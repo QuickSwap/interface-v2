@@ -1,25 +1,44 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { Suspense } from 'react';
+import { BrowserRouter, Switch, Route } from 'react-router-dom';
+import {
+  ThemeProvider as MuiThemeProvider,
+  CssBaseline,
+} from '@material-ui/core';
+import { mainTheme } from './theme';
+import { LandingPage } from 'pages';
+import { PageLayout } from 'layouts';
 import './App.css';
+
+const ThemeProvider: React.FC = ({ children }) => {
+  let theme = mainTheme;
+
+  return <MuiThemeProvider theme={theme}>{children}</MuiThemeProvider>;
+};
+
+const Providers: React.FC = ({ children }) => {
+  return (
+    <BrowserRouter>
+      <Suspense fallback={null}>
+        <ThemeProvider>
+          <CssBaseline />
+          {children}
+        </ThemeProvider>
+      </Suspense>
+    </BrowserRouter>
+  );
+};
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Providers>
+      <Switch>
+        <Route exact path='/'>
+          <PageLayout>
+            <LandingPage />
+          </PageLayout>
+        </Route>
+      </Switch>
+    </Providers>
   );
 }
 
