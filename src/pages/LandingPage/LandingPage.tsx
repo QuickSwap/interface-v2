@@ -94,6 +94,21 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       lineHeight: '42px',
       marginBottom: 60
     }
+  },
+  swapContainer: {
+
+  },
+  rewardsContainer: {
+
+  },
+  buyFiatContainer: {
+
+  },
+  featureContainer: {
+
+  },
+  communityContainer: {
+    
   }
 }));
 
@@ -142,6 +157,16 @@ const LandingPage: React.FC = () => {
           QuickSwap is a next-generation layer-2 decentralized exchange<br/>and Automated Market Maker.
         </Typography>
         <img src={Motif} alt='Motif' />
+      </Box>
+      <Box className={classes.swapContainer}>
+      </Box>
+      <Box className={classes.rewardsContainer}>
+      </Box>
+      <Box className={classes.buyFiatContainer}>
+      </Box>
+      <Box className={classes.featureContainer}>
+      </Box>
+      <Box className={classes.communityContainer}>
       </Box>
     </Box>
   );
