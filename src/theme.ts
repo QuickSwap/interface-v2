@@ -7,6 +7,7 @@ import { merge } from 'lodash';
 
 // colors
 const primary = '#1DAED6';
+const primaryDark = '#1C2938';
 const secondary = '#344252';
 
 const black = '#000000';
@@ -47,7 +48,7 @@ export const mainTheme = responsiveFontSizes(
       },
       primary: {
         main: primary,
-        dark: primary,
+        dark: primaryDark,
       },
       secondary: {
         main: secondary,
@@ -102,6 +103,17 @@ export const mainTheme = responsiveFontSizes(
             opacity: 0.8
           }
         },
+        secondary: {
+          background: secondary
+        },
+        primaryDark: {
+          background: primaryDark,
+          color: 'rgba(255, 255, 255, 0.87)'
+        },
+        successMain: {
+          background: `transparent linear-gradient(279deg, ${successMain} 0%, ${successDark} 100%) 0% 0% no-repeat padding-box`,
+          borderRadius: 50,
+        }
       },
       MuiContainer: {
         root: {
