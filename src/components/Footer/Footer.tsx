@@ -12,6 +12,7 @@ import { ReactComponent as QuickIcon } from 'assets/images/quickIcon.svg';
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   footer: {
     textAlign: 'center',
+    paddingBottom: 110,
     '& p': {
       fontSize: 14,
       lineHeight: '24px',
