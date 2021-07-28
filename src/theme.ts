@@ -75,7 +75,7 @@ export const mainTheme = responsiveFontSizes(
     },
     typography: {
       htmlFontSize: 16,
-      fontFamily: 'DM Sans',
+      fontFamily: 'Ubuntu',
       fontSize: 14,
     },
     spacing,
@@ -106,13 +106,10 @@ export const mainTheme = responsiveFontSizes(
         secondary: {
           background: secondary
         },
-        primaryDark: {
-          background: primaryDark,
-          color: 'rgba(255, 255, 255, 0.87)'
-        },
-        successMain: {
+        textPrimary: {
           background: `transparent linear-gradient(279deg, ${successMain} 0%, ${successDark} 100%) 0% 0% no-repeat padding-box`,
           borderRadius: 50,
+          color: white
         }
       },
       MuiContainer: {
