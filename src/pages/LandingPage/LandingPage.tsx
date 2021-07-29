@@ -17,6 +17,18 @@ import { ReactComponent as SwapIcon2 } from 'assets/images/SwapIcon2.svg';
 import { ReactComponent as SwapChangeIcon } from 'assets/images/SwapChangeIcon.svg';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
+  landingPage: {
+    '& h3': {
+      color: palette.success.dark,
+      fontSize: 26,
+      fontWeight: 'bold'
+    },
+    '& p': {
+      fontSize: 18,
+      lineHeight: '32px',
+      color: palette.text.primary
+    }
+  },
   heroBkg: {
     position: 'absolute',
     top: 0,
@@ -193,21 +205,13 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     textAlign: 'left',
     marginBottom: 60,
     '& h3': {
-      color: palette.success.dark,
-      fontSize: 26,
-      fontWeight: 'bold',
       marginBottom: 16,
     },
-    '& p': {
-      fontSize: 18,
-      lineHeight: '32px',
-      color: palette.text.primary
-    }
   },
   swapPrice: {
     display: 'flex',
     justifyContent: 'space-between',
-    margin: '20px 4px',
+    margin: '20px 8px',
     '& p': {
       fontSize: 16,
       display: 'flex',
@@ -227,7 +231,8 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     }
   },
   rewardsContainer: {
-
+    textAlign: 'center',
+    margin: '172px 0',
   },
   buyFiatContainer: {
 
@@ -247,7 +252,7 @@ const LandingPage: React.FC = () => {
   const [swapInputTo, setSwapInputTo] = useState('0.00');
 
   return (
-    <Box>
+    <Box className={classes.landingPage}>
       <Box className={classes.heroBkg}>
         <img src={HeroBkg} alt='Hero Background' />
       </Box>
@@ -340,6 +345,12 @@ const LandingPage: React.FC = () => {
         </Grid>
       </Box>
       <Box className={classes.rewardsContainer}>
+        <Typography component='h3'>
+          Earn additional rewards in $QUICK by depositing<br/>your LP Tokens
+        </Typography>
+        <Typography>
+          Deposit your Liquidity Provider tokens to receive<br/>Rewards in $QUICK on top of LP Fees.
+        </Typography>
       </Box>
       <Box className={classes.buyFiatContainer}>
       </Box>
