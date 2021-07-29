@@ -15,6 +15,7 @@ import { ReactComponent as PolygonSwapIcon } from 'assets/images/Currency/Polygo
 import { ReactComponent as QuickIcon } from 'assets/images/quickIcon.svg';
 import { ReactComponent as SwapIcon2 } from 'assets/images/SwapIcon2.svg';
 import { ReactComponent as SwapChangeIcon } from 'assets/images/SwapChangeIcon.svg';
+import FiatMask from 'assets/images/FiatMask.svg';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   landingPage: {
@@ -353,6 +354,7 @@ const LandingPage: React.FC = () => {
         </Typography>
       </Box>
       <Box className={classes.buyFiatContainer}>
+        <img src={FiatMask} alt='Fiat Mask' />
       </Box>
       <Box className={classes.featureContainer}>
       </Box>
