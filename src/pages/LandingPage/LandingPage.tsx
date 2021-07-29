@@ -12,6 +12,7 @@ import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import HeroBkg from 'assets/images/heroBkg.svg';
 import Motif from 'assets/images/Motif.svg';
 import { ReactComponent as PolygonSwapIcon } from 'assets/images/Currency/PolygonSwap.svg';
+import { ReactComponent as USDCIcon } from 'assets/images/Currency/USDC.svg';
 import { ReactComponent as QuickIcon } from 'assets/images/quickIcon.svg';
 import { ReactComponent as SwapIcon2 } from 'assets/images/SwapIcon2.svg';
 import { ReactComponent as SwapChangeIcon } from 'assets/images/SwapChangeIcon.svg';
@@ -234,6 +235,12 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
   rewardsContainer: {
     textAlign: 'center',
     margin: '172px 0',
+    '& h3': {
+      marginBottom: 24
+    }
+  },
+  rewardsSlider: {
+
   },
   buyFiatContainer: {
 
@@ -251,6 +258,49 @@ const LandingPage: React.FC = () => {
   const [swapIndex, setSwapIndex] = useState(0);
   const [swapInputFrom, setSwapInputFrom] = useState('0.00');
   const [swapInputTo, setSwapInputTo] = useState('0.00');
+  const rewardItems = [
+    {
+      token1: {
+        symbol: 'USDC',
+        logo: <USDCIcon />
+      },
+      token2: {
+        symbol: 'WMATIC',
+        logo: <PolygonSwapIcon />
+      },
+      fee: 13225,
+      locked: '97.42M',
+      tvl: '120.42M',
+      apr: 21.51
+    },
+    {
+      token1: {
+        symbol: 'USDC',
+        logo: <USDCIcon />
+      },
+      token2: {
+        symbol: 'WMATIC',
+        logo: <PolygonSwapIcon />
+      },      fee: 13225,
+      locked: '97.42M',
+      tvl: '120.42M',
+      apr: 21.51
+    },
+    {
+      token1: {
+        symbol: 'USDC',
+        logo: <USDCIcon />
+      },
+      token2: {
+        symbol: 'WMATIC',
+        logo: <PolygonSwapIcon />
+      },
+      fee: 13225,
+      locked: '97.42M',
+      tvl: '120.42M',
+      apr: 21.51
+    },
+  ]
 
   return (
     <Box className={classes.landingPage}>
@@ -352,6 +402,18 @@ const LandingPage: React.FC = () => {
         <Typography>
           Deposit your Liquidity Provider tokens to receive<br/>Rewards in $QUICK on top of LP Fees.
         </Typography>
+        <Box className={classes.rewardsSlider}>
+          {
+            rewardItems.map((val, index) => (
+              <Box key={index}>
+                <Box className='rewardIcon'>
+                  { val.token1.logo }
+                  { val.token2.logo }
+                </Box>
+              </Box>
+            ))
+          }
+        </Box>
       </Box>
       <Box className={classes.buyFiatContainer}>
         <img src={FiatMask} alt='Fiat Mask' />
