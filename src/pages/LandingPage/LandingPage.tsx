@@ -2,14 +2,19 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import {
-  Container,
-  Grid,
+  ButtonGroup,
   Typography,
   Button,
   Box,
+  Grid,
 } from '@material-ui/core';
+import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import HeroBkg from 'assets/images/heroBkg.svg';
 import Motif from 'assets/images/Motif.svg';
+import { ReactComponent as PolygonSwapIcon } from 'assets/images/Currency/PolygonSwap.svg';
+import { ReactComponent as QuickIcon } from 'assets/images/quickIcon.svg';
+import { ReactComponent as SwapIcon2 } from 'assets/images/SwapIcon2.svg';
+import { ReactComponent as SwapChangeIcon } from 'assets/images/SwapChangeIcon.svg';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   heroBkg: {
@@ -96,7 +101,130 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     }
   },
   swapContainer: {
-
+    textAlign: 'center',
+    padding: 20,
+    maxWidth: 1024,
+    margin: 'auto',
+    '& .MuiButtonGroup-root': {
+      marginBottom: 50,
+      '& button': {
+        width: 180,
+        height: 48,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        background: 'transparent',
+        border: `1px solid ${palette.primary.dark}`,
+        color: 'white',
+        '&.active': {
+          background: '#FFFFFFDE',
+          border: `1px solid transparent`,
+          color: palette.background.default
+        },
+        '&:first-child': {
+          borderTopLeftRadius: 24,
+          borderBottomLeftRadius: 24,
+        },
+        '&:last-child': {
+          borderTopRightRadius: 24,
+          borderBottomRightRadius: 24,
+        }
+      }
+    }
+  },
+  swapBox: {
+    padding: 24,
+    borderRadius: 20,
+    border: `1px solid ${palette.primary.dark}`,
+    zIndex: 1,
+    position: 'relative',
+    textAlign: 'left',
+    '& > p': {
+      fontSize: 14,
+      marginBottom: 16,
+    },
+    '& > div': {
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      '& button': {
+        height: 40,
+        display: 'flex',
+        alignItems: 'center',
+        padding: '0 6px',
+        borderRadius: 20,
+        background: palette.primary.dark,
+        '& svg:first-child': {
+          width: 28,
+          height: 28,
+          marginRight: 8
+        },
+        '& p': {
+          fontSize: 16,
+          fontWeight: 'bold'
+        }
+      },
+      '& input': {
+        background: 'transparent',
+        border: 'none',
+        boxShadow: 'none',
+        outline: 'none',
+        textAlign: 'right',
+        color: 'white',
+        fontSize: 20,
+        fontWeight: 'bold'
+      }
+    }
+  },
+  exchangeSwap: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    background: palette.background.default,
+    border: `2px solid ${palette.primary.dark}`,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    margin: '-20px auto',
+    zIndex: 2,
+    position: 'relative'
+  },
+  swapInfo: {
+    textAlign: 'left',
+    marginBottom: 60,
+    '& h3': {
+      color: palette.success.dark,
+      fontSize: 26,
+      fontWeight: 'bold',
+      marginBottom: 16,
+    },
+    '& p': {
+      fontSize: 18,
+      lineHeight: '32px',
+      color: palette.text.primary
+    }
+  },
+  swapPrice: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    margin: '20px 4px',
+    '& p': {
+      fontSize: 16,
+      display: 'flex',
+      alignItems: 'center',
+      '& svg': {
+        marginLeft: 8,
+        width: 16,
+        height: 16
+      }
+    }
+  },
+  swapButton: {
+    width: '100%',
+    height: 56,
+    '& p': {
+      fontSize: 16
+    }
   },
   rewardsContainer: {
 
@@ -114,6 +242,9 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
 
 const LandingPage: React.FC = () => {
   const classes = useStyles();
+  const [swapIndex, setSwapIndex] = useState(0);
+  const [swapInputFrom, setSwapInputFrom] = useState('0.00');
+  const [swapInputTo, setSwapInputTo] = useState('0.00');
 
   return (
     <Box>
@@ -159,6 +290,54 @@ const LandingPage: React.FC = () => {
         <img src={Motif} alt='Motif' />
       </Box>
       <Box className={classes.swapContainer}>
+        <ButtonGroup>
+          <Button className={swapIndex === 0 ? 'active' : ''} onClick={() => setSwapIndex(0)}>For Traders</Button>
+          <Button className={swapIndex === 1 ? 'active' : ''} onClick={() => setSwapIndex(1)}>For Investors</Button>
+        </ButtonGroup>
+        <Grid container spacing={8} alignItems='center'>
+          <Grid item xs={12} sm={6}>
+            <Box className={classes.swapBox}>
+              <Typography>You Pay:</Typography>
+              <Box>
+                <Button>
+                  <PolygonSwapIcon />
+                  <Typography>MATIC</Typography>
+                  <KeyboardArrowDownIcon />
+                </Button>
+                <input value={swapInputFrom} onChange={(e) => setSwapInputFrom(e.target.value)} />
+              </Box>
+            </Box>
+            <Box className={classes.exchangeSwap}>
+              <SwapChangeIcon />
+            </Box>
+            <Box className={classes.swapBox}>
+              <Typography>You Pay:</Typography>
+              <Box>
+                <Button>
+                  <QuickIcon />
+                  <Typography>QUICK</Typography>
+                  <KeyboardArrowDownIcon />
+                </Button>
+                <input value={swapInputTo} onChange={(e) => setSwapInputTo(e.target.value)} />
+              </Box>
+            </Box>
+            <Box className={classes.swapPrice}>
+              <Typography>Price:</Typography>
+              <Typography>1 MATIC = 0.002 QUICK <SwapIcon2 /></Typography>
+            </Box>
+            <Button color='primary' className={classes.swapButton}>
+              <Typography>Connect Wallet</Typography>
+            </Button>
+          </Grid>
+          <Grid item xs={12} sm={6} className={classes.swapInfo}>
+            <Typography component='h3'>
+              Swap tokens at near-zero gas fees
+            </Typography>
+            <Typography>
+              Exchange any combination of ERC-20 tokens permissionless, with ease
+            </Typography>
+          </Grid>
+        </Grid>
       </Box>
       <Box className={classes.rewardsContainer}>
       </Box>
