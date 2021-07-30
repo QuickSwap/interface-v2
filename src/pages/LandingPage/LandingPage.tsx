@@ -15,6 +15,7 @@ import { ReactComponent as PolygonSwapIcon } from 'assets/images/Currency/Polygo
 import { ReactComponent as USDCIcon } from 'assets/images/Currency/USDC.svg';
 import { ReactComponent as QuickIcon } from 'assets/images/quickIcon.svg';
 import { ReactComponent as SwapIcon2 } from 'assets/images/SwapIcon2.svg';
+import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon.svg';
 import { ReactComponent as SwapChangeIcon } from 'assets/images/SwapChangeIcon.svg';
 import FiatMask from 'assets/images/FiatMask.svg';
 
@@ -237,10 +238,83 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     margin: '172px 0',
     '& h3': {
       marginBottom: 24
+    },
+    '& > button': {
+      width: 194,
+      height: 48,
+      fontSize: 16,
+      borderRadius: 50
     }
   },
   rewardsSlider: {
-
+    maxWidth: 1070,
+    display: 'flex',
+    justifyContent: 'space-between',
+    margin: '64px auto 56px',
+    '& > div': {
+      width: 320,
+      borderRadius: 32,
+      background: palette.primary.dark,
+      padding: '32px 22px',
+      position: 'relative',
+      '& .rewardIcon': {
+        position: 'absolute',
+        display: 'flex',
+        top: 32,
+        left: 22,
+        '& > div': {
+          padding: 2,
+          background: palette.primary.dark,
+          borderRadius: 18,
+          display: 'flex',
+          '&:first-child': {
+            marginRight: -8,
+            position: 'relative',
+            zIndex: 1
+          }
+        }
+      },
+      '& h3': {
+        fontSize: 20,
+        color: 'white',
+        lineHeight: '36px',
+        marginLeft: 10,
+      },
+      '& .row': {
+        display: 'flex',
+        width: '100%',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 12,
+        '& p': {
+          fontSize: 16,
+          color: 'rgba(255, 255, 255, 0.47)',
+          display: 'flex',
+          alignItems: 'center',
+          '& svg': {
+            marginLeft: 4
+          }
+        },
+        '& h4': {
+          fontSize: 16,
+          color: 'white',
+          fontWeight: 'bold'
+        },
+        '& h5': {
+          background: 'rgba(15, 198, 121, 0.12)',
+          color: '#0FC679',
+          fontWeight: 'bold',
+          fontSize: 16,
+          padding: '0 4px',
+          borderRadius: 5,
+        },
+      },
+      '& button': {
+        height: 40,
+        fontSize: 16,
+        marginTop: 12
+      }
+    }
   },
   buyFiatContainer: {
 
@@ -407,13 +481,40 @@ const LandingPage: React.FC = () => {
             rewardItems.map((val, index) => (
               <Box key={index}>
                 <Box className='rewardIcon'>
-                  { val.token1.logo }
-                  { val.token2.logo }
+                  <Box>
+                    { val.token1.logo }
+                  </Box>
+                  <Box>
+                    { val.token2.logo }
+                  </Box>
                 </Box>
+                <Typography component='h3'>
+                  { val.token1.symbol }-{ val.token2.symbol }
+                </Typography>
+                <Box className='row'>
+                  <Typography>24h Fees</Typography>
+                  <Typography component='h4'>{ val.fee }</Typography>
+                </Box>
+                <Box className='row'>
+                  <Typography>Locked Value</Typography>
+                  <Typography component='h4'>{ val.locked }</Typography>
+                </Box>
+                <Box className='row'>
+                  <Typography>TVL</Typography>
+                  <Typography component='h4'>{ val.tvl }</Typography>
+                </Box>
+                <Box className='row'>
+                  <Typography>APR<HelpIcon /></Typography>
+                  <Typography component='h5'>{ val.apr }%</Typography>
+                </Box>
+                <Button fullWidth color='primary'>Invest</Button>
               </Box>
             ))
           }
         </Box>
+        <Button variant='contained' color='secondary'>
+          See all pools
+        </Button>
       </Box>
       <Box className={classes.buyFiatContainer}>
         <img src={FiatMask} alt='Fiat Mask' />
