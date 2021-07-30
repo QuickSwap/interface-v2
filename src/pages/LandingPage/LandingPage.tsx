@@ -17,6 +17,12 @@ import { ReactComponent as QuickIcon } from 'assets/images/quickIcon.svg';
 import { ReactComponent as SwapIcon2 } from 'assets/images/SwapIcon2.svg';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon.svg';
 import { ReactComponent as SwapChangeIcon } from 'assets/images/SwapChangeIcon.svg';
+import { ReactComponent as BuyWithFiat } from 'assets/images/featured/BuywithFiat.svg';
+import { ReactComponent as Analytics } from 'assets/images/featured/Analytics.svg';
+import { ReactComponent as DragonsLair } from 'assets/images/featured/DragonsLair.svg';
+import { ReactComponent as ProvideLiquidity } from 'assets/images/featured/ProvideLiquidity.svg';
+import { ReactComponent as Rewards } from 'assets/images/featured/Rewards.svg';
+import { ReactComponent as FeaturedSwap } from 'assets/images/featured/Swap.svg';
 import FiatMask from 'assets/images/FiatMask.svg';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
@@ -317,7 +323,29 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     }
   },
   buyFiatContainer: {
-
+    background: palette.primary.dark,
+    height: 338,
+    maxWidth: 1248,
+    borderRadius: 48,
+    margin: '0 auto 160px',
+    position: 'relative',
+    '& > img': {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      width: 1248,
+    },
+    '& > div': {
+      display: 'flex',
+      alignItems: 'center',
+      height: '100%',
+      '& svg': {
+        width: 200
+      },
+      '& > div': {
+        width: 'calc(50% - 200px)'
+      }
+    }
   },
   featureContainer: {
 
@@ -415,7 +443,7 @@ const LandingPage: React.FC = () => {
       </Box>
       <Box className={classes.quickInfo}>
         <Typography component='h2'>
-          QuickSwap is a next-generation layer-2 decentralized exchange<br/>and Automated Market Maker.
+          QuickSwap is a next-generation layer-2 decentralized exchange and Automated Market Maker.
         </Typography>
         <img src={Motif} alt='Motif' />
       </Box>
@@ -471,10 +499,10 @@ const LandingPage: React.FC = () => {
       </Box>
       <Box className={classes.rewardsContainer}>
         <Typography component='h3'>
-          Earn additional rewards in $QUICK by depositing<br/>your LP Tokens
+          Earn additional rewards in $QUICK by depositing your LP Tokens
         </Typography>
         <Typography>
-          Deposit your Liquidity Provider tokens to receive<br/>Rewards in $QUICK on top of LP Fees.
+          Deposit your Liquidity Provider tokens to receive Rewards in $QUICK on top of LP Fees.
         </Typography>
         <Box className={classes.rewardsSlider}>
           {
@@ -518,6 +546,17 @@ const LandingPage: React.FC = () => {
       </Box>
       <Box className={classes.buyFiatContainer}>
         <img src={FiatMask} alt='Fiat Mask' />
+        <Box>
+          <BuyWithFiat />
+          <Box>
+            <Typography component='h3'>
+              Buy crypto with Fiat
+            </Typography>
+            <Typography>
+              Simple way to buy or sell crypto with a credit card, bank transfer and more
+            </Typography>
+          </Box>
+        </Box>
       </Box>
       <Box className={classes.featureContainer}>
       </Box>
