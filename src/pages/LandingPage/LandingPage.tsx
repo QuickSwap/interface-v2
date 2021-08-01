@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import {
   ButtonGroup,
@@ -335,6 +334,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     maxWidth: 1248,
     borderRadius: 48,
     margin: '0 auto 160px',
+    overflow: 'hidden',
     position: 'relative',
     '& > img': {
       position: 'absolute',
@@ -771,7 +771,7 @@ const LandingPage: React.FC = () => {
             socialicons.map((val, ind) => (
               <Box key={ind}>
                 { val.icon }
-                <a href={val.link} target='_blank' rel='noreferrer' ></a><Typography>{val.title}</Typography>
+                <a href={val.link} target='_blank' rel='noreferrer' ><Typography>{val.title}</Typography></a>
               </Box>
             ))
           }
