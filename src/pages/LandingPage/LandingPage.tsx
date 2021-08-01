@@ -17,13 +17,20 @@ import { ReactComponent as QuickIcon } from 'assets/images/quickIcon.svg';
 import { ReactComponent as SwapIcon2 } from 'assets/images/SwapIcon2.svg';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon.svg';
 import { ReactComponent as SwapChangeIcon } from 'assets/images/SwapChangeIcon.svg';
-import { ReactComponent as BuyWithFiat } from 'assets/images/featured/BuywithFiat.svg';
-import { ReactComponent as Analytics } from 'assets/images/featured/Analytics.svg';
-import { ReactComponent as DragonsLair } from 'assets/images/featured/DragonsLair.svg';
-import { ReactComponent as ProvideLiquidity } from 'assets/images/featured/ProvideLiquidity.svg';
-import { ReactComponent as Rewards } from 'assets/images/featured/Rewards.svg';
-import { ReactComponent as FeaturedSwap } from 'assets/images/featured/Swap.svg';
+import BuyWithFiat from 'assets/images/featured/BuywithFiat.svg';
+import Analytics from 'assets/images/featured/Analytics.svg';
+import DragonsLair from 'assets/images/featured/DragonsLair.svg';
+import ProvideLiquidity from 'assets/images/featured/ProvideLiquidity.svg';
+import Rewards from 'assets/images/featured/Rewards.svg';
+import FeaturedSwap from 'assets/images/featured/Swap.svg';
 import FiatMask from 'assets/images/FiatMask.svg';
+import { ReactComponent as CoingeckoIcon } from 'assets/images/social/Coingecko.svg';
+import { ReactComponent as DiscordIcon } from 'assets/images/social/Discord.svg';
+import { ReactComponent as MediumIcon } from 'assets/images/social/Medium.svg';
+import { ReactComponent as RedditIcon } from 'assets/images/social/Reddit.svg';
+import { ReactComponent as TelegramIcon } from 'assets/images/social/Telegram.svg';
+import { ReactComponent as TwitterIcon } from 'assets/images/social/Twitter.svg';
+import { ReactComponent as YouTubeIcon } from 'assets/images/social/YouTube.svg';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   landingPage: {
@@ -153,6 +160,23 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       }
     }
   },
+  currencyButton: {
+    height: 40,
+    display: 'flex',
+    alignItems: 'center',
+    padding: '0 6px',
+    borderRadius: 20,
+    background: palette.primary.dark,
+    '& svg:first-child': {
+      width: 28,
+      height: 28,
+      marginRight: 8
+    },
+    '& p': {
+      fontSize: 16,
+      fontWeight: 'bold'
+    }
+  },
   swapBox: {
     padding: 24,
     borderRadius: 20,
@@ -168,23 +192,6 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       display: 'flex',
       justifyContent: 'space-between',
       alignItems: 'center',
-      '& button': {
-        height: 40,
-        display: 'flex',
-        alignItems: 'center',
-        padding: '0 6px',
-        borderRadius: 20,
-        background: palette.primary.dark,
-        '& svg:first-child': {
-          width: 28,
-          height: 28,
-          marginRight: 8
-        },
-        '& p': {
-          fontSize: 16,
-          fontWeight: 'bold'
-        }
-      },
       '& input': {
         background: 'transparent',
         border: 'none',
@@ -338,20 +345,102 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     '& > div': {
       display: 'flex',
       alignItems: 'center',
+      justifyContent: 'space-between',
+      padding: '0 80px 0 0px',
       height: '100%',
-      '& svg': {
-        width: 200
+      position: 'relative',
+      zIndex: 2,
+    },
+    '& .buyFiatInfo': {
+      display: 'flex',
+      width: '50%',
+      alignItems: 'center',
+      position: 'relative',
+      '& img': {
+        width: 200,
       },
       '& > div': {
-        width: 'calc(50% - 200px)'
+        width: 'calc(100% - 200px)',
+        '& > h3': {
+          marginBottom: 12,
+        }
+      }
+    },
+    '& .buyFiatWrapper': {
+      width: 408,
+      '& .buyContent': {
+        background: palette.background.default,
+        borderRadius: 20,
+        padding: 24,
+        '& > p': {
+          fontSize: 14,
+          marginBottom: 8
+        },
+        '& h4': {
+          fontSize: 20,
+          fontWeight: 'bold'
+        }
+      },
+      '& > button': {
+        height: 56,
+        marginTop: 20
       }
     }
   },
+  featureHeading: {
+    margin: 'auto',
+    textAlign: 'center',
+    '& h2': {
+      color: 'rgba(255, 255, 255, 0.87)',
+      fontSize: 26,
+      marginBottom: 32,
+    }
+  },
+  featureDivider: {
+    width: 32,
+    height: 2,
+    background: palette.success.dark,
+    margin: 'auto'
+  },
   featureContainer: {
-
+    maxWidth: 1248,
+    margin: '0 96px',
+    '& > div.MuiGrid-root': {
+      marginTop: 32,
+      '& > div': {
+        '& img': {
+          width: 200
+        },
+        '& > div': {
+          width: 'calc(100% - 210px)'
+        }  
+      }
+    }
   },
   communityContainer: {
-    
+    margin: '100px 0',
+    '& .socialContent': {
+      display: 'flex',
+      flexWrap: 'wrap',
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginTop: 48,
+      '& > div': {
+        marginRight: 32,
+        textAlign: 'center',
+        width: 120,
+        '& p': {
+          fontSize: 16
+        },
+        '& svg': {
+          width: 64,
+          height: 64,
+        },
+        '&:last-child': {
+          marginRight: 0
+        }
+      }
+    }
   }
 }));
 
@@ -402,6 +491,77 @@ const LandingPage: React.FC = () => {
       tvl: '120.42M',
       apr: 21.51
     },
+  ]
+
+  const features = [
+    {
+      img: FeaturedSwap,
+      title: 'Swap Tokens',
+      desc: 'Trade any combination of ERC-20 tokens permissionless, with ease.'
+    },
+    {
+      img: ProvideLiquidity,
+      title: 'Supply Liquidity',
+      desc: 'Earn 0.25% fee on trades proportional to your share of the pool.'
+    },
+    {
+      img: Rewards,
+      title: 'Earn $QUICK',
+      desc: 'Deposit your LP Tokens to earn additional rewards in $QUICK Token.'
+    },
+    {
+      img: DragonsLair,
+      title: 'Dragons Lair',
+      desc: 'Dragons’s lair is a single staking pool for QUICK token. Stake your QUICK to recieve dQuick, and earn your share of .04%'
+    },
+    {
+      img: BuyWithFiat,
+      title: 'Buy Crypto with Fiat',
+      desc: 'Simple way to buy with Apple Pay, credit card, bank transfer & more.'
+    },
+    {
+      img: Analytics,
+      title: 'Analytics',
+      desc: 'Scan through Quickwap analytics & Historical Data.'
+    },
+  ]
+
+  const socialicons = [
+    {
+      link: '',
+      icon: <RedditIcon />,
+      title: 'Reddit'
+    },
+    {
+      link: '',
+      icon: <DiscordIcon />,
+      title: 'Discord'
+    },
+    {
+      link: '',
+      icon: <TwitterIcon />,
+      title: 'Twitter'
+    },
+    {
+      link: '',
+      icon: <MediumIcon />,
+      title: 'Medium'
+    },
+    {
+      link: '',
+      icon: <YouTubeIcon />,
+      title: 'Youtube'
+    },
+    {
+      link: '',
+      icon: <TelegramIcon />,
+      title: 'Telegram'
+    },
+    {
+      link: '',
+      icon: <CoingeckoIcon />,
+      title: 'CoinGecko'
+    }
   ]
 
   return (
@@ -457,7 +617,7 @@ const LandingPage: React.FC = () => {
             <Box className={classes.swapBox}>
               <Typography>You Pay:</Typography>
               <Box>
-                <Button>
+                <Button className={classes.currencyButton}>
                   <PolygonSwapIcon />
                   <Typography>MATIC</Typography>
                   <KeyboardArrowDownIcon />
@@ -471,7 +631,7 @@ const LandingPage: React.FC = () => {
             <Box className={classes.swapBox}>
               <Typography>You Pay:</Typography>
               <Box>
-                <Button>
+                <Button className={classes.currencyButton}>
                   <QuickIcon />
                   <Typography>QUICK</Typography>
                   <KeyboardArrowDownIcon />
@@ -547,20 +707,75 @@ const LandingPage: React.FC = () => {
       <Box className={classes.buyFiatContainer}>
         <img src={FiatMask} alt='Fiat Mask' />
         <Box>
-          <BuyWithFiat />
-          <Box>
-            <Typography component='h3'>
-              Buy crypto with Fiat
-            </Typography>
-            <Typography>
-              Simple way to buy or sell crypto with a credit card, bank transfer and more
-            </Typography>
+          <Box className='buyFiatInfo'>
+            <img src={BuyWithFiat} alt='buy with fiat' />
+            <Box>
+              <Typography component='h3'>
+                Buy crypto with Fiat
+              </Typography>
+              <Typography>
+                Simple way to buy or sell crypto with a credit card, bank transfer and more
+              </Typography>
+            </Box>
+          </Box>
+          <Box className='buyFiatWrapper'>
+            <Box className='buyContent'>
+              <Typography>I want to Buy:</Typography>
+              <Grid container justifyContent='space-between' alignItems='center'>
+                <Button className={classes.currencyButton}>
+                  <QuickIcon />
+                  <Typography>QUICK</Typography>
+                  <KeyboardArrowDownIcon />
+                </Button>
+                <Typography component='h4'>0.00</Typography>
+              </Grid>
+            </Box>
+            <Button fullWidth color='primary'>Buy QUICK Now</Button>
           </Box>
         </Box>
       </Box>
       <Box className={classes.featureContainer}>
+        <Box className={classes.featureHeading}>
+          <Typography component='h2'>
+            Features
+          </Typography>
+          <Box className={classes.featureDivider} />
+        </Box>
+        <Grid container spacing={4}>
+          {
+            features.map((val, index) => (
+              <Grid item container alignItems='center' justifyContent='space-between' xs={12} sm={6} key={index}>
+                <img src={val.img} alt={val.title} />
+                <Box>
+                  <Typography component='h3'>
+                    { val.title }
+                  </Typography>
+                  <Typography>
+                    { val.desc }
+                  </Typography>
+                </Box>
+              </Grid>
+            ))
+          }
+        </Grid>
       </Box>
       <Box className={classes.communityContainer}>
+        <Box className={classes.featureHeading}>
+          <Typography component='h2'>
+            Join our ever-growing Community
+          </Typography>
+          <Box className={classes.featureDivider} />
+        </Box>
+        <Box className='socialContent'>
+          {
+            socialicons.map((val, ind) => (
+              <Box key={ind}>
+                { val.icon }
+                <a href={val.link} target='_blank' rel='noreferrer' ></a><Typography>{val.title}</Typography>
+              </Box>
+            ))
+          }
+        </Box>
       </Box>
     </Box>
   );
