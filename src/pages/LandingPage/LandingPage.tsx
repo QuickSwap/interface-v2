@@ -406,8 +406,9 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     margin: 'auto'
   },
   featureContainer: {
-    maxWidth: 1248,
-    margin: '0 96px',
+    maxWidth: 1400,
+    margin: '0 auto',
+    padding: '0 96px',
     '& > div.MuiGrid-root': {
       marginTop: 32,
       '& > div': {
