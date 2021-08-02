@@ -33,6 +33,9 @@ import { ReactComponent as YouTubeIcon } from 'assets/images/social/YouTube.svg'
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   landingPage: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
     '& h3': {
       color: palette.success.dark,
       fontSize: 26,
@@ -129,8 +132,8 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
   },
   swapContainer: {
     textAlign: 'center',
-    padding: 20,
-    maxWidth: 1024,
+    padding: '20px 32px',
+    maxWidth: 1048,
     margin: 'auto',
     '& .MuiButtonGroup-root': {
       marginBottom: 50,
@@ -248,7 +251,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
   },
   rewardsContainer: {
     textAlign: 'center',
-    margin: '172px 0',
+    margin: '172px 32px',
     '& h3': {
       marginBottom: 24
     },
@@ -269,6 +272,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       borderRadius: 32,
       background: palette.primary.dark,
       padding: '32px 22px',
+      margin: '0 16px',
       position: 'relative',
       '& .rewardIcon': {
         position: 'absolute',
@@ -334,7 +338,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     height: 338,
     maxWidth: 1248,
     borderRadius: 48,
-    margin: '0 auto 160px',
+    margin: '0 32px 160px',
     overflow: 'hidden',
     position: 'relative',
     '& > img': {
@@ -406,9 +410,8 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     margin: 'auto'
   },
   featureContainer: {
-    maxWidth: 1400,
-    margin: '0 auto',
-    padding: '0 96px',
+    maxWidth: 1248,
+    margin: '0 32px',
     '& > div.MuiGrid-root': {
       marginTop: 32,
       '& > div': {
@@ -435,7 +438,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     }
   },
   communityContainer: {
-    margin: '100px 0',
+    margin: '100px 32px',
     '& .socialContent': {
       display: 'flex',
       flexWrap: 'wrap',
@@ -443,11 +446,14 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       justifyContent: 'center',
       marginTop: 48,
       '& > div': {
-        marginRight: 32,
+        margin: '16px 32px 16px 0',
         textAlign: 'center',
         width: 120,
         '& p': {
           fontSize: 16
+        },
+        '& a': {
+          textDecoration: 'none'
         },
         '& svg': {
           width: 64,
