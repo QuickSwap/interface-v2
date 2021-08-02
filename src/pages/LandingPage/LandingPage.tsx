@@ -172,6 +172,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       marginRight: 8
     },
     '& p': {
+      fontFamily: "'Mulish', sans-serif",
       fontSize: 16,
       fontWeight: 'bold'
     }
@@ -373,6 +374,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
         borderRadius: 20,
         padding: 24,
         '& > p': {
+          fontFamily: "'Mulish', sans-serif",
           fontSize: 14,
           marginBottom: 8
         },
@@ -393,6 +395,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     '& h2': {
       color: 'rgba(255, 255, 255, 0.87)',
       fontSize: 26,
+      fontWeight: 'bold',
       marginBottom: 32,
     }
   },
@@ -414,6 +417,19 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
         '& > div': {
           width: 'calc(100% - 210px)'
         }  
+      }
+    },
+    '& .featureText': {
+      '& h3': {
+        fontSize: 20,
+        lineHeight: '30px',
+        color: 'white',
+        marginBottom: 8
+      },
+      '& p': {
+        fontSize: 16,
+        lineHeight: '28px',
+        fontFamily: "'Mulish', sans-serif"
       }
     }
   },
@@ -746,7 +762,7 @@ const LandingPage: React.FC = () => {
             features.map((val, index) => (
               <Grid item container alignItems='center' justifyContent='space-between' xs={12} sm={6} key={index}>
                 <img src={val.img} alt={val.title} />
-                <Box>
+                <Box className='featureText'>
                   <Typography component='h3'>
                     { val.title }
                   </Typography>
