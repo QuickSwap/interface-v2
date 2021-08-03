@@ -24,6 +24,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     '& > div': {
       display: 'flex',
       alignItems: 'center',
+      zIndex: 2,
       '&:last-child': {
         '& button': {
           height: 40,

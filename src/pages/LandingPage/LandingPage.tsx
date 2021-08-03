@@ -58,8 +58,10 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     left: 0,
     zIndex: 1,
     width: '100%',
+    overflow: 'hidden',
     '& img': {
-      width: '100%'
+      width: '100%',
+      minWidth: 1200
     }
   },
   heroSection: {
@@ -94,7 +96,13 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center'
-    }
+    },
+    [breakpoints.down('xs')]: {
+      margin: '64px 0',
+      '& h1': {
+        fontSize: 48
+      }
+    },
   },
   tradingInfo: {
     display: 'flex',
@@ -140,6 +148,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     padding: '20px 32px',
     maxWidth: 1048,
     margin: 'auto',
+    width: '100%',
     '& .MuiButtonGroup-root': {
       marginBottom: 50,
       '& button': {
@@ -165,10 +174,19 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
           borderBottomRightRadius: 24,
         }
       }
+    },
+    [breakpoints.down('xs')]: {
+      padding: 20,
+      '& .MuiGrid-item': {
+        width: '100%',
+        marginBottom: 32,
+        textAlign: 'center'
+      }
     }
   },
   currencyButton: {
     height: 40,
+    minWidth: 121,
     display: 'flex',
     alignItems: 'center',
     padding: '0 6px',
@@ -208,7 +226,8 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
         textAlign: 'right',
         color: 'white',
         fontSize: 20,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        width: 150,
       }
     }
   },
@@ -265,6 +284,9 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       height: 48,
       fontSize: 16,
       borderRadius: 50
+    },
+    [breakpoints.down('xs')]: {
+      margin: '32px 20px 64px'
     }
   },
   rewardsSlider: {
@@ -360,6 +382,9 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     position: 'relative',
     [breakpoints.down('sm')]: {
       height: 'auto'
+    },
+    [breakpoints.down('xs')]: {
+      margin: '0 32px 80px'
     },
     '& > img': {
       position: 'absolute',
