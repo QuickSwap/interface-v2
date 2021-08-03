@@ -6,7 +6,10 @@ import {
   Button,
   Box,
   Grid,
+  useMediaQuery
 } from '@material-ui/core';
+import { useTheme } from '@material-ui/core/styles'
+import Slider from "react-slick";
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import HeroBkg from 'assets/images/heroBkg.svg';
 import Motif from 'assets/images/Motif.svg';
@@ -263,74 +266,81 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     }
   },
   rewardsSlider: {
-    maxWidth: 1070,
+    width: 1072,
     display: 'flex',
     justifyContent: 'space-between',
     margin: '64px auto 56px',
-    '& > div': {
-      width: 320,
-      borderRadius: 32,
-      background: palette.primary.dark,
-      padding: '32px 22px',
-      margin: '0 16px',
-      position: 'relative',
-      '& .rewardIcon': {
-        position: 'absolute',
+    '& .slick-slide': {
+      padding: '0 20px'
+    },
+    [breakpoints.down('md')]: {
+      width: 776
+    },
+    [breakpoints.down('sm')]: {
+      width: 360,
+    }
+  },
+  rewardsSliderItem: {
+    borderRadius: 32,
+    background: palette.primary.dark,
+    padding: '32px 22px',
+    position: 'relative',
+    '& .rewardIcon': {
+      position: 'absolute',
+      display: 'flex',
+      top: 32,
+      left: 22,
+      '& > div': {
+        padding: 2,
+        background: palette.primary.dark,
+        borderRadius: 18,
         display: 'flex',
-        top: 32,
-        left: 22,
-        '& > div': {
-          padding: 2,
-          background: palette.primary.dark,
-          borderRadius: 18,
-          display: 'flex',
-          '&:first-child': {
-            marginRight: -8,
-            position: 'relative',
-            zIndex: 1
-          }
+        '&:first-child': {
+          marginRight: -8,
+          position: 'relative',
+          zIndex: 1
+        }
+      }
+    },
+    '& h3': {
+      fontSize: 20,
+      color: 'white',
+      lineHeight: '36px',
+      marginLeft: 10,
+    },
+    '& .row': {
+      display: 'flex',
+      width: '100%',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: 12,
+      '& p': {
+        fontSize: 16,
+        color: 'rgba(255, 255, 255, 0.47)',
+        display: 'flex',
+        alignItems: 'center',
+        '& svg': {
+          marginLeft: 4
         }
       },
-      '& h3': {
-        fontSize: 20,
-        color: 'white',
-        lineHeight: '36px',
-        marginLeft: 10,
-      },
-      '& .row': {
-        display: 'flex',
-        width: '100%',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: 12,
-        '& p': {
-          fontSize: 16,
-          color: 'rgba(255, 255, 255, 0.47)',
-          display: 'flex',
-          alignItems: 'center',
-          '& svg': {
-            marginLeft: 4
-          }
-        },
-        '& h4': {
-          fontSize: 16,
-          color: 'white',
-          fontWeight: 'bold'
-        },
-        '& h5': {
-          background: 'rgba(15, 198, 121, 0.12)',
-          color: '#0FC679',
-          fontWeight: 'bold',
-          fontSize: 16,
-          padding: '0 4px',
-          borderRadius: 5,
-        },
-      },
-      '& button': {
-        height: 40,
+      '& h4': {
         fontSize: 16,
-        marginTop: 12
-      }
+        color: 'white',
+        fontWeight: 'bold'
+      },
+      '& h5': {
+        background: 'rgba(15, 198, 121, 0.12)',
+        color: '#0FC679',
+        fontWeight: 'bold',
+        fontSize: 16,
+        padding: '0 4px',
+        borderRadius: 5,
+      },
+    },
+    '& button': {
+      height: 40,
+      fontSize: 16,
+      marginTop: 12
     }
   },
   buyFiatContainer: {
@@ -341,6 +351,9 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     margin: '0 32px 160px',
     overflow: 'hidden',
     position: 'relative',
+    [breakpoints.down('sm')]: {
+      height: 'auto'
+    },
     '& > img': {
       position: 'absolute',
       top: 0,
@@ -355,6 +368,10 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       height: '100%',
       position: 'relative',
       zIndex: 2,
+      [breakpoints.down('sm')]: {
+        flexDirection: 'column',
+        padding: 0
+      }
     },
     '& .buyFiatInfo': {
       display: 'flex',
@@ -369,10 +386,32 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
         '& > h3': {
           marginBottom: 12,
         }
+      },
+      [breakpoints.down('sm')]: {
+        width: '100%'
+      },
+      [breakpoints.down('xs')]: {
+        flexDirection: 'column',
+        '& img, & > div': {
+          width: '100%',
+        },
+        '& img': {
+          margin: '-32px 0'
+        },
+        '& div': {
+          padding: '0 20px 20px'
+        }
       }
     },
     '& .buyFiatWrapper': {
       width: 408,
+      [breakpoints.down('sm')]: {
+        width: 'calc(100% - 64px)',
+        marginBottom: 32
+      },
+      [breakpoints.down('xs')]: {
+        width: 'calc(100% - 40px)'
+      },
       '& .buyContent': {
         background: palette.background.default,
         borderRadius: 20,
@@ -472,6 +511,17 @@ const LandingPage: React.FC = () => {
   const [swapIndex, setSwapIndex] = useState(0);
   const [swapInputFrom, setSwapInputFrom] = useState('0.00');
   const [swapInputTo, setSwapInputTo] = useState('0.00');
+  const theme = useTheme();
+  const tabletWindowSize = useMediaQuery(theme.breakpoints.down('md'));
+  const mobileWindowSize = useMediaQuery(theme.breakpoints.down('sm'));
+
+  const rewardSliderSettings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: mobileWindowSize ? 1 : tabletWindowSize ? 2 : 3,
+    slidesToScroll: 1
+  };
   const rewardItems = [
     {
       token1: {
@@ -514,6 +564,48 @@ const LandingPage: React.FC = () => {
       tvl: '120.42M',
       apr: 21.51
     },
+    {
+      token1: {
+        symbol: 'USDC',
+        logo: <USDCIcon />
+      },
+      token2: {
+        symbol: 'WMATIC',
+        logo: <PolygonSwapIcon />
+      },
+      fee: 13225,
+      locked: '97.42M',
+      tvl: '120.42M',
+      apr: 21.51
+    },
+    {
+      token1: {
+        symbol: 'USDC',
+        logo: <USDCIcon />
+      },
+      token2: {
+        symbol: 'WMATIC',
+        logo: <PolygonSwapIcon />
+      },
+      fee: 13225,
+      locked: '97.42M',
+      tvl: '120.42M',
+      apr: 21.51
+    },
+    {
+      token1: {
+        symbol: 'USDC',
+        logo: <USDCIcon />
+      },
+      token2: {
+        symbol: 'WMATIC',
+        logo: <PolygonSwapIcon />
+      },
+      fee: 13225,
+      locked: '97.42M',
+      tvl: '120.42M',
+      apr: 21.51
+    }
   ]
 
   const features = [
@@ -635,8 +727,8 @@ const LandingPage: React.FC = () => {
           <Button className={swapIndex === 0 ? 'active' : ''} onClick={() => setSwapIndex(0)}>For Traders</Button>
           <Button className={swapIndex === 1 ? 'active' : ''} onClick={() => setSwapIndex(1)}>For Investors</Button>
         </ButtonGroup>
-        <Grid container spacing={8} alignItems='center'>
-          <Grid item xs={12} sm={6}>
+        <Grid container spacing={mobileWindowSize ? 0 : 8} alignItems='center'>
+          <Grid item sm={12} md={6}>
             <Box className={classes.swapBox}>
               <Typography>You Pay:</Typography>
               <Box>
@@ -670,7 +762,7 @@ const LandingPage: React.FC = () => {
               <Typography>Connect Wallet</Typography>
             </Button>
           </Grid>
-          <Grid item xs={12} sm={6} className={classes.swapInfo}>
+          <Grid item sm={12} md={6} className={classes.swapInfo}>
             <Typography component='h3'>
               Swap tokens at near-zero gas fees
             </Typography>
@@ -687,10 +779,10 @@ const LandingPage: React.FC = () => {
         <Typography>
           Deposit your Liquidity Provider tokens to receive Rewards in $QUICK on top of LP Fees.
         </Typography>
-        <Box className={classes.rewardsSlider}>
+        <Slider {...rewardSliderSettings} className={classes.rewardsSlider}>
           {
             rewardItems.map((val, index) => (
-              <Box key={index}>
+              <Box key={index} className={classes.rewardsSliderItem}>
                 <Box className='rewardIcon'>
                   <Box>
                     { val.token1.logo }
@@ -722,7 +814,7 @@ const LandingPage: React.FC = () => {
               </Box>
             ))
           }
-        </Box>
+        </Slider>
         <Button variant='contained' color='secondary'>
           See all pools
         </Button>

@@ -7,6 +7,8 @@ import {
 import { mainTheme } from './theme';
 import { LandingPage } from 'pages';
 import { PageLayout } from 'layouts';
+import "slick-carousel/slick/slick.css"; 
+import "slick-carousel/slick/slick-theme.css";
 import './App.css';
 
 const ThemeProvider: React.FC = ({ children }) => {
