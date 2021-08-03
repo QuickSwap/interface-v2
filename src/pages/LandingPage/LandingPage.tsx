@@ -8,7 +8,9 @@ import {
   Grid,
   useMediaQuery
 } from '@material-ui/core';
-import { useTheme } from '@material-ui/core/styles'
+import { useTheme } from '@material-ui/core/styles';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import Slider from "react-slick";
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import HeroBkg from 'assets/images/heroBkg.svg';
@@ -273,6 +275,11 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     '& .slick-slide': {
       padding: '0 20px'
     },
+    '& .slick-arrow': {
+      color: palette.success.dark,
+      width: 32,
+      height: 32,
+    },
     [breakpoints.down('md')]: {
       width: 776
     },
@@ -459,7 +466,14 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
         },
         '& > div': {
           width: 'calc(100% - 210px)'
-        }  
+        },
+        [breakpoints.down('xs')]: {
+          flexDirection: 'column',
+          '& img, & > div': {
+            width: '100%',
+            textAlign: 'center'
+          }
+        }
       }
     },
     '& .featureText': {
@@ -516,11 +530,13 @@ const LandingPage: React.FC = () => {
   const mobileWindowSize = useMediaQuery(theme.breakpoints.down('sm'));
 
   const rewardSliderSettings = {
-    dots: true,
+    dots: false,
     infinite: true,
     speed: 500,
     slidesToShow: mobileWindowSize ? 1 : tabletWindowSize ? 2 : 3,
-    slidesToScroll: 1
+    slidesToScroll: 1,
+    nextArrow: <ChevronRightIcon />,
+    prevArrow: <ChevronLeftIcon />
   };
   const rewardItems = [
     {
@@ -859,7 +875,7 @@ const LandingPage: React.FC = () => {
         <Grid container spacing={4}>
           {
             features.map((val, index) => (
-              <Grid item container alignItems='center' justifyContent='space-between' xs={12} sm={6} key={index}>
+              <Grid item container alignItems='center' justifyContent='space-between' sm={12} md={6} key={index}>
                 <img src={val.img} alt={val.title} />
                 <Box className='featureText'>
                   <Typography component='h3'>
