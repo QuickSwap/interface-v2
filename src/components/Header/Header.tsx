@@ -1,4 +1,5 @@
 import React from 'react';
+import { UnsupportedChainIdError, useWeb3React } from '@web3-react/core'
 import { Link } from 'react-router-dom';
 import {
   Box,
@@ -6,6 +7,8 @@ import {
   Typography,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import { useWalletModalToggle } from 'state/application/hooks';
+import { addMaticToMetamask } from 'utils/addMaticToMetamask';
 import QuickLogo from 'assets/images/quickLogo.svg';
 import { ReactComponent as PolygonIcon } from 'assets/images/Currency/Polygon.svg';
 import { ReactComponent as QuickIcon } from 'assets/images/quickIcon.svg';
@@ -82,6 +85,10 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
 
 const Header: React.FC = () => {
   const classes = useStyles();
+  const { account, connector, error } = useWeb3React();
+  const { ethereum } = (window as any);
+  const isnotMatic = ethereum && ethereum.isMetaMask && Number(ethereum.chainId) !== 137;
+  const toggleWalletModal = useWalletModalToggle();
   const menuItems = [
     {
       link: '/',
@@ -134,8 +141,8 @@ const Header: React.FC = () => {
           <QuickIcon />
           <Typography>Buy Quick</Typography>
         </Button>
-        <Button color='primary'>
-          <Typography>Connect</Typography>
+        <Button color='primary' onClick={() => { isnotMatic ? addMaticToMetamask() : toggleWalletModal() }}>
+          <Typography>{ isnotMatic ? 'Switch to Matic' : 'Connect' }</Typography>
         </Button>
       </Box>
     </Box>
