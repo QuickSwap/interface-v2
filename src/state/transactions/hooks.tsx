@@ -2,8 +2,8 @@ import { TransactionResponse } from '@ethersproject/providers'
 import { useCallback, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
-import { useActiveWeb3React } from '../../hooks'
-import { AppDispatch, AppState } from '../index'
+import { useActiveWeb3React } from 'hooks'
+import { AppDispatch, AppState } from 'state'
 import { addTransaction } from './actions'
 import { TransactionDetails } from './reducer'
 

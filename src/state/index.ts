@@ -1,7 +1,8 @@
-import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit'
+import { configureStore } from '@reduxjs/toolkit'
 import { save, load } from 'redux-localstorage-simple'
 
 import application from 'state/application/reducer'
+import transactions from 'state/transactions/reducer'
 import { updateVersion } from 'state/global/actions'
 
 const PERSISTED_KEYS: string[] = ['user', 'transactions', 'lists']
@@ -9,8 +10,9 @@ const PERSISTED_KEYS: string[] = ['user', 'transactions', 'lists']
 const store = configureStore({
   reducer: {
     application,
+    transactions
   },
-  middleware: [...getDefaultMiddleware({ thunk: false }), save({ states: PERSISTED_KEYS })],
+  middleware: (getDefaultMiddleware) => [...getDefaultMiddleware({ thunk: false }), save({ states: PERSISTED_KEYS })],
   preloadedState: load({ states: PERSISTED_KEYS })
 })
 

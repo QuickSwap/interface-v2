@@ -48,7 +48,7 @@ export class FortmaticConnector extends AbstractConnector {
         if (provider.overlay.overlayReady) {
           clearInterval(interval)
           this.emit(OVERLAY_READY)
-          resolve()
+          resolve(OVERLAY_READY)
         }
       }, 200)
     })
