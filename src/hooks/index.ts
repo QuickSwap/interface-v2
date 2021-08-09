@@ -5,7 +5,7 @@ import { ChainId } from '@uniswap/sdk'
 import { NetworkContextName } from 'constants/index'
 
 export function useActiveWeb3React(): Web3ReactContextInterface<Web3Provider> & { chainId?: ChainId } {
-  const context = useWeb3ReactCore<Web3Provider>()
-  const contextNetwork = useWeb3ReactCore<Web3Provider>(NetworkContextName)
-  return context.active ? context : contextNetwork
+  const context = useWeb3ReactCore<Web3Provider>();
+  const contextNetwork = useWeb3ReactCore<Web3Provider>(NetworkContextName);
+  return context.active ? context : contextNetwork;
 }

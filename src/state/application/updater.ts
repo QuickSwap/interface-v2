@@ -6,10 +6,11 @@ import useIsWindowVisible from 'hooks/useIsWindowVisible'
 import { updateBlockNumber } from './actions'
 
 export default function Updater(): null {
-  const { library, chainId } = useActiveWeb3React()
-  const dispatch = useDispatch()
+  const { library, chainId } = useActiveWeb3React();
+  const { ethereum } = (window as any);
+  const dispatch = useDispatch();
 
-  const windowVisible = useIsWindowVisible()
+  const windowVisible = useIsWindowVisible();
 
   const [state, setState] = useState<{ chainId: number | undefined; blockNumber: number | null }>({
     chainId,
@@ -42,10 +43,15 @@ export default function Updater(): null {
       .catch(error => console.error(`Failed to get block number for chainId: ${chainId}`, error))
 
     library.on('block', blockNumberCallback)
+
+    ethereum?.on('chainChanged', () => {
+      document.location.reload();
+    });
+
     return () => {
       library.removeListener('block', blockNumberCallback)
     }
-  }, [dispatch, chainId, library, blockNumberCallback, windowVisible])
+  }, [dispatch, chainId, library, blockNumberCallback, windowVisible, ethereum])
 
   const debouncedState = useDebounce(state, 100)
 
@@ -56,7 +62,7 @@ export default function Updater(): null {
       setBlock(debouncedState.blockNumber);
     }
     
-  }, [windowVisible, dispatch, debouncedState.blockNumber, debouncedState.chainId])
+  }, [block, windowVisible, dispatch, debouncedState.blockNumber, debouncedState.chainId])
 
   return null
 }

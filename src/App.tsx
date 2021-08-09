@@ -8,6 +8,8 @@ import { Provider } from 'react-redux';
 import store from 'state';
 import { LandingPage } from 'pages';
 import { PageLayout } from 'layouts';
+import ApplicationUpdater from 'state/application/updater'
+import TransactionUpdater from 'state/transactions/updater'
 import "slick-carousel/slick/slick.css"; 
 import "slick-carousel/slick/slick-theme.css";
 import './App.css';
@@ -32,9 +34,19 @@ const Providers: React.FC = ({ children }) => {
   );
 };
 
+function Updaters() {
+  return (
+    <>
+      <ApplicationUpdater />
+      <TransactionUpdater />
+    </>
+  )
+}
+
 function App() {
   return (
     <Provider store={store}>
+      <Updaters />
       <Providers>
         <Switch>
           <Route exact path='/'>
