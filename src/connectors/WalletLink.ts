@@ -36,7 +36,7 @@ export class WalletLinkConnector extends AbstractConnector {
     // @ts-ignore
     if (window.ethereum && window.ethereum.isCoinbaseWallet === true) {
       // user is in the dapp browser on Coinbase Wallet
-      this.provider = window.ethereum
+      this.provider = (window as any).ethereum
     } else if (!this.walletLink) {
       const WalletLink = await import('walletlink').then(m => m?.default ?? m)
       this.walletLink = new WalletLink({
