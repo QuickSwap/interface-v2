@@ -1,6 +1,6 @@
 import { AbstractConnector } from '@web3-react/abstract-connector'
 import React from 'react'
-import { Box, CircularProgress } from '@material-ui/core'
+import { Box, CircularProgress, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import { SUPPORTED_WALLETS } from 'constants/index'
 import { injected } from 'connectors'
@@ -9,6 +9,7 @@ import Option from './Option'
 const useStyles = makeStyles(({ palette }) => ({
   pendingSection: {
     display: 'flex',
+    flexWrap: 'wrap',
     alignItems: 'center',
     justifyContent: 'center',
     width: '100%',
@@ -50,6 +51,9 @@ const useStyles = makeStyles(({ palette }) => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+    '& p': {
+      marginLeft: 8
+    }
   }
 }));
 
@@ -88,7 +92,7 @@ const PendingView: React.FC<PendingViewProps> = ({
           ) : (
             <>
               <CircularProgress />
-              Initializing...
+              <Typography>Initializing...</Typography>
             </>
           )}
         </Box>
