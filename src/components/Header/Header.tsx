@@ -10,9 +10,10 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useWalletModalToggle } from 'state/application/hooks';
 import { isTransactionRecent, useAllTransactions } from 'state/transactions/hooks';
 import { TransactionDetails } from 'state/transactions/reducer'
-import { addMaticToMetamask } from 'utils';
-import useENSName from 'hooks/useENSName'
+import { shortenAddress, addMaticToMetamask } from 'utils';
+import useENSName from 'hooks/useENSName';
 import { WalletModal } from 'components';
+import StatusIcon from 'components/AccountDetails/StatusIcon';
 import QuickLogo from 'assets/images/quickLogo.svg';
 import { ReactComponent as PolygonIcon } from 'assets/images/Currency/Polygon.svg';
 import { ReactComponent as QuickIcon } from 'assets/images/quickIcon.svg';
@@ -83,6 +84,21 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     },
     [breakpoints.down('sm')]: {
       display: 'none !important'
+    }
+  },
+  accountDetails: {
+    border: `1px solid ${palette.divider}`,
+    padding: '8px 12px',
+    cursor: 'pointer',
+    borderRadius: 12,
+    display: 'flex',
+    alignItems: 'center',
+    '& > div': {
+      display: 'flex',
+    },
+    '& img': {
+      width: 20,
+      marginRight: 6
     }
   }
 }));
@@ -158,9 +174,14 @@ const Header: React.FC = () => {
           <QuickIcon />
           <Typography>Buy Quick</Typography>
         </Button>
-        <Button color='primary' onClick={() => { isnotMatic ? addMaticToMetamask() : toggleWalletModal() }}>
-          <Typography>{ isnotMatic ? 'Switch to Matic' : 'Connect' }</Typography>
-        </Button>
+        {
+          account ? 
+            <Box className={classes.accountDetails} onClick={toggleWalletModal}><StatusIcon /><Typography>{ shortenAddress(account) }</Typography></Box>
+            :
+            <Button color='primary' onClick={() => { isnotMatic ? addMaticToMetamask() : toggleWalletModal() }}>
+              <Typography>{ isnotMatic ? 'Switch to Matic' : 'Connect' }</Typography>
+            </Button>  
+        }
       </Box>
       <WalletModal ENSName={ENSName ?? undefined} pendingTransactions={pending} confirmedTransactions={confirmed} />
     </Box>

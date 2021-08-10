@@ -8,13 +8,9 @@ import { clearAllTransactions } from 'state/transactions/actions';
 import { shortenAddress, getEtherscanLink } from 'utils';
 import { SUPPORTED_WALLETS } from 'constants/index';
 import { ReactComponent as Close } from 'assets/images/x.svg';
-import { injected, walletconnect, walletlink, fortmatic, portis, safeApp } from 'connectors';
-import MetamaskIcon from 'assets/images/metamask.png';
-import CoinbaseWalletIcon from 'assets/images/coinbaseWalletIcon.svg';
-import WalletConnectIcon from 'assets/images/walletConnectIcon.svg';
-import FortmaticIcon from 'assets/images/fortmaticIcon.png';
-import PortisIcon from 'assets/images/portisIcon.png';
+import { injected, walletlink, safeApp } from 'connectors';
 import { ExternalLink as LinkIcon } from 'react-feather';
+import StatusIcon from './StatusIcon';
 import Copy from './CopyHelper';
 import Transaction from './Transaction';
 
@@ -192,48 +188,6 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
     return <Box className={classes.walletName}>Connected with {name}</Box>
   }
 
-  function getStatusIcon() {
-    if (connector === injected) {
-      return (
-        <Box>
-          <img src={MetamaskIcon} alt={'metamask logo'} />
-        </Box>
-      )
-    } else if (connector === walletconnect) {
-      return (
-        <Box>
-          <img src={WalletConnectIcon} alt={'wallet connect logo'} />
-        </Box>
-      )
-    } else if (connector === walletlink) {
-      return (
-        <Box>
-          <img src={CoinbaseWalletIcon} alt={'coinbase wallet logo'} />
-        </Box>
-      )
-    } else if (connector === fortmatic) {
-      return (
-        <Box>
-          <img src={FortmaticIcon} alt={'fortmatic logo'} />
-        </Box>
-      )
-    } else if (connector === portis) {
-      return (
-        <Box>
-          <img src={PortisIcon} alt={'portis logo'} />
-          <Button className={classes.walletAction}
-            onClick={() => {
-              portis.portis.showPortis()
-            }}
-          >
-            Show Portis
-          </Button>
-        </Box>
-      )
-    }
-    return null
-  }
-
   const clearAllTransactionsCallback = useCallback(() => {
     if (chainId) dispatch(clearAllTransactions({ chainId }))
   }, [dispatch, chainId])
@@ -277,14 +231,14 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
                   {ENSName ? (
                     <>
                       <div>
-                        {getStatusIcon()}
+                        <StatusIcon />
                         <p> {ENSName}</p>
                       </div>
                     </>
                   ) : (
                     <>
                       <div>
-                        {getStatusIcon()}
+                        <StatusIcon />
                         <p> {account && shortenAddress(account)}</p>
                       </div>
                     </>
