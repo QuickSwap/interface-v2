@@ -95,6 +95,9 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     alignItems: 'center',
     '& > div': {
       display: 'flex',
+      '& button': {
+        display: 'none'
+      }
     },
     '& img': {
       width: 20,
