@@ -21,15 +21,19 @@ const useStyles = makeStyles(({ palette }) => ({
   },
   optionCardLeft: {
     display: 'flex',
-    justifyContent: 'center',
-    height: '100%', 
+    alignItems: 'center'
   },
   optionCardClickable: {
     marginTop: 0,
-    opacity: 0.5,
+    border: `1px solid ${palette.divider}`,
+    borderRadius: 12,
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: '1rem',
     '&:hover': {
       cursor: 'pointer',
-      border: `1px solid ${palette.divider}`
+      border: `1px solid ${palette.primary.main}`,
     },
   },
   greenCircle: {

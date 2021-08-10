@@ -2,6 +2,13 @@ import { ChainId, JSBI, Percent, Token, WETH } from '@uniswap/sdk'
 import { AbstractConnector } from '@web3-react/abstract-connector'
 
 import { injected, walletconnect, walletlink, portis, arkaneconnect, safeApp } from 'connectors'
+import MetamaskIcon from 'assets/images/metamask.png'
+import InjectedIcon from 'assets/images/arrow-right.svg'
+import GnosisIcon from 'assets/images/gnosis_safe.png'
+import CoinbaseWalletIcon from 'assets/images/coinbaseWalletIcon.svg'
+import VenlyIcon from 'assets/images/venly.svg'
+import PortisIcon from 'assets/images/portisIcon.png'
+import WalletConnectIcon from 'assets/images/walletConnectIcon.svg'
 
 export const ROUTER_ADDRESS = '0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff'; //'0x6207A65a8bbc87dD02C3109D2c74a6bCE4af1C8c';//
 
@@ -265,7 +272,7 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   INJECTED: {
     connector: injected,
     name: 'Injected',
-    iconName: 'arrow-right.svg',
+    iconName: InjectedIcon,
     description: 'Injected web3 provider.',
     href: null,
     color: '#010101',
@@ -274,7 +281,7 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   METAMASK: {
     connector: injected,
     name: 'MetaMask',
-    iconName: 'metamask.png',
+    iconName: MetamaskIcon,
     description: 'Easy-to-use browser extension.',
     href: null,
     color: '#E8831D'
@@ -282,7 +289,7 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   SAFE_APP: {
     connector: safeApp,
     name: 'Gnosis Safe App',
-    iconName: 'gnosis_safe.png',
+    iconName: GnosisIcon,
     description: 'Login using gnosis safe app',
     href: null,
     color: '#4196FC',
@@ -291,7 +298,7 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   ARKANE_CONNECT: {
     connector: arkaneconnect,
     name: 'Venly',
-    iconName: 'venly.svg',
+    iconName: VenlyIcon,
     description: 'Login using Venly hosted wallet.',
     href: null,
     color: '#4196FC',
@@ -299,7 +306,7 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   Portis: {
     connector: portis,
     name: 'Portis',
-    iconName: 'portisIcon.png',
+    iconName: PortisIcon,
     description: 'Login using Portis hosted wallet',
     href: null,
     color: '#4A6C9B',
@@ -308,7 +315,7 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   WALLET_LINK: {
     connector: walletlink,
     name: 'Coinbase Wallet',
-    iconName: 'coinbaseWalletIcon.svg',
+    iconName: CoinbaseWalletIcon,
     description: 'Use Coinbase Wallet app on mobile device',
     href: null,
     color: '#315CF5'
@@ -316,7 +323,7 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   WALLET_CONNECT: {
     connector: walletconnect,
     name: 'WalletConnect',
-    iconName: 'walletConnectIcon.svg',
+    iconName: WalletConnectIcon,
     description: 'Connect to Trust Wallet, Rainbow Wallet and more...',
     href: null,
     color: '#4196FC',

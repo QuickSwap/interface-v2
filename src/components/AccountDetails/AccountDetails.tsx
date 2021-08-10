@@ -23,8 +23,8 @@ const useStyles = makeStyles(({ palette }) => ({
     position: 'absolute',
     right: '1rem',
     top: 14,
-    '& svg path': {
-      stroke: palette.text.primary,
+    '& svg': {
+      stroke: palette.primary.dark,
     },
     '&:hover': {
       cursor: 'pointer',
@@ -33,17 +33,15 @@ const useStyles = makeStyles(({ palette }) => ({
   },
   headerRow: {
     padding: '1rem',
+    fontSize: '1.25rem',
     fontWeight: 500,
-    color: palette.text.primary
+    color: palette.primary.dark,
   },
   infoCard: {
     padding: '1rem',
     border: `1px solid ${palette.divider}`,
     borderRadius: 20,
     position: 'relative',
-    display: 'grid',
-    gridRowGap: 12,
-    marginBottom: 20,
   },
   accountGroupingRow: {
     display: 'flex',
@@ -57,7 +55,6 @@ const useStyles = makeStyles(({ palette }) => ({
     }
   },
   accountSection: {
-    backgroundColor: palette.background.default,
     padding: '0rem 1rem'
   },
   yourAccount: {
@@ -82,28 +79,32 @@ const useStyles = makeStyles(({ palette }) => ({
       textDecoration: 'underline'
     },
 
+    '& img': {
+      width: 20
+    },
+
     '& p': {
-      minWidth: 0,
-      margin: 0,
-      overflow: 'hidden',
+      color: palette.primary.dark,
       textOverflow: 'ellipsis',
       whiteSpace: 'nowrap',
+      margin: '8px'
     }
   },
   addressLink: {
     fontSize: '0.825rem',
-    color: palette.text.primary,
+    color: palette.primary.dark,
     marginLeft: '1rem',
     display: 'flex',
+    textDecoration: 'none',
     '&:hover': {
-      color: palette.text.secondary
+      textDecoration: 'underline'
     }
   },
   walletName: {
     width: 'initial',
     fontSize: '0.825rem',
     fontWeight: 500,
-    color: palette.text.primary 
+    color: palette.primary.dark
   },
   walletAction: {
     width: 'fit-content',
@@ -118,6 +119,9 @@ const useStyles = makeStyles(({ palette }) => ({
   },
   upperSection: {
     position: 'relative',
+    background: 'white',
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
     '& h5': {
       margin: 0,
       marginBottom: '0.5rem',
@@ -139,10 +143,10 @@ const useStyles = makeStyles(({ palette }) => ({
     backgroundColor: palette.background.paper,
     borderBottomLeftRadius: 25,
     borderBottomRightRadius: 20,
-    '& h5': {
+    '& p': {
       margin: 0,
       fontWeight: 400,
-      color: palette.text.primary
+      color: palette.primary.dark
     }
   }
 }));

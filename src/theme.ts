@@ -15,6 +15,7 @@ const white = '#ffffff';
 
 const textPrimary = 'rgba(255, 255, 255, 0.87)';
 const bgColor = '#021221';
+const bgColor1 ='rgb(247, 248, 250)'
 
 const successMain = '#2464F4';
 const successDark = '#1DB2D5';
@@ -61,7 +62,7 @@ export const mainTheme = responsiveFontSizes(
       text: {
         primary: textPrimary,
         secondary: white,
-        hint: white,
+        hint: bgColor1,
       },
       background: {
         default: bgColor,

@@ -24,8 +24,8 @@ const useStyles = makeStyles(({ palette }) => ({
     position: 'absolute',
     right: '1rem',
     top: 14,
-    '& svg path': {
-      stroke: palette.text.primary,
+    '& svg': {
+      stroke: palette.primary.dark,
     },
     '&:hover': {
       cursor: 'pointer',
@@ -35,16 +35,24 @@ const useStyles = makeStyles(({ palette }) => ({
   wrapper: {
     margin: 0,
     padding: 0,
+    maxWidth: 500,
     width: '100%',
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)'
   },
   headerRow: {
     display: 'flex',
     padding: '1rem',
     fontWeight: 500,
-    color: palette.primary.main
+    background: palette.background.paper,
+    color: palette.primary.dark,
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
   },
   contentWrapper: {
-    backgroundColor: palette.background.default,
+    backgroundColor: palette.text.hint,
     padding: '2rem',
     borderBottomRightRadius: 20,
     borderBottomLeftRadius: 20
@@ -70,7 +78,12 @@ const useStyles = makeStyles(({ palette }) => ({
     alignItems: 'center',
     justifyContent: 'center',
     flexWrap: 'wrap',
-    marginTop: '2rem'
+    marginTop: '2rem',
+    color: 'black',
+    '& a': {
+      color: palette.primary.main,
+      textDecoration: 'none'
+    }
   },
   optionGrid: {
     display: 'grid',
@@ -209,7 +222,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
               link={option.href}
               header={option.name}
               subheader={null}
-              icon={require('../../assets/images/' + option.iconName)}
+              icon={option.iconName}
             />
           )
         }
@@ -263,7 +276,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
             link={option.href}
             header={option.name}
             subheader={null} //use option.descriptio to bring back multi-line
-            icon={require('../../assets/images/' + option.iconName)}
+            icon={option.iconName}
           />
         )
       )
@@ -343,8 +356,10 @@ const WalletModal: React.FC<WalletModalProps> = ({
   }
 
   return (
-    <Modal open={walletModalOpen} onClose={toggleWalletModal}>
-      <Box className={classes.wrapper}>{getModalContent()}</Box>
+    <Modal open={walletModalOpen} onClose={toggleWalletModal} BackdropComponent={Backdrop} BackdropProps={{ timeout: 500 }}>
+      <Fade in={walletModalOpen}>
+        <Box className={classes.wrapper}>{getModalContent()}</Box>
+      </Fade>
     </Modal>
   )
 }
