@@ -42,10 +42,7 @@ const useStyles = makeStyles(({ palette }) => ({
     padding: '0.5rem',
     fontWeight: 600,
     userSelect: 'none',
-    '&:hover': {
-      cursor: 'pointer',
-      backgroundColor: palette.text.primary
-    }
+    cursor: 'pointer',
   },
   loadingWrapper: {
     display: 'flex',
