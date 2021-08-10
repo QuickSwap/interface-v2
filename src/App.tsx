@@ -13,6 +13,9 @@ import { getLibrary } from 'utils'
 import { NetworkContextName } from 'constants/index';
 import ApplicationUpdater from 'state/application/updater'
 import TransactionUpdater from 'state/transactions/updater'
+import ListsUpdater from './state/lists/updater'
+import MulticallUpdater from './state/multicall/updater'
+import UserUpdater from './state/user/updater'
 import "slick-carousel/slick/slick.css"; 
 import "slick-carousel/slick/slick-theme.css";
 import './App.css';
@@ -44,6 +47,9 @@ function Updaters() {
     <>
       <ApplicationUpdater />
       <TransactionUpdater />
+      <ListsUpdater />
+      <MulticallUpdater />
+      <UserUpdater />
     </>
   )
 }

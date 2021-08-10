@@ -1,4 +1,4 @@
-export const addMaticToMetamask = () => {
+const addMaticToMetamask = () => {
   const { ethereum } = (window as any);
   if(ethereum) {
     ethereum.request({
@@ -30,5 +30,6 @@ export const addMaticToMetamask = () => {
       }
     });
   }
-  
 }
+
+export default addMaticToMetamask;

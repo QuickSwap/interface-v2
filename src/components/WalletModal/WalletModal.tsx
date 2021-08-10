@@ -14,7 +14,7 @@ import { SUPPORTED_WALLETS } from 'constants/index'
 import usePrevious from 'hooks/usePrevious'
 import { ApplicationModal } from 'state/application/actions'
 import { useModalOpen, useWalletModalToggle } from 'state/application/hooks'
-import { AccountDetails } from 'components/AccountDetails'
+import { AccountDetails } from 'components'
 
 import Option from './Option'
 import PendingView from './PendingView'

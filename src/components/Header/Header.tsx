@@ -8,7 +8,8 @@ import {
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { useWalletModalToggle } from 'state/application/hooks';
-import { addMaticToMetamask } from 'utils/addMaticToMetamask';
+import { addMaticToMetamask } from 'utils';
+import { WalletModal } from 'components';
 import QuickLogo from 'assets/images/quickLogo.svg';
 import { ReactComponent as PolygonIcon } from 'assets/images/Currency/Polygon.svg';
 import { ReactComponent as QuickIcon } from 'assets/images/quickIcon.svg';
@@ -145,6 +146,7 @@ const Header: React.FC = () => {
           <Typography>{ isnotMatic ? 'Switch to Matic' : 'Connect' }</Typography>
         </Button>
       </Box>
+      <WalletModal ENSName={ENSName ?? undefined} pendingTransactions={pending} confirmedTransactions={confirmed} />
     </Box>
   );
 };
