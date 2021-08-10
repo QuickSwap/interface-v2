@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { UnsupportedChainIdError, useWeb3React } from '@web3-react/core'
 import { Link } from 'react-router-dom';
 import {
@@ -8,7 +8,10 @@ import {
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { useWalletModalToggle } from 'state/application/hooks';
+import { isTransactionRecent, useAllTransactions } from 'state/transactions/hooks';
+import { TransactionDetails } from 'state/transactions/reducer'
 import { addMaticToMetamask } from 'utils';
+import useENSName from 'hooks/useENSName'
 import { WalletModal } from 'components';
 import QuickLogo from 'assets/images/quickLogo.svg';
 import { ReactComponent as PolygonIcon } from 'assets/images/Currency/Polygon.svg';
@@ -84,10 +87,23 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
   }
 }));
 
+const newTransactionsFirst = (a: TransactionDetails, b: TransactionDetails) => {
+  return b.addedTime - a.addedTime
+}
+
 const Header: React.FC = () => {
   const classes = useStyles();
   const { account, connector, error } = useWeb3React();
+  const { ENSName } = useENSName(account ?? undefined)
   const { ethereum } = (window as any);
+  const allTransactions = useAllTransactions();
+  const sortedRecentTransactions = useMemo(() => {
+    const txs = Object.values(allTransactions)
+    return txs.filter(isTransactionRecent).sort(newTransactionsFirst)
+  }, [allTransactions]);
+
+  const pending = sortedRecentTransactions.filter((tx: any) => !tx.receipt).map((tx: any) => tx.hash)
+  const confirmed = sortedRecentTransactions.filter((tx: any) => tx.receipt).map((tx: any) => tx.hash)
   const isnotMatic = ethereum && ethereum.isMetaMask && Number(ethereum.chainId) !== 137;
   const toggleWalletModal = useWalletModalToggle();
   const menuItems = [
