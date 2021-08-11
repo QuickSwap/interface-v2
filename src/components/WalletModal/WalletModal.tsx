@@ -347,7 +347,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
           {walletView !== WALLET_VIEWS.PENDING && (
             <Box className={classes.blurb}>
               <span>New to Matic? &nbsp;</span>{' '}
-              <a href="https://docs.matic.network/docs/develop/wallets/getting-started" target='_blank'>Learn more about wallets</a>
+              <a href="https://docs.matic.network/docs/develop/wallets/getting-started" target='_blank' rel="noreferrer">Learn more about wallets</a>
             </Box>
           )}
         </Box>

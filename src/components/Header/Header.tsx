@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { UnsupportedChainIdError, useWeb3React } from '@web3-react/core'
+import { useWeb3React } from '@web3-react/core'
 import { Link } from 'react-router-dom';
 import {
   Box,
@@ -112,7 +112,7 @@ const newTransactionsFirst = (a: TransactionDetails, b: TransactionDetails) => {
 
 const Header: React.FC = () => {
   const classes = useStyles();
-  const { account, connector, error } = useWeb3React();
+  const { account } = useWeb3React();
   const { ENSName } = useENSName(account ?? undefined)
   const { ethereum } = (window as any);
   const allTransactions = useAllTransactions();

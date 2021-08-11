@@ -25,8 +25,8 @@ import { Web3Provider } from '@ethersproject/providers'
 import { abi as LairABI } from 'abis/DragonLair.json'; 
 const Web3HttpProvider = require('web3-providers-http');
 
-const providers = new Array();
-const sProviders = new Array();
+const providers: any[] = [];
+const sProviders: any[] = [];
 
 const rpcUrls = [
   //"https://nd-995-891-194.p2pify.com/58d3a2349fd1d7d909ee1a51d76cfdbf",
@@ -74,7 +74,7 @@ function useContract(address: string | undefined, ABI: any, withSignerIfPossible
 
   if (chainId && MULTICALL_NETWORKS[chainId] === address) {
     count = count + 1;
-    if (sThreshold > 0 && count % sThreshold == 0) {
+    if (sThreshold > 0 && count % sThreshold === 0) {
       console.log(count);
       if(sLastUsedUrl === sMaxUrls) {
         sLastUsedUrl = -1;
@@ -98,7 +98,7 @@ function useContract(address: string | undefined, ABI: any, withSignerIfPossible
       console.error('Failed to get contract', error)
       return null
     }
-  }, [address, ABI, library, withSignerIfPossible, account])
+  }, [address, ABI, library, withSignerIfPossible, account, provider])
 }
 
 export function useLairContract(): Contract | null {
