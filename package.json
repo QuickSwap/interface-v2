@@ -55,8 +55,8 @@
     "web3": "^1.3.5"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "react-scripts --max_old_space_size=460 start",
+    "build": "react-scripts --max_old_space_size=460 build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
