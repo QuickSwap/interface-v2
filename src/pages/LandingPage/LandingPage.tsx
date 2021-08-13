@@ -18,9 +18,7 @@ import Motif from 'assets/images/Motif.svg';
 import { ReactComponent as PolygonSwapIcon } from 'assets/images/Currency/PolygonSwap.svg';
 import { ReactComponent as USDCIcon } from 'assets/images/Currency/USDC.svg';
 import { ReactComponent as QuickIcon } from 'assets/images/quickIcon.svg';
-import { ReactComponent as SwapIcon2 } from 'assets/images/SwapIcon2.svg';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon.svg';
-import { ReactComponent as SwapChangeIcon } from 'assets/images/SwapChangeIcon.svg';
 import BuyWithFiat from 'assets/images/featured/BuywithFiat.svg';
 import Analytics from 'assets/images/featured/Analytics.svg';
 import DragonsLair from 'assets/images/featured/DragonsLair.svg';
@@ -35,6 +33,7 @@ import { ReactComponent as RedditIcon } from 'assets/images/social/Reddit.svg';
 import { ReactComponent as TelegramIcon } from 'assets/images/social/Telegram.svg';
 import { ReactComponent as TwitterIcon } from 'assets/images/social/Twitter.svg';
 import { ReactComponent as YouTubeIcon } from 'assets/images/social/YouTube.svg';
+import { Swap } from 'components';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   landingPage: {
@@ -203,75 +202,12 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       fontWeight: 'bold'
     }
   },
-  swapBox: {
-    padding: 24,
-    borderRadius: 20,
-    border: `1px solid ${palette.primary.dark}`,
-    zIndex: 1,
-    position: 'relative',
-    textAlign: 'left',
-    '& > p': {
-      fontSize: 14,
-      marginBottom: 16,
-    },
-    '& > div': {
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      '& input': {
-        background: 'transparent',
-        border: 'none',
-        boxShadow: 'none',
-        outline: 'none',
-        textAlign: 'right',
-        color: 'white',
-        fontSize: 20,
-        fontWeight: 'bold',
-        width: 150,
-      }
-    }
-  },
-  exchangeSwap: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    background: palette.background.default,
-    border: `2px solid ${palette.primary.dark}`,
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    margin: '-20px auto',
-    zIndex: 2,
-    position: 'relative'
-  },
   swapInfo: {
     textAlign: 'left',
     marginBottom: 60,
     '& h3': {
       marginBottom: 16,
     },
-  },
-  swapPrice: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    margin: '20px 8px',
-    '& p': {
-      fontSize: 16,
-      display: 'flex',
-      alignItems: 'center',
-      '& svg': {
-        marginLeft: 8,
-        width: 16,
-        height: 16
-      }
-    }
-  },
-  swapButton: {
-    width: '100%',
-    height: 56,
-    '& p': {
-      fontSize: 16
-    }
   },
   rewardsContainer: {
     textAlign: 'center',
@@ -548,8 +484,6 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
 const LandingPage: React.FC = () => {
   const classes = useStyles();
   const [swapIndex, setSwapIndex] = useState(0);
-  const [swapInputFrom, setSwapInputFrom] = useState('0.00');
-  const [swapInputTo, setSwapInputTo] = useState('0.00');
   const theme = useTheme();
   const tabletWindowSize = useMediaQuery(theme.breakpoints.down('md'));
   const mobileWindowSize = useMediaQuery(theme.breakpoints.down('sm'));
@@ -770,38 +704,7 @@ const LandingPage: React.FC = () => {
         </ButtonGroup>
         <Grid container spacing={mobileWindowSize ? 0 : 8} alignItems='center'>
           <Grid item sm={12} md={6}>
-            <Box className={classes.swapBox}>
-              <Typography>You Pay:</Typography>
-              <Box>
-                <Button className={classes.currencyButton}>
-                  <PolygonSwapIcon />
-                  <Typography>MATIC</Typography>
-                  <KeyboardArrowDownIcon />
-                </Button>
-                <input value={swapInputFrom} onChange={(e) => setSwapInputFrom(e.target.value)} />
-              </Box>
-            </Box>
-            <Box className={classes.exchangeSwap}>
-              <SwapChangeIcon />
-            </Box>
-            <Box className={classes.swapBox}>
-              <Typography>You Pay:</Typography>
-              <Box>
-                <Button className={classes.currencyButton}>
-                  <QuickIcon />
-                  <Typography>QUICK</Typography>
-                  <KeyboardArrowDownIcon />
-                </Button>
-                <input value={swapInputTo} onChange={(e) => setSwapInputTo(e.target.value)} />
-              </Box>
-            </Box>
-            <Box className={classes.swapPrice}>
-              <Typography>Price:</Typography>
-              <Typography>1 MATIC = 0.002 QUICK <SwapIcon2 /></Typography>
-            </Box>
-            <Button color='primary' className={classes.swapButton}>
-              <Typography>Connect Wallet</Typography>
-            </Button>
+            <Swap />
           </Grid>
           <Grid item sm={12} md={6} className={classes.swapInfo}>
             <Typography component='h3'>
