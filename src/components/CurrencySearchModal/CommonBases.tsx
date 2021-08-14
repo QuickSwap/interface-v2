@@ -1,27 +1,23 @@
 import React from 'react'
-import { ChainId, Currency, currencyEquals, ETHER, Token } from '@uniswap/sdk'
+import { ChainId, Currency, currencyEquals, ETHER, Token } from '@uniswap/sdk';
+import { Box, Typography, Button } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import { SUGGESTED_BASES } from 'constants/index';
+import { CurrencyLogo, QuestionHelper } from 'components';
 
-import { SUGGESTED_BASES } from 'constants/index'
-import { AutoColumn } from '../Column'
-import QuestionHelper from '../QuestionHelper'
-import { AutoRow } from '../Row'
-import CurrencyLogo from '../CurrencyLogo'
-
-const BaseWrapper = styled.div<{ disable?: boolean }>`
-  border: 1px solid ${({ theme, disable }) => (disable ? 'transparent' : theme.bg3)};
-  border-radius: 10px;
-  display: flex;
-  padding: 6px;
-
-  align-items: center;
-  :hover {
-    cursor: ${({ disable }) => !disable && 'pointer'};
-    background-color: ${({ theme, disable }) => !disable && theme.bg2};
+const useStyles = makeStyles(({ palette, breakpoints }) => ({
+  baseWrapper: {
+    border: `1px solid ${palette.divider}`,
+    borderRadius: 10,
+    display: 'flex',
+    padding: 6,
+    alignItems: 'center',
+    '&:hover': {
+      cursor: 'pointer',
+      backgroundColor: palette.background.paper
+    }
   }
-
-  background-color: ${({ theme, disable }) => disable && theme.bg3};
-  opacity: ${({ disable }) => disable && '0.4'};
-`
+}));
 
 interface CommonBasesProps {
   chainId?: ChainId
@@ -34,41 +30,43 @@ const CommonBases: React.FC<CommonBasesProps> = ({
   onSelect,
   selectedCurrency
 }) => {
+  const classes = useStyles();
   return (
-    <AutoColumn gap="md">
-      <AutoRow>
-        <Text fontWeight={500} fontSize={14}>
+    <Box>
+      <Box>
+        <Typography>
           Common bases
-        </Text>
+        </Typography>
         <QuestionHelper text="These tokens are commonly paired with other tokens." />
-      </AutoRow>
-      <AutoRow gap="4px">
-        <BaseWrapper
+      </Box>
+      <Box>
+        <Button
+          className={classes.baseWrapper}
           onClick={() => {
             if (!selectedCurrency || !currencyEquals(selectedCurrency, ETHER)) {
               onSelect(ETHER)
             }
           }}
-          disable={selectedCurrency === ETHER}
+          disabled={selectedCurrency === ETHER}
         >
           <CurrencyLogo currency={ETHER} style={{ marginRight: 8 }} />
-          <Text fontWeight={500} fontSize={16}>
+          <Typography>
             MATIC
-          </Text>
-        </BaseWrapper>
+          </Typography>
+        </Button>
         {(chainId ? SUGGESTED_BASES[chainId] : []).map((token: Token) => {
           const selected = selectedCurrency instanceof Token && selectedCurrency.address === token.address
           return (
-            <BaseWrapper onClick={() => !selected && onSelect(token)} disable={selected} key={token.address}>
+            <Button className={classes.baseWrapper} onClick={() => !selected && onSelect(token)} disabled={selected}>
               <CurrencyLogo currency={token} style={{ marginRight: 8 }} />
-              <Text fontWeight={500} fontSize={16}>
+              <Typography>
                 {token.symbol}
-              </Text>
-            </BaseWrapper>
+              </Typography>
+            </Button>
           )
         })}
-      </AutoRow>
-    </AutoColumn>
+      </Box>
+    </Box>
   )
 }
 

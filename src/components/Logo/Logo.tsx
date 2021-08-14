@@ -28,3 +28,5 @@ const Logo: React.FC<LogoProps> = ({ srcs, alt }) => {
 
   return <HelpCircle/>
 }
+
+export default Logo;
