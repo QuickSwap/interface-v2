@@ -1,5 +1,4 @@
 import React, { useMemo } from 'react';
-import { useWeb3React } from '@web3-react/core'
 import { Link } from 'react-router-dom';
 import {
   Box,
@@ -13,6 +12,7 @@ import { TransactionDetails } from 'state/transactions/reducer'
 import { shortenAddress, addMaticToMetamask } from 'utils';
 import useENSName from 'hooks/useENSName';
 import { WalletModal } from 'components';
+import { useActiveWeb3React } from 'hooks';
 import StatusIcon from 'components/AccountDetails/StatusIcon';
 import QuickLogo from 'assets/images/quickLogo.svg';
 import { ReactComponent as PolygonIcon } from 'assets/images/Currency/Polygon.svg';
@@ -112,7 +112,7 @@ const newTransactionsFirst = (a: TransactionDetails, b: TransactionDetails) => {
 
 const Header: React.FC = () => {
   const classes = useStyles();
-  const { account } = useWeb3React();
+  const { account } = useActiveWeb3React();
   const { ENSName } = useENSName(account ?? undefined)
   const { ethereum } = (window as any);
   const allTransactions = useAllTransactions();

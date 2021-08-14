@@ -102,6 +102,9 @@ export const mainTheme = responsiveFontSizes(
           '&:hover': {
             backgroundColor: primary,
             opacity: 0.8
+          },
+          '&$disabled': {
+            opacity: 0.3
           }
         },
         secondary: {

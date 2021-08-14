@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Box, Typography, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
+import { useWalletModalToggle } from 'state/application/hooks';
+import { useActiveWeb3React } from 'hooks';
+import { addMaticToMetamask } from 'utils';
 import { ReactComponent as QuickIcon } from 'assets/images/quickIcon.svg';
 import { ReactComponent as SwapIcon2 } from 'assets/images/SwapIcon2.svg';
 import { ReactComponent as SwapChangeIcon } from 'assets/images/SwapChangeIcon.svg';
@@ -97,8 +100,38 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
 
 const Swap: React.FC = () => {
   const classes = useStyles();
+  const { account } = useActiveWeb3React();
+  const { ethereum } = (window as any);
+  const isnotMatic = ethereum && ethereum.isMetaMask && Number(ethereum.chainId) !== 137;
   const [swapInputFrom, setSwapInputFrom] = useState('');
   const [swapInputTo, setSwapInputTo] = useState('');
+  const swapButtonText = useMemo(() => {
+    if (account) {
+      if (swapInputFrom === '' && swapInputTo === '') {
+        return 'Enter Amount';
+      } else {
+        return 'Swap';
+      }
+    } else {
+      return 'Connect Wallet';
+    }
+  }, [swapInputTo, swapInputFrom, account]);
+
+  const swapButtonDisabled = useMemo(() => account && swapButtonText !== 'Swap', [account, swapButtonText]);
+  const toggleWalletModal = useWalletModalToggle();
+
+  const connectWallet = () => {
+    if (isnotMatic) {
+      addMaticToMetamask();
+    } else {
+      toggleWalletModal();
+    }
+  }
+
+  const onSwap = () => {
+
+  }
+
   return (
     <Box>
       <Box className={classes.swapBox}>
@@ -130,8 +163,8 @@ const Swap: React.FC = () => {
         <Typography>Price:</Typography>
         <Typography>1 MATIC = 0.002 QUICK <SwapIcon2 /></Typography>
       </Box>
-      <Button color='primary' className={classes.swapButton}>
-        <Typography>Connect Wallet</Typography>
+      <Button color='primary' disabled={swapButtonDisabled as boolean} className={classes.swapButton} onClick={account ? onSwap : connectWallet}>
+        <Typography>{ swapButtonText }</Typography>
       </Button>
     </Box>
   )
