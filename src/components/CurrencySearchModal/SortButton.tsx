@@ -1,21 +1,26 @@
-import React from 'react'
-import { Text } from 'rebass'
-import styled from 'styled-components'
-import { RowFixed } from '../Row'
+import React from 'react';
+import { Box, Typography } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 
-export const FilterWrapper = styled(RowFixed)`
-  padding: 8px;
-  background-color: ${({ theme }) => theme.bg2};
-  color: ${({ theme }) => theme.text1};
-  border-radius: 8px;
-  user-select: none;
-  & > * {
-    user-select: none;
+const useStyles = makeStyles(({ palette, breakpoints }) => ({
+  filterWrapper: {
+    padding: 8,
+    backgroundColor: palette.background.default,
+    color: palette.text.primary,
+    borderRadius: 8,
+    userSelect: 'none',
+    '& > *': {
+      userSelect: 'none'
+    },
+    '&:hover': {
+      cursor: 'pointer'
+    },
+    '& p': {
+      fontSize: 14,
+      fontWeight: 500
+    }
   }
-  :hover {
-    cursor: pointer;
-  }
-`
+}));
 
 interface SortButtonProps {
   toggleSortOrder: () => void
@@ -26,12 +31,13 @@ const SortButton: React.FC<SortButtonProps> = ({
   toggleSortOrder,
   ascending
 }) => {
+  const classes = useStyles();
   return (
-    <FilterWrapper onClick={toggleSortOrder}>
-      <Text fontSize={14} fontWeight={500}>
+    <Box className={classes.filterWrapper} onClick={toggleSortOrder}>
+      <Typography>
         {ascending ? '↑' : '↓'}
-      </Text>
-    </FilterWrapper>
+      </Typography>
+    </Box>
   )
 }
 

@@ -1,70 +1,48 @@
 import React, { memo, useCallback, useMemo, useRef, useState } from 'react'
 import { ArrowLeft } from 'react-feather'
 import ReactGA from 'react-ga'
-import { usePopper } from 'react-popper'
+import { Box, Typography, Button, Popover, Divider } from '@material-ui/core'
+import { makeStyles } from '@material-ui/core/styles';
 import { useDispatch, useSelector } from 'react-redux'
-import styled from 'styled-components'
-import { ReactComponent as DropDown } from '../../assets/images/dropdown.svg'
-import { useFetchListCallback } from '../../hooks/useFetchListCallback'
-import { useOnClickOutside } from '../../hooks/useOnClickOutside'
+import { ReactComponent as DropDown } from 'assets/images/dropdown.svg'
+import { useFetchListCallback } from 'hooks/useFetchListCallback'
+import { ReactComponent as CloseIcon } from 'assets/images/x.svg';
 
-import useToggle from '../../hooks/useToggle'
-import { AppDispatch, AppState } from '../../state'
-import { acceptListUpdate, removeList, selectList } from '../../state/lists/actions'
-import { useSelectedListUrl } from '../../state/lists/hooks'
-import { CloseIcon, ExternalLink, LinkStyledButton, TYPE } from '../../theme'
-import listVersionLabel from '../../utils/listVersionLabel'
-import { parseENSAddress } from '../../utils/parseENSAddress'
-import uriToHttp from '../../utils/uriToHttp'
-import { ButtonOutlined, ButtonPrimary, ButtonSecondary } from '../Button'
+import { AppDispatch, AppState } from 'state'
+import { acceptListUpdate, removeList, selectList } from 'state/lists/actions'
+import { useSelectedListUrl } from 'state/lists/hooks'
+import listVersionLabel from 'utils/listVersionLabel'
+import { parseENSAddress } from 'utils/parseENSAddress'
+import uriToHttp from 'utils/uriToHttp'
+import { QuestionHelper, Logo } from 'components'
 
-import Column from '../Column'
-import ListLogo from '../ListLogo'
-import QuestionHelper from '../QuestionHelper'
-import Row, { RowBetween } from '../Row'
-import { PaddedColumn, SearchInput, Separator, SeparatorDark } from './styleds'
-
-const UnpaddedLinkStyledButton = styled(LinkStyledButton)`
-  padding: 0;
-  font-size: 1rem;
-  opacity: ${({ disabled }) => (disabled ? '0.4' : '1')};
-`
-
-const PopoverContainer = styled.div<{ show: boolean }>`
-  z-index: 100;
-  visibility: ${props => (props.show ? 'visible' : 'hidden')};
-  opacity: ${props => (props.show ? 1 : 0)};
-  transition: visibility 150ms linear, opacity 150ms linear;
-  background: ${({ theme }) => theme.bg2};
-  border: 1px solid ${({ theme }) => theme.bg3};
-  box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.01), 0px 4px 8px rgba(0, 0, 0, 0.04), 0px 16px 24px rgba(0, 0, 0, 0.04),
-    0px 24px 32px rgba(0, 0, 0, 0.01);
-  color: ${({ theme }) => theme.text2};
-  border-radius: 0.5rem;
-  padding: 1rem;
-  display: grid;
-  grid-template-rows: 1fr;
-  grid-gap: 8px;
-  font-size: 1rem;
-  text-align: left;
-`
-
-const StyledMenu = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-  border: none;
-`
-
-const StyledListUrlText = styled.div`
-  max-width: 160px;
-  opacity: 0.6;
-  margin-right: 0.5rem;
-  font-size: 14px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-`
+const useStyles = makeStyles(({ palette, breakpoints }) => ({
+  popoverContainer: {
+    zIndex: 100,
+    background: palette.background.default,
+    border: `1px solid ${palette.divider}`,
+    boxShadow: '0px 0px 1px rgba(0, 0, 0, 0.01), 0px 4px 8px rgba(0, 0, 0, 0.04), 0px 16px 24px rgba(0, 0, 0, 0.04), 0px 24px 32px rgba(0, 0, 0, 0.01)',
+    color: 'black',
+    borderRadius: '0.5rem',
+    padding: '1rem',
+    display: 'grid',
+  },
+  styledMenu: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'relative',
+    border: 'none'
+  },
+  styledListUrlText: {
+    maxWidth: 160,
+    opacity: 0.6,
+    marginRight: '0.5rem',
+    fontSize: 14,
+    overflow: 'hidden',
+    textOverflow: 'ellipsis'
+  }
+}));
 
 function ListOrigin({ listUrl }: { listUrl: string }) {
   const ensName = useMemo(() => parseENSAddress(listUrl)?.ensName, [listUrl])
@@ -89,6 +67,7 @@ function listUrlRowHTMLId(listUrl: string) {
 }
 
 const ListRow = memo(function ListRow({ listUrl, onBack }: { listUrl: string; onBack: () => void }) {
+  const classes = useStyles();
   const listsByUrl = useSelector<AppState, AppState['lists']['byUrl']>(state => state.lists.byUrl)
   const selectedListUrl = useSelectedListUrl()
   const dispatch = useDispatch<AppDispatch>()
@@ -96,18 +75,19 @@ const ListRow = memo(function ListRow({ listUrl, onBack }: { listUrl: string; on
 
   const isSelected = listUrl === selectedListUrl
 
-  const [open, toggle] = useToggle(false)
+  // const [open, toggle] = useToggle(false)
+  const [ open, toggle ] = useState(false)
   const node = useRef<HTMLDivElement>()
   const [referenceElement, setReferenceElement] = useState<HTMLDivElement>()
   const [popperElement, setPopperElement] = useState<HTMLDivElement>()
 
-  const { styles, attributes } = usePopper(referenceElement, popperElement, {
-    placement: 'auto',
-    strategy: 'fixed',
-    modifiers: [{ name: 'offset', options: { offset: [8, 8] } }]
-  })
+  // const { styles, attributes } = usePopper(referenceElement, popperElement, {
+  //   placement: 'auto',
+  //   strategy: 'fixed',
+  //   modifiers: [{ name: 'offset', options: { offset: [8, 8] } }]
+  // })
 
-  useOnClickOutside(node, open ? toggle : undefined)
+  // useOnClickOutside(node, open ? toggle : undefined)
 
   const selectThisList = useCallback(() => {
     if (isSelected) return
@@ -150,72 +130,54 @@ const ListRow = memo(function ListRow({ listUrl, onBack }: { listUrl: string; on
   if (!list) return null
 
   return (
-    <Row key={listUrl} align="center" padding="16px" id={listUrlRowHTMLId(listUrl)}>
+    <Box key={listUrl} padding="16px" id={listUrlRowHTMLId(listUrl)}>
       {list.logoURI ? (
-        <ListLogo style={{ marginRight: '1rem' }} logoURI={list.logoURI} alt={`${list.name} list logo`} />
+        <Logo srcs={[list.logoURI]} alt={`${list.name} list logo`} />
       ) : (
         <div style={{ width: '24px', height: '24px', marginRight: '1rem' }} />
       )}
-      <Column style={{ flex: '1' }}>
-        <Row>
-          <Text
-            fontWeight={isSelected ? 500 : 400}
-            fontSize={16}
-            style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}
-          >
+      <Box style={{ flex: '1' }}>
+        <Box>
+          <Typography style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
             {list.name}
-          </Text>
-        </Row>
-        <Row
-          style={{
-            marginTop: '4px'
-          }}
-        >
-          <StyledListUrlText title={listUrl}>
+          </Typography>
+        </Box>
+        <Box style={{ marginTop: '4px' }}>
+          <Box className={classes.styledListUrlText} title={listUrl}>
             <ListOrigin listUrl={listUrl} />
-          </StyledListUrlText>
-        </Row>
-      </Column>
-      <StyledMenu ref={node as any}>
-        <ButtonOutlined
-          style={{
-            width: '2rem',
-            padding: '.8rem .35rem',
-            borderRadius: '12px',
-            fontSize: '14px',
-            marginRight: '0.5rem'
-          }}
-          onClick={toggle}
-          ref={setReferenceElement}
-        >
+          </Box>
+        </Box>
+      </Box>
+      <div className={classes.styledMenu} ref={node as any}>
+        <Button onClick={() => toggle(true)}>
           <DropDown />
-        </ButtonOutlined>
+        </Button>
 
         {open && (
-          <PopoverContainer show={true} ref={setPopperElement as any} style={styles.popper} {...attributes.popper}>
+          <Popover open={open} ref={setPopperElement as any}>
             <div>{list && listVersionLabel(list.version)}</div>
-            <SeparatorDark />
-            <ExternalLink href={`https://tokenlists.org/token-list?url=${listUrl}`}>View list</ExternalLink>
-            <UnpaddedLinkStyledButton onClick={handleRemoveList} disabled={Object.keys(listsByUrl).length === 1}>
+            <Divider />
+            <a href={`https://tokenlists.org/token-list?url=${listUrl}`} target='_blank' rel='noreferrer'>View list</a>
+            <Button onClick={handleRemoveList} disabled={Object.keys(listsByUrl).length === 1}>
               Remove list
-            </UnpaddedLinkStyledButton>
+            </Button>
             {pending && (
-              <UnpaddedLinkStyledButton onClick={handleAcceptListUpdate}>Update list</UnpaddedLinkStyledButton>
+              <Button onClick={handleAcceptListUpdate}>Update list</Button>
             )}
-          </PopoverContainer>
+          </Popover>
         )}
-      </StyledMenu>
+      </div>
       {isSelected ? (
-        <ButtonPrimary
+        <Button
           disabled={true}
           className="select-button"
           style={{ width: '5rem', minWidth: '5rem', padding: '0.5rem .35rem', borderRadius: '12px', fontSize: '14px' }}
         >
           Selected
-        </ButtonPrimary>
+        </Button>
       ) : (
         <>
-          <ButtonPrimary
+          <Button
             className="select-button"
             style={{
               width: '5rem',
@@ -227,24 +189,12 @@ const ListRow = memo(function ListRow({ listUrl, onBack }: { listUrl: string; on
             onClick={selectThisList}
           >
             Select
-          </ButtonPrimary>
+          </Button>
         </>
       )}
-    </Row>
+    </Box>
   )
 })
-
-const AddListButton = styled(ButtonSecondary)`
-  max-width: 4rem;
-  margin-left: 1rem;
-  border-radius: 12px;
-  padding: 10px 18px;
-`
-
-const ListContainer = styled.div`
-  flex: 1;
-  overflow: auto;
-`
 
 interface ListSelectProps {
   onDismiss: () => void;
@@ -252,6 +202,7 @@ interface ListSelectProps {
 }
 
 const ListSelect: React.FC<ListSelectProps> = ({ onDismiss, onBack }) => {
+  const classes = useStyles();
   const [listUrlInput, setListUrlInput] = useState<string>('')
 
   const dispatch = useDispatch<AppDispatch>()
@@ -324,28 +275,28 @@ const ListSelect: React.FC<ListSelectProps> = ({ onDismiss, onBack }) => {
   }, [lists])
 
   return (
-    <Column style={{ width: '100%', flex: '1 1' }}>
-      <PaddedColumn>
-        <RowBetween>
+    <Box style={{ width: '100%', flex: '1 1' }}>
+      <Box>
+        <Box>
           <div>
             <ArrowLeft style={{ cursor: 'pointer' }} onClick={onBack} />
           </div>
-          <Text fontWeight={500} fontSize={20}>
+          <Typography>
             Manage Lists
-          </Text>
+          </Typography>
           <CloseIcon onClick={onDismiss} />
-        </RowBetween>
-      </PaddedColumn>
+        </Box>
+      </Box>
 
-      <Separator />
+      <Divider />
 
-      <PaddedColumn gap="14px">
-        <Text fontWeight={600}>
+      <Box>
+        <Typography>
           Add a list{' '}
           <QuestionHelper text="Token lists are an open specification for lists of ERC20 tokens. You can use any token list by entering its URL below. Beware that third party token lists can contain fake or malicious ERC20 tokens." />
-        </Text>
-        <Row>
-          <SearchInput
+        </Typography>
+        <Box>
+          <input
             type="text"
             id="list-add-input"
             placeholder="https:// or ipfs:// or ENS name"
@@ -354,26 +305,26 @@ const ListSelect: React.FC<ListSelectProps> = ({ onDismiss, onBack }) => {
             onKeyDown={handleEnterKey}
             style={{ height: '2.75rem', borderRadius: 12, padding: '12px' }}
           />
-          <AddListButton onClick={handleAddList} disabled={!validUrl}>
+          <Button onClick={handleAddList} disabled={!validUrl}>
             Add
-          </AddListButton>
-        </Row>
+          </Button>
+        </Box>
         {addError ? (
-          <TYPE.error title={addError} style={{ textOverflow: 'ellipsis', overflow: 'hidden' }} error>
+          <Typography style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}>
             {addError}
-          </TYPE.error>
+          </Typography>
         ) : null}
-      </PaddedColumn>
+      </Box>
 
-      <Separator />
+      <Divider />
 
-      <ListContainer>
+      <Box>
         {sortedLists.map(listUrl => (
           <ListRow key={listUrl} listUrl={listUrl} onBack={onBack} />
         ))}
-      </ListContainer>
-      <Separator />
-    </Column>
+      </Box>
+      <Divider />
+    </Box>
   )
 }
 

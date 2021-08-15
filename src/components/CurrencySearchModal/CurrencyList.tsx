@@ -1,54 +1,41 @@
 import { CurrencyAmount, currencyEquals, ETHER, Token, Currency } from '@uniswap/sdk'
 import React, { CSSProperties, MutableRefObject, useCallback, useMemo } from 'react'
+import { Box, Tooltip, Typography, Button } from '@material-ui/core'
+import { makeStyles } from '@material-ui/core/styles';
+import { Loader } from 'react-feather'
 import { FixedSizeList } from 'react-window'
 import { useActiveWeb3React } from '../../hooks'
 import { useSelectedTokenList, WrappedTokenInfo } from '../../state/lists/hooks'
 import { useAddUserToken, useRemoveUserAddedToken } from '../../state/user/hooks'
 import { useCurrencyBalance } from '../../state/wallet/hooks'
 import { useIsUserAddedToken } from '../../hooks/Tokens'
-import CurrencyLogo from '../CurrencyLogo'
-import { MouseoverTooltip } from '../Tooltip'
-import { FadedSpan, MenuItem } from './styleds'
-import Loader from '../Loader'
+import { CurrencyLogo } from 'components'
 import { isTokenOnList } from 'utils'
-import { PlusHelper } from '../QuestionHelper'
-import { getTokenLogoURL } from '../CurrencyLogo'
+import { getTokenLogoURL } from 'components/CurrencyLogo'
+import { PlusHelper } from 'components/QuestionHelper'
 
 function currencyKey(currency: Token): string {
   return currency instanceof Token ? currency.address : currency === ETHER ? 'ETHER' : ''
 }
 
-const StyledBalanceText = styled(Text)`
-  white-space: nowrap;
-  overflow: hidden;
-  max-width: 5rem;
-  text-overflow: ellipsis;
-`
-
-const Tag = styled.div`
-  background-color: ${({ theme }) => theme.bg3};
-  color: ${({ theme }) => theme.text2};
-  font-size: 14px;
-  border-radius: 4px;
-  padding: 0.25rem 0.3rem 0.25rem 0.3rem;
-  max-width: 6rem;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  justify-self: flex-end;
-  margin-right: 4px;
-`
+const useStyles = makeStyles(({ palette, breakpoints }) => ({
+  tag: {
+    fontSize: 14,
+    borderRadius: 4,
+    padding: '0.25rem 0.3rem 0.25rem 0.3rem',
+    maxWidth: '6rem',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+  },
+}));
 
 function Balance({ balance }: { balance: CurrencyAmount }) {
-  return <StyledBalanceText title={balance.toExact()}>{balance.toSignificant(4)}</StyledBalanceText>
+  return <Typography title={balance.toExact()}>{balance.toSignificant(4)}</Typography>
 }
 
-const TagContainer = styled.div`
-  display: flex;
-  justify-content: flex-end;
-`
-
 function TokenTags({ currency }: { currency: Token }) {
+  const classes = useStyles();
   if (!(currency instanceof WrappedTokenInfo)) {
     return <span />
   }
@@ -59,21 +46,21 @@ function TokenTags({ currency }: { currency: Token }) {
   const tag = tags[0]
 
   return (
-    <TagContainer>
-      <MouseoverTooltip text={tag.description}>
-        <Tag key={tag.id}>{tag.name}</Tag>
-      </MouseoverTooltip>
+    <Box>
+      <Tooltip title={tag.description}>
+        <Box className={classes.tag} key={tag.id}>{tag.name}</Box>
+      </Tooltip>
       {tags.length > 1 ? (
-        <MouseoverTooltip
-          text={tags
+        <Tooltip
+          title={tags
             .slice(1)
             .map(({ name, description }) => `${name}: ${description}`)
             .join('; \n')}
         >
-          <Tag>...</Tag>
-        </MouseoverTooltip>
+          <Box className={classes.tag}>...</Box>
+        </Tooltip>
       ) : null}
-    </TagContainer>
+    </Box>
   )
 }
 
@@ -92,7 +79,7 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
   otherSelected,
   style
 }) => {
-  const { ethereum } = window;
+  const { ethereum } = (window as any);
 
   const { account, chainId } = useActiveWeb3React()
   const key = currencyKey(currency)
@@ -105,10 +92,8 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
   const addToken = useAddUserToken()
   const isMetamask = (ethereum && ethereum.isMetaMask && Number(ethereum.chainId) === 137 && isOnSelectedList);
 
-  
   const addTokenToMetamask = (tokenAddress:any, tokenSymbol:any, tokenDecimals:any, tokenImage:any) => {
     if(ethereum) {
-      // @ts-ignore
       ethereum.request({
         method: 'wallet_watchAsset',
         params: {
@@ -137,73 +122,69 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
 
   // only show add or remove buttons if not on selected list
   return (
-    <MenuItem
-      style={style}
+    <Button
       className={`token-item-${key}`}
       onClick={() => (isSelected ? null : onSelect())}
       disabled={isSelected}
-      selected={otherSelected}
     >
       <CurrencyLogo currency={currency} size={'24px'} />
      
-      <Column>
-        <Text title={currency.name} fontWeight={500}>
+      <Box>
+        <Typography title={currency.name}>
           {currency.symbol}
           { isMetamask && currency !== ETHER && (
-              <LinkStyledButton
-              style={{cursor: 'pointer'}}
-              onClick={event => {
-                addTokenToMetamask(
-                  currency.address,
-                  currency.symbol,
-                  currency.decimals,
-                  getTokenLogoURL(currency.address),
-                )
-                event.stopPropagation()
-              }}
-              >
-              <PlusHelper  text="Add to metamask." />
-
-              </LinkStyledButton>
+              <Button
+                style={{cursor: 'pointer'}}
+                onClick={(event: any) => {
+                  addTokenToMetamask(
+                    currency.address,
+                    currency.symbol,
+                    currency.decimals,
+                    getTokenLogoURL(currency.address),
+                  )
+                  event.stopPropagation()
+                }}
+                >
+                <PlusHelper  text="Add to metamask." />
+              </Button>
           )
           }
-          
-        </Text>
+        </Typography>
         
-        <FadedSpan>
+        <Box>
           {!isOnSelectedList && customAdded ? (
-            <TYPE.main fontWeight={500}>
+            <Typography>
               Added by user
-              <LinkStyledButton
+              <Button
                 onClick={event => {
                   event.stopPropagation()
                   if (chainId && currency instanceof Token) removeToken(chainId, currency.address)
                 }}
               >
                 (Remove)
-              </LinkStyledButton>
-            </TYPE.main>
+              </Button>
+            </Typography>
           ) : null}
           {!isOnSelectedList && !customAdded ? (
-            <TYPE.main fontWeight={500}>
+            <Typography>
               Found by address
-              <LinkStyledButton
+              <Button
                 onClick={event => {
                   event.stopPropagation()
                   if (currency instanceof Token) addToken(currency)
                 }}
               >
                 (Add)
-              </LinkStyledButton>
-            </TYPE.main>
+              </Button>
+            </Typography>
           ) : null}
-        </FadedSpan>
-      </Column>
+        </Box>
+      </Box>
       <TokenTags currency={currency} />
-      <RowFixed style={{ justifySelf: 'flex-end' }}>
+      <Box style={{ justifySelf: 'flex-end' }}>
         {balance ? <Balance balance={balance} /> : account ? <Loader /> : null}
-      </RowFixed>
-    </MenuItem>
+      </Box>
+    </Button>
   )
 }
 

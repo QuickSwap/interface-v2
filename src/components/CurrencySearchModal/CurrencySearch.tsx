@@ -12,8 +12,11 @@ import { useAllTokens, useToken } from 'hooks/Tokens'
 import { useSelectedListInfo } from 'state/lists/hooks'
 import { selectList } from 'state/lists/actions'
 import {DEFAULT_TOKEN_LIST_URL} from "constants/index";
+import { QuestionHelper } from 'components'
+import { ReactComponent as  CloseIcon } from 'assets/images/x.svg'
 
 import CommonBases from './CommonBases'
+import CurrencyList from './CurrencyList'
 import { AppDispatch } from 'state'
 import { isAddress } from 'utils'
 import { filterTokens } from 'utils/filtering'
@@ -152,7 +155,7 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
           </Typography>
           <CloseIcon onClick={onDismiss} />
         </Box>
-        <SearchInput
+        <input
           type="text"
           id="token-search-input"
           placeholder={t('tokenSearchPlaceholder')}
@@ -195,9 +198,9 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
           {selectedListInfo.current ? (
             <Box>
               {selectedListInfo.current.logoURI ? (
-                <ListLogo
+                <Logo
                   style={{ marginRight: 12 }}
-                  logoURI={selectedListInfo.current.logoURI}
+                  srcs={[selectedListInfo.current.logoURI]}
                   alt={`${selectedListInfo.current.name} list logo`}
                 />
               ) : null}
@@ -205,7 +208,7 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
             </Box>
           ) : null}
           <Button
-            style={{ fontWeight: 500, color: theme.text2, fontSize: 16 }}
+            style={{ fontWeight: 500, color: 'black', fontSize: 16 }}
             onClick={onChangeList}
             id="currency-search-change-list-button"
           >

@@ -1,9 +1,10 @@
 import { getAddress } from '@ethersproject/address';
 import { Contract } from '@ethersproject/contracts'
 import { JsonRpcSigner, Web3Provider } from '@ethersproject/providers';
-import { ChainId, Percent, JSBI } from '@uniswap/sdk';
+import { ChainId, Percent, JSBI, Currency, ETHER, Token } from '@uniswap/sdk';
 import { BigNumber } from '@ethersproject/bignumber'
 import { AddressZero } from '@ethersproject/constants'
+import { TokenAddressMap } from 'state/lists/hooks';
 
 export { default as addMaticToMetamask } from './addMaticToMetamask';
 
@@ -13,6 +14,11 @@ export function isAddress(value: any): string | false {
   } catch {
     return false
   }
+}
+
+export function isTokenOnList(defaultTokens: TokenAddressMap, currency?: Currency): boolean {
+  if (currency === ETHER) return true
+  return Boolean(currency instanceof Token && defaultTokens[currency.chainId]?.[currency.address])
 }
 
 export function getEtherscanLink(chainId: ChainId, data: string, type: 'transaction' | 'token' | 'address' | 'block'): string {

@@ -1,65 +1,63 @@
 import React, { useCallback, useState } from 'react'
+import { Box } from '@material-ui/core'
 import { HelpCircle as Question, PlusCircle } from 'react-feather'
-import styled from 'styled-components'
-import Tooltip from '../Tooltip'
+import { makeStyles } from '@material-ui/core/styles';
+import { CustomTooltip } from 'components'
 
-const QuestionWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.2rem;
-  border: none;
-  background: none;
-  outline: none;
-  cursor: default;
-  border-radius: 36px;
-  background-color: ${({ theme }) => theme.bg2};
-  color: ${({ theme }) => theme.text2};
-
-  :hover,
-  :focus {
-    opacity: 0.7;
+const useStyles = makeStyles(({ palette, breakpoints }) => ({
+  questionWrapper: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 0.2,
+    border: 'none',
+    background: 'none',
+    outline: 'none',
+    cursor: 'default',
+    borderRadius: 36,
+    backgroundColor: palette.background.default,
+    color: palette.text.primary,
+    '&:hover, &:focus': {
+      opacity: 0.7
+    }
+  },
+  lightQuestionWrapper: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 0.2,
+    border: 'none',
+    background: 'none',
+    outline: 'none',
+    cursor: 'default',
+    borderRadius: 36,
+    width: 24,
+    height: 24,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    color: 'white',  
+    '&:hover, &:focus': {
+      opacity: 0.7
+    }
+  },
+  questionMark: {
+    fontSize: '1rem'
   }
-`
-
-const LightQuestionWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.2rem;
-  border: none;
-  background: none;
-  outline: none;
-  cursor: default;
-  border-radius: 36px;
-  width: 24px;
-  height: 24px;
-  background-color: rgba(255, 255, 255, 0.1);
-  color: ${({ theme }) => theme.white};
-
-  :hover,
-  :focus {
-    opacity: 0.7;
-  }
-`
-
-const QuestionMark = styled.span`
-  font-size: 1rem;
-`
+}));
 
 const QuestionHelper: React.FC<{ text: string }> = ({ text }) => {
   const [show, setShow] = useState<boolean>(false)
+  const classes = useStyles();
 
   const open = useCallback(() => setShow(true), [setShow])
   const close = useCallback(() => setShow(false), [setShow])
 
   return (
     <span style={{ marginLeft: 4 }}>
-      <Tooltip text={text} show={show}>
-        <QuestionWrapper onClick={open} onMouseEnter={open} onMouseLeave={close}>
+      <CustomTooltip title={text}>
+        <Box className={classes.questionWrapper} onClick={open} onMouseEnter={open} onMouseLeave={close}>
           <Question size={16} />
-        </QuestionWrapper>
-      </Tooltip>
+        </Box>
+      </CustomTooltip>
     </span>
   )
 }
@@ -67,6 +65,7 @@ const QuestionHelper: React.FC<{ text: string }> = ({ text }) => {
 export default QuestionHelper;
 
 export function PlusHelper({ text }: { text: string }) {
+  const classes = useStyles();
   const [show, setShow] = useState<boolean>(false)
 
   const open = useCallback(() => setShow(true), [setShow])
@@ -74,28 +73,29 @@ export function PlusHelper({ text }: { text: string }) {
 
   return (
     <span style={{ marginLeft: 1 }}>
-      <Tooltip text={text} show={show}>
-        <QuestionWrapper onMouseEnter={open} onMouseLeave={close}>
+      <CustomTooltip title={text}>
+        <Box className={classes.questionWrapper} onMouseEnter={open} onMouseLeave={close}>
           <PlusCircle style={{cursor: 'pointer'}} size={16} />
-        </QuestionWrapper>
-      </Tooltip>
+        </Box>
+      </CustomTooltip>
     </span>
   )
 }
 
 export function LightQuestionHelper({ text }: { text: string }) {
   const [show, setShow] = useState<boolean>(false)
+  const classes = useStyles();
 
   const open = useCallback(() => setShow(true), [setShow])
   const close = useCallback(() => setShow(false), [setShow])
 
   return (
     <span style={{ marginLeft: 4 }}>
-      <Tooltip text={text} show={show}>
-        <LightQuestionWrapper onClick={open} onMouseEnter={open} onMouseLeave={close}>
-          <QuestionMark>?</QuestionMark>
-        </LightQuestionWrapper>
-      </Tooltip>
+      <CustomTooltip title={text}>
+        <Box className={classes.lightQuestionWrapper} onClick={open} onMouseEnter={open} onMouseLeave={close}>
+          <span className={classes.questionMark}>?</span>
+        </Box>
+      </CustomTooltip>
     </span>
   )
 }

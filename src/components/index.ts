@@ -1,5 +1,6 @@
 export { default as Header } from './Header';
 export { default as Footer } from './Footer';
+export { default as CustomTooltip } from './CustomTooltip';
 export { default as CurrencyLogo } from './CurrencyLogo';
 export { default as QuestionHelper } from './QuestionHelper';
 export { default as Logo } from './Logo';

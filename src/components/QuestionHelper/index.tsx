@@ -1,1 +1,1 @@
-export { default } from './QuestionHelper';
+export { default, PlusHelper } from './QuestionHelper';
