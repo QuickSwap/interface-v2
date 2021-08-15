@@ -48,13 +48,11 @@ const QuestionHelper: React.FC<{ text: string }> = ({ text }) => {
   const classes = useStyles();
 
   return (
-    <span style={{ marginLeft: 4 }}>
-      <CustomTooltip title={text}>
-        <Box className={classes.questionWrapper}>
-          <Question size={16} />
-        </Box>
-      </CustomTooltip>
-    </span>
+    <CustomTooltip title={text}>
+      <Box className={classes.questionWrapper}>
+        <Question size={16} />
+      </Box>
+    </CustomTooltip>
   )
 }
 
@@ -64,13 +62,11 @@ export function PlusHelper({ text }: { text: string }) {
   const classes = useStyles();
 
   return (
-    <span style={{ marginLeft: 1 }}>
-      <CustomTooltip title={text}>
-        <Box className={classes.questionWrapper}>
-          <PlusCircle style={{cursor: 'pointer'}} size={16} />
-        </Box>
-      </CustomTooltip>
-    </span>
+    <CustomTooltip title={text}>
+      <Box className={classes.questionWrapper}>
+        <PlusCircle style={{cursor: 'pointer'}} size={16} />
+      </Box>
+    </CustomTooltip>
   )
 }
 
@@ -78,12 +74,10 @@ export function LightQuestionHelper({ text }: { text: string }) {
   const classes = useStyles();
 
   return (
-    <span style={{ marginLeft: 4 }}>
-      <CustomTooltip title={text}>
-        <Box className={classes.lightQuestionWrapper}>
-          <span className={classes.questionMark}>?</span>
-        </Box>
-      </CustomTooltip>
-    </span>
+    <CustomTooltip title={text}>
+      <Box className={classes.lightQuestionWrapper}>
+        <span className={classes.questionMark}>?</span>
+      </Box>
+    </CustomTooltip>
   )
 }

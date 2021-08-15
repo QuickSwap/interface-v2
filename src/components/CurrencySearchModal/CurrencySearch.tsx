@@ -2,7 +2,7 @@ import { Currency, ETHER, Token } from '@uniswap/sdk'
 import React, { KeyboardEvent, RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import ReactGA from 'react-ga'
 import { Box, Typography, Divider, Button } from '@material-ui/core'
-import { useTheme } from '@material-ui/styles'
+import { makeStyles } from '@material-ui/core/styles'
 import { useTranslation } from 'react-i18next'
 import { FixedSizeList } from 'react-window'
 import { useDispatch } from 'react-redux'
@@ -12,7 +12,7 @@ import { useAllTokens, useToken } from 'hooks/Tokens'
 import { useSelectedListInfo } from 'state/lists/hooks'
 import { selectList } from 'state/lists/actions'
 import {DEFAULT_TOKEN_LIST_URL} from "constants/index";
-import { QuestionHelper, Logo } from 'components'
+import { QuestionHelper, ListLogo } from 'components'
 import { ReactComponent as  CloseIcon } from 'assets/images/x.svg'
 import CommonBases from './CommonBases'
 import CurrencyList from './CurrencyList'
@@ -21,6 +21,58 @@ import { isAddress } from 'utils'
 import { filterTokens } from 'utils/filtering'
 import { useTokenComparator } from 'utils/sorting'
 import SortButton from './SortButton'
+
+const useStyles = makeStyles(({ palette }) => ({
+  wrapper: {
+    padding: '16px 0',
+    '& p': {
+      color: 'black'
+    }
+  },
+  header: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: '0 16px',
+    '& svg': {
+      fill: 'white',
+      stroke: 'black'
+    },
+    '& > div': {
+      display: 'flex',
+      alignItems: 'center',
+      '& p': {
+        marginRight: 4,
+      },
+    }
+  },
+  searchInput: {
+    width: '100%',
+    margin: '12px 0',
+    fontSize: 16,
+    padding: 8,
+    borderRadius: 12,
+    outline: 'none',
+    border: `1px solid ${palette.divider}`
+  },
+  footer: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: '0 16px',
+    margin: '8px 0 0 0',
+    '& > div': {
+      display: 'flex',
+      alignItems: 'center',
+      '& img': {
+        marginRight: 4
+      }
+    },
+    '& .listButton': {
+      color: 'black'
+    }
+  }
+}));
 
 interface CurrencySearchProps {
   isOpen: boolean
@@ -41,9 +93,9 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
   isOpen,
   onChangeList
 }) => {
+  const classes = useStyles();
   const { t } = useTranslation();
   const { chainId } = useActiveWeb3React();
-  const theme = useTheme();
   const dispatch = useDispatch<AppDispatch>();
 
 
@@ -145,18 +197,18 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
 
 
   return (
-    <Box style={{ width: '100%', flex: '1 1' }}>
-      <Box>
+    <Box className={classes.wrapper}>
+      <Box className={classes.header}>
         <Box>
-          <Typography>
-            Select a token
-            <QuestionHelper text="Find a token by searching for its name or symbol or by pasting its address below." />
-          </Typography>
-          <CloseIcon onClick={onDismiss} />
+          <Typography>Select a token</Typography>
+          <QuestionHelper text="Find a token by searching for its name or symbol or by pasting its address below." />
         </Box>
+        <CloseIcon onClick={onDismiss} />
+      </Box>
+      <Box mx={2}>
         <input
           type="text"
-          id="token-search-input"
+          className={classes.searchInput}
           placeholder={t('tokenSearchPlaceholder')}
           value={searchQuery}
           ref={inputRef as RefObject<HTMLInputElement>}
@@ -166,7 +218,7 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
         {showCommonBases && (
           <CommonBases chainId={chainId} onSelect={handleCurrencySelect} selectedCurrency={selectedCurrency} />
         )}
-        <Box>
+        <Box mb={2} display='flex' justifyContent='space-between' alignItems='center'>
           <Typography>
             Token Name
           </Typography>
@@ -176,7 +228,7 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
 
       <Divider />
 
-      <div style={{ flex: '1' }}>
+      <Box>
         <AutoSizer disableWidth>
           {({ height }) => (
             <CurrencyList
@@ -190,28 +242,22 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
             />
           )}
         </AutoSizer>
-      </div>
+      </Box>
 
-      <Box>
-        <Box>
-          {selectedListInfo.current ? (
-            <Box>
-              {selectedListInfo.current.logoURI ? (
-                <Logo
-                  srcs={[selectedListInfo.current.logoURI]}
-                  alt={`${selectedListInfo.current.name} list logo`}
-                />
-              ) : null}
-              <Typography id="currency-search-selected-list-name">{selectedListInfo.current.name}</Typography>
-            </Box>
-          ) : null}
-          <Button
-            style={{ fontWeight: 500, color: 'black', fontSize: 16 }}
-            onClick={onChangeList}
-            id="currency-search-change-list-button"
-          >
-            {selectedListInfo.current ? 'Change' : 'Select a list'}
-          </Button>
+      <Box className={classes.footer}>
+        {selectedListInfo.current ? (
+          <Box>
+            {selectedListInfo.current.logoURI ? (
+              <ListLogo
+                logoURI={selectedListInfo.current.logoURI}
+                alt={`${selectedListInfo.current.name} list logo`}
+              />
+            ) : null}
+            <Typography id="currency-search-selected-list-name">{selectedListInfo.current.name}</Typography>
+          </Box>
+        ) : null}
+        <Box className='listButton' onClick={onChangeList}>
+          {selectedListInfo.current ? 'Change' : 'Select a list'}
         </Box>
       </Box>
     </Box>

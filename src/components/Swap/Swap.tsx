@@ -159,7 +159,7 @@ const Swap: React.FC = () => {
       <Box className={classes.swapBox}>
         <Typography>You Pay:</Typography>
         <Box>
-          <Button className={classes.currencyButton}>
+          <Button className={classes.currencyButton} onClick={() => { setModalOpen(true) }}>
             <QuickIcon />
             <Typography>QUICK</Typography>
             <KeyboardArrowDownIcon />

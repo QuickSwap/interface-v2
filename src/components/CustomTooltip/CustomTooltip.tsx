@@ -19,7 +19,7 @@ const useStylesBootstrap = makeStyles((theme: Theme) => ({
     padding: '14px',
     fontSize: '14px',
     borderRadius: '14px',
-    color: theme.palette.text.primary,
+    color: 'black',
   },
 }));
 

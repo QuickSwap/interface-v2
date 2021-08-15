@@ -115,7 +115,6 @@ const useStyles = makeStyles(({ palette }) => ({
   },
   upperSection: {
     position: 'relative',
-    background: 'white',
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
     '& h5': {
@@ -136,9 +135,6 @@ const useStyles = makeStyles(({ palette }) => ({
     padding: '1.5rem',
     flexGrow: 1,
     overflow: 'auto',
-    backgroundColor: palette.background.paper,
-    borderBottomLeftRadius: 25,
-    borderBottomRightRadius: 20,
     '& p': {
       margin: 0,
       fontWeight: 400,

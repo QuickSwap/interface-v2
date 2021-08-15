@@ -11,6 +11,8 @@ const useStyles = makeStyles(({ palette }) => ({
     position: 'absolute',
     top: '50%',
     left: '50%',
+    background: palette.background.paper,
+    borderRadius: 20,
     transform: 'translate(-50%, -50%)'
   }
 }));

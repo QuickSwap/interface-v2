@@ -4,17 +4,16 @@ import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   filterWrapper: {
-    padding: 8,
-    backgroundColor: palette.background.default,
+    backgroundColor: 'white',
     color: palette.text.primary,
+    border: `1px solid ${palette.divider}`,
     borderRadius: 8,
-    userSelect: 'none',
-    '& > *': {
-      userSelect: 'none'
-    },
-    '&:hover': {
-      cursor: 'pointer'
-    },
+    width: 32,
+    height: 32,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    cursor: 'pointer',
     '& p': {
       fontSize: 14,
       fontWeight: 500
