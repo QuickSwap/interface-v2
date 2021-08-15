@@ -1,7 +1,7 @@
 import { Currency } from '@uniswap/sdk'
 import React, { useCallback, useEffect, useState } from 'react'
-import { Modal } from '@material-ui/core';
 import ReactGA from 'react-ga'
+import { CustomModal } from 'components'
 import useLast from 'hooks/useLast'
 import CurrencySearch from './CurrencySearch'
 import ListSelect from './ListSelect'
@@ -56,7 +56,7 @@ const CurrencySearchModal: React.FC<CurrencySearchModalProps> = ({
   }, [])
 
   return (
-    <Modal open={isOpen} onClose={onDismiss}>
+    <CustomModal open={isOpen} onClose={onDismiss}>
       {listView ? (
         <ListSelect onDismiss={onDismiss} onBack={handleClickBack} />
       ) : (
@@ -70,7 +70,7 @@ const CurrencySearchModal: React.FC<CurrencySearchModalProps> = ({
           showCommonBases={showCommonBases}
         />
       )}
-    </Modal>
+    </CustomModal>
   )
 }
 

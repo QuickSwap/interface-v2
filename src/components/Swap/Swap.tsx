@@ -3,6 +3,7 @@ import { Box, Typography, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import { useWalletModalToggle } from 'state/application/hooks';
+import { CurrencySearchModal } from 'components';
 import { useActiveWeb3React } from 'hooks';
 import { addMaticToMetamask } from 'utils';
 import { ReactComponent as QuickIcon } from 'assets/images/quickIcon.svg';
@@ -101,7 +102,10 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
 const Swap: React.FC = () => {
   const classes = useStyles();
   const { account } = useActiveWeb3React();
+  const [ modalOpen, setModalOpen ] = useState(false);
   const { ethereum } = (window as any);
+  const [ currency, setCurrency ] = useState(null);
+  const [ otherCurrency, setOtherCurrency ] = useState(null);
   const isnotMatic = ethereum && ethereum.isMetaMask && Number(ethereum.chainId) !== 137;
   const [swapInputFrom, setSwapInputFrom] = useState('');
   const [swapInputTo, setSwapInputTo] = useState('');
@@ -128,6 +132,10 @@ const Swap: React.FC = () => {
     }
   }
 
+  const handleCurrencySelect = () => {
+
+  }
+
   const onSwap = () => {
 
   }
@@ -137,7 +145,7 @@ const Swap: React.FC = () => {
       <Box className={classes.swapBox}>
         <Typography>You Pay:</Typography>
         <Box>
-          <Button className={classes.currencyButton}>
+          <Button className={classes.currencyButton} onClick={() => { setModalOpen(true) }}>
             <PolygonSwapIcon />
             <Typography>MATIC</Typography>
             <KeyboardArrowDownIcon />
@@ -166,6 +174,13 @@ const Swap: React.FC = () => {
       <Button color='primary' disabled={swapButtonDisabled as boolean} className={classes.swapButton} onClick={account ? onSwap : connectWallet}>
         <Typography>{ swapButtonText }</Typography>
       </Button>
+      <CurrencySearchModal
+        isOpen={modalOpen}
+        onDismiss={() => { setModalOpen(false) }}
+        onCurrencySelect={handleCurrencySelect}
+        selectedCurrency={currency}
+        otherSelectedCurrency={otherCurrency}
+      />
     </Box>
   )
 }

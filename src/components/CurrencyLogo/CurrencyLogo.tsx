@@ -1,7 +1,7 @@
 import { Currency, ETHER, Token } from '@uniswap/sdk';
 import React, { useMemo } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import EthereumLogo from 'assets/images/matic.png';
+import EthereumLogo from 'assets/images/Currency/PolygonSwap.svg';
 import useHttpLocations from 'hooks/useHttpLocations';
 import { WrappedTokenInfo } from 'state/lists/hooks';
 import { Logo } from 'components';
@@ -517,7 +517,7 @@ const CurrencyLogo: React.FC<CurrencyLogoProps> = ({
   }, [currency, uriLocations])
 
   if (currency === ETHER) {
-    return <img className={classes.logoStyled} src={EthereumLogo} />
+    return <img className={classes.logoStyled} src={EthereumLogo} alt='Ethereum Logo' />
   }
 
   return <Logo srcs={srcs} alt={`${currency?.symbol ?? 'token'} logo`} />

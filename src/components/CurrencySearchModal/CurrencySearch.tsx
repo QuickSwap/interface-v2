@@ -12,9 +12,8 @@ import { useAllTokens, useToken } from 'hooks/Tokens'
 import { useSelectedListInfo } from 'state/lists/hooks'
 import { selectList } from 'state/lists/actions'
 import {DEFAULT_TOKEN_LIST_URL} from "constants/index";
-import { QuestionHelper } from 'components'
+import { QuestionHelper, Logo } from 'components'
 import { ReactComponent as  CloseIcon } from 'assets/images/x.svg'
-
 import CommonBases from './CommonBases'
 import CurrencyList from './CurrencyList'
 import { AppDispatch } from 'state'
@@ -199,7 +198,6 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
             <Box>
               {selectedListInfo.current.logoURI ? (
                 <Logo
-                  style={{ marginRight: 12 }}
                   srcs={[selectedListInfo.current.logoURI]}
                   alt={`${selectedListInfo.current.name} list logo`}
                 />

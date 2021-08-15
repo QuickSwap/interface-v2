@@ -4,7 +4,7 @@ import { WalletConnectConnector } from '@web3-react/walletconnect-connector'
 import React, { useEffect, useState } from 'react'
 import { isMobile } from 'react-device-detect'
 import ReactGA from 'react-ga'
-import { Modal, Box, Backdrop, Fade } from '@material-ui/core'
+import { Box } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import MetamaskIcon from 'assets/images/metamask.png'
 import { ReactComponent as Close } from 'assets/images/x.svg'
@@ -14,7 +14,7 @@ import { SUPPORTED_WALLETS } from 'constants/index'
 import usePrevious from 'hooks/usePrevious'
 import { ApplicationModal } from 'state/application/actions'
 import { useModalOpen, useWalletModalToggle } from 'state/application/hooks'
-import { AccountDetails } from 'components'
+import { AccountDetails, CustomModal } from 'components'
 
 import Option from './Option'
 import PendingView from './PendingView'
@@ -31,16 +31,6 @@ const useStyles = makeStyles(({ palette }) => ({
       cursor: 'pointer',
       opacity: 0.6,
     }
-  },
-  wrapper: {
-    margin: 0,
-    padding: 0,
-    maxWidth: 500,
-    width: '100%',
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)'
   },
   headerRow: {
     display: 'flex',
@@ -356,11 +346,9 @@ const WalletModal: React.FC<WalletModalProps> = ({
   }
 
   return (
-    <Modal open={walletModalOpen} onClose={toggleWalletModal} BackdropComponent={Backdrop} BackdropProps={{ timeout: 500 }}>
-      <Fade in={walletModalOpen}>
-        <Box className={classes.wrapper}>{getModalContent()}</Box>
-      </Fade>
-    </Modal>
+    <CustomModal open={walletModalOpen} onClose={toggleWalletModal}>
+      {getModalContent()}
+    </CustomModal>
   )
 }
 
