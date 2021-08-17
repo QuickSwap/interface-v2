@@ -1,8 +1,7 @@
 import { CurrencyAmount, currencyEquals, ETHER, Token, Currency } from '@uniswap/sdk'
-import React, { CSSProperties, MutableRefObject, useCallback, useMemo } from 'react'
-import { Box, Tooltip, Typography, Button } from '@material-ui/core'
+import React, { MutableRefObject, useCallback, useMemo } from 'react'
+import { Box, Tooltip, Typography, Button, CircularProgress } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles';
-import { Loader } from 'react-feather'
 import { FixedSizeList } from 'react-window'
 import { useActiveWeb3React } from 'hooks'
 import { useSelectedTokenList, WrappedTokenInfo } from 'state/lists/hooks'
@@ -150,6 +149,7 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
   // only show add or remove buttons if not on selected list
   return (
     <Box
+      key={key}
       className={classes.currencyRow}
       onClick={() => (isSelected ? null : onSelect())}
     >
@@ -207,7 +207,7 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
         </Box>
         <TokenTags currency={currency} />
         <Box>
-          {balance ? <Balance balance={balance} /> : account ? <Loader /> : null}
+          {balance ? <Balance balance={balance} /> : account ? <CircularProgress size={24} color='secondary' /> : null}
         </Box>
       </Box>
     </Box>
