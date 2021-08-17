@@ -69,7 +69,8 @@ const useStyles = makeStyles(({ palette }) => ({
       }
     },
     '& .listButton': {
-      color: 'black'
+      color: 'black',
+      cursor: 'pointer'
     }
   }
 }));

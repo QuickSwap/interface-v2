@@ -14,25 +14,56 @@ import { useSelectedListUrl } from 'state/lists/hooks'
 import listVersionLabel from 'utils/listVersionLabel'
 import { parseENSAddress } from 'utils/parseENSAddress'
 import uriToHttp from 'utils/uriToHttp'
-import { QuestionHelper, Logo } from 'components'
+import { QuestionHelper, ListLogo } from 'components'
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
-  popoverContainer: {
+  popoverWrapper: {
     zIndex: 100,
-    background: palette.background.default,
-    border: `1px solid ${palette.divider}`,
     boxShadow: '0px 0px 1px rgba(0, 0, 0, 0.01), 0px 4px 8px rgba(0, 0, 0, 0.04), 0px 16px 24px rgba(0, 0, 0, 0.04), 0px 24px 32px rgba(0, 0, 0, 0.01)',
     color: 'black',
-    borderRadius: '0.5rem',
-    padding: '1rem',
-    display: 'grid',
+    borderRadius: 12,
+    padding: 16,
+    '& p': {
+      fontSize: 18,
+      marginBottom: 4
+    },
+    '& > div': {
+      display: 'flex',
+      flexDirection: 'column',
+      marginTop: 8,
+      '& a, & button': {
+        fontSize: 16,
+        fontWeight: 400
+      },
+      '& a': {
+        textDecoration: 'none',
+        color: palette.primary.main
+      },
+      '& button': {
+        background: 'transparent',
+        color: 'black',
+        padding: 0,
+        marginTop: 6
+      }
+    }
   },
   styledMenu: {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
     position: 'relative',
-    border: 'none'
+    border: 'none',
+    '& > div:first-child': {
+      cursor: 'pointer',
+      width: 32,
+      height: 32,
+      borderRadius: 8,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      border: `1px solid ${palette.divider}`,
+      marginRight: 8,
+    }
   },
   styledListUrlText: {
     maxWidth: 160,
@@ -41,6 +72,66 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     fontSize: 14,
     overflow: 'hidden',
     textOverflow: 'ellipsis'
+  },
+  manageList: {
+    '& p': {
+      color: 'black'
+    },
+    '& .header': {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      padding: '12px 16px',
+      '& svg': {
+        stroke: 'black',
+        width: 24,
+        height: 24
+      },
+      '& p': {
+        fontSize: 18
+      }
+    },
+    '& .content': {
+      padding: '12px 16px',
+      '& > div': {
+        display: 'flex',
+        '&:first-child': {
+          alignItems: 'center',
+          '& p': {
+            marginRight: 8
+          }
+        },
+        '&:nth-child(2)': {
+          marginTop: 8,
+          '& input': {
+            flex: 1,
+            marginRight: 8,
+            border: `1px solid ${palette.divider}`,
+            fontSize: 16,
+            outline: 'none',
+          }
+        },
+        '& > div': {
+          background: 'transparent'
+        },
+        '& svg': {
+          fill: 'white',
+          stroke: 'black',
+        },
+      }
+    }
+  },
+  listRow: {
+    display: 'flex',
+    alignItems: 'center',
+    padding: '12px 16px',
+    '& .listname': {
+      flex: 1,
+      marginLeft: 8,
+      '& div': {
+        color: '#999'
+      }
+    }
   }
 }));
 
@@ -72,22 +163,9 @@ const ListRow = memo(function ListRow({ listUrl, onBack }: { listUrl: string; on
   const selectedListUrl = useSelectedListUrl()
   const dispatch = useDispatch<AppDispatch>()
   const { current: list, pendingUpdate: pending } = listsByUrl[listUrl]
+  const [ anchorEl, setAnchorEl ] = useState<any>(null)
 
   const isSelected = listUrl === selectedListUrl
-
-  // const [open, toggle] = useToggle(false)
-  const [ open, toggle ] = useState(false)
-  const node = useRef<HTMLDivElement>()
-  const [referenceElement, setReferenceElement] = useState<HTMLDivElement>()
-  const [popperElement, setPopperElement] = useState<HTMLDivElement>()
-
-  // const { styles, attributes } = usePopper(referenceElement, popperElement, {
-  //   placement: 'auto',
-  //   strategy: 'fixed',
-  //   modifiers: [{ name: 'offset', options: { offset: [8, 8] } }]
-  // })
-
-  // useOnClickOutside(node, open ? toggle : undefined)
 
   const selectThisList = useCallback(() => {
     if (isSelected) return
@@ -130,42 +208,38 @@ const ListRow = memo(function ListRow({ listUrl, onBack }: { listUrl: string; on
   if (!list) return null
 
   return (
-    <Box key={listUrl} padding="16px" id={listUrlRowHTMLId(listUrl)}>
+    <Box className={classes.listRow} key={listUrl} id={listUrlRowHTMLId(listUrl)}>
       {list.logoURI ? (
-        <Logo srcs={[list.logoURI]} alt={`${list.name} list logo`} />
+        <ListLogo logoURI={list.logoURI} alt={`${list.name} list logo`} />
       ) : (
         <div style={{ width: '24px', height: '24px', marginRight: '1rem' }} />
       )}
-      <Box style={{ flex: '1' }}>
-        <Box>
-          <Typography style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
-            {list.name}
-          </Typography>
-        </Box>
-        <Box style={{ marginTop: '4px' }}>
-          <Box className={classes.styledListUrlText} title={listUrl}>
-            <ListOrigin listUrl={listUrl} />
-          </Box>
+      <Box className='listname'>
+        <Typography>{list.name}</Typography>
+        <Box className={classes.styledListUrlText} title={listUrl}>
+          <ListOrigin listUrl={listUrl} />
         </Box>
       </Box>
-      <div className={classes.styledMenu} ref={node as any}>
-        <Button onClick={() => toggle(true)}>
+      <div className={classes.styledMenu}>
+        <Box onClick={(evt) => { setAnchorEl(evt.currentTarget)}}>
           <DropDown />
-        </Button>
+        </Box>
 
-        {open && (
-          <Popover open={open} ref={setPopperElement as any}>
-            <div>{list && listVersionLabel(list.version)}</div>
+        <Popover open={Boolean(anchorEl)} onClose={() => setAnchorEl(null)} anchorEl={anchorEl} anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }} transformOrigin={{ vertical: 'top', horizontal: 'center' }}>
+          <Box className={classes.popoverWrapper}>
+            <Typography>{list && listVersionLabel(list.version)}</Typography>
             <Divider />
-            <a href={`https://tokenlists.org/token-list?url=${listUrl}`} target='_blank' rel='noreferrer'>View list</a>
-            <Button onClick={handleRemoveList} disabled={Object.keys(listsByUrl).length === 1}>
-              Remove list
-            </Button>
-            {pending && (
-              <Button onClick={handleAcceptListUpdate}>Update list</Button>
-            )}
-          </Popover>
-        )}
+            <Box>
+              <a href={`https://tokenlists.org/token-list?url=${listUrl}`} target='_blank' rel='noreferrer'>View list</a>
+              <Button onClick={handleRemoveList} disabled={Object.keys(listsByUrl).length === 1}>
+                Remove list
+              </Button>
+              {pending && (
+                <Button onClick={handleAcceptListUpdate}>Update list</Button>
+              )}
+            </Box>
+          </Box>
+        </Popover>
       </div>
       {isSelected ? (
         <Button
@@ -275,26 +349,22 @@ const ListSelect: React.FC<ListSelectProps> = ({ onDismiss, onBack }) => {
   }, [lists])
 
   return (
-    <Box style={{ width: '100%', flex: '1 1' }}>
-      <Box>
-        <Box>
-          <div>
-            <ArrowLeft style={{ cursor: 'pointer' }} onClick={onBack} />
-          </div>
-          <Typography>
-            Manage Lists
-          </Typography>
-          <CloseIcon onClick={onDismiss} />
-        </Box>
+    <Box className={classes.manageList}>
+      <Box className='header'>
+        <ArrowLeft onClick={onBack} />
+        <Typography>Manage Lists</Typography>
+        <CloseIcon onClick={onDismiss} />
       </Box>
 
       <Divider />
 
-      <Box>
-        <Typography>
-          Add a list{' '}
+      <Box className='content'>
+        <Box>
+          <Typography>
+            Add a list
+          </Typography>
           <QuestionHelper text="Token lists are an open specification for lists of ERC20 tokens. You can use any token list by entering its URL below. Beware that third party token lists can contain fake or malicious ERC20 tokens." />
-        </Typography>
+        </Box>
         <Box>
           <input
             type="text"
@@ -323,7 +393,6 @@ const ListSelect: React.FC<ListSelectProps> = ({ onDismiss, onBack }) => {
           <ListRow key={listUrl} listUrl={listUrl} onBack={onBack} />
         ))}
       </Box>
-      <Divider />
     </Box>
   )
 }
