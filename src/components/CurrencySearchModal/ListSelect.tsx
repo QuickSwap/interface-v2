@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useMemo, useRef, useState } from 'react'
+import React, { memo, useCallback, useMemo, useState } from 'react'
 import { ArrowLeft } from 'react-feather'
 import ReactGA from 'react-ga'
 import { Box, Typography, Button, Popover, Divider } from '@material-ui/core'
@@ -250,21 +250,9 @@ const ListRow = memo(function ListRow({ listUrl, onBack }: { listUrl: string; on
           Selected
         </Button>
       ) : (
-        <>
-          <Button
-            className="select-button"
-            style={{
-              width: '5rem',
-              minWidth: '4.5rem',
-              padding: '0.5rem .35rem',
-              borderRadius: '12px',
-              fontSize: '14px'
-            }}
-            onClick={selectThisList}
-          >
-            Select
-          </Button>
-        </>
+        <Button onClick={selectThisList}>
+          Select
+        </Button>
       )}
     </Box>
   )

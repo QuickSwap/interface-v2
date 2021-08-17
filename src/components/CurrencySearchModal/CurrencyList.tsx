@@ -28,6 +28,34 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap',
   },
+  currencyRow: {
+    width: '100%',
+    background: 'transparent',
+    padding: '12px',
+    '& .wrapper': {
+      display: 'flex',
+      width: '100%',
+      alignItems: 'center',
+      '& > p': {
+        margin: '0 4px',
+      },
+      '& button': {
+        background: 'transparent',
+        padding: 0,
+        minWidth: 'unset',
+        '& svg': {
+          fill: 'white',
+          stroke: 'black'
+        },
+        '& div': {
+          background: 'transparent'
+        }
+      }
+    },
+    '&:hover': {
+      background: '#eee'
+    }
+  }
 }));
 
 function Balance({ balance }: { balance: CurrencyAmount }) {
@@ -69,17 +97,16 @@ interface CurrenyRowProps {
   onSelect: () => void
   isSelected: boolean
   otherSelected: boolean
-  style: CSSProperties
 }
 
 const CurrencyRow: React.FC<CurrenyRowProps> = ({
   currency,
   onSelect,
   isSelected,
-  otherSelected,
-  style
+  otherSelected
 }) => {
   const { ethereum } = (window as any);
+  const classes = useStyles();
 
   const { account, chainId } = useActiveWeb3React()
   const key = currencyKey(currency)
@@ -122,36 +149,35 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
 
   // only show add or remove buttons if not on selected list
   return (
-    <Button
-      className={`token-item-${key}`}
+    <Box
+      className={classes.currencyRow}
       onClick={() => (isSelected ? null : onSelect())}
-      disabled={isSelected}
     >
-      <CurrencyLogo currency={currency} size={'24px'} />
-     
-      <Box>
+      <Box className='wrapper'>
+        <CurrencyLogo currency={currency} size={'24px'} />
         <Typography title={currency.name}>
           {currency.symbol}
-          { isMetamask && currency !== ETHER && (
-              <Button
-                style={{cursor: 'pointer'}}
-                onClick={(event: any) => {
-                  addTokenToMetamask(
-                    currency.address,
-                    currency.symbol,
-                    currency.decimals,
-                    getTokenLogoURL(currency.address),
-                  )
-                  event.stopPropagation()
-                }}
-                >
-                <PlusHelper  text="Add to metamask." />
-              </Button>
-          )
-          }
         </Typography>
-        
-        <Box>
+
+        { isMetamask && currency !== ETHER && (
+            <Button
+              style={{cursor: 'pointer'}}
+              onClick={(event: any) => {
+                addTokenToMetamask(
+                  currency.address,
+                  currency.symbol,
+                  currency.decimals,
+                  getTokenLogoURL(currency.address),
+                )
+                event.stopPropagation()
+              }}
+              >
+              <PlusHelper text="Add to metamask." />
+            </Button>
+          )
+        }
+          
+        <Box flex={1}>
           {!isOnSelectedList && customAdded ? (
             <Typography>
               Added by user
@@ -179,12 +205,12 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
             </Typography>
           ) : null}
         </Box>
+        <TokenTags currency={currency} />
+        <Box>
+          {balance ? <Balance balance={balance} /> : account ? <Loader /> : null}
+        </Box>
       </Box>
-      <TokenTags currency={currency} />
-      <Box style={{ justifySelf: 'flex-end' }}>
-        {balance ? <Balance balance={balance} /> : account ? <Loader /> : null}
-      </Box>
-    </Button>
+    </Box>
   )
 }
 
@@ -210,14 +236,13 @@ const CurrencyList: React.FC<CurrencyListProps> = ({
   const itemData = useMemo(() => (showETH ? [Token.ETHER, ...currencies] : currencies), [currencies, showETH])
 
   const Row = useCallback(
-    ({ data, index, style }) => {
+    ({ data, index }) => {
       const currency: Token = data[index]
       const isSelected = Boolean(selectedCurrency && currencyEquals(selectedCurrency, currency))
       const otherSelected = Boolean(otherCurrency && currencyEquals(otherCurrency, currency))
       const handleSelect = () => onCurrencySelect(currency)
       return (
         <CurrencyRow
-          style={style}
           currency={currency}
           isSelected={isSelected}
           onSelect={handleSelect}

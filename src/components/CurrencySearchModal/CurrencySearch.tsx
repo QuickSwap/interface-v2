@@ -1,7 +1,7 @@
 import { Currency, ETHER, Token } from '@uniswap/sdk'
 import React, { KeyboardEvent, RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import ReactGA from 'react-ga'
-import { Box, Typography, Divider, Button } from '@material-ui/core'
+import { Box, Typography, Divider } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import { useTranslation } from 'react-i18next'
 import { FixedSizeList } from 'react-window'
@@ -22,9 +22,15 @@ import { filterTokens } from 'utils/filtering'
 import { useTokenComparator } from 'utils/sorting'
 import SortButton from './SortButton'
 
-const useStyles = makeStyles(({ palette }) => ({
+const useStyles = makeStyles(({ palette, breakpoints }) => ({
   wrapper: {
     padding: '16px 0',
+    height: 400,
+    display: 'flex',
+    flexDirection: 'column',
+    [breakpoints.down('xs')]: {
+      height: '90vh'
+    },
     '& p': {
       color: 'black'
     }
@@ -37,6 +43,9 @@ const useStyles = makeStyles(({ palette }) => ({
     '& svg': {
       fill: 'white',
       stroke: 'black'
+    },
+    '& > svg': {
+      cursor: 'pointer'
     },
     '& > div': {
       display: 'flex',
@@ -229,7 +238,7 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
 
       <Divider />
 
-      <Box>
+      <Box style={{ flex: 1 }}>
         <AutoSizer disableWidth>
           {({ height }) => (
             <CurrencyList
