@@ -49,6 +49,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     borderRadius: 28,
     background: palette.background.default,
     border: `2px solid ${palette.primary.dark}`,
+    cursor: 'pointer',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',

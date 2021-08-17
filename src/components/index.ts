@@ -10,3 +10,4 @@ export { default as Logo } from './Logo';
 export { default as Swap } from './Swap';
 export { default as WalletModal } from './WalletModal';
 export { default as AccountDetails } from './AccountDetails';
+export { default as Web3ReactManager } from './Web3ReactManager';

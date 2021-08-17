@@ -10,12 +10,13 @@ import store from 'state';
 import { LandingPage } from 'pages';
 import { PageLayout } from 'layouts';
 import { getLibrary } from 'utils'
+import { Web3ReactManager } from 'components';
 import { NetworkContextName } from 'constants/index';
 import ApplicationUpdater from 'state/application/updater'
 import TransactionUpdater from 'state/transactions/updater'
-import ListsUpdater from './state/lists/updater'
-import MulticallUpdater from './state/multicall/updater'
-import UserUpdater from './state/user/updater'
+import ListsUpdater from 'state/lists/updater'
+import MulticallUpdater from 'state/multicall/updater'
+import UserUpdater from 'state/user/updater'
 import "slick-carousel/slick/slick.css"; 
 import "slick-carousel/slick/slick-theme.css";
 import './i18n';
@@ -62,13 +63,15 @@ function App() {
         <Provider store={store}>
           <Updaters />
           <Providers>
-            <Switch>
-              <Route exact path='/'>
-                <PageLayout>
-                  <LandingPage />
-                </PageLayout>
-              </Route>
-            </Switch>
+            <Web3ReactManager>
+              <Switch>
+                <Route exact path='/'>
+                  <PageLayout>
+                    <LandingPage />
+                  </PageLayout>
+                </Route>
+              </Switch>
+            </Web3ReactManager>
           </Providers>
         </Provider>
       </Web3ProviderNetwork>

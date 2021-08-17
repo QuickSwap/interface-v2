@@ -4,9 +4,7 @@ import ReactGA from 'react-ga'
 import { Box, Typography, Divider } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import { useTranslation } from 'react-i18next'
-import { FixedSizeList } from 'react-window'
 import { useDispatch } from 'react-redux'
-import AutoSizer from 'react-virtualized-auto-sizer'
 import { useActiveWeb3React } from 'hooks'
 import { useAllTokens, useToken } from 'hooks/Tokens'
 import { useSelectedListInfo } from 'state/lists/hooks'
@@ -81,6 +79,10 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       color: 'black',
       cursor: 'pointer'
     }
+  },
+  currencyListWrapper: {
+    flex: 1,
+    overflowY: 'auto'
   }
 }));
 
@@ -108,8 +110,6 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
   const { chainId } = useActiveWeb3React();
   const dispatch = useDispatch<AppDispatch>();
 
-
-  const fixedList = useRef<FixedSizeList>()
   const [searchQuery, setSearchQuery] = useState<string>('')
   const [invertSearchOrder, setInvertSearchOrder] = useState<boolean>(false)
   const allTokens = useAllTokens()
@@ -176,7 +176,6 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
     const input = event.target.value
     const checksummedInput = isAddress(input)
     setSearchQuery(checksummedInput || input)
-    fixedList.current?.scrollTo(0)
   }, [])
 
   const handleEnter = useCallback(
@@ -238,20 +237,14 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
 
       <Divider />
 
-      <Box style={{ flex: 1 }}>
-        <AutoSizer disableWidth>
-          {({ height }) => (
-            <CurrencyList
-              height={height}
-              showETH={showETH}
-              currencies={filteredSortedTokens}
-              onCurrencySelect={handleCurrencySelect}
-              otherCurrency={otherSelectedCurrency}
-              selectedCurrency={selectedCurrency}
-              fixedListRef={fixedList}
-            />
-          )}
-        </AutoSizer>
+      <Box className={classes.currencyListWrapper}>
+        <CurrencyList
+          showETH={showETH}
+          currencies={filteredSortedTokens}
+          onCurrencySelect={handleCurrencySelect}
+          otherCurrency={otherSelectedCurrency}
+          selectedCurrency={selectedCurrency}
+        />
       </Box>
 
       <Box className={classes.footer}>
