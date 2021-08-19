@@ -1,7 +1,6 @@
 import { CurrencyAmount, currencyEquals, ETHER, Token, Currency } from '@uniswap/sdk'
 import React, { useMemo, useCallback } from 'react'
 import { Box, Tooltip, Typography, Button, CircularProgress, ListItem } from '@material-ui/core'
-import cx from 'classnames'
 import { makeStyles } from '@material-ui/core/styles';
 import { FixedSizeList } from 'react-window';
 import { useActiveWeb3React } from 'hooks'

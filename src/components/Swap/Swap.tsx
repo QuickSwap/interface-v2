@@ -52,8 +52,8 @@ const Swap: React.FC = () => {
   const classes = useStyles();
   const { account } = useActiveWeb3React();
   const { ethereum } = (window as any);
-  const [ currency, setCurrency ] = useState(null);
-  const [ otherCurrency, setOtherCurrency ] = useState(null);
+  const [ currency, setCurrency ] = useState<Currency | null>(null);
+  const [ otherCurrency, setOtherCurrency ] = useState<Currency | null>(null);
   const isnotMatic = ethereum && ethereum.isMetaMask && Number(ethereum.chainId) !== 137;
   const [swapInputFrom, setSwapInputFrom] = useState('');
   const [swapInputTo, setSwapInputTo] = useState('');
@@ -81,11 +81,11 @@ const Swap: React.FC = () => {
   }
 
   const handleCurrencySelect = (currency: Currency) => {
-    console.log('bbb', currency);
+    setCurrency(currency);
   }
 
   const handleOtherCurrencySelect = (currency: Currency) => {
-
+    setOtherCurrency(currency);
   }
 
   const onSwap = () => {
