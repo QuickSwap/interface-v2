@@ -145,7 +145,7 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
 
   // only show add or remove buttons if not on selected list
   return (
-    <ListItem button style={style} key={key}>
+    <ListItem button style={style} key={key} disabled={isSelected} selected={otherSelected} onClick={() => { if(!isSelected) onSelect(); }}>
       <Box className={classes.currencyRow}>
         <CurrencyLogo currency={currency} size={'24px'} />
         <Typography title={currency.name}>

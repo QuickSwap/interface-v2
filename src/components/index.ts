@@ -3,6 +3,7 @@ export { default as Footer } from './Footer';
 export { default as ListLogo } from './ListLogo';
 export { default as CustomTooltip } from './CustomTooltip';
 export { default as CustomModal } from './CustomModal';
+export { default as CurrencyInput } from './CurrencyInput';
 export { default as CurrencySearchModal } from './CurrencySearchModal';
 export { default as CurrencyLogo } from './CurrencyLogo';
 export { default as QuestionHelper } from './QuestionHelper';
