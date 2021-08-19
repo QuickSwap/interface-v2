@@ -1,8 +1,9 @@
 import { CurrencyAmount, currencyEquals, ETHER, Token, Currency } from '@uniswap/sdk'
-import React, { useMemo } from 'react'
-import { Box, Tooltip, Typography, Button, CircularProgress } from '@material-ui/core'
+import React, { useMemo, useCallback } from 'react'
+import { Box, Tooltip, Typography, Button, CircularProgress, ListItem } from '@material-ui/core'
 import cx from 'classnames'
 import { makeStyles } from '@material-ui/core/styles';
+import { FixedSizeList } from 'react-window';
 import { useActiveWeb3React } from 'hooks'
 import { useSelectedTokenList, WrappedTokenInfo } from 'state/lists/hooks'
 import { useAddUserToken, useRemoveUserAddedToken } from 'state/user/hooks'
@@ -31,29 +32,23 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     width: '100%',
     background: 'transparent',
     padding: '12px',
-    '& .wrapper': {
-      display: 'flex',
-      width: '100%',
-      alignItems: 'center',
-      '& > p': {
-        margin: '0 4px',
+    display: 'flex',
+    alignItems: 'center',
+    '& > p': {
+      margin: '0 4px',
+    },
+    '& button': {
+      background: 'transparent',
+      padding: 0,
+      minWidth: 'unset',
+      '& svg': {
+        fill: 'white',
+        stroke: 'black'
       },
-      '& button': {
-        background: 'transparent',
-        padding: 0,
-        minWidth: 'unset',
-        '& svg': {
-          fill: 'white',
-          stroke: 'black'
-        },
-        '& div': {
-          background: 'transparent'
-        }
+      '& div': {
+        background: 'transparent'
       }
     },
-    '&:hover': {
-      background: '#eee'
-    }
   }
 }));
 
@@ -96,13 +91,15 @@ interface CurrenyRowProps {
   onSelect: () => void
   isSelected: boolean
   otherSelected: boolean
+  style: any
 }
 
 const CurrencyRow: React.FC<CurrenyRowProps> = ({
   currency,
   onSelect,
   isSelected,
-  otherSelected
+  otherSelected,
+  style
 }) => {
   const { ethereum } = (window as any);
   const classes = useStyles();
@@ -148,12 +145,8 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
 
   // only show add or remove buttons if not on selected list
   return (
-    <Box
-      key={key}
-      className={cx(classes.currencyRow, `token-item-${key}`)}
-      onClick={() => (isSelected ? null : onSelect())}
-    >
-      <Box className='wrapper'>
+    <ListItem button style={style} key={key}>
+      <Box className={classes.currencyRow}>
         <CurrencyLogo currency={currency} size={'24px'} />
         <Typography title={currency.name}>
           {currency.symbol}
@@ -210,12 +203,13 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
           {balance ? <Balance balance={balance} /> : account ? <CircularProgress size={24} color='secondary' /> : null}
         </Box>
       </Box>
-    </Box>
+    </ListItem>
   )
 }
 
 interface CurrencyListProps {
   currencies: Token[]
+  height: number
   selectedCurrency?: Currency | null
   onCurrencySelect: (currency: Token) => void
   otherCurrency?: Currency | null
@@ -224,32 +218,42 @@ interface CurrencyListProps {
 
 const CurrencyList: React.FC<CurrencyListProps> = ({
   currencies,
+  height,
   selectedCurrency,
   onCurrencySelect,
   otherCurrency,
   showETH
 }) => {
   const itemData = useMemo(() => (showETH ? [Token.ETHER, ...currencies] : currencies), [currencies, showETH])
+  const Row = useCallback(
+    ({ data, index, style }) => {
+      const currency: Token = data[index]
+      const isSelected = Boolean(selectedCurrency && currencyEquals(selectedCurrency, currency))
+      const otherSelected = Boolean(otherCurrency && currencyEquals(otherCurrency, currency))
+      const handleSelect = () => onCurrencySelect(currency)
+      return (
+        <CurrencyRow
+          style={style}
+          currency={currency}
+          isSelected={isSelected}
+          onSelect={handleSelect}
+          otherSelected={otherSelected}
+        />
+      )
+    },
+    [onCurrencySelect, otherCurrency, selectedCurrency]
+  )
+
   return (
-    <Box>
-      {
-        itemData.map((data, index) => {
-          const currency: any = data
-          const isSelected = Boolean(selectedCurrency && currencyEquals(selectedCurrency, currency))
-          const otherSelected = Boolean(otherCurrency && currencyEquals(otherCurrency, currency))
-          const handleSelect = () => onCurrencySelect(currency)
-          return (
-            <CurrencyRow
-              key={index}
-              currency={currency}
-              isSelected={isSelected}
-              onSelect={handleSelect}
-              otherSelected={otherSelected}
-            />
-          )
-        })
-      }
-    </Box>
+    <FixedSizeList
+      height={height}
+      width="100%"
+      itemData={itemData}
+      itemCount={itemData.length}
+      itemSize={56}
+    >
+      {Row}
+    </FixedSizeList>
   )
 }
 

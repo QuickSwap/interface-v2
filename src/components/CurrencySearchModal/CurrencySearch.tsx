@@ -11,6 +11,7 @@ import { useSelectedListInfo } from 'state/lists/hooks'
 import { selectList } from 'state/lists/actions'
 import {DEFAULT_TOKEN_LIST_URL} from "constants/index";
 import { QuestionHelper, ListLogo } from 'components'
+import AutoSizer from 'react-virtualized-auto-sizer'
 import { ReactComponent as  CloseIcon } from 'assets/images/x.svg'
 import CommonBases from './CommonBases'
 import CurrencyList from './CurrencyList'
@@ -238,13 +239,18 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
       <Divider />
 
       <Box className={classes.currencyListWrapper}>
-        <CurrencyList
-          showETH={showETH}
-          currencies={filteredSortedTokens}
-          onCurrencySelect={handleCurrencySelect}
-          otherCurrency={otherSelectedCurrency}
-          selectedCurrency={selectedCurrency}
-        />
+        <AutoSizer disableWidth>
+          {({ height }) => (
+            <CurrencyList
+              showETH={showETH}
+              height={height}
+              currencies={filteredSortedTokens}
+              onCurrencySelect={handleCurrencySelect}
+              otherCurrency={otherSelectedCurrency}
+              selectedCurrency={selectedCurrency}
+            />
+          )}
+        </AutoSizer>
       </Box>
 
       <Box className={classes.footer}>
