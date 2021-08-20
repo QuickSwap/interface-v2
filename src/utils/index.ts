@@ -1,10 +1,12 @@
 import { getAddress } from '@ethersproject/address';
 import { Contract } from '@ethersproject/contracts'
 import { JsonRpcSigner, Web3Provider } from '@ethersproject/providers';
+import { abi as IUniswapV2Router02ABI } from '@uniswap/v2-periphery/build/IUniswapV2Router02.json'
 import { ChainId, Percent, JSBI, Currency, ETHER, Token } from '@uniswap/sdk';
 import { BigNumber } from '@ethersproject/bignumber'
 import { AddressZero } from '@ethersproject/constants'
 import { TokenAddressMap } from 'state/lists/hooks';
+import { ALLOWED_PRICE_IMPACT_HIGH, PRICE_IMPACT_WITHOUT_FEE_CONFIRM_MIN, ROUTER_ADDRESS } from 'constants/index'
 
 export { default as addMaticToMetamask } from './addMaticToMetamask';
 
@@ -14,6 +16,34 @@ export function isAddress(value: any): string | false {
   } catch {
     return false
   }
+}
+
+/**
+ * Given the price impact, get user confirmation.
+ *
+ * @param priceImpactWithoutFee price impact of the trade without the fee.
+ */
+export function confirmPriceImpactWithoutFee(priceImpactWithoutFee: Percent): boolean {
+  if (!priceImpactWithoutFee.lessThan(PRICE_IMPACT_WITHOUT_FEE_CONFIRM_MIN)) {
+    return (
+      window.prompt(
+        `This swap has a price impact of at least ${PRICE_IMPACT_WITHOUT_FEE_CONFIRM_MIN.toFixed(
+          0
+        )}%. Please type the word "confirm" to continue with this swap.`
+      ) === 'confirm'
+    )
+  } else if (!priceImpactWithoutFee.lessThan(ALLOWED_PRICE_IMPACT_HIGH)) {
+    return window.confirm(
+      `This swap has a price impact of at least ${ALLOWED_PRICE_IMPACT_HIGH.toFixed(
+        0
+      )}%. Please confirm that you would like to continue with this swap.`
+    )
+  }
+  return true
+}
+
+export function getRouterContract(_: number, library: Web3Provider, account?: string): Contract {
+  return getContract(ROUTER_ADDRESS, IUniswapV2Router02ABI, library, account)
 }
 
 export function isTokenOnList(defaultTokens: TokenAddressMap, currency?: Currency): boolean {

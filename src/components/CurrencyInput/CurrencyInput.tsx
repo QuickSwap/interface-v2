@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { Currency } from '@uniswap/sdk'
 import { Box, Typography, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { CurrencySearchModal } from 'components';
-import { ReactComponent as PolygonSwapIcon } from 'assets/images/Currency/PolygonSwap.svg';
+import { CurrencySearchModal, CurrencyLogo } from 'components';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
@@ -46,10 +45,9 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     padding: '0 6px',
     borderRadius: 20,
     background: palette.primary.dark,
-    '& svg:first-child': {
-      width: 28,
-      height: 28,
-      marginRight: 8
+    '& img': {
+      borderRadius: 16,
+      marginRight: 4,
     },
     '& p': {
       fontFamily: "'Mulish', sans-serif",
@@ -61,8 +59,8 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
 
 interface CurrencyInputProps {
   handleCurrencySelect: (currency: Currency) => void
-  currency: Currency | null
-  otherCurrency: Currency | null
+  currency: Currency | undefined
+  otherCurrency: Currency | undefined
   amount: string
   setAmount: (value: string) => void
 }
@@ -75,8 +73,15 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({ handleCurrencySelect, cur
       <Typography>You Pay:</Typography>
       <Box>
         <Button className={classes.currencyButton} onClick={() => { setModalOpen(true) }}>
-          <PolygonSwapIcon />
-          <Typography>MATIC</Typography>
+          {
+            currency ?
+              <>
+              <CurrencyLogo currency={currency} size={'28px'} />
+              <Typography>{ currency?.symbol }</Typography>
+              </>
+              :
+              <Typography>Select a token</Typography>
+          }
           <KeyboardArrowDownIcon />
         </Button>
         <input value={amount} placeholder='0.00' onChange={(e) => setAmount(e.target.value)} />

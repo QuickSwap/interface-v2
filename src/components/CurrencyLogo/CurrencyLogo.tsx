@@ -485,7 +485,6 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
   logoStyled: {
     boxShadow: '0px 6px 10px rgba(0, 0, 0, 0.075)',
     borderRadius: 24,
-    width: 24
   },
 }));
 
@@ -517,10 +516,10 @@ const CurrencyLogo: React.FC<CurrencyLogoProps> = ({
   }, [currency, uriLocations])
 
   if (currency === ETHER) {
-    return <img className={classes.logoStyled} src={EthereumLogo} alt='Ethereum Logo' />
+    return <img className={classes.logoStyled} style={{ width: size, height: size }} src={EthereumLogo} alt='Ethereum Logo' />
   }
 
-  return <Logo srcs={srcs} alt={`${currency?.symbol ?? 'token'} logo`} />
+  return <Logo srcs={srcs} size={size} alt={`${currency?.symbol ?? 'token'} logo`} />
 }
 
 export default CurrencyLogo;
