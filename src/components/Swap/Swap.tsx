@@ -7,7 +7,7 @@ import { useWalletModalToggle } from 'state/application/hooks';
 import { useDerivedSwapInfo, useSwapActionHandlers, useSwapState } from 'state/swap/hooks';
 import { useExpertModeManager, useUserSlippageTolerance } from 'state/user/hooks'
 import { Field } from 'state/swap/actions';
-import { CurrencyInput } from 'components';
+import { CurrencyInput, ConfirmSwapModal } from 'components';
 import { useActiveWeb3React } from 'hooks';
 import { ApprovalState, useApproveCallbackFromTrade } from 'hooks/useApproveCallback'
 import { useSwapCallback } from 'hooks/useSwapCallback'
@@ -15,7 +15,7 @@ import useENSAddress from 'hooks/useENSAddress'
 import useWrapCallback, { WrapType } from 'hooks/useWrapCallback' 
 import useToggledVersion, { Version } from 'hooks/useToggledVersion';
 import { addMaticToMetamask, confirmPriceImpactWithoutFee } from 'utils';
-import { computeTradePriceBreakdown } from 'utils/prices'
+import { computeTradePriceBreakdown, warningSeverity } from 'utils/prices'
 import { ReactComponent as SwapIcon2 } from 'assets/images/SwapIcon2.svg';
 import { ReactComponent as SwapChangeIcon } from 'assets/images/SwapChangeIcon.svg';
 
@@ -37,7 +37,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
   swapPrice: {
     display: 'flex',
     justifyContent: 'space-between',
-    margin: '20px 8px',
+    margin: '20px 8px 0',
     '& p': {
       fontSize: 16,
       display: 'flex',
@@ -52,6 +52,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
   },
   swapButton: {
     width: '100%',
+    marginTop: 20,
     height: 56,
     '& p': {
       fontSize: 16
@@ -72,41 +73,77 @@ const Swap: React.FC = () => {
     currencies,
     inputError: swapInputError
   } = useDerivedSwapInfo();
-  const toggledVersion = useToggledVersion()
-  const [isExpertMode] = useExpertModeManager()
+  const toggledVersion = useToggledVersion();
+  const [isExpertMode] = useExpertModeManager();
   const { wrapType, execute: onWrap, inputError: wrapInputError } = useWrapCallback(
     currencies[Field.INPUT],
     currencies[Field.OUTPUT],
     typedValue
-  )
-  const showWrap: boolean = wrapType !== WrapType.NOT_APPLICABLE
+  );
+  const showWrap: boolean = wrapType !== WrapType.NOT_APPLICABLE;
   const tradesByVersion = {
     [Version.v1]: v1Trade,
     [Version.v2]: v2Trade
   };
-  const trade = showWrap ? undefined : tradesByVersion[toggledVersion]
-  const { onSwitchTokens, onCurrencySelection, onUserInput, onChangeRecipient } = useSwapActionHandlers()
-  const { address: recipientAddress } = useENSAddress(recipient)
-  const [allowedSlippage] = useUserSlippageTolerance()
-  const [approval, approveCallback] = useApproveCallbackFromTrade(trade, allowedSlippage)
+  const trade = showWrap ? undefined : tradesByVersion[toggledVersion];
+  const { onSwitchTokens, onCurrencySelection, onUserInput, onChangeRecipient } = useSwapActionHandlers();
+  const { address: recipientAddress } = useENSAddress(recipient);
+  const [allowedSlippage] = useUserSlippageTolerance();
+  const [approval, approveCallback] = useApproveCallbackFromTrade(trade, allowedSlippage);
+  const dependentField: Field = independentField === Field.INPUT ? Field.OUTPUT : Field.INPUT;
+  const parsedAmounts = showWrap
+    ? {
+        [Field.INPUT]: parsedAmount,
+        [Field.OUTPUT]: parsedAmount
+      }
+    : {
+        [Field.INPUT]: independentField === Field.INPUT ? parsedAmount : trade?.inputAmount,
+        [Field.OUTPUT]: independentField === Field.OUTPUT ? parsedAmount : trade?.outputAmount
+      };
+  const formattedAmounts = {
+    [independentField]: typedValue,
+    [dependentField]: showWrap
+      ? parsedAmounts[independentField]?.toExact() ?? ''
+      : parsedAmounts[dependentField]?.toSignificant(6) ?? ''
+  };
+  const route = trade?.route;
+  const userHasSpecifiedInputOutput = Boolean(
+    currencies[Field.INPUT] && currencies[Field.OUTPUT] && parsedAmounts[independentField]?.greaterThan(JSBI.BigInt(0))
+  );
+  const noRoute = !route;
+
+  const { priceImpactWithoutFee } = computeTradePriceBreakdown(trade)
   const [approvalSubmitted, setApprovalSubmitted] = useState<boolean>(false);
   const isnotMatic = ethereum && ethereum.isMetaMask && Number(ethereum.chainId) !== 137;
-  const [swapInputFrom, setSwapInputFrom] = useState('');
-  const [swapInputTo, setSwapInputTo] = useState('');
   const [mainPrice, setMainPrice] = useState(true);
+  const priceImpactSeverity = warningSeverity(priceImpactWithoutFee)
+  const isValid = !swapInputError
+
+  const showApproveFlow =
+    !swapInputError &&
+    (approval === ApprovalState.NOT_APPROVED ||
+      approval === ApprovalState.PENDING ||
+      (approvalSubmitted && approval === ApprovalState.APPROVED)) &&
+    !(priceImpactSeverity > 3 && !isExpertMode);
+
   const swapButtonText = useMemo(() => {
     if (account) {
-      if (swapInputFrom === '' && swapInputTo === '') {
+      if (formattedAmounts[Field.INPUT] === '' && formattedAmounts[Field.OUTPUT] === '') {
         return 'Enter Amount';
+      } else if (showWrap) {
+        return wrapType === WrapType.WRAP ? 'Wrap' : 'UnWrap';
+      } else if (noRoute && userHasSpecifiedInputOutput) {
+        return 'Insufficient liquidity for this trade.';
+      } else if (showApproveFlow) {
+        return 'Approve';
       } else {
         return 'Swap';
       }
     } else {
-      return 'Connect Wallet';
+      return isnotMatic ? 'Switch to Matic' : 'Connect Wallet';
     }
-  }, [swapInputTo, swapInputFrom, account]);
+  }, [formattedAmounts, account]);
 
-  const swapButtonDisabled = useMemo(() => account && swapButtonText !== 'Swap', [account, swapButtonText]);
   const toggleWalletModal = useWalletModalToggle();
 
   useEffect(() => {
@@ -135,9 +172,23 @@ const Swap: React.FC = () => {
     onCurrencySelection
   ])
 
-  const { priceImpactWithoutFee } = computeTradePriceBreakdown(trade)
-
   const { callback: swapCallback, error: swapCallbackError } = useSwapCallback(trade, allowedSlippage, recipient)
+
+  const swapButtonDisabled = useMemo(() => {
+    if (account) {
+      if (showWrap) {
+        return Boolean(wrapInputError);
+      } else if (noRoute && userHasSpecifiedInputOutput) {
+        return true;
+      } else if (showApproveFlow) {
+        return approval !== ApprovalState.NOT_APPROVED || approvalSubmitted;
+      } else {
+        return !isValid || (priceImpactSeverity > 3 && !isExpertMode) || !!swapCallbackError;
+      }
+    } else {
+      return false;
+    }
+  }, [account, swapButtonText]);
 
   const [{ showConfirm, tradeToConfirm, swapErrorMessage, attemptingTxn, txHash }, setSwapState] = useState<{
     showConfirm: boolean
@@ -153,7 +204,46 @@ const Swap: React.FC = () => {
     txHash: undefined
   })
 
-  const onSwap = useCallback(() => {
+  const handleTypeInput = useCallback(
+    (value: string) => {
+      onUserInput(Field.INPUT, value)
+    },
+    [onUserInput]
+  )
+  const handleTypeOutput = useCallback(
+    (value: string) => {
+      onUserInput(Field.OUTPUT, value)
+    },
+    [onUserInput]
+  )
+
+  const onSwap = () => {
+    if (isExpertMode) {
+      handleSwap();
+    } else {
+      setSwapState({
+        tradeToConfirm: trade,
+        attemptingTxn: false,
+        swapErrorMessage: undefined,
+        showConfirm: true,
+        txHash: undefined
+      })  
+    }
+  }
+
+  const handleAcceptChanges = useCallback(() => {
+    setSwapState({ tradeToConfirm: trade, swapErrorMessage, txHash, attemptingTxn, showConfirm })
+  }, [attemptingTxn, showConfirm, swapErrorMessage, trade, txHash]);
+
+  const handleConfirmDismiss = useCallback(() => {
+    setSwapState({ showConfirm: false, tradeToConfirm, attemptingTxn, swapErrorMessage, txHash })
+    // if there was a tx hash, we want to clear the input
+    if (txHash) {
+      onUserInput(Field.INPUT, '')
+    }
+  }, [attemptingTxn, onUserInput, swapErrorMessage, tradeToConfirm, txHash]);
+
+  const handleSwap = useCallback(() => {
     if (priceImpactWithoutFee && !confirmPriceImpactWithoutFee(priceImpactWithoutFee)) {
       return
     }
@@ -192,15 +282,31 @@ const Swap: React.FC = () => {
 
   return (
     <Box>
-      <CurrencyInput currency={currencies[Field.INPUT]} otherCurrency={currencies[Field.OUTPUT]} handleCurrencySelect={handleCurrencySelect} amount={swapInputFrom} setAmount={setSwapInputFrom} />
+      <ConfirmSwapModal
+        isOpen={showConfirm}
+        trade={trade}
+        originalTrade={tradeToConfirm}
+        onAcceptChanges={handleAcceptChanges}
+        attemptingTxn={attemptingTxn}
+        txHash={txHash}
+        recipient={recipient}
+        allowedSlippage={allowedSlippage}
+        onConfirm={handleSwap}
+        swapErrorMessage={swapErrorMessage}
+        onDismiss={handleConfirmDismiss}
+      />
+      <CurrencyInput currency={currencies[Field.INPUT]} otherCurrency={currencies[Field.OUTPUT]} handleCurrencySelect={handleCurrencySelect} amount={formattedAmounts[Field.INPUT]} setAmount={handleTypeInput} />
       <Box className={classes.exchangeSwap} onClick={onSwitchTokens}>
         <SwapChangeIcon />
       </Box>
-      <CurrencyInput currency={currencies[Field.OUTPUT]} otherCurrency={currencies[Field.INPUT]} handleCurrencySelect={handleOtherCurrencySelect} amount={swapInputTo} setAmount={setSwapInputTo} />
-      <Box className={classes.swapPrice}>
-        <Typography>Price:</Typography>
-        <Typography>1 { (mainPrice ? currencies[Field.INPUT] : currencies[Field.OUTPUT])?.symbol } = 0.002 { (mainPrice ? currencies[Field.OUTPUT] : currencies[Field.INPUT])?.symbol } <SwapIcon2 onClick={() => { setMainPrice(!mainPrice) }} /></Typography>
-      </Box>
+      <CurrencyInput currency={currencies[Field.OUTPUT]} otherCurrency={currencies[Field.INPUT]} handleCurrencySelect={handleOtherCurrencySelect} amount={formattedAmounts[Field.OUTPUT]} setAmount={handleTypeOutput} />
+      {
+        trade && trade.executionPrice &&
+          <Box className={classes.swapPrice}>
+            <Typography>Price:</Typography>
+            <Typography>1 { (mainPrice ? currencies[Field.INPUT] : currencies[Field.OUTPUT])?.symbol } = { (mainPrice ? trade.executionPrice : trade.executionPrice.invert()).toSignificant(6) } { (mainPrice ? currencies[Field.OUTPUT] : currencies[Field.INPUT])?.symbol } <SwapIcon2 onClick={() => { setMainPrice(!mainPrice) }} /></Typography>
+          </Box>
+      }
       <Button color='primary' disabled={swapButtonDisabled as boolean} className={classes.swapButton} onClick={account ? onSwap : connectWallet}>
         <Typography>{ swapButtonText }</Typography>
       </Button>

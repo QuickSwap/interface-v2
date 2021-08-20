@@ -12,3 +12,5 @@ export { default as Swap } from './Swap';
 export { default as WalletModal } from './WalletModal';
 export { default as AccountDetails } from './AccountDetails';
 export { default as Web3ReactManager } from './Web3ReactManager';
+export { default as ConfirmSwapModal } from './ConfirmSwapModal';
+export { default as TransactionConfirmationModal } from './TransactionConfirmationModal';
