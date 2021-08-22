@@ -1,13 +1,42 @@
 import { ChainId } from '@uniswap/sdk';
 import React from 'react';
 import { Box, Typography, Button, CircularProgress } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles'
 import { CustomModal } from 'components';
 import { AlertTriangle, ArrowUpCircle } from 'react-feather';
 import { ReactComponent as  CloseIcon } from 'assets/images/x.svg'
 import { getEtherscanLink } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 
-function ConfirmationPendingContent({ onDismiss, pendingText }: { onDismiss: () => void; pendingText: string }) {
+const useStyles = makeStyles(({ palette, breakpoints }) => ({
+  confirmModalTop: {
+    color: 'black',
+    padding: 16,
+    '& > .header': {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginBottom: 20,
+      '& p': {
+        fontSize: 20,
+      },
+      '& svg': {
+        cursor: 'pointer'
+      }
+    }
+  },
+  confirmModalBottom: {
+    padding: 16,
+    background: '#EEE'
+  }
+}));
+
+interface ConfirmationPendingContentProps {
+  onDismiss: () => void;
+  pendingText: string;
+}
+
+export const ConfirmationPendingContent: React.FC<ConfirmationPendingContentProps> =({ onDismiss, pendingText }) => {
   return (
     <Box>
       <Box>
@@ -33,15 +62,17 @@ function ConfirmationPendingContent({ onDismiss, pendingText }: { onDismiss: () 
   )
 }
 
-function TransactionSubmittedContent({
-  onDismiss,
-  chainId,
-  hash
-}: {
+interface TransactionSubmittedContentProps {
   onDismiss: () => void
   hash: string | undefined
   chainId: ChainId
-}) {
+}
+
+export const TransactionSubmittedContent: React.FC<TransactionSubmittedContentProps> = ({
+  onDismiss,
+  chainId,
+  hash
+}) => {
   return (
     <Box>
       <Box>
@@ -67,41 +98,45 @@ function TransactionSubmittedContent({
   )
 }
 
-export function ConfirmationModalContent({
-  title,
-  bottomContent,
-  onDismiss,
-  topContent
-}: {
+interface ConfirmationModalContentProps {
   title: string
   onDismiss: () => void
   topContent: () => React.ReactNode
   bottomContent: () => React.ReactNode
-}) {
+}
+
+export const ConfirmationModalContent: React.FC<ConfirmationModalContentProps> = ({
+  title,
+  bottomContent,
+  onDismiss,
+  topContent
+}) => {
+  const classes = useStyles();
   return (
     <Box>
-      <Box>
-        <Box>
-          <Typography>
-            {title}
-          </Typography>
+      <Box className={classes.confirmModalTop}>
+        <Box className='header'>
+          <Typography>{title}</Typography>
           <CloseIcon onClick={onDismiss} />
         </Box>
         {topContent()}
       </Box>
-      <Box>{bottomContent()}</Box>
+      <Box className={classes.confirmModalBottom}>{bottomContent()}</Box>
     </Box>
   )
 }
 
-export function TransactionErrorContent({ message, onDismiss }: { message: string; onDismiss: () => void }) {
+interface TransactionErrorContentProps {
+  message: string;
+  onDismiss: () => void;
+}
+
+export const TransactionErrorContent: React.FC<TransactionErrorContentProps> = ({ message, onDismiss }) => {
   return (
     <Box>
       <Box>
         <Box>
-          <Typography>
-            Error
-          </Typography>
+          <Typography>Error</Typography>
           <CloseIcon onClick={onDismiss} />
         </Box>
         <Box style={{ marginTop: 20, padding: '2rem 0' }}>
@@ -111,9 +146,7 @@ export function TransactionErrorContent({ message, onDismiss }: { message: strin
           </Typography>
         </Box>
       </Box>
-      <Box>
-        <Button onClick={onDismiss}>Dismiss</Button>
-      </Box>
+      <Button onClick={onDismiss}>Dismiss</Button>
     </Box>
   )
 }
@@ -127,14 +160,14 @@ interface ConfirmationModalProps {
   pendingText: string
 }
 
-export default function TransactionConfirmationModal({
+const TransactionConfirmationModal: React.FC<ConfirmationModalProps> = ({
   isOpen,
   onDismiss,
   attemptingTxn,
   hash,
   pendingText,
   content
-}: ConfirmationModalProps) {
+}) => {
   const { chainId } = useActiveWeb3React()
 
   if (!chainId) return null
@@ -152,3 +185,5 @@ export default function TransactionConfirmationModal({
     </CustomModal>
   )
 }
+
+export default TransactionConfirmationModal;

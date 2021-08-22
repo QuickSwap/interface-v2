@@ -7,6 +7,7 @@ import { merge } from 'lodash';
 
 // colors
 const primary = '#1DAED6';
+const secondaryDark = 'rgb(40, 145, 249)';
 const primaryDark = '#1C2938';
 const secondary = '#344252';
 
@@ -53,7 +54,7 @@ export const mainTheme = responsiveFontSizes(
       },
       secondary: {
         main: secondary,
-        dark: secondary,
+        dark: secondaryDark,
       },
       common: {
         black,
