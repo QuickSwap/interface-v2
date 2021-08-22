@@ -8,7 +8,7 @@ import { useDerivedSwapInfo, useSwapActionHandlers, useSwapState } from 'state/s
 import { useExpertModeManager, useUserSlippageTolerance } from 'state/user/hooks'
 import { Field } from 'state/swap/actions';
 import { useAllTokens } from 'hooks/Tokens';
-import { CurrencyInput, ConfirmSwapModal } from 'components';
+import { CurrencyInput, ConfirmSwapModal, AdvancedSwapDetails } from 'components';
 import { useActiveWeb3React } from 'hooks';
 import { ApprovalState, useApproveCallbackFromTrade } from 'hooks/useApproveCallback'
 import { useSwapCallback } from 'hooks/useSwapCallback'
@@ -329,6 +329,7 @@ const Swap: React.FC = () => {
       <Button color='primary' disabled={swapButtonDisabled as boolean} className={classes.swapButton} onClick={account ? onSwap : connectWallet}>
         <Typography>{ swapButtonText }</Typography>
       </Button>
+      <AdvancedSwapDetails trade={trade} />
     </Box>
   )
 }
