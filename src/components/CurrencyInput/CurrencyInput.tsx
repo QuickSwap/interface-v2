@@ -69,6 +69,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
 }));
 
 interface CurrencyInputProps {
+  title?: string,
   handleCurrencySelect: (currency: Currency) => void
   currency: Currency | undefined
   otherCurrency: Currency | undefined
@@ -78,14 +79,14 @@ interface CurrencyInputProps {
   showMaxButton: boolean
 }
 
-const CurrencyInput: React.FC<CurrencyInputProps> = ({ handleCurrencySelect, currency, otherCurrency, amount, setAmount, onMax, showMaxButton }) => {
+const CurrencyInput: React.FC<CurrencyInputProps> = ({ handleCurrencySelect, currency, otherCurrency, amount, setAmount, onMax, showMaxButton, title }) => {
   const classes = useStyles();
   const [modalOpen, setModalOpen] = useState(false);
   const { account } = useActiveWeb3React();
 
   return (
     <Box className={classes.swapBox}>
-      <Typography>You Pay:</Typography>
+      <Typography>{ title || 'You Pay:' }</Typography>
       <Box>
         <Button className={classes.currencyButton} onClick={() => { setModalOpen(true) }}>
           {

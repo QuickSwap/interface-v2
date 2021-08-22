@@ -8,6 +8,7 @@ import {
   Grid,
   useMediaQuery
 } from '@material-ui/core';
+import { Currency } from '@uniswap/sdk';
 import { useTheme } from '@material-ui/core/styles';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
@@ -33,7 +34,9 @@ import { ReactComponent as RedditIcon } from 'assets/images/social/Reddit.svg';
 import { ReactComponent as TelegramIcon } from 'assets/images/social/Telegram.svg';
 import { ReactComponent as TwitterIcon } from 'assets/images/social/Twitter.svg';
 import { ReactComponent as YouTubeIcon } from 'assets/images/social/YouTube.svg';
-import { Swap } from 'components';
+import { Swap, CurrencyInput } from 'components';
+import { useActiveWeb3React, useInitTransak } from 'hooks';
+import { useAllTokens } from 'hooks/Tokens';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   landingPage: {
@@ -384,19 +387,20 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
         background: palette.background.default,
         borderRadius: 20,
         padding: 24,
-        '& > p': {
-          fontFamily: "'Mulish', sans-serif",
-          fontSize: 14,
-          marginBottom: 8
+        '& > div': {
+          padding: 0,
+          border: 'none',
+          '& > p': {
+            fontFamily: "'Mulish', sans-serif",
+            fontSize: 16,
+            marginBottom: 8
+          },  
         },
-        '& h4': {
-          fontSize: 20,
-          fontWeight: 'bold'
-        }
       },
       '& > button': {
         height: 56,
-        marginTop: 20
+        marginTop: 20,
+        fontSize: 16
       }
     }
   },
@@ -485,8 +489,14 @@ const LandingPage: React.FC = () => {
   const classes = useStyles();
   const [swapIndex, setSwapIndex] = useState(0);
   const theme = useTheme();
+  const { account } = useActiveWeb3React(); 
   const tabletWindowSize = useMediaQuery(theme.breakpoints.down('md'));
   const mobileWindowSize = useMediaQuery(theme.breakpoints.down('sm'));
+  const { initTransak } = useInitTransak();
+  const allTokens = useAllTokens();
+  const quickToken = Object.values(allTokens).find((val) => val.symbol === 'QUICK');
+  const [ fiatCurrency, setFiatCurrency ] = useState<Currency | undefined>(quickToken);
+  const [ fiatAmount, setFiatAmount ] = useState('');
 
   const rewardSliderSettings = {
     dots: false,
@@ -779,17 +789,12 @@ const LandingPage: React.FC = () => {
           </Box>
           <Box className='buyFiatWrapper'>
             <Box className='buyContent'>
-              <Typography>I want to Buy:</Typography>
-              <Grid container justifyContent='space-between' alignItems='center'>
-                <Button className={classes.currencyButton}>
-                  <QuickIcon />
-                  <Typography>QUICK</Typography>
-                  <KeyboardArrowDownIcon />
-                </Button>
-                <Typography component='h4'>0.00</Typography>
-              </Grid>
+              <CurrencyInput currency={fiatCurrency} title='I want to Buy:' showMaxButton={false} otherCurrency={undefined} handleCurrencySelect={setFiatCurrency} amount={fiatAmount} setAmount={setFiatAmount} />
             </Box>
-            <Button fullWidth color='primary'>Buy QUICK Now</Button>
+            {
+              fiatCurrency &&
+                <Button fullWidth color='primary' onClick={() => initTransak(account, mobileWindowSize, fiatCurrency)}>Buy { fiatCurrency.symbol } Now</Button>
+            }
           </Box>
         </Box>
       </Box>
