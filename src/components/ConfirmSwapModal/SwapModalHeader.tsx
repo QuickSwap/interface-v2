@@ -13,6 +13,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
+    color: 'black',
     margin: '8px 0',
     '& > div': {
       display: 'flex',
@@ -38,6 +39,12 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     '& > div': {
       display: 'flex',
       alignItems: 'center'
+    }
+  },
+  transactionText: {
+    color: 'black',
+    '& p': {
+      fontStyle: 'italic',
     }
   }
 }));
@@ -112,9 +119,9 @@ const SwapModalHeader: React.FC<SwapModalHeaderProps> = ({
           </Button>
         </Box>
       )}
-      <Box>
+      <Box className={classes.transactionText}>
         {trade.tradeType === TradeType.EXACT_INPUT ? (
-          <Typography style={{ fontStyle: 'italic', width: '100%' }}>
+          <Typography>
             {`Output is estimated. You will receive at least `}
             <b>
               {slippageAdjustedAmounts[Field.OUTPUT]?.toSignificant(6)} {trade.outputAmount.currency.symbol}
@@ -122,7 +129,7 @@ const SwapModalHeader: React.FC<SwapModalHeaderProps> = ({
             {' or the transaction will revert.'}
           </Typography>
         ) : (
-          <Typography style={{ fontStyle: 'italic', width: '100%' }}>
+          <Typography>
             {`Input is estimated. You will sell at most `}
             <b>
               {slippageAdjustedAmounts[Field.INPUT]?.toSignificant(6)} {trade.inputAmount.currency.symbol}

@@ -2,11 +2,11 @@ import { getAddress } from '@ethersproject/address';
 import { Contract } from '@ethersproject/contracts'
 import { JsonRpcSigner, Web3Provider } from '@ethersproject/providers';
 import { abi as IUniswapV2Router02ABI } from '@uniswap/v2-periphery/build/IUniswapV2Router02.json'
-import { ChainId, Percent, JSBI, Currency, ETHER, Token } from '@uniswap/sdk';
+import { CurrencyAmount, ChainId, Percent, JSBI, Currency, ETHER, Token } from '@uniswap/sdk';
 import { BigNumber } from '@ethersproject/bignumber'
 import { AddressZero } from '@ethersproject/constants'
 import { TokenAddressMap } from 'state/lists/hooks';
-import { ALLOWED_PRICE_IMPACT_HIGH, PRICE_IMPACT_WITHOUT_FEE_CONFIRM_MIN, ROUTER_ADDRESS } from 'constants/index'
+import { ALLOWED_PRICE_IMPACT_HIGH, PRICE_IMPACT_WITHOUT_FEE_CONFIRM_MIN, ROUTER_ADDRESS, MIN_ETH } from 'constants/index'
 
 export { default as addMaticToMetamask } from './addMaticToMetamask';
 
@@ -40,6 +40,18 @@ export function confirmPriceImpactWithoutFee(priceImpactWithoutFee: Percent): bo
     )
   }
   return true
+}
+
+export function maxAmountSpend(currencyAmount?: CurrencyAmount): CurrencyAmount | undefined {
+  if (!currencyAmount) return undefined
+  if (currencyAmount.currency === ETHER) {
+    if (JSBI.greaterThan(currencyAmount.raw, MIN_ETH)) {
+      return CurrencyAmount.ether(JSBI.subtract(currencyAmount.raw, MIN_ETH))
+    } else {
+      return CurrencyAmount.ether(JSBI.BigInt(0))
+    }
+  }
+  return currencyAmount
 }
 
 export function getRouterContract(_: number, library: Web3Provider, account?: string): Contract {

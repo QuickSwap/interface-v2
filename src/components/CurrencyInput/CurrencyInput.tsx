@@ -3,6 +3,7 @@ import { Currency } from '@uniswap/sdk'
 import { Box, Typography, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { CurrencySearchModal, CurrencyLogo } from 'components';
+import { useActiveWeb3React } from 'hooks';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
@@ -19,8 +20,18 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     },
     '& > div': {
       display: 'flex',
-      justifyContent: 'space-between',
       alignItems: 'center',
+      '& .inputWrapper': {
+        flex: 1,
+        position: 'relative',
+        paddingLeft: 8
+      },
+      '& .maxWrapper': {
+        paddingLeft: 8,
+        '& button': {
+          borderRadius: 16
+        }
+      },
       '& input': {
         background: 'transparent',
         border: 'none',
@@ -30,7 +41,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
         color: 'white',
         fontSize: 20,
         fontWeight: 'bold',
-        width: 150,
+        width: '100%',
         '&::placeholder': {
           color: 'white'
         }
@@ -63,11 +74,15 @@ interface CurrencyInputProps {
   otherCurrency: Currency | undefined
   amount: string
   setAmount: (value: string) => void
+  onMax?: () => void
+  showMaxButton: boolean
 }
 
-const CurrencyInput: React.FC<CurrencyInputProps> = ({ handleCurrencySelect, currency, otherCurrency, amount, setAmount }) => {
+const CurrencyInput: React.FC<CurrencyInputProps> = ({ handleCurrencySelect, currency, otherCurrency, amount, setAmount, onMax, showMaxButton }) => {
   const classes = useStyles();
   const [modalOpen, setModalOpen] = useState(false);
+  const { account } = useActiveWeb3React();
+
   return (
     <Box className={classes.swapBox}>
       <Typography>You Pay:</Typography>
@@ -84,7 +99,14 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({ handleCurrencySelect, cur
           }
           <KeyboardArrowDownIcon />
         </Button>
-        <input value={amount} placeholder='0.00' onChange={(e) => setAmount(e.target.value)} />
+        <Box className='inputWrapper'>
+          <input value={amount} placeholder='0.00' onChange={(e) => setAmount(e.target.value)} />
+        </Box>
+        {account && currency && showMaxButton && (
+          <Box className='maxWrapper'>
+            <Button onClick={onMax}>MAX</Button>
+          </Box>
+        )}
       </Box>
       <CurrencySearchModal
         isOpen={modalOpen}

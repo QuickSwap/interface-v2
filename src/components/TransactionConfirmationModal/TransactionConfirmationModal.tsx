@@ -1,6 +1,7 @@
 import { ChainId } from '@uniswap/sdk';
 import React from 'react';
 import { Box, Typography, Button, CircularProgress } from '@material-ui/core';
+import cx from 'classnames'
 import { makeStyles } from '@material-ui/core/styles'
 import { CustomModal } from 'components';
 import { AlertTriangle, ArrowUpCircle } from 'react-feather';
@@ -10,24 +11,67 @@ import { useActiveWeb3React } from 'hooks';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   confirmModalTop: {
-    color: 'black',
     padding: 16,
-    '& > .header': {
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      marginBottom: 20,
-      '& p': {
-        fontSize: 20,
-      },
-      '& svg': {
-        cursor: 'pointer'
-      }
-    }
   },
   confirmModalBottom: {
     padding: 16,
     background: '#EEE'
+  },
+  transactionContent: {
+    padding: 16,
+    '& $modalContent': {
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      color: 'black',
+      '& svg': {
+        strokeWidth: 1.5,
+        marginBottom: 16
+      }
+    }
+  },
+  transactionError: {
+    '& $modalContent': {
+      color: palette.error.main,
+    }
+  },
+  modalHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 20,
+    color: 'black',
+    '& p': {
+      fontSize: 20,
+    },
+    '& svg': {
+      cursor: 'pointer'
+    }
+  },
+  modalContent: {
+    marginTop: 20,
+    padding: '16px 0',
+    '& h1': {
+      fontSize: 24,
+      margin: '32px 0 8px'
+    },
+    '& h2': {
+      fontSize: 20,
+    },
+    '& p': {
+      fontSize: 16,
+      color: '#666',
+      margin: '8px 0 0'
+    },
+    '& a': {
+      fontSize: 16
+    }
+  },
+  submitButton: {
+    width: '100%',
+    height: 48,
+    fontSize: 20,
+    borderRadius: 16
   }
 }));
 
@@ -37,26 +81,24 @@ interface ConfirmationPendingContentProps {
 }
 
 export const ConfirmationPendingContent: React.FC<ConfirmationPendingContentProps> =({ onDismiss, pendingText }) => {
+  const classes = useStyles();
   return (
-    <Box>
-      <Box>
-        <Box>
-          <CloseIcon onClick={onDismiss} />
-        </Box>
-        <CircularProgress size={32} />
-        <Box>
-          <Typography>
-            Waiting For Confirmation
-          </Typography>
-          <Box>
-            <Typography>
-              {pendingText}
-            </Typography>
-          </Box>
-          <Typography>
-            Confirm this transaction in your wallet
-          </Typography>
-        </Box>
+    <Box className={classes.transactionContent}>
+      <Box className={classes.modalHeader}>
+        <Typography />
+        <CloseIcon onClick={onDismiss} />
+      </Box>
+      <Box className={classes.modalContent}>
+        <CircularProgress size={64} />
+        <Typography component='h1'>
+          Waiting For Confirmation
+        </Typography>
+        <Typography component='h2'>
+          {pendingText}
+        </Typography>
+        <Typography>
+          Confirm this transaction in your wallet
+        </Typography>
       </Box>
     </Box>
   )
@@ -73,26 +115,26 @@ export const TransactionSubmittedContent: React.FC<TransactionSubmittedContentPr
   chainId,
   hash
 }) => {
+  const classes = useStyles();
   return (
-    <Box>
-      <Box>
-        <Box>
-          <CloseIcon onClick={onDismiss} />
-        </Box>
+    <Box className={classes.transactionContent}>
+      <Box className={classes.modalHeader}>
+        <Typography />
+        <CloseIcon onClick={onDismiss} />
+      </Box>
+      <Box className={classes.modalContent}>
         <ArrowUpCircle strokeWidth={0.5} size={90} />
-        <Box>
-          <Typography>
-            Transaction Submitted
-          </Typography>
-          {chainId && hash && (
-            <a href={getEtherscanLink(chainId, hash, 'transaction')} target='_blank' rel='noreferrer'>
-              View on Block Explorer
-            </a>
-          )}
-          <Button onClick={onDismiss} style={{ margin: '20px 0 0 0' }}>
-            Close
-          </Button>
-        </Box>
+        <Typography component='h1'>
+          Transaction Submitted
+        </Typography>
+        {chainId && hash && (
+          <a href={getEtherscanLink(chainId, hash, 'transaction')} target='_blank' rel='noreferrer'>
+            View on Block Explorer
+          </a>
+        )}
+        <Button className={classes.submitButton} onClick={onDismiss} style={{ margin: '20px 0 0 0' }}>
+          Close
+        </Button>
       </Box>
     </Box>
   )
@@ -115,7 +157,7 @@ export const ConfirmationModalContent: React.FC<ConfirmationModalContentProps> =
   return (
     <Box>
       <Box className={classes.confirmModalTop}>
-        <Box className='header'>
+        <Box className={classes.modalHeader}>
           <Typography>{title}</Typography>
           <CloseIcon onClick={onDismiss} />
         </Box>
@@ -132,21 +174,22 @@ interface TransactionErrorContentProps {
 }
 
 export const TransactionErrorContent: React.FC<TransactionErrorContentProps> = ({ message, onDismiss }) => {
+  const classes = useStyles();
   return (
-    <Box>
+    <Box className={cx(classes.transactionContent, classes.transactionError)}>
       <Box>
-        <Box>
+        <Box className={classes.modalHeader}>
           <Typography>Error</Typography>
           <CloseIcon onClick={onDismiss} />
         </Box>
-        <Box style={{ marginTop: 20, padding: '2rem 0' }}>
-          <AlertTriangle style={{ strokeWidth: 1.5 }} size={64} />
+        <Box className={classes.modalContent}>
+          <AlertTriangle size={64} />
           <Typography>
             {message}
           </Typography>
         </Box>
       </Box>
-      <Button onClick={onDismiss}>Dismiss</Button>
+      <Button className={classes.submitButton} onClick={onDismiss}>Dismiss</Button>
     </Box>
   )
 }

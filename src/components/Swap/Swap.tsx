@@ -7,6 +7,7 @@ import { useWalletModalToggle } from 'state/application/hooks';
 import { useDerivedSwapInfo, useSwapActionHandlers, useSwapState } from 'state/swap/hooks';
 import { useExpertModeManager, useUserSlippageTolerance } from 'state/user/hooks'
 import { Field } from 'state/swap/actions';
+import { useAllTokens } from 'hooks/Tokens';
 import { CurrencyInput, ConfirmSwapModal } from 'components';
 import { useActiveWeb3React } from 'hooks';
 import { ApprovalState, useApproveCallbackFromTrade } from 'hooks/useApproveCallback'
@@ -14,7 +15,7 @@ import { useSwapCallback } from 'hooks/useSwapCallback'
 import useENSAddress from 'hooks/useENSAddress'
 import useWrapCallback, { WrapType } from 'hooks/useWrapCallback' 
 import useToggledVersion, { Version } from 'hooks/useToggledVersion';
-import { addMaticToMetamask, confirmPriceImpactWithoutFee } from 'utils';
+import { addMaticToMetamask, confirmPriceImpactWithoutFee, maxAmountSpend } from 'utils';
 import { computeTradePriceBreakdown, warningSeverity } from 'utils/prices'
 import { ReactComponent as SwapIcon2 } from 'assets/images/SwapIcon2.svg';
 import { ReactComponent as SwapChangeIcon } from 'assets/images/SwapChangeIcon.svg';
@@ -80,6 +81,8 @@ const Swap: React.FC = () => {
     currencies[Field.OUTPUT],
     typedValue
   );
+  const allTokens = useAllTokens();
+
   const showWrap: boolean = wrapType !== WrapType.NOT_APPLICABLE;
   const tradesByVersion = {
     [Version.v1]: v1Trade,
@@ -217,6 +220,14 @@ const Swap: React.FC = () => {
     [onUserInput]
   )
 
+  const maxAmountInput: CurrencyAmount | undefined = maxAmountSpend(currencyBalances[Field.INPUT])
+
+  const handleMaxInput = useCallback(() => {
+    maxAmountInput && onUserInput(Field.INPUT, maxAmountInput.toExact())
+  }, [maxAmountInput, onUserInput])
+
+  const atMaxAmountInput = Boolean(maxAmountInput && parsedAmounts[Field.INPUT]?.equalTo(maxAmountInput))
+
   const onSwap = () => {
     if (isExpertMode) {
       handleSwap();
@@ -230,6 +241,14 @@ const Swap: React.FC = () => {
       })  
     }
   }
+
+  useEffect(() => {
+    onCurrencySelection(Field.INPUT, Token.ETHER);
+    const quickToken = Object.values(allTokens).find((val) => val.symbol === 'QUICK');
+    if (quickToken) {
+      onCurrencySelection(Field.OUTPUT, quickToken);
+    }
+  }, [onCurrencySelection, allTokens]);
 
   const handleAcceptChanges = useCallback(() => {
     setSwapState({ tradeToConfirm: trade, swapErrorMessage, txHash, attemptingTxn, showConfirm })
@@ -295,11 +314,11 @@ const Swap: React.FC = () => {
         swapErrorMessage={swapErrorMessage}
         onDismiss={handleConfirmDismiss}
       />
-      <CurrencyInput currency={currencies[Field.INPUT]} otherCurrency={currencies[Field.OUTPUT]} handleCurrencySelect={handleCurrencySelect} amount={formattedAmounts[Field.INPUT]} setAmount={handleTypeInput} />
+      <CurrencyInput currency={currencies[Field.INPUT]} onMax={handleMaxInput} showMaxButton={!atMaxAmountInput} otherCurrency={currencies[Field.OUTPUT]} handleCurrencySelect={handleCurrencySelect} amount={formattedAmounts[Field.INPUT]} setAmount={handleTypeInput} />
       <Box className={classes.exchangeSwap} onClick={onSwitchTokens}>
         <SwapChangeIcon />
       </Box>
-      <CurrencyInput currency={currencies[Field.OUTPUT]} otherCurrency={currencies[Field.INPUT]} handleCurrencySelect={handleOtherCurrencySelect} amount={formattedAmounts[Field.OUTPUT]} setAmount={handleTypeOutput} />
+      <CurrencyInput currency={currencies[Field.OUTPUT]} showMaxButton={false} otherCurrency={currencies[Field.INPUT]} handleCurrencySelect={handleOtherCurrencySelect} amount={formattedAmounts[Field.OUTPUT]} setAmount={handleTypeOutput} />
       {
         trade && trade.executionPrice &&
           <Box className={classes.swapPrice}>
