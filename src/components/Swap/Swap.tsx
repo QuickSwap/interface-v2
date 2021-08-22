@@ -2,7 +2,7 @@ import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { CurrencyAmount, JSBI, Token, Trade } from '@uniswap/sdk'
 import ReactGA from 'react-ga'
 import { ArrowDown } from 'react-feather'
-import { Box, Typography, Button } from '@material-ui/core';
+import { Box, Typography, Button, CircularProgress } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { useWalletModalToggle } from 'state/application/hooks';
 import { useDerivedSwapInfo, useSwapActionHandlers, useSwapState } from 'state/swap/hooks';
@@ -39,7 +39,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
   swapPrice: {
     display: 'flex',
     justifyContent: 'space-between',
-    margin: '20px 8px 0',
+    margin: '16px 8px 0',
     '& p': {
       display: 'flex',
       alignItems: 'center',
@@ -51,12 +51,16 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       }
     }
   },
-  swapButton: {
-    width: '100%',
-    marginTop: 20,
-    height: 56,
-    '& p': {
-      fontSize: 16
+  swapButtonWrapper: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    marginTop: 16,
+    '& button': {
+      height: 56,
+      width: (props: any) => props.showApproveFlow ? '48%' : '100%',
+      '& p': {
+        fontSize: 16
+      }
     }
   },
   recipientInput: {
@@ -91,7 +95,6 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
 }));
 
 const Swap: React.FC = () => {
-  const classes = useStyles();
   const { account } = useActiveWeb3React();
   const { ethereum } = (window as any);
   const { independentField, typedValue, recipient } = useSwapState()
@@ -162,23 +165,23 @@ const Swap: React.FC = () => {
       (approvalSubmitted && approval === ApprovalState.APPROVED)) &&
     !(priceImpactSeverity > 3 && !isExpertMode);
 
+  const classes = useStyles({ showApproveFlow });
+
   const swapButtonText = useMemo(() => {
     if (account) {
       if (formattedAmounts[Field.INPUT] === '' && formattedAmounts[Field.OUTPUT] === '') {
         return 'Enter Amount';
       } else if (showWrap) {
-        return wrapType === WrapType.WRAP ? 'Wrap' : 'UnWrap';
+        return wrapType === WrapType.WRAP ? 'Wrap' : wrapType === WrapType.UNWRAP ? 'UnWrap' : '';
       } else if (noRoute && userHasSpecifiedInputOutput) {
         return 'Insufficient liquidity for this trade.';
-      } else if (showApproveFlow) {
-        return 'Approve';
       } else {
         return 'Swap';
       }
     } else {
       return isnotMatic ? 'Switch to Matic' : 'Connect Wallet';
     }
-  }, [formattedAmounts, account, isnotMatic, showApproveFlow, noRoute, userHasSpecifiedInputOutput, showWrap, wrapType]);
+  }, [formattedAmounts, account, isnotMatic, noRoute, userHasSpecifiedInputOutput, showWrap, wrapType]);
 
   const toggleWalletModal = useWalletModalToggle();
 
@@ -217,14 +220,14 @@ const Swap: React.FC = () => {
       } else if (noRoute && userHasSpecifiedInputOutput) {
         return true;
       } else if (showApproveFlow) {
-        return approval !== ApprovalState.NOT_APPROVED || approvalSubmitted;
+        return !isValid || approval !== ApprovalState.APPROVED || (priceImpactSeverity > 3 && !isExpertMode);
       } else {
         return !isValid || (priceImpactSeverity > 3 && !isExpertMode) || !!swapCallbackError;
       }
     } else {
       return false;
     }
-  }, [account, showWrap, wrapInputError, noRoute, userHasSpecifiedInputOutput, showApproveFlow, approval, approvalSubmitted, priceImpactSeverity, isValid, swapCallbackError, isExpertMode]);
+  }, [account, showWrap, wrapInputError, noRoute, userHasSpecifiedInputOutput, showApproveFlow, approval, priceImpactSeverity, isValid, swapCallbackError, isExpertMode]);
 
   const [{ showConfirm, tradeToConfirm, swapErrorMessage, attemptingTxn, txHash }, setSwapState] = useState<{
     showConfirm: boolean
@@ -262,7 +265,9 @@ const Swap: React.FC = () => {
   const atMaxAmountInput = Boolean(maxAmountInput && parsedAmounts[Field.INPUT]?.equalTo(maxAmountInput))
 
   const onSwap = () => {
-    if (isExpertMode) {
+    if (showWrap && onWrap) {
+      onWrap();
+    } else if (isExpertMode) {
       handleSwap();
     } else {
       setSwapState({
@@ -383,9 +388,25 @@ const Swap: React.FC = () => {
             <Typography>1 { (mainPrice ? currencies[Field.INPUT] : currencies[Field.OUTPUT])?.symbol } = { (mainPrice ? trade.executionPrice : trade.executionPrice.invert()).toSignificant(6) } { (mainPrice ? currencies[Field.OUTPUT] : currencies[Field.INPUT])?.symbol } <SwapIcon2 onClick={() => { setMainPrice(!mainPrice) }} /></Typography>
           </Box>
       }
-      <Button color='primary' disabled={swapButtonDisabled as boolean} className={classes.swapButton} onClick={account ? onSwap : connectWallet}>
-        <Typography>{ swapButtonText }</Typography>
-      </Button>
+      <Box className={classes.swapButtonWrapper}>
+        {
+          showApproveFlow &&
+            <Button color='primary' disabled={approval !== ApprovalState.NOT_APPROVED || approvalSubmitted} onClick={approveCallback}>
+              {approval === ApprovalState.PENDING ? (
+                <Box>
+                  Approving <CircularProgress />
+                </Box>
+              ) : approvalSubmitted && approval === ApprovalState.APPROVED ? (
+                'Approved'
+              ) : (
+                'Approve ' + currencies[Field.INPUT]?.symbol
+              )}
+            </Button>
+        }
+        <Button color='primary' disabled={swapButtonDisabled as boolean} onClick={account ? onSwap : connectWallet}>
+          <Typography>{ swapButtonText }</Typography>
+        </Button>
+      </Box>
       <AdvancedSwapDetails trade={trade} />
     </Box>
   )
