@@ -1,5 +1,5 @@
 import { Trade, TradeType } from '@uniswap/sdk'
-import React, { useContext, useMemo, useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import { Button, Box, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import { AlertTriangle, Repeat } from 'react-feather'

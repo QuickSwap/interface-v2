@@ -23,9 +23,8 @@ const useStyles = makeStyles(({ palette }) => ({
     color: palette.primary.main
   },
   transactionStatusText: {
-    marginRight: '0.5rem',
-    display: 'flex',
-    alignItems: 'center',
+    color: palette.primary.main,
+    fontSize: 14,
     '&:hover': {
       textDecoration: 'underline'
     }
@@ -49,14 +48,12 @@ const Transaction: React.FC<TransactionProps> = ({ hash }) => {
   if (!chainId) return null
 
   return (
-    <Box>
-      <a className={classes.transactionState} href={getEtherscanLink(chainId, hash, 'transaction')}>
-        <Box className={classes.transactionStatusText}>{summary ?? hash} ↗</Box>
-        <Box className={classes.iconWrapper}>
-          {pending ? <CircularProgress /> : success ? <CheckCircle size="16" /> : <Triangle size="16" />}
-        </Box>
-      </a>
-    </Box>
+    <a className={classes.transactionState} href={getEtherscanLink(chainId, hash, 'transaction')}>
+      <Box className={classes.transactionStatusText}>{summary ?? hash} ↗</Box>
+      <Box className={classes.iconWrapper}>
+        {pending ? <CircularProgress /> : success ? <CheckCircle size="16" /> : <Triangle size="16" />}
+      </Box>
+    </a>
   )
 }
 

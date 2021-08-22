@@ -12,13 +12,11 @@ import { Currency } from '@uniswap/sdk';
 import { useTheme } from '@material-ui/core/styles';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import Slider from "react-slick";
-import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
+import Slider from 'react-slick';
 import HeroBkg from 'assets/images/heroBkg.svg';
 import Motif from 'assets/images/Motif.svg';
 import { ReactComponent as PolygonSwapIcon } from 'assets/images/Currency/PolygonSwap.svg';
 import { ReactComponent as USDCIcon } from 'assets/images/Currency/USDC.svg';
-import { ReactComponent as QuickIcon } from 'assets/images/quickIcon.svg';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon.svg';
 import BuyWithFiat from 'assets/images/featured/BuywithFiat.svg';
 import Analytics from 'assets/images/featured/Analytics.svg';
@@ -36,6 +34,8 @@ import { ReactComponent as TwitterIcon } from 'assets/images/social/Twitter.svg'
 import { ReactComponent as YouTubeIcon } from 'assets/images/social/YouTube.svg';
 import { Swap, CurrencyInput } from 'components';
 import { useActiveWeb3React, useInitTransak } from 'hooks';
+import { addMaticToMetamask } from 'utils';
+import { useWalletModalToggle } from 'state/application/hooks';
 import { useAllTokens } from 'hooks/Tokens';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
@@ -489,11 +489,14 @@ const LandingPage: React.FC = () => {
   const classes = useStyles();
   const [swapIndex, setSwapIndex] = useState(0);
   const theme = useTheme();
-  const { account } = useActiveWeb3React(); 
+  const { account } = useActiveWeb3React();
+  const { ethereum } = (window as any);
+  const isnotMatic = ethereum && ethereum.isMetaMask && Number(ethereum.chainId) !== 137;
   const tabletWindowSize = useMediaQuery(theme.breakpoints.down('md'));
   const mobileWindowSize = useMediaQuery(theme.breakpoints.down('sm'));
   const { initTransak } = useInitTransak();
   const allTokens = useAllTokens();
+  const toggleWalletModal = useWalletModalToggle();
   const quickToken = Object.values(allTokens).find((val) => val.symbol === 'QUICK');
   const [ fiatCurrency, setFiatCurrency ] = useState<Currency | undefined>(quickToken);
   const [ fiatAmount, setFiatAmount ] = useState('');
@@ -679,9 +682,12 @@ const LandingPage: React.FC = () => {
         <Typography>
           The Top Asset Exchange on the Polygon Network
         </Typography>
-        <Button color='primary'>
-          <Typography>Connect Wallet</Typography>
-        </Button>
+        {
+          !account &&
+            <Button color='primary' onClick={() => { isnotMatic ? addMaticToMetamask() : toggleWalletModal() }}>
+              <Typography>{ isnotMatic ? 'Switch to Matic' : 'Connect Wallet' }</Typography>
+            </Button>        
+        }
       </Box>
       <Box className={classes.tradingInfo}>
         <Box>
@@ -793,7 +799,7 @@ const LandingPage: React.FC = () => {
             </Box>
             {
               fiatCurrency &&
-                <Button fullWidth color='primary' onClick={() => initTransak(account, mobileWindowSize, fiatCurrency)}>Buy { fiatCurrency.symbol } Now</Button>
+                <Button fullWidth color='primary' onClick={() => initTransak(account, mobileWindowSize, fiatCurrency.symbol || '')}>Buy { fiatCurrency.symbol } Now</Button>
             }
           </Box>
         </Box>

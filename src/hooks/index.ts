@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { useWeb3React as useWeb3ReactCore } from '@web3-react/core'
 import { Web3Provider } from '@ethersproject/providers'
 import { Web3ReactContextInterface } from '@web3-react/core/dist/types'
-import { ChainId, Currency } from '@uniswap/sdk'
+import { ChainId } from '@uniswap/sdk'
 import { isMobile } from 'react-device-detect'
 import { injected, safeApp } from 'connectors'
 import { NetworkContextName } from 'constants/index'
@@ -20,11 +20,11 @@ export function useActiveWeb3React(): Web3ReactContextInterface<Web3Provider> & 
 
 export function useInitTransak() {
   const dispatch = useDispatch<AppDispatch>();
-  const initTransak = (account: any, mobileWindowSize: boolean, currency: Currency) => {
+  const initTransak = (account: any, mobileWindowSize: boolean, currency: string) => {
     let transak = new transakSDK({
       apiKey: '258960cf-1e17-4419-bf7f-77443282f5da',  // Your API Key
       environment: 'PRODUCTION', // STAGING/PRODUCTION
-      defaultCryptoCurrency: currency.symbol,
+      defaultCryptoCurrency: currency,
       walletAddress: account, // Your customer's wallet address
       themeColor: '2891f9', // App theme color
       redirectURL: 'window.location.origin',

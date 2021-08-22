@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { CurrencyAmount, JSBI, Token, Trade } from '@uniswap/sdk'
 import ReactGA from 'react-ga'
+import { ArrowDown } from 'react-feather'
 import { Box, Typography, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { useWalletModalToggle } from 'state/application/hooks';
@@ -40,7 +41,6 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     justifyContent: 'space-between',
     margin: '20px 8px 0',
     '& p': {
-      fontSize: 16,
       display: 'flex',
       alignItems: 'center',
       '& svg': {
@@ -57,6 +57,35 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     height: 56,
     '& p': {
       fontSize: 16
+    }
+  },
+  recipientInput: {
+    width: '100%',
+    '& .header': {
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      padding: '8px 12px',
+      '& button': {
+        background: 'transparent'
+      }
+    },
+    '& .content': {
+      border: `1px solid ${palette.primary.dark}`,
+      borderRadius: 20,
+      padding: '12px 24px',
+      textAlign: 'left',
+      '& input': {
+        width: '100%',
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: 'white',
+        background: 'transparent',
+        border: 'none',
+        boxShadow: 'none',
+        outline: 'none',
+        marginTop: 16
+      }
     }
   }
 }));
@@ -94,21 +123,25 @@ const Swap: React.FC = () => {
   const [allowedSlippage] = useUserSlippageTolerance();
   const [approval, approveCallback] = useApproveCallbackFromTrade(trade, allowedSlippage);
   const dependentField: Field = independentField === Field.INPUT ? Field.OUTPUT : Field.INPUT;
-  const parsedAmounts = showWrap
-    ? {
-        [Field.INPUT]: parsedAmount,
-        [Field.OUTPUT]: parsedAmount
-      }
-    : {
-        [Field.INPUT]: independentField === Field.INPUT ? parsedAmount : trade?.inputAmount,
-        [Field.OUTPUT]: independentField === Field.OUTPUT ? parsedAmount : trade?.outputAmount
-      };
-  const formattedAmounts = {
-    [independentField]: typedValue,
-    [dependentField]: showWrap
-      ? parsedAmounts[independentField]?.toExact() ?? ''
-      : parsedAmounts[dependentField]?.toSignificant(6) ?? ''
-  };
+  const parsedAmounts = useMemo(() => {
+    return showWrap
+      ? {
+          [Field.INPUT]: parsedAmount,
+          [Field.OUTPUT]: parsedAmount
+        }
+      : {
+          [Field.INPUT]: independentField === Field.INPUT ? parsedAmount : trade?.inputAmount,
+          [Field.OUTPUT]: independentField === Field.OUTPUT ? parsedAmount : trade?.outputAmount
+        };
+  }, [parsedAmount, independentField, trade, showWrap]);
+  const formattedAmounts = useMemo(() => {
+    return {
+      [independentField]: typedValue,
+      [dependentField]: showWrap
+        ? parsedAmounts[independentField]?.toExact() ?? ''
+        : parsedAmounts[dependentField]?.toSignificant(6) ?? ''  
+    }
+  }, [independentField, typedValue, dependentField, showWrap, parsedAmounts]);
   const route = trade?.route;
   const userHasSpecifiedInputOutput = Boolean(
     currencies[Field.INPUT] && currencies[Field.OUTPUT] && parsedAmounts[independentField]?.greaterThan(JSBI.BigInt(0))
@@ -145,7 +178,7 @@ const Swap: React.FC = () => {
     } else {
       return isnotMatic ? 'Switch to Matic' : 'Connect Wallet';
     }
-  }, [formattedAmounts, account]);
+  }, [formattedAmounts, account, isnotMatic, showApproveFlow, noRoute, userHasSpecifiedInputOutput, showWrap, wrapType]);
 
   const toggleWalletModal = useWalletModalToggle();
 
@@ -191,7 +224,7 @@ const Swap: React.FC = () => {
     } else {
       return false;
     }
-  }, [account, swapButtonText]);
+  }, [account, showWrap, wrapInputError, noRoute, userHasSpecifiedInputOutput, showApproveFlow, approval, approvalSubmitted, priceImpactSeverity, isValid, swapCallbackError, isExpertMode]);
 
   const [{ showConfirm, tradeToConfirm, swapErrorMessage, attemptingTxn, txHash }, setSwapState] = useState<{
     showConfirm: boolean
@@ -319,6 +352,30 @@ const Swap: React.FC = () => {
         <SwapChangeIcon />
       </Box>
       <CurrencyInput currency={currencies[Field.OUTPUT]} showMaxButton={false} otherCurrency={currencies[Field.INPUT]} handleCurrencySelect={handleOtherCurrencySelect} amount={formattedAmounts[Field.OUTPUT]} setAmount={handleTypeOutput} />
+      {recipient === null && !showWrap && isExpertMode &&
+        <Box className={classes.recipientInput}>
+          <Box className='header'>
+            <Box />
+            <Button id='add-recipient-button' onClick={() => onChangeRecipient('')}>
+              + Add a send (optional)
+            </Button>
+          </Box>
+        </Box>
+      }
+      {recipient !== null && !showWrap &&
+        <Box className={classes.recipientInput}>
+          <Box className='header'>
+            <ArrowDown size="16" color='white' />
+            <Button id='remove-recipient-button' onClick={() => onChangeRecipient(null)}>
+              - Remove send
+            </Button>
+          </Box>
+          <Box className='content'>
+            <Typography>Recipient</Typography>
+            <input value={recipient} onChange={(evt) => onChangeRecipient(evt.target.value)} />
+          </Box>
+        </Box>
+      }
       {
         trade && trade.executionPrice &&
           <Box className={classes.swapPrice}>

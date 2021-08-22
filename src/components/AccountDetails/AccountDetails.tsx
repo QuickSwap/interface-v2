@@ -135,6 +135,12 @@ const useStyles = makeStyles(({ palette }) => ({
     padding: '1.5rem',
     flexGrow: 1,
     overflow: 'auto',
+    '& .topPart': {
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: 12
+    },
     '& p': {
       margin: 0,
       fontWeight: 400,
@@ -225,59 +231,47 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
               <Box className={classes.accountGroupingRow} id="web3-account-identifier-row">
                 <Box className={classes.accountControl}>
                   {ENSName ? (
-                    <>
-                      <div>
-                        <StatusIcon />
-                        <p> {ENSName}</p>
-                      </div>
-                    </>
+                    <div>
+                      <StatusIcon />
+                      <p> {ENSName}</p>
+                    </div>
                   ) : (
-                    <>
-                      <div>
-                        <StatusIcon />
-                        <p> {account && shortenAddress(account)}</p>
-                      </div>
-                    </>
+                    <div>
+                      <StatusIcon />
+                      <p> {account && shortenAddress(account)}</p>
+                    </div>
                   )}
                 </Box>
               </Box>
               <Box className={classes.accountGroupingRow}>
                 {ENSName ? (
-                  <>
-                    <Box className={classes.accountControl}>
-                      <div>
-                        {account && (
-                          <Copy toCopy={account}>
-                            <span style={{ marginLeft: '4px' }}>Copy Address</span>
-                          </Copy>
-                        )}
-                        {chainId && account && (
-                          <a className={classes.addressLink} href={chainId && getEtherscanLink(chainId, ENSName, 'address')}>
-                            <LinkIcon size={16} />
-                            <span style={{ marginLeft: '4px' }}>View on Block Explorer</span>
-                          </a>
-                        )}
-                      </div>
-                    </Box>
-                  </>
+                  <Box className={classes.accountControl}>
+                    {account && (
+                      <Copy toCopy={account}>
+                        <span style={{ marginLeft: '4px' }}>Copy Address</span>
+                      </Copy>
+                    )}
+                    {chainId && account && (
+                      <a className={classes.addressLink} href={chainId && getEtherscanLink(chainId, ENSName, 'address')} target='_blank' rel='noreferrer'>
+                        <LinkIcon size={16} />
+                        <span style={{ marginLeft: '4px' }}>View on Block Explorer</span>
+                      </a>
+                    )}
+                  </Box>
                 ) : (
-                  <>
-                    <Box className={classes.accountControl}>
-                      <div>
-                        {account && (
-                          <Copy toCopy={account}>
-                            <span style={{ marginLeft: '4px' }}>Copy Address</span>
-                          </Copy>
-                        )}
-                        {chainId && account && (
-                          <a className={classes.addressLink} href={getEtherscanLink(chainId, account, 'address')}>
-                            <LinkIcon size={16} />
-                            <span style={{ marginLeft: '4px' }}>View on Block Explorer</span>
-                          </a>
-                        )}
-                      </div>
-                    </Box>
-                  </>
+                  <Box className={classes.accountControl}>
+                    {account && (
+                      <Copy toCopy={account}>
+                        <span style={{ marginLeft: '4px' }}>Copy Address</span>
+                      </Copy>
+                    )}
+                    {chainId && account && (
+                      <a className={classes.addressLink} href={getEtherscanLink(chainId, account, 'address')}>
+                        <LinkIcon size={16} />
+                        <span style={{ marginLeft: '4px' }}>View on Block Explorer</span>
+                      </a>
+                    )}
+                  </Box>
                 )}
               </Box>
             </Box>
@@ -286,9 +280,9 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
       </Box>
       {!!pendingTransactions.length || !!confirmedTransactions.length ? (
         <Box className={classes.lowerSection}>
-          <Box>
+          <Box className='topPart'>
             <Typography>Recent Transactions</Typography>
-            <Button onClick={clearAllTransactionsCallback}>(clear all)</Button>
+            <Button onClick={clearAllTransactionsCallback}>clear all</Button>
           </Box>
           {renderTransactions(pendingTransactions)}
           {renderTransactions(confirmedTransactions)}

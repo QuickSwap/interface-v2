@@ -20,18 +20,14 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
         marginLeft: 4
       },
     },
-    '& p': {
-      fontSize: 16,
-      lineHeight: '28px',
-    }
   },
   analyticsWrapper: {
     border: `1px solid ${palette.divider}`,
     borderRadius: 12,
-    padding: '4px 0',
+    padding: '8px 0',
     margin: '8px 0',
     '& a': {
-      fontSize: 16,
+      fontSize: 18,
       color: 'white',
       textDecoration: 'none'
     }
@@ -62,7 +58,7 @@ export const TradeSummary: React.FC<TradeSummaryProps> = ({ trade, allowedSlippa
   const classes = useStyles();
 
   return (
-    <Box>
+    <>
       <Box className={classes.summaryRow}>
         <Box>
           <Typography>
@@ -100,7 +96,7 @@ export const TradeSummary: React.FC<TradeSummaryProps> = ({ trade, allowedSlippa
           {realizedLPFee ? `${realizedLPFee.toSignificant(4)} ${trade.inputAmount.currency.symbol}` : '-'}
         </Typography>
       </Box>
-    </Box>
+    </>
   )
 }
 
@@ -131,7 +127,7 @@ export const AdvancedSwapDetails: React.FC<AdvancedSwapDetailsProps> = ({ trade 
             </Box>
           )}
           <Box className={classes.analyticsWrapper}>
-            <a href={'https://info.quickswap.exchange/pair/' + trade.route.pairs[0].liquidityToken.address} target="_blank">
+            <a href={'https://info.quickswap.exchange/pair/' + trade.route.pairs[0].liquidityToken.address} target="_blank" rel='noreferrer'>
               View pair analytics ↗
             </a>
           </Box>

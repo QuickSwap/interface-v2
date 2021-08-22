@@ -4,15 +4,16 @@ import {
   Box,
   Button,
   Typography,
+  useMediaQuery
 } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { useWalletModalToggle } from 'state/application/hooks';
 import { isTransactionRecent, useAllTransactions } from 'state/transactions/hooks';
 import { TransactionDetails } from 'state/transactions/reducer'
 import { shortenAddress, addMaticToMetamask } from 'utils';
 import useENSName from 'hooks/useENSName';
 import { WalletModal } from 'components';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React, useInitTransak } from 'hooks';
 import StatusIcon from 'components/AccountDetails/StatusIcon';
 import QuickLogo from 'assets/images/quickLogo.svg';
 import { ReactComponent as PolygonIcon } from 'assets/images/Currency/Polygon.svg';
@@ -115,6 +116,8 @@ const Header: React.FC = () => {
   const { account } = useActiveWeb3React();
   const { ENSName } = useENSName(account ?? undefined)
   const { ethereum } = (window as any);
+  const theme = useTheme();
+  const { initTransak } = useInitTransak();
   const allTransactions = useAllTransactions();
   const sortedRecentTransactions = useMemo(() => {
     const txs = Object.values(allTransactions)
@@ -124,6 +127,7 @@ const Header: React.FC = () => {
   const pending = sortedRecentTransactions.filter((tx: any) => !tx.receipt).map((tx: any) => tx.hash)
   const confirmed = sortedRecentTransactions.filter((tx: any) => tx.receipt).map((tx: any) => tx.hash)
   const isnotMatic = ethereum && ethereum.isMetaMask && Number(ethereum.chainId) !== 137;
+  const mobileWindowSize = useMediaQuery(theme.breakpoints.down('sm'));
   const toggleWalletModal = useWalletModalToggle();
   const menuItems = [
     {
@@ -143,8 +147,9 @@ const Header: React.FC = () => {
       text: 'DEVELOPERS',
     },
     {
-      link: '/',
+      link: 'https://idos.starter.xyz/quickstart',
       text: 'IDO',
+      linkOutside: true
     },
     {
       link: '/',
@@ -166,14 +171,19 @@ const Header: React.FC = () => {
       <Box className={classes.mainMenu}>
         {
           menuItems.map((val, index) => (
-            <Link to={val.link} key={index}>
-              <Typography>{ val.text }</Typography>
-            </Link>
+            val.linkOutside ?
+              <a href={val.link} key={index} target='_blank' rel='noreferrer'>
+                <Typography>{ val.text }</Typography>
+              </a>
+            :
+              <Link to={val.link} key={index}>
+                <Typography>{ val.text }</Typography>
+              </Link>
           ))
         }
       </Box>
       <Box>
-        <Button variant='contained' color='secondary'>
+        <Button variant='contained' color='secondary' onClick={() => initTransak(account, mobileWindowSize, 'QUICK')}>
           <QuickIcon />
           <Typography>Buy Quick</Typography>
         </Button>
@@ -183,7 +193,7 @@ const Header: React.FC = () => {
             :
             <Button color='primary' onClick={() => { isnotMatic ? addMaticToMetamask() : toggleWalletModal() }}>
               <Typography>{ isnotMatic ? 'Switch to Matic' : 'Connect' }</Typography>
-            </Button>  
+            </Button>
         }
       </Box>
       <WalletModal ENSName={ENSName ?? undefined} pendingTransactions={pending} confirmedTransactions={confirmed} />
