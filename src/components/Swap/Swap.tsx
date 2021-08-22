@@ -57,6 +57,16 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     marginTop: 16,
     '& button': {
       height: 56,
+      fontSize: 16,
+      fontWeight: 'normal',
+      '& .content': {
+        display: 'flex',
+        alignItems: 'center',
+        '& > div': {
+          color: 'white',
+          marginLeft: 6
+        }
+      },
       width: (props: any) => props.showApproveFlow ? '48%' : '100%',
       '& p': {
         fontSize: 16
@@ -393,8 +403,8 @@ const Swap: React.FC = () => {
           showApproveFlow &&
             <Button color='primary' disabled={approval !== ApprovalState.NOT_APPROVED || approvalSubmitted} onClick={approveCallback}>
               {approval === ApprovalState.PENDING ? (
-                <Box>
-                  Approving <CircularProgress />
+                <Box className='content'>
+                  Approving <CircularProgress size={16} />
                 </Box>
               ) : approvalSubmitted && approval === ApprovalState.APPROVED ? (
                 'Approved'
@@ -404,7 +414,7 @@ const Swap: React.FC = () => {
             </Button>
         }
         <Button color='primary' disabled={swapButtonDisabled as boolean} onClick={account ? onSwap : connectWallet}>
-          <Typography>{ swapButtonText }</Typography>
+          { swapButtonText }
         </Button>
       </Box>
       <AdvancedSwapDetails trade={trade} />
