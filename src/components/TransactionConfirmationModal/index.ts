@@ -1,1 +1,1 @@
-export { default } from './TransactionConfirmationModal';
+export { default, TransactionErrorContent, ConfirmationModalContent } from './TransactionConfirmationModal';
