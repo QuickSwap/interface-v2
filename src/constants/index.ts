@@ -18,6 +18,10 @@ export const LAIR_ADDRESS = '0xf28164a485b0b2c90639e47b0f377b4a438a16b1';
 
 export const QUICK_ADDRESS = '0x831753DD7087CaC61aB5644b308642cc1c33Dc13';
 
+export const FACTORY_ADDRESS = '0x5757371414417b8C6CAad45bAeF941aBc7d3Ab32';
+
+export const BUNDLE_ID = '1';
+
 // a list of tokens by chain
 type ChainTokenList = {
   readonly [chainId in ChainId]: Token[]

@@ -1,5 +1,5 @@
 import { createReducer, nanoid } from '@reduxjs/toolkit'
-import { addPopup, PopupContent, removePopup, updateBlockNumber, ApplicationModal, setOpenModal } from './actions'
+import { addPopup, PopupContent, removePopup, updateBlockNumber, ApplicationModal, setOpenModal, updateEthPrice, updateGlobalData } from './actions'
 
 type PopupList = Array<{ key: string; show: boolean; content: PopupContent; removeAfterMs: number | null }>
 
@@ -7,12 +7,20 @@ export interface ApplicationState {
   readonly blockNumber: { readonly [chainId: number]: number }
   readonly popupList: PopupList
   readonly openModal: ApplicationModal | null
+  readonly ethPrice: any
+  readonly globalData: any
 }
 
 const initialState: ApplicationState = {
   blockNumber: {},
   popupList: [],
-  openModal: null
+  openModal: null,
+  globalData: null,
+  ethPrice: {
+    price: null,
+    oneDayPrice: null,
+    ethPriceChange: null
+  }
 }
 
 export default createReducer(initialState, builder =>
@@ -44,5 +52,13 @@ export default createReducer(initialState, builder =>
           p.show = false
         }
       })
+    })
+    .addCase(updateEthPrice, (state, { payload: { price, oneDayPrice, ethPriceChange }}) => {
+      state.ethPrice = {
+        price, oneDayPrice, ethPriceChange
+      }
+    })
+    .addCase(updateGlobalData, (state, { payload: { data }}) => {
+      state.globalData = data
     })
 )

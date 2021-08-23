@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import {
   ButtonGroup,
@@ -34,8 +34,8 @@ import { ReactComponent as TwitterIcon } from 'assets/images/social/Twitter.svg'
 import { ReactComponent as YouTubeIcon } from 'assets/images/social/YouTube.svg';
 import { Swap, CurrencyInput } from 'components';
 import { useActiveWeb3React, useInitTransak } from 'hooks';
-import { addMaticToMetamask } from 'utils';
-import { useWalletModalToggle } from 'state/application/hooks';
+import { addMaticToMetamask, getEthPrice, getGlobalData } from 'utils';
+import { useEthPrice, useGlobalData, useWalletModalToggle } from 'state/application/hooks';
 import { useAllTokens } from 'hooks/Tokens';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
@@ -667,6 +667,25 @@ const LandingPage: React.FC = () => {
     }
   ]
 
+  const { ethPrice, updateEthPrice } = useEthPrice();
+  const { globalData, updateGlobalData } = useGlobalData();
+
+  console.log('bbb', globalData);
+
+  useEffect(() => {
+    async function checkEthPrice() {
+      if (!ethPrice.price) {
+        const [newPrice, oneDayPrice, priceChange] = await getEthPrice();
+        updateEthPrice({ price: newPrice, oneDayPrice, ethPriceChange: priceChange });
+        const globalData = await getGlobalData(newPrice, oneDayPrice);
+        if (globalData) {
+          updateGlobalData({ data: globalData });
+        }
+      }
+    }
+    checkEthPrice();
+  }, [ethPrice, updateEthPrice, updateGlobalData])
+
   return (
     <Box className={classes.landingPage}>
       <Box className={classes.heroBkg}>
@@ -676,9 +695,12 @@ const LandingPage: React.FC = () => {
         <Typography component='h3'>
           Total Value Locked
         </Typography>
-        <Typography component='h1'>
-          $14,966,289,380
-        </Typography>
+        {
+          globalData && 
+            <Typography component='h1'>
+              ${globalData.totalLiquidityUSD}
+            </Typography>
+        }
         <Typography>
           The Top Asset Exchange on the Polygon Network
         </Typography>
@@ -692,19 +714,39 @@ const LandingPage: React.FC = () => {
       <Box className={classes.tradingInfo}>
         <Box>
           <Typography>Total Trading Pairs</Typography>
-          <Typography component='h1'>11,029</Typography>
+          {
+            globalData && 
+              <Typography component='h1'>
+                ${globalData.pairCount}
+              </Typography>
+          }
         </Box>
         <Box>
           <Typography>24 Hours Volume</Typography>
-          <Typography component='h1'>$99.6M+</Typography>
+          {
+            globalData && 
+              <Typography component='h1'>
+                ${globalData.oneDayVolumeUSD}
+              </Typography>
+          }
         </Box>
         <Box>
           <Typography>24 Hours Transactions</Typography>
-          <Typography component='h1'>333,372</Typography>
+          {
+            globalData && 
+              <Typography component='h1'>
+                ${globalData.oneDayTxns}
+              </Typography>
+          }
         </Box>
         <Box>
           <Typography>24 Hours Fees</Typography>
-          <Typography component='h1'>$223,512</Typography>
+          {
+            globalData && 
+              <Typography component='h1'>
+                ${globalData.oneDayTxns}
+              </Typography>
+          }
         </Box>
       </Box>
       <Box className={classes.quickInfo}>

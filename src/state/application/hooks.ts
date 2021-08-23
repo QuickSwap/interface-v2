@@ -2,7 +2,7 @@ import { useCallback, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useActiveWeb3React } from 'hooks'
 import { AppDispatch, AppState } from 'state'
-import { addPopup, ApplicationModal, PopupContent, removePopup, setOpenModal } from './actions'
+import { addPopup, ApplicationModal, PopupContent, removePopup, setOpenModal, updateEthPrice, updateGlobalData } from './actions'
 
 export function useBlockNumber(): number | undefined {
   const { chainId } = useActiveWeb3React()
@@ -78,4 +78,22 @@ export function useRemovePopup(): (key: string) => void {
 export function useActivePopups(): AppState['application']['popupList'] {
   const list = useSelector((state: AppState) => state.application.popupList)
   return useMemo(() => list.filter(item => item.show), [list])
+}
+
+export function useEthPrice() {
+  const ethPrice = useSelector((state: AppState) => state.application.ethPrice)
+  const dispatch = useDispatch()
+  const _updateETHPrice = useCallback(({ price, oneDayPrice, ethPriceChange }) => {
+    dispatch(updateEthPrice({ price, oneDayPrice, ethPriceChange }));
+  }, [dispatch])
+  return { ethPrice, updateEthPrice: _updateETHPrice }
+}
+
+export function useGlobalData() {
+  const globalData = useSelector((state: AppState) => state.application.globalData)
+  const dispatch = useDispatch()
+  const _updateGlobalData = useCallback(({ data }) => {
+    dispatch(updateGlobalData({ data }));
+  }, [dispatch])
+  return { globalData, updateGlobalData: _updateGlobalData }
 }
