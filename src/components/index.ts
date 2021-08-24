@@ -9,6 +9,7 @@ export { default as CurrencyLogo } from './CurrencyLogo';
 export { default as QuestionHelper } from './QuestionHelper';
 export { default as Logo } from './Logo';
 export { default as Swap, AdvancedSwapDetails } from './Swap';
+export { default as RewardSlider } from './RewardSlider';
 export { default as WalletModal } from './WalletModal';
 export { default as AccountDetails } from './AccountDetails';
 export { default as Web3ReactManager } from './Web3ReactManager';

@@ -11,14 +11,8 @@ import {
 import Skeleton from '@material-ui/lab/Skeleton';
 import { Currency } from '@uniswap/sdk';
 import { useTheme } from '@material-ui/core/styles';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import Slider from 'react-slick';
 import HeroBkg from 'assets/images/heroBkg.svg';
 import Motif from 'assets/images/Motif.svg';
-import { ReactComponent as PolygonSwapIcon } from 'assets/images/Currency/PolygonSwap.svg';
-import { ReactComponent as USDCIcon } from 'assets/images/Currency/USDC.svg';
-import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon.svg';
 import BuyWithFiat from 'assets/images/featured/BuywithFiat.svg';
 import Analytics from 'assets/images/featured/Analytics.svg';
 import DragonsLair from 'assets/images/featured/DragonsLair.svg';
@@ -33,7 +27,7 @@ import { ReactComponent as RedditIcon } from 'assets/images/social/Reddit.svg';
 import { ReactComponent as TelegramIcon } from 'assets/images/social/Telegram.svg';
 import { ReactComponent as TwitterIcon } from 'assets/images/social/Twitter.svg';
 import { ReactComponent as YouTubeIcon } from 'assets/images/social/YouTube.svg';
-import { Swap, CurrencyInput } from 'components';
+import { Swap, CurrencyInput, RewardSlider } from 'components';
 import { useActiveWeb3React, useInitTransak } from 'hooks';
 import { addMaticToMetamask, getEthPrice, getGlobalData, formatCompact } from 'utils';
 import { useEthPrice, useGlobalData, useWalletModalToggle } from 'state/application/hooks';
@@ -229,89 +223,6 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       margin: '32px 20px 64px'
     }
   },
-  rewardsSlider: {
-    width: 1072,
-    display: 'flex',
-    justifyContent: 'space-between',
-    margin: '64px auto 56px',
-    '& .slick-slide': {
-      padding: '0 20px'
-    },
-    '& .slick-arrow': {
-      color: palette.success.dark,
-      width: 32,
-      height: 32,
-    },
-    [breakpoints.down('md')]: {
-      width: 776
-    },
-    [breakpoints.down('sm')]: {
-      width: 360,
-    }
-  },
-  rewardsSliderItem: {
-    borderRadius: 32,
-    background: palette.primary.dark,
-    padding: '32px 22px',
-    position: 'relative',
-    '& .rewardIcon': {
-      position: 'absolute',
-      display: 'flex',
-      top: 32,
-      left: 22,
-      '& > div': {
-        padding: 2,
-        background: palette.primary.dark,
-        borderRadius: 18,
-        display: 'flex',
-        '&:first-child': {
-          marginRight: -8,
-          position: 'relative',
-          zIndex: 1
-        }
-      }
-    },
-    '& h3': {
-      fontSize: 20,
-      color: 'white',
-      lineHeight: '36px',
-      marginLeft: 10,
-    },
-    '& .row': {
-      display: 'flex',
-      width: '100%',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      marginBottom: 12,
-      '& p': {
-        fontSize: 16,
-        color: 'rgba(255, 255, 255, 0.47)',
-        display: 'flex',
-        alignItems: 'center',
-        '& svg': {
-          marginLeft: 4
-        }
-      },
-      '& h4': {
-        fontSize: 16,
-        color: 'white',
-        fontWeight: 'bold'
-      },
-      '& h5': {
-        background: 'rgba(15, 198, 121, 0.12)',
-        color: '#0FC679',
-        fontWeight: 'bold',
-        fontSize: 16,
-        padding: '0 4px',
-        borderRadius: 5,
-      },
-    },
-    '& button': {
-      height: 40,
-      fontSize: 16,
-      marginTop: 12
-    }
-  },
   buyFiatContainer: {
     background: palette.primary.dark,
     height: 338,
@@ -493,7 +404,6 @@ const LandingPage: React.FC = () => {
   const { account } = useActiveWeb3React();
   const { ethereum } = (window as any);
   const isnotMatic = ethereum && ethereum.isMetaMask && Number(ethereum.chainId) !== 137;
-  const tabletWindowSize = useMediaQuery(theme.breakpoints.down('md'));
   const mobileWindowSize = useMediaQuery(theme.breakpoints.down('sm'));
   const { initTransak } = useInitTransak();
   const allTokens = useAllTokens();
@@ -501,101 +411,6 @@ const LandingPage: React.FC = () => {
   const quickToken = Object.values(allTokens).find((val) => val.symbol === 'QUICK');
   const [ fiatCurrency, setFiatCurrency ] = useState<Currency | undefined>(quickToken);
   const [ fiatAmount, setFiatAmount ] = useState('');
-
-  const rewardSliderSettings = {
-    dots: false,
-    infinite: true,
-    speed: 500,
-    slidesToShow: mobileWindowSize ? 1 : tabletWindowSize ? 2 : 3,
-    slidesToScroll: 1,
-    nextArrow: <ChevronRightIcon />,
-    prevArrow: <ChevronLeftIcon />
-  };
-  const rewardItems = [
-    {
-      token1: {
-        symbol: 'USDC',
-        logo: <USDCIcon />
-      },
-      token2: {
-        symbol: 'WMATIC',
-        logo: <PolygonSwapIcon />
-      },
-      fee: 13225,
-      locked: '97.42M',
-      tvl: '120.42M',
-      apr: 21.51
-    },
-    {
-      token1: {
-        symbol: 'USDC',
-        logo: <USDCIcon />
-      },
-      token2: {
-        symbol: 'WMATIC',
-        logo: <PolygonSwapIcon />
-      },      fee: 13225,
-      locked: '97.42M',
-      tvl: '120.42M',
-      apr: 21.51
-    },
-    {
-      token1: {
-        symbol: 'USDC',
-        logo: <USDCIcon />
-      },
-      token2: {
-        symbol: 'WMATIC',
-        logo: <PolygonSwapIcon />
-      },
-      fee: 13225,
-      locked: '97.42M',
-      tvl: '120.42M',
-      apr: 21.51
-    },
-    {
-      token1: {
-        symbol: 'USDC',
-        logo: <USDCIcon />
-      },
-      token2: {
-        symbol: 'WMATIC',
-        logo: <PolygonSwapIcon />
-      },
-      fee: 13225,
-      locked: '97.42M',
-      tvl: '120.42M',
-      apr: 21.51
-    },
-    {
-      token1: {
-        symbol: 'USDC',
-        logo: <USDCIcon />
-      },
-      token2: {
-        symbol: 'WMATIC',
-        logo: <PolygonSwapIcon />
-      },
-      fee: 13225,
-      locked: '97.42M',
-      tvl: '120.42M',
-      apr: 21.51
-    },
-    {
-      token1: {
-        symbol: 'USDC',
-        logo: <USDCIcon />
-      },
-      token2: {
-        symbol: 'WMATIC',
-        logo: <PolygonSwapIcon />
-      },
-      fee: 13225,
-      locked: '97.42M',
-      tvl: '120.42M',
-      apr: 21.51
-    }
-  ]
 
   const features = [
     {
@@ -790,42 +605,7 @@ const LandingPage: React.FC = () => {
         <Typography>
           Deposit your Liquidity Provider tokens to receive Rewards in $QUICK on top of LP Fees.
         </Typography>
-        <Slider {...rewardSliderSettings} className={classes.rewardsSlider}>
-          {
-            rewardItems.map((val, index) => (
-              <Box key={index} className={classes.rewardsSliderItem}>
-                <Box className='rewardIcon'>
-                  <Box>
-                    { val.token1.logo }
-                  </Box>
-                  <Box>
-                    { val.token2.logo }
-                  </Box>
-                </Box>
-                <Typography component='h3'>
-                  { val.token1.symbol }-{ val.token2.symbol }
-                </Typography>
-                <Box className='row'>
-                  <Typography>24h Fees</Typography>
-                  <Typography component='h4'>{ val.fee }</Typography>
-                </Box>
-                <Box className='row'>
-                  <Typography>Locked Value</Typography>
-                  <Typography component='h4'>{ val.locked }</Typography>
-                </Box>
-                <Box className='row'>
-                  <Typography>TVL</Typography>
-                  <Typography component='h4'>{ val.tvl }</Typography>
-                </Box>
-                <Box className='row'>
-                  <Typography>APR<HelpIcon /></Typography>
-                  <Typography component='h5'>{ val.apr }%</Typography>
-                </Box>
-                <Button fullWidth color='primary'>Invest</Button>
-              </Box>
-            ))
-          }
-        </Slider>
+        <RewardSlider />
         <Button variant='contained' color='secondary'>
           See all pools
         </Button>
