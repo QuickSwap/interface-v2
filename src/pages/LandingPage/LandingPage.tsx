@@ -8,6 +8,7 @@ import {
   Grid,
   useMediaQuery
 } from '@material-ui/core';
+import Skeleton from '@material-ui/lab/Skeleton';
 import { Currency } from '@uniswap/sdk';
 import { useTheme } from '@material-ui/core/styles';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
@@ -34,7 +35,7 @@ import { ReactComponent as TwitterIcon } from 'assets/images/social/Twitter.svg'
 import { ReactComponent as YouTubeIcon } from 'assets/images/social/YouTube.svg';
 import { Swap, CurrencyInput } from 'components';
 import { useActiveWeb3React, useInitTransak } from 'hooks';
-import { addMaticToMetamask, getEthPrice, getGlobalData } from 'utils';
+import { addMaticToMetamask, getEthPrice, getGlobalData, formatCompact } from 'utils';
 import { useEthPrice, useGlobalData, useWalletModalToggle } from 'state/application/hooks';
 import { useAllTokens } from 'hooks/Tokens';
 
@@ -79,18 +80,18 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       textTransform: 'uppercase',
       fontWeight: 'bold',
       lineHeight: '18px',
+      marginBottom: 20,
     },
     '& h1': {
       fontSize: 64,
       fontWeight: 'bold',
       color: palette.primary.main,
       lineHeight: '72px',
-      margin: '20px 0',
     },
     '& > p': {
       fontSize: 18,
       lineHeight: '20px',
-      marginBottom: 50
+      margin: '20px 0 50px'
     },
     '& > button': {
       height: 56,
@@ -125,6 +126,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       '& p': {
         fontSize: 13,
         lineHeight: '14px',
+        marginBottom: 24,
         textTransform: 'uppercase',
         fontWeight: 'bold'
       },
@@ -132,7 +134,6 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
         fontSize: 40,
         fontWeight: 'bold',
         lineHeight: '45px',
-        marginTop: 24
       }
     }
   },
@@ -670,8 +671,6 @@ const LandingPage: React.FC = () => {
   const { ethPrice, updateEthPrice } = useEthPrice();
   const { globalData, updateGlobalData } = useGlobalData();
 
-  console.log('bbb', globalData);
-
   useEffect(() => {
     async function checkEthPrice() {
       if (!ethPrice.price) {
@@ -696,10 +695,12 @@ const LandingPage: React.FC = () => {
           Total Value Locked
         </Typography>
         {
-          globalData && 
+          globalData ?
             <Typography component='h1'>
-              ${globalData.totalLiquidityUSD}
+              ${Number(globalData.totalLiquidityUSD).toLocaleString(undefined, { maximumFractionDigits: 0 })}
             </Typography>
+            :
+            <Skeleton variant="rect" width={400} height={72} />
         }
         <Typography>
           The Top Asset Exchange on the Polygon Network
@@ -715,37 +716,45 @@ const LandingPage: React.FC = () => {
         <Box>
           <Typography>Total Trading Pairs</Typography>
           {
-            globalData && 
+            globalData ?
               <Typography component='h1'>
-                ${globalData.pairCount}
+                {Number(globalData.pairCount).toLocaleString()}
               </Typography>
+              :
+              <Skeleton variant="rect" width={100} height={45} />
           }
         </Box>
         <Box>
           <Typography>24 Hours Volume</Typography>
           {
-            globalData && 
+            globalData ?
               <Typography component='h1'>
-                ${globalData.oneDayVolumeUSD}
+                ${formatCompact(globalData.oneDayVolumeUSD)}
               </Typography>
+              :
+              <Skeleton variant="rect" width={100} height={45} />
           }
         </Box>
         <Box>
           <Typography>24 Hours Transactions</Typography>
           {
-            globalData && 
+            globalData ?
               <Typography component='h1'>
-                ${globalData.oneDayTxns}
+                {Number(globalData.oneDayTxns).toLocaleString()}
               </Typography>
+              :
+              <Skeleton variant="rect" width={100} height={45} />
           }
         </Box>
         <Box>
           <Typography>24 Hours Fees</Typography>
           {
-            globalData && 
+            globalData ?
               <Typography component='h1'>
-                ${globalData.oneDayTxns}
+                ${(Number(globalData.oneDayVolumeUSD) * 0.003).toLocaleString(undefined, { maximumFractionDigits: 0 })}
               </Typography>
+              :
+              <Skeleton variant="rect" width={100} height={45} />
           }
         </Box>
       </Box>

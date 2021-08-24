@@ -8,7 +8,8 @@ import { GET_BLOCK, GLOBAL_DATA, GET_BLOCKS, ETH_PRICE } from 'apollo/queries';
 import { JsonRpcSigner, Web3Provider } from '@ethersproject/providers';
 import { abi as IUniswapV2Router02ABI } from '@uniswap/v2-periphery/build/IUniswapV2Router02.json';
 import { CurrencyAmount, ChainId, Percent, JSBI, Currency, ETHER, Token } from '@uniswap/sdk';
-import { BigNumber } from '@ethersproject/bignumber';
+import { BigNumber, BigNumberish } from '@ethersproject/bignumber';
+import { formatUnits } from 'ethers/lib/utils';
 import { AddressZero } from '@ethersproject/constants';
 import { TokenAddressMap } from 'state/lists/hooks';
 import { ALLOWED_PRICE_IMPACT_HIGH, PRICE_IMPACT_WITHOUT_FEE_CONFIRM_MIN, ROUTER_ADDRESS, MIN_ETH } from 'constants/index';
@@ -27,6 +28,30 @@ export async function getBlockFromTimestamp(timestamp: number) {
     fetchPolicy: 'cache-first',
   })
   return result?.data?.blocks?.[0]?.number
+}
+
+export function formatCompact(
+  unformatted: number | string | BigNumber | BigNumberish | undefined | null,
+  decimals = 18,
+  maximumFractionDigits: number | undefined = 3,
+  maxPrecision: number | undefined = 4,
+) {
+  const formatter = Intl.NumberFormat('en', {
+    notation: 'compact',
+    maximumFractionDigits,
+  });
+
+  if (!unformatted) return '0';
+
+  if (unformatted === Infinity) return '∞';
+
+  let formatted: string | number = Number(unformatted);
+
+  if (unformatted instanceof BigNumber) {
+    formatted = Number(formatUnits(unformatted.toString(), decimals));
+  }
+
+  return formatter.format(Number(formatted.toPrecision(maxPrecision)));
 }
 
 export const getPercentChange = (valueNow: any, value24HoursAgo: any) => {
