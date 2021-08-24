@@ -83,15 +83,10 @@ interface RewardSliderItemProps {
 
 const RewardSliderItem: React.FC<RewardSliderItemProps> = ({ info }) => {
   const classes = useStyles();
-  const token0 = info.tokens[0]
-  const token1 = info.tokens[1]
+  const token0 = info.tokens[0];
 
-  const currency0 = unwrappedToken(token0)
-  const currency1 = unwrappedToken(token1)
   const baseTokenCurrency = unwrappedToken(info.baseToken);
   const empty = unwrappedToken(EMPTY);
-
-  const isStaking = Boolean(info.stakedAmount.greaterThan('0'));
 
   let valueOfTotalStakedAmountInBaseToken: TokenAmount | undefined;
   const totalSupplyOfStakingToken = useTotalSupply(info.stakedAmount.token);
