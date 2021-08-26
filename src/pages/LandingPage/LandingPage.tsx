@@ -67,6 +67,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     alignItems: 'center',
     margin: '135px 0 120px',
     position: 'relative',
+    textAlign: 'center',
     zIndex: 2,
     '& h3': {
       color: 'white',

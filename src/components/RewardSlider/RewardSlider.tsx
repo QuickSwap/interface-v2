@@ -36,7 +36,7 @@ const RewardSlider: React.FC = () => {
   const tabletWindowSize = useMediaQuery(theme.breakpoints.down('md'));
   const mobileWindowSize = useMediaQuery(theme.breakpoints.down('sm'));
   const stakingInfos = useStakingInfo();
-  const rewardItems = stakingInfos.slice(0, 10);
+  const rewardItems = stakingInfos.slice(0, 5);
 
   const rewardSliderSettings = {
     dots: false,
