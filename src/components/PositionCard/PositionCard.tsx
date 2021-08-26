@@ -9,7 +9,6 @@ import { useActiveWeb3React } from 'hooks';
 import { useTokenBalance } from 'state/wallet/hooks';
 import { currencyId } from 'utils';
 import { unwrappedToken } from 'utils/wrappedCurrency';
-import { useColor } from 'hooks/useColor';
 import { CurrencyLogo, DoubleCurrencyLogo } from 'components';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
