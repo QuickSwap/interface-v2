@@ -36,8 +36,8 @@ const useStyles = makeStyles(({ palette }) => ({
       }
     },
     '& h3': {
-      fontSize: 20,
-      color: 'white',
+      fontSize: '20px !important',
+      color: 'white !important',
       marginLeft: 10,
     },
     '& .row': {

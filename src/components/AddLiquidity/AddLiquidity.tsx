@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Box, Button, Typography } from '@material-ui/core';
-import { CurrencyInput, TransactionConfirmationModal, ConfirmationModalContent, ConfirmAddModalBottom, MinimalPositionCard } from 'components';
+import { CurrencyInput, TransactionConfirmationModal, ConfirmationModalContent, ConfirmAddModalBottom, MinimalPositionCard, DoubleCurrencyLogo } from 'components';
 import { makeStyles } from '@material-ui/core/styles';
 import { useWalletModalToggle } from 'state/application/hooks';
 import { TransactionResponse } from '@ethersproject/providers';
@@ -81,6 +81,28 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     display: 'flex',
     justifyContent: 'space-between',
     marginBottom: 16
+  },
+  supplyModalHeader: {
+    color: 'black',
+    '& > h2': {
+      fontSize: 24,
+      lineHeight: '36px',
+      margin: '8px 0'
+    },
+    '& > h4': {
+      fontSize: 18,
+      lineHeight: '24px',
+      fontStyle: 'italic',
+    }
+  },
+  liquidityWrapper: {
+    display: 'flex',
+    alignItems: 'center',
+    color: 'black',
+    '& > p': {
+      marginRight: 20,
+      fontSize: 32
+    },
   }
 }));
 
@@ -149,6 +171,16 @@ const AddLiquidity: React.FC = () => {
     chainId &&
       ((currencyA && currencyEquals(currencyA, WETH[chainId])) ||
         (currencyB && currencyEquals(currencyB, WETH[chainId])))
+  )
+
+  const atMaxAmounts: { [field in Field]?: TokenAmount } = [Field.CURRENCY_A, Field.CURRENCY_B].reduce(
+    (accumulator, field) => {
+      return {
+        ...accumulator,
+        [field]: maxAmounts[field]?.equalTo(parsedAmounts[field] ?? '0')
+      }
+    },
+    {}
   )
 
   const handleCurrencyASelect = useCallback(
@@ -286,34 +318,32 @@ const AddLiquidity: React.FC = () => {
 
   const modalHeader = () => {
     return noLiquidity ? (
-      <Box>
+      <Box className={classes.liquidityWrapper}>
         <Typography>
           {currencies[Field.CURRENCY_A]?.symbol + '/' + currencies[Field.CURRENCY_B]?.symbol}
         </Typography>
-        {/* <DoubleCurrencyLogo
+        <DoubleCurrencyLogo
           currency0={currencies[Field.CURRENCY_A]}
           currency1={currencies[Field.CURRENCY_B]}
           size={30}
-        /> */}
+        />
       </Box>
     ) : (
-      <Box>
-        <Box>
+      <Box className={classes.supplyModalHeader}>
+        <Box className={classes.liquidityWrapper}>
           <Typography>
             {liquidityMinted?.toSignificant(6)}
           </Typography>
-          {/* <DoubleCurrencyLogo
+          <DoubleCurrencyLogo
             currency0={currencies[Field.CURRENCY_A]}
             currency1={currencies[Field.CURRENCY_B]}
             size={30}
-          /> */}
+          />
         </Box>
-        <Box>
-          <Typography>
-            {currencies[Field.CURRENCY_A]?.symbol + '/' + currencies[Field.CURRENCY_B]?.symbol + ' Pool Tokens'}
-          </Typography>
-        </Box>
-        <Typography>
+        <Typography component='h2'>
+          {currencies[Field.CURRENCY_A]?.symbol + '/' + currencies[Field.CURRENCY_B]?.symbol + ' Pool Tokens'}
+        </Typography>
+        <Typography component='h4'>
           {`Output is estimated. If the price changes by more than ${allowedSlippage /
             100}% your transaction will revert.`}
         </Typography>
@@ -328,7 +358,7 @@ const AddLiquidity: React.FC = () => {
         currencies={currencies}
         parsedAmounts={parsedAmounts}
         noLiquidity={noLiquidity}
-        onAdd={onAdd}
+        onAdd={onAddLiquidity}
         poolTokenPercentage={poolTokenPercentage}
       />
     )
@@ -351,11 +381,11 @@ const AddLiquidity: React.FC = () => {
         )}
         pendingText={pendingText}
       />
-      <CurrencyInput title='Input 1:' currency={currencies[Field.CURRENCY_A]} onMax={() => onFieldAInput(maxAmounts[Field.CURRENCY_A]?.toExact() ?? '')} handleCurrencySelect={handleCurrencyASelect} amount={formattedAmounts[Field.CURRENCY_A]} setAmount={onFieldAInput} />
+      <CurrencyInput title='Input 1:' currency={currencies[Field.CURRENCY_A]} showMaxButton={!atMaxAmounts[Field.CURRENCY_A]} onMax={() => onFieldAInput(maxAmounts[Field.CURRENCY_A]?.toExact() ?? '')} handleCurrencySelect={handleCurrencyASelect} amount={formattedAmounts[Field.CURRENCY_A]} setAmount={onFieldAInput} />
       <Box className={classes.exchangeSwap}>
         <AddIcon />
       </Box>
-      <CurrencyInput title='Input 2:' currency={currencies[Field.CURRENCY_B]} onMax={() => onFieldBInput(maxAmounts[Field.CURRENCY_B]?.toExact() ?? '')} handleCurrencySelect={handleCurrencyBSelect} amount={formattedAmounts[Field.CURRENCY_B]} setAmount={onFieldBInput} />
+      <CurrencyInput title='Input 2:' currency={currencies[Field.CURRENCY_B]} showMaxButton={!atMaxAmounts[Field.CURRENCY_B]} onMax={() => onFieldBInput(maxAmounts[Field.CURRENCY_B]?.toExact() ?? '')} handleCurrencySelect={handleCurrencyBSelect} amount={formattedAmounts[Field.CURRENCY_B]} setAmount={onFieldBInput} />
       {
         currencies[Field.CURRENCY_A] && currencies[Field.CURRENCY_B] && pairState !== PairState.INVALID && price &&
           <Box className={classes.swapPrice}>
@@ -407,7 +437,9 @@ const AddLiquidity: React.FC = () => {
         </Button>
 
         {pair && !noLiquidity && pairState !== PairState.INVALID ? (
-          <MinimalPositionCard showUnwrapped={oneCurrencyIsWETH} pair={pair} />
+          <Box mt={2}>
+            <MinimalPositionCard showUnwrapped={oneCurrencyIsWETH} pair={pair} />
+          </Box>
         ) : null}
       </Box>
     </Box>

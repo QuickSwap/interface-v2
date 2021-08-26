@@ -1,5 +1,7 @@
 import { JSBI, Pair, Percent } from '@uniswap/sdk';
 import React, { useState } from 'react';
+import { Box, Typography, Button } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import { ChevronDown, ChevronUp } from 'react-feather';
 import { Link } from 'react-router-dom';
 import { useTotalSupply } from 'data/TotalSupply';
@@ -9,7 +11,18 @@ import { currencyId } from 'utils';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { useColor } from 'hooks/useColor';
 import { CurrencyLogo, DoubleCurrencyLogo } from 'components';
-import { Box, Typography, Button } from '@material-ui/core';
+
+const useStyles = makeStyles(({ palette, breakpoints }) => ({
+  minimalCardWrapper: {
+    border: `1px solid ${palette.divider}`,
+    borderRadius: 16,
+    padding: 12,
+    '& p': {
+      fontSize: '16px !important',
+      lineHeight: '24px !important'
+    }
+  }
+}));
 
 interface PositionCardProps {
   pair: Pair
@@ -18,15 +31,16 @@ interface PositionCardProps {
 }
 
 export const MinimalPositionCard: React.FC<PositionCardProps> = ({ pair, showUnwrapped = false, border }) => {
-  const { account } = useActiveWeb3React()
+  const { account } = useActiveWeb3React();
+  const classes = useStyles();
 
-  const currency0 = showUnwrapped ? pair.token0 : unwrappedToken(pair.token0)
-  const currency1 = showUnwrapped ? pair.token1 : unwrappedToken(pair.token1)
+  const currency0 = showUnwrapped ? pair.token0 : unwrappedToken(pair.token0);
+  const currency1 = showUnwrapped ? pair.token1 : unwrappedToken(pair.token1);
 
-  const [showMore, setShowMore] = useState(false)
+  const [showMore, setShowMore] = useState(false);
 
-  const userPoolBalance = useTokenBalance(account ?? undefined, pair.liquidityToken)
-  const totalPoolTokens = useTotalSupply(pair.liquidityToken)
+  const userPoolBalance = useTokenBalance(account ?? undefined, pair.liquidityToken);
+  const totalPoolTokens = useTotalSupply(pair.liquidityToken);
 
   const poolTokenPercentage =
     !!userPoolBalance && !!totalPoolTokens && JSBI.greaterThanOrEqual(totalPoolTokens.raw, userPoolBalance.raw)
@@ -46,63 +60,55 @@ export const MinimalPositionCard: React.FC<PositionCardProps> = ({ pair, showUnw
       : [undefined, undefined]
 
   return (
-    <>
+    <Box className={classes.minimalCardWrapper}>
       {userPoolBalance && JSBI.greaterThan(userPoolBalance.raw, JSBI.BigInt(0)) ? (
         <Box>
+          <Typography>Your position</Typography>
+          <Box onClick={() => setShowMore(!showMore)}>
+            <Box>
+              <DoubleCurrencyLogo currency0={currency0} currency1={currency1} margin={true} size={20} />
+              <Typography>
+                {currency0.symbol}/{currency1.symbol}
+              </Typography>
+            </Box>
+            <Box>
+              <Typography>
+                {userPoolBalance ? userPoolBalance.toSignificant(4) : '-'}
+              </Typography>
+            </Box>
+          </Box>
           <Box>
             <Box>
-              <Box>
-                <Typography>
-                  Your position
-                </Typography>
-              </Box>
-            </Box>
-            <Box onClick={() => setShowMore(!showMore)}>
-              <Box>
-                <DoubleCurrencyLogo currency0={currency0} currency1={currency1} margin={true} size={20} />
-                <Typography>
-                  {currency0.symbol}/{currency1.symbol}
-                </Typography>
-              </Box>
-              <Box>
-                <Typography>
-                  {userPoolBalance ? userPoolBalance.toSignificant(4) : '-'}
-                </Typography>
-              </Box>
+              <Typography>
+                Your pool share:
+              </Typography>
+              <Typography>
+                {poolTokenPercentage ? poolTokenPercentage.toFixed(6) + '%' : '-'}
+              </Typography>
             </Box>
             <Box>
-              <Box>
+              <Typography>
+                {currency0.symbol}:
+              </Typography>
+              {token0Deposited ? (
                 <Typography>
-                  Your pool share:
+                  {token0Deposited?.toSignificant(6)}
                 </Typography>
+              ) : (
+                '-'
+              )}
+            </Box>
+            <Box>
+              <Typography>
+                {currency1.symbol}:
+              </Typography>
+              {token1Deposited ? (
                 <Typography>
-                  {poolTokenPercentage ? poolTokenPercentage.toFixed(6) + '%' : '-'}
+                  {token1Deposited?.toSignificant(6)}
                 </Typography>
-              </Box>
-              <Box>
-                <Typography>
-                  {currency0.symbol}:
-                </Typography>
-                {token0Deposited ? (
-                  <Typography>
-                    {token0Deposited?.toSignificant(6)}
-                  </Typography>
-                ) : (
-                  '-'
-                )}
-              </Box>
-              <Box>
-                <Typography>
-                  {currency1.symbol}:
-                </Typography>
-                {token1Deposited ? (
-                  <Typography>
-                    {token1Deposited?.toSignificant(6)}
-                  </Typography>
-                ) : (
-                  '-'
-                )}
-              </Box>
+              ) : (
+                '-'
+              )}
             </Box>
           </Box>
         </Box>
@@ -115,7 +121,7 @@ export const MinimalPositionCard: React.FC<PositionCardProps> = ({ pair, showUnw
           Fees are added to the pool, accrue in real time and can be claimed by withdrawing your liquidity.
         </Typography>
       )}
-    </>
+    </Box>
   )
 }
 
