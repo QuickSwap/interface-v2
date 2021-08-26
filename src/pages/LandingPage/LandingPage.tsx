@@ -27,7 +27,7 @@ import { ReactComponent as RedditIcon } from 'assets/images/social/Reddit.svg';
 import { ReactComponent as TelegramIcon } from 'assets/images/social/Telegram.svg';
 import { ReactComponent as TwitterIcon } from 'assets/images/social/Twitter.svg';
 import { ReactComponent as YouTubeIcon } from 'assets/images/social/YouTube.svg';
-import { Swap, CurrencyInput, RewardSlider } from 'components';
+import { Swap, CurrencyInput, RewardSlider, AddLiquidity } from 'components';
 import { useActiveWeb3React, useInitTransak } from 'hooks';
 import { addMaticToMetamask, getEthPrice, getGlobalData, formatCompact } from 'utils';
 import { useEthPrice, useGlobalData, useWalletModalToggle } from 'state/application/hooks';
@@ -586,14 +586,28 @@ const LandingPage: React.FC = () => {
         </ButtonGroup>
         <Grid container spacing={mobileWindowSize ? 0 : 8} alignItems='center'>
           <Grid item sm={12} md={6}>
-            <Swap />
+            { swapIndex === 0 ? 
+                <Swap />
+              :
+                <AddLiquidity />
+            }
           </Grid>
           <Grid item sm={12} md={6} className={classes.swapInfo}>
             <Typography component='h3'>
-              Swap tokens at near-zero gas fees
+              {
+                swapIndex === 0 ?
+                  'Swap tokens at near-zero gas fees'
+                  :
+                  'Let your crypto work for you'
+              }
             </Typography>
             <Typography>
-              Exchange any combination of ERC-20 tokens permissionless, with ease
+              {
+                swapIndex === 0 ?
+                  'Exchange any combination of ERC-20 tokens permissionless, with ease'
+                  :
+                  'Provide Liquidity and earn 0.25% fee on all trades proportional to your share of the pool. Earn additional rewards by depositing your LP Tokens in Rewards Pools.'
+              }
             </Typography>
           </Grid>
         </Grid>

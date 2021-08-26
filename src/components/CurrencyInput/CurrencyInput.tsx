@@ -72,11 +72,11 @@ interface CurrencyInputProps {
   title?: string,
   handleCurrencySelect: (currency: Currency) => void
   currency: Currency | undefined
-  otherCurrency: Currency | undefined
+  otherCurrency?: Currency | undefined
   amount: string
   setAmount: (value: string) => void
   onMax?: () => void
-  showMaxButton: boolean
+  showMaxButton?: boolean
 }
 
 const CurrencyInput: React.FC<CurrencyInputProps> = ({ handleCurrencySelect, currency, otherCurrency, amount, setAmount, onMax, showMaxButton, title }) => {

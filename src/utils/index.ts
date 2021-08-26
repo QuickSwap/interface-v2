@@ -287,6 +287,12 @@ export function confirmPriceImpactWithoutFee(priceImpactWithoutFee: Percent): bo
   return true
 }
 
+export function currencyId(currency: Currency): string {
+  if (currency === ETHER) return 'ETH'
+  if (currency instanceof Token) return currency.address
+  throw new Error('invalid currency')
+}
+
 export function maxAmountSpend(currencyAmount?: CurrencyAmount): CurrencyAmount | undefined {
   if (!currencyAmount) return undefined
   if (currencyAmount.currency === ETHER) {
