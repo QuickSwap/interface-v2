@@ -46,6 +46,9 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
           color: 'white'
         }
       }
+    },
+    [breakpoints.down('xs')]: {
+      padding: 12
     }
   },
   currencyButton: {

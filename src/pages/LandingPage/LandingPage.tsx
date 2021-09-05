@@ -147,10 +147,14 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     maxWidth: 1048,
     margin: 'auto',
     width: '100%',
+    '& > div': {
+      width: '100%',
+    },
     '& .MuiButtonGroup-root': {
       marginBottom: 50,
       '& button': {
-        width: 180,
+        maxWidth: 180,
+        width: '50%',
         height: 48,
         display: 'flex',
         justifyContent: 'center',
