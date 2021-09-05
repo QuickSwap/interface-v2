@@ -49,6 +49,7 @@
     "fortmatic": "^2.2.1",
     "graphql": "^15.5.1",
     "graphql-tag": "^2.12.5",
+    "hamburger-react": "^2.4.1",
     "i18next": "^20.4.0",
     "i18next-browser-languagedetector": "^6.1.2",
     "i18next-xhr-backend": "^3.2.2",

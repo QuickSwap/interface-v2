@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Box,
@@ -6,6 +6,7 @@ import {
   Typography,
   useMediaQuery
 } from '@material-ui/core';
+import Hamburger from 'hamburger-react';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { useWalletModalToggle } from 'state/application/hooks';
 import { isTransactionRecent, useAllTransactions } from 'state/transactions/hooks';
@@ -55,6 +56,9 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
           }
         }
       }
+    },
+    [breakpoints.down('xs')]: {
+      padding: '0 16px'
     }
   },
   networkWrapper: {
@@ -70,6 +74,9 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       textTransform: 'uppercase',
       fontSize: 13,
       color: 'rgba(255, 255, 255, 0.87)'
+    },
+    [breakpoints.down('xs')]: {
+      display: 'none'
     }
   },
   mainMenu: {
@@ -82,9 +89,6 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       '&:last-child': {
         marginRight: 0
       }
-    },
-    [breakpoints.down('sm')]: {
-      display: 'none !important'
     }
   },
   accountDetails: {
@@ -129,6 +133,7 @@ const Header: React.FC = () => {
   const isnotMatic = ethereum && ethereum.isMetaMask && Number(ethereum.chainId) !== 137;
   const mobileWindowSize = useMediaQuery(theme.breakpoints.down('sm'));
   const toggleWalletModal = useWalletModalToggle();
+  const [ menuOpen, setMenuOpen ] = useState(false);
   const menuItems = [
     {
       link: '/',
@@ -168,35 +173,45 @@ const Header: React.FC = () => {
           <Typography>Polygon</Typography>
         </Box>
       </Box>
-      <Box className={classes.mainMenu}>
-        {
-          menuItems.map((val, index) => (
-            val.linkOutside ?
-              <a href={val.link} key={index} target='_blank' rel='noreferrer'>
-                <Typography>{ val.text }</Typography>
-              </a>
-            :
-              <Link to={val.link} key={index}>
-                <Typography>{ val.text }</Typography>
-              </Link>
-          ))
-        }
-      </Box>
-      <Box>
-        <Button variant='contained' color='secondary' onClick={() => initTransak(account, mobileWindowSize, 'QUICK')}>
-          <QuickIcon />
-          <Typography>Buy Quick</Typography>
-        </Button>
-        {
-          account ? 
-            <Box className={classes.accountDetails} onClick={toggleWalletModal}><StatusIcon /><Typography>{ shortenAddress(account) }</Typography></Box>
-            :
-            <Button color='primary' onClick={() => { isnotMatic ? addMaticToMetamask() : toggleWalletModal() }}>
-              <Typography>{ isnotMatic ? 'Switch to Matic' : 'Connect' }</Typography>
-            </Button>
-        }
-      </Box>
-      <WalletModal ENSName={ENSName ?? undefined} pendingTransactions={pending} confirmedTransactions={confirmed} />
+      {
+        !mobileWindowSize &&
+          <Box className={classes.mainMenu}>
+            {
+              menuItems.map((val, index) => (
+                val.linkOutside ?
+                  <a href={val.link} key={index} target='_blank' rel='noreferrer'>
+                    <Typography>{ val.text }</Typography>
+                  </a>
+                :
+                  <Link to={val.link} key={index}>
+                    <Typography>{ val.text }</Typography>
+                  </Link>
+              ))
+            }
+          </Box>
+      }
+      {
+        mobileWindowSize ?
+          <Hamburger toggled={menuOpen} toggle={setMenuOpen} />
+        :
+          <>
+            <Box>
+              <Button variant='contained' color='secondary' onClick={() => initTransak(account, mobileWindowSize, 'QUICK')}>
+                <QuickIcon />
+                <Typography>Buy Quick</Typography>
+              </Button>
+              {
+                account ? 
+                  <Box className={classes.accountDetails} onClick={toggleWalletModal}><StatusIcon /><Typography>{ shortenAddress(account) }</Typography></Box>
+                  :
+                  <Button color='primary' onClick={() => { isnotMatic ? addMaticToMetamask() : toggleWalletModal() }}>
+                    <Typography>{ isnotMatic ? 'Switch to Matic' : 'Connect' }</Typography>
+                  </Button>
+              }
+            </Box>
+            <WalletModal ENSName={ENSName ?? undefined} pendingTransactions={pending} confirmedTransactions={confirmed} />
+          </>
+      }
     </Box>
   );
 };
