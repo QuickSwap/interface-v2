@@ -14,7 +14,10 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     justifyContent: 'space-between',
     margin: '64px auto 56px',
     '& .slick-slide': {
-      padding: '0 20px'
+      padding: '0 20px',
+      [breakpoints.down('xs')]: {
+        padding: '0 6px'
+      }
     },
     '& .slick-arrow': {
       color: palette.success.dark,
@@ -26,6 +29,9 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     },
     [breakpoints.down('sm')]: {
       width: 360,
+    },
+    [breakpoints.down('xs')]: {
+      width: 320,
     }
   },
 }));
