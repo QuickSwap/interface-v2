@@ -6,6 +6,7 @@ import {
   Typography,
   useMediaQuery
 } from '@material-ui/core';
+import cx from 'classnames';
 import Hamburger from 'hamburger-react';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { useWalletModalToggle } from 'state/application/hooks';
@@ -23,10 +24,12 @@ import { ReactComponent as QuickIcon } from 'assets/images/quickIcon.svg';
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   header: {
     padding: '0 40px',
+    position: 'relative',
     display: 'flex',
     flexWrap: 'wrap',
     alignItems: 'center',
     minHeight: 88,
+    zIndex: 3,
     justifyContent: 'space-between',
     '& a': {
       display: 'flex'
@@ -108,6 +111,46 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       width: 20,
       marginRight: 6
     }
+  },
+  mobileMenuWrapper: {
+    background: 'white',
+    position: 'absolute',
+    top: 80,
+    left: 0,
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    '& a': {
+      textDecoration: 'none',
+    },
+    '& button': {
+      width: 'calc(100% - 24px)',
+      margin: '8px 12px'
+    }
+  },
+  mobileMenuItemWrapper: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    margin: '4px 0',
+    height: 32,
+    width: '100%',
+    '& p': {
+      color: palette.primary.dark,
+    },
+    '& svg, & img': {
+      width: 32,
+      height: 32,
+      marginRight: 8
+    }
+  },
+  menuTransition: {
+    height: 0,
+    transition: 'height 0.5s',
+    overflow: 'auto'
+  },
+  menuOpen: {
+    height: 'calc(100vh - 80px)',
   }
 }));
 
@@ -164,6 +207,7 @@ const Header: React.FC = () => {
 
   return (
     <Box className={classes.header}>
+      <WalletModal ENSName={ENSName ?? undefined} pendingTransactions={pending} confirmedTransactions={confirmed} />
       <Box>
         <Link to='/'>
           <img src={QuickLogo} alt='QuickLogo' />
@@ -194,23 +238,53 @@ const Header: React.FC = () => {
         mobileWindowSize ?
           <Hamburger toggled={menuOpen} toggle={setMenuOpen} />
         :
-          <>
-            <Box>
-              <Button variant='contained' color='secondary' onClick={() => initTransak(account, mobileWindowSize, 'QUICK')}>
-                <QuickIcon />
-                <Typography>Buy Quick</Typography>
-              </Button>
-              {
-                account ? 
-                  <Box className={classes.accountDetails} onClick={toggleWalletModal}><StatusIcon /><Typography>{ shortenAddress(account) }</Typography></Box>
-                  :
-                  <Button color='primary' onClick={() => { isnotMatic ? addMaticToMetamask() : toggleWalletModal() }}>
-                    <Typography>{ isnotMatic ? 'Switch to Matic' : 'Connect' }</Typography>
-                  </Button>
-              }
+          <Box>
+            <Button variant='contained' color='secondary' onClick={() => initTransak(account, mobileWindowSize, 'QUICK')}>
+              <QuickIcon />
+              <Typography>Buy Quick</Typography>
+            </Button>
+            {
+              account ? 
+                <Box className={classes.accountDetails} onClick={toggleWalletModal}><StatusIcon /><Typography>{ shortenAddress(account) }</Typography></Box>
+                :
+                <Button color='primary' onClick={() => { isnotMatic ? addMaticToMetamask() : toggleWalletModal() }}>
+                  <Typography>{ isnotMatic ? 'Switch to Matic' : 'Connect' }</Typography>
+                </Button>
+            }
+          </Box>
+      }
+      {
+        mobileWindowSize &&
+          <Box className={cx(classes.mobileMenuWrapper, classes.menuTransition, menuOpen && classes.menuOpen)}>
+            {
+              menuItems.map((val, index) => (
+                val.linkOutside ?
+                  <Box className={classes.mobileMenuItemWrapper}>
+                    <a href={val.link} key={index} target='_blank' rel='noreferrer'>
+                      <Typography>{ val.text }</Typography>
+                    </a>
+                  </Box>
+                :
+                  <Box className={classes.mobileMenuItemWrapper}>
+                    <Link to={val.link} key={index}>
+                      <Typography>{ val.text }</Typography>
+                    </Link>
+                  </Box>
+              ))
+            }
+            <Box className={classes.mobileMenuItemWrapper} onClick={() => initTransak(account, mobileWindowSize, 'QUICK')}>
+              <QuickIcon />
+              <Typography>Buy Quick</Typography>
             </Box>
-            <WalletModal ENSName={ENSName ?? undefined} pendingTransactions={pending} confirmedTransactions={confirmed} />
-          </>
+            {
+              account ? 
+                <Box className={classes.mobileMenuItemWrapper} onClick={toggleWalletModal}><StatusIcon /><Typography>{ shortenAddress(account) }</Typography></Box>
+                :
+                <Button color='primary' onClick={() => { isnotMatic ? addMaticToMetamask() : toggleWalletModal() }}>
+                  <Typography>{ isnotMatic ? 'Switch to Matic' : 'Connect Wallet' }</Typography>
+                </Button>
+            }
+          </Box>
       }
     </Box>
   );
