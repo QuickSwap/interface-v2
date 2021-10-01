@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography, Button } from '@material-ui/core';
+import { Box, Typography } from '@material-ui/core';
 import { JSBI , TokenAmount } from '@uniswap/sdk';
 import { makeStyles } from '@material-ui/core/styles';
 import { StakingInfo } from 'state/stake/hooks';
@@ -168,7 +168,7 @@ const RewardSliderItem: React.FC<RewardSliderItemProps> = ({ info }) => {
         <Typography>APR<HelpIcon /></Typography>
         <Typography component='h5'>{ apyWithFee }%</Typography>
       </Box>
-      <Button fullWidth color='primary'>Invest</Button>
+      {/* <Button fullWidth color='primary'>Invest</Button> */}
     </Box>
   )
 }

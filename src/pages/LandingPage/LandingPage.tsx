@@ -625,9 +625,9 @@ const LandingPage: React.FC = () => {
           Deposit your Liquidity Provider tokens to receive Rewards in $QUICK on top of LP Fees.
         </Typography>
         <RewardSlider />
-        <Button variant='contained' color='secondary'>
+        {/* <Button variant='contained' color='secondary'>
           See all pools
-        </Button>
+        </Button> */}
       </Box>
       <Box className={classes.buyFiatContainer}>
         <img src={FiatMask} alt='Fiat Mask' />
