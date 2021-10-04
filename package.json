@@ -53,6 +53,7 @@
     "i18next": "^20.4.0",
     "i18next-browser-languagedetector": "^6.1.2",
     "i18next-xhr-backend": "^3.2.2",
+    "ipfs-deploy": "^11.0.1",
     "lodash.flatmap": "^4.5.0",
     "multicodec": "^2.0.0",
     "multihashes": "^3.0.1",
@@ -82,7 +83,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "ipfs-deploy": "ipfs-deploy build"
   },
   "eslintConfig": {
     "extends": [
