@@ -7,7 +7,7 @@ import {
 } from '@material-ui/core';
 import { Provider } from 'react-redux';
 import store from 'state';
-import { LandingPage } from 'pages';
+import { LandingPage, SwapPage } from 'pages';
 import { PageLayout } from 'layouts';
 import { getLibrary } from 'utils'
 import { Web3ReactManager } from 'components';
@@ -68,6 +68,11 @@ function App() {
                 <Route exact path='/'>
                   <PageLayout>
                     <LandingPage />
+                  </PageLayout>
+                </Route>
+                <Route exact path='/swap'>
+                  <PageLayout>
+                    <SwapPage />
                   </PageLayout>
                 </Route>
               </Switch>
