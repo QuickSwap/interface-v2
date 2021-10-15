@@ -200,7 +200,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       marginRight: 8
     },
     '& p': {
-      fontFamily: "'Mulish', sans-serif",
+      fontFamily: "'Inter', sans-serif",
       fontSize: 16,
       fontWeight: 'bold'
     }
@@ -308,7 +308,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
           padding: 0,
           border: 'none',
           '& > p': {
-            fontFamily: "'Mulish', sans-serif",
+            fontFamily: "'Inter', sans-serif",
             fontSize: 16,
             marginBottom: 8
           },  
@@ -368,7 +368,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       '& p': {
         fontSize: 16,
         lineHeight: '28px',
-        fontFamily: "'Mulish', sans-serif"
+        fontFamily: "'Inter', sans-serif"
       }
     }
   },

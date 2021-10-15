@@ -177,31 +177,26 @@ const Header: React.FC = () => {
   const mobileWindowSize = useMediaQuery(theme.breakpoints.down('sm'));
   const toggleWalletModal = useWalletModalToggle();
   const [ menuOpen, setMenuOpen ] = useState(false);
-  const menuItems = [
+  const menuItems: {link: string, text: string, linkOutside?: boolean}[] = [
     {
-      link: '/',
-      text: 'EXCHANGE'
+      link: '/swap',
+      text: 'Swap'
     },
     {
-      link: '/',
-      text: 'Rewards',
+      link: '/pools',
+      text: 'Pool',
     },
     {
-      link: '/',
-      text: 'ANALYTICS',
+      link: '/farm',
+      text: 'Farm',
     },
     {
-      link: '/',
-      text: 'DEVELOPERS',
+      link: '/dragons',
+      text: 'Dragons Den',
     },
     {
-      link: 'https://idos.starter.xyz/quickstart',
-      text: 'IDO',
-      linkOutside: true
-    },
-    {
-      link: '/',
-      text: 'ABOUT'
+      link: '/analytics',
+      text: 'Analytics'
     }
   ]
 

@@ -77,7 +77,7 @@ export const mainTheme = responsiveFontSizes(
     },
     typography: {
       htmlFontSize: 16,
-      fontFamily: 'Ubuntu',
+      fontFamily: "'Inter', sans-serif",
       fontSize: 14,
     },
     spacing,

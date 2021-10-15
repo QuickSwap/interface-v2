@@ -64,7 +64,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       marginRight: 4,
     },
     '& p': {
-      fontFamily: "'Mulish', sans-serif",
+      fontFamily: "'Inter', sans-serif",
       fontSize: 16,
       fontWeight: 'bold'
     }
