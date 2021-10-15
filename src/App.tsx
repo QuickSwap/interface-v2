@@ -7,7 +7,7 @@ import {
 } from '@material-ui/core';
 import { Provider } from 'react-redux';
 import store from 'state';
-import { LandingPage, SwapPage } from 'pages';
+import { AnalyticsPage, DragonPage, FarmPage, LandingPage, PoolsPage, SwapPage } from 'pages';
 import { PageLayout } from 'layouts';
 import { getLibrary } from 'utils'
 import { Web3ReactManager } from 'components';
@@ -75,6 +75,26 @@ function App() {
                     <SwapPage />
                   </PageLayout>
                 </Route>
+                <Route exact path='/pools'>
+                  <PageLayout>
+                    <PoolsPage />
+                  </PageLayout>
+                </Route>
+                <Route exact path='/farm'>
+                  <PageLayout>
+                    <FarmPage />
+                  </PageLayout>
+                </Route>
+                <Route exact path='/dragons'>
+                  <PageLayout>
+                    <DragonPage />
+                  </PageLayout>
+                </Route>
+                <Route exact path='/analytics'>
+                  <PageLayout>
+                    <AnalyticsPage />
+                  </PageLayout>
+                </Route>                
               </Switch>
             </Web3ReactManager>
           </Providers>
