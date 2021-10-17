@@ -11,7 +11,6 @@ import {
 import Skeleton from '@material-ui/lab/Skeleton';
 import { Currency } from '@uniswap/sdk';
 import { useTheme } from '@material-ui/core/styles';
-import HeroBkg from 'assets/images/heroBkg.svg';
 import Motif from 'assets/images/Motif.svg';
 import BuyWithFiat from 'assets/images/featured/BuywithFiat.svg';
 import Analytics from 'assets/images/featured/Analytics.svg';
@@ -47,18 +46,6 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       fontSize: 18,
       lineHeight: '32px',
       color: palette.text.primary
-    }
-  },
-  heroBkg: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    zIndex: 1,
-    width: '100%',
-    overflow: 'hidden',
-    '& img': {
-      width: '100%',
-      minWidth: 1200
     }
   },
   heroSection: {
@@ -507,9 +494,6 @@ const LandingPage: React.FC = () => {
 
   return (
     <Box className={classes.landingPage}>
-      <Box className={classes.heroBkg}>
-        <img src={HeroBkg} alt='Hero Background' />
-      </Box>
       <Box className={classes.heroSection}>
         <Typography component='h3'>
           Total Value Locked
