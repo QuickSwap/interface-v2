@@ -121,8 +121,6 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       color: '#696c80',
       borderRadius: 10,
       '& p': {
-        fontWeight: 600,
-        fontSize: 14,
         letterSpacing: 'normal',  
       },
       '&.active': {
@@ -325,7 +323,7 @@ const Header: React.FC = () => {
             {
               menuItems.map((val, index) => (
                 <Link to={val.link} key={index} className={val.link === pathname ? 'active' : 'menuItem'}>
-                  <Typography>{ val.text }</Typography>
+                  <Typography variant='body2'>{ val.text }</Typography>
                 </Link>
               ))
             }
@@ -336,7 +334,7 @@ const Header: React.FC = () => {
                   {
                     outLinks.map((item, ind) => (
                       <a href={item.link} key={ind}>
-                        <Typography>{ item.text }</Typography>
+                        <Typography variant='body2'>{ item.text }</Typography>
                       </a>
                     ))
                   }
@@ -361,7 +359,7 @@ const Header: React.FC = () => {
                   { isnotMatic ? 'Wrong Network' : 'Connect Wallet' }
                   <Box position='absolute' top={36} width={272} right={0} paddingTop='18px'>
                     <Box className={classes.wrongNetworkContent}>
-                      <Typography>Please switch your wallet to Polygon Network.</Typography>
+                      <Typography variant='body2'>Please switch your wallet to Polygon Network.</Typography>
                       <Box onClick={addMaticToMetamask}>Switch to Matic</Box>
                     </Box>
                   </Box>
@@ -376,17 +374,17 @@ const Header: React.FC = () => {
               menuItems.map((val, index) => (
                 <Box className={classes.mobileMenuItemWrapper}>
                   <Link to={val.link} key={index}>
-                    <Typography>{ val.text }</Typography>
+                    <Typography variant='body2'>{ val.text }</Typography>
                   </Link>
                 </Box>
               ))
             }
             {
               account ? 
-                <Box className={classes.mobileMenuItemWrapper} onClick={toggleWalletModal}><img src={WalletIcon} alt='Wallet' /><Typography>{ shortenAddress(account) }</Typography></Box>
+                <Box className={classes.mobileMenuItemWrapper} onClick={toggleWalletModal}><img src={WalletIcon} alt='Wallet' /><Typography variant='body2'>{ shortenAddress(account) }</Typography></Box>
                 :
                 <Button color='primary' onClick={() => { isnotMatic ? addMaticToMetamask() : toggleWalletModal() }}>
-                  <Typography>{ isnotMatic ? 'Switch to Matic' : 'Connect Wallet' }</Typography>
+                  <Typography variant='body2'>{ isnotMatic ? 'Switch to Matic' : 'Connect Wallet' }</Typography>
                 </Button>
             }
           </Box>

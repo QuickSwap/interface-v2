@@ -9,7 +9,7 @@ const SwapPage: React.FC = () => {
   const classes = useStyles();
 
   return (
-    <Box>
+    <Box display='flex' width='100%'>
       <h1>Swap</h1>
     </Box>
   );

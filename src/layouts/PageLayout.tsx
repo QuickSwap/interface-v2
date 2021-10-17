@@ -31,16 +31,6 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     flexDirection: 'column',
     margin: '0 auto',
     padding: '0 32px',
-    '& h3': {
-      color: palette.success.dark,
-      fontSize: 26,
-      fontWeight: 'bold'
-    },
-    '& p': {
-      fontSize: 18,
-      lineHeight: '32px',
-      color: palette.text.primary
-    },
     [breakpoints.down('xs')]: {
       padding: '0 12px'
     }

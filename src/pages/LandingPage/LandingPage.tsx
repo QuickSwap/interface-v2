@@ -43,21 +43,13 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     zIndex: 2,
     '& h3': {
       color: 'white',
-      fontSize: 16,
       textTransform: 'uppercase',
-      fontWeight: 'bold',
-      lineHeight: '18px',
       marginBottom: 20,
     },
     '& h1': {
-      fontSize: 64,
-      fontWeight: 'bold',
       color: palette.primary.main,
-      lineHeight: '72px',
     },
     '& > p': {
-      fontSize: 18,
-      lineHeight: '20px',
       margin: '20px 0 50px'
     },
     '& > button': {
@@ -69,9 +61,6 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     },
     [breakpoints.down('xs')]: {
       margin: '64px 0',
-      '& h1': {
-        fontSize: 48
-      }
     },
   },
   tradingInfo: {
@@ -91,25 +80,15 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       borderRadius: 20,
       margin: 12,
       '& p': {
-        fontSize: 13,
-        lineHeight: '14px',
         marginBottom: 24,
         textTransform: 'uppercase',
-        fontWeight: 'bold'
       },
-      '& h1': {
-        fontSize: 40,
-        fontWeight: 'bold',
-        lineHeight: '45px',
-      }
     }
   },
   quickInfo: {
     textAlign: 'center',
     margin: '128px 0 60px',
     '& h2': {
-      fontSize: 26,
-      lineHeight: '42px',
       marginBottom: 60
     }
   },
@@ -170,11 +149,6 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       height: 28,
       marginRight: 8
     },
-    '& p': {
-      fontFamily: "'Inter', sans-serif",
-      fontSize: 16,
-      fontWeight: 'bold'
-    }
   },
   swapInfo: {
     textAlign: 'left',
@@ -192,7 +166,6 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     '& > button': {
       width: 194,
       height: 48,
-      fontSize: 16,
       borderRadius: 50
     },
     [breakpoints.down('xs')]: {
@@ -279,8 +252,6 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
           padding: 0,
           border: 'none',
           '& > p': {
-            fontFamily: "'Inter', sans-serif",
-            fontSize: 16,
             marginBottom: 8
           },  
         },
@@ -288,17 +259,14 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       '& > button': {
         height: 56,
         marginTop: 20,
-        fontSize: 16
       }
     }
   },
   featureHeading: {
     margin: 'auto',
     textAlign: 'center',
-    '& h2': {
+    '& h3': {
       color: 'rgba(255, 255, 255, 0.87)',
-      fontSize: 26,
-      fontWeight: 'bold',
       marginBottom: 32,
     }
   },
@@ -330,16 +298,9 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     },
     '& .featureText': {
       '& h3': {
-        fontSize: 20,
-        lineHeight: '30px',
         color: 'white',
         marginBottom: 8
       },
-      '& p': {
-        fontSize: 16,
-        lineHeight: '28px',
-        fontFamily: "'Inter', sans-serif"
-      }
     }
   },
   communityContainer: {
@@ -354,11 +315,9 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
         margin: '16px 32px 16px 0',
         textAlign: 'center',
         width: 120,
-        '& p': {
-          fontSize: 16
-        },
         '& a': {
-          textDecoration: 'none'
+          textDecoration: 'none',
+          color: 'white'
         },
         '& svg': {
           width: 64,
@@ -479,12 +438,12 @@ const LandingPage: React.FC = () => {
   return (
     <>
       <Box className={classes.heroSection}>
-        <Typography component='h3'>
+        <Typography variant='h3'>
           Total Value Locked
         </Typography>
         {
           globalData ?
-            <Typography component='h1'>
+            <Typography variant='h1'>
               ${Number(globalData.totalLiquidityUSD).toLocaleString(undefined, { maximumFractionDigits: 0 })}
             </Typography>
             :
@@ -505,7 +464,7 @@ const LandingPage: React.FC = () => {
           <Typography>Total Trading Pairs</Typography>
           {
             globalData ?
-              <Typography component='h1'>
+              <Typography variant='h2'>
                 {Number(globalData.pairCount).toLocaleString()}
               </Typography>
               :
@@ -516,7 +475,7 @@ const LandingPage: React.FC = () => {
           <Typography>24 Hours Volume</Typography>
           {
             globalData ?
-              <Typography component='h1'>
+              <Typography variant='h2'>
                 ${formatCompact(globalData.oneDayVolumeUSD)}
               </Typography>
               :
@@ -527,7 +486,7 @@ const LandingPage: React.FC = () => {
           <Typography>24 Hours Transactions</Typography>
           {
             globalData ?
-              <Typography component='h1'>
+              <Typography variant='h2'>
                 {Number(globalData.oneDayTxns).toLocaleString()}
               </Typography>
               :
@@ -538,7 +497,7 @@ const LandingPage: React.FC = () => {
           <Typography>24 Hours Fees</Typography>
           {
             globalData ?
-              <Typography component='h1'>
+              <Typography variant='h2'>
                 ${(Number(globalData.oneDayVolumeUSD) * 0.003).toLocaleString(undefined, { maximumFractionDigits: 0 })}
               </Typography>
               :
@@ -547,7 +506,7 @@ const LandingPage: React.FC = () => {
         </Box>
       </Box>
       <Box className={classes.quickInfo}>
-        <Typography component='h2'>
+        <Typography variant='subtitle1'>
           QuickSwap is a next-generation layer-2 decentralized exchange and Automated Market Maker.
         </Typography>
         <img src={Motif} alt='Motif' />
@@ -566,7 +525,7 @@ const LandingPage: React.FC = () => {
             }
           </Grid>
           <Grid item sm={12} md={6} className={classes.swapInfo}>
-            <Typography component='h3'>
+            <Typography variant='h3'>
               {
                 swapIndex === 0 ?
                   'Swap tokens at near-zero gas fees'
@@ -574,7 +533,7 @@ const LandingPage: React.FC = () => {
                   'Let your crypto work for you'
               }
             </Typography>
-            <Typography>
+            <Typography variant='subtitle1'>
               {
                 swapIndex === 0 ?
                   'Exchange any combination of ERC-20 tokens permissionless, with ease'
@@ -586,10 +545,10 @@ const LandingPage: React.FC = () => {
         </Grid>
       </Box>
       <Box className={classes.rewardsContainer}>
-        <Typography component='h3'>
+        <Typography variant='h3'>
           Earn additional rewards in $QUICK by depositing your LP Tokens
         </Typography>
-        <Typography>
+        <Typography variant='subtitle1'>
           Deposit your Liquidity Provider tokens to receive Rewards in $QUICK on top of LP Fees.
         </Typography>
         <RewardSlider />
@@ -603,10 +562,10 @@ const LandingPage: React.FC = () => {
           <Box className='buyFiatInfo'>
             <img src={BuyWithFiat} alt='buy with fiat' />
             <Box>
-              <Typography component='h3'>
+              <Typography variant='h3'>
                 Buy crypto with Fiat
               </Typography>
-              <Typography>
+              <Typography variant='subtitle1'>
                 Simple way to buy or sell crypto with a credit card, bank transfer and more
               </Typography>
             </Box>
@@ -624,7 +583,7 @@ const LandingPage: React.FC = () => {
       </Box>
       <Box className={classes.featureContainer}>
         <Box className={classes.featureHeading}>
-          <Typography component='h2'>
+          <Typography variant='h3'>
             Features
           </Typography>
           <Box className={classes.featureDivider} />
@@ -635,10 +594,10 @@ const LandingPage: React.FC = () => {
               <Grid item container alignItems='center' justifyContent='space-between' sm={12} md={6} key={index}>
                 <img src={val.img} alt={val.title} />
                 <Box className='featureText'>
-                  <Typography component='h3'>
+                  <Typography variant='h3'>
                     { val.title }
                   </Typography>
-                  <Typography>
+                  <Typography variant='body1'>
                     { val.desc }
                   </Typography>
                 </Box>
@@ -649,7 +608,7 @@ const LandingPage: React.FC = () => {
       </Box>
       <Box className={classes.communityContainer}>
         <Box className={classes.featureHeading}>
-          <Typography component='h2'>
+          <Typography variant='h3'>
             Join our ever-growing Community
           </Typography>
           <Box className={classes.featureDivider} />
