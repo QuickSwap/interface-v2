@@ -26,10 +26,12 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
   },
   pageWrapper: {
     maxWidth: 1312,
+    position: 'relative',
+    zIndex: 2,
     display: 'flex',
     alignItems: 'center',
     flexDirection: 'column',
-    margin: '0 auto',
+    margin: '24px auto',
     padding: '0 32px',
     [breakpoints.down('xs')]: {
       padding: '0 12px'

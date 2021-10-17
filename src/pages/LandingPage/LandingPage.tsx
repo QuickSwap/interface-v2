@@ -37,7 +37,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    margin: '135px 0 80px',
+    margin: '100px 0 80px',
     position: 'relative',
     textAlign: 'center',
     zIndex: 2,
