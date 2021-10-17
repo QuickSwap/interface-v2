@@ -6,7 +6,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import HeroBkg from 'assets/images/heroBkg.svg';
 import { Header, Footer } from 'components';
 
-const useStyles = makeStyles(({ palette }) => ({
+const useStyles = makeStyles(({ palette, breakpoints }) => ({
   page: {
     backgroundColor: palette.background.default,
     width: '100%',
@@ -24,6 +24,27 @@ const useStyles = makeStyles(({ palette }) => ({
       minWidth: 1200
     }
   },
+  pageWrapper: {
+    maxWidth: 1312,
+    display: 'flex',
+    alignItems: 'center',
+    flexDirection: 'column',
+    margin: '0 auto',
+    padding: '0 32px',
+    '& h3': {
+      color: palette.success.dark,
+      fontSize: 26,
+      fontWeight: 'bold'
+    },
+    '& p': {
+      fontSize: 18,
+      lineHeight: '32px',
+      color: palette.text.primary
+    },
+    [breakpoints.down('xs')]: {
+      padding: '0 12px'
+    }
+  }
 }));
 
 export interface PageLayoutProps {
@@ -39,7 +60,9 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children }) => {
       <Box className={classes.heroBkg}>
         <img src={HeroBkg} alt='Hero Background' />
       </Box>
-      { children }
+      <Box className={classes.pageWrapper}>
+        { children }
+      </Box>
       <Footer />
     </Box>
   );

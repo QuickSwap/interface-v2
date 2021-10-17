@@ -33,26 +33,11 @@ import { useEthPrice, useGlobalData, useWalletModalToggle } from 'state/applicat
 import { useAllTokens } from 'hooks/Tokens';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
-  landingPage: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    '& h3': {
-      color: palette.success.dark,
-      fontSize: 26,
-      fontWeight: 'bold'
-    },
-    '& p': {
-      fontSize: 18,
-      lineHeight: '32px',
-      color: palette.text.primary
-    }
-  },
   heroSection: {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    margin: '135px 0 120px',
+    margin: '135px 0 80px',
     position: 'relative',
     textAlign: 'center',
     zIndex: 2,
@@ -90,21 +75,21 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     },
   },
   tradingInfo: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    margin: '0 96px',
+    width: '100%',
     position: 'relative',
     zIndex: 2,
-    '& div': {
+    '& > div': {
       background: palette.background.default,
-      width: 288,
+      width: 'calc(25% - 24px)',
+      maxWidth: 288,
+      minWidth: 220,
       height: 133,
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'center',
       borderRadius: 20,
+      margin: 12,
       '& p': {
         fontSize: 13,
         lineHeight: '14px',
@@ -130,7 +115,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
   },
   swapContainer: {
     textAlign: 'center',
-    padding: '20px 32px',
+    padding: '20px 0',
     maxWidth: 1048,
     margin: 'auto',
     width: '100%',
@@ -165,7 +150,6 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       }
     },
     [breakpoints.down('xs')]: {
-      padding: 20,
       '& .MuiGrid-item': {
         width: '100%',
         marginBottom: 32,
@@ -201,7 +185,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
   },
   rewardsContainer: {
     textAlign: 'center',
-    margin: '172px 32px',
+    margin: '172px 0',
     '& h3': {
       marginBottom: 24
     },
@@ -212,22 +196,21 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       borderRadius: 50
     },
     [breakpoints.down('xs')]: {
-      margin: '32px 20px 64px'
+      margin: '32px 0 64px'
     }
   },
   buyFiatContainer: {
     background: palette.primary.dark,
     height: 338,
-    maxWidth: 1248,
     borderRadius: 48,
-    margin: '0 32px 160px',
+    marginBottom: 160,
     overflow: 'hidden',
     position: 'relative',
     [breakpoints.down('sm')]: {
       height: 'auto'
     },
     [breakpoints.down('xs')]: {
-      margin: '0 32px 80px'
+      marginBottom: 80
     },
     '& > img': {
       position: 'absolute',
@@ -239,7 +222,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
-      padding: '0 80px 0 0px',
+      paddingRight: 80,
       height: '100%',
       position: 'relative',
       zIndex: 2,
@@ -255,6 +238,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       position: 'relative',
       '& img': {
         width: 200,
+        maxWidth: 320,
       },
       '& > div': {
         width: 'calc(100% - 200px)',
@@ -325,13 +309,12 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     margin: 'auto'
   },
   featureContainer: {
-    maxWidth: 1248,
-    margin: '0 32px',
     '& > div.MuiGrid-root': {
       marginTop: 32,
       '& > div': {
         '& img': {
-          width: 200
+          width: 200,
+          maxWidth: 240,
         },
         '& > div': {
           width: 'calc(100% - 210px)'
@@ -360,7 +343,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     }
   },
   communityContainer: {
-    margin: '100px 32px',
+    margin: '100px 0',
     '& .socialContent': {
       display: 'flex',
       flexWrap: 'wrap',
@@ -397,6 +380,7 @@ const LandingPage: React.FC = () => {
   const { ethereum } = (window as any);
   const isnotMatic = ethereum && ethereum.isMetaMask && Number(ethereum.chainId) !== 137;
   const mobileWindowSize = useMediaQuery(theme.breakpoints.down('sm'));
+  const smallWindowSize = useMediaQuery(theme.breakpoints.down('xs'));
   const { initTransak } = useInitTransak();
   const allTokens = useAllTokens();
   const toggleWalletModal = useWalletModalToggle();
@@ -493,7 +477,7 @@ const LandingPage: React.FC = () => {
   }, [ethPrice, updateEthPrice, updateGlobalData])
 
   return (
-    <Box className={classes.landingPage}>
+    <>
       <Box className={classes.heroSection}>
         <Typography component='h3'>
           Total Value Locked
@@ -516,7 +500,7 @@ const LandingPage: React.FC = () => {
             </Button>        
         }
       </Box>
-      <Box className={classes.tradingInfo}>
+      <Box className={classes.tradingInfo} display='flex' flexWrap='wrap' justifyContent={smallWindowSize ? 'center' : 'space-between'}>
         <Box>
           <Typography>Total Trading Pairs</Typography>
           {
@@ -681,7 +665,7 @@ const LandingPage: React.FC = () => {
           }
         </Box>
       </Box>
-    </Box>
+    </>
   );
 };
 

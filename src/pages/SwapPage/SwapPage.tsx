@@ -10,6 +10,7 @@ const SwapPage: React.FC = () => {
 
   return (
     <Box>
+      <h1>Swap</h1>
     </Box>
   );
 };
