@@ -4,6 +4,7 @@ import { Box, Typography, Grid } from '@material-ui/core';
 import cx from 'classnames';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
 import { ReactComponent as SettingsIcon } from 'assets/images/SettingsIcon.svg';
+import { Swap } from 'components';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   helpWrapper: {
@@ -74,6 +75,9 @@ const SwapPage: React.FC = () => {
               <Box className={classes.headingItem}>
                 <SettingsIcon />
               </Box>
+            </Box>
+            <Box mt={2.5}>
+              <Swap />
             </Box>
           </Box>
         </Grid>
