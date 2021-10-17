@@ -35,19 +35,17 @@ const useStyles = makeStyles(({ palette }) => ({
         }
       }
     },
-    '& h3': {
-      fontSize: '20px !important',
-      color: 'white !important',
-      marginLeft: 10,
+    '& h5': {
+      marginLeft: 70,
+      textAlign: 'left'
     },
     '& .row': {
       display: 'flex',
       width: '100%',
       justifyContent: 'space-between',
       alignItems: 'center',
-      marginBottom: 12,
+      marginTop: 12,
       '& p': {
-        fontSize: 16,
         color: 'rgba(255, 255, 255, 0.47)',
         display: 'flex',
         alignItems: 'center',
@@ -56,15 +54,11 @@ const useStyles = makeStyles(({ palette }) => ({
         }
       },
       '& h4': {
-        fontSize: 16,
         color: 'white',
-        fontWeight: 'bold'
       },
       '& h5': {
         background: 'rgba(15, 198, 121, 0.12)',
         color: '#0FC679',
-        fontWeight: 'bold',
-        fontSize: 16,
         padding: '0 4px',
         borderRadius: 5,
       },
@@ -127,17 +121,19 @@ const RewardSliderItem: React.FC<RewardSliderItemProps> = ({ info }) => {
 
   return (
     <Box className={classes.rewardsSliderItem}>
-      <Box className='rewardIcon'>
-        <Box>
-          <CurrencyLogo currency={info.tokens[0]} size='28px' />
+      <Box mb={2}>
+        <Box className='rewardIcon'>
+          <Box>
+            <CurrencyLogo currency={info.tokens[0]} size='28px' />
+          </Box>
+          <Box>
+            <CurrencyLogo currency={info.tokens[1]} size='28px' />
+          </Box>
         </Box>
-        <Box>
-          <CurrencyLogo currency={info.tokens[1]} size='28px' />
-        </Box>
+        <Typography variant='h5'>
+          { info.tokens[0].symbol?.toUpperCase() }-{ info.tokens[1].symbol?.toUpperCase() }
+        </Typography>
       </Box>
-      <Typography component='h3'>
-        { info.tokens[0].symbol?.toUpperCase() }-{ info.tokens[1].symbol?.toUpperCase() }
-      </Typography>
       <Box className='row'>
         <Typography>Total Deposits</Typography>
         <Typography component='h4'>
