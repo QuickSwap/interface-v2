@@ -6,6 +6,7 @@ import { useCurrencyBalance } from 'state/wallet/hooks';
 import cx from 'classnames';
 import { CurrencySearchModal, CurrencyLogo } from 'components';
 import { useActiveWeb3React } from 'hooks';
+import useUSDCPrice from 'utils/useUSDCPrice';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   swapBox: {
@@ -93,7 +94,8 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({ handleCurrencySelect, cur
   const classes = useStyles();
   const [modalOpen, setModalOpen] = useState(false);
   const { account } = useActiveWeb3React();
-  const selectedCurrencyBalance = useCurrencyBalance(account ?? undefined, currency ?? undefined)
+  const selectedCurrencyBalance = useCurrencyBalance(account ?? undefined, currency ?? undefined);
+  const usdPrice = Number(useUSDCPrice(currency)?.toSignificant()) || 0;
 
   return (
     <Box className={classes.swapBox}>
@@ -123,7 +125,7 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({ handleCurrencySelect, cur
       </Box>
       <Box display='flex' justifyContent='space-between' className={classes.balanceSection}>
         <Typography variant='body2'>Balance: { selectedCurrencyBalance ? selectedCurrencyBalance.toSignificant(6) : 0 }</Typography>
-        <Typography variant='body2'>$0</Typography>
+        <Typography variant='body2'>${(usdPrice * Number(amount)).toLocaleString()}</Typography>
       </Box>
       <CurrencySearchModal
         isOpen={modalOpen}
