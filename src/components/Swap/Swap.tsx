@@ -18,7 +18,7 @@ import useWrapCallback, { WrapType } from 'hooks/useWrapCallback'
 import useToggledVersion, { Version } from 'hooks/useToggledVersion';
 import { addMaticToMetamask, confirmPriceImpactWithoutFee, maxAmountSpend } from 'utils';
 import { computeTradePriceBreakdown, warningSeverity } from 'utils/prices'
-import { ReactComponent as SwapIcon2 } from 'assets/images/SwapIcon2.svg';
+import { ReactComponent as PriceExchangeIcon } from 'assets/images/PriceExchangeIcon.svg';
 import { ReactComponent as ExchangeIcon } from 'assets/images/ExchangeIcon.svg';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
@@ -34,10 +34,14 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
   swapPrice: {
     display: 'flex',
     justifyContent: 'space-between',
-    margin: '16px 8px 0',
+    background: 'rgb(43, 45, 59, 0.2)',
+    padding: '8px 24px',
+    borderBottomLeftRadius: 10,
+    borderBottomRightRadius: 10,
     '& p': {
       display: 'flex',
       alignItems: 'center',
+      color: '#b6b9cc',
       '& svg': {
         marginLeft: 8,
         width: 16,
@@ -362,7 +366,14 @@ const Swap: React.FC = () => {
       <Box className={classes.exchangeSwap} onClick={onSwitchTokens}>
         <ExchangeIcon />
       </Box>
-      <CurrencyInput title='To (estimate):' currency={currencies[Field.OUTPUT]} showMaxButton={false} otherCurrency={currencies[Field.INPUT]} handleCurrencySelect={handleOtherCurrencySelect} amount={formattedAmounts[Field.OUTPUT]} setAmount={handleTypeOutput} />
+      <CurrencyInput title='To (estimate):' currency={currencies[Field.OUTPUT]} showPrice={Boolean(trade && trade.executionPrice)} showMaxButton={false} otherCurrency={currencies[Field.INPUT]} handleCurrencySelect={handleOtherCurrencySelect} amount={formattedAmounts[Field.OUTPUT]} setAmount={handleTypeOutput} />
+      {
+        trade && trade.executionPrice &&
+          <Box className={classes.swapPrice}>
+            <Typography variant='body2'>Price:</Typography>
+            <Typography variant='body2'>1 { (mainPrice ? currencies[Field.INPUT] : currencies[Field.OUTPUT])?.symbol } = { (mainPrice ? trade.executionPrice : trade.executionPrice.invert()).toSignificant(6) } { (mainPrice ? currencies[Field.OUTPUT] : currencies[Field.INPUT])?.symbol } <PriceExchangeIcon onClick={() => { setMainPrice(!mainPrice) }} /></Typography>
+          </Box>
+      }
       {recipient === null && !showWrap && isExpertMode &&
         <Box className={classes.recipientInput}>
           <Box className='header'>
@@ -387,13 +398,7 @@ const Swap: React.FC = () => {
           </Box>
         </Box>
       }
-      {
-        trade && trade.executionPrice &&
-          <Box className={classes.swapPrice}>
-            <Typography>Price:</Typography>
-            <Typography>1 { (mainPrice ? currencies[Field.INPUT] : currencies[Field.OUTPUT])?.symbol } = { (mainPrice ? trade.executionPrice : trade.executionPrice.invert()).toSignificant(6) } { (mainPrice ? currencies[Field.OUTPUT] : currencies[Field.INPUT])?.symbol } <SwapIcon2 onClick={() => { setMainPrice(!mainPrice) }} /></Typography>
-          </Box>
-      }
+      <AdvancedSwapDetails trade={trade} />
       <Box className={classes.swapButtonWrapper}>
         {
           showApproveFlow &&
@@ -413,7 +418,6 @@ const Swap: React.FC = () => {
           { swapButtonText }
         </Button>
       </Box>
-      <AdvancedSwapDetails trade={trade} />
     </Box>
   )
 }

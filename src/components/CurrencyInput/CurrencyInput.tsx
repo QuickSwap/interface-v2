@@ -55,6 +55,10 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       padding: 12
     }
   },
+  priceShowBox: {
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 0
+  },
   currencyButton: {
     display: 'flex',
     alignItems: 'center',
@@ -88,9 +92,10 @@ interface CurrencyInputProps {
   setAmount: (value: string) => void
   onMax?: () => void
   showMaxButton?: boolean
+  showPrice?: boolean
 }
 
-const CurrencyInput: React.FC<CurrencyInputProps> = ({ handleCurrencySelect, currency, otherCurrency, amount, setAmount, onMax, showMaxButton, title }) => {
+const CurrencyInput: React.FC<CurrencyInputProps> = ({ handleCurrencySelect, currency, otherCurrency, amount, setAmount, onMax, showMaxButton, title, showPrice }) => {
   const classes = useStyles();
   const [modalOpen, setModalOpen] = useState(false);
   const { account } = useActiveWeb3React();
@@ -98,7 +103,7 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({ handleCurrencySelect, cur
   const usdPrice = Number(useUSDCPrice(currency)?.toSignificant()) || 0;
 
   return (
-    <Box className={classes.swapBox}>
+    <Box className={cx(classes.swapBox, showPrice && classes.priceShowBox)}>
       <Box display='flex' justifyContent='space-between' mb={2}>
         <Typography>{ title || 'You Pay:' }</Typography>
         {account && currency && showMaxButton && (
