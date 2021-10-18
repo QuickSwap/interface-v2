@@ -19,20 +19,15 @@ import useToggledVersion, { Version } from 'hooks/useToggledVersion';
 import { addMaticToMetamask, confirmPriceImpactWithoutFee, maxAmountSpend } from 'utils';
 import { computeTradePriceBreakdown, warningSeverity } from 'utils/prices'
 import { ReactComponent as SwapIcon2 } from 'assets/images/SwapIcon2.svg';
-import { ReactComponent as SwapChangeIcon } from 'assets/images/SwapChangeIcon.svg';
+import { ReactComponent as ExchangeIcon } from 'assets/images/ExchangeIcon.svg';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   exchangeSwap: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    background: palette.background.default,
-    border: `2px solid ${palette.primary.dark}`,
     cursor: 'pointer',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    margin: '-20px auto',
+    margin: '16px auto',
     zIndex: 2,
     position: 'relative'
   },
@@ -54,11 +49,18 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
   swapButtonWrapper: {
     display: 'flex',
     justifyContent: 'space-between',
-    marginTop: 16,
+    marginTop: 20,
     '& button': {
       height: 56,
-      fontSize: 16,
-      fontWeight: 'normal',
+      fontSize: 18,
+      fontWeight: 600,
+      width: (props: any) => props.showApproveFlow ? '48%' : '100%',
+      backgroundImage: 'linear-gradient(to bottom, #448aff, #004ce6)',
+      '&.Mui-disabled': {
+        backgroundImage: 'linear-gradient(to bottom, #282d3d, #1d212c)',
+        color: '#696c80',
+        opacity: 0.5
+      },
       '& .content': {
         display: 'flex',
         alignItems: 'center',
@@ -67,10 +69,6 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
           marginLeft: 6
         }
       },
-      width: (props: any) => props.showApproveFlow ? '48%' : '100%',
-      '& p': {
-        fontSize: 16
-      }
     }
   },
   recipientInput: {
@@ -101,7 +99,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
         marginTop: 16
       }
     }
-  }
+  },
 }));
 
 const Swap: React.FC = () => {
@@ -179,7 +177,9 @@ const Swap: React.FC = () => {
 
   const swapButtonText = useMemo(() => {
     if (account) {
-      if (formattedAmounts[Field.INPUT] === '' && formattedAmounts[Field.OUTPUT] === '') {
+      if (!currencies[Field.INPUT] || !currencies[Field.OUTPUT]) {
+        return 'Select a token';
+      } else if (formattedAmounts[Field.INPUT] === '' && formattedAmounts[Field.OUTPUT] === '') {
         return 'Enter Amount';
       } else if (showWrap) {
         return wrapType === WrapType.WRAP ? 'Wrap' : wrapType === WrapType.UNWRAP ? 'UnWrap' : '';
@@ -191,7 +191,7 @@ const Swap: React.FC = () => {
     } else {
       return isnotMatic ? 'Switch to Matic' : 'Connect Wallet';
     }
-  }, [formattedAmounts, account, isnotMatic, noRoute, userHasSpecifiedInputOutput, showWrap, wrapType]);
+  }, [formattedAmounts, currencies, account, isnotMatic, noRoute, userHasSpecifiedInputOutput, showWrap, wrapType]);
 
   const toggleWalletModal = useWalletModalToggle();
 
@@ -292,10 +292,6 @@ const Swap: React.FC = () => {
 
   useEffect(() => {
     onCurrencySelection(Field.INPUT, Token.ETHER);
-    const quickToken = Object.values(allTokens).find((val) => val.symbol === 'QUICK');
-    if (quickToken) {
-      onCurrencySelection(Field.OUTPUT, quickToken);
-    }
   }, [onCurrencySelection, allTokens]);
 
   const handleAcceptChanges = useCallback(() => {
@@ -362,11 +358,11 @@ const Swap: React.FC = () => {
         swapErrorMessage={swapErrorMessage}
         onDismiss={handleConfirmDismiss}
       />
-      <CurrencyInput currency={currencies[Field.INPUT]} onMax={handleMaxInput} showMaxButton={!atMaxAmountInput} otherCurrency={currencies[Field.OUTPUT]} handleCurrencySelect={handleCurrencySelect} amount={formattedAmounts[Field.INPUT]} setAmount={handleTypeInput} />
+      <CurrencyInput title='From:' currency={currencies[Field.INPUT]} onMax={handleMaxInput} showMaxButton={!atMaxAmountInput} otherCurrency={currencies[Field.OUTPUT]} handleCurrencySelect={handleCurrencySelect} amount={formattedAmounts[Field.INPUT]} setAmount={handleTypeInput} />
       <Box className={classes.exchangeSwap} onClick={onSwitchTokens}>
-        <SwapChangeIcon />
+        <ExchangeIcon />
       </Box>
-      <CurrencyInput currency={currencies[Field.OUTPUT]} showMaxButton={false} otherCurrency={currencies[Field.INPUT]} handleCurrencySelect={handleOtherCurrencySelect} amount={formattedAmounts[Field.OUTPUT]} setAmount={handleTypeOutput} />
+      <CurrencyInput title='To (estimate):' currency={currencies[Field.OUTPUT]} showMaxButton={false} otherCurrency={currencies[Field.INPUT]} handleCurrencySelect={handleOtherCurrencySelect} amount={formattedAmounts[Field.OUTPUT]} setAmount={handleTypeOutput} />
       {recipient === null && !showWrap && isExpertMode &&
         <Box className={classes.recipientInput}>
           <Box className='header'>
@@ -413,7 +409,7 @@ const Swap: React.FC = () => {
               )}
             </Button>
         }
-        <Button color='primary' disabled={swapButtonDisabled as boolean} onClick={account ? onSwap : connectWallet}>
+        <Button disabled={swapButtonDisabled as boolean} onClick={account ? onSwap : connectWallet}>
           { swapButtonText }
         </Button>
       </Box>

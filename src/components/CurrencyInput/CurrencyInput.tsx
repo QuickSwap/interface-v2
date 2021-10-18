@@ -1,16 +1,17 @@
 import React, { useState } from 'react';
 import { Currency } from '@uniswap/sdk'
-import { Box, Typography, Button } from '@material-ui/core';
+import { Box, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import { useCurrencyBalance } from 'state/wallet/hooks';
+import cx from 'classnames';
 import { CurrencySearchModal, CurrencyLogo } from 'components';
 import { useActiveWeb3React } from 'hooks';
-import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   swapBox: {
-    padding: 24,
-    borderRadius: 20,
-    border: `1px solid ${palette.primary.dark}`,
+    padding: '16px 24px',
+    borderRadius: 10,
+    background: '#282d3d',
     zIndex: 1,
     position: 'relative',
     textAlign: 'left',
@@ -28,8 +29,10 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       },
       '& .maxWrapper': {
         paddingLeft: 8,
-        '& button': {
-          borderRadius: 16
+        cursor: 'pointer',
+        '& p': {
+          color: '#448aff',
+          fontWeight: 600
         }
       },
       '& input': {
@@ -38,12 +41,12 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
         boxShadow: 'none',
         outline: 'none',
         textAlign: 'right',
-        color: 'white',
-        fontSize: 20,
-        fontWeight: 'bold',
+        color: '#696c80',
         width: '100%',
+        fontSize: 18,
+        fontWeight: 600,
         '&::placeholder': {
-          color: 'white'
+          color: '#696c80'
         }
       }
     },
@@ -52,23 +55,27 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     }
   },
   currencyButton: {
-    height: 40,
-    minWidth: 121,
     display: 'flex',
     alignItems: 'center',
-    padding: '0 6px',
-    borderRadius: 20,
-    background: palette.primary.dark,
+    cursor: 'pointer',
+    padding: '6px 12px',
+    borderRadius: 38,
     '& img': {
       borderRadius: 16,
       marginRight: 4,
     },
-    '& p': {
-      fontFamily: "'Inter', sans-serif",
-      fontSize: 16,
-      fontWeight: 'bold'
-    }
   },
+  noCurrency: {
+    backgroundImage: 'linear-gradient(105deg, #448aff 3%, #004ce6)'
+  },
+  currencySelected: {
+    backgroundColor: '#404557'
+  },
+  balanceSection: {
+    '& p': {
+      color: '#696c80'
+    }
+  }
 }));
 
 interface CurrencyInputProps {
@@ -86,31 +93,37 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({ handleCurrencySelect, cur
   const classes = useStyles();
   const [modalOpen, setModalOpen] = useState(false);
   const { account } = useActiveWeb3React();
+  const selectedCurrencyBalance = useCurrencyBalance(account ?? undefined, currency ?? undefined)
 
   return (
     <Box className={classes.swapBox}>
-      <Typography>{ title || 'You Pay:' }</Typography>
-      <Box>
-        <Button className={classes.currencyButton} onClick={() => { setModalOpen(true) }}>
+      <Box display='flex' justifyContent='space-between' mb={2}>
+        <Typography>{ title || 'You Pay:' }</Typography>
+        {account && currency && showMaxButton && (
+          <Box className='maxWrapper' onClick={onMax}>
+            <Typography variant='body2'>MAX</Typography>
+          </Box>
+        )}
+      </Box>
+      <Box mb={2}>
+        <Box className={cx(classes.currencyButton, currency ? classes.currencySelected :  classes.noCurrency)} onClick={() => { setModalOpen(true) }}>
           {
             currency ?
               <>
               <CurrencyLogo currency={currency} size={'28px'} />
-              <Typography>{ currency?.symbol }</Typography>
+              <Typography variant='body1'>{ currency?.symbol }</Typography>
               </>
               :
-              <Typography>Select a token</Typography>
+              <Typography variant='body1'>Select a token</Typography>
           }
-          <KeyboardArrowDownIcon />
-        </Button>
+        </Box>
         <Box className='inputWrapper'>
           <input value={amount} placeholder='0.00' onChange={(e) => setAmount(e.target.value)} />
         </Box>
-        {account && currency && showMaxButton && (
-          <Box className='maxWrapper'>
-            <Button onClick={onMax}>MAX</Button>
-          </Box>
-        )}
+      </Box>
+      <Box display='flex' justifyContent='space-between' className={classes.balanceSection}>
+        <Typography variant='body2'>Balance: { selectedCurrencyBalance ? selectedCurrencyBalance.toSignificant(6) : 0 }</Typography>
+        <Typography variant='body2'>$0</Typography>
       </Box>
       <CurrencySearchModal
         isOpen={modalOpen}
