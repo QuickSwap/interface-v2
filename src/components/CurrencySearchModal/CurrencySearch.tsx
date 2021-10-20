@@ -1,89 +1,100 @@
-import { Currency, ETHER, Token } from '@uniswap/sdk'
-import React, { KeyboardEvent, RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import ReactGA from 'react-ga'
-import { Box, Typography, Divider } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
-import { useTranslation } from 'react-i18next'
-import { useDispatch } from 'react-redux'
-import { useActiveWeb3React } from 'hooks'
-import { useAllTokens, useToken } from 'hooks/Tokens'
-import { useSelectedListInfo } from 'state/lists/hooks'
-import { selectList } from 'state/lists/actions'
-import {DEFAULT_TOKEN_LIST_URL} from "constants/index";
-import { QuestionHelper, ListLogo } from 'components'
-import AutoSizer from 'react-virtualized-auto-sizer'
-import { ReactComponent as  CloseIcon } from 'assets/images/x.svg'
-import CommonBases from './CommonBases'
-import CurrencyList from './CurrencyList'
-import { AppDispatch } from 'state'
-import { isAddress } from 'utils'
-import { filterTokens } from 'utils/filtering'
-import { useTokenComparator } from 'utils/sorting'
-import SortButton from './SortButton'
+import { Currency, ETHER, Token } from '@uniswap/sdk';
+import React, { KeyboardEvent, RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import ReactGA from 'react-ga';
+import { Box, Typography, Divider } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import { useTranslation } from 'react-i18next';
+import { useDispatch } from 'react-redux';
+import { useActiveWeb3React } from 'hooks';
+import { useAllTokens, useToken } from 'hooks/Tokens';
+import { useSelectedListInfo } from 'state/lists/hooks';
+import { selectList } from 'state/lists/actions';
+import {DEFAULT_TOKEN_LIST_URL} from 'constants/index';
+import AutoSizer from 'react-virtualized-auto-sizer';
+import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
+import { ReactComponent as SearchIcon } from 'assets/images/SearchIcon.svg';
+import CommonBases from './CommonBases';
+import CurrencyList from './CurrencyList';
+import { AppDispatch } from 'state';
+import { isAddress } from 'utils';
+import { filterTokens } from 'utils/filtering';
+import { useTokenComparator } from 'utils/sorting';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   wrapper: {
-    padding: '16px 0',
-    height: 400,
+    padding: '32px 24px 0',
+    height: 620,
+    borderRadius: 20,
     display: 'flex',
     flexDirection: 'column',
+    background: '#1b1e29',
+    backdropFilter: 'blur(9.9px)',
+    border: '1px solid #3e4252',
     [breakpoints.down('xs')]: {
       height: '90vh'
     },
-    '& p': {
-      color: 'black'
-    }
   },
   header: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: '0 16px',
+    margin: '6px',
     '& svg': {
-      fill: 'white',
-      stroke: 'black'
-    },
-    '& > svg': {
+      fill: '#686c80',
       cursor: 'pointer'
     },
-    '& > div': {
-      display: 'flex',
-      alignItems: 'center',
-      '& p': {
-        marginRight: 4,
-      },
+    '& h6': {
+      color: '#c7cad9',
+      fontWeight: 600
     }
   },
-  searchInput: {
+  searchInputWrapper: {
     width: '100%',
+    height: 50,
+    display: 'flex',
+    alignItems: 'center',
+    padding: '0 12px',
     margin: '12px 0',
     fontSize: 16,
-    padding: 8,
     borderRadius: 12,
     outline: 'none',
-    border: `1px solid ${palette.divider}`
+    border: 'solid 2px rgba(105, 108, 128, 0.12)',
+    backgroundColor: '#12131a',
+    '& svg': {
+      marginRight: 12,
+    },
+    '& input': {
+      background: 'transparent',
+      flex: 1,
+      boxShadow: 'none',
+      border: 'none',
+      outline: 'none',
+      fontSize: 14,
+      fontWeight: 500,
+      color: '#696c80',
+      fontFamily: "'Inter', sans-serif"
+    }
   },
   footer: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: '0 16px',
-    margin: '8px 0 0 0',
-    '& > div': {
-      display: 'flex',
-      alignItems: 'center',
-      '& img': {
-        marginRight: 4
-      }
-    },
-    '& .listButton': {
-      color: 'black',
-      cursor: 'pointer'
-    }
+    backgroundImage: 'linear-gradient(to bottom, rgba(27, 30, 41, 0), #1b1e29 64%)',
+    width: '100%',
+    height: 64,
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    zIndex: 2,
+    borderRadius: 20
   },
   currencyListWrapper: {
     flex: 1,
-    overflowY: 'auto'
+    overflowY: 'auto',
+    marginTop: 16,
+    '& .MuiListItem-root': {
+      padding: 6,
+      '&.Mui-selected, &:hover': {
+        background: 'none'
+      }
+    }
   }
 }));
 
@@ -209,32 +220,23 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
   return (
     <Box className={classes.wrapper}>
       <Box className={classes.header}>
-        <Box>
-          <Typography>Select a token</Typography>
-          <QuestionHelper text="Find a token by searching for its name or symbol or by pasting its address below." />
-        </Box>
+        <Typography variant='subtitle2'>Select a token</Typography>
         <CloseIcon onClick={onDismiss} />
       </Box>
-      <Box mx={2}>
+      <Box className={classes.searchInputWrapper}>
+        <SearchIcon />
         <input
           type="text"
-          className={classes.searchInput}
           placeholder={t('tokenSearchPlaceholder')}
           value={searchQuery}
           ref={inputRef as RefObject<HTMLInputElement>}
           onChange={handleInput}
           onKeyDown={handleEnter}
         />
-        {showCommonBases && (
-          <CommonBases chainId={chainId} onSelect={handleCurrencySelect} selectedCurrency={selectedCurrency} />
-        )}
-        <Box mb={2} display='flex' justifyContent='space-between' alignItems='center'>
-          <Typography>
-            Token Name
-          </Typography>
-          <SortButton ascending={invertSearchOrder} toggleSortOrder={() => setInvertSearchOrder(iso => !iso)} />
-        </Box>
       </Box>
+      {showCommonBases && (
+        <CommonBases chainId={chainId} onSelect={handleCurrencySelect} selectedCurrency={selectedCurrency} />
+      )}
 
       <Divider />
 
@@ -253,22 +255,7 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
         </AutoSizer>
       </Box>
 
-      <Box className={classes.footer}>
-        {selectedListInfo.current ? (
-          <Box>
-            {selectedListInfo.current.logoURI ? (
-              <ListLogo
-                logoURI={selectedListInfo.current.logoURI}
-                alt={`${selectedListInfo.current.name} list logo`}
-              />
-            ) : null}
-            <Typography id="currency-search-selected-list-name">{selectedListInfo.current.name}</Typography>
-          </Box>
-        ) : null}
-        <Box className='listButton' onClick={onChangeList}>
-          {selectedListInfo.current ? 'Change' : 'Select a list'}
-        </Box>
-      </Box>
+      <Box className={classes.footer} />
     </Box>
   )
 }

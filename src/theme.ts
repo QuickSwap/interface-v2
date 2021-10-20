@@ -21,7 +21,7 @@ const bgColor1 ='rgb(247, 248, 250)'
 const successMain = '#2464F4';
 const successDark = '#1DB2D5';
 
-const divider = '#EEE';
+const divider = 'rgba(130, 177, 255, 0.08)';
 
 // breakpoints
 const xl = 1920;

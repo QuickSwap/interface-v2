@@ -12,6 +12,7 @@ import { CurrencyLogo } from 'components'
 import { isTokenOnList } from 'utils'
 import { getTokenLogoURL } from 'components/CurrencyLogo'
 import { PlusHelper } from 'components/QuestionHelper'
+import { ReactComponent as TokenSelectedIcon } from 'assets/images/TokenSelected.svg'
 
 function currencyKey(currency: Token): string {
   return currency instanceof Token ? currency.address : currency === ETHER ? 'ETHER' : ''
@@ -30,7 +31,6 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
   currencyRow: {
     width: '100%',
     background: 'transparent',
-    padding: '12px',
     display: 'flex',
     alignItems: 'center',
     '& > p': {
@@ -48,6 +48,13 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
         background: 'transparent'
       }
     },
+  },
+  currencySymbol: {
+    color: '#c7cad9',
+    lineHeight: 1
+  },
+  currencyName: {
+    color: '#696c80',
   }
 }));
 
@@ -144,12 +151,20 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
 
   // only show add or remove buttons if not on selected list
   return (
-    <ListItem button style={style} key={key} disabled={isSelected} selected={otherSelected} onClick={() => { if(!isSelected) onSelect(); }}>
+    <ListItem button style={style} key={key} selected={otherSelected || isSelected} onClick={() => { if(!isSelected && !otherSelected) onSelect(); }}>
       <Box className={classes.currencyRow}>
-        <CurrencyLogo currency={currency} size={'24px'} />
-        <Typography title={currency.name}>
-          {currency.symbol}
-        </Typography>
+        { (otherSelected || isSelected)  && <TokenSelectedIcon /> }
+        <Box width={32} height={32} borderRadius={16} display='flex' overflow='hidden'>
+          <CurrencyLogo currency={currency} size={'32px'} />
+        </Box>
+        <Box ml={1} height={32}>
+          <Typography variant='body2' className={classes.currencySymbol}>
+            {currency.symbol}
+          </Typography>
+          <Typography variant='caption' className={classes.currencyName}>
+            {currency.name}
+          </Typography>
+        </Box>
 
         { isMetamask && currency !== ETHER && (
             <Button
