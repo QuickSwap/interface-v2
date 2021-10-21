@@ -13,6 +13,7 @@ import { isTokenOnList } from 'utils'
 import { getTokenLogoURL } from 'components/CurrencyLogo'
 import { PlusHelper } from 'components/QuestionHelper'
 import { ReactComponent as TokenSelectedIcon } from 'assets/images/TokenSelected.svg'
+import useUSDCPrice from 'utils/useUSDCPrice';
 
 function currencyKey(currency: Token): string {
   return currency instanceof Token ? currency.address : currency === ETHER ? 'ETHER' : ''
@@ -59,7 +60,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
 }));
 
 function Balance({ balance }: { balance: CurrencyAmount }) {
-  return <Typography title={balance.toExact()}>{balance.toSignificant(4)}</Typography>
+  return <Typography variant='body2' title={balance.toExact()} style={{ color: '#c7cad9' }}>{balance.toSignificant(4)}</Typography>
 }
 
 function TokenTags({ currency }: { currency: Token }) {
@@ -116,6 +117,7 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
   const isOnSelectedList = isTokenOnList(selectedTokenList, currency)
   const customAdded = useIsUserAddedToken(currency)
   const balance = useCurrencyBalance(account ?? undefined, currency)
+  const usdPrice = useUSDCPrice(currency)
 
   const removeToken = useRemoveUserAddedToken()
   const addToken = useAddUserToken()
@@ -158,31 +160,33 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
           <CurrencyLogo currency={currency} size={'32px'} />
         </Box>
         <Box ml={1} height={32}>
-          <Typography variant='body2' className={classes.currencySymbol}>
-            {currency.symbol}
-          </Typography>
+          <Box display='flex' alignItems='center'>
+            <Typography variant='body2' className={classes.currencySymbol}>
+              {currency.symbol}
+            </Typography>
+            {
+              isMetamask && currency !== ETHER && (
+                <Button
+                  style={{cursor: 'pointer', marginLeft: 2}}
+                  onClick={(event: any) => {
+                    addTokenToMetamask(
+                      currency.address,
+                      currency.symbol,
+                      currency.decimals,
+                      getTokenLogoURL(currency.address),
+                    )
+                    event.stopPropagation()
+                  }}
+                  >
+                  <PlusHelper text="Add to metamask." />
+                </Button>
+              )
+            }
+          </Box>
           <Typography variant='caption' className={classes.currencyName}>
             {currency.name}
           </Typography>
         </Box>
-
-        { isMetamask && currency !== ETHER && (
-            <Button
-              style={{cursor: 'pointer'}}
-              onClick={(event: any) => {
-                addTokenToMetamask(
-                  currency.address,
-                  currency.symbol,
-                  currency.decimals,
-                  getTokenLogoURL(currency.address),
-                )
-                event.stopPropagation()
-              }}
-              >
-              <PlusHelper text="Add to metamask." />
-            </Button>
-          )
-        }
           
         <Box flex={1}>
           {!isOnSelectedList && customAdded ? (
@@ -213,8 +217,10 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
           ) : null}
         </Box>
         <TokenTags currency={currency} />
-        <Box>
-          {balance ? <Balance balance={balance} /> : account ? <CircularProgress size={24} color='secondary' /> : null}
+        <Box textAlign='right'>
+          {balance
+            ? <><Balance balance={balance} /><Typography variant='caption' style={{ color: '#696c80' }}>${ (Number(balance.toSignificant()) * (usdPrice ? Number(usdPrice.toSignificant()) : 0)).toLocaleString() }</Typography></>
+            : account ? <CircularProgress size={24} color='secondary' /> : null}
         </Box>
       </Box>
     </ListItem>
