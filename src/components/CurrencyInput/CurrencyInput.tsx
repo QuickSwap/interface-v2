@@ -137,6 +137,7 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({ handleCurrencySelect, cur
         onDismiss={() => { setModalOpen(false) }}
         onCurrencySelect={handleCurrencySelect}
         selectedCurrency={currency}
+        showCommonBases={true}
         otherSelectedCurrency={otherCurrency}
       />
     </Box>

@@ -1,20 +1,29 @@
 import React from 'react'
 import { ChainId, Currency, currencyEquals, ETHER, Token } from '@uniswap/sdk';
-import { Box, Typography, Button } from '@material-ui/core';
+import { Box, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { SUGGESTED_BASES } from 'constants/index';
 import { CurrencyLogo, QuestionHelper } from 'components';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   baseWrapper: {
-    border: `1px solid ${palette.divider}`,
-    borderRadius: 10,
+    borderRadius: 18,
     display: 'flex',
-    padding: 6,
+    padding: '6px 10px',
+    margin: '4px 8px 4px 0',
     alignItems: 'center',
+    backgroundColor: '#282d3d',
     '&:hover': {
       cursor: 'pointer',
-      backgroundColor: palette.background.paper
+    },
+    '& p': {
+      marginLeft: 6
+    }
+  },
+  title: {
+    '& span': {
+      marginRight: 4,
+      color: '#696c80',
     }
   }
 }));
@@ -32,37 +41,40 @@ const CommonBases: React.FC<CommonBasesProps> = ({
 }) => {
   const classes = useStyles();
   return (
-    <Box>
-      <Box>
-        <Typography>
+    <Box mb={2}>
+      <Box display='flex' className={classes.title} my={1.5}>
+        <Typography variant='caption'>
           Common bases
         </Typography>
         <QuestionHelper text="These tokens are commonly paired with other tokens." />
       </Box>
-      <Box>
-        <Button
+      <Box display='flex' flexWrap='wrap'>
+        <Box
           className={classes.baseWrapper}
           onClick={() => {
             if (!selectedCurrency || !currencyEquals(selectedCurrency, ETHER)) {
               onSelect(ETHER)
             }
           }}
-          disabled={selectedCurrency === ETHER}
         >
-          <CurrencyLogo currency={ETHER} style={{ marginRight: 8 }} />
-          <Typography>
+          <Box width={24} height={24} borderRadius={12} overflow='hidden'>
+            <CurrencyLogo currency={ETHER} />
+          </Box>
+          <Typography variant='body2'>
             MATIC
           </Typography>
-        </Button>
+        </Box>
         {(chainId ? SUGGESTED_BASES[chainId] : []).map((token: Token) => {
           const selected = selectedCurrency instanceof Token && selectedCurrency.address === token.address
           return (
-            <Button className={classes.baseWrapper} onClick={() => !selected && onSelect(token)} disabled={selected}>
-              <CurrencyLogo currency={token} style={{ marginRight: 8 }} />
-              <Typography>
+            <Box className={classes.baseWrapper} onClick={() => !selected && onSelect(token)}>
+              <Box width={24} height={24} borderRadius={12} overflow='hidden'>
+                <CurrencyLogo currency={token} size='24px' />
+              </Box>
+              <Typography variant='body2'>
                 {token.symbol}
               </Typography>
-            </Button>
+            </Box>
           )
         })}
       </Box>
