@@ -6,13 +6,16 @@ import { Field } from 'state/swap/actions';
 import { useUserSlippageTolerance } from 'state/user/hooks';
 import { computeSlippageAdjustedAmounts, computeTradePriceBreakdown } from 'utils/prices';
 import { QuestionHelper, FormattedPriceImpact } from 'components';
-import SwapRoute from './SwapRoute';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   summaryRow: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
+    margin: '8px 24px 0',
+    '& p': {
+      color: '#b6b9cc',
+    },
     '& > div': {
       display: 'flex',
       alignItems: 'center',
@@ -60,14 +63,14 @@ export const TradeSummary: React.FC<TradeSummaryProps> = ({ trade, allowedSlippa
   return (
     <>
       <Box className={classes.summaryRow}>
-        <Box>
-          <Typography>
+        <Box display='flex' alignItems='center'>
+          <Typography variant='body2'>
             {isExactIn ? 'Minimum received' : 'Maximum sold'}
           </Typography>
           <QuestionHelper text="Your transaction will revert if there is a large, unfavorable price movement before it is confirmed." />
         </Box>
-        <Box>
-          <Typography>
+        <Box display='flex' alignItems='center'>
+          <Typography variant='body2'>
             {isExactIn
               ? `${slippageAdjustedAmounts[Field.OUTPUT]?.toSignificant(4)} ${trade.outputAmount.currency.symbol}` ??
                 '-'
@@ -77,8 +80,8 @@ export const TradeSummary: React.FC<TradeSummaryProps> = ({ trade, allowedSlippa
         </Box>
       </Box>
       <Box className={classes.summaryRow}>
-        <Box>
-          <Typography>
+        <Box display='flex' alignItems='center'>
+          <Typography variant='body2'>
             Price Impact
           </Typography>
           <QuestionHelper text="The difference between the market price and estimated price due to trade size." />
@@ -86,13 +89,13 @@ export const TradeSummary: React.FC<TradeSummaryProps> = ({ trade, allowedSlippa
         <FormattedPriceImpact priceImpact={priceImpactWithoutFee} />
       </Box>
       <Box className={classes.summaryRow}>
-        <Box>
-          <Typography>
+        <Box display='flex' alignItems='center'>
+          <Typography variant='body2'>
             Liquidity Provider Fee
           </Typography>
           <QuestionHelper text="A portion of each trade (0.30%) goes to liquidity providers as a protocol incentive." />
         </Box>
-        <Typography>
+        <Typography variant='body2'>
           {realizedLPFee ? `${realizedLPFee.toSignificant(4)} ${trade.inputAmount.currency.symbol}` : '-'}
         </Typography>
       </Box>
@@ -106,32 +109,11 @@ export interface AdvancedSwapDetailsProps {
 
 export const AdvancedSwapDetails: React.FC<AdvancedSwapDetailsProps> = ({ trade }) => {
   const [allowedSlippage] = useUserSlippageTolerance();
-  const classes = useStyles();
-
-  const showRoute = Boolean(trade && trade.route.path.length > 2)
 
   return (
-    <Box mt={2} px={2}>
+    <Box>
       {trade && (
-        <>
-          <TradeSummary trade={trade} allowedSlippage={allowedSlippage} />
-          {showRoute && (
-            <Box className={classes.swapRoute}>
-              <Box className='header'>
-                <Typography>
-                  Route
-                </Typography>
-                <QuestionHelper text="Routing through these tokens resulted in the best price for your trade." />
-              </Box>
-              <SwapRoute trade={trade} />
-            </Box>
-          )}
-          <Box className={classes.analyticsWrapper}>
-            <a href={'https://info.quickswap.exchange/pair/' + trade.route.pairs[0].liquidityToken.address} target="_blank" rel='noreferrer'>
-              View pair analytics ↗
-            </a>
-          </Box>
-        </>
+        <TradeSummary trade={trade} allowedSlippage={allowedSlippage} />
       )}
     </Box>
   )

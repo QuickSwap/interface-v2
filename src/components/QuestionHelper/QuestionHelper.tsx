@@ -15,7 +15,6 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     outline: 'none',
     cursor: 'default',
     borderRadius: 36,
-    backgroundColor: palette.background.default,
     color: palette.text.primary,
     '&:hover, &:focus': {
       opacity: 0.7
@@ -33,7 +32,6 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     borderRadius: 36,
     width: 24,
     height: 24,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
     color: 'white',  
     '&:hover, &:focus': {
       opacity: 0.7

@@ -20,6 +20,7 @@ import { addMaticToMetamask, confirmPriceImpactWithoutFee, maxAmountSpend } from
 import { computeTradePriceBreakdown, warningSeverity } from 'utils/prices'
 import { ReactComponent as PriceExchangeIcon } from 'assets/images/PriceExchangeIcon.svg';
 import { ReactComponent as ExchangeIcon } from 'assets/images/ExchangeIcon.svg';
+import { ReactComponent as EditIcon } from 'assets/images/EditIcon.svg';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   exchangeSwap: {
@@ -104,6 +105,9 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       }
     }
   },
+  slippageRow: {
+    color: '#448aff'
+  }
 }));
 
 const Swap: React.FC = () => {
@@ -398,6 +402,17 @@ const Swap: React.FC = () => {
           </Box>
         </Box>
       }
+      <Box display='flex' alignItems='center' justifyContent='space-between' mt={2.5} mx={3} className={classes.slippageRow}>
+        <Typography variant='body2'>
+          Slippage Tolerance
+        </Typography>
+        <Box display='flex' alignItems='center'>
+          <Typography variant='body2'>
+            {allowedSlippage / 100}%
+          </Typography>
+          <EditIcon style={{ marginLeft: 8 }} />
+        </Box>
+      </Box>
       <AdvancedSwapDetails trade={trade} />
       <Box className={classes.swapButtonWrapper}>
         {
