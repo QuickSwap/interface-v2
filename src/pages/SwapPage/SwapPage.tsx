@@ -4,7 +4,9 @@ import { Box, Typography, Grid } from '@material-ui/core';
 import cx from 'classnames';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
 import { ReactComponent as SettingsIcon } from 'assets/images/SettingsIcon.svg';
-import { Swap } from 'components';
+import { Swap, SwapTokenDetails } from 'components';
+import { useDerivedSwapInfo } from 'state/swap/hooks';
+import { Field } from 'state/swap/actions';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   helpWrapper: {
@@ -44,12 +46,21 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
   },
   headingItem: {
     cursor: 'pointer'
+  },
+  swapTokenDetails: {
+    backgroundColor: '#1b1e29',
+    borderRadius: 16,
+    width: 'calc(50% - 16px)',
+    [breakpoints.down('xs')]: {
+      width: '100%'
+    }
   }
 }));
 
 const SwapPage: React.FC = () => {
   const classes = useStyles();
   const [ swapIndex, setSwapIndex ] = useState(0);
+  const { currencies } = useDerivedSwapInfo();
 
   return (
     <Box width='100%'>
@@ -60,7 +71,7 @@ const SwapPage: React.FC = () => {
           <HelpIcon />
         </Box>
       </Box>
-      <Grid container>
+      <Grid container spacing={4}>
         <Grid item sm={12} md={5}>
           <Box className={classes.wrapper}>
             <Box display='flex' justifyContent='space-between'>
@@ -82,6 +93,25 @@ const SwapPage: React.FC = () => {
           </Box>
         </Grid>
         <Grid item sm={12} md={7}>
+          <Box display='flex' justifyContent='space-between' width='100%'>
+            {
+              currencies[Field.INPUT] &&
+                <Box className={classes.swapTokenDetails}>
+                  <SwapTokenDetails currency={currencies[Field.INPUT]} />
+                </Box>
+            }
+            {
+              currencies[Field.OUTPUT] &&
+                <Box className={classes.swapTokenDetails}>
+                  <SwapTokenDetails currency={currencies[Field.OUTPUT]} />
+                </Box>
+            }
+          </Box>
+          {
+            currencies[Field.INPUT] && currencies[Field.OUTPUT] &&
+              <Box className={classes.wrapper} marginTop='32px'>
+              </Box>
+          }
         </Grid>
       </Grid>
     </Box>
