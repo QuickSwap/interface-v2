@@ -367,8 +367,8 @@ const Swap: React.FC = () => {
         onDismiss={handleConfirmDismiss}
       />
       <CurrencyInput title='From:' currency={currencies[Field.INPUT]} onMax={handleMaxInput} showMaxButton={!atMaxAmountInput} otherCurrency={currencies[Field.OUTPUT]} handleCurrencySelect={handleCurrencySelect} amount={formattedAmounts[Field.INPUT]} setAmount={handleTypeInput} />
-      <Box className={classes.exchangeSwap} onClick={onSwitchTokens}>
-        <ExchangeIcon />
+      <Box className={classes.exchangeSwap}>
+        <ExchangeIcon onClick={onSwitchTokens} />
       </Box>
       <CurrencyInput title='To (estimate):' currency={currencies[Field.OUTPUT]} showPrice={Boolean(trade && trade.executionPrice)} showMaxButton={false} otherCurrency={currencies[Field.INPUT]} handleCurrencySelect={handleOtherCurrencySelect} amount={formattedAmounts[Field.OUTPUT]} setAmount={handleTypeOutput} />
       {
