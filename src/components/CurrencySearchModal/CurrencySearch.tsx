@@ -123,7 +123,6 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
   const dispatch = useDispatch<AppDispatch>();
 
   const [searchQuery, setSearchQuery] = useState<string>('')
-  const [invertSearchOrder, setInvertSearchOrder] = useState<boolean>(false)
   const allTokens = useAllTokens()
 
   // if they input an address, use it
@@ -145,7 +144,7 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
     return s === '' || s === 'e' || s === 'et' || s === 'eth'
   }, [searchQuery])
 
-  const tokenComparator = useTokenComparator(invertSearchOrder)
+  const tokenComparator = useTokenComparator(false)
 
   const filteredTokens: Token[] = useMemo(() => {
     if (isAddressSearch) return searchToken ? [searchToken] : []
