@@ -7,8 +7,9 @@ import {
 import { ArrowDropUp, ArrowDropDown } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import { CurrencyLogo } from 'components';
-import { Currency, Token, ETHER } from '@uniswap/sdk';
+import { Currency, Token } from '@uniswap/sdk';
 import useUSDCPrice from 'utils/useUSDCPrice';
+import useCopyClipboard from 'hooks/useCopyClipboard'
 import { ReactComponent as CopyIcon } from 'assets/images/CopyIcon.svg';
 import { shortenAddress } from 'utils';
 
@@ -29,6 +30,7 @@ const SwapTokenDetails: React.FC<{ currency: Currency | undefined }> = ({ curren
   const usdPrice = useUSDCPrice(currency);
   const priceUp = false;
   const priceUpPercent = 5.47;
+  const [isCopied, setCopied] = useCopyClipboard()
 
   return (
     <Box>
@@ -65,7 +67,7 @@ const SwapTokenDetails: React.FC<{ currency: Currency | undefined }> = ({ curren
       </Box>
       <Box display='flex' justifyContent='space-between' alignItems='center' py={1} px={2}>
         <Typography variant='body2' style={{ color: '#448aff' }}>{ (currency as Token).address ? shortenAddress((currency as Token).address) : '' }</Typography>
-        <Box display='flex'>
+        <Box display='flex' style={{ cursor: 'pointer' }} onClick={() => { setCopied((currency as Token).address || '') }}>
           <CopyIcon />
         </Box>
       </Box>
