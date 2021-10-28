@@ -5,18 +5,12 @@ import cx from 'classnames'
 import { makeStyles } from '@material-ui/core/styles'
 import { CustomModal } from 'components';
 import { AlertTriangle, ArrowUpCircle } from 'react-feather';
-import { ReactComponent as  CloseIcon } from 'assets/images/x.svg'
+import { ReactComponent as  CloseIcon } from 'assets/images/CloseIcon.svg'
 import { getEtherscanLink } from 'utils';
 import { useActiveWeb3React } from 'hooks';
+import ModalBg from 'assets/images/ModalBG.svg';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
-  confirmModalTop: {
-    padding: 16,
-  },
-  confirmModalBottom: {
-    padding: 16,
-    background: '#EEE'
-  },
   transactionContent: {
     padding: 16,
     '& $modalContent': {
@@ -38,15 +32,23 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
   modalHeader: {
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end',
+    position: 'relative',
     marginBottom: 20,
-    color: 'black',
-    '& p': {
-      fontSize: 20,
+    '& h6': {
+      position: 'absolute',
+      left: '50%',
+      transform: 'translateX(-50%)',
     },
     '& svg': {
       cursor: 'pointer'
     }
+  },
+  modalBG: {
+    position: 'absolute',
+    top: 100,
+    left: '50%',
+    transform: 'translateX(-50%)'
   },
   modalContent: {
     marginTop: 20,
@@ -85,7 +87,6 @@ export const ConfirmationPendingContent: React.FC<ConfirmationPendingContentProp
   return (
     <Box className={classes.transactionContent}>
       <Box className={classes.modalHeader}>
-        <Typography />
         <CloseIcon onClick={onDismiss} />
       </Box>
       <Box className={classes.modalContent}>
@@ -119,7 +120,6 @@ export const TransactionSubmittedContent: React.FC<TransactionSubmittedContentPr
   return (
     <Box className={classes.transactionContent}>
       <Box className={classes.modalHeader}>
-        <Typography />
         <CloseIcon onClick={onDismiss} />
       </Box>
       <Box className={classes.modalContent}>
@@ -143,27 +143,19 @@ export const TransactionSubmittedContent: React.FC<TransactionSubmittedContentPr
 interface ConfirmationModalContentProps {
   title: string
   onDismiss: () => void
-  topContent: () => React.ReactNode
-  bottomContent: () => React.ReactNode
 }
 
 export const ConfirmationModalContent: React.FC<ConfirmationModalContentProps> = ({
   title,
-  bottomContent,
   onDismiss,
-  topContent
 }) => {
   const classes = useStyles();
   return (
-    <Box>
-      <Box className={classes.confirmModalTop}>
-        <Box className={classes.modalHeader}>
-          <Typography>{title}</Typography>
-          <CloseIcon onClick={onDismiss} />
-        </Box>
-        {topContent()}
+    <Box padding={4}>
+      <Box className={classes.modalHeader}>
+        <Typography variant='h6'>{title}</Typography>
+        <CloseIcon onClick={onDismiss} />
       </Box>
-      <Box className={classes.confirmModalBottom}>{bottomContent()}</Box>
     </Box>
   )
 }
@@ -211,13 +203,15 @@ const TransactionConfirmationModal: React.FC<ConfirmationModalProps> = ({
   pendingText,
   content
 }) => {
-  const { chainId } = useActiveWeb3React()
+  const { chainId } = useActiveWeb3React();
+  const classes = useStyles();
 
   if (!chainId) return null
 
   // confirmation screen
   return (
     <CustomModal open={isOpen} onClose={onDismiss}>
+      <img src={ModalBg} alt='Modal Back' className={classes.modalBG} />
       {attemptingTxn ? (
         <ConfirmationPendingContent onDismiss={onDismiss} pendingText={pendingText} />
       ) : hash ? (

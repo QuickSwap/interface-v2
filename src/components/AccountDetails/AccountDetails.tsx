@@ -7,7 +7,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { clearAllTransactions } from 'state/transactions/actions';
 import { shortenAddress, getEtherscanLink } from 'utils';
 import { SUPPORTED_WALLETS } from 'constants/index';
-import { ReactComponent as Close } from 'assets/images/x.svg';
+import { ReactComponent as Close } from 'assets/images/CloseIcon.svg';
 import { injected, walletlink, safeApp } from 'connectors';
 import { ExternalLink as LinkIcon } from 'react-feather';
 import StatusIcon from './StatusIcon';

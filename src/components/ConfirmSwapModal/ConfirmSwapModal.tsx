@@ -1,7 +1,6 @@
 import { currencyEquals, Trade } from '@uniswap/sdk'
 import React, { useCallback, useMemo } from 'react'
 import { TransactionConfirmationModal, TransactionErrorContent, ConfirmationModalContent } from 'components'
-import SwapModalFooter from './SwapModalFooter'
 import SwapModalHeader from './SwapModalHeader'
 
 /**
@@ -63,18 +62,6 @@ const ConfirmSwapModal: React.FC<ConfirmSwapModalProps> = ({
     ) : null
   }, [allowedSlippage, onAcceptChanges, recipient, showAcceptChanges, trade])
 
-  const modalBottom = useCallback(() => {
-    return trade ? (
-      <SwapModalFooter
-        onConfirm={onConfirm}
-        trade={trade}
-        disabledConfirm={showAcceptChanges}
-        swapErrorMessage={swapErrorMessage}
-        allowedSlippage={allowedSlippage}
-      />
-    ) : null
-  }, [allowedSlippage, onConfirm, showAcceptChanges, swapErrorMessage, trade])
-
   // text to show while loading
   const pendingText = `Swapping ${trade?.inputAmount?.toSignificant(6)} ${
     trade?.inputAmount?.currency?.symbol
@@ -86,13 +73,11 @@ const ConfirmSwapModal: React.FC<ConfirmSwapModalProps> = ({
         <TransactionErrorContent onDismiss={onDismiss} message={swapErrorMessage} />
       ) : (
         <ConfirmationModalContent
-          title="Confirm Swap"
+          title="Confirm Transaction"
           onDismiss={onDismiss}
-          topContent={modalHeader}
-          bottomContent={modalBottom}
         />
       ),
-    [onDismiss, modalBottom, modalHeader, swapErrorMessage]
+    [onDismiss, modalHeader, swapErrorMessage]
   )
 
   return (

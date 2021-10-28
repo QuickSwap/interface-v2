@@ -375,8 +375,6 @@ const AddLiquidity: React.FC = () => {
           <ConfirmationModalContent
             title={noLiquidity ? 'You are creating a pool' : 'You will receive'}
             onDismiss={handleDismissConfirmation}
-            topContent={modalHeader}
-            bottomContent={modalBottom}
           />
         )}
         pendingText={pendingText}

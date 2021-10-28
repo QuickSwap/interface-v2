@@ -6,7 +6,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useDispatch, useSelector } from 'react-redux'
 import { ReactComponent as DropDown } from 'assets/images/dropdown.svg'
 import { useFetchListCallback } from 'hooks/useFetchListCallback'
-import { ReactComponent as CloseIcon } from 'assets/images/x.svg';
+import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 
 import { AppDispatch, AppState } from 'state'
 import { acceptListUpdate, removeList, selectList } from 'state/lists/actions'
