@@ -156,9 +156,7 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
     <ListItem button style={style} key={key} selected={otherSelected || isSelected} onClick={() => { if(!isSelected && !otherSelected) onSelect(); }}>
       <Box className={classes.currencyRow}>
         { (otherSelected || isSelected)  && <TokenSelectedIcon /> }
-        <Box width={32} height={32} borderRadius={16} display='flex' overflow='hidden'>
-          <CurrencyLogo currency={currency} size={'32px'} />
-        </Box>
+        <CurrencyLogo currency={currency} size={'32px'} />
         <Box ml={1} height={32}>
           <Box display='flex' alignItems='center'>
             <Typography variant='body2' className={classes.currencySymbol}>

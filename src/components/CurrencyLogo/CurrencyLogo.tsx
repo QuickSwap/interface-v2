@@ -1,5 +1,6 @@
 import { Currency, ETHER, Token } from '@uniswap/sdk';
 import React, { useMemo } from 'react';
+import { Box } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import EthereumLogo from 'assets/images/Currency/PolygonSwap.svg';
 import useHttpLocations from 'hooks/useHttpLocations';
@@ -516,10 +517,18 @@ const CurrencyLogo: React.FC<CurrencyLogoProps> = ({
   }, [currency, uriLocations])
 
   if (currency === ETHER) {
-    return <img className={classes.logoStyled} style={{ width: size, height: size }} src={EthereumLogo} alt='Ethereum Logo' />
+    return (
+      <Box width={size} height={size} borderRadius={size} overflow='hidden'>
+        <img className={classes.logoStyled} style={{ width: size, height: size }} src={EthereumLogo} alt='Ethereum Logo' />
+      </Box>
+    )
   }
 
-  return <Logo srcs={srcs} size={size} alt={`${currency?.symbol ?? 'token'} logo`} />
+  return (
+    <Box width={size} height={size} borderRadius={size} overflow='hidden'>
+      <Logo srcs={srcs} size={size} alt={`${currency?.symbol ?? 'token'} logo`} />
+    </Box>
+  )
 }
 
 export default CurrencyLogo;

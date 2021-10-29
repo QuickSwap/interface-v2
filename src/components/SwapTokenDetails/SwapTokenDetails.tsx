@@ -35,9 +35,7 @@ const SwapTokenDetails: React.FC<{ currency: Currency | undefined }> = ({ curren
   return (
     <Box>
       <Box display='flex' alignItems='center' px={2} py={1.5}>
-        <Box width='28px' height='28px' borderRadius='14px' overflow='hidden'>
-          <CurrencyLogo currency={currency} size='28px' />
-        </Box>
+        <CurrencyLogo currency={currency} size='28px' />
         <Box ml={1}>
           <Typography variant='body2'>{ currency?.symbol }</Typography>
           <Box display='flex' alignItems='center'>

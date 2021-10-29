@@ -76,11 +76,12 @@ const SwapModalHeader: React.FC<SwapModalHeaderProps> = ({
     <Box>
       <Box className={classes.swapCurrency}>
         <Box>
-          <CurrencyLogo currency={trade.inputAmount.currency} size={'24px'} style={{ marginRight: '12px' }} />
-          <Typography style={{ color: showAcceptChanges && trade.tradeType === TradeType.EXACT_OUTPUT ? 'black' : '' }}>
-            {trade.inputAmount.toSignificant(6)}
-          </Typography>
+          <CurrencyLogo currency={trade.inputAmount.currency} size={'48px'} style={{ marginRight: '12px' }} />
+          <CurrencyLogo currency={trade.outputAmount.currency} size={'48px'} />
         </Box>
+        <Typography style={{ color: showAcceptChanges && trade.tradeType === TradeType.EXACT_OUTPUT ? 'black' : '' }}>
+          {trade.inputAmount.toSignificant(6)}
+        </Typography>
         <Typography style={{ marginLeft: '10px' }}>
           {trade.inputAmount.currency.symbol}
         </Typography>
@@ -90,7 +91,6 @@ const SwapModalHeader: React.FC<SwapModalHeaderProps> = ({
       </Box>
       <Box className={classes.swapCurrency}>
         <Box>
-          <CurrencyLogo currency={trade.outputAmount.currency} size={'24px'} />
           <Typography
             style={{ color: priceImpactSeverity > 2
               ? 'red'

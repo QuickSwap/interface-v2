@@ -48,7 +48,8 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     position: 'absolute',
     top: 100,
     left: '50%',
-    transform: 'translateX(-50%)'
+    transform: 'translateX(-50%)',
+    zIndex: 1
   },
   modalContent: {
     marginTop: 20,
@@ -143,11 +144,13 @@ export const TransactionSubmittedContent: React.FC<TransactionSubmittedContentPr
 interface ConfirmationModalContentProps {
   title: string
   onDismiss: () => void
+  content: () => React.ReactNode
 }
 
 export const ConfirmationModalContent: React.FC<ConfirmationModalContentProps> = ({
   title,
   onDismiss,
+  content
 }) => {
   const classes = useStyles();
   return (
@@ -156,6 +159,7 @@ export const ConfirmationModalContent: React.FC<ConfirmationModalContentProps> =
         <Typography variant='h6'>{title}</Typography>
         <CloseIcon onClick={onDismiss} />
       </Box>
+      { content() }
     </Box>
   )
 }
@@ -212,13 +216,15 @@ const TransactionConfirmationModal: React.FC<ConfirmationModalProps> = ({
   return (
     <CustomModal open={isOpen} onClose={onDismiss}>
       <img src={ModalBg} alt='Modal Back' className={classes.modalBG} />
-      {attemptingTxn ? (
-        <ConfirmationPendingContent onDismiss={onDismiss} pendingText={pendingText} />
-      ) : hash ? (
-        <TransactionSubmittedContent chainId={chainId} hash={hash} onDismiss={onDismiss} />
-      ) : (
-        content()
-      )}
+      <Box position='relative' zIndex={2}>
+        {attemptingTxn ? (
+          <ConfirmationPendingContent onDismiss={onDismiss} pendingText={pendingText} />
+        ) : hash ? (
+          <TransactionSubmittedContent chainId={chainId} hash={hash} onDismiss={onDismiss} />
+        ) : (
+          content()
+        )}
+      </Box>
     </CustomModal>
   )
 }

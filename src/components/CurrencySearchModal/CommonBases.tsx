@@ -57,9 +57,7 @@ const CommonBases: React.FC<CommonBasesProps> = ({
             }
           }}
         >
-          <Box width={24} height={24} borderRadius={12} overflow='hidden'>
-            <CurrencyLogo currency={ETHER} />
-          </Box>
+          <CurrencyLogo currency={ETHER} size='24px' />
           <Typography variant='body2'>
             MATIC
           </Typography>
@@ -68,9 +66,7 @@ const CommonBases: React.FC<CommonBasesProps> = ({
           const selected = selectedCurrency instanceof Token && selectedCurrency.address === token.address
           return (
             <Box className={classes.baseWrapper} onClick={() => !selected && onSelect(token)}>
-              <Box width={24} height={24} borderRadius={12} overflow='hidden'>
-                <CurrencyLogo currency={token} size='24px' />
-              </Box>
+              <CurrencyLogo currency={token} size='24px' />
               <Typography variant='body2'>
                 {token.symbol}
               </Typography>

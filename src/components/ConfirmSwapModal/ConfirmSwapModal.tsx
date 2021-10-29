@@ -75,6 +75,7 @@ const ConfirmSwapModal: React.FC<ConfirmSwapModalProps> = ({
         <ConfirmationModalContent
           title="Confirm Transaction"
           onDismiss={onDismiss}
+          content={modalHeader}
         />
       ),
     [onDismiss, modalHeader, swapErrorMessage]
