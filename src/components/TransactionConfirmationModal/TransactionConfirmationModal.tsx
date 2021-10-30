@@ -35,7 +35,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     justifyContent: 'flex-end',
     position: 'relative',
     marginBottom: 20,
-    '& h6': {
+    '& h5': {
       position: 'absolute',
       left: '50%',
       transform: 'translateX(-50%)',
@@ -156,7 +156,7 @@ export const ConfirmationModalContent: React.FC<ConfirmationModalContentProps> =
   return (
     <Box padding={4}>
       <Box className={classes.modalHeader}>
-        <Typography variant='h6'>{title}</Typography>
+        <Typography variant='h5'>{title}</Typography>
         <CloseIcon onClick={onDismiss} />
       </Box>
       { content() }
@@ -175,7 +175,7 @@ export const TransactionErrorContent: React.FC<TransactionErrorContentProps> = (
     <Box className={cx(classes.transactionContent, classes.transactionError)}>
       <Box>
         <Box className={classes.modalHeader}>
-          <Typography>Error</Typography>
+          <Typography variant='h5'>Error</Typography>
           <CloseIcon onClick={onDismiss} />
         </Box>
         <Box className={classes.modalContent}>

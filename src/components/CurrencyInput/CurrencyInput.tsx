@@ -65,9 +65,8 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     cursor: 'pointer',
     padding: '6px 12px',
     borderRadius: 38,
-    '& img': {
-      borderRadius: 16,
-      marginRight: 4,
+    '& p': {
+      marginLeft: 4,
     },
   },
   noCurrency: {

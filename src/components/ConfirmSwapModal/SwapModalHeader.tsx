@@ -4,28 +4,24 @@ import { ArrowDown, AlertTriangle } from 'react-feather'
 import { Box, Typography, Button } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import { Field } from 'state/swap/actions'
-import { CurrencyLogo } from 'components'
+import { DoubleCurrencyLogo } from 'components'
 import { isAddress, shortenAddress } from 'utils'
+import useUSDCPrice from 'utils/useUSDCPrice'
 import { computeSlippageAdjustedAmounts, computeTradePriceBreakdown, warningSeverity } from 'utils/prices'
+import { ReactComponent as ArrowDownIcon } from 'assets/images/ArrowDownIcon.svg'
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
-  swapCurrency: {
+  swapContent: {
+    margin: '24px 0',
     display: 'flex',
-    justifyContent: 'space-between',
+    flexDirection: 'column',
     alignItems: 'center',
-    color: 'black',
-    margin: '8px 0',
-    '& > div': {
-      display: 'flex',
-      alignItems: 'center',
-      '& img': {
-        marginRight: 4
-      }
+    '& p': {
+      color: '#c7cad9',
+    },
+    '& svg': {
+      margin: '12px 0'
     }
-  },
-  arrowContainer: {
-    marginLeft: 4,
-    display: 'flex'
   },
   priceUpdate: {
     backgroundColor: 'rgba(40, 145, 249, 0.1)',
@@ -42,9 +38,11 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     }
   },
   transactionText: {
-    color: 'black',
+    marginTop: '32px',
+    color: '#696c80',
+    textAlign: 'center',
     '& p': {
-      fontStyle: 'italic',
+      marginBottom: 16
     }
   }
 }));
@@ -71,38 +69,20 @@ const SwapModalHeader: React.FC<SwapModalHeaderProps> = ({
   ])
   const { priceImpactWithoutFee } = useMemo(() => computeTradePriceBreakdown(trade), [trade])
   const priceImpactSeverity = warningSeverity(priceImpactWithoutFee)
+  const usdPrice = useUSDCPrice(trade.inputAmount.currency)
 
   return (
     <Box>
-      <Box className={classes.swapCurrency}>
-        <Box>
-          <CurrencyLogo currency={trade.inputAmount.currency} size={'48px'} style={{ marginRight: '12px' }} />
-          <CurrencyLogo currency={trade.outputAmount.currency} size={'48px'} />
-        </Box>
-        <Typography style={{ color: showAcceptChanges && trade.tradeType === TradeType.EXACT_OUTPUT ? 'black' : '' }}>
-          {trade.inputAmount.toSignificant(6)}
-        </Typography>
-        <Typography style={{ marginLeft: '10px' }}>
-          {trade.inputAmount.currency.symbol}
-        </Typography>
+      <Box mt={10} display='flex' justifyContent='center'>
+        <DoubleCurrencyLogo currency0={trade.inputAmount.currency} currency1={trade.outputAmount.currency} size={48} />
       </Box>
-      <Box className={classes.arrowContainer}>
-        <ArrowDown size="16" color='black' />
-      </Box>
-      <Box className={classes.swapCurrency}>
-        <Box>
-          <Typography
-            style={{ color: priceImpactSeverity > 2
-              ? 'red'
-              : showAcceptChanges && trade.tradeType === TradeType.EXACT_INPUT
-              ? 'blue'
-              : ''}}
-          >
-            {trade.outputAmount.toSignificant(6)}
-          </Typography>
-        </Box>
-        <Typography style={{ marginLeft: '10px' }}>
-          {trade.outputAmount.currency.symbol}
+      <Box className={classes.swapContent}>
+        <Typography variant='body1'>
+          Swap {trade.inputAmount.toSignificant(6)} {trade.inputAmount.currency.symbol} (${Number(usdPrice?.toSignificant()) * Number(trade.inputAmount.toSignificant(2))})
+        </Typography>
+        <ArrowDownIcon />
+        <Typography variant='body1'>
+          {trade.outputAmount.toSignificant(6)} {trade.outputAmount.currency.symbol}
         </Typography>
       </Box>
       {showAcceptChanges && (
@@ -121,31 +101,20 @@ const SwapModalHeader: React.FC<SwapModalHeaderProps> = ({
       )}
       <Box className={classes.transactionText}>
         {trade.tradeType === TradeType.EXACT_INPUT ? (
-          <Typography>
+          <Typography variant='body2'>
             {`Output is estimated. You will receive at least `}
-            <b>
-              {slippageAdjustedAmounts[Field.OUTPUT]?.toSignificant(6)} {trade.outputAmount.currency.symbol}
-            </b>
+            {slippageAdjustedAmounts[Field.OUTPUT]?.toSignificant(6)} {trade.outputAmount.currency.symbol}
             {' or the transaction will revert.'}
           </Typography>
         ) : (
-          <Typography>
+          <Typography variant='body2'>
             {`Input is estimated. You will sell at most `}
-            <b>
-              {slippageAdjustedAmounts[Field.INPUT]?.toSignificant(6)} {trade.inputAmount.currency.symbol}
-            </b>
+            {slippageAdjustedAmounts[Field.INPUT]?.toSignificant(6)} {trade.inputAmount.currency.symbol}
             {' or the transaction will revert.'}
           </Typography>
         )}
+        <Typography variant='caption'>Please confirm this transaction in your wallet.</Typography>
       </Box>
-      {recipient !== null ? (
-        <Box>
-          <Typography>
-            Output will be sent to{' '}
-            <b title={recipient}>{isAddress(recipient) ? shortenAddress(recipient) : recipient}</b>
-          </Typography>
-        </Box>
-      ) : null}
     </Box>
   )
 }

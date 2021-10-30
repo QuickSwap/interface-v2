@@ -8,13 +8,9 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
   wrapper: {
     position: 'relative',
     display: 'flex',
-    marginRight: (props: any) => props.margin && (props.size / 3 + 8),
-    '& img:first-child': {
+    '& > div:first-child': {
       zIndex: 2,
-    },
-    '& img:last-child': {
-      position: 'absolute',
-      left: (props: any) => `-${props.size / 2}px !important`
+      marginRight: -4
     }
   }
 }));

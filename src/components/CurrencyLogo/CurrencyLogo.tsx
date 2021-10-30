@@ -525,7 +525,7 @@ const CurrencyLogo: React.FC<CurrencyLogoProps> = ({
   }
 
   return (
-    <Box width={size} height={size} borderRadius={size} overflow='hidden'>
+    <Box width={size} height={size} borderRadius={size} overflow='hidden' bgcolor='white' display='flex'>
       <Logo srcs={srcs} size={size} alt={`${currency?.symbol ?? 'token'} logo`} />
     </Box>
   )

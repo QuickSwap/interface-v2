@@ -6,7 +6,7 @@ import { StakingInfo } from 'state/stake/hooks';
 import { useTotalSupply } from 'data/TotalSupply';
 import { usePair } from 'data/Reserves';
 import { unwrappedToken } from 'utils/wrappedCurrency';
-import { CurrencyLogo } from 'components';
+import { DoubleCurrencyLogo } from 'components';
 import { EMPTY } from 'constants/index';
 import useUSDCPrice from 'utils/useUSDCPrice';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon.svg';
@@ -22,18 +22,6 @@ const useStyles = makeStyles(({ palette }) => ({
       display: 'flex',
       top: 32,
       left: 22,
-      '& > div': {
-        padding: 2,
-        background: 'white',
-        borderRadius: 18,
-        overflow: 'hidden',
-        display: 'flex',
-        '&:first-child': {
-          marginRight: -8,
-          position: 'relative',
-          zIndex: 1
-        }
-      }
     },
     '& h5': {
       marginLeft: 70,
@@ -123,12 +111,7 @@ const RewardSliderItem: React.FC<RewardSliderItemProps> = ({ info }) => {
     <Box className={classes.rewardsSliderItem}>
       <Box mb={2}>
         <Box className='rewardIcon'>
-          <Box>
-            <CurrencyLogo currency={info.tokens[0]} size='28px' />
-          </Box>
-          <Box>
-            <CurrencyLogo currency={info.tokens[1]} size='28px' />
-          </Box>
+          <DoubleCurrencyLogo currency0={info.tokens[0]} currency1={info.tokens[1]} size={32} />
         </Box>
         <Typography variant='h5'>
           { info.tokens[0].symbol?.toUpperCase() }-{ info.tokens[1].symbol?.toUpperCase() }

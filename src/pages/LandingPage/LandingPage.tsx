@@ -136,20 +136,6 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       }
     }
   },
-  currencyButton: {
-    height: 40,
-    minWidth: 121,
-    display: 'flex',
-    alignItems: 'center',
-    padding: '0 6px',
-    borderRadius: 20,
-    background: palette.primary.dark,
-    '& svg:first-child': {
-      width: 28,
-      height: 28,
-      marginRight: 8
-    },
-  },
   swapInfo: {
     textAlign: 'left',
     marginBottom: 60,
