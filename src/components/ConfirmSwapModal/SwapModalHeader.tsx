@@ -44,23 +44,30 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     '& p': {
       marginBottom: 16
     }
+  },
+  swapButton: {
+    backgroundImage: 'linear-gradient(to bottom, #448aff, #004ce6)',
+    width: '100%',
+    height: 56,
+    marginTop: 20,
+    fontSize: 18,
   }
 }));
 
 interface SwapModalHeaderProps {
   trade: Trade
   allowedSlippage: number
-  recipient: string | null
   showAcceptChanges: boolean
   onAcceptChanges: () => void
+  onConfirm: () => void
 }
 
 const SwapModalHeader: React.FC<SwapModalHeaderProps> = ({
   trade,
   allowedSlippage,
-  recipient,
   showAcceptChanges,
-  onAcceptChanges
+  onAcceptChanges,
+  onConfirm
 }) => {
   const classes = useStyles();
   const slippageAdjustedAmounts = useMemo(() => computeSlippageAdjustedAmounts(trade, allowedSlippage), [
@@ -113,7 +120,12 @@ const SwapModalHeader: React.FC<SwapModalHeaderProps> = ({
             {' or the transaction will revert.'}
           </Typography>
         )}
-        <Typography variant='caption'>Please confirm this transaction in your wallet.</Typography>
+        <Button
+          onClick={onConfirm}
+          className={classes.swapButton}
+        >
+          Confirm Swap
+        </Button>
       </Box>
     </Box>
   )

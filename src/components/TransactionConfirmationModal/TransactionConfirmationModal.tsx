@@ -1,34 +1,16 @@
 import { ChainId } from '@uniswap/sdk';
 import React from 'react';
 import { Box, Typography, Button, CircularProgress } from '@material-ui/core';
-import cx from 'classnames'
 import { makeStyles } from '@material-ui/core/styles'
 import { CustomModal } from 'components';
-import { AlertTriangle, ArrowUpCircle } from 'react-feather';
-import { ReactComponent as  CloseIcon } from 'assets/images/CloseIcon.svg'
+import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
+import { ReactComponent as TransactionFailed } from 'assets/images/TransactionFailed.svg';
+import { ReactComponent as TransactionSuccess } from 'assets/images/TransactionSuccess.svg';
 import { getEtherscanLink } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import ModalBg from 'assets/images/ModalBG.svg';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
-  transactionContent: {
-    padding: 16,
-    '& $modalContent': {
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      color: 'black',
-      '& svg': {
-        strokeWidth: 1.5,
-        marginBottom: 16
-      }
-    }
-  },
-  transactionError: {
-    '& $modalContent': {
-      color: palette.error.main,
-    }
-  },
   modalHeader: {
     display: 'flex',
     alignItems: 'center',
@@ -37,8 +19,8 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     marginBottom: 20,
     '& h5': {
       position: 'absolute',
-      left: '50%',
-      transform: 'translateX(-50%)',
+      width: '100%',
+      textAlign: 'center'
     },
     '& svg': {
       cursor: 'pointer'
@@ -54,27 +36,22 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
   modalContent: {
     marginTop: 20,
     padding: '16px 0',
-    '& h1': {
-      fontSize: 24,
-      margin: '32px 0 8px'
-    },
-    '& h2': {
-      fontSize: 20,
-    },
+    color: '#c7cad9',
+    textAlign: 'center',
     '& p': {
-      fontSize: 16,
-      color: '#666',
-      margin: '8px 0 0'
-    },
-    '& a': {
-      fontSize: 16
+      margin: '16px 0'
     }
   },
   submitButton: {
     width: '100%',
-    height: 48,
-    fontSize: 20,
-    borderRadius: 16
+    height: 50,
+    fontSize: 14,
+    borderRadius: 10,
+    color: '#c7cad9',
+    background: '#282d3d',
+    '&:hover': {
+      background: '#282d3d',
+    }
   }
 }));
 
@@ -86,21 +63,21 @@ interface ConfirmationPendingContentProps {
 export const ConfirmationPendingContent: React.FC<ConfirmationPendingContentProps> =({ onDismiss, pendingText }) => {
   const classes = useStyles();
   return (
-    <Box className={classes.transactionContent}>
+    <Box padding={4}>
       <Box className={classes.modalHeader}>
         <CloseIcon onClick={onDismiss} />
       </Box>
       <Box className={classes.modalContent}>
-        <CircularProgress size={64} />
-        <Typography component='h1'>
+        <Box my={4} display='flex' justifyContent='center'>
+          <CircularProgress size={80} />
+        </Box>
+        <Typography variant='h5'>
           Waiting For Confirmation
         </Typography>
-        <Typography component='h2'>
+        <Typography variant='body1'>
           {pendingText}
         </Typography>
-        <Typography>
-          Confirm this transaction in your wallet
-        </Typography>
+        <Typography variant='caption'>Please confirm this transaction in your wallet.</Typography>
       </Box>
     </Box>
   )
@@ -119,21 +96,26 @@ export const TransactionSubmittedContent: React.FC<TransactionSubmittedContentPr
 }) => {
   const classes = useStyles();
   return (
-    <Box className={classes.transactionContent}>
+    <Box padding={4}>
       <Box className={classes.modalHeader}>
+        <Typography variant='h5'>Transaction Completed</Typography>
         <CloseIcon onClick={onDismiss} />
       </Box>
       <Box className={classes.modalContent}>
-        <ArrowUpCircle strokeWidth={0.5} size={90} />
-        <Typography component='h1'>
-          Transaction Submitted
+        <TransactionSuccess />
+        <Typography variant='body1'>
+          Successfully swapped your tokens
         </Typography>
+      </Box>
+      <Box display='flex' justifyContent='space-between' mt={2}>
         {chainId && hash && (
-          <a href={getEtherscanLink(chainId, hash, 'transaction')} target='_blank' rel='noreferrer'>
-            View on Block Explorer
+          <a href={getEtherscanLink(chainId, hash, 'transaction')} target='_blank' rel='noreferrer' style={{ width: '48%', textDecoration: 'none' }}>
+            <Button className={classes.submitButton}>
+              View on Block Explorer
+            </Button>
           </a>
         )}
-        <Button className={classes.submitButton} onClick={onDismiss} style={{ margin: '20px 0 0 0' }}>
+        <Button className={classes.submitButton} style={{ width: '48%' }} onClick={onDismiss}>
           Close
         </Button>
       </Box>
@@ -172,15 +154,15 @@ interface TransactionErrorContentProps {
 export const TransactionErrorContent: React.FC<TransactionErrorContentProps> = ({ message, onDismiss }) => {
   const classes = useStyles();
   return (
-    <Box className={cx(classes.transactionContent, classes.transactionError)}>
+    <Box padding={4}>
       <Box>
         <Box className={classes.modalHeader}>
-          <Typography variant='h5'>Error</Typography>
+          <Typography variant='h5' color='error'>Error!</Typography>
           <CloseIcon onClick={onDismiss} />
         </Box>
         <Box className={classes.modalContent}>
-          <AlertTriangle size={64} />
-          <Typography>
+          <TransactionFailed />
+          <Typography variant='body1'>
             {message}
           </Typography>
         </Box>
