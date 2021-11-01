@@ -132,15 +132,18 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({ handleCurrencySelect, cur
         <Typography variant='body2'>Balance: { selectedCurrencyBalance ? selectedCurrencyBalance.toSignificant(6) : 0 }</Typography>
         <Typography variant='body2'>${(usdPrice * Number(amount)).toLocaleString()}</Typography>
       </Box>
-      <CurrencySearchModal
-        isOpen={modalOpen}
-        onDismiss={() => { setModalOpen(false) }}
-        onCurrencySelect={handleCurrencySelect}
-        selectedCurrency={currency}
-        showCommonBases={true}
-        otherSelectedCurrency={otherCurrency}
-        balances={balances}
-      />
+      {
+        modalOpen &&
+          <CurrencySearchModal
+            isOpen={modalOpen}
+            onDismiss={() => { setModalOpen(false) }}
+            onCurrencySelect={handleCurrencySelect}
+            selectedCurrency={currency}
+            showCommonBases={true}
+            otherSelectedCurrency={otherCurrency}
+            balances={balances}
+          />      
+      }
     </Box>
   )
 }

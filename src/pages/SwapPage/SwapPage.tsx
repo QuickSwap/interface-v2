@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Box, Typography, Grid } from '@material-ui/core';
 import cx from 'classnames';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
 import { ReactComponent as SettingsIcon } from 'assets/images/SettingsIcon.svg';
 import { Swap, SwapTokenDetails } from 'components';
+import { useEthPrice, useTopTokens } from 'state/application/hooks';
+import { getEthPrice, getTopTokens } from 'utils';
 import { useDerivedSwapInfo } from 'state/swap/hooks';
 import { Field } from 'state/swap/actions';
 
@@ -61,6 +63,23 @@ const SwapPage: React.FC = () => {
   const classes = useStyles();
   const [ swapIndex, setSwapIndex ] = useState(0);
   const { currencies } = useDerivedSwapInfo();
+
+  const { ethPrice, updateEthPrice } = useEthPrice();
+  const { updateTopTokens } = useTopTokens();
+  
+  useEffect(() => {
+    async function checkEthPrice() {
+      if (!ethPrice.price) {
+        const [newPrice, oneDayPrice, priceChange] = await getEthPrice();
+        updateEthPrice({ price: newPrice, oneDayPrice, ethPriceChange: priceChange });
+        const topTokens = await getTopTokens(newPrice, oneDayPrice);
+        if (topTokens) {
+          updateTopTokens({ data: topTokens });
+        }
+      }
+    }
+    checkEthPrice();
+  }, [ethPrice, updateEthPrice, updateTopTokens])
 
   return (
     <Box width='100%'>

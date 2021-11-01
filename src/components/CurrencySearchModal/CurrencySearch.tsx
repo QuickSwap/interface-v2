@@ -121,7 +121,7 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
 }) => {
   const classes = useStyles();
   const { t } = useTranslation();
-  const { account, chainId } = useActiveWeb3React();
+  const { chainId } = useActiveWeb3React();
   const dispatch = useDispatch<AppDispatch>();
 
   const [searchQuery, setSearchQuery] = useState<string>('')

@@ -65,7 +65,7 @@ const CommonBases: React.FC<CommonBasesProps> = ({
         {(chainId ? SUGGESTED_BASES[chainId] : []).map((token: Token) => {
           const selected = selectedCurrency instanceof Token && selectedCurrency.address === token.address
           return (
-            <Box className={classes.baseWrapper} onClick={() => !selected && onSelect(token)}>
+            <Box className={classes.baseWrapper} key={token.address} onClick={() => !selected && onSelect(token)}>
               <CurrencyLogo currency={token} size='24px' />
               <Typography variant='body2'>
                 {token.symbol}
