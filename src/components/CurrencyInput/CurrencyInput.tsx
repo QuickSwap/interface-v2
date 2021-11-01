@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Currency } from '@uniswap/sdk'
+import { Currency, CurrencyAmount } from '@uniswap/sdk'
 import { Box, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { useCurrencyBalance } from 'state/wallet/hooks';
@@ -92,9 +92,10 @@ interface CurrencyInputProps {
   onMax?: () => void
   showMaxButton?: boolean
   showPrice?: boolean
+  balances: { balance: CurrencyAmount | undefined, address: string }[]
 }
 
-const CurrencyInput: React.FC<CurrencyInputProps> = ({ handleCurrencySelect, currency, otherCurrency, amount, setAmount, onMax, showMaxButton, title, showPrice }) => {
+const CurrencyInput: React.FC<CurrencyInputProps> = ({ handleCurrencySelect, currency, otherCurrency, amount, setAmount, onMax, showMaxButton, title, showPrice, balances }) => {
   const classes = useStyles();
   const [modalOpen, setModalOpen] = useState(false);
   const { account } = useActiveWeb3React();
@@ -138,6 +139,7 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({ handleCurrencySelect, cur
         selectedCurrency={currency}
         showCommonBases={true}
         otherSelectedCurrency={otherCurrency}
+        balances={balances}
       />
     </Box>
   )

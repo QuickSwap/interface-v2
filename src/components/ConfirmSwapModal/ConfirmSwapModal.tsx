@@ -59,7 +59,7 @@ const ConfirmSwapModal: React.FC<ConfirmSwapModalProps> = ({
         onAcceptChanges={onAcceptChanges}
       />
     ) : null
-  }, [allowedSlippage, onAcceptChanges, showAcceptChanges, trade])
+  }, [allowedSlippage, onAcceptChanges, showAcceptChanges, trade, onConfirm])
 
   // text to show while loading
   const pendingText = `Swapping ${trade?.inputAmount?.toSignificant(6)} ${

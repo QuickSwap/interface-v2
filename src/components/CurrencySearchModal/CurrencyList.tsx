@@ -6,7 +6,6 @@ import { FixedSizeList } from 'react-window';
 import { useActiveWeb3React } from 'hooks'
 import { useSelectedTokenList, WrappedTokenInfo } from 'state/lists/hooks'
 import { useAddUserToken, useRemoveUserAddedToken } from 'state/user/hooks'
-import { useCurrencyBalance } from 'state/wallet/hooks'
 import { useIsUserAddedToken } from 'hooks/Tokens'
 import { CurrencyLogo } from 'components'
 import { isTokenOnList } from 'utils'
@@ -99,6 +98,7 @@ interface CurrenyRowProps {
   isSelected: boolean
   otherSelected: boolean
   style: any
+  balance: CurrencyAmount | undefined
 }
 
 const CurrencyRow: React.FC<CurrenyRowProps> = ({
@@ -106,7 +106,8 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
   onSelect,
   isSelected,
   otherSelected,
-  style
+  style,
+  balance
 }) => {
   const { ethereum } = (window as any);
   const classes = useStyles();
@@ -116,7 +117,6 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
   const selectedTokenList = useSelectedTokenList()
   const isOnSelectedList = isTokenOnList(selectedTokenList, currency)
   const customAdded = useIsUserAddedToken(currency)
-  const balance = useCurrencyBalance(account ?? undefined, currency)
   const usdPrice = useUSDCPrice(currency)
 
   const removeToken = useRemoveUserAddedToken()
@@ -232,6 +232,7 @@ interface CurrencyListProps {
   onCurrencySelect: (currency: Token) => void
   otherCurrency?: Currency | null
   showETH: boolean
+  balances: (CurrencyAmount | undefined)[]
 }
 
 const CurrencyList: React.FC<CurrencyListProps> = ({
@@ -240,7 +241,8 @@ const CurrencyList: React.FC<CurrencyListProps> = ({
   selectedCurrency,
   onCurrencySelect,
   otherCurrency,
-  showETH
+  showETH,
+  balances
 }) => {
   const itemData = useMemo(() => (showETH ? [Token.ETHER, ...currencies] : currencies), [currencies, showETH])
   const Row = useCallback(
@@ -249,6 +251,7 @@ const CurrencyList: React.FC<CurrencyListProps> = ({
       const isSelected = Boolean(selectedCurrency && currencyEquals(selectedCurrency, currency))
       const otherSelected = Boolean(otherCurrency && currencyEquals(otherCurrency, currency))
       const handleSelect = () => onCurrencySelect(currency)
+      const balance = balances[index]
       return (
         <CurrencyRow
           style={style}
@@ -256,10 +259,11 @@ const CurrencyList: React.FC<CurrencyListProps> = ({
           isSelected={isSelected}
           onSelect={handleSelect}
           otherSelected={otherSelected}
+          balance={balance}
         />
       )
     },
-    [onCurrencySelect, otherCurrency, selectedCurrency]
+    [onCurrencySelect, otherCurrency, selectedCurrency, balances]
   )
 
   return (

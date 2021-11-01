@@ -21,6 +21,7 @@ import { computeTradePriceBreakdown, warningSeverity } from 'utils/prices'
 import { ReactComponent as PriceExchangeIcon } from 'assets/images/PriceExchangeIcon.svg';
 import { ReactComponent as ExchangeIcon } from 'assets/images/ExchangeIcon.svg';
 import { ReactComponent as EditIcon } from 'assets/images/EditIcon.svg';
+import { useCurrencyBalances } from 'state/wallet/hooks';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   exchangeSwap: {
@@ -130,6 +131,8 @@ const Swap: React.FC = () => {
     typedValue
   );
   const allTokens = useAllTokens();
+  const allBalances = useCurrencyBalances(account || undefined, [Token.ETHER, ...(Object.values(allTokens))]);
+  const allBalancesWithTokenAddress = allBalances.map((balance, index) => { return { balance, address: index === 0 ? 'Ether' : Object.values(allTokens)[index - 1].address } })
 
   const showWrap: boolean = wrapType !== WrapType.NOT_APPLICABLE;
   const tradesByVersion = {
@@ -366,11 +369,11 @@ const Swap: React.FC = () => {
         swapErrorMessage={swapErrorMessage}
         onDismiss={handleConfirmDismiss}
       />
-      <CurrencyInput title='From:' currency={currencies[Field.INPUT]} onMax={handleMaxInput} showMaxButton={!atMaxAmountInput} otherCurrency={currencies[Field.OUTPUT]} handleCurrencySelect={handleCurrencySelect} amount={formattedAmounts[Field.INPUT]} setAmount={handleTypeInput} />
+      <CurrencyInput title='From:' currency={currencies[Field.INPUT]} onMax={handleMaxInput} showMaxButton={!atMaxAmountInput} otherCurrency={currencies[Field.OUTPUT]} handleCurrencySelect={handleCurrencySelect} amount={formattedAmounts[Field.INPUT]} setAmount={handleTypeInput} balances={allBalancesWithTokenAddress} />
       <Box className={classes.exchangeSwap}>
         <ExchangeIcon onClick={onSwitchTokens} />
       </Box>
-      <CurrencyInput title='To (estimate):' currency={currencies[Field.OUTPUT]} showPrice={Boolean(trade && trade.executionPrice)} showMaxButton={false} otherCurrency={currencies[Field.INPUT]} handleCurrencySelect={handleOtherCurrencySelect} amount={formattedAmounts[Field.OUTPUT]} setAmount={handleTypeOutput} />
+      <CurrencyInput title='To (estimate):' currency={currencies[Field.OUTPUT]} showPrice={Boolean(trade && trade.executionPrice)} showMaxButton={false} otherCurrency={currencies[Field.INPUT]} handleCurrencySelect={handleOtherCurrencySelect} amount={formattedAmounts[Field.OUTPUT]} setAmount={handleTypeOutput} balances={allBalancesWithTokenAddress} />
       {
         trade && trade.executionPrice &&
           <Box className={classes.swapPrice}>

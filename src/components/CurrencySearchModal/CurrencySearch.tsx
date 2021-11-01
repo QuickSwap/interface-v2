@@ -1,4 +1,4 @@
-import { Currency, ETHER, Token } from '@uniswap/sdk';
+import { Currency, CurrencyAmount, ETHER, Token } from '@uniswap/sdk';
 import React, { KeyboardEvent, RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import ReactGA from 'react-ga';
 import { Box, Typography, Divider } from '@material-ui/core';
@@ -106,6 +106,7 @@ interface CurrencySearchProps {
   otherSelectedCurrency?: Currency | null
   showCommonBases?: boolean
   onChangeList: () => void
+  balances: { balance: CurrencyAmount | undefined, address: string }[]
 }
 
 const CurrencySearch: React.FC<CurrencySearchProps> = ({
@@ -115,11 +116,12 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
   showCommonBases,
   onDismiss,
   isOpen,
-  onChangeList
+  onChangeList,
+  balances
 }) => {
   const classes = useStyles();
   const { t } = useTranslation();
-  const { chainId } = useActiveWeb3React();
+  const { account, chainId } = useActiveWeb3React();
   const dispatch = useDispatch<AppDispatch>();
 
   const [searchQuery, setSearchQuery] = useState<string>('')
@@ -167,6 +169,10 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
       ...sorted.filter(token => token.symbol?.toLowerCase() !== symbolMatch[0])
     ]
   }, [filteredTokens, searchQuery, searchToken, tokenComparator])
+
+  const ethBalance = balances.find(balance => balance.address === 'Ether')?.balance;
+  const filteredBalances = filteredSortedTokens.map(token => balances.find(balance => balance.address === token.address)?.balance);
+  const allBalances = showETH ? [ ethBalance, ...filteredBalances ] : filteredBalances;
 
   const handleCurrencySelect = useCallback(
     (currency: Currency) => {
@@ -249,6 +255,7 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
               onCurrencySelect={handleCurrencySelect}
               otherCurrency={otherSelectedCurrency}
               selectedCurrency={selectedCurrency}
+              balances={allBalances}
             />
           )}
         </AutoSizer>
