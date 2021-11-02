@@ -20,7 +20,6 @@ import { useDerivedMintInfo, useMintActionHandlers, useMintState } from 'state/m
 import { useIsExpertMode, useUserSlippageTolerance } from 'state/user/hooks'
 import { maxAmountSpend, addMaticToMetamask, getRouterContract, calculateSlippageAmount, calculateGasMargin } from 'utils';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
-import { useCurrencyBalances } from 'state/wallet/hooks';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   exchangeSwap: {
@@ -167,9 +166,6 @@ const AddLiquidity: React.FC = () => {
 
   const currencyA = currencies[Field.CURRENCY_A];
   const currencyB = currencies[Field.CURRENCY_B];
-
-  const allBalances = useCurrencyBalances(account || undefined, [Token.ETHER, ...(Object.values(allTokens))]);
-  const allBalancesWithTokenAddress = allBalances.map((balance, index) => { return { balance, address: index === 0 ? 'Ether' : Object.values(allTokens)[index - 1].address } });
 
   const oneCurrencyIsWETH = Boolean(
     chainId &&
@@ -384,11 +380,11 @@ const AddLiquidity: React.FC = () => {
         )}
         pendingText={pendingText}
       />
-      <CurrencyInput title='Input 1:' currency={currencies[Field.CURRENCY_A]} showMaxButton={!atMaxAmounts[Field.CURRENCY_A]} onMax={() => onFieldAInput(maxAmounts[Field.CURRENCY_A]?.toExact() ?? '')} handleCurrencySelect={handleCurrencyASelect} amount={formattedAmounts[Field.CURRENCY_A]} setAmount={onFieldAInput} balances={allBalancesWithTokenAddress} />
+      <CurrencyInput title='Input 1:' currency={currencies[Field.CURRENCY_A]} showMaxButton={!atMaxAmounts[Field.CURRENCY_A]} onMax={() => onFieldAInput(maxAmounts[Field.CURRENCY_A]?.toExact() ?? '')} handleCurrencySelect={handleCurrencyASelect} amount={formattedAmounts[Field.CURRENCY_A]} setAmount={onFieldAInput} />
       <Box className={classes.exchangeSwap}>
         <AddIcon />
       </Box>
-      <CurrencyInput title='Input 2:' currency={currencies[Field.CURRENCY_B]} showMaxButton={!atMaxAmounts[Field.CURRENCY_B]} onMax={() => onFieldBInput(maxAmounts[Field.CURRENCY_B]?.toExact() ?? '')} handleCurrencySelect={handleCurrencyBSelect} amount={formattedAmounts[Field.CURRENCY_B]} setAmount={onFieldBInput} balances={allBalancesWithTokenAddress} />
+      <CurrencyInput title='Input 2:' currency={currencies[Field.CURRENCY_B]} showMaxButton={!atMaxAmounts[Field.CURRENCY_B]} onMax={() => onFieldBInput(maxAmounts[Field.CURRENCY_B]?.toExact() ?? '')} handleCurrencySelect={handleCurrencyBSelect} amount={formattedAmounts[Field.CURRENCY_B]} setAmount={onFieldBInput} />
       {
         currencies[Field.CURRENCY_A] && currencies[Field.CURRENCY_B] && pairState !== PairState.INVALID && price &&
           <Box className={classes.swapPrice}>

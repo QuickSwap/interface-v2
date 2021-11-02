@@ -9,7 +9,7 @@ import {
   useMediaQuery
 } from '@material-ui/core';
 import Skeleton from '@material-ui/lab/Skeleton';
-import { Currency, Token } from '@uniswap/sdk';
+import { Currency } from '@uniswap/sdk';
 import { useTheme } from '@material-ui/core/styles';
 import Motif from 'assets/images/Motif.svg';
 import BuyWithFiat from 'assets/images/featured/BuywithFiat.svg';
@@ -31,7 +31,6 @@ import { useActiveWeb3React, useInitTransak } from 'hooks';
 import { addMaticToMetamask, getEthPrice, getGlobalData, formatCompact } from 'utils';
 import { useEthPrice, useGlobalData, useWalletModalToggle } from 'state/application/hooks';
 import { useAllTokens } from 'hooks/Tokens';
-import { useCurrencyBalances } from 'state/wallet/hooks';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   heroSection: {
@@ -422,9 +421,6 @@ const LandingPage: React.FC = () => {
     checkEthPrice();
   }, [ethPrice, updateEthPrice, updateGlobalData])
 
-  const allBalances = useCurrencyBalances(account || undefined, [Token.ETHER, ...(Object.values(allTokens))]);
-  const allBalancesWithTokenAddress = allBalances.map((balance, index) => { return { balance, address: index === 0 ? 'Ether' : Object.values(allTokens)[index - 1].address } })
-
   return (
     <>
       <Box className={classes.heroSection}>
@@ -562,7 +558,7 @@ const LandingPage: React.FC = () => {
           </Box>
           <Box className='buyFiatWrapper'>
             <Box className='buyContent'>
-              <CurrencyInput currency={fiatCurrency} title='I want to Buy:' showMaxButton={false} otherCurrency={undefined} handleCurrencySelect={setFiatCurrency} amount={fiatAmount} setAmount={setFiatAmount} balances={allBalancesWithTokenAddress} />
+              <CurrencyInput currency={fiatCurrency} title='I want to Buy:' showMaxButton={false} otherCurrency={undefined} handleCurrencySelect={setFiatCurrency} amount={fiatAmount} setAmount={setFiatAmount} />
             </Box>
             {
               fiatCurrency &&

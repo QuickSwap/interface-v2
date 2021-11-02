@@ -1,4 +1,4 @@
-import { Currency, CurrencyAmount } from '@uniswap/sdk'
+import { Currency } from '@uniswap/sdk'
 import React, { useCallback, useEffect, useState } from 'react'
 import ReactGA from 'react-ga'
 import { CustomModal } from 'components'
@@ -13,7 +13,6 @@ interface CurrencySearchModalProps {
   onCurrencySelect: (currency: Currency) => void
   otherSelectedCurrency?: Currency | null
   showCommonBases?: boolean
-  balances: { balance: CurrencyAmount | undefined, address: string }[]
 }
 
 const CurrencySearchModal: React.FC<CurrencySearchModalProps> = ({
@@ -23,7 +22,6 @@ const CurrencySearchModal: React.FC<CurrencySearchModalProps> = ({
   selectedCurrency,
   otherSelectedCurrency,
   showCommonBases = false,
-  balances
 }) => {
   const [listView, setListView] = useState<boolean>(false)
   const lastOpen = useLast(isOpen)
@@ -70,7 +68,6 @@ const CurrencySearchModal: React.FC<CurrencySearchModalProps> = ({
           selectedCurrency={selectedCurrency}
           otherSelectedCurrency={otherSelectedCurrency}
           showCommonBases={showCommonBases}
-          balances={balances}
         />
       )}
     </CustomModal>

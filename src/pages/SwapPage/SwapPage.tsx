@@ -98,10 +98,10 @@ const SwapPage: React.FC = () => {
       if (!ethPrice.price) {
         const [newPrice, oneDayPrice, priceChange] = await getEthPrice();
         updateEthPrice({ price: newPrice, oneDayPrice, ethPriceChange: priceChange });
-        const topTokens = await getTopTokens(newPrice, oneDayPrice);
-        if (topTokens) {
-          updateTopTokens({ data: topTokens });
-        }
+      }
+      const topTokens = await getTopTokens(ethPrice.price, ethPrice.oneDayPrice);
+      if (topTokens) {
+        updateTopTokens({ data: topTokens });
       }
     }
     checkEthPrice();

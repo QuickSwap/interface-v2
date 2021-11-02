@@ -62,7 +62,7 @@ export const TOKENS_CURRENT = () => {
   const queryString = `
   ${TokenFields}
   query tokens {
-    tokens(first: 200, orderBy: tradeVolumeUSD, orderDirection: desc) {
+    tokens(first: 500, orderBy: tradeVolumeUSD, orderDirection: desc) {
       ...TokenFields
     }
   }

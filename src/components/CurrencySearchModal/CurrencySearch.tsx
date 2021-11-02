@@ -1,4 +1,4 @@
-import { Currency, CurrencyAmount, ETHER, Token } from '@uniswap/sdk';
+import { Currency, ETHER, Token } from '@uniswap/sdk';
 import React, { KeyboardEvent, RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import ReactGA from 'react-ga';
 import { Box, Typography, Divider } from '@material-ui/core';
@@ -19,6 +19,7 @@ import { AppDispatch } from 'state';
 import { isAddress } from 'utils';
 import { filterTokens } from 'utils/filtering';
 import { useTokenComparator } from 'utils/sorting';
+import { useCurrencyBalances } from 'state/wallet/hooks';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   wrapper: {
@@ -106,7 +107,6 @@ interface CurrencySearchProps {
   otherSelectedCurrency?: Currency | null
   showCommonBases?: boolean
   onChangeList: () => void
-  balances: { balance: CurrencyAmount | undefined, address: string }[]
 }
 
 const CurrencySearch: React.FC<CurrencySearchProps> = ({
@@ -117,11 +117,10 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
   onDismiss,
   isOpen,
   onChangeList,
-  balances
 }) => {
   const classes = useStyles();
   const { t } = useTranslation();
-  const { chainId } = useActiveWeb3React();
+  const { account, chainId } = useActiveWeb3React();
   const dispatch = useDispatch<AppDispatch>();
 
   const [searchQuery, setSearchQuery] = useState<string>('')
@@ -170,9 +169,7 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
     ]
   }, [filteredTokens, searchQuery, searchToken, tokenComparator])
 
-  const ethBalance = balances.find(balance => balance.address === 'Ether')?.balance;
-  const filteredBalances = filteredSortedTokens.map(token => balances.find(balance => balance.address === token.address)?.balance);
-  const allBalances = showETH ? [ ethBalance, ...filteredBalances ] : filteredBalances;
+  const balances = useCurrencyBalances(account || undefined, showETH ? [ Token.ETHER, ...filteredSortedTokens ] : filteredSortedTokens)
 
   const handleCurrencySelect = useCallback(
     (currency: Currency) => {
@@ -255,7 +252,7 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
               onCurrencySelect={handleCurrencySelect}
               otherCurrency={otherSelectedCurrency}
               selectedCurrency={selectedCurrency}
-              balances={allBalances}
+              balances={balances}
             />
           )}
         </AutoSizer>

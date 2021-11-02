@@ -4,6 +4,7 @@ import {
   Grid,
   Typography
 } from '@material-ui/core';
+import Skeleton from '@material-ui/lab/Skeleton';
 import { ArrowDropUp, ArrowDropDown } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import { CurrencyLogo } from 'components';
@@ -33,7 +34,7 @@ const SwapTokenDetails: React.FC<{ currency: Currency | undefined }> = ({ curren
       return topTokens.find((token: any) => currency?.symbol === Token.ETHER.symbol ? token.symbol.toLowerCase() === 'wmatic' : token.id.toLowerCase() === (currency as Token).address.toLowerCase() );
     }
     return null;
-  }, [topTokens, currency])
+  }, [topTokens, currency]);
   const priceUp = Number(tokenData?.priceChangeUSD) > 0;
   const priceUpPercent = Number(tokenData?.priceChangeUSD).toFixed(2);
   const [isCopied, setCopied] = useCopyClipboard()
@@ -44,33 +45,55 @@ const SwapTokenDetails: React.FC<{ currency: Currency | undefined }> = ({ curren
         <CurrencyLogo currency={currency} size='28px' />
         <Box ml={1}>
           <Typography variant='body2'>{ currency?.symbol }</Typography>
-          <Box display='flex' alignItems='center'>
-            <Typography variant='body2'>${Number(tokenData?.priceUSD).toFixed(2)}</Typography>
-            <Box ml={0.5} display='flex' alignItems='center' className={priceUp ? classes.success : classes.danger}>
-              {
-                priceUp ? <ArrowDropUp /> : <ArrowDropDown />
-              }
-              <Typography variant='body2'>{ priceUpPercent }%</Typography>
-            </Box>
-          </Box>
+          {
+            tokenData ?
+              <Box display='flex' alignItems='center'>
+                <Typography variant='body2'>${Number(tokenData?.priceUSD).toFixed(Number(tokenData?.priceUSD) > 0.01 ? 2 : 5)}</Typography>
+                <Box ml={0.5} display='flex' alignItems='center' className={priceUp ? classes.success : classes.danger}>
+                  {
+                    priceUp ? <ArrowDropUp /> : <ArrowDropDown />
+                  }
+                  <Typography variant='body2'>{ priceUpPercent }%</Typography>
+                </Box>
+              </Box>
+              :
+              <Skeleton variant='rect' width={100} height={20} />
+          }
         </Box>
       </Box>
       <Box borderTop='1px solid #252833' borderBottom='1px solid #252833' px={2}>
         <Grid container>
           <Grid item xs={6}>
             <Box borderRight='1px solid #252833' py={1}>
-              <Typography variant='body2' style={{ color: '#696c80' }}>TVL: {formatCompact(tokenData?.totalLiquidityUSD)}</Typography>
+              {
+                tokenData ?
+                  <Typography variant='body2' style={{ color: '#696c80' }}>TVL: {formatCompact(tokenData?.totalLiquidityUSD)}</Typography>
+                  :
+                  <Skeleton variant='rect' width={100} height={16} />
+              }
             </Box>
           </Grid>
           <Grid item xs={6}>
             <Box py={1} pl={2}>
-              <Typography variant='body2' style={{ color: '#696c80' }}>24h VOL: {formatCompact(tokenData?.oneDayVolumeUSD)}</Typography>
+              {
+                tokenData ?
+                  <Typography variant='body2' style={{ color: '#696c80' }}>24h VOL: {formatCompact(tokenData?.oneDayVolumeUSD)}</Typography>
+                  :
+                  <Skeleton variant='rect' width={100} height={16} />
+              }
             </Box>
           </Grid>
         </Grid>
       </Box>
       <Box display='flex' justifyContent='space-between' alignItems='center' py={1} px={2}>
-        <Typography variant='body2' style={{ color: '#448aff' }}>{ tokenData ? shortenAddress(tokenData.id) : '' }</Typography>
+        {
+          tokenData ?
+            <a href={`https://polygonscan.com/token/${tokenData.id}`} target='_blank' rel='noreferrer' style={{ textDecoration: 'none' }}>
+              <Typography variant='body2' style={{ color: '#448aff' }}>{ tokenData ? shortenAddress(tokenData.id) : '' }</Typography>
+            </a>
+            :
+            <Skeleton variant='rect' width={100} height={16} />
+        }
         <Box display='flex' style={{ cursor: 'pointer' }} onClick={() => { setCopied(tokenData?.id) }}>
           <CopyIcon />
         </Box>
