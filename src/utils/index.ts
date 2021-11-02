@@ -327,14 +327,11 @@ export const getTopTokens = async (ethPrice: any, ethPriceOld: any) => {
             currentLiquidityUSD ?? 0,
             oldLiquidityUSD ?? 0
           );
-          //data.oneDayTxns = oneDayTxns
-          //data.txnChange = txnChange
 
           // new tokens
           if (!oneDayHistory && data) {
             data.oneDayVolumeUSD = data.tradeVolumeUSD;
             data.oneDayVolumeETH = data.tradeVolume * data.derivedETH;
-            //data.oneDayTxns = data.txCount
           }
 
           // update name data for
