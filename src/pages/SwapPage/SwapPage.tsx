@@ -191,7 +191,7 @@ const SwapPage: React.FC = () => {
           {
             currencies[Field.INPUT] && currencies[Field.OUTPUT] &&
               <Box className={classes.wrapper} marginTop='32px'>
-                <Box display='flex' alignItems='center' justifyContent='space-between' marginBottom='20px'>
+                <Box display='flex' alignItems='center' justifyContent='space-between' marginBottom={ liquidityPoolClosed ? 0 : '20px' }>
                   <Box display='flex' alignItems='center'>
                     <Typography variant='h6' style={{ color: '#ebecf2', marginRight: 8 }}>Liquidity Pools </Typography>
                     <Typography variant='body2' style={{ color: '#696c80' }}>({currencies[Field.INPUT]?.symbol?.toUpperCase()}, {currencies[Field.OUTPUT]?.symbol?.toUpperCase()})</Typography>
@@ -205,49 +205,54 @@ const SwapPage: React.FC = () => {
                     }
                   </Box>
                 </Box>
-                <Divider />
-                <Box width={1}>
-                  <Box display='flex' padding={2} className={classes.liquidityMain}>
-                    <Box display='flex' width={0.5} className={classes.liquidityFilter}>
-                      <Typography variant='body2' className={liquidityFilterIndex === 0 ? 'active' : ''} onClick={() => setLiquidityFilterIndex(0)}>All</Typography>
-                      <Typography variant='body2' className={liquidityFilterIndex === 1 ? 'active' : ''} onClick={() => setLiquidityFilterIndex(1)}>{currencies[Field.INPUT]?.symbol?.toUpperCase()}</Typography>
-                      <Typography variant='body2' className={liquidityFilterIndex === 2 ? 'active' : ''} onClick={() => setLiquidityFilterIndex(2)}>{currencies[Field.OUTPUT]?.symbol?.toUpperCase()}</Typography>
-                    </Box>
-                    <Box width={0.2}>
-                    <Typography variant='body2' align='left'>TVL</Typography>
-                    </Box>
-                    <Box width={0.2}>
-                    <Typography variant='body2' align='left'>24h Volume</Typography>
-                    </Box>
-                    <Box width={0.1}>
-                    <Typography variant='body2' align='right'>APY</Typography>
-                    </Box>
-                  </Box>
-                  {
-                    liquidityPairs.map((pair: any) => {
-                      const apy = (Number(pair.oneDayVolumeUSD ? pair.oneDayVolumeUSD : pair.oneDayVolumeUntracked) * 0.003 * 365 * 100) / Number(pair.oneDayVolumeUSD ? pair.trackedReserveUSD : pair.reserveUSD);
-                      const liquidity = pair.trackedReserveUSD ? pair.trackedReserveUSD : pair.reserveUSD;
-                      const volume = pair.oneDayVolumeUSD ? pair.oneDayVolumeUSD : pair.oneDayVolumeUntracked;
-                      return (
-                        <Box display='flex' className={cx(classes.liquidityContent, classes.liquidityMain)} padding={2}>
-                          <Box display='flex' alignItems='center' width={0.5}>
-                            <DoubleCurrencyLogo currency0={currencies[Field.INPUT]} currency1={currencies[Field.OUTPUT]} size={28} />
-                            <Typography variant='body2' style={{ marginLeft: 12 }}>{pair.token0.symbol.toUpperCase()} / {pair.token1.symbol.toUpperCase()}</Typography>
+                {
+                  !liquidityPoolClosed &&
+                    <>
+                      <Divider />
+                      <Box width={1}>
+                        <Box display='flex' padding={2} className={classes.liquidityMain}>
+                          <Box display='flex' width={0.5} className={classes.liquidityFilter}>
+                            <Typography variant='body2' className={liquidityFilterIndex === 0 ? 'active' : ''} onClick={() => setLiquidityFilterIndex(0)}>All</Typography>
+                            <Typography variant='body2' className={liquidityFilterIndex === 1 ? 'active' : ''} onClick={() => setLiquidityFilterIndex(1)}>{currencies[Field.INPUT]?.symbol?.toUpperCase()}</Typography>
+                            <Typography variant='body2' className={liquidityFilterIndex === 2 ? 'active' : ''} onClick={() => setLiquidityFilterIndex(2)}>{currencies[Field.OUTPUT]?.symbol?.toUpperCase()}</Typography>
                           </Box>
                           <Box width={0.2}>
-                            <Typography variant='body2'>${ formatCompact(liquidity) }</Typography>
+                          <Typography variant='body2' align='left'>TVL</Typography>
                           </Box>
                           <Box width={0.2}>
-                            <Typography variant='body2'>${ formatCompact(volume) }</Typography>
+                          <Typography variant='body2' align='left'>24h Volume</Typography>
                           </Box>
                           <Box width={0.1}>
-                            <Typography variant='body2' align='right' style={{ color: '#0fc679' }}>{apy.toFixed(2)}%</Typography>
+                          <Typography variant='body2' align='right'>APY</Typography>
                           </Box>
-                        </Box>    
-                      )
-                    })
-                  }
-                </Box>
+                        </Box>
+                        {
+                          liquidityPairs.map((pair: any) => {
+                            const apy = (Number(pair.oneDayVolumeUSD ? pair.oneDayVolumeUSD : pair.oneDayVolumeUntracked) * 0.003 * 365 * 100) / Number(pair.oneDayVolumeUSD ? pair.trackedReserveUSD : pair.reserveUSD);
+                            const liquidity = pair.trackedReserveUSD ? pair.trackedReserveUSD : pair.reserveUSD;
+                            const volume = pair.oneDayVolumeUSD ? pair.oneDayVolumeUSD : pair.oneDayVolumeUntracked;
+                            return (
+                              <Box display='flex' className={cx(classes.liquidityContent, classes.liquidityMain)} padding={2}>
+                                <Box display='flex' alignItems='center' width={0.5}>
+                                  <DoubleCurrencyLogo currency0={currencies[Field.INPUT]} currency1={currencies[Field.OUTPUT]} size={28} />
+                                  <Typography variant='body2' style={{ marginLeft: 12 }}>{pair.token0.symbol.toUpperCase()} / {pair.token1.symbol.toUpperCase()}</Typography>
+                                </Box>
+                                <Box width={0.2}>
+                                  <Typography variant='body2'>${ formatCompact(liquidity) }</Typography>
+                                </Box>
+                                <Box width={0.2}>
+                                  <Typography variant='body2'>${ formatCompact(volume) }</Typography>
+                                </Box>
+                                <Box width={0.1}>
+                                  <Typography variant='body2' align='right' style={{ color: '#0fc679' }}>{apy.toFixed(2)}%</Typography>
+                                </Box>
+                              </Box>    
+                            )
+                          })
+                        }
+                      </Box>
+                    </>
+                }
               </Box>
           }
         </Grid>
