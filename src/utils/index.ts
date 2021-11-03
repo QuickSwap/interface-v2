@@ -12,7 +12,10 @@ import {
   TOKENS_CURRENT,
   TOKENS_DYNAMIC,
   TOKEN_DATA,
+  TOKEN_DATA1,
   PAIR_DATA,
+  PAIRS_BULK1,
+  PAIRS_HISTORICAL_BULK,
 } from "apollo/queries";
 import { JsonRpcSigner, Web3Provider } from "@ethersproject/providers";
 import { abi as IUniswapV2Router02ABI } from "@uniswap/v2-periphery/build/IUniswapV2Router02.json";
@@ -361,6 +364,182 @@ export const getTopTokens = async (ethPrice: any, ethPriceOld: any) => {
   } catch (e) {
     console.log(e);
   }
+};
+
+export const getTimestampsForChanges = () => {
+  var utcCurrentTime = dayjs();
+  //utcCurrentTime = utcCurrentTime.subtract(0.3,  'day');
+  const t1 = utcCurrentTime.subtract(1, "day").startOf("minute").unix();
+  const t2 = utcCurrentTime.subtract(2, "day").startOf("minute").unix();
+  const tWeek = utcCurrentTime.subtract(1, "week").startOf("minute").unix();
+  return [t1, t2, tWeek];
+};
+
+export const getTokenPairs = async (
+  tokenAddress: string,
+  tokenAddress1: string
+) => {
+  try {
+    // fetch all current and historical data
+    let result = await client.query({
+      query: TOKEN_DATA1(tokenAddress, tokenAddress1),
+      fetchPolicy: "cache-first",
+    });
+    return result.data?.["pairs0"]
+      .concat(result.data?.["pairs1"])
+      .concat(result.data?.["pairs2"])
+      .concat(result.data?.["pairs3"])
+      .concat(result.data?.["pairs4"]);
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+export const getBulkPairData = async (pairList: any, ethPrice: any) => {
+  const [t1, t2, tWeek] = getTimestampsForChanges();
+  let a = await getBlocksFromTimestamps([t1, t2, tWeek]);
+  let [{ number: b1 }, { number: b2 }, { number: bWeek }] = a;
+  try {
+    let current = await client.query({
+      query: PAIRS_BULK1,
+      variables: {
+        allPairs: pairList,
+      },
+      fetchPolicy: "cache-first",
+    });
+
+    let [oneDayResult, twoDayResult, oneWeekResult] = await Promise.all(
+      [b1, b2, bWeek].map(async (block) => {
+        let result = client.query({
+          query: PAIRS_HISTORICAL_BULK(block, pairList),
+          fetchPolicy: "cache-first",
+        });
+        return result;
+      })
+    );
+
+    let oneDayData = oneDayResult?.data?.pairs.reduce((obj: any, cur: any) => {
+      return { ...obj, [cur.id]: cur };
+    }, {});
+
+    let twoDayData = twoDayResult?.data?.pairs.reduce((obj: any, cur: any) => {
+      return { ...obj, [cur.id]: cur };
+    }, {});
+
+    let oneWeekData = oneWeekResult?.data?.pairs.reduce(
+      (obj: any, cur: any) => {
+        return { ...obj, [cur.id]: cur };
+      },
+      {}
+    );
+
+    let pairData = await Promise.all(
+      current &&
+        current.data.pairs.map(async (pair: any) => {
+          let data = pair;
+          let oneDayHistory = oneDayData?.[pair.id];
+          if (!oneDayHistory) {
+            let newData = await client.query({
+              query: PAIR_DATA(pair.id, b1),
+              fetchPolicy: "cache-first",
+            });
+            oneDayHistory = newData.data.pairs[0];
+          }
+          let twoDayHistory = twoDayData?.[pair.id];
+          if (!twoDayHistory) {
+            let newData = await client.query({
+              query: PAIR_DATA(pair.id, b2),
+              fetchPolicy: "cache-first",
+            });
+            twoDayHistory = newData.data.pairs[0];
+          }
+          let oneWeekHistory = oneWeekData?.[pair.id];
+          if (!oneWeekHistory) {
+            let newData = await client.query({
+              query: PAIR_DATA(pair.id, bWeek),
+              fetchPolicy: "cache-first",
+            });
+            oneWeekHistory = newData.data.pairs[0];
+          }
+          data = parseData(
+            data,
+            oneDayHistory,
+            twoDayHistory,
+            oneWeekHistory,
+            ethPrice,
+            b1
+          );
+          return data;
+        })
+    );
+    return pairData;
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+const parseData = (
+  data: any,
+  oneDayData: any,
+  twoDayData: any,
+  oneWeekData: any,
+  ethPrice: any,
+  oneDayBlock: any
+) => {
+  // get volume changes
+  const [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(
+    data?.volumeUSD,
+    oneDayData?.volumeUSD ? oneDayData.volumeUSD : 0,
+    twoDayData?.volumeUSD ? twoDayData.volumeUSD : 0
+  );
+  const [oneDayVolumeUntracked, volumeChangeUntracked] = get2DayPercentChange(
+    data?.untrackedVolumeUSD,
+    oneDayData?.untrackedVolumeUSD
+      ? parseFloat(oneDayData?.untrackedVolumeUSD)
+      : 0,
+    twoDayData?.untrackedVolumeUSD ? twoDayData?.untrackedVolumeUSD : 0
+  );
+
+  const oneWeekVolumeUSD = parseFloat(
+    oneWeekData ? data?.volumeUSD - oneWeekData?.volumeUSD : data.volumeUSD
+  );
+
+  const oneWeekVolumeUntracked = parseFloat(
+    oneWeekData
+      ? data?.untrackedVolumeUSD - oneWeekData?.untrackedVolumeUSD
+      : data.untrackedVolumeUSD
+  );
+
+  // set volume properties
+  data.oneDayVolumeUSD = oneDayVolumeUSD;
+  data.oneWeekVolumeUSD = oneWeekVolumeUSD;
+  data.volumeChangeUSD = volumeChangeUSD;
+  data.oneDayVolumeUntracked = oneDayVolumeUntracked;
+  data.oneWeekVolumeUntracked = oneWeekVolumeUntracked;
+  data.volumeChangeUntracked = volumeChangeUntracked;
+
+  // set liquidity properties
+  data.trackedReserveUSD = data.trackedReserveETH * ethPrice;
+  data.liquidityChangeUSD = getPercentChange(
+    data.reserveUSD,
+    oneDayData?.reserveUSD
+  );
+
+  // format if pair hasnt existed for a day or a week
+  if (!oneDayData && data && data.createdAtBlockNumber > oneDayBlock) {
+    data.oneDayVolumeUSD = parseFloat(data.volumeUSD);
+  }
+  if (!oneDayData && data) {
+    data.oneDayVolumeUSD = parseFloat(data.volumeUSD);
+  }
+  if (!oneWeekData && data) {
+    data.oneWeekVolumeUSD = parseFloat(data.volumeUSD);
+  }
+
+  // format incorrect names
+  updateNameData(data);
+
+  return data;
 };
 
 export function updateNameData(data: BasicData): BasicData | undefined {

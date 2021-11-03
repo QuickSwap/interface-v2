@@ -11,6 +11,7 @@ import {
   updateEthPrice,
   updateGlobalData,
   updateTopTokens,
+  updateTokenPairs,
 } from "./actions";
 
 export function useBlockNumber(): number | undefined {
@@ -134,4 +135,18 @@ export function useTopTokens() {
     [dispatch]
   );
   return { topTokens, updateTopTokens: _updateTopTokens };
+}
+
+export function useTokenPairs() {
+  const tokenPairs = useSelector(
+    (state: AppState) => state.application.tokenPairs
+  );
+  const dispatch = useDispatch();
+  const _updateTokenPairs = useCallback(
+    ({ data }) => {
+      dispatch(updateTokenPairs({ data }));
+    },
+    [dispatch]
+  );
+  return { tokenPairs, updateTokenPairs: _updateTokenPairs };
 }

@@ -217,7 +217,10 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
         <TokenTags currency={currency} />
         <Box textAlign='right'>
           {balance
-            ? <><Balance balance={balance} /><Typography variant='caption' style={{ color: '#696c80' }}>${ (Number(balance.toSignificant()) * (usdPrice ? Number(usdPrice.toSignificant()) : 0)).toLocaleString() }</Typography></>
+            ? <>
+                <Balance balance={balance} />
+                <Typography variant='caption' style={{ color: '#696c80' }}>${ (Number(balance.toSignificant()) * (usdPrice ? Number(usdPrice.toSignificant()) : 0)).toLocaleString() }</Typography>
+              </>
             : account ? <CircularProgress size={24} color='secondary' /> : null}
         </Box>
       </Box>

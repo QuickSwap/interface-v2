@@ -9,6 +9,7 @@ import {
   updateEthPrice,
   updateGlobalData,
   updateTopTokens,
+  updateTokenPairs,
 } from "./actions";
 
 type PopupList = Array<{
@@ -25,6 +26,7 @@ export interface ApplicationState {
   readonly ethPrice: any;
   readonly globalData: any;
   readonly topTokens: any;
+  readonly tokenPairs: any;
 }
 
 const initialState: ApplicationState = {
@@ -33,6 +35,7 @@ const initialState: ApplicationState = {
   openModal: null,
   globalData: null,
   topTokens: null,
+  tokenPairs: null,
   ethPrice: {
     price: null,
     oneDayPrice: null,
@@ -95,5 +98,8 @@ export default createReducer(initialState, (builder) =>
     })
     .addCase(updateTopTokens, (state, { payload: { data } }) => {
       state.topTokens = data;
+    })
+    .addCase(updateTokenPairs, (state, { payload: { data } }) => {
+      state.tokenPairs = data;
     })
 );

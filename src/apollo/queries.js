@@ -25,8 +25,26 @@ const PairFields = `
     volumeUSD
     reserveUSD
     totalSupply
+    token0 {
+      symbol
+      id
+    }
+    token1 {
+      symbol
+      id
+    }
   }
 `
+
+export const PAIRS_CURRENT = () => {
+  const queryString = `
+  query pairs {
+    pairs(first: 200, orderBy: reserveUSD, orderDirection: desc) {
+      id
+    }
+  }`
+  return gql(queryString)
+}
 
 export const PAIRS_BULK = (pairs) => {
   let pairsString = `[`
@@ -44,6 +62,15 @@ export const PAIRS_BULK = (pairs) => {
   `
   return gql(queryString)
 }
+
+export const PAIRS_BULK1 = gql`
+  ${PairFields}
+  query pairs($allPairs: [Bytes]!) {
+    pairs(first: 500, where: { id_in: $allPairs }, orderBy: trackedReserveETH, orderDirection: desc) {
+      ...PairFields
+    }
+  }
+`
 
 const TokenFields = `
   fragment TokenFields on Token {
@@ -93,6 +120,30 @@ export const TOKEN_DATA = (tokenAddress, block) => {
         id
       }
       pairs1: pairs(where: {token1: "${tokenAddress}"}, first: 50, orderBy: reserveUSD, orderDirection: desc){
+        id
+      }
+    }
+  `
+  return gql(queryString)
+}
+
+export const TOKEN_DATA1 = (tokenAddress, tokenAddress1) => {
+  const queryString = `
+    ${TokenFields}
+    query tokens {
+      pairs0: pairs(where: {token0: "${tokenAddress}", token1: "${tokenAddress1}"}){
+        id
+      }
+      pairs1: pairs(where: {token0: "${tokenAddress}", token1_not: "${tokenAddress1}"}, first: 2, orderBy: reserveUSD, orderDirection: desc){
+        id
+      }
+      pairs2: pairs(where: {token1: "${tokenAddress}", token0_not: "${tokenAddress1}"}, first: 2, orderBy: reserveUSD, orderDirection: desc){
+        id
+      }
+      pairs3: pairs(where: {token0: "${tokenAddress1}", token1_not: "${tokenAddress}"}, first: 2, orderBy: reserveUSD, orderDirection: desc){
+        id
+      }
+      pairs4: pairs(where: {token1: "${tokenAddress1}", token0_not: "${tokenAddress}"}, first: 2, orderBy: reserveUSD, orderDirection: desc){
         id
       }
     }

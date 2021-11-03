@@ -59,3 +59,7 @@ export const updateGlobalData = createAction<{ data: any }>(
 export const updateTopTokens = createAction<{ data: any }>(
   "application/updateTopTokens"
 );
+
+export const updateTokenPairs = createAction<{ data: any }>(
+  "application/updateTokenPairs"
+);
