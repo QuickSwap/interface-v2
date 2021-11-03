@@ -6,7 +6,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import { Field } from 'state/swap/actions'
 import { DoubleCurrencyLogo } from 'components'
 import useUSDCPrice from 'utils/useUSDCPrice'
-import { computeSlippageAdjustedAmounts, computeTradePriceBreakdown, warningSeverity } from 'utils/prices'
+import { computeSlippageAdjustedAmounts } from 'utils/prices'
 import { ReactComponent as ArrowDownIcon } from 'assets/images/ArrowDownIcon.svg'
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
@@ -73,8 +73,6 @@ const SwapModalHeader: React.FC<SwapModalHeaderProps> = ({
     trade,
     allowedSlippage
   ])
-  const { priceImpactWithoutFee } = useMemo(() => computeTradePriceBreakdown(trade), [trade])
-  const priceImpactSeverity = warningSeverity(priceImpactWithoutFee)
   const usdPrice = useUSDCPrice(trade.inputAmount.currency)
 
   return (

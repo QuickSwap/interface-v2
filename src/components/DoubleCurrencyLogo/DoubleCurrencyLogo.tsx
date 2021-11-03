@@ -31,8 +31,8 @@ export default function DoubleCurrencyLogo({
   const classes = useStyles({ size, margin })
   return (
     <Box className={classes.wrapper}>
-      {currency0 && <CurrencyLogo currency={currency0} size={size.toString() + 'px'} />}
-      {currency1 && <CurrencyLogo currency={currency1} size={size.toString() + 'px'} />}
+      <CurrencyLogo currency={currency0} size={size.toString() + 'px'} />
+      <CurrencyLogo currency={currency1} size={size.toString() + 'px'} />
     </Box>
   )
 }

@@ -11,6 +11,7 @@ import { useEthPrice, useTopTokens, useTokenPairs } from 'state/application/hook
 import { getEthPrice, getTopTokens, getTokenPairs, getBulkPairData, formatCompact } from 'utils';
 import { useDerivedSwapInfo } from 'state/swap/hooks';
 import { Field } from 'state/swap/actions';
+import { useAllTokens } from 'hooks/Tokens';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   helpWrapper: {
@@ -88,6 +89,7 @@ const SwapPage: React.FC = () => {
   const classes = useStyles();
   const [ swapIndex, setSwapIndex ] = useState(0);
   const { currencies } = useDerivedSwapInfo();
+  const allTokens = useAllTokens();
 
   const { ethPrice, updateEthPrice } = useEthPrice();
   const { updateTopTokens } = useTopTokens();
@@ -129,6 +131,7 @@ const SwapPage: React.FC = () => {
 
   useEffect(() => {
     async function fetchTokenPairs() {
+      updateTokenPairs({ data: null });
       const tokenPairs = await getTokenPairs(token1Address, token2Address);
       const formattedPairs = tokenPairs.map((pair: any) => {
         return pair.id
@@ -231,10 +234,16 @@ const SwapPage: React.FC = () => {
                             const apy = (Number(pair.oneDayVolumeUSD ? pair.oneDayVolumeUSD : pair.oneDayVolumeUntracked) * 0.003 * 365 * 100) / Number(pair.oneDayVolumeUSD ? pair.trackedReserveUSD : pair.reserveUSD);
                             const liquidity = pair.trackedReserveUSD ? pair.trackedReserveUSD : pair.reserveUSD;
                             const volume = pair.oneDayVolumeUSD ? pair.oneDayVolumeUSD : pair.oneDayVolumeUntracked;
+                            const token0 = pair.token0.symbol.toLowerCase() === 'wmatic'
+                              ? Token.ETHER
+                              : Object.values(allTokens).find(token => pair.token0.id.toLowerCase() === token.address.toLowerCase());
+                            const token1 = pair.token1.symbol.toLowerCase() === 'wmatic'
+                              ? Token.ETHER
+                              : Object.values(allTokens).find(token => pair.token1.id.toLowerCase() === token.address.toLowerCase());
                             return (
                               <Box display='flex' className={cx(classes.liquidityContent, classes.liquidityMain)} padding={2}>
                                 <Box display='flex' alignItems='center' width={0.5}>
-                                  <DoubleCurrencyLogo currency0={currencies[Field.INPUT]} currency1={currencies[Field.OUTPUT]} size={28} />
+                                  <DoubleCurrencyLogo currency0={token0} currency1={token1} size={28} />
                                   <Typography variant='body2' style={{ marginLeft: 12 }}>{pair.token0.symbol.toUpperCase()} / {pair.token1.symbol.toUpperCase()}</Typography>
                                 </Box>
                                 <Box width={0.2}>
