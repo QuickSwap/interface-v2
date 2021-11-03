@@ -9,7 +9,6 @@ import ReactGA from 'react-ga';
 import { Currency, Token, currencyEquals, ETHER, TokenAmount, WETH } from '@uniswap/sdk';
 import { ROUTER_ADDRESS } from 'constants/index';
 import { useAllTokens } from 'hooks/Tokens';
-import AddIcon from '@material-ui/icons/Add';
 import { useActiveWeb3React } from 'hooks';
 import useTransactionDeadline from 'hooks/useTransactionDeadline';
 import { ApprovalState, useApproveCallback } from 'hooks/useApproveCallback';
@@ -20,33 +19,31 @@ import { useDerivedMintInfo, useMintActionHandlers, useMintState } from 'state/m
 import { useIsExpertMode, useUserSlippageTolerance } from 'state/user/hooks'
 import { maxAmountSpend, addMaticToMetamask, getRouterContract, calculateSlippageAmount, calculateGasMargin } from 'utils';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
+import { ReactComponent as AddLiquidityIcon } from 'assets/images/AddLiquidityIcon.svg';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   exchangeSwap: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    background: palette.background.default,
-    border: `2px solid ${palette.primary.dark}`,
     cursor: 'pointer',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    margin: '-20px auto',
+    margin: '16px auto',
     zIndex: 2,
-    position: 'relative',
-    '& svg': {
-      width: 32,
-      height: 32,
-      color: palette.primary.main
-    }
+    position: 'relative'
   },
   swapButtonWrapper: {
     marginTop: 16,
     '& button': {
       height: 56,
-      fontSize: 16,
-      fontWeight: 'normal',
+      fontSize: 18,
+      fontWeight: 600,
+      width: (props: any) => props.showApproveFlow ? '48%' : '100%',
+      backgroundImage: 'linear-gradient(to bottom, #448aff, #004ce6)',
+      '&.Mui-disabled': {
+        backgroundImage: 'linear-gradient(to bottom, #282d3d, #1d212c)',
+        color: '#696c80',
+        opacity: 0.5
+      },
       '& .content': {
         display: 'flex',
         alignItems: 'center',
@@ -55,10 +52,6 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
           marginLeft: 6
         }
       },
-      width: '100%',
-      '& p': {
-        fontSize: 16
-      }
     }
   },
   swapPrice: {
@@ -107,7 +100,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
 }));
 
 const AddLiquidity: React.FC = () => {
-  const classes = useStyles();
+  const classes = useStyles({});
 
   const { account, chainId, library } = useActiveWeb3React();
 
@@ -380,11 +373,11 @@ const AddLiquidity: React.FC = () => {
         )}
         pendingText={pendingText}
       />
-      <CurrencyInput title='Input 1:' currency={currencies[Field.CURRENCY_A]} showMaxButton={!atMaxAmounts[Field.CURRENCY_A]} onMax={() => onFieldAInput(maxAmounts[Field.CURRENCY_A]?.toExact() ?? '')} handleCurrencySelect={handleCurrencyASelect} amount={formattedAmounts[Field.CURRENCY_A]} setAmount={onFieldAInput} />
+      <CurrencyInput title='Token 1:' currency={currencies[Field.CURRENCY_A]} showMaxButton={!atMaxAmounts[Field.CURRENCY_A]} onMax={() => onFieldAInput(maxAmounts[Field.CURRENCY_A]?.toExact() ?? '')} handleCurrencySelect={handleCurrencyASelect} amount={formattedAmounts[Field.CURRENCY_A]} setAmount={onFieldAInput} />
       <Box className={classes.exchangeSwap}>
-        <AddIcon />
+        <AddLiquidityIcon />
       </Box>
-      <CurrencyInput title='Input 2:' currency={currencies[Field.CURRENCY_B]} showMaxButton={!atMaxAmounts[Field.CURRENCY_B]} onMax={() => onFieldBInput(maxAmounts[Field.CURRENCY_B]?.toExact() ?? '')} handleCurrencySelect={handleCurrencyBSelect} amount={formattedAmounts[Field.CURRENCY_B]} setAmount={onFieldBInput} />
+      <CurrencyInput title='Token 2:' currency={currencies[Field.CURRENCY_B]} showMaxButton={!atMaxAmounts[Field.CURRENCY_B]} onMax={() => onFieldBInput(maxAmounts[Field.CURRENCY_B]?.toExact() ?? '')} handleCurrencySelect={handleCurrencyBSelect} amount={formattedAmounts[Field.CURRENCY_B]} setAmount={onFieldBInput} />
       {
         currencies[Field.CURRENCY_A] && currencies[Field.CURRENCY_B] && pairState !== PairState.INVALID && price &&
           <Box className={classes.swapPrice}>
@@ -431,15 +424,9 @@ const AddLiquidity: React.FC = () => {
               )}
             </Box>
           )}
-        <Button color='primary' disabled={Boolean(account) && (Boolean(error) || approvalA !== ApprovalState.APPROVED || approvalB !== ApprovalState.APPROVED)} onClick={account ? onAdd : connectWallet}>
+        <Button disabled={Boolean(account) && (Boolean(error) || approvalA !== ApprovalState.APPROVED || approvalB !== ApprovalState.APPROVED)} onClick={account ? onAdd : connectWallet}>
           { account ? error ?? 'Supply' : 'Connect Wallet' }
         </Button>
-
-        {pair && !noLiquidity && pairState !== PairState.INVALID ? (
-          <Box mt={2}>
-            <MinimalPositionCard showUnwrapped={oneCurrencyIsWETH} pair={pair} />
-          </Box>
-        ) : null}
       </Box>
     </Box>
   )

@@ -147,7 +147,7 @@ const SwapPage: React.FC = () => {
   }, [ethPrice, token1Address, token2Address, updateTokenPairs])
 
   return (
-    <Box width='100%'>
+    <Box width='100%' mb={3}>
       <Box mb={2} display='flex' alignItems='center' justifyContent='space-between' width='100%'>
         <Typography variant='h4'>Swap</Typography>
         <Box className={classes.helpWrapper}>
@@ -253,7 +253,7 @@ const SwapPage: React.FC = () => {
                                   <Typography variant='body2'>${ formatCompact(volume) }</Typography>
                                 </Box>
                                 <Box width={0.1}>
-                                  <Typography variant='body2' align='right' style={{ color: '#0fc679' }}>{apy.toFixed(2)}%</Typography>
+                                  <Typography variant='body2' align='right' style={{ color: apy < 0 ? '#ff5252' : '#0fc679' }}>{apy.toFixed(2)}%</Typography>
                                 </Box>
                               </Box>    
                             )

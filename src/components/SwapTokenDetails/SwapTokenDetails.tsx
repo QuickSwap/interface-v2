@@ -15,9 +15,6 @@ import { ReactComponent as CopyIcon } from 'assets/images/CopyIcon.svg';
 import { shortenAddress, formatCompact } from 'utils';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
-  wrapper: {
-
-  },
   success: {
     color: '#0fc679'
   },
