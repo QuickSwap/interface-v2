@@ -222,16 +222,18 @@ const SwapPage: React.FC = () => {
                           <Box width={0.2}>
                           <Typography variant='body2' align='left'>TVL</Typography>
                           </Box>
-                          <Box width={0.2}>
+                          <Box width={0.15}>
                           <Typography variant='body2' align='left'>24h Volume</Typography>
                           </Box>
-                          <Box width={0.1}>
+                          <Box width={0.15}>
                           <Typography variant='body2' align='right'>APY</Typography>
                           </Box>
                         </Box>
                         {
                           liquidityPairs.map((pair: any) => {
-                            const apy = (Number(pair.oneDayVolumeUSD ? pair.oneDayVolumeUSD : pair.oneDayVolumeUntracked) * 0.003 * 365 * 100) / Number(pair.oneDayVolumeUSD ? pair.trackedReserveUSD : pair.reserveUSD);
+                            const dayVolumeUSD = Number(pair.oneDayVolumeUSD ? pair.oneDayVolumeUSD : pair.oneDayVolumeUntracked) * 0.003 * 365 * 100;
+                            const trackReserveUSD = Number(pair.oneDayVolumeUSD ? pair.trackedReserveUSD : pair.reserveUSD);
+                            const apy = (isNaN(dayVolumeUSD) || trackReserveUSD === 0) ? 0 : dayVolumeUSD / trackReserveUSD;
                             const liquidity = pair.trackedReserveUSD ? pair.trackedReserveUSD : pair.reserveUSD;
                             const volume = pair.oneDayVolumeUSD ? pair.oneDayVolumeUSD : pair.oneDayVolumeUntracked;
                             const token0 = pair.token0.symbol.toLowerCase() === 'wmatic'
@@ -249,10 +251,10 @@ const SwapPage: React.FC = () => {
                                 <Box width={0.2}>
                                   <Typography variant='body2'>${ formatCompact(liquidity) }</Typography>
                                 </Box>
-                                <Box width={0.2}>
+                                <Box width={0.15}>
                                   <Typography variant='body2'>${ formatCompact(volume) }</Typography>
                                 </Box>
-                                <Box width={0.1}>
+                                <Box width={0.15}>
                                   <Typography variant='body2' align='right' style={{ color: apy < 0 ? '#ff5252' : '#0fc679' }}>{apy.toFixed(2)}%</Typography>
                                 </Box>
                               </Box>    
