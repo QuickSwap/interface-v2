@@ -9,6 +9,7 @@ export { default as CurrencyLogo } from "./CurrencyLogo";
 export { default as DoubleCurrencyLogo } from "./DoubleCurrencyLogo";
 export { default as QuestionHelper } from "./QuestionHelper";
 export { default as Logo } from "./Logo";
+export { default as PoolPositionCard } from "./PoolPositionCard";
 export {
   default as FullPositionCard,
   MinimalPositionCard,

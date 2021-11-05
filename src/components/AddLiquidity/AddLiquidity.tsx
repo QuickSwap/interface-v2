@@ -16,6 +16,7 @@ import { Field } from 'state/mint/actions';
 import { PairState } from 'data/Reserves';
 import { useTransactionAdder } from 'state/transactions/hooks';
 import { useDerivedMintInfo, useMintActionHandlers, useMintState } from 'state/mint/hooks';
+import { useTokenBalance } from 'state/wallet/hooks';
 import { useIsExpertMode, useUserSlippageTolerance } from 'state/user/hooks'
 import { maxAmountSpend, addMaticToMetamask, getRouterContract, calculateSlippageAmount, calculateGasMargin } from 'utils';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
@@ -57,11 +58,11 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
   swapPrice: {
     display: 'flex',
     justifyContent: 'space-between',
-    margin: '16px 8px 0',
+    margin: '6px 24px 0',
     '& p': {
       display: 'flex',
-      fontSize: 16,
       alignItems: 'center',
+      color: '#c7cad9',
       '& svg': {
         marginLeft: 8,
         width: 16,
@@ -157,14 +158,10 @@ const AddLiquidity: React.FC = () => {
   const [approvalA, approveACallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_A], ROUTER_ADDRESS);
   const [approvalB, approveBCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_B], ROUTER_ADDRESS);
 
+  const userPoolBalance = useTokenBalance(account ?? undefined, pair?.liquidityToken);
+
   const currencyA = currencies[Field.CURRENCY_A];
   const currencyB = currencies[Field.CURRENCY_B];
-
-  const oneCurrencyIsWETH = Boolean(
-    chainId &&
-      ((currencyA && currencyEquals(currencyA, WETH[chainId])) ||
-        (currencyB && currencyEquals(currencyB, WETH[chainId])))
-  )
 
   const atMaxAmounts: { [field in Field]?: TokenAmount } = [Field.CURRENCY_A, Field.CURRENCY_B].reduce(
     (accumulator, field) => {
@@ -380,9 +377,27 @@ const AddLiquidity: React.FC = () => {
       <CurrencyInput title='Token 2:' currency={currencies[Field.CURRENCY_B]} showMaxButton={!atMaxAmounts[Field.CURRENCY_B]} onMax={() => onFieldBInput(maxAmounts[Field.CURRENCY_B]?.toExact() ?? '')} handleCurrencySelect={handleCurrencyBSelect} amount={formattedAmounts[Field.CURRENCY_B]} setAmount={onFieldBInput} />
       {
         currencies[Field.CURRENCY_A] && currencies[Field.CURRENCY_B] && pairState !== PairState.INVALID && price &&
-          <Box className={classes.swapPrice}>
-            <Typography>1 { currencies[Field.CURRENCY_A]?.symbol } = { price.toSignificant(3) } { currencies[Field.CURRENCY_B]?.symbol } </Typography>
-            <Typography>1 { currencies[Field.CURRENCY_B]?.symbol } = { price.invert().toSignificant(3) } { currencies[Field.CURRENCY_A]?.symbol } </Typography>
+          <Box my={2}>
+            <Box className={classes.swapPrice}>
+              <Typography variant='body2'>1 { currencies[Field.CURRENCY_A]?.symbol } = { price.toSignificant(3) } { currencies[Field.CURRENCY_B]?.symbol } </Typography>
+              <Typography variant='body2'>1 { currencies[Field.CURRENCY_B]?.symbol } = { price.invert().toSignificant(3) } { currencies[Field.CURRENCY_A]?.symbol } </Typography>
+            </Box>
+            <Box className={classes.swapPrice}>
+              <Typography variant='body2'>
+                Your pool share:
+              </Typography>
+              <Typography variant='body2'>
+                {poolTokenPercentage ? poolTokenPercentage.toFixed(6) + '%' : '-'}
+              </Typography>
+            </Box>
+            <Box className={classes.swapPrice}>
+              <Typography variant='body2'>
+                LP Tokens Received:
+              </Typography>
+              <Typography variant='body2'>
+                { userPoolBalance?.toSignificant() } LP Tokens
+              </Typography>
+            </Box>
           </Box>
       }
       <Box className={classes.swapButtonWrapper}>
