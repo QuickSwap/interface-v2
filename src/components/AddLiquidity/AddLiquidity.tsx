@@ -1,12 +1,12 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Box, Button, Typography } from '@material-ui/core';
-import { CurrencyInput, TransactionConfirmationModal, ConfirmationModalContent, ConfirmAddModalBottom, MinimalPositionCard, DoubleCurrencyLogo } from 'components';
+import { CurrencyInput, TransactionConfirmationModal, ConfirmationModalContent, DoubleCurrencyLogo } from 'components';
 import { makeStyles } from '@material-ui/core/styles';
 import { useWalletModalToggle } from 'state/application/hooks';
 import { TransactionResponse } from '@ethersproject/providers';
 import { BigNumber } from '@ethersproject/bignumber';
 import ReactGA from 'react-ga';
-import { Currency, Token, currencyEquals, ETHER, TokenAmount, WETH } from '@uniswap/sdk';
+import { Currency, Token, ETHER, TokenAmount } from '@uniswap/sdk';
 import { ROUTER_ADDRESS } from 'constants/index';
 import { useAllTokens } from 'hooks/Tokens';
 import { useActiveWeb3React } from 'hooks';
@@ -100,7 +100,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
   }
 }));
 
-const AddLiquidity: React.FC = () => {
+const AddLiquidity: React.FC<{currency0?: Currency, currency1?: Currency}> = ({ currency0, currency1 }) => {
   const classes = useStyles({});
 
   const { account, chainId, library } = useActiveWeb3React();
@@ -160,9 +160,6 @@ const AddLiquidity: React.FC = () => {
 
   const userPoolBalance = useTokenBalance(account ?? undefined, pair?.liquidityToken);
 
-  const currencyA = currencies[Field.CURRENCY_A];
-  const currencyB = currencies[Field.CURRENCY_B];
-
   const atMaxAmounts: { [field in Field]?: TokenAmount } = [Field.CURRENCY_A, Field.CURRENCY_B].reduce(
     (accumulator, field) => {
       return {
@@ -188,12 +185,20 @@ const AddLiquidity: React.FC = () => {
   )
 
   useEffect(() => {
-    onCurrencySelection(Field.CURRENCY_A, Token.ETHER);
-    const quickToken = Object.values(allTokens).find((val) => val.symbol === 'QUICK');
-    if (quickToken) {
-      onCurrencySelection(Field.CURRENCY_B, quickToken);
+    if (currency0) {
+      onCurrencySelection(Field.CURRENCY_A, currency0);
+    } else {
+      onCurrencySelection(Field.CURRENCY_A, Token.ETHER);
     }
-  }, [onCurrencySelection, allTokens]);
+    if (currency1) {
+      onCurrencySelection(Field.CURRENCY_B, currency1);
+    } else {
+      const quickToken = Object.values(allTokens).find((val) => val.symbol === 'QUICK');
+      if (quickToken) {
+        onCurrencySelection(Field.CURRENCY_B, quickToken);
+      }  
+    }
+  }, [onCurrencySelection, allTokens, currency0, currency1]);
 
   const onAdd = () => {
     if (expertMode) {
@@ -338,19 +343,6 @@ const AddLiquidity: React.FC = () => {
             100}% your transaction will revert.`}
         </Typography>
       </Box>
-    )
-  }
-
-  const modalBottom = () => {
-    return (
-      <ConfirmAddModalBottom
-        price={price}
-        currencies={currencies}
-        parsedAmounts={parsedAmounts}
-        noLiquidity={noLiquidity}
-        onAdd={onAddLiquidity}
-        poolTokenPercentage={poolTokenPercentage}
-      />
     )
   }
 

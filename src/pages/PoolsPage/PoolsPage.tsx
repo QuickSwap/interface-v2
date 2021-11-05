@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
-import { Pair } from '@uniswap/sdk';
+import React, { useMemo, useState } from 'react';
+import { Pair, Token, Currency } from '@uniswap/sdk';
 import { makeStyles } from '@material-ui/core/styles';
 import { Box, Grid, Typography } from '@material-ui/core';
 import Skeleton from '@material-ui/lab/Skeleton';
@@ -39,7 +39,8 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
   liquidityText: {
     color: '#696c80',
     '& span': {
-      color: '#448aff'
+      color: '#448aff',
+      cursor: 'pointer'
     }
   },
   noLiquidityImage: {
@@ -52,7 +53,9 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
 const PoolsPage: React.FC = () => {
   const classes = useStyles();
   const { account } = useActiveWeb3React();
-  const trackedTokenPairs = useTrackedTokenPairs()
+  const [ currency0, setCurrency0 ] = useState<Currency | undefined>();
+  const [ currency1, setCurrency1 ] = useState<Currency | undefined>()
+  const trackedTokenPairs = useTrackedTokenPairs();
   const tokenPairsWithLiquidityTokens = useMemo(
     () => trackedTokenPairs.map(tokens => ({ liquidityToken: toV2LiquidityToken(tokens), tokens })),
     [trackedTokenPairs]
@@ -104,7 +107,7 @@ const PoolsPage: React.FC = () => {
               </Box>
             </Box>
             <Box mt={2.5}>
-              <AddLiquidity />
+              <AddLiquidity currency0={currency0} currency1={currency1} />
             </Box>
           </Box>
         </Grid>
@@ -120,11 +123,19 @@ const PoolsPage: React.FC = () => {
               : allV2PairsWithLiquidity.length > 0 ?
                 <Box>
                   <Typography variant='body2' className={classes.liquidityText}>Don’t see a pool you joined? <span>Import it</span>.<br/>Unstake your LP Tokens from Farms to see them here.</Typography>
-                  {
-                    allV2PairsWithLiquidity.map(pair => (
-                      <PoolPositionCard key={pair.liquidityToken.address} pair={pair} />
-                    ))
-                  }
+                  <Box mt={2}>
+                    {
+                      allV2PairsWithLiquidity.map(pair => (
+                        <PoolPositionCard
+                          key={pair.liquidityToken.address}
+                          pair={pair}
+                          handleAddLiquidity={(currency0: Currency, currency1: Currency) => {
+                            setCurrency0(currency0);
+                            setCurrency1(currency1);
+                          }} />
+                      ))
+                    }
+                  </Box>
                 </Box>
               :
                 <Box textAlign='center'>

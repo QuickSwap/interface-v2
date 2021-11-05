@@ -1,14 +1,54 @@
 import React, { useState } from 'react';
 import { Box, Typography, Button } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import { ChevronDown, ChevronUp } from 'react-feather';
-import { Pair, JSBI, Percent } from '@uniswap/sdk';
+import { Pair, JSBI, Percent, Currency } from '@uniswap/sdk';
 import { useActiveWeb3React } from 'hooks';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { useTokenBalance } from 'state/wallet/hooks';
 import { useTotalSupply } from 'data/TotalSupply';
 import { CurrencyLogo, DoubleCurrencyLogo } from 'components';
 
-const PoolPositionCard: React.FC<{pair: Pair}> = ({ pair }) => {
+const useStyles = makeStyles(({ palette, breakpoints }) => ({
+  poolButtonRow: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    '& .MuiButton-root': {
+      height: 36,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      cursor: 'pointer',
+      borderRadius: 10,
+      '& a': {
+        textDecoration: 'none'
+      },
+      '& p': {
+        color: '#ebecf2'
+      }
+    },
+    '& .MuiButton-outlined': {
+      width: '49%',
+      background: 'transparent',
+      border: '1px solid #404557'
+    },
+    '& .MuiButton-contained': {
+      width: '24%',
+      border: '1px solid transparent',
+      backgroundImage: 'linear-gradient(286deg, #004ce6, #3d71ff)',
+      backgroundColor: 'transparent'
+    }
+  }
+}));
+
+interface PoolPositionCardProps {
+  pair: Pair
+  handleAddLiquidity: (currency0: Currency, currency1: Currency) => void
+}
+
+const PoolPositionCard: React.FC<PoolPositionCardProps> = ({ pair, handleAddLiquidity }) => {
+  const classes = useStyles()
   const { account } = useActiveWeb3React()
 
   const currency0 = unwrappedToken(pair.token0)
@@ -37,121 +77,100 @@ const PoolPositionCard: React.FC<{pair: Pair}> = ({ pair }) => {
       : [undefined, undefined]
 
   return (
-    <Box>
-      <Box>
-        <Box>
-          <DoubleCurrencyLogo currency0={currency0} currency1={currency1} margin={true} size={20} />
-          <Typography>
+    <Box width={1} border='1px solid #282d3d' borderRadius={10} bgcolor={ showMore ? '#282d3d' : 'transparent' } style={{ overflow: 'hidden' }}>
+      <Box padding={3} display='flex' alignItems='center' justifyContent='space-between'>
+        <Box display='flex' alignItems='center'>
+          <DoubleCurrencyLogo currency0={currency0} currency1={currency1} margin={true} size={28} />
+          <Typography variant='h6' style={{ color: '#ebecf2', marginLeft: 16 }}>
             {!currency0 || !currency1 ? 'Loading' : `${currency0.symbol}/${currency1.symbol}`}
           </Typography>
         </Box>
 
-        <Box>
-          <Box
-            padding="6px 8px"
-            borderRadius="12px"
-            onClick={() => setShowMore(!showMore)}
-          >
-            {showMore ? (
-              <>
-                {' '}
-                Manage
-                <ChevronUp size="20" style={{ marginLeft: '10px' }} />
-              </>
-            ) : (
-              <>
-                Manage
-                <ChevronDown size="20" style={{ marginLeft: '10px' }} />
-              </>
-            )}
-          </Box>
+        <Box display='flex' alignItems='center' color='#448aff' style={{ cursor: 'pointer' }} onClick={() => setShowMore(!showMore)}>
+          <Typography variant='body1' style={{ marginRight: 8 }}>Manage</Typography>
+          {showMore ? (
+            <ChevronUp size="20" />
+          ) : (
+            <ChevronDown size="20" />
+          )}
         </Box>
       </Box>
 
       {showMore && (
-        <Box>
-          <Box>
-            <Typography>
+        <Box px={3} mb={3} >
+          <Box display='flex' alignItems='center' justifyContent='space-between' mb={1.5}>
+            <Typography variant='body2' style={{ color: '#c7cad9' }}>
               Your pool tokens:
             </Typography>
-            <Typography>
+            <Typography variant='body2' style={{ color: '#c7cad9' }}>
               {userPoolBalance ? userPoolBalance.toSignificant(4) : '-'}
             </Typography>
           </Box>
-          <Box>
-            <Box>
-              <Typography>
-                Pooled {currency0.symbol}:
-              </Typography>
-            </Box>
+          <Box display='flex' alignItems='center' justifyContent='space-between' mb={1.5}>
+            <Typography variant='body2' style={{ color: '#c7cad9' }}>
+              Pooled {currency0.symbol}:
+            </Typography>
             {token0Deposited ? (
-              <Box>
-                <Typography>
+              <Box display='flex' alignItems='center'>
+                <Typography variant='body2' style={{ color: '#c7cad9', marginRight: 10 }}>
                   {token0Deposited?.toSignificant(6)}
                 </Typography>
-                <CurrencyLogo size="20px" style={{ marginLeft: '8px' }} currency={currency0} />
+                <CurrencyLogo size="20px" currency={currency0} />
               </Box>
             ) : (
               '-'
             )}
           </Box>
 
-          <Box>
-            <Box>
-              <Typography>
-                Pooled {currency1.symbol}:
-              </Typography>
-            </Box>
+          <Box display='flex' alignItems='center' justifyContent='space-between' mb={1.5}>
+            <Typography variant='body2' style={{ color: '#c7cad9' }}>
+              Pooled {currency1.symbol}:
+            </Typography>
             {token1Deposited ? (
-              <Box>
-                <Typography>
+              <Box display='flex' alignItems='center'>
+                <Typography variant='body2' style={{ color: '#c7cad9', marginRight: 10 }}>
                   {token1Deposited?.toSignificant(6)}
                 </Typography>
-                <CurrencyLogo size="20px" style={{ marginLeft: '8px' }} currency={currency1} />
+                <CurrencyLogo size="20px" currency={currency1} />
               </Box>
             ) : (
               '-'
             )}
           </Box>
 
-          <Box>
-            <Typography>
+          <Box display='flex' alignItems='center' justifyContent='space-between' mb={1.5}>
+            <Typography variant='body2' style={{ color: '#c7cad9' }}>
               Your pool share:
             </Typography>
-            <Typography>
+            <Typography variant='body2' style={{ color: '#c7cad9' }}>
               {poolTokenPercentage ? poolTokenPercentage.toFixed(2) + '%' : '-'}
             </Typography>
           </Box>
 
-          <Button>
-            <a
-              style={{ width: '100%', textAlign: 'center' }}
-              href={`https://info.quickswap.exchange/account/${account}`}
-            >
-              View accrued fees and analytics<span style={{ fontSize: '11px' }}>↗</span>
-            </a>
-          </Button>
-          <Box marginTop="10px">
-            <Button
-              // padding="8px"
-              // borderRadius="8px"
-              // as={Link}
-              // to={`/add/${currencyId(currency0)}/${currencyId(currency1)}`}
-            >
-              Add
+          <Box className={classes.poolButtonRow}>
+            <Button variant='outlined'>
+              <a href={`https://info.quickswap.exchange/account/${account}`} target='_blank' rel='noreferrer'>
+                <Typography variant='body2'>View Analytics</Typography>
+              </a>
             </Button>
-            <Button
+            <Button variant='contained' onClick={() => { handleAddLiquidity(currency0, currency1) }}>
+              <Typography variant='body2'>Add</Typography>
+            </Button>
+            <Button variant='contained'
               // padding="8px"
               // borderRadius="8px"
               // as={Link}
               // width="48%"
               // to={`/remove/${currencyId(currency0)}/${currencyId(currency1)}`}
             >
-              Remove
+              <Typography variant='body2'>Remove</Typography>
             </Button>
           </Box>
         </Box>
       )}
+      <Box bgcolor='#404557' height='36px' paddingX={3} display='flex' alignItems='center'>
+        <Typography variant='body2'>Earn <span style={{ color: '#0fc679' }}>49% APY</span> by staking your LP tokens in {currency0.symbol?.toUpperCase()} / {currency1.symbol?.toUpperCase()} Farm</Typography>
+      </Box>
     </Box>
   )
 }
