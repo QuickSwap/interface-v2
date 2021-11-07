@@ -169,8 +169,6 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
     ]
   }, [filteredTokens, searchQuery, searchToken, tokenComparator])
 
-  const balances = useCurrencyBalances(account || undefined, showETH ? [ Token.ETHER, ...filteredSortedTokens ] : filteredSortedTokens)
-
   const handleCurrencySelect = useCallback(
     (currency: Currency) => {
       onCurrencySelect(currency)
@@ -252,7 +250,6 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
               onCurrencySelect={handleCurrencySelect}
               otherCurrency={otherSelectedCurrency}
               selectedCurrency={selectedCurrency}
-              balances={balances}
             />
           )}
         </AutoSizer>
