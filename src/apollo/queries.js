@@ -1,6 +1,23 @@
 import gql from 'graphql-tag'
 import { BUNDLE_ID, FACTORY_ADDRESS } from 'constants/index'
 
+export const SUBGRAPH_HEALTH = gql`
+  query health {
+    indexingStatusForCurrentVersion(subgraphName: "sameepsi/quickswap06") {
+      synced
+      health
+      chains {
+        chainHeadBlock {
+          number
+        }
+        latestBlock {
+          number
+        }
+      }
+    }
+  }
+`
+
 export const TOKEN_CHART = gql`
   query tokenDayDatas($tokenAddr: String!) {
     tokenDayDatas(first: 1, orderBy: date, orderDirection: desc, where: { token: $tokenAddr }) {

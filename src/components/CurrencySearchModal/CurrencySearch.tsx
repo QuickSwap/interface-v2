@@ -19,7 +19,6 @@ import { AppDispatch } from 'state';
 import { isAddress } from 'utils';
 import { filterTokens } from 'utils/filtering';
 import { useTokenComparator } from 'utils/sorting';
-import { useCurrencyBalances } from 'state/wallet/hooks';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   wrapper: {
@@ -120,7 +119,7 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
 }) => {
   const classes = useStyles();
   const { t } = useTranslation();
-  const { account, chainId } = useActiveWeb3React();
+  const { chainId } = useActiveWeb3React();
   const dispatch = useDispatch<AppDispatch>();
 
   const [searchQuery, setSearchQuery] = useState<string>('')
