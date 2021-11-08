@@ -362,11 +362,29 @@ const AddLiquidity: React.FC<{currency0?: Currency, currency1?: Currency}> = ({ 
         )}
         pendingText={pendingText}
       />
-      <CurrencyInput title='Token 1:' currency={currencies[Field.CURRENCY_A]} showMaxButton={!atMaxAmounts[Field.CURRENCY_A]} onMax={() => onFieldAInput(maxAmounts[Field.CURRENCY_A]?.toExact() ?? '')} handleCurrencySelect={handleCurrencyASelect} amount={formattedAmounts[Field.CURRENCY_A]} setAmount={onFieldAInput} />
+      <CurrencyInput
+        title='Token 1:'
+        currency={currencies[Field.CURRENCY_A]}
+        showHalfButton={Boolean(maxAmounts[Field.CURRENCY_A])}
+        showMaxButton={!atMaxAmounts[Field.CURRENCY_A]}
+        onMax={() => onFieldAInput(maxAmounts[Field.CURRENCY_A]?.toExact() ?? '')}
+        onHalf={() => onFieldAInput(maxAmounts[Field.CURRENCY_A] ? (Number(maxAmounts[Field.CURRENCY_A]?.toSignificant()) / 2).toString() : '')}
+        handleCurrencySelect={handleCurrencyASelect} amount={formattedAmounts[Field.CURRENCY_A]} setAmount={onFieldAInput}
+      />
       <Box className={classes.exchangeSwap}>
         <AddLiquidityIcon />
       </Box>
-      <CurrencyInput title='Token 2:' currency={currencies[Field.CURRENCY_B]} showMaxButton={!atMaxAmounts[Field.CURRENCY_B]} onMax={() => onFieldBInput(maxAmounts[Field.CURRENCY_B]?.toExact() ?? '')} handleCurrencySelect={handleCurrencyBSelect} amount={formattedAmounts[Field.CURRENCY_B]} setAmount={onFieldBInput} />
+      <CurrencyInput
+        title='Token 2:' 
+        showHalfButton={Boolean(maxAmounts[Field.CURRENCY_B])}
+        currency={currencies[Field.CURRENCY_B]}
+        showMaxButton={!atMaxAmounts[Field.CURRENCY_B]}
+        onHalf={() => onFieldAInput(maxAmounts[Field.CURRENCY_B] ? (Number(maxAmounts[Field.CURRENCY_B]?.toSignificant()) / 2).toString() : '')}
+        onMax={() => onFieldBInput(maxAmounts[Field.CURRENCY_B]?.toExact() ?? '')}
+        handleCurrencySelect={handleCurrencyBSelect}
+        amount={formattedAmounts[Field.CURRENCY_B]}
+        setAmount={onFieldBInput}
+      />
       {
         currencies[Field.CURRENCY_A] && currencies[Field.CURRENCY_B] && pairState !== PairState.INVALID && price &&
           <Box my={2}>

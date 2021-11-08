@@ -90,11 +90,13 @@ interface CurrencyInputProps {
   amount: string
   setAmount: (value: string) => void
   onMax?: () => void
+  onHalf?: () => void
+  showHalfButton?: boolean
   showMaxButton?: boolean
   showPrice?: boolean
 }
 
-const CurrencyInput: React.FC<CurrencyInputProps> = ({ handleCurrencySelect, currency, otherCurrency, amount, setAmount, onMax, showMaxButton, title, showPrice }) => {
+const CurrencyInput: React.FC<CurrencyInputProps> = ({ handleCurrencySelect, currency, otherCurrency, amount, setAmount, onMax, onHalf, showMaxButton, showHalfButton, title, showPrice }) => {
   const classes = useStyles();
   const [modalOpen, setModalOpen] = useState(false);
   const { account } = useActiveWeb3React();
@@ -105,11 +107,18 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({ handleCurrencySelect, cur
     <Box className={cx(classes.swapBox, showPrice && classes.priceShowBox)}>
       <Box display='flex' justifyContent='space-between' mb={2}>
         <Typography>{ title || 'You Pay:' }</Typography>
-        {account && currency && showMaxButton && (
-          <Box className='maxWrapper' onClick={onMax}>
-            <Typography variant='body2'>MAX</Typography>
-          </Box>
-        )}
+        <Box display='flex'>
+          {account && currency && showHalfButton && (
+            <Box className='maxWrapper' onClick={onHalf}>
+              <Typography variant='body2'>50%</Typography>
+            </Box>
+          )}
+          {account && currency && showMaxButton && (
+            <Box className='maxWrapper' marginLeft='20px' onClick={onMax}>
+              <Typography variant='body2'>MAX</Typography>
+            </Box>
+          )}
+        </Box>
       </Box>
       <Box mb={2}>
         <Box className={cx(classes.currencyButton, currency ? classes.currencySelected :  classes.noCurrency)} onClick={() => { setModalOpen(true) }}>
