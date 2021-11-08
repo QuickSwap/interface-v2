@@ -13,6 +13,7 @@ import { Currency, Token } from '@uniswap/sdk';
 import useCopyClipboard from 'hooks/useCopyClipboard'
 import { ReactComponent as CopyIcon } from 'assets/images/CopyIcon.svg';
 import { shortenAddress, formatCompact } from 'utils';
+import { LineChart } from 'components';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   success: {
@@ -23,7 +24,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
   },
 }));
 
-const SwapTokenDetails: React.FC<{ currency: Currency | undefined }> = ({ currency }) => {
+const SwapTokenDetails: React.FC<{ currency: Currency | undefined, priceData: any }> = ({ currency, priceData }) => {
   const classes = useStyles();
   const { topTokens } = useTopTokens();
   const tokenData = useMemo(() => {
@@ -34,29 +35,45 @@ const SwapTokenDetails: React.FC<{ currency: Currency | undefined }> = ({ curren
   }, [topTokens, currency]);
   const priceUp = Number(tokenData?.priceChangeUSD) > 0;
   const priceUpPercent = Number(tokenData?.priceChangeUSD).toFixed(2);
-  const [isCopied, setCopied] = useCopyClipboard()
+  const [isCopied, setCopied] = useCopyClipboard();
+  const prices = priceData ? priceData.map((price: any) => price.close) : [];
 
   return (
     <Box>
-      <Box display='flex' alignItems='center' px={2} py={1.5}>
-        <CurrencyLogo currency={currency} size='28px' />
-        <Box ml={1}>
-          <Typography variant='body2'>{ currency?.symbol }</Typography>
-          {
-            tokenData ?
-              <Box display='flex' alignItems='center'>
-                <Typography variant='body2'>${Number(tokenData?.priceUSD).toFixed(Number(tokenData?.priceUSD) > 0.01 ? 2 : 5)}</Typography>
-                <Box ml={0.5} display='flex' alignItems='center' className={priceUp ? classes.success : classes.danger}>
-                  {
-                    priceUp ? <ArrowDropUp /> : <ArrowDropDown />
-                  }
-                  <Typography variant='body2'>{ priceUpPercent }%</Typography>
+      <Box display='flex' alignItems='center' justifyContent='space-between' px={2} py={1.5}>
+        <Box display='flex' alignItems='center'>
+          <CurrencyLogo currency={currency} size='28px' />
+          <Box ml={1}>
+            <Typography variant='body2'>{ currency?.symbol }</Typography>
+            {
+              tokenData ?
+                <Box display='flex' alignItems='center'>
+                  <Typography variant='body2'>${Number(tokenData?.priceUSD).toFixed(Number(tokenData?.priceUSD) > 0.01 ? 2 : 5)}</Typography>
+                  <Box ml={0.5} display='flex' alignItems='center' className={priceUp ? classes.success : classes.danger}>
+                    {
+                      priceUp ? <ArrowDropUp /> : <ArrowDropDown />
+                    }
+                    <Typography variant='body2'>{ priceUpPercent }%</Typography>
+                  </Box>
                 </Box>
-              </Box>
-              :
-              <Skeleton variant='rect' width={100} height={20} />
-          }
+                :
+                <Skeleton variant='rect' width={100} height={20} />
+            }
+          </Box>
         </Box>
+        {
+          priceData ?
+            <Box width={88} height={47} position='relative'>
+              <Box position='absolute' top={-30} width={1}>
+                {
+                  prices.length > 0 &&
+                    <LineChart data={prices} width='100%' height={120} color={priceUp ? '#0fc679' : '#ff5252' } />
+                }
+              </Box>
+            </Box>
+            :
+            <Skeleton variant='rect' width={88} height={47} />
+        }
       </Box>
       <Box borderTop='1px solid #252833' borderBottom='1px solid #252833' px={2}>
         <Grid container>

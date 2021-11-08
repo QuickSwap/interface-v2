@@ -7,11 +7,12 @@ import { Token } from '@uniswap/sdk';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
 import { ReactComponent as SettingsIcon } from 'assets/images/SettingsIcon.svg';
 import { DoubleCurrencyLogo, Swap, SwapTokenDetails } from 'components';
-import { useEthPrice, useTopTokens, useTokenPairs } from 'state/application/hooks';
-import { getEthPrice, getTopTokens, getTokenPairs, getBulkPairData, formatCompact } from 'utils';
+import { useEthPrice, useTopTokens, useTokenPairs, useBlockNumber, useSwapTokenPrice0, useSwapTokenPrice1 } from 'state/application/hooks';
+import { getEthPrice, getTopTokens, getTokenPairs, getBulkPairData, getIntervalTokenData, formatCompact } from 'utils';
 import { useDerivedSwapInfo } from 'state/swap/hooks';
 import { Field } from 'state/swap/actions';
 import { useAllTokens } from 'hooks/Tokens';
+import dayjs from 'dayjs';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   helpWrapper: {
@@ -93,9 +94,12 @@ const SwapPage: React.FC = () => {
 
   const { ethPrice, updateEthPrice } = useEthPrice();
   const { updateTopTokens } = useTopTokens();
+  const { swapTokenPrice0, updateSwapTokenPrice0 } = useSwapTokenPrice0();
+  const { swapTokenPrice1, updateSwapTokenPrice1 } = useSwapTokenPrice1();
   const { tokenPairs, updateTokenPairs } = useTokenPairs();
   const [ liquidityPoolClosed, setLiquidityPoolClosed ] = useState(false);
   const [ liquidityFilterIndex, setLiquidityFilterIndex ] = useState(0);
+  const latestBlock = useBlockNumber();
 
   const token1 = currencies[Field.INPUT];
   const token2 = currencies[Field.OUTPUT];
@@ -132,6 +136,8 @@ const SwapPage: React.FC = () => {
   useEffect(() => {
     async function fetchTokenPairs() {
       updateTokenPairs({ data: null });
+      updateSwapTokenPrice0({ data: null });
+      updateSwapTokenPrice1({ data: null });
       const tokenPairs = await getTokenPairs(token1Address, token2Address);
       const formattedPairs = tokenPairs.map((pair: any) => {
         return pair.id
@@ -141,10 +147,29 @@ const SwapPage: React.FC = () => {
         updateTokenPairs({ data: pairData });
       }
     }
+    async function fetchSwapTokenPrice0() {
+      const currentTime = dayjs.utc();
+      const startTime = currentTime.subtract(1, 'day').startOf('hour').unix();
+      const token1PriceData = await getIntervalTokenData(token1Address, startTime, 3600, latestBlock);
+      updateSwapTokenPrice0({ data: token1PriceData });
+    }
+    async function fetchSwapTokenPrice1() {
+      const currentTime = dayjs.utc();
+      const startTime = currentTime.subtract(1, 'day').startOf('hour').unix();
+      const token2PriceData = await getIntervalTokenData(token2Address, startTime, 3600, latestBlock);
+      updateSwapTokenPrice1({ data: token2PriceData });
+    }
     if (ethPrice.price && token1Address && token2Address) {
       fetchTokenPairs();
     }
-  }, [ethPrice, token1Address, token2Address, updateTokenPairs])
+    if (token1Address) {
+      fetchSwapTokenPrice0();
+    }
+    if (token2Address) {
+      fetchSwapTokenPrice1();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ethPrice, token1Address, token2Address])
 
   return (
     <Box width='100%' mb={3}>
@@ -181,13 +206,13 @@ const SwapPage: React.FC = () => {
             {
               currencies[Field.INPUT] &&
                 <Box className={classes.swapTokenDetails}>
-                  <SwapTokenDetails currency={currencies[Field.INPUT]} />
+                  <SwapTokenDetails currency={currencies[Field.INPUT]} priceData={swapTokenPrice0} />
                 </Box>
             }
             {
               currencies[Field.OUTPUT] &&
                 <Box className={classes.swapTokenDetails}>
-                  <SwapTokenDetails currency={currencies[Field.OUTPUT]} />
+                  <SwapTokenDetails currency={currencies[Field.OUTPUT]} priceData={swapTokenPrice1} />
                 </Box>
             }
           </Box>

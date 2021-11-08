@@ -240,8 +240,6 @@ export function useTrackedTokenPairs(): [Token, Token][] {
     [tokens, chainId]
   );
 
-  console.log('ccc', Object.values(tokens))
-
   // pairs saved by users
   const savedSerializedPairs = useSelector<AppState, AppState["user"]["pairs"]>(
     ({ user: { pairs } }) => pairs

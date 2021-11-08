@@ -16,6 +16,7 @@ import {
   PAIR_DATA,
   PAIRS_BULK1,
   PAIRS_HISTORICAL_BULK,
+  PRICES_BY_BLOCK,
 } from "apollo/queries";
 import { JsonRpcSigner, Web3Provider } from "@ethersproject/providers";
 import { abi as IUniswapV2Router02ABI } from "@uniswap/v2-periphery/build/IUniswapV2Router02.json";
@@ -392,6 +393,95 @@ export const getTokenPairs = async (
       .concat(result.data?.["pairs4"]);
   } catch (e) {
     console.log(e);
+  }
+};
+
+export const getIntervalTokenData = async (
+  tokenAddress: string,
+  startTime: number,
+  interval = 3600,
+  latestBlock: any
+) => {
+  const utcEndTime = dayjs.utc();
+  let time = startTime;
+
+  // create an array of hour start times until we reach current hour
+  // buffer by half hour to catch case where graph isnt synced to latest block
+  const timestamps = [];
+  while (time < utcEndTime.unix()) {
+    timestamps.push(time);
+    time += interval;
+  }
+
+  // backout if invalid timestamp format
+  if (timestamps.length === 0) {
+    return [];
+  }
+
+  // once you have all the timestamps, get the blocks for each timestamp in a bulk query
+  let blocks;
+  try {
+    blocks = await getBlocksFromTimestamps(timestamps, 100);
+
+    // catch failing case
+    if (!blocks || blocks.length === 0) {
+      return [];
+    }
+
+    if (latestBlock) {
+      blocks = blocks.filter((b) => {
+        return parseFloat(b.number) <= parseFloat(latestBlock);
+      });
+    }
+
+    let result: any = await splitQuery(
+      PRICES_BY_BLOCK,
+      client,
+      [tokenAddress],
+      blocks,
+      50
+    );
+
+    // format token ETH price results
+    let values: any[] = [];
+    for (var row in result) {
+      let timestamp = row.split("t")[1];
+      let derivedETH = parseFloat(result[row]?.derivedETH);
+      if (timestamp) {
+        values.push({
+          timestamp,
+          derivedETH,
+        });
+      }
+    }
+
+    // go through eth usd prices and assign to original values array
+    let index = 0;
+    for (var brow in result) {
+      let timestamp = brow.split("b")[1];
+      if (timestamp) {
+        values[index].priceUSD =
+          result[brow].ethPrice * values[index].derivedETH;
+        index += 1;
+      }
+    }
+
+    let formattedHistory = [];
+
+    // for each hour, construct the open and close price
+    for (let i = 0; i < values.length - 1; i++) {
+      formattedHistory.push({
+        timestamp: values[i].timestamp,
+        open: parseFloat(values[i].priceUSD),
+        close: parseFloat(values[i + 1].priceUSD),
+      });
+    }
+
+    return formattedHistory;
+  } catch (e) {
+    console.log(e);
+    console.log("error fetching blocks");
+    return [];
   }
 };
 

@@ -12,6 +12,8 @@ import {
   updateGlobalData,
   updateTopTokens,
   updateTokenPairs,
+  updateSwapTokenPrice0,
+  updateSwapTokenPrice1,
 } from "./actions";
 
 export function useBlockNumber(): number | undefined {
@@ -149,4 +151,32 @@ export function useTokenPairs() {
     [dispatch]
   );
   return { tokenPairs, updateTokenPairs: _updateTokenPairs };
+}
+
+export function useSwapTokenPrice0() {
+  const swapTokenPrice0 = useSelector(
+    (state: AppState) => state.application.swapTokenPrice0
+  );
+  const dispatch = useDispatch();
+  const _updateSwapTokenPrice0 = useCallback(
+    (data) => {
+      dispatch(updateSwapTokenPrice0(data));
+    },
+    [dispatch]
+  );
+  return { swapTokenPrice0, updateSwapTokenPrice0: _updateSwapTokenPrice0 };
+}
+
+export function useSwapTokenPrice1() {
+  const swapTokenPrice1 = useSelector(
+    (state: AppState) => state.application.swapTokenPrice1
+  );
+  const dispatch = useDispatch();
+  const _updateSwapTokenPrice1 = useCallback(
+    (data) => {
+      dispatch(updateSwapTokenPrice1(data));
+    },
+    [dispatch]
+  );
+  return { swapTokenPrice1, updateSwapTokenPrice1: _updateSwapTokenPrice1 };
 }
