@@ -1,10 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Box, Typography, Grid } from '@material-ui/core';
+import { useLairInfo } from 'state/stake/hooks';
+import { QUICK } from 'constants/index';
+import { CurrencyLogo } from 'components';
+import { useGlobalData } from 'state/application/hooks';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
 import DragonBg1 from 'assets/images/DragonBg1.svg';
 import DragonBg2 from 'assets/images/DragonBg2.svg';
 import DragonLairMask from 'assets/images/DragonLairMask.svg';
+import { ReactComponent as PriceExchangeIcon } from 'assets/images/PriceExchangeIcon.svg';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   helpWrapper: {
@@ -33,6 +38,8 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     top: 0,
     left: 0,
     background: 'rgb(225, 190, 231, 0.1)',
+    maxHeight: 207,
+    overflow: 'hidden',
     '& img': {
       width: '100%'
     }
@@ -50,7 +57,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     },
   },
   dragonTitle: {
-    margin: '24px 0 49px',
+    margin: '24px 0 64px',
     '& h5': {
       marginBottom: 16,
       color: '#c7cad9'
@@ -59,11 +66,25 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       maxWidth: 280,
       color: '#c7cad9'
     }
+  },
+  stakeButton: {
+    width: '100%',
+    height: 48,
+    borderRadius: 10,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 24,
   }
 }));
 
 const DragonPage: React.FC = () => {
   const classes = useStyles();
+  const [ isQUICKRate, setIsQUICKRate ] = useState(false);
+  const lairInfo = useLairInfo();
+  const { globalData } = useGlobalData();
+  const APR =(((Number(lairInfo?.oneDayVol) * 0.04 * 0.01) / Number(lairInfo?.dQuickTotalSupply.toSignificant(6))) * 365) / (Number(lairInfo?.dQUICKtoQUICK.toSignificant()) * Number(lairInfo?.quickPrice));
+  const APY = APR ? (Math.pow(1 + APR / 365, 365) - 1).toFixed(4) : 0;
 
   return (
     <Box width='100%' mb={3}>
@@ -83,13 +104,57 @@ const DragonPage: React.FC = () => {
             <Box className={classes.dragonBg}>
               <img src={DragonBg2} alt='Dragon Lair' />
             </Box>
-            <img src={DragonLairMask} alt='Dragon Mask' style={{ width: '100%', position: 'absolute', top: '50%', transform: 'translateY(-50%)' }} />
+            <img src={DragonLairMask} alt='Dragon Mask' style={{ width: '100%', position: 'absolute', top: 207 }} />
             <Box className={classes.stepWrapper}>
               <Typography variant='caption'>STEP 1:</Typography>
             </Box>
             <Box className={classes.dragonTitle}>
               <Typography variant='h5'>Dragons Lair</Typography>
               <Typography variant='body2'>Stake QUICK, Receive dQUICK as receipt representing your share of the pool.</Typography>
+            </Box>
+            <Box position='relative' zIndex={3}>
+              <Box display='flex'>
+                <CurrencyLogo currency={QUICK} size='32px' />
+                <Box ml={1.5}>
+                  <Typography variant='body2' style={{ color: '#ebecf2', lineHeight: 1 }}>QUICK</Typography>
+                  <Typography variant='caption' style={{ color: '#636780' }}>Single Stake — Auto compounding</Typography>
+                </Box>
+              </Box>
+              <Box display='flex' justifyContent='space-between' mt={1.5}>
+                <Typography variant='body2'>Total QUICK</Typography>
+                <Typography variant='body2'>{ lairInfo ? lairInfo.totalQuickBalance.toFixed(2, {groupSeparator: ','}): 0 }</Typography>
+              </Box>
+              {
+                globalData &&
+                  <Box display='flex' justifyContent='space-between' mt={1.5}>
+                    <Typography variant='body2'>TVL:</Typography>              
+                    <Typography variant='body2'>${Number(globalData.totalLiquidityUSD).toLocaleString(undefined, { maximumFractionDigits: 0 })}</Typography>
+                  </Box>
+              }
+              <Box display='flex' justifyContent='space-between' mt={1.5}>
+                <Typography variant='body2'>APY</Typography>
+                <Typography variant='body2' style={{ color: '#0fc679' }}>{ APY }%</Typography>
+              </Box>
+              <Box display='flex' justifyContent='space-between' mt={1.5}>
+                <Typography variant='body2'>Your Deposits</Typography>
+                <Typography variant='body2'>{lairInfo.dQUICKBalance.toSignificant(4)}</Typography>
+              </Box>
+              <Box mt={2.5} width={1} height='40px' display='flex' alignItems='center' justifyContent='center' borderRadius={10} border='1px solid #252833'>
+                <CurrencyLogo currency={QUICK} />
+                <Typography variant='body2' style={{ margin: '0 8px' }}>{ isQUICKRate ? 1 : lairInfo.dQUICKtoQUICK.toSignificant(4) } QUICK =</Typography>
+                <CurrencyLogo currency={QUICK} />
+                <Typography variant='body2' style={{ margin: '0 8px' }}>{ isQUICKRate ? lairInfo.QUICKtodQUICK.toSignificant(4) : 1} dQUICK</Typography>
+                <PriceExchangeIcon style={{ cursor: 'pointer' }} onClick={() => setIsQUICKRate(!isQUICKRate)} />
+              </Box>
+              <Box className={classes.stakeButton} bgcolor='#252833'>
+                <Typography variant='body2' style={{ color: '#ebecf2' }}>- Unstake QUICK</Typography>
+              </Box>
+              <Box className={classes.stakeButton} style={{ backgroundImage: 'linear-gradient(279deg, #004ce6, #3d71ff)' }}>
+                <Typography variant='body2'>Stake QUICK</Typography>
+              </Box>
+              <Box mt={3} textAlign='center'>
+                <Typography variant='caption' style={{ color: '#696c80', fontWeight: 500 }}>⭐️  When you unstake, the contract will automatically claim QUICK on your behalf.</Typography>
+              </Box>
             </Box>
           </Box>
         </Grid>
