@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Box, Typography, Grid } from '@material-ui/core';
-import { useLairInfo } from 'state/stake/hooks';
+import { Box, Typography, Grid, Divider } from '@material-ui/core';
+import { useLairInfo, useSyrupInfo } from 'state/stake/hooks';
 import { QUICK } from 'constants/index';
-import { CurrencyLogo } from 'components';
+import { CurrencyLogo, SyrupCard, ToggleSwitch } from 'components';
 import { useGlobalData } from 'state/application/hooks';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
 import DragonBg1 from 'assets/images/DragonBg1.svg';
 import DragonBg2 from 'assets/images/DragonBg2.svg';
 import DragonLairMask from 'assets/images/DragonLairMask.svg';
 import { ReactComponent as PriceExchangeIcon } from 'assets/images/PriceExchangeIcon.svg';
+import { ReactComponent as SearchIcon } from 'assets/images/SearchIcon.svg';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   helpWrapper: {
@@ -75,6 +76,25 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 24,
+  },
+  searchInput: {
+    height: 50,
+    background: '#121319',
+    borderRadius: 10,
+    display: 'flex',
+    alignItems: 'center',
+    padding: '0 16px',
+    '& input': {
+      background: 'transparent',
+      border: 'none',
+      boxShadow: 'none',
+      outline: 'none',
+      marginLeft: 8,
+      fontSize: 14,
+      fontWeight: 500,
+      color: '#c7cad9',
+      flex: 1
+    }
   }
 }));
 
@@ -82,9 +102,12 @@ const DragonPage: React.FC = () => {
   const classes = useStyles();
   const [ isQUICKRate, setIsQUICKRate ] = useState(false);
   const lairInfo = useLairInfo();
+  const syrupInfo = useSyrupInfo();
   const { globalData } = useGlobalData();
   const APR =(((Number(lairInfo?.oneDayVol) * 0.04 * 0.01) / Number(lairInfo?.dQuickTotalSupply.toSignificant(6))) * 365) / (Number(lairInfo?.dQUICKtoQUICK.toSignificant()) * Number(lairInfo?.quickPrice));
   const APY = APR ? (Math.pow(1 + APR / 365, 365) - 1).toFixed(4) : 0;
+  const [ stakedOnly, setStakeOnly ] = useState(false);
+  const [ syrupSearch, setSyrupSearch ] = useState('');
 
   return (
     <Box width='100%' mb={3}>
@@ -170,6 +193,36 @@ const DragonPage: React.FC = () => {
               <Typography variant='h5'>Dragons Syrup</Typography>
               <Typography variant='body2'>Stake dQUICK, Earn tokens of your choice over time.</Typography>
             </Box>
+            <Box display='flex' alignItems='center' mb={3.5}>
+              <Box className={classes.searchInput} flex={1}>
+                <SearchIcon />
+                <input placeholder='Search name, symbol or paste address' value={syrupSearch} onChange={(evt: any) => setSyrupSearch(evt.target.value)} />
+              </Box>
+              <Box display='flex' alignItems='center' ml={4}>
+                <Typography variant='body2' style={{ color: '#626680', marginRight: 8 }}>Staked Only</Typography>
+                <ToggleSwitch toggled={stakedOnly} onToggle={() => setStakeOnly(!stakedOnly)} />
+              </Box>
+            </Box>
+            <Divider />
+            <Box mt={2.5} display='flex' paddingX={2}>
+              <Box width={0.3}>
+                <Typography variant='body2'>Earn</Typography>
+              </Box>
+              <Box width={0.3}>
+                <Typography variant='body2'>dQUICK Deposits</Typography>
+              </Box>
+              <Box width={0.2}>
+                <Typography variant='body2'>APR</Typography>
+              </Box>
+              <Box width={0.2} textAlign='right'>
+                <Typography variant='body2'>Earned</Typography>
+              </Box>
+            </Box>
+            {
+              syrupInfo && syrupInfo.map(syrup => (
+                <SyrupCard syrup={syrup} />
+              ))
+            }
           </Box>
         </Grid>
       </Grid>

@@ -2,6 +2,7 @@ export { default as Header } from "./Header";
 export { default as Footer } from "./Footer";
 export { default as ListLogo } from "./ListLogo";
 export { default as CustomTooltip } from "./CustomTooltip";
+export { default as ToggleSwitch } from "./ToggleSwitch";
 export { default as CustomModal } from "./CustomModal";
 export { default as CurrencyInput } from "./CurrencyInput";
 export { default as LineChart } from "./LineChart";
@@ -15,6 +16,7 @@ export {
   default as FullPositionCard,
   MinimalPositionCard,
 } from "./PositionCard";
+export { default as SyrupCard } from "./SyrupCard";
 export { default as Swap, AdvancedSwapDetails } from "./Swap";
 export { default as AddLiquidity, ConfirmAddModalBottom } from "./AddLiquidity";
 export { default as RewardSlider } from "./RewardSlider";

@@ -203,7 +203,7 @@ export const getTokenLogoURL = (address: string) => {
   }
 
   if (address?.toLowerCase() === '0xf28164A485B0B2C90639E47b0f377b4a438a16B1'.toLowerCase()) {
-    uri = 'https://raw.githubusercontent.com/sameepsi/quickswap-interface/master/public/favicon.jpeg'
+    uri = 'https://i.imgur.com/8G7QIrR.png'
   }
 
   if (address?.toLowerCase() === '0xd85d1e945766fea5eda9103f918bd915fbca63e6'.toLowerCase()) {
@@ -337,11 +337,45 @@ export const getTokenLogoURL = (address: string) => {
     uri = 'https://s2.coinmarketcap.com/static/img/coins/64x64/9651.png'
   }
 
+  if (address?.toLowerCase() === '0xc58158c14D4757EF36Ce25e493758F2fcEEDec5D'.toLowerCase()) {
+    uri = 'https://s2.coinmarketcap.com/static/img/coins/64x64/11147.png'
+  }if (address?.toLowerCase() === '0x0D6ae2a429df13e44A07Cd2969E085e4833f64A0'.toLowerCase()) {
+    uri = 'https://assets.coingecko.com/coins/images/13744/small/symbol-whitebg200x200.png?1611377553'
+  }if (address?.toLowerCase() === '0x0B313b4C589A3BD3350f625f2e94DC80AB50017E'.toLowerCase()) {
+    uri = 'https://assets.coingecko.com/coins/images/18403/small/A0782-F05-535-C-45-C8-BE4-F-FEBB4-B8-B5933.jpg?1631792934'
+  }if (address?.toLowerCase() === '0x6286A9e6f7e745A6D884561D88F94542d6715698'.toLowerCase()) {
+    uri = 'https://assets.coingecko.com/coins/images/17983/small/Profile_picture_white.jpg?1630149169'
+  }if (address?.toLowerCase() === '0xcf32822ff397Ef82425153a9dcb726E5fF61DCA7'.toLowerCase()) {
+    uri = 'https://assets.coingecko.com/coins/images/14716/small/gmee-200x200.png?1621827468'
+  }
+
+  if (address?.toLowerCase() === '0x7E7fF932FAb08A0af569f93Ce65e7b8b23698Ad8'.toLowerCase()) {
+    uri = 'https://assets.coingecko.com/coins/images/12385/small/1619048513068.png?1622193581'
+  }if (address?.toLowerCase() === '0x2db0Db271a10661e7090b6758350E18F6798a49D'.toLowerCase()) {
+    uri = 'https://assets.coingecko.com/coins/images/18144/small/11322.png?1630668459'
+  }if (address?.toLowerCase() === '0xE8d17b127BA8b9899a160D9a07b69bCa8E08bfc6'.toLowerCase()) {
+    uri = 'https://assets.coingecko.com/coins/images/18634/small/nadex.PNG?1632727863'
+  }if (address?.toLowerCase() === '0xa7051C5a22d963b81D71C2BA64D46a877fBc1821'.toLowerCase()) {
+    uri = 'https://assets.coingecko.com/coins/images/14044/small/EROWAN.png?1614656300'
+  }if (address?.toLowerCase() === '0xac51C4c48Dc3116487eD4BC16542e27B5694Da1b'.toLowerCase()) {
+    uri = 'https://assets.coingecko.com/coins/images/1481/small/cosmos_hub.png?1555657960'
+  }
+
+  if (address?.toLowerCase() === '0x09211Dc67f9fe98Fb7bBB91Be0ef05f4a12FA2b2'.toLowerCase()) {
+    uri = 'https://assets.coingecko.com/coins/images/14186/small/WATCH1.png?1614825718'
+  }if (address?.toLowerCase() === '0xa25610a77077390A75aD9072A084c5FbC7d43A0d'.toLowerCase()) {
+    uri = 'https://assets.coingecko.com/coins/images/18632/small/DdcZZeP_%282%29.png?1632716316'
+  }if (address?.toLowerCase() === '0x4455eF8B4B4A007a93DaA12DE63a47EEAC700D9D'.toLowerCase()) {
+    uri = 'https://assets.coingecko.com/coins/images/18441/small/Coin_Forest_Knight_200x200.png?1632480031'
+  }if (address?.toLowerCase() === '0x596eBE76e2DB4470966ea395B0d063aC6197A8C5'.toLowerCase()) {
+    uri = 'https://raw.githubusercontent.com/trustwallet/assets/b8086dbc7040582d1412effe7a951914d4a96eef/blockchains/ethereum/assets/0x8A9C67fee641579dEbA04928c4BC45F66e26343A/logo.png'
+  }
+
   if (address?.toLowerCase() === '0xc56d17dD519e5eB43a19C9759b5D5372115220BD'.toLowerCase()) {
     uri = 'https://i.postimg.cc/CxvzF5bJ/moon-black.png'
   }if (address?.toLowerCase() === '0xc3FdbadC7c795EF1D6Ba111e06fF8F16A20Ea539'.toLowerCase()) {
     uri = 'https://adamant.finance/img/adamant.png'
-  }if (address?.toLowerCase() === '0x99dA82C5464C49962Cdda44fe30d352Bc5Da0580'.toLowerCase()) {
+  }if (address?.toLowerCase() === '0x0Af77B096cbDF53B5c39c2fcff8F14C5E3a36356'.toLowerCase()) {
     uri = 'https://i.imgur.com/jv5A0eX.png'
   }if (address?.toLowerCase() === '0x7f426F6Dc648e50464a0392E60E1BB465a67E9cf'.toLowerCase()) {
     uri = 'https://assets.coingecko.com/coins/images/13751/small/autofarm_icon_200x200.png?1611494288'
@@ -415,6 +449,38 @@ export const getTokenLogoURL = (address: string) => {
     uri = '0x3BA4c387f786bFEE076A58914F5Bd38d668B42c3'
   }
 
+  if (address?.toLowerCase() === '0x300211Def2a644b036A9bdd3e58159bb2074d388'.toLowerCase()) {
+    uri = 'https://raw.githubusercontent.com/iotexproject/iotex-token-metadata/master/images/io1nxetpma4de3wx6tqcgxdtj5wc64a24t64dc76s.png'
+  }if (address?.toLowerCase() === '0x70c006878a5A50Ed185ac4C87d837633923De296'.toLowerCase()) {
+    uri = 'https://assets.coingecko.com/coins/images/12373/small/REVV_TOKEN_Refined_2021_%281%29.png?1627652390'
+  }
+
+  if (address?.toLowerCase() === '0xA55870278d6389ec5B524553D03C04F5677c061E'.toLowerCase()) {
+    uri = 'https://i.imgur.com/jykuRwK.png'
+  }if (address?.toLowerCase() === '0x2fe8733dcb25BFbbA79292294347415417510067'.toLowerCase()) {
+    uri = 'https://i.imgur.com/Kte7hVj.jpg'
+  }if (address?.toLowerCase() === '0x9d5565dA88e596730522CbC5a918d2A89dbC16d9'.toLowerCase()) {
+    uri = 'https://cloudstorage.openocean.finance/image/ooe_log.png'
+  }if (address?.toLowerCase() === '0x7E4c577ca35913af564ee2a24d882a4946Ec492B'.toLowerCase()) {
+    uri = 'https://assets.coingecko.com/coins/images/17393/small/ME_logo_200_200.png?1627526275'
+  }if (address?.toLowerCase() === '0x5fCB9de282Af6122ce3518CDe28B7089c9F97b26'.toLowerCase()) {
+    uri = 'https://assets.coingecko.com/coins/images/14926/small/logo_200x200.png?1626181831'
+  }if (address?.toLowerCase() === '0x855D4248672a1fCE482165e8DBE1207b94b1968a'.toLowerCase()) {
+    uri = 'https://assets.coingecko.com/coins/images/14101/small/Group-423.png?1614317472'
+  }
+
+  if (address?.toLowerCase() === '0xEe9801669C6138E84bD50dEB500827b776777d28'.toLowerCase()) {
+    uri = 'https://assets.coingecko.com/coins/images/15460/small/o3.png?1620904316'
+  }if (address?.toLowerCase() === '0x598e49f01bEfeB1753737934a5b11fea9119C796'.toLowerCase()) {
+    uri = 'https://s2.coinmarketcap.com/static/img/coins/64x64/1883.png'
+  }if (address?.toLowerCase() === '0x34C1b299A74588D6Abdc1b85A53345A48428a521'.toLowerCase()) {
+    uri = 'https://etherscan.io/token/images/easyfi_32.png?v=2'
+  }if (address?.toLowerCase() === '0xcaF5191fc480F43e4DF80106c7695ECA56E48B18'.toLowerCase()) {
+    uri = 'https://dinox.io/images/asset_icon_dnx.png'
+  }if (address?.toLowerCase() === '0x25788a1a171ec66Da6502f9975a15B609fF54CF6'.toLowerCase()) {
+    uri = 'https://assets.coingecko.com/coins/images/14003/small/PoolTogether.png?1613585632'
+  }
+
   if (address?.toLowerCase() === '0x28C388FB1F4fa9F9eB445f0579666849EE5eeb42'.toLowerCase()) {
     uri = 'https://assets.coingecko.com/coins/images/12478/small/Bella.png?1602230054'
   }if (address?.toLowerCase() === '0x7DfF46370e9eA5f0Bad3C4E29711aD50062EA7A4'.toLowerCase()) {
@@ -428,7 +494,120 @@ export const getTokenLogoURL = (address: string) => {
   }if (address?.toLowerCase() === '0x87f654c4b347230C60CAD8d7ea9cF0D7238bcc79'.toLowerCase()) {
     uri = 'https://yamp.finance/img/yamp_logo.svg'
   }
+  
+  if (address?.toLowerCase() === '0x8346Ab8d5EA7A9Db0209aEd2d1806AFA0E2c4C21'.toLowerCase()) {
+    uri = 'https://modefi.io/images/modefi256.png'
+  }if (address?.toLowerCase() === '0x245e5ddb65eFea6522Fa913229dF1f4957fB2e21'.toLowerCase()) {
+    uri = 'https://i.loli.net/2021/07/28/bGfpAaC6idUZVNP.png'
+  }if (address?.toLowerCase() === '0x9e725Cf7265D12fd5f59499AFf1258CA92CAc74d'.toLowerCase()) {
+    uri = 'https://i.loli.net/2021/07/28/K83jnTJzG9bq7Xt.png'
+  }if (address?.toLowerCase() === '0xA731349fa468614c1698fc46ebf06Da6F380239e'.toLowerCase()) {
+    uri = 'https://assets.coingecko.com/coins/images/2822/small/huobi-token-logo.png?1547036992'
+  }
 
+  if (address?.toLowerCase() === '0x554f074d9cCda8F483d1812d4874cBebD682644E'.toLowerCase()) {
+    uri = 'https://assets.coingecko.com/coins/images/13415/small/anrkey.jpg?1608311301'
+  }if (address?.toLowerCase() === '0x2B9E7ccDF0F4e5B24757c1E1a80e311E34Cb10c7'.toLowerCase()) {
+    uri = 'https://assets.coingecko.com/coins/images/14051/small/Mask_Network.jpg?1614050316'
+  }if (address?.toLowerCase() === '0x9C1C23E60B72Bc88a043bf64aFdb16A02540Ae8f'.toLowerCase()) {
+    uri = 'https://assets.coingecko.com/coins/images/9443/small/RING.png?1615271827'
+  }if (address?.toLowerCase() === '0x032F85b8FbF8540a92B986d953e4C3A61C76d39E'.toLowerCase()) {
+    uri = 'https://assets.coingecko.com/coins/images/15054/small/tcp.PNG?1619579195'
+  }if (address?.toLowerCase() === '0x0B6afe834dab840335F87d99b45C2a4bd81A93c7'.toLowerCase()) {
+    uri = 'https://assets.coingecko.com/coins/images/17739/small/Polylauncher_-_200_x_200.png?1629121147'
+  }if (address?.toLowerCase() === '0xBa4c54Ea2d66b904C82847A7d2357d22B857E812'.toLowerCase()) {
+    uri = 'https://s2.coinmarketcap.com/static/img/coins/200x200/11292.png'
+  }if (address?.toLowerCase() === '0xC004e2318722EA2b15499D6375905d75Ee5390B8'.toLowerCase()) {
+    uri = 'https://i.imgur.com/KTS2F7I.png'
+  }if (address?.toLowerCase() === '0x692597b009d13C4049a947CAB2239b7d6517875F'.toLowerCase()) {
+    uri = 'https://assets.coingecko.com/coins/images/12681/small/UST.png?1601612407'
+  }if (address?.toLowerCase() === '0x24834BBEc7E39ef42f4a75EAF8E5B6486d3F0e57'.toLowerCase()) {
+    uri = 'https://assets.coingecko.com/coins/images/8284/small/luna1557227471663.png?1567147072'
+  }if (address?.toLowerCase() === '0xdae89dA41a96956e9e70320Ac9c0dd077070D3a5'.toLowerCase()) {
+    uri = 'https://assets.coingecko.com/coins/images/12743/small/logo_%2898%29.png?1602630445'
+  }if (address?.toLowerCase() === '0x692AC1e363ae34b6B489148152b12e2785a3d8d6'.toLowerCase()) {
+    uri = 'https://polygonscan.com/token/images/polytrade_32.png'
+  }
+
+  if (address?.toLowerCase() === '0xa6b37fC85d870711C56FbcB8afe2f8dB049AE774'.toLowerCase()) {
+    uri = 'https://assets.coingecko.com/coins/images/809/small/v2logo-1.png?1624906282'
+  }if (address?.toLowerCase() === '0xDBf31dF14B66535aF65AaC99C32e9eA844e14501'.toLowerCase()) {
+    uri = 'https://assets.coingecko.com/coins/images/11370/small/Bitcoin.jpg?1628072791'
+  }if (address?.toLowerCase() === '0x614389EaAE0A6821DC49062D56BDA3d9d45Fa2ff'.toLowerCase()) {
+    uri = 'https://assets.coingecko.com/coins/images/4630/small/Orbs.jpg?1547039896'
+  }if (address?.toLowerCase() === '0xF239E69ce434c7Fb408b05a0Da416b14917d934e'.toLowerCase()) {
+    uri = 'https://assets.coingecko.com/coins/images/17641/small/QRE5xI0.png?1628741510'
+  }if (address?.toLowerCase() === '0x9a05D1FF699ea187Dc8523E333eD63503f0d82db'.toLowerCase()) {
+    uri = 'https://pbs.twimg.com/profile_images/1428328610444742660/4fa6uMzp_400x400.jpg'
+  }if (address?.toLowerCase() === '0xe95fD76CF16008c12FF3b3a937CB16Cd9Cc20284'.toLowerCase()) {
+    uri = 'https://assets.coingecko.com/coins/images/16185/small/Pera.jpg?1623238387'
+  }if (address?.toLowerCase() === '0xdaB35042e63E93Cc8556c9bAE482E5415B5Ac4B1'.toLowerCase()) {
+    uri = 'https://www.hermesdefi.io/hermes-logo-1.png'
+  }if (address?.toLowerCase() === '0x03678f2c2c762DC63c2Bb738c3a837D366eDa560'.toLowerCase()) {
+    uri = 'https://assets.coingecko.com/coins/images/6331/small/5fbb9e5b8f27d74dd8bcb912_xcash_coingecko_logo.png?1606133752'
+  }if (address?.toLowerCase() === '0x689f8e5913C158fFB5Ac5aeb83b3C875F5d20309'.toLowerCase()) {
+    uri = 'https://assets.coingecko.com/coins/images/18197/small/snk.png?1630979321'
+  }
+
+  if (address?.toLowerCase() === '0x229b1b6C23ff8953D663C4cBB519717e323a0a84'.toLowerCase()) {
+    uri = 'https://pbs.twimg.com/profile_images/1443182135410634754/l1wH-p3b_400x400.jpg'
+  }if (address?.toLowerCase() === '0xa8fcEe762642f156b5D757b6FabC36E06b6d4A1A'.toLowerCase()) {
+    uri = 'https://assets.coingecko.com/coins/images/14379/small/uaLoLU8c_400x400_%281%29.png?1627873106'
+  }if (address?.toLowerCase() === '0xb3b9c016AD1E9f7EFdAE451b04EF696e05658b32'.toLowerCase()) {
+    uri = 'https://assets.coingecko.com/coins/images/14582/small/512_Light.png?1617149658'
+  }if (address?.toLowerCase() === '0x3dc6052a693E4a2fc28Eb2Ea12fe0CfD3BD221D1'.toLowerCase()) {
+    uri = 'https://assets.coingecko.com/coins/images/5135/small/IRIS.png?1557999365'
+  }if (address?.toLowerCase() === '0xf14fbC6B30e2c4BC05A1D4fbE34bf9f14313309D'.toLowerCase()) {
+    uri = 'https://assets.coingecko.com/coins/images/12785/small/akash-logo.png?1615447676'
+  }if (address?.toLowerCase() === '0x3C720206bFaCB2d16fA3ac0ed87D2048Dbc401Fc'.toLowerCase()) {
+    uri = 'https://assets.coingecko.com/coins/images/12330/small/e353ZVj.png?1599112996'
+  }if (address?.toLowerCase() === '0xEc482De9569a5EA3Dd9779039b79e53F15791fDE'.toLowerCase()) {
+    uri = 'https://assets.coingecko.com/coins/images/16733/small/REGEN.png?1624861317'
+  }
+
+  if (address?.toLowerCase() === '0xc6C855AD634dCDAd23e64DA71Ba85b8C51E5aD7c'.toLowerCase()) {
+    uri = 'https://assets.coingecko.com/coins/images/18110/small/ice-poker.png?1630500966'
+  }if (address?.toLowerCase() === '0x3c205C8B3e02421Da82064646788c82f7bd753B9'.toLowerCase()) {
+    uri = 'https://assets.coingecko.com/coins/images/17341/small/purefi.PNG?1627362147'
+  }if (address?.toLowerCase() === '0x255707B70BF90aa112006E1b07B9AeA6De021424'.toLowerCase()) {
+    uri = 'https://assets.coingecko.com/coins/images/17882/small/gradient_icon_926.png?1629707907'
+  }if (address?.toLowerCase() === '0xE5417Af564e4bFDA1c483642db72007871397896'.toLowerCase()) {
+    uri = 'https://gains.trade/images/logo.png'
+  }if (address?.toLowerCase() === '0x11a819Beb0AA3327E39f52F90d65Cc9bCA499F33'.toLowerCase()) {
+    uri = 'https://assets.coingecko.com/coins/images/16360/small/thumbnail_1170823958_vertical_logo_lateral_radiance.png?1623810516'
+  }
+
+  if (address?.toLowerCase() === '0x85955046DF4668e1DD369D2DE9f3AEB98DD2A369'.toLowerCase()) {
+    uri = 'https://assets.coingecko.com/coins/images/12465/small/defi_pulse_index_set.png?1600051053'
+  }if (address?.toLowerCase() === '0xB85517b87BF64942adf3A0B9E4c71E4Bc5Caa4e5'.toLowerCase()) {
+    uri = 'https://assets.coingecko.com/coins/images/4001/small/Fantom.png?1558015016'
+  }if (address?.toLowerCase() === '0xE0339c80fFDE91F3e20494Df88d4206D86024cdF'.toLowerCase()) {
+    uri = 'https://assets.coingecko.com/coins/images/14962/small/6GxcPRo3_400x400.jpg?1619157413'
+  }if (address?.toLowerCase() === '0x6f8a06447Ff6FcF75d803135a7de15CE88C1d4ec'.toLowerCase()) {
+    uri = 'https://assets.coingecko.com/coins/images/11939/small/shiba.png?1622619446'
+  }if (address?.toLowerCase() === '0xa062fc09cA6bdeb2f6E3b77E1d4e09C42C964742'.toLowerCase()) {
+    uri = 'https://i.imgur.com/rb4P2E3.jpg'
+  }
+  if (address?.toLowerCase() === '0x32934CB16DA43fd661116468c1B225Fc26CF9A8c'.toLowerCase()) {
+    uri = 'https://s2.coinmarketcap.com/static/img/coins/64x64/12258.png'
+  }
+
+  if (address?.toLowerCase() === '0x5c4b7CCBF908E64F32e12c6650ec0C96d717f03F'.toLowerCase()) {
+    uri = 'https://assets.coingecko.com/coins/images/825/small/binance-coin-logo.png?1547034615'
+  }if (address?.toLowerCase() === '0x59E9261255644c411AfDd00bD89162d09D862e38'.toLowerCase()) {
+    uri = 'https://assets.coingecko.com/coins/images/14141/small/etha_logo200x200.png?1614646986'
+  }if (address?.toLowerCase() === '0x31042A4E66eDa0d12143ffc8cC1552D611dA4cbA'.toLowerCase()) {
+    uri = 'https://assets.coingecko.com/coins/images/3164/small/mitx.png?1604888269'
+  }if (address?.toLowerCase() === '0x5668F6d40E15188045a1dE6295054103C13ffAc1'.toLowerCase()) {
+    uri = 'https://assets.coingecko.com/coins/images/17028/small/iconUSD.png?1626619046'
+  }if (address?.toLowerCase() === '0xB9f9e37c2CdbaFF928C3Da730b02F06fE09aE70E'.toLowerCase()) {
+    uri = 'https://assets.coingecko.com/coins/images/17015/small/iconZerogoki.png?1626618921'
+  }if (address?.toLowerCase() === '0x9C6BfEdc14b5C23E3900889436Edca7805170f01'.toLowerCase()) {
+    uri = 'https://assets.coingecko.com/coins/images/17675/small/phx_logo.png?1628832432'
+  }if (address?.toLowerCase() === '0x4e830F67Ec499E69930867f9017AEb5B3f629c73'.toLowerCase()) {
+    uri = 'https://assets.coingecko.com/coins/images/14421/small/img_circle_200x200.png?1617345151'
+  }
+  
   if (address?.toLowerCase() === '0x7e9928aFe96FefB820b85B4CE6597B8F660Fe4F4'.toLowerCase()) {
     uri = 'https://assets.coingecko.com/coins/images/825/small/binance-coin-logo.png?1547034615'
   }if (address?.toLowerCase() === '0xAF24765F631C8830B5528B57002241eE7eef1C14'.toLowerCase()) {
@@ -436,9 +615,9 @@ export const getTokenLogoURL = (address: string) => {
   }if (address?.toLowerCase() === '0x0E50BEA95Fe001A370A4F1C220C49AEdCB982DeC'.toLowerCase()) {
     uri = 'https://assets.coingecko.com/coins/images/14238/small/ethernity_logo.png?1615189750'
   }if (address?.toLowerCase() === '0xaECeBfcF604AD245Eaf0D5BD68459C3a7A6399c2'.toLowerCase()) {
-    uri = 'https://rampdefi.com/assets/RAMP_LOGO_V4_256.png'
+    uri = 'https://assets.coingecko.com/coins/images/12837/small/RAMP-Logo-v2-1000pxsq.png?1617952606'
   }if (address?.toLowerCase() === '0xfC40a4F89b410a1b855b5e205064a38fC29F5eb5'.toLowerCase()) {
-    uri = 'https://rampdefi.com/assets/rUSD-Logo-200.png'
+    uri = 'https://assets.coingecko.com/coins/images/16184/small/rUSD-Logo-200.png?1623231145'
   }if (address?.toLowerCase() === '0x42dbBd5ae373FEA2FC320F62d44C058522Bb3758'.toLowerCase()) {
     uri = 'https://media.discordapp.net/attachments/846293892785242143/852874003928449054/mem_gold_with_white_5.png'
   }if (address?.toLowerCase() === '0x87ff96aba480f1813aF5c780387d8De7cf7D8261'.toLowerCase()) {
@@ -449,8 +628,30 @@ export const getTokenLogoURL = (address: string) => {
     uri = 'https://raw.githubusercontent.com/sameepsi/quickswap-default-token-list/master/assets/wootrade_w.svg'
   }
 
+  if (address?.toLowerCase() === '0xB35fcBCF1fD489fCe02Ee146599e893FDCdC60e6'.toLowerCase()) {
+    uri = 'https://assets.coingecko.com/coins/images/17438/small/derace-logo-black-coingecko.png?1627656907'
+  }
+  if (address?.toLowerCase() === '0x709A4B6217584188DDb93c82f5d716D969accE1C'.toLowerCase()) {
+    uri = 'https://assets.coingecko.com/coins/images/17161/small/Goji_Hanu_Logo_200x200.png?1627127472'
+  }
+  if (address?.toLowerCase() === '0x22e3f02f86Bc8eA0D73718A2AE8851854e62adc5'.toLowerCase()) {
+    uri = 'https://assets.coingecko.com/coins/images/17359/small/Logo_black_%282%29.png?1634095075'
+  }
+  if (address?.toLowerCase() === '0x3f6b3595ecF70735D3f48D69b09C4E4506DB3F47'.toLowerCase()) {
+    uri = 'https://assets.coingecko.com/coins/images/19584/small/game_station.PNG?1635471603'
+  }
+  if (address?.toLowerCase() === '0x3eB177A6693eC81d1E170136f8AD02fffBE172a7'.toLowerCase()) {
+    uri = 'https://assets.coingecko.com/coins/images/19413/small/automatic.PNG?1635212504'
+  }
+  if (address?.toLowerCase() === '0x3B1A0c9252ee7403093fF55b4a5886d49a3d837a'.toLowerCase()) {
+    uri = 'https://assets.coingecko.com/coins/images/18798/small/Moneda.png?1633474110'
+  }
+  if (address?.toLowerCase() === '0x3C1BB39bb696B443a1D80BB2b3a3d950Ba9DEE87'.toLowerCase()) {
+    uri = 'https://i.imgur.com/BDibHLm.png'
+  }
+
   if (address?.toLowerCase() === '0x6Ccf12B480A99C54b23647c995f4525D544A7E72'.toLowerCase()) {
-    uri = 'https://starter.xyz/logo_poly_sym.png'
+    uri = 'https://assets.coingecko.com/coins/images/14301/small/logo_poly_sym.png?1624893386'
   }if (address?.toLowerCase() === '0x26f6Cb841F9D4D72b68D7dCb6fDB5d6C832dD2A7'.toLowerCase()) {
     uri = 'https://assets.coingecko.com/coins/images/16074/small/polysafu.PNG?1622770619'
   }if (address?.toLowerCase() === '0xb82A20B4522680951F11c94c54B8800c1C237693'.toLowerCase()) {
