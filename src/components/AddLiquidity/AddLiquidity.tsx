@@ -368,7 +368,7 @@ const AddLiquidity: React.FC<{currency0?: Currency, currency1?: Currency}> = ({ 
         showHalfButton={Boolean(maxAmounts[Field.CURRENCY_A])}
         showMaxButton={!atMaxAmounts[Field.CURRENCY_A]}
         onMax={() => onFieldAInput(maxAmounts[Field.CURRENCY_A]?.toExact() ?? '')}
-        onHalf={() => onFieldAInput(maxAmounts[Field.CURRENCY_A] ? (Number(maxAmounts[Field.CURRENCY_A]?.toSignificant()) / 2).toString() : '')}
+        onHalf={() => onFieldAInput(maxAmounts[Field.CURRENCY_A] ? (Number(maxAmounts[Field.CURRENCY_A]?.toSignificant(5)) / 2).toString() : '')}
         handleCurrencySelect={handleCurrencyASelect} amount={formattedAmounts[Field.CURRENCY_A]} setAmount={onFieldAInput}
       />
       <Box className={classes.exchangeSwap}>
@@ -379,7 +379,7 @@ const AddLiquidity: React.FC<{currency0?: Currency, currency1?: Currency}> = ({ 
         showHalfButton={Boolean(maxAmounts[Field.CURRENCY_B])}
         currency={currencies[Field.CURRENCY_B]}
         showMaxButton={!atMaxAmounts[Field.CURRENCY_B]}
-        onHalf={() => onFieldBInput(maxAmounts[Field.CURRENCY_B] ? (Number(maxAmounts[Field.CURRENCY_B]?.toSignificant()) / 2).toString() : '')}
+        onHalf={() => onFieldBInput(maxAmounts[Field.CURRENCY_B] ? (Number(maxAmounts[Field.CURRENCY_B]?.toSignificant(5)) / 2).toString() : '')}
         onMax={() => onFieldBInput(maxAmounts[Field.CURRENCY_B]?.toExact() ?? '')}
         handleCurrencySelect={handleCurrencyBSelect}
         amount={formattedAmounts[Field.CURRENCY_B]}

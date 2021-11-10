@@ -7,7 +7,7 @@ import { useActiveWeb3React } from 'hooks';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { useTokenBalance } from 'state/wallet/hooks';
 import { useTotalSupply } from 'data/TotalSupply';
-import { CurrencyLogo, DoubleCurrencyLogo } from 'components';
+import { CurrencyLogo, DoubleCurrencyLogo, RemoveLiquidityModal } from 'components';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   poolButtonRow: {
@@ -48,8 +48,10 @@ interface PoolPositionCardProps {
 }
 
 const PoolPositionCard: React.FC<PoolPositionCardProps> = ({ pair, handleAddLiquidity }) => {
-  const classes = useStyles()
-  const { account } = useActiveWeb3React()
+  const classes = useStyles();
+  const { account } = useActiveWeb3React();
+
+  const [ openRemoveLiquidityModal, setOpenRemoveLiquidityModal ] = useState(false);
 
   const currency0 = unwrappedToken(pair.token0)
   const currency1 = unwrappedToken(pair.token1)
@@ -78,6 +80,15 @@ const PoolPositionCard: React.FC<PoolPositionCardProps> = ({ pair, handleAddLiqu
 
   return (
     <Box width={1} border='1px solid #282d3d' borderRadius={10} bgcolor={ showMore ? '#282d3d' : 'transparent' } style={{ overflow: 'hidden' }}>
+      {
+        openRemoveLiquidityModal &&
+          <RemoveLiquidityModal
+            currency0={currency0}
+            currency1={currency1}
+            open={openRemoveLiquidityModal}
+            onClose={() => setOpenRemoveLiquidityModal(false)}
+          />
+      }
       <Box padding={3} display='flex' alignItems='center' justifyContent='space-between'>
         <Box display='flex' alignItems='center'>
           <DoubleCurrencyLogo currency0={currency0} currency1={currency1} margin={true} size={28} />
@@ -153,16 +164,10 @@ const PoolPositionCard: React.FC<PoolPositionCardProps> = ({ pair, handleAddLiqu
                 <Typography variant='body2'>View Analytics</Typography>
               </a>
             </Button>
-            <Button variant='contained' onClick={() => { handleAddLiquidity(currency0, currency1) }}>
+            <Button variant='contained' onClick={() => { handleAddLiquidity(currency0, currency1); }}>
               <Typography variant='body2'>Add</Typography>
             </Button>
-            <Button variant='contained'
-              // padding="8px"
-              // borderRadius="8px"
-              // as={Link}
-              // width="48%"
-              // to={`/remove/${currencyId(currency0)}/${currencyId(currency1)}`}
-            >
+            <Button variant='contained' onClick={() => { setOpenRemoveLiquidityModal(true); }}>
               <Typography variant='body2'>Remove</Typography>
             </Button>
           </Box>

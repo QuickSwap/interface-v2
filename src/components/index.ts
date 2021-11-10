@@ -16,6 +16,7 @@ export {
   default as FullPositionCard,
   MinimalPositionCard,
 } from "./PositionCard";
+export { default as RemoveLiquidityModal } from "./RemoveLiquidityModal";
 export { default as SyrupCard } from "./SyrupCard";
 export { default as Swap, AdvancedSwapDetails } from "./Swap";
 export { default as AddLiquidity, ConfirmAddModalBottom } from "./AddLiquidity";
