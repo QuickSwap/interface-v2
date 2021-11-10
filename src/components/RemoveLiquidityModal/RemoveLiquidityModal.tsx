@@ -3,7 +3,7 @@ import { ArrowLeft, ArrowDown } from 'react-feather';
 import { Box, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { Currency } from '@uniswap/sdk';
-import { CustomModal } from 'components';
+import { CustomModal, ColoredSlider } from 'components';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
@@ -29,6 +29,7 @@ interface RemoveLiquidityModalProps {
 const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({ currency0, currency1, open, onClose }) => {
   const classes = useStyles();
   const [ amount, setAmount ] = useState('');
+  const [ removePercent, setRemovePercent ] = useState(0);
   return (
     <CustomModal open={open} onClose={onClose}>
       <Box paddingX={3} paddingY={4}>
@@ -44,6 +45,17 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({ currency0, 
           </Box>
           <Box mt={2}>
             <input placeholder='0' className={classes.input} value={amount} onChange={(evt: any) => setAmount(evt.target.value)} />
+          </Box>
+          <Box mt={1} display='flex'>
+            <ColoredSlider
+              min={1}
+              max={100}
+              step={1}
+              value={removePercent}
+              onChange={(event: any, value) => {
+                setRemovePercent(value as number);
+              }}
+            />
           </Box>
         </Box>
         <Box display='flex' my={3} justifyContent='center'>
