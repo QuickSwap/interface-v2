@@ -34,9 +34,9 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({ currency0, 
     <CustomModal open={open} onClose={onClose}>
       <Box paddingX={3} paddingY={4}>
         <Box display='flex' alignItems='center' justifyContent='space-between'>
-          <ArrowLeft color='#696c80' />
+          <ArrowLeft color='#696c80' style={{ cursor: 'pointer' }} onClick={onClose} />
           <Typography variant='subtitle2' style={{ color: '#c7cad9' }}>Remove Liquidity</Typography>
-          <CloseIcon />
+          <CloseIcon style={{ cursor: 'pointer' }} onClick={onClose} />
         </Box>
         <Box mt={3} bgcolor='#12131a' border='1px solid rgba(105, 108, 128, 0.12)' borderRadius='10px' padding='16px'>
           <Box display='flex' alignItems='center' justifyContent='space-between'>
@@ -46,16 +46,19 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({ currency0, 
           <Box mt={2}>
             <input placeholder='0' className={classes.input} value={amount} onChange={(evt: any) => setAmount(evt.target.value)} />
           </Box>
-          <Box mt={1} display='flex'>
-            <ColoredSlider
-              min={1}
-              max={100}
-              step={1}
-              value={removePercent}
-              onChange={(event: any, value) => {
-                setRemovePercent(value as number);
-              }}
-            />
+          <Box display='flex' alignItems='center'>
+            <Box flex={1} mr={2} mt={0.5}>
+              <ColoredSlider
+                min={1}
+                max={100}
+                step={1}
+                value={removePercent}
+                onChange={(event: any, value) => {
+                  setRemovePercent(value as number);
+                }}
+              />
+            </Box>
+            <Typography variant='body2'>{ removePercent }%</Typography>
           </Box>
         </Box>
         <Box display='flex' my={3} justifyContent='center'>

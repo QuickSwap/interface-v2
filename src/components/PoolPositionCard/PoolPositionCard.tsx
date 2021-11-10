@@ -7,7 +7,7 @@ import { useActiveWeb3React } from 'hooks';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { useTokenBalance } from 'state/wallet/hooks';
 import { useTotalSupply } from 'data/TotalSupply';
-import { CurrencyLogo, DoubleCurrencyLogo } from 'components';
+import { CurrencyLogo, DoubleCurrencyLogo, RemoveLiquidityModal } from 'components';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   poolButtonRow: {
@@ -50,6 +50,7 @@ interface PoolPositionCardProps {
 const PoolPositionCard: React.FC<PoolPositionCardProps> = ({ pair, handleAddLiquidity }) => {
   const classes = useStyles()
   const { account } = useActiveWeb3React()
+  const [ openRemoveModal, setOpenRemoveModal ] = useState(false);
 
   const currency0 = unwrappedToken(pair.token0)
   const currency1 = unwrappedToken(pair.token1)
@@ -156,21 +157,21 @@ const PoolPositionCard: React.FC<PoolPositionCardProps> = ({ pair, handleAddLiqu
             <Button variant='contained' onClick={() => { handleAddLiquidity(currency0, currency1) }}>
               <Typography variant='body2'>Add</Typography>
             </Button>
-            <Button variant='contained'
-              // padding="8px"
-              // borderRadius="8px"
-              // as={Link}
-              // width="48%"
-              // to={`/remove/${currencyId(currency0)}/${currencyId(currency1)}`}
-            >
+            <Button variant='contained' onClick={() => { setOpenRemoveModal(true); }}>
               <Typography variant='body2'>Remove</Typography>
             </Button>
           </Box>
         </Box>
       )}
       <Box bgcolor='#404557' height='36px' paddingX={3} display='flex' alignItems='center'>
-        <Typography variant='body2'>Earn <span style={{ color: '#0fc679' }}>49% APY</span> by staking your LP tokens in {currency0.symbol?.toUpperCase()} / {currency1.symbol?.toUpperCase()} Farm</Typography>
+        <Typography variant='body2'>
+          Earn <span style={{ color: '#0fc679' }}>49% APY</span> by staking your LP tokens in {currency0.symbol?.toUpperCase()} / {currency1.symbol?.toUpperCase()} Farm
+        </Typography>
       </Box>
+      {
+        openRemoveModal &&
+          <RemoveLiquidityModal currency0={currency0} currency1={currency1} open={openRemoveModal} onClose={() => setOpenRemoveModal(false)} />
+      }
     </Box>
   )
 }
