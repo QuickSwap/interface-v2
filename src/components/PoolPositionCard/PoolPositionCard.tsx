@@ -144,7 +144,7 @@ const PoolPositionCard: React.FC<PoolPositionCardProps> = ({ pair, handleAddLiqu
               Your pool share:
             </Typography>
             <Typography variant='body2' style={{ color: '#c7cad9' }}>
-              {poolTokenPercentage ? poolTokenPercentage.toFixed(2) + '%' : '-'}
+              {poolTokenPercentage ? poolTokenPercentage.toSignificant() + '%' : '-'}
             </Typography>
           </Box>
 
