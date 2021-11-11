@@ -211,7 +211,7 @@ const FarmPage: React.FC = () => {
               <Box width={0.3}>
                 <Typography color='secondary' variant='body2'>Pool</Typography>
               </Box>
-              <Box width={0.25} display='flex' flexDirection='row' alignItems='center'>
+              <Box width={0.2} display='flex' flexDirection='row' alignItems='center'>
                 <Typography color='secondary' variant='body2'>TVL</Typography>
                 <Box ml={1} style={{height: '23px'}}><img src={ArrowUpIcon} alt={'arrow up'} /></Box>
               </Box>
@@ -219,11 +219,11 @@ const FarmPage: React.FC = () => {
                 <Typography color='secondary' variant='body2'>Rewards</Typography>
                 <Box ml={1} style={{height: '23px'}}><img src={ArrowUpIcon} alt={'arrow up'} /></Box>
               </Box>
-              <Box width={0.2} display='flex' flexDirection='row' alignItems='center' justifyContent='center'>
+              <Box width={0.15} display='flex' flexDirection='row' alignItems='center' justifyContent='center'>
                 <Typography color='secondary' variant='body2'>APY</Typography>
                 <Box ml={1} style={{height: '23px'}}><img src={ArrowUpIcon} alt={'arrow up'} /></Box>
               </Box>
-              <Box width={0.1} display='flex' flexDirection='row' alignItems='center' justifyContent='flex-end' mr={2}>
+              <Box width={0.2} display='flex' flexDirection='row' alignItems='center' justifyContent='flex-end' mr={2}>
                 <Typography color='secondary' variant='body2'>Earned</Typography>
                 <Box ml={1} style={{height: '23px'}}><img src={ArrowUpIcon} alt={'arrow up'} /></Box>
               </Box>

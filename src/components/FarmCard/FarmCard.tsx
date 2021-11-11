@@ -133,22 +133,22 @@ const FarmCard: React.FC<{ stakingInfo: StakingInfo }> = ({ stakingInfo }) => {
             <Typography variant='body2'>{ currency0.symbol } / { currency1.symbol } LP</Typography>
           </Box>
         </Box>
-        <Box width={0.25}>
+        <Box width={0.2}>
           <Typography variant='body2'>{ tvl }</Typography>
         </Box>
         <Box width={0.25}>
           <Typography variant='body2'>{ poolRate }</Typography>
         </Box>
-        <Box width={0.2} display='flex' flexDirection='row' alignItems='center' justifyContent='center'>
+        <Box width={0.15} display='flex' flexDirection='row' alignItems='center' justifyContent='center'>
           <Typography variant='body2' style={{ color: '#0fc679' }}>{ apyWithFee }%</Typography>
           <Box ml={1} style={{height: '16px'}}><img src={CircleInfoIcon} alt={'arrow up'} /></Box>
         </Box>
-        <Box width={0.1} mr={2} textAlign='right'>
+        <Box width={0.2} mr={2} textAlign='right'>
           <Box display='flex' alignItems='center' justifyContent='flex-end' mb={0.25}>
             <CurrencyLogo currency={QUICK} size='16px' />
             <Typography variant='body2' style={{ marginLeft: 5 }}>{ stakingInfo.earnedAmount.toSignificant(2) }<span>&nbsp;dQUICK</span></Typography>
           </Box>
-          <Typography variant='body2' style={{ color: '#696c80' }}>${(Number(stakingInfo.earnedAmount.toSignificant()) * Number(quickPriceUSD)).toLocaleString()}</Typography>
+          <Typography variant='body2' style={{ color: '#696c80' }}>${(Number(stakingInfo.earnedAmount.toSignificant(2)) * Number(quickPriceUSD.toFixed(2)))}</Typography>
         </Box>
       </Box>
 
@@ -158,7 +158,7 @@ const FarmCard: React.FC<{ stakingInfo: StakingInfo }> = ({ stakingInfo }) => {
             <Box display='flex' flexDirection='row' alignItems='flex-start' justifyContent='space-between'>
               <Typography variant='body2'>In Wallet:</Typography>
               <Box display='flex' flexDirection='column' alignItems='flex-end' justifyContent='flex-start'>
-                <Typography variant='body1'>0.00<span>LP (</span>$0)</Typography>
+                <Typography variant='body2'>0.00<span>LP (</span>$0)</Typography>
                 <Link to='#' style={{color: '#448aff'}}>Get {currency0.symbol} / {currency1.symbol} LP</Link>
               </Box>
             </Box>
@@ -174,7 +174,7 @@ const FarmCard: React.FC<{ stakingInfo: StakingInfo }> = ({ stakingInfo }) => {
             <Box display='flex' flexDirection='row' alignItems='flex-start' justifyContent='space-between'>
               <Typography variant='body2'>My deposits:</Typography>
               <Box display='flex' flexDirection='column' alignItems='flex-end' justifyContent='flex-start'>
-                <Typography variant='body1'>10.30<span>LP (</span>$4,387.23)</Typography>
+                <Typography variant='body2'>10.30<span>LP (</span>$4,387.23)</Typography>
               </Box>
             </Box>
             <Box className={classes.inputVal} mb={2} mt={4.5} p={2}>
@@ -189,8 +189,8 @@ const FarmCard: React.FC<{ stakingInfo: StakingInfo }> = ({ stakingInfo }) => {
             <Box display='flex' flexDirection='column' alignItems='center' justifyContent='space-between'>
               <Box mb={1}><Typography variant='body2'>Unclaimed Rewards:</Typography></Box>
               <Box mb={1}><CurrencyLogo currency={QUICK} /></Box>
-              <Box mb={0.5}><Typography variant='body1' color='textSecondary'>1.05<span>&nbsp;dQUICK</span></Typography></Box>
-              <Box mb={0.5}><Typography variant='body2'>$423</Typography></Box>
+              <Box mb={0.5}><Typography variant='body1' color='textSecondary'>{ stakingInfo.earnedAmount.toSignificant(2) }<span>&nbsp;dQUICK</span></Typography></Box>
+              <Box mb={1}><Typography variant='body2'>${(Number(stakingInfo.earnedAmount.toSignificant(2)) * Number(quickPriceUSD.toFixed(2)))}</Typography></Box>
             </Box>
             <Box className={classes.buttonClaim} mb={2} p={2}>
               <Typography variant='body1' color='textSecondary'>Claim</Typography>
