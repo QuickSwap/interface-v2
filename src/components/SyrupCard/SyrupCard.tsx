@@ -26,9 +26,6 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo }> = ({ syrup }) => {
 
   const currency = unwrappedToken(syrup.token);
   const baseTokenCurrency = unwrappedToken(syrup.baseToken);
-  const isStaking = Boolean(syrup.stakedAmount.greaterThan('0'))
-
-  console.log('bbb', syrup);
 
   const dQuickDeposit = syrup.valueOfTotalStakedAmountInUSDC
     ? `$${Number(syrup.valueOfTotalStakedAmountInUSDC).toLocaleString()}`

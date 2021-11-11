@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
-import { Box, Typography, Divider } from '@material-ui/core';
+import { Box, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { SyrupInfo } from 'state/stake/hooks';
-import { QUICK } from 'constants/index';
+import { StakingInfo } from 'state/stake/hooks';
+import { JSBI, TokenAmount } from '@uniswap/sdk';
+import { QUICK, EMPTY } from 'constants/index';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { usePair } from 'data/Reserves';
+import { useTotalSupply } from 'data/TotalSupply';
 import useUSDCPrice from 'utils/useUSDCPrice';
-import { CurrencyLogo } from 'components';
+import { DoubleCurrencyLogo, CurrencyLogo } from 'components';
 import CircleInfoIcon from 'assets/images/circleinfo.svg';
-import TokenPairIcon from 'assets/images/tokenpair.png';
 import { Link } from 'react-router-dom';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
@@ -63,64 +64,91 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
   }
 }));
 
-const FarmCard: React.FC<{ syrup: SyrupInfo }> = ({ syrup }) => {
+const FarmCard: React.FC<{ stakingInfo: StakingInfo }> = ({ stakingInfo }) => {
   const classes = useStyles();
+  const [ isExpandCard, setExpandCard ] = useState(false);
 
-  const currency = unwrappedToken(syrup.token);
-  const baseTokenCurrency = unwrappedToken(syrup.baseToken);
-  const isStaking = Boolean(syrup.stakedAmount.greaterThan('0'))
+  const token0 = stakingInfo.tokens[0]
+  const token1 = stakingInfo.tokens[1]
 
-  console.log('bbb', syrup);
+  const currency0 = unwrappedToken(token0)
+  const currency1 = unwrappedToken(token1)
+  const baseTokenCurrency = unwrappedToken(stakingInfo.baseToken);
+  const empty = unwrappedToken(EMPTY);
+  const quickPriceUSD = stakingInfo.quickPrice;
 
-  const dQuickDeposit = syrup.valueOfTotalStakedAmountInUSDC
-    ? `$${Number(syrup.valueOfTotalStakedAmountInUSDC).toLocaleString()}`
-    : `${syrup.totalStakedAmount.toSignificant(6, { groupSeparator: ',' }) ?? '-'} dQUICK`;
-
-  const [, stakingTokenPair] = usePair(currency, baseTokenCurrency);
-  const price = stakingTokenPair?.priceOf(syrup.token);
-  const USDPriceToken = useUSDCPrice(syrup.token);
-  const USDPriceBaseToken = useUSDCPrice(syrup.baseToken);              
-  const priceOfRewardTokenInUSD = Number(price?.toSignificant(6)) * Number(USDPriceBaseToken?.toSignificant(6));
+  // get the color of the token
+  const baseToken = baseTokenCurrency === empty ? token0: stakingInfo.baseToken;
   
-  const rewards = Number(syrup.rate) * (priceOfRewardTokenInUSD ? priceOfRewardTokenInUSD : 0);
+  const totalSupplyOfStakingToken = useTotalSupply(stakingInfo.stakedAmount.token)
+  const [, stakingTokenPair] = usePair(...stakingInfo.tokens)
 
-  let tokenAPR: any = 0;
-  if (Number(syrup.valueOfTotalStakedAmountInUSDC) > 0) {
-    tokenAPR = (rewards / Number(syrup.valueOfTotalStakedAmountInUSDC)) * 365 * 100
-    tokenAPR = parseFloat(tokenAPR).toFixed(3);
+  // let returnOverMonth: Percent = new Percent('0')
+  let valueOfTotalStakedAmountInBaseToken: TokenAmount | undefined
+  if (totalSupplyOfStakingToken && stakingTokenPair) {
+    // take the total amount of LP tokens staked, multiply by ETH value of all LP tokens, divide by all LP tokens
+    valueOfTotalStakedAmountInBaseToken = new TokenAmount(
+      baseToken,
+      JSBI.divide(
+        JSBI.multiply(
+          JSBI.multiply(stakingInfo.totalStakedAmount.raw, stakingTokenPair.reserveOf(baseToken).raw),
+          JSBI.BigInt(2) // this is b/c the value of LP shares are ~double the value of the WETH they entitle owner to
+        ),
+        totalSupplyOfStakingToken.raw
+      )
+    )
   }
 
-  const dQUICKAPR =(((Number(syrup.oneDayVol) * 0.04 * 0.01) / Number(syrup.dQuickTotalSupply.toSignificant(6))) * 365) / (Number(syrup.dQUICKtoQUICK.toSignificant(6)) * Number(syrup.quickPrice));
+  // get the USD value of staked WETH
+  const USDPrice = useUSDCPrice(baseToken)
+  const valueOfTotalStakedAmountInUSDC =
+    valueOfTotalStakedAmountInBaseToken && USDPrice?.quote(valueOfTotalStakedAmountInBaseToken)
   
-  let dQUICKAPY: any = dQUICKAPR ? Number((Math.pow(1 + dQUICKAPR / 365, 365) - 1) * 100).toLocaleString() : 0;
+  const perMonthReturnInRewards = (Number(stakingInfo.dQuickToQuick) * Number(stakingInfo?.quickPrice) * 30) / Number(valueOfTotalStakedAmountInUSDC?.toSignificant(6));
   
-  const [isExpandCard, setExpandCard] = useState(false);
+  let apyWithFee: any = 0;
+
+  if(stakingInfo?.oneYearFeeAPY && stakingInfo?.oneYearFeeAPY > 0) {
+    apyWithFee = ((1 + ((Number(perMonthReturnInRewards) + Number(stakingInfo.oneYearFeeAPY) / 12) * 12) / 12) ** 12 - 1) * 100 // compounding monthly APY
+    if(apyWithFee > 100000000) {
+      apyWithFee = ">100000000"
+    }
+    else {
+      apyWithFee = parseFloat(apyWithFee.toFixed(2)).toLocaleString()
+    }
+  }
+
+  const tvl = valueOfTotalStakedAmountInUSDC
+    ? `$${valueOfTotalStakedAmountInUSDC.toFixed(0, { groupSeparator: ',' })}`
+    : `${valueOfTotalStakedAmountInBaseToken?.toSignificant(4, { groupSeparator: ',' }) ?? '-'} ETH`;
+
+  const poolRate = `${stakingInfo.totalRewardRate?.toFixed(2, { groupSeparator: ',' }).replace(/[.,]00$/, "")} dQUICK / day`;
 
   return (
     <Box className={classes.syrupCard}>
       <Box className={classes.syrupCardUp} onClick={() => setExpandCard(!isExpandCard)} >
         <Box display='flex' alignItems='center' width={0.3}>
-          <img src={TokenPairIcon} alt='token pair' style={{height: '28px'}} />
+          <DoubleCurrencyLogo currency0={currency0} currency1={currency1} size={28} />
           <Box ml={1.5}>
-            <Typography variant='body2'>{ currency.symbol }</Typography>
+            <Typography variant='body2'>{ currency0.symbol } / { currency1.symbol } LP</Typography>
           </Box>
         </Box>
         <Box width={0.25}>
-          <Typography variant='body2'>{ dQuickDeposit }</Typography>
+          <Typography variant='body2'>{ tvl }</Typography>
         </Box>
         <Box width={0.25}>
-          <Typography variant='caption'>{ Number(syrup.rate).toLocaleString() }<span>&nbsp;dQUICK / Day</span></Typography>
+          <Typography variant='body2'>{ poolRate }</Typography>
         </Box>
         <Box width={0.2} display='flex' flexDirection='row' alignItems='center' justifyContent='center'>
-          <Typography variant='body2' style={{ color: '#0fc679' }}>{ tokenAPR }%</Typography>
+          <Typography variant='body2' style={{ color: '#0fc679' }}>{ apyWithFee }%</Typography>
           <Box ml={1} style={{height: '16px'}}><img src={CircleInfoIcon} alt={'arrow up'} /></Box>
         </Box>
         <Box width={0.1} mr={2} textAlign='right'>
           <Box display='flex' alignItems='center' justifyContent='flex-end' mb={0.25}>
-            <CurrencyLogo currency={currency} size='16px' />
-            <Typography variant='body2' style={{ marginLeft: 5 }}>{ syrup.earnedAmount.toSignificant(2) }<span>&nbsp;dQUICK</span></Typography>
+            <CurrencyLogo currency={QUICK} size='16px' />
+            <Typography variant='body2' style={{ marginLeft: 5 }}>{ stakingInfo.earnedAmount.toSignificant(2) }<span>&nbsp;dQUICK</span></Typography>
           </Box>
-          <Typography variant='body2' style={{ color: '#696c80' }}>${(Number(syrup.earnedAmount.toSignificant()) * Number(USDPriceToken ? USDPriceToken.toSignificant() : 0)).toLocaleString()}</Typography>
+          <Typography variant='body2' style={{ color: '#696c80' }}>${(Number(stakingInfo.earnedAmount.toSignificant()) * Number(quickPriceUSD)).toLocaleString()}</Typography>
         </Box>
       </Box>
 
@@ -131,7 +159,7 @@ const FarmCard: React.FC<{ syrup: SyrupInfo }> = ({ syrup }) => {
               <Typography variant='body2'>In Wallet:</Typography>
               <Box display='flex' flexDirection='column' alignItems='flex-end' justifyContent='flex-start'>
                 <Typography variant='body1'>0.00<span>LP (</span>$0)</Typography>
-                <Link to='#' style={{color: '#448aff'}}>Get QUICK / USDC LP</Link>
+                <Link to='#' style={{color: '#448aff'}}>Get {currency0.symbol} / {currency1.symbol} LP</Link>
               </Box>
             </Box>
             <Box className={classes.inputVal} mb={2} mt={2} p={2}>
@@ -160,7 +188,7 @@ const FarmCard: React.FC<{ syrup: SyrupInfo }> = ({ syrup }) => {
           <Box width={0.25} ml={4} mr={4} style={{color: '#696c80'}}>
             <Box display='flex' flexDirection='column' alignItems='center' justifyContent='space-between'>
               <Box mb={1}><Typography variant='body2'>Unclaimed Rewards:</Typography></Box>
-              <Box mb={1}><img src={TokenPairIcon} alt='token pair' style={{height: '24px'}} /></Box>
+              <Box mb={1}><CurrencyLogo currency={QUICK} /></Box>
               <Box mb={0.5}><Typography variant='body1' color='textSecondary'>1.05<span>&nbsp;dQUICK</span></Typography></Box>
               <Box mb={0.5}><Typography variant='body2'>$423</Typography></Box>
             </Box>
