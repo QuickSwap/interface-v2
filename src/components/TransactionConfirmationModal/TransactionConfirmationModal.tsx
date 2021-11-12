@@ -23,7 +23,9 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       textAlign: 'center'
     },
     '& svg': {
-      cursor: 'pointer'
+      cursor: 'pointer',
+      position: 'relative',
+      zIndex: 3
     }
   },
   modalBG: {

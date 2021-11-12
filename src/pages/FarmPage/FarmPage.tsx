@@ -101,12 +101,12 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
 const FarmPage: React.FC = () => {
   const classes = useStyles();
   const stakingInfos = useStakingInfo();
-  const [ stakedOnly, setStakeOnly ] = useState(false);
-  const [ farmSearch, setFarmSearch ] = useState('');
+  const [stakedOnly, setStakeOnly] = useState(false);
+  const [farmSearch, setFarmSearch] = useState('');
 
   const rewardRate = useMemo(() => {
     if (stakingInfos && stakingInfos.length > 0) {
-      return stakingInfos.map(info => Number(info.rate)).reduce((sum, current) => sum + current, 0); 
+      return stakingInfos.map(info => Number(info.rate)).reduce((sum, current) => sum + current, 0);
     } else {
       return 0;
     }
@@ -114,7 +114,7 @@ const FarmPage: React.FC = () => {
 
   const totalFee = useMemo(() => {
     if (stakingInfos && stakingInfos.length > 0) {
-      return stakingInfos.map(info => Number(info.oneDayFee)).reduce((sum, current) => sum + current, 0); 
+      return stakingInfos.map(info => Number(info.oneDayFee)).reduce((sum, current) => sum + current, 0);
     } else {
       return 0;
     }
@@ -138,6 +138,15 @@ const FarmPage: React.FC = () => {
     }
   }, [stakingInfos, stakedOnly, farmSearch])
 
+  const myDeposits = useMemo(() => {
+    if (stakingInfos && stakingInfos.length > 0) {
+      return stakingInfos.map(stakingInfo => {
+      })
+    } else {
+      return 0;
+    }
+  }, [])
+
   return (
     <Box width='100%' mb={3}>
       <Box mb={4} display='flex' alignItems='flex-start' justifyContent='space-between' width='100%'>
@@ -155,26 +164,26 @@ const FarmPage: React.FC = () => {
         <Box display='flex' flexDirection='column' alignItems='flex-start' justifyContent='space-between'>
           <Typography variant='caption' color='secondary'>Reward Rate:</Typography>
           <Box mt={1} display='flex' flexDirection='row' alignItems='flex-end'>
-            <Typography variant='body1'>{ rewardRate.toLocaleString() } dQUICK</Typography>
+            <Typography variant='body1'>{rewardRate.toLocaleString()} dQUICK</Typography>
             <Typography variant='body2' color='secondary'>&nbsp;/day</Typography>
           </Box>
         </Box>
         <Box display='flex' flexDirection='column' alignItems='flex-start' justifyContent='space-between'>
           <Typography variant='caption' color='secondary'>Total Rewards:</Typography>
           <Box mt={1} display='flex' flexDirection='row' alignItems='flex-end'>
-            <Typography variant='body1'>${ totalRewardsUSD.toLocaleString() }</Typography>
+            <Typography variant='body1'>${totalRewardsUSD.toLocaleString()}</Typography>
           </Box>
         </Box>
         <Box display='flex' flexDirection='column' alignItems='flex-start' justifyContent='space-between'>
           <Typography variant='caption' color='secondary'>24h Fees:</Typography>
           <Box mt={1} display='flex' flexDirection='row' alignItems='flex-end'>
-            <Typography variant='body1'>${ totalFee.toLocaleString() }</Typography>
+            <Typography variant='body1'>${totalFee.toLocaleString()}</Typography>
           </Box>
         </Box>
         <Box display='flex' flexDirection='column' alignItems='flex-start' justifyContent='space-between'>
           <Box display='flex' flexDirection='row' alignItems='center'>
             <Typography variant='caption' color='secondary'>My deposits:</Typography>
-            <Box ml={1} style={{height: '15px'}}><img src={BlindEyeIcon} alt={'blind eye deposits'} /></Box>
+            <Box ml={1} style={{ height: '15px' }}><img src={BlindEyeIcon} alt={'blind eye deposits'} /></Box>
           </Box>
           <Box mt={1} display='flex' flexDirection='row' alignItems='flex-end'>
             <Typography variant='body1'>$7,348.23</Typography>
@@ -183,7 +192,7 @@ const FarmPage: React.FC = () => {
         <Box display='flex' flexDirection='column' alignItems='flex-start' justifyContent='space-between'>
           <Box display='flex' flexDirection='row' alignItems='center'>
             <Typography variant='caption' color='secondary'>Unclaimed rewards:</Typography>
-            <Box ml={1} style={{height: '15px'}}><img src={BlindEyeIcon} alt={'blind eye deposits'} /></Box>
+            <Box ml={1} style={{ height: '15px' }}><img src={BlindEyeIcon} alt={'blind eye deposits'} /></Box>
           </Box>
           <Box mt={1} display='flex' flexDirection='row' alignItems='flex-end'>
             <Typography variant='body1'>0.023 dQUICK</Typography>
@@ -213,24 +222,24 @@ const FarmPage: React.FC = () => {
               </Box>
               <Box width={0.2} display='flex' flexDirection='row' alignItems='center'>
                 <Typography color='secondary' variant='body2'>TVL</Typography>
-                <Box ml={1} style={{height: '23px'}}><img src={ArrowUpIcon} alt={'arrow up'} /></Box>
+                <Box ml={1} style={{ height: '23px' }}><img src={ArrowUpIcon} alt={'arrow up'} /></Box>
               </Box>
               <Box width={0.25} display='flex' flexDirection='row' alignItems='center'>
                 <Typography color='secondary' variant='body2'>Rewards</Typography>
-                <Box ml={1} style={{height: '23px'}}><img src={ArrowUpIcon} alt={'arrow up'} /></Box>
+                <Box ml={1} style={{ height: '23px' }}><img src={ArrowUpIcon} alt={'arrow up'} /></Box>
               </Box>
               <Box width={0.15} display='flex' flexDirection='row' alignItems='center' justifyContent='center'>
                 <Typography color='secondary' variant='body2'>APY</Typography>
-                <Box ml={1} style={{height: '23px'}}><img src={ArrowUpIcon} alt={'arrow up'} /></Box>
+                <Box ml={1} style={{ height: '23px' }}><img src={ArrowUpIcon} alt={'arrow up'} /></Box>
               </Box>
               <Box width={0.2} display='flex' flexDirection='row' alignItems='center' justifyContent='flex-end' mr={2}>
                 <Typography color='secondary' variant='body2'>Earned</Typography>
-                <Box ml={1} style={{height: '23px'}}><img src={ArrowUpIcon} alt={'arrow up'} /></Box>
+                <Box ml={1} style={{ height: '23px' }}><img src={ArrowUpIcon} alt={'arrow up'} /></Box>
               </Box>
             </Box>
             {
-              stakingInfos && filteredStakingInfos.map((info: any) => (
-                <FarmCard stakingInfo={info} />
+              stakingInfos && filteredStakingInfos.map((info: any, index) => (
+                <FarmCard key={index} stakingInfo={info} />
               ))
             }
           </Box>

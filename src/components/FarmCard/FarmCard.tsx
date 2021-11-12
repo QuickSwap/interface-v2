@@ -389,7 +389,7 @@ const FarmCard: React.FC<{ stakingInfo: StakingInfo }> = ({ stakingInfo }) => {
             </Box>
             <Box
               className={
-                Number(stakeAmount) > 0 && Number(stakeAmount) <= Number(userLiquidityUnstaked?.toSignificant())
+                Number(!attempting && stakeAmount) > 0 && Number(stakeAmount) <= Number(userLiquidityUnstaked?.toSignificant())
                   ? classes.buttonClaim
                   : classes.buttonToken
               }
@@ -397,7 +397,7 @@ const FarmCard: React.FC<{ stakingInfo: StakingInfo }> = ({ stakingInfo }) => {
               mt={2}
               p={2}
               onClick={() => {
-                if (Number(stakeAmount) > 0 && Number(stakeAmount) <= Number(userLiquidityUnstaked?.toSignificant())) {
+                if (!attempting && Number(stakeAmount) > 0 && Number(stakeAmount) <= Number(userLiquidityUnstaked?.toSignificant())) {
                   if (approval === ApprovalState.APPROVED || signatureData !== null) {
                     onStake();
                   } else {
@@ -406,7 +406,7 @@ const FarmCard: React.FC<{ stakingInfo: StakingInfo }> = ({ stakingInfo }) => {
                 }
               }}
             >
-              <Typography variant='body1'>{ (approval === ApprovalState.APPROVED || signatureData !== null) ? 'Stake LP Tokens' : 'Approve' }</Typography>
+              <Typography variant='body1'>{ attempting ? 'Staking LP Tokens...' : (approval === ApprovalState.APPROVED || signatureData !== null) ? 'Stake LP Tokens' : 'Approve' }</Typography>
             </Box>
           </Box>
           <Box width={0.25} ml={4} mr={4} style={{color: '#696c80'}}>
@@ -430,7 +430,7 @@ const FarmCard: React.FC<{ stakingInfo: StakingInfo }> = ({ stakingInfo }) => {
             </Box>
             <Box
               className={
-                Number(unstakeAmount) > 0 && Number(unstakeAmount) <= Number(stakingInfo.stakedAmount.toSignificant())
+                !attempting && Number(unstakeAmount) > 0 && Number(unstakeAmount) <= Number(stakingInfo.stakedAmount.toSignificant())
                   ? classes.buttonClaim
                   : classes.buttonToken
               }
@@ -438,11 +438,11 @@ const FarmCard: React.FC<{ stakingInfo: StakingInfo }> = ({ stakingInfo }) => {
               mt={2}
               p={2}
               onClick={() => {
-                if (Number(unstakeAmount) > 0 && Number(unstakeAmount) <= Number(stakingInfo.stakedAmount.toSignificant())) {
+                if (!attempting && Number(unstakeAmount) > 0 && Number(unstakeAmount) <= Number(stakingInfo.stakedAmount.toSignificant())) {
                   onWithdraw();
                 }
             }}>
-              <Typography variant='body1'>Unstake LP Tokens</Typography>
+              <Typography variant='body1'>{ attempting ? 'Unstaking LP Tokens...' : 'Unstake LP Tokens' }</Typography>
             </Box>
           </Box>
           <Box width={0.25} ml={4} mr={4} style={{color: '#696c80'}}>
