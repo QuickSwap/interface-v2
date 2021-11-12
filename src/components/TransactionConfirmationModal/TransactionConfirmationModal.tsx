@@ -23,7 +23,9 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       textAlign: 'center'
     },
     '& svg': {
-      cursor: 'pointer'
+      cursor: 'pointer',
+      position: 'relative',
+      zIndex: 3
     }
   },
   modalBG: {
@@ -98,13 +100,12 @@ export const TransactionSubmittedContent: React.FC<TransactionSubmittedContentPr
   return (
     <Box padding={4}>
       <Box className={classes.modalHeader}>
-        <Typography variant='h5'>Transaction Completed</Typography>
+        <Typography variant='h5'>Transaction Submitted</Typography>
         <CloseIcon onClick={onDismiss} />
       </Box>
       <Box className={classes.modalContent}>
-        <TransactionSuccess />
         <Typography variant='body1'>
-          Successfully swapped your tokens
+          Submitted transaction to swap your tokens
         </Typography>
       </Box>
       <Box display='flex' justifyContent='space-between' mt={2}>

@@ -26,9 +26,6 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo }> = ({ syrup }) => {
 
   const currency = unwrappedToken(syrup.token);
   const baseTokenCurrency = unwrappedToken(syrup.baseToken);
-  const isStaking = Boolean(syrup.stakedAmount.greaterThan('0'))
-
-  console.log('bbb', syrup);
 
   const dQuickDeposit = syrup.valueOfTotalStakedAmountInUSDC
     ? `$${Number(syrup.valueOfTotalStakedAmountInUSDC).toLocaleString()}`
@@ -51,6 +48,8 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo }> = ({ syrup }) => {
   const dQUICKAPR =(((Number(syrup.oneDayVol) * 0.04 * 0.01) / Number(syrup.dQuickTotalSupply.toSignificant(6))) * 365) / (Number(syrup.dQUICKtoQUICK.toSignificant(6)) * Number(syrup.quickPrice));
   
   let dQUICKAPY: any = dQUICKAPR ? Number((Math.pow(1 + dQUICKAPR / 365, 365) - 1) * 100).toLocaleString() : 0;
+
+  const syrupEarnedUSD = Number(syrup.earnedAmount.toSignificant(2)) * Number(USDPriceToken ? USDPriceToken.toSignificant(2) : 0);
   
   return (
     <Box className={classes.syrupCard}>
@@ -78,7 +77,7 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo }> = ({ syrup }) => {
           <CurrencyLogo currency={currency} size='16px' />
           <Typography variant='body2' style={{ marginLeft: 5 }}>{ syrup.earnedAmount.toSignificant(2) }</Typography>
         </Box>
-        <Typography variant='body2' style={{ color: '#696c80' }}>${(Number(syrup.earnedAmount.toSignificant()) * Number(USDPriceToken ? USDPriceToken.toSignificant() : 0)).toLocaleString()}</Typography>
+        <Typography variant='body2' style={{ color: '#696c80' }}>${syrupEarnedUSD < 0.001 ? syrupEarnedUSD.toFixed(5) : syrupEarnedUSD.toLocaleString() }</Typography>
       </Box>
     </Box>
   )

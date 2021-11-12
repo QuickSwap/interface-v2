@@ -1346,12 +1346,96 @@ export const SCA = new Token(
   "ScaleSwapToken"
 );
 
-export const TT = new Token(
+export const JPYC = new Token(
   ChainId.MATIC,
-  "0x16887befea6772175240a8b3aa797c460f80a08e",
+  "0x6AE7Dfc73E0dDE2aa99ac063DcF7e8A63265108c",
   18,
-  "TT",
-  "Test Token"
+  "JPYC",
+  "JPY Coin"
+);
+export const GENESIS = new Token(
+  ChainId.MATIC,
+  "0x51869836681BcE74a514625c856aFb697a013797",
+  18,
+  "GENESIS",
+  "Genesis"
+);
+export const LMT = new Token(
+  ChainId.MATIC,
+  "0x873801Ae2ff12d816Db9a7B082F5796BEC64C82C",
+  18,
+  "LMT",
+  "Lympo Market Token"
+);
+export const MCRN = new Token(
+  ChainId.MATIC,
+  "0xBA25B552C8A098AFdf276324C32C71fE28e0Ad40",
+  18,
+  "MCRN",
+  "MacaronSwap Token"
+);
+export const PNT = new Token(
+  ChainId.MATIC,
+  "0xB6bcae6468760bc0CDFb9C8ef4Ee75C9dd23e1Ed",
+  18,
+  "PNT",
+  "pTokens PNT"
+);
+export const PBTC = new Token(
+  ChainId.MATIC,
+  "0xd7ecf95Cf7eF5256990BeAf4ac895cD9e64cb947",
+  18,
+  "pBTC",
+  "pTokens BTC"
+);
+export const HBAR = new Token(
+  ChainId.MATIC,
+  "0x1646C835d70F76D9030DF6BaAeec8f65c250353d",
+  8,
+  "HBAR",
+  "HBAR"
+);
+export const MM = new Token(
+  ChainId.MATIC,
+  "0x5647Fe4281F8F6F01E84BCE775AD4b828A7b8927",
+  18,
+  "MM",
+  "Million"
+);
+export const CHAMPS = new Token(
+  ChainId.MATIC,
+  "0x8f9E8e833A69Aa467E42c46cCA640da84DD4585f",
+  18,
+  "CHAMPS",
+  "NFT Champions"
+);
+export const AUMI = new Token(
+  ChainId.MATIC,
+  "0x3eB177A6693eC81d1E170136f8AD02fffBE172a7",
+  18,
+  "AUMI",
+  "AutoMatic"
+);
+export const UM = new Token(
+  ChainId.MATIC,
+  "0x3B1A0c9252ee7403093fF55b4a5886d49a3d837a",
+  18,
+  "UM",
+  "Continuum"
+);
+export const WSG = new Token(
+  ChainId.MATIC,
+  "0x3C1BB39bb696B443a1D80BB2b3a3d950Ba9DEE87",
+  18,
+  "WSG",
+  "Wall Street Games"
+);
+export const DERC = new Token(
+  ChainId.MATIC,
+  "0xB35fcBCF1fD489fCe02Ee146599e893FDCdC60e6",
+  18,
+  "DERC",
+  "DeRace Token"
 );
 export const MATIC = WETH[ChainId.MATIC];
 // TODO this is only approximate, it's actually based on blocks

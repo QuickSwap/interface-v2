@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Box, Typography, Grid, Divider } from '@material-ui/core';
 import { useLairInfo, useSyrupInfo } from 'state/stake/hooks';
@@ -102,12 +102,22 @@ const DragonPage: React.FC = () => {
   const classes = useStyles();
   const [ isQUICKRate, setIsQUICKRate ] = useState(false);
   const lairInfo = useLairInfo();
-  const syrupInfo = useSyrupInfo();
+  const syrupInfos = useSyrupInfo();
   const { globalData } = useGlobalData();
   const APR =(((Number(lairInfo?.oneDayVol) * 0.04 * 0.01) / Number(lairInfo?.dQuickTotalSupply.toSignificant(6))) * 365) / (Number(lairInfo?.dQUICKtoQUICK.toSignificant()) * Number(lairInfo?.quickPrice));
   const APY = APR ? (Math.pow(1 + APR / 365, 365) - 1).toFixed(4) : 0;
   const [ stakedOnly, setStakeOnly ] = useState(false);
   const [ syrupSearch, setSyrupSearch ] = useState('');
+
+  const filteredSyrupInfos = useMemo(() => {
+    if (syrupInfos && syrupInfos.length > 0) {
+      return syrupInfos.filter(syrupInfo => {
+        return (stakedOnly ? Boolean(syrupInfo.stakedAmount.greaterThan('0')) : true) && ((syrupInfo.token.symbol ?? '').toLowerCase().indexOf(syrupSearch) > -1 || (syrupInfo.token.name ?? '').toLowerCase().indexOf(syrupSearch) > -1 || (syrupInfo.token.address ?? '').toLowerCase().indexOf(syrupSearch) > -1)
+      })
+    } else {
+      return [];
+    }
+  }, [syrupInfos, stakedOnly, syrupSearch])
 
   return (
     <Box width='100%' mb={3}>
@@ -219,7 +229,7 @@ const DragonPage: React.FC = () => {
               </Box>
             </Box>
             {
-              syrupInfo && syrupInfo.map(syrup => (
+              syrupInfos && filteredSyrupInfos.map(syrup => (
                 <SyrupCard syrup={syrup} />
               ))
             }

@@ -1,12 +1,16 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Box, Typography, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { ChevronDown, ChevronUp } from 'react-feather';
-import { Pair, JSBI, Percent, Currency } from '@uniswap/sdk';
+import { Pair, JSBI, Percent, Currency, TokenAmount } from '@uniswap/sdk';
 import { useActiveWeb3React } from 'hooks';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { useTokenBalance } from 'state/wallet/hooks';
+import { useStakingInfo } from 'state/stake/hooks';
 import { useTotalSupply } from 'data/TotalSupply';
+import { usePair } from 'data/Reserves';
+import { EMPTY } from 'constants/index';
+import useUSDCPrice from 'utils/useUSDCPrice';
 import { CurrencyLogo, DoubleCurrencyLogo, RemoveLiquidityModal } from 'components';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
@@ -49,11 +53,16 @@ interface PoolPositionCardProps {
 
 const PoolPositionCard: React.FC<PoolPositionCardProps> = ({ pair, handleAddLiquidity }) => {
   const classes = useStyles()
+
   const { account } = useActiveWeb3React()
   const [ openRemoveModal, setOpenRemoveModal ] = useState(false);
 
   const currency0 = unwrappedToken(pair.token0)
   const currency1 = unwrappedToken(pair.token1)
+
+  const [, stakingTokenPair] = usePair(currency0, currency1)
+  const stakingInfos = useStakingInfo(stakingTokenPair);
+  const stakingInfo = useMemo(() => stakingInfos && stakingInfos.length > 0 ? stakingInfos[0] : null, [stakingInfos]);
 
   const [showMore, setShowMore] = useState(false)
 
@@ -76,6 +85,43 @@ const PoolPositionCard: React.FC<PoolPositionCardProps> = ({ pair, handleAddLiqu
           pair.getLiquidityValue(pair.token1, totalPoolTokens, userPoolBalance, false)
         ]
       : [undefined, undefined]
+
+  const baseTokenCurrency = stakingInfo ? unwrappedToken(stakingInfo.baseToken) : undefined;
+  const empty = unwrappedToken(EMPTY);
+  const baseToken = baseTokenCurrency && baseTokenCurrency === empty ? stakingInfo?.tokens[0]: stakingInfo?.baseToken;
+  const totalSupplyOfStakingToken = useTotalSupply(stakingInfo?.stakedAmount.token)
+  let valueOfTotalStakedAmountInBaseToken: TokenAmount | undefined
+  if (totalSupplyOfStakingToken && stakingTokenPair && stakingInfo && baseToken) {
+    // take the total amount of LP tokens staked, multiply by ETH value of all LP tokens, divide by all LP tokens
+    valueOfTotalStakedAmountInBaseToken = new TokenAmount(
+      baseToken,
+      JSBI.divide(
+        JSBI.multiply(
+          JSBI.multiply(stakingInfo.totalStakedAmount.raw, stakingTokenPair.reserveOf(baseToken).raw),
+          JSBI.BigInt(2) // this is b/c the value of LP shares are ~double the value of the WETH they entitle owner to
+        ),
+        totalSupplyOfStakingToken.raw
+      )
+    )
+  }
+
+  const USDPrice = useUSDCPrice(baseToken)
+  const valueOfTotalStakedAmountInUSDC =
+    valueOfTotalStakedAmountInBaseToken && USDPrice?.quote(valueOfTotalStakedAmountInBaseToken)
+    
+  const perMonthReturnInRewards = (Number(stakingInfo?.dQuickToQuick) * Number(stakingInfo?.quickPrice) * 30) / Number(valueOfTotalStakedAmountInUSDC?.toSignificant(6));
+  
+  let apyWithFee: any = 0;
+
+  if(stakingInfo && stakingInfo.oneYearFeeAPY && Number(stakingInfo.oneYearFeeAPY) > 0) {
+    apyWithFee = ((1 + ((perMonthReturnInRewards + Number(stakingInfo.oneYearFeeAPY) / 12) * 12) / 12) ** 12 - 1) * 100 // compounding monthly APY
+    if(apyWithFee > 100000000) {
+      apyWithFee = ">100000000"
+    }
+    else {
+      apyWithFee = Number(apyWithFee.toFixed(2)).toLocaleString()
+    }
+  }
 
   return (
     <Box width={1} border='1px solid #282d3d' borderRadius={10} bgcolor={ showMore ? '#282d3d' : 'transparent' } style={{ overflow: 'hidden' }}>
@@ -163,11 +209,14 @@ const PoolPositionCard: React.FC<PoolPositionCardProps> = ({ pair, handleAddLiqu
           </Box>
         </Box>
       )}
-      <Box bgcolor='#404557' height='36px' paddingX={3} display='flex' alignItems='center'>
-        <Typography variant='body2'>
-          Earn <span style={{ color: '#0fc679' }}>49% APY</span> by staking your LP tokens in {currency0.symbol?.toUpperCase()} / {currency1.symbol?.toUpperCase()} Farm
-        </Typography>
-      </Box>
+      {
+        stakingInfo && apyWithFee &&
+          <Box bgcolor='#404557' height='36px' paddingX={3} display='flex' alignItems='center'>
+            <Typography variant='body2'>
+              Earn <span style={{ color: '#0fc679' }}>{apyWithFee}% APY</span> by staking your LP tokens in {currency0.symbol?.toUpperCase()} / {currency1.symbol?.toUpperCase()} Farm
+            </Typography>
+          </Box>
+      }
       {
         openRemoveModal &&
           <RemoveLiquidityModal currency0={currency0} currency1={currency1} open={openRemoveModal} onClose={() => setOpenRemoveModal(false)} />

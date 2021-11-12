@@ -123,9 +123,9 @@ const PoolsPage: React.FC = () => {
               : allV2PairsWithLiquidity.length > 0 ?
                 <Box>
                   <Typography variant='body2' className={classes.liquidityText}>Don’t see a pool you joined? <span>Import it</span>.<br/>Unstake your LP Tokens from Farms to see them here.</Typography>
-                  <Box mt={2}>
-                    {
-                      allV2PairsWithLiquidity.map(pair => (
+                  {
+                    allV2PairsWithLiquidity.map(pair => (
+                      <Box mt={2}>
                         <PoolPositionCard
                           key={pair.liquidityToken.address}
                           pair={pair}
@@ -133,9 +133,9 @@ const PoolsPage: React.FC = () => {
                             setCurrency0(currency0);
                             setCurrency1(currency1);
                           }} />
-                      ))
-                    }
-                  </Box>
+                      </Box>
+                    ))
+                  }
                 </Box>
               :
                 <Box textAlign='center'>

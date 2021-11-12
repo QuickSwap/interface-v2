@@ -62,7 +62,7 @@ const SwapTokenDetails: React.FC<{ currency: Currency | undefined, priceData: an
           </Box>
         </Box>
         {
-          priceData ?
+          tokenData && priceData ?
             <Box width={88} height={47} position='relative'>
               <Box position='absolute' top={-30} width={1}>
                 {
