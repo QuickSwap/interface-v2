@@ -53,13 +53,14 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
   },
   swapButtonWrapper: {
     display: 'flex',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     marginTop: 20,
     '& button': {
+      borderRadius: '10px',
       height: 56,
       fontSize: 18,
       fontWeight: 600,
-      width: (props: any) => props.showApproveFlow ? '48%' : '100%',
+      width: (props: any) => props.showApproveFlow ? '48%' : '48%',
       backgroundImage: 'linear-gradient(to bottom, #448aff, #004ce6)',
       '&.Mui-disabled': {
         backgroundImage: 'linear-gradient(to bottom, #282d3d, #1d212c)',
@@ -106,7 +107,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     }
   },
   slippageRow: {
-    color: '#448aff'
+    color: '#696c80'
   }
 }));
 
@@ -197,7 +198,8 @@ const Swap: React.FC = () => {
         return 'Swap';
       }
     } else {
-      return isnotMatic ? 'Switch to Matic' : 'Connect Wallet';
+      // return isnotMatic ? 'Switch to Matic' : 'Connect Wallet';
+      return 'Enter amount';
     }
   }, [formattedAmounts, currencies, account, isnotMatic, noRoute, userHasSpecifiedInputOutput, showWrap, wrapType]);
 
@@ -405,7 +407,7 @@ const Swap: React.FC = () => {
       <Box display='flex' alignItems='center' justifyContent='space-between' mt={2.5} mx={3} className={classes.slippageRow}>
         <Box display='flex' alignItems='center'>
           <Typography variant='body2' style={{ marginRight: 4 }}>
-            Slippage:
+            Slippage Tolerance:
           </Typography>
           <QuestionHelper text="Your transaction will revert if the price changes unfavorably by more than this percentage." />
         </Box>

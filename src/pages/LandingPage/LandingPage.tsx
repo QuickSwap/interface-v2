@@ -31,6 +31,9 @@ import { useActiveWeb3React, useInitTransak } from 'hooks';
 import { addMaticToMetamask, getEthPrice, getGlobalData, formatCompact } from 'utils';
 import { useEthPrice, useGlobalData, useWalletModalToggle } from 'state/application/hooks';
 import { useAllTokens } from 'hooks/Tokens';
+import QuickIcon from 'assets/images/quickIcon.svg';
+import MaticIcon from 'assets/images/maticicon.png';
+import ArrowUpIcon from 'assets/images/arrowup.svg';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   heroSection: {
@@ -87,7 +90,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
   },
   quickInfo: {
     textAlign: 'center',
-    margin: '128px 0 60px',
+    margin: '128px 0 30px',
     '& h2': {
       marginBottom: 60
     }
@@ -136,6 +139,53 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       }
     }
   },
+  buttonGroup: {
+    textAlign: 'center',
+    padding: '20px 0',
+    maxWidth: 1048,
+    margin: 'auto',
+    width: '100%',
+    '& > div': {
+      width: '100%',
+    },
+    '& .MuiButtonGroup-root': {
+      display: 'flex',
+      flexDirection: 'row',
+      justifyContent: 'center',
+      marginBottom: 50,
+      '& button': {
+        maxWidth: 180,
+        width: '50%',
+        height: 48,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        background: 'transparent',
+        border: `1px solid ${palette.primary.dark}`,
+        color: '#696c80',
+        '&.active': {
+          background: '#FFFFFFDE',
+          border: `1px solid transparent`,
+          color: palette.background.default
+        },
+        '&:first-child': {
+          borderTopLeftRadius: 24,
+          borderBottomLeftRadius: 24,
+        },
+        '&:last-child': {
+          borderTopRightRadius: 24,
+          borderBottomRightRadius: 24,
+        }
+      }
+    },
+    [breakpoints.down('xs')]: {
+      '& .MuiGrid-item': {
+        width: '100%',
+        marginBottom: 32,
+        textAlign: 'center'
+      }
+    }
+  },
   swapInfo: {
     textAlign: 'left',
     marginBottom: 60,
@@ -145,7 +195,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
   },
   rewardsContainer: {
     textAlign: 'center',
-    margin: '172px 0',
+    margin: '172px 0 100px 0',
     '& h3': {
       marginBottom: 24
     },
@@ -267,11 +317,11 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       marginTop: 32,
       '& > div': {
         '& img': {
-          width: 200,
+          width: 150,
           maxWidth: 240,
         },
         '& > div': {
-          width: 'calc(100% - 210px)'
+          width: 'calc(100% - 270px)'
         },
         [breakpoints.down('xs')]: {
           flexDirection: 'column',
@@ -308,6 +358,38 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
         '& svg': {
           width: 64,
           height: 64,
+        },
+        '&:last-child': {
+          marginRight: 0
+        }
+      }
+    }
+  },
+  smallCommunityContainer: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    width: 'calc(100%)',
+    position: 'relative',
+    right: '-120px',
+    '& .socialContent': {
+      display: 'flex',
+      flexWrap: 'wrap',
+      alignItems: 'flex-end',
+      justifyContent: 'flex-end',
+      marginTop: 48,
+      borderTopLeftRadius: '30px',
+      backgroundColor: '#1b202b',
+      '& > div': {
+        margin: '8px 16px 8px 0',
+        textAlign: 'center',
+        width: 40,
+        '& a': {
+          textDecoration: 'none',
+          color: '#3e4252'
+        },
+        '& svg': {
+          width: 32,
+          height: 32,
         },
         '&:last-child': {
           marginRight: 0
@@ -422,86 +504,196 @@ const LandingPage: React.FC = () => {
   }, [ethPrice, updateEthPrice, updateGlobalData])
 
   return (
-    <>
+    <Box>
+    <Box>
       <Box className={classes.heroSection}>
-        <Typography variant='h3'>
+        <Typography variant='body2'>
           Total Value Locked
-        </Typography>
         {
           globalData ?
-            <Typography variant='h1'>
-              ${Number(globalData.totalLiquidityUSD).toLocaleString(undefined, { maximumFractionDigits: 0 })}
-            </Typography>
+            <Box display='flex' flexDirection='row' style={{paddingTop: '5px'}}>
+              <Typography variant='h3' style={{paddingTop: '9px'}}>$</Typography>
+              <Typography color='textSecondary' style={{fontSize: '55px', fontWeight: 700}}>
+                {Number(globalData.totalLiquidityUSD).toLocaleString(undefined, { maximumFractionDigits: 0 })}
+              </Typography>
+            </Box>
             :
-            <Skeleton variant="rect" width={400} height={72} />
+            <Typography><Skeleton variant="rect" width={400} height={72} /></Typography>
         }
-        <Typography>
-          The Top Asset Exchange on the Polygon Network
+          <Typography style={{fontSize: '15px', color: '#696c80'}}>Top Asset Exchange on the Polygon Network</Typography>
         </Typography>
         {
           !account &&
-            <Button color='primary' onClick={() => { isnotMatic ? addMaticToMetamask() : toggleWalletModal() }}>
-              <Typography>{ isnotMatic ? 'Switch to Matic' : 'Connect Wallet' }</Typography>
+            <Button style={{backgroundColor: '#004ce6', borderRadius: '30px', width: '50%'}} onClick={() => { isnotMatic ? addMaticToMetamask() : toggleWalletModal() }}>
+              <Typography>{ isnotMatic ? 'Enter App' : 'Connect Wallet' }</Typography>
             </Button>        
         }
       </Box>
-      <Box className={classes.tradingInfo} display='flex' flexWrap='wrap' justifyContent={smallWindowSize ? 'center' : 'space-between'}>
+      <Box className={classes.tradingInfo} display='flex' justifyContent={smallWindowSize ? 'center' : 'space-between'}>
         <Box>
-          <Typography>Total Trading Pairs</Typography>
           {
             globalData ?
-              <Typography variant='h2'>
+              <Typography variant='h3'>
                 {Number(globalData.pairCount).toLocaleString()}
               </Typography>
               :
               <Skeleton variant="rect" width={100} height={45} />
           }
+          <Typography style={{fontSize: '12px', color: '#696c80', paddingTop: '15px'}}>TRANSACTIONS LAST MONTH</Typography>
         </Box>
         <Box>
-          <Typography>24 Hours Volume</Typography>
           {
             globalData ?
-              <Typography variant='h2'>
-                ${formatCompact(globalData.oneDayVolumeUSD)}
+            <Box display='flex' flexDirection='row'>
+              <Typography variant='h6' style={{paddingTop: '2px'}}>$</Typography>
+              <Typography variant='h3'>
+                {formatCompact(globalData.oneDayVolumeUSD)}
               </Typography>
+            </Box>
               :
               <Skeleton variant="rect" width={100} height={45} />
           }
+          <Typography style={{fontSize: '12px', color: '#696c80', paddingTop: '15px'}}>24H TRADING VOLUME</Typography>
         </Box>
         <Box>
-          <Typography>24 Hours Transactions</Typography>
           {
             globalData ?
-              <Typography variant='h2'>
+            <Box display='flex' flexDirection='row'>
+              <Typography variant='h6' style={{paddingTop: '2px'}}>$</Typography>
+              <Typography variant='h3'>
                 {Number(globalData.oneDayTxns).toLocaleString()}
               </Typography>
+            </Box>
               :
               <Skeleton variant="rect" width={100} height={45} />
           }
+          <Typography style={{fontSize: '12px', color: '#696c80', paddingTop: '15px'}}>24h REWORDS DISTRIBUTED</Typography>
         </Box>
         <Box>
-          <Typography>24 Hours Fees</Typography>
           {
             globalData ?
-              <Typography variant='h2'>
-                ${(Number(globalData.oneDayVolumeUSD) * 0.003).toLocaleString(undefined, { maximumFractionDigits: 0 })}
+              <Typography variant='h3'>
+                {(Number(globalData.oneDayVolumeUSD) * 0.003).toLocaleString(undefined, { maximumFractionDigits: 0 })}
               </Typography>
               :
               <Skeleton variant="rect" width={100} height={45} />
+          }
+          <Typography style={{fontSize: '12px', color: '#696c80', paddingTop: '15px'}}>TOTAL TRADING PAIRS</Typography>
+        </Box>
+        <Box>
+          {
+            globalData ?
+              <Typography variant='h3' style={{paddingTop: '20px'}}>
+                {(Number(globalData.oneDayVolumeUSD) * 0.003).toLocaleString(undefined, { maximumFractionDigits: 0 })}%
+              </Typography>
+              :
+              <Skeleton variant="rect" width={100} height={45} />
+          }
+          <Box style={{fontSize: '12px', color: '#696c80', paddingTop: '15px'}}>dQUICK APY</Box>
+          <Typography style={{color: '#448aff', fontSize: '12px'}}>stake</Typography>
+        </Box>
+      </Box>
+      <Box width='100%' display='flex' flexDirection='column' justifyContent='center' alignItems='flex-start' style={{borderRadius: '10px', border: '1px solid #1b1e29', padding: '20px'}}>
+        <Typography style={{color: '#696c80', fontSize: '12px'}}>24h TOP MOVERS</Typography>
+        <Box width='100%' display='flex' flexDirection='row' justifyContent='space-between' alignItems='center' style={{padding: '32px 35px'}}>
+          <Box display='flex' flexDirection='row' justifyContent='center' alignItems='center'>
+            <img src={MaticIcon} alt='matic icon' style={{width: '28px', height: '28px'}} />
+            <Box display='flex' flexDirection='column' justifyContent='center' alignItems='flex-start' style={{fontSize: '14px', marginLeft: '10px'}}>
+              <Typography>MATIC</Typography>
+              <Box display='flex' flexDirection='row' justifyContent='center' alignItems='center'>
+                <Typography>$1.24</Typography>
+                <Box display='flex' flexDirection='row' justifyContent='center' alignItems='center' style={{color: '#448aff'}}>
+                  <img src={ArrowUpIcon} alt='matic icon' style={{width: '6px', height: '6px'}} />
+                  <Typography>5.47%</Typography>
+                </Box>
+              </Box>
+            </Box>
+          </Box>
+          <Box display='flex' flexDirection='row' justifyContent='center' alignItems='center'>
+            <img src={MaticIcon} alt='matic icon' style={{width: '28px', height: '28px'}} />
+            <Box display='flex' flexDirection='column' justifyContent='center' alignItems='flex-start' style={{fontSize: '14px', marginLeft: '10px'}}>
+              <Typography>BTC</Typography>
+              <Box display='flex' flexDirection='row' justifyContent='center' alignItems='center'>
+                <Typography>$1.54</Typography>
+                <Box display='flex' flexDirection='row' justifyContent='center' alignItems='center' style={{color: '#448aff'}}>
+                  <img src={ArrowUpIcon} alt='matic icon' style={{width: '6px', height: '6px'}} />
+                  <Typography>5.47%</Typography>
+                </Box>
+              </Box>
+            </Box>
+          </Box>
+          <Box display='flex' flexDirection='row' justifyContent='center' alignItems='center'>
+            <img src={QuickIcon} alt='matic icon' style={{width: '28px', height: '28px'}} />
+            <Box display='flex' flexDirection='column' justifyContent='center' alignItems='flex-start' style={{fontSize: '14px', marginLeft: '10px'}}>
+              <Typography>QUICK</Typography>
+              <Box display='flex' flexDirection='row' justifyContent='center' alignItems='center'>
+                <Typography>$433.32</Typography>
+                <Box display='flex' flexDirection='row' justifyContent='center' alignItems='center' style={{color: '#448aff'}}>
+                  <img src={ArrowUpIcon} alt='matic icon' style={{width: '6px', height: '6px'}} />
+                  <Typography>5.47%</Typography>
+                </Box>
+              </Box>
+            </Box>
+          </Box>
+          <Box display='flex' flexDirection='row' justifyContent='center' alignItems='center'>
+            <img src={MaticIcon} alt='matic icon' style={{width: '28px', height: '28px'}} />
+            <Box display='flex' flexDirection='column' justifyContent='center' alignItems='flex-start' style={{fontSize: '14px', marginLeft: '10px'}}>
+              <Typography>GHOST</Typography>
+              <Box display='flex' flexDirection='row' justifyContent='center' alignItems='center'>
+                <Typography>$433.32</Typography>
+                <Box display='flex' flexDirection='row' justifyContent='center' alignItems='center' style={{color: '#448aff'}}>
+                  <img src={ArrowUpIcon} alt='matic icon' style={{width: '6px', height: '6px'}} />
+                  <Typography>5.47%</Typography>
+                </Box>
+              </Box>
+            </Box>
+          </Box>
+          <Box display='flex' flexDirection='row' justifyContent='center' alignItems='center'>
+            <img src={MaticIcon} alt='matic icon' style={{width: '28px', height: '28px'}} />
+            <Box display='flex' flexDirection='column' justifyContent='center' alignItems='flex-start' style={{fontSize: '14px', marginLeft: '10px'}}>
+              <Typography>BTC</Typography>
+              <Box display='flex' flexDirection='row' justifyContent='center' alignItems='center'>
+                <Typography>$1.24</Typography>
+                <Box display='flex' flexDirection='row' justifyContent='center' alignItems='center' style={{color: '#448aff'}}>
+                  <img src={ArrowUpIcon} alt='matic icon' style={{width: '6px', height: '6px'}} />
+                  <Typography>5.47%</Typography>
+                </Box>
+              </Box>
+            </Box>
+          </Box>
+        </Box>
+      </Box>
+      </Box>
+      <Box style={{position: 'relative', width: '100%'}}>
+      <Box className={classes.smallCommunityContainer}>
+        <Box className='socialContent'>
+          {
+            socialicons.map((val, ind) => (
+              <Box key={ind}>
+                { val.icon }
+              </Box>
+            ))
           }
         </Box>
       </Box>
+      </Box>
+      <Box>
       <Box className={classes.quickInfo}>
-        <Typography variant='subtitle1'>
-          QuickSwap is a next-generation layer-2 decentralized exchange and Automated Market Maker.
+        <Typography style={{fontSize: '24px'}}>
+          QuickSwap is a next-generation layer-2 decentralized exchange and
+        </Typography>
+        <Typography style={{fontSize: '24px', paddingTop: '10px'}}>
+          Automated Market Maker.
         </Typography>
         <img src={Motif} alt='Motif' />
       </Box>
-      <Box className={classes.swapContainer}>
+      <Box className={classes.buttonGroup}>
         <ButtonGroup>
-          <Button className={swapIndex === 0 ? 'active' : ''} onClick={() => setSwapIndex(0)}>For Traders</Button>
-          <Button className={swapIndex === 1 ? 'active' : ''} onClick={() => setSwapIndex(1)}>For Investors</Button>
+          <Button className={swapIndex === 0 ? 'active' : ''} onClick={() => setSwapIndex(0)}>Market</Button>
+          <Button className={swapIndex === 1 ? 'active' : ''} onClick={() => setSwapIndex(1)}>Limit</Button>
         </ButtonGroup>
+      </Box>
+      <Box className={classes.swapContainer}>
         <Grid container spacing={mobileWindowSize ? 0 : 8} alignItems='center'>
           <Grid item sm={12} md={6}>
             { swapIndex === 0 ? 
@@ -511,7 +703,7 @@ const LandingPage: React.FC = () => {
             }
           </Grid>
           <Grid item sm={12} md={6} className={classes.swapInfo}>
-            <Typography variant='h3'>
+            <Typography variant='h4'>
               {
                 swapIndex === 0 ?
                   'Swap tokens at near-zero gas fees'
@@ -519,10 +711,10 @@ const LandingPage: React.FC = () => {
                   'Let your crypto work for you'
               }
             </Typography>
-            <Typography variant='subtitle1'>
+            <Typography variant='body1' style={{marginTop: '20px'}}>
               {
                 swapIndex === 0 ?
-                  'Exchange any combination of ERC-20 tokens permissionless, with ease'
+                  'Deposit your Liquidity Provider tokens to receive Rewards in $QUICK on top of LP Fees.'
                   :
                   'Provide Liquidity and earn 0.25% fee on all trades proportional to your share of the pool. Earn additional rewards by depositing your LP Tokens in Rewards Pools.'
               }
@@ -531,16 +723,22 @@ const LandingPage: React.FC = () => {
         </Grid>
       </Box>
       <Box className={classes.rewardsContainer}>
-        <Typography variant='h3'>
-          Earn additional rewards in $QUICK by depositing your LP Tokens
+        <Typography variant='h4'>
+          Earn additional rewards in $QUICK by
         </Typography>
-        <Typography variant='subtitle1'>
-          Deposit your Liquidity Provider tokens to receive Rewards in $QUICK on top of LP Fees.
+        <Typography variant='h4'>
+          depositing your LP Tokens
+        </Typography>
+        <Typography variant='body2' style={{marginTop: '20px'}}>
+          Deposit your Liquidity Provider tokens to receive Rewards
+        </Typography>
+        <Typography variant='body2'>
+          in $QUICK on top of LP Fees.
         </Typography>
         <RewardSlider />
-        {/* <Button variant='contained' color='secondary'>
+        <Button variant='contained' color='secondary'>
           See all pools
-        </Button> */}
+        </Button>
       </Box>
       <Box className={classes.buyFiatContainer}>
         <img src={FiatMask} alt='Fiat Mask' />
@@ -551,7 +749,7 @@ const LandingPage: React.FC = () => {
               <Typography variant='h3'>
                 Buy crypto with Fiat
               </Typography>
-              <Typography variant='subtitle1'>
+              <Typography variant='h6'>
                 Simple way to buy or sell crypto with a credit card, bank transfer and more
               </Typography>
             </Box>
@@ -580,7 +778,7 @@ const LandingPage: React.FC = () => {
               <Grid item container alignItems='center' justifyContent='space-between' sm={12} md={6} key={index}>
                 <img src={val.img} alt={val.title} />
                 <Box className='featureText'>
-                  <Typography variant='h3'>
+                  <Typography variant='h5'>
                     { val.title }
                   </Typography>
                   <Typography variant='body1'>
@@ -610,7 +808,8 @@ const LandingPage: React.FC = () => {
           }
         </Box>
       </Box>
-    </>
+    </Box>
+    </Box>
   );
 };
 

@@ -106,7 +106,10 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({ handleCurrencySelect, cur
   return (
     <Box className={cx(classes.swapBox, showPrice && classes.priceShowBox)}>
       <Box display='flex' justifyContent='space-between' mb={2}>
-        <Typography>{ title || 'You Pay:' }</Typography>
+        <Box display='flex' flexDirection='row' justifyContent='space-between' width='100%'>
+          <Typography>{ title || 'You Pay:' }</Typography>
+          {/* <Typography style={{color: '#448aff', fontSize: '16px', cursor: 'pointer'}}>MAX</Typography> */}
+        </Box>
         <Box display='flex'>
           {account && currency && showHalfButton && (
             <Box className='maxWrapper' onClick={onHalf}>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography } from '@material-ui/core';
+import { Box, Typography, Button } from '@material-ui/core';
 import { JSBI , TokenAmount } from '@uniswap/sdk';
 import { makeStyles } from '@material-ui/core/styles';
 import { StakingInfo } from 'state/stake/hooks';
@@ -109,32 +109,12 @@ const RewardSliderItem: React.FC<RewardSliderItemProps> = ({ info }) => {
 
   return (
     <Box className={classes.rewardsSliderItem}>
-      <Box mb={2}>
+      <Box mb={4}>
         <Box className='rewardIcon'>
           <DoubleCurrencyLogo currency0={info.tokens[0]} currency1={info.tokens[1]} size={32} />
         </Box>
         <Typography variant='h5'>
           { info.tokens[0].symbol?.toUpperCase() }-{ info.tokens[1].symbol?.toUpperCase() }
-        </Typography>
-      </Box>
-      <Box className='row'>
-        <Typography>Total Deposits</Typography>
-        <Typography component='h4'>
-          {valueOfTotalStakedAmountInUSDC
-            ? `$${valueOfTotalStakedAmountInUSDC.toFixed(0, { groupSeparator: ',' })}`
-            : `${valueOfTotalStakedAmountInBaseToken?.toSignificant(4, { groupSeparator: ',' }) ?? '-'} ETH`}
-        </Typography>
-      </Box>
-      <Box className='row'>
-        <Typography>Total Rewards</Typography>
-        <Typography component='h4'>
-          ${ Number(rewards.toFixed(0)).toLocaleString()} / day
-        </Typography>
-      </Box>
-      <Box className='row'>
-        <Typography>Pool Rate</Typography>
-        <Typography component='h4'>
-          {info.totalRewardRate?.toFixed(2, { groupSeparator: ',' }).replace(/[.,]00$/, "")} QUICK / day
         </Typography>
       </Box>
       <Box className='row'>
@@ -144,10 +124,30 @@ const RewardSliderItem: React.FC<RewardSliderItemProps> = ({ info }) => {
         </Typography>
       </Box>
       <Box className='row'>
+        <Typography>Locked Value</Typography>
+        <Typography component='h4'>
+          {valueOfTotalStakedAmountInUSDC
+            ? `$${valueOfTotalStakedAmountInUSDC.toFixed(0, { groupSeparator: ',' })}`
+            : `${valueOfTotalStakedAmountInBaseToken?.toSignificant(4, { groupSeparator: ',' }) ?? '-'} ETH`}
+        </Typography>
+      </Box>
+      <Box className='row'>
+        <Typography>TVL</Typography>
+        <Typography component='h4'>
+          ${ Number(rewards.toFixed(0)).toLocaleString()}
+        </Typography>
+      </Box>
+      {/* <Box className='row'>
+        <Typography>Pool Rate</Typography>
+        <Typography component='h4'>
+          {info.totalRewardRate?.toFixed(2, { groupSeparator: ',' }).replace(/[.,]00$/, "")} QUICK / day
+        </Typography>
+      </Box> */}
+      <Box className='row'>
         <Typography>APR<HelpIcon /></Typography>
         <Typography component='h5'>{ apyWithFee }%</Typography>
       </Box>
-      {/* <Button fullWidth color='primary'>Invest</Button> */}
+      <Button fullWidth color='primary' style={{marginTop: '30px'}}>Invest</Button>
     </Box>
   )
 }
