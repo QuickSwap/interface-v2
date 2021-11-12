@@ -75,7 +75,7 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo }> = ({ syrup }) => {
           <CurrencyLogo currency={currency} size='16px' />
           <Typography variant='body2' style={{ marginLeft: 5 }}>{ syrup.earnedAmount.toSignificant(2) }</Typography>
         </Box>
-        <Typography variant='body2' style={{ color: '#696c80' }}>${(Number(syrup.earnedAmount.toSignificant()) * Number(USDPriceToken ? USDPriceToken.toSignificant() : 0)).toLocaleString()}</Typography>
+        <Typography variant='body2' style={{ color: '#696c80' }}>${(Number(syrup.earnedAmount.toSignificant(2)) * Number(USDPriceToken ? USDPriceToken.toSignificant(2) : 0))}</Typography>
       </Box>
     </Box>
   )
