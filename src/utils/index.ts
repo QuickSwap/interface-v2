@@ -235,7 +235,11 @@ export const getEthPrice = async () => {
   return [ethPrice, ethPriceOneDay, priceChangeETH];
 };
 
-export const getTopTokens = async (ethPrice: any, ethPriceOld: any) => {
+export const getTopTokens = async (
+  ethPrice: any,
+  ethPriceOld: any,
+  count: number = 500
+) => {
   const utcCurrentTime = dayjs();
   const utcOneDayBack = utcCurrentTime.subtract(1, "day").unix();
   const utcTwoDaysBack = utcCurrentTime.subtract(2, "day").unix();
@@ -244,17 +248,17 @@ export const getTopTokens = async (ethPrice: any, ethPriceOld: any) => {
 
   try {
     let current = await client.query({
-      query: TOKENS_CURRENT(),
+      query: TOKENS_CURRENT(count),
       fetchPolicy: "cache-first",
     });
 
     let oneDayResult = await client.query({
-      query: TOKENS_DYNAMIC(oneDayBlock),
+      query: TOKENS_DYNAMIC(oneDayBlock, count),
       fetchPolicy: "cache-first",
     });
 
     let twoDayResult = await client.query({
-      query: TOKENS_DYNAMIC(twoDayBlock),
+      query: TOKENS_DYNAMIC(twoDayBlock, count),
       fetchPolicy: "cache-first",
     });
 
@@ -354,14 +358,10 @@ export const getTopTokens = async (ethPrice: any, ethPriceOld: any) => {
             data.liquidityChangeUSD = 0;
             data.priceChangeUSD = 0;
           }
-
           return data;
         })
     );
-
     return bulkResults;
-
-    // calculate percentage changes and daily changes
   } catch (e) {
     console.log(e);
   }

@@ -94,6 +94,7 @@ const TokenFields = `
     id
     name
     symbol
+    decimals
     derivedETH
     tradeVolume
     tradeVolumeUSD
@@ -102,23 +103,23 @@ const TokenFields = `
   }
 `
 
-export const TOKENS_CURRENT = () => {
-  const queryString = `
-  ${TokenFields}
-  query tokens {
-    tokens(first: 500, orderBy: tradeVolumeUSD, orderDirection: desc) {
-      ...TokenFields
-    }
-  }
-`
-  return gql(queryString)
-}
-
-export const TOKENS_DYNAMIC = (block) => {
+export const TOKENS_CURRENT = (count) => {
   const queryString = `
     ${TokenFields}
     query tokens {
-      tokens(block: {number: ${block}} first: 200, orderBy: tradeVolumeUSD, orderDirection: desc) {
+      tokens(first: ${count}, orderBy: tradeVolumeUSD, orderDirection: desc) {
+        ...TokenFields
+      }
+    }
+  `
+  return gql(queryString)
+}
+
+export const TOKENS_DYNAMIC = (block, count) => {
+  const queryString = `
+    ${TokenFields}
+    query tokens {
+      tokens(block: {number: ${block}} first: ${count}, orderBy: tradeVolumeUSD, orderDirection: desc) {
         ...TokenFields
       }
     }
