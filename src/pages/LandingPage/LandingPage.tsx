@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import { useHistory } from 'react-router-dom';
 import {
   ButtonGroup,
   Typography,
@@ -498,6 +499,7 @@ const LandingPage: React.FC = () => {
     },
   ];
 
+  const history = useHistory();
   const { ethPrice, updateEthPrice } = useEthPrice();
   const { globalData, updateGlobalData } = useGlobalData();
   const { topTokens, updateTopTokens } = useTopTokens();
@@ -581,29 +583,38 @@ const LandingPage: React.FC = () => {
             </Typography>
           </Box>
         ) : (
-          <Typography>
+          <Box my={1}>
             <Skeleton variant='rect' width={400} height={72} />
-          </Typography>
+          </Box>
         )}
         <Typography style={{ fontSize: '15px', color: '#696c80' }}>
           Top Asset Exchange on the Polygon Network
         </Typography>
-        {!account && (
+        <Box mt={2} width={200} height={48}>
           <Button
+            fullWidth
             style={{
               backgroundColor: '#004ce6',
               borderRadius: '30px',
-              width: '50%',
+              height: '100%',
+              fontSize: 16,
+              fontWeight: 500,
             }}
             onClick={() => {
-              isnotMatic ? addMaticToMetamask() : toggleWalletModal();
+              isnotMatic
+                ? addMaticToMetamask()
+                : account
+                ? history.push('/swap')
+                : toggleWalletModal();
             }}
           >
-            <Typography>
-              {isnotMatic ? 'Enter App' : 'Connect Wallet'}
-            </Typography>
+            {isnotMatic
+              ? 'Switch to Matic'
+              : account
+              ? 'Enter App'
+              : 'Connect Wallet'}
           </Button>
-        )}
+        </Box>
       </Box>
       <Box
         className={classes.tradingInfo}
