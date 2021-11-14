@@ -14,7 +14,8 @@ const useStylesBootstrap = makeStyles((theme: Theme) => ({
     },
   },
   tooltip: {
-    backgroundColor: (props: any) => props.dark ? 'rgba(0, 0, 0, 0.9)' : 'rgba(255, 255, 255, 0.9)',
+    backgroundColor: (props: any) =>
+      props.dark ? 'rgba(0, 0, 0, 0.9)' : 'rgba(255, 255, 255, 0.9)',
     border: `1px solid ${theme.palette.divider}`,
     padding: '14px',
     fontSize: '14px',

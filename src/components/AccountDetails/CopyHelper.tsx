@@ -1,8 +1,8 @@
-import React from 'react'
-import { Button } from '@material-ui/core'
+import React from 'react';
+import { Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import useCopyClipboard from 'hooks/useCopyClipboard'
-import { CheckCircle, Copy } from 'react-feather'
+import useCopyClipboard from 'hooks/useCopyClipboard';
+import { CheckCircle, Copy } from 'react-feather';
 
 const useStyles = makeStyles(({ palette }) => ({
   copyIcon: {
@@ -13,15 +13,15 @@ const useStyles = makeStyles(({ palette }) => ({
     fontSize: '0.825rem',
     '&:hover, &:active, &:focus': {
       textDecoration: 'none',
-      color: palette.text.secondary
-    }
+      color: palette.text.secondary,
+    },
   },
   transactionStatusText: {
     marginLeft: '0.25rem',
     fontSize: '0.825rem',
     display: 'flex',
-    alignItems: 'center'
-  }
+    alignItems: 'center',
+  },
 }));
 
 interface CopyHelperProps {
@@ -30,7 +30,7 @@ interface CopyHelperProps {
 }
 
 const CopyHelper: React.FC<CopyHelperProps> = ({ toCopy, children }) => {
-  const [isCopied, setCopied] = useCopyClipboard()
+  const [isCopied, setCopied] = useCopyClipboard();
   const classes = useStyles();
 
   return (
@@ -47,7 +47,7 @@ const CopyHelper: React.FC<CopyHelperProps> = ({ toCopy, children }) => {
       )}
       {isCopied ? '' : children}
     </Button>
-  )
-}
+  );
+};
 
 export default CopyHelper;

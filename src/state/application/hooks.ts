@@ -1,7 +1,7 @@
-import { useCallback, useMemo } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useActiveWeb3React } from "hooks";
-import { AppDispatch, AppState } from "state";
+import { useCallback, useMemo } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useActiveWeb3React } from 'hooks';
+import { AppDispatch, AppState } from 'state';
 import {
   addPopup,
   ApplicationModal,
@@ -14,19 +14,19 @@ import {
   updateTokenPairs,
   updateSwapTokenPrice0,
   updateSwapTokenPrice1,
-} from "./actions";
+} from './actions';
 
 export function useBlockNumber(): number | undefined {
   const { chainId } = useActiveWeb3React();
 
   return useSelector(
-    (state: AppState) => state.application.blockNumber[chainId ?? -1]
+    (state: AppState) => state.application.blockNumber[chainId ?? -1],
   );
 }
 
 export function useModalOpen(modal: ApplicationModal): boolean {
   const openModal = useSelector(
-    (state: AppState) => state.application.openModal
+    (state: AppState) => state.application.openModal,
   );
   return openModal === modal;
 }
@@ -34,10 +34,11 @@ export function useModalOpen(modal: ApplicationModal): boolean {
 export function useToggleModal(modal: ApplicationModal): () => void {
   const open = useModalOpen(modal);
   const dispatch = useDispatch<AppDispatch>();
-  return useCallback(
-    () => dispatch(setOpenModal(open ? null : modal)),
-    [dispatch, modal, open]
-  );
+  return useCallback(() => dispatch(setOpenModal(open ? null : modal)), [
+    dispatch,
+    modal,
+    open,
+  ]);
 }
 
 export function useOpenModal(modal: ApplicationModal): () => void {
@@ -78,7 +79,7 @@ export function useAddPopup(): (content: PopupContent, key?: string) => void {
     (content: PopupContent, key?: string) => {
       dispatch(addPopup({ content, key }));
     },
-    [dispatch]
+    [dispatch],
   );
 }
 
@@ -89,12 +90,12 @@ export function useRemovePopup(): (key: string) => void {
     (key: string) => {
       dispatch(removePopup({ key }));
     },
-    [dispatch]
+    [dispatch],
   );
 }
 
 // get the list of active popups
-export function useActivePopups(): AppState["application"]["popupList"] {
+export function useActivePopups(): AppState['application']['popupList'] {
   const list = useSelector((state: AppState) => state.application.popupList);
   return useMemo(() => list.filter((item) => item.show), [list]);
 }
@@ -106,77 +107,77 @@ export function useEthPrice() {
     ({ price, oneDayPrice, ethPriceChange }) => {
       dispatch(updateEthPrice({ price, oneDayPrice, ethPriceChange }));
     },
-    [dispatch]
+    [dispatch],
   );
   return { ethPrice, updateEthPrice: _updateETHPrice };
 }
 
 export function useGlobalData() {
   const globalData = useSelector(
-    (state: AppState) => state.application.globalData
+    (state: AppState) => state.application.globalData,
   );
   const dispatch = useDispatch();
   const _updateGlobalData = useCallback(
     ({ data }) => {
       dispatch(updateGlobalData({ data }));
     },
-    [dispatch]
+    [dispatch],
   );
   return { globalData, updateGlobalData: _updateGlobalData };
 }
 
 export function useTopTokens() {
   const topTokens = useSelector(
-    (state: AppState) => state.application.topTokens
+    (state: AppState) => state.application.topTokens,
   );
   const dispatch = useDispatch();
   const _updateTopTokens = useCallback(
     ({ data }) => {
       dispatch(updateTopTokens({ data }));
     },
-    [dispatch]
+    [dispatch],
   );
   return { topTokens, updateTopTokens: _updateTopTokens };
 }
 
 export function useTokenPairs() {
   const tokenPairs = useSelector(
-    (state: AppState) => state.application.tokenPairs
+    (state: AppState) => state.application.tokenPairs,
   );
   const dispatch = useDispatch();
   const _updateTokenPairs = useCallback(
     ({ data }) => {
       dispatch(updateTokenPairs({ data }));
     },
-    [dispatch]
+    [dispatch],
   );
   return { tokenPairs, updateTokenPairs: _updateTokenPairs };
 }
 
 export function useSwapTokenPrice0() {
   const swapTokenPrice0 = useSelector(
-    (state: AppState) => state.application.swapTokenPrice0
+    (state: AppState) => state.application.swapTokenPrice0,
   );
   const dispatch = useDispatch();
   const _updateSwapTokenPrice0 = useCallback(
     (data) => {
       dispatch(updateSwapTokenPrice0(data));
     },
-    [dispatch]
+    [dispatch],
   );
   return { swapTokenPrice0, updateSwapTokenPrice0: _updateSwapTokenPrice0 };
 }
 
 export function useSwapTokenPrice1() {
   const swapTokenPrice1 = useSelector(
-    (state: AppState) => state.application.swapTokenPrice1
+    (state: AppState) => state.application.swapTokenPrice1,
   );
   const dispatch = useDispatch();
   const _updateSwapTokenPrice1 = useCallback(
     (data) => {
       dispatch(updateSwapTokenPrice1(data));
     },
-    [dispatch]
+    [dispatch],
   );
   return { swapTokenPrice1, updateSwapTokenPrice1: _updateSwapTokenPrice1 };
 }

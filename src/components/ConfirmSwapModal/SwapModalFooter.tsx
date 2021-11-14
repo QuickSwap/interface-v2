@@ -1,17 +1,17 @@
-import { Trade, TradeType } from '@uniswap/sdk'
-import React, { useMemo, useState } from 'react'
-import { Button, Box, Typography } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
-import { AlertTriangle, Repeat } from 'react-feather'
-import { Field } from 'state/swap/actions'
+import { Trade, TradeType } from '@uniswap/sdk';
+import React, { useMemo, useState } from 'react';
+import { Button, Box, Typography } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import { AlertTriangle, Repeat } from 'react-feather';
+import { Field } from 'state/swap/actions';
 import {
   computeSlippageAdjustedAmounts,
   computeTradePriceBreakdown,
   formatExecutionPrice,
-  warningSeverity
-} from 'utils/prices'
-import { QuestionHelper } from 'components'
-import FormattedPriceImpact from './FormattedPriceImpact'
+  warningSeverity,
+} from 'utils/prices';
+import { QuestionHelper } from 'components';
+import FormattedPriceImpact from './FormattedPriceImpact';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   swapFooterRow: {
@@ -22,12 +22,12 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     '& p': {
       color: 'black',
       '&.headingText': {
-        color: 'rgb(86, 90, 105)'
-      }
+        color: 'rgb(86, 90, 105)',
+      },
     },
     '& > div': {
       display: 'flex',
-      alignItems: 'center'
+      alignItems: 'center',
     },
   },
   questionWrapper: {
@@ -35,14 +35,14 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     '& > div': {
       background: 'white',
       color: 'black',
-    }
+    },
   },
   swapButton: {
     width: '100%',
     fontSize: 20,
     height: 48,
     margin: '16px 0 0',
-    borderRadius: 16
+    borderRadius: 16,
   },
   swapError: {
     color: palette.error.main,
@@ -50,17 +50,17 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     alignItems: 'center',
     justifyContent: 'center',
     '& p': {
-      marginLeft: 6
-    }
-  }
+      marginLeft: 6,
+    },
+  },
 }));
 
 interface SwapModalFooterProps {
-  trade: Trade
-  allowedSlippage: number
-  onConfirm: () => void
-  swapErrorMessage: string | undefined
-  disabledConfirm: boolean
+  trade: Trade;
+  allowedSlippage: number;
+  onConfirm: () => void;
+  swapErrorMessage: string | undefined;
+  disabledConfirm: boolean;
 }
 
 const SwapModalFooter: React.FC<SwapModalFooterProps> = ({
@@ -68,29 +68,32 @@ const SwapModalFooter: React.FC<SwapModalFooterProps> = ({
   onConfirm,
   allowedSlippage,
   swapErrorMessage,
-  disabledConfirm
+  disabledConfirm,
 }) => {
-  const [showInverted, setShowInverted] = useState<boolean>(false)
-  const slippageAdjustedAmounts = useMemo(() => computeSlippageAdjustedAmounts(trade, allowedSlippage), [
-    allowedSlippage,
-    trade
-  ])
-  const { priceImpactWithoutFee, realizedLPFee } = useMemo(() => computeTradePriceBreakdown(trade), [trade])
-  const severity = warningSeverity(priceImpactWithoutFee)
+  const [showInverted, setShowInverted] = useState<boolean>(false);
+  const slippageAdjustedAmounts = useMemo(
+    () => computeSlippageAdjustedAmounts(trade, allowedSlippage),
+    [allowedSlippage, trade],
+  );
+  const { priceImpactWithoutFee, realizedLPFee } = useMemo(
+    () => computeTradePriceBreakdown(trade),
+    [trade],
+  );
+  const severity = warningSeverity(priceImpactWithoutFee);
   const classes = useStyles({ severity });
 
   return (
     <>
       <Box>
         <Box className={classes.swapFooterRow}>
-          <Typography className='headingText'>
-            Price
-          </Typography>
+          <Typography className='headingText'>Price</Typography>
           <Box>
-            <Typography>
-              {formatExecutionPrice(trade, showInverted)}
-            </Typography>
-            <Box display='flex' ml={0.5} onClick={() => setShowInverted(!showInverted)}>
+            <Typography>{formatExecutionPrice(trade, showInverted)}</Typography>
+            <Box
+              display='flex'
+              ml={0.5}
+              onClick={() => setShowInverted(!showInverted)}
+            >
               <Repeat size={14} color='black' />
             </Box>
           </Box>
@@ -98,10 +101,12 @@ const SwapModalFooter: React.FC<SwapModalFooterProps> = ({
         <Box className={classes.swapFooterRow}>
           <Box>
             <Typography className='headingText'>
-              {trade.tradeType === TradeType.EXACT_INPUT ? 'Minimum received' : 'Maximum sold'}
+              {trade.tradeType === TradeType.EXACT_INPUT
+                ? 'Minimum received'
+                : 'Maximum sold'}
             </Typography>
             <Box className={classes.questionWrapper}>
-              <QuestionHelper text="Your transaction will revert if there is a large, unfavorable price movement before it is confirmed." />
+              <QuestionHelper text='Your transaction will revert if there is a large, unfavorable price movement before it is confirmed.' />
             </Box>
           </Box>
           <Box>
@@ -111,7 +116,8 @@ const SwapModalFooter: React.FC<SwapModalFooterProps> = ({
                 : slippageAdjustedAmounts[Field.INPUT]?.toSignificant(4) ?? '-'}
             </Typography>
             <Typography>
-              &nbsp;{trade.tradeType === TradeType.EXACT_INPUT
+              &nbsp;
+              {trade.tradeType === TradeType.EXACT_INPUT
                 ? trade.outputAmount.currency.symbol
                 : trade.inputAmount.currency.symbol}
             </Typography>
@@ -119,11 +125,9 @@ const SwapModalFooter: React.FC<SwapModalFooterProps> = ({
         </Box>
         <Box className={classes.swapFooterRow}>
           <Box>
-            <Typography className='headingText'>
-              Price Impact
-            </Typography>
+            <Typography className='headingText'>Price Impact</Typography>
             <Box className={classes.questionWrapper}>
-              <QuestionHelper text="The difference between the market price and your price due to trade size." />
+              <QuestionHelper text='The difference between the market price and your price due to trade size.' />
             </Box>
           </Box>
           <FormattedPriceImpact priceImpact={priceImpactWithoutFee} />
@@ -134,11 +138,15 @@ const SwapModalFooter: React.FC<SwapModalFooterProps> = ({
               Liquidity Provider Fee
             </Typography>
             <Box className={classes.questionWrapper}>
-              <QuestionHelper text="A portion of each trade (0.30%) goes to liquidity providers as a protocol incentive." />
+              <QuestionHelper text='A portion of each trade (0.30%) goes to liquidity providers as a protocol incentive.' />
             </Box>
           </Box>
           <Typography>
-            {realizedLPFee ? realizedLPFee?.toSignificant(6) + ' ' + trade.inputAmount.currency.symbol : '-'}
+            {realizedLPFee
+              ? realizedLPFee?.toSignificant(6) +
+                ' ' +
+                trade.inputAmount.currency.symbol
+              : '-'}
           </Typography>
         </Box>
       </Box>
@@ -152,14 +160,14 @@ const SwapModalFooter: React.FC<SwapModalFooterProps> = ({
         {severity > 2 ? 'Swap Anyway' : 'Confirm Swap'}
       </Button>
 
-      {swapErrorMessage &&
+      {swapErrorMessage && (
         <Box className={classes.swapError}>
           <AlertTriangle size={24} />
-          <p>{ swapErrorMessage }</p>
+          <p>{swapErrorMessage}</p>
         </Box>
-      }
+      )}
     </>
-  )
-}
+  );
+};
 
 export default SwapModalFooter;

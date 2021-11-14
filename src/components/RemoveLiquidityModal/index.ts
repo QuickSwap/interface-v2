@@ -1,1 +1,1 @@
-export { default } from "./RemoveLiquidityModal";
+export { default } from './RemoveLiquidityModal';

@@ -34,11 +34,10 @@ const LineChart: React.FC<LineChartProps> = ({
     },
     fill: {
       type: 'solid',
-      opacity: 0
+      opacity: 0,
     },
     xaxis: {
-      categories:
-        data.map((val) => ''),
+      categories: data.map((val) => ''),
       axisBorder: {
         show: false,
       },
@@ -62,8 +61,8 @@ const LineChart: React.FC<LineChartProps> = ({
       },
     },
     tooltip: {
-      enabled: false
-    }
+      enabled: false,
+    },
   };
 
   const series = [

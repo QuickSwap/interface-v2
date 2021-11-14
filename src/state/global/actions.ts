@@ -1,3 +1,3 @@
-import { createAction } from '@reduxjs/toolkit'
+import { createAction } from '@reduxjs/toolkit';
 
-export const updateVersion = createAction<void>('global/updateVersion')
+export const updateVersion = createAction<void>('global/updateVersion');

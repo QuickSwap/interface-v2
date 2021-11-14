@@ -1,31 +1,32 @@
-import React, { memo, useCallback, useMemo, useState } from 'react'
-import { ArrowLeft } from 'react-feather'
-import ReactGA from 'react-ga'
-import { Box, Typography, Button, Popover, Divider } from '@material-ui/core'
+import React, { memo, useCallback, useMemo, useState } from 'react';
+import { ArrowLeft } from 'react-feather';
+import ReactGA from 'react-ga';
+import { Box, Typography, Button, Popover, Divider } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { useDispatch, useSelector } from 'react-redux'
-import { ReactComponent as DropDown } from 'assets/images/dropdown.svg'
-import { useFetchListCallback } from 'hooks/useFetchListCallback'
+import { useDispatch, useSelector } from 'react-redux';
+import { ReactComponent as DropDown } from 'assets/images/dropdown.svg';
+import { useFetchListCallback } from 'hooks/useFetchListCallback';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 
-import { AppDispatch, AppState } from 'state'
-import { acceptListUpdate, removeList, selectList } from 'state/lists/actions'
-import { useSelectedListUrl } from 'state/lists/hooks'
-import listVersionLabel from 'utils/listVersionLabel'
-import { parseENSAddress } from 'utils/parseENSAddress'
-import uriToHttp from 'utils/uriToHttp'
-import { QuestionHelper, ListLogo } from 'components'
+import { AppDispatch, AppState } from 'state';
+import { acceptListUpdate, removeList, selectList } from 'state/lists/actions';
+import { useSelectedListUrl } from 'state/lists/hooks';
+import listVersionLabel from 'utils/listVersionLabel';
+import { parseENSAddress } from 'utils/parseENSAddress';
+import uriToHttp from 'utils/uriToHttp';
+import { QuestionHelper, ListLogo } from 'components';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   popoverWrapper: {
     zIndex: 100,
-    boxShadow: '0px 0px 1px rgba(0, 0, 0, 0.01), 0px 4px 8px rgba(0, 0, 0, 0.04), 0px 16px 24px rgba(0, 0, 0, 0.04), 0px 24px 32px rgba(0, 0, 0, 0.01)',
+    boxShadow:
+      '0px 0px 1px rgba(0, 0, 0, 0.01), 0px 4px 8px rgba(0, 0, 0, 0.04), 0px 16px 24px rgba(0, 0, 0, 0.04), 0px 24px 32px rgba(0, 0, 0, 0.01)',
     color: 'black',
     borderRadius: 12,
     padding: 16,
     '& p': {
       fontSize: 18,
-      marginBottom: 4
+      marginBottom: 4,
     },
     '& > div': {
       display: 'flex',
@@ -33,19 +34,19 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       marginTop: 8,
       '& a, & button': {
         fontSize: 16,
-        fontWeight: 400
+        fontWeight: 400,
       },
       '& a': {
         textDecoration: 'none',
-        color: palette.primary.main
+        color: palette.primary.main,
       },
       '& button': {
         background: 'transparent',
         color: 'black',
         padding: 0,
-        marginTop: 6
-      }
-    }
+        marginTop: 6,
+      },
+    },
   },
   styledMenu: {
     display: 'flex',
@@ -63,7 +64,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       justifyContent: 'center',
       border: `1px solid ${palette.divider}`,
       marginRight: 8,
-    }
+    },
   },
   styledListUrlText: {
     maxWidth: 160,
@@ -71,11 +72,11 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     marginRight: '0.5rem',
     fontSize: 14,
     overflow: 'hidden',
-    textOverflow: 'ellipsis'
+    textOverflow: 'ellipsis',
   },
   manageList: {
     '& p': {
-      color: 'black'
+      color: 'black',
     },
     '& .header': {
       display: 'flex',
@@ -85,11 +86,11 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       '& svg': {
         stroke: 'black',
         width: 24,
-        height: 24
+        height: 24,
       },
       '& p': {
-        fontSize: 18
-      }
+        fontSize: 18,
+      },
     },
     '& .content': {
       padding: '12px 16px',
@@ -98,8 +99,8 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
         '&:first-child': {
           alignItems: 'center',
           '& p': {
-            marginRight: 8
-          }
+            marginRight: 8,
+          },
         },
         '&:nth-child(2)': {
           marginTop: 8,
@@ -109,17 +110,17 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
             border: `1px solid ${palette.divider}`,
             fontSize: 16,
             outline: 'none',
-          }
+          },
         },
         '& > div': {
-          background: 'transparent'
+          background: 'transparent',
         },
         '& svg': {
           fill: 'white',
           stroke: 'black',
         },
-      }
-    }
+      },
+    },
   },
   listRow: {
     display: 'flex',
@@ -129,86 +130,105 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       flex: 1,
       marginLeft: 8,
       '& div': {
-        color: '#999'
-      }
-    }
-  }
+        color: '#999',
+      },
+    },
+  },
 }));
 
 function ListOrigin({ listUrl }: { listUrl: string }) {
-  const ensName = useMemo(() => parseENSAddress(listUrl)?.ensName, [listUrl])
+  const ensName = useMemo(() => parseENSAddress(listUrl)?.ensName, [listUrl]);
   const host = useMemo(() => {
-    if (ensName) return undefined
-    const lowerListUrl = listUrl.toLowerCase()
-    if (lowerListUrl.startsWith('ipfs://') || lowerListUrl.startsWith('ipns://')) {
-      return listUrl
+    if (ensName) return undefined;
+    const lowerListUrl = listUrl.toLowerCase();
+    if (
+      lowerListUrl.startsWith('ipfs://') ||
+      lowerListUrl.startsWith('ipns://')
+    ) {
+      return listUrl;
     }
     try {
-      const url = new URL(listUrl)
-      return url.host
+      const url = new URL(listUrl);
+      return url.host;
     } catch (error) {
-      return undefined
+      return undefined;
     }
-  }, [listUrl, ensName])
-  return <>{ensName ?? host}</>
+  }, [listUrl, ensName]);
+  return <>{ensName ?? host}</>;
 }
 
 function listUrlRowHTMLId(listUrl: string) {
-  return `list-row-${listUrl.replace(/\./g, '-')}`
+  return `list-row-${listUrl.replace(/\./g, '-')}`;
 }
 
-const ListRow = memo(function ListRow({ listUrl, onBack }: { listUrl: string; onBack: () => void }) {
+const ListRow = memo(function ListRow({
+  listUrl,
+  onBack,
+}: {
+  listUrl: string;
+  onBack: () => void;
+}) {
   const classes = useStyles();
-  const listsByUrl = useSelector<AppState, AppState['lists']['byUrl']>(state => state.lists.byUrl)
-  const selectedListUrl = useSelectedListUrl()
-  const dispatch = useDispatch<AppDispatch>()
-  const { current: list, pendingUpdate: pending } = listsByUrl[listUrl]
-  const [ anchorEl, setAnchorEl ] = useState<any>(null)
+  const listsByUrl = useSelector<AppState, AppState['lists']['byUrl']>(
+    (state) => state.lists.byUrl,
+  );
+  const selectedListUrl = useSelectedListUrl();
+  const dispatch = useDispatch<AppDispatch>();
+  const { current: list, pendingUpdate: pending } = listsByUrl[listUrl];
+  const [anchorEl, setAnchorEl] = useState<any>(null);
 
-  const isSelected = listUrl === selectedListUrl
+  const isSelected = listUrl === selectedListUrl;
 
   const selectThisList = useCallback(() => {
-    if (isSelected) return
+    if (isSelected) return;
     ReactGA.event({
       category: 'Lists',
       action: 'Select List',
-      label: listUrl
-    })
+      label: listUrl,
+    });
 
-    dispatch(selectList(listUrl))
-    onBack()
-  }, [dispatch, isSelected, listUrl, onBack])
+    dispatch(selectList(listUrl));
+    onBack();
+  }, [dispatch, isSelected, listUrl, onBack]);
 
   const handleAcceptListUpdate = useCallback(() => {
-    if (!pending) return
+    if (!pending) return;
     ReactGA.event({
       category: 'Lists',
       action: 'Update List from List Select',
-      label: listUrl
-    })
-    dispatch(acceptListUpdate(listUrl))
-  }, [dispatch, listUrl, pending])
+      label: listUrl,
+    });
+    dispatch(acceptListUpdate(listUrl));
+  }, [dispatch, listUrl, pending]);
 
   const handleRemoveList = useCallback(() => {
     ReactGA.event({
       category: 'Lists',
       action: 'Start Remove List',
-      label: listUrl
-    })
-    if (window.prompt(`Please confirm you would like to remove this list by typing REMOVE`) === `REMOVE`) {
+      label: listUrl,
+    });
+    if (
+      window.prompt(
+        `Please confirm you would like to remove this list by typing REMOVE`,
+      ) === `REMOVE`
+    ) {
       ReactGA.event({
         category: 'Lists',
         action: 'Confirm Remove List',
-        label: listUrl
-      })
-      dispatch(removeList(listUrl))
+        label: listUrl,
+      });
+      dispatch(removeList(listUrl));
     }
-  }, [dispatch, listUrl])
+  }, [dispatch, listUrl]);
 
-  if (!list) return null
+  if (!list) return null;
 
   return (
-    <Box className={classes.listRow} key={listUrl} id={listUrlRowHTMLId(listUrl)}>
+    <Box
+      className={classes.listRow}
+      key={listUrl}
+      id={listUrlRowHTMLId(listUrl)}
+    >
       {list.logoURI ? (
         <ListLogo logoURI={list.logoURI} alt={`${list.name} list logo`} />
       ) : (
@@ -221,17 +241,36 @@ const ListRow = memo(function ListRow({ listUrl, onBack }: { listUrl: string; on
         </Box>
       </Box>
       <div className={classes.styledMenu}>
-        <Box onClick={(evt) => { setAnchorEl(evt.currentTarget)}}>
+        <Box
+          onClick={(evt) => {
+            setAnchorEl(evt.currentTarget);
+          }}
+        >
           <DropDown />
         </Box>
 
-        <Popover open={Boolean(anchorEl)} onClose={() => setAnchorEl(null)} anchorEl={anchorEl} anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }} transformOrigin={{ vertical: 'top', horizontal: 'center' }}>
+        <Popover
+          open={Boolean(anchorEl)}
+          onClose={() => setAnchorEl(null)}
+          anchorEl={anchorEl}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+          transformOrigin={{ vertical: 'top', horizontal: 'center' }}
+        >
           <Box className={classes.popoverWrapper}>
             <Typography>{list && listVersionLabel(list.version)}</Typography>
             <Divider />
             <Box>
-              <a href={`https://tokenlists.org/token-list?url=${listUrl}`} target='_blank' rel='noreferrer'>View list</a>
-              <Button onClick={handleRemoveList} disabled={Object.keys(listsByUrl).length === 1}>
+              <a
+                href={`https://tokenlists.org/token-list?url=${listUrl}`}
+                target='_blank'
+                rel='noreferrer'
+              >
+                View list
+              </a>
+              <Button
+                onClick={handleRemoveList}
+                disabled={Object.keys(listsByUrl).length === 1}
+              >
                 Remove list
               </Button>
               {pending && (
@@ -244,97 +283,106 @@ const ListRow = memo(function ListRow({ listUrl, onBack }: { listUrl: string; on
       {isSelected ? (
         <Button
           disabled={true}
-          className="select-button"
-          style={{ width: '5rem', minWidth: '5rem', padding: '0.5rem .35rem', borderRadius: '12px', fontSize: '14px' }}
+          className='select-button'
+          style={{
+            width: '5rem',
+            minWidth: '5rem',
+            padding: '0.5rem .35rem',
+            borderRadius: '12px',
+            fontSize: '14px',
+          }}
         >
           Selected
         </Button>
       ) : (
-        <Button onClick={selectThisList}>
-          Select
-        </Button>
+        <Button onClick={selectThisList}>Select</Button>
       )}
     </Box>
-  )
-})
+  );
+});
 
 interface ListSelectProps {
   onDismiss: () => void;
-  onBack: () => void
+  onBack: () => void;
 }
 
 const ListSelect: React.FC<ListSelectProps> = ({ onDismiss, onBack }) => {
   const classes = useStyles();
-  const [listUrlInput, setListUrlInput] = useState<string>('')
+  const [listUrlInput, setListUrlInput] = useState<string>('');
 
-  const dispatch = useDispatch<AppDispatch>()
-  const lists = useSelector<AppState, AppState['lists']['byUrl']>(state => state.lists.byUrl)
-  const adding = Boolean(lists[listUrlInput]?.loadingRequestId)
-  const [addError, setAddError] = useState<string | null>(null)
+  const dispatch = useDispatch<AppDispatch>();
+  const lists = useSelector<AppState, AppState['lists']['byUrl']>(
+    (state) => state.lists.byUrl,
+  );
+  const adding = Boolean(lists[listUrlInput]?.loadingRequestId);
+  const [addError, setAddError] = useState<string | null>(null);
 
-  const handleInput = useCallback(e => {
-    setListUrlInput(e.target.value)
-    setAddError(null)
-  }, [])
-  const fetchList = useFetchListCallback()
+  const handleInput = useCallback((e) => {
+    setListUrlInput(e.target.value);
+    setAddError(null);
+  }, []);
+  const fetchList = useFetchListCallback();
 
   const handleAddList = useCallback(() => {
-    if (adding) return
-    setAddError(null)
+    if (adding) return;
+    setAddError(null);
     fetchList(listUrlInput)
       .then(() => {
-        setListUrlInput('')
+        setListUrlInput('');
         ReactGA.event({
           category: 'Lists',
           action: 'Add List',
-          label: listUrlInput
-        })
+          label: listUrlInput,
+        });
       })
-      .catch(error => {
+      .catch((error) => {
         ReactGA.event({
           category: 'Lists',
           action: 'Add List Failed',
-          label: listUrlInput
-        })
-        setAddError(error.message)
-        dispatch(removeList(listUrlInput))
-      })
-  }, [adding, dispatch, fetchList, listUrlInput])
+          label: listUrlInput,
+        });
+        setAddError(error.message);
+        dispatch(removeList(listUrlInput));
+      });
+  }, [adding, dispatch, fetchList, listUrlInput]);
 
   const validUrl: boolean = useMemo(() => {
-    return uriToHttp(listUrlInput).length > 0 || Boolean(parseENSAddress(listUrlInput))
-  }, [listUrlInput])
+    return (
+      uriToHttp(listUrlInput).length > 0 ||
+      Boolean(parseENSAddress(listUrlInput))
+    );
+  }, [listUrlInput]);
 
   const handleEnterKey = useCallback(
-    e => {
+    (e) => {
       if (validUrl && e.key === 'Enter') {
-        handleAddList()
+        handleAddList();
       }
     },
-    [handleAddList, validUrl]
-  )
+    [handleAddList, validUrl],
+  );
 
   const sortedLists = useMemo(() => {
-    const listUrls = Object.keys(lists)
+    const listUrls = Object.keys(lists);
     return listUrls
-      .filter(listUrl => {
-        return Boolean(lists[listUrl].current)
+      .filter((listUrl) => {
+        return Boolean(lists[listUrl].current);
       })
       .sort((u1, u2) => {
-        const { current: l1 } = lists[u1]
-        const { current: l2 } = lists[u2]
+        const { current: l1 } = lists[u1];
+        const { current: l2 } = lists[u2];
         if (l1 && l2) {
           return l1.name.toLowerCase() < l2.name.toLowerCase()
             ? -1
             : l1.name.toLowerCase() === l2.name.toLowerCase()
             ? 0
-            : 1
+            : 1;
         }
-        if (l1) return -1
-        if (l2) return 1
-        return 0
-      })
-  }, [lists])
+        if (l1) return -1;
+        if (l2) return 1;
+        return 0;
+      });
+  }, [lists]);
 
   return (
     <Box className={classes.manageList}>
@@ -348,16 +396,14 @@ const ListSelect: React.FC<ListSelectProps> = ({ onDismiss, onBack }) => {
 
       <Box className='content'>
         <Box>
-          <Typography>
-            Add a list
-          </Typography>
-          <QuestionHelper text="Token lists are an open specification for lists of ERC20 tokens. You can use any token list by entering its URL below. Beware that third party token lists can contain fake or malicious ERC20 tokens." />
+          <Typography>Add a list</Typography>
+          <QuestionHelper text='Token lists are an open specification for lists of ERC20 tokens. You can use any token list by entering its URL below. Beware that third party token lists can contain fake or malicious ERC20 tokens.' />
         </Box>
         <Box>
           <input
-            type="text"
-            id="list-add-input"
-            placeholder="https:// or ipfs:// or ENS name"
+            type='text'
+            id='list-add-input'
+            placeholder='https:// or ipfs:// or ENS name'
             value={listUrlInput}
             onChange={handleInput}
             onKeyDown={handleEnterKey}
@@ -377,12 +423,12 @@ const ListSelect: React.FC<ListSelectProps> = ({ onDismiss, onBack }) => {
       <Divider />
 
       <Box>
-        {sortedLists.map(listUrl => (
+        {sortedLists.map((listUrl) => (
           <ListRow key={listUrl} listUrl={listUrl} onBack={onBack} />
         ))}
       </Box>
     </Box>
-  )
-}
+  );
+};
 
 export default ListSelect;

@@ -1,12 +1,12 @@
-import { ChainId, Pair, Token } from "@uniswap/sdk";
-import flatMap from "lodash.flatmap";
-import { useCallback, useMemo } from "react";
-import { shallowEqual, useDispatch, useSelector } from "react-redux";
-import { BASES_TO_TRACK_LIQUIDITY_FOR, PINNED_PAIRS } from "constants/index";
+import { ChainId, Pair, Token } from '@uniswap/sdk';
+import flatMap from 'lodash.flatmap';
+import { useCallback, useMemo } from 'react';
+import { shallowEqual, useDispatch, useSelector } from 'react-redux';
+import { BASES_TO_TRACK_LIQUIDITY_FOR, PINNED_PAIRS } from 'constants/index';
 
-import { useActiveWeb3React } from "hooks";
-import { useAllTokens } from "hooks/Tokens";
-import { AppDispatch, AppState } from "state";
+import { useActiveWeb3React } from 'hooks';
+import { useAllTokens } from 'hooks/Tokens';
+import { AppDispatch, AppState } from 'state';
 import {
   addSerializedPair,
   addSerializedToken,
@@ -18,7 +18,7 @@ import {
   updateUserExpertMode,
   updateUserSlippageTolerance,
   toggleURLWarning,
-} from "./actions";
+} from './actions';
 
 function serializeToken(token: Token): SerializedToken {
   return {
@@ -36,7 +36,7 @@ function deserializeToken(serializedToken: SerializedToken): Token {
     serializedToken.address,
     serializedToken.decimals,
     serializedToken.symbol,
-    serializedToken.name
+    serializedToken.name,
   );
 }
 
@@ -49,7 +49,7 @@ export function useIsDarkMode(): boolean {
       userDarkMode,
       matchesDarkMode,
     }),
-    shallowEqual
+    shallowEqual,
   );
 
   return userDarkMode === null ? matchesDarkMode : userDarkMode;
@@ -67,8 +67,8 @@ export function useDarkModeManager(): [boolean, () => void] {
 }
 
 export function useIsExpertMode(): boolean {
-  return useSelector<AppState, AppState["user"]["userExpertMode"]>(
-    (state) => state.user.userExpertMode
+  return useSelector<AppState, AppState['user']['userExpertMode']>(
+    (state) => state.user.userExpertMode,
   );
 }
 
@@ -85,12 +85,12 @@ export function useExpertModeManager(): [boolean, () => void] {
 
 export function useUserSlippageTolerance(): [
   number,
-  (slippage: number) => void
+  (slippage: number) => void,
 ] {
   const dispatch = useDispatch<AppDispatch>();
   const userSlippageTolerance = useSelector<
     AppState,
-    AppState["user"]["userSlippageTolerance"]
+    AppState['user']['userSlippageTolerance']
   >((state) => {
     return state.user.userSlippageTolerance;
   });
@@ -99,7 +99,7 @@ export function useUserSlippageTolerance(): [
     (userSlippageTolerance: number) => {
       dispatch(updateUserSlippageTolerance({ userSlippageTolerance }));
     },
-    [dispatch]
+    [dispatch],
   );
 
   return [userSlippageTolerance, setUserSlippageTolerance];
@@ -107,17 +107,17 @@ export function useUserSlippageTolerance(): [
 
 export function useUserTransactionTTL(): [number, (slippage: number) => void] {
   const dispatch = useDispatch<AppDispatch>();
-  const userDeadline = useSelector<AppState, AppState["user"]["userDeadline"]>(
+  const userDeadline = useSelector<AppState, AppState['user']['userDeadline']>(
     (state) => {
       return state.user.userDeadline;
-    }
+    },
   );
 
   const setUserDeadline = useCallback(
     (userDeadline: number) => {
       dispatch(updateUserDeadline({ userDeadline }));
     },
-    [dispatch]
+    [dispatch],
   );
 
   return [userDeadline, setUserDeadline];
@@ -129,33 +129,33 @@ export function useAddUserToken(): (token: Token) => void {
     (token: Token) => {
       dispatch(addSerializedToken({ serializedToken: serializeToken(token) }));
     },
-    [dispatch]
+    [dispatch],
   );
 }
 
 export function useRemoveUserAddedToken(): (
   chainId: number,
-  address: string
+  address: string,
 ) => void {
   const dispatch = useDispatch<AppDispatch>();
   return useCallback(
     (chainId: number, address: string) => {
       dispatch(removeSerializedToken({ chainId, address }));
     },
-    [dispatch]
+    [dispatch],
   );
 }
 
 export function useUserAddedTokens(): Token[] {
   const { chainId } = useActiveWeb3React();
-  const serializedTokensMap = useSelector<AppState, AppState["user"]["tokens"]>(
-    ({ user: { tokens } }) => tokens
+  const serializedTokensMap = useSelector<AppState, AppState['user']['tokens']>(
+    ({ user: { tokens } }) => tokens,
   );
 
   return useMemo(() => {
     if (!chainId) return [];
     return Object.values(serializedTokensMap[chainId as ChainId] ?? {}).map(
-      deserializeToken
+      deserializeToken,
     );
   }, [serializedTokensMap, chainId]);
 }
@@ -174,7 +174,7 @@ export function usePairAdder(): (pair: Pair) => void {
     (pair: Pair) => {
       dispatch(addSerializedPair({ serializedPair: serializePair(pair) }));
     },
-    [dispatch]
+    [dispatch],
   );
 }
 
@@ -197,8 +197,8 @@ export function toV2LiquidityToken([tokenA, tokenB]: [Token, Token]): Token {
     tokenA.chainId,
     Pair.getAddress(tokenA, tokenB),
     18,
-    "QUICK-V2",
-    "Quickswap V2"
+    'QUICK-V2',
+    'Quickswap V2',
   );
 }
 
@@ -212,7 +212,7 @@ export function useTrackedTokenPairs(): [Token, Token][] {
   // pinned pairs
   const pinnedPairs = useMemo(
     () => (chainId ? PINNED_PAIRS[chainId] ?? [] : []),
-    [chainId]
+    [chainId],
   );
 
   // pairs for every token against every base
@@ -237,12 +237,12 @@ export function useTrackedTokenPairs(): [Token, Token][] {
             );
           })
         : [],
-    [tokens, chainId]
+    [tokens, chainId],
   );
 
   // pairs saved by users
-  const savedSerializedPairs = useSelector<AppState, AppState["user"]["pairs"]>(
-    ({ user: { pairs } }) => pairs
+  const savedSerializedPairs = useSelector<AppState, AppState['user']['pairs']>(
+    ({ user: { pairs } }) => pairs,
   );
 
   const userPairs: [Token, Token][] = useMemo(() => {
@@ -260,7 +260,7 @@ export function useTrackedTokenPairs(): [Token, Token][] {
 
   const combinedList = useMemo(
     () => userPairs.concat(generatedPairs).concat(pinnedPairs),
-    [generatedPairs, pinnedPairs, userPairs]
+    [generatedPairs, pinnedPairs, userPairs],
   );
 
   return useMemo(() => {
@@ -275,7 +275,7 @@ export function useTrackedTokenPairs(): [Token, Token][] {
         memo[key] = sorted ? [tokenA, tokenB] : [tokenB, tokenA];
         return memo;
       },
-      {}
+      {},
     );
 
     return Object.keys(keyed).map((key) => keyed[key]);

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Typography, Button } from '@material-ui/core';
-import { JSBI , TokenAmount } from '@uniswap/sdk';
+import { JSBI, TokenAmount } from '@uniswap/sdk';
 import { makeStyles } from '@material-ui/core/styles';
 import { StakingInfo } from 'state/stake/hooks';
 import { useTotalSupply } from 'data/TotalSupply';
@@ -25,7 +25,7 @@ const useStyles = makeStyles(({ palette }) => ({
     },
     '& h5': {
       marginLeft: 70,
-      textAlign: 'left'
+      textAlign: 'left',
     },
     '& .row': {
       display: 'flex',
@@ -38,8 +38,8 @@ const useStyles = makeStyles(({ palette }) => ({
         display: 'flex',
         alignItems: 'center',
         '& svg': {
-          marginLeft: 4
-        }
+          marginLeft: 4,
+        },
       },
       '& h4': {
         color: 'white',
@@ -54,13 +54,13 @@ const useStyles = makeStyles(({ palette }) => ({
     '& button': {
       height: 40,
       fontSize: 16,
-      marginTop: 12
-    }
-  }
+      marginTop: 12,
+    },
+  },
 }));
 
 interface RewardSliderItemProps {
-  info: StakingInfo
+  info: StakingInfo;
 }
 
 const RewardSliderItem: React.FC<RewardSliderItemProps> = ({ info }) => {
@@ -73,7 +73,7 @@ const RewardSliderItem: React.FC<RewardSliderItemProps> = ({ info }) => {
   let valueOfTotalStakedAmountInBaseToken: TokenAmount | undefined;
   const totalSupplyOfStakingToken = useTotalSupply(info.stakedAmount.token);
   const [, stakingTokenPair] = usePair(...info.tokens);
-  const baseToken = baseTokenCurrency === empty ? token0: info.baseToken;
+  const baseToken = baseTokenCurrency === empty ? token0 : info.baseToken;
 
   const USDPrice = useUSDCPrice(baseToken);
 
@@ -83,27 +83,39 @@ const RewardSliderItem: React.FC<RewardSliderItemProps> = ({ info }) => {
       baseToken,
       JSBI.divide(
         JSBI.multiply(
-          JSBI.multiply(info.totalStakedAmount.raw, stakingTokenPair.reserveOf(baseToken).raw),
-          JSBI.BigInt(2) // this is b/c the value of LP shares are ~double the value of the WETH they entitle owner to
+          JSBI.multiply(
+            info.totalStakedAmount.raw,
+            stakingTokenPair.reserveOf(baseToken).raw,
+          ),
+          JSBI.BigInt(2), // this is b/c the value of LP shares are ~double the value of the WETH they entitle owner to
         ),
-        totalSupplyOfStakingToken.raw
-      )
-    )
+        totalSupplyOfStakingToken.raw,
+      ),
+    );
   }
-  const valueOfTotalStakedAmountInUSDC =  valueOfTotalStakedAmountInBaseToken && USDPrice?.quote(valueOfTotalStakedAmountInBaseToken);
+  const valueOfTotalStakedAmountInUSDC =
+    valueOfTotalStakedAmountInBaseToken &&
+    USDPrice?.quote(valueOfTotalStakedAmountInBaseToken);
 
   const rewards = Number(info.rate) * Number(info.quickPrice);
 
-  const perMonthReturnInRewards: any = (Number(info.rate) * Number(info.quickPrice) * 30) / Number(valueOfTotalStakedAmountInUSDC?.toSignificant(6));
+  const perMonthReturnInRewards: any =
+    (Number(info.rate) * Number(info.quickPrice) * 30) /
+    Number(valueOfTotalStakedAmountInUSDC?.toSignificant(6));
 
   let apyWithFee;
-  if(info.oneYearFeeAPY && info.oneYearFeeAPY > 0) {
-    apyWithFee = ((1 + ((perMonthReturnInRewards + Number(info.oneYearFeeAPY) / 12) * 12) / 12) ** 12 - 1) * 100 // compounding monthly APY
-    if(apyWithFee > 100000000) {
-      apyWithFee = ">100000000"
-    }
-    else {
-      apyWithFee = parseFloat(apyWithFee.toFixed(2)).toLocaleString()
+  if (info.oneYearFeeAPY && info.oneYearFeeAPY > 0) {
+    apyWithFee =
+      ((1 +
+        ((perMonthReturnInRewards + Number(info.oneYearFeeAPY) / 12) * 12) /
+          12) **
+        12 -
+        1) *
+      100; // compounding monthly APY
+    if (apyWithFee > 100000000) {
+      apyWithFee = '>100000000';
+    } else {
+      apyWithFee = parseFloat(apyWithFee.toFixed(2)).toLocaleString();
     }
   }
 
@@ -111,10 +123,15 @@ const RewardSliderItem: React.FC<RewardSliderItemProps> = ({ info }) => {
     <Box className={classes.rewardsSliderItem}>
       <Box mb={4}>
         <Box className='rewardIcon'>
-          <DoubleCurrencyLogo currency0={info.tokens[0]} currency1={info.tokens[1]} size={32} />
+          <DoubleCurrencyLogo
+            currency0={info.tokens[0]}
+            currency1={info.tokens[1]}
+            size={32}
+          />
         </Box>
         <Typography variant='h5'>
-          { info.tokens[0].symbol?.toUpperCase() }-{ info.tokens[1].symbol?.toUpperCase() }
+          {info.tokens[0].symbol?.toUpperCase()}-
+          {info.tokens[1].symbol?.toUpperCase()}
         </Typography>
       </Box>
       <Box className='row'>
@@ -127,14 +144,18 @@ const RewardSliderItem: React.FC<RewardSliderItemProps> = ({ info }) => {
         <Typography>Locked Value</Typography>
         <Typography component='h4'>
           {valueOfTotalStakedAmountInUSDC
-            ? `$${valueOfTotalStakedAmountInUSDC.toFixed(0, { groupSeparator: ',' })}`
-            : `${valueOfTotalStakedAmountInBaseToken?.toSignificant(4, { groupSeparator: ',' }) ?? '-'} ETH`}
+            ? `$${valueOfTotalStakedAmountInUSDC.toFixed(0, {
+                groupSeparator: ',',
+              })}`
+            : `${valueOfTotalStakedAmountInBaseToken?.toSignificant(4, {
+                groupSeparator: ',',
+              }) ?? '-'} ETH`}
         </Typography>
       </Box>
       <Box className='row'>
         <Typography>TVL</Typography>
         <Typography component='h4'>
-          ${ Number(rewards.toFixed(0)).toLocaleString()}
+          ${Number(rewards.toFixed(0)).toLocaleString()}
         </Typography>
       </Box>
       {/* <Box className='row'>
@@ -144,12 +165,17 @@ const RewardSliderItem: React.FC<RewardSliderItemProps> = ({ info }) => {
         </Typography>
       </Box> */}
       <Box className='row'>
-        <Typography>APR<HelpIcon /></Typography>
-        <Typography component='h5'>{ apyWithFee }%</Typography>
+        <Typography>
+          APR
+          <HelpIcon />
+        </Typography>
+        <Typography component='h5'>{apyWithFee}%</Typography>
       </Box>
-      <Button fullWidth color='primary' style={{marginTop: '30px'}}>Invest</Button>
+      <Button fullWidth color='primary' style={{ marginTop: '30px' }}>
+        Invest
+      </Button>
     </Box>
-  )
-}
+  );
+};
 
 export default RewardSliderItem;

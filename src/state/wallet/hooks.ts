@@ -1,4 +1,4 @@
-import { UNI } from "constants/index";
+import { UNI } from 'constants/index';
 import {
   Currency,
   CurrencyAmount,
@@ -6,24 +6,26 @@ import {
   JSBI,
   Token,
   TokenAmount,
-} from "@uniswap/sdk";
-import { useMemo } from "react";
-import ERC20_INTERFACE from "constants/abis/erc20";
-import { useAllTokens } from "hooks/Tokens";
-import { useActiveWeb3React } from "hooks";
-import { useMulticallContract } from "hooks/useContract";
-import { isAddress } from "utils";
+} from '@uniswap/sdk';
+import { useMemo } from 'react';
+import ERC20_INTERFACE from 'constants/abis/erc20';
+import { useAllTokens } from 'hooks/Tokens';
+import { useActiveWeb3React } from 'hooks';
+import { useMulticallContract } from 'hooks/useContract';
+import { isAddress } from 'utils';
 import {
   useSingleContractMultipleData,
   useMultipleContractSingleData,
-} from "state/multicall/hooks";
-import { useUserUnclaimedAmount } from "state/claim/hooks";
-import { useTotalUniEarned } from "state/stake/hooks";
+} from 'state/multicall/hooks';
+import { useUserUnclaimedAmount } from 'state/claim/hooks';
+import { useTotalUniEarned } from 'state/stake/hooks';
 
 /**
  * Returns a map of the given addresses to their eventually consistent ETH balances.
  */
-export function useETHBalances(uncheckedAddresses?: (string | undefined)[]): {
+export function useETHBalances(
+  uncheckedAddresses?: (string | undefined)[],
+): {
   [address: string]: CurrencyAmount | undefined;
 } {
   const multicallContract = useMulticallContract();
@@ -36,13 +38,13 @@ export function useETHBalances(uncheckedAddresses?: (string | undefined)[]): {
             .filter((a): a is string => a !== false)
             .sort()
         : [],
-    [uncheckedAddresses]
+    [uncheckedAddresses],
   );
 
   const results = useSingleContractMultipleData(
     multicallContract,
-    "getEthBalance",
-    addresses.map((address) => [address])
+    'getEthBalance',
+    addresses.map((address) => [address]),
   );
 
   return useMemo(
@@ -54,9 +56,9 @@ export function useETHBalances(uncheckedAddresses?: (string | undefined)[]): {
             memo[address] = CurrencyAmount.ether(JSBI.BigInt(value.toString()));
           return memo;
         },
-        {}
+        {},
       ),
-    [addresses, results]
+    [addresses, results],
   );
 }
 
@@ -65,31 +67,31 @@ export function useETHBalances(uncheckedAddresses?: (string | undefined)[]): {
  */
 export function useTokenBalancesWithLoadingIndicator(
   address?: string,
-  tokens?: (Token | undefined)[]
+  tokens?: (Token | undefined)[],
 ): [{ [tokenAddress: string]: TokenAmount | undefined }, boolean] {
   const validatedTokens: Token[] = useMemo(
     () =>
       tokens?.filter(
-        (t?: Token): t is Token => isAddress(t?.address) !== false
+        (t?: Token): t is Token => isAddress(t?.address) !== false,
       ) ?? [],
-    [tokens]
+    [tokens],
   );
 
   const validatedTokenAddresses = useMemo(
     () => validatedTokens.map((vt) => vt.address),
-    [validatedTokens]
+    [validatedTokens],
   );
 
   const balances = useMultipleContractSingleData(
     validatedTokenAddresses,
     ERC20_INTERFACE,
-    "balanceOf",
-    [address]
+    'balanceOf',
+    [address],
   );
 
   const anyLoading: boolean = useMemo(
     () => balances.some((callState) => callState.loading),
-    [balances]
+    [balances],
   );
 
   return [
@@ -107,7 +109,7 @@ export function useTokenBalancesWithLoadingIndicator(
               return memo;
             }, {})
           : {},
-      [address, validatedTokens, balances]
+      [address, validatedTokens, balances],
     ),
     anyLoading,
   ];
@@ -115,7 +117,7 @@ export function useTokenBalancesWithLoadingIndicator(
 
 export function useTokenBalances(
   address?: string,
-  tokens?: (Token | undefined)[]
+  tokens?: (Token | undefined)[],
 ): { [tokenAddress: string]: TokenAmount | undefined } {
   return useTokenBalancesWithLoadingIndicator(address, tokens)[0];
 }
@@ -123,7 +125,7 @@ export function useTokenBalances(
 // get the balance for a single token/account combo
 export function useTokenBalance(
   account?: string,
-  token?: Token
+  token?: Token,
 ): TokenAmount | undefined {
   const tokenBalances = useTokenBalances(account, [token]);
   if (!token) return undefined;
@@ -132,20 +134,20 @@ export function useTokenBalance(
 
 export function useCurrencyBalances(
   account?: string,
-  currencies?: (Currency | undefined)[]
+  currencies?: (Currency | undefined)[],
 ): (CurrencyAmount | undefined)[] {
   const tokens = useMemo(
     () =>
       currencies?.filter(
-        (currency): currency is Token => currency instanceof Token
+        (currency): currency is Token => currency instanceof Token,
       ) ?? [],
-    [currencies]
+    [currencies],
   );
 
   const tokenBalances = useTokenBalances(account, tokens);
   const containsETH: boolean = useMemo(
     () => currencies?.some((currency) => currency === ETHER) ?? false,
-    [currencies]
+    [currencies],
   );
   const ethBalance = useETHBalances(containsETH ? [account] : []);
 
@@ -157,13 +159,13 @@ export function useCurrencyBalances(
         if (currency === ETHER) return ethBalance[account];
         return undefined;
       }) ?? [],
-    [account, currencies, ethBalance, tokenBalances]
+    [account, currencies, ethBalance, tokenBalances],
   );
 }
 
 export function useCurrencyBalance(
   account?: string,
-  currency?: Currency
+  currency?: Currency,
 ): CurrencyAmount | undefined {
   return useCurrencyBalances(account, [currency])[0];
 }
@@ -174,10 +176,9 @@ export function useAllTokenBalances(): {
 } {
   const { account } = useActiveWeb3React();
   const allTokens = useAllTokens();
-  const allTokensArray = useMemo(
-    () => Object.values(allTokens ?? {}),
-    [allTokens]
-  );
+  const allTokensArray = useMemo(() => Object.values(allTokens ?? {}), [
+    allTokens,
+  ]);
   const balances = useTokenBalances(account ?? undefined, allTokensArray);
   return balances ?? {};
 }
@@ -190,7 +191,7 @@ export function useAggregateUniBalance(): TokenAmount | undefined {
 
   const uniBalance: TokenAmount | undefined = useTokenBalance(
     account ?? undefined,
-    uni
+    uni,
   );
   const uniUnclaimed: TokenAmount | undefined = useUserUnclaimedAmount(account);
   const uniUnHarvested: TokenAmount | undefined = useTotalUniEarned();
@@ -202,9 +203,9 @@ export function useAggregateUniBalance(): TokenAmount | undefined {
     JSBI.add(
       JSBI.add(
         uniBalance?.raw ?? JSBI.BigInt(0),
-        uniUnclaimed?.raw ?? JSBI.BigInt(0)
+        uniUnclaimed?.raw ?? JSBI.BigInt(0),
       ),
-      uniUnHarvested?.raw ?? JSBI.BigInt(0)
-    )
+      uniUnHarvested?.raw ?? JSBI.BigInt(0),
+    ),
   );
 }

@@ -21,10 +21,10 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       '& p': {
         fontSize: 16,
         lineHeight: '24px',
-        marginLeft: 6
-      }
-    }
-  }
+        marginLeft: 6,
+      },
+    },
+  },
 }));
 
 export default memo(function SwapRoute({ trade }: { trade: Trade }) {
@@ -32,19 +32,17 @@ export default memo(function SwapRoute({ trade }: { trade: Trade }) {
   return (
     <Box className={classes.swapRoute}>
       {trade.route.path.map((token, i, path) => {
-        const isLastItem: boolean = i === path.length - 1
+        const isLastItem: boolean = i === path.length - 1;
         return (
           <Fragment key={i}>
             <Box>
-              <CurrencyLogo currency={token} size="1.5rem" />
-              <Typography>
-                {token.symbol}
-              </Typography>
+              <CurrencyLogo currency={token} size='1.5rem' />
+              <Typography>{token.symbol}</Typography>
             </Box>
             {isLastItem ? null : <ChevronRight />}
           </Fragment>
-        )
+        );
       })}
     </Box>
-  )
-})
+  );
+});

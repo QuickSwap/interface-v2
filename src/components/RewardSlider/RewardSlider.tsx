@@ -16,8 +16,8 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     '& .slick-slide': {
       padding: '0 20px',
       [breakpoints.down('xs')]: {
-        padding: '0 6px'
-      }
+        padding: '0 6px',
+      },
     },
     '& .slick-arrow': {
       color: palette.success.dark,
@@ -25,14 +25,14 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       height: 32,
     },
     [breakpoints.down('md')]: {
-      width: 776
+      width: 776,
     },
     [breakpoints.down('sm')]: {
       width: 360,
     },
     [breakpoints.down('xs')]: {
       width: 320,
-    }
+    },
   },
 }));
 
@@ -51,18 +51,16 @@ const RewardSlider: React.FC = () => {
     slidesToShow: mobileWindowSize ? 1 : tabletWindowSize ? 2 : 3,
     slidesToScroll: 1,
     nextArrow: <ChevronRightIcon />,
-    prevArrow: <ChevronLeftIcon />
+    prevArrow: <ChevronLeftIcon />,
   };
 
   return (
     <Slider {...rewardSliderSettings} className={classes.rewardsSlider}>
-      {
-        rewardItems.map((item, index) => (
-          <RewardSliderItem key={index} info={item} />
-        ))
-      }
+      {rewardItems.map((item, index) => (
+        <RewardSliderItem key={index} info={item} />
+      ))}
     </Slider>
-  )
-}
+  );
+};
 
-export default RewardSlider; 
+export default RewardSlider;

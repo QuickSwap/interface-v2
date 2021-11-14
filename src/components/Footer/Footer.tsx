@@ -1,8 +1,5 @@
 import React from 'react';
-import {
-  Box,
-  Typography
-} from '@material-ui/core';
+import { Box, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { ReactComponent as QuickIcon } from 'assets/images/quickIcon.svg';
 
@@ -13,8 +10,8 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     '& p': {
       fontSize: 14,
       lineHeight: '24px',
-      marginTop: 20
-    }
+      marginTop: 20,
+    },
   },
 }));
 
@@ -24,9 +21,7 @@ const Footer: React.FC = () => {
   return (
     <Box className={classes.footer}>
       <QuickIcon />
-      <Typography>
-        © 2021 QuickSwap.
-      </Typography>
+      <Typography>© 2021 QuickSwap.</Typography>
     </Box>
   );
 };

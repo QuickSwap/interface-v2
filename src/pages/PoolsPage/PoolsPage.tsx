@@ -24,68 +24,88 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       color: '#636780',
     },
     '& svg': {
-      marginLeft: 8
-    }
+      marginLeft: 8,
+    },
   },
   wrapper: {
     padding: 24,
     backgroundColor: '#1b1e29',
-    borderRadius: 20
+    borderRadius: 20,
   },
   headingItem: {
     cursor: 'pointer',
-    display: 'flex'
+    display: 'flex',
   },
   liquidityText: {
     color: '#696c80',
     '& span': {
       color: '#448aff',
-      cursor: 'pointer'
-    }
+      cursor: 'pointer',
+    },
   },
   noLiquidityImage: {
     maxWidth: 286,
     width: '80%',
-    filter: 'grayscale(1)' 
-  }
+    filter: 'grayscale(1)',
+  },
 }));
 
 const PoolsPage: React.FC = () => {
   const classes = useStyles();
   const { account } = useActiveWeb3React();
-  const [ currency0, setCurrency0 ] = useState<Currency | undefined>();
-  const [ currency1, setCurrency1 ] = useState<Currency | undefined>()
+  const [currency0, setCurrency0] = useState<Currency | undefined>();
+  const [currency1, setCurrency1] = useState<Currency | undefined>();
   const trackedTokenPairs = useTrackedTokenPairs();
   const tokenPairsWithLiquidityTokens = useMemo(
-    () => trackedTokenPairs.map(tokens => ({ liquidityToken: toV2LiquidityToken(tokens), tokens })),
-    [trackedTokenPairs]
-  )
-  const liquidityTokens = useMemo(() => tokenPairsWithLiquidityTokens.map(tpwlt => tpwlt.liquidityToken), [
-    tokenPairsWithLiquidityTokens
-  ])
-  const [v2PairsBalances, fetchingV2PairBalances] = useTokenBalancesWithLoadingIndicator(
+    () =>
+      trackedTokenPairs.map((tokens) => ({
+        liquidityToken: toV2LiquidityToken(tokens),
+        tokens,
+      })),
+    [trackedTokenPairs],
+  );
+  const liquidityTokens = useMemo(
+    () => tokenPairsWithLiquidityTokens.map((tpwlt) => tpwlt.liquidityToken),
+    [tokenPairsWithLiquidityTokens],
+  );
+  const [
+    v2PairsBalances,
+    fetchingV2PairBalances,
+  ] = useTokenBalancesWithLoadingIndicator(
     account ?? undefined,
-    liquidityTokens
-  )
+    liquidityTokens,
+  );
 
   // fetch the reserves for all V2 pools in which the user has a balance
   const liquidityTokensWithBalances = useMemo(
     () =>
       tokenPairsWithLiquidityTokens.filter(({ liquidityToken }) =>
-        v2PairsBalances[liquidityToken.address]?.greaterThan('0')
+        v2PairsBalances[liquidityToken.address]?.greaterThan('0'),
       ),
-    [tokenPairsWithLiquidityTokens, v2PairsBalances]
-  )
+    [tokenPairsWithLiquidityTokens, v2PairsBalances],
+  );
 
-  const v2Pairs = usePairs(liquidityTokensWithBalances.map(({ tokens }) => tokens))
+  const v2Pairs = usePairs(
+    liquidityTokensWithBalances.map(({ tokens }) => tokens),
+  );
   const v2IsLoading =
-    fetchingV2PairBalances || v2Pairs?.length < liquidityTokensWithBalances.length || v2Pairs?.some(V2Pair => !V2Pair)
+    fetchingV2PairBalances ||
+    v2Pairs?.length < liquidityTokensWithBalances.length ||
+    v2Pairs?.some((V2Pair) => !V2Pair);
 
-  const allV2PairsWithLiquidity = v2Pairs.map(([, pair]) => pair).filter((v2Pair): v2Pair is Pair => Boolean(v2Pair))
+  const allV2PairsWithLiquidity = v2Pairs
+    .map(([, pair]) => pair)
+    .filter((v2Pair): v2Pair is Pair => Boolean(v2Pair));
 
   return (
     <Box width='100%' mb={3}>
-      <Box mb={2} display='flex' alignItems='center' justifyContent='space-between' width='100%'>
+      <Box
+        mb={2}
+        display='flex'
+        alignItems='center'
+        justifyContent='space-between'
+        width='100%'
+      >
         <Typography variant='h4'>Pool</Typography>
         <Box className={classes.helpWrapper}>
           <Typography variant='body2'>Help</Typography>
@@ -95,8 +115,14 @@ const PoolsPage: React.FC = () => {
       <Grid container spacing={4}>
         <Grid item sm={12} md={5}>
           <Box className={classes.wrapper}>
-            <Box display='flex' justifyContent='space-between' alignItems='center'>
-              <Typography variant='body1' style={{ fontWeight: 600 }}>Supply Liquidity</Typography>
+            <Box
+              display='flex'
+              justifyContent='space-between'
+              alignItems='center'
+            >
+              <Typography variant='body1' style={{ fontWeight: 600 }}>
+                Supply Liquidity
+              </Typography>
               <Box display='flex' alignItems='center'>
                 <Box className={classes.headingItem}>
                   <HelpIconLarge />
@@ -113,36 +139,49 @@ const PoolsPage: React.FC = () => {
         </Grid>
         <Grid item sm={12} md={7}>
           <Box className={classes.wrapper}>
-            <Typography variant='body1' style={{ fontWeight: 600 }}>Your Liquidity Pools</Typography>
+            <Typography variant='body1' style={{ fontWeight: 600 }}>
+              Your Liquidity Pools
+            </Typography>
             <Box mt={3}>
-            {
-              v2IsLoading ?
+              {v2IsLoading ? (
                 <Box width={1}>
                   <Skeleton width='100%' height={50} />
                 </Box>
-              : allV2PairsWithLiquidity.length > 0 ?
+              ) : allV2PairsWithLiquidity.length > 0 ? (
                 <Box>
-                  <Typography variant='body2' className={classes.liquidityText}>Don’t see a pool you joined? <span>Import it</span>.<br/>Unstake your LP Tokens from Farms to see them here.</Typography>
-                  {
-                    allV2PairsWithLiquidity.map(pair => (
-                      <Box mt={2}>
-                        <PoolPositionCard
-                          key={pair.liquidityToken.address}
-                          pair={pair}
-                          handleAddLiquidity={(currency0: Currency, currency1: Currency) => {
-                            setCurrency0(currency0);
-                            setCurrency1(currency1);
-                          }} />
-                      </Box>
-                    ))
-                  }
+                  <Typography variant='body2' className={classes.liquidityText}>
+                    Don’t see a pool you joined? <span>Import it</span>.<br />
+                    Unstake your LP Tokens from Farms to see them here.
+                  </Typography>
+                  {allV2PairsWithLiquidity.map((pair, ind) => (
+                    <Box key={ind} mt={2}>
+                      <PoolPositionCard
+                        key={pair.liquidityToken.address}
+                        pair={pair}
+                        handleAddLiquidity={(
+                          currency0: Currency,
+                          currency1: Currency,
+                        ) => {
+                          setCurrency0(currency0);
+                          setCurrency1(currency1);
+                        }}
+                      />
+                    </Box>
+                  ))}
                 </Box>
-              :
+              ) : (
                 <Box textAlign='center'>
-                  <img src={NoLiquidity} alt='No Liquidity' className={classes.noLiquidityImage} />
-                  <Typography variant='body2' className={classes.liquidityText}>Don’t see a pool you joined? <span>Import it</span>.<br/>Unstake your LP Tokens from Farms to see them here.</Typography>
+                  <img
+                    src={NoLiquidity}
+                    alt='No Liquidity'
+                    className={classes.noLiquidityImage}
+                  />
+                  <Typography variant='body2' className={classes.liquidityText}>
+                    Don’t see a pool you joined? <span>Import it</span>.<br />
+                    Unstake your LP Tokens from Farms to see them here.
+                  </Typography>
                 </Box>
-            }
+              )}
             </Box>
           </Box>
         </Grid>

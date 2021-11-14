@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Currency } from '@uniswap/sdk'
+import { Currency } from '@uniswap/sdk';
 import { Box, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { useCurrencyBalance } from 'state/wallet/hooks';
@@ -26,15 +26,15 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       '& .inputWrapper': {
         flex: 1,
         position: 'relative',
-        paddingLeft: 8
+        paddingLeft: 8,
       },
       '& .maxWrapper': {
         paddingLeft: 8,
         cursor: 'pointer',
         '& p': {
           color: '#448aff',
-          fontWeight: 600
-        }
+          fontWeight: 600,
+        },
       },
       '& input': {
         background: 'transparent',
@@ -47,17 +47,17 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
         fontSize: 18,
         fontWeight: 600,
         '&::placeholder': {
-          color: '#696c80'
-        }
-      }
+          color: '#696c80',
+        },
+      },
     },
     [breakpoints.down('xs')]: {
-      padding: 12
-    }
+      padding: 12,
+    },
   },
   priceShowBox: {
     borderBottomLeftRadius: 0,
-    borderBottomRightRadius: 0
+    borderBottomRightRadius: 0,
   },
   currencyButton: {
     display: 'flex',
@@ -70,44 +70,64 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     },
   },
   noCurrency: {
-    backgroundImage: 'linear-gradient(105deg, #448aff 3%, #004ce6)'
+    backgroundImage: 'linear-gradient(105deg, #448aff 3%, #004ce6)',
   },
   currencySelected: {
-    backgroundColor: '#404557'
+    backgroundColor: '#404557',
   },
   balanceSection: {
     '& p': {
-      color: '#696c80'
-    }
-  }
+      color: '#696c80',
+    },
+  },
 }));
 
 interface CurrencyInputProps {
-  title?: string,
-  handleCurrencySelect: (currency: Currency) => void
-  currency: Currency | undefined
-  otherCurrency?: Currency | undefined
-  amount: string
-  setAmount: (value: string) => void
-  onMax?: () => void
-  onHalf?: () => void
-  showHalfButton?: boolean
-  showMaxButton?: boolean
-  showPrice?: boolean
+  title?: string;
+  handleCurrencySelect: (currency: Currency) => void;
+  currency: Currency | undefined;
+  otherCurrency?: Currency | undefined;
+  amount: string;
+  setAmount: (value: string) => void;
+  onMax?: () => void;
+  onHalf?: () => void;
+  showHalfButton?: boolean;
+  showMaxButton?: boolean;
+  showPrice?: boolean;
 }
 
-const CurrencyInput: React.FC<CurrencyInputProps> = ({ handleCurrencySelect, currency, otherCurrency, amount, setAmount, onMax, onHalf, showMaxButton, showHalfButton, title, showPrice }) => {
+const CurrencyInput: React.FC<CurrencyInputProps> = ({
+  handleCurrencySelect,
+  currency,
+  otherCurrency,
+  amount,
+  setAmount,
+  onMax,
+  onHalf,
+  showMaxButton,
+  showHalfButton,
+  title,
+  showPrice,
+}) => {
   const classes = useStyles();
   const [modalOpen, setModalOpen] = useState(false);
   const { account } = useActiveWeb3React();
-  const selectedCurrencyBalance = useCurrencyBalance(account ?? undefined, currency ?? undefined);
+  const selectedCurrencyBalance = useCurrencyBalance(
+    account ?? undefined,
+    currency ?? undefined,
+  );
   const usdPrice = Number(useUSDCPrice(currency)?.toSignificant()) || 0;
 
   return (
     <Box className={cx(classes.swapBox, showPrice && classes.priceShowBox)}>
       <Box display='flex' justifyContent='space-between' mb={2}>
-        <Box display='flex' flexDirection='row' justifyContent='space-between' width='100%'>
-          <Typography>{ title || 'You Pay:' }</Typography>
+        <Box
+          display='flex'
+          flexDirection='row'
+          justifyContent='space-between'
+          width='100%'
+        >
+          <Typography>{title || 'You Pay:'}</Typography>
           {/* <Typography style={{color: '#448aff', fontSize: '16px', cursor: 'pointer'}}>MAX</Typography> */}
         </Box>
         <Box display='flex'>
@@ -124,38 +144,61 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({ handleCurrencySelect, cur
         </Box>
       </Box>
       <Box mb={2}>
-        <Box className={cx(classes.currencyButton, currency ? classes.currencySelected :  classes.noCurrency)} onClick={() => { setModalOpen(true) }}>
-          {
-            currency ?
-              <>
+        <Box
+          className={cx(
+            classes.currencyButton,
+            currency ? classes.currencySelected : classes.noCurrency,
+          )}
+          onClick={() => {
+            setModalOpen(true);
+          }}
+        >
+          {currency ? (
+            <>
               <CurrencyLogo currency={currency} size={'28px'} />
-              <Typography variant='body1'>{ currency?.symbol }</Typography>
-              </>
-              :
-              <Typography variant='body1'>Select a token</Typography>
-          }
+              <Typography variant='body1'>{currency?.symbol}</Typography>
+            </>
+          ) : (
+            <Typography variant='body1'>Select a token</Typography>
+          )}
         </Box>
         <Box className='inputWrapper'>
-          <input value={amount} placeholder='0.00' onChange={(e) => setAmount(e.target.value)} />
+          <input
+            value={amount}
+            placeholder='0.00'
+            onChange={(e) => setAmount(e.target.value)}
+          />
         </Box>
       </Box>
-      <Box display='flex' justifyContent='space-between' className={classes.balanceSection}>
-        <Typography variant='body2'>Balance: { selectedCurrencyBalance ? selectedCurrencyBalance.toSignificant(6) : 0 }</Typography>
-        <Typography variant='body2'>${(usdPrice * Number(amount)).toLocaleString()}</Typography>
+      <Box
+        display='flex'
+        justifyContent='space-between'
+        className={classes.balanceSection}
+      >
+        <Typography variant='body2'>
+          Balance:{' '}
+          {selectedCurrencyBalance
+            ? selectedCurrencyBalance.toSignificant(6)
+            : 0}
+        </Typography>
+        <Typography variant='body2'>
+          ${(usdPrice * Number(amount)).toLocaleString()}
+        </Typography>
       </Box>
-      {
-        modalOpen &&
-          <CurrencySearchModal
-            isOpen={modalOpen}
-            onDismiss={() => { setModalOpen(false) }}
-            onCurrencySelect={handleCurrencySelect}
-            selectedCurrency={currency}
-            showCommonBases={true}
-            otherSelectedCurrency={otherCurrency}
-          />      
-      }
+      {modalOpen && (
+        <CurrencySearchModal
+          isOpen={modalOpen}
+          onDismiss={() => {
+            setModalOpen(false);
+          }}
+          onCurrencySelect={handleCurrencySelect}
+          selectedCurrency={currency}
+          showCommonBases={true}
+          otherSelectedCurrency={otherCurrency}
+        />
+      )}
     </Box>
-  )
-}
+  );
+};
 
 export default CurrencyInput;

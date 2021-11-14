@@ -18,18 +18,22 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     padding: 12,
     '& p': {
       fontSize: '16px !important',
-      lineHeight: '24px !important'
-    }
-  }
+      lineHeight: '24px !important',
+    },
+  },
 }));
 
 interface PositionCardProps {
-  pair: Pair
-  showUnwrapped?: boolean
-  border?: string
+  pair: Pair;
+  showUnwrapped?: boolean;
+  border?: string;
 }
 
-export const MinimalPositionCard: React.FC<PositionCardProps> = ({ pair, showUnwrapped = false, border }) => {
+export const MinimalPositionCard: React.FC<PositionCardProps> = ({
+  pair,
+  showUnwrapped = false,
+  border,
+}) => {
   const { account } = useActiveWeb3React();
   const classes = useStyles();
 
@@ -38,13 +42,18 @@ export const MinimalPositionCard: React.FC<PositionCardProps> = ({ pair, showUnw
 
   const [showMore, setShowMore] = useState(false);
 
-  const userPoolBalance = useTokenBalance(account ?? undefined, pair.liquidityToken);
+  const userPoolBalance = useTokenBalance(
+    account ?? undefined,
+    pair.liquidityToken,
+  );
   const totalPoolTokens = useTotalSupply(pair.liquidityToken);
 
   const poolTokenPercentage =
-    !!userPoolBalance && !!totalPoolTokens && JSBI.greaterThanOrEqual(totalPoolTokens.raw, userPoolBalance.raw)
+    !!userPoolBalance &&
+    !!totalPoolTokens &&
+    JSBI.greaterThanOrEqual(totalPoolTokens.raw, userPoolBalance.raw)
       ? new Percent(userPoolBalance.raw, totalPoolTokens.raw)
-      : undefined
+      : undefined;
 
   const [token0Deposited, token1Deposited] =
     !!pair &&
@@ -53,19 +62,35 @@ export const MinimalPositionCard: React.FC<PositionCardProps> = ({ pair, showUnw
     // this condition is a short-circuit in the case where useTokenBalance updates sooner than useTotalSupply
     JSBI.greaterThanOrEqual(totalPoolTokens.raw, userPoolBalance.raw)
       ? [
-          pair.getLiquidityValue(pair.token0, totalPoolTokens, userPoolBalance, false),
-          pair.getLiquidityValue(pair.token1, totalPoolTokens, userPoolBalance, false)
+          pair.getLiquidityValue(
+            pair.token0,
+            totalPoolTokens,
+            userPoolBalance,
+            false,
+          ),
+          pair.getLiquidityValue(
+            pair.token1,
+            totalPoolTokens,
+            userPoolBalance,
+            false,
+          ),
         ]
-      : [undefined, undefined]
+      : [undefined, undefined];
 
   return (
     <Box className={classes.minimalCardWrapper}>
-      {userPoolBalance && JSBI.greaterThan(userPoolBalance.raw, JSBI.BigInt(0)) ? (
+      {userPoolBalance &&
+      JSBI.greaterThan(userPoolBalance.raw, JSBI.BigInt(0)) ? (
         <Box>
           <Typography>Your position</Typography>
           <Box onClick={() => setShowMore(!showMore)}>
             <Box>
-              <DoubleCurrencyLogo currency0={currency0} currency1={currency1} margin={true} size={20} />
+              <DoubleCurrencyLogo
+                currency0={currency0}
+                currency1={currency1}
+                margin={true}
+                size={20}
+              />
               <Typography>
                 {currency0.symbol}/{currency1.symbol}
               </Typography>
@@ -78,33 +103,25 @@ export const MinimalPositionCard: React.FC<PositionCardProps> = ({ pair, showUnw
           </Box>
           <Box>
             <Box>
+              <Typography>Your pool share:</Typography>
               <Typography>
-                Your pool share:
-              </Typography>
-              <Typography>
-                {poolTokenPercentage ? poolTokenPercentage.toFixed(6) + '%' : '-'}
+                {poolTokenPercentage
+                  ? poolTokenPercentage.toFixed(6) + '%'
+                  : '-'}
               </Typography>
             </Box>
             <Box>
-              <Typography>
-                {currency0.symbol}:
-              </Typography>
+              <Typography>{currency0.symbol}:</Typography>
               {token0Deposited ? (
-                <Typography>
-                  {token0Deposited?.toSignificant(6)}
-                </Typography>
+                <Typography>{token0Deposited?.toSignificant(6)}</Typography>
               ) : (
                 '-'
               )}
             </Box>
             <Box>
-              <Typography>
-                {currency1.symbol}:
-              </Typography>
+              <Typography>{currency1.symbol}:</Typography>
               {token1Deposited ? (
-                <Typography>
-                  {token1Deposited?.toSignificant(6)}
-                </Typography>
+                <Typography>{token1Deposited?.toSignificant(6)}</Typography>
               ) : (
                 '-'
               )}
@@ -113,32 +130,38 @@ export const MinimalPositionCard: React.FC<PositionCardProps> = ({ pair, showUnw
         </Box>
       ) : (
         <Typography>
-          <span role="img" aria-label="wizard-icon">
+          <span role='img' aria-label='wizard-icon'>
             ⭐️
           </span>{' '}
-          By adding liquidity you&apos;ll earn 0.25% of all trades on this pair proportional to your share of the pool.
-          Fees are added to the pool, accrue in real time and can be claimed by withdrawing your liquidity.
+          By adding liquidity you&apos;ll earn 0.25% of all trades on this pair
+          proportional to your share of the pool. Fees are added to the pool,
+          accrue in real time and can be claimed by withdrawing your liquidity.
         </Typography>
       )}
     </Box>
-  )
-}
+  );
+};
 
 export default function FullPositionCard({ pair, border }: PositionCardProps) {
-  const { account } = useActiveWeb3React()
+  const { account } = useActiveWeb3React();
 
-  const currency0 = unwrappedToken(pair.token0)
-  const currency1 = unwrappedToken(pair.token1)
+  const currency0 = unwrappedToken(pair.token0);
+  const currency1 = unwrappedToken(pair.token1);
 
-  const [showMore, setShowMore] = useState(false)
+  const [showMore, setShowMore] = useState(false);
 
-  const userPoolBalance = useTokenBalance(account ?? undefined, pair.liquidityToken)
-  const totalPoolTokens = useTotalSupply(pair.liquidityToken)
+  const userPoolBalance = useTokenBalance(
+    account ?? undefined,
+    pair.liquidityToken,
+  );
+  const totalPoolTokens = useTotalSupply(pair.liquidityToken);
 
   const poolTokenPercentage =
-    !!userPoolBalance && !!totalPoolTokens && JSBI.greaterThanOrEqual(totalPoolTokens.raw, userPoolBalance.raw)
+    !!userPoolBalance &&
+    !!totalPoolTokens &&
+    JSBI.greaterThanOrEqual(totalPoolTokens.raw, userPoolBalance.raw)
       ? new Percent(userPoolBalance.raw, totalPoolTokens.raw)
-      : undefined
+      : undefined;
 
   const [token0Deposited, token1Deposited] =
     !!pair &&
@@ -147,18 +170,37 @@ export default function FullPositionCard({ pair, border }: PositionCardProps) {
     // this condition is a short-circuit in the case where useTokenBalance updates sooner than useTotalSupply
     JSBI.greaterThanOrEqual(totalPoolTokens.raw, userPoolBalance.raw)
       ? [
-          pair.getLiquidityValue(pair.token0, totalPoolTokens, userPoolBalance, false),
-          pair.getLiquidityValue(pair.token1, totalPoolTokens, userPoolBalance, false)
+          pair.getLiquidityValue(
+            pair.token0,
+            totalPoolTokens,
+            userPoolBalance,
+            false,
+          ),
+          pair.getLiquidityValue(
+            pair.token1,
+            totalPoolTokens,
+            userPoolBalance,
+            false,
+          ),
         ]
-      : [undefined, undefined]
+      : [undefined, undefined];
 
   return (
     <Box>
       <Box>
         <Box>
-          <DoubleCurrencyLogo currency0={currency0} currency1={currency1} margin={true} size={20} />
+          <DoubleCurrencyLogo
+            currency0={currency0}
+            currency1={currency1}
+            margin={true}
+            size={20}
+          />
           <Typography>
-            {!currency0 || !currency1 ? <Typography>Loading</Typography> : `${currency0.symbol}/${currency1.symbol}`}
+            {!currency0 || !currency1 ? (
+              <Typography>Loading</Typography>
+            ) : (
+              `${currency0.symbol}/${currency1.symbol}`
+            )}
           </Typography>
         </Box>
 
@@ -167,12 +209,12 @@ export default function FullPositionCard({ pair, border }: PositionCardProps) {
             <>
               {' '}
               Manage
-              <ChevronUp size="20" style={{ marginLeft: '10px' }} />
+              <ChevronUp size='20' style={{ marginLeft: '10px' }} />
             </>
           ) : (
             <>
               Manage
-              <ChevronDown size="20" style={{ marginLeft: '10px' }} />
+              <ChevronDown size='20' style={{ marginLeft: '10px' }} />
             </>
           )}
         </Button>
@@ -181,23 +223,21 @@ export default function FullPositionCard({ pair, border }: PositionCardProps) {
       {showMore && (
         <Box>
           <Box>
-            <Typography>
-              Your pool tokens:
-            </Typography>
+            <Typography>Your pool tokens:</Typography>
             <Typography>
               {userPoolBalance ? userPoolBalance.toSignificant(4) : '-'}
             </Typography>
           </Box>
           <Box>
-            <Typography>
-              Pooled {currency0.symbol}:
-            </Typography>
+            <Typography>Pooled {currency0.symbol}:</Typography>
             {token0Deposited ? (
               <Box>
-                <Typography>
-                  {token0Deposited?.toSignificant(6)}
-                </Typography>
-                <CurrencyLogo size="20px" style={{ marginLeft: '8px' }} currency={currency0} />
+                <Typography>{token0Deposited?.toSignificant(6)}</Typography>
+                <CurrencyLogo
+                  size='20px'
+                  style={{ marginLeft: '8px' }}
+                  currency={currency0}
+                />
               </Box>
             ) : (
               '-'
@@ -205,15 +245,15 @@ export default function FullPositionCard({ pair, border }: PositionCardProps) {
           </Box>
 
           <Box>
-            <Typography>
-              Pooled {currency1.symbol}:
-            </Typography>
+            <Typography>Pooled {currency1.symbol}:</Typography>
             {token1Deposited ? (
               <Box>
-                <Typography>
-                  {token1Deposited?.toSignificant(6)}
-                </Typography>
-                <CurrencyLogo size="20px" style={{ marginLeft: '8px' }} currency={currency1} />
+                <Typography>{token1Deposited?.toSignificant(6)}</Typography>
+                <CurrencyLogo
+                  size='20px'
+                  style={{ marginLeft: '8px' }}
+                  currency={currency1}
+                />
               </Box>
             ) : (
               '-'
@@ -221,27 +261,35 @@ export default function FullPositionCard({ pair, border }: PositionCardProps) {
           </Box>
 
           <Box>
-            <Typography>
-              Your pool share:
-            </Typography>
+            <Typography>Your pool share:</Typography>
             <Typography>
               {poolTokenPercentage ? poolTokenPercentage.toFixed(2) + '%' : '-'}
             </Typography>
           </Box>
 
           <Button>
-            <a style={{ width: '100%', textAlign: 'center' }} href={`https://info.quickswap.exchange/account/${account}`} target='_blank' rel='noreferrer'>
-              View accrued fees and analytics<span style={{ fontSize: '11px' }}>↗</span>
+            <a
+              style={{ width: '100%', textAlign: 'center' }}
+              href={`https://info.quickswap.exchange/account/${account}`}
+              target='_blank'
+              rel='noreferrer'
+            >
+              View accrued fees and analytics
+              <span style={{ fontSize: '11px' }}>↗</span>
             </a>
           </Button>
           <Box display='flex'>
             <Box width='48%'>
-              <Link to={`/add/${currencyId(currency0)}/${currencyId(currency1)}`}>
+              <Link
+                to={`/add/${currencyId(currency0)}/${currencyId(currency1)}`}
+              >
                 Add
               </Link>
             </Box>
             <Box width='48%'>
-              <Link to={`/remove/${currencyId(currency0)}/${currencyId(currency1)}`}>
+              <Link
+                to={`/remove/${currencyId(currency0)}/${currencyId(currency1)}`}
+              >
                 Remove
               </Link>
             </Box>
@@ -249,5 +297,5 @@ export default function FullPositionCard({ pair, border }: PositionCardProps) {
         </Box>
       )}
     </Box>
-  )
+  );
 }

@@ -1,5 +1,5 @@
-import { createAction } from "@reduxjs/toolkit";
-import { TokenList } from "@uniswap/token-lists";
+import { createAction } from '@reduxjs/toolkit';
+import { TokenList } from '@uniswap/token-lists';
 
 export type PopupContent =
   | {
@@ -30,44 +30,44 @@ export enum ApplicationModal {
 export const updateBlockNumber = createAction<{
   chainId: number;
   blockNumber: number;
-}>("application/updateBlockNumber");
+}>('application/updateBlockNumber');
 
 export const setOpenModal = createAction<ApplicationModal | null>(
-  "application/setOpenModal"
+  'application/setOpenModal',
 );
 
 export const addPopup = createAction<{
   key?: string;
   removeAfterMs?: number | null;
   content: PopupContent;
-}>("application/addPopup");
+}>('application/addPopup');
 
 export const removePopup = createAction<{ key: string }>(
-  "application/removePopup"
+  'application/removePopup',
 );
 
 export const updateEthPrice = createAction<{
   price: any;
   oneDayPrice: any;
   ethPriceChange: any;
-}>("application/updateEthPrice");
+}>('application/updateEthPrice');
 
 export const updateGlobalData = createAction<{ data: any }>(
-  "application/updateGlobalData"
+  'application/updateGlobalData',
 );
 
 export const updateTopTokens = createAction<{ data: any }>(
-  "application/updateTopTokens"
+  'application/updateTopTokens',
 );
 
 export const updateTokenPairs = createAction<{ data: any }>(
-  "application/updateTokenPairs"
+  'application/updateTokenPairs',
 );
 
 export const updateSwapTokenPrice0 = createAction<{ data: any }>(
-  "application/updateSwapTokenPrice0"
+  'application/updateSwapTokenPrice0',
 );
 
 export const updateSwapTokenPrice1 = createAction<{ data: any }>(
-  "application/updateSwapTokenPrice1"
+  'application/updateSwapTokenPrice1',
 );

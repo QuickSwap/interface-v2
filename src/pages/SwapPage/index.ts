@@ -1,1 +1,1 @@
-export { default } from './SwapPage'
+export { default } from './SwapPage';

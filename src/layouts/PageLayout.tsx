@@ -1,7 +1,5 @@
 import React from 'react';
-import {
-  Box
-} from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import HeroBkg from 'assets/images/heroBkg.svg';
 import { Header, Footer } from 'components';
@@ -21,8 +19,8 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     overflow: 'hidden',
     '& img': {
       width: '100%',
-      minWidth: 1200
-    }
+      minWidth: 1200,
+    },
   },
   pageWrapper: {
     maxWidth: 1312,
@@ -34,9 +32,9 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     margin: '24px auto',
     padding: '0 32px',
     [breakpoints.down('xs')]: {
-      padding: '0 12px'
-    }
-  }
+      padding: '0 12px',
+    },
+  },
 }));
 
 export interface PageLayoutProps {
@@ -52,9 +50,7 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children }) => {
       <Box className={classes.heroBkg}>
         <img src={HeroBkg} alt='Hero Background' />
       </Box>
-      <Box className={classes.pageWrapper}>
-        { children }
-      </Box>
+      <Box className={classes.pageWrapper}>{children}</Box>
       <Footer />
     </Box>
   );

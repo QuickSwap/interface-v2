@@ -1,1 +1,1 @@
-export { default } from './DragonPage'
+export { default } from './DragonPage';

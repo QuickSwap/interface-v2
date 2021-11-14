@@ -1,6 +1,6 @@
-import React from 'react'
-import { Box } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
+import React from 'react';
+import { Box } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles(({ palette }) => ({
   infoCard: {
@@ -16,12 +16,12 @@ const useStyles = makeStyles(({ palette }) => ({
     marginTop: '2rem',
     padding: '1rem',
     '&:focus': {
-      boxShadow: `0 0 0 1px ${palette.primary.main}`
+      boxShadow: `0 0 0 1px ${palette.primary.main}`,
     },
   },
   optionCardLeft: {
     display: 'flex',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   optionCardClickable: {
     marginTop: 0,
@@ -46,20 +46,20 @@ const useStyles = makeStyles(({ palette }) => ({
       width: 8,
       marginRight: 8,
       backgroundColor: palette.success.main,
-      borderRadius: '50%'
-    }
+      borderRadius: '50%',
+    },
   },
   circleWrapper: {
     color: palette.success.main,
     display: 'flex',
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   headerText: {
     display: 'flex',
     color: palette.primary.main,
     fontSize: '1rem',
-    fontWeight: 500
+    fontWeight: 500,
   },
   subHeader: {
     color: palette.text.primary,
@@ -72,22 +72,22 @@ const useStyles = makeStyles(({ palette }) => ({
     justifyContent: 'center',
     '& > img, & > span': {
       height: 24,
-      width: 24
-    }
-  }
+      width: 24,
+    },
+  },
 }));
 
 interface OptionProps {
-  link?: string | null
-  clickable?: boolean
-  size?: number | null
-  onClick?: () => void
-  color: string
-  header: React.ReactNode
-  subheader: React.ReactNode | null
-  icon: string
-  active?: boolean
-  id: string
+  link?: string | null;
+  clickable?: boolean;
+  size?: number | null;
+  onClick?: () => void;
+  color: string;
+  header: React.ReactNode;
+  subheader: React.ReactNode | null;
+  icon: string;
+  active?: boolean;
+  id: string;
 }
 
 const Option: React.FC<OptionProps> = ({
@@ -100,7 +100,7 @@ const Option: React.FC<OptionProps> = ({
   subheader = null,
   icon,
   active = false,
-  id
+  id,
 }) => {
   const classes = useStyles();
   const content = (
@@ -124,12 +124,16 @@ const Option: React.FC<OptionProps> = ({
         <img src={icon} alt={'Icon'} />
       </Box>
     </Box>
-  )
+  );
   if (link) {
-    return <a href={link} target='_blank' rel="noreferrer">{content}</a>
+    return (
+      <a href={link} target='_blank' rel='noreferrer'>
+        {content}
+      </a>
+    );
   }
 
-  return content
-}
+  return content;
+};
 
 export default Option;

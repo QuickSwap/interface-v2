@@ -1,7 +1,7 @@
 import { ChainId } from '@uniswap/sdk';
 import React from 'react';
 import { Box, Typography, Button, CircularProgress } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/core/styles';
 import { CustomModal } from 'components';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 import { ReactComponent as TransactionFailed } from 'assets/images/TransactionFailed.svg';
@@ -20,20 +20,20 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     '& h5': {
       position: 'absolute',
       width: '100%',
-      textAlign: 'center'
+      textAlign: 'center',
     },
     '& svg': {
       cursor: 'pointer',
       position: 'relative',
-      zIndex: 3
-    }
+      zIndex: 3,
+    },
   },
   modalBG: {
     position: 'absolute',
     top: 100,
     left: '50%',
     transform: 'translateX(-50%)',
-    zIndex: 1
+    zIndex: 1,
   },
   modalContent: {
     marginTop: 20,
@@ -41,8 +41,8 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     color: '#c7cad9',
     textAlign: 'center',
     '& p': {
-      margin: '16px 0'
-    }
+      margin: '16px 0',
+    },
   },
   submitButton: {
     width: '100%',
@@ -53,8 +53,8 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     background: '#282d3d',
     '&:hover': {
       background: '#282d3d',
-    }
-  }
+    },
+  },
 }));
 
 interface ConfirmationPendingContentProps {
@@ -62,7 +62,10 @@ interface ConfirmationPendingContentProps {
   pendingText: string;
 }
 
-export const ConfirmationPendingContent: React.FC<ConfirmationPendingContentProps> =({ onDismiss, pendingText }) => {
+export const ConfirmationPendingContent: React.FC<ConfirmationPendingContentProps> = ({
+  onDismiss,
+  pendingText,
+}) => {
   const classes = useStyles();
   return (
     <Box padding={4}>
@@ -73,28 +76,26 @@ export const ConfirmationPendingContent: React.FC<ConfirmationPendingContentProp
         <Box my={4} display='flex' justifyContent='center'>
           <CircularProgress size={80} />
         </Box>
-        <Typography variant='h5'>
-          Waiting For Confirmation
+        <Typography variant='h5'>Waiting For Confirmation</Typography>
+        <Typography variant='body1'>{pendingText}</Typography>
+        <Typography variant='caption'>
+          Please confirm this transaction in your wallet.
         </Typography>
-        <Typography variant='body1'>
-          {pendingText}
-        </Typography>
-        <Typography variant='caption'>Please confirm this transaction in your wallet.</Typography>
       </Box>
     </Box>
-  )
-}
+  );
+};
 
 interface TransactionSubmittedContentProps {
-  onDismiss: () => void
-  hash: string | undefined
-  chainId: ChainId
+  onDismiss: () => void;
+  hash: string | undefined;
+  chainId: ChainId;
 }
 
 export const TransactionSubmittedContent: React.FC<TransactionSubmittedContentProps> = ({
   onDismiss,
   chainId,
-  hash
+  hash,
 }) => {
   const classes = useStyles();
   return (
@@ -110,30 +111,39 @@ export const TransactionSubmittedContent: React.FC<TransactionSubmittedContentPr
       </Box>
       <Box display='flex' justifyContent='space-between' mt={2}>
         {chainId && hash && (
-          <a href={getEtherscanLink(chainId, hash, 'transaction')} target='_blank' rel='noreferrer' style={{ width: '48%', textDecoration: 'none' }}>
+          <a
+            href={getEtherscanLink(chainId, hash, 'transaction')}
+            target='_blank'
+            rel='noreferrer'
+            style={{ width: '48%', textDecoration: 'none' }}
+          >
             <Button className={classes.submitButton}>
               View on Block Explorer
             </Button>
           </a>
         )}
-        <Button className={classes.submitButton} style={{ width: '48%' }} onClick={onDismiss}>
+        <Button
+          className={classes.submitButton}
+          style={{ width: '48%' }}
+          onClick={onDismiss}
+        >
           Close
         </Button>
       </Box>
     </Box>
-  )
-}
+  );
+};
 
 interface ConfirmationModalContentProps {
-  title: string
-  onDismiss: () => void
-  content: () => React.ReactNode
+  title: string;
+  onDismiss: () => void;
+  content: () => React.ReactNode;
 }
 
 export const ConfirmationModalContent: React.FC<ConfirmationModalContentProps> = ({
   title,
   onDismiss,
-  content
+  content,
 }) => {
   const classes = useStyles();
   return (
@@ -142,44 +152,49 @@ export const ConfirmationModalContent: React.FC<ConfirmationModalContentProps> =
         <Typography variant='h5'>{title}</Typography>
         <CloseIcon onClick={onDismiss} />
       </Box>
-      { content() }
+      {content()}
     </Box>
-  )
-}
+  );
+};
 
 interface TransactionErrorContentProps {
   message: string;
   onDismiss: () => void;
 }
 
-export const TransactionErrorContent: React.FC<TransactionErrorContentProps> = ({ message, onDismiss }) => {
+export const TransactionErrorContent: React.FC<TransactionErrorContentProps> = ({
+  message,
+  onDismiss,
+}) => {
   const classes = useStyles();
   return (
     <Box padding={4}>
       <Box>
         <Box className={classes.modalHeader}>
-          <Typography variant='h5' color='error'>Error!</Typography>
+          <Typography variant='h5' color='error'>
+            Error!
+          </Typography>
           <CloseIcon onClick={onDismiss} />
         </Box>
         <Box className={classes.modalContent}>
           <TransactionFailed />
-          <Typography variant='body1'>
-            {message}
-          </Typography>
+          <Typography variant='body1'>{message}</Typography>
         </Box>
       </Box>
-      <Button className={classes.submitButton} onClick={onDismiss}>Dismiss</Button>
+      <Button className={classes.submitButton} onClick={onDismiss}>
+        Dismiss
+      </Button>
     </Box>
-  )
-}
+  );
+};
 
 interface ConfirmationModalProps {
-  isOpen: boolean
-  onDismiss: () => void
-  hash: string | undefined
-  content: () => React.ReactNode
-  attemptingTxn: boolean
-  pendingText: string
+  isOpen: boolean;
+  onDismiss: () => void;
+  hash: string | undefined;
+  content: () => React.ReactNode;
+  attemptingTxn: boolean;
+  pendingText: string;
 }
 
 const TransactionConfirmationModal: React.FC<ConfirmationModalProps> = ({
@@ -188,12 +203,12 @@ const TransactionConfirmationModal: React.FC<ConfirmationModalProps> = ({
   attemptingTxn,
   hash,
   pendingText,
-  content
+  content,
 }) => {
   const { chainId } = useActiveWeb3React();
   const classes = useStyles();
 
-  if (!chainId) return null
+  if (!chainId) return null;
 
   // confirmation screen
   return (
@@ -201,15 +216,22 @@ const TransactionConfirmationModal: React.FC<ConfirmationModalProps> = ({
       <img src={ModalBg} alt='Modal Back' className={classes.modalBG} />
       <Box position='relative' zIndex={2}>
         {attemptingTxn ? (
-          <ConfirmationPendingContent onDismiss={onDismiss} pendingText={pendingText} />
+          <ConfirmationPendingContent
+            onDismiss={onDismiss}
+            pendingText={pendingText}
+          />
         ) : hash ? (
-          <TransactionSubmittedContent chainId={chainId} hash={hash} onDismiss={onDismiss} />
+          <TransactionSubmittedContent
+            chainId={chainId}
+            hash={hash}
+            onDismiss={onDismiss}
+          />
         ) : (
           content()
         )}
       </Box>
     </CustomModal>
-  )
-}
+  );
+};
 
 export default TransactionConfirmationModal;

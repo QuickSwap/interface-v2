@@ -1,1 +1,1 @@
-export { default } from './CurrencySearchModal'
+export { default } from './CurrencySearchModal';

@@ -1,5 +1,5 @@
-import { BigNumber } from "@ethersproject/bignumber";
-import { Contract } from "@ethersproject/contracts";
+import { BigNumber } from '@ethersproject/bignumber';
+import { Contract } from '@ethersproject/contracts';
 import {
   JSBI,
   Percent,
@@ -7,25 +7,25 @@ import {
   SwapParameters,
   Trade,
   TradeType,
-} from "@uniswap/sdk";
-import { useMemo } from "react";
+} from '@uniswap/sdk';
+import { useMemo } from 'react';
 import {
   BIPS_BASE,
   INITIAL_ALLOWED_SLIPPAGE,
   DEFAULT_DEADLINE_FROM_NOW,
-} from "constants/index";
-import { useTransactionAdder } from "state/transactions/hooks";
+} from 'constants/index';
+import { useTransactionAdder } from 'state/transactions/hooks';
 import {
   calculateGasMargin,
   getRouterContract,
   isZero,
   isAddress,
   shortenAddress,
-} from "utils";
-import { useActiveWeb3React } from "hooks";
-import useTransactionDeadline from "./useTransactionDeadline";
-import useENS from "./useENS";
-import { Version } from "./useToggledVersion";
+} from 'utils';
+import { useActiveWeb3React } from 'hooks';
+import useTransactionDeadline from './useTransactionDeadline';
+import useENS from './useENS';
+import { Version } from './useToggledVersion';
 
 export enum SwapCallbackState {
   INVALID,
@@ -59,7 +59,7 @@ type EstimatedSwapCall = SuccessfulCall | FailedCall;
 function useSwapCallArguments(
   trade: Trade | undefined, // trade to execute, required
   allowedSlippage: number = INITIAL_ALLOWED_SLIPPAGE, // in bips
-  recipientAddressOrName: string | null // the ENS name or address of the recipient of the trade, or null if swap should be returned to sender
+  recipientAddressOrName: string | null, // the ENS name or address of the recipient of the trade, or null if swap should be returned to sender
 ): SwapCall[] {
   const { account, chainId, library } = useActiveWeb3React();
 
@@ -83,7 +83,7 @@ function useSwapCallArguments(
     const contract: Contract | null = getRouterContract(
       chainId,
       library,
-      account
+      account,
     );
     if (!contract) {
       return [];
@@ -98,11 +98,11 @@ function useSwapCallArguments(
             feeOnTransfer: false,
             allowedSlippage: new Percent(
               JSBI.BigInt(allowedSlippage),
-              BIPS_BASE
+              BIPS_BASE,
             ),
             recipient,
             ttl: deadline ? deadline.toNumber() : DEFAULT_DEADLINE_FROM_NOW,
-          })
+          }),
         );
 
         if (trade.tradeType === TradeType.EXACT_INPUT) {
@@ -111,11 +111,11 @@ function useSwapCallArguments(
               feeOnTransfer: true,
               allowedSlippage: new Percent(
                 JSBI.BigInt(allowedSlippage),
-                BIPS_BASE
+                BIPS_BASE,
               ),
               recipient,
               ttl: deadline ? deadline.toNumber() : DEFAULT_DEADLINE_FROM_NOW,
-            })
+            }),
           );
         }
         break;
@@ -129,7 +129,7 @@ function useSwapCallArguments(
 export function useSwapCallback(
   trade: Trade | undefined, // trade to execute, required
   allowedSlippage: number = INITIAL_ALLOWED_SLIPPAGE, // in bips
-  recipientAddressOrName: string | null // the ENS name or address of the recipient of the trade, or null if swap should be returned to sender
+  recipientAddressOrName: string | null, // the ENS name or address of the recipient of the trade, or null if swap should be returned to sender
 ): {
   state: SwapCallbackState;
   callback: null | (() => Promise<string>);
@@ -140,7 +140,7 @@ export function useSwapCallback(
   const swapCalls = useSwapCallArguments(
     trade,
     allowedSlippage,
-    recipientAddressOrName
+    recipientAddressOrName,
   );
 
   const addTransaction = useTransactionAdder();
@@ -154,7 +154,7 @@ export function useSwapCallback(
       return {
         state: SwapCallbackState.INVALID,
         callback: null,
-        error: "Missing dependencies",
+        error: 'Missing dependencies',
       };
     }
     if (!recipient) {
@@ -162,7 +162,7 @@ export function useSwapCallback(
         return {
           state: SwapCallbackState.INVALID,
           callback: null,
-          error: "Invalid recipient",
+          error: 'Invalid recipient',
         };
       } else {
         return {
@@ -195,33 +195,33 @@ export function useSwapCallback(
               })
               .catch((gasError) => {
                 console.debug(
-                  "Gas estimate failed, trying eth_call to extract error",
-                  call
+                  'Gas estimate failed, trying eth_call to extract error',
+                  call,
                 );
 
                 return contract.callStatic[methodName](...args, options)
                   .then((result) => {
                     console.debug(
-                      "Unexpected successful call after failed estimate gas",
+                      'Unexpected successful call after failed estimate gas',
                       call,
                       gasError,
-                      result
+                      result,
                     );
                     return {
                       call,
                       error: new Error(
-                        "Unexpected issue with estimating the gas. Please try again."
+                        'Unexpected issue with estimating the gas. Please try again.',
                       ),
                     };
                   })
                   .catch((callError) => {
-                    console.debug("Call threw error", call, callError);
+                    console.debug('Call threw error', call, callError);
                     let errorMessage: string;
                     switch (callError.reason) {
-                      case "UniswapV2Router: INSUFFICIENT_OUTPUT_AMOUNT":
-                      case "UniswapV2Router: EXCESSIVE_INPUT_AMOUNT":
+                      case 'UniswapV2Router: INSUFFICIENT_OUTPUT_AMOUNT':
+                      case 'UniswapV2Router: EXCESSIVE_INPUT_AMOUNT':
                         errorMessage =
-                          "This transaction will not succeed either due to price movement or fee on transfer. Try increasing your slippage tolerance.";
+                          'This transaction will not succeed either due to price movement or fee on transfer. Try increasing your slippage tolerance.';
                         break;
                       default:
                         errorMessage = `The transaction cannot succeed due to error: ${callError.reason}. This is probably an issue with one of the tokens you are swapping.`;
@@ -229,24 +229,24 @@ export function useSwapCallback(
                     return { call, error: new Error(errorMessage) };
                   });
               });
-          })
+          }),
         );
 
         // a successful estimation is a bignumber gas estimate and the next call is also a bignumber gas estimate
         const successfulEstimation = estimatedCalls.find(
           (el, ix, list): el is SuccessfulCall =>
-            "gasEstimate" in el &&
-            (ix === list.length - 1 || "gasEstimate" in list[ix + 1])
+            'gasEstimate' in el &&
+            (ix === list.length - 1 || 'gasEstimate' in list[ix + 1]),
         );
 
         if (!successfulEstimation) {
           const errorCalls = estimatedCalls.filter(
-            (call): call is FailedCall => "error" in call
+            (call): call is FailedCall => 'error' in call,
           );
           if (errorCalls.length > 0)
             throw errorCalls[errorCalls.length - 1].error;
           throw new Error(
-            "Unexpected error. Please contact support: none of the calls threw an error"
+            'Unexpected error. Please contact support: none of the calls threw an error',
           );
         }
 
@@ -294,7 +294,7 @@ export function useSwapCallback(
           .catch((error: any) => {
             // if the user rejected the tx, pass this along
             if (error?.code === 4001) {
-              throw new Error("Transaction rejected.");
+              throw new Error('Transaction rejected.');
             } else {
               // otherwise, the error was unexpected and we need to convey that
               console.error(`Swap failed`, error, methodName, args, value);

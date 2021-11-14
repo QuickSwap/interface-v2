@@ -1,68 +1,102 @@
-import { useCallback, useEffect, useState } from 'react'
-import { useDispatch } from 'react-redux'
-import { useActiveWeb3React } from 'hooks'
-import useDebounce from 'hooks/useDebounce'
-import useIsWindowVisible from 'hooks/useIsWindowVisible'
-import { updateBlockNumber } from './actions'
+import { useCallback, useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { useActiveWeb3React } from 'hooks';
+import useDebounce from 'hooks/useDebounce';
+import useIsWindowVisible from 'hooks/useIsWindowVisible';
+import { updateBlockNumber } from './actions';
 
 export default function Updater(): null {
   const { library, chainId } = useActiveWeb3React();
-  const { ethereum } = (window as any);
+  const { ethereum } = window as any;
   const dispatch = useDispatch();
 
   const windowVisible = useIsWindowVisible();
 
-  const [state, setState] = useState<{ chainId: number | undefined; blockNumber: number | null }>({
+  const [state, setState] = useState<{
+    chainId: number | undefined;
+    blockNumber: number | null;
+  }>({
     chainId,
-    blockNumber: null
-  })
+    blockNumber: null,
+  });
   const [block, setBlock] = useState(0);
 
   const blockNumberCallback = useCallback(
     (blockNumber: number) => {
-      setState(state => {
+      setState((state) => {
         if (chainId === state.chainId) {
-          if (typeof state.blockNumber !== 'number') return { chainId, blockNumber }
-          return { chainId, blockNumber: Math.max(blockNumber, state.blockNumber) }
+          if (typeof state.blockNumber !== 'number')
+            return { chainId, blockNumber };
+          return {
+            chainId,
+            blockNumber: Math.max(blockNumber, state.blockNumber),
+          };
         }
-        return state
-      })
+        return state;
+      });
     },
-    [chainId, setState]
-  )
+    [chainId, setState],
+  );
 
   // attach/detach listeners
   useEffect(() => {
-    if (!library || !chainId || !windowVisible) return undefined
+    if (!library || !chainId || !windowVisible) return undefined;
 
-    setState({ chainId, blockNumber: null })
+    setState({ chainId, blockNumber: null });
 
     library
       .getBlockNumber()
       .then(blockNumberCallback)
-      .catch(error => console.error(`Failed to get block number for chainId: ${chainId}`, error))
+      .catch((error) =>
+        console.error(
+          `Failed to get block number for chainId: ${chainId}`,
+          error,
+        ),
+      );
 
-    library.on('block', blockNumberCallback)
+    library.on('block', blockNumberCallback);
 
     ethereum?.on('chainChanged', () => {
       document.location.reload();
     });
 
     return () => {
-      library.removeListener('block', blockNumberCallback)
-    }
-  }, [dispatch, chainId, library, blockNumberCallback, windowVisible, ethereum])
+      library.removeListener('block', blockNumberCallback);
+    };
+  }, [
+    dispatch,
+    chainId,
+    library,
+    blockNumberCallback,
+    windowVisible,
+    ethereum,
+  ]);
 
-  const debouncedState = useDebounce(state, 100)
+  const debouncedState = useDebounce(state, 100);
 
   useEffect(() => {
-    if (!debouncedState.chainId || !debouncedState.blockNumber || !windowVisible) return
-    if (debouncedState.blockNumber - block > 17){
-      dispatch(updateBlockNumber({ chainId: debouncedState.chainId, blockNumber: debouncedState.blockNumber }))
+    if (
+      !debouncedState.chainId ||
+      !debouncedState.blockNumber ||
+      !windowVisible
+    )
+      return;
+    if (debouncedState.blockNumber - block > 17) {
+      dispatch(
+        updateBlockNumber({
+          chainId: debouncedState.chainId,
+          blockNumber: debouncedState.blockNumber,
+        }),
+      );
       setBlock(debouncedState.blockNumber);
     }
-    
-  }, [block, windowVisible, dispatch, debouncedState.blockNumber, debouncedState.chainId])
+  }, [
+    block,
+    windowVisible,
+    dispatch,
+    debouncedState.blockNumber,
+    debouncedState.chainId,
+  ]);
 
-  return null
+  return null;
 }

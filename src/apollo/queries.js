@@ -1,5 +1,5 @@
-import gql from 'graphql-tag'
-import { BUNDLE_ID, FACTORY_ADDRESS } from 'constants/index'
+import gql from 'graphql-tag';
+import { BUNDLE_ID, FACTORY_ADDRESS } from 'constants/index';
 
 export const SUBGRAPH_HEALTH = gql`
   query health {
@@ -16,11 +16,16 @@ export const SUBGRAPH_HEALTH = gql`
       }
     }
   }
-`
+`;
 
 export const TOKEN_CHART = gql`
   query tokenDayDatas($tokenAddr: String!) {
-    tokenDayDatas(first: 1, orderBy: date, orderDirection: desc, where: { token: $tokenAddr }) {
+    tokenDayDatas(
+      first: 1
+      orderBy: date
+      orderDirection: desc
+      where: { token: $tokenAddr }
+    ) {
       id
       date
       priceUSD
@@ -30,10 +35,9 @@ export const TOKEN_CHART = gql`
       dailyVolumeETH
       dailyVolumeToken
       dailyVolumeUSD
-      
     }
   }
-`
+`;
 
 const PairFields = `
   fragment PairFields on Pair {
@@ -51,7 +55,7 @@ const PairFields = `
       id
     }
   }
-`
+`;
 
 export const PAIRS_CURRENT = () => {
   const queryString = `
@@ -59,16 +63,16 @@ export const PAIRS_CURRENT = () => {
     pairs(first: 200, orderBy: reserveUSD, orderDirection: desc) {
       id
     }
-  }`
-  return gql(queryString)
-}
+  }`;
+  return gql(queryString);
+};
 
 export const PAIRS_BULK = (pairs) => {
-  let pairsString = `[`
+  let pairsString = `[`;
   pairs.map((pair) => {
-    return (pairsString += `"${pair.toLowerCase()}"`)
-  })
-  pairsString += ']'
+    return (pairsString += `"${pair.toLowerCase()}"`);
+  });
+  pairsString += ']';
   let queryString = `
   ${PairFields}
   query pairs {
@@ -76,18 +80,23 @@ export const PAIRS_BULK = (pairs) => {
       ...PairFields
     }
   }
-  `
-  return gql(queryString)
-}
+  `;
+  return gql(queryString);
+};
 
 export const PAIRS_BULK1 = gql`
   ${PairFields}
   query pairs($allPairs: [Bytes]!) {
-    pairs(first: 500, where: { id_in: $allPairs }, orderBy: trackedReserveETH, orderDirection: desc) {
+    pairs(
+      first: 500
+      where: { id_in: $allPairs }
+      orderBy: trackedReserveETH
+      orderDirection: desc
+    ) {
       ...PairFields
     }
   }
-`
+`;
 
 const TokenFields = `
   fragment TokenFields on Token {
@@ -101,7 +110,7 @@ const TokenFields = `
     untrackedVolumeUSD
     totalLiquidity
   }
-`
+`;
 
 export const TOKENS_CURRENT = (count) => {
   const queryString = `
@@ -111,9 +120,9 @@ export const TOKENS_CURRENT = (count) => {
         ...TokenFields
       }
     }
-  `
-  return gql(queryString)
-}
+  `;
+  return gql(queryString);
+};
 
 export const TOKENS_DYNAMIC = (block, count) => {
   const queryString = `
@@ -123,15 +132,17 @@ export const TOKENS_DYNAMIC = (block, count) => {
         ...TokenFields
       }
     }
-  `
-  return gql(queryString)
-}
+  `;
+  return gql(queryString);
+};
 
 export const TOKEN_DATA = (tokenAddress, block) => {
   const queryString = `
     ${TokenFields}
     query tokens {
-      tokens(${block ? `block : {number: ${block}}` : ``} where: {id:"${tokenAddress}"}) {
+      tokens(${
+        block ? `block : {number: ${block}}` : ``
+      } where: {id:"${tokenAddress}"}) {
         ...TokenFields
       }
       pairs0: pairs(where: {token0: "${tokenAddress}"}, first: 50, orderBy: reserveUSD, orderDirection: desc){
@@ -141,9 +152,9 @@ export const TOKEN_DATA = (tokenAddress, block) => {
         id
       }
     }
-  `
-  return gql(queryString)
-}
+  `;
+  return gql(queryString);
+};
 
 export const TOKEN_DATA1 = (tokenAddress, tokenAddress1) => {
   const queryString = `
@@ -165,20 +176,22 @@ export const TOKEN_DATA1 = (tokenAddress, tokenAddress1) => {
         id
       }
     }
-  `
-  return gql(queryString)
-}
+  `;
+  return gql(queryString);
+};
 
 export const PAIR_DATA = (pairAddress, block) => {
   const queryString = `
     ${PairFields}
     query pairs {
-      pairs(${block ? `block: {number: ${block}}` : ``} where: { id: "${pairAddress}"} ) {
+      pairs(${
+        block ? `block: {number: ${block}}` : ``
+      } where: { id: "${pairAddress}"} ) {
         ...PairFields
       }
-    }`
-  return gql(queryString)
-}
+    }`;
+  return gql(queryString);
+};
 
 export const ETH_PRICE = (block) => {
   const queryString = block
@@ -196,16 +209,16 @@ export const ETH_PRICE = (block) => {
         ethPrice
       }
     }
-  `
-  return gql(queryString)
-}
+  `;
+  return gql(queryString);
+};
 
 export const PAIRS_HISTORICAL_BULK = (block, pairs) => {
-  let pairsString = `[`
+  let pairsString = `[`;
   pairs.map((pair) => {
-    return (pairsString += `"${pair.toLowerCase()}"`)
-  })
-  pairsString += ']'
+    return (pairsString += `"${pair.toLowerCase()}"`);
+  });
+  pairsString += ']';
   let queryString = `
   query pairs {
     pairs(first: 100, where: {id_in: ${pairsString}}, block: {number: ${block}}, orderBy: trackedReserveETH, orderDirection: desc) {
@@ -217,31 +230,31 @@ export const PAIRS_HISTORICAL_BULK = (block, pairs) => {
       totalSupply
     }
   }
-  `
-  return gql(queryString)
-}
+  `;
+  return gql(queryString);
+};
 
 export const PRICES_BY_BLOCK = (tokenAddress, blocks) => {
-  let queryString = 'query blocks {'
+  let queryString = 'query blocks {';
   queryString += blocks.map(
     (block) => `
       t${block.timestamp}:token(id:"${tokenAddress}", block: { number: ${block.number} }) { 
         derivedETH
       }
-    `
-  )
-  queryString += ','
+    `,
+  );
+  queryString += ',';
   queryString += blocks.map(
     (block) => `
       b${block.timestamp}: bundle(id:"1", block: { number: ${block.number} }) { 
         ethPrice
       }
-    `
-  )
+    `,
+  );
 
-  queryString += '}'
-  return gql(queryString)
-}
+  queryString += '}';
+  return gql(queryString);
+};
 
 export const GLOBAL_DATA = (block) => {
   const queryString = ` query uniswapFactories {
@@ -257,9 +270,9 @@ export const GLOBAL_DATA = (block) => {
         txCount
         pairCount
       }
-    }`
-  return gql(queryString)
-}
+    }`;
+  return gql(queryString);
+};
 
 export const GET_BLOCK = gql`
   query blocks($timestampFrom: Int!, $timestampTo: Int!) {
@@ -274,17 +287,16 @@ export const GET_BLOCK = gql`
       timestamp
     }
   }
-`
+`;
 
 export const GET_BLOCKS = (timestamps) => {
-  let queryString = 'query blocks {'
+  let queryString = 'query blocks {';
   queryString += timestamps.map((timestamp) => {
-    return `t${timestamp}:blocks(first: 1, orderBy: timestamp, orderDirection: desc, where: { timestamp_gt: ${timestamp}, timestamp_lt: ${
-      timestamp + 600
-    } }) {
+    return `t${timestamp}:blocks(first: 1, orderBy: timestamp, orderDirection: desc, where: { timestamp_gt: ${timestamp}, timestamp_lt: ${timestamp +
+      600} }) {
       number
-    }`
-  })
-  queryString += '}'
-  return gql(queryString)
-}
+    }`;
+  });
+  queryString += '}';
+  return gql(queryString);
+};

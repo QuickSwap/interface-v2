@@ -1,4 +1,4 @@
-import { createReducer, nanoid } from "@reduxjs/toolkit";
+import { createReducer, nanoid } from '@reduxjs/toolkit';
 import {
   addPopup,
   PopupContent,
@@ -12,7 +12,7 @@ import {
   updateTokenPairs,
   updateSwapTokenPrice0,
   updateSwapTokenPrice1,
-} from "./actions";
+} from './actions';
 
 type PopupList = Array<{
   key: string;
@@ -53,12 +53,12 @@ export default createReducer(initialState, (builder) =>
   builder
     .addCase(updateBlockNumber, (state, action) => {
       const { chainId, blockNumber } = action.payload;
-      if (typeof state.blockNumber[chainId] !== "number") {
+      if (typeof state.blockNumber[chainId] !== 'number') {
         state.blockNumber[chainId] = blockNumber;
       } else {
         state.blockNumber[chainId] = Math.max(
           blockNumber,
-          state.blockNumber[chainId]
+          state.blockNumber[chainId],
         );
       }
     })
@@ -68,10 +68,9 @@ export default createReducer(initialState, (builder) =>
     .addCase(
       addPopup,
       (state, { payload: { content, key, removeAfterMs = 15000 } }) => {
-        state.popupList = (
-          key
-            ? state.popupList.filter((popup) => popup.key !== key)
-            : state.popupList
+        state.popupList = (key
+          ? state.popupList.filter((popup) => popup.key !== key)
+          : state.popupList
         ).concat([
           {
             key: key || nanoid(),
@@ -80,7 +79,7 @@ export default createReducer(initialState, (builder) =>
             removeAfterMs,
           },
         ]);
-      }
+      },
     )
     .addCase(removePopup, (state, { payload: { key } }) => {
       state.popupList.forEach((p) => {
@@ -97,7 +96,7 @@ export default createReducer(initialState, (builder) =>
           oneDayPrice,
           ethPriceChange,
         };
-      }
+      },
     )
     .addCase(updateGlobalData, (state, { payload: { data } }) => {
       state.globalData = data;
@@ -113,5 +112,5 @@ export default createReducer(initialState, (builder) =>
     })
     .addCase(updateSwapTokenPrice1, (state, { payload: { data } }) => {
       state.swapTokenPrice1 = data;
-    })
+    }),
 );

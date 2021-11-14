@@ -1,1 +1,1 @@
-export { default } from "./SwapTokenDetails";
+export { default } from './SwapTokenDetails';

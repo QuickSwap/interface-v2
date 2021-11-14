@@ -1,1 +1,1 @@
-export { default } from './PoolsPage'
+export { default } from './PoolsPage';

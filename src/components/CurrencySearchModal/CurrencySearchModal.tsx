@@ -1,18 +1,18 @@
-import { Currency } from '@uniswap/sdk'
-import React, { useCallback, useEffect, useState } from 'react'
-import ReactGA from 'react-ga'
-import { CustomModal } from 'components'
-import useLast from 'hooks/useLast'
-import CurrencySearch from './CurrencySearch'
-import ListSelect from './ListSelect'
+import { Currency } from '@uniswap/sdk';
+import React, { useCallback, useEffect, useState } from 'react';
+import ReactGA from 'react-ga';
+import { CustomModal } from 'components';
+import useLast from 'hooks/useLast';
+import CurrencySearch from './CurrencySearch';
+import ListSelect from './ListSelect';
 
 interface CurrencySearchModalProps {
-  isOpen: boolean
-  onDismiss: () => void
-  selectedCurrency?: Currency | null
-  onCurrencySelect: (currency: Currency) => void
-  otherSelectedCurrency?: Currency | null
-  showCommonBases?: boolean
+  isOpen: boolean;
+  onDismiss: () => void;
+  selectedCurrency?: Currency | null;
+  onCurrencySelect: (currency: Currency) => void;
+  otherSelectedCurrency?: Currency | null;
+  showCommonBases?: boolean;
 }
 
 const CurrencySearchModal: React.FC<CurrencySearchModalProps> = ({
@@ -23,37 +23,37 @@ const CurrencySearchModal: React.FC<CurrencySearchModalProps> = ({
   otherSelectedCurrency,
   showCommonBases = false,
 }) => {
-  const [listView, setListView] = useState<boolean>(false)
-  const lastOpen = useLast(isOpen)
+  const [listView, setListView] = useState<boolean>(false);
+  const lastOpen = useLast(isOpen);
 
   useEffect(() => {
     if (isOpen && !lastOpen) {
-      setListView(false)
+      setListView(false);
     }
-  }, [isOpen, lastOpen])
+  }, [isOpen, lastOpen]);
 
   const handleCurrencySelect = useCallback(
     (currency: Currency) => {
-      onCurrencySelect(currency)
-      onDismiss()
+      onCurrencySelect(currency);
+      onDismiss();
     },
-    [onDismiss, onCurrencySelect]
-  )
+    [onDismiss, onCurrencySelect],
+  );
 
   const handleClickChangeList = useCallback(() => {
     ReactGA.event({
       category: 'Lists',
-      action: 'Change Lists'
-    })
-    setListView(true)
-  }, [])
+      action: 'Change Lists',
+    });
+    setListView(true);
+  }, []);
   const handleClickBack = useCallback(() => {
     ReactGA.event({
       category: 'Lists',
-      action: 'Back'
-    })
-    setListView(false)
-  }, [])
+      action: 'Back',
+    });
+    setListView(false);
+  }, []);
 
   return (
     <CustomModal open={isOpen} onClose={onDismiss}>
@@ -71,7 +71,7 @@ const CurrencySearchModal: React.FC<CurrencySearchModalProps> = ({
         />
       )}
     </CustomModal>
-  )
-}
+  );
+};
 
 export default CurrencySearchModal;

@@ -1,10 +1,10 @@
-import { AbstractConnector } from '@web3-react/abstract-connector'
-import React from 'react'
-import { Box, CircularProgress, Typography } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
-import { SUPPORTED_WALLETS } from 'constants/index'
-import { injected } from 'connectors'
-import Option from './Option'
+import { AbstractConnector } from '@web3-react/abstract-connector';
+import React from 'react';
+import { Box, CircularProgress, Typography } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import { SUPPORTED_WALLETS } from 'constants/index';
+import { injected } from 'connectors';
+import Option from './Option';
 
 const useStyles = makeStyles(({ palette }) => ({
   pendingSection: {
@@ -14,8 +14,8 @@ const useStyles = makeStyles(({ palette }) => ({
     justifyContent: 'center',
     width: '100%',
     '& > *': {
-      width: '100%'
-    }
+      width: '100%',
+    },
   },
   loadingMessage: {
     alignItems: 'center',
@@ -23,15 +23,15 @@ const useStyles = makeStyles(({ palette }) => ({
     borderRadius: 12,
     marginBottom: 20,
     color: palette.error.main,
-    border: `1px solid ${palette.error.main}`, 
+    border: `1px solid ${palette.error.main}`,
     '& > *': {
-      padding: '1rem'
-    }
+      padding: '1rem',
+    },
   },
   errorGroup: {
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'flex-start'
+    justifyContent: 'flex-start',
   },
   errorButton: {
     borderRadius: 8,
@@ -49,25 +49,25 @@ const useStyles = makeStyles(({ palette }) => ({
     alignItems: 'center',
     justifyContent: 'center',
     '& p': {
-      marginLeft: 8
-    }
-  }
+      marginLeft: 8,
+    },
+  },
 }));
 
 interface PendingViewProps {
-  connector?: AbstractConnector
-  error?: boolean
-  setPendingError: (error: boolean) => void
-  tryActivation: (connector: AbstractConnector) => void
+  connector?: AbstractConnector;
+  error?: boolean;
+  setPendingError: (error: boolean) => void;
+  tryActivation: (connector: AbstractConnector) => void;
 }
 
 const PendingView: React.FC<PendingViewProps> = ({
   connector,
   error = false,
   setPendingError,
-  tryActivation
+  tryActivation,
 }) => {
-  const isMetamask = (window as any).ethereum?.isMetaMask
+  const isMetamask = (window as any).ethereum?.isMetaMask;
   const classes = useStyles();
 
   return (
@@ -77,10 +77,11 @@ const PendingView: React.FC<PendingViewProps> = ({
           {error ? (
             <Box className={classes.errorGroup}>
               <div>Error connecting.</div>
-              <Box className={classes.errorButton}
+              <Box
+                className={classes.errorButton}
                 onClick={() => {
-                  setPendingError(false)
-                  connector && tryActivation(connector)
+                  setPendingError(false);
+                  connector && tryActivation(connector);
                 }}
               >
                 Try Again
@@ -94,15 +95,15 @@ const PendingView: React.FC<PendingViewProps> = ({
           )}
         </Box>
       </Box>
-      {Object.keys(SUPPORTED_WALLETS).map(key => {
-        const option = SUPPORTED_WALLETS[key]
+      {Object.keys(SUPPORTED_WALLETS).map((key) => {
+        const option = SUPPORTED_WALLETS[key];
         if (option.connector === connector) {
           if (option.connector === injected) {
             if (isMetamask && option.name !== 'MetaMask') {
-              return null
+              return null;
             }
             if (!isMetamask && option.name === 'MetaMask') {
-              return null
+              return null;
             }
           }
           return (
@@ -115,12 +116,12 @@ const PendingView: React.FC<PendingViewProps> = ({
               subheader={option.description}
               icon={option.iconName}
             />
-          )
+          );
         }
-        return null
+        return null;
       })}
     </Box>
-  )
-}
+  );
+};
 
 export default PendingView;

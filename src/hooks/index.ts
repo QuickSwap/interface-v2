@@ -1,20 +1,23 @@
-import { useEffect, useState, useCallback } from "react";
-import { useWeb3React as useWeb3ReactCore } from "@web3-react/core";
-import { Web3Provider } from "@ethersproject/providers";
-import { Web3ReactContextInterface } from "@web3-react/core/dist/types";
-import { ChainId } from "@uniswap/sdk";
-import { isMobile } from "react-device-detect";
-import { injected, safeApp } from "connectors";
-import { NetworkContextName } from "constants/index";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "state";
+import { useEffect, useState, useCallback } from 'react';
+import { useWeb3React as useWeb3ReactCore } from '@web3-react/core';
+import { Web3Provider } from '@ethersproject/providers';
+import { Web3ReactContextInterface } from '@web3-react/core/dist/types';
+import { ChainId } from '@uniswap/sdk';
+import { isMobile } from 'react-device-detect';
+import { injected, safeApp } from 'connectors';
+import { NetworkContextName } from 'constants/index';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from 'state';
+/* eslint-disable */
 // @ts-ignore
-import transakSDK from "@transak/transak-sdk";
-import { addPopup } from "state/application/actions";
-import { useSingleCallResult, NEVER_RELOAD } from "state/multicall/hooks";
-import { useArgentWalletDetectorContract } from "./useContract";
+import transakSDK from '@transak/transak-sdk';
+import { addPopup } from 'state/application/actions';
+import { useSingleCallResult, NEVER_RELOAD } from 'state/multicall/hooks';
+import { useArgentWalletDetectorContract } from './useContract';
 
-export function useActiveWeb3React(): Web3ReactContextInterface<Web3Provider> & {
+export function useActiveWeb3React(): Web3ReactContextInterface<
+  Web3Provider
+> & {
   chainId?: ChainId;
 } {
   const context = useWeb3ReactCore<Web3Provider>();
@@ -27,9 +30,9 @@ export function useIsArgentWallet(): boolean {
   const argentWalletDetector = useArgentWalletDetectorContract();
   const call = useSingleCallResult(
     argentWalletDetector,
-    "isArgentWallet",
+    'isArgentWallet',
     [account ?? undefined],
-    NEVER_RELOAD
+    NEVER_RELOAD,
   );
   return call?.result?.[0] ?? false;
 }
@@ -39,19 +42,19 @@ export function useInitTransak() {
   const initTransak = (
     account: any,
     mobileWindowSize: boolean,
-    currency: string
+    currency: string,
   ) => {
-    let transak = new transakSDK({
-      apiKey: "258960cf-1e17-4419-bf7f-77443282f5da", // Your API Key
-      environment: "PRODUCTION", // STAGING/PRODUCTION
+    const transak = new transakSDK({
+      apiKey: '258960cf-1e17-4419-bf7f-77443282f5da', // Your API Key
+      environment: 'PRODUCTION', // STAGING/PRODUCTION
       defaultCryptoCurrency: currency,
       walletAddress: account, // Your customer's wallet address
-      themeColor: "2891f9", // App theme color
-      redirectURL: "window.location.origin",
+      themeColor: '2891f9', // App theme color
+      redirectURL: 'window.location.origin',
       hostURL: window.location.origin,
-      widgetHeight: mobileWindowSize ? "450px" : "600px",
-      widgetWidth: mobileWindowSize ? "360px" : "450px",
-      networks: "matic",
+      widgetHeight: mobileWindowSize ? '450px' : '600px',
+      widgetWidth: mobileWindowSize ? '360px' : '450px',
+      networks: 'matic',
     });
 
     transak.init();
@@ -60,11 +63,11 @@ export function useInitTransak() {
     transak.on(transak.TRANSAK_ORDER_FAILED, (data: any) => {
       dispatch(
         addPopup({
-          key: "abc",
+          key: 'abc',
           content: {
-            txn: { hash: "", summary: "Buy order failed", success: false },
+            txn: { hash: '', summary: 'Buy order failed', success: false },
           },
-        })
+        }),
       );
       console.log(data);
     });
@@ -73,23 +76,23 @@ export function useInitTransak() {
     transak.on(transak.EVENTS.TRANSAK_ORDER_SUCCESSFUL, (orderData: any) => {
       dispatch(
         addPopup({
-          key: "abc",
+          key: 'abc',
           content: {
             txn: {
-              hash: "",
+              hash: '',
               summary:
-                "Buy " +
+                'Buy ' +
                 orderData.status.cryptoAmount +
-                " " +
+                ' ' +
                 orderData.status.cryptocurrency +
-                " for " +
+                ' for ' +
                 orderData.status.fiatAmount +
-                " " +
+                ' ' +
                 orderData.status.fiatCurrency,
               success: true,
             },
           },
-        })
+        }),
       );
       console.log(orderData);
       transak.close();
@@ -132,7 +135,7 @@ export function useEagerConnect() {
       },
       () => {
         checkInjected();
-      }
+      },
     );
   }, [activate, checkInjected]); // intentionally only running on mount (make sure it's only mounted once :))
 
@@ -160,7 +163,7 @@ export function useInactiveListener(suppress = false) {
       const handleChainChanged = () => {
         // eat errors
         activate(injected, undefined, true).catch((error) => {
-          console.error("Failed to activate after chain changed", error);
+          console.error('Failed to activate after chain changed', error);
         });
       };
 
@@ -168,18 +171,18 @@ export function useInactiveListener(suppress = false) {
         if (accounts.length > 0) {
           // eat errors
           activate(injected, undefined, true).catch((error) => {
-            console.error("Failed to activate after accounts changed", error);
+            console.error('Failed to activate after accounts changed', error);
           });
         }
       };
 
-      ethereum.on("chainChanged", handleChainChanged);
-      ethereum.on("accountsChanged", handleAccountsChanged);
+      ethereum.on('chainChanged', handleChainChanged);
+      ethereum.on('accountsChanged', handleAccountsChanged);
 
       return () => {
         if (ethereum.removeListener) {
-          ethereum.removeListener("chainChanged", handleChainChanged);
-          ethereum.removeListener("accountsChanged", handleAccountsChanged);
+          ethereum.removeListener('chainChanged', handleChainChanged);
+          ethereum.removeListener('accountsChanged', handleAccountsChanged);
         }
       };
     }

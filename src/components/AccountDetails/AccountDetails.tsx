@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { useActiveWeb3React } from 'hooks';
 import { AppDispatch } from 'state';
-import { Box, Button, Typography } from '@material-ui/core'
+import { Box, Button, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { clearAllTransactions } from 'state/transactions/actions';
 import { shortenAddress, getEtherscanLink } from 'utils';
@@ -25,7 +25,7 @@ const useStyles = makeStyles(({ palette }) => ({
     '&:hover': {
       cursor: 'pointer',
       opacity: 0.6,
-    }
+    },
   },
   headerRow: {
     padding: '1rem',
@@ -47,21 +47,21 @@ const useStyles = makeStyles(({ palette }) => ({
     color: palette.text.primary,
     '& div': {
       display: 'flex',
-      alignItems: 'center'
-    }
+      alignItems: 'center',
+    },
   },
   accountSection: {
-    padding: '0rem 1rem'
+    padding: '0rem 1rem',
   },
   yourAccount: {
     '& h5': {
       margin: '0 0 1rem 0',
-      fontWeight: 400
-    },  
+      fontWeight: 400,
+    },
     '& h4': {
       margin: 0,
-      fontWeight: 500
-    }
+      fontWeight: 500,
+    },
   },
   accountControl: {
     display: 'flex',
@@ -72,19 +72,19 @@ const useStyles = makeStyles(({ palette }) => ({
     fontSize: '1.25rem',
 
     '& a:hover': {
-      textDecoration: 'underline'
+      textDecoration: 'underline',
     },
 
     '& img': {
-      width: 20
+      width: 20,
     },
 
     '& p': {
       color: palette.primary.dark,
       textOverflow: 'ellipsis',
       whiteSpace: 'nowrap',
-      margin: '8px'
-    }
+      margin: '8px',
+    },
   },
   addressLink: {
     fontSize: '0.825rem',
@@ -93,14 +93,14 @@ const useStyles = makeStyles(({ palette }) => ({
     display: 'flex',
     textDecoration: 'none',
     '&:hover': {
-      textDecoration: 'underline'
-    }
+      textDecoration: 'underline',
+    },
   },
   walletName: {
     width: 'initial',
     fontSize: '0.825rem',
     fontWeight: 500,
-    color: palette.primary.dark
+    color: palette.primary.dark,
   },
   walletAction: {
     width: 'fit-content',
@@ -110,8 +110,8 @@ const useStyles = makeStyles(({ palette }) => ({
     padding: '4px 6px',
     '&:hover': {
       cursor: 'pointer',
-      textDecoration: 'underline'
-    }
+      textDecoration: 'underline',
+    },
   },
   upperSection: {
     position: 'relative',
@@ -123,13 +123,13 @@ const useStyles = makeStyles(({ palette }) => ({
       fontSize: '1rem',
       fontWeight: 400,
       '&:last-child': {
-        marginBottom: 0        
-      }
+        marginBottom: 0,
+      },
     },
     '& h4': {
       marginTop: 0,
-      fontWeight: 500
-    }
+      fontWeight: 500,
+    },
   },
   lowerSection: {
     padding: '1.5rem',
@@ -139,32 +139,32 @@ const useStyles = makeStyles(({ palette }) => ({
       display: 'flex',
       justifyContent: 'space-between',
       alignItems: 'center',
-      marginBottom: 12
+      marginBottom: 12,
     },
     '& p': {
       margin: 0,
       fontWeight: 400,
-      color: palette.primary.dark
-    }
-  }
+      color: palette.primary.dark,
+    },
+  },
 }));
 
 function renderTransactions(transactions: string[]) {
   return (
     <Box>
       {transactions.map((hash, i) => {
-        return <Transaction key={i} hash={hash} />
+        return <Transaction key={i} hash={hash} />;
       })}
     </Box>
-  )
+  );
 }
 
 interface AccountDetailsProps {
-  toggleWalletModal: () => void
-  pendingTransactions: string[]
-  confirmedTransactions: string[]
-  ENSName?: string
-  openOptions: () => void
+  toggleWalletModal: () => void;
+  pendingTransactions: string[];
+  confirmedTransactions: string[];
+  ENSName?: string;
+  openOptions: () => void;
 }
 
 const AccountDetails: React.FC<AccountDetailsProps> = ({
@@ -172,27 +172,28 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
   pendingTransactions,
   confirmedTransactions,
   ENSName,
-  openOptions
+  openOptions,
 }) => {
-  const { chainId, account, connector } = useActiveWeb3React()
+  const { chainId, account, connector } = useActiveWeb3React();
   const classes = useStyles();
-  const dispatch = useDispatch<AppDispatch>()
+  const dispatch = useDispatch<AppDispatch>();
 
   function formatConnectorName() {
-    const { ethereum } = (window as any)
-    const isMetaMask = !!(ethereum && ethereum.isMetaMask)
+    const { ethereum } = window as any;
+    const isMetaMask = !!(ethereum && ethereum.isMetaMask);
     const name = Object.keys(SUPPORTED_WALLETS)
       .filter(
-        k =>
-          SUPPORTED_WALLETS[k].connector === connector && (connector !== injected || isMetaMask === (k === 'METAMASK'))
+        (k) =>
+          SUPPORTED_WALLETS[k].connector === connector &&
+          (connector !== injected || isMetaMask === (k === 'METAMASK')),
       )
-      .map(k => SUPPORTED_WALLETS[k].name)[0]
-    return <Box className={classes.walletName}>Connected with {name}</Box>
+      .map((k) => SUPPORTED_WALLETS[k].name)[0];
+    return <Box className={classes.walletName}>Connected with {name}</Box>;
   }
 
   const clearAllTransactionsCallback = useCallback(() => {
-    if (chainId) dispatch(clearAllTransactions({ chainId }))
-  }, [dispatch, chainId])
+    if (chainId) dispatch(clearAllTransactions({ chainId }));
+  }, [dispatch, chainId]);
 
   return (
     <>
@@ -207,20 +208,28 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
               <Box className={classes.accountGroupingRow}>
                 {formatConnectorName()}
                 <div>
-                  {connector !== injected && connector !== walletlink && connector !== safeApp && (
-                    <Button className={classes.walletAction}
-                      style={{ fontSize: '.825rem', fontWeight: 400, marginRight: '8px' }}
-                      onClick={() => {
-                        ;(connector as any).close()
-                      }}
-                    >
-                      Disconnect
-                    </Button>
-                  )}
+                  {connector !== injected &&
+                    connector !== walletlink &&
+                    connector !== safeApp && (
+                      <Button
+                        className={classes.walletAction}
+                        style={{
+                          fontSize: '.825rem',
+                          fontWeight: 400,
+                          marginRight: '8px',
+                        }}
+                        onClick={() => {
+                          (connector as any).close();
+                        }}
+                      >
+                        Disconnect
+                      </Button>
+                    )}
                   {connector !== safeApp && (
-                    <Button className={classes.walletAction}
+                    <Button
+                      className={classes.walletAction}
                       onClick={() => {
-                        openOptions()
+                        openOptions();
                       }}
                     >
                       Change
@@ -228,7 +237,10 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
                   )}
                 </div>
               </Box>
-              <Box className={classes.accountGroupingRow} id="web3-account-identifier-row">
+              <Box
+                className={classes.accountGroupingRow}
+                id='web3-account-identifier-row'
+              >
                 <Box className={classes.accountControl}>
                   {ENSName ? (
                     <div>
@@ -252,9 +264,19 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
                       </Copy>
                     )}
                     {chainId && account && (
-                      <a className={classes.addressLink} href={chainId && getEtherscanLink(chainId, ENSName, 'address')} target='_blank' rel='noreferrer'>
+                      <a
+                        className={classes.addressLink}
+                        href={
+                          chainId &&
+                          getEtherscanLink(chainId, ENSName, 'address')
+                        }
+                        target='_blank'
+                        rel='noreferrer'
+                      >
                         <LinkIcon size={16} />
-                        <span style={{ marginLeft: '4px' }}>View on Block Explorer</span>
+                        <span style={{ marginLeft: '4px' }}>
+                          View on Block Explorer
+                        </span>
                       </a>
                     )}
                   </Box>
@@ -266,9 +288,14 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
                       </Copy>
                     )}
                     {chainId && account && (
-                      <a className={classes.addressLink} href={getEtherscanLink(chainId, account, 'address')}>
+                      <a
+                        className={classes.addressLink}
+                        href={getEtherscanLink(chainId, account, 'address')}
+                      >
                         <LinkIcon size={16} />
-                        <span style={{ marginLeft: '4px' }}>View on Block Explorer</span>
+                        <span style={{ marginLeft: '4px' }}>
+                          View on Block Explorer
+                        </span>
                       </a>
                     )}
                   </Box>
@@ -293,7 +320,7 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
         </Box>
       )}
     </>
-  )
-}
+  );
+};
 
 export default AccountDetails;

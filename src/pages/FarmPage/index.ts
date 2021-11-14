@@ -1,1 +1,1 @@
-export { default } from './FarmPage'
+export { default } from './FarmPage';

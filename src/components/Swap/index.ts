@@ -1,2 +1,2 @@
-export { default } from './Swap'
-export { AdvancedSwapDetails } from './AdvancedSwapDetails'
+export { default } from './Swap';
+export { AdvancedSwapDetails } from './AdvancedSwapDetails';

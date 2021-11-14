@@ -14,27 +14,34 @@ const useStyles = makeStyles(({ palette }) => ({
     borderRadius: 20,
     transform: 'translate(-50%, -50%)',
     outline: 'none',
-    background: '#1b1e29'
-  }
+    background: '#1b1e29',
+  },
 }));
 
 interface CustomModalProps {
   open: boolean;
   onClose: () => void;
-  children: any
+  children: any;
 }
 
-const CustomModal: React.FC<CustomModalProps> = ({ open, onClose, children }) => {
+const CustomModal: React.FC<CustomModalProps> = ({
+  open,
+  onClose,
+  children,
+}) => {
   const classes = useStyles();
   return (
-    <Modal open={open} onClose={onClose} BackdropComponent={Backdrop} BackdropProps={{ timeout: 500 }}>
+    <Modal
+      open={open}
+      onClose={onClose}
+      BackdropComponent={Backdrop}
+      BackdropProps={{ timeout: 500 }}
+    >
       <Fade in={open}>
-        <Box className={classes.wrapper}>
-          {children}
-        </Box>
+        <Box className={classes.wrapper}>{children}</Box>
       </Fade>
     </Modal>
-  )
-}
+  );
+};
 
 export default CustomModal;

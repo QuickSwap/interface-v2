@@ -16,28 +16,26 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     cursor: 'pointer',
     '& p': {
       fontSize: 14,
-      fontWeight: 500
-    }
-  }
+      fontWeight: 500,
+    },
+  },
 }));
 
 interface SortButtonProps {
-  toggleSortOrder: () => void
-  ascending: boolean
+  toggleSortOrder: () => void;
+  ascending: boolean;
 }
 
 const SortButton: React.FC<SortButtonProps> = ({
   toggleSortOrder,
-  ascending
+  ascending,
 }) => {
   const classes = useStyles();
   return (
     <Box className={classes.filterWrapper} onClick={toggleSortOrder}>
-      <Typography>
-        {ascending ? '↑' : '↓'}
-      </Typography>
+      <Typography>{ascending ? '↑' : '↓'}</Typography>
     </Box>
-  )
-}
+  );
+};
 
 export default SortButton;

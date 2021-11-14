@@ -1,8 +1,8 @@
-import React from 'react'
-import { Box } from '@material-ui/core'
-import { HelpCircle as Question, PlusCircle } from 'react-feather'
+import React from 'react';
+import { Box } from '@material-ui/core';
+import { HelpCircle as Question, PlusCircle } from 'react-feather';
 import { makeStyles } from '@material-ui/core/styles';
-import { CustomTooltip } from 'components'
+import { CustomTooltip } from 'components';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   questionWrapper: {
@@ -17,8 +17,8 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     borderRadius: 36,
     color: palette.text.primary,
     '&:hover, &:focus': {
-      opacity: 0.7
-    }
+      opacity: 0.7,
+    },
   },
   lightQuestionWrapper: {
     display: 'flex',
@@ -32,14 +32,14 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     borderRadius: 36,
     width: 24,
     height: 24,
-    color: 'white',  
+    color: 'white',
     '&:hover, &:focus': {
-      opacity: 0.7
-    }
+      opacity: 0.7,
+    },
   },
   questionMark: {
-    fontSize: '1rem'
-  }
+    fontSize: '1rem',
+  },
 }));
 
 const QuestionHelper: React.FC<{ text: string }> = ({ text }) => {
@@ -51,8 +51,8 @@ const QuestionHelper: React.FC<{ text: string }> = ({ text }) => {
         <Question size={16} />
       </Box>
     </CustomTooltip>
-  )
-}
+  );
+};
 
 export default QuestionHelper;
 
@@ -62,10 +62,10 @@ export function PlusHelper({ text }: { text: string }) {
   return (
     <CustomTooltip title={text}>
       <Box className={classes.questionWrapper}>
-        <PlusCircle style={{cursor: 'pointer'}} size={16} />
+        <PlusCircle style={{ cursor: 'pointer' }} size={16} />
       </Box>
     </CustomTooltip>
-  )
+  );
 }
 
 export function LightQuestionHelper({ text }: { text: string }) {
@@ -77,5 +77,5 @@ export function LightQuestionHelper({ text }: { text: string }) {
         <span className={classes.questionMark}>?</span>
       </Box>
     </CustomTooltip>
-  )
+  );
 }
