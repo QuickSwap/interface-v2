@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Box, Button, Typography } from '@material-ui/core';
 import {
   CurrencyInput,
+  TransactionErrorContent,
   TransactionConfirmationModal,
   ConfirmationModalContent,
   DoubleCurrencyLogo,
@@ -91,28 +92,6 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     justifyContent: 'space-between',
     marginBottom: 16,
   },
-  supplyModalHeader: {
-    color: 'black',
-    '& > h2': {
-      fontSize: 24,
-      lineHeight: '36px',
-      margin: '8px 0',
-    },
-    '& > h4': {
-      fontSize: 18,
-      lineHeight: '24px',
-      fontStyle: 'italic',
-    },
-  },
-  liquidityWrapper: {
-    display: 'flex',
-    alignItems: 'center',
-    color: 'black',
-    '& > p': {
-      marginRight: 20,
-      fontSize: 32,
-    },
-  },
 }));
 
 const AddLiquidity: React.FC<{
@@ -120,6 +99,9 @@ const AddLiquidity: React.FC<{
   currency1?: Currency;
 }> = ({ currency0, currency1 }) => {
   const classes = useStyles({});
+  const [addLiquidityErrorMessage, setAddLiquidityErrorMessage] = useState<
+    string | null
+  >(null);
 
   const { account, chainId, library } = useActiveWeb3React();
 
@@ -359,6 +341,7 @@ const AddLiquidity: React.FC<{
       )
       .catch((error) => {
         setAttemptingTxn(false);
+        setAddLiquidityErrorMessage('Transaction rejected.');
         // we only care if the error is something _other_ than the user rejected the tx
         if (error?.code !== 4001) {
           console.error(error);
@@ -384,39 +367,36 @@ const AddLiquidity: React.FC<{
   }, [onFieldAInput, txHash]);
 
   const modalHeader = () => {
-    return noLiquidity ? (
-      <Box className={classes.liquidityWrapper}>
-        <Typography>
-          {currencies[Field.CURRENCY_A]?.symbol +
-            '/' +
-            currencies[Field.CURRENCY_B]?.symbol}
-        </Typography>
-        <DoubleCurrencyLogo
-          currency0={currencies[Field.CURRENCY_A]}
-          currency1={currencies[Field.CURRENCY_B]}
-          size={30}
-        />
-      </Box>
-    ) : (
-      <Box className={classes.supplyModalHeader}>
-        <Box className={classes.liquidityWrapper}>
-          <Typography>{liquidityMinted?.toSignificant(6)}</Typography>
+    return (
+      <Box>
+        <Box mt={10} mb={3} display='flex' justifyContent='center'>
           <DoubleCurrencyLogo
             currency0={currencies[Field.CURRENCY_A]}
             currency1={currencies[Field.CURRENCY_B]}
-            size={30}
+            size={48}
           />
         </Box>
-        <Typography component='h2'>
-          {currencies[Field.CURRENCY_A]?.symbol +
-            '/' +
-            currencies[Field.CURRENCY_B]?.symbol +
-            ' Pool Tokens'}
-        </Typography>
-        <Typography component='h4'>
-          {`Output is estimated. If the price changes by more than ${allowedSlippage /
-            100}% your transaction will revert.`}
-        </Typography>
+        <Box mb={6} color='#c7cad9' textAlign='center'>
+          <Typography variant='h6'>
+            Supplying {parsedAmounts[Field.CURRENCY_A]?.toSignificant()}&nbsp;
+            {currencies[Field.CURRENCY_A]?.symbol}&nbsp;and&nbsp;
+            {parsedAmounts[Field.CURRENCY_B]?.toSignificant()}
+            {currencies[Field.CURRENCY_B]?.symbol}
+            <br />
+            You will receive {liquidityMinted?.toSignificant(6)}{' '}
+            {currencies[Field.CURRENCY_A]?.symbol} /{' '}
+            {currencies[Field.CURRENCY_B]?.symbol} LP Tokens
+          </Typography>
+        </Box>
+        <Box mb={3} color='#696c80' textAlign='center'>
+          <Typography variant='body2'>
+            {`Output is estimated. If the price changes by more than ${allowedSlippage /
+              100}% your transaction will revert.`}
+          </Typography>
+        </Box>
+        <Box className={classes.swapButtonWrapper}>
+          <Button onClick={onAddLiquidity}>Confirm Supply</Button>
+        </Box>
       </Box>
     );
   };
@@ -428,13 +408,20 @@ const AddLiquidity: React.FC<{
         onDismiss={handleDismissConfirmation}
         attemptingTxn={attemptingTxn}
         hash={txHash}
-        content={() => (
-          <ConfirmationModalContent
-            title={noLiquidity ? 'You are creating a pool' : 'You will receive'}
-            onDismiss={handleDismissConfirmation}
-            content={modalHeader}
-          />
-        )}
+        content={() =>
+          addLiquidityErrorMessage ? (
+            <TransactionErrorContent
+              onDismiss={handleDismissConfirmation}
+              message={addLiquidityErrorMessage}
+            />
+          ) : (
+            <ConfirmationModalContent
+              title='Supplying Liquidity'
+              onDismiss={handleDismissConfirmation}
+              content={modalHeader}
+            />
+          )
+        }
         pendingText={pendingText}
       />
       <CurrencyInput
@@ -526,7 +513,6 @@ const AddLiquidity: React.FC<{
                   width={approvalB !== ApprovalState.APPROVED ? '48%' : '100%'}
                 >
                   <Button
-                    color='primary'
                     onClick={approveACallback}
                     disabled={approvalA === ApprovalState.PENDING}
                   >
@@ -541,7 +527,6 @@ const AddLiquidity: React.FC<{
                   width={approvalA !== ApprovalState.APPROVED ? '48%' : '100%'}
                 >
                   <Button
-                    color='primary'
                     onClick={approveBCallback}
                     disabled={approvalB === ApprovalState.PENDING}
                   >

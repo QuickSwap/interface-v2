@@ -107,7 +107,7 @@ export const mainTheme = responsiveFontSizes(
       h6: {
         fontSize: 16,
         fontWeight: 600,
-        lineHeight: 1.38,
+        lineHeight: 1.5,
       },
       subtitle1: {
         fontSize: 20,

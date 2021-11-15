@@ -176,9 +176,11 @@ const SwapPage: React.FC = () => {
       updateSwapTokenPrice0({ data: null });
       updateSwapTokenPrice1({ data: null });
       const tokenPairs = await getTokenPairs(token1Address, token2Address);
-      const formattedPairs = tokenPairs.map((pair: any) => {
-        return pair.id;
-      });
+      const formattedPairs = tokenPairs
+        ? tokenPairs.map((pair: any) => {
+            return pair.id;
+          })
+        : [];
       const pairData = await getBulkPairData(formattedPairs, ethPrice.price);
       if (pairData) {
         updateTokenPairs({ data: pairData });

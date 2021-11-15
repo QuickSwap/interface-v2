@@ -387,20 +387,22 @@ const Header: React.FC = () => {
               }}
             >
               {isnotMatic ? 'Wrong Network' : 'Connect Wallet'}
-              <Box
-                position='absolute'
-                top={36}
-                width={272}
-                right={0}
-                paddingTop='18px'
-              >
-                <Box className={classes.wrongNetworkContent}>
-                  <Typography variant='body2'>
-                    Please switch your wallet to Polygon Network.
-                  </Typography>
-                  <Box onClick={addMaticToMetamask}>Switch to Matic</Box>
+              {isnotMatic && (
+                <Box
+                  position='absolute'
+                  top={36}
+                  width={272}
+                  right={0}
+                  paddingTop='18px'
+                >
+                  <Box className={classes.wrongNetworkContent}>
+                    <Typography variant='body2'>
+                      Please switch your wallet to Polygon Network.
+                    </Typography>
+                    <Box onClick={addMaticToMetamask}>Switch to Matic</Box>
+                  </Box>
                 </Box>
-              </Box>
+              )}
             </Box>
           )}
         </Box>
