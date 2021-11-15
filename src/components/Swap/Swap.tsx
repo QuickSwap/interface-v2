@@ -21,6 +21,7 @@ import {
   ConfirmSwapModal,
   AdvancedSwapDetails,
   QuestionHelper,
+  SettingsModal,
 } from 'components';
 import { useActiveWeb3React } from 'hooks';
 import {
@@ -131,6 +132,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
 }));
 
 const Swap: React.FC = () => {
+  const [openSettingsModal, setOpenSettingsModal] = useState(false);
   const { account } = useActiveWeb3React();
   const { ethereum } = window as any;
   const { independentField, typedValue, recipient } = useSwapState();
@@ -480,6 +482,10 @@ const Swap: React.FC = () => {
 
   return (
     <Box>
+      <SettingsModal
+        open={openSettingsModal}
+        onClose={() => setOpenSettingsModal(false)}
+      />
       <ConfirmSwapModal
         isOpen={showConfirm}
         trade={trade}
@@ -591,7 +597,10 @@ const Swap: React.FC = () => {
         </Box>
         <Box display='flex' alignItems='center'>
           <Typography variant='body2'>{allowedSlippage / 100}%</Typography>
-          <EditIcon style={{ marginLeft: 8 }} />
+          <EditIcon
+            style={{ marginLeft: 8, cursor: 'pointer' }}
+            onClick={() => setOpenSettingsModal(true)}
+          />
         </Box>
       </Box>
       <AdvancedSwapDetails trade={trade} />
