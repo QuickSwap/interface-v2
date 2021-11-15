@@ -6,7 +6,12 @@ import cx from 'classnames';
 import { Token } from '@uniswap/sdk';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
 import { ReactComponent as SettingsIcon } from 'assets/images/SettingsIcon.svg';
-import { DoubleCurrencyLogo, Swap, SwapTokenDetails } from 'components';
+import {
+  DoubleCurrencyLogo,
+  Swap,
+  SwapTokenDetails,
+  SettingsModal,
+} from 'components';
 import {
   useEthPrice,
   useTopTokens,
@@ -103,9 +108,9 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
 const SwapPage: React.FC = () => {
   const classes = useStyles();
   const [swapIndex, setSwapIndex] = useState(0);
+  const [openSettingsModal, setOpenSettingsModal] = useState(false);
   const { currencies } = useDerivedSwapInfo();
   const allTokens = useAllTokens();
-
   const { ethPrice, updateEthPrice } = useEthPrice();
   const { updateTopTokens } = useTopTokens();
   const { swapTokenPrice0, updateSwapTokenPrice0 } = useSwapTokenPrice0();
@@ -228,6 +233,10 @@ const SwapPage: React.FC = () => {
 
   return (
     <Box width='100%' mb={3}>
+      <SettingsModal
+        open={openSettingsModal}
+        onClose={() => setOpenSettingsModal(false)}
+      />
       <Box
         mb={2}
         display='flex'
@@ -268,7 +277,7 @@ const SwapPage: React.FC = () => {
                 </Box>
               </Box>
               <Box className={classes.headingItem}>
-                <SettingsIcon />
+                <SettingsIcon onClick={() => setOpenSettingsModal(true)} />
               </Box>
             </Box>
             <Box mt={2.5}>

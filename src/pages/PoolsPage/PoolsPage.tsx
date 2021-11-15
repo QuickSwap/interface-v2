@@ -7,7 +7,7 @@ import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
 import { ReactComponent as HelpIconLarge } from 'assets/images/HelpIcon2.svg';
 import { ReactComponent as SettingsIcon } from 'assets/images/SettingsIcon.svg';
 import NoLiquidity from 'assets/images/NoLiquidityPool.png';
-import { AddLiquidity, PoolPositionCard } from 'components';
+import { AddLiquidity, PoolPositionCard, SettingsModal } from 'components';
 import { useActiveWeb3React } from 'hooks';
 import { usePairs } from 'data/Reserves';
 import { toV2LiquidityToken, useTrackedTokenPairs } from 'state/user/hooks';
@@ -53,6 +53,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
 const PoolsPage: React.FC = () => {
   const classes = useStyles();
   const { account } = useActiveWeb3React();
+  const [openSettingsModal, setOpenSettingsModal] = useState(false);
   const [currency0, setCurrency0] = useState<Currency | undefined>();
   const [currency1, setCurrency1] = useState<Currency | undefined>();
   const trackedTokenPairs = useTrackedTokenPairs();
@@ -99,6 +100,10 @@ const PoolsPage: React.FC = () => {
 
   return (
     <Box width='100%' mb={3}>
+      <SettingsModal
+        open={openSettingsModal}
+        onClose={() => setOpenSettingsModal(false)}
+      />
       <Box
         mb={2}
         display='flex'
@@ -128,7 +133,7 @@ const PoolsPage: React.FC = () => {
                   <HelpIconLarge />
                 </Box>
                 <Box className={classes.headingItem}>
-                  <SettingsIcon />
+                  <SettingsIcon onClick={() => setOpenSettingsModal(true)} />
                 </Box>
               </Box>
             </Box>

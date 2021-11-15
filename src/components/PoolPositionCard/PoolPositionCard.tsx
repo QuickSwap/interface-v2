@@ -156,27 +156,27 @@ const PoolPositionCard: React.FC<PoolPositionCardProps> = ({
       30) /
     Number(valueOfTotalStakedAmountInUSDC?.toSignificant(6));
 
-  let apyWithFee: any = 0;
-
-  if (
-    stakingInfo &&
-    stakingInfo.oneYearFeeAPY &&
-    Number(stakingInfo.oneYearFeeAPY) > 0
-  ) {
-    apyWithFee =
-      ((1 +
-        ((perMonthReturnInRewards + Number(stakingInfo.oneYearFeeAPY) / 12) *
-          12) /
-          12) **
-        12 -
-        1) *
-      100; // compounding monthly APY
-    if (apyWithFee > 100000000) {
-      apyWithFee = '>100000000';
-    } else {
-      apyWithFee = Number(apyWithFee.toFixed(2)).toLocaleString();
+  const apyWithFee = useMemo(() => {
+    if (
+      stakingInfo &&
+      stakingInfo.oneYearFeeAPY &&
+      Number(stakingInfo.oneYearFeeAPY) > 0
+    ) {
+      const apy =
+        ((1 +
+          ((perMonthReturnInRewards + Number(stakingInfo.oneYearFeeAPY) / 12) *
+            12) /
+            12) **
+          12 -
+          1) *
+        100; // compounding monthly APY
+      if (apy > 100000000) {
+        return '>100000000';
+      } else {
+        return Number(apy.toFixed(2)).toLocaleString();
+      }
     }
-  }
+  }, [stakingInfo]);
 
   return (
     <Box
