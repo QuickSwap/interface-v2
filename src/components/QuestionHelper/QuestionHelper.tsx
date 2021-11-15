@@ -42,13 +42,16 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
   },
 }));
 
-const QuestionHelper: React.FC<{ text: string }> = ({ text }) => {
+const QuestionHelper: React.FC<{ text: string; size?: number }> = ({
+  text,
+  size = 16,
+}) => {
   const classes = useStyles();
 
   return (
     <CustomTooltip title={text}>
       <Box className={classes.questionWrapper}>
-        <Question size={16} />
+        <Question size={size} />
       </Box>
     </CustomTooltip>
   );

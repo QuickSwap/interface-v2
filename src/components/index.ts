@@ -14,6 +14,7 @@ export { default as QuestionHelper } from './QuestionHelper';
 export { default as Logo } from './Logo';
 export { default as PoolPositionCard } from './PoolPositionCard';
 export { default as RemoveLiquidityModal } from './RemoveLiquidityModal';
+export { default as SettingsModal } from './SettingsModal';
 export {
   default as FullPositionCard,
   MinimalPositionCard,
