@@ -36,8 +36,6 @@ const useStyles = makeStyles(({ palette }) => ({
     display: 'flex',
     padding: '1rem',
     fontWeight: 500,
-    background: palette.background.paper,
-    color: palette.primary.dark,
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
   },

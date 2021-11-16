@@ -1,6 +1,12 @@
 import { ChainId, JSBI, Percent, Token, WETH } from '@uniswap/sdk';
 import { AbstractConnector } from '@web3-react/abstract-connector';
-
+import MetamaskIcon from 'assets/images/metamask.png';
+import ArrowRightIcon from 'assets/images/arrow-right.svg';
+import GnosisSafeIcon from 'assets/images/gnosis_safe.png';
+import VenlyIcon from 'assets/images/venly.svg';
+import PortisIcon from 'assets/images/portisIcon.png';
+import CoinbaseWalletIcon from 'assets/images/coinbaseWalletIcon.svg';
+import WalletConnectIcon from 'assets/images/walletConnectIcon.svg';
 import {
   injected,
   walletconnect,
@@ -9,6 +15,69 @@ import {
   arkaneconnect,
   safeApp,
 } from '../connectors';
+
+export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
+  INJECTED: {
+    connector: injected,
+    name: 'Injected',
+    iconName: ArrowRightIcon,
+    description: 'Injected web3 provider.',
+    href: null,
+    color: '#010101',
+    primary: true,
+  },
+  METAMASK: {
+    connector: injected,
+    name: 'MetaMask',
+    iconName: MetamaskIcon,
+    description: 'Easy-to-use browser extension.',
+    href: null,
+    color: '#E8831D',
+  },
+  SAFE_APP: {
+    connector: safeApp,
+    name: 'Gnosis Safe App',
+    iconName: GnosisSafeIcon,
+    description: 'Login using gnosis safe app',
+    href: null,
+    color: '#4196FC',
+    mobile: true,
+  },
+  ARKANE_CONNECT: {
+    connector: arkaneconnect,
+    name: 'Venly',
+    iconName: VenlyIcon,
+    description: 'Login using Venly hosted wallet.',
+    href: null,
+    color: '#4196FC',
+  },
+  Portis: {
+    connector: portis,
+    name: 'Portis',
+    iconName: PortisIcon,
+    description: 'Login using Portis hosted wallet',
+    href: null,
+    color: '#4A6C9B',
+    mobile: true,
+  },
+  WALLET_LINK: {
+    connector: walletlink,
+    name: 'Coinbase Wallet',
+    iconName: CoinbaseWalletIcon,
+    description: 'Use Coinbase Wallet app on mobile device',
+    href: null,
+    color: '#315CF5',
+  },
+  WALLET_CONNECT: {
+    connector: walletconnect,
+    name: 'WalletConnect',
+    iconName: WalletConnectIcon,
+    description: 'Connect to Trust Wallet, Rainbow Wallet and more...',
+    href: null,
+    color: '#4196FC',
+    mobile: true,
+  },
+};
 
 export const ROUTER_ADDRESS = '0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff'; //'0x6207A65a8bbc87dD02C3109D2c74a6bCE4af1C8c';//
 
@@ -1557,69 +1626,6 @@ export interface WalletInfo {
   mobile?: true;
   mobileOnly?: true;
 }
-
-export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
-  INJECTED: {
-    connector: injected,
-    name: 'Injected',
-    iconName: 'arrow-right.svg',
-    description: 'Injected web3 provider.',
-    href: null,
-    color: '#010101',
-    primary: true,
-  },
-  METAMASK: {
-    connector: injected,
-    name: 'MetaMask',
-    iconName: 'metamask.png',
-    description: 'Easy-to-use browser extension.',
-    href: null,
-    color: '#E8831D',
-  },
-  SAFE_APP: {
-    connector: safeApp,
-    name: 'Gnosis Safe App',
-    iconName: 'gnosis_safe.png',
-    description: 'Login using gnosis safe app',
-    href: null,
-    color: '#4196FC',
-    mobile: true,
-  },
-  ARKANE_CONNECT: {
-    connector: arkaneconnect,
-    name: 'Venly',
-    iconName: 'venly.svg',
-    description: 'Login using Venly hosted wallet.',
-    href: null,
-    color: '#4196FC',
-  },
-  Portis: {
-    connector: portis,
-    name: 'Portis',
-    iconName: 'portisIcon.png',
-    description: 'Login using Portis hosted wallet',
-    href: null,
-    color: '#4A6C9B',
-    mobile: true,
-  },
-  WALLET_LINK: {
-    connector: walletlink,
-    name: 'Coinbase Wallet',
-    iconName: 'coinbaseWalletIcon.svg',
-    description: 'Use Coinbase Wallet app on mobile device',
-    href: null,
-    color: '#315CF5',
-  },
-  WALLET_CONNECT: {
-    connector: walletconnect,
-    name: 'WalletConnect',
-    iconName: 'walletConnectIcon.svg',
-    description: 'Connect to Trust Wallet, Rainbow Wallet and more...',
-    href: null,
-    color: '#4196FC',
-    mobile: true,
-  },
-};
 
 export const NetworkContextName = 'NETWORK';
 
