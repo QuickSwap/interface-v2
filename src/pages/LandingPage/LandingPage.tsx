@@ -845,7 +845,13 @@ const LandingPage: React.FC = () => {
         </Typography>
         <Typography variant='body2'>in $QUICK on top of LP Fees.</Typography>
         <RewardSlider />
-        <Button variant='contained' color='secondary'>
+        <Button
+          variant='contained'
+          color='secondary'
+          onClick={() => {
+            history.push('/pools');
+          }}
+        >
           See all pools
         </Button>
       </Box>

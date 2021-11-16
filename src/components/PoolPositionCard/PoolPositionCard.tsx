@@ -176,7 +176,7 @@ const PoolPositionCard: React.FC<PoolPositionCardProps> = ({
         return Number(apy.toFixed(2)).toLocaleString();
       }
     }
-  }, [stakingInfo]);
+  }, [stakingInfo, perMonthReturnInRewards]);
 
   return (
     <Box

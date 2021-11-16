@@ -1,12 +1,18 @@
 import React, { useMemo, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Box, Typography, Grid, Divider } from '@material-ui/core';
+import { TokenAmount, JSBI } from '@uniswap/sdk';
 import { useStakingInfo } from 'state/stake/hooks';
 import { FarmCard, ToggleSwitch } from 'components';
+import { usePairs } from 'data/Reserves';
+import { useUSDCPrices } from 'utils/useUSDCPrice';
+import { unwrappedToken } from 'utils/wrappedCurrency';
+import { EMPTY } from 'constants/index';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
 import { ReactComponent as SearchIcon } from 'assets/images/SearchIcon.svg';
 import BlindEyeIcon from 'assets/images/blindeye.svg';
 import ArrowUpIcon from 'assets/images/arrowup.svg';
+import { useTotalSupplys } from 'data/TotalSupply';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   helpWrapper: {
@@ -103,6 +109,17 @@ const FarmPage: React.FC = () => {
   const stakingInfos = useStakingInfo();
   const [stakedOnly, setStakeOnly] = useState(false);
   const [farmSearch, setFarmSearch] = useState('');
+  const baseCurrencies = stakingInfos.map((stakingInfo) => {
+    const token0 = stakingInfo.tokens[0];
+    const baseTokenCurrency = unwrappedToken(stakingInfo.baseToken);
+    const empty = unwrappedToken(EMPTY);
+    return baseTokenCurrency === empty ? token0 : stakingInfo.baseToken;
+  });
+  const allPairs = usePairs(stakingInfos.map((info) => info.tokens));
+  const usdPrices = useUSDCPrices(baseCurrencies);
+  const totalStakingSupplys = useTotalSupplys(
+    stakingInfos.map((stakingInfo) => stakingInfo.stakedAmount.token),
+  );
 
   const rewardRate = useMemo(() => {
     if (stakingInfos && stakingInfos.length > 0) {
@@ -131,6 +148,59 @@ const FarmPage: React.FC = () => {
       return 0;
     }
   }, [stakingInfos, rewardRate]);
+
+  const myDeposits = useMemo(() => {
+    if (stakingInfos && stakingInfos.length > 0) {
+      return stakingInfos
+        .map((stakingInfo, index) => {
+          const baseTokenCurrency = unwrappedToken(stakingInfo.baseToken);
+          const [, stakingTokenPair] = allPairs[index];
+          const usdPrice = usdPrices[index];
+          const token0 = stakingInfo.tokens[0];
+          const empty = unwrappedToken(EMPTY);
+          const baseToken =
+            baseTokenCurrency === empty ? token0 : stakingInfo.baseToken;
+          const totalSupplyOfStakingToken = totalStakingSupplys[index];
+          let valueOfMyStakedAmountInBaseToken;
+          if (stakingTokenPair && totalSupplyOfStakingToken) {
+            valueOfMyStakedAmountInBaseToken = new TokenAmount(
+              baseToken,
+              JSBI.divide(
+                JSBI.multiply(
+                  JSBI.multiply(
+                    stakingInfo.stakedAmount.raw,
+                    stakingTokenPair.reserveOf(baseToken).raw,
+                  ),
+                  JSBI.BigInt(2),
+                ),
+                totalSupplyOfStakingToken.raw,
+              ),
+            );
+          }
+          if (valueOfMyStakedAmountInBaseToken && usdPrice) {
+            const valueOfMyStakedAmountInUSDC =
+              valueOfMyStakedAmountInBaseToken &&
+              usdPrice.quote(valueOfMyStakedAmountInBaseToken);
+            return Number(valueOfMyStakedAmountInUSDC.toSignificant(2));
+          } else {
+            return 0;
+          }
+        })
+        .reduce((sum, current) => sum + current, 0);
+    } else {
+      return 0;
+    }
+  }, [stakingInfos]);
+
+  const unclaimedRewards = useMemo(() => {
+    if (stakingInfos && stakingInfos.length > 0) {
+      return stakingInfos
+        .map((info) => Number(info.earnedAmount.toSignificant(2)))
+        .reduce((sum, current) => sum + current, 0);
+    } else {
+      return 0;
+    }
+  }, [stakingInfos]);
 
   const filteredStakingInfos = useMemo(() => {
     if (stakingInfos && stakingInfos.length > 0) {
@@ -266,7 +336,7 @@ const FarmPage: React.FC = () => {
             </Box>
           </Box>
           <Box mt={1} display='flex' flexDirection='row' alignItems='flex-end'>
-            <Typography variant='body1'>$7,348.23</Typography>
+            <Typography variant='body1'>${myDeposits}</Typography>
           </Box>
         </Box>
         <Box
@@ -284,7 +354,7 @@ const FarmPage: React.FC = () => {
             </Box>
           </Box>
           <Box mt={1} display='flex' flexDirection='row' alignItems='flex-end'>
-            <Typography variant='body1'>0.023 dQUICK</Typography>
+            <Typography variant='body1'>{unclaimedRewards} dQUICK</Typography>
           </Box>
           <Box mt={0.5}>
             <Typography className={classes.thirdColor} variant='body2'>

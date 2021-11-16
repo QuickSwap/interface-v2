@@ -7,11 +7,9 @@ import { warningSeverity } from '../../utils/prices';
 /**
  * Formatted version of price impact text with warning colors
  */
-export default function FormattedPriceImpact({
+const FormattedPriceImpact: React.FC<{ priceImpact?: Percent }> = ({
   priceImpact,
-}: {
-  priceImpact?: Percent;
-}) {
+}) => {
   const severity = warningSeverity(priceImpact);
   return (
     <Typography
@@ -34,4 +32,6 @@ export default function FormattedPriceImpact({
         : '-'}
     </Typography>
   );
-}
+};
+
+export default FormattedPriceImpact;

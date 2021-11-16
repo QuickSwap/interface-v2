@@ -63,7 +63,7 @@ function Updaters() {
   );
 }
 
-function App() {
+const App: React.FC = () => {
   return (
     <Web3ReactProvider getLibrary={getLibrary}>
       <Web3ProviderNetwork getLibrary={getLibrary}>
@@ -109,6 +109,6 @@ function App() {
       </Web3ProviderNetwork>
     </Web3ReactProvider>
   );
-}
+};
 
 export default App;
