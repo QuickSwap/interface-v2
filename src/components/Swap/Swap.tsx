@@ -73,14 +73,15 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
   },
   swapButtonWrapper: {
     display: 'flex',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     marginTop: 20,
+    width: '100%',
     '& button': {
       borderRadius: '10px',
       height: 56,
       fontSize: 18,
       fontWeight: 600,
-      width: (props: any) => (props.showApproveFlow ? '48%' : '48%'),
+      width: (props: any) => (props.showApproveFlow ? '48%' : '100%'),
       backgroundImage: 'linear-gradient(to bottom, #448aff, #004ce6)',
       '&.Mui-disabled': {
         backgroundImage: 'linear-gradient(to bottom, #282d3d, #1d212c)',
@@ -590,13 +591,18 @@ const Swap: React.FC = () => {
         className={classes.slippageRow}
       >
         <Box display='flex' alignItems='center'>
-          <Typography variant='body2' style={{ marginRight: 4 }}>
-            Slippage Tolerance:
+          <Typography
+            variant='body2'
+            style={{ marginRight: 4, color: '#448aff' }}
+          >
+            Slippage:
           </Typography>
           <QuestionHelper text='Your transaction will revert if the price changes unfavorably by more than this percentage.' />
         </Box>
         <Box display='flex' alignItems='center'>
-          <Typography variant='body2'>{allowedSlippage / 100}%</Typography>
+          <Typography variant='body2' style={{ color: '#448aff' }}>
+            {allowedSlippage / 100}%
+          </Typography>
           <EditIcon
             style={{ marginLeft: 8, cursor: 'pointer' }}
             onClick={() => setOpenSettingsModal(true)}
