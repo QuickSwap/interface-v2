@@ -8,19 +8,20 @@ const useStylesBootstrap = makeStyles((theme: Theme) => ({
     fontSize: 16,
     width: 17,
     '&::before': {
-      color: theme.palette.background.paper,
+      color: (props: any) =>
+        props.dark ? '#282d3d' : 'rgba(255, 255, 255, 0.9)',
       border: `1px solid ${theme.palette.divider}`,
       boxSizing: 'border-box',
     },
   },
   tooltip: {
     backgroundColor: (props: any) =>
-      props.dark ? 'rgba(0, 0, 0, 0.9)' : 'rgba(255, 255, 255, 0.9)',
+      props.dark ? '#282d3d' : 'rgba(255, 255, 255, 0.9)',
     border: `1px solid ${theme.palette.divider}`,
     padding: '14px',
     fontSize: '14px',
     borderRadius: '14px',
-    color: 'black',
+    color: theme.palette.text.primary,
   },
 }));
 
