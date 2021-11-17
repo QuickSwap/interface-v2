@@ -4,7 +4,7 @@ import { WalletConnectConnector } from '@web3-react/walletconnect-connector';
 import React, { useEffect, useState } from 'react';
 import { isMobile } from 'react-device-detect';
 import ReactGA from 'react-ga';
-import { Box } from '@material-ui/core';
+import { Box, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import MetamaskIcon from 'assets/images/metamask.png';
 import { ReactComponent as Close } from 'assets/images/CloseIcon.svg';
@@ -39,12 +39,6 @@ const useStyles = makeStyles(({ palette }) => ({
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
   },
-  contentWrapper: {
-    backgroundColor: palette.text.hint,
-    padding: '2rem',
-    borderBottomRightRadius: 20,
-    borderBottomLeftRadius: 20,
-  },
   upperSection: {
     position: 'relative',
     '& h5': {
@@ -66,20 +60,10 @@ const useStyles = makeStyles(({ palette }) => ({
     alignItems: 'center',
     justifyContent: 'center',
     flexWrap: 'wrap',
-    marginTop: '2rem',
-    color: 'black',
     '& a': {
-      color: palette.primary.main,
+      marginLeft: 8,
+      color: '#448aff',
       textDecoration: 'none',
-    },
-  },
-  optionGrid: {
-    display: 'grid',
-    gridGap: 10,
-  },
-  hoverText: {
-    '&:hover': {
-      cursor: 'pointer',
     },
   },
 }));
@@ -294,15 +278,13 @@ const WalletModal: React.FC<WalletModalProps> = ({
     if (error) {
       return (
         <Box className={classes.upperSection}>
-          <Box className={classes.closeIcon} onClick={toggleWalletModal}>
-            <Close />
-          </Box>
+          <Close style={{ cursor: 'pointer' }} onClick={toggleWalletModal} />
           <Box className={classes.headerRow}>
             {error instanceof UnsupportedChainIdError
               ? 'Wrong Network'
               : 'Error connecting'}
           </Box>
-          <Box className={classes.contentWrapper}>
+          <Box mt={2}>
             {error instanceof UnsupportedChainIdError ? (
               <h5>Please connect to the appropriate Matic network.</h5>
             ) : (
@@ -324,28 +306,12 @@ const WalletModal: React.FC<WalletModalProps> = ({
       );
     }
     return (
-      <Box className={classes.upperSection}>
-        <Box className={classes.closeIcon} onClick={toggleWalletModal}>
-          <Close />
+      <Box paddingX={3} paddingY={4}>
+        <Box display='flex' justifyContent='space-between'>
+          <Typography variant='h5'>Connect wallet</Typography>
+          <Close style={{ cursor: 'pointer' }} onClick={toggleWalletModal} />
         </Box>
-        {walletView !== WALLET_VIEWS.ACCOUNT ? (
-          <Box className={classes.headerRow}>
-            <Box
-              className={classes.hoverText}
-              onClick={() => {
-                setPendingError(false);
-                setWalletView(WALLET_VIEWS.ACCOUNT);
-              }}
-            >
-              Back
-            </Box>
-          </Box>
-        ) : (
-          <Box className={classes.headerRow}>
-            <Box className={classes.hoverText}>Connect to a wallet</Box>
-          </Box>
-        )}
-        <Box className={classes.contentWrapper}>
+        <Box mt={4}>
           {walletView === WALLET_VIEWS.PENDING ? (
             <PendingView
               connector={pendingWallet}
@@ -354,17 +320,17 @@ const WalletModal: React.FC<WalletModalProps> = ({
               tryActivation={tryActivation}
             />
           ) : (
-            <Box className={classes.optionGrid}>{getOptions()}</Box>
+            getOptions()
           )}
           {walletView !== WALLET_VIEWS.PENDING && (
             <Box className={classes.blurb}>
-              <span>New to Matic? &nbsp;</span>{' '}
+              <Typography variant='body2'>New to Matic?</Typography>
               <a
                 href='https://docs.matic.network/docs/develop/wallets/getting-started'
                 target='_blank'
                 rel='noreferrer'
               >
-                Learn more about wallets
+                <Typography variant='body2'>Learn about Wallets ↗</Typography>
               </a>
             </Box>
           )}
