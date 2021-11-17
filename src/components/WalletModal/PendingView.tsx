@@ -17,21 +17,11 @@ const useStyles = makeStyles(({ palette }) => ({
       width: '100%',
     },
   },
-  loadingMessage: {
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    borderRadius: 12,
-    marginBottom: 20,
-    color: palette.error.main,
-    border: `1px solid ${palette.error.main}`,
-    '& > *': {
-      padding: '1rem',
-    },
-  },
   errorGroup: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'flex-start',
+    color: palette.error.main,
   },
   errorButton: {
     borderRadius: 8,
@@ -43,14 +33,6 @@ const useStyles = makeStyles(({ palette }) => ({
     fontWeight: 600,
     userSelect: 'none',
     cursor: 'pointer',
-  },
-  loadingWrapper: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    '& p': {
-      marginLeft: 8,
-    },
   },
 }));
 
@@ -72,28 +54,28 @@ const PendingView: React.FC<PendingViewProps> = ({
 
   return (
     <Box className={classes.pendingSection}>
-      <Box className={classes.loadingMessage}>
-        <Box className={classes.loadingWrapper}>
-          {error ? (
-            <Box className={classes.errorGroup}>
-              <div>Error connecting.</div>
-              <Box
-                className={classes.errorButton}
-                onClick={() => {
-                  setPendingError(false);
-                  connector && tryActivation(connector);
-                }}
-              >
-                Try Again
-              </Box>
+      <Box display='flex' alignItems='center' justifyContent='center' mb={4}>
+        {error ? (
+          <Box className={classes.errorGroup}>
+            <Typography variant='body1'>Error connecting.</Typography>
+            <Box
+              className={classes.errorButton}
+              onClick={() => {
+                setPendingError(false);
+                connector && tryActivation(connector);
+              }}
+            >
+              Try Again
             </Box>
-          ) : (
-            <>
-              <CircularProgress />
-              <Typography>Initializing...</Typography>
-            </>
-          )}
-        </Box>
+          </Box>
+        ) : (
+          <>
+            <CircularProgress />
+            <Typography variant='body1' style={{ marginLeft: 12 }}>
+              Initializing...
+            </Typography>
+          </>
+        )}
       </Box>
       {Object.keys(SUPPORTED_WALLETS).map((key) => {
         const option = SUPPORTED_WALLETS[key];

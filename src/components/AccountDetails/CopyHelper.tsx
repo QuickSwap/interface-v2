@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button } from '@material-ui/core';
+import { Box, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import useCopyClipboard from 'hooks/useCopyClipboard';
 import { CheckCircle, Copy } from 'react-feather';
@@ -7,20 +7,11 @@ import { CheckCircle, Copy } from 'react-feather';
 const useStyles = makeStyles(({ palette }) => ({
   copyIcon: {
     color: palette.text.primary,
-    flexShrink: 0,
     display: 'flex',
-    textDecoration: 'none',
-    fontSize: '0.825rem',
+    cursor: 'pointer',
     '&:hover, &:active, &:focus': {
-      textDecoration: 'none',
       color: palette.text.secondary,
     },
-  },
-  transactionStatusText: {
-    marginLeft: '0.25rem',
-    fontSize: '0.825rem',
-    display: 'flex',
-    alignItems: 'center',
   },
 }));
 
@@ -34,19 +25,19 @@ const CopyHelper: React.FC<CopyHelperProps> = ({ toCopy, children }) => {
   const classes = useStyles();
 
   return (
-    <Button className={classes.copyIcon} onClick={() => setCopied(toCopy)}>
+    <Box className={classes.copyIcon} onClick={() => setCopied(toCopy)}>
       {isCopied ? (
-        <span className={classes.transactionStatusText}>
-          <CheckCircle size={'16'} />
-          <span className={classes.transactionStatusText}>Copied</span>
-        </span>
+        <>
+          <CheckCircle size='20' />
+          <Typography style={{ marginLeft: 4 }} variant='body2'>
+            Copied
+          </Typography>
+        </>
       ) : (
-        <span className={classes.transactionStatusText}>
-          <Copy size={'16'} />
-        </span>
+        <Copy size='20' />
       )}
       {isCopied ? '' : children}
-    </Button>
+    </Box>
   );
 };
 
