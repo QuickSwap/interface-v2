@@ -6,6 +6,7 @@ import {
   CssBaseline,
 } from '@material-ui/core';
 import { Provider } from 'react-redux';
+import { GelatoProvider } from '@gelatonetwork/limit-orders-react';
 import store from 'state';
 import {
   AnalyticsPage,
@@ -17,8 +18,11 @@ import {
 } from 'pages';
 import { PageLayout } from 'layouts';
 import { getLibrary } from 'utils';
+import StyledThemeProvider from 'theme/index';
 import { Web3ReactManager } from 'components';
 import { NetworkContextName } from 'constants/index';
+import { useActiveWeb3React } from 'hooks';
+import { useWalletModalToggle } from 'state/application/hooks';
 import ApplicationUpdater from 'state/application/updater';
 import TransactionUpdater from 'state/transactions/updater';
 import ListsUpdater from 'state/lists/updater';
@@ -63,6 +67,24 @@ function Updaters() {
   );
 }
 
+function Gelato({ children }: { children?: React.ReactNode }) {
+  const { library, chainId, account } = useActiveWeb3React();
+  const toggleWalletModal = useWalletModalToggle();
+
+  return (
+    <GelatoProvider
+      library={library}
+      chainId={chainId}
+      account={account ?? undefined}
+      handler={'quickswap'}
+      toggleWalletModal={toggleWalletModal}
+      useDefaultTheme={false}
+    >
+      {children}
+    </GelatoProvider>
+  );
+}
+
 const App: React.FC = () => {
   return (
     <Web3ReactProvider getLibrary={getLibrary}>
@@ -70,40 +92,44 @@ const App: React.FC = () => {
         <Provider store={store}>
           <Updaters />
           <Providers>
-            <Web3ReactManager>
-              <Switch>
-                <Route exact path='/'>
-                  <PageLayout>
-                    <LandingPage />
-                  </PageLayout>
-                </Route>
-                <Route exact path='/swap'>
-                  <PageLayout>
-                    <SwapPage />
-                  </PageLayout>
-                </Route>
-                <Route exact path='/pools'>
-                  <PageLayout>
-                    <PoolsPage />
-                  </PageLayout>
-                </Route>
-                <Route exact path='/farm'>
-                  <PageLayout>
-                    <FarmPage />
-                  </PageLayout>
-                </Route>
-                <Route exact path='/dragons'>
-                  <PageLayout>
-                    <DragonPage />
-                  </PageLayout>
-                </Route>
-                <Route exact path='/analytics'>
-                  <PageLayout>
-                    <AnalyticsPage />
-                  </PageLayout>
-                </Route>
-              </Switch>
-            </Web3ReactManager>
+            <StyledThemeProvider>
+              <Gelato>
+                <Web3ReactManager>
+                  <Switch>
+                    <Route exact path='/'>
+                      <PageLayout>
+                        <LandingPage />
+                      </PageLayout>
+                    </Route>
+                    <Route exact path='/swap'>
+                      <PageLayout>
+                        <SwapPage />
+                      </PageLayout>
+                    </Route>
+                    <Route exact path='/pools'>
+                      <PageLayout>
+                        <PoolsPage />
+                      </PageLayout>
+                    </Route>
+                    <Route exact path='/farm'>
+                      <PageLayout>
+                        <FarmPage />
+                      </PageLayout>
+                    </Route>
+                    <Route exact path='/dragons'>
+                      <PageLayout>
+                        <DragonPage />
+                      </PageLayout>
+                    </Route>
+                    <Route exact path='/analytics'>
+                      <PageLayout>
+                        <AnalyticsPage />
+                      </PageLayout>
+                    </Route>
+                  </Switch>
+                </Web3ReactManager>
+              </Gelato>
+            </StyledThemeProvider>
           </Providers>
         </Provider>
       </Web3ProviderNetwork>

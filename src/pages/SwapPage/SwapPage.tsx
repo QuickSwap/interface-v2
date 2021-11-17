@@ -4,6 +4,10 @@ import { Box, Typography, Grid, Divider } from '@material-ui/core';
 import { KeyboardArrowUp, KeyboardArrowDown } from '@material-ui/icons';
 import cx from 'classnames';
 import { Token } from '@uniswap/sdk';
+import {
+  GelatoLimitOrderPanel,
+  GelatoLimitOrdersHistoryPanel,
+} from '@gelatonetwork/limit-orders-react';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
 import { ReactComponent as SettingsIcon } from 'assets/images/SettingsIcon.svg';
 import {
@@ -281,7 +285,29 @@ const SwapPage: React.FC = () => {
               </Box>
             </Box>
             <Box mt={2.5}>
-              <Swap />
+              {swapIndex === 0 && <Swap />}
+              {swapIndex === 1 && (
+                <>
+                  <GelatoLimitOrderPanel />
+                  <GelatoLimitOrdersHistoryPanel />
+                  <Box mt={2} textAlign='center'>
+                    <Typography variant='body2'>
+                      <b>* Disclaimer:</b> Limit Orders on QuickSwap are
+                      provided by Gelato, a 3rd party protocol and should be
+                      considered in beta. DYOR and use at your own risk.
+                      QuickSwap is not responsible. More info can be found&nbsp;
+                      <a
+                        style={{ color: '#c7cad9' }}
+                        target='_blank'
+                        rel='noopener noreferrer'
+                        href='https://www.certik.org/projects/gelato'
+                      >
+                        here.
+                      </a>
+                    </Typography>
+                  </Box>
+                </>
+              )}
             </Box>
           </Box>
         </Grid>
