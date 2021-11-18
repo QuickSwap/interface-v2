@@ -148,9 +148,16 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
               display='flex'
               justifyContent='space-between'
               alignItems='center'
+              mb={1.5}
             >
               <Typography variant='body2'>Recent Transactions</Typography>
-              <Button onClick={clearAllTransactionsCallback}>clear all</Button>
+              <Typography
+                variant='body2'
+                style={{ cursor: 'pointer' }}
+                onClick={clearAllTransactionsCallback}
+              >
+                Clear all
+              </Typography>
             </Box>
             {renderTransactions(pendingTransactions)}
             {renderTransactions(confirmedTransactions)}

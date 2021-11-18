@@ -1,7 +1,11 @@
 import { useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useActiveWeb3React } from 'hooks';
-import { useAddPopup, useBlockNumber } from 'state/application/hooks';
+import {
+  useAddPopup,
+  useBlockNumber,
+  useRemovePopup,
+} from 'state/application/hooks';
 import { AppDispatch, AppState } from 'state';
 import { checkedTransaction, finalizeTransaction } from './actions';
 
@@ -43,6 +47,7 @@ export default function Updater(): null {
 
   // show popup on confirm
   const addPopup = useAddPopup();
+  const removePopup = useRemovePopup();
 
   useEffect(() => {
     if (!chainId || !library || !lastBlockNumber) return;
@@ -50,6 +55,23 @@ export default function Updater(): null {
     Object.keys(transactions)
       .filter((hash) => shouldCheck(lastBlockNumber, transactions[hash]))
       .forEach((hash) => {
+        addPopup(
+          {
+            txn: {
+              hash,
+              pending: true,
+              success: false,
+              summary: transactions[hash]?.summary,
+            },
+          },
+          hash,
+          null,
+        );
+
+        setTimeout(() => {
+          removePopup(hash);
+        }, 20000);
+
         library
           .getTransactionReceipt(hash)
           .then((receipt) => {
@@ -70,6 +92,8 @@ export default function Updater(): null {
                   },
                 }),
               );
+
+              removePopup(hash);
 
               addPopup(
                 {

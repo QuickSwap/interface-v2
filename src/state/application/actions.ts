@@ -5,6 +5,7 @@ export type PopupContent =
   | {
       txn: {
         hash: string;
+        pending?: boolean;
         success: boolean;
         summary?: string;
       };
