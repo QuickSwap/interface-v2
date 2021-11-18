@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Box, Divider, Typography } from '@material-ui/core';
-import { Keyboard, KeyboardArrowDown } from '@material-ui/icons';
+import { KeyboardArrowDown } from '@material-ui/icons';
 import { AlertTriangle } from 'react-feather';
 import { makeStyles } from '@material-ui/core/styles';
 import { CustomModal, QuestionHelper, ToggleSwitch } from 'components';
@@ -22,7 +22,7 @@ enum DeadlineError {
   InvalidInput = 'InvalidInput',
 }
 
-const useStyles = makeStyles(({ palette, breakpoints }) => ({
+const useStyles = makeStyles(({}) => ({
   slippageButton: {
     width: 62,
     height: 40,
@@ -333,6 +333,14 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
             minutes
           </Typography>
         </Box>
+        {deadlineError && (
+          <Typography
+            variant='body2'
+            style={{ color: '#ffa000', marginTop: 12 }}
+          >
+            Enter a valid deadline
+          </Typography>
+        )}
         <Divider />
         <Box
           my={2.5}

@@ -104,7 +104,10 @@ export function useActivePopups(): AppState['application']['popupList'] {
   return useMemo(() => list.filter((item) => item.show), [list]);
 }
 
-export function useEthPrice() {
+export function useEthPrice(): {
+  ethPrice: any;
+  updateEthPrice: ({ price, oneDayPrice, ethPriceChange }: any) => void;
+} {
   const ethPrice = useSelector((state: AppState) => state.application.ethPrice);
   const dispatch = useDispatch();
   const _updateETHPrice = useCallback(
@@ -116,7 +119,10 @@ export function useEthPrice() {
   return { ethPrice, updateEthPrice: _updateETHPrice };
 }
 
-export function useGlobalData() {
+export function useGlobalData(): {
+  globalData: any;
+  updateGlobalData: ({ data }: any) => void;
+} {
   const globalData = useSelector(
     (state: AppState) => state.application.globalData,
   );
@@ -130,7 +136,10 @@ export function useGlobalData() {
   return { globalData, updateGlobalData: _updateGlobalData };
 }
 
-export function useTopTokens() {
+export function useTopTokens(): {
+  topTokens: any;
+  updateTopTokens: ({ data }: any) => void;
+} {
   const topTokens = useSelector(
     (state: AppState) => state.application.topTokens,
   );
@@ -144,7 +153,10 @@ export function useTopTokens() {
   return { topTokens, updateTopTokens: _updateTopTokens };
 }
 
-export function useTokenPairs() {
+export function useTokenPairs(): {
+  tokenPairs: any;
+  updateTokenPairs: ({ data }: any) => void;
+} {
   const tokenPairs = useSelector(
     (state: AppState) => state.application.tokenPairs,
   );
@@ -158,7 +170,10 @@ export function useTokenPairs() {
   return { tokenPairs, updateTokenPairs: _updateTokenPairs };
 }
 
-export function useSwapTokenPrice0() {
+export function useSwapTokenPrice0(): {
+  swapTokenPrice0: any;
+  updateSwapTokenPrice0: (data: any) => void;
+} {
   const swapTokenPrice0 = useSelector(
     (state: AppState) => state.application.swapTokenPrice0,
   );
@@ -172,7 +187,10 @@ export function useSwapTokenPrice0() {
   return { swapTokenPrice0, updateSwapTokenPrice0: _updateSwapTokenPrice0 };
 }
 
-export function useSwapTokenPrice1() {
+export function useSwapTokenPrice1(): {
+  swapTokenPrice1: any;
+  updateSwapTokenPrice1: (data: any) => void;
+} {
   const swapTokenPrice1 = useSelector(
     (state: AppState) => state.application.swapTokenPrice1,
   );

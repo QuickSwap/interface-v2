@@ -7,7 +7,7 @@ import { network } from 'connectors';
 import { useEagerConnect, useInactiveListener } from 'hooks';
 import { NetworkContextName } from 'constants/index';
 
-const useStyles = makeStyles(({ palette, breakpoints }) => ({
+const useStyles = makeStyles(({}) => ({
   messageWrapper: {
     display: 'flex',
     alignItems: 'center',

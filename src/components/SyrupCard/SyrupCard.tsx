@@ -8,7 +8,7 @@ import { usePair } from 'data/Reserves';
 import useUSDCPrice from 'utils/useUSDCPrice';
 import { CurrencyLogo } from 'components';
 
-const useStyles = makeStyles(({ palette, breakpoints }) => ({
+const useStyles = makeStyles(({}) => ({
   syrupCard: {
     background: '#282d3d',
     height: 80,

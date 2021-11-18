@@ -2,7 +2,7 @@ import React from 'react';
 import { Modal, Box, Backdrop, Fade } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 
-const useStyles = makeStyles(({ palette }) => ({
+const useStyles = makeStyles(({}) => ({
   wrapper: {
     margin: 0,
     padding: 0,

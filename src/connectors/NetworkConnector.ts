@@ -221,7 +221,7 @@ export class NetworkConnector extends AbstractConnector {
     return null;
   }
 
-  public deactivate() {
+  public deactivate(): void {
     return;
   }
 }

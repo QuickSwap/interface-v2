@@ -50,10 +50,7 @@ interface OptionProps {
 
 const Option: React.FC<OptionProps> = ({
   link = null,
-  clickable = true,
-  size,
   onClick,
-  color,
   header,
   subheader = null,
   icon,

@@ -11,7 +11,7 @@ import { ReactComponent as CopyIcon } from 'assets/images/CopyIcon.svg';
 import { shortenAddress, formatCompact } from 'utils';
 import { LineChart } from 'components';
 
-const useStyles = makeStyles(({ palette, breakpoints }) => ({
+const useStyles = makeStyles(({}) => ({
   success: {
     color: '#0fc679',
   },

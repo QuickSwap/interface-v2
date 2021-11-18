@@ -11,7 +11,7 @@ import { currencyId } from 'utils';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { CurrencyLogo, DoubleCurrencyLogo } from 'components';
 
-const useStyles = makeStyles(({ palette, breakpoints }) => ({
+const useStyles = makeStyles(({ palette }) => ({
   minimalCardWrapper: {
     border: `1px solid ${palette.divider}`,
     borderRadius: 16,
@@ -32,7 +32,6 @@ interface PositionCardProps {
 export const MinimalPositionCard: React.FC<PositionCardProps> = ({
   pair,
   showUnwrapped = false,
-  border,
 }) => {
   const { account } = useActiveWeb3React();
   const classes = useStyles();
@@ -142,7 +141,7 @@ export const MinimalPositionCard: React.FC<PositionCardProps> = ({
   );
 };
 
-export default function FullPositionCard({ pair, border }: PositionCardProps) {
+const FullPositionCard: React.FC<PositionCardProps> = ({ pair }) => {
   const { account } = useActiveWeb3React();
 
   const currency0 = unwrappedToken(pair.token0);
@@ -298,4 +297,6 @@ export default function FullPositionCard({ pair, border }: PositionCardProps) {
       )}
     </Box>
   );
-}
+};
+
+export default FullPositionCard;

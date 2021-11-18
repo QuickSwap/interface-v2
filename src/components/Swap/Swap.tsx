@@ -42,7 +42,7 @@ import { ReactComponent as PriceExchangeIcon } from 'assets/images/PriceExchange
 import { ReactComponent as ExchangeIcon } from 'assets/images/ExchangeIcon.svg';
 import { ReactComponent as EditIcon } from 'assets/images/EditIcon.svg';
 
-const useStyles = makeStyles(({ palette, breakpoints }) => ({
+const useStyles = makeStyles(({ palette }) => ({
   exchangeSwap: {
     cursor: 'pointer',
     display: 'flex',
@@ -249,8 +249,7 @@ const Swap: React.FC = () => {
         return 'Swap';
       }
     } else {
-      // return isnotMatic ? 'Switch to Matic' : 'Connect Wallet';
-      return 'Enter amount';
+      return isnotMatic ? 'Switch to Matic' : 'Connect Wallet';
     }
   }, [
     formattedAmounts,

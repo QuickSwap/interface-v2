@@ -14,7 +14,7 @@ import BlindEyeIcon from 'assets/images/blindeye.svg';
 import ArrowUpIcon from 'assets/images/arrowup.svg';
 import { useTotalSupplys } from 'data/TotalSupply';
 
-const useStyles = makeStyles(({ palette, breakpoints }) => ({
+const useStyles = makeStyles(({}) => ({
   helpWrapper: {
     display: 'flex',
     alignItems: 'center',
@@ -190,7 +190,7 @@ const FarmPage: React.FC = () => {
     } else {
       return 0;
     }
-  }, [stakingInfos]);
+  }, [stakingInfos, allPairs, totalStakingSupplys, usdPrices]);
 
   const unclaimedRewards = useMemo(() => {
     if (stakingInfos && stakingInfos.length > 0) {

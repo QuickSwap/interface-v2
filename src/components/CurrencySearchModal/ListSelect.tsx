@@ -16,7 +16,7 @@ import { parseENSAddress } from 'utils/parseENSAddress';
 import uriToHttp from 'utils/uriToHttp';
 import { QuestionHelper, ListLogo } from 'components';
 
-const useStyles = makeStyles(({ palette, breakpoints }) => ({
+const useStyles = makeStyles(({ palette }) => ({
   popoverWrapper: {
     zIndex: 100,
     boxShadow:

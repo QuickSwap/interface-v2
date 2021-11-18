@@ -5,7 +5,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { CurrencyLogo } from 'components';
 import { Field } from 'state/mint/actions';
 
-const useStyles = makeStyles(({ palette, breakpoints }) => ({
+const useStyles = makeStyles(({}) => ({
   bottomRow: {
     display: 'flex',
     justifyContent: 'space-between',

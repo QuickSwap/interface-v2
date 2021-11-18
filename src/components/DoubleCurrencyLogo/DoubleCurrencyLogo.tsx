@@ -4,7 +4,7 @@ import { Box } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { CurrencyLogo } from 'components';
 
-const useStyles = makeStyles(({ palette, breakpoints }) => ({
+const useStyles = makeStyles(({}) => ({
   wrapper: {
     position: 'relative',
     display: 'flex',
@@ -21,13 +21,12 @@ interface DoubleCurrencyLogoProps {
   currency0?: Currency;
   currency1?: Currency;
 }
-
-export default function DoubleCurrencyLogo({
+const DoubleCurrencyLogo: React.FC<DoubleCurrencyLogoProps> = ({
   currency0,
   currency1,
   size = 16,
   margin = false,
-}: DoubleCurrencyLogoProps) {
+}: DoubleCurrencyLogoProps) => {
   const classes = useStyles({ size, margin });
   return (
     <Box className={classes.wrapper}>
@@ -35,4 +34,6 @@ export default function DoubleCurrencyLogo({
       <CurrencyLogo currency={currency1} size={size.toString() + 'px'} />
     </Box>
   );
-}
+};
+
+export default DoubleCurrencyLogo;

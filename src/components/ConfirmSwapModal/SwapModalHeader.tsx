@@ -9,7 +9,7 @@ import useUSDCPrice from 'utils/useUSDCPrice';
 import { computeSlippageAdjustedAmounts } from 'utils/prices';
 import { ReactComponent as ArrowDownIcon } from 'assets/images/ArrowDownIcon.svg';
 
-const useStyles = makeStyles(({ palette, breakpoints }) => ({
+const useStyles = makeStyles(({ palette }) => ({
   swapContent: {
     margin: '24px 0',
     display: 'flex',

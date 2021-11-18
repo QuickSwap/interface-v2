@@ -8,7 +8,7 @@ import { CurrencySearchModal, CurrencyLogo } from 'components';
 import { useActiveWeb3React } from 'hooks';
 import useUSDCPrice from 'utils/useUSDCPrice';
 
-const useStyles = makeStyles(({ palette, breakpoints }) => ({
+const useStyles = makeStyles(({ breakpoints }) => ({
   swapBox: {
     padding: '16px 24px',
     borderRadius: 10,

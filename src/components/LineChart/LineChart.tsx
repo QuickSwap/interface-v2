@@ -37,7 +37,7 @@ const LineChart: React.FC<LineChartProps> = ({
       opacity: 0,
     },
     xaxis: {
-      categories: data.map((val) => ''),
+      categories: data.map(() => ''),
       axisBorder: {
         show: false,
       },

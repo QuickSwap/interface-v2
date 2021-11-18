@@ -5,7 +5,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { SUGGESTED_BASES } from 'constants/index';
 import { CurrencyLogo, QuestionHelper } from 'components';
 
-const useStyles = makeStyles(({ palette, breakpoints }) => ({
+const useStyles = makeStyles(({}) => ({
   baseWrapper: {
     borderRadius: 18,
     display: 'flex',

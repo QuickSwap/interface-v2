@@ -1,4 +1,4 @@
-const addMaticToMetamask = () => {
+const addMaticToMetamask: () => void = () => {
   const { ethereum } = window as any;
   if (ethereum) {
     ethereum

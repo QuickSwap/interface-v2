@@ -35,7 +35,11 @@ export class FortmaticConnector extends AbstractConnector {
     this.chainId = chainId;
   }
 
-  async activate() {
+  async activate(): Promise<{
+    provider: any;
+    chainId: any;
+    account: any;
+  }> {
     if (!this.fortmatic) {
       const { default: Fortmatic } = await import('fortmatic');
 
@@ -85,11 +89,11 @@ export class FortmaticConnector extends AbstractConnector {
       .then((accounts: string[]): string => accounts[0]);
   }
 
-  public deactivate() {
+  public deactivate(): void {
     console.log('deactivate');
   }
 
-  public async close() {
+  public async close(): Promise<void> {
     await this.fortmatic.user.logout();
     this.emitDeactivate();
   }

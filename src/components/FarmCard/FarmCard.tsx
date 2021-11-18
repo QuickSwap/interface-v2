@@ -21,7 +21,7 @@ import { useActiveWeb3React, useIsArgentWallet } from 'hooks';
 import useTransactionDeadline from 'hooks/useTransactionDeadline';
 import { useApproveCallback, ApprovalState } from 'hooks/useApproveCallback';
 
-const useStyles = makeStyles(({ palette, breakpoints }) => ({
+const useStyles = makeStyles(({}) => ({
   syrupCard: {
     background: '#282d3d',
     width: '100%',
@@ -91,7 +91,7 @@ const FarmCard: React.FC<{ stakingInfo: StakingInfo }> = ({ stakingInfo }) => {
   const [isExpandCard, setExpandCard] = useState(false);
   const [stakeAmount, setStakeAmount] = useState('');
   const [attempting, setAttempting] = useState(false);
-  const [hash, setHash] = useState<string | undefined>();
+  // const [hash, setHash] = useState<string | undefined>();
   const [unstakeAmount, setUnStakeAmount] = useState('');
 
   const token0 = stakingInfo.tokens[0];
@@ -233,7 +233,7 @@ const FarmCard: React.FC<{ stakingInfo: StakingInfo }> = ({ stakingInfo }) => {
           addTransaction(response, {
             summary: `Withdraw deposited liquidity`,
           });
-          setHash(response.hash);
+          // setHash(response.hash);
         })
         .catch((error: any) => {
           setAttempting(false);
@@ -251,7 +251,7 @@ const FarmCard: React.FC<{ stakingInfo: StakingInfo }> = ({ stakingInfo }) => {
           addTransaction(response, {
             summary: `Claim accumulated rewards`,
           });
-          setHash(response.hash);
+          // setHash(response.hash);
         })
         .catch((error: any) => {
           setAttempting(false);
@@ -260,7 +260,7 @@ const FarmCard: React.FC<{ stakingInfo: StakingInfo }> = ({ stakingInfo }) => {
     }
   };
 
-  const { parsedAmount, error } = useDerivedStakeInfo(
+  const { parsedAmount } = useDerivedStakeInfo(
     stakeAmount,
     stakingInfo.stakedAmount.token,
     userLiquidityUnstaked,
@@ -309,7 +309,7 @@ const FarmCard: React.FC<{ stakingInfo: StakingInfo }> = ({ stakingInfo }) => {
             addTransaction(response, {
               summary: `Deposit liquidity`,
             });
-            setHash(response.hash);
+            // setHash(response.hash);
           })
           .catch((error: any) => {
             setAttempting(false);

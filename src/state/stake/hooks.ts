@@ -200,8 +200,8 @@ import { tryParseAmount } from '../swap/hooks';
 import Web3 from 'web3';
 import { useLairContract, useQUICKContract } from '../../hooks/useContract';
 import useUSDCPrice from '../../utils/useUSDCPrice';
-import { useSelector } from 'react-redux';
-import { AppState } from '..';
+// import { useSelector } from 'react-redux';
+// import { AppState } from '..';
 
 const web3 = new Web3('https://polygon-rpc.com/');
 

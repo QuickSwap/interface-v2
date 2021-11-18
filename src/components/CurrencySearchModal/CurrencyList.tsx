@@ -36,7 +36,7 @@ function currencyKey(currency: Token): string {
     : '';
 }
 
-const useStyles = makeStyles(({ palette, breakpoints }) => ({
+const useStyles = makeStyles(({}) => ({
   tag: {
     fontSize: 14,
     borderRadius: 4,

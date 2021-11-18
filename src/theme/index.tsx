@@ -111,11 +111,9 @@ export function theme(darkMode: boolean): DefaultTheme {
   };
 }
 
-export default function ThemeProvider({
+const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
-}: {
-  children: React.ReactNode;
-}) {
+}) => {
   const darkMode = useIsDarkMode();
 
   const themeObject = useMemo(() => theme(darkMode), [darkMode]);
@@ -125,4 +123,6 @@ export default function ThemeProvider({
       {children}
     </StyledComponentsThemeProvider>
   );
-}
+};
+
+export default ThemeProvider;

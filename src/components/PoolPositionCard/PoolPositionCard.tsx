@@ -17,7 +17,7 @@ import {
   RemoveLiquidityModal,
 } from 'components';
 
-const useStyles = makeStyles(({ palette, breakpoints }) => ({
+const useStyles = makeStyles(({}) => ({
   poolButtonRow: {
     display: 'flex',
     alignItems: 'center',

@@ -129,7 +129,11 @@ export class SafeAppConnector extends AbstractConnector {
   private safe: SafeInfo | undefined;
   private provider: SafeAppProvider | undefined;
 
-  async activate() {
+  async activate(): Promise<{
+    provider: SafeAppProvider;
+    chainId: number;
+    account: string;
+  }> {
     this.safe = await this.sdk.safe.getInfo();
     return {
       provider: await this.getProvider(),
@@ -163,7 +167,7 @@ export class SafeAppConnector extends AbstractConnector {
     return safe.safeAddress;
   }
 
-  public deactivate() {
+  public deactivate(): void {
     return;
   }
 }

@@ -79,11 +79,11 @@ export class ArkaneConnector extends AbstractConnector {
       .then((accounts: any): string => accounts.wallets[0].address);
   }
 
-  public deactivate() {
+  public deactivate(): void {
     console.log('deactivate');
   }
 
-  public async close() {
+  public async close(): Promise<void> {
     await this.arkane.logout();
     this.emitDeactivate();
   }

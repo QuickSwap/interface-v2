@@ -125,7 +125,7 @@ export function useApproveCallback(
 export function useApproveCallbackFromTrade(
   trade?: Trade,
   allowedSlippage = 0,
-) {
+): [ApprovalState, () => Promise<void>] {
   const amountToApprove = useMemo(
     () =>
       trade

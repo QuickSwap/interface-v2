@@ -4,7 +4,7 @@ import { HelpCircle as Question, PlusCircle } from 'react-feather';
 import { makeStyles } from '@material-ui/core/styles';
 import { CustomTooltip } from 'components';
 
-const useStyles = makeStyles(({ palette, breakpoints }) => ({
+const useStyles = makeStyles(({ palette }) => ({
   questionWrapper: {
     display: 'flex',
     alignItems: 'center',
@@ -59,7 +59,7 @@ const QuestionHelper: React.FC<{ text: string; size?: number }> = ({
 
 export default QuestionHelper;
 
-export function PlusHelper({ text }: { text: string }) {
+export const PlusHelper: React.FC<{ text: string }> = ({ text }) => {
   const classes = useStyles();
 
   return (
@@ -69,9 +69,9 @@ export function PlusHelper({ text }: { text: string }) {
       </Box>
     </CustomTooltip>
   );
-}
+};
 
-export function LightQuestionHelper({ text }: { text: string }) {
+export const LightQuestionHelper: React.FC<{ text: string }> = ({ text }) => {
   const classes = useStyles();
 
   return (
@@ -81,4 +81,4 @@ export function LightQuestionHelper({ text }: { text: string }) {
       </Box>
     </CustomTooltip>
   );
-}
+};

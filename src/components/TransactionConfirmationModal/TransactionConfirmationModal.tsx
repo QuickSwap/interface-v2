@@ -5,12 +5,12 @@ import { makeStyles } from '@material-ui/core/styles';
 import { CustomModal } from 'components';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 import { ReactComponent as TransactionFailed } from 'assets/images/TransactionFailed.svg';
-import { ReactComponent as TransactionSuccess } from 'assets/images/TransactionSuccess.svg';
+// import { ReactComponent as TransactionSuccess } from 'assets/images/TransactionSuccess.svg';
 import { getEtherscanLink } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import ModalBg from 'assets/images/ModalBG.svg';
 
-const useStyles = makeStyles(({ palette, breakpoints }) => ({
+const useStyles = makeStyles(({}) => ({
   modalHeader: {
     display: 'flex',
     alignItems: 'center',

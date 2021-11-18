@@ -81,12 +81,12 @@ export class WalletLinkConnector extends AbstractConnector {
     return accounts[0];
   }
 
-  public deactivate() {
+  public deactivate(): void {
     this.provider.removeListener('chainChanged', this.handleChainChanged);
     this.provider.removeListener('accountsChanged', this.handleAccountsChanged);
   }
 
-  public async close() {
+  public async close(): Promise<void> {
     this.provider.close();
     this.emitDeactivate();
   }

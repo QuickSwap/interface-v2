@@ -7,7 +7,9 @@ import useHttpLocations from 'hooks/useHttpLocations';
 import { WrappedTokenInfo } from 'state/lists/hooks';
 import { Logo } from 'components';
 
-export const getTokenLogoURL = (address: string) => {
+export const getTokenLogoURL: (address: string) => string = (
+  address: string,
+) => {
   let uri;
   if (address?.toLowerCase() === '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270') {
     address = '0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0';
@@ -1548,7 +1550,7 @@ export const getTokenLogoURL = (address: string) => {
   return uri;
 };
 
-const useStyles = makeStyles(({ palette, breakpoints }) => ({
+const useStyles = makeStyles(({}) => ({
   logoStyled: {
     boxShadow: '0px 6px 10px rgba(0, 0, 0, 0.075)',
     borderRadius: 24,
@@ -1586,7 +1588,13 @@ const CurrencyLogo: React.FC<CurrencyLogoProps> = ({
 
   if (currency === ETHER) {
     return (
-      <Box width={size} height={size} borderRadius={size} overflow='hidden'>
+      <Box
+        style={style}
+        width={size}
+        height={size}
+        borderRadius={size}
+        overflow='hidden'
+      >
         <img
           className={classes.logoStyled}
           style={{ width: size, height: size }}

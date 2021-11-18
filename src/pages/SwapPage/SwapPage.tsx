@@ -37,7 +37,7 @@ import { Field } from 'state/swap/actions';
 import { useAllTokens } from 'hooks/Tokens';
 import dayjs from 'dayjs';
 
-const useStyles = makeStyles(({ palette, breakpoints }) => ({
+const useStyles = makeStyles(({ breakpoints }) => ({
   helpWrapper: {
     display: 'flex',
     alignItems: 'center',

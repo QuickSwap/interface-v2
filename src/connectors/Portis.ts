@@ -103,7 +103,7 @@ export class PortisConnector extends AbstractConnector {
       .then((accounts: string[]): string => accounts[0]);
   }
 
-  public deactivate() {
+  public deactivate(): void {
     this.portis.onLogout(() => {
       console.log('logout');
     });
@@ -118,7 +118,7 @@ export class PortisConnector extends AbstractConnector {
   public async changeNetwork(
     newNetwork: number | Network,
     isGasRelayEnabled?: boolean,
-  ) {
+  ): Promise<void> {
     if (typeof newNetwork === 'number') {
       invariant(
         !!chainIdToNetwork[newNetwork],
@@ -135,7 +135,7 @@ export class PortisConnector extends AbstractConnector {
     }
   }
 
-  public async close() {
+  public async close(): Promise<void> {
     await this.portis.logout();
     this.emitDeactivate();
   }

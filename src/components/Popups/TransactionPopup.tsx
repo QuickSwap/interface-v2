@@ -5,7 +5,7 @@ import { useActiveWeb3React } from 'hooks';
 import { getEtherscanLink } from 'utils/index';
 import { ReactComponent as ArrowTopRight } from 'assets/images/ArrowTopRight.svg';
 
-const useStyles = makeStyles(({ palette }) => ({
+const useStyles = makeStyles(({}) => ({
   pendingBar: {
     position: 'absolute',
     bottom: 0,

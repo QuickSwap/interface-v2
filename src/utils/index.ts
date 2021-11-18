@@ -70,7 +70,7 @@ const TOKEN_OVERRIDES: {
   },
 };
 
-export async function getBlockFromTimestamp(timestamp: number) {
+export async function getBlockFromTimestamp(timestamp: number): Promise<any> {
   const result = await blockClient.query({
     query: GET_BLOCK,
     variables: {
@@ -87,7 +87,7 @@ export function formatCompact(
   decimals = 18,
   maximumFractionDigits: number | undefined = 3,
   maxPrecision: number | undefined = 4,
-) {
+): string {
   const formatter = Intl.NumberFormat('en', {
     notation: 'compact',
     maximumFractionDigits,
@@ -106,7 +106,10 @@ export function formatCompact(
   return formatter.format(Number(formatted.toPrecision(maxPrecision)));
 }
 
-export const getPercentChange = (valueNow: any, value24HoursAgo: any) => {
+export const getPercentChange: (
+  valueNow: any,
+  value24HoursAgo: any,
+) => number = (valueNow: any, value24HoursAgo: any) => {
   const adjustedPercentChange =
     ((Number(valueNow) - Number(value24HoursAgo)) / Number(value24HoursAgo)) *
     100;
@@ -122,7 +125,7 @@ export async function splitQuery(
   vars: any,
   list: any,
   skipCount = 100,
-) {
+): Promise<any> {
   let fetchedData = {};
   let allFound = false;
   let skip = 0;
@@ -157,7 +160,12 @@ export async function splitQuery(
 export async function getBlocksFromTimestamps(
   timestamps: number[],
   skipCount = 500,
-) {
+): Promise<
+  {
+    timestamp: string;
+    number: any;
+  }[]
+> {
   if (timestamps?.length === 0) {
     return [];
   }
@@ -184,11 +192,11 @@ export async function getBlocksFromTimestamps(
   return blocks;
 }
 
-export const get2DayPercentChange = (
+export const get2DayPercentChange: (
   valueNow: any,
   value24HoursAgo: any,
   value48HoursAgo: any,
-) => {
+) => number[] = (valueNow: any, value24HoursAgo: any, value48HoursAgo: any) => {
   // get volume info for both 24 hour periods
   const currentChange = Number(valueNow) - Number(value24HoursAgo);
   const previousChange = Number(value24HoursAgo) - Number(value48HoursAgo);
@@ -202,7 +210,7 @@ export const get2DayPercentChange = (
   return [currentChange, adjustedPercentChange];
 };
 
-export const getEthPrice = async () => {
+export const getEthPrice: () => Promise<number[]> = async () => {
   const utcCurrentTime = dayjs();
   //utcCurrentTime = utcCurrentTime.subtract(0.3, 'day');
 
@@ -236,11 +244,25 @@ export const getEthPrice = async () => {
   return [ethPrice, ethPriceOneDay, priceChangeETH];
 };
 
-export const getTopTokens = async (
+export const getTopTokens: (
   ethPrice: any,
   ethPriceOld: any,
-  count = 500,
-) => {
+  count?: number,
+) => Promise<
+  | [
+      unknown,
+      unknown,
+      unknown,
+      unknown,
+      unknown,
+      unknown,
+      unknown,
+      unknown,
+      unknown,
+      unknown,
+    ]
+  | undefined
+> = async (ethPrice: any, ethPriceOld: any, count = 500) => {
   const utcCurrentTime = dayjs();
   const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix();
   const utcTwoDaysBack = utcCurrentTime.subtract(2, 'day').unix();
@@ -368,7 +390,7 @@ export const getTopTokens = async (
   }
 };
 
-export const getTimestampsForChanges = () => {
+export const getTimestampsForChanges: () => number[] = () => {
   const utcCurrentTime = dayjs();
   //utcCurrentTime = utcCurrentTime.subtract(0.3,  'day');
   const t1 = utcCurrentTime
@@ -386,10 +408,10 @@ export const getTimestampsForChanges = () => {
   return [t1, t2, tWeek];
 };
 
-export const getTokenPairs = async (
+export const getTokenPairs: (
   tokenAddress: string,
   tokenAddress1: string,
-) => {
+) => Promise<any> = async (tokenAddress: string, tokenAddress1: string) => {
   try {
     // fetch all current and historical data
     const result = await client.query({
@@ -406,7 +428,18 @@ export const getTokenPairs = async (
   }
 };
 
-export const getIntervalTokenData = async (
+export const getIntervalTokenData: (
+  tokenAddress: string,
+  startTime: number,
+  interval: number | undefined,
+  latestBlock: any,
+) => Promise<
+  {
+    timestamp: any;
+    open: number;
+    close: number;
+  }[]
+> = async (
   tokenAddress: string,
   startTime: number,
   interval = 3600,
@@ -495,7 +528,24 @@ export const getIntervalTokenData = async (
   }
 };
 
-export const getBulkPairData = async (pairList: any, ethPrice: any) => {
+export const getBulkPairData: (
+  pairList: any,
+  ethPrice: any,
+) => Promise<
+  | [
+      unknown,
+      unknown,
+      unknown,
+      unknown,
+      unknown,
+      unknown,
+      unknown,
+      unknown,
+      unknown,
+      unknown,
+    ]
+  | undefined
+> = async (pairList: any, ethPrice: any) => {
   const [t1, t2, tWeek] = getTimestampsForChanges();
   const a = await getBlocksFromTimestamps([t1, t2, tWeek]);
   const [{ number: b1 }, { number: b2 }, { number: bWeek }] = a;
@@ -584,7 +634,14 @@ export const getBulkPairData = async (pairList: any, ethPrice: any) => {
   }
 };
 
-const parseData = (
+const parseData: (
+  data: any,
+  oneDayData: any,
+  twoDayData: any,
+  oneWeekData: any,
+  ethPrice: any,
+  oneDayBlock: any,
+) => any = (
   data: any,
   oneDayData: any,
   twoDayData: any,
@@ -668,7 +725,10 @@ export function updateNameData(data: BasicData): BasicData | undefined {
   return data;
 }
 
-export async function getGlobalData(ethPrice: any, oldEthPrice: any) {
+export async function getGlobalData(
+  ethPrice: any,
+  oldEthPrice: any,
+): Promise<any> {
   // data for each day , historic data used for % changes
   let data: any = {};
   let oneDayData: any = {};
@@ -907,7 +967,7 @@ export function getLibrary(provider: any): Web3Provider {
   return library;
 }
 
-export function isZero(hexNumberString: string) {
+export function isZero(hexNumberString: string): boolean {
   return /^0x0*$/.test(hexNumberString);
 }
 

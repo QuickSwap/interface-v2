@@ -10,7 +10,7 @@ import {
 } from 'utils/prices';
 import { QuestionHelper, FormattedPriceImpact, CurrencyLogo } from 'components';
 
-const useStyles = makeStyles(({ palette, breakpoints }) => ({
+const useStyles = makeStyles(({ palette }) => ({
   summaryRow: {
     display: 'flex',
     alignItems: 'center',

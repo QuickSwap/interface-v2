@@ -3,7 +3,7 @@ import { Box, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { ReactComponent as QuickIcon } from 'assets/images/quickIcon.svg';
 
-const useStyles = makeStyles(({ palette, breakpoints }) => ({
+const useStyles = makeStyles(({}) => ({
   footer: {
     textAlign: 'center',
     paddingBottom: 110,

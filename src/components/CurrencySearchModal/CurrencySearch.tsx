@@ -28,7 +28,7 @@ import { isAddress } from 'utils';
 import { filterTokens } from 'utils/filtering';
 import { useTokenComparator } from 'utils/sorting';
 
-const useStyles = makeStyles(({ palette, breakpoints }) => ({
+const useStyles = makeStyles(({ breakpoints }) => ({
   wrapper: {
     padding: '32px 24px 0',
     height: 620,
@@ -124,7 +124,6 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
   showCommonBases,
   onDismiss,
   isOpen,
-  onChangeList,
 }) => {
   const classes = useStyles();
   const { t } = useTranslation();

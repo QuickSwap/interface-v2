@@ -4,7 +4,7 @@ export default function useInterval(
   callback: () => void,
   delay: null | number,
   leading = true,
-) {
+): void {
   const savedCallback = useRef<() => void>();
 
   // Remember the latest callback.

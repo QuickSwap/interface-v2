@@ -5,7 +5,7 @@ import { useActivePopups } from 'state/application/hooks';
 import { useURLWarningVisible } from 'state/user/hooks';
 import PopupItem from './PopupItem';
 
-const useStyles = makeStyles(({ palette, breakpoints }) => ({
+const useStyles = makeStyles(({ breakpoints }) => ({
   mobilePopupWrapper: {
     position: 'relative',
     maxWidth: '100%',
@@ -42,7 +42,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
   },
 }));
 
-export default function Popups() {
+const Popups: React.FC = () => {
   // get all popups
   const activePopups = useActivePopups();
   const urlWarningActive = useURLWarningVisible();
@@ -80,4 +80,6 @@ export default function Popups() {
       </Box>
     </>
   );
-}
+};
+
+export default Popups;
