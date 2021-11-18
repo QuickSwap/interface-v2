@@ -491,7 +491,10 @@ const FarmCard: React.FC<{ stakingInfo: StakingInfo }> = ({ stakingInfo }) => {
                     (${valueOfUnstakedAmountInUSDC?.toSignificant(2)})
                   </span>
                 </Typography>
-                <Link to='#' style={{ color: '#448aff' }}>
+                <Link
+                  to={`/pools?currency0=${token0.address}&currency1=${token1.address}`}
+                  style={{ color: '#448aff' }}
+                >
                   Get {currency0.symbol} / {currency1.symbol} LP
                 </Link>
               </Box>

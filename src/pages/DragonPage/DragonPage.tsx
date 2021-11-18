@@ -76,6 +76,7 @@ const useStyles = makeStyles(({}) => ({
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 24,
+    cursor: 'pointer',
   },
   searchInput: {
     height: 50,

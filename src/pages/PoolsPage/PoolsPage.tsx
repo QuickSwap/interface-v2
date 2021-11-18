@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Pair, Currency } from '@uniswap/sdk';
 import { makeStyles } from '@material-ui/core/styles';
 import { Box, Grid, Typography } from '@material-ui/core';
@@ -9,6 +9,8 @@ import { ReactComponent as SettingsIcon } from 'assets/images/SettingsIcon.svg';
 import NoLiquidity from 'assets/images/NoLiquidityPool.png';
 import { AddLiquidity, PoolPositionCard, SettingsModal } from 'components';
 import { useActiveWeb3React } from 'hooks';
+import useParsedQueryString from 'hooks/useParsedQueryString';
+import { useCurrency } from 'hooks/Tokens';
 import { usePairs } from 'data/Reserves';
 import { toV2LiquidityToken, useTrackedTokenPairs } from 'state/user/hooks';
 import { useTokenBalancesWithLoadingIndicator } from 'state/wallet/hooks';
@@ -54,6 +56,17 @@ const PoolsPage: React.FC = () => {
   const classes = useStyles();
   const { account } = useActiveWeb3React();
   const [openSettingsModal, setOpenSettingsModal] = useState(false);
+  const parsedQuery = useParsedQueryString();
+  const qCurrency0 = useCurrency(
+    parsedQuery && parsedQuery.currency0
+      ? (parsedQuery.currency0 as string)
+      : undefined,
+  );
+  const qCurrency1 = useCurrency(
+    parsedQuery && parsedQuery.currency1
+      ? (parsedQuery.currency1 as string)
+      : undefined,
+  );
   const [currency0, setCurrency0] = useState<Currency | undefined>();
   const [currency1, setCurrency1] = useState<Currency | undefined>();
   const trackedTokenPairs = useTrackedTokenPairs();
@@ -97,6 +110,15 @@ const PoolsPage: React.FC = () => {
   const allV2PairsWithLiquidity = v2Pairs
     .map(([, pair]) => pair)
     .filter((v2Pair): v2Pair is Pair => Boolean(v2Pair));
+
+  useEffect(() => {
+    if (parsedQuery && parsedQuery.currency0 && qCurrency0) {
+      setCurrency0(qCurrency0);
+    }
+    if (parsedQuery && parsedQuery.currency1 && qCurrency1) {
+      setCurrency1(qCurrency1);
+    }
+  }, [parsedQuery, qCurrency0, qCurrency1]);
 
   return (
     <Box width='100%' mb={3}>

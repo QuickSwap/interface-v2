@@ -849,10 +849,10 @@ const LandingPage: React.FC = () => {
           variant='contained'
           color='secondary'
           onClick={() => {
-            history.push('/pools');
+            history.push('/farm');
           }}
         >
-          See all pools
+          See all pairs
         </Button>
       </Box>
       <Box className={classes.buyFiatContainer}>
