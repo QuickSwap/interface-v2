@@ -57,7 +57,7 @@ const PairFields = `
   }
 `;
 
-export const PAIRS_CURRENT = () => {
+export const PAIRS_CURRENT: any = () => {
   const queryString = `
   query pairs {
     pairs(first: 200, orderBy: reserveUSD, orderDirection: desc) {
@@ -67,13 +67,13 @@ export const PAIRS_CURRENT = () => {
   return gql(queryString);
 };
 
-export const PAIRS_BULK = (pairs) => {
+export const PAIRS_BULK: any = (pairs: any[]) => {
   let pairsString = `[`;
   pairs.map((pair) => {
     return (pairsString += `"${pair.toLowerCase()}"`);
   });
   pairsString += ']';
-  let queryString = `
+  const queryString = `
   ${PairFields}
   query pairs {
     pairs(first: 1000, where: { id_in: ${pairsString} }, orderBy: trackedReserveETH, orderDirection: desc) {
@@ -112,7 +112,7 @@ const TokenFields = `
   }
 `;
 
-export const TOKENS_CURRENT = (count) => {
+export const TOKENS_CURRENT: any = (count: number) => {
   const queryString = `
     ${TokenFields}
     query tokens {
@@ -124,7 +124,7 @@ export const TOKENS_CURRENT = (count) => {
   return gql(queryString);
 };
 
-export const TOKENS_DYNAMIC = (block, count) => {
+export const TOKENS_DYNAMIC: any = (block: number, count: number) => {
   const queryString = `
     ${TokenFields}
     query tokens {
@@ -136,7 +136,7 @@ export const TOKENS_DYNAMIC = (block, count) => {
   return gql(queryString);
 };
 
-export const TOKEN_DATA = (tokenAddress, block) => {
+export const TOKEN_DATA: any = (tokenAddress: string, block: number) => {
   const queryString = `
     ${TokenFields}
     query tokens {
@@ -156,7 +156,10 @@ export const TOKEN_DATA = (tokenAddress, block) => {
   return gql(queryString);
 };
 
-export const TOKEN_DATA1 = (tokenAddress, tokenAddress1) => {
+export const TOKEN_DATA1: any = (
+  tokenAddress: string,
+  tokenAddress1: string,
+) => {
   const queryString = `
     ${TokenFields}
     query tokens {
@@ -180,7 +183,7 @@ export const TOKEN_DATA1 = (tokenAddress, tokenAddress1) => {
   return gql(queryString);
 };
 
-export const PAIR_DATA = (pairAddress, block) => {
+export const PAIR_DATA: any = (pairAddress: string, block?: number) => {
   const queryString = `
     ${PairFields}
     query pairs {
@@ -193,7 +196,7 @@ export const PAIR_DATA = (pairAddress, block) => {
   return gql(queryString);
 };
 
-export const ETH_PRICE = (block) => {
+export const ETH_PRICE: any = (block?: number) => {
   const queryString = block
     ? `
     query bundles {
@@ -213,13 +216,13 @@ export const ETH_PRICE = (block) => {
   return gql(queryString);
 };
 
-export const PAIRS_HISTORICAL_BULK = (block, pairs) => {
+export const PAIRS_HISTORICAL_BULK: any = (block: number, pairs: any[]) => {
   let pairsString = `[`;
   pairs.map((pair) => {
     return (pairsString += `"${pair.toLowerCase()}"`);
   });
   pairsString += ']';
-  let queryString = `
+  const queryString = `
   query pairs {
     pairs(first: 100, where: {id_in: ${pairsString}}, block: {number: ${block}}, orderBy: trackedReserveETH, orderDirection: desc) {
       id
@@ -234,7 +237,7 @@ export const PAIRS_HISTORICAL_BULK = (block, pairs) => {
   return gql(queryString);
 };
 
-export const PRICES_BY_BLOCK = (tokenAddress, blocks) => {
+export const PRICES_BY_BLOCK: any = (tokenAddress: string, blocks: any[]) => {
   let queryString = 'query blocks {';
   queryString += blocks.map(
     (block) => `
@@ -256,7 +259,7 @@ export const PRICES_BY_BLOCK = (tokenAddress, blocks) => {
   return gql(queryString);
 };
 
-export const GLOBAL_DATA = (block) => {
+export const GLOBAL_DATA: any = (block?: number) => {
   const queryString = ` query uniswapFactories {
       uniswapFactories(
        ${block ? `block: { number: ${block}}` : ``} 
@@ -289,7 +292,7 @@ export const GET_BLOCK = gql`
   }
 `;
 
-export const GET_BLOCKS = (timestamps) => {
+export const GET_BLOCKS: any = (timestamps: number[]) => {
   let queryString = 'query blocks {';
   queryString += timestamps.map((timestamp) => {
     return `t${timestamp}:blocks(first: 1, orderBy: timestamp, orderDirection: desc, where: { timestamp_gt: ${timestamp}, timestamp_lt: ${timestamp +
