@@ -12,19 +12,15 @@ const useStyles = makeStyles(({ palette }) => ({
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    borderRadius: '0.5rem',
-    padding: '0.25rem 0rem',
-    fontWeight: 500,
-    fontSize: '0.825rem',
-    color: palette.text.primary,
+    marginTop: 4,
   },
   iconWrapper: {
     color: palette.primary.main,
+    display: 'flex',
   },
   transactionStatusText: {
     color: palette.primary.main,
     textDecoration: 'none',
-    fontSize: 14,
     '&:hover': {
       textDecoration: 'underline',
     },
@@ -62,7 +58,7 @@ const Transaction: React.FC<TransactionProps> = ({ hash }) => {
       </a>
       <Box className={classes.iconWrapper}>
         {pending ? (
-          <CircularProgress size='16' />
+          <CircularProgress size={16} />
         ) : success ? (
           <CheckCircle size='16' />
         ) : (

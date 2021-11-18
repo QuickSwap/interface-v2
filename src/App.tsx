@@ -19,7 +19,7 @@ import {
 import { PageLayout } from 'layouts';
 import { getLibrary } from 'utils';
 import StyledThemeProvider from 'theme/index';
-import { Web3ReactManager } from 'components';
+import { Web3ReactManager, Popups } from 'components';
 import { NetworkContextName } from 'constants/index';
 import { useActiveWeb3React } from 'hooks';
 import { useWalletModalToggle } from 'state/application/hooks';
@@ -92,6 +92,7 @@ const App: React.FC = () => {
         <Provider store={store}>
           <Updaters />
           <Providers>
+            <Popups />
             <StyledThemeProvider>
               <Gelato>
                 <Web3ReactManager>
