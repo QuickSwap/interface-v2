@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, Divider } from '@material-ui/core';
-import { TokenAmount, JSBI } from '@uniswap/sdk';
 import { makeStyles } from '@material-ui/core/styles';
+import { TransactionResponse } from '@ethersproject/providers';
 import { SyrupInfo } from 'state/stake/hooks';
 import { QUICK } from 'constants/index';
 import { unwrappedToken } from 'utils/wrappedCurrency';
@@ -10,6 +10,8 @@ import useUSDCPrice from 'utils/useUSDCPrice';
 import { useTokenBalance } from 'state/wallet/hooks';
 import { CurrencyLogo } from 'components';
 import { useActiveWeb3React } from 'hooks';
+import { useStakingContract } from 'hooks/useContract';
+import { useTransactionAdder } from 'state/transactions/hooks';
 
 const useStyles = makeStyles(({}) => ({
   syrupCard: {
@@ -35,9 +37,13 @@ const useStyles = makeStyles(({}) => ({
 }));
 
 const SyrupCard: React.FC<{ syrup: SyrupInfo }> = ({ syrup }) => {
-  const classes = useStyles();
   const [expanded, setExpanded] = useState(false);
+  const [attemptingClaim, setAttemptingClaim] = useState(false);
+  const [hashClaim, setHashClaim] = useState('');
+  const classes = useStyles();
   const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
+  const stakingContract = useStakingContract(syrup.stakingRewardAddress);
+  const addTransaction = useTransactionAdder();
 
   const { account } = useActiveWeb3React();
   const currency = unwrappedToken(syrup.token);
@@ -97,6 +103,24 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo }> = ({ syrup }) => {
   timeRemaining -= hours * HOUR;
   const minutes = (timeRemaining - (timeRemaining % MINUTE)) / MINUTE;
   timeRemaining -= minutes * MINUTE;
+
+  const onClaimReward = async () => {
+    if (stakingContract && syrup.stakedAmount) {
+      setAttemptingClaim(true);
+      await stakingContract
+        .getReward({ gasLimit: 350000 })
+        .then((response: TransactionResponse) => {
+          addTransaction(response, {
+            summary: `Claim accumulated` + syrup.token.symbol + `rewards`,
+          });
+          setHashClaim(response.hash);
+        })
+        .catch((error: any) => {
+          setAttemptingClaim(false);
+          console.log(error);
+        });
+    }
+  };
 
   useEffect(() => {
     const timeInterval = setInterval(() => {
@@ -269,12 +293,27 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo }> = ({ syrup }) => {
                 <Box className={classes.syrupButton}>
                   <Typography variant='body2'>Stake</Typography>
                 </Box>
-                <Box className={classes.syrupButton} mx={1.5}>
-                  <Typography variant='body2'>Unstake</Typography>
-                </Box>
-                <Box className={classes.syrupButton}>
-                  <Typography variant='body2'>Claim</Typography>
-                </Box>
+                {syrup.stakedAmount.greaterThan('0') && (
+                  <Box className={classes.syrupButton} ml={1.5}>
+                    <Typography variant='body2'>Unstake</Typography>
+                  </Box>
+                )}
+                {syrup.earnedAmount.greaterThan('0') && (
+                  <Box
+                    ml={1.5}
+                    className={classes.syrupButton}
+                    style={{ opacity: attemptingClaim ? 0.6 : 1 }}
+                    onClick={() => {
+                      if (!attemptingClaim) {
+                        onClaimReward();
+                      }
+                    }}
+                  >
+                    <Typography variant='body2'>
+                      {attemptingClaim && !hashClaim ? 'Claiming' : 'Claim'}
+                    </Typography>
+                  </Box>
+                )}
               </Box>
             </Box>
           </Box>
