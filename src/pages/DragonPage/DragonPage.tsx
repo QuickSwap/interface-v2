@@ -8,6 +8,7 @@ import {
   SyrupCard,
   ToggleSwitch,
   StakeQuickModal,
+  UnstakeQuickModal,
 } from 'components';
 import { useGlobalData } from 'state/application/hooks';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
@@ -108,6 +109,7 @@ const DragonPage: React.FC = () => {
   const classes = useStyles();
   const [isQUICKRate, setIsQUICKRate] = useState(false);
   const [openStakeModal, setOpenStakeModal] = useState(false);
+  const [openUnstakeModal, setOpenUnstakeModal] = useState(false);
   const lairInfo = useLairInfo();
   const syrupInfos = useSyrupInfo();
   const { globalData } = useGlobalData();
@@ -147,6 +149,12 @@ const DragonPage: React.FC = () => {
         <StakeQuickModal
           open={openStakeModal}
           onClose={() => setOpenStakeModal(false)}
+        />
+      )}
+      {openUnstakeModal && (
+        <UnstakeQuickModal
+          open={openUnstakeModal}
+          onClose={() => setOpenUnstakeModal(false)}
         />
       )}
       <Box
@@ -261,7 +269,11 @@ const DragonPage: React.FC = () => {
                   onClick={() => setIsQUICKRate(!isQUICKRate)}
                 />
               </Box>
-              <Box className={classes.stakeButton} bgcolor='#252833'>
+              <Box
+                className={classes.stakeButton}
+                bgcolor='#252833'
+                onClick={() => setOpenUnstakeModal(true)}
+              >
                 <Typography variant='body2' style={{ color: '#ebecf2' }}>
                   - Unstake QUICK
                 </Typography>

@@ -1,15 +1,20 @@
 import React, { useState } from 'react';
 import { Box, Typography, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import { ExternalLink as LinkIcon } from 'react-feather';
 import { CustomModal, ColoredSlider } from 'components';
-import { useLairInfo, useDerivedLairInfo } from 'state/stake/hooks';
+import { useLairInfo } from 'state/stake/hooks';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
-import { useCurrencyBalance, useTokenBalance } from 'state/wallet/hooks';
-import { useActiveWeb3React } from 'hooks';
-import { useApproveCallback, ApprovalState } from 'hooks/useApproveCallback';
+import { TransactionResponse } from '@ethersproject/providers';
+import { useTransactionAdder } from 'state/transactions/hooks';
 import { useLairContract } from 'hooks/useContract';
+import Web3 from 'web3';
+import { useActiveWeb3React } from 'hooks';
+import { getEtherscanLink } from 'utils';
 
-const useStyles = makeStyles(({}) => ({
+const web3 = new Web3();
+
+const useStyles = makeStyles(({ palette }) => ({
   input: {
     width: '100%',
     background: 'transparent',
@@ -25,7 +30,7 @@ const useStyles = makeStyles(({}) => ({
       'linear-gradient(104deg, #004ce6 -32%, #0098ff 54%, #00cff3 120%, #64fbd3 198%)',
     backgroundColor: 'transparent',
     height: 48,
-    width: '48%',
+    width: '100%',
     borderRadius: 10,
     '& span': {
       fontSize: 16,
@@ -36,59 +41,61 @@ const useStyles = makeStyles(({}) => ({
       backgroundColor: '#282d3d',
     },
   },
+  addressLink: {
+    textDecoration: 'none',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    color: palette.text.primary,
+    '& p': {
+      marginLeft: 4,
+    },
+    '&:hover': {
+      textDecoration: 'underline',
+    },
+  },
 }));
 
-interface StakeQuickModalProps {
+interface UnstakeQuickModalProps {
   open: boolean;
   onClose: () => void;
 }
 
-const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
+const UnstakeQuickModal: React.FC<UnstakeQuickModalProps> = ({
+  open,
+  onClose,
+}) => {
+  const { chainId } = useActiveWeb3React();
   const classes = useStyles();
   const [attempting, setAttempting] = useState(false);
-  const { account } = useActiveWeb3React();
+  const addTransaction = useTransactionAdder();
   const lairInfo = useLairInfo();
-  const QUICK = lairInfo.QUICKBalance.token;
-  const quickBalance = useCurrencyBalance(account ?? undefined, QUICK);
-  const userLiquidityUnstaked = useTokenBalance(account ?? undefined, QUICK);
+  const dQuickBalance = lairInfo.dQUICKBalance;
   const [typedValue, setTypedValue] = useState('');
   const [stakePercent, setStakePercent] = useState(0);
-  const { parsedAmount, error } = useDerivedLairInfo(
-    typedValue,
-    QUICK,
-    userLiquidityUnstaked,
-  );
+  const [hash, setHash] = useState<string | null>(null);
 
   const lairContract = useLairContract();
-  const [approval, approveCallback] = useApproveCallback(
-    parsedAmount,
-    lairInfo.lairAddress,
-  );
+  const error =
+    Number(typedValue) > Number(dQuickBalance.toSignificant()) || !typedValue;
 
-  const onAttemptToApprove = async () => {
-    if (!lairContract) throw new Error('missing dependencies');
-    const liquidityAmount = parsedAmount;
-    if (!liquidityAmount) throw new Error('missing liquidity amount');
-    return approveCallback();
-  };
-
-  const onStake = async () => {
-    setAttempting(true);
-    if (lairContract && parsedAmount) {
-      if (approval === ApprovalState.APPROVED) {
-        try {
-          await lairContract.enter(`0x${parsedAmount.raw.toString(16)}`, {
-            gasLimit: 350000,
+  const onWithdraw = async () => {
+    if (lairContract && lairInfo?.dQUICKBalance) {
+      setAttempting(true);
+      const balance = web3.utils.toWei(typedValue, 'ether');
+      await lairContract
+        .leave(balance.toString(), { gasLimit: 300000 })
+        .then((response: TransactionResponse) => {
+          addTransaction(response, {
+            summary: `Withdraw deposited liquidity`,
           });
-        } catch (err) {
           setAttempting(false);
-        }
-      } else {
-        setAttempting(false);
-        throw new Error(
-          'Attempting to stake without approval or a signature. Please contact support.',
-        );
-      }
+          setHash(response.hash);
+        })
+        .catch((error: any) => {
+          setAttempting(false);
+          console.log(error);
+        });
     }
   };
 
@@ -96,7 +103,7 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
     <CustomModal open={open} onClose={onClose}>
       <Box paddingX={3} paddingY={4}>
         <Box display='flex' alignItems='center' justifyContent='space-between'>
-          <Typography variant='h5'>Stake dQUICK</Typography>
+          <Typography variant='h5'>Unstake dQUICK</Typography>
           <CloseIcon style={{ cursor: 'pointer' }} onClick={onClose} />
         </Box>
         <Box
@@ -113,7 +120,7 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
           >
             <Typography variant='body2'>dQUICK</Typography>
             <Typography variant='body2'>
-              Balance: {quickBalance?.toSignificant(3)}
+              Balance: {dQuickBalance?.toSignificant(3)}
             </Typography>
           </Box>
           <Box mt={2} display='flex' alignItems='center'>
@@ -122,8 +129,8 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
               className={classes.input}
               value={typedValue}
               onChange={(evt: any) => {
-                const totalBalance = quickBalance
-                  ? Number(quickBalance.toSignificant())
+                const totalBalance = dQuickBalance
+                  ? Number(dQuickBalance.toSignificant())
                   : 0;
                 setTypedValue(evt.target.value);
                 setStakePercent(
@@ -142,7 +149,7 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
               }}
               onClick={() => {
                 setTypedValue(
-                  quickBalance ? quickBalance.toSignificant() : '0',
+                  dQuickBalance ? dQuickBalance.toSignificant() : '0',
                 );
                 setStakePercent(100);
               }}
@@ -160,9 +167,9 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
                 onChange={(evt: any, value) => {
                   setStakePercent(value as number);
                   setTypedValue(
-                    quickBalance
+                    dQuickBalance
                       ? (
-                          (Number(quickBalance.toSignificant()) *
+                          (Number(dQuickBalance.toSignificant()) *
                             stakePercent) /
                           100
                         ).toFixed(8)
@@ -176,32 +183,34 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
             </Typography>
           </Box>
         </Box>
-        <Box
-          mt={3}
-          display='flex'
-          justifyContent='space-between'
-          alignItems='center'
-        >
+        <Box mt={3}>
           <Button
             className={classes.stakeButton}
-            disabled={approval !== ApprovalState.NOT_APPROVED}
-            onClick={onAttemptToApprove}
+            disabled={!!error || attempting}
+            onClick={onWithdraw}
           >
-            Approve
-          </Button>
-          <Button
-            className={classes.stakeButton}
-            disabled={
-              !!error || attempting || approval !== ApprovalState.APPROVED
-            }
-            onClick={onStake}
-          >
-            {attempting ? 'Staking...' : 'Stake'}
+            {attempting ? 'Unstaking...' : 'Unstake'}
           </Button>
         </Box>
+        {chainId && hash && (
+          <Box mt={2} textAlign='center'>
+            <Typography variant='body2' style={{ marginBottom: 12 }}>
+              Transaction Submitted
+            </Typography>
+            <a
+              className={classes.addressLink}
+              href={getEtherscanLink(chainId, hash, 'transaction')}
+              target='_blank'
+              rel='noreferrer'
+            >
+              <LinkIcon size={16} />
+              <Typography variant='body2'>View on Block Explorer</Typography>
+            </a>
+          </Box>
+        )}
       </Box>
     </CustomModal>
   );
 };
 
-export default StakeQuickModal;
+export default UnstakeQuickModal;
