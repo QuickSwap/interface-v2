@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Box, Typography, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { ExternalLink as LinkIcon } from 'react-feather';
 import { CustomModal, ColoredSlider } from 'components';
 import { useLairInfo } from 'state/stake/hooks';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
@@ -9,8 +8,6 @@ import { TransactionResponse } from '@ethersproject/providers';
 import { useTransactionAdder } from 'state/transactions/hooks';
 import { useLairContract } from 'hooks/useContract';
 import Web3 from 'web3';
-import { useActiveWeb3React } from 'hooks';
-import { getEtherscanLink } from 'utils';
 
 const web3 = new Web3();
 
@@ -65,7 +62,6 @@ const UnstakeQuickModal: React.FC<UnstakeQuickModalProps> = ({
   open,
   onClose,
 }) => {
-  const { chainId } = useActiveWeb3React();
   const classes = useStyles();
   const [attempting, setAttempting] = useState(false);
   const addTransaction = useTransactionAdder();
@@ -73,24 +69,22 @@ const UnstakeQuickModal: React.FC<UnstakeQuickModalProps> = ({
   const dQuickBalance = lairInfo.dQUICKBalance;
   const [typedValue, setTypedValue] = useState('');
   const [stakePercent, setStakePercent] = useState(0);
-  const [hash, setHash] = useState<string | null>(null);
 
   const lairContract = useLairContract();
   const error =
     Number(typedValue) > Number(dQuickBalance.toSignificant()) || !typedValue;
 
-  const onWithdraw = async () => {
+  const onWithdraw = () => {
     if (lairContract && lairInfo?.dQUICKBalance) {
       setAttempting(true);
       const balance = web3.utils.toWei(typedValue, 'ether');
-      await lairContract
+      lairContract
         .leave(balance.toString(), { gasLimit: 300000 })
         .then((response: TransactionResponse) => {
           addTransaction(response, {
-            summary: `Withdraw deposited liquidity`,
+            summary: `Unstake QUICK`,
           });
-          setAttempting(false);
-          setHash(response.hash);
+          onClose();
         })
         .catch((error: any) => {
           setAttempting(false);
@@ -192,22 +186,6 @@ const UnstakeQuickModal: React.FC<UnstakeQuickModalProps> = ({
             {attempting ? 'Unstaking...' : 'Unstake'}
           </Button>
         </Box>
-        {chainId && hash && (
-          <Box mt={2} textAlign='center'>
-            <Typography variant='body2' style={{ marginBottom: 12 }}>
-              Transaction Submitted
-            </Typography>
-            <a
-              className={classes.addressLink}
-              href={getEtherscanLink(chainId, hash, 'transaction')}
-              target='_blank'
-              rel='noreferrer'
-            >
-              <LinkIcon size={16} />
-              <Typography variant='body2'>View on Block Explorer</Typography>
-            </a>
-          </Box>
-        )}
       </Box>
     </CustomModal>
   );

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Box, Typography, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import { TransactionResponse } from '@ethersproject/providers';
 import { CustomModal, ColoredSlider } from 'components';
 import { useLairInfo, useDerivedLairInfo } from 'state/stake/hooks';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
@@ -8,6 +9,7 @@ import { useCurrencyBalance, useTokenBalance } from 'state/wallet/hooks';
 import { useActiveWeb3React } from 'hooks';
 import { useApproveCallback, ApprovalState } from 'hooks/useApproveCallback';
 import { useLairContract } from 'hooks/useContract';
+import { useTransactionAdder } from 'state/transactions/hooks';
 
 const useStyles = makeStyles(({}) => ({
   input: {
@@ -47,6 +49,7 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
   const classes = useStyles();
   const [attempting, setAttempting] = useState(false);
   const { account } = useActiveWeb3React();
+  const addTransaction = useTransactionAdder();
   const lairInfo = useLairInfo();
   const QUICK = lairInfo.QUICKBalance.token;
   const quickBalance = useCurrencyBalance(account ?? undefined, QUICK);
@@ -77,9 +80,16 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
     if (lairContract && parsedAmount) {
       if (approval === ApprovalState.APPROVED) {
         try {
-          await lairContract.enter(`0x${parsedAmount.raw.toString(16)}`, {
-            gasLimit: 350000,
+          const response: TransactionResponse = await lairContract.enter(
+            `0x${parsedAmount.raw.toString(16)}`,
+            {
+              gasLimit: 350000,
+            },
+          );
+          addTransaction(response, {
+            summary: `Stake QUICK`,
           });
+          onClose();
         } catch (err) {
           setAttempting(false);
         }
