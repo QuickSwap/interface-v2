@@ -34,6 +34,7 @@ import {
   RewardSlider,
   AddLiquidity,
   CurrencyLogo,
+  StakeQuickModal,
 } from 'components';
 import { useActiveWeb3React, useInitTransak } from 'hooks';
 import {
@@ -407,6 +408,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
 const LandingPage: React.FC = () => {
   const classes = useStyles();
   const [swapIndex, setSwapIndex] = useState(0);
+  const [openStakeModal, setOpenStakeModal] = useState(false);
   const theme = useTheme();
   const { account } = useActiveWeb3React();
   const { ethereum } = window as any;
@@ -561,6 +563,12 @@ const LandingPage: React.FC = () => {
 
   return (
     <Box>
+      {openStakeModal && (
+        <StakeQuickModal
+          open={openStakeModal}
+          onClose={() => setOpenStakeModal(false)}
+        />
+      )}
       <Box className={classes.heroSection}>
         <Typography
           variant='body2'
@@ -704,6 +712,7 @@ const LandingPage: React.FC = () => {
           </Box>
           <Typography
             style={{ color: '#448aff', fontSize: '12px', cursor: 'pointer' }}
+            onClick={() => setOpenStakeModal(true)}
           >
             stake {'>'}
           </Typography>

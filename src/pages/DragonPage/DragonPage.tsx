@@ -3,7 +3,12 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Box, Typography, Grid, Divider } from '@material-ui/core';
 import { useLairInfo, useSyrupInfo } from 'state/stake/hooks';
 import { QUICK } from 'constants/index';
-import { CurrencyLogo, SyrupCard, ToggleSwitch } from 'components';
+import {
+  CurrencyLogo,
+  SyrupCard,
+  ToggleSwitch,
+  StakeQuickModal,
+} from 'components';
 import { useGlobalData } from 'state/application/hooks';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
 import DragonBg1 from 'assets/images/DragonBg1.svg';
@@ -102,6 +107,7 @@ const useStyles = makeStyles(({}) => ({
 const DragonPage: React.FC = () => {
   const classes = useStyles();
   const [isQUICKRate, setIsQUICKRate] = useState(false);
+  const [openStakeModal, setOpenStakeModal] = useState(false);
   const lairInfo = useLairInfo();
   const syrupInfos = useSyrupInfo();
   const { globalData } = useGlobalData();
@@ -137,6 +143,12 @@ const DragonPage: React.FC = () => {
 
   return (
     <Box width='100%' mb={3}>
+      {openStakeModal && (
+        <StakeQuickModal
+          open={openStakeModal}
+          onClose={() => setOpenStakeModal(false)}
+        />
+      )}
       <Box
         mb={4}
         display='flex'
@@ -259,6 +271,7 @@ const DragonPage: React.FC = () => {
                 style={{
                   backgroundImage: 'linear-gradient(279deg, #004ce6, #3d71ff)',
                 }}
+                onClick={() => setOpenStakeModal(true)}
               >
                 <Typography variant='body2'>Stake QUICK</Typography>
               </Box>

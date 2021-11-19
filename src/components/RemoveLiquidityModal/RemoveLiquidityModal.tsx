@@ -421,7 +421,6 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
           <Button
             className={classes.removeButton}
             onClick={onAttemptToApprove}
-            // confirmed={approval === ApprovalState.APPROVED || signatureData !== null}
             disabled={
               approval !== ApprovalState.NOT_APPROVED || signatureData !== null
             }
@@ -441,7 +440,6 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
               Boolean(error) ||
               (signatureData === null && approval !== ApprovalState.APPROVED)
             }
-            // error={!isValid && !!parsedAmounts[Field.CURRENCY_A] && !!parsedAmounts[Field.CURRENCY_B]}
           >
             {error || 'Remove'}
           </Button>
