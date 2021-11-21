@@ -17,6 +17,7 @@ export { default as PoolPositionCard } from './PoolPositionCard';
 export { default as RemoveLiquidityModal } from './RemoveLiquidityModal';
 export { default as SettingsModal } from './SettingsModal';
 export { default as StakeQuickModal } from './StakeQuickModal';
+export { default as StakeSyrupModal } from './StakeSyrupModal';
 export { default as UnstakeQuickModal } from './UnstakeQuickModal';
 export {
   default as FullPositionCard,

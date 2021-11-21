@@ -8,10 +8,13 @@ import { unwrappedToken } from 'utils/wrappedCurrency';
 import { usePair } from 'data/Reserves';
 import useUSDCPrice from 'utils/useUSDCPrice';
 import { useTokenBalance } from 'state/wallet/hooks';
-import { CurrencyLogo } from 'components';
+import { CurrencyLogo, StakeSyrupModal } from 'components';
 import { useActiveWeb3React } from 'hooks';
 import { useStakingContract } from 'hooks/useContract';
-import { useTransactionAdder } from 'state/transactions/hooks';
+import {
+  useTransactionAdder,
+  useTransactionFinalizer,
+} from 'state/transactions/hooks';
 
 const useStyles = makeStyles(({}) => ({
   syrupCard: {
@@ -39,11 +42,15 @@ const useStyles = makeStyles(({}) => ({
 const SyrupCard: React.FC<{ syrup: SyrupInfo }> = ({ syrup }) => {
   const [expanded, setExpanded] = useState(false);
   const [attemptingClaim, setAttemptingClaim] = useState(false);
+  const [attemptingUnstake, setAttemptingUnstake] = useState(false);
+  const [openStakeModal, setOpenStakeModal] = useState(false);
   const [hashClaim, setHashClaim] = useState('');
+  const [hashUnstake, setHashUnstake] = useState('');
   const classes = useStyles();
   const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
   const stakingContract = useStakingContract(syrup.stakingRewardAddress);
   const addTransaction = useTransactionAdder();
+  const finalizedTransaction = useTransactionFinalizer();
 
   const { account } = useActiveWeb3React();
   const currency = unwrappedToken(syrup.token);
@@ -122,6 +129,28 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo }> = ({ syrup }) => {
     }
   };
 
+  const onWithdraw = async () => {
+    if (stakingContract && syrup.stakedAmount) {
+      setAttemptingUnstake(true);
+      await stakingContract
+        .exit({ gasLimit: 300000 })
+        .then(async (response: TransactionResponse) => {
+          addTransaction(response, {
+            summary: `Withdraw deposited liquidity`,
+          });
+          setHashUnstake(response.hash);
+          const receipt = await response.wait();
+          finalizedTransaction(receipt, {
+            summary: `Withdraw deposited dQUICK`,
+          });
+        })
+        .catch((error: any) => {
+          setAttemptingUnstake(false);
+          console.log(error);
+        });
+    }
+  };
+
   useEffect(() => {
     const timeInterval = setInterval(() => {
       setCurrentTime(Math.floor(Date.now() / 1000));
@@ -131,6 +160,13 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo }> = ({ syrup }) => {
 
   return (
     <Box className={classes.syrupCard}>
+      {openStakeModal && (
+        <StakeSyrupModal
+          open={openStakeModal}
+          onClose={() => setOpenStakeModal(false)}
+          syrup={syrup}
+        />
+      )}
       <Box
         display='flex'
         alignItems='center'
@@ -290,12 +326,28 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo }> = ({ syrup }) => {
                 </Box>
               )}
               <Box display='flex' alignItems='center'>
-                <Box className={classes.syrupButton}>
+                <Box
+                  className={classes.syrupButton}
+                  onClick={() => setOpenStakeModal(true)}
+                >
                   <Typography variant='body2'>Stake</Typography>
                 </Box>
                 {syrup.stakedAmount.greaterThan('0') && (
-                  <Box className={classes.syrupButton} ml={1.5}>
-                    <Typography variant='body2'>Unstake</Typography>
+                  <Box
+                    className={classes.syrupButton}
+                    ml={1.5}
+                    style={{ opacity: attemptingUnstake ? 0.6 : 1 }}
+                    onClick={() => {
+                      if (!attemptingUnstake) {
+                        onWithdraw();
+                      }
+                    }}
+                  >
+                    <Typography variant='body2'>
+                      {attemptingUnstake && !hashUnstake
+                        ? 'Unstaking...'
+                        : 'Unstake'}
+                    </Typography>
                   </Box>
                 )}
                 {syrup.earnedAmount.greaterThan('0') && (
@@ -310,7 +362,7 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo }> = ({ syrup }) => {
                     }}
                   >
                     <Typography variant='body2'>
-                      {attemptingClaim && !hashClaim ? 'Claiming' : 'Claim'}
+                      {attemptingClaim && !hashClaim ? 'Claiming...' : 'Claim'}
                     </Typography>
                   </Box>
                 )}

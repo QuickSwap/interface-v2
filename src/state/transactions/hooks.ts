@@ -1,10 +1,14 @@
-import { TransactionResponse } from '@ethersproject/providers';
+import {
+  TransactionResponse,
+  TransactionReceipt,
+} from '@ethersproject/providers';
 import { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { useActiveWeb3React } from 'hooks';
+import { useAddPopup } from 'state/application/hooks';
 import { AppDispatch, AppState } from 'state';
-import { addTransaction } from './actions';
+import { addTransaction, finalizeTransaction } from './actions';
 import { TransactionDetails } from './reducer';
 
 // helper that can take a ethers library transaction response and add it to the list of transactions
@@ -51,6 +55,69 @@ export function useTransactionAdder(): (
       );
     },
     [dispatch, chainId, account],
+  );
+}
+
+export function useTransactionFinalizer(): (
+  receipt: TransactionReceipt,
+  customData?: {
+    summary?: string;
+    approval?: { tokenAddress: string; spender: string };
+    claim?: { recipient: string };
+  },
+) => void {
+  const { chainId, account } = useActiveWeb3React();
+  const dispatch = useDispatch<AppDispatch>();
+  const addPopup = useAddPopup();
+
+  return useCallback(
+    (
+      receipt: TransactionReceipt,
+      {
+        summary,
+        approval,
+        claim,
+      }: {
+        summary?: string;
+        claim?: { recipient: string };
+        approval?: { tokenAddress: string; spender: string };
+      } = {},
+    ) => {
+      if (!account) return;
+      if (!chainId) return;
+
+      const { transactionHash } = receipt;
+      if (!transactionHash) {
+        throw Error('No transaction hash found.');
+      }
+      dispatch(
+        finalizeTransaction({
+          chainId,
+          hash: transactionHash,
+          receipt: {
+            blockHash: receipt.blockHash,
+            blockNumber: receipt.blockNumber,
+            contractAddress: receipt.contractAddress,
+            from: receipt.from,
+            status: receipt.status,
+            to: receipt.to,
+            transactionHash: receipt.transactionHash,
+            transactionIndex: receipt.transactionIndex,
+          },
+        }),
+      );
+      addPopup(
+        {
+          txn: {
+            hash: transactionHash,
+            success: receipt.status === 1,
+            summary: summary,
+          },
+        },
+        transactionHash,
+      );
+    },
+    [dispatch, chainId, account, addPopup],
   );
 }
 
