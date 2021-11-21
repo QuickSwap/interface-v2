@@ -1,5 +1,6 @@
 import { BigNumber } from '@ethersproject/bignumber';
 import { Contract } from '@ethersproject/contracts';
+import { TransactionResponse } from '@ethersproject/providers';
 import {
   JSBI,
   Percent,
@@ -132,7 +133,9 @@ export function useSwapCallback(
   recipientAddressOrName: string | null, // the ENS name or address of the recipient of the trade, or null if swap should be returned to sender
 ): {
   state: SwapCallbackState;
-  callback: null | (() => Promise<string>);
+  callback:
+    | null
+    | (() => Promise<{ response: TransactionResponse; summary: string }>);
   error: string | null;
 } {
   const { account, chainId, library } = useActiveWeb3React();
@@ -177,7 +180,10 @@ export function useSwapCallback(
 
     return {
       state: SwapCallbackState.VALID,
-      callback: async function onSwap(): Promise<string> {
+      callback: async function onSwap(): Promise<{
+        response: TransactionResponse;
+        summary: string;
+      }> {
         const estimatedCalls: EstimatedSwapCall[] = await Promise.all(
           swapCalls.map((call) => {
             const {
@@ -264,7 +270,7 @@ export function useSwapCallback(
             ? { value, from: account }
             : { from: account }),
         })
-          .then((response: any) => {
+          .then((response: TransactionResponse) => {
             const inputSymbol = trade.inputAmount.currency.symbol;
             const outputSymbol = trade.outputAmount.currency.symbol;
             const inputAmount = trade.inputAmount.toSignificant(3);
@@ -289,7 +295,7 @@ export function useSwapCallback(
               summary: withVersion,
             });
 
-            return response.hash;
+            return { response, summary: withVersion };
           })
           .catch((error: any) => {
             // if the user rejected the tx, pass this along

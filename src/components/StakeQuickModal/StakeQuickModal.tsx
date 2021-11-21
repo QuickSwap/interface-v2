@@ -9,7 +9,10 @@ import { useCurrencyBalance, useTokenBalance } from 'state/wallet/hooks';
 import { useActiveWeb3React } from 'hooks';
 import { useApproveCallback, ApprovalState } from 'hooks/useApproveCallback';
 import { useLairContract } from 'hooks/useContract';
-import { useTransactionAdder } from 'state/transactions/hooks';
+import {
+  useTransactionAdder,
+  useTransactionFinalizer,
+} from 'state/transactions/hooks';
 
 const useStyles = makeStyles(({}) => ({
   input: {
@@ -50,6 +53,7 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
   const [attempting, setAttempting] = useState(false);
   const { account } = useActiveWeb3React();
   const addTransaction = useTransactionAdder();
+  const finalizedTransaction = useTransactionFinalizer();
   const lairInfo = useLairInfo();
   const QUICK = lairInfo.QUICKBalance.token;
   const quickBalance = useCurrencyBalance(account ?? undefined, QUICK);
@@ -89,7 +93,13 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
           addTransaction(response, {
             summary: `Stake QUICK`,
           });
-          onClose();
+          const receipt = await response.wait();
+          finalizedTransaction(receipt, {
+            summary: `Deposit dQUICK`,
+          });
+          setAttempting(false);
+          setStakePercent(0);
+          setTypedValue('');
         } catch (err) {
           setAttempting(false);
         }

@@ -29,6 +29,7 @@ import {
   useApproveCallbackFromTrade,
 } from 'hooks/useApproveCallback';
 import { useSwapCallback } from 'hooks/useSwapCallback';
+import { useTransactionFinalizer } from 'state/transactions/hooks';
 import useENSAddress from 'hooks/useENSAddress';
 import useWrapCallback, { WrapType } from 'hooks/useWrapCallback';
 import useToggledVersion, { Version } from 'hooks/useToggledVersion';
@@ -146,6 +147,7 @@ const Swap: React.FC = () => {
     inputError: swapInputError,
   } = useDerivedSwapInfo();
   const toggledVersion = useToggledVersion();
+  const finalizedTransaction = useTransactionFinalizer();
   const [isExpertMode] = useExpertModeManager();
   const {
     wrapType,
@@ -334,16 +336,25 @@ const Swap: React.FC = () => {
   ]);
 
   const [
-    { showConfirm, tradeToConfirm, swapErrorMessage, attemptingTxn, txHash },
+    {
+      showConfirm,
+      txPending,
+      tradeToConfirm,
+      swapErrorMessage,
+      attemptingTxn,
+      txHash,
+    },
     setSwapState,
   ] = useState<{
     showConfirm: boolean;
+    txPending?: boolean;
     tradeToConfirm: Trade | undefined;
     attemptingTxn: boolean;
     swapErrorMessage: string | undefined;
     txHash: string | undefined;
   }>({
     showConfirm: false,
+    txPending: false,
     tradeToConfirm: undefined,
     attemptingTxn: false,
     swapErrorMessage: undefined,
@@ -437,28 +448,51 @@ const Swap: React.FC = () => {
       txHash: undefined,
     });
     swapCallback()
-      .then((hash) => {
+      .then(async ({ response, summary }) => {
         setSwapState({
           attemptingTxn: false,
+          txPending: true,
           tradeToConfirm,
           showConfirm,
           swapErrorMessage: undefined,
-          txHash: hash,
+          txHash: response.hash,
         });
 
-        ReactGA.event({
-          category: 'Swap',
-          action:
-            recipient === null
-              ? 'Swap w/o Send'
-              : (recipientAddress ?? recipient) === account
-              ? 'Swap w/o Send + recipient'
-              : 'Swap w/ Send',
-          label: [
-            trade?.inputAmount?.currency?.symbol,
-            trade?.outputAmount?.currency?.symbol,
-          ].join('/'),
-        });
+        try {
+          const receipt = await response.wait();
+          finalizedTransaction(receipt, {
+            summary,
+          });
+          setSwapState({
+            attemptingTxn: false,
+            txPending: false,
+            tradeToConfirm,
+            showConfirm,
+            swapErrorMessage: undefined,
+            txHash: response.hash,
+          });
+          ReactGA.event({
+            category: 'Swap',
+            action:
+              recipient === null
+                ? 'Swap w/o Send'
+                : (recipientAddress ?? recipient) === account
+                ? 'Swap w/o Send + recipient'
+                : 'Swap w/ Send',
+            label: [
+              trade?.inputAmount?.currency?.symbol,
+              trade?.outputAmount?.currency?.symbol,
+            ].join('/'),
+          });
+        } catch (error) {
+          setSwapState({
+            attemptingTxn: false,
+            tradeToConfirm,
+            showConfirm,
+            swapErrorMessage: (error as any).message,
+            txHash: undefined,
+          });
+        }
       })
       .catch((error) => {
         setSwapState({
@@ -477,6 +511,7 @@ const Swap: React.FC = () => {
     recipientAddress,
     showConfirm,
     swapCallback,
+    finalizedTransaction,
     trade,
   ]);
 
@@ -492,6 +527,7 @@ const Swap: React.FC = () => {
         originalTrade={tradeToConfirm}
         onAcceptChanges={handleAcceptChanges}
         attemptingTxn={attemptingTxn}
+        txPending={txPending}
         txHash={txHash}
         recipient={recipient}
         allowedSlippage={allowedSlippage}

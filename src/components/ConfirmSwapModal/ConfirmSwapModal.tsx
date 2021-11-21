@@ -30,6 +30,7 @@ interface ConfirmSwapModalProps {
   trade: Trade | undefined;
   originalTrade: Trade | undefined;
   attemptingTxn: boolean;
+  txPending?: boolean;
   txHash: string | undefined;
   recipient: string | null;
   allowedSlippage: number;
@@ -50,6 +51,7 @@ const ConfirmSwapModal: React.FC<ConfirmSwapModalProps> = ({
   isOpen,
   attemptingTxn,
   txHash,
+  txPending,
 }) => {
   const showAcceptChanges = useMemo(
     () =>
@@ -103,8 +105,14 @@ const ConfirmSwapModal: React.FC<ConfirmSwapModalProps> = ({
       onDismiss={onDismiss}
       attemptingTxn={attemptingTxn}
       hash={txHash}
+      txPending={txPending}
       content={confirmationContent}
       pendingText={pendingText}
+      modalContent={
+        txPending
+          ? 'Submitted transaction to swap your tokens'
+          : 'Successfully swapped your tokens'
+      }
     />
   );
 };

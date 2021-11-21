@@ -5,7 +5,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { CustomModal } from 'components';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 import { ReactComponent as TransactionFailed } from 'assets/images/TransactionFailed.svg';
-// import { ReactComponent as TransactionSuccess } from 'assets/images/TransactionSuccess.svg';
+import { ReactComponent as TransactionSuccess } from 'assets/images/TransactionSuccess.svg';
 import { getEtherscanLink } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import ModalBg from 'assets/images/ModalBG.svg';
@@ -90,24 +90,33 @@ interface TransactionSubmittedContentProps {
   onDismiss: () => void;
   hash: string | undefined;
   chainId: ChainId;
+  txPending?: boolean;
+  modalContent: string;
 }
 
 export const TransactionSubmittedContent: React.FC<TransactionSubmittedContentProps> = ({
   onDismiss,
   chainId,
   hash,
+  txPending,
+  modalContent,
 }) => {
   const classes = useStyles();
   return (
     <Box padding={4}>
       <Box className={classes.modalHeader}>
-        <Typography variant='h5'>Transaction Submitted</Typography>
+        <Typography variant='h5'>
+          Transaction {txPending ? 'Submitted' : 'Completed'}
+        </Typography>
         <CloseIcon onClick={onDismiss} />
       </Box>
+      {!txPending && (
+        <Box mt={8} display='flex' justifyContent='center'>
+          <TransactionSuccess />
+        </Box>
+      )}
       <Box className={classes.modalContent}>
-        <Typography variant='body1'>
-          Submitted transaction to swap your tokens
-        </Typography>
+        <Typography variant='body1'>{modalContent}</Typography>
       </Box>
       <Box display='flex' justifyContent='space-between' mt={2}>
         {chainId && hash && (
@@ -195,15 +204,19 @@ interface ConfirmationModalProps {
   content: () => React.ReactNode;
   attemptingTxn: boolean;
   pendingText: string;
+  modalContent: string;
+  txPending?: boolean;
 }
 
 const TransactionConfirmationModal: React.FC<ConfirmationModalProps> = ({
   isOpen,
   onDismiss,
   attemptingTxn,
+  txPending,
   hash,
   pendingText,
   content,
+  modalContent,
 }) => {
   const { chainId } = useActiveWeb3React();
   const classes = useStyles();
@@ -223,8 +236,10 @@ const TransactionConfirmationModal: React.FC<ConfirmationModalProps> = ({
         ) : hash ? (
           <TransactionSubmittedContent
             chainId={chainId}
+            txPending={txPending}
             hash={hash}
             onDismiss={onDismiss}
+            modalContent={modalContent}
           />
         ) : (
           content()

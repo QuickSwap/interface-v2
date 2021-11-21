@@ -20,7 +20,10 @@ import useTransactionDeadline from 'hooks/useTransactionDeadline';
 import { ApprovalState, useApproveCallback } from 'hooks/useApproveCallback';
 import { Field } from 'state/mint/actions';
 import { PairState } from 'data/Reserves';
-import { useTransactionAdder } from 'state/transactions/hooks';
+import {
+  useTransactionAdder,
+  useTransactionFinalizer,
+} from 'state/transactions/hooks';
 import {
   useDerivedMintInfo,
   useMintActionHandlers,
@@ -107,10 +110,12 @@ const AddLiquidity: React.FC<{
 
   const [showConfirm, setShowConfirm] = useState(false);
   const [attemptingTxn, setAttemptingTxn] = useState(false);
+  const [txPending, setTxPending] = useState(false);
   const [allowedSlippage] = useUserSlippageTolerance();
   const deadline = useTransactionDeadline();
   const [txHash, setTxHash] = useState('');
   const addTransaction = useTransactionAdder();
+  const finalizedTransaction = useTransactionFinalizer();
 
   const { independentField, typedValue, otherTypedValue } = useMintState();
   const expertMode = useIsExpertMode();
@@ -312,22 +317,35 @@ const AddLiquidity: React.FC<{
         method(...args, {
           ...(value ? { value } : {}),
           gasLimit: calculateGasMargin(estimatedGasLimit),
-        }).then((response) => {
+        }).then(async (response) => {
           setAttemptingTxn(false);
+          setTxPending(true);
+          const summary =
+            'Add ' +
+            parsedAmounts[Field.CURRENCY_A]?.toSignificant(3) +
+            ' ' +
+            currencies[Field.CURRENCY_A]?.symbol +
+            ' and ' +
+            parsedAmounts[Field.CURRENCY_B]?.toSignificant(3) +
+            ' ' +
+            currencies[Field.CURRENCY_B]?.symbol;
 
           addTransaction(response, {
-            summary:
-              'Add ' +
-              parsedAmounts[Field.CURRENCY_A]?.toSignificant(3) +
-              ' ' +
-              currencies[Field.CURRENCY_A]?.symbol +
-              ' and ' +
-              parsedAmounts[Field.CURRENCY_B]?.toSignificant(3) +
-              ' ' +
-              currencies[Field.CURRENCY_B]?.symbol,
+            summary,
           });
 
           setTxHash(response.hash);
+
+          try {
+            const receipt = await response.wait();
+            finalizedTransaction(receipt, {
+              summary,
+            });
+            setTxPending(false);
+          } catch (error) {
+            setTxPending(false);
+            setAddLiquidityErrorMessage('There is an error in transaction.');
+          }
 
           ReactGA.event({
             category: 'Liquidity',
@@ -407,6 +425,7 @@ const AddLiquidity: React.FC<{
         isOpen={showConfirm}
         onDismiss={handleDismissConfirmation}
         attemptingTxn={attemptingTxn}
+        txPending={txPending}
         hash={txHash}
         content={() =>
           addLiquidityErrorMessage ? (
@@ -423,6 +442,11 @@ const AddLiquidity: React.FC<{
           )
         }
         pendingText={pendingText}
+        modalContent={
+          txPending
+            ? 'Submitted transaction to add liquidity'
+            : 'Successfully added liquidity'
+        }
       />
       <CurrencyInput
         title='Token 1:'
