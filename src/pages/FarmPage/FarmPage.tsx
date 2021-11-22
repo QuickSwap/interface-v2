@@ -234,14 +234,6 @@ const FarmPage: React.FC = () => {
     }
   }, [stakingInfos, stakedOnly, farmSearch]);
 
-  // const myDeposits = useMemo(() => {
-  //   if (stakingInfos && stakingInfos.length > 0) {
-  //     return stakingInfos.map(stakingInfo => {})
-  //   } else {
-  //     return 0
-  //   }
-  // }, [])
-
   return (
     <Box width='100%' mb={3}>
       <Box
