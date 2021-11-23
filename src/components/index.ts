@@ -1,6 +1,7 @@
 export { default as Header } from './Header';
 export { default as Footer } from './Footer';
 export { default as ListLogo } from './ListLogo';
+export { default as AreaChart } from './AreaChart';
 export { default as ColoredSlider } from './ColoredSlider';
 export { default as CustomTooltip } from './CustomTooltip';
 export { default as ToggleSwitch } from './ToggleSwitch';

@@ -7,6 +7,7 @@ import { blockClient, client } from 'apollo/client';
 import {
   GET_BLOCK,
   GLOBAL_DATA,
+  GLOBAL_CHART,
   GET_BLOCKS,
   ETH_PRICE,
   TOKENS_CURRENT,
@@ -830,6 +831,89 @@ export async function getGlobalData(
 
   return data;
 }
+
+export const getChartData = async (oldestDateToFetch: any) => {
+  let data: any[] = [];
+  const weeklyData: any[] = [];
+  const utcEndTime = dayjs.utc();
+  let skip = 0;
+  let allFound = false;
+
+  try {
+    while (!allFound) {
+      const result = await client.query({
+        query: GLOBAL_CHART,
+        variables: {
+          startTime: oldestDateToFetch,
+          skip,
+        },
+        fetchPolicy: 'cache-first',
+      });
+      skip += 1000;
+      data = data.concat(result.data.uniswapDayDatas);
+      if (result.data.uniswapDayDatas.length < 1000) {
+        allFound = true;
+      }
+    }
+
+    if (data) {
+      const dayIndexSet = new Set();
+      const dayIndexArray: any[] = [];
+      const oneDay = 24 * 60 * 60;
+
+      // for each day, parse the daily volume and format for chart array
+      data.forEach((dayData, i) => {
+        // add the day index to the set of days
+        dayIndexSet.add((data[i].date / oneDay).toFixed(0));
+        dayIndexArray.push(data[i]);
+        dayData.dailyVolumeUSD = parseFloat(dayData.dailyVolumeUSD);
+      });
+
+      // fill in empty days ( there will be no day datas if no trades made that day )
+      let timestamp = data[0].date ? data[0].date : oldestDateToFetch;
+      let latestLiquidityUSD = data[0].totalLiquidityUSD;
+      let latestDayDats = data[0].mostLiquidTokens;
+      let index = 1;
+      while (timestamp < utcEndTime.unix() - oneDay) {
+        const nextDay = timestamp + oneDay;
+        const currentDayIndex = (nextDay / oneDay).toFixed(0);
+        if (!dayIndexSet.has(currentDayIndex)) {
+          data.push({
+            date: nextDay,
+            dailyVolumeUSD: 0,
+            totalLiquidityUSD: latestLiquidityUSD,
+            mostLiquidTokens: latestDayDats,
+          });
+        } else {
+          latestLiquidityUSD = dayIndexArray[index].totalLiquidityUSD;
+          latestDayDats = dayIndexArray[index].mostLiquidTokens;
+          index = index + 1;
+        }
+        timestamp = nextDay;
+      }
+    }
+
+    // format weekly data for weekly sized chunks
+    data = data.sort((a, b) => (parseInt(a.date) > parseInt(b.date) ? 1 : -1));
+    let startIndexWeekly = -1;
+    let currentWeek = -1;
+    data.forEach((entry, i) => {
+      const week = dayjs.utc(dayjs.unix(data[i].date)).week();
+      if (week !== currentWeek) {
+        currentWeek = week;
+        startIndexWeekly++;
+      }
+      weeklyData[startIndexWeekly] = weeklyData[startIndexWeekly] || {};
+      weeklyData[startIndexWeekly].date = data[i].date;
+      weeklyData[startIndexWeekly].weeklyVolumeUSD =
+        (weeklyData[startIndexWeekly].weeklyVolumeUSD ?? 0) +
+        data[i].dailyVolumeUSD;
+    });
+  } catch (e) {
+    console.log(e);
+  }
+  return [data, weeklyData];
+};
 
 export function isAddress(value: any): string | false {
   try {

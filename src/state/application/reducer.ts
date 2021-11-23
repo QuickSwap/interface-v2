@@ -8,6 +8,7 @@ import {
   setOpenModal,
   updateEthPrice,
   updateGlobalData,
+  updateGlobalChartData,
   updateTopTokens,
   updateTokenPairs,
   updateSwapTokenPrice0,
@@ -27,6 +28,7 @@ export interface ApplicationState {
   readonly openModal: ApplicationModal | null;
   readonly ethPrice: any;
   readonly globalData: any;
+  readonly globalChartData: any;
   readonly topTokens: any;
   readonly tokenPairs: any;
   readonly swapTokenPrice0: any;
@@ -38,6 +40,7 @@ const initialState: ApplicationState = {
   popupList: [],
   openModal: null,
   globalData: null,
+  globalChartData: null,
   topTokens: null,
   tokenPairs: null,
   ethPrice: {
@@ -100,6 +103,9 @@ export default createReducer(initialState, (builder) =>
     )
     .addCase(updateGlobalData, (state, { payload: { data } }) => {
       state.globalData = data;
+    })
+    .addCase(updateGlobalChartData, (state, { payload: { data } }) => {
+      state.globalChartData = data;
     })
     .addCase(updateTopTokens, (state, { payload: { data } }) => {
       state.topTokens = data;
