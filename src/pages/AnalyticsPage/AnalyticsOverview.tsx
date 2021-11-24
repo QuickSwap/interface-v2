@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Box, Typography, Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import dayjs from 'dayjs';
+import moment from 'moment';
 import utc from 'dayjs/plugin/utc';
 import { useGlobalChartData } from 'state/application/hooks';
 import { getChartData } from 'utils';
@@ -51,6 +52,31 @@ const AnalyticsOverview: React.FC = () => {
     fetchChartData();
   }, [startTime]);
 
+  const liquidityDates = useMemo(() => {
+    if (globalChartData) {
+      const dates: string[] = [];
+      globalChartData.day.forEach((value: any, ind: number) => {
+        const month = moment(Number(value.date) * 1000).format('MMM');
+        const monthLastDate =
+          ind > 0
+            ? moment(Number(globalChartData.day[ind - 1].date) * 1000).format(
+                'MMM',
+              )
+            : '';
+        if (monthLastDate !== month) {
+          dates.push(month);
+        }
+        const dateStr = moment(Number(value.date) * 1000).format('D');
+        if (Number(dateStr) % 7 === 0) {
+          dates.push(dateStr);
+        }
+      });
+      return dates;
+    } else {
+      return [];
+    }
+  }, [globalChartData]);
+
   return (
     <>
       <Grid container spacing={4}>
@@ -63,7 +89,16 @@ const AnalyticsOverview: React.FC = () => {
               LIQUIDITY
             </Typography>
             <Box mt={2}>
-              <AreaChart data={[2, 3, 2.5]} />
+              {globalChartData && (
+                <AreaChart
+                  data={globalChartData.day.map(
+                    (value: any) => value.dailyVolumeUSD,
+                  )}
+                  width='100%'
+                  height={240}
+                  categories={liquidityDates}
+                />
+              )}
             </Box>
           </Box>
         </Grid>

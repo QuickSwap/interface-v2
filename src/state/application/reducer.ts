@@ -104,8 +104,8 @@ export default createReducer(initialState, (builder) =>
     .addCase(updateGlobalData, (state, { payload: { data } }) => {
       state.globalData = data;
     })
-    .addCase(updateGlobalChartData, (state, { payload: { data } }) => {
-      state.globalChartData = data;
+    .addCase(updateGlobalChartData, (state, { payload }) => {
+      state.globalChartData = payload;
     })
     .addCase(updateTopTokens, (state, { payload: { data } }) => {
       state.topTokens = data;

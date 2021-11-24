@@ -14,8 +14,7 @@ const useStyles = makeStyles(({ palette }) =>
     categoryValues: {
       display: 'flex',
       justifyContent: 'space-between',
-      marginTop: -47,
-      paddingBottom: 22,
+      marginTop: -40,
       '& p': {
         fontSize: 14,
         lineHeight: '18px',
@@ -37,7 +36,6 @@ const useStyles = makeStyles(({ palette }) =>
     },
   }),
 );
-const weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
 export interface AreaChartProps {
   backgroundColor?: string;
@@ -45,7 +43,6 @@ export interface AreaChartProps {
   categories?: Array<string | null>;
   width?: number | string;
   height?: number | string;
-  chartType?: string;
   showYAxis?: boolean;
   multiDimension?: boolean;
 }
@@ -55,7 +52,6 @@ const AreaChart: React.FC<AreaChartProps> = ({
   data = [],
   width = 500,
   height = 200,
-  chartType = 'weekly',
   showYAxis = false,
   multiDimension = false,
 }) => {
@@ -88,7 +84,7 @@ const AreaChart: React.FC<AreaChartProps> = ({
       enabled: false,
     },
     stroke: {
-      width: 3,
+      width: 2,
       colors: [strokeColor],
       curve: 'smooth' as any,
     },
@@ -102,14 +98,13 @@ const AreaChart: React.FC<AreaChartProps> = ({
       gradient: {
         gradientToColors: [backgroundColor],
         shadeIntensity: 1,
-        opacityFrom: 0.4,
-        opacityTo: 0.12,
+        opacityFrom: 0.5,
+        opacityTo: 0.15,
         stops: [0, 100],
       },
     },
     xaxis: {
-      categories:
-        chartType === 'weekly' ? categories.map(() => '') : categories,
+      categories: categories.map(() => ''),
       axisBorder: {
         show: false,
       },
@@ -145,9 +140,6 @@ const AreaChart: React.FC<AreaChartProps> = ({
     tooltip: {
       enabled: true,
       theme: dark ? 'dark' : 'light',
-      marker: {
-        show: false,
-      },
       fillSeriesColor: false,
       custom: (props: any) => {
         return categories[props.dataPointIndex]
@@ -188,24 +180,13 @@ const AreaChart: React.FC<AreaChartProps> = ({
   ];
 
   const classes = useStyles();
-  const filteredCategories = categories
-    .map((label, index) => {
-      if (
-        index === 0 ||
-        moment(categories[index - 1], 'YYYY/MM/DD').isoWeekday() !==
-          moment(label, 'YYYY/MM/DD').isoWeekday()
-      )
-        return weekdays[moment(label, 'YYYY/MM/DD').isoWeekday() - 1];
-      else return '';
-    })
-    .filter((val) => val !== '');
 
   const yAxisValues = Array.from({ length: yCount + 1 }).map((_, index) =>
     Math.round(yMax - (index * (yMax - yMin)) / yCount),
   );
 
   return (
-    <Box display='flex' mt={2.5}>
+    <Box display='flex' mt={2.5} width={width}>
       {showYAxis && (
         <Box className={classes.yAxis}>
           {yAxisValues.map((item, index) => (
@@ -221,11 +202,11 @@ const AreaChart: React.FC<AreaChartProps> = ({
           options={options}
           series={series}
           type='area'
-          width={width}
+          width='100%'
           height={height}
         />
         <Box className={classes.categoryValues}>
-          {filteredCategories.map((val, ind) => (
+          {categories.map((val, ind) => (
             <Typography key={ind}>{val}</Typography>
           ))}
         </Box>
