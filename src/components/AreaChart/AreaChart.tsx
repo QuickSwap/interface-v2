@@ -4,6 +4,7 @@ import { Box, Typography } from '@material-ui/core';
 import Chart from 'react-apexcharts';
 import moment from 'moment';
 import { useIsDarkMode } from 'state/user/hooks';
+import { formatCompact } from 'utils';
 
 const useStyles = makeStyles(({ palette }) =>
   createStyles({
@@ -15,23 +16,22 @@ const useStyles = makeStyles(({ palette }) =>
       display: 'flex',
       justifyContent: 'space-between',
       marginTop: -40,
+      marginRight: 8,
       '& p': {
-        fontSize: 14,
-        lineHeight: '18px',
-        color: palette.text.secondary,
-        opacity: 0.47,
+        fontSize: 12,
+        color: '#626680',
       },
     },
     yAxis: {
       display: 'flex',
       flexDirection: 'column',
       justifyContent: 'space-between',
-      marginRight: 8,
-      marginBottom: 50,
+      marginLeft: 8,
+      marginBottom: 24,
       '& p': {
-        fontSize: 11,
+        fontSize: 10,
         fontWeight: 500,
-        color: palette.text.secondary,
+        color: '#626680',
       },
     },
   }),
@@ -40,20 +40,20 @@ const useStyles = makeStyles(({ palette }) =>
 export interface AreaChartProps {
   backgroundColor?: string;
   data?: Array<any>;
+  dates?: Array<any>;
+  yAxisValues?: Array<number>;
   categories?: Array<string | null>;
   width?: number | string;
   height?: number | string;
-  showYAxis?: boolean;
-  multiDimension?: boolean;
 }
 const AreaChart: React.FC<AreaChartProps> = ({
   backgroundColor = '#004ce6',
   categories = [],
   data = [],
+  dates = [],
+  yAxisValues,
   width = 500,
   height = 200,
-  showYAxis = false,
-  multiDimension = false,
 }) => {
   const dark = useIsDarkMode();
   const theme = useTheme();
@@ -61,14 +61,12 @@ const AreaChart: React.FC<AreaChartProps> = ({
   const strokeColor = '#00dced';
   const gradientColor = dark ? '#64fbd3' : '#D4F8FB';
 
-  const yMax = multiDimension
-    ? Math.ceil(Math.max(...data.map((item) => item.value)) / 10) * 10
+  const yMax = yAxisValues
+    ? Math.max(...yAxisValues.map((val) => Number(val)))
     : 0;
-  const yMin = multiDimension
-    ? Math.floor(Math.min(...data.map((item) => item.value)) / 10) * 10
+  const yMin = yAxisValues
+    ? Math.min(...yAxisValues.map((val) => Number(val)))
     : 0;
-
-  const yCount = (yMax - yMin) / 10;
 
   const options = {
     chart: {
@@ -108,6 +106,9 @@ const AreaChart: React.FC<AreaChartProps> = ({
       axisBorder: {
         show: false,
       },
+      tooltip: {
+        enabled: false,
+      },
       axisTicks: {
         show: false,
       },
@@ -121,9 +122,9 @@ const AreaChart: React.FC<AreaChartProps> = ({
     },
     yaxis: {
       show: false,
-      min: multiDimension ? yMin : undefined,
-      max: multiDimension ? yMax : undefined,
-      tickAmount: yCount,
+      min: yAxisValues ? yMin : undefined,
+      max: yAxisValues ? yMax : undefined,
+      tickAmount: yAxisValues?.length,
     },
     grid: {
       show: false,
@@ -137,37 +138,34 @@ const AreaChart: React.FC<AreaChartProps> = ({
         },
       },
     },
+    legend: {
+      show: false,
+    },
     tooltip: {
       enabled: true,
       theme: dark ? 'dark' : 'light',
       fillSeriesColor: false,
       custom: (props: any) => {
-        return categories[props.dataPointIndex]
-          ? `<div class="tooltip" style="display: flex; flex-direction: column; box-shadow: none; border-radius: 12px; background: transparent;">` +
-              `<span style="padding: 0.5rem; border: 1px solid ${
-                dark ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.15)'
-              }; border-radius: 12px 12px 0 0; background: ${
-                dark ? 'rgba(0, 0, 0, 0.91)' : 'rgba(255, 255, 255, 0.91)'
-              }; color: ${dark ? '#646464' : '#8D97A0'};">` +
-              moment(
-                categories[props.dataPointIndex],
-                'YYYY/MM/DD HH:mm',
-              ).format('DD MMM, h:mm A') +
-              '</span>' +
-              `<span style="padding: 0.5rem; border: 1px solid ${
-                dark ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.15)'
-              }; border-top: none; border-radius: 0 0 12px 12px; background: ${
-                dark ? 'rgba(0, 0, 0, 0.91)' : 'rgba(255, 255, 255, 0.91)'
-              }; color: ${dark ? '#646464' : '#8D97A0'};">` +
-              `${multiDimension ? 'Profit' : 'Price level'}: <b style="color: ${
-                dark ? 'white' : 'rgba(0, 0, 0, 0.91)'
-              };">` +
-              (multiDimension
-                ? data[props.dataPointIndex].value1 + '%'
-                : props.series[props.seriesIndex][props.dataPointIndex]) +
-              '</b></span>' +
-              '</div>'
-          : '';
+        return (
+          `<div class="tooltip" style="display: flex; flex-direction: column; box-shadow: none; border-radius: 12px; background: transparent;">` +
+          `<span style="padding: 0.5rem; border: 1px solid ${
+            dark ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.15)'
+          }; border-radius: 12px 12px 0 0; background: ${
+            dark ? 'rgba(0, 0, 0, 0.91)' : 'rgba(255, 255, 255, 0.91)'
+          }; color: ${dark ? '#646464' : '#8D97A0'};">` +
+          moment(dates[props.dataPointIndex] * 1000).format('MMM DD, YYYY') +
+          '</span>' +
+          `<span style="padding: 0.5rem; border: 1px solid ${
+            dark ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.15)'
+          }; border-top: none; border-radius: 0 0 12px 12px; background: ${
+            dark ? 'rgba(0, 0, 0, 0.91)' : 'rgba(255, 255, 255, 0.91)'
+          }; color: ${dark ? '#646464' : '#8D97A0'};"><b style="color: ${
+            dark ? 'white' : 'rgba(0, 0, 0, 0.91)'
+          };">$` +
+          formatCompact(props.series[props.seriesIndex][props.dataPointIndex]) +
+          '</b></span>' +
+          '</div>'
+        );
       },
     },
   };
@@ -175,28 +173,14 @@ const AreaChart: React.FC<AreaChartProps> = ({
   const series = [
     {
       name: 'Prices',
-      data: multiDimension ? data.map((item) => item.value) : data,
+      data,
     },
   ];
 
   const classes = useStyles();
 
-  const yAxisValues = Array.from({ length: yCount + 1 }).map((_, index) =>
-    Math.round(yMax - (index * (yMax - yMin)) / yCount),
-  );
-
   return (
     <Box display='flex' mt={2.5} width={width}>
-      {showYAxis && (
-        <Box className={classes.yAxis}>
-          {yAxisValues.map((item, index) => (
-            <Typography key={index}>
-              {item}
-              {item === 0 ? '' : '%'}
-            </Typography>
-          ))}
-        </Box>
-      )}
       <Box className={classes.chartContainer}>
         <Chart
           options={options}
@@ -211,6 +195,13 @@ const AreaChart: React.FC<AreaChartProps> = ({
           ))}
         </Box>
       </Box>
+      {yAxisValues && (
+        <Box className={classes.yAxis}>
+          {yAxisValues.map((item, index) => (
+            <Typography key={index}>${formatCompact(item)}</Typography>
+          ))}
+        </Box>
+      )}
     </Box>
   );
 };
