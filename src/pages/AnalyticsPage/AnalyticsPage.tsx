@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Box, Typography } from '@material-ui/core';
 import cx from 'classnames';
-import AnalyticsOverview from './AnalyticsOverview';
 import { ReactComponent as SearchIcon } from 'assets/images/SearchIcon.svg';
+import AnalyticsOverview from './AnalyticsOverview';
+import AnalyticsTokens from './AnalyticsTokens';
 
 const useStyles = makeStyles(({}) => ({
   topTab: {
@@ -100,6 +101,7 @@ const AnalyticsPage: React.FC = () => {
         </Box>
       </Box>
       {tabIndex === 0 && <AnalyticsOverview />}
+      {tabIndex === 1 && <AnalyticsTokens />}
     </Box>
   );
 };

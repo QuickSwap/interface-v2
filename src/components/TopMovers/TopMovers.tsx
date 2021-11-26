@@ -7,7 +7,14 @@ import { CurrencyLogo } from 'components';
 import { getEthPrice, getTopTokens } from 'utils';
 import { useTopTokens } from 'state/application/hooks';
 
-const TopMovers: React.FC<{ background: string }> = ({ background }) => {
+interface TopMoversProps {
+  background: string;
+  hideArrow?: boolean;
+}
+const TopMovers: React.FC<TopMoversProps> = ({
+  background,
+  hideArrow = false,
+}) => {
   const { topTokens, updateTopTokens } = useTopTokens();
 
   const topMoverTokens = useMemo(
@@ -40,7 +47,7 @@ const TopMovers: React.FC<{ background: string }> = ({ background }) => {
       borderRadius={10}
       padding={2.5}
     >
-      <Typography style={{ color: '#696c80', fontSize: '12px' }}>
+      <Typography variant='h6' style={{ color: '#696c80' }}>
         24h TOP MOVERS
       </Typography>
       <Box mt={2} width={1}>
@@ -58,7 +65,8 @@ const TopMovers: React.FC<{ background: string }> = ({ background }) => {
                 token.id,
                 token.decimals,
               );
-              const priceUp = Number(token.priceChangeUSD) >= 0;
+              const priceUp = Number(token.priceChangeUSD) > 0;
+              const priceDown = Number(token.priceChangeUSD) < 0;
               const priceUpPercent = Number(token.priceChangeUSD).toFixed(2);
               return (
                 <Box
@@ -70,7 +78,9 @@ const TopMovers: React.FC<{ background: string }> = ({ background }) => {
                 >
                   <CurrencyLogo currency={currency} size='28px' />
                   <Box ml={1}>
-                    <Typography variant='body2'>{token.symbol}</Typography>
+                    <Typography variant='body2' style={{ fontWeight: 'bold' }}>
+                      {token.symbol}
+                    </Typography>
                     <Box
                       display='flex'
                       flexDirection='row'
@@ -81,14 +91,35 @@ const TopMovers: React.FC<{ background: string }> = ({ background }) => {
                         ${Number(token.priceUSD).toFixed(2)}
                       </Typography>
                       <Box
+                        ml={hideArrow ? 1 : 0}
                         display='flex'
                         flexDirection='row'
                         justifyContent='center'
                         alignItems='center'
-                        style={{ color: priceUp ? '#0fc679' : '#ff5252' }}
+                        px={0.75}
+                        py={0.25}
+                        borderRadius={12}
+                        bgcolor={
+                          !hideArrow
+                            ? 'transparent'
+                            : priceUp
+                            ? 'rgba(15, 198, 121, 0.1)'
+                            : priceDown
+                            ? 'rgba(255, 82, 82, 0.1)'
+                            : 'rgba(99, 103, 128, 0.1)'
+                        }
+                        style={{
+                          color: priceUp
+                            ? '#0fc679'
+                            : priceDown
+                            ? '#ff5252'
+                            : '#636780',
+                        }}
                       >
-                        {priceUp ? <ArrowDropUp /> : <ArrowDropDown />}
-                        <Typography variant='body2'>
+                        {!hideArrow && priceUp && <ArrowDropUp />}
+                        {!hideArrow && priceDown && <ArrowDropDown />}
+                        <Typography variant='caption'>
+                          {hideArrow && priceUp ? '+' : ''}
                           {priceUpPercent}%
                         </Typography>
                       </Box>
