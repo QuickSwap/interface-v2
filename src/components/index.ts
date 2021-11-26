@@ -41,3 +41,4 @@ export {
   TransactionErrorContent,
 } from './TransactionConfirmationModal';
 export { default as SwapTokenDetails } from './SwapTokenDetails';
+export { default as TopMovers } from './TopMovers';
