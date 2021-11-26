@@ -34,7 +34,9 @@ const TopMovers: React.FC<{ background: string }> = ({ background }) => {
       justifyContent='center'
       alignItems='flex-start'
       bgcolor={background}
-      border={`1px solid ${background === 'transparent' ? '#1b1e29' : 'transparent'}`}
+      border={`1px solid ${
+        background === 'transparent' ? '#1b1e29' : 'transparent'
+      }`}
       borderRadius={10}
       padding={2.5}
     >
