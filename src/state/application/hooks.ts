@@ -10,6 +10,7 @@ import {
   setOpenModal,
   updateEthPrice,
   updateGlobalData,
+  updateGlobalChartData,
   updateTopTokens,
   updateTokenPairs,
   updateSwapTokenPrice0,
@@ -134,6 +135,23 @@ export function useGlobalData(): {
     [dispatch],
   );
   return { globalData, updateGlobalData: _updateGlobalData };
+}
+
+export function useGlobalChartData(): {
+  globalChartData: any;
+  updateGlobalChartData: (data: any) => void;
+} {
+  const globalChartData = useSelector(
+    (state: AppState) => state.application.globalChartData,
+  );
+  const dispatch = useDispatch();
+  const _updateGlobalChartData = useCallback(
+    (data) => {
+      dispatch(updateGlobalChartData(data));
+    },
+    [dispatch],
+  );
+  return { globalChartData, updateGlobalChartData: _updateGlobalChartData };
 }
 
 export function useTopTokens(): {

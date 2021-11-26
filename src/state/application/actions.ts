@@ -57,6 +57,10 @@ export const updateGlobalData = createAction<{ data: any }>(
   'application/updateGlobalData',
 );
 
+export const updateGlobalChartData = createAction<{ data: any }>(
+  'application/updateGlobalChartData',
+);
+
 export const updateTopTokens = createAction<{ data: any }>(
   'application/updateTopTokens',
 );

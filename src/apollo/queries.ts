@@ -277,6 +277,26 @@ export const GLOBAL_DATA: any = (block?: number) => {
   return gql(queryString);
 };
 
+export const GLOBAL_CHART = gql`
+  query uniswapDayDatas($startTime: Int!, $skip: Int!) {
+    uniswapDayDatas(
+      first: 500
+      skip: $skip
+      where: { date_gt: $startTime }
+      orderBy: date
+      orderDirection: asc
+    ) {
+      id
+      date
+      totalVolumeUSD
+      dailyVolumeUSD
+      dailyVolumeETH
+      totalLiquidityUSD
+      totalLiquidityETH
+    }
+  }
+`;
+
 export const GET_BLOCK = gql`
   query blocks($timestampFrom: Int!, $timestampTo: Int!) {
     blocks(
