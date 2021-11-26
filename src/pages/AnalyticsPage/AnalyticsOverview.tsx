@@ -7,7 +7,7 @@ import moment from 'moment';
 import utc from 'dayjs/plugin/utc';
 import { useGlobalChartData } from 'state/application/hooks';
 import { formatCompact, getChartData } from 'utils';
-import { AreaChart } from 'components';
+import { AreaChart, BarChart } from 'components';
 
 dayjs.extend(utc);
 
@@ -33,6 +33,7 @@ const useStyles = makeStyles(({}) => ({
 const AnalyticsOverview: React.FC = () => {
   const classes = useStyles();
   const [volumeIndex, setVolumeIndex] = useState(0);
+  const [selectedVolumeIndex, setSelectedVolumeIndex] = useState(-1);
 
   const { globalChartData, updateGlobalChartData } = useGlobalChartData();
 
@@ -48,6 +49,7 @@ const AnalyticsOverview: React.FC = () => {
       const [newChartData, newWeeklyData] = await getChartData(startTime);
       if (newChartData && newWeeklyData) {
         updateGlobalChartData({ day: newChartData, week: newWeeklyData });
+        setSelectedVolumeIndex(newChartData.length - 1);
       }
     };
     fetchChartData();
@@ -69,6 +71,31 @@ const AnalyticsOverview: React.FC = () => {
         }
         const dateStr = moment(Number(value.date) * 1000).format('D');
         if (Number(dateStr) % 7 === 0) {
+          dates.push(dateStr);
+        }
+      });
+      return dates;
+    } else {
+      return [];
+    }
+  }, [globalChartData]);
+
+  const liquidityWeeks = useMemo(() => {
+    if (globalChartData) {
+      const dates: string[] = [];
+      globalChartData.week.forEach((value: any, ind: number) => {
+        const month = moment(Number(value.date) * 1000).format('MMM');
+        const monthLastDate =
+          ind > 0
+            ? moment(Number(globalChartData.week[ind - 1].date) * 1000).format(
+                'MMM',
+              )
+            : '';
+        if (monthLastDate !== month) {
+          dates.push(month);
+        }
+        const dateStr = moment(Number(value.date) * 1000).format('D');
+        if (Number(dateStr) % 2 === 0) {
           dates.push(dateStr);
         }
       });
@@ -115,6 +142,54 @@ const AnalyticsOverview: React.FC = () => {
     }
   }, [globalChartData]);
 
+  const volumePercent = useMemo(() => {
+    if (globalChartData && selectedVolumeIndex > 0) {
+      const volumeData =
+        volumeIndex === 1 ? globalChartData.week : globalChartData.day;
+      if (volumeData.length > 1) {
+        const currentVolume = Number(
+          volumeIndex === 1
+            ? globalChartData.week[
+                Math.min(selectedVolumeIndex, globalChartData.week.length - 1)
+              ].weeklyVolumeUSD
+            : globalChartData.day[
+                Math.min(selectedVolumeIndex, globalChartData.day.length - 1)
+              ].dailyVolumeUSD,
+        );
+        const prevVolume = Number(
+          volumeIndex === 1
+            ? globalChartData.week[
+                Math.min(selectedVolumeIndex, globalChartData.week.length - 1) -
+                  1
+              ].weeklyVolumeUSD
+            : globalChartData.day[
+                Math.min(selectedVolumeIndex, globalChartData.day.length - 1) -
+                  1
+              ].dailyVolumeUSD,
+        );
+        if (prevVolume > 0) {
+          return (currentVolume / prevVolume) * 100 - 100;
+        } else {
+          return 0;
+        }
+      } else {
+        return 0;
+      }
+    } else {
+      return 0;
+    }
+  }, [globalChartData, selectedVolumeIndex, volumeIndex]);
+
+  const barChartData = useMemo(() => {
+    if (globalChartData) {
+      return volumeIndex === 1
+        ? globalChartData.week.map((value: any) => value.weeklyVolumeUSD)
+        : globalChartData.day.map((value: any) => value.dailyVolumeUSD);
+    } else {
+      return [];
+    }
+  }, [globalChartData, volumeIndex]);
+
   return (
     <>
       <Grid container spacing={4}>
@@ -144,22 +219,23 @@ const AnalyticsOverview: React.FC = () => {
                     bgcolor={
                       liquidityPercent > 0
                         ? 'rgba(15, 198, 121, 0.1)'
-                        : 'rgba(255, 82, 82, 0.1)'
+                        : liquidityPercent < 0
+                        ? 'rgba(255, 82, 82, 0.1)'
+                        : 'rgba(99, 103, 128, 0.1)'
                     }
                   >
                     <Typography
                       style={{
-                        color: liquidityPercent > 0 ? '#0fc679' : '#ff5252',
+                        color:
+                          liquidityPercent > 0
+                            ? '#0fc679'
+                            : liquidityPercent < 0
+                            ? '#ff5252'
+                            : '#636780',
                       }}
                       variant='caption'
                     >
-                      {`${
-                        liquidityPercent > 0
-                          ? '+'
-                          : liquidityPercent < 0
-                          ? '-'
-                          : ''
-                      }
+                      {`${liquidityPercent > 0 ? '+' : ''}
                       ${liquidityPercent.toLocaleString()}`}
                       %
                     </Typography>
@@ -173,24 +249,24 @@ const AnalyticsOverview: React.FC = () => {
                     ).format('MMM DD, YYYY')}
                   </Typography>
                 </Box>
+                <Box mt={2}>
+                  <AreaChart
+                    data={globalChartData.day.map((value: any) =>
+                      Number(value.totalLiquidityUSD),
+                    )}
+                    yAxisValues={yAxisValues}
+                    dates={globalChartData.day.map((value: any) => value.date)}
+                    width='100%'
+                    height={240}
+                    categories={liquidityDates}
+                  />
+                </Box>
               </>
             ) : (
-              <Skeleton variant='rect' width='100%' height={72} />
+              <Box mt={2}>
+                <Skeleton variant='rect' width='100%' height={72} />
+              </Box>
             )}
-            <Box mt={2}>
-              {globalChartData && (
-                <AreaChart
-                  data={globalChartData.day.map((value: any) =>
-                    Number(value.totalLiquidityUSD),
-                  )}
-                  yAxisValues={yAxisValues}
-                  dates={globalChartData.day.map((value: any) => value.date)}
-                  width='100%'
-                  height={240}
-                  categories={liquidityDates}
-                />
-              )}
-            </Box>
           </Box>
         </Grid>
         <Grid item sm={12} md={6}>
@@ -218,16 +294,70 @@ const AnalyticsOverview: React.FC = () => {
                 >
                   <Typography variant='caption'>W</Typography>
                 </Box>
-                <Box
-                  className={classes.volumeType}
-                  ml={0.5}
-                  bgcolor={volumeIndex === 2 ? '#3e4252' : 'transparent'}
-                  onClick={() => setVolumeIndex(2)}
-                >
-                  <Typography variant='caption'>M</Typography>
-                </Box>
               </Box>
             </Box>
+            {globalChartData && selectedVolumeIndex > -1 ? (
+              <>
+                <Box mt={0.5} display='flex' alignItems='center'>
+                  <Typography variant='h5' style={{ color: '#ebecf2' }}>
+                    $
+                    {formatCompact(
+                      globalChartData.day[selectedVolumeIndex].dailyVolumeUSD,
+                    )}
+                  </Typography>
+                  <Box
+                    ml={1}
+                    height={23}
+                    px={1}
+                    borderRadius={40}
+                    bgcolor={
+                      volumePercent > 0
+                        ? 'rgba(15, 198, 121, 0.1)'
+                        : volumePercent < 0
+                        ? 'rgba(255, 82, 82, 0.1)'
+                        : 'rgba(99, 103, 128, 0.1)'
+                    }
+                  >
+                    <Typography
+                      style={{
+                        color:
+                          volumePercent > 0
+                            ? '#0fc679'
+                            : volumePercent < 0
+                            ? '#ff5252'
+                            : '#636780',
+                      }}
+                      variant='caption'
+                    >
+                      {`${volumePercent > 0 ? '+' : ''}
+                      ${volumePercent.toLocaleString()}`}
+                      %
+                    </Typography>
+                  </Box>
+                </Box>
+                <Box>
+                  <Typography style={{ color: '#626680' }} variant='caption'>
+                    {moment(
+                      globalChartData.day[selectedVolumeIndex].date * 1000,
+                    ).format('MMM DD, YYYY')}
+                  </Typography>
+                </Box>
+                <Box mt={2}>
+                  <BarChart
+                    height={188.97}
+                    data={barChartData}
+                    categories={
+                      volumeIndex === 1 ? liquidityWeeks : liquidityDates
+                    }
+                    onHover={(ind) => setSelectedVolumeIndex(ind)}
+                  />
+                </Box>
+              </>
+            ) : (
+              <Box mt={2}>
+                <Skeleton variant='rect' width='100%' height={72} />
+              </Box>
+            )}
           </Box>
         </Grid>
       </Grid>
