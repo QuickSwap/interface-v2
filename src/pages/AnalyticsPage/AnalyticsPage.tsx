@@ -100,7 +100,12 @@ const AnalyticsPage: React.FC = () => {
           </Box>
         </Box>
       </Box>
-      {tabIndex === 0 && <AnalyticsOverview />}
+      {tabIndex === 0 && (
+        <AnalyticsOverview
+          showAllTokens={() => setTabIndex(1)}
+          showAllPairs={() => setTabIndex(2)}
+        />
+      )}
       {tabIndex === 1 && <AnalyticsTokens />}
     </Box>
   );

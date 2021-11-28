@@ -2,12 +2,14 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Box, Typography, Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Skeleton from '@material-ui/lab/Skeleton';
+import { ArrowForwardIos } from '@material-ui/icons';
 import dayjs from 'dayjs';
 import moment from 'moment';
 import utc from 'dayjs/plugin/utc';
 import { useGlobalChartData } from 'state/application/hooks';
 import { formatCompact, getChartData } from 'utils';
 import { AreaChart, BarChart } from 'components';
+import AnalyticsInfo from './AnalyticsInfo';
 
 dayjs.extend(utc);
 
@@ -28,9 +30,29 @@ const useStyles = makeStyles(({}) => ({
       color: '#ebecf2',
     },
   },
+  headingWrapper: {
+    display: 'flex',
+    alignItems: 'center',
+    '& h6': {
+      color: '#626680',
+    },
+    '& svg': {
+      height: 16,
+      marginLeft: 2,
+      color: '#3d71ff',
+    },
+  },
 }));
 
-const AnalyticsOverview: React.FC = () => {
+interface AnalyticsOverViewProps {
+  showAllTokens: () => void;
+  showAllPairs: () => void;
+}
+
+const AnalyticsOverview: React.FC<AnalyticsOverViewProps> = ({
+  showAllTokens,
+  showAllPairs,
+}) => {
   const classes = useStyles();
   const [volumeIndex, setVolumeIndex] = useState(0);
   const [selectedVolumeIndex, setSelectedVolumeIndex] = useState(-1);
@@ -361,6 +383,41 @@ const AnalyticsOverview: React.FC = () => {
           </Box>
         </Grid>
       </Grid>
+      <Box mt={4}>
+        <AnalyticsInfo />
+      </Box>
+      <Box mt={4}>
+        <Box display='flex' justifyContent='space-between' alignItems='center'>
+          <Box className={classes.headingWrapper}>
+            <Typography variant='h6'>Top Tokens</Typography>
+          </Box>
+          <Box
+            className={classes.headingWrapper}
+            style={{ cursor: 'pointer' }}
+            onClick={showAllTokens}
+          >
+            <Typography variant='h6'>See All</Typography>
+            <ArrowForwardIos />
+          </Box>
+        </Box>
+      </Box>
+      <Box mt={3} paddingX={4} paddingY={3} className={classes.panel}></Box>
+      <Box mt={4}>
+        <Box display='flex' justifyContent='space-between' alignItems='center'>
+          <Box className={classes.headingWrapper}>
+            <Typography variant='h6'>Top Pairs</Typography>
+          </Box>
+          <Box
+            className={classes.headingWrapper}
+            style={{ cursor: 'pointer' }}
+            onClick={showAllPairs}
+          >
+            <Typography variant='h6'>See All</Typography>
+            <ArrowForwardIos />
+          </Box>
+        </Box>
+      </Box>
+      <Box mt={3} paddingX={4} paddingY={3} className={classes.panel}></Box>
     </>
   );
 };
