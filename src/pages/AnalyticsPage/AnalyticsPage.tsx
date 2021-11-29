@@ -32,6 +32,7 @@ const useStyles = makeStyles(({}) => ({
     background: '#1b1d26',
     height: 46,
     borderRadius: 10,
+    margin: '12px 0',
     '& input': {
       background: 'transparent',
       border: 'none',
@@ -59,6 +60,7 @@ const AnalyticsPage: React.FC = () => {
         display='flex'
         justifyContent='space-between'
         alignItems='center'
+        flexWrap='wrap'
       >
         <Box display='flex' alignItems='center'>
           <Box

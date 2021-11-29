@@ -32,6 +32,7 @@ const AnalyticsInfo: React.FC = () => {
       borderRadius={20}
       display='flex'
       alignItems='center'
+      flexWrap='wrap'
     >
       {globalData ? (
         <>
