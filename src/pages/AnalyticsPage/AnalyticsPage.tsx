@@ -32,6 +32,7 @@ const useStyles = makeStyles(({}) => ({
     background: '#1b1d26',
     height: 46,
     borderRadius: 10,
+    margin: '12px 0',
     '& input': {
       background: 'transparent',
       border: 'none',
@@ -59,6 +60,7 @@ const AnalyticsPage: React.FC = () => {
         display='flex'
         justifyContent='space-between'
         alignItems='center'
+        flexWrap='wrap'
       >
         <Box display='flex' alignItems='center'>
           <Box
@@ -100,7 +102,12 @@ const AnalyticsPage: React.FC = () => {
           </Box>
         </Box>
       </Box>
-      {tabIndex === 0 && <AnalyticsOverview />}
+      {tabIndex === 0 && (
+        <AnalyticsOverview
+          showAllTokens={() => setTabIndex(1)}
+          showAllPairs={() => setTabIndex(2)}
+        />
+      )}
       {tabIndex === 1 && <AnalyticsTokens />}
     </Box>
   );

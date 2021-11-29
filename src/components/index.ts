@@ -12,6 +12,8 @@ export { default as LineChart } from './LineChart';
 export { default as Popups } from './Popups';
 export { default as CurrencySearchModal } from './CurrencySearchModal';
 export { default as CurrencyLogo } from './CurrencyLogo';
+export { default as DataTable } from './DataTable';
+export { default as CustomTable } from './CustomTable';
 export { default as DoubleCurrencyLogo } from './DoubleCurrencyLogo';
 export { default as QuestionHelper } from './QuestionHelper';
 export { default as Logo } from './Logo';
