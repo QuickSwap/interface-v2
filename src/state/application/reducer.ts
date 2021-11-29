@@ -13,6 +13,7 @@ import {
   updateTokenPairs,
   updateSwapTokenPrice0,
   updateSwapTokenPrice1,
+  updateBookMarkedTokens,
 } from './actions';
 
 type PopupList = Array<{
@@ -33,6 +34,7 @@ export interface ApplicationState {
   readonly tokenPairs: any;
   readonly swapTokenPrice0: any;
   readonly swapTokenPrice1: any;
+  readonly bookmarkedTokens: string[];
 }
 
 const initialState: ApplicationState = {
@@ -50,6 +52,7 @@ const initialState: ApplicationState = {
   },
   swapTokenPrice0: null,
   swapTokenPrice1: null,
+  bookmarkedTokens: [],
 };
 
 export default createReducer(initialState, (builder) =>
@@ -118,5 +121,8 @@ export default createReducer(initialState, (builder) =>
     })
     .addCase(updateSwapTokenPrice1, (state, { payload: { data } }) => {
       state.swapTokenPrice1 = data;
+    })
+    .addCase(updateBookMarkedTokens, (state, { payload }) => {
+      state.bookmarkedTokens = payload;
     }),
 );

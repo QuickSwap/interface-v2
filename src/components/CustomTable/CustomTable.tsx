@@ -76,6 +76,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     },
     '& tbody tr td': {
       padding: '6px',
+      borderBottom: 'none',
       '&:first-child': {
         padding: '6px 0px 6px 15px',
         [breakpoints.down('sm')]: {
@@ -96,6 +97,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
 
 export interface CustomTableProps {
   emptyMessage?: string;
+  showPagination?: boolean;
   rowsPerPage?: number;
   headCells: any;
   data: any;
@@ -110,6 +112,7 @@ export interface CustomTableProps {
 
 const CustomTable: React.FC<CustomTableProps> = ({
   rowsPerPage = 5,
+  showPagination = true,
   emptyMessage,
   headCells,
   data,
@@ -135,6 +138,7 @@ const CustomTable: React.FC<CustomTableProps> = ({
       ) : (
         <DataTable
           emptyMesage={emptyMessage}
+          showPagination={showPagination}
           headCells={headCells}
           data={data}
           rowPerPage={rowsPerPage}

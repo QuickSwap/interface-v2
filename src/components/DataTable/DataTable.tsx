@@ -112,6 +112,7 @@ export interface DataTableProps<T> {
   sortDownIcon?: React.ReactNode;
   emptyMesage?: string;
   showEmptyRows: boolean;
+  showPagination: boolean;
 }
 
 const DataTable: React.FC<DataTableProps<any>> = ({
@@ -130,6 +131,7 @@ const DataTable: React.FC<DataTableProps<any>> = ({
   rowPerPage = 10,
   emptyMesage = 'No results.',
   showEmptyRows = true,
+  showPagination,
 }) => {
   const classes = useStyles({ isSinglelineHeader });
   const [order, setOrder] = useState<SortOrder>(defaultOrder);
@@ -280,16 +282,18 @@ const DataTable: React.FC<DataTableProps<any>> = ({
         </Table>
       </TableContainer>
 
-      <TablePagination
-        rowsPerPageOptions={[10, 25, 50]}
-        className={classes.tablePagination}
-        component='div'
-        count={count}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-      />
+      {showPagination && (
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 25, 50]}
+          className={classes.tablePagination}
+          component='div'
+          count={count}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
+      )}
     </Box>
   );
 };

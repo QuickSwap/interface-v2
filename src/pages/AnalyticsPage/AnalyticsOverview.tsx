@@ -6,8 +6,8 @@ import { ArrowForwardIos } from '@material-ui/icons';
 import dayjs from 'dayjs';
 import moment from 'moment';
 import utc from 'dayjs/plugin/utc';
-import { useGlobalChartData } from 'state/application/hooks';
-import { formatCompact, getChartData } from 'utils';
+import { useGlobalChartData, useTopTokens } from 'state/application/hooks';
+import { formatCompact, getChartData, getEthPrice, getTopTokens } from 'utils';
 import { AreaChart, BarChart } from 'components';
 import AnalyticsInfo from './AnalyticsInfo';
 import TokensTable from 'components/TokensTable';
@@ -59,6 +59,7 @@ const AnalyticsOverview: React.FC<AnalyticsOverViewProps> = ({
   const [selectedVolumeIndex, setSelectedVolumeIndex] = useState(-1);
 
   const { globalChartData, updateGlobalChartData } = useGlobalChartData();
+  const { topTokens, updateTopTokens } = useTopTokens();
 
   const utcEndTime = dayjs.utc();
   const startTime =
@@ -75,7 +76,15 @@ const AnalyticsOverview: React.FC<AnalyticsOverViewProps> = ({
         setSelectedVolumeIndex(newChartData.length - 1);
       }
     };
+    const fetchTopTokens = async () => {
+      const [newPrice, oneDayPrice] = await getEthPrice();
+      const topTokensData = await getTopTokens(newPrice, oneDayPrice, 8);
+      if (topTokensData) {
+        updateTopTokens({ data: topTokensData });
+      }
+    };
     fetchChartData();
+    fetchTopTokens();
   }, [startTime, updateGlobalChartData]);
 
   const liquidityDates = useMemo(() => {
@@ -212,16 +221,6 @@ const AnalyticsOverview: React.FC<AnalyticsOverViewProps> = ({
       return [];
     }
   }, [globalChartData, volumeIndex]);
-
-  const tokenTableData = [
-    {
-      name: 'Ethereum',
-      price: '3386',
-      percent: '5.47',
-      volume: '$28,570,009',
-      liquidity: '$215,278,606',
-    },
-  ];
 
   return (
     <>
@@ -413,7 +412,7 @@ const AnalyticsOverview: React.FC<AnalyticsOverViewProps> = ({
         </Box>
       </Box>
       <Box mt={3} paddingX={4} paddingY={3} className={classes.panel}>
-        <TokensTable data={tokenTableData} />
+        {topTokens && <TokensTable data={topTokens} />}
       </Box>
       <Box mt={4}>
         <Box display='flex' justifyContent='space-between' alignItems='center'>
