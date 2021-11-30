@@ -13,7 +13,9 @@ import {
   updateTokenPairs,
   updateSwapTokenPrice0,
   updateSwapTokenPrice1,
-  updateBookMarkedTokens,
+  addBookMarkToken,
+  removeBookmarkToken,
+  updateBookmarkTokens,
 } from './actions';
 
 type PopupList = Array<{
@@ -122,7 +124,24 @@ export default createReducer(initialState, (builder) =>
     .addCase(updateSwapTokenPrice1, (state, { payload: { data } }) => {
       state.swapTokenPrice1 = data;
     })
-    .addCase(updateBookMarkedTokens, (state, { payload }) => {
+    .addCase(addBookMarkToken, (state, { payload }) => {
+      const tokens = state.bookmarkedTokens;
+      tokens.push(payload);
+      state.bookmarkedTokens = tokens;
+    })
+    .addCase(removeBookmarkToken, (state, { payload }) => {
+      const tokenIndex = state.bookmarkedTokens.indexOf(payload);
+      const tokens = state.bookmarkedTokens
+        .slice(0, tokenIndex - 1)
+        .concat(
+          state.bookmarkedTokens.slice(
+            tokenIndex + 1,
+            state.bookmarkedTokens.length - 1,
+          ),
+        );
+      state.bookmarkedTokens = tokens;
+    })
+    .addCase(updateBookmarkTokens, (state, { payload }) => {
       state.bookmarkedTokens = payload;
     }),
 );

@@ -46,3 +46,4 @@ export {
 } from './TransactionConfirmationModal';
 export { default as SwapTokenDetails } from './SwapTokenDetails';
 export { default as TopMovers } from './TopMovers';
+export { default as TokensTable } from './TokensTable';

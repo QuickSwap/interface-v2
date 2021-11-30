@@ -2,6 +2,7 @@ import React from 'react';
 import { Box, Typography } from '@material-ui/core';
 import { ChainId, Token } from '@uniswap/sdk';
 import { CurrencyLogo, CustomTable } from 'components';
+import { useBookmarkTokens } from 'state/application/hooks';
 import { ReactComponent as StarChecked } from 'assets/images/StarChecked.svg';
 import { ReactComponent as StarUnchecked } from 'assets/images/StarUnchecked.svg';
 
@@ -45,7 +46,11 @@ const headCells = () => [
 
 const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
   const tokenHeadCells = headCells();
-  console.log('ccc', data);
+  const {
+    bookmarkTokens,
+    addBookmarkToken,
+    removeBookmarkToken,
+  } = useBookmarkTokens();
   const mobileHTML = (token: any) => {
     return (
       <Box>
@@ -64,8 +69,23 @@ const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
       {
         html: (
           <Box display='flex' alignItems='center'>
-            <Box display='flex' mr={1}>
-              <StarChecked />
+            <Box
+              display='flex'
+              mr={1}
+              onClick={() => {
+                const tokenIndex = bookmarkTokens.indexOf(token.id);
+                if (tokenIndex === -1) {
+                  addBookmarkToken(token.id);
+                } else {
+                  removeBookmarkToken(token.id);
+                }
+              }}
+            >
+              {bookmarkTokens.indexOf(token.id) > -1 ? (
+                <StarChecked />
+              ) : (
+                <StarUnchecked />
+              )}
             </Box>
             <CurrencyLogo currency={tokenCurrency} size='28px' />
             <Box ml={1}>

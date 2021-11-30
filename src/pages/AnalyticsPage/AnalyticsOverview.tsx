@@ -8,9 +8,8 @@ import moment from 'moment';
 import utc from 'dayjs/plugin/utc';
 import { useGlobalChartData, useTopTokens } from 'state/application/hooks';
 import { formatCompact, getChartData, getEthPrice, getTopTokens } from 'utils';
-import { AreaChart, BarChart } from 'components';
+import { AreaChart, BarChart, TokensTable } from 'components';
 import AnalyticsInfo from './AnalyticsInfo';
-import TokensTable from 'components/TokensTable';
 
 dayjs.extend(utc);
 
