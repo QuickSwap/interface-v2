@@ -2,7 +2,7 @@ export function descendingComparator<T>(
   a: T,
   b: T,
   orderBy: (data: T) => string | number,
-) {
+): number {
   if (orderBy?.(b) < orderBy?.(a)) {
     return -1;
   } else if (orderBy?.(b) > orderBy?.(a)) {
@@ -26,7 +26,10 @@ export function getComparator<T>(
     : (a, b) => -descendingComparator(a, b, orderBy.sortKey);
 }
 
-export function stableSort<T>(array: T[], comparator: (a: T, b: T) => number) {
+export function stableSort<T>(
+  array: T[],
+  comparator: (a: T, b: T) => number,
+): T[] {
   const stabilizedThis = array.map((el, index) => [el, index] as [T, number]);
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0]);

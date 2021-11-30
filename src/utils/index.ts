@@ -1,4 +1,5 @@
 import { getAddress } from '@ethersproject/address';
+import { ApolloClient } from 'apollo-client';
 import { Contract } from '@ethersproject/contracts';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
@@ -122,9 +123,9 @@ export const getPercentChange: (
 
 export async function splitQuery(
   query: any,
-  localClient: any,
-  vars: any,
-  list: any,
+  localClient: ApolloClient<any>,
+  vars: any[],
+  list: any[],
   skipCount = 100,
 ): Promise<any> {
   let fetchedData = {};
@@ -193,11 +194,11 @@ export async function getBlocksFromTimestamps(
   return blocks;
 }
 
-export const get2DayPercentChange: (
+export const get2DayPercentChange = (
   valueNow: any,
   value24HoursAgo: any,
   value48HoursAgo: any,
-) => number[] = (valueNow: any, value24HoursAgo: any, value48HoursAgo: any) => {
+) => {
   // get volume info for both 24 hour periods
   const currentChange = Number(valueNow) - Number(value24HoursAgo);
   const previousChange = Number(value24HoursAgo) - Number(value48HoursAgo);
@@ -287,14 +288,14 @@ export const getTopTokens: (
     });
 
     const oneDayData = oneDayResult?.data?.tokens.reduce(
-      (obj: any, cur: any, i: any) => {
+      (obj: any, cur: any) => {
         return { ...obj, [cur.id]: cur };
       },
       {},
     );
 
     const twoDayData = twoDayResult?.data?.tokens.reduce(
-      (obj: any, cur: any, i: any) => {
+      (obj: any, cur: any) => {
         return { ...obj, [cur.id]: cur };
       },
       {},
@@ -727,8 +728,8 @@ export function updateNameData(data: BasicData): BasicData | undefined {
 }
 
 export async function getGlobalData(
-  ethPrice: any,
-  oldEthPrice: any,
+  ethPrice: number,
+  oldEthPrice: number,
 ): Promise<any> {
   // data for each day , historic data used for % changes
   let data: any = {};
@@ -832,7 +833,7 @@ export async function getGlobalData(
   return data;
 }
 
-export const getChartData = async (oldestDateToFetch: any) => {
+export const getChartData = async (oldestDateToFetch: number) => {
   let data: any[] = [];
   const weeklyData: any[] = [];
   const utcEndTime = dayjs.utc();
@@ -915,9 +916,9 @@ export const getChartData = async (oldestDateToFetch: any) => {
   return [data, weeklyData];
 };
 
-export function isAddress(value: any): string | false {
+export function isAddress(value: string | null | undefined): string | false {
   try {
-    return getAddress(value);
+    return getAddress(value || '');
   } catch {
     return false;
   }

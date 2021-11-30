@@ -75,8 +75,6 @@ export function useTransactionFinalizer(): (
       receipt: TransactionReceipt,
       {
         summary,
-        approval,
-        claim,
       }: {
         summary?: string;
         claim?: { recipient: string };

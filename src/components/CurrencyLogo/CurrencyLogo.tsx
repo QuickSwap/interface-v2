@@ -1613,6 +1613,8 @@ const CurrencyLogo: React.FC<CurrencyLogoProps> = ({
       overflow='hidden'
       bgcolor='white'
       display='flex'
+      justifyContent='center'
+      alignItems='center'
     >
       <Logo
         srcs={srcs}

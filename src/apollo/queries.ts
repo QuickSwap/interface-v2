@@ -57,10 +57,10 @@ const PairFields = `
   }
 `;
 
-export const PAIRS_CURRENT: any = () => {
+export const PAIRS_CURRENT: any = (count: number) => {
   const queryString = `
   query pairs {
-    pairs(first: 200, orderBy: reserveUSD, orderDirection: desc) {
+    pairs(first: ${count}, orderBy: reserveUSD, orderDirection: desc) {
       id
     }
   }`;
@@ -161,7 +161,6 @@ export const TOKEN_DATA1: any = (
   tokenAddress1: string,
 ) => {
   const queryString = `
-    ${TokenFields}
     query tokens {
       pairs0: pairs(where: {token0: "${tokenAddress}", token1: "${tokenAddress1}"}){
         id

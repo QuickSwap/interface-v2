@@ -45,6 +45,7 @@ const headCells = () => [
 
 const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
   const tokenHeadCells = headCells();
+  console.log('ccc', data);
   const mobileHTML = (token: any) => {
     return (
       <Box>

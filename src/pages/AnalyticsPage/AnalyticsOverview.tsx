@@ -69,6 +69,7 @@ const AnalyticsOverview: React.FC<AnalyticsOverViewProps> = ({
       .unix() - 1;
 
   useEffect(() => {
+    updateTopTokens({ data: null });
     const fetchChartData = async () => {
       const [newChartData, newWeeklyData] = await getChartData(startTime);
       if (newChartData && newWeeklyData) {
@@ -85,7 +86,7 @@ const AnalyticsOverview: React.FC<AnalyticsOverViewProps> = ({
     };
     fetchChartData();
     fetchTopTokens();
-  }, [startTime, updateGlobalChartData]);
+  }, [startTime, updateGlobalChartData, updateTopTokens]);
 
   const liquidityDates = useMemo(() => {
     if (globalChartData) {
