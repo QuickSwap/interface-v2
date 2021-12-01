@@ -18,6 +18,9 @@ import {
   addBookMarkToken,
   removeBookmarkToken,
   updateBookmarkTokens,
+  updateTopPairs,
+  addBookMarkPair,
+  removeBookmarkPair,
 } from './actions';
 
 export function useBlockNumber(): number | undefined {
@@ -210,6 +213,42 @@ export function useBookmarkTokens(): {
   };
 }
 
+export function useBookmarkPairs(): {
+  bookmarkPairs: string[];
+  addBookmarkPair: (data: string) => void;
+  removeBookmarkPair: (data: string) => void;
+  updateBookmarkPairs: (data: string[]) => void;
+} {
+  const bookmarkedPairs = useSelector(
+    (state: AppState) => state.application.bookmarkedPairs,
+  );
+  const dispatch = useDispatch();
+  const _addBookmarkPair = useCallback(
+    (pair: string) => {
+      dispatch(addBookMarkPair(pair));
+    },
+    [dispatch],
+  );
+  const _removeBookmarkPair = useCallback(
+    (pair: string) => {
+      dispatch(removeBookmarkPair(pair));
+    },
+    [dispatch],
+  );
+  const _updateBookmarkPairs = useCallback(
+    (pairs: string[]) => {
+      dispatch(updateBookmarkTokens(pairs));
+    },
+    [dispatch],
+  );
+  return {
+    bookmarkPairs: bookmarkedPairs,
+    addBookmarkPair: _addBookmarkPair,
+    removeBookmarkPair: _removeBookmarkPair,
+    updateBookmarkPairs: _updateBookmarkPairs,
+  };
+}
+
 export function useTokenPairs(): {
   tokenPairs: any;
   updateTokenPairs: ({ data }: any) => void;
@@ -259,4 +298,19 @@ export function useSwapTokenPrice1(): {
     [dispatch],
   );
   return { swapTokenPrice1, updateSwapTokenPrice1: _updateSwapTokenPrice1 };
+}
+
+export function useTopPairs(): {
+  topPairs: any;
+  updateTopPairs: (data: any) => void;
+} {
+  const topPairs = useSelector((state: AppState) => state.application.topPairs);
+  const dispatch = useDispatch();
+  const _updateTopPairs = useCallback(
+    (data) => {
+      dispatch(updateTopPairs(data));
+    },
+    [dispatch],
+  );
+  return { topPairs, updateTopPairs: _updateTopPairs };
 }

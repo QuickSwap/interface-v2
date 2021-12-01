@@ -49,10 +49,12 @@ const PairFields = `
     token0 {
       symbol
       id
+      decimals
     }
     token1 {
       symbol
       id
+      decimals
     }
   }
 `;

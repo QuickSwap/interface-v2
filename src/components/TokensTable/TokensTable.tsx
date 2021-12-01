@@ -1,10 +1,22 @@
 import React from 'react';
 import { Box, Typography } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import { ChainId, Token } from '@uniswap/sdk';
 import { CurrencyLogo, CustomTable } from 'components';
 import { useBookmarkTokens } from 'state/application/hooks';
 import { ReactComponent as StarChecked } from 'assets/images/StarChecked.svg';
 import { ReactComponent as StarUnchecked } from 'assets/images/StarUnchecked.svg';
+
+const useStyles = makeStyles(({}) => ({
+  priceChangeWrapper: {
+    height: 25,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 8,
+    borderRadius: 16,
+  },
+}));
 
 interface TokensTableProps {
   data: any[];
@@ -21,31 +33,32 @@ const headCells = () => [
     id: 'tokenPrice',
     numeric: false,
     label: 'Price',
-    sortKey: (item: any) => item.price,
+    sortKey: (item: any) => item.priceUSD,
   },
   {
     id: 'tokenUpPercent',
     numeric: false,
     label: '24H %',
-    sortKey: (item: any) => item.percent,
+    sortKey: (item: any) => item.priceChangeUSD,
   },
   {
     id: 'tokenVolume',
     numeric: false,
     label: '24H Volume',
-    sortKey: (item: any) => item.volume,
+    sortKey: (item: any) => item.oneDayVolumeUSD,
   },
   {
     id: 'tokenLiquidity',
     numeric: false,
     label: 'Liquidity',
     align: 'right',
-    sortKey: (item: any) => item.liquidity,
+    sortKey: (item: any) => item.totalLiquidityUSD,
   },
 ];
 
 const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
   const tokenHeadCells = headCells();
+  const classes = useStyles();
   const {
     bookmarkTokens,
     addBookmarkToken,
@@ -106,9 +119,33 @@ const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
       },
       {
         html: (
-          <Box>
-            <Typography>
-              {Number(token.priceChangeUSD).toLocaleString()}%
+          <Box
+            className={classes.priceChangeWrapper}
+            bgcolor={
+              Number(token.priceChangeUSD) > 0
+                ? 'rgba(15, 198, 121, 0.1)'
+                : Number(token.priceChangeUSD) < 0
+                ? 'rgba(255, 82, 82, 0.1)'
+                : 'rgba(99, 103, 128, 0.1)'
+            }
+            color={
+              Number(token.priceChangeUSD) > 0
+                ? 'rgb(15, 198, 121)'
+                : Number(token.priceChangeUSD) < 0
+                ? 'rgb(255, 82, 82)'
+                : 'rgb(99, 103, 128)'
+            }
+          >
+            <Typography variant='body2'>
+              {Number(token.priceChangeUSD) < 0.001 &&
+              Number(token.priceChangeUSD) > 0
+                ? '<0.001'
+                : Number(token.priceChangeUSD) > -0.001 &&
+                  Number(token.priceChangeUSD) < 0
+                ? '>-0.001'
+                : (Number(token.priceChangeUSD) > 0 ? '+' : '') +
+                  Number(token.priceChangeUSD).toLocaleString()}
+              %
             </Typography>
           </Box>
         ),

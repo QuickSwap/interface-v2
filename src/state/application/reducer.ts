@@ -16,6 +16,10 @@ import {
   addBookMarkToken,
   removeBookmarkToken,
   updateBookmarkTokens,
+  updateTopPairs,
+  addBookMarkPair,
+  removeBookmarkPair,
+  updateBookmarkPairs,
 } from './actions';
 
 type PopupList = Array<{
@@ -37,6 +41,8 @@ export interface ApplicationState {
   readonly swapTokenPrice0: any;
   readonly swapTokenPrice1: any;
   readonly bookmarkedTokens: string[];
+  readonly bookmarkedPairs: string[];
+  readonly topPairs: any;
 }
 
 const initialState: ApplicationState = {
@@ -55,6 +61,8 @@ const initialState: ApplicationState = {
   swapTokenPrice0: null,
   swapTokenPrice1: null,
   bookmarkedTokens: [],
+  bookmarkedPairs: [],
+  topPairs: null,
 };
 
 export default createReducer(initialState, (builder) =>
@@ -143,5 +151,28 @@ export default createReducer(initialState, (builder) =>
     })
     .addCase(updateBookmarkTokens, (state, { payload }) => {
       state.bookmarkedTokens = payload;
+    })
+    .addCase(updateTopPairs, (state, { payload }) => {
+      state.topPairs = payload;
+    })
+    .addCase(addBookMarkPair, (state, { payload }) => {
+      const pairs = state.bookmarkedPairs;
+      pairs.push(payload);
+      state.bookmarkedPairs = pairs;
+    })
+    .addCase(removeBookmarkPair, (state, { payload }) => {
+      const pairIndex = state.bookmarkedPairs.indexOf(payload);
+      const pairs = state.bookmarkedPairs
+        .slice(0, pairIndex - 1)
+        .concat(
+          state.bookmarkedPairs.slice(
+            pairIndex + 1,
+            state.bookmarkedPairs.length - 1,
+          ),
+        );
+      state.bookmarkedPairs = pairs;
+    })
+    .addCase(updateBookmarkPairs, (state, { payload }) => {
+      state.bookmarkedPairs = payload;
     }),
 );
