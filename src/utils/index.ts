@@ -19,6 +19,7 @@ import {
   PAIRS_BULK1,
   PAIRS_HISTORICAL_BULK,
   PRICES_BY_BLOCK,
+  PAIRS_CURRENT,
 } from 'apollo/queries';
 import { JsonRpcSigner, Web3Provider } from '@ethersproject/providers';
 import { abi as IUniswapV2Router02ABI } from '@uniswap/v2-periphery/build/IUniswapV2Router02.json';
@@ -425,6 +426,19 @@ export const getTokenPairs: (
       .concat(result.data?.['pairs2'])
       .concat(result.data?.['pairs3'])
       .concat(result.data?.['pairs4']);
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+export const getTopPairs = async (count: number) => {
+  try {
+    // fetch all current and historical data
+    const result = await client.query({
+      query: PAIRS_CURRENT(count),
+      fetchPolicy: 'cache-first',
+    });
+    return result.data?.['pairs'];
   } catch (e) {
     console.log(e);
   }

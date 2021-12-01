@@ -6,9 +6,20 @@ import { ArrowForwardIos } from '@material-ui/icons';
 import dayjs from 'dayjs';
 import moment from 'moment';
 import utc from 'dayjs/plugin/utc';
-import { useGlobalChartData, useTopTokens } from 'state/application/hooks';
-import { formatCompact, getChartData, getEthPrice, getTopTokens } from 'utils';
-import { AreaChart, BarChart, TokensTable } from 'components';
+import {
+  useGlobalChartData,
+  useTopTokens,
+  useTopPairs,
+} from 'state/application/hooks';
+import {
+  formatCompact,
+  getChartData,
+  getEthPrice,
+  getTopPairs,
+  getTopTokens,
+  getBulkPairData,
+} from 'utils';
+import { AreaChart, BarChart, TokensTable, PairTable } from 'components';
 import AnalyticsInfo from './AnalyticsInfo';
 
 dayjs.extend(utc);
@@ -59,6 +70,7 @@ const AnalyticsOverview: React.FC<AnalyticsOverViewProps> = ({
 
   const { globalChartData, updateGlobalChartData } = useGlobalChartData();
   const { topTokens, updateTopTokens } = useTopTokens();
+  const { topPairs, updateTopPairs } = useTopPairs();
 
   const utcEndTime = dayjs.utc();
   const startTime =
@@ -69,6 +81,7 @@ const AnalyticsOverview: React.FC<AnalyticsOverViewProps> = ({
 
   useEffect(() => {
     updateTopTokens({ data: null });
+    updateTopPairs(null);
     const fetchChartData = async () => {
       const [newChartData, newWeeklyData] = await getChartData(startTime);
       if (newChartData && newWeeklyData) {
@@ -82,10 +95,20 @@ const AnalyticsOverview: React.FC<AnalyticsOverViewProps> = ({
       if (topTokensData) {
         updateTopTokens({ data: topTokensData });
       }
+      const pairs = await getTopPairs(8);
+      const formattedPairs = pairs
+        ? pairs.map((pair: any) => {
+            return pair.id;
+          })
+        : [];
+      const pairData = await getBulkPairData(formattedPairs, newPrice);
+      if (pairData) {
+        updateTopPairs(pairData);
+      }
     };
     fetchChartData();
     fetchTopTokens();
-  }, [startTime, updateGlobalChartData, updateTopTokens]);
+  }, [startTime, updateGlobalChartData, updateTopTokens, updateTopPairs]);
 
   const liquidityDates = useMemo(() => {
     if (globalChartData) {
@@ -429,7 +452,9 @@ const AnalyticsOverview: React.FC<AnalyticsOverViewProps> = ({
           </Box>
         </Box>
       </Box>
-      <Box mt={3} paddingX={4} paddingY={3} className={classes.panel}></Box>
+      <Box mt={3} paddingX={4} paddingY={3} className={classes.panel}>
+        {topPairs && <PairTable data={topPairs} />}
+      </Box>
     </>
   );
 };

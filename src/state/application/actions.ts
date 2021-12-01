@@ -88,3 +88,17 @@ export const removeBookmarkToken = createAction<string>(
 export const updateBookmarkTokens = createAction<string[]>(
   'application/updateBookMarkedTokens',
 );
+
+export const addBookMarkPair = createAction<string>(
+  'application/addBookMarkPair',
+);
+
+export const removeBookmarkPair = createAction<string>(
+  'application/removeBookmarkPair',
+);
+
+export const updateBookmarkPairs = createAction<string[]>(
+  'application/updateBookmarkPairs',
+);
+
+export const updateTopPairs = createAction<any>('application/updateTopPairs');

@@ -5,6 +5,7 @@ import cx from 'classnames';
 import { ReactComponent as SearchIcon } from 'assets/images/SearchIcon.svg';
 import AnalyticsOverview from './AnalyticsOverview';
 import AnalyticsTokens from './AnalyticsTokens';
+import AnalyticsPairs from './AnalyticsPairs';
 
 const useStyles = makeStyles(({}) => ({
   topTab: {
@@ -109,6 +110,7 @@ const AnalyticsPage: React.FC = () => {
         />
       )}
       {tabIndex === 1 && <AnalyticsTokens />}
+      {tabIndex === 2 && <AnalyticsPairs />}
     </Box>
   );
 };
