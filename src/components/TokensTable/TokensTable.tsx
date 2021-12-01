@@ -3,7 +3,7 @@ import { Box, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { ChainId, Token } from '@uniswap/sdk';
 import { CurrencyLogo, CustomTable } from 'components';
-import { useBookmarkTokens } from 'state/application/hooks';
+import { useBookmarkTokens, useAnalyticToken } from 'state/application/hooks';
 import { ReactComponent as StarChecked } from 'assets/images/StarChecked.svg';
 import { ReactComponent as StarUnchecked } from 'assets/images/StarUnchecked.svg';
 
@@ -64,6 +64,7 @@ const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
     addBookmarkToken,
     removeBookmarkToken,
   } = useBookmarkTokens();
+  const { updateAnalyticToken } = useAnalyticToken();
   const mobileHTML = (token: any) => {
     return (
       <Box>
@@ -77,6 +78,8 @@ const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
       ChainId.MATIC,
       token.id,
       Number(token.decimals),
+      token.symbol,
+      token.name,
     );
     return [
       {
@@ -100,12 +103,19 @@ const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
                 <StarUnchecked />
               )}
             </Box>
-            <CurrencyLogo currency={tokenCurrency} size='28px' />
-            <Box ml={1}>
-              <Typography variant='body1' style={{ color: '#ebecf2' }}>
-                {token.name}{' '}
-                <span style={{ color: '#636780' }}>({token.symbol})</span>
-              </Typography>
+            <Box
+              display='flex'
+              alignItems='center'
+              style={{ cursor: 'pointer' }}
+              onClick={() => updateAnalyticToken(token)}
+            >
+              <CurrencyLogo currency={tokenCurrency} size='28px' />
+              <Box ml={1}>
+                <Typography variant='body1' style={{ color: '#ebecf2' }}>
+                  {token.name}{' '}
+                  <span style={{ color: '#636780' }}>({token.symbol})</span>
+                </Typography>
+              </Box>
             </Box>
           </Box>
         ),

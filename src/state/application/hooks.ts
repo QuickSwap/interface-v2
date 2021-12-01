@@ -21,6 +21,7 @@ import {
   updateTopPairs,
   addBookMarkPair,
   removeBookmarkPair,
+  updateAnalyticToken,
 } from './actions';
 
 export function useBlockNumber(): number | undefined {
@@ -313,4 +314,21 @@ export function useTopPairs(): {
     [dispatch],
   );
   return { topPairs, updateTopPairs: _updateTopPairs };
+}
+
+export function useAnalyticToken(): {
+  analyticToken: any;
+  updateAnalyticToken: (data: any) => void;
+} {
+  const analyticToken = useSelector(
+    (state: AppState) => state.application.analyticToken,
+  );
+  const dispatch = useDispatch();
+  const _updateAnalyticToken = useCallback(
+    (data) => {
+      dispatch(updateAnalyticToken(data));
+    },
+    [dispatch],
+  );
+  return { analyticToken, updateAnalyticToken: _updateAnalyticToken };
 }

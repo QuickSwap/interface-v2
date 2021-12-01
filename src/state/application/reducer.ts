@@ -20,6 +20,7 @@ import {
   addBookMarkPair,
   removeBookmarkPair,
   updateBookmarkPairs,
+  updateAnalyticToken,
 } from './actions';
 
 type PopupList = Array<{
@@ -43,6 +44,7 @@ export interface ApplicationState {
   readonly bookmarkedTokens: string[];
   readonly bookmarkedPairs: string[];
   readonly topPairs: any[] | null;
+  readonly analyticToken: any;
 }
 
 const initialState: ApplicationState = {
@@ -63,6 +65,7 @@ const initialState: ApplicationState = {
   bookmarkedTokens: [],
   bookmarkedPairs: [],
   topPairs: null,
+  analyticToken: null,
 };
 
 export default createReducer(initialState, (builder) =>
@@ -174,5 +177,8 @@ export default createReducer(initialState, (builder) =>
     })
     .addCase(updateBookmarkPairs, (state, { payload }) => {
       state.bookmarkedPairs = payload;
+    })
+    .addCase(updateAnalyticToken, (state, { payload }) => {
+      state.analyticToken = payload;
     }),
 );

@@ -170,7 +170,7 @@ const SwapPage: React.FC = () => {
         ethPrice.oneDayPrice,
       );
       if (topTokens) {
-        updateTopTokens({ data: topTokens });
+        updateTopTokens(topTokens);
       }
     }
     if (!ethPrice.price) {
