@@ -4,6 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { PairTable } from 'components';
 import { useTopPairs } from 'state/application/hooks';
 import { getEthPrice, getTopPairs, getBulkPairData } from 'utils';
+import { Skeleton } from '@material-ui/lab';
 
 const useStyles = makeStyles(({}) => ({
   tokensFilter: {
@@ -42,7 +43,11 @@ const AnalyticsPairs: React.FC = () => {
     <>
       <Typography>All Pairs</Typography>
       <Box mt={4} paddingX={4} paddingY={3} className={classes.panel}>
-        {topPairs && <PairTable data={topPairs} />}
+        {topPairs ? (
+          <PairTable data={topPairs} />
+        ) : (
+          <Skeleton variant='rect' width='100%' height={150} />
+        )}
       </Box>
     </>
   );

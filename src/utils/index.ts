@@ -247,25 +247,11 @@ export const getEthPrice: () => Promise<number[]> = async () => {
   return [ethPrice, ethPriceOneDay, priceChangeETH];
 };
 
-export const getTopTokens: (
+export const getTopTokens = async (
   ethPrice: any,
   ethPriceOld: any,
-  count?: number,
-) => Promise<
-  | [
-      unknown,
-      unknown,
-      unknown,
-      unknown,
-      unknown,
-      unknown,
-      unknown,
-      unknown,
-      unknown,
-      unknown,
-    ]
-  | undefined
-> = async (ethPrice: any, ethPriceOld: any, count = 500) => {
+  count = 500,
+) => {
   const utcCurrentTime = dayjs();
   const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix();
   const utcTwoDaysBack = utcCurrentTime.subtract(2, 'day').unix();

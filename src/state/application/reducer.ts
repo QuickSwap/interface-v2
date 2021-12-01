@@ -42,7 +42,7 @@ export interface ApplicationState {
   readonly swapTokenPrice1: any;
   readonly bookmarkedTokens: string[];
   readonly bookmarkedPairs: string[];
-  readonly topPairs: any;
+  readonly topPairs: any[] | null;
 }
 
 const initialState: ApplicationState = {
@@ -120,8 +120,8 @@ export default createReducer(initialState, (builder) =>
     .addCase(updateGlobalChartData, (state, { payload }) => {
       state.globalChartData = payload;
     })
-    .addCase(updateTopTokens, (state, { payload: { data } }) => {
-      state.topTokens = data;
+    .addCase(updateTopTokens, (state, { payload }) => {
+      state.topTokens = payload;
     })
     .addCase(updateTokenPairs, (state, { payload: { data } }) => {
       state.tokenPairs = data;

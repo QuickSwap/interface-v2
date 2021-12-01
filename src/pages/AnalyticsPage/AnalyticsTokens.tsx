@@ -4,6 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { TopMovers, TokensTable } from 'components';
 import { useTopTokens } from 'state/application/hooks';
 import { getEthPrice, getTopTokens } from 'utils';
+import { Skeleton } from '@material-ui/lab';
 
 const useStyles = makeStyles(({}) => ({
   tokensFilter: {
@@ -23,15 +24,17 @@ const AnalyticsTokens: React.FC = () => {
   const { topTokens, updateTopTokens } = useTopTokens();
 
   useEffect(() => {
-    updateTopTokens({ data: null });
+    updateTopTokens(null);
     const fetchTopTokens = async () => {
       const [newPrice, oneDayPrice] = await getEthPrice();
       const topTokensData = await getTopTokens(newPrice, oneDayPrice, 200);
       if (topTokensData) {
-        updateTopTokens({ data: topTokensData });
+        updateTopTokens(topTokensData);
       }
     };
-    fetchTopTokens();
+    if (!topTokens || topTokens.length < 200) {
+      fetchTopTokens();
+    }
   }, [updateTopTokens]);
 
   return (
@@ -63,7 +66,11 @@ const AnalyticsTokens: React.FC = () => {
         </Box>
       </Box>
       <Box paddingX={4} paddingY={3} className={classes.panel}>
-        {topTokens && <TokensTable data={topTokens} />}
+        {topTokens && topTokens.length === 200 ? (
+          <TokensTable data={topTokens} />
+        ) : (
+          <Skeleton variant='rect' width='100%' height={150} />
+        )}
       </Box>
     </>
   );

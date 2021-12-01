@@ -80,7 +80,7 @@ const AnalyticsOverview: React.FC<AnalyticsOverViewProps> = ({
       .unix() - 1;
 
   useEffect(() => {
-    updateTopTokens({ data: null });
+    updateTopTokens(null);
     updateTopPairs(null);
     const fetchChartData = async () => {
       const [newChartData, newWeeklyData] = await getChartData(startTime);
@@ -93,7 +93,7 @@ const AnalyticsOverview: React.FC<AnalyticsOverViewProps> = ({
       const [newPrice, oneDayPrice] = await getEthPrice();
       const topTokensData = await getTopTokens(newPrice, oneDayPrice, 8);
       if (topTokensData) {
-        updateTopTokens({ data: topTokensData });
+        updateTopTokens(topTokensData);
       }
       const pairs = await getTopPairs(8);
       const formattedPairs = pairs
@@ -435,7 +435,11 @@ const AnalyticsOverview: React.FC<AnalyticsOverViewProps> = ({
         </Box>
       </Box>
       <Box mt={3} paddingX={4} paddingY={3} className={classes.panel}>
-        {topTokens && <TokensTable data={topTokens} />}
+        {topTokens ? (
+          <TokensTable data={topTokens} />
+        ) : (
+          <Skeleton variant='rect' width='100%' height={150} />
+        )}
       </Box>
       <Box mt={4}>
         <Box display='flex' justifyContent='space-between' alignItems='center'>
@@ -453,7 +457,11 @@ const AnalyticsOverview: React.FC<AnalyticsOverViewProps> = ({
         </Box>
       </Box>
       <Box mt={3} paddingX={4} paddingY={3} className={classes.panel}>
-        {topPairs && <PairTable data={topPairs} />}
+        {topPairs ? (
+          <PairTable data={topPairs} />
+        ) : (
+          <Skeleton variant='rect' width='100%' height={150} />
+        )}
       </Box>
     </>
   );

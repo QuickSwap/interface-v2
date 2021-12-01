@@ -18,19 +18,21 @@ const TopMovers: React.FC<TopMoversProps> = ({
   const { topTokens, updateTopTokens } = useTopTokens();
 
   const topMoverTokens = useMemo(
-    () => (topTokens && topTokens.length > 5 ? topTokens.slice(0, 5) : null),
+    () => (topTokens && topTokens.length >= 5 ? topTokens.slice(0, 5) : null),
     [topTokens],
   );
 
   useEffect(() => {
     async function checkEthPrice() {
       const [newPrice, oneDayPrice] = await getEthPrice();
-      const topTokensData = await getTopTokens(newPrice, oneDayPrice, 20);
+      const topTokensData = await getTopTokens(newPrice, oneDayPrice, 5);
       if (topTokensData) {
-        updateTopTokens({ data: topTokensData });
+        updateTopTokens(topTokensData);
       }
     }
-    checkEthPrice();
+    if (!topTokens || topTokens.length < 5) {
+      checkEthPrice();
+    }
   }, [updateTopTokens, topTokens]);
 
   return (

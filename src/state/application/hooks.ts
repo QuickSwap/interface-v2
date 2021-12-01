@@ -162,15 +162,15 @@ export function useGlobalChartData(): {
 
 export function useTopTokens(): {
   topTokens: any;
-  updateTopTokens: ({ data }: any) => void;
+  updateTopTokens: (data: any) => void;
 } {
   const topTokens = useSelector(
     (state: AppState) => state.application.topTokens,
   );
   const dispatch = useDispatch();
   const _updateTopTokens = useCallback(
-    ({ data }) => {
-      dispatch(updateTopTokens({ data }));
+    (data) => {
+      dispatch(updateTopTokens(data));
     },
     [dispatch],
   );
