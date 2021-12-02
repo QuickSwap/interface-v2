@@ -1,5 +1,5 @@
 import React from 'react';
-import { createStyles, makeStyles, useTheme } from '@material-ui/core/styles';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { Box, Typography } from '@material-ui/core';
 import Chart from 'react-apexcharts';
 import moment from 'moment';
@@ -56,7 +56,6 @@ const AreaChart: React.FC<AreaChartProps> = ({
   height = 200,
 }) => {
   const dark = useIsDarkMode();
-  const theme = useTheme();
 
   const strokeColor = '#00dced';
   const gradientColor = dark ? '#64fbd3' : '#D4F8FB';

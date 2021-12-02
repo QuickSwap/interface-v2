@@ -56,7 +56,7 @@ const AnalyticsPage: React.FC = () => {
 
   useEffect(() => {
     updateAnalyticToken(null);
-  }, []);
+  }, [updateAnalyticToken]);
 
   return (
     <Box width='100%' mb={3}>
