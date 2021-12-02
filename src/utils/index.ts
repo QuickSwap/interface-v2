@@ -13,8 +13,10 @@ import {
   ETH_PRICE,
   TOKENS_CURRENT,
   TOKENS_DYNAMIC,
+  TOKEN_CHART,
   TOKEN_DATA,
   TOKEN_DATA1,
+  TOKEN_DATA2,
   PAIR_DATA,
   PAIRS_BULK1,
   PAIRS_HISTORICAL_BULK,
@@ -255,8 +257,10 @@ export const getTopTokens = async (
   const utcCurrentTime = dayjs();
   const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix();
   const utcTwoDaysBack = utcCurrentTime.subtract(2, 'day').unix();
+  const utcOneWeekBack = utcCurrentTime.subtract(7, 'day').unix();
   const oneDayBlock = await getBlockFromTimestamp(utcOneDayBack);
   const twoDayBlock = await getBlockFromTimestamp(utcTwoDaysBack);
+  const oneWeekBlock = await getBlockFromTimestamp(utcOneWeekBack);
 
   try {
     const current = await client.query({
@@ -274,6 +278,11 @@ export const getTopTokens = async (
       fetchPolicy: 'cache-first',
     });
 
+    const oneWeekResult = await client.query({
+      query: TOKENS_DYNAMIC(oneWeekBlock, count),
+      fetchPolicy: 'cache-first',
+    });
+
     const oneDayData = oneDayResult?.data?.tokens.reduce(
       (obj: any, cur: any) => {
         return { ...obj, [cur.id]: cur };
@@ -282,6 +291,13 @@ export const getTopTokens = async (
     );
 
     const twoDayData = twoDayResult?.data?.tokens.reduce(
+      (obj: any, cur: any) => {
+        return { ...obj, [cur.id]: cur };
+      },
+      {},
+    );
+
+    const oneWeekData = oneWeekResult?.data?.tokens.reduce(
       (obj: any, cur: any) => {
         return { ...obj, [cur.id]: cur };
       },
@@ -298,6 +314,7 @@ export const getTopTokens = async (
           // let liquidityDataThisToken = liquidityData?.[token.id]
           let oneDayHistory = oneDayData?.[token.id];
           let twoDayHistory = twoDayData?.[token.id];
+          let oneWeekHistory = oneWeekData?.[token.id];
 
           // catch the case where token wasnt in top list in previous days
           if (!oneDayHistory) {
@@ -315,12 +332,23 @@ export const getTopTokens = async (
             twoDayHistory = twoDayResult.data.tokens[0];
           }
 
+          if (!oneWeekHistory) {
+            const oneWeekResult = await client.query({
+              query: TOKEN_DATA(token.id, oneWeekBlock),
+              fetchPolicy: 'cache-first',
+            });
+            oneWeekHistory = oneWeekResult.data.tokens[0];
+          }
+
           // calculate percentage changes and daily changes
           const [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(
             data.tradeVolumeUSD,
             oneDayHistory?.tradeVolumeUSD ?? 0,
             twoDayHistory?.tradeVolumeUSD ?? 0,
           );
+
+          const oneWeekVolumeUSD =
+            oneDayHistory.tradeVolumeUSD - oneWeekHistory.tradeVolumeUSD;
 
           const currentLiquidityUSD =
             data?.totalLiquidity * ethPrice * data?.derivedETH;
@@ -341,6 +369,7 @@ export const getTopTokens = async (
           data.priceUSD = data?.derivedETH * ethPrice;
           data.totalLiquidityUSD = currentLiquidityUSD;
           data.oneDayVolumeUSD = oneDayVolumeUSD;
+          data.oneWeekVolumeUSD = oneWeekVolumeUSD;
           data.volumeChangeUSD = volumeChangeUSD;
           data.priceChangeUSD = priceChangeUSD;
           data.liquidityChangeUSD = getPercentChange(
@@ -397,10 +426,10 @@ export const getTimestampsForChanges: () => number[] = () => {
   return [t1, t2, tWeek];
 };
 
-export const getTokenPairs: (
+export const getTokenPairs = async (
   tokenAddress: string,
   tokenAddress1: string,
-) => Promise<any> = async (tokenAddress: string, tokenAddress1: string) => {
+) => {
   try {
     // fetch all current and historical data
     const result = await client.query({
@@ -412,6 +441,19 @@ export const getTokenPairs: (
       .concat(result.data?.['pairs2'])
       .concat(result.data?.['pairs3'])
       .concat(result.data?.['pairs4']);
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+export const getTokenPairs2 = async (tokenAddress: string) => {
+  try {
+    // fetch all current and historical data
+    const result = await client.query({
+      query: TOKEN_DATA2(tokenAddress),
+      fetchPolicy: 'cache-first',
+    });
+    return result.data?.['pairs0'].concat(result.data?.['pairs1']);
   } catch (e) {
     console.log(e);
   }
@@ -528,6 +570,74 @@ export const getIntervalTokenData: (
     console.log('error fetching blocks');
     return [];
   }
+};
+
+export const getTokenChartData = async (tokenAddress: string) => {
+  let data: any[] = [];
+  const utcEndTime = dayjs.utc();
+  const utcStartTime = utcEndTime.subtract(2, 'month');
+  const startTime = utcStartTime.endOf('day').unix() - 1;
+  try {
+    let allFound = false;
+    let skip = 0;
+    while (!allFound) {
+      const result = await client.query({
+        query: TOKEN_CHART,
+        variables: {
+          startTime: startTime,
+          tokenAddr: tokenAddress,
+          skip,
+        },
+        fetchPolicy: 'cache-first',
+      });
+      if (result.data.tokenDayDatas.length < 1000) {
+        allFound = true;
+      }
+      skip += 1000;
+      data = data.concat(result.data.tokenDayDatas);
+    }
+
+    const dayIndexSet = new Set();
+    const dayIndexArray: any[] = [];
+    const oneDay = 24 * 60 * 60;
+    data.forEach((dayData, i) => {
+      // add the day index to the set of days
+      dayIndexSet.add((data[i].date / oneDay).toFixed(0));
+      dayIndexArray.push(data[i]);
+      dayData.dailyVolumeUSD = parseFloat(dayData.dailyVolumeUSD);
+    });
+
+    // fill in empty days
+    let timestamp = data[0] && data[0].date ? data[0].date : startTime;
+    let latestLiquidityUSD = data[0] && data[0].totalLiquidityUSD;
+    let latestPriceUSD = data[0] && data[0].priceUSD;
+    //let latestPairDatas = data[0] && data[0].mostLiquidPairs
+    let index = 1;
+    while (timestamp < utcEndTime.startOf('minute').unix() - oneDay) {
+      const nextDay = timestamp + oneDay;
+      const currentDayIndex = (nextDay / oneDay).toFixed(0);
+      if (!dayIndexSet.has(currentDayIndex)) {
+        data.push({
+          date: nextDay,
+          dayString: nextDay,
+          dailyVolumeUSD: 0,
+          priceUSD: latestPriceUSD,
+          totalLiquidityUSD: latestLiquidityUSD,
+          //mostLiquidPairs: latestPairDatas,
+        });
+      } else {
+        latestLiquidityUSD = dayIndexArray[index].totalLiquidityUSD;
+        latestPriceUSD = dayIndexArray[index].priceUSD;
+        //latestPairDatas = dayIndexArray[index].mostLiquidPairs
+        index = index + 1;
+      }
+      timestamp = nextDay;
+    }
+    data = data.sort((a, b) => (parseInt(a.date) > parseInt(b.date) ? 1 : -1));
+  } catch (e) {
+    console.log(e);
+  }
+  return data;
 };
 
 export const getBulkPairData: (

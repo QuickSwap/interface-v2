@@ -35,6 +35,7 @@ const AnalyticsTokens: React.FC = () => {
     if (!topTokens || topTokens.length < 200) {
       fetchTopTokens();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [updateTopTokens]);
 
   return (

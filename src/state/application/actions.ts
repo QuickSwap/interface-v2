@@ -104,3 +104,7 @@ export const updateTopPairs = createAction<any>('application/updateTopPairs');
 export const updateAnalyticToken = createAction<any>(
   'application/updateAnalyticToken',
 );
+
+export const updateTokenChartData = createAction<any>(
+  'application/updateTokenChartData',
+);
