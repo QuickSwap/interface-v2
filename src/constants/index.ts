@@ -15,6 +15,7 @@ import {
   arkaneconnect,
   safeApp,
 } from '../connectors';
+import { getAddress } from '@ethersproject/address';
 
 export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   INJECTED: {
@@ -99,14 +100,14 @@ type ChainTokenList = {
 //Remove these 2 after testing
 export const TOKENA = new Token(
   ChainId.MATIC,
-  '0xd46422d62c1d3b6b6934727be2f8aad4162a88dc',
+  getAddress('0xd46422d62c1d3b6b6934727be2f8aad4162a88dc'),
   18,
   'TokenA',
   'TokenA',
 );
 export const TOKENB = new Token(
   ChainId.MATIC,
-  '0xc447b32a05819d82b06bf95f9bb878f6ae9c7ecc',
+  getAddress('0xc447b32a05819d82b06bf95f9bb878f6ae9c7ecc'),
   18,
   'TokenB',
   'TokenA',
@@ -114,42 +115,42 @@ export const TOKENB = new Token(
 
 export const EMPTY = new Token(
   ChainId.MATIC,
-  '0x0000000000000000000000000000000000000000',
+  getAddress('0x0000000000000000000000000000000000000000'),
   0,
   'EMPTY',
   'EMPTY',
 );
 export const DAI = new Token(
   ChainId.MATIC,
-  '0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063',
+  getAddress('0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063'),
   18,
   'DAI',
   'Dai Stablecoin',
 );
 export const USDC = new Token(
   ChainId.MATIC,
-  '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
+  getAddress('0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174'),
   6,
   'USDC',
   'USDC',
 );
 export const USDT = new Token(
   ChainId.MATIC,
-  '0xc2132D05D31c914a87C6611C10748AEb04B58e8F',
+  getAddress('0xc2132D05D31c914a87C6611C10748AEb04B58e8F'),
   6,
   'USDT',
   'Tether USD',
 );
 export const COMP = new Token(
   ChainId.MATIC,
-  '0x8505b9d2254A7Ae468c0E9dd10Ccea3A837aef5c',
+  getAddress('0x8505b9d2254A7Ae468c0E9dd10Ccea3A837aef5c'),
   18,
   'COMP',
   'Compound',
 );
 export const UNITOKEN = new Token(
   ChainId.MATIC,
-  '0xb33EaAd8d922B1083446DC23f610c2567fB5180f',
+  getAddress('0xb33EaAd8d922B1083446DC23f610c2567fB5180f'),
   18,
   'UNI',
   'Uniswap',
@@ -158,56 +159,56 @@ export const UNITOKEN = new Token(
 //export const TT02 = new Token(ChainId.MATIC, '0xF6Ad3CcF71Abb3E12beCf6b3D2a74C963859ADCd', 18, 'TT01', 'Test Token 02')
 export const ETHER = new Token(
   ChainId.MATIC,
-  '0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619',
+  getAddress('0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619'),
   18,
   'ETH',
   'Ether',
 );
 export const QUICK = new Token(
   ChainId.MATIC,
-  '0x831753DD7087CaC61aB5644b308642cc1c33Dc13',
+  getAddress('0x831753DD7087CaC61aB5644b308642cc1c33Dc13'),
   18,
   'QUICK',
   'QuickSwap',
 );
 export const WBTC = new Token(
   ChainId.MATIC,
-  '0x1BFD67037B42Cf73acF2047067bd4F2C47D9BfD6',
+  getAddress('0x1BFD67037B42Cf73acF2047067bd4F2C47D9BfD6'),
   18,
   'wBTC',
   'Wrapped Bitcoin',
 );
 export const IGG = new Token(
   ChainId.MATIC,
-  '0xe6FC6C7CB6d2c31b359A49A33eF08aB87F4dE7CE',
+  getAddress('0xe6FC6C7CB6d2c31b359A49A33eF08aB87F4dE7CE'),
   18,
   'IGG',
   'IG Gold',
 );
 export const OM = new Token(
   ChainId.MATIC,
-  '0xC3Ec80343D2bae2F8E680FDADDe7C17E71E114ea',
+  getAddress('0xC3Ec80343D2bae2F8E680FDADDe7C17E71E114ea'),
   18,
   'OM',
   'OM Mantra DAO',
 );
 export const GHST = new Token(
   ChainId.MATIC,
-  '0x385eeac5cb85a38a9a07a70c73e0a3271cfb54a7',
+  getAddress('0x385eeac5cb85a38a9a07a70c73e0a3271cfb54a7'),
   18,
   'GHST',
   'Aavegotchi GHST Token',
 );
 export const MAUSDC = new Token(
   ChainId.MATIC,
-  '0x9719d867A500Ef117cC201206B8ab51e794d3F82',
+  getAddress('0x9719d867A500Ef117cC201206B8ab51e794d3F82'),
   6,
   'maUSDC',
   'Matic Aave interest bearing USDC',
 );
 export const MADAI = new Token(
   ChainId.MATIC,
-  '0xE0b22E0037B130A9F56bBb537684E6fA18192341',
+  getAddress('0xE0b22E0037B130A9F56bBb537684E6fA18192341'),
   18,
   'maDAI',
   'Matic Aave interest bearing DAI',

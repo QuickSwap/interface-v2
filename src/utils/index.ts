@@ -111,13 +111,9 @@ export function formatCompact(
   return formatter.format(Number(formatted.toPrecision(maxPrecision)));
 }
 
-export const getPercentChange: (
-  valueNow: any,
-  value24HoursAgo: any,
-) => number = (valueNow: any, value24HoursAgo: any) => {
+export const getPercentChange = (valueNow: number, value24HoursAgo: number) => {
   const adjustedPercentChange =
-    ((Number(valueNow) - Number(value24HoursAgo)) / Number(value24HoursAgo)) *
-    100;
+    ((valueNow - value24HoursAgo) / value24HoursAgo) * 100;
   if (isNaN(adjustedPercentChange) || !isFinite(adjustedPercentChange)) {
     return 0;
   }
@@ -198,16 +194,16 @@ export async function getBlocksFromTimestamps(
 }
 
 export const get2DayPercentChange = (
-  valueNow: any,
-  value24HoursAgo: any,
-  value48HoursAgo: any,
+  valueNow: number,
+  value24HoursAgo: number,
+  value48HoursAgo: number,
 ) => {
   // get volume info for both 24 hour periods
-  const currentChange = Number(valueNow) - Number(value24HoursAgo);
-  const previousChange = Number(value24HoursAgo) - Number(value48HoursAgo);
+  const currentChange = valueNow - value24HoursAgo;
+  const previousChange = value24HoursAgo - value48HoursAgo;
 
   const adjustedPercentChange =
-    (Number(currentChange - previousChange) / Number(previousChange)) * 100;
+    ((currentChange - previousChange) / previousChange) * 100;
 
   if (isNaN(adjustedPercentChange) || !isFinite(adjustedPercentChange)) {
     return [currentChange, 0];
@@ -250,8 +246,8 @@ export const getEthPrice: () => Promise<number[]> = async () => {
 };
 
 export const getTopTokens = async (
-  ethPrice: any,
-  ethPriceOld: any,
+  ethPrice: number,
+  ethPriceOld: number,
   count = 500,
 ) => {
   const utcCurrentTime = dayjs();

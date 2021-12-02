@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useHistory } from 'react-router-dom';
 import { Box, Typography, Grid } from '@material-ui/core';
 import { ArrowForwardIos } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
@@ -23,6 +24,7 @@ import {
 } from 'utils';
 import { ReactComponent as StarChecked } from 'assets/images/StarChecked.svg';
 import { ReactComponent as StarUnchecked } from 'assets/images/StarUnchecked.svg';
+import { getAddress } from '@ethersproject/address';
 
 const useStyles = makeStyles(({}) => ({
   panel: {
@@ -93,8 +95,13 @@ const AnalyticsTokenDetails: React.FC<{
   goBack: (index: number) => void;
 }> = ({ token, goBack }) => {
   const classes = useStyles();
+  const history = useHistory();
   const { chainId } = useActiveWeb3React();
-  const currency = new Token(ChainId.MATIC, token.id, token.decimals);
+  const currency = new Token(
+    ChainId.MATIC,
+    getAddress(token.id),
+    token.decimals,
+  );
   const { tokenChartData, updateTokenChartData } = useTokenChartData();
   const [chartIndex, setChartIndex] = useState(0);
   const { tokenPairs, updateTokenPairs } = useTokenPairs();
@@ -197,7 +204,8 @@ const AnalyticsTokenDetails: React.FC<{
     }
     fetchTokenPairs();
     fetchTokenChartData();
-  }, [updateTokenPairs, token]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [updateTokenPairs, updateTokenChartData, token]);
 
   return (
     <>
@@ -286,10 +294,22 @@ const AnalyticsTokenDetails: React.FC<{
           </Box>
         </Box>
         <Box display='flex'>
-          <Box className={classes.button} mr={1.5} border='1px solid #448aff'>
+          <Box
+            className={classes.button}
+            mr={1.5}
+            border='1px solid #448aff'
+            onClick={() => {
+              history.push(`/pools?currency0=${token.id}&currency1=ETH`);
+            }}
+          >
             <Typography variant='body2'>Add Liquidity</Typography>
           </Box>
-          <Box className={cx(classes.button, classes.filledButton)}>
+          <Box
+            className={cx(classes.button, classes.filledButton)}
+            onClick={() => {
+              history.push(`/swap?currency0=${token.id}&currency1=ETH`);
+            }}
+          >
             <Typography variant='body2'>Swap</Typography>
           </Box>
         </Box>

@@ -3,7 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Box, Typography, Grid, Divider } from '@material-ui/core';
 import { KeyboardArrowUp, KeyboardArrowDown } from '@material-ui/icons';
 import cx from 'classnames';
-import { Token } from '@uniswap/sdk';
+import { Currency, Token } from '@uniswap/sdk';
 import {
   GelatoLimitOrderPanel,
   GelatoLimitOrdersHistoryPanel,
@@ -35,6 +35,8 @@ import {
 import { useDerivedSwapInfo } from 'state/swap/hooks';
 import { Field } from 'state/swap/actions';
 import { useAllTokens } from 'hooks/Tokens';
+import useParsedQueryString from 'hooks/useParsedQueryString';
+import { useCurrency } from 'hooks/Tokens';
 import dayjs from 'dayjs';
 
 const useStyles = makeStyles(({ breakpoints }) => ({
@@ -113,6 +115,29 @@ const SwapPage: React.FC = () => {
   const classes = useStyles();
   const [swapIndex, setSwapIndex] = useState(0);
   const [openSettingsModal, setOpenSettingsModal] = useState(false);
+  const [currency0, setCurrency0] = useState<Currency | undefined>(undefined);
+  const [currency1, setCurrency1] = useState<Currency | undefined>(undefined);
+  const parsedQuery = useParsedQueryString();
+  const qCurrency0 = useCurrency(
+    parsedQuery && parsedQuery.currency0
+      ? (parsedQuery.currency0 as string)
+      : undefined,
+  );
+  const qCurrency1 = useCurrency(
+    parsedQuery && parsedQuery.currency1
+      ? (parsedQuery.currency1 as string)
+      : undefined,
+  );
+
+  useEffect(() => {
+    if (parsedQuery && parsedQuery.currency0 && qCurrency0) {
+      setCurrency0(qCurrency0);
+    }
+    if (parsedQuery && parsedQuery.currency1 && qCurrency1) {
+      setCurrency1(qCurrency1);
+    }
+  }, [parsedQuery, qCurrency0, qCurrency1]);
+
   const { currencies } = useDerivedSwapInfo();
   const allTokens = useAllTokens();
   const { ethPrice, updateEthPrice } = useEthPrice();
@@ -285,7 +310,9 @@ const SwapPage: React.FC = () => {
               </Box>
             </Box>
             <Box mt={2.5}>
-              {swapIndex === 0 && <Swap />}
+              {swapIndex === 0 && (
+                <Swap currency0={currency0} currency1={currency1} />
+              )}
               {swapIndex === 1 && (
                 <>
                   <GelatoLimitOrderPanel />
