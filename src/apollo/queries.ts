@@ -19,12 +19,12 @@ export const SUBGRAPH_HEALTH = gql`
 `;
 
 export const TOKEN_CHART = gql`
-  query tokenDayDatas($tokenAddr: String!) {
+  query tokenDayDatas($tokenAddr: String!, $startTime: Int!) {
     tokenDayDatas(
-      first: 1
+      first: 1000
       orderBy: date
       orderDirection: desc
-      where: { token: $tokenAddr }
+      where: { token: $tokenAddr, date_gt: $startTime }
     ) {
       id
       date
@@ -177,6 +177,20 @@ export const TOKEN_DATA1: any = (
         id
       }
       pairs4: pairs(where: {token1: "${tokenAddress1}", token0_not: "${tokenAddress}"}, first: 2, orderBy: reserveUSD, orderDirection: desc){
+        id
+      }
+    }
+  `;
+  return gql(queryString);
+};
+
+export const TOKEN_DATA2: any = (tokenAddress: string) => {
+  const queryString = `
+    query tokens {
+      pairs0: pairs(where: {token0: "${tokenAddress}"}, first: 100, orderBy: reserveUSD, orderDirection: desc){
+        id
+      }
+      pairs1: pairs(where: {token1: "${tokenAddress}"}, first: 100, orderBy: reserveUSD, orderDirection: desc){
         id
       }
     }

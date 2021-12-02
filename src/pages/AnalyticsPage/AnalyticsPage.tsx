@@ -57,7 +57,7 @@ const AnalyticsPage: React.FC = () => {
   return (
     <Box width='100%' mb={3}>
       {analyticToken ? (
-        <AnalyticsTokenDetails token={analyticToken} />
+        <AnalyticsTokenDetails token={analyticToken} goBack={setTabIndex} />
       ) : (
         <>
           <Box mb={4}>

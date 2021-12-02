@@ -604,7 +604,7 @@ const LandingPage: React.FC = () => {
             }}
           >
             {isnotMatic
-              ? 'Switch to Matic'
+              ? 'Switch to Polygon'
               : account
               ? 'Enter App'
               : 'Connect Wallet'}

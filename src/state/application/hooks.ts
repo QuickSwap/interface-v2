@@ -22,6 +22,7 @@ import {
   addBookMarkPair,
   removeBookmarkPair,
   updateAnalyticToken,
+  updateTokenChartData,
 } from './actions';
 
 export function useBlockNumber(): number | undefined {
@@ -331,4 +332,21 @@ export function useAnalyticToken(): {
     [dispatch],
   );
   return { analyticToken, updateAnalyticToken: _updateAnalyticToken };
+}
+
+export function useTokenChartData(): {
+  tokenChartData: any;
+  updateTokenChartData: (data: any) => void;
+} {
+  const tokenChartData = useSelector(
+    (state: AppState) => state.application.tokenChartData,
+  );
+  const dispatch = useDispatch();
+  const _updateTokenChartData = useCallback(
+    (data) => {
+      dispatch(updateTokenChartData(data));
+    },
+    [dispatch],
+  );
+  return { tokenChartData, updateTokenChartData: _updateTokenChartData };
 }

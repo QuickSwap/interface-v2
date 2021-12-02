@@ -286,7 +286,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
           </Box>
           <Box mt={2}>
             {error instanceof UnsupportedChainIdError ? (
-              <h5>Please connect to the appropriate Matic network.</h5>
+              <h5>Please connect to the appropriate Polygon network.</h5>
             ) : (
               'Error connecting. Try refreshing the page.'
             )}

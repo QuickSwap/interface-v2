@@ -27,7 +27,7 @@ const useStyles = makeStyles(({ palette }) =>
       flexDirection: 'column',
       justifyContent: 'space-between',
       marginLeft: 8,
-      marginBottom: 24,
+      marginBottom: 20,
       '& p': {
         fontSize: 10,
         fontWeight: 500,
