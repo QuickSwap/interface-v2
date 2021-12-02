@@ -399,7 +399,7 @@ const Header: React.FC = () => {
                     <Typography variant='body2'>
                       Please switch your wallet to Polygon Network.
                     </Typography>
-                    <Box onClick={addMaticToMetamask}>Switch to Matic</Box>
+                    <Box onClick={addMaticToMetamask}>Switch to Polygon</Box>
                   </Box>
                 </Box>
               )}
@@ -438,7 +438,7 @@ const Header: React.FC = () => {
               }}
             >
               <Typography variant='body2'>
-                {isnotMatic ? 'Switch to Matic' : 'Connect Wallet'}
+                {isnotMatic ? 'Switch to Polygon' : 'Connect Wallet'}
               </Typography>
             </Button>
           )}

@@ -251,7 +251,7 @@ const Swap: React.FC = () => {
         return 'Swap';
       }
     } else {
-      return isnotMatic ? 'Switch to Matic' : 'Connect Wallet';
+      return isnotMatic ? 'Switch to Polygon' : 'Connect Wallet';
     }
   }, [
     formattedAmounts,
