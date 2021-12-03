@@ -707,9 +707,11 @@ const LandingPage: React.FC = () => {
       </Box>
       <Box className={classes.smallCommunityContainer}>
         {socialicons.map((val, ind) => (
-          <Box display='flex' mx={1.5} key={ind}>
-            {val.icon}
-          </Box>
+          <a href={val.link} target='_blank' key={ind} rel='noreferrer'>
+            <Box display='flex' mx={1.5}>
+              {val.icon}
+            </Box>
+          </a>
         ))}
       </Box>
       <Box mt={2}>

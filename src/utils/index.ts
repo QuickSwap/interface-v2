@@ -717,14 +717,7 @@ export const getBulkPairData: (
   }
 };
 
-const parseData: (
-  data: any,
-  oneDayData: any,
-  twoDayData: any,
-  oneWeekData: any,
-  ethPrice: any,
-  oneDayBlock: any,
-) => any = (
+const parseData = (
   data: any,
   oneDayData: any,
   twoDayData: any,
@@ -733,8 +726,9 @@ const parseData: (
   oneDayBlock: any,
 ) => {
   // get volume changes
+  console.log('ccc', data);
   const [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(
-    data?.volumeUSD,
+    data?.volumeUSD ? data.volumeUSD : 0,
     oneDayData?.volumeUSD ? oneDayData.volumeUSD : 0,
     twoDayData?.volumeUSD ? twoDayData.volumeUSD : 0,
   );

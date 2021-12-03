@@ -12550,7 +12550,7 @@ export function useSyrupInfo(tokenToFilterBy?: Token | null): SyrupInfo[] {
           const getHypotheticalRewardRate = (
             stakedAmount: TokenAmount,
             totalStakedAmount: TokenAmount,
-            // totalRewardRate: TokenAmount,
+            totalRewardRate: TokenAmount,
           ): TokenAmount => {
             return new TokenAmount(
               token,
@@ -12566,7 +12566,7 @@ export function useSyrupInfo(tokenToFilterBy?: Token | null): SyrupInfo[] {
           const individualRewardRate = getHypotheticalRewardRate(
             stakedAmount,
             totalStakedAmount,
-            // totalRewardRate01,
+            totalRewardRate01,
           );
 
           const periodFinishMs = info[index].ending;
@@ -12757,7 +12757,7 @@ export function useOldSyrupInfo(tokenToFilterBy?: Token | null): SyrupInfo[] {
           const getHypotheticalRewardRate = (
             stakedAmount: TokenAmount,
             totalStakedAmount: TokenAmount,
-            // totalRewardRate: TokenAmount,
+            totalRewardRate: TokenAmount,
           ): TokenAmount => {
             return new TokenAmount(
               token,
@@ -12773,7 +12773,7 @@ export function useOldSyrupInfo(tokenToFilterBy?: Token | null): SyrupInfo[] {
           const individualRewardRate = getHypotheticalRewardRate(
             stakedAmount,
             totalStakedAmount,
-            // totalRewardRate01,
+            totalRewardRate01,
           );
 
           const periodFinishMs = info[index].ending;
@@ -13517,7 +13517,7 @@ export function useStakingInfo(pairToFilterBy?: Pair | null): StakingInfo[] {
           const getHypotheticalRewardRate = (
             stakedAmount: TokenAmount,
             totalStakedAmount: TokenAmount,
-            // totalRewardRate: TokenAmount,
+            totalRewardRate: TokenAmount,
           ): TokenAmount => {
             return new TokenAmount(
               uni,
@@ -13533,7 +13533,7 @@ export function useStakingInfo(pairToFilterBy?: Pair | null): StakingInfo[] {
           const individualRewardRate = getHypotheticalRewardRate(
             stakedAmount,
             totalStakedAmount,
-            // totalRewardRate01,
+            totalRewardRate01,
           );
 
           const periodFinishMs = periodFinishState.result?.[0]
