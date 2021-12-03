@@ -468,18 +468,7 @@ export const getTopPairs = async (count: number) => {
   }
 };
 
-export const getIntervalTokenData: (
-  tokenAddress: string,
-  startTime: number,
-  interval: number | undefined,
-  latestBlock: any,
-) => Promise<
-  {
-    timestamp: any;
-    open: number;
-    close: number;
-  }[]
-> = async (
+export const getIntervalTokenData = async (
   tokenAddress: string,
   startTime: number,
   interval = 3600,
