@@ -304,7 +304,7 @@ export const getTopTokens = async (
       current &&
         oneDayData &&
         twoDayData &&
-        current?.data?.tokens?.map(async (token: any) => {
+        current?.data?.tokens.map(async (token: any) => {
           const data = token;
 
           // let liquidityDataThisToken = liquidityData?.[token.id]
