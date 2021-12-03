@@ -468,18 +468,7 @@ export const getTopPairs = async (count: number) => {
   }
 };
 
-export const getIntervalTokenData: (
-  tokenAddress: string,
-  startTime: number,
-  interval: number | undefined,
-  latestBlock: any,
-) => Promise<
-  {
-    timestamp: any;
-    open: number;
-    close: number;
-  }[]
-> = async (
+export const getIntervalTokenData = async (
   tokenAddress: string,
   startTime: number,
   interval = 3600,
@@ -636,24 +625,7 @@ export const getTokenChartData = async (tokenAddress: string) => {
   return data;
 };
 
-export const getBulkPairData: (
-  pairList: any,
-  ethPrice: any,
-) => Promise<
-  | [
-      unknown,
-      unknown,
-      unknown,
-      unknown,
-      unknown,
-      unknown,
-      unknown,
-      unknown,
-      unknown,
-      unknown,
-    ]
-  | undefined
-> = async (pairList: any, ethPrice: any) => {
+export const getBulkPairData = async (pairList: any, ethPrice: any) => {
   const [t1, t2, tWeek] = getTimestampsForChanges();
   const a = await getBlocksFromTimestamps([t1, t2, tWeek]);
   const [{ number: b1 }, { number: b2 }, { number: bWeek }] = a;
