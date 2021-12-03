@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
-import { CurrencyAmount, JSBI, Token, Trade } from '@uniswap/sdk';
+import { Currency, CurrencyAmount, JSBI, Token, Trade } from '@uniswap/sdk';
 import ReactGA from 'react-ga';
 import { ArrowDown } from 'react-feather';
 import { Box, Typography, Button, CircularProgress } from '@material-ui/core';
@@ -133,7 +133,10 @@ const useStyles = makeStyles(({ palette }) => ({
   },
 }));
 
-const Swap: React.FC = () => {
+const Swap: React.FC<{ currency0?: Currency; currency1?: Currency }> = ({
+  currency0,
+  currency1,
+}) => {
   const [openSettingsModal, setOpenSettingsModal] = useState(false);
   const { account } = useActiveWeb3React();
   const { ethereum } = window as any;
@@ -405,6 +408,15 @@ const Swap: React.FC = () => {
   useEffect(() => {
     onCurrencySelection(Field.INPUT, Token.ETHER);
   }, [onCurrencySelection, allTokens]);
+
+  useEffect(() => {
+    if (currency0) {
+      onCurrencySelection(Field.INPUT, currency0);
+    }
+    if (currency1) {
+      onCurrencySelection(Field.OUTPUT, currency1);
+    }
+  }, [onCurrencySelection, currency0, currency1]);
 
   const handleAcceptChanges = useCallback(() => {
     setSwapState({

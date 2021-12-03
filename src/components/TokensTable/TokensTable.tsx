@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import { getAddress } from '@ethersproject/address';
 import { ChainId, Token } from '@uniswap/sdk';
 import { CurrencyLogo, CustomTable } from 'components';
 import { useBookmarkTokens, useAnalyticToken } from 'state/application/hooks';
@@ -76,7 +77,7 @@ const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
   const desktopHTML = (token: any) => {
     const tokenCurrency = new Token(
       ChainId.MATIC,
-      token.id,
+      getAddress(token.id),
       Number(token.decimals),
       token.symbol,
       token.name,

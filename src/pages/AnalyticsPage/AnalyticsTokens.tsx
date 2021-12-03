@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Box, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { TopMovers, TokensTable } from 'components';
-import { useTopTokens } from 'state/application/hooks';
+import { useTopTokens, useBookmarkTokens } from 'state/application/hooks';
 import { getEthPrice, getTopTokens } from 'utils';
 import { Skeleton } from '@material-ui/lab';
 
@@ -22,6 +22,17 @@ const AnalyticsTokens: React.FC = () => {
   const [tokensFilter, setTokensFilter] = useState(0);
 
   const { topTokens, updateTopTokens } = useTopTokens();
+  const { bookmarkTokens } = useBookmarkTokens();
+
+  const favoriteTokens = useMemo(() => {
+    if (topTokens) {
+      return topTokens.filter(
+        (token: any) => bookmarkTokens.indexOf(token.id) > -1,
+      );
+    } else {
+      return [];
+    }
+  }, [topTokens, bookmarkTokens]);
 
   useEffect(() => {
     updateTopTokens(null);
@@ -68,7 +79,7 @@ const AnalyticsTokens: React.FC = () => {
       </Box>
       <Box paddingX={4} paddingY={3} className={classes.panel}>
         {topTokens && topTokens.length === 200 ? (
-          <TokensTable data={topTokens} />
+          <TokensTable data={tokensFilter === 0 ? topTokens : favoriteTokens} />
         ) : (
           <Skeleton variant='rect' width='100%' height={150} />
         )}

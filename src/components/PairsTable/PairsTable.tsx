@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box, Typography } from '@material-ui/core';
 import { ChainId, Token } from '@uniswap/sdk';
+import { getAddress } from '@ethersproject/address';
 import { DoubleCurrencyLogo, CustomTable } from 'components';
 import { useBookmarkPairs } from 'state/application/hooks';
 import { ReactComponent as StarChecked } from 'assets/images/StarChecked.svg';
@@ -68,13 +69,13 @@ const PairTable: React.FC<TokensTableProps> = ({ data }) => {
   const desktopHTML = (pair: any) => {
     const token0 = new Token(
       ChainId.MATIC,
-      pair.token0.id,
+      getAddress(pair.token0.id),
       Number(pair.token0.decimals),
       pair.token0.symbol,
     );
     const token1 = new Token(
       ChainId.MATIC,
-      pair.token1.id,
+      getAddress(pair.token1.id),
       Number(pair.token1.decimals),
       pair.token1.symbol,
     );

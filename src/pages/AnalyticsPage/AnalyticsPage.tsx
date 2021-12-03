@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Box, Typography } from '@material-ui/core';
 import cx from 'classnames';
@@ -52,7 +52,11 @@ const AnalyticsPage: React.FC = () => {
   const classes = useStyles();
   const [tabIndex, setTabIndex] = useState(0);
   const [searchVal, setSearchVal] = useState('');
-  const { analyticToken } = useAnalyticToken();
+  const { analyticToken, updateAnalyticToken } = useAnalyticToken();
+
+  useEffect(() => {
+    updateAnalyticToken(null);
+  }, [updateAnalyticToken]);
 
   return (
     <Box width='100%' mb={3}>
