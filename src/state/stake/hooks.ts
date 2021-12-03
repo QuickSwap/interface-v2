@@ -13000,8 +13000,8 @@ export function get2DayPercentChange(
 function parseData(data: any, oneDayData: any) {
   // get volume changes
   const oneDayVolumeUSD = get2DayPercentChange(
-    data?.volumeUSD,
-    oneDayData?.volumeUSD ? oneDayData.volumeUSD : 0,
+    data.volumeUSD ? Number(data.volumeUSD) : 0,
+    oneDayData.volumeUSD ? Number(oneDayData.volumeUSD) : 0,
   );
 
   return {
