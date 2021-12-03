@@ -49,9 +49,9 @@ jobs:
       - name: Build the IPFS bundle
         run: npm run build
 
-      - name: Pin to IPFS
+      - name: Crust IPFS Upload
+        uses: crustio/ipfs-upload-action@v2.0.2
         id: upload
-        uses: crustio/ipfs-upload-action@2.0.2
         with:
           path: './build'
           seeds: ${{ secrets.SUBSTRATE_SEEDS }}
