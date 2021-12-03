@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Box, Typography, Grid, Divider } from '@material-ui/core';
+import { VisibilityOff, Visibility } from '@material-ui/icons';
 import { TokenAmount, JSBI } from '@uniswap/sdk';
 import { useStakingInfo } from 'state/stake/hooks';
 import { FarmCard, ToggleSwitch } from 'components';
@@ -10,7 +11,6 @@ import { unwrappedToken } from 'utils/wrappedCurrency';
 import { EMPTY } from 'constants/index';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
 import { ReactComponent as SearchIcon } from 'assets/images/SearchIcon.svg';
-import BlindEyeIcon from 'assets/images/blindeye.svg';
 import ArrowUpIcon from 'assets/images/arrowup.svg';
 import { useTotalSupplys } from 'data/TotalSupply';
 
@@ -109,6 +109,8 @@ const FarmPage: React.FC = () => {
   const stakingInfos = useStakingInfo();
   const [stakedOnly, setStakeOnly] = useState(false);
   const [farmSearch, setFarmSearch] = useState('');
+  const [hideDeposit, setHideDeposit] = useState(false);
+  const [hideRewards, setHideRewards] = useState(false);
   const baseCurrencies = stakingInfos.map((stakingInfo) => {
     const token0 = stakingInfo.tokens[0];
     const baseTokenCurrency = unwrappedToken(stakingInfo.baseToken);
@@ -271,9 +273,11 @@ const FarmPage: React.FC = () => {
           alignItems='flex-start'
           justifyContent='space-between'
         >
-          <Typography variant='caption' color='secondary'>
-            Reward Rate:
-          </Typography>
+          <Box height={16} display='flex' alignItems='center'>
+            <Typography variant='caption' color='secondary'>
+              Reward Rate:
+            </Typography>
+          </Box>
           <Box mt={1} display='flex' flexDirection='row' alignItems='flex-end'>
             <Typography variant='body1'>
               {rewardRate.toLocaleString()} dQUICK
@@ -289,10 +293,12 @@ const FarmPage: React.FC = () => {
           alignItems='flex-start'
           justifyContent='space-between'
         >
-          <Typography variant='caption' color='secondary'>
-            Total Rewards:
-          </Typography>
-          <Box mt={1} display='flex' flexDirection='row' alignItems='flex-end'>
+          <Box height={16} display='flex' alignItems='center'>
+            <Typography variant='caption' color='secondary'>
+              Total Rewards:
+            </Typography>
+          </Box>
+          <Box mt={1} display='flex' alignItems='flex-end'>
             <Typography variant='body1'>
               ${totalRewardsUSD.toLocaleString()}
             </Typography>
@@ -304,10 +310,12 @@ const FarmPage: React.FC = () => {
           alignItems='flex-start'
           justifyContent='space-between'
         >
-          <Typography variant='caption' color='secondary'>
-            24h Fees:
-          </Typography>
-          <Box mt={1} display='flex' flexDirection='row' alignItems='flex-end'>
+          <Box height={16} display='flex' alignItems='center'>
+            <Typography variant='caption' color='secondary'>
+              24h Fees:
+            </Typography>
+          </Box>
+          <Box mt={1} display='flex' alignItems='flex-end'>
             <Typography variant='body1'>
               ${totalFee.toLocaleString()}
             </Typography>
@@ -319,16 +327,31 @@ const FarmPage: React.FC = () => {
           alignItems='flex-start'
           justifyContent='space-between'
         >
-          <Box display='flex' flexDirection='row' alignItems='center'>
+          <Box display='flex' height={16} alignItems='center'>
             <Typography variant='caption' color='secondary'>
               My deposits:
             </Typography>
-            <Box ml={1} style={{ height: '15px' }}>
-              <img src={BlindEyeIcon} alt={'blind eye deposits'} />
+            <Box
+              ml={0.5}
+              display='flex'
+              color='#696c80'
+              onClick={() => {
+                setHideDeposit(!hideDeposit);
+              }}
+            >
+              {hideDeposit ? (
+                <VisibilityOff style={{ width: 16, height: 16 }} />
+              ) : (
+                <Visibility style={{ width: 16, height: 16 }} />
+              )}
             </Box>
           </Box>
-          <Box mt={1} display='flex' flexDirection='row' alignItems='flex-end'>
-            <Typography variant='body1'>${myDeposits}</Typography>
+          <Box mt={1} display='flex' alignItems='flex-end'>
+            {hideDeposit ? (
+              <Box width={70} height={24} bgcolor='#1b1e29' />
+            ) : (
+              <Typography variant='body1'>${myDeposits}</Typography>
+            )}
           </Box>
         </Box>
         <Box
@@ -337,16 +360,31 @@ const FarmPage: React.FC = () => {
           alignItems='flex-start'
           justifyContent='space-between'
         >
-          <Box display='flex' flexDirection='row' alignItems='center'>
+          <Box display='flex' height={16} alignItems='center'>
             <Typography variant='caption' color='secondary'>
               Unclaimed rewards:
             </Typography>
-            <Box ml={1} style={{ height: '15px' }}>
-              <img src={BlindEyeIcon} alt={'blind eye deposits'} />
+            <Box
+              ml={0.5}
+              display='flex'
+              color='#696c80'
+              onClick={() => {
+                setHideRewards(!hideRewards);
+              }}
+            >
+              {hideRewards ? (
+                <VisibilityOff style={{ width: 16, height: 16 }} />
+              ) : (
+                <Visibility style={{ width: 16, height: 16 }} />
+              )}
             </Box>
           </Box>
           <Box mt={1} display='flex' flexDirection='row' alignItems='flex-end'>
-            <Typography variant='body1'>{unclaimedRewards} dQUICK</Typography>
+            {hideRewards ? (
+              <Box width={75} height={24} bgcolor='#1b1e29' />
+            ) : (
+              <Typography variant='body1'>{unclaimedRewards} dQUICK</Typography>
+            )}
           </Box>
           <Box mt={0.5}>
             <Typography className={classes.thirdColor} variant='body2'>
