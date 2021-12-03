@@ -639,21 +639,7 @@ export const getTokenChartData = async (tokenAddress: string) => {
 export const getBulkPairData: (
   pairList: any,
   ethPrice: any,
-) => Promise<
-  | [
-      unknown,
-      unknown,
-      unknown,
-      unknown,
-      unknown,
-      unknown,
-      unknown,
-      unknown,
-      unknown,
-      unknown,
-    ]
-  | undefined
-> = async (pairList: any, ethPrice: any) => {
+) => Promise<any[] | undefined> = async (pairList: any, ethPrice: any) => {
   const [t1, t2, tWeek] = getTimestampsForChanges();
   const a = await getBlocksFromTimestamps([t1, t2, tWeek]);
   const [{ number: b1 }, { number: b2 }, { number: bWeek }] = a;
