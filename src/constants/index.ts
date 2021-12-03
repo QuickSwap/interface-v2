@@ -1507,6 +1507,72 @@ export const DERC = new Token(
   'DERC',
   'DeRace Token',
 );
+
+export const KIRO = new Token(
+  ChainId.MATIC,
+  '0xB382C1cfA622795a534e5bd56Fac93d59BAc8B0D',
+  18,
+  'KIRO',
+  'Kirobo',
+);
+export const RNDR = new Token(
+  ChainId.MATIC,
+  '0x61299774020dA444Af134c82fa83E3810b309991',
+  18,
+  'RNDR',
+  'Render Token',
+);
+
+export const WCRO = new Token(
+  ChainId.MATIC,
+  '0xf2D8124b8F9267DaD61351c7aD252362880C6638',
+  18,
+  'WCRO',
+  'Wrapped CRO',
+);
+export const PECO = new Token(
+  ChainId.MATIC,
+  '0xA9536B9c75A9E0faE3B56a96AC8EdF76AbC91978',
+  18,
+  'PECO',
+  'Polygon Ecosystem Index',
+);
+export const WELT = new Token(
+  ChainId.MATIC,
+  '0x23E8B6A3f6891254988B84Da3738D2bfe5E703b9',
+  18,
+  'WELT',
+  'FABWELT',
+);
+export const MASQ = new Token(
+  ChainId.MATIC,
+  '0xEe9A352F6aAc4aF1A5B9f467F6a93E0ffBe9Dd35',
+  18,
+  'MASQ',
+  'MASQ',
+);
+export const ELIXIR = new Token(
+  ChainId.MATIC,
+  '0xED0bb69f9F96E8C5FffdF16c468eceC385134eA5',
+  18,
+  'ELIXIR',
+  'Starchi Liquid Luck',
+);
+export const ZIG = new Token(
+  ChainId.MATIC,
+  '0x7BeBd226154E865954A87650FAefA8F485d36081',
+  18,
+  'ZIG',
+  'ZigCoin',
+);
+export const MANA = new Token(
+  ChainId.MATIC,
+  '0xA1c57f48F0Deb89f569dFbE6E2B7f46D33606fD4',
+  18,
+  'MANA',
+  'Decentraland MANA',
+);
+
 export const MATIC = WETH[ChainId.MATIC];
 // TODO this is only approximate, it's actually based on blocks
 export const PROPOSAL_LENGTH_IN_DAYS = 7;
@@ -1676,4 +1742,4 @@ export const BETTER_TRADE_LINK_THRESHOLD = new Percent(
 
 // the Uniswap Default token list lives here
 export const DEFAULT_TOKEN_LIST_URL =
-  'https://unpkg.com/quickswap-default-token-list@1.2.4/build/quickswap-default.tokenlist.json';
+  'https://unpkg.com/quickswap-default-token-list@1.2.9/build/quickswap-default.tokenlist.json';

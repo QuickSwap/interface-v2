@@ -472,7 +472,7 @@ export const getIntervalTokenData = async (
   tokenAddress: string,
   startTime: number,
   interval = 3600,
-  latestBlock: any,
+  latestBlock: number | undefined,
 ) => {
   const utcEndTime = dayjs.utc();
   let time = startTime;
@@ -502,7 +502,7 @@ export const getIntervalTokenData = async (
 
     if (latestBlock) {
       blocks = blocks.filter((b) => {
-        return parseFloat(b.number) <= parseFloat(latestBlock);
+        return parseFloat(b.number) <= latestBlock;
       });
     }
 

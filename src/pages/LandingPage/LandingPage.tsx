@@ -467,17 +467,17 @@ const LandingPage: React.FC = () => {
       title: 'Reddit',
     },
     {
-      link: '',
+      link: 'https://discord.com/invite/XJTM7FV88Y',
       icon: <DiscordIcon />,
       title: 'Discord',
     },
     {
-      link: '',
+      link: 'https://twitter.com/QuickswapDEX',
       icon: <TwitterIcon />,
       title: 'Twitter',
     },
     {
-      link: '',
+      link: 'https://quickswap-layer2.medium.com/',
       icon: <MediumIcon />,
       title: 'Medium',
     },
@@ -487,12 +487,12 @@ const LandingPage: React.FC = () => {
       title: 'Youtube',
     },
     {
-      link: '',
+      link: 'https://t.me/QuickSwapDEX',
       icon: <TelegramIcon />,
       title: 'Telegram',
     },
     {
-      link: '',
+      link: 'https://www.coingecko.com/en/exchanges/quickswap',
       icon: <CoingeckoIcon />,
       title: 'CoinGecko',
     },
