@@ -47,7 +47,6 @@
     "apollo-link-http": "^1.5.17",
     "cids": "^1.0.0",
     "copy-to-clipboard": "^3.2.0",
-    "eslint": "^7.11.0",
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-prettier": "^3.1.3",
     "eslint-plugin-react": "^7.19.0",
@@ -86,7 +85,8 @@
     "web3": "^1.3.5",
     "workbox-core": "^6.1.0",
     "workbox-precaching": "^6.1.0",
-    "workbox-routing": "^6.1.0"
+    "workbox-routing": "^6.1.0",
+    "react-scripts": "^3.4.1"
   },
   "resolutions": {
     "@walletconnect/web3-provider": "1.1.1-alpha.0"
@@ -126,6 +126,7 @@
     "@material-ui/lab": "^4.0.0-alpha.60",
     "moment": "^2.29.1",
     "react-apexcharts": "^1.3.9",
+    "react-dev-utils": "^11.0.4",
     "react-ga": "^3.3.0",
     "react-slick": "^0.28.1",
     "slick-carousel": "^1.8.1",
