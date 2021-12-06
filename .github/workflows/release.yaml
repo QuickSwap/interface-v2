@@ -49,12 +49,14 @@ jobs:
       - name: Build the IPFS bundle
         run: yarn build
 
-      - name: Crust IPFS Upload
-        uses: crustio/ipfs-upload-action@v2.0.2
+      - name: Pin to IPFS(PINATA)
         id: upload
+        uses: anantaramdas/ipfs-pinata-deploy-action@39bbda1ce1fe24c69c6f57861b8038278d53688d
         with:
+          pin-name: QuickSwap ${{ needs.bump_version.outputs.new_tag }}
           path: './build'
-          seeds: ${{ secrets.SUBSTRATE_SEEDS }}
+          pinata-api-key: ${{ secrets.PINATA_API_KEY }}
+          pinata-secret-api-key: ${{ secrets.PINATA_API_SECRET_KEY }}
 
       - name: Pin to Crust
         uses: crustio/ipfs-crust-action@v2.0.4
