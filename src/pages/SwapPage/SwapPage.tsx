@@ -280,7 +280,7 @@ const SwapPage: React.FC = () => {
         </Box>
       </Box>
       <Grid container spacing={4}>
-        <Grid item sm={12} md={5}>
+        <Grid item xs={12} sm={12} md={5}>
           <Box className={classes.wrapper}>
             <Box display='flex' justifyContent='space-between'>
               <Box display='flex'>
@@ -338,7 +338,7 @@ const SwapPage: React.FC = () => {
             </Box>
           </Box>
         </Grid>
-        <Grid item sm={12} md={7}>
+        <Grid item xs={12} sm={12} md={7}>
           <Box display='flex' justifyContent='space-between' width='100%'>
             {currencies[Field.INPUT] && (
               <Box className={classes.swapTokenDetails}>

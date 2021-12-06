@@ -1,11 +1,28 @@
 import React, { useEffect, useMemo } from 'react';
-import { Box, Typography } from '@material-ui/core';
+import { Box, Typography, useMediaQuery } from '@material-ui/core';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { ArrowDropUp, ArrowDropDown } from '@material-ui/icons';
 import Skeleton from '@material-ui/lab/Skeleton';
 import { Token, ChainId } from '@uniswap/sdk';
 import { CurrencyLogo } from 'components';
 import { getEthPrice, getTopTokens } from 'utils';
 import { useTopTokens } from 'state/application/hooks';
+
+const useStyles = makeStyles(({ breakpoints }) => ({
+  content: {
+    width: '100%',
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    [breakpoints.down('sm')]: {
+      flexWrap: 'wrap',
+      justifyContent: 'flex-start',
+    },
+    [breakpoints.down('xs')]: {
+      flexDirection: 'column',
+    },
+  },
+}));
 
 interface TopMoversProps {
   background: string;
@@ -15,7 +32,10 @@ const TopMovers: React.FC<TopMoversProps> = ({
   background,
   hideArrow = false,
 }) => {
+  const classes = useStyles();
+  const theme = useTheme();
   const { topTokens, updateTopTokens } = useTopTokens();
+  const smallWindowSize = useMediaQuery(theme.breakpoints.down('xs'));
 
   const topMoverTokens = useMemo(
     () => (topTokens && topTokens.length >= 5 ? topTokens.slice(0, 5) : null),
@@ -39,9 +59,10 @@ const TopMovers: React.FC<TopMoversProps> = ({
     <Box
       width='100%'
       display='flex'
+      flexWrap='wrap'
       flexDirection='column'
       justifyContent='center'
-      alignItems='flex-start'
+      alignItems={smallWindowSize ? 'center' : 'flex-start'}
       bgcolor={background}
       border={`1px solid ${
         background === 'transparent' ? '#1b1e29' : 'transparent'
@@ -52,16 +73,10 @@ const TopMovers: React.FC<TopMoversProps> = ({
       <Typography variant='h6' style={{ color: '#696c80' }}>
         24h TOP MOVERS
       </Typography>
-      <Box mt={2} width={1}>
+      <Box width={1}>
         {topMoverTokens ? (
-          <Box
-            width='100%'
-            display='flex'
-            flexDirection='row'
-            justifyContent='space-between'
-            alignItems='center'
-          >
-            {topMoverTokens.map((token: any) => {
+          <Box className={classes.content}>
+            {topMoverTokens.map((token: any, index: number) => {
               const currency = new Token(
                 ChainId.MATIC,
                 token.id,
@@ -72,10 +87,13 @@ const TopMovers: React.FC<TopMoversProps> = ({
               const priceUpPercent = Number(token.priceChangeUSD).toFixed(2);
               return (
                 <Box
+                  mr={!smallWindowSize && index < topMoverTokens.length ? 2 : 0}
+                  width={smallWindowSize ? 180 : 'unset'}
+                  mt={2}
                   key={token.id}
                   display='flex'
                   flexDirection='row'
-                  justifyContent='center'
+                  justifyContent={smallWindowSize ? 'flex-start' : 'center'}
                   alignItems='center'
                 >
                   <CurrencyLogo currency={currency} size='28px' />

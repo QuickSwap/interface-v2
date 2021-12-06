@@ -21,11 +21,10 @@ import WalletIcon from 'assets/images/WalletIcon.png';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   header: {
-    padding: '0 40px',
+    padding: '0 24px',
     position: 'relative',
     display: 'flex',
     flexWrap: 'wrap',
-    alignItems: 'center',
     minHeight: 88,
     zIndex: 3,
     justifyContent: 'space-between',
@@ -58,6 +57,9 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
         },
       },
     },
+    [breakpoints.down('sm')]: {
+      alignItems: 'center',
+    },
     [breakpoints.down('xs')]: {
       padding: '0 16px',
     },
@@ -86,6 +88,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     transform: 'translateX(-50%)',
     display: 'flex',
     alignItems: 'center',
+    height: '100%',
     '& .menuItem': {
       borderRadius: 10,
       cursor: 'pointer',
@@ -149,7 +152,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     },
   },
   mobileMenuWrapper: {
-    background: 'white',
+    background: '#121319',
     position: 'absolute',
     top: 80,
     left: 0,
@@ -172,7 +175,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     height: 32,
     width: '100%',
     '& p': {
-      color: palette.primary.dark,
+      color: '#ebecf2',
     },
     '& svg, & img': {
       width: 32,
@@ -321,7 +324,7 @@ const Header: React.FC = () => {
         pendingTransactions={pending}
         confirmedTransactions={confirmed}
       />
-      <Link to='/'>
+      <Link to='/' onClick={() => setMenuOpen(false)}>
         <img src={QuickLogo} alt='QuickLogo' />
       </Link>
       {!mobileWindowSize && (
@@ -416,9 +419,13 @@ const Header: React.FC = () => {
           )}
         >
           {menuItems.map((val, index) => (
-            <Box key={index} className={classes.mobileMenuItemWrapper}>
+            <Box
+              key={index}
+              className={classes.mobileMenuItemWrapper}
+              onClick={() => setMenuOpen(false)}
+            >
               <Link to={val.link} key={index}>
-                <Typography variant='body2'>{val.text}</Typography>
+                <Typography variant='body1'>{val.text}</Typography>
               </Link>
             </Box>
           ))}
@@ -428,7 +435,7 @@ const Header: React.FC = () => {
               onClick={toggleWalletModal}
             >
               <img src={WalletIcon} alt='Wallet' />
-              <Typography variant='body2'>{shortenAddress(account)}</Typography>
+              <Typography variant='body1'>{shortenAddress(account)}</Typography>
             </Box>
           ) : (
             <Button
