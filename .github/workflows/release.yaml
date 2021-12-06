@@ -82,7 +82,7 @@ jobs:
         with:
           cid: ${{ steps.upload.outputs.hash }}
       
-      - name: Purge cache
+      - name: Purge cloudflare cache
         uses: jakejarvis/cloudflare-purge-action@master
         env:
           # Zone is required by both authentication methods
