@@ -82,6 +82,10 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     width: '100%',
     position: 'relative',
     zIndex: 2,
+    justifyContent: 'center',
+    [breakpoints.down('md')]: {
+      flexWrap: 'wrap',
+    },
     '& > div': {
       background: palette.background.default,
       width: 'calc(25% - 24px)',
@@ -201,6 +205,9 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
   swapInfo: {
     textAlign: 'left',
     marginBottom: 60,
+    [breakpoints.down('sm')]: {
+      order: -1,
+    },
     '& h3': {
       marginBottom: 16,
     },
@@ -412,7 +419,6 @@ const LandingPage: React.FC = () => {
   const isnotMatic =
     ethereum && ethereum.isMetaMask && Number(ethereum.chainId) !== 137;
   const mobileWindowSize = useMediaQuery(theme.breakpoints.down('sm'));
-  const smallWindowSize = useMediaQuery(theme.breakpoints.down('xs'));
   const { initTransak } = useInitTransak();
   const allTokens = useAllTokens();
   const toggleWalletModal = useWalletModalToggle();
@@ -549,7 +555,7 @@ const LandingPage: React.FC = () => {
   }, [ethPrice, updateEthPrice, updateGlobalData]);
 
   return (
-    <Box>
+    <>
       {openStakeModal && (
         <StakeQuickModal
           open={openStakeModal}
@@ -611,11 +617,7 @@ const LandingPage: React.FC = () => {
           </Button>
         </Box>
       </Box>
-      <Box
-        className={classes.tradingInfo}
-        display='flex'
-        justifyContent={smallWindowSize ? 'center' : 'space-between'}
-      >
+      <Box className={classes.tradingInfo} display='flex'>
         <Box>
           {globalData ? (
             <Typography variant='h3'>
@@ -714,7 +716,7 @@ const LandingPage: React.FC = () => {
           </a>
         ))}
       </Box>
-      <Box mt={2}>
+      <Box mt={2} width={1}>
         <TopMovers background='transparent' />
       </Box>
       <Box className={classes.quickInfo}>
@@ -849,15 +851,15 @@ const LandingPage: React.FC = () => {
         <Box className='socialContent'>
           {socialicons.map((val, ind) => (
             <Box key={ind}>
-              {val.icon}
               <a href={val.link} target='_blank' rel='noreferrer'>
+                {val.icon}
                 <Typography>{val.title}</Typography>
               </a>
             </Box>
           ))}
         </Box>
       </Box>
-    </Box>
+    </>
   );
 };
 

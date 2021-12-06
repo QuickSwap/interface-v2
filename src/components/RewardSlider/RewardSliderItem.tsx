@@ -1,5 +1,6 @@
 import React from 'react';
 import { Box, Typography, Button } from '@material-ui/core';
+import { useHistory } from 'react-router-dom';
 import { JSBI, TokenAmount } from '@uniswap/sdk';
 import { makeStyles } from '@material-ui/core/styles';
 import { StakingInfo } from 'state/stake/hooks';
@@ -65,6 +66,7 @@ interface RewardSliderItemProps {
 
 const RewardSliderItem: React.FC<RewardSliderItemProps> = ({ info }) => {
   const classes = useStyles();
+  const history = useHistory();
   const token0 = info.tokens[0];
 
   const baseTokenCurrency = unwrappedToken(info.baseToken);
@@ -171,7 +173,16 @@ const RewardSliderItem: React.FC<RewardSliderItemProps> = ({ info }) => {
         </Typography>
         <Typography component='h5'>{apyWithFee}%</Typography>
       </Box>
-      <Button fullWidth color='primary' style={{ marginTop: '30px' }}>
+      <Button
+        fullWidth
+        color='primary'
+        style={{ marginTop: '30px' }}
+        onClick={() => {
+          history.push(
+            `/pools?currency0=${info.tokens[0].address}&currency1=${info.tokens[1].address}`,
+          );
+        }}
+      >
         Invest
       </Button>
     </Box>

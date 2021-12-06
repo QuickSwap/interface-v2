@@ -11,12 +11,11 @@ import AnalyticsTokenDetails from './AnalyticTokenDetails';
 
 const useStyles = makeStyles(({}) => ({
   topTab: {
-    width: 120,
     height: 46,
+    padding: '0 24px',
     borderRadius: 10,
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center',
     cursor: 'pointer',
     '& p': {
       color: '#626680',
