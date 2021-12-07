@@ -257,7 +257,7 @@ const FarmPage: React.FC = () => {
         justifyContent='space-between'
         width='100%'
       >
-        <Box>
+        <Box mr={2}>
           <Typography variant='h4'>Farm</Typography>
           <Typography variant='body1'>
             Stake LP Tokens to Earn dQUICK + Pool Fees

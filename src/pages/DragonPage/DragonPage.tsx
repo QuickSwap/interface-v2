@@ -1,6 +1,12 @@
 import React, { useState, useMemo } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import { Box, Typography, Grid, Divider } from '@material-ui/core';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
+import {
+  Box,
+  Typography,
+  Grid,
+  Divider,
+  useMediaQuery,
+} from '@material-ui/core';
 import { useLairInfo, useSyrupInfo } from 'state/stake/hooks';
 import { QUICK } from 'constants/index';
 import {
@@ -18,7 +24,7 @@ import DragonLairMask from 'assets/images/DragonLairMask.svg';
 import { ReactComponent as PriceExchangeIcon } from 'assets/images/PriceExchangeIcon.svg';
 import { ReactComponent as SearchIcon } from 'assets/images/SearchIcon.svg';
 
-const useStyles = makeStyles(({}) => ({
+const useStyles = makeStyles(({ breakpoints }) => ({
   helpWrapper: {
     display: 'flex',
     alignItems: 'center',
@@ -38,6 +44,9 @@ const useStyles = makeStyles(({}) => ({
     padding: 32,
     position: 'relative',
     overflow: 'hidden',
+    [breakpoints.down('xs')]: {
+      padding: '24px 16px',
+    },
   },
   dragonBg: {
     width: '100%',
@@ -107,6 +116,8 @@ const useStyles = makeStyles(({}) => ({
 
 const DragonPage: React.FC = () => {
   const classes = useStyles();
+  const { breakpoints } = useTheme();
+  const isMobile = useMediaQuery(breakpoints.down('xs'));
   const [isQUICKRate, setIsQUICKRate] = useState(false);
   const [openStakeModal, setOpenStakeModal] = useState(false);
   const [openUnstakeModal, setOpenUnstakeModal] = useState(false);
@@ -313,7 +324,7 @@ const DragonPage: React.FC = () => {
                 Stake dQUICK, Earn tokens of your choice over time.
               </Typography>
             </Box>
-            <Box display='flex' alignItems='center' mb={3.5}>
+            <Box display='flex' flexWrap='wrap' alignItems='center' mb={3.5}>
               <Box className={classes.searchInput} flex={1}>
                 <SearchIcon />
                 <input
@@ -322,7 +333,12 @@ const DragonPage: React.FC = () => {
                   onChange={(evt: any) => setSyrupSearch(evt.target.value)}
                 />
               </Box>
-              <Box display='flex' alignItems='center' ml={4}>
+              <Box
+                display='flex'
+                alignItems='center'
+                ml={isMobile ? 2 : 4}
+                mt={isMobile ? 2 : 0}
+              >
                 <Typography
                   variant='body2'
                   style={{ color: '#626680', marginRight: 8 }}
@@ -337,18 +353,22 @@ const DragonPage: React.FC = () => {
             </Box>
             <Divider />
             <Box mt={2.5} display='flex' paddingX={2}>
-              <Box width={0.3}>
-                <Typography variant='body2'>Earn</Typography>
-              </Box>
-              <Box width={0.3}>
-                <Typography variant='body2'>dQUICK Deposits</Typography>
-              </Box>
-              <Box width={0.2}>
-                <Typography variant='body2'>APR</Typography>
-              </Box>
-              <Box width={0.2} textAlign='right'>
-                <Typography variant='body2'>Earned</Typography>
-              </Box>
+              {!isMobile && (
+                <>
+                  <Box width={0.3}>
+                    <Typography variant='body2'>Earn</Typography>
+                  </Box>
+                  <Box width={0.3}>
+                    <Typography variant='body2'>dQUICK Deposits</Typography>
+                  </Box>
+                  <Box width={0.2}>
+                    <Typography variant='body2'>APR</Typography>
+                  </Box>
+                  <Box width={0.2} textAlign='right'>
+                    <Typography variant='body2'>Earned</Typography>
+                  </Box>
+                </>
+              )}
             </Box>
             {syrupInfos &&
               filteredSyrupInfos.map((syrup, ind) => (
