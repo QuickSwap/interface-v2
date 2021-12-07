@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
-import { Box, Typography, Button } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { Box, Typography, Button, useMediaQuery } from '@material-ui/core';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { ChevronDown, ChevronUp } from 'react-feather';
 import { Pair, JSBI, Percent, Currency, TokenAmount } from '@uniswap/sdk';
 import { useActiveWeb3React } from 'hooks';
@@ -60,6 +60,8 @@ const PoolPositionCard: React.FC<PoolPositionCardProps> = ({
   handleAddLiquidity,
 }) => {
   const classes = useStyles();
+  const { breakpoints } = useTheme();
+  const isMobile = useMediaQuery(breakpoints.down('xs'));
 
   const { account } = useActiveWeb3React();
   const [openRemoveModal, setOpenRemoveModal] = useState(false);
@@ -187,7 +189,8 @@ const PoolPositionCard: React.FC<PoolPositionCardProps> = ({
       style={{ overflow: 'hidden' }}
     >
       <Box
-        padding={3}
+        paddingX={isMobile ? 1.5 : 3}
+        paddingY={isMobile ? 2 : 3}
         display='flex'
         alignItems='center'
         justifyContent='space-between'
@@ -221,7 +224,7 @@ const PoolPositionCard: React.FC<PoolPositionCardProps> = ({
       </Box>
 
       {showMore && (
-        <Box px={3} mb={3}>
+        <Box px={isMobile ? 1.5 : 3} mb={3}>
           <Box
             display='flex'
             alignItems='center'
@@ -329,13 +332,7 @@ const PoolPositionCard: React.FC<PoolPositionCardProps> = ({
         </Box>
       )}
       {stakingInfo && apyWithFee && (
-        <Box
-          bgcolor='#404557'
-          height='36px'
-          paddingX={3}
-          display='flex'
-          alignItems='center'
-        >
+        <Box bgcolor='#404557' paddingY={0.75} paddingX={isMobile ? 2 : 3}>
           <Typography variant='body2'>
             Earn <span style={{ color: '#0fc679' }}>{apyWithFee}% APY</span> by
             staking your LP tokens in {currency0.symbol?.toUpperCase()} /{' '}

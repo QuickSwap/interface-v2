@@ -1,6 +1,12 @@
 import React, { useMemo, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import { Box, Typography, Grid, Divider } from '@material-ui/core';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
+import {
+  Box,
+  Typography,
+  Grid,
+  Divider,
+  useMediaQuery,
+} from '@material-ui/core';
 import { VisibilityOff, Visibility } from '@material-ui/icons';
 import { TokenAmount, JSBI } from '@uniswap/sdk';
 import { useStakingInfo } from 'state/stake/hooks';
@@ -14,7 +20,7 @@ import { ReactComponent as SearchIcon } from 'assets/images/SearchIcon.svg';
 import ArrowUpIcon from 'assets/images/arrowup.svg';
 import { useTotalSupplys } from 'data/TotalSupply';
 
-const useStyles = makeStyles(({}) => ({
+const useStyles = makeStyles(({ breakpoints }) => ({
   helpWrapper: {
     display: 'flex',
     alignItems: 'center',
@@ -29,11 +35,15 @@ const useStyles = makeStyles(({}) => ({
     },
   },
   dragonWrapper: {
+    width: '100%',
     backgroundColor: '#1b1e29',
     borderRadius: 20,
     padding: 32,
     position: 'relative',
     overflow: 'hidden',
+    [breakpoints.down('xs')]: {
+      padding: '16px 12px',
+    },
   },
   dragonBg: {
     width: '100%',
@@ -106,6 +116,8 @@ const useStyles = makeStyles(({}) => ({
 
 const FarmPage: React.FC = () => {
   const classes = useStyles();
+  const { breakpoints } = useTheme();
+  const isMobile = useMediaQuery(breakpoints.down('xs'));
   const stakingInfos = useStakingInfo();
   const [stakedOnly, setStakeOnly] = useState(false);
   const [farmSearch, setFarmSearch] = useState('');
@@ -260,6 +272,7 @@ const FarmPage: React.FC = () => {
       <Box
         display='flex'
         flexDirection='row'
+        flexWrap='wrap'
         alignItems='flex-start'
         justifyContent='space-between'
         width='100%'
@@ -268,6 +281,8 @@ const FarmPage: React.FC = () => {
         pr={4}
       >
         <Box
+          mr={1}
+          my={1}
           display='flex'
           flexDirection='column'
           alignItems='flex-start'
@@ -288,6 +303,8 @@ const FarmPage: React.FC = () => {
           </Box>
         </Box>
         <Box
+          mr={1}
+          my={1}
           display='flex'
           flexDirection='column'
           alignItems='flex-start'
@@ -305,6 +322,8 @@ const FarmPage: React.FC = () => {
           </Box>
         </Box>
         <Box
+          mr={1}
+          my={1}
           display='flex'
           flexDirection='column'
           alignItems='flex-start'
@@ -322,6 +341,8 @@ const FarmPage: React.FC = () => {
           </Box>
         </Box>
         <Box
+          mr={1}
+          my={1}
           display='flex'
           flexDirection='column'
           alignItems='flex-start'
@@ -355,6 +376,7 @@ const FarmPage: React.FC = () => {
           </Box>
         </Box>
         <Box
+          my={1}
           display='flex'
           flexDirection='column'
           alignItems='flex-start'
@@ -393,101 +415,110 @@ const FarmPage: React.FC = () => {
           </Box>
         </Box>
       </Box>
-      <Grid container spacing={4}>
-        <Grid item sm={12}>
-          <Box className={classes.dragonWrapper}>
-            <Box display='flex' alignItems='center' mb={3.5}>
-              <Box className={classes.searchInput} flex={1}>
-                <SearchIcon />
-                <input
-                  placeholder='Search name, symbol or paste address'
-                  value={farmSearch}
-                  onChange={(evt: any) => setFarmSearch(evt.target.value)}
-                />
-              </Box>
-              <Box display='flex' alignItems='center' ml={4}>
-                <Typography
-                  variant='body2'
-                  style={{ color: '#626680', marginRight: 8 }}
-                >
-                  Staked Only
-                </Typography>
-                <ToggleSwitch
-                  toggled={stakedOnly}
-                  onToggle={() => setStakeOnly(!stakedOnly)}
-                />
-              </Box>
-            </Box>
-            <Divider />
-            <Box mt={2.5} display='flex' paddingX={2}>
-              <Box width={0.3}>
-                <Typography color='secondary' variant='body2'>
-                  Pool
-                </Typography>
-              </Box>
-              <Box
-                width={0.2}
-                display='flex'
-                flexDirection='row'
-                alignItems='center'
-              >
-                <Typography color='secondary' variant='body2'>
-                  TVL
-                </Typography>
-                <Box ml={1} style={{ height: '23px' }}>
-                  <img src={ArrowUpIcon} alt={'arrow up'} />
-                </Box>
-              </Box>
-              <Box
-                width={0.25}
-                display='flex'
-                flexDirection='row'
-                alignItems='center'
-              >
-                <Typography color='secondary' variant='body2'>
-                  Rewards
-                </Typography>
-                <Box ml={1} style={{ height: '23px' }}>
-                  <img src={ArrowUpIcon} alt={'arrow up'} />
-                </Box>
-              </Box>
-              <Box
-                width={0.15}
-                display='flex'
-                flexDirection='row'
-                alignItems='center'
-                justifyContent='center'
-              >
-                <Typography color='secondary' variant='body2'>
-                  APY
-                </Typography>
-                <Box ml={1} style={{ height: '23px' }}>
-                  <img src={ArrowUpIcon} alt={'arrow up'} />
-                </Box>
-              </Box>
-              <Box
-                width={0.2}
-                display='flex'
-                flexDirection='row'
-                alignItems='center'
-                justifyContent='flex-end'
-                mr={2}
-              >
-                <Typography color='secondary' variant='body2'>
-                  Earned
-                </Typography>
-                <Box ml={1} style={{ height: '23px' }}>
-                  <img src={ArrowUpIcon} alt={'arrow up'} />
-                </Box>
-              </Box>
-            </Box>
-            {stakingInfos &&
-              filteredStakingInfos.map((info: any, index) => (
-                <FarmCard key={index} stakingInfo={info} />
-              ))}
+      <Box className={classes.dragonWrapper}>
+        <Box display='flex' flexWrap='wrap' alignItems='center' mb={3.5}>
+          <Box
+            className={classes.searchInput}
+            width={isMobile ? 1 : 'unset'}
+            flex={1}
+          >
+            <SearchIcon />
+            <input
+              placeholder='Search name, symbol or paste address'
+              value={farmSearch}
+              onChange={(evt: any) => setFarmSearch(evt.target.value)}
+            />
           </Box>
-        </Grid>
-      </Grid>
+          <Box
+            display='flex'
+            alignItems='center'
+            ml={isMobile ? 2 : 4}
+            mt={isMobile ? 2 : 0}
+          >
+            <Typography
+              variant='body2'
+              style={{ color: '#626680', marginRight: 8 }}
+            >
+              Staked Only
+            </Typography>
+            <ToggleSwitch
+              toggled={stakedOnly}
+              onToggle={() => setStakeOnly(!stakedOnly)}
+            />
+          </Box>
+        </Box>
+        <Divider />
+        {!isMobile && (
+          <Box mt={2.5} display='flex' paddingX={2}>
+            <Box width={0.3}>
+              <Typography color='secondary' variant='body2'>
+                Pool
+              </Typography>
+            </Box>
+            <Box
+              width={0.2}
+              display='flex'
+              flexDirection='row'
+              alignItems='center'
+              justifyContent='center'
+            >
+              <Typography color='secondary' variant='body2'>
+                TVL
+              </Typography>
+              <Box ml={1} style={{ height: '23px' }}>
+                <img src={ArrowUpIcon} alt={'arrow up'} />
+              </Box>
+            </Box>
+            <Box
+              width={0.25}
+              display='flex'
+              flexDirection='row'
+              alignItems='center'
+              justifyContent='center'
+            >
+              <Typography color='secondary' variant='body2'>
+                Rewards
+              </Typography>
+              <Box ml={1} style={{ height: '23px' }}>
+                <img src={ArrowUpIcon} alt={'arrow up'} />
+              </Box>
+            </Box>
+            <Box
+              width={0.15}
+              display='flex'
+              flexDirection='row'
+              alignItems='center'
+              justifyContent='center'
+            >
+              <Typography color='secondary' variant='body2'>
+                APY
+              </Typography>
+              <Box ml={1} style={{ height: '23px' }}>
+                <img src={ArrowUpIcon} alt={'arrow up'} />
+              </Box>
+            </Box>
+            <Box
+              width={0.2}
+              display='flex'
+              flexDirection='row'
+              alignItems='center'
+              justifyContent='flex-end'
+              mr={2}
+            >
+              <Typography color='secondary' variant='body2'>
+                Earned
+              </Typography>
+              <Box ml={1} style={{ height: '23px' }}>
+                <img src={ArrowUpIcon} alt={'arrow up'} />
+              </Box>
+            </Box>
+          </Box>
+        )}
+        {stakingInfos &&
+          filteredStakingInfos.map((info: any, index) => (
+            <FarmCard key={index} stakingInfo={info} />
+          ))}
+      </Box>
     </Box>
   );
 };

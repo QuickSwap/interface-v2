@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { TransactionResponse } from '@ethersproject/providers';
 import { splitSignature } from 'ethers/lib/utils';
-import { Box, Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { Box, Typography, useMediaQuery } from '@material-ui/core';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { StakingInfo } from 'state/stake/hooks';
 import { JSBI, TokenAmount, Pair } from '@uniswap/sdk';
 import { QUICK, EMPTY } from 'constants/index';
@@ -21,7 +21,7 @@ import { useActiveWeb3React, useIsArgentWallet } from 'hooks';
 import useTransactionDeadline from 'hooks/useTransactionDeadline';
 import { useApproveCallback, ApprovalState } from 'hooks/useApproveCallback';
 
-const useStyles = makeStyles(({}) => ({
+const useStyles = makeStyles(({ breakpoints }) => ({
   syrupCard: {
     background: '#282d3d',
     width: '100%',
@@ -33,13 +33,15 @@ const useStyles = makeStyles(({}) => ({
   },
   syrupCardUp: {
     background: '#282d3d',
-    height: 80,
     width: '100%',
     borderRadius: 10,
     display: 'flex',
     alignItems: 'center',
-    padding: '0 16px',
+    padding: '16px',
     cursor: 'pointer',
+    [breakpoints.down('xs')]: {
+      flexDirection: 'column',
+    },
   },
   inputVal: {
     backgroundColor: '#121319',
@@ -84,10 +86,17 @@ const useStyles = makeStyles(({}) => ({
     cursor: 'pointer',
     color: 'white',
   },
+  syrupText: {
+    fontSize: 14,
+    fontWeight: 600,
+    color: '#696c80',
+  },
 }));
 
 const FarmCard: React.FC<{ stakingInfo: StakingInfo }> = ({ stakingInfo }) => {
   const classes = useStyles();
+  const { breakpoints } = useTheme();
+  const isMobile = useMediaQuery(breakpoints.down('xs'));
   const [isExpandCard, setExpandCard] = useState(false);
   const [stakeAmount, setStakeAmount] = useState('');
   const [attempting, setAttempting] = useState(false);
@@ -402,56 +411,94 @@ const FarmCard: React.FC<{ stakingInfo: StakingInfo }> = ({ stakingInfo }) => {
         className={classes.syrupCardUp}
         onClick={() => setExpandCard(!isExpandCard)}
       >
-        <Box display='flex' alignItems='center' width={0.3}>
-          <DoubleCurrencyLogo
-            currency0={currency0}
-            currency1={currency1}
-            size={28}
-          />
-          <Box ml={1.5}>
-            <Typography variant='body2'>
-              {currency0.symbol} / {currency1.symbol} LP
-            </Typography>
+        <Box
+          display='flex'
+          alignItems='center'
+          justifyContent='space-between'
+          width={isMobile ? 1 : 0.3}
+          mb={isMobile ? 1.5 : 0}
+        >
+          {isMobile && (
+            <Typography className={classes.syrupText}>Pool</Typography>
+          )}
+          <Box display='flex' alignItems='center'>
+            <DoubleCurrencyLogo
+              currency0={currency0}
+              currency1={currency1}
+              size={28}
+            />
+            <Box ml={1.5}>
+              <Typography variant='body2'>
+                {currency0.symbol} / {currency1.symbol} LP
+              </Typography>
+            </Box>
           </Box>
         </Box>
-        <Box width={0.2}>
+        <Box
+          width={isMobile ? 1 : 0.2}
+          mb={isMobile ? 1.5 : 0}
+          display='flex'
+          justifyContent={isMobile ? 'space-between' : 'center'}
+          alignItems='center'
+        >
+          {isMobile && (
+            <Typography className={classes.syrupText}>TVL</Typography>
+          )}
           <Typography variant='body2'>{tvl}</Typography>
         </Box>
-        <Box width={0.25}>
+        <Box
+          mb={isMobile ? 1.5 : 0}
+          width={isMobile ? 1 : 0.25}
+          display='flex'
+          justifyContent={isMobile ? 'space-between' : 'center'}
+          alignItems='center'
+        >
+          {isMobile && (
+            <Typography className={classes.syrupText}>Rewards</Typography>
+          )}
           <Typography variant='body2'>{poolRate}</Typography>
         </Box>
         <Box
-          width={0.15}
+          mb={isMobile ? 1.5 : 0}
+          width={isMobile ? 1 : 0.15}
           display='flex'
-          flexDirection='row'
           alignItems='center'
-          justifyContent='center'
+          justifyContent={isMobile ? 'space-between' : 'center'}
         >
-          <Typography variant='body2' style={{ color: '#0fc679' }}>
-            {apyWithFee}%
-          </Typography>
-          <Box ml={1} style={{ height: '16px' }}>
-            <img src={CircleInfoIcon} alt={'arrow up'} />
+          {isMobile && (
+            <Typography className={classes.syrupText}>APY</Typography>
+          )}
+          <Box display='flex' alignItems='center'>
+            <Typography variant='body2' style={{ color: '#0fc679' }}>
+              {apyWithFee}%
+            </Typography>
+            <Box ml={1} style={{ height: '16px' }}>
+              <img src={CircleInfoIcon} alt={'arrow up'} />
+            </Box>
           </Box>
         </Box>
-        <Box width={0.2} mr={2} textAlign='right'>
-          <Box
-            display='flex'
-            alignItems='center'
-            justifyContent='flex-end'
-            mb={0.25}
-          >
-            <CurrencyLogo currency={QUICK} size='16px' />
-            <Typography variant='body2' style={{ marginLeft: 5 }}>
-              {stakingInfo.earnedAmount.toSignificant(2)}
-              <span>&nbsp;dQUICK</span>
+        <Box
+          width={isMobile ? 1 : 0.2}
+          display='flex'
+          justifyContent={isMobile ? 'space-between' : 'flex-end'}
+        >
+          {isMobile && (
+            <Typography className={classes.syrupText}>Earned</Typography>
+          )}
+          <Box textAlign='right'>
+            <Box display='flex' alignItems='center' justifyContent='flex-end'>
+              <CurrencyLogo currency={QUICK} size='16px' />
+              <Typography variant='body2' style={{ marginLeft: 5 }}>
+                {stakingInfo.earnedAmount.toSignificant(2)}
+                <span>&nbsp;dQUICK</span>
+              </Typography>
+            </Box>
+            <Typography variant='body2' style={{ color: '#696c80' }}>
+              $
+              {Number(stakingInfo.earnedAmount.toSignificant(2)) *
+                Number(quickPriceUSD.toFixed(2))}
             </Typography>
           </Box>
-          <Typography variant='body2' style={{ color: '#696c80' }}>
-            $
-            {Number(stakingInfo.earnedAmount.toSignificant(2)) *
-              Number(quickPriceUSD.toFixed(2))}
-          </Typography>
         </Box>
       </Box>
 
@@ -459,16 +506,22 @@ const FarmCard: React.FC<{ stakingInfo: StakingInfo }> = ({ stakingInfo }) => {
         <Box
           width='100%'
           mt={2.5}
-          pl={4}
-          pr={4}
-          pt={4}
+          pl={isMobile ? 2 : 4}
+          pr={isMobile ? 2 : 4}
+          pt={2}
           display='flex'
           flexDirection='row'
+          flexWrap='wrap'
           borderTop='1px solid #444444'
           alignItems='center'
           justifyContent='space-between'
         >
-          <Box width={0.25} ml={4} mr={4} style={{ color: '#696c80' }}>
+          <Box
+            minWidth={250}
+            width={isMobile ? 1 : 0.3}
+            color='#696c80'
+            my={1.5}
+          >
             <Box
               display='flex'
               flexDirection='row'
@@ -567,7 +620,12 @@ const FarmCard: React.FC<{ stakingInfo: StakingInfo }> = ({ stakingInfo }) => {
               </Typography>
             </Box>
           </Box>
-          <Box width={0.25} ml={4} mr={4} style={{ color: '#696c80' }}>
+          <Box
+            minWidth={250}
+            width={isMobile ? 1 : 0.3}
+            my={1.5}
+            color='#696c80'
+          >
             <Box
               display='flex'
               flexDirection='row'
@@ -637,7 +695,12 @@ const FarmCard: React.FC<{ stakingInfo: StakingInfo }> = ({ stakingInfo }) => {
               </Typography>
             </Box>
           </Box>
-          <Box width={0.25} ml={4} mr={4} style={{ color: '#696c80' }}>
+          <Box
+            minWidth={250}
+            my={1.5}
+            width={isMobile ? 1 : 0.3}
+            color='#696c80'
+          >
             <Box
               display='flex'
               flexDirection='column'

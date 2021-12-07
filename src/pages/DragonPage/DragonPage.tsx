@@ -176,7 +176,7 @@ const DragonPage: React.FC = () => {
         </Box>
       </Box>
       <Grid container spacing={4}>
-        <Grid item sm={12} md={4}>
+        <Grid item xs={12} sm={12} md={4}>
           <Box className={classes.dragonWrapper}>
             <Box className={classes.dragonBg}>
               <img src={DragonBg2} alt='Dragon Lair' />
@@ -299,7 +299,7 @@ const DragonPage: React.FC = () => {
             </Box>
           </Box>
         </Grid>
-        <Grid item sm={12} md={8}>
+        <Grid item xs={12} sm={12} md={8}>
           <Box className={classes.dragonWrapper}>
             <Box className={classes.dragonBg}>
               <img src={DragonBg1} alt='Dragon Syrup' />

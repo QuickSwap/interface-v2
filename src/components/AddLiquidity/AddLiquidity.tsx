@@ -41,7 +41,7 @@ import {
 import { wrappedCurrency } from 'utils/wrappedCurrency';
 import { ReactComponent as AddLiquidityIcon } from 'assets/images/AddLiquidityIcon.svg';
 
-const useStyles = makeStyles(({}) => ({
+const useStyles = makeStyles(({ breakpoints }) => ({
   exchangeSwap: {
     cursor: 'pointer',
     display: 'flex',
@@ -76,8 +76,12 @@ const useStyles = makeStyles(({}) => ({
   },
   swapPrice: {
     display: 'flex',
+    flexWrap: 'wrap',
     justifyContent: 'space-between',
     margin: '6px 24px 0',
+    [breakpoints.down('xs')]: {
+      margin: '6px 12px 0',
+    },
     '& p': {
       display: 'flex',
       alignItems: 'center',

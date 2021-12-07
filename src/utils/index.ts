@@ -726,7 +726,6 @@ const parseData = (
   oneDayBlock: any,
 ) => {
   // get volume changes
-  console.log('ccc', data);
   const [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(
     data?.volumeUSD ? data.volumeUSD : 0,
     oneDayData?.volumeUSD ? oneDayData.volumeUSD : 0,
