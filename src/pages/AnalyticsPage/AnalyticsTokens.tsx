@@ -6,14 +6,19 @@ import { useTopTokens, useBookmarkTokens } from 'state/application/hooks';
 import { getEthPrice, getTopTokens } from 'utils';
 import { Skeleton } from '@material-ui/lab';
 
-const useStyles = makeStyles(({}) => ({
+const useStyles = makeStyles(({ breakpoints }) => ({
   tokensFilter: {
     cursor: 'pointer',
     display: 'flex',
+    margin: '8px 16px 8px 0',
   },
   panel: {
     background: '#1b1d26',
     borderRadius: 20,
+    padding: 24,
+    [breakpoints.down('xs')]: {
+      padding: 12,
+    },
   },
 }));
 
@@ -52,9 +57,8 @@ const AnalyticsTokens: React.FC = () => {
   return (
     <>
       <TopMovers background='#1b1d26' hideArrow={true} />
-      <Box my={4} px={2} display='flex' alignItems='center'>
+      <Box my={4} px={2} display='flex' flexWrap='wrap' alignItems='center'>
         <Box
-          mr={4}
           className={classes.tokensFilter}
           onClick={() => setTokensFilter(0)}
           color={tokensFilter === 0 ? '#448aff' : '#626680'}
@@ -62,7 +66,6 @@ const AnalyticsTokens: React.FC = () => {
           <Typography variant='h6'>All Cryptos</Typography>
         </Box>
         <Box
-          mr={4}
           className={classes.tokensFilter}
           color={tokensFilter === 1 ? '#448aff' : '#626680'}
           onClick={() => setTokensFilter(1)}
@@ -77,7 +80,7 @@ const AnalyticsTokens: React.FC = () => {
           <Typography variant='h6'>New Listing</Typography>
         </Box>
       </Box>
-      <Box paddingX={4} paddingY={3} className={classes.panel}>
+      <Box className={classes.panel}>
         {topTokens && topTokens.length === 200 ? (
           <TokensTable data={tokensFilter === 0 ? topTokens : favoriteTokens} />
         ) : (

@@ -282,7 +282,7 @@ const Header: React.FC = () => {
     },
     {
       link: '/dragons',
-      text: 'Dragons Den',
+      text: 'Dragons Lair',
     },
     {
       link: '/analytics',

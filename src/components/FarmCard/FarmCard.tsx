@@ -93,7 +93,10 @@ const useStyles = makeStyles(({ breakpoints }) => ({
   },
 }));
 
-const FarmCard: React.FC<{ stakingInfo: StakingInfo }> = ({ stakingInfo }) => {
+const FarmCard: React.FC<{
+  stakingInfo: StakingInfo;
+  dQuicktoQuick: number;
+}> = ({ stakingInfo, dQuicktoQuick }) => {
   const classes = useStyles();
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
@@ -405,6 +408,16 @@ const FarmCard: React.FC<{ stakingInfo: StakingInfo }> = ({ stakingInfo }) => {
       });
   };
 
+  const earnedUSD =
+    Number(stakingInfo.earnedAmount.toSignificant(2)) *
+    dQuicktoQuick *
+    quickPriceUSD;
+
+  const earnedUSDStr =
+    earnedUSD < 0.001 && earnedUSD > 0
+      ? '< $0.001'
+      : '$' + earnedUSD.toLocaleString();
+
   return (
     <Box className={classes.syrupCard}>
       <Box
@@ -494,9 +507,7 @@ const FarmCard: React.FC<{ stakingInfo: StakingInfo }> = ({ stakingInfo }) => {
               </Typography>
             </Box>
             <Typography variant='body2' style={{ color: '#696c80' }}>
-              $
-              {Number(stakingInfo.earnedAmount.toSignificant(2)) *
-                Number(quickPriceUSD.toFixed(2))}
+              {earnedUSDStr}
             </Typography>
           </Box>
         </Box>
@@ -720,11 +731,7 @@ const FarmCard: React.FC<{ stakingInfo: StakingInfo }> = ({ stakingInfo }) => {
                 </Typography>
               </Box>
               <Box mb={1}>
-                <Typography variant='body2'>
-                  $
-                  {Number(stakingInfo.earnedAmount.toSignificant(2)) *
-                    Number(quickPriceUSD.toFixed(2))}
-                </Typography>
+                <Typography variant='body2'>{earnedUSDStr}</Typography>
               </Box>
             </Box>
             <Box

@@ -1,15 +1,9 @@
 import React, { useMemo, useState } from 'react';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-import {
-  Box,
-  Typography,
-  Grid,
-  Divider,
-  useMediaQuery,
-} from '@material-ui/core';
+import { Box, Typography, Divider, useMediaQuery } from '@material-ui/core';
 import { VisibilityOff, Visibility } from '@material-ui/icons';
 import { TokenAmount, JSBI } from '@uniswap/sdk';
-import { useStakingInfo } from 'state/stake/hooks';
+import { useStakingInfo, useLairInfo } from 'state/stake/hooks';
 import { FarmCard, ToggleSwitch } from 'components';
 import { usePairs } from 'data/Reserves';
 import { useUSDCPrices } from 'utils/useUSDCPrice';
@@ -117,6 +111,7 @@ const useStyles = makeStyles(({ breakpoints }) => ({
 const FarmPage: React.FC = () => {
   const classes = useStyles();
   const { breakpoints } = useTheme();
+  const lairInfo = useLairInfo();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const stakingInfos = useStakingInfo();
   const [stakedOnly, setStakeOnly] = useState(false);
@@ -516,7 +511,11 @@ const FarmPage: React.FC = () => {
         )}
         {stakingInfos &&
           filteredStakingInfos.map((info: any, index) => (
-            <FarmCard key={index} stakingInfo={info} />
+            <FarmCard
+              key={index}
+              dQuicktoQuick={Number(lairInfo.dQUICKtoQUICK.toSignificant())}
+              stakingInfo={info}
+            />
           ))}
       </Box>
     </Box>

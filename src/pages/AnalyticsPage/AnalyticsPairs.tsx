@@ -6,7 +6,7 @@ import { useTopPairs } from 'state/application/hooks';
 import { getEthPrice, getTopPairs, getBulkPairData } from 'utils';
 import { Skeleton } from '@material-ui/lab';
 
-const useStyles = makeStyles(({}) => ({
+const useStyles = makeStyles(({ breakpoints }) => ({
   tokensFilter: {
     cursor: 'pointer',
     display: 'flex',
@@ -14,6 +14,10 @@ const useStyles = makeStyles(({}) => ({
   panel: {
     background: '#1b1d26',
     borderRadius: 20,
+    padding: 24,
+    [breakpoints.down('xs')]: {
+      padding: 12,
+    },
   },
 }));
 
@@ -42,7 +46,7 @@ const AnalyticsPairs: React.FC = () => {
   return (
     <>
       <Typography>All Pairs</Typography>
-      <Box mt={4} paddingX={4} paddingY={3} className={classes.panel}>
+      <Box mt={4} className={classes.panel}>
         {topPairs ? (
           <PairTable data={topPairs} />
         ) : (

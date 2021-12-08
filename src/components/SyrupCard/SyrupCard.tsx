@@ -311,7 +311,8 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo }> = ({ syrup }) => {
                   {userLiquidityUnstaked
                     ? (
                         syrup.quickPrice *
-                        Number(userLiquidityUnstaked.toSignificant(2))
+                        Number(syrup.dQUICKtoQUICK.toSignificant()) *
+                        Number(userLiquidityUnstaked.toSignificant())
                       ).toLocaleString()
                     : 0}
                 </span>
@@ -333,7 +334,8 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo }> = ({ syrup }) => {
                 <span style={{ color: '#696c80', marginLeft: 4 }}>
                   $
                   {(
-                    Number(syrup.stakedAmount.toSignificant(2)) *
+                    Number(syrup.stakedAmount.toSignificant()) *
+                    Number(syrup.dQUICKtoQUICK.toSignificant()) *
                     syrup.quickPrice
                   ).toLocaleString()}
                 </span>

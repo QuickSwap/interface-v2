@@ -176,7 +176,7 @@ const DragonPage: React.FC = () => {
         width='100%'
       >
         <Box>
-          <Typography variant='h4'>Dragons Den</Typography>
+          <Typography variant='h4'>Dragons Lair</Typography>
           <Typography variant='body1'>
             Stake your QUICK here to earn more!
           </Typography>

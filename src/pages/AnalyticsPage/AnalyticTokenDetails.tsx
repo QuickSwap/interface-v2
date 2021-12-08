@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Box, Typography, Grid } from '@material-ui/core';
+import { Box, Typography, Grid, useMediaQuery } from '@material-ui/core';
 import { ArrowForwardIos } from '@material-ui/icons';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { Skeleton } from '@material-ui/lab';
 import { ChainId, Token } from '@uniswap/sdk';
 import moment from 'moment';
@@ -26,10 +26,14 @@ import { ReactComponent as StarChecked } from 'assets/images/StarChecked.svg';
 import { ReactComponent as StarUnchecked } from 'assets/images/StarUnchecked.svg';
 import { getAddress } from '@ethersproject/address';
 
-const useStyles = makeStyles(({}) => ({
+const useStyles = makeStyles(({ breakpoints }) => ({
   panel: {
     background: '#1b1d26',
     borderRadius: 20,
+    padding: 24,
+    [breakpoints.down('xs')]: {
+      padding: 12,
+    },
   },
   breadcrumb: {
     display: 'flex',
@@ -52,6 +56,10 @@ const useStyles = makeStyles(({}) => ({
     fontWeight: 'bold',
     color: '#ebecf2',
     lineHeight: 1,
+    [breakpoints.down('xs')]: {
+      fontSize: 22,
+      fontWeight: 600,
+    },
   },
   heading2: {
     fontSize: 20,
@@ -59,6 +67,9 @@ const useStyles = makeStyles(({}) => ({
     fontWeight: 600,
     color: '#636780',
     marginLeft: 6,
+    [breakpoints.down('xs')]: {
+      fontSize: 18,
+    },
   },
   priceChangeWrapper: {
     height: 25,
@@ -95,6 +106,8 @@ const AnalyticsTokenDetails: React.FC<{
   goBack: (index: number) => void;
 }> = ({ token, goBack }) => {
   const classes = useStyles();
+  const { breakpoints } = useTheme();
+  const isMobile = useMediaQuery(breakpoints.down('xs'));
   const history = useHistory();
   const { chainId } = useActiveWeb3React();
   const currency = new Token(
@@ -237,7 +250,7 @@ const AnalyticsTokenDetails: React.FC<{
           {shortenAddress(token.id)})
         </Typography>
       </Box>
-      <Box display='flex' justifyContent='space-between'>
+      <Box display='flex' flexWrap='wrap' justifyContent='space-between'>
         <Box display='flex'>
           <CurrencyLogo currency={currency} size='32px' />
           <Box ml={1.5}>
@@ -293,7 +306,7 @@ const AnalyticsTokenDetails: React.FC<{
             </Box>
           </Box>
         </Box>
-        <Box display='flex'>
+        <Box my={2} display='flex'>
           <Box
             className={classes.button}
             mr={1.5}
@@ -314,11 +327,11 @@ const AnalyticsTokenDetails: React.FC<{
           </Box>
         </Box>
       </Box>
-      <Box className={classes.panel} mt={4} px={4} py={3}>
+      <Box className={classes.panel} mt={4}>
         <Grid container>
           <Grid item xs={12} sm={12} md={6}>
-            <Box display='flex' justifyContent='space-between'>
-              <Box>
+            <Box display='flex' flexWrap='wrap' justifyContent='space-between'>
+              <Box mt={1.5}>
                 <Typography variant='caption'>
                   {chartIndex === 0
                     ? 'Volume'
@@ -378,7 +391,7 @@ const AnalyticsTokenDetails: React.FC<{
                   )}
                 </Box>
               </Box>
-              <Box display='flex'>
+              <Box display='flex' mt={1.5}>
                 <Box
                   mr={1}
                   bgcolor={chartIndex === 0 ? '#3e4252' : 'transparent'}
@@ -421,18 +434,23 @@ const AnalyticsTokenDetails: React.FC<{
           </Grid>
           <Grid item xs={12} sm={12} md={6}>
             <Box
+              my={2}
               height={1}
               display='flex'
               flexDirection='column'
               alignItems='center'
               justifyContent='center'
             >
-              <Box width={0.8} display='flex' justifyContent='space-between'>
+              <Box
+                width={isMobile ? 1 : 0.8}
+                display='flex'
+                justifyContent='space-between'
+              >
                 <Box width={180}>
                   <Typography variant='caption' style={{ color: '#626680' }}>
                     TOTAL LIQUIDITY
                   </Typography>
-                  <Typography variant='h5'>
+                  <Typography variant={isMobile ? 'body1' : 'h5'}>
                     ${token.totalLiquidityUSD.toLocaleString()}
                   </Typography>
                 </Box>
@@ -440,13 +458,13 @@ const AnalyticsTokenDetails: React.FC<{
                   <Typography variant='caption' style={{ color: '#626680' }}>
                     7d Trading Vol
                   </Typography>
-                  <Typography variant='h5'>
+                  <Typography variant={isMobile ? 'body1' : 'h5'}>
                     ${token.oneWeekVolumeUSD.toLocaleString()}
                   </Typography>
                 </Box>
               </Box>
               <Box
-                width={0.8}
+                width={isMobile ? 1 : 0.8}
                 mt={4}
                 display='flex'
                 justifyContent='space-between'
@@ -455,7 +473,7 @@ const AnalyticsTokenDetails: React.FC<{
                   <Typography variant='caption' style={{ color: '#626680' }}>
                     24h Trading Vol
                   </Typography>
-                  <Typography variant='h5'>
+                  <Typography variant={isMobile ? 'body1' : 'h5'}>
                     ${token.oneDayVolumeUSD.toLocaleString()}
                   </Typography>
                 </Box>
@@ -463,13 +481,13 @@ const AnalyticsTokenDetails: React.FC<{
                   <Typography variant='caption' style={{ color: '#626680' }}>
                     24h FEES
                   </Typography>
-                  <Typography variant='h5'>
+                  <Typography variant={isMobile ? 'body1' : 'h5'}>
                     ${(token.oneDayVolumeUSD * 0.003).toLocaleString()}
                   </Typography>
                 </Box>
               </Box>
               <Box
-                width={0.8}
+                width={isMobile ? 1 : 0.8}
                 mt={4}
                 display='flex'
                 justifyContent='space-between'
@@ -493,12 +511,6 @@ const AnalyticsTokenDetails: React.FC<{
                     )}
                   </Typography>
                 </Box>
-                <Box width={140}>
-                  <Typography variant='caption' style={{ color: '#626680' }}>
-                    Network
-                  </Typography>
-                  <Typography variant='h5'>Polygon</Typography>
-                </Box>
               </Box>
             </Box>
           </Grid>
@@ -507,7 +519,7 @@ const AnalyticsTokenDetails: React.FC<{
       <Box mt={5}>
         <Typography variant='body1'>{token.symbol} Pools</Typography>
       </Box>
-      <Box className={classes.panel} mt={4} px={4} py={3}>
+      <Box className={classes.panel} mt={4}>
         {tokenPairs ? (
           <PairTable data={tokenPairs} />
         ) : (

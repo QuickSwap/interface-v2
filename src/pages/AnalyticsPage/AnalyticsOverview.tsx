@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Box, Typography, Grid } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { Box, Typography, Grid, useMediaQuery } from '@material-ui/core';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Skeleton from '@material-ui/lab/Skeleton';
 import { ArrowForwardIos } from '@material-ui/icons';
 import dayjs from 'dayjs';
@@ -65,6 +65,8 @@ const AnalyticsOverview: React.FC<AnalyticsOverViewProps> = ({
   showAllPairs,
 }) => {
   const classes = useStyles();
+  const { breakpoints } = useTheme();
+  const isMobile = useMediaQuery(breakpoints.down('xs'));
   const [volumeIndex, setVolumeIndex] = useState(0);
   const [selectedVolumeIndex, setSelectedVolumeIndex] = useState(-1);
 
@@ -249,7 +251,7 @@ const AnalyticsOverview: React.FC<AnalyticsOverViewProps> = ({
     <>
       <Grid container spacing={4}>
         <Grid item xs={12} sm={12} md={6}>
-          <Box className={classes.panel} padding={3} width={1}>
+          <Box className={classes.panel} padding={isMobile ? 1.5 : 3} width={1}>
             <Typography
               variant='caption'
               style={{ color: '#626680', fontWeight: 'bold' }}
@@ -325,7 +327,7 @@ const AnalyticsOverview: React.FC<AnalyticsOverViewProps> = ({
           </Box>
         </Grid>
         <Grid item xs={12} sm={12} md={6}>
-          <Box className={classes.panel} padding={3} width={1}>
+          <Box className={classes.panel} padding={isMobile ? 1.5 : 3} width={1}>
             <Box display='flex' justifyContent='space-between'>
               <Typography
                 variant='caption'
@@ -434,7 +436,12 @@ const AnalyticsOverview: React.FC<AnalyticsOverViewProps> = ({
           </Box>
         </Box>
       </Box>
-      <Box mt={3} paddingX={4} paddingY={3} className={classes.panel}>
+      <Box
+        mt={3}
+        paddingX={isMobile ? 1.5 : 4}
+        paddingY={isMobile ? 1.5 : 3}
+        className={classes.panel}
+      >
         {topTokens ? (
           <TokensTable data={topTokens} />
         ) : (
@@ -456,7 +463,12 @@ const AnalyticsOverview: React.FC<AnalyticsOverViewProps> = ({
           </Box>
         </Box>
       </Box>
-      <Box mt={3} paddingX={4} paddingY={3} className={classes.panel}>
+      <Box
+        mt={3}
+        paddingX={isMobile ? 1.5 : 4}
+        paddingY={isMobile ? 1.5 : 3}
+        className={classes.panel}
+      >
         {topPairs ? (
           <PairTable data={topPairs} />
         ) : (

@@ -1,11 +1,5 @@
 import React, { ReactChild } from 'react';
-import {
-  Box,
-  useMediaQuery,
-  Container,
-  TableRow,
-  TableCell,
-} from '@material-ui/core';
+import { Box, useMediaQuery, TableRow, TableCell } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { ArrowUpward, ArrowDownward } from '@material-ui/icons';
 import { DataTable } from 'components';
@@ -128,11 +122,7 @@ const CustomTable: React.FC<CustomTableProps> = ({
       {mobileWindowSize ? (
         <>
           {data.map((item: any, index: number) => {
-            return (
-              <Box mb={2} key={index}>
-                <Container fixed>{mobileHTML(item, index)}</Container>
-              </Box>
-            );
+            return mobileHTML(item, index);
           })}
         </>
       ) : (
