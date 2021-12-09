@@ -130,7 +130,7 @@ const DragonPage: React.FC = () => {
       365) /
     (Number(lairInfo?.dQUICKtoQUICK.toSignificant()) *
       Number(lairInfo?.quickPrice));
-  const APY = APR ? (Math.pow(1 + APR / 365, 365) - 1).toFixed(4) : 0;
+  const APY = APR ? ((Math.pow(1 + APR / 365, 365) - 1) * 100).toFixed(2) : 0;
   const [stakedOnly, setStakeOnly] = useState(false);
   const [syrupSearch, setSyrupSearch] = useState('');
 
