@@ -4,6 +4,7 @@ import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { ArrowDropUp, ArrowDropDown } from '@material-ui/icons';
 import Skeleton from '@material-ui/lab/Skeleton';
 import { Token, ChainId } from '@uniswap/sdk';
+import { getAddress } from '@ethersproject/address';
 import { CurrencyLogo } from 'components';
 import { getEthPrice, getTopTokens } from 'utils';
 import { useTopTokens } from 'state/application/hooks';
@@ -79,7 +80,7 @@ const TopMovers: React.FC<TopMoversProps> = ({
             {topMoverTokens.map((token: any, index: number) => {
               const currency = new Token(
                 ChainId.MATIC,
-                token.id,
+                getAddress(token.id),
                 token.decimals,
               );
               const priceUp = Number(token.priceChangeUSD) > 0;
