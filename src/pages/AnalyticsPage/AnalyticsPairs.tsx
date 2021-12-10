@@ -40,7 +40,10 @@ const AnalyticsPairs: React.FC = () => {
         updateTopPairs(pairData);
       }
     };
-    fetchTopPairs();
+    if (!topPairs || topPairs.length < 500) {
+      fetchTopPairs();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [updateTopPairs]);
 
   return (

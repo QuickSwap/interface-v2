@@ -18,6 +18,94 @@ export const SUBGRAPH_HEALTH = gql`
   }
 `;
 
+export const TOKEN_SEARCH = gql`
+  query tokens($value: String, $id: String) {
+    asSymbol: tokens(
+      where: { symbol_contains: $value }
+      orderBy: totalLiquidity
+      orderDirection: desc
+    ) {
+      id
+      symbol
+      name
+      decimals
+      totalLiquidity
+    }
+    asName: tokens(
+      where: { name_contains: $value }
+      orderBy: totalLiquidity
+      orderDirection: desc
+    ) {
+      id
+      symbol
+      name
+      decimals
+      totalLiquidity
+    }
+    asAddress: tokens(
+      where: { id: $id }
+      orderBy: totalLiquidity
+      orderDirection: desc
+    ) {
+      id
+      symbol
+      name
+      decimals
+      totalLiquidity
+    }
+  }
+`;
+
+export const PAIR_SEARCH = gql`
+  query pairs($tokens: [Bytes]!, $id: String) {
+    as0: pairs(where: { token0_in: $tokens }) {
+      id
+      token0 {
+        id
+        symbol
+        decimals
+        name
+      }
+      token1 {
+        id
+        symbol
+        decimals
+        name
+      }
+    }
+    as1: pairs(where: { token1_in: $tokens }) {
+      id
+      token0 {
+        id
+        symbol
+        decimals
+        name
+      }
+      token1 {
+        id
+        symbol
+        decimals
+        name
+      }
+    }
+    asAddress: pairs(where: { id: $id }) {
+      id
+      token0 {
+        id
+        symbol
+        decimals
+        name
+      }
+      token1 {
+        id
+        symbol
+        decimals
+        name
+      }
+    }
+  }
+`;
+
 export const TOKEN_CHART = gql`
   query tokenDayDatas($tokenAddr: String!, $startTime: Int!) {
     tokenDayDatas(
@@ -85,6 +173,43 @@ export const PAIRS_BULK: any = (pairs: any[]) => {
   `;
   return gql(queryString);
 };
+
+export const ALL_TOKENS = gql`
+  query tokens($skip: Int!) {
+    tokens(first: 10, skip: $skip) {
+      id
+      name
+      symbol
+      decimals
+      totalLiquidity
+    }
+  }
+`;
+
+export const ALL_PAIRS = gql`
+  query pairs($skip: Int!) {
+    pairs(
+      first: 10
+      skip: $skip
+      orderBy: trackedReserveETH
+      orderDirection: desc
+    ) {
+      id
+      token0 {
+        id
+        symbol
+        name
+        decimals
+      }
+      token1 {
+        id
+        symbol
+        name
+        decimals
+      }
+    }
+  }
+`;
 
 export const PAIRS_BULK1 = gql`
   ${PairFields}

@@ -22,6 +22,8 @@ import {
   PAIRS_HISTORICAL_BULK,
   PRICES_BY_BLOCK,
   PAIRS_CURRENT,
+  ALL_PAIRS,
+  ALL_TOKENS,
 } from 'apollo/queries';
 import { JsonRpcSigner, Web3Provider } from '@ethersproject/providers';
 import { abi as IUniswapV2Router02ABI } from '@uniswap/v2-periphery/build/IUniswapV2Router02.json';
@@ -905,6 +907,56 @@ export async function getGlobalData(
   }
 
   return data;
+}
+
+export async function getAllPairsOnUniswap() {
+  try {
+    let allFound = false;
+    let pairs: any[] = [];
+    let skipCount = 0;
+    while (!allFound) {
+      const result = await client.query({
+        query: ALL_PAIRS,
+        variables: {
+          skip: skipCount,
+        },
+        fetchPolicy: 'cache-first',
+      });
+      skipCount = skipCount + 10;
+      pairs = pairs.concat(result?.data?.pairs);
+      if (result?.data?.pairs.length < 10 || pairs.length > 10) {
+        allFound = true;
+      }
+    }
+    return pairs;
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+export async function getAllTokensOnUniswap() {
+  try {
+    let allFound = false;
+    let skipCount = 0;
+    let tokens: any[] = [];
+    while (!allFound) {
+      const result = await client.query({
+        query: ALL_TOKENS,
+        variables: {
+          skip: skipCount,
+        },
+        fetchPolicy: 'cache-first',
+      });
+      tokens = tokens.concat(result?.data?.tokens);
+      if (result?.data?.tokens?.length < 10 || tokens.length > 10) {
+        allFound = true;
+      }
+      skipCount = skipCount += 10;
+    }
+    return tokens;
+  } catch (e) {
+    console.log(e);
+  }
 }
 
 export const getChartData = async (oldestDateToFetch: number) => {

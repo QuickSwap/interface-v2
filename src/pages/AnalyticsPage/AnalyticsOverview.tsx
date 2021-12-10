@@ -97,6 +97,9 @@ const AnalyticsOverview: React.FC<AnalyticsOverViewProps> = ({
       if (topTokensData) {
         updateTopTokens(topTokensData);
       }
+    };
+    const fetchTopPairs = async () => {
+      const [newPrice] = await getEthPrice();
       const pairs = await getTopPairs(8);
       const formattedPairs = pairs
         ? pairs.map((pair: any) => {
@@ -109,7 +112,13 @@ const AnalyticsOverview: React.FC<AnalyticsOverViewProps> = ({
       }
     };
     fetchChartData();
-    fetchTopTokens();
+    if (!topTokens || topTokens.length < 8) {
+      fetchTopTokens();
+    }
+    if (!topPairs || topPairs.length < 8) {
+      fetchTopPairs();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [startTime, updateGlobalChartData, updateTopTokens, updateTopPairs]);
 
   const liquidityDates = useMemo(() => {
