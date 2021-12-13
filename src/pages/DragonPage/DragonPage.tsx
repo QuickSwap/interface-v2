@@ -183,7 +183,7 @@ const DragonPage: React.FC = () => {
         syrupInfos.length < (SYRUP_REWARDS_INFO[chainId]?.length ?? 0) &&
         pageIndex * 5 > syrupInfos.length
       ) {
-        setPageIndex(syrupInfos.length / 6);
+        setPageIndex(syrupInfos.length / 5 + 1);
       }
       if (
         !lastSyrupAddress ||

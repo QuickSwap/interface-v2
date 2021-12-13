@@ -175,7 +175,7 @@ const FarmPage: React.FC = () => {
         stakingInfos.length < (STAKING_REWARDS_INFO[chainId]?.length ?? 0) &&
         pageIndex * 6 > stakingInfos.length
       ) {
-        setPageIndex(stakingInfos.length / 6);
+        setPageIndex(stakingInfos.length / 6 + 1);
       }
       if (
         !lastStakingAddress ||
