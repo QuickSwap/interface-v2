@@ -21,7 +21,7 @@ const FormattedPriceImpact: React.FC<{ priceImpact?: Percent }> = ({
             : severity === 2
             ? 'yellow'
             : severity === 1
-            ? 'black'
+            ? 'blueviolet'
             : '#0fc679',
       }}
     >
