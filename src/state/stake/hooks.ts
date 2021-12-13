@@ -253,6 +253,26 @@ export const SYRUP_REWARDS_INFO: {
 } = {
   [ChainId.MATIC]: [
     {
+      token: MM,
+      stakingRewardAddress: '0xB224d9F687538a2FAF8964DcAabb71bFe627Aee0',
+      ended: false,
+      lp: '',
+      name: '',
+      baseToken: USDC,
+      rate: 66.66666667,
+      ending: 1644296104,
+    },
+    {
+      token: ZIG,
+      stakingRewardAddress: '0xfE6174429a963bF4E25a80FE0B72d7Cce7Df6e2f',
+      ended: false,
+      lp: '',
+      name: '',
+      baseToken: QUICK,
+      rate: 37037.03333,
+      ending: 1646888104,
+    },
+    {
       token: TECH,
       stakingRewardAddress: '0xD2C494057f57D845C67bb5825e83B657204875c8',
       ended: false,
@@ -12441,7 +12461,11 @@ export interface SyrupInfo {
   ) => TokenAmount;
 }
 
-export function useSyrupInfo(tokenToFilterBy?: Token | null): SyrupInfo[] {
+export function useSyrupInfo(
+  tokenToFilterBy?: Token | null,
+  startIndex?: number,
+  endIndex?: number,
+): SyrupInfo[] {
   const { chainId, account } = useActiveWeb3React();
   //const [quickPrice,setQuickPrice] = useState(0);
   const [, quickUsdcPair] = usePair(QUICK, USDC);
@@ -12449,16 +12473,18 @@ export function useSyrupInfo(tokenToFilterBy?: Token | null): SyrupInfo[] {
   const info = useMemo(
     () =>
       chainId
-        ? SYRUP_REWARDS_INFO[chainId]?.filter((stakingRewardInfo) =>
-            tokenToFilterBy === undefined
-              ? true
-              : tokenToFilterBy === null
-              ? true
-              : tokenToFilterBy.equals(stakingRewardInfo.token) &&
-                tokenToFilterBy.equals(stakingRewardInfo.token),
-          ) ?? []
+        ? SYRUP_REWARDS_INFO[chainId]
+            ?.slice(startIndex, endIndex)
+            .filter((stakingRewardInfo) =>
+              tokenToFilterBy === undefined
+                ? true
+                : tokenToFilterBy === null
+                ? true
+                : tokenToFilterBy.equals(stakingRewardInfo.token) &&
+                  tokenToFilterBy.equals(stakingRewardInfo.token),
+            ) ?? []
         : [],
-    [chainId, tokenToFilterBy],
+    [chainId, tokenToFilterBy, startIndex, endIndex],
   );
 
   const uni = chainId ? UNI[chainId] : undefined;
@@ -13396,7 +13422,11 @@ export function useLairInfo(): LairInfo {
 }
 
 // gets the staking info from the network for the active chain id
-export function useStakingInfo(pairToFilterBy?: Pair | null): StakingInfo[] {
+export function useStakingInfo(
+  pairToFilterBy?: Pair | null,
+  startIndex?: number,
+  endIndex?: number,
+): StakingInfo[] {
   const { chainId, account } = useActiveWeb3React();
   //const [quickPrice,setQuickPrice] = useState(0);
   const [, quickUsdcPair] = usePair(QUICK, USDC);
@@ -13404,16 +13434,18 @@ export function useStakingInfo(pairToFilterBy?: Pair | null): StakingInfo[] {
   const info = useMemo(
     () =>
       chainId
-        ? STAKING_REWARDS_INFO[chainId]?.filter((stakingRewardInfo) =>
-            pairToFilterBy === undefined
-              ? true
-              : pairToFilterBy === null
-              ? true
-              : pairToFilterBy.involvesToken(stakingRewardInfo.tokens[0]) &&
-                pairToFilterBy.involvesToken(stakingRewardInfo.tokens[1]),
-          ) ?? []
+        ? STAKING_REWARDS_INFO[chainId]
+            ?.slice(startIndex, endIndex)
+            ?.filter((stakingRewardInfo) =>
+              pairToFilterBy === undefined
+                ? true
+                : pairToFilterBy === null
+                ? true
+                : pairToFilterBy.involvesToken(stakingRewardInfo.tokens[0]) &&
+                  pairToFilterBy.involvesToken(stakingRewardInfo.tokens[1]),
+            ) ?? []
         : [],
-    [chainId, pairToFilterBy],
+    [chainId, pairToFilterBy, startIndex, endIndex],
   );
 
   const uni = chainId ? UNI[chainId] : undefined;
