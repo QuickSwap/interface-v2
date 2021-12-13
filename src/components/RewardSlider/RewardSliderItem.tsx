@@ -183,7 +183,7 @@ const RewardSliderItem: React.FC<RewardSliderItemProps> = ({ info }) => {
           );
         }}
       >
-        Invest
+        Deposit LP Tokens
       </Button>
     </Box>
   );
