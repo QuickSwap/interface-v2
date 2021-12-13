@@ -102,7 +102,8 @@ const FarmCard: React.FC<{
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const [isExpandCard, setExpandCard] = useState(false);
   const [stakeAmount, setStakeAmount] = useState('');
-  const [attempting, setAttempting] = useState(false);
+  const [attemptStaking, setAttemptStaking] = useState(false);
+  const [attemptUnstaking, setAttemptUnstaking] = useState(false);
   // const [hash, setHash] = useState<string | undefined>();
   const [unstakeAmount, setUnStakeAmount] = useState('');
 
@@ -238,17 +239,18 @@ const FarmCard: React.FC<{
 
   const onWithdraw = async () => {
     if (stakingContract && stakingInfo.stakedAmount) {
-      setAttempting(true);
+      setAttemptUnstaking(true);
       await stakingContract
         .exit({ gasLimit: 300000 })
         .then((response: TransactionResponse) => {
           addTransaction(response, {
             summary: `Withdraw deposited liquidity`,
           });
+          setAttemptUnstaking(false);
           // setHash(response.hash);
         })
         .catch((error: any) => {
-          setAttempting(false);
+          setAttemptUnstaking(false);
           console.log(error);
         });
     }
@@ -256,7 +258,6 @@ const FarmCard: React.FC<{
 
   const onClaimReward = async () => {
     if (stakingContract && stakingInfo.stakedAmount) {
-      setAttempting(true);
       await stakingContract
         .getReward({ gasLimit: 350000 })
         .then((response: TransactionResponse) => {
@@ -266,7 +267,6 @@ const FarmCard: React.FC<{
           // setHash(response.hash);
         })
         .catch((error: any) => {
-          setAttempting(false);
           console.log(error);
         });
     }
@@ -301,7 +301,7 @@ const FarmCard: React.FC<{
   );
 
   const onStake = async () => {
-    setAttempting(true);
+    setAttemptStaking(true);
     if (stakingContract && parsedAmount && deadline) {
       if (approval === ApprovalState.APPROVED) {
         await stakingContract.stake(`0x${parsedAmount.raw.toString(16)}`, {
@@ -324,11 +324,11 @@ const FarmCard: React.FC<{
             // setHash(response.hash);
           })
           .catch((error: any) => {
-            setAttempting(false);
+            setAttemptStaking(false);
             console.log(error);
           });
       } else {
-        setAttempting(false);
+        setAttemptStaking(false);
         throw new Error(
           'Attempting to stake without approval or a signature. Please contact support.',
         );
@@ -586,6 +586,8 @@ const FarmCard: React.FC<{
                     userLiquidityUnstaked.greaterThan('0')
                   ) {
                     setStakeAmount(userLiquidityUnstaked.toSignificant());
+                  } else {
+                    setStakeAmount('');
                   }
                 }}
               >
@@ -594,7 +596,7 @@ const FarmCard: React.FC<{
             </Box>
             <Box
               className={
-                Number(!attempting && stakeAmount) > 0 &&
+                Number(!attemptStaking && stakeAmount) > 0 &&
                 Number(stakeAmount) <=
                   Number(userLiquidityUnstaked?.toSignificant())
                   ? classes.buttonClaim
@@ -605,7 +607,7 @@ const FarmCard: React.FC<{
               p={2}
               onClick={() => {
                 if (
-                  !attempting &&
+                  !attemptStaking &&
                   Number(stakeAmount) > 0 &&
                   Number(stakeAmount) <=
                     Number(userLiquidityUnstaked?.toSignificant())
@@ -622,7 +624,7 @@ const FarmCard: React.FC<{
               }}
             >
               <Typography variant='body1'>
-                {attempting
+                {attemptStaking
                   ? 'Staking LP Tokens...'
                   : approval === ApprovalState.APPROVED ||
                     signatureData !== null
@@ -672,6 +674,8 @@ const FarmCard: React.FC<{
                     stakingInfo.stakedAmount.greaterThan('0')
                   ) {
                     setUnStakeAmount(stakingInfo.stakedAmount.toSignificant());
+                  } else {
+                    setUnStakeAmount('');
                   }
                 }}
               >
@@ -680,7 +684,7 @@ const FarmCard: React.FC<{
             </Box>
             <Box
               className={
-                !attempting &&
+                !attemptUnstaking &&
                 Number(unstakeAmount) > 0 &&
                 Number(unstakeAmount) <=
                   Number(stakingInfo.stakedAmount.toSignificant())
@@ -692,7 +696,7 @@ const FarmCard: React.FC<{
               p={2}
               onClick={() => {
                 if (
-                  !attempting &&
+                  !attemptUnstaking &&
                   Number(unstakeAmount) > 0 &&
                   Number(unstakeAmount) <=
                     Number(stakingInfo.stakedAmount.toSignificant())
@@ -702,7 +706,9 @@ const FarmCard: React.FC<{
               }}
             >
               <Typography variant='body1'>
-                {attempting ? 'Unstaking LP Tokens...' : 'Unstake LP Tokens'}
+                {attemptUnstaking
+                  ? 'Unstaking LP Tokens...'
+                  : 'Unstake LP Tokens'}
               </Typography>
             </Box>
           </Box>

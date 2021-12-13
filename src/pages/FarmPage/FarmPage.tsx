@@ -1,11 +1,11 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { Box, Typography, Divider, useMediaQuery } from '@material-ui/core';
 import { VisibilityOff, Visibility } from '@material-ui/icons';
-import { TokenAmount, JSBI } from '@uniswap/sdk';
-import { useStakingInfo, useLairInfo } from 'state/stake/hooks';
+import { TokenAmount, JSBI, Pair, Price } from '@uniswap/sdk';
+import { useStakingInfo, useLairInfo, StakingInfo } from 'state/stake/hooks';
 import { FarmCard, ToggleSwitch } from 'components';
-import { usePairs } from 'data/Reserves';
+import { usePairs, PairState } from 'data/Reserves';
 import { useUSDCPrices } from 'utils/useUSDCPrice';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { EMPTY } from 'constants/index';
@@ -13,6 +13,7 @@ import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
 import { ReactComponent as SearchIcon } from 'assets/images/SearchIcon.svg';
 import ArrowUpIcon from 'assets/images/arrowup.svg';
 import { useTotalSupplys } from 'data/TotalSupply';
+import { useInfiniteLoading } from 'utils/useInfiniteLoading';
 
 const useStyles = makeStyles(({ breakpoints }) => ({
   helpWrapper: {
@@ -113,22 +114,14 @@ const FarmPage: React.FC = () => {
   const { breakpoints } = useTheme();
   const lairInfo = useLairInfo();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
+  const [pageIndex, setPageIndex] = useState(0);
+
   const stakingInfos = useStakingInfo();
+
   const [stakedOnly, setStakeOnly] = useState(false);
   const [farmSearch, setFarmSearch] = useState('');
   const [hideDeposit, setHideDeposit] = useState(false);
   const [hideRewards, setHideRewards] = useState(false);
-  const baseCurrencies = stakingInfos.map((stakingInfo) => {
-    const token0 = stakingInfo.tokens[0];
-    const baseTokenCurrency = unwrappedToken(stakingInfo.baseToken);
-    const empty = unwrappedToken(EMPTY);
-    return baseTokenCurrency === empty ? token0 : stakingInfo.baseToken;
-  });
-  const allPairs = usePairs(stakingInfos.map((info) => info.tokens));
-  const usdPrices = useUSDCPrices(baseCurrencies);
-  const totalStakingSupplys = useTotalSupplys(
-    stakingInfos.map((stakingInfo) => stakingInfo.stakedAmount.token),
-  );
 
   const rewardRate = useMemo(() => {
     if (stakingInfos && stakingInfos.length > 0) {
@@ -158,48 +151,50 @@ const FarmPage: React.FC = () => {
     }
   }, [stakingInfos, rewardRate]);
 
-  const myDeposits = useMemo(() => {
-    if (stakingInfos && stakingInfos.length > 0) {
-      return stakingInfos
-        .map((stakingInfo, index) => {
-          const baseTokenCurrency = unwrappedToken(stakingInfo.baseToken);
-          const [, stakingTokenPair] = allPairs[index];
-          const usdPrice = usdPrices[index];
-          const token0 = stakingInfo.tokens[0];
-          const empty = unwrappedToken(EMPTY);
-          const baseToken =
-            baseTokenCurrency === empty ? token0 : stakingInfo.baseToken;
-          const totalSupplyOfStakingToken = totalStakingSupplys[index];
-          let valueOfMyStakedAmountInBaseToken;
-          if (stakingTokenPair && totalSupplyOfStakingToken) {
-            valueOfMyStakedAmountInBaseToken = new TokenAmount(
-              baseToken,
-              JSBI.divide(
-                JSBI.multiply(
-                  JSBI.multiply(
-                    stakingInfo.stakedAmount.raw,
-                    stakingTokenPair.reserveOf(baseToken).raw,
-                  ),
-                  JSBI.BigInt(2),
-                ),
-                totalSupplyOfStakingToken.raw,
-              ),
-            );
-          }
-          if (valueOfMyStakedAmountInBaseToken && usdPrice) {
-            const valueOfMyStakedAmountInUSDC =
-              valueOfMyStakedAmountInBaseToken &&
-              usdPrice.quote(valueOfMyStakedAmountInBaseToken);
-            return Number(valueOfMyStakedAmountInUSDC.toSignificant(2));
-          } else {
-            return 0;
-          }
-        })
-        .reduce((sum, current) => sum + current, 0);
-    } else {
-      return 0;
-    }
-  }, [stakingInfos, allPairs, totalStakingSupplys, usdPrices]);
+  const myDeposits = 0;
+
+  // const myDeposits = useMemo(() => {
+  //   if (stakingInfos && stakingInfos.length > 0) {
+  //     return stakingInfos
+  //       .map((stakingInfo, index) => {
+  //         const baseTokenCurrency = unwrappedToken(stakingInfo.baseToken);
+  //         const [, stakingTokenPair] = allPairs[index];
+  //         const usdPrice = usdPrices[index];
+  //         const token0 = stakingInfo.tokens[0];
+  //         const empty = unwrappedToken(EMPTY);
+  //         const baseToken =
+  //           baseTokenCurrency === empty ? token0 : stakingInfo.baseToken;
+  //         const totalSupplyOfStakingToken = totalStakingSupplys[index];
+  //         let valueOfMyStakedAmountInBaseToken;
+  //         if (stakingTokenPair && totalSupplyOfStakingToken) {
+  //           valueOfMyStakedAmountInBaseToken = new TokenAmount(
+  //             baseToken,
+  //             JSBI.divide(
+  //               JSBI.multiply(
+  //                 JSBI.multiply(
+  //                   stakingInfo.stakedAmount.raw,
+  //                   stakingTokenPair.reserveOf(baseToken).raw,
+  //                 ),
+  //                 JSBI.BigInt(2),
+  //               ),
+  //               totalSupplyOfStakingToken.raw,
+  //             ),
+  //           );
+  //         }
+  //         if (valueOfMyStakedAmountInBaseToken && usdPrice) {
+  //           const valueOfMyStakedAmountInUSDC =
+  //             valueOfMyStakedAmountInBaseToken &&
+  //             usdPrice.quote(valueOfMyStakedAmountInBaseToken);
+  //           return Number(valueOfMyStakedAmountInUSDC.toSignificant(2));
+  //         } else {
+  //           return 0;
+  //         }
+  //       })
+  //       .reduce((sum, current) => sum + current, 0);
+  //   } else {
+  //     return 0;
+  //   }
+  // }, [stakingInfos, allPairs, totalStakingSupplys, usdPrices]);
 
   const unclaimedRewards = useMemo(() => {
     if (stakingInfos && stakingInfos.length > 0) {
@@ -238,13 +233,18 @@ const FarmPage: React.FC = () => {
               .indexOf(farmSearch) > -1)
         );
       });
-    } else {
-      return [];
     }
+    return [];
   }, [stakingInfos, stakedOnly, farmSearch]);
 
+  const loadNext = () => {
+    setPageIndex(pageIndex + 1);
+  };
+
+  const { loadMoreRef } = useInfiniteLoading(loadNext);
+
   return (
-    <Box width='100%' mb={3}>
+    <Box width='100%' mb={3} id='farmPage'>
       <Box
         mb={4}
         display='flex'
@@ -518,6 +518,7 @@ const FarmPage: React.FC = () => {
             />
           ))}
       </Box>
+      <div ref={loadMoreRef} />
     </Box>
   );
 };
