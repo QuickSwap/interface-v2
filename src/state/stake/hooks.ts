@@ -12461,7 +12461,11 @@ export interface SyrupInfo {
   ) => TokenAmount;
 }
 
-export function useSyrupInfo(tokenToFilterBy?: Token | null): SyrupInfo[] {
+export function useSyrupInfo(
+  tokenToFilterBy?: Token | null,
+  startIndex?: number,
+  endIndex?: number,
+): SyrupInfo[] {
   const { chainId, account } = useActiveWeb3React();
   //const [quickPrice,setQuickPrice] = useState(0);
   const [, quickUsdcPair] = usePair(QUICK, USDC);
@@ -12469,16 +12473,18 @@ export function useSyrupInfo(tokenToFilterBy?: Token | null): SyrupInfo[] {
   const info = useMemo(
     () =>
       chainId
-        ? SYRUP_REWARDS_INFO[chainId]?.filter((stakingRewardInfo) =>
-            tokenToFilterBy === undefined
-              ? true
-              : tokenToFilterBy === null
-              ? true
-              : tokenToFilterBy.equals(stakingRewardInfo.token) &&
-                tokenToFilterBy.equals(stakingRewardInfo.token),
-          ) ?? []
+        ? SYRUP_REWARDS_INFO[chainId]
+            ?.slice(startIndex, endIndex)
+            .filter((stakingRewardInfo) =>
+              tokenToFilterBy === undefined
+                ? true
+                : tokenToFilterBy === null
+                ? true
+                : tokenToFilterBy.equals(stakingRewardInfo.token) &&
+                  tokenToFilterBy.equals(stakingRewardInfo.token),
+            ) ?? []
         : [],
-    [chainId, tokenToFilterBy],
+    [chainId, tokenToFilterBy, startIndex, endIndex],
   );
 
   const uni = chainId ? UNI[chainId] : undefined;

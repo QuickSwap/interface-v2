@@ -1,19 +1,18 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { Box, Typography, Divider, useMediaQuery } from '@material-ui/core';
-import { VisibilityOff, Visibility } from '@material-ui/icons';
-import { TokenAmount, JSBI, Pair, Price } from '@uniswap/sdk';
-import { useStakingInfo, useLairInfo, StakingInfo } from 'state/stake/hooks';
+import {
+  useStakingInfo,
+  useLairInfo,
+  StakingInfo,
+  STAKING_REWARDS_INFO,
+} from 'state/stake/hooks';
 import { FarmCard, ToggleSwitch } from 'components';
-import { usePairs, PairState } from 'data/Reserves';
-import { useUSDCPrices } from 'utils/useUSDCPrice';
-import { unwrappedToken } from 'utils/wrappedCurrency';
-import { EMPTY } from 'constants/index';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
 import { ReactComponent as SearchIcon } from 'assets/images/SearchIcon.svg';
 import ArrowUpIcon from 'assets/images/arrowup.svg';
-import { useTotalSupplys } from 'data/TotalSupply';
 import { useInfiniteLoading } from 'utils/useInfiniteLoading';
+import { useActiveWeb3React } from 'hooks';
 
 const useStyles = makeStyles(({ breakpoints }) => ({
   helpWrapper: {
@@ -112,99 +111,32 @@ const useStyles = makeStyles(({ breakpoints }) => ({
 const FarmPage: React.FC = () => {
   const classes = useStyles();
   const { breakpoints } = useTheme();
+  const { chainId } = useActiveWeb3React();
   const lairInfo = useLairInfo();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const [pageIndex, setPageIndex] = useState(0);
+  const [stakingInfos, setStakingInfos] = useState<StakingInfo[]>([]);
 
-  const stakingInfos = useStakingInfo();
+  const addedStakingInfos = useStakingInfo(
+    null,
+    pageIndex * 6 - 6,
+    pageIndex * 6,
+  );
+
+  const stakingRewardAddress = addedStakingInfos
+    .map((stakingInfo) => stakingInfo.stakingRewardAddress.toLowerCase())
+    .reduce((totStr, str) => totStr + str, '');
+
+  const lastStakingAddress =
+    stakingInfos[stakingInfos.length - 1]?.stakingRewardAddress;
+
+  useEffect(() => {
+    setStakingInfos(stakingInfos.concat(addedStakingInfos));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stakingRewardAddress]);
 
   const [stakedOnly, setStakeOnly] = useState(false);
   const [farmSearch, setFarmSearch] = useState('');
-  const [hideDeposit, setHideDeposit] = useState(false);
-  const [hideRewards, setHideRewards] = useState(false);
-
-  const rewardRate = useMemo(() => {
-    if (stakingInfos && stakingInfos.length > 0) {
-      return stakingInfos
-        .map((info) => Number(info.rate))
-        .reduce((sum, current) => sum + current, 0);
-    } else {
-      return 0;
-    }
-  }, [stakingInfos]);
-
-  const totalFee = useMemo(() => {
-    if (stakingInfos && stakingInfos.length > 0) {
-      return stakingInfos
-        .map((info) => Number(info.oneDayFee))
-        .reduce((sum, current) => sum + current, 0);
-    } else {
-      return 0;
-    }
-  }, [stakingInfos]);
-
-  const totalRewardsUSD = useMemo(() => {
-    if (stakingInfos && stakingInfos.length > 0) {
-      return Number(stakingInfos[0].quickPrice) * rewardRate;
-    } else {
-      return 0;
-    }
-  }, [stakingInfos, rewardRate]);
-
-  const myDeposits = 0;
-
-  // const myDeposits = useMemo(() => {
-  //   if (stakingInfos && stakingInfos.length > 0) {
-  //     return stakingInfos
-  //       .map((stakingInfo, index) => {
-  //         const baseTokenCurrency = unwrappedToken(stakingInfo.baseToken);
-  //         const [, stakingTokenPair] = allPairs[index];
-  //         const usdPrice = usdPrices[index];
-  //         const token0 = stakingInfo.tokens[0];
-  //         const empty = unwrappedToken(EMPTY);
-  //         const baseToken =
-  //           baseTokenCurrency === empty ? token0 : stakingInfo.baseToken;
-  //         const totalSupplyOfStakingToken = totalStakingSupplys[index];
-  //         let valueOfMyStakedAmountInBaseToken;
-  //         if (stakingTokenPair && totalSupplyOfStakingToken) {
-  //           valueOfMyStakedAmountInBaseToken = new TokenAmount(
-  //             baseToken,
-  //             JSBI.divide(
-  //               JSBI.multiply(
-  //                 JSBI.multiply(
-  //                   stakingInfo.stakedAmount.raw,
-  //                   stakingTokenPair.reserveOf(baseToken).raw,
-  //                 ),
-  //                 JSBI.BigInt(2),
-  //               ),
-  //               totalSupplyOfStakingToken.raw,
-  //             ),
-  //           );
-  //         }
-  //         if (valueOfMyStakedAmountInBaseToken && usdPrice) {
-  //           const valueOfMyStakedAmountInUSDC =
-  //             valueOfMyStakedAmountInBaseToken &&
-  //             usdPrice.quote(valueOfMyStakedAmountInBaseToken);
-  //           return Number(valueOfMyStakedAmountInUSDC.toSignificant(2));
-  //         } else {
-  //           return 0;
-  //         }
-  //       })
-  //       .reduce((sum, current) => sum + current, 0);
-  //   } else {
-  //     return 0;
-  //   }
-  // }, [stakingInfos, allPairs, totalStakingSupplys, usdPrices]);
-
-  const unclaimedRewards = useMemo(() => {
-    if (stakingInfos && stakingInfos.length > 0) {
-      return stakingInfos
-        .map((info) => Number(info.earnedAmount.toSignificant(2)))
-        .reduce((sum, current) => sum + current, 0);
-    } else {
-      return 0;
-    }
-  }, [stakingInfos]);
 
   const filteredStakingInfos = useMemo(() => {
     if (stakingInfos && stakingInfos.length > 0) {
@@ -238,7 +170,23 @@ const FarmPage: React.FC = () => {
   }, [stakingInfos, stakedOnly, farmSearch]);
 
   const loadNext = () => {
-    setPageIndex(pageIndex + 1);
+    if (chainId && STAKING_REWARDS_INFO[chainId]) {
+      if (
+        stakingInfos.length < (STAKING_REWARDS_INFO[chainId]?.length ?? 0) &&
+        pageIndex * 6 > stakingInfos.length
+      ) {
+        setPageIndex(stakingInfos.length / 6);
+      }
+      if (
+        !lastStakingAddress ||
+        (STAKING_REWARDS_INFO[chainId]?.[pageIndex * 6 - 1] &&
+          lastStakingAddress ===
+            STAKING_REWARDS_INFO[chainId]?.[pageIndex * 6 - 1]
+              .stakingRewardAddress)
+      ) {
+        setPageIndex(pageIndex + 1);
+      }
+    }
   };
 
   const { loadMoreRef } = useInfiniteLoading(loadNext);
@@ -261,153 +209,6 @@ const FarmPage: React.FC = () => {
         <Box className={classes.helpWrapper}>
           <Typography variant='body2'>Help</Typography>
           <HelpIcon />
-        </Box>
-      </Box>
-      <Divider />
-      <Box
-        display='flex'
-        flexDirection='row'
-        flexWrap='wrap'
-        alignItems='flex-start'
-        justifyContent='space-between'
-        width='100%'
-        mt={4}
-        mb={4}
-        pr={4}
-      >
-        <Box
-          mr={1}
-          my={1}
-          display='flex'
-          flexDirection='column'
-          alignItems='flex-start'
-          justifyContent='space-between'
-        >
-          <Box height={16} display='flex' alignItems='center'>
-            <Typography variant='caption' color='secondary'>
-              Reward Rate:
-            </Typography>
-          </Box>
-          <Box mt={1} display='flex' flexDirection='row' alignItems='flex-end'>
-            <Typography variant='body1'>
-              {rewardRate.toLocaleString()} dQUICK
-            </Typography>
-            <Typography variant='body2' color='secondary'>
-              &nbsp;/day
-            </Typography>
-          </Box>
-        </Box>
-        <Box
-          mr={1}
-          my={1}
-          display='flex'
-          flexDirection='column'
-          alignItems='flex-start'
-          justifyContent='space-between'
-        >
-          <Box height={16} display='flex' alignItems='center'>
-            <Typography variant='caption' color='secondary'>
-              Total Rewards:
-            </Typography>
-          </Box>
-          <Box mt={1} display='flex' alignItems='flex-end'>
-            <Typography variant='body1'>
-              ${totalRewardsUSD.toLocaleString()}
-            </Typography>
-          </Box>
-        </Box>
-        <Box
-          mr={1}
-          my={1}
-          display='flex'
-          flexDirection='column'
-          alignItems='flex-start'
-          justifyContent='space-between'
-        >
-          <Box height={16} display='flex' alignItems='center'>
-            <Typography variant='caption' color='secondary'>
-              24h Fees:
-            </Typography>
-          </Box>
-          <Box mt={1} display='flex' alignItems='flex-end'>
-            <Typography variant='body1'>
-              ${totalFee.toLocaleString()}
-            </Typography>
-          </Box>
-        </Box>
-        <Box
-          mr={1}
-          my={1}
-          display='flex'
-          flexDirection='column'
-          alignItems='flex-start'
-          justifyContent='space-between'
-        >
-          <Box display='flex' height={16} alignItems='center'>
-            <Typography variant='caption' color='secondary'>
-              My deposits:
-            </Typography>
-            <Box
-              ml={0.5}
-              display='flex'
-              color='#696c80'
-              onClick={() => {
-                setHideDeposit(!hideDeposit);
-              }}
-            >
-              {hideDeposit ? (
-                <VisibilityOff style={{ width: 16, height: 16 }} />
-              ) : (
-                <Visibility style={{ width: 16, height: 16 }} />
-              )}
-            </Box>
-          </Box>
-          <Box mt={1} display='flex' alignItems='flex-end'>
-            {hideDeposit ? (
-              <Box width={70} height={24} bgcolor='#1b1e29' />
-            ) : (
-              <Typography variant='body1'>${myDeposits}</Typography>
-            )}
-          </Box>
-        </Box>
-        <Box
-          my={1}
-          display='flex'
-          flexDirection='column'
-          alignItems='flex-start'
-          justifyContent='space-between'
-        >
-          <Box display='flex' height={16} alignItems='center'>
-            <Typography variant='caption' color='secondary'>
-              Unclaimed rewards:
-            </Typography>
-            <Box
-              ml={0.5}
-              display='flex'
-              color='#696c80'
-              onClick={() => {
-                setHideRewards(!hideRewards);
-              }}
-            >
-              {hideRewards ? (
-                <VisibilityOff style={{ width: 16, height: 16 }} />
-              ) : (
-                <Visibility style={{ width: 16, height: 16 }} />
-              )}
-            </Box>
-          </Box>
-          <Box mt={1} display='flex' flexDirection='row' alignItems='flex-end'>
-            {hideRewards ? (
-              <Box width={75} height={24} bgcolor='#1b1e29' />
-            ) : (
-              <Typography variant='body1'>{unclaimedRewards} dQUICK</Typography>
-            )}
-          </Box>
-          <Box mt={0.5}>
-            <Typography className={classes.thirdColor} variant='body2'>
-              Claim all
-            </Typography>
-          </Box>
         </Box>
       </Box>
       <Box className={classes.dragonWrapper}>

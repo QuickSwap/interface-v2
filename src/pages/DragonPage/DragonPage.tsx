@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import {
   Box,
@@ -7,7 +7,12 @@ import {
   Divider,
   useMediaQuery,
 } from '@material-ui/core';
-import { useLairInfo, useSyrupInfo } from 'state/stake/hooks';
+import {
+  SyrupInfo,
+  useLairInfo,
+  useSyrupInfo,
+  SYRUP_REWARDS_INFO,
+} from 'state/stake/hooks';
 import { QUICK } from 'constants/index';
 import {
   CurrencyLogo,
@@ -17,12 +22,14 @@ import {
   UnstakeQuickModal,
 } from 'components';
 import { useGlobalData } from 'state/application/hooks';
+import { useInfiniteLoading } from 'utils/useInfiniteLoading';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
 import DragonBg1 from 'assets/images/DragonBg1.svg';
 import DragonBg2 from 'assets/images/DragonBg2.svg';
 import DragonLairMask from 'assets/images/DragonLairMask.svg';
 import { ReactComponent as PriceExchangeIcon } from 'assets/images/PriceExchangeIcon.svg';
 import { ReactComponent as SearchIcon } from 'assets/images/SearchIcon.svg';
+import { useActiveWeb3React } from 'hooks';
 
 const useStyles = makeStyles(({ breakpoints }) => ({
   helpWrapper: {
@@ -116,13 +123,14 @@ const useStyles = makeStyles(({ breakpoints }) => ({
 
 const DragonPage: React.FC = () => {
   const classes = useStyles();
+  const { chainId } = useActiveWeb3React();
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const [isQUICKRate, setIsQUICKRate] = useState(false);
   const [openStakeModal, setOpenStakeModal] = useState(false);
   const [openUnstakeModal, setOpenUnstakeModal] = useState(false);
   const lairInfo = useLairInfo();
-  const syrupInfos = useSyrupInfo();
+  const [syrupInfos, setSyrupInfos] = useState<SyrupInfo[]>([]);
   const { globalData } = useGlobalData();
   const APR =
     (((Number(lairInfo?.oneDayVol) * 0.04 * 0.01) /
@@ -133,6 +141,21 @@ const DragonPage: React.FC = () => {
   const APY = APR ? ((Math.pow(1 + APR / 365, 365) - 1) * 100).toFixed(2) : 0;
   const [stakedOnly, setStakeOnly] = useState(false);
   const [syrupSearch, setSyrupSearch] = useState('');
+  const [pageIndex, setPageIndex] = useState(0);
+
+  const addedSyrupInfos = useSyrupInfo(null, pageIndex * 5 - 5, pageIndex * 5);
+
+  const syrupRewardAddress = addedSyrupInfos
+    .map((syrupInfo) => syrupInfo.stakingRewardAddress.toLowerCase())
+    .reduce((totStr, str) => totStr + str, '');
+
+  const lastSyrupAddress =
+    syrupInfos[syrupInfos.length - 1]?.stakingRewardAddress;
+
+  useEffect(() => {
+    setSyrupInfos(syrupInfos.concat(addedSyrupInfos));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [syrupRewardAddress]);
 
   const filteredSyrupInfos = useMemo(() => {
     if (syrupInfos && syrupInfos.length > 0) {
@@ -153,6 +176,28 @@ const DragonPage: React.FC = () => {
       return [];
     }
   }, [syrupInfos, stakedOnly, syrupSearch]);
+
+  const loadNext = () => {
+    if (chainId && SYRUP_REWARDS_INFO[chainId]) {
+      if (
+        syrupInfos.length < (SYRUP_REWARDS_INFO[chainId]?.length ?? 0) &&
+        pageIndex * 5 > syrupInfos.length
+      ) {
+        setPageIndex(syrupInfos.length / 6);
+      }
+      if (
+        !lastSyrupAddress ||
+        (SYRUP_REWARDS_INFO[chainId]?.[pageIndex * 5 - 1] &&
+          lastSyrupAddress ===
+            SYRUP_REWARDS_INFO[chainId]?.[pageIndex * 5 - 1]
+              .stakingRewardAddress)
+      ) {
+        setPageIndex(pageIndex + 1);
+      }
+    }
+  };
+
+  const { loadMoreRef } = useInfiniteLoading(loadNext);
 
   return (
     <Box width='100%' mb={3}>
@@ -377,6 +422,7 @@ const DragonPage: React.FC = () => {
           </Box>
         </Grid>
       </Grid>
+      <div ref={loadMoreRef} />
     </Box>
   );
 };
