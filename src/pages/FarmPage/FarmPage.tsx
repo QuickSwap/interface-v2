@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { Box, Typography, Divider, useMediaQuery } from '@material-ui/core';
+import { ArrowUp, ArrowDown } from 'react-feather';
 import {
   useStakingInfo,
   useLairInfo,
@@ -10,7 +11,6 @@ import {
 import { FarmCard, ToggleSwitch } from 'components';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
 import { ReactComponent as SearchIcon } from 'assets/images/SearchIcon.svg';
-import ArrowUpIcon from 'assets/images/arrowup.svg';
 import { useInfiniteLoading } from 'utils/useInfiniteLoading';
 import { useActiveWeb3React } from 'hooks';
 
@@ -116,6 +116,8 @@ const FarmPage: React.FC = () => {
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const [pageIndex, setPageIndex] = useState(0);
   const [stakingInfos, setStakingInfos] = useState<StakingInfo[]>([]);
+  const [sortBy, setSortBy] = useState(0);
+  const [sortDesc, setSortDesc] = useState(false);
 
   const addedStakingInfos = useStakingInfo(
     null,
@@ -140,34 +142,83 @@ const FarmPage: React.FC = () => {
 
   const filteredStakingInfos = useMemo(() => {
     if (stakingInfos && stakingInfos.length > 0) {
-      return stakingInfos.filter((stakingInfo) => {
-        return (
-          (stakedOnly
-            ? Boolean(stakingInfo.stakedAmount.greaterThan('0'))
-            : true) &&
-          ((stakingInfo.tokens[0].symbol ?? '')
-            .toLowerCase()
-            .indexOf(farmSearch) > -1 ||
-            (stakingInfo.tokens[0].name ?? '')
+      return stakingInfos
+        .filter((stakingInfo) => {
+          return (
+            (stakedOnly
+              ? Boolean(stakingInfo.stakedAmount.greaterThan('0'))
+              : true) &&
+            ((stakingInfo.tokens[0].symbol ?? '')
               .toLowerCase()
               .indexOf(farmSearch) > -1 ||
-            (stakingInfo.tokens[0].address ?? '')
-              .toLowerCase()
-              .indexOf(farmSearch) > -1 ||
-            (stakingInfo.tokens[1].symbol ?? '')
-              .toLowerCase()
-              .indexOf(farmSearch) > -1 ||
-            (stakingInfo.tokens[1].name ?? '')
-              .toLowerCase()
-              .indexOf(farmSearch) > -1 ||
-            (stakingInfo.tokens[1].address ?? '')
-              .toLowerCase()
-              .indexOf(farmSearch) > -1)
-        );
-      });
+              (stakingInfo.tokens[0].name ?? '')
+                .toLowerCase()
+                .indexOf(farmSearch) > -1 ||
+              (stakingInfo.tokens[0].address ?? '')
+                .toLowerCase()
+                .indexOf(farmSearch) > -1 ||
+              (stakingInfo.tokens[1].symbol ?? '')
+                .toLowerCase()
+                .indexOf(farmSearch) > -1 ||
+              (stakingInfo.tokens[1].name ?? '')
+                .toLowerCase()
+                .indexOf(farmSearch) > -1 ||
+              (stakingInfo.tokens[1].address ?? '')
+                .toLowerCase()
+                .indexOf(farmSearch) > -1)
+          );
+        })
+        .sort((a, b) => {
+          if (sortBy === 1) {
+            const poolStrA = a.tokens[0].symbol + '/' + a.tokens[1].symbol;
+            const poolStrB = b.tokens[0].symbol + '/' + b.tokens[1].symbol;
+            if (sortDesc) {
+              return poolStrA > poolStrB ? -1 : 1;
+            } else {
+              return poolStrA < poolStrB ? -1 : 1;
+            }
+          } else if (sortBy === 2) {
+            if (sortDesc) {
+              return Number(a.tvl) > Number(b.tvl) ? -1 : 1;
+            } else {
+              return Number(a.tvl) < Number(b.tvl) ? -1 : 1;
+            }
+          } else if (sortBy === 3) {
+            if (sortDesc) {
+              return Number(a.totalRewardRate.toSignificant()) >
+                Number(b.totalRewardRate.toSignificant())
+                ? -1
+                : 1;
+            } else {
+              return Number(a.totalRewardRate.toSignificant()) <
+                Number(b.totalRewardRate.toSignificant())
+                ? -1
+                : 1;
+            }
+          } else if (sortBy === 4) {
+            if (sortDesc) {
+              return (a.apyWithFee ?? 0) > (b.apyWithFee ?? 0) ? -1 : 1;
+            } else {
+              return (a.apyWithFee ?? 0) < (b.apyWithFee ?? 0) ? -1 : 1;
+            }
+          } else if (sortBy === 5) {
+            if (sortDesc) {
+              return Number(a.earnedAmount.toSignificant()) >
+                Number(b.earnedAmount.toSignificant())
+                ? -1
+                : 1;
+            } else {
+              return Number(a.earnedAmount.toSignificant()) <
+                Number(b.earnedAmount.toSignificant())
+                ? -1
+                : 1;
+            }
+          }
+          return 1;
+        });
     }
     return [];
-  }, [stakingInfos, stakedOnly, farmSearch]);
+  }, [stakingInfos, stakedOnly, farmSearch, sortBy, sortDesc]);
 
   const loadNext = () => {
     if (chainId && STAKING_REWARDS_INFO[chainId]) {
@@ -246,10 +297,29 @@ const FarmPage: React.FC = () => {
         <Divider />
         {!isMobile && (
           <Box mt={2.5} display='flex' paddingX={2}>
-            <Box width={0.3}>
-              <Typography color='secondary' variant='body2'>
-                Pool
-              </Typography>
+            <Box
+              display='flex'
+              alignItems='center'
+              width={0.3}
+              style={{ cursor: 'pointer' }}
+              onClick={() => {
+                if (sortBy === 1) {
+                  setSortDesc(!sortDesc);
+                } else {
+                  setSortBy(1);
+                  setSortDesc(false);
+                }
+              }}
+              color={sortBy === 1 ? '#c7cad9' : '#344252'}
+            >
+              <Typography variant='body2'>Pool</Typography>
+              <Box display='flex' ml={0.5}>
+                {sortBy === 1 && sortDesc ? (
+                  <ArrowDown size={20} />
+                ) : (
+                  <ArrowUp size={20} />
+                )}
+              </Box>
             </Box>
             <Box
               width={0.2}
@@ -257,12 +327,24 @@ const FarmPage: React.FC = () => {
               flexDirection='row'
               alignItems='center'
               justifyContent='center'
+              style={{ cursor: 'pointer' }}
+              onClick={() => {
+                if (sortBy === 2) {
+                  setSortDesc(!sortDesc);
+                } else {
+                  setSortBy(2);
+                  setSortDesc(false);
+                }
+              }}
+              color={sortBy === 2 ? '#c7cad9' : '#344252'}
             >
-              <Typography color='secondary' variant='body2'>
-                TVL
-              </Typography>
-              <Box ml={1} style={{ height: '23px' }}>
-                <img src={ArrowUpIcon} alt={'arrow up'} />
+              <Typography variant='body2'>TVL</Typography>
+              <Box display='flex' ml={0.5}>
+                {sortBy === 2 && sortDesc ? (
+                  <ArrowDown size={20} />
+                ) : (
+                  <ArrowUp size={20} />
+                )}
               </Box>
             </Box>
             <Box
@@ -271,12 +353,24 @@ const FarmPage: React.FC = () => {
               flexDirection='row'
               alignItems='center'
               justifyContent='center'
+              style={{ cursor: 'pointer' }}
+              onClick={() => {
+                if (sortBy === 3) {
+                  setSortDesc(!sortDesc);
+                } else {
+                  setSortBy(3);
+                  setSortDesc(false);
+                }
+              }}
+              color={sortBy === 3 ? '#c7cad9' : '#344252'}
             >
-              <Typography color='secondary' variant='body2'>
-                Rewards
-              </Typography>
-              <Box ml={1} style={{ height: '23px' }}>
-                <img src={ArrowUpIcon} alt={'arrow up'} />
+              <Typography variant='body2'>Rewards</Typography>
+              <Box display='flex' ml={0.5}>
+                {sortBy === 3 && sortDesc ? (
+                  <ArrowDown size={20} />
+                ) : (
+                  <ArrowUp size={20} />
+                )}
               </Box>
             </Box>
             <Box
@@ -285,12 +379,24 @@ const FarmPage: React.FC = () => {
               flexDirection='row'
               alignItems='center'
               justifyContent='center'
+              style={{ cursor: 'pointer' }}
+              onClick={() => {
+                if (sortBy === 4) {
+                  setSortDesc(!sortDesc);
+                } else {
+                  setSortBy(4);
+                  setSortDesc(false);
+                }
+              }}
+              color={sortBy === 4 ? '#c7cad9' : '#344252'}
             >
-              <Typography color='secondary' variant='body2'>
-                APY
-              </Typography>
-              <Box ml={1} style={{ height: '23px' }}>
-                <img src={ArrowUpIcon} alt={'arrow up'} />
+              <Typography variant='body2'>APY</Typography>
+              <Box display='flex' ml={0.5}>
+                {sortBy === 4 && sortDesc ? (
+                  <ArrowDown size={20} />
+                ) : (
+                  <ArrowUp size={20} />
+                )}
               </Box>
             </Box>
             <Box
@@ -300,12 +406,24 @@ const FarmPage: React.FC = () => {
               alignItems='center'
               justifyContent='flex-end'
               mr={2}
+              style={{ cursor: 'pointer' }}
+              onClick={() => {
+                if (sortBy === 5) {
+                  setSortDesc(!sortDesc);
+                } else {
+                  setSortBy(5);
+                  setSortDesc(false);
+                }
+              }}
+              color={sortBy === 5 ? '#c7cad9' : '#344252'}
             >
-              <Typography color='secondary' variant='body2'>
-                Earned
-              </Typography>
-              <Box ml={1} style={{ height: '23px' }}>
-                <img src={ArrowUpIcon} alt={'arrow up'} />
+              <Typography variant='body2'>Earned</Typography>
+              <Box display='flex' ml={0.5}>
+                {sortBy === 5 && sortDesc ? (
+                  <ArrowDown size={20} />
+                ) : (
+                  <ArrowUp size={20} />
+                )}
               </Box>
             </Box>
           </Box>

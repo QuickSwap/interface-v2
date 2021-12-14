@@ -202,28 +202,10 @@ const FarmCard: React.FC<{
     valueOfUnstakedAmountInBaseToken &&
     USDPrice?.quote(valueOfUnstakedAmountInBaseToken);
 
-  const perMonthReturnInRewards =
-    (Number(stakingInfo.dQuickToQuick) * Number(stakingInfo?.quickPrice) * 30) /
-    Number(valueOfTotalStakedAmountInUSDC?.toSignificant(6));
-
-  let apyWithFee: any = 0;
-
-  if (stakingInfo?.oneYearFeeAPY && stakingInfo?.oneYearFeeAPY > 0) {
-    apyWithFee =
-      ((1 +
-        ((Number(perMonthReturnInRewards) +
-          Number(stakingInfo.oneYearFeeAPY) / 12) *
-          12) /
-          12) **
-        12 -
-        1) *
-      100; // compounding monthly APY
-    if (apyWithFee > 100000000) {
-      apyWithFee = '>100000000';
-    } else {
-      apyWithFee = parseFloat(apyWithFee.toFixed(2)).toLocaleString();
-    }
-  }
+  const apyWithFee =
+    (stakingInfo.apyWithFee ?? 0) > 100000000
+      ? '>100000000'
+      : parseFloat((stakingInfo.apyWithFee ?? 0).toFixed(2)).toLocaleString();
 
   const tvl = valueOfTotalStakedAmountInUSDC
     ? `$${valueOfTotalStakedAmountInUSDC.toFixed(0, { groupSeparator: ',' })}`

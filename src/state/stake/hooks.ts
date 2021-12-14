@@ -7,7 +7,7 @@ import {
   Pair,
 } from '@uniswap/sdk';
 import { useMemo, useEffect /** , useState */ } from 'react';
-import { usePair } from 'data/Reserves';
+import { usePair, usePairs } from 'data/Reserves';
 
 import { client, healthClient } from 'apollo/client';
 import {
@@ -227,7 +227,9 @@ import {
 import { tryParseAmount } from 'state/swap/hooks';
 import Web3 from 'web3';
 import { useLairContract, useQUICKContract } from 'hooks/useContract';
-import useUSDCPrice from 'utils/useUSDCPrice';
+import useUSDCPrice, { useUSDCPrices } from 'utils/useUSDCPrice';
+import { unwrappedToken } from 'utils/wrappedCurrency';
+import { useTotalSupplys } from 'data/TotalSupply';
 
 const web3 = new Web3('https://polygon-rpc.com/');
 
@@ -12351,6 +12353,8 @@ export interface StakingInfo {
 
   accountFee: number;
   dQuickToQuick: number;
+  tvl?: string;
+  apyWithFee?: number;
   // calculates a hypothetical amount of token distributed to the active account per second.
   getHypotheticalRewardRate: (
     stakedAmount: TokenAmount,
@@ -12886,9 +12890,9 @@ export function useOldSyrupInfo(tokenToFilterBy?: Token | null): SyrupInfo[] {
 }
 
 const getBulkPairData = async (pairList: any) => {
-  if (pairs !== undefined) {
-    return;
-  }
+  // if (pairs !== undefined) {
+  //   return;
+  // }
   const current = await web3.eth.getBlockNumber();
   const oneDayOldBlock = current - 44000;
 
@@ -13448,17 +13452,26 @@ export function useStakingInfo(
     [chainId, pairToFilterBy, startIndex, endIndex],
   );
 
+  const allInfo = useMemo(
+    () => (chainId ? STAKING_REWARDS_INFO[chainId] ?? [] : []),
+    [chainId],
+  );
+
   const uni = chainId ? UNI[chainId] : undefined;
 
   const rewardsAddresses = useMemo(
     () => info.map(({ stakingRewardAddress }) => stakingRewardAddress),
     [info],
   );
-  const pairAddresses = useMemo(() => info.map(({ pair }) => pair), [info]);
+  // const pairAddresses = useMemo(() => info.map(({ pair }) => pair), [info]);
+  const allPairAddress = useMemo(() => allInfo.map(({ pair }) => pair), [
+    allInfo,
+  ]);
+  console.log(allPairAddress, ' ', pairs);
 
   useEffect(() => {
-    getBulkPairData(pairAddresses);
-  }, [pairAddresses]);
+    getBulkPairData(allPairAddress);
+  }, [allPairAddress]);
 
   const lair = useLairContract();
   const args = useMemo(
@@ -13505,6 +13518,27 @@ export function useStakingInfo(
     undefined,
     NEVER_RELOAD,
   );
+
+  const baseTokens = info.map((item) => {
+    const unwrappedCurrency = unwrappedToken(item.baseToken);
+    const empty = unwrappedToken(EMPTY);
+    return unwrappedCurrency === empty ? item.tokens[0] : item.baseToken;
+  });
+
+  const usdPrices = useUSDCPrices(baseTokens);
+  const totalSupplys = useTotalSupplys(
+    info.map((item) => {
+      const lp = item.lp;
+      const dummyPair = new Pair(
+        new TokenAmount(item.tokens[0], '0'),
+        new TokenAmount(item.tokens[1], '0'),
+      );
+      return lp && lp !== ''
+        ? new Token(137, lp, 18, 'SLP', 'Staked LP')
+        : dummyPair.liquidityToken;
+    }),
+  );
+  const stakingPairs = usePairs(info.map((item) => item.tokens));
 
   return useMemo(() => {
     if (!chainId || !uni) return [];
@@ -13628,6 +13662,55 @@ export function useStakingInfo(
             }
           }
 
+          let valueOfTotalStakedAmountInBaseToken: TokenAmount | undefined;
+
+          const [, stakingTokenPair] = stakingPairs[index];
+          const totalSupply = totalSupplys[index];
+          const usdPrice = usdPrices[index];
+
+          if (totalSupply && stakingTokenPair && baseTokens[index]) {
+            // take the total amount of LP tokens staked, multiply by ETH value of all LP tokens, divide by all LP tokens
+            valueOfTotalStakedAmountInBaseToken = new TokenAmount(
+              baseTokens[index],
+              JSBI.divide(
+                JSBI.multiply(
+                  JSBI.multiply(
+                    totalStakedAmount.raw,
+                    stakingTokenPair.reserveOf(baseTokens[index]).raw,
+                  ),
+                  JSBI.BigInt(2), // this is b/c the value of LP shares are ~double the value of the WETH they entitle owner to
+                ),
+                totalSupply.raw,
+              ),
+            );
+          }
+
+          const valueOfTotalStakedAmountInUSDC =
+            valueOfTotalStakedAmountInBaseToken &&
+            usdPrice?.quote(valueOfTotalStakedAmountInBaseToken);
+
+          const tvl = valueOfTotalStakedAmountInUSDC
+            ? valueOfTotalStakedAmountInUSDC.toSignificant()
+            : valueOfTotalStakedAmountInBaseToken?.toSignificant();
+
+          const perMonthReturnInRewards =
+            (Number(dQuickToQuick) * Number(quickPrice) * 30) /
+            Number(valueOfTotalStakedAmountInUSDC?.toSignificant(6));
+
+          let apyWithFee = 0;
+
+          if (oneYearFeeAPY && oneYearFeeAPY > 0) {
+            apyWithFee =
+              ((1 +
+                ((Number(perMonthReturnInRewards) +
+                  Number(oneYearFeeAPY) / 12) *
+                  12) /
+                  12) **
+                12 -
+                1) *
+              100;
+          }
+
           memo.push({
             stakingRewardAddress: rewardsAddress,
             tokens: info[index].tokens,
@@ -13653,6 +13736,8 @@ export function useStakingInfo(
             oneDayFee,
             accountFee,
             dQuickToQuick: dQuickToQuick,
+            tvl,
+            apyWithFee,
           });
         }
         return memo;
@@ -13671,6 +13756,10 @@ export function useStakingInfo(
     quickPrice,
     rewardRates,
     dQuickToQuicks,
+    baseTokens,
+    totalSupplys,
+    usdPrices,
+    stakingPairs,
   ]);
 }
 
