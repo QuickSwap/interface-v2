@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { Box, Grid, Typography } from '@material-ui/core';
 import Skeleton from '@material-ui/lab/Skeleton';
 import { ArrowDropUp, ArrowDropDown } from '@material-ui/icons';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { CurrencyLogo } from 'components';
 import { useTopTokens } from 'state/application/hooks';
 import { Currency, Token } from '@uniswap/sdk';
@@ -11,12 +11,12 @@ import { ReactComponent as CopyIcon } from 'assets/images/CopyIcon.svg';
 import { shortenAddress, formatCompact } from 'utils';
 import { LineChart } from 'components';
 
-const useStyles = makeStyles(({}) => ({
+const useStyles = makeStyles(({ palette }) => ({
   success: {
-    color: '#0fc679',
+    color: palette.success.main,
   },
   danger: {
-    color: '#ff5252',
+    color: palette.error.main,
   },
 }));
 
@@ -25,6 +25,7 @@ const SwapTokenDetails: React.FC<{
   priceData: any;
 }> = ({ currency, priceData }) => {
   const classes = useStyles();
+  const { palette } = useTheme();
   const { topTokens } = useTopTokens();
   const tokenData = useMemo(() => {
     if (topTokens) {
@@ -86,7 +87,7 @@ const SwapTokenDetails: React.FC<{
                   data={prices}
                   width='100%'
                   height={120}
-                  color={priceUp ? '#0fc679' : '#ff5252'}
+                  color={priceUp ? palette.success.main : palette.error.main}
                 />
               )}
             </Box>
@@ -96,15 +97,18 @@ const SwapTokenDetails: React.FC<{
         )}
       </Box>
       <Box
-        borderTop='1px solid #252833'
-        borderBottom='1px solid #252833'
+        borderTop={`1px solid ${palette.secondary.light}`}
+        borderBottom={`1px solid ${palette.secondary.light}`}
         px={2}
       >
         <Grid container>
           <Grid item xs={6}>
-            <Box borderRight='1px solid #252833' py={1}>
+            <Box borderRight={`1px solid ${palette.secondary.light}`} py={1}>
               {tokenData ? (
-                <Typography variant='body2' style={{ color: '#696c80' }}>
+                <Typography
+                  variant='body2'
+                  style={{ color: palette.text.secondary }}
+                >
                   TVL: {formatCompact(tokenData?.totalLiquidityUSD)}
                 </Typography>
               ) : (
@@ -115,7 +119,10 @@ const SwapTokenDetails: React.FC<{
           <Grid item xs={6}>
             <Box py={1} pl={2}>
               {tokenData ? (
-                <Typography variant='body2' style={{ color: '#696c80' }}>
+                <Typography
+                  variant='body2'
+                  style={{ color: palette.text.secondary }}
+                >
                   24h VOL: {formatCompact(tokenData?.oneDayVolumeUSD)}
                 </Typography>
               ) : (
@@ -139,7 +146,7 @@ const SwapTokenDetails: React.FC<{
             rel='noreferrer'
             style={{ textDecoration: 'none' }}
           >
-            <Typography variant='body2' style={{ color: '#448aff' }}>
+            <Typography variant='body2' style={{ color: palette.primary.main }}>
               {tokenData ? shortenAddress(tokenData.id) : ''}
             </Typography>
           </a>

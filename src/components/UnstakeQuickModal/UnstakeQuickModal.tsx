@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Box, Typography, Button } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { CustomModal, ColoredSlider } from 'components';
 import { useLairInfo } from 'state/stake/hooks';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
@@ -18,7 +18,7 @@ const useStyles = makeStyles(({ palette }) => ({
     border: 'none',
     boxShadow: 'none',
     outline: 'none',
-    color: '#c7cad9',
+    color: palette.text.primary,
     fontSize: 28,
     fontWeight: 600,
   },
@@ -35,7 +35,7 @@ const useStyles = makeStyles(({ palette }) => ({
     },
     '&.Mui-disabled': {
       backgroundImage: 'none',
-      backgroundColor: '#282d3d',
+      backgroundColor: palette.secondary.dark,
     },
   },
   addressLink: {
@@ -63,6 +63,7 @@ const UnstakeQuickModal: React.FC<UnstakeQuickModalProps> = ({
   onClose,
 }) => {
   const classes = useStyles();
+  const { palette } = useTheme();
   const [attempting, setAttempting] = useState(false);
   const addTransaction = useTransactionAdder();
   const lairInfo = useLairInfo();
@@ -102,7 +103,7 @@ const UnstakeQuickModal: React.FC<UnstakeQuickModalProps> = ({
         </Box>
         <Box
           mt={3}
-          bgcolor='#12131a'
+          bgcolor={palette.background.default}
           border='1px solid rgba(105, 108, 128, 0.12)'
           borderRadius='10px'
           padding='16px'
@@ -137,7 +138,7 @@ const UnstakeQuickModal: React.FC<UnstakeQuickModalProps> = ({
             <Typography
               variant='caption'
               style={{
-                color: '#448aff',
+                color: palette.primary.main,
                 fontWeight: 'bold',
                 cursor: 'pointer',
               }}

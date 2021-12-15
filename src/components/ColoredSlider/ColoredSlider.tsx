@@ -65,7 +65,7 @@ const ColoredSlider = withStyles((theme: Theme) => ({
   thumb: {
     height: 20,
     width: 20,
-    backgroundColor: '#448aff',
+    backgroundColor: theme.palette.primary.main,
     marginTop: -9,
     marginLeft: 0,
     boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.15)',
@@ -97,7 +97,7 @@ const ColoredSlider = withStyles((theme: Theme) => ({
   rail: {
     height: 2,
     borderRadius: 4,
-    background: '#1b1e29',
+    background: theme.palette.background.paper,
     width: 'calc(100% + 16px)',
   },
 }))(Slider);

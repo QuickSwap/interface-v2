@@ -34,9 +34,9 @@ const TopMovers: React.FC<TopMoversProps> = ({
   hideArrow = false,
 }) => {
   const classes = useStyles();
-  const theme = useTheme();
+  const { palette, breakpoints } = useTheme();
   const { topTokens, updateTopTokens } = useTopTokens();
-  const smallWindowSize = useMediaQuery(theme.breakpoints.down('xs'));
+  const smallWindowSize = useMediaQuery(breakpoints.down('xs'));
 
   const topMoverTokens = useMemo(
     () => (topTokens && topTokens.length >= 5 ? topTokens.slice(0, 5) : null),
@@ -66,12 +66,12 @@ const TopMovers: React.FC<TopMoversProps> = ({
       alignItems={smallWindowSize ? 'center' : 'flex-start'}
       bgcolor={background}
       border={`1px solid ${
-        background === 'transparent' ? '#1b1e29' : 'transparent'
+        background === 'transparent' ? palette.background.paper : 'transparent'
       }`}
       borderRadius={10}
       padding={2.5}
     >
-      <Typography variant='h6' style={{ color: '#696c80' }}>
+      <Typography variant='h6' style={{ color: palette.text.secondary }}>
         24h TOP MOVERS
       </Typography>
       <Box width={1}>
@@ -131,10 +131,10 @@ const TopMovers: React.FC<TopMoversProps> = ({
                         }
                         style={{
                           color: priceUp
-                            ? '#0fc679'
+                            ? palette.success.main
                             : priceDown
-                            ? '#ff5252'
-                            : '#636780',
+                            ? palette.error.main
+                            : palette.text.hint,
                         }}
                       >
                         {!hideArrow && priceUp && <ArrowDropUp />}

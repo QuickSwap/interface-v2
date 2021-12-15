@@ -13467,7 +13467,6 @@ export function useStakingInfo(
   const allPairAddress = useMemo(() => allInfo.map(({ pair }) => pair), [
     allInfo,
   ]);
-  console.log(allPairAddress, ' ', pairs);
 
   useEffect(() => {
     getBulkPairData(allPairAddress);

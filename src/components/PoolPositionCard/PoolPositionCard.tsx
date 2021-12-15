@@ -17,7 +17,7 @@ import {
   RemoveLiquidityModal,
 } from 'components';
 
-const useStyles = makeStyles(({}) => ({
+const useStyles = makeStyles(({ palette }) => ({
   poolButtonRow: {
     display: 'flex',
     alignItems: 'center',
@@ -33,7 +33,7 @@ const useStyles = makeStyles(({}) => ({
         textDecoration: 'none',
       },
       '& p': {
-        color: '#ebecf2',
+        color: palette.text.primary,
       },
     },
     '& .MuiButton-outlined': {
@@ -48,6 +48,15 @@ const useStyles = makeStyles(({}) => ({
       backgroundColor: 'transparent',
     },
   },
+  cardRow: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+    '& p': {
+      color: palette.text.primary,
+    },
+  },
 }));
 
 interface PoolPositionCardProps {
@@ -60,7 +69,7 @@ const PoolPositionCard: React.FC<PoolPositionCardProps> = ({
   handleAddLiquidity,
 }) => {
   const classes = useStyles();
-  const { breakpoints } = useTheme();
+  const { palette, breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
 
   const { account } = useActiveWeb3React();
@@ -183,9 +192,9 @@ const PoolPositionCard: React.FC<PoolPositionCardProps> = ({
   return (
     <Box
       width={1}
-      border='1px solid #282d3d'
+      border={`1px solid ${palette.secondary.dark}`}
       borderRadius={10}
-      bgcolor={showMore ? '#282d3d' : 'transparent'}
+      bgcolor={showMore ? palette.secondary.dark : 'transparent'}
       style={{ overflow: 'hidden' }}
     >
       <Box
@@ -202,7 +211,10 @@ const PoolPositionCard: React.FC<PoolPositionCardProps> = ({
             margin={true}
             size={28}
           />
-          <Typography variant='h6' style={{ color: '#ebecf2', marginLeft: 16 }}>
+          <Typography
+            variant='h6'
+            style={{ color: palette.text.primary, marginLeft: 16 }}
+          >
             {!currency0 || !currency1
               ? 'Loading'
               : `${currency0.symbol}/${currency1.symbol}`}
@@ -212,7 +224,7 @@ const PoolPositionCard: React.FC<PoolPositionCardProps> = ({
         <Box
           display='flex'
           alignItems='center'
-          color='#448aff'
+          color={palette.primary.main}
           style={{ cursor: 'pointer' }}
           onClick={() => setShowMore(!showMore)}
         >
@@ -225,34 +237,17 @@ const PoolPositionCard: React.FC<PoolPositionCardProps> = ({
 
       {showMore && (
         <Box px={isMobile ? 1.5 : 3} mb={3}>
-          <Box
-            display='flex'
-            alignItems='center'
-            justifyContent='space-between'
-            mb={1.5}
-          >
-            <Typography variant='body2' style={{ color: '#c7cad9' }}>
-              Your pool tokens:
-            </Typography>
-            <Typography variant='body2' style={{ color: '#c7cad9' }}>
+          <Box className={classes.cardRow}>
+            <Typography variant='body2'>Your pool tokens:</Typography>
+            <Typography variant='body2'>
               {userPoolBalance ? userPoolBalance.toSignificant(4) : '-'}
             </Typography>
           </Box>
-          <Box
-            display='flex'
-            alignItems='center'
-            justifyContent='space-between'
-            mb={1.5}
-          >
-            <Typography variant='body2' style={{ color: '#c7cad9' }}>
-              Pooled {currency0.symbol}:
-            </Typography>
+          <Box className={classes.cardRow}>
+            <Typography variant='body2'>Pooled {currency0.symbol}:</Typography>
             {token0Deposited ? (
               <Box display='flex' alignItems='center'>
-                <Typography
-                  variant='body2'
-                  style={{ color: '#c7cad9', marginRight: 10 }}
-                >
+                <Typography variant='body2' style={{ marginRight: 10 }}>
                   {token0Deposited?.toSignificant(6)}
                 </Typography>
                 <CurrencyLogo size='20px' currency={currency0} />
@@ -262,21 +257,11 @@ const PoolPositionCard: React.FC<PoolPositionCardProps> = ({
             )}
           </Box>
 
-          <Box
-            display='flex'
-            alignItems='center'
-            justifyContent='space-between'
-            mb={1.5}
-          >
-            <Typography variant='body2' style={{ color: '#c7cad9' }}>
-              Pooled {currency1.symbol}:
-            </Typography>
+          <Box className={classes.cardRow}>
+            <Typography variant='body2'>Pooled {currency1.symbol}:</Typography>
             {token1Deposited ? (
               <Box display='flex' alignItems='center'>
-                <Typography
-                  variant='body2'
-                  style={{ color: '#c7cad9', marginRight: 10 }}
-                >
+                <Typography variant='body2' style={{ marginRight: 10 }}>
                   {token1Deposited?.toSignificant(6)}
                 </Typography>
                 <CurrencyLogo size='20px' currency={currency1} />
@@ -286,16 +271,9 @@ const PoolPositionCard: React.FC<PoolPositionCardProps> = ({
             )}
           </Box>
 
-          <Box
-            display='flex'
-            alignItems='center'
-            justifyContent='space-between'
-            mb={1.5}
-          >
-            <Typography variant='body2' style={{ color: '#c7cad9' }}>
-              Your pool share:
-            </Typography>
-            <Typography variant='body2' style={{ color: '#c7cad9' }}>
+          <Box className={classes.cardRow}>
+            <Typography variant='body2'>Your pool share:</Typography>
+            <Typography variant='body2'>
               {poolTokenPercentage
                 ? poolTokenPercentage.toSignificant() + '%'
                 : '-'}
@@ -334,8 +312,11 @@ const PoolPositionCard: React.FC<PoolPositionCardProps> = ({
       {stakingInfo && apyWithFee && (
         <Box bgcolor='#404557' paddingY={0.75} paddingX={isMobile ? 2 : 3}>
           <Typography variant='body2'>
-            Earn <span style={{ color: '#0fc679' }}>{apyWithFee}% APY</span> by
-            staking your LP tokens in {currency0.symbol?.toUpperCase()} /{' '}
+            Earn{' '}
+            <span style={{ color: palette.success.main }}>
+              {apyWithFee}% APY
+            </span>{' '}
+            by staking your LP tokens in {currency0.symbol?.toUpperCase()} /{' '}
             {currency1.symbol?.toUpperCase()} Farm
           </Typography>
         </Box>

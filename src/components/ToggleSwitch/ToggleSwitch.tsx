@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 
 const useStyles = makeStyles(({}) => ({
   wrapper: {
@@ -24,10 +24,11 @@ const ToggleSwitch: React.FC<{ toggled: boolean; onToggle: () => void }> = ({
   onToggle,
 }) => {
   const classes = useStyles();
+  const { palette } = useTheme();
   return (
     <Box
       className={classes.wrapper}
-      bgcolor={toggled ? '#0fc679' : '#ddd'}
+      bgcolor={toggled ? palette.success.main : '#ddd'}
       onClick={onToggle}
     >
       <Box

@@ -15,15 +15,15 @@ import { usePairs } from 'data/Reserves';
 import { toV2LiquidityToken, useTrackedTokenPairs } from 'state/user/hooks';
 import { useTokenBalancesWithLoadingIndicator } from 'state/wallet/hooks';
 
-const useStyles = makeStyles(({ breakpoints }) => ({
+const useStyles = makeStyles(({ palette, breakpoints }) => ({
   helpWrapper: {
     display: 'flex',
     alignItems: 'center',
     padding: '8px 12px',
-    border: '1px solid #252833',
+    border: `1px solid ${palette.secondary.light}`,
     borderRadius: 10,
     '& p': {
-      color: '#636780',
+      color: palette.text.hint,
     },
     '& svg': {
       marginLeft: 8,
@@ -31,7 +31,7 @@ const useStyles = makeStyles(({ breakpoints }) => ({
   },
   wrapper: {
     padding: 24,
-    backgroundColor: '#1b1e29',
+    backgroundColor: palette.background.paper,
     borderRadius: 20,
     [breakpoints.down('xs')]: {
       padding: '16px 12px',
@@ -42,9 +42,9 @@ const useStyles = makeStyles(({ breakpoints }) => ({
     display: 'flex',
   },
   liquidityText: {
-    color: '#696c80',
+    color: palette.text.secondary,
     '& span': {
-      color: '#448aff',
+      color: palette.primary.main,
       cursor: 'pointer',
     },
   },

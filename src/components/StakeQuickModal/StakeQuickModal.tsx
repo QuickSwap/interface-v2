@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Box, Typography, Button } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { TransactionResponse } from '@ethersproject/providers';
 import { CustomModal, ColoredSlider } from 'components';
 import { useLairInfo, useDerivedLairInfo } from 'state/stake/hooks';
@@ -14,14 +14,14 @@ import {
   useTransactionFinalizer,
 } from 'state/transactions/hooks';
 
-const useStyles = makeStyles(({}) => ({
+const useStyles = makeStyles(({ palette }) => ({
   input: {
     width: '100%',
     background: 'transparent',
     border: 'none',
     boxShadow: 'none',
     outline: 'none',
-    color: '#c7cad9',
+    color: palette.text.primary,
     fontSize: 28,
     fontWeight: 600,
   },
@@ -38,7 +38,7 @@ const useStyles = makeStyles(({}) => ({
     },
     '&.Mui-disabled': {
       backgroundImage: 'none',
-      backgroundColor: '#282d3d',
+      backgroundColor: palette.secondary.dark,
     },
   },
 }));
@@ -50,6 +50,7 @@ interface StakeQuickModalProps {
 
 const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
   const classes = useStyles();
+  const { palette } = useTheme();
   const [attempting, setAttempting] = useState(false);
   const { account } = useActiveWeb3React();
   const addTransaction = useTransactionAdder();
@@ -121,7 +122,7 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
         </Box>
         <Box
           mt={3}
-          bgcolor='#12131a'
+          bgcolor={palette.background.default}
           border='1px solid rgba(105, 108, 128, 0.12)'
           borderRadius='10px'
           padding='16px'
@@ -156,7 +157,7 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
             <Typography
               variant='caption'
               style={{
-                color: '#448aff',
+                color: palette.primary.main,
                 fontWeight: 'bold',
                 cursor: 'pointer',
               }}

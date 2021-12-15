@@ -21,9 +21,9 @@ import { useActiveWeb3React, useIsArgentWallet } from 'hooks';
 import useTransactionDeadline from 'hooks/useTransactionDeadline';
 import { useApproveCallback, ApprovalState } from 'hooks/useApproveCallback';
 
-const useStyles = makeStyles(({ breakpoints }) => ({
+const useStyles = makeStyles(({ palette, breakpoints }) => ({
   syrupCard: {
-    background: '#282d3d',
+    background: palette.secondary.dark,
     width: '100%',
     borderRadius: 10,
     marginTop: 24,
@@ -32,7 +32,7 @@ const useStyles = makeStyles(({ breakpoints }) => ({
     alignItems: 'center',
   },
   syrupCardUp: {
-    background: '#282d3d',
+    background: palette.secondary.dark,
     width: '100%',
     borderRadius: 10,
     display: 'flex',
@@ -44,7 +44,7 @@ const useStyles = makeStyles(({ breakpoints }) => ({
     },
   },
   inputVal: {
-    backgroundColor: '#121319',
+    backgroundColor: palette.secondary.contrastText,
     borderRadius: '10px',
     height: '50px',
     display: 'flex',
@@ -58,7 +58,7 @@ const useStyles = makeStyles(({ breakpoints }) => ({
       outline: 'none',
       fontSize: 16,
       fontWeight: 600,
-      color: '#c7cad9',
+      color: palette.text.primary,
     },
     '& p': {
       cursor: 'pointer',
@@ -89,7 +89,7 @@ const useStyles = makeStyles(({ breakpoints }) => ({
   syrupText: {
     fontSize: 14,
     fontWeight: 600,
-    color: '#696c80',
+    color: palette.text.secondary,
   },
 }));
 
@@ -98,7 +98,7 @@ const FarmCard: React.FC<{
   dQuicktoQuick: number;
 }> = ({ stakingInfo, dQuicktoQuick }) => {
   const classes = useStyles();
-  const { breakpoints } = useTheme();
+  const { palette, breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const [isExpandCard, setExpandCard] = useState(false);
   const [stakeAmount, setStakeAmount] = useState('');
@@ -464,7 +464,7 @@ const FarmCard: React.FC<{
             <Typography className={classes.syrupText}>APY</Typography>
           )}
           <Box display='flex' alignItems='center'>
-            <Typography variant='body2' style={{ color: '#0fc679' }}>
+            <Typography variant='body2' style={{ color: palette.success.main }}>
               {apyWithFee}%
             </Typography>
             <Box ml={1} style={{ height: '16px' }}>
@@ -488,7 +488,10 @@ const FarmCard: React.FC<{
                 <span>&nbsp;dQUICK</span>
               </Typography>
             </Box>
-            <Typography variant='body2' style={{ color: '#696c80' }}>
+            <Typography
+              variant='body2'
+              style={{ color: palette.text.secondary }}
+            >
               {earnedUSDStr}
             </Typography>
           </Box>
@@ -512,7 +515,7 @@ const FarmCard: React.FC<{
           <Box
             minWidth={250}
             width={isMobile ? 1 : 0.3}
-            color='#696c80'
+            color={palette.text.secondary}
             my={1.5}
           >
             <Box
@@ -539,7 +542,7 @@ const FarmCard: React.FC<{
                 </Typography>
                 <Link
                   to={`/pools?currency0=${token0.address}&currency1=${token1.address}`}
-                  style={{ color: '#448aff' }}
+                  style={{ color: palette.primary.main }}
                 >
                   Get {currency0.symbol} / {currency1.symbol} LP
                 </Link>
@@ -559,8 +562,8 @@ const FarmCard: React.FC<{
                   color:
                     userLiquidityUnstaked &&
                     userLiquidityUnstaked.greaterThan('0')
-                      ? '#448aff'
-                      : '#636780',
+                      ? palette.primary.main
+                      : palette.text.hint,
                 }}
                 onClick={() => {
                   if (
@@ -619,7 +622,7 @@ const FarmCard: React.FC<{
             minWidth={250}
             width={isMobile ? 1 : 0.3}
             my={1.5}
-            color='#696c80'
+            color={palette.text.secondary}
           >
             <Box
               display='flex'
@@ -647,8 +650,8 @@ const FarmCard: React.FC<{
                   color:
                     stakingInfo.stakedAmount &&
                     stakingInfo.stakedAmount.greaterThan('0')
-                      ? '#448aff'
-                      : '#636780',
+                      ? palette.primary.main
+                      : palette.text.hint,
                 }}
                 onClick={() => {
                   if (
@@ -698,7 +701,7 @@ const FarmCard: React.FC<{
             minWidth={250}
             my={1.5}
             width={isMobile ? 1 : 0.3}
-            color='#696c80'
+            color={palette.text.secondary}
           >
             <Box
               display='flex'

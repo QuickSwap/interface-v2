@@ -98,7 +98,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
         position: 'absolute',
         left: 0,
         top: 14,
-        background: '#1b1e29',
+        background: palette.background.paper,
         borderRadius: 10,
         padding: '14px 0',
         '& > a': {
@@ -109,7 +109,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
         },
       },
       '&:hover': {
-        background: '#1b1e29',
+        background: palette.background.paper,
         '& .subMenu': {
           display: 'block',
         },
@@ -119,14 +119,14 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       textDecoration: 'none',
       padding: '7.5px 24px',
       marginRight: 12,
-      color: '#696c80',
+      color: palette.text.secondary,
       borderRadius: 10,
       '& p': {
         letterSpacing: 'normal',
       },
       '&.active': {
-        color: '#ebecf2',
-        background: '#1b1e29',
+        color: palette.text.primary,
+        background: palette.background.paper,
       },
       '&:last-child': {
         marginRight: 0,
@@ -152,7 +152,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     },
   },
   mobileMenuWrapper: {
-    background: '#121319',
+    background: palette.secondary.contrastText,
     position: 'absolute',
     top: 80,
     left: 0,
@@ -175,7 +175,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     height: 32,
     width: '100%',
     '& p': {
-      color: '#ebecf2',
+      color: palette.text.primary,
     },
     '& svg, & img': {
       width: 32,
@@ -211,10 +211,10 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     backgroundColor: '#004ce6',
   },
   danger: {
-    backgroundColor: '#ff5252',
+    backgroundColor: palette.error.main,
   },
   wrongNetworkContent: {
-    background: '#1b1e29',
+    background: palette.background.paper,
     borderRadius: 10,
     padding: 24,
     display: 'none',
@@ -231,8 +231,8 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       justifyContent: 'center',
       alignItems: 'center',
       borderRadius: 20,
-      border: 'solid 1px #448aff',
-      color: '#448aff',
+      border: `solid 1px ${palette.primary.main}`,
+      color: palette.primary.main,
       fontSize: 14,
       fontWeight: 600,
     },

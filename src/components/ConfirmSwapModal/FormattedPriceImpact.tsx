@@ -1,4 +1,5 @@
 import { Typography } from '@material-ui/core';
+import { useTheme } from '@material-ui/core/styles';
 import { Percent } from '@uniswap/sdk';
 import React from 'react';
 import { ONE_BIPS } from '../../constants';
@@ -10,6 +11,7 @@ import { warningSeverity } from '../../utils/prices';
 const FormattedPriceImpact: React.FC<{ priceImpact?: Percent }> = ({
   priceImpact,
 }) => {
+  const { palette } = useTheme();
   const severity = warningSeverity(priceImpact);
   return (
     <Typography
@@ -22,7 +24,7 @@ const FormattedPriceImpact: React.FC<{ priceImpact?: Percent }> = ({
             ? 'yellow'
             : severity === 1
             ? 'black'
-            : '#0fc679',
+            : palette.success.main,
       }}
     >
       {priceImpact

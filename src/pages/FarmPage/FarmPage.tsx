@@ -14,15 +14,15 @@ import { ReactComponent as SearchIcon } from 'assets/images/SearchIcon.svg';
 import { useInfiniteLoading } from 'utils/useInfiniteLoading';
 import { useActiveWeb3React } from 'hooks';
 
-const useStyles = makeStyles(({ breakpoints }) => ({
+const useStyles = makeStyles(({ palette, breakpoints }) => ({
   helpWrapper: {
     display: 'flex',
     alignItems: 'center',
     padding: '8px 12px',
-    border: '1px solid #252833',
+    border: `1px solid ${palette.secondary.light}`,
     borderRadius: 10,
     '& p': {
-      color: '#636780',
+      color: palette.text.hint,
     },
     '& svg': {
       marginLeft: 8,
@@ -30,7 +30,7 @@ const useStyles = makeStyles(({ breakpoints }) => ({
   },
   dragonWrapper: {
     width: '100%',
-    backgroundColor: '#1b1e29',
+    backgroundColor: palette.background.paper,
     borderRadius: 20,
     padding: 32,
     position: 'relative',
@@ -51,41 +51,9 @@ const useStyles = makeStyles(({ breakpoints }) => ({
       width: '100%',
     },
   },
-  stepWrapper: {
-    width: 80,
-    height: 24,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#121319',
-    '& span': {
-      fontWeight: 'bold',
-      color: '#b6b9cc',
-    },
-  },
-  dragonTitle: {
-    margin: '24px 0 64px',
-    '& h5': {
-      marginBottom: 16,
-      color: '#c7cad9',
-    },
-    '& p': {
-      maxWidth: 280,
-      color: '#c7cad9',
-    },
-  },
-  stakeButton: {
-    width: '100%',
-    height: 48,
-    borderRadius: 10,
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 24,
-  },
   searchInput: {
     height: 50,
-    background: '#121319',
+    background: palette.secondary.contrastText,
     borderRadius: 10,
     display: 'flex',
     alignItems: 'center',
@@ -98,19 +66,19 @@ const useStyles = makeStyles(({ breakpoints }) => ({
       marginLeft: 8,
       fontSize: 14,
       fontWeight: 500,
-      color: '#c7cad9',
+      color: palette.text.primary,
       flex: 1,
     },
   },
   thirdColor: {
-    color: '#448aff',
+    color: palette.primary.main,
     cursor: 'pointer',
   },
 }));
 
 const FarmPage: React.FC = () => {
   const classes = useStyles();
-  const { breakpoints } = useTheme();
+  const { palette, breakpoints } = useTheme();
   const { chainId } = useActiveWeb3React();
   const lairInfo = useLairInfo();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
@@ -284,7 +252,7 @@ const FarmPage: React.FC = () => {
           >
             <Typography
               variant='body2'
-              style={{ color: '#626680', marginRight: 8 }}
+              style={{ color: palette.text.disabled, marginRight: 8 }}
             >
               Staked Only
             </Typography>
@@ -310,7 +278,9 @@ const FarmPage: React.FC = () => {
                   setSortDesc(false);
                 }
               }}
-              color={sortBy === 1 ? '#c7cad9' : '#344252'}
+              color={
+                sortBy === 1 ? palette.text.primary : palette.secondary.main
+              }
             >
               <Typography variant='body2'>Pool</Typography>
               <Box display='flex' ml={0.5}>
@@ -336,7 +306,9 @@ const FarmPage: React.FC = () => {
                   setSortDesc(false);
                 }
               }}
-              color={sortBy === 2 ? '#c7cad9' : '#344252'}
+              color={
+                sortBy === 2 ? palette.text.primary : palette.secondary.main
+              }
             >
               <Typography variant='body2'>TVL</Typography>
               <Box display='flex' ml={0.5}>
@@ -362,7 +334,9 @@ const FarmPage: React.FC = () => {
                   setSortDesc(false);
                 }
               }}
-              color={sortBy === 3 ? '#c7cad9' : '#344252'}
+              color={
+                sortBy === 3 ? palette.text.primary : palette.secondary.main
+              }
             >
               <Typography variant='body2'>Rewards</Typography>
               <Box display='flex' ml={0.5}>
@@ -388,7 +362,9 @@ const FarmPage: React.FC = () => {
                   setSortDesc(false);
                 }
               }}
-              color={sortBy === 4 ? '#c7cad9' : '#344252'}
+              color={
+                sortBy === 4 ? palette.text.primary : palette.secondary.main
+              }
             >
               <Typography variant='body2'>APY</Typography>
               <Box display='flex' ml={0.5}>
@@ -415,7 +391,9 @@ const FarmPage: React.FC = () => {
                   setSortDesc(false);
                 }
               }}
-              color={sortBy === 5 ? '#c7cad9' : '#344252'}
+              color={
+                sortBy === 5 ? palette.text.primary : palette.secondary.main
+              }
             >
               <Typography variant='body2'>Earned</Typography>
               <Box display='flex' ml={0.5}>

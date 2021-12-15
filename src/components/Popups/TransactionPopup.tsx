@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Box, LinearProgress, Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { useActiveWeb3React } from 'hooks';
 import { getEtherscanLink } from 'utils/index';
 import { ReactComponent as ArrowTopRight } from 'assets/images/ArrowTopRight.svg';
@@ -34,6 +34,7 @@ const TransactionPopup: React.FC<TransactionPopupProps> = ({
   summary,
 }) => {
   const classes = useStyles();
+  const { palette } = useTheme();
   const { chainId } = useActiveWeb3React();
   const [progress, setProgress] = React.useState(0);
 
@@ -61,7 +62,11 @@ const TransactionPopup: React.FC<TransactionPopupProps> = ({
           variant='body2'
           style={{
             fontWeight: 600,
-            color: pending ? '#ffa000' : success ? '#0fc679' : '#ff5252',
+            color: pending
+              ? '#ffa000'
+              : success
+              ? palette.success.main
+              : palette.error.main,
           }}
         >
           {pending ? 'Processing…' : success ? 'Confirmed' : 'Failed'}

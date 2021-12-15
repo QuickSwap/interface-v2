@@ -21,7 +21,7 @@ const useStyles = makeStyles(({ palette }) => ({
   },
   optionCardClickable: {
     border: `1px solid transparent`,
-    background: '#282d3d',
+    background: palette.secondary.dark,
     borderRadius: 10,
     display: 'flex',
     justifyContent: 'space-between',

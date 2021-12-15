@@ -9,7 +9,7 @@ export interface BarChartProps {
   onHover: (index: number) => void;
 }
 
-const useStyles = makeStyles(({}) => ({
+const useStyles = makeStyles(({ palette }) => ({
   barChartItem: {
     background:
       'linear-gradient(to bottom, #64fbd3, #00cff3 34%, #0098ff 63%, #004ce6)',
@@ -28,7 +28,7 @@ const useStyles = makeStyles(({}) => ({
     marginRight: 8,
     '& p': {
       fontSize: 12,
-      color: '#626680',
+      color: palette.text.disabled,
     },
   },
 }));

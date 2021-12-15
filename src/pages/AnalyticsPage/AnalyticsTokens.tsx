@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Box, Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { TopMovers, TokensTable } from 'components';
 import { useTopTokens, useBookmarkTokens } from 'state/application/hooks';
 import { getEthPrice, getTopTokens } from 'utils';
@@ -24,6 +24,7 @@ const useStyles = makeStyles(({ breakpoints }) => ({
 
 const AnalyticsTokens: React.FC = () => {
   const classes = useStyles();
+  const { palette } = useTheme();
   const [tokensFilter, setTokensFilter] = useState(0);
 
   const { topTokens, updateTopTokens } = useTopTokens();
@@ -61,20 +62,26 @@ const AnalyticsTokens: React.FC = () => {
         <Box
           className={classes.tokensFilter}
           onClick={() => setTokensFilter(0)}
-          color={tokensFilter === 0 ? '#448aff' : '#626680'}
+          color={
+            tokensFilter === 0 ? palette.primary.main : palette.text.disabled
+          }
         >
           <Typography variant='h6'>All Cryptos</Typography>
         </Box>
         <Box
           className={classes.tokensFilter}
-          color={tokensFilter === 1 ? '#448aff' : '#626680'}
+          color={
+            tokensFilter === 1 ? palette.primary.main : palette.text.disabled
+          }
           onClick={() => setTokensFilter(1)}
         >
           <Typography variant='h6'>Favourites</Typography>
         </Box>
         <Box
           className={classes.tokensFilter}
-          color={tokensFilter === 2 ? '#448aff' : '#626680'}
+          color={
+            tokensFilter === 2 ? palette.primary.main : palette.text.disabled
+          }
           onClick={() => setTokensFilter(2)}
         >
           <Typography variant='h6'>New Listing</Typography>

@@ -6,20 +6,28 @@ import {
 import { merge } from 'lodash';
 
 // colors
-const primary = '#1DAED6';
-const secondaryDark = 'rgb(40, 145, 249)';
+const primary = '#448aff';
 const primaryDark = '#1C2938';
 const secondary = '#344252';
+const secondaryLight = '#252833';
+const secondaryDark = '#282d3d';
+const secondaryContrast = '#121319';
 
 const black = '#000000';
 const white = '#ffffff';
 
 const textPrimary = '#c7cad9';
+const textSecondary = '#696c80';
+const textDisabled = '#626680';
+const textHint = '#636780';
 const bgColor = '#12131a';
-const bgColor1 = 'rgb(247, 248, 250)';
+const bgPalette = '#1b1e29';
 
-const successMain = '#2464F4';
+const successMain = '#0fc679';
 const successDark = '#1DB2D5';
+
+const errorMain = '#ff5252';
+const errorDark = '#f00';
 
 const divider = 'rgba(130, 177, 255, 0.08)';
 
@@ -54,7 +62,9 @@ export const mainTheme = responsiveFontSizes(
       },
       secondary: {
         main: secondary,
+        light: secondaryLight,
         dark: secondaryDark,
+        contrastText: secondaryContrast,
       },
       common: {
         black,
@@ -62,16 +72,21 @@ export const mainTheme = responsiveFontSizes(
       },
       text: {
         primary: textPrimary,
-        secondary: white,
-        hint: bgColor1,
+        secondary: textSecondary,
+        disabled: textDisabled,
+        hint: textHint,
       },
       background: {
         default: bgColor,
-        paper: white,
+        paper: bgPalette,
       },
       success: {
         main: successMain,
         dark: successDark,
+      },
+      error: {
+        main: errorMain,
+        dark: errorDark,
       },
       divider: divider,
     },
@@ -170,7 +185,7 @@ export const mainTheme = responsiveFontSizes(
           background: secondary,
         },
         textPrimary: {
-          background: `transparent linear-gradient(279deg, ${successMain} 0%, ${successDark} 100%) 0% 0% no-repeat padding-box`,
+          background: `linear-gradient(to bottom, ${primary}, #004ce6)`,
           borderRadius: 50,
           color: white,
         },

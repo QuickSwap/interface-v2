@@ -45,15 +45,15 @@ import useParsedQueryString from 'hooks/useParsedQueryString';
 import { useCurrency } from 'hooks/Tokens';
 import dayjs from 'dayjs';
 
-const useStyles = makeStyles(({ breakpoints }) => ({
+const useStyles = makeStyles(({ palette, breakpoints }) => ({
   helpWrapper: {
     display: 'flex',
     alignItems: 'center',
     padding: '8px 12px',
-    border: '1px solid #252833',
+    border: `1px solid ${palette.secondary.light}`,
     borderRadius: 10,
     '& p': {
-      color: '#636780',
+      color: palette.text.hint,
     },
     '& svg': {
       marginLeft: 8,
@@ -61,7 +61,7 @@ const useStyles = makeStyles(({ breakpoints }) => ({
   },
   wrapper: {
     padding: 24,
-    backgroundColor: '#1b1e29',
+    backgroundColor: palette.background.paper,
     borderRadius: 20,
     [breakpoints.down('xs')]: {
       padding: '16px 12px',
@@ -75,11 +75,11 @@ const useStyles = makeStyles(({ breakpoints }) => ({
     alignItems: 'center',
     borderRadius: 8,
     '& p': {
-      color: '#696c80',
+      color: palette.text.secondary,
     },
   },
   activeSwap: {
-    background: '#282d3d',
+    background: palette.secondary.dark,
     '& p': {
       color: 'white',
     },
@@ -88,7 +88,7 @@ const useStyles = makeStyles(({ breakpoints }) => ({
     cursor: 'pointer',
   },
   swapTokenDetails: {
-    backgroundColor: '#1b1e29',
+    backgroundColor: palette.background.paper,
     borderRadius: 16,
     width: 'calc(50% - 16px)',
     [breakpoints.down('xs')]: {
@@ -99,7 +99,7 @@ const useStyles = makeStyles(({ breakpoints }) => ({
   },
   liquidityMain: {
     '& p': {
-      color: '#696c80',
+      color: palette.text.secondary,
       fontWeight: 600,
     },
   },
@@ -108,24 +108,24 @@ const useStyles = makeStyles(({ breakpoints }) => ({
       cursor: 'pointer',
       marginRight: 20,
       '&.active': {
-        color: '#448aff',
+        color: palette.primary.main,
       },
     },
   },
   liquidityContent: {
-    border: '1px solid #282d3d',
+    border: `1px solid ${palette.secondary.dark}`,
     borderRadius: '10px',
     marginBottom: '20px',
     '& p': {
-      color: '#ebecf2',
+      color: palette.text.primary,
     },
   },
 }));
 
 const SwapPage: React.FC = () => {
   const classes = useStyles();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('xs'));
+  const { palette, breakpoints } = useTheme();
+  const isMobile = useMediaQuery(breakpoints.down('xs'));
   const [swapIndex, setSwapIndex] = useState(0);
   const [openSettingsModal, setOpenSettingsModal] = useState(false);
   const [currency0, setCurrency0] = useState<Currency | undefined>(undefined);
@@ -337,7 +337,7 @@ const SwapPage: React.FC = () => {
                       considered in beta. DYOR and use at your own risk.
                       QuickSwap is not responsible. More info can be found&nbsp;
                       <a
-                        style={{ color: '#c7cad9' }}
+                        style={{ color: palette.text.primary }}
                         target='_blank'
                         rel='noopener noreferrer'
                         href='https://www.certik.org/projects/gelato'
@@ -386,18 +386,21 @@ const SwapPage: React.FC = () => {
                 <Box display='flex' alignItems='center'>
                   <Typography
                     variant='h6'
-                    style={{ color: '#ebecf2', marginRight: 8 }}
+                    style={{ color: palette.text.primary, marginRight: 8 }}
                   >
                     Liquidity Pools{' '}
                   </Typography>
-                  <Typography variant='body2' style={{ color: '#696c80' }}>
+                  <Typography
+                    variant='body2'
+                    style={{ color: palette.text.secondary }}
+                  >
                     ({currencies[Field.INPUT]?.symbol?.toUpperCase()},{' '}
                     {currencies[Field.OUTPUT]?.symbol?.toUpperCase()})
                   </Typography>
                 </Box>
                 <Box
                   display='flex'
-                  style={{ cursor: 'pointer', color: '#696c80' }}
+                  style={{ cursor: 'pointer', color: palette.text.secondary }}
                   onClick={() => setLiquidityPoolClosed(!liquidityPoolClosed)}
                 >
                   {liquidityPoolClosed ? (
@@ -542,7 +545,7 @@ const SwapPage: React.FC = () => {
                             {isMobile && (
                               <Typography
                                 variant='body2'
-                                style={{ color: '#696c80' }}
+                                style={{ color: palette.text.secondary }}
                               >
                                 TVL
                               </Typography>
@@ -560,7 +563,7 @@ const SwapPage: React.FC = () => {
                             {isMobile && (
                               <Typography
                                 variant='body2'
-                                style={{ color: '#696c80' }}
+                                style={{ color: palette.text.secondary }}
                               >
                                 24H Volume
                               </Typography>
@@ -580,7 +583,7 @@ const SwapPage: React.FC = () => {
                             {isMobile && (
                               <Typography
                                 variant='body2'
-                                style={{ color: '#696c80' }}
+                                style={{ color: palette.text.secondary }}
                               >
                                 APY
                               </Typography>
@@ -588,7 +591,12 @@ const SwapPage: React.FC = () => {
                             <Typography
                               variant='body2'
                               align='right'
-                              style={{ color: apy < 0 ? '#ff5252' : '#0fc679' }}
+                              style={{
+                                color:
+                                  apy < 0
+                                    ? palette.error.main
+                                    : palette.success.main,
+                              }}
                             >
                               {apy.toFixed(2)}%
                             </Typography>

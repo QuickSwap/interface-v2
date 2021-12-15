@@ -17,9 +17,9 @@ import {
 } from 'state/transactions/hooks';
 import { formatCompact } from 'utils';
 
-const useStyles = makeStyles(({ breakpoints }) => ({
+const useStyles = makeStyles(({ palette, breakpoints }) => ({
   syrupCard: {
-    background: '#282d3d',
+    background: palette.secondary.dark,
     width: '100%',
     borderRadius: 10,
     marginTop: 24,
@@ -38,18 +38,18 @@ const useStyles = makeStyles(({ breakpoints }) => ({
       width: '100%',
     },
     '& p': {
-      color: '#ebecf2',
+      color: palette.text.primary,
     },
   },
   syrupText: {
     fontSize: 14,
     fontWeight: 600,
-    color: '#696c80',
+    color: palette.text.secondary,
   },
 }));
 
 const SyrupCard: React.FC<{ syrup: SyrupInfo }> = ({ syrup }) => {
-  const { breakpoints } = useTheme();
+  const { palette, breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const [expanded, setExpanded] = useState(false);
   const [attemptingClaim, setAttemptingClaim] = useState(false);
@@ -206,7 +206,7 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo }> = ({ syrup }) => {
                 {syrup.rate >= 1000000
                   ? formatCompact(syrup.rate)
                   : syrup.rate.toLocaleString()}
-                <span style={{ color: '#696c80' }}> / day</span>
+                <span style={{ color: palette.text.secondary }}> / day</span>
               </Typography>
             </Box>
           </Box>
@@ -236,7 +236,7 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo }> = ({ syrup }) => {
             <Typography className={classes.syrupText}>APR</Typography>
           )}
           <Box textAlign={isMobile ? 'right' : 'left'}>
-            <Typography variant='body2' style={{ color: '#0fc679' }}>
+            <Typography variant='body2' style={{ color: palette.success.main }}>
               {tokenAPR}%
             </Typography>
             <Box display='flex'>
@@ -250,7 +250,8 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo }> = ({ syrup }) => {
               >
                 <CurrencyLogo currency={QUICK} size='12px' />
                 <Typography variant='caption' style={{ marginLeft: 4 }}>
-                  {dQUICKAPY}% <span style={{ color: '#636780' }}>APY</span>
+                  {dQUICKAPY}%{' '}
+                  <span style={{ color: palette.text.hint }}>APY</span>
                 </Typography>
               </Box>
             </Box>
@@ -277,7 +278,10 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo }> = ({ syrup }) => {
                 {syrup.earnedAmount.toSignificant(2)}
               </Typography>
             </Box>
-            <Typography variant='body2' style={{ color: '#696c80' }}>
+            <Typography
+              variant='body2'
+              style={{ color: palette.text.secondary }}
+            >
               $
               {syrupEarnedUSD < 0.001
                 ? syrupEarnedUSD.toFixed(5)
@@ -296,17 +300,20 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo }> = ({ syrup }) => {
               justifyContent='space-between'
               mb={1}
             >
-              <Typography variant='body2' style={{ color: '#696c80' }}>
+              <Typography
+                variant='body2'
+                style={{ color: palette.text.secondary }}
+              >
                 In wallet
               </Typography>
               <Typography variant='body2'>
-                <span style={{ color: '#c7cad9' }}>
+                <span style={{ color: palette.text.primary }}>
                   {userLiquidityUnstaked
                     ? userLiquidityUnstaked.toSignificant(2)
                     : 0}{' '}
                   dQUICK
                 </span>
-                <span style={{ color: '#696c80', marginLeft: 4 }}>
+                <span style={{ color: palette.text.secondary, marginLeft: 4 }}>
                   $
                   {userLiquidityUnstaked
                     ? (
@@ -324,14 +331,17 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo }> = ({ syrup }) => {
               justifyContent='space-between'
               mb={1}
             >
-              <Typography variant='body2' style={{ color: '#696c80' }}>
+              <Typography
+                variant='body2'
+                style={{ color: palette.text.secondary }}
+              >
                 Staked
               </Typography>
               <Typography variant='body2'>
-                <span style={{ color: '#c7cad9' }}>
+                <span style={{ color: palette.text.primary }}>
                   {syrup.stakedAmount.toSignificant(2)} dQUICK
                 </span>
-                <span style={{ color: '#696c80', marginLeft: 4 }}>
+                <span style={{ color: palette.text.secondary, marginLeft: 4 }}>
                   $
                   {(
                     Number(syrup.stakedAmount.toSignificant()) *
@@ -347,16 +357,21 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo }> = ({ syrup }) => {
               justifyContent='space-between'
               mb={2}
             >
-              <Typography variant='body2' style={{ color: '#696c80' }}>
+              <Typography
+                variant='body2'
+                style={{ color: palette.text.secondary }}
+              >
                 Earned {currency.symbol}
               </Typography>
               <Box display='flex' alignItems='center'>
                 <CurrencyLogo currency={currency} size='16px' />
                 <Typography variant='body2' style={{ marginLeft: 4 }}>
-                  <span style={{ color: '#c7cad9' }}>
+                  <span style={{ color: palette.text.primary }}>
                     {syrup.earnedAmount.toSignificant(2)}
                   </span>
-                  <span style={{ color: '#696c80', marginLeft: 4 }}>
+                  <span
+                    style={{ color: palette.text.secondary, marginLeft: 4 }}
+                  >
                     $
                     {syrupEarnedUSD < 0.001
                       ? syrupEarnedUSD.toFixed(5)
@@ -377,12 +392,18 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo }> = ({ syrup }) => {
                   flexWrap='wrap'
                   alignItems='center'
                 >
-                  <Typography variant='caption' style={{ color: '#696c80' }}>
+                  <Typography
+                    variant='caption'
+                    style={{ color: palette.text.secondary }}
+                  >
                     Time Remaining
                   </Typography>
                   <Typography
                     variant='body2'
-                    style={{ color: '#696c80', marginLeft: isMobile ? 4 : 0 }}
+                    style={{
+                      color: palette.text.secondary,
+                      marginLeft: isMobile ? 4 : 0,
+                    }}
                   >
                     {`${days}d ${hours
                       .toString()

@@ -16,7 +16,7 @@ import { CurrencyLogo, DoubleCurrencyLogo } from 'components';
 import { ChainId, Token } from '@uniswap/sdk';
 import { getAddress } from '@ethersproject/address';
 
-const useStyles = makeStyles(({}) => ({
+const useStyles = makeStyles(({ palette }) => ({
   topTab: {
     height: 46,
     padding: '0 24px',
@@ -25,13 +25,13 @@ const useStyles = makeStyles(({}) => ({
     alignItems: 'center',
     cursor: 'pointer',
     '& p': {
-      color: '#626680',
+      color: palette.text.disabled,
     },
   },
   selectedTab: {
-    background: '#252833',
+    background: palette.secondary.light,
     '& p': {
-      color: '#ebecf2',
+      color: palette.text.primary,
     },
   },
   searchInput: {
@@ -49,7 +49,7 @@ const useStyles = makeStyles(({}) => ({
       fontSize: 15,
       fontWeight: 500,
       minWidth: 240,
-      color: '#ebecf2',
+      color: palette.text.primary,
     },
   },
   searchContent: {

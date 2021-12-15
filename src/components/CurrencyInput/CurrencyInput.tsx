@@ -8,11 +8,11 @@ import { CurrencySearchModal, CurrencyLogo } from 'components';
 import { useActiveWeb3React } from 'hooks';
 import useUSDCPrice from 'utils/useUSDCPrice';
 
-const useStyles = makeStyles(({ breakpoints }) => ({
+const useStyles = makeStyles(({ palette, breakpoints }) => ({
   swapBox: {
     padding: '16px 24px',
     borderRadius: 10,
-    background: '#282d3d',
+    background: palette.secondary.dark,
     zIndex: 1,
     position: 'relative',
     textAlign: 'left',
@@ -32,7 +32,7 @@ const useStyles = makeStyles(({ breakpoints }) => ({
         paddingLeft: 8,
         cursor: 'pointer',
         '& p': {
-          color: '#448aff',
+          color: palette.primary.main,
           fontWeight: 600,
         },
       },
@@ -42,12 +42,12 @@ const useStyles = makeStyles(({ breakpoints }) => ({
         boxShadow: 'none',
         outline: 'none',
         textAlign: 'right',
-        color: '#696c80',
+        color: palette.text.secondary,
         width: '100%',
         fontSize: 18,
         fontWeight: 600,
         '&::placeholder': {
-          color: '#696c80',
+          color: palette.text.secondary,
         },
       },
     },
@@ -70,14 +70,14 @@ const useStyles = makeStyles(({ breakpoints }) => ({
     },
   },
   noCurrency: {
-    backgroundImage: 'linear-gradient(105deg, #448aff 3%, #004ce6)',
+    backgroundImage: `linear-gradient(105deg, ${palette.primary.main} 3%, #004ce6)`,
   },
   currencySelected: {
     backgroundColor: '#404557',
   },
   balanceSection: {
     '& p': {
-      color: '#696c80',
+      color: palette.text.secondary,
     },
   },
 }));
@@ -121,15 +121,7 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
   return (
     <Box className={cx(classes.swapBox, showPrice && classes.priceShowBox)}>
       <Box display='flex' justifyContent='space-between' mb={2}>
-        <Box
-          display='flex'
-          flexDirection='row'
-          justifyContent='space-between'
-          width='100%'
-        >
-          <Typography>{title || 'You Pay:'}</Typography>
-          {/* <Typography style={{color: '#448aff', fontSize: '16px', cursor: 'pointer'}}>MAX</Typography> */}
-        </Box>
+        <Typography>{title || 'You Pay:'}</Typography>
         <Box display='flex'>
           {account && currency && showHalfButton && (
             <Box className='maxWrapper' onClick={onHalf}>

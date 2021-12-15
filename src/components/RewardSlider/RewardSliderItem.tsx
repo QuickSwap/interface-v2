@@ -15,7 +15,7 @@ import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon.svg';
 const useStyles = makeStyles(({ palette }) => ({
   rewardsSliderItem: {
     borderRadius: 32,
-    background: palette.primary.dark,
+    background: palette.background.paper,
     padding: '32px 22px',
     position: 'relative',
     '& .rewardIcon': {
@@ -47,7 +47,7 @@ const useStyles = makeStyles(({ palette }) => ({
       },
       '& h5': {
         background: 'rgba(15, 198, 121, 0.12)',
-        color: '#0FC679',
+        color: palette.success.main,
         padding: '0 4px',
         borderRadius: 5,
       },

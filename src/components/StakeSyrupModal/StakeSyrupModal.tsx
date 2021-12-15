@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Box, Typography, Button } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { TokenAmount } from '@uniswap/sdk';
 import { TransactionResponse } from '@ethersproject/providers';
 import { CustomModal, ColoredSlider } from 'components';
@@ -18,14 +18,14 @@ import {
 import { wrappedCurrencyAmount } from 'utils/wrappedCurrency';
 import { maxAmountSpend } from 'utils';
 
-const useStyles = makeStyles(({}) => ({
+const useStyles = makeStyles(({ palette }) => ({
   input: {
     width: '100%',
     background: 'transparent',
     border: 'none',
     boxShadow: 'none',
     outline: 'none',
-    color: '#c7cad9',
+    color: palette.text.primary,
     fontSize: 28,
     fontWeight: 600,
   },
@@ -42,7 +42,7 @@ const useStyles = makeStyles(({}) => ({
     },
     '&.Mui-disabled': {
       backgroundImage: 'none',
-      backgroundColor: '#282d3d',
+      backgroundColor: palette.secondary.dark,
     },
   },
 }));
@@ -59,6 +59,7 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
   syrup,
 }) => {
   const classes = useStyles();
+  const { palette } = useTheme();
   const [attempting, setAttempting] = useState(false);
   const [hash, setHash] = useState('');
   const { account, chainId, library } = useActiveWeb3React();
@@ -174,7 +175,7 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
         </Box>
         <Box
           mt={3}
-          bgcolor='#12131a'
+          bgcolor={palette.background.default}
           border='1px solid rgba(105, 108, 128, 0.12)'
           borderRadius='10px'
           padding='16px'
@@ -210,7 +211,7 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
             <Typography
               variant='caption'
               style={{
-                color: '#448aff',
+                color: palette.primary.main,
                 fontWeight: 'bold',
                 cursor: 'pointer',
               }}

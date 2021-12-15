@@ -3,7 +3,7 @@ import { splitSignature } from '@ethersproject/bytes';
 import { Contract } from '@ethersproject/contracts';
 import { ArrowLeft, ArrowDown } from 'react-feather';
 import { Box, Typography, Button } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { Currency, ETHER, JSBI, Percent } from '@uniswap/sdk';
 import ReactGA from 'react-ga';
 import { BigNumber } from '@ethersproject/bignumber';
@@ -44,14 +44,14 @@ import { wrappedCurrency } from 'utils/wrappedCurrency';
 import { useTotalSupply } from 'data/TotalSupply';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 
-const useStyles = makeStyles(({}) => ({
+const useStyles = makeStyles(({ palette }) => ({
   input: {
     width: '100%',
     background: 'transparent',
     border: 'none',
     boxShadow: 'none',
     outline: 'none',
-    color: '#c7cad9',
+    color: palette.text.primary,
     fontSize: 28,
     fontWeight: 600,
   },
@@ -68,7 +68,7 @@ const useStyles = makeStyles(({}) => ({
     },
     '&.Mui-disabled': {
       backgroundImage: 'none',
-      backgroundColor: '#282d3d',
+      backgroundColor: palette.secondary.dark,
     },
   },
 }));
@@ -87,6 +87,7 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
   onClose,
 }) => {
   const classes = useStyles();
+  const { palette } = useTheme();
   const [showConfirm, setShowConfirm] = useState(false);
   const [txPending, setTxPending] = useState(false);
   const [attemptingTxn, setAttemptingTxn] = useState(false);
@@ -484,7 +485,7 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
             size={48}
           />
         </Box>
-        <Box mb={6} color='#c7cad9' textAlign='center'>
+        <Box mb={6} color={palette.text.primary} textAlign='center'>
           <Typography variant='h6'>
             Removing {formattedAmounts[Field.LIQUIDITY]} {currency0.symbol} /{' '}
             {currency1.symbol} LP Tokens
@@ -497,7 +498,7 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
             {currency1.symbol}
           </Typography>
         </Box>
-        <Box mb={3} color='#696c80' textAlign='center'>
+        <Box mb={3} color={palette.text.secondary} textAlign='center'>
           <Typography variant='body2'>
             {`Output is estimated. If the price changes by more than ${allowedSlippage /
               100}% your transaction will revert.`}
@@ -550,18 +551,21 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
         )}
         <Box display='flex' alignItems='center' justifyContent='space-between'>
           <ArrowLeft
-            color='#696c80'
+            color={palette.text.secondary}
             style={{ cursor: 'pointer' }}
             onClick={onClose}
           />
-          <Typography variant='subtitle2' style={{ color: '#c7cad9' }}>
+          <Typography
+            variant='subtitle2'
+            style={{ color: palette.text.primary }}
+          >
             Remove Liquidity
           </Typography>
           <CloseIcon style={{ cursor: 'pointer' }} onClick={onClose} />
         </Box>
         <Box
           mt={3}
-          bgcolor='#12131a'
+          bgcolor={palette.background.default}
           border='1px solid rgba(105, 108, 128, 0.12)'
           borderRadius='10px'
           padding='16px'
@@ -606,9 +610,13 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
           </Box>
         </Box>
         <Box display='flex' my={3} justifyContent='center'>
-          <ArrowDown color='#696c80' />
+          <ArrowDown color={palette.text.secondary} />
         </Box>
-        <Box padding='16px' bgcolor='#252833' borderRadius='10px'>
+        <Box
+          padding='16px'
+          bgcolor={palette.secondary.light}
+          borderRadius='10px'
+        >
           <Box
             display='flex'
             justifyContent='space-between'
@@ -741,7 +749,7 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
           </Button>
         </Box>
         <Box mt={2}>
-          <Typography variant='body1' style={{ color: '#ff5252' }}>
+          <Typography variant='body1' style={{ color: palette.error.main }}>
             {errorMsg}
           </Typography>
         </Box>

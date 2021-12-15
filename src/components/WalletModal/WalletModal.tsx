@@ -62,7 +62,7 @@ const useStyles = makeStyles(({ palette }) => ({
     flexWrap: 'wrap',
     '& a': {
       marginLeft: 8,
-      color: '#448aff',
+      color: palette.primary.main,
       textDecoration: 'none',
     },
   },

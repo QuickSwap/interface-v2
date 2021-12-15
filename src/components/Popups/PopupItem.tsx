@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect } from 'react';
 import { Box } from '@material-ui/core';
+import { useTheme } from '@material-ui/core/styles';
 import { PopupContent } from 'state/application/actions';
 import { useRemovePopup } from 'state/application/hooks';
 import TransactionPopup from './TransactionPopup';
@@ -15,6 +16,7 @@ const PopupItem: React.FC<PopupItemProps> = ({
   content,
   popKey,
 }) => {
+  const { palette } = useTheme();
   const removePopup = useRemovePopup();
   const removeThisPopup = useCallback(() => removePopup(popKey), [
     popKey,
@@ -51,7 +53,7 @@ const PopupItem: React.FC<PopupItemProps> = ({
     <Box
       padding={2.5}
       borderRadius={10}
-      bgcolor='#1b1e29'
+      bgcolor={palette.background.paper}
       overflow='hidden'
       position='relative'
     >
