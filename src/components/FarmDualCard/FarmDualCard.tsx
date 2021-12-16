@@ -3,9 +3,9 @@ import { TransactionResponse } from '@ethersproject/providers';
 import { splitSignature } from 'ethers/lib/utils';
 import { Box, Typography, useMediaQuery } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-import { StakingInfo } from 'state/stake/hooks';
-import { JSBI, TokenAmount, Pair } from '@uniswap/sdk';
-import { QUICK, EMPTY } from 'constants/index';
+import { DualStakingInfo } from 'state/stake/hooks';
+import { JSBI, TokenAmount, Pair, ETHER } from '@uniswap/sdk';
+import { QUICK, EMPTY, USDC } from 'constants/index';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { usePair } from 'data/Reserves';
 import { useTotalSupply } from 'data/TotalSupply';
@@ -93,8 +93,8 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
   },
 }));
 
-const FarmCard: React.FC<{
-  stakingInfo: StakingInfo;
+const FarmDualCard: React.FC<{
+  stakingInfo: DualStakingInfo;
   dQuicktoQuick: number;
   stakingAPY: number;
 }> = ({ stakingInfo, dQuicktoQuick, stakingAPY }) => {
@@ -111,6 +111,16 @@ const FarmCard: React.FC<{
   const token0 = stakingInfo.tokens[0];
   const token1 = stakingInfo.tokens[1];
 
+  const rewardTokenA = stakingInfo.rewardTokenA;
+  const rewardTokenB = stakingInfo.rewardTokenB;
+  const rewardTokenBBase = stakingInfo.rewardTokenBBase;
+
+  const [, rewardTokenBPair] = usePair(rewardTokenB, rewardTokenBBase);
+
+  const rewardTokenBPriceInBaseToken = Number(
+    rewardTokenBPair?.priceOf(rewardTokenB)?.toSignificant(6),
+  );
+
   const { account, library, chainId } = useActiveWeb3React();
   const addTransaction = useTransactionAdder();
 
@@ -118,7 +128,6 @@ const FarmCard: React.FC<{
   const currency1 = unwrappedToken(token1);
   const baseTokenCurrency = unwrappedToken(stakingInfo.baseToken);
   const empty = unwrappedToken(EMPTY);
-  const quickPriceUSD = stakingInfo.quickPrice;
 
   // get the color of the token
   const baseToken =
@@ -203,16 +212,14 @@ const FarmCard: React.FC<{
     valueOfUnstakedAmountInBaseToken &&
     USDPrice?.quote(valueOfUnstakedAmountInBaseToken);
 
-  const perMonthReturnInRewards =
-    (Number(stakingInfo.dQuickToQuick) * Number(stakingInfo.quickPrice) * 30) /
-    Number(valueOfTotalStakedAmountInUSDC?.toSignificant(6));
-
   let apyWithFee: number | string = 0;
 
   if (stakingAPY && stakingAPY > 0) {
     apyWithFee =
       ((1 +
-        ((Number(perMonthReturnInRewards) + Number(stakingAPY) / 12) * 12) /
+        ((Number(stakingInfo.perMonthReturnInRewards) +
+          Number(stakingAPY) / 12) *
+          12) /
           12) **
         12 -
         1) *
@@ -231,9 +238,16 @@ const FarmCard: React.FC<{
         groupSeparator: ',',
       }) ?? '-'} ETH`;
 
-  const poolRate = `${stakingInfo.totalRewardRate
+  const poolRateA = `${stakingInfo.totalRewardRateA
     ?.toFixed(2, { groupSeparator: ',' })
-    .replace(/[.,]00$/, '')} dQUICK / day`;
+    .replace(/[.,]00$/, '') +
+    ' ' +
+    rewardTokenA?.symbol}  / day`;
+  const poolRateB = `${stakingInfo.totalRewardRateB
+    ?.toFixed(2, { groupSeparator: ',' })
+    .replace(/[.,]00$/, '') +
+    ' ' +
+    rewardTokenB?.symbol} / day`;
 
   const stakingContract = useStakingContract(stakingInfo.stakingRewardAddress);
 
@@ -409,14 +423,29 @@ const FarmCard: React.FC<{
   };
 
   const earnedUSD =
-    Number(stakingInfo.earnedAmount.toSignificant(2)) *
-    dQuicktoQuick *
-    quickPriceUSD;
+    Number(stakingInfo.earnedAmountA.toSignificant()) *
+      dQuicktoQuick *
+      stakingInfo.quickPrice +
+    Number(stakingInfo.earnedAmountB.toSignificant()) * stakingInfo.maticPrice;
 
   const earnedUSDStr =
     earnedUSD < 0.001 && earnedUSD > 0
       ? '< $0.001'
       : '$' + earnedUSD.toLocaleString();
+
+  let rewardTokenBPrice = 0;
+  let rewards = 0;
+
+  if (rewardTokenBBase.equals(USDC)) {
+    rewardTokenBPrice = rewardTokenBPriceInBaseToken;
+  } else if (rewardTokenBBase.equals(QUICK)) {
+    rewardTokenBPrice = rewardTokenBPriceInBaseToken * stakingInfo?.quickPrice;
+  } else {
+    rewardTokenBPrice = rewardTokenBPriceInBaseToken * stakingInfo?.maticPrice;
+  }
+  rewards =
+    stakingInfo?.rateA * stakingInfo?.quickPrice +
+    stakingInfo?.rateB * rewardTokenBPrice;
 
   return (
     <Box className={classes.syrupCard}>
@@ -469,7 +498,13 @@ const FarmCard: React.FC<{
           {isMobile && (
             <Typography className={classes.syrupText}>Rewards</Typography>
           )}
-          <Typography variant='body2'>{poolRate}</Typography>
+          <Box>
+            <Typography variant='body2'>{`$${parseInt(
+              rewards.toFixed(0),
+            ).toLocaleString()} / day`}</Typography>
+            <Typography variant='body2'>{poolRateA}</Typography>
+            <Typography variant='body2'>{poolRateB}</Typography>
+          </Box>
         </Box>
         <Box
           mb={isMobile ? 1.5 : 0}
@@ -499,19 +534,28 @@ const FarmCard: React.FC<{
             <Typography className={classes.syrupText}>Earned</Typography>
           )}
           <Box textAlign='right'>
+            <Typography variant='body2'>{earnedUSDStr}</Typography>
             <Box display='flex' alignItems='center' justifyContent='flex-end'>
               <CurrencyLogo currency={QUICK} size='16px' />
               <Typography variant='body2' style={{ marginLeft: 5 }}>
-                {stakingInfo.earnedAmount.toSignificant(2)}
+                {stakingInfo.earnedAmountA.toSignificant(2)}
                 <span>&nbsp;dQUICK</span>
               </Typography>
             </Box>
-            <Typography
-              variant='body2'
-              style={{ color: palette.text.secondary }}
-            >
-              {earnedUSDStr}
-            </Typography>
+            <Box display='flex' alignItems='center' justifyContent='flex-end'>
+              <CurrencyLogo
+                currency={
+                  rewardTokenB.symbol?.toLowerCase() === 'wmatic'
+                    ? ETHER
+                    : rewardTokenB
+                }
+                size='16px'
+              />
+              <Typography variant='body2' style={{ marginLeft: 5 }}>
+                {stakingInfo.earnedAmountB.toSignificant(2)}
+                <span>&nbsp;{rewardTokenB.symbol}</span>
+              </Typography>
+            </Box>
           </Box>
         </Box>
       </Box>
@@ -730,29 +774,38 @@ const FarmCard: React.FC<{
               <Box mb={1}>
                 <Typography variant='body2'>Unclaimed Rewards:</Typography>
               </Box>
-              <Box mb={1}>
+              <Box mb={1} display='flex'>
                 <CurrencyLogo currency={QUICK} />
+                <CurrencyLogo
+                  currency={
+                    rewardTokenB.symbol?.toLowerCase() === 'wmatic'
+                      ? ETHER
+                      : rewardTokenB
+                  }
+                />
               </Box>
-              <Box mb={0.5}>
+              <Box mb={1} textAlign='center'>
+                <Typography variant='body1'>{earnedUSDStr}</Typography>
                 <Typography variant='body1' color='textSecondary'>
-                  {stakingInfo.earnedAmount.toSignificant(2)}
+                  {stakingInfo.earnedAmountA.toSignificant(2)}
                   <span>&nbsp;dQUICK</span>
                 </Typography>
-              </Box>
-              <Box mb={1}>
-                <Typography variant='body2'>{earnedUSDStr}</Typography>
+                <Typography variant='body1' color='textSecondary'>
+                  {stakingInfo.earnedAmountB.toSignificant(2)}
+                  <span>&nbsp;{rewardTokenB.symbol}</span>
+                </Typography>
               </Box>
             </Box>
             <Box
               className={
-                stakingInfo.earnedAmount.greaterThan('0')
+                stakingInfo.earnedAmountA.greaterThan('0')
                   ? classes.buttonClaim
                   : classes.buttonToken
               }
               mb={2}
               p={2}
               onClick={() => {
-                if (stakingInfo.earnedAmount.greaterThan('0')) {
+                if (stakingInfo.earnedAmountA.greaterThan('0')) {
                   onClaimReward();
                 }
               }}
@@ -766,4 +819,4 @@ const FarmCard: React.FC<{
   );
 };
 
-export default FarmCard;
+export default FarmDualCard;
