@@ -12354,7 +12354,7 @@ export interface StakingInfo {
   accountFee: number;
   dQuickToQuick: number;
   tvl?: string;
-  apyWithFee?: number;
+  perMonthReturnInRewards?: number;
   // calculates a hypothetical amount of token distributed to the active account per second.
   getHypotheticalRewardRate: (
     stakedAmount: TokenAmount,
@@ -13684,6 +13684,10 @@ export function useStakingInfo(
             ? valueOfTotalStakedAmountInUSDC.toSignificant()
             : valueOfTotalStakedAmountInBaseToken?.toSignificant();
 
+          const perMonthReturnInRewards =
+            (Number(dQuickToQuick) * Number(quickPrice) * 30) /
+            Number(valueOfTotalStakedAmountInUSDC?.toSignificant(6));
+
           memo.push({
             stakingRewardAddress: rewardsAddress,
             tokens: info[index].tokens,
@@ -13710,6 +13714,7 @@ export function useStakingInfo(
             accountFee,
             dQuickToQuick: dQuickToQuick,
             tvl,
+            perMonthReturnInRewards,
           });
         }
         return memo;

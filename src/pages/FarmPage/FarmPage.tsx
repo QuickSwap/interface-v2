@@ -175,10 +175,42 @@ const FarmPage: React.FC = () => {
                 : 1;
             }
           } else if (sortBy === 4) {
+            const aDayVolume = bulkPairs
+              ? bulkPairs[a.pair]?.oneDayVolumeUSD
+              : 0;
+            const bDayVolume = bulkPairs
+              ? bulkPairs[b.pair]?.oneDayVolumeUSD
+              : 0;
+            let aYearFee = 0;
+            let bYearFee = 0;
+            if (aDayVolume) {
+              aYearFee =
+                (aDayVolume * 0.003 * 365) / bulkPairs[a.pair]?.reserveUSD;
+            }
+            if (bDayVolume) {
+              bYearFee =
+                (bDayVolume * 0.003 * 365) / bulkPairs[b.pair]?.reserveUSD;
+            }
+            const aAPYwithFee =
+              ((1 +
+                ((Number(a.perMonthReturnInRewards) + Number(aYearFee) / 12) *
+                  12) /
+                  12) **
+                12 -
+                1) *
+              100;
+            const bAPYwithFee =
+              ((1 +
+                ((Number(b.perMonthReturnInRewards) + Number(bYearFee) / 12) *
+                  12) /
+                  12) **
+                12 -
+                1) *
+              100;
             if (sortDesc) {
-              return (a.apyWithFee ?? 0) > (b.apyWithFee ?? 0) ? -1 : 1;
+              return aAPYwithFee > bAPYwithFee ? -1 : 1;
             } else {
-              return (a.apyWithFee ?? 0) < (b.apyWithFee ?? 0) ? -1 : 1;
+              return aAPYwithFee < bAPYwithFee ? -1 : 1;
             }
           } else if (sortBy === 5) {
             if (sortDesc) {
@@ -197,7 +229,7 @@ const FarmPage: React.FC = () => {
         });
     }
     return [];
-  }, [stakingInfos, stakedOnly, farmSearch, sortBy, sortDesc]);
+  }, [stakingInfos, stakedOnly, farmSearch, sortBy, sortDesc, bulkPairs]);
 
   const stakingAPYs = useMemo(() => {
     if (bulkPairs && filteredStakingInfos.length > 0) {
