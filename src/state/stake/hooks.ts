@@ -12889,7 +12889,7 @@ export function useOldSyrupInfo(tokenToFilterBy?: Token | null): SyrupInfo[] {
   ]);
 }
 
-const getBulkPairData = async (pairList: any) => {
+export const getBulkPairData = async (pairList: any) => {
   // if (pairs !== undefined) {
   //   return;
   // }
@@ -13452,11 +13452,6 @@ export function useStakingInfo(
     [chainId, pairToFilterBy, startIndex, endIndex],
   );
 
-  const allInfo = useMemo(
-    () => (chainId ? STAKING_REWARDS_INFO[chainId] ?? [] : []),
-    [chainId],
-  );
-
   const uni = chainId ? UNI[chainId] : undefined;
 
   const rewardsAddresses = useMemo(
@@ -13464,13 +13459,10 @@ export function useStakingInfo(
     [info],
   );
   // const pairAddresses = useMemo(() => info.map(({ pair }) => pair), [info]);
-  const allPairAddress = useMemo(() => allInfo.map(({ pair }) => pair), [
-    allInfo,
-  ]);
 
-  useEffect(() => {
-    getBulkPairData(allPairAddress);
-  }, [allPairAddress]);
+  // useEffect(() => {
+  //   getBulkPairData(allPairAddress);
+  // }, [allPairAddress]);
 
   const lair = useLairContract();
   const args = useMemo(
@@ -13692,24 +13684,6 @@ export function useStakingInfo(
             ? valueOfTotalStakedAmountInUSDC.toSignificant()
             : valueOfTotalStakedAmountInBaseToken?.toSignificant();
 
-          const perMonthReturnInRewards =
-            (Number(dQuickToQuick) * Number(quickPrice) * 30) /
-            Number(valueOfTotalStakedAmountInUSDC?.toSignificant(6));
-
-          let apyWithFee = 0;
-
-          if (oneYearFeeAPY && oneYearFeeAPY > 0) {
-            apyWithFee =
-              ((1 +
-                ((Number(perMonthReturnInRewards) +
-                  Number(oneYearFeeAPY) / 12) *
-                  12) /
-                  12) **
-                12 -
-                1) *
-              100;
-          }
-
           memo.push({
             stakingRewardAddress: rewardsAddress,
             tokens: info[index].tokens,
@@ -13736,7 +13710,6 @@ export function useStakingInfo(
             accountFee,
             dQuickToQuick: dQuickToQuick,
             tvl,
-            apyWithFee,
           });
         }
         return memo;

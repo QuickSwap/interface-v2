@@ -214,14 +214,9 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
   rewardsContainer: {
     textAlign: 'center',
     margin: '172px 0 100px 0',
-    '& h3': {
-      marginBottom: 24,
-    },
-    '& > button': {
-      width: 194,
-      height: 48,
-      borderRadius: 50,
-    },
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
     [breakpoints.down('xs')]: {
       margin: '32px 0 64px',
     },
@@ -404,6 +399,9 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       '& path': {
         fill: '#3e4252',
       },
+    },
+    [breakpoints.down('xs')]: {
+      display: 'none',
     },
   },
 }));
@@ -790,15 +788,22 @@ const LandingPage: React.FC = () => {
         </Typography>
         <Typography variant='body2'>in $QUICK on top of LP Fees.</Typography>
         <RewardSlider />
-        <Button
-          variant='contained'
-          color='secondary'
+        <Box
+          bgcolor={palette.secondary.dark}
+          color={palette.text.primary}
+          width={194}
+          height={48}
+          display='flex'
+          alignItems='center'
+          justifyContent='center'
+          borderRadius={24}
+          style={{ cursor: 'pointer' }}
           onClick={() => {
             history.push('/farm');
           }}
         >
-          See all pairs
-        </Button>
+          <Typography variant='body1'>See all pairs</Typography>
+        </Box>
       </Box>
       <Box className={classes.buyFiatContainer}>
         <img src={FiatMask} alt='Fiat Mask' />

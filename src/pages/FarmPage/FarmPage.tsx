@@ -7,12 +7,15 @@ import {
   useLairInfo,
   StakingInfo,
   STAKING_REWARDS_INFO,
+  getBulkPairData,
 } from 'state/stake/hooks';
 import { FarmCard, ToggleSwitch } from 'components';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
 import { ReactComponent as SearchIcon } from 'assets/images/SearchIcon.svg';
 import { useInfiniteLoading } from 'utils/useInfiniteLoading';
 import { useActiveWeb3React } from 'hooks';
+import Web3 from 'web3';
+const web3 = new Web3('https://polygon-rpc.com/');
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   helpWrapper: {
@@ -84,6 +87,7 @@ const FarmPage: React.FC = () => {
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const [pageIndex, setPageIndex] = useState(0);
   const [stakingInfos, setStakingInfos] = useState<StakingInfo[]>([]);
+  const [bulkPairs, setBulkPairs] = useState<any>(null);
   const [sortBy, setSortBy] = useState(0);
   const [sortDesc, setSortDesc] = useState(false);
 
@@ -99,6 +103,13 @@ const FarmPage: React.FC = () => {
 
   const lastStakingAddress =
     stakingInfos[stakingInfos.length - 1]?.stakingRewardAddress;
+
+  useEffect(() => {
+    if (chainId) {
+      const pairLists = STAKING_REWARDS_INFO[chainId]?.map((item) => item.pair);
+      getBulkPairData(pairLists).then((data) => setBulkPairs(data));
+    }
+  }, [chainId]);
 
   useEffect(() => {
     setStakingInfos(stakingInfos.concat(addedStakingInfos));
@@ -187,6 +198,23 @@ const FarmPage: React.FC = () => {
     }
     return [];
   }, [stakingInfos, stakedOnly, farmSearch, sortBy, sortDesc]);
+
+  const stakingAPYs = useMemo(() => {
+    if (bulkPairs && filteredStakingInfos.length > 0) {
+      return filteredStakingInfos.map((info: any) => {
+        const oneDayVolume = bulkPairs[info.pair]?.oneDayVolumeUSD;
+        if (oneDayVolume) {
+          const oneYearFeeAPY =
+            (oneDayVolume * 0.003 * 365) / bulkPairs[info.pair]?.reserveUSD;
+          return oneYearFeeAPY;
+        } else {
+          return 0;
+        }
+      });
+    } else {
+      return [];
+    }
+  }, [bulkPairs, filteredStakingInfos]);
 
   const loadNext = () => {
     if (chainId && STAKING_REWARDS_INFO[chainId]) {
@@ -412,10 +440,11 @@ const FarmPage: React.FC = () => {
               key={index}
               dQuicktoQuick={Number(lairInfo.dQUICKtoQUICK.toSignificant())}
               stakingInfo={info}
+              stakingAPY={stakingAPYs[index]}
             />
           ))}
       </Box>
-      <div ref={loadMoreRef} />
+      <div ref={loadMoreRef} style={{ marginTop: 20 }} />
     </Box>
   );
 };

@@ -33,6 +33,9 @@ const useStyles = makeStyles(({ palette }) => ({
       border: `1px solid ${palette.primary.main}`,
     },
   },
+  optionLink: {
+    color: palette.text.primary,
+  },
 }));
 
 interface OptionProps {
@@ -83,7 +86,12 @@ const Option: React.FC<OptionProps> = ({
   );
   if (link) {
     return (
-      <a href={link} target='_blank' rel='noreferrer'>
+      <a
+        href={link}
+        target='_blank'
+        rel='noreferrer'
+        className={classes.optionLink}
+      >
         {content}
       </a>
     );

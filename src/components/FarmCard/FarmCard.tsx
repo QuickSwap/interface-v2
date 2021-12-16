@@ -96,7 +96,8 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
 const FarmCard: React.FC<{
   stakingInfo: StakingInfo;
   dQuicktoQuick: number;
-}> = ({ stakingInfo, dQuicktoQuick }) => {
+  stakingAPY: number;
+}> = ({ stakingInfo, dQuicktoQuick, stakingAPY }) => {
   const classes = useStyles();
   const { palette, breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
@@ -202,10 +203,27 @@ const FarmCard: React.FC<{
     valueOfUnstakedAmountInBaseToken &&
     USDPrice?.quote(valueOfUnstakedAmountInBaseToken);
 
-  const apyWithFee =
-    (stakingInfo.apyWithFee ?? 0) > 100000000
-      ? '>100000000'
-      : parseFloat((stakingInfo.apyWithFee ?? 0).toFixed(2)).toLocaleString();
+  const perMonthReturnInRewards =
+    (Number(stakingInfo.dQuickToQuick) * Number(stakingInfo.quickPrice) * 30) /
+    Number(valueOfTotalStakedAmountInUSDC?.toSignificant(6));
+
+  let apyWithFee: number | string = 0;
+
+  if (stakingAPY && stakingAPY > 0) {
+    apyWithFee =
+      ((1 +
+        ((Number(perMonthReturnInRewards) + Number(stakingAPY) / 12) * 12) /
+          12) **
+        12 -
+        1) *
+      100;
+
+    if (apyWithFee > 100000000) {
+      apyWithFee = '>100000000';
+    } else {
+      apyWithFee = parseFloat(apyWithFee.toFixed(2)).toLocaleString();
+    }
+  }
 
   const tvl = valueOfTotalStakedAmountInUSDC
     ? `$${valueOfTotalStakedAmountInUSDC.toFixed(0, { groupSeparator: ',' })}`
