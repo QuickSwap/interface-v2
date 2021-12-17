@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { TransactionResponse } from '@ethersproject/providers';
-import { splitSignature } from 'ethers/lib/utils';
 import { Box, Typography, useMediaQuery } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { DualStakingInfo } from 'state/stake/hooks';
@@ -10,14 +9,17 @@ import { unwrappedToken } from 'utils/wrappedCurrency';
 import { usePair } from 'data/Reserves';
 import { useTotalSupply } from 'data/TotalSupply';
 import useUSDCPrice from 'utils/useUSDCPrice';
-import { usePairContract, useStakingContract } from 'hooks/useContract';
+import {
+  usePairContract,
+  useDualRewardsStakingContract,
+} from 'hooks/useContract';
 import { useDerivedStakeInfo } from 'state/stake/hooks';
 import { useTransactionAdder } from 'state/transactions/hooks';
 import { DoubleCurrencyLogo, CurrencyLogo } from 'components';
 import CircleInfoIcon from 'assets/images/circleinfo.svg';
 import { Link } from 'react-router-dom';
 import { useTokenBalance } from 'state/wallet/hooks';
-import { useActiveWeb3React, useIsArgentWallet } from 'hooks';
+import { useActiveWeb3React } from 'hooks';
 import useTransactionDeadline from 'hooks/useTransactionDeadline';
 import { useApproveCallback, ApprovalState } from 'hooks/useApproveCallback';
 
@@ -105,6 +107,7 @@ const FarmDualCard: React.FC<{
   const [stakeAmount, setStakeAmount] = useState('');
   const [attemptStaking, setAttemptStaking] = useState(false);
   const [attemptUnstaking, setAttemptUnstaking] = useState(false);
+  const [attemptClaimReward, setAttemptClaimReward] = useState(false);
   // const [hash, setHash] = useState<string | undefined>();
   const [unstakeAmount, setUnStakeAmount] = useState('');
 
@@ -121,7 +124,7 @@ const FarmDualCard: React.FC<{
     rewardTokenBPair?.priceOf(rewardTokenB)?.toSignificant(6),
   );
 
-  const { account, library, chainId } = useActiveWeb3React();
+  const { account, library } = useActiveWeb3React();
   const addTransaction = useTransactionAdder();
 
   const currency0 = unwrappedToken(token0);
@@ -249,10 +252,12 @@ const FarmDualCard: React.FC<{
     ' ' +
     rewardTokenB?.symbol} / day`;
 
-  const stakingContract = useStakingContract(stakingInfo.stakingRewardAddress);
+  const stakingContract = useDualRewardsStakingContract(
+    stakingInfo.stakingRewardAddress,
+  );
 
   const onWithdraw = async () => {
-    if (stakingContract && stakingInfo.stakedAmount) {
+    if (stakingContract && stakingInfo?.stakedAmount) {
       setAttemptUnstaking(true);
       await stakingContract
         .exit({ gasLimit: 300000 })
@@ -260,7 +265,6 @@ const FarmDualCard: React.FC<{
           addTransaction(response, {
             summary: `Withdraw deposited liquidity`,
           });
-          setAttemptUnstaking(false);
           // setHash(response.hash);
         })
         .catch((error: any) => {
@@ -271,6 +275,21 @@ const FarmDualCard: React.FC<{
   };
 
   const onClaimReward = async () => {
+    if (stakingContract && stakingInfo?.stakedAmount) {
+      setAttemptClaimReward(true);
+      await stakingContract
+        .getReward({ gasLimit: 350000 })
+        .then((response: TransactionResponse) => {
+          addTransaction(response, {
+            summary: `Claim accumulated QUICK rewards`,
+          });
+          // setHash(response.hash);
+        })
+        .catch((error: any) => {
+          setAttemptClaimReward(false);
+          console.log(error);
+        });
+    }
     if (stakingContract && stakingInfo.stakedAmount) {
       await stakingContract
         .getReward({ gasLimit: 350000 })
@@ -303,7 +322,6 @@ const FarmDualCard: React.FC<{
     deadline: number;
   } | null>(null);
 
-  const isArgentWallet = useIsArgentWallet();
   const dummyPair = new Pair(
     new TokenAmount(stakingInfo.tokens[0], '0'),
     new TokenAmount(stakingInfo.tokens[1], '0'),
@@ -321,26 +339,6 @@ const FarmDualCard: React.FC<{
         await stakingContract.stake(`0x${parsedAmount.raw.toString(16)}`, {
           gasLimit: 350000,
         });
-      } else if (signatureData) {
-        stakingContract
-          .stakeWithPermit(
-            `0x${parsedAmount.raw.toString(16)}`,
-            signatureData.deadline,
-            signatureData.v,
-            signatureData.r,
-            signatureData.s,
-            { gasLimit: 350000 },
-          )
-          .then((response: TransactionResponse) => {
-            addTransaction(response, {
-              summary: `Deposit liquidity`,
-            });
-            // setHash(response.hash);
-          })
-          .catch((error: any) => {
-            setAttemptStaking(false);
-            console.log(error);
-          });
       } else {
         setAttemptStaking(false);
         throw new Error(
@@ -356,70 +354,7 @@ const FarmDualCard: React.FC<{
     const liquidityAmount = parsedAmount;
     if (!liquidityAmount) throw new Error('missing liquidity amount');
 
-    if (isArgentWallet) {
-      return approveCallback();
-    }
-
-    if (stakingInfo && stakingInfo?.lp !== '') {
-      return approveCallback();
-    }
-
-    // try to gather a signature for permission
-    const nonce = await pairContract.nonces(account);
-
-    const EIP712Domain = [
-      { name: 'name', type: 'string' },
-      { name: 'version', type: 'string' },
-      { name: 'chainId', type: 'uint256' },
-      { name: 'verifyingContract', type: 'address' },
-    ];
-    const domain = {
-      name: 'Uniswap V2',
-      version: '1',
-      chainId: chainId,
-      verifyingContract: pairContract.address,
-    };
-    const Permit = [
-      { name: 'owner', type: 'address' },
-      { name: 'spender', type: 'address' },
-      { name: 'value', type: 'uint256' },
-      { name: 'nonce', type: 'uint256' },
-      { name: 'deadline', type: 'uint256' },
-    ];
-    const message = {
-      owner: account,
-      spender: stakingInfo.stakingRewardAddress,
-      value: liquidityAmount.raw.toString(),
-      nonce: nonce.toHexString(),
-      deadline: deadline.toNumber(),
-    };
-    const data = JSON.stringify({
-      types: {
-        EIP712Domain,
-        Permit,
-      },
-      domain,
-      primaryType: 'Permit',
-      message,
-    });
-
-    library
-      .send('eth_signTypedData_v4', [account, data])
-      .then(splitSignature)
-      .then((signature) => {
-        setSignatureData({
-          v: signature.v,
-          r: signature.r,
-          s: signature.s,
-          deadline: deadline.toNumber(),
-        });
-      })
-      .catch((error) => {
-        // for all errors other than 4001 (EIP-1193 user rejected request), fall back to manual approve
-        if (error?.code !== 4001) {
-          approveCallback();
-        }
-      });
+    return approveCallback();
   };
 
   const earnedUSD =
@@ -798,6 +733,7 @@ const FarmDualCard: React.FC<{
             </Box>
             <Box
               className={
+                !attemptClaimReward &&
                 stakingInfo.earnedAmountA.greaterThan('0')
                   ? classes.buttonClaim
                   : classes.buttonToken
@@ -805,12 +741,17 @@ const FarmDualCard: React.FC<{
               mb={2}
               p={2}
               onClick={() => {
-                if (stakingInfo.earnedAmountA.greaterThan('0')) {
+                if (
+                  !attemptClaimReward &&
+                  stakingInfo.earnedAmountA.greaterThan('0')
+                ) {
                   onClaimReward();
                 }
               }}
             >
-              <Typography variant='body1'>Claim</Typography>
+              <Typography variant='body1'>
+                {attemptClaimReward ? 'Claiming...' : 'Claim'}
+              </Typography>
             </Box>
           </Box>
         </Box>

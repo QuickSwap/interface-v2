@@ -105,6 +105,7 @@ const FarmLPCard: React.FC<{
   const [stakeAmount, setStakeAmount] = useState('');
   const [attemptStaking, setAttemptStaking] = useState(false);
   const [attemptUnstaking, setAttemptUnstaking] = useState(false);
+  const [attemptClaiming, setAttemptClaiming] = useState(false);
   // const [hash, setHash] = useState<string | undefined>();
   const [unstakeAmount, setUnStakeAmount] = useState('');
 
@@ -258,15 +259,18 @@ const FarmLPCard: React.FC<{
 
   const onClaimReward = async () => {
     if (stakingContract && stakingInfo.stakedAmount) {
+      setAttemptClaiming(true);
       await stakingContract
         .getReward({ gasLimit: 350000 })
         .then((response: TransactionResponse) => {
           addTransaction(response, {
             summary: `Claim accumulated rewards`,
           });
+          setAttemptClaiming(false);
           // setHash(response.hash);
         })
         .catch((error: any) => {
+          setAttemptClaiming(false);
           console.log(error);
         });
     }
@@ -747,19 +751,24 @@ const FarmLPCard: React.FC<{
             </Box>
             <Box
               className={
-                stakingInfo.earnedAmount.greaterThan('0')
+                !attemptClaiming && stakingInfo.earnedAmount.greaterThan('0')
                   ? classes.buttonClaim
                   : classes.buttonToken
               }
               mb={2}
               p={2}
               onClick={() => {
-                if (stakingInfo.earnedAmount.greaterThan('0')) {
+                if (
+                  !attemptClaiming &&
+                  stakingInfo.earnedAmount.greaterThan('0')
+                ) {
                   onClaimReward();
                 }
               }}
             >
-              <Typography variant='body1'>Claim</Typography>
+              <Typography variant='body1'>
+                {attemptClaiming ? 'Claiming...' : 'Claim'}
+              </Typography>
             </Box>
           </Box>
         </Box>
