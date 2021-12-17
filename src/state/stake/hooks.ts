@@ -12413,6 +12413,7 @@ export interface DualStakingInfo {
 
   tvl?: string;
   perMonthReturnInRewards?: number;
+  rewardTokenBPrice?: number;
   // calculates a hypothetical amount of token distributed to the active account per second.
   getHypotheticalRewardRate: (
     stakedAmount: TokenAmount,
@@ -13174,6 +13175,10 @@ export function useDualStakingInfo(
     return unwrappedCurrency === empty ? item.tokens[0] : item.baseToken;
   });
 
+  const tokenPairs = usePairs(
+    info.map((item) => [item.rewardTokenB, item.rewardTokenBBase]),
+  );
+
   const usdPrices = useUSDCPrices(baseTokens);
   const totalSupplys = useTotalSupplys(
     info.map((item) => {
@@ -13360,6 +13365,24 @@ export function useDualStakingInfo(
               30) /
             Number(valueOfTotalStakedAmountInUSDC?.toSignificant(6));
 
+          const [, rewardTokenBPair] = tokenPairs[index];
+
+          const rewardTokenBPriceInBaseToken = Number(
+            rewardTokenBPair
+              ?.priceOf(info[index].rewardTokenB)
+              ?.toSignificant(6),
+          );
+
+          let rewardTokenBPrice = 0;
+
+          if (info[index].rewardTokenBBase.equals(USDC)) {
+            rewardTokenBPrice = rewardTokenBPriceInBaseToken;
+          } else if (info[index].rewardTokenBBase.equals(QUICK)) {
+            rewardTokenBPrice = rewardTokenBPriceInBaseToken * quickPrice;
+          } else {
+            rewardTokenBPrice = rewardTokenBPriceInBaseToken * maticPrice;
+          }
+
           memo.push({
             stakingRewardAddress: rewardsAddress,
             tokens: info[index].tokens,
@@ -13395,6 +13418,7 @@ export function useDualStakingInfo(
             rewardTokenA: info[index].rewardTokenA,
             rewardTokenB: info[index].rewardTokenB,
             rewardTokenBBase: info[index].rewardTokenBBase,
+            rewardTokenBPrice,
             tvl,
             perMonthReturnInRewards,
           });
@@ -13421,6 +13445,7 @@ export function useDualStakingInfo(
     totalSupplys,
     usdPrices,
     stakingPairs,
+    tokenPairs,
   ]);
 }
 

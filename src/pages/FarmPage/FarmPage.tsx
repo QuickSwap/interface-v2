@@ -152,14 +152,14 @@ const FarmPage: React.FC = () => {
 
   useEffect(() => {
     if (chainId) {
-      const REWARDS_INFO =
-        farmIndex === 0
-          ? STAKING_REWARDS_INFO[chainId]
-          : STAKING_DUAL_REWARDS_INFO[chainId];
-      const pairLists = REWARDS_INFO?.map((item) => item.pair);
+      const stakingPairLists =
+        STAKING_REWARDS_INFO[chainId]?.map((item) => item.pair) ?? [];
+      const dualPairLists =
+        STAKING_DUAL_REWARDS_INFO[chainId]?.map((item) => item.pair) ?? [];
+      const pairLists = stakingPairLists.concat(dualPairLists);
       getBulkPairData(pairLists).then((data) => setBulkPairs(data));
     }
-  }, [chainId, farmIndex]);
+  }, [chainId]);
 
   useEffect(() => {
     setStakingLPInfos(stakingLPInfos.concat(addedLPStakingInfos));
@@ -330,19 +330,15 @@ const FarmPage: React.FC = () => {
               return Number(a.tvl) < Number(b.tvl) ? -1 : 1;
             }
           } else if (sortBy === 3) {
-            return -1;
-            // const aRewards = (a.rateA * a.quickPrice) + (a.rateB * rewardTokenBPrice )
-            // if (sortDesc) {
-            //   return Number(a.totalRewardRate.toSignificant()) >
-            //     Number(b.totalRewardRate.toSignificant())
-            //     ? -1
-            //     : 1;
-            // } else {
-            //   return Number(a.totalRewardRate.toSignificant()) <
-            //     Number(b.totalRewardRate.toSignificant())
-            //     ? -1
-            //     : 1;
-            // }
+            const aRewards =
+              a.rateA * a.quickPrice + a.rateB * Number(a.rewardTokenBPrice);
+            const bRewards =
+              b.rateA * b.quickPrice + b.rateB * Number(b.rewardTokenBPrice);
+            if (sortDesc) {
+              return aRewards > bRewards ? -1 : 1;
+            } else {
+              return aRewards < bRewards ? -1 : 1;
+            }
           } else if (sortBy === 4) {
             const aDayVolume = bulkPairs
               ? bulkPairs[a.pair]?.oneDayVolumeUSD
@@ -382,18 +378,17 @@ const FarmPage: React.FC = () => {
               return aAPYwithFee < bAPYwithFee ? -1 : 1;
             }
           } else if (sortBy === 5) {
-            return -1;
-            // if (sortDesc) {
-            //   return Number(a.earnedAmount.toSignificant()) >
-            //     Number(b.earnedAmount.toSignificant())
-            //     ? -1
-            //     : 1;
-            // } else {
-            //   return Number(a.earnedAmount.toSignificant()) <
-            //     Number(b.earnedAmount.toSignificant())
-            //     ? -1
-            //     : 1;
-            // }
+            const earnedA =
+              Number(a.earnedAmountA.toSignificant()) * a.quickPrice +
+              Number(a.earnedAmountB.toSignificant()) * a.maticPrice;
+            const earnedB =
+              Number(b.earnedAmountA.toSignificant()) * b.quickPrice +
+              Number(b.earnedAmountB.toSignificant()) * b.maticPrice;
+            if (sortDesc) {
+              return earnedA > earnedB ? -1 : 1;
+            } else {
+              return earnedA < earnedB ? -1 : 1;
+            }
           }
           return 1;
         });

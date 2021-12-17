@@ -565,7 +565,15 @@ const FarmLPCard: React.FC<{
                   </span>
                 </Typography>
                 <Link
-                  to={`/pools?currency0=${token0.address}&currency1=${token1.address}`}
+                  to={`/pools?currency0=${
+                    token0.symbol?.toLowerCase() === 'wmatic'
+                      ? 'ETH'
+                      : token0.address
+                  }&currency1=${
+                    token1.symbol?.toLowerCase() === 'wmatic'
+                      ? 'ETH'
+                      : token1.address
+                  }`}
                   style={{ color: palette.primary.main }}
                 >
                   Get {currency0.symbol} / {currency1.symbol} LP

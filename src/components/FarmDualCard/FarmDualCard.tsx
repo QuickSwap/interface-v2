@@ -4,7 +4,7 @@ import { Box, Typography, useMediaQuery } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { DualStakingInfo } from 'state/stake/hooks';
 import { JSBI, TokenAmount, Pair, ETHER } from '@uniswap/sdk';
-import { QUICK, EMPTY, USDC } from 'constants/index';
+import { QUICK, EMPTY } from 'constants/index';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { usePair } from 'data/Reserves';
 import { useTotalSupply } from 'data/TotalSupply';
@@ -116,13 +116,6 @@ const FarmDualCard: React.FC<{
 
   const rewardTokenA = stakingInfo.rewardTokenA;
   const rewardTokenB = stakingInfo.rewardTokenB;
-  const rewardTokenBBase = stakingInfo.rewardTokenBBase;
-
-  const [, rewardTokenBPair] = usePair(rewardTokenB, rewardTokenBBase);
-
-  const rewardTokenBPriceInBaseToken = Number(
-    rewardTokenBPair?.priceOf(rewardTokenB)?.toSignificant(6),
-  );
 
   const { account, library } = useActiveWeb3React();
   const addTransaction = useTransactionAdder();
@@ -368,19 +361,9 @@ const FarmDualCard: React.FC<{
       ? '< $0.001'
       : '$' + earnedUSD.toLocaleString();
 
-  let rewardTokenBPrice = 0;
-  let rewards = 0;
-
-  if (rewardTokenBBase.equals(USDC)) {
-    rewardTokenBPrice = rewardTokenBPriceInBaseToken;
-  } else if (rewardTokenBBase.equals(QUICK)) {
-    rewardTokenBPrice = rewardTokenBPriceInBaseToken * stakingInfo?.quickPrice;
-  } else {
-    rewardTokenBPrice = rewardTokenBPriceInBaseToken * stakingInfo?.maticPrice;
-  }
-  rewards =
+  const rewards =
     stakingInfo?.rateA * stakingInfo?.quickPrice +
-    stakingInfo?.rateB * rewardTokenBPrice;
+    stakingInfo?.rateB * Number(stakingInfo.rewardTokenBPrice);
 
   return (
     <Box className={classes.syrupCard}>
@@ -538,7 +521,15 @@ const FarmDualCard: React.FC<{
                   </span>
                 </Typography>
                 <Link
-                  to={`/pools?currency0=${token0.address}&currency1=${token1.address}`}
+                  to={`/pools?currency0=${
+                    token0.symbol?.toLowerCase() === 'wmatic'
+                      ? 'ETH'
+                      : token0.address
+                  }&currency1=${
+                    token1.symbol?.toLowerCase() === 'wmatic'
+                      ? 'ETH'
+                      : token1.address
+                  }`}
                   style={{ color: palette.primary.main }}
                 >
                   Get {currency0.symbol} / {currency1.symbol} LP
