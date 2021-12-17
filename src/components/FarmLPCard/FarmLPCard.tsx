@@ -93,7 +93,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
   },
 }));
 
-const FarmCard: React.FC<{
+const FarmLPCard: React.FC<{
   stakingInfo: StakingInfo;
   dQuicktoQuick: number;
   stakingAPY: number;
@@ -105,6 +105,7 @@ const FarmCard: React.FC<{
   const [stakeAmount, setStakeAmount] = useState('');
   const [attemptStaking, setAttemptStaking] = useState(false);
   const [attemptUnstaking, setAttemptUnstaking] = useState(false);
+  const [attemptClaiming, setAttemptClaiming] = useState(false);
   // const [hash, setHash] = useState<string | undefined>();
   const [unstakeAmount, setUnStakeAmount] = useState('');
 
@@ -258,15 +259,18 @@ const FarmCard: React.FC<{
 
   const onClaimReward = async () => {
     if (stakingContract && stakingInfo.stakedAmount) {
+      setAttemptClaiming(true);
       await stakingContract
         .getReward({ gasLimit: 350000 })
         .then((response: TransactionResponse) => {
           addTransaction(response, {
             summary: `Claim accumulated rewards`,
           });
+          setAttemptClaiming(false);
           // setHash(response.hash);
         })
         .catch((error: any) => {
+          setAttemptClaiming(false);
           console.log(error);
         });
     }
@@ -409,7 +413,7 @@ const FarmCard: React.FC<{
   };
 
   const earnedUSD =
-    Number(stakingInfo.earnedAmount.toSignificant(2)) *
+    Number(stakingInfo.earnedAmount.toSignificant()) *
     dQuicktoQuick *
     quickPriceUSD;
 
@@ -417,6 +421,8 @@ const FarmCard: React.FC<{
     earnedUSD < 0.001 && earnedUSD > 0
       ? '< $0.001'
       : '$' + earnedUSD.toLocaleString();
+
+  const rewards = stakingInfo?.dQuickToQuick * stakingInfo?.quickPrice;
 
   return (
     <Box className={classes.syrupCard}>
@@ -469,7 +475,12 @@ const FarmCard: React.FC<{
           {isMobile && (
             <Typography className={classes.syrupText}>Rewards</Typography>
           )}
-          <Typography variant='body2'>{poolRate}</Typography>
+          <Box>
+            <Typography variant='body2'>{`$${Number(
+              rewards.toFixed(0),
+            ).toLocaleString()} / day`}</Typography>
+            <Typography variant='body2'>{poolRate}</Typography>
+          </Box>
         </Box>
         <Box
           mb={isMobile ? 1.5 : 0}
@@ -499,6 +510,7 @@ const FarmCard: React.FC<{
             <Typography className={classes.syrupText}>Earned</Typography>
           )}
           <Box textAlign='right'>
+            <Typography variant='body2'>{earnedUSDStr}</Typography>
             <Box display='flex' alignItems='center' justifyContent='flex-end'>
               <CurrencyLogo currency={QUICK} size='16px' />
               <Typography variant='body2' style={{ marginLeft: 5 }}>
@@ -506,12 +518,6 @@ const FarmCard: React.FC<{
                 <span>&nbsp;dQUICK</span>
               </Typography>
             </Box>
-            <Typography
-              variant='body2'
-              style={{ color: palette.text.secondary }}
-            >
-              {earnedUSDStr}
-            </Typography>
           </Box>
         </Box>
       </Box>
@@ -559,7 +565,15 @@ const FarmCard: React.FC<{
                   </span>
                 </Typography>
                 <Link
-                  to={`/pools?currency0=${token0.address}&currency1=${token1.address}`}
+                  to={`/pools?currency0=${
+                    token0.symbol?.toLowerCase() === 'wmatic'
+                      ? 'ETH'
+                      : token0.address
+                  }&currency1=${
+                    token1.symbol?.toLowerCase() === 'wmatic'
+                      ? 'ETH'
+                      : token1.address
+                  }`}
                   style={{ color: palette.primary.main }}
                 >
                   Get {currency0.symbol} / {currency1.symbol} LP
@@ -745,19 +759,24 @@ const FarmCard: React.FC<{
             </Box>
             <Box
               className={
-                stakingInfo.earnedAmount.greaterThan('0')
+                !attemptClaiming && stakingInfo.earnedAmount.greaterThan('0')
                   ? classes.buttonClaim
                   : classes.buttonToken
               }
               mb={2}
               p={2}
               onClick={() => {
-                if (stakingInfo.earnedAmount.greaterThan('0')) {
+                if (
+                  !attemptClaiming &&
+                  stakingInfo.earnedAmount.greaterThan('0')
+                ) {
                   onClaimReward();
                 }
               }}
             >
-              <Typography variant='body1'>Claim</Typography>
+              <Typography variant='body1'>
+                {attemptClaiming ? 'Claiming...' : 'Claim'}
+              </Typography>
             </Box>
           </Box>
         </Box>
@@ -766,4 +785,4 @@ const FarmCard: React.FC<{
   );
 };
 
-export default FarmCard;
+export default FarmLPCard;

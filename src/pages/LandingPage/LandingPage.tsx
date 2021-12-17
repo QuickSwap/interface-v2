@@ -101,6 +101,9 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
         marginBottom: 24,
         textTransform: 'uppercase',
       },
+      [breakpoints.down('xs')]: {
+        height: 'unset',
+      },
     },
   },
   quickInfo: {

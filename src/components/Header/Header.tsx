@@ -109,7 +109,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
         },
       },
       '&:hover': {
-        background: palette.background.paper,
+        background: palette.secondary.dark,
         '& .subMenu': {
           display: 'block',
         },
@@ -126,7 +126,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       },
       '&.active': {
         color: palette.text.primary,
-        background: palette.background.paper,
+        background: palette.secondary.dark,
       },
       '&:last-child': {
         marginRight: 0,
