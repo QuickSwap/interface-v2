@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { useActiveWeb3React } from 'hooks';
 import { AppDispatch } from 'state';
 import { Box, Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { clearAllTransactions } from 'state/transactions/actions';
 import { shortenAddress, getEtherscanLink } from 'utils';
 import { SUPPORTED_WALLETS } from 'constants/index';
@@ -56,6 +56,7 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
 }) => {
   const { chainId, account, connector } = useActiveWeb3React();
   const classes = useStyles();
+  const { palette } = useTheme();
   const dispatch = useDispatch<AppDispatch>();
 
   function formatConnectorName() {
@@ -81,7 +82,12 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
         <Typography variant='h5'>Account</Typography>
         <Close style={{ cursor: 'pointer' }} onClick={toggleWalletModal} />
       </Box>
-      <Box mt={2} padding={2} borderRadius={10} bgcolor='#282d3d'>
+      <Box
+        mt={2}
+        padding={2}
+        borderRadius={10}
+        bgcolor={palette.secondary.dark}
+      >
         <Box display='flex' justifyContent='space-between' alignItems='center'>
           {formatConnectorName()}
           {connector !== injected &&

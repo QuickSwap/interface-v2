@@ -5,14 +5,14 @@ import { makeStyles } from '@material-ui/core/styles';
 import { SUGGESTED_BASES } from 'constants/index';
 import { CurrencyLogo, QuestionHelper } from 'components';
 
-const useStyles = makeStyles(({}) => ({
+const useStyles = makeStyles(({ palette }) => ({
   baseWrapper: {
     borderRadius: 18,
     display: 'flex',
     padding: '6px 10px',
     margin: '4px 8px 4px 0',
     alignItems: 'center',
-    backgroundColor: '#282d3d',
+    backgroundColor: palette.secondary.dark,
     '&:hover': {
       cursor: 'pointer',
     },
@@ -23,7 +23,7 @@ const useStyles = makeStyles(({}) => ({
   title: {
     '& span': {
       marginRight: 4,
-      color: '#696c80',
+      color: palette.text.secondary,
     },
   },
 }));

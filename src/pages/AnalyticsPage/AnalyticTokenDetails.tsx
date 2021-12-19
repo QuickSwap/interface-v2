@@ -26,7 +26,7 @@ import { ReactComponent as StarChecked } from 'assets/images/StarChecked.svg';
 import { ReactComponent as StarUnchecked } from 'assets/images/StarUnchecked.svg';
 import { getAddress } from '@ethersproject/address';
 
-const useStyles = makeStyles(({ breakpoints }) => ({
+const useStyles = makeStyles(({ palette, breakpoints }) => ({
   panel: {
     background: '#1b1d26',
     borderRadius: 20,
@@ -38,7 +38,7 @@ const useStyles = makeStyles(({ breakpoints }) => ({
   breadcrumb: {
     display: 'flex',
     alignItems: 'center',
-    color: '#636780',
+    color: palette.text.hint,
     marginBottom: 50,
     '& svg': {
       width: 12,
@@ -54,7 +54,7 @@ const useStyles = makeStyles(({ breakpoints }) => ({
   heading1: {
     fontSize: 32,
     fontWeight: 'bold',
-    color: '#ebecf2',
+    color: palette.text.primary,
     lineHeight: 1,
     [breakpoints.down('xs')]: {
       fontSize: 22,
@@ -65,7 +65,7 @@ const useStyles = makeStyles(({ breakpoints }) => ({
     fontSize: 20,
     lineHeight: 1.2,
     fontWeight: 600,
-    color: '#636780',
+    color: palette.text.hint,
     marginLeft: 6,
     [breakpoints.down('xs')]: {
       fontSize: 18,
@@ -85,7 +85,7 @@ const useStyles = makeStyles(({ breakpoints }) => ({
     height: 40,
     padding: '0 28px',
     borderRadius: 10,
-    color: '#ebecf2',
+    color: palette.text.primary,
     cursor: 'pointer',
   },
   filledButton: {
@@ -106,7 +106,7 @@ const AnalyticsTokenDetails: React.FC<{
   goBack: (index: number) => void;
 }> = ({ token, goBack }) => {
   const classes = useStyles();
-  const { breakpoints } = useTheme();
+  const { palette, breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const history = useHistory();
   const { chainId } = useActiveWeb3React();
@@ -270,7 +270,7 @@ const AnalyticsTokenDetails: React.FC<{
               )}
             </Box>
             <Box mt={1.25} display='flex' alignItems='center'>
-              <Typography variant='h5' style={{ color: '#ebecf2' }}>
+              <Typography variant='h5' style={{ color: palette.text.primary }}>
                 ${Number(token.priceUSD).toLocaleString()}
               </Typography>
               <Box
@@ -310,7 +310,7 @@ const AnalyticsTokenDetails: React.FC<{
           <Box
             className={classes.button}
             mr={1.5}
-            border='1px solid #448aff'
+            border={`1px solid ${palette.primary.main}`}
             onClick={() => {
               history.push(`/pools?currency0=${token.id}&currency1=ETH`);
             }}
@@ -343,7 +343,10 @@ const AnalyticsTokenDetails: React.FC<{
                   {chartData ? (
                     <>
                       <Box display='flex' alignItems='center'>
-                        <Typography variant='h4' style={{ color: '#ebecf2' }}>
+                        <Typography
+                          variant='h4'
+                          style={{ color: palette.text.primary }}
+                        >
                           $
                           {currentData > 100000
                             ? formatCompact(currentData)
@@ -447,7 +450,10 @@ const AnalyticsTokenDetails: React.FC<{
                 justifyContent='space-between'
               >
                 <Box width={180}>
-                  <Typography variant='caption' style={{ color: '#626680' }}>
+                  <Typography
+                    variant='caption'
+                    style={{ color: palette.text.disabled }}
+                  >
                     TOTAL LIQUIDITY
                   </Typography>
                   <Typography variant={isMobile ? 'body1' : 'h5'}>
@@ -455,7 +461,10 @@ const AnalyticsTokenDetails: React.FC<{
                   </Typography>
                 </Box>
                 <Box width={140}>
-                  <Typography variant='caption' style={{ color: '#626680' }}>
+                  <Typography
+                    variant='caption'
+                    style={{ color: palette.text.disabled }}
+                  >
                     7d Trading Vol
                   </Typography>
                   <Typography variant={isMobile ? 'body1' : 'h5'}>
@@ -470,7 +479,10 @@ const AnalyticsTokenDetails: React.FC<{
                 justifyContent='space-between'
               >
                 <Box width={180}>
-                  <Typography variant='caption' style={{ color: '#626680' }}>
+                  <Typography
+                    variant='caption'
+                    style={{ color: palette.text.disabled }}
+                  >
                     24h Trading Vol
                   </Typography>
                   <Typography variant={isMobile ? 'body1' : 'h5'}>
@@ -478,7 +490,10 @@ const AnalyticsTokenDetails: React.FC<{
                   </Typography>
                 </Box>
                 <Box width={140}>
-                  <Typography variant='caption' style={{ color: '#626680' }}>
+                  <Typography
+                    variant='caption'
+                    style={{ color: palette.text.disabled }}
+                  >
                     24h FEES
                   </Typography>
                   <Typography variant={isMobile ? 'body1' : 'h5'}>
@@ -493,16 +508,25 @@ const AnalyticsTokenDetails: React.FC<{
                 justifyContent='space-between'
               >
                 <Box width={180}>
-                  <Typography variant='caption' style={{ color: '#626680' }}>
+                  <Typography
+                    variant='caption'
+                    style={{ color: palette.text.disabled }}
+                  >
                     Contract Address
                   </Typography>
-                  <Typography variant='h5' style={{ color: '#448aff' }}>
+                  <Typography
+                    variant='h5'
+                    style={{ color: palette.primary.main }}
+                  >
                     {chainId ? (
                       <a
                         href={getEtherscanLink(chainId, token.id, 'address')}
                         target='_blank'
                         rel='noreferrer'
-                        style={{ color: '#448aff', textDecoration: 'none' }}
+                        style={{
+                          color: palette.primary.main,
+                          textDecoration: 'none',
+                        }}
                       >
                         {shortenAddress(token.id)}
                       </a>

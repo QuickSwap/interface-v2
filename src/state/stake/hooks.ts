@@ -7,7 +7,7 @@ import {
   Pair,
 } from '@uniswap/sdk';
 import { useMemo, useEffect /** , useState */ } from 'react';
-import { usePair } from 'data/Reserves';
+import { usePair, usePairs } from 'data/Reserves';
 
 import { client, healthClient } from 'apollo/client';
 import {
@@ -227,7 +227,9 @@ import {
 import { tryParseAmount } from 'state/swap/hooks';
 import Web3 from 'web3';
 import { useLairContract, useQUICKContract } from 'hooks/useContract';
-import useUSDCPrice from 'utils/useUSDCPrice';
+import useUSDCPrice, { useUSDCPrices } from 'utils/useUSDCPrice';
+import { unwrappedToken } from 'utils/wrappedCurrency';
+import { useTotalSupplys } from 'data/TotalSupply';
 
 const web3 = new Web3('https://polygon-rpc.com/');
 
@@ -252,6 +254,26 @@ export const SYRUP_REWARDS_INFO: {
   }[];
 } = {
   [ChainId.MATIC]: [
+    {
+      token: MM,
+      stakingRewardAddress: '0xB224d9F687538a2FAF8964DcAabb71bFe627Aee0',
+      ended: false,
+      lp: '',
+      name: '',
+      baseToken: USDC,
+      rate: 66.66666667,
+      ending: 1644296104,
+    },
+    {
+      token: ZIG,
+      stakingRewardAddress: '0xfE6174429a963bF4E25a80FE0B72d7Cce7Df6e2f',
+      ended: false,
+      lp: '',
+      name: '',
+      baseToken: QUICK,
+      rate: 37037.03333,
+      ending: 1646888104,
+    },
     {
       token: TECH,
       stakingRewardAddress: '0xD2C494057f57D845C67bb5825e83B657204875c8',
@@ -12331,6 +12353,8 @@ export interface StakingInfo {
 
   accountFee: number;
   dQuickToQuick: number;
+  tvl?: string;
+  perMonthReturnInRewards?: number;
   // calculates a hypothetical amount of token distributed to the active account per second.
   getHypotheticalRewardRate: (
     stakedAmount: TokenAmount,
@@ -12386,6 +12410,10 @@ export interface DualStakingInfo {
   oneDayFee: number;
 
   accountFee: number;
+
+  tvl?: string;
+  perMonthReturnInRewards?: number;
+  rewardTokenBPrice?: number;
   // calculates a hypothetical amount of token distributed to the active account per second.
   getHypotheticalRewardRate: (
     stakedAmount: TokenAmount,
@@ -12441,7 +12469,11 @@ export interface SyrupInfo {
   ) => TokenAmount;
 }
 
-export function useSyrupInfo(tokenToFilterBy?: Token | null): SyrupInfo[] {
+export function useSyrupInfo(
+  tokenToFilterBy?: Token | null,
+  startIndex?: number,
+  endIndex?: number,
+): SyrupInfo[] {
   const { chainId, account } = useActiveWeb3React();
   //const [quickPrice,setQuickPrice] = useState(0);
   const [, quickUsdcPair] = usePair(QUICK, USDC);
@@ -12449,16 +12481,18 @@ export function useSyrupInfo(tokenToFilterBy?: Token | null): SyrupInfo[] {
   const info = useMemo(
     () =>
       chainId
-        ? SYRUP_REWARDS_INFO[chainId]?.filter((stakingRewardInfo) =>
-            tokenToFilterBy === undefined
-              ? true
-              : tokenToFilterBy === null
-              ? true
-              : tokenToFilterBy.equals(stakingRewardInfo.token) &&
-                tokenToFilterBy.equals(stakingRewardInfo.token),
-          ) ?? []
+        ? SYRUP_REWARDS_INFO[chainId]
+            ?.slice(startIndex, endIndex)
+            .filter((stakingRewardInfo) =>
+              tokenToFilterBy === undefined
+                ? true
+                : tokenToFilterBy === null
+                ? true
+                : tokenToFilterBy.equals(stakingRewardInfo.token) &&
+                  tokenToFilterBy.equals(stakingRewardInfo.token),
+            ) ?? []
         : [],
-    [chainId, tokenToFilterBy],
+    [chainId, tokenToFilterBy, startIndex, endIndex],
   );
 
   const uni = chainId ? UNI[chainId] : undefined;
@@ -12859,10 +12893,10 @@ export function useOldSyrupInfo(tokenToFilterBy?: Token | null): SyrupInfo[] {
   ]);
 }
 
-const getBulkPairData = async (pairList: any) => {
-  if (pairs !== undefined) {
-    return;
-  }
+export const getBulkPairData = async (pairList: any) => {
+  // if (pairs !== undefined) {
+  //   return;
+  // }
   const current = await web3.eth.getBlockNumber();
   const oneDayOldBlock = current - 44000;
 
@@ -13045,6 +13079,8 @@ function parseData(data: any, oneDayData: any) {
 // gets the dual rewards staking info from the network for the active chain id
 export function useDualStakingInfo(
   pairToFilterBy?: Pair | null,
+  startIndex?: number,
+  endIndex?: number,
 ): DualStakingInfo[] {
   const { chainId, account } = useActiveWeb3React();
   //const [quickPrice,setQuickPrice] = useState(0);
@@ -13057,16 +13093,18 @@ export function useDualStakingInfo(
   const info = useMemo(
     () =>
       chainId
-        ? STAKING_DUAL_REWARDS_INFO[chainId]?.filter((stakingRewardInfo) =>
-            pairToFilterBy === undefined
-              ? true
-              : pairToFilterBy === null
-              ? true
-              : pairToFilterBy.involvesToken(stakingRewardInfo.tokens[0]) &&
-                pairToFilterBy.involvesToken(stakingRewardInfo.tokens[1]),
-          ) ?? []
+        ? STAKING_DUAL_REWARDS_INFO[chainId]
+            ?.slice(startIndex, endIndex)
+            ?.filter((stakingRewardInfo) =>
+              pairToFilterBy === undefined
+                ? true
+                : pairToFilterBy === null
+                ? true
+                : pairToFilterBy.involvesToken(stakingRewardInfo.tokens[0]) &&
+                  pairToFilterBy.involvesToken(stakingRewardInfo.tokens[1]),
+            ) ?? []
         : [],
-    [chainId, pairToFilterBy],
+    [chainId, pairToFilterBy, startIndex, endIndex],
   );
 
   const uni = chainId ? UNI[chainId] : undefined;
@@ -13075,11 +13113,11 @@ export function useDualStakingInfo(
     () => info.map(({ stakingRewardAddress }) => stakingRewardAddress),
     [info],
   );
-  const pairAddresses = useMemo(() => info.map(({ pair }) => pair), [info]);
+  // const pairAddresses = useMemo(() => info.map(({ pair }) => pair), [info]);
 
-  useEffect(() => {
-    getDualBulkPairData(pairAddresses);
-  }, [pairAddresses]);
+  // useEffect(() => {
+  //   getDualBulkPairData(pairAddresses);
+  // }, [pairAddresses]);
 
   const accountArg = useMemo(() => [account ?? undefined], [account]);
 
@@ -13130,6 +13168,31 @@ export function useDualStakingInfo(
     undefined,
     NEVER_RELOAD,
   );
+
+  const baseTokens = info.map((item) => {
+    const unwrappedCurrency = unwrappedToken(item.baseToken);
+    const empty = unwrappedToken(EMPTY);
+    return unwrappedCurrency === empty ? item.tokens[0] : item.baseToken;
+  });
+
+  const tokenPairs = usePairs(
+    info.map((item) => [item.rewardTokenB, item.rewardTokenBBase]),
+  );
+
+  const usdPrices = useUSDCPrices(baseTokens);
+  const totalSupplys = useTotalSupplys(
+    info.map((item) => {
+      const lp = item.lp;
+      const dummyPair = new Pair(
+        new TokenAmount(item.tokens[0], '0'),
+        new TokenAmount(item.tokens[1], '0'),
+      );
+      return lp && lp !== ''
+        ? new Token(137, lp, 18, 'SLP', 'Staked LP')
+        : dummyPair.liquidityToken;
+    }),
+  );
+  const stakingPairs = usePairs(info.map((item) => item.tokens));
 
   return useMemo(() => {
     if (!chainId || !uni) return [];
@@ -13266,6 +13329,60 @@ export function useDualStakingInfo(
             }
           }
 
+          let valueOfTotalStakedAmountInBaseToken: TokenAmount | undefined;
+
+          const [, stakingTokenPair] = stakingPairs[index];
+          const totalSupply = totalSupplys[index];
+          const usdPrice = usdPrices[index];
+
+          if (totalSupply && stakingTokenPair && baseTokens[index]) {
+            // take the total amount of LP tokens staked, multiply by ETH value of all LP tokens, divide by all LP tokens
+            valueOfTotalStakedAmountInBaseToken = new TokenAmount(
+              baseTokens[index],
+              JSBI.divide(
+                JSBI.multiply(
+                  JSBI.multiply(
+                    totalStakedAmount.raw,
+                    stakingTokenPair.reserveOf(baseTokens[index]).raw,
+                  ),
+                  JSBI.BigInt(2), // this is b/c the value of LP shares are ~double the value of the WETH they entitle owner to
+                ),
+                totalSupply.raw,
+              ),
+            );
+          }
+
+          const valueOfTotalStakedAmountInUSDC =
+            valueOfTotalStakedAmountInBaseToken &&
+            usdPrice?.quote(valueOfTotalStakedAmountInBaseToken);
+
+          const tvl = valueOfTotalStakedAmountInUSDC
+            ? valueOfTotalStakedAmountInUSDC.toSignificant()
+            : valueOfTotalStakedAmountInBaseToken?.toSignificant();
+
+          const perMonthReturnInRewards =
+            ((info[index].rateA * quickPrice + info[index].rateB * maticPrice) *
+              30) /
+            Number(valueOfTotalStakedAmountInUSDC?.toSignificant(6));
+
+          const [, rewardTokenBPair] = tokenPairs[index];
+
+          const rewardTokenBPriceInBaseToken = Number(
+            rewardTokenBPair
+              ?.priceOf(info[index].rewardTokenB)
+              ?.toSignificant(6),
+          );
+
+          let rewardTokenBPrice = 0;
+
+          if (info[index].rewardTokenBBase.equals(USDC)) {
+            rewardTokenBPrice = rewardTokenBPriceInBaseToken;
+          } else if (info[index].rewardTokenBBase.equals(QUICK)) {
+            rewardTokenBPrice = rewardTokenBPriceInBaseToken * quickPrice;
+          } else {
+            rewardTokenBPrice = rewardTokenBPriceInBaseToken * maticPrice;
+          }
+
           memo.push({
             stakingRewardAddress: rewardsAddress,
             tokens: info[index].tokens,
@@ -13301,6 +13418,9 @@ export function useDualStakingInfo(
             rewardTokenA: info[index].rewardTokenA,
             rewardTokenB: info[index].rewardTokenB,
             rewardTokenBBase: info[index].rewardTokenBBase,
+            rewardTokenBPrice,
+            tvl,
+            perMonthReturnInRewards,
           });
         }
         return memo;
@@ -13321,6 +13441,11 @@ export function useDualStakingInfo(
     maticPrice,
     rewardRatesA,
     rewardRatesB,
+    baseTokens,
+    totalSupplys,
+    usdPrices,
+    stakingPairs,
+    tokenPairs,
   ]);
 }
 
@@ -13396,7 +13521,11 @@ export function useLairInfo(): LairInfo {
 }
 
 // gets the staking info from the network for the active chain id
-export function useStakingInfo(pairToFilterBy?: Pair | null): StakingInfo[] {
+export function useStakingInfo(
+  pairToFilterBy?: Pair | null,
+  startIndex?: number,
+  endIndex?: number,
+): StakingInfo[] {
   const { chainId, account } = useActiveWeb3React();
   //const [quickPrice,setQuickPrice] = useState(0);
   const [, quickUsdcPair] = usePair(QUICK, USDC);
@@ -13404,16 +13533,18 @@ export function useStakingInfo(pairToFilterBy?: Pair | null): StakingInfo[] {
   const info = useMemo(
     () =>
       chainId
-        ? STAKING_REWARDS_INFO[chainId]?.filter((stakingRewardInfo) =>
-            pairToFilterBy === undefined
-              ? true
-              : pairToFilterBy === null
-              ? true
-              : pairToFilterBy.involvesToken(stakingRewardInfo.tokens[0]) &&
-                pairToFilterBy.involvesToken(stakingRewardInfo.tokens[1]),
-          ) ?? []
+        ? STAKING_REWARDS_INFO[chainId]
+            ?.slice(startIndex, endIndex)
+            ?.filter((stakingRewardInfo) =>
+              pairToFilterBy === undefined
+                ? true
+                : pairToFilterBy === null
+                ? true
+                : pairToFilterBy.involvesToken(stakingRewardInfo.tokens[0]) &&
+                  pairToFilterBy.involvesToken(stakingRewardInfo.tokens[1]),
+            ) ?? []
         : [],
-    [chainId, pairToFilterBy],
+    [chainId, pairToFilterBy, startIndex, endIndex],
   );
 
   const uni = chainId ? UNI[chainId] : undefined;
@@ -13422,11 +13553,11 @@ export function useStakingInfo(pairToFilterBy?: Pair | null): StakingInfo[] {
     () => info.map(({ stakingRewardAddress }) => stakingRewardAddress),
     [info],
   );
-  const pairAddresses = useMemo(() => info.map(({ pair }) => pair), [info]);
+  // const pairAddresses = useMemo(() => info.map(({ pair }) => pair), [info]);
 
-  useEffect(() => {
-    getBulkPairData(pairAddresses);
-  }, [pairAddresses]);
+  // useEffect(() => {
+  //   getBulkPairData(allPairAddress);
+  // }, [allPairAddress]);
 
   const lair = useLairContract();
   const args = useMemo(
@@ -13473,6 +13604,27 @@ export function useStakingInfo(pairToFilterBy?: Pair | null): StakingInfo[] {
     undefined,
     NEVER_RELOAD,
   );
+
+  const baseTokens = info.map((item) => {
+    const unwrappedCurrency = unwrappedToken(item.baseToken);
+    const empty = unwrappedToken(EMPTY);
+    return unwrappedCurrency === empty ? item.tokens[0] : item.baseToken;
+  });
+
+  const usdPrices = useUSDCPrices(baseTokens);
+  const totalSupplys = useTotalSupplys(
+    info.map((item) => {
+      const lp = item.lp;
+      const dummyPair = new Pair(
+        new TokenAmount(item.tokens[0], '0'),
+        new TokenAmount(item.tokens[1], '0'),
+      );
+      return lp && lp !== ''
+        ? new Token(137, lp, 18, 'SLP', 'Staked LP')
+        : dummyPair.liquidityToken;
+    }),
+  );
+  const stakingPairs = usePairs(info.map((item) => item.tokens));
 
   return useMemo(() => {
     if (!chainId || !uni) return [];
@@ -13596,6 +13748,41 @@ export function useStakingInfo(pairToFilterBy?: Pair | null): StakingInfo[] {
             }
           }
 
+          let valueOfTotalStakedAmountInBaseToken: TokenAmount | undefined;
+
+          const [, stakingTokenPair] = stakingPairs[index];
+          const totalSupply = totalSupplys[index];
+          const usdPrice = usdPrices[index];
+
+          if (totalSupply && stakingTokenPair && baseTokens[index]) {
+            // take the total amount of LP tokens staked, multiply by ETH value of all LP tokens, divide by all LP tokens
+            valueOfTotalStakedAmountInBaseToken = new TokenAmount(
+              baseTokens[index],
+              JSBI.divide(
+                JSBI.multiply(
+                  JSBI.multiply(
+                    totalStakedAmount.raw,
+                    stakingTokenPair.reserveOf(baseTokens[index]).raw,
+                  ),
+                  JSBI.BigInt(2), // this is b/c the value of LP shares are ~double the value of the WETH they entitle owner to
+                ),
+                totalSupply.raw,
+              ),
+            );
+          }
+
+          const valueOfTotalStakedAmountInUSDC =
+            valueOfTotalStakedAmountInBaseToken &&
+            usdPrice?.quote(valueOfTotalStakedAmountInBaseToken);
+
+          const tvl = valueOfTotalStakedAmountInUSDC
+            ? valueOfTotalStakedAmountInUSDC.toSignificant()
+            : valueOfTotalStakedAmountInBaseToken?.toSignificant();
+
+          const perMonthReturnInRewards =
+            (Number(dQuickToQuick) * Number(quickPrice) * 30) /
+            Number(valueOfTotalStakedAmountInUSDC?.toSignificant(6));
+
           memo.push({
             stakingRewardAddress: rewardsAddress,
             tokens: info[index].tokens,
@@ -13621,6 +13808,8 @@ export function useStakingInfo(pairToFilterBy?: Pair | null): StakingInfo[] {
             oneDayFee,
             accountFee,
             dQuickToQuick: dQuickToQuick,
+            tvl,
+            perMonthReturnInRewards,
           });
         }
         return memo;
@@ -13639,6 +13828,10 @@ export function useStakingInfo(pairToFilterBy?: Pair | null): StakingInfo[] {
     quickPrice,
     rewardRates,
     dQuickToQuicks,
+    baseTokens,
+    totalSupplys,
+    usdPrices,
+    stakingPairs,
   ]);
 }
 

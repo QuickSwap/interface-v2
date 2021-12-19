@@ -14,7 +14,7 @@ import {
   CircularProgress,
   ListItem,
 } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { FixedSizeList } from 'react-window';
 import { useActiveWeb3React } from 'hooks';
 import { useSelectedTokenList, WrappedTokenInfo } from 'state/lists/hooks';
@@ -36,7 +36,7 @@ function currencyKey(currency: Token): string {
     : '';
 }
 
-const useStyles = makeStyles(({}) => ({
+const useStyles = makeStyles(({ palette }) => ({
   tag: {
     fontSize: 14,
     borderRadius: 4,
@@ -68,20 +68,21 @@ const useStyles = makeStyles(({}) => ({
     },
   },
   currencySymbol: {
-    color: '#c7cad9',
+    color: palette.text.primary,
     lineHeight: 1,
   },
   currencyName: {
-    color: '#696c80',
+    color: palette.text.secondary,
   },
 }));
 
 function Balance({ balance }: { balance: CurrencyAmount }) {
+  const { palette } = useTheme();
   return (
     <Typography
       variant='body2'
       title={balance.toExact()}
-      style={{ color: '#c7cad9' }}
+      style={{ color: palette.text.primary }}
     >
       {balance.toSignificant(4)}
     </Typography>
@@ -137,6 +138,7 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
 }) => {
   const { ethereum } = window as any;
   const classes = useStyles();
+  const { palette } = useTheme();
 
   const { account, chainId } = useActiveWeb3React();
   const key = currencyKey(currency);
@@ -260,7 +262,10 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
           {balance ? (
             <>
               <Balance balance={balance} />
-              <Typography variant='caption' style={{ color: '#696c80' }}>
+              <Typography
+                variant='caption'
+                style={{ color: palette.text.secondary }}
+              >
                 $
                 {(
                   Number(balance.toSignificant()) *

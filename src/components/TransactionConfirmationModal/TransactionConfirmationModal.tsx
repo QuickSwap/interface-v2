@@ -10,7 +10,7 @@ import { getEtherscanLink } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import ModalBg from 'assets/images/ModalBG.svg';
 
-const useStyles = makeStyles(({}) => ({
+const useStyles = makeStyles(({ palette }) => ({
   modalHeader: {
     display: 'flex',
     alignItems: 'center',
@@ -38,7 +38,7 @@ const useStyles = makeStyles(({}) => ({
   modalContent: {
     marginTop: 20,
     padding: '16px 0',
-    color: '#c7cad9',
+    color: palette.text.primary,
     textAlign: 'center',
     '& p': {
       margin: '16px 0',
@@ -49,10 +49,10 @@ const useStyles = makeStyles(({}) => ({
     height: 50,
     fontSize: 14,
     borderRadius: 10,
-    color: '#c7cad9',
-    background: '#282d3d',
+    color: palette.text.primary,
+    background: palette.secondary.dark,
     '&:hover': {
-      background: '#282d3d',
+      background: palette.secondary.dark,
     },
   },
 }));

@@ -28,14 +28,14 @@ import { isAddress } from 'utils';
 import { filterTokens } from 'utils/filtering';
 import { useTokenComparator } from 'utils/sorting';
 
-const useStyles = makeStyles(({ breakpoints }) => ({
+const useStyles = makeStyles(({ palette, breakpoints }) => ({
   wrapper: {
     padding: '32px 24px 0',
     height: 620,
     borderRadius: 20,
     display: 'flex',
     flexDirection: 'column',
-    background: '#1b1e29',
+    background: palette.background.paper,
     backdropFilter: 'blur(9.9px)',
     border: '1px solid #3e4252',
     [breakpoints.down('xs')]: {
@@ -52,7 +52,7 @@ const useStyles = makeStyles(({ breakpoints }) => ({
       cursor: 'pointer',
     },
     '& h6': {
-      color: '#c7cad9',
+      color: palette.text.primary,
       fontWeight: 600,
     },
   },
@@ -67,7 +67,7 @@ const useStyles = makeStyles(({ breakpoints }) => ({
     borderRadius: 12,
     outline: 'none',
     border: 'solid 2px rgba(105, 108, 128, 0.12)',
-    backgroundColor: '#12131a',
+    backgroundColor: palette.background.default,
     '& svg': {
       marginRight: 12,
     },
@@ -79,13 +79,12 @@ const useStyles = makeStyles(({ breakpoints }) => ({
       outline: 'none',
       fontSize: 14,
       fontWeight: 500,
-      color: '#696c80',
+      color: palette.text.secondary,
       fontFamily: "'Inter', sans-serif",
     },
   },
   footer: {
-    backgroundImage:
-      'linear-gradient(to bottom, rgba(27, 30, 41, 0), #1b1e29 64%)',
+    backgroundImage: `linear-gradient(to bottom, rgba(27, 30, 41, 0), ${palette.background.paper} 64%)`,
     width: '100%',
     height: 64,
     position: 'absolute',

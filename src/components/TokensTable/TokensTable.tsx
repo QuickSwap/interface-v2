@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Typography, Divider } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { getAddress } from '@ethersproject/address';
 import { ChainId, Token } from '@uniswap/sdk';
 import { CurrencyLogo, CustomTable } from 'components';
@@ -67,6 +67,7 @@ const headCells = () => [
 const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
   const tokenHeadCells = headCells();
   const classes = useStyles();
+  const { palette } = useTheme();
   const {
     bookmarkTokens,
     addBookmarkToken,
@@ -110,9 +111,14 @@ const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
           >
             <CurrencyLogo currency={tokenCurrency} size='28px' />
             <Box ml={1}>
-              <Typography variant='body1' style={{ color: '#ebecf2' }}>
+              <Typography
+                variant='body1'
+                style={{ color: palette.text.primary }}
+              >
                 {token.name}{' '}
-                <span style={{ color: '#636780' }}>({token.symbol})</span>
+                <span style={{ color: palette.text.hint }}>
+                  ({token.symbol})
+                </span>
               </Typography>
             </Box>
           </Box>
@@ -210,9 +216,14 @@ const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
             >
               <CurrencyLogo currency={tokenCurrency} size='28px' />
               <Box ml={1}>
-                <Typography variant='body1' style={{ color: '#ebecf2' }}>
+                <Typography
+                  variant='body1'
+                  style={{ color: palette.text.primary }}
+                >
                   {token.name}{' '}
-                  <span style={{ color: '#636780' }}>({token.symbol})</span>
+                  <span style={{ color: palette.text.hint }}>
+                    ({token.symbol})
+                  </span>
                 </Typography>
               </Box>
             </Box>

@@ -60,7 +60,6 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     textAlign: 'center',
     zIndex: 2,
     '& h3': {
-      color: 'white',
       textTransform: 'uppercase',
       marginBottom: 20,
     },
@@ -101,6 +100,9 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       '& p': {
         marginBottom: 24,
         textTransform: 'uppercase',
+      },
+      [breakpoints.down('xs')]: {
+        height: 'unset',
       },
     },
   },
@@ -178,7 +180,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
         alignItems: 'center',
         background: 'transparent',
         border: `1px solid ${palette.primary.dark}`,
-        color: '#696c80',
+        color: palette.text.secondary,
         '&.active': {
           background: '#FFFFFFDE',
           border: `1px solid transparent`,
@@ -215,20 +217,15 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
   rewardsContainer: {
     textAlign: 'center',
     margin: '172px 0 100px 0',
-    '& h3': {
-      marginBottom: 24,
-    },
-    '& > button': {
-      width: 194,
-      height: 48,
-      borderRadius: 50,
-    },
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
     [breakpoints.down('xs')]: {
       margin: '32px 0 64px',
     },
   },
   buyFiatContainer: {
-    background: palette.primary.dark,
+    background: palette.background.paper,
     height: 338,
     borderRadius: 48,
     marginBottom: 160,
@@ -406,6 +403,9 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
         fill: '#3e4252',
       },
     },
+    [breakpoints.down('xs')]: {
+      display: 'none',
+    },
   },
 }));
 
@@ -413,12 +413,12 @@ const LandingPage: React.FC = () => {
   const classes = useStyles();
   const [swapIndex, setSwapIndex] = useState(0);
   const [openStakeModal, setOpenStakeModal] = useState(false);
-  const theme = useTheme();
+  const { palette, breakpoints } = useTheme();
   const { account } = useActiveWeb3React();
   const { ethereum } = window as any;
   const isnotMatic =
     ethereum && ethereum.isMetaMask && Number(ethereum.chainId) !== 137;
-  const mobileWindowSize = useMediaQuery(theme.breakpoints.down('sm'));
+  const mobileWindowSize = useMediaQuery(breakpoints.down('sm'));
   const { initTransak } = useInitTransak();
   const allTokens = useAllTokens();
   const toggleWalletModal = useWalletModalToggle();
@@ -563,10 +563,7 @@ const LandingPage: React.FC = () => {
         />
       )}
       <Box className={classes.heroSection}>
-        <Typography
-          variant='body2'
-          style={{ color: 'white', fontWeight: 'bold' }}
-        >
+        <Typography variant='body2' style={{ fontWeight: 'bold' }}>
           Total Value Locked
         </Typography>
         {globalData ? (
@@ -574,10 +571,7 @@ const LandingPage: React.FC = () => {
             <Typography variant='h3' style={{ paddingTop: '9px' }}>
               $
             </Typography>
-            <Typography
-              color='textSecondary'
-              style={{ fontSize: '55px', fontWeight: 700 }}
-            >
+            <Typography style={{ fontSize: '55px', fontWeight: 700 }}>
               {Number(globalData.totalLiquidityUSD).toLocaleString(undefined, {
                 maximumFractionDigits: 0,
               })}
@@ -588,7 +582,7 @@ const LandingPage: React.FC = () => {
             <Skeleton variant='rect' width={400} height={72} />
           </Box>
         )}
-        <Typography style={{ fontSize: '15px', color: '#696c80' }}>
+        <Typography style={{ fontSize: '15px', color: palette.text.secondary }}>
           Top Asset Exchange on the Polygon Network
         </Typography>
         <Box mt={2} width={200} height={48}>
@@ -627,7 +621,11 @@ const LandingPage: React.FC = () => {
             <Skeleton variant='rect' width={100} height={45} />
           )}
           <Typography
-            style={{ fontSize: '12px', color: '#696c80', paddingTop: '15px' }}
+            style={{
+              fontSize: '12px',
+              color: palette.text.secondary,
+              paddingTop: '15px',
+            }}
           >
             24H TRANSACTIONS
           </Typography>
@@ -646,7 +644,11 @@ const LandingPage: React.FC = () => {
             <Skeleton variant='rect' width={100} height={45} />
           )}
           <Typography
-            style={{ fontSize: '12px', color: '#696c80', paddingTop: '15px' }}
+            style={{
+              fontSize: '12px',
+              color: palette.text.secondary,
+              paddingTop: '15px',
+            }}
           >
             24H TRADING VOLUME
           </Typography>
@@ -665,7 +667,11 @@ const LandingPage: React.FC = () => {
             <Skeleton variant='rect' width={100} height={45} />
           )}
           <Typography
-            style={{ fontSize: '12px', color: '#696c80', paddingTop: '15px' }}
+            style={{
+              fontSize: '12px',
+              color: palette.text.secondary,
+              paddingTop: '15px',
+            }}
           >
             24h REWARDS DISTRIBUTED
           </Typography>
@@ -681,7 +687,11 @@ const LandingPage: React.FC = () => {
             <Skeleton variant='rect' width={100} height={45} />
           )}
           <Typography
-            style={{ fontSize: '12px', color: '#696c80', paddingTop: '15px' }}
+            style={{
+              fontSize: '12px',
+              color: palette.text.secondary,
+              paddingTop: '15px',
+            }}
           >
             TOTAL TRADING PAIRS
           </Typography>
@@ -695,12 +705,20 @@ const LandingPage: React.FC = () => {
             <Skeleton variant='rect' width={100} height={45} />
           )}
           <Box
-            style={{ fontSize: '12px', color: '#696c80', paddingTop: '15px' }}
+            style={{
+              fontSize: '12px',
+              color: palette.text.secondary,
+              paddingTop: '15px',
+            }}
           >
             dQUICK APY
           </Box>
           <Typography
-            style={{ color: '#448aff', fontSize: '12px', cursor: 'pointer' }}
+            style={{
+              color: palette.primary.main,
+              fontSize: '12px',
+              cursor: 'pointer',
+            }}
             onClick={() => setOpenStakeModal(true)}
           >
             stake {'>'}
@@ -717,7 +735,7 @@ const LandingPage: React.FC = () => {
         ))}
       </Box>
       <Box mt={2} width={1}>
-        <TopMovers background='transparent' />
+        <TopMovers background={palette.background.paper} />
       </Box>
       <Box className={classes.quickInfo}>
         <Typography style={{ fontSize: '24px' }}>
@@ -734,13 +752,13 @@ const LandingPage: React.FC = () => {
             className={swapIndex === 0 ? 'active' : ''}
             onClick={() => setSwapIndex(0)}
           >
-            Market
+            Swap
           </Button>
           <Button
             className={swapIndex === 1 ? 'active' : ''}
             onClick={() => setSwapIndex(1)}
           >
-            Limit
+            Add Liquidity
           </Button>
         </ButtonGroup>
       </Box>
@@ -773,15 +791,22 @@ const LandingPage: React.FC = () => {
         </Typography>
         <Typography variant='body2'>in $QUICK on top of LP Fees.</Typography>
         <RewardSlider />
-        <Button
-          variant='contained'
-          color='secondary'
+        <Box
+          bgcolor={palette.secondary.dark}
+          color={palette.text.primary}
+          width={194}
+          height={48}
+          display='flex'
+          alignItems='center'
+          justifyContent='center'
+          borderRadius={24}
+          style={{ cursor: 'pointer' }}
           onClick={() => {
             history.push('/farm');
           }}
         >
-          See all pairs
-        </Button>
+          <Typography variant='body1'>See all pairs</Typography>
+        </Box>
       </Box>
       <Box className={classes.buyFiatContainer}>
         <img src={FiatMask} alt='Fiat Mask' />

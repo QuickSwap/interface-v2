@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { Box, Divider, Typography } from '@material-ui/core';
 import { KeyboardArrowDown } from '@material-ui/icons';
 import { AlertTriangle } from 'react-feather';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { CustomModal, QuestionHelper, ToggleSwitch } from 'components';
 import cx from 'classnames';
 import {
@@ -22,12 +22,12 @@ enum DeadlineError {
   InvalidInput = 'InvalidInput',
 }
 
-const useStyles = makeStyles(({}) => ({
+const useStyles = makeStyles(({ palette }) => ({
   slippageButton: {
     width: 62,
     height: 40,
     borderRadius: 10,
-    border: 'solid 1px #252833',
+    border: `solid 1px ${palette.secondary.light}`,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -35,7 +35,7 @@ const useStyles = makeStyles(({}) => ({
     marginRight: 16,
   },
   activeSlippageButton: {
-    background: '#448aff',
+    background: palette.primary.main,
   },
   settingsInput: {
     background: 'transparent',
@@ -56,6 +56,7 @@ interface SettingsModalProps {
 
 const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
   const classes = useStyles();
+  const { palette } = useTheme();
   const [
     userSlippageTolerance,
     setUserslippageTolerance,
@@ -169,8 +170,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
             px={2}
             display='flex'
             alignItems='center'
-            bgcolor='#12131a'
-            border='1px solid #252833'
+            bgcolor={palette.background.default}
+            border={`1px solid ${palette.secondary.light}`}
           >
             <input
               style={{ textAlign: 'left' }}
@@ -266,9 +267,11 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
               px={2}
               display='flex'
               alignItems='center'
-              bgcolor='#12131a'
+              bgcolor={palette.background.default}
               border={`1px solid
-                ${slippageAlert ? '#448aff' : '#252833'}
+                ${
+                  slippageAlert ? palette.primary.main : palette.secondary.light
+                }
               `}
             >
               {slippageAlert && <AlertTriangle color='#ffa000' size={16} />}
@@ -314,8 +317,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
             px={2}
             display='flex'
             alignItems='center'
-            bgcolor='#12131a'
-            border='1px solid #252833'
+            bgcolor={palette.background.default}
+            border={`1px solid ${palette.secondary.light}`}
             maxWidth={168}
           >
             <input

@@ -24,7 +24,7 @@ import AnalyticsInfo from './AnalyticsInfo';
 
 dayjs.extend(utc);
 
-const useStyles = makeStyles(({}) => ({
+const useStyles = makeStyles(({ palette }) => ({
   panel: {
     background: '#1b1d26',
     borderRadius: 20,
@@ -38,14 +38,14 @@ const useStyles = makeStyles(({}) => ({
     borderRadius: 10,
     cursor: 'pointer',
     '& span': {
-      color: '#ebecf2',
+      color: palette.text.primary,
     },
   },
   headingWrapper: {
     display: 'flex',
     alignItems: 'center',
     '& h6': {
-      color: '#626680',
+      color: palette.text.disabled,
     },
     '& svg': {
       height: 16,
@@ -65,7 +65,7 @@ const AnalyticsOverview: React.FC<AnalyticsOverViewProps> = ({
   showAllPairs,
 }) => {
   const classes = useStyles();
-  const { breakpoints } = useTheme();
+  const { palette, breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const [volumeIndex, setVolumeIndex] = useState(0);
   const [selectedVolumeIndex, setSelectedVolumeIndex] = useState(-1);
@@ -263,14 +263,17 @@ const AnalyticsOverview: React.FC<AnalyticsOverViewProps> = ({
           <Box className={classes.panel} padding={isMobile ? 1.5 : 3} width={1}>
             <Typography
               variant='caption'
-              style={{ color: '#626680', fontWeight: 'bold' }}
+              style={{ color: palette.text.disabled, fontWeight: 'bold' }}
             >
               LIQUIDITY
             </Typography>
             {globalChartData ? (
               <>
                 <Box mt={0.5} display='flex' alignItems='center'>
-                  <Typography variant='h5' style={{ color: '#ebecf2' }}>
+                  <Typography
+                    variant='h5'
+                    style={{ color: palette.text.primary }}
+                  >
                     $
                     {formatCompact(
                       globalChartData.day[globalChartData.day.length - 1]
@@ -294,10 +297,10 @@ const AnalyticsOverview: React.FC<AnalyticsOverViewProps> = ({
                       style={{
                         color:
                           liquidityPercent > 0
-                            ? '#0fc679'
+                            ? palette.success.main
                             : liquidityPercent < 0
-                            ? '#ff5252'
-                            : '#636780',
+                            ? palette.error.main
+                            : palette.text.hint,
                       }}
                       variant='caption'
                     >
@@ -308,7 +311,10 @@ const AnalyticsOverview: React.FC<AnalyticsOverViewProps> = ({
                   </Box>
                 </Box>
                 <Box>
-                  <Typography style={{ color: '#626680' }} variant='caption'>
+                  <Typography
+                    style={{ color: palette.text.disabled }}
+                    variant='caption'
+                  >
                     {moment(
                       globalChartData.day[globalChartData.day.length - 1].date *
                         1000,
@@ -340,7 +346,7 @@ const AnalyticsOverview: React.FC<AnalyticsOverViewProps> = ({
             <Box display='flex' justifyContent='space-between'>
               <Typography
                 variant='caption'
-                style={{ color: '#626680', fontWeight: 'bold' }}
+                style={{ color: palette.text.disabled, fontWeight: 'bold' }}
               >
                 VOLUME
               </Typography>
@@ -365,7 +371,10 @@ const AnalyticsOverview: React.FC<AnalyticsOverViewProps> = ({
             {globalChartData && selectedVolumeIndex > -1 ? (
               <>
                 <Box mt={0.5} display='flex' alignItems='center'>
-                  <Typography variant='h5' style={{ color: '#ebecf2' }}>
+                  <Typography
+                    variant='h5'
+                    style={{ color: palette.text.primary }}
+                  >
                     $
                     {formatCompact(
                       globalChartData.day[selectedVolumeIndex].dailyVolumeUSD,
@@ -388,10 +397,10 @@ const AnalyticsOverview: React.FC<AnalyticsOverViewProps> = ({
                       style={{
                         color:
                           volumePercent > 0
-                            ? '#0fc679'
+                            ? palette.success.main
                             : volumePercent < 0
-                            ? '#ff5252'
-                            : '#636780',
+                            ? palette.error.main
+                            : palette.text.hint,
                       }}
                       variant='caption'
                     >
@@ -402,7 +411,10 @@ const AnalyticsOverview: React.FC<AnalyticsOverViewProps> = ({
                   </Box>
                 </Box>
                 <Box>
-                  <Typography style={{ color: '#626680' }} variant='caption'>
+                  <Typography
+                    style={{ color: palette.text.disabled }}
+                    variant='caption'
+                  >
                     {moment(
                       globalChartData.day[selectedVolumeIndex].date * 1000,
                     ).format('MMM DD, YYYY')}

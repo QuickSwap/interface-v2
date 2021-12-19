@@ -2,7 +2,6 @@ import React, { useMemo, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Box, Button, Typography, useMediaQuery } from '@material-ui/core';
 import cx from 'classnames';
-import Hamburger from 'hamburger-react';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { useWalletModalToggle } from 'state/application/hooks';
 import {
@@ -14,6 +13,7 @@ import { shortenAddress, addMaticToMetamask } from 'utils';
 import useENSName from 'hooks/useENSName';
 import { WalletModal } from 'components';
 import { useActiveWeb3React } from 'hooks';
+import QuickIcon from 'assets/images/quickIcon.svg';
 import QuickLogo from 'assets/images/quickLogo.svg';
 import { ReactComponent as ThreeDotIcon } from 'assets/images/ThreeDot.svg';
 import { ReactComponent as LightIcon } from 'assets/images/LightIcon.svg';
@@ -98,7 +98,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
         position: 'absolute',
         left: 0,
         top: 14,
-        background: '#1b1e29',
+        background: palette.background.paper,
         borderRadius: 10,
         padding: '14px 0',
         '& > a': {
@@ -109,7 +109,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
         },
       },
       '&:hover': {
-        background: '#1b1e29',
+        background: palette.secondary.dark,
         '& .subMenu': {
           display: 'block',
         },
@@ -119,14 +119,14 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       textDecoration: 'none',
       padding: '7.5px 24px',
       marginRight: 12,
-      color: '#696c80',
+      color: palette.text.secondary,
       borderRadius: 10,
       '& p': {
         letterSpacing: 'normal',
       },
       '&.active': {
-        color: '#ebecf2',
-        background: '#1b1e29',
+        color: palette.text.primary,
+        background: palette.secondary.dark,
       },
       '&:last-child': {
         marginRight: 0,
@@ -152,7 +152,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     },
   },
   mobileMenuWrapper: {
-    background: '#121319',
+    background: palette.secondary.contrastText,
     position: 'absolute',
     top: 80,
     left: 0,
@@ -175,7 +175,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     height: 32,
     width: '100%',
     '& p': {
-      color: '#ebecf2',
+      color: palette.text.primary,
     },
     '& svg, & img': {
       width: 32,
@@ -211,10 +211,10 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     backgroundColor: '#004ce6',
   },
   danger: {
-    backgroundColor: '#ff5252',
+    backgroundColor: palette.error.main,
   },
   wrongNetworkContent: {
-    background: '#1b1e29',
+    background: palette.background.paper,
     borderRadius: 10,
     padding: 24,
     display: 'none',
@@ -231,10 +231,30 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       justifyContent: 'center',
       alignItems: 'center',
       borderRadius: 20,
-      border: 'solid 1px #448aff',
-      color: '#448aff',
+      border: `solid 1px ${palette.primary.main}`,
+      color: palette.primary.main,
       fontSize: 14,
       fontWeight: 600,
+    },
+  },
+  mobileMenu: {
+    background: palette.secondary.dark,
+    position: 'fixed',
+    left: 0,
+    bottom: 0,
+    height: 64,
+    width: '100%',
+    justifyContent: 'center',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    '& a': {
+      textDecoration: 'none',
+      padding: '8px 12px',
+      color: palette.text.secondary,
+      fontWeight: 'bold',
+      '&.active': {
+        color: palette.primary.main,
+      },
     },
   },
 }));
@@ -249,6 +269,7 @@ const Header: React.FC = () => {
   const { account } = useActiveWeb3React();
   const { ENSName } = useENSName(account ?? undefined);
   const { ethereum } = window as any;
+  const [openDetailMenu, setOpenDetailMenu] = useState(false);
   const theme = useTheme();
   const allTransactions = useAllTransactions();
   const sortedRecentTransactions = useMemo(() => {
@@ -264,7 +285,8 @@ const Header: React.FC = () => {
     .map((tx: any) => tx.hash);
   const isnotMatic =
     ethereum && ethereum.isMetaMask && Number(ethereum.chainId) !== 137;
-  const mobileWindowSize = useMediaQuery(theme.breakpoints.down('sm'));
+  const tabletWindowSize = useMediaQuery(theme.breakpoints.down('sm'));
+  const mobileWindowSize = useMediaQuery(theme.breakpoints.down('xs'));
   const toggleWalletModal = useWalletModalToggle();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuItems = [
@@ -325,9 +347,9 @@ const Header: React.FC = () => {
         confirmedTransactions={confirmed}
       />
       <Link to='/' onClick={() => setMenuOpen(false)}>
-        <img src={QuickLogo} alt='QuickLogo' />
+        <img src={mobileWindowSize ? QuickIcon : QuickLogo} alt='QuickLogo' />
       </Link>
-      {!mobileWindowSize && (
+      {!tabletWindowSize && (
         <Box className={classes.mainMenu}>
           {menuItems.map((val, index) => (
             <Link
@@ -358,58 +380,104 @@ const Header: React.FC = () => {
           </Box>
         </Box>
       )}
-      {mobileWindowSize ? (
-        <Hamburger toggled={menuOpen} toggle={setMenuOpen} />
-      ) : (
-        <Box>
-          <Box
-            width={36}
-            height={36}
-            display='flex'
-            alignItems='center'
-            justifyContent='center'
-            marginRight={1}
-          >
-            <LightIcon />
-          </Box>
-          {account ? (
-            <Box className={classes.accountDetails} onClick={toggleWalletModal}>
-              <Typography>{shortenAddress(account)}</Typography>
-              <img src={WalletIcon} alt='Wallet' />
-            </Box>
-          ) : (
-            <Box
-              className={cx(
-                classes.connectButton,
-                isnotMatic ? classes.danger : classes.primary,
-              )}
-              onClick={() => {
-                if (!isnotMatic) {
-                  toggleWalletModal();
-                }
-              }}
+      {tabletWindowSize && (
+        <Box className={classes.mobileMenu}>
+          {menuItems.slice(0, 4).map((val, index) => (
+            <Link
+              to={val.link}
+              key={index}
+              className={val.link === pathname ? 'active' : 'menuItem'}
             >
-              {isnotMatic ? 'Wrong Network' : 'Connect Wallet'}
-              {isnotMatic && (
-                <Box
-                  position='absolute'
-                  top={36}
-                  width={272}
-                  right={0}
-                  paddingTop='18px'
-                >
-                  <Box className={classes.wrongNetworkContent}>
-                    <Typography variant='body2'>
-                      Please switch your wallet to Polygon Network.
-                    </Typography>
-                    <Box onClick={addMaticToMetamask}>Switch to Polygon</Box>
-                  </Box>
+              <Typography variant='body2'>{val.text}</Typography>
+            </Link>
+          ))}
+          <Box display='flex' className='menuItem'>
+            <ThreeDotIcon onClick={() => setOpenDetailMenu(!openDetailMenu)} />
+            {openDetailMenu && (
+              <Box
+                position='absolute'
+                bottom={72}
+                right={12}
+                width={209}
+                bgcolor={theme.palette.secondary.dark}
+                borderRadius={20}
+                py={1}
+                border={`1px solid ${theme.palette.divider}`}
+              >
+                <Box className='subMenu'>
+                  {menuItems.slice(4, menuItems.length).map((val, index) => (
+                    <Link
+                      to={val.link}
+                      key={index}
+                      className={val.link === pathname ? 'active' : 'menuItem'}
+                      onClick={() => setOpenDetailMenu(false)}
+                    >
+                      <Typography variant='body2'>{val.text}</Typography>
+                    </Link>
+                  ))}
+                  {outLinks.map((item, ind) => (
+                    <a
+                      href={item.link}
+                      key={ind}
+                      onClick={() => setOpenDetailMenu(false)}
+                    >
+                      <Typography variant='body2'>{item.text}</Typography>
+                    </a>
+                  ))}
                 </Box>
-              )}
-            </Box>
-          )}
+              </Box>
+            )}
+          </Box>
         </Box>
       )}
+      <Box>
+        <Box
+          width={36}
+          height={36}
+          display='flex'
+          alignItems='center'
+          justifyContent='center'
+          marginRight={1}
+        >
+          <LightIcon />
+        </Box>
+        {account ? (
+          <Box className={classes.accountDetails} onClick={toggleWalletModal}>
+            <Typography>{shortenAddress(account)}</Typography>
+            <img src={WalletIcon} alt='Wallet' />
+          </Box>
+        ) : (
+          <Box
+            className={cx(
+              classes.connectButton,
+              isnotMatic ? classes.danger : classes.primary,
+            )}
+            onClick={() => {
+              if (!isnotMatic) {
+                toggleWalletModal();
+              }
+            }}
+          >
+            {isnotMatic ? 'Wrong Network' : 'Connect Wallet'}
+            {isnotMatic && (
+              <Box
+                position='absolute'
+                top={36}
+                width={272}
+                right={0}
+                paddingTop='18px'
+              >
+                <Box className={classes.wrongNetworkContent}>
+                  <Typography variant='body2'>
+                    Please switch your wallet to Polygon Network.
+                  </Typography>
+                  <Box onClick={addMaticToMetamask}>Switch to Polygon</Box>
+                </Box>
+              </Box>
+            )}
+          </Box>
+        )}
+      </Box>
       {mobileWindowSize && (
         <Box
           className={cx(

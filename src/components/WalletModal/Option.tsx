@@ -21,7 +21,7 @@ const useStyles = makeStyles(({ palette }) => ({
   },
   optionCardClickable: {
     border: `1px solid transparent`,
-    background: '#282d3d',
+    background: palette.secondary.dark,
     borderRadius: 10,
     display: 'flex',
     justifyContent: 'space-between',
@@ -32,6 +32,9 @@ const useStyles = makeStyles(({ palette }) => ({
       cursor: 'pointer',
       border: `1px solid ${palette.primary.main}`,
     },
+  },
+  optionLink: {
+    color: palette.text.primary,
   },
 }));
 
@@ -83,7 +86,12 @@ const Option: React.FC<OptionProps> = ({
   );
   if (link) {
     return (
-      <a href={link} target='_blank' rel='noreferrer'>
+      <a
+        href={link}
+        target='_blank'
+        rel='noreferrer'
+        className={classes.optionLink}
+      >
         {content}
       </a>
     );

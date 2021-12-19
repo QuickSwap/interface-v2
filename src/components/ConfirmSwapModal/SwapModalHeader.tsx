@@ -16,7 +16,7 @@ const useStyles = makeStyles(({ palette }) => ({
     flexDirection: 'column',
     alignItems: 'center',
     '& p': {
-      color: '#c7cad9',
+      color: palette.text.primary,
     },
     '& svg': {
       margin: '12px 0',
@@ -30,7 +30,7 @@ const useStyles = makeStyles(({ palette }) => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    color: palette.secondary.dark,
+    color: palette.primary.main,
     '& > div': {
       display: 'flex',
       alignItems: 'center',
@@ -38,14 +38,14 @@ const useStyles = makeStyles(({ palette }) => ({
   },
   transactionText: {
     marginTop: '32px',
-    color: '#696c80',
+    color: palette.text.secondary,
     textAlign: 'center',
     '& p': {
       marginBottom: 16,
     },
   },
   swapButton: {
-    backgroundImage: 'linear-gradient(to bottom, #448aff, #004ce6)',
+    backgroundImage: `linear-gradient(to bottom, ${palette.primary.main}, #004ce6)`,
     width: '100%',
     height: 56,
     marginTop: 20,
@@ -98,28 +98,28 @@ const SwapModalHeader: React.FC<SwapModalHeaderProps> = ({
           {trade.outputAmount.currency.symbol}
         </Typography>
       </Box>
-      {showAcceptChanges && (
-        <Box className={classes.priceUpdate}>
-          <Box>
-            <AlertTriangle
-              size={20}
-              style={{ marginRight: '8px', minWidth: 24 }}
-            />
-            <Typography> Price Updated</Typography>
-          </Box>
-          <Button
-            style={{
-              padding: '.5rem',
-              width: 'fit-content',
-              fontSize: '0.825rem',
-              borderRadius: '12px',
-            }}
-            onClick={onAcceptChanges}
-          >
-            Accept
-          </Button>
+      {/* {showAcceptChanges && ( */}
+      <Box className={classes.priceUpdate}>
+        <Box>
+          <AlertTriangle
+            size={20}
+            style={{ marginRight: '8px', minWidth: 24 }}
+          />
+          <Typography> Price Updated</Typography>
         </Box>
-      )}
+        <Button
+          style={{
+            padding: '.5rem',
+            width: 'fit-content',
+            fontSize: '0.825rem',
+            borderRadius: '12px',
+          }}
+          onClick={onAcceptChanges}
+        >
+          Accept
+        </Button>
+      </Box>
+      {/* )} */}
       <Box className={classes.transactionText}>
         {trade.tradeType === TradeType.EXACT_INPUT ? (
           <Typography variant='body2'>

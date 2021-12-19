@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import {
   Box,
@@ -7,7 +7,12 @@ import {
   Divider,
   useMediaQuery,
 } from '@material-ui/core';
-import { useLairInfo, useSyrupInfo } from 'state/stake/hooks';
+import {
+  SyrupInfo,
+  useLairInfo,
+  useSyrupInfo,
+  SYRUP_REWARDS_INFO,
+} from 'state/stake/hooks';
 import { QUICK } from 'constants/index';
 import {
   CurrencyLogo,
@@ -17,29 +22,31 @@ import {
   UnstakeQuickModal,
 } from 'components';
 import { useGlobalData } from 'state/application/hooks';
+import { useInfiniteLoading } from 'utils/useInfiniteLoading';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
 import DragonBg1 from 'assets/images/DragonBg1.svg';
 import DragonBg2 from 'assets/images/DragonBg2.svg';
 import DragonLairMask from 'assets/images/DragonLairMask.svg';
 import { ReactComponent as PriceExchangeIcon } from 'assets/images/PriceExchangeIcon.svg';
 import { ReactComponent as SearchIcon } from 'assets/images/SearchIcon.svg';
+import { useActiveWeb3React } from 'hooks';
 
-const useStyles = makeStyles(({ breakpoints }) => ({
+const useStyles = makeStyles(({ palette, breakpoints }) => ({
   helpWrapper: {
     display: 'flex',
     alignItems: 'center',
     padding: '8px 12px',
-    border: '1px solid #252833',
+    border: `1px solid ${palette.secondary.light}`,
     borderRadius: 10,
     '& p': {
-      color: '#636780',
+      color: palette.text.hint,
     },
     '& svg': {
       marginLeft: 8,
     },
   },
   dragonWrapper: {
-    backgroundColor: '#1b1e29',
+    backgroundColor: palette.background.paper,
     borderRadius: 20,
     padding: 32,
     position: 'relative',
@@ -66,7 +73,7 @@ const useStyles = makeStyles(({ breakpoints }) => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#121319',
+    backgroundColor: palette.secondary.contrastText,
     '& span': {
       fontWeight: 'bold',
       color: '#b6b9cc',
@@ -76,11 +83,11 @@ const useStyles = makeStyles(({ breakpoints }) => ({
     margin: '24px 0 64px',
     '& h5': {
       marginBottom: 16,
-      color: '#c7cad9',
+      color: palette.text.primary,
     },
     '& p': {
       maxWidth: 280,
-      color: '#c7cad9',
+      color: palette.text.primary,
     },
   },
   stakeButton: {
@@ -95,7 +102,7 @@ const useStyles = makeStyles(({ breakpoints }) => ({
   },
   searchInput: {
     height: 50,
-    background: '#121319',
+    background: palette.secondary.contrastText,
     borderRadius: 10,
     display: 'flex',
     alignItems: 'center',
@@ -108,7 +115,7 @@ const useStyles = makeStyles(({ breakpoints }) => ({
       marginLeft: 8,
       fontSize: 14,
       fontWeight: 500,
-      color: '#c7cad9',
+      color: palette.text.primary,
       flex: 1,
     },
   },
@@ -116,13 +123,14 @@ const useStyles = makeStyles(({ breakpoints }) => ({
 
 const DragonPage: React.FC = () => {
   const classes = useStyles();
-  const { breakpoints } = useTheme();
+  const { chainId } = useActiveWeb3React();
+  const { palette, breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const [isQUICKRate, setIsQUICKRate] = useState(false);
   const [openStakeModal, setOpenStakeModal] = useState(false);
   const [openUnstakeModal, setOpenUnstakeModal] = useState(false);
   const lairInfo = useLairInfo();
-  const syrupInfos = useSyrupInfo();
+  const [syrupInfos, setSyrupInfos] = useState<SyrupInfo[]>([]);
   const { globalData } = useGlobalData();
   const APR =
     (((Number(lairInfo?.oneDayVol) * 0.04 * 0.01) /
@@ -133,6 +141,21 @@ const DragonPage: React.FC = () => {
   const APY = APR ? ((Math.pow(1 + APR / 365, 365) - 1) * 100).toFixed(2) : 0;
   const [stakedOnly, setStakeOnly] = useState(false);
   const [syrupSearch, setSyrupSearch] = useState('');
+  const [pageIndex, setPageIndex] = useState(0);
+
+  const addedSyrupInfos = useSyrupInfo(null, pageIndex * 5 - 5, pageIndex * 5);
+
+  const syrupRewardAddress = addedSyrupInfos
+    .map((syrupInfo) => syrupInfo.stakingRewardAddress.toLowerCase())
+    .reduce((totStr, str) => totStr + str, '');
+
+  const lastSyrupAddress =
+    syrupInfos[syrupInfos.length - 1]?.stakingRewardAddress;
+
+  useEffect(() => {
+    setSyrupInfos(syrupInfos.concat(addedSyrupInfos));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [syrupRewardAddress]);
 
   const filteredSyrupInfos = useMemo(() => {
     if (syrupInfos && syrupInfos.length > 0) {
@@ -153,6 +176,28 @@ const DragonPage: React.FC = () => {
       return [];
     }
   }, [syrupInfos, stakedOnly, syrupSearch]);
+
+  const loadNext = () => {
+    if (chainId && SYRUP_REWARDS_INFO[chainId]) {
+      if (
+        syrupInfos.length < (SYRUP_REWARDS_INFO[chainId]?.length ?? 0) &&
+        pageIndex * 5 > syrupInfos.length
+      ) {
+        setPageIndex(syrupInfos.length / 5 + 1);
+      }
+      if (
+        !lastSyrupAddress ||
+        (SYRUP_REWARDS_INFO[chainId]?.[pageIndex * 5 - 1] &&
+          lastSyrupAddress ===
+            SYRUP_REWARDS_INFO[chainId]?.[pageIndex * 5 - 1]
+              .stakingRewardAddress)
+      ) {
+        setPageIndex(pageIndex + 1);
+      }
+    }
+  };
+
+  const { loadMoreRef } = useInfiniteLoading(loadNext);
 
   return (
     <Box width='100%' mb={3}>
@@ -213,11 +258,14 @@ const DragonPage: React.FC = () => {
                 <Box ml={1.5}>
                   <Typography
                     variant='body2'
-                    style={{ color: '#ebecf2', lineHeight: 1 }}
+                    style={{ color: palette.text.primary, lineHeight: 1 }}
                   >
                     QUICK
                   </Typography>
-                  <Typography variant='caption' style={{ color: '#636780' }}>
+                  <Typography
+                    variant='caption'
+                    style={{ color: palette.text.hint }}
+                  >
                     Single Stake — Auto compounding
                   </Typography>
                 </Box>
@@ -245,7 +293,10 @@ const DragonPage: React.FC = () => {
               )}
               <Box display='flex' justifyContent='space-between' mt={1.5}>
                 <Typography variant='body2'>APY</Typography>
-                <Typography variant='body2' style={{ color: '#0fc679' }}>
+                <Typography
+                  variant='body2'
+                  style={{ color: palette.success.main }}
+                >
                   {APY}%
                 </Typography>
               </Box>
@@ -263,7 +314,7 @@ const DragonPage: React.FC = () => {
                 alignItems='center'
                 justifyContent='center'
                 borderRadius={10}
-                border='1px solid #252833'
+                border={`1px solid ${palette.secondary.light}`}
               >
                 <CurrencyLogo currency={QUICK} />
                 <Typography variant='body2' style={{ margin: '0 8px' }}>
@@ -282,12 +333,10 @@ const DragonPage: React.FC = () => {
               </Box>
               <Box
                 className={classes.stakeButton}
-                bgcolor='#252833'
+                bgcolor={palette.secondary.light}
                 onClick={() => setOpenUnstakeModal(true)}
               >
-                <Typography variant='body2' style={{ color: '#ebecf2' }}>
-                  - Unstake QUICK
-                </Typography>
+                <Typography variant='body2'>- Unstake QUICK</Typography>
               </Box>
               <Box
                 className={classes.stakeButton}
@@ -301,7 +350,7 @@ const DragonPage: React.FC = () => {
               <Box mt={3} textAlign='center'>
                 <Typography
                   variant='caption'
-                  style={{ color: '#696c80', fontWeight: 500 }}
+                  style={{ color: palette.text.secondary, fontWeight: 500 }}
                 >
                   ⭐️ When you unstake, the contract will automatically claim
                   QUICK on your behalf.
@@ -341,7 +390,7 @@ const DragonPage: React.FC = () => {
               >
                 <Typography
                   variant='body2'
-                  style={{ color: '#626680', marginRight: 8 }}
+                  style={{ color: palette.text.disabled, marginRight: 8 }}
                 >
                   Staked Only
                 </Typography>
@@ -377,6 +426,7 @@ const DragonPage: React.FC = () => {
           </Box>
         </Grid>
       </Grid>
+      <div ref={loadMoreRef} />
     </Box>
   );
 };
