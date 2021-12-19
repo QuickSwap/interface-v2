@@ -345,46 +345,6 @@ export const SYRUP_REWARDS_INFO: {
       ending: 1642241616,
     },
     {
-      token: MCASH,
-      stakingRewardAddress: '0xb3DacE74b857C7b0F0890334B8E4770762Bcda5c',
-      ended: false,
-      lp: '',
-      name: '',
-      baseToken: ETHER,
-      rate: 18333.33,
-      ending: 1639241173,
-    },
-    {
-      token: ALN,
-      stakingRewardAddress: '0x568E635426804400f306c6D3Ec56D14782D74261',
-      ended: false,
-      lp: '',
-      name: '',
-      baseToken: ETHER,
-      rate: 18333.33,
-      ending: 1639241173,
-    },
-    {
-      token: WATCH,
-      stakingRewardAddress: '0x0B2b63500243FF87B1299A56094b76c7Db8A4087',
-      ended: false,
-      lp: '',
-      name: '',
-      baseToken: QUICK,
-      rate: 3333.33,
-      ending: 1639073521,
-    },
-    {
-      token: KNIGHT,
-      stakingRewardAddress: '0xCAdfDB2077c32e04a5B78cbECA6de84B1694325c',
-      ended: false,
-      lp: '',
-      name: '',
-      baseToken: ETHER,
-      rate: 2166.67,
-      ending: 1639073521,
-    },
-    {
       token: ELON,
       stakingRewardAddress: '0x0D0dD9b1f34101AF5Def323725a2e8a0C2Ba91Fc',
       ended: false,
@@ -415,74 +375,14 @@ export const SYRUP_REWARDS_INFO: {
       ending: 1639933260,
     },
     {
-      token: ETHA,
-      stakingRewardAddress: '0x2b1F043c8c97a6465F5B5A9E3F7027acb32CDC3b',
-      ended: false,
-      lp: '',
-      name: '',
-      baseToken: USDC,
-      rate: 7496.53,
-      ending: 1639844474,
-    },
-    {
-      token: CNTR,
-      stakingRewardAddress: '0xe59C2f9a2dCe18C6e19d63675e56BabA59a2339F',
-      ended: false,
-      lp: '',
-      name: '',
-      baseToken: MATIC,
-      rate: 617283.95,
-      ending: 1639844474,
-    },
-    {
-      token: PERA,
-      stakingRewardAddress: '0xcA5b75C40583124DD08e7dF9cB148C0833418Fa8',
-      ended: false,
-      lp: '',
-      name: '',
-      baseToken: QUICK,
-      rate: 8333.33,
-      ending: 1639844474,
-    },
-    {
-      token: RAMP,
-      stakingRewardAddress: '0x0a727387f3FF6d2203ECe6CB6e430E4e25032bcd',
-      ended: false,
-      lp: '',
-      name: '',
-      baseToken: ETHER,
-      rate: 8128.1,
-      ending: 1639844474,
-    },
-    {
-      token: EROWAN,
-      stakingRewardAddress: '0x555670a51B56a310bcC71D55D96366F7B1ba1295',
-      ended: false,
-      lp: '',
-      name: '',
-      baseToken: QUICK,
-      rate: 21891.67,
-      ending: 1639844474,
-    },
-    {
-      token: XCAD,
-      stakingRewardAddress: '0xbdF64bf352D1291587b09a28984eE06d3b6538eE',
-      ended: false,
-      lp: '',
-      name: '',
-      baseToken: USDC,
-      rate: 1300,
-      ending: 1639844474,
-    },
-    {
       token: MATIC,
       stakingRewardAddress: '0xd6Ce4f3D692C1c6684fb449993414C5c9E5D0073',
       ended: false,
       lp: '',
       name: '',
       baseToken: ETHER,
-      rate: 2783.33,
-      ending: 1639155366,
+      rate: 1913.43,
+      ending: 1641845720,
     },
     {
       token: COMBO,
@@ -503,16 +403,6 @@ export const SYRUP_REWARDS_INFO: {
       baseToken: QUICK,
       rate: 15555.56,
       ending: 1641401056,
-    },
-    {
-      token: XCASH,
-      stakingRewardAddress: '0xe01e81c76253831602520582793991650225Bf81',
-      ended: false,
-      lp: '',
-      name: '',
-      baseToken: QUICK,
-      rate: 27777777.78,
-      ending: 1639408820,
     },
     {
       token: TEL,
@@ -540,6 +430,116 @@ export const OLD_SYRUP_REWARDS_INFO: {
   }[];
 } = {
   [ChainId.MATIC]: [
+    {
+      token: ETHA,
+      stakingRewardAddress: '0x2b1F043c8c97a6465F5B5A9E3F7027acb32CDC3b',
+      ended: true,
+      lp: '',
+      name: '',
+      baseToken: USDC,
+      rate: 7496.53,
+      ending: 1639844474,
+    },
+    {
+      token: CNTR,
+      stakingRewardAddress: '0xe59C2f9a2dCe18C6e19d63675e56BabA59a2339F',
+      ended: true,
+      lp: '',
+      name: '',
+      baseToken: MATIC,
+      rate: 617283.95,
+      ending: 1639844474,
+    },
+    {
+      token: PERA,
+      stakingRewardAddress: '0xcA5b75C40583124DD08e7dF9cB148C0833418Fa8',
+      ended: true,
+      lp: '',
+      name: '',
+      baseToken: QUICK,
+      rate: 8333.33,
+      ending: 1639844474,
+    },
+    {
+      token: RAMP,
+      stakingRewardAddress: '0x0a727387f3FF6d2203ECe6CB6e430E4e25032bcd',
+      ended: true,
+      lp: '',
+      name: '',
+      baseToken: ETHER,
+      rate: 8128.1,
+      ending: 1639844474,
+    },
+    {
+      token: EROWAN,
+      stakingRewardAddress: '0x555670a51B56a310bcC71D55D96366F7B1ba1295',
+      ended: true,
+      lp: '',
+      name: '',
+      baseToken: QUICK,
+      rate: 21891.67,
+      ending: 1639844474,
+    },
+    {
+      token: XCAD,
+      stakingRewardAddress: '0xbdF64bf352D1291587b09a28984eE06d3b6538eE',
+      ended: false,
+      lp: '',
+      name: '',
+      baseToken: USDC,
+      rate: 1300,
+      ending: 1639844474,
+    },
+    {
+      token: XCASH,
+      stakingRewardAddress: '0xe01e81c76253831602520582793991650225Bf81',
+      ended: true,
+      lp: '',
+      name: '',
+      baseToken: QUICK,
+      rate: 27777777.78,
+      ending: 1639408820,
+    },
+    {
+      token: MCASH,
+      stakingRewardAddress: '0xb3DacE74b857C7b0F0890334B8E4770762Bcda5c',
+      ended: true,
+      lp: '',
+      name: '',
+      baseToken: ETHER,
+      rate: 18333.33,
+      ending: 1639241173,
+    },
+    {
+      token: ALN,
+      stakingRewardAddress: '0x568E635426804400f306c6D3Ec56D14782D74261',
+      ended: true,
+      lp: '',
+      name: '',
+      baseToken: ETHER,
+      rate: 18333.33,
+      ending: 1639241173,
+    },
+    {
+      token: WATCH,
+      stakingRewardAddress: '0x0B2b63500243FF87B1299A56094b76c7Db8A4087',
+      ended: true,
+      lp: '',
+      name: '',
+      baseToken: QUICK,
+      rate: 3333.33,
+      ending: 1639073521,
+    },
+    {
+      token: KNIGHT,
+      stakingRewardAddress: '0xCAdfDB2077c32e04a5B78cbECA6de84B1694325c',
+      ended: true,
+      lp: '',
+      name: '',
+      baseToken: ETHER,
+      rate: 2166.67,
+      ending: 1639073521,
+    },
     {
       token: PBR,
       stakingRewardAddress: '0xa751f7B39F6c111d10e2C603bE2a12bd5F70Fc83',
@@ -12694,7 +12694,11 @@ export function useSyrupInfo(
   ]);
 }
 
-export function useOldSyrupInfo(tokenToFilterBy?: Token | null): SyrupInfo[] {
+export function useOldSyrupInfo(
+  tokenToFilterBy?: Token | null,
+  startIndex?: number,
+  endIndex?: number,
+): SyrupInfo[] {
   const { chainId, account } = useActiveWeb3React();
   //const [quickPrice,setQuickPrice] = useState(0);
   const [, quickUsdcPair] = usePair(QUICK, USDC);
@@ -12702,16 +12706,18 @@ export function useOldSyrupInfo(tokenToFilterBy?: Token | null): SyrupInfo[] {
   const info = useMemo(
     () =>
       chainId
-        ? OLD_SYRUP_REWARDS_INFO[chainId]?.filter((stakingRewardInfo) =>
-            tokenToFilterBy === undefined
-              ? true
-              : tokenToFilterBy === null
-              ? true
-              : tokenToFilterBy.equals(stakingRewardInfo.token) &&
-                tokenToFilterBy.equals(stakingRewardInfo.token),
-          ) ?? []
+        ? OLD_SYRUP_REWARDS_INFO[chainId]
+            ?.slice(startIndex, endIndex)
+            ?.filter((stakingRewardInfo) =>
+              tokenToFilterBy === undefined
+                ? true
+                : tokenToFilterBy === null
+                ? true
+                : tokenToFilterBy.equals(stakingRewardInfo.token) &&
+                  tokenToFilterBy.equals(stakingRewardInfo.token),
+            ) ?? []
         : [],
-    [chainId, tokenToFilterBy],
+    [chainId, tokenToFilterBy, startIndex, endIndex],
   );
 
   const uni = chainId ? UNI[chainId] : undefined;
@@ -14017,22 +14023,28 @@ export function useVeryOldStakingInfo(
   ]);
 }
 
-export function useOldStakingInfo(pairToFilterBy?: Pair | null): StakingInfo[] {
+export function useOldStakingInfo(
+  pairToFilterBy?: Pair | null,
+  startIndex?: number,
+  endIndex?: number,
+): StakingInfo[] {
   const { chainId, account } = useActiveWeb3React();
 
   const info = useMemo(
     () =>
       chainId
-        ? OLD_STAKING_REWARDS_INFO[chainId]?.filter((stakingRewardInfo) =>
-            pairToFilterBy === undefined
-              ? true
-              : pairToFilterBy === null
-              ? true
-              : pairToFilterBy.involvesToken(stakingRewardInfo.tokens[0]) &&
-                pairToFilterBy.involvesToken(stakingRewardInfo.tokens[1]),
-          ) ?? []
+        ? OLD_STAKING_REWARDS_INFO[chainId]
+            ?.slice(startIndex, endIndex)
+            ?.filter((stakingRewardInfo) =>
+              pairToFilterBy === undefined
+                ? true
+                : pairToFilterBy === null
+                ? true
+                : pairToFilterBy.involvesToken(stakingRewardInfo.tokens[0]) &&
+                  pairToFilterBy.involvesToken(stakingRewardInfo.tokens[1]),
+            ) ?? []
         : [],
-    [chainId, pairToFilterBy],
+    [chainId, pairToFilterBy, startIndex, endIndex],
   );
 
   const uni = chainId ? UNI[chainId] : undefined;

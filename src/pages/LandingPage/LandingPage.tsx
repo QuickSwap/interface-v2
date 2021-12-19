@@ -366,7 +366,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       justifyContent: 'center',
       marginTop: 48,
       '& > div': {
-        margin: '16px 32px 16px 0',
+        margin: 16,
         textAlign: 'center',
         width: 120,
         '& a': {
@@ -376,9 +376,6 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
         '& svg': {
           width: 64,
           height: 64,
-        },
-        '&:last-child': {
-          marginRight: 0,
         },
       },
     },
@@ -758,7 +755,7 @@ const LandingPage: React.FC = () => {
             className={swapIndex === 1 ? 'active' : ''}
             onClick={() => setSwapIndex(1)}
           >
-            Add Liquidity
+            Liquidity
           </Button>
         </ButtonGroup>
       </Box>

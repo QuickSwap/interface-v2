@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
+import cx from 'classnames';
 import {
   Box,
   Typography,
@@ -11,7 +12,9 @@ import {
   SyrupInfo,
   useLairInfo,
   useSyrupInfo,
+  useOldSyrupInfo,
   SYRUP_REWARDS_INFO,
+  OLD_SYRUP_REWARDS_INFO,
 } from 'state/stake/hooks';
 import { QUICK } from 'constants/index';
 import {
@@ -101,12 +104,13 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     cursor: 'pointer',
   },
   searchInput: {
-    height: 50,
-    background: palette.secondary.contrastText,
+    height: 40,
+    border: `1px solid ${palette.secondary.dark}`,
     borderRadius: 10,
+    minWidth: 250,
     display: 'flex',
     alignItems: 'center',
-    padding: '0 16px',
+    padding: '0 10px',
     '& input': {
       background: 'transparent',
       border: 'none',
@@ -119,6 +123,25 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       flex: 1,
     },
   },
+  syrupSwitch: {
+    width: '50%',
+    height: '100%',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    cursor: 'pointer',
+    background: palette.background.paper,
+    border: `1px solid ${palette.secondary.dark}`,
+    '& p': {
+      color: palette.text.secondary,
+    },
+  },
+  activeSyrupSwitch: {
+    background: palette.secondary.dark,
+    '& p': {
+      color: palette.text.primary,
+    },
+  },
 }));
 
 const DragonPage: React.FC = () => {
@@ -129,8 +152,10 @@ const DragonPage: React.FC = () => {
   const [isQUICKRate, setIsQUICKRate] = useState(false);
   const [openStakeModal, setOpenStakeModal] = useState(false);
   const [openUnstakeModal, setOpenUnstakeModal] = useState(false);
+  const [isEndedSyrup, setIsEndedSyrup] = useState(false);
   const lairInfo = useLairInfo();
   const [syrupInfos, setSyrupInfos] = useState<SyrupInfo[]>([]);
+  const [syrupOldInfos, setSyrupOldInfos] = useState<SyrupInfo[]>([]);
   const { globalData } = useGlobalData();
   const APR =
     (((Number(lairInfo?.oneDayVol) * 0.04 * 0.01) /
@@ -142,24 +167,43 @@ const DragonPage: React.FC = () => {
   const [stakedOnly, setStakeOnly] = useState(false);
   const [syrupSearch, setSyrupSearch] = useState('');
   const [pageIndex, setPageIndex] = useState(0);
+  const [pageOldIndex, setPageOldIndex] = useState(0);
 
   const addedSyrupInfos = useSyrupInfo(null, pageIndex * 5 - 5, pageIndex * 5);
+  const addedOldSyrupInfos = useOldSyrupInfo(
+    null,
+    pageOldIndex * 5 - 5,
+    pageOldIndex * 5,
+  );
 
   const syrupRewardAddress = addedSyrupInfos
+    .map((syrupInfo) => syrupInfo.stakingRewardAddress.toLowerCase())
+    .reduce((totStr, str) => totStr + str, '');
+
+  const syrupRewardOldAddress = addedOldSyrupInfos
     .map((syrupInfo) => syrupInfo.stakingRewardAddress.toLowerCase())
     .reduce((totStr, str) => totStr + str, '');
 
   const lastSyrupAddress =
     syrupInfos[syrupInfos.length - 1]?.stakingRewardAddress;
 
+  const lastOldSyrupAddress =
+    syrupOldInfos[syrupOldInfos.length - 1]?.stakingRewardAddress;
+
   useEffect(() => {
     setSyrupInfos(syrupInfos.concat(addedSyrupInfos));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [syrupRewardAddress]);
 
+  useEffect(() => {
+    setSyrupOldInfos(syrupOldInfos.concat(addedOldSyrupInfos));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [syrupRewardOldAddress]);
+
   const filteredSyrupInfos = useMemo(() => {
-    if (syrupInfos && syrupInfos.length > 0) {
-      return syrupInfos.filter((syrupInfo) => {
+    const syrupListInfos = isEndedSyrup ? syrupOldInfos : syrupInfos;
+    if (syrupListInfos && syrupListInfos.length > 0) {
+      return syrupListInfos.filter((syrupInfo) => {
         return (
           (stakedOnly
             ? Boolean(syrupInfo.stakedAmount.greaterThan('0'))
@@ -175,24 +219,38 @@ const DragonPage: React.FC = () => {
     } else {
       return [];
     }
-  }, [syrupInfos, stakedOnly, syrupSearch]);
+  }, [syrupInfos, stakedOnly, syrupSearch, isEndedSyrup, syrupOldInfos]);
 
   const loadNext = () => {
-    if (chainId && SYRUP_REWARDS_INFO[chainId]) {
+    const REWARDS_INFO = isEndedSyrup
+      ? OLD_SYRUP_REWARDS_INFO
+      : SYRUP_REWARDS_INFO;
+    const syrupPageIndex = isEndedSyrup ? pageOldIndex : pageIndex;
+    const syrupListInfos = isEndedSyrup ? syrupOldInfos : syrupInfos;
+    const lastAddress = isEndedSyrup ? lastOldSyrupAddress : lastSyrupAddress;
+    if (chainId && REWARDS_INFO[chainId]) {
       if (
-        syrupInfos.length < (SYRUP_REWARDS_INFO[chainId]?.length ?? 0) &&
-        pageIndex * 5 > syrupInfos.length
+        syrupListInfos.length < (REWARDS_INFO[chainId]?.length ?? 0) &&
+        syrupPageIndex * 5 > syrupListInfos.length
       ) {
-        setPageIndex(syrupInfos.length / 5 + 1);
+        if (isEndedSyrup) {
+          setPageOldIndex(syrupListInfos.length / 5 + 1);
+        } else {
+          setPageIndex(syrupListInfos.length / 5 + 1);
+        }
       }
       if (
-        !lastSyrupAddress ||
-        (SYRUP_REWARDS_INFO[chainId]?.[pageIndex * 5 - 1] &&
-          lastSyrupAddress ===
-            SYRUP_REWARDS_INFO[chainId]?.[pageIndex * 5 - 1]
+        !lastAddress ||
+        (REWARDS_INFO[chainId]?.[syrupPageIndex * 5 - 1] &&
+          lastAddress ===
+            REWARDS_INFO[chainId]?.[syrupPageIndex * 5 - 1]
               .stakingRewardAddress)
       ) {
-        setPageIndex(pageIndex + 1);
+        if (isEndedSyrup) {
+          setPageOldIndex(pageOldIndex + 1);
+        } else {
+          setPageIndex(pageIndex + 1);
+        }
       }
     }
   };
@@ -382,12 +440,36 @@ const DragonPage: React.FC = () => {
                   onChange={(evt: any) => setSyrupSearch(evt.target.value)}
                 />
               </Box>
-              <Box
-                display='flex'
-                alignItems='center'
-                ml={isMobile ? 2 : 4}
-                mt={isMobile ? 2 : 0}
-              >
+              <Box width={160} height={40} display='flex' mx={2}>
+                <Box
+                  className={cx(
+                    classes.syrupSwitch,
+                    !isEndedSyrup && classes.activeSyrupSwitch,
+                  )}
+                  style={{ borderTopLeftRadius: 8, borderBottomLeftRadius: 8 }}
+                  onClick={() => {
+                    setIsEndedSyrup(false);
+                  }}
+                >
+                  <Typography variant='body2'>Active</Typography>
+                </Box>
+                <Box
+                  className={cx(
+                    classes.syrupSwitch,
+                    isEndedSyrup && classes.activeSyrupSwitch,
+                  )}
+                  style={{
+                    borderTopRightRadius: 8,
+                    borderBottomRightRadius: 8,
+                  }}
+                  onClick={() => {
+                    setIsEndedSyrup(true);
+                  }}
+                >
+                  <Typography variant='body2'>Ended</Typography>
+                </Box>
+              </Box>
+              <Box display='flex' alignItems='center' mt={isMobile ? 2 : 0}>
                 <Typography
                   variant='body2'
                   style={{ color: palette.text.disabled, marginRight: 8 }}

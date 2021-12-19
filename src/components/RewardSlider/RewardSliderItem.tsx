@@ -56,6 +56,8 @@ const useStyles = makeStyles(({ palette }) => ({
       height: 40,
       fontSize: 16,
       marginTop: 12,
+      background: palette.primary.main,
+      borderRadius: 20,
     },
   },
 }));
@@ -175,7 +177,6 @@ const RewardSliderItem: React.FC<RewardSliderItemProps> = ({ info }) => {
       </Box>
       <Button
         fullWidth
-        color='primary'
         style={{ marginTop: '30px' }}
         onClick={() => {
           history.push(

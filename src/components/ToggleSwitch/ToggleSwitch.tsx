@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box } from '@material-ui/core';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles(({ palette }) => ({
   wrapper: {
@@ -8,13 +8,17 @@ const useStyles = makeStyles(({ palette }) => ({
     height: 20,
     position: 'relative',
     borderRadius: 10,
-    border: `1px solid ${palette.secondary.dark}`,
+    border: (props: any) =>
+      props.toggled
+        ? '1px solid transparent'
+        : `1px solid ${palette.text.disabled}`,
   },
   innerCircle: {
     width: 14,
     height: 14,
     borderRadius: 8,
-    backgroundColor: palette.text.secondary,
+    backgroundColor: (props: any) =>
+      props.toggled ? palette.success.main : palette.text.disabled,
     position: 'absolute',
     top: 2,
   },
@@ -24,12 +28,11 @@ const ToggleSwitch: React.FC<{ toggled: boolean; onToggle: () => void }> = ({
   toggled,
   onToggle,
 }) => {
-  const classes = useStyles();
-  const { palette } = useTheme();
+  const classes = useStyles({ toggled });
   return (
     <Box
       className={classes.wrapper}
-      bgcolor={toggled ? palette.secondary.dark : 'transparent'}
+      bgcolor={toggled ? 'rgba(15, 198, 121, 0.2)' : 'transparent'}
       onClick={onToggle}
     >
       <Box
