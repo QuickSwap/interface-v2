@@ -5,11 +5,13 @@ import { ArrowUp, ArrowDown } from 'react-feather';
 import cx from 'classnames';
 import {
   useStakingInfo,
+  useOldStakingInfo,
   useDualStakingInfo,
   useLairInfo,
   StakingInfo,
   DualStakingInfo,
   STAKING_REWARDS_INFO,
+  OLD_STAKING_REWARDS_INFO,
   STAKING_DUAL_REWARDS_INFO,
   getBulkPairData,
 } from 'state/stake/hooks';
@@ -80,12 +82,6 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     color: palette.primary.main,
     cursor: 'pointer',
   },
-  farmSwitchWrapper: {
-    width: 300,
-    height: 48,
-    display: 'flex',
-    marginTop: 16,
-  },
   farmSwitch: {
     width: '50%',
     height: '100%',
@@ -114,19 +110,28 @@ const FarmPage: React.FC = () => {
   const lairInfo = useLairInfo();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const [pageLPIndex, setPageLPIndex] = useState(0);
+  const [pageLPOldIndex, setPageLPOldIndex] = useState(0);
   const [pageDualIndex, setPageDualIndex] = useState(0);
   const [stakingLPInfos, setStakingLPInfos] = useState<StakingInfo[]>([]);
+  const [stakingLPOldInfos, setStakingLPOldInfos] = useState<StakingInfo[]>([]);
   const [stakingDualInfos, setStakingDualInfos] = useState<DualStakingInfo[]>(
     [],
   );
   const [bulkPairs, setBulkPairs] = useState<any>(null);
   const [farmIndex, setFarmIndex] = useState(0);
+  const [isEndedFarm, setIsEndedFarm] = useState(false);
   const [sortBy, setSortBy] = useState(0);
   const [sortDesc, setSortDesc] = useState(false);
 
   const addedLPStakingInfos = useStakingInfo(
     null,
     pageLPIndex * 6 - 6,
+    pageLPIndex * 6,
+  );
+
+  const addedLPStakingOldInfos = useOldStakingInfo(
+    null,
+    pageLPOldIndex * 6 - 6,
     pageLPIndex * 6,
   );
 
@@ -140,12 +145,19 @@ const FarmPage: React.FC = () => {
     .map((stakingInfo) => stakingInfo.stakingRewardAddress.toLowerCase())
     .reduce((totStr, str) => totStr + str, '');
 
+  const stakingLPOldRewardAddress = addedLPStakingOldInfos
+    .map((stakingInfo) => stakingInfo.stakingRewardAddress.toLowerCase())
+    .reduce((totStr, str) => totStr + str, '');
+
   const stakingDualRewardAddress = addedDualStakingInfos
     .map((info) => info.stakingRewardAddress.toLowerCase())
     .reduce((totStr, str) => totStr + str, '');
 
   const lastStakingLPAddress =
     stakingLPInfos[stakingLPInfos.length - 1]?.stakingRewardAddress;
+
+  const lastStakingLPOldAddress =
+    stakingLPOldInfos[stakingLPOldInfos.length - 1]?.stakingRewardAddress;
 
   const lastStakingDualAddress =
     stakingDualInfos[stakingDualInfos.length - 1]?.stakingRewardAddress;
@@ -154,9 +166,13 @@ const FarmPage: React.FC = () => {
     if (chainId) {
       const stakingPairLists =
         STAKING_REWARDS_INFO[chainId]?.map((item) => item.pair) ?? [];
+      const stakingOldPairLists =
+        OLD_STAKING_REWARDS_INFO[chainId]?.map((item) => item.pair) ?? [];
       const dualPairLists =
         STAKING_DUAL_REWARDS_INFO[chainId]?.map((item) => item.pair) ?? [];
-      const pairLists = stakingPairLists.concat(dualPairLists);
+      const pairLists = stakingPairLists
+        .concat(stakingOldPairLists)
+        .concat(dualPairLists);
       getBulkPairData(pairLists).then((data) => setBulkPairs(data));
     }
   }, [chainId]);
@@ -167,6 +183,11 @@ const FarmPage: React.FC = () => {
   }, [stakingLPRewardAddress]);
 
   useEffect(() => {
+    setStakingLPOldInfos(stakingLPOldInfos.concat(addedLPStakingOldInfos));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stakingLPOldRewardAddress]);
+
+  useEffect(() => {
     setStakingDualInfos(stakingDualInfos.concat(addedDualStakingInfos));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stakingDualRewardAddress]);
@@ -175,8 +196,9 @@ const FarmPage: React.FC = () => {
   const [farmSearch, setFarmSearch] = useState('');
 
   const filteredStakingLPInfos = useMemo(() => {
-    if (stakingLPInfos && stakingLPInfos.length > 0) {
-      return stakingLPInfos
+    const stakingInfos = isEndedFarm ? stakingLPOldInfos : stakingLPInfos;
+    if (stakingInfos && stakingInfos.length > 0) {
+      return stakingInfos
         .filter((stakingInfo) => {
           return (
             (stakedOnly
@@ -284,10 +306,19 @@ const FarmPage: React.FC = () => {
         });
     }
     return [];
-  }, [stakingLPInfos, stakedOnly, farmSearch, sortBy, sortDesc, bulkPairs]);
+  }, [
+    stakingLPInfos,
+    stakedOnly,
+    farmSearch,
+    sortBy,
+    sortDesc,
+    bulkPairs,
+    isEndedFarm,
+    stakingLPOldInfos,
+  ]);
 
   const filteredStakingDualInfos = useMemo(() => {
-    if (stakingDualInfos && stakingDualInfos.length > 0) {
+    if (!isEndedFarm && stakingDualInfos && stakingDualInfos.length > 0) {
       return stakingDualInfos
         .filter((stakingInfo) => {
           return (
@@ -394,7 +425,15 @@ const FarmPage: React.FC = () => {
         });
     }
     return [];
-  }, [stakingDualInfos, stakedOnly, farmSearch, sortBy, sortDesc, bulkPairs]);
+  }, [
+    stakingDualInfos,
+    stakedOnly,
+    farmSearch,
+    sortBy,
+    sortDesc,
+    bulkPairs,
+    isEndedFarm,
+  ]);
 
   const stakingAPYs = useMemo(() => {
     const filteredStakingInfos =
@@ -417,18 +456,42 @@ const FarmPage: React.FC = () => {
 
   const loadNext = () => {
     const REWARDS_INFO =
-      farmIndex === 0 ? STAKING_REWARDS_INFO : STAKING_DUAL_REWARDS_INFO;
-    const stakingInfos = farmIndex === 0 ? stakingLPInfos : stakingDualInfos;
-    const pageIndex = farmIndex === 0 ? pageLPIndex : pageDualIndex;
+      farmIndex === 0
+        ? isEndedFarm
+          ? OLD_STAKING_REWARDS_INFO
+          : STAKING_REWARDS_INFO
+        : isEndedFarm
+        ? null
+        : STAKING_DUAL_REWARDS_INFO;
+    const stakingInfos =
+      farmIndex === 0
+        ? isEndedFarm
+          ? stakingLPOldInfos
+          : stakingLPInfos
+        : stakingDualInfos;
+    const pageIndex =
+      farmIndex === 0
+        ? isEndedFarm
+          ? pageLPOldIndex
+          : pageLPIndex
+        : pageDualIndex;
     const lastStakingAddress =
-      farmIndex === 0 ? lastStakingLPAddress : lastStakingDualAddress;
-    if (chainId && STAKING_REWARDS_INFO[chainId]) {
+      farmIndex === 0
+        ? isEndedFarm
+          ? lastStakingLPOldAddress
+          : lastStakingLPAddress
+        : lastStakingDualAddress;
+    if (chainId && REWARDS_INFO && REWARDS_INFO[chainId]) {
       if (
         stakingInfos.length < (REWARDS_INFO[chainId]?.length ?? 0) &&
         pageIndex * 6 > stakingInfos.length
       ) {
         if (farmIndex === 0) {
-          setPageLPIndex(stakingLPInfos.length / 6 + 1);
+          if (isEndedFarm) {
+            setPageLPOldIndex(stakingLPOldInfos.length / 6 + 1);
+          } else {
+            setPageLPIndex(stakingLPInfos.length / 6 + 1);
+          }
         } else if (farmIndex === 1) {
           setPageDualIndex(stakingDualInfos.length / 6 + 1);
         }
@@ -440,7 +503,11 @@ const FarmPage: React.FC = () => {
             REWARDS_INFO[chainId]?.[pageIndex * 6 - 1].stakingRewardAddress)
       ) {
         if (farmIndex === 0) {
-          setPageLPIndex(pageLPIndex + 1);
+          if (isEndedFarm) {
+            setPageLPOldIndex(pageLPOldIndex + 1);
+          } else {
+            setPageLPIndex(pageLPIndex + 1);
+          }
         } else if (farmIndex === 1) {
           setPageDualIndex(pageDualIndex + 1);
         }
@@ -461,7 +528,7 @@ const FarmPage: React.FC = () => {
       >
         <Box mr={2}>
           <Typography variant='h4'>Farm</Typography>
-          <Box className={classes.farmSwitchWrapper}>
+          <Box display='flex' mt={2} width={300} height={48}>
             <Box
               className={cx(
                 classes.farmSwitch,
@@ -519,12 +586,33 @@ const FarmPage: React.FC = () => {
                 onChange={(evt: any) => setFarmSearch(evt.target.value)}
               />
             </Box>
-            <Box
-              display='flex'
-              alignItems='center'
-              ml={isMobile ? 2 : 4}
-              mt={isMobile ? 2 : 0}
-            >
+            <Box width={160} height={40} display='flex' mx={2}>
+              <Box
+                className={cx(
+                  classes.farmSwitch,
+                  !isEndedFarm && classes.activeFarmSwitch,
+                )}
+                style={{ borderTopLeftRadius: 8, borderBottomLeftRadius: 8 }}
+                onClick={() => {
+                  setIsEndedFarm(false);
+                }}
+              >
+                <Typography variant='body2'>Active</Typography>
+              </Box>
+              <Box
+                className={cx(
+                  classes.farmSwitch,
+                  isEndedFarm && classes.activeFarmSwitch,
+                )}
+                style={{ borderTopRightRadius: 8, borderBottomRightRadius: 8 }}
+                onClick={() => {
+                  setIsEndedFarm(true);
+                }}
+              >
+                <Typography variant='body2'>Ended</Typography>
+              </Box>
+            </Box>
+            <Box display='flex' alignItems='center' mt={isMobile ? 2 : 0}>
               <Typography
                 variant='body2'
                 style={{ color: palette.text.disabled, marginRight: 8 }}

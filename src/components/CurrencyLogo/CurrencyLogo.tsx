@@ -48,6 +48,14 @@ export const getTokenLogoURL = (address: string) => {
       'https://raw.githubusercontent.com/sameepsi/quickswap-interface/master/assets/easyfi-token.png';
   }
 
+  if (
+    address?.toLowerCase() ===
+    '0x2c92a8A41f4b806a6f6F1F7C9D9DEc78DCd8c18e'.toLowerCase()
+  ) {
+    uri =
+      'https://assets.coingecko.com/coins/images/21467/small/n1fqEYRI_400x400.png?1639345175';
+  }
+
   if (address?.toLowerCase() === '0xa1c09c8f4f5d03fcc27b456475d53d988e98d7c5') {
     uri =
       'https://raw.githubusercontent.com/sameepsi/quickswap-interface/master/assets/easyfi-token.png';
