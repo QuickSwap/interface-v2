@@ -1,7 +1,9 @@
 import React from 'react';
 import { Box } from '@material-ui/core';
+import { useLocation } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import HeroBkg from 'assets/images/heroBkg.png';
+import HeroBkg1 from 'assets/images/heroBkg.svg';
 import { Header, Footer } from 'components';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
@@ -43,12 +45,16 @@ export interface PageLayoutProps {
 
 const PageLayout: React.FC<PageLayoutProps> = ({ children }) => {
   const classes = useStyles();
+  const { pathname } = useLocation();
 
   return (
     <Box className={classes.page}>
       <Header />
       <Box className={classes.heroBkg}>
-        <img src={HeroBkg} alt='Hero Background' />
+        <img
+          src={pathname === '/' ? HeroBkg : HeroBkg1}
+          alt='Hero Background'
+        />
       </Box>
       <Box className={classes.pageWrapper}>{children}</Box>
       <Footer />

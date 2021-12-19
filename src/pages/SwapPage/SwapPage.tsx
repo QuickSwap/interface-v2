@@ -215,7 +215,7 @@ const SwapPage: React.FC = () => {
       fetchEthPrice();
     }
     fetchTopTokens();
-  }, [ethPrice, updateEthPrice, updateTopTokens, updateTokenPairs]);
+  }, [ethPrice, updateEthPrice, updateTopTokens]);
 
   useEffect(() => {
     async function fetchTokenPairs() {

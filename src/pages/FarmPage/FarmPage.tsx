@@ -89,7 +89,6 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     justifyContent: 'center',
     alignItems: 'center',
     cursor: 'pointer',
-    background: palette.background.paper,
     border: `1px solid ${palette.secondary.dark}`,
     '& p': {
       color: palette.text.secondary,
