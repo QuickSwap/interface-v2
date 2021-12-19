@@ -132,7 +132,7 @@ const FarmPage: React.FC = () => {
   const addedLPStakingOldInfos = useOldStakingInfo(
     null,
     pageLPOldIndex * 6 - 6,
-    pageLPIndex * 6,
+    pageLPOldIndex * 6,
   );
 
   const addedDualStakingInfos = useDualStakingInfo(

@@ -540,194 +540,206 @@ const FarmLPCard: React.FC<{
             minWidth={250}
             width={isMobile ? 1 : 0.3}
             color={palette.text.secondary}
-            my={1.5}
+            my={stakingInfo.ended ? 0 : 1.5}
           >
-            <Box
-              display='flex'
-              flexDirection='row'
-              alignItems='flex-start'
-              justifyContent='space-between'
-            >
-              <Typography variant='body2'>In Wallet:</Typography>
-              <Box
-                display='flex'
-                flexDirection='column'
-                alignItems='flex-end'
-                justifyContent='flex-start'
-              >
-                <Typography variant='body2'>
-                  {userLiquidityUnstaked
-                    ? userLiquidityUnstaked.toSignificant(2)
-                    : 0}{' '}
-                  LP{' '}
-                  <span>
-                    (${valueOfUnstakedAmountInUSDC?.toSignificant(2)})
-                  </span>
-                </Typography>
-                <Link
-                  to={`/pools?currency0=${
-                    token0.symbol?.toLowerCase() === 'wmatic'
-                      ? 'ETH'
-                      : token0.address
-                  }&currency1=${
-                    token1.symbol?.toLowerCase() === 'wmatic'
-                      ? 'ETH'
-                      : token1.address
-                  }`}
-                  style={{ color: palette.primary.main }}
+            {!stakingInfo.ended && (
+              <>
+                <Box
+                  display='flex'
+                  flexDirection='row'
+                  alignItems='flex-start'
+                  justifyContent='space-between'
                 >
-                  Get {currency0.symbol} / {currency1.symbol} LP
-                </Link>
-              </Box>
-            </Box>
-            <Box className={classes.inputVal} mb={2} mt={2} p={2}>
-              <input
-                placeholder='0.00'
-                value={stakeAmount}
-                onChange={(evt: any) => {
-                  setStakeAmount(evt.target.value);
-                }}
-              />
-              <Typography
-                variant='body2'
-                style={{
-                  color:
-                    userLiquidityUnstaked &&
-                    userLiquidityUnstaked.greaterThan('0')
-                      ? palette.primary.main
-                      : palette.text.hint,
-                }}
-                onClick={() => {
-                  if (
-                    userLiquidityUnstaked &&
-                    userLiquidityUnstaked.greaterThan('0')
-                  ) {
-                    setStakeAmount(userLiquidityUnstaked.toSignificant());
-                  } else {
-                    setStakeAmount('');
+                  <Typography variant='body2'>In Wallet:</Typography>
+                  <Box
+                    display='flex'
+                    flexDirection='column'
+                    alignItems='flex-end'
+                    justifyContent='flex-start'
+                  >
+                    <Typography variant='body2'>
+                      {userLiquidityUnstaked
+                        ? userLiquidityUnstaked.toSignificant(2)
+                        : 0}{' '}
+                      LP{' '}
+                      <span>
+                        (${valueOfUnstakedAmountInUSDC?.toSignificant(2)})
+                      </span>
+                    </Typography>
+                    <Link
+                      to={`/pools?currency0=${
+                        token0.symbol?.toLowerCase() === 'wmatic'
+                          ? 'ETH'
+                          : token0.address
+                      }&currency1=${
+                        token1.symbol?.toLowerCase() === 'wmatic'
+                          ? 'ETH'
+                          : token1.address
+                      }`}
+                      style={{ color: palette.primary.main }}
+                    >
+                      Get {currency0.symbol} / {currency1.symbol} LP
+                    </Link>
+                  </Box>
+                </Box>
+                <Box className={classes.inputVal} mb={2} mt={2} p={2}>
+                  <input
+                    placeholder='0.00'
+                    value={stakeAmount}
+                    onChange={(evt: any) => {
+                      setStakeAmount(evt.target.value);
+                    }}
+                  />
+                  <Typography
+                    variant='body2'
+                    style={{
+                      color:
+                        userLiquidityUnstaked &&
+                        userLiquidityUnstaked.greaterThan('0')
+                          ? palette.primary.main
+                          : palette.text.hint,
+                    }}
+                    onClick={() => {
+                      if (
+                        userLiquidityUnstaked &&
+                        userLiquidityUnstaked.greaterThan('0')
+                      ) {
+                        setStakeAmount(userLiquidityUnstaked.toSignificant());
+                      } else {
+                        setStakeAmount('');
+                      }
+                    }}
+                  >
+                    MAX
+                  </Typography>
+                </Box>
+                <Box
+                  className={
+                    Number(!attemptStaking && stakeAmount) > 0 &&
+                    Number(stakeAmount) <=
+                      Number(userLiquidityUnstaked?.toSignificant())
+                      ? classes.buttonClaim
+                      : classes.buttonToken
                   }
-                }}
-              >
-                MAX
-              </Typography>
-            </Box>
-            <Box
-              className={
-                Number(!attemptStaking && stakeAmount) > 0 &&
-                Number(stakeAmount) <=
-                  Number(userLiquidityUnstaked?.toSignificant())
-                  ? classes.buttonClaim
-                  : classes.buttonToken
-              }
-              mb={2}
-              mt={2}
-              p={2}
-              onClick={() => {
-                if (
-                  !attemptStaking &&
-                  Number(stakeAmount) > 0 &&
-                  Number(stakeAmount) <=
-                    Number(userLiquidityUnstaked?.toSignificant())
-                ) {
-                  if (
-                    approval === ApprovalState.APPROVED ||
-                    signatureData !== null
-                  ) {
-                    onStake();
-                  } else {
-                    onAttemptToApprove();
-                  }
-                }
-              }}
-            >
-              <Typography variant='body1'>
-                {attemptStaking
-                  ? 'Staking LP Tokens...'
-                  : approval === ApprovalState.APPROVED ||
-                    signatureData !== null
-                  ? 'Stake LP Tokens'
-                  : 'Approve'}
-              </Typography>
-            </Box>
+                  mb={2}
+                  mt={2}
+                  p={2}
+                  onClick={() => {
+                    if (
+                      !attemptStaking &&
+                      Number(stakeAmount) > 0 &&
+                      Number(stakeAmount) <=
+                        Number(userLiquidityUnstaked?.toSignificant())
+                    ) {
+                      if (
+                        approval === ApprovalState.APPROVED ||
+                        signatureData !== null
+                      ) {
+                        onStake();
+                      } else {
+                        onAttemptToApprove();
+                      }
+                    }
+                  }}
+                >
+                  <Typography variant='body1'>
+                    {attemptStaking
+                      ? 'Staking LP Tokens...'
+                      : approval === ApprovalState.APPROVED ||
+                        signatureData !== null
+                      ? 'Stake LP Tokens'
+                      : 'Approve'}
+                  </Typography>
+                </Box>
+              </>
+            )}
           </Box>
           <Box
             minWidth={250}
             width={isMobile ? 1 : 0.3}
-            my={1.5}
+            my={stakingInfo.ended ? 0 : 1.5}
             color={palette.text.secondary}
           >
-            <Box
-              display='flex'
-              flexDirection='row'
-              alignItems='flex-start'
-              justifyContent='space-between'
-            >
-              <Typography variant='body2'>My deposits:</Typography>
-              <Typography variant='body2'>
-                {stakingInfo.stakedAmount.toSignificant(2)} LP{' '}
-                <span>(${valueOfMyStakedAmountInUSDC?.toSignificant(2)})</span>
-              </Typography>
-            </Box>
-            <Box className={classes.inputVal} mb={2} mt={4.5} p={2}>
-              <input
-                placeholder='0.00'
-                value={unstakeAmount}
-                onChange={(evt: any) => {
-                  setUnStakeAmount(evt.target.value);
-                }}
-              />
-              <Typography
-                variant='body2'
-                style={{
-                  color:
-                    stakingInfo.stakedAmount &&
-                    stakingInfo.stakedAmount.greaterThan('0')
-                      ? palette.primary.main
-                      : palette.text.hint,
-                }}
-                onClick={() => {
-                  if (
-                    stakingInfo.stakedAmount &&
-                    stakingInfo.stakedAmount.greaterThan('0')
-                  ) {
-                    setUnStakeAmount(stakingInfo.stakedAmount.toSignificant());
-                  } else {
-                    setUnStakeAmount('');
+            {!stakingInfo.ended && (
+              <>
+                <Box
+                  display='flex'
+                  flexDirection='row'
+                  alignItems='flex-start'
+                  justifyContent='space-between'
+                >
+                  <Typography variant='body2'>My deposits:</Typography>
+                  <Typography variant='body2'>
+                    {stakingInfo.stakedAmount.toSignificant(2)} LP{' '}
+                    <span>
+                      (${valueOfMyStakedAmountInUSDC?.toSignificant(2)})
+                    </span>
+                  </Typography>
+                </Box>
+                <Box className={classes.inputVal} mb={2} mt={4.5} p={2}>
+                  <input
+                    placeholder='0.00'
+                    value={unstakeAmount}
+                    onChange={(evt: any) => {
+                      setUnStakeAmount(evt.target.value);
+                    }}
+                  />
+                  <Typography
+                    variant='body2'
+                    style={{
+                      color:
+                        stakingInfo.stakedAmount &&
+                        stakingInfo.stakedAmount.greaterThan('0')
+                          ? palette.primary.main
+                          : palette.text.hint,
+                    }}
+                    onClick={() => {
+                      if (
+                        stakingInfo.stakedAmount &&
+                        stakingInfo.stakedAmount.greaterThan('0')
+                      ) {
+                        setUnStakeAmount(
+                          stakingInfo.stakedAmount.toSignificant(),
+                        );
+                      } else {
+                        setUnStakeAmount('');
+                      }
+                    }}
+                  >
+                    MAX
+                  </Typography>
+                </Box>
+                <Box
+                  className={
+                    !attemptUnstaking &&
+                    Number(unstakeAmount) > 0 &&
+                    Number(unstakeAmount) <=
+                      Number(stakingInfo.stakedAmount.toSignificant())
+                      ? classes.buttonClaim
+                      : classes.buttonToken
                   }
-                }}
-              >
-                MAX
-              </Typography>
-            </Box>
-            <Box
-              className={
-                !attemptUnstaking &&
-                Number(unstakeAmount) > 0 &&
-                Number(unstakeAmount) <=
-                  Number(stakingInfo.stakedAmount.toSignificant())
-                  ? classes.buttonClaim
-                  : classes.buttonToken
-              }
-              mb={2}
-              mt={2}
-              p={2}
-              onClick={() => {
-                if (
-                  !attemptUnstaking &&
-                  Number(unstakeAmount) > 0 &&
-                  Number(unstakeAmount) <=
-                    Number(stakingInfo.stakedAmount.toSignificant())
-                ) {
-                  onWithdraw();
-                }
-              }}
-            >
-              <Typography variant='body1'>
-                {attemptUnstaking
-                  ? 'Unstaking LP Tokens...'
-                  : 'Unstake LP Tokens'}
-              </Typography>
-            </Box>
+                  mb={2}
+                  mt={2}
+                  p={2}
+                  onClick={() => {
+                    if (
+                      !attemptUnstaking &&
+                      Number(unstakeAmount) > 0 &&
+                      Number(unstakeAmount) <=
+                        Number(stakingInfo.stakedAmount.toSignificant())
+                    ) {
+                      onWithdraw();
+                    }
+                  }}
+                >
+                  <Typography variant='body1'>
+                    {attemptUnstaking
+                      ? 'Unstaking LP Tokens...'
+                      : 'Unstake LP Tokens'}
+                  </Typography>
+                </Box>
+              </>
+            )}
           </Box>
           <Box
             minWidth={250}
