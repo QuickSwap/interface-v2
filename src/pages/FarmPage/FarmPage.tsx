@@ -205,22 +205,22 @@ const FarmPage: React.FC = () => {
               : true) &&
             ((stakingInfo.tokens[0].symbol ?? '')
               .toLowerCase()
-              .indexOf(farmSearch) > -1 ||
+              .indexOf(farmSearch.toLowerCase()) > -1 ||
               (stakingInfo.tokens[0].name ?? '')
                 .toLowerCase()
-                .indexOf(farmSearch) > -1 ||
+                .indexOf(farmSearch.toLowerCase()) > -1 ||
               (stakingInfo.tokens[0].address ?? '')
                 .toLowerCase()
-                .indexOf(farmSearch) > -1 ||
+                .indexOf(farmSearch.toLowerCase()) > -1 ||
               (stakingInfo.tokens[1].symbol ?? '')
                 .toLowerCase()
-                .indexOf(farmSearch) > -1 ||
+                .indexOf(farmSearch.toLowerCase()) > -1 ||
               (stakingInfo.tokens[1].name ?? '')
                 .toLowerCase()
-                .indexOf(farmSearch) > -1 ||
+                .indexOf(farmSearch.toLowerCase()) > -1 ||
               (stakingInfo.tokens[1].address ?? '')
                 .toLowerCase()
-                .indexOf(farmSearch) > -1)
+                .indexOf(farmSearch.toLowerCase()) > -1)
           );
         })
         .sort((a, b) => {
@@ -326,22 +326,22 @@ const FarmPage: React.FC = () => {
               : true) &&
             ((stakingInfo.tokens[0].symbol ?? '')
               .toLowerCase()
-              .indexOf(farmSearch) > -1 ||
+              .indexOf(farmSearch.toLowerCase()) > -1 ||
               (stakingInfo.tokens[0].name ?? '')
                 .toLowerCase()
-                .indexOf(farmSearch) > -1 ||
+                .indexOf(farmSearch.toLowerCase()) > -1 ||
               (stakingInfo.tokens[0].address ?? '')
                 .toLowerCase()
-                .indexOf(farmSearch) > -1 ||
+                .indexOf(farmSearch.toLowerCase()) > -1 ||
               (stakingInfo.tokens[1].symbol ?? '')
                 .toLowerCase()
-                .indexOf(farmSearch) > -1 ||
+                .indexOf(farmSearch.toLowerCase()) > -1 ||
               (stakingInfo.tokens[1].name ?? '')
                 .toLowerCase()
-                .indexOf(farmSearch) > -1 ||
+                .indexOf(farmSearch.toLowerCase()) > -1 ||
               (stakingInfo.tokens[1].address ?? '')
                 .toLowerCase()
-                .indexOf(farmSearch) > -1)
+                .indexOf(farmSearch.toLowerCase()) > -1)
           );
         })
         .sort((a, b) => {

@@ -208,12 +208,15 @@ const DragonPage: React.FC = () => {
           (stakedOnly
             ? Boolean(syrupInfo.stakedAmount.greaterThan('0'))
             : true) &&
-          ((syrupInfo.token.symbol ?? '').toLowerCase().indexOf(syrupSearch) >
-            -1 ||
-            (syrupInfo.token.name ?? '').toLowerCase().indexOf(syrupSearch) >
-              -1 ||
-            (syrupInfo.token.address ?? '').toLowerCase().indexOf(syrupSearch) >
-              -1)
+          ((syrupInfo.token.symbol ?? '')
+            .toLowerCase()
+            .indexOf(syrupSearch.toLowerCase()) > -1 ||
+            (syrupInfo.token.name ?? '')
+              .toLowerCase()
+              .indexOf(syrupSearch.toLowerCase()) > -1 ||
+            (syrupInfo.token.address ?? '')
+              .toLowerCase()
+              .indexOf(syrupSearch.toLowerCase()) > -1)
         );
       });
     } else {

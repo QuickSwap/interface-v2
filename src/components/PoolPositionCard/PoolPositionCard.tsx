@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Box, Typography, Button, useMediaQuery } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { ChevronDown, ChevronUp } from 'react-feather';
@@ -6,11 +6,10 @@ import { Pair, JSBI, Percent, Currency, TokenAmount } from '@uniswap/sdk';
 import { useActiveWeb3React } from 'hooks';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { useTokenBalance } from 'state/wallet/hooks';
-import { useStakingInfo } from 'state/stake/hooks';
+import { useStakingInfo, getBulkPairData } from 'state/stake/hooks';
 import { useTotalSupply } from 'data/TotalSupply';
 import { usePair } from 'data/Reserves';
 import { EMPTY } from 'constants/index';
-import useUSDCPrice from 'utils/useUSDCPrice';
 import {
   CurrencyLogo,
   DoubleCurrencyLogo,
@@ -69,6 +68,7 @@ const PoolPositionCard: React.FC<PoolPositionCardProps> = ({
   handleAddLiquidity,
 }) => {
   const classes = useStyles();
+  const [bulkPairData, setBulkPairData] = useState<any>(null);
   const { palette, breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
 
@@ -84,6 +84,13 @@ const PoolPositionCard: React.FC<PoolPositionCardProps> = ({
     () => (stakingInfos && stakingInfos.length > 0 ? stakingInfos[0] : null),
     [stakingInfos],
   );
+
+  const pairId = stakingInfo ? stakingInfo.pair : null;
+
+  useEffect(() => {
+    const pairLists = pairId ? [pairId] : [];
+    getBulkPairData(pairLists).then((data) => setBulkPairData(data));
+  }, [pairId]);
 
   const [showMore, setShowMore] = useState(false);
 
@@ -156,26 +163,17 @@ const PoolPositionCard: React.FC<PoolPositionCardProps> = ({
     );
   }
 
-  const USDPrice = useUSDCPrice(baseToken);
-  const valueOfTotalStakedAmountInUSDC =
-    valueOfTotalStakedAmountInBaseToken &&
-    USDPrice?.quote(valueOfTotalStakedAmountInBaseToken);
-
-  const perMonthReturnInRewards =
-    (Number(stakingInfo?.dQuickToQuick) *
-      Number(stakingInfo?.quickPrice) *
-      30) /
-    Number(valueOfTotalStakedAmountInUSDC?.toSignificant(6));
-
   const apyWithFee = useMemo(() => {
-    if (
-      stakingInfo &&
-      stakingInfo.oneYearFeeAPY &&
-      Number(stakingInfo.oneYearFeeAPY) > 0
-    ) {
+    if (stakingInfo && bulkPairData) {
+      const dayVolume = bulkPairData
+        ? bulkPairData[stakingInfo.pair]?.oneDayVolumeUSD
+        : 0;
+      const oneYearFee =
+        (dayVolume * 0.003 * 365) / bulkPairData[stakingInfo.pair]?.reserveUSD;
       const apy =
         ((1 +
-          ((perMonthReturnInRewards + Number(stakingInfo.oneYearFeeAPY) / 12) *
+          ((Number(stakingInfo.perMonthReturnInRewards) +
+            Number(oneYearFee) / 12) *
             12) /
             12) **
           12 -
@@ -187,7 +185,7 @@ const PoolPositionCard: React.FC<PoolPositionCardProps> = ({
         return Number(apy.toFixed(2)).toLocaleString();
       }
     }
-  }, [stakingInfo, perMonthReturnInRewards]);
+  }, [stakingInfo, bulkPairData]);
 
   return (
     <Box

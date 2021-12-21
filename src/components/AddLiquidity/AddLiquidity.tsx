@@ -43,7 +43,6 @@ import { ReactComponent as AddLiquidityIcon } from 'assets/images/AddLiquidityIc
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   exchangeSwap: {
-    cursor: 'pointer',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',

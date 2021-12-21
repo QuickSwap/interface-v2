@@ -396,8 +396,11 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       width: 32,
       height: 32,
       cursor: 'pointer',
+      '&:hover path': {
+        fill: palette.text.primary,
+      },
       '& path': {
-        fill: '#3e4252',
+        fill: palette.text.secondary,
       },
     },
     [breakpoints.down('xs')]: {

@@ -204,16 +204,14 @@ const FarmLPCard: React.FC<{
     valueOfUnstakedAmountInBaseToken &&
     USDPrice?.quote(valueOfUnstakedAmountInBaseToken);
 
-  const perMonthReturnInRewards =
-    (Number(stakingInfo.dQuickToQuick) * Number(stakingInfo.quickPrice) * 30) /
-    Number(valueOfTotalStakedAmountInUSDC?.toSignificant(6));
-
   let apyWithFee: number | string = 0;
 
   if (stakingAPY && stakingAPY > 0) {
     apyWithFee =
       ((1 +
-        ((Number(perMonthReturnInRewards) + Number(stakingAPY) / 12) * 12) /
+        ((Number(stakingInfo.perMonthReturnInRewards) +
+          Number(stakingAPY) / 12) *
+          12) /
           12) **
         12 -
         1) *
