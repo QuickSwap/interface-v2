@@ -129,20 +129,20 @@ const FarmPage: React.FC = () => {
 
   const addedLPStakingInfos = useStakingInfo(
     null,
-    pageLPIndex * 6 - 6,
-    pageLPIndex * 6,
+    farmIndex === 0 && !isEndedFarm ? pageLPIndex * 6 - 6 : 0,
+    farmIndex === 0 && !isEndedFarm ? pageLPIndex * 6 : 0,
   );
 
   const addedLPStakingOldInfos = useOldStakingInfo(
     null,
-    pageLPOldIndex * 6 - 6,
-    pageLPOldIndex * 6,
+    farmIndex === 0 && isEndedFarm ? pageLPOldIndex * 6 - 6 : 0,
+    farmIndex === 0 && isEndedFarm ? pageLPOldIndex * 6 : 0,
   );
 
   const addedDualStakingInfos = useDualStakingInfo(
     null,
-    pageDualIndex * 6 - 6,
-    pageDualIndex * 6,
+    farmIndex === 1 ? pageDualIndex * 6 - 6 : 0,
+    farmIndex === 1 ? pageDualIndex * 6 : 0,
   );
 
   const stakingLPRewardAddress = addedLPStakingInfos
@@ -182,17 +182,47 @@ const FarmPage: React.FC = () => {
   }, [chainId]);
 
   useEffect(() => {
-    setStakingLPInfos(stakingLPInfos.concat(addedLPStakingInfos));
+    setStakingLPInfos(
+      stakingLPInfos
+        .concat(addedLPStakingInfos)
+        .filter(
+          (val, ind, self) =>
+            ind ===
+            self.findIndex(
+              (item) => item.stakingRewardAddress === val.stakingRewardAddress,
+            ),
+        ),
+    );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stakingLPRewardAddress]);
 
   useEffect(() => {
-    setStakingLPOldInfos(stakingLPOldInfos.concat(addedLPStakingOldInfos));
+    setStakingLPOldInfos(
+      stakingLPOldInfos
+        .concat(addedLPStakingOldInfos)
+        .filter(
+          (val, ind, self) =>
+            ind ===
+            self.findIndex(
+              (item) => item.stakingRewardAddress === val.stakingRewardAddress,
+            ),
+        ),
+    );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stakingLPOldRewardAddress]);
 
   useEffect(() => {
-    setStakingDualInfos(stakingDualInfos.concat(addedDualStakingInfos));
+    setStakingDualInfos(
+      stakingDualInfos
+        .concat(addedDualStakingInfos)
+        .filter(
+          (val, ind, self) =>
+            ind ===
+            self.findIndex(
+              (item) => item.stakingRewardAddress === val.stakingRewardAddress,
+            ),
+        ),
+    );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stakingDualRewardAddress]);
 

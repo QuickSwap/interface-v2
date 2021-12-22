@@ -2,14 +2,13 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Box, Typography, Button, useMediaQuery } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { ChevronDown, ChevronUp } from 'react-feather';
-import { Pair, JSBI, Percent, Currency, TokenAmount } from '@uniswap/sdk';
+import { Pair, JSBI, Percent, Currency } from '@uniswap/sdk';
 import { useActiveWeb3React } from 'hooks';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { useTokenBalance } from 'state/wallet/hooks';
 import { useStakingInfo, getBulkPairData } from 'state/stake/hooks';
 import { useTotalSupply } from 'data/TotalSupply';
 import { usePair } from 'data/Reserves';
-import { EMPTY } from 'constants/index';
 import {
   CurrencyLogo,
   DoubleCurrencyLogo,
@@ -128,40 +127,6 @@ const PoolPositionCard: React.FC<PoolPositionCardProps> = ({
           ),
         ]
       : [undefined, undefined];
-
-  const baseTokenCurrency = stakingInfo
-    ? unwrappedToken(stakingInfo.baseToken)
-    : undefined;
-  const empty = unwrappedToken(EMPTY);
-  const baseToken =
-    baseTokenCurrency && baseTokenCurrency === empty
-      ? stakingInfo?.tokens[0]
-      : stakingInfo?.baseToken;
-  const totalSupplyOfStakingToken = useTotalSupply(
-    stakingInfo?.stakedAmount.token,
-  );
-  let valueOfTotalStakedAmountInBaseToken: TokenAmount | undefined;
-  if (
-    totalSupplyOfStakingToken &&
-    stakingTokenPair &&
-    stakingInfo &&
-    baseToken
-  ) {
-    // take the total amount of LP tokens staked, multiply by ETH value of all LP tokens, divide by all LP tokens
-    valueOfTotalStakedAmountInBaseToken = new TokenAmount(
-      baseToken,
-      JSBI.divide(
-        JSBI.multiply(
-          JSBI.multiply(
-            stakingInfo.totalStakedAmount.raw,
-            stakingTokenPair.reserveOf(baseToken).raw,
-          ),
-          JSBI.BigInt(2), // this is b/c the value of LP shares are ~double the value of the WETH they entitle owner to
-        ),
-        totalSupplyOfStakingToken.raw,
-      ),
-    );
-  }
 
   const apyWithFee = useMemo(() => {
     if (stakingInfo && bulkPairData) {

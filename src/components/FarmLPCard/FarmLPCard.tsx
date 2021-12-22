@@ -473,7 +473,7 @@ const FarmLPCard: React.FC<{
           {isMobile && (
             <Typography className={classes.syrupText}>Rewards</Typography>
           )}
-          <Box>
+          <Box textAlign={isMobile ? 'right' : 'left'}>
             <Typography variant='body2'>{`$${Number(
               rewards.toFixed(0),
             ).toLocaleString()} / day`}</Typography>

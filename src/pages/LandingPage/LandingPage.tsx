@@ -48,7 +48,7 @@ import {
   useWalletModalToggle,
 } from 'state/application/hooks';
 import { useAllTokens } from 'hooks/Tokens';
-import { useLairInfo, useStakingInfo } from 'state/stake/hooks';
+import { useLairInfo, STAKING_REWARDS_INFO } from 'state/stake/hooks';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   heroSection: {
@@ -415,7 +415,7 @@ const LandingPage: React.FC = () => {
   const [swapIndex, setSwapIndex] = useState(0);
   const [openStakeModal, setOpenStakeModal] = useState(false);
   const { palette, breakpoints } = useTheme();
-  const { account } = useActiveWeb3React();
+  const { account, chainId } = useActiveWeb3React();
   const { ethereum } = window as any;
   const isnotMatic =
     ethereum && ethereum.isMetaMask && Number(ethereum.chainId) !== 137;
@@ -509,23 +509,20 @@ const LandingPage: React.FC = () => {
   const { ethPrice, updateEthPrice } = useEthPrice();
   const { globalData, updateGlobalData } = useGlobalData();
   const lairInfo = useLairInfo();
-  const stakingInfos = useStakingInfo();
   const rewardRate = useMemo(() => {
-    if (stakingInfos && stakingInfos.length > 0) {
-      return stakingInfos
-        .map((info) => Number(info.rate))
-        .reduce((sum, current) => sum + current, 0);
+    if (chainId) {
+      const rewardsInfo = STAKING_REWARDS_INFO[chainId];
+      if (rewardsInfo && rewardsInfo.length > 0) {
+        return rewardsInfo
+          .map((info: any) => Number(info.rate))
+          .reduce((sum, current) => sum + current, 0);
+      } else {
+        return 0;
+      }
     } else {
       return 0;
     }
-  }, [stakingInfos]);
-  const totalRewardsUSD = useMemo(() => {
-    if (stakingInfos && stakingInfos.length > 0) {
-      return Number(stakingInfos[0].quickPrice) * rewardRate;
-    } else {
-      return 0;
-    }
-  }, [stakingInfos, rewardRate]);
+  }, [chainId]);
 
   const APR =
     (((Number(lairInfo?.oneDayVol) * 0.04 * 0.01) /
@@ -536,6 +533,11 @@ const LandingPage: React.FC = () => {
   const dQUICKAPY = APR
     ? ((Math.pow(1 + APR / 365, 365) - 1) * 100).toFixed(4)
     : 0;
+
+  const totalRewardsUSD =
+    rewardRate *
+    (Number(lairInfo?.dQUICKtoQUICK.toSignificant()) *
+      Number(lairInfo?.quickPrice));
 
   useEffect(() => {
     async function checkEthPrice() {

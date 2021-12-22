@@ -176,11 +176,15 @@ const DragonPage: React.FC = () => {
   const [pageIndex, setPageIndex] = useState(0);
   const [pageOldIndex, setPageOldIndex] = useState(0);
 
-  const addedSyrupInfos = useSyrupInfo(null, pageIndex * 5 - 5, pageIndex * 5);
+  const addedSyrupInfos = useSyrupInfo(
+    null,
+    isEndedSyrup ? 0 : pageIndex * 5 - 5,
+    isEndedSyrup ? 0 : pageIndex * 5,
+  );
   const addedOldSyrupInfos = useOldSyrupInfo(
     null,
-    pageOldIndex * 5 - 5,
-    pageOldIndex * 5,
+    isEndedSyrup ? pageOldIndex * 5 - 5 : 0,
+    isEndedSyrup ? pageOldIndex * 5 : 0,
   );
 
   const syrupRewardAddress = addedSyrupInfos
@@ -198,12 +202,32 @@ const DragonPage: React.FC = () => {
     syrupOldInfos[syrupOldInfos.length - 1]?.stakingRewardAddress;
 
   useEffect(() => {
-    setSyrupInfos(syrupInfos.concat(addedSyrupInfos));
+    setSyrupInfos(
+      syrupInfos
+        .concat(addedSyrupInfos)
+        .filter(
+          (val, ind, self) =>
+            ind ===
+            self.findIndex(
+              (item) => item.stakingRewardAddress === val.stakingRewardAddress,
+            ),
+        ),
+    );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [syrupRewardAddress]);
 
   useEffect(() => {
-    setSyrupOldInfos(syrupOldInfos.concat(addedOldSyrupInfos));
+    setSyrupOldInfos(
+      syrupOldInfos
+        .concat(addedOldSyrupInfos)
+        .filter(
+          (val, ind, self) =>
+            ind ===
+            self.findIndex(
+              (item) => item.stakingRewardAddress === val.stakingRewardAddress,
+            ),
+        ),
+    );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [syrupRewardOldAddress]);
 
