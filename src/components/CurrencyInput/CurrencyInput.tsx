@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Currency } from '@uniswap/sdk';
 import { Box, Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { useCurrencyBalance } from 'state/wallet/hooks';
 import cx from 'classnames';
 import { CurrencySearchModal, CurrencyLogo } from 'components';
@@ -12,7 +12,6 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
   swapBox: {
     padding: '16px 24px',
     borderRadius: 10,
-    background: palette.secondary.dark,
     zIndex: 1,
     position: 'relative',
     textAlign: 'left',
@@ -94,6 +93,7 @@ interface CurrencyInputProps {
   showHalfButton?: boolean;
   showMaxButton?: boolean;
   showPrice?: boolean;
+  bgColor?: string;
 }
 
 const CurrencyInput: React.FC<CurrencyInputProps> = ({
@@ -108,8 +108,10 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
   showHalfButton,
   title,
   showPrice,
+  bgColor,
 }) => {
   const classes = useStyles();
+  const { palette } = useTheme();
   const [modalOpen, setModalOpen] = useState(false);
   const { account } = useActiveWeb3React();
   const selectedCurrencyBalance = useCurrencyBalance(
@@ -119,7 +121,10 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
   const usdPrice = Number(useUSDCPrice(currency)?.toSignificant()) || 0;
 
   return (
-    <Box className={cx(classes.swapBox, showPrice && classes.priceShowBox)}>
+    <Box
+      className={cx(classes.swapBox, showPrice && classes.priceShowBox)}
+      bgcolor={bgColor ?? palette.secondary.dark}
+    >
       <Box display='flex' justifyContent='space-between' mb={2}>
         <Typography>{title || 'You Pay:'}</Typography>
         <Box display='flex'>

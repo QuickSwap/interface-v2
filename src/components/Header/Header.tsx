@@ -237,16 +237,24 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       fontWeight: 600,
     },
   },
-  mobileMenu: {
+  mobileMenuContainer: {
     background: palette.secondary.dark,
     position: 'fixed',
     left: 0,
     bottom: 0,
     height: 64,
     width: '100%',
-    justifyContent: 'center',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
+    padding: '0 16px',
+    justifyContent: 'center',
+  },
+  mobileMenu: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    maxWidth: 375,
+    width: '100%',
     '& a': {
       textDecoration: 'none',
       padding: '8px 12px',
@@ -381,52 +389,58 @@ const Header: React.FC = () => {
         </Box>
       )}
       {tabletWindowSize && (
-        <Box className={classes.mobileMenu}>
-          {menuItems.slice(0, 4).map((val, index) => (
-            <Link
-              to={val.link}
-              key={index}
-              className={val.link === pathname ? 'active' : 'menuItem'}
-            >
-              <Typography variant='body2'>{val.text}</Typography>
-            </Link>
-          ))}
-          <Box display='flex' className='menuItem'>
-            <ThreeDotIcon onClick={() => setOpenDetailMenu(!openDetailMenu)} />
-            {openDetailMenu && (
-              <Box
-                position='absolute'
-                bottom={72}
-                right={12}
-                width={209}
-                bgcolor={theme.palette.secondary.dark}
-                borderRadius={20}
-                py={1}
-                border={`1px solid ${theme.palette.divider}`}
+        <Box className={classes.mobileMenuContainer}>
+          <Box className={classes.mobileMenu}>
+            {menuItems.slice(0, 4).map((val, index) => (
+              <Link
+                to={val.link}
+                key={index}
+                className={val.link === pathname ? 'active' : 'menuItem'}
               >
-                <Box className='subMenu'>
-                  {menuItems.slice(4, menuItems.length).map((val, index) => (
-                    <Link
-                      to={val.link}
-                      key={index}
-                      className={val.link === pathname ? 'active' : 'menuItem'}
-                      onClick={() => setOpenDetailMenu(false)}
-                    >
-                      <Typography variant='body2'>{val.text}</Typography>
-                    </Link>
-                  ))}
-                  {outLinks.map((item, ind) => (
-                    <a
-                      href={item.link}
-                      key={ind}
-                      onClick={() => setOpenDetailMenu(false)}
-                    >
-                      <Typography variant='body2'>{item.text}</Typography>
-                    </a>
-                  ))}
+                <Typography variant='body2'>{val.text}</Typography>
+              </Link>
+            ))}
+            <Box display='flex' className='menuItem'>
+              <ThreeDotIcon
+                onClick={() => setOpenDetailMenu(!openDetailMenu)}
+              />
+              {openDetailMenu && (
+                <Box
+                  position='absolute'
+                  bottom={72}
+                  right={12}
+                  width={209}
+                  bgcolor={theme.palette.secondary.dark}
+                  borderRadius={20}
+                  py={1}
+                  border={`1px solid ${theme.palette.divider}`}
+                >
+                  <Box className='subMenu'>
+                    {menuItems.slice(4, menuItems.length).map((val, index) => (
+                      <Link
+                        to={val.link}
+                        key={index}
+                        className={
+                          val.link === pathname ? 'active' : 'menuItem'
+                        }
+                        onClick={() => setOpenDetailMenu(false)}
+                      >
+                        <Typography variant='body2'>{val.text}</Typography>
+                      </Link>
+                    ))}
+                    {outLinks.map((item, ind) => (
+                      <a
+                        href={item.link}
+                        key={ind}
+                        onClick={() => setOpenDetailMenu(false)}
+                      >
+                        <Typography variant='body2'>{item.text}</Typography>
+                      </a>
+                    ))}
+                  </Box>
                 </Box>
-              </Box>
-            )}
+              )}
+            </Box>
           </Box>
         </Box>
       )}

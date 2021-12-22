@@ -62,7 +62,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     height: 40,
     border: `1px solid ${palette.secondary.dark}`,
     borderRadius: 10,
-    minWidth: 250,
+    minWidth: 300,
     display: 'flex',
     alignItems: 'center',
     padding: '0 10px',
@@ -76,6 +76,11 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       fontWeight: 500,
       color: palette.text.primary,
       flex: 1,
+    },
+    [breakpoints.down('xs')]: {
+      width: '100%',
+      minWidth: 'unset',
+      marginRight: 0,
     },
   },
   thirdColor: {
@@ -519,7 +524,7 @@ const FarmPage: React.FC = () => {
   return (
     <Box width='100%' mb={3} id='farmPage'>
       <Box
-        mb={4}
+        mb={2}
         display='flex'
         alignItems='flex-start'
         justifyContent='space-between'
@@ -527,36 +532,36 @@ const FarmPage: React.FC = () => {
       >
         <Box mr={2}>
           <Typography variant='h4'>Farm</Typography>
-          <Box display='flex' mt={2} width={300} height={48}>
-            <Box
-              className={cx(
-                classes.farmSwitch,
-                farmIndex === 0 && classes.activeFarmSwitch,
-              )}
-              style={{ borderTopLeftRadius: 8, borderBottomLeftRadius: 8 }}
-              onClick={() => {
-                setFarmIndex(0);
-              }}
-            >
-              <Typography variant='body1'>LP Mining</Typography>
-            </Box>
-            <Box
-              className={cx(
-                classes.farmSwitch,
-                farmIndex === 1 && classes.activeFarmSwitch,
-              )}
-              style={{ borderTopRightRadius: 8, borderBottomRightRadius: 8 }}
-              onClick={() => {
-                setFarmIndex(1);
-              }}
-            >
-              <Typography variant='body1'>Dual Mining</Typography>
-            </Box>
-          </Box>
         </Box>
         <Box className={classes.helpWrapper}>
           <Typography variant='body2'>Help</Typography>
           <HelpIcon />
+        </Box>
+      </Box>
+      <Box display='flex' mb={4} width={300} height={48}>
+        <Box
+          className={cx(
+            classes.farmSwitch,
+            farmIndex === 0 && classes.activeFarmSwitch,
+          )}
+          style={{ borderTopLeftRadius: 8, borderBottomLeftRadius: 8 }}
+          onClick={() => {
+            setFarmIndex(0);
+          }}
+        >
+          <Typography variant='body1'>LP Mining</Typography>
+        </Box>
+        <Box
+          className={cx(
+            classes.farmSwitch,
+            farmIndex === 1 && classes.activeFarmSwitch,
+          )}
+          style={{ borderTopRightRadius: 8, borderBottomRightRadius: 8 }}
+          onClick={() => {
+            setFarmIndex(1);
+          }}
+        >
+          <Typography variant='body1'>Dual Mining</Typography>
         </Box>
       </Box>
       <Box className={classes.dragonWrapper}>
@@ -576,8 +581,8 @@ const FarmPage: React.FC = () => {
                 : 'dQUICK + WMATIC rewards'}
             </Typography>
           </Box>
-          <Box display='flex'>
-            <Box className={classes.searchInput}>
+          <Box display='flex' flexWrap='wrap'>
+            <Box className={classes.searchInput} mr={2} my={2}>
               <SearchIcon />
               <input
                 placeholder='Search name, symbol or paste address'
@@ -585,43 +590,48 @@ const FarmPage: React.FC = () => {
                 onChange={(evt: any) => setFarmSearch(evt.target.value)}
               />
             </Box>
-            <Box width={160} height={40} display='flex' mx={2}>
-              <Box
-                className={cx(
-                  classes.farmSwitch,
-                  !isEndedFarm && classes.activeFarmSwitch,
-                )}
-                style={{ borderTopLeftRadius: 8, borderBottomLeftRadius: 8 }}
-                onClick={() => {
-                  setIsEndedFarm(false);
-                }}
-              >
-                <Typography variant='body2'>Active</Typography>
+            <Box display='flex' flexWrap='wrap' alignItems='center'>
+              <Box width={160} height={40} display='flex' mr={2}>
+                <Box
+                  className={cx(
+                    classes.farmSwitch,
+                    !isEndedFarm && classes.activeFarmSwitch,
+                  )}
+                  style={{ borderTopLeftRadius: 8, borderBottomLeftRadius: 8 }}
+                  onClick={() => {
+                    setIsEndedFarm(false);
+                  }}
+                >
+                  <Typography variant='body2'>Active</Typography>
+                </Box>
+                <Box
+                  className={cx(
+                    classes.farmSwitch,
+                    isEndedFarm && classes.activeFarmSwitch,
+                  )}
+                  style={{
+                    borderTopRightRadius: 8,
+                    borderBottomRightRadius: 8,
+                  }}
+                  onClick={() => {
+                    setIsEndedFarm(true);
+                  }}
+                >
+                  <Typography variant='body2'>Ended</Typography>
+                </Box>
               </Box>
-              <Box
-                className={cx(
-                  classes.farmSwitch,
-                  isEndedFarm && classes.activeFarmSwitch,
-                )}
-                style={{ borderTopRightRadius: 8, borderBottomRightRadius: 8 }}
-                onClick={() => {
-                  setIsEndedFarm(true);
-                }}
-              >
-                <Typography variant='body2'>Ended</Typography>
+              <Box display='flex' alignItems='center'>
+                <Typography
+                  variant='body2'
+                  style={{ color: palette.text.disabled, marginRight: 8 }}
+                >
+                  Staked Only
+                </Typography>
+                <ToggleSwitch
+                  toggled={stakedOnly}
+                  onToggle={() => setStakeOnly(!stakedOnly)}
+                />
               </Box>
-            </Box>
-            <Box display='flex' alignItems='center' mt={isMobile ? 2 : 0}>
-              <Typography
-                variant='body2'
-                style={{ color: palette.text.disabled, marginRight: 8 }}
-              >
-                Staked Only
-              </Typography>
-              <ToggleSwitch
-                toggled={stakedOnly}
-                onToggle={() => setStakeOnly(!stakedOnly)}
-              />
             </Box>
           </Box>
         </Box>

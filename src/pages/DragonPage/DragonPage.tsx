@@ -111,6 +111,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     display: 'flex',
     alignItems: 'center',
     padding: '0 10px',
+    flex: 1,
     '& input': {
       background: 'transparent',
       border: 'none',
@@ -121,6 +122,12 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       fontWeight: 500,
       color: palette.text.primary,
       flex: 1,
+    },
+    [breakpoints.down('xs')]: {
+      width: '100%',
+      minWidth: 'unset',
+      marginRight: 0,
+      flex: 'none',
     },
   },
   syrupSwitch: {
@@ -423,7 +430,7 @@ const DragonPage: React.FC = () => {
         <Grid item xs={12} sm={12} md={8}>
           <Box className={classes.dragonWrapper}>
             <Box className={classes.dragonBg}>
-              <img src={DragonBg1} alt='Dragon Syrup' />
+              <img src={isMobile ? DragonBg2 : DragonBg1} alt='Dragon Syrup' />
             </Box>
             <Box className={classes.stepWrapper}>
               <Typography variant='caption'>STEP 2:</Typography>
@@ -435,7 +442,7 @@ const DragonPage: React.FC = () => {
               </Typography>
             </Box>
             <Box display='flex' flexWrap='wrap' alignItems='center' mb={3.5}>
-              <Box className={classes.searchInput} flex={1}>
+              <Box className={classes.searchInput} mr={2} my={isMobile ? 2 : 0}>
                 <SearchIcon />
                 <input
                   placeholder='Search name, symbol or paste address'
@@ -443,46 +450,51 @@ const DragonPage: React.FC = () => {
                   onChange={(evt: any) => setSyrupSearch(evt.target.value)}
                 />
               </Box>
-              <Box width={160} height={40} display='flex' mx={2}>
-                <Box
-                  className={cx(
-                    classes.syrupSwitch,
-                    !isEndedSyrup && classes.activeSyrupSwitch,
-                  )}
-                  style={{ borderTopLeftRadius: 8, borderBottomLeftRadius: 8 }}
-                  onClick={() => {
-                    setIsEndedSyrup(false);
-                  }}
-                >
-                  <Typography variant='body2'>Active</Typography>
+              <Box display='flex' flexWrap='wrap' alignItems='center'>
+                <Box width={160} height={40} display='flex' mr={2}>
+                  <Box
+                    className={cx(
+                      classes.syrupSwitch,
+                      !isEndedSyrup && classes.activeSyrupSwitch,
+                    )}
+                    style={{
+                      borderTopLeftRadius: 8,
+                      borderBottomLeftRadius: 8,
+                    }}
+                    onClick={() => {
+                      setIsEndedSyrup(false);
+                    }}
+                  >
+                    <Typography variant='body2'>Active</Typography>
+                  </Box>
+                  <Box
+                    className={cx(
+                      classes.syrupSwitch,
+                      isEndedSyrup && classes.activeSyrupSwitch,
+                    )}
+                    style={{
+                      borderTopRightRadius: 8,
+                      borderBottomRightRadius: 8,
+                    }}
+                    onClick={() => {
+                      setIsEndedSyrup(true);
+                    }}
+                  >
+                    <Typography variant='body2'>Ended</Typography>
+                  </Box>
                 </Box>
-                <Box
-                  className={cx(
-                    classes.syrupSwitch,
-                    isEndedSyrup && classes.activeSyrupSwitch,
-                  )}
-                  style={{
-                    borderTopRightRadius: 8,
-                    borderBottomRightRadius: 8,
-                  }}
-                  onClick={() => {
-                    setIsEndedSyrup(true);
-                  }}
-                >
-                  <Typography variant='body2'>Ended</Typography>
+                <Box display='flex' alignItems='center'>
+                  <Typography
+                    variant='body2'
+                    style={{ color: palette.text.disabled, marginRight: 8 }}
+                  >
+                    Staked Only
+                  </Typography>
+                  <ToggleSwitch
+                    toggled={stakedOnly}
+                    onToggle={() => setStakeOnly(!stakedOnly)}
+                  />
                 </Box>
-              </Box>
-              <Box display='flex' alignItems='center' mt={isMobile ? 2 : 0}>
-                <Typography
-                  variant='body2'
-                  style={{ color: palette.text.disabled, marginRight: 8 }}
-                >
-                  Staked Only
-                </Typography>
-                <ToggleSwitch
-                  toggled={stakedOnly}
-                  onToggle={() => setStakeOnly(!stakedOnly)}
-                />
               </Box>
             </Box>
             <Divider />

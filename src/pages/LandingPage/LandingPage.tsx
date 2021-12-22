@@ -109,6 +109,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
   quickInfo: {
     textAlign: 'center',
     margin: '128px 0 30px',
+    maxWidth: 800,
     '& h2': {
       marginBottom: 60,
     },
@@ -740,8 +741,6 @@ const LandingPage: React.FC = () => {
       <Box className={classes.quickInfo}>
         <Typography style={{ fontSize: '24px' }}>
           QuickSwap is a next-generation layer-2 decentralized exchange and
-        </Typography>
-        <Typography style={{ fontSize: '24px', paddingTop: '10px' }}>
           Automated Market Maker.
         </Typography>
         <img src={Motif} alt='Motif' />
@@ -765,7 +764,11 @@ const LandingPage: React.FC = () => {
       <Box className={classes.swapContainer}>
         <Grid container spacing={mobileWindowSize ? 0 : 8} alignItems='center'>
           <Grid item sm={12} md={6}>
-            {swapIndex === 0 ? <Swap /> : <AddLiquidity />}
+            {swapIndex === 0 ? (
+              <Swap currencyBg={palette.background.paper} />
+            ) : (
+              <AddLiquidity currencyBg={palette.background.paper} />
+            )}
           </Grid>
           <Grid item sm={12} md={6} className={classes.swapInfo}>
             <Typography variant='h4'>

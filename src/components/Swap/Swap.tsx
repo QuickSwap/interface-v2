@@ -133,10 +133,11 @@ const useStyles = makeStyles(({ palette }) => ({
   },
 }));
 
-const Swap: React.FC<{ currency0?: Currency; currency1?: Currency }> = ({
-  currency0,
-  currency1,
-}) => {
+const Swap: React.FC<{
+  currency0?: Currency;
+  currency1?: Currency;
+  currencyBg?: string;
+}> = ({ currency0, currency1, currencyBg }) => {
   const [openSettingsModal, setOpenSettingsModal] = useState(false);
   const { palette } = useTheme();
   const { account } = useActiveWeb3React();
@@ -557,6 +558,7 @@ const Swap: React.FC<{ currency0?: Currency; currency1?: Currency }> = ({
         handleCurrencySelect={handleCurrencySelect}
         amount={formattedAmounts[Field.INPUT]}
         setAmount={handleTypeInput}
+        bgColor={currencyBg}
       />
       <Box className={classes.exchangeSwap}>
         <ExchangeIcon onClick={onSwitchTokens} />
@@ -570,6 +572,7 @@ const Swap: React.FC<{ currency0?: Currency; currency1?: Currency }> = ({
         handleCurrencySelect={handleOtherCurrencySelect}
         amount={formattedAmounts[Field.OUTPUT]}
         setAmount={handleTypeOutput}
+        bgColor={currencyBg}
       />
       {trade && trade.executionPrice && (
         <Box className={classes.swapPrice}>

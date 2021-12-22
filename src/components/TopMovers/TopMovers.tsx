@@ -15,13 +15,6 @@ const useStyles = makeStyles(({ breakpoints }) => ({
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    [breakpoints.down('sm')]: {
-      flexWrap: 'wrap',
-      justifyContent: 'flex-start',
-    },
-    [breakpoints.down('xs')]: {
-      flexDirection: 'column',
-    },
   },
 }));
 
@@ -69,12 +62,14 @@ const TopMovers: React.FC<TopMoversProps> = ({
         background === 'transparent' ? palette.background.paper : 'transparent'
       }`}
       borderRadius={10}
-      padding={2.5}
+      px={2.5}
+      pt={2.5}
+      pb={0.5}
     >
       <Typography variant='h6' style={{ color: palette.text.secondary }}>
         24h TOP MOVERS
       </Typography>
-      <Box width={1}>
+      <Box width={1} pb={2} style={{ overflowX: 'auto' }}>
         {topMoverTokens ? (
           <Box className={classes.content}>
             {topMoverTokens.map((token: any, index: number) => {
@@ -88,7 +83,7 @@ const TopMovers: React.FC<TopMoversProps> = ({
               const priceUpPercent = Number(token.priceChangeUSD).toFixed(2);
               return (
                 <Box
-                  mr={!smallWindowSize && index < topMoverTokens.length ? 2 : 0}
+                  mr={index < topMoverTokens.length ? 2 : 0}
                   width={smallWindowSize ? 180 : 'unset'}
                   mt={2}
                   key={token.id}

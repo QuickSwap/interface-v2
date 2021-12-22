@@ -103,7 +103,8 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
 const AddLiquidity: React.FC<{
   currency0?: Currency;
   currency1?: Currency;
-}> = ({ currency0, currency1 }) => {
+  currencyBg?: string;
+}> = ({ currency0, currency1, currencyBg }) => {
   const classes = useStyles({});
   const { palette } = useTheme();
   const [addLiquidityErrorMessage, setAddLiquidityErrorMessage] = useState<
@@ -472,6 +473,7 @@ const AddLiquidity: React.FC<{
         handleCurrencySelect={handleCurrencyASelect}
         amount={formattedAmounts[Field.CURRENCY_A]}
         setAmount={onFieldAInput}
+        bgColor={currencyBg}
       />
       <Box className={classes.exchangeSwap}>
         <AddLiquidityIcon />
@@ -496,6 +498,7 @@ const AddLiquidity: React.FC<{
         handleCurrencySelect={handleCurrencyBSelect}
         amount={formattedAmounts[Field.CURRENCY_B]}
         setAmount={onFieldBInput}
+        bgColor={currencyBg}
       />
       {currencies[Field.CURRENCY_A] &&
         currencies[Field.CURRENCY_B] &&
