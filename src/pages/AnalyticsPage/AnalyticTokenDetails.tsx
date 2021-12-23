@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Box, Typography, Grid } from '@material-ui/core';
+import { Box, Typography, Grid, useMediaQuery } from '@material-ui/core';
 import { ArrowForwardIos } from '@material-ui/icons';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { Skeleton } from '@material-ui/lab';
 import { ChainId, Token } from '@uniswap/sdk';
 import moment from 'moment';
@@ -26,15 +26,19 @@ import { ReactComponent as StarChecked } from 'assets/images/StarChecked.svg';
 import { ReactComponent as StarUnchecked } from 'assets/images/StarUnchecked.svg';
 import { getAddress } from '@ethersproject/address';
 
-const useStyles = makeStyles(({}) => ({
+const useStyles = makeStyles(({ palette, breakpoints }) => ({
   panel: {
     background: '#1b1d26',
     borderRadius: 20,
+    padding: 24,
+    [breakpoints.down('xs')]: {
+      padding: 12,
+    },
   },
   breadcrumb: {
     display: 'flex',
     alignItems: 'center',
-    color: '#636780',
+    color: palette.text.hint,
     marginBottom: 50,
     '& svg': {
       width: 12,
@@ -50,15 +54,22 @@ const useStyles = makeStyles(({}) => ({
   heading1: {
     fontSize: 32,
     fontWeight: 'bold',
-    color: '#ebecf2',
+    color: palette.text.primary,
     lineHeight: 1,
+    [breakpoints.down('xs')]: {
+      fontSize: 22,
+      fontWeight: 600,
+    },
   },
   heading2: {
     fontSize: 20,
     lineHeight: 1.2,
     fontWeight: 600,
-    color: '#636780',
+    color: palette.text.hint,
     marginLeft: 6,
+    [breakpoints.down('xs')]: {
+      fontSize: 18,
+    },
   },
   priceChangeWrapper: {
     height: 25,
@@ -74,7 +85,7 @@ const useStyles = makeStyles(({}) => ({
     height: 40,
     padding: '0 28px',
     borderRadius: 10,
-    color: '#ebecf2',
+    color: palette.text.primary,
     cursor: 'pointer',
   },
   filledButton: {
@@ -95,6 +106,8 @@ const AnalyticsTokenDetails: React.FC<{
   goBack: (index: number) => void;
 }> = ({ token, goBack }) => {
   const classes = useStyles();
+  const { palette, breakpoints } = useTheme();
+  const isMobile = useMediaQuery(breakpoints.down('xs'));
   const history = useHistory();
   const { chainId } = useActiveWeb3React();
   const currency = new Token(
@@ -237,7 +250,7 @@ const AnalyticsTokenDetails: React.FC<{
           {shortenAddress(token.id)})
         </Typography>
       </Box>
-      <Box display='flex' justifyContent='space-between'>
+      <Box display='flex' flexWrap='wrap' justifyContent='space-between'>
         <Box display='flex'>
           <CurrencyLogo currency={currency} size='32px' />
           <Box ml={1.5}>
@@ -257,7 +270,7 @@ const AnalyticsTokenDetails: React.FC<{
               )}
             </Box>
             <Box mt={1.25} display='flex' alignItems='center'>
-              <Typography variant='h5' style={{ color: '#ebecf2' }}>
+              <Typography variant='h5' style={{ color: palette.text.primary }}>
                 ${Number(token.priceUSD).toLocaleString()}
               </Typography>
               <Box
@@ -293,11 +306,11 @@ const AnalyticsTokenDetails: React.FC<{
             </Box>
           </Box>
         </Box>
-        <Box display='flex'>
+        <Box my={2} display='flex'>
           <Box
             className={classes.button}
             mr={1.5}
-            border='1px solid #448aff'
+            border={`1px solid ${palette.primary.main}`}
             onClick={() => {
               history.push(`/pools?currency0=${token.id}&currency1=ETH`);
             }}
@@ -314,11 +327,11 @@ const AnalyticsTokenDetails: React.FC<{
           </Box>
         </Box>
       </Box>
-      <Box className={classes.panel} mt={4} px={4} py={3}>
+      <Box className={classes.panel} mt={4}>
         <Grid container>
           <Grid item xs={12} sm={12} md={6}>
-            <Box display='flex' justifyContent='space-between'>
-              <Box>
+            <Box display='flex' flexWrap='wrap' justifyContent='space-between'>
+              <Box mt={1.5}>
                 <Typography variant='caption'>
                   {chartIndex === 0
                     ? 'Volume'
@@ -330,7 +343,10 @@ const AnalyticsTokenDetails: React.FC<{
                   {chartData ? (
                     <>
                       <Box display='flex' alignItems='center'>
-                        <Typography variant='h4' style={{ color: '#ebecf2' }}>
+                        <Typography
+                          variant='h4'
+                          style={{ color: palette.text.primary }}
+                        >
                           $
                           {currentData > 100000
                             ? formatCompact(currentData)
@@ -378,7 +394,7 @@ const AnalyticsTokenDetails: React.FC<{
                   )}
                 </Box>
               </Box>
-              <Box display='flex'>
+              <Box display='flex' mt={1.5}>
                 <Box
                   mr={1}
                   bgcolor={chartIndex === 0 ? '#3e4252' : 'transparent'}
@@ -421,70 +437,96 @@ const AnalyticsTokenDetails: React.FC<{
           </Grid>
           <Grid item xs={12} sm={12} md={6}>
             <Box
+              my={2}
               height={1}
               display='flex'
               flexDirection='column'
               alignItems='center'
               justifyContent='center'
             >
-              <Box width={0.8} display='flex' justifyContent='space-between'>
+              <Box
+                width={isMobile ? 1 : 0.8}
+                display='flex'
+                justifyContent='space-between'
+              >
                 <Box width={180}>
-                  <Typography variant='caption' style={{ color: '#626680' }}>
+                  <Typography
+                    variant='caption'
+                    style={{ color: palette.text.disabled }}
+                  >
                     TOTAL LIQUIDITY
                   </Typography>
-                  <Typography variant='h5'>
+                  <Typography variant={isMobile ? 'body1' : 'h5'}>
                     ${token.totalLiquidityUSD.toLocaleString()}
                   </Typography>
                 </Box>
                 <Box width={140}>
-                  <Typography variant='caption' style={{ color: '#626680' }}>
+                  <Typography
+                    variant='caption'
+                    style={{ color: palette.text.disabled }}
+                  >
                     7d Trading Vol
                   </Typography>
-                  <Typography variant='h5'>
+                  <Typography variant={isMobile ? 'body1' : 'h5'}>
                     ${token.oneWeekVolumeUSD.toLocaleString()}
                   </Typography>
                 </Box>
               </Box>
               <Box
-                width={0.8}
+                width={isMobile ? 1 : 0.8}
                 mt={4}
                 display='flex'
                 justifyContent='space-between'
               >
                 <Box width={180}>
-                  <Typography variant='caption' style={{ color: '#626680' }}>
+                  <Typography
+                    variant='caption'
+                    style={{ color: palette.text.disabled }}
+                  >
                     24h Trading Vol
                   </Typography>
-                  <Typography variant='h5'>
+                  <Typography variant={isMobile ? 'body1' : 'h5'}>
                     ${token.oneDayVolumeUSD.toLocaleString()}
                   </Typography>
                 </Box>
                 <Box width={140}>
-                  <Typography variant='caption' style={{ color: '#626680' }}>
+                  <Typography
+                    variant='caption'
+                    style={{ color: palette.text.disabled }}
+                  >
                     24h FEES
                   </Typography>
-                  <Typography variant='h5'>
+                  <Typography variant={isMobile ? 'body1' : 'h5'}>
                     ${(token.oneDayVolumeUSD * 0.003).toLocaleString()}
                   </Typography>
                 </Box>
               </Box>
               <Box
-                width={0.8}
+                width={isMobile ? 1 : 0.8}
                 mt={4}
                 display='flex'
                 justifyContent='space-between'
               >
                 <Box width={180}>
-                  <Typography variant='caption' style={{ color: '#626680' }}>
+                  <Typography
+                    variant='caption'
+                    style={{ color: palette.text.disabled }}
+                  >
                     Contract Address
                   </Typography>
-                  <Typography variant='h5' style={{ color: '#448aff' }}>
+                  <Typography
+                    variant='h5'
+                    style={{ color: palette.primary.main }}
+                  >
                     {chainId ? (
                       <a
                         href={getEtherscanLink(chainId, token.id, 'address')}
                         target='_blank'
                         rel='noreferrer'
-                        style={{ color: '#448aff', textDecoration: 'none' }}
+                        style={{
+                          color: palette.primary.main,
+                          textDecoration: 'none',
+                        }}
                       >
                         {shortenAddress(token.id)}
                       </a>
@@ -492,12 +534,6 @@ const AnalyticsTokenDetails: React.FC<{
                       shortenAddress(token.id)
                     )}
                   </Typography>
-                </Box>
-                <Box width={140}>
-                  <Typography variant='caption' style={{ color: '#626680' }}>
-                    Network
-                  </Typography>
-                  <Typography variant='h5'>Polygon</Typography>
                 </Box>
               </Box>
             </Box>
@@ -507,7 +543,7 @@ const AnalyticsTokenDetails: React.FC<{
       <Box mt={5}>
         <Typography variant='body1'>{token.symbol} Pools</Typography>
       </Box>
-      <Box className={classes.panel} mt={4} px={4} py={3}>
+      <Box className={classes.panel} mt={4}>
         {tokenPairs ? (
           <PairTable data={tokenPairs} />
         ) : (

@@ -7,7 +7,7 @@ import {
   ConfirmationModalContent,
   DoubleCurrencyLogo,
 } from 'components';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { useWalletModalToggle } from 'state/application/hooks';
 import { TransactionResponse } from '@ethersproject/providers';
 import { BigNumber } from '@ethersproject/bignumber';
@@ -41,9 +41,8 @@ import {
 import { wrappedCurrency } from 'utils/wrappedCurrency';
 import { ReactComponent as AddLiquidityIcon } from 'assets/images/AddLiquidityIcon.svg';
 
-const useStyles = makeStyles(({}) => ({
+const useStyles = makeStyles(({ palette, breakpoints }) => ({
   exchangeSwap: {
-    cursor: 'pointer',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
@@ -58,10 +57,10 @@ const useStyles = makeStyles(({}) => ({
       fontSize: 18,
       fontWeight: 600,
       width: (props: any) => (props.showApproveFlow ? '48%' : '100%'),
-      backgroundImage: 'linear-gradient(to bottom, #448aff, #004ce6)',
+      backgroundImage: `linear-gradient(to bottom, ${palette.primary.main}, #004ce6)`,
       '&.Mui-disabled': {
-        backgroundImage: 'linear-gradient(to bottom, #282d3d, #1d212c)',
-        color: '#696c80',
+        backgroundImage: `linear-gradient(to bottom, ${palette.secondary.dark}, #1d212c)`,
+        color: palette.text.secondary,
         opacity: 0.5,
       },
       '& .content': {
@@ -76,12 +75,16 @@ const useStyles = makeStyles(({}) => ({
   },
   swapPrice: {
     display: 'flex',
+    flexWrap: 'wrap',
     justifyContent: 'space-between',
     margin: '6px 24px 0',
+    [breakpoints.down('xs')]: {
+      margin: '6px 12px 0',
+    },
     '& p': {
       display: 'flex',
       alignItems: 'center',
-      color: '#c7cad9',
+      color: palette.text.primary,
       '& svg': {
         marginLeft: 8,
         width: 16,
@@ -100,8 +103,10 @@ const useStyles = makeStyles(({}) => ({
 const AddLiquidity: React.FC<{
   currency0?: Currency;
   currency1?: Currency;
-}> = ({ currency0, currency1 }) => {
+  currencyBg?: string;
+}> = ({ currency0, currency1, currencyBg }) => {
   const classes = useStyles({});
+  const { palette } = useTheme();
   const [addLiquidityErrorMessage, setAddLiquidityErrorMessage] = useState<
     string | null
   >(null);
@@ -394,7 +399,7 @@ const AddLiquidity: React.FC<{
             size={48}
           />
         </Box>
-        <Box mb={6} color='#c7cad9' textAlign='center'>
+        <Box mb={6} color={palette.text.primary} textAlign='center'>
           <Typography variant='h6'>
             Supplying {parsedAmounts[Field.CURRENCY_A]?.toSignificant()}&nbsp;
             {currencies[Field.CURRENCY_A]?.symbol}&nbsp;and&nbsp;
@@ -406,7 +411,7 @@ const AddLiquidity: React.FC<{
             {currencies[Field.CURRENCY_B]?.symbol} LP Tokens
           </Typography>
         </Box>
-        <Box mb={3} color='#696c80' textAlign='center'>
+        <Box mb={3} color={palette.text.secondary} textAlign='center'>
           <Typography variant='body2'>
             {`Output is estimated. If the price changes by more than ${allowedSlippage /
               100}% your transaction will revert.`}
@@ -468,6 +473,7 @@ const AddLiquidity: React.FC<{
         handleCurrencySelect={handleCurrencyASelect}
         amount={formattedAmounts[Field.CURRENCY_A]}
         setAmount={onFieldAInput}
+        bgColor={currencyBg}
       />
       <Box className={classes.exchangeSwap}>
         <AddLiquidityIcon />
@@ -492,6 +498,7 @@ const AddLiquidity: React.FC<{
         handleCurrencySelect={handleCurrencyBSelect}
         amount={formattedAmounts[Field.CURRENCY_B]}
         setAmount={onFieldBInput}
+        bgColor={currencyBg}
       />
       {currencies[Field.CURRENCY_A] &&
         currencies[Field.CURRENCY_B] &&

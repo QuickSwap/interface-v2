@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Box, Typography, Grid } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { Box, Typography, Grid, useMediaQuery } from '@material-ui/core';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Skeleton from '@material-ui/lab/Skeleton';
 import { ArrowForwardIos } from '@material-ui/icons';
 import dayjs from 'dayjs';
@@ -24,7 +24,7 @@ import AnalyticsInfo from './AnalyticsInfo';
 
 dayjs.extend(utc);
 
-const useStyles = makeStyles(({}) => ({
+const useStyles = makeStyles(({ palette }) => ({
   panel: {
     background: '#1b1d26',
     borderRadius: 20,
@@ -38,14 +38,14 @@ const useStyles = makeStyles(({}) => ({
     borderRadius: 10,
     cursor: 'pointer',
     '& span': {
-      color: '#ebecf2',
+      color: palette.text.primary,
     },
   },
   headingWrapper: {
     display: 'flex',
     alignItems: 'center',
     '& h6': {
-      color: '#626680',
+      color: palette.text.disabled,
     },
     '& svg': {
       height: 16,
@@ -65,6 +65,8 @@ const AnalyticsOverview: React.FC<AnalyticsOverViewProps> = ({
   showAllPairs,
 }) => {
   const classes = useStyles();
+  const { palette, breakpoints } = useTheme();
+  const isMobile = useMediaQuery(breakpoints.down('xs'));
   const [volumeIndex, setVolumeIndex] = useState(0);
   const [selectedVolumeIndex, setSelectedVolumeIndex] = useState(-1);
 
@@ -95,6 +97,9 @@ const AnalyticsOverview: React.FC<AnalyticsOverViewProps> = ({
       if (topTokensData) {
         updateTopTokens(topTokensData);
       }
+    };
+    const fetchTopPairs = async () => {
+      const [newPrice] = await getEthPrice();
       const pairs = await getTopPairs(8);
       const formattedPairs = pairs
         ? pairs.map((pair: any) => {
@@ -107,7 +112,13 @@ const AnalyticsOverview: React.FC<AnalyticsOverViewProps> = ({
       }
     };
     fetchChartData();
-    fetchTopTokens();
+    if (!topTokens || topTokens.length < 8) {
+      fetchTopTokens();
+    }
+    if (!topPairs || topPairs.length < 8) {
+      fetchTopPairs();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [startTime, updateGlobalChartData, updateTopTokens, updateTopPairs]);
 
   const liquidityDates = useMemo(() => {
@@ -249,17 +260,20 @@ const AnalyticsOverview: React.FC<AnalyticsOverViewProps> = ({
     <>
       <Grid container spacing={4}>
         <Grid item xs={12} sm={12} md={6}>
-          <Box className={classes.panel} padding={3} width={1}>
+          <Box className={classes.panel} padding={isMobile ? 1.5 : 3} width={1}>
             <Typography
               variant='caption'
-              style={{ color: '#626680', fontWeight: 'bold' }}
+              style={{ color: palette.text.disabled, fontWeight: 'bold' }}
             >
               LIQUIDITY
             </Typography>
             {globalChartData ? (
               <>
                 <Box mt={0.5} display='flex' alignItems='center'>
-                  <Typography variant='h5' style={{ color: '#ebecf2' }}>
+                  <Typography
+                    variant='h5'
+                    style={{ color: palette.text.primary }}
+                  >
                     $
                     {formatCompact(
                       globalChartData.day[globalChartData.day.length - 1]
@@ -283,10 +297,10 @@ const AnalyticsOverview: React.FC<AnalyticsOverViewProps> = ({
                       style={{
                         color:
                           liquidityPercent > 0
-                            ? '#0fc679'
+                            ? palette.success.main
                             : liquidityPercent < 0
-                            ? '#ff5252'
-                            : '#636780',
+                            ? palette.error.main
+                            : palette.text.hint,
                       }}
                       variant='caption'
                     >
@@ -297,7 +311,10 @@ const AnalyticsOverview: React.FC<AnalyticsOverViewProps> = ({
                   </Box>
                 </Box>
                 <Box>
-                  <Typography style={{ color: '#626680' }} variant='caption'>
+                  <Typography
+                    style={{ color: palette.text.disabled }}
+                    variant='caption'
+                  >
                     {moment(
                       globalChartData.day[globalChartData.day.length - 1].date *
                         1000,
@@ -325,11 +342,11 @@ const AnalyticsOverview: React.FC<AnalyticsOverViewProps> = ({
           </Box>
         </Grid>
         <Grid item xs={12} sm={12} md={6}>
-          <Box className={classes.panel} padding={3} width={1}>
+          <Box className={classes.panel} padding={isMobile ? 1.5 : 3} width={1}>
             <Box display='flex' justifyContent='space-between'>
               <Typography
                 variant='caption'
-                style={{ color: '#626680', fontWeight: 'bold' }}
+                style={{ color: palette.text.disabled, fontWeight: 'bold' }}
               >
                 VOLUME
               </Typography>
@@ -354,7 +371,10 @@ const AnalyticsOverview: React.FC<AnalyticsOverViewProps> = ({
             {globalChartData && selectedVolumeIndex > -1 ? (
               <>
                 <Box mt={0.5} display='flex' alignItems='center'>
-                  <Typography variant='h5' style={{ color: '#ebecf2' }}>
+                  <Typography
+                    variant='h5'
+                    style={{ color: palette.text.primary }}
+                  >
                     $
                     {formatCompact(
                       globalChartData.day[selectedVolumeIndex].dailyVolumeUSD,
@@ -377,10 +397,10 @@ const AnalyticsOverview: React.FC<AnalyticsOverViewProps> = ({
                       style={{
                         color:
                           volumePercent > 0
-                            ? '#0fc679'
+                            ? palette.success.main
                             : volumePercent < 0
-                            ? '#ff5252'
-                            : '#636780',
+                            ? palette.error.main
+                            : palette.text.hint,
                       }}
                       variant='caption'
                     >
@@ -391,7 +411,10 @@ const AnalyticsOverview: React.FC<AnalyticsOverViewProps> = ({
                   </Box>
                 </Box>
                 <Box>
-                  <Typography style={{ color: '#626680' }} variant='caption'>
+                  <Typography
+                    style={{ color: palette.text.disabled }}
+                    variant='caption'
+                  >
                     {moment(
                       globalChartData.day[selectedVolumeIndex].date * 1000,
                     ).format('MMM DD, YYYY')}
@@ -434,7 +457,12 @@ const AnalyticsOverview: React.FC<AnalyticsOverViewProps> = ({
           </Box>
         </Box>
       </Box>
-      <Box mt={3} paddingX={4} paddingY={3} className={classes.panel}>
+      <Box
+        mt={3}
+        paddingX={isMobile ? 1.5 : 4}
+        paddingY={isMobile ? 1.5 : 3}
+        className={classes.panel}
+      >
         {topTokens ? (
           <TokensTable data={topTokens} />
         ) : (
@@ -456,7 +484,12 @@ const AnalyticsOverview: React.FC<AnalyticsOverViewProps> = ({
           </Box>
         </Box>
       </Box>
-      <Box mt={3} paddingX={4} paddingY={3} className={classes.panel}>
+      <Box
+        mt={3}
+        paddingX={isMobile ? 1.5 : 4}
+        paddingY={isMobile ? 1.5 : 3}
+        className={classes.panel}
+      >
         {topPairs ? (
           <PairTable data={topPairs} />
         ) : (

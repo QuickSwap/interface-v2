@@ -48,7 +48,7 @@ import {
   useWalletModalToggle,
 } from 'state/application/hooks';
 import { useAllTokens } from 'hooks/Tokens';
-import { useLairInfo, useStakingInfo } from 'state/stake/hooks';
+import { useLairInfo, STAKING_REWARDS_INFO } from 'state/stake/hooks';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   heroSection: {
@@ -60,7 +60,6 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     textAlign: 'center',
     zIndex: 2,
     '& h3': {
-      color: 'white',
       textTransform: 'uppercase',
       marginBottom: 20,
     },
@@ -102,11 +101,15 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
         marginBottom: 24,
         textTransform: 'uppercase',
       },
+      [breakpoints.down('xs')]: {
+        height: 'unset',
+      },
     },
   },
   quickInfo: {
     textAlign: 'center',
     margin: '128px 0 30px',
+    maxWidth: 800,
     '& h2': {
       marginBottom: 60,
     },
@@ -178,7 +181,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
         alignItems: 'center',
         background: 'transparent',
         border: `1px solid ${palette.primary.dark}`,
-        color: '#696c80',
+        color: palette.text.secondary,
         '&.active': {
           background: '#FFFFFFDE',
           border: `1px solid transparent`,
@@ -215,20 +218,15 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
   rewardsContainer: {
     textAlign: 'center',
     margin: '172px 0 100px 0',
-    '& h3': {
-      marginBottom: 24,
-    },
-    '& > button': {
-      width: 194,
-      height: 48,
-      borderRadius: 50,
-    },
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
     [breakpoints.down('xs')]: {
       margin: '32px 0 64px',
     },
   },
   buyFiatContainer: {
-    background: palette.primary.dark,
+    background: palette.background.paper,
     height: 338,
     borderRadius: 48,
     marginBottom: 160,
@@ -369,7 +367,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       justifyContent: 'center',
       marginTop: 48,
       '& > div': {
-        margin: '16px 32px 16px 0',
+        margin: 16,
         textAlign: 'center',
         width: 120,
         '& a': {
@@ -379,9 +377,6 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
         '& svg': {
           width: 64,
           height: 64,
-        },
-        '&:last-child': {
-          marginRight: 0,
         },
       },
     },
@@ -402,9 +397,15 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       width: 32,
       height: 32,
       cursor: 'pointer',
-      '& path': {
-        fill: '#3e4252',
+      '&:hover path': {
+        fill: palette.text.primary,
       },
+      '& path': {
+        fill: palette.text.secondary,
+      },
+    },
+    [breakpoints.down('xs')]: {
+      display: 'none',
     },
   },
 }));
@@ -413,12 +414,12 @@ const LandingPage: React.FC = () => {
   const classes = useStyles();
   const [swapIndex, setSwapIndex] = useState(0);
   const [openStakeModal, setOpenStakeModal] = useState(false);
-  const theme = useTheme();
-  const { account } = useActiveWeb3React();
+  const { palette, breakpoints } = useTheme();
+  const { account, chainId } = useActiveWeb3React();
   const { ethereum } = window as any;
   const isnotMatic =
     ethereum && ethereum.isMetaMask && Number(ethereum.chainId) !== 137;
-  const mobileWindowSize = useMediaQuery(theme.breakpoints.down('sm'));
+  const mobileWindowSize = useMediaQuery(breakpoints.down('sm'));
   const { initTransak } = useInitTransak();
   const allTokens = useAllTokens();
   const toggleWalletModal = useWalletModalToggle();
@@ -508,23 +509,20 @@ const LandingPage: React.FC = () => {
   const { ethPrice, updateEthPrice } = useEthPrice();
   const { globalData, updateGlobalData } = useGlobalData();
   const lairInfo = useLairInfo();
-  const stakingInfos = useStakingInfo();
   const rewardRate = useMemo(() => {
-    if (stakingInfos && stakingInfos.length > 0) {
-      return stakingInfos
-        .map((info) => Number(info.rate))
-        .reduce((sum, current) => sum + current, 0);
+    if (chainId) {
+      const rewardsInfo = STAKING_REWARDS_INFO[chainId];
+      if (rewardsInfo && rewardsInfo.length > 0) {
+        return rewardsInfo
+          .map((info: any) => Number(info.rate))
+          .reduce((sum, current) => sum + current, 0);
+      } else {
+        return 0;
+      }
     } else {
       return 0;
     }
-  }, [stakingInfos]);
-  const totalRewardsUSD = useMemo(() => {
-    if (stakingInfos && stakingInfos.length > 0) {
-      return Number(stakingInfos[0].quickPrice) * rewardRate;
-    } else {
-      return 0;
-    }
-  }, [stakingInfos, rewardRate]);
+  }, [chainId]);
 
   const APR =
     (((Number(lairInfo?.oneDayVol) * 0.04 * 0.01) /
@@ -535,6 +533,11 @@ const LandingPage: React.FC = () => {
   const dQUICKAPY = APR
     ? ((Math.pow(1 + APR / 365, 365) - 1) * 100).toFixed(4)
     : 0;
+
+  const totalRewardsUSD =
+    rewardRate *
+    (Number(lairInfo?.dQUICKtoQUICK.toSignificant()) *
+      Number(lairInfo?.quickPrice));
 
   useEffect(() => {
     async function checkEthPrice() {
@@ -563,10 +566,7 @@ const LandingPage: React.FC = () => {
         />
       )}
       <Box className={classes.heroSection}>
-        <Typography
-          variant='body2'
-          style={{ color: 'white', fontWeight: 'bold' }}
-        >
+        <Typography variant='body2' style={{ fontWeight: 'bold' }}>
           Total Value Locked
         </Typography>
         {globalData ? (
@@ -574,10 +574,7 @@ const LandingPage: React.FC = () => {
             <Typography variant='h3' style={{ paddingTop: '9px' }}>
               $
             </Typography>
-            <Typography
-              color='textSecondary'
-              style={{ fontSize: '55px', fontWeight: 700 }}
-            >
+            <Typography style={{ fontSize: '55px', fontWeight: 700 }}>
               {Number(globalData.totalLiquidityUSD).toLocaleString(undefined, {
                 maximumFractionDigits: 0,
               })}
@@ -588,7 +585,7 @@ const LandingPage: React.FC = () => {
             <Skeleton variant='rect' width={400} height={72} />
           </Box>
         )}
-        <Typography style={{ fontSize: '15px', color: '#696c80' }}>
+        <Typography style={{ fontSize: '15px', color: palette.text.secondary }}>
           Top Asset Exchange on the Polygon Network
         </Typography>
         <Box mt={2} width={200} height={48}>
@@ -627,7 +624,11 @@ const LandingPage: React.FC = () => {
             <Skeleton variant='rect' width={100} height={45} />
           )}
           <Typography
-            style={{ fontSize: '12px', color: '#696c80', paddingTop: '15px' }}
+            style={{
+              fontSize: '12px',
+              color: palette.text.secondary,
+              paddingTop: '15px',
+            }}
           >
             24H TRANSACTIONS
           </Typography>
@@ -646,7 +647,11 @@ const LandingPage: React.FC = () => {
             <Skeleton variant='rect' width={100} height={45} />
           )}
           <Typography
-            style={{ fontSize: '12px', color: '#696c80', paddingTop: '15px' }}
+            style={{
+              fontSize: '12px',
+              color: palette.text.secondary,
+              paddingTop: '15px',
+            }}
           >
             24H TRADING VOLUME
           </Typography>
@@ -665,7 +670,11 @@ const LandingPage: React.FC = () => {
             <Skeleton variant='rect' width={100} height={45} />
           )}
           <Typography
-            style={{ fontSize: '12px', color: '#696c80', paddingTop: '15px' }}
+            style={{
+              fontSize: '12px',
+              color: palette.text.secondary,
+              paddingTop: '15px',
+            }}
           >
             24h REWARDS DISTRIBUTED
           </Typography>
@@ -681,7 +690,11 @@ const LandingPage: React.FC = () => {
             <Skeleton variant='rect' width={100} height={45} />
           )}
           <Typography
-            style={{ fontSize: '12px', color: '#696c80', paddingTop: '15px' }}
+            style={{
+              fontSize: '12px',
+              color: palette.text.secondary,
+              paddingTop: '15px',
+            }}
           >
             TOTAL TRADING PAIRS
           </Typography>
@@ -695,12 +708,20 @@ const LandingPage: React.FC = () => {
             <Skeleton variant='rect' width={100} height={45} />
           )}
           <Box
-            style={{ fontSize: '12px', color: '#696c80', paddingTop: '15px' }}
+            style={{
+              fontSize: '12px',
+              color: palette.text.secondary,
+              paddingTop: '15px',
+            }}
           >
             dQUICK APY
           </Box>
           <Typography
-            style={{ color: '#448aff', fontSize: '12px', cursor: 'pointer' }}
+            style={{
+              color: palette.primary.main,
+              fontSize: '12px',
+              cursor: 'pointer',
+            }}
             onClick={() => setOpenStakeModal(true)}
           >
             stake {'>'}
@@ -717,13 +738,11 @@ const LandingPage: React.FC = () => {
         ))}
       </Box>
       <Box mt={2} width={1}>
-        <TopMovers background='transparent' />
+        <TopMovers background={palette.background.paper} />
       </Box>
       <Box className={classes.quickInfo}>
         <Typography style={{ fontSize: '24px' }}>
           QuickSwap is a next-generation layer-2 decentralized exchange and
-        </Typography>
-        <Typography style={{ fontSize: '24px', paddingTop: '10px' }}>
           Automated Market Maker.
         </Typography>
         <img src={Motif} alt='Motif' />
@@ -734,20 +753,24 @@ const LandingPage: React.FC = () => {
             className={swapIndex === 0 ? 'active' : ''}
             onClick={() => setSwapIndex(0)}
           >
-            Market
+            Swap
           </Button>
           <Button
             className={swapIndex === 1 ? 'active' : ''}
             onClick={() => setSwapIndex(1)}
           >
-            Limit
+            Liquidity
           </Button>
         </ButtonGroup>
       </Box>
       <Box className={classes.swapContainer}>
         <Grid container spacing={mobileWindowSize ? 0 : 8} alignItems='center'>
           <Grid item sm={12} md={6}>
-            {swapIndex === 0 ? <Swap /> : <AddLiquidity />}
+            {swapIndex === 0 ? (
+              <Swap currencyBg={palette.background.paper} />
+            ) : (
+              <AddLiquidity currencyBg={palette.background.paper} />
+            )}
           </Grid>
           <Grid item sm={12} md={6} className={classes.swapInfo}>
             <Typography variant='h4'>
@@ -773,15 +796,22 @@ const LandingPage: React.FC = () => {
         </Typography>
         <Typography variant='body2'>in $QUICK on top of LP Fees.</Typography>
         <RewardSlider />
-        <Button
-          variant='contained'
-          color='secondary'
+        <Box
+          bgcolor={palette.secondary.dark}
+          color={palette.text.primary}
+          width={194}
+          height={48}
+          display='flex'
+          alignItems='center'
+          justifyContent='center'
+          borderRadius={24}
+          style={{ cursor: 'pointer' }}
           onClick={() => {
             history.push('/farm');
           }}
         >
-          See all pairs
-        </Button>
+          <Typography variant='body1'>See all pairs</Typography>
+        </Box>
       </Box>
       <Box className={classes.buyFiatContainer}>
         <img src={FiatMask} alt='Fiat Mask' />

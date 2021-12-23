@@ -17,6 +17,19 @@ import {
 } from '../connectors';
 import { getAddress } from '@ethersproject/address';
 
+export const TOKEN_BLACKLIST = [
+  '0x495c7f3a713870f68f8b418b355c085dfdc412c3',
+  '0xc3761eb917cd790b30dad99f6cc5b4ff93c4f9ea',
+  '0xe31debd7abff90b06bca21010dd860d8701fd901',
+  '0xfc989fbb6b3024de5ca0144dc23c18a063942ac1',
+  '0xf4eda77f0b455a12f3eb44f8653835f377e36b76',
+];
+
+export const PAIR_BLACKLIST = [
+  '0xb6a741f37d6e455ebcc9f17e2c16d0586c3f57a5',
+  '0x97cb8cbe91227ba87fc21aaf52c4212d245da3f8',
+];
+
 export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   INJECTED: {
     connector: injected,
@@ -1572,6 +1585,69 @@ export const MANA = new Token(
   'MANA',
   'Decentraland MANA',
 );
+export const GAIA = new Token(
+  ChainId.MATIC,
+  '0x723B17718289A91AF252D616DE2C77944962d122',
+  18,
+  'GAIA',
+  'GAIA Everworld',
+);
+export const SAND = new Token(
+  ChainId.MATIC,
+  '0xBbba073C31bF03b8ACf7c28EF0738DeCF3695683',
+  18,
+  'SAND',
+  'SAND',
+);
+export const ORARE = new Token(
+  ChainId.MATIC,
+  '0xFF2382Bd52efaceF02Cc895bcBFc4618608AA56F',
+  18,
+  'ORARE',
+  'One Rare Token',
+);
+export const MOCA = new Token(
+  ChainId.MATIC,
+  '0xcE899f26928a2B21c6a2Fddd393EF37c61dbA918',
+  18,
+  'MOCA',
+  'Museum of Crypto Art',
+);
+export const MTCL = new Token(
+  ChainId.MATIC,
+  '0x3642c3c8eBe0b36a29e37809e1c9A7DE06BC0B26',
+  18,
+  'MTCL',
+  'MaticLaunch',
+);
+export const XDG = new Token(
+  ChainId.MATIC,
+  '0xc6480Da81151B2277761024599E8Db2Ad4C388C8',
+  18,
+  'xDG',
+  'Decentral Games Governance',
+);
+export const BLANK = new Token(
+  ChainId.MATIC,
+  '0xf4C83080E80AE530d6f8180572cBbf1Ac9D5d435',
+  18,
+  'BLANK',
+  'GoBlank Token',
+);
+export const AGEUR = new Token(
+  ChainId.MATIC,
+  '0xE0B52e49357Fd4DAf2c15e02058DCE6BC0057db4',
+  18,
+  'agEUR',
+  'agEUR',
+);
+export const GAMER = new Token(
+  ChainId.MATIC,
+  '0x3f6b3595ecF70735D3f48D69b09C4E4506DB3F47',
+  18,
+  'GAMER',
+  'GameStation',
+);
 
 export const MATIC = WETH[ChainId.MATIC];
 // TODO this is only approximate, it's actually based on blocks
@@ -1579,19 +1655,17 @@ export const PROPOSAL_LENGTH_IN_DAYS = 7;
 
 export const GOVERNANCE_ADDRESS = '0x5e4be8Bc9637f0EAA1A755019e06A68ce081D58F'; //TODO: MATIC
 
-const UNI_ADDRESS = '0x831753DD7087CaC61aB5644b308642cc1c33Dc13'; //TODO: MATIC QUICK
-
 export const UNI: { [chainId in ChainId]: Token } = {
   [ChainId.MATIC]: new Token(
     ChainId.MATIC,
-    UNI_ADDRESS,
+    QUICK_ADDRESS,
     18,
     'QUICK',
     'Quickswap',
   ),
   [ChainId.MUMBAI]: new Token(
     ChainId.MUMBAI,
-    UNI_ADDRESS,
+    QUICK_ADDRESS,
     18,
     'QUICK',
     'Quickswap',
@@ -1742,4 +1816,4 @@ export const BETTER_TRADE_LINK_THRESHOLD = new Percent(
 
 // the Uniswap Default token list lives here
 export const DEFAULT_TOKEN_LIST_URL =
-  'https://unpkg.com/quickswap-default-token-list@1.2.9/build/quickswap-default.tokenlist.json';
+  'https://unpkg.com/quickswap-default-token-list@1.2.15/build/quickswap-default.tokenlist.json';

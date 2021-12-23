@@ -15,7 +15,7 @@ import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon.svg';
 const useStyles = makeStyles(({ palette }) => ({
   rewardsSliderItem: {
     borderRadius: 32,
-    background: palette.primary.dark,
+    background: palette.background.paper,
     padding: '32px 22px',
     position: 'relative',
     '& .rewardIcon': {
@@ -47,7 +47,7 @@ const useStyles = makeStyles(({ palette }) => ({
       },
       '& h5': {
         background: 'rgba(15, 198, 121, 0.12)',
-        color: '#0FC679',
+        color: palette.success.main,
         padding: '0 4px',
         borderRadius: 5,
       },
@@ -56,6 +56,8 @@ const useStyles = makeStyles(({ palette }) => ({
       height: 40,
       fontSize: 16,
       marginTop: 12,
+      background: palette.primary.main,
+      borderRadius: 20,
     },
   },
 }));
@@ -175,7 +177,6 @@ const RewardSliderItem: React.FC<RewardSliderItemProps> = ({ info }) => {
       </Box>
       <Button
         fullWidth
-        color='primary'
         style={{ marginTop: '30px' }}
         onClick={() => {
           history.push(
@@ -183,7 +184,7 @@ const RewardSliderItem: React.FC<RewardSliderItemProps> = ({ info }) => {
           );
         }}
       >
-        Invest
+        Deposit LP Tokens
       </Button>
     </Box>
   );

@@ -21,6 +21,7 @@ import ENS_PUBLIC_RESOLVER_ABI from 'constants/abis/ens-public-resolver.json';
 import ENS_ABI from 'constants/abis/ens-registrar.json';
 import ERC20_ABI, { ERC20_BYTES32_ABI } from 'constants/abis/erc20';
 import { MIGRATOR_ABI, MIGRATOR_ADDRESS } from 'constants/abis/migrator';
+import { STAKING_DUAL_REWARDS_INTERFACE } from 'constants/abis/staking-rewards';
 import UNISOCKS_ABI from 'constants/abis/unisocks.json';
 import WETH_ABI from 'constants/abis/weth.json';
 import { MULTICALL_ABI, MULTICALL_NETWORKS } from 'constants/multicall';
@@ -182,6 +183,17 @@ export function useStakingContract(
   withSignerIfPossible?: boolean,
 ): Contract | null {
   return useContract(stakingAddress, STAKING_REWARDS_ABI, withSignerIfPossible);
+}
+
+export function useDualRewardsStakingContract(
+  stakingAddress?: string,
+  withSignerIfPossible?: boolean,
+): Contract | null {
+  return useContract(
+    stakingAddress,
+    STAKING_DUAL_REWARDS_INTERFACE,
+    withSignerIfPossible,
+  );
 }
 
 export function useSocksController(): Contract | null {

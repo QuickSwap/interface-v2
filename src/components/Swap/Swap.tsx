@@ -3,7 +3,7 @@ import { Currency, CurrencyAmount, JSBI, Token, Trade } from '@uniswap/sdk';
 import ReactGA from 'react-ga';
 import { ArrowDown } from 'react-feather';
 import { Box, Typography, Button, CircularProgress } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { useWalletModalToggle } from 'state/application/hooks';
 import {
   useDerivedSwapInfo,
@@ -83,10 +83,10 @@ const useStyles = makeStyles(({ palette }) => ({
       fontSize: 18,
       fontWeight: 600,
       width: (props: any) => (props.showApproveFlow ? '48%' : '100%'),
-      backgroundImage: 'linear-gradient(to bottom, #448aff, #004ce6)',
+      backgroundImage: `linear-gradient(to bottom, ${palette.primary.main}, #004ce6)`,
       '&.Mui-disabled': {
-        backgroundImage: 'linear-gradient(to bottom, #282d3d, #1d212c)',
-        color: '#696c80',
+        backgroundImage: `linear-gradient(to bottom, ${palette.secondary.dark}, #1d212c)`,
+        color: palette.text.secondary,
         opacity: 0.5,
       },
       '& .content': {
@@ -129,15 +129,17 @@ const useStyles = makeStyles(({ palette }) => ({
     },
   },
   slippageRow: {
-    color: '#696c80',
+    color: palette.text.secondary,
   },
 }));
 
-const Swap: React.FC<{ currency0?: Currency; currency1?: Currency }> = ({
-  currency0,
-  currency1,
-}) => {
+const Swap: React.FC<{
+  currency0?: Currency;
+  currency1?: Currency;
+  currencyBg?: string;
+}> = ({ currency0, currency1, currencyBg }) => {
   const [openSettingsModal, setOpenSettingsModal] = useState(false);
+  const { palette } = useTheme();
   const { account } = useActiveWeb3React();
   const { ethereum } = window as any;
   const { independentField, typedValue, recipient } = useSwapState();
@@ -556,6 +558,7 @@ const Swap: React.FC<{ currency0?: Currency; currency1?: Currency }> = ({
         handleCurrencySelect={handleCurrencySelect}
         amount={formattedAmounts[Field.INPUT]}
         setAmount={handleTypeInput}
+        bgColor={currencyBg}
       />
       <Box className={classes.exchangeSwap}>
         <ExchangeIcon onClick={onSwitchTokens} />
@@ -569,6 +572,7 @@ const Swap: React.FC<{ currency0?: Currency; currency1?: Currency }> = ({
         handleCurrencySelect={handleOtherCurrencySelect}
         amount={formattedAmounts[Field.OUTPUT]}
         setAmount={handleTypeOutput}
+        bgColor={currencyBg}
       />
       {trade && trade.executionPrice && (
         <Box className={classes.swapPrice}>
@@ -640,14 +644,14 @@ const Swap: React.FC<{ currency0?: Currency; currency1?: Currency }> = ({
         <Box display='flex' alignItems='center'>
           <Typography
             variant='body2'
-            style={{ marginRight: 4, color: '#448aff' }}
+            style={{ marginRight: 4, color: palette.primary.main }}
           >
             Slippage:
           </Typography>
           <QuestionHelper text='Your transaction will revert if the price changes unfavorably by more than this percentage.' />
         </Box>
         <Box display='flex' alignItems='center'>
-          <Typography variant='body2' style={{ color: '#448aff' }}>
+          <Typography variant='body2' style={{ color: palette.primary.main }}>
             {allowedSlippage / 100}%
           </Typography>
           <EditIcon

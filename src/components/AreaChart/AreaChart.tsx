@@ -19,7 +19,7 @@ const useStyles = makeStyles(({ palette }) =>
       marginRight: 8,
       '& p': {
         fontSize: 12,
-        color: '#626680',
+        color: palette.text.disabled,
       },
     },
     yAxis: {
@@ -31,7 +31,7 @@ const useStyles = makeStyles(({ palette }) =>
       '& p': {
         fontSize: 10,
         fontWeight: 500,
-        color: '#626680',
+        color: palette.text.disabled,
       },
     },
   }),

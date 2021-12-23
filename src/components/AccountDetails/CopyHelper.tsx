@@ -10,7 +10,7 @@ const useStyles = makeStyles(({ palette }) => ({
     display: 'flex',
     cursor: 'pointer',
     '&:hover, &:active, &:focus': {
-      color: palette.text.secondary,
+      color: 'white',
     },
   },
 }));

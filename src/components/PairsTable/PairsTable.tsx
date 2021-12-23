@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography } from '@material-ui/core';
+import { Box, Typography, Divider } from '@material-ui/core';
 import { ChainId, Token } from '@uniswap/sdk';
 import { getAddress } from '@ethersproject/address';
 import { DoubleCurrencyLogo, CustomTable } from 'components';
@@ -58,10 +58,102 @@ const PairTable: React.FC<TokensTableProps> = ({ data }) => {
     addBookmarkPair,
     removeBookmarkPair,
   } = useBookmarkPairs();
-  const mobileHTML = (token: any) => {
+  const mobileHTML = (pair: any, index: number) => {
+    const token0 = new Token(
+      ChainId.MATIC,
+      getAddress(pair.token0.id),
+      Number(pair.token0.decimals),
+      pair.token0.symbol,
+    );
+    const token1 = new Token(
+      ChainId.MATIC,
+      getAddress(pair.token1.id),
+      Number(pair.token1.decimals),
+      pair.token1.symbol,
+    );
+    const liquidity = pair.trackedReserveUSD
+      ? pair.trackedReserveUSD
+      : pair.reserveUSD;
+    const oneDayVolume = pair.oneDayVolumeUSD
+      ? pair.oneDayVolumeUSD
+      : pair.oneDayVolumeUntracked;
+    const oneWeekVolume = pair.oneWeekVolumeUSD
+      ? pair.oneWeekVolumeUSD
+      : pair.oneWeekVolumeUntracked;
+    const oneDayFee = (Number(oneDayVolume) * 0.003).toLocaleString();
     return (
-      <Box>
-        <Typography>Token</Typography>
+      <Box mt={index === 0 ? 0 : 3}>
+        <Box display='flex' alignItems='center' mb={1}>
+          <Box
+            display='flex'
+            mr={1}
+            onClick={() => {
+              const pairIndex = bookmarkPairs.indexOf(pair.id);
+              if (pairIndex === -1) {
+                addBookmarkPair(pair.id);
+              } else {
+                removeBookmarkPair(pair.id);
+              }
+            }}
+          >
+            {bookmarkPairs.indexOf(pair.id) > -1 ? (
+              <StarChecked />
+            ) : (
+              <StarUnchecked />
+            )}
+          </Box>
+          <DoubleCurrencyLogo currency0={token0} currency1={token1} size={28} />
+          <Box ml={1}>
+            <Typography variant='body1'>
+              {token0.symbol} / {token1.symbol}
+            </Typography>
+          </Box>
+        </Box>
+        <Divider />
+        <Box
+          mt={1}
+          display='flex'
+          alignItems='center'
+          justifyContent='space-between'
+        >
+          <Typography variant='body1'>Liquidity</Typography>
+          <Typography variant='body1'>
+            ${Number(liquidity).toLocaleString()}
+          </Typography>
+        </Box>
+        <Box
+          mt={1}
+          display='flex'
+          alignItems='center'
+          justifyContent='space-between'
+        >
+          <Typography variant='body1'>24h Volume</Typography>
+          <Typography variant='body1'>
+            ${Number(liquidity).toLocaleString()}
+          </Typography>
+        </Box>
+        <Box
+          mt={1}
+          display='flex'
+          alignItems='center'
+          justifyContent='space-between'
+        >
+          <Typography variant='body1'>7d Volume</Typography>
+          <Typography variant='body1'>
+            ${Number(oneDayVolume).toLocaleString()}
+          </Typography>
+        </Box>
+        <Box
+          mt={1}
+          display='flex'
+          alignItems='center'
+          justifyContent='space-between'
+        >
+          <Typography variant='body1'>24h Fees</Typography>
+          <Typography variant='body1'>
+            ${Number(oneWeekVolume).toLocaleString()}
+          </Typography>
+        </Box>
       </Box>
     );
   };
@@ -97,8 +189,8 @@ const PairTable: React.FC<TokensTableProps> = ({ data }) => {
               display='flex'
               mr={1}
               onClick={() => {
-                const tokenIndex = bookmarkPairs.indexOf(pair.id);
-                if (tokenIndex === -1) {
+                const pairIndex = bookmarkPairs.indexOf(pair.id);
+                if (pairIndex === -1) {
                   addBookmarkPair(pair.id);
                 } else {
                   removeBookmarkPair(pair.id);

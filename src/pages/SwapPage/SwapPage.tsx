@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import { Box, Typography, Grid, Divider } from '@material-ui/core';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
+import {
+  Box,
+  Typography,
+  Grid,
+  Divider,
+  useMediaQuery,
+} from '@material-ui/core';
 import { KeyboardArrowUp, KeyboardArrowDown } from '@material-ui/icons';
 import cx from 'classnames';
 import { Currency, Token } from '@uniswap/sdk';
@@ -39,15 +45,15 @@ import useParsedQueryString from 'hooks/useParsedQueryString';
 import { useCurrency } from 'hooks/Tokens';
 import dayjs from 'dayjs';
 
-const useStyles = makeStyles(({ breakpoints }) => ({
+const useStyles = makeStyles(({ palette, breakpoints }) => ({
   helpWrapper: {
     display: 'flex',
     alignItems: 'center',
     padding: '8px 12px',
-    border: '1px solid #252833',
+    border: `1px solid ${palette.secondary.light}`,
     borderRadius: 10,
     '& p': {
-      color: '#636780',
+      color: palette.text.hint,
     },
     '& svg': {
       marginLeft: 8,
@@ -55,8 +61,11 @@ const useStyles = makeStyles(({ breakpoints }) => ({
   },
   wrapper: {
     padding: 24,
-    backgroundColor: '#1b1e29',
+    backgroundColor: palette.background.paper,
     borderRadius: 20,
+    [breakpoints.down('xs')]: {
+      padding: '16px 12px',
+    },
   },
   swapItem: {
     width: 100,
@@ -66,11 +75,11 @@ const useStyles = makeStyles(({ breakpoints }) => ({
     alignItems: 'center',
     borderRadius: 8,
     '& p': {
-      color: '#696c80',
+      color: palette.text.secondary,
     },
   },
   activeSwap: {
-    background: '#282d3d',
+    background: palette.secondary.dark,
     '& p': {
       color: 'white',
     },
@@ -79,16 +88,18 @@ const useStyles = makeStyles(({ breakpoints }) => ({
     cursor: 'pointer',
   },
   swapTokenDetails: {
-    backgroundColor: '#1b1e29',
+    backgroundColor: palette.background.paper,
     borderRadius: 16,
     width: 'calc(50% - 16px)',
     [breakpoints.down('xs')]: {
       width: '100%',
+      marginTop: 16,
+      marginBottom: 16,
     },
   },
   liquidityMain: {
     '& p': {
-      color: '#696c80',
+      color: palette.text.secondary,
       fontWeight: 600,
     },
   },
@@ -97,22 +108,24 @@ const useStyles = makeStyles(({ breakpoints }) => ({
       cursor: 'pointer',
       marginRight: 20,
       '&.active': {
-        color: '#448aff',
+        color: palette.primary.main,
       },
     },
   },
   liquidityContent: {
-    border: '1px solid #282d3d',
+    border: `1px solid ${palette.secondary.dark}`,
     borderRadius: '10px',
     marginBottom: '20px',
     '& p': {
-      color: '#ebecf2',
+      color: palette.text.primary,
     },
   },
 }));
 
 const SwapPage: React.FC = () => {
   const classes = useStyles();
+  const { palette, breakpoints } = useTheme();
+  const isMobile = useMediaQuery(breakpoints.down('xs'));
   const [swapIndex, setSwapIndex] = useState(0);
   const [openSettingsModal, setOpenSettingsModal] = useState(false);
   const [currency0, setCurrency0] = useState<Currency | undefined>(undefined);
@@ -202,7 +215,7 @@ const SwapPage: React.FC = () => {
       fetchEthPrice();
     }
     fetchTopTokens();
-  }, [ethPrice, updateEthPrice, updateTopTokens, updateTokenPairs]);
+  }, [ethPrice, updateEthPrice, updateTopTokens]);
 
   useEffect(() => {
     async function fetchTokenPairs() {
@@ -324,7 +337,7 @@ const SwapPage: React.FC = () => {
                       considered in beta. DYOR and use at your own risk.
                       QuickSwap is not responsible. More info can be found&nbsp;
                       <a
-                        style={{ color: '#c7cad9' }}
+                        style={{ color: palette.text.primary }}
                         target='_blank'
                         rel='noopener noreferrer'
                         href='https://www.certik.org/projects/gelato'
@@ -339,7 +352,12 @@ const SwapPage: React.FC = () => {
           </Box>
         </Grid>
         <Grid item xs={12} sm={12} md={7}>
-          <Box display='flex' justifyContent='space-between' width='100%'>
+          <Box
+            display='flex'
+            flexWrap='wrap'
+            justifyContent='space-between'
+            width='100%'
+          >
             {currencies[Field.INPUT] && (
               <Box className={classes.swapTokenDetails}>
                 <SwapTokenDetails
@@ -368,18 +386,21 @@ const SwapPage: React.FC = () => {
                 <Box display='flex' alignItems='center'>
                   <Typography
                     variant='h6'
-                    style={{ color: '#ebecf2', marginRight: 8 }}
+                    style={{ color: palette.text.primary, marginRight: 8 }}
                   >
                     Liquidity Pools{' '}
                   </Typography>
-                  <Typography variant='body2' style={{ color: '#696c80' }}>
+                  <Typography
+                    variant='body2'
+                    style={{ color: palette.text.secondary }}
+                  >
                     ({currencies[Field.INPUT]?.symbol?.toUpperCase()},{' '}
                     {currencies[Field.OUTPUT]?.symbol?.toUpperCase()})
                   </Typography>
                 </Box>
                 <Box
                   display='flex'
-                  style={{ cursor: 'pointer', color: '#696c80' }}
+                  style={{ cursor: 'pointer', color: palette.text.secondary }}
                   onClick={() => setLiquidityPoolClosed(!liquidityPoolClosed)}
                 >
                   {liquidityPoolClosed ? (
@@ -425,21 +446,25 @@ const SwapPage: React.FC = () => {
                           {currencies[Field.OUTPUT]?.symbol?.toUpperCase()}
                         </Typography>
                       </Box>
-                      <Box width={0.2}>
-                        <Typography variant='body2' align='left'>
-                          TVL
-                        </Typography>
-                      </Box>
-                      <Box width={0.15}>
-                        <Typography variant='body2' align='left'>
-                          24h Volume
-                        </Typography>
-                      </Box>
-                      <Box width={0.15}>
-                        <Typography variant='body2' align='right'>
-                          APY
-                        </Typography>
-                      </Box>
+                      {!isMobile && (
+                        <>
+                          <Box width={0.2}>
+                            <Typography variant='body2' align='left'>
+                              TVL
+                            </Typography>
+                          </Box>
+                          <Box width={0.15}>
+                            <Typography variant='body2' align='left'>
+                              24h Volume
+                            </Typography>
+                          </Box>
+                          <Box width={0.15}>
+                            <Typography variant='body2' align='right'>
+                              APY
+                            </Typography>
+                          </Box>
+                        </>
+                      )}
                     </Box>
                     {liquidityPairs.map((pair: any, ind: any) => {
                       const dayVolumeUSD =
@@ -486,13 +511,18 @@ const SwapPage: React.FC = () => {
                         <Box
                           key={ind}
                           display='flex'
+                          flexWrap='wrap'
                           className={cx(
                             classes.liquidityContent,
                             classes.liquidityMain,
                           )}
                           padding={2}
                         >
-                          <Box display='flex' alignItems='center' width={0.5}>
+                          <Box
+                            display='flex'
+                            alignItems='center'
+                            width={isMobile ? 1 : 0.5}
+                          >
                             <DoubleCurrencyLogo
                               currency0={token0}
                               currency1={token1}
@@ -506,21 +536,67 @@ const SwapPage: React.FC = () => {
                               {pair.token1.symbol.toUpperCase()}
                             </Typography>
                           </Box>
-                          <Box width={0.2}>
+                          <Box
+                            width={isMobile ? 1 : 0.2}
+                            mt={isMobile ? 2.5 : 0}
+                            display='flex'
+                            justifyContent='space-between'
+                          >
+                            {isMobile && (
+                              <Typography
+                                variant='body2'
+                                style={{ color: palette.text.secondary }}
+                              >
+                                TVL
+                              </Typography>
+                            )}
                             <Typography variant='body2'>
                               ${formatCompact(liquidity)}
                             </Typography>
                           </Box>
-                          <Box width={0.15}>
+                          <Box
+                            width={isMobile ? 1 : 0.15}
+                            mt={isMobile ? 1 : 0}
+                            display='flex'
+                            justifyContent='space-between'
+                          >
+                            {isMobile && (
+                              <Typography
+                                variant='body2'
+                                style={{ color: palette.text.secondary }}
+                              >
+                                24H Volume
+                              </Typography>
+                            )}
                             <Typography variant='body2'>
                               ${formatCompact(volume)}
                             </Typography>
                           </Box>
-                          <Box width={0.15}>
+                          <Box
+                            width={isMobile ? 1 : 0.15}
+                            mt={isMobile ? 1 : 0}
+                            display='flex'
+                            justifyContent={
+                              isMobile ? 'space-between' : 'flex-end'
+                            }
+                          >
+                            {isMobile && (
+                              <Typography
+                                variant='body2'
+                                style={{ color: palette.text.secondary }}
+                              >
+                                APY
+                              </Typography>
+                            )}
                             <Typography
                               variant='body2'
                               align='right'
-                              style={{ color: apy < 0 ? '#ff5252' : '#0fc679' }}
+                              style={{
+                                color:
+                                  apy < 0
+                                    ? palette.error.main
+                                    : palette.success.main,
+                              }}
                             >
                               {apy.toFixed(2)}%
                             </Typography>

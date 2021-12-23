@@ -1,29 +1,31 @@
 import React, { useState } from 'react';
 import { TransactionResponse } from '@ethersproject/providers';
-import { splitSignature } from 'ethers/lib/utils';
-import { Box, Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import { StakingInfo } from 'state/stake/hooks';
-import { JSBI, TokenAmount, Pair } from '@uniswap/sdk';
+import { Box, Typography, useMediaQuery } from '@material-ui/core';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { DualStakingInfo } from 'state/stake/hooks';
+import { JSBI, TokenAmount, Pair, ETHER } from '@uniswap/sdk';
 import { QUICK, EMPTY } from 'constants/index';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { usePair } from 'data/Reserves';
 import { useTotalSupply } from 'data/TotalSupply';
 import useUSDCPrice from 'utils/useUSDCPrice';
-import { usePairContract, useStakingContract } from 'hooks/useContract';
+import {
+  usePairContract,
+  useDualRewardsStakingContract,
+} from 'hooks/useContract';
 import { useDerivedStakeInfo } from 'state/stake/hooks';
 import { useTransactionAdder } from 'state/transactions/hooks';
 import { DoubleCurrencyLogo, CurrencyLogo } from 'components';
 import CircleInfoIcon from 'assets/images/circleinfo.svg';
 import { Link } from 'react-router-dom';
 import { useTokenBalance } from 'state/wallet/hooks';
-import { useActiveWeb3React, useIsArgentWallet } from 'hooks';
+import { useActiveWeb3React } from 'hooks';
 import useTransactionDeadline from 'hooks/useTransactionDeadline';
 import { useApproveCallback, ApprovalState } from 'hooks/useApproveCallback';
 
-const useStyles = makeStyles(({}) => ({
+const useStyles = makeStyles(({ palette, breakpoints }) => ({
   syrupCard: {
-    background: '#282d3d',
+    background: palette.secondary.dark,
     width: '100%',
     borderRadius: 10,
     marginTop: 24,
@@ -32,17 +34,19 @@ const useStyles = makeStyles(({}) => ({
     alignItems: 'center',
   },
   syrupCardUp: {
-    background: '#282d3d',
-    height: 80,
+    background: palette.secondary.dark,
     width: '100%',
     borderRadius: 10,
     display: 'flex',
     alignItems: 'center',
-    padding: '0 16px',
+    padding: '16px',
     cursor: 'pointer',
+    [breakpoints.down('xs')]: {
+      flexDirection: 'column',
+    },
   },
   inputVal: {
-    backgroundColor: '#121319',
+    backgroundColor: palette.secondary.contrastText,
     borderRadius: '10px',
     height: '50px',
     display: 'flex',
@@ -56,7 +60,7 @@ const useStyles = makeStyles(({}) => ({
       outline: 'none',
       fontSize: 16,
       fontWeight: 600,
-      color: '#c7cad9',
+      color: palette.text.primary,
     },
     '& p': {
       cursor: 'pointer',
@@ -84,27 +88,42 @@ const useStyles = makeStyles(({}) => ({
     cursor: 'pointer',
     color: 'white',
   },
+  syrupText: {
+    fontSize: 14,
+    fontWeight: 600,
+    color: palette.text.secondary,
+  },
 }));
 
-const FarmCard: React.FC<{ stakingInfo: StakingInfo }> = ({ stakingInfo }) => {
+const FarmDualCard: React.FC<{
+  stakingInfo: DualStakingInfo;
+  dQuicktoQuick: number;
+  stakingAPY: number;
+}> = ({ stakingInfo, dQuicktoQuick, stakingAPY }) => {
   const classes = useStyles();
+  const { palette, breakpoints } = useTheme();
+  const isMobile = useMediaQuery(breakpoints.down('xs'));
   const [isExpandCard, setExpandCard] = useState(false);
   const [stakeAmount, setStakeAmount] = useState('');
-  const [attempting, setAttempting] = useState(false);
+  const [attemptStaking, setAttemptStaking] = useState(false);
+  const [attemptUnstaking, setAttemptUnstaking] = useState(false);
+  const [attemptClaimReward, setAttemptClaimReward] = useState(false);
   // const [hash, setHash] = useState<string | undefined>();
   const [unstakeAmount, setUnStakeAmount] = useState('');
 
   const token0 = stakingInfo.tokens[0];
   const token1 = stakingInfo.tokens[1];
 
-  const { account, library, chainId } = useActiveWeb3React();
+  const rewardTokenA = stakingInfo.rewardTokenA;
+  const rewardTokenB = stakingInfo.rewardTokenB;
+
+  const { account, library } = useActiveWeb3React();
   const addTransaction = useTransactionAdder();
 
   const currency0 = unwrappedToken(token0);
   const currency1 = unwrappedToken(token1);
   const baseTokenCurrency = unwrappedToken(stakingInfo.baseToken);
   const empty = unwrappedToken(EMPTY);
-  const quickPriceUSD = stakingInfo.quickPrice;
 
   // get the color of the token
   const baseToken =
@@ -189,22 +208,19 @@ const FarmCard: React.FC<{ stakingInfo: StakingInfo }> = ({ stakingInfo }) => {
     valueOfUnstakedAmountInBaseToken &&
     USDPrice?.quote(valueOfUnstakedAmountInBaseToken);
 
-  const perMonthReturnInRewards =
-    (Number(stakingInfo.dQuickToQuick) * Number(stakingInfo?.quickPrice) * 30) /
-    Number(valueOfTotalStakedAmountInUSDC?.toSignificant(6));
+  let apyWithFee: number | string = 0;
 
-  let apyWithFee: any = 0;
-
-  if (stakingInfo?.oneYearFeeAPY && stakingInfo?.oneYearFeeAPY > 0) {
+  if (stakingAPY && stakingAPY > 0) {
     apyWithFee =
       ((1 +
-        ((Number(perMonthReturnInRewards) +
-          Number(stakingInfo.oneYearFeeAPY) / 12) *
+        ((Number(stakingInfo.perMonthReturnInRewards) +
+          Number(stakingAPY) / 12) *
           12) /
           12) **
         12 -
         1) *
-      100; // compounding monthly APY
+      100;
+
     if (apyWithFee > 100000000) {
       apyWithFee = '>100000000';
     } else {
@@ -218,15 +234,24 @@ const FarmCard: React.FC<{ stakingInfo: StakingInfo }> = ({ stakingInfo }) => {
         groupSeparator: ',',
       }) ?? '-'} ETH`;
 
-  const poolRate = `${stakingInfo.totalRewardRate
+  const poolRateA = `${stakingInfo.totalRewardRateA
     ?.toFixed(2, { groupSeparator: ',' })
-    .replace(/[.,]00$/, '')} dQUICK / day`;
+    .replace(/[.,]00$/, '') +
+    ' ' +
+    rewardTokenA?.symbol}  / day`;
+  const poolRateB = `${stakingInfo.totalRewardRateB
+    ?.toFixed(2, { groupSeparator: ',' })
+    .replace(/[.,]00$/, '') +
+    ' ' +
+    rewardTokenB?.symbol} / day`;
 
-  const stakingContract = useStakingContract(stakingInfo.stakingRewardAddress);
+  const stakingContract = useDualRewardsStakingContract(
+    stakingInfo.stakingRewardAddress,
+  );
 
   const onWithdraw = async () => {
-    if (stakingContract && stakingInfo.stakedAmount) {
-      setAttempting(true);
+    if (stakingContract && stakingInfo?.stakedAmount) {
+      setAttemptUnstaking(true);
       await stakingContract
         .exit({ gasLimit: 300000 })
         .then((response: TransactionResponse) => {
@@ -236,15 +261,29 @@ const FarmCard: React.FC<{ stakingInfo: StakingInfo }> = ({ stakingInfo }) => {
           // setHash(response.hash);
         })
         .catch((error: any) => {
-          setAttempting(false);
+          setAttemptUnstaking(false);
           console.log(error);
         });
     }
   };
 
   const onClaimReward = async () => {
+    if (stakingContract && stakingInfo?.stakedAmount) {
+      setAttemptClaimReward(true);
+      await stakingContract
+        .getReward({ gasLimit: 350000 })
+        .then((response: TransactionResponse) => {
+          addTransaction(response, {
+            summary: `Claim accumulated QUICK rewards`,
+          });
+          // setHash(response.hash);
+        })
+        .catch((error: any) => {
+          setAttemptClaimReward(false);
+          console.log(error);
+        });
+    }
     if (stakingContract && stakingInfo.stakedAmount) {
-      setAttempting(true);
       await stakingContract
         .getReward({ gasLimit: 350000 })
         .then((response: TransactionResponse) => {
@@ -254,7 +293,6 @@ const FarmCard: React.FC<{ stakingInfo: StakingInfo }> = ({ stakingInfo }) => {
           // setHash(response.hash);
         })
         .catch((error: any) => {
-          setAttempting(false);
           console.log(error);
         });
     }
@@ -277,7 +315,6 @@ const FarmCard: React.FC<{ stakingInfo: StakingInfo }> = ({ stakingInfo }) => {
     deadline: number;
   } | null>(null);
 
-  const isArgentWallet = useIsArgentWallet();
   const dummyPair = new Pair(
     new TokenAmount(stakingInfo.tokens[0], '0'),
     new TokenAmount(stakingInfo.tokens[1], '0'),
@@ -289,34 +326,14 @@ const FarmCard: React.FC<{ stakingInfo: StakingInfo }> = ({ stakingInfo }) => {
   );
 
   const onStake = async () => {
-    setAttempting(true);
+    setAttemptStaking(true);
     if (stakingContract && parsedAmount && deadline) {
       if (approval === ApprovalState.APPROVED) {
         await stakingContract.stake(`0x${parsedAmount.raw.toString(16)}`, {
           gasLimit: 350000,
         });
-      } else if (signatureData) {
-        stakingContract
-          .stakeWithPermit(
-            `0x${parsedAmount.raw.toString(16)}`,
-            signatureData.deadline,
-            signatureData.v,
-            signatureData.r,
-            signatureData.s,
-            { gasLimit: 350000 },
-          )
-          .then((response: TransactionResponse) => {
-            addTransaction(response, {
-              summary: `Deposit liquidity`,
-            });
-            // setHash(response.hash);
-          })
-          .catch((error: any) => {
-            setAttempting(false);
-            console.log(error);
-          });
       } else {
-        setAttempting(false);
+        setAttemptStaking(false);
         throw new Error(
           'Attempting to stake without approval or a signature. Please contact support.',
         );
@@ -330,71 +347,23 @@ const FarmCard: React.FC<{ stakingInfo: StakingInfo }> = ({ stakingInfo }) => {
     const liquidityAmount = parsedAmount;
     if (!liquidityAmount) throw new Error('missing liquidity amount');
 
-    if (isArgentWallet) {
-      return approveCallback();
-    }
-
-    if (stakingInfo && stakingInfo?.lp !== '') {
-      return approveCallback();
-    }
-
-    // try to gather a signature for permission
-    const nonce = await pairContract.nonces(account);
-
-    const EIP712Domain = [
-      { name: 'name', type: 'string' },
-      { name: 'version', type: 'string' },
-      { name: 'chainId', type: 'uint256' },
-      { name: 'verifyingContract', type: 'address' },
-    ];
-    const domain = {
-      name: 'Uniswap V2',
-      version: '1',
-      chainId: chainId,
-      verifyingContract: pairContract.address,
-    };
-    const Permit = [
-      { name: 'owner', type: 'address' },
-      { name: 'spender', type: 'address' },
-      { name: 'value', type: 'uint256' },
-      { name: 'nonce', type: 'uint256' },
-      { name: 'deadline', type: 'uint256' },
-    ];
-    const message = {
-      owner: account,
-      spender: stakingInfo.stakingRewardAddress,
-      value: liquidityAmount.raw.toString(),
-      nonce: nonce.toHexString(),
-      deadline: deadline.toNumber(),
-    };
-    const data = JSON.stringify({
-      types: {
-        EIP712Domain,
-        Permit,
-      },
-      domain,
-      primaryType: 'Permit',
-      message,
-    });
-
-    library
-      .send('eth_signTypedData_v4', [account, data])
-      .then(splitSignature)
-      .then((signature) => {
-        setSignatureData({
-          v: signature.v,
-          r: signature.r,
-          s: signature.s,
-          deadline: deadline.toNumber(),
-        });
-      })
-      .catch((error) => {
-        // for all errors other than 4001 (EIP-1193 user rejected request), fall back to manual approve
-        if (error?.code !== 4001) {
-          approveCallback();
-        }
-      });
+    return approveCallback();
   };
+
+  const earnedUSD =
+    Number(stakingInfo.earnedAmountA.toSignificant()) *
+      dQuicktoQuick *
+      stakingInfo.quickPrice +
+    Number(stakingInfo.earnedAmountB.toSignificant()) * stakingInfo.maticPrice;
+
+  const earnedUSDStr =
+    earnedUSD < 0.001 && earnedUSD > 0
+      ? '< $0.001'
+      : '$' + earnedUSD.toLocaleString();
+
+  const rewards =
+    stakingInfo?.rateA * stakingInfo?.quickPrice +
+    stakingInfo?.rateB * Number(stakingInfo.rewardTokenBPrice);
 
   return (
     <Box className={classes.syrupCard}>
@@ -402,56 +371,110 @@ const FarmCard: React.FC<{ stakingInfo: StakingInfo }> = ({ stakingInfo }) => {
         className={classes.syrupCardUp}
         onClick={() => setExpandCard(!isExpandCard)}
       >
-        <Box display='flex' alignItems='center' width={0.3}>
-          <DoubleCurrencyLogo
-            currency0={currency0}
-            currency1={currency1}
-            size={28}
-          />
-          <Box ml={1.5}>
-            <Typography variant='body2'>
-              {currency0.symbol} / {currency1.symbol} LP
-            </Typography>
+        <Box
+          display='flex'
+          alignItems='center'
+          justifyContent='space-between'
+          width={isMobile ? 1 : 0.3}
+          mb={isMobile ? 1.5 : 0}
+        >
+          {isMobile && (
+            <Typography className={classes.syrupText}>Pool</Typography>
+          )}
+          <Box display='flex' alignItems='center'>
+            <DoubleCurrencyLogo
+              currency0={currency0}
+              currency1={currency1}
+              size={28}
+            />
+            <Box ml={1.5}>
+              <Typography variant='body2'>
+                {currency0.symbol} / {currency1.symbol} LP
+              </Typography>
+            </Box>
           </Box>
-        </Box>
-        <Box width={0.2}>
-          <Typography variant='body2'>{tvl}</Typography>
-        </Box>
-        <Box width={0.25}>
-          <Typography variant='body2'>{poolRate}</Typography>
         </Box>
         <Box
-          width={0.15}
+          width={isMobile ? 1 : 0.2}
+          mb={isMobile ? 1.5 : 0}
           display='flex'
-          flexDirection='row'
+          justifyContent={isMobile ? 'space-between' : 'center'}
           alignItems='center'
-          justifyContent='center'
         >
-          <Typography variant='body2' style={{ color: '#0fc679' }}>
-            {apyWithFee}%
-          </Typography>
-          <Box ml={1} style={{ height: '16px' }}>
-            <img src={CircleInfoIcon} alt={'arrow up'} />
+          {isMobile && (
+            <Typography className={classes.syrupText}>TVL</Typography>
+          )}
+          <Typography variant='body2'>{tvl}</Typography>
+        </Box>
+        <Box
+          mb={isMobile ? 1.5 : 0}
+          width={isMobile ? 1 : 0.25}
+          display='flex'
+          justifyContent={isMobile ? 'space-between' : 'center'}
+          alignItems='center'
+        >
+          {isMobile && (
+            <Typography className={classes.syrupText}>Rewards</Typography>
+          )}
+          <Box textAlign={isMobile ? 'right' : 'left'}>
+            <Typography variant='body2'>{`$${parseInt(
+              rewards.toFixed(0),
+            ).toLocaleString()} / day`}</Typography>
+            <Typography variant='body2'>{poolRateA}</Typography>
+            <Typography variant='body2'>{poolRateB}</Typography>
           </Box>
         </Box>
-        <Box width={0.2} mr={2} textAlign='right'>
-          <Box
-            display='flex'
-            alignItems='center'
-            justifyContent='flex-end'
-            mb={0.25}
-          >
-            <CurrencyLogo currency={QUICK} size='16px' />
-            <Typography variant='body2' style={{ marginLeft: 5 }}>
-              {stakingInfo.earnedAmount.toSignificant(2)}
-              <span>&nbsp;dQUICK</span>
+        <Box
+          mb={isMobile ? 1.5 : 0}
+          width={isMobile ? 1 : 0.15}
+          display='flex'
+          alignItems='center'
+          justifyContent={isMobile ? 'space-between' : 'center'}
+        >
+          {isMobile && (
+            <Typography className={classes.syrupText}>APY</Typography>
+          )}
+          <Box display='flex' alignItems='center'>
+            <Typography variant='body2' style={{ color: palette.success.main }}>
+              {apyWithFee}%
             </Typography>
+            <Box ml={1} style={{ height: '16px' }}>
+              <img src={CircleInfoIcon} alt={'arrow up'} />
+            </Box>
           </Box>
-          <Typography variant='body2' style={{ color: '#696c80' }}>
-            $
-            {Number(stakingInfo.earnedAmount.toSignificant(2)) *
-              Number(quickPriceUSD.toFixed(2))}
-          </Typography>
+        </Box>
+        <Box
+          width={isMobile ? 1 : 0.2}
+          display='flex'
+          justifyContent={isMobile ? 'space-between' : 'flex-end'}
+        >
+          {isMobile && (
+            <Typography className={classes.syrupText}>Earned</Typography>
+          )}
+          <Box textAlign='right'>
+            <Typography variant='body2'>{earnedUSDStr}</Typography>
+            <Box display='flex' alignItems='center' justifyContent='flex-end'>
+              <CurrencyLogo currency={QUICK} size='16px' />
+              <Typography variant='body2' style={{ marginLeft: 5 }}>
+                {stakingInfo.earnedAmountA.toSignificant(2)}
+                <span>&nbsp;dQUICK</span>
+              </Typography>
+            </Box>
+            <Box display='flex' alignItems='center' justifyContent='flex-end'>
+              <CurrencyLogo
+                currency={
+                  rewardTokenB.symbol?.toLowerCase() === 'wmatic'
+                    ? ETHER
+                    : rewardTokenB
+                }
+                size='16px'
+              />
+              <Typography variant='body2' style={{ marginLeft: 5 }}>
+                {stakingInfo.earnedAmountB.toSignificant(2)}
+                <span>&nbsp;{rewardTokenB.symbol}</span>
+              </Typography>
+            </Box>
+          </Box>
         </Box>
       </Box>
 
@@ -459,16 +482,22 @@ const FarmCard: React.FC<{ stakingInfo: StakingInfo }> = ({ stakingInfo }) => {
         <Box
           width='100%'
           mt={2.5}
-          pl={4}
-          pr={4}
-          pt={4}
+          pl={isMobile ? 2 : 4}
+          pr={isMobile ? 2 : 4}
+          pt={2}
           display='flex'
           flexDirection='row'
+          flexWrap='wrap'
           borderTop='1px solid #444444'
           alignItems='center'
           justifyContent='space-between'
         >
-          <Box width={0.25} ml={4} mr={4} style={{ color: '#696c80' }}>
+          <Box
+            minWidth={250}
+            width={isMobile ? 1 : 0.3}
+            color={palette.text.secondary}
+            my={1.5}
+          >
             <Box
               display='flex'
               flexDirection='row'
@@ -492,8 +521,16 @@ const FarmCard: React.FC<{ stakingInfo: StakingInfo }> = ({ stakingInfo }) => {
                   </span>
                 </Typography>
                 <Link
-                  to={`/pools?currency0=${token0.address}&currency1=${token1.address}`}
-                  style={{ color: '#448aff' }}
+                  to={`/pools?currency0=${
+                    token0.symbol?.toLowerCase() === 'wmatic'
+                      ? 'ETH'
+                      : token0.address
+                  }&currency1=${
+                    token1.symbol?.toLowerCase() === 'wmatic'
+                      ? 'ETH'
+                      : token1.address
+                  }`}
+                  style={{ color: palette.primary.main }}
                 >
                   Get {currency0.symbol} / {currency1.symbol} LP
                 </Link>
@@ -513,8 +550,8 @@ const FarmCard: React.FC<{ stakingInfo: StakingInfo }> = ({ stakingInfo }) => {
                   color:
                     userLiquidityUnstaked &&
                     userLiquidityUnstaked.greaterThan('0')
-                      ? '#448aff'
-                      : '#636780',
+                      ? palette.primary.main
+                      : palette.text.hint,
                 }}
                 onClick={() => {
                   if (
@@ -522,6 +559,8 @@ const FarmCard: React.FC<{ stakingInfo: StakingInfo }> = ({ stakingInfo }) => {
                     userLiquidityUnstaked.greaterThan('0')
                   ) {
                     setStakeAmount(userLiquidityUnstaked.toSignificant());
+                  } else {
+                    setStakeAmount('');
                   }
                 }}
               >
@@ -530,7 +569,7 @@ const FarmCard: React.FC<{ stakingInfo: StakingInfo }> = ({ stakingInfo }) => {
             </Box>
             <Box
               className={
-                Number(!attempting && stakeAmount) > 0 &&
+                Number(!attemptStaking && stakeAmount) > 0 &&
                 Number(stakeAmount) <=
                   Number(userLiquidityUnstaked?.toSignificant())
                   ? classes.buttonClaim
@@ -541,7 +580,7 @@ const FarmCard: React.FC<{ stakingInfo: StakingInfo }> = ({ stakingInfo }) => {
               p={2}
               onClick={() => {
                 if (
-                  !attempting &&
+                  !attemptStaking &&
                   Number(stakeAmount) > 0 &&
                   Number(stakeAmount) <=
                     Number(userLiquidityUnstaked?.toSignificant())
@@ -558,7 +597,7 @@ const FarmCard: React.FC<{ stakingInfo: StakingInfo }> = ({ stakingInfo }) => {
               }}
             >
               <Typography variant='body1'>
-                {attempting
+                {attemptStaking
                   ? 'Staking LP Tokens...'
                   : approval === ApprovalState.APPROVED ||
                     signatureData !== null
@@ -567,7 +606,12 @@ const FarmCard: React.FC<{ stakingInfo: StakingInfo }> = ({ stakingInfo }) => {
               </Typography>
             </Box>
           </Box>
-          <Box width={0.25} ml={4} mr={4} style={{ color: '#696c80' }}>
+          <Box
+            minWidth={250}
+            width={isMobile ? 1 : 0.3}
+            my={1.5}
+            color={palette.text.secondary}
+          >
             <Box
               display='flex'
               flexDirection='row'
@@ -594,8 +638,8 @@ const FarmCard: React.FC<{ stakingInfo: StakingInfo }> = ({ stakingInfo }) => {
                   color:
                     stakingInfo.stakedAmount &&
                     stakingInfo.stakedAmount.greaterThan('0')
-                      ? '#448aff'
-                      : '#636780',
+                      ? palette.primary.main
+                      : palette.text.hint,
                 }}
                 onClick={() => {
                   if (
@@ -603,6 +647,8 @@ const FarmCard: React.FC<{ stakingInfo: StakingInfo }> = ({ stakingInfo }) => {
                     stakingInfo.stakedAmount.greaterThan('0')
                   ) {
                     setUnStakeAmount(stakingInfo.stakedAmount.toSignificant());
+                  } else {
+                    setUnStakeAmount('');
                   }
                 }}
               >
@@ -611,7 +657,7 @@ const FarmCard: React.FC<{ stakingInfo: StakingInfo }> = ({ stakingInfo }) => {
             </Box>
             <Box
               className={
-                !attempting &&
+                !attemptUnstaking &&
                 Number(unstakeAmount) > 0 &&
                 Number(unstakeAmount) <=
                   Number(stakingInfo.stakedAmount.toSignificant())
@@ -623,7 +669,7 @@ const FarmCard: React.FC<{ stakingInfo: StakingInfo }> = ({ stakingInfo }) => {
               p={2}
               onClick={() => {
                 if (
-                  !attempting &&
+                  !attemptUnstaking &&
                   Number(unstakeAmount) > 0 &&
                   Number(unstakeAmount) <=
                     Number(stakingInfo.stakedAmount.toSignificant())
@@ -633,11 +679,18 @@ const FarmCard: React.FC<{ stakingInfo: StakingInfo }> = ({ stakingInfo }) => {
               }}
             >
               <Typography variant='body1'>
-                {attempting ? 'Unstaking LP Tokens...' : 'Unstake LP Tokens'}
+                {attemptUnstaking
+                  ? 'Unstaking LP Tokens...'
+                  : 'Unstake LP Tokens'}
               </Typography>
             </Box>
           </Box>
-          <Box width={0.25} ml={4} mr={4} style={{ color: '#696c80' }}>
+          <Box
+            minWidth={250}
+            my={1.5}
+            width={isMobile ? 1 : 0.3}
+            color={palette.text.secondary}
+          >
             <Box
               display='flex'
               flexDirection='column'
@@ -647,38 +700,49 @@ const FarmCard: React.FC<{ stakingInfo: StakingInfo }> = ({ stakingInfo }) => {
               <Box mb={1}>
                 <Typography variant='body2'>Unclaimed Rewards:</Typography>
               </Box>
-              <Box mb={1}>
+              <Box mb={1} display='flex'>
                 <CurrencyLogo currency={QUICK} />
+                <CurrencyLogo
+                  currency={
+                    rewardTokenB.symbol?.toLowerCase() === 'wmatic'
+                      ? ETHER
+                      : rewardTokenB
+                  }
+                />
               </Box>
-              <Box mb={0.5}>
+              <Box mb={1} textAlign='center'>
+                <Typography variant='body1'>{earnedUSDStr}</Typography>
                 <Typography variant='body1' color='textSecondary'>
-                  {stakingInfo.earnedAmount.toSignificant(2)}
+                  {stakingInfo.earnedAmountA.toSignificant(2)}
                   <span>&nbsp;dQUICK</span>
                 </Typography>
-              </Box>
-              <Box mb={1}>
-                <Typography variant='body2'>
-                  $
-                  {Number(stakingInfo.earnedAmount.toSignificant(2)) *
-                    Number(quickPriceUSD.toFixed(2))}
+                <Typography variant='body1' color='textSecondary'>
+                  {stakingInfo.earnedAmountB.toSignificant(2)}
+                  <span>&nbsp;{rewardTokenB.symbol}</span>
                 </Typography>
               </Box>
             </Box>
             <Box
               className={
-                stakingInfo.earnedAmount.greaterThan('0')
+                !attemptClaimReward &&
+                stakingInfo.earnedAmountA.greaterThan('0')
                   ? classes.buttonClaim
                   : classes.buttonToken
               }
               mb={2}
               p={2}
               onClick={() => {
-                if (stakingInfo.earnedAmount.greaterThan('0')) {
+                if (
+                  !attemptClaimReward &&
+                  stakingInfo.earnedAmountA.greaterThan('0')
+                ) {
                   onClaimReward();
                 }
               }}
             >
-              <Typography variant='body1'>Claim</Typography>
+              <Typography variant='body1'>
+                {attemptClaimReward ? 'Claiming...' : 'Claim'}
+              </Typography>
             </Box>
           </Box>
         </Box>
@@ -687,4 +751,4 @@ const FarmCard: React.FC<{ stakingInfo: StakingInfo }> = ({ stakingInfo }) => {
   );
 };
 
-export default FarmCard;
+export default FarmDualCard;

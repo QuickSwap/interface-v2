@@ -1,23 +1,21 @@
-import React, { useMemo, useState } from 'react';
-import { Box, Typography, Button } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Box, Typography, Button, useMediaQuery } from '@material-ui/core';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { ChevronDown, ChevronUp } from 'react-feather';
-import { Pair, JSBI, Percent, Currency, TokenAmount } from '@uniswap/sdk';
+import { Pair, JSBI, Percent, Currency } from '@uniswap/sdk';
 import { useActiveWeb3React } from 'hooks';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { useTokenBalance } from 'state/wallet/hooks';
-import { useStakingInfo } from 'state/stake/hooks';
+import { useStakingInfo, getBulkPairData } from 'state/stake/hooks';
 import { useTotalSupply } from 'data/TotalSupply';
 import { usePair } from 'data/Reserves';
-import { EMPTY } from 'constants/index';
-import useUSDCPrice from 'utils/useUSDCPrice';
 import {
   CurrencyLogo,
   DoubleCurrencyLogo,
   RemoveLiquidityModal,
 } from 'components';
 
-const useStyles = makeStyles(({}) => ({
+const useStyles = makeStyles(({ palette }) => ({
   poolButtonRow: {
     display: 'flex',
     alignItems: 'center',
@@ -33,7 +31,7 @@ const useStyles = makeStyles(({}) => ({
         textDecoration: 'none',
       },
       '& p': {
-        color: '#ebecf2',
+        color: palette.text.primary,
       },
     },
     '& .MuiButton-outlined': {
@@ -48,6 +46,15 @@ const useStyles = makeStyles(({}) => ({
       backgroundColor: 'transparent',
     },
   },
+  cardRow: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+    '& p': {
+      color: palette.text.primary,
+    },
+  },
 }));
 
 interface PoolPositionCardProps {
@@ -60,6 +67,9 @@ const PoolPositionCard: React.FC<PoolPositionCardProps> = ({
   handleAddLiquidity,
 }) => {
   const classes = useStyles();
+  const [bulkPairData, setBulkPairData] = useState<any>(null);
+  const { palette, breakpoints } = useTheme();
+  const isMobile = useMediaQuery(breakpoints.down('xs'));
 
   const { account } = useActiveWeb3React();
   const [openRemoveModal, setOpenRemoveModal] = useState(false);
@@ -73,6 +83,13 @@ const PoolPositionCard: React.FC<PoolPositionCardProps> = ({
     () => (stakingInfos && stakingInfos.length > 0 ? stakingInfos[0] : null),
     [stakingInfos],
   );
+
+  const pairId = stakingInfo ? stakingInfo.pair : null;
+
+  useEffect(() => {
+    const pairLists = pairId ? [pairId] : [];
+    getBulkPairData(pairLists).then((data) => setBulkPairData(data));
+  }, [pairId]);
 
   const [showMore, setShowMore] = useState(false);
 
@@ -111,60 +128,17 @@ const PoolPositionCard: React.FC<PoolPositionCardProps> = ({
         ]
       : [undefined, undefined];
 
-  const baseTokenCurrency = stakingInfo
-    ? unwrappedToken(stakingInfo.baseToken)
-    : undefined;
-  const empty = unwrappedToken(EMPTY);
-  const baseToken =
-    baseTokenCurrency && baseTokenCurrency === empty
-      ? stakingInfo?.tokens[0]
-      : stakingInfo?.baseToken;
-  const totalSupplyOfStakingToken = useTotalSupply(
-    stakingInfo?.stakedAmount.token,
-  );
-  let valueOfTotalStakedAmountInBaseToken: TokenAmount | undefined;
-  if (
-    totalSupplyOfStakingToken &&
-    stakingTokenPair &&
-    stakingInfo &&
-    baseToken
-  ) {
-    // take the total amount of LP tokens staked, multiply by ETH value of all LP tokens, divide by all LP tokens
-    valueOfTotalStakedAmountInBaseToken = new TokenAmount(
-      baseToken,
-      JSBI.divide(
-        JSBI.multiply(
-          JSBI.multiply(
-            stakingInfo.totalStakedAmount.raw,
-            stakingTokenPair.reserveOf(baseToken).raw,
-          ),
-          JSBI.BigInt(2), // this is b/c the value of LP shares are ~double the value of the WETH they entitle owner to
-        ),
-        totalSupplyOfStakingToken.raw,
-      ),
-    );
-  }
-
-  const USDPrice = useUSDCPrice(baseToken);
-  const valueOfTotalStakedAmountInUSDC =
-    valueOfTotalStakedAmountInBaseToken &&
-    USDPrice?.quote(valueOfTotalStakedAmountInBaseToken);
-
-  const perMonthReturnInRewards =
-    (Number(stakingInfo?.dQuickToQuick) *
-      Number(stakingInfo?.quickPrice) *
-      30) /
-    Number(valueOfTotalStakedAmountInUSDC?.toSignificant(6));
-
   const apyWithFee = useMemo(() => {
-    if (
-      stakingInfo &&
-      stakingInfo.oneYearFeeAPY &&
-      Number(stakingInfo.oneYearFeeAPY) > 0
-    ) {
+    if (stakingInfo && bulkPairData) {
+      const dayVolume = bulkPairData
+        ? bulkPairData[stakingInfo.pair]?.oneDayVolumeUSD
+        : 0;
+      const oneYearFee =
+        (dayVolume * 0.003 * 365) / bulkPairData[stakingInfo.pair]?.reserveUSD;
       const apy =
         ((1 +
-          ((perMonthReturnInRewards + Number(stakingInfo.oneYearFeeAPY) / 12) *
+          ((Number(stakingInfo.perMonthReturnInRewards) +
+            Number(oneYearFee) / 12) *
             12) /
             12) **
           12 -
@@ -176,18 +150,19 @@ const PoolPositionCard: React.FC<PoolPositionCardProps> = ({
         return Number(apy.toFixed(2)).toLocaleString();
       }
     }
-  }, [stakingInfo, perMonthReturnInRewards]);
+  }, [stakingInfo, bulkPairData]);
 
   return (
     <Box
       width={1}
-      border='1px solid #282d3d'
+      border={`1px solid ${palette.secondary.dark}`}
       borderRadius={10}
-      bgcolor={showMore ? '#282d3d' : 'transparent'}
+      bgcolor={showMore ? palette.secondary.dark : 'transparent'}
       style={{ overflow: 'hidden' }}
     >
       <Box
-        padding={3}
+        paddingX={isMobile ? 1.5 : 3}
+        paddingY={isMobile ? 2 : 3}
         display='flex'
         alignItems='center'
         justifyContent='space-between'
@@ -199,7 +174,10 @@ const PoolPositionCard: React.FC<PoolPositionCardProps> = ({
             margin={true}
             size={28}
           />
-          <Typography variant='h6' style={{ color: '#ebecf2', marginLeft: 16 }}>
+          <Typography
+            variant='h6'
+            style={{ color: palette.text.primary, marginLeft: 16 }}
+          >
             {!currency0 || !currency1
               ? 'Loading'
               : `${currency0.symbol}/${currency1.symbol}`}
@@ -209,7 +187,7 @@ const PoolPositionCard: React.FC<PoolPositionCardProps> = ({
         <Box
           display='flex'
           alignItems='center'
-          color='#448aff'
+          color={palette.primary.main}
           style={{ cursor: 'pointer' }}
           onClick={() => setShowMore(!showMore)}
         >
@@ -221,35 +199,18 @@ const PoolPositionCard: React.FC<PoolPositionCardProps> = ({
       </Box>
 
       {showMore && (
-        <Box px={3} mb={3}>
-          <Box
-            display='flex'
-            alignItems='center'
-            justifyContent='space-between'
-            mb={1.5}
-          >
-            <Typography variant='body2' style={{ color: '#c7cad9' }}>
-              Your pool tokens:
-            </Typography>
-            <Typography variant='body2' style={{ color: '#c7cad9' }}>
+        <Box px={isMobile ? 1.5 : 3} mb={3}>
+          <Box className={classes.cardRow}>
+            <Typography variant='body2'>Your pool tokens:</Typography>
+            <Typography variant='body2'>
               {userPoolBalance ? userPoolBalance.toSignificant(4) : '-'}
             </Typography>
           </Box>
-          <Box
-            display='flex'
-            alignItems='center'
-            justifyContent='space-between'
-            mb={1.5}
-          >
-            <Typography variant='body2' style={{ color: '#c7cad9' }}>
-              Pooled {currency0.symbol}:
-            </Typography>
+          <Box className={classes.cardRow}>
+            <Typography variant='body2'>Pooled {currency0.symbol}:</Typography>
             {token0Deposited ? (
               <Box display='flex' alignItems='center'>
-                <Typography
-                  variant='body2'
-                  style={{ color: '#c7cad9', marginRight: 10 }}
-                >
+                <Typography variant='body2' style={{ marginRight: 10 }}>
                   {token0Deposited?.toSignificant(6)}
                 </Typography>
                 <CurrencyLogo size='20px' currency={currency0} />
@@ -259,21 +220,11 @@ const PoolPositionCard: React.FC<PoolPositionCardProps> = ({
             )}
           </Box>
 
-          <Box
-            display='flex'
-            alignItems='center'
-            justifyContent='space-between'
-            mb={1.5}
-          >
-            <Typography variant='body2' style={{ color: '#c7cad9' }}>
-              Pooled {currency1.symbol}:
-            </Typography>
+          <Box className={classes.cardRow}>
+            <Typography variant='body2'>Pooled {currency1.symbol}:</Typography>
             {token1Deposited ? (
               <Box display='flex' alignItems='center'>
-                <Typography
-                  variant='body2'
-                  style={{ color: '#c7cad9', marginRight: 10 }}
-                >
+                <Typography variant='body2' style={{ marginRight: 10 }}>
                   {token1Deposited?.toSignificant(6)}
                 </Typography>
                 <CurrencyLogo size='20px' currency={currency1} />
@@ -283,16 +234,9 @@ const PoolPositionCard: React.FC<PoolPositionCardProps> = ({
             )}
           </Box>
 
-          <Box
-            display='flex'
-            alignItems='center'
-            justifyContent='space-between'
-            mb={1.5}
-          >
-            <Typography variant='body2' style={{ color: '#c7cad9' }}>
-              Your pool share:
-            </Typography>
-            <Typography variant='body2' style={{ color: '#c7cad9' }}>
+          <Box className={classes.cardRow}>
+            <Typography variant='body2'>Your pool share:</Typography>
+            <Typography variant='body2'>
               {poolTokenPercentage
                 ? poolTokenPercentage.toSignificant() + '%'
                 : '-'}
@@ -329,16 +273,13 @@ const PoolPositionCard: React.FC<PoolPositionCardProps> = ({
         </Box>
       )}
       {stakingInfo && apyWithFee && (
-        <Box
-          bgcolor='#404557'
-          height='36px'
-          paddingX={3}
-          display='flex'
-          alignItems='center'
-        >
+        <Box bgcolor='#404557' paddingY={0.75} paddingX={isMobile ? 2 : 3}>
           <Typography variant='body2'>
-            Earn <span style={{ color: '#0fc679' }}>{apyWithFee}% APY</span> by
-            staking your LP tokens in {currency0.symbol?.toUpperCase()} /{' '}
+            Earn{' '}
+            <span style={{ color: palette.success.main }}>
+              {apyWithFee}% APY
+            </span>{' '}
+            by staking your LP tokens in {currency0.symbol?.toUpperCase()} /{' '}
             {currency1.symbol?.toUpperCase()} Farm
           </Typography>
         </Box>

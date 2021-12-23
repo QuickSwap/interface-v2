@@ -15,15 +15,15 @@ import { usePairs } from 'data/Reserves';
 import { toV2LiquidityToken, useTrackedTokenPairs } from 'state/user/hooks';
 import { useTokenBalancesWithLoadingIndicator } from 'state/wallet/hooks';
 
-const useStyles = makeStyles(({}) => ({
+const useStyles = makeStyles(({ palette, breakpoints }) => ({
   helpWrapper: {
     display: 'flex',
     alignItems: 'center',
     padding: '8px 12px',
-    border: '1px solid #252833',
+    border: `1px solid ${palette.secondary.light}`,
     borderRadius: 10,
     '& p': {
-      color: '#636780',
+      color: palette.text.hint,
     },
     '& svg': {
       marginLeft: 8,
@@ -31,17 +31,20 @@ const useStyles = makeStyles(({}) => ({
   },
   wrapper: {
     padding: 24,
-    backgroundColor: '#1b1e29',
+    backgroundColor: palette.background.paper,
     borderRadius: 20,
+    [breakpoints.down('xs')]: {
+      padding: '16px 12px',
+    },
   },
   headingItem: {
     cursor: 'pointer',
     display: 'flex',
   },
   liquidityText: {
-    color: '#696c80',
+    color: palette.text.secondary,
     '& span': {
-      color: '#448aff',
+      color: palette.primary.main,
       cursor: 'pointer',
     },
   },
@@ -140,7 +143,7 @@ const PoolsPage: React.FC = () => {
         </Box>
       </Box>
       <Grid container spacing={4}>
-        <Grid item sm={12} md={5}>
+        <Grid item xs={12} sm={12} md={5}>
           <Box className={classes.wrapper}>
             <Box
               display='flex'
@@ -164,7 +167,7 @@ const PoolsPage: React.FC = () => {
             </Box>
           </Box>
         </Grid>
-        <Grid item sm={12} md={7}>
+        <Grid item xs={12} sm={12} md={7}>
           <Box className={classes.wrapper}>
             <Typography variant='body1' style={{ fontWeight: 600 }}>
               Your Liquidity Pools
