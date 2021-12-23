@@ -6,9 +6,6 @@ import { DualStakingInfo } from 'state/stake/hooks';
 import { JSBI, TokenAmount, Pair, ETHER } from '@uniswap/sdk';
 import { QUICK, EMPTY } from 'constants/index';
 import { unwrappedToken } from 'utils/wrappedCurrency';
-import { usePair } from 'data/Reserves';
-import { useTotalSupply } from 'data/TotalSupply';
-import useUSDCPrice from 'utils/useUSDCPrice';
 import {
   usePairContract,
   useDualRewardsStakingContract,
@@ -129,10 +126,8 @@ const FarmDualCard: React.FC<{
   const baseToken =
     baseTokenCurrency === empty ? token0 : stakingInfo.baseToken;
 
-  const totalSupplyOfStakingToken = useTotalSupply(
-    stakingInfo.stakedAmount.token,
-  );
-  const [, stakingTokenPair] = usePair(...stakingInfo.tokens);
+  const totalSupplyOfStakingToken = stakingInfo.totalSupply;
+  const stakingTokenPair = stakingInfo.stakingTokenPair;
 
   const userLiquidityUnstaked = useTokenBalance(
     account ?? undefined,
@@ -195,7 +190,7 @@ const FarmDualCard: React.FC<{
   }
 
   // get the USD value of staked WETH
-  const USDPrice = useUSDCPrice(baseToken);
+  const USDPrice = stakingInfo.usdPrice;
   const valueOfTotalStakedAmountInUSDC =
     valueOfTotalStakedAmountInBaseToken &&
     USDPrice?.quote(valueOfTotalStakedAmountInBaseToken);

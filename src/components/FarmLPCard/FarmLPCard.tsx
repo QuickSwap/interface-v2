@@ -7,9 +7,6 @@ import { StakingInfo } from 'state/stake/hooks';
 import { JSBI, TokenAmount, Pair } from '@uniswap/sdk';
 import { QUICK, EMPTY } from 'constants/index';
 import { unwrappedToken } from 'utils/wrappedCurrency';
-import { usePair } from 'data/Reserves';
-import { useTotalSupply } from 'data/TotalSupply';
-import useUSDCPrice from 'utils/useUSDCPrice';
 import { usePairContract, useStakingContract } from 'hooks/useContract';
 import { useDerivedStakeInfo } from 'state/stake/hooks';
 import { useTransactionAdder } from 'state/transactions/hooks';
@@ -125,10 +122,7 @@ const FarmLPCard: React.FC<{
   const baseToken =
     baseTokenCurrency === empty ? token0 : stakingInfo.baseToken;
 
-  const totalSupplyOfStakingToken = useTotalSupply(
-    stakingInfo.stakedAmount.token,
-  );
-  const [, stakingTokenPair] = usePair(...stakingInfo.tokens);
+  const stakingTokenPair = stakingInfo.stakingTokenPair;
 
   const userLiquidityUnstaked = useTokenBalance(
     account ?? undefined,
@@ -138,12 +132,7 @@ const FarmLPCard: React.FC<{
   let valueOfTotalStakedAmountInBaseToken: TokenAmount | undefined;
   let valueOfMyStakedAmountInBaseToken: TokenAmount | undefined;
   let valueOfUnstakedAmountInBaseToken: TokenAmount | undefined;
-  if (
-    totalSupplyOfStakingToken &&
-    stakingTokenPair &&
-    stakingInfo &&
-    baseToken
-  ) {
+  if (stakingInfo.totalSupply && stakingTokenPair && stakingInfo && baseToken) {
     // take the total amount of LP tokens staked, multiply by ETH value of all LP tokens, divide by all LP tokens
     valueOfTotalStakedAmountInBaseToken = new TokenAmount(
       baseToken,
@@ -155,7 +144,7 @@ const FarmLPCard: React.FC<{
           ),
           JSBI.BigInt(2), // this is b/c the value of LP shares are ~double the value of the WETH they entitle owner to
         ),
-        totalSupplyOfStakingToken.raw,
+        stakingInfo.totalSupply.raw,
       ),
     );
 
@@ -169,7 +158,7 @@ const FarmLPCard: React.FC<{
           ),
           JSBI.BigInt(2), // this is b/c the value of LP shares are ~double the value of the WETH they entitle owner to
         ),
-        totalSupplyOfStakingToken.raw,
+        stakingInfo.totalSupply.raw,
       ),
     );
 
@@ -184,14 +173,14 @@ const FarmLPCard: React.FC<{
             ),
             JSBI.BigInt(2),
           ),
-          totalSupplyOfStakingToken.raw,
+          stakingInfo.totalSupply.raw,
         ),
       );
     }
   }
 
   // get the USD value of staked WETH
-  const USDPrice = useUSDCPrice(baseToken);
+  const USDPrice = stakingInfo.usdPrice;
   const valueOfTotalStakedAmountInUSDC =
     valueOfTotalStakedAmountInBaseToken &&
     USDPrice?.quote(valueOfTotalStakedAmountInBaseToken);
@@ -220,7 +209,7 @@ const FarmLPCard: React.FC<{
     if (apyWithFee > 100000000) {
       apyWithFee = '>100000000';
     } else {
-      apyWithFee = parseFloat(apyWithFee.toFixed(2)).toLocaleString();
+      apyWithFee = Number(apyWithFee.toFixed(2)).toLocaleString();
     }
   }
 

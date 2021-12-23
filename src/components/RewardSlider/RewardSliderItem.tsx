@@ -4,12 +4,9 @@ import { useHistory } from 'react-router-dom';
 import { JSBI, TokenAmount } from '@uniswap/sdk';
 import { makeStyles } from '@material-ui/core/styles';
 import { StakingInfo } from 'state/stake/hooks';
-import { useTotalSupply } from 'data/TotalSupply';
-import { usePair } from 'data/Reserves';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { DoubleCurrencyLogo } from 'components';
 import { EMPTY } from 'constants/index';
-import useUSDCPrice from 'utils/useUSDCPrice';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon.svg';
 
 const useStyles = makeStyles(({ palette }) => ({
@@ -64,9 +61,13 @@ const useStyles = makeStyles(({ palette }) => ({
 
 interface RewardSliderItemProps {
   info: StakingInfo;
+  stakingAPY: number;
 }
 
-const RewardSliderItem: React.FC<RewardSliderItemProps> = ({ info }) => {
+const RewardSliderItem: React.FC<RewardSliderItemProps> = ({
+  info,
+  stakingAPY,
+}) => {
   const classes = useStyles();
   const history = useHistory();
   const token0 = info.tokens[0];
@@ -75,11 +76,11 @@ const RewardSliderItem: React.FC<RewardSliderItemProps> = ({ info }) => {
   const empty = unwrappedToken(EMPTY);
 
   let valueOfTotalStakedAmountInBaseToken: TokenAmount | undefined;
-  const totalSupplyOfStakingToken = useTotalSupply(info.stakedAmount.token);
-  const [, stakingTokenPair] = usePair(...info.tokens);
+  const totalSupplyOfStakingToken = info.totalSupply;
+  const stakingTokenPair = info.stakingTokenPair;
   const baseToken = baseTokenCurrency === empty ? token0 : info.baseToken;
 
-  const USDPrice = useUSDCPrice(baseToken);
+  const USDPrice = info.usdPrice;
 
   if (totalSupplyOfStakingToken && stakingTokenPair) {
     // take the total amount of LP tokens staked, multiply by ETH value of all LP tokens, divide by all LP tokens
@@ -103,19 +104,17 @@ const RewardSliderItem: React.FC<RewardSliderItemProps> = ({ info }) => {
 
   const rewards = Number(info.rate) * Number(info.quickPrice);
 
-  const perMonthReturnInRewards: any =
-    (Number(info.rate) * Number(info.quickPrice) * 30) /
-    Number(valueOfTotalStakedAmountInUSDC?.toSignificant(6));
-
   let apyWithFee;
-  if (info.oneYearFeeAPY && info.oneYearFeeAPY > 0) {
+  if (stakingAPY && stakingAPY > 0) {
     apyWithFee =
       ((1 +
-        ((perMonthReturnInRewards + Number(info.oneYearFeeAPY) / 12) * 12) /
+        ((Number(info.perMonthReturnInRewards) + Number(stakingAPY) / 12) *
+          12) /
           12) **
         12 -
         1) *
-      100; // compounding monthly APY
+      100;
+
     if (apyWithFee > 100000000) {
       apyWithFee = '>100000000';
     } else {
@@ -162,12 +161,6 @@ const RewardSliderItem: React.FC<RewardSliderItemProps> = ({ info }) => {
           ${Number(rewards.toFixed(0)).toLocaleString()}
         </Typography>
       </Box>
-      {/* <Box className='row'>
-        <Typography>Pool Rate</Typography>
-        <Typography component='h4'>
-          {info.totalRewardRate?.toFixed(2, { groupSeparator: ',' }).replace(/[.,]00$/, "")} QUICK / day
-        </Typography>
-      </Box> */}
       <Box className='row'>
         <Typography>
           APR

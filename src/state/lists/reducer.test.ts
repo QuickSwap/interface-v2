@@ -391,7 +391,7 @@ describe('list reducer', () => {
       expect(store.getState()).toEqual({
         byUrl: {},
         selectedListUrl:
-          'https://unpkg.com/quickswap-default-token-list@1.2.15/build/quickswap-default.tokenlist.json',
+          'https://unpkg.com/quickswap-default-token-list@1.2.16/build/quickswap-default.tokenlist.json',
       });
     });
   });
