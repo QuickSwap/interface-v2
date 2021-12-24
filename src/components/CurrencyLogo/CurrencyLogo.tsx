@@ -1496,6 +1496,14 @@ export const getTokenLogoURL = (address: string) => {
 
   if (
     address?.toLowerCase() ===
+    '0x42d61D766B85431666B39B89C43011f24451bFf6'.toLowerCase()
+  ) {
+    uri =
+      'https://assets.coingecko.com/coins/images/20403/small/ep7GqM19_400x400.jpg?1636979120';
+  }
+
+  if (
+    address?.toLowerCase() ===
     '0xB35fcBCF1fD489fCe02Ee146599e893FDCdC60e6'.toLowerCase()
   ) {
     uri =

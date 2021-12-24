@@ -5,8 +5,6 @@ import { TransactionResponse } from '@ethersproject/providers';
 import { SyrupInfo } from 'state/stake/hooks';
 import { QUICK } from 'constants/index';
 import { unwrappedToken } from 'utils/wrappedCurrency';
-import { usePair } from 'data/Reserves';
-import useUSDCPrice from 'utils/useUSDCPrice';
 import { useTokenBalance } from 'state/wallet/hooks';
 import { CurrencyLogo, StakeSyrupModal } from 'components';
 import { useActiveWeb3React } from 'hooks';
@@ -65,35 +63,25 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo }> = ({ syrup }) => {
 
   const { account } = useActiveWeb3React();
   const currency = unwrappedToken(syrup.token);
-  const baseTokenCurrency = unwrappedToken(syrup.baseToken);
 
   const dQuickDeposit = syrup.valueOfTotalStakedAmountInUSDC
     ? `$${Number(syrup.valueOfTotalStakedAmountInUSDC).toLocaleString()}`
     : `${syrup.totalStakedAmount.toSignificant(6, { groupSeparator: ',' }) ??
         '-'} dQUICK`;
 
-  const [, stakingTokenPair] = usePair(currency, baseTokenCurrency);
-  const price = stakingTokenPair?.priceOf(syrup.token);
-  const USDPriceToken = useUSDCPrice(syrup.token);
-  const USDPriceBaseToken = useUSDCPrice(syrup.baseToken);
-  const priceOfRewardTokenInUSD =
-    Number(price?.toSignificant(6)) *
-    Number(USDPriceBaseToken?.toSignificant(6));
-
   const userLiquidityUnstaked = useTokenBalance(
     account ?? undefined,
     syrup.stakedAmount.token,
   );
-  const rewards =
-    Number(syrup.rate) *
-    (priceOfRewardTokenInUSD ? priceOfRewardTokenInUSD : 0);
 
-  let tokenAPR: any = 0;
-  if (Number(syrup.valueOfTotalStakedAmountInUSDC) > 0) {
-    tokenAPR =
-      (rewards / Number(syrup.valueOfTotalStakedAmountInUSDC)) * 365 * 100;
-    tokenAPR = parseFloat(tokenAPR).toFixed(3);
-  }
+  const tokenAPR =
+    syrup.valueOfTotalStakedAmountInUSDC > 0
+      ? (
+          ((syrup.rewards ?? 0) / syrup.valueOfTotalStakedAmountInUSDC) *
+          365 *
+          100
+        ).toLocaleString()
+      : 0;
 
   const dQUICKAPR =
     (((Number(syrup.oneDayVol) * 0.04 * 0.01) /
@@ -101,13 +89,13 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo }> = ({ syrup }) => {
       365) /
     (Number(syrup.dQUICKtoQUICK.toSignificant(6)) * Number(syrup.quickPrice));
 
-  const dQUICKAPY: any = dQUICKAPR
+  const dQUICKAPY = dQUICKAPR
     ? Number((Math.pow(1 + dQUICKAPR / 365, 365) - 1) * 100).toLocaleString()
     : 0;
 
   const syrupEarnedUSD =
     Number(syrup.earnedAmount.toSignificant(2)) *
-    Number(USDPriceToken ? USDPriceToken.toSignificant(2) : 0);
+    Number(syrup.usdPriceToken ? syrup.usdPriceToken.toSignificant(2) : 0);
 
   const MINUTE = 60;
   const HOUR = MINUTE * 60;

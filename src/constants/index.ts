@@ -1721,6 +1721,13 @@ export const STZ = new Token(
   'STZ',
   '99Starz',
 );
+export const PSP = new Token(
+  ChainId.MATIC,
+  '0x42d61D766B85431666B39B89C43011f24451bFf6',
+  18,
+  'PSP',
+  'ParaSwap',
+);
 
 export const MATIC = WETH[ChainId.MATIC];
 // TODO this is only approximate, it's actually based on blocks
@@ -1883,4 +1890,4 @@ export const BETTER_TRADE_LINK_THRESHOLD = new Percent(
 
 // the Uniswap Default token list lives here
 export const DEFAULT_TOKEN_LIST_URL =
-  'https://unpkg.com/quickswap-default-token-list@1.2.16/build/quickswap-default.tokenlist.json';
+  'https://unpkg.com/quickswap-default-token-list@1.2.17/build/quickswap-default.tokenlist.json';

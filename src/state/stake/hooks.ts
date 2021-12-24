@@ -223,6 +223,7 @@ import {
   WELT,
   WONE,
   STZ,
+  PSP,
 } from 'constants/index';
 import {
   STAKING_REWARDS_INTERFACE,
@@ -443,7 +444,7 @@ export const SYRUP_REWARDS_INFO: {
       name: '',
       baseToken: USDC,
       rate: 333333.33,
-      ending: 1640200125,
+      ending: 1645439402,
     },
   ],
 };
@@ -1060,6 +1061,20 @@ export const STAKING_DUAL_REWARDS_INFO: {
       rateA: 4.494,
       rateB: 14000,
       pair: '0x2fc4dfcee8c331d54341f5668a6d9bcdd86f8e2f',
+    },
+    {
+      tokens: [PSP, MATIC],
+      stakingRewardAddress: '0x64D2B3994F64E3E82E48CC92e1122489e88e8727',
+      ended: false,
+      lp: '',
+      name: '',
+      baseToken: MATIC,
+      rewardTokenA: DQUICK,
+      rewardTokenB: PSP,
+      rewardTokenBBase: MATIC,
+      rateA: 5.61,
+      rateB: 22223,
+      pair: '0x7afc060acca7ec6985d982dd85cc62b111cac7a7',
     },
   ],
 };
@@ -12614,6 +12629,9 @@ export interface SyrupInfo {
 
   valueOfTotalStakedAmountInUSDC: number;
 
+  rewards?: number;
+  usdPriceToken?: Price;
+
   // calculates a hypothetical amount of token distributed to the active account per second.
   getHypotheticalRewardRate: (
     stakedAmount: TokenAmount,
@@ -12697,6 +12715,16 @@ export function useSyrupInfo(
     NEVER_RELOAD,
   );
 
+  const stakingTokenPairs = usePairs(
+    info.map((item) => [
+      unwrappedToken(item.token),
+      unwrappedToken(item.baseToken),
+    ]),
+  );
+
+  const usdTokenPrices = useUSDCPrices(info.map((item) => item.token));
+  const usdBaseTokenPrices = useUSDCPrices(info.map((item) => item.baseToken));
+
   useEffect(() => {
     getOneDayVolume().then((data) => {
       console.log(data);
@@ -12743,6 +12771,17 @@ export function useSyrupInfo(
           }
           // get the LP token
           const token = info[index].token;
+          const [, stakingTokenPair] = stakingTokenPairs[index];
+          const tokenPairPrice = stakingTokenPair?.priceOf(token);
+          const usdPriceToken = usdTokenPrices[index];
+          const usdPriceBaseToken = usdBaseTokenPrices[index];
+          const priceOfRewardTokenInUSD =
+            Number(tokenPairPrice?.toSignificant(6)) *
+            Number(usdPriceBaseToken?.toSignificant(6));
+
+          const rewards =
+            Number(info[index].rate) *
+            (priceOfRewardTokenInUSD ? priceOfRewardTokenInUSD : 0);
 
           // check for account, if no account set to 0
           const lp = info[index].lp;
@@ -12824,6 +12863,8 @@ export function useSyrupInfo(
             ),
             valueOfTotalStakedAmountInUSDC,
             oneDayVol: oneDayVol,
+            usdPriceToken,
+            rewards,
           });
         }
         return memo;
@@ -12844,6 +12885,9 @@ export function useSyrupInfo(
     _dQuickTotalSupply,
     quickPrice,
     rewardRates,
+    stakingTokenPairs,
+    usdBaseTokenPrices,
+    usdTokenPrices,
   ]);
 }
 

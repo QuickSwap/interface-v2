@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { ArrowUp, ArrowDown } from 'react-feather';
 import cx from 'classnames';
 import {
   Box,
@@ -162,6 +163,8 @@ const DragonPage: React.FC = () => {
   const [isEndedSyrup, setIsEndedSyrup] = useState(false);
   const lairInfo = useLairInfo();
   const [syrupInfos, setSyrupInfos] = useState<SyrupInfo[]>([]);
+  const [sortBy, setSortBy] = useState(0);
+  const [sortDesc, setSortDesc] = useState(false);
   const [syrupOldInfos, setSyrupOldInfos] = useState<SyrupInfo[]>([]);
   const { globalData } = useGlobalData();
   const APR =
@@ -234,26 +237,90 @@ const DragonPage: React.FC = () => {
   const filteredSyrupInfos = useMemo(() => {
     const syrupListInfos = isEndedSyrup ? syrupOldInfos : syrupInfos;
     if (syrupListInfos && syrupListInfos.length > 0) {
-      return syrupListInfos.filter((syrupInfo) => {
-        return (
-          (stakedOnly
-            ? Boolean(syrupInfo.stakedAmount.greaterThan('0'))
-            : true) &&
-          ((syrupInfo.token.symbol ?? '')
-            .toLowerCase()
-            .indexOf(syrupSearch.toLowerCase()) > -1 ||
-            (syrupInfo.token.name ?? '')
+      return syrupListInfos
+        .filter((syrupInfo) => {
+          return (
+            (stakedOnly
+              ? Boolean(syrupInfo.stakedAmount.greaterThan('0'))
+              : true) &&
+            ((syrupInfo.token.symbol ?? '')
               .toLowerCase()
               .indexOf(syrupSearch.toLowerCase()) > -1 ||
-            (syrupInfo.token.address ?? '')
-              .toLowerCase()
-              .indexOf(syrupSearch.toLowerCase()) > -1)
-        );
-      });
+              (syrupInfo.token.name ?? '')
+                .toLowerCase()
+                .indexOf(syrupSearch.toLowerCase()) > -1 ||
+              (syrupInfo.token.address ?? '')
+                .toLowerCase()
+                .indexOf(syrupSearch.toLowerCase()) > -1)
+          );
+        })
+        .sort((a, b) => {
+          if (sortBy === 1) {
+            const syrupStrA = a.token.symbol ?? '';
+            const syrupStrB = b.token.symbol ?? '';
+            if (sortDesc) {
+              return syrupStrA > syrupStrB ? -1 : 1;
+            } else {
+              return syrupStrA < syrupStrB ? -1 : 1;
+            }
+          } else if (sortBy === 2) {
+            const depositA =
+              a.valueOfTotalStakedAmountInUSDC ??
+              Number(a.totalStakedAmount.toSignificant());
+            const depositB =
+              b.valueOfTotalStakedAmountInUSDC ??
+              Number(b.totalStakedAmount.toSignificant());
+            if (sortDesc) {
+              return depositA > depositB ? -1 : 1;
+            } else {
+              return depositA < depositB ? -1 : 1;
+            }
+          } else if (sortBy === 3) {
+            const tokenAPRA =
+              a.valueOfTotalStakedAmountInUSDC > 0
+                ? ((a.rewards ?? 0) / a.valueOfTotalStakedAmountInUSDC) *
+                  365 *
+                  100
+                : 0;
+
+            const tokenAPRB =
+              b.valueOfTotalStakedAmountInUSDC > 0
+                ? ((b.rewards ?? 0) / b.valueOfTotalStakedAmountInUSDC) *
+                  365 *
+                  100
+                : 0;
+            if (sortDesc) {
+              return tokenAPRA > tokenAPRB ? -1 : 1;
+            } else {
+              return tokenAPRA < tokenAPRB ? -1 : 1;
+            }
+          } else if (sortBy === 4) {
+            const earnedUSDA =
+              Number(a.earnedAmount.toSignificant()) *
+              Number(a.usdPriceToken ? a.usdPriceToken.toSignificant() : 0);
+            const earnedUSDB =
+              Number(b.earnedAmount.toSignificant()) *
+              Number(b.usdPriceToken ? b.usdPriceToken.toSignificant() : 0);
+            if (sortDesc) {
+              return earnedUSDA > earnedUSDB ? -1 : 1;
+            } else {
+              return earnedUSDA < earnedUSDB ? -1 : 1;
+            }
+          }
+          return 1;
+        });
     } else {
       return [];
     }
-  }, [syrupInfos, stakedOnly, syrupSearch, isEndedSyrup, syrupOldInfos]);
+  }, [
+    syrupInfos,
+    stakedOnly,
+    syrupSearch,
+    isEndedSyrup,
+    syrupOldInfos,
+    sortDesc,
+    sortBy,
+  ]);
 
   const loadNext = () => {
     const REWARDS_INFO = isEndedSyrup
@@ -525,17 +592,118 @@ const DragonPage: React.FC = () => {
             <Box mt={2.5} display='flex' paddingX={2}>
               {!isMobile && (
                 <>
-                  <Box width={0.3}>
+                  <Box
+                    width={0.3}
+                    display='flex'
+                    alignItems='center'
+                    onClick={() => {
+                      if (sortBy === 1) {
+                        setSortDesc(!sortDesc);
+                      } else {
+                        setSortBy(1);
+                        setSortDesc(false);
+                      }
+                    }}
+                    color={
+                      sortBy === 1
+                        ? palette.text.primary
+                        : palette.secondary.main
+                    }
+                    style={{ cursor: 'pointer' }}
+                  >
                     <Typography variant='body2'>Earn</Typography>
+                    <Box display='flex' ml={0.5}>
+                      {sortBy === 1 && sortDesc ? (
+                        <ArrowDown size={20} />
+                      ) : (
+                        <ArrowUp size={20} />
+                      )}
+                    </Box>
                   </Box>
-                  <Box width={0.3}>
+                  <Box
+                    width={0.3}
+                    display='flex'
+                    alignItems='center'
+                    onClick={() => {
+                      if (sortBy === 2) {
+                        setSortDesc(!sortDesc);
+                      } else {
+                        setSortBy(2);
+                        setSortDesc(false);
+                      }
+                    }}
+                    color={
+                      sortBy === 2
+                        ? palette.text.primary
+                        : palette.secondary.main
+                    }
+                    style={{ cursor: 'pointer' }}
+                  >
                     <Typography variant='body2'>dQUICK Deposits</Typography>
+                    <Box display='flex' ml={0.5}>
+                      {sortBy === 2 && sortDesc ? (
+                        <ArrowDown size={20} />
+                      ) : (
+                        <ArrowUp size={20} />
+                      )}
+                    </Box>
                   </Box>
-                  <Box width={0.2}>
+                  <Box
+                    width={0.2}
+                    display='flex'
+                    alignItems='center'
+                    onClick={() => {
+                      if (sortBy === 3) {
+                        setSortDesc(!sortDesc);
+                      } else {
+                        setSortBy(3);
+                        setSortDesc(false);
+                      }
+                    }}
+                    color={
+                      sortBy === 3
+                        ? palette.text.primary
+                        : palette.secondary.main
+                    }
+                    style={{ cursor: 'pointer' }}
+                  >
                     <Typography variant='body2'>APR</Typography>
+                    <Box display='flex' ml={0.5}>
+                      {sortBy === 3 && sortDesc ? (
+                        <ArrowDown size={20} />
+                      ) : (
+                        <ArrowUp size={20} />
+                      )}
+                    </Box>
                   </Box>
-                  <Box width={0.2} textAlign='right'>
+                  <Box
+                    width={0.2}
+                    display='flex'
+                    alignItems='center'
+                    onClick={() => {
+                      if (sortBy === 4) {
+                        setSortDesc(!sortDesc);
+                      } else {
+                        setSortBy(4);
+                        setSortDesc(false);
+                      }
+                    }}
+                    color={
+                      sortBy === 4
+                        ? palette.text.primary
+                        : palette.secondary.main
+                    }
+                    justifyContent='flex-end'
+                    style={{ cursor: 'pointer' }}
+                  >
                     <Typography variant='body2'>Earned</Typography>
+                    <Box display='flex' ml={0.5}>
+                      {sortBy === 4 && sortDesc ? (
+                        <ArrowDown size={20} />
+                      ) : (
+                        <ArrowUp size={20} />
+                      )}
+                    </Box>
                   </Box>
                 </>
               )}
