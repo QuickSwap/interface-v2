@@ -230,11 +230,12 @@ export const MADAI = new Token(
 //export const RBAL  = new Token(ChainId.MATIC, '0x03247a4368A280bEc8133300cD930A3a61d604f6', 18, 'RBAL', 'Rebalance Token')
 export const DG = new Token(
   ChainId.MATIC,
-  '0x2a93172c8DCCbfBC60a39d56183B7279a2F647b4',
+  getAddress('0xef938b6da8576a896f6E0321ef80996F4890f9c4'),
   18,
-  '$DG',
+  'DG',
   'decentral.games',
 );
+
 export const SX = new Token(
   ChainId.MATIC,
   '0x840195888Db4D6A99ED9F73FcD3B225Bb3cB1A79',
@@ -933,13 +934,6 @@ export const MOD = new Token(
   'MOD',
   'MODEFI',
 );
-export const EGG = new Token(
-  ChainId.MATIC,
-  '0x245e5ddb65eFea6522Fa913229dF1f4957fB2e21',
-  18,
-  'EGG',
-  'LoserchickEgg',
-);
 export const CHICK = new Token(
   ChainId.MATIC,
   '0x9e725Cf7265D12fd5f59499AFf1258CA92CAc74d',
@@ -1017,9 +1011,10 @@ export const ANRX = new Token(
   ChainId.MATIC,
   '0x554f074d9cCda8F483d1812d4874cBebD682644E',
   18,
-  '$ANRX',
+  'ANRX',
   'AnRKey X',
 );
+
 export const MASK = new Token(
   ChainId.MATIC,
   '0x2B9E7ccDF0F4e5B24757c1E1a80e311E34Cb10c7',
@@ -1649,6 +1644,91 @@ export const GAMER = new Token(
   'GameStation',
 );
 
+export const TOMB = new Token(
+  ChainId.MATIC,
+  '0x0e98C977B943f06075b2D795794238fBfB9b9a34',
+  18,
+  'TOMB',
+  'TOMB',
+);
+export const CLAM2 = new Token(
+  ChainId.MATIC,
+  '0xC250e9987A032ACAC293d838726C511E6E1C029d',
+  9,
+  'CLAM2',
+  'Otter Clam',
+);
+export const FODL = new Token(
+  ChainId.MATIC,
+  '0x5314bA045a459f63906Aa7C76d9F337DcB7d6995',
+  18,
+  'FODL',
+  'Fodl',
+);
+export const POLYPUG = new Token(
+  ChainId.MATIC,
+  '0xF13bfC42bFcc421Db1fD471EC49Bb865Cede7270',
+  18,
+  'PolyPug',
+  'PolyPug',
+);
+export const MYST = new Token(
+  ChainId.MATIC,
+  '0x1379E8886A944d2D9d440b3d88DF536Aea08d9F3',
+  18,
+  'MYST',
+  'Mysterium',
+);
+export const THX = new Token(
+  ChainId.MATIC,
+  '0x2934b36ca9A4B31E633C5BE670C8C8b28b6aA015',
+  18,
+  'THX',
+  'THX Network',
+);
+export const EGG = new Token(
+  ChainId.MATIC,
+  '0x51dE72b17c7bD12E9E6d69eb506a669EB6b5249E',
+  18,
+  'EGG',
+  'Waves Ducks',
+);
+export const MSHEESHA = new Token(
+  ChainId.MATIC,
+  '0x88C949b4eB85a90071f2C0beF861BDDEe1a7479D',
+  18,
+  'mSHEESHA',
+  'SHEESHA POLYGON',
+);
+export const ORION = new Token(
+  ChainId.MATIC,
+  '0x5E0294Af1732498C77F8dB015a2d52a76298542B',
+  18,
+  'ORION',
+  'Orion Money Token (Wormhole)',
+);
+export const WONE = new Token(
+  ChainId.MATIC,
+  '0x80c0CBDB8d0B190238795d376f0bD57fd40525F2',
+  18,
+  'WONE',
+  'Wrapped ONE',
+);
+export const STZ = new Token(
+  ChainId.MATIC,
+  '0x2c92a8A41f4b806a6f6F1F7C9D9DEc78DCd8c18e',
+  18,
+  'STZ',
+  '99Starz',
+);
+export const PSP = new Token(
+  ChainId.MATIC,
+  '0x42d61D766B85431666B39B89C43011f24451bFf6',
+  18,
+  'PSP',
+  'ParaSwap',
+);
+
 export const MATIC = WETH[ChainId.MATIC];
 // TODO this is only approximate, it's actually based on blocks
 export const PROPOSAL_LENGTH_IN_DAYS = 7;
@@ -1732,7 +1812,6 @@ export const BASES_TO_TRACK_LIQUIDITY_FOR: ChainTokenList = {
     QUICK,
     ETHER,
     WBTC,
-    MAUSDC,
   ],
 };
 
@@ -1742,17 +1821,12 @@ export const PINNED_PAIRS: {
   [ChainId.MATIC]: [
     [USDC, USDT],
     [USDC, DAI],
-    [DAI, USDT],
-    [ETHER, DAI],
     [ETHER, USDC],
+    [WBTC, ETHER],
     [WETH[ChainId.MATIC], USDT],
     [WETH[ChainId.MATIC], USDC],
-    [WETH[ChainId.MATIC], USDT],
-    [WETH[ChainId.MATIC], DAI],
     [WETH[ChainId.MATIC], ETHER],
     [ETHER, QUICK],
-    [UNITOKEN, USDT],
-    [QUICK, UNITOKEN],
   ],
 };
 
@@ -1816,4 +1890,4 @@ export const BETTER_TRADE_LINK_THRESHOLD = new Percent(
 
 // the Uniswap Default token list lives here
 export const DEFAULT_TOKEN_LIST_URL =
-  'https://unpkg.com/quickswap-default-token-list@1.2.15/build/quickswap-default.tokenlist.json';
+  'https://unpkg.com/quickswap-default-token-list@1.2.17/build/quickswap-default.tokenlist.json';

@@ -1,11 +1,17 @@
-import React from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Slider from 'react-slick';
 import { useMediaQuery } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import { useStakingInfo } from 'state/stake/hooks';
+import {
+  useStakingInfo,
+  STAKING_REWARDS_INFO,
+  getBulkPairData,
+  StakingInfo,
+} from 'state/stake/hooks';
 import RewardSliderItem from './RewardSliderItem';
+import { useActiveWeb3React } from 'hooks';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   rewardsSlider: {
@@ -39,9 +45,37 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
 const RewardSlider: React.FC = () => {
   const classes = useStyles();
   const theme = useTheme();
+  const { chainId } = useActiveWeb3React();
   const tabletWindowSize = useMediaQuery(theme.breakpoints.down('md'));
   const mobileWindowSize = useMediaQuery(theme.breakpoints.down('sm'));
   const rewardItems = useStakingInfo(null, 0, 5);
+  const [bulkPairs, setBulkPairs] = useState<any>(null);
+
+  useEffect(() => {
+    if (chainId) {
+      const stakingPairLists =
+        STAKING_REWARDS_INFO[chainId]?.slice(0, 5).map((item) => item.pair) ??
+        [];
+      getBulkPairData(stakingPairLists).then((data) => setBulkPairs(data));
+    }
+  }, [chainId]);
+
+  const stakingAPYs = useMemo(() => {
+    if (bulkPairs && rewardItems.length > 0) {
+      return rewardItems.map((info: StakingInfo) => {
+        const oneDayVolume = bulkPairs[info.pair]?.oneDayVolumeUSD;
+        if (oneDayVolume) {
+          const oneYearFeeAPY =
+            (oneDayVolume * 0.003 * 365) / bulkPairs[info.pair]?.reserveUSD;
+          return oneYearFeeAPY;
+        } else {
+          return 0;
+        }
+      });
+    } else {
+      return [];
+    }
+  }, [bulkPairs, rewardItems]);
 
   const rewardSliderSettings = {
     dots: false,
@@ -56,7 +90,11 @@ const RewardSlider: React.FC = () => {
   return (
     <Slider {...rewardSliderSettings} className={classes.rewardsSlider}>
       {rewardItems.map((item, index) => (
-        <RewardSliderItem key={index} info={item} />
+        <RewardSliderItem
+          key={index}
+          stakingAPY={stakingAPYs[index]}
+          info={item}
+        />
       ))}
     </Slider>
   );
