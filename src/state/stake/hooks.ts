@@ -13128,9 +13128,6 @@ export const getBulkPairData = async (pairList: any) => {
   try {
     const current = await client.query({
       query: PAIRS_BULK(pairList),
-      variables: {
-        allPairs: pairList,
-      },
       fetchPolicy: 'cache-first',
     });
 

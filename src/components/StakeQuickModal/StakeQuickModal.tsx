@@ -117,7 +117,7 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
     <CustomModal open={open} onClose={onClose}>
       <Box paddingX={3} paddingY={4}>
         <Box display='flex' alignItems='center' justifyContent='space-between'>
-          <Typography variant='h5'>Stake dQUICK</Typography>
+          <Typography variant='h5'>Stake QUICK</Typography>
           <CloseIcon style={{ cursor: 'pointer' }} onClick={onClose} />
         </Box>
         <Box
@@ -132,7 +132,7 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
             alignItems='center'
             justifyContent='space-between'
           >
-            <Typography variant='body2'>dQUICK</Typography>
+            <Typography variant='body2'>QUICK</Typography>
             <Typography variant='body2'>
               Balance: {quickBalance?.toSignificant(3)}
             </Typography>
