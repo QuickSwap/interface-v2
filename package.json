@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "devDependencies": {
+    "@biconomy/mexa": "2.0.24",
     "@arkane-network/web3-arkane-provider": "^0.23.0",
     "@gelatonetwork/limit-orders-react": "^1.0.11",
     "@gnosis.pm/safe-apps-sdk": "^4.0.0",

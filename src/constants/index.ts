@@ -16,6 +16,10 @@ import {
   safeApp,
 } from '../connectors';
 import { getAddress } from '@ethersproject/address';
+import usdcABI from './abis/usdc.json';
+import tokenABI from './abis/meta_token.json';
+import quickABI from './abis/quick.json';
+import sandABI from './abis/sand.json';
 
 export const TOKEN_BLACKLIST = [
   '0x495c7f3a713870f68f8b418b355c085dfdc412c3',
@@ -1841,6 +1845,43 @@ export interface WalletInfo {
   mobile?: true;
   mobileOnly?: true;
 }
+
+// Gasless transactions config
+export const biconomyAPIKey = 'MY74Z4Zis.c9f9c7d0-7676-4edf-a0ac-c474c6af4b5c';
+
+export const EIP712_SUPPORTED_TOKENS_DOMAIN_TYPE1: any = {
+  '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619': { abi: tokenABI }, //WETH
+  '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174': { abi: usdcABI }, //USDC
+  '0xc2132d05d31c914a87c6611c10748aeb04b58e8f': { abi: tokenABI }, //USDT
+  '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6': { abi: tokenABI }, //WBTC
+  '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063': { abi: tokenABI }, //DAI
+};
+
+export const EIP712_SUPPORTED_TOKENS_DOMAIN_TYPE2: any = {
+  '0xc6c855ad634dcdad23e64da71ba85b8c51e5ad7c': { abi: tokenABI }, //ICE
+};
+
+export const PERMIT_ONLY_SUPPORTED_TOKENS: any = {
+  '0x831753dd7087cac61ab5644b308642cc1c33dc13': { abi: quickABI }, //QUICK
+};
+
+export const EIP2771_SUPPORTED_TOKENS: any = {
+  '0xbbba073c31bf03b8acf7c28ef0738decf3695683': { abi: sandABI }, //SAND
+};
+
+export const domainType1 = [
+  { name: 'name', type: 'string' },
+  { name: 'version', type: 'string' },
+  { name: 'verifyingContract', type: 'address' },
+  { name: 'salt', type: 'bytes32' },
+];
+
+export const domainType2 = [
+  { name: 'name', type: 'string' },
+  { name: 'version', type: 'string' },
+  { name: 'chainId', type: 'uint256' },
+  { name: 'verifyingContract', type: 'address' },
+];
 
 export const NetworkContextName = 'NETWORK';
 

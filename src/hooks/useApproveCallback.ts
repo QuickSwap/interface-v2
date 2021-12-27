@@ -13,6 +13,7 @@ import { computeSlippageAdjustedAmounts } from 'utils/prices';
 import { calculateGasMargin } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import { useTokenContract } from './useContract';
+import getBiconomy from './getBiconomy';
 
 export enum ApprovalState {
   UNKNOWN,
@@ -35,6 +36,10 @@ export function useApproveCallback(
     spender,
   );
   const pendingApproval = useHasPendingApproval(token?.address, spender);
+  //const [gaslessMode] = //TODO //use gasless mode manager
+  const gaslessMode = true;
+
+  const getWeb3 = getBiconomy(gaslessMode);
 
   // check the current approval status
   const approvalState: ApprovalState = useMemo(() => {
