@@ -2,7 +2,15 @@ import { MaxUint256 } from '@ethersproject/constants';
 import { TransactionResponse } from '@ethersproject/providers';
 import { Trade, TokenAmount, CurrencyAmount, ETHER } from '@uniswap/sdk';
 import { useCallback, useMemo } from 'react';
-import { ROUTER_ADDRESS } from 'constants/index';
+import {
+  ROUTER_ADDRESS,
+  EIP712_SUPPORTED_TOKENS_DOMAIN_TYPE1,
+  EIP712_SUPPORTED_TOKENS_DOMAIN_TYPE2,
+  PERMIT_ONLY_SUPPORTED_TOKENS,
+  EIP2771_SUPPORTED_TOKENS,
+  domainType1,
+  domainType2,
+} from 'constants/index';
 import { useTokenAllowance } from 'data/Allowances';
 import { Field } from 'state/swap/actions';
 import {
@@ -12,6 +20,7 @@ import {
 import { computeSlippageAdjustedAmounts } from 'utils/prices';
 import { calculateGasMargin } from 'utils';
 import { useActiveWeb3React } from 'hooks';
+import { splitSignature } from '@ethersproject/bytes';
 import { useTokenContract } from './useContract';
 import getBiconomy from './getBiconomy';
 
@@ -27,7 +36,9 @@ export function useApproveCallback(
   amountToApprove?: CurrencyAmount,
   spender?: string,
 ): [ApprovalState, () => Promise<void>] {
-  const { account } = useActiveWeb3React();
+  const { account, chainId, library } = useActiveWeb3React();
+  if (!chainId) throw new Error('Error');
+  if (!library) throw new Error('Error');
   const token =
     amountToApprove instanceof TokenAmount ? amountToApprove.token : undefined;
   const currentAllowance = useTokenAllowance(
@@ -84,36 +95,100 @@ export function useApproveCallback(
       return;
     }
 
-    let useExact = false;
-    const estimatedGas = await tokenContract.estimateGas
-      .approve(spender, MaxUint256)
-      .catch(() => {
-        // general fallback for tokens who restrict approval amounts
-        useExact = true;
-        return tokenContract.estimateGas.approve(
-          spender,
-          amountToApprove.raw.toString(),
-        );
-      });
+    if (
+      EIP712_SUPPORTED_TOKENS_DOMAIN_TYPE1[token.address.toLowerCase()] &&
+      gaslessMode
+    ) {
+      const metaToken =
+        EIP712_SUPPORTED_TOKENS_DOMAIN_TYPE1[token.address.toLowerCase()];
+      const bicomony_contract = new getWeb3.eth.Contract(
+        metaToken.abi,
+        token.address,
+      );
+      const nonceMethod =
+        bicomony_contract.methods.getNonce || bicomony_contract.methods.nonces;
+      const biconomy_nonce = await nonceMethod(account).call();
+      const res = bicomony_contract.methods
+        .approve(spender, MaxUint256.toString())
+        .encodeABI();
+      const message: any = {};
+      const name = await bicomony_contract.methods.name().call();
+      message.nonce = parseInt(biconomy_nonce);
+      message.from = account;
+      message.functionSignature = res;
 
-    return tokenContract
-      .approve(
-        spender,
-        useExact ? amountToApprove.raw.toString() : MaxUint256,
-        {
-          gasLimit: calculateGasMargin(estimatedGas),
+      const dataToSign = JSON.stringify({
+        types: {
+          EIP712Domain: domainType1,
+          MetaTransaction: [
+            { name: 'nonce', type: 'uint256' },
+            { name: 'from', type: 'address' },
+            { name: 'functionSignature', type: 'bytes' },
+          ],
         },
-      )
-      .then((response: TransactionResponse) => {
-        addTransaction(response, {
-          summary: 'Approve ' + amountToApprove.currency.symbol,
-          approval: { tokenAddress: token.address, spender: spender },
-        });
-      })
-      .catch((error: Error) => {
-        console.debug('Failed to approve token', error);
-        throw error;
+        domain: {
+          name,
+          version: '1',
+          verifyingContract: token.address,
+          salt: '0x' + chainId.toString(16).padStart(64, '0'),
+        },
+        primaryType: 'MetaTransaction',
+        message,
       });
+      return library
+        .send('eth_signTypedData_v4', [account, dataToSign])
+        .then(splitSignature)
+        .then(({ v, r, s }) => {
+          // TODO: fix approving delay on UI
+          bicomony_contract.methods
+            .executeMetaTransaction(account, res, r, s, v)
+            .send({
+              from: account,
+            })
+            .then((response: any) => {
+              if (!response.hash) response.hash = response.transactionHash;
+              addTransaction(response, {
+                summary: 'Approve ' + amountToApprove.currency.symbol,
+                approval: { tokenAddress: token.address, spender: spender },
+              });
+            })
+            .catch((error: Error) => {
+              console.debug('Failed to approve token', error);
+              throw error;
+            });
+        });
+    } else {
+      let useExact = false;
+      const estimatedGas = await tokenContract.estimateGas
+        .approve(spender, MaxUint256)
+        .catch(() => {
+          // general fallback for tokens who restrict approval amounts
+          useExact = true;
+          return tokenContract.estimateGas.approve(
+            spender,
+            amountToApprove.raw.toString(),
+          );
+        });
+
+      return tokenContract
+        .approve(
+          spender,
+          useExact ? amountToApprove.raw.toString() : MaxUint256,
+          {
+            gasLimit: calculateGasMargin(estimatedGas),
+          },
+        )
+        .then((response: TransactionResponse) => {
+          addTransaction(response, {
+            summary: 'Approve ' + amountToApprove.currency.symbol,
+            approval: { tokenAddress: token.address, spender: spender },
+          });
+        })
+        .catch((error: Error) => {
+          console.debug('Failed to approve token', error);
+          throw error;
+        });
+    }
   }, [
     approvalState,
     token,
@@ -121,6 +196,10 @@ export function useApproveCallback(
     amountToApprove,
     spender,
     addTransaction,
+    chainId,
+    gaslessMode,
+    library,
+    account,
   ]);
 
   return [approvalState, approve];
