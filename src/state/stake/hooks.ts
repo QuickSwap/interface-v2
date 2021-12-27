@@ -242,6 +242,7 @@ import { useLairContract, useQUICKContract } from 'hooks/useContract';
 import useUSDCPrice, { useUSDCPrices } from 'utils/useUSDCPrice';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { useTotalSupplys } from 'data/TotalSupply';
+import { useTokenBalances } from 'state/wallet/hooks';
 
 const web3 = new Web3('https://polygon-rpc.com/');
 
@@ -266,6 +267,26 @@ export const SYRUP_REWARDS_INFO: {
   }[];
 } = {
   [ChainId.MATIC]: [
+    {
+      token: POLYPUG,
+      stakingRewardAddress: '0xA206A97b30343a0802553dB48d71af349AbF563A',
+      ended: false,
+      lp: '',
+      name: '',
+      baseToken: QUICK,
+      rate: 177781944.44,
+      ending: 1648223825,
+    },
+    {
+      token: EGG,
+      stakingRewardAddress: '0x87C114Ca118987549e31f5023DfFF42041e446e4',
+      ended: false,
+      lp: '',
+      name: '',
+      baseToken: USDT,
+      rate: 3.99,
+      ending: 1645631825,
+    },
     {
       token: PBR,
       stakingRewardAddress: '0xa751f7B39F6c111d10e2C603bE2a12bd5F70Fc83',
@@ -12520,6 +12541,7 @@ export interface StakingInfo {
   totalSupply?: TokenAmount;
   usdPrice?: Price;
   stakingTokenPair?: Pair | null;
+  userLiquidityUnstaked?: TokenAmount;
   // calculates a hypothetical amount of token distributed to the active account per second.
   getHypotheticalRewardRate: (
     stakedAmount: TokenAmount,
@@ -13100,8 +13122,8 @@ export const getBulkPairData = async (pairList: any) => {
   // if (pairs !== undefined) {
   //   return;
   // }
-  const current = await web3.eth.getBlockNumber();
-  const oneDayOldBlock = current - 44000;
+  const currentBlock = await web3.eth.getBlockNumber();
+  const oneDayOldBlock = currentBlock - 44000;
 
   try {
     const current = await client.query({
@@ -13114,7 +13136,7 @@ export const getBulkPairData = async (pairList: any) => {
 
     const [oneDayResult] = await Promise.all(
       [oneDayOldBlock].map(async (block) => {
-        const result = client.query({
+        const result = await client.query({
           query: PAIRS_HISTORICAL_BULK(block, pairList),
           fetchPolicy: 'cache-first',
         });
@@ -13829,6 +13851,19 @@ export function useStakingInfo(
         : dummyPair.liquidityToken;
     }),
   );
+  const tokenBalances = useTokenBalances(
+    account ?? undefined,
+    info.map((item) => {
+      const lp = item.lp;
+      const dummyPair = new Pair(
+        new TokenAmount(item.tokens[0], '0'),
+        new TokenAmount(item.tokens[1], '0'),
+      );
+      return lp && lp !== ''
+        ? new Token(137, lp, 18, 'SLP', 'Staked LP')
+        : dummyPair.liquidityToken;
+    }),
+  );
   const stakingPairs = usePairs(info.map((item) => item.tokens));
 
   return useMemo(() => {
@@ -14019,6 +14054,7 @@ export function useStakingInfo(
             usdPrice,
             stakingTokenPair,
             totalSupply,
+            userLiquidityUnstaked: tokenBalances[index],
           });
         }
         return memo;
@@ -14041,6 +14077,7 @@ export function useStakingInfo(
     totalSupplys,
     usdPrices,
     stakingPairs,
+    tokenBalances,
   ]);
 }
 

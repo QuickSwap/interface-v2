@@ -372,11 +372,20 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
         width: 120,
         '& a': {
           textDecoration: 'none',
-          color: 'white',
+          color: palette.text.primary,
+          '&:hover': {
+            color: 'white',
+            '& svg path': {
+              fill: 'white',
+            },
+          },
         },
         '& svg': {
           width: 64,
           height: 64,
+          '& path': {
+            fill: palette.text.primary,
+          },
         },
       },
     },

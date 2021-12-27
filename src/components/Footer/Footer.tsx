@@ -8,7 +8,6 @@ const useStyles = makeStyles(({}) => ({
     textAlign: 'center',
     paddingBottom: 110,
     position: 'relative',
-    zIndex: 2,
     '& p': {
       fontSize: 14,
       lineHeight: '24px',

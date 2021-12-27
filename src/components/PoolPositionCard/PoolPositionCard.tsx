@@ -136,14 +136,16 @@ const PoolPositionCard: React.FC<PoolPositionCardProps> = ({
       const oneYearFee =
         (dayVolume * 0.003 * 365) / bulkPairData[stakingInfo.pair]?.reserveUSD;
       const apy =
-        ((1 +
-          ((Number(stakingInfo.perMonthReturnInRewards) +
-            Number(oneYearFee) / 12) *
-            12) /
-            12) **
-          12 -
-          1) *
-        100; // compounding monthly APY
+        oneYearFee > 0
+          ? ((1 +
+              ((Number(stakingInfo.perMonthReturnInRewards) +
+                Number(oneYearFee) / 12) *
+                12) /
+                12) **
+              12 -
+              1) *
+            100
+          : 0; // compounding monthly APY
       if (apy > 100000000) {
         return '>100000000';
       } else {

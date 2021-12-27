@@ -166,7 +166,7 @@ export const PAIRS_BULK: any = (pairs: any[]) => {
   const queryString = `
   ${PairFields}
   query pairs {
-    pairs(first: 1000, where: { id_in: ${pairsString} }, orderBy: trackedReserveETH, orderDirection: desc) {
+    pairs(first: ${pairs.length}, where: { id_in: ${pairsString} }, orderBy: trackedReserveETH, orderDirection: desc) {
       ...PairFields
     }
   }
@@ -364,7 +364,7 @@ export const PAIRS_HISTORICAL_BULK: any = (block: number, pairs: any[]) => {
   pairsString += ']';
   const queryString = `
   query pairs {
-    pairs(first: 100, where: {id_in: ${pairsString}}, block: {number: ${block}}, orderBy: trackedReserveETH, orderDirection: desc) {
+    pairs(first: ${pairs.length}, where: {id_in: ${pairsString}}, block: {number: ${block}}, orderBy: trackedReserveETH, orderDirection: desc) {
       id
       reserveUSD
       trackedReserveETH
