@@ -1851,7 +1851,7 @@ export const biconomyAPIKey = 'MY74Z4Zis.c9f9c7d0-7676-4edf-a0ac-c474c6af4b5c';
 
 export const EIP712_SUPPORTED_TOKENS_DOMAIN_TYPE1: any = {
   '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619': { abi: tokenABI }, //WETH
-  '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174': { abi: usdcABI }, //USDC
+  '0x2791bca1f2de4661ed88a30c99a7a9449aa84174': { abi: usdcABI }, //USDC
   '0xc2132d05d31c914a87c6611c10748aeb04b58e8f': { abi: tokenABI }, //USDT
   '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6': { abi: tokenABI }, //WBTC
   '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063': { abi: tokenABI }, //DAI
