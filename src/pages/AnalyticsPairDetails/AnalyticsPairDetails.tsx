@@ -12,6 +12,7 @@ import {
   getEtherscanLink,
   formatCompact,
   getPairTransactions,
+  getPairChartData,
 } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import {
@@ -20,18 +21,7 @@ import {
   DoubleCurrencyLogo,
   TransactionsTable,
 } from 'components';
-import {
-  useTokenPairs,
-  useBookmarkTokens,
-  useTokenChartData,
-} from 'state/application/hooks';
-import {
-  getTokenInfo,
-  getEthPrice,
-  getTokenPairs2,
-  getTokenChartData,
-  getBulkPairData,
-} from 'utils';
+import { getEthPrice, getBulkPairData } from 'utils';
 import { getAddress } from '@ethersproject/address';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
@@ -117,6 +107,7 @@ const AnalyticsPairDetails: React.FC = () => {
   const match = useRouteMatch<{ id: string }>();
   const pairAddress = match.params.id;
   const [pairData, setPairData] = useState<any>(null);
+  const [pairChartData, setPairChartData] = useState<any[] | null>(null);
   const [pairTransactions, setPairTransactions] = useState<any>(null);
   const pairTransactionsList = useMemo(() => {
     if (pairTransactions) {
@@ -134,7 +125,6 @@ const AnalyticsPairDetails: React.FC = () => {
       return null;
     }
   }, [pairTransactions]);
-  console.log('ccc', pairTransactionsList);
   const { chainId } = useActiveWeb3React();
   const currency0 = pairData
     ? new Token(
@@ -178,8 +168,6 @@ const AnalyticsPairDetails: React.FC = () => {
         : (Number(pairData.oneDayVolumeUSD) * 0.003).toLocaleString()
       : '-';
   const [chartIndex, setChartIndex] = useState(0);
-  // const { tokenPairs, updateTokenPairs } = useTokenPairs();
-  // const { bookmarkTokens } = useBookmarkTokens();
 
   useEffect(() => {
     async function checkEthPrice() {
@@ -199,104 +187,87 @@ const AnalyticsPairDetails: React.FC = () => {
     fetchTransctions();
   }, [pairAddress]);
 
-  // const chartData = useMemo(() => {
-  //   if (tokenChartData) {
-  //     return tokenChartData.map((item: any) =>
-  //       chartIndex === 0
-  //         ? Number(item.dailyVolumeUSD)
-  //         : chartIndex === 1
-  //         ? Number(item.totalLiquidityUSD)
-  //         : Number(item.priceUSD),
-  //     );
-  //   } else {
-  //     return null;
-  //   }
-  // }, [tokenChartData, chartIndex]);
+  const chartData = useMemo(() => {
+    if (pairChartData) {
+      return pairChartData.map((item: any) =>
+        chartIndex === 0
+          ? Number(item.dailyVolumeUSD)
+          : chartIndex === 1
+          ? Number(item.reserveUSD)
+          : Number(item.dailyVolumeToken0),
+      );
+    } else {
+      return null;
+    }
+  }, [pairChartData, chartIndex]);
 
-  // const yAxisValues = useMemo(() => {
-  //   if (chartData) {
-  //     const minValue = Math.min(...chartData) * 0.99;
-  //     const maxValue = Math.max(...chartData) * 1.01;
-  //     const step = (maxValue - minValue) / 8;
-  //     const values = [];
-  //     for (let i = 0; i < 9; i++) {
-  //       values.push(maxValue - i * step);
-  //     }
-  //     return values;
-  //   } else {
-  //     return undefined;
-  //   }
-  // }, [chartData]);
+  console.log('ccc', pairChartData);
 
-  // const chartDates = useMemo(() => {
-  //   if (tokenChartData) {
-  //     const dates: string[] = [];
-  //     tokenChartData.forEach((value: any, ind: number) => {
-  //       const month = moment(Number(value.date) * 1000).format('MMM');
-  //       const monthLastDate =
-  //         ind > 0
-  //           ? moment(Number(tokenChartData[ind - 1].date) * 1000).format('MMM')
-  //           : '';
-  //       if (monthLastDate !== month) {
-  //         dates.push(month);
-  //       }
-  //       const dateStr = moment(Number(value.date) * 1000).format('D');
-  //       if (Number(dateStr) % 7 === 0) {
-  //         dates.push(dateStr);
-  //       }
-  //     });
-  //     return dates;
-  //   } else {
-  //     return [];
-  //   }
-  // }, [tokenChartData]);
+  const yAxisValues = useMemo(() => {
+    if (chartData) {
+      const minValue = Math.min(...chartData) * 0.99;
+      const maxValue = Math.max(...chartData) * 1.01;
+      const step = (maxValue - minValue) / 8;
+      const values = [];
+      for (let i = 0; i < 9; i++) {
+        values.push(maxValue - i * step);
+      }
+      return values;
+    } else {
+      return undefined;
+    }
+  }, [chartData]);
 
-  // const currentData = useMemo(
-  //   () =>
-  //     chartData && chartData.length > 1
-  //       ? chartData[chartData.length - 1]
-  //       : null,
-  //   [chartData],
-  // );
-  // const currentPercent = useMemo(() => {
-  //   if (chartData && chartData.length > 1) {
-  //     const prevData = chartData[chartData.length - 2];
-  //     const nowData = chartData[chartData.length - 1];
-  //     return (nowData - prevData) / prevData;
-  //   } else {
-  //     return null;
-  //   }
-  // }, [chartData]);
+  const chartDates = useMemo(() => {
+    if (pairChartData) {
+      const dates: string[] = [];
+      pairChartData.forEach((value: any, ind: number) => {
+        const month = moment(Number(value.date) * 1000).format('MMM');
+        const monthLastDate =
+          ind > 0
+            ? moment(Number(pairChartData[ind - 1].date) * 1000).format('MMM')
+            : '';
+        if (monthLastDate !== month) {
+          dates.push(month);
+        }
+        const dateStr = moment(Number(value.date) * 1000).format('D');
+        if (Number(dateStr) % 7 === 0) {
+          dates.push(dateStr);
+        }
+      });
+      return dates;
+    } else {
+      return [];
+    }
+  }, [pairChartData]);
 
-  // useEffect(() => {
-  //   async function fetchTokenChartData() {
-  //     const chartData = await getTokenChartData(tokenAddress);
-  //     if (
-  //       chartData &&
-  //       (!tokenChartData ||
-  //         (tokenChartData.length > 0 && tokenChartData[0].id !== tokenAddress))
-  //     ) {
-  //       updateTokenChartData(chartData);
-  //     }
-  //   }
-  //   async function fetchTokenPairs() {
-  //     const [newPrice] = await getEthPrice();
-  //     updateTokenPairs({ data: null });
-  //     const tokenPairs = await getTokenPairs2(tokenAddress);
-  //     const formattedPairs = tokenPairs
-  //       ? tokenPairs.map((pair: any) => {
-  //           return pair.id;
-  //         })
-  //       : [];
-  //     const pairData = await getBulkPairData(formattedPairs, newPrice);
-  //     if (pairData) {
-  //       updateTokenPairs({ data: pairData });
-  //     }
-  //   }
-  //   fetchTokenPairs();
-  //   fetchTokenChartData();
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [updateTokenPairs, updateTokenChartData, tokenAddress]);
+  const currentData = useMemo(
+    () =>
+      chartData && chartData.length > 1
+        ? chartData[chartData.length - 1]
+        : null,
+    [chartData],
+  );
+  const currentPercent = useMemo(() => {
+    if (chartData && chartData.length > 1) {
+      const prevData = chartData[chartData.length - 2];
+      const nowData = chartData[chartData.length - 1];
+      return (nowData - prevData) / prevData;
+    } else {
+      return null;
+    }
+  }, [chartData]);
+
+  useEffect(() => {
+    async function fetchPairChartData() {
+      const chartData = await getPairChartData(pairAddress);
+      if (chartData && chartData.length > 0) {
+        setPairChartData(chartData);
+      }
+    }
+    fetchPairChartData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pairAddress]);
 
   return (
     <>
@@ -430,8 +401,8 @@ const AnalyticsPairDetails: React.FC = () => {
                         ? 'Liquidity'
                         : 'Price'}
                     </Typography>
-                    {/* <Box mt={1}>
-                      {chartData ? (
+                    <Box mt={1}>
+                      {chartData && currentData ? (
                         <>
                           <Box display='flex' alignItems='center'>
                             <Typography
@@ -483,7 +454,7 @@ const AnalyticsPairDetails: React.FC = () => {
                       ) : (
                         <Skeleton variant='rect' width='120px' height='30px' />
                       )}
-                    </Box> */}
+                    </Box>
                   </Box>
                   <Box display='flex' mt={1.5}>
                     <Box
@@ -517,12 +488,12 @@ const AnalyticsPairDetails: React.FC = () => {
                     </Box>
                   </Box>
                 </Box>
-                {/* <Box mt={2} width={1}>
-                  {tokenChartData ? (
+                <Box mt={2} width={1}>
+                  {chartData && pairChartData ? (
                     <AreaChart
                       data={chartData}
                       yAxisValues={yAxisValues}
-                      dates={tokenChartData.map((value: any) => value.date)}
+                      dates={pairChartData.map((value: any) => value.date)}
                       width='100%'
                       height={240}
                       categories={chartDates}
@@ -530,7 +501,7 @@ const AnalyticsPairDetails: React.FC = () => {
                   ) : (
                     <Skeleton variant='rect' width='100%' height={200} />
                   )}
-                </Box> */}
+                </Box>
               </Grid>
               <Grid item xs={12} sm={12} md={6}>
                 <Box

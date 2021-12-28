@@ -17,6 +17,7 @@ import {
   TOKEN_DATA,
   TOKEN_DATA1,
   TOKEN_DATA2,
+  PAIR_CHART,
   PAIR_DATA,
   PAIRS_BULK1,
   PAIRS_HISTORICAL_BULK,
@@ -806,6 +807,73 @@ export const getTokenChartData = async (tokenAddress: string) => {
   } catch (e) {
     console.log(e);
   }
+  return data;
+};
+
+export const getPairChartData = async (pairAddress: string) => {
+  let data: any[] = [];
+  const utcEndTime = dayjs.utc();
+  const utcStartTime = utcEndTime.subtract(2, 'month');
+  const startTime = utcStartTime.unix() - 1;
+  try {
+    let allFound = false;
+    let skip = 0;
+    while (!allFound) {
+      const result = await client.query({
+        query: PAIR_CHART,
+        variables: {
+          startTime: startTime,
+          pairAddress: pairAddress,
+          skip,
+        },
+        fetchPolicy: 'cache-first',
+      });
+      skip += 1000;
+      data = data.concat(result.data.pairDayDatas);
+      if (result.data.pairDayDatas.length < 1000) {
+        allFound = true;
+      }
+    }
+
+    const dayIndexSet = new Set();
+    const dayIndexArray: any[] = [];
+    const oneDay = 24 * 60 * 60;
+    data.forEach((dayData, i) => {
+      // add the day index to the set of days
+      dayIndexSet.add((data[i].date / oneDay).toFixed(0));
+      dayIndexArray.push(data[i]);
+      dayData.dailyVolumeUSD = parseFloat(dayData.dailyVolumeUSD);
+      dayData.reserveUSD = parseFloat(dayData.reserveUSD);
+    });
+
+    if (data[0]) {
+      // fill in empty days
+      let timestamp = data[0].date ? data[0].date : startTime;
+      let latestLiquidityUSD = data[0].reserveUSD;
+      let index = 1;
+      while (timestamp < utcEndTime.unix() - oneDay) {
+        const nextDay = timestamp + oneDay;
+        const currentDayIndex = (nextDay / oneDay).toFixed(0);
+        if (!dayIndexSet.has(currentDayIndex)) {
+          data.push({
+            date: nextDay,
+            dayString: nextDay,
+            dailyVolumeUSD: 0,
+            reserveUSD: latestLiquidityUSD,
+          });
+        } else {
+          latestLiquidityUSD = dayIndexArray[index].reserveUSD;
+          index = index + 1;
+        }
+        timestamp = nextDay;
+      }
+    }
+
+    data = data.sort((a, b) => (parseInt(a.date) > parseInt(b.date) ? 1 : -1));
+  } catch (e) {
+    console.log(e);
+  }
+
   return data;
 };
 

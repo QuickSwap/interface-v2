@@ -127,6 +127,25 @@ export const TOKEN_CHART = gql`
   }
 `;
 
+export const PAIR_CHART = gql`
+  query pairDayDatas($pairAddress: Bytes!, $skip: Int!, $startTime: Int!) {
+    pairDayDatas(
+      first: 1000
+      skip: $skip
+      orderBy: date
+      orderDirection: asc
+      where: { pairAddress: $pairAddress, date_gt: $startTime }
+    ) {
+      id
+      date
+      dailyVolumeToken0
+      dailyVolumeToken1
+      dailyVolumeUSD
+      reserveUSD
+    }
+  }
+`;
+
 const PairFields = `
   fragment PairFields on Pair {
     id
