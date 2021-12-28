@@ -1,6 +1,6 @@
 import React, { Suspense } from 'react';
 import { createWeb3ReactRoot, Web3ReactProvider } from '@web3-react/core';
-import { BrowserRouter, Switch, Route } from 'react-router-dom';
+import { Switch, Route } from 'react-router-dom';
 import {
   ThemeProvider as MuiThemeProvider,
   CssBaseline,
@@ -33,7 +33,6 @@ import 'slick-carousel/slick/slick-theme.css';
 import './i18n';
 import './App.css';
 import { mainTheme } from './theme';
-import AnalyticsTokenDetails from 'pages/AnalyticsPage/AnalyticTokenDetails';
 
 const Web3ProviderNetwork = createWeb3ReactRoot(NetworkContextName);
 
@@ -45,12 +44,14 @@ const ThemeProvider: React.FC = ({ children }) => {
 
 const Providers: React.FC = ({ children }) => {
   return (
+    <div>
       <Suspense fallback={null}>
         <ThemeProvider>
           <CssBaseline />
           {children}
         </ThemeProvider>
       </Suspense>
+    </div>
   );
 };
 
@@ -124,11 +125,6 @@ const App: React.FC = () => {
                     <Route exact path='/analytics'>
                       <PageLayout>
                         <AnalyticsPage />
-                      </PageLayout>
-                    </Route>
-                    <Route exact path='/analytics/token/:id'>
-                      <PageLayout>
-                        <AnalyticsTokenDetails />
                       </PageLayout>
                     </Route>
                   </Switch>
