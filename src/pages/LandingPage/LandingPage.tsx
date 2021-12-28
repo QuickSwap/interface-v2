@@ -498,7 +498,7 @@ const LandingPage: React.FC = () => {
       title: 'Medium',
     },
     {
-      link: '',
+      link: 'https://www.youtube.com/channel/UCrPlF-DBwD-UzLFDzJ4Z5Fw',
       icon: <YouTubeIcon />,
       title: 'Youtube',
     },
