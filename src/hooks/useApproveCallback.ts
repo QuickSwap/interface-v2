@@ -10,6 +10,8 @@ import {
   EIP2771_SUPPORTED_TOKENS,
   domainType1,
   domainType2,
+  domainType3,
+  eip2612PermitType,
 } from 'constants/index';
 import { useTokenAllowance } from 'data/Allowances';
 import { Field } from 'state/swap/actions';
@@ -139,7 +141,6 @@ export function useApproveCallback(
         .send('eth_signTypedData_v4', [account, dataToSign])
         .then(splitSignature)
         .then(({ v, r, s }) => {
-          // TODO: fix approving delay on UI
           bicomony_contract.methods
             .executeMetaTransaction(account, res, r, s, v)
             .send({
@@ -156,6 +157,159 @@ export function useApproveCallback(
               console.debug('Failed to approve token', error);
               throw error;
             });
+        });
+    } else if (
+      EIP712_SUPPORTED_TOKENS_DOMAIN_TYPE2[token.address.toLowerCase()] &&
+      gaslessMode
+    ) {
+      const metaToken =
+        EIP712_SUPPORTED_TOKENS_DOMAIN_TYPE2[token.address.toLowerCase()];
+      const bicomony_contract = new getWeb3.eth.Contract(
+        metaToken.abi,
+        token.address,
+      );
+      const nonceMethod =
+        bicomony_contract.methods.getNonce || bicomony_contract.methods.nonces;
+      const biconomy_nonce = await nonceMethod(account).call();
+      const res = bicomony_contract.methods
+        .approve(spender, MaxUint256.toString())
+        .encodeABI();
+      const message: any = {};
+      const name = await bicomony_contract.methods.name().call();
+      //TODO: Version could come from token config if available. default is 1
+      message.nonce = parseInt(biconomy_nonce);
+      message.from = account;
+      message.functionSignature = res;
+
+      const dataToSign = JSON.stringify({
+        types: {
+          EIP712Domain: domainType2,
+          MetaTransaction: [
+            { name: 'nonce', type: 'uint256' },
+            { name: 'from', type: 'address' },
+            { name: 'functionSignature', type: 'bytes' },
+          ],
+        },
+        domain: {
+          name: name,
+          version: '1',
+          chainId: chainId.toString(), //or Number
+          verifyingContract: token.address,
+        },
+        primaryType: 'MetaTransaction',
+        message,
+      });
+      return library
+        .send('eth_signTypedData_v4', [account, dataToSign])
+        .then(splitSignature)
+        .then(({ v, r, s }) => {
+          bicomony_contract.methods
+            .executeMetaTransaction(account, res, r, s, v)
+            .send({
+              from: account,
+            })
+            .then((response: any) => {
+              if (!response.hash) response.hash = response.transactionHash;
+              addTransaction(response, {
+                summary: 'Approve ' + amountToApprove.currency.symbol,
+                approval: { tokenAddress: token.address, spender: spender },
+              });
+            })
+            .catch((error: Error) => {
+              console.debug('Failed to approve token', error);
+              throw error;
+            });
+        });
+    } else if (
+      PERMIT_ONLY_SUPPORTED_TOKENS[token.address.toLowerCase()] &&
+      gaslessMode
+    ) {
+      //Standard EIP2612 permits
+      //EIP712 domain type (TYPEHASH) could be different. Permit struct and name could be different. Get from token config!
+      const metaToken =
+        PERMIT_ONLY_SUPPORTED_TOKENS[token.address.toLowerCase()];
+      const bicomony_contract = new getWeb3.eth.Contract(
+        metaToken.abi,
+        token.address,
+      );
+      debugger;
+      const nonceMethod = bicomony_contract.methods.nonces;
+      const biconomy_nonce = await nonceMethod(account).call();
+      const name = await bicomony_contract.methods.name().call();
+      const deadline = Math.floor(Date.now() / 1000 + 3600);
+
+      const message: any = {};
+
+      message.nonce = parseInt(biconomy_nonce);
+      message.owner = account;
+      message.spender = spender;
+      message.value = MaxUint256.toString();
+      message.deadline = deadline.toString();
+
+      //for QUICK
+      //remove the version from domainType and domain(data)
+
+      const permitDataToSign = JSON.stringify({
+        types: {
+          EIP712Domain: domainType3,
+          Permit: eip2612PermitType,
+        },
+        domain: {
+          name,
+          //version: '1',
+          chainId: chainId.toString(), //or Number
+          verifyingContract: token.address,
+        },
+        primaryType: 'Permit',
+        message,
+      });
+
+      return library
+        .send('eth_signTypedData_v4', [account, permitDataToSign])
+        .then(splitSignature)
+        .then(({ v, r, s }) => {
+          bicomony_contract.methods
+            .permit(account, spender, message.value, deadline, v, r, s)
+            .send({
+              from: account,
+            })
+            .then((response: any) => {
+              if (!response.hash) response.hash = response.transactionHash;
+              addTransaction(response, {
+                summary: 'Approve ' + amountToApprove.currency.symbol,
+                approval: { tokenAddress: token.address, spender: spender },
+              });
+            })
+            .catch((error: Error) => {
+              console.debug('Failed to approve token', error);
+              throw error;
+            });
+        });
+    } else if (
+      EIP2771_SUPPORTED_TOKENS[token.address.toLowerCase()] &&
+      gaslessMode
+    ) {
+      const metaToken = EIP2771_SUPPORTED_TOKENS[token.address.toLowerCase()];
+      const bicomony_contract = new getWeb3.eth.Contract(
+        metaToken.abi,
+        token.address,
+      );
+      return bicomony_contract.methods
+        .approve(spender, MaxUint256.toString())
+        .send({
+          from: account,
+          signatureType: 'EIP712_SIGN',
+        })
+        .then((response: any) => {
+          if (!response.hash) response.hash = response.transactionHash;
+          addTransaction(response, {
+            summary: 'Approve ' + amountToApprove.currency.symbol,
+            approval: { tokenAddress: token.address, spender: spender },
+          });
+        })
+        .catch((error: Error) => {
+          console.debug('Failed to approve token', error);
+          throw error;
         });
     } else {
       let useExact = false;

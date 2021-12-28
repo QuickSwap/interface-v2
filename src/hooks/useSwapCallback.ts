@@ -145,7 +145,7 @@ export function useSwapCallback(
 } {
   const { account, chainId, library } = useActiveWeb3React();
   //const [gaslessMode] = //TODO //use gasless mode manager
-  const gaslessMode = true;
+  const gaslessMode = false;
 
   const getWeb3 = getBiconomy(gaslessMode);
 
@@ -366,7 +366,6 @@ export function useSwapCallback(
           ]);
           const signature = await splitSignature(sig);
           const { v, r, s } = signature;
-          // console.log('account: ', account, 'res: ', res, 'r: ', r, 's: ', s, 'v: ', v)
           return bicomony_contract.methods
             .executeMetaTransaction(account, res, r, s, v)
             .send({

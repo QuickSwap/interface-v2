@@ -4,6 +4,7 @@ import { NETWORK_URL } from '../connectors';
 const { Biconomy } = require('@biconomy/mexa');
 const Web3 = require('web3');
 let getWeb3: any = null;
+//TODO include wallet provider from current web3React
 const getBiconomyInstance = (gaslessMode = false) => {
   if (gaslessMode) {
     if (getWeb3 === null) {
@@ -11,6 +12,7 @@ const getBiconomyInstance = (gaslessMode = false) => {
       const biconomy = new Biconomy(
         new Web3.providers.HttpProvider(maticProvider),
         {
+          walletProvider: window.ethereum, //Temp for testing
           apiKey: biconomyAPIKey,
           debug: false,
         },

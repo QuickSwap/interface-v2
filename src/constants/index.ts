@@ -1858,7 +1858,7 @@ export const EIP712_SUPPORTED_TOKENS_DOMAIN_TYPE1: any = {
 };
 
 export const EIP712_SUPPORTED_TOKENS_DOMAIN_TYPE2: any = {
-  '0xc6c855ad634dcdad23e64da71ba85b8c51e5ad7c': { abi: tokenABI }, //ICE
+  '0xc6c855ad634dcdad23e64da71ba85b8c51e5ad7c': { abi: tokenABI }, //ICE // ICE should be discarded from gasless support altogether
 };
 
 export const PERMIT_ONLY_SUPPORTED_TOKENS: any = {
@@ -1881,6 +1881,21 @@ export const domainType2 = [
   { name: 'version', type: 'string' },
   { name: 'chainId', type: 'uint256' },
   { name: 'verifyingContract', type: 'address' },
+];
+
+export const domainType3 = [
+  { name: 'name', type: 'string' },
+  //{ name: 'version', type: 'string' },
+  { name: 'chainId', type: 'uint256' },
+  { name: 'verifyingContract', type: 'address' },
+];
+
+export const eip2612PermitType = [
+  { name: 'owner', type: 'address' },
+  { name: 'spender', type: 'address' },
+  { name: 'value', type: 'uint256' },
+  { name: 'nonce', type: 'uint256' },
+  { name: 'deadline', type: 'uint256' },
 ];
 
 export const NetworkContextName = 'NETWORK';
