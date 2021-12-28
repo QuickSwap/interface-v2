@@ -33,6 +33,7 @@ import 'slick-carousel/slick/slick-theme.css';
 import './i18n';
 import './App.css';
 import { mainTheme } from './theme';
+import AnalyticsTokenDetails from 'pages/AnalyticsPage/AnalyticTokenDetails';
 
 const Web3ProviderNetwork = createWeb3ReactRoot(NetworkContextName);
 
@@ -123,6 +124,11 @@ const App: React.FC = () => {
                     <Route exact path='/analytics'>
                       <PageLayout>
                         <AnalyticsPage />
+                      </PageLayout>
+                    </Route>
+                    <Route exact path='/analytics/token/:id'>
+                      <PageLayout>
+                        <AnalyticsTokenDetails />
                       </PageLayout>
                     </Route>
                   </Switch>

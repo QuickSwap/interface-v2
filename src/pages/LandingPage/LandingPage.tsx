@@ -478,7 +478,7 @@ const LandingPage: React.FC = () => {
 
   const socialicons = [
     {
-      link: '',
+      link: 'https://www.reddit.com/r/QuickSwap/',
       icon: <RedditIcon />,
       title: 'Reddit',
     },

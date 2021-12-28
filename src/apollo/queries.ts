@@ -251,6 +251,30 @@ export const TOKENS_CURRENT: any = (count: number) => {
   return gql(queryString);
 };
 
+export const TOKEN_INFO: any = (address: string) => {
+  const queryString = `
+    ${TokenFields}
+    query tokens {
+      tokens(first: 1, where: {id: "${address}"}) {
+        ...TokenFields
+      }
+    }
+  `;
+  return gql(queryString);
+};
+
+export const TOKEN_INFO_OLD: any = (block: number, address: string) => {
+  const queryString = `
+    ${TokenFields}
+    query tokens {
+      tokens(block: {number: ${block}} first: 1, where: {id: "${address}"}) {
+        ...TokenFields
+      }
+    }
+  `;
+  return gql(queryString);
+};
+
 export const TOKENS_DYNAMIC: any = (block: number, count: number) => {
   const queryString = `
     ${TokenFields}

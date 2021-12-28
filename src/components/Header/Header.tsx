@@ -363,7 +363,9 @@ const Header: React.FC = () => {
             <Link
               to={val.link}
               key={index}
-              className={val.link === pathname ? 'active' : 'menuItem'}
+              className={
+                pathname.indexOf(val.link) > -1 ? 'active' : 'menuItem'
+              }
             >
               <Typography variant='body2'>{val.text}</Typography>
             </Link>
@@ -395,7 +397,9 @@ const Header: React.FC = () => {
               <Link
                 to={val.link}
                 key={index}
-                className={val.link === pathname ? 'active' : 'menuItem'}
+                className={
+                  pathname.indexOf(val.link) > -1 ? 'active' : 'menuItem'
+                }
               >
                 <Typography variant='body2'>{val.text}</Typography>
               </Link>
@@ -420,9 +424,7 @@ const Header: React.FC = () => {
                       <Link
                         to={val.link}
                         key={index}
-                        className={
-                          val.link === pathname ? 'active' : 'menuItem'
-                        }
+                        className='menuItem'
                         onClick={() => setOpenDetailMenu(false)}
                       >
                         <Typography variant='body2'>{val.text}</Typography>

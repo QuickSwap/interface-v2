@@ -13128,19 +13128,16 @@ export const getBulkPairData = async (pairList: any) => {
   try {
     const current = await client.query({
       query: PAIRS_BULK(pairList),
-      variables: {
-        allPairs: pairList,
-      },
-      fetchPolicy: 'cache-first',
+      fetchPolicy: 'network-only',
     });
 
     const [oneDayResult] = await Promise.all(
       [oneDayOldBlock].map(async (block) => {
-        const result = await client.query({
+        const cResult = await client.query({
           query: PAIRS_HISTORICAL_BULK(block, pairList),
-          fetchPolicy: 'cache-first',
+          fetchPolicy: 'network-only',
         });
-        return result;
+        return cResult;
       }),
     );
 
@@ -13187,14 +13184,14 @@ const getDualBulkPairData = async (pairList: any) => {
       variables: {
         allPairs: pairList,
       },
-      fetchPolicy: 'cache-first',
+      fetchPolicy: 'network-only',
     });
 
     const [oneDayResult] = await Promise.all(
       [oneDayOldBlock].map(async (block) => {
         const result = client.query({
           query: PAIRS_HISTORICAL_BULK(block, pairList),
-          fetchPolicy: 'cache-first',
+          fetchPolicy: 'network-only',
         });
         return result;
       }),

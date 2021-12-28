@@ -20,7 +20,6 @@ import {
   addBookMarkPair,
   removeBookmarkPair,
   updateBookmarkPairs,
-  updateAnalyticToken,
   updateTokenChartData,
 } from './actions';
 
@@ -180,9 +179,6 @@ export default createReducer(initialState, (builder) =>
     })
     .addCase(updateBookmarkPairs, (state, { payload }) => {
       state.bookmarkedPairs = payload;
-    })
-    .addCase(updateAnalyticToken, (state, { payload }) => {
-      state.analyticToken = payload;
     })
     .addCase(updateTokenChartData, (state, { payload }) => {
       state.tokenChartData = payload;
