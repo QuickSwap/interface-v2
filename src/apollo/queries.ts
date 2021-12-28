@@ -131,6 +131,8 @@ const PairFields = `
   fragment PairFields on Pair {
     id
     trackedReserveETH
+    reserve0
+    reserve1
     volumeUSD
     reserveUSD
     totalSupply
@@ -138,11 +140,13 @@ const PairFields = `
       symbol
       id
       decimals
+      derivedETH
     }
     token1 {
       symbol
       id
       decimals
+      derivedETH
     }
   }
 `;
@@ -487,3 +491,88 @@ export const GET_BLOCKS: any = (timestamps: number[]) => {
   queryString += '}';
   return gql(queryString);
 };
+
+export const FILTERED_TRANSACTIONS = gql`
+  query($allPairs: [Bytes]!) {
+    mints(
+      first: 20
+      where: { pair_in: $allPairs }
+      orderBy: timestamp
+      orderDirection: desc
+    ) {
+      transaction {
+        id
+        timestamp
+      }
+      pair {
+        token0 {
+          id
+          symbol
+        }
+        token1 {
+          id
+          symbol
+        }
+      }
+      to
+      liquidity
+      amount0
+      amount1
+      amountUSD
+    }
+    burns(
+      first: 20
+      where: { pair_in: $allPairs }
+      orderBy: timestamp
+      orderDirection: desc
+    ) {
+      transaction {
+        id
+        timestamp
+      }
+      pair {
+        token0 {
+          id
+          symbol
+        }
+        token1 {
+          id
+          symbol
+        }
+      }
+      sender
+      liquidity
+      amount0
+      amount1
+      amountUSD
+    }
+    swaps(
+      first: 30
+      where: { pair_in: $allPairs }
+      orderBy: timestamp
+      orderDirection: desc
+    ) {
+      transaction {
+        id
+        timestamp
+      }
+      id
+      pair {
+        token0 {
+          id
+          symbol
+        }
+        token1 {
+          id
+          symbol
+        }
+      }
+      amount0In
+      amount0Out
+      amount1In
+      amount1Out
+      amountUSD
+      to
+    }
+  }
+`;

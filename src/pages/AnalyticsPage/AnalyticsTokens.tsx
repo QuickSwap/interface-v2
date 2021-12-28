@@ -6,14 +6,14 @@ import { useTopTokens, useBookmarkTokens } from 'state/application/hooks';
 import { getEthPrice, getTopTokens } from 'utils';
 import { Skeleton } from '@material-ui/lab';
 
-const useStyles = makeStyles(({ breakpoints }) => ({
+const useStyles = makeStyles(({ palette, breakpoints }) => ({
   tokensFilter: {
     cursor: 'pointer',
     display: 'flex',
     margin: '8px 16px 8px 0',
   },
   panel: {
-    background: '#1b1d26',
+    background: palette.grey.A700,
     borderRadius: 20,
     padding: 24,
     [breakpoints.down('xs')]: {
@@ -57,7 +57,7 @@ const AnalyticsTokens: React.FC = () => {
 
   return (
     <>
-      <TopMovers background='#1b1d26' hideArrow={true} />
+      <TopMovers background={palette.grey.A700} hideArrow={true} />
       <Box my={4} px={2} display='flex' flexWrap='wrap' alignItems='center'>
         <Box
           className={classes.tokensFilter}

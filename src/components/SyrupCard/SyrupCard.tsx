@@ -230,7 +230,7 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo }> = ({ syrup }) => {
             <Box display='flex'>
               <Box
                 borderRadius='4px'
-                border='1px solid #3e4252'
+                border={`1px solid ${palette.grey.A400}`}
                 padding='4px 6px'
                 marginTop='6px'
                 display='flex'

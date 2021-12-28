@@ -1,10 +1,12 @@
 import React, { useEffect } from 'react';
 import { Box, Typography } from '@material-ui/core';
+import { useTheme } from '@material-ui/core/styles';
 import { useGlobalData, useEthPrice } from 'state/application/hooks';
 import { getEthPrice, getGlobalData } from 'utils';
 import { Skeleton } from '@material-ui/lab';
 
 const AnalyticsInfo: React.FC = () => {
+  const { palette } = useTheme();
   const { ethPrice, updateEthPrice } = useEthPrice();
   const { globalData, updateGlobalData } = useGlobalData();
   useEffect(() => {
@@ -28,7 +30,7 @@ const AnalyticsInfo: React.FC = () => {
     <Box
       paddingX={4}
       paddingY={1.5}
-      bgcolor='#1b1d26'
+      bgcolor={palette.grey.A700}
       borderRadius={20}
       display='flex'
       alignItems='center'

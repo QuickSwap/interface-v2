@@ -4,7 +4,7 @@ import { Contract } from '@ethersproject/contracts';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import weekOfYear from 'dayjs/plugin/weekOfYear';
-import { blockClient, client } from 'apollo/client';
+import { blockClient, client, txClient } from 'apollo/client';
 import {
   GET_BLOCK,
   GLOBAL_DATA,
@@ -26,6 +26,7 @@ import {
   ALL_TOKENS,
   TOKEN_INFO,
   TOKEN_INFO_OLD,
+  FILTERED_TRANSACTIONS,
 } from 'apollo/queries';
 import { JsonRpcSigner, Web3Provider } from '@ethersproject/providers';
 import { abi as IUniswapV2Router02ABI } from '@uniswap/v2-periphery/build/IUniswapV2Router02.json';
@@ -717,6 +718,26 @@ export const getIntervalTokenData = async (
     console.log(e);
     console.log('error fetching blocks');
     return [];
+  }
+};
+
+export const getPairTransactions = async (pairAddress: string) => {
+  try {
+    const result = await txClient.query({
+      query: FILTERED_TRANSACTIONS,
+      variables: {
+        allPairs: [pairAddress],
+      },
+      fetchPolicy: 'no-cache',
+    });
+    return {
+      mints: result.data.mints,
+      burns: result.data.burns,
+      swaps: result.data.swaps,
+    };
+  } catch (e) {
+    console.log(e);
+    return null;
   }
 };
 

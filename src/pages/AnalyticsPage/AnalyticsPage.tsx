@@ -38,7 +38,7 @@ const useStyles = makeStyles(({ palette }) => ({
     display: 'flex',
     alignItems: 'center',
     padding: '0 16px',
-    background: '#1b1d26',
+    background: palette.grey.A700,
     height: 46,
     borderRadius: 10,
     margin: '12px 0',
@@ -55,7 +55,7 @@ const useStyles = makeStyles(({ palette }) => ({
   searchContent: {
     position: 'absolute',
     width: '100%',
-    background: '#1b1d26',
+    background: palette.grey.A700,
     borderRadius: 10,
     padding: 12,
     zIndex: 2,

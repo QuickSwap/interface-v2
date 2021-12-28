@@ -1,5 +1,6 @@
 import React from 'react';
 import { Box, Typography, Divider } from '@material-ui/core';
+import { Link } from 'react-router-dom';
 import { ChainId, Token } from '@uniswap/sdk';
 import { getAddress } from '@ethersproject/address';
 import { DoubleCurrencyLogo, CustomTable } from 'components';
@@ -102,12 +103,23 @@ const PairTable: React.FC<TokensTableProps> = ({ data }) => {
               <StarUnchecked />
             )}
           </Box>
-          <DoubleCurrencyLogo currency0={token0} currency1={token1} size={28} />
-          <Box ml={1}>
-            <Typography variant='body1'>
-              {token0.symbol} / {token1.symbol}
-            </Typography>
-          </Box>
+          <Link
+            to={`/analytics/pair/${pair.id}`}
+            style={{ textDecoration: 'none' }}
+          >
+            <Box display='flex' alignItems='center'>
+              <DoubleCurrencyLogo
+                currency0={token0}
+                currency1={token1}
+                size={28}
+              />
+              <Box ml={1}>
+                <Typography variant='body1' color='textPrimary'>
+                  {token0.symbol} / {token1.symbol}
+                </Typography>
+              </Box>
+            </Box>
+          </Link>
         </Box>
         <Divider />
         <Box
@@ -203,16 +215,23 @@ const PairTable: React.FC<TokensTableProps> = ({ data }) => {
                 <StarUnchecked />
               )}
             </Box>
-            <DoubleCurrencyLogo
-              currency0={token0}
-              currency1={token1}
-              size={28}
-            />
-            <Box ml={1}>
-              <Typography variant='body1'>
-                {token0.symbol} / {token1.symbol}
-              </Typography>
-            </Box>
+            <Link
+              to={`/analytics/pair/${pair.id}`}
+              style={{ textDecoration: 'none' }}
+            >
+              <Box display='flex' alignItems='center'>
+                <DoubleCurrencyLogo
+                  currency0={token0}
+                  currency1={token1}
+                  size={28}
+                />
+                <Box ml={1}>
+                  <Typography variant='body1' color='textPrimary'>
+                    {token0.symbol} / {token1.symbol}
+                  </Typography>
+                </Box>
+              </Box>
+            </Link>
           </Box>
         ),
       },

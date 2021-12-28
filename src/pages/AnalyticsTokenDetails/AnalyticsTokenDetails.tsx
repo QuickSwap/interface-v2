@@ -28,7 +28,7 @@ import { getAddress } from '@ethersproject/address';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   panel: {
-    background: '#1b1d26',
+    background: palette.grey.A700,
     borderRadius: 20,
     padding: 24,
     [breakpoints.down('xs')]: {
@@ -417,7 +417,9 @@ const AnalyticsTokenDetails: React.FC = () => {
                   <Box display='flex' mt={1.5}>
                     <Box
                       mr={1}
-                      bgcolor={chartIndex === 0 ? '#3e4252' : 'transparent'}
+                      bgcolor={
+                        chartIndex === 0 ? palette.grey.A400 : 'transparent'
+                      }
                       className={classes.chartType}
                       onClick={() => setChartIndex(0)}
                     >
@@ -425,14 +427,18 @@ const AnalyticsTokenDetails: React.FC = () => {
                     </Box>
                     <Box
                       mr={1}
-                      bgcolor={chartIndex === 1 ? '#3e4252' : 'transparent'}
+                      bgcolor={
+                        chartIndex === 1 ? palette.grey.A400 : 'transparent'
+                      }
                       className={classes.chartType}
                       onClick={() => setChartIndex(1)}
                     >
                       <Typography variant='caption'>Liquidity</Typography>
                     </Box>
                     <Box
-                      bgcolor={chartIndex === 2 ? '#3e4252' : 'transparent'}
+                      bgcolor={
+                        chartIndex === 2 ? palette.grey.A400 : 'transparent'
+                      }
                       className={classes.chartType}
                       onClick={() => setChartIndex(2)}
                     >
