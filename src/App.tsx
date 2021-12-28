@@ -44,14 +44,12 @@ const ThemeProvider: React.FC = ({ children }) => {
 
 const Providers: React.FC = ({ children }) => {
   return (
-    <BrowserRouter>
       <Suspense fallback={null}>
         <ThemeProvider>
           <CssBaseline />
           {children}
         </ThemeProvider>
       </Suspense>
-    </BrowserRouter>
   );
 };
 
