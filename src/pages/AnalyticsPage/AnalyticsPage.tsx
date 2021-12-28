@@ -1,17 +1,17 @@
 import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import { useHistory } from 'react-router-dom';
 import { Box, Typography } from '@material-ui/core';
 import cx from 'classnames';
-import { useAnalyticToken } from 'state/application/hooks';
 import { ReactComponent as SearchIcon } from 'assets/images/SearchIcon.svg';
 import { client } from 'apollo/client';
 import { TOKEN_SEARCH, PAIR_SEARCH } from 'apollo/queries';
 import { getAllTokensOnUniswap, getAllPairsOnUniswap } from 'utils';
 import { TOKEN_BLACKLIST, PAIR_BLACKLIST } from 'constants/index';
+import useParsedQueryString from 'hooks/useParsedQueryString';
 import AnalyticsOverview from './AnalyticsOverview';
 import AnalyticsTokens from './AnalyticsTokens';
 import AnalyticsPairs from './AnalyticsPairs';
-import AnalyticsTokenDetails from './AnalyticTokenDetails';
 import { CurrencyLogo, DoubleCurrencyLogo } from 'components';
 import { ChainId, Token } from '@uniswap/sdk';
 import { getAddress } from '@ethersproject/address';
@@ -66,12 +66,13 @@ const useStyles = makeStyles(({ palette }) => ({
 
 const AnalyticsPage: React.FC = () => {
   const classes = useStyles();
-  const [tabIndex, setTabIndex] = useState(0);
+  const history = useHistory();
+  const parsedQuery = useParsedQueryString();
+  const [tabIndex, setTabIndex] = useState(Number(parsedQuery.tabIndex) || 0);
   const [searchVal, setSearchVal] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<any>(null);
   const wrapperRef = useRef<any>(null);
-  const { analyticToken, updateAnalyticToken } = useAnalyticToken();
   const [searchedTokens, setSearchedTokens] = useState<any[]>([]);
   const [searchedPairs, setSearchedPairs] = useState<any[]>([]);
   const [tokensShown, setTokensShown] = useState(3);
@@ -210,10 +211,6 @@ const AnalyticsPage: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    updateAnalyticToken(null);
-  }, [updateAnalyticToken]);
-
-  useEffect(() => {
     async function fetchData() {
       try {
         if (searchVal.length > 0) {
@@ -268,133 +265,134 @@ const AnalyticsPage: React.FC = () => {
 
   return (
     <Box width='100%' mb={3}>
-      {analyticToken ? (
-        <AnalyticsTokenDetails token={analyticToken} goBack={setTabIndex} />
-      ) : (
-        <>
-          <Box mb={4}>
-            <Typography variant='h4'>Quickswap Analytics</Typography>
+      <Box mb={4}>
+        <Typography variant='h4'>Quickswap Analytics</Typography>
+      </Box>
+      <Box
+        mb={4}
+        position='relative'
+        display='flex'
+        justifyContent='space-between'
+        flexWrap='wrap'
+      >
+        <Box marginY={1.5} display='flex' alignItems='center'>
+          <Box
+            className={cx(
+              classes.topTab,
+              tabIndex === 0 && classes.selectedTab,
+            )}
+            onClick={() => setTabIndex(0)}
+          >
+            <Typography variant='body1'>Overview</Typography>
           </Box>
           <Box
-            mb={4}
-            position='relative'
-            display='flex'
-            justifyContent='space-between'
-            flexWrap='wrap'
+            className={cx(
+              classes.topTab,
+              tabIndex === 1 && classes.selectedTab,
+            )}
+            onClick={() => setTabIndex(1)}
           >
-            <Box marginY={1.5} display='flex' alignItems='center'>
-              <Box
-                className={cx(
-                  classes.topTab,
-                  tabIndex === 0 && classes.selectedTab,
-                )}
-                onClick={() => setTabIndex(0)}
-              >
-                <Typography variant='body1'>Overview</Typography>
-              </Box>
-              <Box
-                className={cx(
-                  classes.topTab,
-                  tabIndex === 1 && classes.selectedTab,
-                )}
-                onClick={() => setTabIndex(1)}
-              >
-                <Typography variant='body1'>Tokens</Typography>
-              </Box>
-              <Box
-                className={cx(
-                  classes.topTab,
-                  tabIndex === 2 && classes.selectedTab,
-                )}
-                onClick={() => setTabIndex(2)}
-              >
-                <Typography variant='body1'>Pairs</Typography>
-              </Box>
-            </Box>
-            <Box position='relative'>
-              <Box className={classes.searchInput}>
-                <input
-                  placeholder='Search for tokens, pairs, etc…'
-                  value={searchVal}
-                  ref={menuRef}
-                  onFocus={() => setMenuOpen(true)}
-                  onChange={(evt) => setSearchVal(evt.target.value)}
-                />
-                <Box display='flex'>
-                  <SearchIcon />
-                </Box>
-              </Box>
-              {menuOpen && (
-                <div ref={wrapperRef} className={classes.searchContent}>
-                  <Typography variant='body1'>Pairs</Typography>
-                  {filteredPairs.slice(0, pairsShown).map((val, ind) => {
-                    const currency0 = new Token(
-                      ChainId.MATIC,
-                      getAddress(val.token0.id),
-                      val.token0.decimals,
-                    );
-                    const currency1 = new Token(
-                      ChainId.MATIC,
-                      getAddress(val.token1.id),
-                      val.token1.decimals,
-                    );
-                    return (
-                      <Box mt={1} key={ind} display='flex' alignItems='center'>
-                        <DoubleCurrencyLogo
-                          currency0={currency0}
-                          currency1={currency1}
-                          size={28}
-                        />
-                        <Typography variant='body2' style={{ marginLeft: 8 }}>
-                          {val.token0.symbol} - {val.token1.symbol} Pair
-                        </Typography>
-                      </Box>
-                    );
-                  })}
-                  <Typography
-                    variant='body2'
-                    style={{ cursor: 'pointer', margin: '8px 0' }}
-                    onClick={() => setPairsShown(pairsShown + 5)}
-                  >
-                    Show More
-                  </Typography>
-                  <Typography variant='body1'>Tokens</Typography>
-                  {filteredTokens.slice(0, tokensShown).map((val, ind) => {
-                    const currency = new Token(
-                      ChainId.MATIC,
-                      getAddress(val.id),
-                      val.decimals,
-                    );
-                    return (
-                      <Box mt={1} key={ind} display='flex' alignItems='center'>
-                        <CurrencyLogo currency={currency} size='28px' />
-                        <Typography variant='body2' style={{ marginLeft: 8 }}>
-                          {val.name} {val.symbol}
-                        </Typography>
-                      </Box>
-                    );
-                  })}
-                  <Typography
-                    variant='body2'
-                    style={{ cursor: 'pointer', marginTop: 8 }}
-                    onClick={() => setTokensShown(tokensShown + 5)}
-                  >
-                    Show More
-                  </Typography>
-                </div>
-              )}
+            <Typography variant='body1'>Tokens</Typography>
+          </Box>
+          <Box
+            className={cx(
+              classes.topTab,
+              tabIndex === 2 && classes.selectedTab,
+            )}
+            onClick={() => setTabIndex(2)}
+          >
+            <Typography variant='body1'>Pairs</Typography>
+          </Box>
+        </Box>
+        <Box position='relative'>
+          <Box className={classes.searchInput}>
+            <input
+              placeholder='Search for tokens, pairs, etc…'
+              value={searchVal}
+              ref={menuRef}
+              onFocus={() => setMenuOpen(true)}
+              onChange={(evt) => setSearchVal(evt.target.value)}
+            />
+            <Box display='flex'>
+              <SearchIcon />
             </Box>
           </Box>
-          {tabIndex === 0 && (
-            <AnalyticsOverview
-              showAllTokens={() => setTabIndex(1)}
-              showAllPairs={() => setTabIndex(2)}
-            />
+          {menuOpen && (
+            <div ref={wrapperRef} className={classes.searchContent}>
+              <Typography variant='body1'>Pairs</Typography>
+              {filteredPairs.slice(0, pairsShown).map((val, ind) => {
+                const currency0 = new Token(
+                  ChainId.MATIC,
+                  getAddress(val.token0.id),
+                  val.token0.decimals,
+                );
+                const currency1 = new Token(
+                  ChainId.MATIC,
+                  getAddress(val.token1.id),
+                  val.token1.decimals,
+                );
+                return (
+                  <Box mt={1} key={ind} display='flex' alignItems='center'>
+                    <DoubleCurrencyLogo
+                      currency0={currency0}
+                      currency1={currency1}
+                      size={28}
+                    />
+                    <Typography variant='body2' style={{ marginLeft: 8 }}>
+                      {val.token0.symbol} - {val.token1.symbol} Pair
+                    </Typography>
+                  </Box>
+                );
+              })}
+              <Typography
+                variant='body2'
+                style={{ cursor: 'pointer', margin: '8px 0' }}
+                onClick={() => setPairsShown(pairsShown + 5)}
+              >
+                Show More
+              </Typography>
+              <Typography variant='body1'>Tokens</Typography>
+              {filteredTokens.slice(0, tokensShown).map((val, ind) => {
+                const currency = new Token(
+                  ChainId.MATIC,
+                  getAddress(val.id),
+                  val.decimals,
+                );
+                return (
+                  <Box
+                    mt={1}
+                    key={ind}
+                    display='flex'
+                    alignItems='center'
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => history.push(`/analytics/token/${val.id}`)}
+                  >
+                    <CurrencyLogo currency={currency} size='28px' />
+                    <Typography variant='body2' style={{ marginLeft: 8 }}>
+                      {val.name} {val.symbol}
+                    </Typography>
+                  </Box>
+                );
+              })}
+              <Typography
+                variant='body2'
+                style={{ cursor: 'pointer', marginTop: 8 }}
+                onClick={() => setTokensShown(tokensShown + 5)}
+              >
+                Show More
+              </Typography>
+            </div>
           )}
-          {tabIndex === 1 && <AnalyticsTokens />}
-          {tabIndex === 2 && <AnalyticsPairs />}
-        </>
+        </Box>
+      </Box>
+      {tabIndex === 0 && (
+        <AnalyticsOverview
+          showAllTokens={() => setTabIndex(1)}
+          showAllPairs={() => setTabIndex(2)}
+        />
       )}
+      {tabIndex === 1 && <AnalyticsTokens />}
+      {tabIndex === 2 && <AnalyticsPairs />}
     </Box>
   );
 };

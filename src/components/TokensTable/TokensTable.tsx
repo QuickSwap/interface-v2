@@ -1,10 +1,11 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Box, Typography, Divider } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { getAddress } from '@ethersproject/address';
 import { ChainId, Token } from '@uniswap/sdk';
 import { CurrencyLogo, CustomTable } from 'components';
-import { useBookmarkTokens, useAnalyticToken } from 'state/application/hooks';
+import { useBookmarkTokens } from 'state/application/hooks';
 import { ReactComponent as StarChecked } from 'assets/images/StarChecked.svg';
 import { ReactComponent as StarUnchecked } from 'assets/images/StarUnchecked.svg';
 
@@ -73,7 +74,6 @@ const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
     addBookmarkToken,
     removeBookmarkToken,
   } = useBookmarkTokens();
-  const { updateAnalyticToken } = useAnalyticToken();
   const mobileHTML = (token: any, index: number) => {
     const tokenCurrency = new Token(
       ChainId.MATIC,
@@ -103,25 +103,29 @@ const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
               <StarUnchecked />
             )}
           </Box>
-          <Box
-            display='flex'
-            alignItems='center'
-            style={{ cursor: 'pointer' }}
-            onClick={() => updateAnalyticToken(token)}
+          <Link
+            to={`/analytics/token/${tokenCurrency.address}`}
+            style={{ textDecoration: 'none' }}
           >
-            <CurrencyLogo currency={tokenCurrency} size='28px' />
-            <Box ml={1}>
-              <Typography
-                variant='body1'
-                style={{ color: palette.text.primary }}
-              >
-                {token.name}{' '}
-                <span style={{ color: palette.text.hint }}>
-                  ({token.symbol})
-                </span>
-              </Typography>
+            <Box
+              display='flex'
+              alignItems='center'
+              style={{ cursor: 'pointer' }}
+            >
+              <CurrencyLogo currency={tokenCurrency} size='28px' />
+              <Box ml={1}>
+                <Typography
+                  variant='body1'
+                  style={{ color: palette.text.primary }}
+                >
+                  {token.name}{' '}
+                  <span style={{ color: palette.text.hint }}>
+                    ({token.symbol})
+                  </span>
+                </Typography>
+              </Box>
             </Box>
-          </Box>
+          </Link>
         </Box>
         <Divider />
         <Box className={classes.mobileRow}>
@@ -208,25 +212,29 @@ const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
                 <StarUnchecked />
               )}
             </Box>
-            <Box
-              display='flex'
-              alignItems='center'
-              style={{ cursor: 'pointer' }}
-              onClick={() => updateAnalyticToken(token)}
+            <Link
+              to={`/analytics/token/${tokenCurrency.address}`}
+              style={{ textDecoration: 'none' }}
             >
-              <CurrencyLogo currency={tokenCurrency} size='28px' />
-              <Box ml={1}>
-                <Typography
-                  variant='body1'
-                  style={{ color: palette.text.primary }}
-                >
-                  {token.name}{' '}
-                  <span style={{ color: palette.text.hint }}>
-                    ({token.symbol})
-                  </span>
-                </Typography>
+              <Box
+                display='flex'
+                alignItems='center'
+                style={{ cursor: 'pointer' }}
+              >
+                <CurrencyLogo currency={tokenCurrency} size='28px' />
+                <Box ml={1}>
+                  <Typography
+                    variant='body1'
+                    style={{ color: palette.text.primary }}
+                  >
+                    {token.name}{' '}
+                    <span style={{ color: palette.text.hint }}>
+                      ({token.symbol})
+                    </span>
+                  </Typography>
+                </Box>
               </Box>
-            </Box>
+            </Link>
           </Box>
         ),
       },

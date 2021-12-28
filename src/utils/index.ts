@@ -24,6 +24,8 @@ import {
   PAIRS_CURRENT,
   ALL_PAIRS,
   ALL_TOKENS,
+  TOKEN_INFO,
+  TOKEN_INFO_OLD,
 } from 'apollo/queries';
 import { JsonRpcSigner, Web3Provider } from '@ethersproject/providers';
 import { abi as IUniswapV2Router02ABI } from '@uniswap/v2-periphery/build/IUniswapV2Router02.json';
@@ -84,7 +86,7 @@ export async function getBlockFromTimestamp(timestamp: number): Promise<any> {
       timestampFrom: timestamp,
       timestampTo: timestamp + 600,
     },
-    fetchPolicy: 'cache-first',
+    fetchPolicy: 'network-only',
   });
   return result?.data?.blocks?.[0]?.number;
 }
@@ -141,7 +143,7 @@ export async function splitQuery(
     const sliced = list.slice(skip, end);
     const result = await localClient.query({
       query: query(...vars, sliced),
-      fetchPolicy: 'cache-first',
+      fetchPolicy: 'network-only',
     });
     fetchedData = {
       ...fetchedData,
@@ -229,11 +231,11 @@ export const getEthPrice: () => Promise<number[]> = async () => {
     const oneDayBlock = await getBlockFromTimestamp(utcOneDayBack);
     const result = await client.query({
       query: ETH_PRICE(),
-      fetchPolicy: 'cache-first',
+      fetchPolicy: 'network-only',
     });
     const resultOneDay = await client.query({
       query: ETH_PRICE(oneDayBlock),
-      fetchPolicy: 'cache-first',
+      fetchPolicy: 'network-only',
     });
     const currentPrice = result?.data?.bundles[0]?.ethPrice;
     const oneDayBackPrice = resultOneDay?.data?.bundles[0]?.ethPrice;
@@ -247,10 +249,10 @@ export const getEthPrice: () => Promise<number[]> = async () => {
   return [ethPrice, ethPriceOneDay, priceChangeETH];
 };
 
-export const getTopTokens = async (
+export const getTokenInfo = async (
   ethPrice: number,
   ethPriceOld: number,
-  count = 500,
+  address: string,
 ) => {
   const utcCurrentTime = dayjs();
   const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix();
@@ -262,23 +264,23 @@ export const getTopTokens = async (
 
   try {
     const current = await client.query({
-      query: TOKENS_CURRENT(count),
-      fetchPolicy: 'cache-first',
+      query: TOKEN_INFO(address),
+      fetchPolicy: 'network-only',
     });
 
     const oneDayResult = await client.query({
-      query: TOKENS_DYNAMIC(oneDayBlock, count),
-      fetchPolicy: 'cache-first',
+      query: TOKEN_INFO_OLD(oneDayBlock, address),
+      fetchPolicy: 'network-only',
     });
 
     const twoDayResult = await client.query({
-      query: TOKENS_DYNAMIC(twoDayBlock, count),
-      fetchPolicy: 'cache-first',
+      query: TOKEN_INFO_OLD(twoDayBlock, address),
+      fetchPolicy: 'network-only',
     });
 
     const oneWeekResult = await client.query({
-      query: TOKENS_DYNAMIC(oneWeekBlock, count),
-      fetchPolicy: 'cache-first',
+      query: TOKEN_INFO_OLD(oneWeekBlock, address),
+      fetchPolicy: 'network-only',
     });
 
     const oneDayData = oneDayResult?.data?.tokens.reduce(
@@ -318,14 +320,14 @@ export const getTopTokens = async (
           if (!oneDayHistory) {
             const oneDayResult = await client.query({
               query: TOKEN_DATA(token.id, oneDayBlock),
-              fetchPolicy: 'cache-first',
+              fetchPolicy: 'network-only',
             });
             oneDayHistory = oneDayResult.data.tokens[0];
           }
           if (!twoDayHistory) {
             const twoDayResult = await client.query({
               query: TOKEN_DATA(token.id, twoDayBlock),
-              fetchPolicy: 'cache-first',
+              fetchPolicy: 'network-only',
             });
             twoDayHistory = twoDayResult.data.tokens[0];
           }
@@ -333,7 +335,7 @@ export const getTopTokens = async (
           if (!oneWeekHistory) {
             const oneWeekResult = await client.query({
               query: TOKEN_DATA(token.id, oneWeekBlock),
-              fetchPolicy: 'cache-first',
+              fetchPolicy: 'network-only',
             });
             oneWeekHistory = oneWeekResult.data.tokens[0];
           }
@@ -390,7 +392,166 @@ export const getTopTokens = async (
           if (data.id === '0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9') {
             const aaveData = await client.query({
               query: PAIR_DATA('0xdfc14d2af169b0d36c4eff567ada9b2e0cae044f'),
-              fetchPolicy: 'cache-first',
+              fetchPolicy: 'network-only',
+            });
+            const result = aaveData.data.pairs[0];
+            data.totalLiquidityUSD = parseFloat(result.reserveUSD) / 2;
+            data.liquidityChangeUSD = 0;
+            data.priceChangeUSD = 0;
+          }
+          return data;
+        }),
+    );
+    return bulkResults;
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+export const getTopTokens = async (
+  ethPrice: number,
+  ethPriceOld: number,
+  count = 500,
+) => {
+  const utcCurrentTime = dayjs();
+  const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix();
+  const utcTwoDaysBack = utcCurrentTime.subtract(2, 'day').unix();
+  const utcOneWeekBack = utcCurrentTime.subtract(7, 'day').unix();
+  const oneDayBlock = await getBlockFromTimestamp(utcOneDayBack);
+  const twoDayBlock = await getBlockFromTimestamp(utcTwoDaysBack);
+  const oneWeekBlock = await getBlockFromTimestamp(utcOneWeekBack);
+
+  try {
+    const current = await client.query({
+      query: TOKENS_CURRENT(count),
+      fetchPolicy: 'network-only',
+    });
+
+    const oneDayResult = await client.query({
+      query: TOKENS_DYNAMIC(oneDayBlock, count),
+      fetchPolicy: 'network-only',
+    });
+
+    const twoDayResult = await client.query({
+      query: TOKENS_DYNAMIC(twoDayBlock, count),
+      fetchPolicy: 'network-only',
+    });
+
+    const oneWeekResult = await client.query({
+      query: TOKENS_DYNAMIC(oneWeekBlock, count),
+      fetchPolicy: 'network-only',
+    });
+
+    const oneDayData = oneDayResult?.data?.tokens.reduce(
+      (obj: any, cur: any) => {
+        return { ...obj, [cur.id]: cur };
+      },
+      {},
+    );
+
+    const twoDayData = twoDayResult?.data?.tokens.reduce(
+      (obj: any, cur: any) => {
+        return { ...obj, [cur.id]: cur };
+      },
+      {},
+    );
+
+    const oneWeekData = oneWeekResult?.data?.tokens.reduce(
+      (obj: any, cur: any) => {
+        return { ...obj, [cur.id]: cur };
+      },
+      {},
+    );
+
+    const bulkResults = await Promise.all(
+      current &&
+        oneDayData &&
+        twoDayData &&
+        current?.data?.tokens?.map(async (token: any) => {
+          const data = token;
+
+          // let liquidityDataThisToken = liquidityData?.[token.id]
+          let oneDayHistory = oneDayData?.[token.id];
+          let twoDayHistory = twoDayData?.[token.id];
+          let oneWeekHistory = oneWeekData?.[token.id];
+
+          // catch the case where token wasnt in top list in previous days
+          if (!oneDayHistory) {
+            const oneDayResult = await client.query({
+              query: TOKEN_DATA(token.id, oneDayBlock),
+              fetchPolicy: 'network-only',
+            });
+            oneDayHistory = oneDayResult.data.tokens[0];
+          }
+          if (!twoDayHistory) {
+            const twoDayResult = await client.query({
+              query: TOKEN_DATA(token.id, twoDayBlock),
+              fetchPolicy: 'network-only',
+            });
+            twoDayHistory = twoDayResult.data.tokens[0];
+          }
+
+          if (!oneWeekHistory) {
+            const oneWeekResult = await client.query({
+              query: TOKEN_DATA(token.id, oneWeekBlock),
+              fetchPolicy: 'network-only',
+            });
+            oneWeekHistory = oneWeekResult.data.tokens[0];
+          }
+
+          // calculate percentage changes and daily changes
+          const [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(
+            data.tradeVolumeUSD,
+            oneDayHistory?.tradeVolumeUSD ?? 0,
+            twoDayHistory?.tradeVolumeUSD ?? 0,
+          );
+
+          const oneWeekVolumeUSD =
+            oneDayHistory.tradeVolumeUSD - oneWeekHistory.tradeVolumeUSD;
+
+          const currentLiquidityUSD =
+            data?.totalLiquidity * ethPrice * data?.derivedETH;
+          const oldLiquidityUSD =
+            oneDayHistory?.totalLiquidity *
+            ethPriceOld *
+            oneDayHistory?.derivedETH;
+
+          // percent changes
+          const priceChangeUSD = getPercentChange(
+            data?.derivedETH * ethPrice,
+            oneDayHistory?.derivedETH
+              ? oneDayHistory?.derivedETH * ethPriceOld
+              : 0,
+          );
+
+          // set data
+          data.priceUSD = data?.derivedETH * ethPrice;
+          data.totalLiquidityUSD = currentLiquidityUSD;
+          data.oneDayVolumeUSD = oneDayVolumeUSD;
+          data.oneWeekVolumeUSD = oneWeekVolumeUSD;
+          data.volumeChangeUSD = volumeChangeUSD;
+          data.priceChangeUSD = priceChangeUSD;
+          data.liquidityChangeUSD = getPercentChange(
+            currentLiquidityUSD ?? 0,
+            oldLiquidityUSD ?? 0,
+          );
+
+          // new tokens
+          if (!oneDayHistory && data) {
+            data.oneDayVolumeUSD = data.tradeVolumeUSD;
+            data.oneDayVolumeETH = data.tradeVolume * data.derivedETH;
+          }
+
+          // update name data for
+          updateNameData({
+            token0: data,
+          });
+
+          // HOTFIX for Aave
+          if (data.id === '0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9') {
+            const aaveData = await client.query({
+              query: PAIR_DATA('0xdfc14d2af169b0d36c4eff567ada9b2e0cae044f'),
+              fetchPolicy: 'network-only',
             });
             const result = aaveData.data.pairs[0];
             data.totalLiquidityUSD = parseFloat(result.reserveUSD) / 2;
@@ -432,7 +593,7 @@ export const getTokenPairs = async (
     // fetch all current and historical data
     const result = await client.query({
       query: TOKEN_DATA1(tokenAddress, tokenAddress1),
-      fetchPolicy: 'cache-first',
+      fetchPolicy: 'network-only',
     });
     return result.data?.['pairs0']
       .concat(result.data?.['pairs1'])
@@ -449,7 +610,7 @@ export const getTokenPairs2 = async (tokenAddress: string) => {
     // fetch all current and historical data
     const result = await client.query({
       query: TOKEN_DATA2(tokenAddress),
-      fetchPolicy: 'cache-first',
+      fetchPolicy: 'network-only',
     });
     return result.data?.['pairs0'].concat(result.data?.['pairs1']);
   } catch (e) {
@@ -462,7 +623,7 @@ export const getTopPairs = async (count: number) => {
     // fetch all current and historical data
     const result = await client.query({
       query: PAIRS_CURRENT(count),
-      fetchPolicy: 'cache-first',
+      fetchPolicy: 'network-only',
     });
     return result.data?.['pairs'];
   } catch (e) {
@@ -575,7 +736,7 @@ export const getTokenChartData = async (tokenAddress: string) => {
           tokenAddr: tokenAddress,
           skip,
         },
-        fetchPolicy: 'cache-first',
+        fetchPolicy: 'network-only',
       });
       if (result.data.tokenDayDatas.length < 1000) {
         allFound = true;
@@ -640,14 +801,14 @@ export const getBulkPairData: (
       variables: {
         allPairs: pairList,
       },
-      fetchPolicy: 'cache-first',
+      fetchPolicy: 'network-only',
     });
 
     const [oneDayResult, twoDayResult, oneWeekResult] = await Promise.all(
       [b1, b2, bWeek].map(async (block) => {
-        const result = client.query({
+        const result = await client.query({
           query: PAIRS_HISTORICAL_BULK(block, pairList),
-          fetchPolicy: 'cache-first',
+          fetchPolicy: 'network-only',
         });
         return result;
       }),
@@ -682,7 +843,7 @@ export const getBulkPairData: (
           if (!oneDayHistory) {
             const newData = await client.query({
               query: PAIR_DATA(pair.id, b1),
-              fetchPolicy: 'cache-first',
+              fetchPolicy: 'network-only',
             });
             oneDayHistory = newData.data.pairs[0];
           }
@@ -690,7 +851,7 @@ export const getBulkPairData: (
           if (!twoDayHistory) {
             const newData = await client.query({
               query: PAIR_DATA(pair.id, b2),
-              fetchPolicy: 'cache-first',
+              fetchPolicy: 'network-only',
             });
             twoDayHistory = newData.data.pairs[0];
           }
@@ -698,7 +859,7 @@ export const getBulkPairData: (
           if (!oneWeekHistory) {
             const newData = await client.query({
               query: PAIR_DATA(pair.id, bWeek),
-              fetchPolicy: 'cache-first',
+              fetchPolicy: 'network-only',
             });
             oneWeekHistory = newData.data.pairs[0];
           }
@@ -838,32 +999,32 @@ export async function getGlobalData(
     // fetch the global data
     const result = await client.query({
       query: GLOBAL_DATA(),
-      fetchPolicy: 'cache-first',
+      fetchPolicy: 'network-only',
     });
     data = result.data.uniswapFactories[0];
 
     // fetch the historical data
     const oneDayResult = await client.query({
       query: GLOBAL_DATA(oneDayBlock?.number),
-      fetchPolicy: 'cache-first',
+      fetchPolicy: 'network-only',
     });
     oneDayData = oneDayResult.data.uniswapFactories[0];
 
     const twoDayResult = await client.query({
       query: GLOBAL_DATA(twoDayBlock?.number),
-      fetchPolicy: 'cache-first',
+      fetchPolicy: 'network-only',
     });
     twoDayData = twoDayResult.data.uniswapFactories[0];
 
     const oneWeekResult = await client.query({
       query: GLOBAL_DATA(oneWeekBlock?.number),
-      fetchPolicy: 'cache-first',
+      fetchPolicy: 'network-only',
     });
     const oneWeekData = oneWeekResult.data.uniswapFactories[0];
 
     const twoWeekResult = await client.query({
       query: GLOBAL_DATA(twoWeekBlock?.number),
-      fetchPolicy: 'cache-first',
+      fetchPolicy: 'network-only',
     });
     const twoWeekData = twoWeekResult.data.uniswapFactories[0];
 
@@ -920,7 +1081,7 @@ export async function getAllPairsOnUniswap() {
         variables: {
           skip: skipCount,
         },
-        fetchPolicy: 'cache-first',
+        fetchPolicy: 'network-only',
       });
       skipCount = skipCount + 10;
       pairs = pairs.concat(result?.data?.pairs);
@@ -945,7 +1106,7 @@ export async function getAllTokensOnUniswap() {
         variables: {
           skip: skipCount,
         },
-        fetchPolicy: 'cache-first',
+        fetchPolicy: 'network-only',
       });
       tokens = tokens.concat(result?.data?.tokens);
       if (result?.data?.tokens?.length < 10 || tokens.length > 10) {
@@ -974,7 +1135,7 @@ export const getChartData = async (oldestDateToFetch: number) => {
           startTime: oldestDateToFetch,
           skip,
         },
-        fetchPolicy: 'cache-first',
+        fetchPolicy: 'network-only',
       });
       skip += 1000;
       data = data.concat(result.data.uniswapDayDatas);
