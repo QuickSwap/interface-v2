@@ -3,7 +3,7 @@ import { Box, Typography, Divider, useMediaQuery } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { Token } from '@uniswap/sdk';
 import { TransactionResponse } from '@ethersproject/providers';
-import { useSyrupInfo } from 'state/stake/hooks';
+import { useOldSyrupInfo, useSyrupInfo } from 'state/stake/hooks';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { useTokenBalance } from 'state/wallet/hooks';
 import { CurrencyLogo, StakeSyrupModal } from 'components';
@@ -55,9 +55,15 @@ const SyrupCardDetails: React.FC<{ token: Token }> = ({ token }) => {
   const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
 
   const syrups = useSyrupInfo(token);
+  const oldSyrups = useOldSyrupInfo(token);
   const syrup = useMemo(
-    () => (syrups && syrups.length > 0 ? syrups[0] : null),
-    [syrups],
+    () =>
+      syrups && syrups.length > 0
+        ? syrups[0]
+        : oldSyrups && oldSyrups.length > 0
+        ? oldSyrups[0]
+        : null,
+    [syrups, oldSyrups],
   );
   const stakingContract = useStakingContract(syrup?.stakingRewardAddress);
   const addTransaction = useTransactionAdder();

@@ -14313,6 +14313,8 @@ export function useOldStakingInfo(
     NEVER_RELOAD,
   );
 
+  const stakingPairs = usePairs(info.map((item) => item.tokens));
+
   return useMemo(() => {
     if (!chainId || !uni) return [];
 
@@ -14397,6 +14399,8 @@ export function useOldStakingInfo(
             ?.mul(1000)
             ?.toNumber();
 
+          const [, stakingTokenPair] = stakingPairs[index];
+
           memo.push({
             stakingRewardAddress: rewardsAddress,
             tokens: info[index].tokens,
@@ -14422,6 +14426,7 @@ export function useOldStakingInfo(
             oneDayFee: 0,
             accountFee: 0,
             dQuickToQuick: 0,
+            stakingTokenPair,
           });
         }
         return memo;
@@ -14437,6 +14442,7 @@ export function useOldStakingInfo(
     rewardsAddresses,
     totalSupplies,
     uni,
+    stakingPairs,
   ]);
 }
 

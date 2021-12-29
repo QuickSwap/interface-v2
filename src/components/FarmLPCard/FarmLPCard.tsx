@@ -132,7 +132,7 @@ const FarmLPCard: React.FC<{
 
   let apyWithFee: number | string = 0;
 
-  if (stakingAPY && stakingAPY > 0) {
+  if (stakingAPY && stakingAPY > 0 && stakingInfo.perMonthReturnInRewards) {
     apyWithFee =
       ((1 +
         ((Number(stakingInfo.perMonthReturnInRewards) +

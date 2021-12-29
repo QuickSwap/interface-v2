@@ -3,7 +3,7 @@ import { TransactionResponse } from '@ethersproject/providers';
 import { splitSignature } from 'ethers/lib/utils';
 import { Box, Typography, useMediaQuery } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-import { useStakingInfo } from 'state/stake/hooks';
+import { useOldStakingInfo, useStakingInfo } from 'state/stake/hooks';
 import { JSBI, TokenAmount, Pair } from '@uniswap/sdk';
 import { QUICK, EMPTY } from 'constants/index';
 import { unwrappedToken } from 'utils/wrappedCurrency';
@@ -103,9 +103,15 @@ const FarmLPCardDetails: React.FC<{
   const [attemptClaiming, setAttemptClaiming] = useState(false);
   const [unstakeAmount, setUnStakeAmount] = useState('');
   const stakingInfos = useStakingInfo(pair);
+  const oldStakingInfos = useOldStakingInfo(pair);
   const stakingInfo = useMemo(
-    () => (stakingInfos && stakingInfos.length > 0 ? stakingInfos[0] : null),
-    [stakingInfos],
+    () =>
+      stakingInfos && stakingInfos.length > 0
+        ? stakingInfos[0]
+        : oldStakingInfos && oldStakingInfos.length > 0
+        ? oldStakingInfos[0]
+        : null,
+    [stakingInfos, oldStakingInfos],
   );
 
   const token0 = stakingInfo ? stakingInfo.tokens[0] : undefined;
@@ -196,7 +202,12 @@ const FarmLPCardDetails: React.FC<{
 
   let apyWithFee: number | string = 0;
 
-  if (stakingInfo && stakingAPY && stakingAPY > 0) {
+  if (
+    stakingInfo &&
+    stakingInfo.perMonthReturnInRewards &&
+    stakingAPY &&
+    stakingAPY > 0
+  ) {
     apyWithFee =
       ((1 +
         ((Number(stakingInfo.perMonthReturnInRewards) +
