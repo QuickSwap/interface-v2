@@ -21,6 +21,7 @@ const useStyles = makeStyles(({ palette }) => ({
       props.toggled ? palette.success.main : palette.text.disabled,
     position: 'absolute',
     top: 2,
+    transition: 'all 0.2s 0s ease',
   },
 }));
 
@@ -37,8 +38,8 @@ const ToggleSwitch: React.FC<{ toggled: boolean; onToggle: () => void }> = ({
     >
       <Box
         className={classes.innerCircle}
-        left={toggled ? 'unset' : '2px'}
-        right={toggled ? '2px' : 'unset'}
+        left={toggled ? '60%' : '5%'}
+        // right={toggled ? '2px' : 'unset'}
       />
     </Box>
   );
