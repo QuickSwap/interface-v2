@@ -49,3 +49,4 @@ export { default as SwapTokenDetails } from './SwapTokenDetails';
 export { default as TopMovers } from './TopMovers';
 export { default as TokensTable } from './TokensTable';
 export { default as PairTable } from './PairsTable';
+export { default as TransactionsTable } from './TransactionsTable';

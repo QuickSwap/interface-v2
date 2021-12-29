@@ -134,7 +134,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     },
   },
   accountDetails: {
-    border: `solid 1px #3e4252`,
+    border: `solid 1px ${palette.grey.A400}`,
     padding: '0 16px',
     height: 36,
     cursor: 'pointer',

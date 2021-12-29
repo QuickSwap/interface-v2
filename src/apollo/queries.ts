@@ -127,10 +127,46 @@ export const TOKEN_CHART = gql`
   }
 `;
 
+export const PAIR_CHART = gql`
+  query pairDayDatas($pairAddress: Bytes!, $skip: Int!, $startTime: Int!) {
+    pairDayDatas(
+      first: 1000
+      skip: $skip
+      orderBy: date
+      orderDirection: asc
+      where: { pairAddress: $pairAddress, date_gt: $startTime }
+    ) {
+      id
+      date
+      dailyVolumeToken0
+      dailyVolumeToken1
+      dailyVolumeUSD
+      reserveUSD
+    }
+  }
+`;
+
+export const HOURLY_PAIR_RATES = (pairAddress: string, blocks: any[]) => {
+  let queryString = 'query blocks {';
+  queryString += blocks.map(
+    (block) => `
+      t${block.timestamp}: pair(id:"${pairAddress}", block: { number: ${block.number} }) { 
+        token0Price
+        token1Price
+      }
+    `,
+  );
+
+  queryString += '}';
+  return gql(queryString);
+};
+
 const PairFields = `
   fragment PairFields on Pair {
     id
     trackedReserveETH
+    reserve0
+    reserve1
     volumeUSD
     reserveUSD
     totalSupply
@@ -138,11 +174,13 @@ const PairFields = `
       symbol
       id
       decimals
+      derivedETH
     }
     token1 {
       symbol
       id
       decimals
+      derivedETH
     }
   }
 `;
@@ -487,3 +525,88 @@ export const GET_BLOCKS: any = (timestamps: number[]) => {
   queryString += '}';
   return gql(queryString);
 };
+
+export const FILTERED_TRANSACTIONS = gql`
+  query($allPairs: [Bytes]!) {
+    mints(
+      first: 20
+      where: { pair_in: $allPairs }
+      orderBy: timestamp
+      orderDirection: desc
+    ) {
+      transaction {
+        id
+        timestamp
+      }
+      pair {
+        token0 {
+          id
+          symbol
+        }
+        token1 {
+          id
+          symbol
+        }
+      }
+      to
+      liquidity
+      amount0
+      amount1
+      amountUSD
+    }
+    burns(
+      first: 20
+      where: { pair_in: $allPairs }
+      orderBy: timestamp
+      orderDirection: desc
+    ) {
+      transaction {
+        id
+        timestamp
+      }
+      pair {
+        token0 {
+          id
+          symbol
+        }
+        token1 {
+          id
+          symbol
+        }
+      }
+      sender
+      liquidity
+      amount0
+      amount1
+      amountUSD
+    }
+    swaps(
+      first: 30
+      where: { pair_in: $allPairs }
+      orderBy: timestamp
+      orderDirection: desc
+    ) {
+      transaction {
+        id
+        timestamp
+      }
+      id
+      pair {
+        token0 {
+          id
+          symbol
+        }
+        token1 {
+          id
+          symbol
+        }
+      }
+      amount0In
+      amount0Out
+      amount1In
+      amount1Out
+      amountUSD
+      to
+    }
+  }
+`;

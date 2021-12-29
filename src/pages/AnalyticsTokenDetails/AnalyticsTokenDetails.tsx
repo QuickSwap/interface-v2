@@ -10,11 +10,7 @@ import cx from 'classnames';
 import { shortenAddress, getEtherscanLink, formatCompact } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import { CurrencyLogo, PairTable, AreaChart } from 'components';
-import {
-  useTokenPairs,
-  useBookmarkTokens,
-  useTokenChartData,
-} from 'state/application/hooks';
+import { useBookmarkTokens } from 'state/application/hooks';
 import {
   getTokenInfo,
   getEthPrice,
@@ -28,7 +24,7 @@ import { getAddress } from '@ethersproject/address';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   panel: {
-    background: '#1b1d26',
+    background: palette.grey.A700,
     borderRadius: 20,
     padding: 24,
     [breakpoints.down('xs')]: {
@@ -113,10 +109,14 @@ const AnalyticsTokenDetails: React.FC = () => {
   const currency = token
     ? new Token(ChainId.MATIC, getAddress(token.id), token.decimals)
     : undefined;
-  const { tokenChartData, updateTokenChartData } = useTokenChartData();
+  const [tokenChartData, updateTokenChartData] = useState<any>(null);
   const [chartIndex, setChartIndex] = useState(0);
-  const { tokenPairs, updateTokenPairs } = useTokenPairs();
-  const { bookmarkTokens } = useBookmarkTokens();
+  const [tokenPairs, updateTokenPairs] = useState<any>(null);
+  const {
+    bookmarkTokens,
+    addBookmarkToken,
+    removeBookmarkToken,
+  } = useBookmarkTokens();
 
   useEffect(() => {
     async function checkEthPrice() {
@@ -211,7 +211,6 @@ const AnalyticsTokenDetails: React.FC = () => {
     }
     async function fetchTokenPairs() {
       const [newPrice] = await getEthPrice();
-      updateTokenPairs({ data: null });
       const tokenPairs = await getTokenPairs2(tokenAddress);
       const formattedPairs = tokenPairs
         ? tokenPairs.map((pair: any) => {
@@ -220,7 +219,7 @@ const AnalyticsTokenDetails: React.FC = () => {
         : [];
       const pairData = await getBulkPairData(formattedPairs, newPrice);
       if (pairData) {
-        updateTokenPairs({ data: pairData });
+        updateTokenPairs(pairData);
       }
     }
     fetchTokenPairs();
@@ -277,9 +276,11 @@ const AnalyticsTokenDetails: React.FC = () => {
                     </Typography>
                   </Box>
                   {bookmarkTokens.includes(token.id) ? (
-                    <StarChecked />
+                    <StarChecked
+                      onClick={() => removeBookmarkToken(token.id)}
+                    />
                   ) : (
-                    <StarUnchecked />
+                    <StarUnchecked onClick={() => addBookmarkToken(token.id)} />
                   )}
                 </Box>
                 <Box mt={1.25} display='flex' alignItems='center'>
@@ -417,7 +418,9 @@ const AnalyticsTokenDetails: React.FC = () => {
                   <Box display='flex' mt={1.5}>
                     <Box
                       mr={1}
-                      bgcolor={chartIndex === 0 ? '#3e4252' : 'transparent'}
+                      bgcolor={
+                        chartIndex === 0 ? palette.grey.A400 : 'transparent'
+                      }
                       className={classes.chartType}
                       onClick={() => setChartIndex(0)}
                     >
@@ -425,14 +428,18 @@ const AnalyticsTokenDetails: React.FC = () => {
                     </Box>
                     <Box
                       mr={1}
-                      bgcolor={chartIndex === 1 ? '#3e4252' : 'transparent'}
+                      bgcolor={
+                        chartIndex === 1 ? palette.grey.A400 : 'transparent'
+                      }
                       className={classes.chartType}
                       onClick={() => setChartIndex(1)}
                     >
                       <Typography variant='caption'>Liquidity</Typography>
                     </Box>
                     <Box
-                      bgcolor={chartIndex === 2 ? '#3e4252' : 'transparent'}
+                      bgcolor={
+                        chartIndex === 2 ? palette.grey.A400 : 'transparent'
+                      }
                       className={classes.chartType}
                       onClick={() => setChartIndex(2)}
                     >

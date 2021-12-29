@@ -22,6 +22,8 @@ const textDisabled = '#626680';
 const textHint = '#636780';
 const bgColor = '#12131a';
 const bgPalette = '#1b1e29';
+const greyBgLight = '#3e4252';
+const greyBg = '#1b1d26';
 
 const successMain = '#0fc679';
 const successDark = '#1DB2D5';
@@ -59,6 +61,10 @@ export const mainTheme = responsiveFontSizes(
       primary: {
         main: primary,
         dark: primaryDark,
+      },
+      grey: {
+        A400: greyBgLight,
+        A700: greyBg,
       },
       secondary: {
         main: secondary,

@@ -6,13 +6,13 @@ import { useTopPairs } from 'state/application/hooks';
 import { getEthPrice, getTopPairs, getBulkPairData } from 'utils';
 import { Skeleton } from '@material-ui/lab';
 
-const useStyles = makeStyles(({ breakpoints }) => ({
+const useStyles = makeStyles(({ palette, breakpoints }) => ({
   tokensFilter: {
     cursor: 'pointer',
     display: 'flex',
   },
   panel: {
-    background: '#1b1d26',
+    background: palette.grey.A700,
     borderRadius: 20,
     padding: 24,
     [breakpoints.down('xs')]: {

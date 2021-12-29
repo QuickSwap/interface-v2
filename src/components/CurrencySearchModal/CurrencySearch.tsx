@@ -37,7 +37,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     flexDirection: 'column',
     background: palette.background.paper,
     backdropFilter: 'blur(9.9px)',
-    border: '1px solid #3e4252',
+    border: `1px solid ${palette.grey.A400}`,
     [breakpoints.down('xs')]: {
       height: '90vh',
     },

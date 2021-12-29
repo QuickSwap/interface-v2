@@ -107,11 +107,7 @@ const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
             to={`/analytics/token/${tokenCurrency.address}`}
             style={{ textDecoration: 'none' }}
           >
-            <Box
-              display='flex'
-              alignItems='center'
-              style={{ cursor: 'pointer' }}
-            >
+            <Box display='flex' alignItems='center'>
               <CurrencyLogo currency={tokenCurrency} size='28px' />
               <Box ml={1}>
                 <Typography
@@ -216,11 +212,7 @@ const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
               to={`/analytics/token/${tokenCurrency.address}`}
               style={{ textDecoration: 'none' }}
             >
-              <Box
-                display='flex'
-                alignItems='center'
-                style={{ cursor: 'pointer' }}
-              >
+              <Box display='flex' alignItems='center'>
                 <CurrencyLogo currency={tokenCurrency} size='28px' />
                 <Box ml={1}>
                   <Typography

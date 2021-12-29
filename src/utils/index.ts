@@ -4,7 +4,7 @@ import { Contract } from '@ethersproject/contracts';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import weekOfYear from 'dayjs/plugin/weekOfYear';
-import { blockClient, client } from 'apollo/client';
+import { blockClient, client, txClient } from 'apollo/client';
 import {
   GET_BLOCK,
   GLOBAL_DATA,
@@ -17,6 +17,7 @@ import {
   TOKEN_DATA,
   TOKEN_DATA1,
   TOKEN_DATA2,
+  PAIR_CHART,
   PAIR_DATA,
   PAIRS_BULK1,
   PAIRS_HISTORICAL_BULK,
@@ -26,6 +27,8 @@ import {
   ALL_TOKENS,
   TOKEN_INFO,
   TOKEN_INFO_OLD,
+  FILTERED_TRANSACTIONS,
+  HOURLY_PAIR_RATES,
 } from 'apollo/queries';
 import { JsonRpcSigner, Web3Provider } from '@ethersproject/providers';
 import { abi as IUniswapV2Router02ABI } from '@uniswap/v2-periphery/build/IUniswapV2Router02.json';
@@ -720,6 +723,26 @@ export const getIntervalTokenData = async (
   }
 };
 
+export const getPairTransactions = async (pairAddress: string) => {
+  try {
+    const result = await txClient.query({
+      query: FILTERED_TRANSACTIONS,
+      variables: {
+        allPairs: [pairAddress],
+      },
+      fetchPolicy: 'no-cache',
+    });
+    return {
+      mints: result.data.mints,
+      burns: result.data.burns,
+      swaps: result.data.swaps,
+    };
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
 export const getTokenChartData = async (tokenAddress: string) => {
   let data: any[] = [];
   const utcEndTime = dayjs.utc();
@@ -786,6 +809,154 @@ export const getTokenChartData = async (tokenAddress: string) => {
     console.log(e);
   }
   return data;
+};
+
+export const getPairChartData = async (pairAddress: string) => {
+  let data: any[] = [];
+  const utcEndTime = dayjs.utc();
+  const utcStartTime = utcEndTime.subtract(2, 'month');
+  const startTime = utcStartTime.unix() - 1;
+  try {
+    let allFound = false;
+    let skip = 0;
+    while (!allFound) {
+      const result = await client.query({
+        query: PAIR_CHART,
+        variables: {
+          startTime: startTime,
+          pairAddress: pairAddress,
+          skip,
+        },
+        fetchPolicy: 'cache-first',
+      });
+      skip += 1000;
+      data = data.concat(result.data.pairDayDatas);
+      if (result.data.pairDayDatas.length < 1000) {
+        allFound = true;
+      }
+    }
+
+    const dayIndexSet = new Set();
+    const dayIndexArray: any[] = [];
+    const oneDay = 24 * 60 * 60;
+    data.forEach((dayData, i) => {
+      // add the day index to the set of days
+      dayIndexSet.add((data[i].date / oneDay).toFixed(0));
+      dayIndexArray.push(data[i]);
+      dayData.dailyVolumeUSD = parseFloat(dayData.dailyVolumeUSD);
+      dayData.reserveUSD = parseFloat(dayData.reserveUSD);
+    });
+
+    if (data[0]) {
+      // fill in empty days
+      let timestamp = data[0].date ? data[0].date : startTime;
+      let latestLiquidityUSD = data[0].reserveUSD;
+      let index = 1;
+      while (timestamp < utcEndTime.unix() - oneDay) {
+        const nextDay = timestamp + oneDay;
+        const currentDayIndex = (nextDay / oneDay).toFixed(0);
+        if (!dayIndexSet.has(currentDayIndex)) {
+          data.push({
+            date: nextDay,
+            dayString: nextDay,
+            dailyVolumeUSD: 0,
+            reserveUSD: latestLiquidityUSD,
+          });
+        } else {
+          latestLiquidityUSD = dayIndexArray[index].reserveUSD;
+          index = index + 1;
+        }
+        timestamp = nextDay;
+      }
+    }
+
+    data = data.sort((a, b) => (parseInt(a.date) > parseInt(b.date) ? 1 : -1));
+  } catch (e) {
+    console.log(e);
+  }
+
+  return data;
+};
+
+export const getHourlyRateData = async (
+  pairAddress: string,
+  latestBlock: number,
+) => {
+  try {
+    const utcEndTime = dayjs.utc();
+    const utcStartTime = utcEndTime.subtract(2, 'month');
+    const startTime = utcStartTime.unix() - 1;
+    let time = startTime;
+
+    // create an array of hour start times until we reach current hour
+    const timestamps = [];
+    while (time <= utcEndTime.unix()) {
+      timestamps.push(time);
+      time += 3600 * 24;
+    }
+
+    // backout if invalid timestamp format
+    if (timestamps.length === 0) {
+      return [];
+    }
+
+    // once you have all the timestamps, get the blocks for each timestamp in a bulk query
+    let blocks;
+
+    blocks = await getBlocksFromTimestamps(timestamps, 100);
+
+    // catch failing case
+    if (!blocks || blocks?.length === 0) {
+      return [];
+    }
+
+    if (latestBlock) {
+      blocks = blocks.filter((b) => {
+        return parseFloat(b.number) <= latestBlock;
+      });
+    }
+
+    const result = await splitQuery(
+      HOURLY_PAIR_RATES,
+      client,
+      [pairAddress],
+      blocks,
+      100,
+    );
+
+    // format token ETH price results
+    const values = [];
+    for (const row in result) {
+      const timestamp = row.split('t')[1];
+      if (timestamp) {
+        values.push({
+          timestamp,
+          rate0: parseFloat(result[row]?.token0Price),
+          rate1: parseFloat(result[row]?.token1Price),
+        });
+      }
+    }
+
+    const formattedHistoryRate0 = [];
+    const formattedHistoryRate1 = [];
+
+    // for each hour, construct the open and close price
+    for (let i = 0; i < values.length - 1; i++) {
+      formattedHistoryRate0.push({
+        timestamp: values[i].timestamp,
+        rate: values[i].rate0,
+      });
+      formattedHistoryRate1.push({
+        timestamp: values[i].timestamp,
+        rate: values[i].rate1,
+      });
+    }
+
+    return [formattedHistoryRate0, formattedHistoryRate1];
+  } catch (e) {
+    console.log(e);
+    return [[], []];
+  }
 };
 
 export const getBulkPairData: (

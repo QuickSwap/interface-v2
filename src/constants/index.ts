@@ -1059,8 +1059,8 @@ export const KOM = new Token(
 );
 export const UST = new Token(
   ChainId.MATIC,
-  '0x692597b009d13C4049a947CAB2239b7d6517875F',
-  18,
+  '0xE6469Ba6D2fD6130788E0eA9C0a0515900563b59',
+  6,
   'UST',
   'Wrapped UST Token',
 );
@@ -1890,4 +1890,4 @@ export const BETTER_TRADE_LINK_THRESHOLD = new Percent(
 
 // the Uniswap Default token list lives here
 export const DEFAULT_TOKEN_LIST_URL =
-  'https://unpkg.com/quickswap-default-token-list@1.2.17/build/quickswap-default.tokenlist.json';
+  'https://unpkg.com/quickswap-default-token-list@1.2.18/build/quickswap-default.tokenlist.json';

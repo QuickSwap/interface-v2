@@ -16,6 +16,7 @@ import {
   PoolsPage,
   SwapPage,
   AnalyticsTokenDetails,
+  AnalyticsPairDetails,
 } from 'pages';
 import { PageLayout } from 'layouts';
 import { getLibrary } from 'utils';
@@ -131,6 +132,11 @@ const App: React.FC = () => {
                     <Route exact path='/analytics/token/:id'>
                       <PageLayout>
                         <AnalyticsTokenDetails />
+                      </PageLayout>
+                    </Route>
+                    <Route exact path='/analytics/pair/:id'>
+                      <PageLayout>
+                        <AnalyticsPairDetails />
                       </PageLayout>
                     </Route>
                   </Switch>

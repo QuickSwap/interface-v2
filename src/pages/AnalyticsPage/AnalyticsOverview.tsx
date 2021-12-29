@@ -26,7 +26,7 @@ dayjs.extend(utc);
 
 const useStyles = makeStyles(({ palette }) => ({
   panel: {
-    background: '#1b1d26',
+    background: palette.grey.A700,
     borderRadius: 20,
   },
   volumeType: {
@@ -353,7 +353,9 @@ const AnalyticsOverview: React.FC<AnalyticsOverViewProps> = ({
               <Box display='flex' alignItems='center'>
                 <Box
                   className={classes.volumeType}
-                  bgcolor={volumeIndex === 0 ? '#3e4252' : 'transparent'}
+                  bgcolor={
+                    volumeIndex === 0 ? palette.grey.A400 : 'transparent'
+                  }
                   onClick={() => setVolumeIndex(0)}
                 >
                   <Typography variant='caption'>D</Typography>
@@ -361,7 +363,9 @@ const AnalyticsOverview: React.FC<AnalyticsOverViewProps> = ({
                 <Box
                   className={classes.volumeType}
                   ml={0.5}
-                  bgcolor={volumeIndex === 1 ? '#3e4252' : 'transparent'}
+                  bgcolor={
+                    volumeIndex === 1 ? palette.grey.A400 : 'transparent'
+                  }
                   onClick={() => setVolumeIndex(1)}
                 >
                   <Typography variant='caption'>W</Typography>

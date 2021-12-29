@@ -60,7 +60,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     },
   },
   buttonToken: {
-    backgroundColor: '#3e4252',
+    backgroundColor: palette.grey.A400,
     borderRadius: '10px',
     height: '50px',
     display: 'flex',

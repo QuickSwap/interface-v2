@@ -38,7 +38,7 @@ const useStyles = makeStyles(({ palette }) => ({
     display: 'flex',
     alignItems: 'center',
     padding: '0 16px',
-    background: '#1b1d26',
+    background: palette.grey.A700,
     height: 46,
     borderRadius: 10,
     margin: '12px 0',
@@ -55,7 +55,7 @@ const useStyles = makeStyles(({ palette }) => ({
   searchContent: {
     position: 'absolute',
     width: '100%',
-    background: '#1b1d26',
+    background: palette.grey.A700,
     borderRadius: 10,
     padding: 12,
     zIndex: 2,
@@ -332,7 +332,14 @@ const AnalyticsPage: React.FC = () => {
                   val.token1.decimals,
                 );
                 return (
-                  <Box mt={1} key={ind} display='flex' alignItems='center'>
+                  <Box
+                    mt={1}
+                    key={ind}
+                    display='flex'
+                    alignItems='center'
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => history.push(`/analytics/pair/${val.id}`)}
+                  >
                     <DoubleCurrencyLogo
                       currency0={currency0}
                       currency1={currency1}
