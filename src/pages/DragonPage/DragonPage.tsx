@@ -25,7 +25,6 @@ import {
   StakeQuickModal,
   UnstakeQuickModal,
 } from 'components';
-import { useGlobalData } from 'state/application/hooks';
 import { useInfiniteLoading } from 'utils/useInfiniteLoading';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
 import DragonBg1 from 'assets/images/DragonBg1.svg';
@@ -166,7 +165,6 @@ const DragonPage: React.FC = () => {
   const [sortBy, setSortBy] = useState(0);
   const [sortDesc, setSortDesc] = useState(false);
   const [syrupOldInfos, setSyrupOldInfos] = useState<SyrupInfo[]>([]);
-  const { globalData } = useGlobalData();
   const APR =
     (((Number(lairInfo?.oneDayVol) * 0.04 * 0.01) /
       Number(lairInfo?.dQuickTotalSupply.toSignificant(6))) *
@@ -439,17 +437,16 @@ const DragonPage: React.FC = () => {
                     : 0}
                 </Typography>
               </Box>
-              {globalData && (
-                <Box display='flex' justifyContent='space-between' mt={1.5}>
-                  <Typography variant='body2'>TVL:</Typography>
-                  <Typography variant='body2'>
-                    $
-                    {Number(
-                      globalData.totalLiquidityUSD,
-                    ).toLocaleString(undefined, { maximumFractionDigits: 0 })}
-                  </Typography>
-                </Box>
-              )}
+              <Box display='flex' justifyContent='space-between' mt={1.5}>
+                <Typography variant='body2'>TVL:</Typography>
+                <Typography variant='body2'>
+                  $
+                  {(
+                    Number(lairInfo.totalQuickBalance.toSignificant()) *
+                    Number(lairInfo.quickPrice)
+                  ).toLocaleString()}
+                </Typography>
+              </Box>
               <Box display='flex' justifyContent='space-between' mt={1.5}>
                 <Typography variant='body2'>APY</Typography>
                 <Typography

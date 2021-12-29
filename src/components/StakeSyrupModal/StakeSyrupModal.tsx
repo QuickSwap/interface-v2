@@ -124,14 +124,19 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
             addTransaction(response, {
               summary: `Deposit dQUICK`,
             });
-            setHash(response.hash);
-            const receipt = await response.wait();
-            finalizedTransaction(receipt, {
-              summary: `Deposit dQUICK`,
-            });
-            setAttempting(false);
-            setStakePercent(0);
-            setTypedValue('');
+            try {
+              const receipt = await response.wait();
+              finalizedTransaction(receipt, {
+                summary: `Deposit dQUICK`,
+              });
+              setAttempting(false);
+              setStakePercent(0);
+              setTypedValue('');
+            } catch (e) {
+              setAttempting(false);
+              setStakePercent(0);
+              setTypedValue('');
+            }
           })
           .catch((error: any) => {
             setAttempting(false);

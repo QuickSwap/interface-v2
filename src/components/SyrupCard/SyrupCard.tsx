@@ -1,19 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Divider, useMediaQuery } from '@material-ui/core';
+import { Box, Typography, useMediaQuery } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-import { TransactionResponse } from '@ethersproject/providers';
 import { SyrupInfo } from 'state/stake/hooks';
 import { QUICK } from 'constants/index';
 import { unwrappedToken } from 'utils/wrappedCurrency';
-import { useTokenBalance } from 'state/wallet/hooks';
-import { CurrencyLogo, StakeSyrupModal } from 'components';
-import { useActiveWeb3React } from 'hooks';
-import { useStakingContract } from 'hooks/useContract';
-import {
-  useTransactionAdder,
-  useTransactionFinalizer,
-} from 'state/transactions/hooks';
+import { CurrencyLogo } from 'components';
 import { formatCompact } from 'utils';
+import SyrupCardDetails from './SyrupCardDetails';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   syrupCard: {
@@ -50,29 +43,15 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo }> = ({ syrup }) => {
   const { palette, breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const [expanded, setExpanded] = useState(false);
-  const [attemptingClaim, setAttemptingClaim] = useState(false);
-  const [attemptingUnstake, setAttemptingUnstake] = useState(false);
-  const [openStakeModal, setOpenStakeModal] = useState(false);
-  const [hashClaim, setHashClaim] = useState('');
-  const [hashUnstake, setHashUnstake] = useState('');
   const classes = useStyles();
   const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
-  const stakingContract = useStakingContract(syrup.stakingRewardAddress);
-  const addTransaction = useTransactionAdder();
-  const finalizedTransaction = useTransactionFinalizer();
 
-  const { account } = useActiveWeb3React();
   const currency = unwrappedToken(syrup.token);
 
   const dQuickDeposit = syrup.valueOfTotalStakedAmountInUSDC
     ? `$${Number(syrup.valueOfTotalStakedAmountInUSDC).toLocaleString()}`
     : `${syrup.totalStakedAmount.toSignificant(6, { groupSeparator: ',' }) ??
         '-'} dQUICK`;
-
-  const userLiquidityUnstaked = useTokenBalance(
-    account ?? undefined,
-    syrup.stakedAmount.token,
-  );
 
   const tokenAPR =
     syrup.valueOfTotalStakedAmountInUSDC > 0
@@ -110,46 +89,6 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo }> = ({ syrup }) => {
   const minutes = (timeRemaining - (timeRemaining % MINUTE)) / MINUTE;
   timeRemaining -= minutes * MINUTE;
 
-  const onClaimReward = async () => {
-    if (stakingContract && syrup.stakedAmount) {
-      setAttemptingClaim(true);
-      await stakingContract
-        .getReward({ gasLimit: 350000 })
-        .then((response: TransactionResponse) => {
-          addTransaction(response, {
-            summary: `Claim accumulated` + syrup.token.symbol + `rewards`,
-          });
-          setHashClaim(response.hash);
-        })
-        .catch((error: any) => {
-          setAttemptingClaim(false);
-          console.log(error);
-        });
-    }
-  };
-
-  const onWithdraw = async () => {
-    if (stakingContract && syrup.stakedAmount) {
-      setAttemptingUnstake(true);
-      await stakingContract
-        .exit({ gasLimit: 300000 })
-        .then(async (response: TransactionResponse) => {
-          addTransaction(response, {
-            summary: `Withdraw deposited liquidity`,
-          });
-          setHashUnstake(response.hash);
-          const receipt = await response.wait();
-          finalizedTransaction(receipt, {
-            summary: `Withdraw deposited dQUICK`,
-          });
-        })
-        .catch((error: any) => {
-          setAttemptingUnstake(false);
-          console.log(error);
-        });
-    }
-  };
-
   useEffect(() => {
     const timeInterval = setInterval(() => {
       setCurrentTime(Math.floor(Date.now() / 1000));
@@ -159,13 +98,6 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo }> = ({ syrup }) => {
 
   return (
     <Box className={classes.syrupCard}>
-      {openStakeModal && (
-        <StakeSyrupModal
-          open={openStakeModal}
-          onClose={() => setOpenStakeModal(false)}
-          syrup={syrup}
-        />
-      )}
       <Box
         display='flex'
         flexWrap='wrap'
@@ -271,198 +203,14 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo }> = ({ syrup }) => {
               style={{ color: palette.text.secondary }}
             >
               $
-              {syrupEarnedUSD < 0.001
+              {syrupEarnedUSD > 0 && syrupEarnedUSD < 0.001
                 ? syrupEarnedUSD.toFixed(5)
                 : syrupEarnedUSD.toLocaleString()}
             </Typography>
           </Box>
         </Box>
       </Box>
-      {expanded && (
-        <>
-          <Divider />
-          <Box padding={3}>
-            <Box
-              display='flex'
-              alignItems='center'
-              justifyContent='space-between'
-              mb={1}
-            >
-              <Typography
-                variant='body2'
-                style={{ color: palette.text.secondary }}
-              >
-                In wallet
-              </Typography>
-              <Typography variant='body2'>
-                <span style={{ color: palette.text.primary }}>
-                  {userLiquidityUnstaked
-                    ? userLiquidityUnstaked.toSignificant(2)
-                    : 0}{' '}
-                  dQUICK
-                </span>
-                <span style={{ color: palette.text.secondary, marginLeft: 4 }}>
-                  $
-                  {userLiquidityUnstaked
-                    ? (
-                        syrup.quickPrice *
-                        Number(syrup.dQUICKtoQUICK.toSignificant()) *
-                        Number(userLiquidityUnstaked.toSignificant())
-                      ).toLocaleString()
-                    : 0}
-                </span>
-              </Typography>
-            </Box>
-            <Box
-              display='flex'
-              alignItems='center'
-              justifyContent='space-between'
-              mb={1}
-            >
-              <Typography
-                variant='body2'
-                style={{ color: palette.text.secondary }}
-              >
-                Staked
-              </Typography>
-              <Typography variant='body2'>
-                <span style={{ color: palette.text.primary }}>
-                  {syrup.stakedAmount.toSignificant(2)} dQUICK
-                </span>
-                <span style={{ color: palette.text.secondary, marginLeft: 4 }}>
-                  $
-                  {(
-                    Number(syrup.stakedAmount.toSignificant()) *
-                    Number(syrup.dQUICKtoQUICK.toSignificant()) *
-                    syrup.quickPrice
-                  ).toLocaleString()}
-                </span>
-              </Typography>
-            </Box>
-            <Box
-              display='flex'
-              alignItems='center'
-              justifyContent='space-between'
-              mb={2}
-            >
-              <Typography
-                variant='body2'
-                style={{ color: palette.text.secondary }}
-              >
-                Earned {currency.symbol}
-              </Typography>
-              <Box display='flex' alignItems='center'>
-                <CurrencyLogo currency={currency} size='16px' />
-                <Typography variant='body2' style={{ marginLeft: 4 }}>
-                  <span style={{ color: palette.text.primary }}>
-                    {syrup.earnedAmount.toSignificant(2)}
-                  </span>
-                  <span
-                    style={{ color: palette.text.secondary, marginLeft: 4 }}
-                  >
-                    $
-                    {syrupEarnedUSD < 0.001
-                      ? syrupEarnedUSD.toFixed(5)
-                      : syrupEarnedUSD.toLocaleString()}
-                  </span>
-                </Typography>
-              </Box>
-            </Box>
-            <Box
-              display='flex'
-              flexWrap='wrap'
-              alignItems='center'
-              justifyContent='space-between'
-            >
-              {!syrup.ended && Number.isFinite(timeRemaining) && (
-                <Box
-                  display={isMobile ? 'flex' : 'unset'}
-                  flexWrap='wrap'
-                  alignItems='center'
-                >
-                  <Typography
-                    variant='caption'
-                    style={{ color: palette.text.secondary }}
-                  >
-                    Time Remaining
-                  </Typography>
-                  <Typography
-                    variant='body2'
-                    style={{
-                      color: palette.text.secondary,
-                      marginLeft: isMobile ? 4 : 0,
-                    }}
-                  >
-                    {`${days}d ${hours
-                      .toString()
-                      .padStart(2, '0')}h ${minutes
-                      .toString()
-                      .padStart(2, '0')}m ${timeRemaining}s`}
-                  </Typography>
-                </Box>
-              )}
-              {syrup.ended && (
-                <Typography variant='body2' color='textSecondary'>
-                  Rewards Ended
-                </Typography>
-              )}
-              <Box
-                width={isMobile ? 1 : 'unset'}
-                display='flex'
-                flexWrap='wrap'
-              >
-                {!syrup.ended && (
-                  <>
-                    <Box
-                      mt={isMobile ? 1.5 : 0}
-                      className={classes.syrupButton}
-                      onClick={() => setOpenStakeModal(true)}
-                    >
-                      <Typography variant='body2'>Stake</Typography>
-                    </Box>
-                  </>
-                )}
-                {syrup.stakedAmount.greaterThan('0') && (
-                  <Box
-                    className={classes.syrupButton}
-                    mt={isMobile ? 1.5 : 0}
-                    ml={isMobile ? 0 : 1.5}
-                    style={{ opacity: attemptingUnstake ? 0.6 : 1 }}
-                    onClick={() => {
-                      if (!attemptingUnstake) {
-                        onWithdraw();
-                      }
-                    }}
-                  >
-                    <Typography variant='body2'>
-                      {attemptingUnstake && !hashUnstake
-                        ? 'Unstaking...'
-                        : 'Unstake'}
-                    </Typography>
-                  </Box>
-                )}
-                {syrup.earnedAmount.greaterThan('0') && (
-                  <Box
-                    mt={isMobile ? 1.5 : 0}
-                    ml={isMobile ? 0 : 1.5}
-                    className={classes.syrupButton}
-                    style={{ opacity: attemptingClaim ? 0.6 : 1 }}
-                    onClick={() => {
-                      if (!attemptingClaim) {
-                        onClaimReward();
-                      }
-                    }}
-                  >
-                    <Typography variant='body2'>
-                      {attemptingClaim && !hashClaim ? 'Claiming...' : 'Claim'}
-                    </Typography>
-                  </Box>
-                )}
-              </Box>
-            </Box>
-          </Box>
-        </>
-      )}
+      {expanded && syrup && <SyrupCardDetails token={syrup.token} />}
     </Box>
   );
 };

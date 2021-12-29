@@ -1,24 +1,17 @@
 import React, { useState } from 'react';
-import { TransactionResponse } from '@ethersproject/providers';
 import { Box, Typography, useMediaQuery } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { DualStakingInfo } from 'state/stake/hooks';
 import { JSBI, TokenAmount, Pair, ETHER } from '@uniswap/sdk';
 import { QUICK, EMPTY } from 'constants/index';
 import { unwrappedToken } from 'utils/wrappedCurrency';
-import {
-  usePairContract,
-  useDualRewardsStakingContract,
-} from 'hooks/useContract';
-import { useDerivedStakeInfo } from 'state/stake/hooks';
+import { useDualRewardsStakingContract } from 'hooks/useContract';
 import { useTransactionAdder } from 'state/transactions/hooks';
 import { DoubleCurrencyLogo, CurrencyLogo } from 'components';
-import CircleInfoIcon from 'assets/images/circleinfo.svg';
-import { Link } from 'react-router-dom';
 import { useTokenBalance } from 'state/wallet/hooks';
 import { useActiveWeb3React } from 'hooks';
-import useTransactionDeadline from 'hooks/useTransactionDeadline';
-import { useApproveCallback, ApprovalState } from 'hooks/useApproveCallback';
+import CircleInfoIcon from 'assets/images/circleinfo.svg';
+import FarmDualCardDetails from './FarmDualCardDetails';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   syrupCard: {
@@ -244,106 +237,10 @@ const FarmDualCard: React.FC<{
     stakingInfo.stakingRewardAddress,
   );
 
-  const onWithdraw = async () => {
-    if (stakingContract && stakingInfo?.stakedAmount) {
-      setAttemptUnstaking(true);
-      await stakingContract
-        .exit({ gasLimit: 300000 })
-        .then((response: TransactionResponse) => {
-          addTransaction(response, {
-            summary: `Withdraw deposited liquidity`,
-          });
-          // setHash(response.hash);
-        })
-        .catch((error: any) => {
-          setAttemptUnstaking(false);
-          console.log(error);
-        });
-    }
-  };
-
-  const onClaimReward = async () => {
-    if (stakingContract && stakingInfo?.stakedAmount) {
-      setAttemptClaimReward(true);
-      await stakingContract
-        .getReward({ gasLimit: 350000 })
-        .then((response: TransactionResponse) => {
-          addTransaction(response, {
-            summary: `Claim accumulated QUICK rewards`,
-          });
-          // setHash(response.hash);
-        })
-        .catch((error: any) => {
-          setAttemptClaimReward(false);
-          console.log(error);
-        });
-    }
-    if (stakingContract && stakingInfo.stakedAmount) {
-      await stakingContract
-        .getReward({ gasLimit: 350000 })
-        .then((response: TransactionResponse) => {
-          addTransaction(response, {
-            summary: `Claim accumulated rewards`,
-          });
-          // setHash(response.hash);
-        })
-        .catch((error: any) => {
-          console.log(error);
-        });
-    }
-  };
-
-  const { parsedAmount } = useDerivedStakeInfo(
-    stakeAmount,
-    stakingInfo.stakedAmount.token,
-    userLiquidityUnstaked,
-  );
-  const deadline = useTransactionDeadline();
-  const [approval, approveCallback] = useApproveCallback(
-    parsedAmount,
-    stakingInfo.stakingRewardAddress,
-  );
-  const [signatureData, setSignatureData] = useState<{
-    v: number;
-    r: string;
-    s: string;
-    deadline: number;
-  } | null>(null);
-
   const dummyPair = new Pair(
     new TokenAmount(stakingInfo.tokens[0], '0'),
     new TokenAmount(stakingInfo.tokens[1], '0'),
   );
-  const pairContract = usePairContract(
-    stakingInfo.lp && stakingInfo.lp !== ''
-      ? stakingInfo.lp
-      : dummyPair.liquidityToken.address,
-  );
-
-  const onStake = async () => {
-    setAttemptStaking(true);
-    if (stakingContract && parsedAmount && deadline) {
-      if (approval === ApprovalState.APPROVED) {
-        await stakingContract.stake(`0x${parsedAmount.raw.toString(16)}`, {
-          gasLimit: 350000,
-        });
-      } else {
-        setAttemptStaking(false);
-        throw new Error(
-          'Attempting to stake without approval or a signature. Please contact support.',
-        );
-      }
-    }
-  };
-
-  const onAttemptToApprove = async () => {
-    if (!pairContract || !library || !deadline)
-      throw new Error('missing dependencies');
-    const liquidityAmount = parsedAmount;
-    if (!liquidityAmount) throw new Error('missing liquidity amount');
-
-    return approveCallback();
-  };
 
   const earnedUSD =
     Number(stakingInfo.earnedAmountA.toSignificant()) *
@@ -473,274 +370,12 @@ const FarmDualCard: React.FC<{
         </Box>
       </Box>
 
-      {isExpandCard && (
-        <Box
-          width='100%'
-          mt={2.5}
-          pl={isMobile ? 2 : 4}
-          pr={isMobile ? 2 : 4}
-          pt={2}
-          display='flex'
-          flexDirection='row'
-          flexWrap='wrap'
-          borderTop='1px solid #444444'
-          alignItems='center'
-          justifyContent='space-between'
-        >
-          <Box
-            minWidth={250}
-            width={isMobile ? 1 : 0.3}
-            color={palette.text.secondary}
-            my={1.5}
-          >
-            <Box
-              display='flex'
-              flexDirection='row'
-              alignItems='flex-start'
-              justifyContent='space-between'
-            >
-              <Typography variant='body2'>In Wallet:</Typography>
-              <Box
-                display='flex'
-                flexDirection='column'
-                alignItems='flex-end'
-                justifyContent='flex-start'
-              >
-                <Typography variant='body2'>
-                  {userLiquidityUnstaked
-                    ? userLiquidityUnstaked.toSignificant(2)
-                    : 0}{' '}
-                  LP{' '}
-                  <span>
-                    (${valueOfUnstakedAmountInUSDC?.toSignificant(2)})
-                  </span>
-                </Typography>
-                <Link
-                  to={`/pools?currency0=${
-                    token0.symbol?.toLowerCase() === 'wmatic'
-                      ? 'ETH'
-                      : token0.address
-                  }&currency1=${
-                    token1.symbol?.toLowerCase() === 'wmatic'
-                      ? 'ETH'
-                      : token1.address
-                  }`}
-                  style={{ color: palette.primary.main }}
-                >
-                  Get {currency0.symbol} / {currency1.symbol} LP
-                </Link>
-              </Box>
-            </Box>
-            <Box className={classes.inputVal} mb={2} mt={2} p={2}>
-              <input
-                placeholder='0.00'
-                value={stakeAmount}
-                onChange={(evt: any) => {
-                  setStakeAmount(evt.target.value);
-                }}
-              />
-              <Typography
-                variant='body2'
-                style={{
-                  color:
-                    userLiquidityUnstaked &&
-                    userLiquidityUnstaked.greaterThan('0')
-                      ? palette.primary.main
-                      : palette.text.hint,
-                }}
-                onClick={() => {
-                  if (
-                    userLiquidityUnstaked &&
-                    userLiquidityUnstaked.greaterThan('0')
-                  ) {
-                    setStakeAmount(userLiquidityUnstaked.toSignificant());
-                  } else {
-                    setStakeAmount('');
-                  }
-                }}
-              >
-                MAX
-              </Typography>
-            </Box>
-            <Box
-              className={
-                Number(!attemptStaking && stakeAmount) > 0 &&
-                Number(stakeAmount) <=
-                  Number(userLiquidityUnstaked?.toSignificant())
-                  ? classes.buttonClaim
-                  : classes.buttonToken
-              }
-              mb={2}
-              mt={2}
-              p={2}
-              onClick={() => {
-                if (
-                  !attemptStaking &&
-                  Number(stakeAmount) > 0 &&
-                  Number(stakeAmount) <=
-                    Number(userLiquidityUnstaked?.toSignificant())
-                ) {
-                  if (
-                    approval === ApprovalState.APPROVED ||
-                    signatureData !== null
-                  ) {
-                    onStake();
-                  } else {
-                    onAttemptToApprove();
-                  }
-                }
-              }}
-            >
-              <Typography variant='body1'>
-                {attemptStaking
-                  ? 'Staking LP Tokens...'
-                  : approval === ApprovalState.APPROVED ||
-                    signatureData !== null
-                  ? 'Stake LP Tokens'
-                  : 'Approve'}
-              </Typography>
-            </Box>
-          </Box>
-          <Box
-            minWidth={250}
-            width={isMobile ? 1 : 0.3}
-            my={1.5}
-            color={palette.text.secondary}
-          >
-            <Box
-              display='flex'
-              flexDirection='row'
-              alignItems='flex-start'
-              justifyContent='space-between'
-            >
-              <Typography variant='body2'>My deposits:</Typography>
-              <Typography variant='body2'>
-                {stakingInfo.stakedAmount.toSignificant(2)} LP{' '}
-                <span>(${valueOfMyStakedAmountInUSDC?.toSignificant(2)})</span>
-              </Typography>
-            </Box>
-            <Box className={classes.inputVal} mb={2} mt={4.5} p={2}>
-              <input
-                placeholder='0.00'
-                value={unstakeAmount}
-                onChange={(evt: any) => {
-                  setUnStakeAmount(evt.target.value);
-                }}
-              />
-              <Typography
-                variant='body2'
-                style={{
-                  color:
-                    stakingInfo.stakedAmount &&
-                    stakingInfo.stakedAmount.greaterThan('0')
-                      ? palette.primary.main
-                      : palette.text.hint,
-                }}
-                onClick={() => {
-                  if (
-                    stakingInfo.stakedAmount &&
-                    stakingInfo.stakedAmount.greaterThan('0')
-                  ) {
-                    setUnStakeAmount(stakingInfo.stakedAmount.toSignificant());
-                  } else {
-                    setUnStakeAmount('');
-                  }
-                }}
-              >
-                MAX
-              </Typography>
-            </Box>
-            <Box
-              className={
-                !attemptUnstaking &&
-                Number(unstakeAmount) > 0 &&
-                Number(unstakeAmount) <=
-                  Number(stakingInfo.stakedAmount.toSignificant())
-                  ? classes.buttonClaim
-                  : classes.buttonToken
-              }
-              mb={2}
-              mt={2}
-              p={2}
-              onClick={() => {
-                if (
-                  !attemptUnstaking &&
-                  Number(unstakeAmount) > 0 &&
-                  Number(unstakeAmount) <=
-                    Number(stakingInfo.stakedAmount.toSignificant())
-                ) {
-                  onWithdraw();
-                }
-              }}
-            >
-              <Typography variant='body1'>
-                {attemptUnstaking
-                  ? 'Unstaking LP Tokens...'
-                  : 'Unstake LP Tokens'}
-              </Typography>
-            </Box>
-          </Box>
-          <Box
-            minWidth={250}
-            my={1.5}
-            width={isMobile ? 1 : 0.3}
-            color={palette.text.secondary}
-          >
-            <Box
-              display='flex'
-              flexDirection='column'
-              alignItems='center'
-              justifyContent='space-between'
-            >
-              <Box mb={1}>
-                <Typography variant='body2'>Unclaimed Rewards:</Typography>
-              </Box>
-              <Box mb={1} display='flex'>
-                <CurrencyLogo currency={QUICK} />
-                <CurrencyLogo
-                  currency={
-                    rewardTokenB.symbol?.toLowerCase() === 'wmatic'
-                      ? ETHER
-                      : rewardTokenB
-                  }
-                />
-              </Box>
-              <Box mb={1} textAlign='center'>
-                <Typography variant='body1'>{earnedUSDStr}</Typography>
-                <Typography variant='body1' color='textSecondary'>
-                  {stakingInfo.earnedAmountA.toSignificant(2)}
-                  <span>&nbsp;dQUICK</span>
-                </Typography>
-                <Typography variant='body1' color='textSecondary'>
-                  {stakingInfo.earnedAmountB.toSignificant(2)}
-                  <span>&nbsp;{rewardTokenB.symbol}</span>
-                </Typography>
-              </Box>
-            </Box>
-            <Box
-              className={
-                !attemptClaimReward &&
-                stakingInfo.earnedAmountA.greaterThan('0')
-                  ? classes.buttonClaim
-                  : classes.buttonToken
-              }
-              mb={2}
-              p={2}
-              onClick={() => {
-                if (
-                  !attemptClaimReward &&
-                  stakingInfo.earnedAmountA.greaterThan('0')
-                ) {
-                  onClaimReward();
-                }
-              }}
-            >
-              <Typography variant='body1'>
-                {attemptClaimReward ? 'Claiming...' : 'Claim'}
-              </Typography>
-            </Box>
-          </Box>
-        </Box>
+      {isExpandCard && stakingInfo.stakingTokenPair && (
+        <FarmDualCardDetails
+          pair={stakingInfo.stakingTokenPair}
+          dQuicktoQuick={dQuicktoQuick}
+          stakingAPY={stakingAPY}
+        />
       )}
     </Box>
   );
