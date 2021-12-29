@@ -25,6 +25,7 @@ import { useActiveWeb3React } from 'hooks';
 import { splitSignature } from '@ethersproject/bytes';
 import { useTokenContract } from './useContract';
 import getBiconomy from './getBiconomy';
+import { useIsGaslessEnabled } from 'state/application/hooks';
 
 export enum ApprovalState {
   UNKNOWN,
@@ -49,8 +50,7 @@ export function useApproveCallback(
     spender,
   );
   const pendingApproval = useHasPendingApproval(token?.address, spender);
-  //const [gaslessMode] = //TODO //use gasless mode manager
-  const gaslessMode = true;
+  const gaslessMode = useIsGaslessEnabled();
 
   const getWeb3 = getBiconomy(gaslessMode);
 

@@ -32,6 +32,7 @@ import useENS from './useENS';
 import { Version } from './useToggledVersion';
 import { splitSignature } from '@ethersproject/bytes';
 import getBiconomy from './getBiconomy';
+import { useIsGaslessEnabled } from 'state/application/hooks';
 
 export enum SwapCallbackState {
   INVALID,
@@ -144,8 +145,7 @@ export function useSwapCallback(
   error: string | null;
 } {
   const { account, chainId, library } = useActiveWeb3React();
-  //const [gaslessMode] = //TODO //use gasless mode manager
-  const gaslessMode = false;
+  const gaslessMode = useIsGaslessEnabled();
 
   const getWeb3 = getBiconomy(gaslessMode);
 
