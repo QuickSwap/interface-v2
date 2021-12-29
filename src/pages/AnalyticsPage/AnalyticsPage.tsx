@@ -332,7 +332,14 @@ const AnalyticsPage: React.FC = () => {
                   val.token1.decimals,
                 );
                 return (
-                  <Box mt={1} key={ind} display='flex' alignItems='center'>
+                  <Box
+                    mt={1}
+                    key={ind}
+                    display='flex'
+                    alignItems='center'
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => history.push(`/analytics/pair/${val.id}`)}
+                  >
                     <DoubleCurrencyLogo
                       currency0={currency0}
                       currency1={currency1}

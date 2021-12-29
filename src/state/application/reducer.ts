@@ -20,7 +20,6 @@ import {
   addBookMarkPair,
   removeBookmarkPair,
   updateBookmarkPairs,
-  updateTokenChartData,
 } from './actions';
 
 type PopupList = Array<{
@@ -179,8 +178,5 @@ export default createReducer(initialState, (builder) =>
     })
     .addCase(updateBookmarkPairs, (state, { payload }) => {
       state.bookmarkedPairs = payload;
-    })
-    .addCase(updateTokenChartData, (state, { payload }) => {
-      state.tokenChartData = payload;
     }),
 );

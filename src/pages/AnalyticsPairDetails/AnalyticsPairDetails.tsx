@@ -13,6 +13,7 @@ import {
   formatCompact,
   getPairTransactions,
   getPairChartData,
+  getHourlyRateData,
 } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import {
@@ -194,14 +195,12 @@ const AnalyticsPairDetails: React.FC = () => {
           ? Number(item.dailyVolumeUSD)
           : chartIndex === 1
           ? Number(item.reserveUSD)
-          : Number(item.dailyVolumeToken0),
+          : Number(item.dailyVolumeUSD) * 0.003,
       );
     } else {
       return null;
     }
   }, [pairChartData, chartIndex]);
-
-  console.log('ccc', pairChartData);
 
   const yAxisValues = useMemo(() => {
     if (chartData) {
@@ -266,7 +265,6 @@ const AnalyticsPairDetails: React.FC = () => {
       }
     }
     fetchPairChartData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pairAddress]);
 
   return (
@@ -377,7 +375,7 @@ const AnalyticsPairDetails: React.FC = () => {
                 className={cx(classes.button, classes.filledButton)}
                 onClick={() => {
                   history.push(
-                    `/swap?currency0=${pairData.token1.id}&currency1=${pairData.token1.id}`,
+                    `/swap?currency0=${pairData.token0.id}&currency1=${pairData.token1.id}`,
                   );
                 }}
               >
@@ -484,7 +482,7 @@ const AnalyticsPairDetails: React.FC = () => {
                       className={classes.chartType}
                       onClick={() => setChartIndex(2)}
                     >
-                      <Typography variant='caption'>Price</Typography>
+                      <Typography variant='caption'>Fees</Typography>
                     </Box>
                   </Box>
                 </Box>

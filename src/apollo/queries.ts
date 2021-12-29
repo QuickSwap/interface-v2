@@ -146,6 +146,21 @@ export const PAIR_CHART = gql`
   }
 `;
 
+export const HOURLY_PAIR_RATES = (pairAddress: string, blocks: any[]) => {
+  let queryString = 'query blocks {';
+  queryString += blocks.map(
+    (block) => `
+      t${block.timestamp}: pair(id:"${pairAddress}", block: { number: ${block.number} }) { 
+        token0Price
+        token1Price
+      }
+    `,
+  );
+
+  queryString += '}';
+  return gql(queryString);
+};
+
 const PairFields = `
   fragment PairFields on Pair {
     id

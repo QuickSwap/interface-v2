@@ -10,11 +10,7 @@ import cx from 'classnames';
 import { shortenAddress, getEtherscanLink, formatCompact } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import { CurrencyLogo, PairTable, AreaChart } from 'components';
-import {
-  useTokenPairs,
-  useBookmarkTokens,
-  useTokenChartData,
-} from 'state/application/hooks';
+import { useBookmarkTokens } from 'state/application/hooks';
 import {
   getTokenInfo,
   getEthPrice,
@@ -113,10 +109,14 @@ const AnalyticsTokenDetails: React.FC = () => {
   const currency = token
     ? new Token(ChainId.MATIC, getAddress(token.id), token.decimals)
     : undefined;
-  const { tokenChartData, updateTokenChartData } = useTokenChartData();
+  const [tokenChartData, updateTokenChartData] = useState<any>(null);
   const [chartIndex, setChartIndex] = useState(0);
-  const { tokenPairs, updateTokenPairs } = useTokenPairs();
-  const { bookmarkTokens } = useBookmarkTokens();
+  const [tokenPairs, updateTokenPairs] = useState<any>(null);
+  const {
+    bookmarkTokens,
+    addBookmarkToken,
+    removeBookmarkToken,
+  } = useBookmarkTokens();
 
   useEffect(() => {
     async function checkEthPrice() {
@@ -211,7 +211,6 @@ const AnalyticsTokenDetails: React.FC = () => {
     }
     async function fetchTokenPairs() {
       const [newPrice] = await getEthPrice();
-      updateTokenPairs({ data: null });
       const tokenPairs = await getTokenPairs2(tokenAddress);
       const formattedPairs = tokenPairs
         ? tokenPairs.map((pair: any) => {
@@ -220,7 +219,7 @@ const AnalyticsTokenDetails: React.FC = () => {
         : [];
       const pairData = await getBulkPairData(formattedPairs, newPrice);
       if (pairData) {
-        updateTokenPairs({ data: pairData });
+        updateTokenPairs(pairData);
       }
     }
     fetchTokenPairs();
@@ -277,9 +276,11 @@ const AnalyticsTokenDetails: React.FC = () => {
                     </Typography>
                   </Box>
                   {bookmarkTokens.includes(token.id) ? (
-                    <StarChecked />
+                    <StarChecked
+                      onClick={() => removeBookmarkToken(token.id)}
+                    />
                   ) : (
-                    <StarUnchecked />
+                    <StarUnchecked onClick={() => addBookmarkToken(token.id)} />
                   )}
                 </Box>
                 <Box mt={1.25} display='flex' alignItems='center'>

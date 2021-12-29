@@ -268,6 +268,16 @@ export const SYRUP_REWARDS_INFO: {
 } = {
   [ChainId.MATIC]: [
     {
+      token: SNE,
+      stakingRewardAddress: '0xf6Fe46F0001FDeFAde6b5E08635ED303f2E0a3aA',
+      ended: false,
+      lp: '',
+      name: '',
+      baseToken: USDC,
+      rate: 160000,
+      ending: 1643302635,
+    },
+    {
       token: POLYPUG,
       stakingRewardAddress: '0xA206A97b30343a0802553dB48d71af349AbF563A',
       ended: false,
@@ -346,16 +356,6 @@ export const SYRUP_REWARDS_INFO: {
       baseToken: ETHER,
       rate: 40610.66,
       ending: 1644090690,
-    },
-    {
-      token: UFI,
-      stakingRewardAddress: '0xE707bB8513873c2360811F01BfBd0e9EBFd96b0D',
-      ended: false,
-      lp: '',
-      name: '',
-      baseToken: MATIC,
-      rate: 18315,
-      ending: 1640485140,
     },
     {
       token: WSG,
@@ -483,6 +483,16 @@ export const OLD_SYRUP_REWARDS_INFO: {
   }[];
 } = {
   [ChainId.MATIC]: [
+    {
+      token: UFI,
+      stakingRewardAddress: '0xE707bB8513873c2360811F01BfBd0e9EBFd96b0D',
+      ended: true,
+      lp: '',
+      name: '',
+      baseToken: MATIC,
+      rate: 18315,
+      ending: 1640485140,
+    },
     {
       token: UCO,
       stakingRewardAddress: '0xC328d6eC46d11a6ABdA3C02434861beA14739E1f',

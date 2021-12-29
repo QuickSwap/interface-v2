@@ -186,12 +186,18 @@ const PairTable: React.FC<TokensTableProps> = ({ data }) => {
     const liquidity = pair.trackedReserveUSD
       ? pair.trackedReserveUSD
       : pair.reserveUSD;
-    const oneDayVolume = pair.oneDayVolumeUSD
-      ? pair.oneDayVolumeUSD
-      : pair.oneDayVolumeUntracked;
-    const oneWeekVolume = pair.oneWeekVolumeUSD
-      ? pair.oneWeekVolumeUSD
-      : pair.oneWeekVolumeUntracked;
+    const oneDayVolume =
+      pair.oneDayVolumeUSD && !isNaN(pair.oneDayVolumeUSD)
+        ? pair.oneDayVolumeUSD
+        : pair.oneDayVolumeUntracked && !isNaN(pair.oneDayVolumeUntracked)
+        ? pair.oneDayVolumeUntracked
+        : 0;
+    const oneWeekVolume =
+      pair.oneWeekVolumeUSD && !isNaN(pair.oneWeekVolumeUSD)
+        ? pair.oneWeekVolumeUSD
+        : pair.oneWeekVolumeUntracked && !isNaN(pair.oneWeekVolumeUntracked)
+        ? pair.oneWeekVolumeUntracked
+        : 0;
     const oneDayFee = (Number(oneDayVolume) * 0.003).toLocaleString();
     return [
       {
