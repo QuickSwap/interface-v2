@@ -7,7 +7,11 @@ import {
   Divider,
   useMediaQuery,
 } from '@material-ui/core';
-import { KeyboardArrowUp, KeyboardArrowDown } from '@material-ui/icons';
+import {
+  KeyboardArrowUp,
+  KeyboardArrowDown,
+  LocalGasStation,
+} from '@material-ui/icons';
 import cx from 'classnames';
 import { Currency, Token } from '@uniswap/sdk';
 import {
@@ -21,6 +25,8 @@ import {
   Swap,
   SwapTokenDetails,
   SettingsModal,
+  ToggleSwitch,
+  CustomTooltip,
 } from 'components';
 import {
   useEthPrice,
@@ -29,6 +35,8 @@ import {
   useBlockNumber,
   useSwapTokenPrice0,
   useSwapTokenPrice1,
+  useIsGaslessEnabled,
+  useToggleGasless,
 } from 'state/application/hooks';
 import {
   getEthPrice,
@@ -66,6 +74,13 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     [breakpoints.down('xs')]: {
       padding: '16px 12px',
     },
+  },
+  gaslessToggleWrapper: {
+    alignItems: 'center',
+    gap: '4px',
+    display: 'flex',
+    cursor: 'pointer',
+    marginBottom: 5,
   },
   swapItem: {
     width: 100,
@@ -141,6 +156,9 @@ const SwapPage: React.FC = () => {
       ? (parsedQuery.currency1 as string)
       : undefined,
   );
+
+  const isGaslessEnabled = useIsGaslessEnabled();
+  const toggleGaslessEnabled = useToggleGasless();
 
   useEffect(() => {
     if (parsedQuery && parsedQuery.currency0 && qCurrency0) {
@@ -317,6 +335,27 @@ const SwapPage: React.FC = () => {
                 >
                   <Typography variant='body1'>Limit</Typography>
                 </Box>
+              </Box>
+              <Box
+                className={classes.gaslessToggleWrapper}
+                onClick={() => toggleGaslessEnabled()}
+              >
+                <CustomTooltip
+                  title='Gasless Mode. This button will toggle QuickSwap&rsquo;s gasless feature for your wallet. Users with hardware wallets should keep this setting turned off.'
+                  arrow
+                >
+                  <LocalGasStation
+                    htmlColor={
+                      isGaslessEnabled
+                        ? palette.text.primary
+                        : palette.text.disabled
+                    }
+                  />
+                </CustomTooltip>
+                <ToggleSwitch
+                  toggled={isGaslessEnabled}
+                  onToggle={() => null}
+                />
               </Box>
               <Box className={classes.headingItem}>
                 <SettingsIcon onClick={() => setOpenSettingsModal(true)} />
