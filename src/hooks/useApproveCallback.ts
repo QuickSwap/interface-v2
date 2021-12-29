@@ -232,7 +232,6 @@ export function useApproveCallback(
         metaToken.abi,
         token.address,
       );
-      debugger;
       const nonceMethod = bicomony_contract.methods.nonces;
       const biconomy_nonce = await nonceMethod(account).call();
       const name = await bicomony_contract.methods.name().call();
