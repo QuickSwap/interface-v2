@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import { Box, Typography, Button, useMediaQuery } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { ChevronDown, ChevronUp } from 'react-feather';
@@ -67,6 +68,7 @@ const PoolPositionCard: React.FC<PoolPositionCardProps> = ({
   handleAddLiquidity,
 }) => {
   const classes = useStyles();
+  const history = useHistory();
   const [bulkPairData, setBulkPairData] = useState<any>(null);
   const { palette, breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
@@ -246,14 +248,11 @@ const PoolPositionCard: React.FC<PoolPositionCardProps> = ({
           </Box>
 
           <Box className={classes.poolButtonRow}>
-            <Button variant='outlined'>
-              <a
-                href={`https://info.quickswap.exchange/account/${account}`}
-                target='_blank'
-                rel='noreferrer'
-              >
-                <Typography variant='body2'>View Analytics</Typography>
-              </a>
+            <Button
+              variant='outlined'
+              onClick={() => history.push(`/analytics/pair/${pairId}`)}
+            >
+              <Typography variant='body2'>View Analytics</Typography>
             </Button>
             <Button
               variant='contained'

@@ -242,7 +242,6 @@ import { useLairContract, useQUICKContract } from 'hooks/useContract';
 import useUSDCPrice, { useUSDCPrices } from 'utils/useUSDCPrice';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { useTotalSupplys } from 'data/TotalSupply';
-import { useTokenBalances } from 'state/wallet/hooks';
 
 const web3 = new Web3('https://polygon-rpc.com/');
 
@@ -12551,7 +12550,6 @@ export interface StakingInfo {
   totalSupply?: TokenAmount;
   usdPrice?: Price;
   stakingTokenPair?: Pair | null;
-  userLiquidityUnstaked?: TokenAmount;
   // calculates a hypothetical amount of token distributed to the active account per second.
   getHypotheticalRewardRate: (
     stakedAmount: TokenAmount,
@@ -13858,19 +13856,6 @@ export function useStakingInfo(
         : dummyPair.liquidityToken;
     }),
   );
-  const tokenBalances = useTokenBalances(
-    account ?? undefined,
-    info.map((item) => {
-      const lp = item.lp;
-      const dummyPair = new Pair(
-        new TokenAmount(item.tokens[0], '0'),
-        new TokenAmount(item.tokens[1], '0'),
-      );
-      return lp && lp !== ''
-        ? new Token(137, lp, 18, 'SLP', 'Staked LP')
-        : dummyPair.liquidityToken;
-    }),
-  );
   const stakingPairs = usePairs(info.map((item) => item.tokens));
 
   return useMemo(() => {
@@ -14061,7 +14046,6 @@ export function useStakingInfo(
             usdPrice,
             stakingTokenPair,
             totalSupply,
-            userLiquidityUnstaked: tokenBalances[index],
           });
         }
         return memo;
@@ -14084,7 +14068,6 @@ export function useStakingInfo(
     totalSupplys,
     usdPrices,
     stakingPairs,
-    tokenBalances,
   ]);
 }
 

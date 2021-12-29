@@ -420,26 +420,26 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo }> = ({ syrup }) => {
                     >
                       <Typography variant='body2'>Stake</Typography>
                     </Box>
-                    {syrup.stakedAmount.greaterThan('0') && (
-                      <Box
-                        className={classes.syrupButton}
-                        mt={isMobile ? 1.5 : 0}
-                        ml={isMobile ? 0 : 1.5}
-                        style={{ opacity: attemptingUnstake ? 0.6 : 1 }}
-                        onClick={() => {
-                          if (!attemptingUnstake) {
-                            onWithdraw();
-                          }
-                        }}
-                      >
-                        <Typography variant='body2'>
-                          {attemptingUnstake && !hashUnstake
-                            ? 'Unstaking...'
-                            : 'Unstake'}
-                        </Typography>
-                      </Box>
-                    )}
                   </>
+                )}
+                {syrup.stakedAmount.greaterThan('0') && (
+                  <Box
+                    className={classes.syrupButton}
+                    mt={isMobile ? 1.5 : 0}
+                    ml={isMobile ? 0 : 1.5}
+                    style={{ opacity: attemptingUnstake ? 0.6 : 1 }}
+                    onClick={() => {
+                      if (!attemptingUnstake) {
+                        onWithdraw();
+                      }
+                    }}
+                  >
+                    <Typography variant='body2'>
+                      {attemptingUnstake && !hashUnstake
+                        ? 'Unstaking...'
+                        : 'Unstake'}
+                    </Typography>
+                  </Box>
                 )}
                 {syrup.earnedAmount.greaterThan('0') && (
                   <Box

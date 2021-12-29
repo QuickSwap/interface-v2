@@ -10,6 +10,7 @@ import { unwrappedToken } from 'utils/wrappedCurrency';
 import { usePairContract, useStakingContract } from 'hooks/useContract';
 import { useDerivedStakeInfo } from 'state/stake/hooks';
 import { useTransactionAdder } from 'state/transactions/hooks';
+import { useTokenBalance } from 'state/wallet/hooks';
 import { CurrencyLogo } from 'components';
 import { Link } from 'react-router-dom';
 import { useActiveWeb3React, useIsArgentWallet } from 'hooks';
@@ -121,7 +122,10 @@ const FarmLPCardDetails: React.FC<{
 
   const stakingTokenPair = stakingInfo.stakingTokenPair;
 
-  const userLiquidityUnstaked = stakingInfo.userLiquidityUnstaked;
+  const userLiquidityUnstaked = useTokenBalance(
+    account ?? undefined,
+    stakingInfo.stakedAmount.token,
+  );
 
   let valueOfTotalStakedAmountInBaseToken: TokenAmount | undefined;
   let valueOfMyStakedAmountInBaseToken: TokenAmount | undefined;

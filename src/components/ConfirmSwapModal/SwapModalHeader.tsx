@@ -98,28 +98,28 @@ const SwapModalHeader: React.FC<SwapModalHeaderProps> = ({
           {trade.outputAmount.currency.symbol}
         </Typography>
       </Box>
-      {/* {showAcceptChanges && ( */}
-      <Box className={classes.priceUpdate}>
-        <Box>
-          <AlertTriangle
-            size={20}
-            style={{ marginRight: '8px', minWidth: 24 }}
-          />
-          <Typography> Price Updated</Typography>
+      {showAcceptChanges && (
+        <Box className={classes.priceUpdate}>
+          <Box>
+            <AlertTriangle
+              size={20}
+              style={{ marginRight: '8px', minWidth: 24 }}
+            />
+            <Typography> Price Updated</Typography>
+          </Box>
+          <Button
+            style={{
+              padding: '.5rem',
+              width: 'fit-content',
+              fontSize: '0.825rem',
+              borderRadius: '12px',
+            }}
+            onClick={onAcceptChanges}
+          >
+            Accept
+          </Button>
         </Box>
-        <Button
-          style={{
-            padding: '.5rem',
-            width: 'fit-content',
-            fontSize: '0.825rem',
-            borderRadius: '12px',
-          }}
-          onClick={onAcceptChanges}
-        >
-          Accept
-        </Button>
-      </Box>
-      {/* )} */}
+      )}
       <Box className={classes.transactionText}>
         {trade.tradeType === TradeType.EXACT_INPUT ? (
           <Typography variant='body2'>
