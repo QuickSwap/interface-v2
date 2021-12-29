@@ -11869,7 +11869,7 @@
     "timeout-abort-controller" "^1.1.1"
     "uint8arrays" "^2.1.3"
 
-"ipfs-deploy@^11.0.1":
+"ipfs-deploy@^11.1.0":
   "integrity" "sha512-kGk/kcf3vn3GwReC2Iqy5u+mWnwd7oS7ARTbRa94ildWT+gh9CKgTZlgWSbq5+elknD3GiiwqwJomgxg6gdjGg=="
   "resolved" "https://registry.npmjs.org/ipfs-deploy/-/ipfs-deploy-11.1.0.tgz"
   "version" "11.1.0"
@@ -17226,6 +17226,11 @@
   "version" "1.2.5"
   dependencies:
     "@babel/runtime" "^7.12.13"
+
+"react-cool-inview@^2.0.8":
+  "integrity" "sha512-D8ilAp7HwRxRMA1xRAvXZF8yhbL/6WWD5nxYX+K1GwbGQuMmCkrr5Bhm/2Mgn8XlFLzAU9frQ7g0UILxt1SnOQ=="
+  "resolved" "https://registry.npmjs.org/react-cool-inview/-/react-cool-inview-2.0.8.tgz"
+  "version" "2.0.8"
 
 "react-dev-utils@^11.0.3":
   "integrity" "sha512-dx0LvIGHcOPtKbeiSUM4jqpBl3TcY7CDjZdfOIcKeznE7BWr9dg0iPG90G5yfVQ+p/rGNMXdbfStvzQZEVEi4A=="

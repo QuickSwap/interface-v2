@@ -1,9 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="15" height="38" viewBox="0 0 15 38">
-  <g id="Motif" transform="translate(-713 -1084)">
-    <path id="Path_6383" data-name="Path 6383" d="M-907.429-937.369h-.236c0-5.451-3.312-9.885-7.382-9.885v-.23c4.07,0,7.382-4.434,7.382-9.885h.236c0,5.451,3.312,9.885,7.382,9.885v.23C-904.117-947.254-907.429-942.82-907.429-937.369Z" transform="translate(1628.047 2051.494)" fill="#1b2a38"/>
-    <g id="Rectangle_17760" data-name="Rectangle 17760" transform="translate(720 1084)" fill="none" stroke="#1b2a38" stroke-width="1">
-      <rect width="1" height="38" stroke="none"/>
-      <rect x="0.5" y="0.5" height="37" fill="none"/>
-    </g>
-  </g>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="15" height="38"><path data-name="Path 6383" d="M7.618 30.125h-.236c0-5.451-3.312-9.885-7.382-9.885v-.23c4.07 0 7.382-4.434 7.382-9.885h.236c0 5.451 3.312 9.885 7.382 9.885v.23c-4.07 0-7.382 4.434-7.382 9.885z" fill="#1b2a38"/><g data-name="Rectangle 17760" transform="translate(7)" fill="none" stroke="#1b2a38"><path stroke="none" d="M0 0h1v38H0z"/><rect x=".5" y=".5" height="37"/></g></svg>
