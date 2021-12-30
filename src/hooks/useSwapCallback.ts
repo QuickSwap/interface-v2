@@ -31,8 +31,9 @@ import useTransactionDeadline from './useTransactionDeadline';
 import useENS from './useENS';
 import { Version } from './useToggledVersion';
 import { splitSignature } from '@ethersproject/bytes';
-import getBiconomy from './getBiconomy';
 import { useIsGaslessEnabled } from 'state/application/hooks';
+import { useBiconomy } from 'context/Biconomy';
+import Web3 from 'web3';
 
 export enum SwapCallbackState {
   INVALID,
@@ -147,7 +148,8 @@ export function useSwapCallback(
   const { account, chainId, library } = useActiveWeb3React();
   const gaslessMode = useIsGaslessEnabled();
 
-  const getWeb3 = getBiconomy(gaslessMode);
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const { biconomy, isBiconomyReady } = useBiconomy()!;
 
   const contractAddress = ROUTER_ADDRESS;
 
@@ -325,8 +327,8 @@ export function useSwapCallback(
               }
             });
         } else {
-          const bicomony_contract = new getWeb3.eth.Contract(
-            routerABI,
+          const bicomony_contract = new new Web3(biconomy).eth.Contract(
+            routerABI as any,
             contractAddress,
           );
           const biconomy_nonce = await bicomony_contract.methods
