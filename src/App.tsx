@@ -33,6 +33,7 @@ import 'slick-carousel/slick/slick-theme.css';
 import './i18n';
 import './App.css';
 import { mainTheme } from './theme';
+import { BiconomyProvider } from 'context/Biconomy';
 
 const Web3ProviderNetwork = createWeb3ReactRoot(NetworkContextName);
 
@@ -44,14 +45,16 @@ const ThemeProvider: React.FC = ({ children }) => {
 
 const Providers: React.FC = ({ children }) => {
   return (
-    <BrowserRouter>
-      <Suspense fallback={null}>
-        <ThemeProvider>
-          <CssBaseline />
-          {children}
-        </ThemeProvider>
-      </Suspense>
-    </BrowserRouter>
+    <BiconomyProvider>
+      <BrowserRouter>
+        <Suspense fallback={null}>
+          <ThemeProvider>
+            <CssBaseline />
+            {children}
+          </ThemeProvider>
+        </Suspense>
+      </BrowserRouter>
+    </BiconomyProvider>
   );
 };
 
