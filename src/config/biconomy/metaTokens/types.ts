@@ -21,6 +21,7 @@ export class MetaToken {
       token: Token,
       library: ethers.providers.Web3Provider,
       account: string,
+      biconomy: any,
     ) => ApproveStrategy,
   ) {
     this.token = token;
@@ -46,6 +47,7 @@ export class MetaToken {
       this.token,
       this.library,
       this.account,
+      this.biconomy,
     ).execute;
   }
 }
@@ -56,6 +58,7 @@ export abstract class ApproveStrategy {
   token;
   library;
   account;
+  biconomy;
 
   constructor(
     contract: ethers.Contract,
@@ -63,12 +66,14 @@ export abstract class ApproveStrategy {
     token: Token,
     library: ethers.providers.Web3Provider,
     account: string,
+    biconomy: any,
   ) {
     this.contract = contract;
     this.contractInterface = contractInterface;
     this.token = token;
     this.library = library;
     this.account = account;
+    this.biconomy = biconomy;
   }
 
   abstract execute(spender: string, chainId: number): Promise<any>;

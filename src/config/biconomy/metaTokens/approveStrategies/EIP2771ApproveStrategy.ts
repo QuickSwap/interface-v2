@@ -18,12 +18,7 @@ export const eip2612PermitType = [
 
 export class EIP2771ApproveStrategy extends ApproveStrategy {
   async execute(spender: string, chainId: number) {
-    const nonceMethod = this.contract.nonces;
-    const nonce = parseInt(await nonceMethod(this.account));
-    const deadline = Math.floor(Date.now() / 1000 + 3600);
-    const name = await this.contract.name();
-
-    const { data } = await this.contract.approve(
+    const { data } = await this.contract.populateTransaction.approve(
       spender,
       ethers.constants.MaxUint256.toString(),
     );
@@ -36,10 +31,15 @@ export class EIP2771ApproveStrategy extends ApproveStrategy {
       signatureType: 'EIP712_SIGN',
     };
 
-    const response = await this.contract.send('eth_sendTransaction', [
-      txParams,
-    ]);
+    // for EIP2771 using ethers providers will return transaction hash
+    const txHash = await this.biconomy
+      .getEthersProvider()
+      .send('eth_sendTransaction', [txParams]);
 
-    return response;
+    // TODO : 
+    // Log response for every strategy. and try to capture native meta tx api response code and message
+    // Add try and catch in execute methods
+    // Based on the response code, message, errors :  propogate the below object with errors with required values (for addTransaction) like hash   
+    return { hash: txHash };
   }
 }
