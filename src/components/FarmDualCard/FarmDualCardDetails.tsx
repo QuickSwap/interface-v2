@@ -232,11 +232,19 @@ const FarmDualCardDetails: React.FC<{
     stakingInfo?.stakingRewardAddress,
   );
 
+  const { parsedAmount: unstakeParsedAmount } = useDerivedStakeInfo(
+    unstakeAmount,
+    stakingInfo?.stakedAmount.token,
+    stakingInfo?.stakedAmount,
+  );
+
   const onWithdraw = () => {
-    if (stakingContract && stakingInfo?.stakedAmount) {
+    if (stakingInfo && stakingContract && unstakeParsedAmount) {
       setAttemptUnstaking(true);
       stakingContract
-        .exit({ gasLimit: 300000 })
+        .withdraw(`0x${unstakeParsedAmount.raw.toString(16)}`, {
+          gasLimit: 300000,
+        })
         .then(async (response: TransactionResponse) => {
           addTransaction(response, {
             summary: `Withdraw deposited liquidity`,
