@@ -1,21 +1,6 @@
 import { ethers } from 'ethers';
 import { ApproveStrategy } from '../types';
 
-export const permitDomainType = [
-  { name: 'name', type: 'string' },
-  //{ name: 'version', type: 'string' },
-  { name: 'chainId', type: 'uint256' },
-  { name: 'verifyingContract', type: 'address' },
-];
-
-export const eip2612PermitType = [
-  { name: 'owner', type: 'address' },
-  { name: 'spender', type: 'address' },
-  { name: 'value', type: 'uint256' },
-  { name: 'nonce', type: 'uint256' },
-  { name: 'deadline', type: 'uint256' },
-];
-
 export class EIP2771ApproveStrategy extends ApproveStrategy {
   async execute(spender: string, chainId: number) {
     const { data } = await this.contract.populateTransaction.approve(

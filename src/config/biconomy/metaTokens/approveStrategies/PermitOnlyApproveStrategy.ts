@@ -3,7 +3,7 @@ import { ApproveStrategy } from '../types';
 
 export const permitDomainType = [
   { name: 'name', type: 'string' },
-  //{ name: 'version', type: 'string' },
+  //{ name: 'version', type: 'string' }, //For QUICK version is omitted
   { name: 'chainId', type: 'uint256' },
   { name: 'verifyingContract', type: 'address' },
 ];
@@ -18,10 +18,22 @@ export const eip2612PermitType = [
 
 export class PermitOnlyApproveStrategy extends ApproveStrategy {
   async execute(spender: string, chainId: number) {
+    //const permitClient = this.biconomy.permitClient;
+    //Permit client is currently only available for ERC20 forwarder supported networks.
+
     const nonceMethod = this.contract.nonces;
     const nonce = parseInt(await nonceMethod(this.account));
     const deadline = Math.floor(Date.now() / 1000 + 3600);
     const name = await this.contract.name();
+
+    //TODO
+    //get permitDomainType and Domain Data from custom config
+    const permitDomainData = {
+      name: name,
+      //version: '1', //for QUICK version is omitted. permitDomainData should come from optional config in the strategy
+      chainId: chainId.toString(), //or Number
+      verifyingContract: this.token.address,
+    };
 
     const message = {
       nonce,
@@ -36,12 +48,7 @@ export class PermitOnlyApproveStrategy extends ApproveStrategy {
         EIP712Domain: permitDomainType,
         Permit: eip2612PermitType,
       },
-      domain: {
-        name,
-        // version: '1', // TODO: Fetch version from config
-        chainId: chainId.toString(), //or Number
-        verifyingContract: this.token.address,
-      },
+      domain: permitDomainData,
       primaryType: 'Permit',
       message,
     });

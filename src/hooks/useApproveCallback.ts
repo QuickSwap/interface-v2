@@ -2,17 +2,7 @@ import { MaxUint256 } from '@ethersproject/constants';
 import { TransactionResponse } from '@ethersproject/providers';
 import { Trade, TokenAmount, CurrencyAmount, ETHER } from '@uniswap/sdk';
 import { useCallback, useMemo } from 'react';
-import {
-  ROUTER_ADDRESS,
-  EIP712_SUPPORTED_TOKENS_DOMAIN_TYPE1,
-  EIP712_SUPPORTED_TOKENS_DOMAIN_TYPE2,
-  PERMIT_ONLY_SUPPORTED_TOKENS,
-  EIP2771_SUPPORTED_TOKENS,
-  domainType1,
-  domainType2,
-  domainType3,
-  eip2612PermitType,
-} from 'constants/index';
+import { ROUTER_ADDRESS } from 'constants/index';
 import { useTokenAllowance } from 'data/Allowances';
 import { Field } from 'state/swap/actions';
 import {
@@ -22,13 +12,11 @@ import {
 import { computeSlippageAdjustedAmounts } from 'utils/prices';
 import { calculateGasMargin } from 'utils';
 import { useActiveWeb3React } from 'hooks';
-import { splitSignature } from '@ethersproject/bytes';
 import { useTokenContract } from './useContract';
 import { useIsGaslessEnabled } from 'state/application/hooks';
 import { useBiconomy } from 'context/Biconomy';
 
 import metaTokens from 'config/biconomy/metaTokens';
-import { ethers } from 'ethers';
 
 export enum ApprovalState {
   UNKNOWN,
@@ -116,12 +104,16 @@ export function useApproveCallback(
       return matchingMetaToken
         .approve(spender, chainId)
         .then((response: TransactionResponse) => {
+          //TODO
+          //Validate response for any biconomy related errors. code != 200
           addTransaction(response, {
             summary: 'Approve ' + amountToApprove.currency.symbol,
             approval: { tokenAddress: token.address, spender: spender },
           });
         })
         .catch((error: Error) => {
+          //TODO
+          //Grep the catched error and bubble up error message to the point. recommend to turn off gasless toggle and retry.
           console.debug('Failed to approve token', error);
           throw error;
         });
