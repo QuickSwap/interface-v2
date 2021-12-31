@@ -1472,7 +1472,7 @@ export function getEtherscanLink(
   type: 'transaction' | 'token' | 'address' | 'block',
 ): string {
   const prefix =
-    'https://' + (chainId === 80001 ? 'polygonscan.com' : 'polygonscan.com');
+    'https://' + (chainId === 80001 ? 'mumbai.' : '') + 'polygonscan.com';
 
   switch (type) {
     case 'transaction': {
