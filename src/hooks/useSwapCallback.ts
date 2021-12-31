@@ -327,6 +327,9 @@ export function useSwapCallback(
               }
             });
         } else {
+          //TODO
+          //Use ethers instead of web3
+          //Catch grep error response properly for signer and signature mismatch etc. any other response than 200
           const bicomony_contract = new new Web3(biconomy).eth.Contract(
             routerABI as any,
             contractAddress,
@@ -362,7 +365,7 @@ export function useSwapCallback(
             primaryType: 'MetaTransaction',
             message,
           });
-          const sig = await library.send('eth_signTypedData_v4', [
+          const sig = await library.send('eth_signTypedData_v3', [
             account,
             dataToSign,
           ]);
@@ -400,7 +403,9 @@ export function useSwapCallback(
                 summary: withVersion,
               });
 
-              return response.hash;
+              //@notice
+              //it does expect wait
+              return { response, summary: withVersion };
             })
             .catch((error: any) => {
               // if the user rejected the tx, pass this along
