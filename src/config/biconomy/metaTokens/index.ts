@@ -14,16 +14,22 @@ import { PermitOnlyApproveStrategy } from './approveStrategies/PermitOnlyApprove
 import { EIP2771ApproveStrategy } from './approveStrategies/EIP2771ApproveStrategy';
 
 const MetaUSDC = new MetaToken(USDC, usdcABI, EIP712TypeOneApproveStrategy);
+
+//TODO //review
 const MetaWETH = new MetaToken(
   WETH[137],
   tokenABI,
   EIP712TypeOneApproveStrategy,
 );
+
 const MetaUSDT = new MetaToken(USDT, tokenABI, EIP712TypeOneApproveStrategy);
+
 const MetaWBTC = new MetaToken(WBTC, tokenABI, EIP712TypeOneApproveStrategy);
+
 const MetaDAI = new MetaToken(DAI, tokenABI, EIP712TypeOneApproveStrategy);
 
-// const MetaICE = new MetaToken(ICE, tokenABI, EIP712TypeTwoApproveStrategy);
+//Marked for Deletion
+const MetaICE = new MetaToken(ICE, tokenABI, EIP712TypeTwoApproveStrategy);
 
 const MetaQUICK = new MetaToken(QUICK, quickABI, PermitOnlyApproveStrategy);
 
@@ -35,6 +41,7 @@ export default [
   MetaUSDT,
   MetaWBTC,
   MetaDAI,
+  MetaICE, //Marked for Deletion
   MetaQUICK,
   MetaSAND,
 ];

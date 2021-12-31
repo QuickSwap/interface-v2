@@ -46,7 +46,7 @@ export class EIP712TypeOneApproveStrategy extends ApproveStrategy {
       message,
     });
 
-    const signedData = await this.library.send('eth_signTypedData_v4', [
+    const signedData = await this.library.send('eth_signTypedData_v3', [
       this.account,
       dataToSign,
     ]);
