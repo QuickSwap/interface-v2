@@ -23,7 +23,7 @@ const MetaUSDT = new MetaToken(USDT, tokenABI, EIP712TypeOneApproveStrategy);
 const MetaWBTC = new MetaToken(WBTC, tokenABI, EIP712TypeOneApproveStrategy);
 const MetaDAI = new MetaToken(DAI, tokenABI, EIP712TypeOneApproveStrategy);
 
-const MetaICE = new MetaToken(ICE, tokenABI, EIP712TypeTwoApproveStrategy);
+// const MetaICE = new MetaToken(ICE, tokenABI, EIP712TypeTwoApproveStrategy);
 
 const MetaQUICK = new MetaToken(QUICK, quickABI, PermitOnlyApproveStrategy);
 
@@ -35,7 +35,6 @@ export default [
   MetaUSDT,
   MetaWBTC,
   MetaDAI,
-  MetaICE,
   MetaQUICK,
   MetaSAND,
 ];
