@@ -259,32 +259,15 @@ const FarmPage: React.FC = () => {
           );
         })
         .sort((a, b) => {
+          const sortOrder = sortDesc ? -1 : 1;
           if (sortBy === 1) {
             const poolStrA = a.tokens[0].symbol + '/' + a.tokens[1].symbol;
             const poolStrB = b.tokens[0].symbol + '/' + b.tokens[1].symbol;
-            if (sortDesc) {
-              return poolStrA > poolStrB ? -1 : 1;
-            } else {
-              return poolStrA < poolStrB ? -1 : 1;
-            }
+            return (poolStrA > poolStrB ? 1 : -1) * sortOrder;
           } else if (sortBy === 2) {
-            if (sortDesc) {
-              return Number(a.tvl) > Number(b.tvl) ? -1 : 1;
-            } else {
-              return Number(a.tvl) < Number(b.tvl) ? -1 : 1;
-            }
+            return (Number(a.tvl) > Number(b.tvl) ? 1 : -1) * sortOrder
           } else if (sortBy === 3) {
-            if (sortDesc) {
-              return Number(a.totalRewardRate.toSignificant()) >
-                Number(b.totalRewardRate.toSignificant())
-                ? -1
-                : 1;
-            } else {
-              return Number(a.totalRewardRate.toSignificant()) <
-                Number(b.totalRewardRate.toSignificant())
-                ? -1
-                : 1;
-            }
+            return (Number(a.totalRewardRate.toSignificant()) > Number(b.totalRewardRate.toSignificant()) ? 1 : -1) * sortOrder;
           } else if (sortBy === 4) {
             const aDayVolume = bulkPairs
               ? bulkPairs[a.pair]?.oneDayVolumeUSD
@@ -324,17 +307,7 @@ const FarmPage: React.FC = () => {
               return aAPYwithFee < bAPYwithFee ? -1 : 1;
             }
           } else if (sortBy === 5) {
-            if (sortDesc) {
-              return Number(a.earnedAmount.toSignificant()) >
-                Number(b.earnedAmount.toSignificant())
-                ? -1
-                : 1;
-            } else {
-              return Number(a.earnedAmount.toSignificant()) <
-                Number(b.earnedAmount.toSignificant())
-                ? -1
-                : 1;
-            }
+            return (Number(a.earnedAmount.toSignificant()) > Number(b.earnedAmount.toSignificant()) ? 1 : -1) * sortOrder;
           }
           return 1;
         });
