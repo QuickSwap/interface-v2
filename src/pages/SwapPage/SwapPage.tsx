@@ -275,10 +275,12 @@ const SwapPage: React.FC = () => {
 
   return (
     <Box width='100%' mb={3}>
-      <SettingsModal
-        open={openSettingsModal}
-        onClose={() => setOpenSettingsModal(false)}
-      />
+      {openSettingsModal && (
+        <SettingsModal
+          open={openSettingsModal}
+          onClose={() => setOpenSettingsModal(false)}
+        />
+      )}
       <Box
         mb={2}
         display='flex'

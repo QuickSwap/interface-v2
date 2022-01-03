@@ -1,13 +1,18 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Pair, Currency } from '@uniswap/sdk';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { Box, Grid, Typography } from '@material-ui/core';
 import Skeleton from '@material-ui/lab/Skeleton';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
-import { ReactComponent as HelpIconLarge } from 'assets/images/HelpIcon2.svg';
 import { ReactComponent as SettingsIcon } from 'assets/images/SettingsIcon.svg';
 import NoLiquidity from 'assets/images/NoLiquidityPool.png';
-import { AddLiquidity, PoolPositionCard, SettingsModal } from 'components';
+import {
+  AddLiquidity,
+  PoolFinderModal,
+  PoolPositionCard,
+  QuestionHelper,
+  SettingsModal,
+} from 'components';
 import { useActiveWeb3React } from 'hooks';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import { useCurrency } from 'hooks/Tokens';
@@ -57,8 +62,10 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
 
 const PoolsPage: React.FC = () => {
   const classes = useStyles();
+  const { palette } = useTheme();
   const { account } = useActiveWeb3React();
   const [openSettingsModal, setOpenSettingsModal] = useState(false);
+  const [openPoolFinder, setOpenPoolFinder] = useState(false);
   const parsedQuery = useParsedQueryString();
   const qCurrency0 = useCurrency(
     parsedQuery && parsedQuery.currency0
@@ -125,10 +132,18 @@ const PoolsPage: React.FC = () => {
 
   return (
     <Box width='100%' mb={3}>
-      <SettingsModal
-        open={openSettingsModal}
-        onClose={() => setOpenSettingsModal(false)}
-      />
+      {openSettingsModal && (
+        <SettingsModal
+          open={openSettingsModal}
+          onClose={() => setOpenSettingsModal(false)}
+        />
+      )}
+      {openPoolFinder && (
+        <PoolFinderModal
+          open={openPoolFinder}
+          onClose={() => setOpenPoolFinder(false)}
+        />
+      )}
       <Box
         mb={2}
         display='flex'
@@ -155,7 +170,11 @@ const PoolsPage: React.FC = () => {
               </Typography>
               <Box display='flex' alignItems='center'>
                 <Box className={classes.headingItem}>
-                  <HelpIconLarge />
+                  <QuestionHelper
+                    size={24}
+                    color={palette.text.secondary}
+                    text='When you add liquidity, you are given pool tokens representing your position. These tokens automatically earn fees proportional to your share of the pool, and can be redeemed at any time.'
+                  />
                 </Box>
                 <Box className={classes.headingItem}>
                   <SettingsIcon onClick={() => setOpenSettingsModal(true)} />
@@ -180,7 +199,11 @@ const PoolsPage: React.FC = () => {
               ) : allV2PairsWithLiquidity.length > 0 ? (
                 <Box>
                   <Typography variant='body2' className={classes.liquidityText}>
-                    Don’t see a pool you joined? <span>Import it</span>.<br />
+                    Don’t see a pool you joined?{' '}
+                    <span onClick={() => setOpenPoolFinder(true)}>
+                      Import it
+                    </span>
+                    .<br />
                     Unstake your LP Tokens from Farms to see them here.
                   </Typography>
                   {allV2PairsWithLiquidity.map((pair, ind) => (
@@ -207,7 +230,11 @@ const PoolsPage: React.FC = () => {
                     className={classes.noLiquidityImage}
                   />
                   <Typography variant='body2' className={classes.liquidityText}>
-                    Don’t see a pool you joined? <span>Import it</span>.<br />
+                    Don’t see a pool you joined?{' '}
+                    <span onClick={() => setOpenPoolFinder(true)}>
+                      Import it
+                    </span>
+                    .<br />
                     Unstake your LP Tokens from Farms to see them here.
                   </Typography>
                 </Box>

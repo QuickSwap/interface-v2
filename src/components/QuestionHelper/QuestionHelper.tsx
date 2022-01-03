@@ -15,7 +15,7 @@ const useStyles = makeStyles(({ palette }) => ({
     outline: 'none',
     cursor: 'default',
     borderRadius: 36,
-    color: palette.text.primary,
+    color: (props: any) => (props.color ? props.color : palette.text.primary),
     '&:hover, &:focus': {
       opacity: 0.7,
     },
@@ -32,7 +32,7 @@ const useStyles = makeStyles(({ palette }) => ({
     borderRadius: 36,
     width: 24,
     height: 24,
-    color: 'white',
+    color: (props: any) => (props.color ? props.color : 'white'),
     '&:hover, &:focus': {
       opacity: 0.7,
     },
@@ -42,11 +42,12 @@ const useStyles = makeStyles(({ palette }) => ({
   },
 }));
 
-const QuestionHelper: React.FC<{ text: string; size?: number }> = ({
-  text,
-  size = 16,
-}) => {
-  const classes = useStyles();
+const QuestionHelper: React.FC<{
+  text: string;
+  size?: number;
+  color?: string;
+}> = ({ text, size = 16, color }) => {
+  const classes = useStyles({ color });
 
   return (
     <CustomTooltip title={text}>
@@ -59,8 +60,11 @@ const QuestionHelper: React.FC<{ text: string; size?: number }> = ({
 
 export default QuestionHelper;
 
-export const PlusHelper: React.FC<{ text: string }> = ({ text }) => {
-  const classes = useStyles();
+export const PlusHelper: React.FC<{ text: string; color?: string }> = ({
+  text,
+  color,
+}) => {
+  const classes = useStyles({ color });
 
   return (
     <CustomTooltip title={text}>
@@ -71,8 +75,11 @@ export const PlusHelper: React.FC<{ text: string }> = ({ text }) => {
   );
 };
 
-export const LightQuestionHelper: React.FC<{ text: string }> = ({ text }) => {
-  const classes = useStyles();
+export const LightQuestionHelper: React.FC<{ text: string; color: string }> = ({
+  text,
+  color,
+}) => {
+  const classes = useStyles({ color });
 
   return (
     <CustomTooltip title={text}>

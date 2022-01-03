@@ -426,33 +426,35 @@ const AddLiquidity: React.FC<{
 
   return (
     <Box>
-      <TransactionConfirmationModal
-        isOpen={showConfirm}
-        onDismiss={handleDismissConfirmation}
-        attemptingTxn={attemptingTxn}
-        txPending={txPending}
-        hash={txHash}
-        content={() =>
-          addLiquidityErrorMessage ? (
-            <TransactionErrorContent
-              onDismiss={handleDismissConfirmation}
-              message={addLiquidityErrorMessage}
-            />
-          ) : (
-            <ConfirmationModalContent
-              title='Supplying Liquidity'
-              onDismiss={handleDismissConfirmation}
-              content={modalHeader}
-            />
-          )
-        }
-        pendingText={pendingText}
-        modalContent={
-          txPending
-            ? 'Submitted transaction to add liquidity'
-            : 'Successfully added liquidity'
-        }
-      />
+      {showConfirm && (
+        <TransactionConfirmationModal
+          isOpen={showConfirm}
+          onDismiss={handleDismissConfirmation}
+          attemptingTxn={attemptingTxn}
+          txPending={txPending}
+          hash={txHash}
+          content={() =>
+            addLiquidityErrorMessage ? (
+              <TransactionErrorContent
+                onDismiss={handleDismissConfirmation}
+                message={addLiquidityErrorMessage}
+              />
+            ) : (
+              <ConfirmationModalContent
+                title='Supplying Liquidity'
+                onDismiss={handleDismissConfirmation}
+                content={modalHeader}
+              />
+            )
+          }
+          pendingText={pendingText}
+          modalContent={
+            txPending
+              ? 'Submitted transaction to add liquidity'
+              : 'Successfully added liquidity'
+          }
+        />
+      )}
       <CurrencyInput
         title='Token 1:'
         currency={currencies[Field.CURRENCY_A]}

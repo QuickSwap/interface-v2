@@ -13,7 +13,7 @@ import { CurrencyLogo, DoubleCurrencyLogo } from 'components';
 
 const useStyles = makeStyles(({ palette }) => ({
   minimalCardWrapper: {
-    border: `1px solid ${palette.divider}`,
+    width: '100%',
     borderRadius: 16,
     padding: 12,
     '& p': {
@@ -31,6 +31,7 @@ interface PositionCardProps {
 
 export const MinimalPositionCard: React.FC<PositionCardProps> = ({
   pair,
+  border,
   showUnwrapped = false,
 }) => {
   const { account } = useActiveWeb3React();
@@ -77,54 +78,68 @@ export const MinimalPositionCard: React.FC<PositionCardProps> = ({
       : [undefined, undefined];
 
   return (
-    <Box className={classes.minimalCardWrapper}>
+    <Box className={classes.minimalCardWrapper} border={border}>
       {userPoolBalance &&
       JSBI.greaterThan(userPoolBalance.raw, JSBI.BigInt(0)) ? (
         <Box>
           <Typography>Your position</Typography>
-          <Box onClick={() => setShowMore(!showMore)}>
-            <Box>
+          <Box
+            mt={0.75}
+            display='flex'
+            justifyContent='space-between'
+            onClick={() => setShowMore(!showMore)}
+          >
+            <Box display='flex' alignItems='center'>
               <DoubleCurrencyLogo
                 currency0={currency0}
                 currency1={currency1}
                 margin={true}
                 size={20}
               />
-              <Typography>
+              <Typography style={{ marginLeft: 6 }}>
                 {currency0.symbol}/{currency1.symbol}
               </Typography>
             </Box>
-            <Box>
-              <Typography>
-                {userPoolBalance ? userPoolBalance.toSignificant(4) : '-'}
-              </Typography>
-            </Box>
+            <Typography>
+              {userPoolBalance ? userPoolBalance.toSignificant(4) : '-'}
+            </Typography>
           </Box>
-          <Box>
-            <Box>
-              <Typography>Your pool share:</Typography>
-              <Typography>
-                {poolTokenPercentage
-                  ? poolTokenPercentage.toFixed(6) + '%'
-                  : '-'}
-              </Typography>
-            </Box>
-            <Box>
-              <Typography>{currency0.symbol}:</Typography>
-              {token0Deposited ? (
-                <Typography>{token0Deposited?.toSignificant(6)}</Typography>
-              ) : (
-                '-'
-              )}
-            </Box>
-            <Box>
-              <Typography>{currency1.symbol}:</Typography>
-              {token1Deposited ? (
-                <Typography>{token1Deposited?.toSignificant(6)}</Typography>
-              ) : (
-                '-'
-              )}
-            </Box>
+          <Box
+            mt={0.75}
+            display='flex'
+            alignItems='center'
+            justifyContent='space-between'
+          >
+            <Typography>Your pool share:</Typography>
+            <Typography>
+              {poolTokenPercentage ? poolTokenPercentage.toFixed(6) + '%' : '-'}
+            </Typography>
+          </Box>
+          <Box
+            mt={0.75}
+            display='flex'
+            alignItems='center'
+            justifyContent='space-between'
+          >
+            <Typography>{currency0.symbol}:</Typography>
+            {token0Deposited ? (
+              <Typography>{token0Deposited?.toSignificant(6)}</Typography>
+            ) : (
+              '-'
+            )}
+          </Box>
+          <Box
+            mt={0.75}
+            display='flex'
+            alignItems='center'
+            justifyContent='space-between'
+          >
+            <Typography>{currency1.symbol}:</Typography>
+            {token1Deposited ? (
+              <Typography>{token1Deposited?.toSignificant(6)}</Typography>
+            ) : (
+              '-'
+            )}
           </Box>
         </Box>
       ) : (
