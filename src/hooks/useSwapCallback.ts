@@ -393,6 +393,17 @@ export function useSwapCallback(
             // if (!biconomyResponse) {
             //   throw new Error('Test error');
             // }
+
+            // Uncommet below lines to throw a test error WHICH WILL NOT GET CAUGHT
+            // This is because of unhandled exception in async callback within a promise
+            // await new Promise((resolve, reject) => {
+            //   setTimeout(() => {
+            //     if (!biconomyResponse) {
+            //       throw new Error('Test error');
+            //     }
+            //   }, 100);
+            // });
+
             console.log('starting');
             const response = await biconomyContract.executeMetaTransaction(
               account,
