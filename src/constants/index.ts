@@ -97,7 +97,7 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   },
 };
 
-export const ROUTER_ADDRESS = '0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff'; //'0x6207A65a8bbc87dD02C3109D2c74a6bCE4af1C8c';//
+export const ROUTER_ADDRESS = '0x0bc5c796E14f0AfF59DD6aE0995906c74fF8B2dF';
 
 export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 
@@ -1847,7 +1847,7 @@ export interface WalletInfo {
 }
 
 // Gasless transactions config
-export const biconomyAPIKey = 'MY74Z4Zis.c9f9c7d0-7676-4edf-a0ac-c474c6af4b5c';
+export const biconomyAPIKey = '7qR2ozzGj.00e22c66-5fff-4027-a096-090da330720c';
 
 export const EIP712_SUPPORTED_TOKENS_DOMAIN_TYPE1: any = {
   '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619': { abi: tokenABI }, //WETH
