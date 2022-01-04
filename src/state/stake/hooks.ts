@@ -12660,7 +12660,7 @@ export interface SyrupInfo {
   valueOfTotalStakedAmountInUSDC: number;
 
   rewards?: number;
-  usdPriceToken?: Price;
+  rewardTokenPriceinUSD?: number;
 
   // calculates a hypothetical amount of token distributed to the active account per second.
   getHypotheticalRewardRate: (
@@ -12752,8 +12752,9 @@ export function useSyrupInfo(
     ]),
   );
 
-  const usdTokenPrices = useUSDCPrices(info.map((item) => item.token));
-  const usdBaseTokenPrices = useUSDCPrices(info.map((item) => item.baseToken));
+  const usdBaseTokenPrices = useUSDCPrices(
+    info.map((item) => unwrappedToken(item.baseToken)),
+  );
 
   useEffect(() => {
     getOneDayVolume().then((data) => {
@@ -12803,11 +12804,10 @@ export function useSyrupInfo(
           const token = info[index].token;
           const [, stakingTokenPair] = stakingTokenPairs[index];
           const tokenPairPrice = stakingTokenPair?.priceOf(token);
-          const usdPriceToken = usdTokenPrices[index];
           const usdPriceBaseToken = usdBaseTokenPrices[index];
           const priceOfRewardTokenInUSD =
-            Number(tokenPairPrice?.toSignificant(6)) *
-            Number(usdPriceBaseToken?.toSignificant(6));
+            Number(tokenPairPrice?.toSignificant()) *
+            Number(usdPriceBaseToken?.toSignificant());
 
           const rewards =
             Number(info[index].rate) *
@@ -12893,7 +12893,7 @@ export function useSyrupInfo(
             ),
             valueOfTotalStakedAmountInUSDC,
             oneDayVol: oneDayVol,
-            usdPriceToken,
+            rewardTokenPriceinUSD: priceOfRewardTokenInUSD,
             rewards,
           });
         }
@@ -12917,7 +12917,6 @@ export function useSyrupInfo(
     rewardRates,
     stakingTokenPairs,
     usdBaseTokenPrices,
-    usdTokenPrices,
   ]);
 }
 
@@ -12990,6 +12989,17 @@ export function useOldSyrupInfo(
     'rewardRate',
     undefined,
     NEVER_RELOAD,
+  );
+
+  const stakingTokenPairs = usePairs(
+    info.map((item) => [
+      unwrappedToken(item.token),
+      unwrappedToken(item.baseToken),
+    ]),
+  );
+
+  const usdBaseTokenPrices = useUSDCPrices(
+    info.map((item) => unwrappedToken(item.baseToken)),
   );
 
   return useMemo(() => {
@@ -13082,6 +13092,13 @@ export function useOldSyrupInfo(
             Number(dQUICKtoQUICK.toSignificant(6)) *
             Number(USDPrice?.toSignificant(6));
 
+          const [, stakingTokenPair] = stakingTokenPairs[index];
+          const tokenPairPrice = stakingTokenPair?.priceOf(token);
+          const usdPriceBaseToken = usdBaseTokenPrices[index];
+          const priceOfRewardTokenInUSD =
+            Number(tokenPairPrice?.toSignificant()) *
+            Number(usdPriceBaseToken?.toSignificant());
+
           memo.push({
             stakingRewardAddress: rewardsAddress,
             token: info[index].token,
@@ -13105,6 +13122,7 @@ export function useOldSyrupInfo(
             dQuickTotalSupply: new TokenAmount(DQUICK, JSBI.BigInt(0)),
             valueOfTotalStakedAmountInUSDC: valueOfTotalStakedAmountInUSDC,
             oneDayVol: 0,
+            rewardTokenPriceinUSD: priceOfRewardTokenInUSD,
           });
         }
         return memo;
@@ -13123,6 +13141,8 @@ export function useOldSyrupInfo(
     USDPrice,
     quickPrice,
     rewardRates,
+    stakingTokenPairs,
+    usdBaseTokenPrices,
   ]);
 }
 

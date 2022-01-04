@@ -79,9 +79,7 @@ const SyrupCardDetails: React.FC<{ token: Token }> = ({ token }) => {
 
   const syrupEarnedUSD =
     Number(syrup?.earnedAmount.toSignificant(2)) *
-    Number(
-      syrup && syrup.usdPriceToken ? syrup.usdPriceToken.toSignificant(2) : 0,
-    );
+    Number(syrup?.rewardTokenPriceinUSD ?? 0);
 
   const MINUTE = 60;
   const HOUR = MINUTE * 60;
@@ -247,10 +245,9 @@ const SyrupCardDetails: React.FC<{ token: Token }> = ({ token }) => {
                   <span
                     style={{ color: palette.text.secondary, marginLeft: 4 }}
                   >
-                    $
                     {syrupEarnedUSD > 0 && syrupEarnedUSD < 0.001
-                      ? syrupEarnedUSD.toFixed(5)
-                      : syrupEarnedUSD.toLocaleString()}
+                      ? '< $0.001'
+                      : `$${syrupEarnedUSD.toLocaleString()}`}
                   </span>
                 </Typography>
               </Box>

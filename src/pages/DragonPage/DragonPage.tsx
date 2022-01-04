@@ -295,10 +295,10 @@ const DragonPage: React.FC = () => {
           } else if (sortBy === 4) {
             const earnedUSDA =
               Number(a.earnedAmount.toSignificant()) *
-              Number(a.usdPriceToken ? a.usdPriceToken.toSignificant() : 0);
+              Number(a.rewardTokenPriceinUSD ?? 0);
             const earnedUSDB =
               Number(b.earnedAmount.toSignificant()) *
-              Number(b.usdPriceToken ? b.usdPriceToken.toSignificant() : 0);
+              Number(b.rewardTokenPriceinUSD ?? 0);
             if (sortDesc) {
               return earnedUSDA > earnedUSDB ? -1 : 1;
             } else {

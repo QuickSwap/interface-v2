@@ -74,7 +74,7 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo }> = ({ syrup }) => {
 
   const syrupEarnedUSD =
     Number(syrup.earnedAmount.toSignificant()) *
-    Number(syrup.usdPriceToken ? syrup.usdPriceToken.toSignificant() : 0);
+    Number(syrup.rewardTokenPriceinUSD ?? 0);
 
   const MINUTE = 60;
   const HOUR = MINUTE * 60;

@@ -372,7 +372,7 @@ export const IFARM = new Token(
 
 export const CEL = new Token(
   ChainId.MATIC,
-  '0xd85d1e945766fea5eda9103f918bd915fbca63e6',
+  getAddress('0xd85d1e945766fea5eda9103f918bd915fbca63e6'),
   4,
   'CEL',
   'Celsius',
@@ -548,7 +548,7 @@ export const POLYDOGE = new Token(
 );
 export const EMON = new Token(
   ChainId.MATIC,
-  '0xd6a5ab46ead26f49b03bbb1f9eb1ad5c1767974a',
+  getAddress('0xd6a5ab46ead26f49b03bbb1f9eb1ad5c1767974a'),
   18,
   'EMON',
   'EthermonToken',
@@ -1638,7 +1638,7 @@ export const AGEUR = new Token(
 );
 export const GAMER = new Token(
   ChainId.MATIC,
-  '0x3f6b3595ecF70735D3f48D69b09C4E4506DB3F47',
+  getAddress('0x3f6b3595ecF70735D3f48D69b09C4E4506DB3F47'),
   18,
   'GAMER',
   'GameStation',
