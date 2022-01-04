@@ -8,59 +8,67 @@ export const domainType2 = [
   { name: 'verifyingContract', type: 'address' },
 ];
 
-export class EIP712TypeTwoApproveStrategy extends ApproveStrategy {
-  async execute(spender: string, chainId: number) {
-    const nonceMethod = this.contract.getNonce || this.contract.nonces;
-    const nonce = parseInt(await nonceMethod(this.account));
+interface IEIP712TypeTwoApproveStrategyFactoryConfig {
+  version?: string;
+}
 
-    const functionSignature = this.contractInterface.encodeFunctionData(
-      'approve',
-      [spender, ethers.constants.MaxUint256.toString()],
-    );
+export function EIP712TypeTwoApproveStrategyFactory(
+  config?: IEIP712TypeTwoApproveStrategyFactoryConfig,
+) {
+  return class EIP712TypeTwoApproveStrategy extends ApproveStrategy {
+    async execute(spender: string, chainId: number) {
+      const nonceMethod = this.contract.getNonce || this.contract.nonces;
+      const nonce = parseInt(await nonceMethod(this.account));
 
-    const name = await this.contract.name();
+      const functionSignature = this.contractInterface.encodeFunctionData(
+        'approve',
+        [spender, ethers.constants.MaxUint256.toString()],
+      );
 
-    const message = {
-      name,
-      nonce,
-      functionSignature,
-      from: this.account,
-    };
+      const name = await this.contract.name();
 
-    const dataToSign = JSON.stringify({
-      types: {
-        EIP712Domain: domainType2,
-        MetaTransaction: [
-          { name: 'nonce', type: 'uint256' },
-          { name: 'from', type: 'address' },
-          { name: 'functionSignature', type: 'bytes' },
-        ],
-      },
-      domain: {
+      const message = {
         name,
-        version: '1', // TODO: Fetch version from config
-        chainId: chainId.toString(), //or Number
-        verifyingContract: this.token.address,
-      },
-      primaryType: 'MetaTransaction',
-      message,
-    });
+        nonce,
+        functionSignature,
+        from: this.account,
+      };
 
-    const signedData = await this.library.send('eth_signTypedData_v4', [
-      this.account,
-      dataToSign,
-    ]);
+      const dataToSign = JSON.stringify({
+        types: {
+          EIP712Domain: domainType2,
+          MetaTransaction: [
+            { name: 'nonce', type: 'uint256' },
+            { name: 'from', type: 'address' },
+            { name: 'functionSignature', type: 'bytes' },
+          ],
+        },
+        domain: {
+          name,
+          version: config?.version || '1',
+          chainId: chainId.toString(), //or Number
+          verifyingContract: this.token.address,
+        },
+        primaryType: 'MetaTransaction',
+        message,
+      });
 
-    const { v, r, s } = ethers.utils.splitSignature(signedData);
+      const signedData = await this.library.send('eth_signTypedData_v4', [
+        this.account,
+        dataToSign,
+      ]);
 
-    const response = await this.contract.executeMetaTransaction(
-      this.account,
-      functionSignature,
-      r,
-      s,
-      v,
-    );
+      const { v, r, s } = ethers.utils.splitSignature(signedData);
 
-    return response;
-  }
+      const response = await this.contract.executeMetaTransaction(
+        this.account,
+        functionSignature,
+        r,
+        s,
+        v,
+      );
+
+      return response;
+    }
+  };
 }

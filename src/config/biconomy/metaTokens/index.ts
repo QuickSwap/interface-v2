@@ -9,8 +9,8 @@ import quickABI from 'constants/abis/quick.json';
 import sandABI from 'constants/abis/sand.json';
 
 import { EIP712TypeOneApproveStrategy } from './approveStrategies/EIP712TypeOneApproveStrategy';
-import { EIP712TypeTwoApproveStrategy } from './approveStrategies/EIP712TypeTwoApproveStrategy';
-import { PermitOnlyApproveStrategy } from './approveStrategies/PermitOnlyApproveStrategy';
+import { EIP712TypeTwoApproveStrategyFactory } from './approveStrategies/EIP712TypeTwoApproveStrategy';
+import { PermitOnlyApproveStrategyFactory } from './approveStrategies/PermitOnlyApproveStrategy';
 import { EIP2771ApproveStrategy } from './approveStrategies/EIP2771ApproveStrategy';
 
 const MetaUSDC = new MetaToken(USDC, usdcABI, EIP712TypeOneApproveStrategy);
@@ -29,9 +29,17 @@ const MetaWBTC = new MetaToken(WBTC, tokenABI, EIP712TypeOneApproveStrategy);
 const MetaDAI = new MetaToken(DAI, tokenABI, EIP712TypeOneApproveStrategy);
 
 //Marked for Deletion
-const MetaICE = new MetaToken(ICE, tokenABI, EIP712TypeTwoApproveStrategy);
+const MetaICE = new MetaToken(
+  ICE,
+  tokenABI,
+  EIP712TypeTwoApproveStrategyFactory(),
+);
 
-const MetaQUICK = new MetaToken(QUICK, quickABI, PermitOnlyApproveStrategy);
+const MetaQUICK = new MetaToken(
+  QUICK,
+  quickABI,
+  PermitOnlyApproveStrategyFactory(),
+);
 
 const MetaSAND = new MetaToken(SAND, sandABI, EIP2771ApproveStrategy);
 

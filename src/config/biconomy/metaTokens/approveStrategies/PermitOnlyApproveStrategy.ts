@@ -16,60 +16,71 @@ export const eip2612PermitType = [
   { name: 'deadline', type: 'uint256' },
 ];
 
-export class PermitOnlyApproveStrategy extends ApproveStrategy {
-  async execute(spender: string, chainId: number) {
-    //const permitClient = this.biconomy.permitClient;
-    //Permit client is currently only available for ERC20 forwarder supported networks.
+interface IPermitOnlyApproveStrategyFactoryConfig {
+  permitDomainData?: {
+    [key: string]: string;
+  };
+}
 
-    const nonceMethod = this.contract.nonces;
-    const nonce = parseInt(await nonceMethod(this.account));
-    const deadline = Math.floor(Date.now() / 1000 + 3600);
-    const name = await this.contract.name();
+export function PermitOnlyApproveStrategyFactory(
+  config?: IPermitOnlyApproveStrategyFactoryConfig,
+) {
+  return class PermitOnlyApproveStrategy extends ApproveStrategy {
+    async execute(spender: string, chainId: number) {
+      //const permitClient = this.biconomy.permitClient;
+      //Permit client is currently only available for ERC20 forwarder supported networks.
 
-    //TODO
-    //get permitDomainType and Domain Data from custom config
-    const permitDomainData = {
-      name: name,
-      //version: '1', //for QUICK version is omitted. permitDomainData should come from optional config in the strategy
-      chainId: chainId.toString(), //or Number
-      verifyingContract: this.token.address,
-    };
+      const nonceMethod = this.contract.nonces;
+      const nonce = parseInt(await nonceMethod(this.account));
+      const deadline = Math.floor(Date.now() / 1000 + 3600);
+      const name = await this.contract.name();
 
-    const message = {
-      nonce,
-      owner: this.account,
-      spender: spender,
-      deadline: deadline.toString(),
-      value: ethers.constants.MaxUint256.toString(),
-    };
+      //TODO
+      //get permitDomainType and Domain Data from custom config
+      const permitDomainData = {
+        name: name,
+        //version: '1', //for QUICK version is omitted. permitDomainData should come from optional config in the strategy
+        chainId: chainId.toString(), //or Number
+        verifyingContract: this.token.address,
+        ...config?.permitDomainData,
+      };
 
-    const dataToSign = JSON.stringify({
-      types: {
-        EIP712Domain: permitDomainType,
-        Permit: eip2612PermitType,
-      },
-      domain: permitDomainData,
-      primaryType: 'Permit',
-      message,
-    });
+      const message = {
+        nonce,
+        owner: this.account,
+        spender: spender,
+        deadline: deadline.toString(),
+        value: ethers.constants.MaxUint256.toString(),
+      };
 
-    const signedData = await this.library.send('eth_signTypedData_v3', [
-      this.account,
-      dataToSign,
-    ]);
+      const dataToSign = JSON.stringify({
+        types: {
+          EIP712Domain: permitDomainType,
+          Permit: eip2612PermitType,
+        },
+        domain: permitDomainData,
+        primaryType: 'Permit',
+        message,
+      });
 
-    const { v, r, s } = ethers.utils.splitSignature(signedData);
+      const signedData = await this.library.send('eth_signTypedData_v3', [
+        this.account,
+        dataToSign,
+      ]);
 
-    const response = await this.contract.permit(
-      this.account,
-      spender,
-      message.value,
-      deadline,
-      v,
-      r,
-      s,
-    );
+      const { v, r, s } = ethers.utils.splitSignature(signedData);
 
-    return response;
-  }
+      const response = await this.contract.permit(
+        this.account,
+        spender,
+        message.value,
+        deadline,
+        v,
+        r,
+        s,
+      );
+
+      return response;
+    }
+  };
 }
