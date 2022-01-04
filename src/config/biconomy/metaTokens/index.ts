@@ -1,6 +1,6 @@
 import { WETH } from '@uniswap/sdk';
 
-import { DAI, ICE, QUICK, SAND, USDC, USDT, WBTC } from 'constants/index';
+import { DAI, QUICK, SAND, USDC, USDT, WBTC } from 'constants/index';
 import { MetaToken } from './types';
 
 import usdcABI from 'constants/abis/usdc.json';
@@ -12,6 +12,12 @@ import { EIP712TypeOneApproveStrategy } from './approveStrategies/EIP712TypeOneA
 import { EIP712TypeTwoApproveStrategyFactory } from './approveStrategies/EIP712TypeTwoApproveStrategy';
 import { PermitOnlyApproveStrategyFactory } from './approveStrategies/PermitOnlyApproveStrategy';
 import { EIP2771ApproveStrategy } from './approveStrategies/EIP2771ApproveStrategy';
+
+const permitDomainTypeQuick = [
+  { name: 'name', type: 'string' },
+  { name: 'chainId', type: 'uint256' },
+  { name: 'verifyingContract', type: 'address' },
+];
 
 const MetaUSDC = new MetaToken(USDC, usdcABI, EIP712TypeOneApproveStrategy);
 
@@ -28,17 +34,13 @@ const MetaWBTC = new MetaToken(WBTC, tokenABI, EIP712TypeOneApproveStrategy);
 
 const MetaDAI = new MetaToken(DAI, tokenABI, EIP712TypeOneApproveStrategy);
 
-//Marked for Deletion
-const MetaICE = new MetaToken(
-  ICE,
-  tokenABI,
-  EIP712TypeTwoApproveStrategyFactory(),
-);
-
 const MetaQUICK = new MetaToken(
   QUICK,
   quickABI,
-  PermitOnlyApproveStrategyFactory(),
+  PermitOnlyApproveStrategyFactory({
+    //permitDomainData: { version: '1' },
+    permitDomainType: permitDomainTypeQuick,
+  }),
 );
 
 const MetaSAND = new MetaToken(SAND, sandABI, EIP2771ApproveStrategy);
@@ -49,7 +51,6 @@ export default [
   MetaUSDT,
   MetaWBTC,
   MetaDAI,
-  MetaICE, //Marked for Deletion
   MetaQUICK,
   MetaSAND,
 ];

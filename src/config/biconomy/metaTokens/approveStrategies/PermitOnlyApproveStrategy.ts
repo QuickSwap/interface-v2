@@ -1,9 +1,10 @@
 import { ethers } from 'ethers';
 import { ApproveStrategy } from '../types';
 
+//default for EIP2612 permits
 export const permitDomainType = [
   { name: 'name', type: 'string' },
-  //{ name: 'version', type: 'string' }, //For QUICK version is omitted
+  { name: 'version', type: 'string' }, //For QUICK version is omitted
   { name: 'chainId', type: 'uint256' },
   { name: 'verifyingContract', type: 'address' },
 ];
@@ -20,6 +21,7 @@ interface IPermitOnlyApproveStrategyFactoryConfig {
   permitDomainData?: {
     [key: string]: string;
   };
+  permitDomainType?: any;
 }
 
 export function PermitOnlyApproveStrategyFactory(
@@ -27,19 +29,14 @@ export function PermitOnlyApproveStrategyFactory(
 ) {
   return class PermitOnlyApproveStrategy extends ApproveStrategy {
     async execute(spender: string, chainId: number) {
-      //const permitClient = this.biconomy.permitClient;
-      //Permit client is currently only available for ERC20 forwarder supported networks.
-
       const nonceMethod = this.contract.nonces;
       const nonce = parseInt(await nonceMethod(this.account));
       const deadline = Math.floor(Date.now() / 1000 + 3600);
       const name = await this.contract.name();
 
-      //TODO
-      //get permitDomainType and Domain Data from custom config
       const permitDomainData = {
         name: name,
-        //version: '1', //for QUICK version is omitted. permitDomainData should come from optional config in the strategy
+        //version: '1', //for QUICK version is omitted
         chainId: chainId.toString(), //or Number
         verifyingContract: this.token.address,
         ...config?.permitDomainData,
@@ -55,7 +52,7 @@ export function PermitOnlyApproveStrategyFactory(
 
       const dataToSign = JSON.stringify({
         types: {
-          EIP712Domain: permitDomainType,
+          EIP712Domain: config?.permitDomainType || permitDomainType,
           Permit: eip2612PermitType,
         },
         domain: permitDomainData,
