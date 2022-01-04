@@ -90,30 +90,32 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
       >
         <Box display='flex' justifyContent='space-between' alignItems='center'>
           {formatConnectorName()}
-          {connector !== injected &&
-            connector !== walletlink &&
-            connector !== safeApp && (
+          <Box display='flex' alignItems='center'>
+            {connector !== injected &&
+              connector !== walletlink &&
+              connector !== safeApp && (
+                <Typography
+                  style={{ cursor: 'pointer', marginRight: 8 }}
+                  onClick={() => {
+                    (connector as any).close();
+                  }}
+                  variant='body2'
+                >
+                  Disconnect
+                </Typography>
+              )}
+            {connector !== safeApp && (
               <Typography
                 style={{ cursor: 'pointer' }}
                 onClick={() => {
-                  (connector as any).close();
+                  openOptions();
                 }}
                 variant='body2'
               >
-                Disconnect
+                Change
               </Typography>
             )}
-          {connector !== safeApp && (
-            <Typography
-              style={{ cursor: 'pointer' }}
-              onClick={() => {
-                openOptions();
-              }}
-              variant='body2'
-            >
-              Change
-            </Typography>
-          )}
+          </Box>
         </Box>
         <Box display='flex' alignItems='center' my={1.5}>
           <StatusIcon />

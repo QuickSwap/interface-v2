@@ -26,6 +26,7 @@ const useStyles = makeStyles(({ palette }) => ({
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
+    flexWrap: 'wrap',
     padding: '16px 24px',
     marginBottom: 16,
     '&:hover': {
@@ -63,7 +64,7 @@ const Option: React.FC<OptionProps> = ({
   const classes = useStyles();
   const content = (
     <Box className={classes.optionCardClickable} id={id} onClick={onClick}>
-      <Box display='flex' alignItems='center'>
+      <Box display='flex' alignItems='center' my={0.5}>
         <img src={icon} alt={'Icon'} width={24} />
         <Typography variant='body1' style={{ marginLeft: 8 }}>
           {header}
@@ -81,7 +82,11 @@ const Option: React.FC<OptionProps> = ({
           <Typography variant='body2'>Connected</Typography>
         </Box>
       )}
-      {subheader && <Typography variant='caption'>{subheader}</Typography>}
+      {subheader && (
+        <Box my={0.5} width={1}>
+          <Typography variant='caption'>{subheader}</Typography>
+        </Box>
+      )}
     </Box>
   );
   if (link) {
