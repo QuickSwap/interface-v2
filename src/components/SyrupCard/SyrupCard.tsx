@@ -73,8 +73,8 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo }> = ({ syrup }) => {
     : 0;
 
   const syrupEarnedUSD =
-    Number(syrup.earnedAmount.toSignificant(2)) *
-    Number(syrup.usdPriceToken ? syrup.usdPriceToken.toSignificant(2) : 0);
+    Number(syrup.earnedAmount.toSignificant()) *
+    Number(syrup.usdPriceToken ? syrup.usdPriceToken.toSignificant() : 0);
 
   const MINUTE = 60;
   const HOUR = MINUTE * 60;
@@ -202,10 +202,9 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo }> = ({ syrup }) => {
               variant='body2'
               style={{ color: palette.text.secondary }}
             >
-              $
               {syrupEarnedUSD > 0 && syrupEarnedUSD < 0.001
-                ? syrupEarnedUSD.toFixed(5)
-                : syrupEarnedUSD.toLocaleString()}
+                ? '< $0.001'
+                : `$${syrupEarnedUSD.toLocaleString()}`}
             </Typography>
           </Box>
         </Box>
