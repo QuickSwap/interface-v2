@@ -1,6 +1,19 @@
 import { WETH } from '@uniswap/sdk';
 
-import { DAI, QUICK, SAND, USDC, USDT, WBTC, TEL, GHST, AAVE, LINK, GNS, DG } from 'constants/index';
+import {
+  DAI,
+  QUICK,
+  SAND,
+  USDC,
+  USDT,
+  WBTC,
+  TEL,
+  GHST,
+  AAVE,
+  LINK,
+  GNS,
+  DG,
+} from 'constants/index';
 import { MetaToken } from './types';
 
 import usdcABI from 'constants/abis/usdc.json';
@@ -70,5 +83,5 @@ export default [
   MetaAAVE,
   MetaLINK,
   MetaGNS,
-  MetaDG
+  MetaDG,
 ];
