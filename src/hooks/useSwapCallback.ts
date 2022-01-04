@@ -327,9 +327,6 @@ export function useSwapCallback(
               }
             });
         } else {
-          // handle gasless swap
-          //TODO
-          //Catch grep error response properly for signer and signature mismatch etc. any other response than 200
           const biconomyContract = new ethers.Contract(
             contractAddress,
             routerABI as any,
@@ -343,9 +340,6 @@ export function useSwapCallback(
           const biconomyNonce = parseInt(
             await biconomyContract.getNonce(account),
           );
-
-          const gasLimit = calculateGasMargin(gasEstimate);
-          console.log('gasLimit', gasLimit);
 
           const functionSignature = biconomyContractInterface.encodeFunctionData(
             methodName,
@@ -384,27 +378,9 @@ export function useSwapCallback(
 
           const { v, r, s } = ethers.utils.splitSignature(signedData);
 
-          console.log({ account, functionSignature, r, s, v });
-
           let biconomyResponse: any;
 
           try {
-            // Uncommet below lines to throw a test error
-            // if (!biconomyResponse) {
-            //   throw new Error('Test error');
-            // }
-
-            // Uncommet below lines to throw a test error WHICH WILL NOT GET CAUGHT
-            // This is because of unhandled exception in async callback within a promise
-            // await new Promise((resolve, reject) => {
-            //   setTimeout(() => {
-            //     if (!biconomyResponse) {
-            //       throw new Error('Test error');
-            //     }
-            //   }, 100);
-            // });
-
-            console.log('starting');
             const response = await biconomyContract.executeMetaTransaction(
               account,
               functionSignature,
@@ -412,29 +388,21 @@ export function useSwapCallback(
               s,
               v,
             );
-            console.log('succcess');
             biconomyResponse = response;
           } catch (e) {
             const error: any = e;
-            // Note:
-            // This catch block is not firing even though the try block generates an error
-            // The error is generated from biconomy.js, but it does not bubble up
-            // If an error is manually triggered, then the catch block runs
-            console.error(error);
-
-            console.log('reached catch block');
             // if the user rejected the tx, pass this along
             if (error?.code === 4001) {
               throw new Error('Transaction rejected.');
             } else {
               // otherwise, the error was unexpected and we need to convey that
-              console.error(`Swap failed`, error, methodName, args, value);
-              throw new Error(`Swap failed: ${error.message}`);
+              // Catch grep error response properly for signer and signature mismatch, internal server error etc. any other response than 200
+              console.debug(`Swap failed`, error, methodName, args, value);
+              throw new Error(
+                `Swap failed: Please try again with gasless toggle off.`,
+              );
             }
           }
-
-          console.log(biconomyResponse);
-
           const inputSymbol = trade.inputAmount.currency.symbol;
           const outputSymbol = trade.outputAmount.currency.symbol;
           const inputAmount = trade.inputAmount.toSignificant(3);
