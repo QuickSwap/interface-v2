@@ -8,12 +8,6 @@ import {
   USDC,
   USDT,
   WBTC,
-  TEL,
-  GHST,
-  AAVE,
-  LINK,
-  GNS,
-  DG,
 } from 'constants/index';
 import { MetaToken } from './types';
 
@@ -40,12 +34,6 @@ const MetaWETH = new MetaToken(
 const MetaUSDT = new MetaToken(USDT, tokenABI, EIP712TypeOneApproveStrategy);
 const MetaWBTC = new MetaToken(WBTC, tokenABI, EIP712TypeOneApproveStrategy);
 const MetaDAI = new MetaToken(DAI, tokenABI, EIP712TypeOneApproveStrategy);
-const MetaTEL = new MetaToken(TEL, tokenABI, EIP712TypeOneApproveStrategy);
-const MetaGHST = new MetaToken(GHST, tokenABI, EIP712TypeOneApproveStrategy);
-const MetaAAVE = new MetaToken(AAVE, tokenABI, EIP712TypeOneApproveStrategy);
-const MetaLINK = new MetaToken(LINK, tokenABI, EIP712TypeOneApproveStrategy);
-const MetaGNS = new MetaToken(GNS, tokenABI, EIP712TypeOneApproveStrategy);
-const MetaDG = new MetaToken(DG, tokenABI, EIP712TypeOneApproveStrategy);
 const MetaQUICK = new MetaToken(
   QUICK,
   quickABI,
@@ -63,10 +51,4 @@ export default [
   MetaDAI,
   MetaQUICK,
   MetaSAND,
-  MetaTEL,
-  MetaGHST,
-  MetaAAVE,
-  MetaLINK,
-  MetaGNS,
-  MetaDG,
 ];
