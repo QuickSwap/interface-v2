@@ -67,14 +67,6 @@ export const updateTokenPairs = createAction<{ data: any }>(
   'application/updateTokenPairs',
 );
 
-export const updateSwapTokenPrice0 = createAction<{ data: any }>(
-  'application/updateSwapTokenPrice0',
-);
-
-export const updateSwapTokenPrice1 = createAction<{ data: any }>(
-  'application/updateSwapTokenPrice1',
-);
-
 export const addBookMarkToken = createAction<string>(
   'application/addBookMarkedToken',
 );

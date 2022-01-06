@@ -1,15 +1,22 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Box, Grid, Typography } from '@material-ui/core';
 import Skeleton from '@material-ui/lab/Skeleton';
 import { ArrowDropUp, ArrowDropDown } from '@material-ui/icons';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { CurrencyLogo } from 'components';
-import { useTopTokens } from 'state/application/hooks';
-import { Currency, Token } from '@uniswap/sdk';
+import { useBlockNumber } from 'state/application/hooks';
 import useCopyClipboard from 'hooks/useCopyClipboard';
 import { ReactComponent as CopyIcon } from 'assets/images/CopyIcon.svg';
-import { shortenAddress, formatCompact } from 'utils';
+import {
+  shortenAddress,
+  formatCompact,
+  getTokenInfo,
+  getEthPrice,
+  getIntervalTokenData,
+} from 'utils';
 import { LineChart } from 'components';
+import { Token } from '@uniswap/sdk';
+import dayjs from 'dayjs';
 
 const useStyles = makeStyles(({ palette }) => ({
   success: {
@@ -21,27 +28,49 @@ const useStyles = makeStyles(({ palette }) => ({
 }));
 
 const SwapTokenDetails: React.FC<{
-  currency: Currency | undefined;
-  priceData: any;
-}> = ({ currency, priceData }) => {
+  token: Token;
+}> = ({ token }) => {
   const classes = useStyles();
+  const currency =
+    token.symbol?.toLowerCase() === 'wmatic' ? Token.ETHER : token;
+  const tokenAddress = token.address;
   const { palette } = useTheme();
-  const { topTokens } = useTopTokens();
-  const tokenData = useMemo(() => {
-    if (topTokens) {
-      return topTokens.find((token: any) =>
-        currency?.symbol === Token.ETHER.symbol
-          ? token.symbol.toLowerCase() === 'wmatic'
-          : token.id.toLowerCase() ===
-            (currency as Token).address.toLowerCase(),
-      );
-    }
-    return null;
-  }, [topTokens, currency]);
+  const latestBlock = useBlockNumber();
+  const [tokenData, setTokenData] = useState<any>(null);
+  const [priceData, setPriceData] = useState<any>(null);
   const priceUp = Number(tokenData?.priceChangeUSD) > 0;
   const priceUpPercent = Number(tokenData?.priceChangeUSD).toFixed(2);
   const [isCopied, setCopied] = useCopyClipboard();
   const prices = priceData ? priceData.map((price: any) => price.close) : [];
+
+  useEffect(() => {
+    setTokenData(null);
+    setPriceData(null);
+    async function fetchTokenData() {
+      const [newPrice, oneDayPrice] = await getEthPrice();
+      const tokenInfo = await getTokenInfo(newPrice, oneDayPrice, tokenAddress);
+      if (tokenInfo) {
+        setTokenData(tokenInfo[0]);
+      }
+    }
+    async function fetchSwapTokenPrice0() {
+      const currentTime = dayjs.utc();
+      const startTime = currentTime
+        .subtract(1, 'day')
+        .startOf('hour')
+        .unix();
+      const tokenPriceData = await getIntervalTokenData(
+        tokenAddress,
+        startTime,
+        3600,
+        latestBlock,
+      );
+      setPriceData(tokenPriceData);
+    }
+    fetchTokenData();
+    fetchSwapTokenPrice0();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tokenAddress]);
 
   return (
     <Box>
@@ -55,7 +84,7 @@ const SwapTokenDetails: React.FC<{
         <Box display='flex' alignItems='center'>
           <CurrencyLogo currency={currency} size='28px' />
           <Box ml={1}>
-            <Typography variant='body2'>{currency?.symbol}</Typography>
+            <Typography variant='body2'>{currency.symbol}</Typography>
             {tokenData ? (
               <Box display='flex' alignItems='center'>
                 <Typography variant='body2'>
@@ -139,25 +168,21 @@ const SwapTokenDetails: React.FC<{
         py={1}
         px={2}
       >
-        {tokenData ? (
-          <a
-            href={`https://polygonscan.com/token/${tokenData.id}`}
-            target='_blank'
-            rel='noreferrer'
-            style={{ textDecoration: 'none' }}
-          >
-            <Typography variant='body2' style={{ color: palette.primary.main }}>
-              {tokenData ? shortenAddress(tokenData.id) : ''}
-            </Typography>
-          </a>
-        ) : (
-          <Skeleton variant='rect' width={100} height={16} />
-        )}
+        <a
+          href={`https://polygonscan.com/token/${tokenAddress}`}
+          target='_blank'
+          rel='noreferrer'
+          style={{ textDecoration: 'none' }}
+        >
+          <Typography variant='body2' style={{ color: palette.primary.main }}>
+            {shortenAddress(tokenAddress)}
+          </Typography>
+        </a>
         <Box
           display='flex'
           style={{ cursor: 'pointer' }}
           onClick={() => {
-            setCopied(tokenData?.id);
+            setCopied(tokenAddress);
           }}
         >
           <CopyIcon />

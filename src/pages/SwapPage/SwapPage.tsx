@@ -22,20 +22,11 @@ import {
   SwapTokenDetails,
   SettingsModal,
 } from 'components';
-import {
-  useEthPrice,
-  useTopTokens,
-  useTokenPairs,
-  useBlockNumber,
-  useSwapTokenPrice0,
-  useSwapTokenPrice1,
-} from 'state/application/hooks';
+import { useEthPrice, useTokenPairs } from 'state/application/hooks';
 import {
   getEthPrice,
-  getTopTokens,
   getTokenPairs,
   getBulkPairData,
-  getIntervalTokenData,
   formatCompact,
 } from 'utils';
 import { useDerivedSwapInfo } from 'state/swap/hooks';
@@ -43,7 +34,8 @@ import { Field } from 'state/swap/actions';
 import { useAllTokens } from 'hooks/Tokens';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import { useCurrency } from 'hooks/Tokens';
-import dayjs from 'dayjs';
+import { wrappedCurrency } from 'utils/wrappedCurrency';
+import { useActiveWeb3React } from 'hooks';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   helpWrapper: {
@@ -152,26 +144,17 @@ const SwapPage: React.FC = () => {
   }, [parsedQuery, qCurrency0, qCurrency1]);
 
   const { currencies } = useDerivedSwapInfo();
+  const { chainId } = useActiveWeb3React();
   const allTokens = useAllTokens();
   const { ethPrice, updateEthPrice } = useEthPrice();
-  const { updateTopTokens } = useTopTokens();
-  const { swapTokenPrice0, updateSwapTokenPrice0 } = useSwapTokenPrice0();
-  const { swapTokenPrice1, updateSwapTokenPrice1 } = useSwapTokenPrice1();
   const { tokenPairs, updateTokenPairs } = useTokenPairs();
   const [liquidityPoolClosed, setLiquidityPoolClosed] = useState(false);
   const [liquidityFilterIndex, setLiquidityFilterIndex] = useState(0);
-  const latestBlock = useBlockNumber();
 
-  const token1 = currencies[Field.INPUT];
-  const token2 = currencies[Field.OUTPUT];
-  const token1Address =
-    token1 === Token.ETHER
-      ? '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270'
-      : (token1 as Token)?.address.toLowerCase();
-  const token2Address =
-    token2 === Token.ETHER
-      ? '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270'
-      : (token2 as Token)?.address.toLowerCase();
+  const token1 = wrappedCurrency(currencies[Field.INPUT], chainId);
+  const token2 = wrappedCurrency(currencies[Field.OUTPUT], chainId);
+  const token1Address = token1?.address.toLowerCase();
+  const token2Address = token2?.address.toLowerCase();
 
   const liquidityPairs = tokenPairs
     ? tokenPairs
@@ -202,73 +185,29 @@ const SwapPage: React.FC = () => {
         ethPriceChange: priceChange,
       });
     }
-    async function fetchTopTokens() {
-      const topTokens = await getTopTokens(
-        ethPrice.price,
-        ethPrice.oneDayPrice,
-      );
-      if (topTokens) {
-        updateTopTokens(topTokens);
-      }
-    }
     if (!ethPrice.price) {
       fetchEthPrice();
     }
-    fetchTopTokens();
-  }, [ethPrice, updateEthPrice, updateTopTokens]);
+  }, [ethPrice, updateEthPrice]);
 
   useEffect(() => {
     async function fetchTokenPairs() {
       updateTokenPairs({ data: null });
-      updateSwapTokenPrice0({ data: null });
-      updateSwapTokenPrice1({ data: null });
-      const tokenPairs = await getTokenPairs(token1Address, token2Address);
-      const formattedPairs = tokenPairs
-        ? tokenPairs.map((pair: any) => {
-            return pair.id;
-          })
-        : [];
-      const pairData = await getBulkPairData(formattedPairs, ethPrice.price);
-      if (pairData) {
-        updateTokenPairs({ data: pairData });
+      if (token1Address && token2Address) {
+        const tokenPairs = await getTokenPairs(token1Address, token2Address);
+        const formattedPairs = tokenPairs
+          ? tokenPairs.map((pair: any) => {
+              return pair.id;
+            })
+          : [];
+        const pairData = await getBulkPairData(formattedPairs, ethPrice.price);
+        if (pairData) {
+          updateTokenPairs({ data: pairData });
+        }
       }
     }
-    async function fetchSwapTokenPrice0() {
-      const currentTime = dayjs.utc();
-      const startTime = currentTime
-        .subtract(1, 'day')
-        .startOf('hour')
-        .unix();
-      const token1PriceData = await getIntervalTokenData(
-        token1Address,
-        startTime,
-        3600,
-        latestBlock,
-      );
-      updateSwapTokenPrice0({ data: token1PriceData });
-    }
-    async function fetchSwapTokenPrice1() {
-      const currentTime = dayjs.utc();
-      const startTime = currentTime
-        .subtract(1, 'day')
-        .startOf('hour')
-        .unix();
-      const token2PriceData = await getIntervalTokenData(
-        token2Address,
-        startTime,
-        3600,
-        latestBlock,
-      );
-      updateSwapTokenPrice1({ data: token2PriceData });
-    }
-    if (ethPrice.price && token1Address && token2Address) {
+    if (ethPrice.price) {
       fetchTokenPairs();
-    }
-    if (token1Address) {
-      fetchSwapTokenPrice0();
-    }
-    if (token2Address) {
-      fetchSwapTokenPrice1();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ethPrice, token1Address, token2Address]);
@@ -360,20 +299,14 @@ const SwapPage: React.FC = () => {
             justifyContent='space-between'
             width='100%'
           >
-            {currencies[Field.INPUT] && (
+            {token1 && (
               <Box className={classes.swapTokenDetails}>
-                <SwapTokenDetails
-                  currency={currencies[Field.INPUT]}
-                  priceData={swapTokenPrice0}
-                />
+                <SwapTokenDetails token={token1} />
               </Box>
             )}
-            {currencies[Field.OUTPUT] && (
+            {token2 && (
               <Box className={classes.swapTokenDetails}>
-                <SwapTokenDetails
-                  currency={currencies[Field.OUTPUT]}
-                  priceData={swapTokenPrice1}
-                />
+                <SwapTokenDetails token={token2} />
               </Box>
             )}
           </Box>

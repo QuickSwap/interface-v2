@@ -71,6 +71,7 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
   );
   const [typedValue, setTypedValue] = useState('');
   const [stakePercent, setStakePercent] = useState(0);
+  const [approving, setApproving] = useState(false);
   const maxAmountInput = maxAmountSpend(userLiquidityUnstaked);
   const { parsedAmount, error } = useDerivedSyrupInfo(
     typedValue,
@@ -278,10 +279,18 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
         >
           <Button
             className={classes.stakeButton}
-            disabled={approval !== ApprovalState.NOT_APPROVED}
-            onClick={onAttemptToApprove}
+            disabled={approving || approval !== ApprovalState.NOT_APPROVED}
+            onClick={async () => {
+              setApproving(true);
+              try {
+                await onAttemptToApprove();
+                setApproving(false);
+              } catch (e) {
+                setApproving(false);
+              }
+            }}
           >
-            Approve
+            {approving ? 'Approving...' : 'Approve'}
           </Button>
           <Button
             className={classes.stakeButton}

@@ -11,8 +11,6 @@ import {
   updateGlobalChartData,
   updateTopTokens,
   updateTokenPairs,
-  updateSwapTokenPrice0,
-  updateSwapTokenPrice1,
   addBookMarkToken,
   removeBookmarkToken,
   updateBookmarkTokens,
@@ -38,8 +36,6 @@ export interface ApplicationState {
   readonly globalChartData: any;
   readonly topTokens: any;
   readonly tokenPairs: any;
-  readonly swapTokenPrice0: any;
-  readonly swapTokenPrice1: any;
   readonly bookmarkedTokens: string[];
   readonly bookmarkedPairs: string[];
   readonly topPairs: any[] | null;
@@ -60,8 +56,6 @@ const initialState: ApplicationState = {
     oneDayPrice: null,
     ethPriceChange: null,
   },
-  swapTokenPrice0: null,
-  swapTokenPrice1: null,
   bookmarkedTokens: [],
   bookmarkedPairs: [],
   topPairs: null,
@@ -129,12 +123,6 @@ export default createReducer(initialState, (builder) =>
     })
     .addCase(updateTokenPairs, (state, { payload: { data } }) => {
       state.tokenPairs = data;
-    })
-    .addCase(updateSwapTokenPrice0, (state, { payload: { data } }) => {
-      state.swapTokenPrice0 = data;
-    })
-    .addCase(updateSwapTokenPrice1, (state, { payload: { data } }) => {
-      state.swapTokenPrice1 = data;
     })
     .addCase(addBookMarkToken, (state, { payload }) => {
       const tokens = state.bookmarkedTokens;

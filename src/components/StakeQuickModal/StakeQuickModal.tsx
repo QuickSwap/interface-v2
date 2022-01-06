@@ -61,6 +61,7 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
   const userLiquidityUnstaked = useTokenBalance(account ?? undefined, QUICK);
   const [typedValue, setTypedValue] = useState('');
   const [stakePercent, setStakePercent] = useState(0);
+  const [approving, setApproving] = useState(false);
   const { parsedAmount, error } = useDerivedLairInfo(
     typedValue,
     QUICK,
@@ -205,10 +206,18 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
         >
           <Button
             className={classes.stakeButton}
-            disabled={approval !== ApprovalState.NOT_APPROVED}
-            onClick={onAttemptToApprove}
+            disabled={approving || approval !== ApprovalState.NOT_APPROVED}
+            onClick={async () => {
+              setApproving(true);
+              try {
+                await onAttemptToApprove();
+                setApproving(false);
+              } catch (e) {
+                setApproving(false);
+              }
+            }}
           >
-            Approve
+            {approving ? 'Approving...' : 'Approve'}
           </Button>
           <Button
             className={classes.stakeButton}

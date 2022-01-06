@@ -119,14 +119,14 @@ const AnalyticsTokenDetails: React.FC = () => {
   } = useBookmarkTokens();
 
   useEffect(() => {
-    async function checkEthPrice() {
+    async function fetchTokenInfo() {
       const [newPrice, oneDayPrice] = await getEthPrice();
       const tokenInfo = await getTokenInfo(newPrice, oneDayPrice, tokenAddress);
       if (tokenInfo) {
         setToken(tokenInfo[0]);
       }
     }
-    checkEthPrice();
+    fetchTokenInfo();
   }, [tokenAddress]);
 
   const chartData = useMemo(() => {

@@ -176,6 +176,8 @@ const AddLiquidity: React.FC<{
   const isnotMatic =
     ethereum && ethereum.isMetaMask && Number(ethereum.chainId) !== 137;
   const toggleWalletModal = useWalletModalToggle();
+  const [approvingA, setApprovingA] = useState(false);
+  const [approvingB, setApprovingB] = useState(false);
   const [approvalA, approveACallback] = useApproveCallback(
     parsedAmounts[Field.CURRENCY_A],
     ROUTER_ADDRESS,
@@ -546,8 +548,16 @@ const AddLiquidity: React.FC<{
                   width={approvalB !== ApprovalState.APPROVED ? '48%' : '100%'}
                 >
                   <Button
-                    onClick={approveACallback}
-                    disabled={approvalA === ApprovalState.PENDING}
+                    onClick={async () => {
+                      setApprovingA(true);
+                      try {
+                        await approveACallback();
+                        setApprovingA(false);
+                      } catch (e) {
+                        setApprovingA(false);
+                      }
+                    }}
+                    disabled={approvingA || approvalA === ApprovalState.PENDING}
                   >
                     {approvalA === ApprovalState.PENDING
                       ? `Approving ${currencies[Field.CURRENCY_A]?.symbol}`
@@ -560,8 +570,16 @@ const AddLiquidity: React.FC<{
                   width={approvalA !== ApprovalState.APPROVED ? '48%' : '100%'}
                 >
                   <Button
-                    onClick={approveBCallback}
-                    disabled={approvalB === ApprovalState.PENDING}
+                    onClick={async () => {
+                      setApprovingB(true);
+                      try {
+                        await approveBCallback();
+                        setApprovingB(false);
+                      } catch (e) {
+                        setApprovingB(false);
+                      }
+                    }}
+                    disabled={approvingB || approvalB === ApprovalState.PENDING}
                   >
                     {approvalB === ApprovalState.PENDING
                       ? `Approving ${currencies[Field.CURRENCY_B]?.symbol}`

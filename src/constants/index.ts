@@ -1655,7 +1655,7 @@ export const CLAM2 = new Token(
   ChainId.MATIC,
   '0xC250e9987A032ACAC293d838726C511E6E1C029d',
   9,
-  'CLAM2',
+  'CLAM',
   'Otter Clam',
 );
 export const FODL = new Token(
@@ -1727,6 +1727,41 @@ export const PSP = new Token(
   18,
   'PSP',
   'ParaSwap',
+);
+export const BCMC = new Token(
+  ChainId.MATIC,
+  '0xc10358f062663448a3489fC258139944534592ac',
+  18,
+  'BCMC',
+  'Blockchain Monster Coin',
+);
+export const NACHO = new Token(
+  ChainId.MATIC,
+  '0xcD86152047e800d67BDf00A4c635A8B6C0e5C4c2',
+  18,
+  'NACHO',
+  'NACHO',
+);
+export const NSHARE = new Token(
+  ChainId.MATIC,
+  '0x948D0a28b600BDBd77AF4ea30E6F338167034181',
+  18,
+  'NSHARE',
+  'NSHARE',
+);
+export const UART = new Token(
+  ChainId.MATIC,
+  '0xf244E91A46A9cdd48da295cA5d0B27894f8032B1',
+  12,
+  'UART',
+  'UniArts Network Token',
+);
+export const SFF = new Token(
+  ChainId.MATIC,
+  '0xdf9B4b57865B403e08c85568442f95c26b7896b0',
+  18,
+  'SFF',
+  'Sunflower Farm',
 );
 
 export const MATIC = WETH[ChainId.MATIC];
@@ -1890,4 +1925,4 @@ export const BETTER_TRADE_LINK_THRESHOLD = new Percent(
 
 // the Uniswap Default token list lives here
 export const DEFAULT_TOKEN_LIST_URL =
-  'https://unpkg.com/quickswap-default-token-list@1.2.18/build/quickswap-default.tokenlist.json';
+  'https://unpkg.com/quickswap-default-token-list@1.2.19/build/quickswap-default.tokenlist.json';

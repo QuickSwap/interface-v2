@@ -103,6 +103,7 @@ const FarmDualCardDetails: React.FC<{
   const [attemptStaking, setAttemptStaking] = useState(false);
   const [attemptUnstaking, setAttemptUnstaking] = useState(false);
   const [attemptClaimReward, setAttemptClaimReward] = useState(false);
+  const [approving, setApproving] = useState(false);
   // const [hash, setHash] = useState<string | undefined>();
   const [unstakeAmount, setUnStakeAmount] = useState('');
   const stakingInfos = useDualStakingInfo(pair);
@@ -473,6 +474,7 @@ const FarmDualCardDetails: React.FC<{
             </Box>
             <Box
               className={
+                !approving &&
                 Number(!attemptStaking && stakeAmount) > 0 &&
                 Number(stakeAmount) <=
                   Number(userLiquidityUnstaked?.toSignificant())
@@ -482,8 +484,9 @@ const FarmDualCardDetails: React.FC<{
               mb={2}
               mt={2}
               p={2}
-              onClick={() => {
+              onClick={async () => {
                 if (
+                  !approving &&
                   !attemptStaking &&
                   Number(stakeAmount) > 0 &&
                   Number(stakeAmount) <=
@@ -495,7 +498,13 @@ const FarmDualCardDetails: React.FC<{
                   ) {
                     onStake();
                   } else {
-                    onAttemptToApprove();
+                    setApproving(true);
+                    try {
+                      await onAttemptToApprove();
+                      setApproving(false);
+                    } catch (e) {
+                      setApproving(false);
+                    }
                   }
                 }
               }}
@@ -506,6 +515,8 @@ const FarmDualCardDetails: React.FC<{
                   : approval === ApprovalState.APPROVED ||
                     signatureData !== null
                   ? 'Stake LP Tokens'
+                  : approving
+                  ? 'Approving...'
                   : 'Approve'}
               </Typography>
             </Box>

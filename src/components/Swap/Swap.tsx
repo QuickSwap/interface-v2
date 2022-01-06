@@ -179,6 +179,7 @@ const Swap: React.FC<{
   } = useSwapActionHandlers();
   const { address: recipientAddress } = useENSAddress(recipient);
   const [allowedSlippage] = useUserSlippageTolerance();
+  const [approving, setApproving] = useState(false);
   const [approval, approveCallback] = useApproveCallbackFromTrade(
     trade,
     allowedSlippage,
@@ -670,9 +671,19 @@ const Swap: React.FC<{
           <Button
             color='primary'
             disabled={
-              approval !== ApprovalState.NOT_APPROVED || approvalSubmitted
+              approving ||
+              approval !== ApprovalState.NOT_APPROVED ||
+              approvalSubmitted
             }
-            onClick={approveCallback}
+            onClick={async () => {
+              setApproving(true);
+              try {
+                await approveCallback();
+                setApproving(false);
+              } catch (err) {
+                setApproving(false);
+              }
+            }}
           >
             {approval === ApprovalState.PENDING ? (
               <Box className='content'>

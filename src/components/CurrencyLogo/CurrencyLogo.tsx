@@ -1007,7 +1007,7 @@ export const getTokenLogoURL = (address: string) => {
   }
   if (
     address?.toLowerCase() ===
-    '0x348e62131fce2F4e0d5ead3Fe1719Bc039B380A9'.toLowerCase()
+    '0x430EF9263E76DAE63c84292C3409D61c598E9682'.toLowerCase()
   ) {
     uri =
       'https://assets.coingecko.com/coins/images/14770/small/1617088937196.png?1619414736';
@@ -1500,6 +1500,41 @@ export const getTokenLogoURL = (address: string) => {
   ) {
     uri =
       'https://assets.coingecko.com/coins/images/20403/small/ep7GqM19_400x400.jpg?1636979120';
+  }
+
+  if (
+    address?.toLowerCase() ===
+    '0xc10358f062663448a3489fC258139944534592ac'.toLowerCase()
+  ) {
+    uri = 'https://bcmhunt.com/bcmc-coin-512x512.png';
+  }
+  if (
+    address?.toLowerCase() ===
+    '0xcD86152047e800d67BDf00A4c635A8B6C0e5C4c2'.toLowerCase()
+  ) {
+    uri =
+      'https://assets.coingecko.com/coins/images/21635/small/NF_nacho_2_200x200.png?1639627573';
+  }
+  if (
+    address?.toLowerCase() ===
+    '0x948D0a28b600BDBd77AF4ea30E6F338167034181'.toLowerCase()
+  ) {
+    uri =
+      'https://assets.coingecko.com/coins/images/21692/small/NF_nshare_2_200x200.png?1639721239';
+  }
+  if (
+    address?.toLowerCase() ===
+    '0xf244E91A46A9cdd48da295cA5d0B27894f8032B1'.toLowerCase()
+  ) {
+    uri =
+      'https://assets.coingecko.com/coins/images/22092/small/3Rx82r_w_400x400.png?1640823145';
+  }
+  if (
+    address?.toLowerCase() ===
+    '0xdf9B4b57865B403e08c85568442f95c26b7896b0'.toLowerCase()
+  ) {
+    uri =
+      'https://assets.coingecko.com/coins/images/22198/small/download.png?1641192480';
   }
 
   if (

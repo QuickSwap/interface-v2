@@ -101,6 +101,7 @@ const FarmLPCardDetails: React.FC<{
   const [attemptStaking, setAttemptStaking] = useState(false);
   const [attemptUnstaking, setAttemptUnstaking] = useState(false);
   const [attemptClaiming, setAttemptClaiming] = useState(false);
+  const [approving, setApproving] = useState(false);
   const [unstakeAmount, setUnStakeAmount] = useState('');
   const stakingInfos = useStakingInfo(pair);
   const oldStakingInfos = useOldStakingInfo(pair);
@@ -405,7 +406,7 @@ const FarmLPCardDetails: React.FC<{
       message,
     });
 
-    library
+    return library
       .send('eth_signTypedData_v4', [account, data])
       .then(splitSignature)
       .then((signature) => {
@@ -540,6 +541,7 @@ const FarmLPCardDetails: React.FC<{
                 </Box>
                 <Box
                   className={
+                    !approving &&
                     Number(!attemptStaking && stakeAmount) > 0 &&
                     Number(stakeAmount) <=
                       Number(userLiquidityUnstaked?.toSignificant())
@@ -549,8 +551,9 @@ const FarmLPCardDetails: React.FC<{
                   mb={2}
                   mt={2}
                   p={2}
-                  onClick={() => {
+                  onClick={async () => {
                     if (
+                      !approving &&
                       !attemptStaking &&
                       Number(stakeAmount) > 0 &&
                       Number(stakeAmount) <=
@@ -562,7 +565,13 @@ const FarmLPCardDetails: React.FC<{
                       ) {
                         onStake();
                       } else {
-                        onAttemptToApprove();
+                        setApproving(true);
+                        try {
+                          await onAttemptToApprove();
+                          setApproving(false);
+                        } catch (e) {
+                          setApproving(false);
+                        }
                       }
                     }
                   }}
@@ -573,6 +582,8 @@ const FarmLPCardDetails: React.FC<{
                       : approval === ApprovalState.APPROVED ||
                         signatureData !== null
                       ? 'Stake LP Tokens'
+                      : approving
+                      ? 'Approving...'
                       : 'Approve'}
                   </Typography>
                 </Box>
