@@ -1,14 +1,6 @@
 import { WETH } from '@uniswap/sdk';
 
-
-import {
-  DAI,
-  QUICK,
-  SAND,
-  USDC,
-  USDT,
-  WBTC,
-} from 'constants/index';
+import { DAI, QUICK, SAND, USDC, USDT, WBTC } from 'constants/index';
 import { MetaToken } from './types';
 
 import usdcABI from 'constants/abis/usdc.json';
