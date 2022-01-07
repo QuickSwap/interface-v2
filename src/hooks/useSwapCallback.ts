@@ -34,6 +34,7 @@ import { Version } from './useToggledVersion';
 import { splitSignature } from '@ethersproject/bytes';
 import { useIsGaslessEnabled } from 'state/application/hooks';
 import { useBiconomy } from 'context/Biconomy';
+import metaTokens from 'config/biconomy/metaTokens';
 
 export enum SwapCallbackState {
   INVALID,
@@ -277,10 +278,19 @@ export function useSwapCallback(
           gasEstimate,
         } = successfulEstimation;
 
+        const fromToken = Object(trade.route.input);
+        let matchingMetaToken;
+        if (fromToken.address) {
+          matchingMetaToken = metaTokens.find(
+            (t) =>
+              t.token.address.toLowerCase() === fromToken.address.toLowerCase(),
+          );
+        }
         if (
           methodName === 'swapExactETHForTokens' ||
           methodName === 'swapETHForExactTokens' ||
-          !gaslessMode
+          !gaslessMode ||
+          !matchingMetaToken
         ) {
           return contract[methodName](...args, {
             gasLimit: calculateGasMargin(gasEstimate),
