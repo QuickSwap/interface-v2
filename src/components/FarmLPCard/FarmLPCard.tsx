@@ -224,9 +224,9 @@ const FarmLPCard: React.FC<{
             <Typography className={classes.syrupText}>Rewards</Typography>
           )}
           <Box textAlign={isMobile ? 'right' : 'left'}>
-            <Typography variant='body2'>{`$${Number(
-              rewards.toFixed(0),
-            ).toLocaleString()} / day`}</Typography>
+            <Typography variant='body2'>
+              ${Number(rewards.toFixed(0)).toLocaleString()} / day
+            </Typography>
             <Typography variant='body2'>{poolRate}</Typography>
           </Box>
         </Box>

@@ -2,11 +2,9 @@ import React, { useState } from 'react';
 import { Box, Typography, useMediaQuery } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { DualStakingInfo } from 'state/stake/hooks';
-import { JSBI, TokenAmount, Pair, ETHER } from '@uniswap/sdk';
+import { JSBI, TokenAmount, ETHER } from '@uniswap/sdk';
 import { QUICK, EMPTY } from 'constants/index';
 import { unwrappedToken } from 'utils/wrappedCurrency';
-import { useDualRewardsStakingContract } from 'hooks/useContract';
-import { useTransactionAdder } from 'state/transactions/hooks';
 import { DoubleCurrencyLogo, CurrencyLogo } from 'components';
 import { useTokenBalance } from 'state/wallet/hooks';
 import { useActiveWeb3React } from 'hooks';
@@ -94,12 +92,6 @@ const FarmDualCard: React.FC<{
   const { palette, breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const [isExpandCard, setExpandCard] = useState(false);
-  const [stakeAmount, setStakeAmount] = useState('');
-  const [attemptStaking, setAttemptStaking] = useState(false);
-  const [attemptUnstaking, setAttemptUnstaking] = useState(false);
-  const [attemptClaimReward, setAttemptClaimReward] = useState(false);
-  // const [hash, setHash] = useState<string | undefined>();
-  const [unstakeAmount, setUnStakeAmount] = useState('');
 
   const token0 = stakingInfo.tokens[0];
   const token1 = stakingInfo.tokens[1];
@@ -107,8 +99,7 @@ const FarmDualCard: React.FC<{
   const rewardTokenA = stakingInfo.rewardTokenA;
   const rewardTokenB = stakingInfo.rewardTokenB;
 
-  const { account, library } = useActiveWeb3React();
-  const addTransaction = useTransactionAdder();
+  const { account } = useActiveWeb3React();
 
   const currency0 = unwrappedToken(token0);
   const currency1 = unwrappedToken(token1);
@@ -188,14 +179,6 @@ const FarmDualCard: React.FC<{
     valueOfTotalStakedAmountInBaseToken &&
     USDPrice?.quote(valueOfTotalStakedAmountInBaseToken);
 
-  const valueOfMyStakedAmountInUSDC =
-    valueOfMyStakedAmountInBaseToken &&
-    USDPrice?.quote(valueOfMyStakedAmountInBaseToken);
-
-  const valueOfUnstakedAmountInUSDC =
-    valueOfUnstakedAmountInBaseToken &&
-    USDPrice?.quote(valueOfUnstakedAmountInBaseToken);
-
   let apyWithFee: number | string = 0;
 
   if (stakingAPY && stakingAPY > 0) {
@@ -233,20 +216,12 @@ const FarmDualCard: React.FC<{
     ' ' +
     rewardTokenB?.symbol} / day`;
 
-  const stakingContract = useDualRewardsStakingContract(
-    stakingInfo.stakingRewardAddress,
-  );
-
-  const dummyPair = new Pair(
-    new TokenAmount(stakingInfo.tokens[0], '0'),
-    new TokenAmount(stakingInfo.tokens[1], '0'),
-  );
-
   const earnedUSD =
     Number(stakingInfo.earnedAmountA.toSignificant()) *
       dQuicktoQuick *
       stakingInfo.quickPrice +
-    Number(stakingInfo.earnedAmountB.toSignificant()) * stakingInfo.maticPrice;
+    Number(stakingInfo.earnedAmountB.toSignificant()) *
+      Number(stakingInfo.rewardTokenBPrice);
 
   const earnedUSDStr =
     earnedUSD < 0.001 && earnedUSD > 0

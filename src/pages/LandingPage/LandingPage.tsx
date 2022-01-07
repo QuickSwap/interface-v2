@@ -47,8 +47,8 @@ import {
   useGlobalData,
   useWalletModalToggle,
 } from 'state/application/hooks';
-import { useAllTokens } from 'hooks/Tokens';
-import { useLairInfo, STAKING_REWARDS_INFO } from 'state/stake/hooks';
+import { QUICK } from 'constants/index';
+import { useLairInfo, useTotalRewardsDistributed } from 'state/stake/hooks';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   heroSection: {
@@ -430,14 +430,8 @@ const LandingPage: React.FC = () => {
     ethereum && ethereum.isMetaMask && Number(ethereum.chainId) !== 137;
   const mobileWindowSize = useMediaQuery(breakpoints.down('sm'));
   const { initTransak } = useInitTransak();
-  const allTokens = useAllTokens();
   const toggleWalletModal = useWalletModalToggle();
-  const quickToken = Object.values(allTokens).find(
-    (val) => val.symbol === 'QUICK',
-  );
-  const [fiatCurrency, setFiatCurrency] = useState<Currency | undefined>(
-    quickToken,
-  );
+  const [fiatCurrency, setFiatCurrency] = useState<Currency | undefined>(QUICK);
   const [fiatAmount, setFiatAmount] = useState('');
 
   const features = [
@@ -518,20 +512,6 @@ const LandingPage: React.FC = () => {
   const { ethPrice, updateEthPrice } = useEthPrice();
   const { globalData, updateGlobalData } = useGlobalData();
   const lairInfo = useLairInfo();
-  const rewardRate = useMemo(() => {
-    if (chainId) {
-      const rewardsInfo = STAKING_REWARDS_INFO[chainId];
-      if (rewardsInfo && rewardsInfo.length > 0) {
-        return rewardsInfo
-          .map((info: any) => Number(info.rate))
-          .reduce((sum, current) => sum + current, 0);
-      } else {
-        return 0;
-      }
-    } else {
-      return 0;
-    }
-  }, [chainId]);
 
   const APR =
     (((Number(lairInfo?.oneDayVol) * 0.04 * 0.01) /
@@ -543,10 +523,7 @@ const LandingPage: React.FC = () => {
     ? ((Math.pow(1 + APR / 365, 365) - 1) * 100).toFixed(4)
     : 0;
 
-  const totalRewardsUSD =
-    rewardRate *
-    (Number(lairInfo?.dQUICKtoQUICK.toSignificant()) *
-      Number(lairInfo?.quickPrice));
+  const totalRewardsUSD = useTotalRewardsDistributed();
 
   useEffect(() => {
     async function checkEthPrice() {

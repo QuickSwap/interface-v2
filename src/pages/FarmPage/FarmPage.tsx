@@ -14,12 +14,14 @@ import {
   OLD_STAKING_REWARDS_INFO,
   STAKING_DUAL_REWARDS_INFO,
   getBulkPairData,
+  useUSDRewardsandFees,
 } from 'state/stake/hooks';
 import { FarmLPCard, FarmDualCard, ToggleSwitch } from 'components';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
 import { ReactComponent as SearchIcon } from 'assets/images/SearchIcon.svg';
 import { useInfiniteLoading } from 'utils/useInfiniteLoading';
 import { useActiveWeb3React } from 'hooks';
+import { Skeleton } from '@material-ui/lab';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   helpWrapper: {
@@ -126,6 +128,19 @@ const FarmPage: React.FC = () => {
   const [isEndedFarm, setIsEndedFarm] = useState(false);
   const [sortBy, setSortBy] = useState(0);
   const [sortDesc, setSortDesc] = useState(false);
+  const farmData = useUSDRewardsandFees(farmIndex === 0, bulkPairs);
+  const dQuickRewardSum = useMemo(() => {
+    if (chainId) {
+      const stakingData = STAKING_REWARDS_INFO[chainId] ?? [];
+      const rewardSum = stakingData.reduce(
+        (total, item) => total + item.rate,
+        0,
+      );
+      return rewardSum;
+    } else {
+      return 0;
+    }
+  }, [chainId]);
 
   const addedLPStakingInfos = useStakingInfo(
     null,
@@ -445,10 +460,12 @@ const FarmPage: React.FC = () => {
           } else if (sortBy === 5) {
             const earnedA =
               Number(a.earnedAmountA.toSignificant()) * a.quickPrice +
-              Number(a.earnedAmountB.toSignificant()) * a.maticPrice;
+              Number(a.earnedAmountB.toSignificant()) *
+                Number(a.rewardTokenBPrice);
             const earnedB =
               Number(b.earnedAmountA.toSignificant()) * b.quickPrice +
-              Number(b.earnedAmountB.toSignificant()) * b.maticPrice;
+              Number(b.earnedAmountB.toSignificant()) *
+                Number(b.rewardTokenBPrice);
             if (sortDesc) {
               return earnedA > earnedB ? -1 : 1;
             } else {
@@ -554,7 +571,6 @@ const FarmPage: React.FC = () => {
   return (
     <Box width='100%' mb={3} id='farmPage'>
       <Box
-        mb={2}
         display='flex'
         alignItems='flex-start'
         justifyContent='space-between'
@@ -568,7 +584,7 @@ const FarmPage: React.FC = () => {
           <HelpIcon />
         </Box>
       </Box>
-      <Box display='flex' mb={4} width={300} height={48}>
+      <Box display='flex' width={300} height={48}>
         <Box
           className={cx(
             classes.farmSwitch,
@@ -592,6 +608,69 @@ const FarmPage: React.FC = () => {
           }}
         >
           <Typography variant='body1'>Dual Mining</Typography>
+        </Box>
+      </Box>
+      <Box
+        display='flex'
+        flexWrap='wrap'
+        my={2}
+        borderRadius={10}
+        py={1.5}
+        bgcolor={palette.secondary.dark}
+      >
+        {farmIndex === 0 && (
+          <Box
+            width={isMobile ? 1 : 1 / 3}
+            py={1.5}
+            borderRight={`1px solid ${palette.divider}`}
+            textAlign='center'
+          >
+            <Box mb={1}>
+              <Typography variant='caption' color='textSecondary'>
+                Reward Rate
+              </Typography>
+            </Box>
+            <Typography variant='subtitle2' style={{ fontWeight: 600 }}>
+              {dQuickRewardSum.toLocaleString()} dQuick / Day
+            </Typography>
+          </Box>
+        )}
+        <Box
+          width={isMobile ? 1 : farmIndex === 0 ? 1 / 3 : 1 / 2}
+          p={1.5}
+          borderRight={isMobile ? 'none' : `1px solid ${palette.divider}`}
+          textAlign='center'
+        >
+          <Box mb={1}>
+            <Typography variant='caption' color='textSecondary'>
+              Total Rewards
+            </Typography>
+          </Box>
+          {farmData.rewardsUSD ? (
+            <Typography variant='subtitle2' style={{ fontWeight: 600 }}>
+              ${farmData.rewardsUSD.toLocaleString()} / Day
+            </Typography>
+          ) : (
+            <Skeleton width='100%' height='28px' />
+          )}
+        </Box>
+        <Box
+          width={isMobile ? 1 : farmIndex === 0 ? 1 / 3 : 1 / 2}
+          p={1.5}
+          textAlign='center'
+        >
+          <Box mb={1}>
+            <Typography variant='caption' color='textSecondary'>
+              Fees [24h]
+            </Typography>
+          </Box>
+          {farmData.stakingFees ? (
+            <Typography variant='subtitle2' style={{ fontWeight: 600 }}>
+              ${farmData.stakingFees.toLocaleString()}
+            </Typography>
+          ) : (
+            <Skeleton width='100%' height='28px' />
+          )}
         </Box>
       </Box>
       <Box className={classes.dragonWrapper}>

@@ -256,8 +256,6 @@ export const REWARDS_DURATION_DAYS = 7;
 
 let pairs: any = undefined;
 
-let dualPairs: any = undefined;
-
 export const SYRUP_REWARDS_INFO: {
   [chainId in ChainId]?: {
     token: Token;
@@ -271,6 +269,16 @@ export const SYRUP_REWARDS_INFO: {
   }[];
 } = {
   [ChainId.MATIC]: [
+    {
+      token: PSP,
+      stakingRewardAddress: '0xdcbDa338D12DBc823d0D484e7206E9AA55eeD844',
+      ended: false,
+      lp: '',
+      name: '',
+      baseToken: MATIC,
+      rate: 5555.55,
+      ending: 1649254544,
+    },
     {
       token: CLAM2,
       stakingRewardAddress: '0xb510935f4D67E27a11cD94E81bF0C465ee2a5509',
@@ -1150,6 +1158,48 @@ export const STAKING_DUAL_REWARDS_INFO: {
       rateA: 5.208,
       rateB: 22223,
       pair: '0x7afc060acca7ec6985d982dd85cc62b111cac7a7',
+    },
+    {
+      tokens: [QUICK, TEL],
+      stakingRewardAddress: '0xF8bdC7bC282847EeB5d4291ec79172B48526e9dE',
+      ended: false,
+      lp: '',
+      name: '',
+      baseToken: QUICK,
+      rewardTokenA: DQUICK,
+      rewardTokenB: TEL,
+      rewardTokenBBase: QUICK,
+      rateA: 5.9534,
+      rateB: 238095.24,
+      pair: '0xe88e24f49338f974b528ace10350ac4576c5c8a1',
+    },
+    {
+      tokens: [TEL, ETHER],
+      stakingRewardAddress: '0xEda437364DCF8AB00f07b49bCc213CDf356b3962',
+      ended: false,
+      lp: '',
+      name: '',
+      baseToken: ETHER,
+      rewardTokenA: DQUICK,
+      rewardTokenB: TEL,
+      rewardTokenBBase: QUICK,
+      rateB: 148809.52,
+      rateA: 5.209225,
+      pair: '0xfc2fc983a411c4b1e238f7eb949308cf0218c750',
+    },
+    {
+      tokens: [TEL, USDC],
+      stakingRewardAddress: '0x84B3c86D660D680847258Fd20aAA1274Cc35EAcd',
+      ended: false,
+      lp: '',
+      name: '',
+      baseToken: USDC,
+      rewardTokenA: DQUICK,
+      rewardTokenB: TEL,
+      rewardTokenBBase: QUICK,
+      rateB: 238095.24,
+      rateA: 3.720875,
+      pair: '0xa5cabfc725dfa129f618d527e93702d10412f039',
     },
   ],
 };
@@ -12694,11 +12744,11 @@ export interface DualStakingInfo {
   rateA: number;
   rateB: number;
 
-  oneYearFeeAPY: number;
+  oneYearFeeAPY?: number;
 
-  oneDayFee: number;
+  oneDayFee?: number;
 
-  accountFee: number;
+  accountFee?: number;
 
   tvl?: string;
   perMonthReturnInRewards?: number;
@@ -12762,6 +12812,149 @@ export interface SyrupInfo {
     totalStakedAmount: TokenAmount,
     totalRewardRate: TokenAmount,
   ) => TokenAmount;
+}
+
+export function useTotalRewardsDistributed() {
+  const { chainId } = useActiveWeb3React();
+  const [, quickUsdcPair] = usePair(QUICK, USDC);
+  const [, maticUsdcPair] = usePair(MATIC, USDC);
+  const quickPrice = Number(quickUsdcPair?.priceOf(QUICK)?.toSignificant(6));
+  const maticPrice = Number(maticUsdcPair?.priceOf(MATIC)?.toSignificant(6));
+  const syrupRewardsInfo = chainId ? SYRUP_REWARDS_INFO[chainId] ?? [] : [];
+  const dualStakingRewardsInfo = chainId
+    ? STAKING_DUAL_REWARDS_INFO[chainId] ?? []
+    : [];
+  const stakingRewardsInfo = chainId ? STAKING_REWARDS_INFO[chainId] ?? [] : [];
+
+  const syrupTokenPairs = usePairs(
+    syrupRewardsInfo.map((item) => [
+      unwrappedToken(item.token),
+      unwrappedToken(item.baseToken),
+    ]),
+  );
+  const syrupUSDBaseTokenPrices = useUSDCPrices(
+    syrupRewardsInfo.map((item) => unwrappedToken(item.baseToken)),
+  );
+  const syrupRewardsUSD = syrupRewardsInfo.reduce((total, item, index) => {
+    const [, syrupTokenPair] = syrupTokenPairs[index];
+    const tokenPairPrice = syrupTokenPair?.priceOf(item.token);
+    const usdPriceBaseToken = syrupUSDBaseTokenPrices[index];
+    const priceOfRewardTokenInUSD =
+      Number(tokenPairPrice?.toSignificant()) *
+      Number(usdPriceBaseToken?.toSignificant());
+    return total + priceOfRewardTokenInUSD * item.rate;
+  }, 0);
+
+  const dualStakingTokenPairs = usePairs(
+    dualStakingRewardsInfo.map((item) => [
+      item.rewardTokenB,
+      item.rewardTokenBBase,
+    ]),
+  );
+  const dualStakingRewardsUSD = dualStakingRewardsInfo.reduce(
+    (total, item, index) => {
+      const [, rewardTokenBPair] = dualStakingTokenPairs[index];
+      const rewardTokenBPriceInBaseToken = Number(
+        rewardTokenBPair?.priceOf(item.rewardTokenB)?.toSignificant(6),
+      );
+
+      let rewardTokenBPrice = 0;
+      if (item.rewardTokenBBase.equals(USDC)) {
+        rewardTokenBPrice = rewardTokenBPriceInBaseToken;
+      } else if (item.rewardTokenBBase.equals(QUICK)) {
+        rewardTokenBPrice = rewardTokenBPriceInBaseToken * quickPrice;
+      } else {
+        rewardTokenBPrice = rewardTokenBPriceInBaseToken * maticPrice;
+      }
+
+      return total + item.rateA * quickPrice + item.rateB * rewardTokenBPrice;
+    },
+    0,
+  );
+
+  const stakingRewardsUSD = stakingRewardsInfo.reduce(
+    (total, item) => total + item.rate * quickPrice,
+    0,
+  );
+
+  return syrupRewardsUSD + dualStakingRewardsUSD + stakingRewardsUSD;
+}
+
+export function useUSDRewardsandFees(isLPFarm: boolean, bulkPairData: any) {
+  const { chainId } = useActiveWeb3React();
+  const [, quickUsdcPair] = usePair(QUICK, USDC);
+  const [, maticUsdcPair] = usePair(MATIC, USDC);
+  const quickPrice = Number(quickUsdcPair?.priceOf(QUICK)?.toSignificant(6));
+  const maticPrice = Number(maticUsdcPair?.priceOf(MATIC)?.toSignificant(6));
+  const dualStakingRewardsInfo =
+    chainId && !isLPFarm ? STAKING_DUAL_REWARDS_INFO[chainId] ?? [] : [];
+  const stakingRewardsInfo =
+    chainId && isLPFarm ? STAKING_REWARDS_INFO[chainId] ?? [] : [];
+  const rewardsInfos = isLPFarm ? stakingRewardsInfo : dualStakingRewardsInfo;
+  const rewardsAddresses = useMemo(
+    () => rewardsInfos.map(({ stakingRewardAddress }) => stakingRewardAddress),
+    [rewardsInfos],
+  );
+  const rewardPairs = useMemo(() => rewardsInfos.map(({ pair }) => pair), [
+    rewardsInfos,
+  ]);
+  const totalSupplies = useMultipleContractSingleData(
+    rewardsAddresses,
+    isLPFarm ? STAKING_REWARDS_INTERFACE : STAKING_DUAL_REWARDS_INTERFACE,
+    'totalSupply',
+  );
+  const dualStakingTokenPairs = usePairs(
+    dualStakingRewardsInfo.map((item) => [
+      item.rewardTokenB,
+      item.rewardTokenBBase,
+    ]),
+  );
+  let rewardsUSD: number | null = null;
+  if (isLPFarm) {
+    rewardsUSD = stakingRewardsInfo.reduce(
+      (total, item) => total + item.rate * quickPrice,
+      0,
+    );
+  } else {
+    rewardsUSD = dualStakingRewardsInfo.reduce((total, item, index) => {
+      const [, rewardTokenBPair] = dualStakingTokenPairs[index];
+      const rewardTokenBPriceInBaseToken = Number(
+        rewardTokenBPair?.priceOf(item.rewardTokenB)?.toSignificant(6),
+      );
+
+      let rewardTokenBPrice = 0;
+      if (item.rewardTokenBBase.equals(USDC)) {
+        rewardTokenBPrice = rewardTokenBPriceInBaseToken;
+      } else if (item.rewardTokenBBase.equals(QUICK)) {
+        rewardTokenBPrice = rewardTokenBPriceInBaseToken * quickPrice;
+      } else {
+        rewardTokenBPrice = rewardTokenBPriceInBaseToken * maticPrice;
+      }
+
+      return total + item.rateA * quickPrice + item.rateB * rewardTokenBPrice;
+    }, 0);
+  }
+  const stakingFees = bulkPairData
+    ? rewardPairs.reduce((total, pair, index) => {
+        const oneYearFeeAPY = Number(bulkPairData[pair]?.oneDayVolumeUSD ?? 0);
+        const totalSupplyState = totalSupplies[index];
+        if (oneYearFeeAPY) {
+          const totalSupply = web3.utils.toWei(
+            pairs[pair]?.totalSupply,
+            'ether',
+          );
+          const ratio =
+            Number(totalSupplyState.result?.[0].toString()) /
+            Number(totalSupply);
+          const oneDayFee = oneYearFeeAPY * 0.003 * ratio;
+          return total + oneDayFee;
+        } else {
+          return total;
+        }
+      }, 0)
+    : null;
+
+  return { rewardsUSD, stakingFees };
 }
 
 export function useSyrupInfo(
@@ -13293,62 +13486,6 @@ export const getBulkPairData = async (pairList: any) => {
   }
 };
 
-const getDualBulkPairData = async (pairList: any) => {
-  if (dualPairs !== undefined) {
-    return;
-  }
-  const current = await web3.eth.getBlockNumber();
-  const oneDayOldBlock = current - 44000;
-
-  try {
-    const current = await client.query({
-      query: PAIRS_BULK(pairList),
-      variables: {
-        allPairs: pairList,
-      },
-      fetchPolicy: 'network-only',
-    });
-
-    const [oneDayResult] = await Promise.all(
-      [oneDayOldBlock].map(async (block) => {
-        const result = client.query({
-          query: PAIRS_HISTORICAL_BULK(block, pairList),
-          fetchPolicy: 'network-only',
-        });
-        return result;
-      }),
-    );
-
-    const oneDayData = oneDayResult?.data?.pairs.reduce(
-      (obj: any, cur: any, i: any) => {
-        return { ...obj, [cur.id]: cur };
-      },
-      {},
-    );
-
-    const pairData = await Promise.all(
-      current &&
-        current.data.pairs.map(async (pair: any) => {
-          let data = pair;
-          const oneDayHistory = oneDayData?.[pair.id];
-
-          data = parseData(data, oneDayHistory);
-          return data;
-        }),
-    );
-
-    const object = convertArrayToObject(pairData, 'id');
-    if (Object.keys(object).length > 0) {
-      dualPairs = object;
-      return object;
-    }
-    return object;
-  } catch (e) {
-    console.log(e);
-    return;
-  }
-};
-
 const getOneDayVolume = async () => {
   let data: any = {};
   let oneDayData: any = {};
@@ -13646,31 +13783,6 @@ export function useDualStakingInfo(
           const periodFinishMs = periodFinishState.result?.[0]
             ?.mul(1000)
             ?.toNumber();
-          let oneYearFeeAPY = 0;
-          let oneDayFee = 0;
-          let accountFee = 0;
-          if (dualPairs !== undefined) {
-            oneYearFeeAPY = dualPairs[info[index].pair]?.oneDayVolumeUSD;
-
-            if (oneYearFeeAPY) {
-              const totalSupply = web3.utils.toWei(
-                dualPairs[info[index].pair]?.totalSupply,
-                'ether',
-              );
-              const ratio =
-                Number(totalSupplyState.result?.[0].toString()) /
-                Number(totalSupply);
-              const myRatio =
-                Number(balanceState?.result?.[0].toString()) /
-                Number(totalSupplyState.result?.[0].toString());
-              oneDayFee = oneYearFeeAPY * 0.003 * ratio;
-              accountFee = oneDayFee * myRatio;
-              oneYearFeeAPY =
-                (oneYearFeeAPY * 0.003 * 365) /
-                dualPairs[info[index].pair]?.reserveUSD;
-              //console.log(info[index].pair, oneYearFeeAPY);
-            }
-          }
 
           let valueOfTotalStakedAmountInBaseToken: TokenAmount | undefined;
 
@@ -13703,11 +13815,6 @@ export function useDualStakingInfo(
             ? valueOfTotalStakedAmountInUSDC.toSignificant()
             : valueOfTotalStakedAmountInBaseToken?.toSignificant();
 
-          const perMonthReturnInRewards =
-            ((info[index].rateA * quickPrice + info[index].rateB * maticPrice) *
-              30) /
-            Number(valueOfTotalStakedAmountInUSDC?.toSignificant(6));
-
           const [, rewardTokenBPair] = tokenPairs[index];
 
           const rewardTokenBPriceInBaseToken = Number(
@@ -13725,6 +13832,12 @@ export function useDualStakingInfo(
           } else {
             rewardTokenBPrice = rewardTokenBPriceInBaseToken * maticPrice;
           }
+
+          const perMonthReturnInRewards =
+            ((info[index].rateA * quickPrice +
+              info[index].rateB * rewardTokenBPrice) *
+              30) /
+            Number(valueOfTotalStakedAmountInUSDC?.toSignificant(6));
 
           memo.push({
             stakingRewardAddress: rewardsAddress,
@@ -13755,9 +13868,6 @@ export function useDualStakingInfo(
             maticPrice: maticPrice,
             rateA: info[index].rateA,
             rateB: info[index].rateB,
-            oneYearFeeAPY: oneYearFeeAPY,
-            oneDayFee,
-            accountFee,
             rewardTokenA: info[index].rewardTokenA,
             rewardTokenB: info[index].rewardTokenB,
             rewardTokenBBase: info[index].rewardTokenBBase,

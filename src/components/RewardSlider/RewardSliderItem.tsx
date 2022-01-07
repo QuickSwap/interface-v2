@@ -122,6 +122,12 @@ const RewardSliderItem: React.FC<RewardSliderItemProps> = ({
     }
   }
 
+  const tvl = valueOfTotalStakedAmountInUSDC
+    ? `$${valueOfTotalStakedAmountInUSDC.toFixed(0, { groupSeparator: ',' })}`
+    : `${valueOfTotalStakedAmountInBaseToken?.toSignificant(4, {
+        groupSeparator: ',',
+      }) ?? '-'} ETH`;
+
   return (
     <Box className={classes.rewardsSliderItem}>
       <Box mb={4}>
@@ -144,22 +150,14 @@ const RewardSliderItem: React.FC<RewardSliderItemProps> = ({
         </Typography>
       </Box>
       <Box className='row'>
-        <Typography>Locked Value</Typography>
+        <Typography>Rewards</Typography>
         <Typography component='h4'>
-          {valueOfTotalStakedAmountInUSDC
-            ? `$${valueOfTotalStakedAmountInUSDC.toFixed(0, {
-                groupSeparator: ',',
-              })}`
-            : `${valueOfTotalStakedAmountInBaseToken?.toSignificant(4, {
-                groupSeparator: ',',
-              }) ?? '-'} ETH`}
+          ${Number(rewards.toFixed(0)).toLocaleString()} / day
         </Typography>
       </Box>
       <Box className='row'>
         <Typography>TVL</Typography>
-        <Typography component='h4'>
-          ${Number(rewards.toFixed(0)).toLocaleString()}
-        </Typography>
+        <Typography component='h4'>{tvl}</Typography>
       </Box>
       <Box className='row'>
         <Typography>

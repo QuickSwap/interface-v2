@@ -122,12 +122,25 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo }> = ({ syrup }) => {
             <CurrencyLogo currency={currency} size='32px' />
             <Box ml={1.5}>
               <Typography variant='body2'>{currency.symbol}</Typography>
-              <Typography variant='caption'>
-                {syrup.rate >= 1000000
-                  ? formatCompact(syrup.rate)
-                  : syrup.rate.toLocaleString()}
-                <span style={{ color: palette.text.secondary }}> / day</span>
-              </Typography>
+              <Box display='flex' mt={0.25}>
+                <Typography variant='caption'>
+                  {syrup.rate >= 1000000
+                    ? formatCompact(syrup.rate)
+                    : syrup.rate.toLocaleString()}
+                  <span style={{ color: palette.text.secondary }}> / day</span>
+                </Typography>
+              </Box>
+              <Box display='flex' mt={0.25}>
+                <Typography variant='caption'>
+                  $
+                  {Number(
+                    (syrup.rate * Number(syrup.rewardTokenPriceinUSD)).toFixed(
+                      2,
+                    ),
+                  ).toLocaleString()}{' '}
+                  <span style={{ color: palette.text.secondary }}> / day</span>
+                </Typography>
+              </Box>
             </Box>
           </Box>
         </Box>
