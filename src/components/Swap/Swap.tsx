@@ -36,6 +36,7 @@ import useToggledVersion, { Version } from 'hooks/useToggledVersion';
 import {
   addMaticToMetamask,
   confirmPriceImpactWithoutFee,
+  halfAmountSpend,
   maxAmountSpend,
 } from 'utils';
 import { computeTradePriceBreakdown, warningSeverity } from 'utils/prices';
@@ -384,9 +385,17 @@ const Swap: React.FC<{
     currencyBalances[Field.INPUT],
   );
 
+  const halfAmountInput: CurrencyAmount | undefined = halfAmountSpend(
+    currencyBalances[Field.INPUT],
+  );
+
   const handleMaxInput = useCallback(() => {
     maxAmountInput && onUserInput(Field.INPUT, maxAmountInput.toExact());
   }, [maxAmountInput, onUserInput]);
+
+  const handleHalfInput = useCallback(() => {
+    halfAmountInput && onUserInput(Field.INPUT, halfAmountInput.toExact());
+  }, [halfAmountInput, onUserInput]);
 
   const atMaxAmountInput = Boolean(
     maxAmountInput && parsedAmounts[Field.INPUT]?.equalTo(maxAmountInput),
@@ -557,7 +566,9 @@ const Swap: React.FC<{
       <CurrencyInput
         title='From:'
         currency={currencies[Field.INPUT]}
+        onHalf={handleHalfInput}
         onMax={handleMaxInput}
+        showHalfButton={true}
         showMaxButton={!atMaxAmountInput}
         otherCurrency={currencies[Field.OUTPUT]}
         handleCurrencySelect={handleCurrencySelect}
