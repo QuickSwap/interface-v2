@@ -17,6 +17,7 @@ import {
   DEFAULT_DEADLINE_FROM_NOW,
   ROUTER_ADDRESS,
   domainType1,
+  GAS_PRICE_LIMIT,
 } from 'constants/index';
 import routerABI from 'constants/abis/meta-router-v2.json';
 import { useTransactionAdder } from 'state/transactions/hooks';
@@ -35,6 +36,7 @@ import { splitSignature } from '@ethersproject/bytes';
 import { useIsGaslessEnabled } from 'state/application/hooks';
 import { useBiconomy } from 'context/Biconomy';
 import metaTokens from 'config/biconomy/metaTokens';
+import { fetchGasPrice } from 'utils/prices';
 
 export enum SwapCallbackState {
   INVALID,
@@ -286,11 +288,15 @@ export function useSwapCallback(
               t.token.address.toLowerCase() === fromToken.address.toLowerCase(),
           );
         }
+        const gasPrice = await fetchGasPrice();
+        const gasPriceInGwei = gasPrice.gasPrice.value;
+        const gasPriceAllowed = gasPriceInGwei > GAS_PRICE_LIMIT ? false : true;
         if (
           methodName === 'swapExactETHForTokens' ||
           methodName === 'swapETHForExactTokens' ||
           !gaslessMode ||
-          !matchingMetaToken
+          !matchingMetaToken ||
+          !gasPriceAllowed
         ) {
           return contract[methodName](...args, {
             gasLimit: calculateGasMargin(gasEstimate),

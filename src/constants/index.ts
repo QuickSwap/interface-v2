@@ -109,6 +109,8 @@ export const FACTORY_ADDRESS = '0x5757371414417b8C6CAad45bAeF941aBc7d3Ab32';
 
 export const BUNDLE_ID = '1';
 
+export const GAS_PRICE_LIMIT = 50;
+
 // a list of tokens by chain
 type ChainTokenList = {
   readonly [chainId in ChainId]: Token[];

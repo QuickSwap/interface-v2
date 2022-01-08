@@ -7649,14 +7649,13 @@
     "node-fetch" "2.6.1"
     "whatwg-fetch" "2.0.4"
 
-"cross-fetch@^3.0.6":
-  "integrity" "sha512-1eAtFWdIubi6T4XPy6ei9iUFoKpUkIF971QLN8lIvvvwueI65+Nw5haMNKUwfJxabqlIIDODJKGrQ66gxC0PbQ=="
-  "resolved" "https://registry.npmjs.org/cross-fetch/-/cross-fetch-3.1.4.tgz"
-  "version" "3.1.4"
+"cross-fetch@^2.1.1":
+  "version" "2.2.3"
   dependencies:
-    "node-fetch" "2.6.1"
+    "node-fetch" "2.1.2"
+    "whatwg-fetch" "2.0.4"
 
-"cross-fetch@^3.1.4":
+"cross-fetch@^3.0.6", "cross-fetch@^3.1.4":
   "integrity" "sha512-1eAtFWdIubi6T4XPy6ei9iUFoKpUkIF971QLN8lIvvvwueI65+Nw5haMNKUwfJxabqlIIDODJKGrQ66gxC0PbQ=="
   "resolved" "https://registry.npmjs.org/cross-fetch/-/cross-fetch-3.1.4.tgz"
   "version" "3.1.4"
