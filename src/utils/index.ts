@@ -1219,20 +1219,21 @@ export async function getGlobalData(
       );
 
       // format the total liquidity in USD
-      data.totalLiquidityUSD = data.totalLiquidityETH * ethPrice;
       const liquidityChangeUSD = getPercentChange(
         data.totalLiquidityETH * ethPrice,
         oneDayData.totalLiquidityETH * oldEthPrice,
       );
-
-      // add relevant fields with the calculated amounts
-      data.oneDayVolumeUSD = oneDayVolumeUSD;
-      data.oneWeekVolume = oneWeekVolume;
-      data.weeklyVolumeChange = weeklyVolumeChange;
-      data.volumeChangeUSD = volumeChangeUSD;
-      data.liquidityChangeUSD = liquidityChangeUSD;
-      data.oneDayTxns = oneDayTxns;
-      data.txnChange = txnChange;
+      return {
+        ...data,
+        totalLiquidityUSD: data.totalLiquidityETH * ethPrice,
+        oneDayVolumeUSD,
+        oneWeekVolume,
+        weeklyVolumeChange,
+        volumeChangeUSD,
+        liquidityChangeUSD,
+        oneDayTxns,
+        txnChange,
+      };
     }
   } catch (e) {
     console.log(e);
@@ -1309,7 +1310,11 @@ export const getChartData = async (oldestDateToFetch: number) => {
         fetchPolicy: 'network-only',
       });
       skip += 1000;
-      data = data.concat(result.data.uniswapDayDatas);
+      data = data.concat(
+        result.data.uniswapDayDatas.map((item: any) => {
+          return { ...item, dailyVolumeUSD: Number(item.dailyVolumeUSD) };
+        }),
+      );
       if (result.data.uniswapDayDatas.length < 1000) {
         allFound = true;
       }
@@ -1325,7 +1330,6 @@ export const getChartData = async (oldestDateToFetch: number) => {
         // add the day index to the set of days
         dayIndexSet.add((data[i].date / oneDay).toFixed(0));
         dayIndexArray.push(data[i]);
-        dayData.dailyVolumeUSD = parseFloat(dayData.dailyVolumeUSD);
       });
 
       // fill in empty days ( there will be no day datas if no trades made that day )

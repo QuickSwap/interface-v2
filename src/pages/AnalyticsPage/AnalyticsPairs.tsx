@@ -26,8 +26,8 @@ const AnalyticsPairs: React.FC = () => {
   const { topPairs, updateTopPairs } = useTopPairs();
 
   useEffect(() => {
-    updateTopPairs(null);
     const fetchTopPairs = async () => {
+      updateTopPairs(null);
       const [newPrice] = await getEthPrice();
       const pairs = await getTopPairs(500);
       const formattedPairs = pairs

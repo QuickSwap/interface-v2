@@ -53,7 +53,7 @@ const headCells = () => [
 ];
 
 const PairTable: React.FC<TokensTableProps> = ({ data }) => {
-  const tokenHeadCells = headCells();
+  const pairHeadCells = headCells();
   const {
     bookmarkPairs,
     addBookmarkPair,
@@ -270,8 +270,10 @@ const PairTable: React.FC<TokensTableProps> = ({ data }) => {
 
   return (
     <CustomTable
+      defaultOrderBy={pairHeadCells[1]}
+      defaultOrder='desc'
       showPagination={data.length > 10}
-      headCells={tokenHeadCells}
+      headCells={pairHeadCells}
       rowsPerPage={10}
       data={data}
       mobileHTML={mobileHTML}

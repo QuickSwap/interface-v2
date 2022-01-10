@@ -294,6 +294,8 @@ const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
 
   return (
     <CustomTable
+      defaultOrderBy={tokenHeadCells[4]}
+      defaultOrder='desc'
       showPagination={data.length > 10}
       headCells={tokenHeadCells}
       rowsPerPage={10}

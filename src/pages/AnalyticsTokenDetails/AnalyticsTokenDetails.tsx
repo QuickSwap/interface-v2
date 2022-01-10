@@ -162,15 +162,21 @@ const AnalyticsTokenDetails: React.FC = () => {
     if (tokenChartData) {
       const dates: string[] = [];
       tokenChartData.forEach((value: any, ind: number) => {
-        const month = moment(Number(value.date) * 1000).format('MMM');
+        const month = moment(Number(value.date) * 1000)
+          .add(1, 'day')
+          .format('MMM');
         const monthLastDate =
           ind > 0
-            ? moment(Number(tokenChartData[ind - 1].date) * 1000).format('MMM')
+            ? moment(Number(tokenChartData[ind - 1].date) * 1000)
+                .add(1, 'day')
+                .format('MMM')
             : '';
         if (monthLastDate !== month) {
           dates.push(month);
         }
-        const dateStr = moment(Number(value.date) * 1000).format('D');
+        const dateStr = moment(Number(value.date) * 1000)
+          .add(1, 'day')
+          .format('D');
         if (Number(dateStr) % 7 === 0) {
           dates.push(dateStr);
         }
@@ -183,20 +189,26 @@ const AnalyticsTokenDetails: React.FC = () => {
 
   const currentData = useMemo(
     () =>
-      chartData && chartData.length > 1
-        ? chartData[chartData.length - 1]
+      token
+        ? chartIndex === 0
+          ? token.oneDayVolumeUSD
+          : chartIndex === 1
+          ? token.totalLiquidityUSD
+          : token.priceUSD
         : null,
-    [chartData],
+    [token, chartIndex],
   );
-  const currentPercent = useMemo(() => {
-    if (chartData && chartData.length > 1) {
-      const prevData = chartData[chartData.length - 2];
-      const nowData = chartData[chartData.length - 1];
-      return (nowData - prevData) / prevData;
-    } else {
-      return null;
-    }
-  }, [chartData]);
+  const currentPercent = useMemo(
+    () =>
+      token
+        ? chartIndex === 0
+          ? token.volumeChangeUSD
+          : chartIndex === 1
+          ? token.liquidityChangeUSD
+          : token.priceChangeUSD
+        : null,
+    [token, chartIndex],
+  );
 
   useEffect(() => {
     async function fetchTokenChartData() {
@@ -361,7 +373,7 @@ const AnalyticsTokenDetails: React.FC = () => {
                         : 'Price'}
                     </Typography>
                     <Box mt={1}>
-                      {chartData ? (
+                      {currentData && currentPercent ? (
                         <>
                           <Box display='flex' alignItems='center'>
                             <Typography
@@ -452,7 +464,11 @@ const AnalyticsTokenDetails: React.FC = () => {
                     <AreaChart
                       data={chartData}
                       yAxisValues={yAxisValues}
-                      dates={tokenChartData.map((value: any) => value.date)}
+                      dates={tokenChartData.map((value: any) =>
+                        moment(value.date * 1000)
+                          .add(1, 'day')
+                          .unix(),
+                      )}
                       width='100%'
                       height={240}
                       categories={chartDates}

@@ -41,8 +41,8 @@ const AnalyticsTokens: React.FC = () => {
   }, [topTokens, bookmarkTokens]);
 
   useEffect(() => {
-    updateTopTokens(null);
     const fetchTopTokens = async () => {
+      updateTopTokens(null);
       const [newPrice, oneDayPrice] = await getEthPrice();
       const topTokensData = await getTopTokens(newPrice, oneDayPrice, 200);
       if (topTokensData) {
