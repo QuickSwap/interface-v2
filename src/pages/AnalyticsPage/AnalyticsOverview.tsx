@@ -7,12 +7,7 @@ import { ArrowForwardIos } from '@material-ui/icons';
 import dayjs from 'dayjs';
 import moment from 'moment';
 import utc from 'dayjs/plugin/utc';
-import {
-  useGlobalData,
-  useGlobalChartData,
-  useTopTokens,
-  useTopPairs,
-} from 'state/application/hooks';
+import { useGlobalData, useGlobalChartData } from 'state/application/hooks';
 import {
   formatCompact,
   getChartData,
@@ -67,8 +62,8 @@ const AnalyticsOverview: React.FC = () => {
   const [selectedVolumeIndex, setSelectedVolumeIndex] = useState(-1);
   const { globalData, updateGlobalData } = useGlobalData();
   const { globalChartData, updateGlobalChartData } = useGlobalChartData();
-  const { topTokens, updateTopTokens } = useTopTokens();
-  const { topPairs, updateTopPairs } = useTopPairs();
+  const [topTokens, updateTopTokens] = useState<any[] | null>(null);
+  const [topPairs, updateTopPairs] = useState<any[] | null>(null);
 
   useEffect(() => {
     const fetchGlobalData = async () => {
@@ -114,13 +109,8 @@ const AnalyticsOverview: React.FC = () => {
     };
     fetchChartData();
     fetchGlobalData();
-    if (!topTokens || topTokens.length < 10) {
-      fetchTopTokens();
-    }
-    if (!topPairs || topPairs.length < 10) {
-      fetchTopPairs();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    fetchTopTokens();
+    fetchTopPairs();
   }, [
     updateGlobalData,
     updateGlobalChartData,
@@ -526,7 +516,7 @@ const AnalyticsOverview: React.FC = () => {
         className={classes.panel}
       >
         {topTokens ? (
-          <TokensTable data={topTokens} />
+          <TokensTable data={topTokens.slice(0, 10)} />
         ) : (
           <Skeleton variant='rect' width='100%' height={150} />
         )}
@@ -553,7 +543,7 @@ const AnalyticsOverview: React.FC = () => {
         className={classes.panel}
       >
         {topPairs ? (
-          <PairTable data={topPairs} />
+          <PairTable data={topPairs.slice(0, 10)} />
         ) : (
           <Skeleton variant='rect' width='100%' height={150} />
         )}

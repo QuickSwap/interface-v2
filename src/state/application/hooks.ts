@@ -11,12 +11,10 @@ import {
   updateEthPrice,
   updateGlobalData,
   updateGlobalChartData,
-  updateTopTokens,
   updateTokenPairs,
   addBookMarkToken,
   removeBookmarkToken,
   updateBookmarkTokens,
-  updateTopPairs,
   addBookMarkPair,
   removeBookmarkPair,
 } from './actions';
@@ -158,23 +156,6 @@ export function useGlobalChartData(): {
   return { globalChartData, updateGlobalChartData: _updateGlobalChartData };
 }
 
-export function useTopTokens(): {
-  topTokens: any;
-  updateTopTokens: (data: any) => void;
-} {
-  const topTokens = useSelector(
-    (state: AppState) => state.application.topTokens,
-  );
-  const dispatch = useDispatch();
-  const _updateTopTokens = useCallback(
-    (data) => {
-      dispatch(updateTopTokens(data));
-    },
-    [dispatch],
-  );
-  return { topTokens, updateTopTokens: _updateTopTokens };
-}
-
 export function useBookmarkTokens(): {
   bookmarkTokens: string[];
   addBookmarkToken: (data: string) => void;
@@ -262,19 +243,4 @@ export function useTokenPairs(): {
     [dispatch],
   );
   return { tokenPairs, updateTokenPairs: _updateTokenPairs };
-}
-
-export function useTopPairs(): {
-  topPairs: any;
-  updateTopPairs: (data: any) => void;
-} {
-  const topPairs = useSelector((state: AppState) => state.application.topPairs);
-  const dispatch = useDispatch();
-  const _updateTopPairs = useCallback(
-    (data) => {
-      dispatch(updateTopPairs(data));
-    },
-    [dispatch],
-  );
-  return { topPairs, updateTopPairs: _updateTopPairs };
 }

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Box, Typography, useMediaQuery } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { ArrowDropUp, ArrowDropDown } from '@material-ui/icons';
@@ -7,7 +7,6 @@ import { Token, ChainId } from '@uniswap/sdk';
 import { getAddress } from '@ethersproject/address';
 import { CurrencyLogo } from 'components';
 import { getEthPrice, getTopTokens } from 'utils';
-import { useTopTokens } from 'state/application/hooks';
 
 const useStyles = makeStyles(({ breakpoints }) => ({
   content: {
@@ -28,7 +27,7 @@ const TopMovers: React.FC<TopMoversProps> = ({
 }) => {
   const classes = useStyles();
   const { palette, breakpoints } = useTheme();
-  const { topTokens, updateTopTokens } = useTopTokens();
+  const [topTokens, updateTopTokens] = useState<any[] | null>(null);
   const smallWindowSize = useMediaQuery(breakpoints.down('xs'));
 
   const topMoverTokens = useMemo(
@@ -37,17 +36,15 @@ const TopMovers: React.FC<TopMoversProps> = ({
   );
 
   useEffect(() => {
-    async function checkEthPrice() {
+    async function fetchTopTokens() {
       const [newPrice, oneDayPrice] = await getEthPrice();
       const topTokensData = await getTopTokens(newPrice, oneDayPrice, 5);
       if (topTokensData) {
         updateTopTokens(topTokensData);
       }
     }
-    if (!topTokens || topTokens.length < 5) {
-      checkEthPrice();
-    }
-  }, [updateTopTokens, topTokens]);
+    fetchTopTokens();
+  }, [updateTopTokens]);
 
   return (
     <Box
