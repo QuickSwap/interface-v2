@@ -16,7 +16,9 @@ import {
   getTopTokens,
   getGlobalData,
   getBulkPairData,
+  formatDateFromTimeStamp,
 } from 'utils';
+import { ROWSPERPAGE } from 'constants/index';
 import { AreaChart, BarChart, TokensTable, PairTable } from 'components';
 import AnalyticsInfo from './AnalyticsInfo';
 
@@ -88,7 +90,11 @@ const AnalyticsOverview: React.FC = () => {
     const fetchTopTokens = async () => {
       updateTopTokens(null);
       const [newPrice, oneDayPrice] = await getEthPrice();
-      const topTokensData = await getTopTokens(newPrice, oneDayPrice, 10);
+      const topTokensData = await getTopTokens(
+        newPrice,
+        oneDayPrice,
+        ROWSPERPAGE,
+      );
       if (topTokensData) {
         updateTopTokens(topTokensData);
       }
@@ -96,7 +102,7 @@ const AnalyticsOverview: React.FC = () => {
     const fetchTopPairs = async () => {
       updateTopPairs(null);
       const [newPrice] = await getEthPrice();
-      const pairs = await getTopPairs(10);
+      const pairs = await getTopPairs(ROWSPERPAGE);
       const formattedPairs = pairs
         ? pairs.map((pair: any) => {
             return pair.id;
@@ -122,21 +128,18 @@ const AnalyticsOverview: React.FC = () => {
     if (globalChartData) {
       const dates: string[] = [];
       globalChartData.day.forEach((value: any, ind: number) => {
-        const month = moment(Number(value.date) * 1000)
-          .add('1', 'day')
-          .format('MMM');
+        const month = formatDateFromTimeStamp(Number(value.date), 'MMM');
         const monthLastDate =
           ind > 0
-            ? moment(Number(globalChartData.day[ind - 1].date) * 1000)
-                .add('1', 'day')
-                .format('MMM')
+            ? formatDateFromTimeStamp(
+                Number(globalChartData.day[ind - 1].date),
+                'MMM',
+              )
             : '';
         if (monthLastDate !== month) {
           dates.push(month);
         }
-        const dateStr = moment(Number(value.date) * 1000)
-          .add('1', 'day')
-          .format('D');
+        const dateStr = formatDateFromTimeStamp(Number(value.date), 'D');
         if (Number(dateStr) % 7 === 0) {
           dates.push(dateStr);
         }
@@ -151,21 +154,18 @@ const AnalyticsOverview: React.FC = () => {
     if (globalChartData) {
       const dates: string[] = [];
       globalChartData.week.forEach((value: any, ind: number) => {
-        const month = moment(Number(value.date) * 1000)
-          .add('1', 'day')
-          .format('MMM');
+        const month = formatDateFromTimeStamp(Number(value.date), 'MMM');
         const monthLastDate =
           ind > 0
-            ? moment(Number(globalChartData.week[ind - 1].date) * 1000)
-                .add('1', 'day')
-                .format('MMM')
+            ? formatDateFromTimeStamp(
+                Number(globalChartData.week[ind - 1].date),
+                'MMM',
+              )
             : '';
         if (monthLastDate !== month) {
           dates.push(month);
         }
-        const dateStr = moment(Number(value.date) * 1000)
-          .add('1', 'day')
-          .format('D');
+        const dateStr = formatDateFromTimeStamp(Number(value.date), 'D');
         if (Number(dateStr) % 2 === 0) {
           dates.push(dateStr);
         }
@@ -239,22 +239,23 @@ const AnalyticsOverview: React.FC = () => {
   const volumeDates = useMemo(() => {
     if (selectedVolumeIndex > -1) {
       if (volumeIndex === 0) {
-        return moment(globalChartData.day[selectedVolumeIndex].date * 1000)
-          .add(1, 'day')
-          .format('MMM DD, YYYY');
-      } else {
-        const weekStart =
-          selectedVolumeIndex > 0
-            ? moment(
-                globalChartData.week[selectedVolumeIndex - 1].date * 1000,
-              ).add(2, 'day')
-            : moment(globalChartData.week[0].date * 1000).subtract(5, 'day');
-        const weekEnd = moment(
-          globalChartData.week[selectedVolumeIndex].date * 1000,
-        ).add(1, 'day');
-        return `${weekStart.format('MMM DD, YYYY')} - ${weekEnd.format(
+        return formatDateFromTimeStamp(
+          Number(globalChartData.day[selectedVolumeIndex].date),
           'MMM DD, YYYY',
-        )}`;
+        );
+      } else {
+        const weekStart = formatDateFromTimeStamp(
+          Number(
+            globalChartData.week[Math.max(0, selectedVolumeIndex - 1)].date,
+          ),
+          'MMM DD, YYYY',
+          selectedVolumeIndex > 0 ? 2 : -5,
+        );
+        const weekEnd = formatDateFromTimeStamp(
+          Number(globalChartData.week[selectedVolumeIndex].date),
+          'MMM DD, YYYY',
+        );
+        return `${weekStart} - ${weekEnd}`;
       }
     }
     return '';
@@ -516,7 +517,7 @@ const AnalyticsOverview: React.FC = () => {
         className={classes.panel}
       >
         {topTokens ? (
-          <TokensTable data={topTokens.slice(0, 10)} />
+          <TokensTable data={topTokens} />
         ) : (
           <Skeleton variant='rect' width='100%' height={150} />
         )}
@@ -543,7 +544,7 @@ const AnalyticsOverview: React.FC = () => {
         className={classes.panel}
       >
         {topPairs ? (
-          <PairTable data={topPairs.slice(0, 10)} />
+          <PairTable data={topPairs} />
         ) : (
           <Skeleton variant='rect' width='100%' height={150} />
         )}

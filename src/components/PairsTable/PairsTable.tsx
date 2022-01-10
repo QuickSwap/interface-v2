@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { ChainId, Token } from '@uniswap/sdk';
 import { getAddress } from '@ethersproject/address';
 import { DoubleCurrencyLogo, CustomTable } from 'components';
+import { ROWSPERPAGE } from 'constants/index';
 import { useBookmarkPairs } from 'state/application/hooks';
 import { ReactComponent as StarChecked } from 'assets/images/StarChecked.svg';
 import { ReactComponent as StarUnchecked } from 'assets/images/StarUnchecked.svg';
@@ -51,6 +52,8 @@ const headCells = () => [
       pair.oneDayVolumeUSD ? pair.oneDayVolumeUSD : pair.oneDayVolumeUntracked,
   },
 ];
+
+const liquidityHeadCellIndex = 1;
 
 const PairTable: React.FC<TokensTableProps> = ({ data }) => {
   const pairHeadCells = headCells();
@@ -270,11 +273,11 @@ const PairTable: React.FC<TokensTableProps> = ({ data }) => {
 
   return (
     <CustomTable
-      defaultOrderBy={pairHeadCells[1]}
+      defaultOrderBy={pairHeadCells[liquidityHeadCellIndex]}
       defaultOrder='desc'
-      showPagination={data.length > 10}
+      showPagination={data.length > ROWSPERPAGE}
       headCells={pairHeadCells}
-      rowsPerPage={10}
+      rowsPerPage={ROWSPERPAGE}
       data={data}
       mobileHTML={mobileHTML}
       desktopHTML={desktopHTML}

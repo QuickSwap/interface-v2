@@ -5,6 +5,7 @@ import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { getAddress } from '@ethersproject/address';
 import { ChainId, Token } from '@uniswap/sdk';
 import { CurrencyLogo, CustomTable } from 'components';
+import { ROWSPERPAGE } from 'constants/index';
 import { useBookmarkTokens } from 'state/application/hooks';
 import { ReactComponent as StarChecked } from 'assets/images/StarChecked.svg';
 import { ReactComponent as StarUnchecked } from 'assets/images/StarUnchecked.svg';
@@ -64,6 +65,8 @@ const headCells = () => [
     sortKey: (item: any) => item.totalLiquidityUSD,
   },
 ];
+
+const liquidityHeadCellIndex = 4;
 
 const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
   const tokenHeadCells = headCells();
@@ -294,11 +297,11 @@ const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
 
   return (
     <CustomTable
-      defaultOrderBy={tokenHeadCells[4]}
+      defaultOrderBy={tokenHeadCells[liquidityHeadCellIndex]}
       defaultOrder='desc'
-      showPagination={data.length > 10}
+      showPagination={data.length > ROWSPERPAGE}
       headCells={tokenHeadCells}
-      rowsPerPage={10}
+      rowsPerPage={ROWSPERPAGE}
       data={data}
       mobileHTML={mobileHTML}
       desktopHTML={desktopHTML}

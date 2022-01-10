@@ -51,6 +51,7 @@ import {
   ROUTER_ADDRESS,
   MIN_ETH,
 } from 'constants/index';
+import moment from 'moment';
 dayjs.extend(utc);
 dayjs.extend(weekOfYear);
 
@@ -1561,4 +1562,14 @@ export function calculateGasMargin(value: BigNumber): BigNumber {
   return value
     .mul(BigNumber.from(10000).add(BigNumber.from(1000)))
     .div(BigNumber.from(10000));
+}
+
+export function formatDateFromTimeStamp(
+  timestamp: number,
+  format: string,
+  addedDay = 1,
+) {
+  return moment(timestamp * 1000) //multiply 1000 to get timestamp in milliseconds
+    .add(addedDay, 'day') //add days to get correct date
+    .format(format);
 }

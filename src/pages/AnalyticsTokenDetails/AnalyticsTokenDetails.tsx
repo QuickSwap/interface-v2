@@ -17,6 +17,7 @@ import {
   getTokenPairs2,
   getTokenChartData,
   getBulkPairData,
+  formatDateFromTimeStamp,
 } from 'utils';
 import { ReactComponent as StarChecked } from 'assets/images/StarChecked.svg';
 import { ReactComponent as StarUnchecked } from 'assets/images/StarUnchecked.svg';
@@ -162,21 +163,18 @@ const AnalyticsTokenDetails: React.FC = () => {
     if (tokenChartData) {
       const dates: string[] = [];
       tokenChartData.forEach((value: any, ind: number) => {
-        const month = moment(Number(value.date) * 1000)
-          .add(1, 'day')
-          .format('MMM');
+        const month = formatDateFromTimeStamp(Number(value.date), 'MMM');
         const monthLastDate =
           ind > 0
-            ? moment(Number(tokenChartData[ind - 1].date) * 1000)
-                .add(1, 'day')
-                .format('MMM')
+            ? formatDateFromTimeStamp(
+                Number(tokenChartData[ind - 1].date),
+                'MMM',
+              )
             : '';
         if (monthLastDate !== month) {
           dates.push(month);
         }
-        const dateStr = moment(Number(value.date) * 1000)
-          .add(1, 'day')
-          .format('D');
+        const dateStr = formatDateFromTimeStamp(Number(value.date), 'D');
         if (Number(dateStr) % 7 === 0) {
           dates.push(dateStr);
         }
