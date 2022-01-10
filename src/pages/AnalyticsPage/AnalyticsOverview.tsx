@@ -167,6 +167,7 @@ const AnalyticsOverview: React.FC = () => {
         }
         const dateStr = formatDateFromTimeStamp(Number(value.date), 'D');
         if (Number(dateStr) % 2 === 0) {
+          //Select dates(one date per 2 weeks) for x axis values of volume chart on week mode
           dates.push(dateStr);
         }
       });
@@ -297,10 +298,10 @@ const AnalyticsOverview: React.FC = () => {
                   borderRadius={40}
                   bgcolor={
                     globalData.liquidityChangeUSD > 0
-                      ? 'rgba(15, 198, 121, 0.1)'
+                      ? palette.success.light
                       : globalData.liquidityChangeUSD < 0
-                      ? 'rgba(255, 82, 82, 0.1)'
-                      : 'rgba(99, 103, 128, 0.1)'
+                      ? palette.error.light
+                      : palette.grey.A100
                   }
                 >
                   <Typography
@@ -422,10 +423,10 @@ const AnalyticsOverview: React.FC = () => {
                       borderRadius={40}
                       bgcolor={
                         volumePercent > 0
-                          ? 'rgba(15, 198, 121, 0.1)'
+                          ? palette.success.light
                           : volumePercent < 0
-                          ? 'rgba(255, 82, 82, 0.1)'
-                          : 'rgba(99, 103, 128, 0.1)'
+                          ? palette.error.light
+                          : palette.grey.A100
                       }
                     >
                       <Typography

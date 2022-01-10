@@ -139,17 +139,17 @@ const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
             className={classes.priceChangeWrapper}
             bgcolor={
               Number(token.priceChangeUSD) > 0
-                ? 'rgba(15, 198, 121, 0.1)'
+                ? palette.success.light
                 : Number(token.priceChangeUSD) < 0
-                ? 'rgba(255, 82, 82, 0.1)'
-                : 'rgba(99, 103, 128, 0.1)'
+                ? palette.error.light
+                : palette.grey.A100
             }
             color={
               Number(token.priceChangeUSD) > 0
-                ? 'rgb(15, 198, 121)'
+                ? palette.success.main
                 : Number(token.priceChangeUSD) < 0
-                ? 'rgb(255, 82, 82)'
-                : 'rgb(99, 103, 128)'
+                ? palette.error.main
+                : palette.text.hint
             }
           >
             <Typography variant='body2'>
@@ -247,17 +247,17 @@ const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
             mr={2}
             bgcolor={
               Number(token.priceChangeUSD) > 0
-                ? 'rgba(15, 198, 121, 0.1)'
+                ? palette.success.light
                 : Number(token.priceChangeUSD) < 0
-                ? 'rgba(255, 82, 82, 0.1)'
-                : 'rgba(99, 103, 128, 0.1)'
+                ? palette.error.light
+                : palette.grey.A100
             }
             color={
               Number(token.priceChangeUSD) > 0
-                ? 'rgb(15, 198, 121)'
+                ? palette.success.main
                 : Number(token.priceChangeUSD) < 0
-                ? 'rgb(255, 82, 82)'
-                : 'rgb(99, 103, 128)'
+                ? palette.error.main
+                : palette.text.hint
             }
           >
             <Typography variant='body2'>

@@ -42,7 +42,7 @@ const AnalyticsTokens: React.FC = () => {
 
   useEffect(() => {
     const fetchTopTokens = async () => {
-      updateTopTokens(null);
+      updateTopTokens(null); //set top tokens as null to show loading status when fetching tokens data
       const [newPrice, oneDayPrice] = await getEthPrice();
       const topTokensData = await getTopTokens(newPrice, oneDayPrice, 200);
       if (topTokensData) {

@@ -31,6 +31,7 @@ export const PAIR_BLACKLIST = [
 ];
 
 export const ROWSPERPAGE = 10;
+export const FEE_PERCENT = 0.003;
 
 export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   INJECTED: {

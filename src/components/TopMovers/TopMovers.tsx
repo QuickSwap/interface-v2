@@ -116,10 +116,10 @@ const TopMovers: React.FC<TopMoversProps> = ({
                           !hideArrow
                             ? 'transparent'
                             : priceUp
-                            ? 'rgba(15, 198, 121, 0.1)'
+                            ? palette.success.light
                             : priceDown
-                            ? 'rgba(255, 82, 82, 0.1)'
-                            : 'rgba(99, 103, 128, 0.1)'
+                            ? palette.error.light
+                            : palette.grey.A100
                         }
                         style={{
                           color: priceUp

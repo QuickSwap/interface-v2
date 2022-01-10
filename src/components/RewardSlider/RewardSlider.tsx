@@ -12,6 +12,7 @@ import {
 } from 'state/stake/hooks';
 import RewardSliderItem from './RewardSliderItem';
 import { useActiveWeb3React } from 'hooks';
+import { FEE_PERCENT } from 'constants/index';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   rewardsSlider: {
@@ -66,7 +67,8 @@ const RewardSlider: React.FC = () => {
         const oneDayVolume = bulkPairs[info.pair]?.oneDayVolumeUSD;
         if (oneDayVolume) {
           const oneYearFeeAPY =
-            (oneDayVolume * 0.003 * 365) / bulkPairs[info.pair]?.reserveUSD;
+            (oneDayVolume * FEE_PERCENT * 365) /
+            bulkPairs[info.pair]?.reserveUSD;
           return oneYearFeeAPY;
         } else {
           return 0;

@@ -15,6 +15,7 @@ import {
   DoubleCurrencyLogo,
   RemoveLiquidityModal,
 } from 'components';
+import { FEE_PERCENT } from 'constants/index';
 
 const useStyles = makeStyles(({ palette }) => ({
   poolButtonRow: {
@@ -136,7 +137,8 @@ const PoolPositionCard: React.FC<PoolPositionCardProps> = ({
         ? bulkPairData[stakingInfo.pair]?.oneDayVolumeUSD
         : 0;
       const oneYearFee =
-        (dayVolume * 0.003 * 365) / bulkPairData[stakingInfo.pair]?.reserveUSD;
+        (dayVolume * FEE_PERCENT * 365) /
+        bulkPairData[stakingInfo.pair]?.reserveUSD;
       const apy =
         oneYearFee > 0
           ? ((1 +

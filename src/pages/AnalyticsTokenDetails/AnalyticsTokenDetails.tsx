@@ -22,6 +22,7 @@ import {
 import { ReactComponent as StarChecked } from 'assets/images/StarChecked.svg';
 import { ReactComponent as StarUnchecked } from 'assets/images/StarUnchecked.svg';
 import { getAddress } from '@ethersproject/address';
+import { FEE_PERCENT } from 'constants/index';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   panel: {
@@ -305,17 +306,17 @@ const AnalyticsTokenDetails: React.FC = () => {
                     ml={2}
                     bgcolor={
                       Number(token.priceChangeUSD) > 0
-                        ? 'rgba(15, 198, 121, 0.1)'
+                        ? palette.success.light
                         : Number(token.priceChangeUSD) < 0
-                        ? 'rgba(255, 82, 82, 0.1)'
-                        : 'rgba(99, 103, 128, 0.1)'
+                        ? palette.error.light
+                        : palette.grey.A100
                     }
                     color={
                       Number(token.priceChangeUSD) > 0
-                        ? 'rgb(15, 198, 121)'
+                        ? palette.success.main
                         : Number(token.priceChangeUSD) < 0
-                        ? 'rgb(255, 82, 82)'
-                        : 'rgb(99, 103, 128)'
+                        ? palette.error.main
+                        : palette.text.hint
                     }
                   >
                     <Typography variant='body2'>
@@ -388,17 +389,17 @@ const AnalyticsTokenDetails: React.FC = () => {
                               ml={1}
                               bgcolor={
                                 Number(currentPercent) > 0
-                                  ? 'rgba(15, 198, 121, 0.1)'
+                                  ? palette.success.light
                                   : Number(currentPercent) < 0
-                                  ? 'rgba(255, 82, 82, 0.1)'
-                                  : 'rgba(99, 103, 128, 0.1)'
+                                  ? palette.error.light
+                                  : palette.grey.A100
                               }
                               color={
                                 Number(currentPercent) > 0
-                                  ? 'rgb(15, 198, 121)'
+                                  ? palette.success.main
                                   : Number(currentPercent) < 0
-                                  ? 'rgb(255, 82, 82)'
-                                  : 'rgb(99, 103, 128)'
+                                  ? palette.error.main
+                                  : palette.text.hint
                               }
                             >
                               <Typography variant='body2'>
@@ -538,7 +539,8 @@ const AnalyticsTokenDetails: React.FC = () => {
                         24h FEES
                       </Typography>
                       <Typography variant={isMobile ? 'body1' : 'h5'}>
-                        ${(token.oneDayVolumeUSD * 0.003).toLocaleString()}
+                        $
+                        {(token.oneDayVolumeUSD * FEE_PERCENT).toLocaleString()}
                       </Typography>
                     </Box>
                   </Box>

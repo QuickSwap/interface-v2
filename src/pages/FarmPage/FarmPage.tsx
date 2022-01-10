@@ -22,6 +22,7 @@ import { ReactComponent as SearchIcon } from 'assets/images/SearchIcon.svg';
 import { useInfiniteLoading } from 'utils/useInfiniteLoading';
 import { useActiveWeb3React } from 'hooks';
 import { Skeleton } from '@material-ui/lab';
+import { FEE_PERCENT } from 'constants/index';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   helpWrapper: {
@@ -311,11 +312,13 @@ const FarmPage: React.FC = () => {
             let bYearFee = 0;
             if (aDayVolume) {
               aYearFee =
-                (aDayVolume * 0.003 * 365) / bulkPairs[a.pair]?.reserveUSD;
+                (aDayVolume * FEE_PERCENT * 365) /
+                bulkPairs[a.pair]?.reserveUSD;
             }
             if (bDayVolume) {
               bYearFee =
-                (bDayVolume * 0.003 * 365) / bulkPairs[b.pair]?.reserveUSD;
+                (bDayVolume * FEE_PERCENT * 365) /
+                bulkPairs[b.pair]?.reserveUSD;
             }
             const aAPYwithFee =
               ((1 +
@@ -430,11 +433,13 @@ const FarmPage: React.FC = () => {
             let bYearFee = 0;
             if (aDayVolume) {
               aYearFee =
-                (aDayVolume * 0.003 * 365) / bulkPairs[a.pair]?.reserveUSD;
+                (aDayVolume * FEE_PERCENT * 365) /
+                bulkPairs[a.pair]?.reserveUSD;
             }
             if (bDayVolume) {
               bYearFee =
-                (bDayVolume * 0.003 * 365) / bulkPairs[b.pair]?.reserveUSD;
+                (bDayVolume * FEE_PERCENT * 365) /
+                bulkPairs[b.pair]?.reserveUSD;
             }
             const aAPYwithFee =
               ((1 +
@@ -494,7 +499,8 @@ const FarmPage: React.FC = () => {
         const oneDayVolume = bulkPairs[info.pair]?.oneDayVolumeUSD;
         if (oneDayVolume) {
           const oneYearFeeAPY =
-            (oneDayVolume * 0.003 * 365) / bulkPairs[info.pair]?.reserveUSD;
+            (oneDayVolume * FEE_PERCENT * 365) /
+            bulkPairs[info.pair]?.reserveUSD;
           return oneYearFeeAPY;
         } else {
           return 0;

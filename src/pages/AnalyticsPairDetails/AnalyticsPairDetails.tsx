@@ -25,6 +25,7 @@ import {
 } from 'components';
 import { getEthPrice, getBulkPairData } from 'utils';
 import { getAddress } from '@ethersproject/address';
+import { FEE_PERCENT } from 'constants/index';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   panel: {
@@ -166,8 +167,10 @@ const AnalyticsPairDetails: React.FC = () => {
   const fees =
     pairData && (pairData.oneDayVolumeUSD || pairData.oneDayVolumeUSD === 0)
       ? usingUtVolume
-        ? (Number(pairData.oneDayVolumeUntracked) * 0.003).toLocaleString()
-        : (Number(pairData.oneDayVolumeUSD) * 0.003).toLocaleString()
+        ? (
+            Number(pairData.oneDayVolumeUntracked) * FEE_PERCENT
+          ).toLocaleString()
+        : (Number(pairData.oneDayVolumeUSD) * FEE_PERCENT).toLocaleString()
       : '-';
   const [chartIndex, setChartIndex] = useState(0);
 
@@ -196,7 +199,7 @@ const AnalyticsPairDetails: React.FC = () => {
           ? Number(item.dailyVolumeUSD)
           : chartIndex === 1
           ? Number(item.reserveUSD)
-          : Number(item.dailyVolumeUSD) * 0.003,
+          : Number(item.dailyVolumeUSD) * FEE_PERCENT,
       );
     } else {
       return null;
@@ -266,7 +269,7 @@ const AnalyticsPairDetails: React.FC = () => {
           ? pairData.liquidityChangeUSD
           : (usingUtVolume
               ? pairData.volumeChangeUntracked
-              : pairData.volumeChangeUSD) * 0.003
+              : pairData.volumeChangeUSD) * FEE_PERCENT
         : null,
     [pairData, chartIndex, usingUtVolume],
   );
@@ -431,17 +434,17 @@ const AnalyticsPairDetails: React.FC = () => {
                               ml={1}
                               bgcolor={
                                 Number(currentPercent) > 0
-                                  ? 'rgba(15, 198, 121, 0.1)'
+                                  ? palette.success.light
                                   : Number(currentPercent) < 0
-                                  ? 'rgba(255, 82, 82, 0.1)'
-                                  : 'rgba(99, 103, 128, 0.1)'
+                                  ? palette.error.light
+                                  : palette.grey.A100
                               }
                               color={
                                 Number(currentPercent) > 0
-                                  ? 'rgb(15, 198, 121)'
+                                  ? palette.success.main
                                   : Number(currentPercent) < 0
-                                  ? 'rgb(255, 82, 82)'
-                                  : 'rgb(99, 103, 128)'
+                                  ? palette.error.main
+                                  : palette.text.hint
                               }
                             >
                               <Typography variant='body2'>

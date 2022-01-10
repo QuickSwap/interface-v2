@@ -36,6 +36,7 @@ import useParsedQueryString from 'hooks/useParsedQueryString';
 import { useCurrency } from 'hooks/Tokens';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
 import { useActiveWeb3React } from 'hooks';
+import { FEE_PERCENT } from 'constants/index';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   helpWrapper: {
@@ -408,7 +409,7 @@ const SwapPage: React.FC = () => {
                             ? pair.oneDayVolumeUSD
                             : pair.oneDayVolumeUntracked,
                         ) *
-                        0.003 *
+                        FEE_PERCENT *
                         365 *
                         100;
                       const trackReserveUSD = Number(

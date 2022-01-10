@@ -1,10 +1,12 @@
 import React from 'react';
 import { Box, Typography } from '@material-ui/core';
-import { useTheme } from '@material-ui/core/styles';
+import { FEE_PERCENT } from 'constants/index';
 
-const AnalyticsInfo: React.FC<{ data: any }> = ({ data }) => {
-  const { palette } = useTheme();
+interface AnalyticsInfoProps {
+  data: any;
+}
 
+const AnalyticsInfo: React.FC<AnalyticsInfoProps> = ({ data }) => {
   return (
     <>
       <Box mr={5}>
@@ -19,7 +21,7 @@ const AnalyticsInfo: React.FC<{ data: any }> = ({ data }) => {
       </Box>
       <Box>
         <Typography variant='body2'>
-          24h Fees: ${(data.oneDayVolumeUSD * 0.003).toLocaleString()}
+          24h Fees: ${(data.oneDayVolumeUSD * FEE_PERCENT).toLocaleString()}
         </Typography>
       </Box>
     </>
