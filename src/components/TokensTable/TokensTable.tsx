@@ -6,6 +6,7 @@ import { getAddress } from '@ethersproject/address';
 import { ChainId, Token } from '@uniswap/sdk';
 import { CurrencyLogo, CustomTable } from 'components';
 import { ROWSPERPAGE } from 'constants/index';
+import { getformattedValue } from 'utils';
 import { useBookmarkTokens } from 'state/application/hooks';
 import { ReactComponent as StarChecked } from 'assets/images/StarChecked.svg';
 import { ReactComponent as StarUnchecked } from 'assets/images/StarUnchecked.svg';
@@ -153,15 +154,7 @@ const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
             }
           >
             <Typography variant='body2'>
-              {Number(token.priceChangeUSD) < 0.001 &&
-              Number(token.priceChangeUSD) > 0
-                ? '<0.001'
-                : Number(token.priceChangeUSD) > -0.001 &&
-                  Number(token.priceChangeUSD) < 0
-                ? '>-0.001'
-                : (Number(token.priceChangeUSD) > 0 ? '+' : '') +
-                  Number(token.priceChangeUSD).toLocaleString()}
-              %
+              {getformattedValue(Number(token.priceChangeUSD))}%
             </Typography>
           </Box>
         </Box>
@@ -261,15 +254,7 @@ const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
             }
           >
             <Typography variant='body2'>
-              {Number(token.priceChangeUSD) < 0.001 &&
-              Number(token.priceChangeUSD) > 0
-                ? '<0.001'
-                : Number(token.priceChangeUSD) > -0.001 &&
-                  Number(token.priceChangeUSD) < 0
-                ? '>-0.001'
-                : (Number(token.priceChangeUSD) > 0 ? '+' : '') +
-                  Number(token.priceChangeUSD).toLocaleString()}
-              %
+              {getformattedValue(Number(token.priceChangeUSD))}%
             </Typography>
           </Box>
         ),

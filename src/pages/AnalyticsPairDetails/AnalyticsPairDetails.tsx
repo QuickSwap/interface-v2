@@ -15,6 +15,7 @@ import {
   getPairChartData,
   getHourlyRateData,
   formatDateFromTimeStamp,
+  getformattedValue,
 } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import {
@@ -102,6 +103,10 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
   },
 }));
 
+const CHART_VOLUME = 0;
+const CHART_LIQUIDITY = 1;
+const CHART_FEES = 2;
+
 const AnalyticsPairDetails: React.FC = () => {
   const classes = useStyles();
   const { palette, breakpoints } = useTheme();
@@ -172,7 +177,7 @@ const AnalyticsPairDetails: React.FC = () => {
           ).toLocaleString()
         : (Number(pairData.oneDayVolumeUSD) * FEE_PERCENT).toLocaleString()
       : '-';
-  const [chartIndex, setChartIndex] = useState(0);
+  const [chartIndex, setChartIndex] = useState(CHART_VOLUME);
 
   useEffect(() => {
     async function checkEthPrice() {
@@ -195,9 +200,9 @@ const AnalyticsPairDetails: React.FC = () => {
   const chartData = useMemo(() => {
     if (pairChartData) {
       return pairChartData.map((item: any) =>
-        chartIndex === 0
+        chartIndex === CHART_VOLUME
           ? Number(item.dailyVolumeUSD)
-          : chartIndex === 1
+          : chartIndex === CHART_LIQUIDITY
           ? Number(item.reserveUSD)
           : Number(item.dailyVolumeUSD) * FEE_PERCENT,
       );
@@ -250,9 +255,9 @@ const AnalyticsPairDetails: React.FC = () => {
   const currentData = useMemo(
     () =>
       pairData
-        ? chartIndex === 0
+        ? chartIndex === CHART_VOLUME
           ? pairData.oneDayVolumeUSD
-          : chartIndex === 1
+          : chartIndex === CHART_LIQUIDITY
           ? pairData.reserveUSD
             ? pairData.reserveUSD
             : pairData.trackedReserveUSD
@@ -263,9 +268,9 @@ const AnalyticsPairDetails: React.FC = () => {
   const currentPercent = useMemo(
     () =>
       pairData
-        ? chartIndex === 0
+        ? chartIndex === CHART_VOLUME
           ? pairData.volumeChangeUSD
-          : chartIndex === 1
+          : chartIndex === CHART_LIQUIDITY
           ? pairData.liquidityChangeUSD
           : (usingUtVolume
               ? pairData.volumeChangeUntracked
@@ -410,9 +415,9 @@ const AnalyticsPairDetails: React.FC = () => {
                 >
                   <Box mt={1.5}>
                     <Typography variant='caption'>
-                      {chartIndex === 0
+                      {chartIndex === CHART_VOLUME
                         ? 'Volume'
-                        : chartIndex === 1
+                        : chartIndex === CHART_LIQUIDITY
                         ? 'Liquidity'
                         : 'Price'}
                     </Typography>
@@ -448,15 +453,7 @@ const AnalyticsPairDetails: React.FC = () => {
                               }
                             >
                               <Typography variant='body2'>
-                                {Number(currentPercent) < 0.001 &&
-                                Number(currentPercent) > 0
-                                  ? '<0.001'
-                                  : Number(currentPercent) > -0.001 &&
-                                    Number(currentPercent) < 0
-                                  ? '>-0.001'
-                                  : (Number(currentPercent) > 0 ? '+' : '') +
-                                    Number(currentPercent).toLocaleString()}
-                                %
+                                {getformattedValue(Number(currentPercent))}%
                               </Typography>
                             </Box>
                           </Box>
@@ -475,29 +472,35 @@ const AnalyticsPairDetails: React.FC = () => {
                     <Box
                       mr={1}
                       bgcolor={
-                        chartIndex === 0 ? palette.grey.A400 : 'transparent'
+                        chartIndex === CHART_VOLUME
+                          ? palette.grey.A400
+                          : 'transparent'
                       }
                       className={classes.chartType}
-                      onClick={() => setChartIndex(0)}
+                      onClick={() => setChartIndex(CHART_VOLUME)}
                     >
                       <Typography variant='caption'>Volume</Typography>
                     </Box>
                     <Box
                       mr={1}
                       bgcolor={
-                        chartIndex === 1 ? palette.grey.A400 : 'transparent'
+                        chartIndex === CHART_LIQUIDITY
+                          ? palette.grey.A400
+                          : 'transparent'
                       }
                       className={classes.chartType}
-                      onClick={() => setChartIndex(1)}
+                      onClick={() => setChartIndex(CHART_LIQUIDITY)}
                     >
                       <Typography variant='caption'>Liquidity</Typography>
                     </Box>
                     <Box
                       bgcolor={
-                        chartIndex === 2 ? palette.grey.A400 : 'transparent'
+                        chartIndex === CHART_FEES
+                          ? palette.grey.A400
+                          : 'transparent'
                       }
                       className={classes.chartType}
-                      onClick={() => setChartIndex(2)}
+                      onClick={() => setChartIndex(CHART_FEES)}
                     >
                       <Typography variant='caption'>Fees</Typography>
                     </Box>

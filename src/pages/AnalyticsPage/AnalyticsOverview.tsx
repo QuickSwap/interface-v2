@@ -55,12 +55,15 @@ const useStyles = makeStyles(({ palette }) => ({
   },
 }));
 
+const DAY_VOLUME = 0;
+const WEEK_VOLUME = 1;
+
 const AnalyticsOverview: React.FC = () => {
   const classes = useStyles();
   const history = useHistory();
   const { palette, breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
-  const [volumeIndex, setVolumeIndex] = useState(0);
+  const [volumeIndex, setVolumeIndex] = useState(DAY_VOLUME);
   const [selectedVolumeIndex, setSelectedVolumeIndex] = useState(-1);
   const { globalData, updateGlobalData } = useGlobalData();
   const { globalChartData, updateGlobalChartData } = useGlobalChartData();
@@ -199,10 +202,12 @@ const AnalyticsOverview: React.FC = () => {
   const volumePercent = useMemo(() => {
     if (globalChartData && selectedVolumeIndex > 0) {
       const volumeData =
-        volumeIndex === 1 ? globalChartData.week : globalChartData.day;
+        volumeIndex === WEEK_VOLUME
+          ? globalChartData.week
+          : globalChartData.day;
       if (volumeData.length > 1) {
         const currentVolume = Number(
-          volumeIndex === 1
+          volumeIndex === WEEK_VOLUME
             ? globalChartData.week[
                 Math.min(selectedVolumeIndex, globalChartData.week.length - 1)
               ].weeklyVolumeUSD
@@ -211,7 +216,7 @@ const AnalyticsOverview: React.FC = () => {
               ].dailyVolumeUSD,
         );
         const prevVolume = Number(
-          volumeIndex === 1
+          volumeIndex === WEEK_VOLUME
             ? globalChartData.week[
                 Math.min(selectedVolumeIndex, globalChartData.week.length - 1) -
                   1
@@ -229,7 +234,7 @@ const AnalyticsOverview: React.FC = () => {
       return 0;
     } else {
       if (globalData && selectedVolumeIndex === -1) {
-        return volumeIndex === 0
+        return volumeIndex === DAY_VOLUME
           ? globalData.volumeChangeUSD
           : globalData.weeklyVolumeChange;
       }
@@ -239,7 +244,7 @@ const AnalyticsOverview: React.FC = () => {
 
   const volumeDates = useMemo(() => {
     if (selectedVolumeIndex > -1) {
-      if (volumeIndex === 0) {
+      if (volumeIndex === DAY_VOLUME) {
         return formatDateFromTimeStamp(
           Number(globalChartData.day[selectedVolumeIndex].date),
           'MMM DD, YYYY',
@@ -264,7 +269,7 @@ const AnalyticsOverview: React.FC = () => {
 
   const barChartData = useMemo(() => {
     if (globalChartData) {
-      return volumeIndex === 1
+      return volumeIndex === WEEK_VOLUME
         ? globalChartData.week.map((value: any) => value.weeklyVolumeUSD)
         : globalChartData.day.map((value: any) => value.dailyVolumeUSD);
     } else {
@@ -378,9 +383,11 @@ const AnalyticsOverview: React.FC = () => {
                   <Box
                     className={classes.volumeType}
                     bgcolor={
-                      volumeIndex === 0 ? palette.grey.A400 : 'transparent'
+                      volumeIndex === DAY_VOLUME
+                        ? palette.grey.A400
+                        : 'transparent'
                     }
-                    onClick={() => setVolumeIndex(0)}
+                    onClick={() => setVolumeIndex(DAY_VOLUME)}
                   >
                     <Typography variant='caption'>D</Typography>
                   </Box>
@@ -388,9 +395,11 @@ const AnalyticsOverview: React.FC = () => {
                     className={classes.volumeType}
                     ml={0.5}
                     bgcolor={
-                      volumeIndex === 1 ? palette.grey.A400 : 'transparent'
+                      volumeIndex === WEEK_VOLUME
+                        ? palette.grey.A400
+                        : 'transparent'
                     }
-                    onClick={() => setVolumeIndex(1)}
+                    onClick={() => setVolumeIndex(WEEK_VOLUME)}
                   >
                     <Typography variant='caption'>W</Typography>
                   </Box>
@@ -406,12 +415,12 @@ const AnalyticsOverview: React.FC = () => {
                       $
                       {formatCompact(
                         selectedVolumeIndex > -1
-                          ? volumeIndex === 0
+                          ? volumeIndex === DAY_VOLUME
                             ? globalChartData.day[selectedVolumeIndex]
                                 .dailyVolumeUSD
                             : globalChartData.week[selectedVolumeIndex]
                                 .weeklyVolumeUSD
-                          : volumeIndex === 0
+                          : volumeIndex === DAY_VOLUME
                           ? globalData.oneDayVolumeUSD
                           : globalData.oneWeekVolume,
                       )}
@@ -467,7 +476,9 @@ const AnalyticsOverview: React.FC = () => {
                   height={188.97}
                   data={barChartData}
                   categories={
-                    volumeIndex === 1 ? liquidityWeeks : liquidityDates
+                    volumeIndex === WEEK_VOLUME
+                      ? liquidityWeeks
+                      : liquidityDates
                   }
                   onHover={(ind) => setSelectedVolumeIndex(ind)}
                   onMouseLeave={() => {

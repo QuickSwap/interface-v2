@@ -1573,3 +1573,14 @@ export function formatDateFromTimeStamp(
     .add(addedDay, 'day') //add days to get correct date
     .format(format);
 }
+
+export function getformattedValue(value: number) {
+  if (value < 0.001 && value > 0) {
+    return '<0.001';
+  } else if (value > -0.001 && value < 0) {
+    return '>-0.001';
+  } else {
+    const beforeSign = value > 0 ? '+' : '';
+    return beforeSign + value.toLocaleString();
+  }
+}

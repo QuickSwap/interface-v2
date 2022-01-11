@@ -7,7 +7,12 @@ import { Skeleton } from '@material-ui/lab';
 import { ChainId, Token } from '@uniswap/sdk';
 import moment from 'moment';
 import cx from 'classnames';
-import { shortenAddress, getEtherscanLink, formatCompact } from 'utils';
+import {
+  shortenAddress,
+  getEtherscanLink,
+  formatCompact,
+  getformattedValue,
+} from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import { CurrencyLogo, PairTable, AreaChart } from 'components';
 import { useBookmarkTokens } from 'state/application/hooks';
@@ -99,6 +104,10 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
   },
 }));
 
+const CHART_VOLUME = 0;
+const CHART_LIQUIDITY = 1;
+const CHART_PRICE = 2;
+
 const AnalyticsTokenDetails: React.FC = () => {
   const classes = useStyles();
   const { palette, breakpoints } = useTheme();
@@ -112,7 +121,7 @@ const AnalyticsTokenDetails: React.FC = () => {
     ? new Token(ChainId.MATIC, getAddress(token.id), token.decimals)
     : undefined;
   const [tokenChartData, updateTokenChartData] = useState<any>(null);
-  const [chartIndex, setChartIndex] = useState(0);
+  const [chartIndex, setChartIndex] = useState(CHART_VOLUME);
   const [tokenPairs, updateTokenPairs] = useState<any>(null);
   const {
     bookmarkTokens,
@@ -134,9 +143,9 @@ const AnalyticsTokenDetails: React.FC = () => {
   const chartData = useMemo(() => {
     if (tokenChartData) {
       return tokenChartData.map((item: any) =>
-        chartIndex === 0
+        chartIndex === CHART_VOLUME
           ? Number(item.dailyVolumeUSD)
-          : chartIndex === 1
+          : chartIndex === CHART_LIQUIDITY
           ? Number(item.totalLiquidityUSD)
           : Number(item.priceUSD),
       );
@@ -189,9 +198,9 @@ const AnalyticsTokenDetails: React.FC = () => {
   const currentData = useMemo(
     () =>
       token
-        ? chartIndex === 0
+        ? chartIndex === CHART_VOLUME
           ? token.oneDayVolumeUSD
-          : chartIndex === 1
+          : chartIndex === CHART_LIQUIDITY
           ? token.totalLiquidityUSD
           : token.priceUSD
         : null,
@@ -200,9 +209,9 @@ const AnalyticsTokenDetails: React.FC = () => {
   const currentPercent = useMemo(
     () =>
       token
-        ? chartIndex === 0
+        ? chartIndex === CHART_VOLUME
           ? token.volumeChangeUSD
-          : chartIndex === 1
+          : chartIndex === CHART_LIQUIDITY
           ? token.liquidityChangeUSD
           : token.priceChangeUSD
         : null,
@@ -320,15 +329,7 @@ const AnalyticsTokenDetails: React.FC = () => {
                     }
                   >
                     <Typography variant='body2'>
-                      {Number(token.priceChangeUSD) < 0.001 &&
-                      Number(token.priceChangeUSD) > 0
-                        ? '<0.001'
-                        : Number(token.priceChangeUSD) > -0.001 &&
-                          Number(token.priceChangeUSD) < 0
-                        ? '>-0.001'
-                        : (Number(token.priceChangeUSD) > 0 ? '+' : '') +
-                          Number(token.priceChangeUSD).toLocaleString()}
-                      %
+                      {getformattedValue(Number(token.priceChangeUSD))}%
                     </Typography>
                   </Box>
                 </Box>
@@ -365,9 +366,9 @@ const AnalyticsTokenDetails: React.FC = () => {
                 >
                   <Box mt={1.5}>
                     <Typography variant='caption'>
-                      {chartIndex === 0
+                      {chartIndex === CHART_VOLUME
                         ? 'Volume'
-                        : chartIndex === 1
+                        : chartIndex === CHART_LIQUIDITY
                         ? 'Liquidity'
                         : 'Price'}
                     </Typography>
@@ -403,15 +404,7 @@ const AnalyticsTokenDetails: React.FC = () => {
                               }
                             >
                               <Typography variant='body2'>
-                                {Number(currentPercent) < 0.001 &&
-                                Number(currentPercent) > 0
-                                  ? '<0.001'
-                                  : Number(currentPercent) > -0.001 &&
-                                    Number(currentPercent) < 0
-                                  ? '>-0.001'
-                                  : (Number(currentPercent) > 0 ? '+' : '') +
-                                    Number(currentPercent).toLocaleString()}
-                                %
+                                {getformattedValue(Number(currentPercent))}%
                               </Typography>
                             </Box>
                           </Box>
@@ -430,29 +423,35 @@ const AnalyticsTokenDetails: React.FC = () => {
                     <Box
                       mr={1}
                       bgcolor={
-                        chartIndex === 0 ? palette.grey.A400 : 'transparent'
+                        chartIndex === CHART_VOLUME
+                          ? palette.grey.A400
+                          : 'transparent'
                       }
                       className={classes.chartType}
-                      onClick={() => setChartIndex(0)}
+                      onClick={() => setChartIndex(CHART_VOLUME)}
                     >
                       <Typography variant='caption'>Volume</Typography>
                     </Box>
                     <Box
                       mr={1}
                       bgcolor={
-                        chartIndex === 1 ? palette.grey.A400 : 'transparent'
+                        chartIndex === CHART_LIQUIDITY
+                          ? palette.grey.A400
+                          : 'transparent'
                       }
                       className={classes.chartType}
-                      onClick={() => setChartIndex(1)}
+                      onClick={() => setChartIndex(CHART_LIQUIDITY)}
                     >
                       <Typography variant='caption'>Liquidity</Typography>
                     </Box>
                     <Box
                       bgcolor={
-                        chartIndex === 2 ? palette.grey.A400 : 'transparent'
+                        chartIndex === CHART_PRICE
+                          ? palette.grey.A400
+                          : 'transparent'
                       }
                       className={classes.chartType}
-                      onClick={() => setChartIndex(2)}
+                      onClick={() => setChartIndex(CHART_PRICE)}
                     >
                       <Typography variant='caption'>Price</Typography>
                     </Box>
