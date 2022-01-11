@@ -25,16 +25,20 @@ const useStyles = makeStyles(({ palette }) => ({
   },
 }));
 
-const ToggleSwitch: React.FC<{ toggled: boolean; onToggle: () => void }> = ({
-  toggled,
-  onToggle,
-}) => {
+const ToggleSwitch: React.FC<{
+  toggled: boolean;
+  onToggle: () => void;
+  disabled?: boolean;
+}> = ({ toggled, onToggle, disabled }) => {
   const classes = useStyles({ toggled });
   return (
     <Box
       className={classes.wrapper}
       bgcolor={toggled ? 'rgba(15, 198, 121, 0.2)' : 'transparent'}
-      onClick={onToggle}
+      onClick={(e) => {
+        // console.log(disabled);
+        // !disabled && onToggle();
+      }}
     >
       <Box
         className={classes.innerCircle}

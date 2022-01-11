@@ -52,6 +52,8 @@ import { useAllTokens } from 'hooks/Tokens';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import { useCurrency } from 'hooks/Tokens';
 import dayjs from 'dayjs';
+import { useGasPrice } from 'context/GasPrice';
+import ToggleWithGasPrice from 'components/Biconomy/ToggleWithGasPrice';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   helpWrapper: {
@@ -81,6 +83,10 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     display: 'flex',
     cursor: 'pointer',
     marginBottom: 5,
+  },
+  gasPrice: {
+    padding: 4,
+    fontWeight: 600,
   },
   swapItem: {
     width: 100,
@@ -159,6 +165,7 @@ const SwapPage: React.FC = () => {
 
   const isGaslessEnabled = useIsGaslessEnabled();
   const toggleGaslessEnabled = useToggleGasless();
+  const { gasPrice } = useGasPrice();
 
   useEffect(() => {
     if (parsedQuery && parsedQuery.currency0 && qCurrency0) {
@@ -336,27 +343,7 @@ const SwapPage: React.FC = () => {
                   <Typography variant='body1'>Limit</Typography>
                 </Box>
               </Box>
-              <Box
-                className={classes.gaslessToggleWrapper}
-                onClick={() => toggleGaslessEnabled()}
-              >
-                <CustomTooltip
-                  title='Gasless Mode. This button will toggle QuickSwap&rsquo;s gasless feature for your wallet. Users with hardware wallets should keep this setting turned off.'
-                  arrow
-                >
-                  <LocalGasStation
-                    htmlColor={
-                      isGaslessEnabled
-                        ? palette.text.primary
-                        : palette.text.disabled
-                    }
-                  />
-                </CustomTooltip>
-                <ToggleSwitch
-                  toggled={isGaslessEnabled}
-                  onToggle={() => null}
-                />
-              </Box>
+              <ToggleWithGasPrice />
               <Box className={classes.headingItem}>
                 <SettingsIcon onClick={() => setOpenSettingsModal(true)} />
               </Box>
