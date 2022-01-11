@@ -14,8 +14,6 @@ import {
   useLairInfo,
   useSyrupInfo,
   useOldSyrupInfo,
-  SYRUP_REWARDS_INFO,
-  OLD_SYRUP_REWARDS_INFO,
 } from 'state/stake/hooks';
 import { QUICK } from 'constants/index';
 import {
@@ -25,15 +23,15 @@ import {
   StakeQuickModal,
   UnstakeQuickModal,
 } from 'components';
-import { useInfiniteLoading } from 'utils/useInfiniteLoading';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
 import DragonBg1 from 'assets/images/DragonBg1.svg';
 import DragonBg2 from 'assets/images/DragonBg2.svg';
 import DragonLairMask from 'assets/images/DragonLairMask.svg';
 import { ReactComponent as PriceExchangeIcon } from 'assets/images/PriceExchangeIcon.svg';
 import { ReactComponent as SearchIcon } from 'assets/images/SearchIcon.svg';
-import { useActiveWeb3React } from 'hooks';
 import { getDaysCurrentYear } from 'utils';
+import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
+import { Skeleton } from '@material-ui/lab';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   helpWrapper: {
@@ -155,7 +153,6 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
 const DragonPage: React.FC = () => {
   const classes = useStyles();
   const daysCurrentYear = getDaysCurrentYear();
-  const { chainId } = useActiveWeb3React();
   const { palette, breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const [isQUICKRate, setIsQUICKRate] = useState(false);
@@ -163,10 +160,11 @@ const DragonPage: React.FC = () => {
   const [openUnstakeModal, setOpenUnstakeModal] = useState(false);
   const [isEndedSyrup, setIsEndedSyrup] = useState(false);
   const lairInfo = useLairInfo();
-  const [syrupInfos, setSyrupInfos] = useState<SyrupInfo[]>([]);
+  const [syrupInfos, setSyrupInfos] = useState<SyrupInfo[] | undefined>(
+    undefined,
+  );
   const [sortBy, setSortBy] = useState(0);
   const [sortDesc, setSortDesc] = useState(false);
-  const [syrupOldInfos, setSyrupOldInfos] = useState<SyrupInfo[]>([]);
   const APR =
     (((Number(lairInfo?.oneDayVol) * 0.04 * 0.01) /
       Number(lairInfo?.dQuickTotalSupply.toSignificant(6))) *
@@ -181,188 +179,103 @@ const DragonPage: React.FC = () => {
     : 0;
   const [stakedOnly, setStakeOnly] = useState(false);
   const [syrupSearch, setSyrupSearch] = useState('');
-  const [pageIndex, setPageIndex] = useState(0);
-  const [pageOldIndex, setPageOldIndex] = useState(0);
+  const [syrupSearchInput, setSyrupSearchInput] = useDebouncedChangeHandler(
+    syrupSearch,
+    setSyrupSearch,
+  );
 
-  const addedSyrupInfos = useSyrupInfo(
+  const addedStakingSyrupInfos = useSyrupInfo(
     null,
-    isEndedSyrup ? 0 : pageIndex * 5 - 5,
-    isEndedSyrup ? 0 : pageIndex * 5,
+    isEndedSyrup ? 0 : undefined,
+    isEndedSyrup ? 0 : undefined,
+    { search: syrupSearch, isStaked: stakedOnly },
   );
   const addedOldSyrupInfos = useOldSyrupInfo(
     null,
-    isEndedSyrup ? pageOldIndex * 5 - 5 : 0,
-    isEndedSyrup ? pageOldIndex * 5 : 0,
+    isEndedSyrup ? undefined : 0,
+    isEndedSyrup ? undefined : 0,
+    { search: syrupSearch, isStaked: stakedOnly },
   );
 
+  const addedSyrupInfos = isEndedSyrup
+    ? addedOldSyrupInfos
+    : addedStakingSyrupInfos;
+
   const syrupRewardAddress = addedSyrupInfos
-    .map((syrupInfo) => syrupInfo.stakingRewardAddress.toLowerCase())
-    .reduce((totStr, str) => totStr + str, '');
-
-  const syrupRewardOldAddress = addedOldSyrupInfos
-    .map((syrupInfo) => syrupInfo.stakingRewardAddress.toLowerCase())
-    .reduce((totStr, str) => totStr + str, '');
-
-  const lastSyrupAddress =
-    syrupInfos[syrupInfos.length - 1]?.stakingRewardAddress;
-
-  const lastOldSyrupAddress =
-    syrupOldInfos[syrupOldInfos.length - 1]?.stakingRewardAddress;
+    ? addedSyrupInfos
+        .map((syrupInfo) => syrupInfo.stakingRewardAddress.toLowerCase())
+        .reduce((totStr, str) => totStr + str, '')
+    : null;
 
   useEffect(() => {
-    setSyrupInfos(
-      syrupInfos
-        .concat(addedSyrupInfos)
-        .filter(
-          (val, ind, self) =>
-            ind ===
-            self.findIndex(
-              (item) => item.stakingRewardAddress === val.stakingRewardAddress,
-            ),
-        ),
-    );
+    setSyrupInfos(undefined);
+    setTimeout(() => {
+      setSyrupInfos(isEndedSyrup ? addedOldSyrupInfos : addedStakingSyrupInfos);
+    }, 1000);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [syrupRewardAddress]);
+  }, [isEndedSyrup, syrupSearch, syrupRewardAddress]);
 
-  useEffect(() => {
-    setSyrupOldInfos(
-      syrupOldInfos
-        .concat(addedOldSyrupInfos)
-        .filter(
-          (val, ind, self) =>
-            ind ===
-            self.findIndex(
-              (item) => item.stakingRewardAddress === val.stakingRewardAddress,
-            ),
-        ),
-    );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [syrupRewardOldAddress]);
-
-  const filteredSyrupInfos = useMemo(() => {
-    const syrupListInfos = isEndedSyrup ? syrupOldInfos : syrupInfos;
-    if (syrupListInfos && syrupListInfos.length > 0) {
-      return syrupListInfos
-        .filter((syrupInfo) => {
-          return (
-            (stakedOnly
-              ? Boolean(syrupInfo.stakedAmount.greaterThan('0'))
-              : true) &&
-            ((syrupInfo.token.symbol ?? '')
-              .toLowerCase()
-              .indexOf(syrupSearch.toLowerCase()) > -1 ||
-              (syrupInfo.token.name ?? '')
-                .toLowerCase()
-                .indexOf(syrupSearch.toLowerCase()) > -1 ||
-              (syrupInfo.token.address ?? '')
-                .toLowerCase()
-                .indexOf(syrupSearch.toLowerCase()) > -1)
-          );
-        })
-        .sort((a, b) => {
-          if (sortBy === 1) {
-            const syrupStrA = a.token.symbol ?? '';
-            const syrupStrB = b.token.symbol ?? '';
-            if (sortDesc) {
-              return syrupStrA > syrupStrB ? -1 : 1;
-            } else {
-              return syrupStrA < syrupStrB ? -1 : 1;
-            }
-          } else if (sortBy === 2) {
-            const depositA =
-              a.valueOfTotalStakedAmountInUSDC ??
-              Number(a.totalStakedAmount.toSignificant());
-            const depositB =
-              b.valueOfTotalStakedAmountInUSDC ??
-              Number(b.totalStakedAmount.toSignificant());
-            if (sortDesc) {
-              return depositA > depositB ? -1 : 1;
-            } else {
-              return depositA < depositB ? -1 : 1;
-            }
-          } else if (sortBy === 3) {
-            const tokenAPRA =
-              a.valueOfTotalStakedAmountInUSDC > 0
-                ? ((a.rewards ?? 0) / a.valueOfTotalStakedAmountInUSDC) *
-                  daysCurrentYear *
-                  100
-                : 0;
-
-            const tokenAPRB =
-              b.valueOfTotalStakedAmountInUSDC > 0
-                ? ((b.rewards ?? 0) / b.valueOfTotalStakedAmountInUSDC) *
-                  daysCurrentYear *
-                  100
-                : 0;
-            if (sortDesc) {
-              return tokenAPRA > tokenAPRB ? -1 : 1;
-            } else {
-              return tokenAPRA < tokenAPRB ? -1 : 1;
-            }
-          } else if (sortBy === 4) {
-            const earnedUSDA =
-              Number(a.earnedAmount.toSignificant()) *
-              Number(a.rewardTokenPriceinUSD ?? 0);
-            const earnedUSDB =
-              Number(b.earnedAmount.toSignificant()) *
-              Number(b.rewardTokenPriceinUSD ?? 0);
-            if (sortDesc) {
-              return earnedUSDA > earnedUSDB ? -1 : 1;
-            } else {
-              return earnedUSDA < earnedUSDB ? -1 : 1;
-            }
+  const sortedSyrupInfos = useMemo(() => {
+    if (syrupInfos && syrupInfos.length > 0) {
+      return syrupInfos.sort((a, b) => {
+        if (sortBy === 1) {
+          const syrupStrA = a.token.symbol ?? '';
+          const syrupStrB = b.token.symbol ?? '';
+          if (sortDesc) {
+            return syrupStrA > syrupStrB ? -1 : 1;
+          } else {
+            return syrupStrA < syrupStrB ? -1 : 1;
           }
-          return 1;
-        });
+        } else if (sortBy === 2) {
+          const depositA =
+            a.valueOfTotalStakedAmountInUSDC ??
+            Number(a.totalStakedAmount.toSignificant());
+          const depositB =
+            b.valueOfTotalStakedAmountInUSDC ??
+            Number(b.totalStakedAmount.toSignificant());
+          if (sortDesc) {
+            return depositA > depositB ? -1 : 1;
+          } else {
+            return depositA < depositB ? -1 : 1;
+          }
+        } else if (sortBy === 3) {
+          const tokenAPRA =
+            a.valueOfTotalStakedAmountInUSDC > 0
+              ? ((a.rewards ?? 0) / a.valueOfTotalStakedAmountInUSDC) *
+                daysCurrentYear *
+                100
+              : 0;
+
+          const tokenAPRB =
+            b.valueOfTotalStakedAmountInUSDC > 0
+              ? ((b.rewards ?? 0) / b.valueOfTotalStakedAmountInUSDC) *
+                daysCurrentYear *
+                100
+              : 0;
+          if (sortDesc) {
+            return tokenAPRA > tokenAPRB ? -1 : 1;
+          } else {
+            return tokenAPRA < tokenAPRB ? -1 : 1;
+          }
+        } else if (sortBy === 4) {
+          const earnedUSDA =
+            Number(a.earnedAmount.toSignificant()) *
+            Number(a.rewardTokenPriceinUSD ?? 0);
+          const earnedUSDB =
+            Number(b.earnedAmount.toSignificant()) *
+            Number(b.rewardTokenPriceinUSD ?? 0);
+          if (sortDesc) {
+            return earnedUSDA > earnedUSDB ? -1 : 1;
+          } else {
+            return earnedUSDA < earnedUSDB ? -1 : 1;
+          }
+        }
+        return 1;
+      });
     } else {
       return [];
     }
-  }, [
-    syrupInfos,
-    stakedOnly,
-    syrupSearch,
-    isEndedSyrup,
-    syrupOldInfos,
-    sortDesc,
-    sortBy,
-    daysCurrentYear,
-  ]);
-
-  const loadNext = () => {
-    const REWARDS_INFO = isEndedSyrup
-      ? OLD_SYRUP_REWARDS_INFO
-      : SYRUP_REWARDS_INFO;
-    const syrupPageIndex = isEndedSyrup ? pageOldIndex : pageIndex;
-    const syrupListInfos = isEndedSyrup ? syrupOldInfos : syrupInfos;
-    const lastAddress = isEndedSyrup ? lastOldSyrupAddress : lastSyrupAddress;
-    if (chainId && REWARDS_INFO[chainId]) {
-      if (
-        syrupListInfos.length < (REWARDS_INFO[chainId]?.length ?? 0) &&
-        syrupPageIndex * 5 > syrupListInfos.length
-      ) {
-        if (isEndedSyrup) {
-          setPageOldIndex(syrupListInfos.length / 5 + 1);
-        } else {
-          setPageIndex(syrupListInfos.length / 5 + 1);
-        }
-      }
-      if (
-        !lastAddress ||
-        (REWARDS_INFO[chainId]?.[syrupPageIndex * 5 - 1] &&
-          lastAddress ===
-            REWARDS_INFO[chainId]?.[syrupPageIndex * 5 - 1]
-              .stakingRewardAddress)
-      ) {
-        if (isEndedSyrup) {
-          setPageOldIndex(pageOldIndex + 1);
-        } else {
-          setPageIndex(pageIndex + 1);
-        }
-      }
-    }
-  };
-
-  const { loadMoreRef } = useInfiniteLoading(loadNext);
+  }, [syrupInfos, sortDesc, sortBy, daysCurrentYear]);
 
   return (
     <Box width='100%' mb={3}>
@@ -542,8 +455,8 @@ const DragonPage: React.FC = () => {
                 <SearchIcon />
                 <input
                   placeholder='Search name, symbol or paste address'
-                  value={syrupSearch}
-                  onChange={(evt: any) => setSyrupSearch(evt.target.value)}
+                  value={syrupSearchInput}
+                  onChange={(evt: any) => setSyrupSearchInput(evt.target.value)}
                 />
               </Box>
               <Box display='flex' flexWrap='wrap' alignItems='center'>
@@ -713,14 +626,16 @@ const DragonPage: React.FC = () => {
                 </>
               )}
             </Box>
-            {syrupInfos &&
-              filteredSyrupInfos.map((syrup, ind) => (
+            {syrupInfos ? (
+              sortedSyrupInfos.map((syrup, ind) => (
                 <SyrupCard key={ind} syrup={syrup} />
-              ))}
+              ))
+            ) : (
+              <Skeleton width='100%' height={80} />
+            )}
           </Box>
         </Grid>
       </Grid>
-      <div ref={loadMoreRef} />
     </Box>
   );
 };
