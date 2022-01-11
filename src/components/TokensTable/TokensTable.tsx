@@ -6,7 +6,7 @@ import { getAddress } from '@ethersproject/address';
 import { ChainId, Token } from '@uniswap/sdk';
 import { CurrencyLogo, CustomTable } from 'components';
 import { ROWSPERPAGE } from 'constants/index';
-import { getformattedValue, getBgTextColor } from 'utils';
+import { getFormattedPrice, getPriceColor } from 'utils';
 import { useBookmarkTokens } from 'state/application/hooks';
 import { ReactComponent as StarChecked } from 'assets/images/StarChecked.svg';
 import { ReactComponent as StarUnchecked } from 'assets/images/StarUnchecked.svg';
@@ -86,7 +86,7 @@ const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
       token.symbol,
       token.name,
     );
-    const priceColor = getBgTextColor(Number(token.priceChangeUSD), palette);
+    const priceColor = getPriceColor(Number(token.priceChangeUSD), palette);
     return (
       <Box mt={index === 0 ? 0 : 3}>
         <Box display='flex' alignItems='center' mb={1}>
@@ -143,7 +143,7 @@ const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
             color={priceColor.textColor}
           >
             <Typography variant='body2'>
-              {getformattedValue(Number(token.priceChangeUSD))}%
+              {getFormattedPrice(Number(token.priceChangeUSD))}%
             </Typography>
           </Box>
         </Box>
@@ -171,7 +171,7 @@ const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
       token.symbol,
       token.name,
     );
-    const priceColor = getBgTextColor(Number(token.priceChangeUSD), palette);
+    const priceColor = getPriceColor(Number(token.priceChangeUSD), palette);
 
     return [
       {
@@ -233,7 +233,7 @@ const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
             color={priceColor.textColor}
           >
             <Typography variant='body2'>
-              {getformattedValue(Number(token.priceChangeUSD))}%
+              {getFormattedPrice(Number(token.priceChangeUSD))}%
             </Typography>
           </Box>
         ),

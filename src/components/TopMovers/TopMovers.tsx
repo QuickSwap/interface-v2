@@ -6,7 +6,7 @@ import Skeleton from '@material-ui/lab/Skeleton';
 import { Token, ChainId } from '@uniswap/sdk';
 import { getAddress } from '@ethersproject/address';
 import { CurrencyLogo } from 'components';
-import { getEthPrice, getTopTokens, getBgTextColor } from 'utils';
+import { getEthPrice, getTopTokens, getPriceColor } from 'utils';
 
 const useStyles = makeStyles(() => ({
   content: {
@@ -75,7 +75,7 @@ const TopMovers: React.FC<TopMoversProps> = ({
                 getAddress(token.id),
                 token.decimals,
               );
-              const priceColor = getBgTextColor(
+              const priceColor = getPriceColor(
                 Number(token.priceChangeUSD),
                 palette,
               );

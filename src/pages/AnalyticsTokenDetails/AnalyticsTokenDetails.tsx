@@ -11,8 +11,8 @@ import {
   shortenAddress,
   getEtherscanLink,
   formatCompact,
-  getformattedValue,
-  getBgTextColor,
+  getFormattedPrice,
+  getPriceColor,
 } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import { CurrencyLogo, PairTable, AreaChart } from 'components';
@@ -248,11 +248,11 @@ const AnalyticsTokenDetails: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [updateTokenPairs, updateTokenChartData, tokenAddress]);
 
-  const tokenPercentColor = getBgTextColor(
+  const tokenPercentColor = getPriceColor(
     token ? Number(token.priceChangeUSD) : 0,
     palette,
   );
-  const currentPercentColor = getBgTextColor(Number(currentPercent), palette);
+  const currentPercentColor = getPriceColor(Number(currentPercent), palette);
 
   return (
     <>
@@ -324,7 +324,7 @@ const AnalyticsTokenDetails: React.FC = () => {
                     color={tokenPercentColor.textColor}
                   >
                     <Typography variant='body2'>
-                      {getformattedValue(Number(token.priceChangeUSD))}%
+                      {getFormattedPrice(Number(token.priceChangeUSD))}%
                     </Typography>
                   </Box>
                 </Box>
@@ -387,7 +387,7 @@ const AnalyticsTokenDetails: React.FC = () => {
                               color={currentPercentColor.textColor}
                             >
                               <Typography variant='body2'>
-                                {getformattedValue(Number(currentPercent))}%
+                                {getFormattedPrice(Number(currentPercent))}%
                               </Typography>
                             </Box>
                           </Box>

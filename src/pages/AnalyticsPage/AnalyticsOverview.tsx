@@ -17,7 +17,7 @@ import {
   getGlobalData,
   getBulkPairData,
   formatDateFromTimeStamp,
-  getBgTextColor,
+  getPriceColor,
 } from 'utils';
 import { ROWSPERPAGE } from 'constants/index';
 import { AreaChart, BarChart, TokensTable, PairTable } from 'components';
@@ -278,12 +278,12 @@ const AnalyticsOverview: React.FC = () => {
     }
   }, [globalChartData, volumeIndex]);
 
-  const liquidityPercentColor = getBgTextColor(
+  const liquidityPercentColor = getPriceColor(
     globalData ? Number(globalData.liquidityChangeUSD) : 0,
     palette,
   );
 
-  const volumePercentColor = getBgTextColor(Number(volumePercent), palette);
+  const volumePercentColor = getPriceColor(Number(volumePercent), palette);
 
   return (
     <>

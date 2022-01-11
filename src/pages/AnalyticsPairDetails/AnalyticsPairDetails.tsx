@@ -14,8 +14,8 @@ import {
   getPairTransactions,
   getPairChartData,
   formatDateFromTimeStamp,
-  getformattedValue,
-  getBgTextColor,
+  getFormattedPrice,
+  getPriceColor,
   getEthPrice,
   getBulkPairData,
 } from 'utils';
@@ -290,7 +290,7 @@ const AnalyticsPairDetails: React.FC = () => {
     fetchPairChartData();
   }, [pairAddress]);
 
-  const currentPercentColor = getBgTextColor(Number(currentPercent), palette);
+  const currentPercentColor = getPriceColor(Number(currentPercent), palette);
 
   return (
     <>
@@ -444,7 +444,7 @@ const AnalyticsPairDetails: React.FC = () => {
                               color={currentPercentColor.textColor}
                             >
                               <Typography variant='body2'>
-                                {getformattedValue(Number(currentPercent))}%
+                                {getFormattedPrice(Number(currentPercent))}%
                               </Typography>
                             </Box>
                           </Box>

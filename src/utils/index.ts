@@ -1575,24 +1575,29 @@ export function formatDateFromTimeStamp(
     .format(format);
 }
 
-export function getformattedValue(value: number) {
-  if (value < 0.001 && value > 0) {
+export function getFormattedPrice(price: number) {
+  if (price < 0.001 && price > 0) {
     return '<0.001';
-  } else if (value > -0.001 && value < 0) {
+  } else if (price > -0.001 && price < 0) {
     return '>-0.001';
   } else {
-    const beforeSign = value > 0 ? '+' : '';
-    return beforeSign + value.toLocaleString();
+    const beforeSign = price > 0 ? '+' : '';
+    return beforeSign + price.toLocaleString();
   }
 }
 
 // get bg and text colors for price percent badge. pass palette as parameter in order to avoid hook
-export function getBgTextColor(value: number, palette: Palette) {
-  if (value > 0) {
+export function getPriceColor(price: number, palette: Palette) {
+  if (price > 0) {
     return { bgColor: palette.success.light, textColor: palette.success.main };
-  } else if (value === 0) {
+  } else if (price === 0) {
     return { bgColor: palette.grey.A100, textColor: palette.text.hint };
   } else {
     return { bgColor: palette.error.light, textColor: palette.error.main };
   }
+}
+
+export function getDaysCurrentYear() {
+  const year = Number(moment().format('YYYY'));
+  return (year % 4 === 0 && year % 100 > 0) || year % 400 == 0 ? 366 : 365;
 }

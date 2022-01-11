@@ -13,6 +13,7 @@ import {
 import RewardSliderItem from './RewardSliderItem';
 import { useActiveWeb3React } from 'hooks';
 import { FEE_PERCENT } from 'constants/index';
+import { getDaysCurrentYear } from 'utils';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   rewardsSlider: {
@@ -46,6 +47,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
 const RewardSlider: React.FC = () => {
   const classes = useStyles();
   const theme = useTheme();
+  const daysCurrentYear = getDaysCurrentYear();
   const { chainId } = useActiveWeb3React();
   const tabletWindowSize = useMediaQuery(theme.breakpoints.down('md'));
   const mobileWindowSize = useMediaQuery(theme.breakpoints.down('sm'));
@@ -67,7 +69,7 @@ const RewardSlider: React.FC = () => {
         const oneDayVolume = bulkPairs[info.pair]?.oneDayVolumeUSD;
         if (oneDayVolume) {
           const oneYearFeeAPY =
-            (oneDayVolume * FEE_PERCENT * 365) /
+            (oneDayVolume * FEE_PERCENT * daysCurrentYear) /
             bulkPairs[info.pair]?.reserveUSD;
           return oneYearFeeAPY;
         } else {
@@ -77,7 +79,7 @@ const RewardSlider: React.FC = () => {
     } else {
       return [];
     }
-  }, [bulkPairs, rewardItems]);
+  }, [bulkPairs, rewardItems, daysCurrentYear]);
 
   const rewardSliderSettings = {
     dots: false,

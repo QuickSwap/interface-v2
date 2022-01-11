@@ -16,6 +16,7 @@ import {
   RemoveLiquidityModal,
 } from 'components';
 import { FEE_PERCENT } from 'constants/index';
+import { getDaysCurrentYear } from 'utils';
 
 const useStyles = makeStyles(({ palette }) => ({
   poolButtonRow: {
@@ -69,6 +70,7 @@ const PoolPositionCard: React.FC<PoolPositionCardProps> = ({
   handleAddLiquidity,
 }) => {
   const classes = useStyles();
+  const daysCurrentYear = getDaysCurrentYear();
   const history = useHistory();
   const [bulkPairData, setBulkPairData] = useState<any>(null);
   const { palette, breakpoints } = useTheme();
@@ -137,7 +139,7 @@ const PoolPositionCard: React.FC<PoolPositionCardProps> = ({
         ? bulkPairData[stakingInfo.pair]?.oneDayVolumeUSD
         : 0;
       const oneYearFee =
-        (dayVolume * FEE_PERCENT * 365) /
+        (dayVolume * FEE_PERCENT * daysCurrentYear) /
         bulkPairData[stakingInfo.pair]?.reserveUSD;
       const apy =
         oneYearFee > 0
@@ -156,7 +158,7 @@ const PoolPositionCard: React.FC<PoolPositionCardProps> = ({
         return Number(apy.toFixed(2)).toLocaleString();
       }
     }
-  }, [stakingInfo, bulkPairData]);
+  }, [stakingInfo, bulkPairData, daysCurrentYear]);
 
   return (
     <Box
