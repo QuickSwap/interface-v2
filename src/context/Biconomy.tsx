@@ -13,10 +13,12 @@ import React, {
 
 import { useActiveWeb3React } from 'hooks';
 import { ethers } from 'ethers';
+import { useGasPrice } from './GasPrice';
 
 interface IBiconomyContext {
   biconomy: undefined | any;
   isBiconomyReady: boolean;
+  isGaslessAllowed: boolean;
 }
 
 const BiconomyContext = createContext<IBiconomyContext | null>(null);
@@ -24,6 +26,8 @@ const BiconomyContext = createContext<IBiconomyContext | null>(null);
 const BiconomyProvider: React.FC = (props) => {
   const { library } = useActiveWeb3React();
   const [isBiconomyReady, setIsBiconomyReady] = useState(false);
+  const { gasPrice } = useGasPrice();
+  const isGaslessAllowed = useMemo(() => (gasPrice ?? 0) <= 50, [gasPrice]);
 
   // reinitialize biconomy everytime library is changed
   const biconomy: any = useMemo(() => {
@@ -55,6 +59,7 @@ const BiconomyProvider: React.FC = (props) => {
     <BiconomyContext.Provider
       value={{
         isBiconomyReady,
+        isGaslessAllowed,
         biconomy,
       }}
       {...props}
@@ -62,5 +67,9 @@ const BiconomyProvider: React.FC = (props) => {
   );
 };
 
-const useBiconomy = () => useContext(BiconomyContext);
+const useBiconomy = () => {
+  const hookData = useContext(BiconomyContext);
+  if (!hookData) throw new Error('Hook used without provider');
+  return hookData;
+};
 export { BiconomyProvider, useBiconomy };
