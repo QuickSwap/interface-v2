@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { ChainId, Token } from '@uniswap/sdk';
 import { getAddress } from '@ethersproject/address';
 import { DoubleCurrencyLogo, CustomTable } from 'components';
-import { ROWSPERPAGE, FEE_PERCENT } from 'constants/index';
+import { GlobalConst } from 'constants/index';
 import { useBookmarkPairs } from 'state/application/hooks';
 import { ReactComponent as StarChecked } from 'assets/images/StarChecked.svg';
 import { ReactComponent as StarUnchecked } from 'assets/images/StarUnchecked.svg';
@@ -84,7 +84,9 @@ const PairTable: React.FC<TokensTableProps> = ({ data }) => {
     const oneWeekVolume = pair.oneWeekVolumeUSD
       ? pair.oneWeekVolumeUSD
       : pair.oneWeekVolumeUntracked;
-    const oneDayFee = (Number(oneDayVolume) * FEE_PERCENT).toLocaleString();
+    const oneDayFee = (
+      Number(oneDayVolume) * GlobalConst.FEEPERCENT
+    ).toLocaleString();
     return (
       <Box mt={index === 0 ? 0 : 3}>
         <Box display='flex' alignItems='center' mb={1}>
@@ -201,7 +203,9 @@ const PairTable: React.FC<TokensTableProps> = ({ data }) => {
         : pair.oneWeekVolumeUntracked && !isNaN(pair.oneWeekVolumeUntracked)
         ? pair.oneWeekVolumeUntracked
         : 0;
-    const oneDayFee = (Number(oneDayVolume) * FEE_PERCENT).toLocaleString();
+    const oneDayFee = (
+      Number(oneDayVolume) * GlobalConst.FEEPERCENT
+    ).toLocaleString();
     return [
       {
         html: (
@@ -275,9 +279,9 @@ const PairTable: React.FC<TokensTableProps> = ({ data }) => {
     <CustomTable
       defaultOrderBy={pairHeadCells[liquidityHeadCellIndex]}
       defaultOrder='desc'
-      showPagination={data.length > ROWSPERPAGE}
+      showPagination={data.length > GlobalConst.ROWSPERPAGE}
       headCells={pairHeadCells}
-      rowsPerPage={ROWSPERPAGE}
+      rowsPerPage={GlobalConst.ROWSPERPAGE}
       data={data}
       mobileHTML={mobileHTML}
       desktopHTML={desktopHTML}

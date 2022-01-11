@@ -15,7 +15,7 @@ import {
   DoubleCurrencyLogo,
   RemoveLiquidityModal,
 } from 'components';
-import { FEE_PERCENT } from 'constants/index';
+import { GlobalConst } from 'constants/index';
 import { getDaysCurrentYear } from 'utils';
 
 const useStyles = makeStyles(({ palette }) => ({
@@ -139,7 +139,7 @@ const PoolPositionCard: React.FC<PoolPositionCardProps> = ({
         ? bulkPairData[stakingInfo.pair]?.oneDayVolumeUSD
         : 0;
       const oneYearFee =
-        (dayVolume * FEE_PERCENT * daysCurrentYear) /
+        (dayVolume * GlobalConst.FEEPERCENT * daysCurrentYear) /
         bulkPairData[stakingInfo.pair]?.reserveUSD;
       const apy =
         oneYearFee > 0

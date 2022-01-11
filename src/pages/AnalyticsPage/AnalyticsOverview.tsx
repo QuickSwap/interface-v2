@@ -19,7 +19,7 @@ import {
   formatDateFromTimeStamp,
   getPriceColor,
 } from 'utils';
-import { ROWSPERPAGE } from 'constants/index';
+import { GlobalConst } from 'constants/index';
 import { AreaChart, BarChart, TokensTable, PairTable } from 'components';
 import AnalyticsInfo from './AnalyticsInfo';
 
@@ -97,7 +97,7 @@ const AnalyticsOverview: React.FC = () => {
       const topTokensData = await getTopTokens(
         newPrice,
         oneDayPrice,
-        ROWSPERPAGE,
+        GlobalConst.ROWSPERPAGE,
       );
       if (topTokensData) {
         updateTopTokens(topTokensData);
@@ -106,7 +106,7 @@ const AnalyticsOverview: React.FC = () => {
     const fetchTopPairs = async () => {
       updateTopPairs(null);
       const [newPrice] = await getEthPrice();
-      const pairs = await getTopPairs(ROWSPERPAGE);
+      const pairs = await getTopPairs(GlobalConst.ROWSPERPAGE);
       const formattedPairs = pairs
         ? pairs.map((pair: any) => {
             return pair.id;

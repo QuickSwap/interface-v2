@@ -22,7 +22,7 @@ import { ReactComponent as SearchIcon } from 'assets/images/SearchIcon.svg';
 import { useInfiniteLoading } from 'utils/useInfiniteLoading';
 import { useActiveWeb3React } from 'hooks';
 import { Skeleton } from '@material-ui/lab';
-import { FEE_PERCENT } from 'constants/index';
+import { GlobalConst } from 'constants/index';
 import { getDaysCurrentYear } from 'utils';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
@@ -314,12 +314,12 @@ const FarmPage: React.FC = () => {
             let bYearFee = 0;
             if (aDayVolume) {
               aYearFee =
-                (aDayVolume * FEE_PERCENT * daysCurrentYear) /
+                (aDayVolume * GlobalConst.FEEPERCENT * daysCurrentYear) /
                 bulkPairs[a.pair]?.reserveUSD;
             }
             if (bDayVolume) {
               bYearFee =
-                (bDayVolume * FEE_PERCENT * daysCurrentYear) /
+                (bDayVolume * GlobalConst.FEEPERCENT * daysCurrentYear) /
                 bulkPairs[b.pair]?.reserveUSD;
             }
             const aAPYwithFee =
@@ -436,12 +436,12 @@ const FarmPage: React.FC = () => {
             let bYearFee = 0;
             if (aDayVolume) {
               aYearFee =
-                (aDayVolume * FEE_PERCENT * daysCurrentYear) /
+                (aDayVolume * GlobalConst.FEEPERCENT * daysCurrentYear) /
                 bulkPairs[a.pair]?.reserveUSD;
             }
             if (bDayVolume) {
               bYearFee =
-                (bDayVolume * FEE_PERCENT * daysCurrentYear) /
+                (bDayVolume * GlobalConst.FEEPERCENT * daysCurrentYear) /
                 bulkPairs[b.pair]?.reserveUSD;
             }
             const aAPYwithFee =
@@ -503,7 +503,7 @@ const FarmPage: React.FC = () => {
         const oneDayVolume = bulkPairs[info.pair]?.oneDayVolumeUSD;
         if (oneDayVolume) {
           const oneYearFeeAPY =
-            (oneDayVolume * FEE_PERCENT * daysCurrentYear) /
+            (oneDayVolume * GlobalConst.FEEPERCENT * daysCurrentYear) /
             bulkPairs[info.pair]?.reserveUSD;
           return oneYearFeeAPY;
         } else {

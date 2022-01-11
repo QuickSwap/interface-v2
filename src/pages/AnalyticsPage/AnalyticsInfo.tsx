@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Typography } from '@material-ui/core';
-import { FEE_PERCENT } from 'constants/index';
+import { GlobalConst } from 'constants/index';
 
 interface AnalyticsInfoProps {
   data: any;
@@ -21,7 +21,8 @@ const AnalyticsInfo: React.FC<AnalyticsInfoProps> = ({ data }) => {
       </Box>
       <Box>
         <Typography variant='body2'>
-          24h Fees: ${(data.oneDayVolumeUSD * FEE_PERCENT).toLocaleString()}
+          24h Fees: $
+          {(data.oneDayVolumeUSD * GlobalConst.FEEPERCENT).toLocaleString()}
         </Typography>
       </Box>
     </>

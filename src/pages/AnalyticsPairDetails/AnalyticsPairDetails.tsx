@@ -27,7 +27,7 @@ import {
   TransactionsTable,
 } from 'components';
 import { getAddress } from '@ethersproject/address';
-import { FEE_PERCENT } from 'constants/index';
+import { GlobalConst } from 'constants/index';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   panel: {
@@ -174,9 +174,11 @@ const AnalyticsPairDetails: React.FC = () => {
     pairData && (pairData.oneDayVolumeUSD || pairData.oneDayVolumeUSD === 0)
       ? usingUtVolume
         ? (
-            Number(pairData.oneDayVolumeUntracked) * FEE_PERCENT
+            Number(pairData.oneDayVolumeUntracked) * GlobalConst.FEEPERCENT
           ).toLocaleString()
-        : (Number(pairData.oneDayVolumeUSD) * FEE_PERCENT).toLocaleString()
+        : (
+            Number(pairData.oneDayVolumeUSD) * GlobalConst.FEEPERCENT
+          ).toLocaleString()
       : '-';
   const [chartIndex, setChartIndex] = useState(CHART_VOLUME);
 
@@ -205,7 +207,7 @@ const AnalyticsPairDetails: React.FC = () => {
           ? Number(item.dailyVolumeUSD)
           : chartIndex === CHART_LIQUIDITY
           ? Number(item.reserveUSD)
-          : Number(item.dailyVolumeUSD) * FEE_PERCENT,
+          : Number(item.dailyVolumeUSD) * GlobalConst.FEEPERCENT,
       );
     } else {
       return null;
@@ -275,7 +277,7 @@ const AnalyticsPairDetails: React.FC = () => {
           ? pairData.liquidityChangeUSD
           : (usingUtVolume
               ? pairData.volumeChangeUntracked
-              : pairData.volumeChangeUSD) * FEE_PERCENT
+              : pairData.volumeChangeUSD) * GlobalConst.FEEPERCENT
         : null,
     [pairData, chartIndex, usingUtVolume],
   );

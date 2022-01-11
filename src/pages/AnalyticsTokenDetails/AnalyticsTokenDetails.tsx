@@ -28,7 +28,7 @@ import {
 import { ReactComponent as StarChecked } from 'assets/images/StarChecked.svg';
 import { ReactComponent as StarUnchecked } from 'assets/images/StarUnchecked.svg';
 import { getAddress } from '@ethersproject/address';
-import { FEE_PERCENT } from 'constants/index';
+import { GlobalConst } from 'constants/index';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   panel: {
@@ -522,7 +522,9 @@ const AnalyticsTokenDetails: React.FC = () => {
                       </Typography>
                       <Typography variant={isMobile ? 'body1' : 'h5'}>
                         $
-                        {(token.oneDayVolumeUSD * FEE_PERCENT).toLocaleString()}
+                        {(
+                          token.oneDayVolumeUSD * GlobalConst.FEEPERCENT
+                        ).toLocaleString()}
                       </Typography>
                     </Box>
                   </Box>

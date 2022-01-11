@@ -229,7 +229,7 @@ import {
   ORBS,
   UART,
   UST,
-  FEE_PERCENT,
+  GlobalConst,
 } from 'constants/index';
 import {
   STAKING_REWARDS_INTERFACE,
@@ -12948,7 +12948,7 @@ export function useUSDRewardsandFees(isLPFarm: boolean, bulkPairData: any) {
           const ratio =
             Number(totalSupplyState.result?.[0].toString()) /
             Number(totalSupply);
-          const oneDayFee = oneYearFeeAPY * FEE_PERCENT * ratio;
+          const oneDayFee = oneYearFeeAPY * GlobalConst.FEEPERCENT * ratio;
           return total + oneDayFee;
         } else {
           return total;
@@ -14198,10 +14198,10 @@ export function useStakingInfo(
               const myRatio =
                 Number(balanceState?.result?.[0].toString()) /
                 Number(totalSupplyState.result?.[0].toString());
-              oneDayFee = oneYearFeeAPY * FEE_PERCENT * ratio;
+              oneDayFee = oneYearFeeAPY * GlobalConst.FEEPERCENT * ratio;
               accountFee = oneDayFee * myRatio;
               oneYearFeeAPY =
-                (oneYearFeeAPY * FEE_PERCENT * daysCurrentYear) /
+                (oneYearFeeAPY * GlobalConst.FEEPERCENT * daysCurrentYear) /
                 pairs[info[index].pair]?.reserveUSD;
               //console.log(info[index].pair, oneYearFeeAPY);
             }
