@@ -17,6 +17,7 @@ import {
   getGlobalData,
   getBulkPairData,
   formatDateFromTimeStamp,
+  getBgTextColor,
 } from 'utils';
 import { ROWSPERPAGE } from 'constants/index';
 import { AreaChart, BarChart, TokensTable, PairTable } from 'components';
@@ -277,6 +278,13 @@ const AnalyticsOverview: React.FC = () => {
     }
   }, [globalChartData, volumeIndex]);
 
+  const liquidityPercentColor = getBgTextColor(
+    globalData ? Number(globalData.liquidityChangeUSD) : 0,
+    palette,
+  );
+
+  const volumePercentColor = getBgTextColor(Number(volumePercent), palette);
+
   return (
     <>
       <Grid container spacing={4}>
@@ -301,25 +309,10 @@ const AnalyticsOverview: React.FC = () => {
                   height={23}
                   px={1}
                   borderRadius={40}
-                  bgcolor={
-                    globalData.liquidityChangeUSD > 0
-                      ? palette.success.light
-                      : globalData.liquidityChangeUSD < 0
-                      ? palette.error.light
-                      : palette.grey.A100
-                  }
+                  bgcolor={liquidityPercentColor.bgColor}
+                  color={liquidityPercentColor.textColor}
                 >
-                  <Typography
-                    style={{
-                      color:
-                        globalData.liquidityChangeUSD > 0
-                          ? palette.success.main
-                          : globalData.liquidityChangeUSD < 0
-                          ? palette.error.main
-                          : palette.text.hint,
-                    }}
-                    variant='caption'
-                  >
+                  <Typography variant='caption'>
                     {`${globalData.liquidityChangeUSD > 0 ? '+' : ''}
                       ${globalData.liquidityChangeUSD.toLocaleString()}`}
                     %
@@ -430,25 +423,10 @@ const AnalyticsOverview: React.FC = () => {
                       height={23}
                       px={1}
                       borderRadius={40}
-                      bgcolor={
-                        volumePercent > 0
-                          ? palette.success.light
-                          : volumePercent < 0
-                          ? palette.error.light
-                          : palette.grey.A100
-                      }
+                      bgcolor={volumePercentColor.bgColor}
+                      color={volumePercentColor.textColor}
                     >
-                      <Typography
-                        style={{
-                          color:
-                            volumePercent > 0
-                              ? palette.success.main
-                              : volumePercent < 0
-                              ? palette.error.main
-                              : palette.text.hint,
-                        }}
-                        variant='caption'
-                      >
+                      <Typography variant='caption'>
                         {`${volumePercent > 0 ? '+' : ''}
                       ${volumePercent.toLocaleString()}`}
                         %

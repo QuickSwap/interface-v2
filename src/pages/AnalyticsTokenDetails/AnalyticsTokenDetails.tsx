@@ -12,6 +12,7 @@ import {
   getEtherscanLink,
   formatCompact,
   getformattedValue,
+  getBgTextColor,
 } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import { CurrencyLogo, PairTable, AreaChart } from 'components';
@@ -247,6 +248,12 @@ const AnalyticsTokenDetails: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [updateTokenPairs, updateTokenChartData, tokenAddress]);
 
+  const tokenPercentColor = getBgTextColor(
+    token ? Number(token.priceChangeUSD) : 0,
+    palette,
+  );
+  const currentPercentColor = getBgTextColor(Number(currentPercent), palette);
+
   return (
     <>
       {token ? (
@@ -313,20 +320,8 @@ const AnalyticsTokenDetails: React.FC = () => {
                   <Box
                     className={classes.priceChangeWrapper}
                     ml={2}
-                    bgcolor={
-                      Number(token.priceChangeUSD) > 0
-                        ? palette.success.light
-                        : Number(token.priceChangeUSD) < 0
-                        ? palette.error.light
-                        : palette.grey.A100
-                    }
-                    color={
-                      Number(token.priceChangeUSD) > 0
-                        ? palette.success.main
-                        : Number(token.priceChangeUSD) < 0
-                        ? palette.error.main
-                        : palette.text.hint
-                    }
+                    bgcolor={tokenPercentColor.bgColor}
+                    color={tokenPercentColor.textColor}
                   >
                     <Typography variant='body2'>
                       {getformattedValue(Number(token.priceChangeUSD))}%
@@ -388,20 +383,8 @@ const AnalyticsTokenDetails: React.FC = () => {
                             <Box
                               className={classes.priceChangeWrapper}
                               ml={1}
-                              bgcolor={
-                                Number(currentPercent) > 0
-                                  ? palette.success.light
-                                  : Number(currentPercent) < 0
-                                  ? palette.error.light
-                                  : palette.grey.A100
-                              }
-                              color={
-                                Number(currentPercent) > 0
-                                  ? palette.success.main
-                                  : Number(currentPercent) < 0
-                                  ? palette.error.main
-                                  : palette.text.hint
-                              }
+                              bgcolor={currentPercentColor.bgColor}
+                              color={currentPercentColor.textColor}
                             >
                               <Typography variant='body2'>
                                 {getformattedValue(Number(currentPercent))}%

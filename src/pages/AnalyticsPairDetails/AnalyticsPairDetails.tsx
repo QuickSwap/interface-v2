@@ -13,9 +13,11 @@ import {
   formatCompact,
   getPairTransactions,
   getPairChartData,
-  getHourlyRateData,
   formatDateFromTimeStamp,
   getformattedValue,
+  getBgTextColor,
+  getEthPrice,
+  getBulkPairData,
 } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import {
@@ -24,7 +26,6 @@ import {
   DoubleCurrencyLogo,
   TransactionsTable,
 } from 'components';
-import { getEthPrice, getBulkPairData } from 'utils';
 import { getAddress } from '@ethersproject/address';
 import { FEE_PERCENT } from 'constants/index';
 
@@ -289,6 +290,8 @@ const AnalyticsPairDetails: React.FC = () => {
     fetchPairChartData();
   }, [pairAddress]);
 
+  const currentPercentColor = getBgTextColor(Number(currentPercent), palette);
+
   return (
     <>
       {pairData ? (
@@ -437,20 +440,8 @@ const AnalyticsPairDetails: React.FC = () => {
                             <Box
                               className={classes.priceChangeWrapper}
                               ml={1}
-                              bgcolor={
-                                Number(currentPercent) > 0
-                                  ? palette.success.light
-                                  : Number(currentPercent) < 0
-                                  ? palette.error.light
-                                  : palette.grey.A100
-                              }
-                              color={
-                                Number(currentPercent) > 0
-                                  ? palette.success.main
-                                  : Number(currentPercent) < 0
-                                  ? palette.error.main
-                                  : palette.text.hint
-                              }
+                              bgcolor={currentPercentColor.bgColor}
+                              color={currentPercentColor.textColor}
                             >
                               <Typography variant='body2'>
                                 {getformattedValue(Number(currentPercent))}%

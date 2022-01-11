@@ -52,6 +52,7 @@ import {
   MIN_ETH,
 } from 'constants/index';
 import moment from 'moment';
+import { Palette } from '@material-ui/core/styles/createPalette';
 dayjs.extend(utc);
 dayjs.extend(weekOfYear);
 
@@ -1582,5 +1583,16 @@ export function getformattedValue(value: number) {
   } else {
     const beforeSign = value > 0 ? '+' : '';
     return beforeSign + value.toLocaleString();
+  }
+}
+
+// get bg and text colors for price percent badge. pass palette as parameter in order to avoid hook
+export function getBgTextColor(value: number, palette: Palette) {
+  if (value > 0) {
+    return { bgColor: palette.success.light, textColor: palette.success.main };
+  } else if (value === 0) {
+    return { bgColor: palette.grey.A100, textColor: palette.text.hint };
+  } else {
+    return { bgColor: palette.error.light, textColor: palette.error.main };
   }
 }

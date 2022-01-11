@@ -6,9 +6,9 @@ import Skeleton from '@material-ui/lab/Skeleton';
 import { Token, ChainId } from '@uniswap/sdk';
 import { getAddress } from '@ethersproject/address';
 import { CurrencyLogo } from 'components';
-import { getEthPrice, getTopTokens } from 'utils';
+import { getEthPrice, getTopTokens, getBgTextColor } from 'utils';
 
-const useStyles = makeStyles(({ breakpoints }) => ({
+const useStyles = makeStyles(() => ({
   content: {
     width: '100%',
     display: 'flex',
@@ -75,6 +75,10 @@ const TopMovers: React.FC<TopMoversProps> = ({
                 getAddress(token.id),
                 token.decimals,
               );
+              const priceColor = getBgTextColor(
+                Number(token.priceChangeUSD),
+                palette,
+              );
               const priceUp = Number(token.priceChangeUSD) > 0;
               const priceDown = Number(token.priceChangeUSD) < 0;
               const priceUpPercent = Number(token.priceChangeUSD).toFixed(2);
@@ -113,21 +117,9 @@ const TopMovers: React.FC<TopMoversProps> = ({
                         py={0.25}
                         borderRadius={12}
                         bgcolor={
-                          !hideArrow
-                            ? 'transparent'
-                            : priceUp
-                            ? palette.success.light
-                            : priceDown
-                            ? palette.error.light
-                            : palette.grey.A100
+                          !hideArrow ? 'transparent' : priceColor.bgColor
                         }
-                        style={{
-                          color: priceUp
-                            ? palette.success.main
-                            : priceDown
-                            ? palette.error.main
-                            : palette.text.hint,
-                        }}
+                        color={priceColor.textColor}
                       >
                         {!hideArrow && priceUp && <ArrowDropUp />}
                         {!hideArrow && priceDown && <ArrowDropDown />}
