@@ -28,6 +28,7 @@ import {
   getTokenPairs,
   getBulkPairData,
   formatCompact,
+  getDaysCurrentYear,
 } from 'utils';
 import { useDerivedSwapInfo } from 'state/swap/hooks';
 import { Field } from 'state/swap/actions';
@@ -36,6 +37,7 @@ import useParsedQueryString from 'hooks/useParsedQueryString';
 import { useCurrency } from 'hooks/Tokens';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
 import { useActiveWeb3React } from 'hooks';
+import { GlobalConst } from 'constants/index';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   helpWrapper: {
@@ -116,6 +118,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
 
 const SwapPage: React.FC = () => {
   const classes = useStyles();
+  const daysCurrentYear = getDaysCurrentYear();
   const { palette, breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const [swapIndex, setSwapIndex] = useState(0);
@@ -408,8 +411,8 @@ const SwapPage: React.FC = () => {
                             ? pair.oneDayVolumeUSD
                             : pair.oneDayVolumeUntracked,
                         ) *
-                        0.003 *
-                        365 *
+                        GlobalConst.FEEPERCENT *
+                        daysCurrentYear *
                         100;
                       const trackReserveUSD = Number(
                         pair.oneDayVolumeUSD

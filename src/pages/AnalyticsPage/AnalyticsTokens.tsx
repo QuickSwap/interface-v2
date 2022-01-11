@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Box, Typography } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { TopMovers, TokensTable } from 'components';
-import { useTopTokens, useBookmarkTokens } from 'state/application/hooks';
+import { useBookmarkTokens } from 'state/application/hooks';
 import { getEthPrice, getTopTokens } from 'utils';
 import { Skeleton } from '@material-ui/lab';
 
@@ -27,7 +27,7 @@ const AnalyticsTokens: React.FC = () => {
   const { palette } = useTheme();
   const [tokensFilter, setTokensFilter] = useState(0);
 
-  const { topTokens, updateTopTokens } = useTopTokens();
+  const [topTokens, updateTopTokens] = useState<any[] | null>(null);
   const { bookmarkTokens } = useBookmarkTokens();
 
   const favoriteTokens = useMemo(() => {
@@ -41,17 +41,15 @@ const AnalyticsTokens: React.FC = () => {
   }, [topTokens, bookmarkTokens]);
 
   useEffect(() => {
-    updateTopTokens(null);
     const fetchTopTokens = async () => {
+      updateTopTokens(null); //set top tokens as null to show loading status when fetching tokens data
       const [newPrice, oneDayPrice] = await getEthPrice();
       const topTokensData = await getTopTokens(newPrice, oneDayPrice, 200);
       if (topTokensData) {
         updateTopTokens(topTokensData);
       }
     };
-    if (!topTokens || topTokens.length < 200) {
-      fetchTopTokens();
-    }
+    fetchTopTokens();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [updateTopTokens]);
 

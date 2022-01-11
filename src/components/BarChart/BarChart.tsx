@@ -6,7 +6,8 @@ export interface BarChartProps {
   data?: Array<number>;
   categories?: Array<any>;
   height?: number;
-  onHover: (index: number) => void;
+  onHover?: (index: number) => void;
+  onMouseLeave?: () => void;
 }
 
 const useStyles = makeStyles(({ palette }) => ({
@@ -38,11 +39,12 @@ const BarChart: React.FC<BarChartProps> = ({
   categories,
   height = 200,
   onHover,
+  onMouseLeave,
 }) => {
   const classes = useStyles();
   const maxValue = Math.max(...data);
   return (
-    <>
+    <Box onMouseLeave={onMouseLeave}>
       <Box display='flex' alignItems='flex-end' justifyContent='space-between'>
         {data.map((value, index) => (
           <Box
@@ -50,7 +52,7 @@ const BarChart: React.FC<BarChartProps> = ({
             className={classes.barChartItem}
             width={`calc(${100 / data.length}% - 2px)`}
             height={(value / maxValue) * height}
-            onMouseOver={() => onHover(index)}
+            onMouseOver={() => onHover && onHover(index)}
           />
         ))}
       </Box>
@@ -61,7 +63,7 @@ const BarChart: React.FC<BarChartProps> = ({
           ))}
         </Box>
       )}
-    </>
+    </Box>
   );
 };
 

@@ -41,6 +41,7 @@ import {
   getEthPrice,
   getGlobalData,
   formatCompact,
+  getDaysCurrentYear,
 } from 'utils';
 import {
   useEthPrice,
@@ -421,6 +422,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
 
 const LandingPage: React.FC = () => {
   const classes = useStyles();
+  const daysCurrentYear = getDaysCurrentYear();
   const [swapIndex, setSwapIndex] = useState(0);
   const [openStakeModal, setOpenStakeModal] = useState(false);
   const { palette, breakpoints } = useTheme();
@@ -516,11 +518,14 @@ const LandingPage: React.FC = () => {
   const APR =
     (((Number(lairInfo?.oneDayVol) * 0.04 * 0.01) /
       Number(lairInfo?.dQuickTotalSupply.toSignificant(6))) *
-      365) /
+      daysCurrentYear) /
     (Number(lairInfo?.dQUICKtoQUICK.toSignificant()) *
       Number(lairInfo?.quickPrice));
   const dQUICKAPY = APR
-    ? ((Math.pow(1 + APR / 365, 365) - 1) * 100).toFixed(4)
+    ? (
+        (Math.pow(1 + APR / daysCurrentYear, daysCurrentYear) - 1) *
+        100
+      ).toFixed(4)
     : 0;
 
   const totalRewardsUSD = useTotalRewardsDistributed();

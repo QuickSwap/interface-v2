@@ -13,7 +13,11 @@ import {
   formatCompact,
   getPairTransactions,
   getPairChartData,
-  getHourlyRateData,
+  formatDateFromTimeStamp,
+  getFormattedPrice,
+  getPriceColor,
+  getEthPrice,
+  getBulkPairData,
 } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import {
@@ -22,8 +26,8 @@ import {
   DoubleCurrencyLogo,
   TransactionsTable,
 } from 'components';
-import { getEthPrice, getBulkPairData } from 'utils';
 import { getAddress } from '@ethersproject/address';
+import { GlobalConst } from 'constants/index';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   panel: {
@@ -100,6 +104,10 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
   },
 }));
 
+const CHART_VOLUME = 0;
+const CHART_LIQUIDITY = 1;
+const CHART_FEES = 2;
+
 const AnalyticsPairDetails: React.FC = () => {
   const classes = useStyles();
   const { palette, breakpoints } = useTheme();
@@ -165,10 +173,14 @@ const AnalyticsPairDetails: React.FC = () => {
   const fees =
     pairData && (pairData.oneDayVolumeUSD || pairData.oneDayVolumeUSD === 0)
       ? usingUtVolume
-        ? (Number(pairData.oneDayVolumeUntracked) * 0.003).toLocaleString()
-        : (Number(pairData.oneDayVolumeUSD) * 0.003).toLocaleString()
+        ? (
+            Number(pairData.oneDayVolumeUntracked) * GlobalConst.FEEPERCENT
+          ).toLocaleString()
+        : (
+            Number(pairData.oneDayVolumeUSD) * GlobalConst.FEEPERCENT
+          ).toLocaleString()
       : '-';
-  const [chartIndex, setChartIndex] = useState(0);
+  const [chartIndex, setChartIndex] = useState(CHART_VOLUME);
 
   useEffect(() => {
     async function checkEthPrice() {
@@ -191,11 +203,11 @@ const AnalyticsPairDetails: React.FC = () => {
   const chartData = useMemo(() => {
     if (pairChartData) {
       return pairChartData.map((item: any) =>
-        chartIndex === 0
+        chartIndex === CHART_VOLUME
           ? Number(item.dailyVolumeUSD)
-          : chartIndex === 1
+          : chartIndex === CHART_LIQUIDITY
           ? Number(item.reserveUSD)
-          : Number(item.dailyVolumeUSD) * 0.003,
+          : Number(item.dailyVolumeUSD) * GlobalConst.FEEPERCENT,
       );
     } else {
       return null;
@@ -221,15 +233,18 @@ const AnalyticsPairDetails: React.FC = () => {
     if (pairChartData) {
       const dates: string[] = [];
       pairChartData.forEach((value: any, ind: number) => {
-        const month = moment(Number(value.date) * 1000).format('MMM');
+        const month = formatDateFromTimeStamp(Number(value.date), 'MMM');
         const monthLastDate =
           ind > 0
-            ? moment(Number(pairChartData[ind - 1].date) * 1000).format('MMM')
+            ? formatDateFromTimeStamp(
+                Number(pairChartData[ind - 1].date),
+                'MMM',
+              )
             : '';
         if (monthLastDate !== month) {
           dates.push(month);
         }
-        const dateStr = moment(Number(value.date) * 1000).format('D');
+        const dateStr = formatDateFromTimeStamp(Number(value.date), 'D');
         if (Number(dateStr) % 7 === 0) {
           dates.push(dateStr);
         }
@@ -242,20 +257,30 @@ const AnalyticsPairDetails: React.FC = () => {
 
   const currentData = useMemo(
     () =>
-      chartData && chartData.length > 1
-        ? chartData[chartData.length - 1]
+      pairData
+        ? chartIndex === CHART_VOLUME
+          ? pairData.oneDayVolumeUSD
+          : chartIndex === CHART_LIQUIDITY
+          ? pairData.reserveUSD
+            ? pairData.reserveUSD
+            : pairData.trackedReserveUSD
+          : fees
         : null,
-    [chartData],
+    [pairData, chartIndex, fees],
   );
-  const currentPercent = useMemo(() => {
-    if (chartData && chartData.length > 1) {
-      const prevData = chartData[chartData.length - 2];
-      const nowData = chartData[chartData.length - 1];
-      return (nowData - prevData) / prevData;
-    } else {
-      return null;
-    }
-  }, [chartData]);
+  const currentPercent = useMemo(
+    () =>
+      pairData
+        ? chartIndex === CHART_VOLUME
+          ? pairData.volumeChangeUSD
+          : chartIndex === CHART_LIQUIDITY
+          ? pairData.liquidityChangeUSD
+          : (usingUtVolume
+              ? pairData.volumeChangeUntracked
+              : pairData.volumeChangeUSD) * GlobalConst.FEEPERCENT
+        : null,
+    [pairData, chartIndex, usingUtVolume],
+  );
 
   useEffect(() => {
     async function fetchPairChartData() {
@@ -266,6 +291,8 @@ const AnalyticsPairDetails: React.FC = () => {
     }
     fetchPairChartData();
   }, [pairAddress]);
+
+  const currentPercentColor = getPriceColor(Number(currentPercent), palette);
 
   return (
     <>
@@ -393,14 +420,14 @@ const AnalyticsPairDetails: React.FC = () => {
                 >
                   <Box mt={1.5}>
                     <Typography variant='caption'>
-                      {chartIndex === 0
+                      {chartIndex === CHART_VOLUME
                         ? 'Volume'
-                        : chartIndex === 1
+                        : chartIndex === CHART_LIQUIDITY
                         ? 'Liquidity'
                         : 'Price'}
                     </Typography>
                     <Box mt={1}>
-                      {chartData && currentData ? (
+                      {currentPercent && currentData ? (
                         <>
                           <Box display='flex' alignItems='center'>
                             <Typography
@@ -415,31 +442,11 @@ const AnalyticsPairDetails: React.FC = () => {
                             <Box
                               className={classes.priceChangeWrapper}
                               ml={1}
-                              bgcolor={
-                                Number(currentPercent) > 0
-                                  ? 'rgba(15, 198, 121, 0.1)'
-                                  : Number(currentPercent) < 0
-                                  ? 'rgba(255, 82, 82, 0.1)'
-                                  : 'rgba(99, 103, 128, 0.1)'
-                              }
-                              color={
-                                Number(currentPercent) > 0
-                                  ? 'rgb(15, 198, 121)'
-                                  : Number(currentPercent) < 0
-                                  ? 'rgb(255, 82, 82)'
-                                  : 'rgb(99, 103, 128)'
-                              }
+                              bgcolor={currentPercentColor.bgColor}
+                              color={currentPercentColor.textColor}
                             >
                               <Typography variant='body2'>
-                                {Number(currentPercent) < 0.001 &&
-                                Number(currentPercent) > 0
-                                  ? '<0.001'
-                                  : Number(currentPercent) > -0.001 &&
-                                    Number(currentPercent) < 0
-                                  ? '>-0.001'
-                                  : (Number(currentPercent) > 0 ? '+' : '') +
-                                    Number(currentPercent).toLocaleString()}
-                                %
+                                {getFormattedPrice(Number(currentPercent))}%
                               </Typography>
                             </Box>
                           </Box>
@@ -458,29 +465,35 @@ const AnalyticsPairDetails: React.FC = () => {
                     <Box
                       mr={1}
                       bgcolor={
-                        chartIndex === 0 ? palette.grey.A400 : 'transparent'
+                        chartIndex === CHART_VOLUME
+                          ? palette.grey.A400
+                          : 'transparent'
                       }
                       className={classes.chartType}
-                      onClick={() => setChartIndex(0)}
+                      onClick={() => setChartIndex(CHART_VOLUME)}
                     >
                       <Typography variant='caption'>Volume</Typography>
                     </Box>
                     <Box
                       mr={1}
                       bgcolor={
-                        chartIndex === 1 ? palette.grey.A400 : 'transparent'
+                        chartIndex === CHART_LIQUIDITY
+                          ? palette.grey.A400
+                          : 'transparent'
                       }
                       className={classes.chartType}
-                      onClick={() => setChartIndex(1)}
+                      onClick={() => setChartIndex(CHART_LIQUIDITY)}
                     >
                       <Typography variant='caption'>Liquidity</Typography>
                     </Box>
                     <Box
                       bgcolor={
-                        chartIndex === 2 ? palette.grey.A400 : 'transparent'
+                        chartIndex === CHART_FEES
+                          ? palette.grey.A400
+                          : 'transparent'
                       }
                       className={classes.chartType}
-                      onClick={() => setChartIndex(2)}
+                      onClick={() => setChartIndex(CHART_FEES)}
                     >
                       <Typography variant='caption'>Fees</Typography>
                     </Box>
@@ -491,7 +504,11 @@ const AnalyticsPairDetails: React.FC = () => {
                     <AreaChart
                       data={chartData}
                       yAxisValues={yAxisValues}
-                      dates={pairChartData.map((value: any) => value.date)}
+                      dates={pairChartData.map((value: any) =>
+                        moment(value.date * 1000)
+                          .add(1, 'day')
+                          .unix(),
+                      )}
                       width='100%'
                       height={240}
                       categories={chartDates}

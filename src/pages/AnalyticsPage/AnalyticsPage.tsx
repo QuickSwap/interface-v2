@@ -68,7 +68,7 @@ const AnalyticsPage: React.FC = () => {
   const classes = useStyles();
   const history = useHistory();
   const parsedQuery = useParsedQueryString();
-  const [tabIndex, setTabIndex] = useState(Number(parsedQuery.tabIndex) || 0);
+  const tabIndex = Number(parsedQuery.tabIndex) || 0;
   const [searchVal, setSearchVal] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<any>(null);
@@ -281,7 +281,7 @@ const AnalyticsPage: React.FC = () => {
               classes.topTab,
               tabIndex === 0 && classes.selectedTab,
             )}
-            onClick={() => setTabIndex(0)}
+            onClick={() => history.push(`/analytics?tabIndex=0`)}
           >
             <Typography variant='body1'>Overview</Typography>
           </Box>
@@ -290,7 +290,7 @@ const AnalyticsPage: React.FC = () => {
               classes.topTab,
               tabIndex === 1 && classes.selectedTab,
             )}
-            onClick={() => setTabIndex(1)}
+            onClick={() => history.push(`/analytics?tabIndex=1`)}
           >
             <Typography variant='body1'>Tokens</Typography>
           </Box>
@@ -299,7 +299,7 @@ const AnalyticsPage: React.FC = () => {
               classes.topTab,
               tabIndex === 2 && classes.selectedTab,
             )}
-            onClick={() => setTabIndex(2)}
+            onClick={() => history.push(`/analytics?tabIndex=2`)}
           >
             <Typography variant='body1'>Pairs</Typography>
           </Box>
@@ -392,12 +392,7 @@ const AnalyticsPage: React.FC = () => {
           )}
         </Box>
       </Box>
-      {tabIndex === 0 && (
-        <AnalyticsOverview
-          showAllTokens={() => setTabIndex(1)}
-          showAllPairs={() => setTabIndex(2)}
-        />
-      )}
+      {tabIndex === 0 && <AnalyticsOverview />}
       {tabIndex === 1 && <AnalyticsTokens />}
       {tabIndex === 2 && <AnalyticsPairs />}
     </Box>

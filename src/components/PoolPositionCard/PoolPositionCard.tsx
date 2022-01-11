@@ -15,6 +15,8 @@ import {
   DoubleCurrencyLogo,
   RemoveLiquidityModal,
 } from 'components';
+import { GlobalConst } from 'constants/index';
+import { getDaysCurrentYear } from 'utils';
 
 const useStyles = makeStyles(({ palette }) => ({
   poolButtonRow: {
@@ -68,6 +70,7 @@ const PoolPositionCard: React.FC<PoolPositionCardProps> = ({
   handleAddLiquidity,
 }) => {
   const classes = useStyles();
+  const daysCurrentYear = getDaysCurrentYear();
   const history = useHistory();
   const [bulkPairData, setBulkPairData] = useState<any>(null);
   const { palette, breakpoints } = useTheme();
@@ -136,7 +139,8 @@ const PoolPositionCard: React.FC<PoolPositionCardProps> = ({
         ? bulkPairData[stakingInfo.pair]?.oneDayVolumeUSD
         : 0;
       const oneYearFee =
-        (dayVolume * 0.003 * 365) / bulkPairData[stakingInfo.pair]?.reserveUSD;
+        (dayVolume * GlobalConst.FEEPERCENT * daysCurrentYear) /
+        bulkPairData[stakingInfo.pair]?.reserveUSD;
       const apy =
         oneYearFee > 0
           ? ((1 +
@@ -154,7 +158,7 @@ const PoolPositionCard: React.FC<PoolPositionCardProps> = ({
         return Number(apy.toFixed(2)).toLocaleString();
       }
     }
-  }, [stakingInfo, bulkPairData]);
+  }, [stakingInfo, bulkPairData, daysCurrentYear]);
 
   return (
     <Box

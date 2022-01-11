@@ -22,6 +22,8 @@ import { ReactComponent as SearchIcon } from 'assets/images/SearchIcon.svg';
 import { useInfiniteLoading } from 'utils/useInfiniteLoading';
 import { useActiveWeb3React } from 'hooks';
 import { Skeleton } from '@material-ui/lab';
+import { GlobalConst } from 'constants/index';
+import { getDaysCurrentYear } from 'utils';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   helpWrapper: {
@@ -111,6 +113,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
 
 const FarmPage: React.FC = () => {
   const classes = useStyles();
+  const daysCurrentYear = getDaysCurrentYear();
   const { palette, breakpoints } = useTheme();
   const { chainId } = useActiveWeb3React();
   const lairInfo = useLairInfo();
@@ -311,11 +314,13 @@ const FarmPage: React.FC = () => {
             let bYearFee = 0;
             if (aDayVolume) {
               aYearFee =
-                (aDayVolume * 0.003 * 365) / bulkPairs[a.pair]?.reserveUSD;
+                (aDayVolume * GlobalConst.FEEPERCENT * daysCurrentYear) /
+                bulkPairs[a.pair]?.reserveUSD;
             }
             if (bDayVolume) {
               bYearFee =
-                (bDayVolume * 0.003 * 365) / bulkPairs[b.pair]?.reserveUSD;
+                (bDayVolume * GlobalConst.FEEPERCENT * daysCurrentYear) /
+                bulkPairs[b.pair]?.reserveUSD;
             }
             const aAPYwithFee =
               ((1 +
@@ -364,6 +369,7 @@ const FarmPage: React.FC = () => {
     bulkPairs,
     isEndedFarm,
     stakingLPOldInfos,
+    daysCurrentYear,
   ]);
 
   const filteredStakingDualInfos = useMemo(() => {
@@ -430,11 +436,13 @@ const FarmPage: React.FC = () => {
             let bYearFee = 0;
             if (aDayVolume) {
               aYearFee =
-                (aDayVolume * 0.003 * 365) / bulkPairs[a.pair]?.reserveUSD;
+                (aDayVolume * GlobalConst.FEEPERCENT * daysCurrentYear) /
+                bulkPairs[a.pair]?.reserveUSD;
             }
             if (bDayVolume) {
               bYearFee =
-                (bDayVolume * 0.003 * 365) / bulkPairs[b.pair]?.reserveUSD;
+                (bDayVolume * GlobalConst.FEEPERCENT * daysCurrentYear) /
+                bulkPairs[b.pair]?.reserveUSD;
             }
             const aAPYwithFee =
               ((1 +
@@ -484,6 +492,7 @@ const FarmPage: React.FC = () => {
     sortDesc,
     bulkPairs,
     isEndedFarm,
+    daysCurrentYear,
   ]);
 
   const stakingAPYs = useMemo(() => {
@@ -494,7 +503,8 @@ const FarmPage: React.FC = () => {
         const oneDayVolume = bulkPairs[info.pair]?.oneDayVolumeUSD;
         if (oneDayVolume) {
           const oneYearFeeAPY =
-            (oneDayVolume * 0.003 * 365) / bulkPairs[info.pair]?.reserveUSD;
+            (oneDayVolume * GlobalConst.FEEPERCENT * daysCurrentYear) /
+            bulkPairs[info.pair]?.reserveUSD;
           return oneYearFeeAPY;
         } else {
           return 0;
@@ -503,7 +513,13 @@ const FarmPage: React.FC = () => {
     } else {
       return [];
     }
-  }, [bulkPairs, filteredStakingLPInfos, filteredStakingDualInfos, farmIndex]);
+  }, [
+    bulkPairs,
+    filteredStakingLPInfos,
+    filteredStakingDualInfos,
+    farmIndex,
+    daysCurrentYear,
+  ]);
 
   const loadNext = () => {
     const REWARDS_INFO =

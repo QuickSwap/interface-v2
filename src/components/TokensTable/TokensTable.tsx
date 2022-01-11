@@ -5,6 +5,8 @@ import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { getAddress } from '@ethersproject/address';
 import { ChainId, Token } from '@uniswap/sdk';
 import { CurrencyLogo, CustomTable } from 'components';
+import { GlobalConst } from 'constants/index';
+import { getFormattedPrice, getPriceColor } from 'utils';
 import { useBookmarkTokens } from 'state/application/hooks';
 import { ReactComponent as StarChecked } from 'assets/images/StarChecked.svg';
 import { ReactComponent as StarUnchecked } from 'assets/images/StarUnchecked.svg';
@@ -65,6 +67,8 @@ const headCells = () => [
   },
 ];
 
+const liquidityHeadCellIndex = 4;
+
 const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
   const tokenHeadCells = headCells();
   const classes = useStyles();
@@ -82,6 +86,7 @@ const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
       token.symbol,
       token.name,
     );
+    const priceColor = getPriceColor(Number(token.priceChangeUSD), palette);
     return (
       <Box mt={index === 0 ? 0 : 3}>
         <Box display='flex' alignItems='center' mb={1}>
@@ -134,31 +139,11 @@ const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
           <Typography variant='body1'>24H %</Typography>
           <Box
             className={classes.priceChangeWrapper}
-            bgcolor={
-              Number(token.priceChangeUSD) > 0
-                ? 'rgba(15, 198, 121, 0.1)'
-                : Number(token.priceChangeUSD) < 0
-                ? 'rgba(255, 82, 82, 0.1)'
-                : 'rgba(99, 103, 128, 0.1)'
-            }
-            color={
-              Number(token.priceChangeUSD) > 0
-                ? 'rgb(15, 198, 121)'
-                : Number(token.priceChangeUSD) < 0
-                ? 'rgb(255, 82, 82)'
-                : 'rgb(99, 103, 128)'
-            }
+            bgcolor={priceColor.bgColor}
+            color={priceColor.textColor}
           >
             <Typography variant='body2'>
-              {Number(token.priceChangeUSD) < 0.001 &&
-              Number(token.priceChangeUSD) > 0
-                ? '<0.001'
-                : Number(token.priceChangeUSD) > -0.001 &&
-                  Number(token.priceChangeUSD) < 0
-                ? '>-0.001'
-                : (Number(token.priceChangeUSD) > 0 ? '+' : '') +
-                  Number(token.priceChangeUSD).toLocaleString()}
-              %
+              {getFormattedPrice(Number(token.priceChangeUSD))}%
             </Typography>
           </Box>
         </Box>
@@ -186,6 +171,8 @@ const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
       token.symbol,
       token.name,
     );
+    const priceColor = getPriceColor(Number(token.priceChangeUSD), palette);
+
     return [
       {
         html: (
@@ -242,31 +229,11 @@ const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
           <Box
             className={classes.priceChangeWrapper}
             mr={2}
-            bgcolor={
-              Number(token.priceChangeUSD) > 0
-                ? 'rgba(15, 198, 121, 0.1)'
-                : Number(token.priceChangeUSD) < 0
-                ? 'rgba(255, 82, 82, 0.1)'
-                : 'rgba(99, 103, 128, 0.1)'
-            }
-            color={
-              Number(token.priceChangeUSD) > 0
-                ? 'rgb(15, 198, 121)'
-                : Number(token.priceChangeUSD) < 0
-                ? 'rgb(255, 82, 82)'
-                : 'rgb(99, 103, 128)'
-            }
+            bgcolor={priceColor.bgColor}
+            color={priceColor.textColor}
           >
             <Typography variant='body2'>
-              {Number(token.priceChangeUSD) < 0.001 &&
-              Number(token.priceChangeUSD) > 0
-                ? '<0.001'
-                : Number(token.priceChangeUSD) > -0.001 &&
-                  Number(token.priceChangeUSD) < 0
-                ? '>-0.001'
-                : (Number(token.priceChangeUSD) > 0 ? '+' : '') +
-                  Number(token.priceChangeUSD).toLocaleString()}
-              %
+              {getFormattedPrice(Number(token.priceChangeUSD))}%
             </Typography>
           </Box>
         ),
@@ -294,9 +261,11 @@ const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
 
   return (
     <CustomTable
-      showPagination={data.length > 10}
+      defaultOrderBy={tokenHeadCells[liquidityHeadCellIndex]}
+      defaultOrder='desc'
+      showPagination={data.length > GlobalConst.ROWSPERPAGE}
       headCells={tokenHeadCells}
-      rowsPerPage={10}
+      rowsPerPage={GlobalConst.ROWSPERPAGE}
       data={data}
       mobileHTML={mobileHTML}
       desktopHTML={desktopHTML}

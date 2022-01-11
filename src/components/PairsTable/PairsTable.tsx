@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { ChainId, Token } from '@uniswap/sdk';
 import { getAddress } from '@ethersproject/address';
 import { DoubleCurrencyLogo, CustomTable } from 'components';
+import { GlobalConst } from 'constants/index';
 import { useBookmarkPairs } from 'state/application/hooks';
 import { ReactComponent as StarChecked } from 'assets/images/StarChecked.svg';
 import { ReactComponent as StarUnchecked } from 'assets/images/StarUnchecked.svg';
@@ -52,8 +53,10 @@ const headCells = () => [
   },
 ];
 
+const liquidityHeadCellIndex = 1;
+
 const PairTable: React.FC<TokensTableProps> = ({ data }) => {
-  const tokenHeadCells = headCells();
+  const pairHeadCells = headCells();
   const {
     bookmarkPairs,
     addBookmarkPair,
@@ -81,7 +84,9 @@ const PairTable: React.FC<TokensTableProps> = ({ data }) => {
     const oneWeekVolume = pair.oneWeekVolumeUSD
       ? pair.oneWeekVolumeUSD
       : pair.oneWeekVolumeUntracked;
-    const oneDayFee = (Number(oneDayVolume) * 0.003).toLocaleString();
+    const oneDayFee = (
+      Number(oneDayVolume) * GlobalConst.FEEPERCENT
+    ).toLocaleString();
     return (
       <Box mt={index === 0 ? 0 : 3}>
         <Box display='flex' alignItems='center' mb={1}>
@@ -141,7 +146,7 @@ const PairTable: React.FC<TokensTableProps> = ({ data }) => {
         >
           <Typography variant='body1'>24h Volume</Typography>
           <Typography variant='body1'>
-            ${Number(liquidity).toLocaleString()}
+            ${Number(oneDayVolume).toLocaleString()}
           </Typography>
         </Box>
         <Box
@@ -152,7 +157,7 @@ const PairTable: React.FC<TokensTableProps> = ({ data }) => {
         >
           <Typography variant='body1'>7d Volume</Typography>
           <Typography variant='body1'>
-            ${Number(oneDayVolume).toLocaleString()}
+            ${Number(oneWeekVolume).toLocaleString()}
           </Typography>
         </Box>
         <Box
@@ -163,7 +168,7 @@ const PairTable: React.FC<TokensTableProps> = ({ data }) => {
         >
           <Typography variant='body1'>24h Fees</Typography>
           <Typography variant='body1'>
-            ${Number(oneWeekVolume).toLocaleString()}
+            ${Number(oneDayFee).toLocaleString()}
           </Typography>
         </Box>
       </Box>
@@ -198,7 +203,9 @@ const PairTable: React.FC<TokensTableProps> = ({ data }) => {
         : pair.oneWeekVolumeUntracked && !isNaN(pair.oneWeekVolumeUntracked)
         ? pair.oneWeekVolumeUntracked
         : 0;
-    const oneDayFee = (Number(oneDayVolume) * 0.003).toLocaleString();
+    const oneDayFee = (
+      Number(oneDayVolume) * GlobalConst.FEEPERCENT
+    ).toLocaleString();
     return [
       {
         html: (
@@ -270,9 +277,11 @@ const PairTable: React.FC<TokensTableProps> = ({ data }) => {
 
   return (
     <CustomTable
-      showPagination={data.length > 10}
-      headCells={tokenHeadCells}
-      rowsPerPage={10}
+      defaultOrderBy={pairHeadCells[liquidityHeadCellIndex]}
+      defaultOrder='desc'
+      showPagination={data.length > GlobalConst.ROWSPERPAGE}
+      headCells={pairHeadCells}
+      rowsPerPage={GlobalConst.ROWSPERPAGE}
       data={data}
       mobileHTML={mobileHTML}
       desktopHTML={desktopHTML}

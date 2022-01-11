@@ -5,7 +5,7 @@ import { SyrupInfo } from 'state/stake/hooks';
 import { QUICK } from 'constants/index';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { CurrencyLogo } from 'components';
-import { formatCompact } from 'utils';
+import { formatCompact, getDaysCurrentYear } from 'utils';
 import SyrupCardDetails from './SyrupCardDetails';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
@@ -40,6 +40,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
 }));
 
 const SyrupCard: React.FC<{ syrup: SyrupInfo }> = ({ syrup }) => {
+  const daysCurrentYear = getDaysCurrentYear();
   const { palette, breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const [expanded, setExpanded] = useState(false);
@@ -57,7 +58,7 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo }> = ({ syrup }) => {
     syrup.valueOfTotalStakedAmountInUSDC > 0
       ? (
           ((syrup.rewards ?? 0) / syrup.valueOfTotalStakedAmountInUSDC) *
-          365 *
+          daysCurrentYear *
           100
         ).toLocaleString()
       : 0;
@@ -65,11 +66,13 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo }> = ({ syrup }) => {
   const dQUICKAPR =
     (((Number(syrup.oneDayVol) * 0.04 * 0.01) /
       Number(syrup.dQuickTotalSupply.toSignificant(6))) *
-      365) /
+      daysCurrentYear) /
     (Number(syrup.dQUICKtoQUICK.toSignificant(6)) * Number(syrup.quickPrice));
 
   const dQUICKAPY = dQUICKAPR
-    ? Number((Math.pow(1 + dQUICKAPR / 365, 365) - 1) * 100).toLocaleString()
+    ? Number(
+        (Math.pow(1 + dQUICKAPR / daysCurrentYear, daysCurrentYear) - 1) * 100,
+      ).toLocaleString()
     : 0;
 
   const syrupEarnedUSD =

@@ -229,6 +229,7 @@ import {
   ORBS,
   UART,
   UST,
+  GlobalConst,
 } from 'constants/index';
 import {
   STAKING_REWARDS_INTERFACE,
@@ -247,6 +248,7 @@ import { useLairContract, useQUICKContract } from 'hooks/useContract';
 import useUSDCPrice, { useUSDCPrices } from 'utils/useUSDCPrice';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { useTotalSupplys } from 'data/TotalSupply';
+import { getDaysCurrentYear } from 'utils';
 
 const web3 = new Web3('https://polygon-rpc.com/');
 
@@ -12946,7 +12948,7 @@ export function useUSDRewardsandFees(isLPFarm: boolean, bulkPairData: any) {
           const ratio =
             Number(totalSupplyState.result?.[0].toString()) /
             Number(totalSupply);
-          const oneDayFee = oneYearFeeAPY * 0.003 * ratio;
+          const oneDayFee = oneYearFeeAPY * GlobalConst.FEEPERCENT * ratio;
           return total + oneDayFee;
         } else {
           return total;
@@ -13982,6 +13984,7 @@ export function useStakingInfo(
   startIndex?: number,
   endIndex?: number,
 ): StakingInfo[] {
+  const daysCurrentYear = getDaysCurrentYear();
   const { chainId, account } = useActiveWeb3React();
   //const [quickPrice,setQuickPrice] = useState(0);
   const [, quickUsdcPair] = usePair(QUICK, USDC);
@@ -14195,10 +14198,10 @@ export function useStakingInfo(
               const myRatio =
                 Number(balanceState?.result?.[0].toString()) /
                 Number(totalSupplyState.result?.[0].toString());
-              oneDayFee = oneYearFeeAPY * 0.003 * ratio;
+              oneDayFee = oneYearFeeAPY * GlobalConst.FEEPERCENT * ratio;
               accountFee = oneDayFee * myRatio;
               oneYearFeeAPY =
-                (oneYearFeeAPY * 0.003 * 365) /
+                (oneYearFeeAPY * GlobalConst.FEEPERCENT * daysCurrentYear) /
                 pairs[info[index].pair]?.reserveUSD;
               //console.log(info[index].pair, oneYearFeeAPY);
             }
@@ -14292,6 +14295,7 @@ export function useStakingInfo(
     totalSupplys,
     usdPrices,
     stakingPairs,
+    daysCurrentYear,
   ]);
 }
 

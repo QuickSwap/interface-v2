@@ -9,12 +9,10 @@ import {
   updateEthPrice,
   updateGlobalData,
   updateGlobalChartData,
-  updateTopTokens,
   updateTokenPairs,
   addBookMarkToken,
   removeBookmarkToken,
   updateBookmarkTokens,
-  updateTopPairs,
   addBookMarkPair,
   removeBookmarkPair,
   updateBookmarkPairs,
@@ -34,11 +32,9 @@ export interface ApplicationState {
   readonly ethPrice: any;
   readonly globalData: any;
   readonly globalChartData: any;
-  readonly topTokens: any;
   readonly tokenPairs: any;
   readonly bookmarkedTokens: string[];
   readonly bookmarkedPairs: string[];
-  readonly topPairs: any[] | null;
   readonly analyticToken: any;
   readonly tokenChartData: any;
 }
@@ -49,7 +45,6 @@ const initialState: ApplicationState = {
   openModal: null,
   globalData: null,
   globalChartData: null,
-  topTokens: null,
   tokenPairs: null,
   ethPrice: {
     price: null,
@@ -58,7 +53,6 @@ const initialState: ApplicationState = {
   },
   bookmarkedTokens: [],
   bookmarkedPairs: [],
-  topPairs: null,
   analyticToken: null,
   tokenChartData: null,
 };
@@ -118,9 +112,6 @@ export default createReducer(initialState, (builder) =>
     .addCase(updateGlobalChartData, (state, { payload }) => {
       state.globalChartData = payload;
     })
-    .addCase(updateTopTokens, (state, { payload }) => {
-      state.topTokens = payload;
-    })
     .addCase(updateTokenPairs, (state, { payload: { data } }) => {
       state.tokenPairs = data;
     })
@@ -143,9 +134,6 @@ export default createReducer(initialState, (builder) =>
     })
     .addCase(updateBookmarkTokens, (state, { payload }) => {
       state.bookmarkedTokens = payload;
-    })
-    .addCase(updateTopPairs, (state, { payload }) => {
-      state.topPairs = payload;
     })
     .addCase(addBookMarkPair, (state, { payload }) => {
       const pairs = state.bookmarkedPairs;

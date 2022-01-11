@@ -33,6 +33,7 @@ import DragonLairMask from 'assets/images/DragonLairMask.svg';
 import { ReactComponent as PriceExchangeIcon } from 'assets/images/PriceExchangeIcon.svg';
 import { ReactComponent as SearchIcon } from 'assets/images/SearchIcon.svg';
 import { useActiveWeb3React } from 'hooks';
+import { getDaysCurrentYear } from 'utils';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   helpWrapper: {
@@ -153,6 +154,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
 
 const DragonPage: React.FC = () => {
   const classes = useStyles();
+  const daysCurrentYear = getDaysCurrentYear();
   const { chainId } = useActiveWeb3React();
   const { palette, breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
@@ -168,10 +170,15 @@ const DragonPage: React.FC = () => {
   const APR =
     (((Number(lairInfo?.oneDayVol) * 0.04 * 0.01) /
       Number(lairInfo?.dQuickTotalSupply.toSignificant(6))) *
-      365) /
+      daysCurrentYear) /
     (Number(lairInfo?.dQUICKtoQUICK.toSignificant()) *
       Number(lairInfo?.quickPrice));
-  const APY = APR ? ((Math.pow(1 + APR / 365, 365) - 1) * 100).toFixed(2) : 0;
+  const APY = APR
+    ? (
+        (Math.pow(1 + APR / daysCurrentYear, daysCurrentYear) - 1) *
+        100
+      ).toFixed(2)
+    : 0;
   const [stakedOnly, setStakeOnly] = useState(false);
   const [syrupSearch, setSyrupSearch] = useState('');
   const [pageIndex, setPageIndex] = useState(0);
@@ -277,14 +284,14 @@ const DragonPage: React.FC = () => {
             const tokenAPRA =
               a.valueOfTotalStakedAmountInUSDC > 0
                 ? ((a.rewards ?? 0) / a.valueOfTotalStakedAmountInUSDC) *
-                  365 *
+                  daysCurrentYear *
                   100
                 : 0;
 
             const tokenAPRB =
               b.valueOfTotalStakedAmountInUSDC > 0
                 ? ((b.rewards ?? 0) / b.valueOfTotalStakedAmountInUSDC) *
-                  365 *
+                  daysCurrentYear *
                   100
                 : 0;
             if (sortDesc) {
@@ -318,6 +325,7 @@ const DragonPage: React.FC = () => {
     syrupOldInfos,
     sortDesc,
     sortBy,
+    daysCurrentYear,
   ]);
 
   const loadNext = () => {

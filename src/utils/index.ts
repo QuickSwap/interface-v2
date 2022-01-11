@@ -51,6 +51,8 @@ import {
   ROUTER_ADDRESS,
   MIN_ETH,
 } from 'constants/index';
+import moment from 'moment';
+import { Palette } from '@material-ui/core/styles/createPalette';
 dayjs.extend(utc);
 dayjs.extend(weekOfYear);
 
@@ -1219,20 +1221,21 @@ export async function getGlobalData(
       );
 
       // format the total liquidity in USD
-      data.totalLiquidityUSD = data.totalLiquidityETH * ethPrice;
       const liquidityChangeUSD = getPercentChange(
         data.totalLiquidityETH * ethPrice,
         oneDayData.totalLiquidityETH * oldEthPrice,
       );
-
-      // add relevant fields with the calculated amounts
-      data.oneDayVolumeUSD = oneDayVolumeUSD;
-      data.oneWeekVolume = oneWeekVolume;
-      data.weeklyVolumeChange = weeklyVolumeChange;
-      data.volumeChangeUSD = volumeChangeUSD;
-      data.liquidityChangeUSD = liquidityChangeUSD;
-      data.oneDayTxns = oneDayTxns;
-      data.txnChange = txnChange;
+      return {
+        ...data,
+        totalLiquidityUSD: data.totalLiquidityETH * ethPrice,
+        oneDayVolumeUSD,
+        oneWeekVolume,
+        weeklyVolumeChange,
+        volumeChangeUSD,
+        liquidityChangeUSD,
+        oneDayTxns,
+        txnChange,
+      };
     }
   } catch (e) {
     console.log(e);
@@ -1309,7 +1312,11 @@ export const getChartData = async (oldestDateToFetch: number) => {
         fetchPolicy: 'network-only',
       });
       skip += 1000;
-      data = data.concat(result.data.uniswapDayDatas);
+      data = data.concat(
+        result.data.uniswapDayDatas.map((item: any) => {
+          return { ...item, dailyVolumeUSD: Number(item.dailyVolumeUSD) };
+        }),
+      );
       if (result.data.uniswapDayDatas.length < 1000) {
         allFound = true;
       }
@@ -1325,7 +1332,6 @@ export const getChartData = async (oldestDateToFetch: number) => {
         // add the day index to the set of days
         dayIndexSet.add((data[i].date / oneDay).toFixed(0));
         dayIndexArray.push(data[i]);
-        dayData.dailyVolumeUSD = parseFloat(dayData.dailyVolumeUSD);
       });
 
       // fill in empty days ( there will be no day datas if no trades made that day )
@@ -1557,4 +1563,41 @@ export function calculateGasMargin(value: BigNumber): BigNumber {
   return value
     .mul(BigNumber.from(10000).add(BigNumber.from(1000)))
     .div(BigNumber.from(10000));
+}
+
+export function formatDateFromTimeStamp(
+  timestamp: number,
+  format: string,
+  addedDay = 1,
+) {
+  return moment(timestamp * 1000) //multiply 1000 to get timestamp in milliseconds
+    .add(addedDay, 'day') //add days to get correct date
+    .format(format);
+}
+
+export function getFormattedPrice(price: number) {
+  if (price < 0.001 && price > 0) {
+    return '<0.001';
+  } else if (price > -0.001 && price < 0) {
+    return '>-0.001';
+  } else {
+    const beforeSign = price > 0 ? '+' : '';
+    return beforeSign + price.toLocaleString();
+  }
+}
+
+// get bg and text colors for price percent badge. pass palette as parameter in order to avoid hook
+export function getPriceColor(price: number, palette: Palette) {
+  if (price > 0) {
+    return { bgColor: palette.success.light, textColor: palette.success.main };
+  } else if (price === 0) {
+    return { bgColor: palette.grey.A100, textColor: palette.text.hint };
+  } else {
+    return { bgColor: palette.error.light, textColor: palette.error.main };
+  }
+}
+
+export function getDaysCurrentYear() {
+  const year = Number(moment().format('YYYY'));
+  return (year % 4 === 0 && year % 100 > 0) || year % 400 == 0 ? 366 : 365;
 }

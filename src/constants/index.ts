@@ -30,6 +30,11 @@ export const PAIR_BLACKLIST = [
   '0x97cb8cbe91227ba87fc21aaf52c4212d245da3f8',
 ];
 
+export const GlobalConst = {
+  ROWSPERPAGE: 10,
+  FEEPERCENT: 0.003,
+};
+
 export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   INJECTED: {
     connector: injected,
