@@ -34,6 +34,7 @@ import './i18n';
 import './App.css';
 import { mainTheme } from './theme';
 import { BiconomyProvider } from 'context/Biconomy';
+import { GasPriceProvider } from 'context/GasPrice';
 
 const Web3ProviderNetwork = createWeb3ReactRoot(NetworkContextName);
 
@@ -45,16 +46,18 @@ const ThemeProvider: React.FC = ({ children }) => {
 
 const Providers: React.FC = ({ children }) => {
   return (
-    <BiconomyProvider>
-      <BrowserRouter>
-        <Suspense fallback={null}>
-          <ThemeProvider>
-            <CssBaseline />
-            {children}
-          </ThemeProvider>
-        </Suspense>
-      </BrowserRouter>
-    </BiconomyProvider>
+    <GasPriceProvider>
+      <BiconomyProvider>
+        <BrowserRouter>
+          <Suspense fallback={null}>
+            <ThemeProvider>
+              <CssBaseline />
+              {children}
+            </ThemeProvider>
+          </Suspense>
+        </BrowserRouter>
+      </BiconomyProvider>
+    </GasPriceProvider>
   );
 };
 
