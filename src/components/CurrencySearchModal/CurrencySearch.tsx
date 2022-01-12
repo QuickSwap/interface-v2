@@ -27,6 +27,7 @@ import { AppDispatch } from 'state';
 import { isAddress } from 'utils';
 import { filterTokens } from 'utils/filtering';
 import { useTokenComparator } from 'utils/sorting';
+import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   wrapper: {
@@ -129,7 +130,17 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
   const { chainId } = useActiveWeb3React();
   const dispatch = useDispatch<AppDispatch>();
 
+  const handleInput = useCallback((input: string) => {
+    const checksummedInput = isAddress(input);
+    setSearchQuery(checksummedInput || input);
+  }, []);
+
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [searchQueryInput, setSearchQueryInput] = useDebouncedChangeHandler(
+    searchQuery,
+    handleInput,
+  );
+
   const allTokens = useAllTokens();
 
   // if they input an address, use it
@@ -192,14 +203,6 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
     if (isOpen) setSearchQuery('');
   }, [isOpen]);
 
-  // manage focus on modal show
-  const inputRef = useRef<HTMLInputElement>();
-  const handleInput = useCallback((event) => {
-    const input = event.target.value;
-    const checksummedInput = isAddress(input);
-    setSearchQuery(checksummedInput || input);
-  }, []);
-
   const handleEnter = useCallback(
     (e: KeyboardEvent<HTMLInputElement>) => {
       if (e.key === 'Enter') {
@@ -220,6 +223,9 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
     [filteredSortedTokens, handleCurrencySelect, searchQuery],
   );
 
+  // manage focus on modal show
+  const inputRef = useRef<HTMLInputElement>();
+
   let selectedListInfo = useSelectedListInfo();
 
   if (selectedListInfo.current === null) {
@@ -238,9 +244,9 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
         <input
           type='text'
           placeholder={t('tokenSearchPlaceholder')}
-          value={searchQuery}
+          value={searchQueryInput}
           ref={inputRef as RefObject<HTMLInputElement>}
-          onChange={handleInput}
+          onChange={(e) => setSearchQueryInput(e.target.value)}
           onKeyDown={handleEnter}
         />
       </Box>
