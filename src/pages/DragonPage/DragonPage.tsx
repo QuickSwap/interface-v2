@@ -211,7 +211,8 @@ const DragonPage: React.FC = () => {
     setSyrupInfos(undefined);
     setTimeout(() => {
       setSyrupInfos(isEndedSyrup ? addedOldSyrupInfos : addedStakingSyrupInfos);
-    }, 1000);
+    }, 500);
+    return () => setSyrupInfos(undefined);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isEndedSyrup, syrupSearch, syrupRewardAddress]);
 
@@ -626,7 +627,8 @@ const DragonPage: React.FC = () => {
                 </>
               )}
             </Box>
-            {syrupInfos ? (
+            {//show loading until dragons lair data is fully loaded
+            syrupInfos && lairInfo.totalQuickBalance.greaterThan('0') ? (
               sortedSyrupInfos.map((syrup, ind) => (
                 <SyrupCard key={ind} syrup={syrup} />
               ))

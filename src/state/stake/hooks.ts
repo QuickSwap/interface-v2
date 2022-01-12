@@ -13135,7 +13135,7 @@ export function useSyrupInfo(
               token,
               JSBI.greaterThan(totalStakedAmount.raw, JSBI.BigInt(0))
                 ? JSBI.divide(
-                    JSBI.multiply(totalRewardRate01.raw, stakedAmount.raw),
+                    JSBI.multiply(totalRewardRate.raw, stakedAmount.raw),
                     totalStakedAmount.raw,
                   )
                 : JSBI.BigInt(0),
@@ -13367,7 +13367,7 @@ export function useOldSyrupInfo(
               token,
               JSBI.greaterThan(totalStakedAmount.raw, JSBI.BigInt(0))
                 ? JSBI.divide(
-                    JSBI.multiply(totalRewardRate01.raw, stakedAmount.raw),
+                    JSBI.multiply(totalRewardRate.raw, stakedAmount.raw),
                     totalStakedAmount.raw,
                   )
                 : JSBI.BigInt(0),
@@ -13965,7 +13965,9 @@ export function useLairInfo(): LairInfo {
   const lair = useLairContract();
   const quick = useQUICKContract();
   const [, quickUsdcPair] = usePair(QUICK, USDC);
-  const quickPrice = Number(quickUsdcPair?.priceOf(QUICK)?.toSignificant(6));
+  const quickPrice = quickUsdcPair
+    ? Number(quickUsdcPair.priceOf(QUICK).toSignificant(6))
+    : 0;
 
   const dQuickToQuick = useSingleCallResult(lair, 'dQUICKForQUICK', inputs);
   const quickToDQuick = useSingleCallResult(lair, 'QUICKForDQUICK', inputs);
@@ -14212,7 +14214,7 @@ export function useStakingInfo(
               uni,
               JSBI.greaterThan(totalStakedAmount.raw, JSBI.BigInt(0))
                 ? JSBI.divide(
-                    JSBI.multiply(totalRewardRate01.raw, stakedAmount.raw),
+                    JSBI.multiply(totalRewardRate.raw, stakedAmount.raw),
                     totalStakedAmount.raw,
                   )
                 : JSBI.BigInt(0),
