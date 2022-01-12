@@ -5,7 +5,7 @@ import {
   Token,
   Currency,
 } from '@uniswap/sdk';
-import React, { useMemo, useCallback } from 'react';
+import React, { useMemo, useCallback, MutableRefObject } from 'react';
 import {
   Box,
   Tooltip,
@@ -26,7 +26,6 @@ import { getTokenLogoURL } from 'components/CurrencyLogo';
 import { PlusHelper } from 'components/QuestionHelper';
 import { ReactComponent as TokenSelectedIcon } from 'assets/images/TokenSelected.svg';
 import useUSDCPrice from 'utils/useUSDCPrice';
-import { useCurrencyBalance } from 'state/wallet/hooks';
 
 function currencyKey(currency: Token): string {
   return currency instanceof Token
@@ -126,6 +125,7 @@ interface CurrenyRowProps {
   onSelect: () => void;
   isSelected: boolean;
   otherSelected: boolean;
+  balance: CurrencyAmount | undefined;
   style: any;
 }
 
@@ -135,6 +135,7 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
   isSelected,
   otherSelected,
   style,
+  balance,
 }) => {
   const { ethereum } = window as any;
   const classes = useStyles();
@@ -154,7 +155,6 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
     ethereum.isMetaMask &&
     Number(ethereum.chainId) === 137 &&
     isOnSelectedList;
-  const balance = useCurrencyBalance(account || undefined, currency);
 
   const addTokenToMetamask = (
     tokenAddress: any,
@@ -289,6 +289,8 @@ interface CurrencyListProps {
   onCurrencySelect: (currency: Token) => void;
   otherCurrency?: Currency | null;
   showETH: boolean;
+  fixedListRef?: MutableRefObject<FixedSizeList | undefined>;
+  balances: (CurrencyAmount | undefined)[];
 }
 
 const CurrencyList: React.FC<CurrencyListProps> = ({
@@ -298,6 +300,8 @@ const CurrencyList: React.FC<CurrencyListProps> = ({
   onCurrencySelect,
   otherCurrency,
   showETH,
+  fixedListRef,
+  balances,
 }) => {
   const itemData = useMemo(
     () => (showETH ? [Token.ETHER, ...currencies] : currencies),
@@ -313,6 +317,7 @@ const CurrencyList: React.FC<CurrencyListProps> = ({
         otherCurrency && currencyEquals(otherCurrency, currency),
       );
       const handleSelect = () => onCurrencySelect(currency);
+      const balance = balances[index];
       return (
         <CurrencyRow
           style={style}
@@ -320,14 +325,16 @@ const CurrencyList: React.FC<CurrencyListProps> = ({
           isSelected={isSelected}
           onSelect={handleSelect}
           otherSelected={otherSelected}
+          balance={balance}
         />
       );
     },
-    [onCurrencySelect, otherCurrency, selectedCurrency],
+    [onCurrencySelect, otherCurrency, selectedCurrency, balances],
   );
 
   return (
     <FixedSizeList
+      ref={fixedListRef as any}
       height={height}
       width='100%'
       itemData={itemData}

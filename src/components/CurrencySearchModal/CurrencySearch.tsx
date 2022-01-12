@@ -13,8 +13,10 @@ import { Box, Typography, Divider } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
+import { FixedSizeList } from 'react-window';
 import { useActiveWeb3React } from 'hooks';
 import { useAllTokens, useToken } from 'hooks/Tokens';
+import { useCurrencyBalances } from 'state/wallet/hooks';
 import { useSelectedListInfo } from 'state/lists/hooks';
 import { selectList } from 'state/lists/actions';
 import { DEFAULT_TOKEN_LIST_URL } from 'constants/index';
@@ -32,7 +34,7 @@ import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   wrapper: {
     padding: '32px 24px 0',
-    height: 620,
+    height: '90vh',
     borderRadius: 20,
     display: 'flex',
     flexDirection: 'column',
@@ -127,12 +129,14 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
 }) => {
   const classes = useStyles();
   const { t } = useTranslation();
-  const { chainId } = useActiveWeb3React();
+  const { account, chainId } = useActiveWeb3React();
   const dispatch = useDispatch<AppDispatch>();
+  const fixedList = useRef<FixedSizeList>();
 
   const handleInput = useCallback((input: string) => {
     const checksummedInput = isAddress(input);
     setSearchQuery(checksummedInput || input);
+    fixedList.current?.scrollTo(0);
   }, []);
 
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -189,6 +193,11 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
       ),
     ];
   }, [filteredTokens, searchQuery, searchToken, tokenComparator]);
+
+  const balances = useCurrencyBalances(
+    account || undefined,
+    showETH ? [Token.ETHER, ...filteredSortedTokens] : filteredSortedTokens,
+  );
 
   const handleCurrencySelect = useCallback(
     (currency: Currency) => {
@@ -260,7 +269,7 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
 
       <Divider />
 
-      <Box className={classes.currencyListWrapper}>
+      <Box flex={1}>
         <AutoSizer disableWidth>
           {({ height }) => (
             <CurrencyList
@@ -270,6 +279,8 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
               onCurrencySelect={handleCurrencySelect}
               otherCurrency={otherSelectedCurrency}
               selectedCurrency={selectedCurrency}
+              fixedListRef={fixedList}
+              balances={balances}
             />
           )}
         </AutoSizer>
