@@ -248,7 +248,7 @@ import { useLairContract, useQUICKContract } from 'hooks/useContract';
 import useUSDCPrice, { useUSDCPrices } from 'utils/useUSDCPrice';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { useTotalSupplys } from 'data/TotalSupply';
-import { getDaysCurrentYear } from 'utils';
+import { getOneYearFee } from 'utils';
 
 const web3 = new Web3('https://polygon-rpc.com/');
 
@@ -13984,7 +13984,6 @@ export function useStakingInfo(
   startIndex?: number,
   endIndex?: number,
 ): StakingInfo[] {
-  const daysCurrentYear = getDaysCurrentYear();
   const { chainId, account } = useActiveWeb3React();
   //const [quickPrice,setQuickPrice] = useState(0);
   const [, quickUsdcPair] = usePair(QUICK, USDC);
@@ -14200,9 +14199,10 @@ export function useStakingInfo(
                 Number(totalSupplyState.result?.[0].toString());
               oneDayFee = oneYearFeeAPY * GlobalConst.FEEPERCENT * ratio;
               accountFee = oneDayFee * myRatio;
-              oneYearFeeAPY =
-                (oneYearFeeAPY * GlobalConst.FEEPERCENT * daysCurrentYear) /
-                pairs[info[index].pair]?.reserveUSD;
+              oneYearFeeAPY = getOneYearFee(
+                oneYearFeeAPY,
+                pairs[info[index].pair]?.reserveUSD,
+              );
               //console.log(info[index].pair, oneYearFeeAPY);
             }
           }
@@ -14295,7 +14295,6 @@ export function useStakingInfo(
     totalSupplys,
     usdPrices,
     stakingPairs,
-    daysCurrentYear,
   ]);
 }
 

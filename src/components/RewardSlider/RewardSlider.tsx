@@ -12,8 +12,7 @@ import {
 } from 'state/stake/hooks';
 import RewardSliderItem from './RewardSliderItem';
 import { useActiveWeb3React } from 'hooks';
-import { GlobalConst } from 'constants/index';
-import { getDaysCurrentYear } from 'utils';
+import { getOneYearFee } from 'utils';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   rewardsSlider: {
@@ -47,7 +46,6 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
 const RewardSlider: React.FC = () => {
   const classes = useStyles();
   const theme = useTheme();
-  const daysCurrentYear = getDaysCurrentYear();
   const { chainId } = useActiveWeb3React();
   const tabletWindowSize = useMediaQuery(theme.breakpoints.down('md'));
   const mobileWindowSize = useMediaQuery(theme.breakpoints.down('sm'));
@@ -68,9 +66,10 @@ const RewardSlider: React.FC = () => {
       return rewardItems.map((info: StakingInfo) => {
         const oneDayVolume = bulkPairs[info.pair]?.oneDayVolumeUSD;
         if (oneDayVolume) {
-          const oneYearFeeAPY =
-            (oneDayVolume * GlobalConst.FEEPERCENT * daysCurrentYear) /
-            bulkPairs[info.pair]?.reserveUSD;
+          const oneYearFeeAPY = getOneYearFee(
+            oneDayVolume,
+            bulkPairs[info.pair].reserveUSD,
+          );
           return oneYearFeeAPY;
         } else {
           return 0;
@@ -79,7 +78,7 @@ const RewardSlider: React.FC = () => {
     } else {
       return [];
     }
-  }, [bulkPairs, rewardItems, daysCurrentYear]);
+  }, [bulkPairs, rewardItems]);
 
   const rewardSliderSettings = {
     dots: false,

@@ -22,8 +22,7 @@ import { ReactComponent as SearchIcon } from 'assets/images/SearchIcon.svg';
 import { useInfiniteLoading } from 'utils/useInfiniteLoading';
 import { useActiveWeb3React } from 'hooks';
 import { Skeleton } from '@material-ui/lab';
-import { GlobalConst } from 'constants/index';
-import { getDaysCurrentYear } from 'utils';
+import { getAPYWithFee, getOneYearFee } from 'utils';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   helpWrapper: {
@@ -113,7 +112,6 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
 
 const FarmPage: React.FC = () => {
   const classes = useStyles();
-  const daysCurrentYear = getDaysCurrentYear();
   const { palette, breakpoints } = useTheme();
   const { chainId } = useActiveWeb3React();
   const lairInfo = useLairInfo();
@@ -304,40 +302,28 @@ const FarmPage: React.FC = () => {
                 : 1;
             }
           } else if (sortBy === 4) {
-            const aDayVolume = bulkPairs
-              ? bulkPairs[a.pair]?.oneDayVolumeUSD
-              : 0;
-            const bDayVolume = bulkPairs
-              ? bulkPairs[b.pair]?.oneDayVolumeUSD
-              : 0;
             let aYearFee = 0;
             let bYearFee = 0;
-            if (aDayVolume) {
-              aYearFee =
-                (aDayVolume * GlobalConst.FEEPERCENT * daysCurrentYear) /
-                bulkPairs[a.pair]?.reserveUSD;
+            if (bulkPairs) {
+              const aDayVolume = bulkPairs[a.pair].oneDayVolumeUSD;
+              const aReserveUSD = bulkPairs[a.pair].reserveUSD;
+              const bDayVolume = bulkPairs[b.pair].oneDayVolumeUSD;
+              const bReserveUSD = bulkPairs[b.pair].reserveUSD;
+              if (aDayVolume && aReserveUSD) {
+                aYearFee = getOneYearFee(aDayVolume, aReserveUSD);
+              }
+              if (bDayVolume && bReserveUSD) {
+                bYearFee = getOneYearFee(bDayVolume, bReserveUSD);
+              }
             }
-            if (bDayVolume) {
-              bYearFee =
-                (bDayVolume * GlobalConst.FEEPERCENT * daysCurrentYear) /
-                bulkPairs[b.pair]?.reserveUSD;
-            }
-            const aAPYwithFee =
-              ((1 +
-                ((Number(a.perMonthReturnInRewards) + Number(aYearFee) / 12) *
-                  12) /
-                  12) **
-                12 -
-                1) *
-              100;
-            const bAPYwithFee =
-              ((1 +
-                ((Number(b.perMonthReturnInRewards) + Number(bYearFee) / 12) *
-                  12) /
-                  12) **
-                12 -
-                1) *
-              100;
+            const aAPYwithFee = getAPYWithFee(
+              a.perMonthReturnInRewards ?? 0,
+              aYearFee,
+            );
+            const bAPYwithFee = getAPYWithFee(
+              b.perMonthReturnInRewards ?? 0,
+              bYearFee,
+            );
             if (sortDesc) {
               return aAPYwithFee > bAPYwithFee ? -1 : 1;
             } else {
@@ -369,7 +355,6 @@ const FarmPage: React.FC = () => {
     bulkPairs,
     isEndedFarm,
     stakingLPOldInfos,
-    daysCurrentYear,
   ]);
 
   const filteredStakingDualInfos = useMemo(() => {
@@ -426,40 +411,28 @@ const FarmPage: React.FC = () => {
               return aRewards < bRewards ? -1 : 1;
             }
           } else if (sortBy === 4) {
-            const aDayVolume = bulkPairs
-              ? bulkPairs[a.pair]?.oneDayVolumeUSD
-              : 0;
-            const bDayVolume = bulkPairs
-              ? bulkPairs[b.pair]?.oneDayVolumeUSD
-              : 0;
             let aYearFee = 0;
             let bYearFee = 0;
-            if (aDayVolume) {
-              aYearFee =
-                (aDayVolume * GlobalConst.FEEPERCENT * daysCurrentYear) /
-                bulkPairs[a.pair]?.reserveUSD;
+            if (bulkPairs) {
+              const aDayVolume = bulkPairs[a.pair].oneDayVolumeUSD;
+              const aReserveUSD = bulkPairs[a.pair].reserveUSD;
+              const bDayVolume = bulkPairs[b.pair].oneDayVolumeUSD;
+              const bReserveUSD = bulkPairs[b.pair].reserveUSD;
+              if (aDayVolume && aReserveUSD) {
+                aYearFee = getOneYearFee(aDayVolume, aReserveUSD);
+              }
+              if (bDayVolume && bReserveUSD) {
+                bYearFee = getOneYearFee(bDayVolume, bReserveUSD);
+              }
             }
-            if (bDayVolume) {
-              bYearFee =
-                (bDayVolume * GlobalConst.FEEPERCENT * daysCurrentYear) /
-                bulkPairs[b.pair]?.reserveUSD;
-            }
-            const aAPYwithFee =
-              ((1 +
-                ((Number(a.perMonthReturnInRewards) + Number(aYearFee) / 12) *
-                  12) /
-                  12) **
-                12 -
-                1) *
-              100;
-            const bAPYwithFee =
-              ((1 +
-                ((Number(b.perMonthReturnInRewards) + Number(bYearFee) / 12) *
-                  12) /
-                  12) **
-                12 -
-                1) *
-              100;
+            const aAPYwithFee = getAPYWithFee(
+              a.perMonthReturnInRewards ?? 0,
+              aYearFee,
+            );
+            const bAPYwithFee = getAPYWithFee(
+              b.perMonthReturnInRewards ?? 0,
+              bYearFee,
+            );
             if (sortDesc) {
               return aAPYwithFee > bAPYwithFee ? -1 : 1;
             } else {
@@ -492,7 +465,6 @@ const FarmPage: React.FC = () => {
     sortDesc,
     bulkPairs,
     isEndedFarm,
-    daysCurrentYear,
   ]);
 
   const stakingAPYs = useMemo(() => {
@@ -501,10 +473,9 @@ const FarmPage: React.FC = () => {
     if (bulkPairs && filteredStakingInfos.length > 0) {
       return filteredStakingInfos.map((info: any) => {
         const oneDayVolume = bulkPairs[info.pair]?.oneDayVolumeUSD;
-        if (oneDayVolume) {
-          const oneYearFeeAPY =
-            (oneDayVolume * GlobalConst.FEEPERCENT * daysCurrentYear) /
-            bulkPairs[info.pair]?.reserveUSD;
+        const reserveUSD = bulkPairs[info.pair]?.reserveUSD;
+        if (oneDayVolume && reserveUSD) {
+          const oneYearFeeAPY = getOneYearFee(oneDayVolume, reserveUSD);
           return oneYearFeeAPY;
         } else {
           return 0;
@@ -513,13 +484,7 @@ const FarmPage: React.FC = () => {
     } else {
       return [];
     }
-  }, [
-    bulkPairs,
-    filteredStakingLPInfos,
-    filteredStakingDualInfos,
-    farmIndex,
-    daysCurrentYear,
-  ]);
+  }, [bulkPairs, filteredStakingLPInfos, filteredStakingDualInfos, farmIndex]);
 
   const loadNext = () => {
     const REWARDS_INFO =

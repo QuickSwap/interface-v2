@@ -15,8 +15,7 @@ import {
   DoubleCurrencyLogo,
   RemoveLiquidityModal,
 } from 'components';
-import { GlobalConst } from 'constants/index';
-import { getDaysCurrentYear } from 'utils';
+import { getAPYWithFee, getOneYearFee } from 'utils';
 
 const useStyles = makeStyles(({ palette }) => ({
   poolButtonRow: {
@@ -70,7 +69,6 @@ const PoolPositionCard: React.FC<PoolPositionCardProps> = ({
   handleAddLiquidity,
 }) => {
   const classes = useStyles();
-  const daysCurrentYear = getDaysCurrentYear();
   const history = useHistory();
   const [bulkPairData, setBulkPairData] = useState<any>(null);
   const { palette, breakpoints } = useTheme();
@@ -135,30 +133,21 @@ const PoolPositionCard: React.FC<PoolPositionCardProps> = ({
 
   const apyWithFee = useMemo(() => {
     if (stakingInfo && bulkPairData) {
-      const dayVolume = bulkPairData
-        ? bulkPairData[stakingInfo.pair]?.oneDayVolumeUSD
-        : 0;
+      const dayVolume = bulkPairData[stakingInfo.pair].oneDayVolumeUSD;
+      const reserveUSD = bulkPairData[stakingInfo.pair].reserveUSD;
       const oneYearFee =
-        (dayVolume * GlobalConst.FEEPERCENT * daysCurrentYear) /
-        bulkPairData[stakingInfo.pair]?.reserveUSD;
-      const apy =
-        oneYearFee > 0
-          ? ((1 +
-              ((Number(stakingInfo.perMonthReturnInRewards) +
-                Number(oneYearFee) / 12) *
-                12) /
-                12) **
-              12 -
-              1) *
-            100
-          : 0; // compounding monthly APY
+        dayVolume && reserveUSD ? getOneYearFee(dayVolume, reserveUSD) : 0;
+      const apy = getAPYWithFee(
+        stakingInfo.perMonthReturnInRewards ?? 0,
+        oneYearFee,
+      ); // compounding monthly APY
       if (apy > 100000000) {
         return '>100000000';
       } else {
         return Number(apy.toFixed(2)).toLocaleString();
       }
     }
-  }, [stakingInfo, bulkPairData, daysCurrentYear]);
+  }, [stakingInfo, bulkPairData]);
 
   return (
     <Box

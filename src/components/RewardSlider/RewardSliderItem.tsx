@@ -8,6 +8,7 @@ import { unwrappedToken } from 'utils/wrappedCurrency';
 import { DoubleCurrencyLogo } from 'components';
 import { EMPTY } from 'constants/index';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon.svg';
+import { getAPYWithFee } from 'utils';
 
 const useStyles = makeStyles(({ palette }) => ({
   rewardsSliderItem: {
@@ -106,14 +107,7 @@ const RewardSliderItem: React.FC<RewardSliderItemProps> = ({
 
   let apyWithFee;
   if (stakingAPY && stakingAPY > 0) {
-    apyWithFee =
-      ((1 +
-        ((Number(info.perMonthReturnInRewards) + Number(stakingAPY) / 12) *
-          12) /
-          12) **
-        12 -
-        1) *
-      100;
+    apyWithFee = getAPYWithFee(info.perMonthReturnInRewards ?? 0, stakingAPY);
 
     if (apyWithFee > 100000000) {
       apyWithFee = '>100000000';

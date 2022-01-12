@@ -8,6 +8,7 @@ import { unwrappedToken } from 'utils/wrappedCurrency';
 import { DoubleCurrencyLogo, CurrencyLogo } from 'components';
 import CircleInfoIcon from 'assets/images/circleinfo.svg';
 import FarmLPCardDetails from './FarmLPCardDetails';
+import { getAPYWithFee } from 'utils';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   syrupCard: {
@@ -133,15 +134,7 @@ const FarmLPCard: React.FC<{
   let apyWithFee: number | string = 0;
 
   if (stakingAPY && stakingAPY > 0 && stakingInfo.perMonthReturnInRewards) {
-    apyWithFee =
-      ((1 +
-        ((Number(stakingInfo.perMonthReturnInRewards) +
-          Number(stakingAPY) / 12) *
-          12) /
-          12) **
-        12 -
-        1) *
-      100;
+    apyWithFee = getAPYWithFee(stakingInfo.perMonthReturnInRewards, stakingAPY);
 
     if (apyWithFee > 100000000) {
       apyWithFee = '>100000000';

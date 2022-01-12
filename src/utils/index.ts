@@ -50,6 +50,7 @@ import {
   PRICE_IMPACT_WITHOUT_FEE_CONFIRM_MIN,
   ROUTER_ADDRESS,
   MIN_ETH,
+  GlobalConst,
 } from 'constants/index';
 import moment from 'moment';
 import { Palette } from '@material-ui/core/styles/createPalette';
@@ -1600,4 +1601,14 @@ export function getPriceColor(price: number, palette: Palette) {
 export function getDaysCurrentYear() {
   const year = Number(moment().format('YYYY'));
   return (year % 4 === 0 && year % 100 > 0) || year % 400 == 0 ? 366 : 365;
+}
+
+export function getOneYearFee(dayVolume: number, reserveUSD: number) {
+  return (
+    (dayVolume * GlobalConst.FEEPERCENT * getDaysCurrentYear()) / reserveUSD
+  );
+}
+
+export function getAPYWithFee(rewards: number, fee: number) {
+  return fee > 0 ? ((1 + ((rewards + fee / 12) * 12) / 12) ** 12 - 1) * 100 : 0;
 }
