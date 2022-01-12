@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useActiveWeb3React } from 'hooks';
 import {
@@ -32,6 +32,7 @@ export function shouldCheck(
 
 export default function Updater(): null {
   const { chainId, library } = useActiveWeb3React();
+  const [popupTxHashes, setPopupTxHashes] = useState(''); // to store hash of the transactions already opened a popup.
 
   const lastBlockNumber = useBlockNumber();
 
@@ -55,22 +56,29 @@ export default function Updater(): null {
     Object.keys(transactions)
       .filter((hash) => shouldCheck(lastBlockNumber, transactions[hash]))
       .forEach((hash) => {
-        addPopup(
-          {
-            txn: {
-              hash,
-              pending: true,
-              success: false,
-              summary: transactions[hash]?.summary,
+        // to prevent opening the processing popup multiple times when the transaction is pending for a long time.
+        if (popupTxHashes.indexOf(hash) === -1) {
+          addPopup(
+            {
+              txn: {
+                hash,
+                pending: true,
+                success: false,
+                summary: transactions[hash]?.summary,
+              },
             },
-          },
-          hash,
-          null,
-        );
+            hash,
+            null,
+          );
 
-        setTimeout(() => {
-          removePopup(hash);
-        }, 20000);
+          setTimeout(() => {
+            removePopup(hash);
+          }, 20000);
+
+          let hashStr = popupTxHashes;
+          hashStr += hash + ',';
+          setPopupTxHashes(hashStr);
+        }
 
         library
           .getTransactionReceipt(hash)
@@ -127,6 +135,7 @@ export default function Updater(): null {
     lastBlockNumber,
     dispatch,
     addPopup,
+    popupTxHashes,
   ]);
 
   return null;
