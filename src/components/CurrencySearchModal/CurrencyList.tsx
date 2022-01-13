@@ -4,8 +4,9 @@ import {
   ETHER,
   Token,
   Currency,
+  Price,
 } from '@uniswap/sdk';
-import React, { useMemo, useCallback } from 'react';
+import React, { useMemo, useCallback, MutableRefObject } from 'react';
 import {
   Box,
   Tooltip,
@@ -19,14 +20,14 @@ import { FixedSizeList } from 'react-window';
 import { useActiveWeb3React } from 'hooks';
 import { useSelectedTokenList, WrappedTokenInfo } from 'state/lists/hooks';
 import { useAddUserToken, useRemoveUserAddedToken } from 'state/user/hooks';
-import { useIsUserAddedToken } from 'hooks/Tokens';
+import { useCurrencyBalances } from 'state/wallet/hooks';
+import { useIsUserAddedTokens } from 'hooks/Tokens';
 import { CurrencyLogo } from 'components';
-import { isTokenOnList } from 'utils';
+import { isTokensOnList } from 'utils';
 import { getTokenLogoURL } from 'components/CurrencyLogo';
 import { PlusHelper } from 'components/QuestionHelper';
 import { ReactComponent as TokenSelectedIcon } from 'assets/images/TokenSelected.svg';
-import useUSDCPrice from 'utils/useUSDCPrice';
-import { useCurrencyBalance } from 'state/wallet/hooks';
+import { useUSDCPrices } from 'utils/useUSDCPrice';
 
 function currencyKey(currency: Token): string {
   return currency instanceof Token
@@ -127,6 +128,10 @@ interface CurrenyRowProps {
   isSelected: boolean;
   otherSelected: boolean;
   style: any;
+  usdPrice?: Price;
+  balance?: CurrencyAmount;
+  isOnSelectedList?: boolean;
+  customAdded?: boolean;
 }
 
 const CurrencyRow: React.FC<CurrenyRowProps> = ({
@@ -135,17 +140,16 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
   isSelected,
   otherSelected,
   style,
+  usdPrice,
+  balance,
+  isOnSelectedList,
+  customAdded,
 }) => {
   const { ethereum } = window as any;
   const classes = useStyles();
   const { palette } = useTheme();
-
   const { account, chainId } = useActiveWeb3React();
   const key = currencyKey(currency);
-  const selectedTokenList = useSelectedTokenList();
-  const isOnSelectedList = isTokenOnList(selectedTokenList, currency);
-  const customAdded = useIsUserAddedToken(currency);
-  const usdPrice = useUSDCPrice(currency);
 
   const removeToken = useRemoveUserAddedToken();
   const addToken = useAddUserToken();
@@ -154,7 +158,6 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
     ethereum.isMetaMask &&
     Number(ethereum.chainId) === 137 &&
     isOnSelectedList;
-  const balance = useCurrencyBalance(account || undefined, currency);
 
   const addTokenToMetamask = (
     tokenAddress: any,
@@ -226,37 +229,42 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
           <Typography variant='caption' className={classes.currencyName}>
             {currency.name}
           </Typography>
+          {!isOnSelectedList && customAdded && (
+            <Box display='flex' alignItems='center'>
+              <Typography variant='caption'>Added by user</Typography>
+              <Box ml={0.5} color={palette.primary.main}>
+                <Typography
+                  variant='caption'
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    if (chainId && currency instanceof Token)
+                      removeToken(chainId, currency.address);
+                  }}
+                >
+                  (Remove)
+                </Typography>
+              </Box>
+            </Box>
+          )}
+          {!isOnSelectedList && !customAdded && (
+            <Box display='flex' alignItems='center'>
+              <Typography variant='caption'>Found by address</Typography>
+              <Box ml={0.5} color={palette.primary.main}>
+                <Typography
+                  variant='caption'
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    if (currency instanceof Token) addToken(currency);
+                  }}
+                >
+                  (Add)
+                </Typography>
+              </Box>
+            </Box>
+          )}
         </Box>
 
-        <Box flex={1}>
-          {!isOnSelectedList && customAdded ? (
-            <Typography>
-              Added by user
-              <Button
-                onClick={(event) => {
-                  event.stopPropagation();
-                  if (chainId && currency instanceof Token)
-                    removeToken(chainId, currency.address);
-                }}
-              >
-                (Remove)
-              </Button>
-            </Typography>
-          ) : null}
-          {!isOnSelectedList && !customAdded ? (
-            <Typography>
-              Found by address
-              <Button
-                onClick={(event) => {
-                  event.stopPropagation();
-                  if (currency instanceof Token) addToken(currency);
-                }}
-              >
-                (Add)
-              </Button>
-            </Typography>
-          ) : null}
-        </Box>
+        <Box flex={1}></Box>
         <TokenTags currency={currency} />
         <Box textAlign='right'>
           {balance ? (
@@ -289,6 +297,7 @@ interface CurrencyListProps {
   onCurrencySelect: (currency: Token) => void;
   otherCurrency?: Currency | null;
   showETH: boolean;
+  fixedListRef?: MutableRefObject<FixedSizeList | undefined>;
 }
 
 const CurrencyList: React.FC<CurrencyListProps> = ({
@@ -298,11 +307,19 @@ const CurrencyList: React.FC<CurrencyListProps> = ({
   onCurrencySelect,
   otherCurrency,
   showETH,
+  fixedListRef,
 }) => {
+  const { account } = useActiveWeb3React();
   const itemData = useMemo(
     () => (showETH ? [Token.ETHER, ...currencies] : currencies),
     [currencies, showETH],
   );
+  const usdPrices = useUSDCPrices(itemData);
+  const balances = useCurrencyBalances(account ?? undefined, itemData);
+  const selectedTokenList = useSelectedTokenList();
+  const isOnSelectedList = isTokensOnList(selectedTokenList, itemData);
+  const customAdded = useIsUserAddedTokens(itemData);
+
   const Row = useCallback(
     ({ data, index, style }) => {
       const currency: Token = data[index];
@@ -313,25 +330,41 @@ const CurrencyList: React.FC<CurrencyListProps> = ({
         otherCurrency && currencyEquals(otherCurrency, currency),
       );
       const handleSelect = () => onCurrencySelect(currency);
-      return (
+      return index < itemData.length ? (
         <CurrencyRow
           style={style}
           currency={currency}
           isSelected={isSelected}
           onSelect={handleSelect}
           otherSelected={otherSelected}
+          usdPrice={usdPrices[index]}
+          balance={balances[index]}
+          isOnSelectedList={isOnSelectedList[index]}
+          customAdded={customAdded[index]}
         />
+      ) : (
+        <Box />
       );
     },
-    [onCurrencySelect, otherCurrency, selectedCurrency],
+    [
+      onCurrencySelect,
+      otherCurrency,
+      selectedCurrency,
+      itemData,
+      usdPrices,
+      balances,
+      isOnSelectedList,
+      customAdded,
+    ],
   );
 
   return (
     <FixedSizeList
+      ref={fixedListRef as any}
       height={height}
       width='100%'
       itemData={itemData}
-      itemCount={itemData.length}
+      itemCount={itemData.length + 1}
       itemSize={56}
     >
       {Row}

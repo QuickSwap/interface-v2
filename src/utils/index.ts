@@ -1480,6 +1480,19 @@ export function isTokenOnList(
   );
 }
 
+export function isTokensOnList(
+  defaultTokens: TokenAddressMap,
+  currencies: (Currency | undefined)[],
+): boolean[] {
+  return currencies.map((currency) => {
+    if (currency === ETHER) return true;
+    return Boolean(
+      currency instanceof Token &&
+        defaultTokens[currency.chainId]?.[currency.address],
+    );
+  });
+}
+
 export function getEtherscanLink(
   chainId: ChainId,
   data: string,
