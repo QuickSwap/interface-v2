@@ -3,10 +3,11 @@ import { Box, Typography, Button } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { TransactionResponse } from '@ethersproject/providers';
 import { CustomModal, ColoredSlider } from 'components';
-import { useLairInfo, useDerivedLairInfo } from 'state/stake/hooks';
+import { useDerivedLairInfo } from 'state/stake/hooks';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 import { useCurrencyBalance, useTokenBalance } from 'state/wallet/hooks';
 import { useActiveWeb3React } from 'hooks';
+import { QUICK, LAIR_ADDRESS } from 'constants/index';
 import { useApproveCallback, ApprovalState } from 'hooks/useApproveCallback';
 import { useLairContract } from 'hooks/useContract';
 import {
@@ -55,8 +56,6 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
   const { account } = useActiveWeb3React();
   const addTransaction = useTransactionAdder();
   const finalizedTransaction = useTransactionFinalizer();
-  const lairInfo = useLairInfo();
-  const QUICK = lairInfo.QUICKBalance.token;
   const quickBalance = useCurrencyBalance(account ?? undefined, QUICK);
   const userLiquidityUnstaked = useTokenBalance(account ?? undefined, QUICK);
   const [typedValue, setTypedValue] = useState('');
@@ -71,7 +70,7 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
   const lairContract = useLairContract();
   const [approval, approveCallback] = useApproveCallback(
     parsedAmount,
-    lairInfo.lairAddress,
+    LAIR_ADDRESS,
   );
 
   const onAttemptToApprove = async () => {
