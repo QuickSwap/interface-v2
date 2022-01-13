@@ -13568,23 +13568,21 @@ function parseData(data: any, oneDayData: any) {
 
 function getSearchFiltered(info: any, search: string) {
   if (info.tokens) {
+    const infoToken0 = info.tokens[0];
+    const infoToken1 = info.tokens[1];
     return (
-      (info.tokens[0].symbol ?? '')
-        .toLowerCase()
-        .indexOf(search.toLowerCase()) > -1 ||
-      (info.tokens[0].name ?? '').toLowerCase().indexOf(search.toLowerCase()) >
+      (infoToken0.symbol ?? '').toLowerCase().indexOf(search.toLowerCase()) >
         -1 ||
-      (info.tokens[0].address ?? '')
-        .toLowerCase()
-        .indexOf(search.toLowerCase()) > -1 ||
-      (info.tokens[1].symbol ?? '')
-        .toLowerCase()
-        .indexOf(search.toLowerCase()) > -1 ||
-      (info.tokens[1].name ?? '').toLowerCase().indexOf(search.toLowerCase()) >
+      (infoToken0.name ?? '').toLowerCase().indexOf(search.toLowerCase()) >
         -1 ||
-      (info.tokens[1].address ?? '')
-        .toLowerCase()
-        .indexOf(search.toLowerCase()) > -1
+      (infoToken0.address ?? '').toLowerCase().indexOf(search.toLowerCase()) >
+        -1 ||
+      (infoToken1.symbol ?? '').toLowerCase().indexOf(search.toLowerCase()) >
+        -1 ||
+      (infoToken1.name ?? '').toLowerCase().indexOf(search.toLowerCase()) >
+        -1 ||
+      (infoToken1.address ?? '').toLowerCase().indexOf(search.toLowerCase()) >
+        -1
     );
   } else if (info.token) {
     return (
