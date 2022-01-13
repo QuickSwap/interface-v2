@@ -16,7 +16,6 @@ import { useDispatch } from 'react-redux';
 import { FixedSizeList } from 'react-window';
 import { useActiveWeb3React } from 'hooks';
 import { useAllTokens, useToken } from 'hooks/Tokens';
-import { useCurrencyBalances } from 'state/wallet/hooks';
 import { useSelectedListInfo } from 'state/lists/hooks';
 import { selectList } from 'state/lists/actions';
 import { DEFAULT_TOKEN_LIST_URL } from 'constants/index';
@@ -194,11 +193,6 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
     ];
   }, [filteredTokens, searchQuery, searchToken, tokenComparator]);
 
-  const balances = useCurrencyBalances(
-    account || undefined,
-    showETH ? [Token.ETHER, ...filteredSortedTokens] : filteredSortedTokens,
-  );
-
   const handleCurrencySelect = useCallback(
     (currency: Currency) => {
       onCurrencySelect(currency);
@@ -280,7 +274,6 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
               otherCurrency={otherSelectedCurrency}
               selectedCurrency={selectedCurrency}
               fixedListRef={fixedList}
-              balances={balances}
             />
           )}
         </AutoSizer>

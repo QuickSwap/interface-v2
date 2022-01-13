@@ -38,6 +38,14 @@ export function useIsUserAddedToken(currency: Currency): boolean {
   return !!userAddedTokens.find((token) => currencyEquals(currency, token));
 }
 
+export function useIsUserAddedTokens(currencies: Currency[]): boolean[] {
+  const userAddedTokens = useUserAddedTokens();
+  return currencies.map(
+    (currency) =>
+      !!userAddedTokens.find((token) => currencyEquals(currency, token)),
+  );
+}
+
 // parse a name or symbol from a token response
 const BYTES32_REGEX = /^0x[a-fA-F0-9]{64}$/;
 function parseStringOrBytes32(
