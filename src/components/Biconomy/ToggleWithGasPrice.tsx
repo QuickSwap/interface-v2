@@ -4,7 +4,6 @@ import { CustomTooltip, ToggleSwitch } from 'components';
 import { useBiconomy } from 'context/Biconomy';
 import { useGasPrice } from 'context/GasPrice';
 import React from 'react';
-import { useIsGaslessEnabled, useToggleGasless } from 'state/application/hooks';
 import GaslessToggle from './GaslessToggle';
 import GasPrice from './GasPrice';
 
@@ -13,7 +12,6 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     alignItems: 'center',
     gap: '4px',
     display: 'flex',
-    cursor: 'pointer',
     marginBottom: 5,
     opacity: (props: any) => (props.isGaslessAllowed ? '1' : '0.3'),
   },
@@ -23,15 +21,11 @@ const ToggleWithGasPrice: React.FunctionComponent = (props) => {
   const { isGaslessAllowed } = useBiconomy();
   const classes = useStyles({ isGaslessAllowed });
   const { gasPrice } = useGasPrice();
-  const toggleGaslessEnabled = useToggleGasless();
-  const isGaslessEnabled = useIsGaslessEnabled();
+  const { isGaslessEnabled, toggleGasless } = useBiconomy();
   const { palette } = useTheme();
 
   return (
-    <Box
-      className={classes.gaslessToggleWrapper}
-      onClick={() => toggleGaslessEnabled()}
-    >
+    <Box className={classes.gaslessToggleWrapper}>
       <GasPrice />
       <GaslessToggle />
     </Box>

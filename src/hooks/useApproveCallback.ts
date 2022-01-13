@@ -13,7 +13,6 @@ import { computeSlippageAdjustedAmounts } from 'utils/prices';
 import { calculateGasMargin } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import { useTokenContract } from './useContract';
-import { useIsGaslessEnabled } from 'state/application/hooks';
 import { useBiconomy } from 'context/Biconomy';
 
 import metaTokens from 'config/biconomy/metaTokens';
@@ -31,7 +30,7 @@ export function useApproveCallback(
   spender?: string,
 ): [ApprovalState, () => Promise<void>] {
   const { account, chainId, library } = useActiveWeb3React();
-  const gaslessMode = useIsGaslessEnabled();
+  const gaslessMode = useBiconomy().isGaslessEnabled;
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const { biconomy, isBiconomyReady } = useBiconomy()!;
 

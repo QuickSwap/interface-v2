@@ -32,8 +32,6 @@ import { useActiveWeb3React } from 'hooks';
 import useTransactionDeadline from './useTransactionDeadline';
 import useENS from './useENS';
 import { Version } from './useToggledVersion';
-import { splitSignature } from '@ethersproject/bytes';
-import { useIsGaslessEnabled } from 'state/application/hooks';
 import { useBiconomy } from 'context/Biconomy';
 import metaTokens from 'config/biconomy/metaTokens';
 import { fetchGasPrice } from 'utils/prices';
@@ -149,7 +147,8 @@ export function useSwapCallback(
   error: string | null;
 } {
   const { account, chainId, library } = useActiveWeb3React();
-  const gaslessMode = useIsGaslessEnabled();
+  const { isGaslessEnabled } = useBiconomy();
+  const gaslessMode = isGaslessEnabled;
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const { biconomy, isBiconomyReady } = useBiconomy()!;

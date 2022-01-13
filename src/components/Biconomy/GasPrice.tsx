@@ -4,7 +4,6 @@ import { CustomTooltip, ToggleSwitch } from 'components';
 import { useBiconomy } from 'context/Biconomy';
 import { useGasPrice } from 'context/GasPrice';
 import React from 'react';
-import { useIsGaslessEnabled, useToggleGasless } from 'state/application/hooks';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   gasPrice: {

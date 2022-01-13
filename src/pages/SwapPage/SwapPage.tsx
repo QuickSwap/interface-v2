@@ -35,8 +35,6 @@ import {
   useBlockNumber,
   useSwapTokenPrice0,
   useSwapTokenPrice1,
-  useIsGaslessEnabled,
-  useToggleGasless,
 } from 'state/application/hooks';
 import {
   getEthPrice,
@@ -54,6 +52,7 @@ import { useCurrency } from 'hooks/Tokens';
 import dayjs from 'dayjs';
 import { useGasPrice } from 'context/GasPrice';
 import ToggleWithGasPrice from 'components/Biconomy/ToggleWithGasPrice';
+import { useBiconomy } from 'context/Biconomy';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   helpWrapper: {
@@ -76,17 +75,6 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     [breakpoints.down('xs')]: {
       padding: '16px 12px',
     },
-  },
-  gaslessToggleWrapper: {
-    alignItems: 'center',
-    gap: '4px',
-    display: 'flex',
-    cursor: 'pointer',
-    marginBottom: 5,
-  },
-  gasPrice: {
-    padding: 4,
-    fontWeight: 600,
   },
   swapItem: {
     width: 100,
@@ -162,10 +150,6 @@ const SwapPage: React.FC = () => {
       ? (parsedQuery.currency1 as string)
       : undefined,
   );
-
-  const isGaslessEnabled = useIsGaslessEnabled();
-  const toggleGaslessEnabled = useToggleGasless();
-  const { gasPrice } = useGasPrice();
 
   useEffect(() => {
     if (parsedQuery && parsedQuery.currency0 && qCurrency0) {

@@ -22,7 +22,6 @@ import {
   updateBookmarkPairs,
   updateAnalyticToken,
   updateTokenChartData,
-  updateIsGaslessEnabled,
 } from './actions';
 
 type PopupList = Array<{
@@ -35,7 +34,6 @@ type PopupList = Array<{
 export interface ApplicationState {
   readonly blockNumber: { readonly [chainId: number]: number };
   readonly popupList: PopupList;
-  readonly isGaslessEnabled: boolean;
   readonly openModal: ApplicationModal | null;
   readonly ethPrice: any;
   readonly globalData: any;
@@ -54,7 +52,6 @@ export interface ApplicationState {
 const initialState: ApplicationState = {
   blockNumber: {},
   popupList: [],
-  isGaslessEnabled: false,
   openModal: null,
   globalData: null,
   globalChartData: null,
@@ -86,9 +83,6 @@ export default createReducer(initialState, (builder) =>
           state.blockNumber[chainId],
         );
       }
-    })
-    .addCase(updateIsGaslessEnabled, (state, action) => {
-      state.isGaslessEnabled = action.payload;
     })
     .addCase(setOpenModal, (state, action) => {
       state.openModal = action.payload;

@@ -23,7 +23,6 @@ import {
   removeBookmarkPair,
   updateAnalyticToken,
   updateTokenChartData,
-  updateIsGaslessEnabled,
 } from './actions';
 
 export function useBlockNumber(): number | undefined {
@@ -49,24 +48,6 @@ export function useToggleModal(modal: ApplicationModal): () => void {
     modal,
     open,
   ]);
-}
-
-export function useIsGaslessEnabled(): boolean {
-  const isGaslesssEnabled = useSelector(
-    (state: AppState) => state.application.isGaslessEnabled,
-  );
-
-  return isGaslesssEnabled;
-}
-
-export function useToggleGasless(): () => void {
-  const dispatch = useDispatch<AppDispatch>();
-  const isGaslessEnabled = useIsGaslessEnabled();
-
-  return useCallback(
-    () => dispatch(updateIsGaslessEnabled(!isGaslessEnabled)),
-    [isGaslessEnabled, dispatch],
-  );
 }
 
 export function useOpenModal(modal: ApplicationModal): () => void {

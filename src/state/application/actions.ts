@@ -28,10 +28,6 @@ export enum ApplicationModal {
   MENU,
 }
 
-export const updateIsGaslessEnabled = createAction<boolean>(
-  'application/updateIsGaslessEnabled',
-);
-
 export const updateBlockNumber = createAction<{
   chainId: number;
   blockNumber: number;

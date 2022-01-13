@@ -5,6 +5,7 @@ const { Biconomy } = require('@biconomy/mexa');
 
 import React, {
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -14,19 +15,85 @@ import React, {
 import { useActiveWeb3React } from 'hooks';
 import { ethers } from 'ethers';
 import { useGasPrice } from './GasPrice';
+import fetch from 'cross-fetch';
 
 interface IBiconomyContext {
   biconomy: undefined | any;
   isBiconomyReady: boolean;
   isGaslessAllowed: boolean;
+  isGaslessEnabled: boolean;
+  toggleGasless: () => void;
+  toggleGaslessStatus: ToggleGaslessStatus;
+  toggleGaslessError: undefined | Error;
+}
+
+export enum ToggleGaslessStatus {
+  IDLE,
+  PENDING,
+  ERROR,
+  SUCCESS,
 }
 
 const BiconomyContext = createContext<IBiconomyContext | null>(null);
 
 const BiconomyProvider: React.FC = (props) => {
-  const { library } = useActiveWeb3React();
-  const [isBiconomyReady, setIsBiconomyReady] = useState(false);
+  const { library, account } = useActiveWeb3React();
   const { gasPrice } = useGasPrice();
+
+  const [isBiconomyReady, setIsBiconomyReady] = useState(false);
+  const [isGaslessEnabled, setIsGaslessEnabled] = useState<boolean>(false);
+  const [toggleGaslessStatus, setToggleGaslessStatus] = useState<
+    ToggleGaslessStatus
+  >(ToggleGaslessStatus.IDLE);
+  const [toggleGaslessError, setToggleGaslessError] = useState<Error>();
+
+  const toggleGasless = useCallback(async () => {
+    setToggleGaslessStatus(ToggleGaslessStatus.PENDING);
+    // if enabled, then disabled without checks
+    if (isGaslessEnabled) {
+      setIsGaslessEnabled(false);
+      setToggleGaslessStatus(ToggleGaslessStatus.SUCCESS);
+      return;
+    }
+    try {
+      // if disabled, then before enabling perform checks
+      if (!account && !biconomyAPIKey) {
+        throw new Error('Cannot get user details');
+      }
+      let checkLimitsResponse: any;
+      try {
+        const response = await fetch(
+          //TODO: replace with apiId from config
+          `https://api.biconomy.io/api/v1/dapp/checkLimits?userAddress=${account}&apiId=${'56a9b499-7a16-470c-a7ae-6f1a2bacc2f4'}`,
+          { headers: { 'x-api-key': biconomyAPIKey } },
+        );
+        checkLimitsResponse = await response.json();
+      } catch (err) {
+        throw new Error('Cannot get response from Biconomy');
+      }
+
+      if (checkLimitsResponse?.allowed === true) {
+        setIsGaslessEnabled(true);
+        setToggleGaslessStatus(ToggleGaslessStatus.SUCCESS);
+      } else if (checkLimitsResponse?.allowed === false) {
+        // let resetTime = new Date(checkLimitsResponse?.resetTime);
+        throw new Error(
+          'Gasless limits exhausted by user. Please try again after 24 hours',
+        );
+      } else {
+        // let resetTime = new Date(checkLimitsResponse?.resetTime);
+        throw new Error(
+          'Cannot enable gasless at this time. Please try again later.',
+        );
+      }
+      setToggleGaslessError(undefined);
+    } catch (err) {
+      const error: any = err;
+      setToggleGaslessStatus(ToggleGaslessStatus.ERROR);
+      setToggleGaslessError(error);
+    }
+  }, [isGaslessEnabled, account]);
+
   const isGaslessAllowed = useMemo(() => (gasPrice ?? 0) <= 50, [gasPrice]);
 
   // reinitialize biconomy everytime library is changed
@@ -58,9 +125,13 @@ const BiconomyProvider: React.FC = (props) => {
   return (
     <BiconomyContext.Provider
       value={{
+        toggleGaslessStatus,
         isBiconomyReady,
         isGaslessAllowed,
+        isGaslessEnabled,
+        toggleGasless,
         biconomy,
+        toggleGaslessError,
       }}
       {...props}
     />
