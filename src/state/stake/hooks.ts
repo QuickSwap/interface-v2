@@ -12963,6 +12963,7 @@ export function useSyrupInfo(
   tokenToFilterBy?: Token | null,
   startIndex?: number,
   endIndex?: number,
+  filter?: { search: string; isStaked: boolean },
 ): SyrupInfo[] {
   const { chainId, account } = useActiveWeb3React();
   //const [quickPrice,setQuickPrice] = useState(0);
@@ -12974,15 +12975,16 @@ export function useSyrupInfo(
         ? SYRUP_REWARDS_INFO[chainId]
             ?.slice(startIndex, endIndex)
             .filter((stakingRewardInfo) =>
-              tokenToFilterBy === undefined
-                ? true
-                : tokenToFilterBy === null
-                ? true
+              tokenToFilterBy === undefined || tokenToFilterBy === null
+                ? getSearchFiltered(
+                    stakingRewardInfo,
+                    filter ? filter.search : '',
+                  )
                 : tokenToFilterBy.equals(stakingRewardInfo.token) &&
                   tokenToFilterBy.equals(stakingRewardInfo.token),
             ) ?? []
         : [],
-    [chainId, tokenToFilterBy, startIndex, endIndex],
+    [chainId, tokenToFilterBy, startIndex, endIndex, filter],
   );
 
   const uni = chainId ? UNI[chainId] : undefined;
@@ -13133,7 +13135,7 @@ export function useSyrupInfo(
               token,
               JSBI.greaterThan(totalStakedAmount.raw, JSBI.BigInt(0))
                 ? JSBI.divide(
-                    JSBI.multiply(totalRewardRate01.raw, stakedAmount.raw),
+                    JSBI.multiply(totalRewardRate.raw, stakedAmount.raw),
                     totalStakedAmount.raw,
                   )
                 : JSBI.BigInt(0),
@@ -13206,13 +13208,16 @@ export function useSyrupInfo(
     rewardRates,
     stakingTokenPairs,
     usdBaseTokenPrices,
-  ]);
+  ]).filter((syrupInfo) =>
+    filter && filter.isStaked ? syrupInfo.stakedAmount.greaterThan('0') : true,
+  );
 }
 
 export function useOldSyrupInfo(
   tokenToFilterBy?: Token | null,
   startIndex?: number,
   endIndex?: number,
+  filter?: { search: string; isStaked: boolean },
 ): SyrupInfo[] {
   const { chainId, account } = useActiveWeb3React();
   //const [quickPrice,setQuickPrice] = useState(0);
@@ -13224,15 +13229,16 @@ export function useOldSyrupInfo(
         ? OLD_SYRUP_REWARDS_INFO[chainId]
             ?.slice(startIndex, endIndex)
             ?.filter((stakingRewardInfo) =>
-              tokenToFilterBy === undefined
-                ? true
-                : tokenToFilterBy === null
-                ? true
+              tokenToFilterBy === undefined || tokenToFilterBy === null
+                ? getSearchFiltered(
+                    stakingRewardInfo,
+                    filter ? filter.search : '',
+                  )
                 : tokenToFilterBy.equals(stakingRewardInfo.token) &&
                   tokenToFilterBy.equals(stakingRewardInfo.token),
             ) ?? []
         : [],
-    [chainId, tokenToFilterBy, startIndex, endIndex],
+    [chainId, tokenToFilterBy, startIndex, endIndex, filter],
   );
 
   const uni = chainId ? UNI[chainId] : undefined;
@@ -13361,7 +13367,7 @@ export function useOldSyrupInfo(
               token,
               JSBI.greaterThan(totalStakedAmount.raw, JSBI.BigInt(0))
                 ? JSBI.divide(
-                    JSBI.multiply(totalRewardRate01.raw, stakedAmount.raw),
+                    JSBI.multiply(totalRewardRate.raw, stakedAmount.raw),
                     totalStakedAmount.raw,
                   )
                 : JSBI.BigInt(0),
@@ -13432,7 +13438,9 @@ export function useOldSyrupInfo(
     rewardRates,
     stakingTokenPairs,
     usdBaseTokenPrices,
-  ]);
+  ]).filter((syrupInfo) =>
+    filter && filter.isStaked ? syrupInfo.stakedAmount.greaterThan('0') : true,
+  );
 }
 
 export const getBulkPairData = async (pairList: any) => {
@@ -13558,11 +13566,44 @@ function parseData(data: any, oneDayData: any) {
   };
 }
 
+function getSearchFiltered(info: any, search: string) {
+  if (info.tokens) {
+    const infoToken0 = info.tokens[0];
+    const infoToken1 = info.tokens[1];
+    return (
+      (infoToken0.symbol ?? '').toLowerCase().indexOf(search.toLowerCase()) >
+        -1 ||
+      (infoToken0.name ?? '').toLowerCase().indexOf(search.toLowerCase()) >
+        -1 ||
+      (infoToken0.address ?? '').toLowerCase().indexOf(search.toLowerCase()) >
+        -1 ||
+      (infoToken1.symbol ?? '').toLowerCase().indexOf(search.toLowerCase()) >
+        -1 ||
+      (infoToken1.name ?? '').toLowerCase().indexOf(search.toLowerCase()) >
+        -1 ||
+      (infoToken1.address ?? '').toLowerCase().indexOf(search.toLowerCase()) >
+        -1
+    );
+  } else if (info.token) {
+    return (
+      (info.token.symbol ?? '').toLowerCase().indexOf(search.toLowerCase()) >
+        -1 ||
+      (info.token.name ?? '').toLowerCase().indexOf(search.toLowerCase()) >
+        -1 ||
+      (info.token.address ?? '').toLowerCase().indexOf(search.toLowerCase()) >
+        -1
+    );
+  } else {
+    return false;
+  }
+}
+
 // gets the dual rewards staking info from the network for the active chain id
 export function useDualStakingInfo(
   pairToFilterBy?: Pair | null,
   startIndex?: number,
   endIndex?: number,
+  filter?: { search: string; isStaked: boolean },
 ): DualStakingInfo[] {
   const { chainId, account } = useActiveWeb3React();
   //const [quickPrice,setQuickPrice] = useState(0);
@@ -13578,15 +13619,16 @@ export function useDualStakingInfo(
         ? STAKING_DUAL_REWARDS_INFO[chainId]
             ?.slice(startIndex, endIndex)
             ?.filter((stakingRewardInfo) =>
-              pairToFilterBy === undefined
-                ? true
-                : pairToFilterBy === null
-                ? true
+              pairToFilterBy === undefined || pairToFilterBy === null
+                ? getSearchFiltered(
+                    stakingRewardInfo,
+                    filter ? filter.search : '',
+                  )
                 : pairToFilterBy.involvesToken(stakingRewardInfo.tokens[0]) &&
                   pairToFilterBy.involvesToken(stakingRewardInfo.tokens[1]),
             ) ?? []
         : [],
-    [chainId, pairToFilterBy, startIndex, endIndex],
+    [chainId, pairToFilterBy, startIndex, endIndex, filter],
   );
 
   const uni = chainId ? UNI[chainId] : undefined;
@@ -13904,7 +13946,11 @@ export function useDualStakingInfo(
     usdPrices,
     stakingPairs,
     tokenPairs,
-  ]);
+  ]).filter((stakingInfo) =>
+    filter && filter.isStaked
+      ? stakingInfo.stakedAmount.greaterThan('0')
+      : true,
+  );
 }
 
 export function useLairInfo(): LairInfo {
@@ -13917,7 +13963,9 @@ export function useLairInfo(): LairInfo {
   const lair = useLairContract();
   const quick = useQUICKContract();
   const [, quickUsdcPair] = usePair(QUICK, USDC);
-  const quickPrice = Number(quickUsdcPair?.priceOf(QUICK)?.toSignificant(6));
+  const quickPrice = quickUsdcPair
+    ? Number(quickUsdcPair.priceOf(QUICK).toSignificant(6))
+    : 0;
 
   const dQuickToQuick = useSingleCallResult(lair, 'dQUICKForQUICK', inputs);
   const quickToDQuick = useSingleCallResult(lair, 'QUICKForDQUICK', inputs);
@@ -13983,6 +14031,7 @@ export function useStakingInfo(
   pairToFilterBy?: Pair | null,
   startIndex?: number,
   endIndex?: number,
+  filter?: { search: string; isStaked: boolean },
 ): StakingInfo[] {
   const { chainId, account } = useActiveWeb3React();
   //const [quickPrice,setQuickPrice] = useState(0);
@@ -13994,15 +14043,16 @@ export function useStakingInfo(
         ? STAKING_REWARDS_INFO[chainId]
             ?.slice(startIndex, endIndex)
             ?.filter((stakingRewardInfo) =>
-              pairToFilterBy === undefined
-                ? true
-                : pairToFilterBy === null
-                ? true
+              pairToFilterBy === undefined || pairToFilterBy === null
+                ? getSearchFiltered(
+                    stakingRewardInfo,
+                    filter ? filter.search : '',
+                  )
                 : pairToFilterBy.involvesToken(stakingRewardInfo.tokens[0]) &&
                   pairToFilterBy.involvesToken(stakingRewardInfo.tokens[1]),
             ) ?? []
         : [],
-    [chainId, pairToFilterBy, startIndex, endIndex],
+    [chainId, pairToFilterBy, startIndex, endIndex, filter],
   );
 
   const uni = chainId ? UNI[chainId] : undefined;
@@ -14161,7 +14211,7 @@ export function useStakingInfo(
               uni,
               JSBI.greaterThan(totalStakedAmount.raw, JSBI.BigInt(0))
                 ? JSBI.divide(
-                    JSBI.multiply(totalRewardRate01.raw, stakedAmount.raw),
+                    JSBI.multiply(totalRewardRate.raw, stakedAmount.raw),
                     totalStakedAmount.raw,
                   )
                 : JSBI.BigInt(0),
@@ -14295,7 +14345,11 @@ export function useStakingInfo(
     totalSupplys,
     usdPrices,
     stakingPairs,
-  ]);
+  ]).filter((stakingInfo) =>
+    filter && filter.isStaked
+      ? stakingInfo.stakedAmount.greaterThan('0')
+      : true,
+  );
 }
 
 // gets the staking info from the network for the active chain id
@@ -14484,6 +14538,7 @@ export function useOldStakingInfo(
   pairToFilterBy?: Pair | null,
   startIndex?: number,
   endIndex?: number,
+  filter?: { search: string; isStaked: boolean },
 ): StakingInfo[] {
   const { chainId, account } = useActiveWeb3React();
 
@@ -14493,15 +14548,16 @@ export function useOldStakingInfo(
         ? OLD_STAKING_REWARDS_INFO[chainId]
             ?.slice(startIndex, endIndex)
             ?.filter((stakingRewardInfo) =>
-              pairToFilterBy === undefined
-                ? true
-                : pairToFilterBy === null
-                ? true
+              pairToFilterBy === undefined || pairToFilterBy === null
+                ? getSearchFiltered(
+                    stakingRewardInfo,
+                    filter ? filter.search : '',
+                  )
                 : pairToFilterBy.involvesToken(stakingRewardInfo.tokens[0]) &&
                   pairToFilterBy.involvesToken(stakingRewardInfo.tokens[1]),
             ) ?? []
         : [],
-    [chainId, pairToFilterBy, startIndex, endIndex],
+    [chainId, pairToFilterBy, startIndex, endIndex, filter],
   );
 
   const uni = chainId ? UNI[chainId] : undefined;
@@ -14670,7 +14726,11 @@ export function useOldStakingInfo(
     totalSupplies,
     uni,
     stakingPairs,
-  ]);
+  ]).filter((stakingInfo) =>
+    filter && filter.isStaked
+      ? stakingInfo.stakedAmount.greaterThan('0')
+      : true,
+  );
 }
 
 export function useTotalUniEarned(): TokenAmount | undefined {
