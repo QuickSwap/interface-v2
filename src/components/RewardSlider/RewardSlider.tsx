@@ -104,4 +104,4 @@ const RewardSlider: React.FC = () => {
   );
 };
 
-export default RewardSlider;
+export default React.memo(RewardSlider);

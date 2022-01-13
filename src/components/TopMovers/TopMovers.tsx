@@ -142,4 +142,4 @@ const TopMovers: React.FC<TopMoversProps> = ({
   );
 };
 
-export default TopMovers;
+export default React.memo(TopMovers);
