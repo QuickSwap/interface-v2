@@ -16,6 +16,7 @@ import {
   STAKING_DUAL_REWARDS_INFO,
   getBulkPairData,
   useUSDRewardsandFees,
+  CommonStakingInfo,
 } from 'state/stake/hooks';
 import { FarmLPCard, FarmDualCard, ToggleSwitch } from 'components';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
@@ -215,7 +216,7 @@ const FarmPage: React.FC = () => {
   const sortIndex = sortDesc ? 1 : -1;
 
   const sortByToken = useCallback(
-    (a: StakingInfo | DualStakingInfo, b: StakingInfo | DualStakingInfo) => {
+    (a: CommonStakingInfo, b: CommonStakingInfo) => {
       const tokenStrA = a.tokens[0].symbol + '/' + a.tokens[1].symbol;
       const tokenStrB = b.tokens[0].symbol + '/' + b.tokens[1].symbol;
       return (tokenStrA > tokenStrB ? -1 : 1) * sortIndex;
@@ -224,7 +225,7 @@ const FarmPage: React.FC = () => {
   );
 
   const sortByTVL = useCallback(
-    (a: StakingInfo | DualStakingInfo, b: StakingInfo | DualStakingInfo) => {
+    (a: CommonStakingInfo, b: CommonStakingInfo) => {
       return (Number(a.tvl ?? 0) > Number(b.tvl ?? 0) ? -1 : 1) * sortIndex;
     },
     [sortIndex],
@@ -254,7 +255,7 @@ const FarmPage: React.FC = () => {
   );
 
   const sortByAPY = useCallback(
-    (a: StakingInfo | DualStakingInfo, b: StakingInfo | DualStakingInfo) => {
+    (a: CommonStakingInfo, b: CommonStakingInfo) => {
       let aYearFee = 0;
       let bYearFee = 0;
       if (bulkPairs) {
