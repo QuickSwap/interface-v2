@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import React, { lazy, Suspense } from 'react';
 import { createWeb3ReactRoot, Web3ReactProvider } from '@web3-react/core';
 import { Switch, Route } from 'react-router-dom';
 import {
@@ -8,16 +8,17 @@ import {
 import { Provider } from 'react-redux';
 import { GelatoProvider } from '@gelatonetwork/limit-orders-react';
 import store from 'state';
-import {
-  AnalyticsPage,
-  DragonPage,
-  FarmPage,
-  LandingPage,
-  PoolsPage,
-  SwapPage,
-  AnalyticsTokenDetails,
-  AnalyticsPairDetails,
-} from 'pages';
+const AnalyticsPage = lazy(() => import('./pages/AnalyticsPage'));
+const DragonPage = lazy(() => import('./pages/DragonPage'));
+const FarmPage = lazy(() => import('./pages/FarmPage'));
+const LandingPage = lazy(() => import('./pages/LandingPage'));
+const PoolsPage = lazy(() => import('./pages/PoolsPage'));
+const SwapPage = lazy(() => import('./pages/SwapPage'));
+const AnalyticsTokenDetails = lazy(() =>
+  import('./pages/AnalyticsTokenDetails'),
+);
+const AnalyticsPairDetails = lazy(() => import('./pages/AnalyticsPairDetails'));
+
 import { PageLayout } from 'layouts';
 import { getLibrary } from 'utils';
 import StyledThemeProvider from 'theme/index';

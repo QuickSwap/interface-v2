@@ -521,12 +521,15 @@ const LandingPage: React.FC = () => {
       daysCurrentYear) /
     (Number(lairInfo?.dQUICKtoQUICK.toSignificant()) *
       Number(lairInfo?.quickPrice));
-  const dQUICKAPY = APR
-    ? (
-        (Math.pow(1 + APR / daysCurrentYear, daysCurrentYear) - 1) *
-        100
-      ).toFixed(4)
-    : 0;
+
+  const dQUICKAPY = useMemo(() => {
+    return APR
+      ? (
+          (Math.pow(1 + APR / daysCurrentYear, daysCurrentYear) - 1) *
+          100
+        ).toFixed(4)
+      : 0;
+  }, [APR, daysCurrentYear]);
 
   const totalRewardsUSD = useTotalRewardsDistributed();
 
@@ -607,7 +610,7 @@ const LandingPage: React.FC = () => {
       </Box>
       <Box className={classes.tradingInfo} display='flex'>
         <Box>
-          {globalData ? (
+          {globalData?.oneDayTxns ? (
             <Typography variant='h3'>
               {Number(globalData.oneDayTxns).toLocaleString()}
             </Typography>
@@ -648,7 +651,7 @@ const LandingPage: React.FC = () => {
           </Typography>
         </Box>
         <Box>
-          {globalData ? (
+          {totalRewardsUSD ? (
             <Box display='flex' flexDirection='row'>
               <Typography variant='h6' style={{ paddingTop: '2px' }}>
                 $
