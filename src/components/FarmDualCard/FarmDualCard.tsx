@@ -10,6 +10,7 @@ import { useTokenBalance } from 'state/wallet/hooks';
 import { useActiveWeb3React } from 'hooks';
 import CircleInfoIcon from 'assets/images/circleinfo.svg';
 import FarmDualCardDetails from './FarmDualCardDetails';
+import { getAPYWithFee } from 'utils';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   syrupCard: {
@@ -181,16 +182,8 @@ const FarmDualCard: React.FC<{
 
   let apyWithFee: number | string = 0;
 
-  if (stakingAPY && stakingAPY > 0) {
-    apyWithFee =
-      ((1 +
-        ((Number(stakingInfo.perMonthReturnInRewards) +
-          Number(stakingAPY) / 12) *
-          12) /
-          12) **
-        12 -
-        1) *
-      100;
+  if (stakingAPY && stakingAPY > 0 && stakingInfo.perMonthReturnInRewards) {
+    apyWithFee = getAPYWithFee(stakingInfo.perMonthReturnInRewards, stakingAPY);
 
     if (apyWithFee > 100000000) {
       apyWithFee = '>100000000';

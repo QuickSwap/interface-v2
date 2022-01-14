@@ -248,7 +248,7 @@ import { useLairContract, useQUICKContract } from 'hooks/useContract';
 import useUSDCPrice, { useUSDCPrices } from 'utils/useUSDCPrice';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { useTotalSupplys } from 'data/TotalSupply';
-import { getDaysCurrentYear } from 'utils';
+import { getOneYearFee } from 'utils';
 
 const web3 = new Web3('https://polygon-rpc.com/');
 
@@ -12651,22 +12651,15 @@ export interface LairInfo {
   oneDayVol: number;
 }
 
-export interface StakingInfo {
+export interface CommonStakingInfo {
   // the address of the reward contract
   stakingRewardAddress: string;
   // the tokens involved in this pair
   tokens: [Token, Token];
   // the amount of token currently staked, or undefined if no account
   stakedAmount: TokenAmount;
-  // the amount of reward token earned by the active account, or undefined if no account
-  earnedAmount: TokenAmount;
   // the total amount of token staked in the contract
   totalStakedAmount: TokenAmount;
-  // the amount of token distributed per second to all LPs, constant
-  totalRewardRate: TokenAmount;
-  // the current amount of token distributed to the active account per second.
-  // equivalent to percent of total supply * reward rate
-  rewardRate: TokenAmount;
   // when the period ends
   periodFinish: Date | undefined;
 
@@ -12682,17 +12675,14 @@ export interface StakingInfo {
 
   quickPrice: number;
 
-  rate: number;
+  oneYearFeeAPY?: number;
 
-  oneYearFeeAPY: number;
+  oneDayFee?: number;
 
-  oneDayFee: number;
-
-  accountFee: number;
-  dQuickToQuick: number;
+  accountFee?: number;
   tvl?: string;
   perMonthReturnInRewards?: number;
-  valueOfTotalStakedAmountInBaseToken?: TokenAmount;
+
   totalSupply?: TokenAmount;
   usdPrice?: Price;
   stakingTokenPair?: Pair | null;
@@ -12704,22 +12694,28 @@ export interface StakingInfo {
   ) => TokenAmount;
 }
 
-export interface DualStakingInfo {
-  // the address of the reward contract
-  stakingRewardAddress: string;
-  // the tokens involved in this pair
-  tokens: [Token, Token];
+export interface StakingInfo extends CommonStakingInfo {
+  // the amount of reward token earned by the active account, or undefined if no account
+  earnedAmount: TokenAmount;
+  // the amount of token distributed per second to all LPs, constant
+  totalRewardRate: TokenAmount;
+  // the current amount of token distributed to the active account per second.
+  // equivalent to percent of total supply * reward rate
+  rewardRate: TokenAmount;
 
+  rate: number;
+
+  dQuickToQuick: number;
+  valueOfTotalStakedAmountInBaseToken?: TokenAmount;
+}
+
+export interface DualStakingInfo extends CommonStakingInfo {
   rewardTokenA: Token;
   rewardTokenB: Token;
   rewardTokenBBase: Token;
-  // the amount of token currently staked, or undefined if no account
-  stakedAmount: TokenAmount;
   // the amount of reward token earned by the active account, or undefined if no account
   earnedAmountA: TokenAmount;
   earnedAmountB: TokenAmount;
-  // the total amount of token staked in the contract
-  totalStakedAmount: TokenAmount;
   // the amount of token distributed per second to all LPs, constant
   totalRewardRateA: TokenAmount;
   totalRewardRateB: TokenAmount;
@@ -12727,43 +12723,12 @@ export interface DualStakingInfo {
   // equivalent to percent of total supply * reward rate
   rewardRateA: TokenAmount;
   rewardRateB: TokenAmount;
-  // when the period ends
-  periodFinish: Date | undefined;
 
-  ended: boolean;
-
-  name: string;
-
-  lp: string;
-
-  baseToken: Token;
-
-  pair: string;
-
-  quickPrice: number;
   maticPrice: number;
 
   rateA: number;
   rateB: number;
-
-  oneYearFeeAPY?: number;
-
-  oneDayFee?: number;
-
-  accountFee?: number;
-
-  tvl?: string;
-  perMonthReturnInRewards?: number;
   rewardTokenBPrice?: number;
-  totalSupply?: TokenAmount;
-  usdPrice?: Price;
-  stakingTokenPair?: Pair | null;
-  // calculates a hypothetical amount of token distributed to the active account per second.
-  getHypotheticalRewardRate: (
-    stakedAmount: TokenAmount,
-    totalStakedAmount: TokenAmount,
-    totalRewardRate: TokenAmount,
-  ) => TokenAmount;
 }
 
 export interface SyrupInfo {
@@ -14033,7 +13998,6 @@ export function useStakingInfo(
   endIndex?: number,
   filter?: { search: string; isStaked: boolean },
 ): StakingInfo[] {
-  const daysCurrentYear = getDaysCurrentYear();
   const { chainId, account } = useActiveWeb3React();
   //const [quickPrice,setQuickPrice] = useState(0);
   const [, quickUsdcPair] = usePair(QUICK, USDC);
@@ -14250,9 +14214,10 @@ export function useStakingInfo(
                 Number(totalSupplyState.result?.[0].toString());
               oneDayFee = oneYearFeeAPY * GlobalConst.FEEPERCENT * ratio;
               accountFee = oneDayFee * myRatio;
-              oneYearFeeAPY =
-                (oneYearFeeAPY * GlobalConst.FEEPERCENT * daysCurrentYear) /
-                pairs[info[index].pair]?.reserveUSD;
+              oneYearFeeAPY = getOneYearFee(
+                oneYearFeeAPY,
+                pairs[info[index].pair]?.reserveUSD,
+              );
               //console.log(info[index].pair, oneYearFeeAPY);
             }
           }
@@ -14345,7 +14310,6 @@ export function useStakingInfo(
     totalSupplys,
     usdPrices,
     stakingPairs,
-    daysCurrentYear,
   ]).filter((stakingInfo) =>
     filter && filter.isStaked
       ? stakingInfo.stakedAmount.greaterThan('0')

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { Box, Typography, Divider, useMediaQuery } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
@@ -16,13 +16,13 @@ import {
   STAKING_DUAL_REWARDS_INFO,
   getBulkPairData,
   useUSDRewardsandFees,
+  CommonStakingInfo,
 } from 'state/stake/hooks';
 import { FarmLPCard, FarmDualCard, ToggleSwitch } from 'components';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
 import { ReactComponent as SearchIcon } from 'assets/images/SearchIcon.svg';
 import { useActiveWeb3React } from 'hooks';
-import { GlobalConst } from 'constants/index';
-import { getDaysCurrentYear } from 'utils';
+import { getAPYWithFee, getOneYearFee } from 'utils';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
@@ -113,7 +113,6 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
 
 const FarmPage: React.FC = () => {
   const classes = useStyles();
-  const daysCurrentYear = getDaysCurrentYear();
   const { palette, breakpoints } = useTheme();
   const { chainId } = useActiveWeb3React();
   const lairInfo = useLairInfo();
@@ -214,184 +213,166 @@ const FarmPage: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isEndedFarm, farmIndex, farmSearch, stakingRewardAddress]);
 
+  const sortIndex = sortDesc ? 1 : -1;
+
+  const sortByToken = useCallback(
+    (a: CommonStakingInfo, b: CommonStakingInfo) => {
+      const tokenStrA = a.tokens[0].symbol + '/' + a.tokens[1].symbol;
+      const tokenStrB = b.tokens[0].symbol + '/' + b.tokens[1].symbol;
+      return (tokenStrA > tokenStrB ? -1 : 1) * sortIndex;
+    },
+    [sortIndex],
+  );
+
+  const sortByTVL = useCallback(
+    (a: CommonStakingInfo, b: CommonStakingInfo) => {
+      return (Number(a.tvl ?? 0) > Number(b.tvl ?? 0) ? -1 : 1) * sortIndex;
+    },
+    [sortIndex],
+  );
+
+  const sortByRewardLP = useCallback(
+    (a: StakingInfo, b: StakingInfo) => {
+      return (
+        (Number(a.totalRewardRate.toSignificant()) >
+        Number(b.totalRewardRate.toSignificant())
+          ? -1
+          : 1) * sortIndex
+      );
+    },
+    [sortIndex],
+  );
+
+  const sortByRewardDual = useCallback(
+    (a: DualStakingInfo, b: DualStakingInfo) => {
+      const aRewards =
+        a.rateA * a.quickPrice + a.rateB * Number(a.rewardTokenBPrice);
+      const bRewards =
+        b.rateA * b.quickPrice + b.rateB * Number(b.rewardTokenBPrice);
+      return (aRewards > bRewards ? -1 : 1) * sortIndex;
+    },
+    [sortIndex],
+  );
+
+  const sortByAPY = useCallback(
+    (a: CommonStakingInfo, b: CommonStakingInfo) => {
+      let aYearFee = 0;
+      let bYearFee = 0;
+      if (bulkPairs) {
+        const aDayVolume = bulkPairs[a.pair].oneDayVolumeUSD;
+        const aReserveUSD = bulkPairs[a.pair].reserveUSD;
+        const bDayVolume = bulkPairs[b.pair].oneDayVolumeUSD;
+        const bReserveUSD = bulkPairs[b.pair].reserveUSD;
+        if (aDayVolume && aReserveUSD) {
+          aYearFee = getOneYearFee(aDayVolume, aReserveUSD);
+        }
+        if (bDayVolume && bReserveUSD) {
+          bYearFee = getOneYearFee(bDayVolume, bReserveUSD);
+        }
+      }
+      const aAPYwithFee = getAPYWithFee(
+        a.perMonthReturnInRewards ?? 0,
+        aYearFee,
+      );
+      const bAPYwithFee = getAPYWithFee(
+        b.perMonthReturnInRewards ?? 0,
+        bYearFee,
+      );
+      return (aAPYwithFee > bAPYwithFee ? -1 : 1) * sortIndex;
+    },
+    [sortIndex, bulkPairs],
+  );
+
+  const sortByEarnedLP = useCallback(
+    (a: StakingInfo, b: StakingInfo) => {
+      return (
+        (Number(a.earnedAmount.toSignificant()) >
+        Number(b.earnedAmount.toSignificant())
+          ? -1
+          : 1) * sortIndex
+      );
+    },
+    [sortIndex],
+  );
+
+  const sortByEarnedDual = useCallback(
+    (a: DualStakingInfo, b: DualStakingInfo) => {
+      const earnedA =
+        Number(a.earnedAmountA.toSignificant()) * a.quickPrice +
+        Number(a.earnedAmountB.toSignificant()) * Number(a.rewardTokenBPrice);
+      const earnedB =
+        Number(b.earnedAmountA.toSignificant()) * b.quickPrice +
+        Number(b.earnedAmountB.toSignificant()) * Number(b.rewardTokenBPrice);
+      return (earnedA > earnedB ? -1 : 1) * sortIndex;
+    },
+    [sortIndex],
+  );
+
   const sortedStakingLPInfos = useMemo(() => {
     if (stakingInfos && stakingInfos.length > 0) {
       return stakingInfos.sort((a, b) => {
         if (sortBy === 1) {
-          const poolStrA = a.tokens[0].symbol + '/' + a.tokens[1].symbol;
-          const poolStrB = b.tokens[0].symbol + '/' + b.tokens[1].symbol;
-          if (sortDesc) {
-            return poolStrA > poolStrB ? -1 : 1;
-          } else {
-            return poolStrA < poolStrB ? -1 : 1;
-          }
+          return sortByToken(a, b);
         } else if (sortBy === 2) {
-          if (sortDesc) {
-            return Number(a.tvl) > Number(b.tvl) ? -1 : 1;
-          } else {
-            return Number(a.tvl) < Number(b.tvl) ? -1 : 1;
-          }
+          return sortByTVL(a, b);
         } else if (sortBy === 3) {
-          if (sortDesc) {
-            return Number(a.totalRewardRate.toSignificant()) >
-              Number(b.totalRewardRate.toSignificant())
-              ? -1
-              : 1;
-          } else {
-            return Number(a.totalRewardRate.toSignificant()) <
-              Number(b.totalRewardRate.toSignificant())
-              ? -1
-              : 1;
-          }
+          return sortByRewardLP(a, b);
         } else if (sortBy === 4) {
-          const aDayVolume = bulkPairs ? bulkPairs[a.pair]?.oneDayVolumeUSD : 0;
-          const bDayVolume = bulkPairs ? bulkPairs[b.pair]?.oneDayVolumeUSD : 0;
-          let aYearFee = 0;
-          let bYearFee = 0;
-          if (aDayVolume) {
-            aYearFee =
-              (aDayVolume * GlobalConst.FEEPERCENT * daysCurrentYear) /
-              bulkPairs[a.pair]?.reserveUSD;
-          }
-          if (bDayVolume) {
-            bYearFee =
-              (bDayVolume * GlobalConst.FEEPERCENT * daysCurrentYear) /
-              bulkPairs[b.pair]?.reserveUSD;
-          }
-          const aAPYwithFee =
-            ((1 +
-              ((Number(a.perMonthReturnInRewards) + Number(aYearFee) / 12) *
-                12) /
-                12) **
-              12 -
-              1) *
-            100;
-          const bAPYwithFee =
-            ((1 +
-              ((Number(b.perMonthReturnInRewards) + Number(bYearFee) / 12) *
-                12) /
-                12) **
-              12 -
-              1) *
-            100;
-          if (sortDesc) {
-            return aAPYwithFee > bAPYwithFee ? -1 : 1;
-          } else {
-            return aAPYwithFee < bAPYwithFee ? -1 : 1;
-          }
+          return sortByAPY(a, b);
         } else if (sortBy === 5) {
-          if (sortDesc) {
-            return Number(a.earnedAmount.toSignificant()) >
-              Number(b.earnedAmount.toSignificant())
-              ? -1
-              : 1;
-          } else {
-            return Number(a.earnedAmount.toSignificant()) <
-              Number(b.earnedAmount.toSignificant())
-              ? -1
-              : 1;
-          }
+          return sortByEarnedLP(a, b);
         }
         return 1;
       });
     }
     return [];
-  }, [stakingInfos, sortBy, sortDesc, bulkPairs, daysCurrentYear]);
+  }, [
+    sortBy,
+    stakingInfos,
+    sortByToken,
+    sortByTVL,
+    sortByRewardLP,
+    sortByAPY,
+    sortByEarnedLP,
+  ]);
 
   const sortedStakingDualInfos = useMemo(() => {
     if (stakingDualInfos && stakingDualInfos.length > 0) {
       return stakingDualInfos.sort((a, b) => {
         if (sortBy === 1) {
-          const poolStrA = a.tokens[0].symbol + '/' + a.tokens[1].symbol;
-          const poolStrB = b.tokens[0].symbol + '/' + b.tokens[1].symbol;
-          if (sortDesc) {
-            return poolStrA > poolStrB ? -1 : 1;
-          } else {
-            return poolStrA < poolStrB ? -1 : 1;
-          }
+          return sortByToken(a, b);
         } else if (sortBy === 2) {
-          if (sortDesc) {
-            return Number(a.tvl) > Number(b.tvl) ? -1 : 1;
-          } else {
-            return Number(a.tvl) < Number(b.tvl) ? -1 : 1;
-          }
+          return sortByTVL(a, b);
         } else if (sortBy === 3) {
-          const aRewards =
-            a.rateA * a.quickPrice + a.rateB * Number(a.rewardTokenBPrice);
-          const bRewards =
-            b.rateA * b.quickPrice + b.rateB * Number(b.rewardTokenBPrice);
-          if (sortDesc) {
-            return aRewards > bRewards ? -1 : 1;
-          } else {
-            return aRewards < bRewards ? -1 : 1;
-          }
+          return sortByRewardDual(a, b);
         } else if (sortBy === 4) {
-          const aDayVolume = bulkPairs ? bulkPairs[a.pair]?.oneDayVolumeUSD : 0;
-          const bDayVolume = bulkPairs ? bulkPairs[b.pair]?.oneDayVolumeUSD : 0;
-          let aYearFee = 0;
-          let bYearFee = 0;
-          if (aDayVolume) {
-            aYearFee =
-              (aDayVolume * GlobalConst.FEEPERCENT * daysCurrentYear) /
-              bulkPairs[a.pair]?.reserveUSD;
-          }
-          if (bDayVolume) {
-            bYearFee =
-              (bDayVolume * GlobalConst.FEEPERCENT * daysCurrentYear) /
-              bulkPairs[b.pair]?.reserveUSD;
-          }
-          const aAPYwithFee =
-            ((1 +
-              ((Number(a.perMonthReturnInRewards) + Number(aYearFee) / 12) *
-                12) /
-                12) **
-              12 -
-              1) *
-            100;
-          const bAPYwithFee =
-            ((1 +
-              ((Number(b.perMonthReturnInRewards) + Number(bYearFee) / 12) *
-                12) /
-                12) **
-              12 -
-              1) *
-            100;
-          if (sortDesc) {
-            return aAPYwithFee > bAPYwithFee ? -1 : 1;
-          } else {
-            return aAPYwithFee < bAPYwithFee ? -1 : 1;
-          }
+          return sortByAPY(a, b);
         } else if (sortBy === 5) {
-          const earnedA =
-            Number(a.earnedAmountA.toSignificant()) * a.quickPrice +
-            Number(a.earnedAmountB.toSignificant()) *
-              Number(a.rewardTokenBPrice);
-          const earnedB =
-            Number(b.earnedAmountA.toSignificant()) * b.quickPrice +
-            Number(b.earnedAmountB.toSignificant()) *
-              Number(b.rewardTokenBPrice);
-          if (sortDesc) {
-            return earnedA > earnedB ? -1 : 1;
-          } else {
-            return earnedA < earnedB ? -1 : 1;
-          }
+          return sortByEarnedDual(a, b);
         }
         return 1;
       });
     }
     return [];
-  }, [stakingDualInfos, sortBy, sortDesc, bulkPairs, daysCurrentYear]);
+  }, [
+    stakingDualInfos,
+    sortBy,
+    sortByToken,
+    sortByTVL,
+    sortByRewardDual,
+    sortByAPY,
+    sortByEarnedDual,
+  ]);
 
   const stakingAPYs = useMemo(() => {
     const sortedStakingInfos =
       farmIndex === 0 ? sortedStakingLPInfos : sortedStakingDualInfos;
     if (bulkPairs && sortedStakingInfos.length > 0) {
-      return sortedStakingInfos.map(({ pair }) => {
-        const oneDayVolume = bulkPairs[pair]?.oneDayVolumeUSD;
-        if (oneDayVolume) {
-          const oneYearFeeAPY =
-            (oneDayVolume * GlobalConst.FEEPERCENT * daysCurrentYear) /
-            bulkPairs[pair]?.reserveUSD;
+      return sortedStakingInfos.map((info: any) => {
+        const oneDayVolume = bulkPairs[info.pair]?.oneDayVolumeUSD;
+        const reserveUSD = bulkPairs[info.pair]?.reserveUSD;
+        if (oneDayVolume && reserveUSD) {
+          const oneYearFeeAPY = getOneYearFee(oneDayVolume, reserveUSD);
           return oneYearFeeAPY;
         } else {
           return 0;
@@ -400,13 +381,7 @@ const FarmPage: React.FC = () => {
     } else {
       return [];
     }
-  }, [
-    bulkPairs,
-    sortedStakingLPInfos,
-    sortedStakingDualInfos,
-    farmIndex,
-    daysCurrentYear,
-  ]);
+  }, [bulkPairs, sortedStakingLPInfos, sortedStakingDualInfos, farmIndex]);
 
   return (
     <Box width='100%' mb={3} id='farmPage'>

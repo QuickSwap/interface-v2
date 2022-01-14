@@ -16,6 +16,7 @@ import { Link } from 'react-router-dom';
 import { useActiveWeb3React, useIsArgentWallet } from 'hooks';
 import useTransactionDeadline from 'hooks/useTransactionDeadline';
 import { useApproveCallback, ApprovalState } from 'hooks/useApproveCallback';
+import { getAPYWithFee } from 'utils';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   syrupCard: {
@@ -209,15 +210,7 @@ const FarmLPCardDetails: React.FC<{
     stakingAPY &&
     stakingAPY > 0
   ) {
-    apyWithFee =
-      ((1 +
-        ((Number(stakingInfo.perMonthReturnInRewards) +
-          Number(stakingAPY) / 12) *
-          12) /
-          12) **
-        12 -
-        1) *
-      100;
+    apyWithFee = getAPYWithFee(stakingInfo.perMonthReturnInRewards, stakingAPY);
 
     if (apyWithFee > 100000000) {
       apyWithFee = '>100000000';
