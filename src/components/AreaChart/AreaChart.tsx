@@ -196,9 +196,11 @@ const AreaChart: React.FC<AreaChartProps> = ({
       </Box>
       {yAxisValues && (
         <Box className={classes.yAxis}>
-          {yAxisValues.map((item, index) => (
+          {yAxisValues.map((value, index) => (
             <Typography key={index}>
-              ${item > 1 ? formatCompact(item) : formatNumber(item)}
+              $
+              {// this is to show small numbers less than 0.0001
+              value > 0.0001 ? formatCompact(value) : formatNumber(value)}
             </Typography>
           ))}
         </Box>

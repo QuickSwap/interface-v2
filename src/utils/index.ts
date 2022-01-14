@@ -1627,10 +1627,16 @@ export function getAPYWithFee(rewards: number, fee: number) {
 }
 
 export function formatNumber(unformatted: number | string, showDigits = 2) {
-  const digits = Math.ceil(Math.log10(1 / Number(unformatted)));
-  if (digits < 3) {
-    return Number(unformatted).toLocaleString();
+  // get fraction digits for small number
+  const absNumber = Math.abs(Number(unformatted));
+  if (absNumber > 0) {
+    const digits = Math.ceil(Math.log10(1 / absNumber));
+    if (digits < 3) {
+      return Number(unformatted).toLocaleString();
+    } else {
+      return Number(unformatted).toFixed(digits + showDigits);
+    }
   } else {
-    return Number(unformatted).toFixed(digits + showDigits);
+    return 0;
   }
 }
