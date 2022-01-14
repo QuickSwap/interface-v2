@@ -92,6 +92,7 @@ const PoolPositionCard: React.FC<PoolPositionCardProps> = ({
   useEffect(() => {
     const pairLists = pairId ? [pairId] : [];
     getBulkPairData(pairLists).then((data) => setBulkPairData(data));
+    return () => setBulkPairData(null);
   }, [pairId]);
 
   const [showMore, setShowMore] = useState(false);
@@ -133,8 +134,8 @@ const PoolPositionCard: React.FC<PoolPositionCardProps> = ({
 
   const apyWithFee = useMemo(() => {
     if (stakingInfo && bulkPairData) {
-      const dayVolume = bulkPairData[stakingInfo.pair].oneDayVolumeUSD;
-      const reserveUSD = bulkPairData[stakingInfo.pair].reserveUSD;
+      const dayVolume = bulkPairData[stakingInfo.pair]?.oneDayVolumeUSD;
+      const reserveUSD = bulkPairData[stakingInfo.pair]?.reserveUSD;
       const oneYearFee =
         dayVolume && reserveUSD ? getOneYearFee(dayVolume, reserveUSD) : 0;
       const apy = getAPYWithFee(
