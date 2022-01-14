@@ -210,7 +210,7 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
               {currency.symbol}
             </Typography>
             {isMetamask && currency !== ETHER && (
-              <Button
+              <Box
                 style={{ cursor: 'pointer', marginLeft: 2 }}
                 onClick={(event: any) => {
                   addTokenToMetamask(
@@ -223,41 +223,33 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
                 }}
               >
                 <PlusHelper text='Add to metamask.' />
-              </Button>
+              </Box>
             )}
           </Box>
-          <Typography variant='caption' className={classes.currencyName}>
-            {currency.name}
-          </Typography>
-          {!isOnSelectedList && customAdded && (
+          {isOnSelectedList ? (
+            <Typography variant='caption' className={classes.currencyName}>
+              {currency.name}
+            </Typography>
+          ) : (
             <Box display='flex' alignItems='center'>
-              <Typography variant='caption'>Added by user</Typography>
-              <Box ml={0.5} color={palette.primary.main}>
-                <Typography
-                  variant='caption'
-                  onClick={(event) => {
-                    event.stopPropagation();
+              <Typography variant='caption'>
+                {customAdded ? 'Added by user' : 'Found by address'}
+              </Typography>
+              <Box
+                ml={0.5}
+                color={palette.primary.main}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  if (customAdded) {
                     if (chainId && currency instanceof Token)
                       removeToken(chainId, currency.address);
-                  }}
-                >
-                  (Remove)
-                </Typography>
-              </Box>
-            </Box>
-          )}
-          {!isOnSelectedList && !customAdded && (
-            <Box display='flex' alignItems='center'>
-              <Typography variant='caption'>Found by address</Typography>
-              <Box ml={0.5} color={palette.primary.main}>
-                <Typography
-                  variant='caption'
-                  onClick={(event) => {
-                    event.stopPropagation();
+                  } else {
                     if (currency instanceof Token) addToken(currency);
-                  }}
-                >
-                  (Add)
+                  }
+                }}
+              >
+                <Typography variant='caption'>
+                  {customAdded ? '(Remove)' : '(Add)'}
                 </Typography>
               </Box>
             </Box>

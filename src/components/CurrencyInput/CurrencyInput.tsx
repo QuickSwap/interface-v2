@@ -116,7 +116,7 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
   const { account } = useActiveWeb3React();
   const selectedCurrencyBalance = useCurrencyBalance(
     account ?? undefined,
-    currency ?? undefined,
+    currency,
   );
   const usdPrice = Number(useUSDCPrice(currency)?.toSignificant()) || 0;
 
