@@ -64,8 +64,8 @@ const RewardSlider: React.FC = () => {
   const stakingAPYs = useMemo(() => {
     if (bulkPairs && rewardItems.length > 0) {
       return rewardItems.map((info: StakingInfo) => {
-        const oneDayVolume = bulkPairs[info.pair].oneDayVolumeUSD;
-        const reserveUSD = bulkPairs[info.pair].reserveUSD;
+        const oneDayVolume = bulkPairs[info.pair]?.oneDayVolumeUSD;
+        const reserveUSD = bulkPairs[info.pair]?.reserveUSD;
         if (oneDayVolume && reserveUSD) {
           return getOneYearFee(oneDayVolume, reserveUSD);
         } else {

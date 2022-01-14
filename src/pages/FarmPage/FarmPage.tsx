@@ -259,10 +259,10 @@ const FarmPage: React.FC = () => {
       let aYearFee = 0;
       let bYearFee = 0;
       if (bulkPairs) {
-        const aDayVolume = bulkPairs[a.pair].oneDayVolumeUSD;
-        const aReserveUSD = bulkPairs[a.pair].reserveUSD;
-        const bDayVolume = bulkPairs[b.pair].oneDayVolumeUSD;
-        const bReserveUSD = bulkPairs[b.pair].reserveUSD;
+        const aDayVolume = bulkPairs[a.pair]?.oneDayVolumeUSD;
+        const aReserveUSD = bulkPairs[a.pair]?.reserveUSD;
+        const bDayVolume = bulkPairs[b.pair]?.oneDayVolumeUSD;
+        const bReserveUSD = bulkPairs[b.pair]?.reserveUSD;
         if (aDayVolume && aReserveUSD) {
           aYearFee = getOneYearFee(aDayVolume, aReserveUSD);
         }
