@@ -1625,3 +1625,12 @@ export function getOneYearFee(dayVolume: number, reserveUSD: number) {
 export function getAPYWithFee(rewards: number, fee: number) {
   return fee > 0 ? ((1 + ((rewards + fee / 12) * 12) / 12) ** 12 - 1) * 100 : 0;
 }
+
+export function formatNumber(unformatted: number | string, showDigits = 2) {
+  const digits = Math.ceil(Math.log10(1 / Number(unformatted)));
+  if (digits < 3) {
+    return Number(unformatted).toLocaleString();
+  } else {
+    return Number(unformatted).toFixed(digits + showDigits);
+  }
+}

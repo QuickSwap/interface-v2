@@ -13,6 +13,7 @@ import {
   getTokenInfo,
   getEthPrice,
   getIntervalTokenData,
+  formatNumber,
 } from 'utils';
 import { LineChart } from 'components';
 import { Token } from '@uniswap/sdk';
@@ -88,10 +89,7 @@ const SwapTokenDetails: React.FC<{
             {tokenData ? (
               <Box display='flex' alignItems='center'>
                 <Typography variant='body2'>
-                  $
-                  {Number(tokenData?.priceUSD).toFixed(
-                    Number(tokenData?.priceUSD) > 0.01 ? 2 : 5,
-                  )}
+                  ${formatNumber(tokenData.priceUSD)}
                 </Typography>
                 <Box
                   ml={0.5}
@@ -180,7 +178,7 @@ const SwapTokenDetails: React.FC<{
         </a>
         <Box
           display='flex'
-          style={{ cursor: 'pointer' }}
+          style={{ cursor: 'pointer', opacity: isCopied ? 0.5 : 1 }}
           onClick={() => {
             setCopied(tokenAddress);
           }}
