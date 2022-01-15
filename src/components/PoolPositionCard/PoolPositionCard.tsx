@@ -9,7 +9,6 @@ import { unwrappedToken } from 'utils/wrappedCurrency';
 import { useTokenBalance } from 'state/wallet/hooks';
 import { useStakingInfo, getBulkPairData } from 'state/stake/hooks';
 import { useTotalSupply } from 'data/TotalSupply';
-import { usePair } from 'data/Reserves';
 import {
   CurrencyLogo,
   DoubleCurrencyLogo,
@@ -80,8 +79,7 @@ const PoolPositionCard: React.FC<PoolPositionCardProps> = ({
   const currency0 = unwrappedToken(pair.token0);
   const currency1 = unwrappedToken(pair.token1);
 
-  const [, stakingTokenPair] = usePair(currency0, currency1);
-  const stakingInfos = useStakingInfo(stakingTokenPair);
+  const stakingInfos = useStakingInfo(pair);
   const stakingInfo = useMemo(
     () => (stakingInfos && stakingInfos.length > 0 ? stakingInfos[0] : null),
     [stakingInfos],

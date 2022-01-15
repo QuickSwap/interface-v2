@@ -13,7 +13,6 @@ const useStyles = makeStyles(({ palette }) => ({
     border: 'none',
     background: 'none',
     outline: 'none',
-    cursor: 'default',
     borderRadius: 36,
     color: (props: any) => (props.color ? props.color : palette.text.primary),
     '&:hover, &:focus': {
@@ -69,7 +68,7 @@ export const PlusHelper: React.FC<{ text: string; color?: string }> = ({
   return (
     <CustomTooltip title={text}>
       <Box className={classes.questionWrapper}>
-        <PlusCircle style={{ cursor: 'pointer' }} size={16} />
+        <PlusCircle size={16} />
       </Box>
     </CustomTooltip>
   );
