@@ -6,7 +6,7 @@ import Skeleton from '@material-ui/lab/Skeleton';
 import { Token, ChainId } from '@uniswap/sdk';
 import { getAddress } from '@ethersproject/address';
 import { CurrencyLogo } from 'components';
-import { getEthPrice, getTopTokens, getPriceColor } from 'utils';
+import { getEthPrice, getTopTokens, getPriceColor, formatNumber } from 'utils';
 
 const useStyles = makeStyles(() => ({
   content: {
@@ -105,7 +105,7 @@ const TopMovers: React.FC<TopMoversProps> = ({
                       alignItems='center'
                     >
                       <Typography variant='body2'>
-                        ${Number(token.priceUSD).toFixed(2)}
+                        ${formatNumber(token.priceUSD)}
                       </Typography>
                       <Box
                         ml={hideArrow ? 1 : 0}

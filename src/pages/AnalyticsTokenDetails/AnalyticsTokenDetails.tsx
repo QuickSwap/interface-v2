@@ -13,6 +13,7 @@ import {
   formatCompact,
   getFormattedPrice,
   getPriceColor,
+  formatNumber,
 } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import { CurrencyLogo, PairTable, AreaChart } from 'components';
@@ -315,7 +316,7 @@ const AnalyticsTokenDetails: React.FC = () => {
                     variant='h5'
                     style={{ color: palette.text.primary }}
                   >
-                    ${Number(token.priceUSD).toLocaleString()}
+                    ${formatNumber(token.priceUSD)}
                   </Typography>
                   <Box
                     className={classes.priceChangeWrapper}
@@ -378,7 +379,7 @@ const AnalyticsTokenDetails: React.FC = () => {
                               $
                               {currentData > 100000
                                 ? formatCompact(currentData)
-                                : currentData.toLocaleString()}
+                                : formatNumber(currentData)}
                             </Typography>
                             <Box
                               className={classes.priceChangeWrapper}

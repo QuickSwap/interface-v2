@@ -4,7 +4,7 @@ import { Box, Typography } from '@material-ui/core';
 import Chart from 'react-apexcharts';
 import moment from 'moment';
 import { useIsDarkMode } from 'state/user/hooks';
-import { formatCompact } from 'utils';
+import { formatCompact, formatNumber } from 'utils';
 
 const useStyles = makeStyles(({ palette }) =>
   createStyles({
@@ -196,8 +196,12 @@ const AreaChart: React.FC<AreaChartProps> = ({
       </Box>
       {yAxisValues && (
         <Box className={classes.yAxis}>
-          {yAxisValues.map((item, index) => (
-            <Typography key={index}>${formatCompact(item)}</Typography>
+          {yAxisValues.map((value, index) => (
+            <Typography key={index}>
+              $
+              {// this is to show small numbers less than 0.0001
+              value > 0.0001 ? formatCompact(value) : formatNumber(value)}
+            </Typography>
           ))}
         </Box>
       )}

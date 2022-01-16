@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useHistory, useRouteMatch } from 'react-router-dom';
+import { useHistory, useRouteMatch, Link } from 'react-router-dom';
 import { Box, Typography, Grid, useMediaQuery } from '@material-ui/core';
 import { ArrowForwardIos } from '@material-ui/icons';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
@@ -72,6 +72,10 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     marginLeft: 6,
     [breakpoints.down('xs')]: {
       fontSize: 18,
+    },
+    '& a': {
+      color: palette.text.primary,
+      textDecoration: 'none',
     },
   },
   priceChangeWrapper: {
@@ -341,7 +345,13 @@ const AnalyticsPairDetails: React.FC = () => {
                 />
                 <Box ml={1}>
                   <Typography className={classes.heading2}>
-                    {pairData.token0.symbol} / {pairData.token1.symbol}
+                    <Link to={`/analytics/token/${pairData.token0.id}`}>
+                      {pairData.token0.symbol}
+                    </Link>{' '}
+                    /{' '}
+                    <Link to={`/analytics/token/${pairData.token1.id}`}>
+                      {pairData.token1.symbol}
+                    </Link>
                   </Typography>
                 </Box>
               </Box>

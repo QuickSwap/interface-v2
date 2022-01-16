@@ -6,7 +6,7 @@ import { getAddress } from '@ethersproject/address';
 import { ChainId, Token } from '@uniswap/sdk';
 import { CurrencyLogo, CustomTable } from 'components';
 import { GlobalConst } from 'constants/index';
-import { getFormattedPrice, getPriceColor } from 'utils';
+import { formatNumber, getFormattedPrice, getPriceColor } from 'utils';
 import { useBookmarkTokens } from 'state/application/hooks';
 import { ReactComponent as StarChecked } from 'assets/images/StarChecked.svg';
 import { ReactComponent as StarUnchecked } from 'assets/images/StarUnchecked.svg';
@@ -132,7 +132,7 @@ const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
         <Box className={classes.mobileRow}>
           <Typography variant='body1'>Price</Typography>
           <Typography variant='body1'>
-            ${Number(token.priceUSD).toLocaleString()}
+            ${formatNumber(token.priceUSD)}
           </Typography>
         </Box>
         <Box className={classes.mobileRow}>
