@@ -31,6 +31,7 @@ import { ReactComponent as PriceExchangeIcon } from 'assets/images/PriceExchange
 import { ReactComponent as SearchIcon } from 'assets/images/SearchIcon.svg';
 import { getDaysCurrentYear } from 'utils';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
+import { useInfiniteLoading } from 'utils/useInfiniteLoading';
 import { Skeleton } from '@material-ui/lab';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
@@ -159,6 +160,7 @@ const DragonPage: React.FC = () => {
   const [openStakeModal, setOpenStakeModal] = useState(false);
   const [openUnstakeModal, setOpenUnstakeModal] = useState(false);
   const [isEndedSyrup, setIsEndedSyrup] = useState(false);
+  const [pageIndex, setPageIndex] = useState(0);
   const lairInfo = useLairInfo();
   const [syrupInfos, setSyrupInfos] = useState<SyrupInfo[] | undefined>(
     undefined,
@@ -209,12 +211,27 @@ const DragonPage: React.FC = () => {
 
   useEffect(() => {
     setSyrupInfos(undefined);
+    setPageIndex(0);
     setTimeout(() => {
-      setSyrupInfos(isEndedSyrup ? addedOldSyrupInfos : addedStakingSyrupInfos);
+      setSyrupInfos(
+        isEndedSyrup
+          ? addedOldSyrupInfos.slice(0, 5)
+          : addedStakingSyrupInfos.slice(0, 5),
+      );
     }, 500);
     return () => setSyrupInfos(undefined);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isEndedSyrup, syrupSearch, syrupRewardAddress]);
+
+  useEffect(() => {
+    const currentSyrupInfos = syrupInfos || [];
+    const syrupInfosToAdd = (isEndedSyrup
+      ? addedOldSyrupInfos
+      : addedStakingSyrupInfos
+    ).slice(currentSyrupInfos.length, currentSyrupInfos.length + 5);
+    setSyrupInfos(currentSyrupInfos.concat(syrupInfosToAdd));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pageIndex]);
 
   const sortedSyrupInfos = useMemo(() => {
     if (syrupInfos && syrupInfos.length > 0) {
@@ -277,6 +294,12 @@ const DragonPage: React.FC = () => {
       return [];
     }
   }, [syrupInfos, sortDesc, sortBy, daysCurrentYear]);
+
+  const loadNext = () => {
+    setPageIndex(pageIndex + 1);
+  };
+
+  const { loadMoreRef } = useInfiniteLoading(loadNext);
 
   return (
     <Box width='100%' mb={3}>
@@ -638,6 +661,7 @@ const DragonPage: React.FC = () => {
           </Box>
         </Grid>
       </Grid>
+      <div ref={loadMoreRef} />
     </Box>
   );
 };

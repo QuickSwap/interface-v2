@@ -24,6 +24,7 @@ import { ReactComponent as SearchIcon } from 'assets/images/SearchIcon.svg';
 import { useActiveWeb3React } from 'hooks';
 import { getAPYWithFee, getOneYearFee } from 'utils';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
+import { useInfiniteLoading } from 'utils/useInfiniteLoading';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   helpWrapper: {
@@ -125,6 +126,7 @@ const FarmPage: React.FC = () => {
     DualStakingInfo[] | undefined
   >(undefined);
   const [bulkPairs, setBulkPairs] = useState<any>(null);
+  const [pageIndex, setPageIndex] = useState(0);
   const [farmIndex, setFarmIndex] = useState(0);
   const [isEndedFarm, setIsEndedFarm] = useState(false);
   const [sortBy, setSortBy] = useState(0);
@@ -200,11 +202,19 @@ const FarmPage: React.FC = () => {
   useEffect(() => {
     setStakingInfos(undefined);
     setStakingDualInfos(undefined);
+    setPageIndex(0);
     setTimeout(() => {
-      setStakingInfos(
-        isEndedFarm ? addedLPStakingOldInfos : addedLPStakingInfos,
-      );
-      setStakingDualInfos(isEndedFarm ? [] : addedDualStakingInfos);
+      if (farmIndex === 0) {
+        setStakingInfos(
+          isEndedFarm
+            ? addedLPStakingOldInfos.slice(0, 6)
+            : addedLPStakingInfos.slice(0, 6),
+        );
+      } else {
+        setStakingDualInfos(
+          isEndedFarm ? [] : addedDualStakingInfos.slice(0, 6),
+        );
+      }
     }, 500);
     return () => {
       setStakingInfos(undefined);
@@ -212,6 +222,30 @@ const FarmPage: React.FC = () => {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isEndedFarm, farmIndex, farmSearch, stakingRewardAddress]);
+
+  useEffect(() => {
+    if (farmIndex === 0) {
+      const currentStakingInfos = stakingInfos || [];
+      const stakingInfosToAdd = (isEndedFarm
+        ? addedLPStakingOldInfos
+        : addedLPStakingInfos
+      ).slice(currentStakingInfos.length, currentStakingInfos.length + 6);
+      setStakingInfos(currentStakingInfos.concat(stakingInfosToAdd));
+    } else if (farmIndex === 1) {
+      const currentDualStakingInfos = stakingDualInfos || [];
+      const stakingDualInfosToAdd = (isEndedFarm
+        ? []
+        : addedDualStakingInfos
+      ).slice(
+        currentDualStakingInfos.length,
+        currentDualStakingInfos.length + 6,
+      );
+      setStakingDualInfos(
+        currentDualStakingInfos.concat(stakingDualInfosToAdd),
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pageIndex]);
 
   const sortIndex = sortDesc ? 1 : -1;
 
@@ -382,6 +416,12 @@ const FarmPage: React.FC = () => {
       return [];
     }
   }, [bulkPairs, sortedStakingLPInfos, sortedStakingDualInfos, farmIndex]);
+
+  const loadNext = () => {
+    setPageIndex(pageIndex + 1);
+  };
+
+  const { loadMoreRef } = useInfiniteLoading(loadNext);
 
   return (
     <Box width='100%' mb={3} id='farmPage'>
@@ -730,6 +770,7 @@ const FarmPage: React.FC = () => {
           <Skeleton width='100%' height={80} />
         )}
       </Box>
+      <div ref={loadMoreRef} />
     </Box>
   );
 };
