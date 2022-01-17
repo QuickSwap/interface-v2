@@ -143,7 +143,11 @@ export function useSwapCallback(
   state: SwapCallbackState;
   callback:
     | null
-    | (() => Promise<{ response: TransactionResponse; summary: string }>);
+    | (() => Promise<{
+        response: TransactionResponse;
+        summary: string;
+        isGasless?: boolean;
+      }>);
   error: string | null;
 } {
   const { account, chainId, library } = useActiveWeb3React();
@@ -198,6 +202,7 @@ export function useSwapCallback(
       callback: async function onSwap(): Promise<{
         response: TransactionResponse;
         summary: string;
+        isGasless?: boolean;
       }> {
         const estimatedCalls: EstimatedSwapCall[] = await Promise.all(
           swapCalls.map((call) => {
@@ -451,11 +456,16 @@ export function useSwapCallback(
 
           addTransaction(biconomyResponse, {
             summary: withVersion,
+            isGasless: true,
           });
 
           //@notice
           //it does expect wait
-          return { response: biconomyResponse, summary: withVersion };
+          return {
+            response: biconomyResponse,
+            summary: withVersion,
+            isGasless: true,
+          };
         }
       },
       error: null,

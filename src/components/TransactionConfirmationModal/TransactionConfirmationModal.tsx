@@ -9,6 +9,7 @@ import { ReactComponent as TransactionSuccess } from 'assets/images/TransactionS
 import { getEtherscanLink } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import ModalBg from 'assets/images/ModalBG.svg';
+import GaslessBranding from 'components/Biconomy/GaslessBranding';
 
 const useStyles = makeStyles(({ palette }) => ({
   modalHeader: {
@@ -206,6 +207,7 @@ interface ConfirmationModalProps {
   pendingText: string;
   modalContent: string;
   txPending?: boolean;
+  isGasless?: boolean;
 }
 
 const TransactionConfirmationModal: React.FC<ConfirmationModalProps> = ({
@@ -217,6 +219,7 @@ const TransactionConfirmationModal: React.FC<ConfirmationModalProps> = ({
   pendingText,
   content,
   modalContent,
+  isGasless,
 }) => {
   const { chainId } = useActiveWeb3React();
   const classes = useStyles();
@@ -229,18 +232,22 @@ const TransactionConfirmationModal: React.FC<ConfirmationModalProps> = ({
       <img src={ModalBg} alt='Modal Back' className={classes.modalBG} />
       <Box position='relative' zIndex={2}>
         {attemptingTxn ? (
-          <ConfirmationPendingContent
-            onDismiss={onDismiss}
-            pendingText={pendingText}
-          />
+          <GaslessBranding enabled={!!isGasless}>
+            <ConfirmationPendingContent
+              onDismiss={onDismiss}
+              pendingText={pendingText}
+            />
+          </GaslessBranding>
         ) : hash ? (
-          <TransactionSubmittedContent
-            chainId={chainId}
-            txPending={txPending}
-            hash={hash}
-            onDismiss={onDismiss}
-            modalContent={modalContent}
-          />
+          <GaslessBranding enabled={!!isGasless}>
+            <TransactionSubmittedContent
+              chainId={chainId}
+              txPending={txPending}
+              hash={hash}
+              onDismiss={onDismiss}
+              modalContent={modalContent}
+            />
+          </GaslessBranding>
         ) : (
           content()
         )}

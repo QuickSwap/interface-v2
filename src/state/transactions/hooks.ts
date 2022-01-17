@@ -18,6 +18,7 @@ export function useTransactionAdder(): (
     summary?: string;
     approval?: { tokenAddress: string; spender: string };
     claim?: { recipient: string };
+    isGasless?: boolean;
   },
 ) => void {
   const { chainId, account } = useActiveWeb3React();
@@ -30,10 +31,12 @@ export function useTransactionAdder(): (
         summary,
         approval,
         claim,
+        isGasless,
       }: {
         summary?: string;
         claim?: { recipient: string };
         approval?: { tokenAddress: string; spender: string };
+        isGasless?: boolean;
       } = {},
     ) => {
       if (!account) return;
@@ -51,6 +54,7 @@ export function useTransactionAdder(): (
           approval,
           summary,
           claim,
+          isGasless: !!isGasless,
         }),
       );
     },
