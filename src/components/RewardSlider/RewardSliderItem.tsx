@@ -6,7 +6,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { StakingInfo } from 'state/stake/hooks';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { DoubleCurrencyLogo } from 'components';
-import { EMPTY } from 'constants/index';
+import { GlobalConst } from 'constants/index';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon.svg';
 import { getAPYWithFee } from 'utils';
 
@@ -74,7 +74,7 @@ const RewardSliderItem: React.FC<RewardSliderItemProps> = ({
   const token0 = info.tokens[0];
 
   const baseTokenCurrency = unwrappedToken(info.baseToken);
-  const empty = unwrappedToken(EMPTY);
+  const empty = unwrappedToken(GlobalConst.tokens.EMPTY);
 
   let valueOfTotalStakedAmountInBaseToken: TokenAmount | undefined;
   const totalSupplyOfStakingToken = info.totalSupply;

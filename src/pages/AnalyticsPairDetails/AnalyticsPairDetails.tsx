@@ -178,10 +178,11 @@ const AnalyticsPairDetails: React.FC = () => {
     pairData && (pairData.oneDayVolumeUSD || pairData.oneDayVolumeUSD === 0)
       ? usingUtVolume
         ? (
-            Number(pairData.oneDayVolumeUntracked) * GlobalConst.FEEPERCENT
+            Number(pairData.oneDayVolumeUntracked) *
+            GlobalConst.utils.FEEPERCENT
           ).toLocaleString()
         : (
-            Number(pairData.oneDayVolumeUSD) * GlobalConst.FEEPERCENT
+            Number(pairData.oneDayVolumeUSD) * GlobalConst.utils.FEEPERCENT
           ).toLocaleString()
       : '-';
   const [chartIndex, setChartIndex] = useState(CHART_VOLUME);
@@ -211,7 +212,7 @@ const AnalyticsPairDetails: React.FC = () => {
           ? Number(item.dailyVolumeUSD)
           : chartIndex === CHART_LIQUIDITY
           ? Number(item.reserveUSD)
-          : Number(item.dailyVolumeUSD) * GlobalConst.FEEPERCENT,
+          : Number(item.dailyVolumeUSD) * GlobalConst.utils.FEEPERCENT,
       );
     } else {
       return null;
@@ -281,7 +282,7 @@ const AnalyticsPairDetails: React.FC = () => {
           ? pairData.liquidityChangeUSD
           : (usingUtVolume
               ? pairData.volumeChangeUntracked
-              : pairData.volumeChangeUSD) * GlobalConst.FEEPERCENT
+              : pairData.volumeChangeUSD) * GlobalConst.utils.FEEPERCENT
         : null,
     [pairData, chartIndex, usingUtVolume],
   );

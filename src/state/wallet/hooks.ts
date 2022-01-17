@@ -1,4 +1,4 @@
-import { UNI } from 'constants/index';
+import { GlobalConst } from 'constants/index';
 import {
   Currency,
   CurrencyAmount,
@@ -187,7 +187,7 @@ export function useAllTokenBalances(): {
 export function useAggregateUniBalance(): TokenAmount | undefined {
   const { account, chainId } = useActiveWeb3React();
 
-  const uni = chainId ? UNI[chainId] : undefined;
+  const uni = chainId ? GlobalConst.tokens.UNI[chainId] : undefined;
 
   const uniBalance: TokenAmount | undefined = useTokenBalance(
     account ?? undefined,

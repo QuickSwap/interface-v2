@@ -2,7 +2,7 @@ import { Typography } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 import { Percent } from '@uniswap/sdk';
 import React from 'react';
-import { ONE_BIPS } from '../../constants';
+import { GlobalConst } from '../../constants';
 import { warningSeverity } from '../../utils/prices';
 
 /**
@@ -28,7 +28,7 @@ const FormattedPriceImpact: React.FC<{ priceImpact?: Percent }> = ({
       }}
     >
       {priceImpact
-        ? priceImpact.lessThan(ONE_BIPS)
+        ? priceImpact.lessThan(GlobalConst.utils.ONE_BIPS)
           ? '<0.01%'
           : `${priceImpact.toFixed(2)}%`
         : '-'}

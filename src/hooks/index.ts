@@ -5,7 +5,7 @@ import { Web3ReactContextInterface } from '@web3-react/core/dist/types';
 import { ChainId } from '@uniswap/sdk';
 import { isMobile } from 'react-device-detect';
 import { injected, safeApp } from 'connectors';
-import { NetworkContextName } from 'constants/index';
+import { GlobalConst } from 'constants/index';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from 'state';
 /* eslint-disable */
@@ -21,7 +21,9 @@ export function useActiveWeb3React(): Web3ReactContextInterface<
   chainId?: ChainId;
 } {
   const context = useWeb3ReactCore<Web3Provider>();
-  const contextNetwork = useWeb3ReactCore<Web3Provider>(NetworkContextName);
+  const contextNetwork = useWeb3ReactCore<Web3Provider>(
+    GlobalConst.utils.NetworkContextName,
+  );
   return context.active ? context : contextNetwork;
 }
 

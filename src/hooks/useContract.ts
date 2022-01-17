@@ -1,4 +1,5 @@
 import { Contract } from '@ethersproject/contracts';
+import { Web3Provider } from '@ethersproject/providers';
 import { abi as GOVERNANCE_ABI } from '@uniswap/governance/build/GovernorAlpha.json';
 import { abi as UNI_ABI } from '@uniswap/governance/build/Uni.json';
 import { abi as STAKING_REWARDS_ABI } from '@uniswap/liquidity-staker/build/StakingRewards.json';
@@ -6,13 +7,7 @@ import { abi as MERKLE_DISTRIBUTOR_ABI } from '@uniswap/merkle-distributor/build
 import { ChainId, WETH } from '@uniswap/sdk';
 import { abi as IUniswapV2PairABI } from '@uniswap/v2-core/build/IUniswapV2Pair.json';
 import { useMemo } from 'react';
-import {
-  GOVERNANCE_ADDRESS,
-  MERKLE_DISTRIBUTOR_ADDRESS,
-  UNI,
-  LAIR_ADDRESS,
-  QUICK_ADDRESS,
-} from '../constants';
+import { GlobalConst, GlobalAddresses } from '../constants';
 import {
   ARGENT_WALLET_DETECTOR_ABI,
   ARGENT_WALLET_DETECTOR_MAINNET_ADDRESS,
@@ -33,6 +28,7 @@ import {
 import { getContract } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import { abi as LairABI } from 'abis/DragonLair.json';
+import { abi as IUniswapV2Router02ABI } from '@uniswap/v2-periphery/build/IUniswapV2Router02.json';
 
 function useContract(
   address: string | undefined,
@@ -59,11 +55,11 @@ function useContract(
 }
 
 export function useLairContract(): Contract | null {
-  return useContract(LAIR_ADDRESS, LairABI, true);
+  return useContract(GlobalAddresses.LAIR_ADDRESS, LairABI, true);
 }
 
 export function useQUICKContract(): Contract | null {
-  return useContract(QUICK_ADDRESS, ERC20_ABI, true);
+  return useContract(GlobalAddresses.QUICK_ADDRESS, ERC20_ABI, true);
 }
 
 export function useV1FactoryContract(): Contract | null {
@@ -163,19 +159,23 @@ export function useMulticallContract(): Contract | null {
 export function useMerkleDistributorContract(): Contract | null {
   const { chainId } = useActiveWeb3React();
   return useContract(
-    chainId ? MERKLE_DISTRIBUTOR_ADDRESS[chainId] : undefined,
+    chainId ? GlobalAddresses.MERKLE_DISTRIBUTOR_ADDRESS[chainId] : undefined,
     MERKLE_DISTRIBUTOR_ABI,
     true,
   );
 }
 
 export function useGovernanceContract(): Contract | null {
-  return useContract(GOVERNANCE_ADDRESS, GOVERNANCE_ABI, true);
+  return useContract(GlobalAddresses.GOVERNANCE_ADDRESS, GOVERNANCE_ABI, true);
 }
 
 export function useUniContract(): Contract | null {
   const { chainId } = useActiveWeb3React();
-  return useContract(chainId ? UNI[chainId].address : undefined, UNI_ABI, true);
+  return useContract(
+    chainId ? GlobalConst.tokens.UNI[chainId].address : undefined,
+    UNI_ABI,
+    true,
+  );
 }
 
 export function useStakingContract(
@@ -202,5 +202,14 @@ export function useSocksController(): Contract | null {
     chainId === ChainId.MATIC ? undefined : undefined,
     UNISOCKS_ABI,
     false,
+  );
+}
+
+export function useRouterContract(): Contract | null {
+  const { chainId, account } = useActiveWeb3React();
+  return useContract(
+    chainId ? GlobalAddresses.ROUTER_ADDRESS[chainId] : undefined,
+    IUniswapV2Router02ABI,
+    Boolean(account),
   );
 }

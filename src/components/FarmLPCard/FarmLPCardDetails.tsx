@@ -5,7 +5,7 @@ import { Box, Typography, useMediaQuery } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { useOldStakingInfo, useStakingInfo } from 'state/stake/hooks';
 import { JSBI, TokenAmount, Pair } from '@uniswap/sdk';
-import { QUICK, EMPTY } from 'constants/index';
+import { GlobalConst } from 'constants/index';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { usePairContract, useStakingContract } from 'hooks/useContract';
 import { useDerivedStakeInfo } from 'state/stake/hooks';
@@ -127,7 +127,7 @@ const FarmLPCardDetails: React.FC<{
   const baseTokenCurrency = stakingInfo
     ? unwrappedToken(stakingInfo.baseToken)
     : undefined;
-  const empty = unwrappedToken(EMPTY);
+  const empty = unwrappedToken(GlobalConst.tokens.EMPTY);
   const quickPriceUSD = stakingInfo?.quickPrice;
 
   // get the color of the token
@@ -689,7 +689,7 @@ const FarmLPCardDetails: React.FC<{
                 <Typography variant='body2'>Unclaimed Rewards:</Typography>
               </Box>
               <Box mb={1}>
-                <CurrencyLogo currency={QUICK} />
+                <CurrencyLogo currency={GlobalConst.tokens.QUICK} />
               </Box>
               <Box mb={0.5}>
                 <Typography variant='body1' color='textSecondary'>

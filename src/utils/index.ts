@@ -31,7 +31,6 @@ import {
   HOURLY_PAIR_RATES,
 } from 'apollo/queries';
 import { JsonRpcSigner, Web3Provider } from '@ethersproject/providers';
-import { abi as IUniswapV2Router02ABI } from '@uniswap/v2-periphery/build/IUniswapV2Router02.json';
 import {
   CurrencyAmount,
   ChainId,
@@ -45,13 +44,7 @@ import { BigNumber, BigNumberish } from '@ethersproject/bignumber';
 import { formatUnits } from 'ethers/lib/utils';
 import { AddressZero } from '@ethersproject/constants';
 import { TokenAddressMap } from 'state/lists/hooks';
-import {
-  ALLOWED_PRICE_IMPACT_HIGH,
-  PRICE_IMPACT_WITHOUT_FEE_CONFIRM_MIN,
-  ROUTER_ADDRESS,
-  MIN_ETH,
-  GlobalConst,
-} from 'constants/index';
+import { GlobalData, GlobalConst } from 'constants/index';
 import moment from 'moment';
 import { Palette } from '@material-ui/core/styles/createPalette';
 dayjs.extend(utc);
@@ -1397,17 +1390,25 @@ export function isAddress(value: string | null | undefined): string | false {
 export function confirmPriceImpactWithoutFee(
   priceImpactWithoutFee: Percent,
 ): boolean {
-  if (!priceImpactWithoutFee.lessThan(PRICE_IMPACT_WITHOUT_FEE_CONFIRM_MIN)) {
+  if (
+    !priceImpactWithoutFee.lessThan(
+      GlobalData.percents.PRICE_IMPACT_WITHOUT_FEE_CONFIRM_MIN,
+    )
+  ) {
     return (
       window.prompt(
-        `This swap has a price impact of at least ${PRICE_IMPACT_WITHOUT_FEE_CONFIRM_MIN.toFixed(
+        `This swap has a price impact of at least ${GlobalData.percents.PRICE_IMPACT_WITHOUT_FEE_CONFIRM_MIN.toFixed(
           0,
         )}%. Please type the word "confirm" to continue with this swap.`,
       ) === 'confirm'
     );
-  } else if (!priceImpactWithoutFee.lessThan(ALLOWED_PRICE_IMPACT_HIGH)) {
+  } else if (
+    !priceImpactWithoutFee.lessThan(
+      GlobalData.percents.ALLOWED_PRICE_IMPACT_HIGH,
+    )
+  ) {
     return window.confirm(
-      `This swap has a price impact of at least ${ALLOWED_PRICE_IMPACT_HIGH.toFixed(
+      `This swap has a price impact of at least ${GlobalData.percents.ALLOWED_PRICE_IMPACT_HIGH.toFixed(
         0,
       )}%. Please confirm that you would like to continue with this swap.`,
     );
@@ -1445,8 +1446,10 @@ export function maxAmountSpend(
 ): CurrencyAmount | undefined {
   if (!currencyAmount) return undefined;
   if (currencyAmount.currency === ETHER) {
-    if (JSBI.greaterThan(currencyAmount.raw, MIN_ETH)) {
-      return CurrencyAmount.ether(JSBI.subtract(currencyAmount.raw, MIN_ETH));
+    if (JSBI.greaterThan(currencyAmount.raw, GlobalConst.utils.MIN_ETH)) {
+      return CurrencyAmount.ether(
+        JSBI.subtract(currencyAmount.raw, GlobalConst.utils.MIN_ETH),
+      );
     } else {
       return CurrencyAmount.ether(JSBI.BigInt(0));
     }
@@ -1461,13 +1464,6 @@ export function halfAmountSpend(
   if (!maxAmount) return undefined;
 
   return CurrencyAmount.ether(JSBI.divide(maxAmount.raw, JSBI.BigInt(2)));
-}
-export function getRouterContract(
-  _: number,
-  library: Web3Provider,
-  account?: string,
-): Contract {
-  return getContract(ROUTER_ADDRESS, IUniswapV2Router02ABI, library, account);
 }
 
 export function isTokenOnList(
@@ -1618,7 +1614,8 @@ export function getDaysCurrentYear() {
 
 export function getOneYearFee(dayVolume: number, reserveUSD: number) {
   return (
-    (dayVolume * GlobalConst.FEEPERCENT * getDaysCurrentYear()) / reserveUSD
+    (dayVolume * GlobalConst.utils.FEEPERCENT * getDaysCurrentYear()) /
+    reserveUSD
   );
 }
 
