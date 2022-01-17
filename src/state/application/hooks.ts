@@ -1,5 +1,6 @@
 import { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useActiveWeb3React } from 'hooks';
 import { AppDispatch, AppState } from 'state';
 import {
   addPopup,
@@ -17,6 +18,14 @@ import {
   addBookMarkPair,
   removeBookmarkPair,
 } from './actions';
+
+export function useBlockNumber(): number | undefined {
+  const { chainId } = useActiveWeb3React();
+
+  return useSelector(
+    (state: AppState) => state.application.blockNumber[chainId ?? -1],
+  );
+}
 
 export function useModalOpen(modal: ApplicationModal): boolean {
   const openModal = useSelector(

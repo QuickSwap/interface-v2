@@ -6,7 +6,7 @@ import { useMulticallContract } from 'hooks/useContract';
 import useDebounce from 'hooks/useDebounce';
 import chunkArray from 'utils/chunkArray';
 import { CancelledError, retry, RetryableError } from 'utils/retry';
-import useBlockNumber from 'hooks/useBlockNumber';
+import { useBlockNumber } from 'state/application/hooks';
 import { AppDispatch, AppState } from 'state';
 import {
   Call,

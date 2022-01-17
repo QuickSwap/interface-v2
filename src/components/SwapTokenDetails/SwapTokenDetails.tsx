@@ -4,7 +4,7 @@ import Skeleton from '@material-ui/lab/Skeleton';
 import { ArrowDropUp, ArrowDropDown } from '@material-ui/icons';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { CurrencyLogo } from 'components';
-import useBlockNumber from 'hooks/useBlockNumber';
+import { useBlockNumber } from 'state/application/hooks';
 import useCopyClipboard from 'hooks/useCopyClipboard';
 import { ReactComponent as CopyIcon } from 'assets/images/CopyIcon.svg';
 import {

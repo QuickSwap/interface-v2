@@ -4,7 +4,7 @@ import { Contract } from '@ethersproject/contracts';
 import { useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useActiveWeb3React } from 'hooks';
-import useBlockNumber from 'hooks/useBlockNumber';
+import { useBlockNumber } from 'state/application/hooks';
 import { AppDispatch, AppState } from 'state';
 import {
   addMulticallListeners,
