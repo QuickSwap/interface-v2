@@ -43,7 +43,7 @@ const AnalyticsPairs: React.FC = () => {
   }, [updateTopPairs]);
 
   return (
-    <>
+    <Box width='100%' mb={3}>
       <Typography>All Pairs</Typography>
       <Box mt={4} className={classes.panel}>
         {topPairs ? (
@@ -52,7 +52,7 @@ const AnalyticsPairs: React.FC = () => {
           <Skeleton variant='rect' width='100%' height={150} />
         )}
       </Box>
-    </>
+    </Box>
   );
 };
 
