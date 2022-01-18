@@ -16,7 +16,7 @@ import { Link } from 'react-router-dom';
 import { useActiveWeb3React, useIsArgentWallet } from 'hooks';
 import useTransactionDeadline from 'hooks/useTransactionDeadline';
 import { useApproveCallback, ApprovalState } from 'hooks/useApproveCallback';
-import { getAPYWithFee } from 'utils';
+import { getAPYWithFee, returnTokenFromKey } from 'utils';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   syrupCard: {
@@ -127,7 +127,7 @@ const FarmLPCardDetails: React.FC<{
   const baseTokenCurrency = stakingInfo
     ? unwrappedToken(stakingInfo.baseToken)
     : undefined;
-  const empty = unwrappedToken(GlobalConst.tokens.EMPTY);
+  const empty = unwrappedToken(returnTokenFromKey('EMPTY'));
   const quickPriceUSD = stakingInfo?.quickPrice;
 
   // get the color of the token
@@ -689,7 +689,7 @@ const FarmLPCardDetails: React.FC<{
                 <Typography variant='body2'>Unclaimed Rewards:</Typography>
               </Box>
               <Box mb={1}>
-                <CurrencyLogo currency={GlobalConst.tokens.QUICK} />
+                <CurrencyLogo currency={returnTokenFromKey('QUICK')} />
               </Box>
               <Box mb={0.5}>
                 <Typography variant='body1' color='textSecondary'>

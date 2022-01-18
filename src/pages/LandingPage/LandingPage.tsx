@@ -42,6 +42,7 @@ import {
   getGlobalData,
   formatCompact,
   getDaysCurrentYear,
+  returnTokenFromKey,
 } from 'utils';
 import {
   useEthPrice,
@@ -434,7 +435,7 @@ const LandingPage: React.FC = () => {
   const { initTransak } = useInitTransak();
   const toggleWalletModal = useWalletModalToggle();
   const [fiatCurrency, setFiatCurrency] = useState<Currency | undefined>(
-    GlobalConst.tokens.QUICK,
+    returnTokenFromKey('QUICK'),
   );
   const [fiatAmount, setFiatAmount] = useState('');
 

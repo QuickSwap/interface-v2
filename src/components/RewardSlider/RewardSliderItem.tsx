@@ -8,7 +8,7 @@ import { unwrappedToken } from 'utils/wrappedCurrency';
 import { DoubleCurrencyLogo } from 'components';
 import { GlobalConst } from 'constants/index';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon.svg';
-import { getAPYWithFee } from 'utils';
+import { getAPYWithFee, returnTokenFromKey } from 'utils';
 
 const useStyles = makeStyles(({ palette }) => ({
   rewardsSliderItem: {
@@ -74,7 +74,7 @@ const RewardSliderItem: React.FC<RewardSliderItemProps> = ({
   const token0 = info.tokens[0];
 
   const baseTokenCurrency = unwrappedToken(info.baseToken);
-  const empty = unwrappedToken(GlobalConst.tokens.EMPTY);
+  const empty = unwrappedToken(returnTokenFromKey('EMPTY'));
 
   let valueOfTotalStakedAmountInBaseToken: TokenAmount | undefined;
   const totalSupplyOfStakingToken = info.totalSupply;

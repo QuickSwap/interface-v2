@@ -8,7 +8,7 @@ import { unwrappedToken } from 'utils/wrappedCurrency';
 import { DoubleCurrencyLogo, CurrencyLogo } from 'components';
 import CircleInfoIcon from 'assets/images/circleinfo.svg';
 import FarmLPCardDetails from './FarmLPCardDetails';
-import { getAPYWithFee } from 'utils';
+import { getAPYWithFee, returnTokenFromKey } from 'utils';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   syrupCard: {
@@ -98,7 +98,7 @@ const FarmLPCard: React.FC<{
   const currency0 = unwrappedToken(token0);
   const currency1 = unwrappedToken(token1);
   const baseTokenCurrency = unwrappedToken(stakingInfo.baseToken);
-  const empty = unwrappedToken(GlobalConst.tokens.EMPTY);
+  const empty = unwrappedToken(returnTokenFromKey('EMPTY'));
   const quickPriceUSD = stakingInfo.quickPrice;
 
   // get the color of the token
@@ -253,7 +253,10 @@ const FarmLPCard: React.FC<{
           <Box textAlign='right'>
             <Typography variant='body2'>{earnedUSDStr}</Typography>
             <Box display='flex' alignItems='center' justifyContent='flex-end'>
-              <CurrencyLogo currency={GlobalConst.tokens.QUICK} size='16px' />
+              <CurrencyLogo
+                currency={returnTokenFromKey('QUICK')}
+                size='16px'
+              />
               <Typography variant='body2' style={{ marginLeft: 5 }}>
                 {stakingInfo.earnedAmount.toSignificant(2)}
                 <span>&nbsp;dQUICK</span>

@@ -8,7 +8,7 @@ import { Currency, ETHER, JSBI, Percent } from '@uniswap/sdk';
 import ReactGA from 'react-ga';
 import { BigNumber } from '@ethersproject/bignumber';
 import { TransactionResponse } from '@ethersproject/providers';
-import { GlobalAddresses } from 'constants/index';
+import { GlobalConst } from 'constants/index';
 import {
   CustomModal,
   DoubleCurrencyLogo,
@@ -204,7 +204,7 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
   } | null>(null);
   const [approval, approveCallback] = useApproveCallback(
     parsedAmounts[Field.LIQUIDITY],
-    chainId ? GlobalAddresses.ROUTER_ADDRESS[chainId] : undefined,
+    chainId ? GlobalConst.addresses.ROUTER_ADDRESS[chainId] : undefined,
   );
   const isArgentWallet = useIsArgentWallet();
 
@@ -247,7 +247,9 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
     ];
     const message = {
       owner: account,
-      spender: chainId ? GlobalAddresses.ROUTER_ADDRESS[chainId] : undefined,
+      spender: chainId
+        ? GlobalConst.addresses.ROUTER_ADDRESS[chainId]
+        : undefined,
       value: liquidityAmount.raw.toString(),
       nonce: nonce.toHexString(),
       deadline: deadline.toNumber(),

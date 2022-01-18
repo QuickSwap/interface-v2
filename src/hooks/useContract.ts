@@ -7,7 +7,7 @@ import { abi as MERKLE_DISTRIBUTOR_ABI } from '@uniswap/merkle-distributor/build
 import { ChainId, WETH } from '@uniswap/sdk';
 import { abi as IUniswapV2PairABI } from '@uniswap/v2-core/build/IUniswapV2Pair.json';
 import { useMemo } from 'react';
-import { GlobalConst, GlobalAddresses } from '../constants';
+import { GlobalConst, GlobalData } from '../constants';
 import {
   ARGENT_WALLET_DETECTOR_ABI,
   ARGENT_WALLET_DETECTOR_MAINNET_ADDRESS,
@@ -55,11 +55,11 @@ function useContract(
 }
 
 export function useLairContract(): Contract | null {
-  return useContract(GlobalAddresses.LAIR_ADDRESS, LairABI, true);
+  return useContract(GlobalConst.addresses.LAIR_ADDRESS, LairABI, true);
 }
 
 export function useQUICKContract(): Contract | null {
-  return useContract(GlobalAddresses.QUICK_ADDRESS, ERC20_ABI, true);
+  return useContract(GlobalConst.addresses.QUICK_ADDRESS, ERC20_ABI, true);
 }
 
 export function useV1FactoryContract(): Contract | null {
@@ -159,20 +159,26 @@ export function useMulticallContract(): Contract | null {
 export function useMerkleDistributorContract(): Contract | null {
   const { chainId } = useActiveWeb3React();
   return useContract(
-    chainId ? GlobalAddresses.MERKLE_DISTRIBUTOR_ADDRESS[chainId] : undefined,
+    chainId
+      ? GlobalConst.addresses.MERKLE_DISTRIBUTOR_ADDRESS[chainId]
+      : undefined,
     MERKLE_DISTRIBUTOR_ABI,
     true,
   );
 }
 
 export function useGovernanceContract(): Contract | null {
-  return useContract(GlobalAddresses.GOVERNANCE_ADDRESS, GOVERNANCE_ABI, true);
+  return useContract(
+    GlobalConst.addresses.GOVERNANCE_ADDRESS,
+    GOVERNANCE_ABI,
+    true,
+  );
 }
 
 export function useUniContract(): Contract | null {
   const { chainId } = useActiveWeb3React();
   return useContract(
-    chainId ? GlobalConst.tokens.UNI[chainId].address : undefined,
+    chainId ? GlobalData.tokens.UNI[chainId].address : undefined,
     UNI_ABI,
     true,
   );
@@ -208,7 +214,7 @@ export function useSocksController(): Contract | null {
 export function useRouterContract(): Contract | null {
   const { chainId, account } = useActiveWeb3React();
   return useContract(
-    chainId ? GlobalAddresses.ROUTER_ADDRESS[chainId] : undefined,
+    chainId ? GlobalConst.addresses.ROUTER_ADDRESS[chainId] : undefined,
     IUniswapV2Router02ABI,
     Boolean(account),
   );

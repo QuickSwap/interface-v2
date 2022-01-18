@@ -29,7 +29,7 @@ import DragonBg2 from 'assets/images/DragonBg2.svg';
 import DragonLairMask from 'assets/images/DragonLairMask.svg';
 import { ReactComponent as PriceExchangeIcon } from 'assets/images/PriceExchangeIcon.svg';
 import { ReactComponent as SearchIcon } from 'assets/images/SearchIcon.svg';
-import { getDaysCurrentYear } from 'utils';
+import { getDaysCurrentYear, returnTokenFromKey } from 'utils';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 import { Skeleton } from '@material-ui/lab';
 
@@ -333,7 +333,10 @@ const DragonPage: React.FC = () => {
             </Box>
             <Box position='relative' zIndex={3}>
               <Box display='flex'>
-                <CurrencyLogo currency={GlobalConst.tokens.QUICK} size='32px' />
+                <CurrencyLogo
+                  currency={returnTokenFromKey('QUICK')}
+                  size='32px'
+                />
                 <Box ml={1.5}>
                   <Typography
                     variant='body2'
@@ -394,12 +397,12 @@ const DragonPage: React.FC = () => {
                 borderRadius={10}
                 border={`1px solid ${palette.secondary.light}`}
               >
-                <CurrencyLogo currency={GlobalConst.tokens.QUICK} />
+                <CurrencyLogo currency={returnTokenFromKey('QUICK')} />
                 <Typography variant='body2' style={{ margin: '0 8px' }}>
                   {isQUICKRate ? 1 : lairInfo.dQUICKtoQUICK.toSignificant(4)}{' '}
                   QUICK =
                 </Typography>
-                <CurrencyLogo currency={GlobalConst.tokens.QUICK} />
+                <CurrencyLogo currency={returnTokenFromKey('QUICK')} />
                 <Typography variant='body2' style={{ margin: '0 8px' }}>
                   {isQUICKRate ? lairInfo.QUICKtodQUICK.toSignificant(4) : 1}{' '}
                   dQUICK

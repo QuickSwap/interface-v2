@@ -18,7 +18,7 @@ import { useTokenBalance } from 'state/wallet/hooks';
 import { useActiveWeb3React } from 'hooks';
 import useTransactionDeadline from 'hooks/useTransactionDeadline';
 import { useApproveCallback, ApprovalState } from 'hooks/useApproveCallback';
-import { getAPYWithFee } from 'utils';
+import { getAPYWithFee, returnTokenFromKey } from 'utils';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   syrupCard: {
@@ -127,7 +127,7 @@ const FarmDualCardDetails: React.FC<{
   const baseTokenCurrency = stakingInfo
     ? unwrappedToken(stakingInfo.baseToken)
     : undefined;
-  const empty = unwrappedToken(GlobalConst.tokens.EMPTY);
+  const empty = unwrappedToken(returnTokenFromKey('EMPTY'));
 
   // get the color of the token
   const baseToken =
@@ -625,7 +625,7 @@ const FarmDualCardDetails: React.FC<{
                 <Typography variant='body2'>Unclaimed Rewards:</Typography>
               </Box>
               <Box mb={1} display='flex'>
-                <CurrencyLogo currency={GlobalConst.tokens.QUICK} />
+                <CurrencyLogo currency={returnTokenFromKey('QUICK')} />
                 <CurrencyLogo
                   currency={
                     rewardTokenB?.symbol?.toLowerCase() === 'wmatic'

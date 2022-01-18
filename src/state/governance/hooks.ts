@@ -1,4 +1,4 @@
-import { GlobalConst } from 'constants/index';
+import { GlobalData } from 'constants/index';
 import { TokenAmount } from '@uniswap/sdk';
 import { isAddress } from 'ethers/lib/utils';
 import { useGovernanceContract, useUniContract } from 'hooks/useContract';
@@ -207,7 +207,7 @@ export function useUserVotes(): TokenAmount | undefined {
   const uniContract = useUniContract();
 
   // check for available votes
-  const uni = chainId ? GlobalConst.tokens.UNI[chainId] : undefined;
+  const uni = chainId ? GlobalData.tokens.UNI[chainId] : undefined;
   const votes = useSingleCallResult(uniContract, 'getCurrentVotes', [
     account ?? undefined,
   ])?.result?.[0];

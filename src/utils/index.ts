@@ -47,6 +47,7 @@ import { TokenAddressMap } from 'state/lists/hooks';
 import { GlobalData, GlobalConst } from 'constants/index';
 import moment from 'moment';
 import { Palette } from '@material-ui/core/styles/createPalette';
+import tokenData from 'constants/tokens.json';
 dayjs.extend(utc);
 dayjs.extend(weekOfYear);
 
@@ -1636,4 +1637,18 @@ export function formatNumber(unformatted: number | string, showDigits = 2) {
   } else {
     return 0;
   }
+}
+
+export function returnTokenFromKey(key: string) {
+  const tokenIndex = Object.keys(tokenData).findIndex(
+    (tokenKey) => tokenKey === key,
+  );
+  const token = Object.values(tokenData)[tokenIndex];
+  return new Token(
+    ChainId.MATIC,
+    getAddress(token.address),
+    token.decimals,
+    token.symbol,
+    token.name,
+  );
 }

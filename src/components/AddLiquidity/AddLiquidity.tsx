@@ -13,7 +13,7 @@ import { TransactionResponse } from '@ethersproject/providers';
 import { BigNumber } from '@ethersproject/bignumber';
 import ReactGA from 'react-ga';
 import { Currency, Token, ETHER, TokenAmount } from '@uniswap/sdk';
-import { GlobalAddresses } from 'constants/index';
+import { GlobalConst } from 'constants/index';
 import { useAllTokens } from 'hooks/Tokens';
 import { useActiveWeb3React } from 'hooks';
 import { useRouterContract } from 'hooks/useContract';
@@ -180,11 +180,11 @@ const AddLiquidity: React.FC<{
   const [approvingB, setApprovingB] = useState(false);
   const [approvalA, approveACallback] = useApproveCallback(
     parsedAmounts[Field.CURRENCY_A],
-    chainId ? GlobalAddresses.ROUTER_ADDRESS[chainId] : undefined,
+    chainId ? GlobalConst.addresses.ROUTER_ADDRESS[chainId] : undefined,
   );
   const [approvalB, approveBCallback] = useApproveCallback(
     parsedAmounts[Field.CURRENCY_B],
-    chainId ? GlobalAddresses.ROUTER_ADDRESS[chainId] : undefined,
+    chainId ? GlobalConst.addresses.ROUTER_ADDRESS[chainId] : undefined,
   );
 
   const userPoolBalance = useTokenBalance(

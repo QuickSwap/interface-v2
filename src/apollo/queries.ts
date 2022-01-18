@@ -1,5 +1,5 @@
 import gql from 'graphql-tag';
-import { GlobalConst, GlobalAddresses } from 'constants/index';
+import { GlobalConst } from 'constants/index';
 
 export const SUBGRAPH_HEALTH = gql`
   query health {
@@ -465,7 +465,7 @@ export const GLOBAL_DATA: any = (block?: number) => {
   const queryString = ` query uniswapFactories {
       uniswapFactories(
        ${block ? `block: { number: ${block}}` : ``} 
-       where: { id: "${GlobalAddresses.FACTORY_ADDRESS}" }) {
+       where: { id: "${GlobalConst.addresses.FACTORY_ADDRESS}" }) {
         id
         totalVolumeUSD
         totalVolumeETH
