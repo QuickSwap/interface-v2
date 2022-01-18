@@ -54,7 +54,7 @@ const AnalyticsTokens: React.FC = () => {
   }, [updateTopTokens]);
 
   return (
-    <>
+    <Box width='100%' mb={3}>
       <TopMovers background={palette.grey.A700} hideArrow={true} />
       <Box my={4} px={2} display='flex' flexWrap='wrap' alignItems='center'>
         <Box
@@ -92,7 +92,7 @@ const AnalyticsTokens: React.FC = () => {
           <Skeleton variant='rect' width='100%' height={150} />
         )}
       </Box>
-    </>
+    </Box>
   );
 };
 
