@@ -1,11 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useActiveWeb3React } from 'hooks';
-import {
-  useAddPopup,
-  useBlockNumber,
-  useRemovePopup,
-} from 'state/application/hooks';
+import { useBlockNumber } from 'state/application/hooks';
+import { useAddPopup, useRemovePopup } from 'state/application/hooks';
 import { AppDispatch, AppState } from 'state';
 import { checkedTransaction, finalizeTransaction } from './actions';
 

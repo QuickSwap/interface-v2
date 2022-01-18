@@ -8,7 +8,6 @@ import {
 import { Provider } from 'react-redux';
 import { GelatoProvider } from '@gelatonetwork/limit-orders-react';
 import store from 'state';
-const AnalyticsPage = lazy(() => import('./pages/AnalyticsPage'));
 const DragonPage = lazy(() => import('./pages/DragonPage'));
 const FarmPage = lazy(() => import('./pages/FarmPage'));
 const LandingPage = lazy(() => import('./pages/LandingPage'));
@@ -18,6 +17,16 @@ const AnalyticsTokenDetails = lazy(() =>
   import('./pages/AnalyticsTokenDetails'),
 );
 const AnalyticsPairDetails = lazy(() => import('./pages/AnalyticsPairDetails'));
+const AnalyticsOverview = lazy(() =>
+  import('./pages/AnalyticsPage/AnalyticsOverview'),
+);
+const AnalyticsHeader = lazy(() => import('./pages/AnalyticsPage'));
+const AnalyticsTokens = lazy(() =>
+  import('./pages/AnalyticsPage/AnalyticsTokens'),
+);
+const AnalyticsPairs = lazy(() =>
+  import('./pages/AnalyticsPage/AnalyticsPairs'),
+);
 
 import { PageLayout } from 'layouts';
 import { getLibrary } from 'utils';
@@ -29,8 +38,8 @@ import { useWalletModalToggle } from 'state/application/hooks';
 import ApplicationUpdater from 'state/application/updater';
 import TransactionUpdater from 'state/transactions/updater';
 import ListsUpdater from 'state/lists/updater';
-import MulticallUpdater from 'state/multicall/updater';
 import UserUpdater from 'state/user/updater';
+import MulticallUpdater from 'state/multicall/updater';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import './i18n';
@@ -127,16 +136,31 @@ const App: React.FC = () => {
                     </Route>
                     <Route exact path='/analytics'>
                       <PageLayout>
-                        <AnalyticsPage />
+                        <AnalyticsHeader />
+                        <AnalyticsOverview />
+                      </PageLayout>
+                    </Route>
+                    <Route exact path='/analytics/tokens'>
+                      <PageLayout>
+                        <AnalyticsHeader />
+                        <AnalyticsTokens />
+                      </PageLayout>
+                    </Route>
+                    <Route exact path='/analytics/pairs'>
+                      <PageLayout>
+                        <AnalyticsHeader />
+                        <AnalyticsPairs />
                       </PageLayout>
                     </Route>
                     <Route exact path='/analytics/token/:id'>
                       <PageLayout>
+                        <AnalyticsHeader />
                         <AnalyticsTokenDetails />
                       </PageLayout>
                     </Route>
                     <Route exact path='/analytics/pair/:id'>
                       <PageLayout>
+                        <AnalyticsHeader />
                         <AnalyticsPairDetails />
                       </PageLayout>
                     </Route>
