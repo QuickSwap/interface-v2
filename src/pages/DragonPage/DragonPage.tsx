@@ -29,7 +29,7 @@ import DragonBg2 from 'assets/images/DragonBg2.svg';
 import DragonLairMask from 'assets/images/DragonLairMask.svg';
 import { ReactComponent as PriceExchangeIcon } from 'assets/images/PriceExchangeIcon.svg';
 import { ReactComponent as SearchIcon } from 'assets/images/SearchIcon.svg';
-import { getDaysCurrentYear } from 'utils';
+import { getDaysCurrentYear, formatNumber } from 'utils';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 import { Skeleton } from '@material-ui/lab';
 
@@ -381,7 +381,10 @@ const DragonPage: React.FC = () => {
               <Box display='flex' justifyContent='space-between' mt={1.5}>
                 <Typography variant='body2'>Your Deposits</Typography>
                 <Typography variant='body2'>
-                  {lairInfo.dQUICKBalance.toSignificant(4)}
+                  {formatNumber(
+                    Number(lairInfo.dQUICKBalance.toSignificant()) *
+                      Number(lairInfo.dQUICKtoQUICK.toSignificant()),
+                  )}
                 </Typography>
               </Box>
               <Box

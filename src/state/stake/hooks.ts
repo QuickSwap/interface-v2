@@ -442,26 +442,6 @@ export const SYRUP_REWARDS_INFO: {
       ending: 1644944188,
     },
     {
-      token: PNT,
-      stakingRewardAddress: '0x396dFF9c3DA3E0ACe3BB8F0635de5a693f990664',
-      ended: false,
-      lp: '',
-      name: '',
-      baseToken: ETHER,
-      rate: 1500,
-      ending: 1642352188,
-    },
-    {
-      token: UM,
-      stakingRewardAddress: '0x1e027abDD77f8A93Cf58982b9878702d14941c56',
-      ended: false,
-      lp: '',
-      name: '',
-      baseToken: ETHER,
-      rate: 16666.68,
-      ending: 1642241616,
-    },
-    {
       token: ELON,
       stakingRewardAddress: '0x0D0dD9b1f34101AF5Def323725a2e8a0C2Ba91Fc',
       ended: false,
@@ -480,16 +460,6 @@ export const SYRUP_REWARDS_INFO: {
       baseToken: QUICK,
       rate: 3858,
       ending: 1642525260,
-    },
-    {
-      token: MATIC,
-      stakingRewardAddress: '0xd6Ce4f3D692C1c6684fb449993414C5c9E5D0073',
-      ended: false,
-      lp: '',
-      name: '',
-      baseToken: ETHER,
-      rate: 1913.43,
-      ending: 1641845720,
     },
     {
       token: TEL,
@@ -517,6 +487,37 @@ export const OLD_SYRUP_REWARDS_INFO: {
   }[];
 } = {
   [ChainId.MATIC]: [
+    {
+      token: MATIC,
+      stakingRewardAddress: '0xd6Ce4f3D692C1c6684fb449993414C5c9E5D0073',
+      ended: true,
+      lp: '',
+      name: '',
+      baseToken: ETHER,
+      rate: 1913.43,
+      ending: 1641845720,
+    },
+    {
+      token: UM,
+      stakingRewardAddress: '0x1e027abDD77f8A93Cf58982b9878702d14941c56',
+      ended: true,
+      lp: '',
+      name: '',
+      baseToken: ETHER,
+      rate: 16666.68,
+      ending: 1642241616,
+    },
+    {
+      token: PNT,
+      stakingRewardAddress: '0x396dFF9c3DA3E0ACe3BB8F0635de5a693f990664',
+      ended: true,
+      lp: '',
+      name: '',
+      baseToken: ETHER,
+      rate: 1500,
+      ending: 1642352188,
+    },
+
     {
       token: COMBO,
       stakingRewardAddress: '0xFAcba3A45354f27442406Df293D9C68FD8f0A8b1',
@@ -567,7 +568,7 @@ export const OLD_SYRUP_REWARDS_INFO: {
       rate: 1300,
       ending: 1639844474,
     },
-    {
+    /**{
       token: ETHA,
       stakingRewardAddress: '0x2b1F043c8c97a6465F5B5A9E3F7027acb32CDC3b',
       ended: true,
@@ -575,8 +576,8 @@ export const OLD_SYRUP_REWARDS_INFO: {
       name: '',
       baseToken: USDC,
       rate: 7496.53,
-      ending: 1639844474,
-    },
+      ending: 1639844474
+    },*/
     {
       token: CNTR,
       stakingRewardAddress: '0xe59C2f9a2dCe18C6e19d63675e56BabA59a2339F',
@@ -587,7 +588,7 @@ export const OLD_SYRUP_REWARDS_INFO: {
       rate: 617283.95,
       ending: 1639844474,
     },
-    {
+    /**{
       token: PERA,
       stakingRewardAddress: '0xcA5b75C40583124DD08e7dF9cB148C0833418Fa8',
       ended: true,
@@ -595,8 +596,8 @@ export const OLD_SYRUP_REWARDS_INFO: {
       name: '',
       baseToken: QUICK,
       rate: 8333.33,
-      ending: 1639844474,
-    },
+      ending: 1639844474
+    },*/
     {
       token: RAMP,
       stakingRewardAddress: '0x0a727387f3FF6d2203ECe6CB6e430E4e25032bcd',
@@ -637,7 +638,7 @@ export const OLD_SYRUP_REWARDS_INFO: {
       rate: 18333.33,
       ending: 1639241173,
     },
-    {
+    /**{
       token: ALN,
       stakingRewardAddress: '0x568E635426804400f306c6D3Ec56D14782D74261',
       ended: true,
@@ -645,7 +646,7 @@ export const OLD_SYRUP_REWARDS_INFO: {
       name: '',
       baseToken: ETHER,
       rate: 18333.33,
-      ending: 1639241173,
+      ending: 1639241173
     },
     {
       token: WATCH,
@@ -655,7 +656,7 @@ export const OLD_SYRUP_REWARDS_INFO: {
       name: '',
       baseToken: QUICK,
       rate: 3333.33,
-      ending: 1639073521,
+      ending: 1639073521
     },
     {
       token: KNIGHT,
@@ -665,7 +666,7 @@ export const OLD_SYRUP_REWARDS_INFO: {
       name: '',
       baseToken: ETHER,
       rate: 2166.67,
-      ending: 1639073521,
+      ending: 1639073521
     },
     {
       token: PHX,
@@ -675,7 +676,7 @@ export const OLD_SYRUP_REWARDS_INFO: {
       name: '',
       baseToken: MATIC,
       rate: 12000,
-      ending: 1638027392,
+      ending: 1638027392
     },
     {
       token: REI,
@@ -685,7 +686,7 @@ export const OLD_SYRUP_REWARDS_INFO: {
       name: '',
       baseToken: QUICK,
       rate: 5127.75,
-      ending: 1638027392,
+      ending: 1638027392
     },
     {
       token: MITX,
@@ -695,7 +696,7 @@ export const OLD_SYRUP_REWARDS_INFO: {
       name: '',
       baseToken: ETHER,
       rate: 29609.1,
-      ending: 1637513623,
+      ending: 1637513623
     },
     {
       token: D11,
@@ -705,7 +706,7 @@ export const OLD_SYRUP_REWARDS_INFO: {
       name: '',
       baseToken: MATIC,
       rate: 728.6,
-      ending: 1637341260,
+      ending: 1637341260
     },
     {
       token: OM,
@@ -715,7 +716,7 @@ export const OLD_SYRUP_REWARDS_INFO: {
       name: '',
       baseToken: QUICK,
       rate: 15833.33,
-      ending: 1637076798,
+      ending: 1637076798
     },
     {
       token: ELET,
@@ -725,7 +726,7 @@ export const OLD_SYRUP_REWARDS_INFO: {
       name: '',
       baseToken: QUICK,
       rate: 83333.33,
-      ending: 1637076798,
+      ending: 1637076798
     },
     {
       token: ODDZ,
@@ -735,7 +736,7 @@ export const OLD_SYRUP_REWARDS_INFO: {
       name: '',
       baseToken: MATIC,
       rate: 4065.05,
-      ending: 1637076798,
+      ending: 1637076798
     },
     {
       token: TCP,
@@ -745,7 +746,7 @@ export const OLD_SYRUP_REWARDS_INFO: {
       name: '',
       baseToken: USDC,
       rate: 17475.7,
-      ending: 1636816820,
+      ending: 1636816820
     },
     {
       token: MEEB,
@@ -755,7 +756,7 @@ export const OLD_SYRUP_REWARDS_INFO: {
       name: '',
       baseToken: ETHER,
       rate: 166.67,
-      ending: 1636816820,
+      ending: 1636816820
     },
     {
       token: PLR,
@@ -765,7 +766,7 @@ export const OLD_SYRUP_REWARDS_INFO: {
       name: '',
       baseToken: QUICK,
       rate: 38402,
-      ending: 1636390770,
+      ending: 1636390770
     },
     {
       token: KOM,
@@ -775,7 +776,7 @@ export const OLD_SYRUP_REWARDS_INFO: {
       name: '',
       baseToken: QUICK,
       rate: 1000000,
-      ending: 1636390770,
+      ending: 1636390770
     },
     {
       token: ANGEL,
@@ -785,8 +786,8 @@ export const OLD_SYRUP_REWARDS_INFO: {
       name: '',
       baseToken: QUICK,
       rate: 6666.67,
-      ending: 1635960912,
-    },
+      ending: 1635960912
+    },*/
     {
       token: TRADE,
       stakingRewardAddress: '0x9f48eB6E139855ebc89de973ea91c7596583E6Bc',
@@ -807,7 +808,7 @@ export const OLD_SYRUP_REWARDS_INFO: {
       rate: 641.03,
       ending: 1635858286,
     },
-    {
+    /**{
       token: SWAP,
       stakingRewardAddress: '0xf2717feF528DF66450511F869517086c26452De7',
       ended: true,
@@ -815,7 +816,7 @@ export const OLD_SYRUP_REWARDS_INFO: {
       name: '',
       baseToken: QUICK,
       rate: 3133.33,
-      ending: 1635700624,
+      ending: 1635700624
     },
     {
       token: BUNNY,
@@ -825,8 +826,8 @@ export const OLD_SYRUP_REWARDS_INFO: {
       name: '',
       baseToken: ETHER,
       rate: 874.49,
-      ending: 1635700624,
-    },
+      ending: 1635700624
+    },*/
     {
       token: MONA,
       stakingRewardAddress: '0xDa8805782Fa38f859b7D0001bedfE498faFca94a',
@@ -837,7 +838,7 @@ export const OLD_SYRUP_REWARDS_INFO: {
       rate: 1.52,
       ending: 1635263542,
     },
-    {
+    /**{
       token: OOE,
       stakingRewardAddress: '0xa5ce7598af3F76c3A254CDDc62f914bBa9d8B7bd',
       ended: true,
@@ -845,7 +846,7 @@ export const OLD_SYRUP_REWARDS_INFO: {
       name: '',
       baseToken: QUICK,
       rate: 2166.66,
-      ending: 1635095958,
+      ending: 1635095958
     },
     {
       token: XED,
@@ -855,7 +856,7 @@ export const OLD_SYRUP_REWARDS_INFO: {
       name: '',
       baseToken: QUICK,
       rate: 3030.3,
-      ending: 1635095958,
+      ending: 1635095958
     },
     {
       token: DHV,
@@ -865,8 +866,8 @@ export const OLD_SYRUP_REWARDS_INFO: {
       name: '',
       baseToken: QUICK,
       rate: 555.55,
-      ending: 1635263542,
-    },
+      ending: 1635263542
+    }, 
     {
       token: MOONED,
       stakingRewardAddress: '0xd66Df9f7Da33C90Ab21601349D5f44eCbB4a1e63',
@@ -875,7 +876,7 @@ export const OLD_SYRUP_REWARDS_INFO: {
       name: '',
       baseToken: QUICK,
       rate: 27333.33,
-      ending: 1635263542,
+      ending: 1635263542
     },
     {
       token: HONOR,
@@ -885,8 +886,8 @@ export const OLD_SYRUP_REWARDS_INFO: {
       name: '',
       baseToken: USDC,
       rate: 75757.57,
-      ending: 1634921623,
-    },
+      ending: 1634921623
+    },*/
     {
       token: START,
       stakingRewardAddress: '0xBC00cF775D78b50925895A872Aa945B728dB0EBB',
@@ -897,7 +898,7 @@ export const OLD_SYRUP_REWARDS_INFO: {
       rate: 116.67,
       ending: 1634680134,
     },
-    {
+    /**{
       token: RELAY,
       stakingRewardAddress: '0x747fC94E52ba06D870Cb793e11C98D7688b28887',
       ended: true,
@@ -905,7 +906,7 @@ export const OLD_SYRUP_REWARDS_INFO: {
       name: '',
       baseToken: QUICK,
       rate: 500,
-      ending: 1634680134,
+      ending: 1634680134
     },
     {
       token: DNXC,
@@ -915,8 +916,8 @@ export const OLD_SYRUP_REWARDS_INFO: {
       name: '',
       baseToken: QUICK,
       rate: 4800,
-      ending: 1634680134,
-    },
+      ending: 1634680134
+    },*/
     {
       token: REVV,
       stakingRewardAddress: '0xBDeaCb01103C6459ED05c4836082b41143825F49',
@@ -927,7 +928,7 @@ export const OLD_SYRUP_REWARDS_INFO: {
       rate: 16816.67,
       ending: 1634680134,
     },
-    {
+    /**{
       token: YAMP,
       stakingRewardAddress: '0x88A989A72fF3981cE02cE3CB5ec81A23C1058382',
       ended: true,
@@ -935,7 +936,7 @@ export const OLD_SYRUP_REWARDS_INFO: {
       name: '',
       baseToken: QUICK,
       rate: 9333.33,
-      ending: 1634680134,
+      ending: 1634680134
     },
     {
       token: FEAR,
@@ -945,7 +946,7 @@ export const OLD_SYRUP_REWARDS_INFO: {
       name: '',
       baseToken: USDC,
       rate: 1157,
-      ending: 1634680134,
+      ending: 1634680134
     },
     {
       token: CHICK,
@@ -955,7 +956,7 @@ export const OLD_SYRUP_REWARDS_INFO: {
       name: '',
       baseToken: USDC,
       rate: 3333.33,
-      ending: 1634680134,
+      ending: 1634680134
     },
     {
       token: ADS,
@@ -965,8 +966,8 @@ export const OLD_SYRUP_REWARDS_INFO: {
       name: '',
       baseToken: USDC,
       rate: 2150,
-      ending: 1634680134,
-    },
+      ending: 1634680134
+    },*/
     {
       token: CIOTX,
       stakingRewardAddress: '0x54B1e1A8F2472230DB6092833249675Fc2E8DFe1',
@@ -987,7 +988,7 @@ export const OLD_SYRUP_REWARDS_INFO: {
       rate: 59.5,
       ending: 1634680134,
     },
-    {
+    /**{
       token: POLYDOGE,
       stakingRewardAddress: '0x0b32AC0A9b6bfdd0E24cd2f4d37d82F8d05B44d8',
       ended: true,
@@ -995,9 +996,10 @@ export const OLD_SYRUP_REWARDS_INFO: {
       name: '',
       baseToken: QUICK,
       rate: 333333333333.33,
-      ending: 1634410234,
+      ending: 1634410234
     },
-    {
+     {
+      
       token: ANRX,
       stakingRewardAddress: '0xfd0A00b0B9b2D05fa4152Ebd25cD85a4F527B375',
       ended: true,
@@ -1005,7 +1007,7 @@ export const OLD_SYRUP_REWARDS_INFO: {
       name: '',
       baseToken: ETHER,
       rate: 17768.33,
-      ending: 1634317059,
+      ending: 1634317059
     },
     {
       token: GUARD,
@@ -1015,7 +1017,7 @@ export const OLD_SYRUP_REWARDS_INFO: {
       name: '',
       baseToken: USDC,
       rate: 3333.33,
-      ending: 1634224820,
+      ending: 1634224820
     },
     {
       token: WOW,
@@ -1025,8 +1027,8 @@ export const OLD_SYRUP_REWARDS_INFO: {
       name: '',
       baseToken: USDC,
       rate: 196.67,
-      ending: 1633108624,
-    },
+      ending: 1633108624
+    }*/
   ],
 };
 
