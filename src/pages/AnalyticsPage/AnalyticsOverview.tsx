@@ -286,7 +286,7 @@ const AnalyticsOverview: React.FC = () => {
   const volumePercentColor = getPriceColor(Number(volumePercent), palette);
 
   return (
-    <>
+    <Box width='100%' mb={3}>
       <Grid container spacing={4}>
         <Grid item xs={12} sm={12} md={6}>
           <Box className={classes.panel} padding={isMobile ? 1.5 : 3} width={1}>
@@ -539,7 +539,7 @@ const AnalyticsOverview: React.FC = () => {
           <Skeleton variant='rect' width='100%' height={150} />
         )}
       </Box>
-    </>
+    </Box>
   );
 };
 
