@@ -30,7 +30,6 @@ import ApplicationUpdater from 'state/application/updater';
 import TransactionUpdater from 'state/transactions/updater';
 import ListsUpdater from 'state/lists/updater';
 import UserUpdater from 'state/user/updater';
-import { BlockUpdater } from 'hooks/useBlockNumber';
 import MulticallUpdater from 'state/multicall/updater';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
@@ -65,7 +64,6 @@ function Updaters() {
       <ApplicationUpdater />
       <TransactionUpdater />
       <ListsUpdater />
-      <BlockUpdater />
       <MulticallUpdater />
       <UserUpdater />
     </>
