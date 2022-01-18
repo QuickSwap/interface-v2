@@ -154,13 +154,11 @@ const App: React.FC = () => {
                     </Route>
                     <Route exact path='/analytics/token/:id'>
                       <PageLayout>
-                        <AnalyticsHeader />
                         <AnalyticsTokenDetails />
                       </PageLayout>
                     </Route>
                     <Route exact path='/analytics/pair/:id'>
                       <PageLayout>
-                        <AnalyticsHeader />
                         <AnalyticsPairDetails />
                       </PageLayout>
                     </Route>

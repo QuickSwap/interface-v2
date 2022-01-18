@@ -28,6 +28,7 @@ import {
 } from 'components';
 import { getAddress } from '@ethersproject/address';
 import { GlobalConst } from 'constants/index';
+import AnalyticsHeader from 'pages/AnalyticsPage/AnalyticsHeader';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   panel: {
@@ -36,22 +37,6 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     padding: 24,
     [breakpoints.down('xs')]: {
       padding: 12,
-    },
-  },
-  breadcrumb: {
-    display: 'flex',
-    alignItems: 'center',
-    color: palette.text.hint,
-    marginBottom: 50,
-    '& svg': {
-      width: 12,
-      margin: '0 6px',
-    },
-  },
-  link: {
-    cursor: 'pointer',
-    '&:hover': {
-      textDecoration: 'underline',
     },
   },
   heading1: {
@@ -300,36 +285,9 @@ const AnalyticsPairDetails: React.FC = () => {
 
   return (
     <>
+      <AnalyticsHeader type='pair' data={pairData} />
       {pairData ? (
         <>
-          <Box className={classes.breadcrumb} width={1}>
-            <Typography
-              variant='caption'
-              className={classes.link}
-              onClick={() => {
-                history.push('/analytics');
-              }}
-            >
-              Analytics
-            </Typography>
-            <ArrowForwardIos />
-            <Typography
-              variant='caption'
-              className={classes.link}
-              onClick={() => {
-                history.push('/analytics?tabIndex=2');
-              }}
-            >
-              Pairs
-            </Typography>
-            <ArrowForwardIos />
-            <Typography variant='caption'>
-              <span style={{ color: '#b6b9cc' }}>
-                {pairData.token0.symbol}/{pairData.token1.symbol}
-              </span>
-              ({shortenAddress(pairAddress)})
-            </Typography>
-          </Box>
           <Box
             width={1}
             display='flex'
