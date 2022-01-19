@@ -1,3 +1,4 @@
+import { Block } from '@ethersproject/abstract-provider';
 import { useCallback, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useActiveWeb3React } from 'hooks';
@@ -19,23 +20,30 @@ export default function Updater(): null {
     chainId,
     blockNumber: null,
   });
-  const [block, setBlock] = useState(0);
 
   const blockNumberCallback = useCallback(
-    (blockNumber: number) => {
+    (block: Block) => {
       setState((state) => {
         if (chainId === state.chainId) {
           if (typeof state.blockNumber !== 'number')
-            return { chainId, blockNumber };
+            return { chainId, blockNumber: block.number };
           return {
             chainId,
-            blockNumber: Math.max(blockNumber, state.blockNumber),
+            blockNumber: block.number,
           };
         }
         return state;
       });
     },
     [chainId, setState],
+  );
+
+  const onBlock = useCallback(
+    (number) => {
+      if (!library) return;
+      return library.getBlock(number).then(blockNumberCallback);
+    },
+    [blockNumberCallback, library],
   );
 
   // attach/detach listeners
@@ -45,7 +53,7 @@ export default function Updater(): null {
     setState({ chainId, blockNumber: null });
 
     library
-      .getBlockNumber()
+      .getBlock('latest')
       .then(blockNumberCallback)
       .catch((error) =>
         console.error(
@@ -54,7 +62,7 @@ export default function Updater(): null {
         ),
       );
 
-    library.on('block', blockNumberCallback);
+    library.on('block', onBlock);
 
     ethereum?.on('chainChanged', () => {
       document.location.reload();
@@ -70,6 +78,7 @@ export default function Updater(): null {
     blockNumberCallback,
     windowVisible,
     ethereum,
+    onBlock,
   ]);
 
   const debouncedState = useDebounce(state, 100);
@@ -81,17 +90,13 @@ export default function Updater(): null {
       !windowVisible
     )
       return;
-    if (debouncedState.blockNumber - block > 17) {
-      dispatch(
-        updateBlockNumber({
-          chainId: debouncedState.chainId,
-          blockNumber: debouncedState.blockNumber,
-        }),
-      );
-      setBlock(debouncedState.blockNumber);
-    }
+    dispatch(
+      updateBlockNumber({
+        chainId: debouncedState.chainId,
+        blockNumber: debouncedState.blockNumber,
+      }),
+    );
   }, [
-    block,
     windowVisible,
     dispatch,
     debouncedState.blockNumber,
