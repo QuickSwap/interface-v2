@@ -22,7 +22,9 @@ const AnalyticsInfo: React.FC<AnalyticsInfoProps> = ({ data }) => {
       <Box>
         <Typography variant='body2'>
           24h Fees: $
-          {(data.oneDayVolumeUSD * GlobalConst.FEEPERCENT).toLocaleString()}
+          {(
+            data.oneDayVolumeUSD * GlobalConst.utils.FEEPERCENT
+          ).toLocaleString()}
         </Typography>
       </Box>
     </>

@@ -1,4 +1,4 @@
-import { UNI } from 'constants/index';
+import { GlobalData } from 'constants/index';
 import { TokenAmount } from '@uniswap/sdk';
 import { isAddress } from 'ethers/lib/utils';
 import { useGovernanceContract, useUniContract } from 'hooks/useContract';
@@ -66,16 +66,16 @@ export function useDataFromEventLogs() {
   const [formattedEvents, setFormattedEvents] = useState<any>();
   const govContract = useGovernanceContract();
 
-  // create filter for these specific events
-  const filter = {
-    ...govContract?.filters?.['ProposalCreated'](),
-    fromBlock: 0,
-    toBlock: 'latest',
-  };
-  const eventParser = new ethers.utils.Interface(GOV_ABI);
-
   useEffect(() => {
     async function fetchData() {
+      // create filter for these specific events
+      const filter = {
+        ...govContract?.filters?.['ProposalCreated'](),
+        fromBlock: 0,
+        toBlock: 'latest',
+      };
+      const eventParser = new ethers.utils.Interface(GOV_ABI);
+
       const pastEvents = await library?.getLogs(filter);
       // reverse events to get them from newest to odlest
       const formattedEventData = pastEvents
@@ -109,7 +109,7 @@ export function useDataFromEventLogs() {
     if (!formattedEvents) {
       fetchData();
     }
-  }, [eventParser, filter, library, formattedEvents]);
+  }, [library, formattedEvents, govContract]);
 
   return formattedEvents;
 }
@@ -207,7 +207,7 @@ export function useUserVotes(): TokenAmount | undefined {
   const uniContract = useUniContract();
 
   // check for available votes
-  const uni = chainId ? UNI[chainId] : undefined;
+  const uni = chainId ? GlobalData.tokens.UNI[chainId] : undefined;
   const votes = useSingleCallResult(uniContract, 'getCurrentVotes', [
     account ?? undefined,
   ])?.result?.[0];

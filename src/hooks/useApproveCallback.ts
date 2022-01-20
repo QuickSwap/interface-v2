@@ -2,7 +2,7 @@ import { MaxUint256 } from '@ethersproject/constants';
 import { TransactionResponse } from '@ethersproject/providers';
 import { Trade, TokenAmount, CurrencyAmount, ETHER } from '@uniswap/sdk';
 import { useCallback, useMemo } from 'react';
-import { ROUTER_ADDRESS } from 'constants/index';
+import { GlobalConst } from 'constants/index';
 import { useTokenAllowance } from 'data/Allowances';
 import { Field } from 'state/swap/actions';
 import {
@@ -126,6 +126,7 @@ export function useApproveCallbackFromTrade(
   trade?: Trade,
   allowedSlippage = 0,
 ): [ApprovalState, () => Promise<void>] {
+  const { chainId } = useActiveWeb3React();
   const amountToApprove = useMemo(
     () =>
       trade
@@ -134,5 +135,8 @@ export function useApproveCallbackFromTrade(
     [trade, allowedSlippage],
   );
 
-  return useApproveCallback(amountToApprove, ROUTER_ADDRESS);
+  return useApproveCallback(
+    amountToApprove,
+    chainId ? GlobalConst.addresses.ROUTER_ADDRESS[chainId] : undefined,
+  );
 }

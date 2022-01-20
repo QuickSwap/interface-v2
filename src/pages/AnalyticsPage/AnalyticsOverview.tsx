@@ -97,7 +97,7 @@ const AnalyticsOverview: React.FC = () => {
       const topTokensData = await getTopTokens(
         newPrice,
         oneDayPrice,
-        GlobalConst.ROWSPERPAGE,
+        GlobalConst.utils.ROWSPERPAGE,
       );
       if (topTokensData) {
         updateTopTokens(topTokensData);
@@ -106,7 +106,7 @@ const AnalyticsOverview: React.FC = () => {
     const fetchTopPairs = async () => {
       updateTopPairs(null);
       const [newPrice] = await getEthPrice();
-      const pairs = await getTopPairs(GlobalConst.ROWSPERPAGE);
+      const pairs = await getTopPairs(GlobalConst.utils.ROWSPERPAGE);
       const formattedPairs = pairs
         ? pairs.map((pair: any) => {
             return pair.id;

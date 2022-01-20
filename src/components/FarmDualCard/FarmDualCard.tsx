@@ -3,14 +3,14 @@ import { Box, Typography, useMediaQuery } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { DualStakingInfo } from 'state/stake/hooks';
 import { JSBI, TokenAmount, ETHER } from '@uniswap/sdk';
-import { QUICK, EMPTY } from 'constants/index';
+import { GlobalConst } from 'constants/index';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { DoubleCurrencyLogo, CurrencyLogo } from 'components';
 import { useTokenBalance } from 'state/wallet/hooks';
 import { useActiveWeb3React } from 'hooks';
 import CircleInfoIcon from 'assets/images/circleinfo.svg';
 import FarmDualCardDetails from './FarmDualCardDetails';
-import { getAPYWithFee } from 'utils';
+import { getAPYWithFee, returnTokenFromKey } from 'utils';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   syrupCard: {
@@ -105,7 +105,7 @@ const FarmDualCard: React.FC<{
   const currency0 = unwrappedToken(token0);
   const currency1 = unwrappedToken(token1);
   const baseTokenCurrency = unwrappedToken(stakingInfo.baseToken);
-  const empty = unwrappedToken(EMPTY);
+  const empty = unwrappedToken(returnTokenFromKey('EMPTY'));
 
   // get the color of the token
   const baseToken =
@@ -314,7 +314,10 @@ const FarmDualCard: React.FC<{
           <Box textAlign='right'>
             <Typography variant='body2'>{earnedUSDStr}</Typography>
             <Box display='flex' alignItems='center' justifyContent='flex-end'>
-              <CurrencyLogo currency={QUICK} size='16px' />
+              <CurrencyLogo
+                currency={returnTokenFromKey('QUICK')}
+                size='16px'
+              />
               <Typography variant='body2' style={{ marginLeft: 5 }}>
                 {stakingInfo.earnedAmountA.toSignificant(2)}
                 <span>&nbsp;dQUICK</span>

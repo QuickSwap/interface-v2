@@ -4,7 +4,7 @@ import { Box, Typography, useMediaQuery } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { useDualStakingInfo } from 'state/stake/hooks';
 import { JSBI, TokenAmount, Pair, ETHER } from '@uniswap/sdk';
-import { QUICK, EMPTY } from 'constants/index';
+import { GlobalConst } from 'constants/index';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import {
   usePairContract,
@@ -18,7 +18,7 @@ import { useTokenBalance } from 'state/wallet/hooks';
 import { useActiveWeb3React } from 'hooks';
 import useTransactionDeadline from 'hooks/useTransactionDeadline';
 import { useApproveCallback, ApprovalState } from 'hooks/useApproveCallback';
-import { getAPYWithFee } from 'utils';
+import { getAPYWithFee, returnTokenFromKey } from 'utils';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   syrupCard: {
@@ -127,7 +127,7 @@ const FarmDualCardDetails: React.FC<{
   const baseTokenCurrency = stakingInfo
     ? unwrappedToken(stakingInfo.baseToken)
     : undefined;
-  const empty = unwrappedToken(EMPTY);
+  const empty = unwrappedToken(returnTokenFromKey('EMPTY'));
 
   // get the color of the token
   const baseToken =
@@ -625,7 +625,7 @@ const FarmDualCardDetails: React.FC<{
                 <Typography variant='body2'>Unclaimed Rewards:</Typography>
               </Box>
               <Box mb={1} display='flex'>
-                <CurrencyLogo currency={QUICK} />
+                <CurrencyLogo currency={returnTokenFromKey('QUICK')} />
                 <CurrencyLogo
                   currency={
                     rewardTokenB?.symbol?.toLowerCase() === 'wmatic'

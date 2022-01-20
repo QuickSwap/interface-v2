@@ -22,28 +22,20 @@ export default function Updater(): null {
   });
 
   const blockNumberCallback = useCallback(
-    (block: Block) => {
+    (blockNumber: number) => {
       setState((state) => {
         if (chainId === state.chainId) {
           if (typeof state.blockNumber !== 'number')
-            return { chainId, blockNumber: block.number };
+            return { chainId, blockNumber };
           return {
             chainId,
-            blockNumber: block.number,
+            blockNumber,
           };
         }
         return state;
       });
     },
     [chainId, setState],
-  );
-
-  const onBlock = useCallback(
-    (number) => {
-      if (!library) return;
-      return library.getBlock(number).then(blockNumberCallback);
-    },
-    [blockNumberCallback, library],
   );
 
   // attach/detach listeners
@@ -53,7 +45,7 @@ export default function Updater(): null {
     setState({ chainId, blockNumber: null });
 
     library
-      .getBlock('latest')
+      .getBlockNumber()
       .then(blockNumberCallback)
       .catch((error) =>
         console.error(
@@ -62,7 +54,7 @@ export default function Updater(): null {
         ),
       );
 
-    library.on('block', onBlock);
+    library.on('block', blockNumberCallback);
 
     ethereum?.on('chainChanged', () => {
       document.location.reload();
@@ -78,7 +70,6 @@ export default function Updater(): null {
     blockNumberCallback,
     windowVisible,
     ethereum,
-    onBlock,
   ]);
 
   const debouncedState = useDebounce(state, 100);

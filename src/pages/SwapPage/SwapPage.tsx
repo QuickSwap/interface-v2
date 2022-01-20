@@ -411,7 +411,7 @@ const SwapPage: React.FC = () => {
                             ? pair.oneDayVolumeUSD
                             : pair.oneDayVolumeUntracked,
                         ) *
-                        GlobalConst.FEEPERCENT *
+                        GlobalConst.utils.FEEPERCENT *
                         daysCurrentYear *
                         100;
                       const trackReserveUSD = Number(

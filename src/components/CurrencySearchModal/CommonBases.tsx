@@ -2,7 +2,7 @@ import React from 'react';
 import { ChainId, Currency, currencyEquals, ETHER, Token } from '@uniswap/sdk';
 import { Box, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { SUGGESTED_BASES } from 'constants/index';
+import { GlobalData } from 'constants/index';
 import { CurrencyLogo, QuestionHelper } from 'components';
 
 const useStyles = makeStyles(({ palette }) => ({
@@ -58,21 +58,23 @@ const CommonBases: React.FC<CommonBasesProps> = ({
           <CurrencyLogo currency={ETHER} size='24px' />
           <Typography variant='body2'>MATIC</Typography>
         </Box>
-        {(chainId ? SUGGESTED_BASES[chainId] : []).map((token: Token) => {
-          const selected =
-            selectedCurrency instanceof Token &&
-            selectedCurrency.address === token.address;
-          return (
-            <Box
-              className={classes.baseWrapper}
-              key={token.address}
-              onClick={() => !selected && onSelect(token)}
-            >
-              <CurrencyLogo currency={token} size='24px' />
-              <Typography variant='body2'>{token.symbol}</Typography>
-            </Box>
-          );
-        })}
+        {(chainId ? GlobalData.bases.SUGGESTED_BASES[chainId] : []).map(
+          (token: Token) => {
+            const selected =
+              selectedCurrency instanceof Token &&
+              selectedCurrency.address === token.address;
+            return (
+              <Box
+                className={classes.baseWrapper}
+                key={token.address}
+                onClick={() => !selected && onSelect(token)}
+              >
+                <CurrencyLogo currency={token} size='24px' />
+                <Typography variant='body2'>{token.symbol}</Typography>
+              </Box>
+            );
+          },
+        )}
       </Box>
     </Box>
   );

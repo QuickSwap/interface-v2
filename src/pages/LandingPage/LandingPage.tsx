@@ -42,13 +42,14 @@ import {
   getGlobalData,
   formatCompact,
   getDaysCurrentYear,
+  returnTokenFromKey,
 } from 'utils';
 import {
   useEthPrice,
   useGlobalData,
   useWalletModalToggle,
 } from 'state/application/hooks';
-import { QUICK } from 'constants/index';
+import { GlobalConst } from 'constants/index';
 import { useLairInfo, useTotalRewardsDistributed } from 'state/stake/hooks';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
@@ -433,7 +434,9 @@ const LandingPage: React.FC = () => {
   const mobileWindowSize = useMediaQuery(breakpoints.down('sm'));
   const { initTransak } = useInitTransak();
   const toggleWalletModal = useWalletModalToggle();
-  const [fiatCurrency, setFiatCurrency] = useState<Currency | undefined>(QUICK);
+  const [fiatCurrency, setFiatCurrency] = useState<Currency | undefined>(
+    returnTokenFromKey('QUICK'),
+  );
   const [fiatAmount, setFiatAmount] = useState('');
 
   const features = [

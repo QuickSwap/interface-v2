@@ -13,9 +13,10 @@ import { TransactionResponse } from '@ethersproject/providers';
 import { BigNumber } from '@ethersproject/bignumber';
 import ReactGA from 'react-ga';
 import { Currency, Token, ETHER, TokenAmount } from '@uniswap/sdk';
-import { ROUTER_ADDRESS } from 'constants/index';
+import { GlobalConst } from 'constants/index';
 import { useAllTokens } from 'hooks/Tokens';
 import { useActiveWeb3React } from 'hooks';
+import { useRouterContract } from 'hooks/useContract';
 import useTransactionDeadline from 'hooks/useTransactionDeadline';
 import { ApprovalState, useApproveCallback } from 'hooks/useApproveCallback';
 import { Field } from 'state/mint/actions';
@@ -34,7 +35,6 @@ import { useIsExpertMode, useUserSlippageTolerance } from 'state/user/hooks';
 import {
   maxAmountSpend,
   addMaticToMetamask,
-  getRouterContract,
   calculateSlippageAmount,
   calculateGasMargin,
 } from 'utils';
@@ -180,11 +180,11 @@ const AddLiquidity: React.FC<{
   const [approvingB, setApprovingB] = useState(false);
   const [approvalA, approveACallback] = useApproveCallback(
     parsedAmounts[Field.CURRENCY_A],
-    ROUTER_ADDRESS,
+    chainId ? GlobalConst.addresses.ROUTER_ADDRESS[chainId] : undefined,
   );
   const [approvalB, approveBCallback] = useApproveCallback(
     parsedAmounts[Field.CURRENCY_B],
-    ROUTER_ADDRESS,
+    chainId ? GlobalConst.addresses.ROUTER_ADDRESS[chainId] : undefined,
   );
 
   const userPoolBalance = useTokenBalance(
@@ -242,9 +242,10 @@ const AddLiquidity: React.FC<{
     }
   };
 
+  const router = useRouterContract();
+
   const onAddLiquidity = async () => {
-    if (!chainId || !library || !account) return;
-    const router = getRouterContract(chainId, library, account);
+    if (!chainId || !library || !account || !router) return;
 
     const {
       [Field.CURRENCY_A]: parsedAmountA,

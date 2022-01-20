@@ -32,21 +32,23 @@ import { PageLayout } from 'layouts';
 import { getLibrary } from 'utils';
 import StyledThemeProvider from 'theme/index';
 import { Web3ReactManager, Popups } from 'components';
-import { NetworkContextName } from 'constants/index';
+import { GlobalConst } from 'constants/index';
 import { useActiveWeb3React } from 'hooks';
 import { useWalletModalToggle } from 'state/application/hooks';
 import ApplicationUpdater from 'state/application/updater';
 import TransactionUpdater from 'state/transactions/updater';
 import ListsUpdater from 'state/lists/updater';
-import MulticallUpdater from 'state/multicall/updater';
 import UserUpdater from 'state/user/updater';
+import MulticallUpdater from 'state/multicall/updater';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import './i18n';
 import './App.css';
 import { mainTheme } from './theme';
 
-const Web3ProviderNetwork = createWeb3ReactRoot(NetworkContextName);
+const Web3ProviderNetwork = createWeb3ReactRoot(
+  GlobalConst.utils.NetworkContextName,
+);
 
 const ThemeProvider: React.FC = ({ children }) => {
   const theme = mainTheme;

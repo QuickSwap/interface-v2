@@ -483,7 +483,7 @@ const AnalyticsTokenDetails: React.FC = () => {
                       <Typography variant={isMobile ? 'body1' : 'h5'}>
                         $
                         {(
-                          token.oneDayVolumeUSD * GlobalConst.FEEPERCENT
+                          token.oneDayVolumeUSD * GlobalConst.utils.FEEPERCENT
                         ).toLocaleString()}
                       </Typography>
                     </Box>
