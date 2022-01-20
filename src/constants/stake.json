@@ -1,6 +1,28 @@
 {
   "syrup": [
     {
+      "token": "MSHEESHA",
+      "stakingRewardAddress": "0x63f7e114c4B5169ddD1a46b99a8e8d396a242ef3",
+      "ended": false,
+      "lp": "",
+      "name": "",
+      "baseToken": "USDT",
+      "rate": 51666.67,
+      "ending": 1653093496,
+      "stakingToken": "QUICK"
+    },
+    {
+      "token": "UART",
+      "stakingRewardAddress": "0x11eF5B387865eb6901FdD020f28Dd6e5b9d88A1e",
+      "ended": false,
+      "lp": "",
+      "name": "",
+      "baseToken": "USDT",
+      "rate": 7333.34,
+      "ending": 1647909496,
+      "stakingToken": "QUICK"
+    },
+    {
       "token": "RELAY",
       "stakingRewardAddress": "0xB06ae8Db92aCba3B7767da98Ef16c9eF8F1bF3bb",
       "ended": false,
@@ -122,17 +144,6 @@
       "stakingToken": "DQUICK"
     },
     {
-      "token": "PBR",
-      "stakingRewardAddress": "0xa751f7B39F6c111d10e2C603bE2a12bd5F70Fc83",
-      "ended": false,
-      "lp": "",
-      "name": "",
-      "baseToken": "USDT",
-      "rate": 1333.333333,
-      "ending": 1642697231,
-      "stakingToken": "DQUICK"
-    },
-    {
       "token": "GAMER",
       "stakingRewardAddress": "0x35F1962fec6B4605ef3Be3b63396552fbf5e99d0",
       "ended": false,
@@ -232,17 +243,6 @@
       "stakingToken": "DQUICK"
     },
     {
-      "token": "DES",
-      "stakingRewardAddress": "0xe436235f6062Eb689Ce81e5f434A005818F7d6f0",
-      "ended": false,
-      "lp": "",
-      "name": "",
-      "baseToken": "QUICK",
-      "rate": 3858,
-      "ending": 1642525260,
-      "stakingToken": "DQUICK"
-    },
-    {
       "token": "TEL",
       "stakingRewardAddress": "0x346C9e501aDc38F1f325CC0c2D44C325283eEaF1",
       "ended": false,
@@ -255,6 +255,28 @@
     }
   ],
   "oldsyrup": [
+    {
+      "token": "DES",
+      "stakingRewardAddress": "0xe436235f6062Eb689Ce81e5f434A005818F7d6f0",
+      "ended": true,
+      "lp": "",
+      "name": "",
+      "baseToken": "QUICK",
+      "rate": 3858,
+      "ending": 1642525260,
+      "stakingToken": "DQUICK"
+    },
+    {
+      "token": "PBR",
+      "stakingRewardAddress": "0xa751f7B39F6c111d10e2C603bE2a12bd5F70Fc83",
+      "ended": true,
+      "lp": "",
+      "name": "",
+      "baseToken": "USDT",
+      "rate": 1333.333333,
+      "ending": 1642697231,
+      "stakingToken": "DQUICK"
+    },
     {
       "token": "MATIC",
       "stakingRewardAddress": "0xd6Ce4f3D692C1c6684fb449993414C5c9E5D0073",
