@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { Box, Typography, useMediaQuery } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { SyrupInfo } from 'state/stake/hooks';
-import { QUICK } from 'constants/index';
+import { GlobalConst } from 'constants/index';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { CurrencyLogo } from 'components';
-import { formatCompact, getDaysCurrentYear } from 'utils';
+import { formatCompact, getDaysCurrentYear, returnTokenFromKey } from 'utils';
 import SyrupCardDetails from './SyrupCardDetails';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
@@ -184,7 +184,10 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo }> = ({ syrup }) => {
                 display='flex'
                 alignItems='center'
               >
-                <CurrencyLogo currency={QUICK} size='12px' />
+                <CurrencyLogo
+                  currency={returnTokenFromKey('QUICK')}
+                  size='12px'
+                />
                 <Typography variant='caption' style={{ marginLeft: 4 }}>
                   {dQUICKAPY}%{' '}
                   <span style={{ color: palette.text.hint }}>APY</span>

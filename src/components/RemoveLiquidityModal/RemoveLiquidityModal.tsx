@@ -8,7 +8,7 @@ import { Currency, ETHER, JSBI, Percent } from '@uniswap/sdk';
 import ReactGA from 'react-ga';
 import { BigNumber } from '@ethersproject/bignumber';
 import { TransactionResponse } from '@ethersproject/providers';
-import { ROUTER_ADDRESS } from 'constants/index';
+import { GlobalConst } from 'constants/index';
 import {
   CustomModal,
   DoubleCurrencyLogo,
@@ -32,14 +32,11 @@ import {
 import { useTokenBalance } from 'state/wallet/hooks';
 import { useActiveWeb3React, useIsArgentWallet } from 'hooks';
 import { usePairContract } from 'hooks/useContract';
-import {
-  calculateGasMargin,
-  calculateSlippageAmount,
-  getRouterContract,
-} from 'utils';
+import { calculateGasMargin, calculateSlippageAmount } from 'utils';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 import useTransactionDeadline from 'hooks/useTransactionDeadline';
 import { useApproveCallback, ApprovalState } from 'hooks/useApproveCallback';
+import { useRouterContract } from 'hooks/useContract';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
 import { useTotalSupply } from 'data/TotalSupply';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
@@ -207,7 +204,7 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
   } | null>(null);
   const [approval, approveCallback] = useApproveCallback(
     parsedAmounts[Field.LIQUIDITY],
-    ROUTER_ADDRESS,
+    chainId ? GlobalConst.addresses.ROUTER_ADDRESS[chainId] : undefined,
   );
   const isArgentWallet = useIsArgentWallet();
 
@@ -250,7 +247,9 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
     ];
     const message = {
       owner: account,
-      spender: ROUTER_ADDRESS,
+      spender: chainId
+        ? GlobalConst.addresses.ROUTER_ADDRESS[chainId]
+        : undefined,
       value: liquidityAmount.raw.toString(),
       nonce: nonce.toHexString(),
       deadline: deadline.toNumber(),
@@ -289,8 +288,10 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
     setTxHash('');
   }, []);
 
+  const router = useRouterContract();
+
   const onRemove = async () => {
-    if (!chainId || !library || !account || !deadline)
+    if (!chainId || !library || !account || !deadline || !router)
       throw new Error('missing dependencies');
     const {
       [Field.CURRENCY_A]: currencyAmountA,
@@ -299,7 +300,6 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
     if (!currencyAmountA || !currencyAmountB) {
       throw new Error('missing currency amounts');
     }
-    const router = getRouterContract(chainId, library, account);
 
     const amountsMin = {
       [Field.CURRENCY_A]: calculateSlippageAmount(

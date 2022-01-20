@@ -2,7 +2,7 @@ import { Currency, CurrencyAmount, Pair, Token, Trade } from '@uniswap/sdk';
 import flatMap from 'lodash.flatmap';
 import { useMemo } from 'react';
 
-import { BASES_TO_CHECK_TRADES_AGAINST, CUSTOM_BASES } from '../constants';
+import { GlobalData } from '../constants';
 import { PairState, usePairs } from '../data/Reserves';
 import { wrappedCurrency } from '../utils/wrappedCurrency';
 
@@ -12,7 +12,8 @@ function useAllCommonPairs(currencyA?: Currency, currencyB?: Currency): Pair[] {
   const { chainId } = useActiveWeb3React();
 
   const bases: Token[] = useMemo(
-    () => (chainId ? BASES_TO_CHECK_TRADES_AGAINST[chainId] : []),
+    () =>
+      chainId ? GlobalData.bases.BASES_TO_CHECK_TRADES_AGAINST[chainId] : [],
     [chainId],
   );
 
@@ -47,7 +48,7 @@ function useAllCommonPairs(currencyA?: Currency, currencyB?: Currency): Pair[] {
             .filter(([t0, t1]) => t0.address !== t1.address)
             .filter(([tokenA, tokenB]) => {
               if (!chainId) return true;
-              const customBases = CUSTOM_BASES[chainId];
+              const customBases = GlobalData.bases.CUSTOM_BASES[chainId];
               if (!customBases) return true;
 
               const customBasesA: Token[] | undefined =
@@ -59,12 +60,12 @@ function useAllCommonPairs(currencyA?: Currency, currencyB?: Currency): Pair[] {
 
               if (
                 customBasesA &&
-                !customBasesA.find((base) => tokenB.equals(base))
+                !(customBasesA as Token[]).find((base) => tokenB.equals(base))
               )
                 return false;
               if (
                 customBasesB &&
-                !customBasesB.find((base) => tokenA.equals(base))
+                !(customBasesB as Token[]).find((base) => tokenA.equals(base))
               )
                 return false;
 

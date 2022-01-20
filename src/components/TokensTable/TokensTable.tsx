@@ -263,9 +263,9 @@ const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
     <CustomTable
       defaultOrderBy={tokenHeadCells[liquidityHeadCellIndex]}
       defaultOrder='desc'
-      showPagination={data.length > GlobalConst.ROWSPERPAGE}
+      showPagination={data.length > GlobalConst.utils.ROWSPERPAGE}
       headCells={tokenHeadCells}
-      rowsPerPage={GlobalConst.ROWSPERPAGE}
+      rowsPerPage={GlobalConst.utils.ROWSPERPAGE}
       data={data}
       mobileHTML={mobileHTML}
       desktopHTML={desktopHTML}

@@ -6,7 +6,7 @@ import { ReactComponent as SearchIcon } from 'assets/images/SearchIcon.svg';
 import { client } from 'apollo/client';
 import { TOKEN_SEARCH, PAIR_SEARCH } from 'apollo/queries';
 import { getAllTokensOnUniswap, getAllPairsOnUniswap } from 'utils';
-import { TOKEN_BLACKLIST, PAIR_BLACKLIST } from 'constants/index';
+import { GlobalConst } from 'constants/index';
 import { CurrencyLogo, DoubleCurrencyLogo } from 'components';
 import { ChainId, Token } from '@uniswap/sdk';
 import { getAddress } from '@ethersproject/address';
@@ -75,7 +75,7 @@ const Search: React.FC = () => {
     );
     const filtered = tokens
       ? tokens.filter((token) => {
-          if (TOKEN_BLACKLIST.includes(token.id)) {
+          if (GlobalConst.blacklists.TOKEN_BLACKLIST.includes(token.id)) {
             return false;
           }
           const regexMatches = Object.keys(token).map((tokenEntryKey) => {
@@ -118,7 +118,7 @@ const Search: React.FC = () => {
     );
     const filtered = pairs
       ? pairs.filter((pair) => {
-          if (PAIR_BLACKLIST.includes(pair.id)) {
+          if (GlobalConst.blacklists.PAIR_BLACKLIST.includes(pair.id)) {
             return false;
           }
           if (searchVal && searchVal.includes(' ')) {

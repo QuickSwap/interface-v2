@@ -85,7 +85,7 @@ const PairTable: React.FC<TokensTableProps> = ({ data }) => {
       ? pair.oneWeekVolumeUSD
       : pair.oneWeekVolumeUntracked;
     const oneDayFee = (
-      Number(oneDayVolume) * GlobalConst.FEEPERCENT
+      Number(oneDayVolume) * GlobalConst.utils.FEEPERCENT
     ).toLocaleString();
     return (
       <Box mt={index === 0 ? 0 : 3}>
@@ -204,7 +204,7 @@ const PairTable: React.FC<TokensTableProps> = ({ data }) => {
         ? pair.oneWeekVolumeUntracked
         : 0;
     const oneDayFee = (
-      Number(oneDayVolume) * GlobalConst.FEEPERCENT
+      Number(oneDayVolume) * GlobalConst.utils.FEEPERCENT
     ).toLocaleString();
     return [
       {
@@ -279,9 +279,9 @@ const PairTable: React.FC<TokensTableProps> = ({ data }) => {
     <CustomTable
       defaultOrderBy={pairHeadCells[liquidityHeadCellIndex]}
       defaultOrder='desc'
-      showPagination={data.length > GlobalConst.ROWSPERPAGE}
+      showPagination={data.length > GlobalConst.utils.ROWSPERPAGE}
       headCells={pairHeadCells}
-      rowsPerPage={GlobalConst.ROWSPERPAGE}
+      rowsPerPage={GlobalConst.utils.ROWSPERPAGE}
       data={data}
       mobileHTML={mobileHTML}
       desktopHTML={desktopHTML}

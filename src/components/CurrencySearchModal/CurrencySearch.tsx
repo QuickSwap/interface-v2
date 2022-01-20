@@ -18,7 +18,7 @@ import { useActiveWeb3React } from 'hooks';
 import { useAllTokens, useToken } from 'hooks/Tokens';
 import { useSelectedListInfo } from 'state/lists/hooks';
 import { selectList } from 'state/lists/actions';
-import { DEFAULT_TOKEN_LIST_URL } from 'constants/index';
+import { GlobalConst } from 'constants/index';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 import { ReactComponent as SearchIcon } from 'assets/images/SearchIcon.svg';
@@ -232,7 +232,7 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
   let selectedListInfo = useSelectedListInfo();
 
   if (selectedListInfo.current === null) {
-    dispatch(selectList(DEFAULT_TOKEN_LIST_URL));
+    dispatch(selectList(GlobalConst.utils.DEFAULT_TOKEN_LIST_URL));
   }
   selectedListInfo = useSelectedListInfo();
 

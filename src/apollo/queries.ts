@@ -1,5 +1,5 @@
 import gql from 'graphql-tag';
-import { BUNDLE_ID, FACTORY_ADDRESS } from 'constants/index';
+import { GlobalConst } from 'constants/index';
 
 export const SUBGRAPH_HEALTH = gql`
   query health {
@@ -402,14 +402,14 @@ export const ETH_PRICE: any = (block?: number) => {
   const queryString = block
     ? `
     query bundles {
-      bundles(where: { id: ${BUNDLE_ID} } block: {number: ${block}}) {
+      bundles(where: { id: ${GlobalConst.utils.BUNDLE_ID} } block: {number: ${block}}) {
         id
         ethPrice
       }
     }
   `
     : ` query bundles {
-      bundles(where: { id: ${BUNDLE_ID} }) {
+      bundles(where: { id: ${GlobalConst.utils.BUNDLE_ID} }) {
         id
         ethPrice
       }
@@ -465,7 +465,7 @@ export const GLOBAL_DATA: any = (block?: number) => {
   const queryString = ` query uniswapFactories {
       uniswapFactories(
        ${block ? `block: { number: ${block}}` : ``} 
-       where: { id: "${FACTORY_ADDRESS}" }) {
+       where: { id: "${GlobalConst.addresses.FACTORY_ADDRESS}" }) {
         id
         totalVolumeUSD
         totalVolumeETH
