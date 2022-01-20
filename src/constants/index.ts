@@ -64,7 +64,7 @@ export const GlobalConst = {
     ),
     // the Uniswap Default token list lives here
     DEFAULT_TOKEN_LIST_URL:
-      'https://unpkg.com/quickswap-default-token-list@1.2.19/build/quickswap-default.tokenlist.json',
+      'https://unpkg.com/quickswap-default-token-list@1.2.20/build/quickswap-default.tokenlist.json',
   },
 };
 
@@ -140,47 +140,6 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
 };
 
 export const GlobalData = {
-  percents: {
-    ALLOWED_PRICE_IMPACT_LOW: new Percent( // used for warning states
-      JSBI.BigInt(100),
-      GlobalConst.utils.BIPS_BASE,
-    ), // 1%
-    ALLOWED_PRICE_IMPACT_MEDIUM: new Percent(
-      JSBI.BigInt(300),
-      GlobalConst.utils.BIPS_BASE,
-    ), // 3%
-    ALLOWED_PRICE_IMPACT_HIGH: new Percent(
-      JSBI.BigInt(500),
-      GlobalConst.utils.BIPS_BASE,
-    ), // 5%
-    PRICE_IMPACT_WITHOUT_FEE_CONFIRM_MIN: new Percent( // if the price slippage exceeds this number, force the user to type 'confirm' to execute
-      JSBI.BigInt(1000),
-      GlobalConst.utils.BIPS_BASE,
-    ), // 10%
-    BLOCKED_PRICE_IMPACT_NON_EXPERT: new Percent( // for non expert mode disable swaps above this
-      JSBI.BigInt(1500),
-      GlobalConst.utils.BIPS_BASE,
-    ), // 15%
-  },
-  tokens: {
-    MATIC: WETH[ChainId.MATIC],
-    UNI: {
-      [ChainId.MATIC]: new Token(
-        ChainId.MATIC,
-        GlobalConst.addresses.QUICK_ADDRESS,
-        18,
-        'QUICK',
-        'Quickswap',
-      ),
-      [ChainId.MUMBAI]: new Token(
-        ChainId.MUMBAI,
-        GlobalConst.addresses.QUICK_ADDRESS,
-        18,
-        'QUICK',
-        'Quickswap',
-      ),
-    },
-  },
   bases: {
     // used to construct intermediary pairs for trading
     BASES_TO_CHECK_TRADES_AGAINST: {
@@ -240,6 +199,50 @@ export const GlobalData = {
         [returnTokenFromKey('ETHER'), returnTokenFromKey('QUICK')],
       ],
       [ChainId.MUMBAI]: undefined,
+    },
+  },
+};
+
+export const GlobalValue = {
+  percents: {
+    ALLOWED_PRICE_IMPACT_LOW: new Percent( // used for warning states
+      JSBI.BigInt(100),
+      GlobalConst.utils.BIPS_BASE,
+    ), // 1%
+    ALLOWED_PRICE_IMPACT_MEDIUM: new Percent(
+      JSBI.BigInt(300),
+      GlobalConst.utils.BIPS_BASE,
+    ), // 3%
+    ALLOWED_PRICE_IMPACT_HIGH: new Percent(
+      JSBI.BigInt(500),
+      GlobalConst.utils.BIPS_BASE,
+    ), // 5%
+    PRICE_IMPACT_WITHOUT_FEE_CONFIRM_MIN: new Percent( // if the price slippage exceeds this number, force the user to type 'confirm' to execute
+      JSBI.BigInt(1000),
+      GlobalConst.utils.BIPS_BASE,
+    ), // 10%
+    BLOCKED_PRICE_IMPACT_NON_EXPERT: new Percent( // for non expert mode disable swaps above this
+      JSBI.BigInt(1500),
+      GlobalConst.utils.BIPS_BASE,
+    ), // 15%
+  },
+  tokens: {
+    MATIC: WETH[ChainId.MATIC],
+    UNI: {
+      [ChainId.MATIC]: new Token(
+        ChainId.MATIC,
+        GlobalConst.addresses.QUICK_ADDRESS,
+        18,
+        'QUICK',
+        'Quickswap',
+      ),
+      [ChainId.MUMBAI]: new Token(
+        ChainId.MUMBAI,
+        GlobalConst.addresses.QUICK_ADDRESS,
+        18,
+        'QUICK',
+        'Quickswap',
+      ),
     },
   },
 };

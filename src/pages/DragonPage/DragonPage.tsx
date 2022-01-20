@@ -15,7 +15,6 @@ import {
   useSyrupInfo,
   useOldSyrupInfo,
 } from 'state/stake/hooks';
-import { GlobalConst } from 'constants/index';
 import {
   CurrencyLogo,
   SyrupCard,

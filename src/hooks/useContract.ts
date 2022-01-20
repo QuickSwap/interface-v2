@@ -7,7 +7,7 @@ import { abi as MERKLE_DISTRIBUTOR_ABI } from '@uniswap/merkle-distributor/build
 import { ChainId, WETH } from '@uniswap/sdk';
 import { abi as IUniswapV2PairABI } from '@uniswap/v2-core/build/IUniswapV2Pair.json';
 import { useMemo } from 'react';
-import { GlobalConst, GlobalData } from '../constants';
+import { GlobalConst, GlobalData, GlobalValue } from '../constants';
 import {
   ARGENT_WALLET_DETECTOR_ABI,
   ARGENT_WALLET_DETECTOR_MAINNET_ADDRESS,
@@ -178,7 +178,7 @@ export function useGovernanceContract(): Contract | null {
 export function useUniContract(): Contract | null {
   const { chainId } = useActiveWeb3React();
   return useContract(
-    chainId ? GlobalData.tokens.UNI[chainId].address : undefined,
+    chainId ? GlobalValue.tokens.UNI[chainId].address : undefined,
     UNI_ABI,
     true,
   );

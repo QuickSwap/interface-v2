@@ -1,4 +1,4 @@
-import { GlobalData } from 'constants/index';
+import { GlobalValue } from 'constants/index';
 import {
   CurrencyAmount,
   Fraction,
@@ -79,14 +79,14 @@ export function warningSeverity(
   priceImpact: Percent | undefined,
 ): 0 | 1 | 2 | 3 | 4 {
   if (
-    !priceImpact?.lessThan(GlobalData.percents.BLOCKED_PRICE_IMPACT_NON_EXPERT)
+    !priceImpact?.lessThan(GlobalValue.percents.BLOCKED_PRICE_IMPACT_NON_EXPERT)
   )
     return 4;
-  if (!priceImpact?.lessThan(GlobalData.percents.ALLOWED_PRICE_IMPACT_HIGH))
+  if (!priceImpact?.lessThan(GlobalValue.percents.ALLOWED_PRICE_IMPACT_HIGH))
     return 3;
-  if (!priceImpact?.lessThan(GlobalData.percents.ALLOWED_PRICE_IMPACT_MEDIUM))
+  if (!priceImpact?.lessThan(GlobalValue.percents.ALLOWED_PRICE_IMPACT_MEDIUM))
     return 2;
-  if (!priceImpact?.lessThan(GlobalData.percents.ALLOWED_PRICE_IMPACT_LOW))
+  if (!priceImpact?.lessThan(GlobalValue.percents.ALLOWED_PRICE_IMPACT_LOW))
     return 1;
   return 0;
 }
