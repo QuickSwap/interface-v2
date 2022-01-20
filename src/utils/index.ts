@@ -1640,14 +1640,12 @@ export function formatNumber(unformatted: number | string, showDigits = 2) {
   }
 }
 
-export function returnTokenFromKey(key: string) {
+export function returnTokenFromKey(key: string): Token {
+  if (key === 'MATIC') return GlobalValue.tokens.MATIC;
   const tokenIndex = Object.keys(tokenData).findIndex(
     (tokenKey) => tokenKey === key,
   );
-  const token =
-    key === 'MATIC'
-      ? GlobalValue.tokens.MATIC
-      : Object.values(tokenData)[tokenIndex];
+  const token = Object.values(tokenData)[tokenIndex];
   return new Token(
     ChainId.MATIC,
     getAddress(token.address),
