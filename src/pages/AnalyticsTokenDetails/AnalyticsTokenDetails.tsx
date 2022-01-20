@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import { Box, Typography, Grid, useMediaQuery } from '@material-ui/core';
-import { ArrowForwardIos } from '@material-ui/icons';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { Skeleton } from '@material-ui/lab';
 import { ChainId, Token } from '@uniswap/sdk';
@@ -30,6 +29,7 @@ import { ReactComponent as StarChecked } from 'assets/images/StarChecked.svg';
 import { ReactComponent as StarUnchecked } from 'assets/images/StarUnchecked.svg';
 import { getAddress } from '@ethersproject/address';
 import { GlobalConst } from 'constants/index';
+import AnalyticsHeader from 'pages/AnalyticsPage/AnalyticsHeader';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   panel: {
@@ -38,22 +38,6 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     padding: 24,
     [breakpoints.down('xs')]: {
       padding: 12,
-    },
-  },
-  breadcrumb: {
-    display: 'flex',
-    alignItems: 'center',
-    color: palette.text.hint,
-    marginBottom: 50,
-    '& svg': {
-      width: 12,
-      margin: '0 6px',
-    },
-  },
-  link: {
-    cursor: 'pointer',
-    '&:hover': {
-      textDecoration: 'underline',
     },
   },
   heading1: {
@@ -257,34 +241,9 @@ const AnalyticsTokenDetails: React.FC = () => {
 
   return (
     <>
+      <AnalyticsHeader type='token' data={token} />
       {token ? (
         <>
-          <Box className={classes.breadcrumb} width={1}>
-            <Typography
-              variant='caption'
-              className={classes.link}
-              onClick={() => {
-                history.push('/analytics');
-              }}
-            >
-              Analytics
-            </Typography>
-            <ArrowForwardIos />
-            <Typography
-              variant='caption'
-              className={classes.link}
-              onClick={() => {
-                history.push('/analytics?tabIndex=1');
-              }}
-            >
-              Tokens
-            </Typography>
-            <ArrowForwardIos />
-            <Typography variant='caption'>
-              <span style={{ color: '#b6b9cc' }}>{token.symbol}</span>(
-              {shortenAddress(token.id)})
-            </Typography>
-          </Box>
           <Box
             width={1}
             display='flex'

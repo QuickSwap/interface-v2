@@ -55,9 +55,43 @@ export const SYRUP_REWARDS_INFO: {
     baseToken: Token;
     rate: number;
     ending: number; //DATE IN UNIX TIMESTAMP
+    stakingToken: Token;
   }[];
 } = {
   [ChainId.MATIC]: [
+    {
+      token: returnTokenFromKey('RELAY'),
+      stakingRewardAddress: '0xB06ae8Db92aCba3B7767da98Ef16c9eF8F1bF3bb',
+      ended: false,
+      lp: '',
+      name: '',
+      baseToken: returnTokenFromKey('QUICK'),
+      rate: 277.78,
+      ending: 1647734484,
+      stakingToken: returnTokenFromKey('QUICK'),
+    },
+    {
+      token: returnTokenFromKey('BCMC'),
+      stakingRewardAddress: '0xb2eb755B507ee5eE8Af17D71175B87c364CD52d0',
+      ended: false,
+      lp: '',
+      name: '',
+      baseToken: GlobalData.tokens.MATIC,
+      rate: 1416.67,
+      ending: 1647734484,
+      stakingToken: returnTokenFromKey('QUICK'),
+    },
+    {
+      token: returnTokenFromKey('ORBS'),
+      stakingRewardAddress: '0xf99E6796b571F5210EF62929c0023771612c4E70',
+      ended: false,
+      lp: '',
+      name: '',
+      baseToken: returnTokenFromKey('USDC'),
+      rate: 20150.18,
+      ending: 1647734484,
+      stakingToken: returnTokenFromKey('QUICK'),
+    },
     {
       token: returnTokenFromKey('PSP'),
       stakingRewardAddress: '0xdcbDa338D12DBc823d0D484e7206E9AA55eeD844',
@@ -67,6 +101,7 @@ export const SYRUP_REWARDS_INFO: {
       baseToken: GlobalData.tokens.MATIC,
       rate: 5555.55,
       ending: 1649254544,
+      stakingToken: returnTokenFromKey('DQUICK'),
     },
     {
       token: returnTokenFromKey('CLAM2'),
@@ -77,6 +112,7 @@ export const SYRUP_REWARDS_INFO: {
       baseToken: returnTokenFromKey('MI'),
       rate: 83.33,
       ending: 1643900469,
+      stakingToken: returnTokenFromKey('DQUICK'),
     },
     {
       token: returnTokenFromKey('BLANK'),
@@ -87,6 +123,7 @@ export const SYRUP_REWARDS_INFO: {
       baseToken: returnTokenFromKey('USDC'),
       rate: 2033,
       ending: 1646492469,
+      stakingToken: returnTokenFromKey('DQUICK'),
     },
     {
       token: returnTokenFromKey('WELT'),
@@ -97,6 +134,7 @@ export const SYRUP_REWARDS_INFO: {
       baseToken: returnTokenFromKey('USDC'),
       rate: 20833.33,
       ending: 1643474718,
+      stakingToken: returnTokenFromKey('DQUICK'),
     },
     {
       token: returnTokenFromKey('MASQ'),
@@ -107,6 +145,7 @@ export const SYRUP_REWARDS_INFO: {
       baseToken: GlobalData.tokens.MATIC,
       rate: 6796.6,
       ending: 1646066718,
+      stakingToken: returnTokenFromKey('DQUICK'),
     },
     {
       token: returnTokenFromKey('SNE'),
@@ -117,6 +156,7 @@ export const SYRUP_REWARDS_INFO: {
       baseToken: returnTokenFromKey('USDC'),
       rate: 160000,
       ending: 1643302635,
+      stakingToken: returnTokenFromKey('DQUICK'),
     },
     {
       token: returnTokenFromKey('POLYPUG'),
@@ -127,6 +167,7 @@ export const SYRUP_REWARDS_INFO: {
       baseToken: returnTokenFromKey('QUICK'),
       rate: 177781944.44,
       ending: 1648223825,
+      stakingToken: returnTokenFromKey('DQUICK'),
     },
     {
       token: returnTokenFromKey('EGG'),
@@ -137,6 +178,7 @@ export const SYRUP_REWARDS_INFO: {
       baseToken: returnTokenFromKey('USDT'),
       rate: 3.99,
       ending: 1645631825,
+      stakingToken: returnTokenFromKey('DQUICK'),
     },
     {
       token: returnTokenFromKey('PBR'),
@@ -147,6 +189,7 @@ export const SYRUP_REWARDS_INFO: {
       baseToken: returnTokenFromKey('USDT'),
       rate: 1333.333333,
       ending: 1642697231,
+      stakingToken: returnTokenFromKey('DQUICK'),
     },
     {
       token: returnTokenFromKey('GAMER'),
@@ -157,6 +200,7 @@ export const SYRUP_REWARDS_INFO: {
       baseToken: returnTokenFromKey('ETHER'),
       rate: 1250,
       ending: 1645289231,
+      stakingToken: returnTokenFromKey('DQUICK'),
     },
     {
       token: returnTokenFromKey('GNS'),
@@ -167,6 +211,7 @@ export const SYRUP_REWARDS_INFO: {
       baseToken: returnTokenFromKey('DAI'),
       rate: 833.3333333,
       ending: 1645289231,
+      stakingToken: returnTokenFromKey('DQUICK'),
     },
     {
       token: returnTokenFromKey('MM'),
@@ -177,6 +222,7 @@ export const SYRUP_REWARDS_INFO: {
       baseToken: returnTokenFromKey('USDC'),
       rate: 66.66666667,
       ending: 1644296104,
+      stakingToken: returnTokenFromKey('DQUICK'),
     },
     {
       token: returnTokenFromKey('ZIG'),
@@ -187,6 +233,7 @@ export const SYRUP_REWARDS_INFO: {
       baseToken: returnTokenFromKey('QUICK'),
       rate: 37037.03333,
       ending: 1646888104,
+      stakingToken: returnTokenFromKey('DQUICK'),
     },
     {
       token: returnTokenFromKey('TECH'),
@@ -197,6 +244,7 @@ export const SYRUP_REWARDS_INFO: {
       baseToken: returnTokenFromKey('ETHER'),
       rate: 40610.66,
       ending: 1644090690,
+      stakingToken: returnTokenFromKey('DQUICK'),
     },
     {
       token: returnTokenFromKey('WSG'),
@@ -207,6 +255,7 @@ export const SYRUP_REWARDS_INFO: {
       baseToken: returnTokenFromKey('QUICK'),
       rate: 41347011961.97,
       ending: 1643077140,
+      stakingToken: returnTokenFromKey('DQUICK'),
     },
     {
       token: returnTokenFromKey('DERC'),
@@ -217,6 +266,7 @@ export const SYRUP_REWARDS_INFO: {
       baseToken: returnTokenFromKey('USDC'),
       rate: 777.78,
       ending: 1645669140,
+      stakingToken: returnTokenFromKey('DQUICK'),
     },
     {
       token: returnTokenFromKey('LMT'),
@@ -227,26 +277,7 @@ export const SYRUP_REWARDS_INFO: {
       baseToken: returnTokenFromKey('ETHER'),
       rate: 9222.22,
       ending: 1644944188,
-    },
-    {
-      token: returnTokenFromKey('PNT'),
-      stakingRewardAddress: '0x396dFF9c3DA3E0ACe3BB8F0635de5a693f990664',
-      ended: false,
-      lp: '',
-      name: '',
-      baseToken: returnTokenFromKey('ETHER'),
-      rate: 1500,
-      ending: 1642352188,
-    },
-    {
-      token: returnTokenFromKey('UM'),
-      stakingRewardAddress: '0x1e027abDD77f8A93Cf58982b9878702d14941c56',
-      ended: false,
-      lp: '',
-      name: '',
-      baseToken: returnTokenFromKey('ETHER'),
-      rate: 16666.68,
-      ending: 1642241616,
+      stakingToken: returnTokenFromKey('DQUICK'),
     },
     {
       token: returnTokenFromKey('ELON'),
@@ -257,6 +288,7 @@ export const SYRUP_REWARDS_INFO: {
       baseToken: returnTokenFromKey('ETHER'),
       rate: 4878682189.7,
       ending: 1643651726,
+      stakingToken: returnTokenFromKey('DQUICK'),
     },
     {
       token: returnTokenFromKey('DES'),
@@ -267,16 +299,7 @@ export const SYRUP_REWARDS_INFO: {
       baseToken: returnTokenFromKey('QUICK'),
       rate: 3858,
       ending: 1642525260,
-    },
-    {
-      token: GlobalData.tokens.MATIC,
-      stakingRewardAddress: '0xd6Ce4f3D692C1c6684fb449993414C5c9E5D0073',
-      ended: false,
-      lp: '',
-      name: '',
-      baseToken: returnTokenFromKey('ETHER'),
-      rate: 1913.43,
-      ending: 1641845720,
+      stakingToken: returnTokenFromKey('DQUICK'),
     },
     {
       token: returnTokenFromKey('TEL'),
@@ -287,6 +310,7 @@ export const SYRUP_REWARDS_INFO: {
       baseToken: returnTokenFromKey('USDC'),
       rate: 333333.33,
       ending: 1645439402,
+      stakingToken: returnTokenFromKey('DQUICK'),
     },
   ],
 };
@@ -301,9 +325,43 @@ export const OLD_SYRUP_REWARDS_INFO: {
     baseToken: Token;
     rate: number;
     ending: number; //DATE IN UNIX TIMESTAMP
+    stakingToken: Token;
   }[];
 } = {
   [ChainId.MATIC]: [
+    {
+      token: GlobalData.tokens.MATIC,
+      stakingRewardAddress: '0xd6Ce4f3D692C1c6684fb449993414C5c9E5D0073',
+      ended: true,
+      lp: '',
+      name: '',
+      baseToken: returnTokenFromKey('ETHER'),
+      rate: 1913.43,
+      ending: 1641845720,
+      stakingToken: returnTokenFromKey('DQUICK'),
+    },
+    {
+      token: returnTokenFromKey('UM'),
+      stakingRewardAddress: '0x1e027abDD77f8A93Cf58982b9878702d14941c56',
+      ended: true,
+      lp: '',
+      name: '',
+      baseToken: returnTokenFromKey('ETHER'),
+      rate: 16666.68,
+      ending: 1642241616,
+      stakingToken: returnTokenFromKey('DQUICK'),
+    },
+    {
+      token: returnTokenFromKey('PNT'),
+      stakingRewardAddress: '0x396dFF9c3DA3E0ACe3BB8F0635de5a693f990664',
+      ended: true,
+      lp: '',
+      name: '',
+      baseToken: returnTokenFromKey('ETHER'),
+      rate: 1500,
+      ending: 1642352188,
+      stakingToken: returnTokenFromKey('DQUICK'),
+    },
     {
       token: returnTokenFromKey('COMBO'),
       stakingRewardAddress: '0xFAcba3A45354f27442406Df293D9C68FD8f0A8b1',
@@ -313,6 +371,7 @@ export const OLD_SYRUP_REWARDS_INFO: {
       baseToken: returnTokenFromKey('ETHER'),
       rate: 8484.44,
       ending: 1641401056,
+      stakingToken: returnTokenFromKey('DQUICK'),
     },
     {
       token: returnTokenFromKey('GMEE'),
@@ -323,6 +382,7 @@ export const OLD_SYRUP_REWARDS_INFO: {
       baseToken: returnTokenFromKey('QUICK'),
       rate: 15555.56,
       ending: 1641401056,
+      stakingToken: returnTokenFromKey('DQUICK'),
     },
     {
       token: returnTokenFromKey('UFI'),
@@ -333,6 +393,7 @@ export const OLD_SYRUP_REWARDS_INFO: {
       baseToken: GlobalData.tokens.MATIC,
       rate: 18315,
       ending: 1640485140,
+      stakingToken: returnTokenFromKey('DQUICK'),
     },
     {
       token: returnTokenFromKey('UCO'),
@@ -343,6 +404,7 @@ export const OLD_SYRUP_REWARDS_INFO: {
       baseToken: returnTokenFromKey('ETHER'),
       rate: 13833.33,
       ending: 1639933260,
+      stakingToken: returnTokenFromKey('DQUICK'),
     },
     {
       token: returnTokenFromKey('XCAD'),
@@ -353,8 +415,9 @@ export const OLD_SYRUP_REWARDS_INFO: {
       baseToken: returnTokenFromKey('USDC'),
       rate: 1300,
       ending: 1639844474,
+      stakingToken: returnTokenFromKey('DQUICK'),
     },
-    {
+    /**{
       token: returnTokenFromKey('ETHA'),
       stakingRewardAddress: '0x2b1F043c8c97a6465F5B5A9E3F7027acb32CDC3b',
       ended: true,
@@ -363,7 +426,8 @@ export const OLD_SYRUP_REWARDS_INFO: {
       baseToken: returnTokenFromKey('USDC'),
       rate: 7496.53,
       ending: 1639844474,
-    },
+      stakingToken: DQUICK
+    },*/
     {
       token: returnTokenFromKey('CNTR'),
       stakingRewardAddress: '0xe59C2f9a2dCe18C6e19d63675e56BabA59a2339F',
@@ -373,8 +437,9 @@ export const OLD_SYRUP_REWARDS_INFO: {
       baseToken: GlobalData.tokens.MATIC,
       rate: 617283.95,
       ending: 1639844474,
+      stakingToken: returnTokenFromKey('DQUICK'),
     },
-    {
+    /**{
       token: returnTokenFromKey('PERA'),
       stakingRewardAddress: '0xcA5b75C40583124DD08e7dF9cB148C0833418Fa8',
       ended: true,
@@ -383,7 +448,8 @@ export const OLD_SYRUP_REWARDS_INFO: {
       baseToken: returnTokenFromKey('QUICK'),
       rate: 8333.33,
       ending: 1639844474,
-    },
+      stakingToken: DQUICK
+    },*/
     {
       token: returnTokenFromKey('RAMP'),
       stakingRewardAddress: '0x0a727387f3FF6d2203ECe6CB6e430E4e25032bcd',
@@ -393,6 +459,7 @@ export const OLD_SYRUP_REWARDS_INFO: {
       baseToken: returnTokenFromKey('ETHER'),
       rate: 8128.1,
       ending: 1639844474,
+      stakingToken: returnTokenFromKey('DQUICK'),
     },
     {
       token: returnTokenFromKey('EROWAN'),
@@ -403,6 +470,7 @@ export const OLD_SYRUP_REWARDS_INFO: {
       baseToken: returnTokenFromKey('QUICK'),
       rate: 21891.67,
       ending: 1639844474,
+      stakingToken: returnTokenFromKey('DQUICK'),
     },
     {
       token: returnTokenFromKey('XCASH'),
@@ -413,6 +481,7 @@ export const OLD_SYRUP_REWARDS_INFO: {
       baseToken: returnTokenFromKey('QUICK'),
       rate: 27777777.78,
       ending: 1639408820,
+      stakingToken: returnTokenFromKey('DQUICK'),
     },
     {
       token: returnTokenFromKey('MCASH'),
@@ -423,8 +492,9 @@ export const OLD_SYRUP_REWARDS_INFO: {
       baseToken: returnTokenFromKey('ETHER'),
       rate: 18333.33,
       ending: 1639241173,
+      stakingToken: returnTokenFromKey('DQUICK'),
     },
-    {
+    /**{
       token: returnTokenFromKey('ALN'),
       stakingRewardAddress: '0x568E635426804400f306c6D3Ec56D14782D74261',
       ended: true,
@@ -433,6 +503,7 @@ export const OLD_SYRUP_REWARDS_INFO: {
       baseToken: returnTokenFromKey('ETHER'),
       rate: 18333.33,
       ending: 1639241173,
+      stakingToken: DQUICK
     },
     {
       token: returnTokenFromKey('WATCH'),
@@ -443,6 +514,7 @@ export const OLD_SYRUP_REWARDS_INFO: {
       baseToken: returnTokenFromKey('QUICK'),
       rate: 3333.33,
       ending: 1639073521,
+      stakingToken: DQUICK
     },
     {
       token: returnTokenFromKey('KNIGHT'),
@@ -453,6 +525,7 @@ export const OLD_SYRUP_REWARDS_INFO: {
       baseToken: returnTokenFromKey('ETHER'),
       rate: 2166.67,
       ending: 1639073521,
+      stakingToken: DQUICK
     },
     {
       token: returnTokenFromKey('PHX'),
@@ -463,6 +536,7 @@ export const OLD_SYRUP_REWARDS_INFO: {
       baseToken: GlobalData.tokens.MATIC,
       rate: 12000,
       ending: 1638027392,
+      stakingToken: DQUICK
     },
     {
       token: returnTokenFromKey('REI'),
@@ -473,6 +547,7 @@ export const OLD_SYRUP_REWARDS_INFO: {
       baseToken: returnTokenFromKey('QUICK'),
       rate: 5127.75,
       ending: 1638027392,
+      stakingToken: DQUICK
     },
     {
       token: returnTokenFromKey('MITX'),
@@ -483,6 +558,7 @@ export const OLD_SYRUP_REWARDS_INFO: {
       baseToken: returnTokenFromKey('ETHER'),
       rate: 29609.1,
       ending: 1637513623,
+      stakingToken: DQUICK
     },
     {
       token: returnTokenFromKey('D11'),
@@ -493,6 +569,7 @@ export const OLD_SYRUP_REWARDS_INFO: {
       baseToken: GlobalData.tokens.MATIC,
       rate: 728.6,
       ending: 1637341260,
+      stakingToken: DQUICK
     },
     {
       token: returnTokenFromKey('OM'),
@@ -503,6 +580,7 @@ export const OLD_SYRUP_REWARDS_INFO: {
       baseToken: returnTokenFromKey('QUICK'),
       rate: 15833.33,
       ending: 1637076798,
+      stakingToken: DQUICK
     },
     {
       token: returnTokenFromKey('ELET'),
@@ -513,6 +591,7 @@ export const OLD_SYRUP_REWARDS_INFO: {
       baseToken: returnTokenFromKey('QUICK'),
       rate: 83333.33,
       ending: 1637076798,
+      stakingToken: DQUICK
     },
     {
       token: returnTokenFromKey('ODDZ'),
@@ -523,6 +602,7 @@ export const OLD_SYRUP_REWARDS_INFO: {
       baseToken: GlobalData.tokens.MATIC,
       rate: 4065.05,
       ending: 1637076798,
+      stakingToken: DQUICK
     },
     {
       token: returnTokenFromKey('TCP'),
@@ -533,6 +613,7 @@ export const OLD_SYRUP_REWARDS_INFO: {
       baseToken: returnTokenFromKey('USDC'),
       rate: 17475.7,
       ending: 1636816820,
+      stakingToken: DQUICK
     },
     {
       token: returnTokenFromKey('MEEB'),
@@ -543,6 +624,7 @@ export const OLD_SYRUP_REWARDS_INFO: {
       baseToken: returnTokenFromKey('ETHER'),
       rate: 166.67,
       ending: 1636816820,
+      stakingToken: DQUICK
     },
     {
       token: returnTokenFromKey('PLR'),
@@ -553,6 +635,7 @@ export const OLD_SYRUP_REWARDS_INFO: {
       baseToken: returnTokenFromKey('QUICK'),
       rate: 38402,
       ending: 1636390770,
+      stakingToken: DQUICK
     },
     {
       token: returnTokenFromKey('KOM'),
@@ -563,6 +646,7 @@ export const OLD_SYRUP_REWARDS_INFO: {
       baseToken: returnTokenFromKey('QUICK'),
       rate: 1000000,
       ending: 1636390770,
+      stakingToken: DQUICK
     },
     {
       token: returnTokenFromKey('ANGEL'),
@@ -573,7 +657,8 @@ export const OLD_SYRUP_REWARDS_INFO: {
       baseToken: returnTokenFromKey('QUICK'),
       rate: 6666.67,
       ending: 1635960912,
-    },
+      stakingToken: DQUICK
+    },*/
     {
       token: returnTokenFromKey('TRADE'),
       stakingRewardAddress: '0x9f48eB6E139855ebc89de973ea91c7596583E6Bc',
@@ -583,6 +668,7 @@ export const OLD_SYRUP_REWARDS_INFO: {
       baseToken: GlobalData.tokens.MATIC,
       rate: 2458,
       ending: 1636117833,
+      stakingToken: returnTokenFromKey('DQUICK'),
     },
     {
       token: returnTokenFromKey('MASK'),
@@ -593,8 +679,9 @@ export const OLD_SYRUP_REWARDS_INFO: {
       baseToken: returnTokenFromKey('QUICK'),
       rate: 641.03,
       ending: 1635858286,
+      stakingToken: returnTokenFromKey('DQUICK'),
     },
-    {
+    /**{
       token: returnTokenFromKey('SWAP'),
       stakingRewardAddress: '0xf2717feF528DF66450511F869517086c26452De7',
       ended: true,
@@ -603,6 +690,7 @@ export const OLD_SYRUP_REWARDS_INFO: {
       baseToken: returnTokenFromKey('QUICK'),
       rate: 3133.33,
       ending: 1635700624,
+      stakingToken: DQUICK
     },
     {
       token: returnTokenFromKey('BUNNY'),
@@ -613,7 +701,8 @@ export const OLD_SYRUP_REWARDS_INFO: {
       baseToken: returnTokenFromKey('ETHER'),
       rate: 874.49,
       ending: 1635700624,
-    },
+      stakingToken: DQUICK
+    },*/
     {
       token: returnTokenFromKey('MONA'),
       stakingRewardAddress: '0xDa8805782Fa38f859b7D0001bedfE498faFca94a',
@@ -623,8 +712,9 @@ export const OLD_SYRUP_REWARDS_INFO: {
       baseToken: returnTokenFromKey('QUICK'),
       rate: 1.52,
       ending: 1635263542,
+      stakingToken: returnTokenFromKey('DQUICK'),
     },
-    {
+    /**{
       token: returnTokenFromKey('OOE'),
       stakingRewardAddress: '0xa5ce7598af3F76c3A254CDDc62f914bBa9d8B7bd',
       ended: true,
@@ -633,6 +723,7 @@ export const OLD_SYRUP_REWARDS_INFO: {
       baseToken: returnTokenFromKey('QUICK'),
       rate: 2166.66,
       ending: 1635095958,
+      stakingToken: DQUICK
     },
     {
       token: returnTokenFromKey('XED'),
@@ -643,6 +734,7 @@ export const OLD_SYRUP_REWARDS_INFO: {
       baseToken: returnTokenFromKey('QUICK'),
       rate: 3030.3,
       ending: 1635095958,
+      stakingToken: DQUICK
     },
     {
       token: returnTokenFromKey('DHV'),
@@ -653,7 +745,8 @@ export const OLD_SYRUP_REWARDS_INFO: {
       baseToken: returnTokenFromKey('QUICK'),
       rate: 555.55,
       ending: 1635263542,
-    },
+      stakingToken: DQUICK
+    }, 
     {
       token: returnTokenFromKey('MOONED'),
       stakingRewardAddress: '0xd66Df9f7Da33C90Ab21601349D5f44eCbB4a1e63',
@@ -663,6 +756,7 @@ export const OLD_SYRUP_REWARDS_INFO: {
       baseToken: returnTokenFromKey('QUICK'),
       rate: 27333.33,
       ending: 1635263542,
+      stakingToken: DQUICK
     },
     {
       token: returnTokenFromKey('HONOR'),
@@ -673,7 +767,8 @@ export const OLD_SYRUP_REWARDS_INFO: {
       baseToken: returnTokenFromKey('USDC'),
       rate: 75757.57,
       ending: 1634921623,
-    },
+      stakingToken: DQUICK
+    },*/
     {
       token: returnTokenFromKey('START'),
       stakingRewardAddress: '0xBC00cF775D78b50925895A872Aa945B728dB0EBB',
@@ -683,8 +778,9 @@ export const OLD_SYRUP_REWARDS_INFO: {
       baseToken: returnTokenFromKey('QUICK'),
       rate: 116.67,
       ending: 1634680134,
+      stakingToken: returnTokenFromKey('DQUICK'),
     },
-    {
+    /**{
       token: returnTokenFromKey('RELAY'),
       stakingRewardAddress: '0x747fC94E52ba06D870Cb793e11C98D7688b28887',
       ended: true,
@@ -693,6 +789,7 @@ export const OLD_SYRUP_REWARDS_INFO: {
       baseToken: returnTokenFromKey('QUICK'),
       rate: 500,
       ending: 1634680134,
+      stakingToken: DQUICK
     },
     {
       token: returnTokenFromKey('DNXC'),
@@ -703,7 +800,8 @@ export const OLD_SYRUP_REWARDS_INFO: {
       baseToken: returnTokenFromKey('QUICK'),
       rate: 4800,
       ending: 1634680134,
-    },
+      stakingToken: DQUICK
+    },*/
     {
       token: returnTokenFromKey('REVV'),
       stakingRewardAddress: '0xBDeaCb01103C6459ED05c4836082b41143825F49',
@@ -713,8 +811,9 @@ export const OLD_SYRUP_REWARDS_INFO: {
       baseToken: returnTokenFromKey('QUICK'),
       rate: 16816.67,
       ending: 1634680134,
+      stakingToken: returnTokenFromKey('DQUICK'),
     },
-    {
+    /**{
       token: returnTokenFromKey('YAMP'),
       stakingRewardAddress: '0x88A989A72fF3981cE02cE3CB5ec81A23C1058382',
       ended: true,
@@ -723,6 +822,7 @@ export const OLD_SYRUP_REWARDS_INFO: {
       baseToken: returnTokenFromKey('QUICK'),
       rate: 9333.33,
       ending: 1634680134,
+      stakingToken: DQUICK
     },
     {
       token: returnTokenFromKey('FEAR'),
@@ -733,6 +833,7 @@ export const OLD_SYRUP_REWARDS_INFO: {
       baseToken: returnTokenFromKey('USDC'),
       rate: 1157,
       ending: 1634680134,
+      stakingToken: DQUICK
     },
     {
       token: returnTokenFromKey('CHICK'),
@@ -743,6 +844,7 @@ export const OLD_SYRUP_REWARDS_INFO: {
       baseToken: returnTokenFromKey('USDC'),
       rate: 3333.33,
       ending: 1634680134,
+      stakingToken: DQUICK
     },
     {
       token: returnTokenFromKey('ADS'),
@@ -753,7 +855,8 @@ export const OLD_SYRUP_REWARDS_INFO: {
       baseToken: returnTokenFromKey('USDC'),
       rate: 2150,
       ending: 1634680134,
-    },
+      stakingToken: DQUICK
+    },*/
     {
       token: returnTokenFromKey('CIOTX'),
       stakingRewardAddress: '0x54B1e1A8F2472230DB6092833249675Fc2E8DFe1',
@@ -763,6 +866,7 @@ export const OLD_SYRUP_REWARDS_INFO: {
       baseToken: returnTokenFromKey('USDC'),
       rate: 16666.67,
       ending: 1634680134,
+      stakingToken: returnTokenFromKey('DQUICK'),
     },
     {
       token: returnTokenFromKey('ADDY'),
@@ -773,8 +877,9 @@ export const OLD_SYRUP_REWARDS_INFO: {
       baseToken: returnTokenFromKey('ETHER'),
       rate: 59.5,
       ending: 1634680134,
+      stakingToken: returnTokenFromKey('DQUICK'),
     },
-    {
+    /**{
       token: returnTokenFromKey('POLYDOGE'),
       stakingRewardAddress: '0x0b32AC0A9b6bfdd0E24cd2f4d37d82F8d05B44d8',
       ended: true,
@@ -783,6 +888,7 @@ export const OLD_SYRUP_REWARDS_INFO: {
       baseToken: returnTokenFromKey('QUICK'),
       rate: 333333333333.33,
       ending: 1634410234,
+      stakingToken: DQUICK
     },
     {
       token: returnTokenFromKey('ANRX'),
@@ -793,6 +899,7 @@ export const OLD_SYRUP_REWARDS_INFO: {
       baseToken: returnTokenFromKey('ETHER'),
       rate: 17768.33,
       ending: 1634317059,
+      stakingToken: DQUICK
     },
     {
       token: returnTokenFromKey('GUARD'),
@@ -803,6 +910,7 @@ export const OLD_SYRUP_REWARDS_INFO: {
       baseToken: returnTokenFromKey('USDC'),
       rate: 3333.33,
       ending: 1634224820,
+      stakingToken: DQUICK
     },
     {
       token: returnTokenFromKey('WOW'),
@@ -813,7 +921,8 @@ export const OLD_SYRUP_REWARDS_INFO: {
       baseToken: returnTokenFromKey('USDC'),
       rate: 196.67,
       ending: 1633108624,
-    },
+      stakingToken: DQUICK
+    }*/
   ],
 };
 
@@ -846,8 +955,8 @@ export const STAKING_DUAL_REWARDS_INFO: {
       rewardTokenA: returnTokenFromKey('DQUICK'),
       rewardTokenB: GlobalData.tokens.MATIC,
       rewardTokenBBase: returnTokenFromKey('USDC'),
-      rateA: 33.48,
-      rateB: 1000,
+      rateA: 33.21,
+      rateB: 800,
       pair: '0xadbf1854e5883eb8aa7baf50705338739e558e5b',
     },
     {
@@ -860,8 +969,8 @@ export const STAKING_DUAL_REWARDS_INFO: {
       rewardTokenA: returnTokenFromKey('DQUICK'),
       rewardTokenB: GlobalData.tokens.MATIC,
       rewardTokenBBase: returnTokenFromKey('USDC'),
-      rateA: 14.136,
-      rateB: 600,
+      rateA: 14.022,
+      rateB: 400,
       pair: '0x6e7a5fafcec6bb1e78bae2a1f0b612012bf14827',
     },
     {
@@ -874,7 +983,7 @@ export const STAKING_DUAL_REWARDS_INFO: {
       rewardTokenA: returnTokenFromKey('DQUICK'),
       rewardTokenB: GlobalData.tokens.MATIC,
       rewardTokenBBase: returnTokenFromKey('USDC'),
-      rateA: 11.904,
+      rateA: 11.808,
       rateB: 100,
       pair: '0x019ba0325f1988213d448b3472fa1cf8d07618d7',
     },
@@ -888,8 +997,8 @@ export const STAKING_DUAL_REWARDS_INFO: {
       rewardTokenA: returnTokenFromKey('DQUICK'),
       rewardTokenB: GlobalData.tokens.MATIC,
       rewardTokenBBase: returnTokenFromKey('USDC'),
-      rateA: 5.952,
-      rateB: 300,
+      rateA: 5.904,
+      rateB: 200,
       pair: '0x604229c960e5cacf2aaeac8be68ac07ba9df81c3',
     },
     {
@@ -902,8 +1011,8 @@ export const STAKING_DUAL_REWARDS_INFO: {
       rewardTokenA: returnTokenFromKey('DQUICK'),
       rewardTokenB: returnTokenFromKey('KIRO'),
       rewardTokenBBase: GlobalData.tokens.MATIC,
-      rateA: 2.232,
-      rateB: 20000,
+      rateA: 2.214,
+      rateB: 12607,
       pair: '0x3f245c6f18442bd6198d964c567a01bd4202e290',
     },
     {
@@ -916,7 +1025,7 @@ export const STAKING_DUAL_REWARDS_INFO: {
       rewardTokenA: returnTokenFromKey('DQUICK'),
       rewardTokenB: returnTokenFromKey('GENESIS'),
       rewardTokenBBase: returnTokenFromKey('QUICK'),
-      rateA: 1.488,
+      rateA: 1.476,
       rateB: 25000,
       pair: '0xf0696be85fa54f7a8c9f20aa98aa4409cd5c9d1b',
     },
@@ -930,7 +1039,7 @@ export const STAKING_DUAL_REWARDS_INFO: {
       rewardTokenA: returnTokenFromKey('DQUICK'),
       rewardTokenB: returnTokenFromKey('FODL'),
       rewardTokenBBase: GlobalData.tokens.MATIC,
-      rateA: 3.72,
+      rateA: 3.69,
       rateB: 14000,
       pair: '0x2fc4dfcee8c331d54341f5668a6d9bcdd86f8e2f',
     },
@@ -944,7 +1053,7 @@ export const STAKING_DUAL_REWARDS_INFO: {
       rewardTokenA: returnTokenFromKey('DQUICK'),
       rewardTokenB: returnTokenFromKey('PSP'),
       rewardTokenBBase: GlobalData.tokens.MATIC,
-      rateA: 5.208,
+      rateA: 5.166,
       rateB: 22223,
       pair: '0x7afc060acca7ec6985d982dd85cc62b111cac7a7',
     },
@@ -1013,7 +1122,7 @@ export const STAKING_REWARDS_INFO: {
       lp: '',
       name: '',
       baseToken: returnTokenFromKey('USDC'),
-      rate: 29.016,
+      rate: 28.782,
       pair: '0x853ee4b2a13f8a742d64c8f088be7ba2131f670d',
     },
     {
@@ -1023,7 +1132,7 @@ export const STAKING_REWARDS_INFO: {
       lp: '',
       name: '',
       baseToken: returnTokenFromKey('ETHER'),
-      rate: 11.904,
+      rate: 11.808,
       pair: '0xdc9232e2df177d7a12fdff6ecbab114e2231198d',
     },
     {
@@ -1033,7 +1142,7 @@ export const STAKING_REWARDS_INFO: {
       lp: '',
       name: '',
       baseToken: returnTokenFromKey('ETHER'),
-      rate: 9.672,
+      rate: 9.594,
       pair: '0xf6422b997c7f54d1c6a6e103bcb1499eea0a7046',
     },
     {
@@ -1043,7 +1152,7 @@ export const STAKING_REWARDS_INFO: {
       lp: '',
       name: '',
       baseToken: returnTokenFromKey('ETHER'),
-      rate: 7.44,
+      rate: 7.38,
       pair: '0x1bd06b96dd42ada85fdd0795f3b4a79db914add5',
     },
     {
@@ -1053,7 +1162,7 @@ export const STAKING_REWARDS_INFO: {
       lp: '',
       name: '',
       baseToken: returnTokenFromKey('ETHER'),
-      rate: 6.696,
+      rate: 6.642,
       pair: '0x90bc3e68ba8393a3bf2d79309365089975341a43',
     },
     {
@@ -1063,18 +1172,8 @@ export const STAKING_REWARDS_INFO: {
       lp: '',
       name: '',
       baseToken: returnTokenFromKey('DAI'),
-      rate: 6.696,
+      rate: 6.642,
       pair: '0x4a35582a710e1f4b2030a3f826da20bfb6703c09',
-    },
-    {
-      tokens: [returnTokenFromKey('DERC'), returnTokenFromKey('USDC')],
-      stakingRewardAddress: '0xaBECe67c01cd2E8ecBFaA311bd08EC299dA03629',
-      ended: false,
-      lp: '',
-      name: '',
-      baseToken: returnTokenFromKey('USDC'),
-      rate: 4.464,
-      pair: '0x0a8a3cb9a21c893a207826e76125ef6faaad99ec',
     },
     {
       tokens: [returnTokenFromKey('WBTC'), returnTokenFromKey('USDC')],
@@ -1083,7 +1182,7 @@ export const STAKING_REWARDS_INFO: {
       lp: '',
       name: '',
       baseToken: returnTokenFromKey('USDC'),
-      rate: 4.464,
+      rate: 4.428,
       pair: '0xf6a637525402643b0654a54bead2cb9a83c8b498',
     },
     {
@@ -1093,7 +1192,7 @@ export const STAKING_REWARDS_INFO: {
       lp: '',
       name: '',
       baseToken: returnTokenFromKey('USDC'),
-      rate: 4.464,
+      rate: 4.428,
       pair: '0x1f1e4c845183ef6d50e9609f16f6f9cae43bc9cb',
     },
     {
@@ -1103,7 +1202,7 @@ export const STAKING_REWARDS_INFO: {
       lp: '',
       name: '',
       baseToken: returnTokenFromKey('USDT'),
-      rate: 4.464,
+      rate: 4.428,
       pair: '0xf64d2b41ca5392ec86d519d616603d2bb85b2a5d',
     },
     {
@@ -1113,7 +1212,7 @@ export const STAKING_REWARDS_INFO: {
       lp: '',
       name: '',
       baseToken: GlobalData.tokens.MATIC,
-      rate: 4.464,
+      rate: 4.428,
       pair: '0x9b7e966fe005d616b5560e4baa7cfa8747d6cbb9',
     },
     {

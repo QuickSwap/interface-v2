@@ -181,8 +181,8 @@ export default function Updater(): null {
           () => fetchChunk(multicallContract, chunk, latestBlockNumber),
           {
             n: Infinity,
-            minWait: 2500,
-            maxWait: 3500,
+            minWait: 1000,
+            maxWait: 2500,
           },
         );
         promise
