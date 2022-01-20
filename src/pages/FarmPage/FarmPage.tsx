@@ -112,6 +112,10 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
   },
 }));
 
+const LPFARM_INDEX = 0;
+const DUALFARM_INDEX = 1;
+const LOADFARM_COUNT = 6;
+
 const FarmPage: React.FC = () => {
   const classes = useStyles();
   const { palette, breakpoints } = useTheme();
@@ -127,7 +131,7 @@ const FarmPage: React.FC = () => {
   >(undefined);
   const [bulkPairs, setBulkPairs] = useState<any>(null);
   const [pageIndex, setPageIndex] = useState(0);
-  const [farmIndex, setFarmIndex] = useState(0);
+  const [farmIndex, setFarmIndex] = useState(LPFARM_INDEX);
   const [isEndedFarm, setIsEndedFarm] = useState(false);
   const [sortBy, setSortBy] = useState(0);
   const [sortDesc, setSortDesc] = useState(false);
@@ -137,7 +141,7 @@ const FarmPage: React.FC = () => {
     farmSearch,
     setFarmSearch,
   );
-  const farmData = useUSDRewardsandFees(farmIndex === 0, bulkPairs);
+  const farmData = useUSDRewardsandFees(farmIndex === LPFARM_INDEX, bulkPairs);
   const dQuickRewardSum = useMemo(() => {
     if (chainId) {
       const stakingData = STAKING_REWARDS_INFO[chainId] ?? [];
@@ -153,25 +157,25 @@ const FarmPage: React.FC = () => {
 
   const addedLPStakingInfos = useStakingInfo(
     null,
-    farmIndex === 1 || isEndedFarm ? 0 : undefined,
-    farmIndex === 1 || isEndedFarm ? 0 : undefined,
+    farmIndex === DUALFARM_INDEX || isEndedFarm ? 0 : undefined,
+    farmIndex === DUALFARM_INDEX || isEndedFarm ? 0 : undefined,
     { search: farmSearch, isStaked: stakedOnly },
   );
   const addedLPStakingOldInfos = useOldStakingInfo(
     null,
-    farmIndex === 1 || !isEndedFarm ? 0 : undefined,
-    farmIndex === 1 || !isEndedFarm ? 0 : undefined,
+    farmIndex === DUALFARM_INDEX || !isEndedFarm ? 0 : undefined,
+    farmIndex === DUALFARM_INDEX || !isEndedFarm ? 0 : undefined,
     { search: farmSearch, isStaked: stakedOnly },
   );
   const addedDualStakingInfos = useDualStakingInfo(
     null,
-    farmIndex === 0 ? 0 : undefined,
-    farmIndex === 0 ? 0 : undefined,
+    farmIndex === LPFARM_INDEX ? 0 : undefined,
+    farmIndex === LPFARM_INDEX ? 0 : undefined,
     { search: farmSearch, isStaked: stakedOnly },
   );
 
   const addedStakingInfos =
-    farmIndex === 1
+    farmIndex === DUALFARM_INDEX
       ? addedDualStakingInfos
       : isEndedFarm
       ? addedLPStakingOldInfos
@@ -204,15 +208,15 @@ const FarmPage: React.FC = () => {
     setStakingDualInfos(undefined);
     setPageIndex(0);
     setTimeout(() => {
-      if (farmIndex === 0) {
+      if (farmIndex === LPFARM_INDEX) {
         setStakingInfos(
           isEndedFarm
-            ? addedLPStakingOldInfos.slice(0, 6)
-            : addedLPStakingInfos.slice(0, 6),
+            ? addedLPStakingOldInfos.slice(0, LOADFARM_COUNT)
+            : addedLPStakingInfos.slice(0, LOADFARM_COUNT),
         );
       } else {
         setStakingDualInfos(
-          isEndedFarm ? [] : addedDualStakingInfos.slice(0, 6),
+          isEndedFarm ? [] : addedDualStakingInfos.slice(0, LOADFARM_COUNT),
         );
       }
     }, 500);
@@ -224,21 +228,24 @@ const FarmPage: React.FC = () => {
   }, [isEndedFarm, farmIndex, farmSearch, stakingRewardAddress]);
 
   useEffect(() => {
-    if (farmIndex === 0) {
+    if (farmIndex === LPFARM_INDEX) {
       const currentStakingInfos = stakingInfos || [];
       const stakingInfosToAdd = (isEndedFarm
         ? addedLPStakingOldInfos
         : addedLPStakingInfos
-      ).slice(currentStakingInfos.length, currentStakingInfos.length + 6);
+      ).slice(
+        currentStakingInfos.length,
+        currentStakingInfos.length + LOADFARM_COUNT,
+      );
       setStakingInfos(currentStakingInfos.concat(stakingInfosToAdd));
-    } else if (farmIndex === 1) {
+    } else if (farmIndex === DUALFARM_INDEX) {
       const currentDualStakingInfos = stakingDualInfos || [];
       const stakingDualInfosToAdd = (isEndedFarm
         ? []
         : addedDualStakingInfos
       ).slice(
         currentDualStakingInfos.length,
-        currentDualStakingInfos.length + 6,
+        currentDualStakingInfos.length + LOADFARM_COUNT,
       );
       setStakingDualInfos(
         currentDualStakingInfos.concat(stakingDualInfosToAdd),

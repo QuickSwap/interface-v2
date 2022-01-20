@@ -151,6 +151,8 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
   },
 }));
 
+const LOADSYRUP_COUNT = 5;
+
 const DragonPage: React.FC = () => {
   const classes = useStyles();
   const daysCurrentYear = getDaysCurrentYear();
@@ -215,8 +217,8 @@ const DragonPage: React.FC = () => {
     setTimeout(() => {
       setSyrupInfos(
         isEndedSyrup
-          ? addedOldSyrupInfos.slice(0, 5)
-          : addedStakingSyrupInfos.slice(0, 5),
+          ? addedOldSyrupInfos.slice(0, LOADSYRUP_COUNT)
+          : addedStakingSyrupInfos.slice(0, LOADSYRUP_COUNT),
       );
     }, 500);
     return () => setSyrupInfos(undefined);
@@ -228,7 +230,10 @@ const DragonPage: React.FC = () => {
     const syrupInfosToAdd = (isEndedSyrup
       ? addedOldSyrupInfos
       : addedStakingSyrupInfos
-    ).slice(currentSyrupInfos.length, currentSyrupInfos.length + 5);
+    ).slice(
+      currentSyrupInfos.length,
+      currentSyrupInfos.length + LOADSYRUP_COUNT,
+    );
     setSyrupInfos(currentSyrupInfos.concat(syrupInfosToAdd));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageIndex]);
