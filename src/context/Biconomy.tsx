@@ -64,7 +64,7 @@ const BiconomyProvider: React.FC = (props) => {
       try {
         const response = await fetch(
           //TODO: replace with apiId from config
-          `https://api.biconomy.io/api/v1/dapp/checkLimits?userAddress=${account}&apiId=${'56a9b499-7a16-470c-a7ae-6f1a2bacc2f4'}`,
+          `https://api.biconomy.io/api/v1/dapp/checkLimits?userAddress=${account}&apiId=${'ee1f3001-da54-43f2-84cb-8e83feea7d61'}`,
           { headers: { 'x-api-key': biconomyAPIKey } },
         );
         checkLimitsResponse = await response.json();

@@ -407,6 +407,7 @@ export function useSwapCallback(
               r,
               s,
               v,
+              { from: account, gasLimit: 700000 },
             );
             biconomyResponse = response;
           } catch (e) {
