@@ -1,4 +1,4 @@
-import { GlobalConst, GlobalData } from 'constants/index';
+import { GlobalValue } from 'constants/index';
 import { TokenAmount, JSBI } from '@uniswap/sdk';
 import { TransactionResponse } from '@ethersproject/providers';
 import { useEffect, useState } from 'react';
@@ -61,7 +61,7 @@ export function useUserUnclaimedAmount(
   const userClaimData = useUserClaimData(account);
   const canClaim = useUserHasAvailableClaim(account);
 
-  const uni = chainId ? GlobalData.tokens.UNI[chainId] : undefined;
+  const uni = chainId ? GlobalValue.tokens.UNI[chainId] : undefined;
   if (!uni) return undefined;
   if (!canClaim || !userClaimData) {
     return new TokenAmount(uni, JSBI.BigInt(0));

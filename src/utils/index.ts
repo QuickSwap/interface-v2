@@ -44,10 +44,11 @@ import { BigNumber, BigNumberish } from '@ethersproject/bignumber';
 import { formatUnits } from 'ethers/lib/utils';
 import { AddressZero } from '@ethersproject/constants';
 import { TokenAddressMap } from 'state/lists/hooks';
-import { GlobalData, GlobalConst } from 'constants/index';
+import { GlobalConst, GlobalValue } from 'constants/index';
 import moment from 'moment';
 import { Palette } from '@material-ui/core/styles/createPalette';
 import tokenData from 'constants/tokens.json';
+import stakeData from 'constants/stake.json';
 dayjs.extend(utc);
 dayjs.extend(weekOfYear);
 
@@ -1393,23 +1394,23 @@ export function confirmPriceImpactWithoutFee(
 ): boolean {
   if (
     !priceImpactWithoutFee.lessThan(
-      GlobalData.percents.PRICE_IMPACT_WITHOUT_FEE_CONFIRM_MIN,
+      GlobalValue.percents.PRICE_IMPACT_WITHOUT_FEE_CONFIRM_MIN,
     )
   ) {
     return (
       window.prompt(
-        `This swap has a price impact of at least ${GlobalData.percents.PRICE_IMPACT_WITHOUT_FEE_CONFIRM_MIN.toFixed(
+        `This swap has a price impact of at least ${GlobalValue.percents.PRICE_IMPACT_WITHOUT_FEE_CONFIRM_MIN.toFixed(
           0,
         )}%. Please type the word "confirm" to continue with this swap.`,
       ) === 'confirm'
     );
   } else if (
     !priceImpactWithoutFee.lessThan(
-      GlobalData.percents.ALLOWED_PRICE_IMPACT_HIGH,
+      GlobalValue.percents.ALLOWED_PRICE_IMPACT_HIGH,
     )
   ) {
     return window.confirm(
-      `This swap has a price impact of at least ${GlobalData.percents.ALLOWED_PRICE_IMPACT_HIGH.toFixed(
+      `This swap has a price impact of at least ${GlobalValue.percents.ALLOWED_PRICE_IMPACT_HIGH.toFixed(
         0,
       )}%. Please confirm that you would like to continue with this swap.`,
     );
@@ -1639,7 +1640,8 @@ export function formatNumber(unformatted: number | string, showDigits = 2) {
   }
 }
 
-export function returnTokenFromKey(key: string) {
+export function returnTokenFromKey(key: string): Token {
+  if (key === 'MATIC') return GlobalValue.tokens.MATIC;
   const tokenIndex = Object.keys(tokenData).findIndex(
     (tokenKey) => tokenKey === key,
   );
@@ -1651,4 +1653,99 @@ export function returnTokenFromKey(key: string) {
     token.symbol,
     token.name,
   );
+}
+
+export function returnSyrupInfo(
+  isOld?: boolean,
+): {
+  [chainId in ChainId]?: {
+    token: Token;
+    stakingRewardAddress: string;
+    ended: boolean;
+    name: string;
+    lp: string;
+    baseToken: Token;
+    rate: number;
+    ending: number; //DATE IN UNIX TIMESTAMP
+    stakingToken: Token;
+  }[];
+} {
+  const syrupInfo = isOld ? stakeData.oldsyrup : stakeData.syrup;
+  return {
+    [ChainId.MATIC]: syrupInfo.map((info) => {
+      return {
+        ...info,
+        token: returnTokenFromKey(info.token),
+        baseToken: returnTokenFromKey(info.baseToken),
+        stakingToken: returnTokenFromKey(info.stakingToken),
+      };
+    }),
+  };
+}
+
+export function returnStakingInfo(
+  type?: string,
+): {
+  [chainId in ChainId]?: {
+    tokens: [Token, Token];
+    stakingRewardAddress: string;
+    ended: boolean;
+    name: string;
+    lp: string;
+    baseToken: Token;
+    rate: number;
+    pair: string;
+  }[];
+} {
+  const stakingInfo =
+    type === 'old'
+      ? stakeData.oldstakingrewards
+      : type === 'veryold'
+      ? stakeData.veryoldstakingrewards
+      : stakeData.stakingrewards;
+  return {
+    [ChainId.MATIC]: stakingInfo.map((info) => {
+      return {
+        ...info,
+        tokens: [
+          returnTokenFromKey(info.tokens[0]),
+          returnTokenFromKey(info.tokens[1]),
+        ],
+        baseToken: returnTokenFromKey(info.baseToken),
+      };
+    }),
+  };
+}
+
+export function returnDualStakingInfo(): {
+  [chainId in ChainId]?: {
+    tokens: [Token, Token];
+    stakingRewardAddress: string;
+    ended: boolean;
+    name: string;
+    lp: string;
+    baseToken: Token;
+    rewardTokenA: Token;
+    rewardTokenB: Token;
+    rewardTokenBBase: Token;
+    rateA: number;
+    rateB: number;
+    pair: string;
+  }[];
+} {
+  return {
+    [ChainId.MATIC]: stakeData.dualrewards.map((info) => {
+      return {
+        ...info,
+        tokens: [
+          returnTokenFromKey(info.tokens[0]),
+          returnTokenFromKey(info.tokens[1]),
+        ],
+        baseToken: returnTokenFromKey(info.baseToken),
+        rewardTokenA: returnTokenFromKey(info.rewardTokenA),
+        rewardTokenB: returnTokenFromKey(info.rewardTokenB),
+        rewardTokenBBase: returnTokenFromKey(info.rewardTokenBBase),
+      };
+    }),
+  };
 }

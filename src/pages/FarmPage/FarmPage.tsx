@@ -11,9 +11,6 @@ import {
   useLairInfo,
   StakingInfo,
   DualStakingInfo,
-  STAKING_REWARDS_INFO,
-  OLD_STAKING_REWARDS_INFO,
-  STAKING_DUAL_REWARDS_INFO,
   getBulkPairData,
   useUSDRewardsandFees,
   CommonStakingInfo,
@@ -22,7 +19,12 @@ import { FarmLPCard, FarmDualCard, ToggleSwitch } from 'components';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
 import { ReactComponent as SearchIcon } from 'assets/images/SearchIcon.svg';
 import { useActiveWeb3React } from 'hooks';
-import { getAPYWithFee, getOneYearFee } from 'utils';
+import {
+  getAPYWithFee,
+  getOneYearFee,
+  returnDualStakingInfo,
+  returnStakingInfo,
+} from 'utils';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 import { useInfiniteLoading } from 'utils/useInfiniteLoading';
 
@@ -144,7 +146,7 @@ const FarmPage: React.FC = () => {
   const farmData = useUSDRewardsandFees(farmIndex === LPFARM_INDEX, bulkPairs);
   const dQuickRewardSum = useMemo(() => {
     if (chainId) {
-      const stakingData = STAKING_REWARDS_INFO[chainId] ?? [];
+      const stakingData = returnStakingInfo()[chainId] ?? [];
       const rewardSum = stakingData.reduce(
         (total, item) => total + item.rate,
         0,
@@ -190,11 +192,11 @@ const FarmPage: React.FC = () => {
   useEffect(() => {
     if (chainId) {
       const stakingPairLists =
-        STAKING_REWARDS_INFO[chainId]?.map((item) => item.pair) ?? [];
+        returnStakingInfo()[chainId]?.map((item) => item.pair) ?? [];
       const stakingOldPairLists =
-        OLD_STAKING_REWARDS_INFO[chainId]?.map((item) => item.pair) ?? [];
+        returnStakingInfo('old')[chainId]?.map((item) => item.pair) ?? [];
       const dualPairLists =
-        STAKING_DUAL_REWARDS_INFO[chainId]?.map((item) => item.pair) ?? [];
+        returnDualStakingInfo()[chainId]?.map((item) => item.pair) ?? [];
       const pairLists = stakingPairLists
         .concat(stakingOldPairLists)
         .concat(dualPairLists);

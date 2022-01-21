@@ -6,13 +6,12 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import {
   useStakingInfo,
-  STAKING_REWARDS_INFO,
   getBulkPairData,
   StakingInfo,
 } from 'state/stake/hooks';
 import RewardSliderItem from './RewardSliderItem';
 import { useActiveWeb3React } from 'hooks';
-import { getOneYearFee } from 'utils';
+import { getOneYearFee, returnStakingInfo } from 'utils';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   rewardsSlider: {
@@ -55,8 +54,9 @@ const RewardSlider: React.FC = () => {
   useEffect(() => {
     if (chainId) {
       const stakingPairLists =
-        STAKING_REWARDS_INFO[chainId]?.slice(0, 5).map((item) => item.pair) ??
-        [];
+        returnStakingInfo()
+          [chainId]?.slice(0, 5)
+          .map((item) => item.pair) ?? [];
       getBulkPairData(stakingPairLists).then((data) => setBulkPairs(data));
     }
   }, [chainId]);
