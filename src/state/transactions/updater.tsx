@@ -5,6 +5,7 @@ import { useBlockNumber } from 'state/application/hooks';
 import { useAddPopup, useRemovePopup } from 'state/application/hooks';
 import { AppDispatch, AppState } from 'state';
 import { checkedTransaction, finalizeTransaction } from './actions';
+import { updateBlockNumber } from 'state/application/actions';
 
 export function shouldCheck(
   lastBlockNumber: number,
@@ -77,10 +78,37 @@ export default function Updater(): null {
           setPopupTxHashes(hashStr);
         }
 
+        library.getTransaction(hash).then(
+          (res) => {
+            console.log('bccc', res, ' ', hash);
+          },
+          (error) => {
+            console.log('cbbb', error);
+          },
+        );
+
         library
           .getTransactionReceipt(hash)
           .then((receipt) => {
             if (receipt) {
+              // the receipt was fetched before the block, fast forward to that block to trigger balance updates
+              console.log(
+                'aaa',
+                receipt.blockNumber,
+                ' ',
+                lastBlockNumber,
+                ' ',
+                receipt.status,
+              );
+              if (receipt.blockNumber > lastBlockNumber) {
+                dispatch(
+                  updateBlockNumber({
+                    chainId,
+                    blockNumber: receipt.blockNumber,
+                  }),
+                );
+              }
+
               dispatch(
                 finalizeTransaction({
                   chainId,
