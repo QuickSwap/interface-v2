@@ -12,7 +12,7 @@ const useStyles = makeStyles(({ palette }) => ({
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: 4,
+    marginBottom: 4,
   },
   iconWrapper: {
     color: palette.primary.main,
@@ -38,11 +38,12 @@ const Transaction: React.FC<TransactionProps> = ({ hash }) => {
 
   const tx = allTransactions?.[hash];
   const summary = tx?.summary;
-  const pending = !tx?.receipt;
+  const pending = !tx?.confirmedTime;
   const success =
     !pending &&
     tx &&
-    (tx.receipt?.status === 1 || typeof tx.receipt?.status === 'undefined');
+    tx.receipt &&
+    (tx.receipt.status === 1 || typeof tx.receipt.status === 'undefined');
 
   if (!chainId) return null;
 

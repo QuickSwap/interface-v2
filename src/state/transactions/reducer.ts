@@ -73,7 +73,9 @@ export default createReducer(initialState, (builder) =>
         if (!tx) {
           return;
         }
-        tx.receipt = receipt;
+        if (receipt !== 'failed') {
+          tx.receipt = receipt;
+        }
         tx.confirmedTime = now();
       },
     ),

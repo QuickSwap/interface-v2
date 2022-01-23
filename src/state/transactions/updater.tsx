@@ -54,29 +54,40 @@ export default function Updater(): null {
     Object.keys(transactions)
       .filter((hash) => shouldCheck(lastBlockNumber, transactions[hash]))
       .forEach((hash) => {
-        // to prevent opening the processing popup multiple times when the transaction is pending for a long time.
-        if (popupTxHashes.indexOf(hash) === -1) {
-          addPopup(
-            {
-              txn: {
-                hash,
-                pending: true,
-                success: false,
-                summary: transactions[hash]?.summary,
+        library.getTransaction(hash).then((res) => {
+          // to prevent opening the processing popup multiple times when the transaction is pending for a long time.
+          if (popupTxHashes.indexOf(hash) === -1 && res) {
+            addPopup(
+              {
+                txn: {
+                  hash,
+                  pending: true,
+                  success: false,
+                  summary: transactions[hash]?.summary,
+                },
               },
-            },
-            hash,
-            null,
-          );
+              hash,
+              null,
+            );
 
-          setTimeout(() => {
-            removePopup(hash);
-          }, 20000);
+            setTimeout(() => {
+              removePopup(hash);
+            }, 20000);
 
-          let hashStr = popupTxHashes;
-          hashStr += hash + ',';
-          setPopupTxHashes(hashStr);
-        }
+            let hashStr = popupTxHashes;
+            hashStr += hash + ',';
+            setPopupTxHashes(hashStr);
+          }
+          if (!res) {
+            dispatch(
+              finalizeTransaction({
+                chainId,
+                hash,
+                receipt: 'failed',
+              }),
+            );
+          }
+        });
 
         library
           .getTransactionReceipt(hash)

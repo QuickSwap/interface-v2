@@ -31,11 +31,11 @@ const useStyles = makeStyles(({ palette }) => ({
 
 function renderTransactions(transactions: string[]) {
   return (
-    <Box>
+    <>
       {transactions.map((hash, i) => {
         return <Transaction key={i} hash={hash} />;
       })}
-    </Box>
+    </>
   );
 }
 
@@ -77,7 +77,13 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
   }, [dispatch, chainId]);
 
   return (
-    <Box paddingX={3} paddingY={4}>
+    <Box
+      paddingX={3}
+      paddingY={4}
+      maxHeight='80vh'
+      display='flex'
+      flexDirection='column'
+    >
       <Box display='flex' justifyContent='space-between'>
         <Typography variant='h5'>Account</Typography>
         <Close style={{ cursor: 'pointer' }} onClick={toggleWalletModal} />
@@ -149,14 +155,16 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
           )}
         </Box>
       </Box>
-      <Box padding={2}>
+      <Box display='flex' flexDirection='column' overflow='auto'>
         {!!pendingTransactions.length || !!confirmedTransactions.length ? (
           <>
             <Box
               display='flex'
               justifyContent='space-between'
               alignItems='center'
-              mb={1.5}
+              paddingX={2}
+              pt={2}
+              mb={1}
             >
               <Typography variant='body2'>Recent Transactions</Typography>
               <Typography
@@ -167,8 +175,10 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
                 Clear all
               </Typography>
             </Box>
-            {renderTransactions(pendingTransactions)}
-            {renderTransactions(confirmedTransactions)}
+            <Box paddingX={2} flex={1} overflow='auto'>
+              {renderTransactions(pendingTransactions)}
+              {renderTransactions(confirmedTransactions)}
+            </Box>
           </>
         ) : (
           <Typography variant='body2'>
