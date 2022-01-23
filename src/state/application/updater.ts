@@ -1,4 +1,3 @@
-import { Block } from '@ethersproject/abstract-provider';
 import { useCallback, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useActiveWeb3React } from 'hooks';
