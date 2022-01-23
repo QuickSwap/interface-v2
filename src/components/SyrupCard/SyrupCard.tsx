@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { Box, Typography, useMediaQuery } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { SyrupInfo } from 'state/stake/hooks';
-import { GlobalConst } from 'constants/index';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { CurrencyLogo } from 'components';
 import { formatCompact, getDaysCurrentYear, returnTokenFromKey } from 'utils';
@@ -48,13 +47,17 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo }> = ({ syrup }) => {
   const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
 
   const currency = unwrappedToken(syrup.token);
+  const isDQUICKStakingToken = syrup.stakingToken.equals(
+    returnTokenFromKey('DQUICK'),
+  );
 
-  const dQuickDeposit = syrup.valueOfTotalStakedAmountInUSDC
+  const depositAmount = syrup.valueOfTotalStakedAmountInUSDC
     ? `$${Number(syrup.valueOfTotalStakedAmountInUSDC).toLocaleString()}`
     : `${syrup.totalStakedAmount.toSignificant(6, { groupSeparator: ',' }) ??
-        '-'} dQUICK`;
+        '-'} ${syrup.stakingToken.symbol}`;
 
   const tokenAPR =
+    syrup.valueOfTotalStakedAmountInUSDC &&
     syrup.valueOfTotalStakedAmountInUSDC > 0
       ? (
           ((syrup.rewards ?? 0) / syrup.valueOfTotalStakedAmountInUSDC) *
@@ -156,10 +159,10 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo }> = ({ syrup }) => {
         >
           {isMobile && (
             <Typography className={classes.syrupText}>
-              dQUICK Deposits
+              {syrup.stakingToken.symbol} Deposits
             </Typography>
           )}
-          <Typography variant='body2'>{dQuickDeposit}</Typography>
+          <Typography variant='body2'>{depositAmount}</Typography>
         </Box>
         <Box
           display='flex'
@@ -175,25 +178,27 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo }> = ({ syrup }) => {
             <Typography variant='body2' style={{ color: palette.success.main }}>
               {tokenAPR}%
             </Typography>
-            <Box display='flex'>
-              <Box
-                borderRadius='4px'
-                border={`1px solid ${palette.grey.A400}`}
-                padding='4px 6px'
-                marginTop='6px'
-                display='flex'
-                alignItems='center'
-              >
-                <CurrencyLogo
-                  currency={returnTokenFromKey('QUICK')}
-                  size='12px'
-                />
-                <Typography variant='caption' style={{ marginLeft: 4 }}>
-                  {dQUICKAPY}%{' '}
-                  <span style={{ color: palette.text.hint }}>APY</span>
-                </Typography>
+            {isDQUICKStakingToken && (
+              <Box display='flex'>
+                <Box
+                  borderRadius='4px'
+                  border={`1px solid ${palette.grey.A400}`}
+                  padding='4px 6px'
+                  marginTop='6px'
+                  display='flex'
+                  alignItems='center'
+                >
+                  <CurrencyLogo
+                    currency={returnTokenFromKey('QUICK')}
+                    size='12px'
+                  />
+                  <Typography variant='caption' style={{ marginLeft: 4 }}>
+                    {dQUICKAPY}%{' '}
+                    <span style={{ color: palette.text.hint }}>APY</span>
+                  </Typography>
+                </Box>
               </Box>
-            </Box>
+            )}
           </Box>
         </Box>
         <Box

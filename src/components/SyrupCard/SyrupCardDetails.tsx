@@ -13,6 +13,7 @@ import {
   useTransactionAdder,
   useTransactionFinalizer,
 } from 'state/transactions/hooks';
+import { getPriceToQUICKSyrup, returnTokenFromKey } from 'utils';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   syrupCard: {
@@ -184,14 +185,14 @@ const SyrupCardDetails: React.FC<{ token: Token }> = ({ token }) => {
                   {userLiquidityUnstaked
                     ? userLiquidityUnstaked.toSignificant(2)
                     : 0}{' '}
-                  dQUICK
+                  {syrup.stakingToken.symbol}
                 </span>
                 <span style={{ color: palette.text.secondary, marginLeft: 4 }}>
                   $
                   {userLiquidityUnstaked
                     ? (
                         syrup.quickPrice *
-                        Number(syrup.dQUICKtoQUICK.toSignificant()) *
+                        getPriceToQUICKSyrup(syrup) *
                         Number(userLiquidityUnstaked.toSignificant())
                       ).toLocaleString()
                     : 0}
@@ -212,14 +213,15 @@ const SyrupCardDetails: React.FC<{ token: Token }> = ({ token }) => {
               </Typography>
               <Typography variant='body2'>
                 <span style={{ color: palette.text.primary }}>
-                  {syrup.stakedAmount.toSignificant(2)} dQUICK
+                  {syrup.stakedAmount.toSignificant(2)}{' '}
+                  {syrup.stakingToken.symbol}
                 </span>
                 <span style={{ color: palette.text.secondary, marginLeft: 4 }}>
                   $
                   {(
+                    syrup.quickPrice *
                     Number(syrup.stakedAmount.toSignificant()) *
-                    Number(syrup.dQUICKtoQUICK.toSignificant()) *
-                    syrup.quickPrice
+                    getPriceToQUICKSyrup(syrup)
                   ).toLocaleString()}
                 </span>
               </Typography>

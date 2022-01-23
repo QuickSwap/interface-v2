@@ -49,6 +49,7 @@ import moment from 'moment';
 import { Palette } from '@material-ui/core/styles/createPalette';
 import tokenData from 'constants/tokens.json';
 import stakeData from 'constants/stake.json';
+import { SyrupInfo } from 'state/stake/hooks';
 dayjs.extend(utc);
 dayjs.extend(weekOfYear);
 
@@ -1748,4 +1749,11 @@ export function returnDualStakingInfo(): {
       };
     }),
   };
+}
+
+export function getPriceToQUICKSyrup(syrup: SyrupInfo) {
+  const isQUICKStakingToken = syrup.stakingToken.equals(
+    returnTokenFromKey('QUICK'),
+  );
+  return isQUICKStakingToken ? 1 : Number(syrup.dQUICKtoQUICK.toSignificant());
 }

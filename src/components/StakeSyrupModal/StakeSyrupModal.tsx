@@ -123,12 +123,12 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
           .stake(`0x${parsedAmount.raw.toString(16)}`, { gasLimit: 350000 })
           .then(async (response: TransactionResponse) => {
             addTransaction(response, {
-              summary: `Deposit dQUICK`,
+              summary: `Deposit ${syrup.stakingToken.symbol}`,
             });
             try {
               const receipt = await response.wait();
               finalizedTransaction(receipt, {
-                summary: `Deposit dQUICK`,
+                summary: `Deposit ${syrup.stakingToken.symbol}`,
               });
               setAttempting(false);
               setStakePercent(0);
@@ -176,7 +176,9 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
     <CustomModal open={open} onClose={onClose}>
       <Box paddingX={3} paddingY={4}>
         <Box display='flex' alignItems='center' justifyContent='space-between'>
-          <Typography variant='h5'>Stake dQUICK</Typography>
+          <Typography variant='h5'>
+            Stake {syrup.stakingToken.symbol}
+          </Typography>
           <CloseIcon style={{ cursor: 'pointer' }} onClick={onClose} />
         </Box>
         <Box
@@ -191,7 +193,7 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
             alignItems='center'
             justifyContent='space-between'
           >
-            <Typography variant='body2'>dQUICK</Typography>
+            <Typography variant='body2'>{syrup.stakingToken.symbol}</Typography>
             <Typography variant='body2'>
               Balance: {maxAmountInput?.toSignificant(3)}
             </Typography>

@@ -36,6 +36,7 @@ import { unwrappedToken } from 'utils/wrappedCurrency';
 import { useTotalSupplys } from 'data/TotalSupply';
 import {
   getOneYearFee,
+  getPriceToQUICKSyrup,
   returnDualStakingInfo,
   returnStakingInfo,
   returnSyrupInfo,
@@ -189,10 +190,12 @@ export interface SyrupInfo {
 
   oneDayVol: number;
 
-  valueOfTotalStakedAmountInUSDC: number;
+  valueOfTotalStakedAmountInUSDC?: number;
 
   rewards?: number;
   rewardTokenPriceinUSD?: number;
+
+  stakingToken: Token;
 
   // calculates a hypothetical amount of token distributed to the active account per second.
   getHypotheticalRewardRate: (
@@ -478,6 +481,7 @@ export function useSyrupInfo(
         const totalSupplyState = totalSupplies[index];
         const rewardRateState = rewardRates[index];
         const periodFinishState = periodFinishes[index];
+        const syrupInfo = info[index];
 
         if (
           // these may be undefined if not logged in
@@ -504,7 +508,7 @@ export function useSyrupInfo(
             return memo;
           }
           // get the LP token
-          const token = info[index].token;
+          const token = syrupInfo.token;
           const [, stakingTokenPair] = stakingTokenPairs[index];
           const tokenPairPrice = stakingTokenPair?.priceOf(token);
           const usdPriceBaseToken = usdBaseTokenPrices[index];
@@ -513,22 +517,22 @@ export function useSyrupInfo(
             Number(usdPriceBaseToken?.toSignificant());
 
           const rewards =
-            Number(info[index].rate) *
+            Number(syrupInfo.rate) *
             (priceOfRewardTokenInUSD ? priceOfRewardTokenInUSD : 0);
 
           // check for account, if no account set to 0
-          const lp = info[index].lp;
-          const rate = web3.utils.toWei(info[index].rate.toString());
+          const lp = syrupInfo.lp;
+          const rate = web3.utils.toWei(syrupInfo.rate.toString());
           const stakedAmount = new TokenAmount(
             lp && lp !== ''
               ? new Token(137, lp, 18, 'SLP', 'Staked LP')
-              : returnTokenFromKey('DQUICK'),
+              : syrupInfo.stakingToken,
             JSBI.BigInt(balanceState?.result?.[0] ?? 0),
           );
           const totalStakedAmount = new TokenAmount(
             lp && lp !== ''
               ? new Token(137, lp, 18, 'SLP', 'Staked LP')
-              : returnTokenFromKey('DQUICK'),
+              : syrupInfo.stakingToken,
             JSBI.BigInt(totalSupplyState.result?.[0]),
           );
           const totalRewardRate = new TokenAmount(token, JSBI.BigInt(rate));
@@ -560,22 +564,18 @@ export function useSyrupInfo(
             totalRewardRate01,
           );
 
-          const periodFinishMs = info[index].ending;
+          const periodFinishMs = syrupInfo.ending;
           const dQUICKtoQUICK = new TokenAmount(
             returnTokenFromKey('QUICK'),
             JSBI.BigInt(dQuickToQuick?.result?.[0] ?? 0),
           );
-          const valueOfTotalStakedAmountInUSDC =
-            Number(totalStakedAmount.toSignificant(6)) *
-            Number(dQUICKtoQUICK.toSignificant(6)) *
-            Number(USDPrice?.toSignificant(6));
 
-          memo.push({
+          const syrup: SyrupInfo = {
             stakingRewardAddress: rewardsAddress,
-            token: info[index].token,
-            ended: info[index].ended,
-            name: info[index].name,
-            lp: info[index].lp,
+            token: syrupInfo.token,
+            ended: syrupInfo.ended,
+            name: syrupInfo.name,
+            lp: syrupInfo.lp,
             periodFinish: periodFinishMs,
             earnedAmount: new TokenAmount(
               token,
@@ -586,18 +586,28 @@ export function useSyrupInfo(
             stakedAmount: stakedAmount,
             totalStakedAmount: totalStakedAmount,
             getHypotheticalRewardRate,
-            baseToken: info[index].baseToken,
+            baseToken: syrupInfo.baseToken,
             quickPrice: quickPrice,
-            rate: info[index].rate,
+            rate: syrupInfo.rate,
             dQUICKtoQUICK: dQUICKtoQUICK,
             dQuickTotalSupply: new TokenAmount(
               returnTokenFromKey('DQUICK'),
               JSBI.BigInt(_dQuickTotalSupply?.result?.[0] ?? 0),
             ),
-            valueOfTotalStakedAmountInUSDC,
             oneDayVol: oneDayVol,
             rewardTokenPriceinUSD: priceOfRewardTokenInUSD,
             rewards,
+            stakingToken: syrupInfo.stakingToken,
+          };
+
+          const valueOfTotalStakedAmountInUSDC =
+            Number(totalStakedAmount.toSignificant(6)) *
+            getPriceToQUICKSyrup(syrup) *
+            Number(USDPrice?.toSignificant(6));
+
+          memo.push({
+            ...syrup,
+            valueOfTotalStakedAmountInUSDC,
           });
         }
         return memo;
@@ -727,6 +737,7 @@ export function useOldSyrupInfo(
         const totalSupplyState = totalSupplies[index];
         const rewardRateState = rewardRates[index];
         const periodFinishState = periodFinishes[index];
+        const syrupInfo = info[index];
 
         if (
           // these may be undefined if not logged in
@@ -751,21 +762,21 @@ export function useOldSyrupInfo(
             return memo;
           }
           // get the LP token
-          const token = info[index].token;
+          const token = syrupInfo.token;
 
           // check for account, if no account set to 0
-          const lp = info[index].lp;
-          const rate = web3.utils.toWei(info[index].rate.toString());
+          const lp = syrupInfo.lp;
+          const rate = web3.utils.toWei(syrupInfo.rate.toString());
           const stakedAmount = new TokenAmount(
             lp && lp !== ''
               ? new Token(137, lp, 18, 'SLP', 'Staked LP')
-              : returnTokenFromKey('DQUICK'),
+              : syrupInfo.stakingToken,
             JSBI.BigInt(balanceState?.result?.[0] ?? 0),
           );
           const totalStakedAmount = new TokenAmount(
             lp && lp !== ''
               ? new Token(137, lp, 18, 'SLP', 'Staked LP')
-              : returnTokenFromKey('DQUICK'),
+              : syrupInfo.stakingToken,
             JSBI.BigInt(totalSupplyState.result?.[0]),
           );
           const totalRewardRate = new TokenAmount(token, JSBI.BigInt(rate));
@@ -797,15 +808,11 @@ export function useOldSyrupInfo(
             totalRewardRate01,
           );
 
-          const periodFinishMs = info[index].ending;
+          const periodFinishMs = syrupInfo.ending;
           const dQUICKtoQUICK = new TokenAmount(
             returnTokenFromKey('QUICK'),
             JSBI.BigInt(0),
           );
-          const valueOfTotalStakedAmountInUSDC =
-            Number(totalStakedAmount.toSignificant(6)) *
-            Number(dQUICKtoQUICK.toSignificant(6)) *
-            Number(USDPrice?.toSignificant(6));
 
           const [, stakingTokenPair] = stakingTokenPairs[index];
           const tokenPairPrice = stakingTokenPair?.priceOf(token);
@@ -814,12 +821,12 @@ export function useOldSyrupInfo(
             Number(tokenPairPrice?.toSignificant()) *
             Number(usdPriceBaseToken?.toSignificant());
 
-          memo.push({
+          const syrup: SyrupInfo = {
             stakingRewardAddress: rewardsAddress,
-            token: info[index].token,
-            ended: info[index].ended,
-            name: info[index].name,
-            lp: info[index].lp,
+            token: syrupInfo.token,
+            ended: syrupInfo.ended,
+            name: syrupInfo.name,
+            lp: syrupInfo.lp,
             periodFinish: periodFinishMs,
             earnedAmount: new TokenAmount(
               token,
@@ -830,7 +837,7 @@ export function useOldSyrupInfo(
             stakedAmount: stakedAmount,
             totalStakedAmount: totalStakedAmount,
             getHypotheticalRewardRate,
-            baseToken: info[index].baseToken,
+            baseToken: syrupInfo.baseToken,
             quickPrice: quickPrice,
             rate: 0,
             dQUICKtoQUICK: dQUICKtoQUICK,
@@ -838,10 +845,17 @@ export function useOldSyrupInfo(
               returnTokenFromKey('DQUICK'),
               JSBI.BigInt(0),
             ),
-            valueOfTotalStakedAmountInUSDC: valueOfTotalStakedAmountInUSDC,
             oneDayVol: 0,
             rewardTokenPriceinUSD: priceOfRewardTokenInUSD,
-          });
+            stakingToken: syrupInfo.stakingToken,
+          };
+
+          const valueOfTotalStakedAmountInUSDC =
+            Number(totalStakedAmount.toSignificant(6)) *
+            getPriceToQUICKSyrup(syrup) *
+            Number(USDPrice?.toSignificant(6));
+
+          memo.push({ ...syrup, valueOfTotalStakedAmountInUSDC });
         }
         return memo;
       },
@@ -1166,6 +1180,7 @@ export function useDualStakingInfo(
         const rewardRateAState = rewardRatesA[index];
         const rewardRateBState = rewardRatesB[index];
         const periodFinishState = periodFinishes[index];
+        const stakingInfo = info[index];
 
         if (
           // these may be undefined if not logged in
@@ -1195,16 +1210,16 @@ export function useDualStakingInfo(
             return memo;
           }
           // get the LP token
-          const tokens = info[index].tokens;
+          const tokens = stakingInfo.tokens;
           const dummyPair = new Pair(
             new TokenAmount(tokens[0], '0'),
             new TokenAmount(tokens[1], '0'),
           );
 
           // check for account, if no account set to 0
-          const lp = info[index].lp;
-          const rateA = web3.utils.toWei(info[index].rateA.toString());
-          const rateB = web3.utils.toWei(info[index].rateB.toString());
+          const lp = stakingInfo.lp;
+          const rateA = web3.utils.toWei(stakingInfo.rateA.toString());
+          const rateB = web3.utils.toWei(stakingInfo.rateB.toString());
           const stakedAmount = new TokenAmount(
             lp && lp !== ''
               ? new Token(137, lp, 18, 'SLP', 'Staked LP')
@@ -1296,16 +1311,16 @@ export function useDualStakingInfo(
 
           const rewardTokenBPriceInBaseToken = Number(
             rewardTokenBPair
-              ?.priceOf(info[index].rewardTokenB)
+              ?.priceOf(stakingInfo.rewardTokenB)
               ?.toSignificant(6),
           );
 
           let rewardTokenBPrice = 0;
 
-          if (info[index].rewardTokenBBase.equals(returnTokenFromKey('USDC'))) {
+          if (stakingInfo.rewardTokenBBase.equals(returnTokenFromKey('USDC'))) {
             rewardTokenBPrice = rewardTokenBPriceInBaseToken;
           } else if (
-            info[index].rewardTokenBBase.equals(returnTokenFromKey('QUICK'))
+            stakingInfo.rewardTokenBBase.equals(returnTokenFromKey('QUICK'))
           ) {
             rewardTokenBPrice = rewardTokenBPriceInBaseToken * quickPrice;
           } else {
@@ -1313,17 +1328,17 @@ export function useDualStakingInfo(
           }
 
           const perMonthReturnInRewards =
-            ((info[index].rateA * quickPrice +
-              info[index].rateB * rewardTokenBPrice) *
+            ((stakingInfo.rateA * quickPrice +
+              stakingInfo.rateB * rewardTokenBPrice) *
               30) /
             Number(valueOfTotalStakedAmountInUSDC?.toSignificant(6));
 
           memo.push({
             stakingRewardAddress: rewardsAddress,
-            tokens: info[index].tokens,
-            ended: info[index].ended,
-            name: info[index].name,
-            lp: info[index].lp,
+            tokens: stakingInfo.tokens,
+            ended: stakingInfo.ended,
+            name: stakingInfo.name,
+            lp: stakingInfo.lp,
             periodFinish:
               periodFinishMs > 0 ? new Date(periodFinishMs) : undefined,
             earnedAmountA: new TokenAmount(
@@ -1341,15 +1356,15 @@ export function useDualStakingInfo(
             stakedAmount: stakedAmount,
             totalStakedAmount: totalStakedAmount,
             getHypotheticalRewardRate,
-            baseToken: info[index].baseToken,
-            pair: info[index].pair,
+            baseToken: stakingInfo.baseToken,
+            pair: stakingInfo.pair,
             quickPrice: quickPrice,
             maticPrice: maticPrice,
-            rateA: info[index].rateA,
-            rateB: info[index].rateB,
-            rewardTokenA: info[index].rewardTokenA,
-            rewardTokenB: info[index].rewardTokenB,
-            rewardTokenBBase: info[index].rewardTokenBBase,
+            rateA: stakingInfo.rateA,
+            rateB: stakingInfo.rateB,
+            rewardTokenA: stakingInfo.rewardTokenA,
+            rewardTokenB: stakingInfo.rewardTokenB,
+            rewardTokenBBase: stakingInfo.rewardTokenBBase,
             rewardTokenBPrice,
             tvl,
             perMonthReturnInRewards,
@@ -1593,6 +1608,7 @@ export function useStakingInfo(
         const totalSupplyState = totalSupplies[index];
         const rewardRateState = rewardRates[index];
         const periodFinishState = periodFinishes[index];
+        const stakingInfo = info[index];
 
         if (
           // these may be undefined if not logged in
@@ -1619,15 +1635,15 @@ export function useStakingInfo(
             return memo;
           }
           // get the LP token
-          const tokens = info[index].tokens;
+          const tokens = stakingInfo.tokens;
           const dummyPair = new Pair(
             new TokenAmount(tokens[0], '0'),
             new TokenAmount(tokens[1], '0'),
           );
 
           // check for account, if no account set to 0
-          const lp = info[index].lp;
-          const rate = web3.utils.toWei(info[index].rate.toString());
+          const lp = stakingInfo.lp;
+          const rate = web3.utils.toWei(stakingInfo.rate.toString());
           const stakedAmount = new TokenAmount(
             lp && lp !== ''
               ? new Token(137, lp, 18, 'SLP', 'Staked LP')
@@ -1679,11 +1695,11 @@ export function useStakingInfo(
 
           dQuickToQuick = web3.utils.fromWei(dQuickToQuick.toString(), 'ether');
           if (pairs !== undefined) {
-            oneYearFeeAPY = pairs[info[index].pair]?.oneDayVolumeUSD;
+            oneYearFeeAPY = pairs[stakingInfo.pair]?.oneDayVolumeUSD;
 
             if (oneYearFeeAPY) {
               const totalSupply = web3.utils.toWei(
-                pairs[info[index].pair]?.totalSupply,
+                pairs[stakingInfo.pair]?.totalSupply,
                 'ether',
               );
               const ratio =
@@ -1696,7 +1712,7 @@ export function useStakingInfo(
               accountFee = oneDayFee * myRatio;
               oneYearFeeAPY = getOneYearFee(
                 oneYearFeeAPY,
-                pairs[info[index].pair]?.reserveUSD,
+                pairs[stakingInfo.pair]?.reserveUSD,
               );
               //console.log(info[index].pair, oneYearFeeAPY);
             }
@@ -1739,10 +1755,10 @@ export function useStakingInfo(
 
           memo.push({
             stakingRewardAddress: rewardsAddress,
-            tokens: info[index].tokens,
-            ended: info[index].ended,
-            name: info[index].name,
-            lp: info[index].lp,
+            tokens: stakingInfo.tokens,
+            ended: stakingInfo.ended,
+            name: stakingInfo.name,
+            lp: stakingInfo.lp,
             periodFinish:
               periodFinishMs > 0 ? new Date(periodFinishMs) : undefined,
             earnedAmount: new TokenAmount(
@@ -1754,10 +1770,10 @@ export function useStakingInfo(
             stakedAmount: stakedAmount,
             totalStakedAmount: totalStakedAmount,
             getHypotheticalRewardRate,
-            baseToken: info[index].baseToken,
-            pair: info[index].pair,
+            baseToken: stakingInfo.baseToken,
+            pair: stakingInfo.pair,
             quickPrice: quickPrice,
-            rate: info[index].rate,
+            rate: stakingInfo.rate,
             oneYearFeeAPY: oneYearFeeAPY,
             oneDayFee,
             accountFee,
@@ -1874,6 +1890,7 @@ export function useOldStakingInfo(
         const totalSupplyState = totalSupplies[index];
 
         const periodFinishState = periodFinishes[index];
+        const stakingInfo = info[index];
 
         if (
           // these may be undefined if not logged in
@@ -1896,14 +1913,14 @@ export function useOldStakingInfo(
           }
 
           // get the LP token
-          const tokens = info[index].tokens;
+          const tokens = stakingInfo.tokens;
           const dummyPair = new Pair(
             new TokenAmount(tokens[0], '0'),
             new TokenAmount(tokens[1], '0'),
           );
 
           // check for account, if no account set to 0
-          const lp = info[index].lp;
+          const lp = stakingInfo.lp;
 
           const stakedAmount = new TokenAmount(
             lp && lp !== ''
@@ -1949,10 +1966,10 @@ export function useOldStakingInfo(
 
           memo.push({
             stakingRewardAddress: rewardsAddress,
-            tokens: info[index].tokens,
-            ended: info[index].ended,
-            name: info[index].name,
-            lp: info[index].lp,
+            tokens: stakingInfo.tokens,
+            ended: stakingInfo.ended,
+            name: stakingInfo.name,
+            lp: stakingInfo.lp,
             periodFinish:
               periodFinishMs > 0 ? new Date(periodFinishMs) : undefined,
             earnedAmount: new TokenAmount(
@@ -1963,11 +1980,11 @@ export function useOldStakingInfo(
             totalRewardRate: totalRewardRate,
             stakedAmount: stakedAmount,
             totalStakedAmount: totalStakedAmount,
-            baseToken: info[index].baseToken,
+            baseToken: stakingInfo.baseToken,
             getHypotheticalRewardRate,
-            pair: info[index].pair,
+            pair: stakingInfo.pair,
             quickPrice: 0,
-            rate: info[index].rate,
+            rate: stakingInfo.rate,
             oneYearFeeAPY: 0,
             oneDayFee: 0,
             accountFee: 0,
