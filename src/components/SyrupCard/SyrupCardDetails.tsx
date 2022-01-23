@@ -13,7 +13,7 @@ import {
   useTransactionAdder,
   useTransactionFinalizer,
 } from 'state/transactions/hooks';
-import { returnTokenFromKey } from 'utils';
+import { getPriceToQUICKSyrup, returnTokenFromKey } from 'utils';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   syrupCard: {
@@ -72,9 +72,6 @@ const SyrupCardDetails: React.FC<{ token: Token }> = ({ token }) => {
 
   const { account } = useActiveWeb3React();
   const currency = syrup ? unwrappedToken(syrup.token) : undefined;
-  const isQUICKStakingToken = syrup?.stakingToken.equals(
-    returnTokenFromKey('QUICK'),
-  );
 
   const userLiquidityUnstaked = useTokenBalance(
     account ?? undefined,
@@ -195,9 +192,7 @@ const SyrupCardDetails: React.FC<{ token: Token }> = ({ token }) => {
                   {userLiquidityUnstaked
                     ? (
                         syrup.quickPrice *
-                        (isQUICKStakingToken
-                          ? 1
-                          : Number(syrup.dQUICKtoQUICK.toSignificant())) *
+                        getPriceToQUICKSyrup(syrup) *
                         Number(userLiquidityUnstaked.toSignificant())
                       ).toLocaleString()
                     : 0}
@@ -224,11 +219,9 @@ const SyrupCardDetails: React.FC<{ token: Token }> = ({ token }) => {
                 <span style={{ color: palette.text.secondary, marginLeft: 4 }}>
                   $
                   {(
+                    syrup.quickPrice *
                     Number(syrup.stakedAmount.toSignificant()) *
-                    (isQUICKStakingToken
-                      ? 1
-                      : Number(syrup.dQUICKtoQUICK.toSignificant())) *
-                    syrup.quickPrice
+                    getPriceToQUICKSyrup(syrup)
                   ).toLocaleString()}
                 </span>
               </Typography>

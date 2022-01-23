@@ -262,6 +262,7 @@ const DragonPage: React.FC = () => {
           }
         } else if (sortBy === 3) {
           const tokenAPRA =
+            a.valueOfTotalStakedAmountInUSDC &&
             a.valueOfTotalStakedAmountInUSDC > 0
               ? ((a.rewards ?? 0) / a.valueOfTotalStakedAmountInUSDC) *
                 daysCurrentYear *
@@ -269,6 +270,7 @@ const DragonPage: React.FC = () => {
               : 0;
 
           const tokenAPRB =
+            b.valueOfTotalStakedAmountInUSDC &&
             b.valueOfTotalStakedAmountInUSDC > 0
               ? ((b.rewards ?? 0) / b.valueOfTotalStakedAmountInUSDC) *
                 daysCurrentYear *

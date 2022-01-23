@@ -57,6 +57,7 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo }> = ({ syrup }) => {
         '-'} ${syrup.stakingToken.symbol}`;
 
   const tokenAPR =
+    syrup.valueOfTotalStakedAmountInUSDC &&
     syrup.valueOfTotalStakedAmountInUSDC > 0
       ? (
           ((syrup.rewards ?? 0) / syrup.valueOfTotalStakedAmountInUSDC) *
