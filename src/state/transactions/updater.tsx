@@ -94,14 +94,6 @@ export default function Updater(): null {
           .then((receipt) => {
             if (receipt) {
               // the receipt was fetched before the block, fast forward to that block to trigger balance updates
-              console.log(
-                'aaa',
-                receipt.blockNumber,
-                ' ',
-                lastBlockNumber,
-                ' ',
-                receipt.status,
-              );
               if (receipt.blockNumber > lastBlockNumber) {
                 dispatch(
                   updateBlockNumber({

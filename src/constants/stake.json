@@ -422,6 +422,17 @@
       "stakingToken": "DQUICK"
     },
     {
+      "token": "ALN",
+      "stakingRewardAddress": "0x568E635426804400f306c6D3Ec56D14782D74261",
+      "ended": true,
+      "lp": "",
+      "name": "",
+      "baseToken": "ETHER",
+      "rate": 18333.33,
+      "ending": 1639241173,
+      "stakingToken": "DQUICK"
+    },
+    {
       "token": "TRADE",
       "stakingRewardAddress": "0x9f48eB6E139855ebc89de973ea91c7596583E6Bc",
       "ended": true,
