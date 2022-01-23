@@ -1,5 +1,4 @@
 import { Contract } from '@ethersproject/contracts';
-import { Web3Provider } from '@ethersproject/providers';
 import { abi as GOVERNANCE_ABI } from '@uniswap/governance/build/GovernorAlpha.json';
 import { abi as UNI_ABI } from '@uniswap/governance/build/Uni.json';
 import { abi as STAKING_REWARDS_ABI } from '@uniswap/liquidity-staker/build/StakingRewards.json';
@@ -7,7 +6,7 @@ import { abi as MERKLE_DISTRIBUTOR_ABI } from '@uniswap/merkle-distributor/build
 import { ChainId, WETH } from '@uniswap/sdk';
 import { abi as IUniswapV2PairABI } from '@uniswap/v2-core/build/IUniswapV2Pair.json';
 import { useMemo } from 'react';
-import { GlobalConst, GlobalData, GlobalValue } from '../constants';
+import { GlobalConst, GlobalValue } from '../constants';
 import {
   ARGENT_WALLET_DETECTOR_ABI,
   ARGENT_WALLET_DETECTOR_MAINNET_ADDRESS,
@@ -36,7 +35,6 @@ function useContract(
   withSignerIfPossible = true,
 ): Contract | null {
   const { library, account } = useActiveWeb3React();
-  const provider: any = undefined;
 
   return useMemo(() => {
     if (!address || !ABI || !library) return null;
@@ -44,14 +42,14 @@ function useContract(
       return getContract(
         address,
         ABI,
-        provider !== undefined ? provider : library,
+        library,
         withSignerIfPossible && account ? account : undefined,
       );
     } catch (error) {
       console.error('Failed to get contract', error);
       return null;
     }
-  }, [address, ABI, library, withSignerIfPossible, account, provider]);
+  }, [address, ABI, library, withSignerIfPossible, account]);
 }
 
 export function useLairContract(): Contract | null {

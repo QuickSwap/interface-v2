@@ -4,8 +4,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useActiveWeb3React } from 'hooks';
 import { useMulticallContract } from 'hooks/useContract';
 import useDebounce from 'hooks/useDebounce';
-import chunkArray from 'utils/chunkArray';
-import { CancelledError, retry, RetryableError } from 'utils/retry';
+import { chunkArray } from 'utils/chunkArray';
+import { retry } from 'utils/retry';
 import { useBlockNumber } from 'state/application/hooks';
 import { AppDispatch, AppState } from 'state';
 import {
@@ -18,6 +18,7 @@ import {
 
 // chunk calls so we do not exceed the gas limit
 const CALL_CHUNK_SIZE = 500;
+const DEFAULT_GAS_REQUIRED = 1_000_000;
 
 /**
  * Fetches a chunk of calls, enforcing a minimum block number constraint
@@ -26,26 +27,46 @@ const CALL_CHUNK_SIZE = 500;
  * @param minBlockNumber minimum block number of the result set
  */
 async function fetchChunk(
-  multicallContract: Contract,
+  multicall: Contract,
   chunk: Call[],
-  minBlockNumber: number,
-): Promise<{ results: string[]; blockNumber: number }> {
-  let resultsBlockNumber, returnData;
+  blockNumber: number,
+): Promise<{ success: boolean; returnData: string }[]> {
+  console.debug('Fetching chunk', chunk, blockNumber);
   try {
-    [resultsBlockNumber, returnData] = await multicallContract.aggregate(
-      chunk.map((obj) => [obj.address, obj.callData]),
+    const { returnData } = await multicall.callStatic.tryBlockAndAggregate(
+      false,
+      chunk.map((obj) => ({
+        target: obj.address,
+        callData: obj.callData,
+        gasLimit: obj.gasRequired ?? 1_000_000,
+      })),
+      { blockTag: blockNumber },
     );
+
+    if (process.env.NODE_ENV === 'development') {
+      returnData.forEach(({ gasUsed, returnData, success }: any, i: number) => {
+        if (
+          !success &&
+          returnData.length === 2 &&
+          gasUsed.gte(
+            Math.floor((chunk[i].gasRequired ?? DEFAULT_GAS_REQUIRED) * 0.95),
+          )
+        ) {
+          console.warn(
+            `A call failed due to requiring ${gasUsed.toString()} vs. allowed ${chunk[
+              i
+            ].gasRequired ?? DEFAULT_GAS_REQUIRED}`,
+            chunk[i],
+          );
+        }
+      });
+    }
+
+    return returnData;
   } catch (error) {
-    console.debug('Failed to fetch chunk inside retry', error);
+    console.error('Failed to fetch chunk', error);
     throw error;
   }
-  if (resultsBlockNumber.toNumber() < minBlockNumber) {
-    console.debug(
-      `Fetched results for old block number: ${resultsBlockNumber.toString()} vs. ${minBlockNumber}`,
-    );
-    throw new RetryableError('Fetched for old block number');
-  }
-  return { results: returnData, blockNumber: resultsBlockNumber.toNumber() };
 }
 
 /**
@@ -160,7 +181,7 @@ export default function Updater(): null {
     if (outdatedCallKeys.length === 0) return;
     const calls = outdatedCallKeys.map((key) => parseCallKey(key));
 
-    const chunkedCalls = chunkArray(calls, CALL_CHUNK_SIZE);
+    const chunkedCalls: Call[][] = chunkArray(calls);
 
     if (cancellations.current?.blockNumber !== latestBlockNumber) {
       cancellations.current?.cancellations?.forEach((c) => c());
@@ -186,39 +207,63 @@ export default function Updater(): null {
           },
         );
         promise
-          .then(({ results: returnData, blockNumber: fetchBlockNumber }) => {
-            cancellations.current = {
-              cancellations: [],
-              blockNumber: latestBlockNumber,
-            };
-
+          .then((returnData) => {
             // accumulates the length of all previous indices
             const firstCallKeyIndex = chunkedCalls
               .slice(0, index)
               .reduce<number>((memo, curr) => memo + curr.length, 0);
             const lastCallKeyIndex = firstCallKeyIndex + returnData.length;
 
-            dispatch(
-              updateMulticallResults({
-                chainId,
-                results: outdatedCallKeys
-                  .slice(firstCallKeyIndex, lastCallKeyIndex)
-                  .reduce<{ [callKey: string]: string | null }>(
-                    (memo, callKey, i) => {
-                      memo[callKey] = returnData[i] ?? null;
-                      return memo;
-                    },
-                    {},
-                  ),
-                blockNumber: fetchBlockNumber,
-              }),
+            const slice = outdatedCallKeys.slice(
+              firstCallKeyIndex,
+              lastCallKeyIndex,
             );
+
+            // split the returned slice into errors and success
+            const { erroredCalls, results } = slice.reduce<{
+              erroredCalls: Call[];
+              results: { [callKey: string]: string | null };
+            }>(
+              (memo, callKey, i) => {
+                if (returnData[i].success) {
+                  memo.results[callKey] = returnData[i].returnData ?? null;
+                } else {
+                  memo.erroredCalls.push(parseCallKey(callKey));
+                }
+                return memo;
+              },
+              { erroredCalls: [], results: {} },
+            );
+
+            // dispatch any new results
+            if (Object.keys(results).length > 0)
+              dispatch(
+                updateMulticallResults({
+                  chainId,
+                  results,
+                  blockNumber: latestBlockNumber,
+                }),
+              );
+
+            // dispatch any errored calls
+            if (erroredCalls.length > 0) {
+              console.debug('Calls errored in fetch', erroredCalls);
+              dispatch(
+                errorFetchingMulticallResults({
+                  calls: erroredCalls,
+                  chainId,
+                  fetchingBlockNumber: latestBlockNumber,
+                }),
+              );
+            }
           })
           .catch((error: any) => {
-            if (error instanceof CancelledError) {
+            if (error.isCancelledError) {
               console.debug(
                 'Cancelled fetch for blockNumber',
                 latestBlockNumber,
+                chunk,
+                chainId,
               );
               return;
             }
