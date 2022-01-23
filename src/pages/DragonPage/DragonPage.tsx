@@ -591,7 +591,7 @@ const DragonPage: React.FC = () => {
                     }
                     style={{ cursor: 'pointer' }}
                   >
-                    <Typography variant='body2'>dQUICK Deposits</Typography>
+                    <Typography variant='body2'>Deposits</Typography>
                     <Box display='flex' ml={0.5}>
                       {sortBy === 2 && sortDesc ? (
                         <ArrowDown size={20} />

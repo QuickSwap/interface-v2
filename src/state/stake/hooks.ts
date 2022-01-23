@@ -194,6 +194,8 @@ export interface SyrupInfo {
   rewards?: number;
   rewardTokenPriceinUSD?: number;
 
+  stakingToken: Token;
+
   // calculates a hypothetical amount of token distributed to the active account per second.
   getHypotheticalRewardRate: (
     stakedAmount: TokenAmount,
@@ -522,13 +524,13 @@ export function useSyrupInfo(
           const stakedAmount = new TokenAmount(
             lp && lp !== ''
               ? new Token(137, lp, 18, 'SLP', 'Staked LP')
-              : returnTokenFromKey('DQUICK'),
+              : info[index].stakingToken,
             JSBI.BigInt(balanceState?.result?.[0] ?? 0),
           );
           const totalStakedAmount = new TokenAmount(
             lp && lp !== ''
               ? new Token(137, lp, 18, 'SLP', 'Staked LP')
-              : returnTokenFromKey('DQUICK'),
+              : info[index].stakingToken,
             JSBI.BigInt(totalSupplyState.result?.[0]),
           );
           const totalRewardRate = new TokenAmount(token, JSBI.BigInt(rate));
@@ -567,7 +569,9 @@ export function useSyrupInfo(
           );
           const valueOfTotalStakedAmountInUSDC =
             Number(totalStakedAmount.toSignificant(6)) *
-            Number(dQUICKtoQUICK.toSignificant(6)) *
+            (info[index].stakingToken.equals(returnTokenFromKey('QUICK'))
+              ? 1
+              : Number(dQUICKtoQUICK.toSignificant(6))) *
             Number(USDPrice?.toSignificant(6));
 
           memo.push({
@@ -598,6 +602,7 @@ export function useSyrupInfo(
             oneDayVol: oneDayVol,
             rewardTokenPriceinUSD: priceOfRewardTokenInUSD,
             rewards,
+            stakingToken: info[index].stakingToken,
           });
         }
         return memo;
@@ -759,13 +764,13 @@ export function useOldSyrupInfo(
           const stakedAmount = new TokenAmount(
             lp && lp !== ''
               ? new Token(137, lp, 18, 'SLP', 'Staked LP')
-              : returnTokenFromKey('DQUICK'),
+              : info[index].stakingToken,
             JSBI.BigInt(balanceState?.result?.[0] ?? 0),
           );
           const totalStakedAmount = new TokenAmount(
             lp && lp !== ''
               ? new Token(137, lp, 18, 'SLP', 'Staked LP')
-              : returnTokenFromKey('DQUICK'),
+              : info[index].stakingToken,
             JSBI.BigInt(totalSupplyState.result?.[0]),
           );
           const totalRewardRate = new TokenAmount(token, JSBI.BigInt(rate));
@@ -804,7 +809,9 @@ export function useOldSyrupInfo(
           );
           const valueOfTotalStakedAmountInUSDC =
             Number(totalStakedAmount.toSignificant(6)) *
-            Number(dQUICKtoQUICK.toSignificant(6)) *
+            (info[index].stakingToken.equals(returnTokenFromKey('QUICK'))
+              ? 1
+              : Number(dQUICKtoQUICK.toSignificant(6))) *
             Number(USDPrice?.toSignificant(6));
 
           const [, stakingTokenPair] = stakingTokenPairs[index];
@@ -841,6 +848,7 @@ export function useOldSyrupInfo(
             valueOfTotalStakedAmountInUSDC: valueOfTotalStakedAmountInUSDC,
             oneDayVol: 0,
             rewardTokenPriceinUSD: priceOfRewardTokenInUSD,
+            stakingToken: info[index].stakingToken,
           });
         }
         return memo;

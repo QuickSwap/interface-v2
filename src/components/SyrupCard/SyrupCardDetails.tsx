@@ -13,6 +13,7 @@ import {
   useTransactionAdder,
   useTransactionFinalizer,
 } from 'state/transactions/hooks';
+import { returnTokenFromKey } from 'utils';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   syrupCard: {
@@ -71,6 +72,9 @@ const SyrupCardDetails: React.FC<{ token: Token }> = ({ token }) => {
 
   const { account } = useActiveWeb3React();
   const currency = syrup ? unwrappedToken(syrup.token) : undefined;
+  const isQUICKStakingToken = syrup?.stakingToken.equals(
+    returnTokenFromKey('QUICK'),
+  );
 
   const userLiquidityUnstaked = useTokenBalance(
     account ?? undefined,
@@ -184,14 +188,16 @@ const SyrupCardDetails: React.FC<{ token: Token }> = ({ token }) => {
                   {userLiquidityUnstaked
                     ? userLiquidityUnstaked.toSignificant(2)
                     : 0}{' '}
-                  dQUICK
+                  {syrup.stakingToken.symbol}
                 </span>
                 <span style={{ color: palette.text.secondary, marginLeft: 4 }}>
                   $
                   {userLiquidityUnstaked
                     ? (
                         syrup.quickPrice *
-                        Number(syrup.dQUICKtoQUICK.toSignificant()) *
+                        (isQUICKStakingToken
+                          ? 1
+                          : Number(syrup.dQUICKtoQUICK.toSignificant())) *
                         Number(userLiquidityUnstaked.toSignificant())
                       ).toLocaleString()
                     : 0}
@@ -212,13 +218,16 @@ const SyrupCardDetails: React.FC<{ token: Token }> = ({ token }) => {
               </Typography>
               <Typography variant='body2'>
                 <span style={{ color: palette.text.primary }}>
-                  {syrup.stakedAmount.toSignificant(2)} dQUICK
+                  {syrup.stakedAmount.toSignificant(2)}{' '}
+                  {syrup.stakingToken.symbol}
                 </span>
                 <span style={{ color: palette.text.secondary, marginLeft: 4 }}>
                   $
                   {(
                     Number(syrup.stakedAmount.toSignificant()) *
-                    Number(syrup.dQUICKtoQUICK.toSignificant()) *
+                    (isQUICKStakingToken
+                      ? 1
+                      : Number(syrup.dQUICKtoQUICK.toSignificant())) *
                     syrup.quickPrice
                   ).toLocaleString()}
                 </span>
