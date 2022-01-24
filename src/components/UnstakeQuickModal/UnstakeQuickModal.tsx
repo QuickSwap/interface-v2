@@ -73,7 +73,7 @@ const UnstakeQuickModal: React.FC<UnstakeQuickModalProps> = ({
 
   const lairContract = useLairContract();
   const error =
-    Number(typedValue) > Number(dQuickBalance.toSignificant()) || !typedValue;
+    Number(typedValue) > Number(dQuickBalance.toExact()) || !typedValue;
 
   const onWithdraw = () => {
     if (lairContract && lairInfo?.dQUICKBalance) {
@@ -81,11 +81,12 @@ const UnstakeQuickModal: React.FC<UnstakeQuickModalProps> = ({
       const balance = web3.utils.toWei(typedValue, 'ether');
       lairContract
         .leave(balance.toString(), { gasLimit: 300000 })
-        .then((response: TransactionResponse) => {
+        .then(async (response: TransactionResponse) => {
           addTransaction(response, {
-            summary: `Unstake QUICK`,
+            summary: `Unstake dQUICK`,
           });
-          onClose();
+          await response.wait();
+          setAttempting(false);
         })
         .catch((error: any) => {
           setAttempting(false);
@@ -115,7 +116,7 @@ const UnstakeQuickModal: React.FC<UnstakeQuickModalProps> = ({
           >
             <Typography variant='body2'>dQUICK</Typography>
             <Typography variant='body2'>
-              Balance: {dQuickBalance?.toSignificant(3)}
+              Balance: {dQuickBalance.toSignificant(3)}
             </Typography>
           </Box>
           <Box mt={2} display='flex' alignItems='center'>
@@ -125,7 +126,7 @@ const UnstakeQuickModal: React.FC<UnstakeQuickModalProps> = ({
               value={typedValue}
               onChange={(evt: any) => {
                 const totalBalance = dQuickBalance
-                  ? Number(dQuickBalance.toSignificant())
+                  ? Number(dQuickBalance.toExact())
                   : 0;
                 setTypedValue(evt.target.value);
                 setStakePercent(
@@ -143,9 +144,7 @@ const UnstakeQuickModal: React.FC<UnstakeQuickModalProps> = ({
                 cursor: 'pointer',
               }}
               onClick={() => {
-                setTypedValue(
-                  dQuickBalance ? dQuickBalance.toSignificant() : '0',
-                );
+                setTypedValue(dQuickBalance ? dQuickBalance.toExact() : '0');
                 setStakePercent(100);
               }}
             >
@@ -164,10 +163,9 @@ const UnstakeQuickModal: React.FC<UnstakeQuickModalProps> = ({
                   setTypedValue(
                     dQuickBalance
                       ? (
-                          (Number(dQuickBalance.toSignificant()) *
-                            stakePercent) /
+                          (Number(dQuickBalance.toExact()) * stakePercent) /
                           100
-                        ).toFixed(8)
+                        ).toString()
                       : '0',
                   );
                 }}
