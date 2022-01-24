@@ -3,9 +3,6 @@ on:
   push:
     branches:
       - master
-  pull_request_target:
-    branches:
-      - master
 
   # manual trigger
   workflow_dispatch:
