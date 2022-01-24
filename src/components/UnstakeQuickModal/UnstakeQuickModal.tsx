@@ -83,7 +83,7 @@ const UnstakeQuickModal: React.FC<UnstakeQuickModalProps> = ({
         .leave(balance.toString(), { gasLimit: 300000 })
         .then(async (response: TransactionResponse) => {
           addTransaction(response, {
-            summary: `Unstake QUICK`,
+            summary: `Unstake dQUICK`,
           });
           await response.wait();
           setAttempting(false);
