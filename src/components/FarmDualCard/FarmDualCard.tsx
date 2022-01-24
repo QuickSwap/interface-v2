@@ -3,17 +3,14 @@ import { Box, Typography, useMediaQuery } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { DualStakingInfo } from 'state/stake/hooks';
 import { JSBI, TokenAmount, ETHER } from '@uniswap/sdk';
-import { GlobalConst } from 'constants/index';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { DoubleCurrencyLogo, CurrencyLogo } from 'components';
-import { useTokenBalance } from 'state/wallet/hooks';
-import { useActiveWeb3React } from 'hooks';
 import CircleInfoIcon from 'assets/images/circleinfo.svg';
 import FarmDualCardDetails from './FarmDualCardDetails';
 import { getAPYWithFee, returnTokenFromKey } from 'utils';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
-  syrupCard: {
+  farmDualCard: {
     background: palette.secondary.dark,
     width: '100%',
     borderRadius: 10,
@@ -22,7 +19,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     flexDirection: 'column',
     alignItems: 'center',
   },
-  syrupCardUp: {
+  farmDualCardUp: {
     background: palette.secondary.dark,
     width: '100%',
     borderRadius: 10,
@@ -34,50 +31,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       flexDirection: 'column',
     },
   },
-  inputVal: {
-    backgroundColor: palette.secondary.contrastText,
-    borderRadius: '10px',
-    height: '50px',
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    '& input': {
-      flex: 1,
-      background: 'transparent',
-      border: 'none',
-      boxShadow: 'none',
-      outline: 'none',
-      fontSize: 16,
-      fontWeight: 600,
-      color: palette.text.primary,
-    },
-    '& p': {
-      cursor: 'pointer',
-    },
-  },
-  buttonToken: {
-    backgroundColor: palette.grey.A400,
-    borderRadius: '10px',
-    height: '50px',
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    cursor: 'pointer',
-  },
-  buttonClaim: {
-    backgroundImage:
-      'linear-gradient(280deg, #64fbd3 0%, #00cff3 0%, #0098ff 10%, #004ce6 100%)',
-    borderRadius: '10px',
-    height: '50px',
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    cursor: 'pointer',
-    color: 'white',
-  },
-  syrupText: {
+  farmDualText: {
     fontSize: 14,
     fontWeight: 600,
     color: palette.text.secondary,
@@ -100,8 +54,6 @@ const FarmDualCard: React.FC<{
   const rewardTokenA = stakingInfo.rewardTokenA;
   const rewardTokenB = stakingInfo.rewardTokenB;
 
-  const { account } = useActiveWeb3React();
-
   const currency0 = unwrappedToken(token0);
   const currency1 = unwrappedToken(token1);
   const baseTokenCurrency = unwrappedToken(stakingInfo.baseToken);
@@ -114,20 +66,8 @@ const FarmDualCard: React.FC<{
   const totalSupplyOfStakingToken = stakingInfo.totalSupply;
   const stakingTokenPair = stakingInfo.stakingTokenPair;
 
-  const userLiquidityUnstaked = useTokenBalance(
-    account ?? undefined,
-    stakingInfo.stakedAmount.token,
-  );
-
   let valueOfTotalStakedAmountInBaseToken: TokenAmount | undefined;
-  let valueOfMyStakedAmountInBaseToken: TokenAmount | undefined;
-  let valueOfUnstakedAmountInBaseToken: TokenAmount | undefined;
-  if (
-    totalSupplyOfStakingToken &&
-    stakingTokenPair &&
-    stakingInfo &&
-    baseToken
-  ) {
+  if (totalSupplyOfStakingToken && stakingTokenPair && baseToken) {
     // take the total amount of LP tokens staked, multiply by ETH value of all LP tokens, divide by all LP tokens
     valueOfTotalStakedAmountInBaseToken = new TokenAmount(
       baseToken,
@@ -142,36 +82,6 @@ const FarmDualCard: React.FC<{
         totalSupplyOfStakingToken.raw,
       ),
     );
-
-    valueOfMyStakedAmountInBaseToken = new TokenAmount(
-      baseToken,
-      JSBI.divide(
-        JSBI.multiply(
-          JSBI.multiply(
-            stakingInfo.stakedAmount.raw,
-            stakingTokenPair.reserveOf(baseToken).raw,
-          ),
-          JSBI.BigInt(2), // this is b/c the value of LP shares are ~double the value of the WETH they entitle owner to
-        ),
-        totalSupplyOfStakingToken.raw,
-      ),
-    );
-
-    if (userLiquidityUnstaked) {
-      valueOfUnstakedAmountInBaseToken = new TokenAmount(
-        baseToken,
-        JSBI.divide(
-          JSBI.multiply(
-            JSBI.multiply(
-              userLiquidityUnstaked.raw,
-              stakingTokenPair.reserveOf(baseToken).raw,
-            ),
-            JSBI.BigInt(2),
-          ),
-          totalSupplyOfStakingToken.raw,
-        ),
-      );
-    }
   }
 
   // get the USD value of staked WETH
@@ -200,14 +110,10 @@ const FarmDualCard: React.FC<{
 
   const poolRateA = `${stakingInfo.totalRewardRateA
     ?.toFixed(2, { groupSeparator: ',' })
-    .replace(/[.,]00$/, '') +
-    ' ' +
-    rewardTokenA?.symbol}  / day`;
+    .replace(/[.,]00$/, '')} ${rewardTokenA?.symbol}  / day`;
   const poolRateB = `${stakingInfo.totalRewardRateB
     ?.toFixed(2, { groupSeparator: ',' })
-    .replace(/[.,]00$/, '') +
-    ' ' +
-    rewardTokenB?.symbol} / day`;
+    .replace(/[.,]00$/, '')} ${rewardTokenB?.symbol} / day`;
 
   const earnedUSD =
     Number(stakingInfo.earnedAmountA.toSignificant()) *
@@ -226,9 +132,9 @@ const FarmDualCard: React.FC<{
     stakingInfo?.rateB * Number(stakingInfo.rewardTokenBPrice);
 
   return (
-    <Box className={classes.syrupCard}>
+    <Box className={classes.farmDualCard}>
       <Box
-        className={classes.syrupCardUp}
+        className={classes.farmDualCardUp}
         onClick={() => setExpandCard(!isExpandCard)}
       >
         <Box
@@ -239,7 +145,7 @@ const FarmDualCard: React.FC<{
           mb={isMobile ? 1.5 : 0}
         >
           {isMobile && (
-            <Typography className={classes.syrupText}>Pool</Typography>
+            <Typography className={classes.farmDualText}>Pool</Typography>
           )}
           <Box display='flex' alignItems='center'>
             <DoubleCurrencyLogo
@@ -262,7 +168,7 @@ const FarmDualCard: React.FC<{
           alignItems='center'
         >
           {isMobile && (
-            <Typography className={classes.syrupText}>TVL</Typography>
+            <Typography className={classes.farmDualText}>TVL</Typography>
           )}
           <Typography variant='body2'>{tvl}</Typography>
         </Box>
@@ -274,7 +180,7 @@ const FarmDualCard: React.FC<{
           alignItems='center'
         >
           {isMobile && (
-            <Typography className={classes.syrupText}>Rewards</Typography>
+            <Typography className={classes.farmDualText}>Rewards</Typography>
           )}
           <Box textAlign={isMobile ? 'right' : 'left'}>
             <Typography variant='body2'>{`$${parseInt(
@@ -292,7 +198,7 @@ const FarmDualCard: React.FC<{
           justifyContent={isMobile ? 'space-between' : 'center'}
         >
           {isMobile && (
-            <Typography className={classes.syrupText}>APY</Typography>
+            <Typography className={classes.farmDualText}>APY</Typography>
           )}
           <Box display='flex' alignItems='center'>
             <Typography variant='body2' style={{ color: palette.success.main }}>
@@ -309,7 +215,7 @@ const FarmDualCard: React.FC<{
           justifyContent={isMobile ? 'space-between' : 'flex-end'}
         >
           {isMobile && (
-            <Typography className={classes.syrupText}>Earned</Typography>
+            <Typography className={classes.farmDualText}>Earned</Typography>
           )}
           <Box textAlign='right'>
             <Typography variant='body2'>{earnedUSDStr}</Typography>
@@ -341,9 +247,9 @@ const FarmDualCard: React.FC<{
         </Box>
       </Box>
 
-      {isExpandCard && stakingInfo.stakingTokenPair && (
+      {isExpandCard && stakingInfo && (
         <FarmDualCardDetails
-          pair={stakingInfo.stakingTokenPair}
+          stakingInfo={stakingInfo}
           dQuicktoQuick={dQuicktoQuick}
           stakingAPY={stakingAPY}
         />

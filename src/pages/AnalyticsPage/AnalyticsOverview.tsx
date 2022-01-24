@@ -191,8 +191,9 @@ const AnalyticsOverview: React.FC = () => {
       const maxVolume =
         Math.ceil(Math.max(...dailyVolumes) / 20000000) * 20000000;
       const values = [];
-      for (let i = maxVolume / 20000000; i >= minVolume / 20000000; i--) {
-        values.push(i * 20000000);
+      const step = (maxVolume - minVolume) / 10;
+      for (let i = maxVolume; i >= minVolume; i -= step) {
+        values.push(i);
       }
       return values;
     } else {

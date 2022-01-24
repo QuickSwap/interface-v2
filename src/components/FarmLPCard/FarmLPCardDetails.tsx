@@ -1,11 +1,10 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { TransactionResponse } from '@ethersproject/providers';
 import { splitSignature } from 'ethers/lib/utils';
 import { Box, Typography, useMediaQuery } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-import { useOldStakingInfo, useStakingInfo } from 'state/stake/hooks';
+import { StakingInfo } from 'state/stake/hooks';
 import { JSBI, TokenAmount, Pair } from '@uniswap/sdk';
-import { GlobalConst } from 'constants/index';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { usePairContract, useStakingContract } from 'hooks/useContract';
 import { useDerivedStakeInfo } from 'state/stake/hooks';
@@ -18,28 +17,7 @@ import useTransactionDeadline from 'hooks/useTransactionDeadline';
 import { useApproveCallback, ApprovalState } from 'hooks/useApproveCallback';
 import { getAPYWithFee, returnTokenFromKey } from 'utils';
 
-const useStyles = makeStyles(({ palette, breakpoints }) => ({
-  syrupCard: {
-    background: palette.secondary.dark,
-    width: '100%',
-    borderRadius: 10,
-    marginTop: 24,
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-  },
-  syrupCardUp: {
-    background: palette.secondary.dark,
-    width: '100%',
-    borderRadius: 10,
-    display: 'flex',
-    alignItems: 'center',
-    padding: '16px',
-    cursor: 'pointer',
-    [breakpoints.down('xs')]: {
-      flexDirection: 'column',
-    },
-  },
+const useStyles = makeStyles(({ palette }) => ({
   inputVal: {
     backgroundColor: palette.secondary.contrastText,
     borderRadius: '10px',
@@ -83,18 +61,13 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     cursor: 'pointer',
     color: 'white',
   },
-  syrupText: {
-    fontSize: 14,
-    fontWeight: 600,
-    color: palette.text.secondary,
-  },
 }));
 
 const FarmLPCardDetails: React.FC<{
-  pair: Pair;
+  stakingInfo: StakingInfo;
   dQuicktoQuick: number;
   stakingAPY: number;
-}> = ({ pair, dQuicktoQuick, stakingAPY }) => {
+}> = ({ stakingInfo, dQuicktoQuick, stakingAPY }) => {
   const classes = useStyles();
   const { palette, breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
@@ -104,17 +77,6 @@ const FarmLPCardDetails: React.FC<{
   const [attemptClaiming, setAttemptClaiming] = useState(false);
   const [approving, setApproving] = useState(false);
   const [unstakeAmount, setUnStakeAmount] = useState('');
-  const stakingInfos = useStakingInfo(pair);
-  const oldStakingInfos = useOldStakingInfo(pair);
-  const stakingInfo = useMemo(
-    () =>
-      stakingInfos && stakingInfos.length > 0
-        ? stakingInfos[0]
-        : oldStakingInfos && oldStakingInfos.length > 0
-        ? oldStakingInfos[0]
-        : null,
-    [stakingInfos, oldStakingInfos],
-  );
 
   const token0 = stakingInfo ? stakingInfo.tokens[0] : undefined;
   const token1 = stakingInfo ? stakingInfo.tokens[1] : undefined;
@@ -124,27 +86,25 @@ const FarmLPCardDetails: React.FC<{
 
   const currency0 = token0 ? unwrappedToken(token0) : undefined;
   const currency1 = token1 ? unwrappedToken(token1) : undefined;
-  const baseTokenCurrency = stakingInfo
-    ? unwrappedToken(stakingInfo.baseToken)
-    : undefined;
+  const baseTokenCurrency = unwrappedToken(stakingInfo.baseToken);
   const empty = unwrappedToken(returnTokenFromKey('EMPTY'));
-  const quickPriceUSD = stakingInfo?.quickPrice;
+  const quickPriceUSD = stakingInfo.quickPrice;
 
   // get the color of the token
   const baseToken =
-    baseTokenCurrency === empty ? token0 : stakingInfo?.baseToken;
+    baseTokenCurrency === empty ? token0 : stakingInfo.baseToken;
 
-  const stakingTokenPair = stakingInfo?.stakingTokenPair;
+  const stakingTokenPair = stakingInfo.stakingTokenPair;
 
   const userLiquidityUnstaked = useTokenBalance(
     account ?? undefined,
-    stakingInfo?.stakedAmount.token,
+    stakingInfo.stakedAmount.token,
   );
 
   let valueOfTotalStakedAmountInBaseToken: TokenAmount | undefined;
   let valueOfMyStakedAmountInBaseToken: TokenAmount | undefined;
   let valueOfUnstakedAmountInBaseToken: TokenAmount | undefined;
-  if (stakingInfo && stakingInfo.totalSupply && stakingTokenPair && baseToken) {
+  if (stakingInfo.totalSupply && stakingTokenPair && baseToken) {
     // take the total amount of LP tokens staked, multiply by ETH value of all LP tokens, divide by all LP tokens
     valueOfTotalStakedAmountInBaseToken = new TokenAmount(
       baseToken,
@@ -192,7 +152,7 @@ const FarmLPCardDetails: React.FC<{
   }
 
   // get the USD value of staked WETH
-  const USDPrice = stakingInfo?.usdPrice;
+  const USDPrice = stakingInfo.usdPrice;
 
   const valueOfMyStakedAmountInUSDC =
     valueOfMyStakedAmountInBaseToken &&
@@ -219,12 +179,12 @@ const FarmLPCardDetails: React.FC<{
     }
   }
 
-  const stakingContract = useStakingContract(stakingInfo?.stakingRewardAddress);
+  const stakingContract = useStakingContract(stakingInfo.stakingRewardAddress);
 
   const { parsedAmount: unstakeParsedAmount } = useDerivedStakeInfo(
     unstakeAmount,
-    stakingInfo?.stakedAmount.token,
-    stakingInfo?.stakedAmount,
+    stakingInfo.stakedAmount.token,
+    stakingInfo.stakedAmount,
   );
 
   const onWithdraw = async () => {
@@ -253,7 +213,7 @@ const FarmLPCardDetails: React.FC<{
   };
 
   const onClaimReward = async () => {
-    if (stakingInfo && stakingContract && stakingInfo.stakedAmount) {
+    if (stakingContract && stakingInfo.stakedAmount) {
       setAttemptClaiming(true);
       await stakingContract
         .getReward({ gasLimit: 350000 })
@@ -277,13 +237,13 @@ const FarmLPCardDetails: React.FC<{
 
   const { parsedAmount } = useDerivedStakeInfo(
     stakeAmount,
-    stakingInfo?.stakedAmount.token,
+    stakingInfo.stakedAmount.token,
     userLiquidityUnstaked,
   );
   const deadline = useTransactionDeadline();
   const [approval, approveCallback] = useApproveCallback(
     parsedAmount,
-    stakingInfo?.stakingRewardAddress,
+    stakingInfo.stakingRewardAddress,
   );
   const [signatureData, setSignatureData] = useState<{
     v: number;
@@ -293,14 +253,12 @@ const FarmLPCardDetails: React.FC<{
   } | null>(null);
 
   const isArgentWallet = useIsArgentWallet();
-  const dummyPair = stakingInfo
-    ? new Pair(
-        new TokenAmount(stakingInfo.tokens[0], '0'),
-        new TokenAmount(stakingInfo.tokens[1], '0'),
-      )
-    : undefined;
+  const dummyPair = new Pair(
+    new TokenAmount(stakingInfo.tokens[0], '0'),
+    new TokenAmount(stakingInfo.tokens[1], '0'),
+  );
   const pairContract = usePairContract(
-    stakingInfo && stakingInfo.lp && stakingInfo.lp !== ''
+    stakingInfo.lp && stakingInfo.lp !== ''
       ? stakingInfo.lp
       : dummyPair?.liquidityToken.address,
   );
@@ -356,7 +314,7 @@ const FarmLPCardDetails: React.FC<{
       return approveCallback();
     }
 
-    if (stakingInfo && stakingInfo?.lp !== '') {
+    if (stakingInfo.lp !== '') {
       return approveCallback();
     }
 
@@ -384,7 +342,7 @@ const FarmLPCardDetails: React.FC<{
     ];
     const message = {
       owner: account,
-      spender: stakingInfo?.stakingRewardAddress,
+      spender: stakingInfo.stakingRewardAddress,
       value: liquidityAmount.raw.toString(),
       nonce: nonce.toHexString(),
       deadline: deadline.toNumber(),
@@ -419,7 +377,7 @@ const FarmLPCardDetails: React.FC<{
   };
 
   const earnedUSD =
-    Number(stakingInfo?.earnedAmount.toSignificant()) *
+    Number(stakingInfo.earnedAmount.toSignificant()) *
     dQuicktoQuick *
     Number(quickPriceUSD);
 

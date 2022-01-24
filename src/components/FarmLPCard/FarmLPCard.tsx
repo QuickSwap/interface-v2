@@ -3,7 +3,6 @@ import { Box, Typography, useMediaQuery } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { StakingInfo } from 'state/stake/hooks';
 import { JSBI, TokenAmount } from '@uniswap/sdk';
-import { GlobalConst } from 'constants/index';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { DoubleCurrencyLogo, CurrencyLogo } from 'components';
 import CircleInfoIcon from 'assets/images/circleinfo.svg';
@@ -11,7 +10,7 @@ import FarmLPCardDetails from './FarmLPCardDetails';
 import { getAPYWithFee, returnTokenFromKey } from 'utils';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
-  syrupCard: {
+  farmLPCard: {
     background: palette.secondary.dark,
     width: '100%',
     borderRadius: 10,
@@ -20,7 +19,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     flexDirection: 'column',
     alignItems: 'center',
   },
-  syrupCardUp: {
+  farmLPCardUp: {
     background: palette.secondary.dark,
     width: '100%',
     borderRadius: 10,
@@ -32,50 +31,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       flexDirection: 'column',
     },
   },
-  inputVal: {
-    backgroundColor: palette.secondary.contrastText,
-    borderRadius: '10px',
-    height: '50px',
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    '& input': {
-      flex: 1,
-      background: 'transparent',
-      border: 'none',
-      boxShadow: 'none',
-      outline: 'none',
-      fontSize: 16,
-      fontWeight: 600,
-      color: palette.text.primary,
-    },
-    '& p': {
-      cursor: 'pointer',
-    },
-  },
-  buttonToken: {
-    backgroundColor: palette.grey.A400,
-    borderRadius: '10px',
-    height: '50px',
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    cursor: 'pointer',
-  },
-  buttonClaim: {
-    backgroundImage:
-      'linear-gradient(280deg, #64fbd3 0%, #00cff3 0%, #0098ff 10%, #004ce6 100%)',
-    borderRadius: '10px',
-    height: '50px',
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    cursor: 'pointer',
-    color: 'white',
-  },
-  syrupText: {
+  farmLPText: {
     fontSize: 14,
     fontWeight: 600,
     color: palette.text.secondary,
@@ -166,9 +122,9 @@ const FarmLPCard: React.FC<{
   const rewards = stakingInfo?.dQuickToQuick * stakingInfo?.quickPrice;
 
   return (
-    <Box className={classes.syrupCard}>
+    <Box className={classes.farmLPCard}>
       <Box
-        className={classes.syrupCardUp}
+        className={classes.farmLPCardUp}
         onClick={() => setExpandCard(!isExpandCard)}
       >
         <Box
@@ -179,7 +135,7 @@ const FarmLPCard: React.FC<{
           mb={isMobile ? 1.5 : 0}
         >
           {isMobile && (
-            <Typography className={classes.syrupText}>Pool</Typography>
+            <Typography className={classes.farmLPText}>Pool</Typography>
           )}
           <Box display='flex' alignItems='center'>
             <DoubleCurrencyLogo
@@ -202,7 +158,7 @@ const FarmLPCard: React.FC<{
           alignItems='center'
         >
           {isMobile && (
-            <Typography className={classes.syrupText}>TVL</Typography>
+            <Typography className={classes.farmLPText}>TVL</Typography>
           )}
           <Typography variant='body2'>{tvl}</Typography>
         </Box>
@@ -214,7 +170,7 @@ const FarmLPCard: React.FC<{
           alignItems='center'
         >
           {isMobile && (
-            <Typography className={classes.syrupText}>Rewards</Typography>
+            <Typography className={classes.farmLPText}>Rewards</Typography>
           )}
           <Box textAlign={isMobile ? 'right' : 'left'}>
             <Typography variant='body2'>
@@ -231,7 +187,7 @@ const FarmLPCard: React.FC<{
           justifyContent={isMobile ? 'space-between' : 'center'}
         >
           {isMobile && (
-            <Typography className={classes.syrupText}>APY</Typography>
+            <Typography className={classes.farmLPText}>APY</Typography>
           )}
           <Box display='flex' alignItems='center'>
             <Typography variant='body2' style={{ color: palette.success.main }}>
@@ -248,7 +204,7 @@ const FarmLPCard: React.FC<{
           justifyContent={isMobile ? 'space-between' : 'flex-end'}
         >
           {isMobile && (
-            <Typography className={classes.syrupText}>Earned</Typography>
+            <Typography className={classes.farmLPText}>Earned</Typography>
           )}
           <Box textAlign='right'>
             <Typography variant='body2'>{earnedUSDStr}</Typography>
@@ -266,9 +222,9 @@ const FarmLPCard: React.FC<{
         </Box>
       </Box>
 
-      {isExpandCard && stakingInfo.stakingTokenPair && (
+      {isExpandCard && stakingInfo && (
         <FarmLPCardDetails
-          pair={stakingInfo.stakingTokenPair}
+          stakingInfo={stakingInfo}
           dQuicktoQuick={dQuicktoQuick}
           stakingAPY={stakingAPY}
         />
