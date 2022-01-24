@@ -204,11 +204,15 @@ const DragonPage: React.FC = () => {
     ? addedOldSyrupInfos
     : addedStakingSyrupInfos;
 
-  const syrupRewardAddress = addedSyrupInfos
-    ? addedSyrupInfos
-        .map((syrupInfo) => syrupInfo.stakingRewardAddress.toLowerCase())
-        .reduce((totStr, str) => totStr + str, '')
-    : null;
+  const syrupRewardAddress = useMemo(
+    () =>
+      addedSyrupInfos
+        ? addedSyrupInfos
+            .map((syrupInfo) => syrupInfo.stakingRewardAddress.toLowerCase())
+            .reduce((totStr, str) => totStr + str, '')
+        : null,
+    [addedSyrupInfos],
+  );
 
   useEffect(() => {
     setSyrupInfos(undefined);
