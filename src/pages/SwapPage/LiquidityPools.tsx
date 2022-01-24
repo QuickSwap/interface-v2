@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Box, Divider, Typography, useMediaQuery } from '@material-ui/core';
 import { KeyboardArrowUp, KeyboardArrowDown } from '@material-ui/icons';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
@@ -37,25 +37,29 @@ const LiquidityPools: React.FC<{
   const token1Address = token1.address.toLowerCase();
   const token2Address = token2.address.toLowerCase();
 
-  const liquidityPairs = tokenPairs
-    ? tokenPairs
-        .filter((pair: any) => {
-          if (liquidityFilterIndex === 0) {
-            return true;
-          } else if (liquidityFilterIndex === 1) {
-            return (
-              pair.token0.id === token1Address ||
-              pair.token1.id === token1Address
-            );
-          } else {
-            return (
-              pair.token0.id === token2Address ||
-              pair.token1.id === token2Address
-            );
-          }
-        })
-        .slice(0, 5)
-    : [];
+  const liquidityPairs = useMemo(
+    () =>
+      tokenPairs
+        ? tokenPairs
+            .filter((pair: any) => {
+              if (liquidityFilterIndex === 0) {
+                return true;
+              } else if (liquidityFilterIndex === 1) {
+                return (
+                  pair.token0.id === token1Address ||
+                  pair.token1.id === token1Address
+                );
+              } else {
+                return (
+                  pair.token0.id === token2Address ||
+                  pair.token1.id === token2Address
+                );
+              }
+            })
+            .slice(0, 5)
+        : [],
+    [tokenPairs, liquidityFilterIndex, token1Address, token2Address],
+  );
 
   useEffect(() => {
     async function fetchTokenPairs() {

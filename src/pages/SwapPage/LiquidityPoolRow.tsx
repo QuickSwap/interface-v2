@@ -119,4 +119,4 @@ const LiquidityPoolRow: React.FC<{
   );
 };
 
-export default LiquidityPoolRow;
+export default React.memo(LiquidityPoolRow);
