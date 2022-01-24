@@ -446,7 +446,7 @@ const DragonPage: React.FC = () => {
                 bgcolor={palette.secondary.light}
                 onClick={() => setOpenUnstakeModal(true)}
               >
-                <Typography variant='body2'>- Unstake QUICK</Typography>
+                <Typography variant='body2'>- Unstake dQUICK</Typography>
               </Box>
               <Box
                 className={classes.stakeButton}
