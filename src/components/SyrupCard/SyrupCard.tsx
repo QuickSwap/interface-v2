@@ -38,15 +38,18 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo }> = ({ syrup }) => {
     : `${syrup.totalStakedAmount.toSignificant(6, { groupSeparator: ',' }) ??
         '-'} ${syrup.stakingToken.symbol}`;
 
-  const tokenAPR =
-    syrup.valueOfTotalStakedAmountInUSDC &&
-    syrup.valueOfTotalStakedAmountInUSDC > 0
-      ? (
-          ((syrup.rewards ?? 0) / syrup.valueOfTotalStakedAmountInUSDC) *
-          daysCurrentYear *
-          100
-        ).toLocaleString()
-      : 0;
+  const tokenAPR = useMemo(
+    () =>
+      syrup.valueOfTotalStakedAmountInUSDC &&
+      syrup.valueOfTotalStakedAmountInUSDC > 0
+        ? (
+            ((syrup.rewards ?? 0) / syrup.valueOfTotalStakedAmountInUSDC) *
+            daysCurrentYear *
+            100
+          ).toLocaleString()
+        : 0,
+    [syrup?.valueOfTotalStakedAmountInUSDC, syrup?.rewards, daysCurrentYear],
+  );
 
   const dQUICKAPR = useMemo(
     () =>
