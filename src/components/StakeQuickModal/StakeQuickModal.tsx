@@ -188,10 +188,12 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
                   setStakePercent(value as number);
                   setTypedValue(
                     quickBalance
-                      ? (
-                          (Number(quickBalance.toExact()) * stakePercent) /
-                          100
-                        ).toFixed(8)
+                      ? stakePercent < 100
+                        ? (
+                            (Number(quickBalance.toExact()) * stakePercent) /
+                            100
+                          ).toString()
+                        : quickBalance.toExact()
                       : '0',
                   );
                 }}

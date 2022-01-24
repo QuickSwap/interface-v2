@@ -162,10 +162,12 @@ const UnstakeQuickModal: React.FC<UnstakeQuickModalProps> = ({
                   setStakePercent(value as number);
                   setTypedValue(
                     dQuickBalance
-                      ? (
-                          (Number(dQuickBalance.toExact()) * stakePercent) /
-                          100
-                        ).toString()
+                      ? stakePercent < 100
+                        ? (
+                            (Number(dQuickBalance.toExact()) * stakePercent) /
+                            100
+                          ).toString()
+                        : dQuickBalance.toExact()
                       : '0',
                   );
                 }}
