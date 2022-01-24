@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Box, Typography, useMediaQuery } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { SyrupInfo } from 'state/stake/hooks';
@@ -14,23 +14,6 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     borderRadius: 10,
     marginTop: 24,
   },
-  syrupButton: {
-    backgroundImage:
-      'linear-gradient(280deg, #64fbd3 0%, #00cff3 0%, #0098ff 10%, #004ce6 100%)',
-    borderRadius: 10,
-    cursor: 'pointer',
-    width: 134,
-    height: 40,
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    [breakpoints.down('xs')]: {
-      width: '100%',
-    },
-    '& p': {
-      color: palette.text.primary,
-    },
-  },
   syrupText: {
     fontSize: 14,
     fontWeight: 600,
@@ -44,7 +27,6 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo }> = ({ syrup }) => {
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const [expanded, setExpanded] = useState(false);
   const classes = useStyles();
-  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
 
   const currency = unwrappedToken(syrup.token);
   const isDQUICKStakingToken = syrup.stakingToken.equals(
@@ -56,51 +38,48 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo }> = ({ syrup }) => {
     : `${syrup.totalStakedAmount.toSignificant(6, { groupSeparator: ',' }) ??
         '-'} ${syrup.stakingToken.symbol}`;
 
-  const tokenAPR =
-    syrup.valueOfTotalStakedAmountInUSDC &&
-    syrup.valueOfTotalStakedAmountInUSDC > 0
-      ? (
-          ((syrup.rewards ?? 0) / syrup.valueOfTotalStakedAmountInUSDC) *
-          daysCurrentYear *
-          100
-        ).toLocaleString()
-      : 0;
+  const tokenAPR = useMemo(
+    () =>
+      syrup.valueOfTotalStakedAmountInUSDC &&
+      syrup.valueOfTotalStakedAmountInUSDC > 0
+        ? (
+            ((syrup.rewards ?? 0) / syrup.valueOfTotalStakedAmountInUSDC) *
+            daysCurrentYear *
+            100
+          ).toLocaleString()
+        : 0,
+    [syrup?.valueOfTotalStakedAmountInUSDC, syrup?.rewards, daysCurrentYear],
+  );
 
-  const dQUICKAPR =
-    (((Number(syrup.oneDayVol) * 0.04 * 0.01) /
-      Number(syrup.dQuickTotalSupply.toSignificant(6))) *
-      daysCurrentYear) /
-    (Number(syrup.dQUICKtoQUICK.toSignificant(6)) * Number(syrup.quickPrice));
+  const dQUICKAPR = useMemo(
+    () =>
+      (((Number(syrup.oneDayVol) * 0.04 * 0.01) /
+        Number(syrup.dQuickTotalSupply.toSignificant(6))) *
+        daysCurrentYear) /
+      (Number(syrup.dQUICKtoQUICK.toSignificant(6)) * Number(syrup.quickPrice)),
+    [
+      syrup?.oneDayVol,
+      syrup?.dQuickTotalSupply,
+      daysCurrentYear,
+      syrup?.dQUICKtoQUICK,
+      syrup?.quickPrice,
+    ],
+  );
 
-  const dQUICKAPY = dQUICKAPR
-    ? Number(
-        (Math.pow(1 + dQUICKAPR / daysCurrentYear, daysCurrentYear) - 1) * 100,
-      ).toLocaleString()
-    : 0;
+  const dQUICKAPY = useMemo(
+    () =>
+      dQUICKAPR
+        ? Number(
+            (Math.pow(1 + dQUICKAPR / daysCurrentYear, daysCurrentYear) - 1) *
+              100,
+          ).toLocaleString()
+        : 0,
+    [dQUICKAPR, daysCurrentYear],
+  );
 
   const syrupEarnedUSD =
     Number(syrup.earnedAmount.toSignificant()) *
     Number(syrup.rewardTokenPriceinUSD ?? 0);
-
-  const MINUTE = 60;
-  const HOUR = MINUTE * 60;
-  const DAY = HOUR * 24;
-  const exactEnd = syrup.periodFinish;
-  let timeRemaining = exactEnd - currentTime;
-
-  const days = (timeRemaining - (timeRemaining % DAY)) / DAY;
-  timeRemaining -= days * DAY;
-  const hours = (timeRemaining - (timeRemaining % HOUR)) / HOUR;
-  timeRemaining -= hours * HOUR;
-  const minutes = (timeRemaining - (timeRemaining % MINUTE)) / MINUTE;
-  timeRemaining -= minutes * MINUTE;
-
-  useEffect(() => {
-    const timeInterval = setInterval(() => {
-      setCurrentTime(Math.floor(Date.now() / 1000));
-    }, 1000);
-    return () => clearInterval(timeInterval);
-  }, []);
 
   return (
     <Box className={classes.syrupCard}>
@@ -238,4 +217,4 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo }> = ({ syrup }) => {
   );
 };
 
-export default SyrupCard;
+export default React.memo(SyrupCard);
