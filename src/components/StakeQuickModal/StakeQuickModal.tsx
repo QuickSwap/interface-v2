@@ -65,6 +65,7 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
     account ?? undefined,
     returnTokenFromKey('QUICK'),
   );
+
   const [typedValue, setTypedValue] = useState('');
   const [stakePercent, setStakePercent] = useState(0);
   const [approving, setApproving] = useState(false);
@@ -151,7 +152,7 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
               value={typedValue}
               onChange={(evt: any) => {
                 const totalBalance = quickBalance
-                  ? Number(quickBalance.toSignificant())
+                  ? Number(quickBalance.toExact())
                   : 0;
                 setTypedValue(evt.target.value);
                 setStakePercent(
@@ -169,9 +170,7 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
                 cursor: 'pointer',
               }}
               onClick={() => {
-                setTypedValue(
-                  quickBalance ? quickBalance.toSignificant() : '0',
-                );
+                setTypedValue(quickBalance ? quickBalance.toExact() : '0');
                 setStakePercent(100);
               }}
             >
@@ -190,8 +189,7 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
                   setTypedValue(
                     quickBalance
                       ? (
-                          (Number(quickBalance.toSignificant()) *
-                            stakePercent) /
+                          (Number(quickBalance.toExact()) * stakePercent) /
                           100
                         ).toFixed(8)
                       : '0',
