@@ -247,9 +247,9 @@ const FarmDualCard: React.FC<{
         </Box>
       </Box>
 
-      {isExpandCard && stakingInfo && (
+      {isExpandCard && (
         <FarmDualCardDetails
-          stakingInfo={stakingInfo}
+          pair={stakingInfo.stakingTokenPair}
           dQuicktoQuick={dQuicktoQuick}
           stakingAPY={stakingAPY}
         />

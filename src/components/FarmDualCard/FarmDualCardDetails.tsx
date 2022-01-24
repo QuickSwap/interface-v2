@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { TransactionResponse } from '@ethersproject/providers';
 import { Box, Typography, useMediaQuery } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-import { DualStakingInfo } from 'state/stake/hooks';
+import { useDualStakingInfo } from 'state/stake/hooks';
 import { JSBI, TokenAmount, Pair } from '@uniswap/sdk';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import {
@@ -66,10 +66,10 @@ const useStyles = makeStyles(({ palette }) => ({
 }));
 
 const FarmDualCardDetails: React.FC<{
-  stakingInfo: DualStakingInfo;
+  pair: Pair | null | undefined;
   dQuicktoQuick: number;
   stakingAPY: number;
-}> = ({ stakingInfo, dQuicktoQuick, stakingAPY }) => {
+}> = ({ pair, dQuicktoQuick, stakingAPY }) => {
   const classes = useStyles();
   const { palette, breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
@@ -80,11 +80,14 @@ const FarmDualCardDetails: React.FC<{
   const [approving, setApproving] = useState(false);
   const [unstakeAmount, setUnStakeAmount] = useState('');
 
+  const stakingInfos = useDualStakingInfo(pair);
+  const stakingInfo = useMemo(
+    () => (stakingInfos && stakingInfos.length > 0 ? stakingInfos[0] : null),
+    [stakingInfos],
+  );
+
   const token0 = stakingInfo ? stakingInfo.tokens[0] : undefined;
   const token1 = stakingInfo ? stakingInfo.tokens[1] : undefined;
-
-  const rewardTokenA = stakingInfo?.rewardTokenA;
-  const rewardTokenB = stakingInfo?.rewardTokenB;
 
   const { account, library } = useActiveWeb3React();
   const addTransaction = useTransactionAdder();
@@ -165,9 +168,6 @@ const FarmDualCardDetails: React.FC<{
 
   // get the USD value of staked WETH
   const USDPrice = stakingInfo?.usdPrice;
-  const valueOfTotalStakedAmountInUSDC =
-    valueOfTotalStakedAmountInBaseToken &&
-    USDPrice?.quote(valueOfTotalStakedAmountInBaseToken);
 
   const valueOfMyStakedAmountInUSDC =
     valueOfMyStakedAmountInBaseToken &&
@@ -312,8 +312,13 @@ const FarmDualCardDetails: React.FC<{
       throw new Error('missing dependencies');
     const liquidityAmount = parsedAmount;
     if (!liquidityAmount) throw new Error('missing liquidity amount');
-
-    return approveCallback();
+    setApproving(true);
+    try {
+      await approveCallback();
+      setApproving(false);
+    } catch (e) {
+      setApproving(false);
+    }
   };
 
   const earnedUSD =
@@ -419,7 +424,7 @@ const FarmDualCardDetails: React.FC<{
                     userLiquidityUnstaked &&
                     userLiquidityUnstaked.greaterThan('0')
                   ) {
-                    setStakeAmount(userLiquidityUnstaked.toSignificant());
+                    setStakeAmount(userLiquidityUnstaked.toExact());
                   } else {
                     setStakeAmount('');
                   }
@@ -432,8 +437,7 @@ const FarmDualCardDetails: React.FC<{
               className={
                 !approving &&
                 Number(!attemptStaking && stakeAmount) > 0 &&
-                Number(stakeAmount) <=
-                  Number(userLiquidityUnstaked?.toSignificant())
+                Number(stakeAmount) <= Number(userLiquidityUnstaked?.toExact())
                   ? classes.buttonClaim
                   : classes.buttonToken
               }
@@ -446,18 +450,12 @@ const FarmDualCardDetails: React.FC<{
                   !attemptStaking &&
                   Number(stakeAmount) > 0 &&
                   Number(stakeAmount) <=
-                    Number(userLiquidityUnstaked?.toSignificant())
+                    Number(userLiquidityUnstaked?.toExact())
                 ) {
                   if (approval === ApprovalState.APPROVED) {
                     onStake();
                   } else {
-                    setApproving(true);
-                    try {
-                      await onAttemptToApprove();
-                      setApproving(false);
-                    } catch (e) {
-                      setApproving(false);
-                    }
+                    onAttemptToApprove();
                   }
                 }
               }}
@@ -524,7 +522,7 @@ const FarmDualCardDetails: React.FC<{
                     stakingInfo.stakedAmount &&
                     stakingInfo.stakedAmount.greaterThan('0')
                   ) {
-                    setUnStakeAmount(stakingInfo.stakedAmount.toSignificant());
+                    setUnStakeAmount(stakingInfo.stakedAmount.toExact());
                   } else {
                     setUnStakeAmount('');
                   }
@@ -538,7 +536,7 @@ const FarmDualCardDetails: React.FC<{
                 !attemptUnstaking &&
                 Number(unstakeAmount) > 0 &&
                 Number(unstakeAmount) <=
-                  Number(stakingInfo.stakedAmount.toSignificant())
+                  Number(stakingInfo.stakedAmount.toExact())
                   ? classes.buttonClaim
                   : classes.buttonToken
               }
@@ -550,7 +548,7 @@ const FarmDualCardDetails: React.FC<{
                   !attemptUnstaking &&
                   Number(unstakeAmount) > 0 &&
                   Number(unstakeAmount) <=
-                    Number(stakingInfo.stakedAmount.toSignificant())
+                    Number(stakingInfo.stakedAmount.toExact())
                 ) {
                   onWithdraw();
                 }
@@ -579,18 +577,22 @@ const FarmDualCardDetails: React.FC<{
                 <Typography variant='body2'>Unclaimed Rewards:</Typography>
               </Box>
               <Box mb={1} display='flex'>
-                <CurrencyLogo currency={unwrappedToken(rewardTokenA)} />
-                <CurrencyLogo currency={unwrappedToken(rewardTokenB)} />
+                <CurrencyLogo
+                  currency={unwrappedToken(stakingInfo.rewardTokenA)}
+                />
+                <CurrencyLogo
+                  currency={unwrappedToken(stakingInfo.rewardTokenB)}
+                />
               </Box>
               <Box mb={1} textAlign='center'>
                 <Typography variant='body1'>{earnedUSDStr}</Typography>
                 <Typography variant='body1' color='textSecondary'>
                   {stakingInfo.earnedAmountA.toSignificant(2)}
-                  <span>&nbsp;{rewardTokenA.symbol}</span>
+                  <span>&nbsp;{stakingInfo.rewardTokenA.symbol}</span>
                 </Typography>
                 <Typography variant='body1' color='textSecondary'>
                   {stakingInfo.earnedAmountB.toSignificant(2)}
-                  <span>&nbsp;{rewardTokenB?.symbol}</span>
+                  <span>&nbsp;{stakingInfo.rewardTokenB.symbol}</span>
                 </Typography>
               </Box>
             </Box>

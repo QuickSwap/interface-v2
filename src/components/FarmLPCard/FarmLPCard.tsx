@@ -222,9 +222,9 @@ const FarmLPCard: React.FC<{
         </Box>
       </Box>
 
-      {isExpandCard && stakingInfo && (
+      {isExpandCard && (
         <FarmLPCardDetails
-          stakingInfo={stakingInfo}
+          pair={stakingInfo.stakingTokenPair}
           dQuicktoQuick={dQuicktoQuick}
           stakingAPY={stakingAPY}
         />
