@@ -11,7 +11,6 @@ import {
   updateEthPrice,
   updateGlobalData,
   updateGlobalChartData,
-  updateTokenPairs,
   addBookMarkToken,
   removeBookmarkToken,
   updateBookmarkTokens,
@@ -226,21 +225,4 @@ export function useBookmarkPairs(): {
     removeBookmarkPair: _removeBookmarkPair,
     updateBookmarkPairs: _updateBookmarkPairs,
   };
-}
-
-export function useTokenPairs(): {
-  tokenPairs: any;
-  updateTokenPairs: ({ data }: any) => void;
-} {
-  const tokenPairs = useSelector(
-    (state: AppState) => state.application.tokenPairs,
-  );
-  const dispatch = useDispatch();
-  const _updateTokenPairs = useCallback(
-    ({ data }) => {
-      dispatch(updateTokenPairs({ data }));
-    },
-    [dispatch],
-  );
-  return { tokenPairs, updateTokenPairs: _updateTokenPairs };
 }
