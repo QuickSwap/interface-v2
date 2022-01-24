@@ -413,10 +413,7 @@ const DragonPage: React.FC = () => {
               <Box display='flex' justifyContent='space-between' mt={1.5}>
                 <Typography variant='body2'>Your Deposits</Typography>
                 <Typography variant='body2'>
-                  {formatNumber(
-                    Number(lairInfo.dQUICKBalance.toSignificant()) *
-                      Number(lairInfo.dQUICKtoQUICK.toSignificant()),
-                  )}
+                  {formatNumber(Number(lairInfo.QUICKBalance.toSignificant()))}
                 </Typography>
               </Box>
               <Box
