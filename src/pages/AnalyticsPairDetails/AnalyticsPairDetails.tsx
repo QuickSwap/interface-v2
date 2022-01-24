@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useHistory, useRouteMatch, Link } from 'react-router-dom';
 import { Box, Typography, Grid, useMediaQuery } from '@material-ui/core';
-import { ArrowForwardIos } from '@material-ui/icons';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { Skeleton } from '@material-ui/lab';
 import { ChainId, Token } from '@uniswap/sdk';
