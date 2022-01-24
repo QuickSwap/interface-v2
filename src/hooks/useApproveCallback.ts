@@ -99,11 +99,17 @@ export function useApproveCallback(
           gasLimit: calculateGasMargin(estimatedGas),
         },
       )
-      .then((response: TransactionResponse) => {
+      .then(async (response: TransactionResponse) => {
         addTransaction(response, {
           summary: 'Approve ' + amountToApprove.currency.symbol,
           approval: { tokenAddress: token.address, spender: spender },
         });
+        try {
+          await response.wait();
+        } catch (e) {
+          console.debug('Failed to approve token', e);
+          throw e;
+        }
       })
       .catch((error: Error) => {
         console.debug('Failed to approve token', error);

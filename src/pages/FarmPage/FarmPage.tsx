@@ -53,18 +53,6 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       padding: '16px 12px',
     },
   },
-  dragonBg: {
-    width: '100%',
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    background: 'rgb(225, 190, 231, 0.1)',
-    maxHeight: 207,
-    overflow: 'hidden',
-    '& img': {
-      width: '100%',
-    },
-  },
   searchInput: {
     height: 40,
     border: `1px solid ${palette.secondary.dark}`,
@@ -89,10 +77,6 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       minWidth: 'unset',
       marginRight: 0,
     },
-  },
-  thirdColor: {
-    color: palette.primary.main,
-    cursor: 'pointer',
   },
   farmSwitch: {
     width: '50%',
@@ -409,7 +393,9 @@ const FarmPage: React.FC = () => {
 
   const stakingAPYs = useMemo(() => {
     const sortedStakingInfos =
-      farmIndex === 0 ? sortedStakingLPInfos : sortedStakingDualInfos;
+      farmIndex === LPFARM_INDEX
+        ? sortedStakingLPInfos
+        : sortedStakingDualInfos;
     if (bulkPairs && sortedStakingInfos.length > 0) {
       return sortedStakingInfos.map((info: any) => {
         const oneDayVolume = bulkPairs[info.pair]?.oneDayVolumeUSD;
@@ -452,11 +438,11 @@ const FarmPage: React.FC = () => {
         <Box
           className={cx(
             classes.farmSwitch,
-            farmIndex === 0 && classes.activeFarmSwitch,
+            farmIndex === LPFARM_INDEX && classes.activeFarmSwitch,
           )}
           style={{ borderTopLeftRadius: 8, borderBottomLeftRadius: 8 }}
           onClick={() => {
-            setFarmIndex(0);
+            setFarmIndex(LPFARM_INDEX);
           }}
         >
           <Typography variant='body1'>LP Mining</Typography>
@@ -464,11 +450,11 @@ const FarmPage: React.FC = () => {
         <Box
           className={cx(
             classes.farmSwitch,
-            farmIndex === 1 && classes.activeFarmSwitch,
+            farmIndex === DUALFARM_INDEX && classes.activeFarmSwitch,
           )}
           style={{ borderTopRightRadius: 8, borderBottomRightRadius: 8 }}
           onClick={() => {
-            setFarmIndex(1);
+            setFarmIndex(DUALFARM_INDEX);
           }}
         >
           <Typography variant='body1'>Dual Mining</Typography>
@@ -482,7 +468,7 @@ const FarmPage: React.FC = () => {
         py={1.5}
         bgcolor={palette.secondary.dark}
       >
-        {farmIndex === 0 && (
+        {farmIndex === LPFARM_INDEX && (
           <Box
             width={isMobile ? 1 : 1 / 3}
             py={1.5}
@@ -500,7 +486,7 @@ const FarmPage: React.FC = () => {
           </Box>
         )}
         <Box
-          width={isMobile ? 1 : farmIndex === 0 ? 1 / 3 : 1 / 2}
+          width={isMobile ? 1 : farmIndex === LPFARM_INDEX ? 1 / 3 : 1 / 2}
           p={1.5}
           borderRight={isMobile ? 'none' : `1px solid ${palette.divider}`}
           textAlign='center'
@@ -519,7 +505,7 @@ const FarmPage: React.FC = () => {
           )}
         </Box>
         <Box
-          width={isMobile ? 1 : farmIndex === 0 ? 1 / 3 : 1 / 2}
+          width={isMobile ? 1 : farmIndex === LPFARM_INDEX ? 1 / 3 : 1 / 2}
           p={1.5}
           textAlign='center'
         >
@@ -549,7 +535,7 @@ const FarmPage: React.FC = () => {
             <Typography variant='h5'>Earn dQuick</Typography>
             <Typography variant='body2'>
               Stake LP Tokens to earn{' '}
-              {farmIndex === 0
+              {farmIndex === LPFARM_INDEX
                 ? 'dQUICK + Pool Fees'
                 : 'dQUICK + WMATIC rewards'}
             </Typography>
@@ -754,7 +740,7 @@ const FarmPage: React.FC = () => {
         )}
         {//show loading until loading total fees
         farmData.stakingFees ? (
-          farmIndex === 0 && stakingInfos ? (
+          farmIndex === LPFARM_INDEX && stakingInfos ? (
             sortedStakingLPInfos.map((info: StakingInfo, index) => (
               <FarmLPCard
                 key={index}
@@ -763,7 +749,7 @@ const FarmPage: React.FC = () => {
                 stakingAPY={stakingAPYs[index]}
               />
             ))
-          ) : farmIndex === 1 && stakingDualInfos ? (
+          ) : farmIndex === DUALFARM_INDEX && stakingDualInfos ? (
             sortedStakingDualInfos.map((info: DualStakingInfo, index) => (
               <FarmDualCard
                 key={index}

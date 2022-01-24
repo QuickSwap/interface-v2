@@ -1,5 +1,4 @@
 import React, { useState, useMemo, useCallback } from 'react';
-import { splitSignature } from '@ethersproject/bytes';
 import { Contract } from '@ethersproject/contracts';
 import { ArrowLeft, ArrowDown } from 'react-feather';
 import { Box, Typography, Button } from '@material-ui/core';
@@ -30,7 +29,7 @@ import {
   useTransactionFinalizer,
 } from 'state/transactions/hooks';
 import { useTokenBalance } from 'state/wallet/hooks';
-import { useActiveWeb3React, useIsArgentWallet } from 'hooks';
+import { useActiveWeb3React } from 'hooks';
 import { usePairContract } from 'hooks/useContract';
 import { calculateGasMargin, calculateSlippageAmount } from 'utils';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
@@ -87,6 +86,7 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
   const { palette } = useTheme();
   const [showConfirm, setShowConfirm] = useState(false);
   const [txPending, setTxPending] = useState(false);
+  const [approving, setApproving] = useState(false);
   const [attemptingTxn, setAttemptingTxn] = useState(false);
   const [removeErrorMessage, setRemoveErrorMessage] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
@@ -113,7 +113,6 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
 
   const onUserInput = useCallback(
     (field: Field, typedValue: string) => {
-      setSignatureData(null);
       return _onUserInput(field, typedValue);
     },
     [_onUserInput],
@@ -196,18 +195,10 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
   const pairContract: Contract | null = usePairContract(
     pair?.liquidityToken?.address,
   );
-  const [signatureData, setSignatureData] = useState<{
-    v: number;
-    r: string;
-    s: string;
-    deadline: number;
-  } | null>(null);
   const [approval, approveCallback] = useApproveCallback(
     parsedAmounts[Field.LIQUIDITY],
     chainId ? GlobalConst.addresses.ROUTER_ADDRESS[chainId] : undefined,
   );
-  const isArgentWallet = useIsArgentWallet();
-
   const onAttemptToApprove = async () => {
     if (!pairContract || !pair || !library || !deadline) {
       setErrorMsg('missing dependencies');
@@ -218,69 +209,13 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
       setErrorMsg('missing liquidity amount');
       return;
     }
-
-    if (isArgentWallet) {
-      return approveCallback();
+    setApproving(true);
+    try {
+      await approveCallback();
+      setApproving(false);
+    } catch (e) {
+      setApproving(false);
     }
-
-    // try to gather a signature for permission
-    const nonce = await pairContract.nonces(account);
-
-    const EIP712Domain = [
-      { name: 'name', type: 'string' },
-      { name: 'version', type: 'string' },
-      { name: 'chainId', type: 'uint256' },
-      { name: 'verifyingContract', type: 'address' },
-    ];
-    const domain = {
-      name: 'Uniswap V2',
-      version: '1',
-      chainId: chainId,
-      verifyingContract: pair.liquidityToken.address,
-    };
-    const Permit = [
-      { name: 'owner', type: 'address' },
-      { name: 'spender', type: 'address' },
-      { name: 'value', type: 'uint256' },
-      { name: 'nonce', type: 'uint256' },
-      { name: 'deadline', type: 'uint256' },
-    ];
-    const message = {
-      owner: account,
-      spender: chainId
-        ? GlobalConst.addresses.ROUTER_ADDRESS[chainId]
-        : undefined,
-      value: liquidityAmount.raw.toString(),
-      nonce: nonce.toHexString(),
-      deadline: deadline.toNumber(),
-    };
-    const data = JSON.stringify({
-      types: {
-        EIP712Domain,
-        Permit,
-      },
-      domain,
-      primaryType: 'Permit',
-      message,
-    });
-
-    library
-      .send('eth_signTypedData_v4', [account, data])
-      .then(splitSignature)
-      .then((signature) => {
-        setSignatureData({
-          v: signature.v,
-          r: signature.r,
-          s: signature.s,
-          deadline: deadline.toNumber(),
-        });
-      })
-      .catch((error) => {
-        // for all errors other than 4001 (EIP-1193 user rejected request), fall back to manual approve
-        if (error?.code !== 4001) {
-          approveCallback();
-        }
-      });
   };
 
   const handleDismissConfirmation = useCallback(() => {
@@ -356,52 +291,9 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
           deadline.toHexString(),
         ];
       }
-    }
-    // we have a signataure, use permit versions of remove liquidity
-    else if (signatureData !== null) {
-      // removeLiquidityETHWithPermit
-      if (oneCurrencyIsETH) {
-        methodNames = [
-          'removeLiquidityETHWithPermit',
-          'removeLiquidityETHWithPermitSupportingFeeOnTransferTokens',
-        ];
-        args = [
-          currencyBIsETH ? tokenA.address : tokenB.address,
-          liquidityAmount.raw.toString(),
-          amountsMin[
-            currencyBIsETH ? Field.CURRENCY_A : Field.CURRENCY_B
-          ].toString(),
-          amountsMin[
-            currencyBIsETH ? Field.CURRENCY_B : Field.CURRENCY_A
-          ].toString(),
-          account,
-          signatureData.deadline,
-          false,
-          signatureData.v,
-          signatureData.r,
-          signatureData.s,
-        ];
-      }
-      // removeLiquidityETHWithPermit
-      else {
-        methodNames = ['removeLiquidityWithPermit'];
-        args = [
-          tokenA.address,
-          tokenB.address,
-          liquidityAmount.raw.toString(),
-          amountsMin[Field.CURRENCY_A].toString(),
-          amountsMin[Field.CURRENCY_B].toString(),
-          account,
-          signatureData.deadline,
-          false,
-          signatureData.v,
-          signatureData.r,
-          signatureData.s,
-        ];
-      }
     } else {
       throw new Error(
-        'Attempting to confirm without approval or a signature. Please contact support.',
+        'Attempting to confirm without approval. Please contact support.',
       );
     }
 
@@ -725,13 +617,11 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
           <Button
             className={classes.removeButton}
             onClick={onAttemptToApprove}
-            disabled={
-              approval !== ApprovalState.NOT_APPROVED || signatureData !== null
-            }
+            disabled={approving || approval !== ApprovalState.NOT_APPROVED}
           >
-            {approval === ApprovalState.PENDING
+            {approving
               ? 'Approving...'
-              : approval === ApprovalState.APPROVED || signatureData !== null
+              : approval === ApprovalState.APPROVED
               ? 'Approved'
               : 'Approve'}
           </Button>
@@ -740,10 +630,7 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
             onClick={() => {
               setShowConfirm(true);
             }}
-            disabled={
-              Boolean(error) ||
-              (signatureData === null && approval !== ApprovalState.APPROVED)
-            }
+            disabled={Boolean(error) || approval !== ApprovalState.APPROVED}
           >
             {error || 'Remove'}
           </Button>
