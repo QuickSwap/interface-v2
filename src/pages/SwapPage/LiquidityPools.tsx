@@ -22,14 +22,6 @@ const useStyles = makeStyles(({ palette }) => ({
       },
     },
   },
-  liquidityContent: {
-    border: `1px solid ${palette.secondary.dark}`,
-    borderRadius: '10px',
-    marginBottom: '20px',
-    '& p': {
-      color: palette.text.primary,
-    },
-  },
 }));
 
 const LiquidityPools: React.FC<{

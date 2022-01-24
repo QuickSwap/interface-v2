@@ -4,31 +4,16 @@ import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { GlobalConst } from 'constants/index';
 import { DoubleCurrencyLogo } from 'components';
 import { formatCompact, getDaysCurrentYear } from 'utils';
-import cx from 'classnames';
 import { useCurrency } from 'hooks/Tokens';
 
 const useStyles = makeStyles(({ palette }) => ({
-  liquidityMain: {
-    '& p': {
-      color: palette.text.secondary,
-      fontWeight: 600,
-    },
-  },
-  liquidityFilter: {
-    '& p': {
-      cursor: 'pointer',
-      marginRight: 20,
-      '&.active': {
-        color: palette.primary.main,
-      },
-    },
-  },
   liquidityContent: {
     border: `1px solid ${palette.secondary.dark}`,
     borderRadius: '10px',
     marginBottom: '20px',
     '& p': {
       color: palette.text.primary,
+      fontWeight: 600,
     },
   },
 }));
@@ -69,7 +54,7 @@ const LiquidityPoolRow: React.FC<{
       key={key}
       display='flex'
       flexWrap='wrap'
-      className={cx(classes.liquidityContent, classes.liquidityMain)}
+      className={classes.liquidityContent}
       padding={2}
     >
       <Box display='flex' alignItems='center' width={isMobile ? 1 : 0.5}>
