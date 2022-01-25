@@ -160,86 +160,6 @@ const FarmPage: React.FC = () => {
     { search: farmSearch, isStaked: stakedOnly },
   );
 
-  const addedStakingInfos =
-    farmIndex === DUALFARM_INDEX
-      ? addedDualStakingInfos
-      : isEndedFarm
-      ? addedLPStakingOldInfos
-      : addedLPStakingInfos;
-
-  const stakingRewardAddress = addedStakingInfos
-    ? addedStakingInfos
-        .map((stakingInfo) => stakingInfo.stakingRewardAddress.toLowerCase())
-        .reduce((totStr, str) => totStr + str, '')
-    : null;
-
-  useEffect(() => {
-    if (chainId) {
-      const stakingPairLists =
-        returnStakingInfo()[chainId]?.map((item) => item.pair) ?? [];
-      const stakingOldPairLists =
-        returnStakingInfo('old')[chainId]?.map((item) => item.pair) ?? [];
-      const dualPairLists =
-        returnDualStakingInfo()[chainId]?.map((item) => item.pair) ?? [];
-      const pairLists = stakingPairLists
-        .concat(stakingOldPairLists)
-        .concat(dualPairLists);
-      getBulkPairData(pairLists).then((data) => setBulkPairs(data));
-    }
-    return () => setBulkPairs(null);
-  }, [chainId]);
-
-  useEffect(() => {
-    setStakingInfos(undefined);
-    setStakingDualInfos(undefined);
-    setPageIndex(0);
-    setTimeout(() => {
-      if (farmIndex === LPFARM_INDEX) {
-        setStakingInfos(
-          isEndedFarm
-            ? addedLPStakingOldInfos.slice(0, LOADFARM_COUNT)
-            : addedLPStakingInfos.slice(0, LOADFARM_COUNT),
-        );
-      } else {
-        setStakingDualInfos(
-          isEndedFarm ? [] : addedDualStakingInfos.slice(0, LOADFARM_COUNT),
-        );
-      }
-    }, 500);
-    return () => {
-      setStakingInfos(undefined);
-      setStakingDualInfos(undefined);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isEndedFarm, farmIndex, farmSearch, stakingRewardAddress]);
-
-  useEffect(() => {
-    if (farmIndex === LPFARM_INDEX) {
-      const currentStakingInfos = stakingInfos || [];
-      const stakingInfosToAdd = (isEndedFarm
-        ? addedLPStakingOldInfos
-        : addedLPStakingInfos
-      ).slice(
-        currentStakingInfos.length,
-        currentStakingInfos.length + LOADFARM_COUNT,
-      );
-      setStakingInfos(currentStakingInfos.concat(stakingInfosToAdd));
-    } else if (farmIndex === DUALFARM_INDEX) {
-      const currentDualStakingInfos = stakingDualInfos || [];
-      const stakingDualInfosToAdd = (isEndedFarm
-        ? []
-        : addedDualStakingInfos
-      ).slice(
-        currentDualStakingInfos.length,
-        currentDualStakingInfos.length + LOADFARM_COUNT,
-      );
-      setStakingDualInfos(
-        currentDualStakingInfos.concat(stakingDualInfosToAdd),
-      );
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pageIndex]);
-
   const sortIndex = sortDesc ? 1 : -1;
 
   const sortByToken = useCallback(
@@ -335,27 +255,29 @@ const FarmPage: React.FC = () => {
     [sortIndex],
   );
 
-  const sortedStakingLPInfos = useMemo(() => {
-    if (stakingInfos && stakingInfos.length > 0) {
-      return stakingInfos.sort((a, b) => {
-        if (sortBy === 1) {
-          return sortByToken(a, b);
-        } else if (sortBy === 2) {
-          return sortByTVL(a, b);
-        } else if (sortBy === 3) {
-          return sortByRewardLP(a, b);
-        } else if (sortBy === 4) {
-          return sortByAPY(a, b);
-        } else if (sortBy === 5) {
-          return sortByEarnedLP(a, b);
-        }
-        return 1;
-      });
-    }
-    return [];
+  const sortedLPStakingInfos = useMemo(() => {
+    const lpStakingInfos = isEndedFarm
+      ? addedLPStakingOldInfos
+      : addedLPStakingInfos;
+    return lpStakingInfos.sort((a, b) => {
+      if (sortBy === 1) {
+        return sortByToken(a, b);
+      } else if (sortBy === 2) {
+        return sortByTVL(a, b);
+      } else if (sortBy === 3) {
+        return sortByRewardLP(a, b);
+      } else if (sortBy === 4) {
+        return sortByAPY(a, b);
+      } else if (sortBy === 5) {
+        return sortByEarnedLP(a, b);
+      }
+      return 1;
+    });
   }, [
     sortBy,
-    stakingInfos,
+    addedLPStakingOldInfos,
+    addedLPStakingInfos,
+    isEndedFarm,
     sortByToken,
     sortByTVL,
     sortByRewardLP,
@@ -364,25 +286,24 @@ const FarmPage: React.FC = () => {
   ]);
 
   const sortedStakingDualInfos = useMemo(() => {
-    if (stakingDualInfos && stakingDualInfos.length > 0) {
-      return stakingDualInfos.sort((a, b) => {
-        if (sortBy === 1) {
-          return sortByToken(a, b);
-        } else if (sortBy === 2) {
-          return sortByTVL(a, b);
-        } else if (sortBy === 3) {
-          return sortByRewardDual(a, b);
-        } else if (sortBy === 4) {
-          return sortByAPY(a, b);
-        } else if (sortBy === 5) {
-          return sortByEarnedDual(a, b);
-        }
-        return 1;
-      });
-    }
-    return [];
+    const dualStakingInfos = isEndedFarm ? [] : addedDualStakingInfos;
+    return dualStakingInfos.sort((a, b) => {
+      if (sortBy === 1) {
+        return sortByToken(a, b);
+      } else if (sortBy === 2) {
+        return sortByTVL(a, b);
+      } else if (sortBy === 3) {
+        return sortByRewardDual(a, b);
+      } else if (sortBy === 4) {
+        return sortByAPY(a, b);
+      } else if (sortBy === 5) {
+        return sortByEarnedDual(a, b);
+      }
+      return 1;
+    });
   }, [
-    stakingDualInfos,
+    addedDualStakingInfos,
+    isEndedFarm,
     sortBy,
     sortByToken,
     sortByTVL,
@@ -391,12 +312,82 @@ const FarmPage: React.FC = () => {
     sortByEarnedDual,
   ]);
 
+  const addedStakingInfos = useMemo(
+    () =>
+      farmIndex === DUALFARM_INDEX
+        ? sortedStakingDualInfos
+        : sortedLPStakingInfos,
+    [farmIndex, sortedStakingDualInfos, sortedLPStakingInfos],
+  );
+
+  const stakingRewardAddress = addedStakingInfos
+    ? addedStakingInfos
+        .map((stakingInfo) => stakingInfo.stakingRewardAddress.toLowerCase())
+        .reduce((totStr, str) => totStr + str, '')
+    : null;
+
+  useEffect(() => {
+    if (chainId) {
+      const stakingPairLists =
+        returnStakingInfo()[chainId]?.map((item) => item.pair) ?? [];
+      const stakingOldPairLists =
+        returnStakingInfo('old')[chainId]?.map((item) => item.pair) ?? [];
+      const dualPairLists =
+        returnDualStakingInfo()[chainId]?.map((item) => item.pair) ?? [];
+      const pairLists = stakingPairLists
+        .concat(stakingOldPairLists)
+        .concat(dualPairLists);
+      getBulkPairData(pairLists).then((data) => setBulkPairs(data));
+    }
+    return () => setBulkPairs(null);
+  }, [chainId]);
+
+  useEffect(() => {
+    setStakingInfos(undefined);
+    setStakingDualInfos(undefined);
+    setPageIndex(0);
+    setTimeout(() => {
+      if (farmIndex === LPFARM_INDEX) {
+        setStakingInfos(sortedLPStakingInfos.slice(0, LOADFARM_COUNT));
+      } else {
+        setStakingDualInfos(sortedStakingDualInfos.slice(0, LOADFARM_COUNT));
+      }
+    }, 500);
+    return () => {
+      setStakingInfos(undefined);
+      setStakingDualInfos(undefined);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isEndedFarm, farmIndex, farmSearch, stakingRewardAddress]);
+
+  useEffect(() => {
+    if (farmIndex === LPFARM_INDEX) {
+      const currentStakingInfos = stakingInfos || [];
+      const stakingInfosToAdd = sortedLPStakingInfos.slice(
+        currentStakingInfos.length,
+        currentStakingInfos.length + LOADFARM_COUNT,
+      );
+      setStakingInfos(currentStakingInfos.concat(stakingInfosToAdd));
+    } else if (farmIndex === DUALFARM_INDEX) {
+      const currentDualStakingInfos = stakingDualInfos || [];
+      const stakingDualInfosToAdd = (isEndedFarm
+        ? []
+        : sortedStakingDualInfos
+      ).slice(
+        currentDualStakingInfos.length,
+        currentDualStakingInfos.length + LOADFARM_COUNT,
+      );
+      setStakingDualInfos(
+        currentDualStakingInfos.concat(stakingDualInfosToAdd),
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pageIndex]);
+
   const stakingAPYs = useMemo(() => {
     const sortedStakingInfos =
-      farmIndex === LPFARM_INDEX
-        ? sortedStakingLPInfos
-        : sortedStakingDualInfos;
-    if (bulkPairs && sortedStakingInfos.length > 0) {
+      farmIndex === LPFARM_INDEX ? stakingInfos : stakingDualInfos;
+    if (bulkPairs && sortedStakingInfos && sortedStakingInfos.length > 0) {
       return sortedStakingInfos.map((info: any) => {
         const oneDayVolume = bulkPairs[info.pair]?.oneDayVolumeUSD;
         const reserveUSD = bulkPairs[info.pair]?.reserveUSD;
@@ -410,7 +401,7 @@ const FarmPage: React.FC = () => {
     } else {
       return [];
     }
-  }, [bulkPairs, sortedStakingLPInfos, sortedStakingDualInfos, farmIndex]);
+  }, [bulkPairs, stakingInfos, stakingDualInfos, farmIndex]);
 
   const loadNext = () => {
     setPageIndex(pageIndex + 1);
@@ -741,7 +732,7 @@ const FarmPage: React.FC = () => {
         {//show loading until loading total fees
         farmData.stakingFees ? (
           farmIndex === LPFARM_INDEX && stakingInfos ? (
-            sortedStakingLPInfos.map((info: StakingInfo, index) => (
+            stakingInfos.map((info: StakingInfo, index) => (
               <FarmLPCard
                 key={index}
                 dQuicktoQuick={Number(lairInfo.dQUICKtoQUICK.toSignificant())}
@@ -750,7 +741,7 @@ const FarmPage: React.FC = () => {
               />
             ))
           ) : farmIndex === DUALFARM_INDEX && stakingDualInfos ? (
-            sortedStakingDualInfos.map((info: DualStakingInfo, index) => (
+            stakingDualInfos.map((info: DualStakingInfo, index) => (
               <FarmDualCard
                 key={index}
                 dQuicktoQuick={Number(lairInfo.dQUICKtoQUICK.toSignificant())}

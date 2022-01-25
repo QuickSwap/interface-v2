@@ -204,25 +204,79 @@ const DragonPage: React.FC = () => {
     ? addedOldSyrupInfos
     : addedStakingSyrupInfos;
 
+  const sortedSyrupInfos = useMemo(() => {
+    return addedSyrupInfos.sort((a, b) => {
+      if (sortBy === 1) {
+        const syrupStrA = a.token.symbol ?? '';
+        const syrupStrB = b.token.symbol ?? '';
+        if (sortDesc) {
+          return syrupStrA > syrupStrB ? -1 : 1;
+        } else {
+          return syrupStrA < syrupStrB ? -1 : 1;
+        }
+      } else if (sortBy === 2) {
+        const depositA =
+          a.valueOfTotalStakedAmountInUSDC ??
+          Number(a.totalStakedAmount.toSignificant());
+        const depositB =
+          b.valueOfTotalStakedAmountInUSDC ??
+          Number(b.totalStakedAmount.toSignificant());
+        if (sortDesc) {
+          return depositA > depositB ? -1 : 1;
+        } else {
+          return depositA < depositB ? -1 : 1;
+        }
+      } else if (sortBy === 3) {
+        const tokenAPRA =
+          a.valueOfTotalStakedAmountInUSDC &&
+          a.valueOfTotalStakedAmountInUSDC > 0
+            ? ((a.rewards ?? 0) / a.valueOfTotalStakedAmountInUSDC) *
+              daysCurrentYear *
+              100
+            : 0;
+
+        const tokenAPRB =
+          b.valueOfTotalStakedAmountInUSDC &&
+          b.valueOfTotalStakedAmountInUSDC > 0
+            ? ((b.rewards ?? 0) / b.valueOfTotalStakedAmountInUSDC) *
+              daysCurrentYear *
+              100
+            : 0;
+        if (sortDesc) {
+          return tokenAPRA > tokenAPRB ? -1 : 1;
+        } else {
+          return tokenAPRA < tokenAPRB ? -1 : 1;
+        }
+      } else if (sortBy === 4) {
+        const earnedUSDA =
+          Number(a.earnedAmount.toSignificant()) *
+          Number(a.rewardTokenPriceinUSD ?? 0);
+        const earnedUSDB =
+          Number(b.earnedAmount.toSignificant()) *
+          Number(b.rewardTokenPriceinUSD ?? 0);
+        if (sortDesc) {
+          return earnedUSDA > earnedUSDB ? -1 : 1;
+        } else {
+          return earnedUSDA < earnedUSDB ? -1 : 1;
+        }
+      }
+      return 1;
+    });
+  }, [addedSyrupInfos, sortDesc, sortBy, daysCurrentYear]);
+
   const syrupRewardAddress = useMemo(
     () =>
-      addedSyrupInfos
-        ? addedSyrupInfos
-            .map((syrupInfo) => syrupInfo.stakingRewardAddress.toLowerCase())
-            .reduce((totStr, str) => totStr + str, '')
-        : null,
-    [addedSyrupInfos],
+      sortedSyrupInfos
+        .map((syrupInfo) => syrupInfo.stakingRewardAddress.toLowerCase())
+        .reduce((totStr, str) => totStr + str, ''),
+    [sortedSyrupInfos],
   );
 
   useEffect(() => {
     setSyrupInfos(undefined);
     setPageIndex(0);
     setTimeout(() => {
-      setSyrupInfos(
-        isEndedSyrup
-          ? addedOldSyrupInfos.slice(0, LOADSYRUP_COUNT)
-          : addedStakingSyrupInfos.slice(0, LOADSYRUP_COUNT),
-      );
+      setSyrupInfos(sortedSyrupInfos.slice(0, LOADSYRUP_COUNT));
     }, 500);
     return () => setSyrupInfos(undefined);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -230,80 +284,13 @@ const DragonPage: React.FC = () => {
 
   useEffect(() => {
     const currentSyrupInfos = syrupInfos || [];
-    const syrupInfosToAdd = (isEndedSyrup
-      ? addedOldSyrupInfos
-      : addedStakingSyrupInfos
-    ).slice(
+    const syrupInfosToAdd = sortedSyrupInfos.slice(
       currentSyrupInfos.length,
       currentSyrupInfos.length + LOADSYRUP_COUNT,
     );
     setSyrupInfos(currentSyrupInfos.concat(syrupInfosToAdd));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageIndex]);
-
-  const sortedSyrupInfos = useMemo(() => {
-    if (syrupInfos && syrupInfos.length > 0) {
-      return syrupInfos.sort((a, b) => {
-        if (sortBy === 1) {
-          const syrupStrA = a.token.symbol ?? '';
-          const syrupStrB = b.token.symbol ?? '';
-          if (sortDesc) {
-            return syrupStrA > syrupStrB ? -1 : 1;
-          } else {
-            return syrupStrA < syrupStrB ? -1 : 1;
-          }
-        } else if (sortBy === 2) {
-          const depositA =
-            a.valueOfTotalStakedAmountInUSDC ??
-            Number(a.totalStakedAmount.toSignificant());
-          const depositB =
-            b.valueOfTotalStakedAmountInUSDC ??
-            Number(b.totalStakedAmount.toSignificant());
-          if (sortDesc) {
-            return depositA > depositB ? -1 : 1;
-          } else {
-            return depositA < depositB ? -1 : 1;
-          }
-        } else if (sortBy === 3) {
-          const tokenAPRA =
-            a.valueOfTotalStakedAmountInUSDC &&
-            a.valueOfTotalStakedAmountInUSDC > 0
-              ? ((a.rewards ?? 0) / a.valueOfTotalStakedAmountInUSDC) *
-                daysCurrentYear *
-                100
-              : 0;
-
-          const tokenAPRB =
-            b.valueOfTotalStakedAmountInUSDC &&
-            b.valueOfTotalStakedAmountInUSDC > 0
-              ? ((b.rewards ?? 0) / b.valueOfTotalStakedAmountInUSDC) *
-                daysCurrentYear *
-                100
-              : 0;
-          if (sortDesc) {
-            return tokenAPRA > tokenAPRB ? -1 : 1;
-          } else {
-            return tokenAPRA < tokenAPRB ? -1 : 1;
-          }
-        } else if (sortBy === 4) {
-          const earnedUSDA =
-            Number(a.earnedAmount.toSignificant()) *
-            Number(a.rewardTokenPriceinUSD ?? 0);
-          const earnedUSDB =
-            Number(b.earnedAmount.toSignificant()) *
-            Number(b.rewardTokenPriceinUSD ?? 0);
-          if (sortDesc) {
-            return earnedUSDA > earnedUSDB ? -1 : 1;
-          } else {
-            return earnedUSDA < earnedUSDB ? -1 : 1;
-          }
-        }
-        return 1;
-      });
-    } else {
-      return [];
-    }
-  }, [syrupInfos, sortDesc, sortBy, daysCurrentYear]);
 
   const loadNext = () => {
     setPageIndex(pageIndex + 1);
@@ -665,7 +652,7 @@ const DragonPage: React.FC = () => {
             </Box>
             {//show loading until dragons lair data is fully loaded
             syrupInfos && lairInfo.totalQuickBalance.greaterThan('0') ? (
-              sortedSyrupInfos.map((syrup, ind) => (
+              syrupInfos.map((syrup, ind) => (
                 <SyrupCard key={ind} syrup={syrup} />
               ))
             ) : (
