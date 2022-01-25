@@ -398,7 +398,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     padding: '0 16px',
     height: 56,
     position: 'fixed',
-    bottom: 80,
+    bottom: 0,
     right: 0,
     borderTopLeftRadius: 24,
     background: 'rgb(27, 32, 43, 0.9)',
@@ -415,7 +415,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
         fill: palette.text.secondary,
       },
     },
-    [breakpoints.down('xs')]: {
+    [breakpoints.down('sm')]: {
       display: 'none',
     },
   },
