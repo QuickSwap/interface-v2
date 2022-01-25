@@ -150,8 +150,7 @@ export function useDerivedSwapInfo(): {
   const inputCurrency = useCurrency(inputCurrencyId);
   const outputCurrency = useCurrency(outputCurrencyId);
   //const recipientLookup = useENS(recipient ?? undefined);
-  const to: string | null =
-    (recipient === null ? account : recipient) ?? null;
+  const to: string | null = (recipient === null ? account : recipient) ?? null;
 
   const relevantTokenBalances = useCurrencyBalances(account ?? undefined, [
     inputCurrency ?? undefined,

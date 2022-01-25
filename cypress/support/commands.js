@@ -21,7 +21,7 @@ export const TEST_ADDRESS_NEVER_USE_SHORTENED = `${TEST_ADDRESS_NEVER_USE.substr
 )}...${TEST_ADDRESS_NEVER_USE.substr(-4, 4)}`
 
 class CustomizedBridge extends Eip1193Bridge {
-  chainId = 4
+  chainId = 80001
 
   async sendAsync(...args) {
     console.debug('sendAsync called', ...args)
