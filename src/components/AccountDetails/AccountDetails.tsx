@@ -177,9 +177,11 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
           </Box>
         </>
       ) : (
-        <Typography variant='body2'>
-          Your transactions will appear here...
-        </Typography>
+        <Box paddingX={2} pt={2}>
+          <Typography variant='body2'>
+            Your transactions will appear here...
+          </Typography>
+        </Box>
       )}
     </Box>
   );
