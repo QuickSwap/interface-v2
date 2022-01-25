@@ -343,16 +343,12 @@ const FarmPage: React.FC = () => {
   }, [chainId]);
 
   useEffect(() => {
-    setStakingInfos(undefined);
-    setStakingDualInfos(undefined);
     setPageIndex(0);
-    setTimeout(() => {
-      if (farmIndex === LPFARM_INDEX) {
-        setStakingInfos(sortedLPStakingInfos.slice(0, LOADFARM_COUNT));
-      } else {
-        setStakingDualInfos(sortedStakingDualInfos.slice(0, LOADFARM_COUNT));
-      }
-    }, 500);
+    if (farmIndex === LPFARM_INDEX) {
+      setStakingInfos(sortedLPStakingInfos.slice(0, LOADFARM_COUNT));
+    } else {
+      setStakingDualInfos(sortedStakingDualInfos.slice(0, LOADFARM_COUNT));
+    }
     return () => {
       setStakingInfos(undefined);
       setStakingDualInfos(undefined);
@@ -370,10 +366,7 @@ const FarmPage: React.FC = () => {
       setStakingInfos(currentStakingInfos.concat(stakingInfosToAdd));
     } else if (farmIndex === DUALFARM_INDEX) {
       const currentDualStakingInfos = stakingDualInfos || [];
-      const stakingDualInfosToAdd = (isEndedFarm
-        ? []
-        : sortedStakingDualInfos
-      ).slice(
+      const stakingDualInfosToAdd = sortedStakingDualInfos.slice(
         currentDualStakingInfos.length,
         currentDualStakingInfos.length + LOADFARM_COUNT,
       );

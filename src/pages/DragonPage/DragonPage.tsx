@@ -273,11 +273,8 @@ const DragonPage: React.FC = () => {
   );
 
   useEffect(() => {
-    setSyrupInfos(undefined);
     setPageIndex(0);
-    setTimeout(() => {
-      setSyrupInfos(sortedSyrupInfos.slice(0, LOADSYRUP_COUNT));
-    }, 500);
+    setSyrupInfos(sortedSyrupInfos.slice(0, LOADSYRUP_COUNT));
     return () => setSyrupInfos(undefined);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isEndedSyrup, syrupSearch, syrupRewardAddress]);
