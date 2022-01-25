@@ -47,6 +47,7 @@
     "apollo-link-http": "^1.5.17",
     "cids": "^1.1.9",
     "copy-to-clipboard": "^3.2.0",
+    "cypress": "^7.7.0",
     "eslint": "^7.11.0",
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-prettier": "^3.1.3",
@@ -81,6 +82,7 @@
     "react-window": "^1.8.6",
     "redux-localstorage-simple": "^2.4.1",
     "source-map-explorer": "^2.5.2",
+    "serve": "^11.3.2",
     "start-server-and-test": "^1.11.0",
     "typescript": "^4.1.2",
     "wcag-contrast": "^3.0.0",
@@ -99,7 +101,7 @@
     "test": "react-scripts test --env=jsdom",
     "format": "prettier --write \"**/*.{ts,js,tsx,json,md}\"",
     "eject": "react-scripts eject",
-    "integration-test": "start-server-and-test 'serve build -l 3000' http://localhost:3000 'cypress run'",
+    "integration-test": "start-server-and-test 'serve build -l 3000' http://localhost:3000 'cypress run --record'",
     "ipfs-deploy": "ipfs-deploy build"
   },
   "eslintConfig": {
