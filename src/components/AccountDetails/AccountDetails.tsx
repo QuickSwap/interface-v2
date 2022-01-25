@@ -62,11 +62,14 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
   function formatConnectorName() {
     const { ethereum } = window as any;
     const isMetaMask = !!(ethereum && ethereum.isMetaMask);
+    const isBitkeep = !!(ethereum && ethereum.isBitKeep);
     const name = Object.keys(SUPPORTED_WALLETS)
       .filter(
         (k) =>
           SUPPORTED_WALLETS[k].connector === connector &&
-          (connector !== injected || isMetaMask === (k === 'METAMASK')),
+          (connector !== injected ||
+            isBitkeep === (k === 'BITKEEP') ||
+            (!isBitkeep && isMetaMask) === (k === 'METAMASK')),
       )
       .map((k) => SUPPORTED_WALLETS[k].name)[0];
     return <Typography variant='body2'>Connected with {name}</Typography>;
@@ -77,13 +80,7 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
   }, [dispatch, chainId]);
 
   return (
-    <Box
-      paddingX={3}
-      paddingY={4}
-      maxHeight='80vh'
-      display='flex'
-      flexDirection='column'
-    >
+    <Box paddingX={3} paddingY={4}>
       <Box display='flex' justifyContent='space-between'>
         <Typography variant='h5'>Account</Typography>
         <Close style={{ cursor: 'pointer' }} onClick={toggleWalletModal} />
@@ -155,37 +152,35 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
           )}
         </Box>
       </Box>
-      <Box display='flex' flexDirection='column' overflow='auto'>
-        {!!pendingTransactions.length || !!confirmedTransactions.length ? (
-          <>
-            <Box
-              display='flex'
-              justifyContent='space-between'
-              alignItems='center'
-              paddingX={2}
-              pt={2}
-              mb={1}
+      {!!pendingTransactions.length || !!confirmedTransactions.length ? (
+        <>
+          <Box
+            display='flex'
+            justifyContent='space-between'
+            alignItems='center'
+            paddingX={2}
+            pt={2}
+            mb={1}
+          >
+            <Typography variant='body2'>Recent Transactions</Typography>
+            <Typography
+              variant='body2'
+              style={{ cursor: 'pointer' }}
+              onClick={clearAllTransactionsCallback}
             >
-              <Typography variant='body2'>Recent Transactions</Typography>
-              <Typography
-                variant='body2'
-                style={{ cursor: 'pointer' }}
-                onClick={clearAllTransactionsCallback}
-              >
-                Clear all
-              </Typography>
-            </Box>
-            <Box paddingX={2} flex={1} overflow='auto'>
-              {renderTransactions(pendingTransactions)}
-              {renderTransactions(confirmedTransactions)}
-            </Box>
-          </>
-        ) : (
-          <Typography variant='body2'>
-            Your transactions will appear here...
-          </Typography>
-        )}
-      </Box>
+              Clear all
+            </Typography>
+          </Box>
+          <Box paddingX={2} flex={1} overflow='auto'>
+            {renderTransactions(pendingTransactions)}
+            {renderTransactions(confirmedTransactions)}
+          </Box>
+        </>
+      ) : (
+        <Typography variant='body2'>
+          Your transactions will appear here...
+        </Typography>
+      )}
     </Box>
   );
 };
