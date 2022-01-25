@@ -8,6 +8,13 @@ import {
   arkaneconnect,
   safeApp,
 } from '../connectors';
+import MetamaskIcon from 'assets/images/metamask.png';
+import BitKeepIcon from 'assets/images/bitkeep.png';
+import CoinbaseWalletIcon from 'assets/images/coinbaseWalletIcon.svg';
+import WalletConnectIcon from 'assets/images/walletConnectIcon.svg';
+import PortisIcon from 'assets/images/portisIcon.png';
+import VenlyIcon from 'assets/images/venly.svg';
+import GnosisIcon from 'assets/images/gnosis_safe.png';
 import { returnTokenFromKey } from 'utils';
 
 const WETH_ONLY: ChainTokenList = {
@@ -72,7 +79,7 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   METAMASK: {
     connector: injected,
     name: 'MetaMask',
-    iconName: 'metamask.png',
+    iconName: MetamaskIcon,
     description: 'Easy-to-use browser extension.',
     href: null,
     color: '#E8831D',
@@ -80,7 +87,7 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   BITKEEP: {
     connector: injected,
     name: 'BitKeep',
-    iconName: 'bitkeep.png',
+    iconName: BitKeepIcon,
     description: 'BitKeep browser extension.',
     href: null,
     color: '#E8831D',
@@ -97,7 +104,7 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   SAFE_APP: {
     connector: safeApp,
     name: 'Gnosis Safe App',
-    iconName: 'gnosis_safe.png',
+    iconName: GnosisIcon,
     description: 'Login using gnosis safe app',
     href: null,
     color: '#4196FC',
@@ -106,7 +113,7 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   ARKANE_CONNECT: {
     connector: arkaneconnect,
     name: 'Venly',
-    iconName: 'venly.svg',
+    iconName: VenlyIcon,
     description: 'Login using Venly hosted wallet.',
     href: null,
     color: '#4196FC',
@@ -114,7 +121,7 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   Portis: {
     connector: portis,
     name: 'Portis',
-    iconName: 'portisIcon.png',
+    iconName: PortisIcon,
     description: 'Login using Portis hosted wallet',
     href: null,
     color: '#4A6C9B',
@@ -123,7 +130,7 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   WALLET_LINK: {
     connector: walletlink,
     name: 'Coinbase Wallet',
-    iconName: 'coinbaseWalletIcon.svg',
+    iconName: CoinbaseWalletIcon,
     description: 'Use Coinbase Wallet app on mobile device',
     href: null,
     color: '#315CF5',
@@ -131,7 +138,7 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   WALLET_CONNECT: {
     connector: walletconnect,
     name: 'WalletConnect',
-    iconName: 'walletConnectIcon.svg',
+    iconName: WalletConnectIcon,
     description: 'Connect to Trust Wallet, Rainbow Wallet and more...',
     href: null,
     color: '#4196FC',

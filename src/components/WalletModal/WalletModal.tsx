@@ -162,6 +162,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
   function getOptions() {
     const { ethereum, web3 } = window as any;
     const isMetamask = ethereum && ethereum.isMetaMask;
+    const isBitKeep = window.ethereum && (window.ethereum as any).isBitKeep;
     return Object.keys(SUPPORTED_WALLETS).map((key) => {
       const option = SUPPORTED_WALLETS[key];
       //disable safe app by in the list
@@ -185,7 +186,12 @@ const WalletModal: React.FC<WalletModalProps> = ({
               }}
               id={`connect-${key}`}
               key={key}
-              active={option.connector && option.connector === connector}
+              active={
+                option.connector === connector &&
+                (connector !== injected ||
+                  isBitKeep === (option.name === 'BitKeep') ||
+                  (!isBitKeep && isMetamask) === (option.name === 'MetaMask'))
+              }
               color={option.color}
               link={option.href}
               header={option.name}
@@ -239,7 +245,12 @@ const WalletModal: React.FC<WalletModalProps> = ({
                 : !option.href && tryActivation(option.connector);
             }}
             key={key}
-            active={option.connector === connector}
+            active={
+              option.connector === connector &&
+              (connector !== injected ||
+                isBitKeep === (option.name === 'BitKeep') ||
+                (!isBitKeep && isMetamask) === (option.name === 'MetaMask'))
+            }
             color={option.color}
             link={option.href}
             header={option.name}
@@ -322,7 +333,14 @@ const WalletModal: React.FC<WalletModalProps> = ({
 
   return (
     <CustomModal open={walletModalOpen} onClose={toggleWalletModal}>
-      {getModalContent()}
+      <Box
+        maxHeight='80vh'
+        display='flex'
+        flexDirection='column'
+        overflow='auto'
+      >
+        {getModalContent()}
+      </Box>
     </CustomModal>
   );
 };
