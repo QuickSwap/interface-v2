@@ -3,8 +3,7 @@ import { TransactionResponse } from '@ethersproject/providers';
 import { Box, Typography, useMediaQuery } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { useDualStakingInfo } from 'state/stake/hooks';
-import { JSBI, TokenAmount, Pair, ETHER } from '@uniswap/sdk';
-import { GlobalConst } from 'constants/index';
+import { JSBI, TokenAmount, Pair } from '@uniswap/sdk';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import {
   usePairContract,
@@ -20,28 +19,7 @@ import useTransactionDeadline from 'hooks/useTransactionDeadline';
 import { useApproveCallback, ApprovalState } from 'hooks/useApproveCallback';
 import { getAPYWithFee, returnTokenFromKey } from 'utils';
 
-const useStyles = makeStyles(({ palette, breakpoints }) => ({
-  syrupCard: {
-    background: palette.secondary.dark,
-    width: '100%',
-    borderRadius: 10,
-    marginTop: 24,
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-  },
-  syrupCardUp: {
-    background: palette.secondary.dark,
-    width: '100%',
-    borderRadius: 10,
-    display: 'flex',
-    alignItems: 'center',
-    padding: '16px',
-    cursor: 'pointer',
-    [breakpoints.down('xs')]: {
-      flexDirection: 'column',
-    },
-  },
+const useStyles = makeStyles(({ palette }) => ({
   inputVal: {
     backgroundColor: palette.secondary.contrastText,
     borderRadius: '10px',
@@ -85,15 +63,10 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     cursor: 'pointer',
     color: 'white',
   },
-  syrupText: {
-    fontSize: 14,
-    fontWeight: 600,
-    color: palette.text.secondary,
-  },
 }));
 
 const FarmDualCardDetails: React.FC<{
-  pair: Pair;
+  pair: Pair | null | undefined;
   dQuicktoQuick: number;
   stakingAPY: number;
 }> = ({ pair, dQuicktoQuick, stakingAPY }) => {
@@ -105,8 +78,8 @@ const FarmDualCardDetails: React.FC<{
   const [attemptUnstaking, setAttemptUnstaking] = useState(false);
   const [attemptClaimReward, setAttemptClaimReward] = useState(false);
   const [approving, setApproving] = useState(false);
-  // const [hash, setHash] = useState<string | undefined>();
   const [unstakeAmount, setUnStakeAmount] = useState('');
+
   const stakingInfos = useDualStakingInfo(pair);
   const stakingInfo = useMemo(
     () => (stakingInfos && stakingInfos.length > 0 ? stakingInfos[0] : null),
@@ -115,9 +88,6 @@ const FarmDualCardDetails: React.FC<{
 
   const token0 = stakingInfo ? stakingInfo.tokens[0] : undefined;
   const token1 = stakingInfo ? stakingInfo.tokens[1] : undefined;
-
-  const rewardTokenA = stakingInfo?.rewardTokenA;
-  const rewardTokenB = stakingInfo?.rewardTokenB;
 
   const { account, library } = useActiveWeb3React();
   const addTransaction = useTransactionAdder();
@@ -198,9 +168,6 @@ const FarmDualCardDetails: React.FC<{
 
   // get the USD value of staked WETH
   const USDPrice = stakingInfo?.usdPrice;
-  const valueOfTotalStakedAmountInUSDC =
-    valueOfTotalStakedAmountInBaseToken &&
-    USDPrice?.quote(valueOfTotalStakedAmountInBaseToken);
 
   const valueOfMyStakedAmountInUSDC =
     valueOfMyStakedAmountInBaseToken &&
@@ -254,7 +221,6 @@ const FarmDualCardDetails: React.FC<{
           } catch (error) {
             setAttemptUnstaking(false);
           }
-          // setHash(response.hash);
         })
         .catch((error: any) => {
           setAttemptUnstaking(false);
@@ -278,7 +244,6 @@ const FarmDualCardDetails: React.FC<{
           } catch (error) {
             setAttemptClaimReward(false);
           }
-          // setHash(response.hash);
         })
         .catch((error: any) => {
           setAttemptClaimReward(false);
@@ -297,12 +262,6 @@ const FarmDualCardDetails: React.FC<{
     parsedAmount,
     stakingInfo?.stakingRewardAddress,
   );
-  const [signatureData, setSignatureData] = useState<{
-    v: number;
-    r: string;
-    s: string;
-    deadline: number;
-  } | null>(null);
 
   const dummyPair = stakingInfo
     ? new Pair(
@@ -334,7 +293,6 @@ const FarmDualCardDetails: React.FC<{
             } catch (error) {
               setAttemptStaking(false);
             }
-            // setHash(response.hash);
           })
           .catch((error: any) => {
             setAttemptStaking(false);
@@ -354,8 +312,13 @@ const FarmDualCardDetails: React.FC<{
       throw new Error('missing dependencies');
     const liquidityAmount = parsedAmount;
     if (!liquidityAmount) throw new Error('missing liquidity amount');
-
-    return approveCallback();
+    setApproving(true);
+    try {
+      await approveCallback();
+      setApproving(false);
+    } catch (e) {
+      setApproving(false);
+    }
   };
 
   const earnedUSD =
@@ -461,7 +424,7 @@ const FarmDualCardDetails: React.FC<{
                     userLiquidityUnstaked &&
                     userLiquidityUnstaked.greaterThan('0')
                   ) {
-                    setStakeAmount(userLiquidityUnstaked.toSignificant());
+                    setStakeAmount(userLiquidityUnstaked.toExact());
                   } else {
                     setStakeAmount('');
                   }
@@ -474,8 +437,7 @@ const FarmDualCardDetails: React.FC<{
               className={
                 !approving &&
                 Number(!attemptStaking && stakeAmount) > 0 &&
-                Number(stakeAmount) <=
-                  Number(userLiquidityUnstaked?.toSignificant())
+                Number(stakeAmount) <= Number(userLiquidityUnstaked?.toExact())
                   ? classes.buttonClaim
                   : classes.buttonToken
               }
@@ -488,21 +450,12 @@ const FarmDualCardDetails: React.FC<{
                   !attemptStaking &&
                   Number(stakeAmount) > 0 &&
                   Number(stakeAmount) <=
-                    Number(userLiquidityUnstaked?.toSignificant())
+                    Number(userLiquidityUnstaked?.toExact())
                 ) {
-                  if (
-                    approval === ApprovalState.APPROVED ||
-                    signatureData !== null
-                  ) {
+                  if (approval === ApprovalState.APPROVED) {
                     onStake();
                   } else {
-                    setApproving(true);
-                    try {
-                      await onAttemptToApprove();
-                      setApproving(false);
-                    } catch (e) {
-                      setApproving(false);
-                    }
+                    onAttemptToApprove();
                   }
                 }
               }}
@@ -510,8 +463,7 @@ const FarmDualCardDetails: React.FC<{
               <Typography variant='body1'>
                 {attemptStaking
                   ? 'Staking LP Tokens...'
-                  : approval === ApprovalState.APPROVED ||
-                    signatureData !== null
+                  : approval === ApprovalState.APPROVED
                   ? 'Stake LP Tokens'
                   : approving
                   ? 'Approving...'
@@ -570,7 +522,7 @@ const FarmDualCardDetails: React.FC<{
                     stakingInfo.stakedAmount &&
                     stakingInfo.stakedAmount.greaterThan('0')
                   ) {
-                    setUnStakeAmount(stakingInfo.stakedAmount.toSignificant());
+                    setUnStakeAmount(stakingInfo.stakedAmount.toExact());
                   } else {
                     setUnStakeAmount('');
                   }
@@ -584,7 +536,7 @@ const FarmDualCardDetails: React.FC<{
                 !attemptUnstaking &&
                 Number(unstakeAmount) > 0 &&
                 Number(unstakeAmount) <=
-                  Number(stakingInfo.stakedAmount.toSignificant())
+                  Number(stakingInfo.stakedAmount.toExact())
                   ? classes.buttonClaim
                   : classes.buttonToken
               }
@@ -596,7 +548,7 @@ const FarmDualCardDetails: React.FC<{
                   !attemptUnstaking &&
                   Number(unstakeAmount) > 0 &&
                   Number(unstakeAmount) <=
-                    Number(stakingInfo.stakedAmount.toSignificant())
+                    Number(stakingInfo.stakedAmount.toExact())
                 ) {
                   onWithdraw();
                 }
@@ -625,24 +577,22 @@ const FarmDualCardDetails: React.FC<{
                 <Typography variant='body2'>Unclaimed Rewards:</Typography>
               </Box>
               <Box mb={1} display='flex'>
-                <CurrencyLogo currency={returnTokenFromKey('QUICK')} />
                 <CurrencyLogo
-                  currency={
-                    rewardTokenB?.symbol?.toLowerCase() === 'wmatic'
-                      ? ETHER
-                      : rewardTokenB
-                  }
+                  currency={unwrappedToken(stakingInfo.rewardTokenA)}
+                />
+                <CurrencyLogo
+                  currency={unwrappedToken(stakingInfo.rewardTokenB)}
                 />
               </Box>
               <Box mb={1} textAlign='center'>
                 <Typography variant='body1'>{earnedUSDStr}</Typography>
                 <Typography variant='body1' color='textSecondary'>
                   {stakingInfo.earnedAmountA.toSignificant(2)}
-                  <span>&nbsp;dQUICK</span>
+                  <span>&nbsp;{stakingInfo.rewardTokenA.symbol}</span>
                 </Typography>
                 <Typography variant='body1' color='textSecondary'>
                   {stakingInfo.earnedAmountB.toSignificant(2)}
-                  <span>&nbsp;{rewardTokenB?.symbol}</span>
+                  <span>&nbsp;{stakingInfo.rewardTokenB.symbol}</span>
                 </Typography>
               </Box>
             </Box>

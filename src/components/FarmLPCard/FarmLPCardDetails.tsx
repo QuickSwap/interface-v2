@@ -1,11 +1,9 @@
 import React, { useState, useMemo } from 'react';
 import { TransactionResponse } from '@ethersproject/providers';
-import { splitSignature } from 'ethers/lib/utils';
 import { Box, Typography, useMediaQuery } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-import { useOldStakingInfo, useStakingInfo } from 'state/stake/hooks';
+import { useStakingInfo, useOldStakingInfo } from 'state/stake/hooks';
 import { JSBI, TokenAmount, Pair } from '@uniswap/sdk';
-import { GlobalConst } from 'constants/index';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { usePairContract, useStakingContract } from 'hooks/useContract';
 import { useDerivedStakeInfo } from 'state/stake/hooks';
@@ -13,33 +11,12 @@ import { useTransactionAdder } from 'state/transactions/hooks';
 import { useTokenBalance } from 'state/wallet/hooks';
 import { CurrencyLogo } from 'components';
 import { Link } from 'react-router-dom';
-import { useActiveWeb3React, useIsArgentWallet } from 'hooks';
+import { useActiveWeb3React } from 'hooks';
 import useTransactionDeadline from 'hooks/useTransactionDeadline';
 import { useApproveCallback, ApprovalState } from 'hooks/useApproveCallback';
 import { getAPYWithFee, returnTokenFromKey } from 'utils';
 
-const useStyles = makeStyles(({ palette, breakpoints }) => ({
-  syrupCard: {
-    background: palette.secondary.dark,
-    width: '100%',
-    borderRadius: 10,
-    marginTop: 24,
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-  },
-  syrupCardUp: {
-    background: palette.secondary.dark,
-    width: '100%',
-    borderRadius: 10,
-    display: 'flex',
-    alignItems: 'center',
-    padding: '16px',
-    cursor: 'pointer',
-    [breakpoints.down('xs')]: {
-      flexDirection: 'column',
-    },
-  },
+const useStyles = makeStyles(({ palette }) => ({
   inputVal: {
     backgroundColor: palette.secondary.contrastText,
     borderRadius: '10px',
@@ -83,15 +60,10 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     cursor: 'pointer',
     color: 'white',
   },
-  syrupText: {
-    fontSize: 14,
-    fontWeight: 600,
-    color: palette.text.secondary,
-  },
 }));
 
 const FarmLPCardDetails: React.FC<{
-  pair: Pair;
+  pair: Pair | null | undefined;
   dQuicktoQuick: number;
   stakingAPY: number;
 }> = ({ pair, dQuicktoQuick, stakingAPY }) => {
@@ -104,6 +76,7 @@ const FarmLPCardDetails: React.FC<{
   const [attemptClaiming, setAttemptClaiming] = useState(false);
   const [approving, setApproving] = useState(false);
   const [unstakeAmount, setUnStakeAmount] = useState('');
+
   const stakingInfos = useStakingInfo(pair);
   const oldStakingInfos = useOldStakingInfo(pair);
   const stakingInfo = useMemo(
@@ -126,7 +99,7 @@ const FarmLPCardDetails: React.FC<{
   const currency1 = token1 ? unwrappedToken(token1) : undefined;
   const baseTokenCurrency = stakingInfo
     ? unwrappedToken(stakingInfo.baseToken)
-    : undefined;
+    : null;
   const empty = unwrappedToken(returnTokenFromKey('EMPTY'));
   const quickPriceUSD = stakingInfo?.quickPrice;
 
@@ -134,39 +107,21 @@ const FarmLPCardDetails: React.FC<{
   const baseToken =
     baseTokenCurrency === empty ? token0 : stakingInfo?.baseToken;
 
-  const stakingTokenPair = stakingInfo?.stakingTokenPair;
-
   const userLiquidityUnstaked = useTokenBalance(
     account ?? undefined,
     stakingInfo?.stakedAmount.token,
   );
 
-  let valueOfTotalStakedAmountInBaseToken: TokenAmount | undefined;
   let valueOfMyStakedAmountInBaseToken: TokenAmount | undefined;
   let valueOfUnstakedAmountInBaseToken: TokenAmount | undefined;
-  if (stakingInfo && stakingInfo.totalSupply && stakingTokenPair && baseToken) {
-    // take the total amount of LP tokens staked, multiply by ETH value of all LP tokens, divide by all LP tokens
-    valueOfTotalStakedAmountInBaseToken = new TokenAmount(
-      baseToken,
-      JSBI.divide(
-        JSBI.multiply(
-          JSBI.multiply(
-            stakingInfo.totalStakedAmount.raw,
-            stakingTokenPair.reserveOf(baseToken).raw,
-          ),
-          JSBI.BigInt(2), // this is b/c the value of LP shares are ~double the value of the WETH they entitle owner to
-        ),
-        stakingInfo.totalSupply.raw,
-      ),
-    );
-
+  if (stakingInfo && stakingInfo.totalSupply && pair && baseToken) {
     valueOfMyStakedAmountInBaseToken = new TokenAmount(
       baseToken,
       JSBI.divide(
         JSBI.multiply(
           JSBI.multiply(
             stakingInfo.stakedAmount.raw,
-            stakingTokenPair.reserveOf(baseToken).raw,
+            pair.reserveOf(baseToken).raw,
           ),
           JSBI.BigInt(2), // this is b/c the value of LP shares are ~double the value of the WETH they entitle owner to
         ),
@@ -181,7 +136,7 @@ const FarmLPCardDetails: React.FC<{
           JSBI.multiply(
             JSBI.multiply(
               userLiquidityUnstaked.raw,
-              stakingTokenPair.reserveOf(baseToken).raw,
+              pair.reserveOf(baseToken).raw,
             ),
             JSBI.BigInt(2),
           ),
@@ -253,7 +208,7 @@ const FarmLPCardDetails: React.FC<{
   };
 
   const onClaimReward = async () => {
-    if (stakingInfo && stakingContract && stakingInfo.stakedAmount) {
+    if (stakingContract && stakingInfo && stakingInfo.stakedAmount) {
       setAttemptClaiming(true);
       await stakingContract
         .getReward({ gasLimit: 350000 })
@@ -285,20 +240,13 @@ const FarmLPCardDetails: React.FC<{
     parsedAmount,
     stakingInfo?.stakingRewardAddress,
   );
-  const [signatureData, setSignatureData] = useState<{
-    v: number;
-    r: string;
-    s: string;
-    deadline: number;
-  } | null>(null);
 
-  const isArgentWallet = useIsArgentWallet();
   const dummyPair = stakingInfo
     ? new Pair(
         new TokenAmount(stakingInfo.tokens[0], '0'),
         new TokenAmount(stakingInfo.tokens[1], '0'),
       )
-    : undefined;
+    : null;
   const pairContract = usePairContract(
     stakingInfo && stakingInfo.lp && stakingInfo.lp !== ''
       ? stakingInfo.lp
@@ -306,43 +254,31 @@ const FarmLPCardDetails: React.FC<{
   );
 
   const onStake = async () => {
-    setAttemptStaking(true);
     if (stakingContract && parsedAmount && deadline) {
-      if (approval === ApprovalState.APPROVED) {
-        await stakingContract.stake(`0x${parsedAmount.raw.toString(16)}`, {
+      setAttemptStaking(true);
+      stakingContract
+        .stake(`0x${parsedAmount.raw.toString(16)}`, {
           gasLimit: 350000,
-        });
-      } else if (signatureData) {
-        stakingContract
-          .stakeWithPermit(
-            `0x${parsedAmount.raw.toString(16)}`,
-            signatureData.deadline,
-            signatureData.v,
-            signatureData.r,
-            signatureData.s,
-            { gasLimit: 350000 },
-          )
-          .then(async (response: TransactionResponse) => {
-            addTransaction(response, {
-              summary: `Deposit liquidity`,
-            });
-            try {
-              await response.wait();
-              setAttemptStaking(false);
-            } catch (error) {
-              setAttemptStaking(false);
-            }
-          })
-          .catch((error: any) => {
-            setAttemptStaking(false);
-            console.log(error);
+        })
+        .then(async (response: TransactionResponse) => {
+          addTransaction(response, {
+            summary: `Deposit liquidity`,
           });
-      } else {
-        setAttemptStaking(false);
-        throw new Error(
-          'Attempting to stake without approval or a signature. Please contact support.',
-        );
-      }
+          try {
+            await response.wait();
+            setAttemptStaking(false);
+          } catch (error) {
+            setAttemptStaking(false);
+          }
+        })
+        .catch((error: any) => {
+          setAttemptStaking(false);
+          console.log(error);
+        });
+    } else {
+      throw new Error(
+        'Attempting to stake without approval or a signature. Please contact support.',
+      );
     }
   };
 
@@ -351,71 +287,13 @@ const FarmLPCardDetails: React.FC<{
       throw new Error('missing dependencies');
     const liquidityAmount = parsedAmount;
     if (!liquidityAmount) throw new Error('missing liquidity amount');
-
-    if (isArgentWallet) {
-      return approveCallback();
+    setApproving(true);
+    try {
+      await approveCallback();
+      setApproving(false);
+    } catch (e) {
+      setApproving(false);
     }
-
-    if (stakingInfo && stakingInfo?.lp !== '') {
-      return approveCallback();
-    }
-
-    // try to gather a signature for permission
-    const nonce = await pairContract.nonces(account);
-
-    const EIP712Domain = [
-      { name: 'name', type: 'string' },
-      { name: 'version', type: 'string' },
-      { name: 'chainId', type: 'uint256' },
-      { name: 'verifyingContract', type: 'address' },
-    ];
-    const domain = {
-      name: 'Uniswap V2',
-      version: '1',
-      chainId: chainId,
-      verifyingContract: pairContract.address,
-    };
-    const Permit = [
-      { name: 'owner', type: 'address' },
-      { name: 'spender', type: 'address' },
-      { name: 'value', type: 'uint256' },
-      { name: 'nonce', type: 'uint256' },
-      { name: 'deadline', type: 'uint256' },
-    ];
-    const message = {
-      owner: account,
-      spender: stakingInfo?.stakingRewardAddress,
-      value: liquidityAmount.raw.toString(),
-      nonce: nonce.toHexString(),
-      deadline: deadline.toNumber(),
-    };
-    const data = JSON.stringify({
-      types: {
-        EIP712Domain,
-        Permit,
-      },
-      domain,
-      primaryType: 'Permit',
-      message,
-    });
-
-    return library
-      .send('eth_signTypedData_v4', [account, data])
-      .then(splitSignature)
-      .then((signature) => {
-        setSignatureData({
-          v: signature.v,
-          r: signature.r,
-          s: signature.s,
-          deadline: deadline.toNumber(),
-        });
-      })
-      .catch((error) => {
-        // for all errors other than 4001 (EIP-1193 user rejected request), fall back to manual approve
-        if (error?.code !== 4001) {
-          approveCallback();
-        }
-      });
   };
 
   const earnedUSD =
@@ -523,7 +401,7 @@ const FarmLPCardDetails: React.FC<{
                         userLiquidityUnstaked &&
                         userLiquidityUnstaked.greaterThan('0')
                       ) {
-                        setStakeAmount(userLiquidityUnstaked.toSignificant());
+                        setStakeAmount(userLiquidityUnstaked.toExact());
                       } else {
                         setStakeAmount('');
                       }
@@ -537,7 +415,7 @@ const FarmLPCardDetails: React.FC<{
                     !approving &&
                     Number(!attemptStaking && stakeAmount) > 0 &&
                     Number(stakeAmount) <=
-                      Number(userLiquidityUnstaked?.toSignificant())
+                      Number(userLiquidityUnstaked?.toExact())
                       ? classes.buttonClaim
                       : classes.buttonToken
                   }
@@ -550,21 +428,12 @@ const FarmLPCardDetails: React.FC<{
                       !attemptStaking &&
                       Number(stakeAmount) > 0 &&
                       Number(stakeAmount) <=
-                        Number(userLiquidityUnstaked?.toSignificant())
+                        Number(userLiquidityUnstaked?.toExact())
                     ) {
-                      if (
-                        approval === ApprovalState.APPROVED ||
-                        signatureData !== null
-                      ) {
+                      if (approval === ApprovalState.APPROVED) {
                         onStake();
                       } else {
-                        setApproving(true);
-                        try {
-                          await onAttemptToApprove();
-                          setApproving(false);
-                        } catch (e) {
-                          setApproving(false);
-                        }
+                        onAttemptToApprove();
                       }
                     }
                   }}
@@ -572,8 +441,7 @@ const FarmLPCardDetails: React.FC<{
                   <Typography variant='body1'>
                     {attemptStaking
                       ? 'Staking LP Tokens...'
-                      : approval === ApprovalState.APPROVED ||
-                        signatureData !== null
+                      : approval === ApprovalState.APPROVED
                       ? 'Stake LP Tokens'
                       : approving
                       ? 'Approving...'
@@ -634,7 +502,7 @@ const FarmLPCardDetails: React.FC<{
                     stakingInfo.stakedAmount &&
                     stakingInfo.stakedAmount.greaterThan('0')
                   ) {
-                    setUnStakeAmount(stakingInfo.stakedAmount.toSignificant());
+                    setUnStakeAmount(stakingInfo.stakedAmount.toExact());
                   } else {
                     setUnStakeAmount('');
                   }
@@ -648,7 +516,7 @@ const FarmLPCardDetails: React.FC<{
                 !attemptUnstaking &&
                 Number(unstakeAmount) > 0 &&
                 Number(unstakeAmount) <=
-                  Number(stakingInfo.stakedAmount.toSignificant())
+                  Number(stakingInfo.stakedAmount.toExact())
                   ? classes.buttonClaim
                   : classes.buttonToken
               }
@@ -660,7 +528,7 @@ const FarmLPCardDetails: React.FC<{
                   !attemptUnstaking &&
                   Number(unstakeAmount) > 0 &&
                   Number(unstakeAmount) <=
-                    Number(stakingInfo.stakedAmount.toSignificant())
+                    Number(stakingInfo.stakedAmount.toExact())
                 ) {
                   onWithdraw();
                 }

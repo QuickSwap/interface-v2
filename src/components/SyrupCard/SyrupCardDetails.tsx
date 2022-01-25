@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Box, Typography, Divider, useMediaQuery } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { Token } from '@uniswap/sdk';
@@ -14,14 +14,9 @@ import {
   useTransactionFinalizer,
 } from 'state/transactions/hooks';
 import { getPriceToQUICKSyrup, returnTokenFromKey } from 'utils';
+import SyrupTimerLabel from './SyrupTimerLabel';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
-  syrupCard: {
-    background: palette.secondary.dark,
-    width: '100%',
-    borderRadius: 10,
-    marginTop: 24,
-  },
   syrupButton: {
     backgroundImage:
       'linear-gradient(280deg, #64fbd3 0%, #00cff3 0%, #0098ff 10%, #004ce6 100%)',
@@ -39,11 +34,6 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       color: palette.text.primary,
     },
   },
-  syrupText: {
-    fontSize: 14,
-    fontWeight: 600,
-    color: palette.text.secondary,
-  },
 }));
 
 const SyrupCardDetails: React.FC<{ token: Token }> = ({ token }) => {
@@ -53,7 +43,6 @@ const SyrupCardDetails: React.FC<{ token: Token }> = ({ token }) => {
   const [attemptingUnstake, setAttemptingUnstake] = useState(false);
   const [openStakeModal, setOpenStakeModal] = useState(false);
   const classes = useStyles();
-  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
 
   const syrups = useSyrupInfo(token);
   const oldSyrups = useOldSyrupInfo(token);
@@ -82,18 +71,7 @@ const SyrupCardDetails: React.FC<{ token: Token }> = ({ token }) => {
     Number(syrup?.earnedAmount.toSignificant(2)) *
     Number(syrup?.rewardTokenPriceinUSD ?? 0);
 
-  const MINUTE = 60;
-  const HOUR = MINUTE * 60;
-  const DAY = HOUR * 24;
   const exactEnd = syrup ? syrup.periodFinish : 0;
-  let timeRemaining = exactEnd - currentTime;
-
-  const days = (timeRemaining - (timeRemaining % DAY)) / DAY;
-  timeRemaining -= days * DAY;
-  const hours = (timeRemaining - (timeRemaining % HOUR)) / HOUR;
-  timeRemaining -= hours * HOUR;
-  const minutes = (timeRemaining - (timeRemaining % MINUTE)) / MINUTE;
-  timeRemaining -= minutes * MINUTE;
 
   const onClaimReward = async () => {
     if (syrup && stakingContract && syrup.stakedAmount) {
@@ -146,13 +124,6 @@ const SyrupCardDetails: React.FC<{ token: Token }> = ({ token }) => {
         });
     }
   };
-
-  useEffect(() => {
-    const timeInterval = setInterval(() => {
-      setCurrentTime(Math.floor(Date.now() / 1000));
-    }, 1000);
-    return () => clearInterval(timeInterval);
-  }, []);
 
   return (
     <>
@@ -260,38 +231,7 @@ const SyrupCardDetails: React.FC<{ token: Token }> = ({ token }) => {
               alignItems='center'
               justifyContent='space-between'
             >
-              {!syrup.ended && Number.isFinite(timeRemaining) && (
-                <Box
-                  display={isMobile ? 'flex' : 'unset'}
-                  flexWrap='wrap'
-                  alignItems='center'
-                >
-                  <Typography
-                    variant='caption'
-                    style={{ color: palette.text.secondary }}
-                  >
-                    Time Remaining
-                  </Typography>
-                  <Typography
-                    variant='body2'
-                    style={{
-                      color: palette.text.secondary,
-                      marginLeft: isMobile ? 4 : 0,
-                    }}
-                  >
-                    {`${days}d ${hours
-                      .toString()
-                      .padStart(2, '0')}h ${minutes
-                      .toString()
-                      .padStart(2, '0')}m ${timeRemaining}s`}
-                  </Typography>
-                </Box>
-              )}
-              {syrup.ended && (
-                <Typography variant='body2' color='textSecondary'>
-                  Rewards Ended
-                </Typography>
-              )}
+              <SyrupTimerLabel exactEnd={exactEnd} isEnded={syrup?.ended} />
               <Box
                 width={isMobile ? 1 : 'unset'}
                 display='flex'
@@ -351,4 +291,4 @@ const SyrupCardDetails: React.FC<{ token: Token }> = ({ token }) => {
   );
 };
 
-export default SyrupCardDetails;
+export default React.memo(SyrupCardDetails);

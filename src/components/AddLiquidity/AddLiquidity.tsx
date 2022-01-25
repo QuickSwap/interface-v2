@@ -14,7 +14,6 @@ import { BigNumber } from '@ethersproject/bignumber';
 import ReactGA from 'react-ga';
 import { Currency, Token, ETHER, TokenAmount } from '@uniswap/sdk';
 import { GlobalConst } from 'constants/index';
-import { useAllTokens } from 'hooks/Tokens';
 import { useActiveWeb3React } from 'hooks';
 import { useRouterContract } from 'hooks/useContract';
 import useTransactionDeadline from 'hooks/useTransactionDeadline';
@@ -37,6 +36,7 @@ import {
   addMaticToMetamask,
   calculateSlippageAmount,
   calculateGasMargin,
+  returnTokenFromKey,
 } from 'utils';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
 import { ReactComponent as AddLiquidityIcon } from 'assets/images/AddLiquidityIcon.svg';
@@ -152,8 +152,6 @@ const AddLiquidity: React.FC<{
     onCurrencySelection,
   } = useMintActionHandlers(noLiquidity);
 
-  const allTokens = useAllTokens();
-
   const maxAmounts: { [field in Field]?: TokenAmount } = [
     Field.CURRENCY_A,
     Field.CURRENCY_B,
@@ -225,14 +223,9 @@ const AddLiquidity: React.FC<{
     if (currency1) {
       onCurrencySelection(Field.CURRENCY_B, currency1);
     } else {
-      const quickToken = Object.values(allTokens).find(
-        (val) => val.symbol === 'QUICK',
-      );
-      if (quickToken) {
-        onCurrencySelection(Field.CURRENCY_B, quickToken);
-      }
+      onCurrencySelection(Field.CURRENCY_B, returnTokenFromKey('QUICK'));
     }
-  }, [onCurrencySelection, allTokens, currency0, currency1]);
+  }, [onCurrencySelection, currency0, currency1]);
 
   const onAdd = () => {
     if (expertMode) {

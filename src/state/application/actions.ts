@@ -61,10 +61,6 @@ export const updateGlobalChartData = createAction<{ data: any }>(
   'application/updateGlobalChartData',
 );
 
-export const updateTokenPairs = createAction<{ data: any }>(
-  'application/updateTokenPairs',
-);
-
 export const addBookMarkToken = createAction<string>(
   'application/addBookMarkedToken',
 );
