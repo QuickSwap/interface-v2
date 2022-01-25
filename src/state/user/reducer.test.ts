@@ -1,7 +1,6 @@
 import { createStore, Store } from 'redux';
 import {
-  DEFAULT_DEADLINE_FROM_NOW,
-  INITIAL_ALLOWED_SLIPPAGE,
+  GlobalConst
 } from 'constants/index';
 import { updateVersion } from 'state/global/actions';
 import reducer, { initialState, UserState } from './reducer';
@@ -31,9 +30,9 @@ describe('swap reducer', () => {
         userSlippageTolerance: undefined,
       } as any);
       store.dispatch(updateVersion());
-      expect(store.getState().userDeadline).toEqual(DEFAULT_DEADLINE_FROM_NOW);
+      expect(store.getState().userDeadline).toEqual(GlobalConst.utils.DEFAULT_DEADLINE_FROM_NOW);
       expect(store.getState().userSlippageTolerance).toEqual(
-        INITIAL_ALLOWED_SLIPPAGE,
+        GlobalConst.utils.INITIAL_ALLOWED_SLIPPAGE,
       );
     });
   });
