@@ -151,6 +151,10 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
 }));
 
 const LOADSYRUP_COUNT = 5;
+const TOKEN_COLUMN = 1;
+const DEPOSIT_COLUMN = 2;
+const APR_COLUMN = 3;
+const EARNED_COLUMN = 4;
 
 const DragonPage: React.FC = () => {
   const classes = useStyles();
@@ -204,29 +208,23 @@ const DragonPage: React.FC = () => {
     ? addedOldSyrupInfos
     : addedStakingSyrupInfos;
 
+  const sortIndex = sortDesc ? 1 : -1;
+
   const sortedSyrupInfos = useMemo(() => {
     return addedSyrupInfos.sort((a, b) => {
-      if (sortBy === 1) {
+      if (sortBy === TOKEN_COLUMN) {
         const syrupStrA = a.token.symbol ?? '';
         const syrupStrB = b.token.symbol ?? '';
-        if (sortDesc) {
-          return syrupStrA > syrupStrB ? -1 : 1;
-        } else {
-          return syrupStrA < syrupStrB ? -1 : 1;
-        }
-      } else if (sortBy === 2) {
+        return (syrupStrA > syrupStrB ? -1 : 1) * sortIndex;
+      } else if (sortBy === DEPOSIT_COLUMN) {
         const depositA =
           a.valueOfTotalStakedAmountInUSDC ??
           Number(a.totalStakedAmount.toSignificant());
         const depositB =
           b.valueOfTotalStakedAmountInUSDC ??
           Number(b.totalStakedAmount.toSignificant());
-        if (sortDesc) {
-          return depositA > depositB ? -1 : 1;
-        } else {
-          return depositA < depositB ? -1 : 1;
-        }
-      } else if (sortBy === 3) {
+        return (depositA > depositB ? -1 : 1) * sortIndex;
+      } else if (sortBy === APR_COLUMN) {
         const tokenAPRA =
           a.valueOfTotalStakedAmountInUSDC &&
           a.valueOfTotalStakedAmountInUSDC > 0
@@ -242,27 +240,20 @@ const DragonPage: React.FC = () => {
               daysCurrentYear *
               100
             : 0;
-        if (sortDesc) {
-          return tokenAPRA > tokenAPRB ? -1 : 1;
-        } else {
-          return tokenAPRA < tokenAPRB ? -1 : 1;
-        }
-      } else if (sortBy === 4) {
+
+        return (tokenAPRA > tokenAPRB ? -1 : 1) * sortIndex;
+      } else if (sortBy === EARNED_COLUMN) {
         const earnedUSDA =
           Number(a.earnedAmount.toSignificant()) *
           Number(a.rewardTokenPriceinUSD ?? 0);
         const earnedUSDB =
           Number(b.earnedAmount.toSignificant()) *
           Number(b.rewardTokenPriceinUSD ?? 0);
-        if (sortDesc) {
-          return earnedUSDA > earnedUSDB ? -1 : 1;
-        } else {
-          return earnedUSDA < earnedUSDB ? -1 : 1;
-        }
+        return (earnedUSDA > earnedUSDB ? -1 : 1) * sortIndex;
       }
       return 1;
     });
-  }, [addedSyrupInfos, sortDesc, sortBy, daysCurrentYear]);
+  }, [addedSyrupInfos, sortIndex, sortBy, daysCurrentYear]);
 
   const syrupRewardAddress = useMemo(
     () =>
@@ -536,15 +527,15 @@ const DragonPage: React.FC = () => {
                     display='flex'
                     alignItems='center'
                     onClick={() => {
-                      if (sortBy === 1) {
+                      if (sortBy === TOKEN_COLUMN) {
                         setSortDesc(!sortDesc);
                       } else {
-                        setSortBy(1);
+                        setSortBy(TOKEN_COLUMN);
                         setSortDesc(false);
                       }
                     }}
                     color={
-                      sortBy === 1
+                      sortBy === TOKEN_COLUMN
                         ? palette.text.primary
                         : palette.secondary.main
                     }
@@ -552,7 +543,7 @@ const DragonPage: React.FC = () => {
                   >
                     <Typography variant='body2'>Earn</Typography>
                     <Box display='flex' ml={0.5}>
-                      {sortBy === 1 && sortDesc ? (
+                      {sortBy === TOKEN_COLUMN && sortDesc ? (
                         <ArrowDown size={20} />
                       ) : (
                         <ArrowUp size={20} />
@@ -564,15 +555,15 @@ const DragonPage: React.FC = () => {
                     display='flex'
                     alignItems='center'
                     onClick={() => {
-                      if (sortBy === 2) {
+                      if (sortBy === DEPOSIT_COLUMN) {
                         setSortDesc(!sortDesc);
                       } else {
-                        setSortBy(2);
+                        setSortBy(DEPOSIT_COLUMN);
                         setSortDesc(false);
                       }
                     }}
                     color={
-                      sortBy === 2
+                      sortBy === DEPOSIT_COLUMN
                         ? palette.text.primary
                         : palette.secondary.main
                     }
@@ -580,7 +571,7 @@ const DragonPage: React.FC = () => {
                   >
                     <Typography variant='body2'>Deposits</Typography>
                     <Box display='flex' ml={0.5}>
-                      {sortBy === 2 && sortDesc ? (
+                      {sortBy === DEPOSIT_COLUMN && sortDesc ? (
                         <ArrowDown size={20} />
                       ) : (
                         <ArrowUp size={20} />
@@ -592,15 +583,15 @@ const DragonPage: React.FC = () => {
                     display='flex'
                     alignItems='center'
                     onClick={() => {
-                      if (sortBy === 3) {
+                      if (sortBy === APR_COLUMN) {
                         setSortDesc(!sortDesc);
                       } else {
-                        setSortBy(3);
+                        setSortBy(APR_COLUMN);
                         setSortDesc(false);
                       }
                     }}
                     color={
-                      sortBy === 3
+                      sortBy === APR_COLUMN
                         ? palette.text.primary
                         : palette.secondary.main
                     }
@@ -608,7 +599,7 @@ const DragonPage: React.FC = () => {
                   >
                     <Typography variant='body2'>APR</Typography>
                     <Box display='flex' ml={0.5}>
-                      {sortBy === 3 && sortDesc ? (
+                      {sortBy === APR_COLUMN && sortDesc ? (
                         <ArrowDown size={20} />
                       ) : (
                         <ArrowUp size={20} />
@@ -620,15 +611,15 @@ const DragonPage: React.FC = () => {
                     display='flex'
                     alignItems='center'
                     onClick={() => {
-                      if (sortBy === 4) {
+                      if (sortBy === EARNED_COLUMN) {
                         setSortDesc(!sortDesc);
                       } else {
-                        setSortBy(4);
+                        setSortBy(EARNED_COLUMN);
                         setSortDesc(false);
                       }
                     }}
                     color={
-                      sortBy === 4
+                      sortBy === EARNED_COLUMN
                         ? palette.text.primary
                         : palette.secondary.main
                     }
@@ -637,7 +628,7 @@ const DragonPage: React.FC = () => {
                   >
                     <Typography variant='body2'>Earned</Typography>
                     <Box display='flex' ml={0.5}>
-                      {sortBy === 4 && sortDesc ? (
+                      {sortBy === EARNED_COLUMN && sortDesc ? (
                         <ArrowDown size={20} />
                       ) : (
                         <ArrowUp size={20} />

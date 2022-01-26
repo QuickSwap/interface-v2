@@ -101,6 +101,11 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
 const LPFARM_INDEX = 0;
 const DUALFARM_INDEX = 1;
 const LOADFARM_COUNT = 6;
+const POOL_COLUMN = 1;
+const TVL_COLUMN = 2;
+const REWARDS_COLUMN = 3;
+const APY_COLUMN = 4;
+const EARNED_COLUMN = 5;
 
 const FarmPage: React.FC = () => {
   const classes = useStyles();
@@ -260,15 +265,15 @@ const FarmPage: React.FC = () => {
       ? addedLPStakingOldInfos
       : addedLPStakingInfos;
     return lpStakingInfos.sort((a, b) => {
-      if (sortBy === 1) {
+      if (sortBy === POOL_COLUMN) {
         return sortByToken(a, b);
-      } else if (sortBy === 2) {
+      } else if (sortBy === TVL_COLUMN) {
         return sortByTVL(a, b);
-      } else if (sortBy === 3) {
+      } else if (sortBy === REWARDS_COLUMN) {
         return sortByRewardLP(a, b);
-      } else if (sortBy === 4) {
+      } else if (sortBy === APY_COLUMN) {
         return sortByAPY(a, b);
-      } else if (sortBy === 5) {
+      } else if (sortBy === EARNED_COLUMN) {
         return sortByEarnedLP(a, b);
       }
       return 1;
@@ -288,15 +293,15 @@ const FarmPage: React.FC = () => {
   const sortedStakingDualInfos = useMemo(() => {
     const dualStakingInfos = isEndedFarm ? [] : addedDualStakingInfos;
     return dualStakingInfos.sort((a, b) => {
-      if (sortBy === 1) {
+      if (sortBy === POOL_COLUMN) {
         return sortByToken(a, b);
-      } else if (sortBy === 2) {
+      } else if (sortBy === TVL_COLUMN) {
         return sortByTVL(a, b);
-      } else if (sortBy === 3) {
+      } else if (sortBy === REWARDS_COLUMN) {
         return sortByRewardDual(a, b);
-      } else if (sortBy === 4) {
+      } else if (sortBy === APY_COLUMN) {
         return sortByAPY(a, b);
-      } else if (sortBy === 5) {
+      } else if (sortBy === EARNED_COLUMN) {
         return sortByEarnedDual(a, b);
       }
       return 1;
@@ -587,20 +592,22 @@ const FarmPage: React.FC = () => {
               width={0.3}
               style={{ cursor: 'pointer' }}
               onClick={() => {
-                if (sortBy === 1) {
+                if (sortBy === POOL_COLUMN) {
                   setSortDesc(!sortDesc);
                 } else {
-                  setSortBy(1);
+                  setSortBy(POOL_COLUMN);
                   setSortDesc(false);
                 }
               }}
               color={
-                sortBy === 1 ? palette.text.primary : palette.secondary.main
+                sortBy === POOL_COLUMN
+                  ? palette.text.primary
+                  : palette.secondary.main
               }
             >
               <Typography variant='body2'>Pool</Typography>
               <Box display='flex' ml={0.5}>
-                {sortBy === 1 && sortDesc ? (
+                {sortBy === POOL_COLUMN && sortDesc ? (
                   <ArrowDown size={20} />
                 ) : (
                   <ArrowUp size={20} />
@@ -615,20 +622,22 @@ const FarmPage: React.FC = () => {
               justifyContent='center'
               style={{ cursor: 'pointer' }}
               onClick={() => {
-                if (sortBy === 2) {
+                if (sortBy === TVL_COLUMN) {
                   setSortDesc(!sortDesc);
                 } else {
-                  setSortBy(2);
+                  setSortBy(TVL_COLUMN);
                   setSortDesc(false);
                 }
               }}
               color={
-                sortBy === 2 ? palette.text.primary : palette.secondary.main
+                sortBy === TVL_COLUMN
+                  ? palette.text.primary
+                  : palette.secondary.main
               }
             >
               <Typography variant='body2'>TVL</Typography>
               <Box display='flex' ml={0.5}>
-                {sortBy === 2 && sortDesc ? (
+                {sortBy === TVL_COLUMN && sortDesc ? (
                   <ArrowDown size={20} />
                 ) : (
                   <ArrowUp size={20} />
@@ -643,20 +652,22 @@ const FarmPage: React.FC = () => {
               justifyContent='center'
               style={{ cursor: 'pointer' }}
               onClick={() => {
-                if (sortBy === 3) {
+                if (sortBy === REWARDS_COLUMN) {
                   setSortDesc(!sortDesc);
                 } else {
-                  setSortBy(3);
+                  setSortBy(REWARDS_COLUMN);
                   setSortDesc(false);
                 }
               }}
               color={
-                sortBy === 3 ? palette.text.primary : palette.secondary.main
+                sortBy === REWARDS_COLUMN
+                  ? palette.text.primary
+                  : palette.secondary.main
               }
             >
               <Typography variant='body2'>Rewards</Typography>
               <Box display='flex' ml={0.5}>
-                {sortBy === 3 && sortDesc ? (
+                {sortBy === REWARDS_COLUMN && sortDesc ? (
                   <ArrowDown size={20} />
                 ) : (
                   <ArrowUp size={20} />
@@ -671,20 +682,22 @@ const FarmPage: React.FC = () => {
               justifyContent='center'
               style={{ cursor: 'pointer' }}
               onClick={() => {
-                if (sortBy === 4) {
+                if (sortBy === APY_COLUMN) {
                   setSortDesc(!sortDesc);
                 } else {
-                  setSortBy(4);
+                  setSortBy(APY_COLUMN);
                   setSortDesc(false);
                 }
               }}
               color={
-                sortBy === 4 ? palette.text.primary : palette.secondary.main
+                sortBy === APY_COLUMN
+                  ? palette.text.primary
+                  : palette.secondary.main
               }
             >
               <Typography variant='body2'>APY</Typography>
               <Box display='flex' ml={0.5}>
-                {sortBy === 4 && sortDesc ? (
+                {sortBy === APY_COLUMN && sortDesc ? (
                   <ArrowDown size={20} />
                 ) : (
                   <ArrowUp size={20} />
@@ -700,20 +713,22 @@ const FarmPage: React.FC = () => {
               mr={2}
               style={{ cursor: 'pointer' }}
               onClick={() => {
-                if (sortBy === 5) {
+                if (sortBy === EARNED_COLUMN) {
                   setSortDesc(!sortDesc);
                 } else {
-                  setSortBy(5);
+                  setSortBy(EARNED_COLUMN);
                   setSortDesc(false);
                 }
               }}
               color={
-                sortBy === 5 ? palette.text.primary : palette.secondary.main
+                sortBy === EARNED_COLUMN
+                  ? palette.text.primary
+                  : palette.secondary.main
               }
             >
               <Typography variant='body2'>Earned</Typography>
               <Box display='flex' ml={0.5}>
-                {sortBy === 5 && sortDesc ? (
+                {sortBy === EARNED_COLUMN && sortDesc ? (
                   <ArrowDown size={20} />
                 ) : (
                   <ArrowUp size={20} />
