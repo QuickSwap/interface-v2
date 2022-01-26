@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { ArrowUp, ArrowDown } from 'react-feather';
 import cx from 'classnames';
@@ -210,50 +210,82 @@ const DragonPage: React.FC = () => {
 
   const sortIndex = sortDesc ? 1 : -1;
 
+  const sortByToken = useCallback(
+    (a: SyrupInfo, b: SyrupInfo) => {
+      const syrupStrA = a.token.symbol ?? '';
+      const syrupStrB = b.token.symbol ?? '';
+      return (syrupStrA > syrupStrB ? -1 : 1) * sortIndex;
+    },
+    [sortIndex],
+  );
+
+  const sortByDeposit = useCallback(
+    (a: SyrupInfo, b: SyrupInfo) => {
+      const depositA =
+        a.valueOfTotalStakedAmountInUSDC ??
+        Number(a.totalStakedAmount.toSignificant());
+      const depositB =
+        b.valueOfTotalStakedAmountInUSDC ??
+        Number(b.totalStakedAmount.toSignificant());
+      return (depositA > depositB ? -1 : 1) * sortIndex;
+    },
+    [sortIndex],
+  );
+
+  const sortByAPR = useCallback(
+    (a: SyrupInfo, b: SyrupInfo) => {
+      const tokenAPRA =
+        a.valueOfTotalStakedAmountInUSDC && a.valueOfTotalStakedAmountInUSDC > 0
+          ? ((a.rewards ?? 0) / a.valueOfTotalStakedAmountInUSDC) *
+            daysCurrentYear *
+            100
+          : 0;
+
+      const tokenAPRB =
+        b.valueOfTotalStakedAmountInUSDC && b.valueOfTotalStakedAmountInUSDC > 0
+          ? ((b.rewards ?? 0) / b.valueOfTotalStakedAmountInUSDC) *
+            daysCurrentYear *
+            100
+          : 0;
+
+      return (tokenAPRA > tokenAPRB ? -1 : 1) * sortIndex;
+    },
+    [sortIndex, daysCurrentYear],
+  );
+  const sortByEarned = useCallback(
+    (a: SyrupInfo, b: SyrupInfo) => {
+      const earnedUSDA =
+        Number(a.earnedAmount.toSignificant()) *
+        Number(a.rewardTokenPriceinUSD ?? 0);
+      const earnedUSDB =
+        Number(b.earnedAmount.toSignificant()) *
+        Number(b.rewardTokenPriceinUSD ?? 0);
+      return (earnedUSDA > earnedUSDB ? -1 : 1) * sortIndex;
+    },
+    [sortIndex],
+  );
+
   const sortedSyrupInfos = useMemo(() => {
     return addedSyrupInfos.sort((a, b) => {
       if (sortBy === TOKEN_COLUMN) {
-        const syrupStrA = a.token.symbol ?? '';
-        const syrupStrB = b.token.symbol ?? '';
-        return (syrupStrA > syrupStrB ? -1 : 1) * sortIndex;
+        return sortByToken(a, b);
       } else if (sortBy === DEPOSIT_COLUMN) {
-        const depositA =
-          a.valueOfTotalStakedAmountInUSDC ??
-          Number(a.totalStakedAmount.toSignificant());
-        const depositB =
-          b.valueOfTotalStakedAmountInUSDC ??
-          Number(b.totalStakedAmount.toSignificant());
-        return (depositA > depositB ? -1 : 1) * sortIndex;
+        return sortByDeposit(a, b);
       } else if (sortBy === APR_COLUMN) {
-        const tokenAPRA =
-          a.valueOfTotalStakedAmountInUSDC &&
-          a.valueOfTotalStakedAmountInUSDC > 0
-            ? ((a.rewards ?? 0) / a.valueOfTotalStakedAmountInUSDC) *
-              daysCurrentYear *
-              100
-            : 0;
-
-        const tokenAPRB =
-          b.valueOfTotalStakedAmountInUSDC &&
-          b.valueOfTotalStakedAmountInUSDC > 0
-            ? ((b.rewards ?? 0) / b.valueOfTotalStakedAmountInUSDC) *
-              daysCurrentYear *
-              100
-            : 0;
-
-        return (tokenAPRA > tokenAPRB ? -1 : 1) * sortIndex;
+        return sortByAPR(a, b);
       } else if (sortBy === EARNED_COLUMN) {
-        const earnedUSDA =
-          Number(a.earnedAmount.toSignificant()) *
-          Number(a.rewardTokenPriceinUSD ?? 0);
-        const earnedUSDB =
-          Number(b.earnedAmount.toSignificant()) *
-          Number(b.rewardTokenPriceinUSD ?? 0);
-        return (earnedUSDA > earnedUSDB ? -1 : 1) * sortIndex;
+        return sortByEarned(a, b);
       }
       return 1;
     });
-  }, [addedSyrupInfos, sortIndex, sortBy, daysCurrentYear]);
+  }, [
+    addedSyrupInfos,
+    sortBy,
+    sortByToken,
+    sortByDeposit,
+    sortByAPR,
+    sortByEarned,
+  ]);
 
   const syrupRewardAddress = useMemo(
     () =>
@@ -638,8 +670,7 @@ const DragonPage: React.FC = () => {
                 </>
               )}
             </Box>
-            {//show loading until dragons lair data is fully loaded
-            syrupInfos && lairInfo.totalQuickBalance.greaterThan('0') ? (
+            {syrupInfos ? (
               syrupInfos.map((syrup, ind) => (
                 <SyrupCard key={ind} syrup={syrup} />
               ))
