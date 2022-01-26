@@ -101,6 +101,11 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
 const LPFARM_INDEX = 0;
 const DUALFARM_INDEX = 1;
 const LOADFARM_COUNT = 6;
+const POOL_COLUMN = 1;
+const TVL_COLUMN = 2;
+const REWARDS_COLUMN = 3;
+const APY_COLUMN = 4;
+const EARNED_COLUMN = 5;
 
 const FarmPage: React.FC = () => {
   const classes = useStyles();
@@ -159,86 +164,6 @@ const FarmPage: React.FC = () => {
     farmIndex === LPFARM_INDEX ? 0 : undefined,
     { search: farmSearch, isStaked: stakedOnly },
   );
-
-  const addedStakingInfos =
-    farmIndex === DUALFARM_INDEX
-      ? addedDualStakingInfos
-      : isEndedFarm
-      ? addedLPStakingOldInfos
-      : addedLPStakingInfos;
-
-  const stakingRewardAddress = addedStakingInfos
-    ? addedStakingInfos
-        .map((stakingInfo) => stakingInfo.stakingRewardAddress.toLowerCase())
-        .reduce((totStr, str) => totStr + str, '')
-    : null;
-
-  useEffect(() => {
-    if (chainId) {
-      const stakingPairLists =
-        returnStakingInfo()[chainId]?.map((item) => item.pair) ?? [];
-      const stakingOldPairLists =
-        returnStakingInfo('old')[chainId]?.map((item) => item.pair) ?? [];
-      const dualPairLists =
-        returnDualStakingInfo()[chainId]?.map((item) => item.pair) ?? [];
-      const pairLists = stakingPairLists
-        .concat(stakingOldPairLists)
-        .concat(dualPairLists);
-      getBulkPairData(pairLists).then((data) => setBulkPairs(data));
-    }
-    return () => setBulkPairs(null);
-  }, [chainId]);
-
-  useEffect(() => {
-    setStakingInfos(undefined);
-    setStakingDualInfos(undefined);
-    setPageIndex(0);
-    setTimeout(() => {
-      if (farmIndex === LPFARM_INDEX) {
-        setStakingInfos(
-          isEndedFarm
-            ? addedLPStakingOldInfos.slice(0, LOADFARM_COUNT)
-            : addedLPStakingInfos.slice(0, LOADFARM_COUNT),
-        );
-      } else {
-        setStakingDualInfos(
-          isEndedFarm ? [] : addedDualStakingInfos.slice(0, LOADFARM_COUNT),
-        );
-      }
-    }, 500);
-    return () => {
-      setStakingInfos(undefined);
-      setStakingDualInfos(undefined);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isEndedFarm, farmIndex, farmSearch, stakingRewardAddress]);
-
-  useEffect(() => {
-    if (farmIndex === LPFARM_INDEX) {
-      const currentStakingInfos = stakingInfos || [];
-      const stakingInfosToAdd = (isEndedFarm
-        ? addedLPStakingOldInfos
-        : addedLPStakingInfos
-      ).slice(
-        currentStakingInfos.length,
-        currentStakingInfos.length + LOADFARM_COUNT,
-      );
-      setStakingInfos(currentStakingInfos.concat(stakingInfosToAdd));
-    } else if (farmIndex === DUALFARM_INDEX) {
-      const currentDualStakingInfos = stakingDualInfos || [];
-      const stakingDualInfosToAdd = (isEndedFarm
-        ? []
-        : addedDualStakingInfos
-      ).slice(
-        currentDualStakingInfos.length,
-        currentDualStakingInfos.length + LOADFARM_COUNT,
-      );
-      setStakingDualInfos(
-        currentDualStakingInfos.concat(stakingDualInfosToAdd),
-      );
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pageIndex]);
 
   const sortIndex = sortDesc ? 1 : -1;
 
@@ -335,27 +260,29 @@ const FarmPage: React.FC = () => {
     [sortIndex],
   );
 
-  const sortedStakingLPInfos = useMemo(() => {
-    if (stakingInfos && stakingInfos.length > 0) {
-      return stakingInfos.sort((a, b) => {
-        if (sortBy === 1) {
-          return sortByToken(a, b);
-        } else if (sortBy === 2) {
-          return sortByTVL(a, b);
-        } else if (sortBy === 3) {
-          return sortByRewardLP(a, b);
-        } else if (sortBy === 4) {
-          return sortByAPY(a, b);
-        } else if (sortBy === 5) {
-          return sortByEarnedLP(a, b);
-        }
-        return 1;
-      });
-    }
-    return [];
+  const sortedLPStakingInfos = useMemo(() => {
+    const lpStakingInfos = isEndedFarm
+      ? addedLPStakingOldInfos
+      : addedLPStakingInfos;
+    return lpStakingInfos.sort((a, b) => {
+      if (sortBy === POOL_COLUMN) {
+        return sortByToken(a, b);
+      } else if (sortBy === TVL_COLUMN) {
+        return sortByTVL(a, b);
+      } else if (sortBy === REWARDS_COLUMN) {
+        return sortByRewardLP(a, b);
+      } else if (sortBy === APY_COLUMN) {
+        return sortByAPY(a, b);
+      } else if (sortBy === EARNED_COLUMN) {
+        return sortByEarnedLP(a, b);
+      }
+      return 1;
+    });
   }, [
     sortBy,
-    stakingInfos,
+    addedLPStakingOldInfos,
+    addedLPStakingInfos,
+    isEndedFarm,
     sortByToken,
     sortByTVL,
     sortByRewardLP,
@@ -364,25 +291,24 @@ const FarmPage: React.FC = () => {
   ]);
 
   const sortedStakingDualInfos = useMemo(() => {
-    if (stakingDualInfos && stakingDualInfos.length > 0) {
-      return stakingDualInfos.sort((a, b) => {
-        if (sortBy === 1) {
-          return sortByToken(a, b);
-        } else if (sortBy === 2) {
-          return sortByTVL(a, b);
-        } else if (sortBy === 3) {
-          return sortByRewardDual(a, b);
-        } else if (sortBy === 4) {
-          return sortByAPY(a, b);
-        } else if (sortBy === 5) {
-          return sortByEarnedDual(a, b);
-        }
-        return 1;
-      });
-    }
-    return [];
+    const dualStakingInfos = isEndedFarm ? [] : addedDualStakingInfos;
+    return dualStakingInfos.sort((a, b) => {
+      if (sortBy === POOL_COLUMN) {
+        return sortByToken(a, b);
+      } else if (sortBy === TVL_COLUMN) {
+        return sortByTVL(a, b);
+      } else if (sortBy === REWARDS_COLUMN) {
+        return sortByRewardDual(a, b);
+      } else if (sortBy === APY_COLUMN) {
+        return sortByAPY(a, b);
+      } else if (sortBy === EARNED_COLUMN) {
+        return sortByEarnedDual(a, b);
+      }
+      return 1;
+    });
   }, [
-    stakingDualInfos,
+    addedDualStakingInfos,
+    isEndedFarm,
     sortBy,
     sortByToken,
     sortByTVL,
@@ -391,12 +317,75 @@ const FarmPage: React.FC = () => {
     sortByEarnedDual,
   ]);
 
+  const addedStakingInfos = useMemo(
+    () =>
+      farmIndex === DUALFARM_INDEX
+        ? sortedStakingDualInfos
+        : sortedLPStakingInfos,
+    [farmIndex, sortedStakingDualInfos, sortedLPStakingInfos],
+  );
+
+  const stakingRewardAddress = addedStakingInfos
+    ? addedStakingInfos
+        .map((stakingInfo) => stakingInfo.stakingRewardAddress.toLowerCase())
+        .reduce((totStr, str) => totStr + str, '')
+    : null;
+
+  useEffect(() => {
+    if (chainId) {
+      const stakingPairLists =
+        returnStakingInfo()[chainId]?.map((item) => item.pair) ?? [];
+      const stakingOldPairLists =
+        returnStakingInfo('old')[chainId]?.map((item) => item.pair) ?? [];
+      const dualPairLists =
+        returnDualStakingInfo()[chainId]?.map((item) => item.pair) ?? [];
+      const pairLists = stakingPairLists
+        .concat(stakingOldPairLists)
+        .concat(dualPairLists);
+      getBulkPairData(pairLists).then((data) => setBulkPairs(data));
+    }
+    return () => setBulkPairs(null);
+  }, [chainId]);
+
+  useEffect(() => {
+    setPageIndex(0);
+    if (farmIndex === LPFARM_INDEX) {
+      setStakingInfos(sortedLPStakingInfos.slice(0, LOADFARM_COUNT));
+    } else {
+      setStakingDualInfos(sortedStakingDualInfos.slice(0, LOADFARM_COUNT));
+    }
+    return () => {
+      setStakingInfos(undefined);
+      setStakingDualInfos(undefined);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isEndedFarm, farmIndex, farmSearch, stakingRewardAddress]);
+
+  useEffect(() => {
+    if (farmIndex === LPFARM_INDEX) {
+      const currentStakingInfos = stakingInfos || [];
+      const stakingInfosToAdd = sortedLPStakingInfos.slice(
+        currentStakingInfos.length,
+        currentStakingInfos.length + LOADFARM_COUNT,
+      );
+      setStakingInfos(currentStakingInfos.concat(stakingInfosToAdd));
+    } else if (farmIndex === DUALFARM_INDEX) {
+      const currentDualStakingInfos = stakingDualInfos || [];
+      const stakingDualInfosToAdd = sortedStakingDualInfos.slice(
+        currentDualStakingInfos.length,
+        currentDualStakingInfos.length + LOADFARM_COUNT,
+      );
+      setStakingDualInfos(
+        currentDualStakingInfos.concat(stakingDualInfosToAdd),
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pageIndex]);
+
   const stakingAPYs = useMemo(() => {
     const sortedStakingInfos =
-      farmIndex === LPFARM_INDEX
-        ? sortedStakingLPInfos
-        : sortedStakingDualInfos;
-    if (bulkPairs && sortedStakingInfos.length > 0) {
+      farmIndex === LPFARM_INDEX ? stakingInfos : stakingDualInfos;
+    if (bulkPairs && sortedStakingInfos && sortedStakingInfos.length > 0) {
       return sortedStakingInfos.map((info: any) => {
         const oneDayVolume = bulkPairs[info.pair]?.oneDayVolumeUSD;
         const reserveUSD = bulkPairs[info.pair]?.reserveUSD;
@@ -410,7 +399,7 @@ const FarmPage: React.FC = () => {
     } else {
       return [];
     }
-  }, [bulkPairs, sortedStakingLPInfos, sortedStakingDualInfos, farmIndex]);
+  }, [bulkPairs, stakingInfos, stakingDualInfos, farmIndex]);
 
   const loadNext = () => {
     setPageIndex(pageIndex + 1);
@@ -603,20 +592,22 @@ const FarmPage: React.FC = () => {
               width={0.3}
               style={{ cursor: 'pointer' }}
               onClick={() => {
-                if (sortBy === 1) {
+                if (sortBy === POOL_COLUMN) {
                   setSortDesc(!sortDesc);
                 } else {
-                  setSortBy(1);
+                  setSortBy(POOL_COLUMN);
                   setSortDesc(false);
                 }
               }}
               color={
-                sortBy === 1 ? palette.text.primary : palette.secondary.main
+                sortBy === POOL_COLUMN
+                  ? palette.text.primary
+                  : palette.secondary.main
               }
             >
               <Typography variant='body2'>Pool</Typography>
               <Box display='flex' ml={0.5}>
-                {sortBy === 1 && sortDesc ? (
+                {sortBy === POOL_COLUMN && sortDesc ? (
                   <ArrowDown size={20} />
                 ) : (
                   <ArrowUp size={20} />
@@ -631,20 +622,22 @@ const FarmPage: React.FC = () => {
               justifyContent='center'
               style={{ cursor: 'pointer' }}
               onClick={() => {
-                if (sortBy === 2) {
+                if (sortBy === TVL_COLUMN) {
                   setSortDesc(!sortDesc);
                 } else {
-                  setSortBy(2);
+                  setSortBy(TVL_COLUMN);
                   setSortDesc(false);
                 }
               }}
               color={
-                sortBy === 2 ? palette.text.primary : palette.secondary.main
+                sortBy === TVL_COLUMN
+                  ? palette.text.primary
+                  : palette.secondary.main
               }
             >
               <Typography variant='body2'>TVL</Typography>
               <Box display='flex' ml={0.5}>
-                {sortBy === 2 && sortDesc ? (
+                {sortBy === TVL_COLUMN && sortDesc ? (
                   <ArrowDown size={20} />
                 ) : (
                   <ArrowUp size={20} />
@@ -659,20 +652,22 @@ const FarmPage: React.FC = () => {
               justifyContent='center'
               style={{ cursor: 'pointer' }}
               onClick={() => {
-                if (sortBy === 3) {
+                if (sortBy === REWARDS_COLUMN) {
                   setSortDesc(!sortDesc);
                 } else {
-                  setSortBy(3);
+                  setSortBy(REWARDS_COLUMN);
                   setSortDesc(false);
                 }
               }}
               color={
-                sortBy === 3 ? palette.text.primary : palette.secondary.main
+                sortBy === REWARDS_COLUMN
+                  ? palette.text.primary
+                  : palette.secondary.main
               }
             >
               <Typography variant='body2'>Rewards</Typography>
               <Box display='flex' ml={0.5}>
-                {sortBy === 3 && sortDesc ? (
+                {sortBy === REWARDS_COLUMN && sortDesc ? (
                   <ArrowDown size={20} />
                 ) : (
                   <ArrowUp size={20} />
@@ -687,20 +682,22 @@ const FarmPage: React.FC = () => {
               justifyContent='center'
               style={{ cursor: 'pointer' }}
               onClick={() => {
-                if (sortBy === 4) {
+                if (sortBy === APY_COLUMN) {
                   setSortDesc(!sortDesc);
                 } else {
-                  setSortBy(4);
+                  setSortBy(APY_COLUMN);
                   setSortDesc(false);
                 }
               }}
               color={
-                sortBy === 4 ? palette.text.primary : palette.secondary.main
+                sortBy === APY_COLUMN
+                  ? palette.text.primary
+                  : palette.secondary.main
               }
             >
               <Typography variant='body2'>APY</Typography>
               <Box display='flex' ml={0.5}>
-                {sortBy === 4 && sortDesc ? (
+                {sortBy === APY_COLUMN && sortDesc ? (
                   <ArrowDown size={20} />
                 ) : (
                   <ArrowUp size={20} />
@@ -716,20 +713,22 @@ const FarmPage: React.FC = () => {
               mr={2}
               style={{ cursor: 'pointer' }}
               onClick={() => {
-                if (sortBy === 5) {
+                if (sortBy === EARNED_COLUMN) {
                   setSortDesc(!sortDesc);
                 } else {
-                  setSortBy(5);
+                  setSortBy(EARNED_COLUMN);
                   setSortDesc(false);
                 }
               }}
               color={
-                sortBy === 5 ? palette.text.primary : palette.secondary.main
+                sortBy === EARNED_COLUMN
+                  ? palette.text.primary
+                  : palette.secondary.main
               }
             >
               <Typography variant='body2'>Earned</Typography>
               <Box display='flex' ml={0.5}>
-                {sortBy === 5 && sortDesc ? (
+                {sortBy === EARNED_COLUMN && sortDesc ? (
                   <ArrowDown size={20} />
                 ) : (
                   <ArrowUp size={20} />
@@ -741,7 +740,7 @@ const FarmPage: React.FC = () => {
         {//show loading until loading total fees
         farmData.stakingFees ? (
           farmIndex === LPFARM_INDEX && stakingInfos ? (
-            sortedStakingLPInfos.map((info: StakingInfo, index) => (
+            stakingInfos.map((info: StakingInfo, index) => (
               <FarmLPCard
                 key={index}
                 dQuicktoQuick={Number(lairInfo.dQUICKtoQUICK.toSignificant())}
@@ -750,7 +749,7 @@ const FarmPage: React.FC = () => {
               />
             ))
           ) : farmIndex === DUALFARM_INDEX && stakingDualInfos ? (
-            sortedStakingDualInfos.map((info: DualStakingInfo, index) => (
+            stakingDualInfos.map((info: DualStakingInfo, index) => (
               <FarmDualCard
                 key={index}
                 dQuicktoQuick={Number(lairInfo.dQUICKtoQUICK.toSignificant())}

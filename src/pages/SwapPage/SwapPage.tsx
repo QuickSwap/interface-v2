@@ -54,7 +54,7 @@ const SwapPage: React.FC = () => {
   const token2 = wrappedCurrency(currencies[Field.OUTPUT], chainId);
 
   return (
-    <Box width='100%' mb={3}>
+    <Box width='100%' mb={3} id='swap-page'>
       <Box
         mb={2}
         display='flex'

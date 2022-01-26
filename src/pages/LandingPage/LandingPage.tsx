@@ -553,7 +553,7 @@ const LandingPage: React.FC = () => {
   }, [ethPrice, updateEthPrice, updateGlobalData]);
 
   return (
-    <>
+    <div id='landing-page'>
       {openStakeModal && (
         <StakeQuickModal
           open={openStakeModal}
@@ -884,7 +884,7 @@ const LandingPage: React.FC = () => {
           ))}
         </Box>
       </Box>
-    </>
+    </div>
   );
 };
 
