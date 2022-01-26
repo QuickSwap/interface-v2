@@ -110,7 +110,8 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
   },
   quickInfo: {
     textAlign: 'center',
-    margin: '128px 0 30px',
+    margin: '128px auto 30px',
+    width: '100%',
     maxWidth: 800,
     '& h2': {
       marginBottom: 60,
@@ -427,7 +428,7 @@ const LandingPage: React.FC = () => {
   const [swapIndex, setSwapIndex] = useState(0);
   const [openStakeModal, setOpenStakeModal] = useState(false);
   const { palette, breakpoints } = useTheme();
-  const { account, chainId } = useActiveWeb3React();
+  const { account } = useActiveWeb3React();
   const { ethereum } = window as any;
   const isnotMatic =
     ethereum && ethereum.isMetaMask && Number(ethereum.chainId) !== 137;
