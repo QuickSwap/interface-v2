@@ -122,7 +122,11 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
         </Box>
         <Box display='flex' alignItems='center' my={1.5}>
           <StatusIcon />
-          <Typography variant='h5' style={{ marginLeft: 8 }}>
+          <Typography
+            variant='h5'
+            style={{ marginLeft: 8 }}
+            id='web3-account-identifier-row'
+          >
             {ENSName ? ENSName : account && shortenAddress(account)}
           </Typography>
         </Box>

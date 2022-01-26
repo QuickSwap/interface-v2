@@ -302,22 +302,27 @@ const Header: React.FC = () => {
     {
       link: '/swap',
       text: 'Swap',
+      id: 'swap-page-link',
     },
     {
       link: '/pools',
       text: 'Pool',
+      id: 'pools-page-link',
     },
     {
       link: '/farm',
       text: 'Farm',
+      id: 'farm-page-link',
     },
     {
       link: '/dragons',
       text: 'Dragons Lair',
+      id: 'dragons-page-link',
     },
     {
       link: '/analytics',
       text: 'Analytics',
+      id: 'analytics-page-link',
     },
   ];
 
@@ -364,6 +369,7 @@ const Header: React.FC = () => {
             <Link
               to={val.link}
               key={index}
+              id={val.id}
               className={
                 pathname.indexOf(val.link) > -1 ? 'active' : 'menuItem'
               }
@@ -459,7 +465,11 @@ const Header: React.FC = () => {
           <LightIcon />
         </Box>
         {account ? (
-          <Box className={classes.accountDetails} onClick={toggleWalletModal}>
+          <Box
+            id='web3-status-connected'
+            className={classes.accountDetails}
+            onClick={toggleWalletModal}
+          >
             <Typography>{shortenAddress(account)}</Typography>
             <img src={WalletIcon} alt='Wallet' />
           </Box>

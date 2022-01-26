@@ -94,6 +94,7 @@ interface CurrencyInputProps {
   showMaxButton?: boolean;
   showPrice?: boolean;
   bgColor?: string;
+  id?: string;
 }
 
 const CurrencyInput: React.FC<CurrencyInputProps> = ({
@@ -109,6 +110,7 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
   title,
   showPrice,
   bgColor,
+  id,
 }) => {
   const classes = useStyles();
   const { palette } = useTheme();
@@ -122,6 +124,7 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
 
   return (
     <Box
+      id={id}
       className={cx(classes.swapBox, showPrice && classes.priceShowBox)}
       bgcolor={bgColor ?? palette.secondary.dark}
     >
@@ -153,7 +156,9 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
           {currency ? (
             <>
               <CurrencyLogo currency={currency} size={'28px'} />
-              <Typography variant='body1'>{currency?.symbol}</Typography>
+              <Typography className='token-symbol-container' variant='body1'>
+                {currency?.symbol}
+              </Typography>
             </>
           ) : (
             <Typography variant='body1'>Select a token</Typography>
