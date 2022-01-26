@@ -1,6 +1,28 @@
 {
   "syrup": [
     {
+      "token": "AWX",
+      "stakingRewardAddress": "0xa590372307e7b85e55E3472E3F9A8EF852fA993f",
+      "ended": false,
+      "lp": "",
+      "name": "",
+      "baseToken": "USDC",
+      "rate": 1111.11,
+      "ending": 1650920902,
+      "stakingToken": "QUICK"
+    },
+    {
+      "token": "DOGIRA",
+      "stakingRewardAddress": "0x1dd3bbefb430Ef48b30f322CF355FeC3bA12b8bd",
+      "ended": false,
+      "lp": "",
+      "name": "",
+      "baseToken": "MATIC",
+      "rate": 193333.33,
+      "ending": 1648328902,
+      "stakingToken": "QUICK"
+    },
+    {
       "token": "MSHEESHA",
       "stakingRewardAddress": "0x63f7e114c4B5169ddD1a46b99a8e8d396a242ef3",
       "ended": false,
@@ -199,17 +221,6 @@
       "stakingToken": "DQUICK"
     },
     {
-      "token": "WSG",
-      "stakingRewardAddress": "0x2b91d985AEb645cc580E35BdF52DF2694e742ADF",
-      "ended": false,
-      "lp": "",
-      "name": "",
-      "baseToken": "QUICK",
-      "rate": 41347011961.97,
-      "ending": 1643077140,
-      "stakingToken": "DQUICK"
-    },
-    {
       "token": "DERC",
       "stakingRewardAddress": "0xE800041A775D269e1cD38261B4500b0D8F0e9916",
       "ended": false,
@@ -255,6 +266,17 @@
     }
   ],
   "oldsyrup": [
+    {
+      "token": "WSG",
+      "stakingRewardAddress": "0x2b91d985AEb645cc580E35BdF52DF2694e742ADF",
+      "ended": false,
+      "lp": "",
+      "name": "",
+      "baseToken": "QUICK",
+      "rate": 41347011961.97,
+      "ending": 1643077140,
+      "stakingToken": "DQUICK"
+    },
     {
       "token": "DES",
       "stakingRewardAddress": "0xe436235f6062Eb689Ce81e5f434A005818F7d6f0",
