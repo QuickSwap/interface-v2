@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { ChainId } from '@uniswap/sdk';
 import { Link, useLocation } from 'react-router-dom';
 import { Box, Button, Typography, useMediaQuery } from '@material-ui/core';
 import cx from 'classnames';
@@ -275,9 +276,8 @@ const newTransactionsFirst = (a: TransactionDetails, b: TransactionDetails) => {
 const Header: React.FC = () => {
   const classes = useStyles();
   const { pathname } = useLocation();
-  const { account } = useActiveWeb3React();
+  const { account, chainId } = useActiveWeb3React();
   const { ENSName } = useENSName(account ?? undefined);
-  const { ethereum } = window as any;
   const [openDetailMenu, setOpenDetailMenu] = useState(false);
   const theme = useTheme();
   const allTransactions = useAllTransactions();
@@ -292,8 +292,7 @@ const Header: React.FC = () => {
   const confirmed = sortedRecentTransactions
     .filter((tx: any) => tx.receipt)
     .map((tx: any) => tx.hash);
-  const isnotMatic =
-    ethereum && ethereum.isMetaMask && Number(ethereum.chainId) !== 137;
+  const isnotMatic = chainId !== ChainId.MATIC;
   const tabletWindowSize = useMediaQuery(theme.breakpoints.down('sm'));
   const mobileWindowSize = useMediaQuery(theme.breakpoints.down('xs'));
   const toggleWalletModal = useWalletModalToggle();
@@ -464,7 +463,7 @@ const Header: React.FC = () => {
         >
           <LightIcon />
         </Box>
-        {account ? (
+        {!isnotMatic && account ? (
           <Box
             id='web3-status-connected'
             className={classes.accountDetails}

@@ -565,6 +565,7 @@ const Swap: React.FC<{
       )}
       <CurrencyInput
         title='From:'
+        id='swap-currency-input'
         currency={currencies[Field.INPUT]}
         onHalf={handleHalfInput}
         onMax={handleMaxInput}
@@ -581,6 +582,7 @@ const Swap: React.FC<{
       </Box>
       <CurrencyInput
         title='To (estimate):'
+        id='swap-currency-output'
         currency={currencies[Field.OUTPUT]}
         showPrice={Boolean(trade && trade.executionPrice)}
         showMaxButton={false}

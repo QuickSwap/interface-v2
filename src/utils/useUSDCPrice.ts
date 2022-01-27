@@ -24,7 +24,7 @@ export default function useUSDCPrice(currency?: Currency): Price | undefined {
       [
         chainId && wrapped && currencyEquals(WETH[chainId], wrapped)
           ? undefined
-          : currency,
+          : wrapped,
         chainId ? WETH[chainId] : undefined,
       ],
       [
@@ -48,11 +48,11 @@ export default function useUSDCPrice(currency?: Currency): Price | undefined {
         chainId === ChainId.MATIC ? returnTokenFromKey('USDC') : undefined,
       ],
       [
-        chainId ? returnTokenFromKey('QUICK') : undefined,
+        chainId === ChainId.MATIC ? returnTokenFromKey('QUICK') : undefined,
         chainId === ChainId.MATIC ? returnTokenFromKey('USDC') : undefined,
       ],
     ],
-    [chainId, currency, wrapped],
+    [chainId, wrapped],
   );
   const [
     [ethPairState, ethPair],

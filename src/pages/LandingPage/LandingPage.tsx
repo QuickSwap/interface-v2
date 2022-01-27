@@ -10,7 +10,7 @@ import {
   useMediaQuery,
 } from '@material-ui/core';
 import Skeleton from '@material-ui/lab/Skeleton';
-import { Currency } from '@uniswap/sdk';
+import { Currency, ChainId } from '@uniswap/sdk';
 import { useTheme } from '@material-ui/core/styles';
 import Motif from 'assets/images/Motif.svg';
 import BuyWithFiat from 'assets/images/featured/BuywithFiat.svg';
@@ -399,7 +399,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     padding: '0 16px',
     height: 56,
     position: 'fixed',
-    bottom: 80,
+    bottom: 0,
     right: 0,
     borderTopLeftRadius: 24,
     background: 'rgb(27, 32, 43, 0.9)',
@@ -416,7 +416,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
         fill: palette.text.secondary,
       },
     },
-    [breakpoints.down('xs')]: {
+    [breakpoints.down('sm')]: {
       display: 'none',
     },
   },
@@ -428,10 +428,8 @@ const LandingPage: React.FC = () => {
   const [swapIndex, setSwapIndex] = useState(0);
   const [openStakeModal, setOpenStakeModal] = useState(false);
   const { palette, breakpoints } = useTheme();
-  const { account } = useActiveWeb3React();
-  const { ethereum } = window as any;
-  const isnotMatic =
-    ethereum && ethereum.isMetaMask && Number(ethereum.chainId) !== 137;
+  const { account, chainId } = useActiveWeb3React();
+  const isnotMatic = chainId !== ChainId.MATIC;
   const mobileWindowSize = useMediaQuery(breakpoints.down('sm'));
   const { initTransak } = useInitTransak();
   const toggleWalletModal = useWalletModalToggle();
