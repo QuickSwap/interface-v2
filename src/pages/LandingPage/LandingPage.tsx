@@ -10,7 +10,7 @@ import {
   useMediaQuery,
 } from '@material-ui/core';
 import Skeleton from '@material-ui/lab/Skeleton';
-import { Currency } from '@uniswap/sdk';
+import { Currency, ChainId } from '@uniswap/sdk';
 import { useTheme } from '@material-ui/core/styles';
 import Motif from 'assets/images/Motif.svg';
 import BuyWithFiat from 'assets/images/featured/BuywithFiat.svg';
@@ -428,9 +428,7 @@ const LandingPage: React.FC = () => {
   const [openStakeModal, setOpenStakeModal] = useState(false);
   const { palette, breakpoints } = useTheme();
   const { account, chainId } = useActiveWeb3React();
-  const { ethereum } = window as any;
-  const isnotMatic =
-    ethereum && ethereum.isMetaMask && Number(ethereum.chainId) !== 137;
+  const isnotMatic = chainId !== ChainId.MATIC;
   const mobileWindowSize = useMediaQuery(breakpoints.down('sm'));
   const { initTransak } = useInitTransak();
   const toggleWalletModal = useWalletModalToggle();

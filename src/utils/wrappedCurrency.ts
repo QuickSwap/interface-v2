@@ -14,7 +14,7 @@ export function wrappedCurrency(
 ): Token | undefined {
   return chainId && currency === ETHER
     ? WETH[chainId]
-    : currency instanceof Token
+    : currency instanceof Token && currency.chainId === chainId
     ? currency
     : undefined;
 }
