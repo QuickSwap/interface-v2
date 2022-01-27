@@ -72,6 +72,8 @@ export const GlobalConst = {
     // the Uniswap Default token list lives here
     DEFAULT_TOKEN_LIST_URL:
       'https://unpkg.com/quickswap-default-token-list@1.2.20/build/quickswap-default.tokenlist.json',
+  },
+  farmIndex: {
     LPFARM_INDEX: 0,
     DUALFARM_INDEX: 1,
   },

@@ -4,7 +4,12 @@ import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { SyrupInfo } from 'state/stake/hooks';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { CurrencyLogo } from 'components';
-import { formatCompact, getDaysCurrentYear, returnTokenFromKey } from 'utils';
+import {
+  formatCompact,
+  getDaysCurrentYear,
+  getTokenAPRSyrup,
+  returnTokenFromKey,
+} from 'utils';
 import SyrupCardDetails from './SyrupCardDetails';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
@@ -38,32 +43,13 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo }> = ({ syrup }) => {
     : `${syrup.totalStakedAmount.toSignificant(6, { groupSeparator: ',' }) ??
         '-'} ${syrup.stakingToken.symbol}`;
 
-  const tokenAPR = useMemo(
-    () =>
-      syrup.valueOfTotalStakedAmountInUSDC &&
-      syrup.valueOfTotalStakedAmountInUSDC > 0
-        ? (
-            ((syrup.rewards ?? 0) / syrup.valueOfTotalStakedAmountInUSDC) *
-            daysCurrentYear *
-            100
-          ).toLocaleString()
-        : 0,
-    [syrup?.valueOfTotalStakedAmountInUSDC, syrup?.rewards, daysCurrentYear],
-  );
-
   const dQUICKAPR = useMemo(
     () =>
       (((Number(syrup.oneDayVol) * 0.04 * 0.01) /
         Number(syrup.dQuickTotalSupply.toSignificant(6))) *
         daysCurrentYear) /
       (Number(syrup.dQUICKtoQUICK.toSignificant(6)) * Number(syrup.quickPrice)),
-    [
-      syrup?.oneDayVol,
-      syrup?.dQuickTotalSupply,
-      daysCurrentYear,
-      syrup?.dQUICKtoQUICK,
-      syrup?.quickPrice,
-    ],
+    [syrup, daysCurrentYear],
   );
 
   const dQUICKAPY = useMemo(
@@ -155,7 +141,7 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo }> = ({ syrup }) => {
           )}
           <Box textAlign={isMobile ? 'right' : 'left'}>
             <Typography variant='body2' style={{ color: palette.success.main }}>
-              {tokenAPR}%
+              {getTokenAPRSyrup(syrup).toLocaleString()}%
             </Typography>
             {isDQUICKStakingToken && (
               <Box display='flex'>

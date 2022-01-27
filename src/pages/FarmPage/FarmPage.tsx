@@ -121,7 +121,9 @@ const FarmPage: React.FC = () => {
   >(undefined);
   const [bulkPairs, setBulkPairs] = useState<any>(null);
   const [pageIndex, setPageIndex] = useState(0);
-  const [farmIndex, setFarmIndex] = useState(GlobalConst.utils.LPFARM_INDEX);
+  const [farmIndex, setFarmIndex] = useState(
+    GlobalConst.farmIndex.LPFARM_INDEX,
+  );
   const [pageloading, setPageLoading] = useState(true); //this is used for not loading farms immediately when user is on farms page
   const [isEndedFarm, setIsEndedFarm] = useState(false);
   const [sortBy, setSortBy] = useState(0);
@@ -135,10 +137,14 @@ const FarmPage: React.FC = () => {
 
   const addedLPStakingInfos = useStakingInfo(
     null,
-    pageloading || farmIndex === GlobalConst.utils.DUALFARM_INDEX || isEndedFarm
+    pageloading ||
+      farmIndex === GlobalConst.farmIndex.DUALFARM_INDEX ||
+      isEndedFarm
       ? 0
       : undefined,
-    pageloading || farmIndex === GlobalConst.utils.DUALFARM_INDEX || isEndedFarm
+    pageloading ||
+      farmIndex === GlobalConst.farmIndex.DUALFARM_INDEX ||
+      isEndedFarm
       ? 0
       : undefined,
     { search: farmSearch, isStaked: stakedOnly },
@@ -146,12 +152,12 @@ const FarmPage: React.FC = () => {
   const addedLPStakingOldInfos = useOldStakingInfo(
     null,
     pageloading ||
-      farmIndex === GlobalConst.utils.DUALFARM_INDEX ||
+      farmIndex === GlobalConst.farmIndex.DUALFARM_INDEX ||
       !isEndedFarm
       ? 0
       : undefined,
     pageloading ||
-      farmIndex === GlobalConst.utils.DUALFARM_INDEX ||
+      farmIndex === GlobalConst.farmIndex.DUALFARM_INDEX ||
       !isEndedFarm
       ? 0
       : undefined,
@@ -159,8 +165,12 @@ const FarmPage: React.FC = () => {
   );
   const addedDualStakingInfos = useDualStakingInfo(
     null,
-    pageloading || farmIndex === GlobalConst.utils.LPFARM_INDEX ? 0 : undefined,
-    pageloading || farmIndex === GlobalConst.utils.LPFARM_INDEX ? 0 : undefined,
+    pageloading || farmIndex === GlobalConst.farmIndex.LPFARM_INDEX
+      ? 0
+      : undefined,
+    pageloading || farmIndex === GlobalConst.farmIndex.LPFARM_INDEX
+      ? 0
+      : undefined,
     { search: farmSearch, isStaked: stakedOnly },
   );
 
@@ -318,7 +328,7 @@ const FarmPage: React.FC = () => {
 
   const addedStakingInfos = useMemo(
     () =>
-      farmIndex === GlobalConst.utils.DUALFARM_INDEX
+      farmIndex === GlobalConst.farmIndex.DUALFARM_INDEX
         ? sortedStakingDualInfos
         : sortedLPStakingInfos,
     [farmIndex, sortedStakingDualInfos, sortedLPStakingInfos],
@@ -354,7 +364,7 @@ const FarmPage: React.FC = () => {
 
   useEffect(() => {
     setPageIndex(0);
-    if (farmIndex === GlobalConst.utils.LPFARM_INDEX) {
+    if (farmIndex === GlobalConst.farmIndex.LPFARM_INDEX) {
       setStakingInfos(sortedLPStakingInfos.slice(0, LOADFARM_COUNT));
     } else {
       setStakingDualInfos(sortedStakingDualInfos.slice(0, LOADFARM_COUNT));
@@ -367,14 +377,14 @@ const FarmPage: React.FC = () => {
   }, [stakingRewardAddress]);
 
   useEffect(() => {
-    if (farmIndex === GlobalConst.utils.LPFARM_INDEX) {
+    if (farmIndex === GlobalConst.farmIndex.LPFARM_INDEX) {
       const currentStakingInfos = stakingInfos || [];
       const stakingInfosToAdd = sortedLPStakingInfos.slice(
         currentStakingInfos.length,
         currentStakingInfos.length + LOADFARM_COUNT,
       );
       setStakingInfos(currentStakingInfos.concat(stakingInfosToAdd));
-    } else if (farmIndex === GlobalConst.utils.DUALFARM_INDEX) {
+    } else if (farmIndex === GlobalConst.farmIndex.DUALFARM_INDEX) {
       const currentDualStakingInfos = stakingDualInfos || [];
       const stakingDualInfosToAdd = sortedStakingDualInfos.slice(
         currentDualStakingInfos.length,
@@ -389,7 +399,7 @@ const FarmPage: React.FC = () => {
 
   const stakingAPYs = useMemo(() => {
     const sortedStakingInfos =
-      farmIndex === GlobalConst.utils.LPFARM_INDEX
+      farmIndex === GlobalConst.farmIndex.LPFARM_INDEX
         ? stakingInfos
         : stakingDualInfos;
     if (bulkPairs && sortedStakingInfos && sortedStakingInfos.length > 0) {
@@ -434,12 +444,12 @@ const FarmPage: React.FC = () => {
         <Box
           className={cx(
             classes.farmSwitch,
-            farmIndex === GlobalConst.utils.LPFARM_INDEX &&
+            farmIndex === GlobalConst.farmIndex.LPFARM_INDEX &&
               classes.activeFarmSwitch,
           )}
           style={{ borderTopLeftRadius: 8, borderBottomLeftRadius: 8 }}
           onClick={() => {
-            setFarmIndex(GlobalConst.utils.LPFARM_INDEX);
+            setFarmIndex(GlobalConst.farmIndex.LPFARM_INDEX);
           }}
         >
           <Typography variant='body1'>LP Mining</Typography>
@@ -447,12 +457,12 @@ const FarmPage: React.FC = () => {
         <Box
           className={cx(
             classes.farmSwitch,
-            farmIndex === GlobalConst.utils.DUALFARM_INDEX &&
+            farmIndex === GlobalConst.farmIndex.DUALFARM_INDEX &&
               classes.activeFarmSwitch,
           )}
           style={{ borderTopRightRadius: 8, borderBottomRightRadius: 8 }}
           onClick={() => {
-            setFarmIndex(GlobalConst.utils.DUALFARM_INDEX);
+            setFarmIndex(GlobalConst.farmIndex.DUALFARM_INDEX);
           }}
         >
           <Typography variant='body1'>Dual Mining</Typography>
@@ -473,7 +483,7 @@ const FarmPage: React.FC = () => {
             <Typography variant='h5'>Earn dQuick</Typography>
             <Typography variant='body2'>
               Stake LP Tokens to earn{' '}
-              {farmIndex === GlobalConst.utils.LPFARM_INDEX
+              {farmIndex === GlobalConst.farmIndex.LPFARM_INDEX
                 ? 'dQUICK + Pool Fees'
                 : 'dQUICK + WMATIC rewards'}
             </Typography>
@@ -686,7 +696,7 @@ const FarmPage: React.FC = () => {
             </Box>
           </Box>
         )}
-        {farmIndex === GlobalConst.utils.LPFARM_INDEX && stakingInfos ? (
+        {farmIndex === GlobalConst.farmIndex.LPFARM_INDEX && stakingInfos ? (
           stakingInfos.map((info: StakingInfo, index) => (
             <FarmLPCard
               key={index}
@@ -695,7 +705,7 @@ const FarmPage: React.FC = () => {
               stakingAPY={stakingAPYs[index]}
             />
           ))
-        ) : farmIndex === GlobalConst.utils.DUALFARM_INDEX &&
+        ) : farmIndex === GlobalConst.farmIndex.DUALFARM_INDEX &&
           stakingDualInfos ? (
           stakingDualInfos.map((info: DualStakingInfo, index) => (
             <FarmDualCard

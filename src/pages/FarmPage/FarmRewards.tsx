@@ -16,20 +16,14 @@ const FarmRewards: React.FC<{ farmIndex: number; bulkPairs: any }> = ({
   const isMobile = useMediaQuery(breakpoints.down('xs'));
 
   const farmData = useUSDRewardsandFees(
-    farmIndex === GlobalConst.utils.LPFARM_INDEX,
+    farmIndex === GlobalConst.farmIndex.LPFARM_INDEX,
     bulkPairs,
   );
   const dQuickRewardSum = useMemo(() => {
-    if (chainId) {
-      const stakingData = returnStakingInfo()[chainId] ?? [];
-      const rewardSum = stakingData.reduce(
-        (total, item) => total + item.rate,
-        0,
-      );
-      return rewardSum;
-    } else {
-      return 0;
-    }
+    if (!chainId) return 0;
+    const stakingData = returnStakingInfo()[chainId] ?? [];
+    const rewardSum = stakingData.reduce((total, item) => total + item.rate, 0);
+    return rewardSum;
   }, [chainId]);
 
   const getRewardsSection = (isLPFarm: boolean) => (
@@ -83,7 +77,7 @@ const FarmRewards: React.FC<{ farmIndex: number; bulkPairs: any }> = ({
       py={1.5}
       bgcolor={palette.secondary.dark}
     >
-      {farmIndex === GlobalConst.utils.LPFARM_INDEX && (
+      {farmIndex === GlobalConst.farmIndex.LPFARM_INDEX && (
         <>
           <Box
             width={isMobile ? 1 : 1 / 3}
@@ -103,7 +97,7 @@ const FarmRewards: React.FC<{ farmIndex: number; bulkPairs: any }> = ({
           {getRewardsSection(true)}
         </>
       )}
-      {farmIndex === GlobalConst.utils.DUALFARM_INDEX &&
+      {farmIndex === GlobalConst.farmIndex.DUALFARM_INDEX &&
         getRewardsSection(false)}
     </Box>
   );

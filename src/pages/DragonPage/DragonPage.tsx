@@ -28,7 +28,12 @@ import DragonBg2 from 'assets/images/DragonBg2.svg';
 import DragonLairMask from 'assets/images/DragonLairMask.svg';
 import { ReactComponent as PriceExchangeIcon } from 'assets/images/PriceExchangeIcon.svg';
 import { ReactComponent as SearchIcon } from 'assets/images/SearchIcon.svg';
-import { getDaysCurrentYear, formatNumber, returnTokenFromKey } from 'utils';
+import {
+  getDaysCurrentYear,
+  formatNumber,
+  returnTokenFromKey,
+  getTokenAPRSyrup,
+} from 'utils';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 import { useInfiniteLoading } from 'utils/useInfiniteLoading';
 import { Skeleton } from '@material-ui/lab';
@@ -235,23 +240,9 @@ const DragonPage: React.FC = () => {
 
   const sortByAPR = useCallback(
     (a: SyrupInfo, b: SyrupInfo) => {
-      const tokenAPRA =
-        a.valueOfTotalStakedAmountInUSDC && a.valueOfTotalStakedAmountInUSDC > 0
-          ? ((a.rewards ?? 0) / a.valueOfTotalStakedAmountInUSDC) *
-            daysCurrentYear *
-            100
-          : 0;
-
-      const tokenAPRB =
-        b.valueOfTotalStakedAmountInUSDC && b.valueOfTotalStakedAmountInUSDC > 0
-          ? ((b.rewards ?? 0) / b.valueOfTotalStakedAmountInUSDC) *
-            daysCurrentYear *
-            100
-          : 0;
-
-      return (tokenAPRA > tokenAPRB ? -1 : 1) * sortIndex;
+      return (getTokenAPRSyrup(a) > getTokenAPRSyrup(b) ? -1 : 1) * sortIndex;
     },
-    [sortIndex, daysCurrentYear],
+    [sortIndex],
   );
   const sortByEarned = useCallback(
     (a: SyrupInfo, b: SyrupInfo) => {
