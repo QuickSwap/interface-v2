@@ -122,6 +122,7 @@ const FarmPage: React.FC = () => {
   const [bulkPairs, setBulkPairs] = useState<any>(null);
   const [pageIndex, setPageIndex] = useState(0);
   const [farmIndex, setFarmIndex] = useState(GlobalConst.utils.LPFARM_INDEX);
+  const [pageloading, setPageLoading] = useState(true); //this is used for not loading farms immediately when user is on farms page
   const [isEndedFarm, setIsEndedFarm] = useState(false);
   const [sortBy, setSortBy] = useState(0);
   const [sortDesc, setSortDesc] = useState(false);
@@ -134,28 +135,32 @@ const FarmPage: React.FC = () => {
 
   const addedLPStakingInfos = useStakingInfo(
     null,
-    farmIndex === GlobalConst.utils.DUALFARM_INDEX || isEndedFarm
+    pageloading || farmIndex === GlobalConst.utils.DUALFARM_INDEX || isEndedFarm
       ? 0
       : undefined,
-    farmIndex === GlobalConst.utils.DUALFARM_INDEX || isEndedFarm
+    pageloading || farmIndex === GlobalConst.utils.DUALFARM_INDEX || isEndedFarm
       ? 0
       : undefined,
     { search: farmSearch, isStaked: stakedOnly },
   );
   const addedLPStakingOldInfos = useOldStakingInfo(
     null,
-    farmIndex === GlobalConst.utils.DUALFARM_INDEX || !isEndedFarm
+    pageloading ||
+      farmIndex === GlobalConst.utils.DUALFARM_INDEX ||
+      !isEndedFarm
       ? 0
       : undefined,
-    farmIndex === GlobalConst.utils.DUALFARM_INDEX || !isEndedFarm
+    pageloading ||
+      farmIndex === GlobalConst.utils.DUALFARM_INDEX ||
+      !isEndedFarm
       ? 0
       : undefined,
     { search: farmSearch, isStaked: stakedOnly },
   );
   const addedDualStakingInfos = useDualStakingInfo(
     null,
-    farmIndex === GlobalConst.utils.LPFARM_INDEX ? 0 : undefined,
-    farmIndex === GlobalConst.utils.LPFARM_INDEX ? 0 : undefined,
+    pageloading || farmIndex === GlobalConst.utils.LPFARM_INDEX ? 0 : undefined,
+    pageloading || farmIndex === GlobalConst.utils.LPFARM_INDEX ? 0 : undefined,
     { search: farmSearch, isStaked: stakedOnly },
   );
 
@@ -326,6 +331,12 @@ const FarmPage: React.FC = () => {
     : null;
 
   useEffect(() => {
+    setStakingInfos(undefined);
+    setStakingDualInfos(undefined);
+    setTimeout(() => setPageLoading(false), 500); //load farms 0.5s after loading page
+  }, []);
+
+  useEffect(() => {
     if (chainId) {
       const stakingPairLists =
         returnStakingInfo()[chainId]?.map((item) => item.pair) ?? [];
@@ -353,7 +364,7 @@ const FarmPage: React.FC = () => {
       setStakingDualInfos(undefined);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isEndedFarm, farmIndex, farmSearch, stakingRewardAddress]);
+  }, [stakingRewardAddress]);
 
   useEffect(() => {
     if (farmIndex === GlobalConst.utils.LPFARM_INDEX) {

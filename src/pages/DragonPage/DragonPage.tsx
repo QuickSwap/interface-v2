@@ -161,6 +161,7 @@ const DragonPage: React.FC = () => {
   const daysCurrentYear = getDaysCurrentYear();
   const { palette, breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
+  const [pageLoading, setPageLoading] = useState(true); //this is used for not loading syrups immediately when user is on dragons page
   const [isQUICKRate, setIsQUICKRate] = useState(false);
   const [openStakeModal, setOpenStakeModal] = useState(false);
   const [openUnstakeModal, setOpenUnstakeModal] = useState(false);
@@ -193,14 +194,14 @@ const DragonPage: React.FC = () => {
 
   const addedStakingSyrupInfos = useSyrupInfo(
     null,
-    isEndedSyrup ? 0 : undefined,
-    isEndedSyrup ? 0 : undefined,
+    pageLoading || isEndedSyrup ? 0 : undefined,
+    pageLoading || isEndedSyrup ? 0 : undefined,
     { search: syrupSearch, isStaked: stakedOnly },
   );
   const addedOldSyrupInfos = useOldSyrupInfo(
     null,
-    isEndedSyrup ? undefined : 0,
-    isEndedSyrup ? undefined : 0,
+    pageLoading || isEndedSyrup ? undefined : 0,
+    pageLoading || isEndedSyrup ? undefined : 0,
     { search: syrupSearch, isStaked: stakedOnly },
   );
 
@@ -296,11 +297,16 @@ const DragonPage: React.FC = () => {
   );
 
   useEffect(() => {
+    setSyrupInfos(undefined);
+    setTimeout(() => setPageLoading(false), 500); //load syrups 0.5s after loading page
+  }, []);
+
+  useEffect(() => {
     setPageIndex(0);
     setSyrupInfos(sortedSyrupInfos.slice(0, LOADSYRUP_COUNT));
     return () => setSyrupInfos(undefined);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isEndedSyrup, syrupSearch, syrupRewardAddress]);
+  }, [syrupRewardAddress]);
 
   useEffect(() => {
     const currentSyrupInfos = syrupInfos || [];
