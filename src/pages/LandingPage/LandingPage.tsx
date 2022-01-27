@@ -110,7 +110,8 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
   },
   quickInfo: {
     textAlign: 'center',
-    margin: '128px 0 30px',
+    margin: '128px auto 30px',
+    width: '100%',
     maxWidth: 800,
     '& h2': {
       marginBottom: 60,
