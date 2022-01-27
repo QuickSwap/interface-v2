@@ -35,7 +35,7 @@ const AnalyticsLiquidityChart: React.FC = () => {
   const { palette } = useTheme();
   const { globalData } = useGlobalData();
   const [durationIndex, setDurationIndex] = useState(
-    GlobalConst.utils.ONE_MONTH_CHART,
+    GlobalConst.analyticChart.ONE_MONTH_CHART,
   );
   const [globalChartData, updateGlobalChartData] = useState<any[] | null>(null);
 
@@ -43,14 +43,14 @@ const AnalyticsLiquidityChart: React.FC = () => {
     const fetchChartData = async () => {
       updateGlobalChartData(null);
       const [newChartData] = await getChartData(
-        durationIndex === GlobalConst.utils.ALL_CHART
+        durationIndex === GlobalConst.analyticChart.ALL_CHART
           ? 0
           : getChartStartTime(durationIndex),
       );
       if (newChartData) {
         const chartData = getLimitedData(
           newChartData,
-          GlobalConst.utils.CHART_COUNT,
+          GlobalConst.analyticChart.CHART_COUNT,
         );
         updateGlobalChartData(chartData);
       }
@@ -96,11 +96,13 @@ const AnalyticsLiquidityChart: React.FC = () => {
           <Box
             className={classes.durationItem}
             bgcolor={
-              durationIndex === GlobalConst.utils.ONE_MONTH_CHART
+              durationIndex === GlobalConst.analyticChart.ONE_MONTH_CHART
                 ? palette.grey.A400
                 : 'transparent'
             }
-            onClick={() => setDurationIndex(GlobalConst.utils.ONE_MONTH_CHART)}
+            onClick={() =>
+              setDurationIndex(GlobalConst.analyticChart.ONE_MONTH_CHART)
+            }
           >
             <Typography variant='caption'>1M</Typography>
           </Box>
@@ -108,12 +110,12 @@ const AnalyticsLiquidityChart: React.FC = () => {
             className={classes.durationItem}
             ml={0.5}
             bgcolor={
-              durationIndex === GlobalConst.utils.THREE_MONTH_CHART
+              durationIndex === GlobalConst.analyticChart.THREE_MONTH_CHART
                 ? palette.grey.A400
                 : 'transparent'
             }
             onClick={() =>
-              setDurationIndex(GlobalConst.utils.THREE_MONTH_CHART)
+              setDurationIndex(GlobalConst.analyticChart.THREE_MONTH_CHART)
             }
           >
             <Typography variant='caption'>3M</Typography>
@@ -122,11 +124,13 @@ const AnalyticsLiquidityChart: React.FC = () => {
             className={classes.durationItem}
             ml={0.5}
             bgcolor={
-              durationIndex === GlobalConst.utils.ONE_YEAR_CHART
+              durationIndex === GlobalConst.analyticChart.ONE_YEAR_CHART
                 ? palette.grey.A400
                 : 'transparent'
             }
-            onClick={() => setDurationIndex(GlobalConst.utils.ONE_YEAR_CHART)}
+            onClick={() =>
+              setDurationIndex(GlobalConst.analyticChart.ONE_YEAR_CHART)
+            }
           >
             <Typography variant='caption'>1Y</Typography>
           </Box>
@@ -134,11 +138,13 @@ const AnalyticsLiquidityChart: React.FC = () => {
             className={classes.durationItem}
             ml={0.5}
             bgcolor={
-              durationIndex === GlobalConst.utils.ALL_CHART
+              durationIndex === GlobalConst.analyticChart.ALL_CHART
                 ? palette.grey.A400
                 : 'transparent'
             }
-            onClick={() => setDurationIndex(GlobalConst.utils.ALL_CHART)}
+            onClick={() =>
+              setDurationIndex(GlobalConst.analyticChart.ALL_CHART)
+            }
           >
             <Typography variant='caption'>All</Typography>
           </Box>
@@ -191,7 +197,7 @@ const AnalyticsLiquidityChart: React.FC = () => {
             categories={getChartDates(globalChartData, durationIndex)}
           />
         ) : (
-          <Skeleton variant='rect' width='100%' height={250} />
+          <Skeleton variant='rect' width='100%' height={223} />
         )}
       </Box>
     </>

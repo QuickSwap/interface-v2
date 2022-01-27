@@ -1773,13 +1773,15 @@ export function getChartDates(chartData: any[] | null, durationIndex: number) {
         dates.push(month);
       }
       if (
-        durationIndex === GlobalConst.utils.ONE_MONTH_CHART ||
-        durationIndex === GlobalConst.utils.THREE_MONTH_CHART
+        durationIndex === GlobalConst.analyticChart.ONE_MONTH_CHART ||
+        durationIndex === GlobalConst.analyticChart.THREE_MONTH_CHART
       ) {
         const dateStr = formatDateFromTimeStamp(Number(value.date), 'D');
         if (
           Number(dateStr) %
-            (durationIndex === GlobalConst.utils.ONE_MONTH_CHART ? 3 : 7) ===
+            (durationIndex === GlobalConst.analyticChart.ONE_MONTH_CHART
+              ? 3
+              : 7) ===
           0
         ) {
           //Select dates(one date per 3 days for 1 month chart and 7 days for 3 month chart) for x axis values of volume chart on week mode
@@ -1798,8 +1800,10 @@ export function getChartStartTime(durationIndex: number) {
   const startTime =
     utcEndTime
       .subtract(
-        durationIndex === GlobalConst.utils.THREE_MONTH_CHART ? 3 : 1,
-        durationIndex === GlobalConst.utils.ONE_YEAR_CHART ? 'year' : 'month',
+        durationIndex === GlobalConst.analyticChart.THREE_MONTH_CHART ? 3 : 1,
+        durationIndex === GlobalConst.analyticChart.ONE_YEAR_CHART
+          ? 'year'
+          : 'month',
       )
       .endOf('day')
       .unix() - 1;

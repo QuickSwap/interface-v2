@@ -38,7 +38,7 @@ const AnalyticsVolumeChart: React.FC = () => {
   const { palette } = useTheme();
   const [volumeIndex, setVolumeIndex] = useState(DAY_VOLUME);
   const [durationIndex, setDurationIndex] = useState(
-    GlobalConst.utils.ONE_MONTH_CHART,
+    GlobalConst.analyticChart.ONE_MONTH_CHART,
   );
   const [selectedVolumeIndex, setSelectedVolumeIndex] = useState(-1);
   const { globalData } = useGlobalData();
@@ -48,18 +48,18 @@ const AnalyticsVolumeChart: React.FC = () => {
     const fetchChartData = async () => {
       updateGlobalChartData(null);
       const [newChartData, newWeeklyData] = await getChartData(
-        durationIndex === GlobalConst.utils.ALL_CHART
+        durationIndex === GlobalConst.analyticChart.ALL_CHART
           ? 0
           : getChartStartTime(durationIndex),
       );
       if (newChartData && newWeeklyData) {
         const dayItems = getLimitedData(
           newChartData,
-          GlobalConst.utils.CHART_COUNT,
+          GlobalConst.analyticChart.CHART_COUNT,
         );
         const weekItems = getLimitedData(
           newWeeklyData,
-          GlobalConst.utils.CHART_COUNT,
+          GlobalConst.analyticChart.CHART_COUNT,
         );
         updateGlobalChartData({ day: dayItems, week: weekItems });
       }
@@ -83,8 +83,8 @@ const AnalyticsVolumeChart: React.FC = () => {
           dates.push(month);
         }
         if (
-          durationIndex === GlobalConst.utils.ONE_MONTH_CHART ||
-          durationIndex === GlobalConst.utils.THREE_MONTH_CHART
+          durationIndex === GlobalConst.analyticChart.ONE_MONTH_CHART ||
+          durationIndex === GlobalConst.analyticChart.THREE_MONTH_CHART
         ) {
           const dateStr = formatDateFromTimeStamp(Number(value.date), 'D');
           if (Number(dateStr) % 2 === 0) {
@@ -270,12 +270,12 @@ const AnalyticsVolumeChart: React.FC = () => {
             <Box
               className={classes.volumeType}
               bgcolor={
-                durationIndex === GlobalConst.utils.ONE_MONTH_CHART
+                durationIndex === GlobalConst.analyticChart.ONE_MONTH_CHART
                   ? palette.grey.A400
                   : 'transparent'
               }
               onClick={() =>
-                setDurationIndex(GlobalConst.utils.ONE_MONTH_CHART)
+                setDurationIndex(GlobalConst.analyticChart.ONE_MONTH_CHART)
               }
             >
               <Typography variant='caption'>1M</Typography>
@@ -284,12 +284,12 @@ const AnalyticsVolumeChart: React.FC = () => {
               className={classes.volumeType}
               ml={0.5}
               bgcolor={
-                durationIndex === GlobalConst.utils.THREE_MONTH_CHART
+                durationIndex === GlobalConst.analyticChart.THREE_MONTH_CHART
                   ? palette.grey.A400
                   : 'transparent'
               }
               onClick={() =>
-                setDurationIndex(GlobalConst.utils.THREE_MONTH_CHART)
+                setDurationIndex(GlobalConst.analyticChart.THREE_MONTH_CHART)
               }
             >
               <Typography variant='caption'>3M</Typography>
@@ -298,11 +298,13 @@ const AnalyticsVolumeChart: React.FC = () => {
               className={classes.volumeType}
               ml={0.5}
               bgcolor={
-                durationIndex === GlobalConst.utils.ONE_YEAR_CHART
+                durationIndex === GlobalConst.analyticChart.ONE_YEAR_CHART
                   ? palette.grey.A400
                   : 'transparent'
               }
-              onClick={() => setDurationIndex(GlobalConst.utils.ONE_YEAR_CHART)}
+              onClick={() =>
+                setDurationIndex(GlobalConst.analyticChart.ONE_YEAR_CHART)
+              }
             >
               <Typography variant='caption'>1Y</Typography>
             </Box>
@@ -310,11 +312,13 @@ const AnalyticsVolumeChart: React.FC = () => {
               className={classes.volumeType}
               ml={0.5}
               bgcolor={
-                durationIndex === GlobalConst.utils.ALL_CHART
+                durationIndex === GlobalConst.analyticChart.ALL_CHART
                   ? palette.grey.A400
                   : 'transparent'
               }
-              onClick={() => setDurationIndex(GlobalConst.utils.ALL_CHART)}
+              onClick={() =>
+                setDurationIndex(GlobalConst.analyticChart.ALL_CHART)
+              }
             >
               <Typography variant='caption'>All</Typography>
             </Box>

@@ -46,7 +46,7 @@ const AnalyticsPairChart: React.FC<{ pairData: any }> = ({ pairData }) => {
   const pairAddress = match.params.id;
   const [pairChartData, setPairChartData] = useState<any[] | null>(null);
   const [durationIndex, setDurationIndex] = useState(
-    GlobalConst.utils.ONE_MONTH_CHART,
+    GlobalConst.analyticChart.ONE_MONTH_CHART,
   );
 
   const usingUtVolume =
@@ -127,14 +127,14 @@ const AnalyticsPairChart: React.FC<{ pairData: any }> = ({ pairData }) => {
       setPairChartData(null);
       const chartData = await getPairChartData(
         pairAddress,
-        durationIndex === GlobalConst.utils.ALL_CHART
+        durationIndex === GlobalConst.analyticChart.ALL_CHART
           ? 0
           : getChartStartTime(durationIndex),
       );
       if (chartData && chartData.length > 0) {
         const newChartData = getLimitedData(
           chartData,
-          GlobalConst.utils.CHART_COUNT,
+          GlobalConst.analyticChart.CHART_COUNT,
         );
         setPairChartData(newChartData);
       }
@@ -228,12 +228,12 @@ const AnalyticsPairChart: React.FC<{ pairData: any }> = ({ pairData }) => {
             <Box
               className={classes.chartType}
               bgcolor={
-                durationIndex === GlobalConst.utils.ONE_MONTH_CHART
+                durationIndex === GlobalConst.analyticChart.ONE_MONTH_CHART
                   ? palette.grey.A400
                   : 'transparent'
               }
               onClick={() =>
-                setDurationIndex(GlobalConst.utils.ONE_MONTH_CHART)
+                setDurationIndex(GlobalConst.analyticChart.ONE_MONTH_CHART)
               }
             >
               <Typography variant='caption'>1M</Typography>
@@ -242,12 +242,12 @@ const AnalyticsPairChart: React.FC<{ pairData: any }> = ({ pairData }) => {
               className={classes.chartType}
               ml={0.5}
               bgcolor={
-                durationIndex === GlobalConst.utils.THREE_MONTH_CHART
+                durationIndex === GlobalConst.analyticChart.THREE_MONTH_CHART
                   ? palette.grey.A400
                   : 'transparent'
               }
               onClick={() =>
-                setDurationIndex(GlobalConst.utils.THREE_MONTH_CHART)
+                setDurationIndex(GlobalConst.analyticChart.THREE_MONTH_CHART)
               }
             >
               <Typography variant='caption'>3M</Typography>
@@ -256,11 +256,13 @@ const AnalyticsPairChart: React.FC<{ pairData: any }> = ({ pairData }) => {
               className={classes.chartType}
               ml={0.5}
               bgcolor={
-                durationIndex === GlobalConst.utils.ONE_YEAR_CHART
+                durationIndex === GlobalConst.analyticChart.ONE_YEAR_CHART
                   ? palette.grey.A400
                   : 'transparent'
               }
-              onClick={() => setDurationIndex(GlobalConst.utils.ONE_YEAR_CHART)}
+              onClick={() =>
+                setDurationIndex(GlobalConst.analyticChart.ONE_YEAR_CHART)
+              }
             >
               <Typography variant='caption'>1Y</Typography>
             </Box>
@@ -268,11 +270,13 @@ const AnalyticsPairChart: React.FC<{ pairData: any }> = ({ pairData }) => {
               className={classes.chartType}
               ml={0.5}
               bgcolor={
-                durationIndex === GlobalConst.utils.ALL_CHART
+                durationIndex === GlobalConst.analyticChart.ALL_CHART
                   ? palette.grey.A400
                   : 'transparent'
               }
-              onClick={() => setDurationIndex(GlobalConst.utils.ALL_CHART)}
+              onClick={() =>
+                setDurationIndex(GlobalConst.analyticChart.ALL_CHART)
+              }
             >
               <Typography variant='caption'>All</Typography>
             </Box>
@@ -294,7 +298,7 @@ const AnalyticsPairChart: React.FC<{ pairData: any }> = ({ pairData }) => {
             categories={getChartDates(pairChartData, durationIndex)}
           />
         ) : (
-          <Skeleton variant='rect' width='100%' height={200} />
+          <Skeleton variant='rect' width='100%' height={217} />
         )}
       </Box>
     </>
