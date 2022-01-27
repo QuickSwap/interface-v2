@@ -32,40 +32,10 @@ const FarmRewards: React.FC<{ farmIndex: number; bulkPairs: any }> = ({
     }
   }, [chainId]);
 
-  return (
-    <Box
-      display='flex'
-      flexWrap='wrap'
-      my={2}
-      borderRadius={10}
-      py={1.5}
-      bgcolor={palette.secondary.dark}
-    >
-      {farmIndex === GlobalConst.utils.LPFARM_INDEX && (
-        <Box
-          width={isMobile ? 1 : 1 / 3}
-          py={1.5}
-          borderRight={`1px solid ${palette.divider}`}
-          textAlign='center'
-        >
-          <Box mb={1}>
-            <Typography variant='caption' color='textSecondary'>
-              Reward Rate
-            </Typography>
-          </Box>
-          <Typography variant='subtitle2' style={{ fontWeight: 600 }}>
-            {dQuickRewardSum.toLocaleString()} dQuick / Day
-          </Typography>
-        </Box>
-      )}
+  const getRewardsSection = (isLPFarm: boolean) => (
+    <>
       <Box
-        width={
-          isMobile
-            ? 1
-            : farmIndex === GlobalConst.utils.LPFARM_INDEX
-            ? 1 / 3
-            : 1 / 2
-        }
+        width={isMobile ? 1 : isLPFarm ? 1 / 3 : 1 / 2}
         p={1.5}
         borderRight={isMobile ? 'none' : `1px solid ${palette.divider}`}
         textAlign='center'
@@ -84,13 +54,7 @@ const FarmRewards: React.FC<{ farmIndex: number; bulkPairs: any }> = ({
         )}
       </Box>
       <Box
-        width={
-          isMobile
-            ? 1
-            : farmIndex === GlobalConst.utils.LPFARM_INDEX
-            ? 1 / 3
-            : 1 / 2
-        }
+        width={isMobile ? 1 : isLPFarm ? 1 / 3 : 1 / 2}
         p={1.5}
         textAlign='center'
       >
@@ -107,6 +71,40 @@ const FarmRewards: React.FC<{ farmIndex: number; bulkPairs: any }> = ({
           <Skeleton width='100%' height='28px' />
         )}
       </Box>
+    </>
+  );
+
+  return (
+    <Box
+      display='flex'
+      flexWrap='wrap'
+      my={2}
+      borderRadius={10}
+      py={1.5}
+      bgcolor={palette.secondary.dark}
+    >
+      {farmIndex === GlobalConst.utils.LPFARM_INDEX && (
+        <>
+          <Box
+            width={isMobile ? 1 : 1 / 3}
+            py={1.5}
+            borderRight={`1px solid ${palette.divider}`}
+            textAlign='center'
+          >
+            <Box mb={1}>
+              <Typography variant='caption' color='textSecondary'>
+                Reward Rate
+              </Typography>
+            </Box>
+            <Typography variant='subtitle2' style={{ fontWeight: 600 }}>
+              {dQuickRewardSum.toLocaleString()} dQuick / Day
+            </Typography>
+          </Box>
+          {getRewardsSection(true)}
+        </>
+      )}
+      {farmIndex === GlobalConst.utils.DUALFARM_INDEX &&
+        getRewardsSection(false)}
     </Box>
   );
 };
