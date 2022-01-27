@@ -742,11 +742,12 @@ export const getPairTransactions = async (pairAddress: string) => {
   }
 };
 
-export const getTokenChartData = async (tokenAddress: string) => {
+export const getTokenChartData = async (
+  tokenAddress: string,
+  startTime: number,
+) => {
   let data: any[] = [];
   const utcEndTime = dayjs.utc();
-  const utcStartTime = utcEndTime.subtract(2, 'month');
-  const startTime = utcStartTime.endOf('day').unix() - 1;
   try {
     let allFound = false;
     let skip = 0;
@@ -810,11 +811,12 @@ export const getTokenChartData = async (tokenAddress: string) => {
   return data;
 };
 
-export const getPairChartData = async (pairAddress: string) => {
+export const getPairChartData = async (
+  pairAddress: string,
+  startTime: number,
+) => {
   let data: any[] = [];
   const utcEndTime = dayjs.utc();
-  const utcStartTime = utcEndTime.subtract(2, 'month');
-  const startTime = utcStartTime.unix() - 1;
   try {
     let allFound = false;
     let skip = 0;
@@ -1756,4 +1758,68 @@ export function getPriceToQUICKSyrup(syrup: SyrupInfo) {
     returnTokenFromKey('QUICK'),
   );
   return isQUICKStakingToken ? 1 : Number(syrup.dQUICKtoQUICK.toSignificant());
+}
+
+export function getChartDates(chartData: any[] | null, durationIndex: number) {
+  if (chartData) {
+    const dates: string[] = [];
+    chartData.forEach((value: any, ind: number) => {
+      const month = formatDateFromTimeStamp(Number(value.date), 'MMM');
+      const monthLastDate =
+        ind > 0
+          ? formatDateFromTimeStamp(Number(chartData[ind - 1].date), 'MMM')
+          : '';
+      if (monthLastDate !== month) {
+        dates.push(month);
+      }
+      if (
+        durationIndex === GlobalConst.utils.ONE_MONTH_CHART ||
+        durationIndex === GlobalConst.utils.THREE_MONTH_CHART
+      ) {
+        const dateStr = formatDateFromTimeStamp(Number(value.date), 'D');
+        if (
+          Number(dateStr) %
+            (durationIndex === GlobalConst.utils.ONE_MONTH_CHART ? 3 : 7) ===
+          0
+        ) {
+          //Select dates(one date per 3 days for 1 month chart and 7 days for 3 month chart) for x axis values of volume chart on week mode
+          dates.push(dateStr);
+        }
+      }
+    });
+    return dates;
+  } else {
+    return [];
+  }
+}
+
+export function getChartStartTime(durationIndex: number) {
+  const utcEndTime = dayjs.utc();
+  const startTime =
+    utcEndTime
+      .subtract(
+        durationIndex === GlobalConst.utils.THREE_MONTH_CHART ? 3 : 1,
+        durationIndex === GlobalConst.utils.ONE_YEAR_CHART ? 'year' : 'month',
+      )
+      .endOf('day')
+      .unix() - 1;
+  return startTime;
+}
+
+export function getLimitedData(data: any[], count: number) {
+  const dataCount = data.length;
+  const newArray: any[] = [];
+  data.forEach((value, index) => {
+    if (dataCount <= count) {
+      newArray.push(value);
+    } else {
+      if (
+        index ===
+        dataCount - Math.floor((dataCount / count) * (count - newArray.length))
+      ) {
+        newArray.push(value);
+      }
+    }
+  });
+  return newArray;
 }

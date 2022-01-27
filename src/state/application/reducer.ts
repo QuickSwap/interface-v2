@@ -8,7 +8,6 @@ import {
   setOpenModal,
   updateEthPrice,
   updateGlobalData,
-  updateGlobalChartData,
   addBookMarkToken,
   removeBookmarkToken,
   updateBookmarkTokens,
@@ -30,7 +29,6 @@ export interface ApplicationState {
   readonly openModal: ApplicationModal | null;
   readonly ethPrice: any;
   readonly globalData: any;
-  readonly globalChartData: any;
   readonly bookmarkedTokens: string[];
   readonly bookmarkedPairs: string[];
   readonly analyticToken: any;
@@ -42,7 +40,6 @@ const initialState: ApplicationState = {
   popupList: [],
   openModal: null,
   globalData: null,
-  globalChartData: null,
   ethPrice: {
     price: null,
     oneDayPrice: null,
@@ -105,9 +102,6 @@ export default createReducer(initialState, (builder) =>
     )
     .addCase(updateGlobalData, (state, { payload: { data } }) => {
       state.globalData = data;
-    })
-    .addCase(updateGlobalChartData, (state, { payload }) => {
-      state.globalChartData = payload;
     })
     .addCase(addBookMarkToken, (state, { payload }) => {
       const tokens = state.bookmarkedTokens;

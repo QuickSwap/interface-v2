@@ -4,32 +4,29 @@ import { Box, Typography, Grid, useMediaQuery } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { Skeleton } from '@material-ui/lab';
 import { ChainId, Token } from '@uniswap/sdk';
-import moment from 'moment';
 import cx from 'classnames';
 import {
   shortenAddress,
   getEtherscanLink,
-  formatCompact,
   getFormattedPrice,
   getPriceColor,
   formatNumber,
 } from 'utils';
 import { useActiveWeb3React } from 'hooks';
-import { CurrencyLogo, PairTable, AreaChart } from 'components';
+import { CurrencyLogo, PairTable } from 'components';
 import { useBookmarkTokens } from 'state/application/hooks';
 import {
   getTokenInfo,
   getEthPrice,
   getTokenPairs2,
-  getTokenChartData,
   getBulkPairData,
-  formatDateFromTimeStamp,
 } from 'utils';
 import { ReactComponent as StarChecked } from 'assets/images/StarChecked.svg';
 import { ReactComponent as StarUnchecked } from 'assets/images/StarUnchecked.svg';
 import { getAddress } from '@ethersproject/address';
 import { GlobalConst } from 'constants/index';
 import AnalyticsHeader from 'pages/AnalyticsPage/AnalyticsHeader';
+import AnalyticsTokenChart from './AnalyticsTokenChart';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   panel: {
@@ -80,19 +77,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
   filledButton: {
     background: 'linear-gradient(279deg, rgb(0, 76, 230), rgb(61, 113, 255))',
   },
-  chartType: {
-    height: 20,
-    padding: '0 6px',
-    borderRadius: 10,
-    display: 'flex',
-    alignItems: 'center',
-    cursor: 'pointer',
-  },
 }));
-
-const CHART_VOLUME = 0;
-const CHART_LIQUIDITY = 1;
-const CHART_PRICE = 2;
 
 const AnalyticsTokenDetails: React.FC = () => {
   const classes = useStyles();
@@ -106,8 +91,6 @@ const AnalyticsTokenDetails: React.FC = () => {
   const currency = token
     ? new Token(ChainId.MATIC, getAddress(token.id), token.decimals)
     : undefined;
-  const [tokenChartData, updateTokenChartData] = useState<any>(null);
-  const [chartIndex, setChartIndex] = useState(CHART_VOLUME);
   const [tokenPairs, updateTokenPairs] = useState<any>(null);
   const {
     bookmarkTokens,
@@ -126,95 +109,7 @@ const AnalyticsTokenDetails: React.FC = () => {
     fetchTokenInfo();
   }, [tokenAddress]);
 
-  const chartData = useMemo(() => {
-    if (tokenChartData) {
-      return tokenChartData.map((item: any) =>
-        chartIndex === CHART_VOLUME
-          ? Number(item.dailyVolumeUSD)
-          : chartIndex === CHART_LIQUIDITY
-          ? Number(item.totalLiquidityUSD)
-          : Number(item.priceUSD),
-      );
-    } else {
-      return null;
-    }
-  }, [tokenChartData, chartIndex]);
-
-  const yAxisValues = useMemo(() => {
-    if (chartData) {
-      const minValue = Math.min(...chartData) * 0.99;
-      const maxValue = Math.max(...chartData) * 1.01;
-      const step = (maxValue - minValue) / 8;
-      const values = [];
-      for (let i = 0; i < 9; i++) {
-        values.push(maxValue - i * step);
-      }
-      return values;
-    } else {
-      return undefined;
-    }
-  }, [chartData]);
-
-  const chartDates = useMemo(() => {
-    if (tokenChartData) {
-      const dates: string[] = [];
-      tokenChartData.forEach((value: any, ind: number) => {
-        const month = formatDateFromTimeStamp(Number(value.date), 'MMM');
-        const monthLastDate =
-          ind > 0
-            ? formatDateFromTimeStamp(
-                Number(tokenChartData[ind - 1].date),
-                'MMM',
-              )
-            : '';
-        if (monthLastDate !== month) {
-          dates.push(month);
-        }
-        const dateStr = formatDateFromTimeStamp(Number(value.date), 'D');
-        if (Number(dateStr) % 7 === 0) {
-          dates.push(dateStr);
-        }
-      });
-      return dates;
-    } else {
-      return [];
-    }
-  }, [tokenChartData]);
-
-  const currentData = useMemo(
-    () =>
-      token
-        ? chartIndex === CHART_VOLUME
-          ? token.oneDayVolumeUSD
-          : chartIndex === CHART_LIQUIDITY
-          ? token.totalLiquidityUSD
-          : token.priceUSD
-        : null,
-    [token, chartIndex],
-  );
-  const currentPercent = useMemo(
-    () =>
-      token
-        ? chartIndex === CHART_VOLUME
-          ? token.volumeChangeUSD
-          : chartIndex === CHART_LIQUIDITY
-          ? token.liquidityChangeUSD
-          : token.priceChangeUSD
-        : null,
-    [token, chartIndex],
-  );
-
   useEffect(() => {
-    async function fetchTokenChartData() {
-      const chartData = await getTokenChartData(tokenAddress);
-      if (
-        chartData &&
-        (!tokenChartData ||
-          (tokenChartData.length > 0 && tokenChartData[0].id !== tokenAddress))
-      ) {
-        updateTokenChartData(chartData);
-      }
-    }
     async function fetchTokenPairs() {
       const [newPrice] = await getEthPrice();
       const tokenPairs = await getTokenPairs2(tokenAddress);
@@ -229,15 +124,13 @@ const AnalyticsTokenDetails: React.FC = () => {
       }
     }
     fetchTokenPairs();
-    fetchTokenChartData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [updateTokenPairs, updateTokenChartData, tokenAddress]);
+  }, [updateTokenPairs, tokenAddress]);
 
   const tokenPercentColor = getPriceColor(
     token ? Number(token.priceChangeUSD) : 0,
     palette,
   );
-  const currentPercentColor = getPriceColor(Number(currentPercent), palette);
 
   return (
     <>
@@ -314,110 +207,7 @@ const AnalyticsTokenDetails: React.FC = () => {
           <Box width={1} className={classes.panel} mt={4}>
             <Grid container>
               <Grid item xs={12} sm={12} md={6}>
-                <Box
-                  display='flex'
-                  flexWrap='wrap'
-                  justifyContent='space-between'
-                >
-                  <Box mt={1.5}>
-                    <Typography variant='caption'>
-                      {chartIndex === CHART_VOLUME
-                        ? 'Volume'
-                        : chartIndex === CHART_LIQUIDITY
-                        ? 'Liquidity'
-                        : 'Price'}
-                    </Typography>
-                    <Box mt={1}>
-                      {currentData && currentPercent ? (
-                        <>
-                          <Box display='flex' alignItems='center'>
-                            <Typography
-                              variant='h4'
-                              style={{ color: palette.text.primary }}
-                            >
-                              $
-                              {currentData > 100000
-                                ? formatCompact(currentData)
-                                : formatNumber(currentData)}
-                            </Typography>
-                            <Box
-                              className={classes.priceChangeWrapper}
-                              ml={1}
-                              bgcolor={currentPercentColor.bgColor}
-                              color={currentPercentColor.textColor}
-                            >
-                              <Typography variant='body2'>
-                                {getFormattedPrice(Number(currentPercent))}%
-                              </Typography>
-                            </Box>
-                          </Box>
-                          <Box>
-                            <Typography variant='caption'>
-                              {moment().format('MMM DD, YYYY')}
-                            </Typography>
-                          </Box>
-                        </>
-                      ) : (
-                        <Skeleton variant='rect' width='120px' height='30px' />
-                      )}
-                    </Box>
-                  </Box>
-                  <Box display='flex' mt={1.5}>
-                    <Box
-                      mr={1}
-                      bgcolor={
-                        chartIndex === CHART_VOLUME
-                          ? palette.grey.A400
-                          : 'transparent'
-                      }
-                      className={classes.chartType}
-                      onClick={() => setChartIndex(CHART_VOLUME)}
-                    >
-                      <Typography variant='caption'>Volume</Typography>
-                    </Box>
-                    <Box
-                      mr={1}
-                      bgcolor={
-                        chartIndex === CHART_LIQUIDITY
-                          ? palette.grey.A400
-                          : 'transparent'
-                      }
-                      className={classes.chartType}
-                      onClick={() => setChartIndex(CHART_LIQUIDITY)}
-                    >
-                      <Typography variant='caption'>Liquidity</Typography>
-                    </Box>
-                    <Box
-                      bgcolor={
-                        chartIndex === CHART_PRICE
-                          ? palette.grey.A400
-                          : 'transparent'
-                      }
-                      className={classes.chartType}
-                      onClick={() => setChartIndex(CHART_PRICE)}
-                    >
-                      <Typography variant='caption'>Price</Typography>
-                    </Box>
-                  </Box>
-                </Box>
-                <Box mt={2} width={1}>
-                  {tokenChartData ? (
-                    <AreaChart
-                      data={chartData}
-                      yAxisValues={yAxisValues}
-                      dates={tokenChartData.map((value: any) =>
-                        moment(value.date * 1000)
-                          .add(1, 'day')
-                          .unix(),
-                      )}
-                      width='100%'
-                      height={240}
-                      categories={chartDates}
-                    />
-                  ) : (
-                    <Skeleton variant='rect' width='100%' height={200} />
-                  )}
-                </Box>
+                <AnalyticsTokenChart token={token} />
               </Grid>
               <Grid item xs={12} sm={12} md={6}>
                 <Box
