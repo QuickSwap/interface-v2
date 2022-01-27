@@ -76,6 +76,9 @@ const AreaChart: React.FC<AreaChartProps> = ({
         show: false,
       },
       width: '100%',
+      zoom: {
+        enabled: false,
+      },
     },
     dataLabels: {
       enabled: false,
