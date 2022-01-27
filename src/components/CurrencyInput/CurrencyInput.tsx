@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Currency } from '@uniswap/sdk';
 import { Box, Typography } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
@@ -122,6 +122,10 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
   );
   const usdPrice = Number(useUSDCPrice(currency)?.toSignificant()) || 0;
 
+  const handleOpenModal = useCallback(() => {
+    setModalOpen(true);
+  }, [setModalOpen]);
+
   return (
     <Box
       id={id}
@@ -149,9 +153,7 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
             classes.currencyButton,
             currency ? classes.currencySelected : classes.noCurrency,
           )}
-          onClick={() => {
-            setModalOpen(true);
-          }}
+          onClick={handleOpenModal}
         >
           {currency ? (
             <>
