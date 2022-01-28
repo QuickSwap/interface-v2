@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { ArrowUp, ArrowDown } from 'react-feather';
 import cx from 'classnames';
@@ -28,7 +28,12 @@ import DragonBg2 from 'assets/images/DragonBg2.svg';
 import DragonLairMask from 'assets/images/DragonLairMask.svg';
 import { ReactComponent as PriceExchangeIcon } from 'assets/images/PriceExchangeIcon.svg';
 import { ReactComponent as SearchIcon } from 'assets/images/SearchIcon.svg';
-import { getDaysCurrentYear, formatNumber, returnTokenFromKey } from 'utils';
+import {
+  getDaysCurrentYear,
+  formatNumber,
+  returnTokenFromKey,
+  getTokenAPRSyrup,
+} from 'utils';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 import { useInfiniteLoading } from 'utils/useInfiniteLoading';
 import { Skeleton } from '@material-ui/lab';
@@ -161,6 +166,7 @@ const DragonPage: React.FC = () => {
   const daysCurrentYear = getDaysCurrentYear();
   const { palette, breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
+  const [pageLoading, setPageLoading] = useState(true); //this is used for not loading syrups immediately when user is on dragons page
   const [isQUICKRate, setIsQUICKRate] = useState(false);
   const [openStakeModal, setOpenStakeModal] = useState(false);
   const [openUnstakeModal, setOpenUnstakeModal] = useState(false);
@@ -193,14 +199,14 @@ const DragonPage: React.FC = () => {
 
   const addedStakingSyrupInfos = useSyrupInfo(
     null,
-    isEndedSyrup ? 0 : undefined,
-    isEndedSyrup ? 0 : undefined,
+    pageLoading || isEndedSyrup ? 0 : undefined,
+    pageLoading || isEndedSyrup ? 0 : undefined,
     { search: syrupSearch, isStaked: stakedOnly },
   );
   const addedOldSyrupInfos = useOldSyrupInfo(
     null,
-    isEndedSyrup ? undefined : 0,
-    isEndedSyrup ? undefined : 0,
+    pageLoading || isEndedSyrup ? undefined : 0,
+    pageLoading || isEndedSyrup ? undefined : 0,
     { search: syrupSearch, isStaked: stakedOnly },
   );
 
@@ -210,50 +216,68 @@ const DragonPage: React.FC = () => {
 
   const sortIndex = sortDesc ? 1 : -1;
 
+  const sortByToken = useCallback(
+    (a: SyrupInfo, b: SyrupInfo) => {
+      const syrupStrA = a.token.symbol ?? '';
+      const syrupStrB = b.token.symbol ?? '';
+      return (syrupStrA > syrupStrB ? -1 : 1) * sortIndex;
+    },
+    [sortIndex],
+  );
+
+  const sortByDeposit = useCallback(
+    (a: SyrupInfo, b: SyrupInfo) => {
+      const depositA =
+        a.valueOfTotalStakedAmountInUSDC ??
+        Number(a.totalStakedAmount.toSignificant());
+      const depositB =
+        b.valueOfTotalStakedAmountInUSDC ??
+        Number(b.totalStakedAmount.toSignificant());
+      return (depositA > depositB ? -1 : 1) * sortIndex;
+    },
+    [sortIndex],
+  );
+
+  const sortByAPR = useCallback(
+    (a: SyrupInfo, b: SyrupInfo) => {
+      return (getTokenAPRSyrup(a) > getTokenAPRSyrup(b) ? -1 : 1) * sortIndex;
+    },
+    [sortIndex],
+  );
+  const sortByEarned = useCallback(
+    (a: SyrupInfo, b: SyrupInfo) => {
+      const earnedUSDA =
+        Number(a.earnedAmount.toSignificant()) *
+        Number(a.rewardTokenPriceinUSD ?? 0);
+      const earnedUSDB =
+        Number(b.earnedAmount.toSignificant()) *
+        Number(b.rewardTokenPriceinUSD ?? 0);
+      return (earnedUSDA > earnedUSDB ? -1 : 1) * sortIndex;
+    },
+    [sortIndex],
+  );
+
   const sortedSyrupInfos = useMemo(() => {
     return addedSyrupInfos.sort((a, b) => {
       if (sortBy === TOKEN_COLUMN) {
-        const syrupStrA = a.token.symbol ?? '';
-        const syrupStrB = b.token.symbol ?? '';
-        return (syrupStrA > syrupStrB ? -1 : 1) * sortIndex;
+        return sortByToken(a, b);
       } else if (sortBy === DEPOSIT_COLUMN) {
-        const depositA =
-          a.valueOfTotalStakedAmountInUSDC ??
-          Number(a.totalStakedAmount.toSignificant());
-        const depositB =
-          b.valueOfTotalStakedAmountInUSDC ??
-          Number(b.totalStakedAmount.toSignificant());
-        return (depositA > depositB ? -1 : 1) * sortIndex;
+        return sortByDeposit(a, b);
       } else if (sortBy === APR_COLUMN) {
-        const tokenAPRA =
-          a.valueOfTotalStakedAmountInUSDC &&
-          a.valueOfTotalStakedAmountInUSDC > 0
-            ? ((a.rewards ?? 0) / a.valueOfTotalStakedAmountInUSDC) *
-              daysCurrentYear *
-              100
-            : 0;
-
-        const tokenAPRB =
-          b.valueOfTotalStakedAmountInUSDC &&
-          b.valueOfTotalStakedAmountInUSDC > 0
-            ? ((b.rewards ?? 0) / b.valueOfTotalStakedAmountInUSDC) *
-              daysCurrentYear *
-              100
-            : 0;
-
-        return (tokenAPRA > tokenAPRB ? -1 : 1) * sortIndex;
+        return sortByAPR(a, b);
       } else if (sortBy === EARNED_COLUMN) {
-        const earnedUSDA =
-          Number(a.earnedAmount.toSignificant()) *
-          Number(a.rewardTokenPriceinUSD ?? 0);
-        const earnedUSDB =
-          Number(b.earnedAmount.toSignificant()) *
-          Number(b.rewardTokenPriceinUSD ?? 0);
-        return (earnedUSDA > earnedUSDB ? -1 : 1) * sortIndex;
+        return sortByEarned(a, b);
       }
       return 1;
     });
-  }, [addedSyrupInfos, sortIndex, sortBy, daysCurrentYear]);
+  }, [
+    addedSyrupInfos,
+    sortBy,
+    sortByToken,
+    sortByDeposit,
+    sortByAPR,
+    sortByEarned,
+  ]);
 
   const syrupRewardAddress = useMemo(
     () =>
@@ -264,11 +288,16 @@ const DragonPage: React.FC = () => {
   );
 
   useEffect(() => {
+    setSyrupInfos(undefined);
+    setTimeout(() => setPageLoading(false), 500); //load syrups 0.5s after loading page
+  }, []);
+
+  useEffect(() => {
     setPageIndex(0);
     setSyrupInfos(sortedSyrupInfos.slice(0, LOADSYRUP_COUNT));
     return () => setSyrupInfos(undefined);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isEndedSyrup, syrupSearch, syrupRewardAddress]);
+  }, [syrupRewardAddress]);
 
   useEffect(() => {
     const currentSyrupInfos = syrupInfos || [];
@@ -638,8 +667,7 @@ const DragonPage: React.FC = () => {
                 </>
               )}
             </Box>
-            {//show loading until dragons lair data is fully loaded
-            syrupInfos && lairInfo.totalQuickBalance.greaterThan('0') ? (
+            {syrupInfos ? (
               syrupInfos.map((syrup, ind) => (
                 <SyrupCard key={ind} syrup={syrup} />
               ))

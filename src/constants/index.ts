@@ -81,6 +81,10 @@ export const GlobalConst = {
     ALL_CHART: 5,
     CHART_COUNT: 60, //limit analytics chart items not more than 60
   },
+  farmIndex: {
+    LPFARM_INDEX: 0,
+    DUALFARM_INDEX: 1,
+  },
 };
 
 export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {

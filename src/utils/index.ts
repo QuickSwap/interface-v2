@@ -1846,3 +1846,12 @@ export function getYAXISValuesAnalytics(chartData: any) {
   }
   return values;
 }
+
+export function getTokenAPRSyrup(syrup: SyrupInfo) {
+  return syrup.valueOfTotalStakedAmountInUSDC &&
+    syrup.valueOfTotalStakedAmountInUSDC > 0
+    ? ((syrup.rewards ?? 0) / syrup.valueOfTotalStakedAmountInUSDC) *
+        getDaysCurrentYear() *
+        100
+    : 0;
+}
