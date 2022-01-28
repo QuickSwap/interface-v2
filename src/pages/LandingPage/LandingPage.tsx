@@ -554,7 +554,7 @@ const LandingPage: React.FC = () => {
   }, [ethPrice, updateEthPrice, updateGlobalData]);
 
   return (
-    <div id='landing-page'>
+    <div id='landing-page' style={{ width: '100%' }}>
       {openStakeModal && (
         <StakeQuickModal
           open={openStakeModal}
