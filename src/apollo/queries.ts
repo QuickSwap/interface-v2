@@ -188,7 +188,7 @@ const PairFields = `
 export const PAIRS_CURRENT: any = (count: number) => {
   const queryString = `
   query pairs {
-    pairs(first: ${count}, orderBy: reserveUSD, orderDirection: desc) {
+    pairs(first: ${count}, orderBy: trackedReserveETH, orderDirection: desc) {
       id
     }
   }`;
