@@ -13,12 +13,12 @@ const useStyles = makeStyles(({ palette }) => ({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: '8px 32px 8px 8px',
+    padding: '8px 32px 8px 16px',
     '& > span': {
-      marginLeft: 6,
+      marginLeft: 8,
       fontWeight: 'bold',
       textTransform: 'uppercase',
-      width: 'calc(100% - 30px)',
+      width: 'calc(100% - 32px)',
     },
   },
   closeBanner: {
