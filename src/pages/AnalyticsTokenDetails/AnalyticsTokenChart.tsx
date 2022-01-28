@@ -12,10 +12,11 @@ import {
   getChartDates,
   getChartStartTime,
   getLimitedData,
+  getYAXISValuesAnalytics,
 } from 'utils';
-import { AreaChart } from 'components';
+import { AreaChart, ChartType } from 'components';
 import { getTokenChartData } from 'utils';
-import { GlobalConst } from 'constants/index';
+import { GlobalConst, GlobalData } from 'constants/index';
 
 const useStyles = makeStyles(() => ({
   priceChangeWrapper: {
@@ -25,14 +26,6 @@ const useStyles = makeStyles(() => ({
     justifyContent: 'center',
     borderRadius: 16,
     padding: '0 8px',
-  },
-  chartType: {
-    height: 20,
-    padding: '0 6px',
-    borderRadius: 10,
-    display: 'flex',
-    alignItems: 'center',
-    cursor: 'pointer',
   },
 }));
 
@@ -46,62 +39,56 @@ const AnalyticsTokenChart: React.FC<{ token: any }> = ({ token }) => {
   const match = useRouteMatch<{ id: string }>();
   const tokenAddress = match.params.id;
   const [tokenChartData, updateTokenChartData] = useState<any>(null);
+  const chartIndexes = [CHART_VOLUME, CHART_LIQUIDITY, CHART_PRICE];
+  const chartIndexTexts = ['Volume', 'Liquidity', 'Price'];
   const [chartIndex, setChartIndex] = useState(CHART_VOLUME);
   const [durationIndex, setDurationIndex] = useState(
     GlobalConst.analyticChart.ONE_MONTH_CHART,
   );
 
   const chartData = useMemo(() => {
-    if (tokenChartData) {
-      return tokenChartData.map((item: any) =>
-        chartIndex === CHART_VOLUME
-          ? Number(item.dailyVolumeUSD)
-          : chartIndex === CHART_LIQUIDITY
-          ? Number(item.totalLiquidityUSD)
-          : Number(item.priceUSD),
-      );
-    } else {
-      return null;
-    }
+    if (!tokenChartData) return;
+    return tokenChartData.map((item: any) => {
+      switch (chartIndex) {
+        case CHART_VOLUME:
+          return Number(item.dailyVolumeUSD);
+        case CHART_LIQUIDITY:
+          return Number(item.totalLiquidityUSD);
+        case CHART_PRICE:
+          return Number(item.priceUSD);
+        default:
+          return;
+      }
+    });
   }, [tokenChartData, chartIndex]);
 
-  const yAxisValues = useMemo(() => {
-    if (chartData) {
-      const minValue = Math.min(...chartData) * 0.99;
-      const maxValue = Math.max(...chartData) * 1.01;
-      const step = (maxValue - minValue) / 8;
-      const values = [];
-      for (let i = 0; i < 9; i++) {
-        values.push(maxValue - i * step);
-      }
-      return values;
-    } else {
-      return undefined;
+  const currentData = useMemo(() => {
+    if (!token) return;
+    switch (chartIndex) {
+      case CHART_VOLUME:
+        return token.oneDayVolumeUSD;
+      case CHART_LIQUIDITY:
+        return token.totalLiquidityUSD;
+      case CHART_PRICE:
+        return token.priceUSD;
+      default:
+        return;
     }
-  }, [chartData]);
+  }, [token, chartIndex]);
 
-  const currentData = useMemo(
-    () =>
-      token
-        ? chartIndex === CHART_VOLUME
-          ? token.oneDayVolumeUSD
-          : chartIndex === CHART_LIQUIDITY
-          ? token.totalLiquidityUSD
-          : token.priceUSD
-        : null,
-    [token, chartIndex],
-  );
-  const currentPercent = useMemo(
-    () =>
-      token
-        ? chartIndex === CHART_VOLUME
-          ? token.volumeChangeUSD
-          : chartIndex === CHART_LIQUIDITY
-          ? token.liquidityChangeUSD
-          : token.priceChangeUSD
-        : null,
-    [token, chartIndex],
-  );
+  const currentPercent = useMemo(() => {
+    if (!token) return;
+    switch (chartIndex) {
+      case CHART_VOLUME:
+        return token.volumeChangeUSD;
+      case CHART_LIQUIDITY:
+        return token.liquidityChangeUSD;
+      case CHART_PRICE:
+        return token.priceChangeUSD;
+      default:
+        return;
+    }
+  }, [token, chartIndex]);
 
   useEffect(() => {
     async function fetchTokenChartData() {
@@ -130,11 +117,7 @@ const AnalyticsTokenChart: React.FC<{ token: any }> = ({ token }) => {
       <Box display='flex' flexWrap='wrap' justifyContent='space-between'>
         <Box mt={1.5}>
           <Typography variant='caption'>
-            {chartIndex === CHART_VOLUME
-              ? 'Volume'
-              : chartIndex === CHART_LIQUIDITY
-              ? 'Liquidity'
-              : 'Price'}
+            {chartIndexTexts[chartIndex]}
           </Typography>
           <Box mt={1}>
             {currentData && currentPercent ? (
@@ -172,95 +155,21 @@ const AnalyticsTokenChart: React.FC<{ token: any }> = ({ token }) => {
           </Box>
         </Box>
         <Box display='flex' flexDirection='column' alignItems='flex-end'>
-          <Box display='flex' mt={1.5}>
-            <Box
-              mr={1}
-              bgcolor={
-                chartIndex === CHART_VOLUME ? palette.grey.A400 : 'transparent'
-              }
-              className={classes.chartType}
-              onClick={() => setChartIndex(CHART_VOLUME)}
-            >
-              <Typography variant='caption'>Volume</Typography>
-            </Box>
-            <Box
-              mr={1}
-              bgcolor={
-                chartIndex === CHART_LIQUIDITY
-                  ? palette.grey.A400
-                  : 'transparent'
-              }
-              className={classes.chartType}
-              onClick={() => setChartIndex(CHART_LIQUIDITY)}
-            >
-              <Typography variant='caption'>Liquidity</Typography>
-            </Box>
-            <Box
-              bgcolor={
-                chartIndex === CHART_PRICE ? palette.grey.A400 : 'transparent'
-              }
-              className={classes.chartType}
-              onClick={() => setChartIndex(CHART_PRICE)}
-            >
-              <Typography variant='caption'>Price</Typography>
-            </Box>
+          <Box mt={1.5}>
+            <ChartType
+              chartTypes={chartIndexes}
+              typeTexts={chartIndexTexts}
+              chartType={chartIndex}
+              setChartType={setChartIndex}
+            />
           </Box>
-          <Box mt={1.5} display='flex' alignItems='center'>
-            <Box
-              className={classes.chartType}
-              bgcolor={
-                durationIndex === GlobalConst.analyticChart.ONE_MONTH_CHART
-                  ? palette.grey.A400
-                  : 'transparent'
-              }
-              onClick={() =>
-                setDurationIndex(GlobalConst.analyticChart.ONE_MONTH_CHART)
-              }
-            >
-              <Typography variant='caption'>1M</Typography>
-            </Box>
-            <Box
-              className={classes.chartType}
-              ml={0.5}
-              bgcolor={
-                durationIndex === GlobalConst.analyticChart.THREE_MONTH_CHART
-                  ? palette.grey.A400
-                  : 'transparent'
-              }
-              onClick={() =>
-                setDurationIndex(GlobalConst.analyticChart.THREE_MONTH_CHART)
-              }
-            >
-              <Typography variant='caption'>3M</Typography>
-            </Box>
-            <Box
-              className={classes.chartType}
-              ml={0.5}
-              bgcolor={
-                durationIndex === GlobalConst.analyticChart.ONE_YEAR_CHART
-                  ? palette.grey.A400
-                  : 'transparent'
-              }
-              onClick={() =>
-                setDurationIndex(GlobalConst.analyticChart.ONE_YEAR_CHART)
-              }
-            >
-              <Typography variant='caption'>1Y</Typography>
-            </Box>
-            <Box
-              className={classes.chartType}
-              ml={0.5}
-              bgcolor={
-                durationIndex === GlobalConst.analyticChart.ALL_CHART
-                  ? palette.grey.A400
-                  : 'transparent'
-              }
-              onClick={() =>
-                setDurationIndex(GlobalConst.analyticChart.ALL_CHART)
-              }
-            >
-              <Typography variant='caption'>All</Typography>
-            </Box>
+          <Box mt={1.5}>
+            <ChartType
+              chartTypes={GlobalData.analytics.CHART_DURATIONS}
+              typeTexts={GlobalData.analytics.CHART_DURATION_TEXTS}
+              chartType={durationIndex}
+              setChartType={setDurationIndex}
+            />
           </Box>
         </Box>
       </Box>
@@ -268,7 +177,7 @@ const AnalyticsTokenChart: React.FC<{ token: any }> = ({ token }) => {
         {tokenChartData ? (
           <AreaChart
             data={chartData}
-            yAxisValues={yAxisValues}
+            yAxisValues={getYAXISValuesAnalytics(chartData)}
             dates={tokenChartData.map((value: any) =>
               moment(value.date * 1000)
                 .add(1, 'day')

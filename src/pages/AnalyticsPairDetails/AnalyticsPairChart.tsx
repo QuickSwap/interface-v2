@@ -12,9 +12,10 @@ import {
   getChartDates,
   getChartStartTime,
   getLimitedData,
+  getYAXISValuesAnalytics,
 } from 'utils';
-import { AreaChart } from 'components';
-import { GlobalConst } from 'constants/index';
+import { AreaChart, ChartType } from 'components';
+import { GlobalConst, GlobalData } from 'constants/index';
 
 const useStyles = makeStyles(() => ({
   priceChangeWrapper: {
@@ -24,14 +25,6 @@ const useStyles = makeStyles(() => ({
     justifyContent: 'center',
     borderRadius: 16,
     padding: '0 8px',
-  },
-  chartType: {
-    height: 20,
-    padding: '0 6px',
-    borderRadius: 10,
-    display: 'flex',
-    alignItems: 'center',
-    cursor: 'pointer',
   },
 }));
 
@@ -65,62 +58,54 @@ const AnalyticsPairChart: React.FC<{ pairData: any }> = ({ pairData }) => {
           ).toLocaleString()
       : '-';
   const [chartIndex, setChartIndex] = useState(CHART_VOLUME);
+  const chartIndexes = [CHART_VOLUME, CHART_LIQUIDITY, CHART_FEES];
+  const chartIndexTexts = ['Volume', 'Liquidity', 'Fees'];
 
   const chartData = useMemo(() => {
-    if (pairChartData) {
-      return pairChartData.map((item: any) =>
-        chartIndex === CHART_VOLUME
-          ? Number(item.dailyVolumeUSD)
-          : chartIndex === CHART_LIQUIDITY
-          ? Number(item.reserveUSD)
-          : Number(item.dailyVolumeUSD) * GlobalConst.utils.FEEPERCENT,
-      );
-    } else {
-      return null;
-    }
+    if (!pairChartData) return;
+    return pairChartData.map((item: any) => {
+      switch (chartIndex) {
+        case CHART_VOLUME:
+          return Number(item.dailyVolumeUSD);
+        case CHART_LIQUIDITY:
+          return Number(item.reserveUSD);
+        case CHART_FEES:
+          return Number(item.dailyVolumeUSD) * GlobalConst.utils.FEEPERCENT;
+        default:
+          return;
+      }
+    });
   }, [pairChartData, chartIndex]);
 
-  const yAxisValues = useMemo(() => {
-    if (chartData) {
-      const minValue = Math.min(...chartData) * 0.99;
-      const maxValue = Math.max(...chartData) * 1.01;
-      const step = (maxValue - minValue) / 8;
-      const values = [];
-      for (let i = 0; i < 9; i++) {
-        values.push(maxValue - i * step);
-      }
-      return values;
-    } else {
-      return undefined;
+  const currentData = useMemo(() => {
+    if (!pairData) return;
+    switch (chartIndex) {
+      case CHART_VOLUME:
+        return pairData.oneDayVolumeUSD;
+      case CHART_LIQUIDITY:
+        return pairData.reserveUSD ?? pairData.trackedReserveUSD;
+      case CHART_FEES:
+        return fees;
+      default:
+        return;
     }
-  }, [chartData]);
+  }, [pairData, chartIndex, fees]);
 
-  const currentData = useMemo(
-    () =>
-      pairData
-        ? chartIndex === CHART_VOLUME
-          ? pairData.oneDayVolumeUSD
-          : chartIndex === CHART_LIQUIDITY
-          ? pairData.reserveUSD
-            ? pairData.reserveUSD
-            : pairData.trackedReserveUSD
-          : fees
-        : null,
-    [pairData, chartIndex, fees],
-  );
-  const currentPercent = useMemo(
-    () =>
-      pairData
-        ? chartIndex === CHART_VOLUME
-          ? pairData.volumeChangeUSD
-          : chartIndex === CHART_LIQUIDITY
-          ? pairData.liquidityChangeUSD
-          : (usingUtVolume
-              ? pairData.volumeChangeUntracked
-              : pairData.volumeChangeUSD) * GlobalConst.utils.FEEPERCENT
-        : null,
-    [pairData, chartIndex, usingUtVolume],
-  );
+  const currentPercent = useMemo(() => {
+    if (!pairData) return;
+    switch (chartIndex) {
+      case CHART_VOLUME:
+        return pairData.volumeChangeUSD;
+      case CHART_LIQUIDITY:
+        return pairData.liquidityChangeUSD;
+      case CHART_FEES:
+        return usingUtVolume
+          ? pairData.volumeChangeUntracked
+          : pairData.volumeChangeUSD;
+      default:
+        return;
+    }
+  }, [pairData, chartIndex, usingUtVolume]);
 
   useEffect(() => {
     async function fetchPairChartData() {
@@ -149,11 +134,7 @@ const AnalyticsPairChart: React.FC<{ pairData: any }> = ({ pairData }) => {
       <Box display='flex' flexWrap='wrap' justifyContent='space-between'>
         <Box mt={1.5}>
           <Typography variant='caption'>
-            {chartIndex === CHART_VOLUME
-              ? 'Volume'
-              : chartIndex === CHART_LIQUIDITY
-              ? 'Liquidity'
-              : 'Price'}
+            {chartIndexTexts[chartIndex]}
           </Typography>
           <Box mt={1}>
             {currentPercent && currentData ? (
@@ -191,95 +172,21 @@ const AnalyticsPairChart: React.FC<{ pairData: any }> = ({ pairData }) => {
           </Box>
         </Box>
         <Box display='flex' flexDirection='column' alignItems='flex-end'>
-          <Box display='flex' mt={1.5}>
-            <Box
-              mr={1}
-              bgcolor={
-                chartIndex === CHART_VOLUME ? palette.grey.A400 : 'transparent'
-              }
-              className={classes.chartType}
-              onClick={() => setChartIndex(CHART_VOLUME)}
-            >
-              <Typography variant='caption'>Volume</Typography>
-            </Box>
-            <Box
-              mr={1}
-              bgcolor={
-                chartIndex === CHART_LIQUIDITY
-                  ? palette.grey.A400
-                  : 'transparent'
-              }
-              className={classes.chartType}
-              onClick={() => setChartIndex(CHART_LIQUIDITY)}
-            >
-              <Typography variant='caption'>Liquidity</Typography>
-            </Box>
-            <Box
-              bgcolor={
-                chartIndex === CHART_FEES ? palette.grey.A400 : 'transparent'
-              }
-              className={classes.chartType}
-              onClick={() => setChartIndex(CHART_FEES)}
-            >
-              <Typography variant='caption'>Fees</Typography>
-            </Box>
+          <Box mt={1.5}>
+            <ChartType
+              chartTypes={chartIndexes}
+              typeTexts={chartIndexTexts}
+              chartType={chartIndex}
+              setChartType={setChartIndex}
+            />
           </Box>
-          <Box mt={1.5} display='flex' alignItems='center'>
-            <Box
-              className={classes.chartType}
-              bgcolor={
-                durationIndex === GlobalConst.analyticChart.ONE_MONTH_CHART
-                  ? palette.grey.A400
-                  : 'transparent'
-              }
-              onClick={() =>
-                setDurationIndex(GlobalConst.analyticChart.ONE_MONTH_CHART)
-              }
-            >
-              <Typography variant='caption'>1M</Typography>
-            </Box>
-            <Box
-              className={classes.chartType}
-              ml={0.5}
-              bgcolor={
-                durationIndex === GlobalConst.analyticChart.THREE_MONTH_CHART
-                  ? palette.grey.A400
-                  : 'transparent'
-              }
-              onClick={() =>
-                setDurationIndex(GlobalConst.analyticChart.THREE_MONTH_CHART)
-              }
-            >
-              <Typography variant='caption'>3M</Typography>
-            </Box>
-            <Box
-              className={classes.chartType}
-              ml={0.5}
-              bgcolor={
-                durationIndex === GlobalConst.analyticChart.ONE_YEAR_CHART
-                  ? palette.grey.A400
-                  : 'transparent'
-              }
-              onClick={() =>
-                setDurationIndex(GlobalConst.analyticChart.ONE_YEAR_CHART)
-              }
-            >
-              <Typography variant='caption'>1Y</Typography>
-            </Box>
-            <Box
-              className={classes.chartType}
-              ml={0.5}
-              bgcolor={
-                durationIndex === GlobalConst.analyticChart.ALL_CHART
-                  ? palette.grey.A400
-                  : 'transparent'
-              }
-              onClick={() =>
-                setDurationIndex(GlobalConst.analyticChart.ALL_CHART)
-              }
-            >
-              <Typography variant='caption'>All</Typography>
-            </Box>
+          <Box mt={1.5}>
+            <ChartType
+              chartTypes={GlobalData.analytics.CHART_DURATIONS}
+              typeTexts={GlobalData.analytics.CHART_DURATION_TEXTS}
+              chartType={durationIndex}
+              setChartType={setDurationIndex}
+            />
           </Box>
         </Box>
       </Box>
@@ -287,7 +194,7 @@ const AnalyticsPairChart: React.FC<{ pairData: any }> = ({ pairData }) => {
         {chartData && pairChartData ? (
           <AreaChart
             data={chartData}
-            yAxisValues={yAxisValues}
+            yAxisValues={getYAXISValuesAnalytics(chartData)}
             dates={pairChartData.map((value: any) =>
               moment(value.date * 1000)
                 .add(1, 'day')

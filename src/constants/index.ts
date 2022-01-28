@@ -76,8 +76,9 @@ export const GlobalConst = {
   analyticChart: {
     ONE_MONTH_CHART: 1,
     THREE_MONTH_CHART: 2,
-    ONE_YEAR_CHART: 3,
-    ALL_CHART: 4,
+    SIX_MONTH_CHART: 3,
+    ONE_YEAR_CHART: 4,
+    ALL_CHART: 5,
     CHART_COUNT: 60, //limit analytics chart items not more than 60
   },
 };
@@ -214,6 +215,16 @@ export const GlobalData = {
       ],
       [ChainId.MUMBAI]: undefined,
     },
+  },
+  analytics: {
+    CHART_DURATIONS: [
+      GlobalConst.analyticChart.ONE_MONTH_CHART,
+      GlobalConst.analyticChart.THREE_MONTH_CHART,
+      GlobalConst.analyticChart.SIX_MONTH_CHART,
+      GlobalConst.analyticChart.ONE_YEAR_CHART,
+      GlobalConst.analyticChart.ALL_CHART,
+    ],
+    CHART_DURATION_TEXTS: ['1M', '3M', '6M', '1Y', 'All'],
   },
 };
 

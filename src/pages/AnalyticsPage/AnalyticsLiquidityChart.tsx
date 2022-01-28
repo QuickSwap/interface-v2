@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { Box, Typography } from '@material-ui/core';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { useTheme } from '@material-ui/core/styles';
 import Skeleton from '@material-ui/lab/Skeleton';
 import moment from 'moment';
 import { useGlobalData } from 'state/application/hooks';
@@ -12,26 +12,10 @@ import {
   getChartStartTime,
   getLimitedData,
 } from 'utils';
-import { GlobalConst } from 'constants/index';
-import { AreaChart } from 'components';
-
-const useStyles = makeStyles(({ palette }) => ({
-  durationItem: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: 20,
-    padding: '0 8px',
-    borderRadius: 10,
-    cursor: 'pointer',
-    '& span': {
-      color: palette.text.primary,
-    },
-  },
-}));
+import { GlobalConst, GlobalData } from 'constants/index';
+import { AreaChart, ChartType } from 'components';
 
 const AnalyticsLiquidityChart: React.FC = () => {
-  const classes = useStyles();
   const { palette } = useTheme();
   const { globalData } = useGlobalData();
   const [durationIndex, setDurationIndex] = useState(
@@ -68,11 +52,13 @@ const AnalyticsLiquidityChart: React.FC = () => {
       const dailyVolumes: number[] = globalChartData.map((value: any) =>
         Number(value.totalLiquidityUSD),
       );
+      // this is for defining the scale for the liquidity values to present in graph. Liquidity values are more than 100M so set the min and max amount with rounding after dividing into 20000000 to show all liquidity values into the graph
       const minVolume =
         Math.floor(Math.min(...dailyVolumes) / 20000000) * 20000000;
       const maxVolume =
         Math.ceil(Math.max(...dailyVolumes) / 20000000) * 20000000;
       const values = [];
+      // show 10 values in the y axis of the graph
       const step = (maxVolume - minVolume) / 10;
       for (let i = maxVolume; i >= minVolume; i -= step) {
         values.push(i);
@@ -92,63 +78,12 @@ const AnalyticsLiquidityChart: React.FC = () => {
         >
           LIQUIDITY
         </Typography>
-        <Box display='flex' alignItems='center'>
-          <Box
-            className={classes.durationItem}
-            bgcolor={
-              durationIndex === GlobalConst.analyticChart.ONE_MONTH_CHART
-                ? palette.grey.A400
-                : 'transparent'
-            }
-            onClick={() =>
-              setDurationIndex(GlobalConst.analyticChart.ONE_MONTH_CHART)
-            }
-          >
-            <Typography variant='caption'>1M</Typography>
-          </Box>
-          <Box
-            className={classes.durationItem}
-            ml={0.5}
-            bgcolor={
-              durationIndex === GlobalConst.analyticChart.THREE_MONTH_CHART
-                ? palette.grey.A400
-                : 'transparent'
-            }
-            onClick={() =>
-              setDurationIndex(GlobalConst.analyticChart.THREE_MONTH_CHART)
-            }
-          >
-            <Typography variant='caption'>3M</Typography>
-          </Box>
-          <Box
-            className={classes.durationItem}
-            ml={0.5}
-            bgcolor={
-              durationIndex === GlobalConst.analyticChart.ONE_YEAR_CHART
-                ? palette.grey.A400
-                : 'transparent'
-            }
-            onClick={() =>
-              setDurationIndex(GlobalConst.analyticChart.ONE_YEAR_CHART)
-            }
-          >
-            <Typography variant='caption'>1Y</Typography>
-          </Box>
-          <Box
-            className={classes.durationItem}
-            ml={0.5}
-            bgcolor={
-              durationIndex === GlobalConst.analyticChart.ALL_CHART
-                ? palette.grey.A400
-                : 'transparent'
-            }
-            onClick={() =>
-              setDurationIndex(GlobalConst.analyticChart.ALL_CHART)
-            }
-          >
-            <Typography variant='caption'>All</Typography>
-          </Box>
-        </Box>
+        <ChartType
+          typeTexts={GlobalData.analytics.CHART_DURATION_TEXTS}
+          chartTypes={GlobalData.analytics.CHART_DURATIONS}
+          chartType={durationIndex}
+          setChartType={setDurationIndex}
+        />
       </Box>
       {globalData ? (
         <Box mt={0.5} display='flex' alignItems='center'>

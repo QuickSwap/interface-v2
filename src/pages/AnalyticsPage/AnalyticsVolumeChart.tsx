@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Box, Typography } from '@material-ui/core';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { useTheme } from '@material-ui/core/styles';
 import Skeleton from '@material-ui/lab/Skeleton';
 import { useGlobalData } from 'state/application/hooks';
 import {
@@ -12,30 +12,16 @@ import {
   getChartStartTime,
   getLimitedData,
 } from 'utils';
-import { BarChart } from 'components';
-import { GlobalConst } from 'constants/index';
-
-const useStyles = makeStyles(({ palette }) => ({
-  volumeType: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: 20,
-    padding: '0 8px',
-    borderRadius: 10,
-    cursor: 'pointer',
-    '& span': {
-      color: palette.text.primary,
-    },
-  },
-}));
+import { BarChart, ChartType } from 'components';
+import { GlobalConst, GlobalData } from 'constants/index';
 
 const DAY_VOLUME = 0;
 const WEEK_VOLUME = 1;
 
 const AnalyticsVolumeChart: React.FC = () => {
-  const classes = useStyles();
   const { palette } = useTheme();
+  const volumeTypes = [DAY_VOLUME, WEEK_VOLUME];
+  const volumeTypeTexts = ['D', 'W'];
   const [volumeIndex, setVolumeIndex] = useState(DAY_VOLUME);
   const [durationIndex, setDurationIndex] = useState(
     GlobalConst.analyticChart.ONE_MONTH_CHART,
@@ -99,48 +85,44 @@ const AnalyticsVolumeChart: React.FC = () => {
     }
   }, [globalChartData, durationIndex]);
 
-  const volumePercent = useMemo(() => {
+  const getVolumePercent = (volumeIndex: number) => {
     if (globalChartData && selectedVolumeIndex > 0) {
-      const volumeData =
-        volumeIndex === WEEK_VOLUME
-          ? globalChartData.week
-          : globalChartData.day;
-      if (volumeData.length > 1) {
-        const currentVolume = Number(
-          volumeIndex === WEEK_VOLUME
-            ? globalChartData.week[
-                Math.min(selectedVolumeIndex, globalChartData.week.length - 1)
-              ].weeklyVolumeUSD
-            : globalChartData.day[
-                Math.min(selectedVolumeIndex, globalChartData.day.length - 1)
-              ].dailyVolumeUSD,
-        );
-        const prevVolume = Number(
-          volumeIndex === WEEK_VOLUME
-            ? globalChartData.week[
-                Math.min(selectedVolumeIndex, globalChartData.week.length - 1) -
-                  1
-              ].weeklyVolumeUSD
-            : globalChartData.day[
-                Math.min(selectedVolumeIndex, globalChartData.day.length - 1) -
-                  1
-              ].dailyVolumeUSD,
-        );
-        if (prevVolume > 0) {
-          return (currentVolume / prevVolume) * 100 - 100;
-        }
-        return 0;
+      const volumeDataArr = [globalChartData.day, globalChartData.week];
+      const volumeData = volumeDataArr[volumeIndex];
+      if (!volumeData || volumeData.length <= 1) return 0;
+      const currentVolumeIndex = Math.min(
+        selectedVolumeIndex,
+        volumeData.length - 1,
+      );
+      const currentVolumeData = volumeData[currentVolumeIndex];
+      const prevVolumeData = volumeData[currentVolumeIndex - 1];
+      let currentVolume = 0;
+      let prevVolume = 0;
+      switch (volumeIndex) {
+        case WEEK_VOLUME:
+          currentVolume = currentVolumeData.weeklyVolumeUSD;
+          prevVolume = prevVolumeData.weeklyVolumeUSD;
+          break;
+        case DAY_VOLUME:
+          currentVolume = currentVolumeData.dailyVolumeUSD;
+          prevVolume = prevVolumeData.dailyVolumeUSD;
+          break;
       }
-      return 0;
+      if (prevVolume <= 0) return 0;
+      return (currentVolume / prevVolume) * 100 - 100;
+    } else if (globalData && selectedVolumeIndex === -1) {
+      switch (volumeIndex) {
+        case WEEK_VOLUME:
+          return globalData.weeklyVolumeChange;
+        case DAY_VOLUME:
+          return globalData.volumeChangeUSD;
+        default:
+          return 0;
+      }
     } else {
-      if (globalData && selectedVolumeIndex === -1) {
-        return volumeIndex === DAY_VOLUME
-          ? globalData.volumeChangeUSD
-          : globalData.weeklyVolumeChange;
-      }
       return 0;
     }
-  }, [globalChartData, globalData, selectedVolumeIndex, volumeIndex]);
+  };
 
   const volumeDates = useMemo(() => {
     if (selectedVolumeIndex > -1) {
@@ -177,7 +159,10 @@ const AnalyticsVolumeChart: React.FC = () => {
     }
   }, [globalChartData, volumeIndex]);
 
-  const volumePercentColor = getPriceColor(Number(volumePercent), palette);
+  const volumePercentColor = getPriceColor(
+    Number(getVolumePercent(volumeIndex)),
+    palette,
+  );
 
   return (
     <>
@@ -189,27 +174,12 @@ const AnalyticsVolumeChart: React.FC = () => {
           >
             VOLUME {selectedVolumeIndex === -1 ? '(24hr)' : ''}
           </Typography>
-          <Box display='flex' alignItems='center'>
-            <Box
-              className={classes.volumeType}
-              bgcolor={
-                volumeIndex === DAY_VOLUME ? palette.grey.A400 : 'transparent'
-              }
-              onClick={() => setVolumeIndex(DAY_VOLUME)}
-            >
-              <Typography variant='caption'>D</Typography>
-            </Box>
-            <Box
-              className={classes.volumeType}
-              ml={0.5}
-              bgcolor={
-                volumeIndex === WEEK_VOLUME ? palette.grey.A400 : 'transparent'
-              }
-              onClick={() => setVolumeIndex(WEEK_VOLUME)}
-            >
-              <Typography variant='caption'>W</Typography>
-            </Box>
-          </Box>
+          <ChartType
+            chartTypes={volumeTypes}
+            typeTexts={volumeTypeTexts}
+            chartType={volumeIndex}
+            setChartType={setVolumeIndex}
+          />
         </Box>
         <Box
           mt={0.5}
@@ -246,8 +216,8 @@ const AnalyticsVolumeChart: React.FC = () => {
                   color={volumePercentColor.textColor}
                 >
                   <Typography variant='caption'>
-                    {`${volumePercent > 0 ? '+' : ''}
-                      ${volumePercent.toLocaleString()}`}
+                    {`${getVolumePercent(volumeIndex) > 0 ? '+' : ''}
+                      ${getVolumePercent(volumeIndex).toLocaleString()}`}
                     %
                   </Typography>
                 </Box>
@@ -266,63 +236,12 @@ const AnalyticsVolumeChart: React.FC = () => {
               <Skeleton variant='rect' width='100%' height={24} />
             </Box>
           )}
-          <Box display='flex' alignItems='center'>
-            <Box
-              className={classes.volumeType}
-              bgcolor={
-                durationIndex === GlobalConst.analyticChart.ONE_MONTH_CHART
-                  ? palette.grey.A400
-                  : 'transparent'
-              }
-              onClick={() =>
-                setDurationIndex(GlobalConst.analyticChart.ONE_MONTH_CHART)
-              }
-            >
-              <Typography variant='caption'>1M</Typography>
-            </Box>
-            <Box
-              className={classes.volumeType}
-              ml={0.5}
-              bgcolor={
-                durationIndex === GlobalConst.analyticChart.THREE_MONTH_CHART
-                  ? palette.grey.A400
-                  : 'transparent'
-              }
-              onClick={() =>
-                setDurationIndex(GlobalConst.analyticChart.THREE_MONTH_CHART)
-              }
-            >
-              <Typography variant='caption'>3M</Typography>
-            </Box>
-            <Box
-              className={classes.volumeType}
-              ml={0.5}
-              bgcolor={
-                durationIndex === GlobalConst.analyticChart.ONE_YEAR_CHART
-                  ? palette.grey.A400
-                  : 'transparent'
-              }
-              onClick={() =>
-                setDurationIndex(GlobalConst.analyticChart.ONE_YEAR_CHART)
-              }
-            >
-              <Typography variant='caption'>1Y</Typography>
-            </Box>
-            <Box
-              className={classes.volumeType}
-              ml={0.5}
-              bgcolor={
-                durationIndex === GlobalConst.analyticChart.ALL_CHART
-                  ? palette.grey.A400
-                  : 'transparent'
-              }
-              onClick={() =>
-                setDurationIndex(GlobalConst.analyticChart.ALL_CHART)
-              }
-            >
-              <Typography variant='caption'>All</Typography>
-            </Box>
-          </Box>
+          <ChartType
+            chartTypes={GlobalData.analytics.CHART_DURATIONS}
+            typeTexts={GlobalData.analytics.CHART_DURATION_TEXTS}
+            chartType={durationIndex}
+            setChartType={setDurationIndex}
+          />
         </Box>
       </Box>
       <Box mt={2}>

@@ -1797,10 +1797,16 @@ export function getChartDates(chartData: any[] | null, durationIndex: number) {
 
 export function getChartStartTime(durationIndex: number) {
   const utcEndTime = dayjs.utc();
+  const months =
+    durationIndex === GlobalConst.analyticChart.SIX_MONTH_CHART
+      ? 6
+      : durationIndex === GlobalConst.analyticChart.THREE_MONTH_CHART
+      ? 3
+      : 1;
   const startTime =
     utcEndTime
       .subtract(
-        durationIndex === GlobalConst.analyticChart.THREE_MONTH_CHART ? 3 : 1,
+        months,
         durationIndex === GlobalConst.analyticChart.ONE_YEAR_CHART
           ? 'year'
           : 'month',
@@ -1826,4 +1832,17 @@ export function getLimitedData(data: any[], count: number) {
     }
   });
   return newArray;
+}
+
+export function getYAXISValuesAnalytics(chartData: any) {
+  if (!chartData) return;
+  // multiply 0.99 to the min value of chart values and 1.01 to the max value in order to show all data in graph. Without this, the scale of the graph is set strictly and some values may be hidden.
+  const minValue = Math.min(...chartData) * 0.99;
+  const maxValue = Math.max(...chartData) * 1.01;
+  const step = (maxValue - minValue) / 8;
+  const values = [];
+  for (let i = 0; i < 9; i++) {
+    values.push(maxValue - i * step);
+  }
+  return values;
 }
