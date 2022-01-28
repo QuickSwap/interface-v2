@@ -6,24 +6,10 @@ import EthereumLogo from 'assets/images/Currency/PolygonSwap.svg';
 import useHttpLocations from 'hooks/useHttpLocations';
 import { WrappedTokenInfo } from 'state/lists/hooks';
 import { Logo } from 'components';
-import tokenLogos from 'constants/tokenLogo.json';
 
 export const getTokenLogoURL = (address: string) => {
-  let uri = '';
-  const item = tokenLogos.find(
-    (logo) => logo.address.toLowerCase() === address.toLowerCase(),
-  );
-
-  if (item) {
-    if (item.logoURI) {
-      uri = item.logoURI;
-    } else {
-      uri = `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/${item.logoAddress ??
-        item.address}/logo.png`;
-    }
-  }
-
-  return uri;
+  const logoExtensions = ['.png', '.webp', '.jpeg', '.svg'];
+  return logoExtensions.map((ext) => `/tokenLogo/${address}${ext}`);
 };
 
 const useStyles = makeStyles(({}) => ({
@@ -54,10 +40,10 @@ const CurrencyLogo: React.FC<CurrencyLogoProps> = ({
 
     if (currency instanceof Token) {
       if (currency instanceof WrappedTokenInfo) {
-        return [...uriLocations, getTokenLogoURL(currency.address)];
+        return [...uriLocations, ...getTokenLogoURL(currency.address)];
       }
 
-      return [getTokenLogoURL(currency.address)];
+      return getTokenLogoURL(currency.address);
     }
     return [];
   }, [currency, uriLocations]);
