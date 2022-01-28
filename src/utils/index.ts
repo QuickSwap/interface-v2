@@ -742,11 +742,12 @@ export const getPairTransactions = async (pairAddress: string) => {
   }
 };
 
-export const getTokenChartData = async (tokenAddress: string) => {
+export const getTokenChartData = async (
+  tokenAddress: string,
+  startTime: number,
+) => {
   let data: any[] = [];
   const utcEndTime = dayjs.utc();
-  const utcStartTime = utcEndTime.subtract(2, 'month');
-  const startTime = utcStartTime.endOf('day').unix() - 1;
   try {
     let allFound = false;
     let skip = 0;
@@ -810,11 +811,12 @@ export const getTokenChartData = async (tokenAddress: string) => {
   return data;
 };
 
-export const getPairChartData = async (pairAddress: string) => {
+export const getPairChartData = async (
+  pairAddress: string,
+  startTime: number,
+) => {
   let data: any[] = [];
   const utcEndTime = dayjs.utc();
-  const utcStartTime = utcEndTime.subtract(2, 'month');
-  const startTime = utcStartTime.unix() - 1;
   try {
     let allFound = false;
     let skip = 0;
@@ -1756,4 +1758,100 @@ export function getPriceToQUICKSyrup(syrup: SyrupInfo) {
     returnTokenFromKey('QUICK'),
   );
   return isQUICKStakingToken ? 1 : Number(syrup.dQUICKtoQUICK.toSignificant());
+}
+
+export function getChartDates(chartData: any[] | null, durationIndex: number) {
+  if (chartData) {
+    const dates: string[] = [];
+    chartData.forEach((value: any, ind: number) => {
+      const month = formatDateFromTimeStamp(Number(value.date), 'MMM');
+      const monthLastDate =
+        ind > 0
+          ? formatDateFromTimeStamp(Number(chartData[ind - 1].date), 'MMM')
+          : '';
+      if (monthLastDate !== month) {
+        dates.push(month);
+      }
+      if (
+        durationIndex === GlobalConst.analyticChart.ONE_MONTH_CHART ||
+        durationIndex === GlobalConst.analyticChart.THREE_MONTH_CHART
+      ) {
+        const dateStr = formatDateFromTimeStamp(Number(value.date), 'D');
+        if (
+          Number(dateStr) %
+            (durationIndex === GlobalConst.analyticChart.ONE_MONTH_CHART
+              ? 3
+              : 7) ===
+          0
+        ) {
+          //Select dates(one date per 3 days for 1 month chart and 7 days for 3 month chart) for x axis values of volume chart on week mode
+          dates.push(dateStr);
+        }
+      }
+    });
+    return dates;
+  } else {
+    return [];
+  }
+}
+
+export function getChartStartTime(durationIndex: number) {
+  const utcEndTime = dayjs.utc();
+  const months =
+    durationIndex === GlobalConst.analyticChart.SIX_MONTH_CHART
+      ? 6
+      : durationIndex === GlobalConst.analyticChart.THREE_MONTH_CHART
+      ? 3
+      : 1;
+  const startTime =
+    utcEndTime
+      .subtract(
+        months,
+        durationIndex === GlobalConst.analyticChart.ONE_YEAR_CHART
+          ? 'year'
+          : 'month',
+      )
+      .endOf('day')
+      .unix() - 1;
+  return startTime;
+}
+
+export function getLimitedData(data: any[], count: number) {
+  const dataCount = data.length;
+  const newArray: any[] = [];
+  data.forEach((value, index) => {
+    if (dataCount <= count) {
+      newArray.push(value);
+    } else {
+      if (
+        index ===
+        dataCount - Math.floor((dataCount / count) * (count - newArray.length))
+      ) {
+        newArray.push(value);
+      }
+    }
+  });
+  return newArray;
+}
+
+export function getYAXISValuesAnalytics(chartData: any) {
+  if (!chartData) return;
+  // multiply 0.99 to the min value of chart values and 1.01 to the max value in order to show all data in graph. Without this, the scale of the graph is set strictly and some values may be hidden.
+  const minValue = Math.min(...chartData) * 0.99;
+  const maxValue = Math.max(...chartData) * 1.01;
+  const step = (maxValue - minValue) / 8;
+  const values = [];
+  for (let i = 0; i < 9; i++) {
+    values.push(maxValue - i * step);
+  }
+  return values;
+}
+
+export function getTokenAPRSyrup(syrup: SyrupInfo) {
+  return syrup.valueOfTotalStakedAmountInUSDC &&
+    syrup.valueOfTotalStakedAmountInUSDC > 0
+    ? ((syrup.rewards ?? 0) / syrup.valueOfTotalStakedAmountInUSDC) *
+        getDaysCurrentYear() *
+        100
+    : 0;
 }

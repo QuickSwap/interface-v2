@@ -44,11 +44,7 @@ import {
   getDaysCurrentYear,
   returnTokenFromKey,
 } from 'utils';
-import {
-  useEthPrice,
-  useGlobalData,
-  useWalletModalToggle,
-} from 'state/application/hooks';
+import { useGlobalData, useWalletModalToggle } from 'state/application/hooks';
 import { GlobalConst } from 'constants/index';
 import { useLairInfo, useTotalRewardsDistributed } from 'state/stake/hooks';
 
@@ -513,7 +509,6 @@ const LandingPage: React.FC = () => {
   ];
 
   const history = useHistory();
-  const { ethPrice, updateEthPrice } = useEthPrice();
   const { globalData, updateGlobalData } = useGlobalData();
   const lairInfo = useLairInfo();
 
@@ -525,36 +520,25 @@ const LandingPage: React.FC = () => {
       Number(lairInfo?.quickPrice));
 
   const dQUICKAPY = useMemo(() => {
-    return APR
-      ? (
-          (Math.pow(1 + APR / daysCurrentYear, daysCurrentYear) - 1) *
-          100
-        ).toFixed(4)
-      : 0;
+    if (!APR) return;
+    return (Math.pow(1 + APR / daysCurrentYear, daysCurrentYear) - 1) * 100;
   }, [APR, daysCurrentYear]);
 
   const totalRewardsUSD = useTotalRewardsDistributed();
 
   useEffect(() => {
-    async function checkEthPrice() {
-      if (!ethPrice.price) {
-        const [newPrice, oneDayPrice, priceChange] = await getEthPrice();
-        updateEthPrice({
-          price: newPrice,
-          oneDayPrice,
-          ethPriceChange: priceChange,
-        });
-        const globalData = await getGlobalData(newPrice, oneDayPrice);
-        if (globalData) {
-          updateGlobalData({ data: globalData });
-        }
+    async function fetchGlobalData() {
+      const [newPrice, oneDayPrice] = await getEthPrice();
+      const newGlobalData = await getGlobalData(newPrice, oneDayPrice);
+      if (newGlobalData) {
+        updateGlobalData({ data: newGlobalData });
       }
     }
-    checkEthPrice();
-  }, [ethPrice, updateEthPrice, updateGlobalData]);
+    fetchGlobalData();
+  }, [updateGlobalData]);
 
   return (
-    <div id='landing-page'>
+    <div id='landing-page' style={{ width: '100%' }}>
       {openStakeModal && (
         <StakeQuickModal
           open={openStakeModal}
@@ -612,7 +596,7 @@ const LandingPage: React.FC = () => {
       </Box>
       <Box className={classes.tradingInfo} display='flex'>
         <Box>
-          {globalData?.oneDayTxns ? (
+          {globalData ? (
             <Typography variant='h3'>
               {Number(globalData.oneDayTxns).toLocaleString()}
             </Typography>
@@ -696,9 +680,9 @@ const LandingPage: React.FC = () => {
           </Typography>
         </Box>
         <Box>
-          {globalData ? (
+          {dQUICKAPY ? (
             <Typography variant='h3' style={{ paddingTop: '20px' }}>
-              {Number(dQUICKAPY).toLocaleString()}%
+              {dQUICKAPY.toLocaleString()}%
             </Typography>
           ) : (
             <Skeleton variant='rect' width={100} height={45} />

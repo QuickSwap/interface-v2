@@ -12,13 +12,13 @@ import {
   StakingInfo,
   DualStakingInfo,
   getBulkPairData,
-  useUSDRewardsandFees,
   CommonStakingInfo,
 } from 'state/stake/hooks';
 import { FarmLPCard, FarmDualCard, ToggleSwitch } from 'components';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
 import { ReactComponent as SearchIcon } from 'assets/images/SearchIcon.svg';
 import { useActiveWeb3React } from 'hooks';
+import { GlobalConst } from 'constants/index';
 import {
   getAPYWithFee,
   getOneYearFee,
@@ -27,6 +27,7 @@ import {
 } from 'utils';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 import { useInfiniteLoading } from 'utils/useInfiniteLoading';
+import FarmRewards from './FarmRewards';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   helpWrapper: {
@@ -98,8 +99,6 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
   },
 }));
 
-const LPFARM_INDEX = 0;
-const DUALFARM_INDEX = 1;
 const LOADFARM_COUNT = 6;
 const POOL_COLUMN = 1;
 const TVL_COLUMN = 2;
@@ -122,7 +121,10 @@ const FarmPage: React.FC = () => {
   >(undefined);
   const [bulkPairs, setBulkPairs] = useState<any>(null);
   const [pageIndex, setPageIndex] = useState(0);
-  const [farmIndex, setFarmIndex] = useState(LPFARM_INDEX);
+  const [farmIndex, setFarmIndex] = useState(
+    GlobalConst.farmIndex.LPFARM_INDEX,
+  );
+  const [pageloading, setPageLoading] = useState(true); //this is used for not loading farms immediately when user is on farms page
   const [isEndedFarm, setIsEndedFarm] = useState(false);
   const [sortBy, setSortBy] = useState(0);
   const [sortDesc, setSortDesc] = useState(false);
@@ -132,36 +134,43 @@ const FarmPage: React.FC = () => {
     farmSearch,
     setFarmSearch,
   );
-  const farmData = useUSDRewardsandFees(farmIndex === LPFARM_INDEX, bulkPairs);
-  const dQuickRewardSum = useMemo(() => {
-    if (chainId) {
-      const stakingData = returnStakingInfo()[chainId] ?? [];
-      const rewardSum = stakingData.reduce(
-        (total, item) => total + item.rate,
-        0,
-      );
-      return rewardSum;
-    } else {
-      return 0;
-    }
-  }, [chainId]);
 
   const addedLPStakingInfos = useStakingInfo(
     null,
-    farmIndex === DUALFARM_INDEX || isEndedFarm ? 0 : undefined,
-    farmIndex === DUALFARM_INDEX || isEndedFarm ? 0 : undefined,
+    pageloading ||
+      farmIndex === GlobalConst.farmIndex.DUALFARM_INDEX ||
+      isEndedFarm
+      ? 0
+      : undefined,
+    pageloading ||
+      farmIndex === GlobalConst.farmIndex.DUALFARM_INDEX ||
+      isEndedFarm
+      ? 0
+      : undefined,
     { search: farmSearch, isStaked: stakedOnly },
   );
   const addedLPStakingOldInfos = useOldStakingInfo(
     null,
-    farmIndex === DUALFARM_INDEX || !isEndedFarm ? 0 : undefined,
-    farmIndex === DUALFARM_INDEX || !isEndedFarm ? 0 : undefined,
+    pageloading ||
+      farmIndex === GlobalConst.farmIndex.DUALFARM_INDEX ||
+      !isEndedFarm
+      ? 0
+      : undefined,
+    pageloading ||
+      farmIndex === GlobalConst.farmIndex.DUALFARM_INDEX ||
+      !isEndedFarm
+      ? 0
+      : undefined,
     { search: farmSearch, isStaked: stakedOnly },
   );
   const addedDualStakingInfos = useDualStakingInfo(
     null,
-    farmIndex === LPFARM_INDEX ? 0 : undefined,
-    farmIndex === LPFARM_INDEX ? 0 : undefined,
+    pageloading || farmIndex === GlobalConst.farmIndex.LPFARM_INDEX
+      ? 0
+      : undefined,
+    pageloading || farmIndex === GlobalConst.farmIndex.LPFARM_INDEX
+      ? 0
+      : undefined,
     { search: farmSearch, isStaked: stakedOnly },
   );
 
@@ -319,7 +328,7 @@ const FarmPage: React.FC = () => {
 
   const addedStakingInfos = useMemo(
     () =>
-      farmIndex === DUALFARM_INDEX
+      farmIndex === GlobalConst.farmIndex.DUALFARM_INDEX
         ? sortedStakingDualInfos
         : sortedLPStakingInfos,
     [farmIndex, sortedStakingDualInfos, sortedLPStakingInfos],
@@ -330,6 +339,12 @@ const FarmPage: React.FC = () => {
         .map((stakingInfo) => stakingInfo.stakingRewardAddress.toLowerCase())
         .reduce((totStr, str) => totStr + str, '')
     : null;
+
+  useEffect(() => {
+    setStakingInfos(undefined);
+    setStakingDualInfos(undefined);
+    setTimeout(() => setPageLoading(false), 500); //load farms 0.5s after loading page
+  }, []);
 
   useEffect(() => {
     if (chainId) {
@@ -349,7 +364,7 @@ const FarmPage: React.FC = () => {
 
   useEffect(() => {
     setPageIndex(0);
-    if (farmIndex === LPFARM_INDEX) {
+    if (farmIndex === GlobalConst.farmIndex.LPFARM_INDEX) {
       setStakingInfos(sortedLPStakingInfos.slice(0, LOADFARM_COUNT));
     } else {
       setStakingDualInfos(sortedStakingDualInfos.slice(0, LOADFARM_COUNT));
@@ -359,17 +374,17 @@ const FarmPage: React.FC = () => {
       setStakingDualInfos(undefined);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isEndedFarm, farmIndex, farmSearch, stakingRewardAddress]);
+  }, [stakingRewardAddress]);
 
   useEffect(() => {
-    if (farmIndex === LPFARM_INDEX) {
+    if (farmIndex === GlobalConst.farmIndex.LPFARM_INDEX) {
       const currentStakingInfos = stakingInfos || [];
       const stakingInfosToAdd = sortedLPStakingInfos.slice(
         currentStakingInfos.length,
         currentStakingInfos.length + LOADFARM_COUNT,
       );
       setStakingInfos(currentStakingInfos.concat(stakingInfosToAdd));
-    } else if (farmIndex === DUALFARM_INDEX) {
+    } else if (farmIndex === GlobalConst.farmIndex.DUALFARM_INDEX) {
       const currentDualStakingInfos = stakingDualInfos || [];
       const stakingDualInfosToAdd = sortedStakingDualInfos.slice(
         currentDualStakingInfos.length,
@@ -384,7 +399,9 @@ const FarmPage: React.FC = () => {
 
   const stakingAPYs = useMemo(() => {
     const sortedStakingInfos =
-      farmIndex === LPFARM_INDEX ? stakingInfos : stakingDualInfos;
+      farmIndex === GlobalConst.farmIndex.LPFARM_INDEX
+        ? stakingInfos
+        : stakingDualInfos;
     if (bulkPairs && sortedStakingInfos && sortedStakingInfos.length > 0) {
       return sortedStakingInfos.map((info: any) => {
         const oneDayVolume = bulkPairs[info.pair]?.oneDayVolumeUSD;
@@ -427,11 +444,12 @@ const FarmPage: React.FC = () => {
         <Box
           className={cx(
             classes.farmSwitch,
-            farmIndex === LPFARM_INDEX && classes.activeFarmSwitch,
+            farmIndex === GlobalConst.farmIndex.LPFARM_INDEX &&
+              classes.activeFarmSwitch,
           )}
           style={{ borderTopLeftRadius: 8, borderBottomLeftRadius: 8 }}
           onClick={() => {
-            setFarmIndex(LPFARM_INDEX);
+            setFarmIndex(GlobalConst.farmIndex.LPFARM_INDEX);
           }}
         >
           <Typography variant='body1'>LP Mining</Typography>
@@ -439,78 +457,19 @@ const FarmPage: React.FC = () => {
         <Box
           className={cx(
             classes.farmSwitch,
-            farmIndex === DUALFARM_INDEX && classes.activeFarmSwitch,
+            farmIndex === GlobalConst.farmIndex.DUALFARM_INDEX &&
+              classes.activeFarmSwitch,
           )}
           style={{ borderTopRightRadius: 8, borderBottomRightRadius: 8 }}
           onClick={() => {
-            setFarmIndex(DUALFARM_INDEX);
+            setFarmIndex(GlobalConst.farmIndex.DUALFARM_INDEX);
           }}
         >
           <Typography variant='body1'>Dual Mining</Typography>
         </Box>
       </Box>
-      <Box
-        display='flex'
-        flexWrap='wrap'
-        my={2}
-        borderRadius={10}
-        py={1.5}
-        bgcolor={palette.secondary.dark}
-      >
-        {farmIndex === LPFARM_INDEX && (
-          <Box
-            width={isMobile ? 1 : 1 / 3}
-            py={1.5}
-            borderRight={`1px solid ${palette.divider}`}
-            textAlign='center'
-          >
-            <Box mb={1}>
-              <Typography variant='caption' color='textSecondary'>
-                Reward Rate
-              </Typography>
-            </Box>
-            <Typography variant='subtitle2' style={{ fontWeight: 600 }}>
-              {dQuickRewardSum.toLocaleString()} dQuick / Day
-            </Typography>
-          </Box>
-        )}
-        <Box
-          width={isMobile ? 1 : farmIndex === LPFARM_INDEX ? 1 / 3 : 1 / 2}
-          p={1.5}
-          borderRight={isMobile ? 'none' : `1px solid ${palette.divider}`}
-          textAlign='center'
-        >
-          <Box mb={1}>
-            <Typography variant='caption' color='textSecondary'>
-              Total Rewards
-            </Typography>
-          </Box>
-          {farmData.rewardsUSD ? (
-            <Typography variant='subtitle2' style={{ fontWeight: 600 }}>
-              ${farmData.rewardsUSD.toLocaleString()} / Day
-            </Typography>
-          ) : (
-            <Skeleton width='100%' height='28px' />
-          )}
-        </Box>
-        <Box
-          width={isMobile ? 1 : farmIndex === LPFARM_INDEX ? 1 / 3 : 1 / 2}
-          p={1.5}
-          textAlign='center'
-        >
-          <Box mb={1}>
-            <Typography variant='caption' color='textSecondary'>
-              Fees [24h]
-            </Typography>
-          </Box>
-          {farmData.stakingFees ? (
-            <Typography variant='subtitle2' style={{ fontWeight: 600 }}>
-              ${farmData.stakingFees.toLocaleString()}
-            </Typography>
-          ) : (
-            <Skeleton width='100%' height='28px' />
-          )}
-        </Box>
+      <Box my={2}>
+        <FarmRewards bulkPairs={bulkPairs} farmIndex={farmIndex} />
       </Box>
       <Box className={classes.dragonWrapper}>
         <Box
@@ -524,7 +483,7 @@ const FarmPage: React.FC = () => {
             <Typography variant='h5'>Earn dQuick</Typography>
             <Typography variant='body2'>
               Stake LP Tokens to earn{' '}
-              {farmIndex === LPFARM_INDEX
+              {farmIndex === GlobalConst.farmIndex.LPFARM_INDEX
                 ? 'dQUICK + Pool Fees'
                 : 'dQUICK + WMATIC rewards'}
             </Typography>
@@ -737,29 +696,25 @@ const FarmPage: React.FC = () => {
             </Box>
           </Box>
         )}
-        {//show loading until loading total fees
-        farmData.stakingFees ? (
-          farmIndex === LPFARM_INDEX && stakingInfos ? (
-            stakingInfos.map((info: StakingInfo, index) => (
-              <FarmLPCard
-                key={index}
-                dQuicktoQuick={Number(lairInfo.dQUICKtoQUICK.toSignificant())}
-                stakingInfo={info}
-                stakingAPY={stakingAPYs[index]}
-              />
-            ))
-          ) : farmIndex === DUALFARM_INDEX && stakingDualInfos ? (
-            stakingDualInfos.map((info: DualStakingInfo, index) => (
-              <FarmDualCard
-                key={index}
-                dQuicktoQuick={Number(lairInfo.dQUICKtoQUICK.toSignificant())}
-                stakingInfo={info}
-                stakingAPY={stakingAPYs[index]}
-              />
-            ))
-          ) : (
-            <Skeleton width='100%' height={80} />
-          )
+        {farmIndex === GlobalConst.farmIndex.LPFARM_INDEX && stakingInfos ? (
+          stakingInfos.map((info: StakingInfo, index) => (
+            <FarmLPCard
+              key={index}
+              dQuicktoQuick={Number(lairInfo.dQUICKtoQUICK.toSignificant())}
+              stakingInfo={info}
+              stakingAPY={stakingAPYs[index]}
+            />
+          ))
+        ) : farmIndex === GlobalConst.farmIndex.DUALFARM_INDEX &&
+          stakingDualInfos ? (
+          stakingDualInfos.map((info: DualStakingInfo, index) => (
+            <FarmDualCard
+              key={index}
+              dQuicktoQuick={Number(lairInfo.dQUICKtoQUICK.toSignificant())}
+              stakingInfo={info}
+              stakingAPY={stakingAPYs[index]}
+            />
+          ))
         ) : (
           <Skeleton width='100%' height={80} />
         )}

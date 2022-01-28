@@ -51,7 +51,7 @@ const BarChart: React.FC<BarChartProps> = ({
             key={index}
             className={classes.barChartItem}
             width={`calc(${100 / data.length}% - 2px)`}
-            height={(value / maxValue) * height}
+            height={`${Math.max(6, (value / maxValue) * height)}px`} // set min height of bar to 6px for the items with small amount
             onMouseOver={() => onHover && onHover(index)}
           />
         ))}

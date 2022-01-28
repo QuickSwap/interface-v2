@@ -73,6 +73,18 @@ export const GlobalConst = {
     DEFAULT_TOKEN_LIST_URL:
       'https://unpkg.com/quickswap-default-token-list@1.2.20/build/quickswap-default.tokenlist.json',
   },
+  analyticChart: {
+    ONE_MONTH_CHART: 1,
+    THREE_MONTH_CHART: 2,
+    SIX_MONTH_CHART: 3,
+    ONE_YEAR_CHART: 4,
+    ALL_CHART: 5,
+    CHART_COUNT: 60, //limit analytics chart items not more than 60
+  },
+  farmIndex: {
+    LPFARM_INDEX: 0,
+    DUALFARM_INDEX: 1,
+  },
 };
 
 export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
@@ -207,6 +219,16 @@ export const GlobalData = {
       ],
       [ChainId.MUMBAI]: undefined,
     },
+  },
+  analytics: {
+    CHART_DURATIONS: [
+      GlobalConst.analyticChart.ONE_MONTH_CHART,
+      GlobalConst.analyticChart.THREE_MONTH_CHART,
+      GlobalConst.analyticChart.SIX_MONTH_CHART,
+      GlobalConst.analyticChart.ONE_YEAR_CHART,
+      GlobalConst.analyticChart.ALL_CHART,
+    ],
+    CHART_DURATION_TEXTS: ['1M', '3M', '6M', '1Y', 'All'],
   },
 };
 
