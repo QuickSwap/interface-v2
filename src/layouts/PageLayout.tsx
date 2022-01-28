@@ -4,7 +4,7 @@ import { useLocation } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import HeroBkg from 'assets/images/heroBkg.png';
 import HeroBkg1 from 'assets/images/heroBkg.svg';
-import { Header, Footer } from 'components';
+import { Header, Footer, BetaWarningBanner } from 'components';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   page: {
@@ -49,6 +49,7 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children }) => {
 
   return (
     <Box className={classes.page}>
+      <BetaWarningBanner />
       <Header />
       <Box className={classes.heroBkg}>
         <img
