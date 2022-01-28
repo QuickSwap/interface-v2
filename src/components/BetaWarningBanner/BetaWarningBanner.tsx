@@ -15,10 +15,10 @@ const useStyles = makeStyles(({ palette }) => ({
     alignItems: 'center',
     padding: '8px 32px 8px 8px',
     '& > span': {
-      marginLeft: 4,
+      marginLeft: 6,
       fontWeight: 'bold',
       textTransform: 'uppercase',
-      maxWidth: 'calc(100% - 24px)',
+      width: 'calc(100% - 30px)',
     },
   },
   closeBanner: {
@@ -39,7 +39,10 @@ const BetaWarningBanner: React.FC = () => {
         <Box className={classes.warningBanner}>
           <AlertTriangle size={20} />
           <Typography variant='caption'>
-            This site is in beta. PLEASE Use it at your own risk.
+            This site is in beta. By using this software, you understand,
+            acknowledge and accept that Quickswap and/or the underlying software
+            are provided “as is” and “as available” basis and without warranties
+            or representations of any kind either expressed or implied
           </Typography>
           <Box
             onClick={() => setShowBanner(false)}
