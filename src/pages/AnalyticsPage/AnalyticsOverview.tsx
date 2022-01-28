@@ -134,7 +134,7 @@ const AnalyticsOverview: React.FC = () => {
           <Box
             className={classes.headingWrapper}
             style={{ cursor: 'pointer' }}
-            onClick={() => history.push(`/analytics?tabIndex=1`)}
+            onClick={() => history.push(`/analytics/tokens`)}
           >
             <Typography variant='h6'>See All</Typography>
             <ArrowForwardIos />
@@ -161,7 +161,7 @@ const AnalyticsOverview: React.FC = () => {
           <Box
             className={classes.headingWrapper}
             style={{ cursor: 'pointer' }}
-            onClick={() => history.push(`/analytics?tabIndex=2`)}
+            onClick={() => history.push(`/analytics/pairs`)}
           >
             <Typography variant='h6'>See All</Typography>
             <ArrowForwardIos />
