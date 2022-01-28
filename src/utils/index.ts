@@ -1757,3 +1757,12 @@ export function getPriceToQUICKSyrup(syrup: SyrupInfo) {
   );
   return isQUICKStakingToken ? 1 : Number(syrup.dQUICKtoQUICK.toSignificant());
 }
+
+export function getTokenAPRSyrup(syrup: SyrupInfo) {
+  return syrup.valueOfTotalStakedAmountInUSDC &&
+    syrup.valueOfTotalStakedAmountInUSDC > 0
+    ? ((syrup.rewards ?? 0) / syrup.valueOfTotalStakedAmountInUSDC) *
+        getDaysCurrentYear() *
+        100
+    : 0;
+}

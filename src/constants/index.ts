@@ -73,6 +73,10 @@ export const GlobalConst = {
     DEFAULT_TOKEN_LIST_URL:
       'https://unpkg.com/quickswap-default-token-list@1.2.20/build/quickswap-default.tokenlist.json',
   },
+  farmIndex: {
+    LPFARM_INDEX: 0,
+    DUALFARM_INDEX: 1,
+  },
 };
 
 export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
