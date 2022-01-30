@@ -6,11 +6,7 @@ import EthereumLogo from 'assets/images/Currency/PolygonSwap.svg';
 import useHttpLocations from 'hooks/useHttpLocations';
 import { WrappedTokenInfo } from 'state/lists/hooks';
 import { Logo } from 'components';
-
-export const getTokenLogoURL = (address: string) => {
-  const logoExtensions = ['.png', '.webp', '.jpeg', '.svg'];
-  return logoExtensions.map((ext) => `/tokenLogo/${address}${ext}`);
-};
+import { getTokenLogoURL } from 'utils/getTokenLogoURL';
 
 const useStyles = makeStyles(({}) => ({
   logoStyled: {

@@ -14,7 +14,7 @@ import { useAddUserToken, useRemoveUserAddedToken } from 'state/user/hooks';
 import { useCurrencyBalance } from 'state/wallet/hooks';
 import { useIsUserAddedToken } from 'hooks/Tokens';
 import { CurrencyLogo } from 'components';
-import { getTokenLogoURL } from 'components/CurrencyLogo';
+import { getTokenLogoURL } from 'utils/getTokenLogoURL';
 import { PlusHelper } from 'components/QuestionHelper';
 import { ReactComponent as TokenSelectedIcon } from 'assets/images/TokenSelected.svg';
 import useUSDCPrice from 'utils/useUSDCPrice';
