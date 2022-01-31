@@ -14,7 +14,7 @@ import {
   getBulkPairData,
   CommonStakingInfo,
 } from 'state/stake/hooks';
-import { FarmLPCard, FarmDualCard, ToggleSwitch } from 'components';
+import { FarmLPCard, FarmDualCard, ToggleSwitch, CustomMenu } from 'components';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
 import { ReactComponent as SearchIcon } from 'assets/images/SearchIcon.svg';
 import { useActiveWeb3React } from 'hooks';
@@ -74,7 +74,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       flex: 1,
     },
     [breakpoints.down('xs')]: {
-      width: '100%',
+      width: 'calc(100% - 140px)',
       minWidth: 'unset',
       marginRight: 0,
     },
@@ -424,6 +424,44 @@ const FarmPage: React.FC = () => {
 
   const { loadMoreRef } = useInfiniteLoading(loadNext);
 
+  const sortByMobileItems = [
+    {
+      text: 'Pool',
+      onClick: () => setSortBy(POOL_COLUMN),
+    },
+    {
+      text: 'TVL',
+      onClick: () => setSortBy(TVL_COLUMN),
+    },
+    {
+      text: 'Rewards',
+      onClick: () => setSortBy(REWARDS_COLUMN),
+    },
+    {
+      text: 'APY',
+      onClick: () => setSortBy(APY_COLUMN),
+    },
+    {
+      text: 'Earned',
+      onClick: () => setSortBy(EARNED_COLUMN),
+    },
+  ];
+
+  const renderStakedOnly = () => (
+    <Box display='flex' alignItems='center'>
+      <Typography
+        variant='body2'
+        style={{ color: palette.text.disabled, marginRight: 8 }}
+      >
+        Staked Only
+      </Typography>
+      <ToggleSwitch
+        toggled={stakedOnly}
+        onToggle={() => setStakeOnly(!stakedOnly)}
+      />
+    </Box>
+  );
+
   return (
     <Box width='100%' mb={3} id='farmPage'>
       <Box
@@ -489,15 +527,29 @@ const FarmPage: React.FC = () => {
             </Typography>
           </Box>
           <Box display='flex' flexWrap='wrap'>
-            <Box className={classes.searchInput} mr={2} my={2}>
-              <SearchIcon />
-              <input
-                placeholder='Search name, symbol or paste address'
-                value={farmSearchInput}
-                onChange={(evt: any) => setFarmSearchInput(evt.target.value)}
-              />
+            <Box
+              display='flex'
+              justifyContent='space-between'
+              width={isMobile ? 1 : 'unset'}
+            >
+              <Box className={classes.searchInput} mr={2} my={2}>
+                <SearchIcon />
+                <input
+                  placeholder={
+                    isMobile ? 'Search' : 'Search name, symbol or paste address'
+                  }
+                  value={farmSearchInput}
+                  onChange={(evt: any) => setFarmSearchInput(evt.target.value)}
+                />
+              </Box>
+              {isMobile && renderStakedOnly()}
             </Box>
-            <Box display='flex' flexWrap='wrap' alignItems='center'>
+            <Box
+              width={isMobile ? 1 : 'unset'}
+              display='flex'
+              flexWrap='wrap'
+              alignItems='center'
+            >
               <Box width={160} height={40} display='flex' mr={2}>
                 <Box
                   className={cx(
@@ -527,18 +579,27 @@ const FarmPage: React.FC = () => {
                   <Typography variant='body2'>Ended</Typography>
                 </Box>
               </Box>
-              <Box display='flex' alignItems='center'>
-                <Typography
-                  variant='body2'
-                  style={{ color: palette.text.disabled, marginRight: 8 }}
-                >
-                  Staked Only
-                </Typography>
-                <ToggleSwitch
-                  toggled={stakedOnly}
-                  onToggle={() => setStakeOnly(!stakedOnly)}
-                />
-              </Box>
+              {isMobile ? (
+                <>
+                  <Box height={40} flex={1}>
+                    <CustomMenu title='Sort By' menuItems={sortByMobileItems} />
+                  </Box>
+                  <Box mt={2} width={1} display='flex' alignItems='center'>
+                    <Typography
+                      variant='body2'
+                      style={{ color: palette.text.disabled, marginRight: 8 }}
+                    >
+                      Sort {sortDesc ? 'Desc' : 'Asc'}
+                    </Typography>
+                    <ToggleSwitch
+                      toggled={sortDesc}
+                      onToggle={() => setSortDesc(!sortDesc)}
+                    />
+                  </Box>
+                </>
+              ) : (
+                renderStakedOnly()
+              )}
             </Box>
           </Box>
         </Box>
