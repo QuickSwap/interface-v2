@@ -51,7 +51,6 @@ const ErrorTooltip: React.FunctionComponent<IErrorTooltipProps> = ({
     let timeout: any;
     if (error) {
       setErrorTooltipVisible(true);
-      console.log(true);
       timeout = setTimeout(() => setErrorTooltipVisible(false), 3000);
     }
     () => {

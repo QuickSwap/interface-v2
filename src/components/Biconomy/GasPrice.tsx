@@ -10,6 +10,10 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     padding: 4,
     fontWeight: 600,
   },
+  gasTankIcon: {
+    height: 18,
+    width: 'auto',
+  },
 }));
 
 const GasPrice: React.FunctionComponent = (props) => {
@@ -18,9 +22,12 @@ const GasPrice: React.FunctionComponent = (props) => {
   const { gasPrice } = useGasPrice();
   return (
     <CustomTooltip title='Current gas price' arrow>
-      <Typography className={classes.gasPrice} variant='body1'>
-        {gasPrice}
-      </Typography>
+      <Box display='flex' alignItems='center'>
+        <LocalGasStation className={classes.gasTankIcon} />
+        <Typography className={classes.gasPrice} variant='body2'>
+          {gasPrice}
+        </Typography>
+      </Box>
     </CustomTooltip>
   );
 };

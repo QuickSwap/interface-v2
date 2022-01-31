@@ -47,6 +47,8 @@ const BiconomyProvider: React.FC = (props) => {
   >(ToggleGaslessStatus.IDLE);
   const [toggleGaslessError, setToggleGaslessError] = useState<Error>();
 
+  const isGaslessAllowed = useMemo(() => (gasPrice ?? 0) <= 50, [gasPrice]);
+
   const toggleGasless = useCallback(async () => {
     setToggleGaslessStatus(ToggleGaslessStatus.PENDING);
     // if enabled, then disabled without checks
@@ -55,6 +57,12 @@ const BiconomyProvider: React.FC = (props) => {
       setToggleGaslessStatus(ToggleGaslessStatus.SUCCESS);
       return;
     }
+
+    if (!isGaslessAllowed) {
+      setToggleGaslessStatus(ToggleGaslessStatus.SUCCESS);
+      return;
+    }
+
     try {
       // if disabled, then before enabling perform checks
       if (!account && !biconomyAPIKey) {
@@ -64,7 +72,7 @@ const BiconomyProvider: React.FC = (props) => {
       try {
         const response = await fetch(
           //TODO: replace with apiId from config
-          `https://api.biconomy.io/api/v1/dapp/checkLimits?userAddress=${account}&apiId=${'ee1f3001-da54-43f2-84cb-8e83feea7d61'}`,
+          `https://api.biconomy.io/api/v1/dapp/checkLimits?userAddress=${account}&apiId=${'b72dcef4-35f4-413b-810f-d46ecfd18c7f'}`,
           { headers: { 'x-api-key': biconomyAPIKey } },
         );
         checkLimitsResponse = await response.json();
@@ -92,9 +100,7 @@ const BiconomyProvider: React.FC = (props) => {
       setToggleGaslessStatus(ToggleGaslessStatus.ERROR);
       setToggleGaslessError(error);
     }
-  }, [isGaslessEnabled, account]);
-
-  const isGaslessAllowed = useMemo(() => (gasPrice ?? 0) <= 50, [gasPrice]);
+  }, [isGaslessEnabled, account, isGaslessAllowed]);
 
   // reinitialize biconomy everytime library is changed
   const biconomy: any = useMemo(() => {

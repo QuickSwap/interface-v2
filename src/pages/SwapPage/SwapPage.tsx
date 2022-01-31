@@ -327,9 +327,11 @@ const SwapPage: React.FC = () => {
                   <Typography variant='body1'>Limit</Typography>
                 </Box>
               </Box>
-              <ToggleWithGasPrice />
-              <Box className={classes.headingItem}>
-                <SettingsIcon onClick={() => setOpenSettingsModal(true)} />
+              <Box display={'flex'} alignItems='center'>
+                <ToggleWithGasPrice token={token1} />
+                <Box className={classes.headingItem}>
+                  <SettingsIcon onClick={() => setOpenSettingsModal(true)} />
+                </Box>
               </Box>
             </Box>
             <Box mt={2.5}>

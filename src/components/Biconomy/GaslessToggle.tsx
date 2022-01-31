@@ -5,16 +5,17 @@ import {
   Typography,
   useTheme,
 } from '@material-ui/core';
-import { LocalGasStation } from '@material-ui/icons';
-import { CustomTooltip, ToggleSwitch } from 'components';
+import { InfoRounded } from '@material-ui/icons';
+import { CustomTooltip } from 'components';
+import ToggleSwitch from './BrandedToggle';
 import { ToggleGaslessStatus, useBiconomy } from 'context/Biconomy';
-import React from 'react';
+import React, { useMemo } from 'react';
 import ErrorTooltip from './ErrorTooltip';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   gaslessToggleWrapper: {
     alignItems: 'center',
-    gap: '4px',
+    gap: '8px',
     display: 'flex',
     cursor: 'pointer',
   },
@@ -43,34 +44,55 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     transform: 'translate(-50%, 50%) rotate(45deg)',
     backgroundColor: palette.error.main,
   },
+  infoIcon: {
+    height: 16,
+    width: 'auto',
+  },
+  switchLabelWrapper: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 4,
+  },
 }));
 
-const GaslessToggle: React.FunctionComponent = (props) => {
+const GaslessToggle: React.FunctionComponent<{
+  disabled?: boolean;
+  isTokenAllowed?: boolean;
+}> = ({ disabled, isTokenAllowed }) => {
   const { isGaslessAllowed, toggleGaslessStatus } = useBiconomy();
   const classes = useStyles();
   const { isGaslessEnabled, toggleGasless, toggleGaslessError } = useBiconomy();
   const { palette } = useTheme();
 
+  const tooltipMessage = useMemo(() => {
+    if (isGaslessAllowed && isTokenAllowed)
+      return "Gasless Mode. This button will toggle QuickSwap's gasless feature for your wallet. Users with hardware wallets should keep this setting turned off.";
+    if (!isGaslessAllowed)
+      return 'Gasless mode is disabled because gas prices are too high';
+    if (!isTokenAllowed)
+      return 'Gasless mode is disabled because current from token is unsupported';
+    return 'Gasless mode';
+  }, [isGaslessAllowed, isTokenAllowed]);
+
   return (
-    <CustomTooltip
-      title={
-        isGaslessAllowed
-          ? "Gasless Mode. This button will toggle QuickSwap's gasless feature for your wallet. Users with hardware wallets should keep this setting turned off."
-          : 'Gasless mode is disabled because gas prices are too high'
-      }
-    >
+    <CustomTooltip title={tooltipMessage}>
       <Box position='relative'>
         <ErrorTooltip error={toggleGaslessError} />
-        <Box className={classes.gaslessToggleWrapper} onClick={toggleGasless}>
-          <LocalGasStation
-            htmlColor={
-              isGaslessEnabled && isGaslessAllowed
-                ? palette.text.primary
-                : palette.text.disabled
-            }
-          />
+        <Box
+          className={classes.gaslessToggleWrapper}
+          onClick={() => {
+            if (disabled) return;
+            toggleGasless();
+          }}
+        >
+          <Box className={classes.switchLabelWrapper}>
+            <InfoRounded className={classes.infoIcon} />
+            <Typography variant='body2' noWrap>
+              Go Gasless
+            </Typography>
+          </Box>
           <ToggleSwitch
-            toggled={isGaslessEnabled && isGaslessAllowed}
+            toggled={isGaslessEnabled && isGaslessAllowed && !disabled}
             onToggle={() => null}
           />
           {toggleGaslessStatus === ToggleGaslessStatus.PENDING && (
