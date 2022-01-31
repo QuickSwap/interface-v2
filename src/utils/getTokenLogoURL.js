@@ -7,7 +7,7 @@ export const getTokenLogoURL = (address) => {
         .default;
       return image;
     } catch (e) {
-      return null;
+      return 'error';
     }
   });
 };
