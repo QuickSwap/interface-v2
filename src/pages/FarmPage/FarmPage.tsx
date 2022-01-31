@@ -14,9 +14,14 @@ import {
   getBulkPairData,
   CommonStakingInfo,
 } from 'state/stake/hooks';
-import { FarmLPCard, FarmDualCard, ToggleSwitch, CustomMenu } from 'components';
+import {
+  FarmLPCard,
+  FarmDualCard,
+  ToggleSwitch,
+  CustomMenu,
+  SearchInput,
+} from 'components';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
-import { ReactComponent as SearchIcon } from 'assets/images/SearchIcon.svg';
 import { useActiveWeb3React } from 'hooks';
 import { GlobalConst } from 'constants/index';
 import {
@@ -52,31 +57,6 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     overflow: 'hidden',
     [breakpoints.down('xs')]: {
       padding: '16px 12px',
-    },
-  },
-  searchInput: {
-    height: 40,
-    border: `1px solid ${palette.secondary.dark}`,
-    borderRadius: 10,
-    minWidth: 300,
-    display: 'flex',
-    alignItems: 'center',
-    padding: '0 10px',
-    '& input': {
-      background: 'transparent',
-      border: 'none',
-      boxShadow: 'none',
-      outline: 'none',
-      marginLeft: 8,
-      fontSize: 14,
-      fontWeight: 500,
-      color: palette.text.primary,
-      flex: 1,
-    },
-    [breakpoints.down('xs')]: {
-      width: 'calc(100% - 140px)',
-      minWidth: 'unset',
-      marginRight: 0,
     },
   },
   farmSwitch: {
@@ -532,14 +512,13 @@ const FarmPage: React.FC = () => {
               justifyContent='space-between'
               width={isMobile ? 1 : 'unset'}
             >
-              <Box className={classes.searchInput} mr={2} my={2}>
-                <SearchIcon />
-                <input
+              <Box width={isMobile ? 'calc(100% - 150px)' : 1} mr={2} my={2}>
+                <SearchInput
                   placeholder={
                     isMobile ? 'Search' : 'Search name, symbol or paste address'
                   }
                   value={farmSearchInput}
-                  onChange={(evt: any) => setFarmSearchInput(evt.target.value)}
+                  setValue={setFarmSearchInput}
                 />
               </Box>
               {isMobile && renderStakedOnly()}

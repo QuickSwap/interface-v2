@@ -4,40 +4,13 @@ import { ArrowUp, ArrowDown } from 'react-feather';
 import cx from 'classnames';
 import { Box, Typography, Divider, useMediaQuery } from '@material-ui/core';
 import { SyrupInfo, useSyrupInfo, useOldSyrupInfo } from 'state/stake/hooks';
-import { SyrupCard, ToggleSwitch, CustomMenu } from 'components';
-import { ReactComponent as SearchIcon } from 'assets/images/SearchIcon.svg';
+import { SyrupCard, ToggleSwitch, CustomMenu, SearchInput } from 'components';
 import { getTokenAPRSyrup } from 'utils';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 import { useInfiniteLoading } from 'utils/useInfiniteLoading';
 import { Skeleton } from '@material-ui/lab';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
-  searchInput: {
-    height: 40,
-    border: `1px solid ${palette.secondary.dark}`,
-    borderRadius: 10,
-    minWidth: 250,
-    display: 'flex',
-    alignItems: 'center',
-    padding: '0 10px',
-    width: '100%',
-    '& input': {
-      background: 'transparent',
-      border: 'none',
-      boxShadow: 'none',
-      outline: 'none',
-      marginLeft: 8,
-      fontSize: 14,
-      fontWeight: 500,
-      color: palette.text.primary,
-      flex: 1,
-    },
-    [breakpoints.down('xs')]: {
-      width: 'calc(100% - 140px)',
-      minWidth: 'unset',
-      marginRight: 0,
-    },
-  },
   syrupSwitch: {
     width: '50%',
     height: '100%',
@@ -246,19 +219,23 @@ const DragonsSyrup: React.FC = () => {
           width={isMobile ? 1 : 'unset'}
           flex={isMobile ? 'unset' : 1}
         >
-          <Box className={classes.searchInput} mr={2} my={isMobile ? 2 : 0}>
-            <SearchIcon />
-            <input
+          <Box width={isMobile ? 'calc(100% - 150px)' : 1} mr={2} my={2}>
+            <SearchInput
               placeholder={
                 isMobile ? 'Search' : 'Search name, symbol or paste address'
               }
               value={syrupSearchInput}
-              onChange={(evt: any) => setSyrupSearchInput(evt.target.value)}
+              setValue={setSyrupSearchInput}
             />
           </Box>
           {isMobile && renderStakedOnly()}
         </Box>
-        <Box display='flex' flexWrap='wrap' alignItems='center'>
+        <Box
+          width={isMobile ? 1 : 'unset'}
+          display='flex'
+          flexWrap='wrap'
+          alignItems='center'
+        >
           <Box width={160} height={40} display='flex' mr={2}>
             <Box
               className={cx(
