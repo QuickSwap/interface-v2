@@ -21,7 +21,7 @@ const useStyles = makeStyles(({ palette }) => ({
     padding: 12,
     background: palette.background.paper,
     position: 'relative',
-    zIndex: 2,
+    zIndex: 10,
     marginTop: 8,
   },
 }));
