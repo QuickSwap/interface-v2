@@ -4,41 +4,13 @@ import { ArrowUp, ArrowDown } from 'react-feather';
 import cx from 'classnames';
 import { Box, Typography, Divider, useMediaQuery } from '@material-ui/core';
 import { SyrupInfo, useSyrupInfo, useOldSyrupInfo } from 'state/stake/hooks';
-import { SyrupCard, ToggleSwitch } from 'components';
-import { ReactComponent as SearchIcon } from 'assets/images/SearchIcon.svg';
-import { getTokenAPRSyrup } from 'utils';
+import { SyrupCard, ToggleSwitch, CustomMenu, SearchInput } from 'components';
+import { getTokenAPRSyrup, returnFullWidthMobile } from 'utils';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 import { useInfiniteLoading } from 'utils/useInfiniteLoading';
 import { Skeleton } from '@material-ui/lab';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
-  searchInput: {
-    height: 40,
-    border: `1px solid ${palette.secondary.dark}`,
-    borderRadius: 10,
-    minWidth: 250,
-    display: 'flex',
-    alignItems: 'center',
-    padding: '0 10px',
-    flex: 1,
-    '& input': {
-      background: 'transparent',
-      border: 'none',
-      boxShadow: 'none',
-      outline: 'none',
-      marginLeft: 8,
-      fontSize: 14,
-      fontWeight: 500,
-      color: palette.text.primary,
-      flex: 1,
-    },
-    [breakpoints.down('xs')]: {
-      width: '100%',
-      minWidth: 'unset',
-      marginRight: 0,
-      flex: 'none',
-    },
-  },
   syrupSwitch: {
     width: '50%',
     height: '100%',
@@ -204,18 +176,66 @@ const DragonsSyrup: React.FC = () => {
 
   const { loadMoreRef } = useInfiniteLoading(loadNext);
 
+  const sortByMobileItems = [
+    {
+      text: 'Token',
+      onClick: () => setSortBy(TOKEN_COLUMN),
+    },
+    {
+      text: 'Deposits',
+      onClick: () => setSortBy(DEPOSIT_COLUMN),
+    },
+    {
+      text: 'APR',
+      onClick: () => setSortBy(APR_COLUMN),
+    },
+    {
+      text: 'Earned',
+      onClick: () => setSortBy(EARNED_COLUMN),
+    },
+  ];
+
+  const renderStakedOnly = () => (
+    <Box display='flex' alignItems='center'>
+      <Typography
+        variant='body2'
+        style={{ color: palette.text.disabled, marginRight: 8 }}
+      >
+        Staked Only
+      </Typography>
+      <ToggleSwitch
+        toggled={stakedOnly}
+        onToggle={() => setStakeOnly(!stakedOnly)}
+      />
+    </Box>
+  );
+
   return (
     <>
       <Box display='flex' flexWrap='wrap' alignItems='center' mb={3.5}>
-        <Box className={classes.searchInput} mr={2} my={isMobile ? 2 : 0}>
-          <SearchIcon />
-          <input
-            placeholder='Search name, symbol or paste address'
-            value={syrupSearchInput}
-            onChange={(evt: any) => setSyrupSearchInput(evt.target.value)}
-          />
+        <Box
+          display='flex'
+          justifyContent='space-between'
+          width={returnFullWidthMobile(isMobile)}
+          flex={isMobile ? 'unset' : 1}
+        >
+          <Box width={isMobile ? 'calc(100% - 150px)' : 1} mr={2} my={2}>
+            <SearchInput
+              placeholder={
+                isMobile ? 'Search' : 'Search name, symbol or paste address'
+              }
+              value={syrupSearchInput}
+              setValue={setSyrupSearchInput}
+            />
+          </Box>
+          {isMobile && renderStakedOnly()}
         </Box>
-        <Box display='flex' flexWrap='wrap' alignItems='center'>
+        <Box
+          width={returnFullWidthMobile(isMobile)}
+          display='flex'
+          flexWrap='wrap'
+          alignItems='center'
+        >
           <Box width={160} height={40} display='flex' mr={2}>
             <Box
               className={cx(
@@ -248,18 +268,27 @@ const DragonsSyrup: React.FC = () => {
               <Typography variant='body2'>Ended</Typography>
             </Box>
           </Box>
-          <Box display='flex' alignItems='center'>
-            <Typography
-              variant='body2'
-              style={{ color: palette.text.disabled, marginRight: 8 }}
-            >
-              Staked Only
-            </Typography>
-            <ToggleSwitch
-              toggled={stakedOnly}
-              onToggle={() => setStakeOnly(!stakedOnly)}
-            />
-          </Box>
+          {isMobile ? (
+            <>
+              <Box height={40} flex={1}>
+                <CustomMenu title='Sort By' menuItems={sortByMobileItems} />
+              </Box>
+              <Box mt={2} width={1} display='flex' alignItems='center'>
+                <Typography
+                  variant='body2'
+                  style={{ color: palette.text.disabled, marginRight: 8 }}
+                >
+                  Sort {sortDesc ? 'Desc' : 'Asc'}
+                </Typography>
+                <ToggleSwitch
+                  toggled={sortDesc}
+                  onToggle={() => setSortDesc(!sortDesc)}
+                />
+              </Box>
+            </>
+          ) : (
+            renderStakedOnly()
+          )}
         </Box>
       </Box>
       <Divider />

@@ -1855,3 +1855,7 @@ export function getTokenAPRSyrup(syrup: SyrupInfo) {
         100
     : 0;
 }
+
+export function returnFullWidthMobile(isMobile: boolean) {
+  return isMobile ? 1 : 'unset';
+}
