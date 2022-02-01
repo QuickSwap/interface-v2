@@ -5,7 +5,7 @@ import cx from 'classnames';
 import { Box, Typography, Divider, useMediaQuery } from '@material-ui/core';
 import { SyrupInfo, useSyrupInfo, useOldSyrupInfo } from 'state/stake/hooks';
 import { SyrupCard, ToggleSwitch, CustomMenu, SearchInput } from 'components';
-import { getTokenAPRSyrup } from 'utils';
+import { getTokenAPRSyrup, returnFullWidthMobile } from 'utils';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 import { useInfiniteLoading } from 'utils/useInfiniteLoading';
 import { Skeleton } from '@material-ui/lab';
@@ -216,7 +216,7 @@ const DragonsSyrup: React.FC = () => {
         <Box
           display='flex'
           justifyContent='space-between'
-          width={isMobile ? 1 : 'unset'}
+          width={returnFullWidthMobile(isMobile)}
           flex={isMobile ? 'unset' : 1}
         >
           <Box width={isMobile ? 'calc(100% - 150px)' : 1} mr={2} my={2}>
@@ -231,7 +231,7 @@ const DragonsSyrup: React.FC = () => {
           {isMobile && renderStakedOnly()}
         </Box>
         <Box
-          width={isMobile ? 1 : 'unset'}
+          width={returnFullWidthMobile(isMobile)}
           display='flex'
           flexWrap='wrap'
           alignItems='center'

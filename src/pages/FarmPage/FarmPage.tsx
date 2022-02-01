@@ -29,6 +29,7 @@ import {
   getOneYearFee,
   returnDualStakingInfo,
   returnStakingInfo,
+  returnFullWidthMobile,
 } from 'utils';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 import { useInfiniteLoading } from 'utils/useInfiniteLoading';
@@ -510,7 +511,7 @@ const FarmPage: React.FC = () => {
             <Box
               display='flex'
               justifyContent='space-between'
-              width={isMobile ? 1 : 'unset'}
+              width={returnFullWidthMobile(isMobile)}
             >
               <Box width={isMobile ? 'calc(100% - 150px)' : 1} mr={2} my={2}>
                 <SearchInput
@@ -524,7 +525,7 @@ const FarmPage: React.FC = () => {
               {isMobile && renderStakedOnly()}
             </Box>
             <Box
-              width={isMobile ? 1 : 'unset'}
+              width={returnFullWidthMobile(isMobile)}
               display='flex'
               flexWrap='wrap'
               alignItems='center'
