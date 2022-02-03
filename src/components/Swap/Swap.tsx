@@ -237,40 +237,6 @@ const Swap: React.FC<{
 
   const classes = useStyles({ showApproveFlow });
 
-  const swapButtonText = useMemo(() => {
-    if (account) {
-      if (!currencies[Field.INPUT] || !currencies[Field.OUTPUT]) {
-        return 'Select a token';
-      } else if (
-        formattedAmounts[Field.INPUT] === '' &&
-        formattedAmounts[Field.OUTPUT] === ''
-      ) {
-        return 'Enter Amount';
-      } else if (showWrap) {
-        return wrapType === WrapType.WRAP
-          ? 'Wrap'
-          : wrapType === WrapType.UNWRAP
-          ? 'UnWrap'
-          : '';
-      } else if (noRoute && userHasSpecifiedInputOutput) {
-        return 'Insufficient liquidity for this trade.';
-      } else {
-        return 'Swap';
-      }
-    } else {
-      return isnotMatic ? 'Switch to Polygon' : 'Connect Wallet';
-    }
-  }, [
-    formattedAmounts,
-    currencies,
-    account,
-    isnotMatic,
-    noRoute,
-    userHasSpecifiedInputOutput,
-    showWrap,
-    wrapType,
-  ]);
-
   const toggleWalletModal = useWalletModalToggle();
 
   useEffect(() => {
@@ -305,6 +271,41 @@ const Swap: React.FC<{
     allowedSlippage,
     recipient,
   );
+
+  const swapButtonText = useMemo(() => {
+    if (account) {
+      if (!currencies[Field.INPUT] || !currencies[Field.OUTPUT]) {
+        return 'Select a token';
+      } else if (
+        formattedAmounts[Field.INPUT] === '' &&
+        formattedAmounts[Field.OUTPUT] === ''
+      ) {
+        return 'Enter Amount';
+      } else if (showWrap) {
+        return wrapType === WrapType.WRAP
+          ? 'Wrap'
+          : wrapType === WrapType.UNWRAP
+          ? 'UnWrap'
+          : '';
+      } else if (noRoute && userHasSpecifiedInputOutput) {
+        return 'Insufficient liquidity for this trade.';
+      } else {
+        return swapInputError ?? 'Swap';
+      }
+    } else {
+      return isnotMatic ? 'Switch to Polygon' : 'Connect Wallet';
+    }
+  }, [
+    formattedAmounts,
+    currencies,
+    account,
+    isnotMatic,
+    noRoute,
+    userHasSpecifiedInputOutput,
+    showWrap,
+    wrapType,
+    swapInputError,
+  ]);
 
   const swapButtonDisabled = useMemo(() => {
     if (account) {
@@ -618,37 +619,31 @@ const Swap: React.FC<{
           </Typography>
         </Box>
       )}
-      {recipient === null && !showWrap && isExpertMode && (
+      {!showWrap && isExpertMode && (
         <Box className={classes.recipientInput}>
           <Box className='header'>
-            <Box />
-            <Button
-              id='add-recipient-button'
-              onClick={() => onChangeRecipient('')}
-            >
-              + Add a send (optional)
-            </Button>
-          </Box>
-        </Box>
-      )}
-      {recipient !== null && !showWrap && (
-        <Box className={classes.recipientInput}>
-          <Box className='header'>
-            <ArrowDown size='16' color='white' />
+            {recipient !== null ? (
+              <ArrowDown size='16' color='white' />
+            ) : (
+              <Box />
+            )}
             <Button
               id='remove-recipient-button'
-              onClick={() => onChangeRecipient(null)}
+              onClick={() => onChangeRecipient(recipient !== null ? null : '')}
             >
-              - Remove send
+              {recipient !== null ? '- Remove send' : '+ Add a send (optional)'}
             </Button>
           </Box>
-          <Box className='content'>
-            <Typography>Recipient</Typography>
-            <input
-              value={recipient}
-              onChange={(evt) => onChangeRecipient(evt.target.value)}
-            />
-          </Box>
+          {recipient !== null && (
+            <Box className='content'>
+              <Typography>Recipient</Typography>
+              <input
+                value={recipient}
+                placeholder='Wallet Address or ENS name'
+                onChange={(evt) => onChangeRecipient(evt.target.value)}
+              />
+            </Box>
+          )}
         </Box>
       )}
       <Box

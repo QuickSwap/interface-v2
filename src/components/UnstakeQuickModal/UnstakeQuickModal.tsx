@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Box, Typography, Button } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-import { CustomModal, ColoredSlider } from 'components';
+import { CustomModal, ColoredSlider, NumericalInput } from 'components';
 import { useLairInfo } from 'state/stake/hooks';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 import { TransactionResponse } from '@ethersproject/providers';
@@ -12,16 +12,6 @@ import Web3 from 'web3';
 const web3 = new Web3();
 
 const useStyles = makeStyles(({ palette }) => ({
-  input: {
-    width: '100%',
-    background: 'transparent',
-    border: 'none',
-    boxShadow: 'none',
-    outline: 'none',
-    color: palette.text.primary,
-    fontSize: 28,
-    fontWeight: 600,
-  },
   stakeButton: {
     backgroundImage:
       'linear-gradient(104deg, #004ce6 -32%, #0098ff 54%, #00cff3 120%, #64fbd3 198%)',
@@ -120,19 +110,17 @@ const UnstakeQuickModal: React.FC<UnstakeQuickModalProps> = ({
             </Typography>
           </Box>
           <Box mt={2} display='flex' alignItems='center'>
-            <input
+            <NumericalInput
               placeholder='0'
-              className={classes.input}
               value={typedValue}
-              onChange={(evt: any) => {
+              fontSize={28}
+              onUserInput={(value) => {
                 const totalBalance = dQuickBalance
                   ? Number(dQuickBalance.toExact())
                   : 0;
-                setTypedValue(evt.target.value);
+                setTypedValue(value);
                 setStakePercent(
-                  totalBalance > 0
-                    ? (Number(evt.target.value) / totalBalance) * 100
-                    : 0,
+                  totalBalance > 0 ? (Number(value) / totalBalance) * 100 : 0,
                 );
               }}
             />

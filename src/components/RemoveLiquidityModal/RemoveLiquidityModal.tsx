@@ -16,6 +16,7 @@ import {
   TransactionConfirmationModal,
   TransactionErrorContent,
   ConfirmationModalContent,
+  NumericalInput,
 } from 'components';
 import {
   useDerivedBurnInfo,
@@ -41,16 +42,6 @@ import { useTotalSupply } from 'data/TotalSupply';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 
 const useStyles = makeStyles(({ palette }) => ({
-  input: {
-    width: '100%',
-    background: 'transparent',
-    border: 'none',
-    boxShadow: 'none',
-    outline: 'none',
-    color: palette.text.primary,
-    fontSize: 28,
-    fontWeight: 600,
-  },
   removeButton: {
     backgroundImage:
       'linear-gradient(104deg, #004ce6 -32%, #0098ff 54%, #00cff3 120%, #64fbd3 198%)',
@@ -475,12 +466,12 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
             </Typography>
           </Box>
           <Box mt={2}>
-            <input
+            <NumericalInput
               placeholder='0'
-              className={classes.input}
               value={formattedAmounts[Field.LIQUIDITY]}
-              onChange={(evt: any) => {
-                onLiquidityInput(evt.target.value);
+              fontSize={28}
+              onUserInput={(value) => {
+                onLiquidityInput(value);
               }}
             />
           </Box>
