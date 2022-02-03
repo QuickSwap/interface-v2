@@ -190,7 +190,6 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
       }}
     >
       <Box className={classes.currencyRow}>
-        {console.log('perfTest: row rendered ')}
         {(otherSelected || isSelected) && <TokenSelectedIcon />}
         <CurrencyLogo currency={currency} size={'32px'} />
         <Box ml={1} height={32}>

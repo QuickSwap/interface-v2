@@ -32,7 +32,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
   },
 }));
 
-const LOADSYRUP_COUNT = 5;
+const LOADSYRUP_COUNT = 10;
 const TOKEN_COLUMN = 1;
 const DEPOSIT_COLUMN = 2;
 const APR_COLUMN = 3;
