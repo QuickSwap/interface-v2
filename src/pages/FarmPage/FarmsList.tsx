@@ -225,7 +225,9 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
   ]);
 
   const sortedStakingDualInfos = useMemo(() => {
-    const dualStakingInfos = isEndedFarm ? [] : addedDualStakingInfos;
+    const dualStakingInfos = addedDualStakingInfos.filter(
+      (info) => info.ended === isEndedFarm,
+    );
     return dualStakingInfos.sort((a, b) => {
       if (sortBy === POOL_COLUMN) {
         return sortByToken(a, b);
