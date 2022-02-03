@@ -1856,6 +1856,20 @@ export function getTokenAPRSyrup(syrup: SyrupInfo) {
     : 0;
 }
 
+export function getDQUICKAPYSyrup(syrup?: SyrupInfo) {
+  if (!syrup) return '0';
+  const dQUICKAPR =
+    (((Number(syrup.oneDayVol) * 0.04 * 0.01) /
+      Number(syrup.dQuickTotalSupply.toSignificant(6))) *
+      getDaysCurrentYear()) /
+    (Number(syrup.dQUICKtoQUICK.toSignificant(6)) * Number(syrup.quickPrice));
+  if (!dQUICKAPR) return '0';
+  return Number(
+    (Math.pow(1 + dQUICKAPR / getDaysCurrentYear(), getDaysCurrentYear()) - 1) *
+      100,
+  ).toLocaleString();
+}
+
 export function returnFullWidthMobile(isMobile: boolean) {
   return isMobile ? 1 : 'unset';
 }
