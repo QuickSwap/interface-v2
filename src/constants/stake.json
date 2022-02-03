@@ -1,6 +1,28 @@
 {
   "syrup": [
     {
+      "token": "SAFLE",
+      "stakingRewardAddress": "0xDaFee9cafDc99c73d2288a9e2dc2c6A22dFB75fC",
+      "ended": false,
+      "lp": "",
+      "name": "",
+      "baseToken": "QUICK",
+      "rate": 16666.67,
+      "ending": 1651705754,
+      "stakingToken": "QUICK"
+    },
+    {
+      "token": "BOOK",
+      "stakingRewardAddress": "0xFBE299d79B3f8fEcAc2A5B7183edDD033FfF9fC3",
+      "ended": false,
+      "lp": "",
+      "name": "",
+      "baseToken": "MATIC",
+      "rate": 12500,
+      "ending": 1651705754,
+      "stakingToken": "QUICK"
+    },
+    {
       "token": "KEYFI",
       "stakingRewardAddress": "0x32a5E77b86A6C54e9a763cC74B45c19222D8c870",
       "ended": false,
@@ -130,17 +152,6 @@
       "baseToken": "MATIC",
       "rate": 5555.55,
       "ending": 1649254544,
-      "stakingToken": "DQUICK"
-    },
-    {
-      "token": "CLAM2",
-      "stakingRewardAddress": "0xb510935f4D67E27a11cD94E81bF0C465ee2a5509",
-      "ended": false,
-      "lp": "",
-      "name": "",
-      "baseToken": "MI",
-      "rate": 83.33,
-      "ending": 1643900469,
       "stakingToken": "DQUICK"
     },
     {
@@ -277,6 +288,17 @@
     }
   ],
   "oldsyrup": [
+    {
+      "token": "CLAM2",
+      "stakingRewardAddress": "0xb510935f4D67E27a11cD94E81bF0C465ee2a5509",
+      "ended": true,
+      "lp": "",
+      "name": "",
+      "baseToken": "MI",
+      "rate": 83.33,
+      "ending": 1643900469,
+      "stakingToken": "DQUICK"
+    },
     {
       "token": "ELON",
       "stakingRewardAddress": "0x0D0dD9b1f34101AF5Def323725a2e8a0C2Ba91Fc",
