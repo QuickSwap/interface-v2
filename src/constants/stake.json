@@ -280,7 +280,7 @@
     {
       "token": "ELON",
       "stakingRewardAddress": "0x0D0dD9b1f34101AF5Def323725a2e8a0C2Ba91Fc",
-      "ended": false,
+      "ended": true,
       "lp": "",
       "name": "",
       "baseToken": "ETHER",
@@ -291,7 +291,7 @@
     {
       "token": "WELT",
       "stakingRewardAddress": "0x7AB75F4e332Ea4410Dc46f644D9cCACC165581d8",
-      "ended": false,
+      "ended": true,
       "lp": "",
       "name": "",
       "baseToken": "USDC",
@@ -302,7 +302,7 @@
     {
       "token": "SNE",
       "stakingRewardAddress": "0xf6Fe46F0001FDeFAde6b5E08635ED303f2E0a3aA",
-      "ended": false,
+      "ended": true,
       "lp": "",
       "name": "",
       "baseToken": "USDC",
@@ -313,7 +313,7 @@
     {
       "token": "WSG",
       "stakingRewardAddress": "0x2b91d985AEb645cc580E35BdF52DF2694e742ADF",
-      "ended": false,
+      "ended": true,
       "lp": "",
       "name": "",
       "baseToken": "QUICK",
