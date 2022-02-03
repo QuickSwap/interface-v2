@@ -237,40 +237,6 @@ const Swap: React.FC<{
 
   const classes = useStyles({ showApproveFlow });
 
-  const swapButtonText = useMemo(() => {
-    if (account) {
-      if (!currencies[Field.INPUT] || !currencies[Field.OUTPUT]) {
-        return 'Select a token';
-      } else if (
-        formattedAmounts[Field.INPUT] === '' &&
-        formattedAmounts[Field.OUTPUT] === ''
-      ) {
-        return 'Enter Amount';
-      } else if (showWrap) {
-        return wrapType === WrapType.WRAP
-          ? 'Wrap'
-          : wrapType === WrapType.UNWRAP
-          ? 'UnWrap'
-          : '';
-      } else if (noRoute && userHasSpecifiedInputOutput) {
-        return 'Insufficient liquidity for this trade.';
-      } else {
-        return 'Swap';
-      }
-    } else {
-      return isnotMatic ? 'Switch to Polygon' : 'Connect Wallet';
-    }
-  }, [
-    formattedAmounts,
-    currencies,
-    account,
-    isnotMatic,
-    noRoute,
-    userHasSpecifiedInputOutput,
-    showWrap,
-    wrapType,
-  ]);
-
   const toggleWalletModal = useWalletModalToggle();
 
   useEffect(() => {
@@ -305,6 +271,41 @@ const Swap: React.FC<{
     allowedSlippage,
     recipient,
   );
+
+  const swapButtonText = useMemo(() => {
+    if (account) {
+      if (!currencies[Field.INPUT] || !currencies[Field.OUTPUT]) {
+        return 'Select a token';
+      } else if (
+        formattedAmounts[Field.INPUT] === '' &&
+        formattedAmounts[Field.OUTPUT] === ''
+      ) {
+        return 'Enter Amount';
+      } else if (showWrap) {
+        return wrapType === WrapType.WRAP
+          ? 'Wrap'
+          : wrapType === WrapType.UNWRAP
+          ? 'UnWrap'
+          : '';
+      } else if (noRoute && userHasSpecifiedInputOutput) {
+        return 'Insufficient liquidity for this trade.';
+      } else {
+        return swapInputError ?? 'Swap';
+      }
+    } else {
+      return isnotMatic ? 'Switch to Polygon' : 'Connect Wallet';
+    }
+  }, [
+    formattedAmounts,
+    currencies,
+    account,
+    isnotMatic,
+    noRoute,
+    userHasSpecifiedInputOutput,
+    showWrap,
+    wrapType,
+    swapInputError,
+  ]);
 
   const swapButtonDisabled = useMemo(() => {
     if (account) {
