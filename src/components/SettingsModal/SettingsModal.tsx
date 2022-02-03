@@ -3,7 +3,12 @@ import { Box, Divider, Typography } from '@material-ui/core';
 import { KeyboardArrowDown } from '@material-ui/icons';
 import { AlertTriangle } from 'react-feather';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-import { CustomModal, QuestionHelper, ToggleSwitch } from 'components';
+import {
+  CustomModal,
+  NumericalInput,
+  QuestionHelper,
+  ToggleSwitch,
+} from 'components';
 import cx from 'classnames';
 import { useSwapActionHandlers } from 'state/swap/hooks';
 import {
@@ -277,14 +282,17 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
               `}
             >
               {slippageAlert && <AlertTriangle color='#ffa000' size={16} />}
-              <input
+              <NumericalInput
                 placeholder={(userSlippageTolerance / 100).toFixed(2)}
-                className={classes.settingsInput}
                 value={slippageInput}
+                fontSize={14}
+                fontWeight={500}
+                align='right'
+                color='rgba(212, 229, 255, 0.8)'
                 onBlur={() => {
                   parseCustomSlippage((userSlippageTolerance / 100).toFixed(2));
                 }}
-                onChange={(e: any) => parseCustomSlippage(e.target.value)}
+                onUserInput={(value) => parseCustomSlippage(value)}
               />
               <Typography variant='body2'>%</Typography>
             </Box>

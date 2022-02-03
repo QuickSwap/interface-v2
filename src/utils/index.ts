@@ -1859,3 +1859,7 @@ export function getTokenAPRSyrup(syrup: SyrupInfo) {
 export function returnFullWidthMobile(isMobile: boolean) {
   return isMobile ? 1 : 'unset';
 }
+
+export function escapeRegExp(string: string): string {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+}

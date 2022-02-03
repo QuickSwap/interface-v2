@@ -20,6 +20,7 @@ export { default as CustomTable } from './CustomTable';
 export { default as DoubleCurrencyLogo } from './DoubleCurrencyLogo';
 export { default as QuestionHelper } from './QuestionHelper';
 export { default as Logo } from './Logo';
+export { default as NumericalInput } from './NumericalInput';
 export { default as PoolPositionCard } from './PoolPositionCard';
 export { default as RemoveLiquidityModal } from './RemoveLiquidityModal';
 export { default as SettingsModal } from './SettingsModal';

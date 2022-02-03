@@ -4,7 +4,7 @@ import { Box, Typography } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { useCurrencyBalance } from 'state/wallet/hooks';
 import cx from 'classnames';
-import { CurrencySearchModal, CurrencyLogo } from 'components';
+import { CurrencySearchModal, CurrencyLogo, NumericalInput } from 'components';
 import { useActiveWeb3React } from 'hooks';
 import useUSDCPrice from 'utils/useUSDCPrice';
 
@@ -33,20 +33,6 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
         '& p': {
           color: palette.primary.main,
           fontWeight: 600,
-        },
-      },
-      '& input': {
-        background: 'transparent',
-        border: 'none',
-        boxShadow: 'none',
-        outline: 'none',
-        textAlign: 'right',
-        color: palette.text.secondary,
-        width: '100%',
-        fontSize: 18,
-        fontWeight: 600,
-        '&::placeholder': {
-          color: palette.text.secondary,
         },
       },
     },
@@ -167,10 +153,14 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
           )}
         </Box>
         <Box className='inputWrapper'>
-          <input
+          <NumericalInput
             value={amount}
+            align='right'
+            color={palette.text.secondary}
             placeholder='0.00'
-            onChange={(e) => setAmount(e.target.value)}
+            onUserInput={(val) => {
+              setAmount(val);
+            }}
           />
         </Box>
       </Box>
