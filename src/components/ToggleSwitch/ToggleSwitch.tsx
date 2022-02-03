@@ -7,6 +7,7 @@ const useStyles = makeStyles(({ palette }) => ({
     width: 40,
     height: 20,
     position: 'relative',
+    cursor: 'pointer',
     borderRadius: 10,
     border: (props: any) =>
       props.toggled

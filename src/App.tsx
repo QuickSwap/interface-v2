@@ -45,6 +45,7 @@ import 'slick-carousel/slick/slick-theme.css';
 import './i18n';
 import './App.css';
 import { mainTheme } from './theme';
+import Background from 'layouts/Background';
 
 const Web3ProviderNetwork = createWeb3ReactRoot(
   GlobalConst.utils.NetworkContextName,
@@ -59,7 +60,7 @@ const ThemeProvider: React.FC = ({ children }) => {
 const Providers: React.FC = ({ children }) => {
   return (
     <div>
-      <Suspense fallback={null}>
+      <Suspense fallback={<Background fallback={true} />}>
         <ThemeProvider>
           <CssBaseline />
           {children}
