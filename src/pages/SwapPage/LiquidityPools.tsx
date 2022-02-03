@@ -5,6 +5,7 @@ import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { getTokenPairs, getBulkPairData, getEthPrice } from 'utils';
 import { Token } from '@uniswap/sdk';
 import LiquidityPoolRow from './LiquidityPoolRow';
+import { useAllTokens } from 'hooks/Tokens';
 
 const useStyles = makeStyles(({ palette }) => ({
   liquidityMain: {
@@ -36,6 +37,7 @@ const LiquidityPools: React.FC<{
   const [tokenPairs, updateTokenPairs] = useState<any[] | null>(null);
   const token1Address = token1.address.toLowerCase();
   const token2Address = token2.address.toLowerCase();
+  const allTokenList = useAllTokens();
 
   const liquidityPairs = useMemo(
     () =>
@@ -61,23 +63,38 @@ const LiquidityPools: React.FC<{
     [tokenPairs, liquidityFilterIndex, token1Address, token2Address],
   );
 
+  const whiteListAddressList = useMemo(
+    () => Object.keys(allTokenList).map((item) => item.toLowerCase()),
+    [allTokenList],
+  );
+
   useEffect(() => {
     async function fetchTokenPairs() {
       const [newPrice] = await getEthPrice();
       const tokenPairs = await getTokenPairs(token1Address, token2Address);
+
       const formattedPairs = tokenPairs
-        ? tokenPairs.map((pair: any) => {
-            return pair.id;
-          })
+        ? tokenPairs
+            .filter((pair: any) => {
+              return (
+                whiteListAddressList.includes(pair?.token0?.id) &&
+                whiteListAddressList.includes(pair?.token1?.id)
+              );
+            })
+            .map((pair: any) => {
+              return pair.id;
+            })
         : [];
+
       const pairData = await getBulkPairData(formattedPairs, newPrice);
+
       if (pairData) {
         updateTokenPairs(pairData);
       }
     }
     fetchTokenPairs();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [token1Address, token2Address]);
+  }, [token1Address, token2Address, whiteListAddressList]);
 
   return (
     <>

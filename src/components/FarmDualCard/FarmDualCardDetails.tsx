@@ -11,7 +11,7 @@ import {
 } from 'hooks/useContract';
 import { useDerivedStakeInfo } from 'state/stake/hooks';
 import { useTransactionAdder } from 'state/transactions/hooks';
-import { CurrencyLogo } from 'components';
+import { CurrencyLogo, NumericalInput } from 'components';
 import { Link } from 'react-router-dom';
 import { useTokenBalance } from 'state/wallet/hooks';
 import { useActiveWeb3React } from 'hooks';
@@ -28,16 +28,6 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    '& input': {
-      flex: 1,
-      background: 'transparent',
-      border: 'none',
-      boxShadow: 'none',
-      outline: 'none',
-      fontSize: 16,
-      fontWeight: 600,
-      color: palette.text.primary,
-    },
     '& p': {
       cursor: 'pointer',
     },
@@ -478,11 +468,12 @@ const FarmDualCardDetails: React.FC<{
                 </Box>
               </Box>
               <Box className={classes.inputVal} mb={2} mt={2} p={2}>
-                <input
+                <NumericalInput
                   placeholder='0.00'
                   value={stakeAmount}
-                  onChange={(evt: any) => {
-                    setStakeAmount(evt.target.value);
+                  fontSize={16}
+                  onUserInput={(value) => {
+                    setStakeAmount(value);
                   }}
                 />
                 <Typography
@@ -568,11 +559,12 @@ const FarmDualCardDetails: React.FC<{
               </Typography>
             </Box>
             <Box className={classes.inputVal} mb={2} mt={4.5} p={2}>
-              <input
+              <NumericalInput
                 placeholder='0.00'
                 value={unstakeAmount}
-                onChange={(evt: any) => {
-                  setUnStakeAmount(evt.target.value);
+                fontSize={16}
+                onUserInput={(value) => {
+                  setUnStakeAmount(value);
                 }}
               />
               <Typography
