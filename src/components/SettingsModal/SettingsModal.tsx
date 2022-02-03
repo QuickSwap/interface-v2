@@ -5,6 +5,7 @@ import { AlertTriangle } from 'react-feather';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { CustomModal, QuestionHelper, ToggleSwitch } from 'components';
 import cx from 'classnames';
+import { useSwapActionHandlers } from 'state/swap/hooks';
 import {
   useExpertModeManager,
   useUserTransactionTTL,
@@ -62,6 +63,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
     setUserslippageTolerance,
   ] = useUserSlippageTolerance();
   const [ttl, setTtl] = useUserTransactionTTL();
+  const { onChangeRecipient } = useSwapActionHandlers();
   const [expertMode, toggleExpertMode] = useExpertModeManager();
   const [slippageInput, setSlippageInput] = useState('');
   const [deadlineInput, setDeadlineInput] = useState('');
@@ -365,6 +367,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
             onToggle={() => {
               if (expertMode) {
                 toggleExpertMode();
+                onChangeRecipient(null);
               } else {
                 setExpertConfirm(true);
               }

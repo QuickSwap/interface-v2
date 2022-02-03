@@ -618,37 +618,31 @@ const Swap: React.FC<{
           </Typography>
         </Box>
       )}
-      {recipient === null && !showWrap && isExpertMode && (
+      {!showWrap && isExpertMode && (
         <Box className={classes.recipientInput}>
           <Box className='header'>
-            <Box />
-            <Button
-              id='add-recipient-button'
-              onClick={() => onChangeRecipient('')}
-            >
-              + Add a send (optional)
-            </Button>
-          </Box>
-        </Box>
-      )}
-      {recipient !== null && !showWrap && (
-        <Box className={classes.recipientInput}>
-          <Box className='header'>
-            <ArrowDown size='16' color='white' />
+            {recipient !== null ? (
+              <ArrowDown size='16' color='white' />
+            ) : (
+              <Box />
+            )}
             <Button
               id='remove-recipient-button'
-              onClick={() => onChangeRecipient(null)}
+              onClick={() => onChangeRecipient(recipient !== null ? null : '')}
             >
-              - Remove send
+              {recipient !== null ? '- Remove send' : '+ Add a send (optional)'}
             </Button>
           </Box>
-          <Box className='content'>
-            <Typography>Recipient</Typography>
-            <input
-              value={recipient}
-              onChange={(evt) => onChangeRecipient(evt.target.value)}
-            />
-          </Box>
+          {recipient !== null && (
+            <Box className='content'>
+              <Typography>Recipient</Typography>
+              <input
+                value={recipient}
+                placeholder='Wallet Address or ENS name'
+                onChange={(evt) => onChangeRecipient(evt.target.value)}
+              />
+            </Box>
+          )}
         </Box>
       )}
       <Box
