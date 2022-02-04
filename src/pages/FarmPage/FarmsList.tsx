@@ -25,7 +25,7 @@ import { getAPYWithFee, getOneYearFee, returnFullWidthMobile } from 'utils';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 import { useInfiniteLoading } from 'utils/useInfiniteLoading';
 
-const LOADFARM_COUNT = 6;
+const LOADFARM_COUNT = 10;
 const POOL_COLUMN = 1;
 const TVL_COLUMN = 2;
 const REWARDS_COLUMN = 3;

@@ -15,7 +15,7 @@ import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 import { useInfiniteLoading } from 'utils/useInfiniteLoading';
 import { Skeleton } from '@material-ui/lab';
 
-const LOADSYRUP_COUNT = 5;
+const LOADSYRUP_COUNT = 10;
 const TOKEN_COLUMN = 1;
 const DEPOSIT_COLUMN = 2;
 const APR_COLUMN = 3;
