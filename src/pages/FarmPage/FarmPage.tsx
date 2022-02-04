@@ -80,7 +80,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
   },
 }));
 
-const LOADFARM_COUNT = 6;
+const LOADFARM_COUNT = 10;
 const POOL_COLUMN = 1;
 const TVL_COLUMN = 2;
 const REWARDS_COLUMN = 3;
