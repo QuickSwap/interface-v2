@@ -3,14 +3,18 @@ import { Box, Typography, useMediaQuery } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
 import { DualStakingInfo } from 'state/stake/hooks';
-import { JSBI, TokenAmount, ETHER } from '@uniswap/sdk';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { DoubleCurrencyLogo, CurrencyLogo } from 'components';
 import CircleInfoIcon from 'assets/images/circleinfo.svg';
 import FarmDualCardDetails from './FarmDualCardDetails';
-import { getAPYWithFee, returnTokenFromKey } from 'utils';
+import {
+  getAPYWithFee,
+  getRewardRate,
+  getStakedAmountStakingInfo,
+  getTVLStaking,
+} from 'utils';
 
-const useStyles = makeStyles(({ palette, breakpoints }) => ({
+const useStyles = makeStyles(({ palette }) => ({
   farmDualCard: {
     background: palette.secondary.dark,
     width: '100%',
@@ -54,39 +58,8 @@ const FarmDualCard: React.FC<{
 
   const currency0 = unwrappedToken(token0);
   const currency1 = unwrappedToken(token1);
-  const baseTokenCurrency = unwrappedToken(stakingInfo.baseToken);
-  const empty = unwrappedToken(returnTokenFromKey('EMPTY'));
 
-  // get the color of the token
-  const baseToken =
-    baseTokenCurrency === empty ? token0 : stakingInfo.baseToken;
-
-  const totalSupplyOfStakingToken = stakingInfo.totalSupply;
-  const stakingTokenPair = stakingInfo.stakingTokenPair;
-
-  let valueOfTotalStakedAmountInBaseToken: TokenAmount | undefined;
-  if (totalSupplyOfStakingToken && stakingTokenPair && baseToken) {
-    // take the total amount of LP tokens staked, multiply by ETH value of all LP tokens, divide by all LP tokens
-    valueOfTotalStakedAmountInBaseToken = new TokenAmount(
-      baseToken,
-      JSBI.divide(
-        JSBI.multiply(
-          JSBI.multiply(
-            stakingInfo.totalStakedAmount.raw,
-            stakingTokenPair.reserveOf(baseToken).raw,
-          ),
-          JSBI.BigInt(2), // this is b/c the value of LP shares are ~double the value of the WETH they entitle owner to
-        ),
-        totalSupplyOfStakingToken.raw,
-      ),
-    );
-  }
-
-  // get the USD value of staked WETH
-  const USDPrice = stakingInfo.usdPrice;
-  const valueOfTotalStakedAmountInUSDC =
-    valueOfTotalStakedAmountInBaseToken &&
-    USDPrice?.quote(valueOfTotalStakedAmountInBaseToken);
+  const stakedAmounts = getStakedAmountStakingInfo(stakingInfo);
 
   let apyWithFee: number | string = 0;
 
@@ -100,18 +73,13 @@ const FarmDualCard: React.FC<{
     }
   }
 
-  const tvl = valueOfTotalStakedAmountInUSDC
-    ? `$${valueOfTotalStakedAmountInUSDC.toFixed(0, { groupSeparator: ',' })}`
-    : `${valueOfTotalStakedAmountInBaseToken?.toSignificant(4, {
-        groupSeparator: ',',
-      }) ?? '-'} ETH`;
+  const tvl = getTVLStaking(
+    stakedAmounts?.totalStakedUSD,
+    stakedAmounts?.totalStakedBase,
+  );
 
-  const poolRateA = `${stakingInfo.totalRewardRateA
-    ?.toFixed(2, { groupSeparator: ',' })
-    .replace(/[.,]00$/, '')} ${rewardTokenA?.symbol}  / day`;
-  const poolRateB = `${stakingInfo.totalRewardRateB
-    ?.toFixed(2, { groupSeparator: ',' })
-    .replace(/[.,]00$/, '')} ${rewardTokenB?.symbol} / day`;
+  const poolRateA = getRewardRate(stakingInfo.totalRewardRateA);
+  const poolRateB = getRewardRate(stakingInfo.totalRewardRateB);
 
   const earnedUSD =
     Number(stakingInfo.earnedAmountA.toSignificant()) *
@@ -206,21 +174,17 @@ const FarmDualCard: React.FC<{
               <Typography variant='body2'>{earnedUSDStr}</Typography>
               <Box display='flex' alignItems='center' justifyContent='flex-end'>
                 <CurrencyLogo
-                  currency={returnTokenFromKey('QUICK')}
+                  currency={unwrappedToken(rewardTokenA)}
                   size='16px'
                 />
                 <Typography variant='body2' style={{ marginLeft: 5 }}>
                   {stakingInfo.earnedAmountA.toSignificant(2)}
-                  <span>&nbsp;dQUICK</span>
+                  <span>&nbsp;{rewardTokenA.symbol}</span>
                 </Typography>
               </Box>
               <Box display='flex' alignItems='center' justifyContent='flex-end'>
                 <CurrencyLogo
-                  currency={
-                    rewardTokenB.symbol?.toLowerCase() === 'wmatic'
-                      ? ETHER
-                      : rewardTokenB
-                  }
+                  currency={unwrappedToken(rewardTokenB)}
                   size='16px'
                 />
                 <Typography variant='body2' style={{ marginLeft: 5 }}>

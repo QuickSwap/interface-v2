@@ -46,26 +46,32 @@ const CustomSwitch: React.FC<CustomSwitchProps> = ({
   const classes = useStyles();
   return (
     <Box display='flex' width={width} height={height}>
-      {items.map((item, index) => (
-        <Box
-          key={index}
-          className={cx(
-            classes.switchItem,
-            item.condition && classes.activeSwitchItem,
-          )}
-          style={{
-            borderTopLeftRadius: index === 0 ? 8 : 0,
-            borderBottomLeftRadius: index === 0 ? 8 : 0,
-            borderTopRightRadius: index === items.length - 1 ? 8 : 0,
-            borderBottomRightRadius: index === items.length - 1 ? 8 : 0,
-          }}
-          onClick={item.onClick}
-        >
-          <Typography variant={isLarge ? 'body1' : 'body2'}>
-            {item.text}
-          </Typography>
-        </Box>
-      ))}
+      {items.map((item, index) => {
+        const returnBorderRadius = (ind: number) => {
+          return index === ind ? 8 : 0; // this makes border radius for individual switch item
+        };
+        return (
+          <Box
+            key={index}
+            className={cx(
+              classes.switchItem,
+              item.condition && classes.activeSwitchItem,
+            )}
+            style={{
+              // makes left border radius for the first switch item and right border radius for the last switch item
+              borderTopLeftRadius: returnBorderRadius(0),
+              borderBottomLeftRadius: returnBorderRadius(0),
+              borderTopRightRadius: returnBorderRadius(items.length - 1),
+              borderBottomRightRadius: returnBorderRadius(items.length - 1),
+            }}
+            onClick={item.onClick}
+          >
+            <Typography variant={isLarge ? 'body1' : 'body2'}>
+              {item.text}
+            </Typography>
+          </Box>
+        );
+      })}
     </Box>
   );
 };

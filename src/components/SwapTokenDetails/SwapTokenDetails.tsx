@@ -18,6 +18,7 @@ import {
 import { LineChart } from 'components';
 import { Token } from '@uniswap/sdk';
 import dayjs from 'dayjs';
+import { unwrappedToken } from 'utils/wrappedCurrency';
 
 const useStyles = makeStyles(({ palette }) => ({
   success: {
@@ -32,8 +33,7 @@ const SwapTokenDetails: React.FC<{
   token: Token;
 }> = ({ token }) => {
   const classes = useStyles();
-  const currency =
-    token.symbol?.toLowerCase() === 'wmatic' ? Token.ETHER : token;
+  const currency = unwrappedToken(token);
   const tokenAddress = token.address;
   const { palette } = useTheme();
   const latestBlock = useBlockNumber();

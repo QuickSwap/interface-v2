@@ -3,7 +3,7 @@ import { TransactionResponse } from '@ethersproject/providers';
 import { Box, Typography, useMediaQuery } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { useStakingInfo, useOldStakingInfo } from 'state/stake/hooks';
-import { JSBI, TokenAmount, Pair } from '@uniswap/sdk';
+import { TokenAmount, Pair } from '@uniswap/sdk';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { usePairContract, useStakingContract } from 'hooks/useContract';
 import { useDerivedStakeInfo } from 'state/stake/hooks';
@@ -14,7 +14,15 @@ import { Link } from 'react-router-dom';
 import { useActiveWeb3React } from 'hooks';
 import useTransactionDeadline from 'hooks/useTransactionDeadline';
 import { useApproveCallback, ApprovalState } from 'hooks/useApproveCallback';
-import { getAPYWithFee, returnTokenFromKey } from 'utils';
+import {
+  getAPYWithFee,
+  getRewardRate,
+  getTokenAddress,
+  getTVLStaking,
+  returnTokenFromKey,
+  getStakedAmountStakingInfo,
+  getUSDString,
+} from 'utils';
 import CircleInfoIcon from 'assets/images/circleinfo.svg';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
@@ -87,93 +95,29 @@ const FarmLPCardDetails: React.FC<{
         ? stakingInfos[0]
         : oldStakingInfos && oldStakingInfos.length > 0
         ? oldStakingInfos[0]
-        : null,
+        : undefined,
     [stakingInfos, oldStakingInfos],
   );
 
   const token0 = stakingInfo ? stakingInfo.tokens[0] : undefined;
   const token1 = stakingInfo ? stakingInfo.tokens[1] : undefined;
 
-  const { account, library, chainId } = useActiveWeb3React();
+  const { account, library } = useActiveWeb3React();
   const addTransaction = useTransactionAdder();
 
   const currency0 = token0 ? unwrappedToken(token0) : undefined;
   const currency1 = token1 ? unwrappedToken(token1) : undefined;
-  const baseTokenCurrency = stakingInfo
-    ? unwrappedToken(stakingInfo.baseToken)
-    : null;
-  const empty = unwrappedToken(returnTokenFromKey('EMPTY'));
   const quickPriceUSD = stakingInfo?.quickPrice;
-
-  // get the color of the token
-  const baseToken =
-    baseTokenCurrency === empty ? token0 : stakingInfo?.baseToken;
 
   const userLiquidityUnstaked = useTokenBalance(
     account ?? undefined,
     stakingInfo?.stakedAmount.token,
   );
 
-  let valueOfMyStakedAmountInBaseToken: TokenAmount | undefined;
-  let valueOfUnstakedAmountInBaseToken: TokenAmount | undefined;
-  let valueOfTotalStakedAmountInBaseToken: TokenAmount | undefined;
-  if (stakingInfo && stakingInfo.totalSupply && pair && baseToken) {
-    // take the total amount of LP tokens staked, multiply by ETH value of all LP tokens, divide by all LP tokens
-    valueOfTotalStakedAmountInBaseToken = new TokenAmount(
-      baseToken,
-      JSBI.divide(
-        JSBI.multiply(
-          JSBI.multiply(
-            stakingInfo.totalStakedAmount.raw,
-            pair.reserveOf(baseToken).raw,
-          ),
-          JSBI.BigInt(2), // this is b/c the value of LP shares are ~double the value of the WETH they entitle owner to
-        ),
-        stakingInfo.totalSupply.raw,
-      ),
-    );
-
-    valueOfMyStakedAmountInBaseToken = new TokenAmount(
-      baseToken,
-      JSBI.divide(
-        JSBI.multiply(
-          JSBI.multiply(
-            stakingInfo.stakedAmount.raw,
-            pair.reserveOf(baseToken).raw,
-          ),
-          JSBI.BigInt(2), // this is b/c the value of LP shares are ~double the value of the WETH they entitle owner to
-        ),
-        stakingInfo.totalSupply.raw,
-      ),
-    );
-
-    if (userLiquidityUnstaked) {
-      valueOfUnstakedAmountInBaseToken = new TokenAmount(
-        baseToken,
-        JSBI.divide(
-          JSBI.multiply(
-            JSBI.multiply(
-              userLiquidityUnstaked.raw,
-              pair.reserveOf(baseToken).raw,
-            ),
-            JSBI.BigInt(2),
-          ),
-          stakingInfo.totalSupply.raw,
-        ),
-      );
-    }
-  }
-
-  // get the USD value of staked WETH
-  const USDPrice = stakingInfo?.usdPrice;
-
-  const valueOfMyStakedAmountInUSDC =
-    valueOfMyStakedAmountInBaseToken &&
-    USDPrice?.quote(valueOfMyStakedAmountInBaseToken);
-
-  const valueOfUnstakedAmountInUSDC =
-    valueOfUnstakedAmountInBaseToken &&
-    USDPrice?.quote(valueOfUnstakedAmountInBaseToken);
+  const stakedAmounts = getStakedAmountStakingInfo(
+    stakingInfo,
+    userLiquidityUnstaked,
+  );
 
   let apyWithFee: number | string = 0;
 
@@ -324,22 +268,15 @@ const FarmLPCardDetails: React.FC<{
       ? '< $0.001'
       : '$' + earnedUSD.toLocaleString();
 
-  const valueOfTotalStakedAmountInUSDC =
-    valueOfTotalStakedAmountInBaseToken &&
-    USDPrice?.quote(valueOfTotalStakedAmountInBaseToken);
-
-  const tvl = valueOfTotalStakedAmountInUSDC
-    ? `$${valueOfTotalStakedAmountInUSDC.toFixed(0, { groupSeparator: ',' })}`
-    : `${valueOfTotalStakedAmountInBaseToken?.toSignificant(4, {
-        groupSeparator: ',',
-      }) ?? '-'} ETH`;
+  const tvl = getTVLStaking(
+    stakedAmounts?.totalStakedUSD,
+    stakedAmounts?.totalStakedBase,
+  );
 
   const rewards =
     (stakingInfo?.dQuickToQuick ?? 0) * (stakingInfo?.quickPrice ?? 0);
 
-  const poolRate = `${stakingInfo?.totalRewardRate
-    ?.toFixed(2, { groupSeparator: ',' })
-    .replace(/[.,]00$/, '')} dQUICK / day`;
+  const poolRate = getRewardRate(stakingInfo?.totalRewardRate);
 
   return (
     <Box
@@ -417,30 +354,12 @@ const FarmLPCardDetails: React.FC<{
                     {userLiquidityUnstaked
                       ? userLiquidityUnstaked.toSignificant(2)
                       : 0}{' '}
-                    LP{' '}
-                    <span>
-                      (
-                      {valueOfUnstakedAmountInUSDC
-                        ? Number(valueOfUnstakedAmountInUSDC.toSignificant(2)) >
-                            0 &&
-                          Number(valueOfUnstakedAmountInUSDC.toSignificant(2)) <
-                            0.001
-                          ? '< $0.001'
-                          : `$${valueOfUnstakedAmountInUSDC.toSignificant(2)}`
-                        : '$0'}
-                      )
-                    </span>
+                    LP <span>({getUSDString(stakedAmounts?.unStakedUSD)})</span>
                   </Typography>
                   <Link
-                    to={`/pools?currency0=${
-                      token0?.symbol?.toLowerCase() === 'wmatic'
-                        ? 'ETH'
-                        : token0?.address
-                    }&currency1=${
-                      token1?.symbol?.toLowerCase() === 'wmatic'
-                        ? 'ETH'
-                        : token1?.address
-                    }`}
+                    to={`/pools?currency0=${getTokenAddress(
+                      token0,
+                    )}&currency1=${getTokenAddress(token1)}`}
                     style={{ color: palette.primary.main }}
                   >
                     Get {currency0?.symbol} / {currency1?.symbol} LP
@@ -523,18 +442,7 @@ const FarmLPCardDetails: React.FC<{
               <Typography variant='body2'>My deposits:</Typography>
               <Typography variant='body2'>
                 {stakingInfo.stakedAmount.toSignificant(2)} LP{' '}
-                <span>
-                  (
-                  {valueOfMyStakedAmountInUSDC
-                    ? Number(valueOfMyStakedAmountInUSDC.toSignificant(2)) >
-                        0 &&
-                      Number(valueOfMyStakedAmountInUSDC.toSignificant(2)) <
-                        0.001
-                      ? '< $0.001'
-                      : `$${valueOfMyStakedAmountInUSDC.toSignificant(2)}`
-                    : '$0'}
-                  )
-                </span>
+                <span>({getUSDString(stakedAmounts?.myStakedUSD)})</span>
               </Typography>
             </Box>
             <Box className={classes.inputVal} mb={2} mt={4.5} p={2}>

@@ -2,12 +2,17 @@ import React, { useState } from 'react';
 import { Box, Typography, useMediaQuery } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { StakingInfo } from 'state/stake/hooks';
-import { JSBI, TokenAmount } from '@uniswap/sdk';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { DoubleCurrencyLogo, CurrencyLogo } from 'components';
 import CircleInfoIcon from 'assets/images/circleinfo.svg';
 import FarmLPCardDetails from './FarmLPCardDetails';
-import { getAPYWithFee, returnTokenFromKey } from 'utils';
+import {
+  getAPYWithFee,
+  returnTokenFromKey,
+  getRewardRate,
+  getStakedAmountStakingInfo,
+  getTVLStaking,
+} from 'utils';
 import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
 
 const useStyles = makeStyles(({ palette }) => ({
@@ -52,39 +57,9 @@ const FarmLPCard: React.FC<{
 
   const currency0 = unwrappedToken(token0);
   const currency1 = unwrappedToken(token1);
-  const baseTokenCurrency = unwrappedToken(stakingInfo.baseToken);
-  const empty = unwrappedToken(returnTokenFromKey('EMPTY'));
   const quickPriceUSD = stakingInfo.quickPrice;
 
-  // get the color of the token
-  const baseToken =
-    baseTokenCurrency === empty ? token0 : stakingInfo.baseToken;
-
-  const stakingTokenPair = stakingInfo.stakingTokenPair;
-
-  let valueOfTotalStakedAmountInBaseToken: TokenAmount | undefined;
-  if (stakingInfo.totalSupply && stakingTokenPair && stakingInfo && baseToken) {
-    // take the total amount of LP tokens staked, multiply by ETH value of all LP tokens, divide by all LP tokens
-    valueOfTotalStakedAmountInBaseToken = new TokenAmount(
-      baseToken,
-      JSBI.divide(
-        JSBI.multiply(
-          JSBI.multiply(
-            stakingInfo.totalStakedAmount.raw,
-            stakingTokenPair.reserveOf(baseToken).raw,
-          ),
-          JSBI.BigInt(2), // this is b/c the value of LP shares are ~double the value of the WETH they entitle owner to
-        ),
-        stakingInfo.totalSupply.raw,
-      ),
-    );
-  }
-
-  // get the USD value of staked WETH
-  const USDPrice = stakingInfo.usdPrice;
-  const valueOfTotalStakedAmountInUSDC =
-    valueOfTotalStakedAmountInBaseToken &&
-    USDPrice?.quote(valueOfTotalStakedAmountInBaseToken);
+  const stakedAmounts = getStakedAmountStakingInfo(stakingInfo);
 
   let apyWithFee: number | string = 0;
 
@@ -98,15 +73,12 @@ const FarmLPCard: React.FC<{
     }
   }
 
-  const tvl = valueOfTotalStakedAmountInUSDC
-    ? `$${valueOfTotalStakedAmountInUSDC.toFixed(0, { groupSeparator: ',' })}`
-    : `${valueOfTotalStakedAmountInBaseToken?.toSignificant(4, {
-        groupSeparator: ',',
-      }) ?? '-'} ETH`;
+  const tvl = getTVLStaking(
+    stakedAmounts?.totalStakedUSD,
+    stakedAmounts?.totalStakedBase,
+  );
 
-  const poolRate = `${stakingInfo.totalRewardRate
-    ?.toFixed(2, { groupSeparator: ',' })
-    .replace(/[.,]00$/, '')} dQUICK / day`;
+  const poolRate = getRewardRate(stakingInfo.totalRewardRate);
 
   const earnedUSD =
     Number(stakingInfo.earnedAmount.toSignificant()) *
