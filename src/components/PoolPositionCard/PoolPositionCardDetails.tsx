@@ -52,15 +52,7 @@ const useStyles = makeStyles(({ palette }) => ({
   },
 }));
 
-interface PoolPositionCardProps {
-  pair: Pair;
-  pairId: string | null;
-}
-
-const PoolPositionCardDetails: React.FC<PoolPositionCardProps> = ({
-  pair,
-  pairId,
-}) => {
+const PoolPositionCardDetails: React.FC<{ pair: Pair }> = ({ pair }) => {
   const classes = useStyles();
   const history = useHistory();
   const { breakpoints } = useTheme();
@@ -156,7 +148,9 @@ const PoolPositionCardDetails: React.FC<PoolPositionCardProps> = ({
         <Box className={classes.poolButtonRow}>
           <Button
             variant='outlined'
-            onClick={() => history.push(`/analytics/pair/${pairId}`)}
+            onClick={() =>
+              history.push(`/analytics/pair/${pair.liquidityToken.address}`)
+            }
           >
             <Typography variant='body2'>View Analytics</Typography>
           </Button>

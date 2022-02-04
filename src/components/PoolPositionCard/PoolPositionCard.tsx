@@ -4,16 +4,16 @@ import { useTheme } from '@material-ui/core/styles';
 import { ChevronDown, ChevronUp } from 'react-feather';
 import { Pair } from '@uniswap/sdk';
 import { unwrappedToken } from 'utils/wrappedCurrency';
-import { useStakingInfo, getBulkPairData } from 'state/stake/hooks';
+import {
+  useStakingInfo,
+  getBulkPairData,
+  useDualStakingInfo,
+} from 'state/stake/hooks';
 import { DoubleCurrencyLogo } from 'components';
 import { getAPYWithFee, getOneYearFee } from 'utils';
 import PoolPositionCardDetails from './PoolPositionCardDetails';
 
-interface PoolPositionCardProps {
-  pair: Pair;
-}
-
-const PoolPositionCard: React.FC<PoolPositionCardProps> = ({ pair }) => {
+const PoolPositionCard: React.FC<{ pair: Pair }> = ({ pair }) => {
   const [bulkPairData, setBulkPairData] = useState<any>(null);
   const { palette, breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
@@ -22,15 +22,21 @@ const PoolPositionCard: React.FC<PoolPositionCardProps> = ({ pair }) => {
   const currency1 = unwrappedToken(pair.token1);
 
   const stakingInfos = useStakingInfo(pair);
+  const dualStakingInfos = useDualStakingInfo(pair);
   const stakingInfo = useMemo(
-    () => (stakingInfos && stakingInfos.length > 0 ? stakingInfos[0] : null),
-    [stakingInfos],
+    () =>
+      stakingInfos && stakingInfos.length > 0
+        ? stakingInfos[0]
+        : dualStakingInfos && dualStakingInfos.length > 0
+        ? dualStakingInfos[0]
+        : null,
+    [stakingInfos, dualStakingInfos],
   );
 
-  const pairId = stakingInfo ? stakingInfo.pair : null;
+  const pairId = pair.liquidityToken.address;
 
   useEffect(() => {
-    const pairLists = pairId ? [pairId] : [];
+    const pairLists = [pairId];
     getBulkPairData(pairLists).then((data) => setBulkPairData(data));
     return () => setBulkPairData(null);
   }, [pairId]);
@@ -101,7 +107,7 @@ const PoolPositionCard: React.FC<PoolPositionCardProps> = ({ pair }) => {
         </Box>
       </Box>
 
-      {showMore && <PoolPositionCardDetails pair={pair} pairId={pairId} />}
+      {showMore && <PoolPositionCardDetails pair={pair} />}
       {stakingInfo && apyWithFee && (
         <Box bgcolor='#404557' paddingY={0.75} paddingX={isMobile ? 2 : 3}>
           <Typography variant='body2'>

@@ -22,6 +22,7 @@ import {
   AdvancedSwapDetails,
   QuestionHelper,
   SettingsModal,
+  AddressInput,
 } from 'components';
 import { useActiveWeb3React } from 'hooks';
 import {
@@ -109,23 +110,6 @@ const useStyles = makeStyles(({ palette }) => ({
       padding: '8px 12px',
       '& button': {
         background: 'transparent',
-      },
-    },
-    '& .content': {
-      border: `1px solid ${palette.primary.dark}`,
-      borderRadius: 20,
-      padding: '12px 24px',
-      textAlign: 'left',
-      '& input': {
-        width: '100%',
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: 'white',
-        background: 'transparent',
-        border: 'none',
-        boxShadow: 'none',
-        outline: 'none',
-        marginTop: 16,
       },
     },
   },
@@ -628,21 +612,18 @@ const Swap: React.FC<{
               <Box />
             )}
             <Button
-              id='remove-recipient-button'
               onClick={() => onChangeRecipient(recipient !== null ? null : '')}
             >
               {recipient !== null ? '- Remove send' : '+ Add a send (optional)'}
             </Button>
           </Box>
           {recipient !== null && (
-            <Box className='content'>
-              <Typography>Recipient</Typography>
-              <input
-                value={recipient}
-                placeholder='Wallet Address or ENS name'
-                onChange={(evt) => onChangeRecipient(evt.target.value)}
-              />
-            </Box>
+            <AddressInput
+              label='Recipient'
+              placeholder='Wallet Address or ENS name'
+              value={recipient}
+              onChange={onChangeRecipient}
+            />
           )}
         </Box>
       )}
