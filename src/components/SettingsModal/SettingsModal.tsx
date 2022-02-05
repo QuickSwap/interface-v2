@@ -331,15 +331,16 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
             border={`1px solid ${palette.secondary.light}`}
             maxWidth={168}
           >
-            <input
-              style={{ textAlign: 'left' }}
-              className={classes.settingsInput}
+            <NumericalInput
+              placeholder={(ttl / 60).toString()}
+              value={deadlineInput}
+              fontSize={14}
+              fontWeight={500}
+              color='rgba(212, 229, 255, 0.8)'
               onBlur={() => {
                 parseCustomDeadline((ttl / 60).toString());
               }}
-              placeholder={(ttl / 60).toString()}
-              value={deadlineInput}
-              onChange={(e: any) => parseCustomDeadline(e.target.value)}
+              onUserInput={(value) => parseCustomDeadline(value)}
             />
           </Box>
           <Typography variant='body2' style={{ marginLeft: 8 }}>

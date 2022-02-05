@@ -310,10 +310,16 @@ const DragonsSyrup: React.FC = () => {
           ))}
         </Box>
       )}
-      {syrupInfos ? (
+      {syrupInfos && !pageLoading ? (
         syrupInfos.map((syrup, ind) => <SyrupCard key={ind} syrup={syrup} />)
       ) : (
-        <Skeleton width='100%' height={80} />
+        <>
+          <Skeleton width='100%' height={120} />
+          <Skeleton width='100%' height={120} />
+          <Skeleton width='100%' height={120} />
+          <Skeleton width='100%' height={120} />
+          <Skeleton width='100%' height={120} />
+        </>
       )}
       <div ref={loadMoreRef} />
     </>

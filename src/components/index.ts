@@ -1,6 +1,7 @@
 export { default as Header } from './Header';
 export { default as Footer } from './Footer';
 export { default as ListLogo } from './ListLogo';
+export { default as AddressInput } from './AddressInput';
 export { default as AreaChart } from './AreaChart';
 export { default as BarChart } from './BarChart';
 export { default as BetaWarningBanner } from './BetaWarningBanner';
