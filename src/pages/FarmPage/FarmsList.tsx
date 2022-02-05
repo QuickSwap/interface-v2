@@ -42,12 +42,12 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
   const lairInfo = useLairInfo();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
 
-  const [stakingInfos, setStakingInfos] = useState<StakingInfo[] | undefined>(
-    undefined,
-  );
-  const [stakingDualInfos, setStakingDualInfos] = useState<
-    DualStakingInfo[] | undefined
-  >(undefined);
+  // const [stakingInfos, setStakingInfos] = useState<StakingInfo[] | undefined>(
+  //   undefined,
+  // );
+  // const [stakingDualInfos, setStakingDualInfos] = useState<
+  //   DualStakingInfo[] | undefined
+  // >(undefined);
   const [pageIndex, setPageIndex] = useState(0);
   const [pageloading, setPageLoading] = useState(true); //this is used for not loading farms immediately when user is on farms page
   const [isEndedFarm, setIsEndedFarm] = useState(false);
@@ -268,45 +268,31 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
     : null;
 
   useEffect(() => {
-    setStakingInfos(undefined);
-    setStakingDualInfos(undefined);
+    // setStakingDualInfos(undefined);
     setTimeout(() => setPageLoading(false), 500); //load farms 0.5s after loading page
   }, []);
 
   useEffect(() => {
     setPageIndex(0);
-    if (farmIndex === GlobalConst.farmIndex.LPFARM_INDEX) {
-      setStakingInfos(sortedLPStakingInfos.slice(0, LOADFARM_COUNT));
-    } else {
-      setStakingDualInfos(sortedStakingDualInfos.slice(0, LOADFARM_COUNT));
-    }
-    return () => {
-      setStakingInfos(undefined);
-      setStakingDualInfos(undefined);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stakingRewardAddress]);
 
-  useEffect(() => {
-    if (farmIndex === GlobalConst.farmIndex.LPFARM_INDEX) {
-      const currentStakingInfos = stakingInfos || [];
-      const stakingInfosToAdd = sortedLPStakingInfos.slice(
-        currentStakingInfos.length,
-        currentStakingInfos.length + LOADFARM_COUNT,
-      );
-      setStakingInfos(currentStakingInfos.concat(stakingInfosToAdd));
-    } else if (farmIndex === GlobalConst.farmIndex.DUALFARM_INDEX) {
-      const currentDualStakingInfos = stakingDualInfos || [];
-      const stakingDualInfosToAdd = sortedStakingDualInfos.slice(
-        currentDualStakingInfos.length,
-        currentDualStakingInfos.length + LOADFARM_COUNT,
-      );
-      setStakingDualInfos(
-        currentDualStakingInfos.concat(stakingDualInfosToAdd),
-      );
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pageIndex]);
+  const stakingInfos = useMemo(() => {
+    return sortedLPStakingInfos
+      ? sortedLPStakingInfos.slice(
+          0,
+          pageIndex === 0 ? LOADFARM_COUNT : LOADFARM_COUNT * pageIndex,
+        )
+      : [];
+  }, [sortedLPStakingInfos, pageIndex]);
+
+  const stakingDualInfos = useMemo(() => {
+    return sortedStakingDualInfos
+      ? sortedStakingDualInfos.slice(
+          0,
+          pageIndex === 0 ? LOADFARM_COUNT : LOADFARM_COUNT * pageIndex,
+        )
+      : [];
+  }, [sortedStakingDualInfos, pageIndex]);
 
   const stakingAPYs = useMemo(() => {
     const sortedStakingInfos =
