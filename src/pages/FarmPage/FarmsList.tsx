@@ -488,36 +488,36 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
         </Box>
       )}
       {farmIndex === GlobalConst.farmIndex.LPFARM_INDEX &&
-        stakingInfos &&
+      stakingInfos &&
+      !pageloading ? (
+        stakingInfos.map((info: StakingInfo, index) => (
+          <FarmLPCard
+            key={index}
+            dQuicktoQuick={Number(lairInfo.dQUICKtoQUICK.toSignificant())}
+            stakingInfo={info}
+            stakingAPY={stakingAPYs[index]}
+          />
+        ))
+      ) : farmIndex === GlobalConst.farmIndex.DUALFARM_INDEX &&
+        stakingDualInfos &&
         !pageloading ? (
-          stakingInfos.map((info: StakingInfo, index) => (
-            <FarmLPCard
-              key={index}
-              dQuicktoQuick={Number(lairInfo.dQUICKtoQUICK.toSignificant())}
-              stakingInfo={info}
-              stakingAPY={stakingAPYs[index]}
-            />
-          ))
-        ) : farmIndex === GlobalConst.farmIndex.DUALFARM_INDEX &&
-          stakingDualInfos &&
-          !pageloading ? (
-          stakingDualInfos.map((info: DualStakingInfo, index) => (
-            <FarmDualCard
-              key={index}
-              dQuicktoQuick={Number(lairInfo.dQUICKtoQUICK.toSignificant())}
-              stakingInfo={info}
-              stakingAPY={stakingAPYs[index]}
-            />
-          ))
-        ) : (
-          <>
-            <Skeleton width='100%' height={100} />
-            <Skeleton width='100%' height={100} />
-            <Skeleton width='100%' height={100} />
-            <Skeleton width='100%' height={100} />
-            <Skeleton width='100%' height={100} />
-          </>
-        )}
+        stakingDualInfos.map((info: DualStakingInfo, index) => (
+          <FarmDualCard
+            key={index}
+            dQuicktoQuick={Number(lairInfo.dQUICKtoQUICK.toSignificant())}
+            stakingInfo={info}
+            stakingAPY={stakingAPYs[index]}
+          />
+        ))
+      ) : (
+        <>
+          <Skeleton width='100%' height={100} />
+          <Skeleton width='100%' height={100} />
+          <Skeleton width='100%' height={100} />
+          <Skeleton width='100%' height={100} />
+          <Skeleton width='100%' height={100} />
+        </>
+      )}
       <div ref={loadMoreRef} />
     </>
   );
