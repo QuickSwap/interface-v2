@@ -737,7 +737,9 @@ const FarmPage: React.FC = () => {
             </Box>
           </Box>
         )}
-        {farmIndex === GlobalConst.farmIndex.LPFARM_INDEX && stakingInfos ? (
+        {farmIndex === GlobalConst.farmIndex.LPFARM_INDEX &&
+        stakingInfos &&
+        !pageloading ? (
           stakingInfos.map((info: StakingInfo, index) => (
             <FarmLPCard
               key={index}
@@ -747,7 +749,8 @@ const FarmPage: React.FC = () => {
             />
           ))
         ) : farmIndex === GlobalConst.farmIndex.DUALFARM_INDEX &&
-          stakingDualInfos ? (
+          stakingDualInfos &&
+          !pageloading ? (
           stakingDualInfos.map((info: DualStakingInfo, index) => (
             <FarmDualCard
               key={index}
@@ -757,7 +760,13 @@ const FarmPage: React.FC = () => {
             />
           ))
         ) : (
-          <Skeleton width='100%' height={80} />
+          <>
+            <Skeleton width='100%' height={100} />
+            <Skeleton width='100%' height={100} />
+            <Skeleton width='100%' height={100} />
+            <Skeleton width='100%' height={100} />
+            <Skeleton width='100%' height={100} />
+          </>
         )}
       </Box>
       <div ref={loadMoreRef} />
