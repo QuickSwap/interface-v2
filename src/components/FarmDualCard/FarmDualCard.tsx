@@ -1,15 +1,20 @@
 import React, { useState } from 'react';
 import { Box, Typography, useMediaQuery } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
 import { DualStakingInfo } from 'state/stake/hooks';
-import { JSBI, TokenAmount, ETHER } from '@uniswap/sdk';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { DoubleCurrencyLogo, CurrencyLogo } from 'components';
 import CircleInfoIcon from 'assets/images/circleinfo.svg';
 import FarmDualCardDetails from './FarmDualCardDetails';
-import { getAPYWithFee, returnTokenFromKey } from 'utils';
+import {
+  getAPYWithFee,
+  getRewardRate,
+  getStakedAmountStakingInfo,
+  getTVLStaking,
+} from 'utils';
 
-const useStyles = makeStyles(({ palette, breakpoints }) => ({
+const useStyles = makeStyles(({ palette }) => ({
   farmDualCard: {
     background: palette.secondary.dark,
     width: '100%',
@@ -27,9 +32,6 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     alignItems: 'center',
     padding: '16px',
     cursor: 'pointer',
-    [breakpoints.down('xs')]: {
-      flexDirection: 'column',
-    },
   },
   farmDualText: {
     fontSize: 14,
@@ -56,39 +58,8 @@ const FarmDualCard: React.FC<{
 
   const currency0 = unwrappedToken(token0);
   const currency1 = unwrappedToken(token1);
-  const baseTokenCurrency = unwrappedToken(stakingInfo.baseToken);
-  const empty = unwrappedToken(returnTokenFromKey('EMPTY'));
 
-  // get the color of the token
-  const baseToken =
-    baseTokenCurrency === empty ? token0 : stakingInfo.baseToken;
-
-  const totalSupplyOfStakingToken = stakingInfo.totalSupply;
-  const stakingTokenPair = stakingInfo.stakingTokenPair;
-
-  let valueOfTotalStakedAmountInBaseToken: TokenAmount | undefined;
-  if (totalSupplyOfStakingToken && stakingTokenPair && baseToken) {
-    // take the total amount of LP tokens staked, multiply by ETH value of all LP tokens, divide by all LP tokens
-    valueOfTotalStakedAmountInBaseToken = new TokenAmount(
-      baseToken,
-      JSBI.divide(
-        JSBI.multiply(
-          JSBI.multiply(
-            stakingInfo.totalStakedAmount.raw,
-            stakingTokenPair.reserveOf(baseToken).raw,
-          ),
-          JSBI.BigInt(2), // this is b/c the value of LP shares are ~double the value of the WETH they entitle owner to
-        ),
-        totalSupplyOfStakingToken.raw,
-      ),
-    );
-  }
-
-  // get the USD value of staked WETH
-  const USDPrice = stakingInfo.usdPrice;
-  const valueOfTotalStakedAmountInUSDC =
-    valueOfTotalStakedAmountInBaseToken &&
-    USDPrice?.quote(valueOfTotalStakedAmountInBaseToken);
+  const stakedAmounts = getStakedAmountStakingInfo(stakingInfo);
 
   let apyWithFee: number | string = 0;
 
@@ -102,18 +73,13 @@ const FarmDualCard: React.FC<{
     }
   }
 
-  const tvl = valueOfTotalStakedAmountInUSDC
-    ? `$${valueOfTotalStakedAmountInUSDC.toFixed(0, { groupSeparator: ',' })}`
-    : `${valueOfTotalStakedAmountInBaseToken?.toSignificant(4, {
-        groupSeparator: ',',
-      }) ?? '-'} ETH`;
+  const tvl = getTVLStaking(
+    stakedAmounts?.totalStakedUSD,
+    stakedAmounts?.totalStakedBase,
+  );
 
-  const poolRateA = `${stakingInfo.totalRewardRateA
-    ?.toFixed(2, { groupSeparator: ',' })
-    .replace(/[.,]00$/, '')} ${rewardTokenA?.symbol}  / day`;
-  const poolRateB = `${stakingInfo.totalRewardRateB
-    ?.toFixed(2, { groupSeparator: ',' })
-    .replace(/[.,]00$/, '')} ${rewardTokenB?.symbol} / day`;
+  const poolRateA = getRewardRate(stakingInfo.totalRewardRateA);
+  const poolRateB = getRewardRate(stakingInfo.totalRewardRateB);
 
   const earnedUSD =
     Number(stakingInfo.earnedAmountA.toSignificant()) *
@@ -131,120 +97,104 @@ const FarmDualCard: React.FC<{
     stakingInfo?.rateA * stakingInfo?.quickPrice +
     stakingInfo?.rateB * Number(stakingInfo.rewardTokenBPrice);
 
+  const renderPool = (width: number) => (
+    <Box display='flex' alignItems='center' width={width}>
+      <DoubleCurrencyLogo
+        currency0={currency0}
+        currency1={currency1}
+        size={28}
+      />
+      <Box ml={1.5}>
+        <Typography variant='body2'>
+          {currency0.symbol} / {currency1.symbol} LP
+        </Typography>
+      </Box>
+    </Box>
+  );
+
   return (
     <Box className={classes.farmDualCard}>
       <Box
         className={classes.farmDualCardUp}
         onClick={() => setExpandCard(!isExpandCard)}
       >
-        <Box
-          display='flex'
-          alignItems='center'
-          justifyContent='space-between'
-          width={isMobile ? 1 : 0.3}
-          mb={isMobile ? 1.5 : 0}
-        >
-          {isMobile && (
-            <Typography className={classes.farmDualText}>Pool</Typography>
-          )}
-          <Box display='flex' alignItems='center'>
-            <DoubleCurrencyLogo
-              currency0={currency0}
-              currency1={currency1}
-              size={28}
-            />
-            <Box ml={1.5}>
+        {isMobile ? (
+          <>
+            {renderPool(isExpandCard ? 0.95 : 0.7)}
+            {!isExpandCard && (
+              <Box width={0.25}>
+                <Box display='flex' alignItems='center'>
+                  <Typography variant='caption' color='textSecondary'>
+                    APY
+                  </Typography>
+                  <Box ml={0.5} height={16}>
+                    <img src={CircleInfoIcon} alt={'arrow up'} />
+                  </Box>
+                </Box>
+                <Box mt={0.5} color={palette.success.main}>
+                  <Typography variant='body2'>{apyWithFee}%</Typography>
+                </Box>
+              </Box>
+            )}
+            <Box
+              width={0.05}
+              display='flex'
+              justifyContent='flex-end'
+              color={palette.primary.main}
+            >
+              {isExpandCard ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
+            </Box>
+          </>
+        ) : (
+          <>
+            {renderPool(0.3)}
+            <Box width={0.2} textAlign='center'>
+              <Typography variant='body2'>{tvl}</Typography>
+            </Box>
+            <Box width={0.25} textAlign='center'>
               <Typography variant='body2'>
-                {currency0.symbol} / {currency1.symbol} LP
+                ${Number(rewards.toFixed(0)).toLocaleString()} / day
               </Typography>
+              <Typography variant='body2'>{poolRateA}</Typography>
+              <Typography variant='body2'>{poolRateB}</Typography>
             </Box>
-          </Box>
-        </Box>
-        <Box
-          width={isMobile ? 1 : 0.2}
-          mb={isMobile ? 1.5 : 0}
-          display='flex'
-          justifyContent={isMobile ? 'space-between' : 'center'}
-          alignItems='center'
-        >
-          {isMobile && (
-            <Typography className={classes.farmDualText}>TVL</Typography>
-          )}
-          <Typography variant='body2'>{tvl}</Typography>
-        </Box>
-        <Box
-          mb={isMobile ? 1.5 : 0}
-          width={isMobile ? 1 : 0.25}
-          display='flex'
-          justifyContent={isMobile ? 'space-between' : 'center'}
-          alignItems='center'
-        >
-          {isMobile && (
-            <Typography className={classes.farmDualText}>Rewards</Typography>
-          )}
-          <Box textAlign={isMobile ? 'right' : 'left'}>
-            <Typography variant='body2'>{`$${parseInt(
-              rewards.toFixed(0),
-            ).toLocaleString()} / day`}</Typography>
-            <Typography variant='body2'>{poolRateA}</Typography>
-            <Typography variant='body2'>{poolRateB}</Typography>
-          </Box>
-        </Box>
-        <Box
-          mb={isMobile ? 1.5 : 0}
-          width={isMobile ? 1 : 0.15}
-          display='flex'
-          alignItems='center'
-          justifyContent={isMobile ? 'space-between' : 'center'}
-        >
-          {isMobile && (
-            <Typography className={classes.farmDualText}>APY</Typography>
-          )}
-          <Box display='flex' alignItems='center'>
-            <Typography variant='body2' style={{ color: palette.success.main }}>
-              {apyWithFee}%
-            </Typography>
-            <Box ml={1} style={{ height: '16px' }}>
-              <img src={CircleInfoIcon} alt={'arrow up'} />
+            <Box
+              width={0.15}
+              display='flex'
+              justifyContent='center'
+              alignItems='center'
+              color={palette.success.main}
+            >
+              <Typography variant='body2'>{apyWithFee}%</Typography>
+              <Box ml={0.5} height={16}>
+                <img src={CircleInfoIcon} alt={'arrow up'} />
+              </Box>
             </Box>
-          </Box>
-        </Box>
-        <Box
-          width={isMobile ? 1 : 0.2}
-          display='flex'
-          justifyContent={isMobile ? 'space-between' : 'flex-end'}
-        >
-          {isMobile && (
-            <Typography className={classes.farmDualText}>Earned</Typography>
-          )}
-          <Box textAlign='right'>
-            <Typography variant='body2'>{earnedUSDStr}</Typography>
-            <Box display='flex' alignItems='center' justifyContent='flex-end'>
-              <CurrencyLogo
-                currency={returnTokenFromKey('QUICK')}
-                size='16px'
-              />
-              <Typography variant='body2' style={{ marginLeft: 5 }}>
-                {stakingInfo.earnedAmountA.toSignificant(2)}
-                <span>&nbsp;dQUICK</span>
-              </Typography>
+            <Box width={0.2} textAlign='right'>
+              <Typography variant='body2'>{earnedUSDStr}</Typography>
+              <Box display='flex' alignItems='center' justifyContent='flex-end'>
+                <CurrencyLogo
+                  currency={unwrappedToken(rewardTokenA)}
+                  size='16px'
+                />
+                <Typography variant='body2' style={{ marginLeft: 5 }}>
+                  {stakingInfo.earnedAmountA.toSignificant(2)}
+                  <span>&nbsp;{rewardTokenA.symbol}</span>
+                </Typography>
+              </Box>
+              <Box display='flex' alignItems='center' justifyContent='flex-end'>
+                <CurrencyLogo
+                  currency={unwrappedToken(rewardTokenB)}
+                  size='16px'
+                />
+                <Typography variant='body2' style={{ marginLeft: 5 }}>
+                  {stakingInfo.earnedAmountB.toSignificant(2)}
+                  <span>&nbsp;{rewardTokenB.symbol}</span>
+                </Typography>
+              </Box>
             </Box>
-            <Box display='flex' alignItems='center' justifyContent='flex-end'>
-              <CurrencyLogo
-                currency={
-                  rewardTokenB.symbol?.toLowerCase() === 'wmatic'
-                    ? ETHER
-                    : rewardTokenB
-                }
-                size='16px'
-              />
-              <Typography variant='body2' style={{ marginLeft: 5 }}>
-                {stakingInfo.earnedAmountB.toSignificant(2)}
-                <span>&nbsp;{rewardTokenB.symbol}</span>
-              </Typography>
-            </Box>
-          </Box>
-        </Box>
+          </>
+        )}
       </Box>
 
       {isExpandCard && (

@@ -1,36 +1,19 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { useTheme } from '@material-ui/core/styles';
 import { ArrowUp, ArrowDown } from 'react-feather';
-import cx from 'classnames';
 import { Box, Typography, Divider, useMediaQuery } from '@material-ui/core';
 import { SyrupInfo, useSyrupInfo, useOldSyrupInfo } from 'state/stake/hooks';
-import { SyrupCard, ToggleSwitch, CustomMenu, SearchInput } from 'components';
+import {
+  SyrupCard,
+  ToggleSwitch,
+  CustomMenu,
+  SearchInput,
+  CustomSwitch,
+} from 'components';
 import { getTokenAPRSyrup, returnFullWidthMobile } from 'utils';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 import { useInfiniteLoading } from 'utils/useInfiniteLoading';
 import { Skeleton } from '@material-ui/lab';
-
-const useStyles = makeStyles(({ palette, breakpoints }) => ({
-  syrupSwitch: {
-    width: '50%',
-    height: '100%',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    cursor: 'pointer',
-    background: palette.background.paper,
-    border: `1px solid ${palette.secondary.dark}`,
-    '& p': {
-      color: palette.text.secondary,
-    },
-  },
-  activeSyrupSwitch: {
-    background: palette.secondary.dark,
-    '& p': {
-      color: palette.text.primary,
-    },
-  },
-}));
 
 const LOADSYRUP_COUNT = 10;
 const TOKEN_COLUMN = 1;
@@ -39,7 +22,6 @@ const APR_COLUMN = 3;
 const EARNED_COLUMN = 4;
 
 const DragonsSyrup: React.FC = () => {
-  const classes = useStyles();
   const { palette, breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const [pageLoading, setPageLoading] = useState(true); //this is used for not loading syrups immediately when user is on dragons page
@@ -176,25 +158,6 @@ const DragonsSyrup: React.FC = () => {
 
   const { loadMoreRef } = useInfiniteLoading(loadNext);
 
-  const sortByMobileItems = [
-    {
-      text: 'Token',
-      onClick: () => setSortBy(TOKEN_COLUMN),
-    },
-    {
-      text: 'Deposits',
-      onClick: () => setSortBy(DEPOSIT_COLUMN),
-    },
-    {
-      text: 'APR',
-      onClick: () => setSortBy(APR_COLUMN),
-    },
-    {
-      text: 'Earned',
-      onClick: () => setSortBy(EARNED_COLUMN),
-    },
-  ];
-
   const renderStakedOnly = () => (
     <Box display='flex' alignItems='center'>
       <Typography
@@ -209,6 +172,61 @@ const DragonsSyrup: React.FC = () => {
       />
     </Box>
   );
+
+  const syrupStatusItems = [
+    {
+      text: 'Active',
+      onClick: () => setIsEndedSyrup(false),
+      condition: !isEndedSyrup,
+    },
+    {
+      text: 'Ended',
+      onClick: () => setIsEndedSyrup(true),
+      condition: isEndedSyrup,
+    },
+  ];
+
+  const sortColumns = [
+    {
+      text: 'Earn',
+      index: TOKEN_COLUMN,
+      width: 0.3,
+    },
+    {
+      text: 'Deposits',
+      index: DEPOSIT_COLUMN,
+      width: 0.3,
+    },
+    {
+      text: 'APR',
+      index: APR_COLUMN,
+      width: 0.2,
+    },
+    {
+      text: 'Earned',
+      index: EARNED_COLUMN,
+      width: 0.2,
+      justify: 'flex-end',
+    },
+  ];
+
+  const sortByDesktopItems = sortColumns.map((item) => {
+    return {
+      ...item,
+      onClick: () => {
+        if (sortBy === item.index) {
+          setSortDesc(!sortDesc);
+        } else {
+          setSortBy(item.index);
+          setSortDesc(false);
+        }
+      },
+    };
+  });
+
+  const sortByMobileItems = sortColumns.map((item) => {
+    return { text: item.text, onClick: () => setSortBy(item.index) };
+  });
 
   return (
     <>
@@ -236,37 +254,8 @@ const DragonsSyrup: React.FC = () => {
           flexWrap='wrap'
           alignItems='center'
         >
-          <Box width={160} height={40} display='flex' mr={2}>
-            <Box
-              className={cx(
-                classes.syrupSwitch,
-                !isEndedSyrup && classes.activeSyrupSwitch,
-              )}
-              style={{
-                borderTopLeftRadius: 8,
-                borderBottomLeftRadius: 8,
-              }}
-              onClick={() => {
-                setIsEndedSyrup(false);
-              }}
-            >
-              <Typography variant='body2'>Active</Typography>
-            </Box>
-            <Box
-              className={cx(
-                classes.syrupSwitch,
-                isEndedSyrup && classes.activeSyrupSwitch,
-              )}
-              style={{
-                borderTopRightRadius: 8,
-                borderBottomRightRadius: 8,
-              }}
-              onClick={() => {
-                setIsEndedSyrup(true);
-              }}
-            >
-              <Typography variant='body2'>Ended</Typography>
-            </Box>
+          <Box mr={2}>
+            <CustomSwitch width={160} height={40} items={syrupStatusItems} />
           </Box>
           {isMobile ? (
             <>
@@ -292,125 +281,35 @@ const DragonsSyrup: React.FC = () => {
         </Box>
       </Box>
       <Divider />
-      <Box mt={2.5} display='flex' paddingX={2}>
-        {!isMobile && (
-          <>
+      {!isMobile && (
+        <Box mt={2.5} display='flex' paddingX={2}>
+          {sortByDesktopItems.map((item) => (
             <Box
-              width={0.3}
+              key={item.index}
               display='flex'
               alignItems='center'
-              onClick={() => {
-                if (sortBy === TOKEN_COLUMN) {
-                  setSortDesc(!sortDesc);
-                } else {
-                  setSortBy(TOKEN_COLUMN);
-                  setSortDesc(false);
-                }
-              }}
+              width={item.width}
+              style={{ cursor: 'pointer' }}
+              justifyContent={item.justify}
+              onClick={item.onClick}
               color={
-                sortBy === TOKEN_COLUMN
+                sortBy === item.index
                   ? palette.text.primary
                   : palette.secondary.main
               }
-              style={{ cursor: 'pointer' }}
             >
-              <Typography variant='body2'>Earn</Typography>
+              <Typography variant='body2'>{item.text}</Typography>
               <Box display='flex' ml={0.5}>
-                {sortBy === TOKEN_COLUMN && sortDesc ? (
+                {sortBy === item.index && sortDesc ? (
                   <ArrowDown size={20} />
                 ) : (
                   <ArrowUp size={20} />
                 )}
               </Box>
             </Box>
-            <Box
-              width={0.3}
-              display='flex'
-              alignItems='center'
-              onClick={() => {
-                if (sortBy === DEPOSIT_COLUMN) {
-                  setSortDesc(!sortDesc);
-                } else {
-                  setSortBy(DEPOSIT_COLUMN);
-                  setSortDesc(false);
-                }
-              }}
-              color={
-                sortBy === DEPOSIT_COLUMN
-                  ? palette.text.primary
-                  : palette.secondary.main
-              }
-              style={{ cursor: 'pointer' }}
-            >
-              <Typography variant='body2'>Deposits</Typography>
-              <Box display='flex' ml={0.5}>
-                {sortBy === DEPOSIT_COLUMN && sortDesc ? (
-                  <ArrowDown size={20} />
-                ) : (
-                  <ArrowUp size={20} />
-                )}
-              </Box>
-            </Box>
-            <Box
-              width={0.2}
-              display='flex'
-              alignItems='center'
-              onClick={() => {
-                if (sortBy === APR_COLUMN) {
-                  setSortDesc(!sortDesc);
-                } else {
-                  setSortBy(APR_COLUMN);
-                  setSortDesc(false);
-                }
-              }}
-              color={
-                sortBy === APR_COLUMN
-                  ? palette.text.primary
-                  : palette.secondary.main
-              }
-              style={{ cursor: 'pointer' }}
-            >
-              <Typography variant='body2'>APR</Typography>
-              <Box display='flex' ml={0.5}>
-                {sortBy === APR_COLUMN && sortDesc ? (
-                  <ArrowDown size={20} />
-                ) : (
-                  <ArrowUp size={20} />
-                )}
-              </Box>
-            </Box>
-            <Box
-              width={0.2}
-              display='flex'
-              alignItems='center'
-              onClick={() => {
-                if (sortBy === EARNED_COLUMN) {
-                  setSortDesc(!sortDesc);
-                } else {
-                  setSortBy(EARNED_COLUMN);
-                  setSortDesc(false);
-                }
-              }}
-              color={
-                sortBy === EARNED_COLUMN
-                  ? palette.text.primary
-                  : palette.secondary.main
-              }
-              justifyContent='flex-end'
-              style={{ cursor: 'pointer' }}
-            >
-              <Typography variant='body2'>Earned</Typography>
-              <Box display='flex' ml={0.5}>
-                {sortBy === EARNED_COLUMN && sortDesc ? (
-                  <ArrowDown size={20} />
-                ) : (
-                  <ArrowUp size={20} />
-                )}
-              </Box>
-            </Box>
-          </>
-        )}
-      </Box>
+          ))}
+        </Box>
+      )}
       {syrupInfos && !pageLoading ? (
         syrupInfos.map((syrup, ind) => <SyrupCard key={ind} syrup={syrup} />)
       ) : (

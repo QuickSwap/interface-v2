@@ -41,9 +41,10 @@ const SyrupTimerLabel: React.FC<{ exactEnd: number; isEnded: boolean }> = ({
           display={isMobile ? 'flex' : 'unset'}
           flexWrap='wrap'
           alignItems='center'
+          justifyContent='space-between'
         >
           <Typography
-            variant='caption'
+            variant={isMobile ? 'body2' : 'caption'}
             style={{ color: palette.text.secondary }}
           >
             Time Remaining
@@ -51,8 +52,7 @@ const SyrupTimerLabel: React.FC<{ exactEnd: number; isEnded: boolean }> = ({
           <Typography
             variant='body2'
             style={{
-              color: palette.text.secondary,
-              marginLeft: isMobile ? 4 : 0,
+              color: isMobile ? palette.text.primary : palette.text.secondary,
             }}
           >
             {`${days}d ${hours

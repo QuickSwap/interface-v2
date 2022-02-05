@@ -3,7 +3,7 @@ import { TransactionResponse } from '@ethersproject/providers';
 import { Box, Typography, useMediaQuery } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { useDualStakingInfo } from 'state/stake/hooks';
-import { JSBI, TokenAmount, Pair } from '@uniswap/sdk';
+import { TokenAmount, Pair } from '@uniswap/sdk';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import {
   usePairContract,
@@ -17,9 +17,17 @@ import { useTokenBalance } from 'state/wallet/hooks';
 import { useActiveWeb3React } from 'hooks';
 import useTransactionDeadline from 'hooks/useTransactionDeadline';
 import { useApproveCallback, ApprovalState } from 'hooks/useApproveCallback';
-import { getAPYWithFee, returnTokenFromKey } from 'utils';
+import {
+  getAPYWithFee,
+  getRewardRate,
+  getStakedAmountStakingInfo,
+  getTokenAddress,
+  getTVLStaking,
+  getUSDString,
+} from 'utils';
+import CircleInfoIcon from 'assets/images/circleinfo.svg';
 
-const useStyles = makeStyles(({ palette }) => ({
+const useStyles = makeStyles(({ palette, breakpoints }) => ({
   inputVal: {
     backgroundColor: palette.secondary.contrastText,
     borderRadius: '10px',
@@ -53,6 +61,17 @@ const useStyles = makeStyles(({ palette }) => ({
     cursor: 'pointer',
     color: 'white',
   },
+  buttonWrapper: {
+    minWidth: 250,
+    width: '30%',
+    color: palette.text.secondary,
+    borderRadius: 16,
+    [breakpoints.down('xs')]: {
+      width: '100%',
+      padding: 16,
+      border: `1px solid ${palette.divider}`,
+    },
+  },
 }));
 
 const FarmDualCardDetails: React.FC<{
@@ -72,7 +91,8 @@ const FarmDualCardDetails: React.FC<{
 
   const stakingInfos = useDualStakingInfo(pair);
   const stakingInfo = useMemo(
-    () => (stakingInfos && stakingInfos.length > 0 ? stakingInfos[0] : null),
+    () =>
+      stakingInfos && stakingInfos.length > 0 ? stakingInfos[0] : undefined,
     [stakingInfos],
   );
 
@@ -84,88 +104,16 @@ const FarmDualCardDetails: React.FC<{
 
   const currency0 = token0 ? unwrappedToken(token0) : undefined;
   const currency1 = token1 ? unwrappedToken(token1) : undefined;
-  const baseTokenCurrency = stakingInfo
-    ? unwrappedToken(stakingInfo.baseToken)
-    : undefined;
-  const empty = unwrappedToken(returnTokenFromKey('EMPTY'));
-
-  // get the color of the token
-  const baseToken =
-    baseTokenCurrency === empty ? token0 : stakingInfo?.baseToken;
-
-  const totalSupplyOfStakingToken = stakingInfo?.totalSupply;
-  const stakingTokenPair = stakingInfo?.stakingTokenPair;
 
   const userLiquidityUnstaked = useTokenBalance(
     account ?? undefined,
     stakingInfo?.stakedAmount.token,
   );
 
-  let valueOfTotalStakedAmountInBaseToken: TokenAmount | undefined;
-  let valueOfMyStakedAmountInBaseToken: TokenAmount | undefined;
-  let valueOfUnstakedAmountInBaseToken: TokenAmount | undefined;
-  if (
-    totalSupplyOfStakingToken &&
-    stakingTokenPair &&
-    stakingInfo &&
-    baseToken
-  ) {
-    // take the total amount of LP tokens staked, multiply by ETH value of all LP tokens, divide by all LP tokens
-    valueOfTotalStakedAmountInBaseToken = new TokenAmount(
-      baseToken,
-      JSBI.divide(
-        JSBI.multiply(
-          JSBI.multiply(
-            stakingInfo.totalStakedAmount.raw,
-            stakingTokenPair.reserveOf(baseToken).raw,
-          ),
-          JSBI.BigInt(2), // this is b/c the value of LP shares are ~double the value of the WETH they entitle owner to
-        ),
-        totalSupplyOfStakingToken.raw,
-      ),
-    );
-
-    valueOfMyStakedAmountInBaseToken = new TokenAmount(
-      baseToken,
-      JSBI.divide(
-        JSBI.multiply(
-          JSBI.multiply(
-            stakingInfo.stakedAmount.raw,
-            stakingTokenPair.reserveOf(baseToken).raw,
-          ),
-          JSBI.BigInt(2), // this is b/c the value of LP shares are ~double the value of the WETH they entitle owner to
-        ),
-        totalSupplyOfStakingToken.raw,
-      ),
-    );
-
-    if (userLiquidityUnstaked) {
-      valueOfUnstakedAmountInBaseToken = new TokenAmount(
-        baseToken,
-        JSBI.divide(
-          JSBI.multiply(
-            JSBI.multiply(
-              userLiquidityUnstaked.raw,
-              stakingTokenPair.reserveOf(baseToken).raw,
-            ),
-            JSBI.BigInt(2),
-          ),
-          totalSupplyOfStakingToken.raw,
-        ),
-      );
-    }
-  }
-
-  // get the USD value of staked WETH
-  const USDPrice = stakingInfo?.usdPrice;
-
-  const valueOfMyStakedAmountInUSDC =
-    valueOfMyStakedAmountInBaseToken &&
-    USDPrice?.quote(valueOfMyStakedAmountInBaseToken);
-
-  const valueOfUnstakedAmountInUSDC =
-    valueOfUnstakedAmountInBaseToken &&
-    USDPrice?.quote(valueOfUnstakedAmountInBaseToken);
+  const stakedAmounts = getStakedAmountStakingInfo(
+    stakingInfo,
+    userLiquidityUnstaked,
+  );
 
   let apyWithFee: number | string = 0;
 
@@ -323,172 +271,189 @@ const FarmDualCardDetails: React.FC<{
       ? '< $0.001'
       : '$' + earnedUSD.toLocaleString();
 
+  const tvl = getTVLStaking(
+    stakedAmounts?.totalStakedUSD,
+    stakedAmounts?.totalStakedBase,
+  );
+
+  const rewards = useMemo(() => {
+    if (!stakingInfo) return 0;
+    return (
+      stakingInfo?.rateA * stakingInfo?.quickPrice +
+      stakingInfo?.rateB * Number(stakingInfo?.rewardTokenBPrice)
+    );
+  }, [stakingInfo]);
+
+  const poolRateA = getRewardRate(stakingInfo?.totalRewardRateA);
+  const poolRateB = getRewardRate(stakingInfo?.totalRewardRateB);
+
   return (
     <Box
       width='100%'
-      mt={2.5}
-      pl={isMobile ? 2 : 4}
-      pr={isMobile ? 2 : 4}
-      pt={2}
+      p={2}
       display='flex'
       flexDirection='row'
       flexWrap='wrap'
       borderTop='1px solid #444444'
       alignItems='center'
-      justifyContent='space-between'
+      justifyContent={stakingInfo?.ended ? 'flex-end' : 'space-between'}
     >
       {stakingInfo && (
         <>
-          <Box
-            minWidth={250}
-            width={isMobile ? 1 : 0.3}
-            color={palette.text.secondary}
-            my={1.5}
-          >
-            <Box
-              display='flex'
-              flexDirection='row'
-              alignItems='flex-start'
-              justifyContent='space-between'
-            >
-              <Typography variant='body2'>In Wallet:</Typography>
+          {isMobile && (
+            <>
+              <Box width={1} display='flex' justifyContent='space-between'>
+                <Typography variant='body2' color='textSecondary'>
+                  TVL
+                </Typography>
+                <Typography variant='body2'>{tvl}</Typography>
+              </Box>
+              <Box
+                mt={2}
+                width={1}
+                display='flex'
+                justifyContent='space-between'
+              >
+                <Typography variant='body2' color='textSecondary'>
+                  Rewards
+                </Typography>
+                <Box textAlign='right'>
+                  <Typography variant='body2'>
+                    ${Number(rewards.toFixed(0)).toLocaleString()} / day
+                  </Typography>
+                  <Typography variant='body2'>{poolRateA}</Typography>
+                  <Typography variant='body2'>{poolRateB}</Typography>
+                </Box>
+              </Box>
+              <Box
+                mt={2}
+                width={1}
+                display='flex'
+                justifyContent='space-between'
+              >
+                <Box display='flex' alignItems='center'>
+                  <Typography variant='body2' color='textSecondary'>
+                    APY
+                  </Typography>
+                  <Box ml={0.5} height={16}>
+                    <img src={CircleInfoIcon} alt={'arrow up'} />
+                  </Box>
+                </Box>
+                <Box color={palette.success.main}>
+                  <Typography variant='body2'>{apyWithFee}%</Typography>
+                </Box>
+              </Box>
+            </>
+          )}
+          {!stakingInfo.ended && (
+            <Box className={classes.buttonWrapper} mt={isMobile ? 2 : 0}>
               <Box
                 display='flex'
-                flexDirection='column'
-                alignItems='flex-end'
-                justifyContent='flex-start'
+                flexDirection='row'
+                alignItems='flex-start'
+                justifyContent='space-between'
               >
-                <Typography variant='body2'>
-                  {userLiquidityUnstaked
-                    ? userLiquidityUnstaked.toSignificant(2)
-                    : 0}{' '}
-                  LP{' '}
-                  <span>
-                    (
-                    {valueOfUnstakedAmountInUSDC
-                      ? Number(valueOfUnstakedAmountInUSDC.toSignificant(2)) >
-                          0 &&
-                        Number(valueOfUnstakedAmountInUSDC.toSignificant(2)) <
-                          0.001
-                        ? '< $0.001'
-                        : `$${valueOfUnstakedAmountInUSDC.toSignificant(2)}`
-                      : '$0'}
-                    )
-                  </span>
-                </Typography>
-                <Link
-                  to={`/pools?currency0=${
-                    token0?.symbol?.toLowerCase() === 'wmatic'
-                      ? 'ETH'
-                      : token0?.address
-                  }&currency1=${
-                    token1?.symbol?.toLowerCase() === 'wmatic'
-                      ? 'ETH'
-                      : token1?.address
-                  }`}
-                  style={{ color: palette.primary.main }}
+                <Typography variant='body2'>In Wallet:</Typography>
+                <Box
+                  display='flex'
+                  flexDirection='column'
+                  alignItems='flex-end'
+                  justifyContent='flex-start'
                 >
-                  Get {currency0?.symbol} / {currency1?.symbol} LP
-                </Link>
+                  <Typography variant='body2'>
+                    {userLiquidityUnstaked
+                      ? userLiquidityUnstaked.toSignificant(2)
+                      : 0}{' '}
+                    LP <span>({getUSDString(stakedAmounts?.unStakedUSD)})</span>
+                  </Typography>
+                  <Link
+                    to={`/pools?currency0=${getTokenAddress(
+                      token0,
+                    )}&currency1=${getTokenAddress(token1)}`}
+                    style={{ color: palette.primary.main }}
+                  >
+                    Get {currency0?.symbol} / {currency1?.symbol} LP
+                  </Link>
+                </Box>
               </Box>
-            </Box>
-            <Box className={classes.inputVal} mb={2} mt={2} p={2}>
-              <NumericalInput
-                placeholder='0.00'
-                value={stakeAmount}
-                fontSize={16}
-                onUserInput={(value) => {
-                  setStakeAmount(value);
-                }}
-              />
-              <Typography
-                variant='body2'
-                style={{
-                  color:
-                    userLiquidityUnstaked &&
-                    userLiquidityUnstaked.greaterThan('0')
-                      ? palette.primary.main
-                      : palette.text.hint,
-                }}
-                onClick={() => {
-                  if (
-                    userLiquidityUnstaked &&
-                    userLiquidityUnstaked.greaterThan('0')
-                  ) {
-                    setStakeAmount(userLiquidityUnstaked.toExact());
-                  } else {
-                    setStakeAmount('');
-                  }
-                }}
-              >
-                MAX
-              </Typography>
-            </Box>
-            <Box
-              className={
-                !approving &&
-                Number(!attemptStaking && stakeAmount) > 0 &&
-                Number(stakeAmount) <= Number(userLiquidityUnstaked?.toExact())
-                  ? classes.buttonClaim
-                  : classes.buttonToken
-              }
-              mb={2}
-              mt={2}
-              p={2}
-              onClick={async () => {
-                if (
+              <Box className={classes.inputVal} mb={2} mt={2} p={2}>
+                <NumericalInput
+                  placeholder='0.00'
+                  value={stakeAmount}
+                  fontSize={16}
+                  onUserInput={(value) => {
+                    setStakeAmount(value);
+                  }}
+                />
+                <Typography
+                  variant='body2'
+                  style={{
+                    color:
+                      userLiquidityUnstaked &&
+                      userLiquidityUnstaked.greaterThan('0')
+                        ? palette.primary.main
+                        : palette.text.hint,
+                  }}
+                  onClick={() => {
+                    if (
+                      userLiquidityUnstaked &&
+                      userLiquidityUnstaked.greaterThan('0')
+                    ) {
+                      setStakeAmount(userLiquidityUnstaked.toExact());
+                    } else {
+                      setStakeAmount('');
+                    }
+                  }}
+                >
+                  MAX
+                </Typography>
+              </Box>
+              <Box
+                className={
                   !approving &&
-                  !attemptStaking &&
-                  Number(stakeAmount) > 0 &&
+                  Number(!attemptStaking && stakeAmount) > 0 &&
                   Number(stakeAmount) <=
                     Number(userLiquidityUnstaked?.toExact())
-                ) {
-                  if (approval === ApprovalState.APPROVED) {
-                    onStake();
-                  } else {
-                    onAttemptToApprove();
-                  }
+                    ? classes.buttonClaim
+                    : classes.buttonToken
                 }
-              }}
-            >
-              <Typography variant='body1'>
-                {attemptStaking
-                  ? 'Staking LP Tokens...'
-                  : approval === ApprovalState.APPROVED
-                  ? 'Stake LP Tokens'
-                  : approving
-                  ? 'Approving...'
-                  : 'Approve'}
-              </Typography>
+                mb={2}
+                mt={2}
+                p={2}
+                onClick={async () => {
+                  if (
+                    !approving &&
+                    !attemptStaking &&
+                    Number(stakeAmount) > 0 &&
+                    Number(stakeAmount) <=
+                      Number(userLiquidityUnstaked?.toExact())
+                  ) {
+                    if (approval === ApprovalState.APPROVED) {
+                      onStake();
+                    } else {
+                      onAttemptToApprove();
+                    }
+                  }
+                }}
+              >
+                <Typography variant='body1'>
+                  {attemptStaking
+                    ? 'Staking LP Tokens...'
+                    : approval === ApprovalState.APPROVED
+                    ? 'Stake LP Tokens'
+                    : approving
+                    ? 'Approving...'
+                    : 'Approve'}
+                </Typography>
+              </Box>
             </Box>
-          </Box>
-          <Box
-            minWidth={250}
-            width={isMobile ? 1 : 0.3}
-            my={1.5}
-            color={palette.text.secondary}
-          >
-            <Box
-              display='flex'
-              flexDirection='row'
-              alignItems='flex-start'
-              justifyContent='space-between'
-            >
+          )}
+          <Box className={classes.buttonWrapper} mx={isMobile ? 0 : 2} my={2}>
+            <Box display='flex' justifyContent='space-between'>
               <Typography variant='body2'>My deposits:</Typography>
               <Typography variant='body2'>
                 {stakingInfo.stakedAmount.toSignificant(2)} LP{' '}
-                <span>
-                  (
-                  {valueOfMyStakedAmountInUSDC
-                    ? Number(valueOfMyStakedAmountInUSDC.toSignificant(2)) >
-                        0 &&
-                      Number(valueOfMyStakedAmountInUSDC.toSignificant(2)) <
-                        0.001
-                      ? '< $0.001'
-                      : `$${valueOfMyStakedAmountInUSDC.toSignificant(2)}`
-                    : '$0'}
-                  )
-                </span>
+                <span>({getUSDString(stakedAmounts?.myStakedUSD)})</span>
               </Typography>
             </Box>
             <Box className={classes.inputVal} mb={2} mt={4.5} p={2}>
@@ -553,12 +518,7 @@ const FarmDualCardDetails: React.FC<{
               </Typography>
             </Box>
           </Box>
-          <Box
-            minWidth={250}
-            my={1.5}
-            width={isMobile ? 1 : 0.3}
-            color={palette.text.secondary}
-          >
+          <Box className={classes.buttonWrapper}>
             <Box
               display='flex'
               flexDirection='column'

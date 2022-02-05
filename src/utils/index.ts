@@ -39,6 +39,7 @@ import {
   Currency,
   ETHER,
   Token,
+  TokenAmount,
 } from '@uniswap/sdk';
 import { BigNumber, BigNumberish } from '@ethersproject/bignumber';
 import { formatUnits } from 'ethers/lib/utils';
@@ -49,7 +50,8 @@ import moment from 'moment';
 import { Palette } from '@material-ui/core/styles/createPalette';
 import tokenData from 'constants/tokens.json';
 import stakeData from 'constants/stake.json';
-import { SyrupInfo } from 'state/stake/hooks';
+import { DualStakingInfo, StakingInfo, SyrupInfo } from 'state/stake/hooks';
+import { unwrappedToken } from './wrappedCurrency';
 dayjs.extend(utc);
 dayjs.extend(weekOfYear);
 
@@ -1856,10 +1858,144 @@ export function getTokenAPRSyrup(syrup: SyrupInfo) {
     : 0;
 }
 
+export function getDQUICKAPYSyrup(syrup?: SyrupInfo) {
+  if (!syrup) return '0';
+  const dQUICKAPR =
+    (((Number(syrup.oneDayVol) * 0.04 * 0.01) /
+      Number(syrup.dQuickTotalSupply.toSignificant(6))) *
+      getDaysCurrentYear()) /
+    (Number(syrup.dQUICKtoQUICK.toSignificant(6)) * Number(syrup.quickPrice));
+  if (!dQUICKAPR) return '0';
+  return Number(
+    (Math.pow(1 + dQUICKAPR / getDaysCurrentYear(), getDaysCurrentYear()) - 1) *
+      100,
+  ).toLocaleString();
+}
+
 export function returnFullWidthMobile(isMobile: boolean) {
   return isMobile ? 1 : 'unset';
 }
 
 export function escapeRegExp(string: string): string {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+}
+
+export function getTokenAddress(token: Token | undefined) {
+  if (!token) return;
+  if (token.symbol?.toLowerCase() === 'wmatic') return 'ETH';
+  return token.address;
+}
+
+export function getRewardRate(rate: TokenAmount | undefined) {
+  if (!rate) return;
+  return `${rate.toFixed(2, { groupSeparator: ',' }).replace(/[.,]00$/, '')} ${
+    rate.token.symbol
+  }  / day`;
+}
+
+export function getStakedAmountStakingInfo(
+  stakingInfo?: StakingInfo | DualStakingInfo,
+  userLiquidityUnstaked?: TokenAmount,
+) {
+  if (!stakingInfo) return;
+  const stakingTokenPair = stakingInfo.stakingTokenPair;
+  const baseTokenCurrency = unwrappedToken(stakingInfo.baseToken);
+  const empty = unwrappedToken(returnTokenFromKey('EMPTY'));
+  const token0 = stakingInfo.tokens[0];
+  const baseToken =
+    baseTokenCurrency === empty ? token0 : stakingInfo.baseToken;
+  if (!stakingInfo.totalSupply || !stakingTokenPair) return;
+  // take the total amount of LP tokens staked, multiply by ETH value of all LP tokens, divide by all LP tokens
+  const valueOfTotalStakedAmountInBaseToken = new TokenAmount(
+    baseToken,
+    JSBI.divide(
+      JSBI.multiply(
+        JSBI.multiply(
+          stakingInfo.totalStakedAmount.raw,
+          stakingTokenPair.reserveOf(baseToken).raw,
+        ),
+        JSBI.BigInt(2), // this is b/c the value of LP shares are ~double the value of the WETH they entitle owner to
+      ),
+      stakingInfo.totalSupply.raw,
+    ),
+  );
+
+  const valueOfMyStakedAmountInBaseToken = new TokenAmount(
+    baseToken,
+    JSBI.divide(
+      JSBI.multiply(
+        JSBI.multiply(
+          stakingInfo.stakedAmount.raw,
+          stakingTokenPair.reserveOf(baseToken).raw,
+        ),
+        JSBI.BigInt(2), // this is b/c the value of LP shares are ~double the value of the WETH they entitle owner to
+      ),
+      stakingInfo.totalSupply.raw,
+    ),
+  );
+
+  // get the USD value of staked WETH
+  const USDPrice = stakingInfo.usdPrice;
+  const valueOfTotalStakedAmountInUSDC = USDPrice?.quote(
+    valueOfTotalStakedAmountInBaseToken,
+  );
+
+  const valueOfMyStakedAmountInUSDC = USDPrice?.quote(
+    valueOfMyStakedAmountInBaseToken,
+  );
+
+  const stakedAmounts = {
+    totalStakedBase: valueOfTotalStakedAmountInBaseToken,
+    totalStakedUSD: valueOfTotalStakedAmountInUSDC,
+    myStakedBase: valueOfMyStakedAmountInBaseToken,
+    myStakedUSD: valueOfMyStakedAmountInUSDC,
+    unStakedBase: undefined,
+    unStakedUSD: undefined,
+  };
+
+  if (!userLiquidityUnstaked) return stakedAmounts;
+
+  const valueOfUnstakedAmountInBaseToken = new TokenAmount(
+    baseToken,
+    JSBI.divide(
+      JSBI.multiply(
+        JSBI.multiply(
+          userLiquidityUnstaked.raw,
+          stakingTokenPair.reserveOf(baseToken).raw,
+        ),
+        JSBI.BigInt(2),
+      ),
+      stakingInfo.totalSupply.raw,
+    ),
+  );
+
+  const valueOfUnstakedAmountInUSDC = USDPrice?.quote(
+    valueOfUnstakedAmountInBaseToken,
+  );
+  return {
+    ...stakedAmounts,
+    unStakedBase: valueOfUnstakedAmountInBaseToken,
+    unStakedUSD: valueOfUnstakedAmountInUSDC,
+  };
+}
+
+export function getTVLStaking(
+  valueOfTotalStakedAmountInUSDC?: CurrencyAmount,
+  valueOfTotalStakedAmountInBaseToken?: TokenAmount,
+) {
+  if (!valueOfTotalStakedAmountInUSDC) {
+    return `${valueOfTotalStakedAmountInBaseToken?.toSignificant(4, {
+      groupSeparator: ',',
+    }) ?? '-'} ETH`;
+  }
+  return `$${valueOfTotalStakedAmountInUSDC.toFixed(0, {
+    groupSeparator: ',',
+  })}`;
+}
+
+export function getUSDString(usdValue?: CurrencyAmount) {
+  if (!usdValue) return '$0';
+  const usdStr = usdValue.toSignificant(2);
+  if (Number(usdStr) > 0 && Number(usdStr) < 0.001) return '< $0.001';
+  return `$${usdStr}`;
 }

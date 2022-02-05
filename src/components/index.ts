@@ -11,6 +11,7 @@ export { default as CustomTooltip } from './CustomTooltip';
 export { default as ToggleSwitch } from './ToggleSwitch';
 export { default as CustomMenu } from './CustomMenu';
 export { default as CustomModal } from './CustomModal';
+export { default as CustomSwitch } from './CustomSwitch';
 export { default as CurrencyInput } from './CurrencyInput';
 export { default as LineChart } from './LineChart';
 export { default as Popups } from './Popups';
