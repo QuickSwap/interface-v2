@@ -47,6 +47,12 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
   const lairInfo = useLairInfo();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
 
+  // const [stakingInfos, setStakingInfos] = useState<StakingInfo[] | undefined>(
+  //   undefined,
+  // );
+  // const [stakingDualInfos, setStakingDualInfos] = useState<
+  //   DualStakingInfo[] | undefined
+  // >(undefined);
   const [pageIndex, setPageIndex] = useState(0);
   const [pageloading, setPageLoading] = useState(false); //this is used for not loading farms immediately when user is on farms page
   const [isEndedFarm, setIsEndedFarm] = useState(false);
