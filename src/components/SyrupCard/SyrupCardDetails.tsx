@@ -70,7 +70,7 @@ const SyrupCardDetails: React.FC<{ token: Token }> = ({ token }) => {
   );
 
   const syrupEarnedUSD =
-    Number(syrup?.earnedAmount.toSignificant(2)) *
+    Number(syrup?.earnedAmount.toSignificant()) *
     Number(syrup?.rewardTokenPriceinUSD ?? 0);
 
   const exactEnd = syrup ? syrup.periodFinish : 0;
