@@ -212,9 +212,7 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
                 cursor: 'pointer',
               }}
               onClick={() => {
-                setTypedValue(
-                  maxAmountInput ? maxAmountInput.toSignificant() : '0',
-                );
+                setTypedValue(maxAmountInput ? maxAmountInput.toExact() : '0');
                 setStakePercent(100);
               }}
             >
@@ -232,11 +230,12 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
                   setStakePercent(value as number);
                   setTypedValue(
                     maxAmountInput
-                      ? (
-                          (Number(maxAmountInput.toSignificant()) *
-                            stakePercent) /
-                          100
-                        ).toFixed(8)
+                      ? stakePercent < 100
+                        ? (
+                            (Number(maxAmountInput.toExact()) * stakePercent) /
+                            100
+                          ).toString()
+                        : maxAmountInput.toExact()
                       : '0',
                   );
                 }}
