@@ -21,7 +21,12 @@ import {
   CustomSwitch,
 } from 'components';
 import { GlobalConst } from 'constants/index';
-import { getAPYWithFee, getOneYearFee, returnFullWidthMobile } from 'utils';
+import {
+  getAPYWithFee,
+  getOneYearFee,
+  getPageItemsToLoad,
+  returnFullWidthMobile,
+} from 'utils';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 import { useInfiniteLoading } from 'utils/useInfiniteLoading';
 
@@ -263,13 +268,13 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
 
   useEffect(() => {
     setPageIndex(0);
-  }, [stakingRewardAddress]);
+  }, [stakingRewardAddress, farmIndex]);
 
   const stakingInfos = useMemo(() => {
     return sortedLPStakingInfos
       ? sortedLPStakingInfos.slice(
           0,
-          pageIndex === 0 ? LOADFARM_COUNT : LOADFARM_COUNT * pageIndex,
+          getPageItemsToLoad(pageIndex, LOADFARM_COUNT),
         )
       : null;
   }, [sortedLPStakingInfos, pageIndex]);
@@ -278,7 +283,7 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
     return sortedStakingDualInfos
       ? sortedStakingDualInfos.slice(
           0,
-          pageIndex === 0 ? LOADFARM_COUNT : LOADFARM_COUNT * pageIndex,
+          getPageItemsToLoad(pageIndex, LOADFARM_COUNT),
         )
       : null;
   }, [sortedStakingDualInfos, pageIndex]);
@@ -290,12 +295,8 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
 
     const oneDayVolume = bulkPairs?.[pairId]?.oneDayVolumeUSD;
     const reserveUSD = bulkPairs?.[pairId]?.reserveUSD;
-    if (oneDayVolume && reserveUSD) {
-      const oneYearFeeAPY = getOneYearFee(oneDayVolume, reserveUSD);
-      return oneYearFeeAPY;
-    } else {
-      return 0;
-    }
+    const oneYearFeeAPY = getOneYearFee(oneDayVolume, reserveUSD);
+    return oneYearFeeAPY;
   };
 
   const loadNext = () => {
@@ -456,25 +457,9 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
           ))}
         </Box>
       )}
-      {farmIndex === GlobalConst.farmIndex.LPFARM_INDEX && stakingInfos
-        ? stakingInfos.map((info: StakingInfo, index) => (
-            <FarmLPCard
-              key={index}
-              dQuicktoQuick={Number(lairInfo.dQUICKtoQUICK.toSignificant())}
-              stakingInfo={info}
-              stakingAPY={getPoolApy(info?.pair)}
-            />
-          ))
-        : farmIndex === GlobalConst.farmIndex.DUALFARM_INDEX && stakingDualInfos
-        ? stakingDualInfos.map((info: DualStakingInfo, index) => (
-            <FarmDualCard
-              key={index}
-              dQuicktoQuick={Number(lairInfo.dQUICKtoQUICK.toSignificant())}
-              stakingInfo={info}
-              stakingAPY={getPoolApy(info?.pair)}
-            />
-          ))
-        : (!stakingInfos || !stakingDualInfos) && (
+      {(farmIndex === GlobalConst.farmIndex.LPFARM_INDEX && !stakingInfos) ||
+        (farmIndex === GlobalConst.farmIndex.DUALFARM_INDEX &&
+          !stakingDualInfos && (
             <>
               <Skeleton width='100%' height={100} />
               <Skeleton width='100%' height={100} />
@@ -482,7 +467,27 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
               <Skeleton width='100%' height={100} />
               <Skeleton width='100%' height={100} />
             </>
-          )}
+          ))}
+      {farmIndex === GlobalConst.farmIndex.LPFARM_INDEX &&
+        stakingInfos &&
+        stakingInfos.map((info: StakingInfo, index) => (
+          <FarmLPCard
+            key={index}
+            dQuicktoQuick={Number(lairInfo.dQUICKtoQUICK.toSignificant())}
+            stakingInfo={info}
+            stakingAPY={getPoolApy(info?.pair)}
+          />
+        ))}
+      {farmIndex === GlobalConst.farmIndex.DUALFARM_INDEX &&
+        stakingDualInfos &&
+        stakingDualInfos.map((info: DualStakingInfo, index) => (
+          <FarmDualCard
+            key={index}
+            dQuicktoQuick={Number(lairInfo.dQUICKtoQUICK.toSignificant())}
+            stakingInfo={info}
+            stakingAPY={getPoolApy(info?.pair)}
+          />
+        ))}
       <div ref={loadMoreRef} />
     </>
   );
