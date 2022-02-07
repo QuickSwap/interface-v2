@@ -315,7 +315,7 @@ const Header: React.FC = () => {
     },
     {
       link: '/dragons',
-      text: 'Dragons Lair',
+      text: 'Dragon’s Lair',
       id: 'dragons-page-link',
     },
     {

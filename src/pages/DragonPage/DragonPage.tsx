@@ -140,7 +140,7 @@ const DragonPage: React.FC = () => {
         width='100%'
       >
         <Box>
-          <Typography variant='h4'>Dragons Lair</Typography>
+          <Typography variant='h4'>Dragon’s Lair</Typography>
           <Typography variant='body1'>
             Stake your QUICK here to earn more!
           </Typography>
@@ -165,7 +165,7 @@ const DragonPage: React.FC = () => {
               <Typography variant='caption'>STEP 1:</Typography>
             </Box>
             <Box className={classes.dragonTitle}>
-              <Typography variant='h5'>Dragons Lair</Typography>
+              <Typography variant='h5'>Dragon’s Lair</Typography>
               <Typography variant='body2'>
                 Stake QUICK, Receive dQUICK as receipt representing your share
                 of the pool.
@@ -183,7 +183,7 @@ const DragonPage: React.FC = () => {
               <Typography variant='caption'>STEP 2:</Typography>
             </Box>
             <Box className={classes.dragonTitle}>
-              <Typography variant='h5'>Dragons Syrup</Typography>
+              <Typography variant='h5'>Dragon’s Syrup</Typography>
               <Typography variant='body2'>
                 Stake dQUICK, Earn tokens of your choice over time.
               </Typography>
