@@ -10,7 +10,7 @@ import {
   useMediaQuery,
 } from '@material-ui/core';
 import Skeleton from '@material-ui/lab/Skeleton';
-import { Currency, ChainId } from '@uniswap/sdk';
+import { Currency } from '@uniswap/sdk';
 import { useTheme } from '@material-ui/core/styles';
 import Motif from 'assets/images/Motif.svg';
 import BuyWithFiat from 'assets/images/featured/BuywithFiat.svg';
@@ -43,6 +43,7 @@ import {
   formatCompact,
   getDaysCurrentYear,
   returnTokenFromKey,
+  checkNetworkisNotMatic,
 } from 'utils';
 import { useGlobalData, useWalletModalToggle } from 'state/application/hooks';
 import { GlobalConst } from 'constants/index';
@@ -424,8 +425,8 @@ const LandingPage: React.FC = () => {
   const [swapIndex, setSwapIndex] = useState(0);
   const [openStakeModal, setOpenStakeModal] = useState(false);
   const { palette, breakpoints } = useTheme();
-  const { account, chainId } = useActiveWeb3React();
-  const isnotMatic = chainId !== ChainId.MATIC;
+  const { account } = useActiveWeb3React();
+  const isnotMatic = checkNetworkisNotMatic();
   const mobileWindowSize = useMediaQuery(breakpoints.down('sm'));
   const { initTransak } = useInitTransak();
   const toggleWalletModal = useWalletModalToggle();

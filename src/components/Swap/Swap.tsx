@@ -36,6 +36,7 @@ import useWrapCallback, { WrapType } from 'hooks/useWrapCallback';
 import useToggledVersion, { Version } from 'hooks/useToggledVersion';
 import {
   addMaticToMetamask,
+  checkNetworkisNotMatic,
   confirmPriceImpactWithoutFee,
   halfAmountSpend,
   maxAmountSpend,
@@ -126,7 +127,6 @@ const Swap: React.FC<{
   const [openSettingsModal, setOpenSettingsModal] = useState(false);
   const { palette } = useTheme();
   const { account } = useActiveWeb3React();
-  const { ethereum } = window as any;
   const { independentField, typedValue, recipient } = useSwapState();
   const {
     v1Trade,
@@ -206,8 +206,7 @@ const Swap: React.FC<{
 
   const { priceImpactWithoutFee } = computeTradePriceBreakdown(trade);
   const [approvalSubmitted, setApprovalSubmitted] = useState<boolean>(false);
-  const isnotMatic =
-    ethereum && ethereum.isMetaMask && Number(ethereum.chainId) !== 137;
+  const isnotMatic = checkNetworkisNotMatic();
   const [mainPrice, setMainPrice] = useState(true);
   const priceImpactSeverity = warningSeverity(priceImpactWithoutFee);
   const isValid = !swapInputError;

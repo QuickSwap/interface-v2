@@ -1999,3 +1999,8 @@ export function getUSDString(usdValue?: CurrencyAmount) {
   if (Number(usdStr) > 0 && Number(usdStr) < 0.001) return '< $0.001';
   return `$${usdStr}`;
 }
+
+export function checkNetworkisNotMatic() {
+  const { ethereum } = window as any;
+  return ethereum && ethereum.isMetaMask && Number(ethereum.chainId) !== 137;
+}
