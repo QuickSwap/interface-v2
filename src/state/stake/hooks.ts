@@ -201,7 +201,6 @@ export interface SyrupInfo {
   getHypotheticalRewardRate: (
     stakedAmount: TokenAmount,
     totalStakedAmount: TokenAmount,
-    totalRewardRate: TokenAmount,
   ) => TokenAmount;
 }
 
@@ -545,13 +544,12 @@ export function useSyrupInfo(
           const getHypotheticalRewardRate = (
             stakedAmount: TokenAmount,
             totalStakedAmount: TokenAmount,
-            totalRewardRate: TokenAmount,
           ): TokenAmount => {
             return new TokenAmount(
               token,
               JSBI.greaterThan(totalStakedAmount.raw, JSBI.BigInt(0))
                 ? JSBI.divide(
-                    JSBI.multiply(totalRewardRate.raw, stakedAmount.raw),
+                    JSBI.multiply(totalRewardRate01.raw, stakedAmount.raw),
                     totalStakedAmount.raw,
                   )
                 : JSBI.BigInt(0),
@@ -561,7 +559,6 @@ export function useSyrupInfo(
           const individualRewardRate = getHypotheticalRewardRate(
             stakedAmount,
             totalStakedAmount,
-            totalRewardRate01,
           );
 
           const periodFinishMs = syrupInfo.ending;
@@ -789,13 +786,12 @@ export function useOldSyrupInfo(
           const getHypotheticalRewardRate = (
             stakedAmount: TokenAmount,
             totalStakedAmount: TokenAmount,
-            totalRewardRate: TokenAmount,
           ): TokenAmount => {
             return new TokenAmount(
               token,
               JSBI.greaterThan(totalStakedAmount.raw, JSBI.BigInt(0))
                 ? JSBI.divide(
-                    JSBI.multiply(totalRewardRate.raw, stakedAmount.raw),
+                    JSBI.multiply(totalRewardRate01.raw, stakedAmount.raw),
                     totalStakedAmount.raw,
                   )
                 : JSBI.BigInt(0),
@@ -805,7 +801,6 @@ export function useOldSyrupInfo(
           const individualRewardRate = getHypotheticalRewardRate(
             stakedAmount,
             totalStakedAmount,
-            totalRewardRate01,
           );
 
           const periodFinishMs = syrupInfo.ending;

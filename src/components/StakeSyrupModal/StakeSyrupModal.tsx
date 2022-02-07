@@ -79,7 +79,6 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
     hypotheticalRewardRate = syrup.getHypotheticalRewardRate(
       syrup.stakedAmount.add(parsedAmountWrapped),
       syrup.totalStakedAmount.add(parsedAmountWrapped),
-      syrup.totalRewardRate,
     );
   }
 
