@@ -1,6 +1,28 @@
 {
   "syrup": [
     {
+      "token": "BICO",
+      "stakingRewardAddress": "0x5D474ddBb7da6275eB22fff06f28615F0B457c9d",
+      "ended": false,
+      "lp": "",
+      "name": "",
+      "baseToken": "ETHER",
+      "rate": 566.67,
+      "ending": 1649547250,
+      "stakingToken": "QUICK"
+    },
+    {
+      "token": "BIOS",
+      "stakingRewardAddress": "0x1e541d19e3a0aC7e2E93cBC56360B4abE7E241fE",
+      "ended": false,
+      "lp": "",
+      "name": "",
+      "baseToken": "MATIC",
+      "rate": 333.33,
+      "ending": 1649547250,
+      "stakingToken": "QUICK"
+    },
+    {
       "token": "SAFLE",
       "stakingRewardAddress": "0xDaFee9cafDc99c73d2288a9e2dc2c6A22dFB75fC",
       "ended": false,
@@ -221,17 +243,6 @@
       "stakingToken": "DQUICK"
     },
     {
-      "token": "MM",
-      "stakingRewardAddress": "0xB224d9F687538a2FAF8964DcAabb71bFe627Aee0",
-      "ended": false,
-      "lp": "",
-      "name": "",
-      "baseToken": "USDC",
-      "rate": 66.66666667,
-      "ending": 1644296104,
-      "stakingToken": "DQUICK"
-    },
-    {
       "token": "ZIG",
       "stakingRewardAddress": "0xfE6174429a963bF4E25a80FE0B72d7Cce7Df6e2f",
       "ended": false,
@@ -240,17 +251,6 @@
       "baseToken": "QUICK",
       "rate": 37037.03333,
       "ending": 1646888104,
-      "stakingToken": "DQUICK"
-    },
-    {
-      "token": "TECH",
-      "stakingRewardAddress": "0xD2C494057f57D845C67bb5825e83B657204875c8",
-      "ended": false,
-      "lp": "",
-      "name": "",
-      "baseToken": "ETHER",
-      "rate": 40610.66,
-      "ending": 1644090690,
       "stakingToken": "DQUICK"
     },
     {
@@ -288,6 +288,28 @@
     }
   ],
   "oldsyrup": [
+    {
+      "token": "MM",
+      "stakingRewardAddress": "0xB224d9F687538a2FAF8964DcAabb71bFe627Aee0",
+      "ended": true,
+      "lp": "",
+      "name": "",
+      "baseToken": "USDC",
+      "rate": 66.66666667,
+      "ending": 1644296104,
+      "stakingToken": "DQUICK"
+    },
+    {
+      "token": "TECH",
+      "stakingRewardAddress": "0xD2C494057f57D845C67bb5825e83B657204875c8",
+      "ended": true,
+      "lp": "",
+      "name": "",
+      "baseToken": "ETHER",
+      "rate": 40610.66,
+      "ending": 1644090690,
+      "stakingToken": "DQUICK"
+    },
     {
       "token": "CLAM2",
       "stakingRewardAddress": "0xb510935f4D67E27a11cD94E81bF0C465ee2a5509",
