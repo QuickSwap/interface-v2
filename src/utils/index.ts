@@ -2024,3 +2024,7 @@ export function getEarnedUSDDualFarm(stakingInfo: DualStakingInfo | undefined) {
   }
   return `$${earnedUSD.toLocaleString()}`;
 }
+
+export function isSupportedNetwork(ethereum: any) {
+  return ethereum && Number(ethereum.chainId) === 137;
+}

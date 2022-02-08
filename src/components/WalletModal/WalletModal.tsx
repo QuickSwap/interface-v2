@@ -265,18 +265,18 @@ const WalletModal: React.FC<WalletModalProps> = ({
   function getModalContent() {
     if (error) {
       return (
-        <Box p={2} position='relative'>
+        <Box position='relative'>
           <Box position='absolute' top='16px' right='16px' display='flex'>
             <Close style={{ cursor: 'pointer' }} onClick={toggleWalletModal} />
           </Box>
-          <Box textAlign='center'>
+          <Box mt={2} textAlign='center'>
             <Typography variant='subtitle2'>
               {error instanceof UnsupportedChainIdError
                 ? 'Wrong Network'
                 : 'Error connecting'}
             </Typography>
           </Box>
-          <Box mt={3} textAlign='center'>
+          <Box mt={3} mb={2} textAlign='center'>
             <Typography variant='body2'>
               {error instanceof UnsupportedChainIdError
                 ? 'Please connect to the appropriate Polygon network.'

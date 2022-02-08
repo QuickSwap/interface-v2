@@ -201,7 +201,6 @@ export interface SyrupInfo {
   getHypotheticalRewardRate: (
     stakedAmount: TokenAmount,
     totalStakedAmount: TokenAmount,
-    totalRewardRate: TokenAmount,
   ) => TokenAmount;
 }
 
@@ -538,20 +537,19 @@ export function useSyrupInfo(
           const totalRewardRate = new TokenAmount(token, JSBI.BigInt(rate));
           //const pair = info[index].pair.toLowerCase();
           //const fees = (pairData && pairData[pair] ? pairData[pair].oneDayVolumeUSD * 0.0025: 0);
-          const totalRewardRate01 = new TokenAmount(
+          const rewardRate = new TokenAmount(
             token,
             JSBI.BigInt(rewardRateState.result?.[0]),
           );
           const getHypotheticalRewardRate = (
             stakedAmount: TokenAmount,
             totalStakedAmount: TokenAmount,
-            totalRewardRate: TokenAmount,
           ): TokenAmount => {
             return new TokenAmount(
               token,
               JSBI.greaterThan(totalStakedAmount.raw, JSBI.BigInt(0))
                 ? JSBI.divide(
-                    JSBI.multiply(totalRewardRate.raw, stakedAmount.raw),
+                    JSBI.multiply(rewardRate.raw, stakedAmount.raw),
                     totalStakedAmount.raw,
                   )
                 : JSBI.BigInt(0),
@@ -561,7 +559,6 @@ export function useSyrupInfo(
           const individualRewardRate = getHypotheticalRewardRate(
             stakedAmount,
             totalStakedAmount,
-            totalRewardRate01,
           );
 
           const periodFinishMs = syrupInfo.ending;
@@ -782,20 +779,19 @@ export function useOldSyrupInfo(
           const totalRewardRate = new TokenAmount(token, JSBI.BigInt(rate));
           //const pair = info[index].pair.toLowerCase();
           //const fees = (pairData && pairData[pair] ? pairData[pair].oneDayVolumeUSD * 0.0025: 0);
-          const totalRewardRate01 = new TokenAmount(
+          const rewardRate = new TokenAmount(
             token,
             JSBI.BigInt(rewardRateState.result?.[0]),
           );
           const getHypotheticalRewardRate = (
             stakedAmount: TokenAmount,
             totalStakedAmount: TokenAmount,
-            totalRewardRate: TokenAmount,
           ): TokenAmount => {
             return new TokenAmount(
               token,
               JSBI.greaterThan(totalStakedAmount.raw, JSBI.BigInt(0))
                 ? JSBI.divide(
-                    JSBI.multiply(totalRewardRate.raw, stakedAmount.raw),
+                    JSBI.multiply(rewardRate.raw, stakedAmount.raw),
                     totalStakedAmount.raw,
                   )
                 : JSBI.BigInt(0),
@@ -805,7 +801,6 @@ export function useOldSyrupInfo(
           const individualRewardRate = getHypotheticalRewardRate(
             stakedAmount,
             totalStakedAmount,
-            totalRewardRate01,
           );
 
           const periodFinishMs = syrupInfo.ending;
