@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useMemo } from 'react';
 import { Box, Button, Typography } from '@material-ui/core';
 import {
   CurrencyInput,
@@ -37,6 +37,7 @@ import {
   calculateSlippageAmount,
   calculateGasMargin,
   returnTokenFromKey,
+  isSupportedNetwork,
 } from 'utils';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
 import { ReactComponent as AddLiquidityIcon } from 'assets/images/AddLiquidityIcon.svg';
@@ -170,9 +171,6 @@ const AddLiquidity: React.FC<{
   };
 
   const { ethereum } = window as any;
-
-  const isnotMatic =
-    ethereum && ethereum.isMetaMask && Number(ethereum.chainId) !== 137;
   const toggleWalletModal = useWalletModalToggle();
   const [approvingA, setApprovingA] = useState(false);
   const [approvingB, setApprovingB] = useState(false);
@@ -369,7 +367,7 @@ const AddLiquidity: React.FC<{
   };
 
   const connectWallet = () => {
-    if (isnotMatic) {
+    if (!isSupportedNetwork(ethereum)) {
       addMaticToMetamask();
     } else {
       toggleWalletModal();
@@ -384,6 +382,15 @@ const AddLiquidity: React.FC<{
     }
     setTxHash('');
   }, [onFieldAInput, txHash]);
+
+  const buttonText = useMemo(() => {
+    if (account) {
+      return error ?? 'Supply';
+    } else if (!isSupportedNetwork(ethereum)) {
+      return 'Switch to Polygon';
+    }
+    return 'Connect Wallet';
+  }, [account, ethereum, error]);
 
   const modalHeader = () => {
     return (
@@ -594,7 +601,7 @@ const AddLiquidity: React.FC<{
           }
           onClick={account ? onAdd : connectWallet}
         >
-          {account ? error ?? 'Supply' : 'Connect Wallet'}
+          {buttonText}
         </Button>
       </Box>
     </Box>

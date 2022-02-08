@@ -1999,3 +1999,7 @@ export function getUSDString(usdValue?: CurrencyAmount) {
   if (Number(usdStr) > 0 && Number(usdStr) < 0.001) return '< $0.001';
   return `$${usdStr}`;
 }
+
+export function isSupportedNetwork(ethereum: any) {
+  return ethereum && Number(ethereum.chainId) === 137;
+}
