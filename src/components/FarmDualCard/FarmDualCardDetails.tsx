@@ -269,7 +269,7 @@ const FarmDualCardDetails: React.FC<{
   const rewards = useMemo(() => {
     if (!stakingInfo) return 0;
     return (
-      stakingInfo?.rateA * stakingInfo?.quickPrice +
+      stakingInfo?.rateA * stakingInfo?.dQuickPrice +
       stakingInfo?.rateB * Number(stakingInfo?.rewardTokenBPrice)
     );
   }, [stakingInfo]);

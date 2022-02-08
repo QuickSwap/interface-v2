@@ -26,7 +26,6 @@ import {
   NEVER_RELOAD,
   useMultipleContractSingleData,
   useSingleCallResult,
-  useSingleContractMultipleData,
 } from 'state/multicall/hooks';
 import { tryParseAmount } from 'state/swap/hooks';
 import Web3 from 'web3';
@@ -96,6 +95,7 @@ export interface CommonStakingInfo {
   pair: string;
 
   quickPrice: number;
+  dQuickPrice: number;
 
   oneYearFeeAPY?: number;
 
@@ -127,7 +127,6 @@ export interface StakingInfo extends CommonStakingInfo {
 
   rate: number;
 
-  dQuickToQuick: number;
   valueOfTotalStakedAmountInBaseToken?: TokenAmount;
 }
 
@@ -1055,6 +1054,9 @@ export function useDualStakingInfo(
     maticUsdcPair?.priceOf(GlobalValue.tokens.MATIC)?.toSignificant(6),
   );
 
+  const dQuickToQuick = useDQUICKtoQUICK();
+  const dQuickPrice = dQuickToQuick * quickPrice;
+
   const info = useMemo(
     () =>
       chainId
@@ -1323,7 +1325,7 @@ export function useDualStakingInfo(
           }
 
           const perMonthReturnInRewards =
-            ((stakingInfo.rateA * quickPrice +
+            ((stakingInfo.rateA * dQuickPrice +
               stakingInfo.rateB * rewardTokenBPrice) *
               30) /
             Number(valueOfTotalStakedAmountInUSDC?.toSignificant(6));
@@ -1355,6 +1357,7 @@ export function useDualStakingInfo(
             pair: stakingInfo.pair,
             quickPrice: quickPrice,
             maticPrice: maticPrice,
+            dQuickPrice: dQuickPrice,
             rateA: stakingInfo.rateA,
             rateB: stakingInfo.rateB,
             rewardTokenA: stakingInfo.rewardTokenA,
@@ -1383,6 +1386,7 @@ export function useDualStakingInfo(
     totalSupplies,
     uni,
     quickPrice,
+    dQuickPrice,
     maticPrice,
     rewardRatesA,
     rewardRatesB,
@@ -1492,6 +1496,8 @@ export function useStakingInfo(
   const quickPrice = Number(
     quickUsdcPair?.priceOf(returnTokenFromKey('QUICK'))?.toSignificant(6),
   );
+  const dQuickToQuick = useDQUICKtoQUICK();
+  const dQuickPrice = quickPrice * dQuickToQuick;
   const info = useMemo(
     () =>
       chainId
@@ -1522,7 +1528,6 @@ export function useStakingInfo(
   //   getBulkPairData(allPairAddress);
   // }, [allPairAddress]);
 
-  const lair = useLairContract();
   const accountArg = useMemo(() => [account ?? undefined], [account]);
 
   // get all the info from the staking rewards contracts
@@ -1542,12 +1547,6 @@ export function useStakingInfo(
     rewardsAddresses,
     STAKING_REWARDS_INTERFACE,
     'totalSupply',
-  );
-  const inputs = ['1000000000000000000'];
-  const dQuickToQuickState = useSingleCallResult(
-    lair,
-    'dQUICKForQUICK',
-    inputs,
   );
 
   const periodFinishes = useMultipleContractSingleData(
@@ -1603,7 +1602,6 @@ export function useStakingInfo(
 
         if (
           // these may be undefined if not logged in
-          !dQuickToQuickState?.loading &&
           !balanceState?.loading &&
           !earnedAmountState?.loading &&
           // always need these
@@ -1615,7 +1613,6 @@ export function useStakingInfo(
           !periodFinishState.loading
         ) {
           if (
-            dQuickToQuickState?.error ||
             balanceState?.error ||
             earnedAmountState?.error ||
             totalSupplyState.error ||
@@ -1682,9 +1679,6 @@ export function useStakingInfo(
           let oneYearFeeAPY = 0;
           let oneDayFee = 0;
           let accountFee = 0;
-          let dQuickToQuick: any = dQuickToQuickState?.result?.[0] ?? 0;
-
-          dQuickToQuick = web3.utils.fromWei(dQuickToQuick.toString(), 'ether');
           if (pairs !== undefined) {
             oneYearFeeAPY = pairs[stakingInfo.pair]?.oneDayVolumeUSD;
 
@@ -1741,7 +1735,7 @@ export function useStakingInfo(
             : valueOfTotalStakedAmountInBaseToken?.toSignificant();
 
           const perMonthReturnInRewards =
-            (Number(dQuickToQuick) * Number(quickPrice) * 30) /
+            (Number(stakingInfo.rate) * Number(dQuickPrice) * 30) /
             Number(valueOfTotalStakedAmountInUSDC?.toSignificant(6));
 
           memo.push({
@@ -1768,7 +1762,7 @@ export function useStakingInfo(
             oneYearFeeAPY: oneYearFeeAPY,
             oneDayFee,
             accountFee,
-            dQuickToQuick: dQuickToQuick,
+            dQuickPrice,
             tvl,
             perMonthReturnInRewards,
             valueOfTotalStakedAmountInBaseToken,
@@ -1792,7 +1786,7 @@ export function useStakingInfo(
     uni,
     quickPrice,
     rewardRates,
-    dQuickToQuickState,
+    dQuickPrice,
     baseTokens,
     totalSupplys,
     usdPrices,
@@ -1979,7 +1973,7 @@ export function useOldStakingInfo(
             oneYearFeeAPY: 0,
             oneDayFee: 0,
             accountFee: 0,
-            dQuickToQuick: 0,
+            dQuickPrice: 0,
             stakingTokenPair,
           });
         }
@@ -2020,6 +2014,23 @@ export function useTotalUniEarned(): TokenAmount | undefined {
       ) ?? new TokenAmount(uni, '0')
     );
   }, [stakingInfos, uni]);
+}
+
+export function useDQUICKtoQUICK() {
+  const lair = useLairContract();
+  const inputs = ['1000000000000000000'];
+  const dQuickToQuickState = useSingleCallResult(
+    lair,
+    'dQUICKForQUICK',
+    inputs,
+  );
+  if (dQuickToQuickState.loading || dQuickToQuickState.error) return 0;
+  return Number(
+    new TokenAmount(
+      returnTokenFromKey('QUICK'),
+      JSBI.BigInt(dQuickToQuickState?.result?.[0] ?? 0),
+    ).toSignificant(),
+  );
 }
 
 export function useDerivedSyrupInfo(

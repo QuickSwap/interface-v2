@@ -84,8 +84,7 @@ const FarmLPCard: React.FC<{
 
   const earnedUSDStr = getEarnedUSDLPFarm(stakingInfo);
 
-  const rewards =
-    stakingInfo?.dQuickToQuick * stakingInfo.rate * stakingInfo?.quickPrice;
+  const rewards = stakingInfo?.dQuickPrice * stakingInfo.rate;
 
   const renderPool = (width: number) => (
     <Box display='flex' alignItems='center' width={width}>

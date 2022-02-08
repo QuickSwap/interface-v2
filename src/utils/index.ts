@@ -2003,10 +2003,7 @@ export function getUSDString(usdValue?: CurrencyAmount) {
 export function getEarnedUSDLPFarm(stakingInfo: StakingInfo | undefined) {
   if (!stakingInfo) return;
   const earnedUSD =
-    ((Number(stakingInfo.earnedAmount.toSignificant()) *
-      stakingInfo.dQuickToQuick) /
-      stakingInfo.rate) *
-    stakingInfo.quickPrice;
+    Number(stakingInfo.earnedAmount.toSignificant()) * stakingInfo.dQuickPrice;
   if (earnedUSD < 0.001 && earnedUSD > 0) {
     return '< $0.001';
   }
@@ -2016,7 +2013,8 @@ export function getEarnedUSDLPFarm(stakingInfo: StakingInfo | undefined) {
 export function getEarnedUSDDualFarm(stakingInfo: DualStakingInfo | undefined) {
   if (!stakingInfo) return;
   const earnedUSD =
-    Number(stakingInfo.earnedAmountA.toSignificant()) * stakingInfo.quickPrice +
+    Number(stakingInfo.earnedAmountA.toSignificant()) *
+      stakingInfo.dQuickPrice +
     Number(stakingInfo.earnedAmountB.toSignificant()) *
       Number(stakingInfo.rewardTokenBPrice);
   if (earnedUSD < 0.001 && earnedUSD > 0) {

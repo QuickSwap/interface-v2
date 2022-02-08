@@ -90,7 +90,7 @@ const FarmDualCard: React.FC<{
   const earnedUSDStr = getEarnedUSDDualFarm(stakingInfo);
 
   const rewards =
-    stakingInfo?.rateA * stakingInfo?.quickPrice +
+    stakingInfo?.rateA * stakingInfo?.dQuickPrice +
     stakingInfo?.rateB * Number(stakingInfo.rewardTokenBPrice);
 
   const renderPool = (width: number) => (
