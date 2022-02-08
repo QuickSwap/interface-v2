@@ -537,7 +537,7 @@ export function useSyrupInfo(
           const totalRewardRate = new TokenAmount(token, JSBI.BigInt(rate));
           //const pair = info[index].pair.toLowerCase();
           //const fees = (pairData && pairData[pair] ? pairData[pair].oneDayVolumeUSD * 0.0025: 0);
-          const totalRewardRate01 = new TokenAmount(
+          const rewardRate = new TokenAmount(
             token,
             JSBI.BigInt(rewardRateState.result?.[0]),
           );
@@ -549,7 +549,7 @@ export function useSyrupInfo(
               token,
               JSBI.greaterThan(totalStakedAmount.raw, JSBI.BigInt(0))
                 ? JSBI.divide(
-                    JSBI.multiply(totalRewardRate01.raw, stakedAmount.raw),
+                    JSBI.multiply(rewardRate.raw, stakedAmount.raw),
                     totalStakedAmount.raw,
                   )
                 : JSBI.BigInt(0),
@@ -779,7 +779,7 @@ export function useOldSyrupInfo(
           const totalRewardRate = new TokenAmount(token, JSBI.BigInt(rate));
           //const pair = info[index].pair.toLowerCase();
           //const fees = (pairData && pairData[pair] ? pairData[pair].oneDayVolumeUSD * 0.0025: 0);
-          const totalRewardRate01 = new TokenAmount(
+          const rewardRate = new TokenAmount(
             token,
             JSBI.BigInt(rewardRateState.result?.[0]),
           );
@@ -791,7 +791,7 @@ export function useOldSyrupInfo(
               token,
               JSBI.greaterThan(totalStakedAmount.raw, JSBI.BigInt(0))
                 ? JSBI.divide(
-                    JSBI.multiply(totalRewardRate01.raw, stakedAmount.raw),
+                    JSBI.multiply(rewardRate.raw, stakedAmount.raw),
                     totalStakedAmount.raw,
                   )
                 : JSBI.BigInt(0),
