@@ -9,11 +9,7 @@ import {
   useAllTransactions,
 } from 'state/transactions/hooks';
 import { TransactionDetails } from 'state/transactions/reducer';
-import {
-  shortenAddress,
-  addMaticToMetamask,
-  checkNetworkisNotMatic,
-} from 'utils';
+import { shortenAddress, addMaticToMetamask, isSupportedNetwork } from 'utils';
 import useENSName from 'hooks/useENSName';
 import { WalletModal } from 'components';
 import { useActiveWeb3React } from 'hooks';
@@ -280,6 +276,7 @@ const Header: React.FC = () => {
   const classes = useStyles();
   const { pathname } = useLocation();
   const { account } = useActiveWeb3React();
+  const { ethereum } = window as any;
   const { ENSName } = useENSName(account ?? undefined);
   const [openDetailMenu, setOpenDetailMenu] = useState(false);
   const theme = useTheme();
@@ -295,7 +292,6 @@ const Header: React.FC = () => {
   const confirmed = sortedRecentTransactions
     .filter((tx: any) => tx.receipt)
     .map((tx: any) => tx.hash);
-  const isnotMatic = checkNetworkisNotMatic();
   const tabletWindowSize = useMediaQuery(theme.breakpoints.down('sm'));
   const mobileWindowSize = useMediaQuery(theme.breakpoints.down('xs'));
   const toggleWalletModal = useWalletModalToggle();
@@ -466,7 +462,7 @@ const Header: React.FC = () => {
         >
           <LightIcon />
         </Box>
-        {!isnotMatic && account ? (
+        {isSupportedNetwork(ethereum) && account ? (
           <Box
             id='web3-status-connected'
             className={classes.accountDetails}
@@ -479,16 +475,16 @@ const Header: React.FC = () => {
           <Box
             className={cx(
               classes.connectButton,
-              isnotMatic ? classes.danger : classes.primary,
+              !isSupportedNetwork(ethereum) ? classes.danger : classes.primary,
             )}
             onClick={() => {
-              if (!isnotMatic) {
+              if (isSupportedNetwork(ethereum)) {
                 toggleWalletModal();
               }
             }}
           >
-            {isnotMatic ? 'Wrong Network' : 'Connect Wallet'}
-            {isnotMatic && (
+            {!isSupportedNetwork(ethereum) ? 'Wrong Network' : 'Connect Wallet'}
+            {!isSupportedNetwork(ethereum) && (
               <Box
                 position='absolute'
                 top={36}
@@ -538,11 +534,15 @@ const Header: React.FC = () => {
             <Button
               color='primary'
               onClick={() => {
-                isnotMatic ? addMaticToMetamask() : toggleWalletModal();
+                !isSupportedNetwork(ethereum)
+                  ? addMaticToMetamask()
+                  : toggleWalletModal();
               }}
             >
               <Typography variant='body2'>
-                {isnotMatic ? 'Switch to Polygon' : 'Connect Wallet'}
+                {!isSupportedNetwork(ethereum)
+                  ? 'Switch to Polygon'
+                  : 'Connect Wallet'}
               </Typography>
             </Button>
           )}

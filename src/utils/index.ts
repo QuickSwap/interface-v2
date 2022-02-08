@@ -2000,7 +2000,6 @@ export function getUSDString(usdValue?: CurrencyAmount) {
   return `$${usdStr}`;
 }
 
-export function checkNetworkisNotMatic() {
-  const { ethereum } = window as any;
-  return ethereum && ethereum.isMetaMask && Number(ethereum.chainId) !== 137;
+export function isSupportedNetwork(ethereum: any) {
+  return ethereum && Number(ethereum.chainId) === 137;
 }

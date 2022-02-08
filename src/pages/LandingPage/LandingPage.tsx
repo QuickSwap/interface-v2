@@ -43,10 +43,9 @@ import {
   formatCompact,
   getDaysCurrentYear,
   returnTokenFromKey,
-  checkNetworkisNotMatic,
+  isSupportedNetwork,
 } from 'utils';
 import { useGlobalData, useWalletModalToggle } from 'state/application/hooks';
-import { GlobalConst } from 'constants/index';
 import { useLairInfo, useTotalRewardsDistributed } from 'state/stake/hooks';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
@@ -426,7 +425,7 @@ const LandingPage: React.FC = () => {
   const [openStakeModal, setOpenStakeModal] = useState(false);
   const { palette, breakpoints } = useTheme();
   const { account } = useActiveWeb3React();
-  const isnotMatic = checkNetworkisNotMatic();
+  const { ethereum } = window as any;
   const mobileWindowSize = useMediaQuery(breakpoints.down('sm'));
   const { initTransak } = useInitTransak();
   const toggleWalletModal = useWalletModalToggle();
@@ -580,14 +579,14 @@ const LandingPage: React.FC = () => {
               fontWeight: 500,
             }}
             onClick={() => {
-              isnotMatic
+              !isSupportedNetwork(ethereum)
                 ? addMaticToMetamask()
                 : account
                 ? history.push('/swap')
                 : toggleWalletModal();
             }}
           >
-            {isnotMatic
+            {!isSupportedNetwork(ethereum)
               ? 'Switch to Polygon'
               : account
               ? 'Enter App'

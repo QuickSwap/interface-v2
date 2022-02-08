@@ -36,7 +36,7 @@ import useWrapCallback, { WrapType } from 'hooks/useWrapCallback';
 import useToggledVersion, { Version } from 'hooks/useToggledVersion';
 import {
   addMaticToMetamask,
-  checkNetworkisNotMatic,
+  isSupportedNetwork,
   confirmPriceImpactWithoutFee,
   halfAmountSpend,
   maxAmountSpend,
@@ -206,7 +206,7 @@ const Swap: React.FC<{
 
   const { priceImpactWithoutFee } = computeTradePriceBreakdown(trade);
   const [approvalSubmitted, setApprovalSubmitted] = useState<boolean>(false);
-  const isnotMatic = checkNetworkisNotMatic();
+  const { ethereum } = window as any;
   const [mainPrice, setMainPrice] = useState(true);
   const priceImpactSeverity = warningSeverity(priceImpactWithoutFee);
   const isValid = !swapInputError;
@@ -229,7 +229,7 @@ const Swap: React.FC<{
   }, [approval, approvalSubmitted]);
 
   const connectWallet = () => {
-    if (isnotMatic) {
+    if (!isSupportedNetwork(ethereum)) {
       addMaticToMetamask();
     } else {
       toggleWalletModal();
@@ -276,13 +276,15 @@ const Swap: React.FC<{
         return swapInputError ?? 'Swap';
       }
     } else {
-      return isnotMatic ? 'Switch to Polygon' : 'Connect Wallet';
+      return !isSupportedNetwork(ethereum)
+        ? 'Switch to Polygon'
+        : 'Connect Wallet';
     }
   }, [
     formattedAmounts,
     currencies,
     account,
-    isnotMatic,
+    ethereum,
     noRoute,
     userHasSpecifiedInputOutput,
     showWrap,
