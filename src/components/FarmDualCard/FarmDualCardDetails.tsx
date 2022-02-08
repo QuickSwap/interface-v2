@@ -19,6 +19,7 @@ import useTransactionDeadline from 'hooks/useTransactionDeadline';
 import { useApproveCallback, ApprovalState } from 'hooks/useApproveCallback';
 import {
   getAPYWithFee,
+  getEarnedUSDDualFarm,
   getRewardRate,
   getStakedAmountStakingInfo,
   getTokenAddress,
@@ -76,9 +77,8 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
 
 const FarmDualCardDetails: React.FC<{
   pair: Pair | null | undefined;
-  dQuicktoQuick: number;
   stakingAPY: number;
-}> = ({ pair, dQuicktoQuick, stakingAPY }) => {
+}> = ({ pair, stakingAPY }) => {
   const classes = useStyles();
   const { palette, breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
@@ -259,17 +259,7 @@ const FarmDualCardDetails: React.FC<{
     }
   };
 
-  const earnedUSD =
-    Number(stakingInfo?.earnedAmountA.toSignificant()) *
-      dQuicktoQuick *
-      Number(stakingInfo?.quickPrice) +
-    Number(stakingInfo?.earnedAmountB.toSignificant()) *
-      Number(stakingInfo?.maticPrice);
-
-  const earnedUSDStr =
-    earnedUSD < 0.001 && earnedUSD > 0
-      ? '< $0.001'
-      : '$' + earnedUSD.toLocaleString();
+  const earnedUSDStr = getEarnedUSDDualFarm(stakingInfo);
 
   const tvl = getTVLStaking(
     stakedAmounts?.totalStakedUSD,
@@ -284,8 +274,14 @@ const FarmDualCardDetails: React.FC<{
     );
   }, [stakingInfo]);
 
-  const poolRateA = getRewardRate(stakingInfo?.totalRewardRateA);
-  const poolRateB = getRewardRate(stakingInfo?.totalRewardRateB);
+  const poolRateA = getRewardRate(
+    stakingInfo?.totalRewardRateA,
+    stakingInfo?.rewardTokenA,
+  );
+  const poolRateB = getRewardRate(
+    stakingInfo?.totalRewardRateB,
+    stakingInfo?.rewardTokenB,
+  );
 
   return (
     <Box

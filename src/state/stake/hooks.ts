@@ -1528,10 +1528,6 @@ export function useStakingInfo(
   // }, [allPairAddress]);
 
   const lair = useLairContract();
-  const args = useMemo(
-    () => info.map(({ rate }) => [web3.utils.toWei(rate.toString(), 'ether')]),
-    [info],
-  );
   const accountArg = useMemo(() => [account ?? undefined], [account]);
 
   // get all the info from the staking rewards contracts
@@ -1552,10 +1548,11 @@ export function useStakingInfo(
     STAKING_REWARDS_INTERFACE,
     'totalSupply',
   );
-  const dQuickToQuicks = useSingleContractMultipleData(
+  const inputs = ['1000000000000000000'];
+  const dQuickToQuickState = useSingleCallResult(
     lair,
     'dQUICKForQUICK',
-    args,
+    inputs,
   );
 
   const periodFinishes = useMultipleContractSingleData(
@@ -1601,7 +1598,6 @@ export function useStakingInfo(
       (memo, rewardsAddress, index) => {
         // these two are dependent on account
         const balanceState = balances[index];
-        const dQuickToQuickState = dQuickToQuicks[index];
         const earnedAmountState = earnedAmounts[index];
 
         // these get fetched regardless of account
@@ -1801,7 +1797,7 @@ export function useStakingInfo(
     uni,
     quickPrice,
     rewardRates,
-    dQuickToQuicks,
+    dQuickToQuickState,
     baseTokens,
     totalSupplys,
     usdPrices,

@@ -12,6 +12,7 @@ import {
   getRewardRate,
   getStakedAmountStakingInfo,
   getTVLStaking,
+  getEarnedUSDLPFarm,
 } from 'utils';
 import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
 
@@ -44,9 +45,8 @@ const useStyles = makeStyles(({ palette }) => ({
 
 const FarmLPCard: React.FC<{
   stakingInfo: StakingInfo;
-  dQuicktoQuick: number;
   stakingAPY: number;
-}> = ({ stakingInfo, dQuicktoQuick, stakingAPY }) => {
+}> = ({ stakingInfo, stakingAPY }) => {
   const classes = useStyles();
   const { palette, breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
@@ -57,7 +57,6 @@ const FarmLPCard: React.FC<{
 
   const currency0 = unwrappedToken(token0);
   const currency1 = unwrappedToken(token1);
-  const quickPriceUSD = stakingInfo.quickPrice;
 
   const stakedAmounts = getStakedAmountStakingInfo(stakingInfo);
 
@@ -78,19 +77,15 @@ const FarmLPCard: React.FC<{
     stakedAmounts?.totalStakedBase,
   );
 
-  const poolRate = getRewardRate(stakingInfo.totalRewardRate);
+  const poolRate = getRewardRate(
+    stakingInfo.totalRewardRate,
+    returnTokenFromKey('DQUICK'),
+  );
 
-  const earnedUSD =
-    Number(stakingInfo.earnedAmount.toSignificant()) *
-    dQuicktoQuick *
-    quickPriceUSD;
+  const earnedUSDStr = getEarnedUSDLPFarm(stakingInfo);
 
-  const earnedUSDStr =
-    earnedUSD < 0.001 && earnedUSD > 0
-      ? '< $0.001'
-      : '$' + earnedUSD.toLocaleString();
-
-  const rewards = stakingInfo?.dQuickToQuick * stakingInfo?.quickPrice;
+  const rewards =
+    stakingInfo?.dQuickToQuick * stakingInfo.rate * stakingInfo?.quickPrice;
 
   const renderPool = (width: number) => (
     <Box display='flex' alignItems='center' width={width}>
@@ -184,7 +179,6 @@ const FarmLPCard: React.FC<{
       {isExpandCard && (
         <FarmLPCardDetails
           pair={stakingInfo.stakingTokenPair}
-          dQuicktoQuick={dQuicktoQuick}
           stakingAPY={stakingAPY}
         />
       )}

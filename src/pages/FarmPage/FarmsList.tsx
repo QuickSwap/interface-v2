@@ -7,7 +7,6 @@ import {
   useStakingInfo,
   useOldStakingInfo,
   useDualStakingInfo,
-  useLairInfo,
   StakingInfo,
   DualStakingInfo,
   CommonStakingInfo,
@@ -39,7 +38,6 @@ interface FarmsListProps {
 
 const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
   const { palette, breakpoints } = useTheme();
-  const lairInfo = useLairInfo();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
 
   const [stakingInfos, setStakingInfos] = useState<StakingInfo[] | undefined>(
@@ -493,7 +491,6 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
         stakingInfos.map((info: StakingInfo, index) => (
           <FarmLPCard
             key={index}
-            dQuicktoQuick={Number(lairInfo.dQUICKtoQUICK.toSignificant())}
             stakingInfo={info}
             stakingAPY={stakingAPYs[index]}
           />
@@ -504,7 +501,6 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
         stakingDualInfos.map((info: DualStakingInfo, index) => (
           <FarmDualCard
             key={index}
-            dQuicktoQuick={Number(lairInfo.dQUICKtoQUICK.toSignificant())}
             stakingInfo={info}
             stakingAPY={stakingAPYs[index]}
           />
