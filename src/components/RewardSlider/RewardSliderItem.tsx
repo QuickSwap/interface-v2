@@ -6,7 +6,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import { StakingInfo } from 'state/stake/hooks';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { DoubleCurrencyLogo } from 'components';
-import { GlobalConst } from 'constants/index';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon.svg';
 import { getAPYWithFee, returnTokenFromKey } from 'utils';
 
@@ -103,7 +102,7 @@ const RewardSliderItem: React.FC<RewardSliderItemProps> = ({
     valueOfTotalStakedAmountInBaseToken &&
     USDPrice?.quote(valueOfTotalStakedAmountInBaseToken);
 
-  const rewards = Number(info.rate) * Number(info.rewardTokenPrice);
+  const rewards = info.rate * info.rewardTokenPrice;
 
   let apyWithFee;
   if (stakingAPY && stakingAPY > 0) {
