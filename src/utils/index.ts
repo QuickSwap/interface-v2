@@ -2000,6 +2000,6 @@ export function getUSDString(usdValue?: CurrencyAmount) {
   return `$${usdStr}`;
 }
 
-export function isSupportedNetwork(ethereum: any) {
-  return ethereum && Number(ethereum.chainId) === 137;
+export function isNotSupportedNetwork(ethereum: any) {
+  return ethereum && ethereum.isMetamask && Number(ethereum.chainId) !== 137;
 }

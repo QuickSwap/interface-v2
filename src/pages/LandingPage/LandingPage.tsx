@@ -43,7 +43,7 @@ import {
   formatCompact,
   getDaysCurrentYear,
   returnTokenFromKey,
-  isSupportedNetwork,
+  isNotSupportedNetwork,
 } from 'utils';
 import { useGlobalData, useWalletModalToggle } from 'state/application/hooks';
 import { useLairInfo, useTotalRewardsDistributed } from 'state/stake/hooks';
@@ -579,14 +579,14 @@ const LandingPage: React.FC = () => {
               fontWeight: 500,
             }}
             onClick={() => {
-              account && !isSupportedNetwork(ethereum)
+              isNotSupportedNetwork(ethereum)
                 ? addMaticToMetamask()
                 : account
                 ? history.push('/swap')
                 : toggleWalletModal();
             }}
           >
-            {account && !isSupportedNetwork(ethereum)
+            {isNotSupportedNetwork(ethereum)
               ? 'Switch to Polygon'
               : account
               ? 'Enter App'

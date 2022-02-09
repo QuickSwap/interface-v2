@@ -36,7 +36,7 @@ import useWrapCallback, { WrapType } from 'hooks/useWrapCallback';
 import useToggledVersion, { Version } from 'hooks/useToggledVersion';
 import {
   addMaticToMetamask,
-  isSupportedNetwork,
+  isNotSupportedNetwork,
   confirmPriceImpactWithoutFee,
   halfAmountSpend,
   maxAmountSpend,
@@ -229,7 +229,7 @@ const Swap: React.FC<{
   }, [approval, approvalSubmitted]);
 
   const connectWallet = () => {
-    if (account && !isSupportedNetwork(ethereum)) {
+    if (isNotSupportedNetwork(ethereum)) {
       addMaticToMetamask();
     } else {
       toggleWalletModal();
@@ -257,9 +257,7 @@ const Swap: React.FC<{
 
   const swapButtonText = useMemo(() => {
     if (account) {
-      if (!isSupportedNetwork(ethereum)) {
-        return 'Switch to Polygon';
-      } else if (!currencies[Field.INPUT] || !currencies[Field.OUTPUT]) {
+      if (!currencies[Field.INPUT] || !currencies[Field.OUTPUT]) {
         return 'Select a token';
       } else if (
         formattedAmounts[Field.INPUT] === '' &&
@@ -278,7 +276,9 @@ const Swap: React.FC<{
         return swapInputError ?? 'Swap';
       }
     } else {
-      return 'Connect Wallet';
+      return isNotSupportedNetwork(ethereum)
+        ? 'Switch to Polygon'
+        : 'Connect Wallet';
     }
   }, [
     formattedAmounts,
