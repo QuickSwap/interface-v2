@@ -130,9 +130,9 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
   const sortByRewardDual = useCallback(
     (a: DualStakingInfo, b: DualStakingInfo) => {
       const aRewards =
-        a.rateA * a.quickPrice + a.rateB * Number(a.rewardTokenBPrice);
+        a.rateA * a.rewardTokenAPrice + a.rateB * a.rewardTokenBPrice;
       const bRewards =
-        b.rateA * b.quickPrice + b.rateB * Number(b.rewardTokenBPrice);
+        b.rateA * b.rewardTokenAPrice + b.rateB * b.rewardTokenBPrice;
       return (aRewards > bRewards ? -1 : 1) * sortIndex;
     },
     [sortIndex],
@@ -182,11 +182,11 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
   const sortByEarnedDual = useCallback(
     (a: DualStakingInfo, b: DualStakingInfo) => {
       const earnedA =
-        Number(a.earnedAmountA.toSignificant()) * a.quickPrice +
-        Number(a.earnedAmountB.toSignificant()) * Number(a.rewardTokenBPrice);
+        Number(a.earnedAmountA.toSignificant()) * a.rewardTokenAPrice +
+        Number(a.earnedAmountB.toSignificant()) * a.rewardTokenBPrice;
       const earnedB =
-        Number(b.earnedAmountA.toSignificant()) * b.quickPrice +
-        Number(b.earnedAmountB.toSignificant()) * Number(b.rewardTokenBPrice);
+        Number(b.earnedAmountA.toSignificant()) * b.rewardTokenAPrice +
+        Number(b.earnedAmountB.toSignificant()) * b.rewardTokenBPrice;
       return (earnedA > earnedB ? -1 : 1) * sortIndex;
     },
     [sortIndex],

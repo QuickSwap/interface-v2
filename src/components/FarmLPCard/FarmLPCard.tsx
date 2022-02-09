@@ -79,12 +79,12 @@ const FarmLPCard: React.FC<{
 
   const poolRate = getRewardRate(
     stakingInfo.totalRewardRate,
-    returnTokenFromKey('DQUICK'),
+    stakingInfo.rewardToken,
   );
 
   const earnedUSDStr = getEarnedUSDLPFarm(stakingInfo);
 
-  const rewards = stakingInfo?.dQuickPrice * stakingInfo.rate;
+  const rewards = stakingInfo.rewardTokenPrice * stakingInfo.rate;
 
   const renderPool = (width: number) => (
     <Box display='flex' alignItems='center' width={width}>

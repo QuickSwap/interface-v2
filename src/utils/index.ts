@@ -1700,6 +1700,7 @@ export function returnStakingInfo(
     baseToken: Token;
     rate: number;
     pair: string;
+    rewardToken: Token;
   }[];
 } {
   const stakingInfo =
@@ -1709,7 +1710,7 @@ export function returnStakingInfo(
       ? stakeData.veryoldstakingrewards
       : stakeData.stakingrewards;
   return {
-    [ChainId.MATIC]: stakingInfo.map((info) => {
+    [ChainId.MATIC]: stakingInfo.map((info: any) => {
       return {
         ...info,
         tokens: [
@@ -1717,6 +1718,7 @@ export function returnStakingInfo(
           returnTokenFromKey(info.tokens[1]),
         ],
         baseToken: returnTokenFromKey(info.baseToken),
+        rewardToken: returnTokenFromKey(info.rewardToken ?? 'DQUICK'),
       };
     }),
   };
@@ -2003,7 +2005,8 @@ export function getUSDString(usdValue?: CurrencyAmount) {
 export function getEarnedUSDLPFarm(stakingInfo: StakingInfo | undefined) {
   if (!stakingInfo) return;
   const earnedUSD =
-    Number(stakingInfo.earnedAmount.toSignificant()) * stakingInfo.dQuickPrice;
+    Number(stakingInfo.earnedAmount.toSignificant()) *
+    stakingInfo.rewardTokenPrice;
   if (earnedUSD < 0.001 && earnedUSD > 0) {
     return '< $0.001';
   }
@@ -2014,7 +2017,7 @@ export function getEarnedUSDDualFarm(stakingInfo: DualStakingInfo | undefined) {
   if (!stakingInfo) return;
   const earnedUSD =
     Number(stakingInfo.earnedAmountA.toSignificant()) *
-      stakingInfo.dQuickPrice +
+      stakingInfo.rewardTokenAPrice +
     Number(stakingInfo.earnedAmountB.toSignificant()) *
       Number(stakingInfo.rewardTokenBPrice);
   if (earnedUSD < 0.001 && earnedUSD > 0) {

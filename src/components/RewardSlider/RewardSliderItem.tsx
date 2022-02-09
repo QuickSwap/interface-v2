@@ -103,7 +103,7 @@ const RewardSliderItem: React.FC<RewardSliderItemProps> = ({
     valueOfTotalStakedAmountInBaseToken &&
     USDPrice?.quote(valueOfTotalStakedAmountInBaseToken);
 
-  const rewards = Number(info.rate) * Number(info.quickPrice);
+  const rewards = Number(info.rate) * Number(info.rewardTokenPrice);
 
   let apyWithFee;
   if (stakingAPY && stakingAPY > 0) {

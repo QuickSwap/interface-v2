@@ -266,12 +266,12 @@ const FarmLPCardDetails: React.FC<{
 
   const rewards = useMemo(() => {
     if (!stakingInfo) return 0;
-    return stakingInfo.rate * stakingInfo.dQuickPrice;
+    return stakingInfo.rate * stakingInfo.rewardTokenPrice;
   }, [stakingInfo]);
 
   const poolRate = getRewardRate(
     stakingInfo?.totalRewardRate,
-    returnTokenFromKey('DQUICK'),
+    stakingInfo?.rewardToken,
   );
 
   return (

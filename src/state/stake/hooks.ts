@@ -30,7 +30,10 @@ import {
 import { tryParseAmount } from 'state/swap/hooks';
 import Web3 from 'web3';
 import { useLairContract, useQUICKContract } from 'hooks/useContract';
-import useUSDCPrice, { useUSDCPrices } from 'utils/useUSDCPrice';
+import useUSDCPrice, {
+  useUSDCPrices,
+  useUSDCPricesToken,
+} from 'utils/useUSDCPrice';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { useTotalSupplys } from 'data/TotalSupply';
 import {
@@ -94,9 +97,6 @@ export interface CommonStakingInfo {
 
   pair: string;
 
-  quickPrice: number;
-  dQuickPrice: number;
-
   oneYearFeeAPY?: number;
 
   oneDayFee?: number;
@@ -124,6 +124,8 @@ export interface StakingInfo extends CommonStakingInfo {
   // the current amount of token distributed to the active account per second.
   // equivalent to percent of total supply * reward rate
   rewardRate: TokenAmount;
+  rewardToken: Token;
+  rewardTokenPrice: number;
 
   rate: number;
 
@@ -145,11 +147,10 @@ export interface DualStakingInfo extends CommonStakingInfo {
   rewardRateA: TokenAmount;
   rewardRateB: TokenAmount;
 
-  maticPrice: number;
-
   rateA: number;
   rateB: number;
-  rewardTokenBPrice?: number;
+  rewardTokenAPrice: number;
+  rewardTokenBPrice: number;
 }
 
 export interface SyrupInfo {
@@ -250,6 +251,9 @@ export function useTotalRewardsDistributed() {
       item.rewardTokenBBase,
     ]),
   );
+  const rewardTokenAPrices = useUSDCPricesToken(
+    dualStakingRewardsInfo.map((item) => item.rewardTokenA),
+  );
   const dualStakingRewardsUSD = dualStakingRewardsInfo.reduce(
     (total, item, index) => {
       const [, rewardTokenBPair] = dualStakingTokenPairs[index];
@@ -266,13 +270,20 @@ export function useTotalRewardsDistributed() {
         rewardTokenBPrice = rewardTokenBPriceInBaseToken * maticPrice;
       }
 
-      return total + item.rateA * quickPrice + item.rateB * rewardTokenBPrice;
+      return (
+        total +
+        item.rateA * rewardTokenAPrices[index] +
+        item.rateB * rewardTokenBPrice
+      );
     },
     0,
   );
 
+  const rewardTokenPrices = useUSDCPricesToken(
+    stakingRewardsInfo.map((item) => item.rewardToken),
+  );
   const stakingRewardsUSD = stakingRewardsInfo.reduce(
-    (total, item) => total + item.rate * quickPrice,
+    (total, item, index) => total + item.rate * rewardTokenPrices[index],
     0,
   );
 
@@ -1161,6 +1172,8 @@ export function useDualStakingInfo(
     }),
   );
   const stakingPairs = usePairs(info.map((item) => item.tokens));
+  const rewardTokensA = info.map((item) => item.rewardTokenA);
+  const rewardTokenAPrices = useUSDCPricesToken(rewardTokensA);
 
   return useMemo(() => {
     if (!chainId || !uni) return [];
@@ -1178,6 +1191,7 @@ export function useDualStakingInfo(
         const rewardRateBState = rewardRatesB[index];
         const periodFinishState = periodFinishes[index];
         const stakingInfo = info[index];
+        const rewardTokenAPrice = rewardTokenAPrices[index];
 
         if (
           // these may be undefined if not logged in
@@ -1355,14 +1369,12 @@ export function useDualStakingInfo(
             getHypotheticalRewardRate,
             baseToken: stakingInfo.baseToken,
             pair: stakingInfo.pair,
-            quickPrice: quickPrice,
-            maticPrice: maticPrice,
-            dQuickPrice: dQuickPrice,
             rateA: stakingInfo.rateA,
             rateB: stakingInfo.rateB,
             rewardTokenA: stakingInfo.rewardTokenA,
             rewardTokenB: stakingInfo.rewardTokenB,
             rewardTokenBBase: stakingInfo.rewardTokenBBase,
+            rewardTokenAPrice,
             rewardTokenBPrice,
             tvl,
             perMonthReturnInRewards,
@@ -1395,6 +1407,7 @@ export function useDualStakingInfo(
     usdPrices,
     stakingPairs,
     tokenPairs,
+    rewardTokenAPrices,
   ]).filter((stakingInfo) =>
     filter && filter.isStaked
       ? stakingInfo.stakedAmount.greaterThan('0')
@@ -1488,16 +1501,7 @@ export function useStakingInfo(
   filter?: { search: string; isStaked: boolean },
 ): StakingInfo[] {
   const { chainId, account } = useActiveWeb3React();
-  //const [quickPrice,setQuickPrice] = useState(0);
-  const [, quickUsdcPair] = usePair(
-    returnTokenFromKey('QUICK'),
-    returnTokenFromKey('USDC'),
-  );
-  const quickPrice = Number(
-    quickUsdcPair?.priceOf(returnTokenFromKey('QUICK'))?.toSignificant(6),
-  );
-  const dQuickToQuick = useDQUICKtoQUICK();
-  const dQuickPrice = quickPrice * dQuickToQuick;
+
   const info = useMemo(
     () =>
       chainId
@@ -1569,8 +1573,10 @@ export function useStakingInfo(
     const empty = unwrappedToken(returnTokenFromKey('EMPTY'));
     return unwrappedCurrency === empty ? item.tokens[0] : item.baseToken;
   });
+  const rewardTokens = info.map((item) => item.rewardToken);
 
   const usdPrices = useUSDCPrices(baseTokens);
+  const usdPricesRewardTokens = useUSDCPricesToken(rewardTokens);
   const totalSupplys = useTotalSupplys(
     info.map((item) => {
       const lp = item.lp;
@@ -1599,6 +1605,7 @@ export function useStakingInfo(
         const rewardRateState = rewardRates[index];
         const periodFinishState = periodFinishes[index];
         const stakingInfo = info[index];
+        const rewardTokenPrice = usdPricesRewardTokens[index];
 
         if (
           // these may be undefined if not logged in
@@ -1735,7 +1742,7 @@ export function useStakingInfo(
             : valueOfTotalStakedAmountInBaseToken?.toSignificant();
 
           const perMonthReturnInRewards =
-            (Number(stakingInfo.rate) * Number(dQuickPrice) * 30) /
+            (Number(stakingInfo.rate) * rewardTokenPrice * 30) /
             Number(valueOfTotalStakedAmountInUSDC?.toSignificant(6));
 
           memo.push({
@@ -1744,6 +1751,8 @@ export function useStakingInfo(
             ended: stakingInfo.ended,
             name: stakingInfo.name,
             lp: stakingInfo.lp,
+            rewardToken: stakingInfo.rewardToken,
+            rewardTokenPrice,
             periodFinish:
               periodFinishMs > 0 ? new Date(periodFinishMs) : undefined,
             earnedAmount: new TokenAmount(
@@ -1757,12 +1766,10 @@ export function useStakingInfo(
             getHypotheticalRewardRate,
             baseToken: stakingInfo.baseToken,
             pair: stakingInfo.pair,
-            quickPrice: quickPrice,
             rate: stakingInfo.rate,
             oneYearFeeAPY: oneYearFeeAPY,
             oneDayFee,
             accountFee,
-            dQuickPrice,
             tvl,
             perMonthReturnInRewards,
             valueOfTotalStakedAmountInBaseToken,
@@ -1784,9 +1791,8 @@ export function useStakingInfo(
     rewardsAddresses,
     totalSupplies,
     uni,
-    quickPrice,
     rewardRates,
-    dQuickPrice,
+    usdPricesRewardTokens,
     baseTokens,
     totalSupplys,
     usdPrices,
@@ -1955,6 +1961,8 @@ export function useOldStakingInfo(
             ended: stakingInfo.ended,
             name: stakingInfo.name,
             lp: stakingInfo.lp,
+            rewardToken: stakingInfo.rewardToken,
+            rewardTokenPrice: 0,
             periodFinish:
               periodFinishMs > 0 ? new Date(periodFinishMs) : undefined,
             earnedAmount: new TokenAmount(
@@ -1968,12 +1976,10 @@ export function useOldStakingInfo(
             baseToken: stakingInfo.baseToken,
             getHypotheticalRewardRate,
             pair: stakingInfo.pair,
-            quickPrice: 0,
             rate: stakingInfo.rate,
             oneYearFeeAPY: 0,
             oneDayFee: 0,
             accountFee: 0,
-            dQuickPrice: 0,
             stakingTokenPair,
           });
         }
