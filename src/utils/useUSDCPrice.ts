@@ -471,15 +471,30 @@ export function useUSDCPricesToken(tokens: Token[]) {
   const quickPrice = Number(
     quickUsdcPair?.priceOf(returnTokenFromKey('QUICK'))?.toSignificant(6) ?? 0,
   );
-  const currencies = tokens.map((token) => unwrappedToken(token));
+  const filteredTokens = tokens
+    .filter((item, pos, self) => {
+      return self.findIndex((token) => token.equals(item)) == pos;
+    })
+    .filter(
+      (token) =>
+        !token.equals(returnTokenFromKey('QUICK')) &&
+        !token.equals(returnTokenFromKey('DQUICK')),
+    );
+  const currencies = filteredTokens.map((token) => unwrappedToken(token));
   const usdPrices = useUSDCPrices(currencies);
-  return tokens.map((token, index) => {
+  const usdPricesWithToken = filteredTokens.map((token, index) => {
+    return { token, price: Number(usdPrices[index]?.toSignificant(6) ?? 0) };
+  });
+  return tokens.map((token) => {
     if (token.equals(returnTokenFromKey('DQUICK'))) {
       return dQUICKtoQUICK * quickPrice;
     } else if (token.equals(returnTokenFromKey('QUICK'))) {
       return quickPrice;
     } else {
-      return Number(usdPrices[index]?.toSignificant(6) ?? 0);
+      const priceObj = usdPricesWithToken.find((item) =>
+        item.token.equals(token),
+      );
+      return priceObj?.price ?? 0;
     }
   });
 }
