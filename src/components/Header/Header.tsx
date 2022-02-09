@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Box, Button, Typography, useMediaQuery } from '@material-ui/core';
+import { Box, Typography, useMediaQuery } from '@material-ui/core';
 import cx from 'classnames';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { useWalletModalToggle } from 'state/application/hooks';
@@ -152,46 +152,6 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       marginLeft: 8,
     },
   },
-  mobileMenuWrapper: {
-    background: palette.secondary.contrastText,
-    position: 'absolute',
-    top: 80,
-    left: 0,
-    width: '100%',
-    display: 'flex',
-    flexDirection: 'column',
-    '& a': {
-      textDecoration: 'none',
-    },
-    '& button': {
-      width: 'calc(100% - 24px)',
-      margin: '8px 12px',
-    },
-  },
-  mobileMenuItemWrapper: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    margin: '4px 0',
-    height: 32,
-    width: '100%',
-    '& p': {
-      color: palette.text.primary,
-    },
-    '& svg, & img': {
-      width: 32,
-      height: 32,
-      marginRight: 8,
-    },
-  },
-  menuTransition: {
-    height: 0,
-    transition: 'height 0.5s',
-    overflow: 'auto',
-  },
-  menuOpen: {
-    height: 'calc(100vh - 80px)',
-  },
   connectButton: {
     width: 152,
     height: 36,
@@ -295,7 +255,6 @@ const Header: React.FC = () => {
   const tabletWindowSize = useMediaQuery(theme.breakpoints.down('sm'));
   const mobileWindowSize = useMediaQuery(theme.breakpoints.down('xs'));
   const toggleWalletModal = useWalletModalToggle();
-  const [menuOpen, setMenuOpen] = useState(false);
   const menuItems = [
     {
       link: '/swap',
@@ -358,7 +317,7 @@ const Header: React.FC = () => {
         pendingTransactions={pending}
         confirmedTransactions={confirmed}
       />
-      <Link to='/' onClick={() => setMenuOpen(false)}>
+      <Link to='/'>
         <img src={mobileWindowSize ? QuickIcon : QuickLogo} alt='QuickLogo' />
       </Link>
       {!tabletWindowSize && (
@@ -475,16 +434,20 @@ const Header: React.FC = () => {
           <Box
             className={cx(
               classes.connectButton,
-              !isSupportedNetwork(ethereum) ? classes.danger : classes.primary,
+              account && !isSupportedNetwork(ethereum)
+                ? classes.danger
+                : classes.primary,
             )}
             onClick={() => {
-              if (isSupportedNetwork(ethereum)) {
+              if (!account || isSupportedNetwork(ethereum)) {
                 toggleWalletModal();
               }
             }}
           >
-            {!isSupportedNetwork(ethereum) ? 'Wrong Network' : 'Connect Wallet'}
-            {!isSupportedNetwork(ethereum) && (
+            {account && !isSupportedNetwork(ethereum)
+              ? 'Wrong Network'
+              : 'Connect Wallet'}
+            {account && !isSupportedNetwork(ethereum) && (
               <Box
                 position='absolute'
                 top={36}
@@ -503,51 +466,6 @@ const Header: React.FC = () => {
           </Box>
         )}
       </Box>
-      {mobileWindowSize && (
-        <Box
-          className={cx(
-            classes.mobileMenuWrapper,
-            classes.menuTransition,
-            menuOpen && classes.menuOpen,
-          )}
-        >
-          {menuItems.map((val, index) => (
-            <Box
-              key={index}
-              className={classes.mobileMenuItemWrapper}
-              onClick={() => setMenuOpen(false)}
-            >
-              <Link to={val.link} key={index}>
-                <Typography variant='body1'>{val.text}</Typography>
-              </Link>
-            </Box>
-          ))}
-          {account ? (
-            <Box
-              className={classes.mobileMenuItemWrapper}
-              onClick={toggleWalletModal}
-            >
-              <img src={WalletIcon} alt='Wallet' />
-              <Typography variant='body1'>{shortenAddress(account)}</Typography>
-            </Box>
-          ) : (
-            <Button
-              color='primary'
-              onClick={() => {
-                !isSupportedNetwork(ethereum)
-                  ? addMaticToMetamask()
-                  : toggleWalletModal();
-              }}
-            >
-              <Typography variant='body2'>
-                {!isSupportedNetwork(ethereum)
-                  ? 'Switch to Polygon'
-                  : 'Connect Wallet'}
-              </Typography>
-            </Button>
-          )}
-        </Box>
-      )}
     </Box>
   );
 };

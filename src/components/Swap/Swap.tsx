@@ -229,7 +229,7 @@ const Swap: React.FC<{
   }, [approval, approvalSubmitted]);
 
   const connectWallet = () => {
-    if (!isSupportedNetwork(ethereum)) {
+    if (account && !isSupportedNetwork(ethereum)) {
       addMaticToMetamask();
     } else {
       toggleWalletModal();
@@ -257,7 +257,9 @@ const Swap: React.FC<{
 
   const swapButtonText = useMemo(() => {
     if (account) {
-      if (!currencies[Field.INPUT] || !currencies[Field.OUTPUT]) {
+      if (!isSupportedNetwork(ethereum)) {
+        return 'Switch to Polygon';
+      } else if (!currencies[Field.INPUT] || !currencies[Field.OUTPUT]) {
         return 'Select a token';
       } else if (
         formattedAmounts[Field.INPUT] === '' &&
@@ -276,9 +278,7 @@ const Swap: React.FC<{
         return swapInputError ?? 'Swap';
       }
     } else {
-      return !isSupportedNetwork(ethereum)
-        ? 'Switch to Polygon'
-        : 'Connect Wallet';
+      return 'Connect Wallet';
     }
   }, [
     formattedAmounts,
