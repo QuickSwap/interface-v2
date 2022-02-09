@@ -425,7 +425,7 @@ const Header: React.FC = () => {
         >
           <LightIcon />
         </Box>
-        {account ? (
+        {account && !isNotSupportedNetwork(ethereum) ? (
           <Box
             id='web3-status-connected'
             className={classes.accountDetails}
