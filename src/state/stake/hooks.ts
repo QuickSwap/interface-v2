@@ -37,6 +37,7 @@ import useUSDCPrice, {
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { useTotalSupplys } from 'data/TotalSupply';
 import {
+  getDaysCurrentYear,
   getOneYearFee,
   getPriceToQUICKSyrup,
   returnDualStakingInfo,
@@ -315,6 +316,16 @@ export function useUSDRewardsandFees(isLPFarm: boolean, bulkPairData: any) {
     () => rewardsInfos.map(({ stakingRewardAddress }) => stakingRewardAddress),
     [rewardsInfos],
   );
+  const stakingRewardTokens = stakingRewardsInfo.map(
+    (item) => item.rewardToken,
+  );
+  const stakingRewardTokenPrices = useUSDCPricesToken(stakingRewardTokens);
+  const dualStakingRewardATokens = dualStakingRewardsInfo.map(
+    (item) => item.rewardTokenA,
+  );
+  const dualStakingRewardTokenAPrices = useUSDCPricesToken(
+    dualStakingRewardATokens,
+  );
   const rewardPairs = useMemo(() => rewardsInfos.map(({ pair }) => pair), [
     rewardsInfos,
   ]);
@@ -332,7 +343,8 @@ export function useUSDRewardsandFees(isLPFarm: boolean, bulkPairData: any) {
   let rewardsUSD: number | null = null;
   if (isLPFarm) {
     rewardsUSD = stakingRewardsInfo.reduce(
-      (total, item) => total + item.rate * quickPrice,
+      (total, item, index) =>
+        total + item.rate * stakingRewardTokenPrices[index],
       0,
     );
   } else {
@@ -351,7 +363,11 @@ export function useUSDRewardsandFees(isLPFarm: boolean, bulkPairData: any) {
         rewardTokenBPrice = rewardTokenBPriceInBaseToken * maticPrice;
       }
 
-      return total + item.rateA * quickPrice + item.rateB * rewardTokenBPrice;
+      return (
+        total +
+        item.rateA * dualStakingRewardTokenAPrices[index] +
+        item.rateB * rewardTokenBPrice
+      );
     }, 0);
   }
   const stakingFees = bulkPairData
@@ -1065,9 +1081,6 @@ export function useDualStakingInfo(
     maticUsdcPair?.priceOf(GlobalValue.tokens.MATIC)?.toSignificant(6),
   );
 
-  const dQuickToQuick = useDQUICKtoQUICK();
-  const dQuickPrice = dQuickToQuick * quickPrice;
-
   const info = useMemo(
     () =>
       chainId
@@ -1339,9 +1352,9 @@ export function useDualStakingInfo(
           }
 
           const perMonthReturnInRewards =
-            ((stakingInfo.rateA * dQuickPrice +
+            ((stakingInfo.rateA * rewardTokenAPrice +
               stakingInfo.rateB * rewardTokenBPrice) *
-              30) /
+              (getDaysCurrentYear() / 12)) /
             Number(valueOfTotalStakedAmountInUSDC?.toSignificant(6));
 
           memo.push({
@@ -1398,7 +1411,6 @@ export function useDualStakingInfo(
     totalSupplies,
     uni,
     quickPrice,
-    dQuickPrice,
     maticPrice,
     rewardRatesA,
     rewardRatesB,
@@ -1742,7 +1754,9 @@ export function useStakingInfo(
             : valueOfTotalStakedAmountInBaseToken?.toSignificant();
 
           const perMonthReturnInRewards =
-            (Number(stakingInfo.rate) * rewardTokenPrice * 30) /
+            (Number(stakingInfo.rate) *
+              rewardTokenPrice *
+              (getDaysCurrentYear() / 12)) /
             Number(valueOfTotalStakedAmountInUSDC?.toSignificant(6));
 
           memo.push({
