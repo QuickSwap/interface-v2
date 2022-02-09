@@ -2001,5 +2001,5 @@ export function getUSDString(usdValue?: CurrencyAmount) {
 }
 
 export function isNotSupportedNetwork(ethereum: any) {
-  return ethereum && ethereum.isMetamask && Number(ethereum.chainId) !== 137;
+  return ethereum && Number(ethereum.chainId) !== 137;
 }
