@@ -29,6 +29,8 @@ import {
   TOKEN_INFO_OLD,
   FILTERED_TRANSACTIONS,
   HOURLY_PAIR_RATES,
+  GLOBAL_ALLDATA,
+  ETH_ALLPRICE,
 } from 'apollo/queries';
 import { JsonRpcSigner, Web3Provider } from '@ethersproject/providers';
 import {
@@ -233,16 +235,25 @@ export const getEthPrice: () => Promise<number[]> = async () => {
 
   try {
     const oneDayBlock = await getBlockFromTimestamp(utcOneDayBack);
+
+    // const result = await client.query({
+    //   query: ETH_PRICE(),
+    //   fetchPolicy: 'network-only',
+    // });
+    // const resultOneDay = await client.query({
+    //   query: ETH_PRICE(oneDayBlock),
+    //   fetchPolicy: 'network-only',
+    // });
+    // const currentPrice = result?.data?.bundles[0]?.ethPrice;
+    // const oneDayBackPrice = resultOneDay?.data?.bundles[0]?.ethPrice;
+
     const result = await client.query({
-      query: ETH_PRICE(),
+      query: ETH_ALLPRICE(oneDayBlock),
       fetchPolicy: 'network-only',
     });
-    const resultOneDay = await client.query({
-      query: ETH_PRICE(oneDayBlock),
-      fetchPolicy: 'network-only',
-    });
-    const currentPrice = result?.data?.bundles[0]?.ethPrice;
-    const oneDayBackPrice = resultOneDay?.data?.bundles[0]?.ethPrice;
+    const currentPrice = result?.data['currentPrice'][0].ethPrice;
+    const oneDayBackPrice = result?.data['oneDayBackPrice'][0].ethPrice;
+
     priceChangeETH = getPercentChange(currentPrice, oneDayBackPrice);
     ethPrice = currentPrice;
     ethPriceOneDay = oneDayBackPrice;
@@ -1177,30 +1188,47 @@ export async function getGlobalData(
     });
     data = result.data.uniswapFactories[0];
 
-    // fetch the historical data
-    const oneDayResult = await client.query({
-      query: GLOBAL_DATA(oneDayBlock?.number),
-      fetchPolicy: 'network-only',
-    });
-    oneDayData = oneDayResult.data.uniswapFactories[0];
+    // // fetch the historical data
+    // const oneDayResult = await client.query({
+    //   query: GLOBAL_DATA(oneDayBlock?.number),
+    //   fetchPolicy: 'network-only',
+    // });
+    // oneDayData = oneDayResult.data.uniswapFactories[0];
 
-    const twoDayResult = await client.query({
-      query: GLOBAL_DATA(twoDayBlock?.number),
-      fetchPolicy: 'network-only',
-    });
-    twoDayData = twoDayResult.data.uniswapFactories[0];
+    // const twoDayResult = await client.query({
+    //   query: GLOBAL_DATA(twoDayBlock?.number),
+    //   fetchPolicy: 'network-only',
+    // });
+    // twoDayData = twoDayResult.data.uniswapFactories[0];
 
-    const oneWeekResult = await client.query({
-      query: GLOBAL_DATA(oneWeekBlock?.number),
-      fetchPolicy: 'network-only',
-    });
-    const oneWeekData = oneWeekResult.data.uniswapFactories[0];
+    // const oneWeekResult = await client.query({
+    //   query: GLOBAL_DATA(oneWeekBlock?.number),
+    //   fetchPolicy: 'network-only',
+    // });
+    // const oneWeekData = oneWeekResult.data.uniswapFactories[0];
 
-    const twoWeekResult = await client.query({
-      query: GLOBAL_DATA(twoWeekBlock?.number),
+    // const twoWeekResult = await client.query({
+    //   query: GLOBAL_DATA(twoWeekBlock?.number),
+    //   fetchPolicy: 'network-only',
+    // });
+    // const twoWeekData = twoWeekResult.data.uniswapFactories[0];
+
+    const queryReq = [
+      { index: 'result', block: null },
+      { index: 'oneDayData', block: oneDayBlock?.number },
+      { index: 'twoDayData', block: twoDayBlock?.number },
+      { index: 'oneWeekData', block: oneWeekBlock?.number },
+      { index: 'twoWeekData', block: twoWeekBlock?.number },
+    ];
+    const allData = await client.query({
+      query: GLOBAL_ALLDATA(queryReq),
       fetchPolicy: 'network-only',
     });
-    const twoWeekData = twoWeekResult.data.uniswapFactories[0];
+    data = allData.data['result'][0];
+    oneDayData = allData.data['oneDayData'][0];
+    twoDayData = allData.data['twoDayData'][0];
+    const oneWeekData = allData.data['oneWeekData'][0];
+    const twoWeekData = allData.data['twoWeekData'][0];
 
     if (data && oneDayData && twoDayData && twoWeekData) {
       const [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(

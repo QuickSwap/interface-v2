@@ -422,7 +422,7 @@ export function useSyrupInfo(
 
   useEffect(() => {
     getOneDayVolume().then((data) => {
-      console.log(data);
+      // console.log(data);
     });
   }, []);
 
@@ -1356,7 +1356,7 @@ export function useLairInfo(): LairInfo {
 
   useEffect(() => {
     getOneDayVolume().then((data) => {
-      console.log(data);
+      // console.log(data);
     });
   }, []);
 
