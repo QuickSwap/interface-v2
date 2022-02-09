@@ -6,6 +6,7 @@ import {
   Price,
   Pair,
 } from '@uniswap/sdk';
+import dayjs from 'dayjs';
 import { useMemo, useEffect /** , useState */ } from 'react';
 import { usePair, usePairs } from 'data/Reserves';
 
@@ -35,6 +36,7 @@ import useUSDCPrice, { useUSDCPrices } from 'utils/useUSDCPrice';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { useTotalSupplys } from 'data/TotalSupply';
 import {
+  getBlockFromTimestamp,
   getOneYearFee,
   getPriceToQUICKSyrup,
   returnDualStakingInfo,
@@ -346,23 +348,23 @@ export function useUSDRewardsandFees(isLPFarm: boolean, bulkPairData: any) {
   }
   const stakingFees = bulkPairData
     ? rewardPairs.reduce((total, pair, index) => {
-        const oneYearFeeAPY = Number(bulkPairData[pair]?.oneDayVolumeUSD ?? 0);
-        const totalSupplyState = totalSupplies[index];
-        if (oneYearFeeAPY) {
-          const totalSupply = web3.utils.toWei(
-            pairs[pair]?.totalSupply,
-            'ether',
-          );
-          const ratio =
-            Number(totalSupplyState.result?.[0].toString()) /
-            Number(totalSupply);
-          const oneDayFee =
-            oneYearFeeAPY * GlobalConst.utils.FEEPERCENT * ratio;
-          return total + oneDayFee;
-        } else {
-          return total;
-        }
-      }, 0)
+      const oneYearFeeAPY = Number(bulkPairData[pair]?.oneDayVolumeUSD ?? 0);
+      const totalSupplyState = totalSupplies[index];
+      if (oneYearFeeAPY) {
+        const totalSupply = web3.utils.toWei(
+          pairs[pair]?.totalSupply,
+          'ether',
+        );
+        const ratio =
+          Number(totalSupplyState.result?.[0].toString()) /
+          Number(totalSupply);
+        const oneDayFee =
+          oneYearFeeAPY * GlobalConst.utils.FEEPERCENT * ratio;
+        return total + oneDayFee;
+      } else {
+        return total;
+      }
+    }, 0)
     : null;
 
   return { rewardsUSD, stakingFees };
@@ -387,16 +389,16 @@ export function useSyrupInfo(
     () =>
       chainId
         ? returnSyrupInfo()
-            [chainId]?.slice(startIndex, endIndex)
-            .filter((stakingRewardInfo) =>
-              tokenToFilterBy === undefined || tokenToFilterBy === null
-                ? getSearchFiltered(
-                    stakingRewardInfo,
-                    filter ? filter.search : '',
-                  )
-                : tokenToFilterBy.equals(stakingRewardInfo.token) &&
-                  tokenToFilterBy.equals(stakingRewardInfo.token),
-            ) ?? []
+        [chainId]?.slice(startIndex, endIndex)
+          .filter((stakingRewardInfo) =>
+            tokenToFilterBy === undefined || tokenToFilterBy === null
+              ? getSearchFiltered(
+                stakingRewardInfo,
+                filter ? filter.search : '',
+              )
+              : tokenToFilterBy.equals(stakingRewardInfo.token) &&
+              tokenToFilterBy.equals(stakingRewardInfo.token),
+          ) ?? []
         : [],
     [chainId, tokenToFilterBy, startIndex, endIndex, filter],
   );
@@ -549,9 +551,9 @@ export function useSyrupInfo(
               token,
               JSBI.greaterThan(totalStakedAmount.raw, JSBI.BigInt(0))
                 ? JSBI.divide(
-                    JSBI.multiply(rewardRate.raw, stakedAmount.raw),
-                    totalStakedAmount.raw,
-                  )
+                  JSBI.multiply(rewardRate.raw, stakedAmount.raw),
+                  totalStakedAmount.raw,
+                )
                 : JSBI.BigInt(0),
             );
           };
@@ -651,16 +653,16 @@ export function useOldSyrupInfo(
     () =>
       chainId
         ? returnSyrupInfo(true)
-            [chainId]?.slice(startIndex, endIndex)
-            ?.filter((stakingRewardInfo) =>
-              tokenToFilterBy === undefined || tokenToFilterBy === null
-                ? getSearchFiltered(
-                    stakingRewardInfo,
-                    filter ? filter.search : '',
-                  )
-                : tokenToFilterBy.equals(stakingRewardInfo.token) &&
-                  tokenToFilterBy.equals(stakingRewardInfo.token),
-            ) ?? []
+        [chainId]?.slice(startIndex, endIndex)
+          ?.filter((stakingRewardInfo) =>
+            tokenToFilterBy === undefined || tokenToFilterBy === null
+              ? getSearchFiltered(
+                stakingRewardInfo,
+                filter ? filter.search : '',
+              )
+              : tokenToFilterBy.equals(stakingRewardInfo.token) &&
+              tokenToFilterBy.equals(stakingRewardInfo.token),
+          ) ?? []
         : [],
     [chainId, tokenToFilterBy, startIndex, endIndex, filter],
   );
@@ -791,9 +793,9 @@ export function useOldSyrupInfo(
               token,
               JSBI.greaterThan(totalStakedAmount.raw, JSBI.BigInt(0))
                 ? JSBI.divide(
-                    JSBI.multiply(rewardRate.raw, stakedAmount.raw),
-                    totalStakedAmount.raw,
-                  )
+                  JSBI.multiply(rewardRate.raw, stakedAmount.raw),
+                  totalStakedAmount.raw,
+                )
                 : JSBI.BigInt(0),
             );
           };
@@ -907,13 +909,13 @@ export const getBulkPairData = async (pairList: any) => {
 
     const pairData = await Promise.all(
       current &&
-        current.data.pairs.map(async (pair: any) => {
-          let data = pair;
-          const oneDayHistory = oneDayData?.[pair.id];
+      current.data.pairs.map(async (pair: any) => {
+        let data = pair;
+        const oneDayHistory = oneDayData?.[pair.id];
 
-          data = parseData(data, oneDayHistory);
-          return data;
-        }),
+        data = parseData(data, oneDayHistory);
+        return data;
+      }),
     );
 
     const object = convertArrayToObject(pairData, 'id');
@@ -939,7 +941,13 @@ const getOneDayVolume = async () => {
     healthInfo.data.indexingStatusForCurrentVersion.chains[0].latestBlock
       .number,
   );
-  const oneDayOldBlock = current - 45000;
+  const utcCurrentTime = dayjs();
+  const utcOneDayBack = utcCurrentTime
+    .subtract(1, 'day')
+    .startOf('minute')
+    .unix();
+
+  const oneDayOldBlock = await getBlockFromTimestamp(utcOneDayBack);
 
   const result = await client.query({
     query: GLOBAL_DATA(current),
@@ -1004,26 +1012,26 @@ function getSearchFiltered(info: any, search: string) {
     const infoToken1 = info.tokens[1];
     return (
       (infoToken0.symbol ?? '').toLowerCase().indexOf(search.toLowerCase()) >
-        -1 ||
+      -1 ||
       (infoToken0.name ?? '').toLowerCase().indexOf(search.toLowerCase()) >
-        -1 ||
+      -1 ||
       (infoToken0.address ?? '').toLowerCase().indexOf(search.toLowerCase()) >
-        -1 ||
+      -1 ||
       (infoToken1.symbol ?? '').toLowerCase().indexOf(search.toLowerCase()) >
-        -1 ||
+      -1 ||
       (infoToken1.name ?? '').toLowerCase().indexOf(search.toLowerCase()) >
-        -1 ||
+      -1 ||
       (infoToken1.address ?? '').toLowerCase().indexOf(search.toLowerCase()) >
-        -1
+      -1
     );
   } else if (info.token) {
     return (
       (info.token.symbol ?? '').toLowerCase().indexOf(search.toLowerCase()) >
-        -1 ||
+      -1 ||
       (info.token.name ?? '').toLowerCase().indexOf(search.toLowerCase()) >
-        -1 ||
+      -1 ||
       (info.token.address ?? '').toLowerCase().indexOf(search.toLowerCase()) >
-        -1
+      -1
     );
   } else {
     return false;
@@ -1059,16 +1067,16 @@ export function useDualStakingInfo(
     () =>
       chainId
         ? returnDualStakingInfo()
-            [chainId]?.slice(startIndex, endIndex)
-            ?.filter((stakingRewardInfo) =>
-              pairToFilterBy === undefined || pairToFilterBy === null
-                ? getSearchFiltered(
-                    stakingRewardInfo,
-                    filter ? filter.search : '',
-                  )
-                : pairToFilterBy.involvesToken(stakingRewardInfo.tokens[0]) &&
-                  pairToFilterBy.involvesToken(stakingRewardInfo.tokens[1]),
-            ) ?? []
+        [chainId]?.slice(startIndex, endIndex)
+          ?.filter((stakingRewardInfo) =>
+            pairToFilterBy === undefined || pairToFilterBy === null
+              ? getSearchFiltered(
+                stakingRewardInfo,
+                filter ? filter.search : '',
+              )
+              : pairToFilterBy.involvesToken(stakingRewardInfo.tokens[0]) &&
+              pairToFilterBy.involvesToken(stakingRewardInfo.tokens[1]),
+          ) ?? []
         : [],
     [chainId, pairToFilterBy, startIndex, endIndex, filter],
   );
@@ -1249,9 +1257,9 @@ export function useDualStakingInfo(
               uni,
               JSBI.greaterThan(totalStakedAmount.raw, JSBI.BigInt(0))
                 ? JSBI.divide(
-                    JSBI.multiply(totalRewardRate.raw, stakedAmount.raw),
-                    totalStakedAmount.raw,
-                  )
+                  JSBI.multiply(totalRewardRate.raw, stakedAmount.raw),
+                  totalStakedAmount.raw,
+                )
                 : JSBI.BigInt(0),
             );
           };
@@ -1413,8 +1421,8 @@ export function useLairInfo(): LairInfo {
   );
   const quickPrice = quickUsdcPair
     ? Number(
-        quickUsdcPair.priceOf(returnTokenFromKey('QUICK')).toSignificant(6),
-      )
+      quickUsdcPair.priceOf(returnTokenFromKey('QUICK')).toSignificant(6),
+    )
     : 0;
 
   const dQuickToQuick = useSingleCallResult(lair, 'dQUICKForQUICK', inputs);
@@ -1430,9 +1438,7 @@ export function useLairInfo(): LairInfo {
   const lairsQuickBalance = useSingleCallResult(quick, 'balanceOf', accountArg);
 
   useEffect(() => {
-    getOneDayVolume().then((data) => {
-      // console.log(data);
-    });
+    getOneDayVolume();
   }, []);
 
   return useMemo(() => {
@@ -1496,16 +1502,16 @@ export function useStakingInfo(
     () =>
       chainId
         ? returnStakingInfo()
-            [chainId]?.slice(startIndex, endIndex)
-            ?.filter((stakingRewardInfo) =>
-              pairToFilterBy === undefined || pairToFilterBy === null
-                ? getSearchFiltered(
-                    stakingRewardInfo,
-                    filter ? filter.search : '',
-                  )
-                : pairToFilterBy.involvesToken(stakingRewardInfo.tokens[0]) &&
-                  pairToFilterBy.involvesToken(stakingRewardInfo.tokens[1]),
-            ) ?? []
+        [chainId]?.slice(startIndex, endIndex)
+          ?.filter((stakingRewardInfo) =>
+            pairToFilterBy === undefined || pairToFilterBy === null
+              ? getSearchFiltered(
+                stakingRewardInfo,
+                filter ? filter.search : '',
+              )
+              : pairToFilterBy.involvesToken(stakingRewardInfo.tokens[0]) &&
+              pairToFilterBy.involvesToken(stakingRewardInfo.tokens[1]),
+          ) ?? []
         : [],
     [chainId, pairToFilterBy, startIndex, endIndex, filter],
   );
@@ -1667,9 +1673,9 @@ export function useStakingInfo(
               uni,
               JSBI.greaterThan(totalStakedAmount.raw, JSBI.BigInt(0))
                 ? JSBI.divide(
-                    JSBI.multiply(totalRewardRate.raw, stakedAmount.raw),
-                    totalStakedAmount.raw,
-                  )
+                  JSBI.multiply(totalRewardRate.raw, stakedAmount.raw),
+                  totalStakedAmount.raw,
+                )
                 : JSBI.BigInt(0),
             );
           };
@@ -1820,16 +1826,16 @@ export function useOldStakingInfo(
     () =>
       chainId
         ? returnStakingInfo('old')
-            [chainId]?.slice(startIndex, endIndex)
-            ?.filter((stakingRewardInfo) =>
-              pairToFilterBy === undefined || pairToFilterBy === null
-                ? getSearchFiltered(
-                    stakingRewardInfo,
-                    filter ? filter.search : '',
-                  )
-                : pairToFilterBy.involvesToken(stakingRewardInfo.tokens[0]) &&
-                  pairToFilterBy.involvesToken(stakingRewardInfo.tokens[1]),
-            ) ?? []
+        [chainId]?.slice(startIndex, endIndex)
+          ?.filter((stakingRewardInfo) =>
+            pairToFilterBy === undefined || pairToFilterBy === null
+              ? getSearchFiltered(
+                stakingRewardInfo,
+                filter ? filter.search : '',
+              )
+              : pairToFilterBy.involvesToken(stakingRewardInfo.tokens[0]) &&
+              pairToFilterBy.involvesToken(stakingRewardInfo.tokens[1]),
+          ) ?? []
         : [],
     [chainId, pairToFilterBy, startIndex, endIndex, filter],
   );
@@ -1940,9 +1946,9 @@ export function useOldStakingInfo(
               uni,
               JSBI.greaterThan(totalStakedAmount.raw, JSBI.BigInt(0))
                 ? JSBI.divide(
-                    JSBI.multiply(totalRewardRate.raw, stakedAmount.raw),
-                    totalStakedAmount.raw,
-                  )
+                  JSBI.multiply(totalRewardRate.raw, stakedAmount.raw),
+                  totalStakedAmount.raw,
+                )
                 : JSBI.BigInt(0),
             );
           };
@@ -2043,8 +2049,8 @@ export function useDerivedSyrupInfo(
 
   const parsedAmount =
     parsedInput &&
-    userLiquidityUnstaked &&
-    JSBI.lessThanOrEqual(parsedInput.raw, userLiquidityUnstaked.raw)
+      userLiquidityUnstaked &&
+      JSBI.lessThanOrEqual(parsedInput.raw, userLiquidityUnstaked.raw)
       ? parsedInput
       : undefined;
 
@@ -2080,8 +2086,8 @@ export function useDerivedStakeInfo(
 
   const parsedAmount =
     parsedInput &&
-    userLiquidityUnstaked &&
-    JSBI.lessThanOrEqual(parsedInput.raw, userLiquidityUnstaked.raw)
+      userLiquidityUnstaked &&
+      JSBI.lessThanOrEqual(parsedInput.raw, userLiquidityUnstaked.raw)
       ? parsedInput
       : undefined;
 
@@ -2116,8 +2122,8 @@ export function useDerivedLairInfo(
 
   const parsedAmount =
     parsedInput &&
-    userLiquidityUnstaked &&
-    JSBI.lessThanOrEqual(parsedInput.raw, userLiquidityUnstaked.raw)
+      userLiquidityUnstaked &&
+      JSBI.lessThanOrEqual(parsedInput.raw, userLiquidityUnstaked.raw)
       ? parsedInput
       : undefined;
 
