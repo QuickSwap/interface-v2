@@ -21,7 +21,12 @@ import {
   CustomSwitch,
 } from 'components';
 import { GlobalConst } from 'constants/index';
-import { getAPYWithFee, getOneYearFee, returnFullWidthMobile } from 'utils';
+import {
+  getAPYWithFee,
+  getOneYearFee,
+  getPageItemsToLoad,
+  returnFullWidthMobile,
+} from 'utils';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 import { useInfiniteLoading } from 'utils/useInfiniteLoading';
 
@@ -42,14 +47,8 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
   const lairInfo = useLairInfo();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
 
-  const [stakingInfos, setStakingInfos] = useState<StakingInfo[] | undefined>(
-    undefined,
-  );
-  const [stakingDualInfos, setStakingDualInfos] = useState<
-    DualStakingInfo[] | undefined
-  >(undefined);
   const [pageIndex, setPageIndex] = useState(0);
-  const [pageloading, setPageLoading] = useState(true); //this is used for not loading farms immediately when user is on farms page
+  const [pageloading, setPageLoading] = useState(false); //this is used for not loading farms immediately when user is on farms page
   const [isEndedFarm, setIsEndedFarm] = useState(false);
   const [sortBy, setSortBy] = useState(0);
   const [sortDesc, setSortDesc] = useState(false);
@@ -268,66 +267,37 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
     : null;
 
   useEffect(() => {
-    setStakingInfos(undefined);
-    setStakingDualInfos(undefined);
-    setTimeout(() => setPageLoading(false), 500); //load farms 0.5s after loading page
-  }, []);
-
-  useEffect(() => {
     setPageIndex(0);
-    if (farmIndex === GlobalConst.farmIndex.LPFARM_INDEX) {
-      setStakingInfos(sortedLPStakingInfos.slice(0, LOADFARM_COUNT));
-    } else {
-      setStakingDualInfos(sortedStakingDualInfos.slice(0, LOADFARM_COUNT));
-    }
-    return () => {
-      setStakingInfos(undefined);
-      setStakingDualInfos(undefined);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [stakingRewardAddress]);
+  }, [stakingRewardAddress, farmIndex]);
 
-  useEffect(() => {
-    if (farmIndex === GlobalConst.farmIndex.LPFARM_INDEX) {
-      const currentStakingInfos = stakingInfos || [];
-      const stakingInfosToAdd = sortedLPStakingInfos.slice(
-        currentStakingInfos.length,
-        currentStakingInfos.length + LOADFARM_COUNT,
-      );
-      setStakingInfos(currentStakingInfos.concat(stakingInfosToAdd));
-    } else if (farmIndex === GlobalConst.farmIndex.DUALFARM_INDEX) {
-      const currentDualStakingInfos = stakingDualInfos || [];
-      const stakingDualInfosToAdd = sortedStakingDualInfos.slice(
-        currentDualStakingInfos.length,
-        currentDualStakingInfos.length + LOADFARM_COUNT,
-      );
-      setStakingDualInfos(
-        currentDualStakingInfos.concat(stakingDualInfosToAdd),
-      );
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pageIndex]);
+  const stakingInfos = useMemo(() => {
+    return sortedLPStakingInfos
+      ? sortedLPStakingInfos.slice(
+          0,
+          getPageItemsToLoad(pageIndex, LOADFARM_COUNT),
+        )
+      : null;
+  }, [sortedLPStakingInfos, pageIndex]);
 
-  const stakingAPYs = useMemo(() => {
-    const sortedStakingInfos =
-      farmIndex === GlobalConst.farmIndex.LPFARM_INDEX
-        ? stakingInfos
-        : stakingDualInfos;
-    if (bulkPairs && sortedStakingInfos && sortedStakingInfos.length > 0) {
-      return sortedStakingInfos.map((info: any) => {
-        const oneDayVolume = bulkPairs[info.pair]?.oneDayVolumeUSD;
-        const reserveUSD = bulkPairs[info.pair]?.reserveUSD;
-        if (oneDayVolume && reserveUSD) {
-          const oneYearFeeAPY = getOneYearFee(oneDayVolume, reserveUSD);
-          return oneYearFeeAPY;
-        } else {
-          return 0;
-        }
-      });
-    } else {
-      return [];
+  const stakingDualInfos = useMemo(() => {
+    return sortedStakingDualInfos
+      ? sortedStakingDualInfos.slice(
+          0,
+          getPageItemsToLoad(pageIndex, LOADFARM_COUNT),
+        )
+      : null;
+  }, [sortedStakingDualInfos, pageIndex]);
+
+  const getPoolApy = (pairId: string) => {
+    if (!pairId || !bulkPairs) {
+      return 0;
     }
-  }, [bulkPairs, stakingInfos, stakingDualInfos, farmIndex]);
+
+    const oneDayVolume = bulkPairs?.[pairId]?.oneDayVolumeUSD;
+    const reserveUSD = bulkPairs?.[pairId]?.reserveUSD;
+    const oneYearFeeAPY = getOneYearFee(oneDayVolume, reserveUSD);
+    return oneYearFeeAPY;
+  };
 
   const loadNext = () => {
     setPageIndex(pageIndex + 1);
@@ -487,37 +457,37 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
           ))}
         </Box>
       )}
+      {(farmIndex === GlobalConst.farmIndex.LPFARM_INDEX && !stakingInfos) ||
+        (farmIndex === GlobalConst.farmIndex.DUALFARM_INDEX &&
+          !stakingDualInfos && (
+            <>
+              <Skeleton width='100%' height={100} />
+              <Skeleton width='100%' height={100} />
+              <Skeleton width='100%' height={100} />
+              <Skeleton width='100%' height={100} />
+              <Skeleton width='100%' height={100} />
+            </>
+          ))}
       {farmIndex === GlobalConst.farmIndex.LPFARM_INDEX &&
-      stakingInfos &&
-      !pageloading ? (
+        stakingInfos &&
         stakingInfos.map((info: StakingInfo, index) => (
           <FarmLPCard
             key={index}
             dQuicktoQuick={Number(lairInfo.dQUICKtoQUICK.toSignificant())}
             stakingInfo={info}
-            stakingAPY={stakingAPYs[index]}
+            stakingAPY={getPoolApy(info?.pair)}
           />
-        ))
-      ) : farmIndex === GlobalConst.farmIndex.DUALFARM_INDEX &&
+        ))}
+      {farmIndex === GlobalConst.farmIndex.DUALFARM_INDEX &&
         stakingDualInfos &&
-        !pageloading ? (
         stakingDualInfos.map((info: DualStakingInfo, index) => (
           <FarmDualCard
             key={index}
             dQuicktoQuick={Number(lairInfo.dQUICKtoQUICK.toSignificant())}
             stakingInfo={info}
-            stakingAPY={stakingAPYs[index]}
+            stakingAPY={getPoolApy(info?.pair)}
           />
-        ))
-      ) : (
-        <>
-          <Skeleton width='100%' height={100} />
-          <Skeleton width='100%' height={100} />
-          <Skeleton width='100%' height={100} />
-          <Skeleton width='100%' height={100} />
-          <Skeleton width='100%' height={100} />
-        </>
-      )}
+        ))}
       <div ref={loadMoreRef} />
     </>
   );
