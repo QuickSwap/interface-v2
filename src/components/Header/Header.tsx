@@ -287,7 +287,7 @@ const Header: React.FC = () => {
     },
   ];
 
-  const outLinks = [
+  const outLinks: any[] = [
     // {
     //   link: '/',
     //   text: 'Governance',
@@ -338,7 +338,7 @@ const Header: React.FC = () => {
               <Typography variant='body2'>{val.text}</Typography>
             </Link>
           ))}
-          <Box display='flex' className='menuItem'>
+          {/* <Box display='flex' className='menuItem'>
             <ThreeDotIcon />
             <Box
               position='absolute'
@@ -355,7 +355,7 @@ const Header: React.FC = () => {
                 ))}
               </Box>
             </Box>
-          </Box>
+          </Box> */}
         </Box>
       )}
       {tabletWindowSize && (
