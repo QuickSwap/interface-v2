@@ -1620,6 +1620,10 @@ export function getDaysCurrentYear() {
 }
 
 export function getOneYearFee(dayVolume: number, reserveUSD: number) {
+  if (!dayVolume || !reserveUSD) {
+    return 0;
+  }
+
   return (
     (dayVolume * GlobalConst.utils.FEEPERCENT * getDaysCurrentYear()) /
     reserveUSD
@@ -2028,4 +2032,8 @@ export function getEarnedUSDDualFarm(stakingInfo: DualStakingInfo | undefined) {
 
 export function isSupportedNetwork(ethereum: any) {
   return ethereum && Number(ethereum.chainId) === 137;
+}
+
+export function getPageItemsToLoad(index: number, countsPerPage: number) {
+  return index === 0 ? countsPerPage : countsPerPage * index;
 }

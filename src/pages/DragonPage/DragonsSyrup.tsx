@@ -10,7 +10,11 @@ import {
   SearchInput,
   CustomSwitch,
 } from 'components';
-import { getTokenAPRSyrup, returnFullWidthMobile } from 'utils';
+import {
+  getPageItemsToLoad,
+  getTokenAPRSyrup,
+  returnFullWidthMobile,
+} from 'utils';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 import { useInfiniteLoading } from 'utils/useInfiniteLoading';
 import { Skeleton } from '@material-ui/lab';
@@ -24,12 +28,9 @@ const EARNED_COLUMN = 4;
 const DragonsSyrup: React.FC = () => {
   const { palette, breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
-  const [pageLoading, setPageLoading] = useState(true); //this is used for not loading syrups immediately when user is on dragons page
+  const [pageLoading, setPageLoading] = useState(false); //this is used for not loading syrups immediately when user is on dragons page
   const [isEndedSyrup, setIsEndedSyrup] = useState(false);
   const [pageIndex, setPageIndex] = useState(0);
-  const [syrupInfos, setSyrupInfos] = useState<SyrupInfo[] | undefined>(
-    undefined,
-  );
   const [sortBy, setSortBy] = useState(0);
   const [sortDesc, setSortDesc] = useState(false);
 
@@ -131,26 +132,17 @@ const DragonsSyrup: React.FC = () => {
   );
 
   useEffect(() => {
-    setSyrupInfos(undefined);
-    setTimeout(() => setPageLoading(false), 500); //load syrups 0.5s after loading page
-  }, []);
-
-  useEffect(() => {
     setPageIndex(0);
-    setSyrupInfos(sortedSyrupInfos.slice(0, LOADSYRUP_COUNT));
-    return () => setSyrupInfos(undefined);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [syrupRewardAddress]);
 
-  useEffect(() => {
-    const currentSyrupInfos = syrupInfos || [];
-    const syrupInfosToAdd = sortedSyrupInfos.slice(
-      currentSyrupInfos.length,
-      currentSyrupInfos.length + LOADSYRUP_COUNT,
-    );
-    setSyrupInfos(currentSyrupInfos.concat(syrupInfosToAdd));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pageIndex]);
+  const syrupInfos = useMemo(() => {
+    return sortedSyrupInfos
+      ? sortedSyrupInfos.slice(
+          0,
+          getPageItemsToLoad(pageIndex, LOADSYRUP_COUNT),
+        )
+      : null;
+  }, [sortedSyrupInfos, pageIndex]);
 
   const loadNext = () => {
     setPageIndex(pageIndex + 1);
