@@ -288,30 +288,30 @@ const Header: React.FC = () => {
   ];
 
   const outLinks = [
-    {
-      link: '/',
-      text: 'Governance',
-    },
-    {
-      link: '/',
-      text: 'Docs',
-    },
-    {
-      link: '/',
-      text: 'For Developers',
-    },
-    {
-      link: '/',
-      text: 'Help & Tutorials',
-    },
-    {
-      link: '/',
-      text: 'Knowledge Base',
-    },
-    {
-      link: '/',
-      text: 'News',
-    },
+    // {
+    //   link: '/',
+    //   text: 'Governance',
+    // },
+    // {
+    //   link: '/',
+    //   text: 'Docs',
+    // },
+    // {
+    //   link: '/',
+    //   text: 'For Developers',
+    // },
+    // {
+    //   link: '/',
+    //   text: 'Help & Tutorials',
+    // },
+    // {
+    //   link: '/',
+    //   text: 'Knowledge Base',
+    // },
+    // {
+    //   link: '/',
+    //   text: 'News',
+    // },
   ];
 
   return (
