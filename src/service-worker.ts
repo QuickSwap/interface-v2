@@ -36,7 +36,7 @@ const fileExtensionRegexp = new RegExp('/[^/?]+\\.[^/]+$');
 registerRoute(({ request, url }: { request: Request; url: URL }) => {
   // If this isn't app.uniswap.org, skip. IPFS gateways may not have domain
   // separation, so they cannot use App Shell-style routing.
-  if (url.hostname !== 'app.uniswap.org') {
+  if (url.hostname !== 'quickswap.exchange') {
     return false;
   }
 

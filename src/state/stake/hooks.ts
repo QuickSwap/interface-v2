@@ -207,20 +207,7 @@ export interface SyrupInfo {
 
 export function useTotalRewardsDistributed() {
   const { chainId } = useActiveWeb3React();
-  const [, quickUsdcPair] = usePair(
-    returnTokenFromKey('QUICK'),
-    returnTokenFromKey('USDC'),
-  );
-  const [, maticUsdcPair] = usePair(
-    GlobalValue.tokens.MATIC,
-    returnTokenFromKey('USDC'),
-  );
-  const quickPrice = Number(
-    quickUsdcPair?.priceOf(returnTokenFromKey('QUICK'))?.toSignificant(6),
-  );
-  const maticPrice = Number(
-    maticUsdcPair?.priceOf(GlobalValue.tokens.MATIC)?.toSignificant(6),
-  );
+
   const syrupRewardsInfo = chainId ? returnSyrupInfo()[chainId] ?? [] : [];
   const dualStakingRewardsInfo = chainId
     ? returnDualStakingInfo()[chainId] ?? []
@@ -246,37 +233,17 @@ export function useTotalRewardsDistributed() {
     return total + priceOfRewardTokenInUSD * item.rate;
   }, 0);
 
-  const dualStakingTokenPairs = usePairs(
-    dualStakingRewardsInfo.map((item) => [
-      item.rewardTokenB,
-      item.rewardTokenBBase,
-    ]),
-  );
   const rewardTokenAPrices = useUSDCPricesToken(
     dualStakingRewardsInfo.map((item) => item.rewardTokenA),
   );
+  const rewardTokenBPrices = useUSDCPricesToken(
+    dualStakingRewardsInfo.map((item) => item.rewardTokenB),
+  );
   const dualStakingRewardsUSD = dualStakingRewardsInfo.reduce(
-    (total, item, index) => {
-      const [, rewardTokenBPair] = dualStakingTokenPairs[index];
-      const rewardTokenBPriceInBaseToken = Number(
-        rewardTokenBPair?.priceOf(item.rewardTokenB)?.toSignificant(6),
-      );
-
-      let rewardTokenBPrice = 0;
-      if (item.rewardTokenBBase.equals(returnTokenFromKey('USDC'))) {
-        rewardTokenBPrice = rewardTokenBPriceInBaseToken;
-      } else if (item.rewardTokenBBase.equals(returnTokenFromKey('QUICK'))) {
-        rewardTokenBPrice = rewardTokenBPriceInBaseToken * quickPrice;
-      } else {
-        rewardTokenBPrice = rewardTokenBPriceInBaseToken * maticPrice;
-      }
-
-      return (
-        total +
-        item.rateA * rewardTokenAPrices[index] +
-        item.rateB * rewardTokenBPrice
-      );
-    },
+    (total, item, index) =>
+      total +
+      item.rateA * rewardTokenAPrices[index] +
+      item.rateB * rewardTokenBPrices[index],
     0,
   );
 
@@ -293,20 +260,6 @@ export function useTotalRewardsDistributed() {
 
 export function useUSDRewardsandFees(isLPFarm: boolean, bulkPairData: any) {
   const { chainId } = useActiveWeb3React();
-  const [, quickUsdcPair] = usePair(
-    returnTokenFromKey('QUICK'),
-    returnTokenFromKey('USDC'),
-  );
-  const [, maticUsdcPair] = usePair(
-    GlobalValue.tokens.MATIC,
-    returnTokenFromKey('USDC'),
-  );
-  const quickPrice = Number(
-    quickUsdcPair?.priceOf(returnTokenFromKey('QUICK'))?.toSignificant(6),
-  );
-  const maticPrice = Number(
-    maticUsdcPair?.priceOf(GlobalValue.tokens.MATIC)?.toSignificant(6),
-  );
   const dualStakingRewardsInfo =
     chainId && !isLPFarm ? returnDualStakingInfo()[chainId] ?? [] : [];
   const stakingRewardsInfo =
@@ -320,11 +273,11 @@ export function useUSDRewardsandFees(isLPFarm: boolean, bulkPairData: any) {
     (item) => item.rewardToken,
   );
   const stakingRewardTokenPrices = useUSDCPricesToken(stakingRewardTokens);
-  const dualStakingRewardATokens = dualStakingRewardsInfo.map(
-    (item) => item.rewardTokenA,
-  );
   const dualStakingRewardTokenAPrices = useUSDCPricesToken(
-    dualStakingRewardATokens,
+    dualStakingRewardsInfo.map((item) => item.rewardTokenA),
+  );
+  const dualStakingRewardTokenBPrices = useUSDCPricesToken(
+    dualStakingRewardsInfo.map((item) => item.rewardTokenB),
   );
   const rewardPairs = useMemo(() => rewardsInfos.map(({ pair }) => pair), [
     rewardsInfos,
@@ -334,12 +287,6 @@ export function useUSDRewardsandFees(isLPFarm: boolean, bulkPairData: any) {
     isLPFarm ? STAKING_REWARDS_INTERFACE : STAKING_DUAL_REWARDS_INTERFACE,
     'totalSupply',
   );
-  const dualStakingTokenPairs = usePairs(
-    dualStakingRewardsInfo.map((item) => [
-      item.rewardTokenB,
-      item.rewardTokenBBase,
-    ]),
-  );
   let rewardsUSD: number | null = null;
   if (isLPFarm) {
     rewardsUSD = stakingRewardsInfo.reduce(
@@ -348,27 +295,13 @@ export function useUSDRewardsandFees(isLPFarm: boolean, bulkPairData: any) {
       0,
     );
   } else {
-    rewardsUSD = dualStakingRewardsInfo.reduce((total, item, index) => {
-      const [, rewardTokenBPair] = dualStakingTokenPairs[index];
-      const rewardTokenBPriceInBaseToken = Number(
-        rewardTokenBPair?.priceOf(item.rewardTokenB)?.toSignificant(6),
-      );
-
-      let rewardTokenBPrice = 0;
-      if (item.rewardTokenBBase.equals(returnTokenFromKey('USDC'))) {
-        rewardTokenBPrice = rewardTokenBPriceInBaseToken;
-      } else if (item.rewardTokenBBase.equals(returnTokenFromKey('QUICK'))) {
-        rewardTokenBPrice = rewardTokenBPriceInBaseToken * quickPrice;
-      } else {
-        rewardTokenBPrice = rewardTokenBPriceInBaseToken * maticPrice;
-      }
-
-      return (
+    rewardsUSD = dualStakingRewardsInfo.reduce(
+      (total, item, index) =>
         total +
         item.rateA * dualStakingRewardTokenAPrices[index] +
-        item.rateB * rewardTokenBPrice
-      );
-    }, 0);
+        item.rateB * dualStakingRewardTokenBPrices[index],
+      0,
+    );
   }
   const stakingFees = bulkPairData
     ? rewardPairs.reduce((total, pair, index) => {
@@ -1064,22 +997,6 @@ export function useDualStakingInfo(
   filter?: { search: string; isStaked: boolean },
 ): DualStakingInfo[] {
   const { chainId, account } = useActiveWeb3React();
-  //const [quickPrice,setQuickPrice] = useState(0);
-  const [, quickUsdcPair] = usePair(
-    returnTokenFromKey('QUICK'),
-    returnTokenFromKey('USDC'),
-  );
-  const [, maticUsdcPair] = usePair(
-    GlobalValue.tokens.MATIC,
-    returnTokenFromKey('USDC'),
-  );
-
-  const quickPrice = Number(
-    quickUsdcPair?.priceOf(returnTokenFromKey('QUICK'))?.toSignificant(6),
-  );
-  const maticPrice = Number(
-    maticUsdcPair?.priceOf(GlobalValue.tokens.MATIC)?.toSignificant(6),
-  );
 
   const info = useMemo(
     () =>
@@ -1167,10 +1084,6 @@ export function useDualStakingInfo(
     return unwrappedCurrency === empty ? item.tokens[0] : item.baseToken;
   });
 
-  const tokenPairs = usePairs(
-    info.map((item) => [item.rewardTokenB, item.rewardTokenBBase]),
-  );
-
   const usdPrices = useUSDCPrices(baseTokens);
   const totalSupplys = useTotalSupplys(
     info.map((item) => {
@@ -1185,8 +1098,12 @@ export function useDualStakingInfo(
     }),
   );
   const stakingPairs = usePairs(info.map((item) => item.tokens));
-  const rewardTokensA = info.map((item) => item.rewardTokenA);
-  const rewardTokenAPrices = useUSDCPricesToken(rewardTokensA);
+  const rewardTokenAPrices = useUSDCPricesToken(
+    info.map((item) => item.rewardTokenA),
+  );
+  const rewardTokenBPrices = useUSDCPricesToken(
+    info.map((item) => item.rewardTokenB),
+  );
 
   return useMemo(() => {
     if (!chainId || !uni) return [];
@@ -1205,6 +1122,7 @@ export function useDualStakingInfo(
         const periodFinishState = periodFinishes[index];
         const stakingInfo = info[index];
         const rewardTokenAPrice = rewardTokenAPrices[index];
+        const rewardTokenBPrice = rewardTokenBPrices[index];
 
         if (
           // these may be undefined if not logged in
@@ -1331,26 +1249,6 @@ export function useDualStakingInfo(
             ? valueOfTotalStakedAmountInUSDC.toSignificant()
             : valueOfTotalStakedAmountInBaseToken?.toSignificant();
 
-          const [, rewardTokenBPair] = tokenPairs[index];
-
-          const rewardTokenBPriceInBaseToken = Number(
-            rewardTokenBPair
-              ?.priceOf(stakingInfo.rewardTokenB)
-              ?.toSignificant(6),
-          );
-
-          let rewardTokenBPrice = 0;
-
-          if (stakingInfo.rewardTokenBBase.equals(returnTokenFromKey('USDC'))) {
-            rewardTokenBPrice = rewardTokenBPriceInBaseToken;
-          } else if (
-            stakingInfo.rewardTokenBBase.equals(returnTokenFromKey('QUICK'))
-          ) {
-            rewardTokenBPrice = rewardTokenBPriceInBaseToken * quickPrice;
-          } else {
-            rewardTokenBPrice = rewardTokenBPriceInBaseToken * maticPrice;
-          }
-
           const perMonthReturnInRewards =
             ((stakingInfo.rateA * rewardTokenAPrice +
               stakingInfo.rateB * rewardTokenBPrice) *
@@ -1410,16 +1308,14 @@ export function useDualStakingInfo(
     rewardsAddresses,
     totalSupplies,
     uni,
-    quickPrice,
-    maticPrice,
     rewardRatesA,
     rewardRatesB,
     baseTokens,
     totalSupplys,
     usdPrices,
     stakingPairs,
-    tokenPairs,
     rewardTokenAPrices,
+    rewardTokenBPrices,
   ]).filter((stakingInfo) =>
     filter && filter.isStaked
       ? stakingInfo.stakedAmount.greaterThan('0')
