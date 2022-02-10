@@ -579,14 +579,14 @@ const LandingPage: React.FC = () => {
               fontWeight: 500,
             }}
             onClick={() => {
-              !isSupportedNetwork(ethereum)
+              ethereum && !isSupportedNetwork(ethereum)
                 ? addMaticToMetamask()
                 : account
                 ? history.push('/swap')
                 : toggleWalletModal();
             }}
           >
-            {!isSupportedNetwork(ethereum)
+            {ethereum && !isSupportedNetwork(ethereum)
               ? 'Switch to Polygon'
               : account
               ? 'Enter App'

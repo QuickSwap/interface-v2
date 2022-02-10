@@ -2005,7 +2005,7 @@ export function getUSDString(usdValue?: CurrencyAmount) {
 }
 
 export function isSupportedNetwork(ethereum: any) {
-  return ethereum && Number(ethereum.chainId) === 137;
+  return Number(ethereum.chainId) === 137;
 }
 
 export function getPageItemsToLoad(index: number, countsPerPage: number) {
