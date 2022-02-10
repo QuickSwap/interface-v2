@@ -9,11 +9,7 @@ import {
   useAllTransactions,
 } from 'state/transactions/hooks';
 import { TransactionDetails } from 'state/transactions/reducer';
-import {
-  shortenAddress,
-  addMaticToMetamask,
-  isNotSupportedNetwork,
-} from 'utils';
+import { shortenAddress, addMaticToMetamask, isSupportedNetwork } from 'utils';
 import useENSName from 'hooks/useENSName';
 import { WalletModal } from 'components';
 import { useActiveWeb3React } from 'hooks';
@@ -425,7 +421,7 @@ const Header: React.FC = () => {
         >
           <LightIcon />
         </Box>
-        {account && !isNotSupportedNetwork(ethereum) ? (
+        {account && (!ethereum || isSupportedNetwork(ethereum)) ? (
           <Box
             id='web3-status-connected'
             className={classes.accountDetails}
@@ -438,20 +434,20 @@ const Header: React.FC = () => {
           <Box
             className={cx(
               classes.connectButton,
-              isNotSupportedNetwork(ethereum)
+              ethereum && !isSupportedNetwork(ethereum)
                 ? classes.danger
                 : classes.primary,
             )}
             onClick={() => {
-              if (!isNotSupportedNetwork(ethereum)) {
+              if (!ethereum || isSupportedNetwork(ethereum)) {
                 toggleWalletModal();
               }
             }}
           >
-            {isNotSupportedNetwork(ethereum)
+            {ethereum && !isSupportedNetwork(ethereum)
               ? 'Wrong Network'
               : 'Connect Wallet'}
-            {isNotSupportedNetwork(ethereum) && (
+            {ethereum && !isSupportedNetwork(ethereum) && (
               <Box
                 position='absolute'
                 top={36}

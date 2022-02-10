@@ -37,7 +37,7 @@ import {
   calculateSlippageAmount,
   calculateGasMargin,
   returnTokenFromKey,
-  isNotSupportedNetwork,
+  isSupportedNetwork,
 } from 'utils';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
 import { ReactComponent as AddLiquidityIcon } from 'assets/images/AddLiquidityIcon.svg';
@@ -367,7 +367,7 @@ const AddLiquidity: React.FC<{
   };
 
   const connectWallet = () => {
-    if (isNotSupportedNetwork(ethereum)) {
+    if (ethereum && !isSupportedNetwork(ethereum)) {
       addMaticToMetamask();
     } else {
       toggleWalletModal();
@@ -386,7 +386,7 @@ const AddLiquidity: React.FC<{
   const buttonText = useMemo(() => {
     if (account) {
       return error ?? 'Supply';
-    } else if (isNotSupportedNetwork(ethereum)) {
+    } else if (ethereum && !isSupportedNetwork(ethereum)) {
       return 'Switch to Polygon';
     }
     return 'Connect Wallet';
