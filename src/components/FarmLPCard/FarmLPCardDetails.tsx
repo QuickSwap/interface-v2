@@ -22,6 +22,7 @@ import {
   returnTokenFromKey,
   getStakedAmountStakingInfo,
   getUSDString,
+  getEarnedUSDLPFarm,
 } from 'utils';
 import CircleInfoIcon from 'assets/images/circleinfo.svg';
 
@@ -74,9 +75,8 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
 
 const FarmLPCardDetails: React.FC<{
   pair: Pair | null | undefined;
-  dQuicktoQuick: number;
   stakingAPY: number;
-}> = ({ pair, dQuicktoQuick, stakingAPY }) => {
+}> = ({ pair, stakingAPY }) => {
   const classes = useStyles();
   const { palette, breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
@@ -107,7 +107,6 @@ const FarmLPCardDetails: React.FC<{
 
   const currency0 = token0 ? unwrappedToken(token0) : undefined;
   const currency1 = token1 ? unwrappedToken(token1) : undefined;
-  const quickPriceUSD = stakingInfo?.quickPrice;
 
   const userLiquidityUnstaked = useTokenBalance(
     account ?? undefined,
@@ -258,25 +257,22 @@ const FarmLPCardDetails: React.FC<{
     }
   };
 
-  const earnedUSD =
-    Number(stakingInfo?.earnedAmount.toSignificant()) *
-    dQuicktoQuick *
-    Number(quickPriceUSD);
-
-  const earnedUSDStr =
-    earnedUSD < 0.001 && earnedUSD > 0
-      ? '< $0.001'
-      : '$' + earnedUSD.toLocaleString();
+  const earnedUSDStr = getEarnedUSDLPFarm(stakingInfo);
 
   const tvl = getTVLStaking(
     stakedAmounts?.totalStakedUSD,
     stakedAmounts?.totalStakedBase,
   );
 
-  const rewards =
-    (stakingInfo?.dQuickToQuick ?? 0) * (stakingInfo?.quickPrice ?? 0);
+  const rewards = useMemo(() => {
+    if (!stakingInfo) return 0;
+    return stakingInfo.rate * stakingInfo.rewardTokenPrice;
+  }, [stakingInfo]);
 
-  const poolRate = getRewardRate(stakingInfo?.totalRewardRate);
+  const poolRate = getRewardRate(
+    stakingInfo?.totalRewardRate,
+    stakingInfo?.rewardToken,
+  );
 
   return (
     <Box

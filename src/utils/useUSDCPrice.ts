@@ -5,12 +5,14 @@ import {
   JSBI,
   Price,
   WETH,
+  Token,
 } from '@uniswap/sdk';
 import { useMemo } from 'react';
-import { PairState, usePairs } from 'data/Reserves';
+import { PairState, usePairs, usePair } from 'data/Reserves';
 import { useActiveWeb3React } from 'hooks';
-import { wrappedCurrency } from './wrappedCurrency';
+import { unwrappedToken, wrappedCurrency } from './wrappedCurrency';
 import { returnTokenFromKey } from 'utils';
+import { useDQUICKtoQUICK } from 'state/stake/hooks';
 
 /**
  * Returns the price in USDC of the input currency
@@ -458,4 +460,45 @@ export function useUSDCPrices(currencies: Currency[]): (Price | undefined)[] {
     }
     return undefined;
   });
+}
+
+export function useUSDCPricesToken(tokens: Token[]) {
+  const dQUICKtoQUICK = useDQUICKtoQUICK();
+  const [, quickUsdcPair] = usePair(
+    returnTokenFromKey('QUICK'),
+    returnTokenFromKey('USDC'),
+  );
+  const quickPrice = Number(
+    quickUsdcPair?.priceOf(returnTokenFromKey('QUICK'))?.toSignificant(6) ?? 0,
+  );
+  const filteredTokens = tokens
+    .filter((item, pos, self) => {
+      return self.findIndex((token) => token.equals(item)) == pos;
+    })
+    .filter(
+      (token) =>
+        !token.equals(returnTokenFromKey('QUICK')) &&
+        !token.equals(returnTokenFromKey('DQUICK')),
+    );
+  const currencies = filteredTokens.map((token) => unwrappedToken(token));
+  const usdPrices = useUSDCPrices(currencies);
+  const usdPricesWithToken = filteredTokens.map((token, index) => {
+    return { token, price: Number(usdPrices[index]?.toSignificant(6) ?? 0) };
+  });
+  return tokens.map((token) => {
+    if (token.equals(returnTokenFromKey('DQUICK'))) {
+      return dQUICKtoQUICK * quickPrice;
+    } else if (token.equals(returnTokenFromKey('QUICK'))) {
+      return quickPrice;
+    } else {
+      const priceObj = usdPricesWithToken.find((item) =>
+        item.token.equals(token),
+      );
+      return priceObj?.price ?? 0;
+    }
+  });
+}
+
+export function useUSDCPriceToken(token: Token) {
+  return useUSDCPricesToken([token])[0];
 }

@@ -9,6 +9,7 @@ import CircleInfoIcon from 'assets/images/circleinfo.svg';
 import FarmDualCardDetails from './FarmDualCardDetails';
 import {
   getAPYWithFee,
+  getEarnedUSDDualFarm,
   getRewardRate,
   getStakedAmountStakingInfo,
   getTVLStaking,
@@ -42,9 +43,8 @@ const useStyles = makeStyles(({ palette }) => ({
 
 const FarmDualCard: React.FC<{
   stakingInfo: DualStakingInfo;
-  dQuicktoQuick: number;
   stakingAPY: number;
-}> = ({ stakingInfo, dQuicktoQuick, stakingAPY }) => {
+}> = ({ stakingInfo, stakingAPY }) => {
   const classes = useStyles();
   const { palette, breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
@@ -78,23 +78,19 @@ const FarmDualCard: React.FC<{
     stakedAmounts?.totalStakedBase,
   );
 
-  const poolRateA = getRewardRate(stakingInfo.totalRewardRateA);
-  const poolRateB = getRewardRate(stakingInfo.totalRewardRateB);
+  const poolRateA = getRewardRate(
+    stakingInfo.totalRewardRateA,
+    stakingInfo.rewardTokenA,
+  );
+  const poolRateB = getRewardRate(
+    stakingInfo.totalRewardRateB,
+    stakingInfo.rewardTokenB,
+  );
 
-  const earnedUSD =
-    Number(stakingInfo.earnedAmountA.toSignificant()) *
-      dQuicktoQuick *
-      stakingInfo.quickPrice +
-    Number(stakingInfo.earnedAmountB.toSignificant()) *
-      Number(stakingInfo.rewardTokenBPrice);
-
-  const earnedUSDStr =
-    earnedUSD < 0.001 && earnedUSD > 0
-      ? '< $0.001'
-      : '$' + earnedUSD.toLocaleString();
+  const earnedUSDStr = getEarnedUSDDualFarm(stakingInfo);
 
   const rewards =
-    stakingInfo?.rateA * stakingInfo?.quickPrice +
+    stakingInfo?.rateA * (stakingInfo?.rewardTokenAPrice ?? 0) +
     stakingInfo?.rateB * Number(stakingInfo.rewardTokenBPrice);
 
   const renderPool = (width: number) => (
@@ -200,7 +196,6 @@ const FarmDualCard: React.FC<{
       {isExpandCard && (
         <FarmDualCardDetails
           pair={stakingInfo.stakingTokenPair}
-          dQuicktoQuick={dQuicktoQuick}
           stakingAPY={stakingAPY}
         />
       )}
