@@ -1,16 +1,13 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { useHistory } from 'react-router-dom';
 import {
-  ButtonGroup,
   Typography,
   Button,
   Box,
   Grid,
   useMediaQuery,
 } from '@material-ui/core';
-import Skeleton from '@material-ui/lab/Skeleton';
-import { Currency } from '@uniswap/sdk';
 import { useTheme } from '@material-ui/core/styles';
 import Motif from 'assets/images/Motif.svg';
 import BuyWithFiat from 'assets/images/featured/BuywithFiat.svg';
@@ -19,7 +16,6 @@ import DragonsLair from 'assets/images/featured/DragonsLair.svg';
 import ProvideLiquidity from 'assets/images/featured/ProvideLiquidity.svg';
 import Rewards from 'assets/images/featured/Rewards.svg';
 import FeaturedSwap from 'assets/images/featured/Swap.svg';
-import FiatMask from 'assets/images/FiatMask.svg';
 import { ReactComponent as CoingeckoIcon } from 'assets/images/social/Coingecko.svg';
 import { ReactComponent as DiscordIcon } from 'assets/images/social/Discord.svg';
 import { ReactComponent as MediumIcon } from 'assets/images/social/Medium.svg';
@@ -27,54 +23,15 @@ import { ReactComponent as RedditIcon } from 'assets/images/social/Reddit.svg';
 import { ReactComponent as TelegramIcon } from 'assets/images/social/Telegram.svg';
 import { ReactComponent as TwitterIcon } from 'assets/images/social/Twitter.svg';
 import { ReactComponent as YouTubeIcon } from 'assets/images/social/YouTube.svg';
-import {
-  Swap,
-  CurrencyInput,
-  RewardSlider,
-  AddLiquidity,
-  StakeQuickModal,
-  TopMovers,
-} from 'components';
-import { useActiveWeb3React, useInitTransak } from 'hooks';
-import {
-  addMaticToMetamask,
-  getEthPrice,
-  getGlobalData,
-  formatCompact,
-  getDaysCurrentYear,
-  returnTokenFromKey,
-  isSupportedNetwork,
-} from 'utils';
-import { useGlobalData, useWalletModalToggle } from 'state/application/hooks';
-import { useLairInfo, useTotalRewardsDistributed } from 'state/stake/hooks';
+import { RewardSlider, TopMovers } from 'components';
+import { getEthPrice, getGlobalData } from 'utils';
+import { useGlobalData } from 'state/application/hooks';
+import { HeroSection } from './HeroSection';
+import { TradingInfo } from './TradingInfo';
+import { SwapSection } from './SwapSection';
+import { BuyFiatSection } from './BuyFiatSection';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
-  heroSection: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    margin: '100px 0 80px',
-    position: 'relative',
-    textAlign: 'center',
-    zIndex: 2,
-    '& h3': {
-      textTransform: 'uppercase',
-      marginBottom: 20,
-    },
-    '& h1': {
-      color: palette.primary.main,
-    },
-    '& > button': {
-      height: 56,
-      width: 194,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    [breakpoints.down('xs')]: {
-      margin: '64px 0',
-    },
-  },
   tradingInfo: {
     width: '100%',
     position: 'relative',
@@ -82,26 +39,6 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     justifyContent: 'center',
     [breakpoints.down('md')]: {
       flexWrap: 'wrap',
-    },
-    '& > div': {
-      background: palette.background.default,
-      width: 'calc(25% - 24px)',
-      maxWidth: 288,
-      minWidth: 220,
-      height: 133,
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      borderRadius: 20,
-      margin: 12,
-      '& p': {
-        marginBottom: 24,
-        textTransform: 'uppercase',
-      },
-      [breakpoints.down('xs')]: {
-        height: 'unset',
-      },
     },
   },
   quickInfo: {
@@ -111,107 +48,6 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     maxWidth: 800,
     '& h2': {
       marginBottom: 60,
-    },
-  },
-  swapContainer: {
-    textAlign: 'center',
-    padding: '20px 0',
-    maxWidth: 1048,
-    margin: 'auto',
-    width: '100%',
-    '& > div': {
-      width: '100%',
-    },
-    '& .MuiButtonGroup-root': {
-      marginBottom: 50,
-      '& button': {
-        maxWidth: 180,
-        width: '50%',
-        height: 48,
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        background: 'transparent',
-        border: `1px solid ${palette.primary.dark}`,
-        color: 'white',
-        '&.active': {
-          background: '#FFFFFFDE',
-          border: `1px solid transparent`,
-          color: palette.background.default,
-        },
-        '&:first-child': {
-          borderTopLeftRadius: 24,
-          borderBottomLeftRadius: 24,
-        },
-        '&:last-child': {
-          borderTopRightRadius: 24,
-          borderBottomRightRadius: 24,
-        },
-      },
-    },
-    [breakpoints.down('xs')]: {
-      '& .MuiGrid-item': {
-        width: '100%',
-        marginBottom: 32,
-        textAlign: 'center',
-      },
-    },
-  },
-  buttonGroup: {
-    textAlign: 'center',
-    padding: '20px 0',
-    maxWidth: 1048,
-    margin: 'auto',
-    width: '100%',
-    '& > div': {
-      width: '100%',
-    },
-    '& .MuiButtonGroup-root': {
-      display: 'flex',
-      flexDirection: 'row',
-      justifyContent: 'center',
-      marginBottom: 50,
-      '& button': {
-        maxWidth: 180,
-        width: '50%',
-        height: 48,
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        background: 'transparent',
-        border: `1px solid ${palette.primary.dark}`,
-        color: palette.text.secondary,
-        '&.active': {
-          background: '#FFFFFFDE',
-          border: `1px solid transparent`,
-          color: palette.background.default,
-        },
-        '&:first-child': {
-          borderTopLeftRadius: 24,
-          borderBottomLeftRadius: 24,
-        },
-        '&:last-child': {
-          borderTopRightRadius: 24,
-          borderBottomRightRadius: 24,
-        },
-      },
-    },
-    [breakpoints.down('xs')]: {
-      '& .MuiGrid-item': {
-        width: '100%',
-        marginBottom: 32,
-        textAlign: 'center',
-      },
-    },
-  },
-  swapInfo: {
-    textAlign: 'left',
-    marginBottom: 60,
-    [breakpoints.down('sm')]: {
-      order: -1,
-    },
-    '& h3': {
-      marginBottom: 16,
     },
   },
   rewardsContainer: {
@@ -420,19 +256,8 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
 
 const LandingPage: React.FC = () => {
   const classes = useStyles();
-  const daysCurrentYear = getDaysCurrentYear();
-  const [swapIndex, setSwapIndex] = useState(0);
-  const [openStakeModal, setOpenStakeModal] = useState(false);
   const { palette, breakpoints } = useTheme();
-  const { account } = useActiveWeb3React();
-  const { ethereum } = window as any;
   const mobileWindowSize = useMediaQuery(breakpoints.down('sm'));
-  const { initTransak } = useInitTransak();
-  const toggleWalletModal = useWalletModalToggle();
-  const [fiatCurrency, setFiatCurrency] = useState<Currency | undefined>(
-    returnTokenFromKey('QUICK'),
-  );
-  const [fiatAmount, setFiatAmount] = useState('');
 
   const features = [
     {
@@ -510,21 +335,6 @@ const LandingPage: React.FC = () => {
 
   const history = useHistory();
   const { globalData, updateGlobalData } = useGlobalData();
-  const lairInfo = useLairInfo();
-
-  const APR =
-    (((Number(lairInfo?.oneDayVol) * 0.04 * 0.01) /
-      Number(lairInfo?.dQuickTotalSupply.toSignificant(6))) *
-      daysCurrentYear) /
-    (Number(lairInfo?.dQUICKtoQUICK.toSignificant()) *
-      Number(lairInfo?.quickPrice));
-
-  const dQUICKAPY = useMemo(() => {
-    if (!APR) return;
-    return (Math.pow(1 + APR / daysCurrentYear, daysCurrentYear) - 1) * 100;
-  }, [APR, daysCurrentYear]);
-
-  const totalRewardsUSD = useTotalRewardsDistributed();
 
   useEffect(() => {
     async function fetchGlobalData() {
@@ -539,174 +349,11 @@ const LandingPage: React.FC = () => {
 
   return (
     <div id='landing-page' style={{ width: '100%' }}>
-      {openStakeModal && (
-        <StakeQuickModal
-          open={openStakeModal}
-          onClose={() => setOpenStakeModal(false)}
-        />
-      )}
-      <Box className={classes.heroSection}>
-        <Typography variant='body2' style={{ fontWeight: 'bold' }}>
-          Total Value Locked
-        </Typography>
-        {globalData ? (
-          <Box display='flex' flexDirection='row' style={{ paddingTop: '5px' }}>
-            <Typography variant='h3' style={{ paddingTop: '9px' }}>
-              $
-            </Typography>
-            <Typography style={{ fontSize: '55px', fontWeight: 700 }}>
-              {Number(globalData.totalLiquidityUSD).toLocaleString(undefined, {
-                maximumFractionDigits: 0,
-              })}
-            </Typography>
-          </Box>
-        ) : (
-          <Box my={1}>
-            <Skeleton variant='rect' width={400} height={72} />
-          </Box>
-        )}
-        <Typography style={{ fontSize: '15px', color: palette.text.secondary }}>
-          Top Asset Exchange on the Polygon Network
-        </Typography>
-        <Box mt={2} width={200} height={48}>
-          <Button
-            fullWidth
-            style={{
-              backgroundColor: '#004ce6',
-              borderRadius: '30px',
-              height: '100%',
-              fontSize: 16,
-              fontWeight: 500,
-            }}
-            onClick={() => {
-              ethereum && !isSupportedNetwork(ethereum)
-                ? addMaticToMetamask()
-                : account
-                ? history.push('/swap')
-                : toggleWalletModal();
-            }}
-          >
-            {ethereum && !isSupportedNetwork(ethereum)
-              ? 'Switch to Polygon'
-              : account
-              ? 'Enter App'
-              : 'Connect Wallet'}
-          </Button>
-        </Box>
+      <Box margin={mobileWindowSize ? '64px 0' : '100px 0 80px'}>
+        <HeroSection globalData={globalData} />
       </Box>
       <Box className={classes.tradingInfo} display='flex'>
-        <Box>
-          {globalData ? (
-            <Typography variant='h3'>
-              {Number(globalData.oneDayTxns).toLocaleString()}
-            </Typography>
-          ) : (
-            <Skeleton variant='rect' width={100} height={45} />
-          )}
-          <Typography
-            style={{
-              fontSize: '12px',
-              color: palette.text.secondary,
-              paddingTop: '15px',
-            }}
-          >
-            24H TRANSACTIONS
-          </Typography>
-        </Box>
-        <Box>
-          {globalData ? (
-            <Box display='flex' flexDirection='row'>
-              <Typography variant='h6' style={{ paddingTop: '2px' }}>
-                $
-              </Typography>
-              <Typography variant='h3'>
-                {formatCompact(globalData.oneDayVolumeUSD)}
-              </Typography>
-            </Box>
-          ) : (
-            <Skeleton variant='rect' width={100} height={45} />
-          )}
-          <Typography
-            style={{
-              fontSize: '12px',
-              color: palette.text.secondary,
-              paddingTop: '15px',
-            }}
-          >
-            24H TRADING VOLUME
-          </Typography>
-        </Box>
-        <Box>
-          {totalRewardsUSD ? (
-            <Box display='flex' flexDirection='row'>
-              <Typography variant='h6' style={{ paddingTop: '2px' }}>
-                $
-              </Typography>
-              <Typography variant='h3'>
-                {totalRewardsUSD.toLocaleString()}
-              </Typography>
-            </Box>
-          ) : (
-            <Skeleton variant='rect' width={100} height={45} />
-          )}
-          <Typography
-            style={{
-              fontSize: '12px',
-              color: palette.text.secondary,
-              paddingTop: '15px',
-            }}
-          >
-            24h REWARDS DISTRIBUTED
-          </Typography>
-        </Box>
-        <Box>
-          {globalData ? (
-            <Typography variant='h3'>
-              {Number(globalData.pairCount).toLocaleString(undefined, {
-                maximumFractionDigits: 0,
-              })}
-            </Typography>
-          ) : (
-            <Skeleton variant='rect' width={100} height={45} />
-          )}
-          <Typography
-            style={{
-              fontSize: '12px',
-              color: palette.text.secondary,
-              paddingTop: '15px',
-            }}
-          >
-            TOTAL TRADING PAIRS
-          </Typography>
-        </Box>
-        <Box>
-          {dQUICKAPY ? (
-            <Typography variant='h3' style={{ paddingTop: '20px' }}>
-              {dQUICKAPY.toLocaleString()}%
-            </Typography>
-          ) : (
-            <Skeleton variant='rect' width={100} height={45} />
-          )}
-          <Box
-            style={{
-              fontSize: '12px',
-              color: palette.text.secondary,
-              paddingTop: '15px',
-            }}
-          >
-            dQUICK APY
-          </Box>
-          <Typography
-            style={{
-              color: palette.primary.main,
-              fontSize: '12px',
-              cursor: 'pointer',
-            }}
-            onClick={() => setOpenStakeModal(true)}
-          >
-            stake {'>'}
-          </Typography>
-        </Box>
+        <TradingInfo globalData={globalData} />
       </Box>
       <Box className={classes.smallCommunityContainer}>
         {socialicons.map((val, ind) => (
@@ -727,45 +374,7 @@ const LandingPage: React.FC = () => {
         </Typography>
         <img src={Motif} alt='Motif' />
       </Box>
-      <Box className={classes.buttonGroup}>
-        <ButtonGroup>
-          <Button
-            className={swapIndex === 0 ? 'active' : ''}
-            onClick={() => setSwapIndex(0)}
-          >
-            Swap
-          </Button>
-          <Button
-            className={swapIndex === 1 ? 'active' : ''}
-            onClick={() => setSwapIndex(1)}
-          >
-            Liquidity
-          </Button>
-        </ButtonGroup>
-      </Box>
-      <Box className={classes.swapContainer}>
-        <Grid container spacing={mobileWindowSize ? 0 : 8} alignItems='center'>
-          <Grid item sm={12} md={6}>
-            {swapIndex === 0 ? (
-              <Swap currencyBg={palette.background.paper} />
-            ) : (
-              <AddLiquidity currencyBg={palette.background.paper} />
-            )}
-          </Grid>
-          <Grid item sm={12} md={6} className={classes.swapInfo}>
-            <Typography variant='h4'>
-              {swapIndex === 0
-                ? 'Swap tokens at near-zero gas fees'
-                : 'Let your crypto work for you'}
-            </Typography>
-            <Typography variant='body1' style={{ marginTop: '20px' }}>
-              {swapIndex === 0
-                ? 'Deposit your Liquidity Provider tokens to receive Rewards in $QUICK on top of LP Fees.'
-                : 'Provide Liquidity and earn 0.25% fee on all trades proportional to your share of the pool. Earn additional rewards by depositing your LP Tokens in Rewards Pools.'}
-            </Typography>
-          </Grid>
-        </Grid>
-      </Box>
+      <SwapSection />
       <Box className={classes.rewardsContainer}>
         <Box maxWidth='480px' width='100%'>
           <Typography variant='h4'>
@@ -794,49 +403,7 @@ const LandingPage: React.FC = () => {
           <Typography variant='body1'>See all pairs</Typography>
         </Box>
       </Box>
-      <Box className={classes.buyFiatContainer}>
-        <img src={FiatMask} alt='Fiat Mask' />
-        <Box>
-          <Box className='buyFiatInfo'>
-            <img src={BuyWithFiat} alt='buy with fiat' />
-            <Box>
-              <Typography variant='h3'>Buy crypto with Fiat</Typography>
-              <Typography variant='h6'>
-                Simple way to buy or sell crypto with a credit card, bank
-                transfer and more
-              </Typography>
-            </Box>
-          </Box>
-          <Box className='buyFiatWrapper'>
-            <Box className='buyContent'>
-              <CurrencyInput
-                currency={fiatCurrency}
-                title='I want to Buy:'
-                showMaxButton={false}
-                otherCurrency={undefined}
-                handleCurrencySelect={setFiatCurrency}
-                amount={fiatAmount}
-                setAmount={setFiatAmount}
-              />
-            </Box>
-            {fiatCurrency && (
-              <Button
-                fullWidth
-                color='primary'
-                onClick={() =>
-                  initTransak(
-                    account,
-                    mobileWindowSize,
-                    fiatCurrency.symbol || '',
-                  )
-                }
-              >
-                Buy {fiatCurrency.symbol} Now
-              </Button>
-            )}
-          </Box>
-        </Box>
-      </Box>
+      <BuyFiatSection />
       <Box className={classes.featureContainer}>
         <Box className={classes.featureHeading}>
           <Typography variant='h3'>Features</Typography>
