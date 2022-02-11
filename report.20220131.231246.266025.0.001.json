@@ -1,0 +1,659 @@
+
+{
+  "header": {
+    "reportVersion": 1,
+    "event": "Allocation failed - JavaScript heap out of memory",
+    "trigger": "FatalError",
+    "filename": "report.20220131.231246.266025.0.001.json",
+    "dumpEventTime": "2022-01-31T23:12:46Z",
+    "dumpEventTimeStamp": "1643650966143",
+    "processId": 266025,
+    "cwd": "/home/sameep/projects/uniswap/interface-v2",
+    "commandLine": [
+      "/home/sameep/.nvm/versions/node/v12.10.0/bin/node",
+      "/home/sameep/projects/uniswap/interface-v2/node_modules/.bin/eslint",
+      "."
+    ],
+    "nodejsVersion": "v12.10.0",
+    "glibcVersionRuntime": "2.31",
+    "glibcVersionCompiler": "2.17",
+    "wordSize": 64,
+    "arch": "x64",
+    "platform": "linux",
+    "componentVersions": {
+      "node": "12.10.0",
+      "v8": "7.6.303.29-node.16",
+      "uv": "1.31.0",
+      "zlib": "1.2.11",
+      "brotli": "1.0.7",
+      "ares": "1.15.0",
+      "modules": "72",
+      "nghttp2": "1.39.2",
+      "napi": "4",
+      "llhttp": "1.1.4",
+      "http_parser": "2.8.0",
+      "openssl": "1.1.1c",
+      "cldr": "35.1",
+      "icu": "64.2",
+      "tz": "2019a",
+      "unicode": "12.1"
+    },
+    "release": {
+      "name": "node",
+      "headersUrl": "https://nodejs.org/download/release/v12.10.0/node-v12.10.0-headers.tar.gz",
+      "sourceUrl": "https://nodejs.org/download/release/v12.10.0/node-v12.10.0.tar.gz"
+    },
+    "osName": "Linux",
+    "osRelease": "5.13.0-27-generic",
+    "osVersion": "#29~20.04.1-Ubuntu SMP Fri Jan 14 00:32:30 UTC 2022",
+    "osMachine": "x86_64",
+    "cpus": [
+      {
+        "model": "Intel(R) Core(TM) i9-10980HK CPU @ 2.40GHz",
+        "speed": 3100,
+        "user": 20152700,
+        "nice": 23300,
+        "sys": 5844000,
+        "idle": 739423800,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Core(TM) i9-10980HK CPU @ 2.40GHz",
+        "speed": 3100,
+        "user": 23401300,
+        "nice": 19000,
+        "sys": 5522200,
+        "idle": 55815100,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Core(TM) i9-10980HK CPU @ 2.40GHz",
+        "speed": 3100,
+        "user": 26067300,
+        "nice": 16500,
+        "sys": 6149000,
+        "idle": 52479500,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Core(TM) i9-10980HK CPU @ 2.40GHz",
+        "speed": 3100,
+        "user": 28730500,
+        "nice": 23500,
+        "sys": 5540800,
+        "idle": 55587800,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Core(TM) i9-10980HK CPU @ 2.40GHz",
+        "speed": 3100,
+        "user": 23557800,
+        "nice": 21600,
+        "sys": 5537900,
+        "idle": 56395000,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Core(TM) i9-10980HK CPU @ 2.40GHz",
+        "speed": 3100,
+        "user": 25816900,
+        "nice": 17400,
+        "sys": 5593800,
+        "idle": 55933400,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Core(TM) i9-10980HK CPU @ 2.40GHz",
+        "speed": 3100,
+        "user": 22263000,
+        "nice": 45200,
+        "sys": 5502800,
+        "idle": 57581800,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Core(TM) i9-10980HK CPU @ 2.40GHz",
+        "speed": 3100,
+        "user": 15688800,
+        "nice": 26500,
+        "sys": 15555900,
+        "idle": 55577100,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Core(TM) i9-10980HK CPU @ 2.40GHz",
+        "speed": 3100,
+        "user": 23737200,
+        "nice": 25400,
+        "sys": 6093700,
+        "idle": 55376100,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Core(TM) i9-10980HK CPU @ 2.40GHz",
+        "speed": 3100,
+        "user": 22450600,
+        "nice": 24100,
+        "sys": 5644300,
+        "idle": 56135600,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Core(TM) i9-10980HK CPU @ 2.40GHz",
+        "speed": 3100,
+        "user": 24956100,
+        "nice": 21400,
+        "sys": 5727500,
+        "idle": 53808000,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Core(TM) i9-10980HK CPU @ 2.40GHz",
+        "speed": 3100,
+        "user": 28929800,
+        "nice": 24600,
+        "sys": 6028100,
+        "idle": 53295100,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Core(TM) i9-10980HK CPU @ 2.40GHz",
+        "speed": 3242,
+        "user": 22324100,
+        "nice": 22600,
+        "sys": 5422300,
+        "idle": 56702500,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Core(TM) i9-10980HK CPU @ 2.40GHz",
+        "speed": 3100,
+        "user": 25034200,
+        "nice": 19300,
+        "sys": 5363400,
+        "idle": 56254100,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Core(TM) i9-10980HK CPU @ 2.40GHz",
+        "speed": 3100,
+        "user": 20552200,
+        "nice": 19200,
+        "sys": 5499400,
+        "idle": 57375100,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Core(TM) i9-10980HK CPU @ 2.40GHz",
+        "speed": 3100,
+        "user": 24740900,
+        "nice": 23300,
+        "sys": 5181000,
+        "idle": 54070400,
+        "irq": 0
+      }
+    ],
+    "networkInterfaces": [
+      {
+        "name": "lo",
+        "internal": true,
+        "mac": "00:00:00:00:00:00",
+        "address": "127.0.0.1",
+        "netmask": "255.0.0.0",
+        "family": "IPv4"
+      },
+      {
+        "name": "wlp0s20f3",
+        "internal": false,
+        "mac": "b4:0e:de:ea:65:e1",
+        "address": "192.168.0.15",
+        "netmask": "255.255.255.0",
+        "family": "IPv4"
+      },
+      {
+        "name": "br-33c5e653fe85",
+        "internal": false,
+        "mac": "02:42:02:26:e1:44",
+        "address": "172.18.0.1",
+        "netmask": "255.255.0.0",
+        "family": "IPv4"
+      },
+      {
+        "name": "lo",
+        "internal": true,
+        "mac": "00:00:00:00:00:00",
+        "address": "::1",
+        "netmask": "ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff",
+        "family": "IPv6",
+        "scopeid": 0
+      },
+      {
+        "name": "wlp0s20f3",
+        "internal": false,
+        "mac": "b4:0e:de:ea:65:e1",
+        "address": "fe80::f77c:9165:8efb:d910",
+        "netmask": "ffff:ffff:ffff:ffff::",
+        "family": "IPv6",
+        "scopeid": 3
+      },
+      {
+        "name": "br-33c5e653fe85",
+        "internal": false,
+        "mac": "02:42:02:26:e1:44",
+        "address": "fe80::42:2ff:fe26:e144",
+        "netmask": "ffff:ffff:ffff:ffff::",
+        "family": "IPv6",
+        "scopeid": 5
+      },
+      {
+        "name": "vethade29b4",
+        "internal": false,
+        "mac": "4a:4b:ef:53:e1:58",
+        "address": "fe80::484b:efff:fe53:e158",
+        "netmask": "ffff:ffff:ffff:ffff::",
+        "family": "IPv6",
+        "scopeid": 8
+      }
+    ],
+    "host": "sameeprateek"
+  },
+  "javascriptStack": {
+    "message": "No stack.",
+    "stack": [
+      "Unavailable."
+    ]
+  },
+  "nativeStack": [
+    {
+      "pc": "0x0000000000ae3e75",
+      "symbol": "report::TriggerNodeReport(v8::Isolate*, node::Environment*, char const*, char const*, std::string const&, v8::Local<v8::String>) [/home/sameep/.nvm/versions/node/v12.10.0/bin/node]"
+    },
+    {
+      "pc": "0x00000000009bdd83",
+      "symbol": "node::OnFatalError(char const*, char const*) [/home/sameep/.nvm/versions/node/v12.10.0/bin/node]"
+    },
+    {
+      "pc": "0x0000000000b1948e",
+      "symbol": "v8::Utils::ReportOOMFailure(v8::internal::Isolate*, char const*, bool) [/home/sameep/.nvm/versions/node/v12.10.0/bin/node]"
+    },
+    {
+      "pc": "0x0000000000b19809",
+      "symbol": "v8::internal::V8::FatalProcessOutOfMemory(v8::internal::Isolate*, char const*, bool) [/home/sameep/.nvm/versions/node/v12.10.0/bin/node]"
+    },
+    {
+      "pc": "0x0000000000cca1f5",
+      "symbol": " [/home/sameep/.nvm/versions/node/v12.10.0/bin/node]"
+    },
+    {
+      "pc": "0x0000000000cca866",
+      "symbol": "v8::internal::Heap::RecomputeLimits(v8::internal::GarbageCollector) [/home/sameep/.nvm/versions/node/v12.10.0/bin/node]"
+    },
+    {
+      "pc": "0x0000000000cd609a",
+      "symbol": "v8::internal::Heap::PerformGarbageCollection(v8::internal::GarbageCollector, v8::GCCallbackFlags) [/home/sameep/.nvm/versions/node/v12.10.0/bin/node]"
+    },
+    {
+      "pc": "0x0000000000cd6fa5",
+      "symbol": "v8::internal::Heap::CollectGarbage(v8::internal::AllocationSpace, v8::internal::GarbageCollectionReason, v8::GCCallbackFlags) [/home/sameep/.nvm/versions/node/v12.10.0/bin/node]"
+    },
+    {
+      "pc": "0x0000000000cd9a68",
+      "symbol": "v8::internal::Heap::AllocateRawWithRetryOrFail(int, v8::internal::AllocationType, v8::internal::AllocationAlignment) [/home/sameep/.nvm/versions/node/v12.10.0/bin/node]"
+    },
+    {
+      "pc": "0x0000000000ca1597",
+      "symbol": "v8::internal::Factory::NewFillerObject(int, bool, v8::internal::AllocationType) [/home/sameep/.nvm/versions/node/v12.10.0/bin/node]"
+    },
+    {
+      "pc": "0x0000000000fc9820",
+      "symbol": "v8::internal::Runtime_AllocateInOldGeneration(int, unsigned long*, v8::internal::Isolate*) [/home/sameep/.nvm/versions/node/v12.10.0/bin/node]"
+    },
+    {
+      "pc": "0x000000000134e879",
+      "symbol": " [/home/sameep/.nvm/versions/node/v12.10.0/bin/node]"
+    }
+  ],
+  "javascriptHeap": {
+    "totalMemory": 2153504768,
+    "totalCommittedMemory": 2150773496,
+    "usedMemory": 2141964872,
+    "availableMemory": 48187720,
+    "memoryLimit": 2197815296,
+    "heapSpaces": {
+      "read_only_space": {
+        "memorySize": 262144,
+        "committedMemory": 31744,
+        "capacity": 261832,
+        "used": 31432,
+        "available": 230400
+      },
+      "new_space": {
+        "memorySize": 2097152,
+        "committedMemory": 300400,
+        "capacity": 1047328,
+        "used": 50000,
+        "available": 997328
+      },
+      "old_space": {
+        "memorySize": 1941549056,
+        "committedMemory": 1941222872,
+        "capacity": 1935823024,
+        "used": 1934220888,
+        "available": 1602136
+      },
+      "code_space": {
+        "memorySize": 1736704,
+        "committedMemory": 1574304,
+        "capacity": 1456928,
+        "used": 1456928,
+        "available": 0
+      },
+      "map_space": {
+        "memorySize": 2887680,
+        "committedMemory": 2672144,
+        "capacity": 1417360,
+        "used": 1417360,
+        "available": 0
+      },
+      "large_object_space": {
+        "memorySize": 204349440,
+        "committedMemory": 204349440,
+        "capacity": 204237704,
+        "used": 204237704,
+        "available": 0
+      },
+      "code_large_object_space": {
+        "memorySize": 622592,
+        "committedMemory": 622592,
+        "capacity": 550560,
+        "used": 550560,
+        "available": 0
+      },
+      "new_large_object_space": {
+        "memorySize": 0,
+        "committedMemory": 0,
+        "capacity": 1047328,
+        "used": 0,
+        "available": 1047328
+      }
+    }
+  },
+  "resourceUsage": {
+    "userCpuSeconds": 5376.94,
+    "kernelCpuSeconds": 23.8517,
+    "cpuConsumptionPercent": 105.237,
+    "maxRss": 2439528448,
+    "pageFaults": {
+      "IORequired": 17,
+      "IONotRequired": 1016817
+    },
+    "fsActivity": {
+      "reads": 17136,
+      "writes": 16
+    }
+  },
+  "uvthreadResourceUsage": {
+    "userCpuSeconds": 5089.86,
+    "kernelCpuSeconds": 11.5854,
+    "cpuConsumptionPercent": 99.4045,
+    "fsActivity": {
+      "reads": 17136,
+      "writes": 16
+    }
+  },
+  "libuv": [
+  ],
+  "environmentVariables": {
+    "GJS_DEBUG_TOPICS": "JS ERROR;JS LOG",
+    "LESSOPEN": "| /usr/bin/lesspipe %s",
+    "npm_package_devDependencies__web3_react_core": "6.0.9",
+    "npm_package_devDependencies__types_node": "^13.13.5",
+    "npm_package_dependencies_apexcharts": "3.32.1",
+    "npm_package_dependencies__material_ui_icons": "^4.11.2",
+    "npm_package_devDependencies_workbox_precaching": "^6.1.0",
+    "npm_package_devDependencies__types_react_router_dom": "^5.1.8",
+    "npm_package_devDependencies__types_qs": "^6.9.2",
+    "npm_package_devDependencies__ethersproject_experimental": "^5.4.0",
+    "LANGUAGE": "en_IN:en",
+    "USER": "sameep",
+    "npm_package_devDependencies_ajv": "^6.12.3",
+    "npm_package_devDependencies__uniswap_liquidity_staker": "^1.0.2",
+    "npm_package_devDependencies__gelatonetwork_limit_orders_react": "^1.0.11",
+    "npm_config_version_commit_hooks": "true",
+    "npm_config_user_agent": "yarn/1.22.10 npm/? node/v12.10.0 linux x64",
+    "npm_package_dependencies__material_ui_core": "^4.12.3",
+    "npm_package_devDependencies_react_virtualized_auto_sizer": "^1.0.6",
+    "npm_package_devDependencies_graphql": "^15.5.1",
+    "npm_package_devDependencies_copy_to_clipboard": "^3.2.0",
+    "npm_config_bin_links": "true",
+    "SSH_AGENT_PID": "3467",
+    "XDG_SESSION_TYPE": "x11",
+    "npm_node_execpath": "/home/sameep/.nvm/versions/node/v12.10.0/bin/node",
+    "npm_package_dependencies_react_slick": "^0.28.1",
+    "npm_package_devDependencies__web3_react_walletlink_connector": "6.2.3",
+    "npm_config_init_version": "1.0.0",
+    "SHLVL": "1",
+    "npm_package_devDependencies_multicodec": "^3.0.1",
+    "npm_package_devDependencies_ipfs_deploy": "^11.1.0",
+    "HOME": "/home/sameep",
+    "OLDPWD": "/home/sameep/projects/uniswap/events",
+    "npm_package_browserslist_production_0": ">0.2%",
+    "npm_package_devDependencies_workbox_routing": "^6.1.0",
+    "npm_package_devDependencies_workbox_core": "^6.1.0",
+    "npm_package_devDependencies__typescript_eslint_parser": "^5.3.1",
+    "npm_package_devDependencies__types_react_window": "^1.8.5",
+    "npm_package_devDependencies__transak_transak_sdk": "^1.0.28",
+    "DESKTOP_SESSION": "ubuntu",
+    "NVM_BIN": "/home/sameep/.nvm/versions/node/v12.10.0/bin",
+    "npm_package_browserslist_production_1": "not dead",
+    "npm_package_devDependencies_eslint_config_prettier": "^6.11.0",
+    "NVM_INC": "/home/sameep/.nvm/versions/node/v12.10.0/include/node",
+    "npm_package_browserslist_production_2": "not op_mini all",
+    "npm_package_devDependencies__web3_react_walletconnect_connector": "6.2.4",
+    "npm_package_devDependencies__uniswap_v2_core": "1.0.0",
+    "npm_config_init_license": "MIT",
+    "GNOME_SHELL_SESSION_MODE": "ubuntu",
+    "GTK_MODULES": "gail:atk-bridge",
+    "YARN_WRAP_OUTPUT": "false",
+    "npm_package_devDependencies_apollo_client": "^2.6.10",
+    "npm_config_version_tag_prefix": "v",
+    "MANAGERPID": "3102",
+    "DBUS_SESSION_BUS_ADDRESS": "unix:path=/run/user/1000/bus",
+    "npm_package_dependencies_moment": "^2.29.1",
+    "npm_package_devDependencies_web3": "^1.3.5",
+    "npm_package_devDependencies_source_map_explorer": "^2.5.2",
+    "npm_package_devDependencies_eslint_plugin_react_hooks": "^4.0.0",
+    "npm_package_devDependencies__types_react_redux": "^7.1.8",
+    "COLORTERM": "truecolor",
+    "npm_package_description": "This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).",
+    "npm_package_devDependencies_typescript": "^4.1.2",
+    "npm_package_devDependencies_hamburger_react": "^2.4.1",
+    "npm_package_devDependencies__uniswap_token_lists": "^1.0.0-beta.17",
+    "NVM_DIR": "/home/sameep/.nvm",
+    "npm_package_readmeFilename": "README.md",
+    "npm_package_devDependencies_redux_localstorage_simple": "^2.4.1",
+    "npm_package_devDependencies_react": "^17.0.2",
+    "npm_package_devDependencies__types_react_dom": "^17.0.0",
+    "IM_CONFIG_PHASE": "1",
+    "npm_package_eslintConfig_ignorePatterns_0": "node_modules",
+    "npm_package_devDependencies_prettier": "^1.17.0",
+    "npm_package_devDependencies_multihashes": "^3.0.1",
+    "npm_package_devDependencies__reduxjs_toolkit": "^1.3.5",
+    "LOGNAME": "sameep",
+    "npm_package_devDependencies__types_workbox_precaching": "^4.3.1",
+    "JOURNAL_STREAM": "8:66666",
+    "_": "/home/sameep/.nvm/versions/node/v12.10.0/bin/yarn",
+    "npm_package_devDependencies__types_jest": "^25.2.1",
+    "npm_package_private": "true",
+    "XDG_SESSION_CLASS": "user",
+    "npm_package_devDependencies_react_device_detect": "^1.6.2",
+    "npm_package_devDependencies__typescript_eslint_eslint_plugin": "^5.3.1",
+    "npm_package_devDependencies__types_react_virtualized_auto_sizer": "^1.0.1",
+    "npm_config_registry": "https://registry.yarnpkg.com",
+    "USERNAME": "sameep",
+    "TERM": "xterm-256color",
+    "npm_package_devDependencies_i18next_xhr_backend": "^3.2.2",
+    "npm_package_devDependencies__uniswap_merkle_distributor": "1.0.1",
+    "npm_package_devDependencies__types_testing_library__cypress": "^5.0.5",
+    "GNOME_DESKTOP_SESSION_ID": "this-is-deprecated",
+    "npm_package_scripts_ipfs_deploy": "ipfs-deploy build",
+    "npm_package_scripts_start": "react-app-rewired start",
+    "npm_package_devDependencies_wcag_contrast": "^3.0.0",
+    "npm_package_devDependencies__types_multicodec": "^1.0.0",
+    "npm_config_ignore_scripts": "true",
+    "WINDOWPATH": "2",
+    "npm_package_browserslist_development_0": "last 1 chrome version",
+    "npm_package_devDependencies_node_vibrant": "^3.1.5",
+    "npm_package_devDependencies_ethers": "^5.0.7",
+    "npm_package_devDependencies__web3_react_ledger_connector": "6.1.9",
+    "npm_package_devDependencies__types_workbox_routing": "^4.3.1",
+    "npm_package_devDependencies__types_workbox_core": "^4.3.1",
+    "PATH": "/tmp/yarn--1643645834149-0.30136008583119:/home/sameep/projects/uniswap/interface-v2/node_modules/.bin:/home/sameep/.config/yarn/link/node_modules/.bin:/home/sameep/.yarn/bin:/home/sameep/.nvm/versions/node/v12.10.0/libexec/lib/node_modules/npm/bin/node-gyp-bin:/home/sameep/.nvm/versions/node/v12.10.0/lib/node_modules/npm/bin/node-gyp-bin:/home/sameep/.nvm/versions/node/v12.10.0/bin/node_modules/npm/bin/node-gyp-bin:/home/sameep/.nvm/versions/node/v12.10.0/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+    "NODE": "/home/sameep/.nvm/versions/node/v12.10.0/bin/node",
+    "SESSION_MANAGER": "local/sameeprateek:@/tmp/.ICE-unix/3501,unix/sameeprateek:/tmp/.ICE-unix/3501",
+    "INVOCATION_ID": "ff77c04d6bba458d91ac23d968bdcc39",
+    "npm_package_dependencies_react_ga": "^3.3.0",
+    "npm_package_browserslist_development_1": "last 1 firefox version",
+    "npm_package_devDependencies_lodash_flatmap": "^4.5.0",
+    "npm_package_devDependencies__uniswap_v2_periphery": "^1.1.0-beta.0",
+    "npm_package_name": "interface-v2",
+    "XDG_MENU_PREFIX": "gnome-",
+    "GNOME_TERMINAL_SCREEN": "/org/gnome/Terminal/screen/04f12845_5392_42bb_8997_1e9e7b5078c6",
+    "XDG_RUNTIME_DIR": "/run/user/1000",
+    "npm_package_browserslist_development_2": "last 1 safari version",
+    "npm_package_scripts_integration_test": "start-server-and-test 'serve build -l 3000' http://localhost:3000 'cypress run'",
+    "npm_package_scripts_analyze": "source-map-explorer 'build/static/js/*.js'",
+    "npm_package_devDependencies_cids": "^1.1.9",
+    "DISPLAY": ":1",
+    "npm_package_scripts_eject": "react-scripts eject",
+    "LANG": "en_IN",
+    "XDG_CURRENT_DESKTOP": "ubuntu:GNOME",
+    "npm_package_resolutions__walletconnect_web3_provider": "1.1.1-alpha.0",
+    "npm_package_devDependencies_react_i18next": "^11.11.4",
+    "npm_package_devDependencies_react_feather": "^2.0.8",
+    "npm_package_devDependencies_graphql_tag": "^2.12.5",
+    "npm_package_devDependencies_eslint": "^7.11.0",
+    "npm_package_devDependencies__types_styled_components": "^5.1.15",
+    "XMODIFIERS": "@im=ibus",
+    "XDG_SESSION_DESKTOP": "ubuntu",
+    "XAUTHORITY": "/run/user/1000/gdm/Xauthority",
+    "LS_COLORS": "rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:",
+    "GNOME_TERMINAL_SERVICE": ":1.91",
+    "npm_package_devDependencies__gnosis_pm_safe_apps_sdk": "^4.0.0",
+    "SSH_AUTH_SOCK": "/run/user/1000/keyring/ssh",
+    "npm_package_scripts_test": "react-scripts test --env=jsdom",
+    "npm_package_devDependencies_react_scripts": "4.0.3",
+    "npm_package_devDependencies_react_router_dom": "^5.2.0",
+    "npm_package_devDependencies_qs": "^6.9.4",
+    "npm_package_devDependencies_i18next": "^20.4.0",
+    "npm_package_devDependencies_fortmatic": "^2.2.1",
+    "npm_package_devDependencies_apollo_cache_inmemory": "^1.6.6",
+    "npm_config_version_git_message": "v%s",
+    "SHELL": "/bin/bash",
+    "npm_lifecycle_event": "eslint",
+    "npm_package_dependencies_slick_carousel": "^1.8.1",
+    "npm_package_devDependencies__web3_react_portis_connector": "6.0.9",
+    "npm_package_devDependencies__types_react": "^17.0.0",
+    "npm_package_version": "0.1.0",
+    "QT_ACCESSIBILITY": "1",
+    "GDMSESSION": "ubuntu",
+    "npm_config_argv": "{\"remain\":[],\"cooked\":[\"run\",\"eslint\"],\"original\":[\"eslint\",\".\"]}",
+    "npm_package_dependencies_react_cool_inview": "^2.0.8",
+    "npm_package_scripts_build": "CI=false react-app-rewired --max_old_space_size=4096 build",
+    "LESSCLOSE": "/usr/bin/lesspipe %s %s",
+    "npm_package_devDependencies_cypress": "^7.7.0",
+    "npm_package_devDependencies_react_app_rewired": "^2.1.8",
+    "npm_package_devDependencies_polished": "^3.3.2",
+    "npm_package_devDependencies_i18next_browser_languagedetector": "^6.1.2",
+    "npm_config_version_git_tag": "true",
+    "npm_config_version_git_sign": "",
+    "GPG_AGENT_INFO": "/run/user/1000/gnupg/S.gpg-agent:0:1",
+    "GJS_DEBUG_OUTPUT": "stderr",
+    "npm_package_dependencies_react_error_overlay": "^6.0.10",
+    "npm_package_license": "GPL-3.0-or-later",
+    "npm_package_devDependencies_start_server_and_test": "^1.11.0",
+    "npm_package_devDependencies_react_window": "^1.8.6",
+    "npm_package_devDependencies_eslint_plugin_react": "^7.19.0",
+    "npm_package_devDependencies_apollo_link_http": "^1.5.17",
+    "npm_config_strict_ssl": "true",
+    "QT_IM_MODULE": "ibus",
+    "npm_package_scripts_format": "prettier --write \"**/*.{ts,js,tsx,json,md}\"",
+    "npm_package_devDependencies_eslint_plugin_prettier": "^3.1.3",
+    "npm_package_devDependencies__uniswap_sdk": "npm:quickswap-sdk@3.0.8",
+    "npm_package_devDependencies__types_react_slick": "^0.23.7",
+    "PWD": "/home/sameep/projects/uniswap/interface-v2",
+    "npm_execpath": "/home/sameep/.nvm/versions/node/v12.10.0/lib/node_modules/yarn/bin/yarn.js",
+    "npm_package_devDependencies__uniswap_governance": "^1.0.2",
+    "npm_package_devDependencies__types_wcag_contrast": "^3.0.0",
+    "XDG_CONFIG_DIRS": "/etc/xdg/xdg-ubuntu:/etc/xdg",
+    "NVM_CD_FLAGS": "",
+    "XDG_DATA_DIRS": "/usr/share/ubuntu:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop",
+    "npm_package_dependencies_styled_components": "^5.3.3",
+    "npm_package_devDependencies_serve": "^11.3.2",
+    "npm_package_devDependencies__types_lodash_flatmap": "^4.5.6",
+    "npm_config_save_prefix": "^",
+    "npm_config_ignore_optional": "",
+    "npm_package_devDependencies_react_redux": "^7.2.4",
+    "npm_package_devDependencies__web3_react_injected_connector": "6.0.7",
+    "VTE_VERSION": "6003",
+    "npm_package_dependencies__material_ui_lab": "^4.0.0-alpha.60",
+    "npm_package_devDependencies__arkane_network_web3_arkane_provider": "^0.23.0",
+    "INIT_CWD": "/home/sameep/projects/uniswap/interface-v2",
+    "npm_package_dependencies_react_apexcharts": "^1.3.9",
+    "npm_package_eslintConfig_extends": "react-app",
+    "npm_package_devDependencies_react_dom": "^17.0.2"
+  },
+  "userLimits": {
+    "core_file_size_blocks": {
+      "soft": 0,
+      "hard": "unlimited"
+    },
+    "data_seg_size_kbytes": {
+      "soft": "unlimited",
+      "hard": "unlimited"
+    },
+    "file_size_blocks": {
+      "soft": "unlimited",
+      "hard": "unlimited"
+    },
+    "max_locked_memory_bytes": {
+      "soft": 67108864,
+      "hard": 67108864
+    },
+    "max_memory_size_kbytes": {
+      "soft": "unlimited",
+      "hard": "unlimited"
+    },
+    "open_files": {
+      "soft": 1048576,
+      "hard": 1048576
+    },
+    "stack_size_bytes": {
+      "soft": 8388608,
+      "hard": "unlimited"
+    },
+    "cpu_time_seconds": {
+      "soft": "unlimited",
+      "hard": "unlimited"
+    },
+    "max_user_processes": {
+      "soft": 127304,
+      "hard": 127304
+    },
+    "virtual_memory_kbytes": {
+      "soft": "unlimited",
+      "hard": "unlimited"
+    }
+  },
+  "sharedObjects": [
+    "linux-vdso.so.1",
+    "/lib/x86_64-linux-gnu/libdl.so.2",
+    "/lib/x86_64-linux-gnu/librt.so.1",
+    "/lib/x86_64-linux-gnu/libstdc++.so.6",
+    "/lib/x86_64-linux-gnu/libm.so.6",
+    "/lib/x86_64-linux-gnu/libgcc_s.so.1",
+    "/lib/x86_64-linux-gnu/libpthread.so.0",
+    "/lib/x86_64-linux-gnu/libc.so.6",
+    "/lib64/ld-linux-x86-64.so.2"
+  ]
+}
