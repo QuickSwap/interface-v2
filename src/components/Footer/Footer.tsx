@@ -18,11 +18,12 @@ const useStyles = makeStyles(({}) => ({
 
 const Footer: React.FC = () => {
   const classes = useStyles();
+  const copyrightYear = new Date().getFullYear();
 
   return (
     <Box className={classes.footer}>
       <QuickIcon />
-      <Typography>© 2022 QuickSwap.</Typography>
+      <Typography>© {copyrightYear} QuickSwap.</Typography>
     </Box>
   );
 };
