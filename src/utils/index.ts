@@ -235,18 +235,6 @@ export const getEthPrice: () => Promise<number[]> = async () => {
 
   try {
     const oneDayBlock = await getBlockFromTimestamp(utcOneDayBack);
-
-    // const result = await client.query({
-    //   query: ETH_PRICE(),
-    //   fetchPolicy: 'network-only',
-    // });
-    // const resultOneDay = await client.query({
-    //   query: ETH_PRICE(oneDayBlock),
-    //   fetchPolicy: 'network-only',
-    // });
-    // const currentPrice = result?.data?.bundles[0]?.ethPrice;
-    // const oneDayBackPrice = resultOneDay?.data?.bundles[0]?.ethPrice;
-
     const result = await client.query({
       query: ETH_ALLPRICE(oneDayBlock),
       fetchPolicy: 'network-only',
@@ -1187,31 +1175,6 @@ export async function getGlobalData(
       fetchPolicy: 'network-only',
     });
     data = result.data.uniswapFactories[0];
-
-    // // fetch the historical data
-    // const oneDayResult = await client.query({
-    //   query: GLOBAL_DATA(oneDayBlock?.number),
-    //   fetchPolicy: 'network-only',
-    // });
-    // oneDayData = oneDayResult.data.uniswapFactories[0];
-
-    // const twoDayResult = await client.query({
-    //   query: GLOBAL_DATA(twoDayBlock?.number),
-    //   fetchPolicy: 'network-only',
-    // });
-    // twoDayData = twoDayResult.data.uniswapFactories[0];
-
-    // const oneWeekResult = await client.query({
-    //   query: GLOBAL_DATA(oneWeekBlock?.number),
-    //   fetchPolicy: 'network-only',
-    // });
-    // const oneWeekData = oneWeekResult.data.uniswapFactories[0];
-
-    // const twoWeekResult = await client.query({
-    //   query: GLOBAL_DATA(twoWeekBlock?.number),
-    //   fetchPolicy: 'network-only',
-    // });
-    // const twoWeekData = twoWeekResult.data.uniswapFactories[0];
 
     const queryReq = [
       { index: 'result', block: null },
