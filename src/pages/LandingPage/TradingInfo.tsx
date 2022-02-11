@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Typography, Box } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { Skeleton } from '@material-ui/lab';
 import { StakeQuickModal } from 'components';
 import { useLairInfo, useTotalRewardsDistributed } from 'state/stake/hooks';
-import { formatCompact, useLairDQUICKAPY } from 'utils';
+import { getDaysCurrentYear, formatCompact } from 'utils';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   tradingSection: {
