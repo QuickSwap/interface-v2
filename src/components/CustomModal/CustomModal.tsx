@@ -14,7 +14,8 @@ const useStyles = makeStyles(({ palette }) => ({
     borderRadius: 20,
     transform: 'translate(-50%, -50%)',
     outline: 'none',
-    background: palette.background.paper,
+    background: (props: any) => props.background ?? palette.background.paper,
+    overflow: (props: any) => props.overflow,
   },
 }));
 
@@ -22,14 +23,18 @@ interface CustomModalProps {
   open: boolean;
   onClose: () => void;
   children: any;
+  background?: string;
+  overflow?: string;
 }
 
 const CustomModal: React.FC<CustomModalProps> = ({
   open,
   onClose,
   children,
+  background,
+  overflow,
 }) => {
-  const classes = useStyles();
+  const classes = useStyles({ background, overflow });
   return (
     <Modal
       open={open}

@@ -4,6 +4,7 @@ import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { useActiveWeb3React, useInitTransak } from 'hooks';
 import FiatMask from 'assets/images/FiatMask.svg';
 import BuyWithFiat from 'assets/images/featured/BuywithFiat.svg';
+import { MoonpayModal } from 'components';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   buyFiatContainer: {
@@ -71,6 +72,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     },
     '& .buyFiatWrapper': {
       width: 408,
+      position: 'relative',
       [breakpoints.down('sm')]: {
         width: 'calc(100% - 64px)',
         marginBottom: 32,
@@ -96,6 +98,19 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       },
     },
   },
+  fiatMenu: {
+    position: 'absolute',
+    background: palette.background.paper,
+    borderRadius: 10,
+    border: `1px solid ${palette.secondary.dark}`,
+    padding: '8px 12px',
+    marginTop: 8,
+    width: '100%',
+    '& p': {
+      cursor: 'pointer',
+      margin: '4px 0',
+    },
+  },
 }));
 
 export const BuyFiatSection: React.FC = () => {
@@ -105,9 +120,20 @@ export const BuyFiatSection: React.FC = () => {
   const { breakpoints } = useTheme();
   const mobileWindowSize = useMediaQuery(breakpoints.down('sm'));
   const [openMenu, setOpenMenu] = useState(false);
+  const [showMoonPayWidget, setShowMoonPayWidget] = useState(false);
+
+  window.addEventListener('click', () => {
+    setOpenMenu(false);
+  });
 
   return (
     <Box className={classes.buyFiatContainer}>
+      {showMoonPayWidget && (
+        <MoonpayModal
+          open={showMoonPayWidget}
+          onClose={() => setShowMoonPayWidget(false)}
+        />
+      )}
       <img src={FiatMask} alt='Fiat Mask' />
       <Box>
         <Box className='buyFiatInfo'>
@@ -124,10 +150,31 @@ export const BuyFiatSection: React.FC = () => {
           <Button
             fullWidth
             color='primary'
-            onClick={() => initTransak(account, mobileWindowSize)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setOpenMenu(true);
+            }}
           >
             Buy Now
           </Button>
+          {openMenu && (
+            <Box className={classes.fiatMenu}>
+              <Typography
+                onClick={() => {
+                  initTransak(account, mobileWindowSize);
+                }}
+              >
+                Transak
+              </Typography>
+              <Typography
+                onClick={() => {
+                  setShowMoonPayWidget(true);
+                }}
+              >
+                Moonpay
+              </Typography>
+            </Box>
+          )}
         </Box>
       </Box>
     </Box>
