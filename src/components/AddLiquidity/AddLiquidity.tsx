@@ -367,7 +367,7 @@ const AddLiquidity: React.FC<{
   };
 
   const connectWallet = () => {
-    if (!isSupportedNetwork(ethereum)) {
+    if (ethereum && !isSupportedNetwork(ethereum)) {
       addMaticToMetamask();
     } else {
       toggleWalletModal();
@@ -386,7 +386,7 @@ const AddLiquidity: React.FC<{
   const buttonText = useMemo(() => {
     if (account) {
       return error ?? 'Supply';
-    } else if (!isSupportedNetwork(ethereum)) {
+    } else if (ethereum && !isSupportedNetwork(ethereum)) {
       return 'Switch to Polygon';
     }
     return 'Connect Wallet';

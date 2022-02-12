@@ -1611,6 +1611,10 @@ export function getDaysCurrentYear() {
 }
 
 export function getOneYearFee(dayVolume: number, reserveUSD: number) {
+  if (!dayVolume || !reserveUSD) {
+    return 0;
+  }
+
   return (
     (dayVolume * GlobalConst.utils.FEEPERCENT * getDaysCurrentYear()) /
     reserveUSD
@@ -1691,6 +1695,7 @@ export function returnStakingInfo(
     baseToken: Token;
     rate: number;
     pair: string;
+    rewardToken: Token;
   }[];
 } {
   const stakingInfo =
@@ -1700,7 +1705,7 @@ export function returnStakingInfo(
       ? stakeData.veryoldstakingrewards
       : stakeData.stakingrewards;
   return {
-    [ChainId.MATIC]: stakingInfo.map((info) => {
+    [ChainId.MATIC]: stakingInfo.map((info: any) => {
       return {
         ...info,
         tokens: [
@@ -1708,6 +1713,7 @@ export function returnStakingInfo(
           returnTokenFromKey(info.tokens[1]),
         ],
         baseToken: returnTokenFromKey(info.baseToken),
+        rewardToken: returnTokenFromKey(info.rewardToken ?? 'DQUICK'),
       };
     }),
   };
@@ -1877,10 +1883,10 @@ export function getTokenAddress(token: Token | undefined) {
   return token.address;
 }
 
-export function getRewardRate(rate: TokenAmount | undefined) {
-  if (!rate) return;
+export function getRewardRate(rate?: TokenAmount, rewardToken?: Token) {
+  if (!rate || !rewardToken) return;
   return `${rate.toFixed(2, { groupSeparator: ',' }).replace(/[.,]00$/, '')} ${
-    rate.token.symbol
+    rewardToken.symbol
   }  / day`;
 }
 
@@ -1991,6 +1997,34 @@ export function getUSDString(usdValue?: CurrencyAmount) {
   return `$${usdStr}`;
 }
 
+export function getEarnedUSDLPFarm(stakingInfo: StakingInfo | undefined) {
+  if (!stakingInfo) return;
+  const earnedUSD =
+    Number(stakingInfo.earnedAmount.toSignificant()) *
+    stakingInfo.rewardTokenPrice;
+  if (earnedUSD < 0.001 && earnedUSD > 0) {
+    return '< $0.001';
+  }
+  return `$${earnedUSD.toLocaleString()}`;
+}
+
+export function getEarnedUSDDualFarm(stakingInfo: DualStakingInfo | undefined) {
+  if (!stakingInfo) return;
+  const earnedUSD =
+    Number(stakingInfo.earnedAmountA.toSignificant()) *
+      stakingInfo.rewardTokenAPrice +
+    Number(stakingInfo.earnedAmountB.toSignificant()) *
+      Number(stakingInfo.rewardTokenBPrice);
+  if (earnedUSD < 0.001 && earnedUSD > 0) {
+    return '< $0.001';
+  }
+  return `$${earnedUSD.toLocaleString()}`;
+}
+
 export function isSupportedNetwork(ethereum: any) {
-  return ethereum && Number(ethereum.chainId) === 137;
+  return Number(ethereum.chainId) === 137;
+}
+
+export function getPageItemsToLoad(index: number, countsPerPage: number) {
+  return index === 0 ? countsPerPage : countsPerPage * index;
 }

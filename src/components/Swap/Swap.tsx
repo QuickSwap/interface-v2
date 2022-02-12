@@ -229,7 +229,7 @@ const Swap: React.FC<{
   }, [approval, approvalSubmitted]);
 
   const connectWallet = () => {
-    if (!isSupportedNetwork(ethereum)) {
+    if (ethereum && !isSupportedNetwork(ethereum)) {
       addMaticToMetamask();
     } else {
       toggleWalletModal();
@@ -276,7 +276,7 @@ const Swap: React.FC<{
         return swapInputError ?? 'Swap';
       }
     } else {
-      return !isSupportedNetwork(ethereum)
+      return ethereum && !isSupportedNetwork(ethereum)
         ? 'Switch to Polygon'
         : 'Connect Wallet';
     }
