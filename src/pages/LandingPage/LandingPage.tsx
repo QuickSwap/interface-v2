@@ -455,7 +455,7 @@ const LandingPage: React.FC = () => {
       img: DragonsLair,
       title: 'Dragon’s Lair',
       desc:
-        'Dragon’s lair is a single staking pool for QUICK token. Stake your QUICK to recieve dQuick, and earn your share of .04%',
+        'Dragon’s Lair is a single staking pool for QUICK token. Stake your QUICK to receive dQuick, and earn your share of .04%',
     },
     {
       img: BuyWithFiat,
@@ -466,7 +466,7 @@ const LandingPage: React.FC = () => {
     {
       img: Analytics,
       title: 'Analytics',
-      desc: 'Scan through Quickwap analytics & Historical Data.',
+      desc: 'Scan through QuickSwap analytics & Historical Data.',
     },
   ];
 
@@ -767,14 +767,15 @@ const LandingPage: React.FC = () => {
         </Grid>
       </Box>
       <Box className={classes.rewardsContainer}>
-        <Typography variant='h4'>
-          Earn additional rewards in $QUICK by
-        </Typography>
-        <Typography variant='h4'>depositing your LP Tokens</Typography>
-        <Typography variant='body2' style={{ marginTop: '20px' }}>
-          Deposit your Liquidity Provider tokens to receive Rewards
-        </Typography>
-        <Typography variant='body2'>in $QUICK on top of LP Fees.</Typography>
+        <Box maxWidth='480px' width='100%'>
+          <Typography variant='h4'>
+            Earn additional rewards in $QUICK by depositing your LP Tokens
+          </Typography>
+          <Typography style={{ marginTop: '20px' }}>
+            Deposit your Liquidity Provider tokens to receive Rewards in $QUICK
+            on top of LP Fees.
+          </Typography>
+        </Box>
         <RewardSlider />
         <Box
           bgcolor={palette.secondary.dark}
