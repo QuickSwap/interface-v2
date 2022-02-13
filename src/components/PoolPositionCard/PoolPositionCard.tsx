@@ -108,7 +108,7 @@ const PoolPositionCard: React.FC<{ pair: Pair }> = ({ pair }) => {
       </Box>
 
       {showMore && <PoolPositionCardDetails pair={pair} />}
-      {stakingInfo && apyWithFee && (
+      {stakingInfo && !stakingInfo.ended && apyWithFee && (
         <Box bgcolor='#404557' paddingY={0.75} paddingX={isMobile ? 2 : 3}>
           <Typography variant='body2'>
             Earn{' '}
