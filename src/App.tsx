@@ -13,6 +13,8 @@ const FarmPage = lazy(() => import('./pages/FarmPage'));
 const LandingPage = lazy(() => import('./pages/LandingPage'));
 const PoolsPage = lazy(() => import('./pages/PoolsPage'));
 const SwapPage = lazy(() => import('./pages/SwapPage'));
+const LendPage = lazy(() => import('./pages/LendPage'));
+const LendDetailPage = lazy(() => import('./pages/LendPage/LendDetailPage'));
 const AnalyticsTokenDetails = lazy(() =>
   import('./pages/AnalyticsTokenDetails'),
 );
@@ -111,61 +113,49 @@ const App: React.FC = () => {
             <StyledThemeProvider>
               <Gelato>
                 <Web3ReactManager>
-                  <Switch>
-                    <Route exact path='/'>
-                      <PageLayout>
+                  <PageLayout>
+                    <Switch>
+                      <Route exact path='/'>
                         <LandingPage />
-                      </PageLayout>
-                    </Route>
-                    <Route exact path='/swap'>
-                      <PageLayout>
+                      </Route>
+                      <Route exact path='/swap'>
                         <SwapPage />
-                      </PageLayout>
-                    </Route>
-                    <Route exact path='/pools'>
-                      <PageLayout>
+                      </Route>
+                      <Route exact path='/lend'>
+                        <LendPage />
+                      </Route>
+                      <Route exact path='/lend/detail'>
+                        <LendDetailPage />
+                      </Route>
+                      <Route exact path='/pools'>
                         <PoolsPage />
-                      </PageLayout>
-                    </Route>
-                    <Route exact path='/farm'>
-                      <PageLayout>
+                      </Route>
+                      <Route exact path='/farm'>
                         <FarmPage />
-                      </PageLayout>
-                    </Route>
-                    <Route exact path='/dragons'>
-                      <PageLayout>
+                      </Route>
+                      <Route exact path='/dragons'>
                         <DragonPage />
-                      </PageLayout>
-                    </Route>
-                    <Route exact path='/analytics'>
-                      <PageLayout>
+                      </Route>
+                      <Route exact path='/analytics'>
                         <AnalyticsHeader />
                         <AnalyticsOverview />
-                      </PageLayout>
-                    </Route>
-                    <Route exact path='/analytics/tokens'>
-                      <PageLayout>
+                      </Route>
+                      <Route exact path='/analytics/tokens'>
                         <AnalyticsHeader />
                         <AnalyticsTokens />
-                      </PageLayout>
-                    </Route>
-                    <Route exact path='/analytics/pairs'>
-                      <PageLayout>
+                      </Route>
+                      <Route exact path='/analytics/pairs'>
                         <AnalyticsHeader />
                         <AnalyticsPairs />
-                      </PageLayout>
-                    </Route>
-                    <Route exact path='/analytics/token/:id'>
-                      <PageLayout>
+                      </Route>
+                      <Route exact path='/analytics/token/:id'>
                         <AnalyticsTokenDetails />
-                      </PageLayout>
-                    </Route>
-                    <Route exact path='/analytics/pair/:id'>
-                      <PageLayout>
+                      </Route>
+                      <Route exact path='/analytics/pair/:id'>
                         <AnalyticsPairDetails />
-                      </PageLayout>
-                    </Route>
-                  </Switch>
+                      </Route>
+                    </Switch>
+                  </PageLayout>
                 </Web3ReactManager>
               </Gelato>
             </StyledThemeProvider>
