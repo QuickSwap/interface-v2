@@ -9,6 +9,7 @@ import {
   computeTradePriceBreakdown,
 } from 'utils/prices';
 import { QuestionHelper, FormattedPriceImpact, CurrencyLogo } from 'components';
+import SwapRoute from './SwapRoute';
 
 const useStyles = makeStyles(({ palette }) => ({
   summaryRow: {
@@ -70,6 +71,7 @@ export const TradeSummary: React.FC<TradeSummaryProps> = ({
     allowedSlippage,
   );
   const classes = useStyles();
+  const showRoute = Boolean(trade && trade.route.path.length > 2);
 
   return (
     <>
@@ -128,6 +130,19 @@ export const TradeSummary: React.FC<TradeSummaryProps> = ({
             : '-'}
         </Typography>
       </Box>
+      {showRoute && (
+        <Box margin='8px 24px 0'>
+          <Box display='flex' alignItems='center'>
+            <Typography variant='body2' style={{ marginRight: 4 }}>
+              Route
+            </Typography>
+            <QuestionHelper text='Routing through these tokens resulted in the best price for your trade.' />
+          </Box>
+          <Box width={1} mt={1}>
+            <SwapRoute trade={trade} />
+          </Box>
+        </Box>
+      )}
     </>
   );
 };
@@ -142,10 +157,10 @@ export const AdvancedSwapDetails: React.FC<AdvancedSwapDetailsProps> = ({
   const [allowedSlippage] = useUserSlippageTolerance();
 
   return (
-    <Box>
+    <>
       {trade && (
         <TradeSummary trade={trade} allowedSlippage={allowedSlippage} />
       )}
-    </Box>
+    </>
   );
 };
