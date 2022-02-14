@@ -1535,6 +1535,16 @@ export function shortenAddress(address: string, chars = 4): string {
   return `${parsed.substring(0, chars + 2)}...${parsed.substring(42 - chars)}`;
 }
 
+export const shortenTx = (tx: string) => {
+  if (tx.length) {
+    const txLength = tx.length;
+    const first = tx.slice(0, 6);
+    const last = tx.slice(txLength - 4, txLength);
+    return `${first}...${last}`;
+  }
+  return '';
+};
+
 export function getLibrary(provider: any): Web3Provider {
   const library = new Web3Provider(provider, 'any');
   library.pollingInterval = 15000;

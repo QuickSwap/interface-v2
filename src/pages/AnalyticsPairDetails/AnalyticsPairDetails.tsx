@@ -92,10 +92,22 @@ const AnalyticsPairDetails: React.FC = () => {
       const mints = pairTransactions.mints.map((item: any) => {
         return { ...item, type: 'Add' };
       });
-      const swaps = pairTransactions.mints.map((item: any) => {
-        return { ...item, type: 'Swap' };
+      const swaps = pairTransactions.swaps.map((item: any) => {
+        const amount0 = item.amount0Out > 0 ? item.amount0Out : item.amount1Out;
+        const amount1 = item.amount0In > 0 ? item.amount0In : item.amount1In;
+        const token0 =
+          item.amount0Out > 0 ? item.pair.token1 : item.pair.token0;
+        const token1 =
+          item.amount0Out > 0 ? item.pair.token0 : item.pair.token1;
+        return {
+          ...item,
+          amount0,
+          amount1,
+          pair: { token0, token1 },
+          type: 'Swap',
+        };
       });
-      const burns = pairTransactions.mints.map((item: any) => {
+      const burns = pairTransactions.burns.map((item: any) => {
         return { ...item, type: 'Remove' };
       });
       return mints.concat(swaps).concat(burns);

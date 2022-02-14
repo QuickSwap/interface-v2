@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Box, Typography, Divider, useMediaQuery } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { CustomTable } from 'components';
-import { getEtherscanLink } from 'utils';
+import { formatNumber, getEtherscanLink, shortenTx } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import moment from 'moment';
 
@@ -106,11 +106,24 @@ const headCells = (
 
 const TransactionsTable: React.FC<TransactionsTableProps> = ({ data }) => {
   const [txFilter, setTxFilter] = useState('');
-  const tokenHeadCells = headCells(txFilter, setTxFilter);
+  const txHeadCells = headCells(txFilter, setTxFilter);
   const classes = useStyles();
   const { chainId } = useActiveWeb3React();
   const { palette, breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
+  const getTxString = (txn: any) => {
+    return `${txn.type} ${txn.pair.token0.symbol} ${
+      txn.type === 'Swap' ? 'for' : 'and'
+    } ${txn.pair.token1.symbol}`;
+  };
+  const getTxAmount0String = (txn: any) => {
+    const token = txn.type === 'Swap' ? txn.pair.token1 : txn.pair.token0;
+    return `${formatNumber(txn.amount0)} ${token.symbol}`;
+  };
+  const getTxAmount1String = (txn: any) => {
+    const token = txn.type === 'Swap' ? txn.pair.token0 : txn.pair.token1;
+    return `${formatNumber(txn.amount1)} ${token.symbol}`;
+  };
   const mobileHTML = (txn: any, index: number) => {
     return (
       <Box mt={index === 0 ? 0 : 3} key={index}>
@@ -130,14 +143,12 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({ data }) => {
                 variant='body1'
                 style={{ color: palette.primary.main }}
               >
-                {txn.type} {txn.pair.token0.symbol}{' '}
-                {txn.type === 'Swap' ? 'for' : 'and'} {txn.pair.token1.symbol}
+                {getTxString(txn)}
               </Typography>
             </a>
           ) : (
             <Typography variant='body1' style={{ color: palette.primary.main }}>
-              {txn.type} {txn.pair.token0.symbol}{' '}
-              {txn.type === 'Swap' ? 'for' : 'and'} {txn.pair.token1.symbol}
+              {getTxString(txn)}
             </Typography>
           )}
         </Box>
@@ -151,23 +162,13 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({ data }) => {
         <Box className={classes.mobileRow}>
           <Typography variant='body1'>Token Amount</Typography>
           <Typography variant='body1' color='textPrimary'>
-            {Number(txn.amount1) < 0.0001
-              ? '< 0.0001'
-              : Number(txn.amount1).toFixed(
-                  Number(txn.amount1) < 1 ? 4 : 2,
-                )}{' '}
-            {txn.pair.token1.symbol}
+            {getTxAmount1String(txn)}
           </Typography>
         </Box>
         <Box className={classes.mobileRow}>
           <Typography variant='body1'>Token Amount</Typography>
           <Typography variant='body1' color='textPrimary'>
-            {Number(txn.amount0) < 0.0001
-              ? '< 0.0001'
-              : Number(txn.amount0).toFixed(
-                  Number(txn.amount0) < 1 ? 4 : 2,
-                )}{' '}
-            {txn.pair.token0.symbol}
+            {getTxAmount0String(txn)}
           </Typography>
         </Box>
         <Box className={classes.mobileRow}>
@@ -187,14 +188,12 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({ data }) => {
                 variant='body1'
                 style={{ color: palette.primary.main }}
               >
-                {txn.transaction.id.substring(0, 6)}...
-                {txn.transaction.id.substring(txn.transaction.id.length - 4)}
+                {shortenTx(txn.transaction.id)}
               </Typography>
             </a>
           ) : (
             <Typography variant='body1' style={{ color: palette.primary.main }}>
-              {txn.transaction.id.substring(0, 6)}...
-              {txn.transaction.id.substring(txn.transaction.id.length - 4)}
+              {shortenTx(txn.transaction.id)}
             </Typography>
           )}
         </Box>
@@ -219,14 +218,12 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({ data }) => {
             style={{ textDecoration: 'none' }}
           >
             <Typography variant='body1' style={{ color: palette.primary.main }}>
-              {txn.type} {txn.pair.token0.symbol}{' '}
-              {txn.type === 'Swap' ? 'for' : 'and'} {txn.pair.token1.symbol}
+              {getTxString(txn)}
             </Typography>
           </a>
         ) : (
           <Typography variant='body1' style={{ color: palette.primary.main }}>
-            {txn.type} {txn.pair.token0.symbol}{' '}
-            {txn.type === 'Swap' ? 'for' : 'and'} {txn.pair.token1.symbol}
+            {getTxString(txn)}
           </Typography>
         ),
       },
@@ -240,24 +237,14 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({ data }) => {
       {
         html: (
           <Typography variant='body1' color='textPrimary'>
-            {Number(txn.amount1) < 0.0001
-              ? '< 0.0001'
-              : Number(txn.amount1).toFixed(
-                  Number(txn.amount1) < 1 ? 4 : 2,
-                )}{' '}
-            {txn.pair.token1.symbol}
+            {getTxAmount1String(txn)}
           </Typography>
         ),
       },
       {
         html: (
           <Typography variant='body1' color='textPrimary'>
-            {Number(txn.amount0) < 0.0001
-              ? '< 0.0001'
-              : Number(txn.amount0).toFixed(
-                  Number(txn.amount0) < 1 ? 4 : 2,
-                )}{' '}
-            {txn.pair.token0.symbol}
+            {getTxAmount0String(txn)}
           </Typography>
         ),
       },
@@ -270,14 +257,12 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({ data }) => {
             style={{ textDecoration: 'none' }}
           >
             <Typography variant='body1' style={{ color: palette.primary.main }}>
-              {txn.transaction.id.substring(0, 6)}...
-              {txn.transaction.id.substring(txn.transaction.id.length - 4)}
+              {shortenTx(txn.transaction.id)}
             </Typography>
           </a>
         ) : (
           <Typography variant='body1' style={{ color: palette.primary.main }}>
-            {txn.transaction.id.substring(0, 6)}...
-            {txn.transaction.id.substring(txn.transaction.id.length - 4)}
+            {shortenTx(txn.transaction.id)}
           </Typography>
         ),
       },
@@ -337,7 +322,8 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({ data }) => {
       )}
       <CustomTable
         showPagination={data.length > 10}
-        headCells={tokenHeadCells}
+        headCells={txHeadCells}
+        defaultOrderBy={txHeadCells[5]}
         rowsPerPage={10}
         data={data.filter((item) =>
           txFilter === '' ? true : item.type === txFilter,
