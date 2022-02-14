@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import {
   Box,
@@ -12,6 +12,9 @@ import {
 } from '@material-ui/core';
 
 import styled from 'styled-components';
+import { CustomSelect, SmOption } from 'components/CustomSelect';
+import ReactApexChart from 'react-apexcharts';
+import { _100 } from '@uniswap/sdk/dist/constants';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   hideCell: {
@@ -138,7 +141,7 @@ const LendDetailPage: React.FC = () => {
           borderRadius={'12px'}
         >
           <Box color={'#696c80'} fontSize={'14px'}>
-            Pull Utilization
+            Pool Utilization
           </Box>
           <Box fontSize={'24px'} color={'white'}>
             $19.2M
@@ -149,17 +152,25 @@ const LendDetailPage: React.FC = () => {
         mt={'24px'}
         flex={'1'}
         bgcolor={'#232734'}
-        height={'40px'}
         borderRadius={'8px'}
         display={'flex'}
-        alignItems={'center'}
+        sx={{
+          height: { xs: 'auto', sm: 'auto', md: '40px' },
+          paddingY: { xs: '10px', sm: '10px', md: '0px' },
+          flexDirection: { xs: 'column', sm: 'column', md: 'row' },
+          alignItems: { xs: 'unset', sm: 'unset', md: 'center' },
+        }}
+        flexWrap={'wrap'}
+        gridRowGap={'4px'}
       >
         <Box
           height={'100%'}
           paddingX={'25px'}
           display={'flex'}
           alignItems={'center'}
-          borderRight={'1px solid #323548'}
+          sx={{
+            borderRight: { xs: 'none', sm: 'none', md: '1px solid #323548' },
+          }}
         >
           <Box>Borrow limit</Box>
           <Box ml={'8px'}>
@@ -182,11 +193,17 @@ const LendDetailPage: React.FC = () => {
           flexGrow={'1'}
           paddingX={'30px'}
           display={'flex'}
+          justifyContent={'space-between'}
           alignItems={'center'}
-          gridGap={'24px'}
+          gridGap={'4px 24px'}
+          flexWrap={'wrap'}
         >
-          <Box>$0</Box>
+          <Box sx={{ order: { xs: 2, sm: 2, md: 1 } }}>$0</Box>
           <Box
+            sx={{
+              order: { xs: 1, sm: 1, md: 2 },
+              minWidth: { xs: '100%', sm: '100%', md: 'unset' },
+            }}
             flexGrow={'1'}
             position={'relative'}
             bgcolor={'#323548'}
@@ -194,6 +211,14 @@ const LendDetailPage: React.FC = () => {
             borderRadius={'100px'}
             overflow={'hidden'}
           >
+            <Box
+              position={'absolute'}
+              top={'0px'}
+              left={'0px'}
+              bgcolor={'#0fc679'}
+              width={'35%'}
+              height={'100%'}
+            />
             <Box
               position={'absolute'}
               top={'0px'}
@@ -211,7 +236,7 @@ const LendDetailPage: React.FC = () => {
               height={'100%'}
             />
           </Box>
-          <Box>$0</Box>
+          <Box sx={{ order: { xs: 3, sm: 3, md: 3 } }}>$0</Box>
         </Box>
       </Box>
       <Box
@@ -250,16 +275,16 @@ const LendDetailPage: React.FC = () => {
               <Box color={'white'}>$0.00</Box>
             </Box>
           </Box>
-          <Box display={'flex'}>
+          <Box display={'flex'} paddingX={'24px'}>
             <Table>
               <TableHead>
                 <TableRow>
                   <MuiTableCell>
-                    <Box p={'20px 24px'}>Asset / LTV</Box>
+                    <Box paddingY={'20px'}>Asset / LTV</Box>
                   </MuiTableCell>
                   <MuiTableCell className={classes.hideCell}>
                     <Box
-                      p={'20px 24px'}
+                      paddingY={'20px'}
                       display={'flex'}
                       justifyContent={'flex-end'}
                     >
@@ -268,7 +293,7 @@ const LendDetailPage: React.FC = () => {
                   </MuiTableCell>
                   <MuiTableCell>
                     <Box
-                      p={'20px 24px'}
+                      paddingY={'20px'}
                       display={'flex'}
                       justifyContent={'flex-end'}
                     >
@@ -277,7 +302,7 @@ const LendDetailPage: React.FC = () => {
                   </MuiTableCell>
                   <MuiTableCell>
                     <Box
-                      p={'20px 24px'}
+                      paddingY={'20px'}
                       display={'flex'}
                       justifyContent={'flex-end'}
                     >
@@ -290,7 +315,7 @@ const LendDetailPage: React.FC = () => {
                 <TableRow>
                   <MuiTableCell>
                     <Box
-                      p={'20px 24px'}
+                      paddingY={'20px'}
                       display={'flex'}
                       alignItems={'center'}
                       gridGap={'16px'}
@@ -303,10 +328,18 @@ const LendDetailPage: React.FC = () => {
                         flexDirection={'column'}
                         gridGap={'4px'}
                       >
-                        <Box fontSize={'14px'} color={'#ebecf2'}>
+                        <Box
+                          fontSize={'14px'}
+                          color={'#ebecf2'}
+                          textAlign={'right'}
+                        >
                           QUICK
                         </Box>
-                        <Box fontSize={'13px'} color={'#696c80'}>
+                        <Box
+                          fontSize={'13px'}
+                          color={'#696c80'}
+                          textAlign={'right'}
+                        >
                           LTV: 65%
                         </Box>
                       </Box>
@@ -314,7 +347,7 @@ const LendDetailPage: React.FC = () => {
                   </MuiTableCell>
                   <MuiTableCell>
                     <Box
-                      p={'20px 24px'}
+                      paddingY={'20px'}
                       display={'flex'}
                       justifyContent={'flex-end'}
                     >
@@ -325,8 +358,10 @@ const LendDetailPage: React.FC = () => {
                         gridGap={'4px'}
                         color={'#ebecf2'}
                       >
-                        <Box fontSize={'14px'}>10.24%</Box>
-                        <Box fontSize={'13px'}>
+                        <Box fontSize={'14px'} textAlign={'right'}>
+                          10.24%
+                        </Box>
+                        <Box fontSize={'13px'} textAlign={'right'}>
                           (12.3%
                           <USDTIcon size={'12px'} />)
                         </Box>
@@ -335,7 +370,7 @@ const LendDetailPage: React.FC = () => {
                   </MuiTableCell>
                   <MuiTableCell>
                     <Box
-                      p={'20px 24px'}
+                      paddingY={'20px'}
                       display={'flex'}
                       justifyContent={'flex-end'}
                     >
@@ -344,10 +379,18 @@ const LendDetailPage: React.FC = () => {
                         flexDirection={'column'}
                         gridGap={'4px'}
                       >
-                        <Box fontSize={'14px'} color={'#ebecf2'}>
+                        <Box
+                          fontSize={'14px'}
+                          color={'#ebecf2'}
+                          textAlign={'right'}
+                        >
                           $0.00
                         </Box>
-                        <Box fontSize={'13px'} color={'#696c80'}>
+                        <Box
+                          fontSize={'13px'}
+                          color={'#696c80'}
+                          textAlign={'right'}
+                        >
                           QUICK
                         </Box>
                       </Box>
@@ -355,7 +398,7 @@ const LendDetailPage: React.FC = () => {
                   </MuiTableCell>
                   <MuiTableCell>
                     <Box
-                      p={'20px 24px'}
+                      paddingY={'20px'}
                       display={'flex'}
                       justifyContent={'flex-end'}
                     >
@@ -365,6 +408,722 @@ const LendDetailPage: React.FC = () => {
                 </TableRow>
               </TableBody>
             </Table>
+          </Box>
+        </Box>
+        <Box
+          flex={'1'}
+          borderRadius={'20px'}
+          bgcolor={'#232734'}
+          display={'flex'}
+          flexDirection={'column'}
+          sx={{ minWidth: { xs: '55%', sm: '35%' } }}
+        >
+          <Box
+            height={'70px'}
+            borderBottom={'solid 1px #32394d'}
+            display={'flex'}
+            justifyContent={'space-between'}
+            alignItems={'center'}
+          >
+            <Box
+              px={'30px'}
+              fontSize={'18px'}
+              fontWeight={'500'}
+              borderLeft={'4px solid #fc6259'}
+              lineHeight={'1'}
+            >
+              Borrow
+            </Box>
+            <Box mr={'30px'} display={'flex'} fontSize={'14px'}>
+              <Box color={'#c7cad9'}>Your Supply Balance:&nbsp;</Box>
+              <Box color={'white'}>$0.00</Box>
+            </Box>
+          </Box>
+          <Box display={'flex'} paddingX={'24px'}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <MuiTableCell>
+                    <Box paddingY={'20px'}>Asset / LTV</Box>
+                  </MuiTableCell>
+                  <MuiTableCell className={classes.hideCell}>
+                    <Box
+                      paddingY={'20px'}
+                      display={'flex'}
+                      justifyContent={'flex-end'}
+                    >
+                      Supply APY
+                    </Box>
+                  </MuiTableCell>
+                  <MuiTableCell className={classes.hideCell}>
+                    <Box
+                      paddingY={'20px'}
+                      display={'flex'}
+                      justifyContent={'flex-end'}
+                    >
+                      Depositd
+                    </Box>
+                  </MuiTableCell>
+                  <MuiTableCell>
+                    <Box
+                      paddingY={'20px'}
+                      display={'flex'}
+                      justifyContent={'flex-end'}
+                    >
+                      Collateral
+                    </Box>
+                  </MuiTableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                <TableRow>
+                  <MuiTableCell>
+                    <Box
+                      paddingY={'20px'}
+                      display={'flex'}
+                      alignItems={'center'}
+                      gridGap={'16px'}
+                    >
+                      <Box
+                        display={'flex'}
+                        alignItems={'center'}
+                        gridGap={'16px'}
+                      >
+                        <USDTIcon size={'36px'} />
+                        <Box
+                          fontSize={'14px'}
+                          color={'#ebecf2'}
+                          textAlign={'right'}
+                        >
+                          USDT
+                        </Box>
+                      </Box>
+                    </Box>
+                  </MuiTableCell>
+                  <MuiTableCell className={classes.hideCell}>
+                    <Box
+                      paddingY={'20px'}
+                      display={'flex'}
+                      justifyContent={'flex-end'}
+                    >
+                      <Box fontSize={'13px'}>12.3%</Box>
+                    </Box>
+                  </MuiTableCell>
+                  <MuiTableCell>
+                    <Box
+                      paddingY={'20px'}
+                      display={'flex'}
+                      justifyContent={'flex-end'}
+                    >
+                      <Box
+                        display={'inline-flex'}
+                        flexDirection={'column'}
+                        gridGap={'4px'}
+                      >
+                        <Box
+                          fontSize={'14px'}
+                          color={'#ebecf2'}
+                          textAlign={'right'}
+                        >
+                          $0.00
+                        </Box>
+                        <Box
+                          fontSize={'13px'}
+                          color={'#696c80'}
+                          textAlign={'right'}
+                        >
+                          130.49 USDC
+                        </Box>
+                      </Box>
+                    </Box>
+                  </MuiTableCell>
+                  <MuiTableCell>
+                    <Box
+                      paddingY={'20px'}
+                      display={'flex'}
+                      justifyContent={'flex-end'}
+                    >
+                      <Box
+                        display={'inline-flex'}
+                        flexDirection={'column'}
+                        gridGap={'4px'}
+                      >
+                        <Box
+                          fontSize={'14px'}
+                          color={'#ebecf2'}
+                          textAlign={'right'}
+                        >
+                          $0.00M
+                        </Box>
+                        <Box
+                          fontSize={'13px'}
+                          color={'#696c80'}
+                          textAlign={'right'}
+                        >
+                          4.5M USDC
+                        </Box>
+                      </Box>
+                    </Box>
+                  </MuiTableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </Box>
+        </Box>
+        <Box
+          flex={'1'}
+          borderRadius={'20px'}
+          bgcolor={'#232734'}
+          display={'flex'}
+          flexDirection={'column'}
+          sx={{ minWidth: { xs: '55%', sm: '35%' } }}
+        >
+          <Box
+            height={'70px'}
+            borderBottom={'solid 1px #32394d'}
+            display={'flex'}
+            justifyContent={'space-between'}
+            alignItems={'center'}
+          >
+            <Box
+              px={'30px'}
+              fontSize={'18px'}
+              fontWeight={'500'}
+              lineHeight={'1'}
+            >
+              Pool Info
+            </Box>
+          </Box>
+          <Box display={'flex'} pb={'16px'} flexDirection={'column'}>
+            <Box
+              flex={1}
+              display={'flex'}
+              sx={{ flexDirection: { xs: 'column', sm: 'column', md: 'row' } }}
+            >
+              <Box flex={1}>
+                <Box
+                  padding={'20px'}
+                  display={'flex'}
+                  alignItems={'center'}
+                  gridGap={'4px'}
+                  borderBottom={'1px solid #32394d'}
+                  sx={{
+                    justifyContent: {
+                      xs: 'space-between',
+                      sm: 'space-between',
+                      md: 'flex-start',
+                    },
+                  }}
+                >
+                  <Box fontSize={'14px'} fontWeight={'500'} color={'#c7cad9'}>
+                    Total Supplied:
+                  </Box>
+                  <Box fontSize={'14px'} fontWeight={'500'} color={'#ebecf2'}>
+                    $12.9M
+                  </Box>
+                </Box>
+              </Box>
+              <Box flex={1}>
+                <Box
+                  padding={'20px'}
+                  display={'flex'}
+                  alignItems={'center'}
+                  gridGap={'4px'}
+                  borderBottom={'1px solid #32394d'}
+                  sx={{
+                    justifyContent: {
+                      xs: 'space-between',
+                      sm: 'space-between',
+                      md: 'flex-start',
+                    },
+                  }}
+                >
+                  <Box fontSize={'14px'} fontWeight={'500'} color={'#c7cad9'}>
+                    Total Borrowed:
+                  </Box>
+                  <Box fontSize={'14px'} fontWeight={'500'} color={'#ebecf2'}>
+                    $12.9M
+                  </Box>
+                </Box>
+              </Box>
+            </Box>
+            <Box
+              flex={1}
+              display={'flex'}
+              sx={{ flexDirection: { xs: 'column', sm: 'column', md: 'row' } }}
+            >
+              <Box flex={1}>
+                <Box
+                  padding={'20px'}
+                  display={'flex'}
+                  alignItems={'center'}
+                  gridGap={'4px'}
+                  borderBottom={'1px solid #32394d'}
+                  sx={{
+                    justifyContent: {
+                      xs: 'space-between',
+                      sm: 'space-between',
+                      md: 'flex-start',
+                    },
+                  }}
+                >
+                  <Box fontSize={'14px'} fontWeight={'500'} color={'#c7cad9'}>
+                    Available Liquidity:
+                  </Box>
+                  <Box fontSize={'14px'} fontWeight={'500'} color={'#ebecf2'}>
+                    $12.9M
+                  </Box>
+                </Box>
+              </Box>
+              <Box flex={1}>
+                <Box
+                  padding={'20px'}
+                  display={'flex'}
+                  alignItems={'center'}
+                  gridGap={'4px'}
+                  borderBottom={'1px solid #32394d'}
+                  sx={{
+                    justifyContent: {
+                      xs: 'space-between',
+                      sm: 'space-between',
+                      md: 'flex-start',
+                    },
+                  }}
+                >
+                  <Box fontSize={'14px'} fontWeight={'500'} color={'#c7cad9'}>
+                    Pool Utilization:
+                  </Box>
+                  <Box fontSize={'14px'} fontWeight={'500'} color={'#ebecf2'}>
+                    23.22%
+                  </Box>
+                </Box>
+              </Box>
+            </Box>
+            <Box
+              flex={1}
+              display={'flex'}
+              sx={{ flexDirection: { xs: 'column', sm: 'column', md: 'row' } }}
+            >
+              <Box flex={1}>
+                <Box
+                  padding={'20px'}
+                  display={'flex'}
+                  alignItems={'center'}
+                  gridGap={'4px'}
+                  borderBottom={'1px solid #32394d'}
+                  sx={{
+                    justifyContent: {
+                      xs: 'space-between',
+                      sm: 'space-between',
+                      md: 'flex-start',
+                    },
+                  }}
+                >
+                  <Box fontSize={'14px'} fontWeight={'500'} color={'#c7cad9'}>
+                    Upgradeable:
+                  </Box>
+                  <Box fontSize={'14px'} fontWeight={'500'} color={'#ebecf2'}>
+                    Yes
+                  </Box>
+                </Box>
+              </Box>
+              <Box flex={1}>
+                <Box
+                  padding={'20px'}
+                  display={'flex'}
+                  alignItems={'center'}
+                  gridGap={'4px'}
+                  borderBottom={'1px solid #32394d'}
+                  sx={{
+                    justifyContent: {
+                      xs: 'space-between',
+                      sm: 'space-between',
+                      md: 'flex-start',
+                    },
+                  }}
+                >
+                  <Box fontSize={'14px'} fontWeight={'500'} color={'#c7cad9'}>
+                    Admin (copy):
+                  </Box>
+                  <Box fontSize={'14px'} fontWeight={'500'} color={'#ebecf2'}>
+                    0x07…46
+                  </Box>
+                </Box>
+              </Box>
+            </Box>
+            <Box
+              flex={1}
+              display={'flex'}
+              sx={{ flexDirection: { xs: 'column', sm: 'column', md: 'row' } }}
+            >
+              <Box flex={1}>
+                <Box
+                  padding={'20px'}
+                  display={'flex'}
+                  alignItems={'center'}
+                  gridGap={'4px'}
+                  borderBottom={'1px solid #32394d'}
+                  sx={{
+                    justifyContent: {
+                      xs: 'space-between',
+                      sm: 'space-between',
+                      md: 'flex-start',
+                    },
+                  }}
+                >
+                  <Box fontSize={'14px'} fontWeight={'500'} color={'#c7cad9'}>
+                    Platform Fee:
+                  </Box>
+                  <Box fontSize={'14px'} fontWeight={'500'} color={'#ebecf2'}>
+                    5.0%
+                  </Box>
+                </Box>
+              </Box>
+              <Box flex={1}>
+                <Box
+                  padding={'20px'}
+                  display={'flex'}
+                  alignItems={'center'}
+                  gridGap={'4px'}
+                  borderBottom={'1px solid #32394d'}
+                  sx={{
+                    justifyContent: {
+                      xs: 'space-between',
+                      sm: 'space-between',
+                      md: 'flex-start',
+                    },
+                  }}
+                >
+                  <Box fontSize={'14px'} fontWeight={'500'} color={'#c7cad9'}>
+                    Average Admin Fee:
+                  </Box>
+                  <Box fontSize={'14px'} fontWeight={'500'} color={'#ebecf2'}>
+                    0.00%
+                  </Box>
+                </Box>
+              </Box>
+            </Box>
+            <Box
+              flex={1}
+              display={'flex'}
+              sx={{ flexDirection: { xs: 'column', sm: 'column', md: 'row' } }}
+            >
+              <Box flex={1}>
+                <Box
+                  padding={'20px'}
+                  display={'flex'}
+                  alignItems={'center'}
+                  gridGap={'4px'}
+                  borderBottom={'1px solid #32394d'}
+                  sx={{
+                    justifyContent: {
+                      xs: 'space-between',
+                      sm: 'space-between',
+                      md: 'flex-start',
+                    },
+                  }}
+                >
+                  <Box fontSize={'14px'} fontWeight={'500'} color={'#c7cad9'}>
+                    Close Factor:
+                  </Box>
+                  <Box fontSize={'14px'} fontWeight={'500'} color={'#ebecf2'}>
+                    50%
+                  </Box>
+                </Box>
+              </Box>
+              <Box flex={1}>
+                <Box
+                  padding={'20px'}
+                  display={'flex'}
+                  alignItems={'center'}
+                  gridGap={'4px'}
+                  borderBottom={'1px solid #32394d'}
+                  sx={{
+                    justifyContent: {
+                      xs: 'space-between',
+                      sm: 'space-between',
+                      md: 'flex-start',
+                    },
+                  }}
+                >
+                  <Box fontSize={'14px'} fontWeight={'500'} color={'#c7cad9'}>
+                    Liquidation Incentive:
+                  </Box>
+                  <Box fontSize={'14px'} fontWeight={'500'} color={'#ebecf2'}>
+                    8%
+                  </Box>
+                </Box>
+              </Box>
+            </Box>
+            <Box
+              flex={1}
+              display={'flex'}
+              sx={{ flexDirection: { xs: 'column', sm: 'column', md: 'row' } }}
+            >
+              <Box flex={1}>
+                <Box
+                  padding={'20px'}
+                  display={'flex'}
+                  alignItems={'center'}
+                  gridGap={'4px'}
+                  borderBottom={'1px solid #32394d'}
+                  sx={{
+                    justifyContent: {
+                      xs: 'space-between',
+                      sm: 'space-between',
+                      md: 'flex-start',
+                    },
+                  }}
+                >
+                  <Box fontSize={'14px'} fontWeight={'500'} color={'#c7cad9'}>
+                    Oracle:
+                  </Box>
+                  <Box fontSize={'14px'} fontWeight={'500'} color={'#ebecf2'}>
+                    Chainlink
+                  </Box>
+                </Box>
+              </Box>
+              <Box flex={1}>
+                <Box
+                  padding={'20px'}
+                  display={'flex'}
+                  alignItems={'center'}
+                  gridGap={'4px'}
+                  borderBottom={'1px solid #32394d'}
+                  sx={{
+                    justifyContent: {
+                      xs: 'space-between',
+                      sm: 'space-between',
+                      md: 'flex-start',
+                    },
+                  }}
+                >
+                  <Box fontSize={'14px'} fontWeight={'500'} color={'#c7cad9'}>
+                    Whitelist:
+                  </Box>
+                  <Box fontSize={'14px'} fontWeight={'500'} color={'#ebecf2'}>
+                    Yes
+                  </Box>
+                </Box>
+              </Box>
+            </Box>
+          </Box>
+        </Box>
+        <Box
+          flex={'1'}
+          borderRadius={'20px'}
+          bgcolor={'#232734'}
+          display={'flex'}
+          flexDirection={'column'}
+          sx={{ minWidth: { xs: '55%', sm: '35%' } }}
+        >
+          <Box
+            height={'70px'}
+            borderBottom={'solid 1px #32394d'}
+            display={'flex'}
+            justifyContent={'space-between'}
+            alignItems={'center'}
+          >
+            <Box
+              px={'30px'}
+              fontSize={'18px'}
+              fontWeight={'500'}
+              lineHeight={'1'}
+            >
+              QUICK Statistics
+            </Box>
+            <Box mr={'30px'} display={'flex'} fontSize={'14px'}>
+              <CustomSelect arrowcolor={'#428afa'}>
+                <SmOption value={'QUICK'}>QUICK</SmOption>
+                <SmOption value={'123123'}>123123</SmOption>
+                <SmOption value={'12313212'}>12313212</SmOption>
+              </CustomSelect>
+            </Box>
+          </Box>
+          <Box flex={1} pb={'16px'} display={'flex'} flexDirection={'column'}>
+            <Box flex={1} position={'relative'} pt={'10px'} paddingX={'30px'}>
+              <Box
+                ml={'-5px'}
+                mr={'auto'}
+                padding={'6px 7px'}
+                fontSize={'10px'}
+                borderRadius={'4px'}
+                border={'solid 1px #3e4252'}
+                display={'inline-block'}
+              >
+                Current Utilization
+              </Box>
+              <Box mb={'20px'} borderLeft={'1px dashed #484c58'}>
+                <ReactApexChart
+                  options={{
+                    chart: {
+                      type: 'line',
+                      zoom: {
+                        enabled: false,
+                      },
+                      toolbar: {
+                        show: false,
+                      },
+                    },
+                    dataLabels: {
+                      enabled: false,
+                    },
+                    colors: ['#4289ff', '#fa6358'],
+                    markers: {
+                      size: [1, 1],
+                      colors: undefined,
+                      strokeColors: ['#4289ff', '#fa6358'],
+                      discrete: [
+                        {
+                          seriesIndex: 0,
+                          dataPointIndex: 0,
+                          fillColor: '#4289ff',
+                          strokeColor: '#fff',
+                          size: 5,
+                          shape: 'circle',
+                        },
+                        {
+                          seriesIndex: 1,
+                          dataPointIndex: 0,
+                          fillColor: '#fa6358',
+                          strokeColor: '#eee',
+                          size: 5,
+                          shape: 'circle',
+                        },
+                      ],
+                    },
+                    stroke: {
+                      curve: 'smooth',
+                    },
+                    title: {
+                      text: '',
+                      align: 'left',
+                    },
+                    grid: {
+                      show: false,
+                      padding: {
+                        top: 0,
+                        right: 0,
+                        bottom: 0,
+                        left: 0,
+                      },
+                    },
+                    xaxis: {
+                      position: 'top',
+                      axisBorder: {
+                        show: false,
+                      },
+                      labels: {
+                        show: false,
+                      },
+                      axisTicks: {
+                        show: false,
+                      },
+                    },
+                    yaxis: {
+                      show: false,
+                    },
+                    tooltip: {
+                      enabled: false,
+                    },
+                    legend: {
+                      show: false,
+                    },
+                  }}
+                  series={[
+                    {
+                      name: 'first',
+                      data: [0, 41, 35, 51, 49, 62, 69, 91, 148],
+                    },
+                    {
+                      name: 'second',
+                      data: [62, 69, 91, 0, 41, 35, 51, 49, 148],
+                    },
+                  ]}
+                  type='line'
+                  height={'100%'}
+                />
+              </Box>
+            </Box>
+            <Box
+              display={'flex'}
+              justifyContent={'space-around'}
+              paddingY={'20px'}
+              borderTop={'1px solid #32394d'}
+            >
+              <Box
+                display={'flex'}
+                flexDirection={'column'}
+                alignItems={'center'}
+                gridGap={'8px'}
+              >
+                <Box textAlign={'center'} fontSize={'14px'} color={'#c7cad9'}>
+                  Collateral Factor:
+                </Box>
+                <Box textAlign={'center'} fontSize={'14px'} color={'#ebecf2'}>
+                  60%
+                </Box>
+              </Box>
+              <Box
+                display={'flex'}
+                flexDirection={'column'}
+                alignItems={'center'}
+                gridGap={'8px'}
+              >
+                <Box textAlign={'center'} fontSize={'14px'} color={'#c7cad9'}>
+                  Reserve Factor:
+                </Box>
+                <Box textAlign={'center'} fontSize={'14px'} color={'#ebecf2'}>
+                  60%
+                </Box>
+              </Box>
+            </Box>
+            <Box
+              display={'flex'}
+              justifyContent={'space-around'}
+              paddingY={'20px'}
+              borderTop={'1px solid #32394d'}
+            >
+              <Box
+                display={'flex'}
+                flexDirection={'column'}
+                alignItems={'center'}
+                gridGap={'8px'}
+              >
+                <Box textAlign={'center'} fontSize={'14px'} color={'#c7cad9'}>
+                  Total Supplied:
+                </Box>
+                <Box textAlign={'center'} fontSize={'14px'} color={'#ebecf2'}>
+                  $2.3M
+                </Box>
+              </Box>
+              <Box
+                display={'flex'}
+                flexDirection={'column'}
+                alignItems={'center'}
+                gridGap={'8px'}
+              >
+                <Box textAlign={'center'} fontSize={'14px'} color={'#c7cad9'}>
+                  Total Borrowed:
+                </Box>
+                <Box textAlign={'center'} fontSize={'14px'} color={'#ebecf2'}>
+                  $0
+                </Box>
+              </Box>
+              <Box
+                display={'flex'}
+                flexDirection={'column'}
+                alignItems={'center'}
+                gridGap={'8px'}
+              >
+                <Box textAlign={'center'} fontSize={'14px'} color={'#c7cad9'}>
+                  Utilization:
+                </Box>
+                <Box textAlign={'center'} fontSize={'14px'} color={'#ebecf2'}>
+                  0%
+                </Box>
+              </Box>
+            </Box>
           </Box>
         </Box>
       </Box>
@@ -411,10 +1170,18 @@ const AntSwitch = styled(Switch)(({ theme }) => ({
     boxSizing: 'border-box',
   },
 }));
+
 const MuiTableCell = withStyles({
   root: {
     padding: '0px',
     borderBottom: 'none',
+  },
+})(TableCell);
+
+const MuiTableCell1Style = withStyles({
+  root: {
+    padding: '20px 24px',
+    borderBottom: '1px solid #32394d',
   },
 })(TableCell);
 
