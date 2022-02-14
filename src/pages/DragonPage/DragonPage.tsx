@@ -4,7 +4,7 @@ import { Box, Typography, Grid, useMediaQuery } from '@material-ui/core';
 import DragonBg1 from 'assets/images/DragonBg1.svg';
 import DragonBg2 from 'assets/images/DragonBg2.svg';
 import DragonLairMask from 'assets/images/DragonLairMask.svg';
-import DragonAlert from './DargonAlert';
+import DragonAlert from './DragonAlert';
 import DragonsLair from './DragonsLair';
 import DragonsSyrup from './DragonsSyrup';
 
