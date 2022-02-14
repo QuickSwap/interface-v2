@@ -1863,7 +1863,9 @@ export function getDQUICKAPY(info?: LairInfo) {
   const daysCurrentYear = getDaysCurrentYear();
   if (!info) return '0';
   const dQUICKAPR =
-    (((Number(info.oneDayVol) * 0.04 * 0.01) /
+    (((Number(info.oneDayVol) *
+      GlobalConst.utils.DQUICKFEE *
+      GlobalConst.utils.DQUICKAPR_MULTIPLIER) /
       Number(info.dQuickTotalSupply.toSignificant(6))) *
       daysCurrentYear) /
     (Number(info.dQUICKtoQUICK.toSignificant(6)) * Number(info.quickPrice));

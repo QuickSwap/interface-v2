@@ -53,6 +53,8 @@ export const GlobalConst = {
     },
   },
   utils: {
+    DQUICKFEE: 0.04,
+    DQUICKAPR_MULTIPLIER: 0.01,
     ROWSPERPAGE: 10,
     FEEPERCENT: 0.003,
     BUNDLE_ID: '1',
