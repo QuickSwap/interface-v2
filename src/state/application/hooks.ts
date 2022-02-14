@@ -15,7 +15,9 @@ import {
   updateBookmarkTokens,
   addBookMarkPair,
   removeBookmarkPair,
+  updateTokenDetails,
 } from './actions';
+import { TokenDetail } from './reducer';
 
 export function useBlockNumber(): number | undefined {
   const { chainId } = useActiveWeb3React();
@@ -135,6 +137,23 @@ export function useGlobalData(): {
     [dispatch],
   );
   return { globalData, updateGlobalData: _updateGlobalData };
+}
+
+export function useTokenDetails(): {
+  tokenDetails: TokenDetail[];
+  updateTokenDetails: (data: TokenDetail) => void;
+} {
+  const tokenDetails = useSelector(
+    (state: AppState) => state.application.tokenDetails,
+  );
+  const dispatch = useDispatch();
+  const _updateTokenDetails = useCallback(
+    (data: TokenDetail) => {
+      dispatch(updateTokenDetails(data));
+    },
+    [dispatch],
+  );
+  return { tokenDetails, updateTokenDetails: _updateTokenDetails };
 }
 
 export function useBookmarkTokens(): {

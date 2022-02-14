@@ -14,6 +14,7 @@ import {
   addBookMarkPair,
   removeBookmarkPair,
   updateBookmarkPairs,
+  updateTokenDetails,
 } from './actions';
 
 type PopupList = Array<{
@@ -22,6 +23,12 @@ type PopupList = Array<{
   content: PopupContent;
   removeAfterMs: number | null;
 }>;
+
+export interface TokenDetail {
+  address: string;
+  tokenData: any;
+  priceData: any;
+}
 
 export interface ApplicationState {
   readonly blockNumber: { readonly [chainId: number]: number };
@@ -33,6 +40,7 @@ export interface ApplicationState {
   readonly bookmarkedPairs: string[];
   readonly analyticToken: any;
   readonly tokenChartData: any;
+  readonly tokenDetails: TokenDetail[];
 }
 
 const initialState: ApplicationState = {
@@ -49,6 +57,7 @@ const initialState: ApplicationState = {
   bookmarkedPairs: [],
   analyticToken: null,
   tokenChartData: null,
+  tokenDetails: [],
 };
 
 export default createReducer(initialState, (builder) =>
@@ -142,5 +151,17 @@ export default createReducer(initialState, (builder) =>
     })
     .addCase(updateBookmarkPairs, (state, { payload }) => {
       state.bookmarkedPairs = payload;
+    })
+    .addCase(updateTokenDetails, (state, { payload }) => {
+      const updatedTokenDetails = state.tokenDetails;
+      const detailIndex = updatedTokenDetails.findIndex(
+        (item) => item.address === payload.address,
+      );
+      if (detailIndex > -1) {
+        updatedTokenDetails[detailIndex] = payload;
+      } else {
+        updatedTokenDetails.push(payload);
+      }
+      state.tokenDetails = updatedTokenDetails;
     }),
 );
