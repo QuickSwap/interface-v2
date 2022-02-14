@@ -1,5 +1,6 @@
 import { createAction } from '@reduxjs/toolkit';
 import { TokenList } from '@uniswap/token-lists';
+import { TokenDetail } from './reducer';
 
 export type PopupContent =
   | {
@@ -79,4 +80,8 @@ export const removeBookmarkPair = createAction<string>(
 
 export const updateBookmarkPairs = createAction<string[]>(
   'application/updateBookmarkPairs',
+);
+
+export const updateTokenDetails = createAction<TokenDetail>(
+  'application/updateTokenDetail',
 );
