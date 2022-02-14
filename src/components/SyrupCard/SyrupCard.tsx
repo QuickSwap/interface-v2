@@ -23,7 +23,10 @@ const useStyles = makeStyles(({ palette }) => ({
   },
 }));
 
-const SyrupCard: React.FC<{ syrup: SyrupInfo }> = ({ syrup }) => {
+const SyrupCard: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
+  syrup,
+  dQUICKAPY,
+}) => {
   const { palette, breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const [expanded, setExpanded] = useState(false);
@@ -65,7 +68,7 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo }> = ({ syrup }) => {
             </Box>
             {!expanded && (
               <Box width={0.45}>
-                <SyrupAPR syrup={syrup} />
+                <SyrupAPR syrup={syrup} dQUICKAPY={dQUICKAPY} />
               </Box>
             )}
             <Box
@@ -114,7 +117,7 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo }> = ({ syrup }) => {
               <Typography variant='body2'>{depositAmount}</Typography>
             </Box>
             <Box width={0.2} textAlign='left'>
-              <SyrupAPR syrup={syrup} />
+              <SyrupAPR syrup={syrup} dQUICKAPY={dQUICKAPY} />
             </Box>
             <Box width={0.2} textAlign='right'>
               <Box
@@ -140,7 +143,9 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo }> = ({ syrup }) => {
           </>
         )}
       </Box>
-      {expanded && syrup && <SyrupCardDetails token={syrup.token} />}
+      {expanded && syrup && (
+        <SyrupCardDetails syrup={syrup} dQUICKAPY={dQUICKAPY} />
+      )}
     </Box>
   );
 };

@@ -31,17 +31,13 @@ import {
 import { tryParseAmount } from 'state/swap/hooks';
 import Web3 from 'web3';
 import { useLairContract, useQUICKContract } from 'hooks/useContract';
-import useUSDCPrice, {
-  useUSDCPrices,
-  useUSDCPricesToken,
-} from 'utils/useUSDCPrice';
+import { useUSDCPrices, useUSDCPricesToken } from 'utils/useUSDCPrice';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { useTotalSupplys } from 'data/TotalSupply';
 import {
   getBlockFromTimestamp,
   getDaysCurrentYear,
   getOneYearFee,
-  getPriceToQUICKSyrup,
   returnDualStakingInfo,
   returnStakingInfo,
   returnSyrupInfo,
@@ -183,15 +179,7 @@ export interface SyrupInfo {
 
   baseToken: Token;
 
-  quickPrice: number;
-
   rate: number;
-
-  dQUICKtoQUICK: TokenAmount;
-
-  dQuickTotalSupply: TokenAmount;
-
-  oneDayVol: number;
 
   valueOfTotalStakedAmountInUSDC?: number;
 
@@ -336,14 +324,7 @@ export function useSyrupInfo(
   filter?: { search: string; isStaked: boolean },
 ): SyrupInfo[] {
   const { chainId, account } = useActiveWeb3React();
-  //const [quickPrice,setQuickPrice] = useState(0);
-  const [, quickUsdcPair] = usePair(
-    returnTokenFromKey('QUICK'),
-    returnTokenFromKey('USDC'),
-  );
-  const quickPrice = Number(
-    quickUsdcPair?.priceOf(returnTokenFromKey('QUICK'))?.toSignificant(6),
-  );
+
   const info = useMemo(
     () =>
       chainId
@@ -370,10 +351,6 @@ export function useSyrupInfo(
   );
 
   const accountArg = useMemo(() => [account ?? undefined], [account]);
-  const lair = useLairContract();
-
-  const inputs = ['1000000000000000000'];
-  const USDPrice = useUSDCPrice(returnTokenFromKey('QUICK'));
 
   // get all the info from the staking rewards contracts
   const balances = useMultipleContractSingleData(
@@ -393,9 +370,6 @@ export function useSyrupInfo(
     STAKING_REWARDS_INTERFACE,
     'totalSupply',
   );
-  const dQuickToQuick = useSingleCallResult(lair, 'dQUICKForQUICK', inputs);
-  const _dQuickTotalSupply = useSingleCallResult(lair, 'totalSupply', []);
-
   const periodFinishes = useMultipleContractSingleData(
     rewardsAddresses,
     STAKING_REWARDS_INTERFACE,
@@ -422,11 +396,9 @@ export function useSyrupInfo(
     info.map((item) => unwrappedToken(item.baseToken)),
   );
 
-  useEffect(() => {
-    getOneDayVolume().then((data) => {
-      // console.log(data);
-    });
-  }, []);
+  const stakingTokenPrices = useUSDCPricesToken(
+    info.map((item) => item.stakingToken),
+  );
 
   return useMemo(() => {
     if (!chainId || !uni) return [];
@@ -436,6 +408,7 @@ export function useSyrupInfo(
         // these two are dependent on account
         const balanceState = balances[index];
         const earnedAmountState = earnedAmounts[index];
+        const stakingTokenPrice = stakingTokenPrices[index];
 
         // these get fetched regardless of account
         const totalSupplyState = totalSupplies[index];
@@ -445,7 +418,6 @@ export function useSyrupInfo(
 
         if (
           // these may be undefined if not logged in
-          !dQuickToQuick?.loading &&
           !balanceState?.loading &&
           !earnedAmountState?.loading &&
           // always need these
@@ -457,7 +429,6 @@ export function useSyrupInfo(
           !periodFinishState.loading
         ) {
           if (
-            dQuickToQuick?.error ||
             balanceState?.error ||
             earnedAmountState?.error ||
             totalSupplyState.error ||
@@ -523,12 +494,8 @@ export function useSyrupInfo(
           );
 
           const periodFinishMs = syrupInfo.ending;
-          const dQUICKtoQUICK = new TokenAmount(
-            returnTokenFromKey('QUICK'),
-            JSBI.BigInt(dQuickToQuick?.result?.[0] ?? 0),
-          );
 
-          const syrup: SyrupInfo = {
+          memo.push({
             stakingRewardAddress: rewardsAddress,
             token: syrupInfo.token,
             ended: syrupInfo.ended,
@@ -545,27 +512,12 @@ export function useSyrupInfo(
             totalStakedAmount: totalStakedAmount,
             getHypotheticalRewardRate,
             baseToken: syrupInfo.baseToken,
-            quickPrice: quickPrice,
             rate: syrupInfo.rate,
-            dQUICKtoQUICK: dQUICKtoQUICK,
-            dQuickTotalSupply: new TokenAmount(
-              returnTokenFromKey('DQUICK'),
-              JSBI.BigInt(_dQuickTotalSupply?.result?.[0] ?? 0),
-            ),
-            oneDayVol: oneDayVol,
             rewardTokenPriceinUSD: priceOfRewardTokenInUSD,
             rewards,
             stakingToken: syrupInfo.stakingToken,
-          };
-
-          const valueOfTotalStakedAmountInUSDC =
-            Number(totalStakedAmount.toSignificant(6)) *
-            getPriceToQUICKSyrup(syrup) *
-            Number(USDPrice?.toSignificant(6));
-
-          memo.push({
-            ...syrup,
-            valueOfTotalStakedAmountInUSDC,
+            valueOfTotalStakedAmountInUSDC:
+              Number(totalStakedAmount.toSignificant(6)) * stakingTokenPrice,
           });
         }
         return memo;
@@ -581,13 +533,10 @@ export function useSyrupInfo(
     rewardsAddresses,
     totalSupplies,
     uni,
-    dQuickToQuick,
-    USDPrice,
-    _dQuickTotalSupply,
-    quickPrice,
     rewardRates,
     stakingTokenPairs,
     usdBaseTokenPrices,
+    stakingTokenPrices,
   ]).filter((syrupInfo) =>
     filter && filter.isStaked ? syrupInfo.stakedAmount.greaterThan('0') : true,
   );
@@ -600,14 +549,6 @@ export function useOldSyrupInfo(
   filter?: { search: string; isStaked: boolean },
 ): SyrupInfo[] {
   const { chainId, account } = useActiveWeb3React();
-  //const [quickPrice,setQuickPrice] = useState(0);
-  const [, quickUsdcPair] = usePair(
-    returnTokenFromKey('QUICK'),
-    returnTokenFromKey('USDC'),
-  );
-  const quickPrice = Number(
-    quickUsdcPair?.priceOf(returnTokenFromKey('QUICK'))?.toSignificant(6),
-  );
   const info = useMemo(
     () =>
       chainId
@@ -634,8 +575,6 @@ export function useOldSyrupInfo(
   );
 
   const accountArg = useMemo(() => [account ?? undefined], [account]);
-
-  const USDPrice = useUSDCPrice(returnTokenFromKey('QUICK'));
 
   // get all the info from the staking rewards contracts
   const balances = useMultipleContractSingleData(
@@ -682,6 +621,10 @@ export function useOldSyrupInfo(
     info.map((item) => unwrappedToken(item.baseToken)),
   );
 
+  const stakingTokenPrices = useUSDCPricesToken(
+    info.map((item) => item.stakingToken),
+  );
+
   return useMemo(() => {
     if (!chainId || !uni) return [];
 
@@ -696,6 +639,7 @@ export function useOldSyrupInfo(
         const rewardRateState = rewardRates[index];
         const periodFinishState = periodFinishes[index];
         const syrupInfo = info[index];
+        const stakingTokenPrice = stakingTokenPrices[index];
 
         if (
           // these may be undefined if not logged in
@@ -765,10 +709,6 @@ export function useOldSyrupInfo(
           );
 
           const periodFinishMs = syrupInfo.ending;
-          const dQUICKtoQUICK = new TokenAmount(
-            returnTokenFromKey('QUICK'),
-            JSBI.BigInt(0),
-          );
 
           const [, stakingTokenPair] = stakingTokenPairs[index];
           const tokenPairPrice = stakingTokenPair?.priceOf(token);
@@ -777,7 +717,7 @@ export function useOldSyrupInfo(
             Number(tokenPairPrice?.toSignificant()) *
             Number(usdPriceBaseToken?.toSignificant());
 
-          const syrup: SyrupInfo = {
+          memo.push({
             stakingRewardAddress: rewardsAddress,
             token: syrupInfo.token,
             ended: syrupInfo.ended,
@@ -794,24 +734,12 @@ export function useOldSyrupInfo(
             totalStakedAmount: totalStakedAmount,
             getHypotheticalRewardRate,
             baseToken: syrupInfo.baseToken,
-            quickPrice: quickPrice,
             rate: 0,
-            dQUICKtoQUICK: dQUICKtoQUICK,
-            dQuickTotalSupply: new TokenAmount(
-              returnTokenFromKey('DQUICK'),
-              JSBI.BigInt(0),
-            ),
-            oneDayVol: 0,
             rewardTokenPriceinUSD: priceOfRewardTokenInUSD,
             stakingToken: syrupInfo.stakingToken,
-          };
-
-          const valueOfTotalStakedAmountInUSDC =
-            Number(totalStakedAmount.toSignificant(6)) *
-            getPriceToQUICKSyrup(syrup) *
-            Number(USDPrice?.toSignificant(6));
-
-          memo.push({ ...syrup, valueOfTotalStakedAmountInUSDC });
+            valueOfTotalStakedAmountInUSDC:
+              Number(totalStakedAmount.toSignificant(6)) * stakingTokenPrice,
+          });
         }
         return memo;
       },
@@ -826,11 +754,10 @@ export function useOldSyrupInfo(
     rewardsAddresses,
     totalSupplies,
     uni,
-    USDPrice,
-    quickPrice,
     rewardRates,
     stakingTokenPairs,
     usdBaseTokenPrices,
+    stakingTokenPrices,
   ]).filter((syrupInfo) =>
     filter && filter.isStaked ? syrupInfo.stakedAmount.greaterThan('0') : true,
   );
@@ -901,10 +828,7 @@ const getOneDayVolume = async () => {
       .number,
   );
   const utcCurrentTime = dayjs();
-  const utcOneDayBack = utcCurrentTime
-    .subtract(1, 'day')
-    .startOf('minute')
-    .unix();
+  const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix();
 
   const oneDayOldBlock = await getBlockFromTimestamp(utcOneDayBack);
 

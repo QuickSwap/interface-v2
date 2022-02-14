@@ -4,7 +4,7 @@ import { Box, Typography } from '@material-ui/core';
 import { useLairInfo } from 'state/stake/hooks';
 import { CurrencyLogo, StakeQuickModal, UnstakeQuickModal } from 'components';
 import { ReactComponent as PriceExchangeIcon } from 'assets/images/PriceExchangeIcon.svg';
-import { getDaysCurrentYear, formatNumber, returnTokenFromKey } from 'utils';
+import { formatNumber, returnTokenFromKey, getDQUICKAPY } from 'utils';
 
 const useStyles = makeStyles(({ palette }) => ({
   stakeButton: {
@@ -26,24 +26,12 @@ const useStyles = makeStyles(({ palette }) => ({
 
 const DragonsLair: React.FC = () => {
   const classes = useStyles();
-  const daysCurrentYear = getDaysCurrentYear();
   const { palette } = useTheme();
   const [isQUICKRate, setIsQUICKRate] = useState(false);
   const [openStakeModal, setOpenStakeModal] = useState(false);
   const [openUnstakeModal, setOpenUnstakeModal] = useState(false);
   const lairInfo = useLairInfo();
-  const APR =
-    (((Number(lairInfo?.oneDayVol) * 0.04 * 0.01) /
-      Number(lairInfo?.dQuickTotalSupply.toSignificant(6))) *
-      daysCurrentYear) /
-    (Number(lairInfo?.dQUICKtoQUICK.toSignificant()) *
-      Number(lairInfo?.quickPrice));
-  const APY = APR
-    ? (
-        (Math.pow(1 + APR / daysCurrentYear, daysCurrentYear) - 1) *
-        100
-      ).toFixed(2)
-    : 0;
+  const APY = getDQUICKAPY(lairInfo);
 
   return (
     <Box position='relative' zIndex={3}>

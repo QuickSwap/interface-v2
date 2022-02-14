@@ -2,7 +2,12 @@ import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { useTheme } from '@material-ui/core/styles';
 import { ArrowUp, ArrowDown } from 'react-feather';
 import { Box, Typography, Divider, useMediaQuery } from '@material-ui/core';
-import { SyrupInfo, useSyrupInfo, useOldSyrupInfo } from 'state/stake/hooks';
+import {
+  SyrupInfo,
+  useSyrupInfo,
+  useOldSyrupInfo,
+  useLairInfo,
+} from 'state/stake/hooks';
 import {
   SyrupCard,
   ToggleSwitch,
@@ -11,6 +16,7 @@ import {
   CustomSwitch,
 } from 'components';
 import {
+  getDQUICKAPY,
   getPageItemsToLoad,
   getTokenAPRSyrup,
   returnFullWidthMobile,
@@ -40,6 +46,9 @@ const DragonsSyrup: React.FC = () => {
     syrupSearch,
     setSyrupSearch,
   );
+
+  const lairInfo = useLairInfo();
+  const dQUICKAPY = getDQUICKAPY(lairInfo);
 
   const addedStakingSyrupInfos = useSyrupInfo(
     null,
@@ -303,7 +312,9 @@ const DragonsSyrup: React.FC = () => {
         </Box>
       )}
       {syrupInfos && !pageLoading ? (
-        syrupInfos.map((syrup, ind) => <SyrupCard key={ind} syrup={syrup} />)
+        syrupInfos.map((syrup, ind) => (
+          <SyrupCard key={ind} syrup={syrup} dQUICKAPY={dQUICKAPY} />
+        ))
       ) : (
         <>
           <Skeleton width='100%' height={120} />
