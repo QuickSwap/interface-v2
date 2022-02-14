@@ -57,17 +57,11 @@ let oneDayVol: any = undefined;
 export interface LairInfo {
   lairAddress: string;
 
-  dQUICKtoQUICK: TokenAmount;
-
-  QUICKtodQUICK: TokenAmount;
-
   dQUICKBalance: TokenAmount;
 
   QUICKBalance: TokenAmount;
 
   totalQuickBalance: TokenAmount;
-
-  quickPrice: number;
 
   dQuickTotalSupply: TokenAmount;
 
@@ -1260,22 +1254,8 @@ export function useLairInfo(): LairInfo {
 
   let accountArg = useMemo(() => [account ?? undefined], [account]);
 
-  const inputs = ['1000000000000000000'];
-
   const lair = useLairContract();
   const quick = useQUICKContract();
-  const [, quickUsdcPair] = usePair(
-    returnTokenFromKey('QUICK'),
-    returnTokenFromKey('USDC'),
-  );
-  const quickPrice = quickUsdcPair
-    ? Number(
-        quickUsdcPair.priceOf(returnTokenFromKey('QUICK')).toSignificant(6),
-      )
-    : 0;
-
-  const dQuickToQuick = useSingleCallResult(lair, 'dQUICKForQUICK', inputs);
-  const quickToDQuick = useSingleCallResult(lair, 'QUICKForDQUICK', inputs);
 
   const _dQuickTotalSupply = useSingleCallResult(lair, 'totalSupply', []);
 
@@ -1293,14 +1273,6 @@ export function useLairInfo(): LairInfo {
   return useMemo(() => {
     return {
       lairAddress: GlobalConst.addresses.LAIR_ADDRESS,
-      dQUICKtoQUICK: new TokenAmount(
-        returnTokenFromKey('QUICK'),
-        JSBI.BigInt(dQuickToQuick?.result?.[0] ?? 0),
-      ),
-      QUICKtodQUICK: new TokenAmount(
-        returnTokenFromKey('DQUICK'),
-        JSBI.BigInt(quickToDQuick?.result?.[0] ?? 0),
-      ),
       dQUICKBalance: new TokenAmount(
         returnTokenFromKey('DQUICK'),
         JSBI.BigInt(dQuickBalance?.result?.[0] ?? 0),
@@ -1313,22 +1285,13 @@ export function useLairInfo(): LairInfo {
         returnTokenFromKey('QUICK'),
         JSBI.BigInt(lairsQuickBalance?.result?.[0] ?? 0),
       ),
-      quickPrice,
       dQuickTotalSupply: new TokenAmount(
         returnTokenFromKey('DQUICK'),
         JSBI.BigInt(_dQuickTotalSupply?.result?.[0] ?? 0),
       ),
       oneDayVol: oneDayVol,
     };
-  }, [
-    dQuickToQuick,
-    quickToDQuick,
-    quickBalance,
-    dQuickBalance,
-    _dQuickTotalSupply,
-    quickPrice,
-    lairsQuickBalance,
-  ]);
+  }, [quickBalance, dQuickBalance, _dQuickTotalSupply, lairsQuickBalance]);
 }
 
 // gets the staking info from the network for the active chain id
