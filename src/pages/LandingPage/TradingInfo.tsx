@@ -1,10 +1,10 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { Typography, Box } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { Skeleton } from '@material-ui/lab';
 import { StakeQuickModal } from 'components';
 import { useLairInfo, useTotalRewardsDistributed } from 'state/stake/hooks';
-import { getDaysCurrentYear, formatCompact } from 'utils';
+import { formatCompact, getDQUICKAPY } from 'utils';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   tradingSection: {
@@ -42,20 +42,9 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
 export const TradingInfo: React.FC<{ globalData: any }> = ({ globalData }) => {
   const classes = useStyles();
   const lairInfo = useLairInfo();
-  const daysCurrentYear = getDaysCurrentYear();
   const [openStakeModal, setOpenStakeModal] = useState(false);
 
-  const APR =
-    (((Number(lairInfo?.oneDayVol) * 0.04 * 0.01) /
-      Number(lairInfo?.dQuickTotalSupply.toSignificant(6))) *
-      daysCurrentYear) /
-    (Number(lairInfo?.dQUICKtoQUICK.toSignificant()) *
-      Number(lairInfo?.quickPrice));
-
-  const dQUICKAPY = useMemo(() => {
-    if (!APR) return;
-    return (Math.pow(1 + APR / daysCurrentYear, daysCurrentYear) - 1) * 100;
-  }, [APR, daysCurrentYear]);
+  const dQUICKAPY = getDQUICKAPY(lairInfo);
 
   const totalRewardsUSD = useTotalRewardsDistributed();
 

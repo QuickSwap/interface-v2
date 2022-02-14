@@ -52,7 +52,12 @@ import moment from 'moment';
 import { Palette } from '@material-ui/core/styles/createPalette';
 import tokenData from 'constants/tokens.json';
 import stakeData from 'constants/stake.json';
-import { DualStakingInfo, StakingInfo, SyrupInfo } from 'state/stake/hooks';
+import {
+  DualStakingInfo,
+  LairInfo,
+  StakingInfo,
+  SyrupInfo,
+} from 'state/stake/hooks';
 import { unwrappedToken } from './wrappedCurrency';
 dayjs.extend(utc);
 dayjs.extend(weekOfYear);
@@ -223,12 +228,8 @@ export const get2DayPercentChange = (
 
 export const getEthPrice: () => Promise<number[]> = async () => {
   const utcCurrentTime = dayjs();
-  //utcCurrentTime = utcCurrentTime.subtract(0.3, 'day');
 
-  const utcOneDayBack = utcCurrentTime
-    .subtract(1, 'day')
-    .startOf('minute')
-    .unix();
+  const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix();
   let ethPrice = 0;
   let ethPriceOneDay = 0;
   let priceChangeETH = 0;
@@ -1762,13 +1763,6 @@ export function returnDualStakingInfo(): {
   };
 }
 
-export function getPriceToQUICKSyrup(syrup: SyrupInfo) {
-  const isQUICKStakingToken = syrup.stakingToken.equals(
-    returnTokenFromKey('QUICK'),
-  );
-  return isQUICKStakingToken ? 1 : Number(syrup.dQUICKtoQUICK.toSignificant());
-}
-
 export function getChartDates(chartData: any[] | null, durationIndex: number) {
   if (chartData) {
     const dates: string[] = [];
@@ -1865,17 +1859,17 @@ export function getTokenAPRSyrup(syrup: SyrupInfo) {
     : 0;
 }
 
-export function getDQUICKAPYSyrup(syrup?: SyrupInfo) {
-  if (!syrup) return '0';
+export function getDQUICKAPY(info?: LairInfo) {
+  const daysCurrentYear = getDaysCurrentYear();
+  if (!info) return '0';
   const dQUICKAPR =
-    (((Number(syrup.oneDayVol) * 0.04 * 0.01) /
-      Number(syrup.dQuickTotalSupply.toSignificant(6))) *
-      getDaysCurrentYear()) /
-    (Number(syrup.dQUICKtoQUICK.toSignificant(6)) * Number(syrup.quickPrice));
+    (((Number(info.oneDayVol) * 0.04 * 0.01) /
+      Number(info.dQuickTotalSupply.toSignificant(6))) *
+      daysCurrentYear) /
+    (Number(info.dQUICKtoQUICK.toSignificant(6)) * Number(info.quickPrice));
   if (!dQUICKAPR) return '0';
   return Number(
-    (Math.pow(1 + dQUICKAPR / getDaysCurrentYear(), getDaysCurrentYear()) - 1) *
-      100,
+    (Math.pow(1 + dQUICKAPR / daysCurrentYear, daysCurrentYear) - 1) * 100,
   ).toLocaleString();
 }
 
