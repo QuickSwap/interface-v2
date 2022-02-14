@@ -6,16 +6,21 @@ import { CurrencyLogo, StakeQuickModal, UnstakeQuickModal } from 'components';
 import { ReactComponent as PriceExchangeIcon } from 'assets/images/PriceExchangeIcon.svg';
 import { getDaysCurrentYear, formatNumber, returnTokenFromKey } from 'utils';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles(({ palette }) => ({
   stakeButton: {
     width: '100%',
     height: 48,
     borderRadius: 10,
+    border: `1px solid ${palette.primary.main}`,
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 24,
     cursor: 'pointer',
+    '& p': {
+      fontWeight: 600,
+      color: '#ebecf2',
+    },
   },
 }));
 
@@ -125,19 +130,17 @@ const DragonsLair: React.FC = () => {
       </Box>
       <Box
         className={classes.stakeButton}
-        bgcolor={palette.secondary.light}
-        onClick={() => setOpenUnstakeModal(true)}
+        bgcolor={palette.primary.main}
+        onClick={() => setOpenStakeModal(true)}
       >
-        <Typography variant='body2'>- Unstake dQUICK</Typography>
+        <Typography variant='body2'>Stake</Typography>
       </Box>
       <Box
         className={classes.stakeButton}
-        style={{
-          backgroundImage: 'linear-gradient(279deg, #004ce6, #3d71ff)',
-        }}
-        onClick={() => setOpenStakeModal(true)}
+        bgcolor='transparent'
+        onClick={() => setOpenUnstakeModal(true)}
       >
-        <Typography variant='body2'>Stake QUICK</Typography>
+        <Typography variant='body2'>Unstake</Typography>
       </Box>
       <Box mt={3} textAlign='center'>
         <Typography
