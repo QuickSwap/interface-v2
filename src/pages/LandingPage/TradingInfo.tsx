@@ -4,7 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Skeleton } from '@material-ui/lab';
 import { StakeQuickModal } from 'components';
 import { useLairInfo, useTotalRewardsDistributed } from 'state/stake/hooks';
-import { formatCompact, getDQUICKAPY } from 'utils';
+import { formatCompact, useLairDQUICKAPY } from 'utils';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   tradingSection: {
@@ -44,7 +44,7 @@ export const TradingInfo: React.FC<{ globalData: any }> = ({ globalData }) => {
   const lairInfo = useLairInfo();
   const [openStakeModal, setOpenStakeModal] = useState(false);
 
-  const dQUICKAPY = getDQUICKAPY(lairInfo);
+  const dQUICKAPY = useLairDQUICKAPY(lairInfo);
 
   const totalRewardsUSD = useTotalRewardsDistributed();
 

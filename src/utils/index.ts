@@ -59,6 +59,7 @@ import {
   SyrupInfo,
 } from 'state/stake/hooks';
 import { unwrappedToken } from './wrappedCurrency';
+import { useUSDCPriceToken } from './useUSDCPrice';
 dayjs.extend(utc);
 dayjs.extend(weekOfYear);
 
@@ -1849,16 +1850,17 @@ export function getTokenAPRSyrup(syrup: SyrupInfo) {
     : 0;
 }
 
-export function getDQUICKAPY(info?: LairInfo) {
+export function useLairDQUICKAPY(lair?: LairInfo) {
   const daysCurrentYear = getDaysCurrentYear();
-  if (!info) return '0';
+  const dQUICKPrice = useUSDCPriceToken(returnTokenFromKey('DQUICK'));
+  if (!lair) return '0';
   const dQUICKAPR =
-    (((Number(info.oneDayVol) *
+    (((Number(lair.oneDayVol) *
       GlobalConst.utils.DQUICKFEE *
       GlobalConst.utils.DQUICKAPR_MULTIPLIER) /
-      Number(info.dQuickTotalSupply.toSignificant(6))) *
+      Number(lair.dQuickTotalSupply.toSignificant(6))) *
       daysCurrentYear) /
-    (Number(info.dQUICKtoQUICK.toSignificant(6)) * Number(info.quickPrice));
+    dQUICKPrice;
   if (!dQUICKAPR) return '0';
   return Number(
     (Math.pow(1 + dQUICKAPR / daysCurrentYear, daysCurrentYear) - 1) * 100,

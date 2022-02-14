@@ -4,7 +4,8 @@ import { Box, Typography } from '@material-ui/core';
 import { useLairInfo } from 'state/stake/hooks';
 import { CurrencyLogo, StakeQuickModal, UnstakeQuickModal } from 'components';
 import { ReactComponent as PriceExchangeIcon } from 'assets/images/PriceExchangeIcon.svg';
-import { formatNumber, returnTokenFromKey, getDQUICKAPY } from 'utils';
+import { formatNumber, returnTokenFromKey, useLairDQUICKAPY } from 'utils';
+import { useUSDCPriceToken } from 'utils/useUSDCPrice';
 
 const useStyles = makeStyles(({ palette }) => ({
   stakeButton: {
@@ -27,11 +28,15 @@ const useStyles = makeStyles(({ palette }) => ({
 const DragonsLair: React.FC = () => {
   const classes = useStyles();
   const { palette } = useTheme();
+  const quickPrice = useUSDCPriceToken(returnTokenFromKey('QUICK'));
+  const dQUICKPrice = useUSDCPriceToken(returnTokenFromKey('DQUICK'));
+  const dQUICKtoQUICK = dQUICKPrice / quickPrice;
+  const QUICKtodQUICK = quickPrice / dQUICKPrice;
   const [isQUICKRate, setIsQUICKRate] = useState(false);
   const [openStakeModal, setOpenStakeModal] = useState(false);
   const [openUnstakeModal, setOpenUnstakeModal] = useState(false);
   const lairInfo = useLairInfo();
-  const APY = getDQUICKAPY(lairInfo);
+  const APY = useLairDQUICKAPY(lairInfo);
 
   return (
     <Box position='relative' zIndex={3}>
@@ -76,8 +81,7 @@ const DragonsLair: React.FC = () => {
         <Typography variant='body2'>
           $
           {(
-            Number(lairInfo.totalQuickBalance.toSignificant()) *
-            Number(lairInfo.quickPrice)
+            Number(lairInfo.totalQuickBalance.toSignificant()) * quickPrice
           ).toLocaleString()}
         </Typography>
       </Box>
@@ -105,11 +109,11 @@ const DragonsLair: React.FC = () => {
       >
         <CurrencyLogo currency={returnTokenFromKey('QUICK')} />
         <Typography variant='body2' style={{ margin: '0 8px' }}>
-          {isQUICKRate ? 1 : lairInfo.dQUICKtoQUICK.toSignificant(4)} QUICK =
+          {isQUICKRate ? 1 : dQUICKtoQUICK.toLocaleString()} QUICK =
         </Typography>
         <CurrencyLogo currency={returnTokenFromKey('QUICK')} />
         <Typography variant='body2' style={{ margin: '0 8px' }}>
-          {isQUICKRate ? lairInfo.QUICKtodQUICK.toSignificant(4) : 1} dQUICK
+          {isQUICKRate ? QUICKtodQUICK.toLocaleString() : 1} dQUICK
         </Typography>
         <PriceExchangeIcon
           style={{ cursor: 'pointer' }}

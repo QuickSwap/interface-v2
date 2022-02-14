@@ -16,7 +16,7 @@ import {
   CustomSwitch,
 } from 'components';
 import {
-  getDQUICKAPY,
+  useLairDQUICKAPY,
   getPageItemsToLoad,
   getTokenAPRSyrup,
   returnFullWidthMobile,
@@ -48,7 +48,7 @@ const DragonsSyrup: React.FC = () => {
   );
 
   const lairInfo = useLairInfo();
-  const dQUICKAPY = getDQUICKAPY(lairInfo);
+  const dQUICKAPY = useLairDQUICKAPY(lairInfo);
 
   const addedStakingSyrupInfos = useSyrupInfo(
     null,
