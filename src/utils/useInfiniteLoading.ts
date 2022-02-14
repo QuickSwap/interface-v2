@@ -5,7 +5,7 @@ export const useInfiniteLoading = (loadNext: () => void) => {
     onChange: () => {
       loadNext();
     },
-    rootMargin: '100px 0px 600px 0px',
+    rootMargin: '100px 0px',
   });
 
   return {

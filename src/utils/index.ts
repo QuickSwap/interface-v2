@@ -29,6 +29,8 @@ import {
   TOKEN_INFO_OLD,
   FILTERED_TRANSACTIONS,
   HOURLY_PAIR_RATES,
+  GLOBAL_ALLDATA,
+  ETH_ALLPRICE,
 } from 'apollo/queries';
 import { JsonRpcSigner, Web3Provider } from '@ethersproject/providers';
 import {
@@ -234,15 +236,12 @@ export const getEthPrice: () => Promise<number[]> = async () => {
   try {
     const oneDayBlock = await getBlockFromTimestamp(utcOneDayBack);
     const result = await client.query({
-      query: ETH_PRICE(),
+      query: ETH_ALLPRICE(oneDayBlock),
       fetchPolicy: 'network-only',
     });
-    const resultOneDay = await client.query({
-      query: ETH_PRICE(oneDayBlock),
-      fetchPolicy: 'network-only',
-    });
-    const currentPrice = result?.data?.bundles[0]?.ethPrice;
-    const oneDayBackPrice = resultOneDay?.data?.bundles[0]?.ethPrice;
+    const currentPrice = result?.data['currentPrice'][0].ethPrice;
+    const oneDayBackPrice = result?.data['oneDayBackPrice'][0].ethPrice;
+
     priceChangeETH = getPercentChange(currentPrice, oneDayBackPrice);
     ethPrice = currentPrice;
     ethPriceOneDay = oneDayBackPrice;
@@ -1177,30 +1176,22 @@ export async function getGlobalData(
     });
     data = result.data.uniswapFactories[0];
 
-    // fetch the historical data
-    const oneDayResult = await client.query({
-      query: GLOBAL_DATA(oneDayBlock?.number),
+    const queryReq = [
+      { index: 'result', block: null },
+      { index: 'oneDayData', block: oneDayBlock?.number },
+      { index: 'twoDayData', block: twoDayBlock?.number },
+      { index: 'oneWeekData', block: oneWeekBlock?.number },
+      { index: 'twoWeekData', block: twoWeekBlock?.number },
+    ];
+    const allData = await client.query({
+      query: GLOBAL_ALLDATA(queryReq),
       fetchPolicy: 'network-only',
     });
-    oneDayData = oneDayResult.data.uniswapFactories[0];
-
-    const twoDayResult = await client.query({
-      query: GLOBAL_DATA(twoDayBlock?.number),
-      fetchPolicy: 'network-only',
-    });
-    twoDayData = twoDayResult.data.uniswapFactories[0];
-
-    const oneWeekResult = await client.query({
-      query: GLOBAL_DATA(oneWeekBlock?.number),
-      fetchPolicy: 'network-only',
-    });
-    const oneWeekData = oneWeekResult.data.uniswapFactories[0];
-
-    const twoWeekResult = await client.query({
-      query: GLOBAL_DATA(twoWeekBlock?.number),
-      fetchPolicy: 'network-only',
-    });
-    const twoWeekData = twoWeekResult.data.uniswapFactories[0];
+    data = allData.data['result'][0];
+    oneDayData = allData.data['oneDayData'][0];
+    twoDayData = allData.data['twoDayData'][0];
+    const oneWeekData = allData.data['oneWeekData'][0];
+    const twoWeekData = allData.data['twoWeekData'][0];
 
     if (data && oneDayData && twoDayData && twoWeekData) {
       const [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(
@@ -1704,6 +1695,7 @@ export function returnStakingInfo(
     baseToken: Token;
     rate: number;
     pair: string;
+    rewardToken: Token;
   }[];
 } {
   const stakingInfo =
@@ -1713,7 +1705,7 @@ export function returnStakingInfo(
       ? stakeData.veryoldstakingrewards
       : stakeData.stakingrewards;
   return {
-    [ChainId.MATIC]: stakingInfo.map((info) => {
+    [ChainId.MATIC]: stakingInfo.map((info: any) => {
       return {
         ...info,
         tokens: [
@@ -1721,6 +1713,7 @@ export function returnStakingInfo(
           returnTokenFromKey(info.tokens[1]),
         ],
         baseToken: returnTokenFromKey(info.baseToken),
+        rewardToken: returnTokenFromKey(info.rewardToken ?? 'DQUICK'),
       };
     }),
   };
@@ -1890,10 +1883,10 @@ export function getTokenAddress(token: Token | undefined) {
   return token.address;
 }
 
-export function getRewardRate(rate: TokenAmount | undefined) {
-  if (!rate) return;
+export function getRewardRate(rate?: TokenAmount, rewardToken?: Token) {
+  if (!rate || !rewardToken) return;
   return `${rate.toFixed(2, { groupSeparator: ',' }).replace(/[.,]00$/, '')} ${
-    rate.token.symbol
+    rewardToken.symbol
   }  / day`;
 }
 
@@ -2002,6 +1995,30 @@ export function getUSDString(usdValue?: CurrencyAmount) {
   const usdStr = usdValue.toSignificant(2);
   if (Number(usdStr) > 0 && Number(usdStr) < 0.001) return '< $0.001';
   return `$${usdStr}`;
+}
+
+export function getEarnedUSDLPFarm(stakingInfo: StakingInfo | undefined) {
+  if (!stakingInfo) return;
+  const earnedUSD =
+    Number(stakingInfo.earnedAmount.toSignificant()) *
+    stakingInfo.rewardTokenPrice;
+  if (earnedUSD < 0.001 && earnedUSD > 0) {
+    return '< $0.001';
+  }
+  return `$${earnedUSD.toLocaleString()}`;
+}
+
+export function getEarnedUSDDualFarm(stakingInfo: DualStakingInfo | undefined) {
+  if (!stakingInfo) return;
+  const earnedUSD =
+    Number(stakingInfo.earnedAmountA.toSignificant()) *
+      stakingInfo.rewardTokenAPrice +
+    Number(stakingInfo.earnedAmountB.toSignificant()) *
+      Number(stakingInfo.rewardTokenBPrice);
+  if (earnedUSD < 0.001 && earnedUSD > 0) {
+    return '< $0.001';
+  }
+  return `$${earnedUSD.toLocaleString()}`;
 }
 
 export function isSupportedNetwork(ethereum: any) {
