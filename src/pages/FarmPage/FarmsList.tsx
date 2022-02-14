@@ -440,7 +440,7 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
               color={
                 sortBy === item.index
                   ? palette.text.primary
-                  : palette.secondary.main
+                  : palette.text.secondary
               }
             >
               <Typography variant='body2'>{item.text}</Typography>
