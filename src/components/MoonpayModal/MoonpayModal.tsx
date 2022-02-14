@@ -20,7 +20,7 @@ const MoonpayModal: React.FC<MoonpayModalProps> = ({ open, onClose }) => {
           allow='accelerometer; autoplay; camera; gyroscope; payment'
           frameBorder='0'
           height='600px'
-          src='https://buy.moonpay.com?apiKey=pk_live_72EGoobLnlgc8WB7AaxyiWu2S43dj8eY'
+          src={`https://buy.moonpay.com?apiKey=${process.env.REACT_APP_MOONPAY_KEY}`}
           width='100%'
         >
           <p>Your browser does not support iframes.</p>
