@@ -45,7 +45,7 @@ const LendPage: React.FC = () => {
             Total Supply
           </Box>
           <Box fontSize={'24px'} color={'white'}>
-            $19.2M
+            $24.12M
           </Box>
         </Box>
         <Box
@@ -59,7 +59,7 @@ const LendPage: React.FC = () => {
             Total Borrowed
           </Box>
           <Box fontSize={'24px'} color={'white'}>
-            $19.2M
+            $9.23M
           </Box>
         </Box>
         <Box
@@ -73,7 +73,7 @@ const LendPage: React.FC = () => {
             Liquidity
           </Box>
           <Box fontSize={'24px'} color={'white'}>
-            $19.2M
+            $3.45M
           </Box>
         </Box>
         <Box
@@ -84,10 +84,10 @@ const LendPage: React.FC = () => {
           sx={{ minWidth: { xs: '35%', sm: '35%', md: '20%' } }}
         >
           <Box color={'#696c80'} fontSize={'14px'}>
-            Assets
+            Markets
           </Box>
           <Box fontSize={'24px'} color={'white'}>
-            $19.2M
+            5
           </Box>
         </Box>
       </Box>
@@ -127,8 +127,8 @@ const LendPage: React.FC = () => {
           />
           <CustomSelect width={'calc(50% - 8px)'}>
             <SmOption>SortBy: Rewards</SmOption>
-            <SmOption>12313123123</SmOption>
-            <SmOption>12313123123</SmOption>
+            <SmOption>Quickswap</SmOption>
+            <SmOption>PoolTitle</SmOption>
           </CustomSelect>
         </Box>
       </Box>

@@ -9,11 +9,9 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     height: 40,
     border: `1px solid ${palette.secondary.dark}`,
     borderRadius: 10,
-    // minWidth: 300,
     display: 'flex',
     alignItems: 'center',
     padding: '0 10px',
-    // width: '100%',
     '& input': {
       background: 'transparent',
       border: 'none',

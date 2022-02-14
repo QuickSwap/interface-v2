@@ -30,7 +30,7 @@ export const CustomSelect: React.FC<MiniSelectProps> = ({
   const [isOpened, setIsOpened] = useState(false);
   const [optionList, setOptionList] = useState<any>(null);
   const dropBox = useRef<any>(null);
-  const dropPannel = useRef<any>(null);
+  const dropPanel = useRef<any>(null);
   useEffect(() => {
     const handle = (event: any) => {
       if (dropBox?.current && !dropBox.current.contains(event.target)) {
@@ -137,14 +137,14 @@ export const CustomSelect: React.FC<MiniSelectProps> = ({
           {after}
         </Box>
       )}
-      <DropPannel
+      <DropPanel
         bgcolor={'#1b1e29'}
         position={'absolute'}
         top={'110%'}
         right={'0px'}
         border={'1px solid #282d3d'}
         borderRadius={'8px'}
-        ref={dropPannel}
+        ref={dropPanel}
         display={'flex'}
         flexDirection={'column'}
         zIndex={3}
@@ -170,7 +170,7 @@ export const CustomSelect: React.FC<MiniSelectProps> = ({
               );
             })
           : 'Here is not any options.'}
-      </DropPannel>
+      </DropPanel>
     </DropBox>
   );
 };
@@ -178,7 +178,7 @@ export const CustomSelect: React.FC<MiniSelectProps> = ({
 interface RefProps {
   ref: any;
 }
-const DropPannel = styled(Box)<RefProps>`
+const DropPanel = styled(Box)<RefProps>`
   transition: var(--transition);
 `;
 const DropBox = styled(Box)<RefProps>``;
