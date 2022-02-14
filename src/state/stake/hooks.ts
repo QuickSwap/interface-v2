@@ -6,6 +6,7 @@ import {
   Price,
   Pair,
 } from '@uniswap/sdk';
+import dayjs from 'dayjs';
 import { useMemo, useEffect /** , useState */ } from 'react';
 import { usePair, usePairs } from 'data/Reserves';
 
@@ -37,6 +38,7 @@ import useUSDCPrice, {
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { useTotalSupplys } from 'data/TotalSupply';
 import {
+  getBlockFromTimestamp,
   getDaysCurrentYear,
   getOneYearFee,
   getPriceToQUICKSyrup,
@@ -422,7 +424,7 @@ export function useSyrupInfo(
 
   useEffect(() => {
     getOneDayVolume().then((data) => {
-      console.log(data);
+      // console.log(data);
     });
   }, []);
 
@@ -898,7 +900,13 @@ const getOneDayVolume = async () => {
     healthInfo.data.indexingStatusForCurrentVersion.chains[0].latestBlock
       .number,
   );
-  const oneDayOldBlock = current - 45000;
+  const utcCurrentTime = dayjs();
+  const utcOneDayBack = utcCurrentTime
+    .subtract(1, 'day')
+    .startOf('minute')
+    .unix();
+
+  const oneDayOldBlock = await getBlockFromTimestamp(utcOneDayBack);
 
   const result = await client.query({
     query: GLOBAL_DATA(current),
@@ -1355,9 +1363,7 @@ export function useLairInfo(): LairInfo {
   const lairsQuickBalance = useSingleCallResult(quick, 'balanceOf', accountArg);
 
   useEffect(() => {
-    getOneDayVolume().then((data) => {
-      console.log(data);
-    });
+    getOneDayVolume();
   }, []);
 
   return useMemo(() => {
