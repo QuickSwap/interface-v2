@@ -15,6 +15,7 @@ import styled from 'styled-components';
 import { CustomSelect, SmOption } from 'components/CustomSelect';
 import ReactApexChart from 'react-apexcharts';
 import { _100 } from '@uniswap/sdk/dist/constants';
+import { useHistory } from 'react-router-dom';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   hideCell: {
@@ -26,6 +27,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
 }));
 
 const LendDetailPage: React.FC = () => {
+  const history = useHistory();
   const classes = useStyles();
   return (
     <Box width={'100%'}>
@@ -36,25 +38,34 @@ const LendDetailPage: React.FC = () => {
         gridGap={'20px'}
         flexWrap={'wrap'}
       >
-        <svg
-          data-name='Layer 2'
-          xmlns='http://www.w3.org/2000/svg'
-          width='28'
-          height='28'
-          viewBox='0 0 28 28'
+        <Box
+          onClick={() => {
+            history.push('../lend');
+          }}
+          display={'flex'}
+          alignItems={'center'}
+          style={{ cursor: 'pointer' }}
         >
-          <g data-name='invisible box'>
-            <path data-name='Rectangle 20001' fill='none' d='M0 0h28v28H0z' />
-          </g>
-          <g data-name='Q3 icons'>
-            <path
-              data-name='Path 11780'
-              d='m16.285 10.35-6.942 7a1.108 1.108 0 0 0 0 1.633l6.942 7a1.225 1.225 0 0 0 1.575.117 1.108 1.108 0 0 0 .117-1.75l-5.017-5.016h12.367a1.167 1.167 0 1 0 0-2.333H12.96l5.017-5.017a1.108 1.108 0 0 0-.117-1.75 1.225 1.225 0 0 0-1.575.117z'
-              transform='translate(-3.744 -4.167)'
-              fill='#448aff'
-            />
-          </g>
-        </svg>
+          <svg
+            data-name='Layer 2'
+            xmlns='http://www.w3.org/2000/svg'
+            width='28'
+            height='28'
+            viewBox='0 0 28 28'
+          >
+            <g data-name='invisible box'>
+              <path data-name='Rectangle 20001' fill='none' d='M0 0h28v28H0z' />
+            </g>
+            <g data-name='Q3 icons'>
+              <path
+                data-name='Path 11780'
+                d='m16.285 10.35-6.942 7a1.108 1.108 0 0 0 0 1.633l6.942 7a1.225 1.225 0 0 0 1.575.117 1.108 1.108 0 0 0 .117-1.75l-5.017-5.016h12.367a1.167 1.167 0 1 0 0-2.333H12.96l5.017-5.017a1.108 1.108 0 0 0-.117-1.75 1.225 1.225 0 0 0-1.575.117z'
+                transform='translate(-3.744 -4.167)'
+                fill='#448aff'
+              />
+            </g>
+          </svg>
+        </Box>
         <Box fontSize={'24px'} fontWeight={'bold'} color={'white'}>
           Quickswap Pool
         </Box>
@@ -1004,8 +1015,8 @@ const LendDetailPage: React.FC = () => {
                       padding: {
                         top: 0,
                         right: 0,
-                        bottom: 0,
-                        left: 0,
+                        bottom: -10,
+                        left: 5,
                       },
                     },
                     xaxis: {

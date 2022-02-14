@@ -3,8 +3,10 @@ import { Box } from '@material-ui/core';
 import { SearchInput } from 'components';
 import { CustomSelect, SmOption } from 'components/CustomSelect';
 import styled from 'styled-components';
+import { useHistory } from 'react-router-dom';
 
 const LendPage: React.FC = () => {
+  const history = useHistory();
   const [searchInput, setSearchInput] = useState('');
   return (
     <Box width={'100%'}>
@@ -125,10 +127,10 @@ const LendPage: React.FC = () => {
             value={searchInput}
             setValue={setSearchInput}
           />
-          <CustomSelect width={'calc(50% - 8px)'}>
-            <SmOption>SortBy: Rewards</SmOption>
-            <SmOption>Quickswap</SmOption>
-            <SmOption>PoolTitle</SmOption>
+          <CustomSelect before={'SortBy: '} width={'calc(50% - 8px)'}>
+            <SmOption value={'Rewards'}>Rewards</SmOption>
+            <SmOption value={'Quickswap'}>Quickswap</SmOption>
+            <SmOption value={'PoolTitle'}>PoolTitle</SmOption>
           </CustomSelect>
         </Box>
       </Box>
@@ -140,6 +142,9 @@ const LendPage: React.FC = () => {
           display={'flex'}
           flexDirection={'column'}
           sx={{ minWidth: { xs: '55%', sm: '25%' } }}
+          onClick={() => {
+            history.push('lend/detail');
+          }}
         >
           <Box
             py={'28px'}
