@@ -73,7 +73,7 @@ export const GlobalConst = {
     ),
     // the Uniswap Default token list lives here
     DEFAULT_TOKEN_LIST_URL:
-      'https://unpkg.com/quickswap-default-token-list@1.2.21/build/quickswap-default.tokenlist.json',
+      'https://unpkg.com/quickswap-default-token-list@1.2.22/build/quickswap-default.tokenlist.json',
   },
   analyticChart: {
     ONE_MONTH_CHART: 1,
@@ -175,7 +175,7 @@ export const GlobalData = {
         returnTokenFromKey('DAI'),
         returnTokenFromKey('MAUSDC'),
         returnTokenFromKey('MI'),
-        returnTokenFromKey('EROWAN'),
+        returnTokenFromKey('CXETH'),
       ],
     },
     // Some tokens can only be swapped via certain pairs, so we override the list of bases that are considered for these tokens.
