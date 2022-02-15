@@ -181,7 +181,7 @@ export const GlobalData = {
         returnTokenFromKey('DAI'),
         returnTokenFromKey('MAUSDC'),
         returnTokenFromKey('MI'),
-        returnTokenFromKey('EROWAN'),
+        returnTokenFromKey('CXETH'),
       ],
     },
     // Some tokens can only be swapped via certain pairs, so we override the list of bases that are considered for these tokens.
