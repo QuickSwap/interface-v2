@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import { Typography, Button, Box, useMediaQuery } from '@material-ui/core';
+import { Typography, Button, Box } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-import { useActiveWeb3React, useInitTransak } from 'hooks';
 import FiatMask from 'assets/images/FiatMask.svg';
 import BuyWithFiat from 'assets/images/featured/BuywithFiat.svg';
-import { MoonpayModal } from 'components';
+import { BuyFiatModal, MoonpayModal } from 'components';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   buyFiatContainer: {
@@ -98,33 +97,12 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       },
     },
   },
-  fiatMenu: {
-    position: 'absolute',
-    background: palette.background.paper,
-    borderRadius: 10,
-    border: `1px solid ${palette.secondary.dark}`,
-    padding: '8px 12px',
-    marginTop: 8,
-    width: '100%',
-    '& p': {
-      cursor: 'pointer',
-      margin: '4px 0',
-    },
-  },
 }));
 
 export const BuyFiatSection: React.FC = () => {
   const classes = useStyles();
-  const { account } = useActiveWeb3React();
-  const { initTransak } = useInitTransak();
-  const { breakpoints } = useTheme();
-  const mobileWindowSize = useMediaQuery(breakpoints.down('sm'));
   const [openMenu, setOpenMenu] = useState(false);
   const [showMoonPayWidget, setShowMoonPayWidget] = useState(false);
-
-  window.addEventListener('click', () => {
-    setOpenMenu(false);
-  });
 
   return (
     <Box className={classes.buyFiatContainer}>
@@ -132,6 +110,16 @@ export const BuyFiatSection: React.FC = () => {
         <MoonpayModal
           open={showMoonPayWidget}
           onClose={() => setShowMoonPayWidget(false)}
+        />
+      )}
+      {openMenu && (
+        <BuyFiatModal
+          open={openMenu}
+          onClose={() => setOpenMenu(false)}
+          buyMoonpay={() => {
+            setShowMoonPayWidget(true);
+            setOpenMenu(false);
+          }}
         />
       )}
       <img src={FiatMask} alt='Fiat Mask' />
@@ -150,31 +138,12 @@ export const BuyFiatSection: React.FC = () => {
           <Button
             fullWidth
             color='primary'
-            onClick={(e) => {
-              e.stopPropagation();
+            onClick={() => {
               setOpenMenu(true);
             }}
           >
             Buy Now
           </Button>
-          {openMenu && (
-            <Box className={classes.fiatMenu}>
-              <Typography
-                onClick={() => {
-                  initTransak(account, mobileWindowSize);
-                }}
-              >
-                Transak
-              </Typography>
-              <Typography
-                onClick={() => {
-                  setShowMoonPayWidget(true);
-                }}
-              >
-                Moonpay
-              </Typography>
-            </Box>
-          )}
         </Box>
       </Box>
     </Box>
