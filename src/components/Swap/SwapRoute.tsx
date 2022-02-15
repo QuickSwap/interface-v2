@@ -34,7 +34,8 @@ const SwapRoute: React.FC<{ trade: Trade }> = ({ trade }) => {
               <CurrencyLogo currency={token} size='24px' />
               <Typography>{token.symbol}</Typography>
             </Box>
-            {!isLastItem && <ChevronRight />}
+            {// this is not to show the arrow at the end of the trade path
+            !isLastItem && <ChevronRight />}
           </Box>
         );
       })}
