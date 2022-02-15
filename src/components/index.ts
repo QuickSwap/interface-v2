@@ -40,6 +40,7 @@ export { default as Swap, AdvancedSwapDetails } from './Swap';
 export { default as AddLiquidity, ConfirmAddModalBottom } from './AddLiquidity';
 export { default as RewardSlider } from './RewardSlider';
 export { default as WalletModal } from './WalletModal';
+export { default as MoonpayModal } from './MoonpayModal';
 export { default as AccountDetails } from './AccountDetails';
 export { default as Web3ReactManager } from './Web3ReactManager';
 export {
