@@ -280,7 +280,7 @@ const LandingPage: React.FC = () => {
       img: DragonsLair,
       title: 'Dragon’s Lair',
       desc:
-        'Dragon’s Lair is a single staking pool for QUICK token. Stake your QUICK to receive dQuick, and earn your share of .04%',
+        'Dragon’s Lair is a single staking pool for QUICK token. Stake your QUICK to receive dQuick, and earn your share of .04% of all trading fees',
     },
     {
       img: BuyWithFiat,
@@ -378,11 +378,11 @@ const LandingPage: React.FC = () => {
       <Box className={classes.rewardsContainer}>
         <Box maxWidth='480px' width='100%'>
           <Typography variant='h4'>
-            Earn additional rewards in $QUICK by depositing your LP Tokens
+            Earn additional rewards by depositing your LP tokens
           </Typography>
           <Typography style={{ marginTop: '20px' }}>
-            Deposit your Liquidity Provider tokens to receive Rewards in $QUICK
-            on top of LP Fees.
+            Deposit your Liquidity Provider tokens to receive rewards in
+            addition to LP fees.
           </Typography>
         </Box>
         <RewardSlider />
