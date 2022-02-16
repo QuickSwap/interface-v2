@@ -14,6 +14,7 @@ import useENSName from 'hooks/useENSName';
 import { WalletModal } from 'components';
 import { useActiveWeb3React } from 'hooks';
 import QuickIcon from 'assets/images/quickIcon.svg';
+import HeaderIcon from 'assets/images/HeaderIcon.png';
 import QuickLogo from 'assets/images/quickLogo.svg';
 import { ReactComponent as ThreeDotIcon } from 'assets/images/ThreeDot.svg';
 import { ReactComponent as LightIcon } from 'assets/images/LightIcon.svg';
@@ -261,21 +262,21 @@ const Header: React.FC = () => {
       text: 'Swap',
       id: 'swap-page-link',
     },
-    {
-      link: '/pools',
-      text: 'Pool',
-      id: 'pools-page-link',
-    },
-    {
-      link: '/farm',
-      text: 'Farm',
-      id: 'farm-page-link',
-    },
-    {
-      link: '/dragons',
-      text: 'Dragon’s Lair',
-      id: 'dragons-page-link',
-    },
+    // {
+    //   link: '/pools',
+    //   text: 'Pool',
+    //   id: 'pools-page-link',
+    // },
+    // {
+    //   link: '/farm',
+    //   text: 'Farm',
+    //   id: 'farm-page-link',
+    // },
+    // {
+    //   link: '/dragons',
+    //   text: 'Dragon’s Lair',
+    //   id: 'dragons-page-link',
+    // },
     {
       link: '/analytics',
       text: 'Analytics',
@@ -318,7 +319,7 @@ const Header: React.FC = () => {
         confirmedTransactions={confirmed}
       />
       <Link to='/'>
-        <img src={mobileWindowSize ? QuickIcon : QuickLogo} alt='QuickLogo' />
+        <img src={HeaderIcon} style={{ width: '25%' }} alt='HeadIcon' />
       </Link>
       {!tabletWindowSize && (
         <Box className={classes.mainMenu}>

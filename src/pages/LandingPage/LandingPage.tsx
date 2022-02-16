@@ -27,6 +27,11 @@ import { ReactComponent as RedditIcon } from 'assets/images/social/Reddit.svg';
 import { ReactComponent as TelegramIcon } from 'assets/images/social/Telegram.svg';
 import { ReactComponent as TwitterIcon } from 'assets/images/social/Twitter.svg';
 import { ReactComponent as YouTubeIcon } from 'assets/images/social/YouTube.svg';
+
+import { ReactComponent as InstagramIcon } from 'assets/images/social/Instagram.svg';
+import { ReactComponent as FacebookIcon } from 'assets/images/social/Facebook.svg';
+import HeroIcon from 'assets/images/herobackground.png';
+
 import {
   Swap,
   CurrencyInput,
@@ -49,6 +54,16 @@ import { useGlobalData, useWalletModalToggle } from 'state/application/hooks';
 import { useLairInfo, useTotalRewardsDistributed } from 'state/stake/hooks';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
+  footer: {
+    textAlign: 'center',
+    paddingBottom: 110,
+    position: 'relative',
+    '& p': {
+      fontSize: 14,
+      lineHeight: '24px',
+      marginTop: 20,
+    },
+  },
   heroSection: {
     display: 'flex',
     flexDirection: 'column',
@@ -75,35 +90,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       margin: '64px 0',
     },
   },
-  tradingInfo: {
-    width: '100%',
-    position: 'relative',
-    zIndex: 2,
-    justifyContent: 'center',
-    [breakpoints.down('md')]: {
-      flexWrap: 'wrap',
-    },
-    '& > div': {
-      background: palette.background.default,
-      width: 'calc(25% - 24px)',
-      maxWidth: 288,
-      minWidth: 220,
-      height: 133,
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      borderRadius: 20,
-      margin: 12,
-      '& p': {
-        marginBottom: 24,
-        textTransform: 'uppercase',
-      },
-      [breakpoints.down('xs')]: {
-        height: 'unset',
-      },
-    },
-  },
+
   quickInfo: {
     textAlign: 'center',
     margin: '128px auto 30px',
@@ -212,16 +199,6 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     },
     '& h3': {
       marginBottom: 16,
-    },
-  },
-  rewardsContainer: {
-    textAlign: 'center',
-    margin: '172px 0 100px 0',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    [breakpoints.down('xs')]: {
-      margin: '32px 0 64px',
     },
   },
   buyFiatContainer: {
@@ -477,6 +454,16 @@ const LandingPage: React.FC = () => {
       title: 'Reddit',
     },
     {
+      link: 'https://www.facebook.com/intergalactic.racing',
+      icon: <FacebookIcon />,
+      title: 'Facebook',
+    },
+    {
+      link: 'https://www.instagram.com/intergalactic.racing/',
+      icon: <InstagramIcon />,
+      title: 'Instagram',
+    },
+    {
       link: 'https://discord.com/invite/XJTM7FV88Y',
       icon: <DiscordIcon />,
       title: 'Discord',
@@ -546,27 +533,12 @@ const LandingPage: React.FC = () => {
         />
       )}
       <Box className={classes.heroSection}>
-        <Typography variant='body2' style={{ fontWeight: 'bold' }}>
-          Total Value Locked
+        <Typography style={{ fontSize: '15px', color: 'white' }}>
+          PLAY TO EARN
         </Typography>
-        {globalData ? (
-          <Box display='flex' flexDirection='row' style={{ paddingTop: '5px' }}>
-            <Typography variant='h3' style={{ paddingTop: '9px' }}>
-              $
-            </Typography>
-            <Typography style={{ fontSize: '55px', fontWeight: 700 }}>
-              {Number(globalData.totalLiquidityUSD).toLocaleString(undefined, {
-                maximumFractionDigits: 0,
-              })}
-            </Typography>
-          </Box>
-        ) : (
-          <Box my={1}>
-            <Skeleton variant='rect' width={400} height={72} />
-          </Box>
-        )}
+        <img src={HeroIcon} style={{ width: '15%' }} />
         <Typography style={{ fontSize: '15px', color: palette.text.secondary }}>
-          Top Asset Exchange on the Polygon Network
+          DeFi & GameFi on the Polygon Network with QuickSwap for convenience
         </Typography>
         <Box mt={2} width={200} height={48}>
           <Button
@@ -592,120 +564,6 @@ const LandingPage: React.FC = () => {
               ? 'Enter App'
               : 'Connect Wallet'}
           </Button>
-        </Box>
-      </Box>
-      <Box className={classes.tradingInfo} display='flex'>
-        <Box>
-          {globalData ? (
-            <Typography variant='h3'>
-              {Number(globalData.oneDayTxns).toLocaleString()}
-            </Typography>
-          ) : (
-            <Skeleton variant='rect' width={100} height={45} />
-          )}
-          <Typography
-            style={{
-              fontSize: '12px',
-              color: palette.text.secondary,
-              paddingTop: '15px',
-            }}
-          >
-            24H TRANSACTIONS
-          </Typography>
-        </Box>
-        <Box>
-          {globalData ? (
-            <Box display='flex' flexDirection='row'>
-              <Typography variant='h6' style={{ paddingTop: '2px' }}>
-                $
-              </Typography>
-              <Typography variant='h3'>
-                {formatCompact(globalData.oneDayVolumeUSD)}
-              </Typography>
-            </Box>
-          ) : (
-            <Skeleton variant='rect' width={100} height={45} />
-          )}
-          <Typography
-            style={{
-              fontSize: '12px',
-              color: palette.text.secondary,
-              paddingTop: '15px',
-            }}
-          >
-            24H TRADING VOLUME
-          </Typography>
-        </Box>
-        <Box>
-          {totalRewardsUSD ? (
-            <Box display='flex' flexDirection='row'>
-              <Typography variant='h6' style={{ paddingTop: '2px' }}>
-                $
-              </Typography>
-              <Typography variant='h3'>
-                {totalRewardsUSD.toLocaleString()}
-              </Typography>
-            </Box>
-          ) : (
-            <Skeleton variant='rect' width={100} height={45} />
-          )}
-          <Typography
-            style={{
-              fontSize: '12px',
-              color: palette.text.secondary,
-              paddingTop: '15px',
-            }}
-          >
-            24h REWARDS DISTRIBUTED
-          </Typography>
-        </Box>
-        <Box>
-          {globalData ? (
-            <Typography variant='h3'>
-              {Number(globalData.pairCount).toLocaleString(undefined, {
-                maximumFractionDigits: 0,
-              })}
-            </Typography>
-          ) : (
-            <Skeleton variant='rect' width={100} height={45} />
-          )}
-          <Typography
-            style={{
-              fontSize: '12px',
-              color: palette.text.secondary,
-              paddingTop: '15px',
-            }}
-          >
-            TOTAL TRADING PAIRS
-          </Typography>
-        </Box>
-        <Box>
-          {dQUICKAPY ? (
-            <Typography variant='h3' style={{ paddingTop: '20px' }}>
-              {dQUICKAPY.toLocaleString()}%
-            </Typography>
-          ) : (
-            <Skeleton variant='rect' width={100} height={45} />
-          )}
-          <Box
-            style={{
-              fontSize: '12px',
-              color: palette.text.secondary,
-              paddingTop: '15px',
-            }}
-          >
-            dQUICK APY
-          </Box>
-          <Typography
-            style={{
-              color: palette.primary.main,
-              fontSize: '12px',
-              cursor: 'pointer',
-            }}
-            onClick={() => setOpenStakeModal(true)}
-          >
-            stake {'>'}
-          </Typography>
         </Box>
       </Box>
       <Box className={classes.smallCommunityContainer}>
@@ -765,33 +623,6 @@ const LandingPage: React.FC = () => {
             </Typography>
           </Grid>
         </Grid>
-      </Box>
-      <Box className={classes.rewardsContainer}>
-        <Typography variant='h4'>
-          Earn additional rewards in $QUICK by
-        </Typography>
-        <Typography variant='h4'>depositing your LP Tokens</Typography>
-        <Typography variant='body2' style={{ marginTop: '20px' }}>
-          Deposit your Liquidity Provider tokens to receive Rewards
-        </Typography>
-        <Typography variant='body2'>in $QUICK on top of LP Fees.</Typography>
-        <RewardSlider />
-        <Box
-          bgcolor={palette.secondary.dark}
-          color={palette.text.primary}
-          width={194}
-          height={48}
-          display='flex'
-          alignItems='center'
-          justifyContent='center'
-          borderRadius={24}
-          style={{ cursor: 'pointer' }}
-          onClick={() => {
-            history.push('/farm');
-          }}
-        >
-          <Typography variant='body1'>See all pairs</Typography>
-        </Box>
       </Box>
       <Box className={classes.buyFiatContainer}>
         <img src={FiatMask} alt='Fiat Mask' />
