@@ -2,7 +2,7 @@ import React from 'react';
 import { Box } from '@material-ui/core';
 import { useLocation } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
-import HeroBkg from 'assets/images/heroBkg.png';
+import HeroBkg from 'assets/images/heroBkg.jpg';
 import HeroBkg1 from 'assets/images/heroBkg.svg';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
