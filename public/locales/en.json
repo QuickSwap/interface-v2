@@ -87,5 +87,8 @@
   "forAtLeast": "for at least ",
   "brokenToken": "The selected token is not compatible with Uniswap V1. Adding liquidity will result in locked funds.",
   "toleranceExplanation": "Lowering this limit decreases your risk of frontrunning. However, this makes more likely that your transaction will fail due to normal price movements.",
-  "tokenSearchPlaceholder": "Search name or paste address"
+  "tokenSearchPlaceholder": "Search name or paste address",
+  "txnSwapMessage": "Swap {{ token0Symbol }} for {{ token1Symbol }}",
+  "txnAddMessage": "Add {{ token0Symbol }} and {{ token1Symbol }}",
+  "txnRemoveMessage": "Remove {{ token0Symbol }} and {{ token1Symbol }}"
 }

@@ -22,6 +22,12 @@ const WETH_ONLY: ChainTokenList = {
   [ChainId.MATIC]: [WETH[ChainId.MATIC]],
 };
 
+export enum TxnType {
+  SWAP,
+  ADD,
+  REMOVE,
+}
+
 export const GlobalConst = {
   blacklists: {
     TOKEN_BLACKLIST: [
