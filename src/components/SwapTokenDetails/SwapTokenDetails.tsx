@@ -68,10 +68,11 @@ const SwapTokenDetails: React.FC<{
       const [newPrice, oneDayPrice] = await getEthPrice();
       const tokenInfo = await getTokenInfo(newPrice, oneDayPrice, tokenAddress);
       if (tokenInfo) {
-        setTokenData(tokenInfo[0]);
+        const token0 = tokenInfo[0];
+        setTokenData(token0);
         const tokenDetailToUpdate = {
           address: tokenAddress,
-          tokenData: tokenInfo[0],
+          tokenData: token0,
           priceData: tokenPriceData,
         };
         updateTokenDetails(tokenDetailToUpdate);
