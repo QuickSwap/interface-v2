@@ -22,6 +22,12 @@ const WETH_ONLY: ChainTokenList = {
   [ChainId.MATIC]: [WETH[ChainId.MATIC]],
 };
 
+export enum TxnType {
+  SWAP,
+  ADD,
+  REMOVE,
+}
+
 export const GlobalConst = {
   blacklists: {
     TOKEN_BLACKLIST: [
@@ -73,7 +79,7 @@ export const GlobalConst = {
     ),
     // the Uniswap Default token list lives here
     DEFAULT_TOKEN_LIST_URL:
-      'https://unpkg.com/quickswap-default-token-list@1.2.23/build/quickswap-default.tokenlist.json',
+      'https://unpkg.com/quickswap-default-token-list@1.2.25/build/quickswap-default.tokenlist.json',
   },
   analyticChart: {
     ONE_MONTH_CHART: 1,

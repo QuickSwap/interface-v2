@@ -19,7 +19,7 @@ import {
   TransactionsTable,
 } from 'components';
 import { getAddress } from '@ethersproject/address';
-import { GlobalConst } from 'constants/index';
+import { GlobalConst, TxnType } from 'constants/index';
 import AnalyticsHeader from 'pages/AnalyticsPage/AnalyticsHeader';
 import AnalyticsPairChart from './AnalyticsPairChart';
 
@@ -90,13 +90,25 @@ const AnalyticsPairDetails: React.FC = () => {
   const pairTransactionsList = useMemo(() => {
     if (pairTransactions) {
       const mints = pairTransactions.mints.map((item: any) => {
-        return { ...item, type: 'Add' };
+        return { ...item, type: TxnType.ADD };
       });
-      const swaps = pairTransactions.mints.map((item: any) => {
-        return { ...item, type: 'Swap' };
+      const swaps = pairTransactions.swaps.map((item: any) => {
+        const amount0 = item.amount0Out > 0 ? item.amount0Out : item.amount1Out;
+        const amount1 = item.amount0In > 0 ? item.amount0In : item.amount1In;
+        const token0 =
+          item.amount0Out > 0 ? item.pair.token0 : item.pair.token1;
+        const token1 =
+          item.amount0Out > 0 ? item.pair.token1 : item.pair.token0;
+        return {
+          ...item,
+          amount0,
+          amount1,
+          pair: { token0, token1 },
+          type: TxnType.SWAP,
+        };
       });
-      const burns = pairTransactions.mints.map((item: any) => {
-        return { ...item, type: 'Remove' };
+      const burns = pairTransactions.burns.map((item: any) => {
+        return { ...item, type: TxnType.REMOVE };
       });
       return mints.concat(swaps).concat(burns);
     } else {
