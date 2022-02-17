@@ -115,21 +115,16 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({ data }) => {
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const { t } = useTranslation();
   const getTxString = (txn: any) => {
+    const messageData = {
+      token0Symbol: txn.pair.token1.symbol,
+      token1Symbol: txn.pair.token0.symbol,
+    };
     if (txn.type === TxnType.SWAP) {
-      return t('txnSwapMessage', {
-        token0Symbol: txn.pair.token1.symbol,
-        token1Symbol: txn.pair.token0.symbol,
-      });
+      return t('txnSwapMessage', messageData);
     } else if (txn.type === TxnType.ADD) {
-      return t('txnAddMessage', {
-        token0Symbol: txn.pair.token0.symbol,
-        token1Symbol: txn.pair.token1.symbol,
-      });
+      return t('txnAddMessage', messageData);
     } else if (txn.type === TxnType.REMOVE) {
-      return t('txnRemoveMessage', {
-        token0Symbol: txn.pair.token0.symbol,
-        token1Symbol: txn.pair.token1.symbol,
-      });
+      return t('txnRemoveMessage', messageData);
     }
     return '';
   };
