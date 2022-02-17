@@ -38,6 +38,7 @@ import {
   calculateGasMargin,
   returnTokenFromKey,
   isSupportedNetwork,
+  formatTokenAmount,
 } from 'utils';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
 import { ReactComponent as AddLiquidityIcon } from 'assets/images/AddLiquidityIcon.svg';
@@ -139,13 +140,11 @@ const AddLiquidity: React.FC<{
     error,
   } = useDerivedMintInfo();
 
-  const pendingText = `Supplying ${parsedAmounts[
-    Field.CURRENCY_A
-  ]?.toSignificant(6)} ${
-    currencies[Field.CURRENCY_A]?.symbol
-  } and ${parsedAmounts[Field.CURRENCY_B]?.toSignificant(6)} ${
-    currencies[Field.CURRENCY_B]?.symbol
-  }`;
+  const pendingText = `Supplying ${formatTokenAmount(
+    parsedAmounts[Field.CURRENCY_A],
+  )} ${currencies[Field.CURRENCY_A]?.symbol} and ${formatTokenAmount(
+    parsedAmounts[Field.CURRENCY_B],
+  )} ${currencies[Field.CURRENCY_B]?.symbol}`;
 
   const {
     onFieldAInput,
@@ -167,7 +166,7 @@ const AddLiquidity: React.FC<{
     [independentField]: typedValue,
     [dependentField]: noLiquidity
       ? otherTypedValue
-      : parsedAmounts[dependentField]?.toSignificant(6) ?? '',
+      : formatTokenAmount(parsedAmounts[dependentField]),
   };
 
   const { ethereum } = window as any;
@@ -321,11 +320,11 @@ const AddLiquidity: React.FC<{
           setTxPending(true);
           const summary =
             'Add ' +
-            parsedAmounts[Field.CURRENCY_A]?.toSignificant(3) +
+            formatTokenAmount(parsedAmounts[Field.CURRENCY_A]) +
             ' ' +
             currencies[Field.CURRENCY_A]?.symbol +
             ' and ' +
-            parsedAmounts[Field.CURRENCY_B]?.toSignificant(3) +
+            formatTokenAmount(parsedAmounts[Field.CURRENCY_B]) +
             ' ' +
             currencies[Field.CURRENCY_B]?.symbol;
 
@@ -404,12 +403,12 @@ const AddLiquidity: React.FC<{
         </Box>
         <Box mb={6} color={palette.text.primary} textAlign='center'>
           <Typography variant='h6'>
-            Supplying {parsedAmounts[Field.CURRENCY_A]?.toSignificant()}&nbsp;
+            Supplying {formatTokenAmount(parsedAmounts[Field.CURRENCY_A])}&nbsp;
             {currencies[Field.CURRENCY_A]?.symbol}&nbsp;and&nbsp;
-            {parsedAmounts[Field.CURRENCY_B]?.toSignificant()}
+            {formatTokenAmount(parsedAmounts[Field.CURRENCY_B])}
             {currencies[Field.CURRENCY_B]?.symbol}
             <br />
-            You will receive {liquidityMinted?.toSignificant(6)}{' '}
+            You will receive {formatTokenAmount(liquidityMinted)}{' '}
             {currencies[Field.CURRENCY_A]?.symbol} /{' '}
             {currencies[Field.CURRENCY_B]?.symbol} LP Tokens
           </Typography>
@@ -470,9 +469,7 @@ const AddLiquidity: React.FC<{
         onHalf={() =>
           onFieldAInput(
             maxAmounts[Field.CURRENCY_A]
-              ? (
-                  Number(maxAmounts[Field.CURRENCY_A]?.toSignificant()) / 2
-                ).toString()
+              ? (Number(maxAmounts[Field.CURRENCY_A]?.toExact()) / 2).toString()
               : '',
           )
         }
@@ -493,9 +490,7 @@ const AddLiquidity: React.FC<{
         onHalf={() =>
           onFieldBInput(
             maxAmounts[Field.CURRENCY_B]
-              ? (
-                  Number(maxAmounts[Field.CURRENCY_B]?.toSignificant()) / 2
-                ).toString()
+              ? (Number(maxAmounts[Field.CURRENCY_B]?.toExact()) / 2).toString()
               : '',
           )
         }

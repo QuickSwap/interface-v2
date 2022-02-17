@@ -14,7 +14,7 @@ import {
   useTransactionAdder,
   useTransactionFinalizer,
 } from 'state/transactions/hooks';
-import { returnTokenFromKey } from 'utils';
+import { formatTokenAmount, returnTokenFromKey } from 'utils';
 
 const useStyles = makeStyles(({ palette }) => ({
   stakeButton: {
@@ -132,7 +132,7 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
           >
             <Typography variant='body2'>QUICK</Typography>
             <Typography variant='body2'>
-              Balance: {quickBalance?.toSignificant(3)}
+              Balance: {formatTokenAmount(quickBalance)}
             </Typography>
           </Box>
           <Box mt={2} display='flex' alignItems='center'>

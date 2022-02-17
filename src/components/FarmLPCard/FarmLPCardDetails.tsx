@@ -23,6 +23,7 @@ import {
   getStakedAmountStakingInfo,
   getUSDString,
   getEarnedUSDLPFarm,
+  formatTokenAmount,
 } from 'utils';
 import CircleInfoIcon from 'assets/images/circleinfo.svg';
 
@@ -347,10 +348,8 @@ const FarmLPCardDetails: React.FC<{
                   justifyContent='flex-start'
                 >
                   <Typography variant='body2'>
-                    {userLiquidityUnstaked
-                      ? userLiquidityUnstaked.toSignificant(2)
-                      : 0}{' '}
-                    LP <span>({getUSDString(stakedAmounts?.unStakedUSD)})</span>
+                    {formatTokenAmount(userLiquidityUnstaked)} LP{' '}
+                    <span>({getUSDString(stakedAmounts?.unStakedUSD)})</span>
                   </Typography>
                   <Link
                     to={`/pools?currency0=${getTokenAddress(
@@ -437,7 +436,7 @@ const FarmLPCardDetails: React.FC<{
             <Box display='flex' justifyContent='space-between'>
               <Typography variant='body2'>My deposits:</Typography>
               <Typography variant='body2'>
-                {stakingInfo.stakedAmount.toSignificant(2)} LP{' '}
+                {formatTokenAmount(stakingInfo.stakedAmount)} LP{' '}
                 <span>({getUSDString(stakedAmounts?.myStakedUSD)})</span>
               </Typography>
             </Box>
@@ -517,7 +516,7 @@ const FarmLPCardDetails: React.FC<{
               </Box>
               <Box mb={0.5}>
                 <Typography variant='body1' color='textSecondary'>
-                  {stakingInfo.earnedAmount.toSignificant(2)}
+                  {formatTokenAmount(stakingInfo.earnedAmount)}
                   <span>&nbsp;dQUICK</span>
                 </Typography>
               </Box>

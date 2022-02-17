@@ -511,7 +511,7 @@ export function useSyrupInfo(
             rewards,
             stakingToken: syrupInfo.stakingToken,
             valueOfTotalStakedAmountInUSDC:
-              Number(totalStakedAmount.toSignificant(6)) * stakingTokenPrice,
+              Number(totalStakedAmount.toExact()) * stakingTokenPrice,
           });
         }
         return memo;
@@ -1172,14 +1172,14 @@ export function useDualStakingInfo(
             usdPrice?.quote(valueOfTotalStakedAmountInBaseToken);
 
           const tvl = valueOfTotalStakedAmountInUSDC
-            ? valueOfTotalStakedAmountInUSDC.toSignificant()
-            : valueOfTotalStakedAmountInBaseToken?.toSignificant();
+            ? valueOfTotalStakedAmountInUSDC.toExact()
+            : valueOfTotalStakedAmountInBaseToken?.toExact();
 
           const perMonthReturnInRewards =
             ((stakingInfo.rateA * rewardTokenAPrice +
               stakingInfo.rateB * rewardTokenBPrice) *
               (getDaysCurrentYear() / 12)) /
-            Number(valueOfTotalStakedAmountInUSDC?.toSignificant(6));
+            Number(valueOfTotalStakedAmountInUSDC?.toExact());
 
           memo.push({
             stakingRewardAddress: rewardsAddress,
@@ -1539,14 +1539,14 @@ export function useStakingInfo(
             usdPrice?.quote(valueOfTotalStakedAmountInBaseToken);
 
           const tvl = valueOfTotalStakedAmountInUSDC
-            ? valueOfTotalStakedAmountInUSDC.toSignificant()
-            : valueOfTotalStakedAmountInBaseToken?.toSignificant();
+            ? valueOfTotalStakedAmountInUSDC.toExact()
+            : valueOfTotalStakedAmountInBaseToken?.toExact();
 
           const perMonthReturnInRewards =
             (Number(stakingInfo.rate) *
               rewardTokenPrice *
               (getDaysCurrentYear() / 12)) /
-            Number(valueOfTotalStakedAmountInUSDC?.toSignificant(6));
+            Number(valueOfTotalStakedAmountInUSDC?.toExact());
 
           memo.push({
             stakingRewardAddress: rewardsAddress,
@@ -1838,7 +1838,7 @@ export function useDQUICKtoQUICK() {
     new TokenAmount(
       returnTokenFromKey('QUICK'),
       JSBI.BigInt(dQuickToQuickState?.result?.[0] ?? 0),
-    ).toSignificant(),
+    ).toExact(),
   );
 }
 

@@ -7,6 +7,7 @@ import cx from 'classnames';
 import { CurrencySearchModal, CurrencyLogo, NumericalInput } from 'components';
 import { useActiveWeb3React } from 'hooks';
 import useUSDCPrice from 'utils/useUSDCPrice';
+import { formatTokenAmount } from 'utils';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   swapBox: {
@@ -170,10 +171,7 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
         className={classes.balanceSection}
       >
         <Typography variant='body2'>
-          Balance:{' '}
-          {selectedCurrencyBalance
-            ? selectedCurrencyBalance.toSignificant(6)
-            : 0}
+          Balance: {formatTokenAmount(selectedCurrencyBalance)}
         </Typography>
         <Typography variant='body2'>
           ${(usdPrice * Number(amount)).toLocaleString()}

@@ -12,7 +12,7 @@ import {
   useTransactionAdder,
   useTransactionFinalizer,
 } from 'state/transactions/hooks';
-import { formatCompact } from 'utils';
+import { formatCompact, formatTokenAmount } from 'utils';
 import SyrupTimerLabel from './SyrupTimerLabel';
 import CircleInfoIcon from 'assets/images/circleinfo.svg';
 import SyrupAPR from './SyrupAPR';
@@ -303,7 +303,7 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
                 <CurrencyLogo currency={currency} size='16px' />
                 <Typography variant='body2' style={{ marginLeft: 4 }}>
                   <span style={{ color: palette.text.primary }}>
-                    {syrup.earnedAmount.toSignificant(2)}
+                    {formatTokenAmount(syrup.earnedAmount)}
                   </span>
                   <span
                     style={{ color: palette.text.secondary, marginLeft: 4 }}

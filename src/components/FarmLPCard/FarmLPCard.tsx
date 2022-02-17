@@ -13,6 +13,7 @@ import {
   getStakedAmountStakingInfo,
   getTVLStaking,
   getEarnedUSDLPFarm,
+  formatTokenAmount,
 } from 'utils';
 import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
 
@@ -166,7 +167,7 @@ const FarmLPCard: React.FC<{
                   size='16px'
                 />
                 <Typography variant='body2' style={{ marginLeft: 5 }}>
-                  {stakingInfo.earnedAmount.toSignificant(2)}
+                  {formatTokenAmount(stakingInfo.earnedAmount)}
                   <span>&nbsp;dQUICK</span>
                 </Typography>
               </Box>
