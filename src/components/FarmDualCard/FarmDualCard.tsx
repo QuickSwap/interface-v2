@@ -8,6 +8,7 @@ import { DoubleCurrencyLogo, CurrencyLogo } from 'components';
 import CircleInfoIcon from 'assets/images/circleinfo.svg';
 import FarmDualCardDetails from './FarmDualCardDetails';
 import {
+  formatTokenAmount,
   getAPYWithFee,
   getEarnedUSDDualFarm,
   getRewardRate,
@@ -174,7 +175,7 @@ const FarmDualCard: React.FC<{
                   size='16px'
                 />
                 <Typography variant='body2' style={{ marginLeft: 5 }}>
-                  {stakingInfo.earnedAmountA.toSignificant(2)}
+                  {formatTokenAmount(stakingInfo.earnedAmountA)}
                   <span>&nbsp;{rewardTokenA.symbol}</span>
                 </Typography>
               </Box>
@@ -184,7 +185,7 @@ const FarmDualCard: React.FC<{
                   size='16px'
                 />
                 <Typography variant='body2' style={{ marginLeft: 5 }}>
-                  {stakingInfo.earnedAmountB.toSignificant(2)}
+                  {formatTokenAmount(stakingInfo.earnedAmountB)}
                   <span>&nbsp;{rewardTokenB.symbol}</span>
                 </Typography>
               </Box>

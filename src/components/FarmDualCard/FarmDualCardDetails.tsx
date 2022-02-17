@@ -18,6 +18,7 @@ import { useActiveWeb3React } from 'hooks';
 import useTransactionDeadline from 'hooks/useTransactionDeadline';
 import { useApproveCallback, ApprovalState } from 'hooks/useApproveCallback';
 import {
+  formatTokenAmount,
   getAPYWithFee,
   getEarnedUSDDualFarm,
   getRewardRate,
@@ -357,10 +358,8 @@ const FarmDualCardDetails: React.FC<{
                   justifyContent='flex-start'
                 >
                   <Typography variant='body2'>
-                    {userLiquidityUnstaked
-                      ? userLiquidityUnstaked.toSignificant(2)
-                      : 0}{' '}
-                    LP <span>({getUSDString(stakedAmounts?.unStakedUSD)})</span>
+                    {formatTokenAmount(userLiquidityUnstaked)} LP{' '}
+                    <span>({getUSDString(stakedAmounts?.unStakedUSD)})</span>
                   </Typography>
                   <Link
                     to={`/pools?currency0=${getTokenAddress(
@@ -448,7 +447,7 @@ const FarmDualCardDetails: React.FC<{
             <Box display='flex' justifyContent='space-between'>
               <Typography variant='body2'>My deposits:</Typography>
               <Typography variant='body2'>
-                {stakingInfo.stakedAmount.toSignificant(2)} LP{' '}
+                {formatTokenAmount(stakingInfo.stakedAmount)} LP{' '}
                 <span>({getUSDString(stakedAmounts?.myStakedUSD)})</span>
               </Typography>
             </Box>
@@ -535,11 +534,11 @@ const FarmDualCardDetails: React.FC<{
               <Box mb={1} textAlign='center'>
                 <Typography variant='body1'>{earnedUSDStr}</Typography>
                 <Typography variant='body1' color='textSecondary'>
-                  {stakingInfo.earnedAmountA.toSignificant(2)}
+                  {formatTokenAmount(stakingInfo.earnedAmountA)}
                   <span>&nbsp;{stakingInfo.rewardTokenA.symbol}</span>
                 </Typography>
                 <Typography variant='body1' color='textSecondary'>
-                  {stakingInfo.earnedAmountB.toSignificant(2)}
+                  {formatTokenAmount(stakingInfo.earnedAmountB)}
                   <span>&nbsp;{stakingInfo.rewardTokenB.symbol}</span>
                 </Typography>
               </Box>

@@ -4,7 +4,12 @@ import { Box, Typography } from '@material-ui/core';
 import { useLairInfo } from 'state/stake/hooks';
 import { CurrencyLogo, StakeQuickModal, UnstakeQuickModal } from 'components';
 import { ReactComponent as PriceExchangeIcon } from 'assets/images/PriceExchangeIcon.svg';
-import { formatNumber, returnTokenFromKey, useLairDQUICKAPY } from 'utils';
+import {
+  formatNumber,
+  formatTokenAmount,
+  returnTokenFromKey,
+  useLairDQUICKAPY,
+} from 'utils';
 import { useUSDCPriceToken } from 'utils/useUSDCPrice';
 
 const useStyles = makeStyles(({ palette }) => ({
@@ -81,7 +86,7 @@ const DragonsLair: React.FC = () => {
         <Typography variant='body2'>
           $
           {(
-            Number(lairInfo.totalQuickBalance.toSignificant()) * quickPrice
+            Number(lairInfo.totalQuickBalance.toExact()) * quickPrice
           ).toLocaleString()}
         </Typography>
       </Box>
@@ -94,7 +99,7 @@ const DragonsLair: React.FC = () => {
       <Box display='flex' justifyContent='space-between' mt={1.5}>
         <Typography variant='body2'>Your Deposits</Typography>
         <Typography variant='body2'>
-          {formatNumber(Number(lairInfo.QUICKBalance.toSignificant()))}
+          {formatTokenAmount(lairInfo.QUICKBalance)}
         </Typography>
       </Box>
       <Box

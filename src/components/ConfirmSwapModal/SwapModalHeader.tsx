@@ -8,6 +8,7 @@ import { DoubleCurrencyLogo } from 'components';
 import useUSDCPrice from 'utils/useUSDCPrice';
 import { computeSlippageAdjustedAmounts } from 'utils/prices';
 import { ReactComponent as ArrowDownIcon } from 'assets/images/ArrowDownIcon.svg';
+import { formatTokenAmount } from 'utils';
 
 const useStyles = makeStyles(({ palette }) => ({
   swapContent: {
@@ -86,7 +87,7 @@ const SwapModalHeader: React.FC<SwapModalHeaderProps> = ({
       </Box>
       <Box className={classes.swapContent}>
         <Typography variant='body1'>
-          Swap {trade.inputAmount.toSignificant(6)}{' '}
+          Swap {formatTokenAmount(trade.inputAmount)}{' '}
           {trade.inputAmount.currency.symbol} ($
           {Number(usdPrice?.toSignificant()) *
             Number(trade.inputAmount.toSignificant(2))}
@@ -94,7 +95,7 @@ const SwapModalHeader: React.FC<SwapModalHeaderProps> = ({
         </Typography>
         <ArrowDownIcon />
         <Typography variant='body1'>
-          {trade.outputAmount.toSignificant(6)}{' '}
+          {formatTokenAmount(trade.outputAmount)}{' '}
           {trade.outputAmount.currency.symbol}
         </Typography>
       </Box>
@@ -124,14 +125,14 @@ const SwapModalHeader: React.FC<SwapModalHeaderProps> = ({
         {trade.tradeType === TradeType.EXACT_INPUT ? (
           <Typography variant='body2'>
             {`Output is estimated. You will receive at least `}
-            {slippageAdjustedAmounts[Field.OUTPUT]?.toSignificant(6)}{' '}
+            {formatTokenAmount(slippageAdjustedAmounts[Field.OUTPUT])}{' '}
             {trade.outputAmount.currency.symbol}
             {' or the transaction will revert.'}
           </Typography>
         ) : (
           <Typography variant='body2'>
             {`Input is estimated. You will sell at most `}
-            {slippageAdjustedAmounts[Field.INPUT]?.toSignificant(6)}{' '}
+            {formatTokenAmount(slippageAdjustedAmounts[Field.INPUT])}{' '}
             {trade.inputAmount.currency.symbol}
             {' or the transaction will revert.'}
           </Typography>

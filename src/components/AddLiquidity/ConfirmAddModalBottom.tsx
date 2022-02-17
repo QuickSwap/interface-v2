@@ -4,6 +4,7 @@ import { Box, Typography, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { CurrencyLogo } from 'components';
 import { Field } from 'state/mint/actions';
+import { formatTokenAmount } from 'utils';
 
 const useStyles = makeStyles(({}) => ({
   bottomRow: {
@@ -55,7 +56,7 @@ const ConfirmAddModalBottom: React.FC<ConfirmAddModalBottomProps> = ({
             style={{ marginRight: '8px' }}
           />
           <Typography>
-            {parsedAmounts[Field.CURRENCY_A]?.toSignificant(6)}
+            {formatTokenAmount(parsedAmounts[Field.CURRENCY_A])}
           </Typography>
         </Box>
       </Box>
@@ -69,7 +70,7 @@ const ConfirmAddModalBottom: React.FC<ConfirmAddModalBottomProps> = ({
             style={{ marginRight: '8px' }}
           />
           <Typography>
-            {parsedAmounts[Field.CURRENCY_B]?.toSignificant(6)}
+            {formatTokenAmount(parsedAmounts[Field.CURRENCY_B])}
           </Typography>
         </Box>
       </Box>

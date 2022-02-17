@@ -10,6 +10,7 @@ import {
 } from 'utils/prices';
 import { QuestionHelper, FormattedPriceImpact, CurrencyLogo } from 'components';
 import SwapRoute from './SwapRoute';
+import { formatTokenAmount } from 'utils';
 
 const useStyles = makeStyles(({ palette }) => ({
   summaryRow: {
@@ -84,13 +85,10 @@ export const TradeSummary: React.FC<TradeSummaryProps> = ({
         </Box>
         <Box display='flex' alignItems='center'>
           <Typography variant='body2'>
-            {isExactIn
-              ? `${slippageAdjustedAmounts[Field.OUTPUT]?.toSignificant(4)} ${
-                  trade.outputAmount.currency.symbol
-                }` ?? '-'
-              : `${slippageAdjustedAmounts[Field.INPUT]?.toSignificant(4)} ${
-                  trade.inputAmount.currency.symbol
-                }` ?? '-'}
+            {formatTokenAmount(
+              slippageAdjustedAmounts[isExactIn ? Field.OUTPUT : Field.INPUT],
+            )}{' '}
+            {trade.outputAmount.currency.symbol}
           </Typography>
           <Box
             width={16}
@@ -123,11 +121,7 @@ export const TradeSummary: React.FC<TradeSummaryProps> = ({
           <QuestionHelper text='A portion of each trade (0.30%) goes to liquidity providers as a protocol incentive.' />
         </Box>
         <Typography variant='body2'>
-          {realizedLPFee
-            ? `${realizedLPFee.toSignificant(4)} ${
-                trade.inputAmount.currency.symbol
-              }`
-            : '-'}
+          {formatTokenAmount(realizedLPFee)} {trade.inputAmount.currency.symbol}
         </Typography>
       </Box>
       {showRoute && (

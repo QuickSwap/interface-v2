@@ -193,7 +193,7 @@ const Swap: React.FC<{
       [independentField]: typedValue,
       [dependentField]: showWrap
         ? parsedAmounts[independentField]?.toExact() ?? ''
-        : parsedAmounts[dependentField]?.toSignificant(6) ?? '',
+        : parsedAmounts[dependentField]?.toExact() ?? '',
     };
   }, [independentField, typedValue, dependentField, showWrap, parsedAmounts]);
   const route = trade?.route;

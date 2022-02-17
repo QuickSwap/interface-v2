@@ -18,6 +18,7 @@ import { getTokenLogoURL } from 'utils/getTokenLogoURL';
 import { PlusHelper } from 'components/QuestionHelper';
 import { ReactComponent as TokenSelectedIcon } from 'assets/images/TokenSelected.svg';
 import useUSDCPrice from 'utils/useUSDCPrice';
+import { formatTokenAmount } from 'utils';
 
 function currencyKey(currency: Token): string {
   return currency instanceof Token
@@ -75,7 +76,7 @@ function Balance({ balance }: { balance: CurrencyAmount }) {
       title={balance.toExact()}
       style={{ color: palette.text.primary }}
     >
-      {balance.toSignificant(4)}
+      {formatTokenAmount(balance)}
     </Typography>
   );
 }
