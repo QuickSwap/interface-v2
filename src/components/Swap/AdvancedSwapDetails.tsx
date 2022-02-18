@@ -29,17 +29,6 @@ const useStyles = makeStyles(({ palette }) => ({
       },
     },
   },
-  analyticsWrapper: {
-    border: `1px solid ${palette.divider}`,
-    borderRadius: 12,
-    padding: '8px 0',
-    margin: '8px 0',
-    '& a': {
-      fontSize: 18,
-      color: 'white',
-      textDecoration: 'none',
-    },
-  },
   swapRoute: {
     margin: '8px 0',
     '& .header': {
@@ -73,6 +62,7 @@ export const TradeSummary: React.FC<TradeSummaryProps> = ({
   );
   const classes = useStyles();
   const showRoute = Boolean(trade && trade.route.path.length > 2);
+  const tradeAmount = isExactIn ? trade.outputAmount : trade.inputAmount;
 
   return (
     <>
@@ -88,7 +78,7 @@ export const TradeSummary: React.FC<TradeSummaryProps> = ({
             {formatTokenAmount(
               slippageAdjustedAmounts[isExactIn ? Field.OUTPUT : Field.INPUT],
             )}{' '}
-            {trade.outputAmount.currency.symbol}
+            {tradeAmount.currency.symbol}
           </Typography>
           <Box
             width={16}
@@ -97,14 +87,7 @@ export const TradeSummary: React.FC<TradeSummaryProps> = ({
             borderRadius={8}
             overflow='hidden'
           >
-            {isExactIn ? (
-              <CurrencyLogo
-                currency={trade.outputAmount.currency}
-                size='16px'
-              />
-            ) : (
-              <CurrencyLogo currency={trade.inputAmount.currency} size='16px' />
-            )}
+            <CurrencyLogo currency={tradeAmount.currency} size='16px' />
           </Box>
         </Box>
       </Box>

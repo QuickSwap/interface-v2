@@ -166,7 +166,7 @@ const AddLiquidity: React.FC<{
     [independentField]: typedValue,
     [dependentField]: noLiquidity
       ? otherTypedValue
-      : formatTokenAmount(parsedAmounts[dependentField]),
+      : parsedAmounts[dependentField]?.toExact() ?? '',
   };
 
   const { ethereum } = window as any;
@@ -522,14 +522,14 @@ const AddLiquidity: React.FC<{
               <Typography variant='body2'>Your pool share:</Typography>
               <Typography variant='body2'>
                 {poolTokenPercentage
-                  ? poolTokenPercentage.toFixed(6) + '%'
+                  ? poolTokenPercentage.toSignificant(6) + '%'
                   : '-'}
               </Typography>
             </Box>
             <Box className={classes.swapPrice}>
               <Typography variant='body2'>LP Tokens Received:</Typography>
               <Typography variant='body2'>
-                {userPoolBalance?.toSignificant()} LP Tokens
+                {formatTokenAmount(userPoolBalance)} LP Tokens
               </Typography>
             </Box>
           </Box>

@@ -1,23 +1,26 @@
 import React, { useState } from 'react';
 import { Box, Typography, useMediaQuery } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
-import { DualStakingInfo } from 'state/stake/hooks';
+import { DualStakingInfo, StakingInfo } from 'state/stake/hooks';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { DoubleCurrencyLogo, CurrencyLogo } from 'components';
 import CircleInfoIcon from 'assets/images/circleinfo.svg';
-import FarmDualCardDetails from './FarmDualCardDetails';
+import FarmCardDetails from './FarmCardDetails';
 import {
-  formatTokenAmount,
   getAPYWithFee,
-  getEarnedUSDDualFarm,
+  returnTokenFromKey,
   getRewardRate,
   getStakedAmountStakingInfo,
   getTVLStaking,
+  getEarnedUSDLPFarm,
+  getEarnedUSDDualFarm,
+  formatTokenAmount,
+  formatAPY,
 } from 'utils';
+import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
 
 const useStyles = makeStyles(({ palette }) => ({
-  farmDualCard: {
+  farmLPCard: {
     background: palette.secondary.dark,
     width: '100%',
     borderRadius: 10,
@@ -26,7 +29,7 @@ const useStyles = makeStyles(({ palette }) => ({
     flexDirection: 'column',
     alignItems: 'center',
   },
-  farmDualCardUp: {
+  farmLPCardUp: {
     background: palette.secondary.dark,
     width: '100%',
     borderRadius: 10,
@@ -35,27 +38,27 @@ const useStyles = makeStyles(({ palette }) => ({
     padding: '16px',
     cursor: 'pointer',
   },
-  farmDualText: {
+  farmLPText: {
     fontSize: 14,
     fontWeight: 600,
     color: palette.text.secondary,
   },
 }));
 
-const FarmDualCard: React.FC<{
-  stakingInfo: DualStakingInfo;
+const FarmCard: React.FC<{
+  stakingInfo: StakingInfo | DualStakingInfo;
   stakingAPY: number;
-}> = ({ stakingInfo, stakingAPY }) => {
+  isLPFarm?: boolean;
+}> = ({ stakingInfo, stakingAPY, isLPFarm }) => {
   const classes = useStyles();
   const { palette, breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const [isExpandCard, setExpandCard] = useState(false);
+  const lpStakingInfo = stakingInfo as StakingInfo;
+  const dualStakingInfo = stakingInfo as DualStakingInfo;
 
   const token0 = stakingInfo.tokens[0];
   const token1 = stakingInfo.tokens[1];
-
-  const rewardTokenA = stakingInfo.rewardTokenA;
-  const rewardTokenB = stakingInfo.rewardTokenB;
 
   const currency0 = unwrappedToken(token0);
   const currency1 = unwrappedToken(token1);
@@ -65,13 +68,9 @@ const FarmDualCard: React.FC<{
   let apyWithFee: number | string = 0;
 
   if (stakingAPY && stakingAPY > 0 && stakingInfo.perMonthReturnInRewards) {
-    apyWithFee = getAPYWithFee(stakingInfo.perMonthReturnInRewards, stakingAPY);
-
-    if (apyWithFee > 100000000) {
-      apyWithFee = '>100000000';
-    } else {
-      apyWithFee = parseFloat(apyWithFee.toFixed(2)).toLocaleString();
-    }
+    apyWithFee = formatAPY(
+      getAPYWithFee(stakingInfo.perMonthReturnInRewards, stakingAPY),
+    );
   }
 
   const tvl = getTVLStaking(
@@ -79,20 +78,28 @@ const FarmDualCard: React.FC<{
     stakedAmounts?.totalStakedBase,
   );
 
-  const poolRateA = getRewardRate(
-    stakingInfo.totalRewardRateA,
-    stakingInfo.rewardTokenA,
-  );
-  const poolRateB = getRewardRate(
-    stakingInfo.totalRewardRateB,
-    stakingInfo.rewardTokenB,
+  const lpPoolRate = getRewardRate(
+    lpStakingInfo.totalRewardRate,
+    lpStakingInfo.rewardToken,
   );
 
-  const earnedUSDStr = getEarnedUSDDualFarm(stakingInfo);
+  const dualPoolRateA = getRewardRate(
+    dualStakingInfo.totalRewardRateA,
+    dualStakingInfo.rewardTokenA,
+  );
+  const dualPoolRateB = getRewardRate(
+    dualStakingInfo.totalRewardRateB,
+    dualStakingInfo.rewardTokenB,
+  );
 
-  const rewards =
-    stakingInfo?.rateA * (stakingInfo?.rewardTokenAPrice ?? 0) +
-    stakingInfo?.rateB * Number(stakingInfo.rewardTokenBPrice);
+  const earnedUSDStr = isLPFarm
+    ? getEarnedUSDLPFarm(lpStakingInfo)
+    : getEarnedUSDDualFarm(dualStakingInfo);
+
+  const lpRewards = lpStakingInfo.rewardTokenPrice * lpStakingInfo.rate;
+  const dualRewards =
+    dualStakingInfo.rateA * (dualStakingInfo.rewardTokenAPrice ?? 0) +
+    dualStakingInfo.rateB * Number(dualStakingInfo.rewardTokenBPrice);
 
   const renderPool = (width: number) => (
     <Box display='flex' alignItems='center' width={width}>
@@ -110,9 +117,9 @@ const FarmDualCard: React.FC<{
   );
 
   return (
-    <Box className={classes.farmDualCard}>
+    <Box className={classes.farmLPCard}>
       <Box
-        className={classes.farmDualCardUp}
+        className={classes.farmLPCardUp}
         onClick={() => setExpandCard(!isExpandCard)}
       >
         {isMobile ? (
@@ -150,10 +157,16 @@ const FarmDualCard: React.FC<{
             </Box>
             <Box width={0.25} textAlign='center'>
               <Typography variant='body2'>
-                ${Number(rewards.toFixed(0)).toLocaleString()} / day
+                ${(isLPFarm ? lpRewards : dualRewards).toLocaleString()} / day
               </Typography>
-              <Typography variant='body2'>{poolRateA}</Typography>
-              <Typography variant='body2'>{poolRateB}</Typography>
+              {isLPFarm ? (
+                <Typography variant='body2'>{lpPoolRate}</Typography>
+              ) : (
+                <>
+                  <Typography variant='body2'>{dualPoolRateA}</Typography>
+                  <Typography variant='body2'>{dualPoolRateB}</Typography>
+                </>
+              )}
             </Box>
             <Box
               width={0.15}
@@ -169,39 +182,67 @@ const FarmDualCard: React.FC<{
             </Box>
             <Box width={0.2} textAlign='right'>
               <Typography variant='body2'>{earnedUSDStr}</Typography>
-              <Box display='flex' alignItems='center' justifyContent='flex-end'>
-                <CurrencyLogo
-                  currency={unwrappedToken(rewardTokenA)}
-                  size='16px'
-                />
-                <Typography variant='body2' style={{ marginLeft: 5 }}>
-                  {formatTokenAmount(stakingInfo.earnedAmountA)}
-                  <span>&nbsp;{rewardTokenA.symbol}</span>
-                </Typography>
-              </Box>
-              <Box display='flex' alignItems='center' justifyContent='flex-end'>
-                <CurrencyLogo
-                  currency={unwrappedToken(rewardTokenB)}
-                  size='16px'
-                />
-                <Typography variant='body2' style={{ marginLeft: 5 }}>
-                  {formatTokenAmount(stakingInfo.earnedAmountB)}
-                  <span>&nbsp;{rewardTokenB.symbol}</span>
-                </Typography>
-              </Box>
+              {isLPFarm ? (
+                <Box
+                  display='flex'
+                  alignItems='center'
+                  justifyContent='flex-end'
+                >
+                  <CurrencyLogo
+                    currency={lpStakingInfo.rewardToken}
+                    size='16px'
+                  />
+                  <Typography variant='body2' style={{ marginLeft: 5 }}>
+                    {formatTokenAmount(lpStakingInfo.earnedAmount)}
+                    <span>&nbsp;{lpStakingInfo.rewardToken.symbol}</span>
+                  </Typography>
+                </Box>
+              ) : (
+                <>
+                  <Box
+                    display='flex'
+                    alignItems='center'
+                    justifyContent='flex-end'
+                  >
+                    <CurrencyLogo
+                      currency={unwrappedToken(dualStakingInfo.rewardTokenA)}
+                      size='16px'
+                    />
+                    <Typography variant='body2' style={{ marginLeft: 5 }}>
+                      {formatTokenAmount(dualStakingInfo.earnedAmountA)}
+                      <span>&nbsp;{dualStakingInfo.rewardTokenA.symbol}</span>
+                    </Typography>
+                  </Box>
+                  <Box
+                    display='flex'
+                    alignItems='center'
+                    justifyContent='flex-end'
+                  >
+                    <CurrencyLogo
+                      currency={unwrappedToken(dualStakingInfo.rewardTokenB)}
+                      size='16px'
+                    />
+                    <Typography variant='body2' style={{ marginLeft: 5 }}>
+                      {formatTokenAmount(dualStakingInfo.earnedAmountB)}
+                      <span>&nbsp;{dualStakingInfo.rewardTokenB.symbol}</span>
+                    </Typography>
+                  </Box>
+                </>
+              )}
             </Box>
           </>
         )}
       </Box>
 
       {isExpandCard && (
-        <FarmDualCardDetails
-          pair={stakingInfo.stakingTokenPair}
+        <FarmCardDetails
+          stakingInfo={stakingInfo}
           stakingAPY={stakingAPY}
+          isLPFarm={isLPFarm}
         />
       )}
     </Box>
   );
 };
 
-export default FarmDualCard;
+export default FarmCard;

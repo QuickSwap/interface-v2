@@ -32,7 +32,11 @@ import {
 import { useTokenBalance } from 'state/wallet/hooks';
 import { useActiveWeb3React } from 'hooks';
 import { usePairContract } from 'hooks/useContract';
-import { calculateGasMargin, calculateSlippageAmount } from 'utils';
+import {
+  calculateGasMargin,
+  calculateSlippageAmount,
+  formatTokenAmount,
+} from 'utils';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 import useTransactionDeadline from 'hooks/useTransactionDeadline';
 import { useApproveCallback, ApprovalState } from 'hooks/useApproveCallback';
@@ -151,15 +155,15 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
     [Field.LIQUIDITY]:
       independentField === Field.LIQUIDITY
         ? typedValue
-        : parsedAmounts[Field.LIQUIDITY]?.toSignificant(6) ?? '',
+        : parsedAmounts[Field.LIQUIDITY]?.toExact() ?? '',
     [Field.CURRENCY_A]:
       independentField === Field.CURRENCY_A
         ? typedValue
-        : parsedAmounts[Field.CURRENCY_A]?.toSignificant(6) ?? '',
+        : parsedAmounts[Field.CURRENCY_A]?.toExact() ?? '',
     [Field.CURRENCY_B]:
       independentField === Field.CURRENCY_B
         ? typedValue
-        : parsedAmounts[Field.CURRENCY_B]?.toSignificant(6) ?? '',
+        : parsedAmounts[Field.CURRENCY_B]?.toExact() ?? '',
   };
 
   const [token0Deposited, token1Deposited] =
@@ -462,7 +466,7 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
               {currency0.symbol} / {currency1.symbol} LP
             </Typography>
             <Typography variant='body2'>
-              Balance: {userPoolBalance?.toSignificant(3)}
+              Balance: {formatTokenAmount(userPoolBalance)}
             </Typography>
           </Box>
           <Box mt={2}>
@@ -508,7 +512,7 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
             <Typography variant='body1'>Pooled {currency0.symbol}</Typography>
             <Box display='flex' alignItems='center'>
               <Typography variant='body1' style={{ marginRight: 6 }}>
-                {token0Deposited?.toSignificant(2)}
+                {formatTokenAmount(token0Deposited)}
               </Typography>
               <CurrencyLogo currency={currency0} />
             </Box>
@@ -541,7 +545,7 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
             <Typography variant='body1'>Pooled {currency1.symbol}</Typography>
             <Box display='flex' alignItems='center'>
               <Typography variant='body1' style={{ marginRight: 6 }}>
-                {token1Deposited?.toSignificant(2)}
+                {formatTokenAmount(token1Deposited)}
               </Typography>
               <CurrencyLogo currency={currency1} />
             </Box>

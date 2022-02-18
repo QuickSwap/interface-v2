@@ -10,7 +10,7 @@ import {
   useDualStakingInfo,
 } from 'state/stake/hooks';
 import { DoubleCurrencyLogo } from 'components';
-import { getAPYWithFee, getOneYearFee } from 'utils';
+import { formatAPY, getAPYWithFee, getOneYearFee } from 'utils';
 import PoolPositionCardDetails from './PoolPositionCardDetails';
 
 const PoolPositionCard: React.FC<{ pair: Pair }> = ({ pair }) => {
@@ -49,15 +49,9 @@ const PoolPositionCard: React.FC<{ pair: Pair }> = ({ pair }) => {
       const reserveUSD = bulkPairData[stakingInfo.pair]?.reserveUSD;
       const oneYearFee =
         dayVolume && reserveUSD ? getOneYearFee(dayVolume, reserveUSD) : 0;
-      const apy = getAPYWithFee(
-        stakingInfo.perMonthReturnInRewards ?? 0,
-        oneYearFee,
-      ); // compounding monthly APY
-      if (apy > 100000000) {
-        return '>100000000';
-      } else {
-        return Number(apy.toFixed(2)).toLocaleString();
-      }
+      return formatAPY(
+        getAPYWithFee(stakingInfo.perMonthReturnInRewards ?? 0, oneYearFee),
+      );
     }
   }, [stakingInfo, bulkPairData]);
 
