@@ -59,9 +59,31 @@ const ThemeProvider: React.FC = ({ children }) => {
   return <MuiThemeProvider theme={theme}>{children}</MuiThemeProvider>;
 };
 
+import ModalParent, {
+  QuickModalContent,
+  StateModalContent,
+} from 'components/Modals';
 const Providers: React.FC = ({ children }) => {
   return (
     <div>
+      <ModalParent notoolbar>
+        <StateModalContent loading />
+      </ModalParent>
+      <ModalParent notitle>
+        <StateModalContent />
+      </ModalParent>
+      <ModalParent>
+        <QuickModalContent confirm />
+      </ModalParent>
+      <ModalParent>
+        <QuickModalContent />
+      </ModalParent>
+      <ModalParent>
+        <QuickModalContent borrow confirm />
+      </ModalParent>
+      <ModalParent>
+        <QuickModalContent borrow />
+      </ModalParent>
       <Suspense fallback={<Background fallback={true} />}>
         <ThemeProvider>
           <CssBaseline />
