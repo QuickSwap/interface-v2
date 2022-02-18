@@ -12,8 +12,7 @@ import {
   CommonStakingInfo,
 } from 'state/stake/hooks';
 import {
-  FarmLPCard,
-  FarmDualCard,
+  FarmCard,
   ToggleSwitch,
   CustomMenu,
   SearchInput,
@@ -468,16 +467,17 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
       {farmIndex === GlobalConst.farmIndex.LPFARM_INDEX &&
         stakingInfos &&
         stakingInfos.map((info: StakingInfo, index) => (
-          <FarmLPCard
+          <FarmCard
             key={index}
             stakingInfo={info}
             stakingAPY={getPoolApy(info?.pair)}
+            isLPFarm={true}
           />
         ))}
       {farmIndex === GlobalConst.farmIndex.DUALFARM_INDEX &&
         stakingDualInfos &&
         stakingDualInfos.map((info: DualStakingInfo, index) => (
-          <FarmDualCard
+          <FarmCard
             key={index}
             stakingInfo={info}
             stakingAPY={getPoolApy(info?.pair)}

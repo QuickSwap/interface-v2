@@ -95,7 +95,7 @@ const ConfirmAddModalBottom: React.FC<ConfirmAddModalBottomProps> = ({
       <Box className={classes.bottomRow}>
         <Typography>Share of Pool:</Typography>
         <Typography>
-          {noLiquidity ? '100' : poolTokenPercentage?.toSignificant(4)}%
+          {noLiquidity ? '100' : poolTokenPercentage?.toSignificant(6)}%
         </Typography>
       </Box>
       <Button className={classes.confirmButton} onClick={onAdd}>

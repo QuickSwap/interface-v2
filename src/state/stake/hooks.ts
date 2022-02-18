@@ -732,7 +732,7 @@ export function useOldSyrupInfo(
             rewardTokenPriceinUSD: priceOfRewardTokenInUSD,
             stakingToken: syrupInfo.stakingToken,
             valueOfTotalStakedAmountInUSDC:
-              Number(totalStakedAmount.toSignificant(6)) * stakingTokenPrice,
+              Number(totalStakedAmount.toExact()) * stakingTokenPrice,
           });
         }
         return memo;

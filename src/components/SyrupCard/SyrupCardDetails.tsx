@@ -63,7 +63,7 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
   );
 
   const syrupEarnedUSD =
-    Number(syrup?.earnedAmount.toSignificant()) *
+    Number(syrup?.earnedAmount.toExact() ?? 0) *
     Number(syrup?.rewardTokenPriceinUSD ?? 0);
 
   const exactEnd = syrup ? syrup.periodFinish : 0;
@@ -71,8 +71,9 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
   const depositAmount =
     syrup && syrup.valueOfTotalStakedAmountInUSDC
       ? `$${Number(syrup.valueOfTotalStakedAmountInUSDC).toLocaleString()}`
-      : `${syrup?.totalStakedAmount.toSignificant(6, { groupSeparator: ',' }) ??
-          '-'} ${syrup?.stakingToken.symbol}`;
+      : `${formatTokenAmount(syrup?.totalStakedAmount)} ${
+          syrup?.stakingToken.symbol
+        }`;
 
   const onClaimReward = async () => {
     if (syrup && stakingContract && syrup.stakedAmount) {
@@ -246,7 +247,7 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
               <Typography variant='body2'>
                 <span style={{ color: palette.text.primary }}>
                   {userLiquidityUnstaked
-                    ? userLiquidityUnstaked.toSignificant(2)
+                    ? formatTokenAmount(userLiquidityUnstaked)
                     : 0}{' '}
                   {syrup.stakingToken.symbol}
                 </span>
@@ -255,7 +256,7 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
                   {userLiquidityUnstaked
                     ? (
                         stakingTokenPrice *
-                        Number(userLiquidityUnstaked.toSignificant())
+                        Number(userLiquidityUnstaked.toExact())
                       ).toLocaleString()
                     : 0}
                 </span>
@@ -275,14 +276,13 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
               </Typography>
               <Typography variant='body2'>
                 <span style={{ color: palette.text.primary }}>
-                  {syrup.stakedAmount.toSignificant(2)}{' '}
+                  {formatTokenAmount(syrup.stakedAmount)}{' '}
                   {syrup.stakingToken.symbol}
                 </span>
                 <span style={{ color: palette.text.secondary, marginLeft: 4 }}>
                   $
                   {(
-                    stakingTokenPrice *
-                    Number(syrup.stakedAmount.toSignificant())
+                    stakingTokenPrice * Number(syrup.stakedAmount.toExact())
                   ).toLocaleString()}
                 </span>
               </Typography>

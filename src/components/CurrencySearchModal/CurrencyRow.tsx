@@ -257,7 +257,7 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
               >
                 $
                 {(
-                  Number(balance.toSignificant()) *
+                  Number(balance.toExact()) *
                   (usdPrice ? Number(usdPrice.toSignificant()) : 0)
                 ).toLocaleString()}
               </Typography>

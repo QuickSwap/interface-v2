@@ -16,7 +16,7 @@ import {
   useTransactionFinalizer,
 } from 'state/transactions/hooks';
 import { wrappedCurrencyAmount } from 'utils/wrappedCurrency';
-import { formatTokenAmount, maxAmountSpend } from 'utils';
+import { formatTokenAmount, maxAmountSpend, formatNumber } from 'utils';
 
 const useStyles = makeStyles(({ palette }) => ({
   stakeButton: {
@@ -253,9 +253,9 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
         >
           <Typography variant='body1'>Daily Rewards</Typography>
           <Typography variant='body1'>
-            {hypotheticalRewardRate
-              .multiply((60 * 60 * 24).toString())
-              .toSignificant(4, { groupSeparator: ',' })}{' '}
+            {formatNumber(
+              Number(hypotheticalRewardRate.toExact()) * 60 * 60 * 24,
+            )}{' '}
             {syrup.token.symbol} / day
           </Typography>
         </Box>

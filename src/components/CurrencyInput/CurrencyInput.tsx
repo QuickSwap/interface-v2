@@ -107,7 +107,7 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
     account ?? undefined,
     currency,
   );
-  const usdPrice = Number(useUSDCPrice(currency)?.toSignificant()) || 0;
+  const usdPrice = Number(useUSDCPrice(currency)?.toSignificant() ?? 0);
 
   const handleOpenModal = useCallback(() => {
     setModalOpen(true);
