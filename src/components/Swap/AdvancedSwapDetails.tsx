@@ -1,15 +1,21 @@
 import { Trade, TradeType } from '@uniswap/sdk';
-import React from 'react';
+import React, { useState } from 'react';
 import { Box, Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { Field } from 'state/swap/actions';
 import { useUserSlippageTolerance } from 'state/user/hooks';
 import {
   computeSlippageAdjustedAmounts,
   computeTradePriceBreakdown,
 } from 'utils/prices';
-import { QuestionHelper, FormattedPriceImpact, CurrencyLogo } from 'components';
-import SwapRoute from './SwapRoute';
+import {
+  QuestionHelper,
+  FormattedPriceImpact,
+  CurrencyLogo,
+  SettingsModal,
+} from 'components';
+import { ReactComponent as EditIcon } from 'assets/images/EditIcon.svg';
+
 import { formatTokenAmount } from 'utils';
 
 const useStyles = makeStyles(({ palette }) => ({
@@ -52,6 +58,9 @@ export const TradeSummary: React.FC<TradeSummaryProps> = ({
   trade,
   allowedSlippage,
 }) => {
+  const [openSettingsModal, setOpenSettingsModal] = useState(false);
+  const { palette } = useTheme();
+
   const { priceImpactWithoutFee, realizedLPFee } = computeTradePriceBreakdown(
     trade,
   );
@@ -61,11 +70,32 @@ export const TradeSummary: React.FC<TradeSummaryProps> = ({
     allowedSlippage,
   );
   const classes = useStyles();
-  const showRoute = Boolean(trade && trade.route.path.length > 2);
   const tradeAmount = isExactIn ? trade.outputAmount : trade.inputAmount;
 
   return (
-    <>
+    <Box mt={1.5}>
+      {openSettingsModal && (
+        <SettingsModal
+          open={openSettingsModal}
+          onClose={() => setOpenSettingsModal(false)}
+        />
+      )}
+      <Box className={classes.summaryRow}>
+        <Box display='flex' alignItems='center'>
+          <Typography variant='body2'>Slippage:</Typography>
+          <QuestionHelper text='Your transaction will revert if the price changes unfavorably by more than this percentage.' />
+        </Box>
+        <Box
+          display='flex'
+          alignItems='center'
+          onClick={() => setOpenSettingsModal(true)}
+        >
+          <Typography variant='body2' style={{ color: palette.primary.main }}>
+            {allowedSlippage / 100}%
+          </Typography>
+          <EditIcon style={{ marginLeft: 8, cursor: 'pointer' }} />
+        </Box>
+      </Box>
       <Box className={classes.summaryRow}>
         <Box display='flex' alignItems='center'>
           <Typography variant='body2'>
@@ -107,20 +137,29 @@ export const TradeSummary: React.FC<TradeSummaryProps> = ({
           {formatTokenAmount(realizedLPFee)} {trade.inputAmount.currency.symbol}
         </Typography>
       </Box>
-      {showRoute && (
-        <Box margin='8px 24px 0'>
-          <Box display='flex' alignItems='center'>
-            <Typography variant='body2' style={{ marginRight: 4 }}>
-              Route
-            </Typography>
-            <QuestionHelper text='Routing through these tokens resulted in the best price for your trade.' />
-          </Box>
-          <Box width={1} mt={1}>
-            <SwapRoute trade={trade} />
-          </Box>
+      <Box className={classes.summaryRow}>
+        <Box display='flex' alignItems='center'>
+          <Typography variant='body2' style={{ marginRight: 4 }}>
+            Route
+          </Typography>
+          <QuestionHelper text='Routing through these tokens resulted in the best price for your trade.' />
         </Box>
-      )}
-    </>
+        <Box>
+          {trade.route.path.map((token, i, path) => {
+            const isLastItem: boolean = i === path.length - 1;
+            return (
+              <Box key={i} display='flex' alignItems='center'>
+                <Typography variant='body2'>
+                  {token.symbol}{' '}
+                  {// this is not to show the arrow at the end of the trade path
+                  isLastItem ? '' : ' > '}
+                </Typography>
+              </Box>
+            );
+          })}
+        </Box>
+      </Box>
+    </Box>
   );
 };
 
