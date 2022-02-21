@@ -89,11 +89,12 @@ export const TradeSummary: React.FC<TradeSummaryProps> = ({
           display='flex'
           alignItems='center'
           onClick={() => setOpenSettingsModal(true)}
+          style={{ cursor: 'pointer' }}
         >
           <Typography variant='body2' style={{ color: palette.primary.main }}>
             {allowedSlippage / 100}%
           </Typography>
-          <EditIcon style={{ marginLeft: 8, cursor: 'pointer' }} />
+          <EditIcon style={{ marginLeft: 8 }} />
         </Box>
       </Box>
       <Box className={classes.summaryRow}>
