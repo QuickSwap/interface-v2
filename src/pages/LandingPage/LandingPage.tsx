@@ -279,7 +279,7 @@ const LandingPage: React.FC = () => {
       img: DragonsLair,
       title: 'Dragon’s Lair',
       desc:
-        'Dragon’s Lair is a single staking pool for QUICK token. Stake your QUICK to receive dQuick, and earn your share of .04% of all trading fees',
+        'Dragon’s Lair is a single staking pool for QUICK token. Stake your QUICK to receive dQUICK, and earn your share of .04% of all trading fees',
     },
     {
       img: BuyWithFiat,
