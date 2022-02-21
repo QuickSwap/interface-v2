@@ -4,7 +4,7 @@ import Skeleton from '@material-ui/lab/Skeleton';
 import { ArrowDropUp, ArrowDropDown } from '@material-ui/icons';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { CurrencyLogo } from 'components';
-import { useBlockNumber } from 'state/application/hooks';
+import { useBlockNumber, useTokenDetails } from 'state/application/hooks';
 import useCopyClipboard from 'hooks/useCopyClipboard';
 import { ReactComponent as CopyIcon } from 'assets/images/CopyIcon.svg';
 import {
@@ -37,6 +37,7 @@ const SwapTokenDetails: React.FC<{
   const tokenAddress = token.address;
   const { palette } = useTheme();
   const latestBlock = useBlockNumber();
+  const { tokenDetails, updateTokenDetails } = useTokenDetails();
   const [tokenData, setTokenData] = useState<any>(null);
   const [priceData, setPriceData] = useState<any>(null);
   const priceUp = Number(tokenData?.priceChangeUSD) > 0;
@@ -45,16 +46,12 @@ const SwapTokenDetails: React.FC<{
   const prices = priceData ? priceData.map((price: any) => price.close) : [];
 
   useEffect(() => {
-    setTokenData(null);
-    setPriceData(null);
     async function fetchTokenData() {
-      const [newPrice, oneDayPrice] = await getEthPrice();
-      const tokenInfo = await getTokenInfo(newPrice, oneDayPrice, tokenAddress);
-      if (tokenInfo) {
-        setTokenData(tokenInfo[0]);
-      }
-    }
-    async function fetchSwapTokenPrice0() {
+      const tokenDetail = tokenDetails.find(
+        (item) => item.address === tokenAddress,
+      );
+      setTokenData(tokenDetail?.tokenData);
+      setPriceData(tokenDetail?.priceData);
       const currentTime = dayjs.utc();
       const startTime = currentTime
         .subtract(1, 'day')
@@ -67,9 +64,21 @@ const SwapTokenDetails: React.FC<{
         latestBlock,
       );
       setPriceData(tokenPriceData);
+
+      const [newPrice, oneDayPrice] = await getEthPrice();
+      const tokenInfo = await getTokenInfo(newPrice, oneDayPrice, tokenAddress);
+      if (tokenInfo) {
+        const token0 = tokenInfo[0];
+        setTokenData(token0);
+        const tokenDetailToUpdate = {
+          address: tokenAddress,
+          tokenData: token0,
+          priceData: tokenPriceData,
+        };
+        updateTokenDetails(tokenDetailToUpdate);
+      }
     }
     fetchTokenData();
-    fetchSwapTokenPrice0();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tokenAddress]);
 

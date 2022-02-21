@@ -29,6 +29,8 @@ import {
   TOKEN_INFO_OLD,
   FILTERED_TRANSACTIONS,
   HOURLY_PAIR_RATES,
+  GLOBAL_ALLDATA,
+  ETH_ALLPRICE,
 } from 'apollo/queries';
 import { JsonRpcSigner, Web3Provider } from '@ethersproject/providers';
 import {
@@ -40,6 +42,7 @@ import {
   ETHER,
   Token,
   TokenAmount,
+  Price,
 } from '@uniswap/sdk';
 import { BigNumber, BigNumberish } from '@ethersproject/bignumber';
 import { formatUnits } from 'ethers/lib/utils';
@@ -50,8 +53,14 @@ import moment from 'moment';
 import { Palette } from '@material-ui/core/styles/createPalette';
 import tokenData from 'constants/tokens.json';
 import stakeData from 'constants/stake.json';
-import { DualStakingInfo, StakingInfo, SyrupInfo } from 'state/stake/hooks';
+import {
+  DualStakingInfo,
+  LairInfo,
+  StakingInfo,
+  SyrupInfo,
+} from 'state/stake/hooks';
 import { unwrappedToken } from './wrappedCurrency';
+import { useUSDCPriceToken } from './useUSDCPrice';
 dayjs.extend(utc);
 dayjs.extend(weekOfYear);
 
@@ -221,12 +230,8 @@ export const get2DayPercentChange = (
 
 export const getEthPrice: () => Promise<number[]> = async () => {
   const utcCurrentTime = dayjs();
-  //utcCurrentTime = utcCurrentTime.subtract(0.3, 'day');
 
-  const utcOneDayBack = utcCurrentTime
-    .subtract(1, 'day')
-    .startOf('minute')
-    .unix();
+  const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix();
   let ethPrice = 0;
   let ethPriceOneDay = 0;
   let priceChangeETH = 0;
@@ -234,15 +239,12 @@ export const getEthPrice: () => Promise<number[]> = async () => {
   try {
     const oneDayBlock = await getBlockFromTimestamp(utcOneDayBack);
     const result = await client.query({
-      query: ETH_PRICE(),
+      query: ETH_ALLPRICE(oneDayBlock),
       fetchPolicy: 'network-only',
     });
-    const resultOneDay = await client.query({
-      query: ETH_PRICE(oneDayBlock),
-      fetchPolicy: 'network-only',
-    });
-    const currentPrice = result?.data?.bundles[0]?.ethPrice;
-    const oneDayBackPrice = resultOneDay?.data?.bundles[0]?.ethPrice;
+    const currentPrice = result?.data['currentPrice'][0].ethPrice;
+    const oneDayBackPrice = result?.data['oneDayBackPrice'][0].ethPrice;
+
     priceChangeETH = getPercentChange(currentPrice, oneDayBackPrice);
     ethPrice = currentPrice;
     ethPriceOneDay = oneDayBackPrice;
@@ -1177,30 +1179,22 @@ export async function getGlobalData(
     });
     data = result.data.uniswapFactories[0];
 
-    // fetch the historical data
-    const oneDayResult = await client.query({
-      query: GLOBAL_DATA(oneDayBlock?.number),
+    const queryReq = [
+      { index: 'result', block: null },
+      { index: 'oneDayData', block: oneDayBlock?.number },
+      { index: 'twoDayData', block: twoDayBlock?.number },
+      { index: 'oneWeekData', block: oneWeekBlock?.number },
+      { index: 'twoWeekData', block: twoWeekBlock?.number },
+    ];
+    const allData = await client.query({
+      query: GLOBAL_ALLDATA(queryReq),
       fetchPolicy: 'network-only',
     });
-    oneDayData = oneDayResult.data.uniswapFactories[0];
-
-    const twoDayResult = await client.query({
-      query: GLOBAL_DATA(twoDayBlock?.number),
-      fetchPolicy: 'network-only',
-    });
-    twoDayData = twoDayResult.data.uniswapFactories[0];
-
-    const oneWeekResult = await client.query({
-      query: GLOBAL_DATA(oneWeekBlock?.number),
-      fetchPolicy: 'network-only',
-    });
-    const oneWeekData = oneWeekResult.data.uniswapFactories[0];
-
-    const twoWeekResult = await client.query({
-      query: GLOBAL_DATA(twoWeekBlock?.number),
-      fetchPolicy: 'network-only',
-    });
-    const twoWeekData = twoWeekResult.data.uniswapFactories[0];
+    data = allData.data['result'][0];
+    oneDayData = allData.data['oneDayData'][0];
+    twoDayData = allData.data['twoDayData'][0];
+    const oneWeekData = allData.data['oneWeekData'][0];
+    const twoWeekData = allData.data['twoWeekData'][0];
 
     if (data && oneDayData && twoDayData && twoWeekData) {
       const [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(
@@ -1535,6 +1529,16 @@ export function shortenAddress(address: string, chars = 4): string {
   return `${parsed.substring(0, chars + 2)}...${parsed.substring(42 - chars)}`;
 }
 
+export const shortenTx = (tx: string) => {
+  if (tx.length) {
+    const txLength = tx.length;
+    const first = tx.slice(0, 6);
+    const last = tx.slice(txLength - 4, txLength);
+    return `${first}...${last}`;
+  }
+  return '';
+};
+
 export function getLibrary(provider: any): Web3Provider {
   const library = new Web3Provider(provider, 'any');
   library.pollingInterval = 15000;
@@ -1632,6 +1636,14 @@ export function getOneYearFee(dayVolume: number, reserveUSD: number) {
 
 export function getAPYWithFee(rewards: number, fee: number) {
   return fee > 0 ? ((1 + ((rewards + fee / 12) * 12) / 12) ** 12 - 1) * 100 : 0;
+}
+
+export function formatAPY(apy: number) {
+  if (apy > 100000000) {
+    return '>100000000';
+  } else {
+    return apy.toLocaleString();
+  }
 }
 
 export function formatNumber(unformatted: number | string, showDigits = 2) {
@@ -1761,13 +1773,6 @@ export function returnDualStakingInfo(): {
   };
 }
 
-export function getPriceToQUICKSyrup(syrup: SyrupInfo) {
-  const isQUICKStakingToken = syrup.stakingToken.equals(
-    returnTokenFromKey('QUICK'),
-  );
-  return isQUICKStakingToken ? 1 : Number(syrup.dQUICKtoQUICK.toSignificant());
-}
-
 export function getChartDates(chartData: any[] | null, durationIndex: number) {
   if (chartData) {
     const dates: string[] = [];
@@ -1864,17 +1869,20 @@ export function getTokenAPRSyrup(syrup: SyrupInfo) {
     : 0;
 }
 
-export function getDQUICKAPYSyrup(syrup?: SyrupInfo) {
-  if (!syrup) return '0';
+export function useLairDQUICKAPY(lair?: LairInfo) {
+  const daysCurrentYear = getDaysCurrentYear();
+  const dQUICKPrice = useUSDCPriceToken(returnTokenFromKey('DQUICK'));
+  if (!lair) return '0';
   const dQUICKAPR =
-    (((Number(syrup.oneDayVol) * 0.04 * 0.01) /
-      Number(syrup.dQuickTotalSupply.toSignificant(6))) *
-      getDaysCurrentYear()) /
-    (Number(syrup.dQUICKtoQUICK.toSignificant(6)) * Number(syrup.quickPrice));
+    (((Number(lair.oneDayVol) *
+      GlobalConst.utils.DQUICKFEE *
+      GlobalConst.utils.DQUICKAPR_MULTIPLIER) /
+      Number(lair.dQuickTotalSupply.toExact())) *
+      daysCurrentYear) /
+    dQUICKPrice;
   if (!dQUICKAPR) return '0';
   return Number(
-    (Math.pow(1 + dQUICKAPR / getDaysCurrentYear(), getDaysCurrentYear()) - 1) *
-      100,
+    (Math.pow(1 + dQUICKAPR / daysCurrentYear, daysCurrentYear) - 1) * 100,
   ).toLocaleString();
 }
 
@@ -1985,32 +1993,39 @@ export function getStakedAmountStakingInfo(
   };
 }
 
+export function formatTokenAmount(
+  amount?: TokenAmount | CurrencyAmount,
+  digits = 3,
+) {
+  if (!amount) return '-';
+  const amountStr = amount.toExact();
+  if (Math.abs(Number(amountStr)) > 1) {
+    return Number(amountStr).toLocaleString();
+  }
+  return amount.toSignificant(digits);
+}
+
 export function getTVLStaking(
   valueOfTotalStakedAmountInUSDC?: CurrencyAmount,
   valueOfTotalStakedAmountInBaseToken?: TokenAmount,
 ) {
   if (!valueOfTotalStakedAmountInUSDC) {
-    return `${valueOfTotalStakedAmountInBaseToken?.toSignificant(4, {
-      groupSeparator: ',',
-    }) ?? '-'} ETH`;
+    return `${formatTokenAmount(valueOfTotalStakedAmountInBaseToken)} ETH`;
   }
-  return `$${valueOfTotalStakedAmountInUSDC.toFixed(0, {
-    groupSeparator: ',',
-  })}`;
+  return `$${formatTokenAmount(valueOfTotalStakedAmountInUSDC)}`;
 }
 
 export function getUSDString(usdValue?: CurrencyAmount) {
   if (!usdValue) return '$0';
-  const usdStr = usdValue.toSignificant(2);
-  if (Number(usdStr) > 0 && Number(usdStr) < 0.001) return '< $0.001';
-  return `$${usdStr}`;
+  const value = Number(usdValue.toExact());
+  if (value > 0 && value < 0.001) return '< $0.001';
+  return `$${value.toLocaleString()}`;
 }
 
 export function getEarnedUSDLPFarm(stakingInfo: StakingInfo | undefined) {
   if (!stakingInfo) return;
   const earnedUSD =
-    Number(stakingInfo.earnedAmount.toSignificant()) *
-    stakingInfo.rewardTokenPrice;
+    Number(stakingInfo.earnedAmount.toExact()) * stakingInfo.rewardTokenPrice;
   if (earnedUSD < 0.001 && earnedUSD > 0) {
     return '< $0.001';
   }
@@ -2020,9 +2035,9 @@ export function getEarnedUSDLPFarm(stakingInfo: StakingInfo | undefined) {
 export function getEarnedUSDDualFarm(stakingInfo: DualStakingInfo | undefined) {
   if (!stakingInfo) return;
   const earnedUSD =
-    Number(stakingInfo.earnedAmountA.toSignificant()) *
+    Number(stakingInfo.earnedAmountA.toExact()) *
       stakingInfo.rewardTokenAPrice +
-    Number(stakingInfo.earnedAmountB.toSignificant()) *
+    Number(stakingInfo.earnedAmountB.toExact()) *
       Number(stakingInfo.rewardTokenBPrice);
   if (earnedUSD < 0.001 && earnedUSD > 0) {
     return '< $0.001';
