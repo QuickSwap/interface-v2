@@ -2,6 +2,7 @@ import { Trade, TradeType } from '@uniswap/sdk';
 import React, { useState } from 'react';
 import { Box, Typography } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { useTranslation } from 'react-i18next';
 import { Field } from 'state/swap/actions';
 import { useUserSlippageTolerance } from 'state/user/hooks';
 import {
@@ -15,7 +16,6 @@ import {
   SettingsModal,
 } from 'components';
 import { ReactComponent as EditIcon } from 'assets/images/EditIcon.svg';
-
 import { formatTokenAmount } from 'utils';
 
 const useStyles = makeStyles(({ palette }) => ({
@@ -60,6 +60,7 @@ export const TradeSummary: React.FC<TradeSummaryProps> = ({
 }) => {
   const [openSettingsModal, setOpenSettingsModal] = useState(false);
   const { palette } = useTheme();
+  const { t } = useTranslation();
 
   const { priceImpactWithoutFee, realizedLPFee } = computeTradePriceBreakdown(
     trade,
@@ -83,7 +84,7 @@ export const TradeSummary: React.FC<TradeSummaryProps> = ({
       <Box className={classes.summaryRow}>
         <Box display='flex' alignItems='center'>
           <Typography variant='body2'>Slippage:</Typography>
-          <QuestionHelper text='Your transaction will revert if the price changes unfavorably by more than this percentage.' />
+          <QuestionHelper text={t('slippageHelper')} />
         </Box>
         <Box
           display='flex'
@@ -100,9 +101,9 @@ export const TradeSummary: React.FC<TradeSummaryProps> = ({
       <Box className={classes.summaryRow}>
         <Box display='flex' alignItems='center'>
           <Typography variant='body2'>
-            {isExactIn ? 'Minimum Received:' : 'Maximum sold:'}
+            {isExactIn ? t('minReceived') : t('maxSold')}:
           </Typography>
-          <QuestionHelper text='Your transaction will revert if there is a large, unfavorable price movement before it is confirmed.' />
+          <QuestionHelper text={t('txLimitHelper')} />
         </Box>
         <Box display='flex' alignItems='center'>
           <Typography variant='body2'>
@@ -125,14 +126,14 @@ export const TradeSummary: React.FC<TradeSummaryProps> = ({
       <Box className={classes.summaryRow}>
         <Box display='flex' alignItems='center'>
           <Typography variant='body2'>Price Impact:</Typography>
-          <QuestionHelper text='The difference between the market price and estimated price due to trade size.' />
+          <QuestionHelper text={t('priceImpactHelper')} />
         </Box>
         <FormattedPriceImpact priceImpact={priceImpactWithoutFee} />
       </Box>
       <Box className={classes.summaryRow}>
         <Box display='flex' alignItems='center'>
           <Typography variant='body2'>Liquidity Provider Fee:</Typography>
-          <QuestionHelper text='A portion of each trade (0.30%) goes to liquidity providers as a protocol incentive.' />
+          <QuestionHelper text={t('liquidityProviderFeeHelper')} />
         </Box>
         <Typography variant='body2'>
           {formatTokenAmount(realizedLPFee)} {trade.inputAmount.currency.symbol}
@@ -143,7 +144,7 @@ export const TradeSummary: React.FC<TradeSummaryProps> = ({
           <Typography variant='body2' style={{ marginRight: 4 }}>
             Route
           </Typography>
-          <QuestionHelper text='Routing through these tokens resulted in the best price for your trade.' />
+          <QuestionHelper text={t('swapRouteHelper')} />
         </Box>
         <Box>
           {trade.route.path.map((token, i, path) => {
