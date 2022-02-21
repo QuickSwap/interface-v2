@@ -108,5 +108,12 @@
   "switchPolygon": "Switch to Polygon",
   "connectWallet": "Connect Wallet",
   "errorInTx": "There is an error in transaction.",
-  "txRejected": "Transaction rejected."
+  "txRejected": "Transaction rejected.",
+  "slippageHelper": "Your transaction will revert if the price changes unfavorably by more than this percentage.",
+  "txLimitHelper": "Your transaction will revert if there is a large, unfavorable price movement before it is confirmed.",
+  "priceImpactHelper": "The difference between the market price and estimated price due to trade size.",
+  "liquidityProviderFeeHelper": "A portion of each trade (0.30%) goes to liquidity providers as a protocol incentive.",
+  "swapRouteHelper": "Routing through these tokens resulted in the best price for your trade.",
+  "minReceived": "Minimum Received",
+  "maxSold": "Maximum Sold"
 }
