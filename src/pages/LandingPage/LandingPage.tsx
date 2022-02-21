@@ -1,14 +1,9 @@
 import React, { useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { useHistory } from 'react-router-dom';
-import {
-  Typography,
-  Button,
-  Box,
-  Grid,
-  useMediaQuery,
-} from '@material-ui/core';
+import { Typography, Box, Grid, useMediaQuery } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
+import { useTranslation } from 'react-i18next';
 import Motif from 'assets/images/Motif.svg';
 import BuyWithFiat from 'assets/images/featured/BuywithFiat.svg';
 import Analytics from 'assets/images/featured/Analytics.svg';
@@ -58,97 +53,6 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     alignItems: 'center',
     [breakpoints.down('xs')]: {
       margin: '32px 0 64px',
-    },
-  },
-  buyFiatContainer: {
-    background: palette.background.paper,
-    height: 338,
-    borderRadius: 48,
-    marginBottom: 160,
-    overflow: 'hidden',
-    position: 'relative',
-    [breakpoints.down('sm')]: {
-      height: 'auto',
-    },
-    [breakpoints.down('xs')]: {
-      marginBottom: 80,
-    },
-    '& > img': {
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      width: 1248,
-    },
-    '& > div': {
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      paddingRight: 80,
-      height: '100%',
-      position: 'relative',
-      zIndex: 2,
-      [breakpoints.down('sm')]: {
-        flexDirection: 'column',
-        padding: 0,
-      },
-    },
-    '& .buyFiatInfo': {
-      display: 'flex',
-      width: '50%',
-      alignItems: 'center',
-      position: 'relative',
-      '& img': {
-        width: 200,
-        maxWidth: 320,
-      },
-      '& > div': {
-        width: 'calc(100% - 200px)',
-        '& > h3': {
-          marginBottom: 12,
-        },
-      },
-      [breakpoints.down('sm')]: {
-        width: '100%',
-      },
-      [breakpoints.down('xs')]: {
-        flexDirection: 'column',
-        '& img, & > div': {
-          width: '100%',
-        },
-        '& img': {
-          margin: '-32px 0',
-        },
-        '& div': {
-          padding: '0 20px 20px',
-        },
-      },
-    },
-    '& .buyFiatWrapper': {
-      width: 408,
-      [breakpoints.down('sm')]: {
-        width: 'calc(100% - 64px)',
-        marginBottom: 32,
-      },
-      [breakpoints.down('xs')]: {
-        width: 'calc(100% - 40px)',
-      },
-      '& .buyContent': {
-        background: palette.background.default,
-        borderRadius: 20,
-        padding: 24,
-        '& > div': {
-          padding: 0,
-          border: 'none',
-          background: 'transparent',
-          '& > p': {
-            marginBottom: 8,
-          },
-        },
-      },
-      '& > button': {
-        height: 56,
-        marginTop: 20,
-      },
     },
   },
   featureHeading: {
@@ -258,39 +162,38 @@ const LandingPage: React.FC = () => {
   const classes = useStyles();
   const { palette, breakpoints } = useTheme();
   const mobileWindowSize = useMediaQuery(breakpoints.down('sm'));
+  const { t } = useTranslation();
 
   const features = [
     {
       img: FeaturedSwap,
-      title: 'Swap Tokens',
-      desc: 'Trade any combination of ERC-20 tokens permissionless, with ease.',
+      title: t('swapTokens'),
+      desc: t('featureTradeDesc'),
     },
     {
       img: ProvideLiquidity,
-      title: 'Supply Liquidity',
-      desc: 'Earn 0.25% fee on trades proportional to your share of the pool.',
+      title: t('supplyLiquidity'),
+      desc: t('featureLiquidityDesc'),
     },
     {
       img: Rewards,
-      title: 'Earn dQUICK',
-      desc: 'Deposit your LP tokens to earn additional rewards',
+      title: t('earndQUICK'),
+      desc: t('featureDepositDesc'),
     },
     {
       img: DragonsLair,
-      title: 'Dragon’s Lair',
-      desc:
-        'Dragon’s Lair is a single staking pool for QUICK token. Stake your QUICK to receive dQUICK, and earn your share of .04% of all trading fees',
+      title: t('dragonLair'),
+      desc: t('featureDragonDesc'),
     },
     {
       img: BuyWithFiat,
-      title: 'Buy Crypto with Fiat',
-      desc:
-        'Simple way to buy with Apple Pay, credit card, bank transfer & more.',
+      title: t('buyWithFiat'),
+      desc: t('featureBuyFiatDesc'),
     },
     {
       img: Analytics,
-      title: 'Analytics',
-      desc: 'Scan through QuickSwap analytics & Historical Data.',
+      title: t('analytics'),
+      desc: t('featureAnalyticsDesc'),
     },
   ];
 
@@ -368,20 +271,16 @@ const LandingPage: React.FC = () => {
       </Box>
       <Box className={classes.quickInfo}>
         <Typography style={{ fontSize: '24px' }}>
-          QuickSwap is a next-generation layer-2 decentralized exchange and
-          Automated Market Maker.
+          {t('quickInfoTitle')}
         </Typography>
         <img src={Motif} alt='Motif' />
       </Box>
       <SwapSection />
       <Box className={classes.rewardsContainer}>
         <Box maxWidth='480px' width='100%'>
-          <Typography variant='h4'>
-            Earn additional rewards by depositing your LP tokens
-          </Typography>
+          <Typography variant='h4'>{t('earnRewardsbyDeposit')}</Typography>
           <Typography style={{ marginTop: '20px' }}>
-            Deposit your Liquidity Provider tokens to receive rewards in
-            addition to LP fees.
+            {t('depositLPTokensRewards')}
           </Typography>
         </Box>
         <RewardSlider />
@@ -399,13 +298,13 @@ const LandingPage: React.FC = () => {
             history.push('/farm');
           }}
         >
-          <Typography variant='body1'>See all pairs</Typography>
+          <Typography variant='body1'>{t('seeAllPairs')}</Typography>
         </Box>
       </Box>
       <BuyFiatSection />
       <Box className={classes.featureContainer}>
         <Box className={classes.featureHeading}>
-          <Typography variant='h3'>Features</Typography>
+          <Typography variant='h3'>{t('features')}</Typography>
           <Box className={classes.featureDivider} />
         </Box>
         <Grid container spacing={4}>
@@ -422,7 +321,7 @@ const LandingPage: React.FC = () => {
       </Box>
       <Box className={classes.communityContainer}>
         <Box className={classes.featureHeading}>
-          <Typography variant='h3'>Join our ever-growing Community</Typography>
+          <Typography variant='h3'>{t('joinCommunity')}</Typography>
           <Box className={classes.featureDivider} />
         </Box>
         <Box className='socialContent'>
