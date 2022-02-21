@@ -42,6 +42,7 @@ import {
   ETHER,
   Token,
   TokenAmount,
+  Price,
 } from '@uniswap/sdk';
 import { BigNumber, BigNumberish } from '@ethersproject/bignumber';
 import { formatUnits } from 'ethers/lib/utils';
@@ -1637,6 +1638,14 @@ export function getAPYWithFee(rewards: number, fee: number) {
   return fee > 0 ? ((1 + ((rewards + fee / 12) * 12) / 12) ** 12 - 1) * 100 : 0;
 }
 
+export function formatAPY(apy: number) {
+  if (apy > 100000000) {
+    return '>100000000';
+  } else {
+    return apy.toLocaleString();
+  }
+}
+
 export function formatNumber(unformatted: number | string, showDigits = 2) {
   // get fraction digits for small number
   const absNumber = Math.abs(Number(unformatted));
@@ -1868,7 +1877,7 @@ export function useLairDQUICKAPY(lair?: LairInfo) {
     (((Number(lair.oneDayVol) *
       GlobalConst.utils.DQUICKFEE *
       GlobalConst.utils.DQUICKAPR_MULTIPLIER) /
-      Number(lair.dQuickTotalSupply.toSignificant(6))) *
+      Number(lair.dQuickTotalSupply.toExact())) *
       daysCurrentYear) /
     dQUICKPrice;
   if (!dQUICKAPR) return '0';
@@ -1984,32 +1993,39 @@ export function getStakedAmountStakingInfo(
   };
 }
 
+export function formatTokenAmount(
+  amount?: TokenAmount | CurrencyAmount,
+  digits = 3,
+) {
+  if (!amount) return '-';
+  const amountStr = amount.toExact();
+  if (Math.abs(Number(amountStr)) > 1) {
+    return Number(amountStr).toLocaleString();
+  }
+  return amount.toSignificant(digits);
+}
+
 export function getTVLStaking(
   valueOfTotalStakedAmountInUSDC?: CurrencyAmount,
   valueOfTotalStakedAmountInBaseToken?: TokenAmount,
 ) {
   if (!valueOfTotalStakedAmountInUSDC) {
-    return `${valueOfTotalStakedAmountInBaseToken?.toSignificant(4, {
-      groupSeparator: ',',
-    }) ?? '-'} ETH`;
+    return `${formatTokenAmount(valueOfTotalStakedAmountInBaseToken)} ETH`;
   }
-  return `$${valueOfTotalStakedAmountInUSDC.toFixed(0, {
-    groupSeparator: ',',
-  })}`;
+  return `$${formatTokenAmount(valueOfTotalStakedAmountInUSDC)}`;
 }
 
 export function getUSDString(usdValue?: CurrencyAmount) {
   if (!usdValue) return '$0';
-  const usdStr = usdValue.toSignificant(2);
-  if (Number(usdStr) > 0 && Number(usdStr) < 0.001) return '< $0.001';
-  return `$${usdStr}`;
+  const value = Number(usdValue.toExact());
+  if (value > 0 && value < 0.001) return '< $0.001';
+  return `$${value.toLocaleString()}`;
 }
 
 export function getEarnedUSDLPFarm(stakingInfo: StakingInfo | undefined) {
   if (!stakingInfo) return;
   const earnedUSD =
-    Number(stakingInfo.earnedAmount.toSignificant()) *
-    stakingInfo.rewardTokenPrice;
+    Number(stakingInfo.earnedAmount.toExact()) * stakingInfo.rewardTokenPrice;
   if (earnedUSD < 0.001 && earnedUSD > 0) {
     return '< $0.001';
   }
@@ -2019,9 +2035,9 @@ export function getEarnedUSDLPFarm(stakingInfo: StakingInfo | undefined) {
 export function getEarnedUSDDualFarm(stakingInfo: DualStakingInfo | undefined) {
   if (!stakingInfo) return;
   const earnedUSD =
-    Number(stakingInfo.earnedAmountA.toSignificant()) *
+    Number(stakingInfo.earnedAmountA.toExact()) *
       stakingInfo.rewardTokenAPrice +
-    Number(stakingInfo.earnedAmountB.toSignificant()) *
+    Number(stakingInfo.earnedAmountB.toExact()) *
       Number(stakingInfo.rewardTokenBPrice);
   if (earnedUSD < 0.001 && earnedUSD > 0) {
     return '< $0.001';

@@ -82,10 +82,10 @@ const DragonsSyrup: React.FC = () => {
     (a: SyrupInfo, b: SyrupInfo) => {
       const depositA =
         a.valueOfTotalStakedAmountInUSDC ??
-        Number(a.totalStakedAmount.toSignificant());
+        Number(a.totalStakedAmount.toExact());
       const depositB =
         b.valueOfTotalStakedAmountInUSDC ??
-        Number(b.totalStakedAmount.toSignificant());
+        Number(b.totalStakedAmount.toExact());
       return (depositA > depositB ? -1 : 1) * sortIndex;
     },
     [sortIndex],
@@ -100,11 +100,9 @@ const DragonsSyrup: React.FC = () => {
   const sortByEarned = useCallback(
     (a: SyrupInfo, b: SyrupInfo) => {
       const earnedUSDA =
-        Number(a.earnedAmount.toSignificant()) *
-        Number(a.rewardTokenPriceinUSD ?? 0);
+        Number(a.earnedAmount.toExact()) * Number(a.rewardTokenPriceinUSD ?? 0);
       const earnedUSDB =
-        Number(b.earnedAmount.toSignificant()) *
-        Number(b.rewardTokenPriceinUSD ?? 0);
+        Number(b.earnedAmount.toExact()) * Number(b.rewardTokenPriceinUSD ?? 0);
       return (earnedUSDA > earnedUSDB ? -1 : 1) * sortIndex;
     },
     [sortIndex],

@@ -4,7 +4,7 @@ import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { SyrupInfo } from 'state/stake/hooks';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { CurrencyLogo } from 'components';
-import { formatCompact } from 'utils';
+import { formatCompact, formatTokenAmount } from 'utils';
 import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
 import SyrupAPR from './SyrupAPR';
 import SyrupCardDetails from './SyrupCardDetails';
@@ -35,12 +35,13 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
   const currency = unwrappedToken(syrup.token);
 
   const depositAmount = syrup.valueOfTotalStakedAmountInUSDC
-    ? `$${Number(syrup.valueOfTotalStakedAmountInUSDC).toLocaleString()}`
-    : `${syrup.totalStakedAmount.toSignificant(6, { groupSeparator: ',' }) ??
-        '-'} ${syrup.stakingToken.symbol}`;
+    ? `$${syrup.valueOfTotalStakedAmountInUSDC.toLocaleString()}`
+    : `${formatTokenAmount(syrup.totalStakedAmount)} ${
+        syrup.stakingToken.symbol
+      }`;
 
   const syrupEarnedUSD =
-    Number(syrup.earnedAmount.toSignificant()) *
+    Number(syrup.earnedAmount.toExact()) *
     Number(syrup.rewardTokenPriceinUSD ?? 0);
 
   return (
@@ -128,7 +129,7 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
               >
                 <CurrencyLogo currency={currency} size='16px' />
                 <Typography variant='body2' style={{ marginLeft: 5 }}>
-                  {syrup.earnedAmount.toSignificant(2)}
+                  {formatTokenAmount(syrup.earnedAmount)}
                 </Typography>
               </Box>
               <Typography

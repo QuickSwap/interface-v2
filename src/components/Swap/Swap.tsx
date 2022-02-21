@@ -3,7 +3,7 @@ import { Currency, CurrencyAmount, JSBI, Token, Trade } from '@uniswap/sdk';
 import ReactGA from 'react-ga';
 import { ArrowDown } from 'react-feather';
 import { Box, Typography, Button, CircularProgress } from '@material-ui/core';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import { useWalletModalToggle } from 'state/application/hooks';
 import {
   useDerivedSwapInfo,
@@ -20,8 +20,6 @@ import {
   CurrencyInput,
   ConfirmSwapModal,
   AdvancedSwapDetails,
-  QuestionHelper,
-  SettingsModal,
   AddressInput,
 } from 'components';
 import { useActiveWeb3React } from 'hooks';
@@ -44,7 +42,6 @@ import {
 import { computeTradePriceBreakdown, warningSeverity } from 'utils/prices';
 import { ReactComponent as PriceExchangeIcon } from 'assets/images/PriceExchangeIcon.svg';
 import { ReactComponent as ExchangeIcon } from 'assets/images/ExchangeIcon.svg';
-import { ReactComponent as EditIcon } from 'assets/images/EditIcon.svg';
 
 const useStyles = makeStyles(({ palette }) => ({
   exchangeSwap: {
@@ -114,9 +111,6 @@ const useStyles = makeStyles(({ palette }) => ({
       },
     },
   },
-  slippageRow: {
-    color: palette.text.secondary,
-  },
 }));
 
 const Swap: React.FC<{
@@ -124,8 +118,6 @@ const Swap: React.FC<{
   currency1?: Currency;
   currencyBg?: string;
 }> = ({ currency0, currency1, currencyBg }) => {
-  const [openSettingsModal, setOpenSettingsModal] = useState(false);
-  const { palette } = useTheme();
   const { account } = useActiveWeb3React();
   const { independentField, typedValue, recipient } = useSwapState();
   const {
@@ -193,7 +185,7 @@ const Swap: React.FC<{
       [independentField]: typedValue,
       [dependentField]: showWrap
         ? parsedAmounts[independentField]?.toExact() ?? ''
-        : parsedAmounts[dependentField]?.toSignificant(6) ?? '',
+        : parsedAmounts[dependentField]?.toExact() ?? '',
     };
   }, [independentField, typedValue, dependentField, showWrap, parsedAmounts]);
   const route = trade?.route;
@@ -527,12 +519,6 @@ const Swap: React.FC<{
 
   return (
     <Box>
-      {openSettingsModal && (
-        <SettingsModal
-          open={openSettingsModal}
-          onClose={() => setOpenSettingsModal(false)}
-        />
-      )}
       {showConfirm && (
         <ConfirmSwapModal
           isOpen={showConfirm}
@@ -628,33 +614,6 @@ const Swap: React.FC<{
           )}
         </Box>
       )}
-      <Box
-        display='flex'
-        alignItems='center'
-        justifyContent='space-between'
-        mt={2.5}
-        mx={3}
-        className={classes.slippageRow}
-      >
-        <Box display='flex' alignItems='center'>
-          <Typography
-            variant='body2'
-            style={{ marginRight: 4, color: palette.primary.main }}
-          >
-            Slippage:
-          </Typography>
-          <QuestionHelper text='Your transaction will revert if the price changes unfavorably by more than this percentage.' />
-        </Box>
-        <Box display='flex' alignItems='center'>
-          <Typography variant='body2' style={{ color: palette.primary.main }}>
-            {allowedSlippage / 100}%
-          </Typography>
-          <EditIcon
-            style={{ marginLeft: 8, cursor: 'pointer' }}
-            onClick={() => setOpenSettingsModal(true)}
-          />
-        </Box>
-      </Box>
       <AdvancedSwapDetails trade={trade} />
       <Box className={classes.swapButtonWrapper}>
         {showApproveFlow && (

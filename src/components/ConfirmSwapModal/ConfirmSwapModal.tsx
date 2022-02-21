@@ -6,6 +6,7 @@ import {
   ConfirmationModalContent,
 } from 'components';
 import SwapModalHeader from './SwapModalHeader';
+import { formatTokenAmount } from 'utils';
 
 /**
  * Returns true if the trade requires a confirmation of details before we can submit it
@@ -76,9 +77,9 @@ const ConfirmSwapModal: React.FC<ConfirmSwapModalProps> = ({
   }, [allowedSlippage, onAcceptChanges, showAcceptChanges, trade, onConfirm]);
 
   // text to show while loading
-  const pendingText = `Swapping ${trade?.inputAmount?.toSignificant(6)} ${
+  const pendingText = `Swapping ${formatTokenAmount(trade?.inputAmount)} ${
     trade?.inputAmount?.currency?.symbol
-  } for ${trade?.outputAmount?.toSignificant(6)} ${
+  } for ${formatTokenAmount(trade?.outputAmount)} ${
     trade?.outputAmount?.currency?.symbol
   }`;
 
