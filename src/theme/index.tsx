@@ -4,7 +4,7 @@ import {
   css,
   DefaultTheme,
 } from 'styled-components';
-import { useIsDarkMode } from 'state/user/hooks';
+import { useIsWhiteMode } from 'state/user/hooks';
 import { Colors } from './styled';
 
 const MEDIA_WIDTHS = {
@@ -82,9 +82,9 @@ export function colors(darkMode: boolean): Colors {
   };
 }
 
-export function theme(darkMode: boolean): DefaultTheme {
+export function theme(whiteMode: boolean): DefaultTheme {
   return {
-    ...colors(darkMode),
+    ...colors(whiteMode),
 
     grids: {
       sm: 8,
@@ -93,7 +93,7 @@ export function theme(darkMode: boolean): DefaultTheme {
     },
 
     //shadows
-    shadow1: darkMode ? '#000' : '#2F80ED',
+    shadow1: whiteMode ? '#000' : '#2F80ED',
 
     // media queries
     mediaWidth: mediaWidthTemplates,
@@ -113,9 +113,9 @@ export function theme(darkMode: boolean): DefaultTheme {
 const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const darkMode = useIsDarkMode();
+  const whiteMode = useIsWhiteMode();
 
-  const themeObject = useMemo(() => theme(darkMode), [darkMode]);
+  const themeObject = useMemo(() => theme(whiteMode), [whiteMode]);
 
   return (
     <StyledComponentsThemeProvider theme={themeObject}>
