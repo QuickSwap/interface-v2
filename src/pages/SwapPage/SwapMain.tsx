@@ -3,9 +3,10 @@ import { Box, Typography } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { ReactComponent as SettingsIcon } from 'assets/images/SettingsIcon.svg';
 import cx from 'classnames';
+import { useIsProMode } from 'state/application/hooks';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import { useCurrency } from 'hooks/Tokens';
-import { Swap, SettingsModal } from 'components';
+import { Swap, SettingsModal, ToggleSwitch } from 'components';
 import {
   GelatoLimitOrderPanel,
   GelatoLimitOrdersHistoryPanel,
@@ -31,6 +32,7 @@ const useStyles = makeStyles(({ palette }) => ({
   },
   headingItem: {
     cursor: 'pointer',
+    display: 'flex',
   },
 }));
 
@@ -39,6 +41,7 @@ const SwapMain: React.FC = () => {
   const { palette } = useTheme();
   const [swapIndex, setSwapIndex] = useState(0);
   const [openSettingsModal, setOpenSettingsModal] = useState(false);
+  const { isProMode, updateIsProMode } = useIsProMode();
 
   const parsedQuery = useParsedQueryString();
   const currency0 = useCurrency(
@@ -60,7 +63,7 @@ const SwapMain: React.FC = () => {
           onClose={() => setOpenSettingsModal(false)}
         />
       )}
-      <Box display='flex' justifyContent='space-between'>
+      <Box display='flex' alignItems='center' justifyContent='space-between'>
         <Box display='flex'>
           <Box
             className={cx(
@@ -83,8 +86,22 @@ const SwapMain: React.FC = () => {
             <Typography variant='body1'>Limit</Typography>
           </Box>
         </Box>
-        <Box className={classes.headingItem}>
-          <SettingsIcon onClick={() => setOpenSettingsModal(true)} />
+        <Box display='flex' alignItems='center'>
+          <Box display='flex' alignItems='center' mr={1}>
+            <Typography
+              variant='caption'
+              style={{ color: palette.text.secondary, marginRight: 8 }}
+            >
+              PRO MODE
+            </Typography>
+            <ToggleSwitch
+              toggled={isProMode}
+              onToggle={() => updateIsProMode(!isProMode)}
+            />
+          </Box>
+          <Box className={classes.headingItem}>
+            <SettingsIcon onClick={() => setOpenSettingsModal(true)} />
+          </Box>
         </Box>
       </Box>
       <Box mt={2.5}>

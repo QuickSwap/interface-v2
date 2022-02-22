@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Box, Typography, Grid } from '@material-ui/core';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
 import { SwapTokenDetails } from 'components';
+import { useIsProMode } from 'state/application/hooks';
 import { useDerivedSwapInfo } from 'state/swap/hooks';
 import { Field } from 'state/swap/actions';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
@@ -27,7 +28,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
   wrapper: {
     padding: 24,
     backgroundColor: palette.background.paper,
-    borderRadius: 20,
+    borderRadius: (props: any) => (props.isProMode ? 0 : 20),
     [breakpoints.down('xs')]: {
       padding: '16px 12px',
     },
@@ -45,7 +46,8 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
 }));
 
 const SwapPage: React.FC = () => {
-  const classes = useStyles();
+  const { isProMode } = useIsProMode();
+  const classes = useStyles({ isProMode });
 
   const { currencies } = useDerivedSwapInfo();
   const { chainId } = useActiveWeb3React();
@@ -55,47 +57,55 @@ const SwapPage: React.FC = () => {
 
   return (
     <Box width='100%' mb={3} id='swap-page'>
-      <Box
-        mb={2}
-        display='flex'
-        alignItems='center'
-        justifyContent='space-between'
-        width='100%'
-      >
-        <Typography variant='h4'>Swap</Typography>
-        <Box className={classes.helpWrapper}>
-          <Typography variant='body2'>Help</Typography>
-          <HelpIcon />
+      {!isProMode && (
+        <Box
+          mb={2}
+          display='flex'
+          alignItems='center'
+          justifyContent='space-between'
+          width='100%'
+        >
+          <Typography variant='h4'>Swap</Typography>
+          <Box className={classes.helpWrapper}>
+            <Typography variant='body2'>Help</Typography>
+            <HelpIcon />
+          </Box>
         </Box>
-      </Box>
+      )}
       <Grid container spacing={4}>
-        <Grid item xs={12} sm={12} md={5}>
+        <Grid item xs={12} sm={12} md={isProMode ? 3 : 5}>
           <Box className={classes.wrapper}>
             <SwapMain />
           </Box>
         </Grid>
         <Grid item xs={12} sm={12} md={7}>
-          <Box
-            display='flex'
-            flexWrap='wrap'
-            justifyContent='space-between'
-            width='100%'
-          >
-            {token1 && (
-              <Box className={classes.swapTokenDetails}>
-                <SwapTokenDetails token={token1} />
+          {isProMode ? (
+            <></>
+          ) : (
+            <>
+              <Box
+                display='flex'
+                flexWrap='wrap'
+                justifyContent='space-between'
+                width='100%'
+              >
+                {token1 && (
+                  <Box className={classes.swapTokenDetails}>
+                    <SwapTokenDetails token={token1} />
+                  </Box>
+                )}
+                {token2 && (
+                  <Box className={classes.swapTokenDetails}>
+                    <SwapTokenDetails token={token2} />
+                  </Box>
+                )}
               </Box>
-            )}
-            {token2 && (
-              <Box className={classes.swapTokenDetails}>
-                <SwapTokenDetails token={token2} />
-              </Box>
-            )}
-          </Box>
-          {token1 && token2 && (
-            <Box className={classes.wrapper} marginTop='32px'>
-              <LiquidityPools token1={token1} token2={token2} />
-            </Box>
+              {token1 && token2 && (
+                <Box className={classes.wrapper} marginTop='32px'>
+                  <LiquidityPools token1={token1} token2={token2} />
+                </Box>
+              )}
+            </>
           )}
         </Grid>
       </Grid>

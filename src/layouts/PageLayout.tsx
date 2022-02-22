@@ -3,6 +3,8 @@ import { Box } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { Header, Footer, BetaWarningBanner } from 'components';
 import Background from './Background';
+import { useIsProMode } from 'state/application/hooks';
+import { useLocation } from 'react-router-dom';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   page: {
@@ -31,13 +33,16 @@ export interface PageLayoutProps {
 
 const PageLayout: React.FC<PageLayoutProps> = ({ children }) => {
   const classes = useStyles();
+  const { pathname } = useLocation();
+  const { isProMode } = useIsProMode();
+  const isProModeSwap = isProMode && pathname === '/swap';
 
   return (
     <Box className={classes.page}>
       <BetaWarningBanner />
       <Header />
-      <Background fallback={false} />
-      <Box className={classes.pageWrapper}>{children}</Box>
+      {!isProModeSwap && <Background fallback={false} />}
+      <Box className={isProModeSwap ? '' : classes.pageWrapper}>{children}</Box>
       <Footer />
     </Box>
   );

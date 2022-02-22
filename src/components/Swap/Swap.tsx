@@ -69,6 +69,9 @@ const useStyles = makeStyles(({ palette }) => ({
         width: 16,
         height: 16,
         cursor: 'pointer',
+        '& path': {
+          fill: palette.primary.main,
+        },
       },
     },
   },
