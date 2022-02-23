@@ -20,7 +20,12 @@ import { useDQUICKtoQUICK } from 'state/stake/hooks';
  */
 export default function useUSDCPrice(currency?: Currency): Price | undefined {
   const { chainId } = useActiveWeb3React();
-  const wrapped = wrappedCurrency(currency, chainId);
+  let wrapped = wrappedCurrency(currency, chainId);
+  const internalWrapped = wrapped;
+  if (wrapped?.equals(returnTokenFromKey('CXETH'))) {
+    wrapped = wrappedCurrency(returnTokenFromKey('ETHER'), chainId);
+  }
+
   const tokenPairs: [Currency | undefined, Currency | undefined][] = useMemo(
     () => [
       [
@@ -142,6 +147,16 @@ export default function useUSDCPrice(currency?: Currency): Price | undefined {
         .greaterThan(ethPairETHUSDCValue)
     ) {
       const price = usdcPair.priceOf(wrapped);
+
+      if (internalWrapped?.equals(returnTokenFromKey('CXETH'))) {
+        return new Price(
+          returnTokenFromKey('CXETH'),
+          returnTokenFromKey('USDC'),
+          price.denominator,
+          price.numerator,
+        );
+      }
+
       return new Price(
         currency,
         returnTokenFromKey('USDC'),
@@ -227,31 +242,36 @@ export default function useUSDCPrice(currency?: Currency): Price | undefined {
     }
     return undefined;
   }, [
-    chainId,
     currency,
-    ethPair,
-    ethPairState,
-    usdcEthPair,
-    usdcEthPairState,
-    usdcPair,
-    usdcPairState,
     wrapped,
-    daiPair,
-    daiPairState,
-    quickPair,
-    quickPairState,
-    usdcQuickPair,
-    usdcQuickPairState,
-    usdtPair,
+    chainId,
+    ethPair,
+    usdcEthPair,
+    usdcPairState,
+    usdcPair,
     usdtPairState,
+    usdtPair,
+    daiPairState,
+    daiPair,
+    ethPairState,
+    usdcEthPairState,
+    quickPairState,
+    quickPair,
+    usdcQuickPairState,
+    usdcQuickPair,
+    internalWrapped,
   ]);
 }
 
 export function useUSDCPrices(currencies: Currency[]): (Price | undefined)[] {
   const { chainId } = useActiveWeb3React();
-  const wrappedCurrencies = currencies.map((currency) =>
-    wrappedCurrency(currency, chainId),
-  );
+  const wrappedCurrencies = currencies.map((currency) => {
+    let wrapped = wrappedCurrency(currency, chainId);
+    if (wrapped?.equals(returnTokenFromKey('CXETH'))) {
+      wrapped = wrappedCurrency(returnTokenFromKey('ETHER'), chainId);
+    }
+    return wrapped;
+  });
   const tokenPairs: [Currency | undefined, Currency | undefined][] = [];
   wrappedCurrencies.forEach((wrapped, ind) => {
     tokenPairs.push([
@@ -301,6 +321,7 @@ export function useUSDCPrices(currencies: Currency[]): (Price | undefined)[] {
       [usdcQuickPairState, usdcQuickPair],
     ] = remainPairs[index];
     const wrapped = wrappedCurrencies[index];
+    const internalWrapped = wrappedCurrency(currency, chainId);
     if (!wrapped || !chainId) {
       return undefined;
     }
@@ -375,6 +396,14 @@ export function useUSDCPrices(currencies: Currency[]): (Price | undefined)[] {
         .greaterThan(ethPairETHUSDCValue)
     ) {
       const price = usdcPair.priceOf(wrapped);
+      if (internalWrapped?.equals(returnTokenFromKey('CXETH'))) {
+        return new Price(
+          returnTokenFromKey('CXETH'),
+          returnTokenFromKey('USDC'),
+          price.denominator,
+          price.numerator,
+        );
+      }
       return new Price(
         currency,
         returnTokenFromKey('USDC'),
