@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import React from 'react';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { Box, Typography, Grid } from '@material-ui/core';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
-import { SwapTokenDetails } from 'components';
+import { SwapTokenDetails, ToggleSwitch } from 'components';
 import { useIsProMode } from 'state/application/hooks';
 import { useDerivedSwapInfo } from 'state/swap/hooks';
 import { Field } from 'state/swap/actions';
@@ -26,7 +26,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     },
   },
   wrapper: {
-    padding: 24,
+    padding: (props: any) => (props.isProMode ? '24px 0' : 24),
     backgroundColor: palette.background.paper,
     borderRadius: (props: any) => (props.isProMode ? 0 : 20),
     [breakpoints.down('xs')]: {
@@ -46,8 +46,9 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
 }));
 
 const SwapPage: React.FC = () => {
-  const { isProMode } = useIsProMode();
+  const { isProMode, updateIsProMode } = useIsProMode();
   const classes = useStyles({ isProMode });
+  const { palette } = useTheme();
 
   const { currencies } = useDerivedSwapInfo();
   const { chainId } = useActiveWeb3React();
@@ -75,6 +76,29 @@ const SwapPage: React.FC = () => {
       <Grid container spacing={4}>
         <Grid item xs={12} sm={12} md={isProMode ? 3 : 5}>
           <Box className={classes.wrapper}>
+            {isProMode && (
+              <Box
+                display='flex'
+                justifyContent='space-between'
+                alignItems='center'
+                padding='0 24px'
+                mb={3}
+              >
+                <Typography variant='h4'>Swap</Typography>
+                <Box display='flex' alignItems='center' mr={1}>
+                  <Typography
+                    variant='caption'
+                    style={{ color: palette.text.secondary, marginRight: 8 }}
+                  >
+                    PRO MODE
+                  </Typography>
+                  <ToggleSwitch
+                    toggled={isProMode}
+                    onToggle={() => updateIsProMode(!isProMode)}
+                  />
+                </Box>
+              </Box>
+            )}
             <SwapMain />
           </Box>
         </Grid>

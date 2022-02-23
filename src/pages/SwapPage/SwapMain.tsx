@@ -14,8 +14,8 @@ import {
 
 const useStyles = makeStyles(({ palette }) => ({
   swapItem: {
-    width: 100,
-    height: 40,
+    width: 122,
+    height: 46,
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
@@ -33,6 +33,13 @@ const useStyles = makeStyles(({ palette }) => ({
   headingItem: {
     cursor: 'pointer',
     display: 'flex',
+  },
+  proModeWrapper: {
+    borderTop: `1px solid ${palette.divider}`,
+    borderBottom: `1px solid ${palette.divider}`,
+    '& $swapItem': {
+      borderRadius: 0,
+    },
   },
 }));
 
@@ -63,7 +70,12 @@ const SwapMain: React.FC = () => {
           onClose={() => setOpenSettingsModal(false)}
         />
       )}
-      <Box display='flex' alignItems='center' justifyContent='space-between'>
+      <Box
+        display='flex'
+        alignItems='center'
+        justifyContent='space-between'
+        className={isProMode ? classes.proModeWrapper : ''}
+      >
         <Box display='flex'>
           <Box
             className={cx(
@@ -81,30 +93,38 @@ const SwapMain: React.FC = () => {
               classes.swapItem,
               classes.headingItem,
             )}
+            borderRight={
+              isProMode && swapIndex !== 1 ? `1px solid ${palette.divider}` : ''
+            }
             onClick={() => setSwapIndex(1)}
           >
             <Typography variant='body1'>Limit</Typography>
           </Box>
         </Box>
         <Box display='flex' alignItems='center'>
-          <Box display='flex' alignItems='center' mr={1}>
-            <Typography
-              variant='caption'
-              style={{ color: palette.text.secondary, marginRight: 8 }}
-            >
-              PRO MODE
-            </Typography>
-            <ToggleSwitch
-              toggled={isProMode}
-              onToggle={() => updateIsProMode(!isProMode)}
-            />
-          </Box>
-          <Box className={classes.headingItem}>
+          {!isProMode && (
+            <Box display='flex' alignItems='center' mr={1}>
+              <Typography
+                variant='caption'
+                style={{ color: palette.text.secondary, marginRight: 8 }}
+              >
+                PRO MODE
+              </Typography>
+              <ToggleSwitch
+                toggled={isProMode}
+                onToggle={() => updateIsProMode(!isProMode)}
+              />
+            </Box>
+          )}
+          <Box
+            className={classes.headingItem}
+            marginRight={isProMode ? 2.5 : 0}
+          >
             <SettingsIcon onClick={() => setOpenSettingsModal(true)} />
           </Box>
         </Box>
       </Box>
-      <Box mt={2.5}>
+      <Box padding={isProMode ? '0 24px' : '0'} mt={3.5}>
         {swapIndex === 0 && (
           <Swap
             currency0={currency0 ?? undefined}
