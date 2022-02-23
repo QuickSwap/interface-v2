@@ -237,7 +237,7 @@ const Header: React.FC = () => {
   const { pathname } = useLocation();
   const { account } = useActiveWeb3React();
   const { ethereum } = window as any;
-  const { ENSName } = useENSName(account ?? undefined);
+  const { ENSName, nom } = useENSName(account ?? undefined);
   const [openDetailMenu, setOpenDetailMenu] = useState(false);
   const theme = useTheme();
   const allTransactions = useAllTransactions();
@@ -427,7 +427,7 @@ const Header: React.FC = () => {
             className={classes.accountDetails}
             onClick={toggleWalletModal}
           >
-            <Typography>{shortenAddress(account)}</Typography>
+            <Typography>{nom || shortenAddress(account)}</Typography>
             <img src={WalletIcon} alt='Wallet' />
           </Box>
         ) : (

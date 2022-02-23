@@ -1,5 +1,5 @@
 import { namehash } from 'ethers/lib/utils';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useSingleCallResult } from 'state/multicall/hooks';
 import { isAddress, isZero } from 'utils';
 import {
@@ -7,6 +7,9 @@ import {
   useENSResolverContract,
 } from 'hooks/useContract';
 import useDebounce from 'hooks/useDebounce';
+import ENS from '@ensdomains/ensjs';
+import { providers } from 'ethers';
+const NOM_REGISTRY_ADDRESS = '0x3DE51c3960400A0F752d3492652Ae4A0b2A36FB3';
 
 /**
  * Does a reverse lookup for an address to find its ENS name.
@@ -14,8 +17,12 @@ import useDebounce from 'hooks/useDebounce';
  */
 export default function useENSName(
   address?: string,
-): { ENSName: string | null; loading: boolean } {
+): { ENSName: string | null; loading: boolean; nom: string | null } {
   const debouncedAddress = useDebounce(address, 200);
+
+  const provider = new providers.JsonRpcProvider('https://forno.celo.org');
+  const [nom, setNom] = useState<string | null>(null);
+
   const ensNodeArgument = useMemo(() => {
     if (!debouncedAddress || !isAddress(debouncedAddress)) return [undefined];
     try {
@@ -26,6 +33,16 @@ export default function useENSName(
       return [undefined];
     }
   }, [debouncedAddress]);
+
+  useEffect(() => {
+    (async () => {
+      const nom = new ENS({ provider, ensAddress: NOM_REGISTRY_ADDRESS });
+      try {
+        const { name } = await nom.getName(address);
+        if (name) setNom(`${name}.nom`);
+      } catch (e) {}
+    })();
+  }, [address, provider]);
   const registrarContract = useENSRegistrarContract(false);
   const resolverAddress = useSingleCallResult(
     registrarContract,
@@ -45,5 +62,6 @@ export default function useENSName(
   return {
     ENSName: changed ? null : name.result?.[0] ?? null,
     loading: changed || resolverAddress.loading || name.loading,
+    nom: nom,
   };
 }
