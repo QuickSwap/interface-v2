@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import React, { useEffect, useRef, useState } from 'react';
-import { Box, ModalProps } from '@material-ui/core';
+import { Box, Button, Input, ModalProps, withStyles } from '@material-ui/core';
 import styled, { keyframes } from 'styled-components';
 import AntSwitch from 'components/AntSwitch';
 import { ArrowForward } from '@material-ui/icons';
@@ -8,18 +8,20 @@ import { ArrowForward } from '@material-ui/icons';
 interface ModalParentProps {
   notitle?: boolean;
   notoolbar?: boolean;
+  setOpenModalType?: any;
 }
 const ModalParent: React.FC<ModalParentProps> = ({
   notitle,
   notoolbar,
   children,
+  setOpenModalType,
 }) => {
   const [visible, setVisible] = useState(true);
   const childrenWithProps = React.Children.map(children, (child) => {
     // Checking isValidElement is the safe way and avoids a typescript
     // error too.
     if (React.isValidElement(child)) {
-      return React.cloneElement(child, { setVisible });
+      return React.cloneElement(child, { setOpenModalType });
     }
     return child;
   });
@@ -33,7 +35,7 @@ const ModalParent: React.FC<ModalParentProps> = ({
         // modalContentBox?.current &&
         // !modalContentBox.current.contains(event.target)
       ) {
-        setVisible(false);
+        setOpenModalType(false);
       }
     };
     window.addEventListener('click', handle);
@@ -42,45 +44,39 @@ const ModalParent: React.FC<ModalParentProps> = ({
     };
   }, []);
   return (
-    <>
-      {visible ? (
-        <ModalBack ref={modalBackBox}>
-          <ModalBox ref={modalContentBox}>
-            <Box width={'100%'} display={'flex'} flexDirection={'column'}>
-              {!notoolbar && (
-                <Box display={'flex'} justifyContent={'space-between'}>
-                  {!notitle && (
-                    <Box
-                      fontSize={'20px'}
-                      display={'flex'}
-                      alignItems={'center'}
-                      gridGap={'12px'}
-                    >
-                      <LogoIcon size={'32px'} />
-                      Quick
-                    </Box>
-                  )}
-                  <Box
-                    ml={'auto'}
-                    fontSize={'26px'}
-                    lineHeight={'32px'}
-                    style={{ cursor: 'pointer' }}
-                    onClick={() => {
-                      setVisible(false);
-                    }}
-                  >
-                    &times;
-                  </Box>
+    <ModalBack ref={modalBackBox}>
+      <ModalBox ref={modalContentBox}>
+        <Box width={'100%'} display={'flex'} flexDirection={'column'}>
+          {!notoolbar && (
+            <Box display={'flex'} justifyContent={'space-between'}>
+              {!notitle && (
+                <Box
+                  fontSize={'20px'}
+                  display={'flex'}
+                  alignItems={'center'}
+                  gridGap={'12px'}
+                >
+                  <LogoIcon size={'32px'} />
+                  Quick
                 </Box>
               )}
-              {childrenWithProps}
+              <Box
+                ml={'auto'}
+                fontSize={'26px'}
+                lineHeight={'32px'}
+                style={{ cursor: 'pointer' }}
+                onClick={() => {
+                  setOpenModalType(false);
+                }}
+              >
+                &times;
+              </Box>
             </Box>
-          </ModalBox>
-        </ModalBack>
-      ) : (
-        ''
-      )}
-    </>
+          )}
+          {childrenWithProps}
+        </Box>
+      </ModalBox>
+    </ModalBack>
   );
 };
 const ModalBack = styled(Box)`
@@ -96,7 +92,7 @@ const ModalBack = styled(Box)`
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 111;
+  z-index: 100000200;
 `;
 const ModalBox = styled(Box)`
   margin: auto;
@@ -106,19 +102,30 @@ const ModalBox = styled(Box)`
   border: solid 1px #3e4252;
 `;
 
-interface QuickModalContentProps {
+interface ModalContentProps {
+  modalSetting: {
+    setModalNotoolbar: { value: any; set: any };
+    setModalNotitle: { value: any; set: any };
+    setModalType: { value: any; set: any };
+    setModalIsBorrow: { value: any; set: any };
+    setModalIsConfirm: { value: any; set: any };
+  };
+}
+
+interface QuickModalContentProps extends ModalContentProps {
   confirm?: boolean;
   withdraw?: boolean;
   borrow?: boolean;
 }
 export const QuickModalContent: React.FC<QuickModalContentProps> = ({
+  modalSetting,
   confirm,
   withdraw,
   borrow,
 }) => {
-  const [isConfirm, setIsConfirm] = useState(confirm ? true : false);
-  const [isReply, setIsReply] = useState(confirm ? true : false);
+  const [isRepay, setisRepay] = useState(confirm ? true : false);
   const [isWithdraw, setIsWithdraw] = useState(withdraw ? true : false);
+  const [value, setValue] = useState<any>(0);
   return (
     <Box display={'flex'} flexDirection={'column'} width={'480px'}>
       {!borrow ? (
@@ -177,14 +184,14 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
             margin={'0 6px 0 0'}
             paddingY={'12px'}
             borderRadius={'6px'}
-            bgcolor={!isReply ? '#282d3d' : 'unset'}
-            color={!isReply ? '#696c80' : 'white'}
+            bgcolor={!isRepay ? '#282d3d' : 'unset'}
+            color={!isRepay ? '#696c80' : 'white'}
             fontSize={'16px'}
             fontWeight={'500'}
             textAlign={'center'}
             style={{ cursor: 'pointer' }}
             onClick={() => {
-              setIsReply(false);
+              setisRepay(false);
             }}
           >
             Borrow
@@ -194,17 +201,17 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
             margin={'0 6px 0 0'}
             paddingY={'12px'}
             borderRadius={'6px'}
-            bgcolor={isReply ? '#282d3d' : 'unset'}
-            color={isReply ? '#696c80' : 'white'}
+            bgcolor={isRepay ? '#282d3d' : 'unset'}
+            color={isRepay ? '#696c80' : 'white'}
             fontSize={'16px'}
             fontWeight={'500'}
             textAlign={'center'}
             style={{ cursor: 'pointer' }}
             onClick={() => {
-              setIsReply(true);
+              setisRepay(true);
             }}
           >
-            Reply
+            Repay
           </Box>
         </Box>
       )}
@@ -228,24 +235,35 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
         display={'flex'}
         justifyContent={'space-between'}
         alignItems={'center'}
-        border={isConfirm && 'solid 1px #448aff'}
+        border={modalSetting.setModalIsConfirm.value && 'solid 1px #448aff'}
       >
         <Box display={'flex'} flexDirection={'column'} gridGap={'6px'}>
-          <Box fontSize={'20px'} fontWeight={'500'} color={'#c7cad9'}>
-            0.00
-          </Box>
+          <MuiInput
+            type={'text'}
+            disableUnderline={true}
+            placeholder={'0.00'}
+            value={value}
+            onChange={(e) => {
+              setValue(e.currentTarget.value);
+            }}
+          />
           <Box fontSize={'12px'} fontWeight={'500'} color={'#696c80'}>
             ($0)
           </Box>
         </Box>
         <Box>
           <Box
-            bgcolor={'#1b2c48'}
-            padding={'4px 8px'}
-            borderRadius={'4px'}
-            fontSize={'13px'}
-            fontWeight={'500'}
-            color={'#448aff'}
+            sx={{
+              bgcolor: '#1b2c48',
+              padding: '4px 8px',
+              borderRadius: '4px',
+              fontSize: '13px',
+              fontWeight: '500',
+              color: '#448aff',
+            }}
+            onClick={() => {
+              setValue(1111);
+            }}
           >
             MAX
           </Box>
@@ -265,7 +283,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
           <Box display={'flex'} justifyContent={'space-between'}>
             <Box color={'#c7cad9'}>Supplied balance:</Box>
             <Box display={'flex'} alignItems={'center'} gridGap={'10px'}>
-              {!isConfirm ? (
+              {!modalSetting.setModalIsConfirm.value ? (
                 '0 QUICK'
               ) : (
                 <>
@@ -285,7 +303,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
           <Box display={'flex'} justifyContent={'space-between'}>
             <Box color={'#c7cad9'}>Borrow Limit:</Box>
             <Box>
-              {!isConfirm ? (
+              {!modalSetting.setModalIsConfirm.value ? (
                 '$0'
               ) : (
                 <>
@@ -316,7 +334,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
           <Box display={'flex'} justifyContent={'space-between'}>
             <Box color={'#c7cad9'}>Borrowed balance:</Box>
             <Box display={'flex'} alignItems={'center'} gridGap={'10px'}>
-              {!isConfirm ? (
+              {!modalSetting.setModalIsConfirm.value ? (
                 '0 QUICK'
               ) : (
                 <>
@@ -331,7 +349,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
           <Box display={'flex'} justifyContent={'space-between'}>
             <Box color={'#c7cad9'}>Supplied balance:</Box>
             <Box display={'flex'} alignItems={'center'} gridGap={'10px'}>
-              {!isConfirm ? (
+              {!modalSetting.setModalIsConfirm.value ? (
                 '0 QUICK'
               ) : (
                 <>
@@ -356,7 +374,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
           <Box display={'flex'} justifyContent={'space-between'}>
             <Box color={'#c7cad9'}>Total Debt balance:</Box>
             <Box>
-              {!isConfirm ? (
+              {!modalSetting.setModalIsConfirm.value ? (
                 '$0.00'
               ) : (
                 <>
@@ -382,41 +400,73 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
           <Box>Enable as collateral</Box>
           <AntSwitch
             inputProps={{ 'aria-label': 'ant design' }}
-            defaultChecked={isConfirm}
+            defaultChecked={modalSetting.setModalIsConfirm.value}
           />
         </Box>
       )}
-      <Box
-        mt={'24px'}
-        paddingY={'16px'}
-        borderRadius={'10px'}
-        bgcolor={!isConfirm ? '#3e4252' : '#448aff'}
-        textAlign={'center'}
-        fontSize={'16px'}
-        fontWeight={'600'}
-        color={!isConfirm ? '#696c80' : '#ebecf2'}
-      >
-        {!isConfirm ? 'Enter amount' : 'Confirm'}
+      <Box mt={'24px'} display={'flex'}>
+        {value > 0 ? (
+          <MuiButton
+            fullWidth
+            style={{
+              cursor: 'pointer',
+            }}
+            // sx={{
+            //   color: '#696c80',
+            //   borderRadius: '10px',
+            //   bgcolor: '#3e4252',
+            //   textAlign: 'center',
+            //   fontSize: '16px',
+            //   fontWeight: '600',
+            // }}
+            onClick={() => {
+              modalSetting.setModalType.set('state');
+              modalSetting.setModalNotoolbar.set(true);
+            }}
+          >
+            Confirm
+            {/* {!modalSetting.setModalIsConfirm.value ? 'Enter amount' : 'Confirm'} */}
+          </MuiButton>
+        ) : (
+          <Box
+            width={'100%'}
+            py={'16px'}
+            borderRadius={'10px'}
+            bgcolor={'#3e4252'}
+            textAlign={'center'}
+            fontSize={'16px'}
+            fontWeight={'600'}
+            color={'#696c80'}
+          >
+            Enter amount
+          </Box>
+        )}
       </Box>
     </Box>
   );
 };
-interface StateModalContentProps {
+interface StateModalContentProps extends ModalContentProps {
   loading?: boolean;
-  setVisible?: any;
+  setOpenModalType?: any;
 }
 export const StateModalContent: React.FC<StateModalContentProps> = ({
+  modalSetting,
   loading,
-  setVisible,
+  setOpenModalType,
 }) => {
   const [isLoading, setIsLoading] = useState(loading ? true : false);
+  useEffect(() => {
+    window.setTimeout(() => {
+      isLoading && setIsLoading(false);
+    }, 3000);
+  }, [isLoading]);
   return (
     <>
       {isLoading ? (
         <Box position={'relative'} width={'369px'}>
           <img
             src={
-              require('../../assets/images/resource/loadingmodalback.png')
+              require('../../assets/images/resource/loadingmodalback.svg')
                 .default
             }
           />
@@ -435,7 +485,7 @@ export const StateModalContent: React.FC<StateModalContentProps> = ({
             <Spinner>
               <img
                 src={
-                  require('../../assets/images/resource/spinner.png').default
+                  require('../../assets/images/resource/spinner.svg').default
                 }
               />
             </Spinner>
@@ -454,7 +504,7 @@ export const StateModalContent: React.FC<StateModalContentProps> = ({
           >
             <img
               src={
-                require('../../assets/images/resource/loadingmodalback.png')
+                require('../../assets/images/resource/loadingmodalback.svg')
                   .default
               }
             />
@@ -473,7 +523,7 @@ export const StateModalContent: React.FC<StateModalContentProps> = ({
               <Box>
                 <img
                   src={
-                    require('../../assets/images/resource/success.png').default
+                    require('../../assets/images/resource/success.svg').default
                   }
                 />
               </Box>
@@ -509,7 +559,7 @@ export const StateModalContent: React.FC<StateModalContentProps> = ({
               textAlign={'center'}
               style={{ cursor: 'pointer' }}
               onClick={() => {
-                setVisible(false);
+                setOpenModalType(false);
               }}
             >
               Close
@@ -602,5 +652,19 @@ const LogoIcon: React.FC<IconProps> = ({
     </svg>
   );
 };
+
+const MuiButton = withStyles({
+  root: {
+    paddingTop: '16px',
+    paddingBottom: '16px',
+  },
+})(Button);
+const MuiInput = withStyles({
+  root: {
+    fontSize: '20px',
+    fontWeight: 'bolder',
+    color: '#c7cad9',
+  },
+})(Input);
 
 export default ModalParent;

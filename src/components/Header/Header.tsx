@@ -26,7 +26,6 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     display: 'flex',
     flexWrap: 'wrap',
     minHeight: 88,
-    zIndex: 3,
     alignItems: 'center',
     justifyContent: 'space-between',
     '& a': {

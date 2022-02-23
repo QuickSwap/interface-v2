@@ -1,0 +1,18 @@
+<svg data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
+    <g data-name="invisible box">
+        <path data-name="Rectangle 20040" style="fill:none" d="M0 0h48v48H0z"/>
+        <path data-name="Rectangle 20041" style="fill:none" d="M0 0h48v48H0z"/>
+        <path data-name="Rectangle 20042" style="fill:none" d="M0 0h48v48H0z"/>
+    </g>
+    <g data-name="Q3 icons">
+        <g data-name="Group 20478">
+            <path data-name="Path 11786" d="M25.4 5.5a1.9 1.9 0 0 0-2.8.2 2 2 0 1 0 2.8-.2z" style="opacity:.4;fill:#448aff"/>
+            <path data-name="Path 11787" d="M31.5 8.4a2.2 2.2 0 0 0 .2 3.1 2.3 2.3 0 1 0 3-3.4 2.2 2.2 0 0 0-3.2.3z" style="opacity:.5;fill:#448aff"/>
+            <path data-name="Path 11788" d="M41.9 19.2a2.7 2.7 0 1 0-1.886.986A2.7 2.7 0 0 0 41.9 19.2z" style="opacity:.6;fill:#448aff"/>
+            <path data-name="Path 11789" d="M42 27.6a3.5 3.5 0 1 0 .108 4.652A3.5 3.5 0 0 0 42 27.6z" style="opacity:.7;fill:#448aff"/>
+            <path data-name="Path 11790" d="M26.1 37.1a4.5 4.5 0 1 0 6.3-.5 4.4 4.4 0 0 0-6.3.5z" style="opacity:.8;fill:#448aff"/>
+            <path data-name="Path 11791" d="M9.9 34.3a5.1 5.1 0 0 0 .5 7.1 5 5 0 1 0-.5-7.1z" style="opacity:.9;fill:#448aff"/>
+            <circle data-name="Ellipse 918" cx="5.518" cy="5.518" r="5.518" transform="rotate(-4.574 214.561 -8.335)" style="fill:#448aff"/>
+        </g>
+    </g>
+</svg>
