@@ -1,6 +1,28 @@
 {
   "syrup": [
     {
+      "token": "WSG",
+      "stakingRewardAddress": "0xB7070622F36e01A8f1B0eCc14c41553965BdD053",
+      "ended": false,
+      "lp": "",
+      "name": "",
+      "baseToken": "ETHER",
+      "rate": 49605378111,
+      "ending": 1653442686,
+      "stakingToken": "QUICK"
+    },
+    {
+      "token": "FOURINT",
+      "stakingRewardAddress": "0x5bF3A873F3ac58644df59B990E663810e212955f",
+      "ended": false,
+      "lp": "",
+      "name": "",
+      "baseToken": "MATIC",
+      "rate": 32316.68,
+      "ending": 1650850686,
+      "stakingToken": "QUICK"
+    },
+    {
       "token": "TOWER",
       "stakingRewardAddress": "0xeEf2D69bd3aeDd1bd770d67E9B9A3C58a1267e50",
       "ended": false,
