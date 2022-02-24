@@ -22,7 +22,7 @@ jobs:
         uses: mathieudutour/github-tag-action@v6.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          release_branches: master
+          release_branches: dev
 
   create_release:
     name: Create Release
