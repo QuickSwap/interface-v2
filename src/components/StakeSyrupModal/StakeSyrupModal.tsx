@@ -57,7 +57,7 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
   const finalizedTransaction = useTransactionFinalizer();
   const userLiquidityUnstaked = useTokenBalance(
     account ?? undefined,
-    syrup.stakedAmount.token,
+    syrup.stakedAmount?.token,
   );
   const [typedValue, setTypedValue] = useState('');
   const [stakePercent, setStakePercent] = useState(0);
@@ -65,21 +65,23 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
   const maxAmountInput = maxAmountSpend(userLiquidityUnstaked);
   const { parsedAmount, error } = useDerivedSyrupInfo(
     typedValue,
-    syrup.stakedAmount.token,
+    syrup.stakingToken,
     userLiquidityUnstaked,
   );
 
   const parsedAmountWrapped = wrappedCurrencyAmount(parsedAmount, chainId);
 
-  let hypotheticalRewardRate: TokenAmount = new TokenAmount(
-    syrup.rewardRate.token,
-    '0',
-  );
+  let hypotheticalRewardRate = syrup.rewardRate
+    ? new TokenAmount(syrup.rewardRate.token, '0')
+    : undefined;
   if (parsedAmountWrapped?.greaterThan('0')) {
-    hypotheticalRewardRate = syrup.getHypotheticalRewardRate(
-      syrup.stakedAmount.add(parsedAmountWrapped),
-      syrup.totalStakedAmount.add(parsedAmountWrapped),
-    );
+    hypotheticalRewardRate =
+      syrup.stakedAmount && syrup.totalStakedAmount
+        ? syrup.getHypotheticalRewardRate(
+            syrup.stakedAmount.add(parsedAmountWrapped),
+            syrup.totalStakedAmount.add(parsedAmountWrapped),
+          )
+        : undefined;
   }
 
   const deadline = useTransactionDeadline();
@@ -253,9 +255,11 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
         >
           <Typography variant='body1'>Daily Rewards</Typography>
           <Typography variant='body1'>
-            {formatNumber(
-              Number(hypotheticalRewardRate.toExact()) * 60 * 60 * 24,
-            )}{' '}
+            {hypotheticalRewardRate
+              ? formatNumber(
+                  Number(hypotheticalRewardRate.toExact()) * 60 * 60 * 24,
+                )
+              : '-'}{' '}
             {syrup.token.symbol} / day
           </Typography>
         </Box>
