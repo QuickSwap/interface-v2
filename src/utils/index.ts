@@ -1918,7 +1918,12 @@ export function getStakedAmountStakingInfo(
   const token0 = stakingInfo.tokens[0];
   const baseToken =
     baseTokenCurrency === empty ? token0 : stakingInfo.baseToken;
-  if (!stakingInfo.totalSupply || !stakingTokenPair) return;
+  if (
+    !stakingInfo.totalSupply ||
+    !stakingTokenPair ||
+    !stakingInfo.totalStakedAmount
+  )
+    return;
   // take the total amount of LP tokens staked, multiply by ETH value of all LP tokens, divide by all LP tokens
   const valueOfTotalStakedAmountInBaseToken = new TokenAmount(
     baseToken,
@@ -2020,6 +2025,14 @@ export function getUSDString(usdValue?: CurrencyAmount) {
   const value = Number(usdValue.toExact());
   if (value > 0 && value < 0.001) return '< $0.001';
   return `$${value.toLocaleString()}`;
+}
+
+export function getEarnedUSDSyrup(syrup?: SyrupInfo) {
+  if (!syrup || !syrup.earnedAmount || !syrup.rewardTokenPriceinUSD) return '-';
+  const earnedUSD =
+    Number(syrup.earnedAmount.toExact()) * Number(syrup.rewardTokenPriceinUSD);
+  if (earnedUSD > 0 && earnedUSD < 0.001) return '< $0.001';
+  return `$${earnedUSD.toLocaleString()}`;
 }
 
 export function getEarnedUSDLPFarm(stakingInfo: StakingInfo | undefined) {
