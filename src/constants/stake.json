@@ -1,6 +1,28 @@
 {
   "syrup": [
     {
+      "token": "COT",
+      "stakingRewardAddress": "0xA518cca4891e274DD85bDCc47ce8191bccA19854",
+      "ended": false,
+      "lp": "",
+      "name": "",
+      "baseToken": "USDC",
+      "rate": 7407.4,
+      "ending": 1653524379,
+      "stakingToken": "QUICK"
+    },
+    {
+      "token": "MASQ",
+      "stakingRewardAddress": "0x84dc01625a2ACAc0eb58776869e0F8BFb018D2fB",
+      "ended": false,
+      "lp": "",
+      "name": "",
+      "baseToken": "MATIC",
+      "rate": 9150,
+      "ending": 1648340379,
+      "stakingToken": "QUICK"
+    },
+    {
       "token": "WSG",
       "stakingRewardAddress": "0xB7070622F36e01A8f1B0eCc14c41553965BdD053",
       "ended": false,
@@ -1444,118 +1466,7 @@
       "pair": "0x096c5ccb33cfc5732bcd1f3195c13dbefc4c82f4"
     }
   ],
-  "oldstakingrewards": [
-    {
-      "tokens": ["BOOK", "MATIC"],
-      "stakingRewardAddress": "0xD947F789e90859E26794a9A1f7b2FD63a433f762",
-      "ended": true,
-      "lp": "",
-      "name": "",
-      "baseToken": "MATIC",
-      "rate": 2.5515,
-      "pair": "0xe6672538c35508b011b82c986b8822ecf26b1cbc"
-    },
-    {
-      "tokens": ["CLAM2", "MI"],
-      "stakingRewardAddress": "0x0A1Fddba82A78aEE9652971D12eE91b41D8C3dEB",
-      "ended": true,
-      "lp": "",
-      "name": "",
-      "baseToken": "MI",
-      "rate": 2.916,
-      "pair": "0x1581802317f32a2665005109444233ca6e3e2d68"
-    },
-    {
-      "tokens": ["SAND", "MATIC"],
-      "stakingRewardAddress": "0x411b772B9eb19a33E7af5fCD9B1629D2015DC886",
-      "ended": true,
-      "lp": "",
-      "name": "",
-      "baseToken": "MATIC",
-      "rate": 2.187,
-      "pair": "0x369582d2010b6ed950b571f4101e3bb9b554876f"
-    },
-    {
-      "tokens": ["MM", "USDC"],
-      "stakingRewardAddress": "0x164A74cD08e6a0851fbE74B16E5E18d02c5E86f6",
-      "ended": true,
-      "lp": "",
-      "name": "",
-      "baseToken": "USDC",
-      "rate": 1.458,
-      "pair": "0x5e06e1da9b7cb3ddd0df596003ad4cb852f51955"
-    },
-    {
-      "tokens": ["TOMB", "MI"],
-      "stakingRewardAddress": "0xe6d8Dda661Ff57Bc45d919AA868Ee219Ca9f03c7",
-      "ended": true,
-      "lp": "",
-      "name": "",
-      "baseToken": "MI",
-      "rate": 1.458,
-      "pair": "0xbdbe9c09ffc1de53ad9fa3732ec1cd37da7ba52f"
-    },
-    {
-      "tokens": ["ZIG", "QUICK"],
-      "stakingRewardAddress": "0x089C2D16eFCf91A69dae6f0c5769cc1b6F1da26d",
-      "ended": true,
-      "lp": "",
-      "name": "",
-      "baseToken": "QUICK",
-      "rate": 1.458,
-      "pair": "0x9d6d31d8bd564cd77a70b7a0cc1416be9dcd8b6f"
-    },
-    {
-      "tokens": ["SNE", "USDC"],
-      "stakingRewardAddress": "0xeB029E7a319207db79C54fdf4ee377Fe749A90b3",
-      "ended": true,
-      "lp": "",
-      "name": "",
-      "baseToken": "USDC",
-      "rate": 1.458,
-      "pair": "0x23baf6d86c80eb18b1799763ea47eae6fe727767"
-    },
-    {
-      "tokens": ["PBR", "USDT"],
-      "stakingRewardAddress": "0x4c510d82FD85F2B54FD0C41975fbb9305a92751B",
-      "ended": true,
-      "lp": "",
-      "name": "",
-      "baseToken": "USDT",
-      "rate": 1.458,
-      "pair": "0x53b02ad5f6615262ec5b483937260135429d5af9"
-    },
-    {
-      "tokens": ["HBAR", "MI"],
-      "stakingRewardAddress": "0xCa379470379fCb2daBff4eECF975a2b6733bdF9E",
-      "ended": true,
-      "lp": "",
-      "name": "",
-      "baseToken": "MI",
-      "rate": 1.458,
-      "pair": "0x71952d09aa093acccae0c1d5612d7fe26f20517f"
-    },
-    {
-      "tokens": ["UM", "ETHER"],
-      "stakingRewardAddress": "0x7b6151f2935cE9420eEb79D2B9821515b7f3E876",
-      "ended": true,
-      "lp": "",
-      "name": "",
-      "baseToken": "ETHER",
-      "rate": 0.729,
-      "pair": "0x78413ed015b19766c8881f6f1bb9011ce95ec786"
-    },
-    {
-      "tokens": ["WELT", "USDC"],
-      "stakingRewardAddress": "0xE85f2dc81006fB580c7e5007399D5167Ea806F41",
-      "ended": true,
-      "lp": "",
-      "name": "",
-      "baseToken": "USDC",
-      "rate": 0.729,
-      "pair": "0x55e49f32fbba12aa360eec55200dafd1ac47aaed"
-    }
-  ],
+  "oldstakingrewards": [],
   "veryoldstakingrewards": [
     {
       "tokens": ["LMT", "ETHER"],
