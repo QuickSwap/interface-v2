@@ -8,7 +8,6 @@ import CircleInfoIcon from 'assets/images/circleinfo.svg';
 import FarmCardDetails from './FarmCardDetails';
 import {
   getAPYWithFee,
-  returnTokenFromKey,
   getRewardRate,
   getStakedAmountStakingInfo,
   getTVLStaking,
@@ -98,8 +97,8 @@ const FarmCard: React.FC<{
 
   const lpRewards = lpStakingInfo.rewardTokenPrice * lpStakingInfo.rate;
   const dualRewards =
-    dualStakingInfo.rateA * (dualStakingInfo.rewardTokenAPrice ?? 0) +
-    dualStakingInfo.rateB * Number(dualStakingInfo.rewardTokenBPrice);
+    dualStakingInfo.rateA * dualStakingInfo.rewardTokenAPrice +
+    dualStakingInfo.rateB * dualStakingInfo.rewardTokenBPrice;
 
   const renderPool = (width: number) => (
     <Box display='flex' alignItems='center' width={width}>
