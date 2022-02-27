@@ -298,39 +298,6 @@
       "stakingToken": "DQUICK"
     },
     {
-      "token": "EGG",
-      "stakingRewardAddress": "0x87C114Ca118987549e31f5023DfFF42041e446e4",
-      "ended": false,
-      "lp": "",
-      "name": "",
-      "baseToken": "USDT",
-      "rate": 3.99,
-      "ending": 1645631825,
-      "stakingToken": "DQUICK"
-    },
-    {
-      "token": "GAMER",
-      "stakingRewardAddress": "0x35F1962fec6B4605ef3Be3b63396552fbf5e99d0",
-      "ended": false,
-      "lp": "",
-      "name": "",
-      "baseToken": "ETHER",
-      "rate": 1250,
-      "ending": 1645289231,
-      "stakingToken": "DQUICK"
-    },
-    {
-      "token": "GNS",
-      "stakingRewardAddress": "0xF5F645A01A4a7f874C15eC7F7Baa7221a71C180d",
-      "ended": false,
-      "lp": "",
-      "name": "",
-      "baseToken": "DAI",
-      "rate": 833.3333333,
-      "ending": 1645289231,
-      "stakingToken": "DQUICK"
-    },
-    {
       "token": "ZIG",
       "stakingRewardAddress": "0xfE6174429a963bF4E25a80FE0B72d7Cce7Df6e2f",
       "ended": false,
@@ -354,6 +321,39 @@
     }
   ],
   "oldsyrup": [
+    {
+      "token": "EGG",
+      "stakingRewardAddress": "0x87C114Ca118987549e31f5023DfFF42041e446e4",
+      "ended": true,
+      "lp": "",
+      "name": "",
+      "baseToken": "USDT",
+      "rate": 3.99,
+      "ending": 1645631825,
+      "stakingToken": "DQUICK"
+    },
+    {
+      "token": "GAMER",
+      "stakingRewardAddress": "0x35F1962fec6B4605ef3Be3b63396552fbf5e99d0",
+      "ended": true,
+      "lp": "",
+      "name": "",
+      "baseToken": "ETHER",
+      "rate": 1250,
+      "ending": 1645289231,
+      "stakingToken": "DQUICK"
+    },
+    {
+      "token": "GNS",
+      "stakingRewardAddress": "0xF5F645A01A4a7f874C15eC7F7Baa7221a71C180d",
+      "ended": true,
+      "lp": "",
+      "name": "",
+      "baseToken": "DAI",
+      "rate": 833.3333333,
+      "ending": 1645289231,
+      "stakingToken": "DQUICK"
+    },
     {
       "token": "TEL",
       "stakingRewardAddress": "0x346C9e501aDc38F1f325CC0c2D44C325283eEaF1",
@@ -532,28 +532,6 @@
       "stakingToken": "DQUICK"
     },
     {
-      "token": "UFI",
-      "stakingRewardAddress": "0xE707bB8513873c2360811F01BfBd0e9EBFd96b0D",
-      "ended": true,
-      "lp": "",
-      "name": "",
-      "baseToken": "MATIC",
-      "rate": 18315,
-      "ending": 1640485140,
-      "stakingToken": "DQUICK"
-    },
-    {
-      "token": "UCO",
-      "stakingRewardAddress": "0xC328d6eC46d11a6ABdA3C02434861beA14739E1f",
-      "ended": true,
-      "lp": "",
-      "name": "",
-      "baseToken": "ETHER",
-      "rate": 13833.33,
-      "ending": 1639933260,
-      "stakingToken": "DQUICK"
-    },
-    {
       "token": "XCAD",
       "stakingRewardAddress": "0xbdF64bf352D1291587b09a28984eE06d3b6538eE",
       "ended": true,
@@ -561,17 +539,6 @@
       "name": "",
       "baseToken": "USDC",
       "rate": 1300,
-      "ending": 1639844474,
-      "stakingToken": "DQUICK"
-    },
-    {
-      "token": "CNTR",
-      "stakingRewardAddress": "0xe59C2f9a2dCe18C6e19d63675e56BabA59a2339F",
-      "ended": true,
-      "lp": "",
-      "name": "",
-      "baseToken": "MATIC",
-      "rate": 617283.95,
       "ending": 1639844474,
       "stakingToken": "DQUICK"
     },
@@ -584,61 +551,6 @@
       "baseToken": "ETHER",
       "rate": 8128.1,
       "ending": 1639844474,
-      "stakingToken": "DQUICK"
-    },
-    {
-      "token": "EROWAN",
-      "stakingRewardAddress": "0x555670a51B56a310bcC71D55D96366F7B1ba1295",
-      "ended": true,
-      "lp": "",
-      "name": "",
-      "baseToken": "QUICK",
-      "rate": 21891.67,
-      "ending": 1639844474,
-      "stakingToken": "DQUICK"
-    },
-    {
-      "token": "XCASH",
-      "stakingRewardAddress": "0xe01e81c76253831602520582793991650225Bf81",
-      "ended": true,
-      "lp": "",
-      "name": "",
-      "baseToken": "QUICK",
-      "rate": 27777777.78,
-      "ending": 1639408820,
-      "stakingToken": "DQUICK"
-    },
-    {
-      "token": "MCASH",
-      "stakingRewardAddress": "0xb3DacE74b857C7b0F0890334B8E4770762Bcda5c",
-      "ended": true,
-      "lp": "",
-      "name": "",
-      "baseToken": "ETHER",
-      "rate": 18333.33,
-      "ending": 1639241173,
-      "stakingToken": "DQUICK"
-    },
-    {
-      "token": "ALN",
-      "stakingRewardAddress": "0x568E635426804400f306c6D3Ec56D14782D74261",
-      "ended": true,
-      "lp": "",
-      "name": "",
-      "baseToken": "ETHER",
-      "rate": 18333.33,
-      "ending": 1639241173,
-      "stakingToken": "DQUICK"
-    },
-    {
-      "token": "TRADE",
-      "stakingRewardAddress": "0x9f48eB6E139855ebc89de973ea91c7596583E6Bc",
-      "ended": true,
-      "lp": "",
-      "name": "",
-      "baseToken": "MATIC",
-      "rate": 2458,
-      "ending": 1636117833,
       "stakingToken": "DQUICK"
     },
     {
