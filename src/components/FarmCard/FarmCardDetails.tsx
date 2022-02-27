@@ -110,7 +110,7 @@ const FarmCardDetails: React.FC<{
 
   const userLiquidityUnstaked = useTokenBalance(
     account ?? undefined,
-    stakingInfo?.stakedAmount.token,
+    stakingInfo.stakedAmount?.token,
   );
 
   const stakedAmounts = getStakedAmountStakingInfo(
@@ -135,7 +135,7 @@ const FarmCardDetails: React.FC<{
 
   const { parsedAmount: unstakeParsedAmount } = useDerivedStakeInfo(
     unstakeAmount,
-    stakingInfo.stakedAmount.token,
+    stakingInfo.stakedAmount?.token,
     stakingInfo.stakedAmount,
   );
 
@@ -189,7 +189,7 @@ const FarmCardDetails: React.FC<{
 
   const { parsedAmount } = useDerivedStakeInfo(
     stakeAmount,
-    stakingInfo?.stakedAmount.token,
+    stakingInfo.stakedAmount?.token,
     userLiquidityUnstaked,
   );
   const deadline = useTransactionDeadline();
@@ -492,7 +492,7 @@ const FarmCardDetails: React.FC<{
                 !attemptUnstaking &&
                 Number(unstakeAmount) > 0 &&
                 Number(unstakeAmount) <=
-                  Number(stakingInfo.stakedAmount.toExact())
+                  Number(stakingInfo.stakedAmount?.toExact() ?? 0)
                   ? classes.buttonClaim
                   : classes.buttonToken
               }
@@ -503,7 +503,7 @@ const FarmCardDetails: React.FC<{
                   !attemptUnstaking &&
                   Number(unstakeAmount) > 0 &&
                   Number(unstakeAmount) <=
-                    Number(stakingInfo.stakedAmount.toExact())
+                    Number(stakingInfo.stakedAmount?.toExact() ?? 0)
                 ) {
                   onWithdraw();
                 }
@@ -567,9 +567,10 @@ const FarmCardDetails: React.FC<{
               className={
                 !attemptClaiming &&
                 (isLPFarm
-                  ? lpStakingInfo.earnedAmount
-                  : dualStakingInfo.earnedAmountA
-                ).greaterThan('0')
+                  ? lpStakingInfo.earnedAmount &&
+                    lpStakingInfo.earnedAmount.greaterThan('0')
+                  : dualStakingInfo.earnedAmountA &&
+                    dualStakingInfo.earnedAmountA.greaterThan('0'))
                   ? classes.buttonClaim
                   : classes.buttonToken
               }
@@ -578,9 +579,10 @@ const FarmCardDetails: React.FC<{
                 if (
                   !attemptClaiming &&
                   (isLPFarm
-                    ? lpStakingInfo.earnedAmount
-                    : dualStakingInfo.earnedAmountA
-                  ).greaterThan('0')
+                    ? lpStakingInfo.earnedAmount &&
+                      lpStakingInfo.earnedAmount.greaterThan('0')
+                    : dualStakingInfo.earnedAmountA &&
+                      dualStakingInfo.earnedAmountA.greaterThan('0'))
                 ) {
                   onClaimReward();
                 }

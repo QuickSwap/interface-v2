@@ -65,7 +65,7 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
   const maxAmountInput = maxAmountSpend(userLiquidityUnstaked);
   const { parsedAmount, error } = useDerivedSyrupInfo(
     typedValue,
-    syrup.stakingToken,
+    syrup.stakedAmount?.token,
     userLiquidityUnstaked,
   );
 
