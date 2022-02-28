@@ -77,8 +77,6 @@ export interface CommonStakingInfo {
   stakedAmount?: TokenAmount;
   // the total amount of token staked in the contract
   totalStakedAmount?: TokenAmount;
-  // when the period ends
-  periodFinish: Date | undefined;
 
   ended: boolean;
 
@@ -364,13 +362,6 @@ export function useSyrupInfo(
     STAKING_REWARDS_INTERFACE,
     'totalSupply',
   );
-  const periodFinishes = useMultipleContractSingleData(
-    rewardsAddresses,
-    STAKING_REWARDS_INTERFACE,
-    'periodFinish',
-    undefined,
-    NEVER_RELOAD,
-  );
   const rewardRates = useMultipleContractSingleData(
     rewardsAddresses,
     STAKING_REWARDS_INTERFACE,
@@ -407,7 +398,6 @@ export function useSyrupInfo(
         // these get fetched regardless of account
         const totalSupplyState = totalSupplies[index];
         const rewardRateState = rewardRates[index];
-        const periodFinishState = periodFinishes[index];
         const syrupInfo = info[index];
 
         if (
@@ -418,9 +408,7 @@ export function useSyrupInfo(
           totalSupplyState &&
           !totalSupplyState.loading &&
           rewardRateState &&
-          !rewardRateState.loading &&
-          periodFinishState &&
-          !periodFinishState.loading
+          !rewardRateState.loading
         ) {
           // get the LP token
           const token = syrupInfo.token;
@@ -523,7 +511,6 @@ export function useSyrupInfo(
     chainId,
     earnedAmounts,
     info,
-    periodFinishes,
     rewardsAddresses,
     totalSupplies,
     uni,
@@ -971,14 +958,6 @@ export function useDualStakingInfo(
     STAKING_DUAL_REWARDS_INTERFACE,
     'totalSupply',
   );
-
-  const periodFinishes = useMultipleContractSingleData(
-    rewardsAddresses,
-    STAKING_DUAL_REWARDS_INTERFACE,
-    'periodFinish',
-    undefined,
-    NEVER_RELOAD,
-  );
   const rewardRatesA = useMultipleContractSingleData(
     rewardsAddresses,
     STAKING_DUAL_REWARDS_INTERFACE,
@@ -1036,7 +1015,6 @@ export function useDualStakingInfo(
         const totalSupplyState = totalSupplies[index];
         const rewardRateAState = rewardRatesA[index];
         const rewardRateBState = rewardRatesB[index];
-        const periodFinishState = periodFinishes[index];
         const stakingInfo = info[index];
         const rewardTokenAPrice = rewardTokenAPrices[index];
         const rewardTokenBPrice = rewardTokenBPrices[index];
@@ -1052,9 +1030,7 @@ export function useDualStakingInfo(
           rewardRateAState &&
           !rewardRateAState.loading &&
           rewardRateBState &&
-          !rewardRateBState.loading &&
-          periodFinishState &&
-          !periodFinishState.loading
+          !rewardRateBState.loading
         ) {
           // get the LP token
           const tokens = stakingInfo.tokens;
@@ -1126,10 +1102,6 @@ export function useDualStakingInfo(
             totalRewardRateB01,
           );
 
-          const periodFinishMs = periodFinishState.result?.[0]
-            ?.mul(1000)
-            ?.toNumber();
-
           let valueOfTotalStakedAmountInBaseToken: TokenAmount | undefined;
 
           const [, stakingTokenPair] = stakingPairs[index];
@@ -1178,8 +1150,6 @@ export function useDualStakingInfo(
             ended: stakingInfo.ended,
             name: stakingInfo.name,
             lp: stakingInfo.lp,
-            periodFinish:
-              periodFinishMs > 0 ? new Date(periodFinishMs) : undefined,
             earnedAmountA:
               earnedAAmountState?.result && earnedAAmountState?.result?.[0]
                 ? new TokenAmount(
@@ -1227,7 +1197,6 @@ export function useDualStakingInfo(
     earnedAAmounts,
     earnedBAmounts,
     info,
-    periodFinishes,
     rewardsAddresses,
     totalSupplies,
     uni,
@@ -1350,14 +1319,6 @@ export function useStakingInfo(
     STAKING_REWARDS_INTERFACE,
     'totalSupply',
   );
-
-  const periodFinishes = useMultipleContractSingleData(
-    rewardsAddresses,
-    STAKING_REWARDS_INTERFACE,
-    'periodFinish',
-    undefined,
-    NEVER_RELOAD,
-  );
   const rewardRates = useMultipleContractSingleData(
     rewardsAddresses,
     STAKING_REWARDS_INTERFACE,
@@ -1401,7 +1362,6 @@ export function useStakingInfo(
         // these get fetched regardless of account
         const totalSupplyState = totalSupplies[index];
         const rewardRateState = rewardRates[index];
-        const periodFinishState = periodFinishes[index];
         const stakingInfo = info[index];
         const rewardTokenPrice = usdPricesRewardTokens[index];
 
@@ -1413,9 +1373,7 @@ export function useStakingInfo(
           totalSupplyState &&
           !totalSupplyState.loading &&
           rewardRateState &&
-          !rewardRateState.loading &&
-          periodFinishState &&
-          !periodFinishState.loading
+          !rewardRateState.loading
         ) {
           // get the LP token
           const tokens = stakingInfo.tokens;
@@ -1475,10 +1433,6 @@ export function useStakingInfo(
             totalRewardRate01,
           );
 
-          const periodFinishMs =
-            periodFinishState.result && periodFinishState.result[0]
-              ? periodFinishState.result[0]?.mul(1000)?.toNumber()
-              : undefined;
           let oneYearFeeAPY = 0;
           let oneDayFee = 0;
           let accountFee = 0;
@@ -1556,10 +1510,6 @@ export function useStakingInfo(
             lp: stakingInfo.lp,
             rewardToken: stakingInfo.rewardToken,
             rewardTokenPrice,
-            periodFinish:
-              periodFinishMs && periodFinishMs > 0
-                ? new Date(periodFinishMs)
-                : undefined,
             earnedAmount:
               earnedAmountState?.result && earnedAmountState?.result?.[0]
                 ? new TokenAmount(
@@ -1595,7 +1545,6 @@ export function useStakingInfo(
     chainId,
     earnedAmounts,
     info,
-    periodFinishes,
     rewardsAddresses,
     totalSupplies,
     uni,
@@ -1768,8 +1717,6 @@ export function useOldStakingInfo(
             lp: stakingInfo.lp,
             rewardToken: stakingInfo.rewardToken,
             rewardTokenPrice: 0,
-            periodFinish:
-              periodFinishMs > 0 ? new Date(periodFinishMs) : undefined,
             earnedAmount: new TokenAmount(
               uni,
               JSBI.BigInt(earnedAmountState?.result?.[0] ?? 0),
