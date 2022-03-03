@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Typography } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
-import { SyrupInfo } from 'state/stake/hooks';
+import { SyrupInfo } from 'types';
 import { CurrencyLogo } from 'components';
 import { returnTokenFromKey, getTokenAPRSyrup } from 'utils';
 
