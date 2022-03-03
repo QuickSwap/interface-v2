@@ -1244,17 +1244,25 @@ export function useStakingInfo(
           if (pairs !== undefined) {
             oneYearFeeAPY = pairs[stakingInfo.pair]?.oneDayVolumeUSD;
 
-            if (oneYearFeeAPY) {
+            if (
+              oneYearFeeAPY &&
+              balanceState &&
+              balanceState.result &&
+              balanceState.result[0] &&
+              totalSupplyState &&
+              totalSupplyState.result &&
+              totalSupplyState.result[0]
+            ) {
               const totalSupply = web3.utils.toWei(
                 pairs[stakingInfo.pair]?.totalSupply,
                 'ether',
               );
               const ratio =
-                Number(totalSupplyState.result?.[0].toString()) /
+                Number(totalSupplyState.result[0].toString()) /
                 Number(totalSupply);
               const myRatio =
-                Number(balanceState?.result?.[0].toString()) /
-                Number(totalSupplyState.result?.[0].toString());
+                Number(balanceState.result[0].toString()) /
+                Number(totalSupplyState.result[0].toString());
               oneDayFee = oneYearFeeAPY * GlobalConst.utils.FEEPERCENT * ratio;
               accountFee = oneDayFee * myRatio;
               oneYearFeeAPY = getOneYearFee(
