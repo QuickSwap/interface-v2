@@ -79,7 +79,7 @@ export const GlobalConst = {
     ),
     // the Uniswap Default token list lives here
     DEFAULT_TOKEN_LIST_URL:
-      'https://unpkg.com/quickswap-default-token-list@1.2.25/build/quickswap-default.tokenlist.json',
+      'https://unpkg.com/quickswap-default-token-list@1.2.26/build/quickswap-default.tokenlist.json',
   },
   analyticChart: {
     ONE_MONTH_CHART: 1,
