@@ -61,6 +61,7 @@ import {
 } from 'state/stake/hooks';
 import { unwrappedToken } from './wrappedCurrency';
 import { useUSDCPriceToken } from './useUSDCPrice';
+import { CallState } from 'state/multicall/hooks';
 dayjs.extend(utc);
 dayjs.extend(weekOfYear);
 
@@ -637,6 +638,10 @@ export const getTopPairs = async (count: number) => {
   }
 };
 
+export function getSecondsOneDay() {
+  return 60 * 60 * 24;
+}
+
 export const getIntervalTokenData = async (
   tokenAddress: string,
   startTime: number,
@@ -774,7 +779,7 @@ export const getTokenChartData = async (
 
     const dayIndexSet = new Set();
     const dayIndexArray: any[] = [];
-    const oneDay = 24 * 60 * 60;
+    const oneDay = getSecondsOneDay();
     data.forEach((dayData, i) => {
       // add the day index to the set of days
       dayIndexSet.add((data[i].date / oneDay).toFixed(0));
@@ -2066,4 +2071,42 @@ export function isSupportedNetwork(ethereum: any) {
 
 export function getPageItemsToLoad(index: number, countsPerPage: number) {
   return index === 0 ? countsPerPage : countsPerPage * index;
+}
+
+export function getExactTokenAmount(amount?: TokenAmount | CurrencyAmount) {
+  if (!amount) return 0;
+  return Number(amount.toExact());
+}
+
+// this is useful when the value has more digits than token decimals
+export function getValueTokenDecimals(value: string, token?: Token | Currency) {
+  if (!token) return '0';
+  const valueDigits = value.split('.');
+  const valueDigitStr = valueDigits.length > 1 ? valueDigits[1] : '';
+  const valueDigitCount = valueDigitStr.length;
+  if (valueDigitCount > token.decimals) {
+    return value.substring(
+      0,
+      value.length - (valueDigitCount - token.decimals),
+    );
+  }
+  return value;
+}
+
+export function getPartialTokenAmount(
+  percent: number,
+  amount?: TokenAmount | CurrencyAmount,
+) {
+  if (!amount) return '0';
+  if (percent === 100) return amount.toExact();
+  const partialAmount = (Number(amount.toExact()) * percent) / 100;
+  return getValueTokenDecimals(partialAmount.toString(), amount.currency);
+}
+
+export function initTokenAmountFromCallResult(
+  token: Token,
+  callState?: CallState,
+) {
+  if (!callState || !callState.result || !callState.result[0]) return;
+  return new TokenAmount(token, JSBI.BigInt(callState.result[0]));
 }

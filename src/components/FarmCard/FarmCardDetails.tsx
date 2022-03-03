@@ -1,13 +1,8 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { TransactionResponse } from '@ethersproject/providers';
 import { Box, Typography, useMediaQuery } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-import {
-  useStakingInfo,
-  useOldStakingInfo,
-  StakingInfo,
-  DualStakingInfo,
-} from 'state/stake/hooks';
+import { StakingInfo, DualStakingInfo } from 'state/stake/hooks';
 import { TokenAmount, Pair } from '@uniswap/sdk';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { usePairContract, useStakingContract } from 'hooks/useContract';
@@ -24,13 +19,13 @@ import {
   getRewardRate,
   getTokenAddress,
   getTVLStaking,
-  returnTokenFromKey,
   getStakedAmountStakingInfo,
   getUSDString,
   getEarnedUSDLPFarm,
   formatTokenAmount,
   formatAPY,
   getEarnedUSDDualFarm,
+  getExactTokenAmount,
 } from 'utils';
 import CircleInfoIcon from 'assets/images/circleinfo.svg';
 
@@ -411,9 +406,10 @@ const FarmCardDetails: React.FC<{
               <Box
                 className={
                   !approving &&
-                  Number(!attemptStaking && stakeAmount) > 0 &&
+                  !attemptStaking &&
+                  Number(stakeAmount) > 0 &&
                   Number(stakeAmount) <=
-                    Number(userLiquidityUnstaked?.toExact())
+                    getExactTokenAmount(userLiquidityUnstaked)
                     ? classes.buttonClaim
                     : classes.buttonToken
                 }
@@ -425,7 +421,7 @@ const FarmCardDetails: React.FC<{
                     !attemptStaking &&
                     Number(stakeAmount) > 0 &&
                     Number(stakeAmount) <=
-                      Number(userLiquidityUnstaked?.toExact())
+                      getExactTokenAmount(userLiquidityUnstaked)
                   ) {
                     if (approval === ApprovalState.APPROVED) {
                       onStake();
@@ -492,7 +488,7 @@ const FarmCardDetails: React.FC<{
                 !attemptUnstaking &&
                 Number(unstakeAmount) > 0 &&
                 Number(unstakeAmount) <=
-                  Number(stakingInfo.stakedAmount?.toExact() ?? 0)
+                  getExactTokenAmount(stakingInfo.stakedAmount)
                   ? classes.buttonClaim
                   : classes.buttonToken
               }
@@ -503,7 +499,7 @@ const FarmCardDetails: React.FC<{
                   !attemptUnstaking &&
                   Number(unstakeAmount) > 0 &&
                   Number(unstakeAmount) <=
-                    Number(stakingInfo.stakedAmount?.toExact() ?? 0)
+                    getExactTokenAmount(stakingInfo.stakedAmount)
                 ) {
                   onWithdraw();
                 }

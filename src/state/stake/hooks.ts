@@ -38,6 +38,7 @@ import {
   getBlockFromTimestamp,
   getDaysCurrentYear,
   getOneYearFee,
+  initTokenAmountFromCallResult,
   returnDualStakingInfo,
   returnStakingInfo,
   returnSyrupInfo,
@@ -421,38 +422,30 @@ export function useSyrupInfo(
                 Number(usdPriceBaseToken.toSignificant())
               : undefined;
 
-          const rewards =
-            Number(syrupInfo.rate) *
-            (priceOfRewardTokenInUSD ? priceOfRewardTokenInUSD : 0);
+          const rewards = syrupInfo.rate * (priceOfRewardTokenInUSD ?? 0);
 
           // check for account, if no account set to 0
           const lp = syrupInfo.lp;
           const rate = web3.utils.toWei(syrupInfo.rate.toString());
-          const stakedAmount =
-            balanceState?.result && balanceState?.result?.[0]
-              ? new TokenAmount(
-                  lp && lp !== ''
-                    ? new Token(137, lp, 18, 'SLP', 'Staked LP')
-                    : syrupInfo.stakingToken,
-                  JSBI.BigInt(balanceState?.result?.[0] ?? 0),
-                )
-              : undefined;
-          const totalStakedAmount =
-            totalSupplyState.result && totalSupplyState.result?.[0]
-              ? new TokenAmount(
-                  lp && lp !== ''
-                    ? new Token(137, lp, 18, 'SLP', 'Staked LP')
-                    : syrupInfo.stakingToken,
-                  JSBI.BigInt(totalSupplyState.result?.[0]),
-                )
-              : undefined;
+          const syrupToken =
+            lp && lp !== ''
+              ? new Token(137, lp, 18, 'SLP', 'Staked LP')
+              : syrupInfo.stakingToken;
+          const stakedAmount = initTokenAmountFromCallResult(
+            syrupToken,
+            balanceState,
+          );
+          const totalStakedAmount = initTokenAmountFromCallResult(
+            syrupToken,
+            totalSupplyState,
+          );
           const totalRewardRate = new TokenAmount(token, JSBI.BigInt(rate));
           //const pair = info[index].pair.toLowerCase();
           //const fees = (pairData && pairData[pair] ? pairData[pair].oneDayVolumeUSD * 0.0025: 0);
-          const rewardRate =
-            rewardRateState.result && rewardRateState.result?.[0]
-              ? new TokenAmount(token, JSBI.BigInt(rewardRateState.result?.[0]))
-              : undefined;
+          const rewardRate = initTokenAmountFromCallResult(
+            token,
+            rewardRateState,
+          );
           const getHypotheticalRewardRate = (
             stakedAmount?: TokenAmount,
             totalStakedAmount?: TokenAmount,
@@ -483,9 +476,9 @@ export function useSyrupInfo(
             name: syrupInfo.name,
             lp: syrupInfo.lp,
             periodFinish: periodFinishMs,
-            earnedAmount: new TokenAmount(
+            earnedAmount: initTokenAmountFromCallResult(
               token,
-              JSBI.BigInt(earnedAmountState?.result?.[0] ?? 0),
+              earnedAmountState,
             ),
             rewardRate: individualRewardRate,
             totalRewardRate: totalRewardRate,

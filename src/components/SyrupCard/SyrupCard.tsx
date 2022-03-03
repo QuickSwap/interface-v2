@@ -99,7 +99,7 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
                     $
                     {syrup.rewardTokenPriceinUSD
                       ? (
-                          syrup.rate * Number(syrup.rewardTokenPriceinUSD)
+                          syrup.rate * syrup.rewardTokenPriceinUSD
                         ).toLocaleString()
                       : '-'}{' '}
                     <span style={{ color: palette.text.secondary }}>/ day</span>

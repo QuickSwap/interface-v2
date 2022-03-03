@@ -21,6 +21,7 @@ import {
 import { GlobalConst } from 'constants/index';
 import {
   getAPYWithFee,
+  getExactTokenAmount,
   getOneYearFee,
   getPageItemsToLoad,
   returnFullWidthMobile,
@@ -116,8 +117,8 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
   const sortByRewardLP = useCallback(
     (a: StakingInfo, b: StakingInfo) => {
       return (
-        (Number(a.totalRewardRate?.toExact() ?? 0) >
-        Number(b.totalRewardRate?.toExact() ?? 0)
+        (getExactTokenAmount(a.totalRewardRate) >
+        getExactTokenAmount(b.totalRewardRate)
           ? -1
           : 1) * sortIndex
       );
@@ -168,8 +169,8 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
   const sortByEarnedLP = useCallback(
     (a: StakingInfo, b: StakingInfo) => {
       return (
-        (Number(a.earnedAmount?.toExact() ?? 0) >
-        Number(b.earnedAmount?.toExact() ?? 0)
+        (getExactTokenAmount(a.earnedAmount) >
+        getExactTokenAmount(b.earnedAmount)
           ? -1
           : 1) * sortIndex
       );
@@ -180,11 +181,11 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
   const sortByEarnedDual = useCallback(
     (a: DualStakingInfo, b: DualStakingInfo) => {
       const earnedA =
-        Number(a.earnedAmountA?.toExact() ?? 0) * a.rewardTokenAPrice +
-        Number(a.earnedAmountB?.toExact() ?? 0) * a.rewardTokenBPrice;
+        getExactTokenAmount(a.earnedAmountA) * a.rewardTokenAPrice +
+        getExactTokenAmount(a.earnedAmountB) * a.rewardTokenBPrice;
       const earnedB =
-        Number(b.earnedAmountA?.toExact() ?? 0) * b.rewardTokenAPrice +
-        Number(b.earnedAmountB?.toExact() ?? 0) * b.rewardTokenBPrice;
+        getExactTokenAmount(b.earnedAmountA) * b.rewardTokenAPrice +
+        getExactTokenAmount(b.earnedAmountB) * b.rewardTokenBPrice;
       return (earnedA > earnedB ? -1 : 1) * sortIndex;
     },
     [sortIndex],
