@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { TransactionResponse } from '@ethersproject/providers';
 import { Box, Typography, useMediaQuery } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-import { StakingInfo, DualStakingInfo } from 'state/stake/hooks';
+import { StakingInfo, DualStakingInfo } from 'types';
 import { TokenAmount, Pair } from '@uniswap/sdk';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { usePairContract, useStakingContract } from 'hooks/useContract';

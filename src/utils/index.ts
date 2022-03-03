@@ -43,6 +43,7 @@ import {
   Token,
   TokenAmount,
   Price,
+  Pair,
 } from '@uniswap/sdk';
 import { BigNumber, BigNumberish } from '@ethersproject/bignumber';
 import { formatUnits } from 'ethers/lib/utils';
@@ -57,11 +58,13 @@ import {
   DualStakingInfo,
   LairInfo,
   StakingInfo,
+  SyrupBasic,
   SyrupInfo,
-} from 'state/stake/hooks';
+} from 'types';
 import { unwrappedToken } from './wrappedCurrency';
 import { useUSDCPriceToken } from './useUSDCPrice';
 import { CallState } from 'state/multicall/hooks';
+import { DualStakingBasic, StakingBasic } from 'types';
 dayjs.extend(utc);
 dayjs.extend(weekOfYear);
 
@@ -1684,17 +1687,7 @@ export function returnTokenFromKey(key: string): Token {
 export function returnSyrupInfo(
   isOld?: boolean,
 ): {
-  [chainId in ChainId]?: {
-    token: Token;
-    stakingRewardAddress: string;
-    ended: boolean;
-    name: string;
-    lp: string;
-    baseToken: Token;
-    rate: number;
-    ending: number; //DATE IN UNIX TIMESTAMP
-    stakingToken: Token;
-  }[];
+  [chainId in ChainId]?: SyrupBasic[];
 } {
   const syrupInfo = isOld ? stakeData.oldsyrup : stakeData.syrup;
   return {
@@ -1712,17 +1705,7 @@ export function returnSyrupInfo(
 export function returnStakingInfo(
   type?: string,
 ): {
-  [chainId in ChainId]?: {
-    tokens: [Token, Token];
-    stakingRewardAddress: string;
-    ended: boolean;
-    name: string;
-    lp: string;
-    baseToken: Token;
-    rate: number;
-    pair: string;
-    rewardToken: Token;
-  }[];
+  [chainId in ChainId]?: StakingBasic[];
 } {
   const stakingInfo =
     type === 'old'
@@ -1746,20 +1729,7 @@ export function returnStakingInfo(
 }
 
 export function returnDualStakingInfo(): {
-  [chainId in ChainId]?: {
-    tokens: [Token, Token];
-    stakingRewardAddress: string;
-    ended: boolean;
-    name: string;
-    lp: string;
-    baseToken: Token;
-    rewardTokenA: Token;
-    rewardTokenB: Token;
-    rewardTokenBBase: Token;
-    rateA: number;
-    rateB: number;
-    pair: string;
-  }[];
+  [chainId in ChainId]?: DualStakingBasic[];
 } {
   return {
     [ChainId.MATIC]: stakeData.dualrewards.map((info) => {
@@ -2109,4 +2079,22 @@ export function initTokenAmountFromCallResult(
 ) {
   if (!callState || !callState.result || !callState.result[0]) return;
   return new TokenAmount(token, JSBI.BigInt(callState.result[0]));
+}
+
+export function getFarmLPToken(
+  info: StakingInfo | DualStakingInfo | StakingBasic | DualStakingBasic,
+) {
+  const lp = info.lp;
+  const dummyPair = new Pair(
+    new TokenAmount(info.tokens[0], '0'),
+    new TokenAmount(info.tokens[1], '0'),
+  );
+  if (lp && lp !== '') return new Token(137, lp, 18, 'SLP', 'Staked LP');
+  return dummyPair.liquidityToken;
+}
+
+export function getSyrupLPToken(info: SyrupBasic | SyrupInfo) {
+  const lp = info.lp;
+  if (lp && lp !== '') return new Token(137, lp, 18, 'SLP', 'Staked LP');
+  return info.stakingToken;
 }

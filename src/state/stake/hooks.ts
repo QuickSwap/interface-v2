@@ -8,7 +8,7 @@ import {
 } from '@uniswap/sdk';
 import dayjs from 'dayjs';
 import { useMemo, useEffect /** , useState */ } from 'react';
-import { usePair, usePairs } from 'data/Reserves';
+import { usePairs } from 'data/Reserves';
 
 import { client, healthClient } from 'apollo/client';
 import {
@@ -37,13 +37,17 @@ import { useTotalSupplys } from 'data/TotalSupply';
 import {
   getDaysCurrentYear,
   getBlockFromTimestamp,
+  getFarmLPToken,
   getOneYearFee,
+  getSyrupLPToken,
   initTokenAmountFromCallResult,
   returnDualStakingInfo,
   returnStakingInfo,
   returnSyrupInfo,
   returnTokenFromKey,
 } from 'utils';
+
+import { SyrupInfo, LairInfo, StakingInfo, DualStakingInfo } from 'types';
 
 const web3 = new Web3('https://polygon-rpc.com/');
 
@@ -54,139 +58,6 @@ export const REWARDS_DURATION_DAYS = 7;
 let pairs: any = undefined;
 
 let oneDayVol: any = undefined;
-
-export interface LairInfo {
-  lairAddress: string;
-
-  dQUICKBalance: TokenAmount;
-
-  QUICKBalance: TokenAmount;
-
-  totalQuickBalance: TokenAmount;
-
-  dQuickTotalSupply: TokenAmount;
-
-  oneDayVol: number;
-}
-
-export interface CommonStakingInfo {
-  // the address of the reward contract
-  stakingRewardAddress: string;
-  // the tokens involved in this pair
-  tokens: [Token, Token];
-  // the amount of token currently staked, or undefined if no account
-  stakedAmount?: TokenAmount;
-  // the total amount of token staked in the contract
-  totalStakedAmount?: TokenAmount;
-
-  ended: boolean;
-
-  name: string;
-
-  lp: string;
-
-  baseToken: Token;
-
-  pair: string;
-
-  oneYearFeeAPY?: number;
-
-  oneDayFee?: number;
-
-  accountFee?: number;
-  tvl?: string;
-  perMonthReturnInRewards?: number;
-
-  totalSupply?: TokenAmount;
-  usdPrice?: Price;
-  stakingTokenPair?: Pair | null;
-  // calculates a hypothetical amount of token distributed to the active account per second.
-  getHypotheticalRewardRate: (
-    stakedAmount?: TokenAmount,
-    totalStakedAmount?: TokenAmount,
-    totalRewardRate?: TokenAmount,
-  ) => TokenAmount | undefined;
-}
-
-export interface StakingInfo extends CommonStakingInfo {
-  // the amount of reward token earned by the active account, or undefined if no account
-  earnedAmount?: TokenAmount;
-  // the amount of token distributed per second to all LPs, constant
-  totalRewardRate?: TokenAmount;
-  // the current amount of token distributed to the active account per second.
-  // equivalent to percent of total supply * reward rate
-  rewardRate?: TokenAmount;
-  rewardToken: Token;
-  rewardTokenPrice: number;
-
-  rate: number;
-
-  valueOfTotalStakedAmountInBaseToken?: TokenAmount;
-}
-
-export interface DualStakingInfo extends CommonStakingInfo {
-  rewardTokenA: Token;
-  rewardTokenB: Token;
-  rewardTokenBBase: Token;
-  // the amount of reward token earned by the active account, or undefined if no account
-  earnedAmountA?: TokenAmount;
-  earnedAmountB?: TokenAmount;
-  // the amount of token distributed per second to all LPs, constant
-  totalRewardRateA: TokenAmount;
-  totalRewardRateB: TokenAmount;
-  // the current amount of token distributed to the active account per second.
-  // equivalent to percent of total supply * reward rate
-  rewardRateA?: TokenAmount;
-  rewardRateB?: TokenAmount;
-
-  rateA: number;
-  rateB: number;
-  rewardTokenAPrice: number;
-  rewardTokenBPrice: number;
-}
-
-export interface SyrupInfo {
-  // the address of the reward contract
-  stakingRewardAddress: string;
-  // the token involved in this staking
-  token: Token;
-  // the amount of token currently staked, or undefined if no account
-  stakedAmount?: TokenAmount;
-  // the amount of reward token earned by the active account, or undefined if no account
-  earnedAmount?: TokenAmount;
-  // the total amount of token staked in the contract
-  totalStakedAmount?: TokenAmount;
-  // the amount of token distributed per second to all stakers, constant
-  totalRewardRate: TokenAmount;
-  // the current amount of token distributed to the active account per second.
-  // equivalent to percent of total supply * reward rate
-  rewardRate?: TokenAmount;
-  // when the period ends
-  periodFinish: number;
-
-  ended: boolean;
-
-  name: string;
-
-  lp: string;
-
-  baseToken: Token;
-
-  rate: number;
-
-  valueOfTotalStakedAmountInUSDC?: number;
-
-  rewards?: number;
-  rewardTokenPriceinUSD?: number;
-
-  stakingToken: Token;
-
-  // calculates a hypothetical amount of token distributed to the active account per second.
-  getHypotheticalRewardRate: (
-    stakedAmount?: TokenAmount,
-    totalStakedAmount?: TokenAmount,
-  ) => TokenAmount | undefined;
-}
 
 export function useTotalRewardsDistributed() {
   const { chainId } = useActiveWeb3React();
@@ -425,12 +296,8 @@ export function useSyrupInfo(
           const rewards = syrupInfo.rate * (priceOfRewardTokenInUSD ?? 0);
 
           // check for account, if no account set to 0
-          const lp = syrupInfo.lp;
           const rate = web3.utils.toWei(syrupInfo.rate.toString());
-          const syrupToken =
-            lp && lp !== ''
-              ? new Token(137, lp, 18, 'SLP', 'Staked LP')
-              : syrupInfo.stakingToken;
+          const syrupToken = getSyrupLPToken(syrupInfo);
           const stakedAmount = initTokenAmountFromCallResult(
             syrupToken,
             balanceState,
@@ -623,38 +490,27 @@ export function useOldSyrupInfo(
           const token = syrupInfo.token;
 
           // check for account, if no account set to 0
-          const lp = syrupInfo.lp;
           const rate = web3.utils.toWei(syrupInfo.rate.toString());
-          const stakedAmount =
-            balanceState?.result && balanceState?.result?.[0]
-              ? new TokenAmount(
-                  lp && lp !== ''
-                    ? new Token(137, lp, 18, 'SLP', 'Staked LP')
-                    : syrupInfo.stakingToken,
-                  JSBI.BigInt(balanceState?.result?.[0] ?? 0),
-                )
-              : undefined;
-          const totalStakedAmount =
-            totalSupplyState.result && totalSupplyState.result?.[0]
-              ? new TokenAmount(
-                  lp && lp !== ''
-                    ? new Token(137, lp, 18, 'SLP', 'Staked LP')
-                    : syrupInfo.stakingToken,
-                  JSBI.BigInt(totalSupplyState.result?.[0]),
-                )
-              : undefined;
+          const stakedAmount = initTokenAmountFromCallResult(
+            getSyrupLPToken(syrupInfo),
+            balanceState,
+          );
+          const totalStakedAmount = initTokenAmountFromCallResult(
+            getSyrupLPToken(syrupInfo),
+            totalSupplyState,
+          );
           const totalRewardRate = new TokenAmount(token, JSBI.BigInt(rate));
           //const pair = info[index].pair.toLowerCase();
           //const fees = (pairData && pairData[pair] ? pairData[pair].oneDayVolumeUSD * 0.0025: 0);
-          const rewardRate = new TokenAmount(
+          const rewardRate = initTokenAmountFromCallResult(
             token,
-            JSBI.BigInt(rewardRateState.result?.[0]),
+            rewardRateState,
           );
           const getHypotheticalRewardRate = (
             stakedAmount?: TokenAmount,
             totalStakedAmount?: TokenAmount,
           ): TokenAmount | undefined => {
-            if (!stakedAmount || !totalStakedAmount) return;
+            if (!stakedAmount || !totalStakedAmount || !rewardRate) return;
             return new TokenAmount(
               token,
               JSBI.greaterThan(totalStakedAmount.raw, JSBI.BigInt(0))
@@ -687,9 +543,9 @@ export function useOldSyrupInfo(
             name: syrupInfo.name,
             lp: syrupInfo.lp,
             periodFinish: periodFinishMs,
-            earnedAmount: new TokenAmount(
+            earnedAmount: initTokenAmountFromCallResult(
               token,
-              JSBI.BigInt(earnedAmountState?.result?.[0] ?? 0),
+              earnedAmountState,
             ),
             rewardRate: individualRewardRate,
             totalRewardRate: totalRewardRate,
@@ -975,16 +831,7 @@ export function useDualStakingInfo(
 
   const usdPrices = useUSDCPrices(baseTokens);
   const totalSupplys = useTotalSupplys(
-    info.map((item) => {
-      const lp = item.lp;
-      const dummyPair = new Pair(
-        new TokenAmount(item.tokens[0], '0'),
-        new TokenAmount(item.tokens[1], '0'),
-      );
-      return lp && lp !== ''
-        ? new Token(137, lp, 18, 'SLP', 'Staked LP')
-        : dummyPair.liquidityToken;
-    }),
+    info.map((item) => getFarmLPToken(item)),
   );
   const stakingPairs = usePairs(info.map((item) => item.tokens));
   const rewardTokenAPrices = useUSDCPricesToken(
@@ -1025,47 +872,28 @@ export function useDualStakingInfo(
           rewardRateBState &&
           !rewardRateBState.loading
         ) {
-          // get the LP token
-          const tokens = stakingInfo.tokens;
-          const dummyPair = new Pair(
-            new TokenAmount(tokens[0], '0'),
-            new TokenAmount(tokens[1], '0'),
-          );
-
-          // check for account, if no account set to 0
-          const lp = stakingInfo.lp;
           const rateA = web3.utils.toWei(stakingInfo.rateA.toString());
           const rateB = web3.utils.toWei(stakingInfo.rateB.toString());
-          const stakedAmount =
-            balanceState?.result && balanceState?.result?.[0]
-              ? new TokenAmount(
-                  lp && lp !== ''
-                    ? new Token(137, lp, 18, 'SLP', 'Staked LP')
-                    : dummyPair.liquidityToken,
-                  JSBI.BigInt(balanceState?.result?.[0]),
-                )
-              : undefined;
-          const totalStakedAmount =
-            totalSupplyState.result && totalSupplyState.result?.[0]
-              ? new TokenAmount(
-                  lp && lp !== ''
-                    ? new Token(137, lp, 18, 'SLP', 'Staked LP')
-                    : dummyPair.liquidityToken,
-                  JSBI.BigInt(totalSupplyState.result?.[0]),
-                )
-              : undefined;
+          const stakedAmount = initTokenAmountFromCallResult(
+            getFarmLPToken(stakingInfo),
+            balanceState,
+          );
+          const totalStakedAmount = initTokenAmountFromCallResult(
+            getFarmLPToken(stakingInfo),
+            totalSupplyState,
+          );
           const totalRewardRateA = new TokenAmount(uni, JSBI.BigInt(rateA));
           const totalRewardRateB = new TokenAmount(uni, JSBI.BigInt(rateB));
           //const pair = info[index].pair.toLowerCase();
           //const fees = (pairData && pairData[pair] ? pairData[pair].oneDayVolumeUSD * 0.0025: 0);
-          const totalRewardRateA01 =
-            rewardRateAState.result && rewardRateAState.result?.[0]
-              ? new TokenAmount(uni, JSBI.BigInt(rewardRateAState.result?.[0]))
-              : undefined;
-          const totalRewardRateB01 =
-            rewardRateBState.result && rewardRateBState.result?.[0]
-              ? new TokenAmount(uni, JSBI.BigInt(rewardRateBState.result?.[0]))
-              : undefined;
+          const totalRewardRateA01 = initTokenAmountFromCallResult(
+            uni,
+            rewardRateAState,
+          );
+          const totalRewardRateB01 = initTokenAmountFromCallResult(
+            uni,
+            rewardRateBState,
+          );
 
           const getHypotheticalRewardRate = (
             stakedAmount?: TokenAmount,
@@ -1143,20 +971,14 @@ export function useDualStakingInfo(
             ended: stakingInfo.ended,
             name: stakingInfo.name,
             lp: stakingInfo.lp,
-            earnedAmountA:
-              earnedAAmountState?.result && earnedAAmountState?.result?.[0]
-                ? new TokenAmount(
-                    uni,
-                    JSBI.BigInt(earnedAAmountState?.result?.[0] ?? 0),
-                  )
-                : undefined,
-            earnedAmountB:
-              earnedBAmountState?.result && earnedBAmountState?.result?.[0]
-                ? new TokenAmount(
-                    uni,
-                    JSBI.BigInt(earnedBAmountState?.result?.[0] ?? 0),
-                  )
-                : undefined,
+            earnedAmountA: initTokenAmountFromCallResult(
+              uni,
+              earnedAAmountState,
+            ),
+            earnedAmountB: initTokenAmountFromCallResult(
+              uni,
+              earnedBAmountState,
+            ),
             rewardRateA: individualRewardRateA,
             rewardRateB: individualRewardRateB,
             totalRewardRateA: totalRewardRateA,
@@ -1378,31 +1200,21 @@ export function useStakingInfo(
           // check for account, if no account set to 0
           const lp = stakingInfo.lp;
           const rate = web3.utils.toWei(stakingInfo.rate.toString());
-          const stakedAmount =
-            balanceState?.result && balanceState?.result?.[0]
-              ? new TokenAmount(
-                  lp && lp !== ''
-                    ? new Token(137, lp, 18, 'SLP', 'Staked LP')
-                    : dummyPair.liquidityToken,
-                  JSBI.BigInt(balanceState?.result?.[0] ?? 0),
-                )
-              : undefined;
-          const totalStakedAmount =
-            totalSupplyState.result && totalSupplyState.result?.[0]
-              ? new TokenAmount(
-                  lp && lp !== ''
-                    ? new Token(137, lp, 18, 'SLP', 'Staked LP')
-                    : dummyPair.liquidityToken,
-                  JSBI.BigInt(totalSupplyState.result?.[0]),
-                )
-              : undefined;
+          const stakedAmount = initTokenAmountFromCallResult(
+            getFarmLPToken(stakingInfo),
+            balanceState,
+          );
+          const totalStakedAmount = initTokenAmountFromCallResult(
+            getFarmLPToken(stakingInfo),
+            totalSupplyState,
+          );
           const totalRewardRate = new TokenAmount(uni, JSBI.BigInt(rate));
           //const pair = info[index].pair.toLowerCase();
           //const fees = (pairData && pairData[pair] ? pairData[pair].oneDayVolumeUSD * 0.0025: 0);
-          const totalRewardRate01 =
-            rewardRateState.result && rewardRateState.result?.[0]
-              ? new TokenAmount(uni, JSBI.BigInt(rewardRateState.result?.[0]))
-              : undefined;
+          const totalRewardRate01 = initTokenAmountFromCallResult(
+            uni,
+            rewardRateState,
+          );
           const getHypotheticalRewardRate = (
             stakedAmount?: TokenAmount,
             totalStakedAmount?: TokenAmount,
@@ -1503,13 +1315,7 @@ export function useStakingInfo(
             lp: stakingInfo.lp,
             rewardToken: stakingInfo.rewardToken,
             rewardTokenPrice,
-            earnedAmount:
-              earnedAmountState?.result && earnedAmountState?.result?.[0]
-                ? new TokenAmount(
-                    uni,
-                    JSBI.BigInt(earnedAmountState?.result?.[0]),
-                  )
-                : undefined,
+            earnedAmount: initTokenAmountFromCallResult(uni, earnedAmountState),
             rewardRate: individualRewardRate,
             totalRewardRate: totalRewardRate,
             stakedAmount: stakedAmount,
@@ -1608,14 +1414,6 @@ export function useOldStakingInfo(
     'totalSupply',
   );
 
-  const periodFinishes = useMultipleContractSingleData(
-    rewardsAddresses,
-    STAKING_REWARDS_INTERFACE,
-    'periodFinish',
-    undefined,
-    NEVER_RELOAD,
-  );
-
   const stakingPairs = usePairs(info.map((item) => item.tokens));
 
   return useMemo(() => {
@@ -1630,7 +1428,6 @@ export function useOldStakingInfo(
         // these get fetched regardless of account
         const totalSupplyState = totalSupplies[index];
 
-        const periodFinishState = periodFinishes[index];
         const stakingInfo = info[index];
 
         if (
@@ -1639,38 +1436,16 @@ export function useOldStakingInfo(
           !earnedAmountState?.loading &&
           // always need these
           totalSupplyState &&
-          !totalSupplyState.loading &&
-          periodFinishState &&
-          !periodFinishState.loading
+          !totalSupplyState.loading
         ) {
-          // get the LP token
-          const tokens = stakingInfo.tokens;
-          const dummyPair = new Pair(
-            new TokenAmount(tokens[0], '0'),
-            new TokenAmount(tokens[1], '0'),
+          const stakedAmount = initTokenAmountFromCallResult(
+            getFarmLPToken(stakingInfo),
+            balanceState,
           );
-
-          // check for account, if no account set to 0
-          const lp = stakingInfo.lp;
-
-          const stakedAmount =
-            balanceState?.result && balanceState?.result?.[0]
-              ? new TokenAmount(
-                  lp && lp !== ''
-                    ? new Token(137, lp, 18, 'SLP', 'Staked LP')
-                    : dummyPair.liquidityToken,
-                  JSBI.BigInt(balanceState?.result?.[0]),
-                )
-              : undefined;
-          const totalStakedAmount =
-            totalSupplyState.result && totalSupplyState.result?.[0]
-              ? new TokenAmount(
-                  lp && lp !== ''
-                    ? new Token(137, lp, 18, 'SLP', 'Staked LP')
-                    : dummyPair.liquidityToken,
-                  JSBI.BigInt(totalSupplyState.result?.[0]),
-                )
-              : undefined;
+          const totalStakedAmount = initTokenAmountFromCallResult(
+            getFarmLPToken(stakingInfo),
+            totalSupplyState,
+          );
           const totalRewardRate = new TokenAmount(uni, JSBI.BigInt(0));
 
           const getHypotheticalRewardRate = (
@@ -1696,10 +1471,6 @@ export function useOldStakingInfo(
             totalRewardRate,
           );
 
-          const periodFinishMs = periodFinishState.result?.[0]
-            ?.mul(1000)
-            ?.toNumber();
-
           const [, stakingTokenPair] = stakingPairs[index];
 
           memo.push({
@@ -1710,10 +1481,7 @@ export function useOldStakingInfo(
             lp: stakingInfo.lp,
             rewardToken: stakingInfo.rewardToken,
             rewardTokenPrice: 0,
-            earnedAmount: new TokenAmount(
-              uni,
-              JSBI.BigInt(earnedAmountState?.result?.[0] ?? 0),
-            ),
+            earnedAmount: initTokenAmountFromCallResult(uni, earnedAmountState),
             rewardRate: individualRewardRate,
             totalRewardRate: totalRewardRate,
             stakedAmount: stakedAmount,
@@ -1737,7 +1505,6 @@ export function useOldStakingInfo(
     chainId,
     earnedAmounts,
     info,
-    periodFinishes,
     rewardsAddresses,
     totalSupplies,
     uni,

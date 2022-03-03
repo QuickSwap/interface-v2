@@ -7,10 +7,8 @@ import {
   useStakingInfo,
   useOldStakingInfo,
   useDualStakingInfo,
-  StakingInfo,
-  DualStakingInfo,
-  CommonStakingInfo,
 } from 'state/stake/hooks';
+import { StakingInfo, DualStakingInfo, CommonStakingInfo } from 'types';
 import {
   FarmCard,
   ToggleSwitch,

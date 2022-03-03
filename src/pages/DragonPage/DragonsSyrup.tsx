@@ -2,12 +2,8 @@ import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { useTheme } from '@material-ui/core/styles';
 import { ArrowUp, ArrowDown } from 'react-feather';
 import { Box, Typography, Divider, useMediaQuery } from '@material-ui/core';
-import {
-  SyrupInfo,
-  useSyrupInfo,
-  useOldSyrupInfo,
-  useLairInfo,
-} from 'state/stake/hooks';
+import { useSyrupInfo, useOldSyrupInfo, useLairInfo } from 'state/stake/hooks';
+import { SyrupInfo } from 'types';
 import {
   SyrupCard,
   ToggleSwitch,
