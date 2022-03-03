@@ -20,6 +20,7 @@ import {
   getPageItemsToLoad,
   getTokenAPRSyrup,
   returnFullWidthMobile,
+  getExactTokenAmount,
 } from 'utils';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 import { useInfiniteLoading } from 'utils/useInfiniteLoading';
@@ -82,10 +83,10 @@ const DragonsSyrup: React.FC = () => {
     (a: SyrupInfo, b: SyrupInfo) => {
       const depositA =
         a.valueOfTotalStakedAmountInUSDC ??
-        Number(a.totalStakedAmount?.toExact() ?? 0);
+        getExactTokenAmount(a.totalStakedAmount);
       const depositB =
         b.valueOfTotalStakedAmountInUSDC ??
-        Number(b.totalStakedAmount?.toExact() ?? 0);
+        getExactTokenAmount(b.totalStakedAmount);
       return (depositA > depositB ? -1 : 1) * sortIndex;
     },
     [sortIndex],
@@ -100,11 +101,9 @@ const DragonsSyrup: React.FC = () => {
   const sortByEarned = useCallback(
     (a: SyrupInfo, b: SyrupInfo) => {
       const earnedUSDA =
-        Number(a.earnedAmount?.toExact() ?? 0) *
-        Number(a.rewardTokenPriceinUSD ?? 0);
+        getExactTokenAmount(a.earnedAmount) * (a.rewardTokenPriceinUSD ?? 0);
       const earnedUSDB =
-        Number(b.earnedAmount?.toExact() ?? 0) *
-        Number(b.rewardTokenPriceinUSD ?? 0);
+        getExactTokenAmount(b.earnedAmount) * (b.rewardTokenPriceinUSD ?? 0);
       return (earnedUSDA > earnedUSDB ? -1 : 1) * sortIndex;
     },
     [sortIndex],
