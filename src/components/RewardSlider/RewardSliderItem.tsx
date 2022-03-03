@@ -107,13 +107,13 @@ const RewardSliderItem: React.FC<RewardSliderItemProps> = ({
       <Box className='row'>
         <Typography>24h Fees</Typography>
         <Typography component='h4'>
-          ${Number((info?.oneDayFee ?? 0).toFixed(0)).toLocaleString()}
+          ${(info?.oneDayFee ?? 0).toLocaleString()}
         </Typography>
       </Box>
       <Box className='row'>
         <Typography>Rewards</Typography>
         <Typography component='h4'>
-          ${Number(rewards.toFixed(0)).toLocaleString()} / day
+          ${rewards.toLocaleString()} / day
         </Typography>
       </Box>
       <Box className='row'>
