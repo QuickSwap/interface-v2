@@ -135,7 +135,6 @@
     "react-error-overlay": "^6.0.10",
     "react-ga": "^3.3.0",
     "react-slick": "^0.28.1",
-    "s": "^1.0.0",
     "slick-carousel": "^1.8.1",
     "styled-components": "^5.3.3"
   }
