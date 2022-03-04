@@ -12,6 +12,7 @@ import { useWalletModalToggle } from 'state/application/hooks';
 import { TransactionResponse } from '@ethersproject/providers';
 import { BigNumber } from '@ethersproject/bignumber';
 import ReactGA from 'react-ga';
+import { useTranslation } from 'react-i18next';
 import { Currency, Token, ETHER, TokenAmount } from '@uniswap/sdk';
 import { GlobalConst } from 'constants/index';
 import { useActiveWeb3React } from 'hooks';
@@ -38,6 +39,7 @@ import {
   calculateGasMargin,
   returnTokenFromKey,
   isSupportedNetwork,
+  formatTokenAmount,
 } from 'utils';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
 import { ReactComponent as AddLiquidityIcon } from 'assets/images/AddLiquidityIcon.svg';
@@ -108,6 +110,7 @@ const AddLiquidity: React.FC<{
 }> = ({ currency0, currency1, currencyBg }) => {
   const classes = useStyles({});
   const { palette } = useTheme();
+  const { t } = useTranslation();
   const [addLiquidityErrorMessage, setAddLiquidityErrorMessage] = useState<
     string | null
   >(null);
@@ -139,13 +142,14 @@ const AddLiquidity: React.FC<{
     error,
   } = useDerivedMintInfo();
 
-  const pendingText = `Supplying ${parsedAmounts[
-    Field.CURRENCY_A
-  ]?.toSignificant(6)} ${
-    currencies[Field.CURRENCY_A]?.symbol
-  } and ${parsedAmounts[Field.CURRENCY_B]?.toSignificant(6)} ${
-    currencies[Field.CURRENCY_B]?.symbol
-  }`;
+  const liquidityTokenData = {
+    amountA: formatTokenAmount(parsedAmounts[Field.CURRENCY_A]),
+    symbolA: currencies[Field.CURRENCY_A]?.symbol,
+    amountB: formatTokenAmount(parsedAmounts[Field.CURRENCY_B]),
+    symbolB: currencies[Field.CURRENCY_B]?.symbol,
+  };
+
+  const pendingText = t('supplyingTokens', liquidityTokenData);
 
   const {
     onFieldAInput,
@@ -167,7 +171,7 @@ const AddLiquidity: React.FC<{
     [independentField]: typedValue,
     [dependentField]: noLiquidity
       ? otherTypedValue
-      : parsedAmounts[dependentField]?.toSignificant(6) ?? '',
+      : parsedAmounts[dependentField]?.toExact() ?? '',
   };
 
   const { ethereum } = window as any;
@@ -319,15 +323,7 @@ const AddLiquidity: React.FC<{
         }).then(async (response) => {
           setAttemptingTxn(false);
           setTxPending(true);
-          const summary =
-            'Add ' +
-            parsedAmounts[Field.CURRENCY_A]?.toSignificant(3) +
-            ' ' +
-            currencies[Field.CURRENCY_A]?.symbol +
-            ' and ' +
-            parsedAmounts[Field.CURRENCY_B]?.toSignificant(3) +
-            ' ' +
-            currencies[Field.CURRENCY_B]?.symbol;
+          const summary = t('addLiquidityTokens', liquidityTokenData);
 
           addTransaction(response, {
             summary,
@@ -343,7 +339,7 @@ const AddLiquidity: React.FC<{
             setTxPending(false);
           } catch (error) {
             setTxPending(false);
-            setAddLiquidityErrorMessage('There is an error in transaction.');
+            setAddLiquidityErrorMessage(t('errorInTx'));
           }
 
           ReactGA.event({
@@ -358,7 +354,7 @@ const AddLiquidity: React.FC<{
       )
       .catch((error) => {
         setAttemptingTxn(false);
-        setAddLiquidityErrorMessage('Transaction rejected.');
+        setAddLiquidityErrorMessage(t('txRejected'));
         // we only care if the error is something _other_ than the user rejected the tx
         if (error?.code !== 4001) {
           console.error(error);
@@ -385,12 +381,12 @@ const AddLiquidity: React.FC<{
 
   const buttonText = useMemo(() => {
     if (account) {
-      return error ?? 'Supply';
+      return error ?? t('supply');
     } else if (ethereum && !isSupportedNetwork(ethereum)) {
-      return 'Switch to Polygon';
+      return t('switchPolygon');
     }
-    return 'Connect Wallet';
-  }, [account, ethereum, error]);
+    return t('connectWallet');
+  }, [account, ethereum, error, t]);
 
   const modalHeader = () => {
     return (
@@ -404,24 +400,22 @@ const AddLiquidity: React.FC<{
         </Box>
         <Box mb={6} color={palette.text.primary} textAlign='center'>
           <Typography variant='h6'>
-            Supplying {parsedAmounts[Field.CURRENCY_A]?.toSignificant()}&nbsp;
-            {currencies[Field.CURRENCY_A]?.symbol}&nbsp;and&nbsp;
-            {parsedAmounts[Field.CURRENCY_B]?.toSignificant()}
-            {currencies[Field.CURRENCY_B]?.symbol}
+            {t('supplyingTokens', liquidityTokenData)}
             <br />
-            You will receive {liquidityMinted?.toSignificant(6)}{' '}
-            {currencies[Field.CURRENCY_A]?.symbol} /{' '}
-            {currencies[Field.CURRENCY_B]?.symbol} LP Tokens
+            {t('receiveLPTokens', {
+              amount: formatTokenAmount(liquidityMinted),
+              symbolA: currencies[Field.CURRENCY_A]?.symbol,
+              symbolB: currencies[Field.CURRENCY_B]?.symbol,
+            })}
           </Typography>
         </Box>
         <Box mb={3} color={palette.text.secondary} textAlign='center'>
           <Typography variant='body2'>
-            {`Output is estimated. If the price changes by more than ${allowedSlippage /
-              100}% your transaction will revert.`}
+            {t('outputEstimated', { slippage: allowedSlippage / 100 })}
           </Typography>
         </Box>
         <Box className={classes.swapButtonWrapper}>
-          <Button onClick={onAddLiquidity}>Confirm Supply</Button>
+          <Button onClick={onAddLiquidity}>{t('confirmSupply')}</Button>
         </Box>
       </Box>
     );
@@ -444,7 +438,7 @@ const AddLiquidity: React.FC<{
               />
             ) : (
               <ConfirmationModalContent
-                title='Supplying Liquidity'
+                title={t('supplyingliquidity')}
                 onDismiss={handleDismissConfirmation}
                 content={modalHeader}
               />
@@ -452,15 +446,13 @@ const AddLiquidity: React.FC<{
           }
           pendingText={pendingText}
           modalContent={
-            txPending
-              ? 'Submitted transaction to add liquidity'
-              : 'Successfully added liquidity'
+            txPending ? t('submittedTxLiquidity') : t('successAddedliquidity')
           }
         />
       )}
       <CurrencyInput
         id='add-liquidity-input-tokena'
-        title='Token 1:'
+        title={`${t('token')} 1:`}
         currency={currencies[Field.CURRENCY_A]}
         showHalfButton={Boolean(maxAmounts[Field.CURRENCY_A])}
         showMaxButton={!atMaxAmounts[Field.CURRENCY_A]}
@@ -470,9 +462,7 @@ const AddLiquidity: React.FC<{
         onHalf={() =>
           onFieldAInput(
             maxAmounts[Field.CURRENCY_A]
-              ? (
-                  Number(maxAmounts[Field.CURRENCY_A]?.toSignificant()) / 2
-                ).toString()
+              ? (Number(maxAmounts[Field.CURRENCY_A]?.toExact()) / 2).toString()
               : '',
           )
         }
@@ -486,16 +476,14 @@ const AddLiquidity: React.FC<{
       </Box>
       <CurrencyInput
         id='add-liquidity-input-tokenb'
-        title='Token 2:'
+        title={`${t('token')} 2:`}
         showHalfButton={Boolean(maxAmounts[Field.CURRENCY_B])}
         currency={currencies[Field.CURRENCY_B]}
         showMaxButton={!atMaxAmounts[Field.CURRENCY_B]}
         onHalf={() =>
           onFieldBInput(
             maxAmounts[Field.CURRENCY_B]
-              ? (
-                  Number(maxAmounts[Field.CURRENCY_B]?.toSignificant()) / 2
-                ).toString()
+              ? (Number(maxAmounts[Field.CURRENCY_B]?.toExact()) / 2).toString()
               : '',
           )
         }
@@ -524,17 +512,17 @@ const AddLiquidity: React.FC<{
               </Typography>
             </Box>
             <Box className={classes.swapPrice}>
-              <Typography variant='body2'>Your pool share:</Typography>
+              <Typography variant='body2'>{t('yourPoolShare')}:</Typography>
               <Typography variant='body2'>
                 {poolTokenPercentage
-                  ? poolTokenPercentage.toFixed(6) + '%'
+                  ? poolTokenPercentage.toSignificant(6) + '%'
                   : '-'}
               </Typography>
             </Box>
             <Box className={classes.swapPrice}>
-              <Typography variant='body2'>LP Tokens Received:</Typography>
+              <Typography variant='body2'>{t('lpTokenReceived')}:</Typography>
               <Typography variant='body2'>
-                {userPoolBalance?.toSignificant()} LP Tokens
+                {formatTokenAmount(userPoolBalance)} {t('lpTokens')}
               </Typography>
             </Box>
           </Box>
@@ -563,8 +551,12 @@ const AddLiquidity: React.FC<{
                     disabled={approvingA || approvalA === ApprovalState.PENDING}
                   >
                     {approvalA === ApprovalState.PENDING
-                      ? `Approving ${currencies[Field.CURRENCY_A]?.symbol}`
-                      : 'Approve ' + currencies[Field.CURRENCY_A]?.symbol}
+                      ? `${t('approving')} ${
+                          currencies[Field.CURRENCY_A]?.symbol
+                        }`
+                      : `${t('approve')} ${
+                          currencies[Field.CURRENCY_A]?.symbol
+                        }`}
                   </Button>
                 </Box>
               )}
@@ -585,8 +577,12 @@ const AddLiquidity: React.FC<{
                     disabled={approvingB || approvalB === ApprovalState.PENDING}
                   >
                     {approvalB === ApprovalState.PENDING
-                      ? `Approving ${currencies[Field.CURRENCY_B]?.symbol}`
-                      : 'Approve ' + currencies[Field.CURRENCY_B]?.symbol}
+                      ? `${t('approving')} ${
+                          currencies[Field.CURRENCY_B]?.symbol
+                        }`
+                      : `${t('approve')} ${
+                          currencies[Field.CURRENCY_B]?.symbol
+                        }`}
                   </Button>
                 </Box>
               )}

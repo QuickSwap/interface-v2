@@ -8,7 +8,7 @@ import { unwrappedToken } from 'utils/wrappedCurrency';
 import { useTokenBalance } from 'state/wallet/hooks';
 import { useTotalSupply } from 'data/TotalSupply';
 import { CurrencyLogo, RemoveLiquidityModal } from 'components';
-import { currencyId } from 'utils';
+import { currencyId, formatTokenAmount } from 'utils';
 
 const useStyles = makeStyles(({ palette }) => ({
   poolButtonRow: {
@@ -105,35 +105,27 @@ const PoolPositionCardDetails: React.FC<{ pair: Pair }> = ({ pair }) => {
         <Box className={classes.cardRow}>
           <Typography variant='body2'>Your pool tokens:</Typography>
           <Typography variant='body2'>
-            {userPoolBalance ? userPoolBalance.toSignificant(4) : '-'}
+            {formatTokenAmount(userPoolBalance)}
           </Typography>
         </Box>
         <Box className={classes.cardRow}>
           <Typography variant='body2'>Pooled {currency0.symbol}:</Typography>
-          {token0Deposited ? (
-            <Box display='flex' alignItems='center'>
-              <Typography variant='body2' style={{ marginRight: 10 }}>
-                {token0Deposited?.toSignificant(6)}
-              </Typography>
-              <CurrencyLogo size='20px' currency={currency0} />
-            </Box>
-          ) : (
-            '-'
-          )}
+          <Box display='flex' alignItems='center'>
+            <Typography variant='body2' style={{ marginRight: 10 }}>
+              {formatTokenAmount(token0Deposited)}
+            </Typography>
+            <CurrencyLogo size='20px' currency={currency0} />
+          </Box>
         </Box>
 
         <Box className={classes.cardRow}>
           <Typography variant='body2'>Pooled {currency1.symbol}:</Typography>
-          {token1Deposited ? (
-            <Box display='flex' alignItems='center'>
-              <Typography variant='body2' style={{ marginRight: 10 }}>
-                {token1Deposited?.toSignificant(6)}
-              </Typography>
-              <CurrencyLogo size='20px' currency={currency1} />
-            </Box>
-          ) : (
-            '-'
-          )}
+          <Box display='flex' alignItems='center'>
+            <Typography variant='body2' style={{ marginRight: 10 }}>
+              {formatTokenAmount(token1Deposited)}
+            </Typography>
+            <CurrencyLogo size='20px' currency={currency1} />
+          </Box>
         </Box>
 
         <Box className={classes.cardRow}>

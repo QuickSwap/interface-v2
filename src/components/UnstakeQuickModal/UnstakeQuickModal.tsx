@@ -8,6 +8,7 @@ import { TransactionResponse } from '@ethersproject/providers';
 import { useTransactionAdder } from 'state/transactions/hooks';
 import { useLairContract } from 'hooks/useContract';
 import Web3 from 'web3';
+import { formatTokenAmount } from 'utils';
 
 const web3 = new Web3();
 
@@ -106,7 +107,7 @@ const UnstakeQuickModal: React.FC<UnstakeQuickModalProps> = ({
           >
             <Typography variant='body2'>dQUICK</Typography>
             <Typography variant='body2'>
-              Balance: {dQuickBalance.toSignificant(3)}
+              Balance: {formatTokenAmount(dQuickBalance)}
             </Typography>
           </Box>
           <Box mt={2} display='flex' alignItems='center'>

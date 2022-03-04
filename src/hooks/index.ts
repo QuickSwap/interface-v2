@@ -41,15 +41,11 @@ export function useIsArgentWallet(): boolean {
 
 export function useInitTransak() {
   const dispatch = useDispatch<AppDispatch>();
-  const initTransak = (
-    account: any,
-    mobileWindowSize: boolean,
-    currency: string,
-  ) => {
+  const initTransak = (account: any, mobileWindowSize: boolean) => {
     const transak = new transakSDK({
-      apiKey: '258960cf-1e17-4419-bf7f-77443282f5da', // Your API Key
+      apiKey: process.env.REACT_APP_TRANSAK_KEY, // Your API Key
       environment: 'PRODUCTION', // STAGING/PRODUCTION
-      defaultCryptoCurrency: currency,
+      defaultCryptoCurrency: 'MATIC',
       walletAddress: account, // Your customer's wallet address
       themeColor: '2891f9', // App theme color
       redirectURL: 'window.location.origin',
