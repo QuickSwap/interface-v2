@@ -49,8 +49,7 @@ export const CustomSelect: React.FC<MiniSelectProps> = ({
       return;
     }
     children?.map((each, index) => {
-      if (each.props.customTagType !== '--411customisedOption--') {
-        // to check it is customTagType or not. It was defined as default customTagType value on CustomSelect component.
+      if (each.props.customTagType !== '') {
         return null;
       }
       const value = each.props.value;
@@ -187,6 +186,7 @@ const DropBox = styled(Box)<RefProps>``;
 interface SmOptionProps {
   value: any;
   [index: string]: any;
+  customTagType: string;
 }
 export const SmOption = styled.div<SmOptionProps>`
   padding: 8px 16px;
@@ -201,10 +201,6 @@ export const SmOption = styled.div<SmOptionProps>`
     background: #8888;
   }
 `;
-
-SmOption.defaultProps = {
-  customTagType: '--411customisedOption--', // set customTagType as `--411customisedOption--`, and it can be randomized strings.
-};
 
 interface IconProps {
   size?: any;
