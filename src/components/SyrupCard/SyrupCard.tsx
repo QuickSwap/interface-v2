@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { Box, Typography, useMediaQuery } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-import { SyrupInfo } from 'state/stake/hooks';
+import { SyrupInfo } from 'types';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { CurrencyLogo } from 'components';
-import { formatCompact, formatTokenAmount } from 'utils';
+import { formatCompact, formatTokenAmount, getEarnedUSDSyrup } from 'utils';
 import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
 import SyrupAPR from './SyrupAPR';
 import SyrupCardDetails from './SyrupCardDetails';
@@ -39,10 +39,6 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
     : `${formatTokenAmount(syrup.totalStakedAmount)} ${
         syrup.stakingToken.symbol
       }`;
-
-  const syrupEarnedUSD =
-    Number(syrup.earnedAmount.toExact()) *
-    Number(syrup.rewardTokenPriceinUSD ?? 0);
 
   return (
     <Box className={classes.syrupCard}>
@@ -101,15 +97,12 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
                 <Box display='flex' mt={0.25}>
                   <Typography variant='caption'>
                     $
-                    {Number(
-                      (
-                        syrup.rate * Number(syrup.rewardTokenPriceinUSD)
-                      ).toFixed(2),
-                    ).toLocaleString()}{' '}
-                    <span style={{ color: palette.text.secondary }}>
-                      {' '}
-                      / day
-                    </span>
+                    {syrup.rewardTokenPriceinUSD
+                      ? (
+                          syrup.rate * syrup.rewardTokenPriceinUSD
+                        ).toLocaleString()
+                      : '-'}{' '}
+                    <span style={{ color: palette.text.secondary }}>/ day</span>
                   </Typography>
                 </Box>
               </Box>
@@ -136,9 +129,7 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
                 variant='body2'
                 style={{ color: palette.text.secondary }}
               >
-                {syrupEarnedUSD > 0 && syrupEarnedUSD < 0.001
-                  ? '< $0.001'
-                  : `$${syrupEarnedUSD.toLocaleString()}`}
+                {getEarnedUSDSyrup(syrup)}
               </Typography>
             </Box>
           </>

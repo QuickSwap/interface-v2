@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, Typography, Button } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
-import { StakingInfo } from 'state/stake/hooks';
+import { StakingInfo } from 'types';
 import { DoubleCurrencyLogo } from 'components';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon.svg';
 import {
@@ -107,13 +107,13 @@ const RewardSliderItem: React.FC<RewardSliderItemProps> = ({
       <Box className='row'>
         <Typography>24h Fees</Typography>
         <Typography component='h4'>
-          ${Number((info?.oneDayFee ?? 0).toFixed(0)).toLocaleString()}
+          ${(info?.oneDayFee ?? 0).toLocaleString()}
         </Typography>
       </Box>
       <Box className='row'>
         <Typography>Rewards</Typography>
         <Typography component='h4'>
-          ${Number(rewards.toFixed(0)).toLocaleString()} / day
+          ${rewards.toLocaleString()} / day
         </Typography>
       </Box>
       <Box className='row'>

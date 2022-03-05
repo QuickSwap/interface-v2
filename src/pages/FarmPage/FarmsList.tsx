@@ -7,10 +7,8 @@ import {
   useStakingInfo,
   useOldStakingInfo,
   useDualStakingInfo,
-  StakingInfo,
-  DualStakingInfo,
-  CommonStakingInfo,
 } from 'state/stake/hooks';
+import { StakingInfo, DualStakingInfo, CommonStakingInfo } from 'types';
 import {
   FarmCard,
   ToggleSwitch,
@@ -21,6 +19,7 @@ import {
 import { GlobalConst } from 'constants/index';
 import {
   getAPYWithFee,
+  getExactTokenAmount,
   getOneYearFee,
   getPageItemsToLoad,
   returnFullWidthMobile,
@@ -116,8 +115,8 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
   const sortByRewardLP = useCallback(
     (a: StakingInfo, b: StakingInfo) => {
       return (
-        (Number(a.totalRewardRate.toExact()) >
-        Number(b.totalRewardRate.toExact())
+        (getExactTokenAmount(a.totalRewardRate) >
+        getExactTokenAmount(b.totalRewardRate)
           ? -1
           : 1) * sortIndex
       );
@@ -168,7 +167,8 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
   const sortByEarnedLP = useCallback(
     (a: StakingInfo, b: StakingInfo) => {
       return (
-        (Number(a.earnedAmount.toExact()) > Number(b.earnedAmount.toExact())
+        (getExactTokenAmount(a.earnedAmount) >
+        getExactTokenAmount(b.earnedAmount)
           ? -1
           : 1) * sortIndex
       );
@@ -179,11 +179,11 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
   const sortByEarnedDual = useCallback(
     (a: DualStakingInfo, b: DualStakingInfo) => {
       const earnedA =
-        Number(a.earnedAmountA.toExact()) * a.rewardTokenAPrice +
-        Number(a.earnedAmountB.toExact()) * a.rewardTokenBPrice;
+        getExactTokenAmount(a.earnedAmountA) * a.rewardTokenAPrice +
+        getExactTokenAmount(a.earnedAmountB) * a.rewardTokenBPrice;
       const earnedB =
-        Number(b.earnedAmountA.toExact()) * b.rewardTokenAPrice +
-        Number(b.earnedAmountB.toExact()) * b.rewardTokenBPrice;
+        getExactTokenAmount(b.earnedAmountA) * b.rewardTokenAPrice +
+        getExactTokenAmount(b.earnedAmountB) * b.rewardTokenBPrice;
       return (earnedA > earnedB ? -1 : 1) * sortIndex;
     },
     [sortIndex],

@@ -4,11 +4,8 @@ import { useMediaQuery } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import {
-  useStakingInfo,
-  getBulkPairData,
-  StakingInfo,
-} from 'state/stake/hooks';
+import { StakingInfo } from 'types';
+import { useStakingInfo, getBulkPairData } from 'state/stake/hooks';
 import RewardSliderItem from './RewardSliderItem';
 import { useActiveWeb3React } from 'hooks';
 import { getOneYearFee, returnStakingInfo } from 'utils';

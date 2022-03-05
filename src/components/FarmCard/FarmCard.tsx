@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
 import { Box, Typography, useMediaQuery } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-import { DualStakingInfo, StakingInfo } from 'state/stake/hooks';
+import { DualStakingInfo, StakingInfo } from 'types';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { DoubleCurrencyLogo, CurrencyLogo } from 'components';
 import CircleInfoIcon from 'assets/images/circleinfo.svg';
 import FarmCardDetails from './FarmCardDetails';
 import {
   getAPYWithFee,
-  returnTokenFromKey,
   getRewardRate,
   getStakedAmountStakingInfo,
   getTVLStaking,
@@ -98,8 +97,8 @@ const FarmCard: React.FC<{
 
   const lpRewards = lpStakingInfo.rewardTokenPrice * lpStakingInfo.rate;
   const dualRewards =
-    dualStakingInfo.rateA * (dualStakingInfo.rewardTokenAPrice ?? 0) +
-    dualStakingInfo.rateB * Number(dualStakingInfo.rewardTokenBPrice);
+    dualStakingInfo.rateA * dualStakingInfo.rewardTokenAPrice +
+    dualStakingInfo.rateB * dualStakingInfo.rewardTokenBPrice;
 
   const renderPool = (width: number) => (
     <Box display='flex' alignItems='center' width={width}>

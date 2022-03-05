@@ -43,6 +43,7 @@ import {
   Token,
   TokenAmount,
   Price,
+  Pair,
 } from '@uniswap/sdk';
 import { BigNumber, BigNumberish } from '@ethersproject/bignumber';
 import { formatUnits } from 'ethers/lib/utils';
@@ -57,10 +58,13 @@ import {
   DualStakingInfo,
   LairInfo,
   StakingInfo,
+  SyrupBasic,
   SyrupInfo,
-} from 'state/stake/hooks';
+} from 'types';
 import { unwrappedToken } from './wrappedCurrency';
 import { useUSDCPriceToken } from './useUSDCPrice';
+import { CallState } from 'state/multicall/hooks';
+import { DualStakingBasic, StakingBasic } from 'types';
 dayjs.extend(utc);
 dayjs.extend(weekOfYear);
 
@@ -637,6 +641,10 @@ export const getTopPairs = async (count: number) => {
   }
 };
 
+export function getSecondsOneDay() {
+  return 60 * 60 * 24;
+}
+
 export const getIntervalTokenData = async (
   tokenAddress: string,
   startTime: number,
@@ -774,7 +782,7 @@ export const getTokenChartData = async (
 
     const dayIndexSet = new Set();
     const dayIndexArray: any[] = [];
-    const oneDay = 24 * 60 * 60;
+    const oneDay = getSecondsOneDay();
     data.forEach((dayData, i) => {
       // add the day index to the set of days
       dayIndexSet.add((data[i].date / oneDay).toFixed(0));
@@ -1679,17 +1687,7 @@ export function returnTokenFromKey(key: string): Token {
 export function returnSyrupInfo(
   isOld?: boolean,
 ): {
-  [chainId in ChainId]?: {
-    token: Token;
-    stakingRewardAddress: string;
-    ended: boolean;
-    name: string;
-    lp: string;
-    baseToken: Token;
-    rate: number;
-    ending: number; //DATE IN UNIX TIMESTAMP
-    stakingToken: Token;
-  }[];
+  [chainId in ChainId]?: SyrupBasic[];
 } {
   const syrupInfo = isOld ? stakeData.oldsyrup : stakeData.syrup;
   return {
@@ -1707,17 +1705,7 @@ export function returnSyrupInfo(
 export function returnStakingInfo(
   type?: string,
 ): {
-  [chainId in ChainId]?: {
-    tokens: [Token, Token];
-    stakingRewardAddress: string;
-    ended: boolean;
-    name: string;
-    lp: string;
-    baseToken: Token;
-    rate: number;
-    pair: string;
-    rewardToken: Token;
-  }[];
+  [chainId in ChainId]?: StakingBasic[];
 } {
   const stakingInfo =
     type === 'old'
@@ -1741,20 +1729,7 @@ export function returnStakingInfo(
 }
 
 export function returnDualStakingInfo(): {
-  [chainId in ChainId]?: {
-    tokens: [Token, Token];
-    stakingRewardAddress: string;
-    ended: boolean;
-    name: string;
-    lp: string;
-    baseToken: Token;
-    rewardTokenA: Token;
-    rewardTokenB: Token;
-    rewardTokenBBase: Token;
-    rateA: number;
-    rateB: number;
-    pair: string;
-  }[];
+  [chainId in ChainId]?: DualStakingBasic[];
 } {
   return {
     [ChainId.MATIC]: stakeData.dualrewards.map((info) => {
@@ -1918,7 +1893,13 @@ export function getStakedAmountStakingInfo(
   const token0 = stakingInfo.tokens[0];
   const baseToken =
     baseTokenCurrency === empty ? token0 : stakingInfo.baseToken;
-  if (!stakingInfo.totalSupply || !stakingTokenPair) return;
+  if (
+    !stakingInfo.totalSupply ||
+    !stakingTokenPair ||
+    !stakingInfo.totalStakedAmount ||
+    !stakingInfo.stakedAmount
+  )
+    return;
   // take the total amount of LP tokens staked, multiply by ETH value of all LP tokens, divide by all LP tokens
   const valueOfTotalStakedAmountInBaseToken = new TokenAmount(
     baseToken,
@@ -2022,8 +2003,16 @@ export function getUSDString(usdValue?: CurrencyAmount) {
   return `$${value.toLocaleString()}`;
 }
 
+export function getEarnedUSDSyrup(syrup?: SyrupInfo) {
+  if (!syrup || !syrup.earnedAmount || !syrup.rewardTokenPriceinUSD) return '-';
+  const earnedUSD =
+    Number(syrup.earnedAmount.toExact()) * Number(syrup.rewardTokenPriceinUSD);
+  if (earnedUSD > 0 && earnedUSD < 0.001) return '< $0.001';
+  return `$${earnedUSD.toLocaleString()}`;
+}
+
 export function getEarnedUSDLPFarm(stakingInfo: StakingInfo | undefined) {
-  if (!stakingInfo) return;
+  if (!stakingInfo || !stakingInfo.earnedAmount) return;
   const earnedUSD =
     Number(stakingInfo.earnedAmount.toExact()) * stakingInfo.rewardTokenPrice;
   if (earnedUSD < 0.001 && earnedUSD > 0) {
@@ -2033,7 +2022,8 @@ export function getEarnedUSDLPFarm(stakingInfo: StakingInfo | undefined) {
 }
 
 export function getEarnedUSDDualFarm(stakingInfo: DualStakingInfo | undefined) {
-  if (!stakingInfo) return;
+  if (!stakingInfo || !stakingInfo.earnedAmountA || !stakingInfo.earnedAmountB)
+    return;
   const earnedUSD =
     Number(stakingInfo.earnedAmountA.toExact()) *
       stakingInfo.rewardTokenAPrice +
@@ -2051,4 +2041,60 @@ export function isSupportedNetwork(ethereum: any) {
 
 export function getPageItemsToLoad(index: number, countsPerPage: number) {
   return index === 0 ? countsPerPage : countsPerPage * index;
+}
+
+export function getExactTokenAmount(amount?: TokenAmount | CurrencyAmount) {
+  if (!amount) return 0;
+  return Number(amount.toExact());
+}
+
+// this is useful when the value has more digits than token decimals
+export function getValueTokenDecimals(value: string, token?: Token | Currency) {
+  if (!token) return '0';
+  const valueDigits = value.split('.');
+  const valueDigitStr = valueDigits.length > 1 ? valueDigits[1] : '';
+  const valueDigitCount = valueDigitStr.length;
+  if (valueDigitCount > token.decimals) {
+    return value.substring(
+      0,
+      value.length - (valueDigitCount - token.decimals),
+    );
+  }
+  return value;
+}
+
+export function getPartialTokenAmount(
+  percent: number,
+  amount?: TokenAmount | CurrencyAmount,
+) {
+  if (!amount) return '0';
+  if (percent === 100) return amount.toExact();
+  const partialAmount = (Number(amount.toExact()) * percent) / 100;
+  return getValueTokenDecimals(partialAmount.toString(), amount.currency);
+}
+
+export function initTokenAmountFromCallResult(
+  token: Token,
+  callState?: CallState,
+) {
+  if (!callState || !callState.result || !callState.result[0]) return;
+  return new TokenAmount(token, JSBI.BigInt(callState.result[0]));
+}
+
+export function getFarmLPToken(
+  info: StakingInfo | DualStakingInfo | StakingBasic | DualStakingBasic,
+) {
+  const lp = info.lp;
+  const dummyPair = new Pair(
+    new TokenAmount(info.tokens[0], '0'),
+    new TokenAmount(info.tokens[1], '0'),
+  );
+  if (lp && lp !== '') return new Token(137, lp, 18, 'SLP', 'Staked LP');
+  return dummyPair.liquidityToken;
+}
+
+export function getSyrupLPToken(info: SyrupBasic | SyrupInfo) {
+  const lp = info.lp;
+  if (lp && lp !== '') return new Token(137, lp, 18, 'SLP', 'Staked LP');
+  return info.stakingToken;
 }

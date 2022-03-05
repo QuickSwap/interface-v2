@@ -2,12 +2,8 @@ import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { useTheme } from '@material-ui/core/styles';
 import { ArrowUp, ArrowDown } from 'react-feather';
 import { Box, Typography, Divider, useMediaQuery } from '@material-ui/core';
-import {
-  SyrupInfo,
-  useSyrupInfo,
-  useOldSyrupInfo,
-  useLairInfo,
-} from 'state/stake/hooks';
+import { useSyrupInfo, useOldSyrupInfo, useLairInfo } from 'state/stake/hooks';
+import { SyrupInfo } from 'types';
 import {
   SyrupCard,
   ToggleSwitch,
@@ -20,6 +16,7 @@ import {
   getPageItemsToLoad,
   getTokenAPRSyrup,
   returnFullWidthMobile,
+  getExactTokenAmount,
 } from 'utils';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 import { useInfiniteLoading } from 'utils/useInfiniteLoading';
@@ -82,10 +79,10 @@ const DragonsSyrup: React.FC = () => {
     (a: SyrupInfo, b: SyrupInfo) => {
       const depositA =
         a.valueOfTotalStakedAmountInUSDC ??
-        Number(a.totalStakedAmount.toExact());
+        getExactTokenAmount(a.totalStakedAmount);
       const depositB =
         b.valueOfTotalStakedAmountInUSDC ??
-        Number(b.totalStakedAmount.toExact());
+        getExactTokenAmount(b.totalStakedAmount);
       return (depositA > depositB ? -1 : 1) * sortIndex;
     },
     [sortIndex],
@@ -100,9 +97,9 @@ const DragonsSyrup: React.FC = () => {
   const sortByEarned = useCallback(
     (a: SyrupInfo, b: SyrupInfo) => {
       const earnedUSDA =
-        Number(a.earnedAmount.toExact()) * Number(a.rewardTokenPriceinUSD ?? 0);
+        getExactTokenAmount(a.earnedAmount) * (a.rewardTokenPriceinUSD ?? 0);
       const earnedUSDB =
-        Number(b.earnedAmount.toExact()) * Number(b.rewardTokenPriceinUSD ?? 0);
+        getExactTokenAmount(b.earnedAmount) * (b.rewardTokenPriceinUSD ?? 0);
       return (earnedUSDA > earnedUSDB ? -1 : 1) * sortIndex;
     },
     [sortIndex],
