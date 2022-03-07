@@ -59,7 +59,7 @@ const SwapPage: React.FC = () => {
   const { isProMode, updateIsProMode } = useIsProMode();
   const classes = useStyles({ isProMode });
   const { palette, breakpoints } = useTheme();
-  const isMobile = useMediaQuery(breakpoints.down('xs'));
+  const isMobile = useMediaQuery(breakpoints.down('sm'));
 
   const { currencies } = useDerivedSwapInfo();
   const { chainId } = useActiveWeb3React();
@@ -126,7 +126,7 @@ const SwapPage: React.FC = () => {
           minHeight='calc(100vh - 140px)'
         >
           <Box
-            width={isMobile ? 1 : '390px'}
+            width={isMobile ? 1 : '450px'}
             padding='20px 0'
             borderRight={isMobile ? 'none' : `1px solid ${palette.divider}`}
           >
@@ -158,7 +158,7 @@ const SwapPage: React.FC = () => {
           </Box>
           <Box
             borderLeft={isMobile ? 'none' : `1px solid ${palette.divider}`}
-            width={isMobile ? 1 : 200}
+            width={isMobile ? 1 : 250}
           >
             <SwapProInfo />
           </Box>

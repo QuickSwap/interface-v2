@@ -57,7 +57,7 @@ const useStyles = makeStyles(({ palette }) => ({
     display: 'flex',
     justifyContent: 'space-between',
     background: 'rgb(43, 45, 59, 0.2)',
-    padding: '8px 24px',
+    padding: '8px 16px',
     borderBottomLeftRadius: 10,
     borderBottomRightRadius: 10,
     '& p': {

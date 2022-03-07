@@ -13,7 +13,11 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({}));
 const SwapProInfo: React.FC = () => {
   const classes = useStyles();
 
-  return <Typography variant='body1'>Info:</Typography>;
+  return (
+    <Box p={1}>
+      <Typography variant='body1'>Info:</Typography>
+    </Box>
+  );
 };
 
 export default SwapProInfo;
