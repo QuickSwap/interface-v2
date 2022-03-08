@@ -160,7 +160,7 @@ const SwapPage: React.FC = () => {
             borderLeft={isMobile ? 'none' : `1px solid ${palette.divider}`}
             width={isMobile ? 1 : 250}
           >
-            <SwapProInfo />
+            <SwapProInfo token1={token1} token2={token2} />
           </Box>
         </Box>
       )}

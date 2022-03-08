@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { Box, Typography, Checkbox } from '@material-ui/core';
 import { Replay } from '@material-ui/icons';
-import { AdvancedChart } from 'react-tradingview-embed';
 import { CustomSwitch } from 'components';
+import { AdvancedChart } from 'react-tradingview-embed';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   checkWrapper: {
@@ -74,4 +74,4 @@ const SwapProChartTrade: React.FC = () => {
   );
 };
 
-export default SwapProChartTrade;
+export default React.memo(SwapProChartTrade);
