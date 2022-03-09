@@ -3,17 +3,12 @@
 import { Box } from '@material-ui/core';
 import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
-
-interface MiniSelectProps {
-  onChange?: any;
-  sm?: boolean;
-  bg?: any;
-  width?: any;
-  after?: any;
-  before?: any;
-  border?: any;
-  [index: string]: any;
-}
+import {
+  MiniSelectProps,
+  RefProps,
+  SmOptionProps,
+  NarrowIconProps,
+} from './interfaces';
 
 export const CustomSelect: React.FC<MiniSelectProps> = ({
   after,
@@ -49,7 +44,8 @@ export const CustomSelect: React.FC<MiniSelectProps> = ({
       return;
     }
     children?.map((each, index) => {
-      if (each.props.customTagType !== '') {
+      if (each.props.customTagType !== '--411customisedOption--') {
+        // to check it is customTagType or not. It was defined as default customTagType value on CustomSelect component.
         return null;
       }
       const value = each.props.value;
@@ -175,19 +171,11 @@ export const CustomSelect: React.FC<MiniSelectProps> = ({
   );
 };
 
-interface RefProps {
-  ref: any;
-}
 const DropPanel = styled(Box)<RefProps>`
   transition: var(--transition);
 `;
 const DropBox = styled(Box)<RefProps>``;
 
-interface SmOptionProps {
-  value: any;
-  [index: string]: any;
-  customTagType: string;
-}
 export const SmOption = styled.div<SmOptionProps>`
   padding: 8px 16px;
   white-space: nowrap;
@@ -202,13 +190,10 @@ export const SmOption = styled.div<SmOptionProps>`
   }
 `;
 
-interface IconProps {
-  size?: any;
-  color?: any;
-}
-interface NarrowIconProps extends IconProps {
-  dir?: any;
-}
+SmOption.defaultProps = {
+  customTagType: '--411customisedOption--', // set customTagType as `--411customisedOption--`, and it can be randomized strings.
+};
+
 const NarrowIcon: React.FC<NarrowIconProps> = ({
   size = '1em',
   color = 'currentColor',
