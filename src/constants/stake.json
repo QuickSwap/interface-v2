@@ -755,7 +755,7 @@
     {
       "tokens": ["KIRO", "MATIC"],
       "stakingRewardAddress": "0xfF22Bf1f778BcD6741D823b077285533EC582F78",
-      "ended": false,
+      "ended": true,
       "lp": "",
       "name": "",
       "baseToken": "MATIC",
@@ -929,16 +929,6 @@
       "baseToken": "ETHER",
       "rate": 5.712,
       "pair": "0x1bd06b96dd42ada85fdd0795f3b4a79db914add5"
-    },
-    {
-      "tokens": ["AAVE", "ETHER"],
-      "stakingRewardAddress": "0x9891548FB271C2350bd0FA25eb56A3b558cD4A64",
-      "ended": false,
-      "lp": "",
-      "name": "",
-      "baseToken": "ETHER",
-      "rate": 4.326,
-      "pair": "0x90bc3e68ba8393a3bf2d79309365089975341a43"
     },
     {
       "tokens": ["WBTC", "USDC"],
