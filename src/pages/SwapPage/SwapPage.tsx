@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { Box, Typography, Grid, useMediaQuery } from '@material-ui/core';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
@@ -12,6 +12,7 @@ import SwapMain from './SwapMain';
 import LiquidityPools from './LiquidityPools';
 import SwapProChartTrade from './SwapProChartTrade';
 import SwapProInfo from './SwapProInfo';
+import SwapProFilter from './SwapProFilter';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   helpWrapper: {
@@ -60,6 +61,10 @@ const SwapPage: React.FC = () => {
   const classes = useStyles({ isProMode });
   const { palette, breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('sm'));
+  const isTablet = useMediaQuery(breakpoints.down('md'));
+  const [showChart, setShowChart] = useState(true);
+  const [showTrades, setShowTrades] = useState(true);
+  const [infoPos, setInfoPos] = useState('left');
 
   const { currencies } = useDerivedSwapInfo();
   const { chainId } = useActiveWeb3React();
@@ -154,11 +159,27 @@ const SwapPage: React.FC = () => {
             <SwapMain />
           </Box>
           <Box flex={isMobile ? 'none' : 1}>
-            <SwapProChartTrade />
+            <SwapProFilter
+              infoPos={infoPos}
+              setInfoPos={setInfoPos}
+              showChart={showChart}
+              setShowChart={setShowChart}
+              showTrades={showTrades}
+              setShowTrades={setShowTrades}
+            />
+            {token1 && token2 && (
+              <SwapProChartTrade
+                showChart={showChart}
+                showTrades={showTrades}
+                token1={token1}
+                token2={token2}
+              />
+            )}
           </Box>
           <Box
             borderLeft={isMobile ? 'none' : `1px solid ${palette.divider}`}
-            width={isMobile ? 1 : 250}
+            borderTop={isTablet ? `1px solid ${palette.divider}` : 'none'}
+            width={isTablet ? 1 : 250}
           >
             <SwapProInfo token1={token1} token2={token2} />
           </Box>

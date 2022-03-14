@@ -1,75 +1,72 @@
-import React, { useState } from 'react';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
-import { Box, Typography, Checkbox } from '@material-ui/core';
-import { Replay } from '@material-ui/icons';
-import { CustomSwitch } from 'components';
-import { AdvancedChart } from 'react-tradingview-embed';
+import React from 'react';
+import { makeStyles } from '@material-ui/core/styles';
+import { Box } from '@material-ui/core';
+import SwapProChart from './SwapProChart';
+import { Token } from '@uniswap/sdk';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
-  checkWrapper: {
-    display: 'flex',
-    alignItems: 'center',
-    marginRight: 16,
-    '& .MuiCheckbox-root': {
-      padding: 2,
+  tradeTable: {
+    width: '100%',
+    '& thead tr th, & tbody tr td': {
+      borderRight: `1px solid ${palette.divider}`,
+      '&:last-child': {
+        borderRight: 'none',
+      },
     },
-    '& p': {
+    '& thead tr th': {
       textTransform: 'uppercase',
+      padding: '8px 16px',
+      background: palette.secondary.main,
+      color: palette.text.primary,
+      fontWeight: 'normal',
+    },
+    '& tbody tr td': {
+      padding: '8px 16px',
     },
   },
 }));
 
-const SwapProChartTrade: React.FC = () => {
+const SwapProChartTrade: React.FC<{
+  showChart: boolean;
+  showTrades: boolean;
+  token1: Token;
+  token2: Token;
+}> = ({ showChart, showTrades, token1, token2 }) => {
   const classes = useStyles();
-
-  const [infoPos, setInfoPos] = useState('left');
-
-  const infoPosItems = [
-    {
-      text: 'LEFT',
-      onClick: () => setInfoPos('left'),
-      condition: infoPos === 'left',
-    },
-    {
-      text: 'RIGHT',
-      onClick: () => setInfoPos('right'),
-      condition: infoPos === 'right',
-    },
-    {
-      text: 'NONE',
-      onClick: () => setInfoPos('none'),
-      condition: infoPos === 'none',
-    },
-  ];
-
-  console.log('ccc');
 
   return (
     <>
-      <Box display='flex' alignItems='center' flexWrap='wrap' padding='8px'>
-        <Box className={classes.checkWrapper}>
-          <Checkbox />
-          <Typography variant='body2'>chart</Typography>
+      {showChart && (
+        <Box mt={1}>
+          <SwapProChart />
         </Box>
-        <Box className={classes.checkWrapper}>
-          <Checkbox />
-          <Typography variant='body2'>trades</Typography>
-        </Box>
-        <Box display='flex' alignItems='center'>
-          <Typography variant='body2'>INFO:</Typography>
-          <Box ml={1}>
-            <CustomSwitch width={190} height={30} items={infoPosItems} />
-          </Box>
-        </Box>
-        <Box display='flex' ml={1}>
-          <Replay />
-        </Box>
-      </Box>
-      <Box>
-        <AdvancedChart
-          widgetProps={{ theme: 'dark', symbol: 'QUICKSWAP:QUICKOM' }}
-        />
-      </Box>
+      )}
+      {showTrades && (
+        <table className={classes.tradeTable} cellSpacing={0}>
+          <thead>
+            <tr>
+              <th align='left'>date</th>
+              <th align='left'>type</th>
+              <th align='right'>usd</th>
+              <th align='right'>{token1.symbol}</th>
+              <th align='right'>{token2.symbol}</th>
+              <th align='right'>price</th>
+              <th align='right'>txn</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td align='left'>111</td>
+              <td align='left'>111</td>
+              <td align='right'>111</td>
+              <td align='right'>111</td>
+              <td align='right'>111</td>
+              <td align='right'>111</td>
+              <td align='right'>111</td>
+            </tr>
+          </tbody>
+        </table>
+      )}
     </>
   );
 };

@@ -3,10 +3,11 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Box, Typography, Grid, Divider } from '@material-ui/core';
 import { SwapHoriz } from '@material-ui/icons';
 import { Currency, Token } from '@uniswap/sdk';
-import { CurrencyLogo } from 'components';
+import { ButtonSwitch, CurrencyLogo } from 'components';
 import { getTokenInfo, getEthPrice, formatNumber } from 'utils';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import Skeleton from '@material-ui/lab/Skeleton';
+import SwapInfoTx from './SwapInfoTx';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   success: {
@@ -42,6 +43,7 @@ const SwapProInfo: React.FC<{ token1?: Token; token2?: Token }> = ({
   const token2Address = token2?.address;
   const currency1 = token1 ? unwrappedToken(token1) : undefined;
   const currency2 = token2 ? unwrappedToken(token2) : undefined;
+  const [txFilter, setTxFilter] = useState('5m');
 
   useEffect(() => {
     async function fetchTokenData() {
@@ -120,20 +122,26 @@ const SwapProInfo: React.FC<{ token1?: Token; token2?: Token }> = ({
       {currency1 && <TokenInfo currency={currency1} tokenData={token1Data} />}
       {currency2 && <TokenInfo currency={currency2} tokenData={token2Data} />}
       {currency1 && currency2 && (
-        <Box p={1}>
-          <Box
-            display='flex'
-            alignItems='center'
-            justifyContent='space-between'
-          >
-            <Typography variant='body2'>
-              {currency1.symbol} / {currency2.symbol}
-            </Typography>
-            <Box className={classes.swapIcon}>
-              <SwapHoriz />
+        <>
+          <Box py={2} px={1}>
+            <Box
+              mb={1}
+              px={1}
+              display='flex'
+              alignItems='center'
+              justifyContent='space-between'
+            >
+              <Typography variant='body2'>
+                {currency1.symbol} / {currency2.symbol}
+              </Typography>
+              <Box className={classes.swapIcon}>
+                <SwapHoriz />
+              </Box>
             </Box>
+            <SwapInfoTx />
           </Box>
-        </Box>
+          <Divider />
+        </>
       )}
     </>
   );

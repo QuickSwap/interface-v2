@@ -8,6 +8,7 @@ export { default as BetaWarningBanner } from './BetaWarningBanner';
 export { default as ChartType } from './ChartType';
 export { default as ColoredSlider } from './ColoredSlider';
 export { default as CustomTooltip } from './CustomTooltip';
+export { default as ButtonSwitch } from './ButtonSwitch';
 export { default as ToggleSwitch } from './ToggleSwitch';
 export { default as CustomMenu } from './CustomMenu';
 export { default as CustomModal } from './CustomModal';
