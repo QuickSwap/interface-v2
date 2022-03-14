@@ -134,6 +134,7 @@
     "react-cool-inview": "^2.0.8",
     "react-error-overlay": "^6.0.10",
     "react-ga": "^3.3.0",
+    "react-reflex": "^4.0.6",
     "react-slick": "^0.28.1",
     "react-tradingview-embed": "^2.2.6",
     "slick-carousel": "^1.8.1",

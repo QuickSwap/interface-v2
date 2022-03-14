@@ -4,7 +4,11 @@ import { AdvancedChart } from 'react-tradingview-embed';
 const SwapProChart: React.FC = () => {
   return (
     <AdvancedChart
-      widgetProps={{ theme: 'dark', symbol: 'QUICKSWAP:QUICKOM' }}
+      widgetProps={{
+        theme: 'dark',
+        height: '100%',
+        symbol: 'QUICKSWAP:QUICKOM',
+      }}
     />
   );
 };
