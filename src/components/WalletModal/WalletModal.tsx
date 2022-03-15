@@ -229,12 +229,8 @@ const WalletModal: React.FC<WalletModalProps> = ({
         else if (option.name === 'MetaMask' && !isMetamask) {
           return null;
         }
-        // likewise for Blockwallet
-        else if (option.name === 'Injected' && isBlockWallet) {
-          return null;
-        }
         // likewise for generic
-        else if (option.name === 'Injected' && isMetamask) {
+        else if (option.name === 'Injected' && (isMetamask || isBlockWallet)) {
           return null;
         }
       }
