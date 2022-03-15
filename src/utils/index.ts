@@ -10,7 +10,6 @@ import {
   GLOBAL_DATA,
   GLOBAL_CHART,
   GET_BLOCKS,
-  ETH_PRICE,
   TOKENS_CURRENT,
   TOKENS_DYNAMIC,
   TOKEN_CHART,
@@ -28,9 +27,11 @@ import {
   TOKEN_INFO,
   TOKEN_INFO_OLD,
   FILTERED_TRANSACTIONS,
+  SWAP_TRANSACTIONS,
   HOURLY_PAIR_RATES,
   GLOBAL_ALLDATA,
   ETH_ALLPRICE,
+  PAIR_ID,
 } from 'apollo/queries';
 import { JsonRpcSigner, Web3Provider } from '@ethersproject/providers';
 import {
@@ -743,6 +744,35 @@ export const getPairTransactions = async (pairAddress: string) => {
   } catch (e) {
     console.log(e);
     return null;
+  }
+};
+
+export const getSwapTransactions = async (
+  token0Address: string,
+  token1Address: string,
+) => {
+  try {
+    const pairData = await client.query({
+      query: PAIR_ID(token0Address, token1Address),
+      fetchPolicy: 'network-only',
+    });
+    const pairId =
+      pairData && pairData.data && pairData.data.pairs.length > 0
+        ? pairData.data.pairs[0].id
+        : undefined;
+    if (!pairId) return;
+    const swapTx = await txClient.query({
+      query: SWAP_TRANSACTIONS,
+      variables: {
+        allPairs: [pairId],
+      },
+      fetchPolicy: 'no-cache',
+    });
+    return swapTx && swapTx.data && swapTx.data.swaps
+      ? swapTx.data.swaps
+      : undefined;
+  } catch (e) {
+    return;
   }
 };
 

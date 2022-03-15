@@ -345,6 +345,17 @@ export const TOKEN_DATA: any = (tokenAddress: string, block: number) => {
   return gql(queryString);
 };
 
+export const PAIR_ID: any = (tokenAddress: string, tokenAddress1: string) => {
+  const queryString = `
+    query tokens {
+      pairs: pairs(where: {token0: "${tokenAddress}", token1: "${tokenAddress1}"}){
+        id
+      }
+    }
+  `;
+  return gql(queryString);
+};
+
 export const TOKEN_DATA1: any = (
   tokenAddress: string,
   tokenAddress1: string,
@@ -655,6 +666,38 @@ export const FILTERED_TRANSACTIONS = gql`
         timestamp
       }
       id
+      pair {
+        token0 {
+          id
+          symbol
+        }
+        token1 {
+          id
+          symbol
+        }
+      }
+      amount0In
+      amount0Out
+      amount1In
+      amount1Out
+      amountUSD
+      to
+    }
+  }
+`;
+
+export const SWAP_TRANSACTIONS = gql`
+  query($allPairs: [Bytes]!) {
+    swaps(
+      first: 1000
+      where: { pair_in: $allPairs }
+      orderBy: timestamp
+      orderDirection: desc
+    ) {
+      transaction {
+        id
+        timestamp
+      }
       pair {
         token0 {
           id

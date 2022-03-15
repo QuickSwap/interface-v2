@@ -158,7 +158,12 @@ const SwapPage: React.FC = () => {
             </Box>
             <SwapMain />
           </Box>
-          <Box flex={isMobile ? 'none' : 1}>
+          <Box
+            flex={isMobile ? 'none' : 1}
+            display='flex'
+            flexDirection='column'
+            maxHeight='100vh'
+          >
             <SwapProFilter
               infoPos={infoPos}
               setInfoPos={setInfoPos}
