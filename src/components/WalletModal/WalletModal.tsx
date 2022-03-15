@@ -162,6 +162,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
   function getOptions() {
     const { ethereum, web3 } = window as any;
     const isMetamask = ethereum && ethereum.isMetaMask;
+    const isBlockWallet = ethereum && ethereum.isBlockWallet;
     const isBitKeep = window.ethereum && (window.ethereum as any).isBitKeep;
     return Object.keys(SUPPORTED_WALLETS).map((key) => {
       const option = SUPPORTED_WALLETS[key];
@@ -189,6 +190,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
               active={
                 option.connector === connector &&
                 (connector !== injected ||
+                  isBlockWallet === (option.name === 'BlockWallet') ||
                   isBitKeep === (option.name === 'BitKeep') ||
                   (!isBitKeep && isMetamask) === (option.name === 'MetaMask'))
               }
@@ -225,6 +227,10 @@ const WalletModal: React.FC<WalletModalProps> = ({
         }
         // don't return metamask if injected provider isn't metamask
         else if (option.name === 'MetaMask' && !isMetamask) {
+          return null;
+        }
+        // likewise for Blockwallet
+        else if (option.name === 'Injected' && isBlockWallet) {
           return null;
         }
         // likewise for generic

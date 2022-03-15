@@ -10,6 +10,7 @@ import {
 } from '../connectors';
 import MetamaskIcon from 'assets/images/metamask.png';
 import BitKeepIcon from 'assets/images/bitkeep.png';
+import BlockWalletIcon from 'assets/images/blockwalletIcon.svg';
 import CoinbaseWalletIcon from 'assets/images/coinbaseWalletIcon.svg';
 import WalletConnectIcon from 'assets/images/walletConnectIcon.svg';
 import PortisIcon from 'assets/images/portisIcon.png';
@@ -95,6 +96,14 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
     description: 'Easy-to-use browser extension.',
     href: null,
     color: '#E8831D',
+  },
+  BLOCKWALLET: {
+    connector: injected,
+    name: 'BlockWallet',
+    iconName: BlockWalletIcon,
+    description: 'BlockWallet browser extension.',
+    href: null,
+    color: '#1673ff',
   },
   BITKEEP: {
     connector: injected,
