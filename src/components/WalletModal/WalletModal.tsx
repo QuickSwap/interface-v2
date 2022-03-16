@@ -161,8 +161,9 @@ const WalletModal: React.FC<WalletModalProps> = ({
   // get wallets user can switch too, depending on device/browser
   function getOptions() {
     const { ethereum, web3 } = window as any;
-    const isMetamask = ethereum && ethereum.isMetaMask;
-    const isBitKeep = window.ethereum && (window.ethereum as any).isBitKeep;
+    const isMetamask = ethereum && !ethereum.isBitKeep && ethereum.isMetaMask;
+    const isBlockWallet = ethereum && ethereum.isBlockWallet;
+    const isBitKeep = ethereum && ethereum.isBitKeep;
     return Object.keys(SUPPORTED_WALLETS).map((key) => {
       const option = SUPPORTED_WALLETS[key];
       //disable safe app by in the list
@@ -189,6 +190,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
               active={
                 option.connector === connector &&
                 (connector !== injected ||
+                  isBlockWallet === (option.name === 'BlockWallet') ||
                   isBitKeep === (option.name === 'BitKeep') ||
                   (!isBitKeep && isMetamask) === (option.name === 'MetaMask'))
               }
@@ -226,9 +228,16 @@ const WalletModal: React.FC<WalletModalProps> = ({
         // don't return metamask if injected provider isn't metamask
         else if (option.name === 'MetaMask' && !isMetamask) {
           return null;
+        } else if (option.name === 'BitKeep' && !isBitKeep) {
+          return null;
+        } else if (option.name === 'BlockWallet' && !isBlockWallet) {
+          return null;
         }
         // likewise for generic
-        else if (option.name === 'Injected' && isMetamask) {
+        else if (
+          option.name === 'Injected' &&
+          (isMetamask || isBitKeep || isBlockWallet)
+        ) {
           return null;
         }
       }

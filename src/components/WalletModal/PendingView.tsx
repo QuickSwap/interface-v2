@@ -50,6 +50,8 @@ const PendingView: React.FC<PendingViewProps> = ({
   tryActivation,
 }) => {
   const isMetamask = (window as any).ethereum?.isMetaMask;
+  const isBlockWallet = (window as any).ethereum?.isBlockWallet;
+  const isBitKeep = (window as any).ethereum?.isBitKeep;
   const classes = useStyles();
 
   return (
@@ -85,6 +87,18 @@ const PendingView: React.FC<PendingViewProps> = ({
               return null;
             }
             if (!isMetamask && option.name === 'MetaMask') {
+              return null;
+            }
+            if (isBitKeep && option.name !== 'BitKeep') {
+              return null;
+            }
+            if (!isBitKeep && option.name === 'BitKeep') {
+              return null;
+            }
+            if (isBlockWallet && option.name !== 'BlockWallet') {
+              return null;
+            }
+            if (!isBlockWallet && option.name === 'BlockWallet') {
               return null;
             }
           }
