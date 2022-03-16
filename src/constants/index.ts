@@ -86,12 +86,23 @@ export const GlobalConst = {
     LPFARM_INDEX: 0,
     DUALFARM_INDEX: 1,
   },
+  walletName: {
+    METAMASK: 'Metamask',
+    BLOCKWALLET: 'BlockWallet',
+    BITKEEP: 'BitKeep',
+    INJECTED: 'Injected',
+    SAFE_APP: 'Gnosis Safe App',
+    ARKANE_CONNECT: 'Venly',
+    Portis: 'Portis',
+    WALLET_LINK: 'Coinbase Wallet',
+    WALLET_CONNECT: 'WalletConnect',
+  },
 };
 
 export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   METAMASK: {
     connector: injected,
-    name: 'MetaMask',
+    name: GlobalConst.walletName.METAMASK,
     iconName: MetamaskIcon,
     description: 'Easy-to-use browser extension.',
     href: null,
@@ -99,7 +110,7 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   },
   BLOCKWALLET: {
     connector: injected,
-    name: 'BlockWallet',
+    name: GlobalConst.walletName.BLOCKWALLET,
     iconName: BlockWalletIcon,
     description: 'BlockWallet browser extension.',
     href: null,
@@ -107,7 +118,7 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   },
   BITKEEP: {
     connector: injected,
-    name: 'BitKeep',
+    name: GlobalConst.walletName.BITKEEP,
     iconName: BitKeepIcon,
     description: 'BitKeep browser extension.',
     href: null,
@@ -115,7 +126,7 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   },
   INJECTED: {
     connector: injected,
-    name: 'Injected',
+    name: GlobalConst.walletName.INJECTED,
     iconName: 'arrow-right.svg',
     description: 'Injected web3 provider.',
     href: null,
@@ -124,7 +135,7 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   },
   SAFE_APP: {
     connector: safeApp,
-    name: 'Gnosis Safe App',
+    name: GlobalConst.walletName.SAFE_APP,
     iconName: GnosisIcon,
     description: 'Login using gnosis safe app',
     href: null,
@@ -133,7 +144,7 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   },
   ARKANE_CONNECT: {
     connector: arkaneconnect,
-    name: 'Venly',
+    name: GlobalConst.walletName.ARKANE_CONNECT,
     iconName: VenlyIcon,
     description: 'Login using Venly hosted wallet.',
     href: null,
@@ -141,7 +152,7 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   },
   Portis: {
     connector: portis,
-    name: 'Portis',
+    name: GlobalConst.walletName.Portis,
     iconName: PortisIcon,
     description: 'Login using Portis hosted wallet',
     href: null,
@@ -150,7 +161,7 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   },
   WALLET_LINK: {
     connector: walletlink,
-    name: 'Coinbase Wallet',
+    name: GlobalConst.walletName.WALLET_LINK,
     iconName: CoinbaseWalletIcon,
     description: 'Use Coinbase Wallet app on mobile device',
     href: null,
@@ -158,7 +169,7 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   },
   WALLET_CONNECT: {
     connector: walletconnect,
-    name: 'WalletConnect',
+    name: GlobalConst.walletName.WALLET_CONNECT,
     iconName: WalletConnectIcon,
     description: 'Connect to Trust Wallet, Rainbow Wallet and more...',
     href: null,
