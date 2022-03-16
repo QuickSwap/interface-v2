@@ -61,7 +61,11 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
 
   function formatConnectorName() {
     const { ethereum } = window as any;
-    const isMetaMask = !!(ethereum && ethereum.isMetaMask);
+    const isMetaMask = !!(
+      ethereum &&
+      !ethereum.isBitKeep &&
+      ethereum.isMetaMask
+    );
     const isBitkeep = !!(ethereum && ethereum.isBitKeep);
     const isBlockWallet = !!(ethereum && ethereum.isBlockWallet);
     const name = Object.keys(SUPPORTED_WALLETS)
@@ -70,8 +74,8 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
           SUPPORTED_WALLETS[k].connector === connector &&
           (connector !== injected ||
             (isBlockWallet && k === 'BLOCKWALLET') ||
-            isBitkeep === (k === 'BITKEEP') ||
-            (!isBitkeep && isMetaMask) === (k === 'METAMASK')),
+            (isBitkeep && k === 'BITKEEP') ||
+            (isMetaMask && k === 'METAMASK')),
       )
       .map((k) => SUPPORTED_WALLETS[k].name)[0];
     return <Typography variant='body2'>Connected with {name}</Typography>;
