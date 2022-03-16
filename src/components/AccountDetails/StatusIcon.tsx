@@ -8,12 +8,14 @@ const StatusIcon: React.FC = () => {
   const { connector } = useActiveWeb3React();
   const { ethereum } = window as any;
   const isMetaMask = !!(ethereum && ethereum.isMetaMask);
+  const isBlockWallet = !!(ethereum && ethereum.isBlockWallet);
   const isBitkeep = !!(ethereum && ethereum.isBitKeep);
   const icon = Object.keys(SUPPORTED_WALLETS)
     .filter(
       (k) =>
         SUPPORTED_WALLETS[k].connector === connector &&
         (connector !== injected ||
+          (isBlockWallet && k === 'BLOCKWALLET') ||
           isBitkeep === (k === 'BITKEEP') ||
           (!isBitkeep && isMetaMask) === (k === 'METAMASK')),
     )

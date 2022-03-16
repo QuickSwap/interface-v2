@@ -63,11 +63,13 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
     const { ethereum } = window as any;
     const isMetaMask = !!(ethereum && ethereum.isMetaMask);
     const isBitkeep = !!(ethereum && ethereum.isBitKeep);
+    const isBlockWallet = !!(ethereum && ethereum.isBlockWallet);
     const name = Object.keys(SUPPORTED_WALLETS)
       .filter(
         (k) =>
           SUPPORTED_WALLETS[k].connector === connector &&
           (connector !== injected ||
+            (isBlockWallet && k === 'BLOCKWALLET') ||
             isBitkeep === (k === 'BITKEEP') ||
             (!isBitkeep && isMetaMask) === (k === 'METAMASK')),
       )
