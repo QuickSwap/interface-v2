@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import SwapProChart from './SwapProChart';
 import { Token } from '@uniswap/sdk';
@@ -6,12 +6,7 @@ import { Box } from '@material-ui/core';
 import { Height } from '@material-ui/icons';
 import { ReflexContainer, ReflexSplitter, ReflexElement } from 'react-reflex';
 import 'react-reflex/styles.css';
-import {
-  getSwapTransactions,
-  formatNumber,
-  shortenTx,
-  getEtherscanLink,
-} from 'utils';
+import { formatNumber, shortenTx, getEtherscanLink } from 'utils';
 import moment from 'moment';
 import { useActiveWeb3React } from 'hooks';
 
@@ -64,23 +59,11 @@ const SwapProChartTrade: React.FC<{
   showTrades: boolean;
   token1: Token;
   token2: Token;
-}> = ({ showChart, showTrades, token1, token2 }) => {
+  transactions?: any[];
+}> = ({ showChart, showTrades, token1, token2, transactions }) => {
   const classes = useStyles();
-  const [transactions, setTransactions] = useState<any[] | undefined>(
-    undefined,
-  );
-  const { chainId } = useActiveWeb3React();
 
-  useEffect(() => {
-    async function getTradesData() {
-      const transactions = await getSwapTransactions(
-        token1.address,
-        token2.address,
-      );
-      setTransactions(transactions);
-    }
-    getTradesData();
-  }, [token1.address, token2.address]);
+  const { chainId } = useActiveWeb3React();
 
   const TradesTable = () => (
     <table className={classes.tradeTable} cellSpacing={0}>
@@ -97,45 +80,53 @@ const SwapProChartTrade: React.FC<{
       </thead>
       {transactions && (
         <tbody>
-          {transactions.map((tx, ind) => (
-            <tr key={ind} className={Number(tx.amount0In) > 0 ? 'sell' : 'buy'}>
-              <td align='left'>
-                {moment
-                  .unix(tx.transaction.timestamp)
-                  .format('MMMM Do h:mm:ss a')}
-              </td>
-              <td align='left'>{Number(tx.amount0In) > 0 ? 'Sell' : 'Buy'}</td>
-              <td align='right'>{formatNumber(tx.amountUSD)}</td>
-              <td align='right'>
-                {formatNumber(
-                  Number(tx.amount0In) > 0 ? tx.amount0In : tx.amount0Out,
-                )}
-              </td>
-              <td align='right'>
-                {formatNumber(
-                  Number(tx.amount1In) > 0 ? tx.amount1In : tx.amount1Out,
-                )}
-              </td>
-              <td align='right'>111</td>
-              <td align='right'>
-                {chainId ? (
-                  <a
-                    href={getEtherscanLink(
-                      chainId,
-                      tx.transaction.id,
-                      'transaction',
-                    )}
-                    target='_blank'
-                    rel='noreferrer'
-                  >
-                    {shortenTx(tx.transaction.id)}
-                  </a>
-                ) : (
-                  shortenTx(tx.transaction.id)
-                )}
-              </td>
-            </tr>
-          ))}
+          {transactions.map((tx, ind) => {
+            const txType = Number(tx.amount0In) > 0 ? 'sell' : 'buy';
+            const txAmount0 =
+              Number(tx.amount0In) > 0 ? tx.amount0In : tx.amount0Out;
+            const txAmount1 =
+              Number(tx.amount1In) > 0 ? tx.amount1In : tx.amount1Out;
+            const token1Amount =
+              tx.pair.token0.id.toLowerCase() === token1.address.toLowerCase()
+                ? txAmount0
+                : txAmount1;
+            const token2Amount =
+              tx.pair.token0.id.toLowerCase() === token1.address.toLowerCase()
+                ? txAmount1
+                : txAmount0;
+            const txPrice = Number(tx.amountUSD) / txAmount1;
+            return (
+              <tr key={ind} className={txType}>
+                <td align='left'>
+                  {moment
+                    .unix(tx.transaction.timestamp)
+                    .format('MMMM Do h:mm:ss a')}
+                </td>
+                <td align='left'>{txType.toUpperCase()}</td>
+                <td align='right'>{formatNumber(tx.amountUSD)}</td>
+                <td align='right'>{formatNumber(token1Amount)}</td>
+                <td align='right'>{formatNumber(token2Amount)}</td>
+                <td align='right'>{formatNumber(txPrice)}</td>
+                <td align='right'>
+                  {chainId ? (
+                    <a
+                      href={getEtherscanLink(
+                        chainId,
+                        tx.transaction.id,
+                        'transaction',
+                      )}
+                      target='_blank'
+                      rel='noreferrer'
+                    >
+                      {shortenTx(tx.transaction.id)}
+                    </a>
+                  ) : (
+                    shortenTx(tx.transaction.id)
+                  )}
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       )}
     </table>

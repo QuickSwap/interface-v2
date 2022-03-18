@@ -756,11 +756,12 @@ export const getSwapTransactions = async (
       query: PAIR_ID(token0Address, token1Address),
       fetchPolicy: 'network-only',
     });
-    const pairId =
-      pairData && pairData.data && pairData.data.pairs.length > 0
-        ? pairData.data.pairs[0].id
+    const pairs =
+      pairData && pairData.data
+        ? pairData.data.pairs0.concat(pairData.data.pairs1)
         : undefined;
-    if (!pairId) return;
+    if (!pairs || pairs.length === 0) return;
+    const pairId = pairs[0].id;
     const swapTx = await txClient.query({
       query: SWAP_TRANSACTIONS,
       variables: {

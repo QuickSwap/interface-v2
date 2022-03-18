@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { Box, Typography, Grid, useMediaQuery } from '@material-ui/core';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
@@ -6,6 +6,7 @@ import { SwapTokenDetails, ToggleSwitch } from 'components';
 import { useIsProMode } from 'state/application/hooks';
 import { useDerivedSwapInfo } from 'state/swap/hooks';
 import { Field } from 'state/swap/actions';
+import { getSwapTransactions } from 'utils';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
 import { useActiveWeb3React } from 'hooks';
 import SwapMain from './SwapMain';
@@ -64,6 +65,10 @@ const SwapPage: React.FC = () => {
   const isTablet = useMediaQuery(breakpoints.down('md'));
   const [showChart, setShowChart] = useState(true);
   const [showTrades, setShowTrades] = useState(true);
+  const [transactions, setTransactions] = useState<any[] | undefined>(
+    undefined,
+  );
+  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
   const [infoPos, setInfoPos] = useState('left');
 
   const { currencies } = useDerivedSwapInfo();
@@ -71,6 +76,28 @@ const SwapPage: React.FC = () => {
 
   const token1 = wrappedCurrency(currencies[Field.INPUT], chainId);
   const token2 = wrappedCurrency(currencies[Field.OUTPUT], chainId);
+
+  // this is for refreshing data of trades table every 30 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const _currentTime = Math.floor(Date.now() / 1000);
+      setCurrentTime(_currentTime);
+    }, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    async function getTradesData(token1Address: string, token2Address: string) {
+      const transactions = await getSwapTransactions(
+        token1Address,
+        token2Address,
+      );
+      setTransactions(transactions);
+    }
+    if (token1?.address && token2?.address) {
+      getTradesData(token1.address, token2.address);
+    }
+  }, [token1?.address, token2?.address, currentTime]);
 
   return (
     <Box width='100%' mb={3} id='swap-page'>
@@ -178,6 +205,7 @@ const SwapPage: React.FC = () => {
                 showTrades={showTrades}
                 token1={token1}
                 token2={token2}
+                transactions={transactions}
               />
             )}
           </Box>
@@ -186,7 +214,11 @@ const SwapPage: React.FC = () => {
             borderTop={isTablet ? `1px solid ${palette.divider}` : 'none'}
             width={isTablet ? 1 : 250}
           >
-            <SwapProInfo token1={token1} token2={token2} />
+            <SwapProInfo
+              token1={token1}
+              token2={token2}
+              transactions={transactions}
+            />
           </Box>
         </Box>
       )}

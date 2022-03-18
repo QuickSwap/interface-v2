@@ -345,10 +345,13 @@ export const TOKEN_DATA: any = (tokenAddress: string, block: number) => {
   return gql(queryString);
 };
 
-export const PAIR_ID: any = (tokenAddress: string, tokenAddress1: string) => {
+export const PAIR_ID: any = (tokenAddress0: string, tokenAddress1: string) => {
   const queryString = `
     query tokens {
-      pairs: pairs(where: {token0: "${tokenAddress}", token1: "${tokenAddress1}"}){
+      pairs0: pairs(where: {token0: "${tokenAddress0}", token1: "${tokenAddress1}"}){
+        id
+      }
+      pairs1: pairs(where: {token0: "${tokenAddress1}", token1: "${tokenAddress0}"}){
         id
       }
     }

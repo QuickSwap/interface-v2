@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Box, Typography, Grid, Divider } from '@material-ui/core';
+import { Box, Typography, Divider } from '@material-ui/core';
 import { SwapHoriz } from '@material-ui/icons';
 import { Currency, Token } from '@uniswap/sdk';
-import { ButtonSwitch, CurrencyLogo } from 'components';
+import { CurrencyLogo } from 'components';
 import { getTokenInfo, getEthPrice, formatNumber } from 'utils';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import Skeleton from '@material-ui/lab/Skeleton';
 import SwapInfoTx from './SwapInfoTx';
 
-const useStyles = makeStyles(({ palette, breakpoints }) => ({
+const useStyles = makeStyles(({ palette }) => ({
   success: {
     color: palette.success.main,
   },
@@ -32,10 +32,11 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
   },
 }));
 
-const SwapProInfo: React.FC<{ token1?: Token; token2?: Token }> = ({
-  token1,
-  token2,
-}) => {
+const SwapProInfo: React.FC<{
+  token1?: Token;
+  token2?: Token;
+  transactions?: any[];
+}> = ({ token1, token2, transactions }) => {
   const classes = useStyles();
   const [token1Data, setToken1Data] = useState<any>(null);
   const [token2Data, setToken2Data] = useState<any>(null);
@@ -43,7 +44,6 @@ const SwapProInfo: React.FC<{ token1?: Token; token2?: Token }> = ({
   const token2Address = token2?.address;
   const currency1 = token1 ? unwrappedToken(token1) : undefined;
   const currency2 = token2 ? unwrappedToken(token2) : undefined;
-  const [txFilter, setTxFilter] = useState('5m');
 
   useEffect(() => {
     async function fetchTokenData() {
@@ -138,7 +138,7 @@ const SwapProInfo: React.FC<{ token1?: Token; token2?: Token }> = ({
                 <SwapHoriz />
               </Box>
             </Box>
-            <SwapInfoTx />
+            <SwapInfoTx transactions={transactions} />
           </Box>
           <Divider />
         </>
