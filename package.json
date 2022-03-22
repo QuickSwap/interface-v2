@@ -137,6 +137,7 @@
     "react-reflex": "^4.0.6",
     "react-slick": "^0.28.1",
     "react-tradingview-embed": "^2.2.6",
+    "react-virtuoso": "^2.8.3",
     "slick-carousel": "^1.8.1",
     "styled-components": "^5.3.3"
   }

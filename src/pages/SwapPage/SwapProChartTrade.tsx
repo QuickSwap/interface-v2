@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import SwapProChart from './SwapProChart';
 import { Token } from '@uniswap/sdk';
@@ -9,8 +9,9 @@ import 'react-reflex/styles.css';
 import { formatNumber, shortenTx, getEtherscanLink } from 'utils';
 import moment from 'moment';
 import { useActiveWeb3React } from 'hooks';
+import { TableVirtuoso } from 'react-virtuoso';
 
-const useStyles = makeStyles(({ palette, breakpoints }) => ({
+const useStyles = makeStyles(({ palette }) => ({
   splitPane: {
     '& [data-type=Resizer]': {
       margin: '8px 0 0',
@@ -33,13 +34,13 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       color: palette.text.primary,
       fontWeight: 'normal',
     },
-    '& tbody tr.sell td:not(:first-child)': {
+    '& tbody td.sell': {
       color: palette.error.main,
       '& a': {
         color: palette.error.main,
       },
     },
-    '& tbody tr.buy td:not(:first-child)': {
+    '& tbody td.buy': {
       color: palette.success.main,
       '& a': {
         color: palette.success.main,
@@ -66,8 +67,14 @@ const SwapProChartTrade: React.FC<{
   const { chainId } = useActiveWeb3React();
 
   const TradesTable = () => (
-    <table className={classes.tradeTable} cellSpacing={0}>
-      <thead>
+    <TableVirtuoso
+      data={transactions}
+      components={{
+        Table: ({ ...props }) => (
+          <table className={classes.tradeTable} {...props} />
+        ),
+      }}
+      fixedHeaderContent={() => (
         <tr>
           <th align='left'>date</th>
           <th align='left'>type</th>
@@ -77,59 +84,65 @@ const SwapProChartTrade: React.FC<{
           <th align='right'>price</th>
           <th align='right'>txn</th>
         </tr>
-      </thead>
-      {transactions && (
-        <tbody>
-          {transactions.map((tx, ind) => {
-            const txType = Number(tx.amount0In) > 0 ? 'sell' : 'buy';
-            const txAmount0 =
-              Number(tx.amount0In) > 0 ? tx.amount0In : tx.amount0Out;
-            const txAmount1 =
-              Number(tx.amount1In) > 0 ? tx.amount1In : tx.amount1Out;
-            const token1Amount =
-              tx.pair.token0.id.toLowerCase() === token1.address.toLowerCase()
-                ? txAmount0
-                : txAmount1;
-            const token2Amount =
-              tx.pair.token0.id.toLowerCase() === token1.address.toLowerCase()
-                ? txAmount1
-                : txAmount0;
-            const txPrice = Number(tx.amountUSD) / txAmount1;
-            return (
-              <tr key={ind} className={txType}>
-                <td align='left'>
-                  {moment
-                    .unix(tx.transaction.timestamp)
-                    .format('MMMM Do h:mm:ss a')}
-                </td>
-                <td align='left'>{txType.toUpperCase()}</td>
-                <td align='right'>{formatNumber(tx.amountUSD)}</td>
-                <td align='right'>{formatNumber(token1Amount)}</td>
-                <td align='right'>{formatNumber(token2Amount)}</td>
-                <td align='right'>{formatNumber(txPrice)}</td>
-                <td align='right'>
-                  {chainId ? (
-                    <a
-                      href={getEtherscanLink(
-                        chainId,
-                        tx.transaction.id,
-                        'transaction',
-                      )}
-                      target='_blank'
-                      rel='noreferrer'
-                    >
-                      {shortenTx(tx.transaction.id)}
-                    </a>
-                  ) : (
-                    shortenTx(tx.transaction.id)
-                  )}
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
       )}
-    </table>
+      itemContent={(index, tx) => {
+        const txType = Number(tx.amount0In) > 0 ? 'sell' : 'buy';
+        const txAmount0 =
+          Number(tx.amount0In) > 0 ? tx.amount0In : tx.amount0Out;
+        const txAmount1 =
+          Number(tx.amount1In) > 0 ? tx.amount1In : tx.amount1Out;
+        const token1Amount =
+          tx.pair.token0.id.toLowerCase() === token1.address.toLowerCase()
+            ? txAmount0
+            : txAmount1;
+        const token2Amount =
+          tx.pair.token0.id.toLowerCase() === token1.address.toLowerCase()
+            ? txAmount1
+            : txAmount0;
+        const txPrice = Number(tx.amountUSD) / txAmount1;
+        return (
+          <>
+            <td align='left'>
+              {moment
+                .unix(tx.transaction.timestamp)
+                .format('MMMM Do h:mm:ss a')}
+            </td>
+            <td className={txType} align='left'>
+              {txType.toUpperCase()}
+            </td>
+            <td className={txType} align='right'>
+              {formatNumber(tx.amountUSD)}
+            </td>
+            <td className={txType} align='right'>
+              {formatNumber(token1Amount)}
+            </td>
+            <td className={txType} align='right'>
+              {formatNumber(token2Amount)}
+            </td>
+            <td className={txType} align='right'>
+              {formatNumber(txPrice)}
+            </td>
+            <td className={txType} align='right'>
+              {chainId ? (
+                <a
+                  href={getEtherscanLink(
+                    chainId,
+                    tx.transaction.id,
+                    'transaction',
+                  )}
+                  target='_blank'
+                  rel='noreferrer'
+                >
+                  {shortenTx(tx.transaction.id)}
+                </a>
+              ) : (
+                shortenTx(tx.transaction.id)
+              )}
+            </td>
+          </>
+        );
+      }}
+    />
   );
 
   return (
