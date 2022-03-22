@@ -1,12 +1,64 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState, useMemo } from 'react';
 import { Box } from '@material-ui/core';
 import { SearchInput } from 'components';
 import { CustomSelect, SmOption } from 'components/CustomSelect';
 import styled from 'styled-components';
 import { useHistory } from 'react-router-dom';
+import { useActiveWeb3React } from 'hooks';
+import Web3 from 'web3';
+import { MarketSDK, Comptroller, CToken } from 'market-sdk';
+
+const QS_Pool_Comptroller = '0x772EdfEDee10029E98AF15359595bB398950416B';
+const QS_Pool_admin = '0x03c91dEc8Ca1c7932305B4B0c15AB3A1F13f2eE6';
+const fQSUSDC = '0xE6538102EDE880BdDbEe50C2f763Be02DE164010';
 
 const LendPage: React.FC = () => {
   const history = useHistory();
+  const { account } = useActiveWeb3React();
+  const web3 = new Web3('https://polygon-rpc.com');
+
+  const [pools, setPools] = useState<any>([]);
+
+  useMemo(() => {
+    const getPools = async () => {
+      const sdk = await MarketSDK.init(web3);
+      const allPools = await sdk.poolDirectory.v1!.getAllPools();
+      setPools(allPools);
+
+      const comptroller = new Comptroller(sdk, QS_Pool_Comptroller);
+
+      const cTokens = (await comptroller.getAllMarkets()).map(
+        (address) => new CToken(sdk, address),
+      );
+
+      console.log('cTokens??', cTokens);
+
+      const publicPoolData: any = await sdk.lens.v1?.getPublicPoolsWithData();
+
+      // let i = 1;
+      // for (const cToken of cTokens) {
+      //   console.log(`cToken[${i}] address = `, cToken.address); /// 0x5a
+      //   console.log(`cToken[${i}] name = `, await cToken.name()); /// Market Pool X USDC
+      //   console.log(`cToken[${i}] symbol = `, await cToken.symbol()); /// mPXUSDC
+      //   console.log(
+      //     `cToken[${i}] LTV = `,
+      //     (await comptroller.markets(cToken.address)).collateralFactorMantissa, /// 5e17
+      //   );
+      //   console.log(
+      //     `cToken[${i}] reserve factor = `,
+      //     await cToken.reserveFactorMantissa(), /// 5e16
+      //   );
+
+      //   ++i;
+      // }
+    };
+    getPools();
+  }, [web3]);
+
+  // useEffect(() => {
+  //   if (pools) pools.map((x: any, i: any) => console.log(x, i));
+  // }, [pools]);
+
   const [searchInput, setSearchInput] = useState('');
   return (
     <Box width={'100%'}>
@@ -135,190 +187,67 @@ const LendPage: React.FC = () => {
         </Box>
       </Box>
       <Box display={'flex'} gridGap={'32px'} flexWrap={'wrap'}>
-        <Card
-          flex={'1'}
-          borderRadius={'20px'}
-          bgcolor={'#232734'}
-          display={'flex'}
-          flexDirection={'column'}
-          sx={{ minWidth: { xs: '55%', sm: '25%' } }}
-          onClick={() => {
-            history.push('lend/detail');
-          }}
-        >
-          <Box
-            py={'28px'}
+        {pools.map((pool: any, index: any) => (
+          <Card
+            flex={'1'}
+            key={`${index}`}
+            borderRadius={'20px'}
+            bgcolor={'#232734'}
             display={'flex'}
             flexDirection={'column'}
-            alignItems={'center'}
-          >
-            <Box fontSize={'20px'}>Quickswap Pool</Box>
-            <Box mt={'14px'} display={'flex'} gridGap={'4px'}>
-              <USDTIcon size={'22px'} />
-              <USDTIcon size={'22px'} />
-              <USDTIcon size={'22px'} />
-              <USDTIcon size={'22px'} />
-              <USDTIcon size={'22px'} />
-            </Box>
-          </Box>
-          <Box
-            display={'flex'}
-            borderTop={'1px solid #30374a'}
-            borderBottom={'1px solid #30374a'}
+            sx={{ minWidth: { xs: '55%', sm: '25%' } }}
+            onClick={() => {
+              history.push('lend/detail');
+            }}
           >
             <Box
-              flex={'1'}
-              textAlign={'center'}
-              borderRight={'1px solid #30374a'}
-              pt={'18px'}
-              pb={'24px'}
+              py={'28px'}
+              display={'flex'}
+              flexDirection={'column'}
+              alignItems={'center'}
             >
-              <Box fontSize={'14px'} color={'#575b73'}>
-                Total Supply
-              </Box>
-              <Box fontSize={'16px'} mt={'10px'}>
-                $13,132,132
-              </Box>
-            </Box>
-            <Box flex={'1'} textAlign={'center'} pt={'18px'} pb={'24px'}>
-              <Box fontSize={'14px'} color={'#575b73'}>
-                Total Borrowed
-              </Box>
-              <Box fontSize={'16px'} mt={'10px'}>
-                $13,132,132
+              <Box fontSize={'20px'}>{pool.name}</Box>
+              <Box mt={'14px'} display={'flex'} gridGap={'4px'}>
+                <USDTIcon size={'22px'} />
+                <USDTIcon size={'22px'} />
+                <USDTIcon size={'22px'} />
+                <USDTIcon size={'22px'} />
+                <USDTIcon size={'22px'} />
               </Box>
             </Box>
-          </Box>
-          <Box py={'22px'} textAlign={'center'} fontSize={'16px'}>
-            View Details
-          </Box>
-        </Card>
-        <Card
-          flex={'1'}
-          borderRadius={'20px'}
-          bgcolor={'#232734'}
-          display={'flex'}
-          flexDirection={'column'}
-          sx={{ minWidth: { xs: '55%', sm: '25%' } }}
-        >
-          <Box
-            py={'28px'}
-            display={'flex'}
-            flexDirection={'column'}
-            alignItems={'center'}
-          >
-            <Box fontSize={'20px'}>Pool Title</Box>
-            <Box mt={'14px'} display={'flex'} gridGap={'4px'}>
-              <USDTIcon size={'22px'} />
-              <USDTIcon size={'22px'} />
+            <Box
+              display={'flex'}
+              borderTop={'1px solid #30374a'}
+              borderBottom={'1px solid #30374a'}
+            >
               <Box
-                p={'2px'}
-                borderRadius={'100px'}
-                border={'1px solid #42495e'}
-                fontSize={'16px'}
-                display={'flex'}
-                gridGap={'2px'}
+                flex={'1'}
+                textAlign={'center'}
+                borderRight={'1px solid #30374a'}
+                pt={'18px'}
+                pb={'24px'}
               >
-                <USDTIcon />
-                <USDTIcon />
+                <Box fontSize={'14px'} color={'#575b73'}>
+                  Total Supply
+                </Box>
+                <Box fontSize={'16px'} mt={'10px'}>
+                  {pool.blockPosted.toNumber()}
+                </Box>
+              </Box>
+              <Box flex={'1'} textAlign={'center'} pt={'18px'} pb={'24px'}>
+                <Box fontSize={'14px'} color={'#575b73'}>
+                  Total Borrowed
+                </Box>
+                <Box fontSize={'16px'} mt={'10px'}>
+                  $13,132,132
+                </Box>
               </Box>
             </Box>
-          </Box>
-          <Box
-            display={'flex'}
-            borderTop={'1px solid #30374a'}
-            borderBottom={'1px solid #30374a'}
-          >
-            <Box
-              flex={'1'}
-              textAlign={'center'}
-              borderRight={'1px solid #30374a'}
-              pt={'18px'}
-              pb={'24px'}
-            >
-              <Box fontSize={'14px'} color={'#575b73'}>
-                Total Supply
-              </Box>
-              <Box fontSize={'16px'} mt={'10px'}>
-                $13,132,132
-              </Box>
+            <Box py={'22px'} textAlign={'center'} fontSize={'16px'}>
+              View Details
             </Box>
-            <Box flex={'1'} textAlign={'center'} pt={'18px'} pb={'24px'}>
-              <Box fontSize={'14px'} color={'#575b73'}>
-                Total Borrowed
-              </Box>
-              <Box fontSize={'16px'} mt={'10px'}>
-                $13,132,132
-              </Box>
-            </Box>
-          </Box>
-          <Box py={'22px'} textAlign={'center'} fontSize={'16px'}>
-            View Details
-          </Box>
-        </Card>
-        <Card
-          flex={'1'}
-          borderRadius={'20px'}
-          bgcolor={'#232734'}
-          display={'flex'}
-          flexDirection={'column'}
-          sx={{ minWidth: { xs: '55%', sm: '25%' } }}
-        >
-          <Box
-            py={'28px'}
-            display={'flex'}
-            flexDirection={'column'}
-            alignItems={'center'}
-          >
-            <Box fontSize={'20px'}>Pool Title</Box>
-            <Box mt={'14px'} display={'flex'} gridGap={'4px'}>
-              <USDTIcon size={'22px'} />
-              <USDTIcon size={'22px'} />
-              <Box
-                p={'2px'}
-                borderRadius={'100px'}
-                border={'1px solid #42495e'}
-                fontSize={'16px'}
-                display={'flex'}
-                gridGap={'2px'}
-              >
-                <USDTIcon />
-                <USDTIcon />
-              </Box>
-            </Box>
-          </Box>
-          <Box
-            display={'flex'}
-            borderTop={'1px solid #30374a'}
-            borderBottom={'1px solid #30374a'}
-          >
-            <Box
-              flex={'1'}
-              textAlign={'center'}
-              borderRight={'1px solid #30374a'}
-              pt={'18px'}
-              pb={'24px'}
-            >
-              <Box fontSize={'14px'} color={'#575b73'}>
-                Total Supply
-              </Box>
-              <Box fontSize={'16px'} mt={'10px'}>
-                $13,132,132
-              </Box>
-            </Box>
-            <Box flex={'1'} textAlign={'center'} pt={'18px'} pb={'24px'}>
-              <Box fontSize={'14px'} color={'#575b73'}>
-                Total Borrowed
-              </Box>
-              <Box fontSize={'16px'} mt={'10px'}>
-                $13,132,132
-              </Box>
-            </Box>
-          </Box>
-          <Box py={'22px'} textAlign={'center'} fontSize={'16px'}>
-            View Details
-          </Box>
-        </Card>
+          </Card>
+        ))}
       </Box>
     </Box>
   );
