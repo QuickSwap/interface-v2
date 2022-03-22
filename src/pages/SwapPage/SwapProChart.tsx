@@ -8,6 +8,8 @@ const SwapProChart: React.FC = () => {
         theme: 'dark',
         height: '100%',
         symbol: 'BINANCE:QUICKUSDT',
+        range: '1D',
+        style: '1',
       }}
     />
   );
