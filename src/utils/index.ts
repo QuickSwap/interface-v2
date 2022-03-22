@@ -752,6 +752,11 @@ export const getSwapTransactions = async (
   token1Address: string,
 ) => {
   try {
+    const oneDayAgo = dayjs
+      .utc()
+      .subtract(1, 'day')
+      .unix();
+
     const pairData = await client.query({
       query: PAIR_ID(token0Address, token1Address),
       fetchPolicy: 'network-only',
@@ -762,16 +767,27 @@ export const getSwapTransactions = async (
         : undefined;
     if (!pairs || pairs.length === 0) return;
     const pairId = pairs[0].id;
-    const swapTx = await txClient.query({
-      query: SWAP_TRANSACTIONS,
-      variables: {
-        allPairs: [pairId],
-      },
-      fetchPolicy: 'no-cache',
-    });
-    return swapTx && swapTx.data && swapTx.data.swaps
-      ? swapTx.data.swaps
-      : undefined;
+
+    let allFound = false;
+    let skip = 0;
+    let swapTx: any[] = [];
+    while (!allFound) {
+      const result = await txClient.query({
+        query: SWAP_TRANSACTIONS,
+        variables: {
+          allPairs: [pairId],
+          skip,
+          lastTime: oneDayAgo,
+        },
+        fetchPolicy: 'no-cache',
+      });
+      if (result.data.swaps.length < 1000) {
+        allFound = true;
+      }
+      skip += 1000;
+      swapTx = swapTx.concat(result.data.swaps);
+    }
+    return swapTx;
   } catch (e) {
     return;
   }
