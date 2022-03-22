@@ -99,7 +99,7 @@ const SwapProChartTrade: React.FC<{
           tx.pair.token0.id.toLowerCase() === token1.address.toLowerCase()
             ? txAmount1
             : txAmount0;
-        const txPrice = Number(tx.amountUSD) / txAmount1;
+        const txPrice = Number(tx.amountUSD) / token1Amount;
         return (
           <>
             <td align='left'>
