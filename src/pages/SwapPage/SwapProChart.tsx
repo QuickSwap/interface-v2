@@ -7,7 +7,7 @@ const SwapProChart: React.FC = () => {
       widgetProps={{
         theme: 'dark',
         height: '100%',
-        symbol: 'QUICKSWAP:QUICKOM',
+        symbol: 'BINANCE:QUICKUSDT',
       }}
     />
   );

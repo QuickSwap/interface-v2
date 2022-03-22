@@ -69,7 +69,7 @@ const SwapPage: React.FC = () => {
     undefined,
   );
   const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
-  const [infoPos, setInfoPos] = useState('left');
+  const [infoPos, setInfoPos] = useState('right');
 
   const { currencies } = useDerivedSwapInfo();
   const { chainId } = useActiveWeb3React();
@@ -185,11 +185,27 @@ const SwapPage: React.FC = () => {
             </Box>
             <SwapMain />
           </Box>
+          {infoPos === 'left' && (
+            <Box
+              borderLeft={isMobile ? 'none' : `1px solid ${palette.divider}`}
+              borderRight={isMobile ? 'none' : `1px solid ${palette.divider}`}
+              borderTop={isMobile ? `1px solid ${palette.divider}` : 'none'}
+              width={isMobile ? 1 : 250}
+            >
+              <SwapProInfo
+                token1={token1}
+                token2={token2}
+                transactions={transactions}
+              />
+            </Box>
+          )}
           <Box
             flex={isMobile ? 'none' : 1}
             display='flex'
             flexDirection='column'
             maxHeight='100vh'
+            minHeight='500px'
+            width='100%'
           >
             <SwapProFilter
               infoPos={infoPos}
@@ -209,17 +225,19 @@ const SwapPage: React.FC = () => {
               />
             )}
           </Box>
-          <Box
-            borderLeft={isMobile ? 'none' : `1px solid ${palette.divider}`}
-            borderTop={isTablet ? `1px solid ${palette.divider}` : 'none'}
-            width={isTablet ? 1 : 250}
-          >
-            <SwapProInfo
-              token1={token1}
-              token2={token2}
-              transactions={transactions}
-            />
-          </Box>
+          {infoPos === 'right' && (
+            <Box
+              borderLeft={isMobile ? 'none' : `1px solid ${palette.divider}`}
+              borderTop={isTablet ? `1px solid ${palette.divider}` : 'none'}
+              width={isTablet ? 1 : 250}
+            >
+              <SwapProInfo
+                token1={token1}
+                token2={token2}
+                transactions={transactions}
+              />
+            </Box>
+          )}
         </Box>
       )}
     </Box>

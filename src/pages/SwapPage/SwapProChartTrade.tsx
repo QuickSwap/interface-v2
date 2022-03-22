@@ -132,30 +132,32 @@ const SwapProChartTrade: React.FC<{
     </table>
   );
 
-  return showChart && showTrades ? (
+  return (
     <ReflexContainer orientation='horizontal'>
-      <ReflexElement className='top-pane' minSize={200}>
-        <SwapProChart />
-      </ReflexElement>
-      <ReflexSplitter>
-        <Box
-          width={1}
-          height='2px'
-          display='flex'
-          justifyContent='center'
-          alignItems='center'
-        >
-          <Height />
-        </Box>
-      </ReflexSplitter>
-      <ReflexElement className='bottom-pane' minSize={200}>
-        <TradesTable />
-      </ReflexElement>
+      {showChart && (
+        <ReflexElement className='top-pane' minSize={200}>
+          <SwapProChart />
+        </ReflexElement>
+      )}
+      {showChart && showTrades && (
+        <ReflexSplitter>
+          <Box
+            width={1}
+            height='2px'
+            display='flex'
+            justifyContent='center'
+            alignItems='center'
+          >
+            <Height />
+          </Box>
+        </ReflexSplitter>
+      )}
+      {showTrades && (
+        <ReflexElement className='bottom-pane' minSize={200}>
+          <TradesTable />
+        </ReflexElement>
+      )}
     </ReflexContainer>
-  ) : showChart ? (
-    <SwapProChart />
-  ) : (
-    <TradesTable />
   );
 };
 
