@@ -149,7 +149,7 @@ const SwapProChartTrade: React.FC<{
     <ReflexContainer orientation='horizontal'>
       {showChart && (
         <ReflexElement className='top-pane' minSize={200}>
-          <SwapProChart />
+          <SwapProChart symbol1={token1.symbol} symbol2={token2.symbol} />
         </ReflexElement>
       )}
       {showChart && showTrades && (
