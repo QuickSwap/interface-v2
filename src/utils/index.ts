@@ -29,6 +29,8 @@ import {
   TOKEN_INFO_OLD,
   FILTERED_TRANSACTIONS,
   HOURLY_PAIR_RATES,
+  GLOBAL_ALLDATA,
+  ETH_ALLPRICE,
 } from 'apollo/queries';
 import { JsonRpcSigner, Web3Provider } from '@ethersproject/providers';
 import {
@@ -40,6 +42,8 @@ import {
   ETHER,
   Token,
   TokenAmount,
+  Price,
+  Pair,
 } from '@uniswap/sdk';
 import { BigNumber, BigNumberish } from '@ethersproject/bignumber';
 import { formatUnits } from 'ethers/lib/utils';
@@ -50,8 +54,17 @@ import moment from 'moment';
 import { Palette } from '@material-ui/core/styles/createPalette';
 import tokenData from 'constants/tokens.json';
 import stakeData from 'constants/stake.json';
-import { DualStakingInfo, StakingInfo, SyrupInfo } from 'state/stake/hooks';
+import {
+  DualStakingInfo,
+  LairInfo,
+  StakingInfo,
+  SyrupBasic,
+  SyrupInfo,
+} from 'types';
 import { unwrappedToken } from './wrappedCurrency';
+import { useUSDCPriceToken } from './useUSDCPrice';
+import { CallState } from 'state/multicall/hooks';
+import { DualStakingBasic, StakingBasic } from 'types';
 dayjs.extend(utc);
 dayjs.extend(weekOfYear);
 
@@ -221,12 +234,8 @@ export const get2DayPercentChange = (
 
 export const getEthPrice: () => Promise<number[]> = async () => {
   const utcCurrentTime = dayjs();
-  //utcCurrentTime = utcCurrentTime.subtract(0.3, 'day');
 
-  const utcOneDayBack = utcCurrentTime
-    .subtract(1, 'day')
-    .startOf('minute')
-    .unix();
+  const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix();
   let ethPrice = 0;
   let ethPriceOneDay = 0;
   let priceChangeETH = 0;
@@ -234,15 +243,12 @@ export const getEthPrice: () => Promise<number[]> = async () => {
   try {
     const oneDayBlock = await getBlockFromTimestamp(utcOneDayBack);
     const result = await client.query({
-      query: ETH_PRICE(),
+      query: ETH_ALLPRICE(oneDayBlock),
       fetchPolicy: 'network-only',
     });
-    const resultOneDay = await client.query({
-      query: ETH_PRICE(oneDayBlock),
-      fetchPolicy: 'network-only',
-    });
-    const currentPrice = result?.data?.bundles[0]?.ethPrice;
-    const oneDayBackPrice = resultOneDay?.data?.bundles[0]?.ethPrice;
+    const currentPrice = result?.data['currentPrice'][0].ethPrice;
+    const oneDayBackPrice = result?.data['oneDayBackPrice'][0].ethPrice;
+
     priceChangeETH = getPercentChange(currentPrice, oneDayBackPrice);
     ethPrice = currentPrice;
     ethPriceOneDay = oneDayBackPrice;
@@ -635,6 +641,10 @@ export const getTopPairs = async (count: number) => {
   }
 };
 
+export function getSecondsOneDay() {
+  return 60 * 60 * 24;
+}
+
 export const getIntervalTokenData = async (
   tokenAddress: string,
   startTime: number,
@@ -772,7 +782,7 @@ export const getTokenChartData = async (
 
     const dayIndexSet = new Set();
     const dayIndexArray: any[] = [];
-    const oneDay = 24 * 60 * 60;
+    const oneDay = getSecondsOneDay();
     data.forEach((dayData, i) => {
       // add the day index to the set of days
       dayIndexSet.add((data[i].date / oneDay).toFixed(0));
@@ -1177,30 +1187,22 @@ export async function getGlobalData(
     });
     data = result.data.uniswapFactories[0];
 
-    // fetch the historical data
-    const oneDayResult = await client.query({
-      query: GLOBAL_DATA(oneDayBlock?.number),
+    const queryReq = [
+      { index: 'result', block: null },
+      { index: 'oneDayData', block: oneDayBlock?.number },
+      { index: 'twoDayData', block: twoDayBlock?.number },
+      { index: 'oneWeekData', block: oneWeekBlock?.number },
+      { index: 'twoWeekData', block: twoWeekBlock?.number },
+    ];
+    const allData = await client.query({
+      query: GLOBAL_ALLDATA(queryReq),
       fetchPolicy: 'network-only',
     });
-    oneDayData = oneDayResult.data.uniswapFactories[0];
-
-    const twoDayResult = await client.query({
-      query: GLOBAL_DATA(twoDayBlock?.number),
-      fetchPolicy: 'network-only',
-    });
-    twoDayData = twoDayResult.data.uniswapFactories[0];
-
-    const oneWeekResult = await client.query({
-      query: GLOBAL_DATA(oneWeekBlock?.number),
-      fetchPolicy: 'network-only',
-    });
-    const oneWeekData = oneWeekResult.data.uniswapFactories[0];
-
-    const twoWeekResult = await client.query({
-      query: GLOBAL_DATA(twoWeekBlock?.number),
-      fetchPolicy: 'network-only',
-    });
-    const twoWeekData = twoWeekResult.data.uniswapFactories[0];
+    data = allData.data['result'][0];
+    oneDayData = allData.data['oneDayData'][0];
+    twoDayData = allData.data['twoDayData'][0];
+    const oneWeekData = allData.data['oneWeekData'][0];
+    const twoWeekData = allData.data['twoWeekData'][0];
 
     if (data && oneDayData && twoDayData && twoWeekData) {
       const [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(
@@ -1535,6 +1537,16 @@ export function shortenAddress(address: string, chars = 4): string {
   return `${parsed.substring(0, chars + 2)}...${parsed.substring(42 - chars)}`;
 }
 
+export const shortenTx = (tx: string) => {
+  if (tx.length) {
+    const txLength = tx.length;
+    const first = tx.slice(0, 6);
+    const last = tx.slice(txLength - 4, txLength);
+    return `${first}...${last}`;
+  }
+  return '';
+};
+
 export function getLibrary(provider: any): Web3Provider {
   const library = new Web3Provider(provider, 'any');
   library.pollingInterval = 15000;
@@ -1634,6 +1646,14 @@ export function getAPYWithFee(rewards: number, fee: number) {
   return fee > 0 ? ((1 + ((rewards + fee / 12) * 12) / 12) ** 12 - 1) * 100 : 0;
 }
 
+export function formatAPY(apy: number) {
+  if (apy > 100000000) {
+    return '>100000000';
+  } else {
+    return apy.toLocaleString();
+  }
+}
+
 export function formatNumber(unformatted: number | string, showDigits = 2) {
   // get fraction digits for small number
   const absNumber = Math.abs(Number(unformatted));
@@ -1667,17 +1687,7 @@ export function returnTokenFromKey(key: string): Token {
 export function returnSyrupInfo(
   isOld?: boolean,
 ): {
-  [chainId in ChainId]?: {
-    token: Token;
-    stakingRewardAddress: string;
-    ended: boolean;
-    name: string;
-    lp: string;
-    baseToken: Token;
-    rate: number;
-    ending: number; //DATE IN UNIX TIMESTAMP
-    stakingToken: Token;
-  }[];
+  [chainId in ChainId]?: SyrupBasic[];
 } {
   const syrupInfo = isOld ? stakeData.oldsyrup : stakeData.syrup;
   return {
@@ -1695,17 +1705,7 @@ export function returnSyrupInfo(
 export function returnStakingInfo(
   type?: string,
 ): {
-  [chainId in ChainId]?: {
-    tokens: [Token, Token];
-    stakingRewardAddress: string;
-    ended: boolean;
-    name: string;
-    lp: string;
-    baseToken: Token;
-    rate: number;
-    pair: string;
-    rewardToken: Token;
-  }[];
+  [chainId in ChainId]?: StakingBasic[];
 } {
   const stakingInfo =
     type === 'old'
@@ -1729,20 +1729,7 @@ export function returnStakingInfo(
 }
 
 export function returnDualStakingInfo(): {
-  [chainId in ChainId]?: {
-    tokens: [Token, Token];
-    stakingRewardAddress: string;
-    ended: boolean;
-    name: string;
-    lp: string;
-    baseToken: Token;
-    rewardTokenA: Token;
-    rewardTokenB: Token;
-    rewardTokenBBase: Token;
-    rateA: number;
-    rateB: number;
-    pair: string;
-  }[];
+  [chainId in ChainId]?: DualStakingBasic[];
 } {
   return {
     [ChainId.MATIC]: stakeData.dualrewards.map((info) => {
@@ -1759,13 +1746,6 @@ export function returnDualStakingInfo(): {
       };
     }),
   };
-}
-
-export function getPriceToQUICKSyrup(syrup: SyrupInfo) {
-  const isQUICKStakingToken = syrup.stakingToken.equals(
-    returnTokenFromKey('QUICK'),
-  );
-  return isQUICKStakingToken ? 1 : Number(syrup.dQUICKtoQUICK.toSignificant());
 }
 
 export function getChartDates(chartData: any[] | null, durationIndex: number) {
@@ -1864,17 +1844,20 @@ export function getTokenAPRSyrup(syrup: SyrupInfo) {
     : 0;
 }
 
-export function getDQUICKAPYSyrup(syrup?: SyrupInfo) {
-  if (!syrup) return '0';
+export function useLairDQUICKAPY(lair?: LairInfo) {
+  const daysCurrentYear = getDaysCurrentYear();
+  const dQUICKPrice = useUSDCPriceToken(returnTokenFromKey('DQUICK'));
+  if (!lair) return '0';
   const dQUICKAPR =
-    (((Number(syrup.oneDayVol) * 0.04 * 0.01) /
-      Number(syrup.dQuickTotalSupply.toSignificant(6))) *
-      getDaysCurrentYear()) /
-    (Number(syrup.dQUICKtoQUICK.toSignificant(6)) * Number(syrup.quickPrice));
+    (((Number(lair.oneDayVol) *
+      GlobalConst.utils.DQUICKFEE *
+      GlobalConst.utils.DQUICKAPR_MULTIPLIER) /
+      Number(lair.dQuickTotalSupply.toExact())) *
+      daysCurrentYear) /
+    dQUICKPrice;
   if (!dQUICKAPR) return '0';
   return Number(
-    (Math.pow(1 + dQUICKAPR / getDaysCurrentYear(), getDaysCurrentYear()) - 1) *
-      100,
+    (Math.pow(1 + dQUICKAPR / daysCurrentYear, daysCurrentYear) - 1) * 100,
   ).toLocaleString();
 }
 
@@ -1910,7 +1893,13 @@ export function getStakedAmountStakingInfo(
   const token0 = stakingInfo.tokens[0];
   const baseToken =
     baseTokenCurrency === empty ? token0 : stakingInfo.baseToken;
-  if (!stakingInfo.totalSupply || !stakingTokenPair) return;
+  if (
+    !stakingInfo.totalSupply ||
+    !stakingTokenPair ||
+    !stakingInfo.totalStakedAmount ||
+    !stakingInfo.stakedAmount
+  )
+    return;
   // take the total amount of LP tokens staked, multiply by ETH value of all LP tokens, divide by all LP tokens
   const valueOfTotalStakedAmountInBaseToken = new TokenAmount(
     baseToken,
@@ -1985,32 +1974,47 @@ export function getStakedAmountStakingInfo(
   };
 }
 
+export function formatTokenAmount(
+  amount?: TokenAmount | CurrencyAmount,
+  digits = 3,
+) {
+  if (!amount) return '-';
+  const amountStr = amount.toExact();
+  if (Math.abs(Number(amountStr)) > 1) {
+    return Number(amountStr).toLocaleString();
+  }
+  return amount.toSignificant(digits);
+}
+
 export function getTVLStaking(
   valueOfTotalStakedAmountInUSDC?: CurrencyAmount,
   valueOfTotalStakedAmountInBaseToken?: TokenAmount,
 ) {
   if (!valueOfTotalStakedAmountInUSDC) {
-    return `${valueOfTotalStakedAmountInBaseToken?.toSignificant(4, {
-      groupSeparator: ',',
-    }) ?? '-'} ETH`;
+    return `${formatTokenAmount(valueOfTotalStakedAmountInBaseToken)} ETH`;
   }
-  return `$${valueOfTotalStakedAmountInUSDC.toFixed(0, {
-    groupSeparator: ',',
-  })}`;
+  return `$${formatTokenAmount(valueOfTotalStakedAmountInUSDC)}`;
 }
 
 export function getUSDString(usdValue?: CurrencyAmount) {
   if (!usdValue) return '$0';
-  const usdStr = usdValue.toSignificant(2);
-  if (Number(usdStr) > 0 && Number(usdStr) < 0.001) return '< $0.001';
-  return `$${usdStr}`;
+  const value = Number(usdValue.toExact());
+  if (value > 0 && value < 0.001) return '< $0.001';
+  return `$${value.toLocaleString()}`;
+}
+
+export function getEarnedUSDSyrup(syrup?: SyrupInfo) {
+  if (!syrup || !syrup.earnedAmount || !syrup.rewardTokenPriceinUSD) return '-';
+  const earnedUSD =
+    Number(syrup.earnedAmount.toExact()) * Number(syrup.rewardTokenPriceinUSD);
+  if (earnedUSD > 0 && earnedUSD < 0.001) return '< $0.001';
+  return `$${earnedUSD.toLocaleString()}`;
 }
 
 export function getEarnedUSDLPFarm(stakingInfo: StakingInfo | undefined) {
-  if (!stakingInfo) return;
+  if (!stakingInfo || !stakingInfo.earnedAmount) return;
   const earnedUSD =
-    Number(stakingInfo.earnedAmount.toSignificant()) *
-    stakingInfo.rewardTokenPrice;
+    Number(stakingInfo.earnedAmount.toExact()) * stakingInfo.rewardTokenPrice;
   if (earnedUSD < 0.001 && earnedUSD > 0) {
     return '< $0.001';
   }
@@ -2018,11 +2022,12 @@ export function getEarnedUSDLPFarm(stakingInfo: StakingInfo | undefined) {
 }
 
 export function getEarnedUSDDualFarm(stakingInfo: DualStakingInfo | undefined) {
-  if (!stakingInfo) return;
+  if (!stakingInfo || !stakingInfo.earnedAmountA || !stakingInfo.earnedAmountB)
+    return;
   const earnedUSD =
-    Number(stakingInfo.earnedAmountA.toSignificant()) *
+    Number(stakingInfo.earnedAmountA.toExact()) *
       stakingInfo.rewardTokenAPrice +
-    Number(stakingInfo.earnedAmountB.toSignificant()) *
+    Number(stakingInfo.earnedAmountB.toExact()) *
       Number(stakingInfo.rewardTokenBPrice);
   if (earnedUSD < 0.001 && earnedUSD > 0) {
     return '< $0.001';
@@ -2036,4 +2041,60 @@ export function isSupportedNetwork(ethereum: any) {
 
 export function getPageItemsToLoad(index: number, countsPerPage: number) {
   return index === 0 ? countsPerPage : countsPerPage * index;
+}
+
+export function getExactTokenAmount(amount?: TokenAmount | CurrencyAmount) {
+  if (!amount) return 0;
+  return Number(amount.toExact());
+}
+
+// this is useful when the value has more digits than token decimals
+export function getValueTokenDecimals(value: string, token?: Token | Currency) {
+  if (!token) return '0';
+  const valueDigits = value.split('.');
+  const valueDigitStr = valueDigits.length > 1 ? valueDigits[1] : '';
+  const valueDigitCount = valueDigitStr.length;
+  if (valueDigitCount > token.decimals) {
+    return value.substring(
+      0,
+      value.length - (valueDigitCount - token.decimals),
+    );
+  }
+  return value;
+}
+
+export function getPartialTokenAmount(
+  percent: number,
+  amount?: TokenAmount | CurrencyAmount,
+) {
+  if (!amount) return '0';
+  if (percent === 100) return amount.toExact();
+  const partialAmount = (Number(amount.toExact()) * percent) / 100;
+  return getValueTokenDecimals(partialAmount.toString(), amount.currency);
+}
+
+export function initTokenAmountFromCallResult(
+  token: Token,
+  callState?: CallState,
+) {
+  if (!callState || !callState.result || !callState.result[0]) return;
+  return new TokenAmount(token, JSBI.BigInt(callState.result[0]));
+}
+
+export function getFarmLPToken(
+  info: StakingInfo | DualStakingInfo | StakingBasic | DualStakingBasic,
+) {
+  const lp = info.lp;
+  const dummyPair = new Pair(
+    new TokenAmount(info.tokens[0], '0'),
+    new TokenAmount(info.tokens[1], '0'),
+  );
+  if (lp && lp !== '') return new Token(137, lp, 18, 'SLP', 'Staked LP');
+  return dummyPair.liquidityToken;
+}
+
+export function getSyrupLPToken(info: SyrupBasic | SyrupInfo) {
+  const lp = info.lp;
+  if (lp && lp !== '') return new Token(137, lp, 18, 'SLP', 'Staked LP');
+  return info.stakingToken;
 }

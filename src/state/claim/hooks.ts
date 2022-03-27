@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { useActiveWeb3React } from 'hooks';
 import { useMerkleDistributorContract } from 'hooks/useContract';
 import { useSingleCallResult } from 'state/multicall/hooks';
-import { calculateGasMargin } from 'utils';
+import { calculateGasMargin, formatTokenAmount } from 'utils';
 import { useTransactionAdder } from 'state/transactions/hooks';
 
 interface UserClaimData {
@@ -100,7 +100,7 @@ export function useClaimCallback(
           })
           .then((response: TransactionResponse) => {
             addTransaction(response, {
-              summary: `Claimed ${unClaimedAmount?.toSignificant(4)} QUICK`,
+              summary: `Claimed ${formatTokenAmount(unClaimedAmount)} QUICK`,
               claim: { recipient: account },
             });
             return response.hash;

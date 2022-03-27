@@ -2,7 +2,8 @@ import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { useTheme } from '@material-ui/core/styles';
 import { ArrowUp, ArrowDown } from 'react-feather';
 import { Box, Typography, Divider, useMediaQuery } from '@material-ui/core';
-import { SyrupInfo, useSyrupInfo, useOldSyrupInfo } from 'state/stake/hooks';
+import { useSyrupInfo, useOldSyrupInfo, useLairInfo } from 'state/stake/hooks';
+import { SyrupInfo } from 'types';
 import {
   SyrupCard,
   ToggleSwitch,
@@ -11,9 +12,11 @@ import {
   CustomSwitch,
 } from 'components';
 import {
+  useLairDQUICKAPY,
   getPageItemsToLoad,
   getTokenAPRSyrup,
   returnFullWidthMobile,
+  getExactTokenAmount,
 } from 'utils';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 import { useInfiniteLoading } from 'utils/useInfiniteLoading';
@@ -40,6 +43,9 @@ const DragonsSyrup: React.FC = () => {
     syrupSearch,
     setSyrupSearch,
   );
+
+  const lairInfo = useLairInfo();
+  const dQUICKAPY = useLairDQUICKAPY(lairInfo);
 
   const addedStakingSyrupInfos = useSyrupInfo(
     null,
@@ -73,10 +79,10 @@ const DragonsSyrup: React.FC = () => {
     (a: SyrupInfo, b: SyrupInfo) => {
       const depositA =
         a.valueOfTotalStakedAmountInUSDC ??
-        Number(a.totalStakedAmount.toSignificant());
+        getExactTokenAmount(a.totalStakedAmount);
       const depositB =
         b.valueOfTotalStakedAmountInUSDC ??
-        Number(b.totalStakedAmount.toSignificant());
+        getExactTokenAmount(b.totalStakedAmount);
       return (depositA > depositB ? -1 : 1) * sortIndex;
     },
     [sortIndex],
@@ -91,11 +97,9 @@ const DragonsSyrup: React.FC = () => {
   const sortByEarned = useCallback(
     (a: SyrupInfo, b: SyrupInfo) => {
       const earnedUSDA =
-        Number(a.earnedAmount.toSignificant()) *
-        Number(a.rewardTokenPriceinUSD ?? 0);
+        getExactTokenAmount(a.earnedAmount) * (a.rewardTokenPriceinUSD ?? 0);
       const earnedUSDB =
-        Number(b.earnedAmount.toSignificant()) *
-        Number(b.rewardTokenPriceinUSD ?? 0);
+        getExactTokenAmount(b.earnedAmount) * (b.rewardTokenPriceinUSD ?? 0);
       return (earnedUSDA > earnedUSDB ? -1 : 1) * sortIndex;
     },
     [sortIndex],
@@ -287,7 +291,7 @@ const DragonsSyrup: React.FC = () => {
               color={
                 sortBy === item.index
                   ? palette.text.primary
-                  : palette.secondary.main
+                  : palette.text.secondary
               }
             >
               <Typography variant='body2'>{item.text}</Typography>
@@ -303,7 +307,9 @@ const DragonsSyrup: React.FC = () => {
         </Box>
       )}
       {syrupInfos && !pageLoading ? (
-        syrupInfos.map((syrup, ind) => <SyrupCard key={ind} syrup={syrup} />)
+        syrupInfos.map((syrup, ind) => (
+          <SyrupCard key={ind} syrup={syrup} dQUICKAPY={dQUICKAPY} />
+        ))
       ) : (
         <>
           <Skeleton width='100%' height={120} />

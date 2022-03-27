@@ -12,7 +12,13 @@ import {
 import { useMemo } from 'react';
 import { GlobalConst } from 'constants/index';
 import { useTransactionAdder } from 'state/transactions/hooks';
-import { calculateGasMargin, isZero, isAddress, shortenAddress } from 'utils';
+import {
+  calculateGasMargin,
+  isZero,
+  isAddress,
+  shortenAddress,
+  formatTokenAmount,
+} from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import { useRouterContract } from './useContract';
 import useTransactionDeadline from './useTransactionDeadline';
@@ -273,8 +279,8 @@ export function useSwapCallback(
           .then((response: TransactionResponse) => {
             const inputSymbol = trade.inputAmount.currency.symbol;
             const outputSymbol = trade.outputAmount.currency.symbol;
-            const inputAmount = trade.inputAmount.toSignificant(3);
-            const outputAmount = trade.outputAmount.toSignificant(3);
+            const inputAmount = formatTokenAmount(trade.inputAmount);
+            const outputAmount = formatTokenAmount(trade.outputAmount);
 
             const base = `Swap ${inputAmount} ${inputSymbol} for ${outputAmount} ${outputSymbol}`;
             const withRecipient =

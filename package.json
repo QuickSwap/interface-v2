@@ -5,7 +5,7 @@
   "devDependencies": {
     "@arkane-network/web3-arkane-provider": "^0.23.0",
     "@ethersproject/experimental": "^5.4.0",
-    "@gelatonetwork/limit-orders-react": "^1.0.11",
+    "@gelatonetwork/limit-orders-react": "^2.4.0",
     "@gnosis.pm/safe-apps-sdk": "^4.0.0",
     "@reduxjs/toolkit": "^1.3.5",
     "@transak/transak-sdk": "^1.0.28",
@@ -82,8 +82,8 @@
     "react-virtualized-auto-sizer": "^1.0.6",
     "react-window": "^1.8.6",
     "redux-localstorage-simple": "^2.4.1",
-    "source-map-explorer": "^2.5.2",
     "serve": "^11.3.2",
+    "source-map-explorer": "^2.5.2",
     "start-server-and-test": "^1.11.0",
     "typescript": "^4.1.2",
     "wcag-contrast": "^3.0.0",

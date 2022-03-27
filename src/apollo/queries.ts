@@ -448,6 +448,22 @@ export const ETH_PRICE: any = (block?: number) => {
   return gql(queryString);
 };
 
+export const ETH_ALLPRICE: any = (block?: number) => {
+  const queryString = `
+    query bundles {
+      oneDayBackPrice: bundles(where: { id: ${GlobalConst.utils.BUNDLE_ID} } block: {number: ${block}}) {
+        id
+        ethPrice
+      }
+      currentPrice: bundles(where: { id: ${GlobalConst.utils.BUNDLE_ID} }) {
+        id
+        ethPrice
+      }
+    }
+  `;
+  return gql(queryString);
+};
+
 export const PAIRS_HISTORICAL_BULK: any = (block: number, pairs: any[]) => {
   let pairsString = `[`;
   pairs.map((pair) => {
@@ -507,6 +523,24 @@ export const GLOBAL_DATA: any = (block?: number) => {
       }
     }`;
   return gql(queryString);
+};
+
+export const GLOBAL_ALLDATA: any = (reqData: any) => {
+  const queryString = reqData.map((each: any, index: any) => {
+    return `${each.index}: uniswapFactories(
+    ${each.block ? `block: { number: ${each.block} }` : ``}   
+    where: { id: "${GlobalConst.addresses.FACTORY_ADDRESS}" }) {
+      id
+      totalVolumeUSD
+      totalVolumeETH
+      untrackedVolumeUSD
+      totalLiquidityUSD
+      totalLiquidityETH
+      txCount
+      pairCount
+    }`;
+  });
+  return gql(`query uniswapFactories {${queryString.join(' ')}}`);
 };
 
 export const GLOBAL_CHART = gql`

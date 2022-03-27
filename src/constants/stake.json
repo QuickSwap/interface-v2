@@ -1,6 +1,50 @@
 {
   "syrup": [
     {
+      "token": "TRACE",
+      "stakingRewardAddress": "0xE9F0F6Fd89046aE69a96935B3e81707BA2961f1d",
+      "ended": false,
+      "lp": "",
+      "name": "",
+      "baseToken": "USDC",
+      "rate": 2976.16,
+      "ending": 1650673754,
+      "stakingToken": "QUICK"
+    },
+    {
+      "token": "IXT",
+      "stakingRewardAddress": "0xF3ed4Fc825864a16CAb4b8946622222050c63f5E",
+      "ended": false,
+      "lp": "",
+      "name": "",
+      "baseToken": "USDT",
+      "rate": 2666.666667,
+      "ending": 1661042020,
+      "stakingToken": "QUICK"
+    },
+    {
+      "token": "FUSE",
+      "stakingRewardAddress": "0xF2f0eadC00FE2009B64D5B735F0F06B45C502D15",
+      "ended": false,
+      "lp": "",
+      "name": "",
+      "baseToken": "ETHER",
+      "rate": 3333.33,
+      "ending": 1652570793,
+      "stakingToken": "QUICK"
+    },
+    {
+      "token": "DERC",
+      "stakingRewardAddress": "0x09ecE0A8fF76AEa30d82480E8a89ec9fEeca9B0F",
+      "ended": false,
+      "lp": "",
+      "name": "",
+      "baseToken": "USDC",
+      "rate": 988.89,
+      "ending": 1654558436,
+      "stakingToken": "QUICK"
+    },
+    {
       "token": "KIRO",
       "stakingRewardAddress": "0xB68842d78ef33C2b327f863D0E0e293C81d7a243",
       "ended": false,
@@ -231,50 +275,7 @@
       "ending": 1653093496,
       "stakingToken": "QUICK"
     },
-    {
-      "token": "UART",
-      "stakingRewardAddress": "0x11eF5B387865eb6901FdD020f28Dd6e5b9d88A1e",
-      "ended": false,
-      "lp": "",
-      "name": "",
-      "baseToken": "USDT",
-      "rate": 7333.34,
-      "ending": 1647909496,
-      "stakingToken": "QUICK"
-    },
-    {
-      "token": "RELAY",
-      "stakingRewardAddress": "0xB06ae8Db92aCba3B7767da98Ef16c9eF8F1bF3bb",
-      "ended": false,
-      "lp": "",
-      "name": "",
-      "baseToken": "QUICK",
-      "rate": 277.78,
-      "ending": 1647734484,
-      "stakingToken": "QUICK"
-    },
-    {
-      "token": "BCMC",
-      "stakingRewardAddress": "0xb2eb755B507ee5eE8Af17D71175B87c364CD52d0",
-      "ended": false,
-      "lp": "",
-      "name": "",
-      "baseToken": "MATIC",
-      "rate": 1416.67,
-      "ending": 1647734484,
-      "stakingToken": "QUICK"
-    },
-    {
-      "token": "ORBS",
-      "stakingRewardAddress": "0xf99E6796b571F5210EF62929c0023771612c4E70",
-      "ended": false,
-      "lp": "",
-      "name": "",
-      "baseToken": "USDC",
-      "rate": 20150.18,
-      "ending": 1647734484,
-      "stakingToken": "QUICK"
-    },
+
     {
       "token": "PSP",
       "stakingRewardAddress": "0xdcbDa338D12DBc823d0D484e7206E9AA55eeD844",
@@ -287,17 +288,6 @@
       "stakingToken": "DQUICK"
     },
     {
-      "token": "BLANK",
-      "stakingRewardAddress": "0x5d6a48AF1a102CC9CD278fBd56b1Bdc833EeA1d0",
-      "ended": false,
-      "lp": "",
-      "name": "",
-      "baseToken": "USDC",
-      "rate": 2033,
-      "ending": 1646492469,
-      "stakingToken": "DQUICK"
-    },
-    {
       "token": "POLYPUG",
       "stakingRewardAddress": "0xA206A97b30343a0802553dB48d71af349AbF563A",
       "ended": false,
@@ -307,20 +297,75 @@
       "rate": 177781944.44,
       "ending": 1648223825,
       "stakingToken": "DQUICK"
+    }
+  ],
+  "oldsyrup": [
+    {
+      "token": "UART",
+      "stakingRewardAddress": "0x11eF5B387865eb6901FdD020f28Dd6e5b9d88A1e",
+      "ended": true,
+      "lp": "",
+      "name": "",
+      "baseToken": "USDT",
+      "rate": 7333.34,
+      "ending": 1647909496,
+      "stakingToken": "QUICK"
+    },
+    {
+      "token": "RELAY",
+      "stakingRewardAddress": "0xB06ae8Db92aCba3B7767da98Ef16c9eF8F1bF3bb",
+      "ended": true,
+      "lp": "",
+      "name": "",
+      "baseToken": "QUICK",
+      "rate": 277.78,
+      "ending": 1647734484,
+      "stakingToken": "QUICK"
+    },
+    {
+      "token": "BCMC",
+      "stakingRewardAddress": "0xb2eb755B507ee5eE8Af17D71175B87c364CD52d0",
+      "ended": true,
+      "lp": "",
+      "name": "",
+      "baseToken": "MATIC",
+      "rate": 1416.67,
+      "ending": 1647734484,
+      "stakingToken": "QUICK"
+    },
+    {
+      "token": "ORBS",
+      "stakingRewardAddress": "0xf99E6796b571F5210EF62929c0023771612c4E70",
+      "ended": true,
+      "lp": "",
+      "name": "",
+      "baseToken": "USDC",
+      "rate": 20150.18,
+      "ending": 1647734484,
+      "stakingToken": "QUICK"
     },
     {
       "token": "ZIG",
       "stakingRewardAddress": "0xfE6174429a963bF4E25a80FE0B72d7Cce7Df6e2f",
-      "ended": false,
+      "ended": true,
       "lp": "",
       "name": "",
       "baseToken": "QUICK",
       "rate": 37037.03333,
       "ending": 1646888104,
       "stakingToken": "DQUICK"
-    }
-  ],
-  "oldsyrup": [
+    },
+    {
+      "token": "BLANK",
+      "stakingRewardAddress": "0x5d6a48AF1a102CC9CD278fBd56b1Bdc833EeA1d0",
+      "ended": true,
+      "lp": "",
+      "name": "",
+      "baseToken": "USDC",
+      "rate": 2033,
+      "ending": 1646492469,
+      "stakingToken": "DQUICK"
+    },
     {
       "token": "ATLX",
       "stakingRewardAddress": "0x8C0220490AC39b7b1F643cd4AfFbaFEB5ad16427",
@@ -664,7 +709,7 @@
       "rewardTokenBBase": "USDC",
       "rewardTokenA": "DQUICK",
       "rewardTokenB": "MATIC",
-      "rateA": 39.92607,
+      "rateA": 39.48183,
       "rateB": 5533.33,
       "pair": "0xfec2385b26a4446a7813d16263348fde7e99fee4"
     },
@@ -678,7 +723,7 @@
       "rewardTokenBBase": "USDC",
       "rewardTokenA": "DQUICK",
       "rewardTokenB": "MATIC",
-      "rateA": 39.92607,
+      "rateA": 39.48183,
       "rateB": 5533.33,
       "pair": "0x96a523d3576b9b1dfee49aa73723f64a5b553720"
     },
@@ -692,7 +737,7 @@
       "rewardTokenBBase": "USDC",
       "rewardTokenA": "DQUICK",
       "rewardTokenB": "MATIC",
-      "rateA": 19.9882,
+      "rateA": 19.7658,
       "rateB": 2800,
       "pair": "0xda7cd765df426fca6fb5e1438c78581e4e66bfe7"
     },
@@ -706,7 +751,7 @@
       "rewardTokenA": "DQUICK",
       "rewardTokenB": "MATIC",
       "rewardTokenBBase": "USDC",
-      "rateA": 32.445,
+      "rateA": 31.86,
       "rateB": 200,
       "pair": "0xadbf1854e5883eb8aa7baf50705338739e558e5b"
     },
@@ -720,7 +765,7 @@
       "rewardTokenA": "DQUICK",
       "rewardTokenB": "MATIC",
       "rewardTokenBBase": "USDC",
-      "rateA": 13.669,
+      "rateA": 13.452,
       "rateB": 300,
       "pair": "0x6e7a5fafcec6bb1e78bae2a1f0b612012bf14827"
     },
@@ -734,7 +779,7 @@
       "rewardTokenA": "DQUICK",
       "rewardTokenB": "MATIC",
       "rewardTokenBBase": "USDC",
-      "rateA": 11.536,
+      "rateA": 11.328,
       "rateB": 100,
       "pair": "0x019ba0325f1988213d448b3472fa1cf8d07618d7"
     },
@@ -748,28 +793,28 @@
       "rewardTokenA": "DQUICK",
       "rewardTokenB": "MATIC",
       "rewardTokenBBase": "USDC",
-      "rateA": 5.768,
+      "rateA": 5.664,
       "rateB": 100,
       "pair": "0x604229c960e5cacf2aaeac8be68ac07ba9df81c3"
     },
     {
       "tokens": ["KIRO", "MATIC"],
       "stakingRewardAddress": "0xfF22Bf1f778BcD6741D823b077285533EC582F78",
-      "ended": true,
+      "ended": false,
       "lp": "",
       "name": "",
       "baseToken": "MATIC",
       "rewardTokenA": "DQUICK",
       "rewardTokenB": "KIRO",
       "rewardTokenBBase": "MATIC",
-      "rateA": 2.163,
+      "rateA": 2.124,
       "rateB": 7500,
       "pair": "0x3f245c6f18442bd6198d964c567a01bd4202e290"
     },
     {
       "tokens": ["GENESIS", "QUICK"],
       "stakingRewardAddress": "0x3620418dD43853c35fF8Df90cAb5508FB5df46Bf",
-      "ended": false,
+      "ended": true,
       "lp": "",
       "name": "",
       "baseToken": "QUICK",
@@ -783,7 +828,7 @@
     {
       "tokens": ["FODL", "MATIC"],
       "stakingRewardAddress": "0x75CA5C33ed96222ddE8488C385E823852161d44a",
-      "ended": false,
+      "ended": true,
       "lp": "",
       "name": "",
       "baseToken": "MATIC",
@@ -804,8 +849,8 @@
       "rewardTokenA": "DQUICK",
       "rewardTokenB": "PSP",
       "rewardTokenBBase": "MATIC",
-      "rateA": 5.047,
-      "rateB": 22223,
+      "rateA": 2.124,
+      "rateB": 9146,
       "pair": "0x7afc060acca7ec6985d982dd85cc62b111cac7a7"
     },
     {
@@ -818,7 +863,7 @@
       "rewardTokenA": "DQUICK",
       "rewardTokenB": "BOOK",
       "rewardTokenBBase": "MATIC",
-      "rateA": 2.523,
+      "rateA": 2.478,
       "rateB": 28125,
       "pair": "0xe6672538c35508b011b82c986b8822ecf26b1cbc"
     },
@@ -832,7 +877,7 @@
       "rewardTokenA": "DQUICK",
       "rewardTokenB": "BICO",
       "rewardTokenBBase": "ETHER",
-      "rateA": 2.5523,
+      "rateA": 2.478,
       "rateB": 856,
       "pair": "0x7e02a82a9f2b96ee2836c5c64c44e0ab13020f4b"
     },
@@ -887,7 +932,7 @@
       "lp": "",
       "name": "",
       "baseToken": "USDC",
-      "rate": 27.846,
+      "rate": 27.612,
       "pair": "0x853ee4b2a13f8a742d64c8f088be7ba2131f670d"
     },
     {
@@ -897,8 +942,18 @@
       "lp": "",
       "name": "",
       "baseToken": "ETHER",
-      "rate": 8.568,
+      "rate": 8.496,
       "pair": "0xdc9232e2df177d7a12fdff6ecbab114e2231198d"
+    },
+    {
+      "tokens": ["IXT", "USDT"],
+      "stakingRewardAddress": "0x99872da6038D60E4cF6Dc2C16710B63c380f79dB",
+      "ended": false,
+      "lp": "",
+      "name": "",
+      "baseToken": "USDT",
+      "rate": 7.08,
+      "pair": "0x304e57c752e854e9a233ae82fcc42f7568b81180"
     },
     {
       "tokens": ["ETHER", "USDT"],
@@ -907,7 +962,7 @@
       "lp": "",
       "name": "",
       "baseToken": "ETHER",
-      "rate": 6.426,
+      "rate": 6.372,
       "pair": "0xf6422b997c7f54d1c6a6e103bcb1499eea0a7046"
     },
     {
@@ -917,7 +972,7 @@
       "lp": "",
       "name": "",
       "baseToken": "DAI",
-      "rate": 6.426,
+      "rate": 6.372,
       "pair": "0x4a35582a710e1f4b2030a3f826da20bfb6703c09"
     },
     {
@@ -927,18 +982,8 @@
       "lp": "",
       "name": "",
       "baseToken": "ETHER",
-      "rate": 5.712,
+      "rate": 5.664,
       "pair": "0x1bd06b96dd42ada85fdd0795f3b4a79db914add5"
-    },
-    {
-      "tokens": ["WBTC", "USDC"],
-      "stakingRewardAddress": "0xBF0b0DEF82C1D473e6B8770458Ddc82f5C8C7504",
-      "ended": false,
-      "lp": "",
-      "name": "",
-      "baseToken": "USDC",
-      "rate": 4.284,
-      "pair": "0xf6a637525402643b0654a54bead2cb9a83c8b498"
     },
     {
       "tokens": ["USDC", "QUICK"],
@@ -947,7 +992,7 @@
       "lp": "",
       "name": "",
       "baseToken": "USDC",
-      "rate": 4.284,
+      "rate": 4.248,
       "pair": "0x1f1e4c845183ef6d50e9609f16f6f9cae43bc9cb"
     },
     {
@@ -957,18 +1002,18 @@
       "lp": "",
       "name": "",
       "baseToken": "USDC",
-      "rate": 3.213,
+      "rate": 3.186,
       "pair": "0x0a8a3cb9a21c893a207826e76125ef6faaad99ec"
     },
     {
-      "tokens": ["ORBS", "USDC"],
-      "stakingRewardAddress": "0x9CA237962823A0a74bbC8354764e1DAC9e4057F0",
+      "tokens": ["WBTC", "USDC"],
+      "stakingRewardAddress": "0xBF0b0DEF82C1D473e6B8770458Ddc82f5C8C7504",
       "ended": false,
       "lp": "",
       "name": "",
       "baseToken": "USDC",
-      "rate": 2.856,
-      "pair": "0xb2b6d423e535b57aad06e9866803b95fb66152ea"
+      "rate": 2.832,
+      "pair": "0xf6a637525402643b0654a54bead2cb9a83c8b498"
     },
     {
       "tokens": ["USDC", "USDT"],
@@ -977,7 +1022,7 @@
       "lp": "",
       "name": "",
       "baseToken": "USDC",
-      "rate": 2.856,
+      "rate": 2.832,
       "pair": "0x2cf7252e74036d1da831d11089d326296e64a728"
     },
     {
@@ -987,7 +1032,7 @@
       "lp": "",
       "name": "",
       "baseToken": "MATIC",
-      "rate": 2.856,
+      "rate": 2.832,
       "pair": "0xb5a7c572741d77f34d2096f928beb6168f31a621"
     },
     {
@@ -997,7 +1042,7 @@
       "lp": "",
       "name": "",
       "baseToken": "USDC",
-      "rate": 2.856,
+      "rate": 2.832,
       "pair": "0xe55aea66ea7f71a8af0506cb37fde3c551a9b089"
     },
     {
@@ -1007,7 +1052,7 @@
       "lp": "",
       "name": "",
       "baseToken": "MATIC",
-      "rate": 2.856,
+      "rate": 2.832,
       "pair": "0xc74e7a5cdbf0c916d5bffa7b6bddd43ab46e72ea"
     },
     {
@@ -1017,68 +1062,18 @@
       "lp": "",
       "name": "",
       "baseToken": "ETHER",
-      "rate": 2.856,
+      "rate": 2.832,
       "pair": "0xccb65f861266ef7def8bf35d4247e3ffa03563c7"
     },
     {
-      "tokens": ["AAVE", "ETHER"],
-      "stakingRewardAddress": "0x9891548FB271C2350bd0FA25eb56A3b558cD4A64",
+      "tokens": ["ORBS", "USDC"],
+      "stakingRewardAddress": "0x9CA237962823A0a74bbC8354764e1DAC9e4057F0",
       "ended": false,
       "lp": "",
       "name": "",
-      "baseToken": "ETHER",
-      "rate": 2.142,
-      "pair": "0x90bc3e68ba8393a3bf2d79309365089975341a43"
-    },
-    {
-      "tokens": ["MSHEESHA", "USDT"],
-      "stakingRewardAddress": "0xD415D602216ca8ab12128288A76c6c5585eE030D",
-      "ended": false,
-      "lp": "",
-      "name": "",
-      "baseToken": "USDT",
-      "rate": 2.142,
-      "pair": "0xf64d2b41ca5392ec86d519d616603d2bb85b2a5d"
-    },
-    {
-      "tokens": ["GNS", "DAI"],
-      "stakingRewardAddress": "0x33025b177A35F6275b78f9c25684273fc24B4e43",
-      "ended": false,
-      "lp": "",
-      "name": "",
-      "baseToken": "DAI",
-      "rate": 2.142,
-      "pair": "0x6e53cb6942e518376e9e763554db1a45ddcd25c4"
-    },
-    {
-      "tokens": ["UST", "MATIC"],
-      "stakingRewardAddress": "0x03E215DeA6227af79FF4fEf1be4a7F1198ca43B7",
-      "ended": false,
-      "lp": "",
-      "name": "",
-      "baseToken": "MATIC",
-      "rate": 2.142,
-      "pair": "0x9b7e966fe005d616b5560e4baa7cfa8747d6cbb9"
-    },
-    {
-      "tokens": ["MI", "USDT"],
-      "stakingRewardAddress": "0x06e49078b1900A8489462Cd2355ED8c09f507499",
-      "ended": false,
-      "lp": "",
-      "name": "",
-      "baseToken": "USDT",
-      "rate": 2.142,
-      "pair": "0xe89fae1b4ada2c869f05a0c96c87022dadc7709a"
-    },
-    {
-      "tokens": ["MI", "DAI"],
-      "stakingRewardAddress": "0xb827B23e2276ceB912CB42088ab064800447c158",
-      "ended": false,
-      "lp": "",
-      "name": "",
-      "baseToken": "DAI",
-      "rate": 2.142,
-      "pair": "0x74214f5d8aa71b8dc921d8a963a1ba3605050781"
+      "baseToken": "USDC",
+      "rate": 2.124,
+      "pair": "0xb2b6d423e535b57aad06e9866803b95fb66152ea"
     },
     {
       "tokens": ["PECO", "MATIC"],
@@ -1087,7 +1082,7 @@
       "lp": "",
       "name": "",
       "baseToken": "MATIC",
-      "rate": 2.142,
+      "rate": 2.124,
       "pair": "0xc2ea6521f23358d18c3623d33ce1106f798acc64"
     },
     {
@@ -1097,7 +1092,7 @@
       "lp": "",
       "name": "",
       "baseToken": "QUICK",
-      "rate": 2.142,
+      "rate": 2.124,
       "pair": "0x7ca8e540df6326005b72661e50f1350c84c0e55d"
     },
     {
@@ -1107,7 +1102,7 @@
       "lp": "",
       "name": "",
       "baseToken": "ETHER",
-      "rate": 2.142,
+      "rate": 2.124,
       "pair": "0x8d25fec513309f2d329d99d6f677d46c831fdee8"
     },
     {
@@ -1117,7 +1112,7 @@
       "lp": "",
       "name": "",
       "baseToken": "MATIC",
-      "rate": 2.142,
+      "rate": 2.124,
       "pair": "0x267720b5d8dcbdb847fc333ccc68cb284648b816"
     },
     {
@@ -1127,7 +1122,7 @@
       "lp": "",
       "name": "",
       "baseToken": "MATIC",
-      "rate": 2.142,
+      "rate": 2.124,
       "pair": "0xb3df7c04da826c7302f5ccaa849e0b016af07ffe"
     },
     {
@@ -1137,7 +1132,7 @@
       "lp": "",
       "name": "",
       "baseToken": "MATIC",
-      "rate": 2.142,
+      "rate": 2.124,
       "pair": "0x7d341b151dbfbfe97714f3edec98e26f2dd0e532"
     },
     {
@@ -1147,7 +1142,7 @@
       "lp": "",
       "name": "",
       "baseToken": "ETHER",
-      "rate": 2.142,
+      "rate": 2.124,
       "pair": "0x9ab6e8197cfd366f920b54cb069ce6273898cb0b"
     },
     {
@@ -1157,7 +1152,7 @@
       "lp": "",
       "name": "",
       "baseToken": "USDT",
-      "rate": 1.785,
+      "rate": 1.77,
       "pair": "0xbdf395f950c49ca25f2588192b939edb64375fc4"
     },
     {
@@ -1167,18 +1162,58 @@
       "lp": "",
       "name": "",
       "baseToken": "USDC",
-      "rate": 1.785,
+      "rate": 1.77,
       "pair": "0x0d117bbc0e51b4a64b1410bcd5b58ddf5bcf3c13"
     },
     {
-      "tokens": ["ORARE", "USDT"],
-      "stakingRewardAddress": "0xA50D6c54080e81C9948e4E8375C8F468478A99Df",
+      "tokens": ["MSHEESHA", "USDT"],
+      "stakingRewardAddress": "0xD415D602216ca8ab12128288A76c6c5585eE030D",
       "ended": false,
       "lp": "",
       "name": "",
       "baseToken": "USDT",
-      "rate": 1.428,
-      "pair": "0x8bebd067b8f17699707b02e37956f846dfb0932a"
+      "rate": 1.416,
+      "pair": "0xf64d2b41ca5392ec86d519d616603d2bb85b2a5d"
+    },
+    {
+      "tokens": ["GNS", "DAI"],
+      "stakingRewardAddress": "0x33025b177A35F6275b78f9c25684273fc24B4e43",
+      "ended": false,
+      "lp": "",
+      "name": "",
+      "baseToken": "DAI",
+      "rate": 1.416,
+      "pair": "0x6e53cb6942e518376e9e763554db1a45ddcd25c4"
+    },
+    {
+      "tokens": ["UST", "MATIC"],
+      "stakingRewardAddress": "0x03E215DeA6227af79FF4fEf1be4a7F1198ca43B7",
+      "ended": false,
+      "lp": "",
+      "name": "",
+      "baseToken": "MATIC",
+      "rate": 1.416,
+      "pair": "0x9b7e966fe005d616b5560e4baa7cfa8747d6cbb9"
+    },
+    {
+      "tokens": ["MI", "USDT"],
+      "stakingRewardAddress": "0x06e49078b1900A8489462Cd2355ED8c09f507499",
+      "ended": false,
+      "lp": "",
+      "name": "",
+      "baseToken": "USDT",
+      "rate": 1.416,
+      "pair": "0xe89fae1b4ada2c869f05a0c96c87022dadc7709a"
+    },
+    {
+      "tokens": ["MI", "DAI"],
+      "stakingRewardAddress": "0xb827B23e2276ceB912CB42088ab064800447c158",
+      "ended": false,
+      "lp": "",
+      "name": "",
+      "baseToken": "DAI",
+      "rate": 1.416,
+      "pair": "0x74214f5d8aa71b8dc921d8a963a1ba3605050781"
     },
     {
       "tokens": ["DAI", "USDC"],
@@ -1187,7 +1222,7 @@
       "lp": "",
       "name": "",
       "baseToken": "USDC",
-      "rate": 1.428,
+      "rate": 1.416,
       "pair": "0xf04adbf75cdfc5ed26eea4bbbb991db002036bdd"
     },
     {
@@ -1197,7 +1232,7 @@
       "lp": "",
       "name": "",
       "baseToken": "MATIC",
-      "rate": 1.428,
+      "rate": 1.416,
       "pair": "0xeb477ae74774b697b5d515ef8ca09e24fee413b5"
     },
     {
@@ -1207,7 +1242,7 @@
       "lp": "",
       "name": "",
       "baseToken": "USDC",
-      "rate": 1.428,
+      "rate": 1.416,
       "pair": "0x40a5df3e37152d4daf279e0450289af76472b02e"
     },
     {
@@ -1217,7 +1252,7 @@
       "lp": "",
       "name": "",
       "baseToken": "MATIC",
-      "rate": 1.428,
+      "rate": 1.416,
       "pair": "0xd2b61a42d3790533fedc2829951a65120624034a"
     },
     {
@@ -1227,7 +1262,7 @@
       "lp": "",
       "name": "",
       "baseToken": "MATIC",
-      "rate": 1.428,
+      "rate": 1.416,
       "pair": "0xfd168748dd07a32a401e800240aec8ec6efc706f"
     },
     {
@@ -1237,28 +1272,8 @@
       "lp": "",
       "name": "",
       "baseToken": "MATIC",
-      "rate": 1.428,
+      "rate": 1.416,
       "pair": "0x28c5367d8a4e85f8d7b41a0ca2579e66a58fccb6"
-    },
-    {
-      "tokens": ["SAFLE", "USDT"],
-      "stakingRewardAddress": "0x7B62e5e27E3eB52002F587F842Ba053277e8f935",
-      "ended": false,
-      "lp": "",
-      "name": "",
-      "baseToken": "USDT",
-      "rate": 1.428,
-      "pair": "0xef77d1e8fcf83a4818f6dffc73ef682794600c10"
-    },
-    {
-      "tokens": ["KEYFI", "QUICK"],
-      "stakingRewardAddress": "0x8b405c88cdACB1f54206183bC5866bdAdfa315c8",
-      "ended": false,
-      "lp": "",
-      "name": "",
-      "baseToken": "QUICK",
-      "rate": 1.428,
-      "pair": "0x394f946d368d4d4d4a10f4bf8d87ff8ef3f3cc8c"
     },
     {
       "tokens": ["GM", "MATIC"],
@@ -1267,7 +1282,7 @@
       "lp": "",
       "name": "",
       "baseToken": "MATIC",
-      "rate": 1.428,
+      "rate": 1.416,
       "pair": "0xf9845837bec7c7310560cb0f1b84860c1ab6a7ca"
     },
     {
@@ -1277,7 +1292,7 @@
       "lp": "",
       "name": "",
       "baseToken": "MATIC",
-      "rate": 1.428,
+      "rate": 1.416,
       "pair": "0x8fa6c2dccf3f1ddefd0140e9fe850ef293ff62f8"
     },
     {
@@ -1287,7 +1302,7 @@
       "lp": "",
       "name": "",
       "baseToken": "MATIC",
-      "rate": 1.428,
+      "rate": 1.416,
       "pair": "0xbd13d74a9b4cff99feaefa916e357056689df91f"
     },
     {
@@ -1297,7 +1312,7 @@
       "lp": "",
       "name": "",
       "baseToken": "MATIC",
-      "rate": 1.428,
+      "rate": 1.416,
       "pair": "0x029717539b450a711b49dc6d6bd0b405e383e3d9"
     },
     {
@@ -1307,7 +1322,7 @@
       "lp": "",
       "name": "",
       "baseToken": "USDT",
-      "rate": 1.428,
+      "rate": 1.416,
       "pair": "0x690a87ed8972e451e755b8f2dc1fc2b28e3c6566"
     },
     {
@@ -1317,28 +1332,58 @@
       "lp": "",
       "name": "",
       "baseToken": "USDC",
-      "rate": 1.428,
+      "rate": 1.416,
       "pair": "0x55a08b3c363a2cc61a07d54b52fee201bd4ec0dc"
     },
     {
-      "tokens": ["DOGIRA", "MATIC"],
-      "stakingRewardAddress": "0x7c92B39d0f6f840f24d6afD4b23F99F0Ed223179",
-      "ended": false,
-      "lp": "",
-      "name": "",
-      "baseToken": "MATIC",
-      "rate": 0.714,
-      "pair": "0x38fe052f0ce76a2239115589098d2fb5aba01d80"
-    },
-    {
-      "tokens": ["GAMER", "ETHER"],
-      "stakingRewardAddress": "0x9DFF9CeDaDFf61a918626fF24D93EDc65DC95391",
+      "tokens": ["BANANA", "ETHER"],
+      "stakingRewardAddress": "0x5D1B08A16aF56c1c9B81eD69FCb9df3480b857E7",
       "ended": false,
       "lp": "",
       "name": "",
       "baseToken": "ETHER",
-      "rate": 0.714,
-      "pair": "0x1df661fc4319415a2f990bd5f49d5ca70efdee1c"
+      "rate": 1.416,
+      "pair": "0xdee9dc02c517866d33a9db1453b3867d61a24f3f"
+    },
+    {
+      "tokens": ["TRACE", "USDC"],
+      "stakingRewardAddress": "0x8050Edf437668e538C52b97A019b106f8116E0e1",
+      "ended": false,
+      "lp": "",
+      "name": "",
+      "baseToken": "USDC",
+      "rate": 1.062,
+      "pair": "0x630144415f6a084ce89461cf4f53b9c6368270be"
+    },
+    {
+      "tokens": ["ORARE", "USDT"],
+      "stakingRewardAddress": "0xA50D6c54080e81C9948e4E8375C8F468478A99Df",
+      "ended": false,
+      "lp": "",
+      "name": "",
+      "baseToken": "USDT",
+      "rate": 0.708,
+      "pair": "0x8bebd067b8f17699707b02e37956f846dfb0932a"
+    },
+    {
+      "tokens": ["SAFLE", "USDT"],
+      "stakingRewardAddress": "0x7B62e5e27E3eB52002F587F842Ba053277e8f935",
+      "ended": false,
+      "lp": "",
+      "name": "",
+      "baseToken": "USDT",
+      "rate": 0.708,
+      "pair": "0xef77d1e8fcf83a4818f6dffc73ef682794600c10"
+    },
+    {
+      "tokens": ["KEYFI", "QUICK"],
+      "stakingRewardAddress": "0x8b405c88cdACB1f54206183bC5866bdAdfa315c8",
+      "ended": false,
+      "lp": "",
+      "name": "",
+      "baseToken": "QUICK",
+      "rate": 0.708,
+      "pair": "0x394f946d368d4d4d4a10f4bf8d87ff8ef3f3cc8c"
     },
     {
       "tokens": ["UART", "USDT"],
@@ -1347,7 +1392,7 @@
       "lp": "",
       "name": "",
       "baseToken": "USDT",
-      "rate": 0.714,
+      "rate": 0.708,
       "pair": "0x55fac9f86e274ac335046e8e434881b3f2a9c09a"
     },
     {
@@ -1357,11 +1402,41 @@
       "name": "stkGHST-USDC",
       "lp": "0x04439eC4ba8b09acfae0E9b5D75A82cC63b19f09",
       "baseToken": "USDC",
-      "rate": 0.714,
+      "rate": 0.708,
       "pair": "0x096c5ccb33cfc5732bcd1f3195c13dbefc4c82f4"
     }
   ],
   "oldstakingrewards": [
+    {
+      "tokens": ["AAVE", "ETHER"],
+      "stakingRewardAddress": "0x9891548FB271C2350bd0FA25eb56A3b558cD4A64",
+      "ended": true,
+      "lp": "",
+      "name": "",
+      "baseToken": "ETHER",
+      "rate": 2.142,
+      "pair": "0x90bc3e68ba8393a3bf2d79309365089975341a43"
+    },
+    {
+      "tokens": ["DOGIRA", "MATIC"],
+      "stakingRewardAddress": "0x7c92B39d0f6f840f24d6afD4b23F99F0Ed223179",
+      "ended": true,
+      "lp": "",
+      "name": "",
+      "baseToken": "MATIC",
+      "rate": 0.714,
+      "pair": "0x38fe052f0ce76a2239115589098d2fb5aba01d80"
+    },
+    {
+      "tokens": ["GAMER", "ETHER"],
+      "stakingRewardAddress": "0x9DFF9CeDaDFf61a918626fF24D93EDc65DC95391",
+      "ended": true,
+      "lp": "",
+      "name": "",
+      "baseToken": "ETHER",
+      "rate": 0.714,
+      "pair": "0x1df661fc4319415a2f990bd5f49d5ca70efdee1c"
+    },
     {
       "tokens": ["LINK", "ETHER"],
       "stakingRewardAddress": "0x1b077a0586b2ABD4062a39E6368E256dB2F723c4",

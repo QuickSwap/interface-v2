@@ -4,7 +4,8 @@ import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { TokenAmount } from '@uniswap/sdk';
 import { TransactionResponse } from '@ethersproject/providers';
 import { CustomModal, ColoredSlider, NumericalInput } from 'components';
-import { useDerivedSyrupInfo, SyrupInfo } from 'state/stake/hooks';
+import { useDerivedSyrupInfo } from 'state/stake/hooks';
+import { SyrupInfo } from 'types';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 import { useTokenBalance } from 'state/wallet/hooks';
 import { useActiveWeb3React } from 'hooks';
@@ -16,7 +17,15 @@ import {
   useTransactionFinalizer,
 } from 'state/transactions/hooks';
 import { wrappedCurrencyAmount } from 'utils/wrappedCurrency';
-import { maxAmountSpend } from 'utils';
+import {
+  formatTokenAmount,
+  maxAmountSpend,
+  formatNumber,
+  getSecondsOneDay,
+  getExactTokenAmount,
+  getValueTokenDecimals,
+  getPartialTokenAmount,
+} from 'utils';
 
 const useStyles = makeStyles(({ palette }) => ({
   stakeButton: {
@@ -57,7 +66,7 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
   const finalizedTransaction = useTransactionFinalizer();
   const userLiquidityUnstaked = useTokenBalance(
     account ?? undefined,
-    syrup.stakedAmount.token,
+    syrup.stakedAmount?.token,
   );
   const [typedValue, setTypedValue] = useState('');
   const [stakePercent, setStakePercent] = useState(0);
@@ -65,21 +74,23 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
   const maxAmountInput = maxAmountSpend(userLiquidityUnstaked);
   const { parsedAmount, error } = useDerivedSyrupInfo(
     typedValue,
-    syrup.stakedAmount.token,
+    syrup.stakedAmount?.token,
     userLiquidityUnstaked,
   );
 
   const parsedAmountWrapped = wrappedCurrencyAmount(parsedAmount, chainId);
 
-  let hypotheticalRewardRate: TokenAmount = new TokenAmount(
-    syrup.rewardRate.token,
-    '0',
-  );
-  if (parsedAmountWrapped?.greaterThan('0')) {
-    hypotheticalRewardRate = syrup.getHypotheticalRewardRate(
-      syrup.stakedAmount.add(parsedAmountWrapped),
-      syrup.totalStakedAmount.add(parsedAmountWrapped),
-    );
+  let hypotheticalRewardRate = syrup.rewardRate
+    ? new TokenAmount(syrup.rewardRate.token, '0')
+    : undefined;
+  if (parsedAmountWrapped && parsedAmountWrapped.greaterThan('0')) {
+    hypotheticalRewardRate =
+      syrup.stakedAmount && syrup.totalStakedAmount
+        ? syrup.getHypotheticalRewardRate(
+            syrup.stakedAmount.add(parsedAmountWrapped),
+            syrup.totalStakedAmount.add(parsedAmountWrapped),
+          )
+        : undefined;
   }
 
   const deadline = useTransactionDeadline();
@@ -184,7 +195,7 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
           >
             <Typography variant='body2'>{syrup.stakingToken.symbol}</Typography>
             <Typography variant='body2'>
-              Balance: {maxAmountInput?.toSignificant(3)}
+              Balance: {formatTokenAmount(maxAmountInput)}
             </Typography>
           </Box>
           <Box mt={2} display='flex' alignItems='center'>
@@ -194,13 +205,20 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
               fontSize={28}
               onUserInput={(value) => {
                 setSignatureData(null);
-                const totalBalance = maxAmountInput
-                  ? Number(maxAmountInput.toSignificant())
-                  : 0;
-                setTypedValue(value);
-                setStakePercent(
-                  totalBalance > 0 ? (Number(value) / totalBalance) * 100 : 0,
+                const totalBalance = getExactTokenAmount(maxAmountInput);
+                const exactTypedValue = getValueTokenDecimals(
+                  value,
+                  syrup.stakedAmount?.token,
                 );
+                // this is to avoid input amount more than balance
+                if (Number(exactTypedValue) <= totalBalance) {
+                  setTypedValue(exactTypedValue);
+                  setStakePercent(
+                    totalBalance > 0
+                      ? (Number(exactTypedValue) / totalBalance) * 100
+                      : 0,
+                  );
+                }
               }}
             />
             <Typography
@@ -225,18 +243,10 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
                 max={100}
                 step={1}
                 value={stakePercent}
-                onChange={(evt: any, value) => {
-                  setStakePercent(value as number);
-                  setTypedValue(
-                    maxAmountInput
-                      ? stakePercent < 100
-                        ? (
-                            (Number(maxAmountInput.toExact()) * stakePercent) /
-                            100
-                          ).toString()
-                        : maxAmountInput.toExact()
-                      : '0',
-                  );
+                onChange={(_, value) => {
+                  const percent = value as number;
+                  setStakePercent(percent);
+                  setTypedValue(getPartialTokenAmount(percent, maxAmountInput));
                 }}
               />
             </Box>
@@ -254,8 +264,10 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
           <Typography variant='body1'>Daily Rewards</Typography>
           <Typography variant='body1'>
             {hypotheticalRewardRate
-              .multiply((60 * 60 * 24).toString())
-              .toSignificant(4, { groupSeparator: ',' })}{' '}
+              ? formatNumber(
+                  Number(hypotheticalRewardRate.toExact()) * getSecondsOneDay(),
+                )
+              : '-'}{' '}
             {syrup.token.symbol} / day
           </Typography>
         </Box>

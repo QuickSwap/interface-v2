@@ -9,6 +9,7 @@ import {
   safeApp,
 } from '../connectors';
 import MetamaskIcon from 'assets/images/metamask.png';
+import BlockWalletIcon from 'assets/images/blockwalletIcon.svg';
 import BitKeepIcon from 'assets/images/bitkeep.png';
 import CoinbaseWalletIcon from 'assets/images/coinbaseWalletIcon.svg';
 import WalletConnectIcon from 'assets/images/walletConnectIcon.svg';
@@ -21,6 +22,12 @@ const WETH_ONLY: ChainTokenList = {
   [ChainId.MUMBAI]: [WETH[ChainId.MUMBAI]],
   [ChainId.MATIC]: [WETH[ChainId.MATIC]],
 };
+
+export enum TxnType {
+  SWAP,
+  ADD,
+  REMOVE,
+}
 
 export const GlobalConst = {
   blacklists: {
@@ -53,6 +60,8 @@ export const GlobalConst = {
     },
   },
   utils: {
+    DQUICKFEE: 0.04,
+    DQUICKAPR_MULTIPLIER: 0.01,
     ROWSPERPAGE: 10,
     FEEPERCENT: 0.003,
     BUNDLE_ID: '1',
@@ -71,7 +80,7 @@ export const GlobalConst = {
     ),
     // the Uniswap Default token list lives here
     DEFAULT_TOKEN_LIST_URL:
-      'https://unpkg.com/quickswap-default-token-list@1.2.26/build/quickswap-default.tokenlist.json',
+      'https://unpkg.com/quickswap-default-token-list@1.2.27/build/quickswap-default.tokenlist.json',
   },
   analyticChart: {
     ONE_MONTH_CHART: 1,
@@ -85,20 +94,39 @@ export const GlobalConst = {
     LPFARM_INDEX: 0,
     DUALFARM_INDEX: 1,
   },
+  walletName: {
+    METAMASK: 'Metamask',
+    BLOCKWALLET: 'BlockWallet',
+    BITKEEP: 'BitKeep',
+    INJECTED: 'Injected',
+    SAFE_APP: 'Gnosis Safe App',
+    ARKANE_CONNECT: 'Venly',
+    Portis: 'Portis',
+    WALLET_LINK: 'Coinbase Wallet',
+    WALLET_CONNECT: 'WalletConnect',
+  },
 };
 
 export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   METAMASK: {
     connector: injected,
-    name: 'MetaMask',
+    name: GlobalConst.walletName.METAMASK,
     iconName: MetamaskIcon,
     description: 'Easy-to-use browser extension.',
     href: null,
     color: '#E8831D',
   },
+  BLOCKWALLET: {
+    connector: injected,
+    name: GlobalConst.walletName.BLOCKWALLET,
+    iconName: BlockWalletIcon,
+    description: 'BlockWallet browser extension.',
+    href: null,
+    color: '#1673ff',
+  },
   BITKEEP: {
     connector: injected,
-    name: 'BitKeep',
+    name: GlobalConst.walletName.BITKEEP,
     iconName: BitKeepIcon,
     description: 'BitKeep browser extension.',
     href: null,
@@ -106,7 +134,7 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   },
   INJECTED: {
     connector: injected,
-    name: 'Injected',
+    name: GlobalConst.walletName.INJECTED,
     iconName: 'arrow-right.svg',
     description: 'Injected web3 provider.',
     href: null,
@@ -115,7 +143,7 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   },
   SAFE_APP: {
     connector: safeApp,
-    name: 'Gnosis Safe App',
+    name: GlobalConst.walletName.SAFE_APP,
     iconName: GnosisIcon,
     description: 'Login using gnosis safe app',
     href: null,
@@ -124,7 +152,7 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   },
   ARKANE_CONNECT: {
     connector: arkaneconnect,
-    name: 'Venly',
+    name: GlobalConst.walletName.ARKANE_CONNECT,
     iconName: VenlyIcon,
     description: 'Login using Venly hosted wallet.',
     href: null,
@@ -132,7 +160,7 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   },
   Portis: {
     connector: portis,
-    name: 'Portis',
+    name: GlobalConst.walletName.Portis,
     iconName: PortisIcon,
     description: 'Login using Portis hosted wallet',
     href: null,
@@ -141,7 +169,7 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   },
   WALLET_LINK: {
     connector: walletlink,
-    name: 'Coinbase Wallet',
+    name: GlobalConst.walletName.WALLET_LINK,
     iconName: CoinbaseWalletIcon,
     description: 'Use Coinbase Wallet app on mobile device',
     href: null,
@@ -149,7 +177,7 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   },
   WALLET_CONNECT: {
     connector: walletconnect,
-    name: 'WalletConnect',
+    name: GlobalConst.walletName.WALLET_CONNECT,
     iconName: WalletConnectIcon,
     description: 'Connect to Trust Wallet, Rainbow Wallet and more...',
     href: null,
@@ -173,7 +201,7 @@ export const GlobalData = {
         returnTokenFromKey('DAI'),
         returnTokenFromKey('MAUSDC'),
         returnTokenFromKey('MI'),
-        returnTokenFromKey('EROWAN'),
+        returnTokenFromKey('CXETH'),
       ],
     },
     // Some tokens can only be swapped via certain pairs, so we override the list of bases that are considered for these tokens.

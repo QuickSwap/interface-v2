@@ -1,8 +1,8 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { TransactionResponse } from '@ethersproject/providers';
 import { Box, Typography, useMediaQuery } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-import { useStakingInfo, useOldStakingInfo } from 'state/stake/hooks';
+import { StakingInfo, DualStakingInfo } from 'types';
 import { TokenAmount, Pair } from '@uniswap/sdk';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { usePairContract, useStakingContract } from 'hooks/useContract';
@@ -19,10 +19,13 @@ import {
   getRewardRate,
   getTokenAddress,
   getTVLStaking,
-  returnTokenFromKey,
   getStakedAmountStakingInfo,
   getUSDString,
   getEarnedUSDLPFarm,
+  formatTokenAmount,
+  formatAPY,
+  getEarnedUSDDualFarm,
+  getExactTokenAmount,
 } from 'utils';
 import CircleInfoIcon from 'assets/images/circleinfo.svg';
 
@@ -73,10 +76,11 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
   },
 }));
 
-const FarmLPCardDetails: React.FC<{
-  pair: Pair | null | undefined;
+const FarmCardDetails: React.FC<{
+  stakingInfo: StakingInfo | DualStakingInfo;
   stakingAPY: number;
-}> = ({ pair, stakingAPY }) => {
+  isLPFarm?: boolean;
+}> = ({ stakingInfo, stakingAPY, isLPFarm }) => {
   const classes = useStyles();
   const { palette, breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
@@ -87,17 +91,8 @@ const FarmLPCardDetails: React.FC<{
   const [approving, setApproving] = useState(false);
   const [unstakeAmount, setUnStakeAmount] = useState('');
 
-  const stakingInfos = useStakingInfo(pair);
-  const oldStakingInfos = useOldStakingInfo(pair);
-  const stakingInfo = useMemo(
-    () =>
-      stakingInfos && stakingInfos.length > 0
-        ? stakingInfos[0]
-        : oldStakingInfos && oldStakingInfos.length > 0
-        ? oldStakingInfos[0]
-        : undefined,
-    [stakingInfos, oldStakingInfos],
-  );
+  const lpStakingInfo = stakingInfo as StakingInfo;
+  const dualStakingInfo = stakingInfo as DualStakingInfo;
 
   const token0 = stakingInfo ? stakingInfo.tokens[0] : undefined;
   const token1 = stakingInfo ? stakingInfo.tokens[1] : undefined;
@@ -110,7 +105,7 @@ const FarmLPCardDetails: React.FC<{
 
   const userLiquidityUnstaked = useTokenBalance(
     account ?? undefined,
-    stakingInfo?.stakedAmount.token,
+    stakingInfo.stakedAmount?.token,
   );
 
   const stakedAmounts = getStakedAmountStakingInfo(
@@ -126,21 +121,17 @@ const FarmLPCardDetails: React.FC<{
     stakingAPY &&
     stakingAPY > 0
   ) {
-    apyWithFee = getAPYWithFee(stakingInfo.perMonthReturnInRewards, stakingAPY);
-
-    if (apyWithFee > 100000000) {
-      apyWithFee = '>100000000';
-    } else {
-      apyWithFee = Number(apyWithFee.toFixed(2)).toLocaleString();
-    }
+    apyWithFee = formatAPY(
+      getAPYWithFee(stakingInfo.perMonthReturnInRewards, stakingAPY),
+    );
   }
 
   const stakingContract = useStakingContract(stakingInfo?.stakingRewardAddress);
 
   const { parsedAmount: unstakeParsedAmount } = useDerivedStakeInfo(
     unstakeAmount,
-    stakingInfo?.stakedAmount.token,
-    stakingInfo?.stakedAmount,
+    stakingInfo.stakedAmount?.token,
+    stakingInfo.stakedAmount,
   );
 
   const onWithdraw = async () => {
@@ -193,7 +184,7 @@ const FarmLPCardDetails: React.FC<{
 
   const { parsedAmount } = useDerivedStakeInfo(
     stakeAmount,
-    stakingInfo?.stakedAmount.token,
+    stakingInfo.stakedAmount?.token,
     userLiquidityUnstaked,
   );
   const deadline = useTransactionDeadline();
@@ -257,21 +248,33 @@ const FarmLPCardDetails: React.FC<{
     }
   };
 
-  const earnedUSDStr = getEarnedUSDLPFarm(stakingInfo);
+  const earnedUSDStr = isLPFarm
+    ? getEarnedUSDLPFarm(lpStakingInfo)
+    : getEarnedUSDDualFarm(dualStakingInfo);
 
   const tvl = getTVLStaking(
     stakedAmounts?.totalStakedUSD,
     stakedAmounts?.totalStakedBase,
   );
 
-  const rewards = useMemo(() => {
-    if (!stakingInfo) return 0;
-    return stakingInfo.rate * stakingInfo.rewardTokenPrice;
-  }, [stakingInfo]);
+  const lpRewards = lpStakingInfo.rate * lpStakingInfo.rewardTokenPrice;
 
-  const poolRate = getRewardRate(
-    stakingInfo?.totalRewardRate,
-    stakingInfo?.rewardToken,
+  const lpPoolRate = getRewardRate(
+    lpStakingInfo.totalRewardRate,
+    lpStakingInfo.rewardToken,
+  );
+
+  const dualRewards =
+    dualStakingInfo.rateA * dualStakingInfo.rewardTokenAPrice +
+    dualStakingInfo.rateB * Number(dualStakingInfo.rewardTokenBPrice);
+
+  const dualPoolRateA = getRewardRate(
+    dualStakingInfo.totalRewardRateA,
+    dualStakingInfo.rewardTokenA,
+  );
+  const dualPoolRateB = getRewardRate(
+    dualStakingInfo.totalRewardRateB,
+    dualStakingInfo.rewardTokenB,
   );
 
   return (
@@ -311,9 +314,17 @@ const FarmLPCardDetails: React.FC<{
                 </Typography>
                 <Box textAlign='right'>
                   <Typography variant='body2'>
-                    ${Number(rewards.toFixed(0)).toLocaleString()} / day
+                    ${(isLPFarm ? lpRewards : dualRewards).toLocaleString()} /
+                    day
                   </Typography>
-                  <Typography variant='body2'>{poolRate}</Typography>
+                  {isLPFarm ? (
+                    <Typography variant='body2'>{lpPoolRate}</Typography>
+                  ) : (
+                    <>
+                      <Typography variant='body2'>{dualPoolRateA}</Typography>
+                      <Typography variant='body2'>{dualPoolRateB}</Typography>
+                    </>
+                  )}
                 </Box>
               </Box>
               <Box
@@ -347,10 +358,8 @@ const FarmLPCardDetails: React.FC<{
                   justifyContent='flex-start'
                 >
                   <Typography variant='body2'>
-                    {userLiquidityUnstaked
-                      ? userLiquidityUnstaked.toSignificant(2)
-                      : 0}{' '}
-                    LP <span>({getUSDString(stakedAmounts?.unStakedUSD)})</span>
+                    {formatTokenAmount(userLiquidityUnstaked)} LP{' '}
+                    <span>({getUSDString(stakedAmounts?.unStakedUSD)})</span>
                   </Typography>
                   <Link
                     to={`/pools?currency0=${getTokenAddress(
@@ -397,9 +406,10 @@ const FarmLPCardDetails: React.FC<{
               <Box
                 className={
                   !approving &&
-                  Number(!attemptStaking && stakeAmount) > 0 &&
+                  !attemptStaking &&
+                  Number(stakeAmount) > 0 &&
                   Number(stakeAmount) <=
-                    Number(userLiquidityUnstaked?.toExact())
+                    getExactTokenAmount(userLiquidityUnstaked)
                     ? classes.buttonClaim
                     : classes.buttonToken
                 }
@@ -411,7 +421,7 @@ const FarmLPCardDetails: React.FC<{
                     !attemptStaking &&
                     Number(stakeAmount) > 0 &&
                     Number(stakeAmount) <=
-                      Number(userLiquidityUnstaked?.toExact())
+                      getExactTokenAmount(userLiquidityUnstaked)
                   ) {
                     if (approval === ApprovalState.APPROVED) {
                       onStake();
@@ -437,7 +447,7 @@ const FarmLPCardDetails: React.FC<{
             <Box display='flex' justifyContent='space-between'>
               <Typography variant='body2'>My deposits:</Typography>
               <Typography variant='body2'>
-                {stakingInfo.stakedAmount.toSignificant(2)} LP{' '}
+                {formatTokenAmount(stakingInfo.stakedAmount)} LP{' '}
                 <span>({getUSDString(stakedAmounts?.myStakedUSD)})</span>
               </Typography>
             </Box>
@@ -478,7 +488,7 @@ const FarmLPCardDetails: React.FC<{
                 !attemptUnstaking &&
                 Number(unstakeAmount) > 0 &&
                 Number(unstakeAmount) <=
-                  Number(stakingInfo.stakedAmount.toExact())
+                  getExactTokenAmount(stakingInfo.stakedAmount)
                   ? classes.buttonClaim
                   : classes.buttonToken
               }
@@ -489,7 +499,7 @@ const FarmLPCardDetails: React.FC<{
                   !attemptUnstaking &&
                   Number(unstakeAmount) > 0 &&
                   Number(unstakeAmount) <=
-                    Number(stakingInfo.stakedAmount.toExact())
+                    getExactTokenAmount(stakingInfo.stakedAmount)
                 ) {
                   onWithdraw();
                 }
@@ -512,22 +522,51 @@ const FarmLPCardDetails: React.FC<{
               <Box mb={1}>
                 <Typography variant='body2'>Unclaimed Rewards:</Typography>
               </Box>
-              <Box mb={1}>
-                <CurrencyLogo currency={returnTokenFromKey('QUICK')} />
-              </Box>
-              <Box mb={0.5}>
-                <Typography variant='body1' color='textSecondary'>
-                  {stakingInfo.earnedAmount.toSignificant(2)}
-                  <span>&nbsp;dQUICK</span>
-                </Typography>
-              </Box>
-              <Box mb={1}>
-                <Typography variant='body2'>{earnedUSDStr}</Typography>
-              </Box>
+              {isLPFarm ? (
+                <>
+                  <Box mb={1}>
+                    <CurrencyLogo currency={lpStakingInfo.rewardToken} />
+                  </Box>
+                  <Box mb={1} textAlign='center'>
+                    <Typography variant='body1' color='textSecondary'>
+                      {formatTokenAmount(lpStakingInfo.earnedAmount)}
+                      <span>&nbsp;{lpStakingInfo.rewardToken.symbol}</span>
+                    </Typography>
+                    <Typography variant='body2'>{earnedUSDStr}</Typography>
+                  </Box>
+                </>
+              ) : (
+                <>
+                  <Box mb={1} display='flex'>
+                    <CurrencyLogo
+                      currency={unwrappedToken(dualStakingInfo.rewardTokenA)}
+                    />
+                    <CurrencyLogo
+                      currency={unwrappedToken(dualStakingInfo.rewardTokenB)}
+                    />
+                  </Box>
+                  <Box mb={1} textAlign='center'>
+                    <Typography variant='body1'>{earnedUSDStr}</Typography>
+                    <Typography variant='body1' color='textSecondary'>
+                      {formatTokenAmount(dualStakingInfo.earnedAmountA)}
+                      <span>&nbsp;{dualStakingInfo.rewardTokenA.symbol}</span>
+                    </Typography>
+                    <Typography variant='body1' color='textSecondary'>
+                      {formatTokenAmount(dualStakingInfo.earnedAmountB)}
+                      <span>&nbsp;{dualStakingInfo.rewardTokenB.symbol}</span>
+                    </Typography>
+                  </Box>
+                </>
+              )}
             </Box>
             <Box
               className={
-                !attemptClaiming && stakingInfo.earnedAmount.greaterThan('0')
+                !attemptClaiming &&
+                (isLPFarm
+                  ? lpStakingInfo.earnedAmount &&
+                    lpStakingInfo.earnedAmount.greaterThan('0')
+                  : dualStakingInfo.earnedAmountA &&
+                    dualStakingInfo.earnedAmountA.greaterThan('0'))
                   ? classes.buttonClaim
                   : classes.buttonToken
               }
@@ -535,7 +574,11 @@ const FarmLPCardDetails: React.FC<{
               onClick={() => {
                 if (
                   !attemptClaiming &&
-                  stakingInfo.earnedAmount.greaterThan('0')
+                  (isLPFarm
+                    ? lpStakingInfo.earnedAmount &&
+                      lpStakingInfo.earnedAmount.greaterThan('0')
+                    : dualStakingInfo.earnedAmountA &&
+                      dualStakingInfo.earnedAmountA.greaterThan('0'))
                 ) {
                   onClaimReward();
                 }
@@ -552,4 +595,4 @@ const FarmLPCardDetails: React.FC<{
   );
 };
 
-export default FarmLPCardDetails;
+export default FarmCardDetails;

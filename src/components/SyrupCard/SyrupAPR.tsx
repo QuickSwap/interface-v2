@@ -1,16 +1,18 @@
 import React from 'react';
 import { Box, Typography } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
-import { SyrupInfo } from 'state/stake/hooks';
+import { SyrupInfo } from 'types';
 import { CurrencyLogo } from 'components';
-import { returnTokenFromKey, getTokenAPRSyrup, getDQUICKAPYSyrup } from 'utils';
+import { returnTokenFromKey, getTokenAPRSyrup } from 'utils';
 
-const SyrupAPR: React.FC<{ syrup: SyrupInfo }> = ({ syrup }) => {
+const SyrupAPR: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
+  syrup,
+  dQUICKAPY,
+}) => {
   const { palette } = useTheme();
   const isDQUICKStakingToken = syrup.stakingToken.equals(
     returnTokenFromKey('DQUICK'),
   );
-  const dQUICKAPY = getDQUICKAPYSyrup(syrup);
 
   return (
     <>

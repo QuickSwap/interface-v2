@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { Box, Typography, Divider, useMediaQuery } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { useTranslation } from 'react-i18next';
 import { CustomTable } from 'components';
-import { getEtherscanLink } from 'utils';
+import { formatNumber, getEtherscanLink, shortenTx } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import moment from 'moment';
+import { TxnType } from 'constants/index';
 
 const useStyles = makeStyles(({}) => ({
   priceChangeWrapper: {
@@ -29,8 +31,8 @@ interface TransactionsTableProps {
 }
 
 const headCells = (
-  txFilter: string,
-  setTxFilter: (txFilter: string) => void,
+  txFilter: number,
+  setTxFilter: (txFilter: number) => void,
 ) => [
   {
     id: 'description',
@@ -39,31 +41,31 @@ const headCells = (
       <Box display='flex' alignItems='center'>
         <Typography
           variant='body2'
-          color={txFilter === '' ? 'textPrimary' : 'textSecondary'}
-          onClick={() => setTxFilter('')}
+          color={txFilter === -1 ? 'textPrimary' : 'textSecondary'}
+          onClick={() => setTxFilter(-1)}
         >
           All
         </Typography>
         <Typography
           variant='body2'
-          color={txFilter === 'Swap' ? 'textPrimary' : 'textSecondary'}
-          onClick={() => setTxFilter('Swap')}
+          color={txFilter === TxnType.SWAP ? 'textPrimary' : 'textSecondary'}
+          onClick={() => setTxFilter(TxnType.SWAP)}
           style={{ marginLeft: 12 }}
         >
           Swap
         </Typography>
         <Typography
           variant='body2'
-          color={txFilter === 'Add' ? 'textPrimary' : 'textSecondary'}
-          onClick={() => setTxFilter('Add')}
+          color={txFilter === TxnType.ADD ? 'textPrimary' : 'textSecondary'}
+          onClick={() => setTxFilter(TxnType.ADD)}
           style={{ marginLeft: 12 }}
         >
           Add
         </Typography>
         <Typography
           variant='body2'
-          color={txFilter === 'Remove' ? 'textPrimary' : 'textSecondary'}
-          onClick={() => setTxFilter('Remove')}
+          color={txFilter === TxnType.REMOVE ? 'textPrimary' : 'textSecondary'}
+          onClick={() => setTxFilter(TxnType.REMOVE)}
           style={{ marginLeft: 12 }}
         >
           Remove
@@ -105,12 +107,27 @@ const headCells = (
 ];
 
 const TransactionsTable: React.FC<TransactionsTableProps> = ({ data }) => {
-  const [txFilter, setTxFilter] = useState('');
-  const tokenHeadCells = headCells(txFilter, setTxFilter);
+  const [txFilter, setTxFilter] = useState(-1);
+  const txHeadCells = headCells(txFilter, setTxFilter);
   const classes = useStyles();
   const { chainId } = useActiveWeb3React();
   const { palette, breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
+  const { t } = useTranslation();
+  const getTxString = (txn: any) => {
+    const messageData = {
+      token0Symbol: txn.pair.token1.symbol,
+      token1Symbol: txn.pair.token0.symbol,
+    };
+    if (txn.type === TxnType.SWAP) {
+      return t('txnSwapMessage', messageData);
+    } else if (txn.type === TxnType.ADD) {
+      return t('txnAddMessage', messageData);
+    } else if (txn.type === TxnType.REMOVE) {
+      return t('txnRemoveMessage', messageData);
+    }
+    return '';
+  };
   const mobileHTML = (txn: any, index: number) => {
     return (
       <Box mt={index === 0 ? 0 : 3} key={index}>
@@ -130,14 +147,12 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({ data }) => {
                 variant='body1'
                 style={{ color: palette.primary.main }}
               >
-                {txn.type} {txn.pair.token0.symbol}{' '}
-                {txn.type === 'Swap' ? 'for' : 'and'} {txn.pair.token1.symbol}
+                {getTxString(txn)}
               </Typography>
             </a>
           ) : (
             <Typography variant='body1' style={{ color: palette.primary.main }}>
-              {txn.type} {txn.pair.token0.symbol}{' '}
-              {txn.type === 'Swap' ? 'for' : 'and'} {txn.pair.token1.symbol}
+              {getTxString(txn)}
             </Typography>
           )}
         </Box>
@@ -151,23 +166,13 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({ data }) => {
         <Box className={classes.mobileRow}>
           <Typography variant='body1'>Token Amount</Typography>
           <Typography variant='body1' color='textPrimary'>
-            {Number(txn.amount1) < 0.0001
-              ? '< 0.0001'
-              : Number(txn.amount1).toFixed(
-                  Number(txn.amount1) < 1 ? 4 : 2,
-                )}{' '}
-            {txn.pair.token1.symbol}
+            {formatNumber(txn.amount0)} {txn.pair.token0.symbol}
           </Typography>
         </Box>
         <Box className={classes.mobileRow}>
           <Typography variant='body1'>Token Amount</Typography>
           <Typography variant='body1' color='textPrimary'>
-            {Number(txn.amount0) < 0.0001
-              ? '< 0.0001'
-              : Number(txn.amount0).toFixed(
-                  Number(txn.amount0) < 1 ? 4 : 2,
-                )}{' '}
-            {txn.pair.token0.symbol}
+            {formatNumber(txn.amount1)} {txn.pair.token1.symbol}
           </Typography>
         </Box>
         <Box className={classes.mobileRow}>
@@ -187,14 +192,12 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({ data }) => {
                 variant='body1'
                 style={{ color: palette.primary.main }}
               >
-                {txn.transaction.id.substring(0, 6)}...
-                {txn.transaction.id.substring(txn.transaction.id.length - 4)}
+                {shortenTx(txn.transaction.id)}
               </Typography>
             </a>
           ) : (
             <Typography variant='body1' style={{ color: palette.primary.main }}>
-              {txn.transaction.id.substring(0, 6)}...
-              {txn.transaction.id.substring(txn.transaction.id.length - 4)}
+              {shortenTx(txn.transaction.id)}
             </Typography>
           )}
         </Box>
@@ -219,14 +222,12 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({ data }) => {
             style={{ textDecoration: 'none' }}
           >
             <Typography variant='body1' style={{ color: palette.primary.main }}>
-              {txn.type} {txn.pair.token0.symbol}{' '}
-              {txn.type === 'Swap' ? 'for' : 'and'} {txn.pair.token1.symbol}
+              {getTxString(txn)}
             </Typography>
           </a>
         ) : (
           <Typography variant='body1' style={{ color: palette.primary.main }}>
-            {txn.type} {txn.pair.token0.symbol}{' '}
-            {txn.type === 'Swap' ? 'for' : 'and'} {txn.pair.token1.symbol}
+            {getTxString(txn)}
           </Typography>
         ),
       },
@@ -240,24 +241,14 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({ data }) => {
       {
         html: (
           <Typography variant='body1' color='textPrimary'>
-            {Number(txn.amount1) < 0.0001
-              ? '< 0.0001'
-              : Number(txn.amount1).toFixed(
-                  Number(txn.amount1) < 1 ? 4 : 2,
-                )}{' '}
-            {txn.pair.token1.symbol}
+            {formatNumber(txn.amount1)} {txn.pair.token1.symbol}
           </Typography>
         ),
       },
       {
         html: (
           <Typography variant='body1' color='textPrimary'>
-            {Number(txn.amount0) < 0.0001
-              ? '< 0.0001'
-              : Number(txn.amount0).toFixed(
-                  Number(txn.amount0) < 1 ? 4 : 2,
-                )}{' '}
-            {txn.pair.token0.symbol}
+            {formatNumber(txn.amount0)} {txn.pair.token0.symbol}
           </Typography>
         ),
       },
@@ -270,14 +261,12 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({ data }) => {
             style={{ textDecoration: 'none' }}
           >
             <Typography variant='body1' style={{ color: palette.primary.main }}>
-              {txn.transaction.id.substring(0, 6)}...
-              {txn.transaction.id.substring(txn.transaction.id.length - 4)}
+              {shortenTx(txn.transaction.id)}
             </Typography>
           </a>
         ) : (
           <Typography variant='body1' style={{ color: palette.primary.main }}>
-            {txn.transaction.id.substring(0, 6)}...
-            {txn.transaction.id.substring(txn.transaction.id.length - 4)}
+            {shortenTx(txn.transaction.id)}
           </Typography>
         ),
       },
@@ -301,34 +290,38 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({ data }) => {
           top={-48}
           right={0}
         >
-          <Box padding={1} onClick={() => setTxFilter('')}>
+          <Box padding={1} onClick={() => setTxFilter(-1)}>
             <Typography
               variant='body1'
-              color={txFilter === '' ? 'textPrimary' : 'textSecondary'}
+              color={txFilter === -1 ? 'textPrimary' : 'textSecondary'}
             >
               All
             </Typography>
           </Box>
-          <Box padding={1} onClick={() => setTxFilter('Swap')}>
+          <Box padding={1} onClick={() => setTxFilter(TxnType.SWAP)}>
             <Typography
               variant='body1'
-              color={txFilter === 'Swap' ? 'textPrimary' : 'textSecondary'}
+              color={
+                txFilter === TxnType.SWAP ? 'textPrimary' : 'textSecondary'
+              }
             >
               Swap
             </Typography>
           </Box>
-          <Box padding={1} onClick={() => setTxFilter('Add')}>
+          <Box padding={1} onClick={() => setTxFilter(TxnType.ADD)}>
             <Typography
               variant='body1'
-              color={txFilter === 'Add' ? 'textPrimary' : 'textSecondary'}
+              color={txFilter === TxnType.ADD ? 'textPrimary' : 'textSecondary'}
             >
               Add
             </Typography>
           </Box>
-          <Box padding={1} onClick={() => setTxFilter('Remove')}>
+          <Box padding={1} onClick={() => setTxFilter(TxnType.REMOVE)}>
             <Typography
               variant='body1'
-              color={txFilter === 'Remove' ? 'textPrimary' : 'textSecondary'}
+              color={
+                txFilter === TxnType.REMOVE ? 'textPrimary' : 'textSecondary'
+              }
             >
               Remove
             </Typography>
@@ -337,10 +330,11 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({ data }) => {
       )}
       <CustomTable
         showPagination={data.length > 10}
-        headCells={tokenHeadCells}
+        headCells={txHeadCells}
+        defaultOrderBy={txHeadCells[5]}
         rowsPerPage={10}
         data={data.filter((item) =>
-          txFilter === '' ? true : item.type === txFilter,
+          txFilter === -1 ? true : item.type === txFilter,
         )}
         mobileHTML={mobileHTML}
         desktopHTML={desktopHTML}

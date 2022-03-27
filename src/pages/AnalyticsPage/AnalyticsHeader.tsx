@@ -74,9 +74,7 @@ const AnalyticsHeader: React.FC<AnalyticHeaderProps> = ({ data, type }) => {
                 variant='caption'
                 className={classes.link}
                 onClick={() => {
-                  history.push(
-                    `/analytics?tabIndex=${type === 'token' ? 1 : 2}`,
-                  );
+                  history.push(`/analytics/${type}s`);
                 }}
               >
                 {type === 'token' ? 'Tokens' : 'Pairs'}

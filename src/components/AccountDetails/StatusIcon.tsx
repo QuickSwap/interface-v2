@@ -7,15 +7,17 @@ import { useActiveWeb3React } from 'hooks';
 const StatusIcon: React.FC = () => {
   const { connector } = useActiveWeb3React();
   const { ethereum } = window as any;
-  const isMetaMask = !!(ethereum && ethereum.isMetaMask);
+  const isMetaMask = !!(ethereum && !ethereum.isBitKeep && ethereum.isMetaMask);
+  const isBlockWallet = !!(ethereum && ethereum.isBlockWallet);
   const isBitkeep = !!(ethereum && ethereum.isBitKeep);
   const icon = Object.keys(SUPPORTED_WALLETS)
     .filter(
       (k) =>
         SUPPORTED_WALLETS[k].connector === connector &&
         (connector !== injected ||
-          isBitkeep === (k === 'BITKEEP') ||
-          (!isBitkeep && isMetaMask) === (k === 'METAMASK')),
+          (isBlockWallet && k === 'BLOCKWALLET') ||
+          (isBitkeep && k === 'BITKEEP') ||
+          (isMetaMask && k === 'METAMASK')),
     )
     .map((k) => SUPPORTED_WALLETS[k].iconName)[0];
   return (

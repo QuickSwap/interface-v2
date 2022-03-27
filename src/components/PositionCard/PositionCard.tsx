@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 import { useTotalSupply } from 'data/TotalSupply';
 import { useActiveWeb3React } from 'hooks';
 import { useTokenBalance } from 'state/wallet/hooks';
-import { currencyId } from 'utils';
+import { currencyId, formatTokenAmount } from 'utils';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { CurrencyLogo, DoubleCurrencyLogo } from 'components';
 
@@ -100,9 +100,7 @@ export const MinimalPositionCard: React.FC<PositionCardProps> = ({
                 {currency0.symbol}/{currency1.symbol}
               </Typography>
             </Box>
-            <Typography>
-              {userPoolBalance ? userPoolBalance.toSignificant(4) : '-'}
-            </Typography>
+            <Typography>{formatTokenAmount(userPoolBalance)}</Typography>
           </Box>
           <Box
             mt={0.75}
@@ -122,11 +120,7 @@ export const MinimalPositionCard: React.FC<PositionCardProps> = ({
             justifyContent='space-between'
           >
             <Typography>{currency0.symbol}:</Typography>
-            {token0Deposited ? (
-              <Typography>{token0Deposited?.toSignificant(6)}</Typography>
-            ) : (
-              '-'
-            )}
+            <Typography>{formatTokenAmount(token0Deposited)}</Typography>
           </Box>
           <Box
             mt={0.75}
@@ -135,11 +129,7 @@ export const MinimalPositionCard: React.FC<PositionCardProps> = ({
             justifyContent='space-between'
           >
             <Typography>{currency1.symbol}:</Typography>
-            {token1Deposited ? (
-              <Typography>{token1Deposited?.toSignificant(6)}</Typography>
-            ) : (
-              '-'
-            )}
+            <Typography>{formatTokenAmount(token1Deposited)}</Typography>
           </Box>
         </Box>
       ) : (
@@ -238,40 +228,30 @@ const FullPositionCard: React.FC<PositionCardProps> = ({ pair }) => {
         <Box>
           <Box>
             <Typography>Your pool tokens:</Typography>
-            <Typography>
-              {userPoolBalance ? userPoolBalance.toSignificant(4) : '-'}
-            </Typography>
+            <Typography>{formatTokenAmount(userPoolBalance)}</Typography>
           </Box>
           <Box>
             <Typography>Pooled {currency0.symbol}:</Typography>
-            {token0Deposited ? (
-              <Box>
-                <Typography>{token0Deposited?.toSignificant(6)}</Typography>
-                <CurrencyLogo
-                  size='20px'
-                  style={{ marginLeft: '8px' }}
-                  currency={currency0}
-                />
-              </Box>
-            ) : (
-              '-'
-            )}
+            <Box>
+              <Typography>{formatTokenAmount(token0Deposited)}</Typography>
+              <CurrencyLogo
+                size='20px'
+                style={{ marginLeft: '8px' }}
+                currency={currency0}
+              />
+            </Box>
           </Box>
 
           <Box>
             <Typography>Pooled {currency1.symbol}:</Typography>
-            {token1Deposited ? (
-              <Box>
-                <Typography>{token1Deposited?.toSignificant(6)}</Typography>
-                <CurrencyLogo
-                  size='20px'
-                  style={{ marginLeft: '8px' }}
-                  currency={currency1}
-                />
-              </Box>
-            ) : (
-              '-'
-            )}
+            <Box>
+              <Typography>{formatTokenAmount(token1Deposited)}</Typography>
+              <CurrencyLogo
+                size='20px'
+                style={{ marginLeft: '8px' }}
+                currency={currency1}
+              />
+            </Box>
           </Box>
 
           <Box>

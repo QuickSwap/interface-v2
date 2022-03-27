@@ -14,7 +14,7 @@ import useENSName from 'hooks/useENSName';
 import { WalletModal } from 'components';
 import { useActiveWeb3React } from 'hooks';
 import QuickIcon from 'assets/images/quickIcon.svg';
-import QuickLogo from 'assets/images/quickLogo.svg';
+import QuickLogo from 'assets/images/quickLogo.png';
 import { ReactComponent as ThreeDotIcon } from 'assets/images/ThreeDot.svg';
 import { ReactComponent as LightIcon } from 'assets/images/LightIcon.svg';
 import WalletIcon from 'assets/images/WalletIcon.png';
@@ -318,7 +318,11 @@ const Header: React.FC = () => {
         confirmedTransactions={confirmed}
       />
       <Link to='/'>
-        <img src={mobileWindowSize ? QuickIcon : QuickLogo} alt='QuickLogo' />
+        <img
+          src={mobileWindowSize ? QuickIcon : QuickLogo}
+          alt='QuickLogo'
+          height={60}
+        />
       </Link>
       {!tabletWindowSize && (
         <Box className={classes.mainMenu}>

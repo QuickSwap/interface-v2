@@ -1,9 +1,8 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { Box, Typography, Divider, useMediaQuery } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-import { Token } from '@uniswap/sdk';
 import { TransactionResponse } from '@ethersproject/providers';
-import { useOldSyrupInfo, useSyrupInfo } from 'state/stake/hooks';
+import { SyrupInfo } from 'types';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { useTokenBalance } from 'state/wallet/hooks';
 import { CurrencyLogo, StakeSyrupModal } from 'components';
@@ -13,10 +12,11 @@ import {
   useTransactionAdder,
   useTransactionFinalizer,
 } from 'state/transactions/hooks';
-import { getPriceToQUICKSyrup, formatCompact } from 'utils';
+import { formatCompact, formatTokenAmount, getEarnedUSDSyrup } from 'utils';
 import SyrupTimerLabel from './SyrupTimerLabel';
 import CircleInfoIcon from 'assets/images/circleinfo.svg';
 import SyrupAPR from './SyrupAPR';
+import { useUSDCPriceToken } from 'utils/useUSDCPrice';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   syrupButton: {
@@ -38,7 +38,10 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
   },
 }));
 
-const SyrupCardDetails: React.FC<{ token: Token }> = ({ token }) => {
+const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
+  syrup,
+  dQUICKAPY,
+}) => {
   const { palette, breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const [attemptingClaim, setAttemptingClaim] = useState(false);
@@ -46,17 +49,7 @@ const SyrupCardDetails: React.FC<{ token: Token }> = ({ token }) => {
   const [openStakeModal, setOpenStakeModal] = useState(false);
   const classes = useStyles();
 
-  const syrups = useSyrupInfo(token);
-  const oldSyrups = useOldSyrupInfo(token);
-  const syrup = useMemo(
-    () =>
-      syrups && syrups.length > 0
-        ? syrups[0]
-        : oldSyrups && oldSyrups.length > 0
-        ? oldSyrups[0]
-        : undefined,
-    [syrups, oldSyrups],
-  );
+  const stakingTokenPrice = useUSDCPriceToken(syrup.stakingToken);
   const stakingContract = useStakingContract(syrup?.stakingRewardAddress);
   const addTransaction = useTransactionAdder();
   const finalizedTransaction = useTransactionFinalizer();
@@ -66,20 +59,17 @@ const SyrupCardDetails: React.FC<{ token: Token }> = ({ token }) => {
 
   const userLiquidityUnstaked = useTokenBalance(
     account ?? undefined,
-    syrup?.stakedAmount.token,
+    syrup.stakedAmount?.token,
   );
-
-  const syrupEarnedUSD =
-    Number(syrup?.earnedAmount.toSignificant()) *
-    Number(syrup?.rewardTokenPriceinUSD ?? 0);
 
   const exactEnd = syrup ? syrup.periodFinish : 0;
 
   const depositAmount =
     syrup && syrup.valueOfTotalStakedAmountInUSDC
       ? `$${Number(syrup.valueOfTotalStakedAmountInUSDC).toLocaleString()}`
-      : `${syrup?.totalStakedAmount.toSignificant(6, { groupSeparator: ',' }) ??
-          '-'} ${syrup?.stakingToken.symbol}`;
+      : `${formatTokenAmount(syrup?.totalStakedAmount)} ${
+          syrup?.stakingToken.symbol
+        }`;
 
   const onClaimReward = async () => {
     if (syrup && stakingContract && syrup.stakedAmount) {
@@ -232,7 +222,7 @@ const SyrupCardDetails: React.FC<{ token: Token }> = ({ token }) => {
                     </Box>
                   </Box>
                   <Box textAlign='right'>
-                    <SyrupAPR syrup={syrup} />
+                    <SyrupAPR syrup={syrup} dQUICKAPY={dQUICKAPY} />
                   </Box>
                 </Box>
                 <Divider />
@@ -253,7 +243,7 @@ const SyrupCardDetails: React.FC<{ token: Token }> = ({ token }) => {
               <Typography variant='body2'>
                 <span style={{ color: palette.text.primary }}>
                   {userLiquidityUnstaked
-                    ? userLiquidityUnstaked.toSignificant(2)
+                    ? formatTokenAmount(userLiquidityUnstaked)
                     : 0}{' '}
                   {syrup.stakingToken.symbol}
                 </span>
@@ -261,9 +251,8 @@ const SyrupCardDetails: React.FC<{ token: Token }> = ({ token }) => {
                   $
                   {userLiquidityUnstaked
                     ? (
-                        syrup.quickPrice *
-                        getPriceToQUICKSyrup(syrup) *
-                        Number(userLiquidityUnstaked.toSignificant())
+                        stakingTokenPrice *
+                        Number(userLiquidityUnstaked.toExact())
                       ).toLocaleString()
                     : 0}
                 </span>
@@ -283,16 +272,15 @@ const SyrupCardDetails: React.FC<{ token: Token }> = ({ token }) => {
               </Typography>
               <Typography variant='body2'>
                 <span style={{ color: palette.text.primary }}>
-                  {syrup.stakedAmount.toSignificant(2)}{' '}
+                  {formatTokenAmount(syrup.stakedAmount)}{' '}
                   {syrup.stakingToken.symbol}
                 </span>
                 <span style={{ color: palette.text.secondary, marginLeft: 4 }}>
-                  $
-                  {(
-                    syrup.quickPrice *
-                    Number(syrup.stakedAmount.toSignificant()) *
-                    getPriceToQUICKSyrup(syrup)
-                  ).toLocaleString()}
+                  {syrup.stakedAmount
+                    ? `$${(
+                        stakingTokenPrice * Number(syrup.stakedAmount.toExact())
+                      ).toLocaleString()}`
+                    : '-'}
                 </span>
               </Typography>
             </Box>
@@ -312,14 +300,12 @@ const SyrupCardDetails: React.FC<{ token: Token }> = ({ token }) => {
                 <CurrencyLogo currency={currency} size='16px' />
                 <Typography variant='body2' style={{ marginLeft: 4 }}>
                   <span style={{ color: palette.text.primary }}>
-                    {syrup.earnedAmount.toSignificant(2)}
+                    {formatTokenAmount(syrup.earnedAmount)}
                   </span>
                   <span
                     style={{ color: palette.text.secondary, marginLeft: 4 }}
                   >
-                    {syrupEarnedUSD > 0 && syrupEarnedUSD < 0.001
-                      ? '< $0.001'
-                      : `$${syrupEarnedUSD.toLocaleString()}`}
+                    {getEarnedUSDSyrup(syrup)}
                   </span>
                 </Typography>
               </Box>
@@ -335,7 +321,7 @@ const SyrupCardDetails: React.FC<{ token: Token }> = ({ token }) => {
               )}
               {isMobile ? (
                 <>
-                  {syrup.earnedAmount.greaterThan('0') && (
+                  {syrup.earnedAmount && syrup.earnedAmount.greaterThan('0') && (
                     <Box
                       width={1}
                       mb={1.5}
@@ -350,24 +336,25 @@ const SyrupCardDetails: React.FC<{ token: Token }> = ({ token }) => {
                     mb={1.5}
                     display='flex'
                     justifyContent={
-                      syrup.stakedAmount.greaterThan('0')
+                      syrup.stakedAmount && syrup.stakedAmount.greaterThan('0')
                         ? 'space-between'
                         : 'flex-end'
                     }
                   >
                     {!syrup.ended && <StakeButton />}
-                    {syrup.stakedAmount.greaterThan('0') && <UnstakeButton />}
+                    {syrup.stakedAmount &&
+                      syrup.stakedAmount.greaterThan('0') && <UnstakeButton />}
                   </Box>
                 </>
               ) : (
                 <Box display='flex' flexWrap='wrap' my={1}>
                   {!syrup.ended && <StakeButton />}
-                  {syrup.stakedAmount.greaterThan('0') && (
+                  {syrup.stakedAmount && syrup.stakedAmount.greaterThan('0') && (
                     <Box ml={1}>
                       <UnstakeButton />
                     </Box>
                   )}
-                  {syrup.earnedAmount.greaterThan('0') && (
+                  {syrup.earnedAmount && syrup.earnedAmount.greaterThan('0') && (
                     <Box ml={1}>
                       <ClaimButton />
                     </Box>

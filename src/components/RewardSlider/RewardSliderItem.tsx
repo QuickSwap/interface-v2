@@ -1,13 +1,16 @@
 import React from 'react';
 import { Box, Typography, Button } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
-import { JSBI, TokenAmount } from '@uniswap/sdk';
 import { makeStyles } from '@material-ui/core/styles';
-import { StakingInfo } from 'state/stake/hooks';
-import { unwrappedToken } from 'utils/wrappedCurrency';
+import { StakingInfo } from 'types';
 import { DoubleCurrencyLogo } from 'components';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon.svg';
-import { getAPYWithFee, returnTokenFromKey } from 'utils';
+import {
+  formatAPY,
+  getAPYWithFee,
+  getStakedAmountStakingInfo,
+  getTVLStaking,
+} from 'utils';
 
 const useStyles = makeStyles(({ palette }) => ({
   rewardsSliderItem: {
@@ -70,56 +73,21 @@ const RewardSliderItem: React.FC<RewardSliderItemProps> = ({
 }) => {
   const classes = useStyles();
   const history = useHistory();
-  const token0 = info.tokens[0];
 
-  const baseTokenCurrency = unwrappedToken(info.baseToken);
-  const empty = unwrappedToken(returnTokenFromKey('EMPTY'));
-
-  let valueOfTotalStakedAmountInBaseToken: TokenAmount | undefined;
-  const totalSupplyOfStakingToken = info.totalSupply;
-  const stakingTokenPair = info.stakingTokenPair;
-  const baseToken = baseTokenCurrency === empty ? token0 : info.baseToken;
-
-  const USDPrice = info.usdPrice;
-
-  if (totalSupplyOfStakingToken && stakingTokenPair) {
-    // take the total amount of LP tokens staked, multiply by ETH value of all LP tokens, divide by all LP tokens
-    valueOfTotalStakedAmountInBaseToken = new TokenAmount(
-      baseToken,
-      JSBI.divide(
-        JSBI.multiply(
-          JSBI.multiply(
-            info.totalStakedAmount.raw,
-            stakingTokenPair.reserveOf(baseToken).raw,
-          ),
-          JSBI.BigInt(2), // this is b/c the value of LP shares are ~double the value of the WETH they entitle owner to
-        ),
-        totalSupplyOfStakingToken.raw,
-      ),
-    );
-  }
-  const valueOfTotalStakedAmountInUSDC =
-    valueOfTotalStakedAmountInBaseToken &&
-    USDPrice?.quote(valueOfTotalStakedAmountInBaseToken);
+  const stakedAmounts = getStakedAmountStakingInfo(info);
+  const tvl = getTVLStaking(
+    stakedAmounts?.totalStakedUSD,
+    stakedAmounts?.totalStakedBase,
+  );
 
   const rewards = info.rate * info.rewardTokenPrice;
 
   let apyWithFee;
   if (stakingAPY && stakingAPY > 0) {
-    apyWithFee = getAPYWithFee(info.perMonthReturnInRewards ?? 0, stakingAPY);
-
-    if (apyWithFee > 100000000) {
-      apyWithFee = '>100000000';
-    } else {
-      apyWithFee = parseFloat(apyWithFee.toFixed(2)).toLocaleString();
-    }
+    apyWithFee = formatAPY(
+      getAPYWithFee(info.perMonthReturnInRewards ?? 0, stakingAPY),
+    );
   }
-
-  const tvl = valueOfTotalStakedAmountInUSDC
-    ? `$${valueOfTotalStakedAmountInUSDC.toFixed(0, { groupSeparator: ',' })}`
-    : `${valueOfTotalStakedAmountInBaseToken?.toSignificant(4, {
-        groupSeparator: ',',
-      }) ?? '-'} ETH`;
 
   return (
     <Box className={classes.rewardsSliderItem}>
@@ -139,13 +107,13 @@ const RewardSliderItem: React.FC<RewardSliderItemProps> = ({
       <Box className='row'>
         <Typography>24h Fees</Typography>
         <Typography component='h4'>
-          ${Number((info?.oneDayFee ?? 0).toFixed(0)).toLocaleString()}
+          ${(info?.oneDayFee ?? 0).toLocaleString()}
         </Typography>
       </Box>
       <Box className='row'>
         <Typography>Rewards</Typography>
         <Typography component='h4'>
-          ${Number(rewards.toFixed(0)).toLocaleString()} / day
+          ${rewards.toLocaleString()} / day
         </Typography>
       </Box>
       <Box className='row'>
