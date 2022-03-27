@@ -747,26 +747,29 @@ export const getPairTransactions = async (pairAddress: string) => {
   }
 };
 
-export const getSwapTransactions = async (
+export const getPairAddress = async (
   token0Address: string,
   token1Address: string,
 ) => {
+  const pairData = await client.query({
+    query: PAIR_ID(token0Address, token1Address),
+    fetchPolicy: 'network-only',
+  });
+  const pairs =
+    pairData && pairData.data
+      ? pairData.data.pairs0.concat(pairData.data.pairs1)
+      : undefined;
+  if (!pairs || pairs.length === 0) return;
+  const pairId = pairs[0].id;
+  return pairId;
+};
+
+export const getSwapTransactions = async (pairId: string) => {
   try {
     const oneDayAgo = dayjs
       .utc()
       .subtract(1, 'day')
       .unix();
-
-    const pairData = await client.query({
-      query: PAIR_ID(token0Address, token1Address),
-      fetchPolicy: 'network-only',
-    });
-    const pairs =
-      pairData && pairData.data
-        ? pairData.data.pairs0.concat(pairData.data.pairs1)
-        : undefined;
-    if (!pairs || pairs.length === 0) return;
-    const pairId = pairs[0].id;
 
     let allFound = false;
     let skip = 0;
@@ -933,11 +936,10 @@ export const getPairChartData = async (
 export const getHourlyRateData = async (
   pairAddress: string,
   latestBlock: number,
+  startTime: number,
 ) => {
   try {
     const utcEndTime = dayjs.utc();
-    const utcStartTime = utcEndTime.subtract(2, 'month');
-    const startTime = utcStartTime.unix() - 1;
     let time = startTime;
 
     // create an array of hour start times until we reach current hour

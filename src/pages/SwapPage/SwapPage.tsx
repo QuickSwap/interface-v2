@@ -6,7 +6,7 @@ import { SwapTokenDetails, ToggleSwitch } from 'components';
 import { useIsProMode } from 'state/application/hooks';
 import { useDerivedSwapInfo } from 'state/swap/hooks';
 import { Field } from 'state/swap/actions';
-import { getSwapTransactions } from 'utils';
+import { getPairAddress, getSwapTransactions } from 'utils';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
 import { useActiveWeb3React } from 'hooks';
 import SwapMain from './SwapMain';
@@ -65,6 +65,7 @@ const SwapPage: React.FC = () => {
   const isTablet = useMediaQuery(breakpoints.down('md'));
   const [showChart, setShowChart] = useState(true);
   const [showTrades, setShowTrades] = useState(true);
+  const [pairId, setPairId] = useState('');
   const [transactions, setTransactions] = useState<any[] | undefined>(
     undefined,
   );
@@ -88,10 +89,9 @@ const SwapPage: React.FC = () => {
 
   useEffect(() => {
     async function getTradesData(token1Address: string, token2Address: string) {
-      const transactions = await getSwapTransactions(
-        token1Address,
-        token2Address,
-      );
+      const pairId = await getPairAddress(token1Address, token2Address);
+      setPairId(pairId);
+      const transactions = await getSwapTransactions(pairId);
       setTransactions(transactions);
     }
     if (token1?.address && token2?.address) {
@@ -215,12 +215,13 @@ const SwapPage: React.FC = () => {
               showTrades={showTrades}
               setShowTrades={setShowTrades}
             />
-            {token1 && token2 && (
+            {token1 && token2 && pairId && (
               <SwapProChartTrade
                 showChart={showChart}
                 showTrades={showTrades}
                 token1={token1}
                 token2={token2}
+                pairAddress={pairId}
                 transactions={transactions}
               />
             )}
