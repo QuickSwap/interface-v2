@@ -43,10 +43,13 @@ const useStyles = makeStyles(({ palette }) => ({
   },
 }));
 
+const SWAP_NORMAL = 0;
+const SWAP_LIMIT = 1;
+
 const SwapMain: React.FC = () => {
   const classes = useStyles();
   const { palette } = useTheme();
-  const [swapIndex, setSwapIndex] = useState(0);
+  const [swapIndex, setSwapIndex] = useState(SWAP_NORMAL);
   const [openSettingsModal, setOpenSettingsModal] = useState(false);
   const { isProMode, updateIsProMode } = useIsProMode();
 
@@ -79,24 +82,26 @@ const SwapMain: React.FC = () => {
         <Box display='flex'>
           <Box
             className={cx(
-              swapIndex === 0 && classes.activeSwap,
+              swapIndex === SWAP_NORMAL && classes.activeSwap,
               classes.swapItem,
               classes.headingItem,
             )}
-            onClick={() => setSwapIndex(0)}
+            onClick={() => setSwapIndex(SWAP_NORMAL)}
           >
             <Typography variant='body1'>Market</Typography>
           </Box>
           <Box
             className={cx(
-              swapIndex === 1 && classes.activeSwap,
+              swapIndex === SWAP_LIMIT && classes.activeSwap,
               classes.swapItem,
               classes.headingItem,
             )}
             borderRight={
-              isProMode && swapIndex !== 1 ? `1px solid ${palette.divider}` : ''
+              isProMode && swapIndex !== SWAP_LIMIT
+                ? `1px solid ${palette.divider}`
+                : ''
             }
-            onClick={() => setSwapIndex(1)}
+            onClick={() => setSwapIndex(SWAP_LIMIT)}
           >
             <Typography variant='body1'>Limit</Typography>
           </Box>
@@ -125,13 +130,13 @@ const SwapMain: React.FC = () => {
         </Box>
       </Box>
       <Box padding={isProMode ? '0 24px' : '0'} mt={3.5}>
-        {swapIndex === 0 && (
+        {swapIndex === SWAP_NORMAL && (
           <Swap
             currency0={currency0 ?? undefined}
             currency1={currency1 ?? undefined}
           />
         )}
-        {swapIndex === 1 && (
+        {swapIndex === SWAP_LIMIT && (
           <>
             <GelatoLimitOrderPanel />
             <GelatoLimitOrdersHistoryPanel />
