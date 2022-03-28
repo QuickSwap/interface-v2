@@ -4,17 +4,31 @@ import { Box, Typography, Checkbox } from '@material-ui/core';
 import { Replay } from '@material-ui/icons';
 import { CustomSwitch } from 'components';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles(({ palette }) => ({
+  swapFilter: {
+    display: 'flex',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    padding: 8,
+    '& p': {
+      textTransform: 'uppercase',
+    },
+  },
   checkWrapper: {
     display: 'flex',
     alignItems: 'center',
     marginRight: 16,
     '& .MuiCheckbox-root': {
       padding: 2,
+      '& svg path': {
+        fill: palette.text.primary,
+      },
     },
-    '& p': {
-      textTransform: 'uppercase',
-    },
+  },
+  replayButton: {
+    cursor: 'pointer',
+    display: 'flex',
+    marginLeft: 8,
   },
 }));
 
@@ -36,27 +50,18 @@ const SwapProFilter: React.FC<SwapProFilterProps> = ({
   setShowTrades,
 }) => {
   const classes = useStyles();
+  const swapPositions = ['left', 'right', 'none'];
 
-  const infoPosItems = [
-    {
-      text: 'LEFT',
-      onClick: () => setInfoPos('left'),
-      condition: infoPos === 'left',
-    },
-    {
-      text: 'RIGHT',
-      onClick: () => setInfoPos('right'),
-      condition: infoPos === 'right',
-    },
-    {
-      text: 'NONE',
-      onClick: () => setInfoPos('none'),
-      condition: infoPos === 'none',
-    },
-  ];
+  const infoPosItems = swapPositions.map((pos) => {
+    return {
+      text: pos,
+      onClick: () => setInfoPos(pos),
+      condition: infoPos === pos,
+    };
+  });
 
   return (
-    <Box display='flex' alignItems='center' flexWrap='wrap' padding='8px'>
+    <Box className={classes.swapFilter}>
       <Box className={classes.checkWrapper}>
         <Checkbox
           checked={showChart}
@@ -79,7 +84,14 @@ const SwapProFilter: React.FC<SwapProFilterProps> = ({
           <CustomSwitch width={190} height={30} items={infoPosItems} />
         </Box>
       </Box>
-      <Box display='flex' ml={1}>
+      <Box
+        className={classes.replayButton}
+        onClick={() => {
+          setInfoPos('right');
+          setShowChart(true);
+          setShowTrades(true);
+        }}
+      >
         <Replay />
       </Box>
     </Box>
