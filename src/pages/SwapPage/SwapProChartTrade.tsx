@@ -61,8 +61,17 @@ const SwapProChartTrade: React.FC<{
   token1: Token;
   token2: Token;
   pairAddress: string;
+  pairTokenReversed: boolean;
   transactions?: any[];
-}> = ({ showChart, showTrades, token1, token2, pairAddress, transactions }) => {
+}> = ({
+  showChart,
+  showTrades,
+  token1,
+  token2,
+  pairAddress,
+  pairTokenReversed,
+  transactions,
+}) => {
   const classes = useStyles();
 
   const { chainId } = useActiveWeb3React();
@@ -151,8 +160,9 @@ const SwapProChartTrade: React.FC<{
       {showChart && (
         <ReflexElement className='top-pane' minSize={200}>
           <SwapProChart
-            pairName={`${token1.symbol}${token2.symbol}`}
+            pairName={`${token1.symbol}/${token2.symbol}`}
             pairAddress={pairAddress}
+            pairTokenReversed={pairTokenReversed}
           />
         </ReflexElement>
       )}

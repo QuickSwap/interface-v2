@@ -761,7 +761,8 @@ export const getPairAddress = async (
       : undefined;
   if (!pairs || pairs.length === 0) return;
   const pairId = pairs[0].id;
-  return pairId;
+  const tokenReversed = pairData.data.pairs1.length > 0;
+  return { pairId, tokenReversed };
 };
 
 export const getSwapTransactions = async (pairId: string) => {
@@ -933,10 +934,12 @@ export const getPairChartData = async (
   return data;
 };
 
-export const getHourlyRateData = async (
+export const getRateData = async (
   pairAddress: string,
   latestBlock: number,
+  interval: number,
   startTime: number,
+  pairTokenReversed: boolean,
 ) => {
   try {
     const utcEndTime = dayjs.utc();
@@ -946,7 +949,7 @@ export const getHourlyRateData = async (
     const timestamps = [];
     while (time <= utcEndTime.unix()) {
       timestamps.push(time);
-      time += 3600 * 24;
+      time += interval;
     }
 
     // backout if invalid timestamp format
@@ -985,31 +988,16 @@ export const getHourlyRateData = async (
       if (timestamp) {
         values.push({
           timestamp,
-          rate0: parseFloat(result[row]?.token0Price),
-          rate1: parseFloat(result[row]?.token1Price),
+          rate: pairTokenReversed
+            ? Number(result[row]?.token0Price)
+            : Number(result[row]?.token1Price),
         });
       }
     }
-
-    const formattedHistoryRate0 = [];
-    const formattedHistoryRate1 = [];
-
-    // for each hour, construct the open and close price
-    for (let i = 0; i < values.length - 1; i++) {
-      formattedHistoryRate0.push({
-        timestamp: values[i].timestamp,
-        rate: values[i].rate0,
-      });
-      formattedHistoryRate1.push({
-        timestamp: values[i].timestamp,
-        rate: values[i].rate1,
-      });
-    }
-
-    return [formattedHistoryRate0, formattedHistoryRate1];
+    return values;
   } catch (e) {
     console.log(e);
-    return [[], []];
+    return [];
   }
 };
 

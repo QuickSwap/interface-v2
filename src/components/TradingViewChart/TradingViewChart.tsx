@@ -7,7 +7,7 @@ import {
   IChartingLibraryWidget,
   ResolutionString,
 } from 'charting_library/charting_library';
-import { getHourlyRateData, isAddress } from 'utils';
+import { getRateData, isAddress } from 'utils';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import weekOfYear from 'dayjs/plugin/weekOfYear';
@@ -33,6 +33,7 @@ export interface ChartContainerProps {
   height: number | string;
   pairAddress: string;
   pairName: string;
+  pairTokenReversed: boolean;
 }
 
 const ChartContainerProps = {
@@ -111,22 +112,24 @@ const TradingViewChart: React.FC<Partial<ChartContainerProps>> = (props) => {
       const startTimestamp =
         utcCurrentTime.subtract(duration, durationType).unix() - 1;
 
-      const tokenPrices = await getHourlyRateData(
+      const tokenPrices = await getRateData(
         checksumAddress.toLocaleLowerCase(),
-        startTimestamp,
         latestBlock ?? 0,
+        interval,
+        startTimestamp,
+        props.pairTokenReversed ?? false,
       );
-      console.log('ccc', tokenPrices);
-      return [
-        {
-          time: new Date().getTime(),
-          open: 1,
-          close: 0.9,
-          high: 1,
-          low: 0.9,
-        },
-      ];
-      // return priceData;
+
+      return tokenPrices.map((item, ind) => {
+        const nextInd = ind === tokenPrices.length - 1 ? ind : ind + 1;
+        return {
+          time: Number(item.timestamp),
+          open: item.rate,
+          close: tokenPrices[nextInd].rate,
+          high: tokenPrices[nextInd].rate,
+          low: item.rate,
+        };
+      });
     }
     return [];
   };
@@ -160,7 +163,7 @@ const TradingViewChart: React.FC<Partial<ChartContainerProps>> = (props) => {
         has_no_volume: false,
         has_weekly_and_monthly: false,
         supported_resolutions: configurationData.supported_resolutions,
-        volume_precision: 2,
+        volume_precision: 3,
         data_status: 'streaming',
       };
       // eslint-disable-next-line no-console
@@ -188,7 +191,6 @@ const TradingViewChart: React.FC<Partial<ChartContainerProps>> = (props) => {
         }
 
         const data = await fetchPriceData(resolution);
-        console.log(data);
 
         let bars: any = [];
         // if(data.data.data){
@@ -252,7 +254,7 @@ const TradingViewChart: React.FC<Partial<ChartContainerProps>> = (props) => {
   React.useEffect(() => {
     getWidget();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [props.pairAddress, props.pairTokenReversed]);
 
   return (
     <Box height={props.height}>

@@ -65,7 +65,8 @@ const SwapPage: React.FC = () => {
   const isTablet = useMediaQuery(breakpoints.down('md'));
   const [showChart, setShowChart] = useState(true);
   const [showTrades, setShowTrades] = useState(true);
-  const [pairId, setPairId] = useState('');
+  const [pairId, setPairId] = useState<string | undefined>(undefined);
+  const [pairTokenReversed, setPairTokenReversed] = useState(false);
   const [transactions, setTransactions] = useState<any[] | undefined>(
     undefined,
   );
@@ -88,16 +89,27 @@ const SwapPage: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    async function getTradesData(token1Address: string, token2Address: string) {
-      const pairId = await getPairAddress(token1Address, token2Address);
-      setPairId(pairId);
+    async function getPairId(token1Address: string, token2Address: string) {
+      const pairData = await getPairAddress(token1Address, token2Address);
+      if (pairData) {
+        setPairTokenReversed(pairData.tokenReversed);
+        setPairId(pairData.pairId);
+      }
+    }
+    if (token1?.address && token2?.address) {
+      getPairId(token1?.address, token2?.address);
+    }
+  }, [token1?.address, token2?.address]);
+
+  useEffect(() => {
+    async function getTradesData(pairId: string) {
       const transactions = await getSwapTransactions(pairId);
       setTransactions(transactions);
     }
-    if (token1?.address && token2?.address) {
-      getTradesData(token1.address, token2.address);
+    if (pairId) {
+      getTradesData(pairId);
     }
-  }, [token1?.address, token2?.address, currentTime]);
+  }, [pairId, currentTime]);
 
   return (
     <Box width='100%' mb={3} id='swap-page'>
@@ -222,6 +234,7 @@ const SwapPage: React.FC = () => {
                 token1={token1}
                 token2={token2}
                 pairAddress={pairId}
+                pairTokenReversed={pairTokenReversed}
                 transactions={transactions}
               />
             )}
