@@ -96,11 +96,7 @@ const SwapMain: React.FC = () => {
               classes.swapItem,
               classes.headingItem,
             )}
-            borderRight={
-              isProMode && swapIndex !== SWAP_LIMIT
-                ? `1px solid ${palette.divider}`
-                : ''
-            }
+            borderRight={isProMode ? `1px solid ${palette.divider}` : ''}
             onClick={() => setSwapIndex(SWAP_LIMIT)}
           >
             <Typography variant='body1'>Limit</Typography>
