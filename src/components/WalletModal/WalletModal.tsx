@@ -10,7 +10,7 @@ import MetamaskIcon from 'assets/images/metamask.png';
 import { ReactComponent as Close } from 'assets/images/CloseIcon.svg';
 import { fortmatic, injected, portis, safeApp } from 'connectors';
 import { OVERLAY_READY } from 'connectors/Fortmatic';
-import { SUPPORTED_WALLETS } from 'constants/index';
+import { GlobalConst, SUPPORTED_WALLETS } from 'constants/index';
 import usePrevious from 'hooks/usePrevious';
 import { ApplicationModal } from 'state/application/actions';
 import { useModalOpen, useWalletModalToggle } from 'state/application/hooks';
@@ -161,8 +161,9 @@ const WalletModal: React.FC<WalletModalProps> = ({
   // get wallets user can switch too, depending on device/browser
   function getOptions() {
     const { ethereum, web3 } = window as any;
-    const isMetamask = ethereum && ethereum.isMetaMask;
-    const isBitKeep = window.ethereum && (window.ethereum as any).isBitKeep;
+    const isMetamask = ethereum && !ethereum.isBitKeep && ethereum.isMetaMask;
+    const isBlockWallet = ethereum && ethereum.isBlockWallet;
+    const isBitKeep = ethereum && ethereum.isBitKeep;
     return Object.keys(SUPPORTED_WALLETS).map((key) => {
       const option = SUPPORTED_WALLETS[key];
       //disable safe app by in the list
@@ -189,8 +190,12 @@ const WalletModal: React.FC<WalletModalProps> = ({
               active={
                 option.connector === connector &&
                 (connector !== injected ||
-                  isBitKeep === (option.name === 'BitKeep') ||
-                  (!isBitKeep && isMetamask) === (option.name === 'MetaMask'))
+                  isBlockWallet ===
+                    (option.name === GlobalConst.walletName.BLOCKWALLET) ||
+                  isBitKeep ===
+                    (option.name === GlobalConst.walletName.BITKEEP) ||
+                  isMetamask ===
+                    (option.name === GlobalConst.walletName.METAMASK))
               }
               color={option.color}
               link={option.href}
@@ -207,7 +212,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
       if (option.connector === injected) {
         // don't show injected if there's no injected provider
         if (!(web3 || ethereum)) {
-          if (option.name === 'MetaMask') {
+          if (option.name === GlobalConst.walletName.METAMASK) {
             return (
               <Option
                 id={`connect-${key}`}
@@ -224,11 +229,27 @@ const WalletModal: React.FC<WalletModalProps> = ({
           }
         }
         // don't return metamask if injected provider isn't metamask
-        else if (option.name === 'MetaMask' && !isMetamask) {
+        else if (
+          option.name === GlobalConst.walletName.METAMASK &&
+          !isMetamask
+        ) {
+          return null;
+        } else if (
+          option.name === GlobalConst.walletName.BITKEEP &&
+          !isBitKeep
+        ) {
+          return null;
+        } else if (
+          option.name === GlobalConst.walletName.BLOCKWALLET &&
+          !isBlockWallet
+        ) {
           return null;
         }
         // likewise for generic
-        else if (option.name === 'Injected' && isMetamask) {
+        else if (
+          option.name === GlobalConst.walletName.INJECTED &&
+          (isMetamask || isBitKeep || isBlockWallet)
+        ) {
           return null;
         }
       }
@@ -248,8 +269,12 @@ const WalletModal: React.FC<WalletModalProps> = ({
             active={
               option.connector === connector &&
               (connector !== injected ||
-                isBitKeep === (option.name === 'BitKeep') ||
-                (!isBitKeep && isMetamask) === (option.name === 'MetaMask'))
+                isBlockWallet ===
+                  (option.name === GlobalConst.walletName.BLOCKWALLET) ||
+                isBitKeep ===
+                  (option.name === GlobalConst.walletName.BITKEEP) ||
+                isMetamask ===
+                  (option.name === GlobalConst.walletName.METAMASK))
             }
             color={option.color}
             link={option.href}

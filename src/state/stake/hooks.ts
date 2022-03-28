@@ -8,7 +8,7 @@ import {
 } from '@uniswap/sdk';
 import dayjs from 'dayjs';
 import { useMemo, useEffect /** , useState */ } from 'react';
-import { usePair, usePairs } from 'data/Reserves';
+import { usePairs } from 'data/Reserves';
 
 import { client, healthClient } from 'apollo/client';
 import {
@@ -37,12 +37,17 @@ import { useTotalSupplys } from 'data/TotalSupply';
 import {
   getBlockFromTimestamp,
   getDaysCurrentYear,
+  getFarmLPToken,
   getOneYearFee,
+  getSyrupLPToken,
+  initTokenAmountFromCallResult,
   returnDualStakingInfo,
   returnStakingInfo,
   returnSyrupInfo,
   returnTokenFromKey,
 } from 'utils';
+
+import { SyrupInfo, LairInfo, StakingInfo, DualStakingInfo } from 'types';
 
 const web3 = new Web3('https://polygon-rpc.com/');
 
@@ -53,141 +58,6 @@ export const REWARDS_DURATION_DAYS = 7;
 let pairs: any = undefined;
 
 let oneDayVol: any = undefined;
-
-export interface LairInfo {
-  lairAddress: string;
-
-  dQUICKBalance: TokenAmount;
-
-  QUICKBalance: TokenAmount;
-
-  totalQuickBalance: TokenAmount;
-
-  dQuickTotalSupply: TokenAmount;
-
-  oneDayVol: number;
-}
-
-export interface CommonStakingInfo {
-  // the address of the reward contract
-  stakingRewardAddress: string;
-  // the tokens involved in this pair
-  tokens: [Token, Token];
-  // the amount of token currently staked, or undefined if no account
-  stakedAmount: TokenAmount;
-  // the total amount of token staked in the contract
-  totalStakedAmount: TokenAmount;
-  // when the period ends
-  periodFinish: Date | undefined;
-
-  ended: boolean;
-
-  name: string;
-
-  lp: string;
-
-  baseToken: Token;
-
-  pair: string;
-
-  oneYearFeeAPY?: number;
-
-  oneDayFee?: number;
-
-  accountFee?: number;
-  tvl?: string;
-  perMonthReturnInRewards?: number;
-
-  totalSupply?: TokenAmount;
-  usdPrice?: Price;
-  stakingTokenPair?: Pair | null;
-  // calculates a hypothetical amount of token distributed to the active account per second.
-  getHypotheticalRewardRate: (
-    stakedAmount: TokenAmount,
-    totalStakedAmount: TokenAmount,
-    totalRewardRate: TokenAmount,
-  ) => TokenAmount;
-}
-
-export interface StakingInfo extends CommonStakingInfo {
-  // the amount of reward token earned by the active account, or undefined if no account
-  earnedAmount: TokenAmount;
-  // the amount of token distributed per second to all LPs, constant
-  totalRewardRate: TokenAmount;
-  // the current amount of token distributed to the active account per second.
-  // equivalent to percent of total supply * reward rate
-  rewardRate: TokenAmount;
-  rewardToken: Token;
-  rewardTokenPrice: number;
-
-  rate: number;
-
-  valueOfTotalStakedAmountInBaseToken?: TokenAmount;
-}
-
-export interface DualStakingInfo extends CommonStakingInfo {
-  rewardTokenA: Token;
-  rewardTokenB: Token;
-  rewardTokenBBase: Token;
-  // the amount of reward token earned by the active account, or undefined if no account
-  earnedAmountA: TokenAmount;
-  earnedAmountB: TokenAmount;
-  // the amount of token distributed per second to all LPs, constant
-  totalRewardRateA: TokenAmount;
-  totalRewardRateB: TokenAmount;
-  // the current amount of token distributed to the active account per second.
-  // equivalent to percent of total supply * reward rate
-  rewardRateA: TokenAmount;
-  rewardRateB: TokenAmount;
-
-  rateA: number;
-  rateB: number;
-  rewardTokenAPrice: number;
-  rewardTokenBPrice: number;
-}
-
-export interface SyrupInfo {
-  // the address of the reward contract
-  stakingRewardAddress: string;
-  // the token involved in this staking
-  token: Token;
-  // the amount of token currently staked, or undefined if no account
-  stakedAmount: TokenAmount;
-  // the amount of reward token earned by the active account, or undefined if no account
-  earnedAmount: TokenAmount;
-  // the total amount of token staked in the contract
-  totalStakedAmount: TokenAmount;
-  // the amount of token distributed per second to all stakers, constant
-  totalRewardRate: TokenAmount;
-  // the current amount of token distributed to the active account per second.
-  // equivalent to percent of total supply * reward rate
-  rewardRate: TokenAmount;
-  // when the period ends
-  periodFinish: number;
-
-  ended: boolean;
-
-  name: string;
-
-  lp: string;
-
-  baseToken: Token;
-
-  rate: number;
-
-  valueOfTotalStakedAmountInUSDC?: number;
-
-  rewards?: number;
-  rewardTokenPriceinUSD?: number;
-
-  stakingToken: Token;
-
-  // calculates a hypothetical amount of token distributed to the active account per second.
-  getHypotheticalRewardRate: (
-    stakedAmount: TokenAmount,
-    totalStakedAmount: TokenAmount,
-  ) => TokenAmount;
-}
 
 export function useTotalRewardsDistributed() {
   const { chainId } = useActiveWeb3React();
@@ -364,13 +234,6 @@ export function useSyrupInfo(
     STAKING_REWARDS_INTERFACE,
     'totalSupply',
   );
-  const periodFinishes = useMultipleContractSingleData(
-    rewardsAddresses,
-    STAKING_REWARDS_INTERFACE,
-    'periodFinish',
-    undefined,
-    NEVER_RELOAD,
-  );
   const rewardRates = useMultipleContractSingleData(
     rewardsAddresses,
     STAKING_REWARDS_INTERFACE,
@@ -407,7 +270,6 @@ export function useSyrupInfo(
         // these get fetched regardless of account
         const totalSupplyState = totalSupplies[index];
         const rewardRateState = rewardRates[index];
-        const periodFinishState = periodFinishes[index];
         const syrupInfo = info[index];
 
         if (
@@ -418,59 +280,44 @@ export function useSyrupInfo(
           totalSupplyState &&
           !totalSupplyState.loading &&
           rewardRateState &&
-          !rewardRateState.loading &&
-          periodFinishState &&
-          !periodFinishState.loading
+          !rewardRateState.loading
         ) {
-          if (
-            balanceState?.error ||
-            earnedAmountState?.error ||
-            totalSupplyState.error ||
-            rewardRateState.error ||
-            periodFinishState.error
-          ) {
-            console.error('Failed to load syrup rewards info');
-            return memo;
-          }
           // get the LP token
           const token = syrupInfo.token;
           const [, stakingTokenPair] = stakingTokenPairs[index];
           const tokenPairPrice = stakingTokenPair?.priceOf(token);
           const usdPriceBaseToken = usdBaseTokenPrices[index];
           const priceOfRewardTokenInUSD =
-            Number(tokenPairPrice?.toSignificant()) *
-            Number(usdPriceBaseToken?.toSignificant());
+            tokenPairPrice && usdPriceBaseToken
+              ? Number(tokenPairPrice.toSignificant()) *
+                Number(usdPriceBaseToken.toSignificant())
+              : undefined;
 
-          const rewards =
-            Number(syrupInfo.rate) *
-            (priceOfRewardTokenInUSD ? priceOfRewardTokenInUSD : 0);
+          const rewards = syrupInfo.rate * (priceOfRewardTokenInUSD ?? 0);
 
           // check for account, if no account set to 0
-          const lp = syrupInfo.lp;
           const rate = web3.utils.toWei(syrupInfo.rate.toString());
-          const stakedAmount = new TokenAmount(
-            lp && lp !== ''
-              ? new Token(137, lp, 18, 'SLP', 'Staked LP')
-              : syrupInfo.stakingToken,
-            JSBI.BigInt(balanceState?.result?.[0] ?? 0),
+          const syrupToken = getSyrupLPToken(syrupInfo);
+          const stakedAmount = initTokenAmountFromCallResult(
+            syrupToken,
+            balanceState,
           );
-          const totalStakedAmount = new TokenAmount(
-            lp && lp !== ''
-              ? new Token(137, lp, 18, 'SLP', 'Staked LP')
-              : syrupInfo.stakingToken,
-            JSBI.BigInt(totalSupplyState.result?.[0]),
+          const totalStakedAmount = initTokenAmountFromCallResult(
+            syrupToken,
+            totalSupplyState,
           );
           const totalRewardRate = new TokenAmount(token, JSBI.BigInt(rate));
           //const pair = info[index].pair.toLowerCase();
           //const fees = (pairData && pairData[pair] ? pairData[pair].oneDayVolumeUSD * 0.0025: 0);
-          const rewardRate = new TokenAmount(
+          const rewardRate = initTokenAmountFromCallResult(
             token,
-            JSBI.BigInt(rewardRateState.result?.[0]),
+            rewardRateState,
           );
           const getHypotheticalRewardRate = (
-            stakedAmount: TokenAmount,
-            totalStakedAmount: TokenAmount,
-          ): TokenAmount => {
+            stakedAmount?: TokenAmount,
+            totalStakedAmount?: TokenAmount,
+          ): TokenAmount | undefined => {
+            if (!stakedAmount || !totalStakedAmount || !rewardRate) return;
             return new TokenAmount(
               token,
               JSBI.greaterThan(totalStakedAmount.raw, JSBI.BigInt(0))
@@ -496,9 +343,9 @@ export function useSyrupInfo(
             name: syrupInfo.name,
             lp: syrupInfo.lp,
             periodFinish: periodFinishMs,
-            earnedAmount: new TokenAmount(
+            earnedAmount: initTokenAmountFromCallResult(
               token,
-              JSBI.BigInt(earnedAmountState?.result?.[0] ?? 0),
+              earnedAmountState,
             ),
             rewardRate: individualRewardRate,
             totalRewardRate: totalRewardRate,
@@ -510,8 +357,9 @@ export function useSyrupInfo(
             rewardTokenPriceinUSD: priceOfRewardTokenInUSD,
             rewards,
             stakingToken: syrupInfo.stakingToken,
-            valueOfTotalStakedAmountInUSDC:
-              Number(totalStakedAmount.toExact()) * stakingTokenPrice,
+            valueOfTotalStakedAmountInUSDC: totalStakedAmount
+              ? Number(totalStakedAmount.toExact()) * stakingTokenPrice
+              : undefined,
           });
         }
         return memo;
@@ -523,7 +371,6 @@ export function useSyrupInfo(
     chainId,
     earnedAmounts,
     info,
-    periodFinishes,
     rewardsAddresses,
     totalSupplies,
     uni,
@@ -532,7 +379,9 @@ export function useSyrupInfo(
     usdBaseTokenPrices,
     stakingTokenPrices,
   ]).filter((syrupInfo) =>
-    filter && filter.isStaked ? syrupInfo.stakedAmount.greaterThan('0') : true,
+    filter && filter.isStaked
+      ? syrupInfo.stakedAmount && syrupInfo.stakedAmount.greaterThan('0')
+      : true,
   );
 }
 
@@ -589,13 +438,6 @@ export function useOldSyrupInfo(
     'totalSupply',
   );
 
-  const periodFinishes = useMultipleContractSingleData(
-    rewardsAddresses,
-    STAKING_REWARDS_INTERFACE,
-    'periodFinish',
-    undefined,
-    NEVER_RELOAD,
-  );
   const rewardRates = useMultipleContractSingleData(
     rewardsAddresses,
     STAKING_REWARDS_INTERFACE,
@@ -631,7 +473,6 @@ export function useOldSyrupInfo(
         // these get fetched regardless of account
         const totalSupplyState = totalSupplies[index];
         const rewardRateState = rewardRates[index];
-        const periodFinishState = periodFinishes[index];
         const syrupInfo = info[index];
         const stakingTokenPrice = stakingTokenPrices[index];
 
@@ -643,49 +484,33 @@ export function useOldSyrupInfo(
           totalSupplyState &&
           !totalSupplyState.loading &&
           rewardRateState &&
-          !rewardRateState.loading &&
-          periodFinishState &&
-          !periodFinishState.loading
+          !rewardRateState.loading
         ) {
-          if (
-            balanceState?.error ||
-            earnedAmountState?.error ||
-            totalSupplyState.error ||
-            rewardRateState.error ||
-            periodFinishState.error
-          ) {
-            console.error('Failed to load syrup rewards info');
-            return memo;
-          }
           // get the LP token
           const token = syrupInfo.token;
 
           // check for account, if no account set to 0
-          const lp = syrupInfo.lp;
           const rate = web3.utils.toWei(syrupInfo.rate.toString());
-          const stakedAmount = new TokenAmount(
-            lp && lp !== ''
-              ? new Token(137, lp, 18, 'SLP', 'Staked LP')
-              : syrupInfo.stakingToken,
-            JSBI.BigInt(balanceState?.result?.[0] ?? 0),
+          const stakedAmount = initTokenAmountFromCallResult(
+            getSyrupLPToken(syrupInfo),
+            balanceState,
           );
-          const totalStakedAmount = new TokenAmount(
-            lp && lp !== ''
-              ? new Token(137, lp, 18, 'SLP', 'Staked LP')
-              : syrupInfo.stakingToken,
-            JSBI.BigInt(totalSupplyState.result?.[0]),
+          const totalStakedAmount = initTokenAmountFromCallResult(
+            getSyrupLPToken(syrupInfo),
+            totalSupplyState,
           );
           const totalRewardRate = new TokenAmount(token, JSBI.BigInt(rate));
           //const pair = info[index].pair.toLowerCase();
           //const fees = (pairData && pairData[pair] ? pairData[pair].oneDayVolumeUSD * 0.0025: 0);
-          const rewardRate = new TokenAmount(
+          const rewardRate = initTokenAmountFromCallResult(
             token,
-            JSBI.BigInt(rewardRateState.result?.[0]),
+            rewardRateState,
           );
           const getHypotheticalRewardRate = (
-            stakedAmount: TokenAmount,
-            totalStakedAmount: TokenAmount,
-          ): TokenAmount => {
+            stakedAmount?: TokenAmount,
+            totalStakedAmount?: TokenAmount,
+          ): TokenAmount | undefined => {
+            if (!stakedAmount || !totalStakedAmount || !rewardRate) return;
             return new TokenAmount(
               token,
               JSBI.greaterThan(totalStakedAmount.raw, JSBI.BigInt(0))
@@ -718,9 +543,9 @@ export function useOldSyrupInfo(
             name: syrupInfo.name,
             lp: syrupInfo.lp,
             periodFinish: periodFinishMs,
-            earnedAmount: new TokenAmount(
+            earnedAmount: initTokenAmountFromCallResult(
               token,
-              JSBI.BigInt(earnedAmountState?.result?.[0] ?? 0),
+              earnedAmountState,
             ),
             rewardRate: individualRewardRate,
             totalRewardRate: totalRewardRate,
@@ -731,8 +556,9 @@ export function useOldSyrupInfo(
             rate: 0,
             rewardTokenPriceinUSD: priceOfRewardTokenInUSD,
             stakingToken: syrupInfo.stakingToken,
-            valueOfTotalStakedAmountInUSDC:
-              Number(totalStakedAmount.toExact()) * stakingTokenPrice,
+            valueOfTotalStakedAmountInUSDC: totalStakedAmount
+              ? Number(totalStakedAmount.toExact()) * stakingTokenPrice
+              : undefined,
           });
         }
         return memo;
@@ -744,7 +570,6 @@ export function useOldSyrupInfo(
     chainId,
     earnedAmounts,
     info,
-    periodFinishes,
     rewardsAddresses,
     totalSupplies,
     uni,
@@ -753,7 +578,9 @@ export function useOldSyrupInfo(
     usdBaseTokenPrices,
     stakingTokenPrices,
   ]).filter((syrupInfo) =>
-    filter && filter.isStaked ? syrupInfo.stakedAmount.greaterThan('0') : true,
+    filter && filter.isStaked
+      ? syrupInfo.stakedAmount && syrupInfo.stakedAmount.greaterThan('0')
+      : true,
   );
 }
 
@@ -980,14 +807,6 @@ export function useDualStakingInfo(
     STAKING_DUAL_REWARDS_INTERFACE,
     'totalSupply',
   );
-
-  const periodFinishes = useMultipleContractSingleData(
-    rewardsAddresses,
-    STAKING_DUAL_REWARDS_INTERFACE,
-    'periodFinish',
-    undefined,
-    NEVER_RELOAD,
-  );
   const rewardRatesA = useMultipleContractSingleData(
     rewardsAddresses,
     STAKING_DUAL_REWARDS_INTERFACE,
@@ -1012,16 +831,7 @@ export function useDualStakingInfo(
 
   const usdPrices = useUSDCPrices(baseTokens);
   const totalSupplys = useTotalSupplys(
-    info.map((item) => {
-      const lp = item.lp;
-      const dummyPair = new Pair(
-        new TokenAmount(item.tokens[0], '0'),
-        new TokenAmount(item.tokens[1], '0'),
-      );
-      return lp && lp !== ''
-        ? new Token(137, lp, 18, 'SLP', 'Staked LP')
-        : dummyPair.liquidityToken;
-    }),
+    info.map((item) => getFarmLPToken(item)),
   );
   const stakingPairs = usePairs(info.map((item) => item.tokens));
   const rewardTokenAPrices = useUSDCPricesToken(
@@ -1045,7 +855,6 @@ export function useDualStakingInfo(
         const totalSupplyState = totalSupplies[index];
         const rewardRateAState = rewardRatesA[index];
         const rewardRateBState = rewardRatesB[index];
-        const periodFinishState = periodFinishes[index];
         const stakingInfo = info[index];
         const rewardTokenAPrice = rewardTokenAPrices[index];
         const rewardTokenBPrice = rewardTokenBPrices[index];
@@ -1061,63 +870,37 @@ export function useDualStakingInfo(
           rewardRateAState &&
           !rewardRateAState.loading &&
           rewardRateBState &&
-          !rewardRateBState.loading &&
-          periodFinishState &&
-          !periodFinishState.loading
+          !rewardRateBState.loading
         ) {
-          if (
-            balanceState?.error ||
-            earnedAAmountState?.error ||
-            earnedBAmountState?.error ||
-            totalSupplyState.error ||
-            rewardRateAState.error ||
-            rewardRateBState.error ||
-            periodFinishState.error
-          ) {
-            console.error('Failed to load staking rewards info');
-            return memo;
-          }
-          // get the LP token
-          const tokens = stakingInfo.tokens;
-          const dummyPair = new Pair(
-            new TokenAmount(tokens[0], '0'),
-            new TokenAmount(tokens[1], '0'),
-          );
-
-          // check for account, if no account set to 0
-          const lp = stakingInfo.lp;
           const rateA = web3.utils.toWei(stakingInfo.rateA.toString());
           const rateB = web3.utils.toWei(stakingInfo.rateB.toString());
-          const stakedAmount = new TokenAmount(
-            lp && lp !== ''
-              ? new Token(137, lp, 18, 'SLP', 'Staked LP')
-              : dummyPair.liquidityToken,
-            JSBI.BigInt(balanceState?.result?.[0] ?? 0),
+          const stakedAmount = initTokenAmountFromCallResult(
+            getFarmLPToken(stakingInfo),
+            balanceState,
           );
-          const totalStakedAmount = new TokenAmount(
-            lp && lp !== ''
-              ? new Token(137, lp, 18, 'SLP', 'Staked LP')
-              : dummyPair.liquidityToken,
-            JSBI.BigInt(totalSupplyState.result?.[0]),
+          const totalStakedAmount = initTokenAmountFromCallResult(
+            getFarmLPToken(stakingInfo),
+            totalSupplyState,
           );
           const totalRewardRateA = new TokenAmount(uni, JSBI.BigInt(rateA));
           const totalRewardRateB = new TokenAmount(uni, JSBI.BigInt(rateB));
           //const pair = info[index].pair.toLowerCase();
           //const fees = (pairData && pairData[pair] ? pairData[pair].oneDayVolumeUSD * 0.0025: 0);
-          const totalRewardRateA01 = new TokenAmount(
+          const totalRewardRateA01 = initTokenAmountFromCallResult(
             uni,
-            JSBI.BigInt(rewardRateAState.result?.[0]),
+            rewardRateAState,
           );
-          const totalRewardRateB01 = new TokenAmount(
+          const totalRewardRateB01 = initTokenAmountFromCallResult(
             uni,
-            JSBI.BigInt(rewardRateBState.result?.[0]),
+            rewardRateBState,
           );
 
           const getHypotheticalRewardRate = (
-            stakedAmount: TokenAmount,
-            totalStakedAmount: TokenAmount,
-            totalRewardRate: TokenAmount,
-          ): TokenAmount => {
+            stakedAmount?: TokenAmount,
+            totalStakedAmount?: TokenAmount,
+            totalRewardRate?: TokenAmount,
+          ): TokenAmount | undefined => {
+            if (!stakedAmount || !totalStakedAmount || !totalRewardRate) return;
             return new TokenAmount(
               uni,
               JSBI.greaterThan(totalStakedAmount.raw, JSBI.BigInt(0))
@@ -1140,17 +923,18 @@ export function useDualStakingInfo(
             totalRewardRateB01,
           );
 
-          const periodFinishMs = periodFinishState.result?.[0]
-            ?.mul(1000)
-            ?.toNumber();
-
           let valueOfTotalStakedAmountInBaseToken: TokenAmount | undefined;
 
           const [, stakingTokenPair] = stakingPairs[index];
           const totalSupply = totalSupplys[index];
           const usdPrice = usdPrices[index];
 
-          if (totalSupply && stakingTokenPair && baseTokens[index]) {
+          if (
+            totalSupply &&
+            stakingTokenPair &&
+            baseTokens[index] &&
+            totalStakedAmount
+          ) {
             // take the total amount of LP tokens staked, multiply by ETH value of all LP tokens, divide by all LP tokens
             valueOfTotalStakedAmountInBaseToken = new TokenAmount(
               baseTokens[index],
@@ -1187,15 +971,13 @@ export function useDualStakingInfo(
             ended: stakingInfo.ended,
             name: stakingInfo.name,
             lp: stakingInfo.lp,
-            periodFinish:
-              periodFinishMs > 0 ? new Date(periodFinishMs) : undefined,
-            earnedAmountA: new TokenAmount(
+            earnedAmountA: initTokenAmountFromCallResult(
               uni,
-              JSBI.BigInt(earnedAAmountState?.result?.[0] ?? 0),
+              earnedAAmountState,
             ),
-            earnedAmountB: new TokenAmount(
+            earnedAmountB: initTokenAmountFromCallResult(
               uni,
-              JSBI.BigInt(earnedBAmountState?.result?.[0] ?? 0),
+              earnedBAmountState,
             ),
             rewardRateA: individualRewardRateA,
             rewardRateB: individualRewardRateB,
@@ -1230,7 +1012,6 @@ export function useDualStakingInfo(
     earnedAAmounts,
     earnedBAmounts,
     info,
-    periodFinishes,
     rewardsAddresses,
     totalSupplies,
     uni,
@@ -1244,7 +1025,7 @@ export function useDualStakingInfo(
     rewardTokenBPrices,
   ]).filter((stakingInfo) =>
     filter && filter.isStaked
-      ? stakingInfo.stakedAmount.greaterThan('0')
+      ? stakingInfo.stakedAmount && stakingInfo.stakedAmount.greaterThan('0')
       : true,
   );
 }
@@ -1353,14 +1134,6 @@ export function useStakingInfo(
     STAKING_REWARDS_INTERFACE,
     'totalSupply',
   );
-
-  const periodFinishes = useMultipleContractSingleData(
-    rewardsAddresses,
-    STAKING_REWARDS_INTERFACE,
-    'periodFinish',
-    undefined,
-    NEVER_RELOAD,
-  );
   const rewardRates = useMultipleContractSingleData(
     rewardsAddresses,
     STAKING_REWARDS_INTERFACE,
@@ -1404,7 +1177,6 @@ export function useStakingInfo(
         // these get fetched regardless of account
         const totalSupplyState = totalSupplies[index];
         const rewardRateState = rewardRates[index];
-        const periodFinishState = periodFinishes[index];
         const stakingInfo = info[index];
         const rewardTokenPrice = usdPricesRewardTokens[index];
 
@@ -1416,20 +1188,8 @@ export function useStakingInfo(
           totalSupplyState &&
           !totalSupplyState.loading &&
           rewardRateState &&
-          !rewardRateState.loading &&
-          periodFinishState &&
-          !periodFinishState.loading
+          !rewardRateState.loading
         ) {
-          if (
-            balanceState?.error ||
-            earnedAmountState?.error ||
-            totalSupplyState.error ||
-            rewardRateState.error ||
-            periodFinishState.error
-          ) {
-            console.error('Failed to load staking rewards info');
-            return memo;
-          }
           // get the LP token
           const tokens = stakingInfo.tokens;
           const dummyPair = new Pair(
@@ -1440,30 +1200,27 @@ export function useStakingInfo(
           // check for account, if no account set to 0
           const lp = stakingInfo.lp;
           const rate = web3.utils.toWei(stakingInfo.rate.toString());
-          const stakedAmount = new TokenAmount(
-            lp && lp !== ''
-              ? new Token(137, lp, 18, 'SLP', 'Staked LP')
-              : dummyPair.liquidityToken,
-            JSBI.BigInt(balanceState?.result?.[0] ?? 0),
+          const stakedAmount = initTokenAmountFromCallResult(
+            getFarmLPToken(stakingInfo),
+            balanceState,
           );
-          const totalStakedAmount = new TokenAmount(
-            lp && lp !== ''
-              ? new Token(137, lp, 18, 'SLP', 'Staked LP')
-              : dummyPair.liquidityToken,
-            JSBI.BigInt(totalSupplyState.result?.[0]),
+          const totalStakedAmount = initTokenAmountFromCallResult(
+            getFarmLPToken(stakingInfo),
+            totalSupplyState,
           );
           const totalRewardRate = new TokenAmount(uni, JSBI.BigInt(rate));
           //const pair = info[index].pair.toLowerCase();
           //const fees = (pairData && pairData[pair] ? pairData[pair].oneDayVolumeUSD * 0.0025: 0);
-          const totalRewardRate01 = new TokenAmount(
+          const totalRewardRate01 = initTokenAmountFromCallResult(
             uni,
-            JSBI.BigInt(rewardRateState.result?.[0]),
+            rewardRateState,
           );
           const getHypotheticalRewardRate = (
-            stakedAmount: TokenAmount,
-            totalStakedAmount: TokenAmount,
-            totalRewardRate: TokenAmount,
-          ): TokenAmount => {
+            stakedAmount?: TokenAmount,
+            totalStakedAmount?: TokenAmount,
+            totalRewardRate?: TokenAmount,
+          ): TokenAmount | undefined => {
+            if (!stakedAmount || !totalStakedAmount || !totalRewardRate) return;
             return new TokenAmount(
               uni,
               JSBI.greaterThan(totalStakedAmount.raw, JSBI.BigInt(0))
@@ -1481,26 +1238,31 @@ export function useStakingInfo(
             totalRewardRate01,
           );
 
-          const periodFinishMs = periodFinishState.result?.[0]
-            ?.mul(1000)
-            ?.toNumber();
           let oneYearFeeAPY = 0;
           let oneDayFee = 0;
           let accountFee = 0;
           if (pairs !== undefined) {
             oneYearFeeAPY = pairs[stakingInfo.pair]?.oneDayVolumeUSD;
 
-            if (oneYearFeeAPY) {
+            if (
+              oneYearFeeAPY &&
+              balanceState &&
+              balanceState.result &&
+              balanceState.result[0] &&
+              totalSupplyState &&
+              totalSupplyState.result &&
+              totalSupplyState.result[0]
+            ) {
               const totalSupply = web3.utils.toWei(
                 pairs[stakingInfo.pair]?.totalSupply,
                 'ether',
               );
               const ratio =
-                Number(totalSupplyState.result?.[0].toString()) /
+                Number(totalSupplyState.result[0].toString()) /
                 Number(totalSupply);
               const myRatio =
-                Number(balanceState?.result?.[0].toString()) /
-                Number(totalSupplyState.result?.[0].toString());
+                Number(balanceState.result[0].toString()) /
+                Number(totalSupplyState.result[0].toString());
               oneDayFee = oneYearFeeAPY * GlobalConst.utils.FEEPERCENT * ratio;
               accountFee = oneDayFee * myRatio;
               oneYearFeeAPY = getOneYearFee(
@@ -1517,7 +1279,12 @@ export function useStakingInfo(
           const totalSupply = totalSupplys[index];
           const usdPrice = usdPrices[index];
 
-          if (totalSupply && stakingTokenPair && baseTokens[index]) {
+          if (
+            totalSupply &&
+            stakingTokenPair &&
+            baseTokens[index] &&
+            totalStakedAmount
+          ) {
             // take the total amount of LP tokens staked, multiply by ETH value of all LP tokens, divide by all LP tokens
             valueOfTotalStakedAmountInBaseToken = new TokenAmount(
               baseTokens[index],
@@ -1556,12 +1323,7 @@ export function useStakingInfo(
             lp: stakingInfo.lp,
             rewardToken: stakingInfo.rewardToken,
             rewardTokenPrice,
-            periodFinish:
-              periodFinishMs > 0 ? new Date(periodFinishMs) : undefined,
-            earnedAmount: new TokenAmount(
-              uni,
-              JSBI.BigInt(earnedAmountState?.result?.[0] ?? 0),
-            ),
+            earnedAmount: initTokenAmountFromCallResult(uni, earnedAmountState),
             rewardRate: individualRewardRate,
             totalRewardRate: totalRewardRate,
             stakedAmount: stakedAmount,
@@ -1590,7 +1352,6 @@ export function useStakingInfo(
     chainId,
     earnedAmounts,
     info,
-    periodFinishes,
     rewardsAddresses,
     totalSupplies,
     uni,
@@ -1602,7 +1363,7 @@ export function useStakingInfo(
     stakingPairs,
   ]).filter((stakingInfo) =>
     filter && filter.isStaked
-      ? stakingInfo.stakedAmount.greaterThan('0')
+      ? stakingInfo.stakedAmount && stakingInfo.stakedAmount.greaterThan('0')
       : true,
   );
 }
@@ -1661,14 +1422,6 @@ export function useOldStakingInfo(
     'totalSupply',
   );
 
-  const periodFinishes = useMultipleContractSingleData(
-    rewardsAddresses,
-    STAKING_REWARDS_INTERFACE,
-    'periodFinish',
-    undefined,
-    NEVER_RELOAD,
-  );
-
   const stakingPairs = usePairs(info.map((item) => item.tokens));
 
   return useMemo(() => {
@@ -1683,7 +1436,6 @@ export function useOldStakingInfo(
         // these get fetched regardless of account
         const totalSupplyState = totalSupplies[index];
 
-        const periodFinishState = periodFinishes[index];
         const stakingInfo = info[index];
 
         if (
@@ -1692,49 +1444,24 @@ export function useOldStakingInfo(
           !earnedAmountState?.loading &&
           // always need these
           totalSupplyState &&
-          !totalSupplyState.loading &&
-          periodFinishState &&
-          !periodFinishState.loading
+          !totalSupplyState.loading
         ) {
-          if (
-            balanceState?.error ||
-            earnedAmountState?.error ||
-            totalSupplyState.error ||
-            periodFinishState.error
-          ) {
-            console.error('Failed to load staking rewards info');
-            return memo;
-          }
-
-          // get the LP token
-          const tokens = stakingInfo.tokens;
-          const dummyPair = new Pair(
-            new TokenAmount(tokens[0], '0'),
-            new TokenAmount(tokens[1], '0'),
+          const stakedAmount = initTokenAmountFromCallResult(
+            getFarmLPToken(stakingInfo),
+            balanceState,
           );
-
-          // check for account, if no account set to 0
-          const lp = stakingInfo.lp;
-
-          const stakedAmount = new TokenAmount(
-            lp && lp !== ''
-              ? new Token(137, lp, 18, 'SLP', 'Staked LP')
-              : dummyPair.liquidityToken,
-            JSBI.BigInt(balanceState?.result?.[0] ?? 0),
-          );
-          const totalStakedAmount = new TokenAmount(
-            lp && lp !== ''
-              ? new Token(137, lp, 18, 'SLP', 'Staked LP')
-              : dummyPair.liquidityToken,
-            JSBI.BigInt(totalSupplyState.result?.[0]),
+          const totalStakedAmount = initTokenAmountFromCallResult(
+            getFarmLPToken(stakingInfo),
+            totalSupplyState,
           );
           const totalRewardRate = new TokenAmount(uni, JSBI.BigInt(0));
 
           const getHypotheticalRewardRate = (
-            stakedAmount: TokenAmount,
-            totalStakedAmount: TokenAmount,
-            totalRewardRate: TokenAmount,
-          ): TokenAmount => {
+            stakedAmount?: TokenAmount,
+            totalStakedAmount?: TokenAmount,
+            totalRewardRate?: TokenAmount,
+          ): TokenAmount | undefined => {
+            if (!stakedAmount || !totalStakedAmount || !totalRewardRate) return;
             return new TokenAmount(
               uni,
               JSBI.greaterThan(totalStakedAmount.raw, JSBI.BigInt(0))
@@ -1752,10 +1479,6 @@ export function useOldStakingInfo(
             totalRewardRate,
           );
 
-          const periodFinishMs = periodFinishState.result?.[0]
-            ?.mul(1000)
-            ?.toNumber();
-
           const [, stakingTokenPair] = stakingPairs[index];
 
           memo.push({
@@ -1766,12 +1489,7 @@ export function useOldStakingInfo(
             lp: stakingInfo.lp,
             rewardToken: stakingInfo.rewardToken,
             rewardTokenPrice: 0,
-            periodFinish:
-              periodFinishMs > 0 ? new Date(periodFinishMs) : undefined,
-            earnedAmount: new TokenAmount(
-              uni,
-              JSBI.BigInt(earnedAmountState?.result?.[0] ?? 0),
-            ),
+            earnedAmount: initTokenAmountFromCallResult(uni, earnedAmountState),
             rewardRate: individualRewardRate,
             totalRewardRate: totalRewardRate,
             stakedAmount: stakedAmount,
@@ -1795,14 +1513,13 @@ export function useOldStakingInfo(
     chainId,
     earnedAmounts,
     info,
-    periodFinishes,
     rewardsAddresses,
     totalSupplies,
     uni,
     stakingPairs,
   ]).filter((stakingInfo) =>
     filter && filter.isStaked
-      ? stakingInfo.stakedAmount.greaterThan('0')
+      ? stakingInfo.stakedAmount && stakingInfo.stakedAmount.greaterThan('0')
       : true,
   );
 }
@@ -1818,7 +1535,10 @@ export function useTotalUniEarned(): TokenAmount | undefined {
     if (!uni) return undefined;
     return (
       stakingInfos?.reduce(
-        (accumulator, stakingInfo) => accumulator.add(stakingInfo.earnedAmount),
+        (accumulator, stakingInfo) =>
+          accumulator.add(
+            stakingInfo.earnedAmount ?? new TokenAmount(uni, '0'),
+          ),
         new TokenAmount(uni, '0'),
       ) ?? new TokenAmount(uni, '0')
     );
@@ -1844,7 +1564,7 @@ export function useDQUICKtoQUICK() {
 
 export function useDerivedSyrupInfo(
   typedValue: string,
-  stakingToken: Token,
+  stakingToken: Token | undefined,
   userLiquidityUnstaked: TokenAmount | undefined,
 ): {
   parsedAmount?: CurrencyAmount;
