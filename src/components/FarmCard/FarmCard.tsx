@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Box, Typography, useMediaQuery } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
+import cx from 'classnames';
 import { DualStakingInfo, StakingInfo } from 'types';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { DoubleCurrencyLogo, CurrencyLogo } from 'components';
@@ -27,6 +28,11 @@ const useStyles = makeStyles(({ palette }) => ({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
+    padding: '0 16px',
+  },
+  highlightedCard: {
+    border: `1px solid ${palette.primary.main}`,
+    boxShadow: '0 0 5px 5px rgba(68, 138, 255, 0.3)',
   },
   farmLPCardUp: {
     background: palette.secondary.dark,
@@ -53,6 +59,7 @@ const FarmCard: React.FC<{
   const { palette, breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const [isExpandCard, setExpandCard] = useState(false);
+
   const lpStakingInfo = stakingInfo as StakingInfo;
   const dualStakingInfo = stakingInfo as DualStakingInfo;
 
@@ -116,7 +123,12 @@ const FarmCard: React.FC<{
   );
 
   return (
-    <Box className={classes.farmLPCard}>
+    <Box
+      className={cx(
+        classes.farmLPCard,
+        isExpandCard && classes.highlightedCard,
+      )}
+    >
       <Box
         className={classes.farmLPCardUp}
         onClick={() => setExpandCard(!isExpandCard)}

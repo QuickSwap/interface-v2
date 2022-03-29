@@ -31,7 +31,7 @@ import CircleInfoIcon from 'assets/images/circleinfo.svg';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   inputVal: {
-    backgroundColor: palette.secondary.contrastText,
+    backgroundColor: palette.background.paper,
     borderRadius: '10px',
     height: '50px',
     display: 'flex',
@@ -73,6 +73,13 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       padding: 16,
       border: `1px solid ${palette.divider}`,
     },
+  },
+  dailyRateWrapper: {
+    background: palette.secondary.contrastText,
+    width: '100%',
+    marginBottom: 16,
+    padding: '8px 16px',
+    borderRadius: 10,
   },
 }));
 
@@ -278,125 +285,206 @@ const FarmCardDetails: React.FC<{
   );
 
   return (
-    <Box
-      width='100%'
-      p={2}
-      display='flex'
-      flexDirection='row'
-      flexWrap='wrap'
-      borderTop='1px solid #444444'
-      alignItems='center'
-      justifyContent={stakingInfo?.ended ? 'flex-end' : 'space-between'}
-    >
-      {stakingInfo && (
-        <>
-          {isMobile && (
-            <>
-              <Box
-                mt={2}
-                width={1}
-                display='flex'
-                justifyContent='space-between'
-              >
-                <Typography variant='body2' color='textSecondary'>
-                  TVL
-                </Typography>
-                <Typography variant='body2'>{tvl}</Typography>
-              </Box>
-              <Box
-                mt={2}
-                width={1}
-                display='flex'
-                justifyContent='space-between'
-              >
-                <Typography variant='body2' color='textSecondary'>
-                  Rewards
-                </Typography>
-                <Box textAlign='right'>
-                  <Typography variant='body2'>
-                    ${(isLPFarm ? lpRewards : dualRewards).toLocaleString()} /
-                    day
-                  </Typography>
-                  {isLPFarm ? (
-                    <Typography variant='body2'>{lpPoolRate}</Typography>
-                  ) : (
-                    <>
-                      <Typography variant='body2'>{dualPoolRateA}</Typography>
-                      <Typography variant='body2'>{dualPoolRateB}</Typography>
-                    </>
-                  )}
-                </Box>
-              </Box>
-              <Box
-                mt={2}
-                width={1}
-                display='flex'
-                justifyContent='space-between'
-              >
-                <Box display='flex' alignItems='center'>
+    <>
+      <Box
+        width='100%'
+        p={2}
+        display='flex'
+        flexDirection='row'
+        flexWrap='wrap'
+        borderTop='1px solid #444444'
+        alignItems='center'
+        justifyContent={stakingInfo?.ended ? 'flex-end' : 'space-between'}
+      >
+        {stakingInfo && (
+          <>
+            {isMobile && (
+              <>
+                <Box
+                  mt={2}
+                  width={1}
+                  display='flex'
+                  justifyContent='space-between'
+                >
                   <Typography variant='body2' color='textSecondary'>
-                    APY
+                    TVL
                   </Typography>
-                  <Box ml={0.5} height={16}>
-                    <img src={CircleInfoIcon} alt={'arrow up'} />
+                  <Typography variant='body2'>{tvl}</Typography>
+                </Box>
+                <Box
+                  mt={2}
+                  width={1}
+                  display='flex'
+                  justifyContent='space-between'
+                >
+                  <Typography variant='body2' color='textSecondary'>
+                    Rewards
+                  </Typography>
+                  <Box textAlign='right'>
+                    <Typography variant='body2'>
+                      ${(isLPFarm ? lpRewards : dualRewards).toLocaleString()} /
+                      day
+                    </Typography>
+                    {isLPFarm ? (
+                      <Typography variant='body2'>{lpPoolRate}</Typography>
+                    ) : (
+                      <>
+                        <Typography variant='body2'>{dualPoolRateA}</Typography>
+                        <Typography variant='body2'>{dualPoolRateB}</Typography>
+                      </>
+                    )}
                   </Box>
                 </Box>
-                <Box color={palette.success.main}>
-                  <Typography variant='body2'>{apyWithFee}%</Typography>
-                </Box>
-              </Box>
-            </>
-          )}
-          {!stakingInfo.ended && (
-            <Box className={classes.buttonWrapper} mt={isMobile ? 2 : 0}>
-              <Box display='flex' justifyContent='space-between'>
-                <Typography variant='body2'>In Wallet:</Typography>
                 <Box
+                  mt={2}
+                  width={1}
                   display='flex'
-                  flexDirection='column'
-                  alignItems='flex-end'
-                  justifyContent='flex-start'
+                  justifyContent='space-between'
                 >
-                  <Typography variant='body2'>
-                    {formatTokenAmount(userLiquidityUnstaked)} LP{' '}
-                    <span>({getUSDString(stakedAmounts?.unStakedUSD)})</span>
-                  </Typography>
-                  <Link
-                    to={`/pools?currency0=${getTokenAddress(
-                      token0,
-                    )}&currency1=${getTokenAddress(token1)}`}
-                    style={{ color: palette.primary.main }}
+                  <Box display='flex' alignItems='center'>
+                    <Typography variant='body2' color='textSecondary'>
+                      APY
+                    </Typography>
+                    <Box ml={0.5} height={16}>
+                      <img src={CircleInfoIcon} alt={'arrow up'} />
+                    </Box>
+                  </Box>
+                  <Box color={palette.success.main}>
+                    <Typography variant='body2'>{apyWithFee}%</Typography>
+                  </Box>
+                </Box>
+              </>
+            )}
+            {!stakingInfo.ended && (
+              <Box className={classes.buttonWrapper} mt={isMobile ? 2 : 0}>
+                <Box display='flex' justifyContent='space-between'>
+                  <Typography variant='body2'>In Wallet:</Typography>
+                  <Box
+                    display='flex'
+                    flexDirection='column'
+                    alignItems='flex-end'
+                    justifyContent='flex-start'
                   >
-                    Get {currency0?.symbol} / {currency1?.symbol} LP
-                  </Link>
+                    <Typography variant='body2'>
+                      {formatTokenAmount(userLiquidityUnstaked)} LP{' '}
+                      <span>({getUSDString(stakedAmounts?.unStakedUSD)})</span>
+                    </Typography>
+                    <Link
+                      to={`/pools?currency0=${getTokenAddress(
+                        token0,
+                      )}&currency1=${getTokenAddress(token1)}`}
+                      style={{ color: palette.primary.main }}
+                    >
+                      Get {currency0?.symbol} / {currency1?.symbol} LP
+                    </Link>
+                  </Box>
+                </Box>
+                <Box className={classes.inputVal} mb={2} mt={2} p={2}>
+                  <NumericalInput
+                    placeholder='0.00'
+                    value={stakeAmount}
+                    fontSize={16}
+                    onUserInput={(value) => {
+                      setStakeAmount(value);
+                    }}
+                  />
+                  <Typography
+                    variant='body2'
+                    style={{
+                      color:
+                        userLiquidityUnstaked &&
+                        userLiquidityUnstaked.greaterThan('0')
+                          ? palette.primary.main
+                          : palette.text.hint,
+                    }}
+                    onClick={() => {
+                      if (
+                        userLiquidityUnstaked &&
+                        userLiquidityUnstaked.greaterThan('0')
+                      ) {
+                        setStakeAmount(userLiquidityUnstaked.toExact());
+                      } else {
+                        setStakeAmount('');
+                      }
+                    }}
+                  >
+                    MAX
+                  </Typography>
+                </Box>
+                <Box
+                  className={
+                    !approving &&
+                    !attemptStaking &&
+                    Number(stakeAmount) > 0 &&
+                    Number(stakeAmount) <=
+                      getExactTokenAmount(userLiquidityUnstaked)
+                      ? classes.buttonClaim
+                      : classes.buttonToken
+                  }
+                  mt={2}
+                  p={2}
+                  onClick={async () => {
+                    if (
+                      !approving &&
+                      !attemptStaking &&
+                      Number(stakeAmount) > 0 &&
+                      Number(stakeAmount) <=
+                        getExactTokenAmount(userLiquidityUnstaked)
+                    ) {
+                      if (approval === ApprovalState.APPROVED) {
+                        onStake();
+                      } else {
+                        onAttemptToApprove();
+                      }
+                    }
+                  }}
+                >
+                  <Typography variant='body1'>
+                    {attemptStaking
+                      ? 'Staking LP Tokens...'
+                      : approval === ApprovalState.APPROVED
+                      ? 'Stake LP Tokens'
+                      : approving
+                      ? 'Approving...'
+                      : 'Approve'}
+                  </Typography>
                 </Box>
               </Box>
-              <Box className={classes.inputVal} mb={2} mt={2} p={2}>
+            )}
+            <Box className={classes.buttonWrapper} mx={isMobile ? 0 : 2} my={2}>
+              <Box display='flex' justifyContent='space-between'>
+                <Typography variant='body2'>My deposits:</Typography>
+                <Typography variant='body2'>
+                  {formatTokenAmount(stakingInfo.stakedAmount)} LP{' '}
+                  <span>({getUSDString(stakedAmounts?.myStakedUSD)})</span>
+                </Typography>
+              </Box>
+              <Box className={classes.inputVal} mb={2} mt={4.5} p={2}>
                 <NumericalInput
                   placeholder='0.00'
-                  value={stakeAmount}
+                  value={unstakeAmount}
                   fontSize={16}
                   onUserInput={(value) => {
-                    setStakeAmount(value);
+                    setUnStakeAmount(value);
                   }}
                 />
                 <Typography
                   variant='body2'
                   style={{
                     color:
-                      userLiquidityUnstaked &&
-                      userLiquidityUnstaked.greaterThan('0')
+                      stakingInfo.stakedAmount &&
+                      stakingInfo.stakedAmount.greaterThan('0')
                         ? palette.primary.main
                         : palette.text.hint,
                   }}
                   onClick={() => {
                     if (
-                      userLiquidityUnstaked &&
-                      userLiquidityUnstaked.greaterThan('0')
+                      stakingInfo.stakedAmount &&
+                      stakingInfo.stakedAmount.greaterThan('0')
                     ) {
-                      setStakeAmount(userLiquidityUnstaked.toExact());
+                      setUnStakeAmount(stakingInfo.stakedAmount.toExact());
                     } else {
-                      setStakeAmount('');
+                      setUnStakeAmount('');
                     }
                   }}
                 >
@@ -405,193 +493,119 @@ const FarmCardDetails: React.FC<{
               </Box>
               <Box
                 className={
-                  !approving &&
-                  !attemptStaking &&
-                  Number(stakeAmount) > 0 &&
-                  Number(stakeAmount) <=
-                    getExactTokenAmount(userLiquidityUnstaked)
+                  !attemptUnstaking &&
+                  Number(unstakeAmount) > 0 &&
+                  Number(unstakeAmount) <=
+                    getExactTokenAmount(stakingInfo.stakedAmount)
                     ? classes.buttonClaim
                     : classes.buttonToken
                 }
                 mt={2}
                 p={2}
-                onClick={async () => {
+                onClick={() => {
                   if (
-                    !approving &&
-                    !attemptStaking &&
-                    Number(stakeAmount) > 0 &&
-                    Number(stakeAmount) <=
-                      getExactTokenAmount(userLiquidityUnstaked)
+                    !attemptUnstaking &&
+                    Number(unstakeAmount) > 0 &&
+                    Number(unstakeAmount) <=
+                      getExactTokenAmount(stakingInfo.stakedAmount)
                   ) {
-                    if (approval === ApprovalState.APPROVED) {
-                      onStake();
-                    } else {
-                      onAttemptToApprove();
-                    }
+                    onWithdraw();
                   }
                 }}
               >
                 <Typography variant='body1'>
-                  {attemptStaking
-                    ? 'Staking LP Tokens...'
-                    : approval === ApprovalState.APPROVED
-                    ? 'Stake LP Tokens'
-                    : approving
-                    ? 'Approving...'
-                    : 'Approve'}
+                  {attemptUnstaking
+                    ? 'Unstaking LP Tokens...'
+                    : 'Unstake LP Tokens'}
                 </Typography>
               </Box>
             </Box>
-          )}
-          <Box className={classes.buttonWrapper} mx={isMobile ? 0 : 2} my={2}>
-            <Box display='flex' justifyContent='space-between'>
-              <Typography variant='body2'>My deposits:</Typography>
-              <Typography variant='body2'>
-                {formatTokenAmount(stakingInfo.stakedAmount)} LP{' '}
-                <span>({getUSDString(stakedAmounts?.myStakedUSD)})</span>
-              </Typography>
-            </Box>
-            <Box className={classes.inputVal} mb={2} mt={4.5} p={2}>
-              <NumericalInput
-                placeholder='0.00'
-                value={unstakeAmount}
-                fontSize={16}
-                onUserInput={(value) => {
-                  setUnStakeAmount(value);
-                }}
-              />
-              <Typography
-                variant='body2'
-                style={{
-                  color:
-                    stakingInfo.stakedAmount &&
-                    stakingInfo.stakedAmount.greaterThan('0')
-                      ? palette.primary.main
-                      : palette.text.hint,
-                }}
-                onClick={() => {
-                  if (
-                    stakingInfo.stakedAmount &&
-                    stakingInfo.stakedAmount.greaterThan('0')
-                  ) {
-                    setUnStakeAmount(stakingInfo.stakedAmount.toExact());
-                  } else {
-                    setUnStakeAmount('');
-                  }
-                }}
+            <Box className={classes.buttonWrapper}>
+              <Box
+                display='flex'
+                flexDirection='column'
+                alignItems='center'
+                justifyContent='space-between'
               >
-                MAX
-              </Typography>
-            </Box>
-            <Box
-              className={
-                !attemptUnstaking &&
-                Number(unstakeAmount) > 0 &&
-                Number(unstakeAmount) <=
-                  getExactTokenAmount(stakingInfo.stakedAmount)
-                  ? classes.buttonClaim
-                  : classes.buttonToken
-              }
-              mt={2}
-              p={2}
-              onClick={() => {
-                if (
-                  !attemptUnstaking &&
-                  Number(unstakeAmount) > 0 &&
-                  Number(unstakeAmount) <=
-                    getExactTokenAmount(stakingInfo.stakedAmount)
-                ) {
-                  onWithdraw();
-                }
-              }}
-            >
-              <Typography variant='body1'>
-                {attemptUnstaking
-                  ? 'Unstaking LP Tokens...'
-                  : 'Unstake LP Tokens'}
-              </Typography>
-            </Box>
-          </Box>
-          <Box className={classes.buttonWrapper}>
-            <Box
-              display='flex'
-              flexDirection='column'
-              alignItems='center'
-              justifyContent='space-between'
-            >
-              <Box mb={1}>
-                <Typography variant='body2'>Unclaimed Rewards:</Typography>
+                <Box mb={1}>
+                  <Typography variant='body2'>Unclaimed Rewards:</Typography>
+                </Box>
+                {isLPFarm ? (
+                  <>
+                    <Box mb={1}>
+                      <CurrencyLogo currency={lpStakingInfo.rewardToken} />
+                    </Box>
+                    <Box mb={1} textAlign='center'>
+                      <Typography variant='body1' color='textSecondary'>
+                        {formatTokenAmount(lpStakingInfo.earnedAmount)}
+                        <span>&nbsp;{lpStakingInfo.rewardToken.symbol}</span>
+                      </Typography>
+                      <Typography variant='body2'>{earnedUSDStr}</Typography>
+                    </Box>
+                  </>
+                ) : (
+                  <>
+                    <Box mb={1} display='flex'>
+                      <CurrencyLogo
+                        currency={unwrappedToken(dualStakingInfo.rewardTokenA)}
+                      />
+                      <CurrencyLogo
+                        currency={unwrappedToken(dualStakingInfo.rewardTokenB)}
+                      />
+                    </Box>
+                    <Box mb={1} textAlign='center'>
+                      <Typography variant='body1'>{earnedUSDStr}</Typography>
+                      <Typography variant='body1' color='textSecondary'>
+                        {formatTokenAmount(dualStakingInfo.earnedAmountA)}
+                        <span>&nbsp;{dualStakingInfo.rewardTokenA.symbol}</span>
+                      </Typography>
+                      <Typography variant='body1' color='textSecondary'>
+                        {formatTokenAmount(dualStakingInfo.earnedAmountB)}
+                        <span>&nbsp;{dualStakingInfo.rewardTokenB.symbol}</span>
+                      </Typography>
+                    </Box>
+                  </>
+                )}
               </Box>
-              {isLPFarm ? (
-                <>
-                  <Box mb={1}>
-                    <CurrencyLogo currency={lpStakingInfo.rewardToken} />
-                  </Box>
-                  <Box mb={1} textAlign='center'>
-                    <Typography variant='body1' color='textSecondary'>
-                      {formatTokenAmount(lpStakingInfo.earnedAmount)}
-                      <span>&nbsp;{lpStakingInfo.rewardToken.symbol}</span>
-                    </Typography>
-                    <Typography variant='body2'>{earnedUSDStr}</Typography>
-                  </Box>
-                </>
-              ) : (
-                <>
-                  <Box mb={1} display='flex'>
-                    <CurrencyLogo
-                      currency={unwrappedToken(dualStakingInfo.rewardTokenA)}
-                    />
-                    <CurrencyLogo
-                      currency={unwrappedToken(dualStakingInfo.rewardTokenB)}
-                    />
-                  </Box>
-                  <Box mb={1} textAlign='center'>
-                    <Typography variant='body1'>{earnedUSDStr}</Typography>
-                    <Typography variant='body1' color='textSecondary'>
-                      {formatTokenAmount(dualStakingInfo.earnedAmountA)}
-                      <span>&nbsp;{dualStakingInfo.rewardTokenA.symbol}</span>
-                    </Typography>
-                    <Typography variant='body1' color='textSecondary'>
-                      {formatTokenAmount(dualStakingInfo.earnedAmountB)}
-                      <span>&nbsp;{dualStakingInfo.rewardTokenB.symbol}</span>
-                    </Typography>
-                  </Box>
-                </>
-              )}
-            </Box>
-            <Box
-              className={
-                !attemptClaiming &&
-                (isLPFarm
-                  ? lpStakingInfo.earnedAmount &&
-                    lpStakingInfo.earnedAmount.greaterThan('0')
-                  : dualStakingInfo.earnedAmountA &&
-                    dualStakingInfo.earnedAmountA.greaterThan('0'))
-                  ? classes.buttonClaim
-                  : classes.buttonToken
-              }
-              p={2}
-              onClick={() => {
-                if (
+              <Box
+                className={
                   !attemptClaiming &&
                   (isLPFarm
                     ? lpStakingInfo.earnedAmount &&
                       lpStakingInfo.earnedAmount.greaterThan('0')
                     : dualStakingInfo.earnedAmountA &&
                       dualStakingInfo.earnedAmountA.greaterThan('0'))
-                ) {
-                  onClaimReward();
+                    ? classes.buttonClaim
+                    : classes.buttonToken
                 }
-              }}
-            >
-              <Typography variant='body1'>
-                {attemptClaiming ? 'Claiming...' : 'Claim'}
-              </Typography>
+                p={2}
+                onClick={() => {
+                  if (
+                    !attemptClaiming &&
+                    (isLPFarm
+                      ? lpStakingInfo.earnedAmount &&
+                        lpStakingInfo.earnedAmount.greaterThan('0')
+                      : dualStakingInfo.earnedAmountA &&
+                        dualStakingInfo.earnedAmountA.greaterThan('0'))
+                  ) {
+                    onClaimReward();
+                  }
+                }}
+              >
+                <Typography variant='body1'>
+                  {attemptClaiming ? 'Claiming...' : 'Claim'}
+                </Typography>
+              </Box>
             </Box>
-          </Box>
-        </>
-      )}
-    </Box>
+          </>
+        )}
+      </Box>
+      <Box className={classes.dailyRateWrapper}>
+        <Typography variant='body2' color='textSecondary'>
+          Your Rate:
+        </Typography>
+      </Box>
+    </>
   );
 };
 
