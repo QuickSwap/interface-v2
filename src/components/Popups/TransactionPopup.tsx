@@ -75,7 +75,7 @@ const TransactionPopup: React.FC<TransactionPopupProps> = ({
           <a
             href={getEtherscanLink(chainId, hash, 'transaction')}
             target='_blank'
-            rel='noreferrer'
+            rel='noopener noreferrer'
           >
             <ArrowTopRight />
           </a>

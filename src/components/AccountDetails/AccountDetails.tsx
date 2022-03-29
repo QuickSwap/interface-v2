@@ -154,7 +154,7 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
                 )
               }
               target='_blank'
-              rel='noreferrer'
+              rel='noopener noreferrer'
             >
               <LinkIcon size={16} />
               <Typography variant='body2'>View on Block Explorer</Typography>

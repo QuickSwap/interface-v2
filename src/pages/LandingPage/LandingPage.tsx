@@ -259,7 +259,12 @@ const LandingPage: React.FC = () => {
       </Box>
       <Box className={classes.smallCommunityContainer}>
         {socialicons.map((val, ind) => (
-          <a href={val.link} target='_blank' key={ind} rel='noreferrer'>
+          <a
+            href={val.link}
+            target='_blank'
+            key={ind}
+            rel='noopener noreferrer'
+          >
             <Box display='flex' mx={1.5}>
               {val.icon}
             </Box>
@@ -327,7 +332,7 @@ const LandingPage: React.FC = () => {
         <Box className='socialContent'>
           {socialicons.map((val, ind) => (
             <Box key={ind}>
-              <a href={val.link} target='_blank' rel='noreferrer'>
+              <a href={val.link} target='_blank' rel='noopener noreferrer'>
                 {val.icon}
                 <Typography>{val.title}</Typography>
               </a>

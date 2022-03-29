@@ -266,7 +266,7 @@ const FullPositionCard: React.FC<PositionCardProps> = ({ pair }) => {
               style={{ width: '100%', textAlign: 'center' }}
               href={`https://info.quickswap.exchange/account/${account}`}
               target='_blank'
-              rel='noreferrer'
+              rel='noopener noreferrer'
             >
               View accrued fees and analytics
               <span style={{ fontSize: '11px' }}>↗</span>

@@ -140,7 +140,7 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({ data }) => {
                 'transaction',
               )}
               target='_blank'
-              rel='noreferrer'
+              rel='noopener noreferrer'
               style={{ textDecoration: 'none' }}
             >
               <Typography
@@ -185,7 +185,7 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({ data }) => {
                 'transaction',
               )}
               target='_blank'
-              rel='noreferrer'
+              rel='noopener noreferrer'
               style={{ textDecoration: 'none' }}
             >
               <Typography
@@ -218,7 +218,7 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({ data }) => {
           <a
             href={getEtherscanLink(chainId, txn.transaction.id, 'transaction')}
             target='_blank'
-            rel='noreferrer'
+            rel='noopener noreferrer'
             style={{ textDecoration: 'none' }}
           >
             <Typography variant='body1' style={{ color: palette.primary.main }}>
@@ -257,7 +257,7 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({ data }) => {
           <a
             href={getEtherscanLink(chainId, txn.transaction.id, 'transaction')}
             target='_blank'
-            rel='noreferrer'
+            rel='noopener noreferrer'
             style={{ textDecoration: 'none' }}
           >
             <Typography variant='body1' style={{ color: palette.primary.main }}>

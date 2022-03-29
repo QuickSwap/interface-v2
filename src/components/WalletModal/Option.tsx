@@ -94,7 +94,7 @@ const Option: React.FC<OptionProps> = ({
       <a
         href={link}
         target='_blank'
-        rel='noreferrer'
+        rel='noopener noreferrer'
         className={classes.optionLink}
       >
         {content}
