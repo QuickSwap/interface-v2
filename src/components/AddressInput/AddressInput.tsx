@@ -57,7 +57,7 @@ const AddressInput: React.FC<AddressInputProps> = ({
           <a
             href={getEtherscanLink(chainId, name ?? address, 'address')}
             target='_blank'
-            rel='noreferrer'
+            rel='noopener noreferrer'
           >
             (View on Block Explorer)
           </a>
