@@ -75,6 +75,9 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     },
   },
   dailyRateWrapper: {
+    display: 'flex',
+    alignItems: 'center',
+    flexWrap: 'wrap',
     background: palette.secondary.contrastText,
     width: '100%',
     marginBottom: 16,
@@ -600,11 +603,79 @@ const FarmCardDetails: React.FC<{
           </>
         )}
       </Box>
-      <Box className={classes.dailyRateWrapper}>
-        <Typography variant='body2' color='textSecondary'>
-          Your Rate:
-        </Typography>
-      </Box>
+      {(isLPFarm
+        ? lpStakingInfo.rewardRate
+        : dualStakingInfo.rewardRateA
+      )?.greaterThan('0') && (
+        <Box className={classes.dailyRateWrapper}>
+          <Box
+            display='flex'
+            alignItems='center'
+            justifyContent={isMobile ? 'space-between' : 'flex-start'}
+            mr={isMobile ? 0 : 1.5}
+            width={isMobile ? 1 : 'auto'}
+            mb={isMobile ? 1 : 0}
+            flexWrap='wrap'
+          >
+            <Box display='flex' mr={1}>
+              <Typography variant='body2' color='textSecondary'>
+                Your {!isLPFarm && dualStakingInfo.rewardTokenA.symbol} Rate:
+              </Typography>
+            </Box>
+            <Typography variant='body2' color='textPrimary'>
+              {(isLPFarm
+                ? lpStakingInfo.rewardRate
+                : dualStakingInfo.rewardRateA
+              )
+                ?.multiply(`${60 * 60 * 24}`)
+                ?.toSignificant(4, { groupSeparator: ',' })}{' '}
+              {isLPFarm
+                ? lpStakingInfo.rewardToken.symbol
+                : dualStakingInfo.rewardTokenA.symbol}{' '}
+              / day
+            </Typography>
+          </Box>
+          {!isLPFarm && (
+            <Box
+              display='flex'
+              alignItems='center'
+              justifyContent={isMobile ? 'space-between' : 'flex-start'}
+              mr={isMobile ? 0 : 1.5}
+              width={isMobile ? 1 : 'auto'}
+              mb={isMobile ? 1 : 0}
+              flexWrap='wrap'
+            >
+              <Box display='flex' mr={1}>
+                <Typography variant='body2' color='textSecondary'>
+                  Your {dualStakingInfo.rewardTokenB.symbol} Rate:
+                </Typography>
+              </Box>
+              <Typography variant='body2' color='textPrimary'>
+                {dualStakingInfo.rewardRateB
+                  ?.multiply(`${60 * 60 * 24}`)
+                  ?.toSignificant(4, { groupSeparator: ',' })}{' '}
+                {dualStakingInfo.rewardTokenB.symbol} / day
+              </Typography>
+            </Box>
+          )}
+          <Box
+            display='flex'
+            justifyContent={isMobile ? 'space-between' : 'flex-start'}
+            alignItems='center'
+            width={isMobile ? 1 : 'auto'}
+            flexWrap='wrap'
+          >
+            <Box display='flex' mr={1}>
+              <Typography variant='body2' color='textSecondary'>
+                Your Fees:
+              </Typography>
+            </Box>
+            <Typography variant='body2' color='textPrimary'>
+              ${stakingInfo.accountFee?.toFixed(6)} / day
+            </Typography>
+          </Box>
+        </Box>
+      )}
     </>
   );
 };

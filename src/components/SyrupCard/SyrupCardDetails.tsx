@@ -36,12 +36,23 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       color: palette.text.primary,
     },
   },
+  dailyRateWrapper: {
+    display: 'flex',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    background: palette.secondary.contrastText,
+    width: '100%',
+    marginTop: 16,
+    padding: '8px 16px',
+    borderRadius: 10,
+  },
 }));
 
 const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
   syrup,
   dQUICKAPY,
 }) => {
+  const syrupCurrency = unwrappedToken(syrup.token);
   const { palette, breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const [attemptingClaim, setAttemptingClaim] = useState(false);
@@ -362,6 +373,29 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
                 </Box>
               )}
             </Box>
+            {syrup.rewardRate?.greaterThan('0') && (
+              <Box className={classes.dailyRateWrapper}>
+                <Box
+                  display='flex'
+                  alignItems='center'
+                  justifyContent={isMobile ? 'space-between' : 'flex-start'}
+                  width={isMobile ? 1 : 'auto'}
+                  flexWrap='wrap'
+                >
+                  <Box display='flex' mr={1}>
+                    <Typography variant='body2' color='textSecondary'>
+                      Your rate:
+                    </Typography>
+                  </Box>
+                  <Typography variant='body2' color='textPrimary'>
+                    {syrup.rewardRate
+                      ?.multiply(`${60 * 60 * 24}`)
+                      ?.toSignificant(4, { groupSeparator: ',' })}{' '}
+                    {syrupCurrency.symbol} / day
+                  </Typography>
+                </Box>
+              </Box>
+            )}
           </Box>
         </>
       )}

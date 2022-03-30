@@ -24,6 +24,7 @@ import {
 } from 'constants/abis/staking-rewards';
 import { useActiveWeb3React } from 'hooks';
 import {
+  CallState,
   NEVER_RELOAD,
   useMultipleContractSingleData,
   useSingleCallResult,
@@ -47,7 +48,15 @@ import {
   returnTokenFromKey,
 } from 'utils';
 
-import { SyrupInfo, LairInfo, StakingInfo, DualStakingInfo } from 'types';
+import {
+  SyrupInfo,
+  LairInfo,
+  StakingInfo,
+  DualStakingInfo,
+  CommonStakingInfo,
+  StakingBasic,
+  DualStakingBasic,
+} from 'types';
 
 const web3 = new Web3('https://polygon-rpc.com/');
 
@@ -742,6 +751,46 @@ function getSearchFiltered(info: any, search: string) {
   }
 }
 
+export function getStakingFees(
+  stakingInfo: StakingBasic | DualStakingBasic,
+  balanceState?: CallState,
+  totalSupplyState?: CallState,
+) {
+  let oneYearFeeAPY = 0;
+  let oneDayFee = 0;
+  let accountFee = 0;
+  if (pairs !== undefined) {
+    oneYearFeeAPY = pairs[stakingInfo.pair]?.oneDayVolumeUSD;
+
+    if (
+      oneYearFeeAPY &&
+      balanceState &&
+      balanceState.result &&
+      balanceState.result[0] &&
+      totalSupplyState &&
+      totalSupplyState.result &&
+      totalSupplyState.result[0]
+    ) {
+      const totalSupply = web3.utils.toWei(
+        pairs[stakingInfo.pair]?.totalSupply,
+        'ether',
+      );
+      const ratio =
+        Number(totalSupplyState.result[0].toString()) / Number(totalSupply);
+      const myRatio =
+        Number(balanceState.result[0].toString()) /
+        Number(totalSupplyState.result[0].toString());
+      oneDayFee = oneYearFeeAPY * GlobalConst.utils.FEEPERCENT * ratio;
+      accountFee = oneDayFee * myRatio;
+      oneYearFeeAPY = getOneYearFee(
+        oneYearFeeAPY,
+        pairs[stakingInfo.pair]?.reserveUSD,
+      );
+    }
+  }
+  return { oneYearFeeAPY, oneDayFee, accountFee };
+}
+
 // gets the dual rewards staking info from the network for the active chain id
 export function useDualStakingInfo(
   pairToFilterBy?: Pair | null,
@@ -923,6 +972,12 @@ export function useDualStakingInfo(
             totalRewardRateB01,
           );
 
+          const { oneDayFee, accountFee } = getStakingFees(
+            stakingInfo,
+            balanceState,
+            totalSupplyState,
+          );
+
           let valueOfTotalStakedAmountInBaseToken: TokenAmount | undefined;
 
           const [, stakingTokenPair] = stakingPairs[index];
@@ -1000,6 +1055,8 @@ export function useDualStakingInfo(
             totalSupply,
             usdPrice,
             stakingTokenPair,
+            oneDayFee,
+            accountFee,
           });
         }
         return memo;
@@ -1238,40 +1295,11 @@ export function useStakingInfo(
             totalRewardRate01,
           );
 
-          let oneYearFeeAPY = 0;
-          let oneDayFee = 0;
-          let accountFee = 0;
-          if (pairs !== undefined) {
-            oneYearFeeAPY = pairs[stakingInfo.pair]?.oneDayVolumeUSD;
-
-            if (
-              oneYearFeeAPY &&
-              balanceState &&
-              balanceState.result &&
-              balanceState.result[0] &&
-              totalSupplyState &&
-              totalSupplyState.result &&
-              totalSupplyState.result[0]
-            ) {
-              const totalSupply = web3.utils.toWei(
-                pairs[stakingInfo.pair]?.totalSupply,
-                'ether',
-              );
-              const ratio =
-                Number(totalSupplyState.result[0].toString()) /
-                Number(totalSupply);
-              const myRatio =
-                Number(balanceState.result[0].toString()) /
-                Number(totalSupplyState.result[0].toString());
-              oneDayFee = oneYearFeeAPY * GlobalConst.utils.FEEPERCENT * ratio;
-              accountFee = oneDayFee * myRatio;
-              oneYearFeeAPY = getOneYearFee(
-                oneYearFeeAPY,
-                pairs[stakingInfo.pair]?.reserveUSD,
-              );
-              //console.log(info[index].pair, oneYearFeeAPY);
-            }
-          }
+          const { oneYearFeeAPY, oneDayFee, accountFee } = getStakingFees(
+            stakingInfo,
+            balanceState,
+            totalSupplyState,
+          );
 
           let valueOfTotalStakedAmountInBaseToken: TokenAmount | undefined;
 
