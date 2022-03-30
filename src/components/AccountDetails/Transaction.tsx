@@ -53,7 +53,7 @@ const Transaction: React.FC<TransactionProps> = ({ hash }) => {
         className={classes.transactionStatusText}
         href={getEtherscanLink(chainId, hash, 'transaction')}
         target='_blank'
-        rel='noreferrer'
+        rel='noopener noreferrer'
       >
         {summary ?? hash} ↗
       </a>

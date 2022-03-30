@@ -345,7 +345,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
               <a
                 href='https://docs.matic.network/docs/develop/wallets/getting-started'
                 target='_blank'
-                rel='noreferrer'
+                rel='noopener noreferrer'
               >
                 <Typography variant='body2'>Learn about Wallets ↗</Typography>
               </a>
