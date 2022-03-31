@@ -83,6 +83,10 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     marginBottom: 16,
     padding: '8px 16px',
     borderRadius: 10,
+    [breakpoints.down('xs')]: {
+      margin: '0 16px 16px',
+      width: 'calc(100% - 32px)',
+    },
   },
 }));
 

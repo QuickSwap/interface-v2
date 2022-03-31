@@ -19,7 +19,7 @@ import {
 } from 'utils';
 import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
 
-const useStyles = makeStyles(({ palette }) => ({
+const useStyles = makeStyles(({ palette, breakpoints }) => ({
   farmLPCard: {
     background: palette.secondary.dark,
     width: '100%',
@@ -29,6 +29,9 @@ const useStyles = makeStyles(({ palette }) => ({
     flexDirection: 'column',
     alignItems: 'center',
     padding: '0 16px',
+    [breakpoints.down('xs')]: {
+      padding: 0,
+    },
   },
   highlightedCard: {
     border: `1px solid ${palette.primary.main}`,
