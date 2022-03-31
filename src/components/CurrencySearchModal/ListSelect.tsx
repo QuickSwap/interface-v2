@@ -263,7 +263,7 @@ const ListRow = memo(function ListRow({
               <a
                 href={`https://tokenlists.org/token-list?url=${listUrl}`}
                 target='_blank'
-                rel='noreferrer'
+                rel='noopener noreferrer'
               >
                 View list
               </a>
