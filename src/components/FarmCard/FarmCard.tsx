@@ -43,8 +43,11 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     borderRadius: 10,
     display: 'flex',
     alignItems: 'center',
-    padding: '16px',
+    padding: '16px 0',
     cursor: 'pointer',
+    [breakpoints.down('xs')]: {
+      padding: 16,
+    },
   },
   farmLPText: {
     fontSize: 14,
