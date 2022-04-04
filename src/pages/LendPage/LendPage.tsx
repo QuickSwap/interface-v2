@@ -8,9 +8,11 @@ import { useActiveWeb3React } from 'hooks';
 import Web3 from 'web3';
 import { MarketSDK, Comptroller, CToken } from 'market-sdk';
 
-const QS_Pool_Comptroller = '0x772EdfEDee10029E98AF15359595bB398950416B';
-const QS_Pool_admin = '0x03c91dEc8Ca1c7932305B4B0c15AB3A1F13f2eE6';
-const fQSUSDC = '0xE6538102EDE880BdDbEe50C2f763Be02DE164010';
+// const QS_Pool_Comptroller = '0x772EdfEDee10029E98AF15359595bB398950416B';
+// const QS_Pool_admin = '0x03c91dEc8Ca1c7932305B4B0c15AB3A1F13f2eE6';
+// const fQSUSDC = '0xE6538102EDE880BdDbEe50C2f763Be02DE164010';
+
+const poolsList = ['0x772EdfEDee10029E98AF15359595bB398950416B'];
 
 const LendPage: React.FC = () => {
   const history = useHistory();
@@ -22,35 +24,13 @@ const LendPage: React.FC = () => {
   useMemo(() => {
     const getPools = async () => {
       const sdk = await MarketSDK.init(web3);
-      const allPools = await sdk.poolDirectory.v1!.getAllPools();
-      setPools(allPools);
-
-      const comptroller = new Comptroller(sdk, QS_Pool_Comptroller);
-
-      const cTokens = (await comptroller.getAllMarkets()).map(
-        (address) => new CToken(sdk, address),
+      const poolDatas = await Promise.all(
+        poolsList.map((comptrollerAddress) => {
+          return sdk.lens.v1?.getPoolSummary(comptrollerAddress);
+        })
       );
-
-      console.log('cTokens??', cTokens);
-
-      const publicPoolData: any = await sdk.lens.v1?.getPublicPoolsWithData();
-
-      // let i = 1;
-      // for (const cToken of cTokens) {
-      //   console.log(`cToken[${i}] address = `, cToken.address); /// 0x5a
-      //   console.log(`cToken[${i}] name = `, await cToken.name()); /// Market Pool X USDC
-      //   console.log(`cToken[${i}] symbol = `, await cToken.symbol()); /// mPXUSDC
-      //   console.log(
-      //     `cToken[${i}] LTV = `,
-      //     (await comptroller.markets(cToken.address)).collateralFactorMantissa, /// 5e17
-      //   );
-      //   console.log(
-      //     `cToken[${i}] reserve factor = `,
-      //     await cToken.reserveFactorMantissa(), /// 5e16
-      //   );
-
-      //   ++i;
-      // }
+      
+      setPools(poolDatas);
     };
     getPools();
   }, [web3]);
