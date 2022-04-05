@@ -1,13 +1,6 @@
-import {
-  CurrencyAmount,
-  JSBI,
-  Token,
-  TokenAmount,
-  Price,
-  Pair,
-} from '@uniswap/sdk';
+import { CurrencyAmount, JSBI, Token, TokenAmount, Pair } from '@uniswap/sdk';
 import dayjs from 'dayjs';
-import { useMemo, useEffect /** , useState */ } from 'react';
+import { useMemo, useEffect } from 'react';
 import { usePairs } from 'data/Reserves';
 
 import { client, healthClient } from 'apollo/client';
@@ -46,6 +39,7 @@ import {
   returnStakingInfo,
   returnSyrupInfo,
   returnTokenFromKey,
+  getCallStateResult,
 } from 'utils';
 
 import {
@@ -53,7 +47,6 @@ import {
   LairInfo,
   StakingInfo,
   DualStakingInfo,
-  CommonStakingInfo,
   StakingBasic,
   DualStakingBasic,
 } from 'types';
@@ -761,25 +754,16 @@ export function getStakingFees(
   let accountFee = 0;
   if (pairs !== undefined) {
     oneYearFeeAPY = pairs[stakingInfo.pair]?.oneDayVolumeUSD;
+    const balanceResult = getCallStateResult(balanceState);
+    const totalSupplyResult = getCallStateResult(totalSupplyState);
 
-    if (
-      oneYearFeeAPY &&
-      balanceState &&
-      balanceState.result &&
-      balanceState.result[0] &&
-      totalSupplyState &&
-      totalSupplyState.result &&
-      totalSupplyState.result[0]
-    ) {
+    if (oneYearFeeAPY && balanceResult && totalSupplyResult) {
       const totalSupply = web3.utils.toWei(
         pairs[stakingInfo.pair]?.totalSupply,
         'ether',
       );
-      const ratio =
-        Number(totalSupplyState.result[0].toString()) / Number(totalSupply);
-      const myRatio =
-        Number(balanceState.result[0].toString()) /
-        Number(totalSupplyState.result[0].toString());
+      const ratio = Number(totalSupplyResult) / Number(totalSupply);
+      const myRatio = Number(balanceResult) / Number(totalSupplyResult);
       oneDayFee = oneYearFeeAPY * GlobalConst.utils.FEEPERCENT * ratio;
       accountFee = oneDayFee * myRatio;
       oneYearFeeAPY = getOneYearFee(

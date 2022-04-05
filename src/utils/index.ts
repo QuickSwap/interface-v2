@@ -2124,3 +2124,8 @@ export function getSyrupLPToken(info: SyrupBasic | SyrupInfo) {
   if (lp && lp !== '') return new Token(137, lp, 18, 'SLP', 'Staked LP');
   return info.stakingToken;
 }
+
+export function getCallStateResult(callState?: CallState) {
+  if (callState && callState.result) return callState.result[0];
+  return;
+}
