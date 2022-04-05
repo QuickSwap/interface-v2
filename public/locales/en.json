@@ -133,5 +133,19 @@
   "depositLPTokensRewards": "Deposit your Liquidity Provider tokens to receive rewards in addition to LP fees.",
   "seeAllPairs": "See all pairs",
   "features": "Features",
-  "joinCommunity": "Join our ever-growing Community"
+  "joinCommunity": "Join our ever-growing Community",
+  "day": "day",
+  "stakingLPTokens": "Staking LP Tokens",
+  "stakeLPTokens": "Stake LP Tokens",
+  "mydeposits": "My deposits",
+  "unstakingLPTokens": "Unstaking LP Tokens",
+  "unstakeLPTokens": "Unstake LP Tokens",
+  "unclaimedRewards": "Unclaimed Rewards",
+  "yourRate": "Your {{ symbol }} Rate",
+  "yourFees": "Your Fees",
+  "dailyRewards": "Daily Rewards",
+  "inwallet": "In wallet",
+  "staked": "Staked",
+  "earned": "Earned",
+  "deposits": "Deposits"
 }

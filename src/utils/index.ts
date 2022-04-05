@@ -1654,8 +1654,12 @@ export function formatAPY(apy: number) {
   }
 }
 
-export function formatNumber(unformatted: number | string, showDigits = 2) {
+export function formatNumber(
+  unformatted: number | string | undefined,
+  showDigits = 2,
+) {
   // get fraction digits for small number
+  if (!unformatted) return 0;
   const absNumber = Math.abs(Number(unformatted));
   if (absNumber > 0) {
     const digits = Math.ceil(Math.log10(1 / absNumber));
@@ -1984,6 +1988,28 @@ export function formatTokenAmount(
     return Number(amountStr).toLocaleString();
   }
   return amount.toSignificant(digits);
+}
+
+export function formatMulDivTokenAmount(
+  amount?: TokenAmount,
+  otherAmount?: number | string,
+  operator = 'mul',
+  digits = 3,
+) {
+  if (!amount || otherAmount === undefined) return '-';
+  if (otherAmount === 0) return 0;
+
+  const exactAmount = Number(amount.toExact());
+
+  let resultAmount;
+  if (operator === 'mul') resultAmount = exactAmount * Number(otherAmount);
+  else resultAmount = exactAmount / Number(otherAmount);
+
+  if (Math.abs(resultAmount) > 1) return resultAmount.toLocaleString();
+
+  if (operator === 'mul')
+    return amount.multiply(otherAmount.toString()).toSignificant(digits);
+  return amount.divide(otherAmount.toString()).toSignificant(digits);
 }
 
 export function getTVLStaking(

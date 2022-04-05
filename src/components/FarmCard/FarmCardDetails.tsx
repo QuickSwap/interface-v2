@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { TransactionResponse } from '@ethersproject/providers';
 import { Box, Typography, useMediaQuery } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { useTranslation } from 'react-i18next';
 import { StakingInfo, DualStakingInfo } from 'types';
 import { TokenAmount, Pair } from '@uniswap/sdk';
 import { unwrappedToken } from 'utils/wrappedCurrency';
@@ -11,6 +12,7 @@ import { useTransactionAdder } from 'state/transactions/hooks';
 import { useTokenBalance } from 'state/wallet/hooks';
 import { CurrencyLogo, NumericalInput } from 'components';
 import { Link } from 'react-router-dom';
+import { GlobalConst } from 'constants/index';
 import { useActiveWeb3React } from 'hooks';
 import useTransactionDeadline from 'hooks/useTransactionDeadline';
 import { useApproveCallback, ApprovalState } from 'hooks/useApproveCallback';
@@ -22,10 +24,12 @@ import {
   getStakedAmountStakingInfo,
   getUSDString,
   getEarnedUSDLPFarm,
+  formatMulDivTokenAmount,
   formatTokenAmount,
   formatAPY,
   getEarnedUSDDualFarm,
   getExactTokenAmount,
+  formatNumber,
 } from 'utils';
 import CircleInfoIcon from 'assets/images/circleinfo.svg';
 
@@ -96,6 +100,7 @@ const FarmCardDetails: React.FC<{
   isLPFarm?: boolean;
 }> = ({ stakingInfo, stakingAPY, isLPFarm }) => {
   const classes = useStyles();
+  const { t } = useTranslation();
   const { palette, breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const [stakeAmount, setStakeAmount] = useState('');
@@ -291,6 +296,29 @@ const FarmCardDetails: React.FC<{
     dualStakingInfo.rewardTokenB,
   );
 
+  const mainRewardRate = isLPFarm
+    ? lpStakingInfo.rewardRate
+    : dualStakingInfo.rewardRateA;
+
+  const stakeEnabled =
+    !approving &&
+    !attemptStaking &&
+    Number(stakeAmount) > 0 &&
+    Number(stakeAmount) <= getExactTokenAmount(userLiquidityUnstaked);
+
+  const unstakeEnabled =
+    !attemptUnstaking &&
+    Number(unstakeAmount) > 0 &&
+    Number(unstakeAmount) <= getExactTokenAmount(stakingInfo.stakedAmount);
+
+  const claimEnabled =
+    !attemptClaiming &&
+    (isLPFarm
+      ? lpStakingInfo.earnedAmount &&
+        lpStakingInfo.earnedAmount.greaterThan('0')
+      : dualStakingInfo.earnedAmountA &&
+        dualStakingInfo.earnedAmountA.greaterThan('0'));
+
   return (
     <>
       <Box
@@ -330,7 +358,7 @@ const FarmCardDetails: React.FC<{
                   <Box textAlign='right'>
                     <Typography variant='body2'>
                       ${(isLPFarm ? lpRewards : dualRewards).toLocaleString()} /
-                      day
+                      {t('day')}
                     </Typography>
                     {isLPFarm ? (
                       <Typography variant='body2'>{lpPoolRate}</Typography>
@@ -365,7 +393,7 @@ const FarmCardDetails: React.FC<{
             {!stakingInfo.ended && (
               <Box className={classes.buttonWrapper} mt={isMobile ? 2 : 0}>
                 <Box display='flex' justifyContent='space-between'>
-                  <Typography variant='body2'>In Wallet:</Typography>
+                  <Typography variant='body2'>{t('inwallet')}:</Typography>
                   <Box
                     display='flex'
                     flexDirection='column'
@@ -420,24 +448,12 @@ const FarmCardDetails: React.FC<{
                 </Box>
                 <Box
                   className={
-                    !approving &&
-                    !attemptStaking &&
-                    Number(stakeAmount) > 0 &&
-                    Number(stakeAmount) <=
-                      getExactTokenAmount(userLiquidityUnstaked)
-                      ? classes.buttonClaim
-                      : classes.buttonToken
+                    stakeEnabled ? classes.buttonClaim : classes.buttonToken
                   }
                   mt={2}
                   p={2}
                   onClick={async () => {
-                    if (
-                      !approving &&
-                      !attemptStaking &&
-                      Number(stakeAmount) > 0 &&
-                      Number(stakeAmount) <=
-                        getExactTokenAmount(userLiquidityUnstaked)
-                    ) {
+                    if (stakeEnabled) {
                       if (approval === ApprovalState.APPROVED) {
                         onStake();
                       } else {
@@ -448,19 +464,19 @@ const FarmCardDetails: React.FC<{
                 >
                   <Typography variant='body1'>
                     {attemptStaking
-                      ? 'Staking LP Tokens...'
+                      ? t('stakingLPTokens')
                       : approval === ApprovalState.APPROVED
-                      ? 'Stake LP Tokens'
+                      ? t('stakeLPTokens')
                       : approving
-                      ? 'Approving...'
-                      : 'Approve'}
+                      ? t('approving')
+                      : t('approve')}
                   </Typography>
                 </Box>
               </Box>
             )}
             <Box className={classes.buttonWrapper} mx={isMobile ? 0 : 2} my={2}>
               <Box display='flex' justifyContent='space-between'>
-                <Typography variant='body2'>My deposits:</Typography>
+                <Typography variant='body2'>{t('mydeposits')}:</Typography>
                 <Typography variant='body2'>
                   {formatTokenAmount(stakingInfo.stakedAmount)} LP{' '}
                   <span>({getUSDString(stakedAmounts?.myStakedUSD)})</span>
@@ -500,30 +516,20 @@ const FarmCardDetails: React.FC<{
               </Box>
               <Box
                 className={
-                  !attemptUnstaking &&
-                  Number(unstakeAmount) > 0 &&
-                  Number(unstakeAmount) <=
-                    getExactTokenAmount(stakingInfo.stakedAmount)
-                    ? classes.buttonClaim
-                    : classes.buttonToken
+                  unstakeEnabled ? classes.buttonClaim : classes.buttonToken
                 }
                 mt={2}
                 p={2}
                 onClick={() => {
-                  if (
-                    !attemptUnstaking &&
-                    Number(unstakeAmount) > 0 &&
-                    Number(unstakeAmount) <=
-                      getExactTokenAmount(stakingInfo.stakedAmount)
-                  ) {
+                  if (unstakeEnabled) {
                     onWithdraw();
                   }
                 }}
               >
                 <Typography variant='body1'>
                   {attemptUnstaking
-                    ? 'Unstaking LP Tokens...'
-                    : 'Unstake LP Tokens'}
+                    ? t('unstakingLPTokens')
+                    : t('unstakeLPTokens')}
                 </Typography>
               </Box>
             </Box>
@@ -535,7 +541,9 @@ const FarmCardDetails: React.FC<{
                 justifyContent='space-between'
               >
                 <Box mb={1}>
-                  <Typography variant='body2'>Unclaimed Rewards:</Typography>
+                  <Typography variant='body2'>
+                    {t('unclaimedRewards')}:
+                  </Typography>
                 </Box>
                 {isLPFarm ? (
                   <>
@@ -576,25 +584,11 @@ const FarmCardDetails: React.FC<{
               </Box>
               <Box
                 className={
-                  !attemptClaiming &&
-                  (isLPFarm
-                    ? lpStakingInfo.earnedAmount &&
-                      lpStakingInfo.earnedAmount.greaterThan('0')
-                    : dualStakingInfo.earnedAmountA &&
-                      dualStakingInfo.earnedAmountA.greaterThan('0'))
-                    ? classes.buttonClaim
-                    : classes.buttonToken
+                  claimEnabled ? classes.buttonClaim : classes.buttonToken
                 }
                 p={2}
                 onClick={() => {
-                  if (
-                    !attemptClaiming &&
-                    (isLPFarm
-                      ? lpStakingInfo.earnedAmount &&
-                        lpStakingInfo.earnedAmount.greaterThan('0')
-                      : dualStakingInfo.earnedAmountA &&
-                        dualStakingInfo.earnedAmountA.greaterThan('0'))
-                  ) {
+                  if (claimEnabled) {
                     onClaimReward();
                   }
                 }}
@@ -607,10 +601,7 @@ const FarmCardDetails: React.FC<{
           </>
         )}
       </Box>
-      {(isLPFarm
-        ? lpStakingInfo.rewardRate
-        : dualStakingInfo.rewardRateA
-      )?.greaterThan('0') && (
+      {mainRewardRate?.greaterThan('0') && (
         <Box className={classes.dailyRateWrapper}>
           <Box
             display='flex'
@@ -623,20 +614,21 @@ const FarmCardDetails: React.FC<{
           >
             <Box display='flex' mr={1}>
               <Typography variant='body2' color='textSecondary'>
-                Your {!isLPFarm && dualStakingInfo.rewardTokenA.symbol} Rate:
+                {t('yourRate', {
+                  symbol: isLPFarm ? '' : dualStakingInfo.rewardTokenA.symbol,
+                })}
+                :
               </Typography>
             </Box>
             <Typography variant='body2' color='textPrimary'>
-              {(isLPFarm
-                ? lpStakingInfo.rewardRate
-                : dualStakingInfo.rewardRateA
-              )
-                ?.multiply(`${60 * 60 * 24}`)
-                ?.toSignificant(4, { groupSeparator: ',' })}{' '}
+              {formatMulDivTokenAmount(
+                mainRewardRate,
+                GlobalConst.utils.ONEDAYSECONDS,
+              )}{' '}
               {isLPFarm
                 ? lpStakingInfo.rewardToken.symbol
                 : dualStakingInfo.rewardTokenA.symbol}{' '}
-              / day
+              / {t('day')}
             </Typography>
           </Box>
           {!isLPFarm && (
@@ -651,14 +643,18 @@ const FarmCardDetails: React.FC<{
             >
               <Box display='flex' mr={1}>
                 <Typography variant='body2' color='textSecondary'>
-                  Your {dualStakingInfo.rewardTokenB.symbol} Rate:
+                  {t('yourRate', {
+                    symbol: dualStakingInfo.rewardTokenB.symbol,
+                  })}
+                  :
                 </Typography>
               </Box>
               <Typography variant='body2' color='textPrimary'>
-                {dualStakingInfo.rewardRateB
-                  ?.multiply(`${60 * 60 * 24}`)
-                  ?.toSignificant(4, { groupSeparator: ',' })}{' '}
-                {dualStakingInfo.rewardTokenB.symbol} / day
+                {formatMulDivTokenAmount(
+                  dualStakingInfo.rewardRateB,
+                  GlobalConst.utils.ONEDAYSECONDS,
+                )}{' '}
+                {dualStakingInfo.rewardTokenB.symbol} / {t('day')}
               </Typography>
             </Box>
           )}
@@ -671,11 +667,11 @@ const FarmCardDetails: React.FC<{
           >
             <Box display='flex' mr={1}>
               <Typography variant='body2' color='textSecondary'>
-                Your Fees:
+                {t('yourFees')}:
               </Typography>
             </Box>
             <Typography variant='body2' color='textPrimary'>
-              ${stakingInfo.accountFee?.toFixed(6)} / day
+              ${formatNumber(stakingInfo.accountFee)} / {t('day')}
             </Typography>
           </Box>
         </Box>
