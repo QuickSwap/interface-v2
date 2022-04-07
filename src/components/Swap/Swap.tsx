@@ -42,6 +42,7 @@ import {
 import { computeTradePriceBreakdown, warningSeverity } from 'utils/prices';
 import { ReactComponent as PriceExchangeIcon } from 'assets/images/PriceExchangeIcon.svg';
 import { ReactComponent as ExchangeIcon } from 'assets/images/ExchangeIcon.svg';
+import useIsAmbireWC from '../../hooks/useIsAmbireWC';
 
 const useStyles = makeStyles(({ palette }) => ({
   exchangeSwap: {
@@ -203,7 +204,10 @@ const Swap: React.FC<{
   const priceImpactSeverity = warningSeverity(priceImpactWithoutFee);
   const isValid = !swapInputError;
 
+  const isAmbireWC = useIsAmbireWC();
+
   const showApproveFlow =
+    !isAmbireWC &&
     !swapInputError &&
     (approval === ApprovalState.NOT_APPROVED ||
       approval === ApprovalState.PENDING ||

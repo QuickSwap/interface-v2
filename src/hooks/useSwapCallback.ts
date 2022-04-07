@@ -1,11 +1,14 @@
 import { BigNumber } from '@ethersproject/bignumber';
 import { Contract } from '@ethersproject/contracts';
+import { MaxUint256 } from '@ethersproject/constants';
 import { TransactionResponse } from '@ethersproject/providers';
 import {
   JSBI,
   Percent,
   Router,
   SwapParameters,
+  Token,
+  TokenAmount,
   Trade,
   TradeType,
 } from '@uniswap/sdk';
@@ -20,10 +23,16 @@ import {
   formatTokenAmount,
 } from 'utils';
 import { useActiveWeb3React } from 'hooks';
-import { useRouterContract } from './useContract';
+import { useRouterContract, useTokenContract } from './useContract';
+import {
+  ApprovalState,
+  useApproveCallbackFromTrade,
+} from './useApproveCallback';
 import useTransactionDeadline from './useTransactionDeadline';
 import useENS from './useENS';
 import { Version } from './useToggledVersion';
+import useIsAmbireWC from './useIsAmbireWC';
+import WalletConnectProvider from '@walletconnect/web3-provider';
 
 export enum SwapCallbackState {
   INVALID,
@@ -34,6 +43,8 @@ export enum SwapCallbackState {
 interface SwapCall {
   contract: Contract;
   parameters: SwapParameters;
+  skipGasEstimation?: boolean;
+  extra?: any;
 }
 
 interface SuccessfulCall {
@@ -66,6 +77,12 @@ function useSwapCallArguments(
     recipientAddressOrName === null ? account : recipientAddress;
   const deadline = useTransactionDeadline();
   const contract = useRouterContract();
+
+  const token = trade?.inputAmount.currency as Token;
+  const tokenContract = useTokenContract(token?.address);
+  const isAmbireWC = useIsAmbireWC();
+
+  const [approvalState] = useApproveCallbackFromTrade(trade, allowedSlippage);
 
   return useMemo(() => {
     const tradeVersion = Version.v2;
@@ -118,16 +135,55 @@ function useSwapCallArguments(
         }
         break;
     }
-    return swapMethods.map((parameters) => ({ parameters, contract }));
+
+    return swapMethods.map((parameters) => {
+      const isToken = trade.inputAmount instanceof TokenAmount;
+
+      if (
+        isAmbireWC &&
+        isToken &&
+        approvalState === ApprovalState.NOT_APPROVED
+      ) {
+        const approveData = tokenContract?.interface?.encodeFunctionData(
+          'approve',
+          [contract.address, MaxUint256],
+        );
+
+        const swapData = contract.interface.encodeFunctionData(
+          parameters.methodName,
+          parameters.args,
+        );
+
+        return {
+          parameters,
+          contract,
+          skipGasEstimation: true,
+          extra: [
+            {
+              to: tokenContract?.address,
+              data: approveData,
+            },
+            {
+              to: contract.address,
+              data: swapData,
+            },
+          ],
+        };
+      }
+      return { parameters, contract };
+    });
   }, [
-    account,
-    allowedSlippage,
-    chainId,
-    deadline,
-    library,
-    recipient,
     trade,
+    recipient,
+    library,
+    account,
+    chainId,
     contract,
+    allowedSlippage,
+    deadline,
+    isAmbireWC,
+    approvalState,
+    tokenContract,
   ]);
 }
 
@@ -153,6 +209,9 @@ export function useSwapCallback(
   );
 
   const addTransaction = useTransactionAdder();
+
+  const isAmbireWC = useIsAmbireWC();
+  const [approvalState] = useApproveCallbackFromTrade(trade, allowedSlippage);
 
   const { address: recipientAddress } = useENS(recipientAddressOrName);
   const recipient =
@@ -195,8 +254,13 @@ export function useSwapCallback(
             const {
               parameters: { methodName, args, value },
               contract,
+              skipGasEstimation,
             } = call;
             const options = !value || isZero(value) ? {} : { value };
+
+            if (skipGasEstimation) {
+              return { call, gasEstimate: BigNumber.from(0) };
+            }
 
             return contract.estimateGas[methodName](...args, options)
               .then((gasEstimate) => {
@@ -266,16 +330,41 @@ export function useSwapCallback(
           call: {
             contract,
             parameters: { methodName, args, value },
+            extra,
           },
           gasEstimate,
         } = successfulEstimation;
 
-        return contract[methodName](...args, {
-          gasLimit: calculateGasMargin(gasEstimate),
-          ...(value && !isZero(value)
-            ? { value, from: account }
-            : { from: account }),
-        })
+        let txResponse;
+
+        if (isAmbireWC && approvalState === ApprovalState.NOT_APPROVED) {
+          const wcProvider = library.provider as WalletConnectProvider;
+          txResponse = new Promise<TransactionResponse>((resolve, reject) => {
+            wcProvider.connector
+              .sendCustomRequest({
+                method: 'ambire_sendBatchTransaction',
+                params: extra,
+              })
+              .then((res) => {
+                const txResponse = {
+                  hash: res,
+                  wait: (confirmations) =>
+                    library.waitForTransaction(res, confirmations),
+                } as TransactionResponse;
+                resolve(txResponse);
+              })
+              .catch(reject);
+          });
+        } else {
+          txResponse = contract[methodName](...args, {
+            gasLimit: calculateGasMargin(gasEstimate),
+            ...(value && !isZero(value)
+              ? { value, from: account }
+              : { from: account }),
+          });
+        }
+
+        return txResponse
           .then((response: TransactionResponse) => {
             const inputSymbol = trade.inputAmount.currency.symbol;
             const outputSymbol = trade.outputAmount.currency.symbol;
@@ -324,6 +413,8 @@ export function useSwapCallback(
     recipient,
     recipientAddressOrName,
     swapCalls,
+    isAmbireWC,
+    approvalState,
     addTransaction,
   ]);
 }
