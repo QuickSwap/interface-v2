@@ -162,7 +162,7 @@ const FarmCardDetails: React.FC<{
         })
         .then(async (response: TransactionResponse) => {
           addTransaction(response, {
-            summary: `Withdraw deposited liquidity`,
+            summary: t('withdrawliquidity'),
           });
           try {
             await response.wait();
@@ -185,7 +185,7 @@ const FarmCardDetails: React.FC<{
         .getReward({ gasLimit: 350000 })
         .then(async (response: TransactionResponse) => {
           addTransaction(response, {
-            summary: `Claim accumulated rewards`,
+            summary: t('claimrewards'),
           });
           try {
             await response.wait();
@@ -233,7 +233,7 @@ const FarmCardDetails: React.FC<{
         })
         .then(async (response: TransactionResponse) => {
           addTransaction(response, {
-            summary: `Deposit liquidity`,
+            summary: t('depositliquidity'),
           });
           try {
             await response.wait();
@@ -247,17 +247,15 @@ const FarmCardDetails: React.FC<{
           console.log(error);
         });
     } else {
-      throw new Error(
-        'Attempting to stake without approval or a signature. Please contact support.',
-      );
+      throw new Error(t('stakewithoutapproval'));
     }
   };
 
   const onAttemptToApprove = async () => {
     if (!pairContract || !library || !deadline)
-      throw new Error('missing dependencies');
+      throw new Error(t('missingdependencies'));
     const liquidityAmount = parsedAmount;
-    if (!liquidityAmount) throw new Error('missing liquidity amount');
+    if (!liquidityAmount) throw new Error(t('missingliquidity'));
     setApproving(true);
     try {
       await approveCallback();
@@ -342,7 +340,7 @@ const FarmCardDetails: React.FC<{
                   justifyContent='space-between'
                 >
                   <Typography variant='body2' color='textSecondary'>
-                    TVL
+                    {t('tvl')}
                   </Typography>
                   <Typography variant='body2'>{tvl}</Typography>
                 </Box>
@@ -353,7 +351,7 @@ const FarmCardDetails: React.FC<{
                   justifyContent='space-between'
                 >
                   <Typography variant='body2' color='textSecondary'>
-                    Rewards
+                    {t('rewards')}
                   </Typography>
                   <Box textAlign='right'>
                     <Typography variant='body2'>
@@ -378,7 +376,7 @@ const FarmCardDetails: React.FC<{
                 >
                   <Box display='flex' alignItems='center'>
                     <Typography variant='body2' color='textSecondary'>
-                      APY
+                      {t('apy')}
                     </Typography>
                     <Box ml={0.5} height={16}>
                       <img src={CircleInfoIcon} alt={'arrow up'} />
@@ -401,7 +399,7 @@ const FarmCardDetails: React.FC<{
                     justifyContent='flex-start'
                   >
                     <Typography variant='body2'>
-                      {formatTokenAmount(userLiquidityUnstaked)} LP{' '}
+                      {formatTokenAmount(userLiquidityUnstaked)} {t('lp')}{' '}
                       <span>({getUSDString(stakedAmounts?.unStakedUSD)})</span>
                     </Typography>
                     <Link
@@ -410,7 +408,8 @@ const FarmCardDetails: React.FC<{
                       )}&currency1=${getTokenAddress(token1)}`}
                       style={{ color: palette.primary.main }}
                     >
-                      Get {currency0?.symbol} / {currency1?.symbol} LP
+                      {t('get')} {currency0?.symbol} / {currency1?.symbol}{' '}
+                      {t('lp')}
                     </Link>
                   </Box>
                 </Box>
@@ -443,7 +442,7 @@ const FarmCardDetails: React.FC<{
                       }
                     }}
                   >
-                    MAX
+                    {t('max')}
                   </Typography>
                 </Box>
                 <Box
@@ -478,7 +477,7 @@ const FarmCardDetails: React.FC<{
               <Box display='flex' justifyContent='space-between'>
                 <Typography variant='body2'>{t('mydeposits')}:</Typography>
                 <Typography variant='body2'>
-                  {formatTokenAmount(stakingInfo.stakedAmount)} LP{' '}
+                  {formatTokenAmount(stakingInfo.stakedAmount)} {t('lp')}{' '}
                   <span>({getUSDString(stakedAmounts?.myStakedUSD)})</span>
                 </Typography>
               </Box>
@@ -511,7 +510,7 @@ const FarmCardDetails: React.FC<{
                     }
                   }}
                 >
-                  MAX
+                  {t('max')}
                 </Typography>
               </Box>
               <Box
@@ -594,7 +593,7 @@ const FarmCardDetails: React.FC<{
                 }}
               >
                 <Typography variant='body1'>
-                  {attemptClaiming ? 'Claiming...' : 'Claim'}
+                  {attemptClaiming ? t('claiming') : t('claim')}
                 </Typography>
               </Box>
             </Box>

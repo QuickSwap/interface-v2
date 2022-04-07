@@ -147,5 +147,19 @@
   "inwallet": "In wallet",
   "staked": "Staked",
   "earned": "Earned",
-  "deposits": "Deposits"
+  "deposits": "Deposits",
+  "withdrawliquidity": "Withdraw deposited liquidity",
+  "claimrewards": "Claim accumulated rewards",
+  "depositliquidity": "Deposit liquidity",
+  "stakewithoutapproval": "Attempting to stake without approval or a signature. Please contact support.",
+  "missingdependencies": "Missing dependencies",
+  "missingliquidity": "Missing liquidity amount",
+  "rewards": "Rewards",
+  "apy": "APY",
+  "tvl": "TVL",
+  "max": "MAX",
+  "lp": "LP",
+  "get": "Get",
+  "claiming": "Claiming",
+  "claim": "Claim"
 }
