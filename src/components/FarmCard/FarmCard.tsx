@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Box, Typography, useMediaQuery } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
+import cx from 'classnames';
 import { DualStakingInfo, StakingInfo } from 'types';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { DoubleCurrencyLogo, CurrencyLogo } from 'components';
@@ -18,7 +19,7 @@ import {
 } from 'utils';
 import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
 
-const useStyles = makeStyles(({ palette }) => ({
+const useStyles = makeStyles(({ palette, breakpoints }) => ({
   farmLPCard: {
     background: palette.secondary.dark,
     width: '100%',
@@ -27,6 +28,14 @@ const useStyles = makeStyles(({ palette }) => ({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
+    padding: '0 16px',
+    [breakpoints.down('xs')]: {
+      padding: 0,
+    },
+  },
+  highlightedCard: {
+    border: `1px solid ${palette.primary.main}`,
+    boxShadow: '0 0 5px 5px rgba(68, 138, 255, 0.3)',
   },
   farmLPCardUp: {
     background: palette.secondary.dark,
@@ -34,8 +43,11 @@ const useStyles = makeStyles(({ palette }) => ({
     borderRadius: 10,
     display: 'flex',
     alignItems: 'center',
-    padding: '16px',
+    padding: '16px 0',
     cursor: 'pointer',
+    [breakpoints.down('xs')]: {
+      padding: 16,
+    },
   },
   farmLPText: {
     fontSize: 14,
@@ -53,6 +65,7 @@ const FarmCard: React.FC<{
   const { palette, breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const [isExpandCard, setExpandCard] = useState(false);
+
   const lpStakingInfo = stakingInfo as StakingInfo;
   const dualStakingInfo = stakingInfo as DualStakingInfo;
 
@@ -116,7 +129,12 @@ const FarmCard: React.FC<{
   );
 
   return (
-    <Box className={classes.farmLPCard}>
+    <Box
+      className={cx(
+        classes.farmLPCard,
+        isExpandCard && classes.highlightedCard,
+      )}
+    >
       <Box
         className={classes.farmLPCardUp}
         onClick={() => setExpandCard(!isExpandCard)}

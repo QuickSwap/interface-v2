@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Box, Typography, Divider, useMediaQuery } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { TransactionResponse } from '@ethersproject/providers';
+import { useTranslation } from 'react-i18next';
 import { SyrupInfo } from 'types';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { useTokenBalance } from 'state/wallet/hooks';
@@ -12,11 +13,17 @@ import {
   useTransactionAdder,
   useTransactionFinalizer,
 } from 'state/transactions/hooks';
-import { formatCompact, formatTokenAmount, getEarnedUSDSyrup } from 'utils';
+import {
+  formatCompact,
+  formatMulDivTokenAmount,
+  formatTokenAmount,
+  getEarnedUSDSyrup,
+} from 'utils';
 import SyrupTimerLabel from './SyrupTimerLabel';
 import CircleInfoIcon from 'assets/images/circleinfo.svg';
 import SyrupAPR from './SyrupAPR';
 import { useUSDCPriceToken } from 'utils/useUSDCPrice';
+import { GlobalConst } from 'constants/index';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   syrupButton: {
@@ -36,13 +43,25 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       color: palette.text.primary,
     },
   },
+  dailyRateWrapper: {
+    display: 'flex',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    background: palette.secondary.contrastText,
+    width: '100%',
+    marginTop: 16,
+    padding: '8px 16px',
+    borderRadius: 10,
+  },
 }));
 
 const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
   syrup,
   dQUICKAPY,
 }) => {
+  const syrupCurrency = unwrappedToken(syrup.token);
   const { palette, breakpoints } = useTheme();
+  const { t } = useTranslation();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const [attemptingClaim, setAttemptingClaim] = useState(false);
   const [attemptingUnstake, setAttemptingUnstake] = useState(false);
@@ -184,7 +203,7 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
                     variant='body2'
                     style={{ color: palette.text.secondary }}
                   >
-                    {syrup.stakingToken.symbol} Deposits:
+                    {syrup.stakingToken.symbol} {t('deposits')}:
                   </Typography>
                   <Typography variant='body2'>{depositAmount}</Typography>
                 </Box>
@@ -193,7 +212,7 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
                     variant='body2'
                     style={{ color: palette.text.secondary }}
                   >
-                    Daily Rewards:
+                    {t('dailyRewards')}:
                   </Typography>
                   <Typography variant='body2'>
                     {syrup.rate >= 1000000
@@ -202,7 +221,7 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
                     {syrup.token.symbol}
                     <span style={{ color: palette.text.secondary }}>
                       {' '}
-                      / day
+                      / {t('day')}
                     </span>
                   </Typography>
                 </Box>
@@ -238,7 +257,7 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
                 variant='body2'
                 style={{ color: palette.text.secondary }}
               >
-                In wallet
+                {t('inwallet')}
               </Typography>
               <Typography variant='body2'>
                 <span style={{ color: palette.text.primary }}>
@@ -268,7 +287,7 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
                 variant='body2'
                 style={{ color: palette.text.secondary }}
               >
-                Staked
+                {t('staked')}
               </Typography>
               <Typography variant='body2'>
                 <span style={{ color: palette.text.primary }}>
@@ -294,7 +313,7 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
                 variant='body2'
                 style={{ color: palette.text.secondary }}
               >
-                Earned {currency?.symbol}
+                {t('earned')} {currency?.symbol}
               </Typography>
               <Box display='flex' alignItems='center'>
                 <CurrencyLogo currency={currency} size='16px' />
@@ -362,6 +381,30 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
                 </Box>
               )}
             </Box>
+            {syrup.rewardRate?.greaterThan('0') && (
+              <Box className={classes.dailyRateWrapper}>
+                <Box
+                  display='flex'
+                  alignItems='center'
+                  justifyContent={isMobile ? 'space-between' : 'flex-start'}
+                  width={isMobile ? 1 : 'auto'}
+                  flexWrap='wrap'
+                >
+                  <Box display='flex' mr={1}>
+                    <Typography variant='body2' color='textSecondary'>
+                      {t('yourRate')}:
+                    </Typography>
+                  </Box>
+                  <Typography variant='body2' color='textPrimary'>
+                    {formatMulDivTokenAmount(
+                      syrup.rewardRate,
+                      GlobalConst.utils.ONEDAYSECONDS,
+                    )}{' '}
+                    {syrupCurrency.symbol} / {t('day')}
+                  </Typography>
+                </Box>
+              </Box>
+            )}
           </Box>
         </>
       )}

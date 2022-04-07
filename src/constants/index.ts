@@ -60,6 +60,7 @@ export const GlobalConst = {
     },
   },
   utils: {
+    ONEDAYSECONDS: 60 * 60 * 24,
     DQUICKFEE: 0.04,
     DQUICKAPR_MULTIPLIER: 0.01,
     ROWSPERPAGE: 10,

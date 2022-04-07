@@ -82,6 +82,7 @@ const FarmPage: React.FC = () => {
         alignItems='flex-start'
         justifyContent='space-between'
         width='100%'
+        mb={2}
       >
         <Box mr={2}>
           <Typography variant='h4'>Farm</Typography>
