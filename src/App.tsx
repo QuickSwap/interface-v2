@@ -13,6 +13,7 @@ const FarmPage = lazy(() => import('./pages/FarmPage'));
 const LandingPage = lazy(() => import('./pages/LandingPage'));
 const PoolsPage = lazy(() => import('./pages/PoolsPage'));
 const SwapPage = lazy(() => import('./pages/SwapPage'));
+const ConvertQUICKPage = lazy(() => import('./pages/ConvertQUICKPage'));
 const AnalyticsTokenDetails = lazy(() =>
   import('./pages/AnalyticsTokenDetails'),
 );
@@ -135,6 +136,11 @@ const App: React.FC = () => {
                     <Route exact path='/dragons'>
                       <PageLayout>
                         <DragonPage />
+                      </PageLayout>
+                    </Route>
+                    <Route exact path='/convert'>
+                      <PageLayout>
+                        <ConvertQUICKPage />
                       </PageLayout>
                     </Route>
                     <Route exact path='/analytics'>
