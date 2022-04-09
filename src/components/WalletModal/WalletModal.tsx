@@ -65,7 +65,14 @@ const WalletModal: React.FC<WalletModalProps> = ({
 }) => {
   const classes = useStyles();
   // important that these are destructed from the account-specific web3-react context
-  const { active, account, connector, activate, error } = useWeb3React();
+  const {
+    active,
+    account,
+    connector,
+    activate,
+    error,
+    deactivate,
+  } = useWeb3React();
 
   const [walletView, setWalletView] = useState(WALLET_VIEWS.ACCOUNT);
 
@@ -85,7 +92,17 @@ const WalletModal: React.FC<WalletModalProps> = ({
     if (account && !previousAccount && walletModalOpen) {
       toggleWalletModal();
     }
-  }, [account, previousAccount, toggleWalletModal, walletModalOpen]);
+    if (!walletModalOpen && error) {
+      deactivate();
+    }
+  }, [
+    account,
+    previousAccount,
+    toggleWalletModal,
+    walletModalOpen,
+    deactivate,
+    error,
+  ]);
 
   // always reset to account view
   useEffect(() => {
