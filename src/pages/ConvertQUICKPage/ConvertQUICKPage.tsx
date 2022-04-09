@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Box, Typography, Button } from '@material-ui/core';
+import { useTranslation } from 'react-i18next';
 import QUICKIcon from 'assets/images/quickIcon.svg';
 import { ReactComponent as QUICKV2Icon } from 'assets/images/QUICKV2.svg';
 import { ArrowForward, ArrowDownward } from '@material-ui/icons';
@@ -37,12 +38,44 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       fontSize: 13,
     },
   },
-  currencyInput: {},
-  maxButton: {},
+  currencyInput: {
+    background: palette.secondary.dark,
+    borderRadius: 10,
+    margin: '8px 0',
+    display: 'flex',
+    alignItems: 'center',
+    height: 63,
+    padding: '0 16px',
+    '& input': {
+      flex: 1,
+    },
+    '& h6': {
+      fontSize: 18,
+    },
+  },
+  maxButton: {
+    background: 'rgba(68, 138, 255, 0.24)',
+    color: palette.primary.main,
+    width: 34,
+    height: 18,
+    borderRadius: 4,
+    fontSize: 11,
+    fontWeight: 600,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  convertButton: {
+    maxWidth: 224,
+    height: 40,
+    width: '100%',
+    borderRadius: 20,
+  },
 }));
 
 const ConvertQUICKPage: React.FC = () => {
   const classes = useStyles();
+  const { t } = useTranslation();
   const [quickAmount, setQUICKAmount] = useState('');
   const [quickV2Amount, setQUICKV2Amount] = useState('');
 
@@ -80,16 +113,18 @@ const ConvertQUICKPage: React.FC = () => {
             <NumericalInput
               placeholder='0.00'
               value={quickAmount}
-              fontSize={16}
+              fontSize={18}
               onUserInput={(value) => {
                 setQUICKAmount(value);
               }}
             />
-            <Box className={classes.maxButton}>MAX</Box>
+            <Box mr={1} className={classes.maxButton}>
+              {t('max')}
+            </Box>
             <Typography variant='h6'>QUICK</Typography>
           </Box>
         </Box>
-        <Box className={classes.convertArrow}>
+        <Box ml={2} className={classes.convertArrow}>
           <ArrowDownward />
         </Box>
         <Box mt={2} mb={4}>
@@ -100,7 +135,7 @@ const ConvertQUICKPage: React.FC = () => {
             <NumericalInput
               placeholder='0.00'
               value={quickV2Amount}
-              fontSize={16}
+              fontSize={18}
               onUserInput={(value) => {
                 setQUICKV2Amount(value);
               }}
@@ -108,7 +143,9 @@ const ConvertQUICKPage: React.FC = () => {
             <Typography variant='h6'>QUICK-v2</Typography>
           </Box>
         </Box>
-        <Button>Convert</Button>
+        <Box display='flex' justifyContent='center'>
+          <Button className={classes.convertButton}>Convert</Button>
+        </Box>
       </Box>
     </Box>
   );
