@@ -39,7 +39,6 @@
   "youAreBuying": "You are buying",
   "itWillCost": "It will cost at most",
   "forAtMost": "for at most",
-  "insufficientBalance": "Insufficient Balance",
   "inputNotValid": "Not a valid input value",
   "differentToken": "Must be different token.",
   "noRecipient": "Enter a wallet address to send to.",
@@ -161,5 +160,12 @@
   "lp": "LP",
   "get": "Get",
   "claiming": "Claiming",
-  "claim": "Claim"
+  "claim": "Claim",
+  "convert": "Convert",
+  "convertQUICK": "Convert your QUICK to QUICK-v2. Lorem ipsum dolor sit amet constracteur amit seiu. You have until 00 JUNE 2024 to convert.",
+  "conversionRate": "Conversion Rate",
+  "yourbalance": "Your balance",
+  "youwillreceive": "You will receive",
+  "insufficientBalance": "Insufficient {{ symbol }} Balance",
+  "enterAmount": "Enter Amount"
 }
