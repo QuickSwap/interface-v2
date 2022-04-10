@@ -417,7 +417,7 @@ const AnalyticsPairDetails: React.FC = () => {
                                 'address',
                               )}
                               target='_blank'
-                              rel='noreferrer'
+                              rel='noopener noreferrer'
                               style={{
                                 color: palette.primary.main,
                                 textDecoration: 'none',

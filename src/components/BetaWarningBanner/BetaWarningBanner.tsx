@@ -39,7 +39,7 @@ const BetaWarningBanner: React.FC = () => {
         <Box className={classes.warningBanner}>
           <AlertTriangle size={20} />
           <Typography variant='caption'>
-            This site is in alpha. By using this software, you understand,
+            This site is in beta. By using this software, you understand,
             acknowledge and accept that Quickswap and/or the underlying software
             are provided “as is” and “as available” basis and without warranties
             or representations of any kind either expressed or implied

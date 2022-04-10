@@ -60,6 +60,7 @@ export const GlobalConst = {
     },
   },
   utils: {
+    ONEDAYSECONDS: 60 * 60 * 24,
     DQUICKFEE: 0.04,
     DQUICKAPR_MULTIPLIER: 0.01,
     ROWSPERPAGE: 10,
@@ -80,7 +81,7 @@ export const GlobalConst = {
     ),
     // the Uniswap Default token list lives here
     DEFAULT_TOKEN_LIST_URL:
-      'https://unpkg.com/quickswap-default-token-list@1.2.27/build/quickswap-default.tokenlist.json',
+      'https://unpkg.com/quickswap-default-token-list@1.2.29/build/quickswap-default.tokenlist.json',
   },
   analyticChart: {
     ONE_MONTH_CHART: 1,

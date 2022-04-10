@@ -178,7 +178,7 @@ const SwapTokenDetails: React.FC<{
         <a
           href={`https://polygonscan.com/token/${tokenAddress}`}
           target='_blank'
-          rel='noreferrer'
+          rel='noopener noreferrer'
           style={{ textDecoration: 'none' }}
         >
           <Typography variant='body2' style={{ color: palette.primary.main }}>
