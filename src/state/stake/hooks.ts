@@ -194,14 +194,13 @@ export function useSyrupInfo(
       chainId
         ? returnSyrupInfo()
             [chainId]?.slice(startIndex, endIndex)
-            .filter((stakingRewardInfo) =>
-              tokenToFilterBy === undefined || tokenToFilterBy === null
-                ? getSearchFiltered(
-                    stakingRewardInfo,
-                    filter ? filter.search : '',
-                  )
-                : tokenToFilterBy.equals(stakingRewardInfo.token) &&
-                  tokenToFilterBy.equals(stakingRewardInfo.token),
+            .filter(
+              (syrupInfo) =>
+                syrupInfo.ending > Math.floor(Date.now() / 1000) &&
+                (tokenToFilterBy === undefined || tokenToFilterBy === null
+                  ? getSearchFiltered(syrupInfo, filter ? filter.search : '')
+                  : tokenToFilterBy.equals(syrupInfo.token) &&
+                    tokenToFilterBy.equals(syrupInfo.token)),
             ) ?? []
         : [],
     [chainId, tokenToFilterBy, startIndex, endIndex, filter],
@@ -392,23 +391,23 @@ export function useOldSyrupInfo(
   filter?: { search: string; isStaked: boolean },
 ): SyrupInfo[] {
   const { chainId, account } = useActiveWeb3React();
-  const info = useMemo(
-    () =>
-      chainId
-        ? returnSyrupInfo(true)
-            [chainId]?.slice(startIndex, endIndex)
-            ?.filter((stakingRewardInfo) =>
-              tokenToFilterBy === undefined || tokenToFilterBy === null
-                ? getSearchFiltered(
-                    stakingRewardInfo,
-                    filter ? filter.search : '',
-                  )
-                : tokenToFilterBy.equals(stakingRewardInfo.token) &&
-                  tokenToFilterBy.equals(stakingRewardInfo.token),
-            ) ?? []
-        : [],
-    [chainId, tokenToFilterBy, startIndex, endIndex, filter],
-  );
+  const info = useMemo(() => {
+    if (!chainId) return [];
+    const endedSyrupInfos =
+      returnSyrupInfo(false)[chainId]?.filter(
+        (syrupInfo) => syrupInfo.ending <= Math.floor(Date.now() / 1000),
+      ) ?? [];
+    const oldSyrupInfos = returnSyrupInfo(true)[chainId] ?? [];
+    const allOldSyrupInfos = endedSyrupInfos.concat(oldSyrupInfos);
+    return allOldSyrupInfos
+      .slice(startIndex, endIndex)
+      .filter((syrupInfo) =>
+        tokenToFilterBy === undefined || tokenToFilterBy === null
+          ? getSearchFiltered(syrupInfo, filter ? filter.search : '')
+          : tokenToFilterBy.equals(syrupInfo.token) &&
+            tokenToFilterBy.equals(syrupInfo.token),
+      );
+  }, [chainId, tokenToFilterBy, startIndex, endIndex, filter]);
 
   const uni = chainId ? GlobalValue.tokens.UNI[chainId] : undefined;
 
@@ -539,7 +538,7 @@ export function useOldSyrupInfo(
           memo.push({
             stakingRewardAddress: rewardsAddress,
             token: syrupInfo.token,
-            ended: syrupInfo.ended,
+            ended: true,
             name: syrupInfo.name,
             lp: syrupInfo.lp,
             periodFinish: periodFinishMs,
