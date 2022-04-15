@@ -1,65 +1,79 @@
 import React, { useCallback, useEffect, useState, useMemo } from 'react';
+import Web3 from 'web3';
 import { Box } from '@material-ui/core';
 import { SearchInput } from 'components';
 import { CustomSelect, SmOption } from 'components/CustomSelect';
 import styled from 'styled-components';
 import { useHistory } from 'react-router-dom';
 import { useActiveWeb3React } from 'hooks';
-import Web3 from 'web3';
-import { MarketSDK, Comptroller, CToken } from 'market-sdk';
+import { MarketSDK, Comptroller, Pool, PoolDirectoryV1 } from 'market-sdk';
+import { midUsdFormatter } from 'utils/bigUtils';
 
-const QS_Pool_Comptroller = '0x772EdfEDee10029E98AF15359595bB398950416B';
-const QS_Pool_admin = '0x03c91dEc8Ca1c7932305B4B0c15AB3A1F13f2eE6';
-const fQSUSDC = '0xE6538102EDE880BdDbEe50C2f763Be02DE164010';
+import { usePoolData } from 'hooks/marketxyz/usePoolData';
+import {
+  fetchPoolData,
+  getPoolIdFromComptroller,
+} from 'utils/marketxyz/fetchPoolData';
+import { getEthPrice } from 'utils';
+
+const QS_PoolDirectory = '0x9180296118C8Deb7c5547eF5c1E798DC0405f350';
+const QS_Pools = ['0x772EdfEDee10029E98AF15359595bB398950416B'];
+// const QS_Pool_Comptroller = '0x772EdfEDee10029E98AF15359595bB398950416B';
+// const QS_Pool_admin = '0x03c91dEc8Ca1c7932305B4B0c15AB3A1F13f2eE6';
+// const fQSUSDC = '0xE6538102EDE880BdDbEe50C2f763Be02DE164010';
 
 const LendPage: React.FC = () => {
   const history = useHistory();
   const { account } = useActiveWeb3React();
   const web3 = new Web3('https://polygon-rpc.com');
 
-  const [pools, setPools] = useState<any>([]);
+  const [totalSupply, setTotalSupply] = useState<string>();
+  const [totalBorrow, setTotalBorrow] = useState<string>();
+  const [totalLiquidity, setTotalLiquidity] = useState<string>();
 
-  useMemo(() => {
+  const [pools, setPools] = useState<any[]>([]);
+
+  useEffect(() => {
     const getPools = async () => {
       const sdk = await MarketSDK.init(web3);
-      const allPools = await sdk.poolDirectory.v1!.getAllPools();
-      setPools(allPools);
+      const directory = new PoolDirectoryV1(sdk, QS_PoolDirectory);
 
-      const comptroller = new Comptroller(sdk, QS_Pool_Comptroller);
+      const allPools = await directory.getAllPools();
+      const poolsData = [];
 
-      const cTokens = (await comptroller.getAllMarkets()).map(
-        (address) => new CToken(sdk, address),
-      );
+      let _totalBorrowUSD = 0;
+      let _totalSupplyUSD = 0;
+      let _totalLiquidityUSD = 0;
 
-      console.log('cTokens??', cTokens);
+      for (const comptrollerAddress of QS_Pools) {
+        const poolId = allPools
+          .findIndex((p) => {
+            return p.comptroller.address === comptrollerAddress;
+          })
+          .toString();
+        const poolData = await fetchPoolData(
+          poolId,
+          account ?? undefined,
+          directory,
+        );
 
-      const publicPoolData: any = await sdk.lens.v1?.getPublicPoolsWithData();
+        _totalSupplyUSD += poolData!.totalSuppliedUSD;
+        _totalBorrowUSD += poolData!.totalBorrowedUSD;
+        _totalLiquidityUSD += poolData!.totalLiquidityUSD;
 
-      // let i = 1;
-      // for (const cToken of cTokens) {
-      //   console.log(`cToken[${i}] address = `, cToken.address); /// 0x5a
-      //   console.log(`cToken[${i}] name = `, await cToken.name()); /// Market Pool X USDC
-      //   console.log(`cToken[${i}] symbol = `, await cToken.symbol()); /// mPXUSDC
-      //   console.log(
-      //     `cToken[${i}] LTV = `,
-      //     (await comptroller.markets(cToken.address)).collateralFactorMantissa, /// 5e17
-      //   );
-      //   console.log(
-      //     `cToken[${i}] reserve factor = `,
-      //     await cToken.reserveFactorMantissa(), /// 5e16
-      //   );
+        poolsData.push(poolData);
+      }
 
-      //   ++i;
-      // }
+      setTotalSupply(_totalSupplyUSD.toString());
+      setTotalBorrow(_totalSupplyUSD.toString());
+      setTotalLiquidity(_totalLiquidityUSD.toString());
+      setPools(poolsData);
     };
     getPools();
-  }, [web3]);
-
-  // useEffect(() => {
-  //   if (pools) pools.map((x: any, i: any) => console.log(x, i));
-  // }, [pools]);
+  }, [account]);
 
   const [searchInput, setSearchInput] = useState('');
+
   return (
     <Box width={'100%'}>
       <Box
@@ -99,7 +113,7 @@ const LendPage: React.FC = () => {
             Total Supply
           </Box>
           <Box fontSize={'24px'} color={'white'}>
-            $24.12M
+            {midUsdFormatter(Number(totalSupply))}
           </Box>
         </Box>
         <Box
@@ -113,7 +127,7 @@ const LendPage: React.FC = () => {
             Total Borrowed
           </Box>
           <Box fontSize={'24px'} color={'white'}>
-            $9.23M
+            {midUsdFormatter(Number(totalBorrow))}
           </Box>
         </Box>
         <Box
@@ -127,7 +141,7 @@ const LendPage: React.FC = () => {
             Liquidity
           </Box>
           <Box fontSize={'24px'} color={'white'}>
-            $3.45M
+            {midUsdFormatter(Number(totalLiquidity))}
           </Box>
         </Box>
         <Box
@@ -141,7 +155,7 @@ const LendPage: React.FC = () => {
             Markets
           </Box>
           <Box fontSize={'24px'} color={'white'}>
-            5
+            {pools.length}
           </Box>
         </Box>
       </Box>
@@ -187,7 +201,7 @@ const LendPage: React.FC = () => {
         </Box>
       </Box>
       <Box display={'flex'} gridGap={'32px'} flexWrap={'wrap'}>
-        {pools.map((pool: any, index: any) => (
+        {pools.map(({ pool, summary, poolId }, index: any) => (
           <Card
             flex={'1'}
             key={`${index}`}
@@ -197,7 +211,7 @@ const LendPage: React.FC = () => {
             flexDirection={'column'}
             sx={{ minWidth: { xs: '55%', sm: '25%' } }}
             onClick={() => {
-              history.push('lend/detail');
+              history.push('/lend/detail?poolId=' + poolId);
             }}
           >
             <Box
@@ -231,7 +245,7 @@ const LendPage: React.FC = () => {
                   Total Supply
                 </Box>
                 <Box fontSize={'16px'} mt={'10px'}>
-                  {pool.blockPosted.toNumber()}
+                  {midUsdFormatter(summary.totalSupply.toNumber())}
                 </Box>
               </Box>
               <Box flex={'1'} textAlign={'center'} pt={'18px'} pb={'24px'}>
@@ -239,7 +253,7 @@ const LendPage: React.FC = () => {
                   Total Borrowed
                 </Box>
                 <Box fontSize={'16px'} mt={'10px'}>
-                  $13,132,132
+                  {midUsdFormatter(summary.totalBorrow.toNumber())}
                 </Box>
               </Box>
             </Box>

@@ -1,4 +1,5 @@
 import React, { lazy, Suspense } from 'react';
+import { QueryClient, QueryClientProvider } from 'react-query';
 import { createWeb3ReactRoot, Web3ReactProvider } from '@web3-react/core';
 import { Switch, Route } from 'react-router-dom';
 import {
@@ -106,67 +107,71 @@ function Gelato({ children }: { children?: React.ReactNode }) {
   );
 }
 
+const queryClient = new QueryClient();
+
 const App: React.FC = () => {
   return (
-    <Web3ReactProvider getLibrary={getLibrary}>
-      <Web3ProviderNetwork getLibrary={getLibrary}>
-        <Provider store={store}>
-          <Updaters />
-          <Providers>
-            <Popups />
-            <StyledThemeProvider>
-              <Gelato>
-                <Web3ReactManager>
-                  <PageLayout>
-                    <Switch>
-                      <Route exact path='/'>
-                        <LandingPage />
-                      </Route>
-                      <Route exact path='/swap'>
-                        <SwapPage />
-                      </Route>
-                      <Route exact path='/lend'>
-                        <LendPage />
-                      </Route>
-                      <Route exact path='/lend/detail'>
-                        <LendDetailPage />
-                      </Route>
-                      <Route exact path='/pools'>
-                        <PoolsPage />
-                      </Route>
-                      <Route exact path='/farm'>
-                        <FarmPage />
-                      </Route>
-                      <Route exact path='/dragons'>
-                        <DragonPage />
-                      </Route>
-                      <Route exact path='/analytics'>
-                        <AnalyticsHeader />
-                        <AnalyticsOverview />
-                      </Route>
-                      <Route exact path='/analytics/tokens'>
-                        <AnalyticsHeader />
-                        <AnalyticsTokens />
-                      </Route>
-                      <Route exact path='/analytics/pairs'>
-                        <AnalyticsHeader />
-                        <AnalyticsPairs />
-                      </Route>
-                      <Route exact path='/analytics/token/:id'>
-                        <AnalyticsTokenDetails />
-                      </Route>
-                      <Route exact path='/analytics/pair/:id'>
-                        <AnalyticsPairDetails />
-                      </Route>
-                    </Switch>
-                  </PageLayout>
-                </Web3ReactManager>
-              </Gelato>
-            </StyledThemeProvider>
-          </Providers>
-        </Provider>
-      </Web3ProviderNetwork>
-    </Web3ReactProvider>
+    <QueryClientProvider client={queryClient}>
+      <Web3ReactProvider getLibrary={getLibrary}>
+        <Web3ProviderNetwork getLibrary={getLibrary}>
+          <Provider store={store}>
+            <Updaters />
+            <Providers>
+              <Popups />
+              <StyledThemeProvider>
+                <Gelato>
+                  <Web3ReactManager>
+                    <PageLayout>
+                      <Switch>
+                        <Route exact path='/'>
+                          <LandingPage />
+                        </Route>
+                        <Route exact path='/swap'>
+                          <SwapPage />
+                        </Route>
+                        <Route exact path='/lend'>
+                          <LendPage />
+                        </Route>
+                        <Route exact path='/lend/detail'>
+                          <LendDetailPage />
+                        </Route>
+                        <Route exact path='/pools'>
+                          <PoolsPage />
+                        </Route>
+                        <Route exact path='/farm'>
+                          <FarmPage />
+                        </Route>
+                        <Route exact path='/dragons'>
+                          <DragonPage />
+                        </Route>
+                        <Route exact path='/analytics'>
+                          <AnalyticsHeader />
+                          <AnalyticsOverview />
+                        </Route>
+                        <Route exact path='/analytics/tokens'>
+                          <AnalyticsHeader />
+                          <AnalyticsTokens />
+                        </Route>
+                        <Route exact path='/analytics/pairs'>
+                          <AnalyticsHeader />
+                          <AnalyticsPairs />
+                        </Route>
+                        <Route exact path='/analytics/token/:id'>
+                          <AnalyticsTokenDetails />
+                        </Route>
+                        <Route exact path='/analytics/pair/:id'>
+                          <AnalyticsPairDetails />
+                        </Route>
+                      </Switch>
+                    </PageLayout>
+                  </Web3ReactManager>
+                </Gelato>
+              </StyledThemeProvider>
+            </Providers>
+          </Provider>
+        </Web3ProviderNetwork>
+      </Web3ReactProvider>
+    </QueryClientProvider>
   );
 };
 

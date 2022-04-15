@@ -11,17 +11,33 @@ import {
   Switch,
 } from '@material-ui/core';
 
-import styled from 'styled-components';
 import { CustomSelect, SmOption } from 'components/CustomSelect';
 import ReactApexChart from 'react-apexcharts';
 import { _100 } from '@uniswap/sdk/dist/constants';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import AntSwitch from 'components/AntSwitch';
 
 import ModalParent, {
   QuickModalContent,
   StateModalContent,
 } from 'components/Modals';
+
+import { usePoolData } from 'hooks/marketxyz/usePoolData';
+import { midUsdFormatter, shortUsdFormatter } from 'utils/bigUtils';
+import { shortenAddress } from 'utils';
+import { useExtraPoolData } from 'hooks/marketxyz/useExtraPoolData';
+import { useActiveWeb3React } from 'hooks';
+import { useMarket } from 'hooks/marketxyz/useMarket';
+import { useTokensData } from 'hooks/marketxyz/useTokenData';
+import { PoolData, USDPricedPoolAsset } from 'utils/marketxyz/fetchPoolData';
+import { Comptroller } from 'market-sdk';
+import {
+  toggleCollateral,
+  convertMantissaToAPY,
+  convertMantissaToAPR,
+} from 'utils/marketxyz';
+
+const QS_PoolDirectory = '0x9180296118C8Deb7c5547eF5c1E798DC0405f350';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   hideCell: {
@@ -34,7 +50,9 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
 
 const LendDetailPage: React.FC = () => {
   const history = useHistory();
+  const location = useLocation();
   const classes = useStyles();
+  const { account } = useActiveWeb3React();
 
   const [modalNotoolbar, setModalNotoolbar] = useState<boolean>(false);
   const [modalNotitle, setModalNotitle] = useState<boolean>(false);
@@ -53,6 +71,20 @@ const LendDetailPage: React.FC = () => {
       confirm: boolean;
     };
   } | null>(null);
+
+  const { sdk } = useMarket();
+  const poolId = location && new URLSearchParams(location.search).get('poolId');
+  const poolData = usePoolData(poolId ?? undefined, QS_PoolDirectory);
+
+  const tokensData = useTokensData(
+    poolData?.assets.map((asset) => asset.underlyingToken) || [],
+  ) || ['0x0'];
+
+  const extraPoolData = useExtraPoolData(
+    poolData?.pool.comptroller,
+    account ?? undefined,
+  );
+
   return (
     <>
       <Box width={'100%'}>
@@ -96,15 +128,13 @@ const LendDetailPage: React.FC = () => {
             </svg>
           </Box>
           <Box fontSize={'24px'} fontWeight={'bold'} color={'white'}>
-            Quickswap Pool
+            {poolData?.pool.name}
           </Box>
           <Box display={'flex'} gridGap={'2px'}>
-            <USDTIcon size={'24px'} />
-            <USDTIcon size={'24px'} />
-            <USDTIcon size={'24px'} />
-            <USDTIcon size={'24px'} />
-            <USDTIcon size={'24px'} />
-            <Box
+            {poolData?.assets.map((asset, i) => (
+              <USDTIcon key={i} size={'24px'} />
+            ))}
+            {/* <Box
               bgcolor={'#32394c'}
               width={'24px'}
               height={'24px'}
@@ -118,7 +148,7 @@ const LendDetailPage: React.FC = () => {
               <Box ml={'-4px'} mt={'5px'} display={'flex'}>
                 <USDTIcon size={'13px'} />
               </Box>
-            </Box>
+            </Box> */}
           </Box>
         </Box>
         <Box
@@ -142,7 +172,7 @@ const LendDetailPage: React.FC = () => {
               Total Supply
             </Box>
             <Box fontSize={'24px'} color={'white'}>
-              $19.2M
+              {poolData && midUsdFormatter(poolData.totalSuppliedUSD)}
             </Box>
           </Box>
           <Box
@@ -156,7 +186,7 @@ const LendDetailPage: React.FC = () => {
               Total Borrowed
             </Box>
             <Box fontSize={'24px'} color={'white'}>
-              $19.2M
+              {poolData && midUsdFormatter(poolData.totalBorrowedUSD)}
             </Box>
           </Box>
           <Box
@@ -170,7 +200,7 @@ const LendDetailPage: React.FC = () => {
               Liquidity
             </Box>
             <Box fontSize={'24px'} color={'white'}>
-              $19.2M
+              {poolData && midUsdFormatter(poolData.totalLiquidityUSD)}
             </Box>
           </Box>
           <Box
@@ -184,7 +214,7 @@ const LendDetailPage: React.FC = () => {
               Pool Utilization
             </Box>
             <Box fontSize={'24px'} color={'white'}>
-              $19.2M
+              {poolData && midUsdFormatter(poolData.totalBorrowBalanceUSD)}
             </Box>
           </Box>
         </Box>
@@ -312,7 +342,11 @@ const LendDetailPage: React.FC = () => {
               </Box>
               <Box mr={'30px'} display={'flex'} fontSize={'14px'}>
                 <Box color={'#c7cad9'}>Your Supply Balance:&nbsp;</Box>
-                <Box color={'white'}>$0.00</Box>
+                <Box color={'white'}>
+                  {poolData
+                    ? midUsdFormatter(poolData.totalSupplyBalanceUSD)
+                    : '?'}
+                </Box>
               </Box>
             </Box>
             <Box display={'flex'} paddingX={'24px'}>
@@ -337,7 +371,7 @@ const LendDetailPage: React.FC = () => {
                         display={'flex'}
                         justifyContent={'flex-end'}
                       >
-                        Depositd
+                        Deposited
                       </Box>
                     </MuiTableCell>
                     <MuiTableCell>
@@ -352,117 +386,148 @@ const LendDetailPage: React.FC = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  <TableRow>
-                    <ItemTableCell
-                      onClick={() => {
-                        setModalType('quick');
-                        setModalIsBorrow(false);
-                      }}
-                    >
-                      <Box
-                        paddingY={'20px'}
-                        display={'flex'}
-                        alignItems={'center'}
-                        gridGap={'16px'}
+                  {poolData?.assets.map((asset, i) => (
+                    <TableRow key={asset.cToken.address}>
+                      <ItemTableCell
+                        onClick={() => {
+                          setModalType('quick');
+                          setModalIsBorrow(false);
+                        }}
                       >
-                        <Box display={'flex'} alignItems={'center'}>
-                          <USDTIcon size={'36px'} />
-                        </Box>
                         <Box
+                          paddingY={'20px'}
                           display={'flex'}
-                          flexDirection={'column'}
-                          gridGap={'4px'}
+                          alignItems={'center'}
+                          gridGap={'16px'}
                         >
-                          <Box
-                            fontSize={'14px'}
-                            color={'#ebecf2'}
-                            textAlign={'right'}
-                          >
-                            QUICK
+                          <Box display={'flex'} alignItems={'center'}>
+                            <USDTIcon size={'36px'} />
                           </Box>
                           <Box
-                            fontSize={'13px'}
-                            color={'#696c80'}
-                            textAlign={'right'}
+                            display={'flex'}
+                            flexDirection={'column'}
+                            gridGap={'4px'}
                           >
-                            LTV: 65%
+                            <Box
+                              fontSize={'14px'}
+                              color={'#ebecf2'}
+                              textAlign={'right'}
+                            >
+                              {asset.underlyingName}
+                            </Box>
+                            <Box
+                              fontSize={'13px'}
+                              color={'#696c80'}
+                              textAlign={'right'}
+                            >
+                              LTV:
+                              {sdk &&
+                                asset.collateralFactor
+                                  .div(sdk.web3.utils.toBN(1e16))
+                                  .toNumber()}
+                              %
+                            </Box>
                           </Box>
                         </Box>
-                      </Box>
-                    </ItemTableCell>
-                    <ItemTableCell
-                      onClick={() => {
-                        setModalType('quick');
-                        setModalIsBorrow(false);
-                      }}
-                    >
-                      <Box
-                        paddingY={'20px'}
-                        display={'flex'}
-                        justifyContent={'flex-end'}
+                      </ItemTableCell>
+                      <ItemTableCell
+                        onClick={() => {
+                          setModalType('quick');
+                          setModalIsBorrow(false);
+                        }}
                       >
                         <Box
-                          ml={'auto'}
-                          display={'inline-flex'}
-                          flexDirection={'column'}
-                          gridGap={'4px'}
-                          color={'#ebecf2'}
+                          paddingY={'20px'}
+                          display={'flex'}
+                          justifyContent={'flex-end'}
                         >
-                          <Box fontSize={'14px'} textAlign={'right'}>
-                            10.24%
-                          </Box>
-                          <Box fontSize={'13px'} textAlign={'right'}>
-                            (12.3%
-                            <USDTIcon size={'12px'} />)
+                          <Box
+                            ml={'auto'}
+                            display={'inline-flex'}
+                            flexDirection={'column'}
+                            gridGap={'4px'}
+                            color={'#ebecf2'}
+                          >
+                            <Box fontSize={'14px'} textAlign={'right'}>
+                              {convertMantissaToAPY(
+                                asset.supplyRatePerBlock,
+                                365,
+                              ).toFixed(2)}
+                              %
+                            </Box>
+                            <Box fontSize={'13px'} textAlign={'right'}>
+                              {convertMantissaToAPY(
+                                asset.supplyRatePerBlock,
+                                365,
+                              ).toFixed(2)}
+                              %
+                              <USDTIcon size={'12px'} />
+                            </Box>
                           </Box>
                         </Box>
-                      </Box>
-                    </ItemTableCell>
-                    <ItemTableCell
-                      onClick={() => {
-                        setModalType('quick');
-                        setModalIsBorrow(false);
-                      }}
-                    >
-                      <Box
-                        paddingY={'20px'}
-                        display={'flex'}
-                        justifyContent={'flex-end'}
+                      </ItemTableCell>
+                      <ItemTableCell
+                        onClick={() => {
+                          setModalType('quick');
+                          setModalIsBorrow(false);
+                        }}
                       >
                         <Box
-                          display={'inline-flex'}
-                          flexDirection={'column'}
-                          gridGap={'4px'}
+                          paddingY={'20px'}
+                          display={'flex'}
+                          justifyContent={'flex-end'}
                         >
                           <Box
-                            fontSize={'14px'}
-                            color={'#ebecf2'}
-                            textAlign={'right'}
+                            display={'inline-flex'}
+                            flexDirection={'column'}
+                            gridGap={'4px'}
                           >
-                            $0.00
-                          </Box>
-                          <Box
-                            fontSize={'13px'}
-                            color={'#696c80'}
-                            textAlign={'right'}
-                          >
-                            QUICK
+                            <Box
+                              fontSize={'14px'}
+                              color={'#ebecf2'}
+                              textAlign={'right'}
+                            >
+                              {asset.supplyBalanceUSD}
+                            </Box>
+                            <Box
+                              fontSize={'13px'}
+                              color={'#696c80'}
+                              textAlign={'right'}
+                            >
+                              {sdk
+                                ? asset.supplyBalance
+                                    .div(
+                                      sdk.web3.utils
+                                        .toBN(10)
+                                        .pow(asset.underlyinDecimals),
+                                    )
+                                    .toNumber()
+                                : '?'}
+                              {asset.underlyingSymbol}
+                            </Box>
                           </Box>
                         </Box>
-                      </Box>
-                    </ItemTableCell>
-                    <MuiTableCell>
-                      <Box
-                        paddingY={'20px'}
-                        display={'flex'}
-                        justifyContent={'flex-end'}
-                      >
-                        <AntSwitch
-                          inputProps={{ 'aria-label': 'ant design' }}
-                        />
-                      </Box>
-                    </MuiTableCell>
-                  </TableRow>
+                      </ItemTableCell>
+                      <MuiTableCell>
+                        <Box
+                          paddingY={'20px'}
+                          display={'flex'}
+                          justifyContent={'flex-end'}
+                        >
+                          <AntSwitch
+                            onChange={() => {
+                              toggleCollateral(
+                                asset,
+                                poolData.pool.comptroller,
+                                account!,
+                              );
+                            }}
+                            inputProps={{ 'aria-label': 'ant design' }}
+                          />
+                        </Box>
+                      </MuiTableCell>
+                    </TableRow>
+                  ))}
                 </TableBody>
               </Table>
             </Box>
@@ -492,8 +557,12 @@ const LendDetailPage: React.FC = () => {
                 Borrow
               </Box>
               <Box mr={'30px'} display={'flex'} fontSize={'14px'}>
-                <Box color={'#c7cad9'}>Your Supply Balance:&nbsp;</Box>
-                <Box color={'white'}>$0.00</Box>
+                <Box color={'#c7cad9'}>Your Borrow Balance:&nbsp;</Box>
+                <Box color={'white'}>
+                  {poolData
+                    ? midUsdFormatter(poolData.totalBorrowBalanceUSD)
+                    : '?'}
+                </Box>
               </Box>
             </Box>
             <Box display={'flex'} paddingX={'24px'}>
@@ -509,7 +578,7 @@ const LendDetailPage: React.FC = () => {
                         display={'flex'}
                         justifyContent={'flex-end'}
                       >
-                        Supply APY
+                        APR/TVL
                       </Box>
                     </MuiTableCell>
                     <MuiTableCell className={classes.hideCell}>
@@ -518,7 +587,7 @@ const LendDetailPage: React.FC = () => {
                         display={'flex'}
                         justifyContent={'flex-end'}
                       >
-                        Depositd
+                        Deposited
                       </Box>
                     </MuiTableCell>
                     <MuiTableCell>
@@ -527,107 +596,138 @@ const LendDetailPage: React.FC = () => {
                         display={'flex'}
                         justifyContent={'flex-end'}
                       >
-                        Collateral
+                        Liquidity
                       </Box>
                     </MuiTableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  <ItemTableRow
-                    onClick={() => {
-                      setModalType('quick');
-                      setModalIsBorrow(true);
-                    }}
-                  >
-                    <ItemTableCell>
-                      <Box
-                        paddingY={'20px'}
-                        display={'flex'}
-                        alignItems={'center'}
-                        gridGap={'16px'}
+                  {poolData?.assets.map((asset) => {
+                    if (asset.isPaused) {
+                      return null;
+                    }
+                    return (
+                      <ItemTableRow
+                        key={asset.cToken.address}
+                        onClick={() => {
+                          setModalType('quick');
+                          setModalIsBorrow(true);
+                        }}
                       >
-                        <Box
-                          display={'flex'}
-                          alignItems={'center'}
-                          gridGap={'16px'}
-                        >
-                          <USDTIcon size={'36px'} />
+                        <ItemTableCell>
                           <Box
-                            fontSize={'14px'}
-                            color={'#ebecf2'}
-                            textAlign={'right'}
+                            paddingY={'20px'}
+                            display={'flex'}
+                            alignItems={'center'}
+                            gridGap={'16px'}
                           >
-                            USDT
+                            <Box
+                              display={'flex'}
+                              alignItems={'center'}
+                              gridGap={'16px'}
+                            >
+                              <USDTIcon size={'36px'} />
+                              <Box
+                                fontSize={'14px'}
+                                color={'#ebecf2'}
+                                textAlign={'right'}
+                              >
+                                {asset.underlyingName}
+                              </Box>
+                            </Box>
                           </Box>
-                        </Box>
-                      </Box>
-                    </ItemTableCell>
-                    <ItemTableCell className={classes.hideCell}>
-                      <Box
-                        paddingY={'20px'}
-                        display={'flex'}
-                        justifyContent={'flex-end'}
-                      >
-                        <Box fontSize={'13px'}>12.3%</Box>
-                      </Box>
-                    </ItemTableCell>
-                    <ItemTableCell>
-                      <Box
-                        paddingY={'20px'}
-                        display={'flex'}
-                        justifyContent={'flex-end'}
-                      >
-                        <Box
-                          display={'inline-flex'}
-                          flexDirection={'column'}
-                          gridGap={'4px'}
-                        >
+                        </ItemTableCell>
+                        <ItemTableCell className={classes.hideCell}>
                           <Box
-                            fontSize={'14px'}
-                            color={'#ebecf2'}
-                            textAlign={'right'}
+                            paddingY={'20px'}
+                            display={'flex'}
+                            justifyContent={'flex-end'}
                           >
-                            $0.00
+                            <Box fontSize={'13px'}>
+                              {convertMantissaToAPR(
+                                asset.borrowRatePerBlock,
+                              ).toFixed(2)}
+                              %
+                            </Box>
                           </Box>
+                        </ItemTableCell>
+                        <ItemTableCell>
                           <Box
-                            fontSize={'13px'}
-                            color={'#696c80'}
-                            textAlign={'right'}
+                            paddingY={'20px'}
+                            display={'flex'}
+                            justifyContent={'flex-end'}
                           >
-                            130.49 USDC
+                            <Box
+                              display={'inline-flex'}
+                              flexDirection={'column'}
+                              gridGap={'4px'}
+                            >
+                              <Box
+                                fontSize={'14px'}
+                                color={'#ebecf2'}
+                                textAlign={'right'}
+                              >
+                                {asset.borrowBalanceUSD}
+                              </Box>
+                              <Box
+                                fontSize={'13px'}
+                                color={'#696c80'}
+                                textAlign={'right'}
+                              >
+                                {sdk
+                                  ? asset.borrowBalance
+                                      .div(
+                                        sdk.web3.utils
+                                          .toBN(10)
+                                          .pow(asset.underlyinDecimals),
+                                      )
+                                      .toNumber()
+                                  : '?'}
+                                {asset.underlyingSymbol}
+                              </Box>
+                            </Box>
                           </Box>
-                        </Box>
-                      </Box>
-                    </ItemTableCell>
-                    <ItemTableCell>
-                      <Box
-                        paddingY={'20px'}
-                        display={'flex'}
-                        justifyContent={'flex-end'}
-                      >
-                        <Box
-                          display={'inline-flex'}
-                          flexDirection={'column'}
-                          gridGap={'4px'}
-                        >
+                        </ItemTableCell>
+                        <ItemTableCell>
                           <Box
-                            fontSize={'14px'}
-                            color={'#ebecf2'}
-                            textAlign={'right'}
+                            paddingY={'20px'}
+                            display={'flex'}
+                            justifyContent={'flex-end'}
                           >
-                            $0.00M
+                            <Box
+                              display={'inline-flex'}
+                              flexDirection={'column'}
+                              gridGap={'4px'}
+                            >
+                              <Box
+                                fontSize={'14px'}
+                                color={'#ebecf2'}
+                                textAlign={'right'}
+                              >
+                                {asset.liquidityUSD}
+                              </Box>
+                              <Box
+                                fontSize={'13px'}
+                                color={'#696c80'}
+                                textAlign={'right'}
+                              >
+                                {sdk
+                                  ? asset.liquidity
+                                      .div(
+                                        sdk.web3.utils
+                                          .toBN(10)
+                                          .pow(asset.underlyinDecimals),
+                                      )
+                                      .toNumber()
+                                  : '?'}
+                                {asset.underlyingSymbol}
+                              </Box>
+                            </Box>
                           </Box>
-                          <Box
-                            fontSize={'13px'}
-                            color={'#696c80'}
-                            textAlign={'right'}
-                          >
-                            4.5M USDC
-                          </Box>
-                        </Box>
-                      </Box>
-                    </ItemTableCell>
-                  </ItemTableRow>
+                        </ItemTableCell>
+                      </ItemTableRow>
+                    );
+                  })}
                 </TableBody>
               </Table>
             </Box>
@@ -683,7 +783,9 @@ const LendDetailPage: React.FC = () => {
                       Total Supplied:
                     </Box>
                     <Box fontSize={'14px'} fontWeight={'500'} color={'#ebecf2'}>
-                      $12.9M
+                      {poolData
+                        ? midUsdFormatter(poolData.totalSuppliedUSD)
+                        : '?'}
                     </Box>
                   </Box>
                 </Box>
@@ -706,7 +808,9 @@ const LendDetailPage: React.FC = () => {
                       Total Borrowed:
                     </Box>
                     <Box fontSize={'14px'} fontWeight={'500'} color={'#ebecf2'}>
-                      $12.9M
+                      {poolData
+                        ? midUsdFormatter(poolData.totalBorrowedUSD)
+                        : '?'}
                     </Box>
                   </Box>
                 </Box>
@@ -737,7 +841,9 @@ const LendDetailPage: React.FC = () => {
                       Available Liquidity:
                     </Box>
                     <Box fontSize={'14px'} fontWeight={'500'} color={'#ebecf2'}>
-                      $12.9M
+                      {poolData
+                        ? midUsdFormatter(poolData.totalLiquidityUSD)
+                        : '?'}
                     </Box>
                   </Box>
                 </Box>
@@ -760,7 +866,15 @@ const LendDetailPage: React.FC = () => {
                       Pool Utilization:
                     </Box>
                     <Box fontSize={'14px'} fontWeight={'500'} color={'#ebecf2'}>
-                      23.22%
+                      {poolData
+                        ? poolData.totalSuppliedUSD.toString() === '0'
+                          ? '0%'
+                          : (
+                              (poolData.totalBorrowedUSD /
+                                poolData.totalSuppliedUSD) *
+                              100
+                            ).toFixed(2) + '%'
+                        : '?'}
                     </Box>
                   </Box>
                 </Box>
@@ -791,7 +905,11 @@ const LendDetailPage: React.FC = () => {
                       Upgradeable:
                     </Box>
                     <Box fontSize={'14px'} fontWeight={'500'} color={'#ebecf2'}>
-                      Yes
+                      {extraPoolData
+                        ? extraPoolData.upgradeable
+                          ? 'Yes'
+                          : 'No'
+                        : '?'}
                     </Box>
                   </Box>
                 </Box>
@@ -814,7 +932,9 @@ const LendDetailPage: React.FC = () => {
                       Admin (copy):
                     </Box>
                     <Box fontSize={'14px'} fontWeight={'500'} color={'#ebecf2'}>
-                      0x07…46
+                      {extraPoolData && extraPoolData.admin
+                        ? shortenAddress(extraPoolData.admin)
+                        : '?'}
                     </Box>
                   </Box>
                 </Box>
@@ -845,7 +965,14 @@ const LendDetailPage: React.FC = () => {
                       Platform Fee:
                     </Box>
                     <Box fontSize={'14px'} fontWeight={'500'} color={'#ebecf2'}>
-                      5.0%
+                      {poolData
+                        ? poolData.assets.length > 0
+                          ? (
+                              Number(poolData.assets[0].fuseFee.toString()) /
+                              1e16
+                            ).toPrecision(2) + '%'
+                          : '10%'
+                        : '?'}
                     </Box>
                   </Box>
                 </Box>
@@ -868,7 +995,13 @@ const LendDetailPage: React.FC = () => {
                       Average Admin Fee:
                     </Box>
                     <Box fontSize={'14px'} fontWeight={'500'} color={'#ebecf2'}>
-                      0.00%
+                      {poolData
+                        ? poolData.assets.reduce(
+                            (a, b, _, { length }) =>
+                              a + Number(b.adminFee.toString()) / 1e16 / length,
+                            0,
+                          )
+                        : '?'}
                     </Box>
                   </Box>
                 </Box>
@@ -899,7 +1032,9 @@ const LendDetailPage: React.FC = () => {
                       Close Factor:
                     </Box>
                     <Box fontSize={'14px'} fontWeight={'500'} color={'#ebecf2'}>
-                      50%
+                      {extraPoolData
+                        ? extraPoolData.closeFactor / 1e16 + '%'
+                        : '?%'}
                     </Box>
                   </Box>
                 </Box>
@@ -922,7 +1057,9 @@ const LendDetailPage: React.FC = () => {
                       Liquidation Incentive:
                     </Box>
                     <Box fontSize={'14px'} fontWeight={'500'} color={'#ebecf2'}>
-                      8%
+                      {extraPoolData
+                        ? extraPoolData.liquidationIncentive / 1e16 - 100 + '%'
+                        : '?%'}
                     </Box>
                   </Box>
                 </Box>
@@ -953,7 +1090,7 @@ const LendDetailPage: React.FC = () => {
                       Oracle:
                     </Box>
                     <Box fontSize={'14px'} fontWeight={'500'} color={'#ebecf2'}>
-                      Chainlink
+                      {extraPoolData && shortenAddress(extraPoolData.oracle)}
                     </Box>
                   </Box>
                 </Box>
@@ -976,232 +1113,22 @@ const LendDetailPage: React.FC = () => {
                       Whitelist:
                     </Box>
                     <Box fontSize={'14px'} fontWeight={'500'} color={'#ebecf2'}>
-                      Yes
+                      {extraPoolData
+                        ? extraPoolData.enforceWhitelist
+                          ? 'Yes'
+                          : 'No'
+                        : '?'}
                     </Box>
                   </Box>
                 </Box>
               </Box>
             </Box>
           </Box>
-          <Box
-            flex={'1'}
-            borderRadius={'20px'}
-            bgcolor={'#232734'}
-            display={'flex'}
-            flexDirection={'column'}
-            sx={{ minWidth: { xs: '55%', sm: '35%' } }}
-          >
-            <Box
-              height={'70px'}
-              borderBottom={'solid 1px #32394d'}
-              display={'flex'}
-              justifyContent={'space-between'}
-              alignItems={'center'}
-            >
-              <Box
-                px={'30px'}
-                fontSize={'18px'}
-                fontWeight={'500'}
-                lineHeight={'1'}
-              >
-                QUICK Statistics
-              </Box>
-              <Box mr={'30px'} display={'flex'} fontSize={'14px'}>
-                <CustomSelect arrowcolor={'#428afa'}>
-                  <SmOption value={'QUICK'}>QUICK</SmOption>
-                  <SmOption value={'123123'}>123123</SmOption>
-                  <SmOption value={'12313212'}>12313212</SmOption>
-                </CustomSelect>
-              </Box>
-            </Box>
-            <Box flex={1} pb={'16px'} display={'flex'} flexDirection={'column'}>
-              <Box flex={1} position={'relative'} pt={'10px'} paddingX={'30px'}>
-                <Box
-                  ml={'-5px'}
-                  mr={'auto'}
-                  padding={'6px 7px'}
-                  fontSize={'10px'}
-                  borderRadius={'4px'}
-                  border={'solid 1px #3e4252'}
-                  display={'inline-block'}
-                >
-                  Current Utilization
-                </Box>
-                <Box mb={'20px'} borderLeft={'1px dashed #484c58'}>
-                  <ReactApexChart
-                    options={{
-                      chart: {
-                        type: 'line',
-                        zoom: {
-                          enabled: false,
-                        },
-                        toolbar: {
-                          show: false,
-                        },
-                      },
-                      dataLabels: {
-                        enabled: false,
-                      },
-                      colors: ['#4289ff', '#fa6358'],
-                      markers: {
-                        size: [1, 1],
-                        colors: undefined,
-                        strokeColors: ['#4289ff', '#fa6358'],
-                        discrete: [
-                          {
-                            seriesIndex: 0,
-                            dataPointIndex: 0,
-                            fillColor: '#4289ff',
-                            strokeColor: '#fff',
-                            size: 5,
-                            shape: 'circle',
-                          },
-                          {
-                            seriesIndex: 1,
-                            dataPointIndex: 0,
-                            fillColor: '#fa6358',
-                            strokeColor: '#eee',
-                            size: 5,
-                            shape: 'circle',
-                          },
-                        ],
-                      },
-                      stroke: {
-                        curve: 'smooth',
-                      },
-                      title: {
-                        text: '',
-                        align: 'left',
-                      },
-                      grid: {
-                        show: false,
-                        padding: {
-                          top: 0,
-                          right: 0,
-                          bottom: -10,
-                          left: 5,
-                        },
-                      },
-                      xaxis: {
-                        position: 'top',
-                        axisBorder: {
-                          show: false,
-                        },
-                        labels: {
-                          show: false,
-                        },
-                        axisTicks: {
-                          show: false,
-                        },
-                      },
-                      yaxis: {
-                        show: false,
-                      },
-                      tooltip: {
-                        enabled: false,
-                      },
-                      legend: {
-                        show: false,
-                      },
-                    }}
-                    series={[
-                      {
-                        name: 'first',
-                        data: [0, 41, 35, 51, 49, 62, 69, 91, 148],
-                      },
-                      {
-                        name: 'second',
-                        data: [62, 69, 91, 0, 41, 35, 51, 49, 148],
-                      },
-                    ]}
-                    type='line'
-                    height={'100%'}
-                  />
-                </Box>
-              </Box>
-              <Box
-                display={'flex'}
-                justifyContent={'space-around'}
-                paddingY={'20px'}
-                borderTop={'1px solid #32394d'}
-              >
-                <Box
-                  display={'flex'}
-                  flexDirection={'column'}
-                  alignItems={'center'}
-                  gridGap={'8px'}
-                >
-                  <Box textAlign={'center'} fontSize={'14px'} color={'#c7cad9'}>
-                    Collateral Factor:
-                  </Box>
-                  <Box textAlign={'center'} fontSize={'14px'} color={'#ebecf2'}>
-                    60%
-                  </Box>
-                </Box>
-                <Box
-                  display={'flex'}
-                  flexDirection={'column'}
-                  alignItems={'center'}
-                  gridGap={'8px'}
-                >
-                  <Box textAlign={'center'} fontSize={'14px'} color={'#c7cad9'}>
-                    Reserve Factor:
-                  </Box>
-                  <Box textAlign={'center'} fontSize={'14px'} color={'#ebecf2'}>
-                    60%
-                  </Box>
-                </Box>
-              </Box>
-              <Box
-                display={'flex'}
-                justifyContent={'space-around'}
-                paddingY={'20px'}
-                borderTop={'1px solid #32394d'}
-              >
-                <Box
-                  display={'flex'}
-                  flexDirection={'column'}
-                  alignItems={'center'}
-                  gridGap={'8px'}
-                >
-                  <Box textAlign={'center'} fontSize={'14px'} color={'#c7cad9'}>
-                    Total Supplied:
-                  </Box>
-                  <Box textAlign={'center'} fontSize={'14px'} color={'#ebecf2'}>
-                    $2.3M
-                  </Box>
-                </Box>
-                <Box
-                  display={'flex'}
-                  flexDirection={'column'}
-                  alignItems={'center'}
-                  gridGap={'8px'}
-                >
-                  <Box textAlign={'center'} fontSize={'14px'} color={'#c7cad9'}>
-                    Total Borrowed:
-                  </Box>
-                  <Box textAlign={'center'} fontSize={'14px'} color={'#ebecf2'}>
-                    $0
-                  </Box>
-                </Box>
-                <Box
-                  display={'flex'}
-                  flexDirection={'column'}
-                  alignItems={'center'}
-                  gridGap={'8px'}
-                >
-                  <Box textAlign={'center'} fontSize={'14px'} color={'#c7cad9'}>
-                    Utilization:
-                  </Box>
-                  <Box textAlign={'center'} fontSize={'14px'} color={'#ebecf2'}>
-                    0%
-                  </Box>
-                </Box>
-              </Box>
-            </Box>
-          </Box>
+
+          {poolData && <AssetStats poolData={poolData} />}
         </Box>
       </Box>
+
       {modalType && (
         <ModalParent
           notoolbar={modalNotoolbar}
@@ -1253,6 +1180,233 @@ const LendDetailPage: React.FC = () => {
         </ModalParent>
       )}
     </>
+  );
+};
+
+const AssetStats = ({ poolData }: { poolData: PoolData }) => {
+  const asset = poolData.assets[0];
+  const sdk = asset.cToken.sdk;
+
+  return (
+    <Box
+      flex={'1'}
+      borderRadius={'20px'}
+      bgcolor={'#232734'}
+      display={'flex'}
+      flexDirection={'column'}
+      sx={{ minWidth: { xs: '55%', sm: '35%' } }}
+    >
+      <Box
+        height={'70px'}
+        borderBottom={'solid 1px #32394d'}
+        display={'flex'}
+        justifyContent={'space-between'}
+        alignItems={'center'}
+      >
+        <Box px={'30px'} fontSize={'18px'} fontWeight={'500'} lineHeight={'1'}>
+          {asset.underlyingName} Statistics
+        </Box>
+        <Box mr={'30px'} display={'flex'} fontSize={'14px'}>
+          <CustomSelect arrowcolor={'#428afa'}>
+            {poolData.assets.map((asset, i) => (
+              <SmOption key={i} value={i}>
+                {asset.underlyingName}
+              </SmOption>
+            ))}
+          </CustomSelect>
+        </Box>
+      </Box>
+      <Box flex={1} pb={'16px'} display={'flex'} flexDirection={'column'}>
+        <Box flex={1} position={'relative'} pt={'10px'} paddingX={'30px'}>
+          <Box
+            ml={'-5px'}
+            mr={'auto'}
+            padding={'6px 7px'}
+            fontSize={'10px'}
+            borderRadius={'4px'}
+            border={'solid 1px #3e4252'}
+            display={'inline-block'}
+          >
+            Current Utilization
+          </Box>
+          <Box mb={'20px'} borderLeft={'1px dashed #484c58'}>
+            <ReactApexChart
+              options={{
+                chart: {
+                  type: 'line',
+                  zoom: {
+                    enabled: false,
+                  },
+                  toolbar: {
+                    show: false,
+                  },
+                },
+                dataLabels: {
+                  enabled: false,
+                },
+                colors: ['#4289ff', '#fa6358'],
+                markers: {
+                  size: [1, 1],
+                  colors: undefined,
+                  strokeColors: ['#4289ff', '#fa6358'],
+                  discrete: [
+                    {
+                      seriesIndex: 0,
+                      dataPointIndex: 0,
+                      fillColor: '#4289ff',
+                      strokeColor: '#fff',
+                      size: 5,
+                      shape: 'circle',
+                    },
+                    {
+                      seriesIndex: 1,
+                      dataPointIndex: 0,
+                      fillColor: '#fa6358',
+                      strokeColor: '#eee',
+                      size: 5,
+                      shape: 'circle',
+                    },
+                  ],
+                },
+                stroke: {
+                  curve: 'smooth',
+                },
+                title: {
+                  text: '',
+                  align: 'left',
+                },
+                grid: {
+                  show: false,
+                  padding: {
+                    top: 0,
+                    right: 0,
+                    bottom: -10,
+                    left: 5,
+                  },
+                },
+                xaxis: {
+                  position: 'top',
+                  axisBorder: {
+                    show: false,
+                  },
+                  labels: {
+                    show: false,
+                  },
+                  axisTicks: {
+                    show: false,
+                  },
+                },
+                yaxis: {
+                  show: false,
+                },
+                tooltip: {
+                  enabled: false,
+                },
+                legend: {
+                  show: false,
+                },
+              }}
+              series={[
+                {
+                  name: 'first',
+                  data: [0, 41, 35, 51, 49, 62, 69, 91, 148],
+                },
+                {
+                  name: 'second',
+                  data: [62, 69, 91, 0, 41, 35, 51, 49, 148],
+                },
+              ]}
+              type='line'
+              height={'100%'}
+            />
+          </Box>
+        </Box>
+        <Box
+          display={'flex'}
+          justifyContent={'space-around'}
+          paddingY={'20px'}
+          borderTop={'1px solid #32394d'}
+        >
+          <Box
+            display={'flex'}
+            flexDirection={'column'}
+            alignItems={'center'}
+            gridGap={'8px'}
+          >
+            <Box textAlign={'center'} fontSize={'14px'} color={'#c7cad9'}>
+              Collateral Factor:
+            </Box>
+            <Box textAlign={'center'} fontSize={'14px'} color={'#ebecf2'}>
+              {asset.collateralFactor.div(sdk.web3.utils.toBN(1e16)).toNumber()}
+              %
+            </Box>
+          </Box>
+          <Box
+            display={'flex'}
+            flexDirection={'column'}
+            alignItems={'center'}
+            gridGap={'8px'}
+          >
+            <Box textAlign={'center'} fontSize={'14px'} color={'#c7cad9'}>
+              Reserve Factor:
+            </Box>
+            <Box textAlign={'center'} fontSize={'14px'} color={'#ebecf2'}>
+              {asset.reserveFactor.div(sdk.web3.utils.toBN(1e16)).toNumber()}%
+            </Box>
+          </Box>
+        </Box>
+        <Box
+          display={'flex'}
+          justifyContent={'space-around'}
+          paddingY={'20px'}
+          borderTop={'1px solid #32394d'}
+        >
+          <Box
+            display={'flex'}
+            flexDirection={'column'}
+            alignItems={'center'}
+            gridGap={'8px'}
+          >
+            <Box textAlign={'center'} fontSize={'14px'} color={'#c7cad9'}>
+              Total Supplied:
+            </Box>
+            <Box textAlign={'center'} fontSize={'14px'} color={'#ebecf2'}>
+              {shortUsdFormatter(asset.totalSupplyUSD)}
+            </Box>
+          </Box>
+          <Box
+            display={'flex'}
+            flexDirection={'column'}
+            alignItems={'center'}
+            gridGap={'8px'}
+          >
+            <Box textAlign={'center'} fontSize={'14px'} color={'#c7cad9'}>
+              Total Borrowed:
+            </Box>
+            <Box textAlign={'center'} fontSize={'14px'} color={'#ebecf2'}>
+              {shortUsdFormatter(asset.totalBorrowUSD)}
+            </Box>
+          </Box>
+          <Box
+            display={'flex'}
+            flexDirection={'column'}
+            alignItems={'center'}
+            gridGap={'8px'}
+          >
+            <Box textAlign={'center'} fontSize={'14px'} color={'#c7cad9'}>
+              Utilization:
+            </Box>
+            <Box textAlign={'center'} fontSize={'14px'} color={'#ebecf2'}>
+              {asset.totalSupplyUSD.toString() === '0'
+                ? '0%'
+                : ((asset.totalBorrowUSD / asset.totalSupplyUSD) * 100).toFixed(
+                    0,
+                  ) + '%'}
+            </Box>
+          </Box>
+        </Box>
+      </Box>
+    </Box>
   );
 };
 
