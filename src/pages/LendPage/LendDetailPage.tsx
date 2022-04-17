@@ -391,15 +391,14 @@ const LendDetailPage: React.FC = () => {
                 </TableHead>
                 <TableBody>
                   {poolData?.assets.map((asset, i) => (
-                    <TableRow
-                      key={asset.cToken.address}
-                      onClick={() => {
-                        setSelectedAsset(asset);
-                        setModalType('quick');
-                        setModalIsBorrow(false);
-                      }}
-                    >
-                      <ItemTableCell>
+                    <TableRow key={asset.cToken.address}>
+                      <ItemTableCell
+                        onClick={() => {
+                          setSelectedAsset(asset);
+                          setModalType('quick');
+                          setModalIsBorrow(false);
+                        }}
+                      >
                         <Box
                           paddingY={'20px'}
                           display={'flex'}
@@ -436,7 +435,13 @@ const LendDetailPage: React.FC = () => {
                           </Box>
                         </Box>
                       </ItemTableCell>
-                      <ItemTableCell>
+                      <ItemTableCell
+                        onClick={() => {
+                          setSelectedAsset(asset);
+                          setModalType('quick');
+                          setModalIsBorrow(false);
+                        }}
+                      >
                         <Box
                           paddingY={'20px'}
                           display={'flex'}
@@ -467,7 +472,13 @@ const LendDetailPage: React.FC = () => {
                           </Box>
                         </Box>
                       </ItemTableCell>
-                      <ItemTableCell>
+                      <ItemTableCell
+                        onClick={() => {
+                          setSelectedAsset(asset);
+                          setModalType('quick');
+                          setModalIsBorrow(false);
+                        }}
+                      >
                         <Box
                           paddingY={'20px'}
                           display={'flex'}
@@ -483,7 +494,7 @@ const LendDetailPage: React.FC = () => {
                               color={'#ebecf2'}
                               textAlign={'right'}
                             >
-                              {asset.supplyBalanceUSD}
+                              {midUsdFormatter(asset.supplyBalanceUSD)}
                             </Box>
                             <Box
                               fontSize={'13px'}
@@ -498,7 +509,7 @@ const LendDetailPage: React.FC = () => {
                                         .pow(asset.underlyinDecimals),
                                     )
                                     .toNumber()
-                                : '?'}
+                                : '?'}{' '}
                               {asset.underlyingSymbol}
                             </Box>
                           </Box>
@@ -511,6 +522,7 @@ const LendDetailPage: React.FC = () => {
                           justifyContent={'flex-end'}
                         >
                           <AntSwitch
+                            defaultChecked={asset.membership}
                             onChange={() => {
                               toggleCollateral(
                                 asset,
@@ -679,7 +691,7 @@ const LendDetailPage: React.FC = () => {
                                           .pow(asset.underlyinDecimals),
                                       )
                                       .toNumber()
-                                  : '?'}
+                                  : '?'}{' '}
                                 {asset.underlyingSymbol}
                               </Box>
                             </Box>
@@ -701,7 +713,7 @@ const LendDetailPage: React.FC = () => {
                                 color={'#ebecf2'}
                                 textAlign={'right'}
                               >
-                                {asset.liquidityUSD}
+                                {midUsdFormatter(asset.liquidityUSD)}
                               </Box>
                               <Box
                                 fontSize={'13px'}
@@ -716,7 +728,7 @@ const LendDetailPage: React.FC = () => {
                                           .pow(asset.underlyinDecimals),
                                       )
                                       .toNumber()
-                                  : '?'}
+                                  : '?'}{' '}
                                 {asset.underlyingSymbol}
                               </Box>
                             </Box>

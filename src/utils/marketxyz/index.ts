@@ -23,11 +23,15 @@ const fetchGasForCall = async (
 ) => {
   const estimatedGas = sdk.web3.utils.toBN(
     (
-      (await call.estimateGas({
-        from: address,
-        // Cut amountBN in half in case it screws up the gas estimation by causing a fail in the event that it accounts for gasPrice > 0 which means there will not be enough ETH (after paying gas)
-        value: amountBN.div(sdk.web3.utils.toBN(2)),
-      })) *
+      Number(
+        (
+          await call.estimateGas({
+            from: address,
+            // Cut amountBN in half in case it screws up the gas estimation by causing a fail in the event that it accounts for gasPrice > 0 which means there will not be enough ETH (after paying gas)
+            value: amountBN.div(sdk.web3.utils.toBN(2)),
+          })
+        ).toString(),
+      ) *
       // 50% more gas for limit:
       1.5
     ).toFixed(0),
@@ -45,7 +49,7 @@ const fetchGasForCall = async (
 
 const checkAndApproveCToken = async (
   asset: USDPricedPoolAsset,
-  amount: BN,
+  amountBN: BN,
   address: string,
 ) => {
   const cToken = asset.cToken;
@@ -62,8 +66,12 @@ const checkAndApproveCToken = async (
     .sub(sdk.web3.utils.toBN(1));
 
   const hasApprovedEnough = sdk.web3.utils
-    .toBN(await underlyingContract.methods.allowance(address, cToken.address))
-    .gte(amount);
+    .toBN(
+      await underlyingContract.methods
+        .allowance(address, cToken.address)
+        .call(),
+    )
+    .gte(amountBN);
 
   if (!hasApprovedEnough) {
     await underlyingContract.methods
@@ -74,7 +82,7 @@ const checkAndApproveCToken = async (
 
 export const supply = async (
   asset: USDPricedPoolAsset,
-  amount: BN | string | number,
+  amount: number,
   address: string,
   enableAsCollateral: boolean,
 ) => {
@@ -82,7 +90,9 @@ export const supply = async (
   const sdk = cToken.sdk;
 
   const isETH = asset.underlyingToken === ETH_TOKEN_DATA.address;
-  const amountBN = sdk.web3.utils.toBN(Number(amount).toFixed(0));
+  const amountBN = sdk.web3.utils.toBN(
+    Number(amount * 10 ** asset.underlyinDecimals.toNumber()).toFixed(0),
+  );
 
   const comptroller = new Comptroller(
     sdk,
@@ -124,14 +134,16 @@ export const supply = async (
 
 export const repayBorrow = async (
   asset: USDPricedPoolAsset,
-  amount: BN | string | number,
+  amount: number,
   address: string,
 ) => {
   const cToken = asset.cToken;
   const sdk = cToken.sdk;
 
   const isETH = asset.underlyingToken === ETH_TOKEN_DATA.address;
-  const amountBN = sdk.web3.utils.toBN(Number(amount).toFixed(0));
+  const amountBN = sdk.web3.utils.toBN(
+    Number(amount * 10 ** asset.underlyinDecimals.toNumber()).toFixed(0),
+  );
 
   const isRepayingMax = amountBN.eq(asset.borrowBalance) && !isETH;
 
@@ -176,7 +188,7 @@ export const toggleCollateral = (
   comptroller: Comptroller,
   address: string,
 ) => {
-  if (asset.membership) {
+  if (!asset.membership) {
     return comptroller.enterMarkets([asset.cToken.address], { from: address });
   } else {
     return comptroller.exitMarket(asset.cToken.address, { from: address });
@@ -185,24 +197,28 @@ export const toggleCollateral = (
 
 export const withdraw = (
   asset: USDPricedPoolAsset,
-  amount: BN | string | number,
+  amount: number,
   address: string,
 ) => {
   const cToken = asset.cToken;
   const sdk = cToken.sdk;
 
-  const amountBN = sdk.web3.utils.toBN(Number(amount).toFixed(0));
+  const amountBN = sdk.web3.utils.toBN(
+    Number(amount * 10 ** asset.underlyinDecimals.toNumber()).toFixed(0),
+  );
   return cToken.redeemUnderlying(amountBN, { from: address });
 };
 
 export const borrow = (
   asset: USDPricedPoolAsset,
-  amount: BN | string | number,
+  amount: number,
   address: string,
 ) => {
   const cToken = asset.cToken;
   const sdk = cToken.sdk;
 
-  const amountBN = sdk.web3.utils.toBN(Number(amount).toFixed(0));
+  const amountBN = sdk.web3.utils.toBN(
+    Number(amount * 10 ** asset.underlyinDecimals.toNumber()).toFixed(0),
+  );
   return cToken.borrow(amountBN, { from: address });
 };

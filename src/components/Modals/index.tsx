@@ -342,18 +342,11 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
                 asset.underlyingSymbol
               ) : (
                 <>
-                  {(
-                    Number(asset.supplyBalance.toString()) /
-                    10 ** Number(asset.underlyinDecimals.toString())
-                  ).toFixed(3) +
+                  {asset.supplyBalanceUSD.toFixed(3) +
                     ' ' +
                     asset.underlyingSymbol}
                   <ArrowForward fontSize='small' />
-                  {(
-                    Number(asset.supplyBalance.toString()) /
-                      10 ** Number(asset.underlyinDecimals.toString()) +
-                    Number(value)
-                  ).toFixed(3) +
+                  {(asset.supplyBalanceUSD + Number(value)).toFixed(3) +
                     ' ' +
                     asset.underlyingSymbol}
                 </>
@@ -403,26 +396,14 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
             <Box color={'#c7cad9'}>Borrowed balance:</Box>
             <Box display={'flex'} alignItems={'center'} gridGap={'10px'}>
               {!modalSetting.setModalIsConfirm.value ? (
-                (
-                  Number(asset.borrowBalance.toString()) /
-                  10 ** Number(asset.underlyinDecimals.toString())
-                ).toFixed(3) +
-                ' ' +
-                asset.underlyingSymbol
+                asset.borrowBalanceUSD.toFixed(3) + ' ' + asset.underlyingSymbol
               ) : (
                 <>
-                  {(
-                    Number(asset.borrowBalance.toString()) /
-                    10 ** Number(asset.underlyinDecimals.toString())
-                  ).toFixed(3) +
+                  {asset.borrowBalanceUSD.toFixed(3) +
                     ' ' +
                     asset.underlyingSymbol}
                   <ArrowForward fontSize='small' />
-                  {(
-                    Number(asset.borrowBalance.toString()) /
-                      10 ** Number(asset.underlyinDecimals.toString()) +
-                    Number(value)
-                  ).toFixed(3) +
+                  {(asset.borrowBalanceUSD + Number(value)).toFixed(3) +
                     ' ' +
                     asset.underlyingSymbol}
                 </>
@@ -434,26 +415,14 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
             <Box color={'#c7cad9'}>Supplied balance:</Box>
             <Box display={'flex'} alignItems={'center'} gridGap={'10px'}>
               {!modalSetting.setModalIsConfirm.value ? (
-                (
-                  Number(asset.supplyBalance.toString()) /
-                  10 ** Number(asset.underlyinDecimals.toString())
-                ).toFixed(3) +
-                ' ' +
-                asset.underlyingSymbol
+                asset.supplyBalanceUSD.toFixed(3) + ' ' + asset.underlyingSymbol
               ) : (
                 <>
-                  {(
-                    Number(asset.supplyBalance.toString()) /
-                    10 ** Number(asset.underlyinDecimals.toString())
-                  ).toFixed(3) +
+                  {asset.supplyBalanceUSD.toFixed(3) +
                     ' ' +
                     asset.underlyingSymbol}
                   <ArrowForward fontSize='small' />
-                  {(
-                    Number(asset.supplyBalance.toString()) /
-                      10 ** Number(asset.underlyinDecimals.toString()) +
-                    Number(value)
-                  ).toFixed(3) +
+                  {(asset.supplyBalanceUSD + Number(value)).toFixed(3) +
                     ' ' +
                     asset.underlyingSymbol}
                 </>
@@ -477,26 +446,14 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
             <Box color={'#c7cad9'}>Total Debt balance:</Box>
             <Box>
               {!modalSetting.setModalIsConfirm.value ? (
-                (
-                  Number(asset.borrowBalance.toString()) /
-                  10 ** Number(asset.underlyinDecimals.toString())
-                ).toFixed(3) +
-                ' ' +
-                asset.underlyingSymbol
+                asset.borrowBalanceUSD.toFixed(3) + ' ' + asset.underlyingSymbol
               ) : (
                 <>
-                  {(
-                    Number(asset.borrowBalance.toString()) /
-                    10 ** Number(asset.underlyinDecimals.toString())
-                  ).toFixed(3) +
+                  {asset.borrowBalanceUSD.toFixed(3) +
                     ' ' +
                     asset.underlyingSymbol}
                   <ArrowForward fontSize='small' />
-                  {(
-                    Number(asset.borrowBalance.toString()) /
-                      10 ** Number(asset.underlyinDecimals.toString()) +
-                    Number(value)
-                  ).toFixed(3) +
+                  {(asset.borrowBalanceUSD + Number(value)).toFixed(3) +
                     ' ' +
                     asset.underlyingSymbol}
                 </>

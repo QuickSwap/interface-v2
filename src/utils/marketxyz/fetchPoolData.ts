@@ -66,14 +66,13 @@ export const fetchPoolData = async (
   let totalSuppliedUSD = 0;
   let totalBorrowedUSD = 0;
 
-  const ethPrice = sdk.web3.utils
-    .toBN(Math.round((await getEthPrice())[0] * 1e10))
-    .mul(sdk.web3.utils.toBN(1e8));
-
-  const _1e36 = sdk.web3.utils.toBN(1e4).pow(sdk.web3.utils.toBN(9));
+  const ethPrice = Number((await getEthPrice())[0].toString());
+  // const _1e36 = sdk.web3.utils.toBN(10).pow(sdk.web3.utils.toBN(36));
 
   await Promise.all(
     assets.map(async (asset) => {
+      const underlyingPrice = Number(asset.underlyingPrice.toString());
+
       asset.isPaused = await pool.comptroller.borrowGuardianPaused(
         asset.cToken.address,
       );
@@ -81,41 +80,31 @@ export const fetchPoolData = async (
         asset.cToken.address,
       );
 
-      asset.supplyBalanceUSD = asset.supplyBalance
-        .mul(asset.underlyingPrice)
-        .mul(ethPrice)
-        .div(_1e36)
-        .toNumber();
+      asset.supplyBalanceUSD =
+        (Number(asset.supplyBalance.toString()) * underlyingPrice * ethPrice) /
+        1e36;
 
-      asset.borrowBalanceUSD = asset.borrowBalance
-        .mul(asset.underlyingPrice)
-        .mul(ethPrice)
-        .div(_1e36)
-        .toNumber();
+      asset.borrowBalanceUSD =
+        (Number(asset.borrowBalance.toString()) * underlyingPrice * ethPrice) /
+        1e36;
 
       totalSupplyBalanceUSD += asset.supplyBalanceUSD;
       totalBorrowBalanceUSD += asset.borrowBalanceUSD;
 
-      asset.totalSupplyUSD = asset.totalSupply
-        .mul(asset.underlyingPrice)
-        .mul(ethPrice)
-        .div(_1e36)
-        .toNumber();
+      asset.totalSupplyUSD =
+        (Number(asset.borrowBalance.toString()) * underlyingPrice * ethPrice) /
+        1e36;
 
-      asset.totalBorrowUSD = asset.totalBorrow
-        .mul(asset.underlyingPrice)
-        .mul(ethPrice)
-        .div(_1e36)
-        .toNumber();
+      asset.totalBorrowUSD =
+        (Number(asset.totalBorrow.toString()) * underlyingPrice * ethPrice) /
+        1e36;
 
       totalSuppliedUSD += asset.totalSupplyUSD;
       totalBorrowedUSD += asset.totalBorrowUSD;
 
-      asset.liquidityUSD = asset.liquidity
-        .mul(asset.underlyingPrice)
-        .mul(ethPrice)
-        .div(_1e36)
-        .toNumber();
+      asset.liquidityUSD =
+        (Number(asset.liquidity.toString()) * underlyingPrice * ethPrice) /
+        1e36;
 
       totalLiquidityUSD += asset.liquidityUSD;
     }),
