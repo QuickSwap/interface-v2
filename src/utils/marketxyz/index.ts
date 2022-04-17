@@ -52,8 +52,7 @@ const checkAndApproveCToken = async (
   const sdk = cToken.sdk;
 
   const underlyingContract = new sdk.web3.eth.Contract(
-    // @ts-ignore
-    ERC20_ABI,
+    ERC20_ABI as any,
     asset.underlyingToken,
   );
 
@@ -90,8 +89,7 @@ export const supply = async (
     const ethBalance = await sdk.web3.eth.getBalance(address);
 
     if (amountBN.toString() === ethBalance.toString()) {
-      // @ts-ignore
-      const call = cToken.contract.methods.mint();
+      const call = (cToken.contract.methods.mint as any)();
 
       // Subtract gas for max ETH
       const { gasWEI, gasPrice, estimatedGas } = await fetchGasForCall(
@@ -103,15 +101,13 @@ export const supply = async (
 
       await call.send({
         from: address,
-        // @ts-ignore
         value: amountBN.sub(gasWEI),
 
         gasPrice,
         gas: estimatedGas,
-      });
+      } as any);
     } else {
-      // @ts-ignore
-      await cToken.mint({ from: address, value: amountBN });
+      await (cToken.mint as any)({ from: address, value: amountBN });
     }
   } else {
     await checkAndApproveCToken(asset, amountBN, address);
@@ -149,8 +145,7 @@ export const repayBorrow = async (
   const ethBalance = await sdk.web3.eth.getBalance(address);
 
   if (amountBN.toString() === ethBalance.toString()) {
-    // @ts-ignore
-    const call = cToken.contract.methods.repayBorrow();
+    const call = (cToken.contract.methods.repayBorrow as any)();
 
     // Subtract gas for max ETH
     const { gasWEI, gasPrice, estimatedGas } = await fetchGasForCall(
@@ -162,15 +157,13 @@ export const repayBorrow = async (
 
     await call.send({
       from: address,
-      // @ts-ignore
       value: amountBN.sub(gasWEI),
 
       gasPrice,
       gas: estimatedGas,
-    });
+    } as any);
   } else {
-    // @ts-ignore
-    await cToken.repayBorrow({ from: address, value: amountBN });
+    await (cToken.repayBorrow as any)({ from: address, value: amountBN });
   }
 };
 

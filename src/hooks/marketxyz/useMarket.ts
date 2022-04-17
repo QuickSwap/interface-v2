@@ -8,11 +8,10 @@ export const useMarket = () => {
   const [sdk, setSDK] = useState<MarketSDK>();
 
   useEffect(() => {
-    MarketSDK
-      // @ts-ignore
-      .init(new Web3(library.provider))
-      .then(setSDK);
-  }, []);
+    if (library) {
+      MarketSDK.init(new Web3(library.provider as any)).then(setSDK);
+    }
+  }, [library]);
 
   return { sdk };
 };
