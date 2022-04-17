@@ -310,7 +310,9 @@ const LendDetailPage: React.FC = () => {
                 height={'100%'}
               />
             </Box>
-            <Box sx={{ order: { xs: 3, sm: 3, md: 3 } }}>$0</Box>
+            <Box sx={{ order: { xs: 3, sm: 3, md: 3 } }}>
+              {borrowLimit ? midUsdFormatter(borrowLimit) : '?'}
+            </Box>
           </Box>
         </Box>
         <Box
@@ -595,7 +597,7 @@ const LendDetailPage: React.FC = () => {
                         display={'flex'}
                         justifyContent={'flex-end'}
                       >
-                        Deposited
+                        Borrowed
                       </Box>
                     </MuiTableCell>
                     <MuiTableCell>
@@ -676,7 +678,7 @@ const LendDetailPage: React.FC = () => {
                                 color={'#ebecf2'}
                                 textAlign={'right'}
                               >
-                                {asset.borrowBalanceUSD}
+                                {midUsdFormatter(asset.borrowBalanceUSD)}
                               </Box>
                               <Box
                                 fontSize={'13px'}
