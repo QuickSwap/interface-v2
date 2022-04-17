@@ -1,9 +1,17 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Box, Button, Input, ModalProps, withStyles } from '@material-ui/core';
 import styled, { keyframes } from 'styled-components';
 import AntSwitch from 'components/AntSwitch';
 import { ArrowForward } from '@material-ui/icons';
+import { USDPricedPoolAsset } from 'utils/marketxyz/fetchPoolData';
+import { midUsdFormatter } from 'utils/bigUtils';
+
+import * as MarketUtils from 'utils/marketxyz';
+import { convertMantissaToAPR, convertMantissaToAPY } from 'utils/marketxyz';
+
+import { getEthPrice } from 'utils';
+import { useActiveWeb3React } from 'hooks';
 
 interface ModalParentProps {
   notitle?: boolean;
@@ -28,6 +36,7 @@ const ModalParent: React.FC<ModalParentProps> = ({
 
   const modalContentBox = useRef<any>(null);
   const modalBackBox = useRef<any>(null);
+
   useEffect(() => {
     const handle = (event: any) => {
       if (
@@ -43,6 +52,7 @@ const ModalParent: React.FC<ModalParentProps> = ({
       window.removeEventListener('click', handle);
     };
   }, []);
+
   return (
     <ModalBack ref={modalBackBox}>
       <ModalBox ref={modalContentBox}>
@@ -116,16 +126,32 @@ interface QuickModalContentProps extends ModalContentProps {
   confirm?: boolean;
   withdraw?: boolean;
   borrow?: boolean;
+  asset: USDPricedPoolAsset;
+  borrowLimit: number;
 }
 export const QuickModalContent: React.FC<QuickModalContentProps> = ({
   modalSetting,
   confirm,
   withdraw,
   borrow,
+  asset,
+  borrowLimit,
 }) => {
+  const { account } = useActiveWeb3React();
+
   const [isRepay, setisRepay] = useState(confirm ? true : false);
   const [isWithdraw, setIsWithdraw] = useState(withdraw ? true : false);
   const [value, setValue] = useState<any>(0);
+  const [enableAsCollateral, setEnableAsCollateral] = useState<boolean>(
+    modalSetting.setModalIsConfirm.value,
+  );
+
+  const [ethPrice, setEthPrice] = useState<number>();
+
+  useEffect(() => {
+    getEthPrice().then(([price]) => setEthPrice(price));
+  }, []);
+
   return (
     <Box display={'flex'} flexDirection={'column'} width={'480px'}>
       {!borrow ? (
@@ -224,8 +250,17 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
         display={'flex'}
         justifyContent={'space-between'}
       >
-        {!borrow ? <Box>SUPPLY AMOUNT</Box> : <Box>SUPPLY AMOUNT</Box>}
-        {!borrow && <Box>Balance: 10.020458</Box>}
+        {!borrow ? <Box>SUPPLY AMOUNT</Box> : <Box>BORROW AMOUNT</Box>}
+        {!borrow && (
+          <Box>
+            Balance:{' '}
+            {(
+              Number(asset.underlyingBalance.toString()) /
+              10 ** Number(asset.underlyinDecimals.toString())
+            ).toFixed(3)}{' '}
+            {asset.underlyingSymbol}
+          </Box>
+        )}
       </Box>
       <Box
         mt={'16px'}
@@ -248,7 +283,17 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
             }}
           />
           <Box fontSize={'12px'} fontWeight={'500'} color={'#696c80'}>
-            ($0)
+            (
+            {ethPrice
+              ? midUsdFormatter(
+                  ((Number(asset.underlyingPrice.toString()) /
+                    10 ** Number(asset.underlyinDecimals.toString()) /
+                    10 ** 17) *
+                    Number(value)) /
+                    ethPrice,
+                )
+              : '?'}
+            )
           </Box>
         </Box>
         <Box>
@@ -262,7 +307,12 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
               color: '#448aff',
             }}
             onClick={() => {
-              setValue(1111);
+              setValue(
+                (
+                  Number(asset.underlyingBalance.toString()) /
+                  10 ** asset.underlyinDecimals.toNumber()
+                ).toFixed(3),
+              );
             }}
           >
             MAX
@@ -284,12 +334,28 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
             <Box color={'#c7cad9'}>Supplied balance:</Box>
             <Box display={'flex'} alignItems={'center'} gridGap={'10px'}>
               {!modalSetting.setModalIsConfirm.value ? (
-                '0 QUICK'
+                (
+                  Number(asset.supplyBalance.toString()) /
+                  10 ** Number(asset.underlyinDecimals.toString())
+                ).toFixed(3) +
+                ' ' +
+                asset.underlyingSymbol
               ) : (
                 <>
-                  0 QUICK
+                  {(
+                    Number(asset.supplyBalance.toString()) /
+                    10 ** Number(asset.underlyinDecimals.toString())
+                  ).toFixed(3) +
+                    ' ' +
+                    asset.underlyingSymbol}
                   <ArrowForward fontSize='small' />
-                  100 QUICK
+                  {(
+                    Number(asset.supplyBalance.toString()) /
+                      10 ** Number(asset.underlyinDecimals.toString()) +
+                    Number(value)
+                  ).toFixed(3) +
+                    ' ' +
+                    asset.underlyingSymbol}
                 </>
               )}
             </Box>
@@ -297,19 +363,21 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
           <Box bgcolor={'#282d3d'} height={'1px'} />
           <Box display={'flex'} justifyContent={'space-between'}>
             <Box color={'#c7cad9'}>Supply APY:</Box>
-            <Box color={'#0fc679'}>12.44%</Box>
+            <Box color={'#0fc679'}>
+              {convertMantissaToAPY(asset.supplyRatePerBlock, 365)}%
+            </Box>
           </Box>
           <Box bgcolor={'#282d3d'} height={'1px'} />
           <Box display={'flex'} justifyContent={'space-between'}>
             <Box color={'#c7cad9'}>Borrow Limit:</Box>
             <Box>
               {!modalSetting.setModalIsConfirm.value ? (
-                '$0'
+                midUsdFormatter(borrowLimit)
               ) : (
                 <>
-                  $0
+                  {midUsdFormatter(borrowLimit)}
                   <ArrowForward fontSize='small' />
-                  $100
+                  {midUsdFormatter(borrowLimit - value)}
                 </>
               )}
             </Box>
@@ -317,7 +385,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
           <Box bgcolor={'#282d3d'} height={'1px'} />
           <Box display={'flex'} justifyContent={'space-between'}>
             <Box color={'#c7cad9'}>Total Debt balance:</Box>
-            <Box>$0.00</Box>
+            <Box>{midUsdFormatter(asset.borrowBalanceUSD)}</Box>
           </Box>
         </Box>
       ) : (
@@ -335,12 +403,28 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
             <Box color={'#c7cad9'}>Borrowed balance:</Box>
             <Box display={'flex'} alignItems={'center'} gridGap={'10px'}>
               {!modalSetting.setModalIsConfirm.value ? (
-                '0 QUICK'
+                (
+                  Number(asset.borrowBalance.toString()) /
+                  10 ** Number(asset.underlyinDecimals.toString())
+                ).toFixed(3) +
+                ' ' +
+                asset.underlyingSymbol
               ) : (
                 <>
-                  0 QUICK
+                  {(
+                    Number(asset.borrowBalance.toString()) /
+                    10 ** Number(asset.underlyinDecimals.toString())
+                  ).toFixed(3) +
+                    ' ' +
+                    asset.underlyingSymbol}
                   <ArrowForward fontSize='small' />
-                  100 QUICK
+                  {(
+                    Number(asset.borrowBalance.toString()) /
+                      10 ** Number(asset.underlyinDecimals.toString()) +
+                    Number(value)
+                  ).toFixed(3) +
+                    ' ' +
+                    asset.underlyingSymbol}
                 </>
               )}
             </Box>
@@ -350,37 +434,71 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
             <Box color={'#c7cad9'}>Supplied balance:</Box>
             <Box display={'flex'} alignItems={'center'} gridGap={'10px'}>
               {!modalSetting.setModalIsConfirm.value ? (
-                '0 QUICK'
+                (
+                  Number(asset.supplyBalance.toString()) /
+                  10 ** Number(asset.underlyinDecimals.toString())
+                ).toFixed(3) +
+                ' ' +
+                asset.underlyingSymbol
               ) : (
                 <>
-                  0 QUICK
+                  {(
+                    Number(asset.supplyBalance.toString()) /
+                    10 ** Number(asset.underlyinDecimals.toString())
+                  ).toFixed(3) +
+                    ' ' +
+                    asset.underlyingSymbol}
                   <ArrowForward fontSize='small' />
-                  100 QUICK
+                  {(
+                    Number(asset.supplyBalance.toString()) /
+                      10 ** Number(asset.underlyinDecimals.toString()) +
+                    Number(value)
+                  ).toFixed(3) +
+                    ' ' +
+                    asset.underlyingSymbol}
                 </>
-              )}{' '}
+              )}
             </Box>
           </Box>
           <Box bgcolor={'#282d3d'} height={'1px'} />
           <Box display={'flex'} justifyContent={'space-between'}>
             <Box color={'#c7cad9'}>Borrow APR:</Box>
-            <Box color={'#0fc679'}>12.44%</Box>
+            <Box color={'#0fc679'}>
+              {convertMantissaToAPR(asset.borrowRatePerBlock)}%
+            </Box>
           </Box>
           <Box bgcolor={'#282d3d'} height={'1px'} />
           <Box display={'flex'} justifyContent={'space-between'}>
             <Box color={'#c7cad9'}>Borrow Limit:</Box>
-            <Box>$0</Box>
+            <Box>{midUsdFormatter(borrowLimit)}</Box>
           </Box>
           <Box bgcolor={'#282d3d'} height={'1px'} />
           <Box display={'flex'} justifyContent={'space-between'}>
             <Box color={'#c7cad9'}>Total Debt balance:</Box>
             <Box>
               {!modalSetting.setModalIsConfirm.value ? (
-                '$0.00'
+                (
+                  Number(asset.borrowBalance.toString()) /
+                  10 ** Number(asset.underlyinDecimals.toString())
+                ).toFixed(3) +
+                ' ' +
+                asset.underlyingSymbol
               ) : (
                 <>
-                  $0.00
+                  {(
+                    Number(asset.borrowBalance.toString()) /
+                    10 ** Number(asset.underlyinDecimals.toString())
+                  ).toFixed(3) +
+                    ' ' +
+                    asset.underlyingSymbol}
                   <ArrowForward fontSize='small' />
-                  $110.00
+                  {(
+                    Number(asset.borrowBalance.toString()) /
+                      10 ** Number(asset.underlyinDecimals.toString()) +
+                    Number(value)
+                  ).toFixed(3) +
+                    ' ' +
+                    asset.underlyingSymbol}
                 </>
               )}
             </Box>
@@ -400,7 +518,12 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
           <Box>Enable as collateral</Box>
           <AntSwitch
             inputProps={{ 'aria-label': 'ant design' }}
-            defaultChecked={modalSetting.setModalIsConfirm.value}
+            defaultChecked={enableAsCollateral}
+            onChange={() => {
+              setEnableAsCollateral(
+                (enableAsCollateral) => !enableAsCollateral,
+              );
+            }}
           />
         </Box>
       )}
@@ -422,6 +545,24 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
             onClick={() => {
               modalSetting.setModalType.set('state');
               modalSetting.setModalNotoolbar.set(true);
+
+              if (!account) {
+                throw new Error('Wallet not connected');
+              }
+
+              if (borrow) {
+                if (isRepay) {
+                  MarketUtils.repayBorrow(asset, value, account);
+                } else {
+                  MarketUtils.borrow(asset, value, account);
+                }
+              } else {
+                if (isWithdraw) {
+                  MarketUtils.withdraw(asset, value, account);
+                } else {
+                  MarketUtils.supply(asset, value, account, enableAsCollateral);
+                }
+              }
             }}
           >
             Confirm

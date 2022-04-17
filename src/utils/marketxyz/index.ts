@@ -74,16 +74,20 @@ const checkAndApproveCToken = async (
 
 export const supply = async (
   asset: USDPricedPoolAsset,
-  amount: number,
+  amount: BN | string | number,
   address: string,
   enableAsCollateral: boolean,
-  comptroller: Comptroller,
 ) => {
   const cToken = asset.cToken;
   const sdk = cToken.sdk;
 
   const isETH = asset.underlyingToken === ETH_TOKEN_DATA.address;
-  const amountBN = sdk.web3.utils.toBN(amount.toFixed(0));
+  const amountBN = sdk.web3.utils.toBN(Number(amount).toFixed(0));
+
+  const comptroller = new Comptroller(
+    sdk,
+    await asset.cToken.contract.methods.comptroller().call(),
+  );
 
   if (isETH) {
     const ethBalance = await sdk.web3.eth.getBalance(address);
@@ -120,14 +124,14 @@ export const supply = async (
 
 export const repayBorrow = async (
   asset: USDPricedPoolAsset,
-  amount: number,
+  amount: BN | string | number,
   address: string,
 ) => {
   const cToken = asset.cToken;
   const sdk = cToken.sdk;
 
   const isETH = asset.underlyingToken === ETH_TOKEN_DATA.address;
-  const amountBN = sdk.web3.utils.toBN(amount.toFixed(0));
+  const amountBN = sdk.web3.utils.toBN(Number(amount).toFixed(0));
 
   const isRepayingMax = amountBN.eq(asset.borrowBalance) && !isETH;
 
@@ -181,18 +185,24 @@ export const toggleCollateral = (
 
 export const withdraw = (
   asset: USDPricedPoolAsset,
-  amount: BN,
+  amount: BN | string | number,
   address: string,
 ) => {
   const cToken = asset.cToken;
-  return cToken.redeemUnderlying(amount, { from: address });
+  const sdk = cToken.sdk;
+
+  const amountBN = sdk.web3.utils.toBN(Number(amount).toFixed(0));
+  return cToken.redeemUnderlying(amountBN, { from: address });
 };
 
 export const borrow = (
   asset: USDPricedPoolAsset,
-  amount: BN,
+  amount: BN | string | number,
   address: string,
 ) => {
   const cToken = asset.cToken;
-  return cToken.borrow(amount, { from: address });
+  const sdk = cToken.sdk;
+
+  const amountBN = sdk.web3.utils.toBN(Number(amount).toFixed(0));
+  return cToken.borrow(amountBN, { from: address });
 };

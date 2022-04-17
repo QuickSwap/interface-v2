@@ -24,7 +24,6 @@ export const useTokensData = (addresses: string[]) => {
     const ret: any[] = [];
 
     if (!tokensData.length) return null;
-    console.log(tokensData);
 
     // Return null altogether
     tokensData.forEach(({ data }) => {

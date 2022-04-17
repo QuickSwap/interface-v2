@@ -36,6 +36,7 @@ import {
   convertMantissaToAPY,
   convertMantissaToAPR,
 } from 'utils/marketxyz';
+import { useBorrowLimit } from 'hooks/marketxyz/useBorrowLimit';
 
 const QS_PoolDirectory = '0x9180296118C8Deb7c5547eF5c1E798DC0405f350';
 
@@ -71,6 +72,7 @@ const LendDetailPage: React.FC = () => {
       confirm: boolean;
     };
   } | null>(null);
+  const [selectedAsset, setSelectedAsset] = useState<USDPricedPoolAsset>();
 
   const { sdk } = useMarket();
   const poolId = location && new URLSearchParams(location.search).get('poolId');
@@ -84,6 +86,8 @@ const LendDetailPage: React.FC = () => {
     poolData?.pool.comptroller,
     account ?? undefined,
   );
+
+  const borrowLimit = useBorrowLimit(poolData?.assets || []);
 
   return (
     <>
@@ -387,13 +391,15 @@ const LendDetailPage: React.FC = () => {
                 </TableHead>
                 <TableBody>
                   {poolData?.assets.map((asset, i) => (
-                    <TableRow key={asset.cToken.address}>
-                      <ItemTableCell
-                        onClick={() => {
-                          setModalType('quick');
-                          setModalIsBorrow(false);
-                        }}
-                      >
+                    <TableRow
+                      key={asset.cToken.address}
+                      onClick={() => {
+                        setSelectedAsset(asset);
+                        setModalType('quick');
+                        setModalIsBorrow(false);
+                      }}
+                    >
+                      <ItemTableCell>
                         <Box
                           paddingY={'20px'}
                           display={'flex'}
@@ -420,7 +426,7 @@ const LendDetailPage: React.FC = () => {
                               color={'#696c80'}
                               textAlign={'right'}
                             >
-                              LTV:
+                              LTV:{' '}
                               {sdk &&
                                 asset.collateralFactor
                                   .div(sdk.web3.utils.toBN(1e16))
@@ -430,12 +436,7 @@ const LendDetailPage: React.FC = () => {
                           </Box>
                         </Box>
                       </ItemTableCell>
-                      <ItemTableCell
-                        onClick={() => {
-                          setModalType('quick');
-                          setModalIsBorrow(false);
-                        }}
-                      >
+                      <ItemTableCell>
                         <Box
                           paddingY={'20px'}
                           display={'flex'}
@@ -466,12 +467,7 @@ const LendDetailPage: React.FC = () => {
                           </Box>
                         </Box>
                       </ItemTableCell>
-                      <ItemTableCell
-                        onClick={() => {
-                          setModalType('quick');
-                          setModalIsBorrow(false);
-                        }}
-                      >
+                      <ItemTableCell>
                         <Box
                           paddingY={'20px'}
                           display={'flex'}
@@ -610,6 +606,7 @@ const LendDetailPage: React.FC = () => {
                       <ItemTableRow
                         key={asset.cToken.address}
                         onClick={() => {
+                          setSelectedAsset(asset);
                           setModalType('quick');
                           setModalIsBorrow(true);
                         }}
@@ -1175,6 +1172,8 @@ const LendDetailPage: React.FC = () => {
               }}
               borrow={modalIsBorrow}
               confirm={modalIsConfirm}
+              asset={selectedAsset!}
+              borrowLimit={borrowLimit}
             />
           )}
         </ModalParent>
