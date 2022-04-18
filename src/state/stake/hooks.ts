@@ -1,11 +1,4 @@
-import {
-  CurrencyAmount,
-  JSBI,
-  Token,
-  TokenAmount,
-  Price,
-  Pair,
-} from '@uniswap/sdk';
+import { CurrencyAmount, JSBI, Token, TokenAmount, Pair } from '@uniswap/sdk';
 import dayjs from 'dayjs';
 import { useMemo, useEffect /** , useState */ } from 'react';
 import { usePairs } from 'data/Reserves';
@@ -188,6 +181,7 @@ export function useSyrupInfo(
   filter?: { search: string; isStaked: boolean },
 ): SyrupInfo[] {
   const { chainId, account } = useActiveWeb3React();
+  const currentTimestamp = dayjs().unix();
 
   const info = useMemo(
     () =>
@@ -196,14 +190,13 @@ export function useSyrupInfo(
             [chainId]?.slice(startIndex, endIndex)
             .filter(
               (syrupInfo) =>
-                syrupInfo.ending > Math.floor(Date.now() / 1000) &&
+                syrupInfo.ending > currentTimestamp &&
                 (tokenToFilterBy === undefined || tokenToFilterBy === null
                   ? getSearchFiltered(syrupInfo, filter ? filter.search : '')
-                  : tokenToFilterBy.equals(syrupInfo.token) &&
-                    tokenToFilterBy.equals(syrupInfo.token)),
+                  : tokenToFilterBy.equals(syrupInfo.token)),
             ) ?? []
         : [],
-    [chainId, tokenToFilterBy, startIndex, endIndex, filter],
+    [chainId, tokenToFilterBy, startIndex, endIndex, filter, currentTimestamp],
   );
 
   const uni = chainId ? GlobalValue.tokens.UNI[chainId] : undefined;
@@ -391,11 +384,13 @@ export function useOldSyrupInfo(
   filter?: { search: string; isStaked: boolean },
 ): SyrupInfo[] {
   const { chainId, account } = useActiveWeb3React();
+  const currentTimestamp = dayjs().unix();
+
   const info = useMemo(() => {
     if (!chainId) return [];
     const endedSyrupInfos =
       returnSyrupInfo(false)[chainId]?.filter(
-        (syrupInfo) => syrupInfo.ending <= Math.floor(Date.now() / 1000),
+        (syrupInfo) => syrupInfo.ending <= currentTimestamp,
       ) ?? [];
     const oldSyrupInfos = returnSyrupInfo(true)[chainId] ?? [];
     const allOldSyrupInfos = endedSyrupInfos.concat(oldSyrupInfos);
@@ -404,10 +399,16 @@ export function useOldSyrupInfo(
       .filter((syrupInfo) =>
         tokenToFilterBy === undefined || tokenToFilterBy === null
           ? getSearchFiltered(syrupInfo, filter ? filter.search : '')
-          : tokenToFilterBy.equals(syrupInfo.token) &&
-            tokenToFilterBy.equals(syrupInfo.token),
+          : tokenToFilterBy.equals(syrupInfo.token),
       );
-  }, [chainId, tokenToFilterBy, startIndex, endIndex, filter]);
+  }, [
+    chainId,
+    tokenToFilterBy,
+    startIndex,
+    endIndex,
+    filter,
+    currentTimestamp,
+  ]);
 
   const uni = chainId ? GlobalValue.tokens.UNI[chainId] : undefined;
 
