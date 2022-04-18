@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import {
   Box,
@@ -30,7 +30,8 @@ import { useActiveWeb3React } from 'hooks';
 import { useMarket } from 'hooks/marketxyz/useMarket';
 import { useTokensData } from 'hooks/marketxyz/useTokenData';
 import { PoolData, USDPricedPoolAsset } from 'utils/marketxyz/fetchPoolData';
-import { Comptroller } from 'market-sdk';
+import JumpRateModel from '../../utils/marketxyz/interestRateModel';
+
 import {
   toggleCollateral,
   convertMantissaToAPY,
@@ -1199,6 +1200,39 @@ const LendDetailPage: React.FC = () => {
 const AssetStats = ({ poolData }: { poolData: PoolData }) => {
   const asset = poolData.assets[0];
   const sdk = asset.cToken.sdk;
+  const [jrm, setJrm] = useState<JumpRateModel>();
+
+  const utilization =
+    asset.totalSupply.toString() === '0'
+      ? 0
+      : parseFloat(
+          // Use Max.min() to cap util at 100%
+          Math.min(
+            (Number(asset.totalBorrow.toString()) /
+              Number(asset.totalSupply.toString())) *
+              100,
+            100,
+          ).toFixed(0),
+        );
+
+  const [borrowerRates, setBorrowerRates] = useState<
+    { x: number; y: number }[]
+  >();
+  const [supplierRates, setSupplyerRates] = useState<
+    { x: number; y: number }[]
+  >();
+
+  useEffect(() => {
+    const _jrm = new JumpRateModel(sdk, asset);
+
+    _jrm.init().then(() => {
+      setJrm(_jrm);
+      const { borrowerRates, supplierRates } = _jrm.convertIRMtoCurve();
+
+      setBorrowerRates(borrowerRates);
+      setSupplyerRates(supplierRates);
+    });
+  }, []);
 
   return (
     <Box
@@ -1308,6 +1342,7 @@ const AssetStats = ({ poolData }: { poolData: PoolData }) => {
                   axisTicks: {
                     show: false,
                   },
+                  categories: supplierRates?.map(({ x }) => x),
                 },
                 yaxis: {
                   show: false,
@@ -1321,12 +1356,12 @@ const AssetStats = ({ poolData }: { poolData: PoolData }) => {
               }}
               series={[
                 {
-                  name: 'first',
-                  data: [0, 41, 35, 51, 49, 62, 69, 91, 148],
+                  name: 'Supplier Rates',
+                  data: supplierRates?.map(({ y }) => y),
                 },
                 {
-                  name: 'second',
-                  data: [62, 69, 91, 0, 41, 35, 51, 49, 148],
+                  name: 'Borrower Rates',
+                  data: borrowerRates?.map(({ y }) => y),
                 },
               ]}
               type='line'

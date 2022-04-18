@@ -4,8 +4,8 @@ import { USDPricedPoolAsset } from './fetchPoolData';
 import { ETH_TOKEN_DATA } from './fetchTokenData';
 import ERC20_ABI from '../../constants/abis/erc20.json';
 
-const BlocksPerMin = 60 / 2;
-const BlocksPerDay = BlocksPerMin * 60 * 24;
+export const BlocksPerMin = 60 / 2;
+export const BlocksPerDay = BlocksPerMin * 60 * 24;
 
 export const convertMantissaToAPY = (mantissa: any, dayRange: number) => {
   return (Math.pow((mantissa / 1e18) * BlocksPerDay + 1, dayRange) - 1) * 100;
