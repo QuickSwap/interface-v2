@@ -13,9 +13,10 @@ import {
   TransactionConfirmationModal,
   ConfirmationModalContent,
 } from 'components';
-import { returnTokenFromKey } from 'utils';
+import { formatTokenAmount, returnTokenFromKey } from 'utils';
 import { useTokenBalance } from 'state/wallet/hooks';
 import { useActiveWeb3React } from 'hooks';
+import { useApproveCallback, ApprovalState } from 'hooks/useApproveCallback';
 import { GlobalConst } from 'constants/index';
 import { useQUICKConversionContract } from 'hooks/useContract';
 import {
@@ -23,6 +24,7 @@ import {
   useTransactionFinalizer,
 } from 'state/transactions/hooks';
 import { parseUnits } from 'ethers/lib/utils';
+import { tryParseAmount } from 'state/swap/hooks';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   wrapper: {
@@ -107,15 +109,21 @@ const ConvertQUICKPage: React.FC = () => {
   const { account, library } = useActiveWeb3React();
   const [quickAmount, setQUICKAmount] = useState('');
   const [quickV2Amount, setQUICKV2Amount] = useState('');
+  const [approving, setApproving] = useState(false);
   const [attemptConverting, setAttemptConverting] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [txPending, setTxPending] = useState(false);
   const [txHash, setTxHash] = useState('');
   const [txError, setTxError] = useState('');
 
-  const quickToken = returnTokenFromKey('QUICK');
+  const quickToken = returnTokenFromKey('OLDQUICK');
   const quickBalance = useTokenBalance(account ?? undefined, quickToken);
   const quickConvertContract = useQUICKConversionContract();
+  const parsedAmount = tryParseAmount(quickAmount, quickToken);
+  const [approval, approveCallback] = useApproveCallback(
+    parsedAmount,
+    quickConvertContract?.address,
+  );
 
   const quickConvertingText = t('convertingQUICKtoQUICKV2', {
     quickAmount,
@@ -137,14 +145,16 @@ const ConvertQUICKPage: React.FC = () => {
   const isInsufficientQUICK =
     Number(quickAmount) > Number(quickBalance?.toExact() ?? 0);
   const buttonText = useMemo(() => {
-    if (isInsufficientQUICK) {
-      return t('insufficientBalance');
-    } else if (quickAmount === '') {
+    if (quickAmount === '') {
       return t('enterAmount');
+    } else if (approval !== ApprovalState.APPROVED) {
+      return t('approve');
+    } else if (isInsufficientQUICK) {
+      return t('insufficientBalance');
     } else {
       return t('convert');
     }
-  }, [isInsufficientQUICK, quickAmount, t]);
+  }, [isInsufficientQUICK, quickAmount, t, approval]);
   const addTransaction = useTransactionAdder();
   const finalizedTransaction = useTransactionFinalizer();
 
@@ -152,13 +162,22 @@ const ConvertQUICKPage: React.FC = () => {
     setShowConfirm(false);
   };
 
+  const attemptToApprove = async () => {
+    setApproving(true);
+    try {
+      await approveCallback();
+      setApproving(false);
+    } catch (e) {
+      setApproving(false);
+    }
+  };
+
   const convertQUICK = async () => {
-    if (quickConvertContract && library) {
+    if (quickConvertContract && library && parsedAmount) {
       setAttemptConverting(true);
       setShowConfirm(true);
-      const quickAmounttoPass = parseUnits(quickAmount, quickToken.decimals);
       await quickConvertContract
-        .quickToQuickX(quickAmounttoPass, {
+        .quickToQuickX(parsedAmount.raw.toString(), {
           gasLimit: 300000,
         })
         .then(async (response: TransactionResponse) => {
@@ -174,7 +193,6 @@ const ConvertQUICKPage: React.FC = () => {
             finalizedTransaction(tx, {
               summary: quickConvertedText,
             });
-            const res = await library.getTransaction(tx.transactionHash);
             setTxPending(false);
             setTxHash(tx.transactionHash);
           } catch (err) {
@@ -219,7 +237,7 @@ const ConvertQUICKPage: React.FC = () => {
         </Box>
         <Box mt={4} mb={2}>
           <Typography variant='body2' color='textSecondary'>
-            {t('yourbalance')}: {quickBalance?.toSignificant(2)}
+            {t('yourbalance')}: {formatTokenAmount(quickBalance)}
           </Typography>
           <Box
             className={cx(
@@ -292,10 +310,19 @@ const ConvertQUICKPage: React.FC = () => {
         <Box display='flex' justifyContent='center'>
           <Button
             disabled={
-              attemptConverting || isInsufficientQUICK || quickAmount === ''
+              approving ||
+              attemptConverting ||
+              isInsufficientQUICK ||
+              quickAmount === ''
             }
             className={classes.convertButton}
-            onClick={convertQUICK}
+            onClick={() => {
+              if (approval === ApprovalState.APPROVED) {
+                convertQUICK();
+              } else {
+                attemptToApprove();
+              }
+            }}
           >
             {buttonText}
           </Button>
