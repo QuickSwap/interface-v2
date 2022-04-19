@@ -58,8 +58,10 @@ export const GlobalConst = {
       [ChainId.MATIC]: '0x4087F566796b46eEB01A38174c06E2f9924eAea8', //TODO: MATIC
       [ChainId.MUMBAI]: undefined,
     },
+    QUICK_CONVERSION: '0xDCdCdcE4f1CB0253365a77a02310F2AD0832969f',
   },
   utils: {
+    QUICK_CONVERSION_RATE: 1000,
     ONEDAYSECONDS: 60 * 60 * 24,
     DQUICKFEE: 0.04,
     DQUICKAPR_MULTIPLIER: 0.01,

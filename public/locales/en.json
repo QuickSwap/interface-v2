@@ -167,5 +167,10 @@
   "yourbalance": "Your balance",
   "youwillreceive": "You will receive",
   "insufficientBalance": "Insufficient {{ symbol }} Balance",
-  "enterAmount": "Enter Amount"
+  "enterAmount": "Enter Amount",
+  "convertingQUICK": "Converting QUICK",
+  "convertingQUICKtoQUICKV2": "Converting {{ quickAmount }} QUICK -> {{ quickV2Amount }} QUICK-v2",
+  "convertedQUICKtoQUICKV2": "Converted {{ quickAmount }} QUICK -> {{ quickV2Amount }} QUICK-v2",
+  "submittedTxQUICKConvert": "Submitted Transction to convert {{ quickAmount }} QUICK -> {{ quickV2Amount }} QUICK-v2",
+  "successConvertedQUICKtoQUICKV2": "Sucessfully Converted {{ quickAmount }} QUICK -> {{ quickV2Amount }} QUICK-v2"
 }

@@ -1,15 +1,28 @@
 import React, { useMemo, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import cx from 'classnames';
-import { Box, Typography, Button } from '@material-ui/core';
+import { TransactionResponse } from '@ethersproject/providers';
+import { Box, Typography, Button, CircularProgress } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import QUICKIcon from 'assets/images/quickIcon.svg';
 import { ReactComponent as QUICKV2Icon } from 'assets/images/QUICKV2.svg';
 import { ArrowForward, ArrowDownward } from '@material-ui/icons';
-import { NumericalInput } from 'components';
+import {
+  NumericalInput,
+  TransactionErrorContent,
+  TransactionConfirmationModal,
+  ConfirmationModalContent,
+} from 'components';
 import { returnTokenFromKey } from 'utils';
 import { useTokenBalance } from 'state/wallet/hooks';
 import { useActiveWeb3React } from 'hooks';
+import { GlobalConst } from 'constants/index';
+import { useQUICKConversionContract } from 'hooks/useContract';
+import {
+  useTransactionAdder,
+  useTransactionFinalizer,
+} from 'state/transactions/hooks';
+import { parseUnits } from 'ethers/lib/utils';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   wrapper: {
@@ -91,11 +104,36 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
 const ConvertQUICKPage: React.FC = () => {
   const classes = useStyles();
   const { t } = useTranslation();
-  const { account } = useActiveWeb3React();
+  const { account, library } = useActiveWeb3React();
   const [quickAmount, setQUICKAmount] = useState('');
   const [quickV2Amount, setQUICKV2Amount] = useState('');
+  const [attemptConverting, setAttemptConverting] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [txPending, setTxPending] = useState(false);
+  const [txHash, setTxHash] = useState('');
+  const [txError, setTxError] = useState('');
+
   const quickToken = returnTokenFromKey('QUICK');
   const quickBalance = useTokenBalance(account ?? undefined, quickToken);
+  const quickConvertContract = useQUICKConversionContract();
+
+  const quickConvertingText = t('convertingQUICKtoQUICKV2', {
+    quickAmount,
+    quickV2Amount,
+  });
+  const quickConvertedText = t('convertedQUICKtoQUICKV2', {
+    quickAmount,
+    quickV2Amount,
+  });
+  const txSubmittedQuickConvertText = t('submittedTxQUICKConvert', {
+    quickAmount,
+    quickV2Amount,
+  });
+  const successQuickConvertedText = t('successConvertedQUICKtoQUICKV2', {
+    quickAmount,
+    quickV2Amount,
+  });
+
   const isInsufficientQUICK =
     Number(quickAmount) > Number(quickBalance?.toExact() ?? 0);
   const buttonText = useMemo(() => {
@@ -107,6 +145,51 @@ const ConvertQUICKPage: React.FC = () => {
       return t('convert');
     }
   }, [isInsufficientQUICK, quickAmount, t]);
+  const addTransaction = useTransactionAdder();
+  const finalizedTransaction = useTransactionFinalizer();
+
+  const handleDismissConfirmation = () => {
+    setShowConfirm(false);
+  };
+
+  const convertQUICK = async () => {
+    if (quickConvertContract && library) {
+      setAttemptConverting(true);
+      setShowConfirm(true);
+      const quickAmounttoPass = parseUnits(quickAmount, quickToken.decimals);
+      await quickConvertContract
+        .quickToQuickX(quickAmounttoPass, {
+          gasLimit: 300000,
+        })
+        .then(async (response: TransactionResponse) => {
+          setAttemptConverting(false);
+          setTxPending(true);
+          setTxError('');
+          setTxHash('');
+          addTransaction(response, {
+            summary: quickConvertingText,
+          });
+          try {
+            const tx = await response.wait();
+            finalizedTransaction(tx, {
+              summary: quickConvertedText,
+            });
+            const res = await library.getTransaction(tx.transactionHash);
+            setTxPending(false);
+            setTxHash(tx.transactionHash);
+          } catch (err) {
+            setTxPending(false);
+            setTxError(t('errorInTx'));
+          }
+        })
+        .catch(() => {
+          setAttemptConverting(false);
+          setTxPending(false);
+          setTxHash('');
+          setTxError(t('txRejected'));
+        });
+    }
+  };
 
   return (
     <Box width='100%' maxWidth={488} id='convertQUICKPage'>
@@ -130,7 +213,8 @@ const ConvertQUICKPage: React.FC = () => {
         </Typography>
         <Box className={classes.conversionRate}>
           <Typography variant='caption'>
-            {t('conversionRate')}: 1 QUICK = 100 QUICK-v2
+            {t('conversionRate')}: 1 QUICK ={' '}
+            {GlobalConst.utils.QUICK_CONVERSION_RATE} QUICK-v2
           </Typography>
         </Box>
         <Box mt={4} mb={2}>
@@ -149,7 +233,11 @@ const ConvertQUICKPage: React.FC = () => {
               fontSize={18}
               onUserInput={(value) => {
                 setQUICKAmount(value);
-                setQUICKV2Amount((Number(value) * 100).toString());
+                setQUICKV2Amount(
+                  (
+                    Number(value) * GlobalConst.utils.QUICK_CONVERSION_RATE
+                  ).toString(),
+                );
               }}
             />
             <Box
@@ -159,7 +247,10 @@ const ConvertQUICKPage: React.FC = () => {
                 if (quickBalance) {
                   setQUICKAmount(quickBalance.toExact());
                   setQUICKV2Amount(
-                    (Number(quickBalance.toExact()) * 100).toString(),
+                    (
+                      Number(quickBalance.toExact()) *
+                      GlobalConst.utils.QUICK_CONVERSION_RATE
+                    ).toString(),
                   );
                 }
               }}
@@ -188,7 +279,11 @@ const ConvertQUICKPage: React.FC = () => {
               fontSize={18}
               onUserInput={(value) => {
                 setQUICKV2Amount(value);
-                setQUICKAmount((Number(value) / 100).toString());
+                setQUICKAmount(
+                  (
+                    Number(value) / GlobalConst.utils.QUICK_CONVERSION_RATE
+                  ).toString(),
+                );
               }}
             />
             <Typography variant='h6'>QUICK-v2</Typography>
@@ -196,13 +291,52 @@ const ConvertQUICKPage: React.FC = () => {
         </Box>
         <Box display='flex' justifyContent='center'>
           <Button
-            disabled={isInsufficientQUICK || quickAmount === ''}
+            disabled={
+              attemptConverting || isInsufficientQUICK || quickAmount === ''
+            }
             className={classes.convertButton}
+            onClick={convertQUICK}
           >
             {buttonText}
           </Button>
         </Box>
       </Box>
+      {showConfirm && (
+        <TransactionConfirmationModal
+          isOpen={showConfirm}
+          onDismiss={handleDismissConfirmation}
+          attemptingTxn={attemptConverting}
+          txPending={txPending}
+          hash={txHash}
+          content={() =>
+            txError ? (
+              <TransactionErrorContent
+                onDismiss={handleDismissConfirmation}
+                message={txError}
+              />
+            ) : (
+              <ConfirmationModalContent
+                title={t('convertingQUICK')}
+                onDismiss={handleDismissConfirmation}
+                content={() => (
+                  <Box textAlign='center'>
+                    <Box mt={6} mb={5}>
+                      <CircularProgress size={80} />
+                    </Box>
+                    <Typography variant='body1'>
+                      {quickConvertingText}
+                    </Typography>
+                  </Box>
+                )}
+              />
+            )
+          }
+          pendingText={quickConvertingText}
+          modalContent={
+            txPending ? txSubmittedQuickConvertText : successQuickConvertedText
+          }
+        />
+      )}
     </Box>
   );
 };
