@@ -3,7 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import cx from 'classnames';
 import { TransactionResponse } from '@ethersproject/providers';
 import { Box, Typography, Button, CircularProgress } from '@material-ui/core';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import QUICKIcon from 'assets/images/quickIcon.svg';
 import { ReactComponent as QUICKV2Icon } from 'assets/images/QUICKV2.svg';
 import { ArrowForward, ArrowDownward } from '@material-ui/icons';
@@ -23,7 +23,6 @@ import {
   useTransactionAdder,
   useTransactionFinalizer,
 } from 'state/transactions/hooks';
-import { parseUnits } from 'ethers/lib/utils';
 import { tryParseAmount } from 'state/swap/hooks';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
@@ -217,22 +216,32 @@ const ConvertQUICKPage: React.FC = () => {
           <Box className={classes.iconWrapper}>
             <img src={QUICKIcon} alt='QUICK' />
           </Box>
-          <Typography variant='h6'>QUICK</Typography>
+          <Typography variant='h6'>QUICK(old)</Typography>
           <Box mx={1.5} className={classes.convertArrow}>
             <ArrowForward />
           </Box>
           <Box className={classes.iconWrapper}>
             <QUICKV2Icon />
           </Box>
-          <Typography variant='h6'>QUICK-v2</Typography>
+          <Typography variant='h6'>QUICK(new)</Typography>
         </Box>
         <Typography variant='body2' color='textSecondary'>
-          {t('convertQUICK')}
+          <Trans i18nKey='convertQuick'>
+            Convert your QUICK(old) to QUICK(new). Read more about QUICK token
+            split{' '}
+            <a
+              href='https://quickswap-layer2.medium.com/you-voted-for-a-1-1000-token-split-to-make-quick-more-appealing-9c25c2a2dd7e'
+              rel='noreferrer'
+              target='_blank'
+            >
+              here
+            </a>
+          </Trans>
         </Typography>
         <Box className={classes.conversionRate}>
           <Typography variant='caption'>
-            {t('conversionRate')}: 1 QUICK ={' '}
-            {GlobalConst.utils.QUICK_CONVERSION_RATE} QUICK-v2
+            {t('conversionRate')}: 1 QUICK(old) ={' '}
+            {GlobalConst.utils.QUICK_CONVERSION_RATE} QUICK(new)
           </Typography>
         </Box>
         <Box mt={4} mb={2}>
@@ -275,7 +284,7 @@ const ConvertQUICKPage: React.FC = () => {
             >
               {t('max')}
             </Box>
-            <Typography variant='h6'>QUICK</Typography>
+            <Typography variant='h6'>QUICK(old)</Typography>
           </Box>
           {isInsufficientQUICK && (
             <Typography variant='body2' className={classes.errorText}>
@@ -304,7 +313,7 @@ const ConvertQUICKPage: React.FC = () => {
                 );
               }}
             />
-            <Typography variant='h6'>QUICK-v2</Typography>
+            <Typography variant='h6'>QUICK(new)</Typography>
           </Box>
         </Box>
         <Box display='flex' justifyContent='center'>
