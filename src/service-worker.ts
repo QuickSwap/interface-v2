@@ -38,6 +38,7 @@ registerRoute(({ request, url }: { request: Request; url: URL }) => {
   // separation, so they cannot use App Shell-style routing.
   if (
     url.hostname !== 'alpha.quickswap.exchange' &&
+    url.hostname !== 'beta.quickswap.exchange' &&
     url.hostname !== 'dev.quickswap.exchange'
   ) {
     return false;
