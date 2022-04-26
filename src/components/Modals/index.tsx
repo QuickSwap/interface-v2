@@ -256,7 +256,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
             Balance:{' '}
             {(
               Number(asset.underlyingBalance.toString()) /
-              10 ** Number(asset.underlyinDecimals.toString())
+              10 ** Number(asset.underlyingDecimals.toString())
             ).toFixed(3)}{' '}
             {asset.underlyingSymbol}
           </Box>
@@ -287,7 +287,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
             {ethPrice
               ? midUsdFormatter(
                   ((Number(asset.underlyingPrice.toString()) /
-                    10 ** Number(asset.underlyinDecimals.toString()) /
+                    10 ** Number(asset.underlyingDecimals.toString()) /
                     10 ** 17) *
                     Number(value)) /
                     ethPrice,
@@ -310,7 +310,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
               setValue(
                 (
                   Number(asset.underlyingBalance.toString()) /
-                  10 ** asset.underlyinDecimals.toNumber()
+                  10 ** asset.underlyingDecimals.toNumber()
                 ).toFixed(3),
               );
             }}
@@ -336,7 +336,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
               {!modalSetting.setModalIsConfirm.value ? (
                 (
                   Number(asset.supplyBalance.toString()) /
-                  10 ** Number(asset.underlyinDecimals.toString())
+                  10 ** Number(asset.underlyingDecimals.toString())
                 ).toFixed(3) +
                 ' ' +
                 asset.underlyingSymbol
@@ -344,14 +344,14 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
                 <>
                   {(
                     Number(asset.supplyBalance.toString()) /
-                    10 ** Number(asset.underlyinDecimals.toString())
+                    10 ** Number(asset.underlyingDecimals.toString())
                   ).toFixed(3) +
                     ' ' +
                     asset.underlyingSymbol}
                   <ArrowForward fontSize='small' />
                   {(
                     Number(asset.supplyBalance.toString()) /
-                      10 ** Number(asset.underlyinDecimals.toString()) +
+                      10 ** Number(asset.underlyingDecimals.toString()) +
                     Number(value)
                   ).toFixed(3) +
                     ' ' +
@@ -405,7 +405,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
               {!modalSetting.setModalIsConfirm.value ? (
                 (
                   Number(asset.borrowBalance.toString()) /
-                  10 ** Number(asset.underlyinDecimals.toString())
+                  10 ** Number(asset.underlyingDecimals.toString())
                 ).toFixed(3) +
                 ' ' +
                 asset.underlyingSymbol
@@ -413,14 +413,14 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
                 <>
                   {(
                     Number(asset.borrowBalance.toString()) /
-                    10 ** Number(asset.underlyinDecimals.toString())
+                    10 ** Number(asset.underlyingDecimals.toString())
                   ).toFixed(3) +
                     ' ' +
                     asset.underlyingSymbol}
                   <ArrowForward fontSize='small' />
                   {(
                     Number(asset.borrowBalance.toString()) /
-                      10 ** Number(asset.underlyinDecimals.toString()) +
+                      10 ** Number(asset.underlyingDecimals.toString()) +
                     Number(value)
                   ).toFixed(3) +
                     ' ' +
@@ -436,7 +436,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
               {!modalSetting.setModalIsConfirm.value ? (
                 (
                   Number(asset.supplyBalance.toString()) /
-                  10 ** Number(asset.underlyinDecimals.toString())
+                  10 ** Number(asset.underlyingDecimals.toString())
                 ).toFixed(3) +
                 ' ' +
                 asset.underlyingSymbol
@@ -444,14 +444,14 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
                 <>
                   {(
                     Number(asset.supplyBalance.toString()) /
-                    10 ** Number(asset.underlyinDecimals.toString())
+                    10 ** Number(asset.underlyingDecimals.toString())
                   ).toFixed(3) +
                     ' ' +
                     asset.underlyingSymbol}
                   <ArrowForward fontSize='small' />
                   {(
                     Number(asset.supplyBalance.toString()) /
-                      10 ** Number(asset.underlyinDecimals.toString()) +
+                      10 ** Number(asset.underlyingDecimals.toString()) +
                     Number(value)
                   ).toFixed(3) +
                     ' ' +
@@ -479,7 +479,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
               {!modalSetting.setModalIsConfirm.value ? (
                 (
                   Number(asset.borrowBalance.toString()) /
-                  10 ** Number(asset.underlyinDecimals.toString())
+                  10 ** Number(asset.underlyingDecimals.toString())
                 ).toFixed(3) +
                 ' ' +
                 asset.underlyingSymbol
@@ -487,14 +487,14 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
                 <>
                   {(
                     Number(asset.borrowBalance.toString()) /
-                    10 ** Number(asset.underlyinDecimals.toString())
+                    10 ** Number(asset.underlyingDecimals.toString())
                   ).toFixed(3) +
                     ' ' +
                     asset.underlyingSymbol}
                   <ArrowForward fontSize='small' />
                   {(
                     Number(asset.borrowBalance.toString()) /
-                      10 ** Number(asset.underlyinDecimals.toString()) +
+                      10 ** Number(asset.underlyingDecimals.toString()) +
                     Number(value)
                   ).toFixed(3) +
                     ' ' +

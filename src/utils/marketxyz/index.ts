@@ -91,7 +91,7 @@ export const supply = async (
 
   const isETH = asset.underlyingToken === ETH_TOKEN_DATA.address;
   const amountBN = sdk.web3.utils.toBN(
-    Number(amount * 10 ** asset.underlyinDecimals.toNumber()).toFixed(0),
+    Number(amount * 10 ** asset.underlyingDecimals.toNumber()).toFixed(0),
   );
 
   const comptroller = new Comptroller(
@@ -142,7 +142,7 @@ export const repayBorrow = async (
 
   const isETH = asset.underlyingToken === ETH_TOKEN_DATA.address;
   const amountBN = sdk.web3.utils.toBN(
-    Number(amount * 10 ** asset.underlyinDecimals.toNumber()).toFixed(0),
+    Number(amount * 10 ** asset.underlyingDecimals.toNumber()).toFixed(0),
   );
 
   const isRepayingMax = amountBN.eq(asset.borrowBalance) && !isETH;
@@ -204,7 +204,7 @@ export const withdraw = (
   const sdk = cToken.sdk;
 
   const amountBN = sdk.web3.utils.toBN(
-    Number(amount * 10 ** asset.underlyinDecimals.toNumber()).toFixed(0),
+    Number(amount * 10 ** asset.underlyingDecimals.toNumber()).toFixed(0),
   );
   return cToken.redeemUnderlying(amountBN, { from: address });
 };
@@ -218,7 +218,7 @@ export const borrow = (
   const sdk = cToken.sdk;
 
   const amountBN = sdk.web3.utils.toBN(
-    Number(amount * 10 ** asset.underlyinDecimals.toNumber()).toFixed(0),
+    Number(amount * 10 ** asset.underlyingDecimals.toNumber()).toFixed(0),
   );
   return cToken.borrow(amountBN, { from: address });
 };

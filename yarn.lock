@@ -14166,8 +14166,9 @@
   dependencies:
     "object-visit" "^1.0.0"
 
-"market-sdk@github:marketxyz/market-sdk":
-  "resolved" "git+ssh://git@github.com/marketxyz/market-sdk.git#efa6bae940d9ba6e05caf7bcc8ac7f73f830804d"
+"market-sdk@^1.0.0":
+  "integrity" "sha512-15cc7suoSam5TzkP0E6qSwtwuC3weLu9lstr4WWlrycFiRnSGQziyiZgg8XNaC7XXqMPc18acpVN6C2NNverqg=="
+  "resolved" "https://registry.npmjs.org/market-sdk/-/market-sdk-1.0.0.tgz"
   "version" "1.0.0"
   dependencies:
     "bn.js" "^5.2.0"

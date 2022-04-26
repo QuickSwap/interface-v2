@@ -509,7 +509,7 @@ const LendDetailPage: React.FC = () => {
                                     .div(
                                       sdk.web3.utils
                                         .toBN(10)
-                                        .pow(asset.underlyinDecimals),
+                                        .pow(asset.underlyingDecimals),
                                     )
                                     .toNumber()
                                 : '?'}{' '}
@@ -691,7 +691,7 @@ const LendDetailPage: React.FC = () => {
                                       .div(
                                         sdk.web3.utils
                                           .toBN(10)
-                                          .pow(asset.underlyinDecimals),
+                                          .pow(asset.underlyingDecimals),
                                       )
                                       .toNumber()
                                   : '?'}{' '}
@@ -728,7 +728,7 @@ const LendDetailPage: React.FC = () => {
                                       .div(
                                         sdk.web3.utils
                                           .toBN(10)
-                                          .pow(asset.underlyinDecimals),
+                                          .pow(asset.underlyingDecimals),
                                       )
                                       .toNumber()
                                   : '?'}{' '}
