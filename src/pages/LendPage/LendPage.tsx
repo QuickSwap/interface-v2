@@ -65,7 +65,7 @@ const LendPage: React.FC = () => {
       }
 
       setTotalSupply(_totalSupplyUSD.toString());
-      setTotalBorrow(_totalSupplyUSD.toString());
+      setTotalBorrow(_totalBorrowUSD.toString());
       setTotalLiquidity(_totalLiquidityUSD.toString());
       setPools(poolsData);
     };
@@ -201,67 +201,72 @@ const LendPage: React.FC = () => {
         </Box>
       </Box>
       <Box display={'flex'} gridGap={'32px'} flexWrap={'wrap'}>
-        {pools.map(({ pool, summary, poolId }, index: any) => (
-          <Card
-            flex={'1'}
-            key={`${index}`}
-            borderRadius={'20px'}
-            bgcolor={'#232734'}
-            display={'flex'}
-            flexDirection={'column'}
-            sx={{ minWidth: { xs: '55%', sm: '25%' } }}
-            onClick={() => {
-              history.push('/lend/detail?poolId=' + poolId);
-            }}
-          >
-            <Box
-              py={'28px'}
+        {pools.map(
+          (
+            { pool, poolId, totalSuppliedUSD, totalBorrowedUSD },
+            index: any,
+          ) => (
+            <Card
+              flex={'1'}
+              key={`${index}`}
+              borderRadius={'20px'}
+              bgcolor={'#232734'}
               display={'flex'}
               flexDirection={'column'}
-              alignItems={'center'}
-            >
-              <Box fontSize={'20px'}>{pool.name}</Box>
-              <Box mt={'14px'} display={'flex'} gridGap={'4px'}>
-                <USDTIcon size={'22px'} />
-                <USDTIcon size={'22px'} />
-                <USDTIcon size={'22px'} />
-                <USDTIcon size={'22px'} />
-                <USDTIcon size={'22px'} />
-              </Box>
-            </Box>
-            <Box
-              display={'flex'}
-              borderTop={'1px solid #30374a'}
-              borderBottom={'1px solid #30374a'}
+              sx={{ minWidth: { xs: '55%', sm: '25%' } }}
+              onClick={() => {
+                history.push('/lend/detail?poolId=' + poolId);
+              }}
             >
               <Box
-                flex={'1'}
-                textAlign={'center'}
-                borderRight={'1px solid #30374a'}
-                pt={'18px'}
-                pb={'24px'}
+                py={'28px'}
+                display={'flex'}
+                flexDirection={'column'}
+                alignItems={'center'}
               >
-                <Box fontSize={'14px'} color={'#575b73'}>
-                  Total Supply
-                </Box>
-                <Box fontSize={'16px'} mt={'10px'}>
-                  {midUsdFormatter(summary.totalSupply.toNumber())}
-                </Box>
-              </Box>
-              <Box flex={'1'} textAlign={'center'} pt={'18px'} pb={'24px'}>
-                <Box fontSize={'14px'} color={'#575b73'}>
-                  Total Borrowed
-                </Box>
-                <Box fontSize={'16px'} mt={'10px'}>
-                  {midUsdFormatter(summary.totalBorrow.toNumber())}
+                <Box fontSize={'20px'}>{pool.name}</Box>
+                <Box mt={'14px'} display={'flex'} gridGap={'4px'}>
+                  <USDTIcon size={'22px'} />
+                  <USDTIcon size={'22px'} />
+                  <USDTIcon size={'22px'} />
+                  <USDTIcon size={'22px'} />
+                  <USDTIcon size={'22px'} />
                 </Box>
               </Box>
-            </Box>
-            <Box py={'22px'} textAlign={'center'} fontSize={'16px'}>
-              View Details
-            </Box>
-          </Card>
-        ))}
+              <Box
+                display={'flex'}
+                borderTop={'1px solid #30374a'}
+                borderBottom={'1px solid #30374a'}
+              >
+                <Box
+                  flex={'1'}
+                  textAlign={'center'}
+                  borderRight={'1px solid #30374a'}
+                  pt={'18px'}
+                  pb={'24px'}
+                >
+                  <Box fontSize={'14px'} color={'#575b73'}>
+                    Total Supply
+                  </Box>
+                  <Box fontSize={'16px'} mt={'10px'}>
+                    {midUsdFormatter(totalSuppliedUSD)}
+                  </Box>
+                </Box>
+                <Box flex={'1'} textAlign={'center'} pt={'18px'} pb={'24px'}>
+                  <Box fontSize={'14px'} color={'#575b73'}>
+                    Total Borrowed
+                  </Box>
+                  <Box fontSize={'16px'} mt={'10px'}>
+                    {midUsdFormatter(totalBorrowedUSD)}
+                  </Box>
+                </Box>
+              </Box>
+              <Box py={'22px'} textAlign={'center'} fontSize={'16px'}>
+                View Details
+              </Box>
+            </Card>
+          ),
+        )}
       </Box>
     </Box>
   );
