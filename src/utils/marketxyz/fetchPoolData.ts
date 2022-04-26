@@ -5,6 +5,7 @@ import {
   Pool,
   PoolLensV1,
 } from 'market-sdk';
+import Web3 from 'web3';
 import { getEthPrice } from '../index';
 
 export interface USDPricedPoolAsset extends PoolAsset {
@@ -74,13 +75,11 @@ export const fetchPoolData = async (
   let totalSuppliedUSD = 0;
   let totalBorrowedUSD = 0;
 
-  const ethPrice = Number((await getEthPrice())[0].toString());
-  // const _1e36 = sdk.web3.utils.toBN(10).pow(sdk.web3.utils.toBN(36));
+  const ethPrice = Web3.utils.toBN(Math.round((await getEthPrice())[0] * 1e2));
+  const _1e36 = Web3.utils.toBN(10).pow(Web3.utils.toBN(36));
 
   await Promise.all(
     assets.map(async (asset) => {
-      const underlyingPrice = Number(asset.underlyingPrice.toString());
-
       asset.isPaused = await pool.comptroller.borrowGuardianPaused(
         asset.cToken.address,
       );
@@ -89,32 +88,57 @@ export const fetchPoolData = async (
       );
 
       asset.supplyBalanceUSD =
-        (Number(asset.supplyBalance.toString()) * underlyingPrice * ethPrice) /
-        1e36;
+        parseInt(
+          asset.supplyBalance
+            .mul(asset.underlyingPrice)
+            .mul(ethPrice)
+            .div(_1e36)
+            .toString(),
+        ) / 1e2;
 
       asset.borrowBalanceUSD =
-        (Number(asset.borrowBalance.toString()) * underlyingPrice * ethPrice) /
-        1e36;
+        parseInt(
+          asset.borrowBalance
+            .mul(asset.underlyingPrice)
+            .mul(ethPrice)
+            .div(_1e36)
+            .toString(),
+        ) / 1e2;
 
       totalSupplyBalanceUSD += asset.supplyBalanceUSD;
       totalBorrowBalanceUSD += asset.borrowBalanceUSD;
 
       asset.totalSupplyUSD =
-        (Number(asset.borrowBalance.toString()) * underlyingPrice * ethPrice) /
-        1e36;
-
+        parseInt(
+          asset.totalSupply
+            .mul(asset.underlyingPrice)
+            .mul(ethPrice)
+            .div(_1e36)
+            .toString(),
+        ) / 1e2;
       asset.totalBorrowUSD =
-        (Number(asset.totalBorrow.toString()) * underlyingPrice * ethPrice) /
-        1e36;
+        parseInt(
+          asset.totalBorrow
+            .mul(asset.underlyingPrice)
+            .mul(ethPrice)
+            .div(_1e36)
+            .toString(),
+        ) / 1e2;
 
       totalSuppliedUSD += asset.totalSupplyUSD;
       totalBorrowedUSD += asset.totalBorrowUSD;
 
       asset.liquidityUSD =
-        (Number(asset.liquidity.toString()) * underlyingPrice * ethPrice) /
-        1e36;
+        parseInt(
+          asset.liquidity
+            .mul(asset.underlyingPrice)
+            .mul(ethPrice)
+            .div(_1e36)
+            .toString(),
+        ) / 1e2;
 
       totalLiquidityUSD += asset.liquidityUSD;
+      return asset;
     }),
   );
 
