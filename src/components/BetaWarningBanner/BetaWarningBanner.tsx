@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Typography } from '@material-ui/core';
+import { Box, Typography, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { AlertTriangle, XCircle } from 'react-feather';
 
@@ -14,11 +14,12 @@ const useStyles = makeStyles(({ palette }) => ({
     justifyContent: 'center',
     alignItems: 'center',
     padding: '8px 32px 8px 16px',
-    '& > span': {
-      marginLeft: 8,
+    '& span': {
       fontWeight: 'bold',
       textTransform: 'uppercase',
-      width: 'calc(100% - 32px)',
+    },
+    '& button': {
+      marginLeft: 8,
     },
   },
   closeBanner: {
@@ -38,12 +39,22 @@ const BetaWarningBanner: React.FC = () => {
       {showBanner && (
         <Box className={classes.warningBanner}>
           <AlertTriangle size={20} />
-          <Typography variant='caption'>
-            This site is in beta. By using this software, you understand,
-            acknowledge and accept that Quickswap and/or the underlying software
-            are provided “as is” and “as available” basis and without warranties
-            or representations of any kind either expressed or implied
-          </Typography>
+          <Box
+            width='calc(100% - 32px)'
+            ml={1}
+            display='flex'
+            alignItems='center'
+          >
+            <Typography variant='caption'>
+              The new Beta is out. You can check it out.
+            </Typography>
+            <Button
+              size='small'
+              onClick={() => window.open('https://beta.quickswap.exchange')}
+            >
+              Go to Beta
+            </Button>
+          </Box>
           <Box
             onClick={() => setShowBanner(false)}
             className={classes.closeBanner}
