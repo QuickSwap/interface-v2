@@ -1,4 +1,10 @@
-import { PoolDirectoryV1, PoolAsset, Comptroller, Pool } from 'market-sdk';
+import {
+  PoolDirectoryV1,
+  PoolAsset,
+  Comptroller,
+  Pool,
+  PoolLensV1,
+} from 'market-sdk';
 import { getEthPrice } from '../index';
 
 export interface USDPricedPoolAsset extends PoolAsset {
@@ -52,8 +58,10 @@ export const fetchPoolData = async (
   const sdk = directory.sdk;
   const pool = await directory.pools(poolId, { from: address });
 
-  const summary = await sdk.lens.v1?.getPoolSummary(pool.comptroller);
-  const assets = (await sdk.lens.v1?.getPoolAssetsWithData(pool.comptroller, {
+  const lens = new PoolLensV1(sdk, sdk.options!.poolLens);
+
+  const summary = await lens.getPoolSummary(pool.comptroller);
+  const assets = (await lens.getPoolAssetsWithData(pool.comptroller, {
     from: address,
     gas: 1e18,
   })) as USDPricedPoolAsset[];

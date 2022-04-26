@@ -130,7 +130,7 @@
     "@material-ui/lab": "^4.0.0-alpha.60",
     "apexcharts": "3.32.1",
     "isomorphic-unfetch": "^3.1.0",
-    "market-sdk": "marketxyz/market-sdk",
+    "market-sdk": "github:marketxyz/market-sdk",
     "moment": "^2.29.1",
     "react-apexcharts": "^1.3.9",
     "react-cool-inview": "^2.0.8",

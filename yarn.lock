@@ -14166,7 +14166,7 @@
   dependencies:
     "object-visit" "^1.0.0"
 
-"market-sdk@marketxyz/market-sdk":
+"market-sdk@github:marketxyz/market-sdk":
   "resolved" "git+ssh://git@github.com/marketxyz/market-sdk.git#efa6bae940d9ba6e05caf7bcc8ac7f73f830804d"
   "version" "1.0.0"
   dependencies:
