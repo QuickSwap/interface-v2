@@ -1,5 +1,5 @@
 import { getAddress } from '@ethersproject/address';
-import { ApolloClient } from 'apollo-client';
+import { ApolloClient } from '@apollo/client';
 import { Contract } from '@ethersproject/contracts';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
