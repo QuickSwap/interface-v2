@@ -1,8 +1,5 @@
 import { WETH } from '@uniswap/sdk';
-
-import { DAI, QUICK, SAND, USDC, USDT, WBTC } from 'constants/index';
 import { MetaToken } from './types';
-
 import usdcABI from 'constants/abis/usdc.json';
 import tokenABI from 'constants/abis/meta_token.json';
 import quickABI from 'constants/abis/quick.json';
@@ -11,6 +8,15 @@ import { EIP712TypeOneApproveStrategy } from './approveStrategies/EIP712TypeOneA
 import { EIP712TypeTwoApproveStrategyFactory } from './approveStrategies/EIP712TypeTwoApproveStrategy';
 import { PermitOnlyApproveStrategyFactory } from './approveStrategies/PermitOnlyApproveStrategy';
 import { EIP2771ApproveStrategy } from './approveStrategies/EIP2771ApproveStrategy';
+import { returnTokenFromKey } from '../../../utils';
+
+const DAI = returnTokenFromKey('DAI');
+const QUICK = returnTokenFromKey('QUICK');
+const SAND = returnTokenFromKey('SAND');
+const USDC = returnTokenFromKey('USDC');
+const USDT = returnTokenFromKey('USDT');
+const WBTC = returnTokenFromKey('WBTC');
+
 const permitDomainTypeQuick = [
   { name: 'name', type: 'string' },
   { name: 'chainId', type: 'uint256' },

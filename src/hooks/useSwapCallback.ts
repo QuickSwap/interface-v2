@@ -11,16 +11,12 @@ import {
 } from '@uniswap/sdk';
 import { useMemo } from 'react';
 import { ethers } from 'ethers';
-import {
-  BIPS_BASE,
-  INITIAL_ALLOWED_SLIPPAGE,
-  DEFAULT_DEADLINE_FROM_NOW,
-  ROUTER_ADDRESS,
-  domainType1,
-  GAS_PRICE_LIMIT,
-} from 'constants/index';
-import routerABI from 'constants/abis/meta-router-v2.json';
 import { GlobalConst } from 'constants/index';
+const BIPS_BASE = GlobalConst.utils.BIPS_BASE;
+const INITIAL_ALLOWED_SLIPPAGE = GlobalConst.utils.INITIAL_ALLOWED_SLIPPAGE;
+const DEFAULT_DEADLINE_FROM_NOW = GlobalConst.utils.DEFAULT_DEADLINE_FROM_NOW;
+import { ROUTER_ADDRESS, domainType1, GAS_PRICE_LIMIT } from 'constants/index';
+import routerABI from 'constants/abis/meta-router-v2.json';
 import { useTransactionAdder } from 'state/transactions/hooks';
 import {
   calculateGasMargin,
