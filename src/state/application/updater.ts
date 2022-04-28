@@ -19,7 +19,6 @@ export default function Updater(): null {
     chainId,
     blockNumber: null,
   });
-  const [block, setBlock] = useState(0);
 
   const blockNumberCallback = useCallback(
     (blockNumber: number) => {
@@ -29,7 +28,7 @@ export default function Updater(): null {
             return { chainId, blockNumber };
           return {
             chainId,
-            blockNumber: Math.max(blockNumber, state.blockNumber),
+            blockNumber,
           };
         }
         return state;
@@ -81,17 +80,13 @@ export default function Updater(): null {
       !windowVisible
     )
       return;
-    if (debouncedState.blockNumber - block > 17) {
-      dispatch(
-        updateBlockNumber({
-          chainId: debouncedState.chainId,
-          blockNumber: debouncedState.blockNumber,
-        }),
-      );
-      setBlock(debouncedState.blockNumber);
-    }
+    dispatch(
+      updateBlockNumber({
+        chainId: debouncedState.chainId,
+        blockNumber: debouncedState.blockNumber,
+      }),
+    );
   }, [
-    block,
     windowVisible,
     dispatch,
     debouncedState.blockNumber,

@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Currency } from '@uniswap/sdk';
 import { Box, Typography } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { useCurrencyBalance } from 'state/wallet/hooks';
 import cx from 'classnames';
-import { CurrencySearchModal, CurrencyLogo } from 'components';
+import { CurrencySearchModal, CurrencyLogo, NumericalInput } from 'components';
 import { useActiveWeb3React } from 'hooks';
 import useUSDCPrice from 'utils/useUSDCPrice';
+import { formatTokenAmount } from 'utils';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   swapBox: {
@@ -33,20 +34,6 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
         '& p': {
           color: palette.primary.main,
           fontWeight: 600,
-        },
-      },
-      '& input': {
-        background: 'transparent',
-        border: 'none',
-        boxShadow: 'none',
-        outline: 'none',
-        textAlign: 'right',
-        color: palette.text.secondary,
-        width: '100%',
-        fontSize: 18,
-        fontWeight: 600,
-        '&::placeholder': {
-          color: palette.text.secondary,
         },
       },
     },
@@ -94,6 +81,7 @@ interface CurrencyInputProps {
   showMaxButton?: boolean;
   showPrice?: boolean;
   bgColor?: string;
+  id?: string;
 }
 
 const CurrencyInput: React.FC<CurrencyInputProps> = ({
@@ -109,6 +97,7 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
   title,
   showPrice,
   bgColor,
+  id,
 }) => {
   const classes = useStyles();
   const { palette } = useTheme();
@@ -116,12 +105,17 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
   const { account } = useActiveWeb3React();
   const selectedCurrencyBalance = useCurrencyBalance(
     account ?? undefined,
-    currency ?? undefined,
+    currency,
   );
-  const usdPrice = Number(useUSDCPrice(currency)?.toSignificant()) || 0;
+  const usdPrice = Number(useUSDCPrice(currency)?.toSignificant() ?? 0);
+
+  const handleOpenModal = useCallback(() => {
+    setModalOpen(true);
+  }, [setModalOpen]);
 
   return (
     <Box
+      id={id}
       className={cx(classes.swapBox, showPrice && classes.priceShowBox)}
       bgcolor={bgColor ?? palette.secondary.dark}
     >
@@ -146,24 +140,28 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
             classes.currencyButton,
             currency ? classes.currencySelected : classes.noCurrency,
           )}
-          onClick={() => {
-            setModalOpen(true);
-          }}
+          onClick={handleOpenModal}
         >
           {currency ? (
             <>
               <CurrencyLogo currency={currency} size={'28px'} />
-              <Typography variant='body1'>{currency?.symbol}</Typography>
+              <Typography className='token-symbol-container' variant='body1'>
+                {currency?.symbol}
+              </Typography>
             </>
           ) : (
             <Typography variant='body1'>Select a token</Typography>
           )}
         </Box>
         <Box className='inputWrapper'>
-          <input
+          <NumericalInput
             value={amount}
+            align='right'
+            color={palette.text.secondary}
             placeholder='0.00'
-            onChange={(e) => setAmount(e.target.value)}
+            onUserInput={(val) => {
+              setAmount(val);
+            }}
           />
         </Box>
       </Box>
@@ -173,10 +171,7 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
         className={classes.balanceSection}
       >
         <Typography variant='body2'>
-          Balance:{' '}
-          {selectedCurrencyBalance
-            ? selectedCurrencyBalance.toSignificant(6)
-            : 0}
+          Balance: {formatTokenAmount(selectedCurrencyBalance)}
         </Typography>
         <Typography variant='body2'>
           ${(usdPrice * Number(amount)).toLocaleString()}

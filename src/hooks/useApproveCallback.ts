@@ -2,7 +2,7 @@ import { MaxUint256 } from '@ethersproject/constants';
 import { TransactionResponse } from '@ethersproject/providers';
 import { Trade, TokenAmount, CurrencyAmount, ETHER } from '@uniswap/sdk';
 import { useCallback, useMemo } from 'react';
-import { ROUTER_ADDRESS } from 'constants/index';
+import { GlobalConst } from 'constants/index';
 import { useTokenAllowance } from 'data/Allowances';
 import { Field } from 'state/swap/actions';
 import {
@@ -137,11 +137,17 @@ export function useApproveCallback(
             gasLimit: calculateGasMargin(estimatedGas),
           },
         )
-        .then((response: TransactionResponse) => {
+        .then(async (response: TransactionResponse) => {
           addTransaction(response, {
             summary: 'Approve ' + amountToApprove.currency.symbol,
             approval: { tokenAddress: token.address, spender: spender },
           });
+          try {
+            await response.wait();
+          } catch (e) {
+            console.debug('Failed to approve token', e);
+            throw e;
+          }
         })
         .catch((error: Error) => {
           console.debug('Failed to approve token', error);
@@ -170,6 +176,7 @@ export function useApproveCallbackFromTrade(
   trade?: Trade,
   allowedSlippage = 0,
 ): [ApprovalState, () => Promise<void>] {
+  const { chainId } = useActiveWeb3React();
   const amountToApprove = useMemo(
     () =>
       trade
@@ -178,5 +185,8 @@ export function useApproveCallbackFromTrade(
     [trade, allowedSlippage],
   );
 
-  return useApproveCallback(amountToApprove, ROUTER_ADDRESS);
+  return useApproveCallback(
+    amountToApprove,
+    chainId ? GlobalConst.addresses.ROUTER_ADDRESS[chainId] : undefined,
+  );
 }

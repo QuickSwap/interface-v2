@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Box, Button, Typography, useMediaQuery } from '@material-ui/core';
+import { Box, Typography, useMediaQuery } from '@material-ui/core';
 import cx from 'classnames';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { useWalletModalToggle } from 'state/application/hooks';
@@ -9,12 +9,12 @@ import {
   useAllTransactions,
 } from 'state/transactions/hooks';
 import { TransactionDetails } from 'state/transactions/reducer';
-import { shortenAddress, addMaticToMetamask } from 'utils';
+import { shortenAddress, addMaticToMetamask, isSupportedNetwork } from 'utils';
 import useENSName from 'hooks/useENSName';
 import { WalletModal } from 'components';
 import { useActiveWeb3React } from 'hooks';
 import QuickIcon from 'assets/images/quickIcon.svg';
-import QuickLogo from 'assets/images/quickLogo.svg';
+import QuickLogo from 'assets/images/quickLogo.png';
 import { ReactComponent as ThreeDotIcon } from 'assets/images/ThreeDot.svg';
 import { ReactComponent as LightIcon } from 'assets/images/LightIcon.svg';
 import WalletIcon from 'assets/images/WalletIcon.png';
@@ -27,6 +27,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     flexWrap: 'wrap',
     minHeight: 88,
     zIndex: 3,
+    alignItems: 'center',
     justifyContent: 'space-between',
     '& a': {
       display: 'flex',
@@ -134,7 +135,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     },
   },
   accountDetails: {
-    border: `solid 1px #3e4252`,
+    border: `solid 1px ${palette.grey.A400}`,
     padding: '0 16px',
     height: 36,
     cursor: 'pointer',
@@ -150,46 +151,6 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
       width: 20,
       marginLeft: 8,
     },
-  },
-  mobileMenuWrapper: {
-    background: palette.secondary.contrastText,
-    position: 'absolute',
-    top: 80,
-    left: 0,
-    width: '100%',
-    display: 'flex',
-    flexDirection: 'column',
-    '& a': {
-      textDecoration: 'none',
-    },
-    '& button': {
-      width: 'calc(100% - 24px)',
-      margin: '8px 12px',
-    },
-  },
-  mobileMenuItemWrapper: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    margin: '4px 0',
-    height: 32,
-    width: '100%',
-    '& p': {
-      color: palette.text.primary,
-    },
-    '& svg, & img': {
-      width: 32,
-      height: 32,
-      marginRight: 8,
-    },
-  },
-  menuTransition: {
-    height: 0,
-    transition: 'height 0.5s',
-    overflow: 'auto',
-  },
-  menuOpen: {
-    height: 'calc(100vh - 80px)',
   },
   connectButton: {
     width: 152,
@@ -275,8 +236,8 @@ const Header: React.FC = () => {
   const classes = useStyles();
   const { pathname } = useLocation();
   const { account } = useActiveWeb3React();
-  const { ENSName } = useENSName(account ?? undefined);
   const { ethereum } = window as any;
+  const { ENSName } = useENSName(account ?? undefined);
   const [openDetailMenu, setOpenDetailMenu] = useState(false);
   const theme = useTheme();
   const allTransactions = useAllTransactions();
@@ -291,60 +252,67 @@ const Header: React.FC = () => {
   const confirmed = sortedRecentTransactions
     .filter((tx: any) => tx.receipt)
     .map((tx: any) => tx.hash);
-  const isnotMatic =
-    ethereum && ethereum.isMetaMask && Number(ethereum.chainId) !== 137;
   const tabletWindowSize = useMediaQuery(theme.breakpoints.down('sm'));
   const mobileWindowSize = useMediaQuery(theme.breakpoints.down('xs'));
   const toggleWalletModal = useWalletModalToggle();
-  const [menuOpen, setMenuOpen] = useState(false);
   const menuItems = [
     {
       link: '/swap',
       text: 'Swap',
+      id: 'swap-page-link',
     },
     {
       link: '/pools',
       text: 'Pool',
+      id: 'pools-page-link',
     },
     {
       link: '/farm',
       text: 'Farm',
+      id: 'farm-page-link',
     },
     {
       link: '/dragons',
-      text: 'Dragons Lair',
+      text: 'Dragon’s Lair',
+      id: 'dragons-page-link',
+    },
+    {
+      link: '/convert',
+      text: 'Convert',
+      id: 'convert-quick',
     },
     {
       link: '/analytics',
       text: 'Analytics',
+      id: 'analytics-page-link',
     },
   ];
 
-  const outLinks = [
-    {
-      link: '/',
-      text: 'Governance',
-    },
-    {
-      link: '/',
-      text: 'Docs',
-    },
-    {
-      link: '/',
-      text: 'For Developers',
-    },
-    {
-      link: '/',
-      text: 'Help & Tutorials',
-    },
-    {
-      link: '/',
-      text: 'Knowledge Base',
-    },
-    {
-      link: '/',
-      text: 'News',
-    },
+  const outLinks: any[] = [
+    // {
+    //   link: '/',
+    //   text: 'Governance',
+    // },
+    // {
+    //   link: '/',
+    //   text: 'Docs',
+    // },
+    // {
+    //   link: '/',
+    //   text: 'For Developers',
+    // },
+    // {
+    //   link: '/',
+    //   text: 'Help & Tutorials',
+    // },
+    // {
+    //   link: '/',
+    //   text: 'Knowledge Base',
+    // },
+    // {
+    //   link: '/',
+    //   text: 'News',
+    // },
   ];
 
   return (
@@ -354,8 +322,12 @@ const Header: React.FC = () => {
         pendingTransactions={pending}
         confirmedTransactions={confirmed}
       />
-      <Link to='/' onClick={() => setMenuOpen(false)}>
-        <img src={mobileWindowSize ? QuickIcon : QuickLogo} alt='QuickLogo' />
+      <Link to='/'>
+        <img
+          src={mobileWindowSize ? QuickIcon : QuickLogo}
+          alt='QuickLogo'
+          height={60}
+        />
       </Link>
       {!tabletWindowSize && (
         <Box className={classes.mainMenu}>
@@ -363,12 +335,15 @@ const Header: React.FC = () => {
             <Link
               to={val.link}
               key={index}
-              className={val.link === pathname ? 'active' : 'menuItem'}
+              id={val.id}
+              className={
+                pathname.indexOf(val.link) > -1 ? 'active' : 'menuItem'
+              }
             >
               <Typography variant='body2'>{val.text}</Typography>
             </Link>
           ))}
-          <Box display='flex' className='menuItem'>
+          {/* <Box display='flex' className='menuItem'>
             <ThreeDotIcon />
             <Box
               position='absolute'
@@ -385,7 +360,7 @@ const Header: React.FC = () => {
                 ))}
               </Box>
             </Box>
-          </Box>
+          </Box> */}
         </Box>
       )}
       {tabletWindowSize && (
@@ -395,7 +370,9 @@ const Header: React.FC = () => {
               <Link
                 to={val.link}
                 key={index}
-                className={val.link === pathname ? 'active' : 'menuItem'}
+                className={
+                  pathname.indexOf(val.link) > -1 ? 'active' : 'menuItem'
+                }
               >
                 <Typography variant='body2'>{val.text}</Typography>
               </Link>
@@ -420,9 +397,7 @@ const Header: React.FC = () => {
                       <Link
                         to={val.link}
                         key={index}
-                        className={
-                          val.link === pathname ? 'active' : 'menuItem'
-                        }
+                        className='menuItem'
                         onClick={() => setOpenDetailMenu(false)}
                       >
                         <Typography variant='body2'>{val.text}</Typography>
@@ -455,8 +430,12 @@ const Header: React.FC = () => {
         >
           <LightIcon />
         </Box>
-        {account ? (
-          <Box className={classes.accountDetails} onClick={toggleWalletModal}>
+        {account && (!ethereum || isSupportedNetwork(ethereum)) ? (
+          <Box
+            id='web3-status-connected'
+            className={classes.accountDetails}
+            onClick={toggleWalletModal}
+          >
             <Typography>{shortenAddress(account)}</Typography>
             <img src={WalletIcon} alt='Wallet' />
           </Box>
@@ -464,16 +443,20 @@ const Header: React.FC = () => {
           <Box
             className={cx(
               classes.connectButton,
-              isnotMatic ? classes.danger : classes.primary,
+              ethereum && !isSupportedNetwork(ethereum)
+                ? classes.danger
+                : classes.primary,
             )}
             onClick={() => {
-              if (!isnotMatic) {
+              if (!ethereum || isSupportedNetwork(ethereum)) {
                 toggleWalletModal();
               }
             }}
           >
-            {isnotMatic ? 'Wrong Network' : 'Connect Wallet'}
-            {isnotMatic && (
+            {ethereum && !isSupportedNetwork(ethereum)
+              ? 'Wrong Network'
+              : 'Connect Wallet'}
+            {ethereum && !isSupportedNetwork(ethereum) && (
               <Box
                 position='absolute'
                 top={36}
@@ -492,47 +475,6 @@ const Header: React.FC = () => {
           </Box>
         )}
       </Box>
-      {mobileWindowSize && (
-        <Box
-          className={cx(
-            classes.mobileMenuWrapper,
-            classes.menuTransition,
-            menuOpen && classes.menuOpen,
-          )}
-        >
-          {menuItems.map((val, index) => (
-            <Box
-              key={index}
-              className={classes.mobileMenuItemWrapper}
-              onClick={() => setMenuOpen(false)}
-            >
-              <Link to={val.link} key={index}>
-                <Typography variant='body1'>{val.text}</Typography>
-              </Link>
-            </Box>
-          ))}
-          {account ? (
-            <Box
-              className={classes.mobileMenuItemWrapper}
-              onClick={toggleWalletModal}
-            >
-              <img src={WalletIcon} alt='Wallet' />
-              <Typography variant='body1'>{shortenAddress(account)}</Typography>
-            </Box>
-          ) : (
-            <Button
-              color='primary'
-              onClick={() => {
-                isnotMatic ? addMaticToMetamask() : toggleWalletModal();
-              }}
-            >
-              <Typography variant='body2'>
-                {isnotMatic ? 'Switch to Polygon' : 'Connect Wallet'}
-              </Typography>
-            </Button>
-          )}
-        </Box>
-      )}
     </Box>
   );
 };

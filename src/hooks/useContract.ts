@@ -6,13 +6,7 @@ import { abi as MERKLE_DISTRIBUTOR_ABI } from '@uniswap/merkle-distributor/build
 import { ChainId, WETH } from '@uniswap/sdk';
 import { abi as IUniswapV2PairABI } from '@uniswap/v2-core/build/IUniswapV2Pair.json';
 import { useMemo } from 'react';
-import {
-  GOVERNANCE_ADDRESS,
-  MERKLE_DISTRIBUTOR_ADDRESS,
-  UNI,
-  LAIR_ADDRESS,
-  QUICK_ADDRESS,
-} from '../constants';
+import { GlobalConst, GlobalValue } from '../constants';
 import {
   ARGENT_WALLET_DETECTOR_ABI,
   ARGENT_WALLET_DETECTOR_MAINNET_ADDRESS,
@@ -33,6 +27,8 @@ import {
 import { getContract } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import { abi as LairABI } from 'abis/DragonLair.json';
+import { abi as IUniswapV2Router02ABI } from '@uniswap/v2-periphery/build/IUniswapV2Router02.json';
+import QUICKConversionABI from 'constants/abis/quick-conversion.json';
 
 function useContract(
   address: string | undefined,
@@ -40,7 +36,6 @@ function useContract(
   withSignerIfPossible = true,
 ): Contract | null {
   const { library, account } = useActiveWeb3React();
-  const provider: any = undefined;
 
   return useMemo(() => {
     if (!address || !ABI || !library) return null;
@@ -48,22 +43,30 @@ function useContract(
       return getContract(
         address,
         ABI,
-        provider !== undefined ? provider : library,
+        library,
         withSignerIfPossible && account ? account : undefined,
       );
     } catch (error) {
       console.error('Failed to get contract', error);
       return null;
     }
-  }, [address, ABI, library, withSignerIfPossible, account, provider]);
+  }, [address, ABI, library, withSignerIfPossible, account]);
 }
 
 export function useLairContract(): Contract | null {
-  return useContract(LAIR_ADDRESS, LairABI, true);
+  return useContract(GlobalConst.addresses.LAIR_ADDRESS, LairABI, true);
 }
 
 export function useQUICKContract(): Contract | null {
-  return useContract(QUICK_ADDRESS, ERC20_ABI, true);
+  return useContract(GlobalConst.addresses.QUICK_ADDRESS, ERC20_ABI, true);
+}
+
+export function useQUICKConversionContract(): Contract | null {
+  return useContract(
+    GlobalConst.addresses.QUICK_CONVERSION,
+    QUICKConversionABI,
+    true,
+  );
 }
 
 export function useV1FactoryContract(): Contract | null {
@@ -163,19 +166,29 @@ export function useMulticallContract(): Contract | null {
 export function useMerkleDistributorContract(): Contract | null {
   const { chainId } = useActiveWeb3React();
   return useContract(
-    chainId ? MERKLE_DISTRIBUTOR_ADDRESS[chainId] : undefined,
+    chainId
+      ? GlobalConst.addresses.MERKLE_DISTRIBUTOR_ADDRESS[chainId]
+      : undefined,
     MERKLE_DISTRIBUTOR_ABI,
     true,
   );
 }
 
 export function useGovernanceContract(): Contract | null {
-  return useContract(GOVERNANCE_ADDRESS, GOVERNANCE_ABI, true);
+  return useContract(
+    GlobalConst.addresses.GOVERNANCE_ADDRESS,
+    GOVERNANCE_ABI,
+    true,
+  );
 }
 
 export function useUniContract(): Contract | null {
   const { chainId } = useActiveWeb3React();
-  return useContract(chainId ? UNI[chainId].address : undefined, UNI_ABI, true);
+  return useContract(
+    chainId ? GlobalValue.tokens.UNI[chainId].address : undefined,
+    UNI_ABI,
+    true,
+  );
 }
 
 export function useStakingContract(
@@ -202,5 +215,14 @@ export function useSocksController(): Contract | null {
     chainId === ChainId.MATIC ? undefined : undefined,
     UNISOCKS_ABI,
     false,
+  );
+}
+
+export function useRouterContract(): Contract | null {
+  const { chainId, account } = useActiveWeb3React();
+  return useContract(
+    chainId ? GlobalConst.addresses.ROUTER_ADDRESS[chainId] : undefined,
+    IUniswapV2Router02ABI,
+    Boolean(account),
   );
 }

@@ -8,20 +8,13 @@ import {
   setOpenModal,
   updateEthPrice,
   updateGlobalData,
-  updateGlobalChartData,
-  updateTopTokens,
-  updateTokenPairs,
-  updateSwapTokenPrice0,
-  updateSwapTokenPrice1,
   addBookMarkToken,
   removeBookmarkToken,
   updateBookmarkTokens,
-  updateTopPairs,
   addBookMarkPair,
   removeBookmarkPair,
   updateBookmarkPairs,
-  updateAnalyticToken,
-  updateTokenChartData,
+  updateTokenDetails,
 } from './actions';
 
 type PopupList = Array<{
@@ -31,22 +24,23 @@ type PopupList = Array<{
   removeAfterMs: number | null;
 }>;
 
+export interface TokenDetail {
+  address: string;
+  tokenData: any;
+  priceData: any;
+}
+
 export interface ApplicationState {
   readonly blockNumber: { readonly [chainId: number]: number };
   readonly popupList: PopupList;
   readonly openModal: ApplicationModal | null;
   readonly ethPrice: any;
   readonly globalData: any;
-  readonly globalChartData: any;
-  readonly topTokens: any;
-  readonly tokenPairs: any;
-  readonly swapTokenPrice0: any;
-  readonly swapTokenPrice1: any;
   readonly bookmarkedTokens: string[];
   readonly bookmarkedPairs: string[];
-  readonly topPairs: any[] | null;
   readonly analyticToken: any;
   readonly tokenChartData: any;
+  readonly tokenDetails: TokenDetail[];
 }
 
 const initialState: ApplicationState = {
@@ -54,21 +48,16 @@ const initialState: ApplicationState = {
   popupList: [],
   openModal: null,
   globalData: null,
-  globalChartData: null,
-  topTokens: null,
-  tokenPairs: null,
   ethPrice: {
     price: null,
     oneDayPrice: null,
     ethPriceChange: null,
   },
-  swapTokenPrice0: null,
-  swapTokenPrice1: null,
   bookmarkedTokens: [],
   bookmarkedPairs: [],
-  topPairs: null,
   analyticToken: null,
   tokenChartData: null,
+  tokenDetails: [],
 };
 
 export default createReducer(initialState, (builder) =>
@@ -123,21 +112,6 @@ export default createReducer(initialState, (builder) =>
     .addCase(updateGlobalData, (state, { payload: { data } }) => {
       state.globalData = data;
     })
-    .addCase(updateGlobalChartData, (state, { payload }) => {
-      state.globalChartData = payload;
-    })
-    .addCase(updateTopTokens, (state, { payload }) => {
-      state.topTokens = payload;
-    })
-    .addCase(updateTokenPairs, (state, { payload: { data } }) => {
-      state.tokenPairs = data;
-    })
-    .addCase(updateSwapTokenPrice0, (state, { payload: { data } }) => {
-      state.swapTokenPrice0 = data;
-    })
-    .addCase(updateSwapTokenPrice1, (state, { payload: { data } }) => {
-      state.swapTokenPrice1 = data;
-    })
     .addCase(addBookMarkToken, (state, { payload }) => {
       const tokens = state.bookmarkedTokens;
       tokens.push(payload);
@@ -157,9 +131,6 @@ export default createReducer(initialState, (builder) =>
     })
     .addCase(updateBookmarkTokens, (state, { payload }) => {
       state.bookmarkedTokens = payload;
-    })
-    .addCase(updateTopPairs, (state, { payload }) => {
-      state.topPairs = payload;
     })
     .addCase(addBookMarkPair, (state, { payload }) => {
       const pairs = state.bookmarkedPairs;
@@ -181,10 +152,16 @@ export default createReducer(initialState, (builder) =>
     .addCase(updateBookmarkPairs, (state, { payload }) => {
       state.bookmarkedPairs = payload;
     })
-    .addCase(updateAnalyticToken, (state, { payload }) => {
-      state.analyticToken = payload;
-    })
-    .addCase(updateTokenChartData, (state, { payload }) => {
-      state.tokenChartData = payload;
+    .addCase(updateTokenDetails, (state, { payload }) => {
+      const updatedTokenDetails = state.tokenDetails;
+      const detailIndex = updatedTokenDetails.findIndex(
+        (item) => item.address === payload.address,
+      );
+      if (detailIndex > -1) {
+        updatedTokenDetails[detailIndex] = payload;
+      } else {
+        updatedTokenDetails.push(payload);
+      }
+      state.tokenDetails = updatedTokenDetails;
     }),
 );

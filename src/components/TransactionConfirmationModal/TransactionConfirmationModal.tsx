@@ -124,7 +124,7 @@ export const TransactionSubmittedContent: React.FC<TransactionSubmittedContentPr
           <a
             href={getEtherscanLink(chainId, hash, 'transaction')}
             target='_blank'
-            rel='noreferrer'
+            rel='noopener noreferrer'
             style={{ width: '48%', textDecoration: 'none' }}
           >
             <Button className={classes.submitButton}>

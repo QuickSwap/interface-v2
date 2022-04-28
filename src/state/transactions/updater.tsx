@@ -1,13 +1,11 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useActiveWeb3React } from 'hooks';
-import {
-  useAddPopup,
-  useBlockNumber,
-  useRemovePopup,
-} from 'state/application/hooks';
+import { useBlockNumber } from 'state/application/hooks';
+import { useAddPopup, useRemovePopup } from 'state/application/hooks';
 import { AppDispatch, AppState } from 'state';
 import { checkedTransaction, finalizeTransaction } from './actions';
+import { updateBlockNumber } from 'state/application/actions';
 
 export function shouldCheck(
   lastBlockNumber: number,
@@ -32,6 +30,7 @@ export function shouldCheck(
 
 export default function Updater(): null {
   const { chainId, library } = useActiveWeb3React();
+  const [popupTxHashes, setPopupTxHashes] = useState(''); // to store hash of the transactions already opened a popup.
 
   const lastBlockNumber = useBlockNumber();
 
@@ -55,27 +54,55 @@ export default function Updater(): null {
     Object.keys(transactions)
       .filter((hash) => shouldCheck(lastBlockNumber, transactions[hash]))
       .forEach((hash) => {
-        addPopup(
-          {
-            txn: {
+        library.getTransaction(hash).then((res) => {
+          // to prevent opening the processing popup multiple times when the transaction is pending for a long time.
+          if (popupTxHashes.indexOf(hash) === -1 && res) {
+            addPopup(
+              {
+                txn: {
+                  hash,
+                  pending: true,
+                  success: false,
+                  summary: transactions[hash]?.summary,
+                },
+              },
               hash,
-              pending: true,
-              success: false,
-              summary: transactions[hash]?.summary,
-            },
-          },
-          hash,
-          null,
-        );
+              null,
+            );
 
-        setTimeout(() => {
-          removePopup(hash);
-        }, 20000);
+            setTimeout(() => {
+              removePopup(hash);
+            }, 20000);
+
+            let hashStr = popupTxHashes;
+            hashStr += hash + ',';
+            setPopupTxHashes(hashStr);
+          }
+          if (!res) {
+            dispatch(
+              finalizeTransaction({
+                chainId,
+                hash,
+                receipt: 'failed',
+              }),
+            );
+          }
+        });
 
         library
           .getTransactionReceipt(hash)
           .then((receipt) => {
             if (receipt) {
+              // the receipt was fetched before the block, fast forward to that block to trigger balance updates
+              if (receipt.blockNumber > lastBlockNumber) {
+                dispatch(
+                  updateBlockNumber({
+                    chainId,
+                    blockNumber: receipt.blockNumber,
+                  }),
+                );
+              }
+
               dispatch(
                 finalizeTransaction({
                   chainId,
@@ -127,6 +154,7 @@ export default function Updater(): null {
     lastBlockNumber,
     dispatch,
     addPopup,
+    popupTxHashes,
   ]);
 
   return null;

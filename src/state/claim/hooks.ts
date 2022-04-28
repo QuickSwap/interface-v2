@@ -1,11 +1,11 @@
-import { UNI } from 'constants/index';
+import { GlobalValue } from 'constants/index';
 import { TokenAmount, JSBI } from '@uniswap/sdk';
 import { TransactionResponse } from '@ethersproject/providers';
 import { useEffect, useState } from 'react';
 import { useActiveWeb3React } from 'hooks';
 import { useMerkleDistributorContract } from 'hooks/useContract';
 import { useSingleCallResult } from 'state/multicall/hooks';
-import { calculateGasMargin } from 'utils';
+import { calculateGasMargin, formatTokenAmount } from 'utils';
 import { useTransactionAdder } from 'state/transactions/hooks';
 
 interface UserClaimData {
@@ -61,7 +61,7 @@ export function useUserUnclaimedAmount(
   const userClaimData = useUserClaimData(account);
   const canClaim = useUserHasAvailableClaim(account);
 
-  const uni = chainId ? UNI[chainId] : undefined;
+  const uni = chainId ? GlobalValue.tokens.UNI[chainId] : undefined;
   if (!uni) return undefined;
   if (!canClaim || !userClaimData) {
     return new TokenAmount(uni, JSBI.BigInt(0));
@@ -100,7 +100,7 @@ export function useClaimCallback(
           })
           .then((response: TransactionResponse) => {
             addTransaction(response, {
-              summary: `Claimed ${unClaimedAmount?.toSignificant(4)} QUICK`,
+              summary: `Claimed ${formatTokenAmount(unClaimedAmount)} QUICK`,
               claim: { recipient: account },
             });
             return response.hash;

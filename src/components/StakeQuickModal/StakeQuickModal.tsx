@@ -2,29 +2,21 @@ import React, { useState } from 'react';
 import { Box, Typography, Button } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { TransactionResponse } from '@ethersproject/providers';
-import { CustomModal, ColoredSlider } from 'components';
-import { useLairInfo, useDerivedLairInfo } from 'state/stake/hooks';
+import { CustomModal, ColoredSlider, NumericalInput } from 'components';
+import { useDerivedLairInfo } from 'state/stake/hooks';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 import { useCurrencyBalance, useTokenBalance } from 'state/wallet/hooks';
 import { useActiveWeb3React } from 'hooks';
+import { GlobalConst } from 'constants/index';
 import { useApproveCallback, ApprovalState } from 'hooks/useApproveCallback';
 import { useLairContract } from 'hooks/useContract';
 import {
   useTransactionAdder,
   useTransactionFinalizer,
 } from 'state/transactions/hooks';
+import { formatTokenAmount, returnTokenFromKey } from 'utils';
 
 const useStyles = makeStyles(({ palette }) => ({
-  input: {
-    width: '100%',
-    background: 'transparent',
-    border: 'none',
-    boxShadow: 'none',
-    outline: 'none',
-    color: palette.text.primary,
-    fontSize: 28,
-    fontWeight: 600,
-  },
   stakeButton: {
     backgroundImage:
       'linear-gradient(104deg, #004ce6 -32%, #0098ff 54%, #00cff3 120%, #64fbd3 198%)',
@@ -55,22 +47,28 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
   const { account } = useActiveWeb3React();
   const addTransaction = useTransactionAdder();
   const finalizedTransaction = useTransactionFinalizer();
-  const lairInfo = useLairInfo();
-  const QUICK = lairInfo.QUICKBalance.token;
-  const quickBalance = useCurrencyBalance(account ?? undefined, QUICK);
-  const userLiquidityUnstaked = useTokenBalance(account ?? undefined, QUICK);
+  const quickBalance = useCurrencyBalance(
+    account ?? undefined,
+    returnTokenFromKey('QUICK'),
+  );
+  const userLiquidityUnstaked = useTokenBalance(
+    account ?? undefined,
+    returnTokenFromKey('QUICK'),
+  );
+
   const [typedValue, setTypedValue] = useState('');
   const [stakePercent, setStakePercent] = useState(0);
+  const [approving, setApproving] = useState(false);
   const { parsedAmount, error } = useDerivedLairInfo(
     typedValue,
-    QUICK,
+    returnTokenFromKey('QUICK'),
     userLiquidityUnstaked,
   );
 
   const lairContract = useLairContract();
   const [approval, approveCallback] = useApproveCallback(
     parsedAmount,
-    lairInfo.lairAddress,
+    GlobalConst.addresses.LAIR_ADDRESS,
   );
 
   const onAttemptToApprove = async () => {
@@ -117,7 +115,7 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
     <CustomModal open={open} onClose={onClose}>
       <Box paddingX={3} paddingY={4}>
         <Box display='flex' alignItems='center' justifyContent='space-between'>
-          <Typography variant='h5'>Stake dQUICK</Typography>
+          <Typography variant='h5'>Stake QUICK</Typography>
           <CloseIcon style={{ cursor: 'pointer' }} onClick={onClose} />
         </Box>
         <Box
@@ -132,25 +130,23 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
             alignItems='center'
             justifyContent='space-between'
           >
-            <Typography variant='body2'>dQUICK</Typography>
+            <Typography variant='body2'>QUICK</Typography>
             <Typography variant='body2'>
-              Balance: {quickBalance?.toSignificant(3)}
+              Balance: {formatTokenAmount(quickBalance)}
             </Typography>
           </Box>
           <Box mt={2} display='flex' alignItems='center'>
-            <input
+            <NumericalInput
               placeholder='0'
-              className={classes.input}
               value={typedValue}
-              onChange={(evt: any) => {
+              fontSize={28}
+              onUserInput={(value) => {
                 const totalBalance = quickBalance
-                  ? Number(quickBalance.toSignificant())
+                  ? Number(quickBalance.toExact())
                   : 0;
-                setTypedValue(evt.target.value);
+                setTypedValue(value);
                 setStakePercent(
-                  totalBalance > 0
-                    ? (Number(evt.target.value) / totalBalance) * 100
-                    : 0,
+                  totalBalance > 0 ? (Number(value) / totalBalance) * 100 : 0,
                 );
               }}
             />
@@ -162,9 +158,7 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
                 cursor: 'pointer',
               }}
               onClick={() => {
-                setTypedValue(
-                  quickBalance ? quickBalance.toSignificant() : '0',
-                );
+                setTypedValue(quickBalance ? quickBalance.toExact() : '0');
                 setStakePercent(100);
               }}
             >
@@ -182,11 +176,12 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
                   setStakePercent(value as number);
                   setTypedValue(
                     quickBalance
-                      ? (
-                          (Number(quickBalance.toSignificant()) *
-                            stakePercent) /
-                          100
-                        ).toFixed(8)
+                      ? stakePercent < 100
+                        ? (
+                            (Number(quickBalance.toExact()) * stakePercent) /
+                            100
+                          ).toString()
+                        : quickBalance.toExact()
                       : '0',
                   );
                 }}
@@ -205,10 +200,18 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
         >
           <Button
             className={classes.stakeButton}
-            disabled={approval !== ApprovalState.NOT_APPROVED}
-            onClick={onAttemptToApprove}
+            disabled={approving || approval !== ApprovalState.NOT_APPROVED}
+            onClick={async () => {
+              setApproving(true);
+              try {
+                await onAttemptToApprove();
+                setApproving(false);
+              } catch (e) {
+                setApproving(false);
+              }
+            }}
           >
-            Approve
+            {approving ? 'Approving...' : 'Approve'}
           </Button>
           <Button
             className={classes.stakeButton}

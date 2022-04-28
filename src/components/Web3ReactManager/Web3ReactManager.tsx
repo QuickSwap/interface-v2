@@ -5,7 +5,7 @@ import { Box, CircularProgress, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { network } from 'connectors';
 import { useEagerConnect, useInactiveListener } from 'hooks';
-import { NetworkContextName } from 'constants/index';
+import { GlobalConst } from 'constants/index';
 
 const useStyles = makeStyles(({}) => ({
   messageWrapper: {
@@ -29,7 +29,7 @@ const Web3ReactManager: React.FC<{ children: JSX.Element }> = ({
     active: networkActive,
     error: networkError,
     activate: activateNetwork,
-  } = useWeb3React(NetworkContextName);
+  } = useWeb3React(GlobalConst.utils.NetworkContextName);
 
   // try to eagerly connect to an injected provider, if it exists and has granted access already
   const triedEager = useEagerConnect();

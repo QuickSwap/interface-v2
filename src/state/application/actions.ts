@@ -1,5 +1,6 @@
 import { createAction } from '@reduxjs/toolkit';
 import { TokenList } from '@uniswap/token-lists';
+import { TokenDetail } from './reducer';
 
 export type PopupContent =
   | {
@@ -57,24 +58,6 @@ export const updateGlobalData = createAction<{ data: any }>(
   'application/updateGlobalData',
 );
 
-export const updateGlobalChartData = createAction<{ data: any }>(
-  'application/updateGlobalChartData',
-);
-
-export const updateTopTokens = createAction<any>('application/updateTopTokens');
-
-export const updateTokenPairs = createAction<{ data: any }>(
-  'application/updateTokenPairs',
-);
-
-export const updateSwapTokenPrice0 = createAction<{ data: any }>(
-  'application/updateSwapTokenPrice0',
-);
-
-export const updateSwapTokenPrice1 = createAction<{ data: any }>(
-  'application/updateSwapTokenPrice1',
-);
-
 export const addBookMarkToken = createAction<string>(
   'application/addBookMarkedToken',
 );
@@ -99,12 +82,6 @@ export const updateBookmarkPairs = createAction<string[]>(
   'application/updateBookmarkPairs',
 );
 
-export const updateTopPairs = createAction<any>('application/updateTopPairs');
-
-export const updateAnalyticToken = createAction<any>(
-  'application/updateAnalyticToken',
-);
-
-export const updateTokenChartData = createAction<any>(
-  'application/updateTokenChartData',
+export const updateTokenDetails = createAction<TokenDetail>(
+  'application/updateTokenDetail',
 );

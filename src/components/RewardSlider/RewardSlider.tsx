@@ -4,14 +4,11 @@ import { useMediaQuery } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import {
-  useStakingInfo,
-  STAKING_REWARDS_INFO,
-  getBulkPairData,
-  StakingInfo,
-} from 'state/stake/hooks';
+import { StakingInfo } from 'types';
+import { useStakingInfo, getBulkPairData } from 'state/stake/hooks';
 import RewardSliderItem from './RewardSliderItem';
 import { useActiveWeb3React } from 'hooks';
+import { getOneYearFee, returnStakingInfo } from 'utils';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   rewardsSlider: {
@@ -54,8 +51,9 @@ const RewardSlider: React.FC = () => {
   useEffect(() => {
     if (chainId) {
       const stakingPairLists =
-        STAKING_REWARDS_INFO[chainId]?.slice(0, 5).map((item) => item.pair) ??
-        [];
+        returnStakingInfo()
+          [chainId]?.slice(0, 5)
+          .map((item) => item.pair) ?? [];
       getBulkPairData(stakingPairLists).then((data) => setBulkPairs(data));
     }
   }, [chainId]);
@@ -64,10 +62,9 @@ const RewardSlider: React.FC = () => {
     if (bulkPairs && rewardItems.length > 0) {
       return rewardItems.map((info: StakingInfo) => {
         const oneDayVolume = bulkPairs[info.pair]?.oneDayVolumeUSD;
-        if (oneDayVolume) {
-          const oneYearFeeAPY =
-            (oneDayVolume * 0.003 * 365) / bulkPairs[info.pair]?.reserveUSD;
-          return oneYearFeeAPY;
+        const reserveUSD = bulkPairs[info.pair]?.reserveUSD;
+        if (oneDayVolume && reserveUSD) {
+          return getOneYearFee(oneDayVolume, reserveUSD);
         } else {
           return 0;
         }
@@ -100,4 +97,4 @@ const RewardSlider: React.FC = () => {
   );
 };
 
-export default RewardSlider;
+export default React.memo(RewardSlider);

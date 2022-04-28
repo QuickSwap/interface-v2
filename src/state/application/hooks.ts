@@ -10,20 +10,14 @@ import {
   setOpenModal,
   updateEthPrice,
   updateGlobalData,
-  updateGlobalChartData,
-  updateTopTokens,
-  updateTokenPairs,
-  updateSwapTokenPrice0,
-  updateSwapTokenPrice1,
   addBookMarkToken,
   removeBookmarkToken,
   updateBookmarkTokens,
-  updateTopPairs,
   addBookMarkPair,
   removeBookmarkPair,
-  updateAnalyticToken,
-  updateTokenChartData,
+  updateTokenDetails,
 } from './actions';
+import { TokenDetail } from './reducer';
 
 export function useBlockNumber(): number | undefined {
   const { chainId } = useActiveWeb3React();
@@ -145,38 +139,21 @@ export function useGlobalData(): {
   return { globalData, updateGlobalData: _updateGlobalData };
 }
 
-export function useGlobalChartData(): {
-  globalChartData: any;
-  updateGlobalChartData: (data: any) => void;
+export function useTokenDetails(): {
+  tokenDetails: TokenDetail[];
+  updateTokenDetails: (data: TokenDetail) => void;
 } {
-  const globalChartData = useSelector(
-    (state: AppState) => state.application.globalChartData,
+  const tokenDetails = useSelector(
+    (state: AppState) => state.application.tokenDetails,
   );
   const dispatch = useDispatch();
-  const _updateGlobalChartData = useCallback(
-    (data) => {
-      dispatch(updateGlobalChartData(data));
+  const _updateTokenDetails = useCallback(
+    (data: TokenDetail) => {
+      dispatch(updateTokenDetails(data));
     },
     [dispatch],
   );
-  return { globalChartData, updateGlobalChartData: _updateGlobalChartData };
-}
-
-export function useTopTokens(): {
-  topTokens: any;
-  updateTopTokens: (data: any) => void;
-} {
-  const topTokens = useSelector(
-    (state: AppState) => state.application.topTokens,
-  );
-  const dispatch = useDispatch();
-  const _updateTopTokens = useCallback(
-    (data) => {
-      dispatch(updateTopTokens(data));
-    },
-    [dispatch],
-  );
-  return { topTokens, updateTopTokens: _updateTopTokens };
+  return { tokenDetails, updateTokenDetails: _updateTokenDetails };
 }
 
 export function useBookmarkTokens(): {
@@ -249,104 +226,4 @@ export function useBookmarkPairs(): {
     removeBookmarkPair: _removeBookmarkPair,
     updateBookmarkPairs: _updateBookmarkPairs,
   };
-}
-
-export function useTokenPairs(): {
-  tokenPairs: any;
-  updateTokenPairs: ({ data }: any) => void;
-} {
-  const tokenPairs = useSelector(
-    (state: AppState) => state.application.tokenPairs,
-  );
-  const dispatch = useDispatch();
-  const _updateTokenPairs = useCallback(
-    ({ data }) => {
-      dispatch(updateTokenPairs({ data }));
-    },
-    [dispatch],
-  );
-  return { tokenPairs, updateTokenPairs: _updateTokenPairs };
-}
-
-export function useSwapTokenPrice0(): {
-  swapTokenPrice0: any;
-  updateSwapTokenPrice0: (data: any) => void;
-} {
-  const swapTokenPrice0 = useSelector(
-    (state: AppState) => state.application.swapTokenPrice0,
-  );
-  const dispatch = useDispatch();
-  const _updateSwapTokenPrice0 = useCallback(
-    (data) => {
-      dispatch(updateSwapTokenPrice0(data));
-    },
-    [dispatch],
-  );
-  return { swapTokenPrice0, updateSwapTokenPrice0: _updateSwapTokenPrice0 };
-}
-
-export function useSwapTokenPrice1(): {
-  swapTokenPrice1: any;
-  updateSwapTokenPrice1: (data: any) => void;
-} {
-  const swapTokenPrice1 = useSelector(
-    (state: AppState) => state.application.swapTokenPrice1,
-  );
-  const dispatch = useDispatch();
-  const _updateSwapTokenPrice1 = useCallback(
-    (data) => {
-      dispatch(updateSwapTokenPrice1(data));
-    },
-    [dispatch],
-  );
-  return { swapTokenPrice1, updateSwapTokenPrice1: _updateSwapTokenPrice1 };
-}
-
-export function useTopPairs(): {
-  topPairs: any;
-  updateTopPairs: (data: any) => void;
-} {
-  const topPairs = useSelector((state: AppState) => state.application.topPairs);
-  const dispatch = useDispatch();
-  const _updateTopPairs = useCallback(
-    (data) => {
-      dispatch(updateTopPairs(data));
-    },
-    [dispatch],
-  );
-  return { topPairs, updateTopPairs: _updateTopPairs };
-}
-
-export function useAnalyticToken(): {
-  analyticToken: any;
-  updateAnalyticToken: (data: any) => void;
-} {
-  const analyticToken = useSelector(
-    (state: AppState) => state.application.analyticToken,
-  );
-  const dispatch = useDispatch();
-  const _updateAnalyticToken = useCallback(
-    (data) => {
-      dispatch(updateAnalyticToken(data));
-    },
-    [dispatch],
-  );
-  return { analyticToken, updateAnalyticToken: _updateAnalyticToken };
-}
-
-export function useTokenChartData(): {
-  tokenChartData: any;
-  updateTokenChartData: (data: any) => void;
-} {
-  const tokenChartData = useSelector(
-    (state: AppState) => state.application.tokenChartData,
-  );
-  const dispatch = useDispatch();
-  const _updateTokenChartData = useCallback(
-    (data) => {
-      dispatch(updateTokenChartData(data));
-    },
-    [dispatch],
-  );
-  return { tokenChartData, updateTokenChartData: _updateTokenChartData };
 }

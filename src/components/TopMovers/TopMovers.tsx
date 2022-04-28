@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Box, Typography, useMediaQuery } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { ArrowDropUp, ArrowDropDown } from '@material-ui/icons';
@@ -6,10 +6,9 @@ import Skeleton from '@material-ui/lab/Skeleton';
 import { Token, ChainId } from '@uniswap/sdk';
 import { getAddress } from '@ethersproject/address';
 import { CurrencyLogo } from 'components';
-import { getEthPrice, getTopTokens } from 'utils';
-import { useTopTokens } from 'state/application/hooks';
+import { getEthPrice, getTopTokens, getPriceColor, formatNumber } from 'utils';
 
-const useStyles = makeStyles(({ breakpoints }) => ({
+const useStyles = makeStyles(() => ({
   content: {
     width: '100%',
     display: 'flex',
@@ -28,7 +27,7 @@ const TopMovers: React.FC<TopMoversProps> = ({
 }) => {
   const classes = useStyles();
   const { palette, breakpoints } = useTheme();
-  const { topTokens, updateTopTokens } = useTopTokens();
+  const [topTokens, updateTopTokens] = useState<any[] | null>(null);
   const smallWindowSize = useMediaQuery(breakpoints.down('xs'));
 
   const topMoverTokens = useMemo(
@@ -37,17 +36,15 @@ const TopMovers: React.FC<TopMoversProps> = ({
   );
 
   useEffect(() => {
-    async function checkEthPrice() {
+    async function fetchTopTokens() {
       const [newPrice, oneDayPrice] = await getEthPrice();
       const topTokensData = await getTopTokens(newPrice, oneDayPrice, 5);
       if (topTokensData) {
         updateTopTokens(topTokensData);
       }
     }
-    if (!topTokens || topTokens.length < 5) {
-      checkEthPrice();
-    }
-  }, [updateTopTokens, topTokens]);
+    fetchTopTokens();
+  }, [updateTopTokens]);
 
   return (
     <Box
@@ -78,6 +75,10 @@ const TopMovers: React.FC<TopMoversProps> = ({
                 getAddress(token.id),
                 token.decimals,
               );
+              const priceColor = getPriceColor(
+                Number(token.priceChangeUSD),
+                palette,
+              );
               const priceUp = Number(token.priceChangeUSD) > 0;
               const priceDown = Number(token.priceChangeUSD) < 0;
               const priceUpPercent = Number(token.priceChangeUSD).toFixed(2);
@@ -104,7 +105,7 @@ const TopMovers: React.FC<TopMoversProps> = ({
                       alignItems='center'
                     >
                       <Typography variant='body2'>
-                        ${Number(token.priceUSD).toFixed(2)}
+                        ${formatNumber(token.priceUSD)}
                       </Typography>
                       <Box
                         ml={hideArrow ? 1 : 0}
@@ -116,21 +117,9 @@ const TopMovers: React.FC<TopMoversProps> = ({
                         py={0.25}
                         borderRadius={12}
                         bgcolor={
-                          !hideArrow
-                            ? 'transparent'
-                            : priceUp
-                            ? 'rgba(15, 198, 121, 0.1)'
-                            : priceDown
-                            ? 'rgba(255, 82, 82, 0.1)'
-                            : 'rgba(99, 103, 128, 0.1)'
+                          !hideArrow ? 'transparent' : priceColor.bgColor
                         }
-                        style={{
-                          color: priceUp
-                            ? palette.success.main
-                            : priceDown
-                            ? palette.error.main
-                            : palette.text.hint,
-                        }}
+                        color={priceColor.textColor}
                       >
                         {!hideArrow && priceUp && <ArrowDropUp />}
                         {!hideArrow && priceDown && <ArrowDropDown />}
@@ -153,4 +142,4 @@ const TopMovers: React.FC<TopMoversProps> = ({
   );
 };
 
-export default TopMovers;
+export default React.memo(TopMovers);

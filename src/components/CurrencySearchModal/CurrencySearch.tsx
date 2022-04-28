@@ -13,11 +13,12 @@ import { Box, Typography, Divider } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
+import { FixedSizeList } from 'react-window';
 import { useActiveWeb3React } from 'hooks';
 import { useAllTokens, useToken } from 'hooks/Tokens';
 import { useSelectedListInfo } from 'state/lists/hooks';
 import { selectList } from 'state/lists/actions';
-import { DEFAULT_TOKEN_LIST_URL } from 'constants/index';
+import { GlobalConst } from 'constants/index';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 import { ReactComponent as SearchIcon } from 'assets/images/SearchIcon.svg';
@@ -27,17 +28,18 @@ import { AppDispatch } from 'state';
 import { isAddress } from 'utils';
 import { filterTokens } from 'utils/filtering';
 import { useTokenComparator } from 'utils/sorting';
+import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   wrapper: {
     padding: '32px 24px 0',
-    height: 620,
+    height: '90vh',
     borderRadius: 20,
     display: 'flex',
     flexDirection: 'column',
     background: palette.background.paper,
     backdropFilter: 'blur(9.9px)',
-    border: '1px solid #3e4252',
+    border: `1px solid ${palette.grey.A400}`,
     [breakpoints.down('xs')]: {
       height: '90vh',
     },
@@ -126,10 +128,22 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
 }) => {
   const classes = useStyles();
   const { t } = useTranslation();
-  const { chainId } = useActiveWeb3React();
+  const { account, chainId } = useActiveWeb3React();
   const dispatch = useDispatch<AppDispatch>();
+  const fixedList = useRef<FixedSizeList>();
+
+  const handleInput = useCallback((input: string) => {
+    const checksummedInput = isAddress(input);
+    setSearchQuery(checksummedInput || input);
+    fixedList.current?.scrollTo(0);
+  }, []);
 
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [searchQueryInput, setSearchQueryInput] = useDebouncedChangeHandler(
+    searchQuery,
+    handleInput,
+  );
+
   const allTokens = useAllTokens();
 
   // if they input an address, use it
@@ -192,14 +206,6 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
     if (isOpen) setSearchQuery('');
   }, [isOpen]);
 
-  // manage focus on modal show
-  const inputRef = useRef<HTMLInputElement>();
-  const handleInput = useCallback((event) => {
-    const input = event.target.value;
-    const checksummedInput = isAddress(input);
-    setSearchQuery(checksummedInput || input);
-  }, []);
-
   const handleEnter = useCallback(
     (e: KeyboardEvent<HTMLInputElement>) => {
       if (e.key === 'Enter') {
@@ -220,10 +226,13 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
     [filteredSortedTokens, handleCurrencySelect, searchQuery],
   );
 
+  // manage focus on modal show
+  const inputRef = useRef<HTMLInputElement>();
+
   let selectedListInfo = useSelectedListInfo();
 
   if (selectedListInfo.current === null) {
-    dispatch(selectList(DEFAULT_TOKEN_LIST_URL));
+    dispatch(selectList(GlobalConst.utils.DEFAULT_TOKEN_LIST_URL));
   }
   selectedListInfo = useSelectedListInfo();
 
@@ -238,9 +247,9 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
         <input
           type='text'
           placeholder={t('tokenSearchPlaceholder')}
-          value={searchQuery}
+          value={searchQueryInput}
           ref={inputRef as RefObject<HTMLInputElement>}
-          onChange={handleInput}
+          onChange={(e) => setSearchQueryInput(e.target.value)}
           onKeyDown={handleEnter}
         />
       </Box>
@@ -254,7 +263,7 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
 
       <Divider />
 
-      <Box className={classes.currencyListWrapper}>
+      <Box flex={1}>
         <AutoSizer disableWidth>
           {({ height }) => (
             <CurrencyList
@@ -264,6 +273,7 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
               onCurrencySelect={handleCurrencySelect}
               otherCurrency={otherSelectedCurrency}
               selectedCurrency={selectedCurrency}
+              fixedListRef={fixedList}
             />
           )}
         </AutoSizer>

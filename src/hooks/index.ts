@@ -5,7 +5,7 @@ import { Web3ReactContextInterface } from '@web3-react/core/dist/types';
 import { ChainId } from '@uniswap/sdk';
 import { isMobile } from 'react-device-detect';
 import { injected, safeApp } from 'connectors';
-import { NetworkContextName } from 'constants/index';
+import { GlobalConst } from 'constants/index';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from 'state';
 /* eslint-disable */
@@ -21,7 +21,9 @@ export function useActiveWeb3React(): Web3ReactContextInterface<
   chainId?: ChainId;
 } {
   const context = useWeb3ReactCore<Web3Provider>();
-  const contextNetwork = useWeb3ReactCore<Web3Provider>(NetworkContextName);
+  const contextNetwork = useWeb3ReactCore<Web3Provider>(
+    GlobalConst.utils.NetworkContextName,
+  );
   return context.active ? context : contextNetwork;
 }
 
@@ -39,15 +41,11 @@ export function useIsArgentWallet(): boolean {
 
 export function useInitTransak() {
   const dispatch = useDispatch<AppDispatch>();
-  const initTransak = (
-    account: any,
-    mobileWindowSize: boolean,
-    currency: string,
-  ) => {
+  const initTransak = (account: any, mobileWindowSize: boolean) => {
     const transak = new transakSDK({
-      apiKey: '258960cf-1e17-4419-bf7f-77443282f5da', // Your API Key
+      apiKey: process.env.REACT_APP_TRANSAK_KEY, // Your API Key
       environment: 'PRODUCTION', // STAGING/PRODUCTION
-      defaultCryptoCurrency: currency,
+      defaultCryptoCurrency: 'MATIC',
       walletAddress: account, // Your customer's wallet address
       themeColor: '2891f9', // App theme color
       redirectURL: 'window.location.origin',

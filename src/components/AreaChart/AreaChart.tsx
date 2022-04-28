@@ -4,7 +4,7 @@ import { Box, Typography } from '@material-ui/core';
 import Chart from 'react-apexcharts';
 import moment from 'moment';
 import { useIsDarkMode } from 'state/user/hooks';
-import { formatCompact } from 'utils';
+import { formatCompact, formatNumber } from 'utils';
 
 const useStyles = makeStyles(({ palette }) =>
   createStyles({
@@ -76,6 +76,9 @@ const AreaChart: React.FC<AreaChartProps> = ({
         show: false,
       },
       width: '100%',
+      zoom: {
+        enabled: false,
+      },
     },
     dataLabels: {
       enabled: false,
@@ -144,7 +147,7 @@ const AreaChart: React.FC<AreaChartProps> = ({
       enabled: true,
       theme: dark ? 'dark' : 'light',
       fillSeriesColor: false,
-      custom: (props: any) => {
+      custom: ({ series, seriesIndex, dataPointIndex }: any) => {
         return (
           `<div class="tooltip" style="display: flex; flex-direction: column; box-shadow: none; border-radius: 12px; background: transparent;">` +
           `<span style="padding: 0.5rem; border: 1px solid ${
@@ -152,7 +155,7 @@ const AreaChart: React.FC<AreaChartProps> = ({
           }; border-radius: 12px 12px 0 0; background: ${
             dark ? 'rgba(0, 0, 0, 0.91)' : 'rgba(255, 255, 255, 0.91)'
           }; color: ${dark ? '#646464' : '#8D97A0'};">` +
-          moment(dates[props.dataPointIndex] * 1000).format('MMM DD, YYYY') +
+          moment(dates[dataPointIndex] * 1000).format('MMM DD, YYYY') +
           '</span>' +
           `<span style="padding: 0.5rem; border: 1px solid ${
             dark ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.15)'
@@ -161,7 +164,7 @@ const AreaChart: React.FC<AreaChartProps> = ({
           }; color: ${dark ? '#646464' : '#8D97A0'};"><b style="color: ${
             dark ? 'white' : 'rgba(0, 0, 0, 0.91)'
           };">$` +
-          formatCompact(props.series[props.seriesIndex][props.dataPointIndex]) +
+          formatCompact(series[seriesIndex][dataPointIndex]) +
           '</b></span>' +
           '</div>'
         );
@@ -196,8 +199,12 @@ const AreaChart: React.FC<AreaChartProps> = ({
       </Box>
       {yAxisValues && (
         <Box className={classes.yAxis}>
-          {yAxisValues.map((item, index) => (
-            <Typography key={index}>${formatCompact(item)}</Typography>
+          {yAxisValues.map((value, index) => (
+            <Typography key={index}>
+              $
+              {// this is to show small numbers less than 0.0001
+              value > 0.0001 ? formatCompact(value) : formatNumber(value)}
+            </Typography>
           ))}
         </Box>
       )}

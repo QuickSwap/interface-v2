@@ -23,6 +23,9 @@ const LineChart: React.FC<LineChartProps> = ({
         show: false,
       },
       width: '100%',
+      zoom: {
+        enabled: false,
+      },
     },
     dataLabels: {
       enabled: false,

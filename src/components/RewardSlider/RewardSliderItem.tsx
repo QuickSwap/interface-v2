@@ -1,13 +1,16 @@
 import React from 'react';
 import { Box, Typography, Button } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
-import { JSBI, TokenAmount } from '@uniswap/sdk';
 import { makeStyles } from '@material-ui/core/styles';
-import { StakingInfo } from 'state/stake/hooks';
-import { unwrappedToken } from 'utils/wrappedCurrency';
+import { StakingInfo } from 'types';
 import { DoubleCurrencyLogo } from 'components';
-import { EMPTY } from 'constants/index';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon.svg';
+import {
+  formatAPY,
+  getAPYWithFee,
+  getStakedAmountStakingInfo,
+  getTVLStaking,
+} from 'utils';
 
 const useStyles = makeStyles(({ palette }) => ({
   rewardsSliderItem: {
@@ -70,56 +73,20 @@ const RewardSliderItem: React.FC<RewardSliderItemProps> = ({
 }) => {
   const classes = useStyles();
   const history = useHistory();
-  const token0 = info.tokens[0];
 
-  const baseTokenCurrency = unwrappedToken(info.baseToken);
-  const empty = unwrappedToken(EMPTY);
+  const stakedAmounts = getStakedAmountStakingInfo(info);
+  const tvl = getTVLStaking(
+    stakedAmounts?.totalStakedUSD,
+    stakedAmounts?.totalStakedBase,
+  );
 
-  let valueOfTotalStakedAmountInBaseToken: TokenAmount | undefined;
-  const totalSupplyOfStakingToken = info.totalSupply;
-  const stakingTokenPair = info.stakingTokenPair;
-  const baseToken = baseTokenCurrency === empty ? token0 : info.baseToken;
-
-  const USDPrice = info.usdPrice;
-
-  if (totalSupplyOfStakingToken && stakingTokenPair) {
-    // take the total amount of LP tokens staked, multiply by ETH value of all LP tokens, divide by all LP tokens
-    valueOfTotalStakedAmountInBaseToken = new TokenAmount(
-      baseToken,
-      JSBI.divide(
-        JSBI.multiply(
-          JSBI.multiply(
-            info.totalStakedAmount.raw,
-            stakingTokenPair.reserveOf(baseToken).raw,
-          ),
-          JSBI.BigInt(2), // this is b/c the value of LP shares are ~double the value of the WETH they entitle owner to
-        ),
-        totalSupplyOfStakingToken.raw,
-      ),
-    );
-  }
-  const valueOfTotalStakedAmountInUSDC =
-    valueOfTotalStakedAmountInBaseToken &&
-    USDPrice?.quote(valueOfTotalStakedAmountInBaseToken);
-
-  const rewards = Number(info.rate) * Number(info.quickPrice);
+  const rewards = info.rate * info.rewardTokenPrice;
 
   let apyWithFee;
   if (stakingAPY && stakingAPY > 0) {
-    apyWithFee =
-      ((1 +
-        ((Number(info.perMonthReturnInRewards) + Number(stakingAPY) / 12) *
-          12) /
-          12) **
-        12 -
-        1) *
-      100;
-
-    if (apyWithFee > 100000000) {
-      apyWithFee = '>100000000';
-    } else {
-      apyWithFee = parseFloat(apyWithFee.toFixed(2)).toLocaleString();
-    }
+    apyWithFee = formatAPY(
+      getAPYWithFee(info.perMonthReturnInRewards ?? 0, stakingAPY),
+    );
   }
 
   return (
@@ -140,26 +107,18 @@ const RewardSliderItem: React.FC<RewardSliderItemProps> = ({
       <Box className='row'>
         <Typography>24h Fees</Typography>
         <Typography component='h4'>
-          ${Number(info?.oneDayFee.toFixed(0)).toLocaleString()}
+          ${(info?.oneDayFee ?? 0).toLocaleString()}
         </Typography>
       </Box>
       <Box className='row'>
-        <Typography>Locked Value</Typography>
+        <Typography>Rewards</Typography>
         <Typography component='h4'>
-          {valueOfTotalStakedAmountInUSDC
-            ? `$${valueOfTotalStakedAmountInUSDC.toFixed(0, {
-                groupSeparator: ',',
-              })}`
-            : `${valueOfTotalStakedAmountInBaseToken?.toSignificant(4, {
-                groupSeparator: ',',
-              }) ?? '-'} ETH`}
+          ${rewards.toLocaleString()} / day
         </Typography>
       </Box>
       <Box className='row'>
         <Typography>TVL</Typography>
-        <Typography component='h4'>
-          ${Number(rewards.toFixed(0)).toLocaleString()}
-        </Typography>
+        <Typography component='h4'>{tvl}</Typography>
       </Box>
       <Box className='row'>
         <Typography>

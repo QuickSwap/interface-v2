@@ -20,15 +20,17 @@ import {
   GAS_PRICE_LIMIT,
 } from 'constants/index';
 import routerABI from 'constants/abis/meta-router-v2.json';
+import { GlobalConst } from 'constants/index';
 import { useTransactionAdder } from 'state/transactions/hooks';
 import {
   calculateGasMargin,
-  getRouterContract,
   isZero,
   isAddress,
   shortenAddress,
+  formatTokenAmount,
 } from 'utils';
 import { useActiveWeb3React } from 'hooks';
+import { useRouterContract } from './useContract';
 import useTransactionDeadline from './useTransactionDeadline';
 import useENS from './useENS';
 import { Version } from './useToggledVersion';
@@ -67,7 +69,7 @@ type EstimatedSwapCall = SuccessfulCall | FailedCall;
  */
 function useSwapCallArguments(
   trade: Trade | undefined, // trade to execute, required
-  allowedSlippage: number = INITIAL_ALLOWED_SLIPPAGE, // in bips
+  allowedSlippage: number = GlobalConst.utils.INITIAL_ALLOWED_SLIPPAGE, // in bips
   recipientAddressOrName: string | null, // the ENS name or address of the recipient of the trade, or null if swap should be returned to sender
 ): SwapCall[] {
   const { account, chainId, library } = useActiveWeb3React();
@@ -76,6 +78,7 @@ function useSwapCallArguments(
   const recipient =
     recipientAddressOrName === null ? account : recipientAddress;
   const deadline = useTransactionDeadline();
+  const contract = useRouterContract();
 
   return useMemo(() => {
     const tradeVersion = Version.v2;
@@ -89,11 +92,6 @@ function useSwapCallArguments(
     )
       return [];
 
-    const contract: Contract | null = getRouterContract(
-      chainId,
-      library,
-      account,
-    );
     if (!contract) {
       return [];
     }
@@ -107,10 +105,12 @@ function useSwapCallArguments(
             feeOnTransfer: false,
             allowedSlippage: new Percent(
               JSBI.BigInt(allowedSlippage),
-              BIPS_BASE,
+              GlobalConst.utils.BIPS_BASE,
             ),
             recipient,
-            ttl: deadline ? deadline.toNumber() : DEFAULT_DEADLINE_FROM_NOW,
+            ttl: deadline
+              ? deadline.toNumber()
+              : GlobalConst.utils.DEFAULT_DEADLINE_FROM_NOW,
           }),
         );
 
@@ -120,24 +120,35 @@ function useSwapCallArguments(
               feeOnTransfer: true,
               allowedSlippage: new Percent(
                 JSBI.BigInt(allowedSlippage),
-                BIPS_BASE,
+                GlobalConst.utils.BIPS_BASE,
               ),
               recipient,
-              ttl: deadline ? deadline.toNumber() : DEFAULT_DEADLINE_FROM_NOW,
+              ttl: deadline
+                ? deadline.toNumber()
+                : GlobalConst.utils.DEFAULT_DEADLINE_FROM_NOW,
             }),
           );
         }
         break;
     }
     return swapMethods.map((parameters) => ({ parameters, contract }));
-  }, [account, allowedSlippage, chainId, deadline, library, recipient, trade]);
+  }, [
+    account,
+    allowedSlippage,
+    chainId,
+    deadline,
+    library,
+    recipient,
+    trade,
+    contract,
+  ]);
 }
 
 // returns a function that will execute a swap, if the parameters are all valid
 // and the user has approved the slippage adjusted input amount for the trade
 export function useSwapCallback(
   trade: Trade | undefined, // trade to execute, required
-  allowedSlippage: number = INITIAL_ALLOWED_SLIPPAGE, // in bips
+  allowedSlippage: number = GlobalConst.utils.INITIAL_ALLOWED_SLIPPAGE, // in bips
   recipientAddressOrName: string | null, // the ENS name or address of the recipient of the trade, or null if swap should be returned to sender
 ): {
   state: SwapCallbackState;
@@ -311,8 +322,8 @@ export function useSwapCallback(
             .then((response: TransactionResponse) => {
               const inputSymbol = trade.inputAmount.currency.symbol;
               const outputSymbol = trade.outputAmount.currency.symbol;
-              const inputAmount = trade.inputAmount.toSignificant(3);
-              const outputAmount = trade.outputAmount.toSignificant(3);
+              const inputAmount = formatTokenAmount(trade.inputAmount);
+              const outputAmount = formatTokenAmount(trade.outputAmount);
 
               const base = `Swap ${inputAmount} ${inputSymbol} for ${outputAmount} ${outputSymbol}`;
               const withRecipient =

@@ -1,18 +1,17 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { PairTable } from 'components';
-import { useTopPairs } from 'state/application/hooks';
 import { getEthPrice, getTopPairs, getBulkPairData } from 'utils';
 import { Skeleton } from '@material-ui/lab';
 
-const useStyles = makeStyles(({ breakpoints }) => ({
+const useStyles = makeStyles(({ palette, breakpoints }) => ({
   tokensFilter: {
     cursor: 'pointer',
     display: 'flex',
   },
   panel: {
-    background: '#1b1d26',
+    background: palette.grey.A700,
     borderRadius: 20,
     padding: 24,
     [breakpoints.down('xs')]: {
@@ -23,11 +22,11 @@ const useStyles = makeStyles(({ breakpoints }) => ({
 
 const AnalyticsPairs: React.FC = () => {
   const classes = useStyles();
-  const { topPairs, updateTopPairs } = useTopPairs();
+  const [topPairs, updateTopPairs] = useState<any[] | null>(null);
 
   useEffect(() => {
-    updateTopPairs(null);
     const fetchTopPairs = async () => {
+      updateTopPairs(null);
       const [newPrice] = await getEthPrice();
       const pairs = await getTopPairs(500);
       const formattedPairs = pairs
@@ -40,14 +39,11 @@ const AnalyticsPairs: React.FC = () => {
         updateTopPairs(pairData);
       }
     };
-    if (!topPairs || topPairs.length < 500) {
-      fetchTopPairs();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    fetchTopPairs();
   }, [updateTopPairs]);
 
   return (
-    <>
+    <Box width='100%' mb={3}>
       <Typography>All Pairs</Typography>
       <Box mt={4} className={classes.panel}>
         {topPairs ? (
@@ -56,7 +52,7 @@ const AnalyticsPairs: React.FC = () => {
           <Skeleton variant='rect' width='100%' height={150} />
         )}
       </Box>
-    </>
+    </Box>
   );
 };
 

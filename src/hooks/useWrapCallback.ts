@@ -5,6 +5,7 @@ import { useTransactionAdder } from 'state/transactions/hooks';
 import { useCurrencyBalance } from 'state/wallet/hooks';
 import { useActiveWeb3React } from 'hooks';
 import { useWETHContract } from './useContract';
+import { formatTokenAmount } from 'utils';
 
 export enum WrapType {
   NOT_APPLICABLE,
@@ -59,7 +60,9 @@ export default function useWrapCallback(
                     value: `0x${inputAmount.raw.toString(16)}`,
                   });
                   addTransaction(txReceipt, {
-                    summary: `Wrap ${inputAmount.toSignificant(6)} ETH to WETH`,
+                    summary: `Wrap ${formatTokenAmount(
+                      inputAmount,
+                    )} ETH to WETH`,
                   });
                 } catch (error) {
                   console.error('Could not deposit', error);
@@ -82,8 +85,8 @@ export default function useWrapCallback(
                     `0x${inputAmount.raw.toString(16)}`,
                   );
                   addTransaction(txReceipt, {
-                    summary: `Unwrap ${inputAmount.toSignificant(
-                      6,
+                    summary: `Unwrap ${formatTokenAmount(
+                      inputAmount,
                     )} WETH to ETH`,
                   });
                 } catch (error) {

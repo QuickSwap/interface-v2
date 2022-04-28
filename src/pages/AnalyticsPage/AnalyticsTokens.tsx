@@ -2,18 +2,18 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Box, Typography } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { TopMovers, TokensTable } from 'components';
-import { useTopTokens, useBookmarkTokens } from 'state/application/hooks';
+import { useBookmarkTokens } from 'state/application/hooks';
 import { getEthPrice, getTopTokens } from 'utils';
 import { Skeleton } from '@material-ui/lab';
 
-const useStyles = makeStyles(({ breakpoints }) => ({
+const useStyles = makeStyles(({ palette, breakpoints }) => ({
   tokensFilter: {
     cursor: 'pointer',
     display: 'flex',
     margin: '8px 16px 8px 0',
   },
   panel: {
-    background: '#1b1d26',
+    background: palette.grey.A700,
     borderRadius: 20,
     padding: 24,
     [breakpoints.down('xs')]: {
@@ -27,7 +27,7 @@ const AnalyticsTokens: React.FC = () => {
   const { palette } = useTheme();
   const [tokensFilter, setTokensFilter] = useState(0);
 
-  const { topTokens, updateTopTokens } = useTopTokens();
+  const [topTokens, updateTopTokens] = useState<any[] | null>(null);
   const { bookmarkTokens } = useBookmarkTokens();
 
   const favoriteTokens = useMemo(() => {
@@ -41,23 +41,21 @@ const AnalyticsTokens: React.FC = () => {
   }, [topTokens, bookmarkTokens]);
 
   useEffect(() => {
-    updateTopTokens(null);
     const fetchTopTokens = async () => {
+      updateTopTokens(null); //set top tokens as null to show loading status when fetching tokens data
       const [newPrice, oneDayPrice] = await getEthPrice();
       const topTokensData = await getTopTokens(newPrice, oneDayPrice, 200);
       if (topTokensData) {
         updateTopTokens(topTokensData);
       }
     };
-    if (!topTokens || topTokens.length < 200) {
-      fetchTopTokens();
-    }
+    fetchTopTokens();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [updateTopTokens]);
 
   return (
-    <>
-      <TopMovers background='#1b1d26' hideArrow={true} />
+    <Box width='100%' mb={3}>
+      <TopMovers background={palette.grey.A700} hideArrow={true} />
       <Box my={4} px={2} display='flex' flexWrap='wrap' alignItems='center'>
         <Box
           className={classes.tokensFilter}
@@ -94,7 +92,7 @@ const AnalyticsTokens: React.FC = () => {
           <Skeleton variant='rect' width='100%' height={150} />
         )}
       </Box>
-    </>
+    </Box>
   );
 };
 

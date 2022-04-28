@@ -2,7 +2,7 @@ import { AbstractConnector } from '@web3-react/abstract-connector';
 import React from 'react';
 import { Box, CircularProgress, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { SUPPORTED_WALLETS } from 'constants/index';
+import { GlobalConst, SUPPORTED_WALLETS } from 'constants/index';
 import { injected } from 'connectors';
 import Option from './Option';
 
@@ -50,6 +50,8 @@ const PendingView: React.FC<PendingViewProps> = ({
   tryActivation,
 }) => {
   const isMetamask = (window as any).ethereum?.isMetaMask;
+  const isBlockWallet = (window as any).ethereum?.isBlockWallet;
+  const isBitKeep = (window as any).ethereum?.isBitKeep;
   const classes = useStyles();
 
   return (
@@ -81,10 +83,31 @@ const PendingView: React.FC<PendingViewProps> = ({
         const option = SUPPORTED_WALLETS[key];
         if (option.connector === connector) {
           if (option.connector === injected) {
-            if (isMetamask && option.name !== 'MetaMask') {
+            if (isMetamask && option.name !== GlobalConst.walletName.METAMASK) {
               return null;
             }
-            if (!isMetamask && option.name === 'MetaMask') {
+            if (
+              !isMetamask &&
+              option.name === GlobalConst.walletName.METAMASK
+            ) {
+              return null;
+            }
+            if (isBitKeep && option.name !== GlobalConst.walletName.BITKEEP) {
+              return null;
+            }
+            if (!isBitKeep && option.name === GlobalConst.walletName.BITKEEP) {
+              return null;
+            }
+            if (
+              isBlockWallet &&
+              option.name !== GlobalConst.walletName.BLOCKWALLET
+            ) {
+              return null;
+            }
+            if (
+              !isBlockWallet &&
+              option.name === GlobalConst.walletName.BLOCKWALLET
+            ) {
               return null;
             }
           }

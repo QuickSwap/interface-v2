@@ -1,27 +1,18 @@
 import React, { useState } from 'react';
 import { Box, Typography, Button } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-import { CustomModal, ColoredSlider } from 'components';
+import { CustomModal, ColoredSlider, NumericalInput } from 'components';
 import { useLairInfo } from 'state/stake/hooks';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 import { TransactionResponse } from '@ethersproject/providers';
 import { useTransactionAdder } from 'state/transactions/hooks';
 import { useLairContract } from 'hooks/useContract';
 import Web3 from 'web3';
+import { formatTokenAmount } from 'utils';
 
 const web3 = new Web3();
 
 const useStyles = makeStyles(({ palette }) => ({
-  input: {
-    width: '100%',
-    background: 'transparent',
-    border: 'none',
-    boxShadow: 'none',
-    outline: 'none',
-    color: palette.text.primary,
-    fontSize: 28,
-    fontWeight: 600,
-  },
   stakeButton: {
     backgroundImage:
       'linear-gradient(104deg, #004ce6 -32%, #0098ff 54%, #00cff3 120%, #64fbd3 198%)',
@@ -73,7 +64,7 @@ const UnstakeQuickModal: React.FC<UnstakeQuickModalProps> = ({
 
   const lairContract = useLairContract();
   const error =
-    Number(typedValue) > Number(dQuickBalance.toSignificant()) || !typedValue;
+    Number(typedValue) > Number(dQuickBalance.toExact()) || !typedValue;
 
   const onWithdraw = () => {
     if (lairContract && lairInfo?.dQUICKBalance) {
@@ -81,11 +72,12 @@ const UnstakeQuickModal: React.FC<UnstakeQuickModalProps> = ({
       const balance = web3.utils.toWei(typedValue, 'ether');
       lairContract
         .leave(balance.toString(), { gasLimit: 300000 })
-        .then((response: TransactionResponse) => {
+        .then(async (response: TransactionResponse) => {
           addTransaction(response, {
-            summary: `Unstake QUICK`,
+            summary: `Unstake dQUICK`,
           });
-          onClose();
+          await response.wait();
+          setAttempting(false);
         })
         .catch((error: any) => {
           setAttempting(false);
@@ -115,23 +107,21 @@ const UnstakeQuickModal: React.FC<UnstakeQuickModalProps> = ({
           >
             <Typography variant='body2'>dQUICK</Typography>
             <Typography variant='body2'>
-              Balance: {dQuickBalance?.toSignificant(3)}
+              Balance: {formatTokenAmount(dQuickBalance)}
             </Typography>
           </Box>
           <Box mt={2} display='flex' alignItems='center'>
-            <input
+            <NumericalInput
               placeholder='0'
-              className={classes.input}
               value={typedValue}
-              onChange={(evt: any) => {
+              fontSize={28}
+              onUserInput={(value) => {
                 const totalBalance = dQuickBalance
-                  ? Number(dQuickBalance.toSignificant())
+                  ? Number(dQuickBalance.toExact())
                   : 0;
-                setTypedValue(evt.target.value);
+                setTypedValue(value);
                 setStakePercent(
-                  totalBalance > 0
-                    ? (Number(evt.target.value) / totalBalance) * 100
-                    : 0,
+                  totalBalance > 0 ? (Number(value) / totalBalance) * 100 : 0,
                 );
               }}
             />
@@ -143,9 +133,7 @@ const UnstakeQuickModal: React.FC<UnstakeQuickModalProps> = ({
                 cursor: 'pointer',
               }}
               onClick={() => {
-                setTypedValue(
-                  dQuickBalance ? dQuickBalance.toSignificant() : '0',
-                );
+                setTypedValue(dQuickBalance ? dQuickBalance.toExact() : '0');
                 setStakePercent(100);
               }}
             >
@@ -163,11 +151,12 @@ const UnstakeQuickModal: React.FC<UnstakeQuickModalProps> = ({
                   setStakePercent(value as number);
                   setTypedValue(
                     dQuickBalance
-                      ? (
-                          (Number(dQuickBalance.toSignificant()) *
-                            stakePercent) /
-                          100
-                        ).toFixed(8)
+                      ? stakePercent < 100
+                        ? (
+                            (Number(dQuickBalance.toExact()) * stakePercent) /
+                            100
+                          ).toString()
+                        : dQuickBalance.toExact()
                       : '0',
                   );
                 }}

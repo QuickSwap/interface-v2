@@ -1,5 +1,5 @@
 import gql from 'graphql-tag';
-import { BUNDLE_ID, FACTORY_ADDRESS } from 'constants/index';
+import { GlobalConst } from 'constants/index';
 
 export const SUBGRAPH_HEALTH = gql`
   query health {
@@ -127,10 +127,46 @@ export const TOKEN_CHART = gql`
   }
 `;
 
+export const PAIR_CHART = gql`
+  query pairDayDatas($pairAddress: Bytes!, $skip: Int!, $startTime: Int!) {
+    pairDayDatas(
+      first: 1000
+      skip: $skip
+      orderBy: date
+      orderDirection: asc
+      where: { pairAddress: $pairAddress, date_gt: $startTime }
+    ) {
+      id
+      date
+      dailyVolumeToken0
+      dailyVolumeToken1
+      dailyVolumeUSD
+      reserveUSD
+    }
+  }
+`;
+
+export const HOURLY_PAIR_RATES = (pairAddress: string, blocks: any[]) => {
+  let queryString = 'query blocks {';
+  queryString += blocks.map(
+    (block) => `
+      t${block.timestamp}: pair(id:"${pairAddress}", block: { number: ${block.number} }) { 
+        token0Price
+        token1Price
+      }
+    `,
+  );
+
+  queryString += '}';
+  return gql(queryString);
+};
+
 const PairFields = `
   fragment PairFields on Pair {
     id
     trackedReserveETH
+    reserve0
+    reserve1
     volumeUSD
     reserveUSD
     totalSupply
@@ -138,11 +174,13 @@ const PairFields = `
       symbol
       id
       decimals
+      derivedETH
     }
     token1 {
       symbol
       id
       decimals
+      derivedETH
     }
   }
 `;
@@ -150,7 +188,7 @@ const PairFields = `
 export const PAIRS_CURRENT: any = (count: number) => {
   const queryString = `
   query pairs {
-    pairs(first: ${count}, orderBy: reserveUSD, orderDirection: desc) {
+    pairs(first: ${count}, orderBy: trackedReserveETH, orderDirection: desc) {
       id
     }
   }`;
@@ -251,6 +289,30 @@ export const TOKENS_CURRENT: any = (count: number) => {
   return gql(queryString);
 };
 
+export const TOKEN_INFO: any = (address: string) => {
+  const queryString = `
+    ${TokenFields}
+    query tokens {
+      tokens(first: 1, where: {id: "${address}"}) {
+        ...TokenFields
+      }
+    }
+  `;
+  return gql(queryString);
+};
+
+export const TOKEN_INFO_OLD: any = (block: number, address: string) => {
+  const queryString = `
+    ${TokenFields}
+    query tokens {
+      tokens(block: {number: ${block}} first: 1, where: {id: "${address}"}) {
+        ...TokenFields
+      }
+    }
+  `;
+  return gql(queryString);
+};
+
 export const TOKENS_DYNAMIC: any = (block: number, count: number) => {
   const queryString = `
     ${TokenFields}
@@ -291,18 +353,48 @@ export const TOKEN_DATA1: any = (
     query tokens {
       pairs0: pairs(where: {token0: "${tokenAddress}", token1: "${tokenAddress1}"}){
         id
+        token0 {
+          id
+        }
+        token1{
+          id
+        }
       }
       pairs1: pairs(where: {token0: "${tokenAddress}", token1_not: "${tokenAddress1}"}, first: 2, orderBy: reserveUSD, orderDirection: desc){
         id
+        token0 {
+          id
+        }
+        token1{
+          id
+        }
       }
       pairs2: pairs(where: {token1: "${tokenAddress}", token0_not: "${tokenAddress1}"}, first: 2, orderBy: reserveUSD, orderDirection: desc){
         id
+        token0 {
+          id
+        }
+        token1{
+          id
+        }
       }
       pairs3: pairs(where: {token0: "${tokenAddress1}", token1_not: "${tokenAddress}"}, first: 2, orderBy: reserveUSD, orderDirection: desc){
         id
+        token0 {
+          id
+        }
+        token1{
+          id
+        }
       }
       pairs4: pairs(where: {token1: "${tokenAddress1}", token0_not: "${tokenAddress}"}, first: 2, orderBy: reserveUSD, orderDirection: desc){
         id
+        token0 {
+          id
+        }
+        token1{
+          id
+        }
       }
     }
   `;
@@ -340,14 +432,30 @@ export const ETH_PRICE: any = (block?: number) => {
   const queryString = block
     ? `
     query bundles {
-      bundles(where: { id: ${BUNDLE_ID} } block: {number: ${block}}) {
+      bundles(where: { id: ${GlobalConst.utils.BUNDLE_ID} } block: {number: ${block}}) {
         id
         ethPrice
       }
     }
   `
     : ` query bundles {
-      bundles(where: { id: ${BUNDLE_ID} }) {
+      bundles(where: { id: ${GlobalConst.utils.BUNDLE_ID} }) {
+        id
+        ethPrice
+      }
+    }
+  `;
+  return gql(queryString);
+};
+
+export const ETH_ALLPRICE: any = (block?: number) => {
+  const queryString = `
+    query bundles {
+      oneDayBackPrice: bundles(where: { id: ${GlobalConst.utils.BUNDLE_ID} } block: {number: ${block}}) {
+        id
+        ethPrice
+      }
+      currentPrice: bundles(where: { id: ${GlobalConst.utils.BUNDLE_ID} }) {
         id
         ethPrice
       }
@@ -403,7 +511,7 @@ export const GLOBAL_DATA: any = (block?: number) => {
   const queryString = ` query uniswapFactories {
       uniswapFactories(
        ${block ? `block: { number: ${block}}` : ``} 
-       where: { id: "${FACTORY_ADDRESS}" }) {
+       where: { id: "${GlobalConst.addresses.FACTORY_ADDRESS}" }) {
         id
         totalVolumeUSD
         totalVolumeETH
@@ -415,6 +523,24 @@ export const GLOBAL_DATA: any = (block?: number) => {
       }
     }`;
   return gql(queryString);
+};
+
+export const GLOBAL_ALLDATA: any = (reqData: any) => {
+  const queryString = reqData.map((each: any, index: any) => {
+    return `${each.index}: uniswapFactories(
+    ${each.block ? `block: { number: ${each.block} }` : ``}   
+    where: { id: "${GlobalConst.addresses.FACTORY_ADDRESS}" }) {
+      id
+      totalVolumeUSD
+      totalVolumeETH
+      untrackedVolumeUSD
+      totalLiquidityUSD
+      totalLiquidityETH
+      txCount
+      pairCount
+    }`;
+  });
+  return gql(`query uniswapFactories {${queryString.join(' ')}}`);
 };
 
 export const GLOBAL_CHART = gql`
@@ -463,3 +589,88 @@ export const GET_BLOCKS: any = (timestamps: number[]) => {
   queryString += '}';
   return gql(queryString);
 };
+
+export const FILTERED_TRANSACTIONS = gql`
+  query($allPairs: [Bytes]!) {
+    mints(
+      first: 20
+      where: { pair_in: $allPairs }
+      orderBy: timestamp
+      orderDirection: desc
+    ) {
+      transaction {
+        id
+        timestamp
+      }
+      pair {
+        token0 {
+          id
+          symbol
+        }
+        token1 {
+          id
+          symbol
+        }
+      }
+      to
+      liquidity
+      amount0
+      amount1
+      amountUSD
+    }
+    burns(
+      first: 20
+      where: { pair_in: $allPairs }
+      orderBy: timestamp
+      orderDirection: desc
+    ) {
+      transaction {
+        id
+        timestamp
+      }
+      pair {
+        token0 {
+          id
+          symbol
+        }
+        token1 {
+          id
+          symbol
+        }
+      }
+      sender
+      liquidity
+      amount0
+      amount1
+      amountUSD
+    }
+    swaps(
+      first: 30
+      where: { pair_in: $allPairs }
+      orderBy: timestamp
+      orderDirection: desc
+    ) {
+      transaction {
+        id
+        timestamp
+      }
+      id
+      pair {
+        token0 {
+          id
+          symbol
+        }
+        token1 {
+          id
+          symbol
+        }
+      }
+      amount0In
+      amount0Out
+      amount1In
+      amount1Out
+      amountUSD
+      to
+    }
+  }
+`;

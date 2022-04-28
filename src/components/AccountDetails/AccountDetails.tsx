@@ -31,11 +31,11 @@ const useStyles = makeStyles(({ palette }) => ({
 
 function renderTransactions(transactions: string[]) {
   return (
-    <Box>
+    <>
       {transactions.map((hash, i) => {
         return <Transaction key={i} hash={hash} />;
       })}
-    </Box>
+    </>
   );
 }
 
@@ -61,12 +61,21 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
 
   function formatConnectorName() {
     const { ethereum } = window as any;
-    const isMetaMask = !!(ethereum && ethereum.isMetaMask);
+    const isMetaMask = !!(
+      ethereum &&
+      !ethereum.isBitKeep &&
+      ethereum.isMetaMask
+    );
+    const isBitkeep = !!(ethereum && ethereum.isBitKeep);
+    const isBlockWallet = !!(ethereum && ethereum.isBlockWallet);
     const name = Object.keys(SUPPORTED_WALLETS)
       .filter(
         (k) =>
           SUPPORTED_WALLETS[k].connector === connector &&
-          (connector !== injected || isMetaMask === (k === 'METAMASK')),
+          (connector !== injected ||
+            (isBlockWallet && k === 'BLOCKWALLET') ||
+            (isBitkeep && k === 'BITKEEP') ||
+            (isMetaMask && k === 'METAMASK')),
       )
       .map((k) => SUPPORTED_WALLETS[k].name)[0];
     return <Typography variant='body2'>Connected with {name}</Typography>;
@@ -90,34 +99,40 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
       >
         <Box display='flex' justifyContent='space-between' alignItems='center'>
           {formatConnectorName()}
-          {connector !== injected &&
-            connector !== walletlink &&
-            connector !== safeApp && (
+          <Box display='flex' alignItems='center'>
+            {connector !== injected &&
+              connector !== walletlink &&
+              connector !== safeApp && (
+                <Typography
+                  style={{ cursor: 'pointer', marginRight: 8 }}
+                  onClick={() => {
+                    (connector as any).close();
+                  }}
+                  variant='body2'
+                >
+                  Disconnect
+                </Typography>
+              )}
+            {connector !== safeApp && (
               <Typography
                 style={{ cursor: 'pointer' }}
                 onClick={() => {
-                  (connector as any).close();
+                  openOptions();
                 }}
                 variant='body2'
               >
-                Disconnect
+                Change
               </Typography>
             )}
-          {connector !== safeApp && (
-            <Typography
-              style={{ cursor: 'pointer' }}
-              onClick={() => {
-                openOptions();
-              }}
-              variant='body2'
-            >
-              Change
-            </Typography>
-          )}
+          </Box>
         </Box>
         <Box display='flex' alignItems='center' my={1.5}>
           <StatusIcon />
-          <Typography variant='h5' style={{ marginLeft: 8 }}>
+          <Typography
+            variant='h5'
+            style={{ marginLeft: 8 }}
+            id='web3-account-identifier-row'
+          >
             {ENSName ? ENSName : account && shortenAddress(account)}
           </Typography>
         </Box>
@@ -139,7 +154,7 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
                 )
               }
               target='_blank'
-              rel='noreferrer'
+              rel='noopener noreferrer'
             >
               <LinkIcon size={16} />
               <Typography variant='body2'>View on Block Explorer</Typography>
@@ -147,33 +162,37 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
           )}
         </Box>
       </Box>
-      <Box padding={2}>
-        {!!pendingTransactions.length || !!confirmedTransactions.length ? (
-          <>
-            <Box
-              display='flex'
-              justifyContent='space-between'
-              alignItems='center'
-              mb={1.5}
+      {!!pendingTransactions.length || !!confirmedTransactions.length ? (
+        <>
+          <Box
+            display='flex'
+            justifyContent='space-between'
+            alignItems='center'
+            paddingX={2}
+            pt={2}
+            mb={1}
+          >
+            <Typography variant='body2'>Recent Transactions</Typography>
+            <Typography
+              variant='body2'
+              style={{ cursor: 'pointer' }}
+              onClick={clearAllTransactionsCallback}
             >
-              <Typography variant='body2'>Recent Transactions</Typography>
-              <Typography
-                variant='body2'
-                style={{ cursor: 'pointer' }}
-                onClick={clearAllTransactionsCallback}
-              >
-                Clear all
-              </Typography>
-            </Box>
+              Clear all
+            </Typography>
+          </Box>
+          <Box paddingX={2} flex={1} overflow='auto'>
             {renderTransactions(pendingTransactions)}
             {renderTransactions(confirmedTransactions)}
-          </>
-        ) : (
+          </Box>
+        </>
+      ) : (
+        <Box paddingX={2} pt={2}>
           <Typography variant='body2'>
             Your transactions will appear here...
           </Typography>
-        )}
-      </Box>
+        </Box>
+      )}
     </Box>
   );
 };

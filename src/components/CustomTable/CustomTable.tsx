@@ -89,12 +89,14 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
   },
 }));
 
-export interface CustomTableProps {
+export interface CustomTableProps<T> {
   emptyMessage?: string;
   showPagination?: boolean;
   rowsPerPage?: number;
   headCells: any;
   data: any;
+  defaultOrderBy?: T;
+  defaultOrder?: 'asc' | 'desc';
   mobileHTML: (item: any, index: number) => ReactChild;
   desktopHTML: (
     item: any,
@@ -104,12 +106,14 @@ export interface CustomTableProps {
   ) => any;
 }
 
-const CustomTable: React.FC<CustomTableProps> = ({
+const CustomTable: React.FC<CustomTableProps<any>> = ({
   rowsPerPage = 5,
   showPagination = true,
   emptyMessage,
   headCells,
   data,
+  defaultOrderBy,
+  defaultOrder,
   mobileHTML,
   desktopHTML,
 }) => {
@@ -127,6 +131,8 @@ const CustomTable: React.FC<CustomTableProps> = ({
         </>
       ) : (
         <DataTable
+          defaultOrderBy={defaultOrderBy}
+          defaultOrder={defaultOrder}
           emptyMesage={emptyMessage}
           showPagination={showPagination}
           headCells={headCells}

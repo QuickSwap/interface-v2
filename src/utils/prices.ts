@@ -1,9 +1,4 @@
-import {
-  BLOCKED_PRICE_IMPACT_NON_EXPERT,
-  ALLOWED_PRICE_IMPACT_HIGH,
-  ALLOWED_PRICE_IMPACT_LOW,
-  ALLOWED_PRICE_IMPACT_MEDIUM,
-} from 'constants/index';
+import { GlobalValue } from 'constants/index';
 import {
   CurrencyAmount,
   Fraction,
@@ -90,10 +85,16 @@ export async function fetchGasPrice() {
 export function warningSeverity(
   priceImpact: Percent | undefined,
 ): 0 | 1 | 2 | 3 | 4 {
-  if (!priceImpact?.lessThan(BLOCKED_PRICE_IMPACT_NON_EXPERT)) return 4;
-  if (!priceImpact?.lessThan(ALLOWED_PRICE_IMPACT_HIGH)) return 3;
-  if (!priceImpact?.lessThan(ALLOWED_PRICE_IMPACT_MEDIUM)) return 2;
-  if (!priceImpact?.lessThan(ALLOWED_PRICE_IMPACT_LOW)) return 1;
+  if (
+    !priceImpact?.lessThan(GlobalValue.percents.BLOCKED_PRICE_IMPACT_NON_EXPERT)
+  )
+    return 4;
+  if (!priceImpact?.lessThan(GlobalValue.percents.ALLOWED_PRICE_IMPACT_HIGH))
+    return 3;
+  if (!priceImpact?.lessThan(GlobalValue.percents.ALLOWED_PRICE_IMPACT_MEDIUM))
+    return 2;
+  if (!priceImpact?.lessThan(GlobalValue.percents.ALLOWED_PRICE_IMPACT_LOW))
+    return 1;
   return 0;
 }
 

@@ -1,1 +1,1 @@
-export { default, getTokenLogoURL } from './CurrencyLogo';
+export { default } from './CurrencyLogo';

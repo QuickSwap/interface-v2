@@ -7,13 +7,13 @@ import { Link } from 'react-router-dom';
 import { useTotalSupply } from 'data/TotalSupply';
 import { useActiveWeb3React } from 'hooks';
 import { useTokenBalance } from 'state/wallet/hooks';
-import { currencyId } from 'utils';
+import { currencyId, formatTokenAmount } from 'utils';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { CurrencyLogo, DoubleCurrencyLogo } from 'components';
 
 const useStyles = makeStyles(({ palette }) => ({
   minimalCardWrapper: {
-    border: `1px solid ${palette.divider}`,
+    width: '100%',
     borderRadius: 16,
     padding: 12,
     '& p': {
@@ -31,6 +31,7 @@ interface PositionCardProps {
 
 export const MinimalPositionCard: React.FC<PositionCardProps> = ({
   pair,
+  border,
   showUnwrapped = false,
 }) => {
   const { account } = useActiveWeb3React();
@@ -77,54 +78,58 @@ export const MinimalPositionCard: React.FC<PositionCardProps> = ({
       : [undefined, undefined];
 
   return (
-    <Box className={classes.minimalCardWrapper}>
+    <Box className={classes.minimalCardWrapper} border={border}>
       {userPoolBalance &&
       JSBI.greaterThan(userPoolBalance.raw, JSBI.BigInt(0)) ? (
         <Box>
           <Typography>Your position</Typography>
-          <Box onClick={() => setShowMore(!showMore)}>
-            <Box>
+          <Box
+            mt={0.75}
+            display='flex'
+            justifyContent='space-between'
+            onClick={() => setShowMore(!showMore)}
+          >
+            <Box display='flex' alignItems='center'>
               <DoubleCurrencyLogo
                 currency0={currency0}
                 currency1={currency1}
                 margin={true}
                 size={20}
               />
-              <Typography>
+              <Typography style={{ marginLeft: 6 }}>
                 {currency0.symbol}/{currency1.symbol}
               </Typography>
             </Box>
-            <Box>
-              <Typography>
-                {userPoolBalance ? userPoolBalance.toSignificant(4) : '-'}
-              </Typography>
-            </Box>
+            <Typography>{formatTokenAmount(userPoolBalance)}</Typography>
           </Box>
-          <Box>
-            <Box>
-              <Typography>Your pool share:</Typography>
-              <Typography>
-                {poolTokenPercentage
-                  ? poolTokenPercentage.toFixed(6) + '%'
-                  : '-'}
-              </Typography>
-            </Box>
-            <Box>
-              <Typography>{currency0.symbol}:</Typography>
-              {token0Deposited ? (
-                <Typography>{token0Deposited?.toSignificant(6)}</Typography>
-              ) : (
-                '-'
-              )}
-            </Box>
-            <Box>
-              <Typography>{currency1.symbol}:</Typography>
-              {token1Deposited ? (
-                <Typography>{token1Deposited?.toSignificant(6)}</Typography>
-              ) : (
-                '-'
-              )}
-            </Box>
+          <Box
+            mt={0.75}
+            display='flex'
+            alignItems='center'
+            justifyContent='space-between'
+          >
+            <Typography>Your pool share:</Typography>
+            <Typography>
+              {poolTokenPercentage ? poolTokenPercentage.toFixed(6) + '%' : '-'}
+            </Typography>
+          </Box>
+          <Box
+            mt={0.75}
+            display='flex'
+            alignItems='center'
+            justifyContent='space-between'
+          >
+            <Typography>{currency0.symbol}:</Typography>
+            <Typography>{formatTokenAmount(token0Deposited)}</Typography>
+          </Box>
+          <Box
+            mt={0.75}
+            display='flex'
+            alignItems='center'
+            justifyContent='space-between'
+          >
+            <Typography>{currency1.symbol}:</Typography>
+            <Typography>{formatTokenAmount(token1Deposited)}</Typography>
           </Box>
         </Box>
       ) : (
@@ -223,40 +228,30 @@ const FullPositionCard: React.FC<PositionCardProps> = ({ pair }) => {
         <Box>
           <Box>
             <Typography>Your pool tokens:</Typography>
-            <Typography>
-              {userPoolBalance ? userPoolBalance.toSignificant(4) : '-'}
-            </Typography>
+            <Typography>{formatTokenAmount(userPoolBalance)}</Typography>
           </Box>
           <Box>
             <Typography>Pooled {currency0.symbol}:</Typography>
-            {token0Deposited ? (
-              <Box>
-                <Typography>{token0Deposited?.toSignificant(6)}</Typography>
-                <CurrencyLogo
-                  size='20px'
-                  style={{ marginLeft: '8px' }}
-                  currency={currency0}
-                />
-              </Box>
-            ) : (
-              '-'
-            )}
+            <Box>
+              <Typography>{formatTokenAmount(token0Deposited)}</Typography>
+              <CurrencyLogo
+                size='20px'
+                style={{ marginLeft: '8px' }}
+                currency={currency0}
+              />
+            </Box>
           </Box>
 
           <Box>
             <Typography>Pooled {currency1.symbol}:</Typography>
-            {token1Deposited ? (
-              <Box>
-                <Typography>{token1Deposited?.toSignificant(6)}</Typography>
-                <CurrencyLogo
-                  size='20px'
-                  style={{ marginLeft: '8px' }}
-                  currency={currency1}
-                />
-              </Box>
-            ) : (
-              '-'
-            )}
+            <Box>
+              <Typography>{formatTokenAmount(token1Deposited)}</Typography>
+              <CurrencyLogo
+                size='20px'
+                style={{ marginLeft: '8px' }}
+                currency={currency1}
+              />
+            </Box>
           </Box>
 
           <Box>
@@ -271,7 +266,7 @@ const FullPositionCard: React.FC<PositionCardProps> = ({ pair }) => {
               style={{ width: '100%', textAlign: 'center' }}
               href={`https://info.quickswap.exchange/account/${account}`}
               target='_blank'
-              rel='noreferrer'
+              rel='noopener noreferrer'
             >
               View accrued fees and analytics
               <span style={{ fontSize: '11px' }}>↗</span>

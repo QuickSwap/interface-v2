@@ -1,8 +1,10 @@
 import React from 'react';
 import { Box, Typography, Divider } from '@material-ui/core';
+import { Link } from 'react-router-dom';
 import { ChainId, Token } from '@uniswap/sdk';
 import { getAddress } from '@ethersproject/address';
 import { DoubleCurrencyLogo, CustomTable } from 'components';
+import { GlobalConst } from 'constants/index';
 import { useBookmarkPairs } from 'state/application/hooks';
 import { ReactComponent as StarChecked } from 'assets/images/StarChecked.svg';
 import { ReactComponent as StarUnchecked } from 'assets/images/StarUnchecked.svg';
@@ -51,8 +53,10 @@ const headCells = () => [
   },
 ];
 
+const liquidityHeadCellIndex = 1;
+
 const PairTable: React.FC<TokensTableProps> = ({ data }) => {
-  const tokenHeadCells = headCells();
+  const pairHeadCells = headCells();
   const {
     bookmarkPairs,
     addBookmarkPair,
@@ -80,7 +84,9 @@ const PairTable: React.FC<TokensTableProps> = ({ data }) => {
     const oneWeekVolume = pair.oneWeekVolumeUSD
       ? pair.oneWeekVolumeUSD
       : pair.oneWeekVolumeUntracked;
-    const oneDayFee = (Number(oneDayVolume) * 0.003).toLocaleString();
+    const oneDayFee = (
+      Number(oneDayVolume) * GlobalConst.utils.FEEPERCENT
+    ).toLocaleString();
     return (
       <Box mt={index === 0 ? 0 : 3}>
         <Box display='flex' alignItems='center' mb={1}>
@@ -102,12 +108,23 @@ const PairTable: React.FC<TokensTableProps> = ({ data }) => {
               <StarUnchecked />
             )}
           </Box>
-          <DoubleCurrencyLogo currency0={token0} currency1={token1} size={28} />
-          <Box ml={1}>
-            <Typography variant='body1'>
-              {token0.symbol} / {token1.symbol}
-            </Typography>
-          </Box>
+          <Link
+            to={`/analytics/pair/${pair.id}`}
+            style={{ textDecoration: 'none' }}
+          >
+            <Box display='flex' alignItems='center'>
+              <DoubleCurrencyLogo
+                currency0={token0}
+                currency1={token1}
+                size={28}
+              />
+              <Box ml={1}>
+                <Typography variant='body1' color='textPrimary'>
+                  {token0.symbol} / {token1.symbol}
+                </Typography>
+              </Box>
+            </Box>
+          </Link>
         </Box>
         <Divider />
         <Box
@@ -129,7 +146,7 @@ const PairTable: React.FC<TokensTableProps> = ({ data }) => {
         >
           <Typography variant='body1'>24h Volume</Typography>
           <Typography variant='body1'>
-            ${Number(liquidity).toLocaleString()}
+            ${Number(oneDayVolume).toLocaleString()}
           </Typography>
         </Box>
         <Box
@@ -140,7 +157,7 @@ const PairTable: React.FC<TokensTableProps> = ({ data }) => {
         >
           <Typography variant='body1'>7d Volume</Typography>
           <Typography variant='body1'>
-            ${Number(oneDayVolume).toLocaleString()}
+            ${Number(oneWeekVolume).toLocaleString()}
           </Typography>
         </Box>
         <Box
@@ -151,7 +168,7 @@ const PairTable: React.FC<TokensTableProps> = ({ data }) => {
         >
           <Typography variant='body1'>24h Fees</Typography>
           <Typography variant='body1'>
-            ${Number(oneWeekVolume).toLocaleString()}
+            ${Number(oneDayFee).toLocaleString()}
           </Typography>
         </Box>
       </Box>
@@ -174,13 +191,21 @@ const PairTable: React.FC<TokensTableProps> = ({ data }) => {
     const liquidity = pair.trackedReserveUSD
       ? pair.trackedReserveUSD
       : pair.reserveUSD;
-    const oneDayVolume = pair.oneDayVolumeUSD
-      ? pair.oneDayVolumeUSD
-      : pair.oneDayVolumeUntracked;
-    const oneWeekVolume = pair.oneWeekVolumeUSD
-      ? pair.oneWeekVolumeUSD
-      : pair.oneWeekVolumeUntracked;
-    const oneDayFee = (Number(oneDayVolume) * 0.003).toLocaleString();
+    const oneDayVolume =
+      pair.oneDayVolumeUSD && !isNaN(pair.oneDayVolumeUSD)
+        ? pair.oneDayVolumeUSD
+        : pair.oneDayVolumeUntracked && !isNaN(pair.oneDayVolumeUntracked)
+        ? pair.oneDayVolumeUntracked
+        : 0;
+    const oneWeekVolume =
+      pair.oneWeekVolumeUSD && !isNaN(pair.oneWeekVolumeUSD)
+        ? pair.oneWeekVolumeUSD
+        : pair.oneWeekVolumeUntracked && !isNaN(pair.oneWeekVolumeUntracked)
+        ? pair.oneWeekVolumeUntracked
+        : 0;
+    const oneDayFee = (
+      Number(oneDayVolume) * GlobalConst.utils.FEEPERCENT
+    ).toLocaleString();
     return [
       {
         html: (
@@ -203,16 +228,23 @@ const PairTable: React.FC<TokensTableProps> = ({ data }) => {
                 <StarUnchecked />
               )}
             </Box>
-            <DoubleCurrencyLogo
-              currency0={token0}
-              currency1={token1}
-              size={28}
-            />
-            <Box ml={1}>
-              <Typography variant='body1'>
-                {token0.symbol} / {token1.symbol}
-              </Typography>
-            </Box>
+            <Link
+              to={`/analytics/pair/${pair.id}`}
+              style={{ textDecoration: 'none' }}
+            >
+              <Box display='flex' alignItems='center'>
+                <DoubleCurrencyLogo
+                  currency0={token0}
+                  currency1={token1}
+                  size={28}
+                />
+                <Box ml={1}>
+                  <Typography variant='body1' color='textPrimary'>
+                    {token0.symbol} / {token1.symbol}
+                  </Typography>
+                </Box>
+              </Box>
+            </Link>
           </Box>
         ),
       },
@@ -245,9 +277,11 @@ const PairTable: React.FC<TokensTableProps> = ({ data }) => {
 
   return (
     <CustomTable
-      showPagination={data.length > 10}
-      headCells={tokenHeadCells}
-      rowsPerPage={10}
+      defaultOrderBy={pairHeadCells[liquidityHeadCellIndex]}
+      defaultOrder='desc'
+      showPagination={data.length > GlobalConst.utils.ROWSPERPAGE}
+      headCells={pairHeadCells}
+      rowsPerPage={GlobalConst.utils.ROWSPERPAGE}
       data={data}
       mobileHTML={mobileHTML}
       desktopHTML={desktopHTML}

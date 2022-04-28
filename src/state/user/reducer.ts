@@ -1,7 +1,4 @@
-import {
-  INITIAL_ALLOWED_SLIPPAGE,
-  DEFAULT_DEADLINE_FROM_NOW,
-} from 'constants/index';
+import { GlobalConst } from 'constants/index';
 import { createReducer } from '@reduxjs/toolkit';
 import { updateVersion } from 'state/global/actions';
 import {
@@ -61,8 +58,8 @@ export const initialState: UserState = {
   userDarkMode: null,
   matchesDarkMode: false,
   userExpertMode: false,
-  userSlippageTolerance: INITIAL_ALLOWED_SLIPPAGE,
-  userDeadline: DEFAULT_DEADLINE_FROM_NOW,
+  userSlippageTolerance: GlobalConst.utils.INITIAL_ALLOWED_SLIPPAGE,
+  userDeadline: GlobalConst.utils.DEFAULT_DEADLINE_FROM_NOW,
   tokens: {},
   pairs: {},
   timestamp: currentTimestamp(),
@@ -75,13 +72,14 @@ export default createReducer(initialState, (builder) =>
       // slippage isnt being tracked in local storage, reset to default
       // noinspection SuspiciousTypeOfGuard
       if (typeof state.userSlippageTolerance !== 'number') {
-        state.userSlippageTolerance = INITIAL_ALLOWED_SLIPPAGE;
+        state.userSlippageTolerance =
+          GlobalConst.utils.INITIAL_ALLOWED_SLIPPAGE;
       }
 
       // deadline isnt being tracked in local storage, reset to default
       // noinspection SuspiciousTypeOfGuard
       if (typeof state.userDeadline !== 'number') {
-        state.userDeadline = DEFAULT_DEADLINE_FROM_NOW;
+        state.userDeadline = GlobalConst.utils.DEFAULT_DEADLINE_FROM_NOW;
       }
 
       state.lastUpdateVersionTimestamp = currentTimestamp();

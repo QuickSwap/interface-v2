@@ -10,7 +10,7 @@ import MetamaskIcon from 'assets/images/metamask.png';
 import { ReactComponent as Close } from 'assets/images/CloseIcon.svg';
 import { fortmatic, injected, portis, safeApp } from 'connectors';
 import { OVERLAY_READY } from 'connectors/Fortmatic';
-import { SUPPORTED_WALLETS } from 'constants/index';
+import { GlobalConst, SUPPORTED_WALLETS } from 'constants/index';
 import usePrevious from 'hooks/usePrevious';
 import { ApplicationModal } from 'state/application/actions';
 import { useModalOpen, useWalletModalToggle } from 'state/application/hooks';
@@ -30,29 +30,6 @@ const useStyles = makeStyles(({ palette }) => ({
     '&:hover': {
       cursor: 'pointer',
       opacity: 0.6,
-    },
-  },
-  headerRow: {
-    display: 'flex',
-    padding: '1rem',
-    fontWeight: 500,
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
-  },
-  upperSection: {
-    position: 'relative',
-    '& h5': {
-      margin: 0,
-      marginBottom: '0.5rem',
-      fontSize: '1rem',
-      fontWeight: 400,
-    },
-    '& h5:last-child': {
-      marginBottom: 0,
-    },
-    '& h4': {
-      marginTop: 0,
-      fontWeight: 500,
     },
   },
   blurb: {
@@ -88,7 +65,14 @@ const WalletModal: React.FC<WalletModalProps> = ({
 }) => {
   const classes = useStyles();
   // important that these are destructed from the account-specific web3-react context
-  const { active, account, connector, activate, error } = useWeb3React();
+  const {
+    active,
+    account,
+    connector,
+    activate,
+    error,
+    deactivate,
+  } = useWeb3React();
 
   const [walletView, setWalletView] = useState(WALLET_VIEWS.ACCOUNT);
 
@@ -108,7 +92,17 @@ const WalletModal: React.FC<WalletModalProps> = ({
     if (account && !previousAccount && walletModalOpen) {
       toggleWalletModal();
     }
-  }, [account, previousAccount, toggleWalletModal, walletModalOpen]);
+    if (!walletModalOpen && error) {
+      deactivate();
+    }
+  }, [
+    account,
+    previousAccount,
+    toggleWalletModal,
+    walletModalOpen,
+    deactivate,
+    error,
+  ]);
 
   // always reset to account view
   useEffect(() => {
@@ -184,7 +178,9 @@ const WalletModal: React.FC<WalletModalProps> = ({
   // get wallets user can switch too, depending on device/browser
   function getOptions() {
     const { ethereum, web3 } = window as any;
-    const isMetamask = ethereum && ethereum.isMetaMask;
+    const isMetamask = ethereum && !ethereum.isBitKeep && ethereum.isMetaMask;
+    const isBlockWallet = ethereum && ethereum.isBlockWallet;
+    const isBitKeep = ethereum && ethereum.isBitKeep;
     return Object.keys(SUPPORTED_WALLETS).map((key) => {
       const option = SUPPORTED_WALLETS[key];
       //disable safe app by in the list
@@ -208,7 +204,16 @@ const WalletModal: React.FC<WalletModalProps> = ({
               }}
               id={`connect-${key}`}
               key={key}
-              active={option.connector && option.connector === connector}
+              active={
+                option.connector === connector &&
+                (connector !== injected ||
+                  isBlockWallet ===
+                    (option.name === GlobalConst.walletName.BLOCKWALLET) ||
+                  isBitKeep ===
+                    (option.name === GlobalConst.walletName.BITKEEP) ||
+                  isMetamask ===
+                    (option.name === GlobalConst.walletName.METAMASK))
+              }
               color={option.color}
               link={option.href}
               header={option.name}
@@ -224,7 +229,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
       if (option.connector === injected) {
         // don't show injected if there's no injected provider
         if (!(web3 || ethereum)) {
-          if (option.name === 'MetaMask') {
+          if (option.name === GlobalConst.walletName.METAMASK) {
             return (
               <Option
                 id={`connect-${key}`}
@@ -241,11 +246,27 @@ const WalletModal: React.FC<WalletModalProps> = ({
           }
         }
         // don't return metamask if injected provider isn't metamask
-        else if (option.name === 'MetaMask' && !isMetamask) {
+        else if (
+          option.name === GlobalConst.walletName.METAMASK &&
+          !isMetamask
+        ) {
+          return null;
+        } else if (
+          option.name === GlobalConst.walletName.BITKEEP &&
+          !isBitKeep
+        ) {
+          return null;
+        } else if (
+          option.name === GlobalConst.walletName.BLOCKWALLET &&
+          !isBlockWallet
+        ) {
           return null;
         }
         // likewise for generic
-        else if (option.name === 'Injected' && isMetamask) {
+        else if (
+          option.name === GlobalConst.walletName.INJECTED &&
+          (isMetamask || isBitKeep || isBlockWallet)
+        ) {
           return null;
         }
       }
@@ -262,7 +283,16 @@ const WalletModal: React.FC<WalletModalProps> = ({
                 : !option.href && tryActivation(option.connector);
             }}
             key={key}
-            active={option.connector === connector}
+            active={
+              option.connector === connector &&
+              (connector !== injected ||
+                isBlockWallet ===
+                  (option.name === GlobalConst.walletName.BLOCKWALLET) ||
+                isBitKeep ===
+                  (option.name === GlobalConst.walletName.BITKEEP) ||
+                isMetamask ===
+                  (option.name === GlobalConst.walletName.METAMASK))
+            }
             color={option.color}
             link={option.href}
             header={option.name}
@@ -277,19 +307,23 @@ const WalletModal: React.FC<WalletModalProps> = ({
   function getModalContent() {
     if (error) {
       return (
-        <Box className={classes.upperSection}>
-          <Close style={{ cursor: 'pointer' }} onClick={toggleWalletModal} />
-          <Box className={classes.headerRow}>
-            {error instanceof UnsupportedChainIdError
-              ? 'Wrong Network'
-              : 'Error connecting'}
+        <Box position='relative'>
+          <Box position='absolute' top='16px' right='16px' display='flex'>
+            <Close style={{ cursor: 'pointer' }} onClick={toggleWalletModal} />
           </Box>
-          <Box mt={2}>
-            {error instanceof UnsupportedChainIdError ? (
-              <h5>Please connect to the appropriate Polygon network.</h5>
-            ) : (
-              'Error connecting. Try refreshing the page.'
-            )}
+          <Box mt={2} textAlign='center'>
+            <Typography variant='subtitle2'>
+              {error instanceof UnsupportedChainIdError
+                ? 'Wrong Network'
+                : 'Error connecting'}
+            </Typography>
+          </Box>
+          <Box mt={3} mb={2} textAlign='center'>
+            <Typography variant='body2'>
+              {error instanceof UnsupportedChainIdError
+                ? 'Please connect to the appropriate Polygon network.'
+                : 'Error connecting. Try refreshing the page.'}
+            </Typography>
           </Box>
         </Box>
       );
@@ -328,7 +362,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
               <a
                 href='https://docs.matic.network/docs/develop/wallets/getting-started'
                 target='_blank'
-                rel='noreferrer'
+                rel='noopener noreferrer'
               >
                 <Typography variant='body2'>Learn about Wallets ↗</Typography>
               </a>
@@ -341,7 +375,14 @@ const WalletModal: React.FC<WalletModalProps> = ({
 
   return (
     <CustomModal open={walletModalOpen} onClose={toggleWalletModal}>
-      {getModalContent()}
+      <Box
+        maxHeight='80vh'
+        display='flex'
+        flexDirection='column'
+        overflow='auto'
+      >
+        {getModalContent()}
+      </Box>
     </CustomModal>
   );
 };
