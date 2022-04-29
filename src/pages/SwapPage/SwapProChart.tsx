@@ -1,5 +1,4 @@
 import React from 'react';
-import { TradingViewChart } from 'components';
 
 const SwapProChart: React.FC<{
   pairName: string;
@@ -7,11 +6,9 @@ const SwapProChart: React.FC<{
   pairTokenReversed: boolean;
 }> = ({ pairAddress, pairName, pairTokenReversed }) => {
   return (
-    <TradingViewChart
+    <iframe
+      src={`https://mode.quickswap.exchange?pairAddress=${pairAddress}&pairName=${pairName}&pairTokenReversed=${pairTokenReversed}`}
       height='100%'
-      pairAddress={pairAddress}
-      pairName={pairName}
-      pairTokenReversed={pairTokenReversed}
     />
   );
 };
