@@ -9,6 +9,8 @@ const SwapProChart: React.FC<{
     <iframe
       src={`https://mode.quickswap.exchange?pairAddress=${pairAddress}&pairName=${pairName}&pairTokenReversed=${pairTokenReversed}`}
       height='100%'
+      width='100%'
+      frameBorder='0'
     />
   );
 };

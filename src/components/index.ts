@@ -60,4 +60,3 @@ export { default as TokensTable } from './TokensTable';
 export { default as PairTable } from './PairsTable';
 export { default as TransactionsTable } from './TransactionsTable';
 export { default as PoolFinderModal } from './PoolFinderModal';
-export { default as TradingViewChart } from './TradingViewChart';
