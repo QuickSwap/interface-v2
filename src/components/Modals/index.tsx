@@ -550,6 +550,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
                 throw new Error('Wallet not connected');
               }
 
+              console.log(value, account);
               if (borrow) {
                 if (isRepay) {
                   MarketUtils.repayBorrow(asset, value, account);

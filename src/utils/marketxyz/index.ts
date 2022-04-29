@@ -1,8 +1,12 @@
-import { Comptroller, MarketSDK } from 'market-sdk';
+import { Comptroller, CTokenV2, MarketSDK } from 'market-sdk';
 import { BN } from 'utils/bigUtils';
 import { USDPricedPoolAsset } from './fetchPoolData';
 import { ETH_TOKEN_DATA } from './fetchTokenData';
 import ERC20_ABI from '../../constants/abis/erc20.json';
+import {
+  testForComptrollerErrorAndSend,
+  testForCTokenErrorAndSend,
+} from './errors';
 
 export const BlocksPerMin = 60 / 2;
 export const BlocksPerDay = BlocksPerMin * 60 * 24;
@@ -125,10 +129,14 @@ export const supply = async (
     }
   } else {
     await checkAndApproveCToken(asset, amountBN, address);
-    await cToken.mint(amountBN, { from: address });
+    await testForCTokenErrorAndSend(
+      cToken.contract.methods.mint(amountBN),
+      address,
+      'Cannot deposit this amount right now!',
+    );
   }
   if (enableAsCollateral) {
-    comptroller.enterMarkets([asset.cToken], { from: address });
+    await comptroller.enterMarkets([asset.cToken], { from: address });
   }
 };
 
@@ -154,15 +162,18 @@ export const repayBorrow = async (
 
   if (!isETH) {
     await checkAndApproveCToken(asset, amountBN, address);
-    await cToken.repayBorrow(isRepayingMax ? max : amountBN, { from: address });
+    await testForCTokenErrorAndSend(
+      cToken.contract.methods.repayBorrow(isRepayingMax ? max : amountBN),
+      address,
+      'Cannot repay this amount right now!',
+    );
 
     return;
   }
   const ethBalance = await sdk.web3.eth.getBalance(address);
+  const call = (cToken.contract.methods.repayBorrow as any)();
 
   if (amountBN.toString() === ethBalance.toString()) {
-    const call = (cToken.contract.methods.repayBorrow as any)();
-
     // Subtract gas for max ETH
     const { gasWEI, gasPrice, estimatedGas } = await fetchGasForCall(
       call,
@@ -179,7 +190,10 @@ export const repayBorrow = async (
       gas: estimatedGas,
     } as any);
   } else {
-    await (cToken.repayBorrow as any)({ from: address, value: amountBN });
+    await call.send({
+      from: address,
+      value: amountBN,
+    });
   }
 };
 
@@ -189,9 +203,17 @@ export const toggleCollateral = (
   address: string,
 ) => {
   if (!asset.membership) {
-    return comptroller.enterMarkets([asset.cToken.address], { from: address });
+    return testForComptrollerErrorAndSend(
+      comptroller.contract.methods.enterMarkets([asset.cToken.address]),
+      address,
+      'Cannot enter this market right now!',
+    );
   } else {
-    return comptroller.exitMarket(asset.cToken.address, { from: address });
+    return testForComptrollerErrorAndSend(
+      comptroller.contract.methods.exitMarket(asset.cToken.address),
+      address,
+      'Cannot exit this market right now!',
+    );
   }
 };
 
@@ -206,7 +228,11 @@ export const withdraw = (
   const amountBN = sdk.web3.utils.toBN(
     Number(amount * 10 ** asset.underlyingDecimals.toNumber()).toFixed(0),
   );
-  return cToken.redeemUnderlying(amountBN, { from: address });
+  return testForCTokenErrorAndSend(
+    cToken.contract.methods.redeemUnderlying(amountBN),
+    address,
+    'Cannot withdraw this amount right now!',
+  );
 };
 
 export const borrow = (
@@ -220,5 +246,10 @@ export const borrow = (
   const amountBN = sdk.web3.utils.toBN(
     Number(amount * 10 ** asset.underlyingDecimals.toNumber()).toFixed(0),
   );
-  return cToken.borrow(amountBN, { from: address });
+
+  return testForCTokenErrorAndSend(
+    cToken.contract.methods.borrow(amountBN),
+    address,
+    'Cannot borrow this amount right now!',
+  );
 };
