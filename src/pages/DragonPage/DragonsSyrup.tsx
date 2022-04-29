@@ -31,7 +31,6 @@ const EARNED_COLUMN = 4;
 const DragonsSyrup: React.FC = () => {
   const { palette, breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
-  const [pageLoading, setPageLoading] = useState(false); //this is used for not loading syrups immediately when user is on dragons page
   const [isEndedSyrup, setIsEndedSyrup] = useState(false);
   const [pageIndex, setPageIndex] = useState(0);
   const [sortBy, setSortBy] = useState(0);
@@ -49,14 +48,14 @@ const DragonsSyrup: React.FC = () => {
 
   const addedStakingSyrupInfos = useSyrupInfo(
     null,
-    pageLoading || isEndedSyrup ? 0 : undefined,
-    pageLoading || isEndedSyrup ? 0 : undefined,
+    isEndedSyrup ? 0 : undefined,
+    isEndedSyrup ? 0 : undefined,
     { search: syrupSearch, isStaked: stakedOnly },
   );
   const addedOldSyrupInfos = useOldSyrupInfo(
     null,
-    pageLoading || isEndedSyrup ? undefined : 0,
-    pageLoading || isEndedSyrup ? undefined : 0,
+    isEndedSyrup ? undefined : 0,
+    isEndedSyrup ? undefined : 0,
     { search: syrupSearch, isStaked: stakedOnly },
   );
 
@@ -306,7 +305,7 @@ const DragonsSyrup: React.FC = () => {
           ))}
         </Box>
       )}
-      {syrupInfos && !pageLoading ? (
+      {syrupInfos ? (
         syrupInfos.map((syrup, ind) => (
           <SyrupCard key={ind} syrup={syrup} dQUICKAPY={dQUICKAPY} />
         ))
