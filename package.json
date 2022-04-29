@@ -107,6 +107,7 @@
     "glob-parent": "^5.1.2",
     "browserslist": "^4.16.5",
     "ajv": "^6.12.3",
+    "async": "^3.2.2",
     "moment": "^2.29.2"
   },
   "scripts": {

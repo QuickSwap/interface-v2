@@ -277,6 +277,11 @@ const Header: React.FC = () => {
       id: 'dragons-page-link',
     },
     {
+      link: '/convert',
+      text: 'Convert',
+      id: 'convert-quick',
+    },
+    {
       link: '/analytics',
       text: 'Analytics',
       id: 'analytics-page-link',

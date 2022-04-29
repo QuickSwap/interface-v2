@@ -39,7 +39,6 @@
   "youAreBuying": "You are buying",
   "itWillCost": "It will cost at most",
   "forAtMost": "for at most",
-  "insufficientBalance": "Insufficient Balance",
   "inputNotValid": "Not a valid input value",
   "differentToken": "Must be different token.",
   "noRecipient": "Enter a wallet address to send to.",
@@ -161,5 +160,17 @@
   "lp": "LP",
   "get": "Get",
   "claiming": "Claiming",
-  "claim": "Claim"
+  "claim": "Claim",
+  "convert": "Convert",
+  "convertQUICK": "Convert your QUICK(old) to QUICK(new). Read more about QUICK token split <1>here</1>",
+  "conversionRate": "Conversion Rate",
+  "yourbalance": "Your balance",
+  "youwillreceive": "You will receive",
+  "insufficientBalance": "Insufficient {{ symbol }} Balance",
+  "enterAmount": "Enter Amount",
+  "convertingQUICK": "Converting QUICK",
+  "convertingQUICKtoQUICKV2": "Converting {{ quickAmount }} QUICK -> {{ quickV2Amount }} QUICK-v2",
+  "convertedQUICKtoQUICKV2": "Converted {{ quickAmount }} QUICK -> {{ quickV2Amount }} QUICK-v2",
+  "submittedTxQUICKConvert": "Submitted Transction to convert {{ quickAmount }} QUICK -> {{ quickV2Amount }} QUICK-v2",
+  "successConvertedQUICKtoQUICKV2": "Sucessfully Converted {{ quickAmount }} QUICK -> {{ quickV2Amount }} QUICK-v2"
 }

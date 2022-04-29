@@ -28,6 +28,7 @@ import { getContract } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import { abi as LairABI } from 'abis/DragonLair.json';
 import { abi as IUniswapV2Router02ABI } from '@uniswap/v2-periphery/build/IUniswapV2Router02.json';
+import QUICKConversionABI from 'constants/abis/quick-conversion.json';
 
 function useContract(
   address: string | undefined,
@@ -58,6 +59,14 @@ export function useLairContract(): Contract | null {
 
 export function useQUICKContract(): Contract | null {
   return useContract(GlobalConst.addresses.QUICK_ADDRESS, ERC20_ABI, true);
+}
+
+export function useQUICKConversionContract(): Contract | null {
+  return useContract(
+    GlobalConst.addresses.QUICK_CONVERSION,
+    QUICKConversionABI,
+    true,
+  );
 }
 
 export function useV1FactoryContract(): Contract | null {
