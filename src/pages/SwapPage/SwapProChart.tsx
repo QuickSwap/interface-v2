@@ -7,7 +7,7 @@ const SwapProChart: React.FC<{
 }> = ({ pairAddress, pairName, pairTokenReversed }) => {
   return (
     <iframe
-      src={`https://mode.quickswap.exchange?pairAddress=${pairAddress}&pairName=${pairName}&pairTokenReversed=${pairTokenReversed}`}
+      src={`https://mode.quickswap.exchange?pairAddress=${pairAddress}&pairName=${pairName}&tokenReversed=${pairTokenReversed}`}
       height='100%'
       width='100%'
       frameBorder='0'
