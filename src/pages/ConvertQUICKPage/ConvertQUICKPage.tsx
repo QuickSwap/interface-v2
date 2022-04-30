@@ -115,7 +115,7 @@ const ConvertQUICKPage: React.FC = () => {
   const [txHash, setTxHash] = useState('');
   const [txError, setTxError] = useState('');
 
-  const quickToken = returnTokenFromKey('OLDQUICK');
+  const quickToken = returnTokenFromKey('QUICK');
   const quickBalance = useTokenBalance(account ?? undefined, quickToken);
   const quickConvertContract = useQUICKConversionContract();
   const parsedAmount = tryParseAmount(quickAmount, quickToken);
@@ -216,18 +216,18 @@ const ConvertQUICKPage: React.FC = () => {
           <Box className={classes.iconWrapper}>
             <img src={QUICKIcon} alt='QUICK' />
           </Box>
-          <Typography variant='h6'>QUICK(old)</Typography>
+          <Typography variant='h6'>QUICK(OLD)</Typography>
           <Box mx={1.5} className={classes.convertArrow}>
             <ArrowForward />
           </Box>
           <Box className={classes.iconWrapper}>
             <QUICKV2Icon />
           </Box>
-          <Typography variant='h6'>QUICK(new)</Typography>
+          <Typography variant='h6'>QUICK(NEW)</Typography>
         </Box>
         <Typography variant='body2' color='textSecondary'>
           <Trans i18nKey='convertQuick'>
-            Convert your QUICK(old) to QUICK(new). Read more about QUICK token
+            Convert your QUICK(OLD) to QUICK(NEW). Read more about QUICK token
             split{' '}
             <a
               href='https://quickswap-layer2.medium.com/you-voted-for-a-1-1000-token-split-to-make-quick-more-appealing-9c25c2a2dd7e'
@@ -240,8 +240,8 @@ const ConvertQUICKPage: React.FC = () => {
         </Typography>
         <Box className={classes.conversionRate}>
           <Typography variant='caption'>
-            {t('conversionRate')}: 1 QUICK(old) ={' '}
-            {GlobalConst.utils.QUICK_CONVERSION_RATE} QUICK(new)
+            {t('conversionRate')}: 1 QUICK(OLD) ={' '}
+            {GlobalConst.utils.QUICK_CONVERSION_RATE} QUICK(NEW)
           </Typography>
         </Box>
         <Box mt={4} mb={2}>
@@ -284,7 +284,7 @@ const ConvertQUICKPage: React.FC = () => {
             >
               {t('max')}
             </Box>
-            <Typography variant='h6'>QUICK(old)</Typography>
+            <Typography variant='h6'>QUICK(OLD)</Typography>
           </Box>
           {isInsufficientQUICK && (
             <Typography variant='body2' className={classes.errorText}>
@@ -313,7 +313,7 @@ const ConvertQUICKPage: React.FC = () => {
                 );
               }}
             />
-            <Typography variant='h6'>QUICK(new)</Typography>
+            <Typography variant='h6'>QUICK(NEW)</Typography>
           </Box>
         </Box>
         <Box display='flex' justifyContent='center'>
