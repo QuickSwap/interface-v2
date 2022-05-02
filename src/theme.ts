@@ -10,8 +10,8 @@ const primary = '#448aff';
 const primaryDark = '#1C2938';
 const secondary = '#344252';
 const secondaryLight = '#252833';
-const secondaryDark = '#282d3d';
-const secondaryContrast = '#121319';
+const secondaryDark = '#232734';
+const secondaryContrast = '#2c3242';
 
 const black = '#000000';
 const white = '#ffffff';

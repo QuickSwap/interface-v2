@@ -58,8 +58,11 @@ export const GlobalConst = {
       [ChainId.MATIC]: '0x4087F566796b46eEB01A38174c06E2f9924eAea8', //TODO: MATIC
       [ChainId.MUMBAI]: undefined,
     },
+    QUICK_CONVERSION: '0x333068d06563a8dfdbf330a0e04a9d128e98bf5a',
   },
   utils: {
+    QUICK_CONVERSION_RATE: 1000,
+    ONEDAYSECONDS: 60 * 60 * 24,
     DQUICKFEE: 0.04,
     DQUICKAPR_MULTIPLIER: 0.01,
     ROWSPERPAGE: 10,
@@ -80,7 +83,7 @@ export const GlobalConst = {
     ),
     // the Uniswap Default token list lives here
     DEFAULT_TOKEN_LIST_URL:
-      'https://unpkg.com/quickswap-default-token-list@1.2.32/build/quickswap-default.tokenlist.json',
+      'https://unpkg.com/quickswap-default-token-list@1.2.33/build/quickswap-default.tokenlist.json',
   },
   analyticChart: {
     ONE_MONTH_CHART: 1,
