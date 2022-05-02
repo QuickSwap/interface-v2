@@ -1254,6 +1254,16 @@
       "pair": "0xe90056b377cbbb477e3950505ccbd8d00b9cdc75"
     },
     {
+      "tokens": ["USDC", "UND"],
+      "stakingRewardAddress": "0x79465793A612D8A7972c11961fC8f1825d6AD67D",
+      "ended": false,
+      "lp": "",
+      "name": "",
+      "baseToken": "USDC",
+      "rate": 1.384,
+      "pair": "0x55a08b3c363a2cc61a07d54b52fee201bd4ec0dc"
+    },
+    {
       "tokens": ["MATIC", "NEAR"],
       "stakingRewardAddress": "0xCa28ad52Cc3190D92Ca2133274F9aa2EBe8c84bf",
       "ended": false,
@@ -1324,16 +1334,6 @@
       "baseToken": "ETHER",
       "rate": 0,
       "pair": "0x9Ab6E8197cfD366F920b54cb069cE6273898CB0B"
-    },
-    {
-      "tokens": ["USDC", "UND"],
-      "stakingRewardAddress": "0x79465793A612D8A7972c11961fC8f1825d6AD67D",
-      "ended": true,
-      "lp": "",
-      "name": "",
-      "baseToken": "USDC",
-      "rate": 0,
-      "pair": "0x55a08B3c363a2Cc61A07d54B52FEe201bd4eC0dC"
     },
     {
       "tokens": ["USDT", "SAFLE"],

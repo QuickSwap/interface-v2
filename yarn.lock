@@ -5110,10 +5110,15 @@
     tiny-warning "^1.0.3"
     toformat "^2.0.0"
 
-"@uniswap/token-lists@^1.0.0-beta.17", "@uniswap/token-lists@^1.0.0-beta.24":
+"@uniswap/token-lists@^1.0.0-beta.24":
   version "1.0.0-beta.27"
   resolved "https://registry.yarnpkg.com/@uniswap/token-lists/-/token-lists-1.0.0-beta.27.tgz#8b02a979b0b0024cc96f60e694a3f6db6b2ccab2"
   integrity sha512-x5hmIniQ9TGqOBCRqfWcmZi/U5kB0qrHMDQ9igs3nMbK0wwmYLraL4owbIwXFGR/co6/lJYJC4K/Gjn4wZY5mQ==
+
+"@uniswap/token-lists@npm:quickswap-token-lists@1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/quickswap-token-lists/-/quickswap-token-lists-1.0.1.tgz#209dbd89929d941ba2af6f019ddd98e5a7da3c9a"
+  integrity sha512-QIiF39AXlS1TAlG8cNgPHYzCqUnRUBB9l4bE+wp/qWR2d6W6b4fiEdVHjYlIkbCRSfZqQy6Carh6owud5Ct24g==
 
 "@uniswap/v2-core@1.0.0":
   version "1.0.0"
