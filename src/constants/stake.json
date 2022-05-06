@@ -1,6 +1,61 @@
 {
   "syrup": [
     {
+      "token": "FODL",
+      "stakingRewardAddress": "0xFc80C8817405f7D7a345051a47EC457ED0080664",
+      "ended": false,
+      "lp": "",
+      "name": "",
+      "baseToken": "MATIC",
+      "rate": 8640,
+      "ending": 1654444738,
+      "stakingToken": "QUICKNEW"
+    },
+    {
+      "token": "BLANK",
+      "stakingRewardAddress": "0x834A43bB0e9a208139497ea9DA005A7973903421",
+      "ended": false,
+      "lp": "",
+      "name": "",
+      "baseToken": "USDC",
+      "rate": 3000,
+      "ending": 1654444738,
+      "stakingToken": "QUICKNEW"
+    },
+    {
+      "token": "QUIDD",
+      "stakingRewardAddress": "0xEc9DB6f357917a88e223c6A88c2CBFC6f7d76a39",
+      "ended": false,
+      "lp": "",
+      "name": "",
+      "baseToken": "MATIC",
+      "rate": 5200,
+      "ending": 1654444738,
+      "stakingToken": "QUICKNEW"
+    },
+    {
+      "token": "PDDOLLAR",
+      "stakingRewardAddress": "0x21B3650931ac0b016D0377B606EDc2CFD77Ed84c",
+      "ended": false,
+      "lp": "",
+      "name": "",
+      "baseToken": "MATIC",
+      "rate": 1200,
+      "ending": 1654444738,
+      "stakingToken": "QUICKNEW"
+    },
+    {
+      "token": "ACRE",
+      "stakingRewardAddress": "0x1e578D4F624A2bA8E697e0b834e48AcA856184dE",
+      "ended": false,
+      "lp": "",
+      "name": "",
+      "baseToken": "MATIC",
+      "rate": 29366.67,
+      "ending": 1654444738,
+      "stakingToken": "QUICKNEW"
+    },
+    {
       "token": "MCHC",
       "stakingRewardAddress": "0xca06B2661a4521461cb226234c0911421196d8FC",
       "ended": false,

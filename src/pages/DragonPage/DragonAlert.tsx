@@ -21,9 +21,9 @@ const DragonAlert: React.FC = () => {
           <AlertIcon />
           <Box mx={2} width='calc(100% - 96px)'>
             <Typography>
-              As of January 2022, you can stake QUICK in Syrup Pools. Note that
-              there are some Syrup Pools that will still accept dQUICK for
-              staking, until they run out of rewards.
+              As of May 2022, you can stake QUICK(NEW) in Syrup Pools. Note that
+              there are some Syrup Pools that will still accept QUICK(OLD) for
+              staking, until they run out of rewards
             </Typography>
           </Box>
           <CloseIcon
