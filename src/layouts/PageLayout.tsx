@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Box } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import { useHistory } from 'react-router-dom';
 import { Header, Footer, BetaWarningBanner } from 'components';
 import Background from './Background';
+import { useIsProMode } from 'state/application/hooks';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   page: {
@@ -31,13 +33,24 @@ export interface PageLayoutProps {
 
 const PageLayout: React.FC<PageLayoutProps> = ({ children }) => {
   const classes = useStyles();
+  const history = useHistory();
+  const { isProMode, updateIsProMode } = useIsProMode();
+
+  useEffect(() => {
+    const unlisten = history.listen((location) => {
+      updateIsProMode(false);
+    });
+    return function cleanup() {
+      unlisten();
+    };
+  }, [history, updateIsProMode]);
 
   return (
     <Box className={classes.page}>
       <BetaWarningBanner />
       <Header />
-      <Background fallback={false} />
-      <Box className={classes.pageWrapper}>{children}</Box>
+      {!isProMode && <Background fallback={false} />}
+      <Box className={isProMode ? '' : classes.pageWrapper}>{children}</Box>
       <Footer />
     </Box>
   );

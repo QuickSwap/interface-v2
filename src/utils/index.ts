@@ -10,7 +10,6 @@ import {
   GLOBAL_DATA,
   GLOBAL_CHART,
   GET_BLOCKS,
-  ETH_PRICE,
   TOKENS_CURRENT,
   TOKENS_DYNAMIC,
   TOKEN_CHART,
@@ -28,9 +27,11 @@ import {
   TOKEN_INFO,
   TOKEN_INFO_OLD,
   FILTERED_TRANSACTIONS,
+  SWAP_TRANSACTIONS,
   HOURLY_PAIR_RATES,
   GLOBAL_ALLDATA,
   ETH_ALLPRICE,
+  PAIR_ID,
 } from 'apollo/queries';
 import { JsonRpcSigner, Web3Provider } from '@ethersproject/providers';
 import {
@@ -754,6 +755,56 @@ export const getPairTransactions = async (pairAddress: string) => {
   }
 };
 
+export const getPairAddress = async (
+  token0Address: string,
+  token1Address: string,
+) => {
+  const pairData = await client.query({
+    query: PAIR_ID(token0Address, token1Address),
+    fetchPolicy: 'network-only',
+  });
+  const pairs =
+    pairData && pairData.data
+      ? pairData.data.pairs0.concat(pairData.data.pairs1)
+      : undefined;
+  if (!pairs || pairs.length === 0) return;
+  const pairId = pairs[0].id;
+  const tokenReversed = pairData.data.pairs1.length > 0;
+  return { pairId, tokenReversed };
+};
+
+export const getSwapTransactions = async (pairId: string) => {
+  try {
+    const oneDayAgo = dayjs
+      .utc()
+      .subtract(1, 'day')
+      .unix();
+
+    let allFound = false;
+    let skip = 0;
+    let swapTx: any[] = [];
+    while (!allFound) {
+      const result = await txClient.query({
+        query: SWAP_TRANSACTIONS,
+        variables: {
+          allPairs: [pairId],
+          skip,
+          lastTime: oneDayAgo,
+        },
+        fetchPolicy: 'no-cache',
+      });
+      if (result.data.swaps.length < 1000) {
+        allFound = true;
+      }
+      skip += 1000;
+      swapTx = swapTx.concat(result.data.swaps);
+    }
+    return swapTx;
+  } catch (e) {
+    return;
+  }
+};
+
 export const getTokenChartData = async (
   tokenAddress: string,
   startTime: number,
@@ -891,21 +942,22 @@ export const getPairChartData = async (
   return data;
 };
 
-export const getHourlyRateData = async (
+export const getRateData = async (
   pairAddress: string,
   latestBlock: number,
+  interval: number,
+  startTime: number,
+  pairTokenReversed: boolean,
 ) => {
   try {
     const utcEndTime = dayjs.utc();
-    const utcStartTime = utcEndTime.subtract(2, 'month');
-    const startTime = utcStartTime.unix() - 1;
     let time = startTime;
 
     // create an array of hour start times until we reach current hour
     const timestamps = [];
     while (time <= utcEndTime.unix()) {
       timestamps.push(time);
-      time += 3600 * 24;
+      time += interval;
     }
 
     // backout if invalid timestamp format
@@ -944,31 +996,16 @@ export const getHourlyRateData = async (
       if (timestamp) {
         values.push({
           timestamp,
-          rate0: parseFloat(result[row]?.token0Price),
-          rate1: parseFloat(result[row]?.token1Price),
+          rate: pairTokenReversed
+            ? Number(result[row]?.token0Price)
+            : Number(result[row]?.token1Price),
         });
       }
     }
-
-    const formattedHistoryRate0 = [];
-    const formattedHistoryRate1 = [];
-
-    // for each hour, construct the open and close price
-    for (let i = 0; i < values.length - 1; i++) {
-      formattedHistoryRate0.push({
-        timestamp: values[i].timestamp,
-        rate: values[i].rate0,
-      });
-      formattedHistoryRate1.push({
-        timestamp: values[i].timestamp,
-        rate: values[i].rate1,
-      });
-    }
-
-    return [formattedHistoryRate0, formattedHistoryRate1];
+    return values;
   } catch (e) {
     console.log(e);
-    return [[], []];
+    return [];
   }
 };
 
