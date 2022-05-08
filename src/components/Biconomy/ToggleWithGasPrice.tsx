@@ -11,6 +11,10 @@ import GasPrice from './GasPrice';
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   gaslessToggleWrapper: {
     alignItems: 'center',
+    justifyContent: 'space-between',
+    flexGrow: 1,
+    paddingRight: 8,
+    paddingLeft: 4,
     gap: '8px',
     display: 'flex',
     marginBottom: 5,
@@ -25,6 +29,7 @@ interface IToggleWithGasPrice {
 }
 
 const ToggleWithGasPrice: React.FC<IToggleWithGasPrice> = ({ token }) => {
+  console.log({ token });
   const { isGaslessAllowed } = useBiconomy();
   const isTokenAllowed: boolean = token
     ? isGaslessEnabledForToken(token)
