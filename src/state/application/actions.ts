@@ -85,3 +85,7 @@ export const updateBookmarkPairs = createAction<string[]>(
 export const updateTokenDetails = createAction<TokenDetail>(
   'application/updateTokenDetail',
 );
+
+export const updateIsProMode = createAction<boolean>(
+  'application/updateIsProMode',
+);

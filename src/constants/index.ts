@@ -326,7 +326,7 @@ export const GlobalValue = {
   },
 };
 
-export const GAS_PRICE_LIMIT = process.env.GAS_PRICE_LIMIT || 50;
+export const GAS_PRICE_LIMIT = process.env.REACT_APP_GAS_PRICE_LIMIT || 50;
 
 // a list of tokens by chain
 type ChainTokenList = {

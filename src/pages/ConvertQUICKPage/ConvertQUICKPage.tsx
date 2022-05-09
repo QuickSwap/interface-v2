@@ -144,7 +144,7 @@ const ConvertQUICKPage: React.FC = () => {
   const isInsufficientQUICK =
     Number(quickAmount) > Number(quickBalance?.toExact() ?? 0);
   const buttonText = useMemo(() => {
-    if (quickAmount === '') {
+    if (!quickAmount || !Number(quickAmount)) {
       return t('enterAmount');
     } else if (approval !== ApprovalState.APPROVED) {
       return t('approve');
@@ -259,11 +259,20 @@ const ConvertQUICKPage: React.FC = () => {
               value={quickAmount}
               fontSize={18}
               onUserInput={(value) => {
-                setQUICKAmount(value);
+                const digits =
+                  value.indexOf('.') > -1 ? value.split('.')[1].length : 0;
+                let fixedVal = value;
+                if (digits > quickToken.decimals) {
+                  fixedVal = Number(value).toFixed(quickToken.decimals);
+                }
+                setQUICKAmount(fixedVal);
                 setQUICKV2Amount(
                   (
-                    Number(value) * GlobalConst.utils.QUICK_CONVERSION_RATE
-                  ).toString(),
+                    Number(fixedVal) * GlobalConst.utils.QUICK_CONVERSION_RATE
+                  ).toLocaleString('fullwide', {
+                    useGrouping: false,
+                    maximumFractionDigits: quickToken.decimals,
+                  }),
                 );
               }}
             />
@@ -306,11 +315,13 @@ const ConvertQUICKPage: React.FC = () => {
               fontSize={18}
               onUserInput={(value) => {
                 setQUICKV2Amount(value);
-                setQUICKAmount(
-                  (
-                    Number(value) / GlobalConst.utils.QUICK_CONVERSION_RATE
-                  ).toString(),
-                );
+                const quickAmount = (
+                  Number(value) / GlobalConst.utils.QUICK_CONVERSION_RATE
+                ).toLocaleString('fullwide', {
+                  useGrouping: false,
+                  maximumFractionDigits: quickToken.decimals,
+                });
+                setQUICKAmount(quickAmount);
               }}
             />
             <Typography variant='h6'>QUICK(NEW)</Typography>
@@ -322,7 +333,8 @@ const ConvertQUICKPage: React.FC = () => {
               approving ||
               attemptConverting ||
               isInsufficientQUICK ||
-              quickAmount === ''
+              !quickAmount ||
+              !Number(quickAmount)
             }
             className={classes.convertButton}
             onClick={() => {
