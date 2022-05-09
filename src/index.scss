@@ -1,0 +1,42 @@
+@use 'styles/variables' as *;
+@use 'styles/fonts' as *;
+@use 'styles/colors' as *;
+@use 'styles/breakpoints' as *;
+
+body {
+  margin: 0;
+  font-family: Inter, sans-serif;
+}
+
+.page {
+  background-color: $bgColor;
+  width: 100%;
+  min-height: 100vh;
+}
+
+.pageWrapper {
+  max-width: 1312px;
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  margin: 24px auto;
+  padding: 0 32px;
+  @include media("screen", "<phone") {
+    padding: 0 12px;
+  }
+}
+
+.heroBkg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  width: 100%;
+  overflow: hidden;
+  & img {
+    width: 100%;
+    min-width: 1200;
+  }
+}

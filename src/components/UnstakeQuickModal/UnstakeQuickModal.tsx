@@ -29,19 +29,6 @@ const useStyles = makeStyles(({ palette }) => ({
       backgroundColor: palette.secondary.dark,
     },
   },
-  addressLink: {
-    textDecoration: 'none',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    color: palette.text.primary,
-    '& p': {
-      marginLeft: 4,
-    },
-    '&:hover': {
-      textDecoration: 'underline',
-    },
-  },
 }));
 
 interface UnstakeQuickModalProps {

@@ -4,12 +4,7 @@ import { Box, Typography } from '@material-ui/core';
 import { useLairInfo } from 'state/stake/hooks';
 import { CurrencyLogo, StakeQuickModal, UnstakeQuickModal } from 'components';
 import { ReactComponent as PriceExchangeIcon } from 'assets/images/PriceExchangeIcon.svg';
-import {
-  formatNumber,
-  formatTokenAmount,
-  returnTokenFromKey,
-  useLairDQUICKAPY,
-} from 'utils';
+import { formatTokenAmount, returnTokenFromKey, useLairDQUICKAPY } from 'utils';
 import { useUSDCPriceToken } from 'utils/useUSDCPrice';
 
 const useStyles = makeStyles(({ palette }) => ({
