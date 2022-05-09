@@ -1,6 +1,7 @@
 import { ethers } from 'ethers';
 import { ApproveStrategy } from '../types';
 
+// For tokens like SAND, BICO
 export class EIP2771ApproveStrategy extends ApproveStrategy {
   async execute(spender: string, chainId: number) {
     const { data } = await this.contract.populateTransaction.approve(
@@ -14,6 +15,8 @@ export class EIP2771ApproveStrategy extends ApproveStrategy {
       from: this.account,
       // gasLimit: gasLimit, // optional
       signatureType: 'EIP712_SIGN',
+      // for tokens trusting the forwarder : https://polygonscan.com/address/0xf0511f123164602042ab2bcf02111fa5d3fe97cd#code
+      domainName: 'Powered by Biconomy',
     };
 
     // for EIP2771 using ethers providers will return transaction hash

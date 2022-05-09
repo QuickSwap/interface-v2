@@ -50,6 +50,7 @@ export const GlobalConst = {
   },
   addresses: {
     ROUTER_ADDRESS: {
+      // Gasless Router : 0x0bc5c796E14f0AfF59DD6aE0995906c74fF8B2dF
       [ChainId.MATIC]: '0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff',
       [ChainId.MUMBAI]: '0x8954AfA98594b838bda56FE4C12a09D7739D179b',
     }, //'0x6207A65a8bbc87dD02C3109D2c74a6bCE4af1C8c';//
@@ -325,7 +326,7 @@ export const GlobalValue = {
   },
 };
 
-export const GAS_PRICE_LIMIT = 50;
+export const GAS_PRICE_LIMIT = process.env.GAS_PRICE_LIMIT || 50;
 
 // a list of tokens by chain
 type ChainTokenList = {

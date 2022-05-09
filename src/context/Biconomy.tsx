@@ -1,4 +1,4 @@
-import { biconomyAPIKey } from '../constants';
+import { biconomyAPIKey, GAS_PRICE_LIMIT } from '../constants';
 import { NETWORK_URL } from '../connectors';
 
 const { Biconomy } = require('@biconomy/mexa');
@@ -47,7 +47,10 @@ const BiconomyProvider: React.FC = (props) => {
   >(ToggleGaslessStatus.IDLE);
   const [toggleGaslessError, setToggleGaslessError] = useState<Error>();
 
-  const isGaslessAllowed = useMemo(() => (gasPrice ?? 0) <= 50, [gasPrice]);
+  const isGaslessAllowed = useMemo(
+    () => (gasPrice ?? 0) <= Number(GAS_PRICE_LIMIT),
+    [gasPrice],
+  );
 
   const toggleGasless = useCallback(async () => {
     setToggleGaslessStatus(ToggleGaslessStatus.PENDING);
@@ -71,7 +74,7 @@ const BiconomyProvider: React.FC = (props) => {
       let checkLimitsResponse: any;
       try {
         const response = await fetch(
-          //TODO: replace with apiId from config
+          //TODO: replace with swap apiId from dashboard
           `https://api.biconomy.io/api/v1/dapp/checkLimits?userAddress=${account}&apiId=${'b72dcef4-35f4-413b-810f-d46ecfd18c7f'}`,
           { headers: { 'x-api-key': biconomyAPIKey } },
         );
