@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useHistory, useRouteMatch, Link } from 'react-router-dom';
 import { Box, Typography, Grid, useMediaQuery } from '@material-ui/core';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { useTheme } from '@material-ui/core/styles';
 import { Skeleton } from '@material-ui/lab';
 import { ChainId, Token } from '@uniswap/sdk';
-import cx from 'classnames';
 import {
   shortenAddress,
   getEtherscanLink,
@@ -20,66 +19,11 @@ import {
 } from 'components';
 import { getAddress } from '@ethersproject/address';
 import { GlobalConst, TxnType } from 'constants/index';
+import 'pages/styles/analytics.scss';
 import AnalyticsHeader from 'pages/AnalyticsPage/AnalyticsHeader';
 import AnalyticsPairChart from './AnalyticsPairChart';
 
-const useStyles = makeStyles(({ palette, breakpoints }) => ({
-  panel: {
-    background: palette.grey.A700,
-    borderRadius: 20,
-    padding: 24,
-    [breakpoints.down('xs')]: {
-      padding: 12,
-    },
-  },
-  heading1: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: palette.text.primary,
-    lineHeight: 1,
-    [breakpoints.down('xs')]: {
-      fontSize: 22,
-      fontWeight: 600,
-    },
-  },
-  heading2: {
-    fontSize: 32,
-    lineHeight: 1.2,
-    fontWeight: 600,
-    color: palette.text.primary,
-    marginLeft: 6,
-    [breakpoints.down('xs')]: {
-      fontSize: 18,
-    },
-    '& a': {
-      color: palette.text.primary,
-      textDecoration: 'none',
-    },
-  },
-  priceChangeWrapper: {
-    height: 25,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 16,
-    padding: '0 8px',
-  },
-  button: {
-    display: 'flex',
-    alignItems: 'center',
-    height: 40,
-    padding: '0 28px',
-    borderRadius: 10,
-    color: palette.text.primary,
-    cursor: 'pointer',
-  },
-  filledButton: {
-    background: 'linear-gradient(279deg, rgb(0, 76, 230), rgb(61, 113, 255))',
-  },
-}));
-
 const AnalyticsPairDetails: React.FC = () => {
-  const classes = useStyles();
   const { palette, breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const history = useHistory();
@@ -200,7 +144,7 @@ const AnalyticsPairDetails: React.FC = () => {
                   size={32}
                 />
                 <Box ml={1}>
-                  <Typography className={classes.heading2}>
+                  <Typography className='heading2'>
                     <Link to={`/analytics/token/${pairData.token0.id}`}>
                       {pairData.token0.symbol}
                     </Link>{' '}
@@ -253,7 +197,7 @@ const AnalyticsPairDetails: React.FC = () => {
             </Box>
             <Box my={2} display='flex'>
               <Box
-                className={classes.button}
+                className='button'
                 mr={1.5}
                 border={`1px solid ${palette.primary.main}`}
                 onClick={() => {
@@ -265,7 +209,7 @@ const AnalyticsPairDetails: React.FC = () => {
                 <Typography variant='body2'>Add Liquidity</Typography>
               </Box>
               <Box
-                className={cx(classes.button, classes.filledButton)}
+                className='button filledButton'
                 onClick={() => {
                   history.push(
                     `/swap?currency0=${pairData.token0.id}&currency1=${pairData.token1.id}`,
@@ -276,7 +220,7 @@ const AnalyticsPairDetails: React.FC = () => {
               </Box>
             </Box>
           </Box>
-          <Box width={1} className={classes.panel} mt={4}>
+          <Box width={1} className='panel' mt={4}>
             <Grid container>
               <Grid item xs={12} sm={12} md={6}>
                 <AnalyticsPairChart pairData={pairData} />
@@ -439,7 +383,7 @@ const AnalyticsPairDetails: React.FC = () => {
           <Box width={1} mt={5}>
             <Typography variant='body1'>Transactions</Typography>
           </Box>
-          <Box width={1} className={classes.panel} mt={4}>
+          <Box width={1} className='panel' mt={4}>
             {pairTransactionsList ? (
               <TransactionsTable data={pairTransactionsList} />
             ) : (

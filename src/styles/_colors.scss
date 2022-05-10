@@ -1,1 +1,5 @@
 @use './variables' as *;
+
+.text-error {
+  color: $errorMain;
+}

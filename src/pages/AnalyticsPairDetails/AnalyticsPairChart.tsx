@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useRouteMatch } from 'react-router-dom';
 import { Box, Typography } from '@material-ui/core';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { useTheme } from '@material-ui/core/styles';
 import { Skeleton } from '@material-ui/lab';
 import moment from 'moment';
 import {
@@ -17,23 +17,11 @@ import {
 import { AreaChart, ChartType } from 'components';
 import { GlobalConst, GlobalData } from 'constants/index';
 
-const useStyles = makeStyles(() => ({
-  priceChangeWrapper: {
-    height: 25,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 16,
-    padding: '0 8px',
-  },
-}));
-
 const CHART_VOLUME = 0;
 const CHART_LIQUIDITY = 1;
 const CHART_FEES = 2;
 
 const AnalyticsPairChart: React.FC<{ pairData: any }> = ({ pairData }) => {
-  const classes = useStyles();
   const { palette } = useTheme();
   const match = useRouteMatch<{ id: string }>();
   const pairAddress = match.params.id;
@@ -150,7 +138,7 @@ const AnalyticsPairChart: React.FC<{ pairData: any }> = ({ pairData }) => {
                       : currentData.toLocaleString()}
                   </Typography>
                   <Box
-                    className={classes.priceChangeWrapper}
+                    className='priceChangeWrapper'
                     ml={1}
                     bgcolor={currentPercentColor.bgColor}
                     color={currentPercentColor.textColor}

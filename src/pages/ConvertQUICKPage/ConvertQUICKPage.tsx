@@ -1,6 +1,4 @@
 import React, { useMemo, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import cx from 'classnames';
 import { TransactionResponse } from '@ethersproject/providers';
 import { Box, Typography, Button, CircularProgress } from '@material-ui/core';
 import { Trans, useTranslation } from 'react-i18next';
@@ -24,86 +22,9 @@ import {
   useTransactionFinalizer,
 } from 'state/transactions/hooks';
 import { tryParseAmount } from 'state/swap/hooks';
-
-const useStyles = makeStyles(({ palette, breakpoints }) => ({
-  wrapper: {
-    background: palette.background.default,
-    marginTop: 24,
-    padding: 24,
-    borderRadius: 20,
-    border: `1px solid ${palette.secondary.dark}`,
-  },
-  iconWrapper: {
-    display: 'flex',
-    marginRight: 6,
-    '& svg, & img': {
-      width: 24,
-      height: 24,
-    },
-  },
-  convertArrow: {
-    display: 'flex',
-    '& svg path': {
-      fill: palette.text.secondary,
-    },
-  },
-  conversionRate: {
-    marginTop: 24,
-    border: `1px solid ${palette.secondary.dark}`,
-    padding: '8px 12px',
-    borderRadius: 10,
-    '& span': {
-      fontSize: 13,
-    },
-  },
-  currencyInput: {
-    background: palette.secondary.dark,
-    borderRadius: 10,
-    margin: '8px 0',
-    display: 'flex',
-    alignItems: 'center',
-    height: 63,
-    padding: '0 16px',
-    border: '1px solid transparent',
-    '& input': {
-      flex: 1,
-    },
-    '& h6': {
-      fontSize: 18,
-    },
-  },
-  maxButton: {
-    background: 'rgba(68, 138, 255, 0.24)',
-    color: palette.primary.main,
-    width: 34,
-    height: 18,
-    borderRadius: 4,
-    fontSize: 11,
-    fontWeight: 600,
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    cursor: 'pointer',
-  },
-  convertButton: {
-    maxWidth: 224,
-    height: 40,
-    width: '100%',
-    borderRadius: 20,
-    '&.Mui-disabled': {
-      background: palette.grey.A400,
-    },
-  },
-  errorInput: {
-    borderColor: palette.error.main,
-  },
-  errorText: {
-    color: palette.error.main,
-  },
-}));
+import 'pages/styles/convertQUICK.scss';
 
 const ConvertQUICKPage: React.FC = () => {
-  const classes = useStyles();
   const { t } = useTranslation();
   const { account, library } = useActiveWeb3React();
   const [quickAmount, setQUICKAmount] = useState('');
@@ -211,16 +132,16 @@ const ConvertQUICKPage: React.FC = () => {
   return (
     <Box width='100%' maxWidth={488} id='convertQUICKPage'>
       <Typography variant='h4'>{t('convert')} QUICK</Typography>
-      <Box className={classes.wrapper}>
+      <Box className='wrapper'>
         <Box display='flex' alignItems='center' mb={3}>
-          <Box className={classes.iconWrapper}>
+          <Box className='iconWrapper'>
             <img src={QUICKIcon} alt='QUICK' />
           </Box>
           <Typography variant='h6'>QUICK(OLD)</Typography>
-          <Box mx={1.5} className={classes.convertArrow}>
+          <Box mx={1.5} className='convertArrow'>
             <ArrowForward />
           </Box>
-          <Box className={classes.iconWrapper}>
+          <Box className='iconWrapper'>
             <QUICKV2Icon />
           </Box>
           <Typography variant='h6'>QUICK(NEW)</Typography>
@@ -238,7 +159,7 @@ const ConvertQUICKPage: React.FC = () => {
             </a>
           </Trans>
         </Typography>
-        <Box className={classes.conversionRate}>
+        <Box className='conversionRate'>
           <Typography variant='caption'>
             {t('conversionRate')}: 1 QUICK(OLD) ={' '}
             {GlobalConst.utils.QUICK_CONVERSION_RATE} QUICK(NEW)
@@ -248,12 +169,7 @@ const ConvertQUICKPage: React.FC = () => {
           <Typography variant='body2' color='textSecondary'>
             {t('yourbalance')}: {formatTokenAmount(quickBalance)}
           </Typography>
-          <Box
-            className={cx(
-              classes.currencyInput,
-              isInsufficientQUICK && classes.errorInput,
-            )}
-          >
+          <Box className='currencyInput errorInput'>
             <NumericalInput
               placeholder='0.00'
               value={quickAmount}
@@ -278,7 +194,7 @@ const ConvertQUICKPage: React.FC = () => {
             />
             <Box
               mr={1}
-              className={classes.maxButton}
+              className='maxButton'
               onClick={() => {
                 if (quickBalance) {
                   setQUICKAmount(quickBalance.toExact());
@@ -296,19 +212,19 @@ const ConvertQUICKPage: React.FC = () => {
             <Typography variant='h6'>QUICK(OLD)</Typography>
           </Box>
           {isInsufficientQUICK && (
-            <Typography variant='body2' className={classes.errorText}>
+            <Typography variant='body2' className='text-error'>
               {t('insufficientBalance', { symbol: 'QUICK' })}
             </Typography>
           )}
         </Box>
-        <Box ml={2} className={classes.convertArrow}>
+        <Box ml={2} className='convertArrow'>
           <ArrowDownward />
         </Box>
         <Box mt={2} mb={4}>
           <Typography variant='body2' color='textSecondary'>
             {t('youwillreceive')}:
           </Typography>
-          <Box className={classes.currencyInput}>
+          <Box className='currencyInput'>
             <NumericalInput
               placeholder='0.00'
               value={quickV2Amount}
@@ -336,7 +252,7 @@ const ConvertQUICKPage: React.FC = () => {
               !quickAmount ||
               !Number(quickAmount)
             }
-            className={classes.convertButton}
+            className='convertButton'
             onClick={() => {
               if (approval === ApprovalState.APPROVED) {
                 convertQUICK();

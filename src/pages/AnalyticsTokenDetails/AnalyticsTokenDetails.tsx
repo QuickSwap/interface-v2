@@ -1,10 +1,9 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import { Box, Typography, Grid, useMediaQuery } from '@material-ui/core';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { useTheme } from '@material-ui/core/styles';
 import { Skeleton } from '@material-ui/lab';
 import { ChainId, Token } from '@uniswap/sdk';
-import cx from 'classnames';
 import {
   shortenAddress,
   getEtherscanLink,
@@ -28,59 +27,7 @@ import { GlobalConst } from 'constants/index';
 import AnalyticsHeader from 'pages/AnalyticsPage/AnalyticsHeader';
 import AnalyticsTokenChart from './AnalyticsTokenChart';
 
-const useStyles = makeStyles(({ palette, breakpoints }) => ({
-  panel: {
-    background: palette.grey.A700,
-    borderRadius: 20,
-    padding: 24,
-    [breakpoints.down('xs')]: {
-      padding: 12,
-    },
-  },
-  heading1: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: palette.text.primary,
-    lineHeight: 1,
-    [breakpoints.down('xs')]: {
-      fontSize: 22,
-      fontWeight: 600,
-    },
-  },
-  heading2: {
-    fontSize: 20,
-    lineHeight: 1.2,
-    fontWeight: 600,
-    color: palette.text.hint,
-    marginLeft: 6,
-    [breakpoints.down('xs')]: {
-      fontSize: 18,
-    },
-  },
-  priceChangeWrapper: {
-    height: 25,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 16,
-    padding: '0 8px',
-  },
-  button: {
-    display: 'flex',
-    alignItems: 'center',
-    height: 40,
-    padding: '0 28px',
-    borderRadius: 10,
-    color: palette.text.primary,
-    cursor: 'pointer',
-  },
-  filledButton: {
-    background: 'linear-gradient(279deg, rgb(0, 76, 230), rgb(61, 113, 255))',
-  },
-}));
-
 const AnalyticsTokenDetails: React.FC = () => {
-  const classes = useStyles();
   const { palette, breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const history = useHistory();
@@ -148,10 +95,8 @@ const AnalyticsTokenDetails: React.FC = () => {
               <Box ml={1.5}>
                 <Box display='flex' alignItems='center'>
                   <Box display='flex' alignItems='flex-end' mr={0.5}>
-                    <Typography className={classes.heading1}>
-                      {token.name}{' '}
-                    </Typography>
-                    <Typography className={classes.heading2}>
+                    <Typography className='heading1'>{token.name} </Typography>
+                    <Typography className='heading2'>
                       ({token.symbol})
                     </Typography>
                   </Box>
@@ -171,7 +116,7 @@ const AnalyticsTokenDetails: React.FC = () => {
                     ${formatNumber(token.priceUSD)}
                   </Typography>
                   <Box
-                    className={classes.priceChangeWrapper}
+                    className='priceChangeWrapper'
                     ml={2}
                     bgcolor={tokenPercentColor.bgColor}
                     color={tokenPercentColor.textColor}
@@ -185,7 +130,7 @@ const AnalyticsTokenDetails: React.FC = () => {
             </Box>
             <Box my={2} display='flex'>
               <Box
-                className={classes.button}
+                className='button'
                 mr={1.5}
                 border={`1px solid ${palette.primary.main}`}
                 onClick={() => {
@@ -195,7 +140,7 @@ const AnalyticsTokenDetails: React.FC = () => {
                 <Typography variant='body2'>Add Liquidity</Typography>
               </Box>
               <Box
-                className={cx(classes.button, classes.filledButton)}
+                className='button filledButton'
                 onClick={() => {
                   history.push(`/swap?currency0=${token.id}&currency1=ETH`);
                 }}
@@ -204,7 +149,7 @@ const AnalyticsTokenDetails: React.FC = () => {
               </Box>
             </Box>
           </Box>
-          <Box width={1} className={classes.panel} mt={4}>
+          <Box width={1} className='panel' mt={4}>
             <Grid container>
               <Grid item xs={12} sm={12} md={6}>
                 <AnalyticsTokenChart token={token} />
@@ -324,7 +269,7 @@ const AnalyticsTokenDetails: React.FC = () => {
           <Box width={1} mt={5}>
             <Typography variant='body1'>{token.symbol} Pools</Typography>
           </Box>
-          <Box width={1} className={classes.panel} mt={4}>
+          <Box width={1} className='panel' mt={4}>
             {tokenPairs ? (
               <PairTable data={tokenPairs} />
             ) : (

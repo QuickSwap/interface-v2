@@ -5,7 +5,7 @@ import { Box, Typography } from '@material-ui/core';
 import { ArrowForwardIos } from '@material-ui/icons';
 import Search from 'components/Search';
 import { shortenAddress } from 'utils';
-import './index.scss';
+import 'pages/styles/analytics.scss';
 
 interface AnalyticHeaderProps {
   data?: any;
