@@ -1,5 +1,4 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 import SwapProChart from './SwapProChart';
 import { Token } from '@uniswap/sdk';
 import { Box } from '@material-ui/core';
@@ -10,50 +9,6 @@ import { formatNumber, shortenTx, getEtherscanLink } from 'utils';
 import moment from 'moment';
 import { useActiveWeb3React } from 'hooks';
 import { TableVirtuoso } from 'react-virtuoso';
-
-const useStyles = makeStyles(({ palette }) => ({
-  splitPane: {
-    '& [data-type=Resizer]': {
-      margin: '8px 0 0',
-    },
-  },
-  tradeTable: {
-    width: '100%',
-    '& thead tr th, & tbody tr td': {
-      borderRight: `1px solid ${palette.divider}`,
-      '&:last-child': {
-        borderRight: 'none',
-      },
-    },
-    '& thead tr th': {
-      position: 'sticky',
-      top: 0,
-      textTransform: 'uppercase',
-      padding: '8px 16px',
-      background: palette.secondary.main,
-      color: palette.text.primary,
-      fontWeight: 'normal',
-    },
-    '& tbody td.sell': {
-      color: palette.error.main,
-      '& a': {
-        color: palette.error.main,
-      },
-    },
-    '& tbody td.buy': {
-      color: palette.success.main,
-      '& a': {
-        color: palette.success.main,
-      },
-    },
-    '& tbody tr td': {
-      padding: '8px 16px',
-      '& a': {
-        textDecoration: 'none',
-      },
-    },
-  },
-}));
 
 const SwapProChartTrade: React.FC<{
   showChart: boolean;
@@ -72,17 +27,13 @@ const SwapProChartTrade: React.FC<{
   pairTokenReversed,
   transactions,
 }) => {
-  const classes = useStyles();
-
   const { chainId } = useActiveWeb3React();
 
   const TradesTable = () => (
     <TableVirtuoso
       data={transactions}
       components={{
-        Table: ({ ...props }) => (
-          <table className={classes.tradeTable} {...props} />
-        ),
+        Table: ({ ...props }) => <table className='tradeTable' {...props} />,
       }}
       fixedHeaderContent={() => (
         <tr>

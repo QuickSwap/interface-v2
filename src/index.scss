@@ -40,3 +40,18 @@ body {
     min-width: 1200;
   }
 }
+
+.helpWrapper {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  border: 1px solid $secondary2;
+  border-radius: 10px;
+  & p {
+    color: $textHint;
+  }
+
+  & svg {
+    margin-left: 8px;
+  }
+}

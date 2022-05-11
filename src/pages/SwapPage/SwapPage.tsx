@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { useTheme } from '@material-ui/core/styles';
 import { Box, Typography, Grid, useMediaQuery } from '@material-ui/core';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
 import { SwapTokenDetails, ToggleSwitch } from 'components';
@@ -14,52 +14,10 @@ import LiquidityPools from './LiquidityPools';
 import SwapProChartTrade from './SwapProChartTrade';
 import SwapProInfo from './SwapProInfo';
 import SwapProFilter from './SwapProFilter';
-
-const useStyles = makeStyles(({ palette, breakpoints }) => ({
-  helpWrapper: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: '8px 12px',
-    border: `1px solid ${palette.secondary.light}`,
-    borderRadius: 10,
-    '& p': {
-      color: palette.text.hint,
-    },
-    '& svg': {
-      marginLeft: 8,
-    },
-  },
-  wrapper: {
-    padding: (props: any) => (props.isProMode ? '24px 0' : 24),
-    backgroundColor: palette.background.paper,
-    borderRadius: (props: any) => (props.isProMode ? 0 : 20),
-    [breakpoints.down('xs')]: {
-      padding: '16px 12px',
-    },
-  },
-  swapTokenDetails: {
-    backgroundColor: palette.background.paper,
-    borderRadius: 16,
-    width: 'calc(50% - 16px)',
-    [breakpoints.down('md')]: {
-      width: '100%',
-      marginBottom: 16,
-    },
-    [breakpoints.down('sm')]: {
-      width: 'calc(50% - 16px)',
-      margin: 0,
-    },
-    [breakpoints.down('xs')]: {
-      width: '100%',
-      marginTop: 16,
-      marginBottom: 16,
-    },
-  },
-}));
+import 'pages/styles/swap.scss';
 
 const SwapPage: React.FC = () => {
   const { isProMode, updateIsProMode } = useIsProMode();
-  const classes = useStyles({ isProMode });
   const { palette, breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('sm'));
   const isTablet = useMediaQuery(breakpoints.down('md'));
@@ -122,7 +80,7 @@ const SwapPage: React.FC = () => {
           width='100%'
         >
           <Typography variant='h4'>Swap</Typography>
-          <Box className={classes.helpWrapper}>
+          <Box className='helpWrapper'>
             <Typography variant='body2'>Help</Typography>
             <HelpIcon />
           </Box>
@@ -131,7 +89,7 @@ const SwapPage: React.FC = () => {
       {!isProMode ? (
         <Grid container spacing={4}>
           <Grid item xs={12} sm={12} md={6} lg={5}>
-            <Box className={classes.wrapper}>
+            <Box className='wrapper'>
               <SwapMain />
             </Box>
           </Grid>
@@ -143,18 +101,18 @@ const SwapPage: React.FC = () => {
               width='100%'
             >
               {token1 && (
-                <Box className={classes.swapTokenDetails}>
+                <Box className='swapTokenDetails'>
                   <SwapTokenDetails token={token1} />
                 </Box>
               )}
               {token2 && (
-                <Box className={classes.swapTokenDetails}>
+                <Box className='swapTokenDetails'>
                   <SwapTokenDetails token={token2} />
                 </Box>
               )}
             </Box>
             {token1 && token2 && (
-              <Box className={classes.wrapper} marginTop='32px'>
+              <Box className='wrapper' marginTop='32px'>
                 <LiquidityPools token1={token1} token2={token2} />
               </Box>
             )}

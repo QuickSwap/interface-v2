@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { useTheme } from '@material-ui/core/styles';
 import { Box, Typography } from '@material-ui/core';
 import { useLairInfo } from 'state/stake/hooks';
 import { CurrencyLogo, StakeQuickModal, UnstakeQuickModal } from 'components';
@@ -7,26 +7,7 @@ import { ReactComponent as PriceExchangeIcon } from 'assets/images/PriceExchange
 import { formatTokenAmount, returnTokenFromKey, useLairDQUICKAPY } from 'utils';
 import { useUSDCPriceToken } from 'utils/useUSDCPrice';
 
-const useStyles = makeStyles(({ palette }) => ({
-  stakeButton: {
-    width: '100%',
-    height: 48,
-    borderRadius: 10,
-    border: `1px solid ${palette.primary.main}`,
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 24,
-    cursor: 'pointer',
-    '& p': {
-      fontWeight: 600,
-      color: '#ebecf2',
-    },
-  },
-}));
-
 const DragonsLair: React.FC = () => {
-  const classes = useStyles();
   const { palette } = useTheme();
   const quickPrice = useUSDCPriceToken(returnTokenFromKey('QUICK'));
   const dQUICKPrice = useUSDCPriceToken(returnTokenFromKey('DQUICK'));
@@ -121,14 +102,14 @@ const DragonsLair: React.FC = () => {
         />
       </Box>
       <Box
-        className={classes.stakeButton}
+        className='stakeButton'
         bgcolor={palette.primary.main}
         onClick={() => setOpenStakeModal(true)}
       >
         <Typography variant='body2'>Stake</Typography>
       </Box>
       <Box
-        className={classes.stakeButton}
+        className='stakeButton'
         bgcolor='transparent'
         onClick={() => setOpenUnstakeModal(true)}
       >

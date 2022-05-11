@@ -1,6 +1,5 @@
 import React, { useMemo, useState } from 'react';
 import { Pair } from '@uniswap/sdk';
-import { makeStyles } from '@material-ui/core/styles';
 import { Box, Typography } from '@material-ui/core';
 import Skeleton from '@material-ui/lab/Skeleton';
 import NoLiquidity from 'assets/images/NoLiquidityPool.png';
@@ -10,23 +9,7 @@ import { usePairs } from 'data/Reserves';
 import { toV2LiquidityToken, useTrackedTokenPairs } from 'state/user/hooks';
 import { useTokenBalancesWithLoadingIndicator } from 'state/wallet/hooks';
 
-const useStyles = makeStyles(({ palette }) => ({
-  liquidityText: {
-    color: palette.text.secondary,
-    '& span': {
-      color: palette.primary.main,
-      cursor: 'pointer',
-    },
-  },
-  noLiquidityImage: {
-    maxWidth: 286,
-    width: '80%',
-    filter: 'grayscale(1)',
-  },
-}));
-
 const YourLiquidityPools: React.FC = () => {
-  const classes = useStyles();
   const { account } = useActiveWeb3React();
   const [openPoolFinder, setOpenPoolFinder] = useState(false);
   const trackedTokenPairs = useTrackedTokenPairs();
@@ -89,7 +72,7 @@ const YourLiquidityPools: React.FC = () => {
           </Box>
         ) : allV2PairsWithLiquidity.length > 0 ? (
           <Box>
-            <Typography variant='body2' className={classes.liquidityText}>
+            <Typography variant='body2' className='liquidityText'>
               Don’t see a pool you joined?{' '}
               <span onClick={() => setOpenPoolFinder(true)}>Import it</span>
               .<br />
@@ -109,9 +92,9 @@ const YourLiquidityPools: React.FC = () => {
             <img
               src={NoLiquidity}
               alt='No Liquidity'
-              className={classes.noLiquidityImage}
+              className='noLiquidityImage'
             />
-            <Typography variant='body2' className={classes.liquidityText}>
+            <Typography variant='body2' className='liquidityText'>
               Don’t see a pool you joined?{' '}
               <span onClick={() => setOpenPoolFinder(true)}>Import it</span>
               .<br />

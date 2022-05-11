@@ -1,36 +1,7 @@
-import React, { useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import React from 'react';
 import { Box, Typography, Checkbox } from '@material-ui/core';
 import { Replay } from '@material-ui/icons';
 import { CustomSwitch } from 'components';
-
-const useStyles = makeStyles(({ palette }) => ({
-  swapFilter: {
-    display: 'flex',
-    alignItems: 'center',
-    flexWrap: 'wrap',
-    padding: 8,
-    '& p': {
-      textTransform: 'uppercase',
-    },
-  },
-  checkWrapper: {
-    display: 'flex',
-    alignItems: 'center',
-    marginRight: 16,
-    '& .MuiCheckbox-root': {
-      padding: 2,
-      '& svg path': {
-        fill: palette.text.primary,
-      },
-    },
-  },
-  replayButton: {
-    cursor: 'pointer',
-    display: 'flex',
-    marginLeft: 8,
-  },
-}));
 
 interface SwapProFilterProps {
   infoPos: string;
@@ -49,7 +20,6 @@ const SwapProFilter: React.FC<SwapProFilterProps> = ({
   showTrades,
   setShowTrades,
 }) => {
-  const classes = useStyles();
   const swapPositions = ['left', 'right', 'none'];
 
   const infoPosItems = swapPositions.map((pos) => {
@@ -61,8 +31,8 @@ const SwapProFilter: React.FC<SwapProFilterProps> = ({
   });
 
   return (
-    <Box className={classes.swapFilter}>
-      <Box className={classes.checkWrapper}>
+    <Box className='swapFilter'>
+      <Box className='checkWrapper'>
         <Checkbox
           checked={showChart}
           disabled={!showTrades}
@@ -70,7 +40,7 @@ const SwapProFilter: React.FC<SwapProFilterProps> = ({
         />
         <Typography variant='body2'>chart</Typography>
       </Box>
-      <Box className={classes.checkWrapper}>
+      <Box className='checkWrapper'>
         <Checkbox
           checked={showTrades}
           disabled={!showChart}
@@ -85,7 +55,7 @@ const SwapProFilter: React.FC<SwapProFilterProps> = ({
         </Box>
       </Box>
       <Box
-        className={classes.replayButton}
+        className='replayButton'
         onClick={() => {
           setInfoPos('right');
           setShowChart(true);

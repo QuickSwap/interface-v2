@@ -1,28 +1,15 @@
 import React from 'react';
 import { Box, Typography, useMediaQuery } from '@material-ui/core';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { useTheme } from '@material-ui/core/styles';
 import { GlobalConst } from 'constants/index';
 import { DoubleCurrencyLogo } from 'components';
 import { formatCompact, getDaysCurrentYear } from 'utils';
 import { useCurrency } from 'hooks/Tokens';
 
-const useStyles = makeStyles(({ palette }) => ({
-  liquidityContent: {
-    border: `1px solid ${palette.secondary.dark}`,
-    borderRadius: '10px',
-    marginBottom: '20px',
-    '& p': {
-      color: palette.text.primary,
-      fontWeight: 600,
-    },
-  },
-}));
-
 const LiquidityPoolRow: React.FC<{
   pair: any;
   key: number;
 }> = ({ pair, key }) => {
-  const classes = useStyles();
   const { palette, breakpoints } = useTheme();
   const daysCurrentYear = getDaysCurrentYear();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
@@ -54,7 +41,7 @@ const LiquidityPoolRow: React.FC<{
       key={key}
       display='flex'
       flexWrap='wrap'
-      className={classes.liquidityContent}
+      className='liquidityContent'
       padding={2}
     >
       <Box display='flex' alignItems='center' width={isMobile ? 1 : 0.5}>

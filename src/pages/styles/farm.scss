@@ -1,0 +1,13 @@
+@use 'styles/variables' as *;
+@use 'styles/breakpoints' as *;
+
+.farmsWrapper {
+  background: $bgPalette;
+  border-radius: 20px;
+  padding: 32px;
+  position: relative;
+  overflow: hidden;
+  @include media("screen", "<phone") {
+    padding: 24px 16px
+  }
+}

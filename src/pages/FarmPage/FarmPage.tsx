@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 import { Box, Typography } from '@material-ui/core';
 import { getBulkPairData } from 'state/stake/hooks';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
@@ -9,36 +8,9 @@ import { returnDualStakingInfo, returnStakingInfo } from 'utils';
 import FarmRewards from './FarmRewards';
 import FarmsList from './FarmsList';
 import { CustomSwitch } from 'components';
-
-const useStyles = makeStyles(({ palette, breakpoints }) => ({
-  helpWrapper: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: '8px 12px',
-    border: `1px solid ${palette.secondary.light}`,
-    borderRadius: 10,
-    '& p': {
-      color: palette.text.hint,
-    },
-    '& svg': {
-      marginLeft: 8,
-    },
-  },
-  dragonWrapper: {
-    width: '100%',
-    backgroundColor: palette.background.paper,
-    borderRadius: 20,
-    padding: 32,
-    position: 'relative',
-    overflow: 'hidden',
-    [breakpoints.down('xs')]: {
-      padding: '16px 12px',
-    },
-  },
-}));
+import 'pages/styles/farm.scss';
 
 const FarmPage: React.FC = () => {
-  const classes = useStyles();
   const { chainId } = useActiveWeb3React();
 
   const [bulkPairs, setBulkPairs] = useState<any>(null);
@@ -87,7 +59,7 @@ const FarmPage: React.FC = () => {
         <Box mr={2}>
           <Typography variant='h4'>Farm</Typography>
         </Box>
-        <Box className={classes.helpWrapper}>
+        <Box className='helpWrapper'>
           <Typography variant='body2'>Help</Typography>
           <HelpIcon />
         </Box>
@@ -101,7 +73,7 @@ const FarmPage: React.FC = () => {
       <Box my={2}>
         <FarmRewards bulkPairs={bulkPairs} farmIndex={farmIndex} />
       </Box>
-      <Box className={classes.dragonWrapper}>
+      <Box className='farmsWrapper'>
         <FarmsList bulkPairs={bulkPairs} farmIndex={farmIndex} />
       </Box>
     </Box>

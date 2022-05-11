@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { Box, Typography } from '@material-ui/core';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { useTheme } from '@material-ui/core/styles';
 import { ReactComponent as SettingsIcon } from 'assets/images/SettingsIcon.svg';
-import cx from 'classnames';
 import { useIsProMode } from 'state/application/hooks';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import { useCurrency } from 'hooks/Tokens';
@@ -12,42 +11,10 @@ import {
   GelatoLimitOrdersHistoryPanel,
 } from '@gelatonetwork/limit-orders-react';
 
-const useStyles = makeStyles(({ palette }) => ({
-  swapItem: {
-    width: 122,
-    height: 46,
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 8,
-    '& p': {
-      color: palette.text.secondary,
-    },
-  },
-  activeSwap: {
-    background: palette.secondary.dark,
-    '& p': {
-      color: 'white',
-    },
-  },
-  headingItem: {
-    cursor: 'pointer',
-    display: 'flex',
-  },
-  proModeWrapper: {
-    borderTop: `1px solid ${palette.divider}`,
-    borderBottom: `1px solid ${palette.divider}`,
-    '& $swapItem': {
-      borderRadius: 0,
-    },
-  },
-}));
-
 const SWAP_NORMAL = 0;
 const SWAP_LIMIT = 1;
 
 const SwapMain: React.FC = () => {
-  const classes = useStyles();
   const { palette } = useTheme();
   const [swapIndex, setSwapIndex] = useState(SWAP_NORMAL);
   const [openSettingsModal, setOpenSettingsModal] = useState(false);
@@ -77,25 +44,20 @@ const SwapMain: React.FC = () => {
         display='flex'
         alignItems='center'
         justifyContent='space-between'
-        className={isProMode ? classes.proModeWrapper : ''}
+        className={isProMode ? 'proModeWrapper' : ''}
       >
         <Box display='flex'>
           <Box
-            className={cx(
-              swapIndex === SWAP_NORMAL && classes.activeSwap,
-              classes.swapItem,
-              classes.headingItem,
-            )}
+            className={`${swapIndex === SWAP_NORMAL &&
+              'activeSwap'} swapItem headingItem
+            `}
             onClick={() => setSwapIndex(SWAP_NORMAL)}
           >
             <Typography variant='body1'>Market</Typography>
           </Box>
           <Box
-            className={cx(
-              swapIndex === SWAP_LIMIT && classes.activeSwap,
-              classes.swapItem,
-              classes.headingItem,
-            )}
+            className={`${swapIndex === SWAP_LIMIT &&
+              'activeSwap'} swapItem headingItem`}
             borderRight={isProMode ? `1px solid ${palette.divider}` : ''}
             onClick={() => setSwapIndex(SWAP_LIMIT)}
           >
@@ -117,10 +79,7 @@ const SwapMain: React.FC = () => {
               />
             </Box>
           )}
-          <Box
-            className={classes.headingItem}
-            marginRight={isProMode ? 2.5 : 0}
-          >
+          <Box className='headingItem' marginRight={isProMode ? 2.5 : 0}>
             <SettingsIcon onClick={() => setOpenSettingsModal(true)} />
           </Box>
         </Box>

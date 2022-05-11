@@ -1,37 +1,11 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 import { Box, Grid, Typography } from '@material-ui/core';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
 import SupplyLiquidity from './SupplyLiquidity';
 import YourLiquidityPools from './YourLiquidityPools';
-
-const useStyles = makeStyles(({ palette, breakpoints }) => ({
-  helpWrapper: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: '8px 12px',
-    border: `1px solid ${palette.secondary.light}`,
-    borderRadius: 10,
-    '& p': {
-      color: palette.text.hint,
-    },
-    '& svg': {
-      marginLeft: 8,
-    },
-  },
-  wrapper: {
-    padding: 24,
-    backgroundColor: palette.background.paper,
-    borderRadius: 20,
-    [breakpoints.down('xs')]: {
-      padding: '16px 12px',
-    },
-  },
-}));
+import 'pages/styles/pools.scss';
 
 const PoolsPage: React.FC = () => {
-  const classes = useStyles();
-
   return (
     <Box width='100%' mb={3}>
       <Box
@@ -42,19 +16,19 @@ const PoolsPage: React.FC = () => {
         width='100%'
       >
         <Typography variant='h4'>Pool</Typography>
-        <Box className={classes.helpWrapper}>
+        <Box className='helpWrapper'>
           <Typography variant='body2'>Help</Typography>
           <HelpIcon />
         </Box>
       </Box>
       <Grid container spacing={4}>
         <Grid item xs={12} sm={12} md={5}>
-          <Box className={classes.wrapper}>
+          <Box className='wrapper'>
             <SupplyLiquidity />
           </Box>
         </Grid>
         <Grid item xs={12} sm={12} md={7}>
-          <Box className={classes.wrapper}>
+          <Box className='wrapper'>
             <YourLiquidityPools />
           </Box>
         </Grid>

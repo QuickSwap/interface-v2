@@ -1,35 +1,16 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Box, Divider, Typography, useMediaQuery } from '@material-ui/core';
 import { KeyboardArrowUp, KeyboardArrowDown } from '@material-ui/icons';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { useTheme } from '@material-ui/core/styles';
 import { getTokenPairs, getBulkPairData, getEthPrice } from 'utils';
 import { Token } from '@uniswap/sdk';
 import LiquidityPoolRow from './LiquidityPoolRow';
 import { useAllTokens } from 'hooks/Tokens';
 
-const useStyles = makeStyles(({ palette }) => ({
-  liquidityMain: {
-    '& p': {
-      color: palette.text.secondary,
-      fontWeight: 600,
-    },
-  },
-  liquidityFilter: {
-    '& p': {
-      cursor: 'pointer',
-      marginRight: 20,
-      '&.active': {
-        color: palette.primary.main,
-      },
-    },
-  },
-}));
-
 const LiquidityPools: React.FC<{
   token1: Token;
   token2: Token;
 }> = ({ token1, token2 }) => {
-  const classes = useStyles();
   const { palette, breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const [liquidityPoolClosed, setLiquidityPoolClosed] = useState(false);
@@ -127,12 +108,8 @@ const LiquidityPools: React.FC<{
         <>
           <Divider />
           <Box width={1}>
-            <Box display='flex' padding={2} className={classes.liquidityMain}>
-              <Box
-                display='flex'
-                width={0.5}
-                className={classes.liquidityFilter}
-              >
+            <Box display='flex' padding={2} className='liquidityMain'>
+              <Box display='flex' width={0.5} className='liquidityFilter'>
                 <Typography
                   variant='body2'
                   className={liquidityFilterIndex === 0 ? 'active' : ''}

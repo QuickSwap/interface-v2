@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 import { Box, Typography, Divider } from '@material-ui/core';
 import { SwapHoriz } from '@material-ui/icons';
 import { Currency, Token } from '@uniswap/sdk';
@@ -9,35 +8,11 @@ import { unwrappedToken } from 'utils/wrappedCurrency';
 import Skeleton from '@material-ui/lab/Skeleton';
 import SwapInfoTx from './SwapInfoTx';
 
-const useStyles = makeStyles(({ palette }) => ({
-  success: {
-    color: palette.success.main,
-  },
-  danger: {
-    color: palette.error.main,
-  },
-  swapIcon: {
-    background: '#c5cbe0',
-    width: 16,
-    height: 16,
-    borderRadius: 7,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    color: 'black',
-    cursor: 'pointer',
-    '& svg': {
-      width: 14,
-    },
-  },
-}));
-
 const SwapProInfo: React.FC<{
   token1?: Token;
   token2?: Token;
   transactions?: any[];
 }> = ({ token1, token2, transactions }) => {
-  const classes = useStyles();
   const [token1Data, setToken1Data] = useState<any>(null);
   const [token2Data, setToken2Data] = useState<any>(null);
   const token1Address = token1?.address;
@@ -97,7 +72,7 @@ const SwapProInfo: React.FC<{
                 24h:{' '}
                 <span
                   className={
-                    priceUpPercent > 0 ? classes.success : classes.danger
+                    priceUpPercent > 0 ? 'text-success' : 'text-danger'
                   }
                 >
                   {formatNumber(priceUpPercent)}%
@@ -134,7 +109,7 @@ const SwapProInfo: React.FC<{
               <Typography variant='body2'>
                 {currency1.symbol} / {currency2.symbol}
               </Typography>
-              <Box className={classes.swapIcon}>
+              <Box className='swapIcon'>
                 <SwapHoriz />
               </Box>
             </Box>
