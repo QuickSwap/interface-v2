@@ -44,9 +44,9 @@
     height: 56px;
     font-size: 18px;
     font-weight: 600;
-    background-image: linear-gradient(to bottom, $primary $blue1);
+    background-image: linear-gradient(to bottom, $primary, $blue1);
     &.Mui-disabled {
-      background-image: linear-gradient(to bottom, $secondary1 $grey10);
+      background-image: linear-gradient(to bottom, $secondary1, $grey10);
       color: $textSecondary;
       opacity: 0.5;
     }

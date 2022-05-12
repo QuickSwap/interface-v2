@@ -1,41 +1,10 @@
 import React from 'react';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { Box, Typography } from '@material-ui/core';
 import Chart from 'react-apexcharts';
 import moment from 'moment';
 import { useIsDarkMode } from 'state/user/hooks';
 import { formatCompact, formatNumber } from 'utils';
-
-const useStyles = makeStyles(({ palette }) =>
-  createStyles({
-    chartContainer: {
-      flex: 1,
-      marginTop: -20,
-    },
-    categoryValues: {
-      display: 'flex',
-      justifyContent: 'space-between',
-      marginTop: -40,
-      marginRight: 8,
-      '& p': {
-        fontSize: 12,
-        color: palette.text.disabled,
-      },
-    },
-    yAxis: {
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'space-between',
-      marginLeft: 8,
-      marginBottom: 20,
-      '& p': {
-        fontSize: 10,
-        fontWeight: 500,
-        color: palette.text.disabled,
-      },
-    },
-  }),
-);
+import 'components/styles/AreaChart.scss';
 
 export interface AreaChartProps {
   backgroundColor?: string;
@@ -179,11 +148,9 @@ const AreaChart: React.FC<AreaChartProps> = ({
     },
   ];
 
-  const classes = useStyles();
-
   return (
     <Box display='flex' mt={2.5} width={width}>
-      <Box className={classes.chartContainer}>
+      <Box className='chartContainer'>
         <Chart
           options={options}
           series={series}
@@ -191,14 +158,14 @@ const AreaChart: React.FC<AreaChartProps> = ({
           width='100%'
           height={height}
         />
-        <Box className={classes.categoryValues}>
+        <Box className='categoryValues' mt={-5}>
           {categories.map((val, ind) => (
             <Typography key={ind}>{val}</Typography>
           ))}
         </Box>
       </Box>
       {yAxisValues && (
-        <Box className={classes.yAxis}>
+        <Box className='yAxis'>
           {yAxisValues.map((value, index) => (
             <Typography key={index}>
               $

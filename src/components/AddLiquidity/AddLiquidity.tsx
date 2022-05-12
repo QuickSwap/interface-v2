@@ -43,7 +43,6 @@ import {
 } from 'utils';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
 import { ReactComponent as AddLiquidityIcon } from 'assets/images/AddLiquidityIcon.svg';
-import 'components/styles/Swap.scss';
 
 const AddLiquidity: React.FC<{
   currency0?: Currency;
@@ -530,6 +529,7 @@ const AddLiquidity: React.FC<{
             </Box>
           )}
         <Button
+          fullWidth
           disabled={
             Boolean(account) &&
             (Boolean(error) ||

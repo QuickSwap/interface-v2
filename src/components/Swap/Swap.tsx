@@ -547,6 +547,7 @@ const Swap: React.FC<{
         {showApproveFlow && (
           <Box width='48%'>
             <Button
+              fullWidth
               color='primary'
               disabled={
                 approving ||
@@ -577,6 +578,7 @@ const Swap: React.FC<{
         )}
         <Box width={showApproveFlow ? '48%' : '100%'}>
           <Button
+            fullWidth
             disabled={swapButtonDisabled as boolean}
             onClick={account ? onSwap : connectWallet}
           >
