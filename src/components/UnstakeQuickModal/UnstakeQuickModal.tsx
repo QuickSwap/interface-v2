@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Box, Typography, Button } from '@material-ui/core';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { useTheme } from '@material-ui/core/styles';
 import { CustomModal, ColoredSlider, NumericalInput } from 'components';
 import { useLairInfo } from 'state/stake/hooks';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
@@ -9,27 +9,9 @@ import { useTransactionAdder } from 'state/transactions/hooks';
 import { useLairContract } from 'hooks/useContract';
 import Web3 from 'web3';
 import { formatTokenAmount } from 'utils';
+import 'components/styles/StakeModal.scss';
 
 const web3 = new Web3();
-
-const useStyles = makeStyles(({ palette }) => ({
-  stakeButton: {
-    backgroundImage:
-      'linear-gradient(104deg, #004ce6 -32%, #0098ff 54%, #00cff3 120%, #64fbd3 198%)',
-    backgroundColor: 'transparent',
-    height: 48,
-    width: '100%',
-    borderRadius: 10,
-    '& span': {
-      fontSize: 16,
-      fontWeight: 600,
-    },
-    '&.Mui-disabled': {
-      backgroundImage: 'none',
-      backgroundColor: palette.secondary.dark,
-    },
-  },
-}));
 
 interface UnstakeQuickModalProps {
   open: boolean;
@@ -40,7 +22,6 @@ const UnstakeQuickModal: React.FC<UnstakeQuickModalProps> = ({
   open,
   onClose,
 }) => {
-  const classes = useStyles();
   const { palette } = useTheme();
   const [attempting, setAttempting] = useState(false);
   const addTransaction = useTransactionAdder();
@@ -156,7 +137,7 @@ const UnstakeQuickModal: React.FC<UnstakeQuickModalProps> = ({
         </Box>
         <Box mt={3}>
           <Button
-            className={classes.stakeButton}
+            className='stakeButton'
             disabled={!!error || attempting}
             onClick={onWithdraw}
           >

@@ -3,31 +3,17 @@ import { useDispatch } from 'react-redux';
 import { useActiveWeb3React } from 'hooks';
 import { AppDispatch } from 'state';
 import { Box, Typography } from '@material-ui/core';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { useTheme } from '@material-ui/core/styles';
 import { clearAllTransactions } from 'state/transactions/actions';
 import { shortenAddress, getEtherscanLink } from 'utils';
 import { SUPPORTED_WALLETS } from 'constants/index';
 import { ReactComponent as Close } from 'assets/images/CloseIcon.svg';
 import { injected, walletlink, safeApp } from 'connectors';
 import { ExternalLink as LinkIcon } from 'react-feather';
+import 'components/styles/AccountDetails.scss';
 import StatusIcon from './StatusIcon';
 import Copy from './CopyHelper';
 import Transaction from './Transaction';
-
-const useStyles = makeStyles(({ palette }) => ({
-  addressLink: {
-    textDecoration: 'none',
-    display: 'flex',
-    alignItems: 'center',
-    color: palette.text.primary,
-    '& p': {
-      marginLeft: 4,
-    },
-    '&:hover': {
-      textDecoration: 'underline',
-    },
-  },
-}));
 
 function renderTransactions(transactions: string[]) {
   return (
@@ -55,7 +41,6 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
   openOptions,
 }) => {
   const { chainId, account, connector } = useActiveWeb3React();
-  const classes = useStyles();
   const { palette } = useTheme();
   const dispatch = useDispatch<AppDispatch>();
 
@@ -144,7 +129,7 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
           )}
           {chainId && account && (
             <a
-              className={classes.addressLink}
+              className='addressLink'
               href={
                 chainId &&
                 getEtherscanLink(

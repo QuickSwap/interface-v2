@@ -1,52 +1,19 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { Typography, Button, Box } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
 import { Skeleton } from '@material-ui/lab';
 import { isSupportedNetwork, addMaticToMetamask } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import { useWalletModalToggle } from 'state/application/hooks';
 
-const useStyles = makeStyles(({ palette }) => ({
-  heroSection: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    position: 'relative',
-    textAlign: 'center',
-    zIndex: 2,
-    '& h3': {
-      textTransform: 'uppercase',
-      marginBottom: 20,
-      paddingTop: 9,
-    },
-    '& h1': {
-      fontSize: '55px',
-      fontWeight: 700,
-    },
-    '& h5': {
-      fontSize: '15px',
-      color: palette.text.secondary,
-    },
-    '& > button': {
-      height: 56,
-      width: 194,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-  },
-}));
-
 export const HeroSection: React.FC<{ globalData: any }> = ({ globalData }) => {
-  const classes = useStyles();
   const history = useHistory();
   const { account } = useActiveWeb3React();
   const { ethereum } = window as any;
   const toggleWalletModal = useWalletModalToggle();
 
   return (
-    <Box className={classes.heroSection}>
+    <Box className='heroSection'>
       <Typography variant='body2' style={{ fontWeight: 'bold' }}>
         Total Value Locked
       </Typography>

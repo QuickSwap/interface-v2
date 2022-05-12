@@ -1,7 +1,7 @@
 import { Trade, TradeType } from '@uniswap/sdk';
 import React, { useState } from 'react';
 import { Box, Typography } from '@material-ui/core';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { useTheme } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { Field } from 'state/swap/actions';
 import { useUserSlippageTolerance } from 'state/user/hooks';
@@ -17,37 +17,6 @@ import {
 } from 'components';
 import { ReactComponent as EditIcon } from 'assets/images/EditIcon.svg';
 import { formatTokenAmount } from 'utils';
-
-const useStyles = makeStyles(({ palette }) => ({
-  summaryRow: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    margin: '8px 16px 0',
-    '& p': {
-      color: '#b6b9cc',
-    },
-    '& > div': {
-      display: 'flex',
-      alignItems: 'center',
-      '& > div': {
-        marginLeft: 4,
-      },
-    },
-  },
-  swapRoute: {
-    margin: '8px 0',
-    '& .header': {
-      display: 'flex',
-      alignItems: 'center',
-      '& p': {
-        fontSize: 16,
-        lineHeight: '28px',
-        marginRight: 4,
-      },
-    },
-  },
-}));
 
 interface TradeSummaryProps {
   trade: Trade;
@@ -70,7 +39,6 @@ export const TradeSummary: React.FC<TradeSummaryProps> = ({
     trade,
     allowedSlippage,
   );
-  const classes = useStyles();
   const tradeAmount = isExactIn ? trade.outputAmount : trade.inputAmount;
 
   return (
@@ -81,7 +49,7 @@ export const TradeSummary: React.FC<TradeSummaryProps> = ({
           onClose={() => setOpenSettingsModal(false)}
         />
       )}
-      <Box className={classes.summaryRow}>
+      <Box className='summaryRow'>
         <Box display='flex' alignItems='center'>
           <Typography variant='body2'>Slippage:</Typography>
           <QuestionHelper text={t('slippageHelper')} />
@@ -98,7 +66,7 @@ export const TradeSummary: React.FC<TradeSummaryProps> = ({
           <EditIcon style={{ marginLeft: 8 }} />
         </Box>
       </Box>
-      <Box className={classes.summaryRow}>
+      <Box className='summaryRow'>
         <Box display='flex' alignItems='center'>
           <Typography variant='body2'>
             {isExactIn ? t('minReceived') : t('maxSold')}:
@@ -123,14 +91,14 @@ export const TradeSummary: React.FC<TradeSummaryProps> = ({
           </Box>
         </Box>
       </Box>
-      <Box className={classes.summaryRow}>
+      <Box className='summaryRow'>
         <Box display='flex' alignItems='center'>
           <Typography variant='body2'>Price Impact:</Typography>
           <QuestionHelper text={t('priceImpactHelper')} />
         </Box>
         <FormattedPriceImpact priceImpact={priceImpactWithoutFee} />
       </Box>
-      <Box className={classes.summaryRow}>
+      <Box className='summaryRow'>
         <Box display='flex' alignItems='center'>
           <Typography variant='body2'>Liquidity Provider Fee:</Typography>
           <QuestionHelper text={t('liquidityProviderFeeHelper')} />
@@ -139,7 +107,7 @@ export const TradeSummary: React.FC<TradeSummaryProps> = ({
           {formatTokenAmount(realizedLPFee)} {trade.inputAmount.currency.symbol}
         </Typography>
       </Box>
-      <Box className={classes.summaryRow}>
+      <Box className='summaryRow'>
         <Box display='flex' alignItems='center'>
           <Typography variant='body2' style={{ marginRight: 4 }}>
             Route

@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 import { useHistory } from 'react-router-dom';
 import { Typography, Box, Grid, useMediaQuery } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
@@ -21,145 +20,13 @@ import { ReactComponent as YouTubeIcon } from 'assets/images/social/YouTube.svg'
 import { RewardSlider, TopMovers } from 'components';
 import { getEthPrice, getGlobalData } from 'utils';
 import { useGlobalData } from 'state/application/hooks';
+import 'pages/styles/landing.scss';
 import { HeroSection } from './HeroSection';
 import { TradingInfo } from './TradingInfo';
 import { SwapSection } from './SwapSection';
 import { BuyFiatSection } from './BuyFiatSection';
 
-const useStyles = makeStyles(({ palette, breakpoints }) => ({
-  tradingInfo: {
-    width: '100%',
-    position: 'relative',
-    zIndex: 2,
-    justifyContent: 'center',
-    [breakpoints.down('md')]: {
-      flexWrap: 'wrap',
-    },
-  },
-  quickInfo: {
-    textAlign: 'center',
-    margin: '128px auto 30px',
-    width: '100%',
-    maxWidth: 800,
-    '& h2': {
-      marginBottom: 60,
-    },
-  },
-  rewardsContainer: {
-    textAlign: 'center',
-    margin: '172px 0 100px 0',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    [breakpoints.down('xs')]: {
-      margin: '32px 0 64px',
-    },
-  },
-  featureHeading: {
-    margin: 'auto',
-    textAlign: 'center',
-    '& h3': {
-      color: 'rgba(255, 255, 255, 0.87)',
-      marginBottom: 32,
-    },
-  },
-  featureDivider: {
-    width: 32,
-    height: 2,
-    background: palette.success.dark,
-    margin: 'auto',
-  },
-  featureContainer: {
-    '& > div.MuiGrid-root': {
-      marginTop: 32,
-      '& > div': {
-        '& img': {
-          width: 150,
-          maxWidth: 240,
-        },
-        '& > div': {
-          width: 'calc(100% - 270px)',
-        },
-        [breakpoints.down('xs')]: {
-          flexDirection: 'column',
-          '& img, & > div': {
-            width: '100%',
-            textAlign: 'center',
-          },
-        },
-      },
-    },
-    '& .featureText': {
-      marginLeft: 8,
-      '& h3': {
-        color: 'white',
-        marginBottom: 8,
-      },
-    },
-  },
-  communityContainer: {
-    margin: '100px 0',
-    '& .socialContent': {
-      display: 'flex',
-      flexWrap: 'wrap',
-      alignItems: 'center',
-      justifyContent: 'center',
-      marginTop: 48,
-      '& > div': {
-        margin: 16,
-        textAlign: 'center',
-        width: 120,
-        '& a': {
-          textDecoration: 'none',
-          color: palette.text.primary,
-          '&:hover': {
-            color: 'white',
-            '& svg path': {
-              fill: 'white',
-            },
-          },
-        },
-        '& svg': {
-          width: 64,
-          height: 64,
-          '& path': {
-            fill: palette.text.primary,
-          },
-        },
-      },
-    },
-  },
-  smallCommunityContainer: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: '0 16px',
-    height: 56,
-    position: 'fixed',
-    bottom: 0,
-    right: 0,
-    borderTopLeftRadius: 24,
-    background: 'rgb(27, 32, 43, 0.9)',
-    backdropFilter: 'blur(30px)',
-    zIndex: 10,
-    '& svg': {
-      width: 32,
-      height: 32,
-      cursor: 'pointer',
-      '&:hover path': {
-        fill: palette.text.primary,
-      },
-      '& path': {
-        fill: palette.text.secondary,
-      },
-    },
-    [breakpoints.down('sm')]: {
-      display: 'none',
-    },
-  },
-}));
-
 const LandingPage: React.FC = () => {
-  const classes = useStyles();
   const { palette, breakpoints } = useTheme();
   const mobileWindowSize = useMediaQuery(breakpoints.down('sm'));
   const { t } = useTranslation();
@@ -254,10 +121,10 @@ const LandingPage: React.FC = () => {
       <Box margin={mobileWindowSize ? '64px 0' : '100px 0 80px'}>
         <HeroSection globalData={globalData} />
       </Box>
-      <Box className={classes.tradingInfo} display='flex'>
+      <Box className='tradingInfo' display='flex'>
         <TradingInfo globalData={globalData} />
       </Box>
-      <Box className={classes.smallCommunityContainer}>
+      <Box className='smallCommunityContainer'>
         {socialicons.map((val, ind) => (
           <a
             href={val.link}
@@ -274,14 +141,14 @@ const LandingPage: React.FC = () => {
       <Box mt={2} width={1}>
         <TopMovers background={palette.background.paper} />
       </Box>
-      <Box className={classes.quickInfo}>
+      <Box className='quickInfo'>
         <Typography style={{ fontSize: '24px' }}>
           {t('quickInfoTitle')}
         </Typography>
         <img src={Motif} alt='Motif' />
       </Box>
       <SwapSection />
-      <Box className={classes.rewardsContainer}>
+      <Box className='rewardsContainer'>
         <Box maxWidth='480px' width='100%'>
           <Typography variant='h4'>{t('earnRewardsbyDeposit')}</Typography>
           <Typography style={{ marginTop: '20px' }}>
@@ -307,10 +174,10 @@ const LandingPage: React.FC = () => {
         </Box>
       </Box>
       <BuyFiatSection />
-      <Box className={classes.featureContainer}>
-        <Box className={classes.featureHeading}>
+      <Box className='featureContainer'>
+        <Box className='featureHeading'>
           <Typography variant='h3'>{t('features')}</Typography>
-          <Box className={classes.featureDivider} />
+          <Box className='featureDivider' />
         </Box>
         <Grid container spacing={4}>
           {features.map((val, index) => (
@@ -324,10 +191,10 @@ const LandingPage: React.FC = () => {
           ))}
         </Grid>
       </Box>
-      <Box className={classes.communityContainer}>
-        <Box className={classes.featureHeading}>
+      <Box className='communityContainer'>
+        <Box className='featureHeading'>
           <Typography variant='h3'>{t('joinCommunity')}</Typography>
-          <Box className={classes.featureDivider} />
+          <Box className='featureDivider' />
         </Box>
         <Box className='socialContent'>
           {socialicons.map((val, ind) => (

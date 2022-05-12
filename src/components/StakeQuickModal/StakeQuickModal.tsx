@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Box, Typography, Button } from '@material-ui/core';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { useTheme } from '@material-ui/core/styles';
 import { TransactionResponse } from '@ethersproject/providers';
 import { CustomModal, ColoredSlider, NumericalInput } from 'components';
 import { useDerivedLairInfo } from 'state/stake/hooks';
@@ -15,25 +15,7 @@ import {
   useTransactionFinalizer,
 } from 'state/transactions/hooks';
 import { formatTokenAmount, returnTokenFromKey } from 'utils';
-
-const useStyles = makeStyles(({ palette }) => ({
-  stakeButton: {
-    backgroundImage:
-      'linear-gradient(104deg, #004ce6 -32%, #0098ff 54%, #00cff3 120%, #64fbd3 198%)',
-    backgroundColor: 'transparent',
-    height: 48,
-    width: '48%',
-    borderRadius: 10,
-    '& span': {
-      fontSize: 16,
-      fontWeight: 600,
-    },
-    '&.Mui-disabled': {
-      backgroundImage: 'none',
-      backgroundColor: palette.secondary.dark,
-    },
-  },
-}));
+import 'components/styles/StakeModal.scss';
 
 interface StakeQuickModalProps {
   open: boolean;
@@ -41,7 +23,6 @@ interface StakeQuickModalProps {
 }
 
 const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
-  const classes = useStyles();
   const { palette } = useTheme();
   const [attempting, setAttempting] = useState(false);
   const { account } = useActiveWeb3React();
@@ -199,7 +180,7 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
           alignItems='center'
         >
           <Button
-            className={classes.stakeButton}
+            className='stakeButton'
             disabled={approving || approval !== ApprovalState.NOT_APPROVED}
             onClick={async () => {
               setApproving(true);
@@ -214,7 +195,7 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
             {approving ? 'Approving...' : 'Approve'}
           </Button>
           <Button
-            className={classes.stakeButton}
+            className='stakeButton'
             disabled={
               !!error || attempting || approval !== ApprovalState.APPROVED
             }

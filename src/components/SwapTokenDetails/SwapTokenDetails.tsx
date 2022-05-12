@@ -1,8 +1,8 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box, Grid, Typography } from '@material-ui/core';
 import Skeleton from '@material-ui/lab/Skeleton';
 import { ArrowDropUp, ArrowDropDown } from '@material-ui/icons';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { useTheme } from '@material-ui/core/styles';
 import { CurrencyLogo } from 'components';
 import { useBlockNumber, useTokenDetails } from 'state/application/hooks';
 import useCopyClipboard from 'hooks/useCopyClipboard';
@@ -20,19 +20,9 @@ import { Token } from '@uniswap/sdk';
 import dayjs from 'dayjs';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 
-const useStyles = makeStyles(({ palette }) => ({
-  success: {
-    color: palette.success.main,
-  },
-  danger: {
-    color: palette.error.main,
-  },
-}));
-
 const SwapTokenDetails: React.FC<{
   token: Token;
 }> = ({ token }) => {
-  const classes = useStyles();
   const currency = unwrappedToken(token);
   const tokenAddress = token.address;
   const { palette } = useTheme();
@@ -104,7 +94,7 @@ const SwapTokenDetails: React.FC<{
                   ml={0.5}
                   display='flex'
                   alignItems='center'
-                  className={priceUp ? classes.success : classes.danger}
+                  className={priceUp ? 'text-success' : 'text-danger'}
                 >
                   {priceUp ? <ArrowDropUp /> : <ArrowDropDown />}
                   <Typography variant='body2'>{priceUpPercent}%</Typography>
