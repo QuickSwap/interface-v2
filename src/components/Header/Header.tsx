@@ -18,6 +18,7 @@ import QuickLogo from 'assets/images/quickLogo.png';
 import { ReactComponent as ThreeDotIcon } from 'assets/images/ThreeDot.svg';
 import { ReactComponent as LightIcon } from 'assets/images/LightIcon.svg';
 import WalletIcon from 'assets/images/WalletIcon.png';
+import styled from 'styled-components';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   header: {
@@ -228,6 +229,18 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
   },
 }));
 
+const StyledPollingDot = styled.div`
+  width: 15px;
+  height: 15px;
+  min-height: 8px;
+  min-width: 8px;
+  margin-left: 0rem;
+  margin-top: 0px;
+  border-radius: 50%;
+  position: relative;
+  background-color: ${({ theme }) => theme.green1};
+`;
+
 const newTransactionsFirst = (a: TransactionDetails, b: TransactionDetails) => {
   return b.addedTime - a.addedTime;
 };
@@ -421,13 +434,14 @@ const Header: React.FC = () => {
       )}
       <Box>
         <Box
-          width={36}
+          width={45}
           height={36}
           display='flex'
           alignItems='center'
           justifyContent='center'
           marginRight={1}
         >
+          <StyledPollingDot></StyledPollingDot>
           <LightIcon />
         </Box>
         {account && (!ethereum || isSupportedNetwork(ethereum)) ? (
