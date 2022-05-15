@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import {
   Box,
   Grid,
@@ -13,73 +12,9 @@ import {
   TableSortLabel,
   CircularProgress,
 } from '@material-ui/core';
-
 import { SortOrder, getComparator, stableSort } from './sort';
-import cx from 'classnames';
+import 'components/styles/DataTable.scss';
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    table: {
-      width: '100%',
-    },
-    visuallyHidden: {
-      border: 0,
-      clip: 'rect(0 0 0 0)',
-      height: 1,
-      margin: -1,
-      overflow: 'hidden',
-      padding: 0,
-      position: 'absolute',
-      top: 20,
-      width: 1,
-    },
-    label: {
-      whiteSpace: (props: any) => {
-        return props.isSinglelineHeader ? 'nowrap' : 'initial';
-      },
-    },
-    sortIcon: {
-      marginLeft: 4,
-      display: 'flex',
-      alignItems: 'center',
-      '& svg': {
-        width: 16,
-        '& path': {
-          stroke: theme.palette.text.secondary,
-        },
-      },
-    },
-    headCellLabel: {
-      color: theme.palette.text.secondary,
-      display: 'flex',
-      alignItems: 'center',
-      fontSize: 14,
-      '& svg': {
-        marginLeft: 3,
-        width: 16,
-        '& path': {
-          fill: theme.palette.text.secondary,
-        },
-      },
-    },
-    sortRequestedHeadLabel: {
-      color: theme.palette.primary.main,
-      '& svg path': {
-        fill: theme.palette.primary.main,
-      },
-    },
-    sortRequestedIcon: {
-      '& svg path': {
-        stroke: theme.palette.primary.main,
-      },
-    },
-    tablePagination: {
-      '& svg path': {
-        fill: theme.palette.primary.main,
-      },
-    },
-  }),
-);
 export interface HeadCell<T> {
   id: string;
   label: React.ReactNode | string;
@@ -133,7 +68,6 @@ const DataTable: React.FC<DataTableProps<any>> = ({
   showEmptyRows = true,
   showPagination,
 }) => {
-  const classes = useStyles({ isSinglelineHeader });
   const [order, setOrder] = useState<SortOrder>(defaultOrder);
   const [orderBy, setOrderBy] = useState<HeadCell<any>>(defaultOrderBy);
   const [page, setPage] = useState(0);
@@ -164,12 +98,12 @@ const DataTable: React.FC<DataTableProps<any>> = ({
     rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage);
 
   return (
-    <Box>
+    <Box className='datatableWrapper'>
       {toolbar}
 
       <TableContainer>
         <Table
-          className={classes.table}
+          className='table'
           aria-labelledby='tableTitle'
           size='medium'
           aria-label='enhanced table'
@@ -189,27 +123,29 @@ const DataTable: React.FC<DataTableProps<any>> = ({
                     <Grid
                       container
                       alignItems='center'
-                      className={classes.label}
+                      style={{
+                        whiteSpace: isSinglelineHeader ? 'nowrap' : 'initial',
+                      }}
                       onClick={(event: any) =>
                         handleRequestSort(event, headCell)
                       }
                     >
                       <Box
-                        className={cx(
-                          classes.headCellLabel,
-                          orderBy.id === headCell.id &&
-                            classes.sortRequestedHeadLabel,
-                        )}
+                        className={`headCellLabel${
+                          orderBy.id === headCell.id
+                            ? ' sortRequestedHeadLabel'
+                            : ''
+                        }`}
                       >
                         {headCell.label}
                       </Box>
                       {!headCell.sortDisabled && (
                         <Box
-                          className={cx(
-                            classes.sortIcon,
-                            orderBy.id === headCell.id &&
-                              classes.sortRequestedIcon,
-                          )}
+                          className={`sortIcon${
+                            orderBy.id === headCell.id
+                              ? ' sortRequestedIcon'
+                              : ''
+                          }`}
                         >
                           {order === 'asc' && orderBy.id === headCell.id
                             ? sortUpIcon
@@ -219,7 +155,9 @@ const DataTable: React.FC<DataTableProps<any>> = ({
                     </Grid>
                   ) : (
                     <TableSortLabel
-                      className={classes.label}
+                      style={{
+                        whiteSpace: isSinglelineHeader ? 'nowrap' : 'initial',
+                      }}
                       active={orderBy.id === headCell.id}
                       direction={orderBy.id === headCell.id ? order : 'asc'}
                       onClick={(event: any) =>
@@ -228,7 +166,7 @@ const DataTable: React.FC<DataTableProps<any>> = ({
                     >
                       {headCell.label}
                       {orderBy.id === headCell.id ? (
-                        <span className={classes.visuallyHidden}>
+                        <span className='visuallyHidden'>
                           {order === 'desc'
                             ? 'sorted descending'
                             : 'sorted ascending'}
@@ -285,7 +223,7 @@ const DataTable: React.FC<DataTableProps<any>> = ({
       {showPagination && (
         <TablePagination
           rowsPerPageOptions={[5, 10, 25, 50]}
-          className={classes.tablePagination}
+          className='tablePagination'
           component='div'
           count={count}
           rowsPerPage={rowsPerPage}

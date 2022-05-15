@@ -1,37 +1,13 @@
 import React from 'react';
 import { Box, Typography, useMediaQuery } from '@material-ui/core';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { useTheme } from '@material-ui/core/styles';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon2.svg';
 import Moonpay from 'assets/images/Moonpay.svg';
 import Transak from 'assets/images/Transak.png';
 import { CustomModal } from 'components';
 import { useActiveWeb3React, useInitTransak } from 'hooks';
-
-const useStyles = makeStyles(({ palette }) => ({
-  paymentBox: {
-    marginTop: 24,
-    border: `1px solid ${palette.secondary.dark}`,
-    padding: '32px 24px',
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    borderRadius: 8,
-    '& img': {
-      width: 132,
-    },
-  },
-  buyButton: {
-    width: 104,
-    height: 36,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 18,
-    background: palette.primary.main,
-    cursor: 'pointer',
-  },
-}));
+import 'components/styles/BuyFiatModal.scss';
 
 interface BuyFiatModalProps {
   open: boolean;
@@ -44,7 +20,6 @@ const BuyFiatModal: React.FC<BuyFiatModalProps> = ({
   onClose,
   buyMoonpay,
 }) => {
-  const classes = useStyles();
   const { account } = useActiveWeb3React();
   const { breakpoints } = useTheme();
   const mobileWindowSize = useMediaQuery(breakpoints.down('sm'));
@@ -59,16 +34,16 @@ const BuyFiatModal: React.FC<BuyFiatModalProps> = ({
           </Typography>
           <CloseIcon style={{ cursor: 'pointer' }} onClick={onClose} />
         </Box>
-        <Box className={classes.paymentBox}>
+        <Box className='paymentBox'>
           <img src={Moonpay} alt='moonpay' />
-          <Box className={classes.buyButton} onClick={buyMoonpay}>
+          <Box className='buyButton' onClick={buyMoonpay}>
             Buy
           </Box>
         </Box>
-        <Box className={classes.paymentBox}>
+        <Box className='paymentBox'>
           <img src={Transak} alt='transak' />
           <Box
-            className={classes.buyButton}
+            className='buyButton'
             onClick={() => {
               onClose();
               initTransak(account, mobileWindowSize);

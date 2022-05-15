@@ -1,21 +1,7 @@
 import React from 'react';
 import { Box, Typography } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-
-const useStyles = makeStyles(({ palette }) => ({
-  chartType: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: 20,
-    padding: '0 8px',
-    borderRadius: 10,
-    cursor: 'pointer',
-    '& span': {
-      color: palette.text.primary,
-    },
-  },
-}));
+import 'components/styles/ChartType.scss';
 
 interface ChartTypeProps {
   typeTexts: string[];
@@ -30,7 +16,6 @@ const ChartType: React.FC<ChartTypeProps> = ({
   chartType,
   setChartType,
 }) => {
-  const classes = useStyles();
   const { palette } = useTheme();
 
   return (
@@ -38,7 +23,7 @@ const ChartType: React.FC<ChartTypeProps> = ({
       {chartTypes.map((value, index) => (
         <Box
           key={index}
-          className={classes.chartType}
+          className='chartType'
           bgcolor={chartType === value ? palette.grey.A400 : 'transparent'}
           onClick={() => setChartType(value)}
         >

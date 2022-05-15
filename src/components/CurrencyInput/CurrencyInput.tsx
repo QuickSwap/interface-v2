@@ -1,72 +1,13 @@
 import React, { useCallback, useState } from 'react';
 import { Currency } from '@uniswap/sdk';
 import { Box, Typography } from '@material-ui/core';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { useTheme } from '@material-ui/core/styles';
 import { useCurrencyBalance } from 'state/wallet/hooks';
-import cx from 'classnames';
 import { CurrencySearchModal, CurrencyLogo, NumericalInput } from 'components';
 import { useActiveWeb3React } from 'hooks';
 import useUSDCPrice from 'utils/useUSDCPrice';
 import { formatTokenAmount } from 'utils';
-
-const useStyles = makeStyles(({ palette, breakpoints }) => ({
-  swapBox: {
-    padding: 16,
-    borderRadius: 10,
-    zIndex: 1,
-    position: 'relative',
-    textAlign: 'left',
-    '& > p': {
-      fontSize: 14,
-      marginBottom: 16,
-    },
-    '& > div': {
-      display: 'flex',
-      alignItems: 'center',
-      '& .inputWrapper': {
-        flex: 1,
-        position: 'relative',
-        paddingLeft: 8,
-      },
-      '& .maxWrapper': {
-        paddingLeft: 8,
-        cursor: 'pointer',
-        '& p': {
-          color: palette.primary.main,
-          fontWeight: 600,
-        },
-      },
-    },
-    [breakpoints.down('xs')]: {
-      padding: 12,
-    },
-  },
-  priceShowBox: {
-    borderBottomLeftRadius: 0,
-    borderBottomRightRadius: 0,
-  },
-  currencyButton: {
-    display: 'flex',
-    alignItems: 'center',
-    cursor: 'pointer',
-    padding: '6px 12px',
-    borderRadius: 38,
-    '& p': {
-      marginLeft: 4,
-    },
-  },
-  noCurrency: {
-    backgroundImage: `linear-gradient(105deg, ${palette.primary.main} 3%, #004ce6)`,
-  },
-  currencySelected: {
-    backgroundColor: '#404557',
-  },
-  balanceSection: {
-    '& p': {
-      color: palette.text.secondary,
-    },
-  },
-}));
+import 'components/styles/CurrencyInput.scss';
 
 interface CurrencyInputProps {
   title?: string;
@@ -99,7 +40,6 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
   bgColor,
   id,
 }) => {
-  const classes = useStyles();
   const { palette } = useTheme();
   const [modalOpen, setModalOpen] = useState(false);
   const { account } = useActiveWeb3React();
@@ -116,7 +56,7 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
   return (
     <Box
       id={id}
-      className={cx(classes.swapBox, showPrice && classes.priceShowBox)}
+      className={`swapBox${showPrice ? ' priceShowBox' : ''}`}
       bgcolor={bgColor ?? palette.secondary.dark}
     >
       <Box display='flex' justifyContent='space-between' mb={2}>
@@ -136,10 +76,9 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
       </Box>
       <Box mb={2}>
         <Box
-          className={cx(
-            classes.currencyButton,
-            currency ? classes.currencySelected : classes.noCurrency,
-          )}
+          className={`currencyButton ${
+            currency ? 'currencySelected' : 'noCurrency'
+          }`}
           onClick={handleOpenModal}
         >
           {currency ? (
@@ -168,7 +107,7 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
       <Box
         display='flex'
         justifyContent='space-between'
-        className={classes.balanceSection}
+        className='balanceSection'
       >
         <Typography variant='body2'>
           Balance: {formatTokenAmount(selectedCurrencyBalance)}

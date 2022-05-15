@@ -1,19 +1,12 @@
 import { Currency, ETHER, Token } from '@uniswap/sdk';
 import React, { useMemo } from 'react';
 import { Box } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
 import EthereumLogo from 'assets/images/Currency/PolygonSwap.svg';
 import useHttpLocations from 'hooks/useHttpLocations';
 import { WrappedTokenInfo } from 'state/lists/hooks';
 import { Logo } from 'components';
 import { getTokenLogoURL } from 'utils/getTokenLogoURL';
-
-const useStyles = makeStyles(({}) => ({
-  logoStyled: {
-    boxShadow: '0px 6px 10px rgba(0, 0, 0, 0.075)',
-    borderRadius: 24,
-  },
-}));
+import 'components/styles/CurrencyLogo.scss';
 
 interface CurrencyLogoProps {
   currency?: Currency;
@@ -26,7 +19,6 @@ const CurrencyLogo: React.FC<CurrencyLogoProps> = ({
   size = '24px',
   style,
 }) => {
-  const classes = useStyles();
   const uriLocations = useHttpLocations(
     currency instanceof WrappedTokenInfo ? currency.logoURI : undefined,
   );
@@ -54,7 +46,7 @@ const CurrencyLogo: React.FC<CurrencyLogoProps> = ({
         overflow='hidden'
       >
         <img
-          className={classes.logoStyled}
+          className='logoStyled'
           style={{ width: size, height: size }}
           src={EthereumLogo}
           alt='Ethereum Logo'

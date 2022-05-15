@@ -2,7 +2,6 @@ import React, { memo, useCallback, useMemo, useState } from 'react';
 import { ArrowLeft } from 'react-feather';
 import ReactGA from 'react-ga';
 import { Box, Typography, Button, Popover, Divider } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
 import { useDispatch, useSelector } from 'react-redux';
 import { ReactComponent as DropDown } from 'assets/images/dropdown.svg';
 import { useFetchListCallback } from 'hooks/useFetchListCallback';
@@ -15,126 +14,6 @@ import listVersionLabel from 'utils/listVersionLabel';
 import { parseENSAddress } from 'utils/parseENSAddress';
 import uriToHttp from 'utils/uriToHttp';
 import { QuestionHelper, ListLogo } from 'components';
-
-const useStyles = makeStyles(({ palette }) => ({
-  popoverWrapper: {
-    zIndex: 100,
-    boxShadow:
-      '0px 0px 1px rgba(0, 0, 0, 0.01), 0px 4px 8px rgba(0, 0, 0, 0.04), 0px 16px 24px rgba(0, 0, 0, 0.04), 0px 24px 32px rgba(0, 0, 0, 0.01)',
-    color: 'black',
-    borderRadius: 12,
-    padding: 16,
-    '& p': {
-      fontSize: 18,
-      marginBottom: 4,
-    },
-    '& > div': {
-      display: 'flex',
-      flexDirection: 'column',
-      marginTop: 8,
-      '& a, & button': {
-        fontSize: 16,
-        fontWeight: 400,
-      },
-      '& a': {
-        textDecoration: 'none',
-        color: palette.primary.main,
-      },
-      '& button': {
-        background: 'transparent',
-        color: 'black',
-        padding: 0,
-        marginTop: 6,
-      },
-    },
-  },
-  styledMenu: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    position: 'relative',
-    border: 'none',
-    '& > div:first-child': {
-      cursor: 'pointer',
-      width: 32,
-      height: 32,
-      borderRadius: 8,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      border: `1px solid ${palette.divider}`,
-      marginRight: 8,
-    },
-  },
-  styledListUrlText: {
-    maxWidth: 160,
-    opacity: 0.6,
-    marginRight: '0.5rem',
-    fontSize: 14,
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-  },
-  manageList: {
-    '& p': {
-      color: 'black',
-    },
-    '& .header': {
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      padding: '12px 16px',
-      '& svg': {
-        stroke: 'black',
-        width: 24,
-        height: 24,
-      },
-      '& p': {
-        fontSize: 18,
-      },
-    },
-    '& .content': {
-      padding: '12px 16px',
-      '& > div': {
-        display: 'flex',
-        '&:first-child': {
-          alignItems: 'center',
-          '& p': {
-            marginRight: 8,
-          },
-        },
-        '&:nth-child(2)': {
-          marginTop: 8,
-          '& input': {
-            flex: 1,
-            marginRight: 8,
-            border: `1px solid ${palette.divider}`,
-            fontSize: 16,
-            outline: 'none',
-          },
-        },
-        '& > div': {
-          background: 'transparent',
-        },
-        '& svg': {
-          fill: 'white',
-          stroke: 'black',
-        },
-      },
-    },
-  },
-  listRow: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: '12px 16px',
-    '& .listname': {
-      flex: 1,
-      marginLeft: 8,
-      '& div': {
-        color: '#999',
-      },
-    },
-  },
-}));
 
 function ListOrigin({ listUrl }: { listUrl: string }) {
   const ensName = useMemo(() => parseENSAddress(listUrl)?.ensName, [listUrl]);
@@ -168,7 +47,6 @@ const ListRow = memo(function ListRow({
   listUrl: string;
   onBack: () => void;
 }) {
-  const classes = useStyles();
   const listsByUrl = useSelector<AppState, AppState['lists']['byUrl']>(
     (state) => state.lists.byUrl,
   );
@@ -224,11 +102,7 @@ const ListRow = memo(function ListRow({
   if (!list) return null;
 
   return (
-    <Box
-      className={classes.listRow}
-      key={listUrl}
-      id={listUrlRowHTMLId(listUrl)}
-    >
+    <Box className='listRow' key={listUrl} id={listUrlRowHTMLId(listUrl)}>
       {list.logoURI ? (
         <ListLogo logoURI={list.logoURI} alt={`${list.name} list logo`} />
       ) : (
@@ -236,11 +110,11 @@ const ListRow = memo(function ListRow({
       )}
       <Box className='listname'>
         <Typography>{list.name}</Typography>
-        <Box className={classes.styledListUrlText} title={listUrl}>
+        <Box className='styledListUrlText' title={listUrl}>
           <ListOrigin listUrl={listUrl} />
         </Box>
       </Box>
-      <div className={classes.styledMenu}>
+      <div className='styledMenu'>
         <Box
           onClick={(evt) => {
             setAnchorEl(evt.currentTarget);
@@ -256,7 +130,7 @@ const ListRow = memo(function ListRow({
           anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
           transformOrigin={{ vertical: 'top', horizontal: 'center' }}
         >
-          <Box className={classes.popoverWrapper}>
+          <Box className='popoverWrapper'>
             <Typography>{list && listVersionLabel(list.version)}</Typography>
             <Divider />
             <Box>
@@ -307,7 +181,6 @@ interface ListSelectProps {
 }
 
 const ListSelect: React.FC<ListSelectProps> = ({ onDismiss, onBack }) => {
-  const classes = useStyles();
   const [listUrlInput, setListUrlInput] = useState<string>('');
 
   const dispatch = useDispatch<AppDispatch>();
@@ -385,7 +258,7 @@ const ListSelect: React.FC<ListSelectProps> = ({ onDismiss, onBack }) => {
   }, [lists]);
 
   return (
-    <Box className={classes.manageList}>
+    <Box className='manageList'>
       <Box className='header'>
         <ArrowLeft onClick={onBack} />
         <Typography>Manage Lists</Typography>

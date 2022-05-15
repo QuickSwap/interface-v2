@@ -1,0 +1,7 @@
+@use 'styles/variables' as *;
+@use 'styles/breakpoints' as *;
+
+.logoStyled {
+  box-shadow: 0px 6px 10px $grey13;
+  border-radius: 24px;
+}

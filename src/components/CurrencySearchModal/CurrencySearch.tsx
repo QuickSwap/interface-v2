@@ -10,7 +10,6 @@ import React, {
 } from 'react';
 import ReactGA from 'react-ga';
 import { Box, Typography, Divider } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { FixedSizeList } from 'react-window';
@@ -30,84 +29,6 @@ import { filterTokens } from 'utils/filtering';
 import { useTokenComparator } from 'utils/sorting';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 
-const useStyles = makeStyles(({ palette, breakpoints }) => ({
-  wrapper: {
-    padding: '32px 24px 0',
-    height: '90vh',
-    borderRadius: 20,
-    display: 'flex',
-    flexDirection: 'column',
-    background: palette.background.paper,
-    backdropFilter: 'blur(9.9px)',
-    border: `1px solid ${palette.grey.A400}`,
-    [breakpoints.down('xs')]: {
-      height: '90vh',
-    },
-  },
-  header: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    margin: '6px',
-    '& svg': {
-      fill: '#686c80',
-      cursor: 'pointer',
-    },
-    '& h6': {
-      color: palette.text.primary,
-      fontWeight: 600,
-    },
-  },
-  searchInputWrapper: {
-    width: '100%',
-    height: 50,
-    display: 'flex',
-    alignItems: 'center',
-    padding: '0 12px',
-    margin: '12px 0',
-    fontSize: 16,
-    borderRadius: 12,
-    outline: 'none',
-    border: 'solid 2px rgba(105, 108, 128, 0.12)',
-    backgroundColor: palette.background.default,
-    '& svg': {
-      marginRight: 12,
-    },
-    '& input': {
-      background: 'transparent',
-      flex: 1,
-      boxShadow: 'none',
-      border: 'none',
-      outline: 'none',
-      fontSize: 14,
-      fontWeight: 500,
-      color: palette.text.secondary,
-      fontFamily: "'Inter', sans-serif",
-    },
-  },
-  footer: {
-    backgroundImage: `linear-gradient(to bottom, rgba(27, 30, 41, 0), ${palette.background.paper} 64%)`,
-    width: '100%',
-    height: 64,
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    zIndex: 2,
-    borderRadius: 20,
-  },
-  currencyListWrapper: {
-    flex: 1,
-    overflowY: 'auto',
-    marginTop: 16,
-    '& .MuiListItem-root': {
-      padding: 6,
-      '&.Mui-selected, &:hover': {
-        background: 'none',
-      },
-    },
-  },
-}));
-
 interface CurrencySearchProps {
   isOpen: boolean;
   onDismiss: () => void;
@@ -126,7 +47,6 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
   onDismiss,
   isOpen,
 }) => {
-  const classes = useStyles();
   const { t } = useTranslation();
   const { account, chainId } = useActiveWeb3React();
   const dispatch = useDispatch<AppDispatch>();
@@ -237,12 +157,12 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
   selectedListInfo = useSelectedListInfo();
 
   return (
-    <Box className={classes.wrapper}>
-      <Box className={classes.header}>
+    <Box className='currencySearchWrapper'>
+      <Box className='header'>
         <Typography variant='subtitle2'>Select a token</Typography>
         <CloseIcon onClick={onDismiss} />
       </Box>
-      <Box className={classes.searchInputWrapper}>
+      <Box className='searchInputWrapper'>
         <SearchIcon />
         <input
           type='text'
@@ -279,7 +199,7 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
         </AutoSizer>
       </Box>
 
-      <Box className={classes.footer} />
+      <Box className='footer' />
     </Box>
   );
 };

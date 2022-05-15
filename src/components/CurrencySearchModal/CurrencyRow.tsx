@@ -7,7 +7,7 @@ import {
   CircularProgress,
   ListItem,
 } from '@material-ui/core';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { useTheme } from '@material-ui/core/styles';
 import { useActiveWeb3React } from 'hooks';
 import { WrappedTokenInfo } from 'state/lists/hooks';
 import { useAddUserToken, useRemoveUserAddedToken } from 'state/user/hooks';
@@ -28,46 +28,6 @@ function currencyKey(currency: Token): string {
     : '';
 }
 
-const useStyles = makeStyles(({ palette }) => ({
-  tag: {
-    fontSize: 14,
-    borderRadius: 4,
-    padding: '0.25rem 0.3rem 0.25rem 0.3rem',
-    maxWidth: '6rem',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap',
-  },
-  currencyRow: {
-    width: '100%',
-    background: 'transparent',
-    display: 'flex',
-    alignItems: 'center',
-    '& > p': {
-      margin: '0 4px',
-    },
-    '& button': {
-      background: 'transparent',
-      padding: 0,
-      minWidth: 'unset',
-      '& svg': {
-        fill: 'white',
-        stroke: 'black',
-      },
-      '& div': {
-        background: 'transparent',
-      },
-    },
-  },
-  currencySymbol: {
-    color: palette.text.primary,
-    lineHeight: 1,
-  },
-  currencyName: {
-    color: palette.text.secondary,
-  },
-}));
-
 function Balance({ balance }: { balance: CurrencyAmount }) {
   const { palette } = useTheme();
   return (
@@ -82,7 +42,6 @@ function Balance({ balance }: { balance: CurrencyAmount }) {
 }
 
 function TokenTags({ currency }: { currency: Token }) {
-  const classes = useStyles();
   if (!(currency instanceof WrappedTokenInfo)) {
     return <span />;
   }
@@ -95,7 +54,7 @@ function TokenTags({ currency }: { currency: Token }) {
   return (
     <Box>
       <Tooltip title={tag.description}>
-        <Box className={classes.tag} key={tag.id}>
+        <Box className='tag' key={tag.id}>
           {tag.name}
         </Box>
       </Tooltip>
@@ -106,7 +65,7 @@ function TokenTags({ currency }: { currency: Token }) {
             .map(({ name, description }) => `${name}: ${description}`)
             .join('; \n')}
         >
-          <Box className={classes.tag}>...</Box>
+          <Box className='tag'>...</Box>
         </Tooltip>
       ) : null}
     </Box>
@@ -131,7 +90,6 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
   isOnSelectedList,
 }) => {
   const { ethereum } = window as any;
-  const classes = useStyles();
   const { palette } = useTheme();
   const { account, chainId } = useActiveWeb3React();
   const key = currencyKey(currency);
@@ -190,12 +148,12 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
         if (!isSelected && !otherSelected) onSelect();
       }}
     >
-      <Box className={classes.currencyRow}>
+      <Box className='currencyRow'>
         {(otherSelected || isSelected) && <TokenSelectedIcon />}
         <CurrencyLogo currency={currency} size={'32px'} />
         <Box ml={1} height={32}>
           <Box display='flex' alignItems='center'>
-            <Typography variant='body2' className={classes.currencySymbol}>
+            <Typography variant='body2' className='currencySymbol'>
               {currency.symbol}
             </Typography>
             {isMetamask && currency !== ETHER && (
@@ -216,7 +174,7 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
             )}
           </Box>
           {isOnSelectedList ? (
-            <Typography variant='caption' className={classes.currencyName}>
+            <Typography variant='caption' className='currencyName'>
               {currency.name}
             </Typography>
           ) : (
