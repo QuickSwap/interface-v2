@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Typography, Divider } from '@material-ui/core';
+import { Box, Divider } from '@material-ui/core';
 import { ButtonSwitch } from 'components';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
@@ -42,55 +42,49 @@ const SwapInfoTx: React.FC<{
       />
       <Box pt={1} px={1}>
         <Box py={1} display='flex' justifyContent='space-between'>
-          <Typography variant='body2' color='textSecondary'>
-            Transactions:
-          </Typography>
+          <small className='text-secondary'>Transactions:</small>
           {filteredTxs ? (
-            <Typography variant='body2'>{filteredTxs.length}</Typography>
+            <small>{filteredTxs.length}</small>
           ) : (
             <Skeleton width={60} height={14} />
           )}
         </Box>
         <Divider />
         <Box py={1} display='flex' justifyContent='space-between'>
-          <Typography variant='body2' color='textSecondary'>
-            Buys:
-          </Typography>
-          <Typography variant='body2'>
+          <small className='text-secondary'>Buys:</small>
+          <small>
             {filteredBuyTxs ? (
-              <Typography variant='body2'>{filteredBuyTxs.length}</Typography>
+              filteredBuyTxs.length
             ) : (
               <Skeleton width={60} height={14} />
             )}
-          </Typography>
+          </small>
         </Box>
         <Divider />
         <Box py={1} display='flex' justifyContent='space-between'>
-          <Typography variant='body2' color='textSecondary'>
-            Sells:
-          </Typography>
-          <Typography variant='body2'>
+          <small className='text-secondary'>Sells:</small>
+          <small>
             {filteredSellTxs ? (
-              <Typography variant='body2'>{filteredSellTxs.length}</Typography>
+              filteredSellTxs.length
             ) : (
               <Skeleton width={60} height={14} />
             )}
-          </Typography>
+          </small>
         </Box>
         <Divider />
         <Box pt={1} display='flex' justifyContent='space-between'>
-          <Typography variant='body2' color='textSecondary'>
-            Volume:
-          </Typography>
-          <Typography variant='body2'>
+          <small className='text-secondary'>Volume:</small>
+          <small>
             {filteredTxs ? (
-              <Typography variant='body2'>
-                ${volume > 1000 ? formatCompact(volume) : formatNumber(volume)}
-              </Typography>
+              volume > 1000 ? (
+                formatCompact(volume)
+              ) : (
+                formatNumber(volume)
+              )
             ) : (
               <Skeleton width={60} height={14} />
             )}
-          </Typography>
+          </small>
         </Box>
       </Box>
     </>

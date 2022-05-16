@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import Chart from 'react-apexcharts';
 import moment from 'moment';
 import { useIsDarkMode } from 'state/user/hooks';
@@ -160,18 +160,18 @@ const AreaChart: React.FC<AreaChartProps> = ({
         />
         <Box className='categoryValues' mt={-5}>
           {categories.map((val, ind) => (
-            <Typography key={ind}>{val}</Typography>
+            <p key={ind}>{val}</p>
           ))}
         </Box>
       </Box>
       {yAxisValues && (
         <Box className='yAxis'>
           {yAxisValues.map((value, index) => (
-            <Typography key={index}>
+            <p key={index}>
               $
               {// this is to show small numbers less than 0.0001
               value > 0.0001 ? formatCompact(value) : formatNumber(value)}
-            </Typography>
+            </p>
           ))}
         </Box>
       )}

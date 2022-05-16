@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState, useMemo } from 'react';
-import { Box, Button, Typography } from '@material-ui/core';
+import { Box, Button } from '@material-ui/core';
 import {
   CurrencyInput,
   TransactionErrorContent,
@@ -339,7 +339,7 @@ const AddLiquidity: React.FC<{
           />
         </Box>
         <Box mb={6} color={palette.text.primary} textAlign='center'>
-          <Typography variant='h6'>
+          <h6>
             {t('supplyingTokens', liquidityTokenData)}
             <br />
             {t('receiveLPTokens', {
@@ -347,12 +347,12 @@ const AddLiquidity: React.FC<{
               symbolA: currencies[Field.CURRENCY_A]?.symbol,
               symbolB: currencies[Field.CURRENCY_B]?.symbol,
             })}
-          </Typography>
+          </h6>
         </Box>
         <Box mb={3} color={palette.text.secondary} textAlign='center'>
-          <Typography variant='body2'>
+          <small>
             {t('outputEstimated', { slippage: allowedSlippage / 100 })}
-          </Typography>
+          </small>
         </Box>
         <Box className='swapButtonWrapper'>
           <Button onClick={onAddLiquidity}>{t('confirmSupply')}</Button>
@@ -441,29 +441,29 @@ const AddLiquidity: React.FC<{
         price && (
           <Box my={2}>
             <Box className='swapPrice'>
-              <Typography variant='body2'>
+              <small>
                 1 {currencies[Field.CURRENCY_A]?.symbol} ={' '}
                 {price.toSignificant(3)} {currencies[Field.CURRENCY_B]?.symbol}{' '}
-              </Typography>
-              <Typography variant='body2'>
+              </small>
+              <small>
                 1 {currencies[Field.CURRENCY_B]?.symbol} ={' '}
                 {price.invert().toSignificant(3)}{' '}
                 {currencies[Field.CURRENCY_A]?.symbol}{' '}
-              </Typography>
+              </small>
             </Box>
             <Box className='swapPrice'>
-              <Typography variant='body2'>{t('yourPoolShare')}:</Typography>
-              <Typography variant='body2'>
+              <small>{t('yourPoolShare')}:</small>
+              <small>
                 {poolTokenPercentage
                   ? poolTokenPercentage.toSignificant(6) + '%'
                   : '-'}
-              </Typography>
+              </small>
             </Box>
             <Box className='swapPrice'>
-              <Typography variant='body2'>{t('lpTokenReceived')}:</Typography>
-              <Typography variant='body2'>
+              <small>{t('lpTokenReceived')}:</small>
+              <small>
                 {formatTokenAmount(userPoolBalance)} {t('lpTokens')}
-              </Typography>
+              </small>
             </Box>
           </Box>
         )}

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useRouteMatch } from 'react-router-dom';
-import { Box, Typography } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 import { Skeleton } from '@material-ui/lab';
 import moment from 'moment';
@@ -104,37 +104,28 @@ const AnalyticsTokenChart: React.FC<{ token: any }> = ({ token }) => {
     <>
       <Box display='flex' flexWrap='wrap' justifyContent='space-between'>
         <Box mt={1.5}>
-          <Typography variant='caption'>
-            {chartIndexTexts[chartIndex]}
-          </Typography>
+          <caption>{chartIndexTexts[chartIndex]}</caption>
           <Box mt={1}>
             {currentData && currentPercent ? (
               <>
                 <Box display='flex' alignItems='center'>
-                  <Typography
-                    variant='h4'
-                    style={{ color: palette.text.primary }}
-                  >
+                  <h4>
                     $
                     {currentData > 100000
                       ? formatCompact(currentData)
                       : formatNumber(currentData)}
-                  </Typography>
+                  </h4>
                   <Box
                     className='priceChangeWrapper'
                     ml={1}
                     bgcolor={currentPercentColor.bgColor}
                     color={currentPercentColor.textColor}
                   >
-                    <Typography variant='body2'>
-                      {getFormattedPrice(Number(currentPercent))}%
-                    </Typography>
+                    <small>{getFormattedPrice(Number(currentPercent))}%</small>
                   </Box>
                 </Box>
                 <Box>
-                  <Typography variant='caption'>
-                    {moment().format('MMM DD, YYYY')}
-                  </Typography>
+                  <caption>{moment().format('MMM DD, YYYY')}</caption>
                 </Box>
               </>
             ) : (

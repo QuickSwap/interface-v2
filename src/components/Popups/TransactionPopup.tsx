@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
-import { Box, LinearProgress, Typography } from '@material-ui/core';
-import { useTheme } from '@material-ui/core/styles';
+import { Box, LinearProgress } from '@material-ui/core';
 import { useActiveWeb3React } from 'hooks';
 import { getEtherscanLink } from 'utils/index';
 import { ReactComponent as ArrowTopRight } from 'assets/images/ArrowTopRight.svg';
@@ -18,7 +17,6 @@ const TransactionPopup: React.FC<TransactionPopupProps> = ({
   success,
   summary,
 }) => {
-  const { palette } = useTheme();
   const { chainId } = useActiveWeb3React();
   const [progress, setProgress] = React.useState(0);
 
@@ -42,19 +40,13 @@ const TransactionPopup: React.FC<TransactionPopupProps> = ({
         justifyContent='space-between'
         alignItems='center'
       >
-        <Typography
-          variant='body2'
-          style={{
-            fontWeight: 600,
-            color: pending
-              ? '#ffa000'
-              : success
-              ? palette.success.main
-              : palette.error.main,
-          }}
+        <small
+          className={`weight-600 ${
+            pending ? 'text-yellow3' : success ? 'text-success' : 'text-error'
+          }`}
         >
           {pending ? 'Processing…' : success ? 'Confirmed' : 'Failed'}
-        </Typography>
+        </small>
         {chainId && hash.length > 0 && (
           <a
             href={getEtherscanLink(chainId, hash, 'transaction')}
@@ -65,9 +57,9 @@ const TransactionPopup: React.FC<TransactionPopupProps> = ({
           </a>
         )}
       </Box>
-      <Typography variant='body2'>
+      <small>
         {summary ?? 'Hash: ' + hash.slice(0, 8) + '...' + hash.slice(58, 65)}
-      </Typography>
+      </small>
       {pending && (
         <Box className='pendingBar'>
           <LinearProgress variant='determinate' value={progress} />

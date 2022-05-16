@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Typography, Box } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import { StakeQuickModal } from 'components';
 import { useLairInfo, useTotalRewardsDistributed } from 'state/stake/hooks';
@@ -23,62 +23,54 @@ export const TradingInfo: React.FC<{ globalData: any }> = ({ globalData }) => {
       )}
       <Box className='tradingSection'>
         {globalData ? (
-          <Typography variant='h3'>
-            {Number(globalData.oneDayTxns).toLocaleString()}
-          </Typography>
+          <h3>{Number(globalData.oneDayTxns).toLocaleString()}</h3>
         ) : (
           <Skeleton variant='rect' width={100} height={45} />
         )}
-        <Typography>24H TRANSACTIONS</Typography>
+        <p>24H TRANSACTIONS</p>
       </Box>
       <Box className='tradingSection'>
         {globalData ? (
           <Box display='flex'>
-            <Typography variant='h6'>$</Typography>
-            <Typography variant='h3'>
-              {formatCompact(globalData.oneDayVolumeUSD)}
-            </Typography>
+            <h6>$</h6>
+            <h3>{formatCompact(globalData.oneDayVolumeUSD)}</h3>
           </Box>
         ) : (
           <Skeleton variant='rect' width={100} height={45} />
         )}
-        <Typography>24H TRADING VOLUME</Typography>
+        <p>24H TRADING VOLUME</p>
       </Box>
       <Box className='tradingSection'>
         {totalRewardsUSD ? (
           <Box display='flex'>
-            <Typography variant='h6'>$</Typography>
-            <Typography variant='h3'>
-              {totalRewardsUSD.toLocaleString()}
-            </Typography>
+            <h6>$</h6>
+            <h3>{totalRewardsUSD.toLocaleString()}</h3>
           </Box>
         ) : (
           <Skeleton variant='rect' width={100} height={45} />
         )}
-        <Typography>24h REWARDS DISTRIBUTED</Typography>
+        <p>24h REWARDS DISTRIBUTED</p>
       </Box>
       <Box className='tradingSection'>
         {globalData ? (
-          <Typography variant='h3'>
+          <h3>
             {Number(globalData.pairCount).toLocaleString(undefined, {
               maximumFractionDigits: 0,
             })}
-          </Typography>
+          </h3>
         ) : (
           <Skeleton variant='rect' width={100} height={45} />
         )}
-        <Typography>TOTAL TRADING PAIRS</Typography>
+        <p>TOTAL TRADING PAIRS</p>
       </Box>
       <Box className='tradingSection' pt='20px'>
         {dQUICKAPY ? (
-          <Typography variant='h3'>{dQUICKAPY.toLocaleString()}%</Typography>
+          <h3>{dQUICKAPY.toLocaleString()}%</h3>
         ) : (
           <Skeleton variant='rect' width={100} height={45} />
         )}
-        <Typography>dQUICK APY</Typography>
-        <Typography variant='h4' onClick={() => setOpenStakeModal(true)}>
-          stake {'>'}
-        </Typography>
+        <p>dQUICK APY</p>
+        <h4 onClick={() => setOpenStakeModal(true)}>stake {'>'}</h4>
       </Box>
     </>
   );

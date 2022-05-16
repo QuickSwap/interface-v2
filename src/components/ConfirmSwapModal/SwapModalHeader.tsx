@@ -1,7 +1,7 @@
 import { Trade, TradeType } from '@uniswap/sdk';
 import React, { useMemo } from 'react';
 import { AlertTriangle } from 'react-feather';
-import { Box, Typography, Button } from '@material-ui/core';
+import { Box, Button } from '@material-ui/core';
 import { Field } from 'state/swap/actions';
 import { DoubleCurrencyLogo } from 'components';
 import useUSDCPrice from 'utils/useUSDCPrice';
@@ -40,18 +40,18 @@ const SwapModalHeader: React.FC<SwapModalHeaderProps> = ({
         />
       </Box>
       <Box className='swapContent'>
-        <Typography variant='body1'>
+        <p>
           Swap {formatTokenAmount(trade.inputAmount)}{' '}
           {trade.inputAmount.currency.symbol} ($
           {Number(usdPrice?.toSignificant()) *
             Number(trade.inputAmount.toSignificant(2))}
           )
-        </Typography>
+        </p>
         <ArrowDownIcon />
-        <Typography variant='body1'>
+        <p>
           {formatTokenAmount(trade.outputAmount)}{' '}
           {trade.outputAmount.currency.symbol}
-        </Typography>
+        </p>
       </Box>
       {showAcceptChanges && (
         <Box className='priceUpdate'>
@@ -60,7 +60,7 @@ const SwapModalHeader: React.FC<SwapModalHeaderProps> = ({
               size={20}
               style={{ marginRight: '8px', minWidth: 24 }}
             />
-            <Typography> Price Updated</Typography>
+            <p> Price Updated</p>
           </Box>
           <Button
             style={{
@@ -77,19 +77,19 @@ const SwapModalHeader: React.FC<SwapModalHeaderProps> = ({
       )}
       <Box className='transactionText'>
         {trade.tradeType === TradeType.EXACT_INPUT ? (
-          <Typography variant='body2'>
+          <small>
             {`Output is estimated. You will receive at least `}
             {formatTokenAmount(slippageAdjustedAmounts[Field.OUTPUT])}{' '}
             {trade.outputAmount.currency.symbol}
             {' or the transaction will revert.'}
-          </Typography>
+          </small>
         ) : (
-          <Typography variant='body2'>
+          <small>
             {`Input is estimated. You will sell at most `}
             {formatTokenAmount(slippageAdjustedAmounts[Field.INPUT])}{' '}
             {trade.inputAmount.currency.symbol}
             {' or the transaction will revert.'}
-          </Typography>
+          </small>
         )}
         <Button onClick={onConfirm} className='swapButton'>
           Confirm Swap

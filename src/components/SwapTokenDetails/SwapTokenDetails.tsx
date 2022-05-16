@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Grid, Typography } from '@material-ui/core';
+import { Box, Grid } from '@material-ui/core';
 import Skeleton from '@material-ui/lab/Skeleton';
 import { ArrowDropUp, ArrowDropDown } from '@material-ui/icons';
 import { useTheme } from '@material-ui/core/styles';
@@ -84,12 +84,10 @@ const SwapTokenDetails: React.FC<{
         <Box display='flex' alignItems='center'>
           <CurrencyLogo currency={currency} size='28px' />
           <Box ml={1}>
-            <Typography variant='body2'>{currency.symbol}</Typography>
+            <small>{currency.symbol}</small>
             {tokenData ? (
               <Box display='flex' alignItems='center'>
-                <Typography variant='body2'>
-                  ${formatNumber(tokenData.priceUSD)}
-                </Typography>
+                <small>${formatNumber(tokenData.priceUSD)}</small>
                 <Box
                   ml={0.5}
                   display='flex'
@@ -97,7 +95,7 @@ const SwapTokenDetails: React.FC<{
                   className={priceUp ? 'text-success' : 'text-danger'}
                 >
                   {priceUp ? <ArrowDropUp /> : <ArrowDropDown />}
-                  <Typography variant='body2'>{priceUpPercent}%</Typography>
+                  <small>{priceUpPercent}%</small>
                 </Box>
               </Box>
             ) : (
@@ -131,12 +129,9 @@ const SwapTokenDetails: React.FC<{
           <Grid item xs={6}>
             <Box borderRight={`1px solid ${palette.secondary.light}`} py={1}>
               {tokenData ? (
-                <Typography
-                  variant='body2'
-                  style={{ color: palette.text.secondary }}
-                >
+                <small className='text-secondary'>
                   TVL: {formatCompact(tokenData?.totalLiquidityUSD)}
-                </Typography>
+                </small>
               ) : (
                 <Skeleton variant='rect' width={100} height={16} />
               )}
@@ -145,12 +140,9 @@ const SwapTokenDetails: React.FC<{
           <Grid item xs={6}>
             <Box py={1} pl={2}>
               {tokenData ? (
-                <Typography
-                  variant='body2'
-                  style={{ color: palette.text.secondary }}
-                >
+                <small className='text-secondary'>
                   24h VOL: {formatCompact(tokenData?.oneDayVolumeUSD)}
-                </Typography>
+                </small>
               ) : (
                 <Skeleton variant='rect' width={100} height={16} />
               )}
@@ -171,9 +163,7 @@ const SwapTokenDetails: React.FC<{
           rel='noopener noreferrer'
           style={{ textDecoration: 'none' }}
         >
-          <Typography variant='body2' style={{ color: palette.primary.main }}>
-            {shortenAddress(tokenAddress)}
-          </Typography>
+          <small className='text-primary'>{shortenAddress(tokenAddress)}</small>
         </a>
         <Box
           display='flex'

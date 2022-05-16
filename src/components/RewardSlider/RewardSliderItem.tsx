@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography, Button } from '@material-ui/core';
+import { Box, Button } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
 import { StakingInfo } from 'types';
 import { DoubleCurrencyLogo } from 'components';
@@ -47,33 +47,29 @@ const RewardSliderItem: React.FC<RewardSliderItemProps> = ({
             size={32}
           />
         </Box>
-        <Typography variant='h5'>
+        <h5>
           {info.tokens[0].symbol?.toUpperCase()}-
           {info.tokens[1].symbol?.toUpperCase()}
-        </Typography>
+        </h5>
       </Box>
       <Box className='row'>
-        <Typography>24h Fees</Typography>
-        <Typography component='h4'>
-          ${(info?.oneDayFee ?? 0).toLocaleString()}
-        </Typography>
+        <p>24h Fees</p>
+        <h4>${(info?.oneDayFee ?? 0).toLocaleString()}</h4>
       </Box>
       <Box className='row'>
-        <Typography>Rewards</Typography>
-        <Typography component='h4'>
-          ${rewards.toLocaleString()} / day
-        </Typography>
+        <p>Rewards</p>
+        <h4>${rewards.toLocaleString()} / day</h4>
       </Box>
       <Box className='row'>
-        <Typography>TVL</Typography>
-        <Typography component='h4'>{tvl}</Typography>
+        <p>TVL</p>
+        <h4>{tvl}</h4>
       </Box>
       <Box className='row'>
-        <Typography>
+        <p>
           APR
           <HelpIcon />
-        </Typography>
-        <Typography component='h5'>{apyWithFee}%</Typography>
+        </p>
+        <h5>{apyWithFee}%</h5>
       </Box>
       <Button
         fullWidth

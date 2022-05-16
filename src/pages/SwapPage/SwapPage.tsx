@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTheme } from '@material-ui/core/styles';
-import { Box, Typography, Grid, useMediaQuery } from '@material-ui/core';
+import { Box, Grid, useMediaQuery } from '@material-ui/core';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
 import { SwapTokenDetails, ToggleSwitch } from 'components';
 import { useIsProMode } from 'state/application/hooks';
@@ -79,9 +79,9 @@ const SwapPage: React.FC = () => {
           justifyContent='space-between'
           width='100%'
         >
-          <Typography variant='h4'>Swap</Typography>
+          <h4>Swap</h4>
           <Box className='helpWrapper'>
-            <Typography variant='body2'>Help</Typography>
+            <small>Help</small>
             <HelpIcon />
           </Box>
         </Box>
@@ -139,14 +139,11 @@ const SwapPage: React.FC = () => {
               padding='0 24px'
               mb={3}
             >
-              <Typography variant='h4'>Swap</Typography>
+              <h4>Swap</h4>
               <Box display='flex' alignItems='center' mr={1}>
-                <Typography
-                  variant='caption'
-                  style={{ color: palette.text.secondary, marginRight: 8 }}
-                >
+                <caption className='text-secondary' style={{ marginRight: 8 }}>
                   PRO MODE
-                </Typography>
+                </caption>
                 <ToggleSwitch
                   toggled={isProMode}
                   onToggle={() => updateIsProMode(!isProMode)}

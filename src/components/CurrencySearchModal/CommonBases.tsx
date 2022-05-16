@@ -1,6 +1,6 @@
 import React from 'react';
 import { ChainId, Currency, currencyEquals, ETHER, Token } from '@uniswap/sdk';
-import { Box, Typography } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import { GlobalData } from 'constants/index';
 import { CurrencyLogo, QuestionHelper } from 'components';
 
@@ -18,7 +18,7 @@ const CommonBases: React.FC<CommonBasesProps> = ({
   return (
     <Box mb={2}>
       <Box display='flex' className='title' my={1.5}>
-        <Typography variant='caption'>Common bases</Typography>
+        <caption>Common bases</caption>
         <QuestionHelper text='These tokens are commonly paired with other tokens.' />
       </Box>
       <Box display='flex' flexWrap='wrap'>
@@ -31,7 +31,7 @@ const CommonBases: React.FC<CommonBasesProps> = ({
           }}
         >
           <CurrencyLogo currency={ETHER} size='24px' />
-          <Typography variant='body2'>MATIC</Typography>
+          <small>MATIC</small>
         </Box>
         {(chainId ? GlobalData.bases.SUGGESTED_BASES[chainId] : []).map(
           (token: Token) => {
@@ -45,7 +45,7 @@ const CommonBases: React.FC<CommonBasesProps> = ({
                 onClick={() => !selected && onSelect(token)}
               >
                 <CurrencyLogo currency={token} size='24px' />
-                <Typography variant='body2'>{token.symbol}</Typography>
+                <small>{token.symbol}</small>
               </Box>
             );
           },

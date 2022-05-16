@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Box, Typography } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import { ReactComponent as SearchIcon } from 'assets/images/SearchIcon.svg';
 import { client } from 'apollo/client';
 import { TOKEN_SEARCH, PAIR_SEARCH } from 'apollo/queries';
@@ -223,7 +223,7 @@ const Search: React.FC = () => {
       </Box>
       {menuOpen && (
         <div ref={wrapperRef} className='searchWidgetContent'>
-          <Typography variant='body1'>Pairs</Typography>
+          <p>Pairs</p>
           {filteredPairs.slice(0, pairsShown).map((val, ind) => {
             const currency0 = new Token(
               ChainId.MATIC,
@@ -249,20 +249,20 @@ const Search: React.FC = () => {
                   currency1={currency1}
                   size={28}
                 />
-                <Typography variant='body2' style={{ marginLeft: 8 }}>
+                <small style={{ marginLeft: 8 }}>
                   {val.token0.symbol} - {val.token1.symbol} Pair
-                </Typography>
+                </small>
               </Box>
             );
           })}
-          <Typography
-            variant='body2'
-            style={{ cursor: 'pointer', margin: '8px 0' }}
+          <Box
+            className='cursor-pointer'
             onClick={() => setPairsShown(pairsShown + 5)}
+            margin='8px 0'
           >
-            Show More
-          </Typography>
-          <Typography variant='body1'>Tokens</Typography>
+            <small>Show More</small>
+          </Box>
+          <p>Tokens</p>
           {filteredTokens.slice(0, tokensShown).map((val, ind) => {
             const currency = new Token(
               ChainId.MATIC,
@@ -279,19 +279,21 @@ const Search: React.FC = () => {
                 onClick={() => history.push(`/analytics/token/${val.id}`)}
               >
                 <CurrencyLogo currency={currency} size='28px' />
-                <Typography variant='body2' style={{ marginLeft: 8 }}>
-                  {val.name} {val.symbol}
-                </Typography>
+                <Box ml={1}>
+                  <small>
+                    {val.name} {val.symbol}
+                  </small>
+                </Box>
               </Box>
             );
           })}
-          <Typography
-            variant='body2'
-            style={{ cursor: 'pointer', marginTop: 8 }}
+          <Box
+            className='cursor-pointer'
+            mt={1}
             onClick={() => setTokensShown(tokensShown + 5)}
           >
-            Show More
-          </Typography>
+            <small>Show More</small>
+          </Box>
         </div>
       )}
     </Box>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography, Checkbox } from '@material-ui/core';
+import { Box, Checkbox } from '@material-ui/core';
 import { Replay } from '@material-ui/icons';
 import { CustomSwitch } from 'components';
 
@@ -38,7 +38,7 @@ const SwapProFilter: React.FC<SwapProFilterProps> = ({
           disabled={!showTrades}
           onChange={(evt) => setShowChart(evt.target.checked)}
         />
-        <Typography variant='body2'>chart</Typography>
+        <small>chart</small>
       </Box>
       <Box className='checkWrapper'>
         <Checkbox
@@ -46,10 +46,10 @@ const SwapProFilter: React.FC<SwapProFilterProps> = ({
           disabled={!showChart}
           onChange={(evt) => setShowTrades(evt.target.checked)}
         />
-        <Typography variant='body2'>trades</Typography>
+        <small>trades</small>
       </Box>
       <Box display='flex' alignItems='center'>
-        <Typography variant='body2'>INFO:</Typography>
+        <small>INFO:</small>
         <Box ml={1}>
           <CustomSwitch width={190} height={30} items={infoPosItems} />
         </Box>

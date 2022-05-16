@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography, useMediaQuery } from '@material-ui/core';
+import { Box, useMediaQuery } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon2.svg';
@@ -29,9 +29,7 @@ const BuyFiatModal: React.FC<BuyFiatModalProps> = ({
     <CustomModal open={open} onClose={onClose}>
       <Box padding={3}>
         <Box display='flex' justifyContent='space-between' alignItems='center'>
-          <Typography variant='subtitle2' color='textPrimary'>
-            Fiat gateway providers
-          </Typography>
+          <h6 className='text-primary'>Fiat gateway providers</h6>
           <CloseIcon style={{ cursor: 'pointer' }} onClick={onClose} />
         </Box>
         <Box className='paymentBox'>
@@ -57,12 +55,12 @@ const BuyFiatModal: React.FC<BuyFiatModalProps> = ({
             <HelpIcon />
           </Box>
           <Box ml={1.5} width='calc(100% - 32px)'>
-            <Typography variant='body2'>
+            <small>
               Fiat services on Quickswap are provided by third-parties.
               Quickswap is not associated with, responsible or liable for the
               performance of these third-party services. Any claims & questions
               should be addressed with the selected provider.
-            </Typography>
+            </small>
           </Box>
         </Box>
       </Box>

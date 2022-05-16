@@ -1,8 +1,7 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { Contract } from '@ethersproject/contracts';
 import { ArrowLeft, ArrowDown } from 'react-feather';
-import { Box, Typography, Button } from '@material-ui/core';
-import { useTheme } from '@material-ui/core/styles';
+import { Box, Button } from '@material-ui/core';
 import { Currency, ETHER, JSBI, Percent } from '@uniswap/sdk';
 import ReactGA from 'react-ga';
 import { BigNumber } from '@ethersproject/bignumber';
@@ -59,7 +58,6 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
   open,
   onClose,
 }) => {
-  const { palette } = useTheme();
   const [showConfirm, setShowConfirm] = useState(false);
   const [txPending, setTxPending] = useState(false);
   const [approving, setApproving] = useState(false);
@@ -353,8 +351,8 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
             size={48}
           />
         </Box>
-        <Box mb={6} color={palette.text.primary} textAlign='center'>
-          <Typography variant='h6'>
+        <Box mb={6} textAlign='center'>
+          <p className='weight-600'>
             Removing {formattedAmounts[Field.LIQUIDITY]} {currency0.symbol} /{' '}
             {currency1.symbol} LP Tokens
             <br />
@@ -364,13 +362,13 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
             {currency0.symbol} and{' '}
             {parsedAmounts[Field.CURRENCY_B]?.toSignificant(2)}{' '}
             {currency1.symbol}
-          </Typography>
+          </p>
         </Box>
-        <Box mb={3} color={palette.text.secondary} textAlign='center'>
-          <Typography variant='body2'>
+        <Box mb={3} textAlign='center'>
+          <small className='text-secondary'>
             {`Output is estimated. If the price changes by more than ${allowedSlippage /
               100}% your transaction will revert.`}
-          </Typography>
+          </small>
         </Box>
         <Box mt={2}>
           <Button fullWidth className='removeButton' onClick={onRemove}>
@@ -415,22 +413,15 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
         )}
         <Box display='flex' alignItems='center' justifyContent='space-between'>
           <ArrowLeft
-            color={palette.text.secondary}
-            style={{ cursor: 'pointer' }}
+            className='text-secondary cursor-pointer'
             onClick={onClose}
           />
-          <Typography
-            variant='subtitle2'
-            style={{ color: palette.text.primary }}
-          >
-            Remove Liquidity
-          </Typography>
-          <CloseIcon style={{ cursor: 'pointer' }} onClick={onClose} />
+          <h6>Remove Liquidity</h6>
+          <CloseIcon className='cursor-pointer' onClick={onClose} />
         </Box>
         <Box
           mt={3}
-          bgcolor={palette.background.default}
-          border='1px solid rgba(105, 108, 128, 0.12)'
+          className='bg-default border-gray14'
           borderRadius='10px'
           padding='16px'
         >
@@ -439,12 +430,10 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
             alignItems='center'
             justifyContent='space-between'
           >
-            <Typography variant='body2'>
+            <small>
               {currency0.symbol} / {currency1.symbol} LP
-            </Typography>
-            <Typography variant='body2'>
-              Balance: {formatTokenAmount(userPoolBalance)}
-            </Typography>
+            </small>
+            <small>Balance: {formatTokenAmount(userPoolBalance)}</small>
           </Box>
           <Box mt={2}>
             <NumericalInput
@@ -468,29 +457,23 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
                 }
               />
             </Box>
-            <Typography variant='body2'>
-              {formattedAmounts[Field.LIQUIDITY_PERCENT]}%
-            </Typography>
+            <small>{formattedAmounts[Field.LIQUIDITY_PERCENT]}%</small>
           </Box>
         </Box>
         <Box display='flex' my={3} justifyContent='center'>
-          <ArrowDown color={palette.text.secondary} />
+          <ArrowDown className='text-secondary' />
         </Box>
-        <Box
-          padding='16px'
-          bgcolor={palette.secondary.light}
-          borderRadius='10px'
-        >
+        <Box padding='16px' className='bg-secondary1' borderRadius='10px'>
           <Box
             display='flex'
             justifyContent='space-between'
             alignItems='center'
           >
-            <Typography variant='body1'>Pooled {currency0.symbol}</Typography>
+            <p>Pooled {currency0.symbol}</p>
             <Box display='flex' alignItems='center'>
-              <Typography variant='body1' style={{ marginRight: 6 }}>
+              <p style={{ marginRight: 6 }}>
                 {formatTokenAmount(token0Deposited)}
-              </Typography>
+              </p>
               <CurrencyLogo currency={currency0} />
             </Box>
           </Box>
@@ -500,18 +483,8 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
             justifyContent='space-between'
             alignItems='center'
           >
-            <Typography
-              variant='body1'
-              style={{ color: 'rgba(68, 138, 255, 0.5)' }}
-            >
-              - Withdraw {currency0.symbol}
-            </Typography>
-            <Typography
-              variant='body1'
-              style={{ color: 'rgba(68, 138, 255, 0.5)' }}
-            >
-              {formattedAmounts[Field.CURRENCY_A]}
-            </Typography>
+            <p className='text-blue7'>- Withdraw {currency0.symbol}</p>
+            <p className='text-blue7'>{formattedAmounts[Field.CURRENCY_A]}</p>
           </Box>
           <Box
             mt={1}
@@ -519,11 +492,11 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
             justifyContent='space-between'
             alignItems='center'
           >
-            <Typography variant='body1'>Pooled {currency1.symbol}</Typography>
+            <p>Pooled {currency1.symbol}</p>
             <Box display='flex' alignItems='center'>
-              <Typography variant='body1' style={{ marginRight: 6 }}>
+              <p style={{ marginRight: 6 }}>
                 {formatTokenAmount(token1Deposited)}
-              </Typography>
+              </p>
               <CurrencyLogo currency={currency1} />
             </Box>
           </Box>
@@ -533,18 +506,8 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
             justifyContent='space-between'
             alignItems='center'
           >
-            <Typography
-              variant='body1'
-              style={{ color: 'rgba(68, 138, 255, 0.5)' }}
-            >
-              - Withdraw {currency1.symbol}
-            </Typography>
-            <Typography
-              variant='body1'
-              style={{ color: 'rgba(68, 138, 255, 0.5)' }}
-            >
-              {formattedAmounts[Field.CURRENCY_B]}
-            </Typography>
+            <p className='text-blue7'>- Withdraw {currency1.symbol}</p>
+            <p className='text-blue7'>{formattedAmounts[Field.CURRENCY_B]}</p>
           </Box>
           <Box
             mt={1}
@@ -552,12 +515,12 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
             justifyContent='space-between'
             alignItems='center'
           >
-            <Typography variant='body1'>Your Pool Share</Typography>
-            <Typography variant='body1'>
+            <p>Your Pool Share</p>
+            <p>
               {poolTokenPercentage
                 ? poolTokenPercentage.toSignificant() + '%'
                 : '-'}
-            </Typography>
+            </p>
           </Box>
         </Box>
         {pair && (
@@ -568,16 +531,16 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
             alignItems='center'
             justifyContent='space-between'
           >
-            <Typography variant='body2'>
+            <small>
               1 {currency0.symbol} ={' '}
               {tokenA ? pair.priceOf(tokenA).toSignificant(6) : '-'}{' '}
               {currency1.symbol}
-            </Typography>
-            <Typography variant='body2'>
+            </small>
+            <small>
               1 {currency1.symbol} ={' '}
               {tokenB ? pair.priceOf(tokenB).toSignificant(6) : '-'}{' '}
               {currency0.symbol}
-            </Typography>
+            </small>
           </Box>
         )}
         <Box
@@ -608,9 +571,7 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
           </Button>
         </Box>
         <Box mt={2}>
-          <Typography variant='body1' style={{ color: palette.error.main }}>
-            {errorMsg}
-          </Typography>
+          <p className='text-error'>{errorMsg}</p>
         </Box>
       </Box>
     </CustomModal>

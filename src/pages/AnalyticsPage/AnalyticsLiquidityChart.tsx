@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { Box, Typography } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 import Skeleton from '@material-ui/lab/Skeleton';
 import moment from 'moment';
@@ -72,12 +72,7 @@ const AnalyticsLiquidityChart: React.FC = () => {
   return (
     <>
       <Box display='flex' justifyContent='space-between'>
-        <Typography
-          variant='caption'
-          style={{ color: palette.text.disabled, fontWeight: 'bold' }}
-        >
-          LIQUIDITY
-        </Typography>
+        <caption className='text-disabled text-bold'>LIQUIDITY</caption>
         <ChartType
           typeTexts={GlobalData.analytics.CHART_DURATION_TEXTS}
           chartTypes={GlobalData.analytics.CHART_DURATIONS}
@@ -87,9 +82,7 @@ const AnalyticsLiquidityChart: React.FC = () => {
       </Box>
       {globalData ? (
         <Box mt={0.5} display='flex' alignItems='center'>
-          <Typography variant='h5' style={{ color: palette.text.primary }}>
-            ${formatCompact(globalData.totalLiquidityUSD)}
-          </Typography>
+          <h5>${formatCompact(globalData.totalLiquidityUSD)}</h5>
           <Box
             ml={1}
             height={23}
@@ -98,11 +91,11 @@ const AnalyticsLiquidityChart: React.FC = () => {
             bgcolor={liquidityPercentColor.bgColor}
             color={liquidityPercentColor.textColor}
           >
-            <Typography variant='caption'>
+            <caption>
               {`${globalData.liquidityChangeUSD > 0 ? '+' : ''}
                       ${globalData.liquidityChangeUSD.toLocaleString()}`}
               %
-            </Typography>
+            </caption>
           </Box>
         </Box>
       ) : (
@@ -111,9 +104,9 @@ const AnalyticsLiquidityChart: React.FC = () => {
         </Box>
       )}
       <Box>
-        <Typography style={{ color: palette.text.disabled }} variant='caption'>
+        <caption className='text-disabled'>
           {moment().format('MMM DD, YYYY')}
-        </Typography>
+        </caption>
       </Box>
       <Box mt={2}>
         {globalChartData ? (

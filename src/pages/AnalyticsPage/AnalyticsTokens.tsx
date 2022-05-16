@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Box, Typography } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 import { TopMovers, TokensTable } from 'components';
 import { useBookmarkTokens } from 'state/application/hooks';
@@ -47,7 +47,7 @@ const AnalyticsTokens: React.FC = () => {
             tokensFilter === 0 ? palette.primary.main : palette.text.disabled
           }
         >
-          <Typography variant='h6'>All Cryptos</Typography>
+          <p className='weight-600'>All Cryptos</p>
         </Box>
         <Box
           className='tokensFilter'
@@ -56,7 +56,7 @@ const AnalyticsTokens: React.FC = () => {
           }
           onClick={() => setTokensFilter(1)}
         >
-          <Typography variant='h6'>Favourites</Typography>
+          <p className='weight-600'>Favourites</p>
         </Box>
         <Box
           className='tokensFilter'
@@ -65,7 +65,7 @@ const AnalyticsTokens: React.FC = () => {
           }
           onClick={() => setTokensFilter(2)}
         >
-          <Typography variant='h6'>New Listing</Typography>
+          <p className='weight-600'>New Listing</p>
         </Box>
       </Box>
       <Box className='panel'>

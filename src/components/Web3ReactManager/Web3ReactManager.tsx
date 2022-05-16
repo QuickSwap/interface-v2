@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useWeb3React } from '@web3-react/core';
 import { useTranslation } from 'react-i18next';
-import { Box, CircularProgress, Typography } from '@material-ui/core';
+import { Box, CircularProgress } from '@material-ui/core';
 import { network } from 'connectors';
 import { useEagerConnect, useInactiveListener } from 'hooks';
 import { GlobalConst } from 'constants/index';
@@ -52,7 +52,7 @@ const Web3ReactManager: React.FC<{ children: JSX.Element }> = ({
   if (!active && networkError) {
     return (
       <Box className='messageWrapper'>
-        <Typography className='message'>{t('unknownError')}</Typography>
+        <p className='message'>{t('unknownError')}</p>
       </Box>
     );
   }

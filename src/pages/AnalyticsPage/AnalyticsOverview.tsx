@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, Grid } from '@material-ui/core';
+import { Box, Grid } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
 import { useTheme } from '@material-ui/core/styles';
 import Skeleton from '@material-ui/lab/Skeleton';
@@ -100,14 +100,14 @@ const AnalyticsOverview: React.FC = () => {
       <Box mt={4}>
         <Box display='flex' justifyContent='space-between' alignItems='center'>
           <Box className='headingWrapper'>
-            <Typography variant='h6'>Top Tokens</Typography>
+            <p className='weight-600'>Top Tokens</p>
           </Box>
           <Box
             className='headingWrapper'
             style={{ cursor: 'pointer' }}
             onClick={() => history.push(`/analytics/tokens`)}
           >
-            <Typography variant='h6'>See All</Typography>
+            <p className='weight-600'>See All</p>
             <ArrowForwardIos />
           </Box>
         </Box>
@@ -122,14 +122,14 @@ const AnalyticsOverview: React.FC = () => {
       <Box mt={4}>
         <Box display='flex' justifyContent='space-between' alignItems='center'>
           <Box className='headingWrapper'>
-            <Typography variant='h6'>Top Pairs</Typography>
+            <p className='weight-600'>Top Pairs</p>
           </Box>
           <Box
             className='headingWrapper'
             style={{ cursor: 'pointer' }}
             onClick={() => history.push(`/analytics/pairs`)}
           >
-            <Typography variant='h6'>See All</Typography>
+            <p className='weight-600'>See All</p>
             <ArrowForwardIos />
           </Box>
         </Box>

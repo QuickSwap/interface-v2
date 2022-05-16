@@ -1,6 +1,6 @@
 import { JSBI, Pair, Percent } from '@uniswap/sdk';
 import React, { useState } from 'react';
-import { Box, Typography, Button } from '@material-ui/core';
+import { Box, Button } from '@material-ui/core';
 import { ChevronDown, ChevronUp } from 'react-feather';
 import { Link } from 'react-router-dom';
 import { useTotalSupply } from 'data/TotalSupply';
@@ -69,7 +69,7 @@ export const MinimalPositionCard: React.FC<PositionCardProps> = ({
       {userPoolBalance &&
       JSBI.greaterThan(userPoolBalance.raw, JSBI.BigInt(0)) ? (
         <Box>
-          <Typography>Your position</Typography>
+          <p>Your position</p>
           <Box
             mt={0.75}
             display='flex'
@@ -82,11 +82,11 @@ export const MinimalPositionCard: React.FC<PositionCardProps> = ({
                 currency1={currency1}
                 size={20}
               />
-              <Typography style={{ marginLeft: 6 }}>
+              <p style={{ marginLeft: 6 }}>
                 {currency0.symbol}/{currency1.symbol}
-              </Typography>
+              </p>
             </Box>
-            <Typography>{formatTokenAmount(userPoolBalance)}</Typography>
+            <p>{formatTokenAmount(userPoolBalance)}</p>
           </Box>
           <Box
             mt={0.75}
@@ -94,10 +94,10 @@ export const MinimalPositionCard: React.FC<PositionCardProps> = ({
             alignItems='center'
             justifyContent='space-between'
           >
-            <Typography>Your pool share:</Typography>
-            <Typography>
+            <p>Your pool share:</p>
+            <p>
               {poolTokenPercentage ? poolTokenPercentage.toFixed(6) + '%' : '-'}
-            </Typography>
+            </p>
           </Box>
           <Box
             mt={0.75}
@@ -105,8 +105,8 @@ export const MinimalPositionCard: React.FC<PositionCardProps> = ({
             alignItems='center'
             justifyContent='space-between'
           >
-            <Typography>{currency0.symbol}:</Typography>
-            <Typography>{formatTokenAmount(token0Deposited)}</Typography>
+            <p>{currency0.symbol}:</p>
+            <p>{formatTokenAmount(token0Deposited)}</p>
           </Box>
           <Box
             mt={0.75}
@@ -114,19 +114,19 @@ export const MinimalPositionCard: React.FC<PositionCardProps> = ({
             alignItems='center'
             justifyContent='space-between'
           >
-            <Typography>{currency1.symbol}:</Typography>
-            <Typography>{formatTokenAmount(token1Deposited)}</Typography>
+            <p>{currency1.symbol}:</p>
+            <p>{formatTokenAmount(token1Deposited)}</p>
           </Box>
         </Box>
       ) : (
-        <Typography>
+        <p>
           <span role='img' aria-label='wizard-icon'>
             ⭐️
           </span>{' '}
           By adding liquidity you&apos;ll earn 0.25% of all trades on this pair
           proportional to your share of the pool. Fees are added to the pool,
           accrue in real time and can be claimed by withdrawing your liquidity.
-        </Typography>
+        </p>
       )}
     </Box>
   );
@@ -184,19 +184,16 @@ const FullPositionCard: React.FC<PositionCardProps> = ({ pair }) => {
             currency1={currency1}
             size={20}
           />
-          <Typography>
-            {!currency0 || !currency1 ? (
-              <Typography>Loading</Typography>
-            ) : (
-              `${currency0.symbol}/${currency1.symbol}`
-            )}
-          </Typography>
+          <p>
+            {!currency0 || !currency1
+              ? 'Loading'
+              : `${currency0.symbol}/${currency1.symbol}`}
+          </p>
         </Box>
 
         <Button onClick={() => setShowMore(!showMore)}>
           {showMore ? (
             <>
-              {' '}
               Manage
               <ChevronUp size='20' style={{ marginLeft: '10px' }} />
             </>
@@ -212,13 +209,13 @@ const FullPositionCard: React.FC<PositionCardProps> = ({ pair }) => {
       {showMore && (
         <Box>
           <Box>
-            <Typography>Your pool tokens:</Typography>
-            <Typography>{formatTokenAmount(userPoolBalance)}</Typography>
+            <p>Your pool tokens:</p>
+            <p>{formatTokenAmount(userPoolBalance)}</p>
           </Box>
           <Box>
-            <Typography>Pooled {currency0.symbol}:</Typography>
+            <p>Pooled {currency0.symbol}:</p>
             <Box>
-              <Typography>{formatTokenAmount(token0Deposited)}</Typography>
+              <p>{formatTokenAmount(token0Deposited)}</p>
               <CurrencyLogo
                 size='20px'
                 style={{ marginLeft: '8px' }}
@@ -228,9 +225,9 @@ const FullPositionCard: React.FC<PositionCardProps> = ({ pair }) => {
           </Box>
 
           <Box>
-            <Typography>Pooled {currency1.symbol}:</Typography>
+            <p>Pooled {currency1.symbol}:</p>
             <Box>
-              <Typography>{formatTokenAmount(token1Deposited)}</Typography>
+              <p>{formatTokenAmount(token1Deposited)}</p>
               <CurrencyLogo
                 size='20px'
                 style={{ marginLeft: '8px' }}
@@ -240,10 +237,10 @@ const FullPositionCard: React.FC<PositionCardProps> = ({ pair }) => {
           </Box>
 
           <Box>
-            <Typography>Your pool share:</Typography>
-            <Typography>
+            <p>Your pool share:</p>
+            <p>
               {poolTokenPercentage ? poolTokenPercentage.toFixed(2) + '%' : '-'}
-            </Typography>
+            </p>
           </Box>
 
           <Button>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Typography, useMediaQuery } from '@material-ui/core';
+import { Box, useMediaQuery } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 import { DualStakingInfo, StakingInfo } from 'types';
 import { unwrappedToken } from 'utils/wrappedCurrency';
@@ -16,7 +16,11 @@ import {
   formatTokenAmount,
   formatAPY,
 } from 'utils';
-import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
+import {
+  KeyboardArrowDown,
+  KeyboardArrowUp,
+  StoreMallDirectoryOutlined,
+} from '@material-ui/icons';
 import 'components/styles/FarmCard.scss';
 
 const FarmCard: React.FC<{
@@ -83,9 +87,9 @@ const FarmCard: React.FC<{
         size={28}
       />
       <Box ml={1.5}>
-        <Typography variant='body2'>
+        <small>
           {currency0.symbol} / {currency1.symbol} LP
-        </Typography>
+        </small>
       </Box>
     </Box>
   );
@@ -102,15 +106,13 @@ const FarmCard: React.FC<{
             {!isExpandCard && (
               <Box width={0.25}>
                 <Box display='flex' alignItems='center'>
-                  <Typography variant='caption' color='textSecondary'>
-                    APY
-                  </Typography>
+                  <caption className='text-secondary'>APY</caption>
                   <Box ml={0.5} height={16}>
                     <img src={CircleInfoIcon} alt={'arrow up'} />
                   </Box>
                 </Box>
                 <Box mt={0.5} color={palette.success.main}>
-                  <Typography variant='body2'>{apyWithFee}%</Typography>
+                  <small>{apyWithFee}%</small>
                 </Box>
               </Box>
             )}
@@ -127,18 +129,18 @@ const FarmCard: React.FC<{
           <>
             {renderPool(0.3)}
             <Box width={0.2} textAlign='center'>
-              <Typography variant='body2'>{tvl}</Typography>
+              <small>{tvl}</small>
             </Box>
             <Box width={0.25} textAlign='center'>
-              <Typography variant='body2'>
+              <small>
                 ${(isLPFarm ? lpRewards : dualRewards).toLocaleString()} / day
-              </Typography>
+              </small>
               {isLPFarm ? (
-                <Typography variant='body2'>{lpPoolRate}</Typography>
+                <small>{lpPoolRate}</small>
               ) : (
                 <>
-                  <Typography variant='body2'>{dualPoolRateA}</Typography>
-                  <Typography variant='body2'>{dualPoolRateB}</Typography>
+                  <small>{dualPoolRateA}</small>
+                  <small>{dualPoolRateB}</small>
                 </>
               )}
             </Box>
@@ -149,13 +151,13 @@ const FarmCard: React.FC<{
               alignItems='center'
               color={palette.success.main}
             >
-              <Typography variant='body2'>{apyWithFee}%</Typography>
+              <small>{apyWithFee}%</small>
               <Box ml={0.5} height={16}>
                 <img src={CircleInfoIcon} alt={'arrow up'} />
               </Box>
             </Box>
             <Box width={0.2} textAlign='right'>
-              <Typography variant='body2'>{earnedUSDStr}</Typography>
+              <small>{earnedUSDStr}</small>
               {isLPFarm ? (
                 <Box
                   display='flex'
@@ -166,10 +168,10 @@ const FarmCard: React.FC<{
                     currency={lpStakingInfo.rewardToken}
                     size='16px'
                   />
-                  <Typography variant='body2' style={{ marginLeft: 5 }}>
+                  <small style={{ marginLeft: 5 }}>
                     {formatTokenAmount(lpStakingInfo.earnedAmount)}
                     <span>&nbsp;{lpStakingInfo.rewardToken.symbol}</span>
-                  </Typography>
+                  </small>
                 </Box>
               ) : (
                 <>
@@ -182,10 +184,10 @@ const FarmCard: React.FC<{
                       currency={unwrappedToken(dualStakingInfo.rewardTokenA)}
                       size='16px'
                     />
-                    <Typography variant='body2' style={{ marginLeft: 5 }}>
+                    <small style={{ marginLeft: 5 }}>
                       {formatTokenAmount(dualStakingInfo.earnedAmountA)}
                       <span>&nbsp;{dualStakingInfo.rewardTokenA.symbol}</span>
-                    </Typography>
+                    </small>
                   </Box>
                   <Box
                     display='flex'
@@ -196,10 +198,10 @@ const FarmCard: React.FC<{
                       currency={unwrappedToken(dualStakingInfo.rewardTokenB)}
                       size='16px'
                     />
-                    <Typography variant='body2' style={{ marginLeft: 5 }}>
+                    <small style={{ marginLeft: 5 }}>
                       {formatTokenAmount(dualStakingInfo.earnedAmountB)}
                       <span>&nbsp;{dualStakingInfo.rewardTokenB.symbol}</span>
-                    </Typography>
+                    </small>
                   </Box>
                 </>
               )}

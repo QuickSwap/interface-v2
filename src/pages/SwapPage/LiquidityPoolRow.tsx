@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography, useMediaQuery } from '@material-ui/core';
+import { Box, useMediaQuery } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 import { GlobalConst } from 'constants/index';
 import { DoubleCurrencyLogo } from 'components';
@@ -50,10 +50,10 @@ const LiquidityPoolRow: React.FC<{
           currency1={token1 ?? undefined}
           size={28}
         />
-        <Typography variant='body2' style={{ marginLeft: 12 }}>
+        <small style={{ marginLeft: 12 }}>
           {pair.token0.symbol.toUpperCase()} /{' '}
           {pair.token1.symbol.toUpperCase()}
-        </Typography>
+        </small>
       </Box>
       <Box
         width={isMobile ? 1 : 0.2}
@@ -61,12 +61,8 @@ const LiquidityPoolRow: React.FC<{
         display='flex'
         justifyContent='space-between'
       >
-        {isMobile && (
-          <Typography variant='body2' style={{ color: palette.text.secondary }}>
-            TVL
-          </Typography>
-        )}
-        <Typography variant='body2'>${formatCompact(liquidity)}</Typography>
+        {isMobile && <small className='text-secondary'>TVL</small>}
+        <small>${formatCompact(liquidity)}</small>
       </Box>
       <Box
         width={isMobile ? 1 : 0.15}
@@ -74,12 +70,8 @@ const LiquidityPoolRow: React.FC<{
         display='flex'
         justifyContent='space-between'
       >
-        {isMobile && (
-          <Typography variant='body2' style={{ color: palette.text.secondary }}>
-            24H Volume
-          </Typography>
-        )}
-        <Typography variant='body2'>${formatCompact(volume)}</Typography>
+        {isMobile && <small className='text-secondary'>24H Volume</small>}
+        <small>${formatCompact(volume)}</small>
       </Box>
       <Box
         width={isMobile ? 1 : 0.15}
@@ -87,20 +79,12 @@ const LiquidityPoolRow: React.FC<{
         display='flex'
         justifyContent={isMobile ? 'space-between' : 'flex-end'}
       >
-        {isMobile && (
-          <Typography variant='body2' style={{ color: palette.text.secondary }}>
-            APY
-          </Typography>
-        )}
-        <Typography
-          variant='body2'
-          align='right'
-          style={{
-            color: apy < 0 ? palette.error.main : palette.success.main,
-          }}
+        {isMobile && <small className='text-secondary'>APY</small>}
+        <small
+          className={`text-right ${apy < 0 ? 'text-error' : 'text-success'}`}
         >
           {apy.toFixed(2)}%
-        </Typography>
+        </small>
       </Box>
     </Box>
   );

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import useCopyClipboard from 'hooks/useCopyClipboard';
 import { CheckCircle, Copy } from 'react-feather';
 
@@ -16,9 +16,7 @@ const CopyHelper: React.FC<CopyHelperProps> = ({ toCopy, children }) => {
       {isCopied ? (
         <>
           <CheckCircle size='20' />
-          <Typography style={{ marginLeft: 4 }} variant='body2'>
-            Copied
-          </Typography>
+          <small style={{ marginLeft: 4 }}>Copied</small>
         </>
       ) : (
         <Copy size='20' />

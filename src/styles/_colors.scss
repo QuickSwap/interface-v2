@@ -1,5 +1,33 @@
 @use './variables' as *;
 
+.bg-default {
+  background-color: $bgColor;
+}
+
+.bg-palette {
+  background-color: $bgPalette;
+}
+
+.bg-secondary2 {
+  background-color: $secondary2;
+}
+
+.bg-blue1 {
+  background-color: $blue1;
+}
+
+.bg-secondary1 {
+  background-color: $secondary1;
+}
+
+.border-gray14 {
+  border: 1px solid $grey14;
+}
+
+.border-gray2 {
+  border: 1px solid $grey2;
+}
+
 .text-error {
   color: $errorMain;
 }
@@ -9,5 +37,29 @@
 }
 
 .text-primary {
-  color: $textPrimary;
+  color: $primary;
+}
+
+.text-secondary {
+  color: $textSecondary;
+}
+
+.text-hint {
+  color: $textHint;
+}
+
+.text-disabled {
+  color: $textDisabled;
+}
+
+.text-gray19 {
+  color: $grey19;
+}
+
+.text-yellow3 {
+  color: $yellow3;
+}
+
+.text-blue7 {
+  color: $blue7;
 }

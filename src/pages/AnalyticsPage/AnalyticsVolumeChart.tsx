@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Box, Typography } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 import Skeleton from '@material-ui/lab/Skeleton';
 import { useGlobalData } from 'state/application/hooks';
@@ -168,12 +168,9 @@ const AnalyticsVolumeChart: React.FC = () => {
     <>
       <Box>
         <Box display='flex' justifyContent='space-between'>
-          <Typography
-            variant='caption'
-            style={{ color: palette.text.disabled, fontWeight: 'bold' }}
-          >
+          <caption className='text-disabled text-bold'>
             VOLUME {selectedVolumeIndex === -1 ? '(24hr)' : ''}
-          </Typography>
+          </caption>
           <ChartType
             chartTypes={volumeTypes}
             typeTexts={volumeTypeTexts}
@@ -190,10 +187,7 @@ const AnalyticsVolumeChart: React.FC = () => {
           {globalChartData && globalData ? (
             <Box flex={1} mr={2}>
               <Box display='flex' alignItems='center'>
-                <Typography
-                  variant='h5'
-                  style={{ color: palette.text.primary }}
-                >
+                <h5>
                   $
                   {formatCompact(
                     selectedVolumeIndex > -1
@@ -206,7 +200,7 @@ const AnalyticsVolumeChart: React.FC = () => {
                       ? globalData.oneDayVolumeUSD
                       : globalData.oneWeekVolume,
                   )}
-                </Typography>
+                </h5>
                 <Box
                   ml={1}
                   height={23}
@@ -215,20 +209,15 @@ const AnalyticsVolumeChart: React.FC = () => {
                   bgcolor={volumePercentColor.bgColor}
                   color={volumePercentColor.textColor}
                 >
-                  <Typography variant='caption'>
+                  <caption>
                     {`${getVolumePercent(volumeIndex) > 0 ? '+' : ''}
                       ${getVolumePercent(volumeIndex).toLocaleString()}`}
                     %
-                  </Typography>
+                  </caption>
                 </Box>
               </Box>
               <Box height={21}>
-                <Typography
-                  style={{ color: palette.text.disabled }}
-                  variant='caption'
-                >
-                  {volumeDates}
-                </Typography>
+                <caption className='text-disabled'>{volumeDates}</caption>
               </Box>
             </Box>
           ) : (

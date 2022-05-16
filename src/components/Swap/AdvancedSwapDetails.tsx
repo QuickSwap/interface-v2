@@ -1,6 +1,6 @@
 import { Trade, TradeType } from '@uniswap/sdk';
 import React, { useState } from 'react';
-import { Box, Typography } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { Field } from 'state/swap/actions';
@@ -51,35 +51,31 @@ export const TradeSummary: React.FC<TradeSummaryProps> = ({
       )}
       <Box className='summaryRow'>
         <Box display='flex' alignItems='center'>
-          <Typography variant='body2'>Slippage:</Typography>
+          <small>Slippage:</small>
           <QuestionHelper text={t('slippageHelper')} />
         </Box>
         <Box
           display='flex'
           alignItems='center'
           onClick={() => setOpenSettingsModal(true)}
-          style={{ cursor: 'pointer' }}
+          className='cursor-pointer'
         >
-          <Typography variant='body2' style={{ color: palette.primary.main }}>
-            {allowedSlippage / 100}%
-          </Typography>
+          <small className='text-primary'>{allowedSlippage / 100}%</small>
           <EditIcon style={{ marginLeft: 8 }} />
         </Box>
       </Box>
       <Box className='summaryRow'>
         <Box display='flex' alignItems='center'>
-          <Typography variant='body2'>
-            {isExactIn ? t('minReceived') : t('maxSold')}:
-          </Typography>
+          <small>{isExactIn ? t('minReceived') : t('maxSold')}:</small>
           <QuestionHelper text={t('txLimitHelper')} />
         </Box>
         <Box display='flex' alignItems='center'>
-          <Typography variant='body2'>
+          <small>
             {formatTokenAmount(
               slippageAdjustedAmounts[isExactIn ? Field.OUTPUT : Field.INPUT],
             )}{' '}
             {tradeAmount.currency.symbol}
-          </Typography>
+          </small>
           <Box
             width={16}
             height={16}
@@ -93,25 +89,23 @@ export const TradeSummary: React.FC<TradeSummaryProps> = ({
       </Box>
       <Box className='summaryRow'>
         <Box display='flex' alignItems='center'>
-          <Typography variant='body2'>Price Impact:</Typography>
+          <small>Price Impact:</small>
           <QuestionHelper text={t('priceImpactHelper')} />
         </Box>
         <FormattedPriceImpact priceImpact={priceImpactWithoutFee} />
       </Box>
       <Box className='summaryRow'>
         <Box display='flex' alignItems='center'>
-          <Typography variant='body2'>Liquidity Provider Fee:</Typography>
+          <small>Liquidity Provider Fee:</small>
           <QuestionHelper text={t('liquidityProviderFeeHelper')} />
         </Box>
-        <Typography variant='body2'>
+        <small>
           {formatTokenAmount(realizedLPFee)} {trade.inputAmount.currency.symbol}
-        </Typography>
+        </small>
       </Box>
       <Box className='summaryRow'>
         <Box display='flex' alignItems='center'>
-          <Typography variant='body2' style={{ marginRight: 4 }}>
-            Route
-          </Typography>
+          <small style={{ marginRight: 4 }}>Route</small>
           <QuestionHelper text={t('swapRouteHelper')} />
         </Box>
         <Box>
@@ -119,11 +113,11 @@ export const TradeSummary: React.FC<TradeSummaryProps> = ({
             const isLastItem: boolean = i === path.length - 1;
             return (
               <Box key={i} display='flex' alignItems='center'>
-                <Typography variant='body2'>
+                <small>
                   {token.symbol}{' '}
                   {// this is not to show the arrow at the end of the trade path
                   isLastItem ? '' : ' > '}
-                </Typography>
+                </small>
               </Box>
             );
           })}

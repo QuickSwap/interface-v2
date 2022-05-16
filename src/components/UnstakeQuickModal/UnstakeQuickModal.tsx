@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Typography, Button } from '@material-ui/core';
+import { Box, Button } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 import { CustomModal, ColoredSlider, NumericalInput } from 'components';
 import { useLairInfo } from 'state/stake/hooks';
@@ -57,8 +57,8 @@ const UnstakeQuickModal: React.FC<UnstakeQuickModalProps> = ({
     <CustomModal open={open} onClose={onClose}>
       <Box paddingX={3} paddingY={4}>
         <Box display='flex' alignItems='center' justifyContent='space-between'>
-          <Typography variant='h5'>Unstake dQUICK</Typography>
-          <CloseIcon style={{ cursor: 'pointer' }} onClick={onClose} />
+          <h5>Unstake dQUICK</h5>
+          <CloseIcon className='cursor-pointer' onClick={onClose} />
         </Box>
         <Box
           mt={3}
@@ -72,10 +72,8 @@ const UnstakeQuickModal: React.FC<UnstakeQuickModalProps> = ({
             alignItems='center'
             justifyContent='space-between'
           >
-            <Typography variant='body2'>dQUICK</Typography>
-            <Typography variant='body2'>
-              Balance: {formatTokenAmount(dQuickBalance)}
-            </Typography>
+            <small>dQUICK</small>
+            <small>Balance: {formatTokenAmount(dQuickBalance)}</small>
           </Box>
           <Box mt={2} display='flex' alignItems='center'>
             <NumericalInput
@@ -92,20 +90,15 @@ const UnstakeQuickModal: React.FC<UnstakeQuickModalProps> = ({
                 );
               }}
             />
-            <Typography
-              variant='caption'
-              style={{
-                color: palette.primary.main,
-                fontWeight: 'bold',
-                cursor: 'pointer',
-              }}
+            <caption
+              className='text-primary text-bold cursor-pointer'
               onClick={() => {
                 setTypedValue(dQuickBalance ? dQuickBalance.toExact() : '0');
                 setStakePercent(100);
               }}
             >
               MAX
-            </Typography>
+            </caption>
           </Box>
           <Box display='flex' alignItems='center'>
             <Box flex={1} mr={2} mt={0.5}>
@@ -129,9 +122,7 @@ const UnstakeQuickModal: React.FC<UnstakeQuickModalProps> = ({
                 }}
               />
             </Box>
-            <Typography variant='body2'>
-              {Math.min(stakePercent, 100).toLocaleString()}%
-            </Typography>
+            <small>{Math.min(stakePercent, 100).toLocaleString()}%</small>
           </Box>
         </Box>
         <Box mt={3}>

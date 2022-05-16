@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTheme } from '@material-ui/core/styles';
-import { Box, Typography, Divider, useMediaQuery } from '@material-ui/core';
+import { Box, Divider, useMediaQuery } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import { ArrowUp, ArrowDown } from 'react-feather';
 import {
@@ -329,12 +329,9 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
 
   const renderStakedOnly = () => (
     <Box display='flex' alignItems='center'>
-      <Typography
-        variant='body2'
-        style={{ color: palette.text.disabled, marginRight: 8 }}
-      >
+      <small className='text-disabled' style={{ marginRight: 8 }}>
         Staked Only
-      </Typography>
+      </small>
       <ToggleSwitch
         toggled={stakedOnly}
         onToggle={() => setStakeOnly(!stakedOnly)}
@@ -365,13 +362,13 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
         mb={3.5}
       >
         <Box>
-          <Typography variant='h5'>Earn dQuick</Typography>
-          <Typography variant='body2'>
+          <h5>Earn dQuick</h5>
+          <small>
             Stake LP Tokens to earn{' '}
             {farmIndex === GlobalConst.farmIndex.LPFARM_INDEX
               ? 'dQUICK + Pool Fees'
               : 'dQUICK + WMATIC rewards'}
-          </Typography>
+          </small>
         </Box>
         <Box display='flex' flexWrap='wrap'>
           <Box
@@ -405,12 +402,9 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
                   <CustomMenu title='Sort By' menuItems={sortByMobileItems} />
                 </Box>
                 <Box mt={2} width={1} display='flex' alignItems='center'>
-                  <Typography
-                    variant='body2'
-                    style={{ color: palette.text.disabled, marginRight: 8 }}
-                  >
+                  <small className='text-disabled' style={{ marginRight: 8 }}>
                     Sort {sortDesc ? 'Desc' : 'Asc'}
-                  </Typography>
+                  </small>
                   <ToggleSwitch
                     toggled={sortDesc}
                     onToggle={() => setSortDesc(!sortDesc)}
@@ -432,16 +426,14 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
               display='flex'
               alignItems='center'
               width={item.width}
+              className={`cursor-pointer ${
+                sortBy === item.index ? '' : 'text-secondary'
+              }`}
               style={{ cursor: 'pointer' }}
               justifyContent={item.justify}
               onClick={item.onClick}
-              color={
-                sortBy === item.index
-                  ? palette.text.primary
-                  : palette.text.secondary
-              }
             >
-              <Typography variant='body2'>{item.text}</Typography>
+              <small>{item.text}</small>
               <Box display='flex' ml={0.5}>
                 {sortBy === item.index && sortDesc ? (
                   <ArrowDown size={20} />

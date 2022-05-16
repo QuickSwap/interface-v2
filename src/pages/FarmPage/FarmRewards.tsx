@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { useTheme } from '@material-ui/core/styles';
-import { Box, Typography, useMediaQuery } from '@material-ui/core';
+import { Box, useMediaQuery } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import { useUSDRewardsandFees } from 'state/stake/hooks';
 import { useActiveWeb3React } from 'hooks';
@@ -35,14 +35,12 @@ const FarmRewards: React.FC<{ farmIndex: number; bulkPairs: any }> = ({
         textAlign='center'
       >
         <Box mb={1}>
-          <Typography variant='caption' color='textSecondary'>
-            Total Rewards
-          </Typography>
+          <caption className='text-secondary'>Total Rewards</caption>
         </Box>
         {farmData.rewardsUSD ? (
-          <Typography variant='subtitle2' style={{ fontWeight: 600 }}>
+          <h6 className='weight-600'>
             ${farmData.rewardsUSD.toLocaleString()} / Day
-          </Typography>
+          </h6>
         ) : (
           <Skeleton width='100%' height='28px' />
         )}
@@ -53,14 +51,12 @@ const FarmRewards: React.FC<{ farmIndex: number; bulkPairs: any }> = ({
         textAlign='center'
       >
         <Box mb={1}>
-          <Typography variant='caption' color='textSecondary'>
-            Fees [24h]
-          </Typography>
+          <caption className='text-secondary'>Fees [24h]</caption>
         </Box>
         {farmData.stakingFees ? (
-          <Typography variant='subtitle2' style={{ fontWeight: 600 }}>
+          <h6 className='weight-600'>
             ${farmData.stakingFees.toLocaleString()}
-          </Typography>
+          </h6>
         ) : (
           <Skeleton width='100%' height='28px' />
         )}
@@ -86,13 +82,11 @@ const FarmRewards: React.FC<{ farmIndex: number; bulkPairs: any }> = ({
             textAlign='center'
           >
             <Box mb={1}>
-              <Typography variant='caption' color='textSecondary'>
-                Reward Rate
-              </Typography>
+              <caption className='text-secondary'>Reward Rate</caption>
             </Box>
-            <Typography variant='subtitle2' style={{ fontWeight: 600 }}>
+            <h6 className='weight-600'>
               {dQuickRewardSum.toLocaleString()} dQuick / Day
-            </Typography>
+            </h6>
           </Box>
           {getRewardsSection(true)}
         </>

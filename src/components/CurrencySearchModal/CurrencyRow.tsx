@@ -1,12 +1,6 @@
 import { CurrencyAmount, ETHER, Token } from '@uniswap/sdk';
 import React from 'react';
-import {
-  Box,
-  Tooltip,
-  Typography,
-  CircularProgress,
-  ListItem,
-} from '@material-ui/core';
+import { Box, Tooltip, CircularProgress, ListItem } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 import { useActiveWeb3React } from 'hooks';
 import { WrappedTokenInfo } from 'state/lists/hooks';
@@ -29,15 +23,10 @@ function currencyKey(currency: Token): string {
 }
 
 function Balance({ balance }: { balance: CurrencyAmount }) {
-  const { palette } = useTheme();
   return (
-    <Typography
-      variant='body2'
-      title={balance.toExact()}
-      style={{ color: palette.text.primary }}
-    >
+    <small className='text-primary' title={balance.toExact()}>
       {formatTokenAmount(balance)}
-    </Typography>
+    </small>
   );
 }
 
@@ -153,9 +142,7 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
         <CurrencyLogo currency={currency} size={'32px'} />
         <Box ml={1} height={32}>
           <Box display='flex' alignItems='center'>
-            <Typography variant='body2' className='currencySymbol'>
-              {currency.symbol}
-            </Typography>
+            <small className='currencySymbol'>{currency.symbol}</small>
             {isMetamask && currency !== ETHER && (
               <Box
                 style={{ cursor: 'pointer', marginLeft: 2 }}
@@ -174,14 +161,12 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
             )}
           </Box>
           {isOnSelectedList ? (
-            <Typography variant='caption' className='currencyName'>
-              {currency.name}
-            </Typography>
+            <caption className='currencyName'>{currency.name}</caption>
           ) : (
             <Box display='flex' alignItems='center'>
-              <Typography variant='caption'>
+              <caption>
                 {customAdded ? 'Added by user' : 'Found by address'}
-              </Typography>
+              </caption>
               <Box
                 ml={0.5}
                 color={palette.primary.main}
@@ -195,9 +180,7 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
                   }
                 }}
               >
-                <Typography variant='caption'>
-                  {customAdded ? '(Remove)' : '(Add)'}
-                </Typography>
+                <caption>{customAdded ? '(Remove)' : '(Add)'}</caption>
               </Box>
             </Box>
           )}
@@ -209,16 +192,13 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
           {balance ? (
             <>
               <Balance balance={balance} />
-              <Typography
-                variant='caption'
-                style={{ color: palette.text.secondary }}
-              >
+              <caption className='text-secondary'>
                 $
                 {(
                   Number(balance.toExact()) *
                   (usdPrice ? Number(usdPrice.toSignificant()) : 0)
                 ).toLocaleString()}
-              </Typography>
+              </caption>
             </>
           ) : account ? (
             <CircularProgress size={24} color='secondary' />

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Typography, Button, Box } from '@material-ui/core';
+import { Button, Box } from '@material-ui/core';
 import FiatMask from 'assets/images/FiatMask.svg';
 import BuyWithFiat from 'assets/images/featured/BuywithFiat.svg';
 import { BuyFiatModal, MoonpayModal } from 'components';
@@ -31,11 +31,11 @@ export const BuyFiatSection: React.FC = () => {
         <Box className='buyFiatInfo'>
           <img src={BuyWithFiat} alt='buy with fiat' />
           <Box>
-            <Typography variant='h3'>Buy crypto with Fiat</Typography>
-            <Typography variant='h6'>
+            <h3>Buy crypto with Fiat</h3>
+            <h6>
               Simple way to buy or sell crypto with a credit card, bank transfer
               and more
-            </Typography>
+            </h6>
           </Box>
         </Box>
         <Box className='buyFiatWrapper'>

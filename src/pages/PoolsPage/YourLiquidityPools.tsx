@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { Pair } from '@uniswap/sdk';
-import { Box, Typography } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import Skeleton from '@material-ui/lab/Skeleton';
 import NoLiquidity from 'assets/images/NoLiquidityPool.png';
 import { PoolFinderModal, PoolPositionCard } from 'components';
@@ -62,9 +62,7 @@ const YourLiquidityPools: React.FC = () => {
           onClose={() => setOpenPoolFinder(false)}
         />
       )}
-      <Typography variant='body1' style={{ fontWeight: 600 }}>
-        Your Liquidity Pools
-      </Typography>
+      <p className='weight-600'>Your Liquidity Pools</p>
       <Box mt={3}>
         {v2IsLoading ? (
           <Box width={1}>
@@ -72,12 +70,12 @@ const YourLiquidityPools: React.FC = () => {
           </Box>
         ) : allV2PairsWithLiquidity.length > 0 ? (
           <Box>
-            <Typography variant='body2' className='liquidityText'>
+            <small className='liquidityText'>
               Don’t see a pool you joined?{' '}
               <span onClick={() => setOpenPoolFinder(true)}>Import it</span>
               .<br />
               Unstake your LP Tokens from Farms to see them here.
-            </Typography>
+            </small>
             {allV2PairsWithLiquidity.map((pair, ind) => (
               <Box key={ind} mt={2}>
                 <PoolPositionCard
@@ -94,12 +92,12 @@ const YourLiquidityPools: React.FC = () => {
               alt='No Liquidity'
               className='noLiquidityImage'
             />
-            <Typography variant='body2' className='liquidityText'>
+            <small className='liquidityText'>
               Don’t see a pool you joined?{' '}
               <span onClick={() => setOpenPoolFinder(true)}>Import it</span>
               .<br />
               Unstake your LP Tokens from Farms to see them here.
-            </Typography>
+            </small>
           </Box>
         )}
       </Box>

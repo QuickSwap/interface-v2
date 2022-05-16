@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Typography } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 import { ReactComponent as SettingsIcon } from 'assets/images/SettingsIcon.svg';
 import { useIsProMode } from 'state/application/hooks';
@@ -53,7 +53,7 @@ const SwapMain: React.FC = () => {
             `}
             onClick={() => setSwapIndex(SWAP_NORMAL)}
           >
-            <Typography variant='body1'>Market</Typography>
+            <p>Market</p>
           </Box>
           <Box
             className={`${swapIndex === SWAP_LIMIT &&
@@ -61,18 +61,15 @@ const SwapMain: React.FC = () => {
             borderRight={isProMode ? `1px solid ${palette.divider}` : ''}
             onClick={() => setSwapIndex(SWAP_LIMIT)}
           >
-            <Typography variant='body1'>Limit</Typography>
+            <p>Limit</p>
           </Box>
         </Box>
         <Box display='flex' alignItems='center'>
           {!isProMode && (
             <Box display='flex' alignItems='center' mr={1}>
-              <Typography
-                variant='caption'
-                style={{ color: palette.text.secondary, marginRight: 8 }}
-              >
+              <caption className='text-secondary' style={{ marginRight: 8 }}>
                 PRO MODE
-              </Typography>
+              </caption>
               <ToggleSwitch
                 toggled={isProMode}
                 onToggle={() => updateIsProMode(!isProMode)}
@@ -96,20 +93,19 @@ const SwapMain: React.FC = () => {
             <GelatoLimitOrderPanel />
             <GelatoLimitOrdersHistoryPanel />
             <Box mt={2} textAlign='center'>
-              <Typography variant='body2'>
+              <small>
                 <b>* Disclaimer:</b> Limit Orders on QuickSwap are provided by
                 Gelato, a 3rd party protocol and should be considered in beta.
                 DYOR and use at your own risk. QuickSwap is not responsible.
                 More info can be found&nbsp;
                 <a
-                  style={{ color: palette.text.primary }}
                   target='_blank'
                   rel='noopener noreferrer'
                   href='https://www.certik.org/projects/gelato'
                 >
                   here.
                 </a>
-              </Typography>
+              </small>
             </Box>
           </>
         )}

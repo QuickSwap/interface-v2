@@ -1,6 +1,6 @@
 import React from 'react';
-import { Box, Typography } from '@material-ui/core';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { Box } from '@material-ui/core';
+import { useTheme } from '@material-ui/core/styles';
 import 'components/styles/ChartType.scss';
 
 interface ChartTypeProps {
@@ -27,7 +27,7 @@ const ChartType: React.FC<ChartTypeProps> = ({
           bgcolor={chartType === value ? palette.grey.A400 : 'transparent'}
           onClick={() => setChartType(value)}
         >
-          <Typography variant='caption'>{typeTexts[index]}</Typography>
+          <caption>{typeTexts[index]}</caption>
         </Box>
       ))}
     </Box>

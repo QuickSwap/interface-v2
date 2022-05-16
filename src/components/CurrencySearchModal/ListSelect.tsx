@@ -1,7 +1,7 @@
 import React, { memo, useCallback, useMemo, useState } from 'react';
 import { ArrowLeft } from 'react-feather';
 import ReactGA from 'react-ga';
-import { Box, Typography, Button, Popover, Divider } from '@material-ui/core';
+import { Box, Button, Popover, Divider } from '@material-ui/core';
 import { useDispatch, useSelector } from 'react-redux';
 import { ReactComponent as DropDown } from 'assets/images/dropdown.svg';
 import { useFetchListCallback } from 'hooks/useFetchListCallback';
@@ -109,7 +109,7 @@ const ListRow = memo(function ListRow({
         <div style={{ width: '24px', height: '24px', marginRight: '1rem' }} />
       )}
       <Box className='listname'>
-        <Typography>{list.name}</Typography>
+        <p>{list.name}</p>
         <Box className='styledListUrlText' title={listUrl}>
           <ListOrigin listUrl={listUrl} />
         </Box>
@@ -131,7 +131,7 @@ const ListRow = memo(function ListRow({
           transformOrigin={{ vertical: 'top', horizontal: 'center' }}
         >
           <Box className='popoverWrapper'>
-            <Typography>{list && listVersionLabel(list.version)}</Typography>
+            <p>{list && listVersionLabel(list.version)}</p>
             <Divider />
             <Box>
               <a
@@ -261,7 +261,7 @@ const ListSelect: React.FC<ListSelectProps> = ({ onDismiss, onBack }) => {
     <Box className='manageList'>
       <Box className='header'>
         <ArrowLeft onClick={onBack} />
-        <Typography>Manage Lists</Typography>
+        <p>Manage Lists</p>
         <CloseIcon onClick={onDismiss} />
       </Box>
 
@@ -269,7 +269,7 @@ const ListSelect: React.FC<ListSelectProps> = ({ onDismiss, onBack }) => {
 
       <Box className='content'>
         <Box>
-          <Typography>Add a list</Typography>
+          <p>Add a list</p>
           <QuestionHelper text='Token lists are an open specification for lists of ERC20 tokens. You can use any token list by entering its URL below. Beware that third party token lists can contain fake or malicious ERC20 tokens.' />
         </Box>
         <Box>
@@ -287,9 +287,9 @@ const ListSelect: React.FC<ListSelectProps> = ({ onDismiss, onBack }) => {
           </Button>
         </Box>
         {addError ? (
-          <Typography style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}>
+          <p style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}>
             {addError}
-          </Typography>
+          </p>
         ) : null}
       </Box>
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 
 interface SortButtonProps {
   toggleSortOrder: () => void;
@@ -12,7 +12,7 @@ const SortButton: React.FC<SortButtonProps> = ({
 }) => {
   return (
     <Box className='filterWrapper' onClick={toggleSortOrder}>
-      <Typography>{ascending ? '↑' : '↓'}</Typography>
+      <p>{ascending ? '↑' : '↓'}</p>
     </Box>
   );
 };

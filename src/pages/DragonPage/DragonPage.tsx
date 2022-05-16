@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTheme } from '@material-ui/core/styles';
-import { Box, Typography, Grid, useMediaQuery } from '@material-ui/core';
+import { Box, Grid, useMediaQuery } from '@material-ui/core';
 import DragonBg1 from 'assets/images/DragonBg1.svg';
 import DragonBg2 from 'assets/images/DragonBg2.svg';
 import DragonLairMask from 'assets/images/DragonLairMask.svg';
@@ -28,8 +28,8 @@ const DragonPage: React.FC = () => {
               style={{ width: '100%', position: 'absolute', top: 207 }}
             />
             <Box className='dragonTitle'>
-              <Typography variant='h5'>Dragon’s Lair</Typography>
-              <Typography variant='body2'>Stake QUICK to earn QUICK</Typography>
+              <h5>Dragon’s Lair</h5>
+              <small>Stake QUICK to earn QUICK</small>
             </Box>
             <DragonsLair />
           </Box>
@@ -40,10 +40,8 @@ const DragonPage: React.FC = () => {
               <img src={isMobile ? DragonBg2 : DragonBg1} alt='Dragon Syrup' />
             </Box>
             <Box className='dragonTitle'>
-              <Typography variant='h5'>Dragon’s Syrup</Typography>
-              <Typography variant='body2'>
-                Earn tokens of your choice over time
-              </Typography>
+              <h5>Dragon’s Syrup</h5>
+              <small>Earn tokens of your choice over time</small>
             </Box>
             <DragonsSyrup />
           </Box>

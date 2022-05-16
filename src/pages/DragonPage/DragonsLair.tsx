@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTheme } from '@material-ui/core/styles';
-import { Box, Typography } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import { useLairInfo } from 'state/stake/hooks';
 import { CurrencyLogo, StakeQuickModal, UnstakeQuickModal } from 'components';
 import { ReactComponent as PriceExchangeIcon } from 'assets/images/PriceExchangeIcon.svg';
@@ -36,47 +36,38 @@ const DragonsLair: React.FC = () => {
       <Box display='flex'>
         <CurrencyLogo currency={returnTokenFromKey('QUICK')} size='32px' />
         <Box ml={1.5}>
-          <Typography
-            variant='body2'
-            style={{ color: palette.text.primary, lineHeight: 1 }}
-          >
-            QUICK
-          </Typography>
-          <Typography variant='caption' style={{ color: palette.text.hint }}>
+          <small>QUICK</small>
+          <caption className='text-hint'>
             Single Stake — Auto compounding
-          </Typography>
+          </caption>
         </Box>
       </Box>
       <Box display='flex' justifyContent='space-between' mt={1.5}>
-        <Typography variant='body2'>Total QUICK</Typography>
-        <Typography variant='body2'>
+        <small>Total QUICK</small>
+        <small>
           {lairInfo
             ? lairInfo.totalQuickBalance.toFixed(2, {
                 groupSeparator: ',',
               })
             : 0}
-        </Typography>
+        </small>
       </Box>
       <Box display='flex' justifyContent='space-between' mt={1.5}>
-        <Typography variant='body2'>TVL:</Typography>
-        <Typography variant='body2'>
+        <small>TVL:</small>
+        <small>
           $
           {(
             Number(lairInfo.totalQuickBalance.toExact()) * quickPrice
           ).toLocaleString()}
-        </Typography>
+        </small>
       </Box>
       <Box display='flex' justifyContent='space-between' mt={1.5}>
-        <Typography variant='body2'>APY</Typography>
-        <Typography variant='body2' style={{ color: palette.success.main }}>
-          {APY}%
-        </Typography>
+        <small>APY</small>
+        <small className='text-success'>{APY}%</small>
       </Box>
       <Box display='flex' justifyContent='space-between' mt={1.5}>
-        <Typography variant='body2'>Your Deposits</Typography>
-        <Typography variant='body2'>
-          {formatTokenAmount(lairInfo.QUICKBalance)}
-        </Typography>
+        <small>Your Deposits</small>
+        <small>{formatTokenAmount(lairInfo.QUICKBalance)}</small>
       </Box>
       <Box
         mt={2.5}
@@ -89,15 +80,15 @@ const DragonsLair: React.FC = () => {
         border={`1px solid ${palette.secondary.light}`}
       >
         <CurrencyLogo currency={returnTokenFromKey('QUICK')} />
-        <Typography variant='body2' style={{ margin: '0 8px' }}>
+        <small style={{ margin: '0 8px' }}>
           {isQUICKRate ? 1 : dQUICKtoQUICK.toLocaleString()} QUICK =
-        </Typography>
+        </small>
         <CurrencyLogo currency={returnTokenFromKey('QUICK')} />
-        <Typography variant='body2' style={{ margin: '0 8px' }}>
+        <small style={{ margin: '0 8px' }}>
           {isQUICKRate ? QUICKtodQUICK.toLocaleString() : 1} dQUICK
-        </Typography>
+        </small>
         <PriceExchangeIcon
-          style={{ cursor: 'pointer' }}
+          className='cursor-pointer'
           onClick={() => setIsQUICKRate(!isQUICKRate)}
         />
       </Box>
@@ -106,23 +97,20 @@ const DragonsLair: React.FC = () => {
         bgcolor={palette.primary.main}
         onClick={() => setOpenStakeModal(true)}
       >
-        <Typography variant='body2'>Stake</Typography>
+        <small>Stake</small>
       </Box>
       <Box
         className='stakeButton'
         bgcolor='transparent'
         onClick={() => setOpenUnstakeModal(true)}
       >
-        <Typography variant='body2'>Unstake</Typography>
+        <small>Unstake</small>
       </Box>
       <Box mt={3} textAlign='center'>
-        <Typography
-          variant='caption'
-          style={{ color: palette.text.secondary, fontWeight: 500 }}
-        >
+        <caption className='text-secondary'>
           ⭐️ When you unstake, the contract will automatically claim QUICK on
           your behalf.
-        </Typography>
+        </caption>
       </Box>
     </Box>
   );

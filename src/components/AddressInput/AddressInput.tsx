@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography, useTheme } from '@material-ui/core';
+import { Box, useTheme } from '@material-ui/core';
 import useENS from 'hooks/useENS';
 import { useActiveWeb3React } from 'hooks';
 import { getEtherscanLink } from 'utils';
@@ -29,7 +29,7 @@ const AddressInput: React.FC<AddressInputProps> = ({
       border={`1px solid ${error ? palette.error.main : palette.primary.dark}`}
     >
       <Box display='flex' justifyContent='space-between' alignItems='center'>
-        <Typography>{label}</Typography>
+        <p>{label}</p>
         {address && chainId && (
           <a
             href={getEtherscanLink(chainId, name ?? address, 'address')}

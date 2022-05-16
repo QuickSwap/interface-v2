@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 
 interface OptionProps {
   link?: string | null;
@@ -27,9 +27,7 @@ const Option: React.FC<OptionProps> = ({
     <Box className='optionCardClickable' id={id} onClick={onClick}>
       <Box display='flex' alignItems='center' my={0.5}>
         <img src={icon} alt={'Icon'} width={24} />
-        <Typography variant='body1' style={{ marginLeft: 8 }}>
-          {header}
-        </Typography>
+        <p style={{ marginLeft: 8 }}>{header}</p>
       </Box>
       {active && (
         <Box display='flex' alignItems='center'>
@@ -40,12 +38,12 @@ const Option: React.FC<OptionProps> = ({
             mr={1}
             bgcolor='#11eea7'
           />
-          <Typography variant='body2'>Connected</Typography>
+          <small>Connected</small>
         </Box>
       )}
       {subheader && (
         <Box my={0.5} width={1}>
-          <Typography variant='caption'>{subheader}</Typography>
+          <caption>{subheader}</caption>
         </Box>
       )}
     </Box>

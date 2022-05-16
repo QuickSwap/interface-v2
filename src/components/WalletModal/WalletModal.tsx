@@ -4,7 +4,7 @@ import { WalletConnectConnector } from '@web3-react/walletconnect-connector';
 import React, { useEffect, useState } from 'react';
 import { isMobile } from 'react-device-detect';
 import ReactGA from 'react-ga';
-import { Box, Typography } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import MetamaskIcon from 'assets/images/metamask.png';
 import { ReactComponent as Close } from 'assets/images/CloseIcon.svg';
 import { fortmatic, injected, portis, safeApp } from 'connectors';
@@ -285,18 +285,18 @@ const WalletModal: React.FC<WalletModalProps> = ({
             <Close style={{ cursor: 'pointer' }} onClick={toggleWalletModal} />
           </Box>
           <Box mt={2} textAlign='center'>
-            <Typography variant='subtitle2'>
+            <h6>
               {error instanceof UnsupportedChainIdError
                 ? 'Wrong Network'
                 : 'Error connecting'}
-            </Typography>
+            </h6>
           </Box>
           <Box mt={3} mb={2} textAlign='center'>
-            <Typography variant='body2'>
+            <small>
               {error instanceof UnsupportedChainIdError
                 ? 'Please connect to the appropriate Polygon network.'
                 : 'Error connecting. Try refreshing the page.'}
-            </Typography>
+            </small>
           </Box>
         </Box>
       );
@@ -315,7 +315,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
     return (
       <Box paddingX={3} paddingY={4}>
         <Box display='flex' justifyContent='space-between'>
-          <Typography variant='h5'>Connect wallet</Typography>
+          <h5>Connect wallet</h5>
           <Close style={{ cursor: 'pointer' }} onClick={toggleWalletModal} />
         </Box>
         <Box mt={4}>
@@ -331,13 +331,13 @@ const WalletModal: React.FC<WalletModalProps> = ({
           )}
           {walletView !== WALLET_VIEWS.PENDING && (
             <Box className='blurb'>
-              <Typography variant='body2'>New to Matic?</Typography>
+              <small>New to Matic?</small>
               <a
                 href='https://docs.matic.network/docs/develop/wallets/getting-started'
                 target='_blank'
                 rel='noopener noreferrer'
               >
-                <Typography variant='body2'>Learn about Wallets ↗</Typography>
+                <small>Learn about Wallets ↗</small>
               </a>
             </Box>
           )}

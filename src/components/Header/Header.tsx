@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Box, Typography, useMediaQuery } from '@material-ui/core';
+import { Box, useMediaQuery } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 import { useWalletModalToggle } from 'state/application/hooks';
 import {
@@ -130,7 +130,7 @@ const Header: React.FC = () => {
                 pathname.indexOf(val.link) > -1 ? 'active' : 'menuItem'
               }
             >
-              <Typography variant='body2'>{val.text}</Typography>
+              <small>{val.text}</small>
             </Link>
           ))}
           {/* <Box display='flex' className='menuItem'>
@@ -145,7 +145,7 @@ const Header: React.FC = () => {
               <Box className='subMenu'>
                 {outLinks.map((item, ind) => (
                   <a href={item.link} key={ind}>
-                    <Typography variant='body2'>{item.text}</Typography>
+                    <small>{item.text}</small>
                   </a>
                 ))}
               </Box>
@@ -164,7 +164,7 @@ const Header: React.FC = () => {
                   pathname.indexOf(val.link) > -1 ? 'active' : 'menuItem'
                 }
               >
-                <Typography variant='body2'>{val.text}</Typography>
+                <small>{val.text}</small>
               </Link>
             ))}
             <Box display='flex' className='menuItem'>
@@ -190,7 +190,7 @@ const Header: React.FC = () => {
                         className='menuItem'
                         onClick={() => setOpenDetailMenu(false)}
                       >
-                        <Typography variant='body2'>{val.text}</Typography>
+                        <small>{val.text}</small>
                       </Link>
                     ))}
                     {outLinks.map((item, ind) => (
@@ -199,7 +199,7 @@ const Header: React.FC = () => {
                         key={ind}
                         onClick={() => setOpenDetailMenu(false)}
                       >
-                        <Typography variant='body2'>{item.text}</Typography>
+                        <small>{item.text}</small>
                       </a>
                     ))}
                   </Box>
@@ -226,7 +226,7 @@ const Header: React.FC = () => {
             className='accountDetails'
             onClick={toggleWalletModal}
           >
-            <Typography>{shortenAddress(account)}</Typography>
+            <p>{shortenAddress(account)}</p>
             <img src={WalletIcon} alt='Wallet' />
           </Box>
         ) : (
@@ -252,9 +252,7 @@ const Header: React.FC = () => {
                 paddingTop='18px'
               >
                 <Box className='wrongNetworkContent'>
-                  <Typography variant='body2'>
-                    Please switch your wallet to Polygon Network.
-                  </Typography>
+                  <small>Please switch your wallet to Polygon Network.</small>
                   <Box onClick={addMaticToMetamask}>Switch to Polygon</Box>
                 </Box>
               </Box>

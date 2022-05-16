@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import { SUPPORTED_WALLETS } from 'constants/index';
 import { injected, portis } from 'connectors';
 import { useActiveWeb3React } from 'hooks';
@@ -31,7 +31,7 @@ const StatusIcon: React.FC = () => {
             portis.portis.showPortis();
           }}
         >
-          <Typography variant='body2'>Show Portis</Typography>
+          <small>Show Portis</small>
         </Box>
       )}
     </Box>

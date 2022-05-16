@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Typography, Button } from '@material-ui/core';
+import { Box, Button } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 import { TransactionResponse } from '@ethersproject/providers';
 import { CustomModal, ColoredSlider, NumericalInput } from 'components';
@@ -96,8 +96,8 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
     <CustomModal open={open} onClose={onClose}>
       <Box paddingX={3} paddingY={4}>
         <Box display='flex' alignItems='center' justifyContent='space-between'>
-          <Typography variant='h5'>Stake QUICK</Typography>
-          <CloseIcon style={{ cursor: 'pointer' }} onClick={onClose} />
+          <h5>Stake QUICK</h5>
+          <CloseIcon className='cursor-pointer' onClick={onClose} />
         </Box>
         <Box
           mt={3}
@@ -111,10 +111,8 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
             alignItems='center'
             justifyContent='space-between'
           >
-            <Typography variant='body2'>QUICK</Typography>
-            <Typography variant='body2'>
-              Balance: {formatTokenAmount(quickBalance)}
-            </Typography>
+            <small>QUICK</small>
+            <small>Balance: {formatTokenAmount(quickBalance)}</small>
           </Box>
           <Box mt={2} display='flex' alignItems='center'>
             <NumericalInput
@@ -131,20 +129,15 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
                 );
               }}
             />
-            <Typography
-              variant='caption'
-              style={{
-                color: palette.primary.main,
-                fontWeight: 'bold',
-                cursor: 'pointer',
-              }}
+            <caption
+              className='text-primary text-bold cursor-pointer'
               onClick={() => {
                 setTypedValue(quickBalance ? quickBalance.toExact() : '0');
                 setStakePercent(100);
               }}
             >
               MAX
-            </Typography>
+            </caption>
           </Box>
           <Box display='flex' alignItems='center'>
             <Box flex={1} mr={2} mt={0.5}>
@@ -168,9 +161,7 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
                 }}
               />
             </Box>
-            <Typography variant='body2'>
-              {Math.min(stakePercent, 100).toLocaleString()}%
-            </Typography>
+            <small>{Math.min(stakePercent, 100).toLocaleString()}%</small>
           </Box>
         </Box>
         <Box display='flex' justifyContent='space-between' alignItems='center'>

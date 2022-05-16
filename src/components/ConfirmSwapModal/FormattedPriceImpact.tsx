@@ -1,4 +1,3 @@
-import { Typography } from '@material-ui/core';
 import { Percent } from '@uniswap/sdk';
 import React from 'react';
 import { GlobalConst } from '../../constants';
@@ -12,8 +11,7 @@ const FormattedPriceImpact: React.FC<{ priceImpact?: Percent }> = ({
 }) => {
   const severity = warningSeverity(priceImpact);
   return (
-    <Typography
-      variant='body2'
+    <small
       style={{
         color:
           severity === 3 || severity === 4
@@ -30,7 +28,7 @@ const FormattedPriceImpact: React.FC<{ priceImpact?: Percent }> = ({
           ? '<0.01%'
           : `${priceImpact.toFixed(2)}%`
         : '-'}
-    </Typography>
+    </small>
   );
 };
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, Divider } from '@material-ui/core';
+import { Box, Divider } from '@material-ui/core';
 import { SwapHoriz } from '@material-ui/icons';
 import { Currency, Token } from '@uniswap/sdk';
 import { CurrencyLogo } from 'components';
@@ -58,17 +58,15 @@ const SwapProInfo: React.FC<{
           <CurrencyLogo currency={currency} />
           <Box ml={1} flex={1}>
             <Box display='flex' justifyContent='space-between'>
-              <Typography variant='body2'>{currency.symbol}</Typography>
+              <small>{currency.symbol}</small>
               {tokenData ? (
-                <Typography variant='body2'>
-                  ${formatNumber(tokenData?.priceUSD)}
-                </Typography>
+                <small>${formatNumber(tokenData?.priceUSD)}</small>
               ) : (
                 <Skeleton width={60} height={14} />
               )}
             </Box>
             {tokenData ? (
-              <Typography variant='caption'>
+              <caption>
                 24h:{' '}
                 <span
                   className={
@@ -77,7 +75,7 @@ const SwapProInfo: React.FC<{
                 >
                   {formatNumber(priceUpPercent)}%
                 </span>
-              </Typography>
+              </caption>
             ) : (
               <Skeleton width={60} height={12} />
             )}
@@ -91,7 +89,7 @@ const SwapProInfo: React.FC<{
   return (
     <>
       <Box p={1}>
-        <Typography variant='body1'>Info:</Typography>
+        <p>Info:</p>
       </Box>
       <Divider />
       {currency1 && <TokenInfo currency={currency1} tokenData={token1Data} />}
@@ -106,9 +104,9 @@ const SwapProInfo: React.FC<{
               alignItems='center'
               justifyContent='space-between'
             >
-              <Typography variant='body2'>
+              <small>
                 {currency1.symbol} / {currency2.symbol}
-              </Typography>
+              </small>
               <Box className='swapIcon'>
                 <SwapHoriz />
               </Box>

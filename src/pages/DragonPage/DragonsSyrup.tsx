@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { useTheme } from '@material-ui/core/styles';
 import { ArrowUp, ArrowDown } from 'react-feather';
-import { Box, Typography, Divider, useMediaQuery } from '@material-ui/core';
+import { Box, Divider, useMediaQuery } from '@material-ui/core';
 import { useSyrupInfo, useOldSyrupInfo, useLairInfo } from 'state/stake/hooks';
 import { SyrupInfo } from 'types';
 import {
@@ -29,7 +29,7 @@ const APR_COLUMN = 3;
 const EARNED_COLUMN = 4;
 
 const DragonsSyrup: React.FC = () => {
-  const { palette, breakpoints } = useTheme();
+  const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const [isEndedSyrup, setIsEndedSyrup] = useState(false);
   const [pageIndex, setPageIndex] = useState(0);
@@ -155,12 +155,9 @@ const DragonsSyrup: React.FC = () => {
 
   const renderStakedOnly = () => (
     <Box display='flex' alignItems='center'>
-      <Typography
-        variant='body2'
-        style={{ color: palette.text.disabled, marginRight: 8 }}
-      >
+      <small className='text-disabled' style={{ marginRight: 8 }}>
         Staked Only
-      </Typography>
+      </small>
       <ToggleSwitch
         toggled={stakedOnly}
         onToggle={() => setStakeOnly(!stakedOnly)}
@@ -258,12 +255,9 @@ const DragonsSyrup: React.FC = () => {
                 <CustomMenu title='Sort By' menuItems={sortByMobileItems} />
               </Box>
               <Box mt={2} width={1} display='flex' alignItems='center'>
-                <Typography
-                  variant='body2'
-                  style={{ color: palette.text.disabled, marginRight: 8 }}
-                >
+                <small className='text-disabled' style={{ marginRight: 8 }}>
                   Sort {sortDesc ? 'Desc' : 'Asc'}
-                </Typography>
+                </small>
                 <ToggleSwitch
                   toggled={sortDesc}
                   onToggle={() => setSortDesc(!sortDesc)}
@@ -284,16 +278,13 @@ const DragonsSyrup: React.FC = () => {
               display='flex'
               alignItems='center'
               width={item.width}
-              style={{ cursor: 'pointer' }}
               justifyContent={item.justify}
               onClick={item.onClick}
-              color={
-                sortBy === item.index
-                  ? palette.text.primary
-                  : palette.text.secondary
-              }
+              className={`cursor-pointer ${
+                sortBy === item.index ? 'text-primaryText' : 'text-secondary'
+              }`}
             >
-              <Typography variant='body2'>{item.text}</Typography>
+              <small>{item.text}</small>
               <Box display='flex' ml={0.5}>
                 {sortBy === item.index && sortDesc ? (
                   <ArrowDown size={20} />

@@ -9,7 +9,7 @@ import React, {
   useState,
 } from 'react';
 import ReactGA from 'react-ga';
-import { Box, Typography, Divider } from '@material-ui/core';
+import { Box, Divider } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { FixedSizeList } from 'react-window';
@@ -159,7 +159,7 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
   return (
     <Box className='currencySearchWrapper'>
       <Box className='header'>
-        <Typography variant='subtitle2'>Select a token</Typography>
+        <h6>Select a token</h6>
         <CloseIcon onClick={onDismiss} />
       </Box>
       <Box className='searchInputWrapper'>

@@ -1,6 +1,6 @@
 import { ChainId } from '@uniswap/sdk';
 import React from 'react';
-import { Box, Typography, Button, CircularProgress } from '@material-ui/core';
+import { Box, Button, CircularProgress } from '@material-ui/core';
 import { CustomModal } from 'components';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 import { ReactComponent as TransactionFailed } from 'assets/images/TransactionFailed.svg';
@@ -28,11 +28,9 @@ export const ConfirmationPendingContent: React.FC<ConfirmationPendingContentProp
         <Box my={4} display='flex' justifyContent='center'>
           <CircularProgress size={80} />
         </Box>
-        <Typography variant='h5'>Waiting For Confirmation</Typography>
-        <Typography variant='body1'>{pendingText}</Typography>
-        <Typography variant='caption'>
-          Please confirm this transaction in your wallet.
-        </Typography>
+        <h5>Waiting For Confirmation</h5>
+        <p>{pendingText}</p>
+        <caption>Please confirm this transaction in your wallet.</caption>
       </Box>
     </Box>
   );
@@ -56,9 +54,7 @@ export const TransactionSubmittedContent: React.FC<TransactionSubmittedContentPr
   return (
     <Box padding={4}>
       <Box className='txModalHeader'>
-        <Typography variant='h5'>
-          Transaction {txPending ? 'Submitted' : 'Completed'}
-        </Typography>
+        <h5>Transaction {txPending ? 'Submitted' : 'Completed'}</h5>
         <CloseIcon onClick={onDismiss} />
       </Box>
       {!txPending && (
@@ -67,7 +63,7 @@ export const TransactionSubmittedContent: React.FC<TransactionSubmittedContentPr
         </Box>
       )}
       <Box className='txModalContent'>
-        <Typography variant='body1'>{modalContent}</Typography>
+        <p>{modalContent}</p>
       </Box>
       <Box display='flex' justifyContent='space-between' mt={2}>
         {chainId && hash && (
@@ -106,7 +102,7 @@ export const ConfirmationModalContent: React.FC<ConfirmationModalContentProps> =
   return (
     <Box padding={4}>
       <Box className='txModalHeader'>
-        <Typography variant='h5'>{title}</Typography>
+        <h5>{title}</h5>
         <CloseIcon onClick={onDismiss} />
       </Box>
       {content()}
@@ -127,14 +123,12 @@ export const TransactionErrorContent: React.FC<TransactionErrorContentProps> = (
     <Box padding={4}>
       <Box>
         <Box className='txModalHeader'>
-          <Typography variant='h5' color='error'>
-            Error!
-          </Typography>
+          <h5 className='text-error'>Error!</h5>
           <CloseIcon onClick={onDismiss} />
         </Box>
         <Box className='txModalContent'>
           <TransactionFailed />
-          <Typography variant='body1'>{message}</Typography>
+          <p>{message}</p>
         </Box>
       </Box>
       <Button className='txSubmitButton' onClick={onDismiss}>

@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { TransactionResponse } from '@ethersproject/providers';
-import { Box, Typography, Button, CircularProgress } from '@material-ui/core';
+import { Box, Button, CircularProgress } from '@material-ui/core';
 import { Trans, useTranslation } from 'react-i18next';
 import QUICKIcon from 'assets/images/quickIcon.svg';
 import { ReactComponent as QUICKV2Icon } from 'assets/images/QUICKV2.svg';
@@ -131,22 +131,22 @@ const ConvertQUICKPage: React.FC = () => {
 
   return (
     <Box width='100%' maxWidth={488} id='convertQUICKPage'>
-      <Typography variant='h4'>{t('convert')} QUICK</Typography>
+      <h4>{t('convert')} QUICK</h4>
       <Box className='wrapper'>
         <Box display='flex' alignItems='center' mb={3}>
           <Box className='iconWrapper'>
             <img src={QUICKIcon} alt='QUICK' />
           </Box>
-          <Typography variant='h6'>QUICK(OLD)</Typography>
+          <p className='weight-600'>QUICK(OLD)</p>
           <Box mx={1.5} className='convertArrow'>
             <ArrowForward />
           </Box>
           <Box className='iconWrapper'>
             <QUICKV2Icon />
           </Box>
-          <Typography variant='h6'>QUICK(NEW)</Typography>
+          <p className='weight-600'>QUICK(NEW)</p>
         </Box>
-        <Typography variant='body2' color='textSecondary'>
+        <small className='text-secondary'>
           <Trans i18nKey='convertQuick'>
             Convert your QUICK(OLD) to QUICK(NEW). Read more about QUICK token
             split{' '}
@@ -158,17 +158,17 @@ const ConvertQUICKPage: React.FC = () => {
               here
             </a>
           </Trans>
-        </Typography>
+        </small>
         <Box className='conversionRate'>
-          <Typography variant='caption'>
+          <caption>
             {t('conversionRate')}: 1 QUICK(OLD) ={' '}
             {GlobalConst.utils.QUICK_CONVERSION_RATE} QUICK(NEW)
-          </Typography>
+          </caption>
         </Box>
         <Box mt={4} mb={2}>
-          <Typography variant='body2' color='textSecondary'>
+          <small className='text-secondary'>
             {t('yourbalance')}: {formatTokenAmount(quickBalance)}
-          </Typography>
+          </small>
           <Box className='currencyInput errorInput'>
             <NumericalInput
               placeholder='0.00'
@@ -209,21 +209,19 @@ const ConvertQUICKPage: React.FC = () => {
             >
               {t('max')}
             </Box>
-            <Typography variant='h6'>QUICK(OLD)</Typography>
+            <p className='weight-600'>QUICK(OLD)</p>
           </Box>
           {isInsufficientQUICK && (
-            <Typography variant='body2' className='text-error'>
+            <small className='text-error'>
               {t('insufficientBalance', { symbol: 'QUICK' })}
-            </Typography>
+            </small>
           )}
         </Box>
         <Box ml={2} className='convertArrow'>
           <ArrowDownward />
         </Box>
         <Box mt={2} mb={4}>
-          <Typography variant='body2' color='textSecondary'>
-            {t('youwillreceive')}:
-          </Typography>
+          <small className='text-secondary'>{t('youwillreceive')}:</small>
           <Box className='currencyInput'>
             <NumericalInput
               placeholder='0.00'
@@ -240,7 +238,7 @@ const ConvertQUICKPage: React.FC = () => {
                 setQUICKAmount(quickAmount);
               }}
             />
-            <Typography variant='h6'>QUICK(NEW)</Typography>
+            <p className='weight-600'>QUICK(NEW)</p>
           </Box>
         </Box>
         <Box display='flex' justifyContent='center'>
@@ -287,9 +285,7 @@ const ConvertQUICKPage: React.FC = () => {
                     <Box mt={6} mb={5}>
                       <CircularProgress size={80} />
                     </Box>
-                    <Typography variant='body1'>
-                      {quickConvertingText}
-                    </Typography>
+                    <p>{quickConvertingText}</p>
                   </Box>
                 )}
               />

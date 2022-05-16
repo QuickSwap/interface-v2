@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Typography, Box, Grid, useMediaQuery } from '@material-ui/core';
+import { Box, Grid, useMediaQuery } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import Motif from 'assets/images/Motif.svg';
@@ -142,41 +142,35 @@ const LandingPage: React.FC = () => {
         <TopMovers background={palette.background.paper} />
       </Box>
       <Box className='quickInfo'>
-        <Typography style={{ fontSize: '24px' }}>
-          {t('quickInfoTitle')}
-        </Typography>
+        <h4>{t('quickInfoTitle')}</h4>
         <img src={Motif} alt='Motif' />
       </Box>
       <SwapSection />
       <Box className='rewardsContainer'>
         <Box maxWidth='480px' width='100%'>
-          <Typography variant='h4'>{t('earnRewardsbyDeposit')}</Typography>
-          <Typography style={{ marginTop: '20px' }}>
-            {t('depositLPTokensRewards')}
-          </Typography>
+          <h4>{t('earnRewardsbyDeposit')}</h4>
+          <p style={{ marginTop: '20px' }}>{t('depositLPTokensRewards')}</p>
         </Box>
         <RewardSlider />
         <Box
-          bgcolor={palette.secondary.dark}
-          color={palette.text.primary}
+          className='cursor-pointer bg-secondary2'
           width={194}
           height={48}
           display='flex'
           alignItems='center'
           justifyContent='center'
           borderRadius={24}
-          style={{ cursor: 'pointer' }}
           onClick={() => {
             history.push('/farm');
           }}
         >
-          <Typography variant='body1'>{t('seeAllPairs')}</Typography>
+          <p>{t('seeAllPairs')}</p>
         </Box>
       </Box>
       <BuyFiatSection />
       <Box className='featureContainer'>
         <Box className='featureHeading'>
-          <Typography variant='h3'>{t('features')}</Typography>
+          <h3>{t('features')}</h3>
           <Box className='featureDivider' />
         </Box>
         <Grid container spacing={4}>
@@ -184,8 +178,8 @@ const LandingPage: React.FC = () => {
             <Grid item container alignItems='center' sm={12} md={6} key={index}>
               <img src={val.img} alt={val.title} />
               <Box className='featureText'>
-                <Typography variant='h5'>{val.title}</Typography>
-                <Typography variant='body1'>{val.desc}</Typography>
+                <h5>{val.title}</h5>
+                <p>{val.desc}</p>
               </Box>
             </Grid>
           ))}
@@ -193,7 +187,7 @@ const LandingPage: React.FC = () => {
       </Box>
       <Box className='communityContainer'>
         <Box className='featureHeading'>
-          <Typography variant='h3'>{t('joinCommunity')}</Typography>
+          <h3>{t('joinCommunity')}</h3>
           <Box className='featureDivider' />
         </Box>
         <Box className='socialContent'>
@@ -201,7 +195,7 @@ const LandingPage: React.FC = () => {
             <Box key={ind}>
               <a href={val.link} target='_blank' rel='noopener noreferrer'>
                 {val.icon}
-                <Typography>{val.title}</Typography>
+                <p>{val.title}</p>
               </a>
             </Box>
           ))}

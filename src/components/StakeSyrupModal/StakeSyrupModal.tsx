@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Typography, Button } from '@material-ui/core';
+import { Box, Button } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 import { TokenAmount } from '@uniswap/sdk';
 import { TransactionResponse } from '@ethersproject/providers';
@@ -156,9 +156,7 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
     <CustomModal open={open} onClose={onClose}>
       <Box paddingX={3} paddingY={4}>
         <Box display='flex' alignItems='center' justifyContent='space-between'>
-          <Typography variant='h5'>
-            Stake {syrup.stakingToken.symbol}
-          </Typography>
+          <h5>Stake {syrup.stakingToken.symbol}</h5>
           <CloseIcon style={{ cursor: 'pointer' }} onClick={onClose} />
         </Box>
         <Box
@@ -173,10 +171,8 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
             alignItems='center'
             justifyContent='space-between'
           >
-            <Typography variant='body2'>{syrup.stakingToken.symbol}</Typography>
-            <Typography variant='body2'>
-              Balance: {formatTokenAmount(maxAmountInput)}
-            </Typography>
+            <small>{syrup.stakingToken.symbol}</small>
+            <small>Balance: {formatTokenAmount(maxAmountInput)}</small>
           </Box>
           <Box mt={2} display='flex' alignItems='center'>
             <NumericalInput
@@ -201,20 +197,15 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
                 }
               }}
             />
-            <Typography
-              variant='caption'
-              style={{
-                color: palette.primary.main,
-                fontWeight: 'bold',
-                cursor: 'pointer',
-              }}
+            <caption
+              className='text-primary text-bold cursor-pointer'
               onClick={() => {
                 setTypedValue(maxAmountInput ? maxAmountInput.toExact() : '0');
                 setStakePercent(100);
               }}
             >
               MAX
-            </Typography>
+            </caption>
           </Box>
           <Box display='flex' alignItems='center'>
             <Box flex={1} mr={2} mt={0.5}>
@@ -230,9 +221,7 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
                 }}
               />
             </Box>
-            <Typography variant='body2'>
-              {Math.min(stakePercent, 100).toLocaleString()}%
-            </Typography>
+            <small>{Math.min(stakePercent, 100).toLocaleString()}%</small>
           </Box>
         </Box>
         <Box
@@ -241,15 +230,15 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
           alignItems='center'
           justifyContent='space-between'
         >
-          <Typography variant='body1'>Daily Rewards</Typography>
-          <Typography variant='body1'>
+          <p>Daily Rewards</p>
+          <p>
             {hypotheticalRewardRate
               ? formatNumber(
                   Number(hypotheticalRewardRate.toExact()) * getSecondsOneDay(),
                 )
               : '-'}{' '}
             {syrup.token.symbol} / day
-          </Typography>
+          </p>
         </Box>
         <Box
           mt={3}

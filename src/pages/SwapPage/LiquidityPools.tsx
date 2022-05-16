@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Box, Divider, Typography, useMediaQuery } from '@material-ui/core';
+import { Box, Divider, useMediaQuery } from '@material-ui/core';
 import { KeyboardArrowUp, KeyboardArrowDown } from '@material-ui/icons';
 import { useTheme } from '@material-ui/core/styles';
 import { getTokenPairs, getBulkPairData, getEthPrice } from 'utils';
@@ -86,15 +86,12 @@ const LiquidityPools: React.FC<{
         marginBottom={liquidityPoolClosed ? 0 : '20px'}
       >
         <Box display='flex' alignItems='center'>
-          <Typography
-            variant='h6'
-            style={{ color: palette.text.primary, marginRight: 8 }}
-          >
+          <p className='weight-600' style={{ marginRight: 8 }}>
             Liquidity Pools{' '}
-          </Typography>
-          <Typography variant='body2' style={{ color: palette.text.secondary }}>
+          </p>
+          <small className='text-secondary'>
             ({token1.symbol?.toUpperCase()}, {token2.symbol?.toUpperCase()})
-          </Typography>
+          </small>
         </Box>
         <Box
           display='flex'
@@ -110,44 +107,35 @@ const LiquidityPools: React.FC<{
           <Box width={1}>
             <Box display='flex' padding={2} className='liquidityMain'>
               <Box display='flex' width={0.5} className='liquidityFilter'>
-                <Typography
-                  variant='body2'
+                <small
                   className={liquidityFilterIndex === 0 ? 'active' : ''}
                   onClick={() => setLiquidityFilterIndex(0)}
                 >
                   All
-                </Typography>
-                <Typography
-                  variant='body2'
+                </small>
+                <small
                   className={liquidityFilterIndex === 1 ? 'active' : ''}
                   onClick={() => setLiquidityFilterIndex(1)}
                 >
                   {token1.symbol?.toUpperCase()}
-                </Typography>
-                <Typography
-                  variant='body2'
+                </small>
+                <small
                   className={liquidityFilterIndex === 2 ? 'active' : ''}
                   onClick={() => setLiquidityFilterIndex(2)}
                 >
                   {token2.symbol?.toUpperCase()}
-                </Typography>
+                </small>
               </Box>
               {!isMobile && (
                 <>
                   <Box width={0.2}>
-                    <Typography variant='body2' align='left'>
-                      TVL
-                    </Typography>
+                    <small>TVL</small>
                   </Box>
                   <Box width={0.15}>
-                    <Typography variant='body2' align='left'>
-                      24h Volume
-                    </Typography>
+                    <small>24h Volume</small>
                   </Box>
                   <Box width={0.15}>
-                    <Typography variant='body2' align='right'>
-                      APY
-                    </Typography>
+                    <small className='text-right'>APY</small>
                   </Box>
                 </>
               )}

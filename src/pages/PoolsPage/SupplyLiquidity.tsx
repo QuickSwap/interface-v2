@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTheme } from '@material-ui/core/styles';
-import { Box, Typography } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import { ReactComponent as SettingsIcon } from 'assets/images/SettingsIcon.svg';
 import { AddLiquidity, QuestionHelper, SettingsModal } from 'components';
 import useParsedQueryString from 'hooks/useParsedQueryString';
@@ -30,9 +30,7 @@ const SupplyLiquidity: React.FC = () => {
         />
       )}
       <Box display='flex' justifyContent='space-between' alignItems='center'>
-        <Typography variant='body1' style={{ fontWeight: 600 }}>
-          Supply Liquidity
-        </Typography>
+        <p className='weight-600'>Supply Liquidity</p>
         <Box display='flex' alignItems='center'>
           <Box className='headingItem'>
             <QuestionHelper

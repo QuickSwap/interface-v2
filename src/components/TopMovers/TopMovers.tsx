@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Box, Typography, useMediaQuery } from '@material-ui/core';
+import { Box, useMediaQuery } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 import { ArrowDropUp, ArrowDropDown } from '@material-ui/icons';
 import Skeleton from '@material-ui/lab/Skeleton';
@@ -53,9 +53,7 @@ const TopMovers: React.FC<TopMoversProps> = ({
       pt={2.5}
       pb={0.5}
     >
-      <Typography variant='h6' style={{ color: palette.text.secondary }}>
-        24h TOP MOVERS
-      </Typography>
+      <p className='weight-600 text-secondary'>24h TOP MOVERS</p>
       <Box width={1} pb={2} style={{ overflowX: 'auto' }}>
         {topMoverTokens ? (
           <Box
@@ -90,18 +88,14 @@ const TopMovers: React.FC<TopMoversProps> = ({
                 >
                   <CurrencyLogo currency={currency} size='28px' />
                   <Box ml={1}>
-                    <Typography variant='body2' style={{ fontWeight: 'bold' }}>
-                      {token.symbol}
-                    </Typography>
+                    <small className='text-bold'>{token.symbol}</small>
                     <Box
                       display='flex'
                       flexDirection='row'
                       justifyContent='center'
                       alignItems='center'
                     >
-                      <Typography variant='body2'>
-                        ${formatNumber(token.priceUSD)}
-                      </Typography>
+                      <small>${formatNumber(token.priceUSD)}</small>
                       <Box
                         ml={hideArrow ? 1 : 0}
                         display='flex'
@@ -118,10 +112,10 @@ const TopMovers: React.FC<TopMoversProps> = ({
                       >
                         {!hideArrow && priceUp && <ArrowDropUp />}
                         {!hideArrow && priceDown && <ArrowDropDown />}
-                        <Typography variant='caption'>
+                        <caption>
                           {hideArrow && priceUp ? '+' : ''}
                           {priceUpPercent}%
-                        </Typography>
+                        </caption>
                       </Box>
                     </Box>
                   </Box>

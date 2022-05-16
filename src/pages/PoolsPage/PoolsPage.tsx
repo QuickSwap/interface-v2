@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Grid, Typography } from '@material-ui/core';
+import { Box, Grid } from '@material-ui/core';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
 import SupplyLiquidity from './SupplyLiquidity';
 import YourLiquidityPools from './YourLiquidityPools';
@@ -15,9 +15,9 @@ const PoolsPage: React.FC = () => {
         justifyContent='space-between'
         width='100%'
       >
-        <Typography variant='h4'>Pool</Typography>
+        <h4>Pool</h4>
         <Box className='helpWrapper'>
-          <Typography variant='body2'>Help</Typography>
+          <small>Help</small>
           <HelpIcon />
         </Box>
       </Box>

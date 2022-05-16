@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Typography, useTheme } from '@material-ui/core';
+import { Box, useTheme } from '@material-ui/core';
 import { ReactComponent as AlertIcon } from 'assets/images/AlertIcon.svg';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 
@@ -20,11 +20,11 @@ const DragonAlert: React.FC = () => {
         >
           <AlertIcon />
           <Box mx={2} width='calc(100% - 96px)'>
-            <Typography>
+            <p>
               As of May 2022, you can stake QUICK(NEW) in Syrup Pools. Note that
               there are some Syrup Pools that will still accept QUICK(OLD) for
               staking, until they run out of rewards
-            </Typography>
+            </p>
           </Box>
           <CloseIcon
             onClick={() => setOpenAlert(false)}

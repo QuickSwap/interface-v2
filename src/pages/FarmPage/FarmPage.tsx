@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import { getBulkPairData } from 'state/stake/hooks';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
 import { useActiveWeb3React } from 'hooks';
@@ -57,10 +57,10 @@ const FarmPage: React.FC = () => {
         mb={2}
       >
         <Box mr={2}>
-          <Typography variant='h4'>Farm</Typography>
+          <h4>Farm</h4>
         </Box>
         <Box className='helpWrapper'>
-          <Typography variant='body2'>Help</Typography>
+          <small>Help</small>
           <HelpIcon />
         </Box>
       </Box>

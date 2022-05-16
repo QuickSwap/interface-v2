@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Box, Typography, Divider } from '@material-ui/core';
+import { Box, Divider } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 import { getAddress } from '@ethersproject/address';
 import { ChainId, Token } from '@uniswap/sdk';
@@ -97,49 +97,36 @@ const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
             <Box display='flex' alignItems='center'>
               <CurrencyLogo currency={tokenCurrency} size='28px' />
               <Box ml={1}>
-                <Typography
-                  variant='body1'
-                  style={{ color: palette.text.primary }}
-                >
+                <p>
                   {token.name}{' '}
-                  <span style={{ color: palette.text.hint }}>
-                    ({token.symbol})
-                  </span>
-                </Typography>
+                  <span className='text-hint'>({token.symbol})</span>
+                </p>
               </Box>
             </Box>
           </Link>
         </Box>
         <Divider />
         <Box className='mobileRow'>
-          <Typography variant='body1'>Price</Typography>
-          <Typography variant='body1'>
-            ${formatNumber(token.priceUSD)}
-          </Typography>
+          <p>Price</p>
+          <p>${formatNumber(token.priceUSD)}</p>
         </Box>
         <Box className='mobileRow'>
-          <Typography variant='body1'>24H %</Typography>
+          <p>24H %</p>
           <Box
             className='priceChangeWrapper'
             bgcolor={priceColor.bgColor}
             color={priceColor.textColor}
           >
-            <Typography variant='body2'>
-              {getFormattedPrice(Number(token.priceChangeUSD))}%
-            </Typography>
+            <small>{getFormattedPrice(Number(token.priceChangeUSD))}%</small>
           </Box>
         </Box>
         <Box className='mobileRow'>
-          <Typography variant='body1'>24H Volume</Typography>
-          <Typography variant='body1'>
-            ${Number(token.oneDayVolumeUSD).toLocaleString()}
-          </Typography>
+          <p>24H Volume</p>
+          <p>${Number(token.oneDayVolumeUSD).toLocaleString()}</p>
         </Box>
         <Box className='mobileRow'>
-          <Typography variant='body1'>Liquidity</Typography>
-          <Typography variant='body1'>
-            ${Number(token.totalLiquidityUSD).toLocaleString()}
-          </Typography>
+          <p>Liquidity</p>
+          <p>${Number(token.totalLiquidityUSD).toLocaleString()}</p>
         </Box>
       </Box>
     );
@@ -184,15 +171,12 @@ const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
               <Box display='flex' alignItems='center'>
                 <CurrencyLogo currency={tokenCurrency} size='28px' />
                 <Box ml={1}>
-                  <Typography
-                    variant='body1'
-                    style={{ color: palette.text.primary }}
-                  >
+                  <p>
                     {token.name}{' '}
                     <span style={{ color: palette.text.hint }}>
                       ({token.symbol})
                     </span>
-                  </Typography>
+                  </p>
                 </Box>
               </Box>
             </Link>
@@ -202,7 +186,7 @@ const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
       {
         html: (
           <Box>
-            <Typography>${Number(token.priceUSD).toLocaleString()}</Typography>
+            <p>${Number(token.priceUSD).toLocaleString()}</p>
           </Box>
         ),
       },
@@ -214,29 +198,15 @@ const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
             bgcolor={priceColor.bgColor}
             color={priceColor.textColor}
           >
-            <Typography variant='body2'>
-              {getFormattedPrice(Number(token.priceChangeUSD))}%
-            </Typography>
+            <small>{getFormattedPrice(Number(token.priceChangeUSD))}%</small>
           </Box>
         ),
       },
       {
-        html: (
-          <Box>
-            <Typography>
-              ${Number(token.oneDayVolumeUSD).toLocaleString()}
-            </Typography>
-          </Box>
-        ),
+        html: <p>${Number(token.oneDayVolumeUSD).toLocaleString()}</p>,
       },
       {
-        html: (
-          <Box>
-            <Typography>
-              ${Number(token.totalLiquidityUSD).toLocaleString()}
-            </Typography>
-          </Box>
-        ),
+        html: <p>${Number(token.totalLiquidityUSD).toLocaleString()}</p>,
       },
     ];
   };

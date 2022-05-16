@@ -1,5 +1,5 @@
 import React from 'react';
-import { Typography, Box } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import 'components/styles/CustomSwitch.scss';
 
 interface SwitchItems {
@@ -41,9 +41,7 @@ const CustomSwitch: React.FC<CustomSwitchProps> = ({
             }}
             onClick={item.onClick}
           >
-            <Typography variant={isLarge ? 'body1' : 'body2'}>
-              {item.text}
-            </Typography>
+            <p className={isLarge ? '' : 'small'}>{item.text}</p>
           </Box>
         );
       })}

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import {
   ButtonGroup,
-  Typography,
   Button,
   Box,
   Grid,
@@ -46,16 +45,16 @@ export const SwapSection: React.FC = () => {
             )}
           </Grid>
           <Grid item sm={12} md={6} className='swapInfo'>
-            <Typography variant='h4'>
+            <h4>
               {tabIndex === SWAP_TAB
                 ? 'Swap tokens at near-zero gas fees'
                 : 'Let your crypto work for you'}
-            </Typography>
-            <Typography variant='body1' style={{ marginTop: '20px' }}>
+            </h4>
+            <p style={{ marginTop: '20px' }}>
               {tabIndex === SWAP_TAB
                 ? 'Deposit your Liquidity Provider tokens to receive Rewards in $QUICK on top of LP Fees.'
                 : 'Provide Liquidity and earn 0.25% fee on all trades proportional to your share of the pool. Earn additional rewards by depositing your LP Tokens in Rewards Pools.'}
-            </Typography>
+            </p>
           </Grid>
         </Grid>
       </Box>

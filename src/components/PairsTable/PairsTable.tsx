@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography, Divider } from '@material-ui/core';
+import { Box, Divider } from '@material-ui/core';
 import { Link } from 'react-router-dom';
 import { ChainId, Token } from '@uniswap/sdk';
 import { getAddress } from '@ethersproject/address';
@@ -119,9 +119,9 @@ const PairTable: React.FC<TokensTableProps> = ({ data }) => {
                 size={28}
               />
               <Box ml={1}>
-                <Typography variant='body1' color='textPrimary'>
+                <p className='text-primary'>
                   {token0.symbol} / {token1.symbol}
-                </Typography>
+                </p>
               </Box>
             </Box>
           </Link>
@@ -133,10 +133,8 @@ const PairTable: React.FC<TokensTableProps> = ({ data }) => {
           alignItems='center'
           justifyContent='space-between'
         >
-          <Typography variant='body1'>Liquidity</Typography>
-          <Typography variant='body1'>
-            ${Number(liquidity).toLocaleString()}
-          </Typography>
+          <p>Liquidity</p>
+          <p>${Number(liquidity).toLocaleString()}</p>
         </Box>
         <Box
           mt={1}
@@ -144,10 +142,8 @@ const PairTable: React.FC<TokensTableProps> = ({ data }) => {
           alignItems='center'
           justifyContent='space-between'
         >
-          <Typography variant='body1'>24h Volume</Typography>
-          <Typography variant='body1'>
-            ${Number(oneDayVolume).toLocaleString()}
-          </Typography>
+          <p>24h Volume</p>
+          <p>${Number(oneDayVolume).toLocaleString()}</p>
         </Box>
         <Box
           mt={1}
@@ -155,10 +151,8 @@ const PairTable: React.FC<TokensTableProps> = ({ data }) => {
           alignItems='center'
           justifyContent='space-between'
         >
-          <Typography variant='body1'>7d Volume</Typography>
-          <Typography variant='body1'>
-            ${Number(oneWeekVolume).toLocaleString()}
-          </Typography>
+          <p>7d Volume</p>
+          <p>${Number(oneWeekVolume).toLocaleString()}</p>
         </Box>
         <Box
           mt={1}
@@ -166,10 +160,8 @@ const PairTable: React.FC<TokensTableProps> = ({ data }) => {
           alignItems='center'
           justifyContent='space-between'
         >
-          <Typography variant='body1'>24h Fees</Typography>
-          <Typography variant='body1'>
-            ${Number(oneDayFee).toLocaleString()}
-          </Typography>
+          <p>24h Fees</p>
+          <p>${Number(oneDayFee).toLocaleString()}</p>
         </Box>
       </Box>
     );
@@ -239,9 +231,9 @@ const PairTable: React.FC<TokensTableProps> = ({ data }) => {
                   size={28}
                 />
                 <Box ml={1}>
-                  <Typography variant='body1' color='textPrimary'>
+                  <p>
                     {token0.symbol} / {token1.symbol}
-                  </Typography>
+                  </p>
                 </Box>
               </Box>
             </Link>
@@ -249,28 +241,16 @@ const PairTable: React.FC<TokensTableProps> = ({ data }) => {
         ),
       },
       {
-        html: (
-          <Typography variant='body1'>
-            ${Number(liquidity).toLocaleString()}
-          </Typography>
-        ),
+        html: <p>${Number(liquidity).toLocaleString()}</p>,
       },
       {
-        html: (
-          <Typography variant='body1'>
-            ${Number(oneDayVolume).toLocaleString()}
-          </Typography>
-        ),
+        html: <p>${Number(oneDayVolume).toLocaleString()}</p>,
       },
       {
-        html: (
-          <Typography variant='body1'>
-            ${Number(oneWeekVolume).toLocaleString()}
-          </Typography>
-        ),
+        html: <p>${Number(oneWeekVolume).toLocaleString()}</p>,
       },
       {
-        html: <Typography variant='body1'>${oneDayFee}</Typography>,
+        html: <p>${oneDayFee}</p>,
       },
     ];
   };

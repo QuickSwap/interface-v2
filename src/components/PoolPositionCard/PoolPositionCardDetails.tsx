@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Box, Typography, Button, useMediaQuery } from '@material-ui/core';
+import { Box, Button, useMediaQuery } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 import { Pair, JSBI, Percent } from '@uniswap/sdk';
 import { useActiveWeb3React } from 'hooks';
@@ -60,38 +60,36 @@ const PoolPositionCardDetails: React.FC<{ pair: Pair }> = ({ pair }) => {
     <>
       <Box px={isMobile ? 1.5 : 3} mb={3}>
         <Box className='cardRow'>
-          <Typography variant='body2'>Your pool tokens:</Typography>
-          <Typography variant='body2'>
-            {formatTokenAmount(userPoolBalance)}
-          </Typography>
+          <small>Your pool tokens:</small>
+          <small>{formatTokenAmount(userPoolBalance)}</small>
         </Box>
         <Box className='cardRow'>
-          <Typography variant='body2'>Pooled {currency0.symbol}:</Typography>
+          <small>Pooled {currency0.symbol}:</small>
           <Box display='flex' alignItems='center'>
-            <Typography variant='body2' style={{ marginRight: 10 }}>
+            <small style={{ marginRight: 10 }}>
               {formatTokenAmount(token0Deposited)}
-            </Typography>
+            </small>
             <CurrencyLogo size='20px' currency={currency0} />
           </Box>
         </Box>
 
         <Box className='cardRow'>
-          <Typography variant='body2'>Pooled {currency1.symbol}:</Typography>
+          <small>Pooled {currency1.symbol}:</small>
           <Box display='flex' alignItems='center'>
-            <Typography variant='body2' style={{ marginRight: 10 }}>
+            <small style={{ marginRight: 10 }}>
               {formatTokenAmount(token1Deposited)}
-            </Typography>
+            </small>
             <CurrencyLogo size='20px' currency={currency1} />
           </Box>
         </Box>
 
         <Box className='cardRow'>
-          <Typography variant='body2'>Your pool share:</Typography>
-          <Typography variant='body2'>
+          <small>Your pool share:</small>
+          <small>
             {poolTokenPercentage
               ? poolTokenPercentage.toSignificant() + '%'
               : '-'}
-          </Typography>
+          </small>
         </Box>
 
         <Box className='poolButtonRow'>
@@ -101,7 +99,7 @@ const PoolPositionCardDetails: React.FC<{ pair: Pair }> = ({ pair }) => {
               history.push(`/analytics/pair/${pair.liquidityToken.address}`)
             }
           >
-            <Typography variant='body2'>View Analytics</Typography>
+            <small>View Analytics</small>
           </Button>
           <Button
             variant='contained'
@@ -113,7 +111,7 @@ const PoolPositionCardDetails: React.FC<{ pair: Pair }> = ({ pair }) => {
               );
             }}
           >
-            <Typography variant='body2'>Add</Typography>
+            <small>Add</small>
           </Button>
           <Button
             variant='contained'
@@ -121,7 +119,7 @@ const PoolPositionCardDetails: React.FC<{ pair: Pair }> = ({ pair }) => {
               setOpenRemoveModal(true);
             }}
           >
-            <Typography variant='body2'>Remove</Typography>
+            <small>Remove</small>
           </Button>
         </Box>
       </Box>

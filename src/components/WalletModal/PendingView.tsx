@@ -1,6 +1,6 @@
 import { AbstractConnector } from '@web3-react/abstract-connector';
 import React from 'react';
-import { Box, CircularProgress, Typography } from '@material-ui/core';
+import { Box, CircularProgress } from '@material-ui/core';
 import { GlobalConst, SUPPORTED_WALLETS } from 'constants/index';
 import { injected } from 'connectors';
 import Option from './Option';
@@ -27,7 +27,7 @@ const PendingView: React.FC<PendingViewProps> = ({
       <Box display='flex' alignItems='center' justifyContent='center' mb={4}>
         {error ? (
           <Box className='errorGroup'>
-            <Typography variant='body1'>Error connecting.</Typography>
+            <p>Error connecting.</p>
             <Box
               className='errorButton'
               onClick={() => {
@@ -41,9 +41,7 @@ const PendingView: React.FC<PendingViewProps> = ({
         ) : (
           <>
             <CircularProgress />
-            <Typography variant='body1' style={{ marginLeft: 12 }}>
-              Initializing...
-            </Typography>
+            <p style={{ marginLeft: 12 }}>Initializing...</p>
           </>
         )}
       </Box>

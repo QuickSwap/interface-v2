@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Typography, useMediaQuery } from '@material-ui/core';
+import { Box, useMediaQuery } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 import { SyrupInfo } from 'types';
 import { unwrappedToken } from 'utils/wrappedCurrency';
@@ -46,7 +46,7 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
             >
               <CurrencyLogo currency={currency} size='32px' />
               <Box ml={1.5}>
-                <Typography variant='body2'>{currency.symbol}</Typography>
+                <small>{currency.symbol}</small>
               </Box>
             </Box>
             {!expanded && (
@@ -68,33 +68,30 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
             <Box width={0.3} display='flex' alignItems='center'>
               <CurrencyLogo currency={currency} size='32px' />
               <Box ml={1.5}>
-                <Typography variant='body2'>{currency.symbol}</Typography>
+                <small>{currency.symbol}</small>
                 <Box display='flex' mt={0.25}>
-                  <Typography variant='caption'>
+                  <caption>
                     {syrup.rate >= 1000000
                       ? formatCompact(syrup.rate)
                       : syrup.rate.toLocaleString()}
-                    <span style={{ color: palette.text.secondary }}>
-                      {' '}
-                      / day
-                    </span>
-                  </Typography>
+                    <span className='text-secondary'> / day</span>
+                  </caption>
                 </Box>
                 <Box display='flex' mt={0.25}>
-                  <Typography variant='caption'>
+                  <caption>
                     $
                     {syrup.rewardTokenPriceinUSD
                       ? (
                           syrup.rate * syrup.rewardTokenPriceinUSD
                         ).toLocaleString()
                       : '-'}{' '}
-                    <span style={{ color: palette.text.secondary }}>/ day</span>
-                  </Typography>
+                    <span className='text-secondary'>/ day</span>
+                  </caption>
                 </Box>
               </Box>
             </Box>
             <Box width={0.3}>
-              <Typography variant='body2'>{depositAmount}</Typography>
+              <small>{depositAmount}</small>
             </Box>
             <Box width={0.2} textAlign='left'>
               <SyrupAPR syrup={syrup} dQUICKAPY={dQUICKAPY} />
@@ -107,16 +104,13 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
                 mb={0.25}
               >
                 <CurrencyLogo currency={currency} size='16px' />
-                <Typography variant='body2' style={{ marginLeft: 5 }}>
+                <small style={{ marginLeft: 5 }}>
                   {formatTokenAmount(syrup.earnedAmount)}
-                </Typography>
+                </small>
               </Box>
-              <Typography
-                variant='body2'
-                style={{ color: palette.text.secondary }}
-              >
+              <small className='text-secondary'>
                 {getEarnedUSDSyrup(syrup)}
-              </Typography>
+              </small>
             </Box>
           </>
         )}

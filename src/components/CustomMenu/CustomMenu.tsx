@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
 import 'components/styles/CustomMenu.scss';
 
@@ -19,9 +19,9 @@ const CustomMenu: React.FC<CustomMenuProps> = ({ title, menuItems }) => {
   return (
     <>
       <Box className='customMenuWrapper' onClick={() => setOpenMenu(!openMenu)}>
-        <Typography variant='body2'>
+        <small>
           {title} {menuItem?.text}
-        </Typography>
+        </small>
         {openMenu ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
       </Box>
       {openMenu && (
@@ -36,9 +36,7 @@ const CustomMenu: React.FC<CustomMenuProps> = ({ title, menuItems }) => {
                 setMenuItem(item);
               }}
             >
-              <Typography variant='body2' color='textSecondary'>
-                {item.text}
-              </Typography>
+              <small className='text-secondary'>{item.text}</small>
             </Box>
           ))}
         </Box>

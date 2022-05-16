@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { Currency } from '@uniswap/sdk';
-import { Box, Typography } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 import { useCurrencyBalance } from 'state/wallet/hooks';
 import { CurrencySearchModal, CurrencyLogo, NumericalInput } from 'components';
@@ -60,16 +60,16 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
       bgcolor={bgColor ?? palette.secondary.dark}
     >
       <Box display='flex' justifyContent='space-between' mb={2}>
-        <Typography>{title || 'You Pay:'}</Typography>
+        <p>{title || 'You Pay:'}</p>
         <Box display='flex'>
           {account && currency && showHalfButton && (
             <Box className='maxWrapper' onClick={onHalf}>
-              <Typography variant='body2'>50%</Typography>
+              <small>50%</small>
             </Box>
           )}
           {account && currency && showMaxButton && (
             <Box className='maxWrapper' marginLeft='20px' onClick={onMax}>
-              <Typography variant='body2'>MAX</Typography>
+              <small>MAX</small>
             </Box>
           )}
         </Box>
@@ -84,12 +84,10 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
           {currency ? (
             <>
               <CurrencyLogo currency={currency} size={'28px'} />
-              <Typography className='token-symbol-container' variant='body1'>
-                {currency?.symbol}
-              </Typography>
+              <p className='token-symbol-container'>{currency?.symbol}</p>
             </>
           ) : (
-            <Typography variant='body1'>Select a token</Typography>
+            <p>Select a token</p>
           )}
         </Box>
         <Box className='inputWrapper'>
@@ -109,12 +107,8 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
         justifyContent='space-between'
         className='balanceSection'
       >
-        <Typography variant='body2'>
-          Balance: {formatTokenAmount(selectedCurrencyBalance)}
-        </Typography>
-        <Typography variant='body2'>
-          ${(usdPrice * Number(amount)).toLocaleString()}
-        </Typography>
+        <small>Balance: {formatTokenAmount(selectedCurrencyBalance)}</small>
+        <small>${(usdPrice * Number(amount)).toLocaleString()}</small>
       </Box>
       {modalOpen && (
         <CurrencySearchModal

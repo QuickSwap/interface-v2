@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Box, Typography, useMediaQuery } from '@material-ui/core';
+import { Box, useMediaQuery } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 import { ChevronDown, ChevronUp } from 'react-feather';
 import { Pair } from '@uniswap/sdk';
@@ -77,14 +77,11 @@ const PoolPositionCard: React.FC<{ pair: Pair }> = ({ pair }) => {
             currency1={currency1}
             size={28}
           />
-          <Typography
-            variant='h6'
-            style={{ color: palette.text.primary, marginLeft: 16 }}
-          >
+          <p className='weight-600' style={{ marginLeft: 16 }}>
             {!currency0 || !currency1
               ? 'Loading'
               : `${currency0.symbol}/${currency1.symbol}`}
-          </Typography>
+          </p>
         </Box>
 
         <Box
@@ -94,9 +91,7 @@ const PoolPositionCard: React.FC<{ pair: Pair }> = ({ pair }) => {
           style={{ cursor: 'pointer' }}
           onClick={() => setShowMore(!showMore)}
         >
-          <Typography variant='body1' style={{ marginRight: 8 }}>
-            Manage
-          </Typography>
+          <p style={{ marginRight: 8 }}>Manage</p>
           {showMore ? <ChevronUp size='20' /> : <ChevronDown size='20' />}
         </Box>
       </Box>
@@ -104,14 +99,11 @@ const PoolPositionCard: React.FC<{ pair: Pair }> = ({ pair }) => {
       {showMore && <PoolPositionCardDetails pair={pair} />}
       {stakingInfo && !stakingInfo.ended && apyWithFee && (
         <Box bgcolor='#404557' paddingY={0.75} paddingX={isMobile ? 2 : 3}>
-          <Typography variant='body2'>
-            Earn{' '}
-            <span style={{ color: palette.success.main }}>
-              {apyWithFee}% APY
-            </span>{' '}
-            by staking your LP tokens in {currency0.symbol?.toUpperCase()} /{' '}
+          <small>
+            Earn <span className='text-success'>{apyWithFee}% APY</span> by
+            staking your LP tokens in {currency0.symbol?.toUpperCase()} /{' '}
             {currency1.symbol?.toUpperCase()} Farm
-          </Typography>
+          </small>
         </Box>
       )}
     </Box>

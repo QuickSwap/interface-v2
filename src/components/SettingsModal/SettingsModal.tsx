@@ -1,8 +1,8 @@
 import React, { useState, useMemo } from 'react';
-import { Box, Divider, Typography } from '@material-ui/core';
+import { Box, Divider } from '@material-ui/core';
 import { KeyboardArrowDown } from '@material-ui/icons';
 import { AlertTriangle } from 'react-feather';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { useTheme } from '@material-ui/core/styles';
 import {
   CustomModal,
   NumericalInput,
@@ -117,7 +117,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
             justifyContent='space-between'
             alignItems='center'
           >
-            <Typography variant='h5'>Are you sure?</Typography>
+            <h5>Are you sure?</h5>
             <CloseIcon
               style={{ cursor: 'pointer' }}
               onClick={() => setExpertConfirm(false)}
@@ -125,23 +125,21 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
           </Box>
           <Divider />
           <Box mt={2.5} mb={1.5}>
-            <Typography variant='body1'>
+            <p>
               Expert mode turns off the confirm transaction prompt and allows
               high slippage trades that often result in bad rates and lost
               funds.
-            </Typography>
-            <Typography
-              variant='body1'
-              style={{ fontWeight: 'bold', marginTop: 24 }}
-            >
-              ONLY USE THIS MODE IF YOU KNOW WHAT YOU ARE DOING.
-            </Typography>
-            <Typography
-              variant='body1'
-              style={{ fontWeight: 'bold', marginTop: 24 }}
-            >
-              Please type the word &quot;confirm&quot; to enable expert mode.
-            </Typography>
+            </p>
+            <Box mt={3}>
+              <p className='text-bold'>
+                ONLY USE THIS MODE IF YOU KNOW WHAT YOU ARE DOING.
+              </p>
+            </Box>
+            <Box mt={3}>
+              <p className='text-bold'>
+                Please type the word &quot;confirm&quot; to enable expert mode.
+              </p>
+            </Box>
           </Box>
           <Box
             height={40}
@@ -178,7 +176,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
               }
             }}
           >
-            <Typography variant='h6'>Turn on Expert Mode</Typography>
+            <p className='weight-600'>Turn on Expert Mode</p>
           </Box>
         </Box>
       </CustomModal>
@@ -189,14 +187,14 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
           justifyContent='space-between'
           alignItems='center'
         >
-          <Typography variant='h5'>Settings</Typography>
+          <h5>Settings</h5>
           <CloseIcon onClick={onClose} />
         </Box>
         <Divider />
         <Box my={2.5} display='flex' alignItems='center'>
-          <Typography variant='body1' style={{ marginRight: 6 }}>
-            Slippage Tolerance
-          </Typography>
+          <Box mr='6px'>
+            <p>Slippage Tolerance</p>
+          </Box>
           <QuestionHelper
             size={20}
             text='Your transaction will revert if the price changes unfavorably by more than this percentage.'
@@ -213,7 +211,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
                 setUserslippageTolerance(10);
               }}
             >
-              <Typography variant='body2'>0.1%</Typography>
+              <small>0.1%</small>
             </Box>
             <Box
               className={`slippageButton${
@@ -224,7 +222,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
                 setUserslippageTolerance(50);
               }}
             >
-              <Typography variant='body2'>0.5%</Typography>
+              <small>0.5%</small>
             </Box>
             <Box
               className={`slippageButton${
@@ -235,7 +233,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
                 setUserslippageTolerance(100);
               }}
             >
-              <Typography variant='body2'>1%</Typography>
+              <small>1%</small>
             </Box>
             <Box
               flex={1}
@@ -264,27 +262,26 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
                 }}
                 onUserInput={(value) => parseCustomSlippage(value)}
               />
-              <Typography variant='body2'>%</Typography>
+              <small>%</small>
             </Box>
           </Box>
           {slippageError && (
-            <Typography
-              variant='body2'
-              style={{ color: '#ffa000', marginTop: 12 }}
-            >
-              {slippageError === SlippageError.InvalidInput
-                ? 'Enter a valid slippage percentage'
-                : slippageError === SlippageError.RiskyLow
-                ? 'Your transaction may fail'
-                : 'Your transaction may be frontrun'}
-            </Typography>
+            <Box mt={1.5}>
+              <small className='text-yellow3'>
+                {slippageError === SlippageError.InvalidInput
+                  ? 'Enter a valid slippage percentage'
+                  : slippageError === SlippageError.RiskyLow
+                  ? 'Your transaction may fail'
+                  : 'Your transaction may be frontrun'}
+              </small>
+            </Box>
           )}
         </Box>
         <Divider />
         <Box my={2.5} display='flex' alignItems='center'>
-          <Typography variant='body1' style={{ marginRight: 6 }}>
-            Transaction Deadline
-          </Typography>
+          <Box mr='6px'>
+            <p>Transaction Deadline</p>
+          </Box>
           <QuestionHelper
             size={20}
             text='Your transaction will revert if it is pending for more than this long.'
@@ -313,17 +310,14 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
               onUserInput={(value) => parseCustomDeadline(value)}
             />
           </Box>
-          <Typography variant='body2' style={{ marginLeft: 8 }}>
-            minutes
-          </Typography>
+          <Box ml={1}>
+            <small>minutes</small>
+          </Box>
         </Box>
         {deadlineError && (
-          <Typography
-            variant='body2'
-            style={{ color: '#ffa000', marginTop: 12 }}
-          >
-            Enter a valid deadline
-          </Typography>
+          <Box mt={1.5}>
+            <small className='text-yellow3'>Enter a valid deadline</small>
+          </Box>
         )}
         <Divider />
         <Box
@@ -333,9 +327,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
           alignItems='center'
         >
           <Box display='flex' alignItems='center'>
-            <Typography variant='body1' style={{ marginRight: 6 }}>
-              Expert Mode
-            </Typography>
+            <p style={{ marginRight: 6 }}>Expert Mode</p>
             <QuestionHelper
               size={20}
               text='Bypasses confirmation modals and allows high slippage trades. Use at your own risk.'
@@ -360,9 +352,9 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
           justifyContent='space-between'
           alignItems='center'
         >
-          <Typography variant='body1'>Language</Typography>
+          <p>Language</p>
           <Box display='flex' alignItems='center'>
-            <Typography variant='body1'>English (default)</Typography>
+            <p>English (default)</p>
             <KeyboardArrowDown />
           </Box>
         </Box>

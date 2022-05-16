@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { useActiveWeb3React } from 'hooks';
 import { AppDispatch } from 'state';
-import { Box, Typography } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 import { clearAllTransactions } from 'state/transactions/actions';
 import { shortenAddress, getEtherscanLink } from 'utils';
@@ -63,7 +63,7 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
             (isMetaMask && k === 'METAMASK')),
       )
       .map((k) => SUPPORTED_WALLETS[k].name)[0];
-    return <Typography variant='body2'>Connected with {name}</Typography>;
+    return <small>Connected with {name}</small>;
   }
 
   const clearAllTransactionsCallback = useCallback(() => {
@@ -73,7 +73,7 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
   return (
     <Box paddingX={3} paddingY={4}>
       <Box display='flex' justifyContent='space-between'>
-        <Typography variant='h5'>Account</Typography>
+        <h5 className='text-bold'>Account</h5>
         <Close style={{ cursor: 'pointer' }} onClick={toggleWalletModal} />
       </Box>
       <Box
@@ -88,38 +88,32 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
             {connector !== injected &&
               connector !== walletlink &&
               connector !== safeApp && (
-                <Typography
+                <small
                   style={{ cursor: 'pointer', marginRight: 8 }}
                   onClick={() => {
                     (connector as any).close();
                   }}
-                  variant='body2'
                 >
                   Disconnect
-                </Typography>
+                </small>
               )}
             {connector !== safeApp && (
-              <Typography
-                style={{ cursor: 'pointer' }}
+              <small
+                className='cursor-pointer'
                 onClick={() => {
                   openOptions();
                 }}
-                variant='body2'
               >
                 Change
-              </Typography>
+              </small>
             )}
           </Box>
         </Box>
         <Box display='flex' alignItems='center' my={1.5}>
           <StatusIcon />
-          <Typography
-            variant='h5'
-            style={{ marginLeft: 8 }}
-            id='web3-account-identifier-row'
-          >
+          <h5 style={{ marginLeft: 8 }} id='web3-account-identifier-row'>
             {ENSName ? ENSName : account && shortenAddress(account)}
-          </Typography>
+          </h5>
         </Box>
         <Box display='flex' justifyContent='space-between' alignItems='center'>
           {account && (
@@ -142,7 +136,7 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
               rel='noopener noreferrer'
             >
               <LinkIcon size={16} />
-              <Typography variant='body2'>View on Block Explorer</Typography>
+              <small>View on Block Explorer</small>
             </a>
           )}
         </Box>
@@ -157,14 +151,13 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
             pt={2}
             mb={1}
           >
-            <Typography variant='body2'>Recent Transactions</Typography>
-            <Typography
-              variant='body2'
-              style={{ cursor: 'pointer' }}
+            <small>Recent Transactions</small>
+            <small
+              className='cursor-pointer'
               onClick={clearAllTransactionsCallback}
             >
               Clear all
-            </Typography>
+            </small>
           </Box>
           <Box paddingX={2} flex={1} overflow='auto'>
             {renderTransactions(pendingTransactions)}
@@ -173,9 +166,7 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
         </>
       ) : (
         <Box paddingX={2} pt={2}>
-          <Typography variant='body2'>
-            Your transactions will appear here...
-          </Typography>
+          <p>Your transactions will appear here...</p>
         </Box>
       )}
     </Box>

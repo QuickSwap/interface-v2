@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import { PairTable } from 'components';
 import { getEthPrice, getTopPairs, getBulkPairData } from 'utils';
 import { Skeleton } from '@material-ui/lab';
@@ -27,7 +27,7 @@ const AnalyticsPairs: React.FC = () => {
 
   return (
     <Box width='100%' mb={3}>
-      <Typography>All Pairs</Typography>
+      <p>All Pairs</p>
       <Box mt={4} className='panel'>
         {topPairs ? (
           <PairTable data={topPairs} />

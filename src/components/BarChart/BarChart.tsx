@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import 'components/styles/BarChart.scss';
 
 export interface BarChartProps {
@@ -34,7 +34,7 @@ const BarChart: React.FC<BarChartProps> = ({
       {categories && data.length > 0 && (
         <Box className='categoryValues' mt={2}>
           {categories.map((val, ind) => (
-            <Typography key={ind}>{val}</Typography>
+            <p key={ind}>{val}</p>
           ))}
         </Box>
       )}

@@ -2,7 +2,7 @@ import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { Currency, CurrencyAmount, JSBI, Token, Trade } from '@uniswap/sdk';
 import ReactGA from 'react-ga';
 import { ArrowDown } from 'react-feather';
-import { Box, Typography, Button, CircularProgress } from '@material-ui/core';
+import { Box, Button, CircularProgress } from '@material-ui/core';
 import { useWalletModalToggle } from 'state/application/hooks';
 import {
   useDerivedSwapInfo,
@@ -494,8 +494,8 @@ const Swap: React.FC<{
       />
       {trade && trade.executionPrice && (
         <Box className='swapPrice'>
-          <Typography variant='body2'>Price:</Typography>
-          <Typography variant='body2'>
+          <small>Price:</small>
+          <small>
             1{' '}
             {
               (mainPrice ? currencies[Field.INPUT] : currencies[Field.OUTPUT])
@@ -515,7 +515,7 @@ const Swap: React.FC<{
                 setMainPrice(!mainPrice);
               }}
             />
-          </Typography>
+          </small>
         </Box>
       )}
       {!showWrap && isExpertMode && (
