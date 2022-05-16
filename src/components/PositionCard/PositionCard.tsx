@@ -93,7 +93,6 @@ export const MinimalPositionCard: React.FC<PositionCardProps> = ({
               <DoubleCurrencyLogo
                 currency0={currency0}
                 currency1={currency1}
-                margin={true}
                 size={20}
               />
               <Typography style={{ marginLeft: 6 }}>
@@ -196,7 +195,6 @@ const FullPositionCard: React.FC<PositionCardProps> = ({ pair }) => {
           <DoubleCurrencyLogo
             currency0={currency0}
             currency1={currency1}
-            margin={true}
             size={20}
           />
           <Typography>

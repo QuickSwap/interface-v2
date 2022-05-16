@@ -1,0 +1,209 @@
+@use 'styles/variables' as *;
+@use 'styles/breakpoints' as *;
+
+.header {
+  padding: 0 24px;
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  min-height: 88px;
+  z-index: 3;
+  align-items: center;
+  justify-content: space-between;
+  & a {
+    display: flex;
+  }
+  & .primary {
+    background-color: $blue1;
+  }
+  & .danger {
+    background-color: $errorMain;
+  }  
+  & > div {
+    display: flex;
+    align-items: center;
+    z-index: 2;
+    &:last-child {
+      & button {
+        height: 40px;
+        border-radius: 20px;
+        &:first-child {
+          padding: 0 16px;
+          margin-right: 16px;
+          & svg {
+            width: 20px;
+            height: 20px;
+            margin-right: 8px;
+          }
+        }
+        &:last-child {
+          padding: 0 32px;
+        }
+        & p {
+          font-size: 16,
+        }
+      }
+    }
+  }
+  @include media("screen", "<tablet") {
+    align-items: center;
+  }
+  @include media("screen", "<phone") {
+    padding: 0 16px;
+  }
+}
+.networkWrapper {
+  margin-left: 16px;
+  padding: 0 12px;
+  height: 26px;
+  border-radius: 13px;
+  display: flex;
+  align-items: center;
+  background: $primaryDark;
+  & p {
+    margin-left: 6px;
+    text-transform: uppercase;
+    font-size: 13px;
+    color: $grey7;
+  }
+  @include media("screen", "<phone") {
+    display: none;
+  }
+}
+.mainMenu {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  height: 100%;
+  & .menuItem {
+    border-radius: 10px;
+    cursor: pointer;
+    position: relative;
+    & .subMenu {
+      display: none;
+      position: absolute;
+      left: 0;
+      top: 14px;
+      background: $bgColor;
+      border-radius: 10px;
+      padding: 14px 0;
+      & > a {
+        padding: 10px 24px;
+        &:hover {
+          color: white;
+        }
+      }
+    }
+    &:hover {
+      background: $secondary1;
+      & .subMenu {
+        display: block;
+      }
+    }
+  }
+  & a {
+    text-decoration: none;
+    padding: 7.5px 24px;
+    margin-right: 12px;
+    color: $textSecondary;
+    border-radius: 10px;
+    & p {
+      letter-spacing: normal;
+    }
+    &.active {
+      color: $textPrimary;
+      background: $secondary1;
+    }
+    &:last-child {
+      margin-right: 0,
+    }
+  }
+}
+.accountDetails {
+  border: solid 1px $grey2;
+  padding: 0 16px;
+  height: 36px;
+  cursor: pointer;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  & p {
+    font-size: 14px;
+    font-weight: 600;
+  }
+  & img {
+    width: 20px;
+    margin-left: 8px
+  }
+}
+.connectButton {
+  width: 152px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+  cursor: pointer;
+  position: relative;
+  &:hover .wrongNetworkContent {
+    display: block;
+  }
+}
+.wrongNetworkContent {
+  background: $bgColor;
+  border-radius: 10px;
+  padding: 24px;
+  display: none;
+  & p {
+    color: $grey19;
+    font-size: 14px;
+    line-height: 1.57;
+    margin-bottom: 20px;
+  }
+  & div {
+    width: 100%;
+    height: 36px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 20px;
+    border: solid 1px $primary;
+    color: $primary;
+    font-size: 14px;
+    font-weight: 600
+  }
+}
+.mobileMenuContainer {
+  background: $secondary1;
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  height: 64px;
+  width: 100%;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  padding: 0 16px;
+  justify-content: center;
+}
+.mobileMenu {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 375px;
+  width: 100%;
+  & a {
+    text-decoration: none;
+    padding: 8px 12px;
+    color: $textSecondary;
+    font-weight: bold;
+    &.active {
+      color: $primary;
+    }
+  }
+}

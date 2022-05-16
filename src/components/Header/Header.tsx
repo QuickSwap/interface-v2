@@ -1,8 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Box, Typography, useMediaQuery } from '@material-ui/core';
-import cx from 'classnames';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { useTheme } from '@material-ui/core/styles';
 import { useWalletModalToggle } from 'state/application/hooks';
 import {
   isTransactionRecent,
@@ -18,222 +17,13 @@ import QuickLogo from 'assets/images/quickLogo.png';
 import { ReactComponent as ThreeDotIcon } from 'assets/images/ThreeDot.svg';
 import { ReactComponent as LightIcon } from 'assets/images/LightIcon.svg';
 import WalletIcon from 'assets/images/WalletIcon.png';
-
-const useStyles = makeStyles(({ palette, breakpoints }) => ({
-  header: {
-    padding: '0 24px',
-    position: 'relative',
-    display: 'flex',
-    flexWrap: 'wrap',
-    minHeight: 88,
-    zIndex: 3,
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    '& a': {
-      display: 'flex',
-    },
-    '& > div': {
-      display: 'flex',
-      alignItems: 'center',
-      zIndex: 2,
-      '&:last-child': {
-        '& button': {
-          height: 40,
-          borderRadius: 20,
-          '&:first-child': {
-            padding: '0 16px',
-            marginRight: 16,
-            '& svg': {
-              width: 20,
-              height: 20,
-              marginRight: 8,
-            },
-          },
-          '&:last-child': {
-            padding: '0 32px',
-          },
-          '& p': {
-            fontSize: 16,
-          },
-        },
-      },
-    },
-    [breakpoints.down('sm')]: {
-      alignItems: 'center',
-    },
-    [breakpoints.down('xs')]: {
-      padding: '0 16px',
-    },
-  },
-  networkWrapper: {
-    marginLeft: 16,
-    padding: '0 12px',
-    height: 26,
-    borderRadius: 13,
-    display: 'flex',
-    alignItems: 'center',
-    background: palette.primary.dark,
-    '& p': {
-      marginLeft: 6,
-      textTransform: 'uppercase',
-      fontSize: 13,
-      color: 'rgba(255, 255, 255, 0.87)',
-    },
-    [breakpoints.down('xs')]: {
-      display: 'none',
-    },
-  },
-  mainMenu: {
-    position: 'absolute',
-    left: '50%',
-    transform: 'translateX(-50%)',
-    display: 'flex',
-    alignItems: 'center',
-    height: '100%',
-    '& .menuItem': {
-      borderRadius: 10,
-      cursor: 'pointer',
-      position: 'relative',
-      '& .subMenu': {
-        display: 'none',
-        position: 'absolute',
-        left: 0,
-        top: 14,
-        background: palette.background.paper,
-        borderRadius: 10,
-        padding: '14px 0',
-        '& > a': {
-          padding: '10px 24px',
-          '&:hover': {
-            color: 'white',
-          },
-        },
-      },
-      '&:hover': {
-        background: palette.secondary.dark,
-        '& .subMenu': {
-          display: 'block',
-        },
-      },
-    },
-    '& a': {
-      textDecoration: 'none',
-      padding: '7.5px 24px',
-      marginRight: 12,
-      color: palette.text.secondary,
-      borderRadius: 10,
-      '& p': {
-        letterSpacing: 'normal',
-      },
-      '&.active': {
-        color: palette.text.primary,
-        background: palette.secondary.dark,
-      },
-      '&:last-child': {
-        marginRight: 0,
-      },
-    },
-  },
-  accountDetails: {
-    border: `solid 1px ${palette.grey.A400}`,
-    padding: '0 16px',
-    height: 36,
-    cursor: 'pointer',
-    borderRadius: 20,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    '& p': {
-      fontSize: 14,
-      fontWeight: 600,
-    },
-    '& img': {
-      width: 20,
-      marginLeft: 8,
-    },
-  },
-  connectButton: {
-    width: 152,
-    height: 36,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 20,
-    fontSize: 14,
-    fontWeight: 600,
-    color: 'white',
-    cursor: 'pointer',
-    position: 'relative',
-    '&:hover $wrongNetworkContent': {
-      display: 'block',
-    },
-  },
-  primary: {
-    backgroundColor: '#004ce6',
-  },
-  danger: {
-    backgroundColor: palette.error.main,
-  },
-  wrongNetworkContent: {
-    background: palette.background.paper,
-    borderRadius: 10,
-    padding: 24,
-    display: 'none',
-    '& p': {
-      color: '#b6b9cc',
-      fontSize: 14,
-      lineHeight: 1.57,
-      marginBottom: 20,
-    },
-    '& div': {
-      width: '100%',
-      height: 36,
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      borderRadius: 20,
-      border: `solid 1px ${palette.primary.main}`,
-      color: palette.primary.main,
-      fontSize: 14,
-      fontWeight: 600,
-    },
-  },
-  mobileMenuContainer: {
-    background: palette.secondary.dark,
-    position: 'fixed',
-    left: 0,
-    bottom: 0,
-    height: 64,
-    width: '100%',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    padding: '0 16px',
-    justifyContent: 'center',
-  },
-  mobileMenu: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    maxWidth: 375,
-    width: '100%',
-    '& a': {
-      textDecoration: 'none',
-      padding: '8px 12px',
-      color: palette.text.secondary,
-      fontWeight: 'bold',
-      '&.active': {
-        color: palette.primary.main,
-      },
-    },
-  },
-}));
+import 'components/styles/Header.scss';
 
 const newTransactionsFirst = (a: TransactionDetails, b: TransactionDetails) => {
   return b.addedTime - a.addedTime;
 };
 
 const Header: React.FC = () => {
-  const classes = useStyles();
   const { pathname } = useLocation();
   const { account } = useActiveWeb3React();
   const { ethereum } = window as any;
@@ -316,7 +106,7 @@ const Header: React.FC = () => {
   ];
 
   return (
-    <Box className={classes.header}>
+    <Box className='header'>
       <WalletModal
         ENSName={ENSName ?? undefined}
         pendingTransactions={pending}
@@ -330,7 +120,7 @@ const Header: React.FC = () => {
         />
       </Link>
       {!tabletWindowSize && (
-        <Box className={classes.mainMenu}>
+        <Box className='mainMenu'>
           {menuItems.map((val, index) => (
             <Link
               to={val.link}
@@ -364,8 +154,8 @@ const Header: React.FC = () => {
         </Box>
       )}
       {tabletWindowSize && (
-        <Box className={classes.mobileMenuContainer}>
-          <Box className={classes.mobileMenu}>
+        <Box className='mobileMenuContainer'>
+          <Box className='mobileMenu'>
             {menuItems.slice(0, 4).map((val, index) => (
               <Link
                 to={val.link}
@@ -433,7 +223,7 @@ const Header: React.FC = () => {
         {account && (!ethereum || isSupportedNetwork(ethereum)) ? (
           <Box
             id='web3-status-connected'
-            className={classes.accountDetails}
+            className='accountDetails'
             onClick={toggleWalletModal}
           >
             <Typography>{shortenAddress(account)}</Typography>
@@ -441,12 +231,9 @@ const Header: React.FC = () => {
           </Box>
         ) : (
           <Box
-            className={cx(
-              classes.connectButton,
-              ethereum && !isSupportedNetwork(ethereum)
-                ? classes.danger
-                : classes.primary,
-            )}
+            className={`connectButton ${
+              ethereum && !isSupportedNetwork(ethereum) ? 'danger' : 'primary'
+            }`}
             onClick={() => {
               if (!ethereum || isSupportedNetwork(ethereum)) {
                 toggleWalletModal();
@@ -464,7 +251,7 @@ const Header: React.FC = () => {
                 right={0}
                 paddingTop='18px'
               >
-                <Box className={classes.wrongNetworkContent}>
+                <Box className='wrongNetworkContent'>
                   <Typography variant='body2'>
                     Please switch your wallet to Polygon Network.
                   </Typography>

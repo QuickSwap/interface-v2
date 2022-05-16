@@ -74,7 +74,6 @@ const PoolPositionCard: React.FC<{ pair: Pair }> = ({ pair }) => {
           <DoubleCurrencyLogo
             currency0={currency0}
             currency1={currency1}
-            margin={true}
             size={28}
           />
           <Typography
