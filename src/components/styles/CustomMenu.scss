@@ -1,5 +1,4 @@
 @use 'styles/variables' as *;
-@use 'styles/breakpoints' as *;
 
 .customMenuWrapper {
   border-radius: 10px;
@@ -10,7 +9,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  color: $textSecondary,
+  color: $textSecondary
 }
 .menuContent {
   border-radius: 10px;

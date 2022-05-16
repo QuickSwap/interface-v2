@@ -6,7 +6,7 @@
   background: $bgPalette;
   border-radius: 20px;
   @include media("screen", "<phone") {
-    padding: '16px 12px',
+    padding: '16px 12px'
   }
 }
 
@@ -57,7 +57,7 @@
   border-top: 1px solid $divider;
   border-bottom: 1px solid $divider;
   .swapItem {
-    border-radius: 0,
+    border-radius: 0
   }
 }
 

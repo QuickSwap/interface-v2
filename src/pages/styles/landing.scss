@@ -295,7 +295,7 @@
     z-index: 2;
     @include media("screen", "<tablet") {
       flex-direction: column;
-      padding: 0,
+      padding: 0
     }
   }
   & .buyFiatInfo {
@@ -317,7 +317,7 @@
       width: 100%;
     }
     @include media("screen", "<phone") {
-      flexDirection: column;
+      flex-direction: column;
       & img, & > div {
         width: 100%;
       }
