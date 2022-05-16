@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Box, Typography, useMediaQuery } from '@material-ui/core';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
-import cx from 'classnames';
+import { useTheme } from '@material-ui/core/styles';
 import { DualStakingInfo, StakingInfo } from 'types';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { DoubleCurrencyLogo, CurrencyLogo } from 'components';
@@ -18,50 +17,13 @@ import {
   formatAPY,
 } from 'utils';
 import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
-
-const useStyles = makeStyles(({ palette, breakpoints }) => ({
-  farmLPCard: {
-    background: palette.secondary.dark,
-    width: '100%',
-    borderRadius: 10,
-    marginTop: 24,
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    padding: '0 16px',
-    [breakpoints.down('xs')]: {
-      padding: 0,
-    },
-  },
-  highlightedCard: {
-    border: `1px solid ${palette.primary.main}`,
-    boxShadow: '0 0 5px 5px rgba(68, 138, 255, 0.3)',
-  },
-  farmLPCardUp: {
-    background: palette.secondary.dark,
-    width: '100%',
-    borderRadius: 10,
-    display: 'flex',
-    alignItems: 'center',
-    padding: '16px 0',
-    cursor: 'pointer',
-    [breakpoints.down('xs')]: {
-      padding: 16,
-    },
-  },
-  farmLPText: {
-    fontSize: 14,
-    fontWeight: 600,
-    color: palette.text.secondary,
-  },
-}));
+import 'components/styles/FarmCard.scss';
 
 const FarmCard: React.FC<{
   stakingInfo: StakingInfo | DualStakingInfo;
   stakingAPY: number;
   isLPFarm?: boolean;
 }> = ({ stakingInfo, stakingAPY, isLPFarm }) => {
-  const classes = useStyles();
   const { palette, breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const [isExpandCard, setExpandCard] = useState(false);
@@ -129,14 +91,9 @@ const FarmCard: React.FC<{
   );
 
   return (
-    <Box
-      className={cx(
-        classes.farmLPCard,
-        isExpandCard && classes.highlightedCard,
-      )}
-    >
+    <Box className={`farmLPCard ${isExpandCard ? 'highlightedCard' : ''}`}>
       <Box
-        className={classes.farmLPCardUp}
+        className='farmLPCardUp'
         onClick={() => setExpandCard(!isExpandCard)}
       >
         {isMobile ? (

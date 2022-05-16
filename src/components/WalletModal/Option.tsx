@@ -1,43 +1,5 @@
 import React from 'react';
 import { Box, Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-
-const useStyles = makeStyles(({ palette }) => ({
-  infoCard: {
-    backgroundColor: palette.background.paper,
-    outline: 'none',
-    border: `1px solid ${palette.divider}`,
-    borderRadius: 12,
-    width: '100%',
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginTop: '2rem',
-    padding: '1rem',
-    '&:focus': {
-      boxShadow: `0 0 0 1px ${palette.primary.main}`,
-    },
-  },
-  optionCardClickable: {
-    border: `1px solid transparent`,
-    background: palette.secondary.dark,
-    borderRadius: 10,
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    flexWrap: 'wrap',
-    padding: '16px 24px',
-    marginBottom: 16,
-    '&:hover': {
-      cursor: 'pointer',
-      border: `1px solid ${palette.primary.main}`,
-    },
-  },
-  optionLink: {
-    color: palette.text.primary,
-  },
-}));
 
 interface OptionProps {
   link?: string | null;
@@ -61,9 +23,8 @@ const Option: React.FC<OptionProps> = ({
   active = false,
   id,
 }) => {
-  const classes = useStyles();
   const content = (
-    <Box className={classes.optionCardClickable} id={id} onClick={onClick}>
+    <Box className='optionCardClickable' id={id} onClick={onClick}>
       <Box display='flex' alignItems='center' my={0.5}>
         <img src={icon} alt={'Icon'} width={24} />
         <Typography variant='body1' style={{ marginLeft: 8 }}>
@@ -95,7 +56,7 @@ const Option: React.FC<OptionProps> = ({
         href={link}
         target='_blank'
         rel='noopener noreferrer'
-        className={classes.optionLink}
+        className='optionLink'
       >
         {content}
       </a>

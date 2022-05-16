@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Box, Typography, Divider } from '@material-ui/core';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { useTheme } from '@material-ui/core/styles';
 import { getAddress } from '@ethersproject/address';
 import { ChainId, Token } from '@uniswap/sdk';
 import { CurrencyLogo, CustomTable } from 'components';
@@ -10,24 +10,7 @@ import { formatNumber, getFormattedPrice, getPriceColor } from 'utils';
 import { useBookmarkTokens } from 'state/application/hooks';
 import { ReactComponent as StarChecked } from 'assets/images/StarChecked.svg';
 import { ReactComponent as StarUnchecked } from 'assets/images/StarUnchecked.svg';
-
-const useStyles = makeStyles(({}) => ({
-  priceChangeWrapper: {
-    height: 25,
-    padding: '0 12px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 16,
-  },
-  mobileRow: {
-    width: '100%',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    margin: '8px 0',
-  },
-}));
+import 'components/styles/TokensTable.scss';
 
 interface TokensTableProps {
   data: any[];
@@ -71,7 +54,6 @@ const liquidityHeadCellIndex = 4;
 
 const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
   const tokenHeadCells = headCells();
-  const classes = useStyles();
   const { palette } = useTheme();
   const {
     bookmarkTokens,
@@ -129,16 +111,16 @@ const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
           </Link>
         </Box>
         <Divider />
-        <Box className={classes.mobileRow}>
+        <Box className='mobileRow'>
           <Typography variant='body1'>Price</Typography>
           <Typography variant='body1'>
             ${formatNumber(token.priceUSD)}
           </Typography>
         </Box>
-        <Box className={classes.mobileRow}>
+        <Box className='mobileRow'>
           <Typography variant='body1'>24H %</Typography>
           <Box
-            className={classes.priceChangeWrapper}
+            className='priceChangeWrapper'
             bgcolor={priceColor.bgColor}
             color={priceColor.textColor}
           >
@@ -147,13 +129,13 @@ const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
             </Typography>
           </Box>
         </Box>
-        <Box className={classes.mobileRow}>
+        <Box className='mobileRow'>
           <Typography variant='body1'>24H Volume</Typography>
           <Typography variant='body1'>
             ${Number(token.oneDayVolumeUSD).toLocaleString()}
           </Typography>
         </Box>
-        <Box className={classes.mobileRow}>
+        <Box className='mobileRow'>
           <Typography variant='body1'>Liquidity</Typography>
           <Typography variant='body1'>
             ${Number(token.totalLiquidityUSD).toLocaleString()}
@@ -227,7 +209,7 @@ const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
       {
         html: (
           <Box
-            className={classes.priceChangeWrapper}
+            className='priceChangeWrapper'
             mr={2}
             bgcolor={priceColor.bgColor}
             color={priceColor.textColor}

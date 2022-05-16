@@ -17,6 +17,7 @@ import {
   useUserSlippageTolerance,
 } from 'state/user/hooks';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
+import 'components/styles/SettingsModal.scss';
 
 enum SlippageError {
   InvalidInput = 'InvalidInput',
@@ -28,40 +29,12 @@ enum DeadlineError {
   InvalidInput = 'InvalidInput',
 }
 
-const useStyles = makeStyles(({ palette }) => ({
-  slippageButton: {
-    width: 62,
-    height: 40,
-    borderRadius: 10,
-    border: `solid 1px ${palette.secondary.light}`,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    cursor: 'pointer',
-    marginRight: 16,
-  },
-  activeSlippageButton: {
-    background: palette.primary.main,
-  },
-  settingsInput: {
-    background: 'transparent',
-    border: 'none',
-    outline: 'none',
-    textAlign: 'right',
-    flex: 1,
-    fontSize: 14,
-    color: 'rgba(212, 229, 255, 0.8)',
-    fontWeight: 500,
-  },
-}));
-
 interface SettingsModalProps {
   open: boolean;
   onClose: () => void;
 }
 
 const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
-  const classes = useStyles();
   const { palette } = useTheme();
   const [
     userSlippageTolerance,
@@ -182,7 +155,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
           >
             <input
               style={{ textAlign: 'left' }}
-              className={classes.settingsInput}
+              className='settingsInput'
               value={expertConfirmText}
               onChange={(e: any) => setExpertConfirmText(e.target.value)}
             />
@@ -232,10 +205,9 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
         <Box mb={2.5}>
           <Box display='flex' alignItems='center'>
             <Box
-              className={cx(
-                classes.slippageButton,
-                userSlippageTolerance === 10 && classes.activeSlippageButton,
-              )}
+              className={`slippageButton${
+                userSlippageTolerance === 10 ? ' activeSlippageButton' : ''
+              }`}
               onClick={() => {
                 setSlippageInput('');
                 setUserslippageTolerance(10);
@@ -244,10 +216,9 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
               <Typography variant='body2'>0.1%</Typography>
             </Box>
             <Box
-              className={cx(
-                classes.slippageButton,
-                userSlippageTolerance === 50 && classes.activeSlippageButton,
-              )}
+              className={`slippageButton${
+                userSlippageTolerance === 50 ? ' activeSlippageButton' : ''
+              }`}
               onClick={() => {
                 setSlippageInput('');
                 setUserslippageTolerance(50);
@@ -256,10 +227,9 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
               <Typography variant='body2'>0.5%</Typography>
             </Box>
             <Box
-              className={cx(
-                classes.slippageButton,
-                userSlippageTolerance === 100 && classes.activeSlippageButton,
-              )}
+              className={`slippageButton${
+                userSlippageTolerance === 100 ? ' activeSlippageButton' : ''
+              }`}
               onClick={() => {
                 setSlippageInput('');
                 setUserslippageTolerance(100);

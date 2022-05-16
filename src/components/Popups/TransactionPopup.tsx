@@ -1,24 +1,9 @@
 import React, { useEffect } from 'react';
 import { Box, LinearProgress, Typography } from '@material-ui/core';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { useTheme } from '@material-ui/core/styles';
 import { useActiveWeb3React } from 'hooks';
 import { getEtherscanLink } from 'utils/index';
 import { ReactComponent as ArrowTopRight } from 'assets/images/ArrowTopRight.svg';
-
-const useStyles = makeStyles(({}) => ({
-  pendingBar: {
-    position: 'absolute',
-    bottom: 0,
-    width: '100%',
-    left: 0,
-    '& .MuiLinearProgress-root': {
-      background: 'rgba(255, 160, 0, 0.3)',
-      '& .MuiLinearProgress-bar': {
-        background: '#ffa000',
-      },
-    },
-  },
-}));
 
 interface TransactionPopupProps {
   hash: string;
@@ -33,7 +18,6 @@ const TransactionPopup: React.FC<TransactionPopupProps> = ({
   success,
   summary,
 }) => {
-  const classes = useStyles();
   const { palette } = useTheme();
   const { chainId } = useActiveWeb3React();
   const [progress, setProgress] = React.useState(0);
@@ -85,7 +69,7 @@ const TransactionPopup: React.FC<TransactionPopupProps> = ({
         {summary ?? 'Hash: ' + hash.slice(0, 8) + '...' + hash.slice(58, 65)}
       </Typography>
       {pending && (
-        <Box className={classes.pendingBar}>
+        <Box className='pendingBar'>
           <LinearProgress variant='determinate' value={progress} />
         </Box>
       )}

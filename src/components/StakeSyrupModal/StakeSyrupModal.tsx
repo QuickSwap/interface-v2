@@ -26,7 +26,6 @@ import {
   getValueTokenDecimals,
   getPartialTokenAmount,
 } from 'utils';
-import 'components/styles/StakeModal.scss';
 
 interface StakeSyrupModalProps {
   open: boolean;

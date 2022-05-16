@@ -1,7 +1,6 @@
 import React from 'react';
 import { Box, Typography, Button } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
-import { makeStyles } from '@material-ui/core/styles';
 import { StakingInfo } from 'types';
 import { DoubleCurrencyLogo } from 'components';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon.svg';
@@ -12,56 +11,6 @@ import {
   getTVLStaking,
 } from 'utils';
 
-const useStyles = makeStyles(({ palette }) => ({
-  rewardsSliderItem: {
-    borderRadius: 32,
-    background: palette.background.paper,
-    padding: '32px 22px',
-    position: 'relative',
-    '& .rewardIcon': {
-      position: 'absolute',
-      display: 'flex',
-      top: 32,
-      left: 22,
-    },
-    '& h5': {
-      marginLeft: 70,
-      textAlign: 'left',
-    },
-    '& .row': {
-      display: 'flex',
-      width: '100%',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      marginTop: 12,
-      '& p': {
-        color: 'rgba(255, 255, 255, 0.47)',
-        display: 'flex',
-        alignItems: 'center',
-        '& svg': {
-          marginLeft: 4,
-        },
-      },
-      '& h4': {
-        color: 'white',
-      },
-      '& h5': {
-        background: 'rgba(15, 198, 121, 0.12)',
-        color: palette.success.main,
-        padding: '0 4px',
-        borderRadius: 5,
-      },
-    },
-    '& button': {
-      height: 40,
-      fontSize: 16,
-      marginTop: 12,
-      background: palette.primary.main,
-      borderRadius: 20,
-    },
-  },
-}));
-
 interface RewardSliderItemProps {
   info: StakingInfo;
   stakingAPY: number;
@@ -71,7 +20,6 @@ const RewardSliderItem: React.FC<RewardSliderItemProps> = ({
   info,
   stakingAPY,
 }) => {
-  const classes = useStyles();
   const history = useHistory();
 
   const stakedAmounts = getStakedAmountStakingInfo(info);
@@ -90,7 +38,7 @@ const RewardSliderItem: React.FC<RewardSliderItemProps> = ({
   }
 
   return (
-    <Box className={classes.rewardsSliderItem}>
+    <Box className='rewardsSliderItem'>
       <Box mb={4}>
         <Box className='rewardIcon'>
           <DoubleCurrencyLogo

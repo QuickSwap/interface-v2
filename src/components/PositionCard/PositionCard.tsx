@@ -1,7 +1,6 @@
 import { JSBI, Pair, Percent } from '@uniswap/sdk';
 import React, { useState } from 'react';
 import { Box, Typography, Button } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
 import { ChevronDown, ChevronUp } from 'react-feather';
 import { Link } from 'react-router-dom';
 import { useTotalSupply } from 'data/TotalSupply';
@@ -10,18 +9,7 @@ import { useTokenBalance } from 'state/wallet/hooks';
 import { currencyId, formatTokenAmount } from 'utils';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { CurrencyLogo, DoubleCurrencyLogo } from 'components';
-
-const useStyles = makeStyles(({ palette }) => ({
-  minimalCardWrapper: {
-    width: '100%',
-    borderRadius: 16,
-    padding: 12,
-    '& p': {
-      fontSize: '16px !important',
-      lineHeight: '24px !important',
-    },
-  },
-}));
+import 'components/styles/PositionCard.scss';
 
 interface PositionCardProps {
   pair: Pair;
@@ -35,7 +23,6 @@ export const MinimalPositionCard: React.FC<PositionCardProps> = ({
   showUnwrapped = false,
 }) => {
   const { account } = useActiveWeb3React();
-  const classes = useStyles();
 
   const currency0 = showUnwrapped ? pair.token0 : unwrappedToken(pair.token0);
   const currency1 = showUnwrapped ? pair.token1 : unwrappedToken(pair.token1);
@@ -78,7 +65,7 @@ export const MinimalPositionCard: React.FC<PositionCardProps> = ({
       : [undefined, undefined];
 
   return (
-    <Box className={classes.minimalCardWrapper} border={border}>
+    <Box className='minimalCardWrapper' border={border}>
       {userPoolBalance &&
       JSBI.greaterThan(userPoolBalance.raw, JSBI.BigInt(0)) ? (
         <Box>

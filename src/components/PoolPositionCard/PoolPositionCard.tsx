@@ -12,6 +12,7 @@ import {
 import { DoubleCurrencyLogo } from 'components';
 import { formatAPY, getAPYWithFee, getOneYearFee } from 'utils';
 import PoolPositionCardDetails from './PoolPositionCardDetails';
+import 'components/styles/PoolPositionCard.scss';
 
 const PoolPositionCard: React.FC<{ pair: Pair }> = ({ pair }) => {
   const [bulkPairData, setBulkPairData] = useState<any>(null);

@@ -1,0 +1,77 @@
+@use 'styles/variables' as *;
+@use 'styles/breakpoints' as *;
+
+.rewardsSlider {
+  width: 1072px;
+  display: flex;
+  justify-content: space-between;
+  margin: 64px auto 56px;
+  & .slick-slide {
+    padding: 0 20px;
+    @include media("screen", "<phone") {
+      padding: 0 6px;
+    }
+  }
+  & .slick-arrow {
+    color: $successDark;
+    width: 32px;
+    height: 32
+  }
+  @include media("screen", "<desktop") {
+    width: 776px;
+  }
+  @include media("screen", "<tablet") {
+    width: 360px
+  }
+  @include media("screen", "<phone") {
+    width: 320px
+  }
+}
+
+.rewardsSliderItem {
+  border-radius: 32px;
+  background: $bgPalette;
+  padding: 32px 22px;
+  position: relative;
+  & .rewardIcon {
+    position: absolute;
+    display: flex;
+    top: 32px;
+    left: 22px;
+  }
+  & h5 {
+    margin-left: 70px;
+    text-align: left;
+  }
+  & .row {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 12px;
+    & p {
+      color: $grey22;
+      display: flex;
+      align-items: center;
+      & svg {
+        margin-left: 4,
+      }
+    }
+    & h4 {
+      color: white;
+    }
+    & h5 {
+      background: $green2;
+      color: $successMain;
+      padding: 0 4px;
+      border-radius: 5;
+    }
+  }
+  & button {
+    height: 40px;
+    font-size: 16px;
+    margin-top: 12px;
+    background: $primary;
+    border-radius: 20px;
+  }
+}

@@ -1,30 +1,12 @@
 import React, { useState } from 'react';
 import { Box, Typography, Divider, useMediaQuery } from '@material-ui/core';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { useTheme } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { CustomTable } from 'components';
 import { formatNumber, getEtherscanLink, shortenTx } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import moment from 'moment';
 import { TxnType } from 'constants/index';
-
-const useStyles = makeStyles(({}) => ({
-  priceChangeWrapper: {
-    height: 25,
-    padding: '0 12px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 16,
-  },
-  mobileRow: {
-    width: '100%',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    margin: '8px 0',
-  },
-}));
 
 interface TransactionsTableProps {
   data: any[];
@@ -109,7 +91,6 @@ const headCells = (
 const TransactionsTable: React.FC<TransactionsTableProps> = ({ data }) => {
   const [txFilter, setTxFilter] = useState(-1);
   const txHeadCells = headCells(txFilter, setTxFilter);
-  const classes = useStyles();
   const { chainId } = useActiveWeb3React();
   const { palette, breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
@@ -157,25 +138,25 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({ data }) => {
           )}
         </Box>
         <Divider />
-        <Box className={classes.mobileRow}>
+        <Box className='mobileRow'>
           <Typography variant='body1'>Total Value</Typography>
           <Typography variant='body1' color='textPrimary'>
             ${Number(txn.amountUSD).toLocaleString()}
           </Typography>
         </Box>
-        <Box className={classes.mobileRow}>
+        <Box className='mobileRow'>
           <Typography variant='body1'>Token Amount</Typography>
           <Typography variant='body1' color='textPrimary'>
             {formatNumber(txn.amount0)} {txn.pair.token0.symbol}
           </Typography>
         </Box>
-        <Box className={classes.mobileRow}>
+        <Box className='mobileRow'>
           <Typography variant='body1'>Token Amount</Typography>
           <Typography variant='body1' color='textPrimary'>
             {formatNumber(txn.amount1)} {txn.pair.token1.symbol}
           </Typography>
         </Box>
-        <Box className={classes.mobileRow}>
+        <Box className='mobileRow'>
           <Typography variant='body1'>TXN</Typography>
           {chainId ? (
             <a
@@ -201,7 +182,7 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({ data }) => {
             </Typography>
           )}
         </Box>
-        <Box className={classes.mobileRow}>
+        <Box className='mobileRow'>
           <Typography variant='body1'>Time</Typography>
           <Typography variant='body1' color='textPrimary'>
             {moment(Number(txn.transaction.timestamp) * 1000).fromNow()}

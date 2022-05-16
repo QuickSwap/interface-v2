@@ -173,36 +173,35 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
             </Typography>
           </Box>
         </Box>
-        <Box
-          mt={3}
-          display='flex'
-          justifyContent='space-between'
-          alignItems='center'
-        >
-          <Button
-            className='stakeButton'
-            disabled={approving || approval !== ApprovalState.NOT_APPROVED}
-            onClick={async () => {
-              setApproving(true);
-              try {
-                await onAttemptToApprove();
-                setApproving(false);
-              } catch (e) {
-                setApproving(false);
+        <Box display='flex' justifyContent='space-between' alignItems='center'>
+          <Box width='48%'>
+            <Button
+              className='stakeButton'
+              disabled={approving || approval !== ApprovalState.NOT_APPROVED}
+              onClick={async () => {
+                setApproving(true);
+                try {
+                  await onAttemptToApprove();
+                  setApproving(false);
+                } catch (e) {
+                  setApproving(false);
+                }
+              }}
+            >
+              {approving ? 'Approving...' : 'Approve'}
+            </Button>
+          </Box>
+          <Box width='48%'>
+            <Button
+              className='stakeButton'
+              disabled={
+                !!error || attempting || approval !== ApprovalState.APPROVED
               }
-            }}
-          >
-            {approving ? 'Approving...' : 'Approve'}
-          </Button>
-          <Button
-            className='stakeButton'
-            disabled={
-              !!error || attempting || approval !== ApprovalState.APPROVED
-            }
-            onClick={onStake}
-          >
-            {attempting ? 'Staking...' : 'Stake'}
-          </Button>
+              onClick={onStake}
+            >
+              {attempting ? 'Staking...' : 'Stake'}
+            </Button>
+          </Box>
         </Box>
       </Box>
     </CustomModal>

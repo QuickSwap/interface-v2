@@ -520,7 +520,7 @@ const Swap: React.FC<{
       )}
       {!showWrap && isExpertMode && (
         <Box className='recipientInput'>
-          <Box className='header'>
+          <Box className='recipientInputHeader'>
             {recipient !== null ? (
               <ArrowDown size='16' color='white' />
             ) : (

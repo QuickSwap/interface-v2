@@ -1,0 +1,26 @@
+@use 'styles/variables' as *;
+
+.slippageButton {
+  width: 62px;
+  height: 40px;
+  border-radius: 10px;
+  border: solid 1px $secondary2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin-right: 16px
+}
+.activeSlippageButton {
+  background: $primary;
+}
+.settingsInput {
+  background: transparent;
+  border: none;
+  outline: none;
+  text-align: right;
+  flex: 1;
+  font-size: 14px;
+  color: $grey23;
+  font-weight: 500
+}

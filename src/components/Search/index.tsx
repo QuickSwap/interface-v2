@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useRef, useMemo } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 import { useHistory } from 'react-router-dom';
 import { Box, Typography } from '@material-ui/core';
 import { ReactComponent as SearchIcon } from 'assets/images/SearchIcon.svg';
@@ -10,40 +9,9 @@ import { GlobalConst } from 'constants/index';
 import { CurrencyLogo, DoubleCurrencyLogo } from 'components';
 import { ChainId, Token } from '@uniswap/sdk';
 import { getAddress } from '@ethersproject/address';
-
-const useStyles = makeStyles(({ palette }) => ({
-  searchInput: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: '0 16px',
-    background: palette.grey.A700,
-    height: 46,
-    borderRadius: 10,
-    margin: '12px 0',
-    '& input': {
-      background: 'transparent',
-      border: 'none',
-      outline: 'none',
-      fontSize: 15,
-      fontWeight: 500,
-      minWidth: 240,
-      color: palette.text.primary,
-    },
-  },
-  searchContent: {
-    position: 'absolute',
-    width: '100%',
-    background: palette.grey.A700,
-    borderRadius: 10,
-    padding: 12,
-    zIndex: 2,
-    height: 300,
-    overflowY: 'auto',
-  },
-}));
+import 'components/styles/SearchWidget.scss';
 
 const Search: React.FC = () => {
-  const classes = useStyles();
   const history = useHistory();
   const [searchVal, setSearchVal] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
@@ -241,7 +209,7 @@ const Search: React.FC = () => {
 
   return (
     <Box position='relative'>
-      <Box className={classes.searchInput}>
+      <Box className='searchWidgetInput'>
         <input
           placeholder='Search for tokens, pairs, etc…'
           value={searchVal}
@@ -254,7 +222,7 @@ const Search: React.FC = () => {
         </Box>
       </Box>
       {menuOpen && (
-        <div ref={wrapperRef} className={classes.searchContent}>
+        <div ref={wrapperRef} className='searchWidgetContent'>
           <Typography variant='body1'>Pairs</Typography>
           {filteredPairs.slice(0, pairsShown).map((val, ind) => {
             const currency0 = new Token(

@@ -5,7 +5,6 @@ import React, { useEffect, useState } from 'react';
 import { isMobile } from 'react-device-detect';
 import ReactGA from 'react-ga';
 import { Box, Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
 import MetamaskIcon from 'assets/images/metamask.png';
 import { ReactComponent as Close } from 'assets/images/CloseIcon.svg';
 import { fortmatic, injected, portis, safeApp } from 'connectors';
@@ -18,32 +17,7 @@ import { AccountDetails, CustomModal } from 'components';
 
 import Option from './Option';
 import PendingView from './PendingView';
-
-const useStyles = makeStyles(({ palette }) => ({
-  closeIcon: {
-    position: 'absolute',
-    right: '1rem',
-    top: 14,
-    '& svg': {
-      stroke: palette.primary.dark,
-    },
-    '&:hover': {
-      cursor: 'pointer',
-      opacity: 0.6,
-    },
-  },
-  blurb: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexWrap: 'wrap',
-    '& a': {
-      marginLeft: 8,
-      color: palette.primary.main,
-      textDecoration: 'none',
-    },
-  },
-}));
+import 'components/styles/WalletModal.scss';
 
 const WALLET_VIEWS = {
   OPTIONS: 'options',
@@ -63,7 +37,6 @@ const WalletModal: React.FC<WalletModalProps> = ({
   confirmedTransactions,
   ENSName,
 }) => {
-  const classes = useStyles();
   // important that these are destructed from the account-specific web3-react context
   const {
     active,
@@ -357,7 +330,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
             getOptions()
           )}
           {walletView !== WALLET_VIEWS.PENDING && (
-            <Box className={classes.blurb}>
+            <Box className='blurb'>
               <Typography variant='body2'>New to Matic?</Typography>
               <a
                 href='https://docs.matic.network/docs/develop/wallets/getting-started'

@@ -2,7 +2,7 @@ import React, { useState, useMemo, useCallback } from 'react';
 import { Contract } from '@ethersproject/contracts';
 import { ArrowLeft, ArrowDown } from 'react-feather';
 import { Box, Typography, Button } from '@material-ui/core';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { useTheme } from '@material-ui/core/styles';
 import { Currency, ETHER, JSBI, Percent } from '@uniswap/sdk';
 import ReactGA from 'react-ga';
 import { BigNumber } from '@ethersproject/bignumber';
@@ -44,25 +44,7 @@ import { useRouterContract } from 'hooks/useContract';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
 import { useTotalSupply } from 'data/TotalSupply';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
-
-const useStyles = makeStyles(({ palette }) => ({
-  removeButton: {
-    backgroundImage:
-      'linear-gradient(104deg, #004ce6 -32%, #0098ff 54%, #00cff3 120%, #64fbd3 198%)',
-    backgroundColor: 'transparent',
-    height: 48,
-    width: '48%',
-    borderRadius: 10,
-    '& span': {
-      fontSize: 16,
-      fontWeight: 600,
-    },
-    '&.Mui-disabled': {
-      backgroundImage: 'none',
-      backgroundColor: palette.secondary.dark,
-    },
-  },
-}));
+import 'components/styles/RemoveLiquidityModal.scss';
 
 interface RemoveLiquidityModalProps {
   currency0: Currency;
@@ -77,7 +59,6 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
   open,
   onClose,
 }) => {
-  const classes = useStyles();
   const { palette } = useTheme();
   const [showConfirm, setShowConfirm] = useState(false);
   const [txPending, setTxPending] = useState(false);
@@ -392,11 +373,7 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
           </Typography>
         </Box>
         <Box mt={2}>
-          <Button
-            style={{ width: '100%' }}
-            className={classes.removeButton}
-            onClick={onRemove}
-          >
+          <Button fullWidth className='removeButton' onClick={onRemove}>
             Confirm
           </Button>
         </Box>
@@ -610,7 +587,7 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
           justifyContent='space-between'
         >
           <Button
-            className={classes.removeButton}
+            className='removeButton'
             onClick={onAttemptToApprove}
             disabled={approving || approval !== ApprovalState.NOT_APPROVED}
           >
@@ -621,7 +598,7 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
               : 'Approve'}
           </Button>
           <Button
-            className={classes.removeButton}
+            className='removeButton'
             onClick={() => {
               setShowConfirm(true);
             }}

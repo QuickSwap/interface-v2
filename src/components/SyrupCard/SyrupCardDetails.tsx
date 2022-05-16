@@ -25,36 +25,6 @@ import SyrupAPR from './SyrupAPR';
 import { useUSDCPriceToken } from 'utils/useUSDCPrice';
 import { GlobalConst } from 'constants/index';
 
-const useStyles = makeStyles(({ palette, breakpoints }) => ({
-  syrupButton: {
-    backgroundImage:
-      'linear-gradient(280deg, #64fbd3 0%, #00cff3 0%, #0098ff 10%, #004ce6 100%)',
-    borderRadius: 10,
-    cursor: 'pointer',
-    width: 134,
-    height: 40,
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    [breakpoints.down('xs')]: {
-      width: '49%',
-    },
-    '& p': {
-      color: palette.text.primary,
-    },
-  },
-  dailyRateWrapper: {
-    display: 'flex',
-    alignItems: 'center',
-    flexWrap: 'wrap',
-    background: palette.secondary.contrastText,
-    width: '100%',
-    marginTop: 16,
-    padding: '8px 16px',
-    borderRadius: 10,
-  },
-}));
-
 const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
   syrup,
   dQUICKAPY,
@@ -66,7 +36,6 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
   const [attemptingClaim, setAttemptingClaim] = useState(false);
   const [attemptingUnstake, setAttemptingUnstake] = useState(false);
   const [openStakeModal, setOpenStakeModal] = useState(false);
-  const classes = useStyles();
 
   const stakingTokenPrice = useUSDCPriceToken(syrup.stakingToken);
   const stakingContract = useStakingContract(syrup?.stakingRewardAddress);
@@ -143,17 +112,14 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
   };
 
   const StakeButton = () => (
-    <Box
-      className={classes.syrupButton}
-      onClick={() => setOpenStakeModal(true)}
-    >
+    <Box className='syrupButton' onClick={() => setOpenStakeModal(true)}>
       <Typography variant='body2'>Stake</Typography>
     </Box>
   );
 
   const UnstakeButton = () => (
     <Box
-      className={classes.syrupButton}
+      className='syrupButton'
       style={{ opacity: attemptingUnstake ? 0.6 : 1 }}
       onClick={() => {
         if (!attemptingUnstake) {
@@ -169,7 +135,7 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
 
   const ClaimButton = () => (
     <Box
-      className={classes.syrupButton}
+      className='syrupButton'
       style={{ opacity: attemptingClaim ? 0.6 : 1 }}
       onClick={() => {
         if (!attemptingClaim) {
@@ -382,7 +348,7 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
               )}
             </Box>
             {syrup.rewardRate?.greaterThan('0') && (
-              <Box className={classes.dailyRateWrapper}>
+              <Box className='dailyRateWrapper'>
                 <Box
                   display='flex'
                   alignItems='center'

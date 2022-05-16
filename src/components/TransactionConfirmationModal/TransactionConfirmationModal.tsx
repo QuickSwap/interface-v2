@@ -1,7 +1,6 @@
 import { ChainId } from '@uniswap/sdk';
 import React from 'react';
 import { Box, Typography, Button, CircularProgress } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
 import { CustomModal } from 'components';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 import { ReactComponent as TransactionFailed } from 'assets/images/TransactionFailed.svg';
@@ -9,53 +8,7 @@ import { ReactComponent as TransactionSuccess } from 'assets/images/TransactionS
 import { getEtherscanLink } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import ModalBg from 'assets/images/ModalBG.svg';
-
-const useStyles = makeStyles(({ palette }) => ({
-  modalHeader: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    position: 'relative',
-    marginBottom: 20,
-    '& h5': {
-      position: 'absolute',
-      width: '100%',
-      textAlign: 'center',
-    },
-    '& svg': {
-      cursor: 'pointer',
-      position: 'relative',
-      zIndex: 3,
-    },
-  },
-  modalBG: {
-    position: 'absolute',
-    top: 100,
-    left: '50%',
-    transform: 'translateX(-50%)',
-    zIndex: 1,
-  },
-  modalContent: {
-    marginTop: 20,
-    padding: '16px 0',
-    color: palette.text.primary,
-    textAlign: 'center',
-    '& p': {
-      margin: '16px 0',
-    },
-  },
-  submitButton: {
-    width: '100%',
-    height: 50,
-    fontSize: 14,
-    borderRadius: 10,
-    color: palette.text.primary,
-    background: palette.secondary.dark,
-    '&:hover': {
-      background: palette.secondary.dark,
-    },
-  },
-}));
+import 'components/styles/TransactionConfirmationModal.scss';
 
 interface ConfirmationPendingContentProps {
   onDismiss: () => void;
@@ -66,13 +19,12 @@ export const ConfirmationPendingContent: React.FC<ConfirmationPendingContentProp
   onDismiss,
   pendingText,
 }) => {
-  const classes = useStyles();
   return (
     <Box padding={4}>
-      <Box className={classes.modalHeader}>
+      <Box className='txModalHeader'>
         <CloseIcon onClick={onDismiss} />
       </Box>
-      <Box className={classes.modalContent}>
+      <Box className='txModalContent'>
         <Box my={4} display='flex' justifyContent='center'>
           <CircularProgress size={80} />
         </Box>
@@ -101,10 +53,9 @@ export const TransactionSubmittedContent: React.FC<TransactionSubmittedContentPr
   txPending,
   modalContent,
 }) => {
-  const classes = useStyles();
   return (
     <Box padding={4}>
-      <Box className={classes.modalHeader}>
+      <Box className='txModalHeader'>
         <Typography variant='h5'>
           Transaction {txPending ? 'Submitted' : 'Completed'}
         </Typography>
@@ -115,7 +66,7 @@ export const TransactionSubmittedContent: React.FC<TransactionSubmittedContentPr
           <TransactionSuccess />
         </Box>
       )}
-      <Box className={classes.modalContent}>
+      <Box className='txModalContent'>
         <Typography variant='body1'>{modalContent}</Typography>
       </Box>
       <Box display='flex' justifyContent='space-between' mt={2}>
@@ -126,13 +77,11 @@ export const TransactionSubmittedContent: React.FC<TransactionSubmittedContentPr
             rel='noopener noreferrer'
             style={{ width: '48%', textDecoration: 'none' }}
           >
-            <Button className={classes.submitButton}>
-              View on Block Explorer
-            </Button>
+            <Button className='txSubmitButton'>View on Block Explorer</Button>
           </a>
         )}
         <Button
-          className={classes.submitButton}
+          className='txSubmitButton'
           style={{ width: '48%' }}
           onClick={onDismiss}
         >
@@ -154,10 +103,9 @@ export const ConfirmationModalContent: React.FC<ConfirmationModalContentProps> =
   onDismiss,
   content,
 }) => {
-  const classes = useStyles();
   return (
     <Box padding={4}>
-      <Box className={classes.modalHeader}>
+      <Box className='txModalHeader'>
         <Typography variant='h5'>{title}</Typography>
         <CloseIcon onClick={onDismiss} />
       </Box>
@@ -175,22 +123,21 @@ export const TransactionErrorContent: React.FC<TransactionErrorContentProps> = (
   message,
   onDismiss,
 }) => {
-  const classes = useStyles();
   return (
     <Box padding={4}>
       <Box>
-        <Box className={classes.modalHeader}>
+        <Box className='txModalHeader'>
           <Typography variant='h5' color='error'>
             Error!
           </Typography>
           <CloseIcon onClick={onDismiss} />
         </Box>
-        <Box className={classes.modalContent}>
+        <Box className='txModalContent'>
           <TransactionFailed />
           <Typography variant='body1'>{message}</Typography>
         </Box>
       </Box>
-      <Button className={classes.submitButton} onClick={onDismiss}>
+      <Button className='txSubmitButton' onClick={onDismiss}>
         Dismiss
       </Button>
     </Box>
@@ -219,14 +166,13 @@ const TransactionConfirmationModal: React.FC<ConfirmationModalProps> = ({
   modalContent,
 }) => {
   const { chainId } = useActiveWeb3React();
-  const classes = useStyles();
 
   if (!chainId) return null;
 
   // confirmation screen
   return (
     <CustomModal open={isOpen} onClose={onDismiss}>
-      <img src={ModalBg} alt='Modal Back' className={classes.modalBG} />
+      <img src={ModalBg} alt='Modal Back' className='txModalBG' />
       <Box position='relative' zIndex={2}>
         {attemptingTxn ? (
           <ConfirmationPendingContent

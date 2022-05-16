@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Box, Typography, useMediaQuery } from '@material-ui/core';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { useTheme } from '@material-ui/core/styles';
 import { SyrupInfo } from 'types';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { CurrencyLogo } from 'components';
@@ -8,20 +8,7 @@ import { formatCompact, formatTokenAmount, getEarnedUSDSyrup } from 'utils';
 import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
 import SyrupAPR from './SyrupAPR';
 import SyrupCardDetails from './SyrupCardDetails';
-
-const useStyles = makeStyles(({ palette }) => ({
-  syrupCard: {
-    background: palette.secondary.dark,
-    width: '100%',
-    borderRadius: 10,
-    marginTop: 24,
-  },
-  syrupText: {
-    fontSize: 14,
-    fontWeight: 600,
-    color: palette.text.secondary,
-  },
-}));
+import 'components/styles/SyrupCard.scss';
 
 const SyrupCard: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
   syrup,
@@ -30,7 +17,6 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
   const { palette, breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const [expanded, setExpanded] = useState(false);
-  const classes = useStyles();
 
   const currency = unwrappedToken(syrup.token);
 
@@ -41,7 +27,7 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
       }`;
 
   return (
-    <Box className={classes.syrupCard}>
+    <Box className='syrupCard'>
       <Box
         display='flex'
         flexWrap='wrap'

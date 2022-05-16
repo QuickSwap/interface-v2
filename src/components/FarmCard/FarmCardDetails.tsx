@@ -33,73 +33,11 @@ import {
 } from 'utils';
 import CircleInfoIcon from 'assets/images/circleinfo.svg';
 
-const useStyles = makeStyles(({ palette, breakpoints }) => ({
-  inputVal: {
-    backgroundColor: palette.background.paper,
-    borderRadius: '10px',
-    height: '50px',
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    '& p': {
-      cursor: 'pointer',
-    },
-  },
-  buttonToken: {
-    backgroundColor: palette.grey.A400,
-    borderRadius: '10px',
-    height: '50px',
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    cursor: 'pointer',
-  },
-  buttonClaim: {
-    backgroundImage:
-      'linear-gradient(280deg, #64fbd3 0%, #00cff3 0%, #0098ff 10%, #004ce6 100%)',
-    borderRadius: '10px',
-    height: '50px',
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    cursor: 'pointer',
-    color: 'white',
-  },
-  buttonWrapper: {
-    minWidth: 250,
-    width: '30%',
-    color: palette.text.secondary,
-    borderRadius: 16,
-    [breakpoints.down('xs')]: {
-      width: '100%',
-      padding: 16,
-      border: `1px solid ${palette.divider}`,
-    },
-  },
-  dailyRateWrapper: {
-    display: 'flex',
-    alignItems: 'center',
-    flexWrap: 'wrap',
-    background: palette.secondary.contrastText,
-    width: '100%',
-    marginBottom: 16,
-    padding: '8px 16px',
-    borderRadius: 10,
-    [breakpoints.down('xs')]: {
-      margin: '0 16px 16px',
-      width: 'calc(100% - 32px)',
-    },
-  },
-}));
-
 const FarmCardDetails: React.FC<{
   stakingInfo: StakingInfo | DualStakingInfo;
   stakingAPY: number;
   isLPFarm?: boolean;
 }> = ({ stakingInfo, stakingAPY, isLPFarm }) => {
-  const classes = useStyles();
   const { t } = useTranslation();
   const { palette, breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
@@ -389,7 +327,7 @@ const FarmCardDetails: React.FC<{
               </>
             )}
             {!stakingInfo.ended && (
-              <Box className={classes.buttonWrapper} mt={isMobile ? 2 : 0}>
+              <Box className='buttonWrapper' mt={isMobile ? 2 : 0}>
                 <Box display='flex' justifyContent='space-between'>
                   <Typography variant='body2'>{t('inwallet')}:</Typography>
                   <Box
@@ -413,7 +351,7 @@ const FarmCardDetails: React.FC<{
                     </Link>
                   </Box>
                 </Box>
-                <Box className={classes.inputVal} mb={2} mt={2} p={2}>
+                <Box className='inputVal' mb={2} mt={2} p={2}>
                   <NumericalInput
                     placeholder='0.00'
                     value={stakeAmount}
@@ -446,9 +384,7 @@ const FarmCardDetails: React.FC<{
                   </Typography>
                 </Box>
                 <Box
-                  className={
-                    stakeEnabled ? classes.buttonClaim : classes.buttonToken
-                  }
+                  className={stakeEnabled ? 'buttonClaim' : 'buttonToken'}
                   mt={2}
                   p={2}
                   onClick={async () => {
@@ -473,7 +409,7 @@ const FarmCardDetails: React.FC<{
                 </Box>
               </Box>
             )}
-            <Box className={classes.buttonWrapper} mx={isMobile ? 0 : 2} my={2}>
+            <Box className='buttonWrapper' mx={isMobile ? 0 : 2} my={2}>
               <Box display='flex' justifyContent='space-between'>
                 <Typography variant='body2'>{t('mydeposits')}:</Typography>
                 <Typography variant='body2'>
@@ -481,7 +417,7 @@ const FarmCardDetails: React.FC<{
                   <span>({getUSDString(stakedAmounts?.myStakedUSD)})</span>
                 </Typography>
               </Box>
-              <Box className={classes.inputVal} mb={2} mt={4.5} p={2}>
+              <Box className='inputVal' mb={2} mt={4.5} p={2}>
                 <NumericalInput
                   placeholder='0.00'
                   value={unstakeAmount}
@@ -514,9 +450,7 @@ const FarmCardDetails: React.FC<{
                 </Typography>
               </Box>
               <Box
-                className={
-                  unstakeEnabled ? classes.buttonClaim : classes.buttonToken
-                }
+                className={unstakeEnabled ? 'buttonClaim' : 'buttonToken'}
                 mt={2}
                 p={2}
                 onClick={() => {
@@ -532,7 +466,7 @@ const FarmCardDetails: React.FC<{
                 </Typography>
               </Box>
             </Box>
-            <Box className={classes.buttonWrapper}>
+            <Box className='buttonWrapper'>
               <Box
                 display='flex'
                 flexDirection='column'
@@ -582,9 +516,7 @@ const FarmCardDetails: React.FC<{
                 )}
               </Box>
               <Box
-                className={
-                  claimEnabled ? classes.buttonClaim : classes.buttonToken
-                }
+                className={claimEnabled ? 'buttonClaim' : 'buttonToken'}
                 p={2}
                 onClick={() => {
                   if (claimEnabled) {
@@ -601,7 +533,7 @@ const FarmCardDetails: React.FC<{
         )}
       </Box>
       {mainRewardRate?.greaterThan('0') && (
-        <Box className={classes.dailyRateWrapper}>
+        <Box className='dailyRateWrapper'>
           <Box
             display='flex'
             alignItems='center'

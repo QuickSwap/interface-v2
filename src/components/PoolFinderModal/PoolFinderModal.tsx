@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Currency, TokenAmount, ETHER, JSBI } from '@uniswap/sdk';
 import { ArrowLeft, Plus } from 'react-feather';
 import { Box, Typography } from '@material-ui/core';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { useTheme } from '@material-ui/core/styles';
 import {
   CustomModal,
   CurrencyLogo,
@@ -16,18 +16,7 @@ import { useActiveWeb3React } from 'hooks';
 import { currencyId } from 'utils';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 import { Link } from 'react-router-dom';
-
-const useStyles = makeStyles(({ palette }) => ({
-  borderedCard: {
-    border: `1px solid ${palette.divider}`,
-    padding: 8,
-    borderRadius: 10,
-    cursor: 'pointer',
-    '&:hover': {
-      border: `1px solid ${palette.text.primary}`,
-    },
-  },
-}));
+import 'components/styles/PoolFinderModal.scss';
 
 enum Fields {
   TOKEN0 = 0,
@@ -40,7 +29,6 @@ interface PoolFinderModalProps {
 }
 
 const PoolFinderModal: React.FC<PoolFinderModalProps> = ({ open, onClose }) => {
-  const classes = useStyles();
   const { palette } = useTheme();
 
   const { account } = useActiveWeb3React();
@@ -114,7 +102,7 @@ const PoolFinderModal: React.FC<PoolFinderModalProps> = ({ open, onClose }) => {
         </Box>
         <Box
           mt={2}
-          className={classes.borderedCard}
+          className='borderedCard'
           onClick={() => {
             setShowSearch(true);
             setActiveField(Fields.TOKEN0);
@@ -135,7 +123,7 @@ const PoolFinderModal: React.FC<PoolFinderModalProps> = ({ open, onClose }) => {
           <Plus size='20' color={palette.text.secondary} />
         </Box>
         <Box
-          className={classes.borderedCard}
+          className='borderedCard'
           onClick={() => {
             setShowSearch(true);
             setActiveField(Fields.TOKEN1);

@@ -1,21 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Box, Typography, useMediaQuery } from '@material-ui/core';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { useTheme } from '@material-ui/core/styles';
 import { ArrowDropUp, ArrowDropDown } from '@material-ui/icons';
 import Skeleton from '@material-ui/lab/Skeleton';
 import { Token, ChainId } from '@uniswap/sdk';
 import { getAddress } from '@ethersproject/address';
 import { CurrencyLogo } from 'components';
 import { getEthPrice, getTopTokens, getPriceColor, formatNumber } from 'utils';
-
-const useStyles = makeStyles(() => ({
-  content: {
-    width: '100%',
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-}));
 
 interface TopMoversProps {
   background: string;
@@ -25,7 +16,6 @@ const TopMovers: React.FC<TopMoversProps> = ({
   background,
   hideArrow = false,
 }) => {
-  const classes = useStyles();
   const { palette, breakpoints } = useTheme();
   const [topTokens, updateTopTokens] = useState<any[] | null>(null);
   const smallWindowSize = useMediaQuery(breakpoints.down('xs'));
@@ -68,7 +58,12 @@ const TopMovers: React.FC<TopMoversProps> = ({
       </Typography>
       <Box width={1} pb={2} style={{ overflowX: 'auto' }}>
         {topMoverTokens ? (
-          <Box className={classes.content}>
+          <Box
+            width='100%'
+            display='flex'
+            justifyContent='space-between'
+            alignItems='center'
+          >
             {topMoverTokens.map((token: any, index: number) => {
               const currency = new Token(
                 ChainId.MATIC,

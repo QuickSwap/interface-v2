@@ -9,7 +9,6 @@ import { useTransactionAdder } from 'state/transactions/hooks';
 import { useLairContract } from 'hooks/useContract';
 import Web3 from 'web3';
 import { formatTokenAmount } from 'utils';
-import 'components/styles/StakeModal.scss';
 
 const web3 = new Web3();
 
