@@ -72,7 +72,7 @@ const YourLiquidityPools: React.FC = () => {
           <Box>
             <small className='liquidityText'>
               Don’t see a pool you joined?{' '}
-              <span onClick={() => setOpenPoolFinder(true)}>Import it</span>
+              <small onClick={() => setOpenPoolFinder(true)}>Import it</small>
               .<br />
               Unstake your LP Tokens from Farms to see them here.
             </small>
@@ -92,12 +92,12 @@ const YourLiquidityPools: React.FC = () => {
               alt='No Liquidity'
               className='noLiquidityImage'
             />
-            <small className='liquidityText'>
+            <p className='small liquidityText'>
               Don’t see a pool you joined?{' '}
-              <span onClick={() => setOpenPoolFinder(true)}>Import it</span>
+              <small onClick={() => setOpenPoolFinder(true)}>Import it</small>
               .<br />
               Unstake your LP Tokens from Farms to see them here.
-            </small>
+            </p>
           </Box>
         )}
       </Box>

@@ -152,7 +152,7 @@
       fill: $textPrimary
     }
     & path {
-      fill: $textPrimary
+      fill: $textSecondary
     }
   }
   @include media("screen", "<tablet") {

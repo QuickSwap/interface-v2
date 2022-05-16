@@ -17,7 +17,7 @@
 
 .liquidityText {
   color: $textSecondary;
-  & span {
+  & small {
     color: $primary;
     cursor: pointer;
   }

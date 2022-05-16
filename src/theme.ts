@@ -102,69 +102,6 @@ export const mainTheme = responsiveFontSizes(
       },
       divider: divider,
     },
-    typography: {
-      htmlFontSize: 16,
-      fontFamily: "'Inter', sans-serif",
-      fontSize: 14,
-      h1: {
-        fontSize: 60,
-        fontWeight: 'bold',
-        lineHeight: 0.93,
-      },
-      h2: {
-        fontSize: 40,
-        fontWeight: 'bold',
-        lineHeight: 1.2,
-      },
-      h3: {
-        fontSize: 30,
-        fontWeight: 'bold',
-        lineHeight: 1.33,
-      },
-      h4: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        lineHeight: 1.5,
-      },
-      h5: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        lineHeight: 1.5,
-      },
-      h6: {
-        fontSize: 16,
-        fontWeight: 600,
-        lineHeight: 1.5,
-      },
-      subtitle1: {
-        fontSize: 20,
-        lineHeight: 1.5,
-      },
-      subtitle2: {
-        fontSize: 18,
-        lineHeight: 1.56,
-      },
-      body1: {
-        fontSize: 16,
-        fontWeight: 500,
-        lineHeight: 1.5,
-      },
-      body2: {
-        fontSize: 14,
-        fontWeight: 500,
-        lineHeight: 1.57,
-      },
-      caption: {
-        fontSize: 12,
-        fontWeight: 600,
-        lineHeight: 1.33,
-      },
-      overLine: {
-        fontSize: 13,
-        fontWeight: 'bold',
-        lineHeight: 1.69,
-      },
-    },
     spacing,
     breakpoints: {
       values: {
@@ -178,9 +115,6 @@ export const mainTheme = responsiveFontSizes(
     overrides: {
       MuiButton: {
         root: {
-          fontSize: 14,
-          fontWeight: 'bold',
-          lineHeight: '20px',
           textTransform: 'none',
           backgroundColor: primary,
           color: white,
@@ -192,6 +126,10 @@ export const mainTheme = responsiveFontSizes(
           '&$disabled': {
             opacity: 0.3,
           },
+        },
+        label: {
+          fontSize: 16,
+          lineHeight: '20px',
         },
         secondary: {
           background: secondary,

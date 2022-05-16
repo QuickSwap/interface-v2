@@ -62,14 +62,14 @@
 }
 
 .liquidityMain {
-  & p {
+  & small {
     color: $textSecondary;
     font-weight: 600;
   }
 }
 
 .liquidityFilter {
-  & p {
+  & small {
     cursor: pointer;
     margin-right: 20px;
     &.active {
@@ -82,8 +82,7 @@
   border: 1px solid $secondary1;
   border-radius: 10px;
   margin-bottom: 20px;
-  & p {
-    color: $textPrimary;
+  & small {
     font-weight: 600;
   }
 }
@@ -149,6 +148,9 @@
     & svg path {
       fill: $textPrimary;
     }
+  }
+  & small {
+    text-transform: uppercase;
   }
 }
 .replayButton {

@@ -169,7 +169,11 @@ const ConvertQUICKPage: React.FC = () => {
           <small className='text-secondary'>
             {t('yourbalance')}: {formatTokenAmount(quickBalance)}
           </small>
-          <Box className='currencyInput errorInput'>
+          <Box
+            className={`currencyInput${
+              isInsufficientQUICK ? ' errorInput' : ''
+            }`}
+          >
             <NumericalInput
               placeholder='0.00'
               value={quickAmount}

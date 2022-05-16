@@ -59,10 +59,11 @@ const PoolPositionCard: React.FC<{ pair: Pair }> = ({ pair }) => {
   return (
     <Box
       width={1}
-      border={`1px solid ${palette.secondary.dark}`}
       borderRadius={10}
-      bgcolor={showMore ? palette.secondary.dark : 'transparent'}
-      style={{ overflow: 'hidden' }}
+      className={`border-secondary2 ${
+        showMore ? 'bg-secondary2' : 'bg-transparent'
+      }`}
+      overflow='hidden'
     >
       <Box
         paddingX={isMobile ? 1.5 : 3}
@@ -87,8 +88,7 @@ const PoolPositionCard: React.FC<{ pair: Pair }> = ({ pair }) => {
         <Box
           display='flex'
           alignItems='center'
-          color={palette.primary.main}
-          style={{ cursor: 'pointer' }}
+          className='text-primary cursor-pointer'
           onClick={() => setShowMore(!showMore)}
         >
           <p style={{ marginRight: 8 }}>Manage</p>
@@ -100,7 +100,7 @@ const PoolPositionCard: React.FC<{ pair: Pair }> = ({ pair }) => {
       {stakingInfo && !stakingInfo.ended && apyWithFee && (
         <Box bgcolor='#404557' paddingY={0.75} paddingX={isMobile ? 2 : 3}>
           <small>
-            Earn <span className='text-success'>{apyWithFee}% APY</span> by
+            Earn <small className='text-success'>{apyWithFee}% APY</small> by
             staking your LP tokens in {currency0.symbol?.toUpperCase()} /{' '}
             {currency1.symbol?.toUpperCase()} Farm
           </small>

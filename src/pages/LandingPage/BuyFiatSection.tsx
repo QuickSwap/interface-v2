@@ -32,10 +32,10 @@ export const BuyFiatSection: React.FC = () => {
           <img src={BuyWithFiat} alt='buy with fiat' />
           <Box>
             <h3>Buy crypto with Fiat</h3>
-            <h6>
+            <p className='weight-600'>
               Simple way to buy or sell crypto with a credit card, bank transfer
               and more
-            </h6>
+            </p>
           </Box>
         </Box>
         <Box className='buyFiatWrapper'>

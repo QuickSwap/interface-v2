@@ -134,8 +134,8 @@ const LiquidityPools: React.FC<{
                   <Box width={0.15}>
                     <small>24h Volume</small>
                   </Box>
-                  <Box width={0.15}>
-                    <small className='text-right'>APY</small>
+                  <Box width={0.15} className='text-right'>
+                    <small>APY</small>
                   </Box>
                 </>
               )}

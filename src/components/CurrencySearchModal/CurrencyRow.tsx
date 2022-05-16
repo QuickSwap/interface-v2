@@ -23,7 +23,11 @@ function currencyKey(currency: Token): string {
 }
 
 function Balance({ balance }: { balance: CurrencyAmount }) {
-  return <small title={balance.toExact()}>{formatTokenAmount(balance)}</small>;
+  return (
+    <p className='small' title={balance.toExact()}>
+      {formatTokenAmount(balance)}
+    </p>
+  );
 }
 
 function TokenTags({ currency }: { currency: Token }) {
@@ -163,7 +167,7 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
               <span>{customAdded ? 'Added by user' : 'Found by address'}</span>
               <Box
                 ml={0.5}
-                color={palette.primary.main}
+                className='text-primary'
                 onClick={(event) => {
                   event.stopPropagation();
                   if (customAdded) {

@@ -7,7 +7,6 @@ import {
   ConfirmationModalContent,
   DoubleCurrencyLogo,
 } from 'components';
-import { useTheme } from '@material-ui/core/styles';
 import { useWalletModalToggle } from 'state/application/hooks';
 import { TransactionResponse } from '@ethersproject/providers';
 import { BigNumber } from '@ethersproject/bignumber';
@@ -49,7 +48,6 @@ const AddLiquidity: React.FC<{
   currency1?: Currency;
   currencyBg?: string;
 }> = ({ currency0, currency1, currencyBg }) => {
-  const { palette } = useTheme();
   const { t } = useTranslation();
   const [addLiquidityErrorMessage, setAddLiquidityErrorMessage] = useState<
     string | null
@@ -338,7 +336,7 @@ const AddLiquidity: React.FC<{
             size={48}
           />
         </Box>
-        <Box mb={6} color={palette.text.primary} textAlign='center'>
+        <Box mb={6} textAlign='center'>
           <h6>
             {t('supplyingTokens', liquidityTokenData)}
             <br />
@@ -349,8 +347,8 @@ const AddLiquidity: React.FC<{
             })}
           </h6>
         </Box>
-        <Box mb={3} color={palette.text.secondary} textAlign='center'>
-          <small>
+        <Box mb={3} textAlign='center'>
+          <small className='text-secondary'>
             {t('outputEstimated', { slippage: allowedSlippage / 100 })}
           </small>
         </Box>
