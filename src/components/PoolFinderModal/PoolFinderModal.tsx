@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Currency, TokenAmount, ETHER, JSBI } from '@uniswap/sdk';
 import { ArrowLeft, Plus } from 'react-feather';
 import { Box } from '@material-ui/core';
-import { useTheme } from '@material-ui/core/styles';
 import {
   CustomModal,
   CurrencyLogo,
@@ -29,8 +28,6 @@ interface PoolFinderModalProps {
 }
 
 const PoolFinderModal: React.FC<PoolFinderModalProps> = ({ open, onClose }) => {
-  const { palette } = useTheme();
-
   const { account } = useActiveWeb3React();
 
   const [showSearch, setShowSearch] = useState<boolean>(false);
@@ -88,12 +85,11 @@ const PoolFinderModal: React.FC<PoolFinderModalProps> = ({ open, onClose }) => {
       <Box paddingX={3} paddingY={4}>
         <Box display='flex' alignItems='center' justifyContent='space-between'>
           <ArrowLeft
-            color={palette.text.secondary}
-            style={{ cursor: 'pointer' }}
+            className='text-secondary cursor-pointer'
             onClick={onClose}
           />
           <h6>Import Pool</h6>
-          <CloseIcon style={{ cursor: 'pointer' }} onClick={onClose} />
+          <CloseIcon className='cursor-pointer' onClick={onClose} />
         </Box>
         <Box
           mt={2}
@@ -115,7 +111,7 @@ const PoolFinderModal: React.FC<PoolFinderModalProps> = ({ open, onClose }) => {
           )}
         </Box>
         <Box my={1} display='flex' justifyContent='center'>
-          <Plus size='20' color={palette.text.secondary} />
+          <Plus size='20' className='text-secondary' />
         </Box>
         <Box
           className='borderedCard'
@@ -149,7 +145,7 @@ const PoolFinderModal: React.FC<PoolFinderModalProps> = ({ open, onClose }) => {
           borderRadius={10}
           display='flex'
           justifyContent='center'
-          border={`1px solid ${palette.divider}`}
+          className='border'
         >
           {currency0 && currency1 ? (
             pairState === PairState.EXISTS ? (
@@ -162,10 +158,7 @@ const PoolFinderModal: React.FC<PoolFinderModalProps> = ({ open, onClose }) => {
                     to={`/pools?currency0=${currencyId(
                       currency0,
                     )}&currency1=${currencyId(currency1)}`}
-                    style={{
-                      color: palette.primary.main,
-                      textDecoration: 'none',
-                    }}
+                    className='text-primary no-decoration'
                     onClick={onClose}
                   >
                     <p>Add liquidity.</p>
@@ -179,10 +172,7 @@ const PoolFinderModal: React.FC<PoolFinderModalProps> = ({ open, onClose }) => {
                   to={`/pools?currency0=${currencyId(
                     currency0,
                   )}&currency1=${currencyId(currency1)}`}
-                  style={{
-                    color: palette.primary.main,
-                    textDecoration: 'none',
-                  }}
+                  className='text-primary no-decoration'
                   onClick={onClose}
                 >
                   Create pool.

@@ -41,28 +41,25 @@ const AnalyticsTokens: React.FC = () => {
       <TopMovers background={palette.grey.A700} hideArrow={true} />
       <Box my={4} px={2} display='flex' flexWrap='wrap' alignItems='center'>
         <Box
-          className='tokensFilter'
+          className={`tokensFilter ${
+            tokensFilter === 0 ? 'text-primary' : 'text-disabled'
+          }`}
           onClick={() => setTokensFilter(0)}
-          color={
-            tokensFilter === 0 ? palette.primary.main : palette.text.disabled
-          }
         >
           <p className='weight-600'>All Cryptos</p>
         </Box>
         <Box
-          className='tokensFilter'
-          color={
-            tokensFilter === 1 ? palette.primary.main : palette.text.disabled
-          }
+          className={`tokensFilter ${
+            tokensFilter === 1 ? 'text-primary' : 'text-disabled'
+          }`}
           onClick={() => setTokensFilter(1)}
         >
           <p className='weight-600'>Favourites</p>
         </Box>
         <Box
-          className='tokensFilter'
-          color={
-            tokensFilter === 2 ? palette.primary.main : palette.text.disabled
-          }
+          className={`tokensFilter ${
+            tokensFilter === 2 ? 'text-primary' : 'text-disabled'
+          }`}
           onClick={() => setTokensFilter(2)}
         >
           <p className='weight-600'>New Listing</p>

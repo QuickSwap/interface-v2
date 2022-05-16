@@ -69,7 +69,7 @@
 .featureDivider {
   width: 32px;
   height: 2px;
-  background: $successDark;
+  background: $successLight;
   margin: auto;
 }
 .featureContainer {
@@ -107,7 +107,7 @@
     flex-wrap: wrap;
     align-items: center;
     justify-content: center;
-    margin-top: 48;
+    margin-top: 48px;
     & > div {
       margin: 16;
       text-align: center;

@@ -97,7 +97,7 @@ const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
             <Box display='flex' alignItems='center'>
               <CurrencyLogo currency={tokenCurrency} size='28px' />
               <Box ml={1}>
-                <p>
+                <p className='text-gray25'>
                   {token.name}{' '}
                   <span className='text-hint'>({token.symbol})</span>
                 </p>
@@ -171,11 +171,9 @@ const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
               <Box display='flex' alignItems='center'>
                 <CurrencyLogo currency={tokenCurrency} size='28px' />
                 <Box ml={1}>
-                  <p>
+                  <p className='text-gray25'>
                     {token.name}{' '}
-                    <span style={{ color: palette.text.hint }}>
-                      ({token.symbol})
-                    </span>
+                    <span className='text-hint'>({token.symbol})</span>
                   </p>
                 </Box>
               </Box>

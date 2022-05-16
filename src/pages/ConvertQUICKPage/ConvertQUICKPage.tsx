@@ -160,10 +160,10 @@ const ConvertQUICKPage: React.FC = () => {
           </Trans>
         </small>
         <Box className='conversionRate'>
-          <caption>
+          <span>
             {t('conversionRate')}: 1 QUICK(OLD) ={' '}
             {GlobalConst.utils.QUICK_CONVERSION_RATE} QUICK(NEW)
-          </caption>
+          </span>
         </Box>
         <Box mt={4} mb={2}>
           <small className='text-secondary'>

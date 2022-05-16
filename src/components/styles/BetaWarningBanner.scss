@@ -11,11 +11,11 @@
   justify-content: center;
   align-items: center;
   padding: 8px 32px 8px 16px;
-  & > span {
+  & span {
     margin-left: 8px;
-    font-weight: bold;
     text-transform: uppercase;
     width: calc(100% - 32px);
+    text-align: left;
   }
 }
 

@@ -28,9 +28,9 @@ const SyrupAPR: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
             alignItems='center'
           >
             <CurrencyLogo currency={returnTokenFromKey('QUICK')} size='12px' />
-            <caption style={{ marginLeft: 4 }}>
+            <span style={{ marginLeft: 4 }}>
               {dQUICKAPY}% <span className='text-hint'>APY</span>
-            </caption>
+            </span>
           </Box>
         </Box>
       )}

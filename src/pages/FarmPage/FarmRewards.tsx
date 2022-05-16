@@ -11,7 +11,7 @@ const FarmRewards: React.FC<{ farmIndex: number; bulkPairs: any }> = ({
   farmIndex,
   bulkPairs,
 }) => {
-  const { palette, breakpoints } = useTheme();
+  const { breakpoints } = useTheme();
   const { chainId } = useActiveWeb3React();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
 
@@ -31,11 +31,10 @@ const FarmRewards: React.FC<{ farmIndex: number; bulkPairs: any }> = ({
       <Box
         width={isMobile ? 1 : isLPFarm ? 1 / 3 : 1 / 2}
         p={1.5}
-        borderRight={isMobile ? 'none' : `1px solid ${palette.divider}`}
-        textAlign='center'
+        className={`text-center ${isMobile ? '' : 'border-right'}`}
       >
         <Box mb={1}>
-          <caption className='text-secondary'>Total Rewards</caption>
+          <span className='text-secondary'>Total Rewards</span>
         </Box>
         {farmData.rewardsUSD ? (
           <h6 className='weight-600'>
@@ -51,7 +50,7 @@ const FarmRewards: React.FC<{ farmIndex: number; bulkPairs: any }> = ({
         textAlign='center'
       >
         <Box mb={1}>
-          <caption className='text-secondary'>Fees [24h]</caption>
+          <span className='text-secondary'>Fees [24h]</span>
         </Box>
         {farmData.stakingFees ? (
           <h6 className='weight-600'>
@@ -71,18 +70,17 @@ const FarmRewards: React.FC<{ farmIndex: number; bulkPairs: any }> = ({
       my={2}
       borderRadius={10}
       py={1.5}
-      bgcolor={palette.secondary.dark}
+      className='bg-secondary2'
     >
       {farmIndex === GlobalConst.farmIndex.LPFARM_INDEX && (
         <>
           <Box
             width={isMobile ? 1 : 1 / 3}
             py={1.5}
-            borderRight={`1px solid ${palette.divider}`}
-            textAlign='center'
+            className='border-right text-center'
           >
             <Box mb={1}>
-              <caption className='text-secondary'>Reward Rate</caption>
+              <span className='text-secondary'>Reward Rate</span>
             </Box>
             <h6 className='weight-600'>
               {dQuickRewardSum.toLocaleString()} dQuick / Day

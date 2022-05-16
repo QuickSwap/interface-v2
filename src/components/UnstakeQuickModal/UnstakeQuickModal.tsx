@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Box, Button } from '@material-ui/core';
-import { useTheme } from '@material-ui/core/styles';
 import { CustomModal, ColoredSlider, NumericalInput } from 'components';
 import { useLairInfo } from 'state/stake/hooks';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
@@ -21,7 +20,6 @@ const UnstakeQuickModal: React.FC<UnstakeQuickModalProps> = ({
   open,
   onClose,
 }) => {
-  const { palette } = useTheme();
   const [attempting, setAttempting] = useState(false);
   const addTransaction = useTransactionAdder();
   const lairInfo = useLairInfo();
@@ -62,8 +60,7 @@ const UnstakeQuickModal: React.FC<UnstakeQuickModalProps> = ({
         </Box>
         <Box
           mt={3}
-          bgcolor={palette.background.default}
-          border='1px solid rgba(105, 108, 128, 0.12)'
+          className='bg-default border-gray14'
           borderRadius='10px'
           padding='16px'
         >
@@ -90,7 +87,7 @@ const UnstakeQuickModal: React.FC<UnstakeQuickModalProps> = ({
                 );
               }}
             />
-            <caption
+            <span
               className='text-primary text-bold cursor-pointer'
               onClick={() => {
                 setTypedValue(dQuickBalance ? dQuickBalance.toExact() : '0');
@@ -98,7 +95,7 @@ const UnstakeQuickModal: React.FC<UnstakeQuickModalProps> = ({
               }}
             >
               MAX
-            </caption>
+            </span>
           </Box>
           <Box display='flex' alignItems='center'>
             <Box flex={1} mr={2} mt={0.5}>

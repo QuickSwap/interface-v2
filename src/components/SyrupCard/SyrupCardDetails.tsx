@@ -30,7 +30,7 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
   dQUICKAPY,
 }) => {
   const syrupCurrency = unwrappedToken(syrup.token);
-  const { palette, breakpoints } = useTheme();
+  const { breakpoints } = useTheme();
   const { t } = useTranslation();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const [attemptingClaim, setAttemptingClaim] = useState(false);
@@ -173,10 +173,7 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
                       ? formatCompact(syrup.rate)
                       : syrup.rate.toLocaleString()}{' '}
                     {syrup.token.symbol}
-                    <span style={{ color: palette.text.secondary }}>
-                      {' '}
-                      / {t('day')}
-                    </span>
+                    <span className='text-secondary'> / {t('day')}</span>
                   </small>
                 </Box>
                 <Box mb={2}>
@@ -204,13 +201,11 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
             >
               <small className='text-secondary'>{t('inwallet')}</small>
               <small>
-                <span>
-                  {userLiquidityUnstaked
-                    ? formatTokenAmount(userLiquidityUnstaked)
-                    : 0}{' '}
-                  {syrup.stakingToken.symbol}
-                </span>
-                <span className='text-secondary' style={{ marginLeft: 4 }}>
+                {userLiquidityUnstaked
+                  ? formatTokenAmount(userLiquidityUnstaked)
+                  : 0}{' '}
+                {syrup.stakingToken.symbol}
+                <small className='text-secondary' style={{ marginLeft: 4 }}>
                   $
                   {userLiquidityUnstaked
                     ? (
@@ -218,7 +213,7 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
                         Number(userLiquidityUnstaked.toExact())
                       ).toLocaleString()
                     : 0}
-                </span>
+                </small>
               </small>
             </Box>
             <Box
@@ -229,17 +224,15 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
             >
               <small className='text-secondary'>{t('staked')}</small>
               <small>
-                <span>
-                  {formatTokenAmount(syrup.stakedAmount)}{' '}
-                  {syrup.stakingToken.symbol}
-                </span>
-                <span className='text-secondary' style={{ marginLeft: 4 }}>
+                {formatTokenAmount(syrup.stakedAmount)}{' '}
+                {syrup.stakingToken.symbol}
+                <small className='text-secondary' style={{ marginLeft: 4 }}>
                   {syrup.stakedAmount
                     ? `$${(
                         stakingTokenPrice * Number(syrup.stakedAmount.toExact())
                       ).toLocaleString()}`
                     : '-'}
-                </span>
+                </small>
               </small>
             </Box>
             <Box
@@ -254,12 +247,10 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
               <Box display='flex' alignItems='center'>
                 <CurrencyLogo currency={currency} size='16px' />
                 <small style={{ marginLeft: 4 }}>
-                  <span style={{ color: palette.text.primary }}>
-                    {formatTokenAmount(syrup.earnedAmount)}
-                  </span>
-                  <span className='text-secondary' style={{ marginLeft: 4 }}>
+                  {formatTokenAmount(syrup.earnedAmount)}
+                  <small className='text-secondary' style={{ marginLeft: 4 }}>
                     {getEarnedUSDSyrup(syrup)}
-                  </span>
+                  </small>
                 </small>
               </Box>
             </Box>

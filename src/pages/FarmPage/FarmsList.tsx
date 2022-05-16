@@ -40,7 +40,7 @@ interface FarmsListProps {
 }
 
 const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
-  const { palette, breakpoints } = useTheme();
+  const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
 
   const [pageIndex, setPageIndex] = useState(0);

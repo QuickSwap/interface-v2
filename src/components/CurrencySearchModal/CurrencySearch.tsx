@@ -158,7 +158,7 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
 
   return (
     <Box className='currencySearchWrapper'>
-      <Box className='header'>
+      <Box className='currencySearchHeader'>
         <h6>Select a token</h6>
         <CloseIcon onClick={onDismiss} />
       </Box>

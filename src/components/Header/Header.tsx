@@ -253,7 +253,9 @@ const Header: React.FC = () => {
               >
                 <Box className='wrongNetworkContent'>
                   <small>Please switch your wallet to Polygon Network.</small>
-                  <Box onClick={addMaticToMetamask}>Switch to Polygon</Box>
+                  <Box mt={2.5} onClick={addMaticToMetamask}>
+                    Switch to Polygon
+                  </Box>
                 </Box>
               </Box>
             )}

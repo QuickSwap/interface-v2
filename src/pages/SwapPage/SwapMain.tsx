@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Box } from '@material-ui/core';
-import { useTheme } from '@material-ui/core/styles';
 import { ReactComponent as SettingsIcon } from 'assets/images/SettingsIcon.svg';
 import { useIsProMode } from 'state/application/hooks';
 import useParsedQueryString from 'hooks/useParsedQueryString';
@@ -15,7 +14,6 @@ const SWAP_NORMAL = 0;
 const SWAP_LIMIT = 1;
 
 const SwapMain: React.FC = () => {
-  const { palette } = useTheme();
   const [swapIndex, setSwapIndex] = useState(SWAP_NORMAL);
   const [openSettingsModal, setOpenSettingsModal] = useState(false);
   const { isProMode, updateIsProMode } = useIsProMode();
@@ -57,8 +55,9 @@ const SwapMain: React.FC = () => {
           </Box>
           <Box
             className={`${swapIndex === SWAP_LIMIT &&
-              'activeSwap'} swapItem headingItem`}
-            borderRight={isProMode ? `1px solid ${palette.divider}` : ''}
+              'activeSwap'} swapItem headingItem ${
+              isProMode ? 'border-right' : ''
+            }`}
             onClick={() => setSwapIndex(SWAP_LIMIT)}
           >
             <p>Limit</p>
@@ -67,9 +66,9 @@ const SwapMain: React.FC = () => {
         <Box display='flex' alignItems='center'>
           {!isProMode && (
             <Box display='flex' alignItems='center' mr={1}>
-              <caption className='text-secondary' style={{ marginRight: 8 }}>
+              <span className='text-secondary' style={{ marginRight: 8 }}>
                 PRO MODE
-              </caption>
+              </span>
               <ToggleSwitch
                 toggled={isProMode}
                 onToggle={() => updateIsProMode(!isProMode)}

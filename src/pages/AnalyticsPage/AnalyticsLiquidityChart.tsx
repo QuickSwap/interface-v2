@@ -72,7 +72,7 @@ const AnalyticsLiquidityChart: React.FC = () => {
   return (
     <>
       <Box display='flex' justifyContent='space-between'>
-        <caption className='text-disabled text-bold'>LIQUIDITY</caption>
+        <span className='text-disabled text-bold'>LIQUIDITY</span>
         <ChartType
           typeTexts={GlobalData.analytics.CHART_DURATION_TEXTS}
           chartTypes={GlobalData.analytics.CHART_DURATIONS}
@@ -91,11 +91,11 @@ const AnalyticsLiquidityChart: React.FC = () => {
             bgcolor={liquidityPercentColor.bgColor}
             color={liquidityPercentColor.textColor}
           >
-            <caption>
+            <span>
               {`${globalData.liquidityChangeUSD > 0 ? '+' : ''}
                       ${globalData.liquidityChangeUSD.toLocaleString()}`}
               %
-            </caption>
+            </span>
           </Box>
         </Box>
       ) : (
@@ -104,9 +104,7 @@ const AnalyticsLiquidityChart: React.FC = () => {
         </Box>
       )}
       <Box>
-        <caption className='text-disabled'>
-          {moment().format('MMM DD, YYYY')}
-        </caption>
+        <span className='text-disabled'>{moment().format('MMM DD, YYYY')}</span>
       </Box>
       <Box mt={2}>
         {globalChartData ? (

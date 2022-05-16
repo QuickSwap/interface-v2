@@ -66,7 +66,7 @@ const SwapProInfo: React.FC<{
               )}
             </Box>
             {tokenData ? (
-              <caption>
+              <span>
                 24h:{' '}
                 <span
                   className={
@@ -75,7 +75,7 @@ const SwapProInfo: React.FC<{
                 >
                   {formatNumber(priceUpPercent)}%
                 </span>
-              </caption>
+              </span>
             ) : (
               <Skeleton width={60} height={12} />
             )}

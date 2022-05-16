@@ -1,6 +1,5 @@
 import React from 'react';
 import { Box } from '@material-ui/core';
-import { useTheme } from '@material-ui/core/styles';
 import 'components/styles/ChartType.scss';
 
 interface ChartTypeProps {
@@ -16,18 +15,17 @@ const ChartType: React.FC<ChartTypeProps> = ({
   chartType,
   setChartType,
 }) => {
-  const { palette } = useTheme();
-
   return (
     <Box display='flex' alignItems='center'>
       {chartTypes.map((value, index) => (
         <Box
           key={index}
-          className='chartType'
-          bgcolor={chartType === value ? palette.grey.A400 : 'transparent'}
+          className={`chartType ${
+            chartType === value ? 'bg-gray2' : 'transparent'
+          }`}
           onClick={() => setChartType(value)}
         >
-          <caption>{typeTexts[index]}</caption>
+          <span>{typeTexts[index]}</span>
         </Box>
       ))}
     </Box>

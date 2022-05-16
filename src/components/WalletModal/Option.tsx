@@ -43,7 +43,7 @@ const Option: React.FC<OptionProps> = ({
       )}
       {subheader && (
         <Box my={0.5} width={1}>
-          <caption>{subheader}</caption>
+          <span>{subheader}</span>
         </Box>
       )}
     </Box>

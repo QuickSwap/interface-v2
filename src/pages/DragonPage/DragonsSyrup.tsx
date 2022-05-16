@@ -281,7 +281,7 @@ const DragonsSyrup: React.FC = () => {
               justifyContent={item.justify}
               onClick={item.onClick}
               className={`cursor-pointer ${
-                sortBy === item.index ? 'text-primaryText' : 'text-secondary'
+                sortBy === item.index ? '' : 'text-secondary'
               }`}
             >
               <small>{item.text}</small>

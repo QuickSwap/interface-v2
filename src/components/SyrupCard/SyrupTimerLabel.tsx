@@ -7,7 +7,7 @@ const SyrupTimerLabel: React.FC<{ exactEnd: number; isEnded: boolean }> = ({
   isEnded,
 }) => {
   const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
-  const { palette, breakpoints } = useTheme();
+  const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
 
   const MINUTE = 60;
@@ -43,9 +43,9 @@ const SyrupTimerLabel: React.FC<{ exactEnd: number; isEnded: boolean }> = ({
           alignItems='center'
           justifyContent='space-between'
         >
-          <small className={`text-secondary${isMobile ? '' : ' caption'}`}>
+          <p className={`text-secondary ${isMobile ? 'small' : 'caption'}`}>
             Time Remaining
-          </small>
+          </p>
           <small className={isMobile ? '' : 'text-secondary'}>
             {`${days}d ${hours
               .toString()

@@ -30,7 +30,7 @@ export const ConfirmationPendingContent: React.FC<ConfirmationPendingContentProp
         </Box>
         <h5>Waiting For Confirmation</h5>
         <p>{pendingText}</p>
-        <caption>Please confirm this transaction in your wallet.</caption>
+        <span>Please confirm this transaction in your wallet.</span>
       </Box>
     </Box>
   );

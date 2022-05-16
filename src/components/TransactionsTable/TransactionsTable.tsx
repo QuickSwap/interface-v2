@@ -88,7 +88,7 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({ data }) => {
   const [txFilter, setTxFilter] = useState(-1);
   const txHeadCells = headCells(txFilter, setTxFilter);
   const { chainId } = useActiveWeb3React();
-  const { palette, breakpoints } = useTheme();
+  const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const { t } = useTranslation();
   const getTxString = (txn: any) => {

@@ -215,7 +215,7 @@ const DataTable: React.FC<DataTableProps<any>> = ({
 
           {/* Todo: show captions */}
           {caption === false && (
-            <caption style={{ marginTop: 24 }}>{caption}</caption>
+            <span style={{ marginTop: 24 }}>{caption}</span>
           )}
         </Table>
       </TableContainer>

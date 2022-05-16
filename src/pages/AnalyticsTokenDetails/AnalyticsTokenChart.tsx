@@ -104,7 +104,7 @@ const AnalyticsTokenChart: React.FC<{ token: any }> = ({ token }) => {
     <>
       <Box display='flex' flexWrap='wrap' justifyContent='space-between'>
         <Box mt={1.5}>
-          <caption>{chartIndexTexts[chartIndex]}</caption>
+          <span>{chartIndexTexts[chartIndex]}</span>
           <Box mt={1}>
             {currentData && currentPercent ? (
               <>
@@ -125,7 +125,7 @@ const AnalyticsTokenChart: React.FC<{ token: any }> = ({ token }) => {
                   </Box>
                 </Box>
                 <Box>
-                  <caption>{moment().format('MMM DD, YYYY')}</caption>
+                  <span>{moment().format('MMM DD, YYYY')}</span>
                 </Box>
               </>
             ) : (

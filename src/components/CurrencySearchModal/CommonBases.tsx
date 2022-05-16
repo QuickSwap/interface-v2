@@ -18,7 +18,7 @@ const CommonBases: React.FC<CommonBasesProps> = ({
   return (
     <Box mb={2}>
       <Box display='flex' className='title' my={1.5}>
-        <caption>Common bases</caption>
+        <span>Common bases</span>
         <QuestionHelper text='These tokens are commonly paired with other tokens.' />
       </Box>
       <Box display='flex' flexWrap='wrap'>

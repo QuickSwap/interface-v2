@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Box, Button } from '@material-ui/core';
-import { useTheme } from '@material-ui/core/styles';
 import { TokenAmount } from '@uniswap/sdk';
 import { TransactionResponse } from '@ethersproject/providers';
 import { CustomModal, ColoredSlider, NumericalInput } from 'components';
@@ -38,7 +37,6 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
   onClose,
   syrup,
 }) => {
-  const { palette } = useTheme();
   const [attempting, setAttempting] = useState(false);
   const [hash, setHash] = useState('');
   const { account, chainId, library } = useActiveWeb3React();
@@ -161,8 +159,7 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
         </Box>
         <Box
           mt={3}
-          bgcolor={palette.background.default}
-          border='1px solid rgba(105, 108, 128, 0.12)'
+          className='bg-default border-gray14'
           borderRadius='10px'
           padding='16px'
         >
@@ -197,7 +194,7 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
                 }
               }}
             />
-            <caption
+            <span
               className='text-primary text-bold cursor-pointer'
               onClick={() => {
                 setTypedValue(maxAmountInput ? maxAmountInput.toExact() : '0');
@@ -205,7 +202,7 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
               }}
             >
               MAX
-            </caption>
+            </span>
           </Box>
           <Box display='flex' alignItems='center'>
             <Box flex={1} mr={2} mt={0.5}>

@@ -30,7 +30,6 @@
 
 .rewardsSliderItem {
   border-radius: 32px;
-  background: $bgPalette;
   padding: 32px 22px;
   position: relative;
   & .rewardIcon {
@@ -41,7 +40,6 @@
   }
   & h5 {
     margin-left: 70px;
-    text-align: left;
   }
   & .row {
     display: flex;
@@ -50,21 +48,16 @@
     align-items: center;
     margin-top: 12px;
     & p {
-      color: $grey22;
       display: flex;
       align-items: center;
       & svg {
-        margin-left: 4,
+        margin-left: 4px,
       }
-    }
-    & h4 {
-      color: white;
     }
     & h5 {
       background: $green2;
-      color: $successMain;
       padding: 0 4px;
-      border-radius: 5;
+      border-radius: 5px;
     }
   }
   & button {

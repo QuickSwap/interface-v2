@@ -24,7 +24,7 @@ import AnalyticsHeader from 'pages/AnalyticsPage/AnalyticsHeader';
 import AnalyticsPairChart from './AnalyticsPairChart';
 
 const AnalyticsPairDetails: React.FC = () => {
-  const { palette, breakpoints } = useTheme();
+  const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const history = useHistory();
   const match = useRouteMatch<{ id: string }>();
@@ -162,7 +162,7 @@ const AnalyticsPairDetails: React.FC = () => {
                   borderRadius={20}
                   display='flex'
                   alignItems='center'
-                  bgcolor={palette.grey.A700}
+                  className='bg-gray3'
                 >
                   <CurrencyLogo currency={currency0} size='16px' />
                   <small style={{ marginLeft: 6 }}>
@@ -177,7 +177,7 @@ const AnalyticsPairDetails: React.FC = () => {
                   borderRadius={20}
                   display='flex'
                   alignItems='center'
-                  bgcolor={palette.grey.A700}
+                  className='bg-gray3'
                 >
                   <CurrencyLogo currency={currency1} size='16px' />
                   <small style={{ marginLeft: 6 }}>
@@ -189,9 +189,8 @@ const AnalyticsPairDetails: React.FC = () => {
             </Box>
             <Box my={2} display='flex'>
               <Box
-                className='button'
+                className='button border-primary'
                 mr={1.5}
-                border={`1px solid ${palette.primary.main}`}
                 onClick={() => {
                   history.push(
                     `/pools?currency0=${pairData.token0.id}&currency1=${pairData.token1.id}`,
@@ -232,12 +231,12 @@ const AnalyticsPairDetails: React.FC = () => {
                   >
                     <Box width={212}>
                       <Box>
-                        <caption className='text-disabled'>
+                        <span className='text-disabled'>
                           TOTAL TOKENS LOCKED
-                        </caption>
+                        </span>
                         <Box
                           mt={1.5}
-                          bgcolor={palette.grey.A400}
+                          className='bg-gray2'
                           borderRadius={8}
                           padding={1.5}
                         >
@@ -248,13 +247,13 @@ const AnalyticsPairDetails: React.FC = () => {
                           >
                             <Box display='flex' alignItems='center'>
                               <CurrencyLogo currency={currency0} size='16px' />
-                              <caption style={{ marginLeft: 6 }}>
+                              <span style={{ marginLeft: 6 }}>
                                 {pairData.token0.symbol} :
-                              </caption>
+                              </span>
                             </Box>
-                            <caption>
+                            <span>
                               {Number(pairData.reserve0).toLocaleString()}
-                            </caption>
+                            </span>
                           </Box>
                           <Box
                             mt={1}
@@ -264,33 +263,29 @@ const AnalyticsPairDetails: React.FC = () => {
                           >
                             <Box display='flex' alignItems='center'>
                               <CurrencyLogo currency={currency1} size='16px' />
-                              <caption style={{ marginLeft: 6 }}>
+                              <span style={{ marginLeft: 6 }}>
                                 {pairData.token1.symbol} :
-                              </caption>
+                              </span>
                             </Box>
-                            <caption>
+                            <span>
                               {Number(pairData.reserve1).toLocaleString()}
-                            </caption>
+                            </span>
                           </Box>
                         </Box>
                       </Box>
                       <Box mt={4}>
-                        <caption className='text-disabled'>
-                          7d Trading Vol
-                        </caption>
+                        <span className='text-disabled'>7d Trading Vol</span>
                         <p className={isMobile ? '' : 'h5'}>
                           ${pairData.oneWeekVolumeUSD.toLocaleString()}
                         </p>
                       </Box>
                       <Box mt={4}>
-                        <caption className='text-disabled'>24h FEES</caption>
+                        <span className='text-disabled'>24h FEES</span>
                         <p className={isMobile ? '' : 'h5'}>${fees}</p>
                       </Box>
                     </Box>
                     <Box width={140}>
-                      <caption className='text-disabled'>
-                        TOTAL LIQUIDITY
-                      </caption>
+                      <span className='text-disabled'>TOTAL LIQUIDITY</span>
                       <p className={isMobile ? '' : 'h5'}>
                         $
                         {Number(
@@ -300,17 +295,13 @@ const AnalyticsPairDetails: React.FC = () => {
                         ).toLocaleString()}
                       </p>
                       <Box mt={4}>
-                        <caption className='text-disabled'>
-                          24h Trading Vol
-                        </caption>
+                        <span className='text-disabled'>24h Trading Vol</span>
                         <p className={isMobile ? '' : 'h5'}>
                           ${pairData.oneDayVolumeUSD.toLocaleString()}
                         </p>
                       </Box>
                       <Box mt={4}>
-                        <caption className='text-disabled'>
-                          Contract Address
-                        </caption>
+                        <span className='text-disabled'>Contract Address</span>
                         <h5 className='text-primary'>
                           {chainId ? (
                             <a
@@ -321,10 +312,7 @@ const AnalyticsPairDetails: React.FC = () => {
                               )}
                               target='_blank'
                               rel='noopener noreferrer'
-                              style={{
-                                color: palette.primary.main,
-                                textDecoration: 'none',
-                              }}
+                              className='text-primary no-decoration'
                             >
                               {shortenAddress(pairData.id)}
                             </a>

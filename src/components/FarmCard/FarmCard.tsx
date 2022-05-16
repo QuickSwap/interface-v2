@@ -16,11 +16,7 @@ import {
   formatTokenAmount,
   formatAPY,
 } from 'utils';
-import {
-  KeyboardArrowDown,
-  KeyboardArrowUp,
-  StoreMallDirectoryOutlined,
-} from '@material-ui/icons';
+import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
 import 'components/styles/FarmCard.scss';
 
 const FarmCard: React.FC<{
@@ -28,7 +24,7 @@ const FarmCard: React.FC<{
   stakingAPY: number;
   isLPFarm?: boolean;
 }> = ({ stakingInfo, stakingAPY, isLPFarm }) => {
-  const { palette, breakpoints } = useTheme();
+  const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const [isExpandCard, setExpandCard] = useState(false);
 
@@ -106,13 +102,13 @@ const FarmCard: React.FC<{
             {!isExpandCard && (
               <Box width={0.25}>
                 <Box display='flex' alignItems='center'>
-                  <caption className='text-secondary'>APY</caption>
+                  <span className='text-secondary'>APY</span>
                   <Box ml={0.5} height={16}>
                     <img src={CircleInfoIcon} alt={'arrow up'} />
                   </Box>
                 </Box>
-                <Box mt={0.5} color={palette.success.main}>
-                  <small>{apyWithFee}%</small>
+                <Box mt={0.5}>
+                  <small className='text-success'>{apyWithFee}%</small>
                 </Box>
               </Box>
             )}
@@ -120,7 +116,7 @@ const FarmCard: React.FC<{
               width={0.05}
               display='flex'
               justifyContent='flex-end'
-              color={palette.primary.main}
+              className='text-primary'
             >
               {isExpandCard ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
             </Box>
@@ -132,15 +128,15 @@ const FarmCard: React.FC<{
               <small>{tvl}</small>
             </Box>
             <Box width={0.25} textAlign='center'>
-              <small>
+              <p className='small'>
                 ${(isLPFarm ? lpRewards : dualRewards).toLocaleString()} / day
-              </small>
+              </p>
               {isLPFarm ? (
-                <small>{lpPoolRate}</small>
+                <p className='small'>{lpPoolRate}</p>
               ) : (
                 <>
-                  <small>{dualPoolRateA}</small>
-                  <small>{dualPoolRateB}</small>
+                  <p className='small'>{dualPoolRateA}</p>
+                  <p className='small'>{dualPoolRateB}</p>
                 </>
               )}
             </Box>
@@ -149,7 +145,7 @@ const FarmCard: React.FC<{
               display='flex'
               justifyContent='center'
               alignItems='center'
-              color={palette.success.main}
+              className='text-success'
             >
               <small>{apyWithFee}%</small>
               <Box ml={0.5} height={16}>
@@ -170,7 +166,7 @@ const FarmCard: React.FC<{
                   />
                   <small style={{ marginLeft: 5 }}>
                     {formatTokenAmount(lpStakingInfo.earnedAmount)}
-                    <span>&nbsp;{lpStakingInfo.rewardToken.symbol}</span>
+                    &nbsp;{lpStakingInfo.rewardToken.symbol}
                   </small>
                 </Box>
               ) : (
@@ -186,7 +182,7 @@ const FarmCard: React.FC<{
                     />
                     <small style={{ marginLeft: 5 }}>
                       {formatTokenAmount(dualStakingInfo.earnedAmountA)}
-                      <span>&nbsp;{dualStakingInfo.rewardTokenA.symbol}</span>
+                      &nbsp;{dualStakingInfo.rewardTokenA.symbol}
                     </small>
                   </Box>
                   <Box
@@ -200,7 +196,7 @@ const FarmCard: React.FC<{
                     />
                     <small style={{ marginLeft: 5 }}>
                       {formatTokenAmount(dualStakingInfo.earnedAmountB)}
-                      <span>&nbsp;{dualStakingInfo.rewardTokenB.symbol}</span>
+                      &nbsp;{dualStakingInfo.rewardTokenB.symbol}
                     </small>
                   </Box>
                 </>

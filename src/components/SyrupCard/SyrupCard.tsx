@@ -14,7 +14,7 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
   syrup,
   dQUICKAPY,
 }) => {
-  const { palette, breakpoints } = useTheme();
+  const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const [expanded, setExpanded] = useState(false);
 
@@ -58,7 +58,7 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
               width={0.05}
               display='flex'
               justifyContent='flex-end'
-              color={palette.primary.main}
+              className='color-primary'
             >
               {expanded ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
             </Box>
@@ -70,15 +70,15 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
               <Box ml={1.5}>
                 <small>{currency.symbol}</small>
                 <Box display='flex' mt={0.25}>
-                  <caption>
+                  <span>
                     {syrup.rate >= 1000000
                       ? formatCompact(syrup.rate)
                       : syrup.rate.toLocaleString()}
                     <span className='text-secondary'> / day</span>
-                  </caption>
+                  </span>
                 </Box>
                 <Box display='flex' mt={0.25}>
-                  <caption>
+                  <span>
                     $
                     {syrup.rewardTokenPriceinUSD
                       ? (
@@ -86,7 +86,7 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
                         ).toLocaleString()
                       : '-'}{' '}
                     <span className='text-secondary'>/ day</span>
-                  </caption>
+                  </span>
                 </Box>
               </Box>
             </Box>

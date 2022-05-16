@@ -112,10 +112,10 @@ const TopMovers: React.FC<TopMoversProps> = ({
                       >
                         {!hideArrow && priceUp && <ArrowDropUp />}
                         {!hideArrow && priceDown && <ArrowDropDown />}
-                        <caption>
+                        <span>
                           {hideArrow && priceUp ? '+' : ''}
                           {priceUpPercent}%
-                        </caption>
+                        </span>
                       </Box>
                     </Box>
                   </Box>

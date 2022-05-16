@@ -2,7 +2,6 @@ import React, { useState, useMemo } from 'react';
 import { Box, Divider } from '@material-ui/core';
 import { KeyboardArrowDown } from '@material-ui/icons';
 import { AlertTriangle } from 'react-feather';
-import { useTheme } from '@material-ui/core/styles';
 import {
   CustomModal,
   NumericalInput,
@@ -35,7 +34,6 @@ interface SettingsModalProps {
 }
 
 const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
-  const { palette } = useTheme();
   const [
     userSlippageTolerance,
     setUserslippageTolerance,
@@ -148,11 +146,9 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
             px={2}
             display='flex'
             alignItems='center'
-            bgcolor={palette.background.default}
-            border={`1px solid ${palette.secondary.light}`}
+            className='bg-default border-secondary1'
           >
             <input
-              style={{ textAlign: 'left' }}
               className='settingsInput'
               value={expertConfirmText}
               onChange={(e: any) => setExpertConfirmText(e.target.value)}
@@ -242,12 +238,9 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
               px={2}
               display='flex'
               alignItems='center'
-              bgcolor={palette.background.default}
-              border={`1px solid
-                ${
-                  slippageAlert ? palette.primary.main : palette.secondary.light
-                }
-              `}
+              className={`bg-default ${
+                slippageAlert ? 'border-primary' : 'border-secondary1'
+              }`}
             >
               {slippageAlert && <AlertTriangle color='#ffa000' size={16} />}
               <NumericalInput
@@ -294,8 +287,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
             px={2}
             display='flex'
             alignItems='center'
-            bgcolor={palette.background.default}
-            border={`1px solid ${palette.secondary.light}`}
+            className='bg-default bg-secondary1'
             maxWidth={168}
           >
             <NumericalInput

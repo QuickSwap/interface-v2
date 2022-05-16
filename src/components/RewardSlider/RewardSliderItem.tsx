@@ -38,7 +38,7 @@ const RewardSliderItem: React.FC<RewardSliderItemProps> = ({
   }
 
   return (
-    <Box className='rewardsSliderItem'>
+    <Box className='rewardsSliderItem bg-palette'>
       <Box mb={4}>
         <Box className='rewardIcon'>
           <DoubleCurrencyLogo
@@ -53,35 +53,38 @@ const RewardSliderItem: React.FC<RewardSliderItemProps> = ({
         </h5>
       </Box>
       <Box className='row'>
-        <p>24h Fees</p>
-        <h4>${(info?.oneDayFee ?? 0).toLocaleString()}</h4>
+        <p className='text-gray22'>24h Fees</p>
+        <p>${(info?.oneDayFee ?? 0).toLocaleString()}</p>
       </Box>
       <Box className='row'>
-        <p>Rewards</p>
-        <h4>${rewards.toLocaleString()} / day</h4>
+        <p className='text-gray22'>Rewards</p>
+        <p>${rewards.toLocaleString()} / day</p>
       </Box>
       <Box className='row'>
-        <p>TVL</p>
-        <h4>{tvl}</h4>
+        <p className='text-gray22'>TVL</p>
+        <p>{tvl}</p>
       </Box>
       <Box className='row'>
-        <p>
+        <p className='text-gray22'>
           APR
           <HelpIcon />
         </p>
-        <h5>{apyWithFee}%</h5>
+        <h5>
+          <p className='text-success'>{apyWithFee}%</p>
+        </h5>
       </Box>
-      <Button
-        fullWidth
-        style={{ marginTop: '30px' }}
-        onClick={() => {
-          history.push(
-            `/pools?currency0=${info.tokens[0].address}&currency1=${info.tokens[1].address}`,
-          );
-        }}
-      >
-        Deposit LP Tokens
-      </Button>
+      <Box mt='30px'>
+        <Button
+          fullWidth
+          onClick={() => {
+            history.push(
+              `/pools?currency0=${info.tokens[0].address}&currency1=${info.tokens[1].address}`,
+            );
+          }}
+        >
+          Deposit LP Tokens
+        </Button>
+      </Box>
     </Box>
   );
 };

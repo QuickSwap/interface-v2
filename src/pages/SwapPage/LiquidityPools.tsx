@@ -11,7 +11,7 @@ const LiquidityPools: React.FC<{
   token1: Token;
   token2: Token;
 }> = ({ token1, token2 }) => {
-  const { palette, breakpoints } = useTheme();
+  const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const [liquidityPoolClosed, setLiquidityPoolClosed] = useState(false);
   const [liquidityFilterIndex, setLiquidityFilterIndex] = useState(0);
@@ -95,7 +95,7 @@ const LiquidityPools: React.FC<{
         </Box>
         <Box
           display='flex'
-          style={{ cursor: 'pointer', color: palette.text.secondary }}
+          className='cursor-pointer text-secondary'
           onClick={() => setLiquidityPoolClosed(!liquidityPoolClosed)}
         >
           {liquidityPoolClosed ? <KeyboardArrowDown /> : <KeyboardArrowUp />}

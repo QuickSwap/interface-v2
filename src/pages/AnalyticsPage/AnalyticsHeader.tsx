@@ -1,5 +1,4 @@
 import React from 'react';
-import { useTheme } from '@material-ui/core/styles';
 import { useHistory, useLocation } from 'react-router-dom';
 import { Box } from '@material-ui/core';
 import { ArrowForwardIos } from '@material-ui/icons';
@@ -13,7 +12,6 @@ interface AnalyticHeaderProps {
 }
 
 const AnalyticsHeader: React.FC<AnalyticHeaderProps> = ({ data, type }) => {
-  const { palette } = useTheme();
   const history = useHistory();
   const { pathname } = useLocation();
 
@@ -31,33 +29,33 @@ const AnalyticsHeader: React.FC<AnalyticHeaderProps> = ({ data, type }) => {
       >
         <Box marginY={1.5} display='flex' alignItems='center'>
           {type && data && (
-            <Box display='flex' alignItems='center' color={palette.text.hint}>
-              <caption
+            <Box display='flex' alignItems='center' className='text-hint'>
+              <span
                 className='link'
                 onClick={() => {
                   history.push('/analytics');
                 }}
               >
                 Analytics
-              </caption>
+              </span>
               <ArrowForwardIos style={{ width: 16 }} />
-              <caption
+              <span
                 className='link'
                 onClick={() => {
                   history.push(`/analytics/${type}s`);
                 }}
               >
                 {type === 'token' ? 'Tokens' : 'Pairs'}
-              </caption>
+              </span>
               <ArrowForwardIos style={{ width: 16 }} />
-              <caption>
+              <span>
                 <span className='text-gray19'>
                   {type === 'token'
                     ? data.symbol
                     : `${data.token0.symbol}/${data.token1.symbol}`}
                 </span>
                 ({shortenAddress(data.id)})
-              </caption>
+              </span>
             </Box>
           )}
           {!type && (

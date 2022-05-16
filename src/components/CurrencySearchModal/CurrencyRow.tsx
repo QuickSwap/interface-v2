@@ -23,11 +23,7 @@ function currencyKey(currency: Token): string {
 }
 
 function Balance({ balance }: { balance: CurrencyAmount }) {
-  return (
-    <small className='text-primary' title={balance.toExact()}>
-      {formatTokenAmount(balance)}
-    </small>
-  );
+  return <small title={balance.toExact()}>{formatTokenAmount(balance)}</small>;
 }
 
 function TokenTags({ currency }: { currency: Token }) {
@@ -161,12 +157,10 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
             )}
           </Box>
           {isOnSelectedList ? (
-            <caption className='currencyName'>{currency.name}</caption>
+            <span className='currencyName'>{currency.name}</span>
           ) : (
             <Box display='flex' alignItems='center'>
-              <caption>
-                {customAdded ? 'Added by user' : 'Found by address'}
-              </caption>
+              <span>{customAdded ? 'Added by user' : 'Found by address'}</span>
               <Box
                 ml={0.5}
                 color={palette.primary.main}
@@ -180,7 +174,7 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
                   }
                 }}
               >
-                <caption>{customAdded ? '(Remove)' : '(Add)'}</caption>
+                <span>{customAdded ? '(Remove)' : '(Add)'}</span>
               </Box>
             </Box>
           )}
@@ -192,13 +186,13 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
           {balance ? (
             <>
               <Balance balance={balance} />
-              <caption className='text-secondary'>
+              <span className='text-secondary'>
                 $
                 {(
                   Number(balance.toExact()) *
                   (usdPrice ? Number(usdPrice.toSignificant()) : 0)
                 ).toLocaleString()}
-              </caption>
+              </span>
             </>
           ) : account ? (
             <CircularProgress size={24} color='secondary' />

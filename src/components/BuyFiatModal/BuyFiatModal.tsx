@@ -29,8 +29,8 @@ const BuyFiatModal: React.FC<BuyFiatModalProps> = ({
     <CustomModal open={open} onClose={onClose}>
       <Box padding={3}>
         <Box display='flex' justifyContent='space-between' alignItems='center'>
-          <h6 className='text-primary'>Fiat gateway providers</h6>
-          <CloseIcon style={{ cursor: 'pointer' }} onClick={onClose} />
+          <h6>Fiat gateway providers</h6>
+          <CloseIcon className='cursor-pointer' onClick={onClose} />
         </Box>
         <Box className='paymentBox'>
           <img src={Moonpay} alt='moonpay' />

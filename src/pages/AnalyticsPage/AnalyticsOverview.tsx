@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Grid } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
-import { useTheme } from '@material-ui/core/styles';
 import Skeleton from '@material-ui/lab/Skeleton';
 import { ArrowForwardIos } from '@material-ui/icons';
 import dayjs from 'dayjs';

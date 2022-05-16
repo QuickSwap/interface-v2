@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, useTheme } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import useENS from 'hooks/useENS';
 import { useActiveWeb3React } from 'hooks';
 import { getEtherscanLink } from 'utils';
@@ -18,15 +18,15 @@ const AddressInput: React.FC<AddressInputProps> = ({
   placeholder,
   label,
 }) => {
-  const { palette } = useTheme();
   const { chainId } = useActiveWeb3React();
   const { address, loading, name } = useENS(value);
   const error = Boolean(value.length > 0 && !loading && !address);
 
   return (
     <Box
-      className='addressInput'
-      border={`1px solid ${error ? palette.error.main : palette.primary.dark}`}
+      className={`addressInput ${
+        error ? 'border-error' : 'border-primaryDark'
+      }`}
     >
       <Box display='flex' justifyContent='space-between' alignItems='center'>
         <p>{label}</p>

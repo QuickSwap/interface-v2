@@ -18,7 +18,7 @@ import 'pages/styles/swap.scss';
 
 const SwapPage: React.FC = () => {
   const { isProMode, updateIsProMode } = useIsProMode();
-  const { palette, breakpoints } = useTheme();
+  const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('sm'));
   const isTablet = useMediaQuery(breakpoints.down('md'));
   const [showChart, setShowChart] = useState(true);
@@ -120,9 +120,7 @@ const SwapPage: React.FC = () => {
         </Grid>
       ) : (
         <Box
-          borderTop={`1px solid ${palette.divider}`}
-          borderBottom={`1px solid ${palette.divider}`}
-          bgcolor={palette.background.paper}
+          className='border-top border-bottom bg-palette'
           display='flex'
           flexWrap='wrap'
           minHeight='calc(100vh - 140px)'
@@ -130,7 +128,7 @@ const SwapPage: React.FC = () => {
           <Box
             width={isMobile ? 1 : '450px'}
             padding='20px 0'
-            borderRight={isMobile ? 'none' : `1px solid ${palette.divider}`}
+            className={isMobile ? '' : 'border-right'}
           >
             <Box
               display='flex'
@@ -141,9 +139,9 @@ const SwapPage: React.FC = () => {
             >
               <h4>Swap</h4>
               <Box display='flex' alignItems='center' mr={1}>
-                <caption className='text-secondary' style={{ marginRight: 8 }}>
+                <span className='text-secondary' style={{ marginRight: 8 }}>
                   PRO MODE
-                </caption>
+                </span>
                 <ToggleSwitch
                   toggled={isProMode}
                   onToggle={() => updateIsProMode(!isProMode)}
@@ -154,9 +152,7 @@ const SwapPage: React.FC = () => {
           </Box>
           {infoPos === 'left' && (
             <Box
-              borderLeft={isMobile ? 'none' : `1px solid ${palette.divider}`}
-              borderRight={isMobile ? 'none' : `1px solid ${palette.divider}`}
-              borderTop={isMobile ? `1px solid ${palette.divider}` : 'none'}
+              className={isMobile ? 'border-top' : 'border-left border-right'}
               width={isMobile ? 1 : 250}
             >
               <SwapProInfo
@@ -196,8 +192,7 @@ const SwapPage: React.FC = () => {
           </Box>
           {infoPos === 'right' && (
             <Box
-              borderLeft={isMobile ? 'none' : `1px solid ${palette.divider}`}
-              borderTop={isTablet ? `1px solid ${palette.divider}` : 'none'}
+              className={isMobile ? 'border-top' : 'border-left'}
               width={isTablet ? 1 : 250}
             >
               <SwapProInfo

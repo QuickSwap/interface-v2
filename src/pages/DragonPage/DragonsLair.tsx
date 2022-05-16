@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useTheme } from '@material-ui/core/styles';
 import { Box } from '@material-ui/core';
 import { useLairInfo } from 'state/stake/hooks';
 import { CurrencyLogo, StakeQuickModal, UnstakeQuickModal } from 'components';
@@ -8,7 +7,6 @@ import { formatTokenAmount, returnTokenFromKey, useLairDQUICKAPY } from 'utils';
 import { useUSDCPriceToken } from 'utils/useUSDCPrice';
 
 const DragonsLair: React.FC = () => {
-  const { palette } = useTheme();
   const quickPrice = useUSDCPriceToken(returnTokenFromKey('QUICK'));
   const dQUICKPrice = useUSDCPriceToken(returnTokenFromKey('DQUICK'));
   const dQUICKtoQUICK = dQUICKPrice / quickPrice;
@@ -36,10 +34,8 @@ const DragonsLair: React.FC = () => {
       <Box display='flex'>
         <CurrencyLogo currency={returnTokenFromKey('QUICK')} size='32px' />
         <Box ml={1.5}>
-          <small>QUICK</small>
-          <caption className='text-hint'>
-            Single Stake — Auto compounding
-          </caption>
+          <p className='small line-height-1'>QUICK</p>
+          <span className='text-hint'>Single Stake — Auto compounding</span>
         </Box>
       </Box>
       <Box display='flex' justifyContent='space-between' mt={1.5}>
@@ -77,7 +73,7 @@ const DragonsLair: React.FC = () => {
         alignItems='center'
         justifyContent='center'
         borderRadius={10}
-        border={`1px solid ${palette.secondary.light}`}
+        className='border-secondary1'
       >
         <CurrencyLogo currency={returnTokenFromKey('QUICK')} />
         <small style={{ margin: '0 8px' }}>
@@ -93,24 +89,22 @@ const DragonsLair: React.FC = () => {
         />
       </Box>
       <Box
-        className='stakeButton'
-        bgcolor={palette.primary.main}
+        className='stakeButton bg-primary'
         onClick={() => setOpenStakeModal(true)}
       >
         <small>Stake</small>
       </Box>
       <Box
-        className='stakeButton'
-        bgcolor='transparent'
+        className='stakeButton bg-transparent'
         onClick={() => setOpenUnstakeModal(true)}
       >
         <small>Unstake</small>
       </Box>
       <Box mt={3} textAlign='center'>
-        <caption className='text-secondary'>
+        <span className='text-secondary'>
           ⭐️ When you unstake, the contract will automatically claim QUICK on
           your behalf.
-        </caption>
+        </span>
       </Box>
     </Box>
   );

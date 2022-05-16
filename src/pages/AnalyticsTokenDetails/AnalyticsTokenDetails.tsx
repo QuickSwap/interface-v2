@@ -123,9 +123,8 @@ const AnalyticsTokenDetails: React.FC = () => {
             </Box>
             <Box my={2} display='flex'>
               <Box
-                className='button'
+                className='button border-primary'
                 mr={1.5}
-                border={`1px solid ${palette.primary.main}`}
                 onClick={() => {
                   history.push(`/pools?currency0=${token.id}&currency1=ETH`);
                 }}
@@ -162,17 +161,13 @@ const AnalyticsTokenDetails: React.FC = () => {
                     justifyContent='space-between'
                   >
                     <Box width={180}>
-                      <caption className='text-disabled'>
-                        TOTAL LIQUIDITY
-                      </caption>
+                      <span className='text-disabled'>TOTAL LIQUIDITY</span>
                       <p className={isMobile ? '' : 'h5'}>
                         ${token.totalLiquidityUSD.toLocaleString()}
                       </p>
                     </Box>
                     <Box width={140}>
-                      <caption className='text-disabled'>
-                        7d Trading Vol
-                      </caption>
+                      <span className='text-disabled'>7d Trading Vol</span>
                       <p className={isMobile ? '' : 'h5'}>
                         ${token.oneWeekVolumeUSD.toLocaleString()}
                       </p>
@@ -185,15 +180,13 @@ const AnalyticsTokenDetails: React.FC = () => {
                     justifyContent='space-between'
                   >
                     <Box width={180}>
-                      <caption className='text-disabled'>
-                        24h Trading Vol
-                      </caption>
+                      <span className='text-disabled'>24h Trading Vol</span>
                       <p className={isMobile ? '' : 'h5'}>
                         ${token.oneDayVolumeUSD.toLocaleString()}
                       </p>
                     </Box>
                     <Box width={140}>
-                      <caption className='text-disabled'>24h FEES</caption>
+                      <span className='text-disabled'>24h FEES</span>
                       <p className={isMobile ? '' : 'h5'}>
                         $
                         {(
@@ -209,9 +202,7 @@ const AnalyticsTokenDetails: React.FC = () => {
                     justifyContent='space-between'
                   >
                     <Box width={180}>
-                      <caption className='text-disabled'>
-                        Contract Address
-                      </caption>
+                      <span className='text-disabled'>Contract Address</span>
                       <h5 className='text-primary'>
                         {chainId ? (
                           <a
@@ -222,10 +213,7 @@ const AnalyticsTokenDetails: React.FC = () => {
                             )}
                             target='_blank'
                             rel='noopener noreferrer'
-                            style={{
-                              color: palette.primary.main,
-                              textDecoration: 'none',
-                            }}
+                            className='text-primary no-decoration'
                           >
                             {shortenAddress(token.id)}
                           </a>

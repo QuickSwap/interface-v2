@@ -10,7 +10,7 @@ const LiquidityPoolRow: React.FC<{
   pair: any;
   key: number;
 }> = ({ pair, key }) => {
-  const { palette, breakpoints } = useTheme();
+  const { breakpoints } = useTheme();
   const daysCurrentYear = getDaysCurrentYear();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
 

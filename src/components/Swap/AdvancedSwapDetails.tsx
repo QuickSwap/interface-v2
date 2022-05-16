@@ -1,7 +1,6 @@
 import { Trade, TradeType } from '@uniswap/sdk';
 import React, { useState } from 'react';
 import { Box } from '@material-ui/core';
-import { useTheme } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { Field } from 'state/swap/actions';
 import { useUserSlippageTolerance } from 'state/user/hooks';
@@ -28,7 +27,6 @@ export const TradeSummary: React.FC<TradeSummaryProps> = ({
   allowedSlippage,
 }) => {
   const [openSettingsModal, setOpenSettingsModal] = useState(false);
-  const { palette } = useTheme();
   const { t } = useTranslation();
 
   const { priceImpactWithoutFee, realizedLPFee } = computeTradePriceBreakdown(

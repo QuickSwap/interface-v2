@@ -119,7 +119,7 @@ const PairTable: React.FC<TokensTableProps> = ({ data }) => {
                 size={28}
               />
               <Box ml={1}>
-                <p className='text-primary'>
+                <p className='text-gray25'>
                   {token0.symbol} / {token1.symbol}
                 </p>
               </Box>
@@ -231,7 +231,7 @@ const PairTable: React.FC<TokensTableProps> = ({ data }) => {
                   size={28}
                 />
                 <Box ml={1}>
-                  <p>
+                  <p className='text-gray25'>
                     {token0.symbol} / {token1.symbol}
                   </p>
                 </Box>

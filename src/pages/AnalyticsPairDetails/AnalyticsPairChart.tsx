@@ -121,7 +121,7 @@ const AnalyticsPairChart: React.FC<{ pairData: any }> = ({ pairData }) => {
     <>
       <Box display='flex' flexWrap='wrap' justifyContent='space-between'>
         <Box mt={1.5}>
-          <caption>{chartIndexTexts[chartIndex]}</caption>
+          <span>{chartIndexTexts[chartIndex]}</span>
           <Box mt={1}>
             {currentPercent && currentData ? (
               <>
@@ -142,7 +142,7 @@ const AnalyticsPairChart: React.FC<{ pairData: any }> = ({ pairData }) => {
                   </Box>
                 </Box>
                 <Box>
-                  <caption>{moment().format('MMM DD, YYYY')}</caption>
+                  <span>{moment().format('MMM DD, YYYY')}</span>
                 </Box>
               </>
             ) : (

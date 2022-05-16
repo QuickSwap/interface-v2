@@ -168,9 +168,9 @@ const AnalyticsVolumeChart: React.FC = () => {
     <>
       <Box>
         <Box display='flex' justifyContent='space-between'>
-          <caption className='text-disabled text-bold'>
+          <span className='text-disabled text-bold'>
             VOLUME {selectedVolumeIndex === -1 ? '(24hr)' : ''}
-          </caption>
+          </span>
           <ChartType
             chartTypes={volumeTypes}
             typeTexts={volumeTypeTexts}
@@ -209,15 +209,15 @@ const AnalyticsVolumeChart: React.FC = () => {
                   bgcolor={volumePercentColor.bgColor}
                   color={volumePercentColor.textColor}
                 >
-                  <caption>
+                  <span>
                     {`${getVolumePercent(volumeIndex) > 0 ? '+' : ''}
                       ${getVolumePercent(volumeIndex).toLocaleString()}`}
                     %
-                  </caption>
+                  </span>
                 </Box>
               </Box>
               <Box height={21}>
-                <caption className='text-disabled'>{volumeDates}</caption>
+                <span className='text-disabled'>{volumeDates}</span>
               </Box>
             </Box>
           ) : (

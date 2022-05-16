@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Box, Button } from '@material-ui/core';
-import { useTheme } from '@material-ui/core/styles';
 import { TransactionResponse } from '@ethersproject/providers';
 import { CustomModal, ColoredSlider, NumericalInput } from 'components';
 import { useDerivedLairInfo } from 'state/stake/hooks';
@@ -23,7 +22,6 @@ interface StakeQuickModalProps {
 }
 
 const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
-  const { palette } = useTheme();
   const [attempting, setAttempting] = useState(false);
   const { account } = useActiveWeb3React();
   const addTransaction = useTransactionAdder();
@@ -101,8 +99,7 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
         </Box>
         <Box
           mt={3}
-          bgcolor={palette.background.default}
-          border='1px solid rgba(105, 108, 128, 0.12)'
+          className='bg-default border-gray14'
           borderRadius='10px'
           padding='16px'
         >
@@ -129,7 +126,7 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
                 );
               }}
             />
-            <caption
+            <span
               className='text-primary text-bold cursor-pointer'
               onClick={() => {
                 setTypedValue(quickBalance ? quickBalance.toExact() : '0');
@@ -137,7 +134,7 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
               }}
             >
               MAX
-            </caption>
+            </span>
           </Box>
           <Box display='flex' alignItems='center'>
             <Box flex={1} mr={2} mt={0.5}>

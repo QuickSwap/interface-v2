@@ -39,7 +39,7 @@ const FarmCardDetails: React.FC<{
   isLPFarm?: boolean;
 }> = ({ stakingInfo, stakingAPY, isLPFarm }) => {
   const { t } = useTranslation();
-  const { palette, breakpoints } = useTheme();
+  const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const [stakeAmount, setStakeAmount] = useState('');
   const [attemptStaking, setAttemptStaking] = useState(false);
@@ -314,9 +314,7 @@ const FarmCardDetails: React.FC<{
                       <img src={CircleInfoIcon} alt={'arrow up'} />
                     </Box>
                   </Box>
-                  <Box color={palette.success.main}>
-                    <small>{apyWithFee}%</small>
-                  </Box>
+                  <small className='text-success'>{apyWithFee}%</small>
                 </Box>
               </>
             )}
@@ -331,14 +329,14 @@ const FarmCardDetails: React.FC<{
                     justifyContent='flex-start'
                   >
                     <small>
-                      {formatTokenAmount(userLiquidityUnstaked)} {t('lp')}{' '}
-                      <span>({getUSDString(stakedAmounts?.unStakedUSD)})</span>
+                      {formatTokenAmount(userLiquidityUnstaked)} {t('lp')} (
+                      {getUSDString(stakedAmounts?.unStakedUSD)})
                     </small>
                     <Link
                       to={`/pools?currency0=${getTokenAddress(
                         token0,
                       )}&currency1=${getTokenAddress(token1)}`}
-                      style={{ color: palette.primary.main }}
+                      className='text-primary'
                     >
                       {t('get')} {currency0?.symbol} / {currency1?.symbol}{' '}
                       {t('lp')}
@@ -355,13 +353,12 @@ const FarmCardDetails: React.FC<{
                     }}
                   />
                   <small
-                    style={{
-                      color:
-                        userLiquidityUnstaked &&
-                        userLiquidityUnstaked.greaterThan('0')
-                          ? palette.primary.main
-                          : palette.text.hint,
-                    }}
+                    className={
+                      userLiquidityUnstaked &&
+                      userLiquidityUnstaked.greaterThan('0')
+                        ? 'text-primary'
+                        : 'text-hint'
+                    }
                     onClick={() => {
                       if (
                         userLiquidityUnstaked &&
@@ -406,8 +403,8 @@ const FarmCardDetails: React.FC<{
               <Box display='flex' justifyContent='space-between'>
                 <small>{t('mydeposits')}:</small>
                 <small>
-                  {formatTokenAmount(stakingInfo.stakedAmount)} {t('lp')}{' '}
-                  <span>({getUSDString(stakedAmounts?.myStakedUSD)})</span>
+                  {formatTokenAmount(stakingInfo.stakedAmount)} {t('lp')} (
+                  {getUSDString(stakedAmounts?.myStakedUSD)})
                 </small>
               </Box>
               <Box className='inputVal' mb={2} mt={4.5} p={2}>
@@ -420,13 +417,12 @@ const FarmCardDetails: React.FC<{
                   }}
                 />
                 <small
-                  style={{
-                    color:
-                      stakingInfo.stakedAmount &&
-                      stakingInfo.stakedAmount.greaterThan('0')
-                        ? palette.primary.main
-                        : palette.text.hint,
-                  }}
+                  className={
+                    stakingInfo.stakedAmount &&
+                    stakingInfo.stakedAmount.greaterThan('0')
+                      ? 'text-primary'
+                      : 'text-hint'
+                  }
                   onClick={() => {
                     if (
                       stakingInfo.stakedAmount &&
@@ -476,7 +472,7 @@ const FarmCardDetails: React.FC<{
                     <Box mb={1} textAlign='center'>
                       <p className='text-secondary'>
                         {formatTokenAmount(lpStakingInfo.earnedAmount)}
-                        <span>&nbsp;{lpStakingInfo.rewardToken.symbol}</span>
+                        &nbsp;{lpStakingInfo.rewardToken.symbol}
                       </p>
                       <small>{earnedUSDStr}</small>
                     </Box>
