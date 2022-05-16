@@ -70,6 +70,10 @@
   font-weight: bold;
   color: $textPrimary;
   line-height: 1;
+  & a {
+    color: $textPrimary;
+    text-decoration: none;
+  }
   @include media("screen", "<phone") {
     font-size: 22px;
     font-weight: 600;
@@ -77,15 +81,11 @@
 }
 
 .heading2 {
-  font-size: 32px;
+  font-size: 20px;
   line-height: 1.2;
   font-weight: 600;
-  color: $textPrimary;
+  color: $textHint;
   margin-left: 6px;
-  & a {
-    color: $textPrimary;
-    text-decoration: none;
-  }
   @include media("screen", "<phone") {
     font-size: 18px
   }

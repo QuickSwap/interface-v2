@@ -144,7 +144,7 @@ const AnalyticsPairDetails: React.FC = () => {
                   size={32}
                 />
                 <Box ml={1}>
-                  <h2>
+                  <p className='heading1'>
                     <Link to={`/analytics/token/${pairData.token0.id}`}>
                       {pairData.token0.symbol}
                     </Link>{' '}
@@ -152,7 +152,7 @@ const AnalyticsPairDetails: React.FC = () => {
                     <Link to={`/analytics/token/${pairData.token1.id}`}>
                       {pairData.token1.symbol}
                     </Link>
-                  </h2>
+                  </p>
                 </Box>
               </Box>
               <Box mt={2} display='flex'>

@@ -95,8 +95,8 @@ const AnalyticsTokenDetails: React.FC = () => {
               <Box ml={1.5}>
                 <Box display='flex' alignItems='center'>
                   <Box display='flex' alignItems='flex-end' mr={0.5}>
-                    <h1>{token.name} </h1>
-                    <h2>({token.symbol})</h2>
+                    <p className='heading1'>{token.name} </p>
+                    <p className='heading2'>({token.symbol})</p>
                   </Box>
                   {bookmarkTokens.includes(token.id) ? (
                     <StarChecked
