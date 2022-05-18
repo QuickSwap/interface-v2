@@ -258,34 +258,19 @@ const FarmCardDetails: React.FC<{
   return (
     <>
       <Box
-        width='100%'
-        p={2}
-        display='flex'
-        flexDirection='row'
-        flexWrap='wrap'
-        borderTop='1px solid #444444'
-        alignItems='center'
-        justifyContent={stakingInfo?.ended ? 'flex-end' : 'space-between'}
+        className={`farmCardDetails ${
+          stakingInfo?.ended ? 'justify-end' : 'justify-between'
+        }`}
       >
         {stakingInfo && (
           <>
             {isMobile && (
               <>
-                <Box
-                  mt={2}
-                  width={1}
-                  display='flex'
-                  justifyContent='space-between'
-                >
+                <Box className='farmCardMobileRow'>
                   <small className='text-secondary'>{t('tvl')}</small>
                   <small>{tvl}</small>
                 </Box>
-                <Box
-                  mt={2}
-                  width={1}
-                  display='flex'
-                  justifyContent='space-between'
-                >
+                <Box className='farmCardMobileRow'>
                   <small className='text-secondary'>{t('rewards')}</small>
                   <Box textAlign='right'>
                     <small>
@@ -302,13 +287,8 @@ const FarmCardDetails: React.FC<{
                     )}
                   </Box>
                 </Box>
-                <Box
-                  mt={2}
-                  width={1}
-                  display='flex'
-                  justifyContent='space-between'
-                >
-                  <Box display='flex' alignItems='center'>
+                <Box className='farmCardMobileRow'>
+                  <Box className='flex items-center'>
                     <small className='text-secondary'>{t('apy')}</small>
                     <Box ml={0.5} height={16}>
                       <img src={CircleInfoIcon} alt={'arrow up'} />
@@ -322,12 +302,7 @@ const FarmCardDetails: React.FC<{
               <Box className='buttonWrapper' mt={isMobile ? 2 : 0}>
                 <Box display='flex' justifyContent='space-between'>
                   <small>{t('inwallet')}:</small>
-                  <Box
-                    display='flex'
-                    flexDirection='column'
-                    alignItems='flex-end'
-                    justifyContent='flex-start'
-                  >
+                  <Box className='flex flex-col items-end'>
                     <small>
                       {formatTokenAmount(userLiquidityUnstaked)} {t('lp')} (
                       {getUSDString(stakedAmounts?.unStakedUSD)})
@@ -455,12 +430,7 @@ const FarmCardDetails: React.FC<{
               </Box>
             </Box>
             <Box className='buttonWrapper'>
-              <Box
-                display='flex'
-                flexDirection='column'
-                alignItems='center'
-                justifyContent='space-between'
-              >
+              <Box className='flex flex-col items-center justify-between'>
                 <Box mb={1}>
                   <small>{t('unclaimedRewards')}:</small>
                 </Box>
@@ -518,16 +488,8 @@ const FarmCardDetails: React.FC<{
       </Box>
       {mainRewardRate?.greaterThan('0') && (
         <Box className='dailyRateWrapper'>
-          <Box
-            display='flex'
-            alignItems='center'
-            justifyContent={isMobile ? 'space-between' : 'flex-start'}
-            mr={isMobile ? 0 : 1.5}
-            width={isMobile ? 1 : 'auto'}
-            mb={isMobile ? 1 : 0}
-            flexWrap='wrap'
-          >
-            <Box display='flex' mr={1}>
+          <Box>
+            <Box>
               <small className='text-secondary'>
                 {t('yourRate', {
                   symbol: isLPFarm ? '' : dualStakingInfo.rewardTokenA.symbol,
@@ -547,16 +509,8 @@ const FarmCardDetails: React.FC<{
             </small>
           </Box>
           {!isLPFarm && (
-            <Box
-              display='flex'
-              alignItems='center'
-              justifyContent={isMobile ? 'space-between' : 'flex-start'}
-              mr={isMobile ? 0 : 1.5}
-              width={isMobile ? 1 : 'auto'}
-              mb={isMobile ? 1 : 0}
-              flexWrap='wrap'
-            >
-              <Box display='flex' mr={1}>
+            <Box>
+              <Box>
                 <small className='text-secondary'>
                   {t('yourRate', {
                     symbol: dualStakingInfo.rewardTokenB.symbol,
@@ -573,14 +527,8 @@ const FarmCardDetails: React.FC<{
               </small>
             </Box>
           )}
-          <Box
-            display='flex'
-            justifyContent={isMobile ? 'space-between' : 'flex-start'}
-            alignItems='center'
-            width={isMobile ? 1 : 'auto'}
-            flexWrap='wrap'
-          >
-            <Box display='flex' mr={1}>
+          <Box>
+            <Box>
               <small className='text-secondary'>{t('yourFees')}:</small>
             </Box>
             <small>

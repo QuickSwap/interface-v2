@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import {
   Box,
-  Grid,
   Table,
   TableBody,
   TableCell,
@@ -120,9 +119,8 @@ const DataTable: React.FC<DataTableProps<any>> = ({
                 >
                   {headCell.element}
                   {sortUpIcon && sortDownIcon ? (
-                    <Grid
-                      container
-                      alignItems='center'
+                    <Box
+                      className='flex items-center'
                       style={{
                         whiteSpace: isSinglelineHeader ? 'nowrap' : 'initial',
                       }}
@@ -152,7 +150,7 @@ const DataTable: React.FC<DataTableProps<any>> = ({
                             : sortDownIcon}
                         </Box>
                       )}
-                    </Grid>
+                    </Box>
                   ) : (
                     <TableSortLabel
                       style={{
@@ -183,9 +181,9 @@ const DataTable: React.FC<DataTableProps<any>> = ({
             {loading && (
               <TableRow style={{ height: 53 * emptyRows }}>
                 <TableCell colSpan={headCells.length}>
-                  <Grid container justifyContent='center' alignItems='center'>
+                  <Box className='flex justify-center items-center'>
                     <CircularProgress />
-                  </Grid>
+                  </Box>
                 </TableCell>
               </TableRow>
             )}

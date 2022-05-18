@@ -44,6 +44,10 @@
   background-color: $successLight;
 }
 
+.bg-error {
+  background-color: $errorMain;
+}
+
 .bg-errorLight {
   background-color: $errorLight;
 }
@@ -70,6 +74,18 @@
 
 .border-secondary1 {
   border: 1px solid $secondary1;
+}
+
+.border-top-secondary1 {
+  border-top: 1px solid $secondary1;
+}
+
+.border-bottom-secondary1 {
+  border-bottom: 1px solid $secondary1;
+}
+
+.border-right-secondary1 {
+  border-right: 1px solid $secondary1;
 }
 
 .border-secondary2 {

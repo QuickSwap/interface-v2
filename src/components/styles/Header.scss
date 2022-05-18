@@ -13,12 +13,6 @@
   & a {
     display: flex;
   }
-  & .primary {
-    background-color: $blue1;
-  }
-  & .danger {
-    background-color: $errorMain;
-  }  
   & > div {
     display: flex;
     align-items: center;
@@ -121,6 +115,16 @@
     }
   }
 }
+.subMenuWrapper {
+  position: absolute;
+  bottom: 72px;
+  right: 12px;
+  width: 209px;
+  background-color: $secondary2;
+  border-radius: 20px;
+  padding: '8px 0';
+  border: 1px solid $divider
+}
 .accountDetails {
   border: solid 1px $grey2;
   padding: 0 16px;
@@ -154,6 +158,13 @@
   &:hover .wrongNetworkContent {
     display: block;
   }
+}
+.wrongNetworkWrapper {
+  position: absolute;
+  top: 36px;
+  width: 272px;
+  right: 0;
+  padding-top: 18px
 }
 .wrongNetworkContent {
   background: $bgColor;

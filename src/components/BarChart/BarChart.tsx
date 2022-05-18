@@ -20,7 +20,7 @@ const BarChart: React.FC<BarChartProps> = ({
   const maxValue = Math.max(...data);
   return (
     <Box onMouseLeave={onMouseLeave}>
-      <Box display='flex' alignItems='flex-end' justifyContent='space-between'>
+      <Box className='flex items-end justify-between'>
         {data.map((value, index) => (
           <Box
             key={index}

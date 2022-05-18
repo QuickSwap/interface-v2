@@ -172,16 +172,7 @@ const Header: React.FC = () => {
                 onClick={() => setOpenDetailMenu(!openDetailMenu)}
               />
               {openDetailMenu && (
-                <Box
-                  position='absolute'
-                  bottom={72}
-                  right={12}
-                  width={209}
-                  bgcolor={theme.palette.secondary.dark}
-                  borderRadius={20}
-                  py={1}
-                  border={`1px solid ${theme.palette.divider}`}
-                >
+                <Box className='subMenuWrapper'>
                   <Box className='subMenu'>
                     {menuItems.slice(4, menuItems.length).map((val, index) => (
                       <Link
@@ -213,10 +204,8 @@ const Header: React.FC = () => {
         <Box
           width={36}
           height={36}
-          display='flex'
-          alignItems='center'
-          justifyContent='center'
-          marginRight={1}
+          className='flex items-center justify-center'
+          mr={1}
         >
           <LightIcon />
         </Box>
@@ -232,7 +221,9 @@ const Header: React.FC = () => {
         ) : (
           <Box
             className={`connectButton ${
-              ethereum && !isSupportedNetwork(ethereum) ? 'danger' : 'primary'
+              ethereum && !isSupportedNetwork(ethereum)
+                ? 'bg-error'
+                : 'bg-primary'
             }`}
             onClick={() => {
               if (!ethereum || isSupportedNetwork(ethereum)) {
@@ -244,13 +235,7 @@ const Header: React.FC = () => {
               ? 'Wrong Network'
               : 'Connect Wallet'}
             {ethereum && !isSupportedNetwork(ethereum) && (
-              <Box
-                position='absolute'
-                top={36}
-                width={272}
-                right={0}
-                paddingTop='18px'
-              >
+              <Box className='wrongNetworkWrapper'>
                 <Box className='wrongNetworkContent'>
                   <small>Please switch your wallet to Polygon Network.</small>
                   <Box mt={2.5} onClick={addMaticToMetamask}>

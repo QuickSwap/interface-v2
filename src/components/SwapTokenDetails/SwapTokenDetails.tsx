@@ -92,7 +92,7 @@ const SwapTokenDetails: React.FC<{
                   ml={0.5}
                   display='flex'
                   alignItems='center'
-                  className={priceUp ? 'text-success' : 'text-danger'}
+                  className={priceUp ? 'text-success' : 'text-error'}
                 >
                   {priceUp ? <ArrowDropUp /> : <ArrowDropDown />}
                   <small>{priceUpPercent}%</small>
@@ -120,14 +120,10 @@ const SwapTokenDetails: React.FC<{
           <Skeleton variant='rect' width={88} height={47} />
         )}
       </Box>
-      <Box
-        borderTop={`1px solid ${palette.secondary.light}`}
-        borderBottom={`1px solid ${palette.secondary.light}`}
-        px={2}
-      >
+      <Box className='border-top-secondary1 border-bottom-secondary1' px={2}>
         <Grid container>
           <Grid item xs={6}>
-            <Box borderRight={`1px solid ${palette.secondary.light}`} py={1}>
+            <Box className='border-right-secondary1' py={1}>
               {tokenData ? (
                 <small className='text-secondary'>
                   TVL: {formatCompact(tokenData?.totalLiquidityUSD)}
@@ -150,13 +146,7 @@ const SwapTokenDetails: React.FC<{
           </Grid>
         </Grid>
       </Box>
-      <Box
-        display='flex'
-        justifyContent='space-between'
-        alignItems='center'
-        py={1}
-        px={2}
-      >
+      <Box className='flex justify-between items-center' py={1} px={2}>
         <a
           href={`https://polygonscan.com/token/${tokenAddress}`}
           target='_blank'
@@ -166,8 +156,8 @@ const SwapTokenDetails: React.FC<{
           <small className='text-primary'>{shortenAddress(tokenAddress)}</small>
         </a>
         <Box
-          display='flex'
-          style={{ cursor: 'pointer', opacity: isCopied ? 0.5 : 1 }}
+          className='flex cursor-pointer'
+          style={{ opacity: isCopied ? 0.5 : 1 }}
           onClick={() => {
             setCopied(tokenAddress);
           }}

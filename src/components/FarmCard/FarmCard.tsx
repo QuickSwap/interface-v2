@@ -76,7 +76,7 @@ const FarmCard: React.FC<{
     dualStakingInfo.rateB * dualStakingInfo.rewardTokenBPrice;
 
   const renderPool = (width: number) => (
-    <Box display='flex' alignItems='center' width={width}>
+    <Box className='flex items-center' width={width}>
       <DoubleCurrencyLogo
         currency0={currency0}
         currency1={currency1}
@@ -101,7 +101,7 @@ const FarmCard: React.FC<{
             {renderPool(isExpandCard ? 0.95 : 0.7)}
             {!isExpandCard && (
               <Box width={0.25}>
-                <Box display='flex' alignItems='center'>
+                <Box className='flex items-center'>
                   <span className='text-secondary'>APY</span>
                   <Box ml={0.5} height={16}>
                     <img src={CircleInfoIcon} alt={'arrow up'} />
@@ -112,12 +112,7 @@ const FarmCard: React.FC<{
                 </Box>
               </Box>
             )}
-            <Box
-              width={0.05}
-              display='flex'
-              justifyContent='flex-end'
-              className='text-primary'
-            >
+            <Box width={0.05} className='flex justify-end text-primary'>
               {isExpandCard ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
             </Box>
           </>
@@ -142,10 +137,7 @@ const FarmCard: React.FC<{
             </Box>
             <Box
               width={0.15}
-              display='flex'
-              justifyContent='center'
-              alignItems='center'
-              className='text-success'
+              className='flex justify-center items-center text-success'
             >
               <small>{apyWithFee}%</small>
               <Box ml={0.5} height={16}>
@@ -155,11 +147,7 @@ const FarmCard: React.FC<{
             <Box width={0.2} textAlign='right'>
               <small>{earnedUSDStr}</small>
               {isLPFarm ? (
-                <Box
-                  display='flex'
-                  alignItems='center'
-                  justifyContent='flex-end'
-                >
+                <Box className='flex items-center justify-end'>
                   <CurrencyLogo
                     currency={lpStakingInfo.rewardToken}
                     size='16px'
@@ -171,11 +159,7 @@ const FarmCard: React.FC<{
                 </Box>
               ) : (
                 <>
-                  <Box
-                    display='flex'
-                    alignItems='center'
-                    justifyContent='flex-end'
-                  >
+                  <Box className='flex items-center justify-end'>
                     <CurrencyLogo
                       currency={unwrappedToken(dualStakingInfo.rewardTokenA)}
                       size='16px'
@@ -185,11 +169,7 @@ const FarmCard: React.FC<{
                       &nbsp;{dualStakingInfo.rewardTokenA.symbol}
                     </small>
                   </Box>
-                  <Box
-                    display='flex'
-                    alignItems='center'
-                    justifyContent='flex-end'
-                  >
+                  <Box className='flex items-center justify-end'>
                     <CurrencyLogo
                       currency={unwrappedToken(dualStakingInfo.rewardTokenB)}
                       size='16px'

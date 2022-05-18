@@ -100,7 +100,7 @@ const PoolFinderModal: React.FC<PoolFinderModalProps> = ({ open, onClose }) => {
           }}
         >
           {currency0 ? (
-            <Box display='flex' alignItems='center'>
+            <Box className='flex items-center'>
               <CurrencyLogo currency={currency0} size='20px' />
               <p className='weight-600' style={{ marginLeft: 6 }}>
                 {currency0.symbol}

@@ -28,15 +28,10 @@ const ButtonSwitch: React.FC<ButtonSwitchProps> = ({
   const minHeight = height - padding * 2;
 
   return (
-    <Box
-      width={width}
-      maxWidth='100%'
-      display='inline-block'
-      className='t-button-switch'
-    >
-      <Box className='buttonSwitchContainer' padding={padding}>
+    <Box width={width} maxWidth='100%' display='inline-block'>
+      <Box className='buttonSwitchContainer' padding={`${padding}px`}>
         <Tabs
-          style={{ minHeight: minHeight }}
+          style={{ minHeight }}
           value={value}
           variant='fullWidth'
           onChange={(event, newValue) => {
@@ -62,7 +57,7 @@ const ButtonSwitch: React.FC<ButtonSwitchProps> = ({
                 wrapped
                 className={`tab ${
                   value === tab.value ? 'tabActive' : 'tabInactive'
-                } t-button-switch-item`}
+                }`}
                 style={{
                   minWidth: '0px',
                   minHeight: minHeight,

@@ -1,7 +1,6 @@
 import { CurrencyAmount, ETHER, Token } from '@uniswap/sdk';
 import React from 'react';
 import { Box, Tooltip, CircularProgress, ListItem } from '@material-ui/core';
-import { useTheme } from '@material-ui/core/styles';
 import { useActiveWeb3React } from 'hooks';
 import { WrappedTokenInfo } from 'state/lists/hooks';
 import { useAddUserToken, useRemoveUserAddedToken } from 'state/user/hooks';
@@ -79,7 +78,6 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
   isOnSelectedList,
 }) => {
   const { ethereum } = window as any;
-  const { palette } = useTheme();
   const { account, chainId } = useActiveWeb3React();
   const key = currencyKey(currency);
 
@@ -139,13 +137,14 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
     >
       <Box className='currencyRow'>
         {(otherSelected || isSelected) && <TokenSelectedIcon />}
-        <CurrencyLogo currency={currency} size={'32px'} />
+        <CurrencyLogo currency={currency} size='32px' />
         <Box ml={1} height={32}>
-          <Box display='flex' alignItems='center'>
+          <Box className='flex items-center'>
             <small className='currencySymbol'>{currency.symbol}</small>
             {isMetamask && currency !== ETHER && (
               <Box
-                style={{ cursor: 'pointer', marginLeft: 2 }}
+                className='cursor-pointer'
+                ml='2px'
                 onClick={(event: any) => {
                   addTokenToMetamask(
                     currency.address,
@@ -163,7 +162,7 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
           {isOnSelectedList ? (
             <span className='currencyName'>{currency.name}</span>
           ) : (
-            <Box display='flex' alignItems='center'>
+            <Box className='flex items-center'>
               <span>{customAdded ? 'Added by user' : 'Found by address'}</span>
               <Box
                 ml={0.5}

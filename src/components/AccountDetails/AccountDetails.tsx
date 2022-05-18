@@ -70,14 +70,14 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
 
   return (
     <Box paddingX={3} paddingY={4}>
-      <Box display='flex' justifyContent='space-between'>
+      <Box className='flex justify-between'>
         <h5 className='text-bold'>Account</h5>
         <Close className='cursor-pointer' onClick={toggleWalletModal} />
       </Box>
       <Box mt={2} padding={2} borderRadius={10} className='bg-secondary2'>
-        <Box display='flex' justifyContent='space-between' alignItems='center'>
+        <Box className='flex justify-between items-center'>
           {formatConnectorName()}
-          <Box display='flex' alignItems='center'>
+          <Box className='flex items-center'>
             {connector !== injected &&
               connector !== walletlink &&
               connector !== safeApp && (
@@ -102,13 +102,13 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
             )}
           </Box>
         </Box>
-        <Box display='flex' alignItems='center' my={1.5}>
+        <Box className='flex items-center' my={1.5}>
           <StatusIcon />
           <h5 style={{ marginLeft: 8 }} id='web3-account-identifier-row'>
             {ENSName ? ENSName : account && shortenAddress(account)}
           </h5>
         </Box>
-        <Box display='flex' justifyContent='space-between' alignItems='center'>
+        <Box className='flex justify-between items-center'>
           {account && (
             <Copy toCopy={account}>
               <span style={{ marginLeft: '4px' }}>Copy Address</span>
@@ -137,10 +137,8 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
       {!!pendingTransactions.length || !!confirmedTransactions.length ? (
         <>
           <Box
-            display='flex'
-            justifyContent='space-between'
-            alignItems='center'
-            paddingX={2}
+            className='flex justify-between items-center'
+            px={2}
             pt={2}
             mb={1}
           >

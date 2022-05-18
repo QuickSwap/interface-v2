@@ -21,7 +21,7 @@ const StatusIcon: React.FC = () => {
     )
     .map((k) => SUPPORTED_WALLETS[k].iconName)[0];
   return (
-    <Box display='flex' alignItems='center'>
+    <Box className='flex items-center'>
       <img src={icon} width={24} alt='wallet icon' />
       {connector === portis && (
         <Box

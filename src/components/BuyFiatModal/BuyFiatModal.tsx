@@ -28,7 +28,7 @@ const BuyFiatModal: React.FC<BuyFiatModalProps> = ({
   return (
     <CustomModal open={open} onClose={onClose}>
       <Box padding={3}>
-        <Box display='flex' justifyContent='space-between' alignItems='center'>
+        <Box className='flex justify-between items-center'>
           <h6>Fiat gateway providers</h6>
           <CloseIcon className='cursor-pointer' onClick={onClose} />
         </Box>

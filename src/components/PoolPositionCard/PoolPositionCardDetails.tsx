@@ -65,20 +65,16 @@ const PoolPositionCardDetails: React.FC<{ pair: Pair }> = ({ pair }) => {
         </Box>
         <Box className='cardRow'>
           <small>Pooled {currency0.symbol}:</small>
-          <Box display='flex' alignItems='center'>
-            <small style={{ marginRight: 10 }}>
-              {formatTokenAmount(token0Deposited)}
-            </small>
+          <Box>
+            <small>{formatTokenAmount(token0Deposited)}</small>
             <CurrencyLogo size='20px' currency={currency0} />
           </Box>
         </Box>
 
         <Box className='cardRow'>
           <small>Pooled {currency1.symbol}:</small>
-          <Box display='flex' alignItems='center'>
-            <small style={{ marginRight: 10 }}>
-              {formatTokenAmount(token1Deposited)}
-            </small>
+          <Box>
+            <small>{formatTokenAmount(token1Deposited)}</small>
             <CurrencyLogo size='20px' currency={currency1} />
           </Box>
         </Box>

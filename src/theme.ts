@@ -112,6 +112,9 @@ export const mainTheme = responsiveFontSizes(
         xs,
       },
     },
+    typography: {
+      fontFamily: "'Inter', sans-serif",
+    },
     overrides: {
       MuiButton: {
         root: {

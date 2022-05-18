@@ -72,13 +72,7 @@ const SwapPage: React.FC = () => {
   return (
     <Box width='100%' mb={3} id='swap-page'>
       {!isProMode && (
-        <Box
-          mb={2}
-          display='flex'
-          alignItems='center'
-          justifyContent='space-between'
-          width='100%'
-        >
+        <Box mb={2} className='flex items-center justify-between fullWidth'>
           <h4>Swap</h4>
           <Box className='helpWrapper'>
             <small>Help</small>
@@ -94,12 +88,7 @@ const SwapPage: React.FC = () => {
             </Box>
           </Grid>
           <Grid item xs={12} sm={12} md={6} lg={7}>
-            <Box
-              display='flex'
-              flexWrap='wrap'
-              justifyContent='space-between'
-              width='100%'
-            >
+            <Box className='flex flex-wrap justify-between fullWidth'>
               {token1 && (
                 <Box className='swapTokenDetails'>
                   <SwapTokenDetails token={token1} />
@@ -120,9 +109,7 @@ const SwapPage: React.FC = () => {
         </Grid>
       ) : (
         <Box
-          className='border-top border-bottom bg-palette'
-          display='flex'
-          flexWrap='wrap'
+          className='border-top border-bottom bg-palette flex flex-wrap'
           minHeight='calc(100vh - 140px)'
         >
           <Box
@@ -131,14 +118,12 @@ const SwapPage: React.FC = () => {
             className={isMobile ? '' : 'border-right'}
           >
             <Box
-              display='flex'
-              justifyContent='space-between'
-              alignItems='center'
+              className='flex justify-between items-center'
               padding='0 24px'
               mb={3}
             >
               <h4>Swap</h4>
-              <Box display='flex' alignItems='center' mr={1}>
+              <Box className='flex items-center' mr={1}>
                 <span className='text-secondary' style={{ marginRight: 8 }}>
                   PRO MODE
                 </span>

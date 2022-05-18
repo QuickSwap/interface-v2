@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Box } from '@material-ui/core';
-import { useTheme } from '@material-ui/core/styles';
 import Skeleton from '@material-ui/lab/Skeleton';
 import { useGlobalData } from 'state/application/hooks';
 import {
@@ -19,7 +18,6 @@ const DAY_VOLUME = 0;
 const WEEK_VOLUME = 1;
 
 const AnalyticsVolumeChart: React.FC = () => {
-  const { palette } = useTheme();
   const volumeTypes = [DAY_VOLUME, WEEK_VOLUME];
   const volumeTypeTexts = ['D', 'W'];
   const [volumeIndex, setVolumeIndex] = useState(DAY_VOLUME);

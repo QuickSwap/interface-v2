@@ -66,13 +66,11 @@ const PoolPositionCard: React.FC<{ pair: Pair }> = ({ pair }) => {
       overflow='hidden'
     >
       <Box
-        paddingX={isMobile ? 1.5 : 3}
-        paddingY={isMobile ? 2 : 3}
-        display='flex'
-        alignItems='center'
-        justifyContent='space-between'
+        px={isMobile ? 1.5 : 3}
+        py={isMobile ? 2 : 3}
+        className='flex items-center justify-between'
       >
-        <Box display='flex' alignItems='center'>
+        <Box className='flex items-center'>
           <DoubleCurrencyLogo
             currency0={currency0}
             currency1={currency1}
@@ -86,9 +84,7 @@ const PoolPositionCard: React.FC<{ pair: Pair }> = ({ pair }) => {
         </Box>
 
         <Box
-          display='flex'
-          alignItems='center'
-          className='text-primary cursor-pointer'
+          className='flex items-center text-primary cursor-pointer'
           onClick={() => setShowMore(!showMore)}
         >
           <p style={{ marginRight: 8 }}>Manage</p>

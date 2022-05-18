@@ -87,8 +87,44 @@
   margin-bottom: 16px;
   padding: 8px 16px;
   border-radius: 10px;
+  & > div {
+    display: flex;
+    align-items: center;
+    margin-right: 12px;
+    width: auto;
+    flex-wrap: wrap;
+    & > div {
+      display: flex;
+      margin-right: 8px
+    }
+    &:last-child {
+      margin-right: 0;
+    }
+  }
   @include media("screen", "<phone") {
     margin: 0 16px 16px;
     width: calc(100% - 32px);
+    & > div {
+      justify-content: space-between;
+      margin-bottom: 8px;
+      width: 100%;
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
   }
+}
+.farmCardDetails {
+  width: 100%;
+  padding: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  border-top: 1px solid $grey26;
+  align-items: center
+}
+.farmCardMobileRow {
+  margin-top: 16px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
 }

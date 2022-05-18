@@ -69,9 +69,7 @@ const SwapProInfo: React.FC<{
               <span>
                 24h:{' '}
                 <span
-                  className={
-                    priceUpPercent > 0 ? 'text-success' : 'text-danger'
-                  }
+                  className={priceUpPercent > 0 ? 'text-success' : 'text-error'}
                 >
                   {formatNumber(priceUpPercent)}%
                 </span>

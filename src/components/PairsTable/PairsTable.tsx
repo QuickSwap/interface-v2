@@ -89,7 +89,7 @@ const PairTable: React.FC<TokensTableProps> = ({ data }) => {
     ).toLocaleString();
     return (
       <Box mt={index === 0 ? 0 : 3}>
-        <Box display='flex' alignItems='center' mb={1}>
+        <Box className='flex items-center' mb={1}>
           <Box
             display='flex'
             mr={1}
@@ -112,7 +112,7 @@ const PairTable: React.FC<TokensTableProps> = ({ data }) => {
             to={`/analytics/pair/${pair.id}`}
             style={{ textDecoration: 'none' }}
           >
-            <Box display='flex' alignItems='center'>
+            <Box className='flex items-center'>
               <DoubleCurrencyLogo
                 currency0={token0}
                 currency1={token1}
@@ -127,41 +127,21 @@ const PairTable: React.FC<TokensTableProps> = ({ data }) => {
           </Link>
         </Box>
         <Divider />
-        <Box
-          mt={1}
-          display='flex'
-          alignItems='center'
-          justifyContent='space-between'
-        >
+        <Box className='mobileRow'>
           <p>Liquidity</p>
           <p>${Number(liquidity).toLocaleString()}</p>
         </Box>
-        <Box
-          mt={1}
-          display='flex'
-          alignItems='center'
-          justifyContent='space-between'
-        >
+        <Box className='mobileRow'>
           <p>24h Volume</p>
           <p>${Number(oneDayVolume).toLocaleString()}</p>
         </Box>
-        <Box
-          mt={1}
-          display='flex'
-          alignItems='center'
-          justifyContent='space-between'
-        >
+        <Box className='mobileRow'>
           <p>7d Volume</p>
           <p>${Number(oneWeekVolume).toLocaleString()}</p>
         </Box>
-        <Box
-          mt={1}
-          display='flex'
-          alignItems='center'
-          justifyContent='space-between'
-        >
+        <Box className='mobileRow'>
           <p>24h Fees</p>
-          <p>${Number(oneDayFee).toLocaleString()}</p>
+          <p>${oneDayFee}</p>
         </Box>
       </Box>
     );
@@ -201,7 +181,7 @@ const PairTable: React.FC<TokensTableProps> = ({ data }) => {
     return [
       {
         html: (
-          <Box display='flex' alignItems='center'>
+          <Box className='flex items-center'>
             <Box
               display='flex'
               mr={1}
@@ -224,7 +204,7 @@ const PairTable: React.FC<TokensTableProps> = ({ data }) => {
               to={`/analytics/pair/${pair.id}`}
               style={{ textDecoration: 'none' }}
             >
-              <Box display='flex' alignItems='center'>
+              <Box className='flex items-center'>
                 <DoubleCurrencyLogo
                   currency0={token0}
                   currency1={token1}

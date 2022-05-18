@@ -28,7 +28,7 @@ const AddressInput: React.FC<AddressInputProps> = ({
         error ? 'border-error' : 'border-primaryDark'
       }`}
     >
-      <Box display='flex' justifyContent='space-between' alignItems='center'>
+      <Box className='flex justify-between items-center'>
         <p>{label}</p>
         {address && chainId && (
           <a

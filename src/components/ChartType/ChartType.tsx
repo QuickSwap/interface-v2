@@ -16,7 +16,7 @@ const ChartType: React.FC<ChartTypeProps> = ({
   setChartType,
 }) => {
   return (
-    <Box display='flex' alignItems='center'>
+    <Box className='flex items-center'>
       {chartTypes.map((value, index) => (
         <Box
           key={index}
