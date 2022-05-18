@@ -1,14 +1,13 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useRouteMatch } from 'react-router-dom';
 import { Box } from '@material-ui/core';
-import { useTheme } from '@material-ui/core/styles';
 import { Skeleton } from '@material-ui/lab';
 import moment from 'moment';
 import {
   formatCompact,
   getPairChartData,
   getFormattedPrice,
-  getPriceColor,
+  getPriceClass,
   getChartDates,
   getChartStartTime,
   getLimitedData,
@@ -22,7 +21,6 @@ const CHART_LIQUIDITY = 1;
 const CHART_FEES = 2;
 
 const AnalyticsPairChart: React.FC<{ pairData: any }> = ({ pairData }) => {
-  const { palette } = useTheme();
   const match = useRouteMatch<{ id: string }>();
   const pairAddress = match.params.id;
   const [pairChartData, setPairChartData] = useState<any[] | null>(null);
@@ -115,7 +113,7 @@ const AnalyticsPairChart: React.FC<{ pairData: any }> = ({ pairData }) => {
     fetchPairChartData();
   }, [pairAddress, durationIndex]);
 
-  const currentPercentColor = getPriceColor(Number(currentPercent), palette);
+  const currentPercentClass = getPriceClass(Number(currentPercent));
 
   return (
     <>
@@ -133,10 +131,8 @@ const AnalyticsPairChart: React.FC<{ pairData: any }> = ({ pairData }) => {
                       : currentData.toLocaleString()}
                   </h4>
                   <Box
-                    className='priceChangeWrapper'
+                    className={`priceChangeWrapper ${currentPercentClass}`}
                     ml={1}
-                    bgcolor={currentPercentColor.bgColor}
-                    color={currentPercentColor.textColor}
                   >
                     <small>{getFormattedPrice(Number(currentPercent))}%</small>
                   </Box>

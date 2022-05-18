@@ -1652,14 +1652,14 @@ export function getFormattedPrice(price: number) {
   }
 }
 
-// get bg and text colors for price percent badge. pass palette as parameter in order to avoid hook
-export function getPriceColor(price: number, palette: Palette) {
+// set different bg and text colors for price percent badge according to price.
+export function getPriceClass(price: number) {
   if (price > 0) {
-    return { bgColor: palette.success.light, textColor: palette.success.main };
+    return 'bg-successLight text-success';
   } else if (price === 0) {
-    return { bgColor: palette.grey.A100, textColor: palette.text.hint };
+    return 'bg-gray1 text-hint';
   } else {
-    return { bgColor: palette.error.light, textColor: palette.error.main };
+    return 'bg-errorLight text-error';
   }
 }
 

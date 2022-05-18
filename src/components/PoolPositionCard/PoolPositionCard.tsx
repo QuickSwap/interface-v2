@@ -16,7 +16,7 @@ import 'components/styles/PoolPositionCard.scss';
 
 const PoolPositionCard: React.FC<{ pair: Pair }> = ({ pair }) => {
   const [bulkPairData, setBulkPairData] = useState<any>(null);
-  const { palette, breakpoints } = useTheme();
+  const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
 
   const currency0 = unwrappedToken(pair.token0);

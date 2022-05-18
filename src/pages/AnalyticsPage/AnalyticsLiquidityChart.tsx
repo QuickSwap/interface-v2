@@ -1,13 +1,12 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { Box } from '@material-ui/core';
-import { useTheme } from '@material-ui/core/styles';
 import Skeleton from '@material-ui/lab/Skeleton';
 import moment from 'moment';
 import { useGlobalData } from 'state/application/hooks';
 import {
   formatCompact,
   getChartData,
-  getPriceColor,
+  getPriceClass,
   getChartDates,
   getChartStartTime,
   getLimitedData,
@@ -16,7 +15,6 @@ import { GlobalConst, GlobalData } from 'constants/index';
 import { AreaChart, ChartType } from 'components';
 
 const AnalyticsLiquidityChart: React.FC = () => {
-  const { palette } = useTheme();
   const { globalData } = useGlobalData();
   const [durationIndex, setDurationIndex] = useState(
     GlobalConst.analyticChart.ONE_MONTH_CHART,
@@ -42,9 +40,8 @@ const AnalyticsLiquidityChart: React.FC = () => {
     fetchChartData();
   }, [updateGlobalChartData, durationIndex]);
 
-  const liquidityPercentColor = getPriceColor(
+  const liquidityPercentClass = getPriceClass(
     globalData ? Number(globalData.liquidityChangeUSD) : 0,
-    palette,
   );
 
   const yAxisValues = useMemo(() => {
@@ -88,8 +85,7 @@ const AnalyticsLiquidityChart: React.FC = () => {
             height={23}
             px={1}
             borderRadius={40}
-            bgcolor={liquidityPercentColor.bgColor}
-            color={liquidityPercentColor.textColor}
+            className={liquidityPercentClass}
           >
             <span>
               {`${globalData.liquidityChangeUSD > 0 ? '+' : ''}

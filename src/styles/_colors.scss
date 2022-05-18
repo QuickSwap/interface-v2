@@ -20,6 +20,10 @@
   background-color: $blue1;
 }
 
+.bg-gray1 {
+  background-color: $grey1;
+}
+
 .bg-gray2 {
   background-color: $grey2;
 }
@@ -34,6 +38,14 @@
 
 .bg-primary {
   background-color: $primary;
+}
+
+.bg-successLight {
+  background-color: $successLight;
+}
+
+.bg-errorLight {
+  background-color: $errorLight;
 }
 
 .border {

@@ -139,7 +139,7 @@ const LandingPage: React.FC = () => {
         ))}
       </Box>
       <Box mt={2} width={1}>
-        <TopMovers background={palette.background.paper} />
+        <TopMovers />
       </Box>
       <Box className='quickInfo'>
         <h4>{t('quickInfoTitle')}</h4>

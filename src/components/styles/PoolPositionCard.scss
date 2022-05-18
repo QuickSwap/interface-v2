@@ -9,19 +9,15 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
     border-radius: 10px;
-    & a {
-      text-decoration: none;
-    }
-    & p {
-      color: $textPrimary;
-    }
   }
   & .MuiButton-outlined {
     width: 49%;
     background: transparent;
-    border: 1px solid #404557;
+    border: 1px solid $grey12;
+    &:hover {
+      background: transparent;
+    }
   }
   & .MuiButton-contained {
     width: 24%;
@@ -36,7 +32,4 @@
   align-items: center;
   justify-content: space-between;
   margin-bottom: 12px;
-  & p {
-    color: $textPrimary
-  }
 }

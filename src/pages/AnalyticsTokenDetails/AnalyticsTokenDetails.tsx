@@ -8,7 +8,7 @@ import {
   shortenAddress,
   getEtherscanLink,
   getFormattedPrice,
-  getPriceColor,
+  getPriceClass,
   formatNumber,
 } from 'utils';
 import { useActiveWeb3React } from 'hooks';
@@ -28,7 +28,7 @@ import AnalyticsHeader from 'pages/AnalyticsPage/AnalyticsHeader';
 import AnalyticsTokenChart from './AnalyticsTokenChart';
 
 const AnalyticsTokenDetails: React.FC = () => {
-  const { palette, breakpoints } = useTheme();
+  const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const history = useHistory();
   const match = useRouteMatch<{ id: string }>();
@@ -74,9 +74,8 @@ const AnalyticsTokenDetails: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [updateTokenPairs, tokenAddress]);
 
-  const tokenPercentColor = getPriceColor(
+  const tokenPercentClass = getPriceClass(
     token ? Number(token.priceChangeUSD) : 0,
-    palette,
   );
 
   return (
@@ -109,10 +108,8 @@ const AnalyticsTokenDetails: React.FC = () => {
                 <Box mt={1.25} display='flex' alignItems='center'>
                   <h5>${formatNumber(token.priceUSD)}</h5>
                   <Box
-                    className='priceChangeWrapper'
+                    className={`priceChangeWrapper ${tokenPercentClass}`}
                     ml={2}
-                    bgcolor={tokenPercentColor.bgColor}
-                    color={tokenPercentColor.textColor}
                   >
                     <small>
                       {getFormattedPrice(Number(token.priceChangeUSD))}%

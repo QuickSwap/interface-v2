@@ -1,13 +1,12 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useRouteMatch } from 'react-router-dom';
 import { Box } from '@material-ui/core';
-import { useTheme } from '@material-ui/core/styles';
 import { Skeleton } from '@material-ui/lab';
 import moment from 'moment';
 import {
   formatCompact,
   getFormattedPrice,
-  getPriceColor,
+  getPriceClass,
   formatNumber,
   getChartDates,
   getChartStartTime,
@@ -23,7 +22,6 @@ const CHART_LIQUIDITY = 1;
 const CHART_PRICE = 2;
 
 const AnalyticsTokenChart: React.FC<{ token: any }> = ({ token }) => {
-  const { palette } = useTheme();
   const match = useRouteMatch<{ id: string }>();
   const tokenAddress = match.params.id;
   const [tokenChartData, updateTokenChartData] = useState<any>(null);
@@ -98,7 +96,7 @@ const AnalyticsTokenChart: React.FC<{ token: any }> = ({ token }) => {
     fetchTokenChartData();
   }, [updateTokenChartData, tokenAddress, durationIndex]);
 
-  const currentPercentColor = getPriceColor(Number(currentPercent), palette);
+  const currentPercentClass = getPriceClass(Number(currentPercent));
 
   return (
     <>
@@ -116,10 +114,8 @@ const AnalyticsTokenChart: React.FC<{ token: any }> = ({ token }) => {
                       : formatNumber(currentData)}
                   </h4>
                   <Box
-                    className='priceChangeWrapper'
+                    className={`priceChangeWrapper ${currentPercentClass}`}
                     ml={1}
-                    bgcolor={currentPercentColor.bgColor}
-                    color={currentPercentColor.textColor}
                   >
                     <small>{getFormattedPrice(Number(currentPercent))}%</small>
                   </Box>

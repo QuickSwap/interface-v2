@@ -1,12 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Box, Divider } from '@material-ui/core';
-import { useTheme } from '@material-ui/core/styles';
 import { getAddress } from '@ethersproject/address';
 import { ChainId, Token } from '@uniswap/sdk';
 import { CurrencyLogo, CustomTable } from 'components';
 import { GlobalConst } from 'constants/index';
-import { formatNumber, getFormattedPrice, getPriceColor } from 'utils';
+import { formatNumber, getFormattedPrice, getPriceClass } from 'utils';
 import { useBookmarkTokens } from 'state/application/hooks';
 import { ReactComponent as StarChecked } from 'assets/images/StarChecked.svg';
 import { ReactComponent as StarUnchecked } from 'assets/images/StarUnchecked.svg';
@@ -54,7 +53,6 @@ const liquidityHeadCellIndex = 4;
 
 const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
   const tokenHeadCells = headCells();
-  const { palette } = useTheme();
   const {
     bookmarkTokens,
     addBookmarkToken,
@@ -68,7 +66,7 @@ const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
       token.symbol,
       token.name,
     );
-    const priceColor = getPriceColor(Number(token.priceChangeUSD), palette);
+    const priceClass = getPriceClass(Number(token.priceChangeUSD));
     return (
       <Box mt={index === 0 ? 0 : 3}>
         <Box display='flex' alignItems='center' mb={1}>
@@ -112,11 +110,7 @@ const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
         </Box>
         <Box className='mobileRow'>
           <p>24H %</p>
-          <Box
-            className='priceChangeWrapper'
-            bgcolor={priceColor.bgColor}
-            color={priceColor.textColor}
-          >
+          <Box className={`priceChangeWrapper ${priceClass}`}>
             <small>{getFormattedPrice(Number(token.priceChangeUSD))}%</small>
           </Box>
         </Box>
@@ -140,7 +134,7 @@ const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
       token.symbol,
       token.name,
     );
-    const priceColor = getPriceColor(Number(token.priceChangeUSD), palette);
+    const priceClass = getPriceClass(Number(token.priceChangeUSD));
 
     return [
       {
@@ -190,12 +184,7 @@ const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
       },
       {
         html: (
-          <Box
-            className='priceChangeWrapper'
-            mr={2}
-            bgcolor={priceColor.bgColor}
-            color={priceColor.textColor}
-          >
+          <Box className={`priceChangeWrapper ${priceClass}`} mr={2}>
             <small>{getFormattedPrice(Number(token.priceChangeUSD))}%</small>
           </Box>
         ),

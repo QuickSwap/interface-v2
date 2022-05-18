@@ -34,12 +34,7 @@ const TransactionPopup: React.FC<TransactionPopupProps> = ({
 
   return (
     <>
-      <Box
-        mb={1.5}
-        display='flex'
-        justifyContent='space-between'
-        alignItems='center'
-      >
+      <Box mb={1.5} className='flex justify-between items-center'>
         <small
           className={`weight-600 ${
             pending ? 'text-yellow3' : success ? 'text-success' : 'text-error'

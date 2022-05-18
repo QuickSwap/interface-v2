@@ -6,17 +6,14 @@ import Skeleton from '@material-ui/lab/Skeleton';
 import { Token, ChainId } from '@uniswap/sdk';
 import { getAddress } from '@ethersproject/address';
 import { CurrencyLogo } from 'components';
-import { getEthPrice, getTopTokens, getPriceColor, formatNumber } from 'utils';
+import { getEthPrice, getTopTokens, getPriceClass, formatNumber } from 'utils';
+import 'components/styles/TopMovers.scss';
 
 interface TopMoversProps {
-  background: string;
   hideArrow?: boolean;
 }
-const TopMovers: React.FC<TopMoversProps> = ({
-  background,
-  hideArrow = false,
-}) => {
-  const { palette, breakpoints } = useTheme();
+const TopMovers: React.FC<TopMoversProps> = ({ hideArrow = false }) => {
+  const { breakpoints } = useTheme();
   const [topTokens, updateTopTokens] = useState<any[] | null>(null);
   const smallWindowSize = useMediaQuery(breakpoints.down('xs'));
 
@@ -37,79 +34,29 @@ const TopMovers: React.FC<TopMoversProps> = ({
   }, [updateTopTokens]);
 
   return (
-    <Box
-      width='100%'
-      display='flex'
-      flexWrap='wrap'
-      flexDirection='column'
-      justifyContent='center'
-      alignItems={smallWindowSize ? 'center' : 'flex-start'}
-      bgcolor={background}
-      border={`1px solid ${
-        background === 'transparent' ? palette.background.paper : 'transparent'
-      }`}
-      borderRadius={10}
-      px={2.5}
-      pt={2.5}
-      pb={0.5}
-    >
+    <Box className='bg-palette topMoversWrapper'>
       <p className='weight-600 text-secondary'>24h TOP MOVERS</p>
-      <Box width={1} pb={2} style={{ overflowX: 'auto' }}>
+      <Box className='topMoversContent'>
         {topMoverTokens ? (
-          <Box
-            width='100%'
-            display='flex'
-            justifyContent='space-between'
-            alignItems='center'
-          >
-            {topMoverTokens.map((token: any, index: number) => {
+          <Box>
+            {topMoverTokens.map((token: any) => {
               const currency = new Token(
                 ChainId.MATIC,
                 getAddress(token.id),
                 token.decimals,
               );
-              const priceColor = getPriceColor(
-                Number(token.priceChangeUSD),
-                palette,
-              );
+              const priceClass = getPriceClass(Number(token.priceChangeUSD));
               const priceUp = Number(token.priceChangeUSD) > 0;
               const priceDown = Number(token.priceChangeUSD) < 0;
               const priceUpPercent = Number(token.priceChangeUSD).toFixed(2);
               return (
-                <Box
-                  mr={index < topMoverTokens.length ? 2 : 0}
-                  width={smallWindowSize ? 180 : 'unset'}
-                  mt={2}
-                  key={token.id}
-                  display='flex'
-                  flexDirection='row'
-                  justifyContent={smallWindowSize ? 'flex-start' : 'center'}
-                  alignItems='center'
-                >
+                <Box className='topMoverItem' key={token.id}>
                   <CurrencyLogo currency={currency} size='28px' />
                   <Box ml={1}>
                     <small className='text-bold'>{token.symbol}</small>
-                    <Box
-                      display='flex'
-                      flexDirection='row'
-                      justifyContent='center'
-                      alignItems='center'
-                    >
+                    <Box className='flex justify-center items-center'>
                       <small>${formatNumber(token.priceUSD)}</small>
-                      <Box
-                        ml={hideArrow ? 1 : 0}
-                        display='flex'
-                        flexDirection='row'
-                        justifyContent='center'
-                        alignItems='center'
-                        px={0.75}
-                        py={0.25}
-                        borderRadius={12}
-                        bgcolor={
-                          !hideArrow ? 'transparent' : priceColor.bgColor
-                        }
-                        color={priceColor.textColor}
-                      >
+                      <Box className={`topMoverText ${priceClass}`}>
                         {!hideArrow && priceUp && <ArrowDropUp />}
                         {!hideArrow && priceDown && <ArrowDropDown />}
                         <span>

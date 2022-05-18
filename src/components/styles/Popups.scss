@@ -43,3 +43,10 @@
     }
   }
 }
+.popupItem {
+  padding: 20px;
+  border-radius: 10px;
+  background-color: $bgPalette;
+  overflow: hidden;
+  position: relative;
+}

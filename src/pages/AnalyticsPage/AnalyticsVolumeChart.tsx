@@ -7,7 +7,7 @@ import {
   formatCompact,
   getChartData,
   formatDateFromTimeStamp,
-  getPriceColor,
+  getPriceClass,
   getChartDates,
   getChartStartTime,
   getLimitedData,
@@ -159,9 +159,8 @@ const AnalyticsVolumeChart: React.FC = () => {
     }
   }, [globalChartData, volumeIndex]);
 
-  const volumePercentColor = getPriceColor(
+  const volumePercentClass = getPriceClass(
     Number(getVolumePercent(volumeIndex)),
-    palette,
   );
 
   return (
@@ -206,8 +205,7 @@ const AnalyticsVolumeChart: React.FC = () => {
                   height={23}
                   px={1}
                   borderRadius={40}
-                  bgcolor={volumePercentColor.bgColor}
-                  color={volumePercentColor.textColor}
+                  className={volumePercentClass}
                 >
                   <span>
                     {`${getVolumePercent(volumeIndex) > 0 ? '+' : ''}
