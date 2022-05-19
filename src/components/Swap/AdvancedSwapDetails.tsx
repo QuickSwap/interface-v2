@@ -48,52 +48,42 @@ export const TradeSummary: React.FC<TradeSummaryProps> = ({
         />
       )}
       <Box className='summaryRow'>
-        <Box display='flex' alignItems='center'>
+        <Box>
           <small>Slippage:</small>
           <QuestionHelper text={t('slippageHelper')} />
         </Box>
         <Box
-          display='flex'
-          alignItems='center'
           onClick={() => setOpenSettingsModal(true)}
-          className='cursor-pointer'
+          className='swapSlippage'
         >
-          <small className='text-primary'>{allowedSlippage / 100}%</small>
-          <EditIcon style={{ marginLeft: 8 }} />
+          <small>{allowedSlippage / 100}%</small>
+          <EditIcon />
         </Box>
       </Box>
       <Box className='summaryRow'>
-        <Box display='flex' alignItems='center'>
+        <Box>
           <small>{isExactIn ? t('minReceived') : t('maxSold')}:</small>
           <QuestionHelper text={t('txLimitHelper')} />
         </Box>
-        <Box display='flex' alignItems='center'>
+        <Box>
           <small>
             {formatTokenAmount(
               slippageAdjustedAmounts[isExactIn ? Field.OUTPUT : Field.INPUT],
             )}{' '}
             {tradeAmount.currency.symbol}
           </small>
-          <Box
-            width={16}
-            height={16}
-            ml={0.5}
-            borderRadius={8}
-            overflow='hidden'
-          >
-            <CurrencyLogo currency={tradeAmount.currency} size='16px' />
-          </Box>
+          <CurrencyLogo currency={tradeAmount.currency} size='16px' />
         </Box>
       </Box>
       <Box className='summaryRow'>
-        <Box display='flex' alignItems='center'>
+        <Box>
           <small>Price Impact:</small>
           <QuestionHelper text={t('priceImpactHelper')} />
         </Box>
         <FormattedPriceImpact priceImpact={priceImpactWithoutFee} />
       </Box>
       <Box className='summaryRow'>
-        <Box display='flex' alignItems='center'>
+        <Box>
           <small>Liquidity Provider Fee:</small>
           <QuestionHelper text={t('liquidityProviderFeeHelper')} />
         </Box>
@@ -102,21 +92,19 @@ export const TradeSummary: React.FC<TradeSummaryProps> = ({
         </small>
       </Box>
       <Box className='summaryRow'>
-        <Box display='flex' alignItems='center'>
-          <small style={{ marginRight: 4 }}>Route</small>
+        <Box>
+          <small>Route:</small>
           <QuestionHelper text={t('swapRouteHelper')} />
         </Box>
         <Box>
           {trade.route.path.map((token, i, path) => {
             const isLastItem: boolean = i === path.length - 1;
             return (
-              <Box key={i} display='flex' alignItems='center'>
-                <small>
-                  {token.symbol}{' '}
-                  {// this is not to show the arrow at the end of the trade path
-                  isLastItem ? '' : ' > '}
-                </small>
-              </Box>
+              <small key={i}>
+                {token.symbol}{' '}
+                {// this is not to show the arrow at the end of the trade path
+                isLastItem ? '' : ' > '}
+              </small>
             );
           })}
         </Box>

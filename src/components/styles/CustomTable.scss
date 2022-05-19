@@ -43,25 +43,6 @@
       & button {
         color: $textSecondary;
       }
-      & .removeAll {
-        & p {
-          margin: 0;
-          font-size: 12px;
-          line-height: 16px;
-          font-weight: normal;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          & b {
-            font-size: 14px
-          }
-          & svg {
-            width: 12px;
-            height: 12px;
-            margin-top: -1px
-          }
-        }
-      }
     }
   }
   & tbody tr td {

@@ -69,9 +69,9 @@ const RewardSliderItem: React.FC<RewardSliderItemProps> = ({
           APR
           <HelpIcon />
         </p>
-        <h5>
+        <Box className='rewardApyWrapper'>
           <p className='text-success'>{apyWithFee}%</p>
-        </h5>
+        </Box>
       </Box>
       <Box mt='30px'>
         <Button

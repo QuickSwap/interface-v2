@@ -6,6 +6,10 @@
   width: 100%;
   border-radius: 10px;
   margin-top: 24px;
+  & .dailyRateWrapper {
+    margin-bottom: 0;
+    margin-top: 16px;
+  }
 }
 .syrupCardContent {
   display: flex;
@@ -31,8 +35,5 @@
   align-items: center;
   @include media("screen", "<phone") {
     width: 49%;
-  }
-  & p {
-    color: $textPrimary
   }
 }

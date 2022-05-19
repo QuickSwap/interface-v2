@@ -15,7 +15,7 @@
   & .slick-arrow {
     color: $successLight;
     width: 32px;
-    height: 32
+    height: 32px;
   }
   @include media("screen", "<desktop") {
     width: 776px;
@@ -55,16 +55,15 @@
         margin-left: 4px
       }
     }
-    & h5 {
-      background: $green2;
-      padding: 0 4px;
-      border-radius: 5px;
-    }
+  }
+  & .rewardApyWrapper {
+    background: $green2;
+    padding: 0 4px;
+    border-radius: 5px;
   }
   & button {
     height: 40px;
     font-size: 16px;
-    margin-top: 12px;
     background: $primary;
     border-radius: 20px;
   }
