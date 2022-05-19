@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useTheme } from '@material-ui/core/styles';
 import { Box } from '@material-ui/core';
 import { ReactComponent as SettingsIcon } from 'assets/images/SettingsIcon.svg';
 import { AddLiquidity, QuestionHelper, SettingsModal } from 'components';
@@ -7,7 +6,6 @@ import useParsedQueryString from 'hooks/useParsedQueryString';
 import { useCurrency } from 'hooks/Tokens';
 
 const SupplyLiquidity: React.FC = () => {
-  const { palette } = useTheme();
   const [openSettingsModal, setOpenSettingsModal] = useState(false);
   const parsedQuery = useParsedQueryString();
   const qCurrency0 = useCurrency(
@@ -29,13 +27,13 @@ const SupplyLiquidity: React.FC = () => {
           onClose={() => setOpenSettingsModal(false)}
         />
       )}
-      <Box display='flex' justifyContent='space-between' alignItems='center'>
+      <Box className='flex justify-between items-center'>
         <p className='weight-600'>Supply Liquidity</p>
-        <Box display='flex' alignItems='center'>
+        <Box className='flex items-center'>
           <Box className='headingItem'>
             <QuestionHelper
               size={24}
-              color={palette.text.secondary}
+              className='text-secondary'
               text='When you add liquidity, you are given pool tokens representing your position. These tokens automatically earn fees proportional to your share of the pool, and can be redeemed at any time.'
             />
           </Box>

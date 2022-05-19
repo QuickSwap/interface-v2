@@ -155,7 +155,7 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
       <Box paddingX={3} paddingY={4}>
         <Box display='flex' alignItems='center' justifyContent='space-between'>
           <h5>Stake {syrup.stakingToken.symbol}</h5>
-          <CloseIcon style={{ cursor: 'pointer' }} onClick={onClose} />
+          <CloseIcon className='cursor-pointer' onClick={onClose} />
         </Box>
         <Box
           mt={3}
@@ -163,11 +163,7 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
           borderRadius='10px'
           padding='16px'
         >
-          <Box
-            display='flex'
-            alignItems='center'
-            justifyContent='space-between'
-          >
+          <Box className='flex items-center justify-between'>
             <small>{syrup.stakingToken.symbol}</small>
             <small>Balance: {formatTokenAmount(maxAmountInput)}</small>
           </Box>

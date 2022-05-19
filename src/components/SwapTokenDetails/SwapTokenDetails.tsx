@@ -74,13 +74,7 @@ const SwapTokenDetails: React.FC<{
 
   return (
     <Box>
-      <Box
-        display='flex'
-        alignItems='center'
-        justifyContent='space-between'
-        px={2}
-        py={1.5}
-      >
+      <Box className='flex items-center justify-between' px={2} py={1.5}>
         <Box display='flex' alignItems='center'>
           <CurrencyLogo currency={currency} size='28px' />
           <Box ml={1}>
@@ -151,7 +145,7 @@ const SwapTokenDetails: React.FC<{
           href={`https://polygonscan.com/token/${tokenAddress}`}
           target='_blank'
           rel='noopener noreferrer'
-          style={{ textDecoration: 'none' }}
+          className='no-decoration'
         >
           <small className='text-primary'>{shortenAddress(tokenAddress)}</small>
         </a>

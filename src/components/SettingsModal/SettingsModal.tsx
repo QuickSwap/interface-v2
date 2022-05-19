@@ -109,15 +109,10 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
     <CustomModal open={open} onClose={onClose}>
       <CustomModal open={expertConfirm} onClose={() => setExpertConfirm(false)}>
         <Box paddingX={3} paddingY={4}>
-          <Box
-            mb={3}
-            display='flex'
-            justifyContent='space-between'
-            alignItems='center'
-          >
+          <Box mb={3} className='flex justify-between items-center'>
             <h5>Are you sure?</h5>
             <CloseIcon
-              style={{ cursor: 'pointer' }}
+              className='cursor-pointer'
               onClick={() => setExpertConfirm(false)}
             />
           </Box>
@@ -144,9 +139,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
             borderRadius={10}
             mb={2.5}
             px={2}
-            display='flex'
-            alignItems='center'
-            className='bg-default border-secondary1'
+            className='flex items-center bg-default border-secondary1'
           >
             <input
               className='settingsInput'

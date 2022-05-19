@@ -282,7 +282,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
       return (
         <Box position='relative'>
           <Box position='absolute' top='16px' right='16px' display='flex'>
-            <Close style={{ cursor: 'pointer' }} onClick={toggleWalletModal} />
+            <Close className='cursor-pointer' onClick={toggleWalletModal} />
           </Box>
           <Box mt={2} textAlign='center'>
             <h6>
@@ -316,7 +316,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
       <Box paddingX={3} paddingY={4}>
         <Box display='flex' justifyContent='space-between'>
           <h5>Connect wallet</h5>
-          <Close style={{ cursor: 'pointer' }} onClick={toggleWalletModal} />
+          <Close className='cursor-pointer' onClick={toggleWalletModal} />
         </Box>
         <Box mt={4}>
           {walletView === WALLET_VIEWS.PENDING ? (

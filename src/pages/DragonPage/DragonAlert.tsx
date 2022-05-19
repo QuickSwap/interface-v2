@@ -26,8 +26,8 @@ const DragonAlert: React.FC = () => {
             </p>
           </Box>
           <CloseIcon
+            className='cursor-pointer'
             onClick={() => setOpenAlert(false)}
-            style={{ cursor: 'pointer' }}
           />
         </Box>
       )}

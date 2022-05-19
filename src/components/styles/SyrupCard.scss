@@ -7,6 +7,14 @@
   border-radius: 10px;
   margin-top: 24px;
 }
+.syrupCardContent {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  width: 100%;
+  padding: 16px;
+  cursor: pointer;
+}
 .syrupText {
   font-size: 14px;
   font-weight: 600;

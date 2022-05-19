@@ -239,9 +239,7 @@ const Search: React.FC = () => {
               <Box
                 mt={1}
                 key={ind}
-                display='flex'
-                alignItems='center'
-                style={{ cursor: 'pointer' }}
+                className='flex items-center cursor-pointer'
                 onClick={() => history.push(`/analytics/pair/${val.id}`)}
               >
                 <DoubleCurrencyLogo
@@ -273,9 +271,7 @@ const Search: React.FC = () => {
               <Box
                 mt={1}
                 key={ind}
-                display='flex'
-                alignItems='center'
-                style={{ cursor: 'pointer' }}
+                className='flex items-center cursor-pointer'
                 onClick={() => history.push(`/analytics/token/${val.id}`)}
               >
                 <CurrencyLogo currency={currency} size='28px' />

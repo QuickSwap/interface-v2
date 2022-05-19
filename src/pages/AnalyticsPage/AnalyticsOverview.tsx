@@ -102,8 +102,7 @@ const AnalyticsOverview: React.FC = () => {
             <p className='weight-600'>Top Tokens</p>
           </Box>
           <Box
-            className='headingWrapper'
-            style={{ cursor: 'pointer' }}
+            className='headingWrapper cursor-pointer'
             onClick={() => history.push(`/analytics/tokens`)}
           >
             <p className='weight-600'>See All</p>
@@ -124,8 +123,7 @@ const AnalyticsOverview: React.FC = () => {
             <p className='weight-600'>Top Pairs</p>
           </Box>
           <Box
-            className='headingWrapper'
-            style={{ cursor: 'pointer' }}
+            className='headingWrapper cursor-pointer'
             onClick={() => history.push(`/analytics/pairs`)}
           >
             <p className='weight-600'>See All</p>

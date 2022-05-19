@@ -423,13 +423,10 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
           {sortByDesktopItems.map((item) => (
             <Box
               key={item.index}
-              display='flex'
-              alignItems='center'
               width={item.width}
-              className={`cursor-pointer ${
+              className={`flex items-center cursor-pointer ${
                 sortBy === item.index ? '' : 'text-secondary'
               }`}
-              style={{ cursor: 'pointer' }}
               justifyContent={item.justify}
               onClick={item.onClick}
             >

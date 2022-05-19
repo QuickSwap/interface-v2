@@ -108,10 +108,7 @@ const PairTable: React.FC<TokensTableProps> = ({ data }) => {
               <StarUnchecked />
             )}
           </Box>
-          <Link
-            to={`/analytics/pair/${pair.id}`}
-            style={{ textDecoration: 'none' }}
-          >
+          <Link className='no-decoration' to={`/analytics/pair/${pair.id}`}>
             <Box className='flex items-center'>
               <DoubleCurrencyLogo
                 currency0={token0}
@@ -200,10 +197,7 @@ const PairTable: React.FC<TokensTableProps> = ({ data }) => {
                 <StarUnchecked />
               )}
             </Box>
-            <Link
-              to={`/analytics/pair/${pair.id}`}
-              style={{ textDecoration: 'none' }}
-            >
+            <Link className='no-decoration' to={`/analytics/pair/${pair.id}`}>
               <Box className='flex items-center'>
                 <DoubleCurrencyLogo
                   currency0={token0}

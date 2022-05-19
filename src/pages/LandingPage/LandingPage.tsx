@@ -27,7 +27,7 @@ import { SwapSection } from './SwapSection';
 import { BuyFiatSection } from './BuyFiatSection';
 
 const LandingPage: React.FC = () => {
-  const { palette, breakpoints } = useTheme();
+  const { breakpoints } = useTheme();
   const mobileWindowSize = useMediaQuery(breakpoints.down('sm'));
   const { t } = useTranslation();
 

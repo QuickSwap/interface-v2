@@ -46,8 +46,8 @@ import { ReactComponent as AddLiquidityIcon } from 'assets/images/AddLiquidityIc
 const AddLiquidity: React.FC<{
   currency0?: Currency;
   currency1?: Currency;
-  currencyBg?: string;
-}> = ({ currency0, currency1, currencyBg }) => {
+  currencyBgClass?: string;
+}> = ({ currency0, currency1, currencyBgClass }) => {
   const { t } = useTranslation();
   const [addLiquidityErrorMessage, setAddLiquidityErrorMessage] = useState<
     string | null
@@ -407,7 +407,7 @@ const AddLiquidity: React.FC<{
         handleCurrencySelect={handleCurrencyASelect}
         amount={formattedAmounts[Field.CURRENCY_A]}
         setAmount={onFieldAInput}
-        bgColor={currencyBg}
+        bgClass={currencyBgClass}
       />
       <Box className='exchangeSwap'>
         <AddLiquidityIcon />
@@ -431,7 +431,7 @@ const AddLiquidity: React.FC<{
         handleCurrencySelect={handleCurrencyBSelect}
         amount={formattedAmounts[Field.CURRENCY_B]}
         setAmount={onFieldBInput}
-        bgColor={currencyBg}
+        bgClass={currencyBgClass}
       />
       {currencies[Field.CURRENCY_A] &&
         currencies[Field.CURRENCY_B] &&

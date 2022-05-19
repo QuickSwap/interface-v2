@@ -46,8 +46,8 @@ import 'components/styles/Swap.scss';
 const Swap: React.FC<{
   currency0?: Currency;
   currency1?: Currency;
-  currencyBg?: string;
-}> = ({ currency0, currency1, currencyBg }) => {
+  currencyBgClass?: string;
+}> = ({ currency0, currency1, currencyBgClass }) => {
   const { account } = useActiveWeb3React();
   const { independentField, typedValue, recipient } = useSwapState();
   const {
@@ -475,7 +475,7 @@ const Swap: React.FC<{
         handleCurrencySelect={handleCurrencySelect}
         amount={formattedAmounts[Field.INPUT]}
         setAmount={handleTypeInput}
-        bgColor={currencyBg}
+        bgClass={currencyBgClass}
       />
       <Box className='exchangeSwap'>
         <ExchangeIcon onClick={onSwitchTokens} />
@@ -490,7 +490,7 @@ const Swap: React.FC<{
         handleCurrencySelect={handleOtherCurrencySelect}
         amount={formattedAmounts[Field.OUTPUT]}
         setAmount={handleTypeOutput}
-        bgColor={currencyBg}
+        bgClass={currencyBgClass}
       />
       {trade && trade.executionPrice && (
         <Box className='swapPrice'>

@@ -118,7 +118,7 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({ data }) => {
               )}
               target='_blank'
               rel='noopener noreferrer'
-              style={{ textDecoration: 'none' }}
+              className='no-decoration'
             >
               <p className='text-primary'>{getTxString(txn)}</p>
             </a>
@@ -154,7 +154,7 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({ data }) => {
               )}
               target='_blank'
               rel='noopener noreferrer'
-              style={{ textDecoration: 'none' }}
+              className='no-decoration'
             >
               <p className='text-primary'>{shortenTx(txn.transaction.id)}</p>
             </a>
@@ -178,7 +178,7 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({ data }) => {
             href={getEtherscanLink(chainId, txn.transaction.id, 'transaction')}
             target='_blank'
             rel='noopener noreferrer'
-            style={{ textDecoration: 'none' }}
+            className='no-decoration'
           >
             <p className='text-primary'>{getTxString(txn)}</p>
           </a>
@@ -209,7 +209,7 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({ data }) => {
             href={getEtherscanLink(chainId, txn.transaction.id, 'transaction')}
             target='_blank'
             rel='noopener noreferrer'
-            style={{ textDecoration: 'none' }}
+            className='no-decoration'
           >
             <p className='text-primary'>{shortenTx(txn.transaction.id)}</p>
           </a>

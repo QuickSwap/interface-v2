@@ -28,22 +28,10 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
 
   return (
     <Box className='syrupCard'>
-      <Box
-        display='flex'
-        flexWrap='wrap'
-        alignItems='center'
-        width={1}
-        padding={2}
-        style={{ cursor: 'pointer' }}
-        onClick={() => setExpanded(!expanded)}
-      >
+      <Box className='syrupCardContent' onClick={() => setExpanded(!expanded)}>
         {isMobile ? (
           <>
-            <Box
-              display='flex'
-              alignItems='center'
-              width={expanded ? 0.95 : 0.5}
-            >
+            <Box className='flex items-center' width={expanded ? 0.95 : 0.5}>
               <CurrencyLogo currency={currency} size='32px' />
               <Box ml={1.5}>
                 <small>{currency.symbol}</small>
@@ -54,12 +42,7 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
                 <SyrupAPR syrup={syrup} dQUICKAPY={dQUICKAPY} />
               </Box>
             )}
-            <Box
-              width={0.05}
-              display='flex'
-              justifyContent='flex-end'
-              className='color-primary'
-            >
+            <Box width={0.05} className='text-primary flex justify-end'>
               {expanded ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
             </Box>
           </>

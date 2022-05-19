@@ -7,11 +7,11 @@ import 'components/styles/QuestionHelper.scss';
 const QuestionHelper: React.FC<{
   text: string;
   size?: number;
-  color?: string;
-}> = ({ text, size = 16, color }) => {
+  className?: string;
+}> = ({ text, size = 16, className }) => {
   return (
     <CustomTooltip title={text}>
-      <Box className='questionWrapper' color={color}>
+      <Box className={`questionWrapper ${className}`}>
         <Question size={size} />
       </Box>
     </CustomTooltip>

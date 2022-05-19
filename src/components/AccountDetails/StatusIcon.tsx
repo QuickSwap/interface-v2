@@ -26,7 +26,7 @@ const StatusIcon: React.FC = () => {
       {connector === portis && (
         <Box
           ml={1}
-          style={{ cursor: 'pointer' }}
+          className='cursor-pointer'
           onClick={() => {
             portis.portis.showPortis();
           }}

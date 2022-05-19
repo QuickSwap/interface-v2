@@ -89,8 +89,8 @@ const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
             )}
           </Box>
           <Link
+            className='no-decoration'
             to={`/analytics/token/${tokenCurrency.address}`}
-            style={{ textDecoration: 'none' }}
           >
             <Box display='flex' alignItems='center'>
               <CurrencyLogo currency={tokenCurrency} size='28px' />
@@ -159,8 +159,8 @@ const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
               )}
             </Box>
             <Link
+              className='no-decoration'
               to={`/analytics/token/${tokenCurrency.address}`}
-              style={{ textDecoration: 'none' }}
             >
               <Box display='flex' alignItems='center'>
                 <CurrencyLogo currency={tokenCurrency} size='28px' />

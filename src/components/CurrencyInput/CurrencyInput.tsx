@@ -21,7 +21,7 @@ interface CurrencyInputProps {
   showHalfButton?: boolean;
   showMaxButton?: boolean;
   showPrice?: boolean;
-  bgColor?: string;
+  bgClass?: string;
   id?: string;
 }
 
@@ -37,7 +37,7 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
   showHalfButton,
   title,
   showPrice,
-  bgColor,
+  bgClass,
   id,
 }) => {
   const { palette } = useTheme();
@@ -56,8 +56,8 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
   return (
     <Box
       id={id}
-      className={`swapBox${showPrice ? ' priceShowBox' : ''}`}
-      bgcolor={bgColor ?? palette.secondary.dark}
+      className={`swapBox${showPrice ? ' priceShowBox' : ''} ${bgClass ??
+        'bg-secondary2'}`}
     >
       <Box display='flex' justifyContent='space-between' mb={2}>
         <p>{title || 'You Pay:'}</p>

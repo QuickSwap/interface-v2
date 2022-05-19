@@ -39,9 +39,9 @@ export const SwapSection: React.FC = () => {
         <Grid container spacing={mobileWindowSize ? 0 : 8} alignItems='center'>
           <Grid item sm={12} md={6}>
             {tabIndex === SWAP_TAB ? (
-              <Swap currencyBg={palette.background.paper} />
+              <Swap currencyBgClass='bg-palette' />
             ) : (
-              <AddLiquidity currencyBg={palette.background.paper} />
+              <AddLiquidity currencyBgClass='bg-palette' />
             )}
           </Grid>
           <Grid item sm={12} md={6} className='swapInfo'>
