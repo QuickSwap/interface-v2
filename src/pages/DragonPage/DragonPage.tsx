@@ -25,7 +25,7 @@ const DragonPage: React.FC = () => {
             <img
               src={DragonLairMask}
               alt='Dragon Mask'
-              style={{ width: '100%', position: 'absolute', top: 207 }}
+              className='dragonMask'
             />
             <Box className='dragonTitle'>
               <h5>Dragon’s Lair</h5>

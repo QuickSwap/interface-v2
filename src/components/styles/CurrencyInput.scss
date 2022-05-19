@@ -18,6 +18,9 @@
       flex: 1;
       position: relative;
       padding-left: 8px;
+      & input {
+        color: $textSecondary;
+      }
     }
     & .maxWrapper {
       padding-left: 8px;
@@ -51,9 +54,4 @@
 }
 .currencySelected {
   background-color: $grey12;
-}
-.balanceSection {
-  & p {
-    color: $textSecondary
-  }
 }

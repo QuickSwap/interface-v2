@@ -1,7 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { Currency } from '@uniswap/sdk';
 import { Box } from '@material-ui/core';
-import { useTheme } from '@material-ui/core/styles';
 import { useCurrencyBalance } from 'state/wallet/hooks';
 import { CurrencySearchModal, CurrencyLogo, NumericalInput } from 'components';
 import { useActiveWeb3React } from 'hooks';
@@ -40,7 +39,6 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
   bgClass,
   id,
 }) => {
-  const { palette } = useTheme();
   const [modalOpen, setModalOpen] = useState(false);
   const { account } = useActiveWeb3React();
   const selectedCurrencyBalance = useCurrencyBalance(
@@ -94,7 +92,6 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
           <NumericalInput
             value={amount}
             align='right'
-            color={palette.text.secondary}
             placeholder='0.00'
             onUserInput={(val) => {
               setAmount(val);
@@ -102,13 +99,13 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
           />
         </Box>
       </Box>
-      <Box
-        display='flex'
-        justifyContent='space-between'
-        className='balanceSection'
-      >
-        <small>Balance: {formatTokenAmount(selectedCurrencyBalance)}</small>
-        <small>${(usdPrice * Number(amount)).toLocaleString()}</small>
+      <Box className='flex justify-between'>
+        <small className='text-secondary'>
+          Balance: {formatTokenAmount(selectedCurrencyBalance)}
+        </small>
+        <small className='text-secondary'>
+          ${(usdPrice * Number(amount)).toLocaleString()}
+        </small>
       </Box>
       {modalOpen && (
         <CurrencySearchModal

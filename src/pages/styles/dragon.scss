@@ -25,14 +25,16 @@
   }
 }
 
+.dragonMask {
+  width: 100%;
+  position: absolute;
+  top: 207px;
+}
+
 .dragonTitle {
   margin-bottom: 64px;
   & h5 {
     margin-bottom: 16px;
-    color: $textPrimary;
-  }
-  & p {
-    max-width: 280px;
     color: $textPrimary;
   }
 }

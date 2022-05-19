@@ -13,7 +13,7 @@ const SWAP_TAB = 0;
 const LIQUIDITY_TAB = 1;
 
 export const SwapSection: React.FC = () => {
-  const { palette, breakpoints } = useTheme();
+  const { breakpoints } = useTheme();
   const mobileWindowSize = useMediaQuery(breakpoints.down('sm'));
   const [tabIndex, setTabIndex] = useState(SWAP_TAB);
 
