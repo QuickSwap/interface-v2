@@ -5,8 +5,10 @@ import { useTranslation } from 'react-i18next';
 import { CustomTable } from 'components';
 import { formatNumber, getEtherscanLink, shortenTx } from 'utils';
 import { useActiveWeb3React } from 'hooks';
-import moment from 'moment';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
 import { TxnType } from 'constants/index';
+dayjs.extend(relativeTime);
 
 const useStyles = makeStyles(({}) => ({
   priceChangeWrapper: {
@@ -204,7 +206,7 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({ data }) => {
         <Box className={classes.mobileRow}>
           <Typography variant='body1'>Time</Typography>
           <Typography variant='body1' color='textPrimary'>
-            {moment(Number(txn.transaction.timestamp) * 1000).fromNow()}
+            {dayjs(Number(txn.transaction.timestamp) * 1000).fromNow()}
           </Typography>
         </Box>
       </Box>
@@ -273,7 +275,7 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({ data }) => {
       {
         html: (
           <Typography variant='body1' color='textPrimary'>
-            {moment(Number(txn.transaction.timestamp) * 1000).fromNow()}
+            {dayjs(Number(txn.transaction.timestamp) * 1000).fromNow()}
           </Typography>
         ),
       },

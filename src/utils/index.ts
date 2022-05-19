@@ -50,7 +50,6 @@ import { formatUnits } from 'ethers/lib/utils';
 import { AddressZero } from '@ethersproject/constants';
 import { TokenAddressMap } from 'state/lists/hooks';
 import { GlobalConst, GlobalValue } from 'constants/index';
-import moment from 'moment';
 import { Palette } from '@material-ui/core/styles/createPalette';
 import tokenData from 'constants/tokens.json';
 import stakeData from 'constants/stake.json';
@@ -1599,7 +1598,7 @@ export function formatDateFromTimeStamp(
   format: string,
   addedDay = 1,
 ) {
-  return moment(timestamp * 1000) //multiply 1000 to get timestamp in milliseconds
+  return dayjs(timestamp * 1000) //multiply 1000 to get timestamp in milliseconds
     .add(addedDay, 'day') //add days to get correct date
     .format(format);
 }
@@ -1627,7 +1626,7 @@ export function getPriceColor(price: number, palette: Palette) {
 }
 
 export function getDaysCurrentYear() {
-  const year = Number(moment().format('YYYY'));
+  const year = Number(dayjs().format('YYYY'));
   return (year % 4 === 0 && year % 100 > 0) || year % 400 == 0 ? 366 : 365;
 }
 

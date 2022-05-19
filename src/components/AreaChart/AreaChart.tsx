@@ -2,7 +2,7 @@ import React from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { Box, Typography } from '@material-ui/core';
 import Chart from 'react-apexcharts';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { useIsDarkMode } from 'state/user/hooks';
 import { formatCompact, formatNumber } from 'utils';
 
@@ -155,7 +155,7 @@ const AreaChart: React.FC<AreaChartProps> = ({
           }; border-radius: 12px 12px 0 0; background: ${
             dark ? 'rgba(0, 0, 0, 0.91)' : 'rgba(255, 255, 255, 0.91)'
           }; color: ${dark ? '#646464' : '#8D97A0'};">` +
-          moment(dates[dataPointIndex] * 1000).format('MMM DD, YYYY') +
+          dayjs(dates[dataPointIndex] * 1000).format('MMM DD, YYYY') +
           '</span>' +
           `<span style="padding: 0.5rem; border: 1px solid ${
             dark ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.15)'
