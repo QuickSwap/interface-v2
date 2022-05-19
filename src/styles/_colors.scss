@@ -116,12 +116,20 @@
   color: $errorMain;
 }
 
+.text-blueviolet {
+  color: blueviolet;
+}
+
 .text-success {
   color: $successMain;
 }
 
 .text-primary {
   color: $primary;
+}
+
+.text-primaryText {
+  color: $textPrimary;
 }
 
 .text-secondary {
@@ -146,6 +154,10 @@
 
 .text-gray25 {
   color: $grey25;
+}
+
+.text-yellow {
+  color: $yellow1;
 }
 
 .text-yellow3 {

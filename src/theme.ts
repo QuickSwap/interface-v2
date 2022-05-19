@@ -134,14 +134,6 @@ export const mainTheme = responsiveFontSizes(
           fontSize: 16,
           lineHeight: '20px',
         },
-        secondary: {
-          background: secondary,
-        },
-        textPrimary: {
-          background: `linear-gradient(to bottom, ${primary}, #004ce6)`,
-          borderRadius: 50,
-          color: white,
-        },
       },
       MuiContainer: {
         root: {

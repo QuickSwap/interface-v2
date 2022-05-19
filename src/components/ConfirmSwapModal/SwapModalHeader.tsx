@@ -56,40 +56,27 @@ const SwapModalHeader: React.FC<SwapModalHeaderProps> = ({
       {showAcceptChanges && (
         <Box className='priceUpdate'>
           <Box>
-            <AlertTriangle
-              size={20}
-              style={{ marginRight: '8px', minWidth: 24 }}
-            />
+            <AlertTriangle size={20} />
             <p> Price Updated</p>
           </Box>
-          <Button
-            style={{
-              padding: '.5rem',
-              width: 'fit-content',
-              fontSize: '0.825rem',
-              borderRadius: '12px',
-            }}
-            onClick={onAcceptChanges}
-          >
-            Accept
-          </Button>
+          <Button onClick={onAcceptChanges}>Accept</Button>
         </Box>
       )}
       <Box className='transactionText'>
         {trade.tradeType === TradeType.EXACT_INPUT ? (
-          <small>
+          <p className='small'>
             {`Output is estimated. You will receive at least `}
             {formatTokenAmount(slippageAdjustedAmounts[Field.OUTPUT])}{' '}
             {trade.outputAmount.currency.symbol}
             {' or the transaction will revert.'}
-          </small>
+          </p>
         ) : (
-          <small>
+          <p className='small'>
             {`Input is estimated. You will sell at most `}
             {formatTokenAmount(slippageAdjustedAmounts[Field.INPUT])}{' '}
             {trade.inputAmount.currency.symbol}
             {' or the transaction will revert.'}
-          </small>
+          </p>
         )}
         <Button onClick={onConfirm} className='swapButton'>
           Confirm Swap

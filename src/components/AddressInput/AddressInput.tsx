@@ -42,7 +42,7 @@ const AddressInput: React.FC<AddressInputProps> = ({
       </Box>
       <input
         value={value}
-        className={error ? 'text-error' : 'text-primary'}
+        className={error ? 'text-error' : 'text-primaryText'}
         placeholder={placeholder}
         onChange={(evt) => {
           const input = evt.target.value;

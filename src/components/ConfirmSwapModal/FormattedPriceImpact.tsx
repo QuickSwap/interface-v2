@@ -12,16 +12,15 @@ const FormattedPriceImpact: React.FC<{ priceImpact?: Percent }> = ({
   const severity = warningSeverity(priceImpact);
   return (
     <small
-      style={{
-        color:
-          severity === 3 || severity === 4
-            ? 'red'
-            : severity === 2
-            ? 'yellow'
-            : severity === 1
-            ? 'blueviolet'
-            : '#0fc679',
-      }}
+      className={
+        severity === 3 || severity === 4
+          ? 'text-error'
+          : severity === 2
+          ? 'text-yellow'
+          : severity === 1
+          ? 'text-blueviolet'
+          : 'text-success'
+      }
     >
       {priceImpact
         ? priceImpact.lessThan(GlobalConst.utils.ONE_BIPS)
