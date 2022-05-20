@@ -150,8 +150,9 @@ const SwapTokenDetails: React.FC<{
           <small className='text-primary'>{shortenAddress(tokenAddress)}</small>
         </a>
         <Box
-          className='flex cursor-pointer'
-          style={{ opacity: isCopied ? 0.5 : 1 }}
+          className={`flex cursor-pointer${
+            isCopied ? ' opacity-disabled' : ''
+          }`}
           onClick={() => {
             setCopied(tokenAddress);
           }}

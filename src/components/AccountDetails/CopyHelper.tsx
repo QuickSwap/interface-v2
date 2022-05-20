@@ -16,7 +16,7 @@ const CopyHelper: React.FC<CopyHelperProps> = ({ toCopy, children }) => {
       {isCopied ? (
         <>
           <CheckCircle size='20' />
-          <small style={{ marginLeft: 4 }}>Copied</small>
+          <small>Copied</small>
         </>
       ) : (
         <Copy size='20' />

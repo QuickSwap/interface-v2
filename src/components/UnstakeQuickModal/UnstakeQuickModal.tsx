@@ -54,7 +54,7 @@ const UnstakeQuickModal: React.FC<UnstakeQuickModalProps> = ({
   return (
     <CustomModal open={open} onClose={onClose}>
       <Box paddingX={3} paddingY={4}>
-        <Box display='flex' alignItems='center' justifyContent='space-between'>
+        <Box className='flex items-center justify-between'>
           <h5>Unstake dQUICK</h5>
           <CloseIcon className='cursor-pointer' onClick={onClose} />
         </Box>

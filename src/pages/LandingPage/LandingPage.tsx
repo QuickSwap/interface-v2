@@ -153,13 +153,7 @@ const LandingPage: React.FC = () => {
         </Box>
         <RewardSlider />
         <Box
-          className='cursor-pointer bg-secondary2'
-          width={194}
-          height={48}
-          display='flex'
-          alignItems='center'
-          justifyContent='center'
-          borderRadius={24}
+          className='allRewardPairs'
           onClick={() => {
             history.push('/farm');
           }}

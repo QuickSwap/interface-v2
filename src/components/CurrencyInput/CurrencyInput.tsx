@@ -57,7 +57,7 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
       className={`swapBox${showPrice ? ' priceShowBox' : ''} ${bgClass ??
         'bg-secondary2'}`}
     >
-      <Box display='flex' justifyContent='space-between' mb={2}>
+      <Box className='flex justify-between' mb={2}>
         <p>{title || 'You Pay:'}</p>
         <Box display='flex'>
           {account && currency && showHalfButton && (

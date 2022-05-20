@@ -1,5 +1,9 @@
 @use './variables' as *;
 
+.bg-white {
+  background-color: white;
+}
+
 .bg-default {
   background-color: $bgColor;
 }

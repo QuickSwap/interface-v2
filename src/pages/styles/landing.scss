@@ -57,6 +57,14 @@
   @include media("screen", "<phone") {
     margin: 32px 0 64px;
   }
+  .allRewardPairs {
+    width: 194px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 24px;
+  }
 }
 .featureHeading {
   margin: auto;

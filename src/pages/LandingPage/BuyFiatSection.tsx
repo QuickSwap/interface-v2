@@ -41,7 +41,6 @@ export const BuyFiatSection: React.FC = () => {
         <Box className='buyFiatWrapper'>
           <Button
             fullWidth
-            color='primary'
             onClick={() => {
               setOpenMenu(true);
             }}

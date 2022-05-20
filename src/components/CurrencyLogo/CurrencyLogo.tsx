@@ -61,10 +61,7 @@ const CurrencyLogo: React.FC<CurrencyLogoProps> = ({
       height={size}
       borderRadius={size}
       overflow='hidden'
-      bgcolor='white'
-      display='flex'
-      justifyContent='center'
-      alignItems='center'
+      className='flex justify-center items-center bg-white'
     >
       <Logo
         srcs={srcs}

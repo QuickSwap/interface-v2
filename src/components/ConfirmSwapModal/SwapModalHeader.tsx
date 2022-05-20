@@ -32,7 +32,7 @@ const SwapModalHeader: React.FC<SwapModalHeaderProps> = ({
 
   return (
     <Box>
-      <Box mt={10} display='flex' justifyContent='center'>
+      <Box mt={10} className='flex justify-center'>
         <DoubleCurrencyLogo
           currency0={trade.inputAmount.currency}
           currency1={trade.outputAmount.currency}

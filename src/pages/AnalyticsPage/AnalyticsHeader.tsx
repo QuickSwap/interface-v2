@@ -23,13 +23,11 @@ const AnalyticsHeader: React.FC<AnalyticHeaderProps> = ({ data, type }) => {
       <Box
         mb={4}
         position='relative'
-        display='flex'
-        justifyContent='space-between'
-        flexWrap='wrap'
+        className='flex justify-between flex-wrap'
       >
         <Box marginY={1.5} display='flex' alignItems='center'>
           {type && data && (
-            <Box display='flex' alignItems='center' className='text-hint'>
+            <Box className='flex items-center text-hint'>
               <span
                 className='link'
                 onClick={() => {

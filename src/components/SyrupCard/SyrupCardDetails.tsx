@@ -119,8 +119,7 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
 
   const UnstakeButton = () => (
     <Box
-      className='syrupButton'
-      style={{ opacity: attemptingUnstake ? 0.6 : 1 }}
+      className={`syrupButton${attemptingUnstake ? ' opacity-disabled' : ''}`}
       onClick={() => {
         if (!attemptingUnstake) {
           onWithdraw();
@@ -133,8 +132,7 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
 
   const ClaimButton = () => (
     <Box
-      className='syrupButton'
-      style={{ opacity: attemptingClaim ? 0.6 : 1 }}
+      className={`syrupButton${attemptingClaim ? ' opacity-disabled' : ''}`}
       onClick={() => {
         if (!attemptingClaim) {
           onClaimReward();

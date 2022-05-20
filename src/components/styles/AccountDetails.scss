@@ -20,6 +20,9 @@
   &:hover, &:active, &:focus {
     color: white;
   }
+  & small {
+    margin-left: 4px;
+  }
 }
 
 .transactionState {

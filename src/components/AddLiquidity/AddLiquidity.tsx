@@ -329,7 +329,7 @@ const AddLiquidity: React.FC<{
   const modalHeader = () => {
     return (
       <Box>
-        <Box mt={10} mb={3} display='flex' justifyContent='center'>
+        <Box mt={10} mb={3} className='flex justify-center'>
           <DoubleCurrencyLogo
             currency0={currencies[Field.CURRENCY_A]}
             currency1={currencies[Field.CURRENCY_B]}
@@ -471,7 +471,7 @@ const AddLiquidity: React.FC<{
           approvalB === ApprovalState.NOT_APPROVED ||
           approvalB === ApprovalState.PENDING) &&
           !error && (
-            <Box display='flex' justifyContent='space-between' mb={2}>
+            <Box className='flex justify-between' mb={2}>
               {approvalA !== ApprovalState.APPROVED && (
                 <Box
                   width={approvalB !== ApprovalState.APPROVED ? '48%' : '100%'}
