@@ -217,12 +217,7 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
             <small>{Math.min(stakePercent, 100).toLocaleString()}%</small>
           </Box>
         </Box>
-        <Box
-          mt={2}
-          display='flex'
-          alignItems='center'
-          justifyContent='space-between'
-        >
+        <Box mt={2} className='flex items-center justify-between'>
           <p>Daily Rewards</p>
           <p>
             {hypotheticalRewardRate
@@ -233,12 +228,7 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
             {syrup.token.symbol} / day
           </p>
         </Box>
-        <Box
-          mt={3}
-          display='flex'
-          justifyContent='space-between'
-          alignItems='center'
-        >
+        <Box mt={3} className='flex justify-between items-center'>
           <Button
             className='stakeButton'
             disabled={approving || approval !== ApprovalState.NOT_APPROVED}

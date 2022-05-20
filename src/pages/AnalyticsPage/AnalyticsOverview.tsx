@@ -88,7 +88,7 @@ const AnalyticsOverview: React.FC = () => {
         </Grid>
       </Grid>
       <Box mt={4}>
-        <Box display='flex' flexWrap='wrap' className='panel'>
+        <Box className='panel flex flex-wrap'>
           {globalData ? (
             <AnalyticsInfo data={globalData} />
           ) : (
@@ -118,7 +118,7 @@ const AnalyticsOverview: React.FC = () => {
         )}
       </Box>
       <Box mt={4}>
-        <Box display='flex' justifyContent='space-between' alignItems='center'>
+        <Box className='flex items-center justify-between'>
           <Box className='headingWrapper'>
             <p className='weight-600'>Top Pairs</p>
           </Box>

@@ -64,11 +64,7 @@ const UnstakeQuickModal: React.FC<UnstakeQuickModalProps> = ({
           borderRadius='10px'
           padding='16px'
         >
-          <Box
-            display='flex'
-            alignItems='center'
-            justifyContent='space-between'
-          >
+          <Box className='flex items-center justify-between'>
             <small>dQUICK</small>
             <small>Balance: {formatTokenAmount(dQuickBalance)}</small>
           </Box>
