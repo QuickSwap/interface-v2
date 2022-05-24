@@ -148,16 +148,9 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
             />
           </Box>
           <Box
-            style={{
-              cursor: 'pointer',
-              opacity: expertConfirmText === 'confirm' ? 1 : 0.6,
-            }}
-            bgcolor='rgb(255, 104, 113)'
-            height={42}
-            borderRadius={10}
-            display='flex'
-            alignItems='center'
-            justifyContent='center'
+            className={`expertButtonWrapper${
+              expertConfirmText === 'confirm' ? '' : ' opacity-disabled'
+            }`}
             onClick={() => {
               if (expertConfirmText === 'confirm') {
                 toggleExpertMode();
@@ -170,17 +163,12 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
         </Box>
       </CustomModal>
       <Box paddingX={3} paddingY={4}>
-        <Box
-          mb={3}
-          display='flex'
-          justifyContent='space-between'
-          alignItems='center'
-        >
+        <Box mb={3} className='flex justify-between items-center'>
           <h5>Settings</h5>
           <CloseIcon onClick={onClose} />
         </Box>
         <Divider />
-        <Box my={2.5} display='flex' alignItems='center'>
+        <Box my={2.5} className='flex items-center'>
           <Box mr='6px'>
             <p>Slippage Tolerance</p>
           </Box>
@@ -190,7 +178,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
           />
         </Box>
         <Box mb={2.5}>
-          <Box display='flex' alignItems='center'>
+          <Box className='flex items-center'>
             <Box
               className={`slippageButton${
                 userSlippageTolerance === 10 ? ' activeSlippageButton' : ''
@@ -225,13 +213,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
               <small>1%</small>
             </Box>
             <Box
-              flex={1}
-              height={40}
-              borderRadius={10}
-              px={2}
-              display='flex'
-              alignItems='center'
-              className={`bg-default ${
+              className={`settingsInputWrapper ${
                 slippageAlert ? 'border-primary' : 'border-secondary1'
               }`}
             >
@@ -242,7 +224,6 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
                 fontSize={14}
                 fontWeight={500}
                 align='right'
-                color='rgba(212, 229, 255, 0.8)'
                 onBlur={() => {
                   parseCustomSlippage((userSlippageTolerance / 100).toFixed(2));
                 }}
@@ -264,7 +245,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
           )}
         </Box>
         <Divider />
-        <Box my={2.5} display='flex' alignItems='center'>
+        <Box my={2.5} className='flex items-center'>
           <Box mr='6px'>
             <p>Transaction Deadline</p>
           </Box>
@@ -273,22 +254,13 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
             text='Your transaction will revert if it is pending for more than this long.'
           />
         </Box>
-        <Box mb={2.5} display='flex' alignItems='center'>
-          <Box
-            height={40}
-            borderRadius={10}
-            px={2}
-            display='flex'
-            alignItems='center'
-            className='bg-default bg-secondary1'
-            maxWidth={168}
-          >
+        <Box mb={2.5} className='flex items-center'>
+          <Box className='settingsInputWrapper' maxWidth={168}>
             <NumericalInput
               placeholder={(ttl / 60).toString()}
               value={deadlineInput}
               fontSize={14}
               fontWeight={500}
-              color='rgba(212, 229, 255, 0.8)'
               onBlur={() => {
                 parseCustomDeadline((ttl / 60).toString());
               }}
@@ -305,13 +277,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
           </Box>
         )}
         <Divider />
-        <Box
-          my={2.5}
-          display='flex'
-          justifyContent='space-between'
-          alignItems='center'
-        >
-          <Box display='flex' alignItems='center'>
+        <Box my={2.5} className='flex justify-between items-center'>
+          <Box className='flex items-center'>
             <p style={{ marginRight: 6 }}>Expert Mode</p>
             <QuestionHelper
               size={20}
@@ -331,14 +298,9 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
           />
         </Box>
         <Divider />
-        <Box
-          mt={2.5}
-          display='flex'
-          justifyContent='space-between'
-          alignItems='center'
-        >
+        <Box mt={2.5} className='flex justify-between items-center'>
           <p>Language</p>
-          <Box display='flex' alignItems='center'>
+          <Box className='flex items-center'>
             <p>English (default)</p>
             <KeyboardArrowDown />
           </Box>

@@ -93,7 +93,7 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
   return (
     <CustomModal open={open} onClose={onClose}>
       <Box paddingX={3} paddingY={4}>
-        <Box display='flex' alignItems='center' justifyContent='space-between'>
+        <Box className='flex items-center justify-between'>
           <h5>Stake QUICK</h5>
           <CloseIcon className='cursor-pointer' onClick={onClose} />
         </Box>
@@ -103,15 +103,11 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
           borderRadius='10px'
           padding='16px'
         >
-          <Box
-            display='flex'
-            alignItems='center'
-            justifyContent='space-between'
-          >
+          <Box className='flex items-center justify-between'>
             <small>QUICK</small>
             <small>Balance: {formatTokenAmount(quickBalance)}</small>
           </Box>
-          <Box mt={2} display='flex' alignItems='center'>
+          <Box mt={2} className='flex items-center'>
             <NumericalInput
               placeholder='0'
               value={typedValue}
@@ -136,7 +132,7 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
               MAX
             </span>
           </Box>
-          <Box display='flex' alignItems='center'>
+          <Box className='flex items-center'>
             <Box flex={1} mr={2} mt={0.5}>
               <ColoredSlider
                 min={1}
@@ -161,7 +157,7 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
             <small>{Math.min(stakePercent, 100).toLocaleString()}%</small>
           </Box>
         </Box>
-        <Box display='flex' justifyContent='space-between' alignItems='center'>
+        <Box className='flex items-center justify-between'>
           <Box width='48%'>
             <Button
               className='stakeButton'

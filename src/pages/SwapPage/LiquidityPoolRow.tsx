@@ -37,14 +37,8 @@ const LiquidityPoolRow: React.FC<{
   const token0 = useCurrency(pair.token0.id);
   const token1 = useCurrency(pair.token1.id);
   return (
-    <Box
-      key={key}
-      display='flex'
-      flexWrap='wrap'
-      className='liquidityContent'
-      padding={2}
-    >
-      <Box display='flex' alignItems='center' width={isMobile ? 1 : 0.5}>
+    <Box key={key} className='flex flex-wrap liquidityContent' padding={2}>
+      <Box className='flex items-center' width={isMobile ? 1 : 0.5}>
         <DoubleCurrencyLogo
           currency0={token0 ?? undefined}
           currency1={token1 ?? undefined}

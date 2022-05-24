@@ -23,7 +23,7 @@ const CommonBases: React.FC<CommonBasesProps> = ({
         </Box>
         <QuestionHelper text='These tokens are commonly paired with other tokens.' />
       </Box>
-      <Box display='flex' flexWrap='wrap'>
+      <Box className='flex flex-wrap'>
         <Box
           className='baseWrapper'
           onClick={() => {

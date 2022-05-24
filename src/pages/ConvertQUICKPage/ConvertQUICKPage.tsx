@@ -133,7 +133,7 @@ const ConvertQUICKPage: React.FC = () => {
     <Box width='100%' maxWidth={488} id='convertQUICKPage'>
       <h4>{t('convert')} QUICK</h4>
       <Box className='wrapper'>
-        <Box display='flex' alignItems='center' mb={3}>
+        <Box className='flex items-center' mb={3}>
           <Box className='iconWrapper'>
             <img src={QUICKIcon} alt='QUICK' />
           </Box>

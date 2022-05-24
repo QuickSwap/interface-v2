@@ -167,7 +167,7 @@ const Header: React.FC = () => {
                 <small>{val.text}</small>
               </Link>
             ))}
-            <Box display='flex' className='menuItem'>
+            <Box className='flex menuItem'>
               <ThreeDotIcon
                 onClick={() => setOpenDetailMenu(!openDetailMenu)}
               />

@@ -48,7 +48,7 @@ const SwapProFilter: React.FC<SwapProFilterProps> = ({
         />
         <small>trades</small>
       </Box>
-      <Box display='flex' alignItems='center'>
+      <Box className='flex items-center'>
         <small>INFO:</small>
         <Box ml={1}>
           <CustomSwitch width={190} height={30} items={infoPosItems} />

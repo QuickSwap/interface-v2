@@ -75,18 +75,18 @@ const SwapTokenDetails: React.FC<{
   return (
     <Box>
       <Box className='flex items-center justify-between' px={2} py={1.5}>
-        <Box display='flex' alignItems='center'>
+        <Box className='flex items-center'>
           <CurrencyLogo currency={currency} size='28px' />
           <Box ml={1}>
             <small>{currency.symbol}</small>
             {tokenData ? (
-              <Box display='flex' alignItems='center'>
+              <Box className='flex items-center'>
                 <small>${formatNumber(tokenData.priceUSD)}</small>
                 <Box
                   ml={0.5}
-                  display='flex'
-                  alignItems='center'
-                  className={priceUp ? 'text-success' : 'text-error'}
+                  className={`flex items-center ${
+                    priceUp ? 'text-success' : 'text-error'
+                  }`}
                 >
                   {priceUp ? <ArrowDropUp /> : <ArrowDropDown />}
                   <small>{priceUpPercent}%</small>

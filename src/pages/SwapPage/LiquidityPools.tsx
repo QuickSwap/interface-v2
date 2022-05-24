@@ -80,12 +80,10 @@ const LiquidityPools: React.FC<{
   return (
     <>
       <Box
-        display='flex'
-        alignItems='center'
-        justifyContent='space-between'
+        className='flex items-center justify-between'
         marginBottom={liquidityPoolClosed ? 0 : '20px'}
       >
-        <Box display='flex' alignItems='center'>
+        <Box className='flex items-center'>
           <p className='weight-600' style={{ marginRight: 8 }}>
             Liquidity Pools{' '}
           </p>
@@ -94,8 +92,7 @@ const LiquidityPools: React.FC<{
           </small>
         </Box>
         <Box
-          display='flex'
-          className='cursor-pointer text-secondary'
+          className='flex cursor-pointer text-secondary'
           onClick={() => setLiquidityPoolClosed(!liquidityPoolClosed)}
         >
           {liquidityPoolClosed ? <KeyboardArrowDown /> : <KeyboardArrowUp />}
@@ -105,8 +102,8 @@ const LiquidityPools: React.FC<{
         <>
           <Divider />
           <Box width={1}>
-            <Box display='flex' padding={2} className='liquidityMain'>
-              <Box display='flex' width={0.5} className='liquidityFilter'>
+            <Box padding={2} className='flex liquidityMain'>
+              <Box width={0.5} className='flex liquidityFilter'>
                 <small
                   className={liquidityFilterIndex === 0 ? 'active' : ''}
                   onClick={() => setLiquidityFilterIndex(0)}

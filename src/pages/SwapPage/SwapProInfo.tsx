@@ -95,13 +95,7 @@ const SwapProInfo: React.FC<{
       {currency1 && currency2 && (
         <>
           <Box py={2} px={1}>
-            <Box
-              mb={1}
-              px={1}
-              display='flex'
-              alignItems='center'
-              justifyContent='space-between'
-            >
+            <Box mb={1} px={1} className='flex items-center justify-between'>
               <small>
                 {currency1.symbol} / {currency2.symbol}
               </small>

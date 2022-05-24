@@ -173,3 +173,13 @@
     width: 14px;
   }
 }
+
+.swapProWrapper {
+  flex: 1;
+  max-height: 100vh;
+  min-height: 500px;
+  width: 100%;
+  @include media("screen", "<phone") {
+    flex: none
+  }
+}

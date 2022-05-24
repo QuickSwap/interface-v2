@@ -122,9 +122,7 @@ const SwapProChartTrade: React.FC<{
           <Box
             width={1}
             height='2px'
-            display='flex'
-            justifyContent='center'
-            alignItems='center'
+            className='flex justify-center items-center'
           >
             <Height />
           </Box>

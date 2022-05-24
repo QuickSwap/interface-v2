@@ -24,3 +24,24 @@
   color: $grey23;
   font-weight: 500
 }
+.expertButtonWrapper {
+  cursor: pointer;
+  background-color: $errorMain;
+  height: 42px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.settingsInputWrapper {
+  flex: 1;
+  height: 40px;
+  border-radius: 10px;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  background-color: $bgColor;
+  & input {
+    color: $grey23;
+  }
+}

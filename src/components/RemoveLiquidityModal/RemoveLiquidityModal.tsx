@@ -344,7 +344,7 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
   const modalHeader = () => {
     return (
       <Box>
-        <Box mt={10} mb={3} display='flex' justifyContent='center'>
+        <Box className='flex justify-center' mt={10} mb={3}>
           <DoubleCurrencyLogo
             currency0={currency0}
             currency1={currency1}
@@ -411,7 +411,7 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
             }
           />
         )}
-        <Box display='flex' alignItems='center' justifyContent='space-between'>
+        <Box className='flex items-center justify-between'>
           <ArrowLeft
             className='text-secondary cursor-pointer'
             onClick={onClose}
@@ -419,17 +419,8 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
           <h6>Remove Liquidity</h6>
           <CloseIcon className='cursor-pointer' onClick={onClose} />
         </Box>
-        <Box
-          mt={3}
-          className='bg-default border-gray14'
-          borderRadius='10px'
-          padding='16px'
-        >
-          <Box
-            display='flex'
-            alignItems='center'
-            justifyContent='space-between'
-          >
+        <Box className='removeLiquidityInput'>
+          <Box className='flex items-center justify-between'>
             <small>
               {currency0.symbol} / {currency1.symbol} LP
             </small>
@@ -445,7 +436,7 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
               }}
             />
           </Box>
-          <Box display='flex' alignItems='center'>
+          <Box className='flex items-center'>
             <Box flex={1} mr={2} mt={0.5}>
               <ColoredSlider
                 min={1}
@@ -460,61 +451,33 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
             <small>{formattedAmounts[Field.LIQUIDITY_PERCENT]}%</small>
           </Box>
         </Box>
-        <Box display='flex' my={3} justifyContent='center'>
+        <Box className='flex justify-center' my={3}>
           <ArrowDown className='text-secondary' />
         </Box>
-        <Box padding='16px' className='bg-secondary1' borderRadius='10px'>
-          <Box
-            display='flex'
-            justifyContent='space-between'
-            alignItems='center'
-          >
+        <Box className='removeLiquidityInfo bg-secondary1'>
+          <Box>
             <p>Pooled {currency0.symbol}</p>
-            <Box display='flex' alignItems='center'>
-              <p style={{ marginRight: 6 }}>
-                {formatTokenAmount(token0Deposited)}
-              </p>
+            <Box>
+              <p>{formatTokenAmount(token0Deposited)}</p>
               <CurrencyLogo currency={currency0} />
             </Box>
           </Box>
-          <Box
-            mt={1}
-            display='flex'
-            justifyContent='space-between'
-            alignItems='center'
-          >
+          <Box>
             <p className='text-blue7'>- Withdraw {currency0.symbol}</p>
             <p className='text-blue7'>{formattedAmounts[Field.CURRENCY_A]}</p>
           </Box>
-          <Box
-            mt={1}
-            display='flex'
-            justifyContent='space-between'
-            alignItems='center'
-          >
+          <Box>
             <p>Pooled {currency1.symbol}</p>
-            <Box display='flex' alignItems='center'>
-              <p style={{ marginRight: 6 }}>
-                {formatTokenAmount(token1Deposited)}
-              </p>
+            <Box>
+              <p>{formatTokenAmount(token1Deposited)}</p>
               <CurrencyLogo currency={currency1} />
             </Box>
           </Box>
-          <Box
-            mt={1}
-            display='flex'
-            justifyContent='space-between'
-            alignItems='center'
-          >
+          <Box>
             <p className='text-blue7'>- Withdraw {currency1.symbol}</p>
             <p className='text-blue7'>{formattedAmounts[Field.CURRENCY_B]}</p>
           </Box>
-          <Box
-            mt={1}
-            display='flex'
-            justifyContent='space-between'
-            alignItems='center'
-          >
+          <Box>
             <p>Your Pool Share</p>
             <p>
               {poolTokenPercentage
@@ -524,13 +487,7 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
           </Box>
         </Box>
         {pair && (
-          <Box
-            display='flex'
-            mt={2}
-            px={2}
-            alignItems='center'
-            justifyContent='space-between'
-          >
+          <Box className='flex justify-between items-center' mt={2} px={2}>
             <small>
               1 {currency0.symbol} ={' '}
               {tokenA ? pair.priceOf(tokenA).toSignificant(6) : '-'}{' '}
@@ -543,12 +500,7 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
             </small>
           </Box>
         )}
-        <Box
-          mt={2}
-          display='flex'
-          alignItems='center'
-          justifyContent='space-between'
-        >
+        <Box mt={2} className='flex justify-between items-center'>
           <Button
             className='removeButton'
             onClick={onAttemptToApprove}

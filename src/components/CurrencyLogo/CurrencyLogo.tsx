@@ -43,14 +43,9 @@ const CurrencyLogo: React.FC<CurrencyLogoProps> = ({
         width={size}
         height={size}
         borderRadius={size}
-        overflow='hidden'
+        className='currencyLogo'
       >
-        <img
-          className='logoStyled'
-          style={{ width: size, height: size }}
-          src={EthereumLogo}
-          alt='Ethereum Logo'
-        />
+        <img className='ethereumLogo' src={EthereumLogo} alt='Ethereum Logo' />
       </Box>
     );
   }
@@ -60,8 +55,7 @@ const CurrencyLogo: React.FC<CurrencyLogoProps> = ({
       width={size}
       height={size}
       borderRadius={size}
-      overflow='hidden'
-      className='flex justify-center items-center bg-white'
+      className='currencyLogo bg-white'
     >
       <Logo
         srcs={srcs}

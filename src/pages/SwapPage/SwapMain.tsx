@@ -39,33 +39,32 @@ const SwapMain: React.FC = () => {
         />
       )}
       <Box
-        display='flex'
-        alignItems='center'
-        justifyContent='space-between'
-        className={isProMode ? 'proModeWrapper' : ''}
+        className={`flex items-center justify-between ${
+          isProMode ? ' proModeWrapper' : ''
+        }`}
       >
         <Box display='flex'>
           <Box
-            className={`${swapIndex === SWAP_NORMAL &&
-              'activeSwap'} swapItem headingItem
+            className={`${
+              swapIndex === SWAP_NORMAL ? 'activeSwap' : ''
+            } swapItem headingItem
             `}
             onClick={() => setSwapIndex(SWAP_NORMAL)}
           >
             <p>Market</p>
           </Box>
           <Box
-            className={`${swapIndex === SWAP_LIMIT &&
-              'activeSwap'} swapItem headingItem ${
-              isProMode ? 'border-right' : ''
-            }`}
+            className={`${
+              swapIndex === SWAP_LIMIT ? 'activeSwap' : ''
+            } swapItem headingItem ${isProMode ? 'border-right' : ''}`}
             onClick={() => setSwapIndex(SWAP_LIMIT)}
           >
             <p>Limit</p>
           </Box>
         </Box>
-        <Box display='flex' alignItems='center'>
+        <Box className='flex items-center'>
           {!isProMode && (
-            <Box display='flex' alignItems='center' mr={1}>
+            <Box className='flex items-center' mr={1}>
               <span className='text-secondary' style={{ marginRight: 8 }}>
                 PRO MODE
               </span>

@@ -300,7 +300,7 @@ const FarmCardDetails: React.FC<{
             )}
             {!stakingInfo.ended && (
               <Box className='buttonWrapper' mt={isMobile ? 2 : 0}>
-                <Box display='flex' justifyContent='space-between'>
+                <Box className='flex justify-between'>
                   <small>{t('inwallet')}:</small>
                   <Box className='flex flex-col items-end'>
                     <small>
@@ -375,7 +375,7 @@ const FarmCardDetails: React.FC<{
               </Box>
             )}
             <Box className='buttonWrapper' mx={isMobile ? 0 : 2} my={2}>
-              <Box display='flex' justifyContent='space-between'>
+              <Box className='flex justify-between'>
                 <small>{t('mydeposits')}:</small>
                 <small>
                   {formatTokenAmount(stakingInfo.stakedAmount)} {t('lp')} (

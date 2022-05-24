@@ -72,7 +72,7 @@ export const MinimalPositionCard: React.FC<PositionCardProps> = ({
             className='minimalCardRow'
             onClick={() => setShowMore(!showMore)}
           >
-            <Box display='flex' alignItems='center'>
+            <Box className='flex items-center'>
               <DoubleCurrencyLogo
                 currency0={currency0}
                 currency1={currency1}

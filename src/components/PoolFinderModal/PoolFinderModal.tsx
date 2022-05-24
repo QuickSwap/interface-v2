@@ -110,7 +110,7 @@ const PoolFinderModal: React.FC<PoolFinderModalProps> = ({ open, onClose }) => {
             <p className='weight-600'>Select a Token</p>
           )}
         </Box>
-        <Box my={1} display='flex' justifyContent='center'>
+        <Box my={1} className='flex justify-center'>
           <Plus size='20' className='text-secondary' />
         </Box>
         <Box
@@ -139,14 +139,7 @@ const PoolFinderModal: React.FC<PoolFinderModalProps> = ({ open, onClose }) => {
             </p>
           </Box>
         )}
-        <Box
-          mt={2}
-          p={1}
-          borderRadius={10}
-          display='flex'
-          justifyContent='center'
-          className='border'
-        >
+        <Box className='poolFinderInfo border'>
           {currency0 && currency1 ? (
             pairState === PairState.EXISTS ? (
               hasPosition && pair ? (
