@@ -57,7 +57,7 @@ const SwapProInfo: React.FC<{
         <Box p={1} display='flex'>
           <CurrencyLogo currency={currency} />
           <Box ml={1} flex={1}>
-            <Box display='flex' justifyContent='space-between'>
+            <Box className='flex justify-between'>
               <small>{currency.symbol}</small>
               {tokenData ? (
                 <small>${formatNumber(tokenData?.priceUSD)}</small>

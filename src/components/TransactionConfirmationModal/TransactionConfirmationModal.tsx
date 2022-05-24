@@ -25,7 +25,7 @@ export const ConfirmationPendingContent: React.FC<ConfirmationPendingContentProp
         <CloseIcon onClick={onDismiss} />
       </Box>
       <Box className='txModalContent'>
-        <Box my={4} display='flex' justifyContent='center'>
+        <Box my={4} className='flex justify-center'>
           <CircularProgress size={80} />
         </Box>
         <h5>Waiting For Confirmation</h5>
@@ -58,14 +58,14 @@ export const TransactionSubmittedContent: React.FC<TransactionSubmittedContentPr
         <CloseIcon onClick={onDismiss} />
       </Box>
       {!txPending && (
-        <Box mt={8} display='flex' justifyContent='center'>
+        <Box mt={8} className='flex justify-center'>
           <TransactionSuccess />
         </Box>
       )}
       <Box className='txModalContent'>
         <p>{modalContent}</p>
       </Box>
-      <Box display='flex' justifyContent='space-between' mt={2}>
+      <Box className='flex justify-between' mt={2}>
         {chainId && hash && (
           <a
             href={getEtherscanLink(chainId, hash, 'transaction')}

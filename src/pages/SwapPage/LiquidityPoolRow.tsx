@@ -37,7 +37,7 @@ const LiquidityPoolRow: React.FC<{
   const token0 = useCurrency(pair.token0.id);
   const token1 = useCurrency(pair.token1.id);
   return (
-    <Box key={key} className='flex flex-wrap liquidityContent' padding={2}>
+    <Box key={key} className='liquidityContent'>
       <Box className='flex items-center' width={isMobile ? 1 : 0.5}>
         <DoubleCurrencyLogo
           currency0={token0 ?? undefined}
@@ -52,8 +52,7 @@ const LiquidityPoolRow: React.FC<{
       <Box
         width={isMobile ? 1 : 0.2}
         mt={isMobile ? 2.5 : 0}
-        display='flex'
-        justifyContent='space-between'
+        className='flex justify-between'
       >
         {isMobile && <small className='text-secondary'>TVL</small>}
         <small>${formatCompact(liquidity)}</small>
@@ -61,8 +60,7 @@ const LiquidityPoolRow: React.FC<{
       <Box
         width={isMobile ? 1 : 0.15}
         mt={isMobile ? 1 : 0}
-        display='flex'
-        justifyContent='space-between'
+        className='flex justify-between'
       >
         {isMobile && <small className='text-secondary'>24H Volume</small>}
         <small>${formatCompact(volume)}</small>
@@ -70,8 +68,7 @@ const LiquidityPoolRow: React.FC<{
       <Box
         width={isMobile ? 1 : 0.15}
         mt={isMobile ? 1 : 0}
-        display='flex'
-        justifyContent={isMobile ? 'space-between' : 'flex-end'}
+        className={`flex ${isMobile ? 'justify-between' : 'justify-end'}`}
       >
         {isMobile && <small className='text-secondary'>APY</small>}
         <small

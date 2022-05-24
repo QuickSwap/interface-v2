@@ -82,6 +82,9 @@
   border: 1px solid $secondary1;
   border-radius: 10px;
   margin-bottom: 20px;
+  padding: 16px;
+  display: flex;
+  flex-wrap: wrap;
   & small {
     font-weight: 600;
   }
@@ -181,5 +184,14 @@
   width: 100%;
   @include media("screen", "<phone") {
     flex: none
+  }
+}
+
+.swapTxInfo {
+  padding: 8px;
+  & > div {
+    padding: 8px 0;
+    display: flex;
+    justify-content: space-between;
   }
 }

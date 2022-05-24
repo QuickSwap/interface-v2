@@ -328,7 +328,7 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
   });
 
   const renderStakedOnly = () => (
-    <Box display='flex' alignItems='center'>
+    <Box className='flex items-center'>
       <small className='text-disabled' style={{ marginRight: 8 }}>
         Staked Only
       </small>
@@ -354,13 +354,7 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
 
   return (
     <>
-      <Box
-        display='flex'
-        flexWrap='wrap'
-        justifyContent='space-between'
-        alignItems='center'
-        mb={3.5}
-      >
+      <Box className='farmListHeader'>
         <Box>
           <h5>Earn dQuick</h5>
           <small>
@@ -370,10 +364,9 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
               : 'dQUICK + WMATIC rewards'}
           </small>
         </Box>
-        <Box display='flex' flexWrap='wrap'>
+        <Box className='flex flex-wrap'>
           <Box
-            display='flex'
-            justifyContent='space-between'
+            className='flex justify-between'
             width={returnFullWidthMobile(isMobile)}
           >
             <Box width={isMobile ? 'calc(100% - 150px)' : 1} mr={2} my={2}>
@@ -389,9 +382,7 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
           </Box>
           <Box
             width={returnFullWidthMobile(isMobile)}
-            display='flex'
-            flexWrap='wrap'
-            alignItems='center'
+            className='flex flex-wrap items-center'
           >
             <Box mr={2}>
               <CustomSwitch width={160} height={40} items={farmStatusItems} />
@@ -401,7 +392,7 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
                 <Box height={40} flex={1}>
                   <CustomMenu title='Sort By' menuItems={sortByMobileItems} />
                 </Box>
-                <Box mt={2} width={1} display='flex' alignItems='center'>
+                <Box mt={2} width={1} className='flex items-center'>
                   <small className='text-disabled' style={{ marginRight: 8 }}>
                     Sort {sortDesc ? 'Desc' : 'Asc'}
                   </small>

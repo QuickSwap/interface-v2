@@ -40,8 +40,8 @@ const SwapInfoTx: React.FC<{
           { label: '24h', value: '24_hour' },
         ]}
       />
-      <Box pt={1} px={1}>
-        <Box py={1} display='flex' justifyContent='space-between'>
+      <Box className='swapTxInfo'>
+        <Box>
           <small className='text-secondary'>Transactions:</small>
           {filteredTxs ? (
             <small>{filteredTxs.length}</small>
@@ -50,7 +50,7 @@ const SwapInfoTx: React.FC<{
           )}
         </Box>
         <Divider />
-        <Box py={1} display='flex' justifyContent='space-between'>
+        <Box>
           <small className='text-secondary'>Buys:</small>
           <small>
             {filteredBuyTxs ? (
@@ -61,7 +61,7 @@ const SwapInfoTx: React.FC<{
           </small>
         </Box>
         <Divider />
-        <Box py={1} display='flex' justifyContent='space-between'>
+        <Box>
           <small className='text-secondary'>Sells:</small>
           <small>
             {filteredSellTxs ? (
@@ -72,7 +72,7 @@ const SwapInfoTx: React.FC<{
           </small>
         </Box>
         <Divider />
-        <Box pt={1} display='flex' justifyContent='space-between'>
+        <Box>
           <small className='text-secondary'>Volume:</small>
           <small>
             {filteredTxs ? (

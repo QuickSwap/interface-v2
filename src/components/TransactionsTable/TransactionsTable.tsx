@@ -20,7 +20,7 @@ const headCells = (
     id: 'description',
     numeric: false,
     label: (
-      <Box display='flex' alignItems='center'>
+      <Box className='flex items-center'>
         <small
           className={txFilter === -1 ? '' : 'text-secondary'}
           onClick={() => setTxFilter(-1)}

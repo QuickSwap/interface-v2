@@ -121,7 +121,7 @@ const LandingPage: React.FC = () => {
       <Box margin={mobileWindowSize ? '64px 0' : '100px 0 80px'}>
         <HeroSection globalData={globalData} />
       </Box>
-      <Box className='tradingInfo' display='flex'>
+      <Box className='flex tradingInfo'>
         <TradingInfo globalData={globalData} />
       </Box>
       <Box className='smallCommunityContainer'>

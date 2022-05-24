@@ -8,15 +8,7 @@ const DragonAlert: React.FC = () => {
   return (
     <>
       {openAlert && (
-        <Box
-          mb={3}
-          display='flex'
-          alignItems='center'
-          width='100%'
-          className='bg-secondary2'
-          padding='16px 24px 16px 12px'
-          borderRadius={12}
-        >
+        <Box className='dragonAlertWrapper bg-secondary2'>
           <AlertIcon />
           <Box mx={2} width='calc(100% - 96px)'>
             <p>

@@ -68,7 +68,7 @@ const UnstakeQuickModal: React.FC<UnstakeQuickModalProps> = ({
             <small>dQUICK</small>
             <small>Balance: {formatTokenAmount(dQuickBalance)}</small>
           </Box>
-          <Box mt={2} display='flex' alignItems='center'>
+          <Box mt={2} className='flex items-center'>
             <NumericalInput
               placeholder='0'
               value={typedValue}
@@ -93,7 +93,7 @@ const UnstakeQuickModal: React.FC<UnstakeQuickModalProps> = ({
               MAX
             </span>
           </Box>
-          <Box display='flex' alignItems='center'>
+          <Box className='flex items-center'>
             <Box flex={1} mr={2} mt={0.5}>
               <ColoredSlider
                 min={1}

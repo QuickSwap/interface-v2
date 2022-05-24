@@ -48,11 +48,11 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
           </>
         ) : (
           <>
-            <Box width={0.3} display='flex' alignItems='center'>
+            <Box width={0.3} className='flex items-center'>
               <CurrencyLogo currency={currency} size='32px' />
               <Box ml={1.5}>
                 <small>{currency.symbol}</small>
-                <Box display='flex' mt={0.25}>
+                <Box mt={0.25}>
                   <span>
                     {syrup.rate >= 1000000
                       ? formatCompact(syrup.rate)
@@ -60,7 +60,7 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
                     <span className='text-secondary'> / day</span>
                   </span>
                 </Box>
-                <Box display='flex' mt={0.25}>
+                <Box mt={0.25}>
                   <span>
                     $
                     {syrup.rewardTokenPriceinUSD
@@ -80,12 +80,7 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
               <SyrupAPR syrup={syrup} dQUICKAPY={dQUICKAPY} />
             </Box>
             <Box width={0.2} textAlign='right'>
-              <Box
-                display='flex'
-                alignItems='center'
-                justifyContent='flex-end'
-                mb={0.25}
-              >
+              <Box className='flex items-center justify-end' mb={0.25}>
                 <CurrencyLogo currency={currency} size='16px' />
                 <small style={{ marginLeft: 5 }}>
                   {formatTokenAmount(syrup.earnedAmount)}

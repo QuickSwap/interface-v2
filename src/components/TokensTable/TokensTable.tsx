@@ -69,7 +69,7 @@ const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
     const priceClass = getPriceClass(Number(token.priceChangeUSD));
     return (
       <Box mt={index === 0 ? 0 : 3}>
-        <Box display='flex' alignItems='center' mb={1}>
+        <Box className='flex items-center' mb={1}>
           <Box
             display='flex'
             mr={1}
@@ -92,7 +92,7 @@ const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
             className='no-decoration'
             to={`/analytics/token/${tokenCurrency.address}`}
           >
-            <Box display='flex' alignItems='center'>
+            <Box className='flex items-center'>
               <CurrencyLogo currency={tokenCurrency} size='28px' />
               <Box ml={1}>
                 <p className='text-gray25'>
@@ -139,7 +139,7 @@ const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
     return [
       {
         html: (
-          <Box display='flex' alignItems='center'>
+          <Box className='flex items-center'>
             <Box
               display='flex'
               mr={1}
@@ -162,7 +162,7 @@ const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
               className='no-decoration'
               to={`/analytics/token/${tokenCurrency.address}`}
             >
-              <Box display='flex' alignItems='center'>
+              <Box className='flex items-center'>
                 <CurrencyLogo currency={tokenCurrency} size='28px' />
                 <Box ml={1}>
                   <p className='text-gray25'>

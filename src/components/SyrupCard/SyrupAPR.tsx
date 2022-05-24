@@ -18,20 +18,11 @@ const SyrupAPR: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
         {getTokenAPRSyrup(syrup).toLocaleString()}%
       </small>
       {isDQUICKStakingToken && (
-        <Box display='flex'>
-          <Box
-            borderRadius='4px'
-            className='border-gray2'
-            padding='4px'
-            marginTop='4px'
-            display='flex'
-            alignItems='center'
-          >
-            <CurrencyLogo currency={returnTokenFromKey('QUICK')} size='12px' />
-            <span style={{ marginLeft: 4 }}>
-              {dQUICKAPY}% <span className='text-hint'>APY</span>
-            </span>
-          </Box>
+        <Box className='syrupAPR border-gray2'>
+          <CurrencyLogo currency={returnTokenFromKey('QUICK')} size='12px' />
+          <span style={{ marginLeft: 4 }}>
+            {dQUICKAPY}% <span className='text-hint'>APY</span>
+          </span>
         </Box>
       )}
     </>

@@ -24,7 +24,7 @@ const PendingView: React.FC<PendingViewProps> = ({
 
   return (
     <Box className='pendingSection'>
-      <Box display='flex' alignItems='center' justifyContent='center' mb={4}>
+      <Box className='flex items-center justify-center' mb={4}>
         {error ? (
           <Box className='errorGroup'>
             <p>Error connecting.</p>

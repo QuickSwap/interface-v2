@@ -158,13 +158,13 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
           <Box padding={3}>
             {isMobile && (
               <Box mb={3}>
-                <Box display='flex' justifyContent='space-between' mb={2}>
+                <Box className='flex justify-between' mb={2}>
                   <small className='text-secondary'>
                     {syrup.stakingToken.symbol} {t('deposits')}:
                   </small>
                   <small>{depositAmount}</small>
                 </Box>
-                <Box display='flex' justifyContent='space-between' mb={2}>
+                <Box className='flex justify-between' mb={2}>
                   <small className='text-secondary'>{t('dailyRewards')}:</small>
                   <small>
                     {syrup.rate >= 1000000
@@ -177,8 +177,8 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
                 <Box mb={2}>
                   <SyrupTimerLabel exactEnd={exactEnd} isEnded={syrup?.ended} />
                 </Box>
-                <Box display='flex' justifyContent='space-between' mb={3}>
-                  <Box display='flex' alignItems='center'>
+                <Box className='flex justify-between' mb={3}>
+                  <Box className='flex items-center'>
                     <small className='text-secondary'>APR:</small>
                     <Box ml={0.5} height={16}>
                       <img src={CircleInfoIcon} alt={'arrow up'} />
@@ -191,12 +191,7 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
                 <Divider />
               </Box>
             )}
-            <Box
-              display='flex'
-              alignItems='center'
-              justifyContent='space-between'
-              mb={1}
-            >
+            <Box className='flex items-center justify-between' mb={1}>
               <small className='text-secondary'>{t('inwallet')}</small>
               <small>
                 {userLiquidityUnstaked
@@ -214,12 +209,7 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
                 </small>
               </small>
             </Box>
-            <Box
-              display='flex'
-              alignItems='center'
-              justifyContent='space-between'
-              mb={1}
-            >
+            <Box className='flex items-center justify-between' mb={1}>
               <small className='text-secondary'>{t('staked')}</small>
               <small>
                 {formatTokenAmount(syrup.stakedAmount)}{' '}
@@ -233,16 +223,11 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
                 </small>
               </small>
             </Box>
-            <Box
-              display='flex'
-              alignItems='center'
-              justifyContent='space-between'
-              mb={2}
-            >
+            <Box className='flex items-center justify-between' mb={2}>
               <small className='text-secondary'>
                 {t('earned')} {currency?.symbol}
               </small>
-              <Box display='flex' alignItems='center'>
+              <Box className='flex items-center'>
                 <CurrencyLogo currency={currency} size='16px' />
                 <small style={{ marginLeft: 4 }}>
                   {formatTokenAmount(syrup.earnedAmount)}
@@ -252,36 +237,25 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
                 </small>
               </Box>
             </Box>
-            <Box
-              display='flex'
-              flexWrap='wrap'
-              alignItems='center'
-              justifyContent='space-between'
-            >
+            <Box className='flex flex-wrap items-center justify-between'>
               {!isMobile && (
                 <SyrupTimerLabel exactEnd={exactEnd} isEnded={syrup?.ended} />
               )}
               {isMobile ? (
                 <>
                   {syrup.earnedAmount && syrup.earnedAmount.greaterThan('0') && (
-                    <Box
-                      width={1}
-                      mb={1.5}
-                      display='flex'
-                      justifyContent='flex-end'
-                    >
+                    <Box width={1} mb={1.5} className='flex justify-end'>
                       <ClaimButton />
                     </Box>
                   )}
                   <Box
                     width={1}
                     mb={1.5}
-                    display='flex'
-                    justifyContent={
+                    className={`flex ${
                       syrup.stakedAmount && syrup.stakedAmount.greaterThan('0')
-                        ? 'space-between'
-                        : 'flex-end'
-                    }
+                        ? 'justify-between'
+                        : 'justify-end'
+                    }`}
                   >
                     {!syrup.ended && <StakeButton />}
                     {syrup.stakedAmount &&
@@ -289,7 +263,7 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
                   </Box>
                 </>
               ) : (
-                <Box display='flex' flexWrap='wrap' my={1}>
+                <Box className='flex flex-wrap' my={1}>
                   {!syrup.ended && <StakeButton />}
                   {syrup.stakedAmount && syrup.stakedAmount.greaterThan('0') && (
                     <Box ml={1}>
