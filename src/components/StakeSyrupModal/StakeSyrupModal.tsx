@@ -229,30 +229,34 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
           </p>
         </Box>
         <Box mt={3} className='flex justify-between items-center'>
-          <Button
-            className='stakeButton'
-            disabled={approving || approval !== ApprovalState.NOT_APPROVED}
-            onClick={async () => {
-              setApproving(true);
-              try {
-                await onAttemptToApprove();
-                setApproving(false);
-              } catch (e) {
-                setApproving(false);
+          <Box width='48%'>
+            <Button
+              className='stakeButton'
+              disabled={approving || approval !== ApprovalState.NOT_APPROVED}
+              onClick={async () => {
+                setApproving(true);
+                try {
+                  await onAttemptToApprove();
+                  setApproving(false);
+                } catch (e) {
+                  setApproving(false);
+                }
+              }}
+            >
+              {approving ? 'Approving...' : 'Approve'}
+            </Button>
+          </Box>
+          <Box width='48%'>
+            <Button
+              className='stakeButton'
+              disabled={
+                !!error || attempting || approval !== ApprovalState.APPROVED
               }
-            }}
-          >
-            {approving ? 'Approving...' : 'Approve'}
-          </Button>
-          <Button
-            className='stakeButton'
-            disabled={
-              !!error || attempting || approval !== ApprovalState.APPROVED
-            }
-            onClick={onStake}
-          >
-            {attempting ? 'Staking...' : 'Stake'}
-          </Button>
+              onClick={onStake}
+            >
+              {attempting ? 'Staking...' : 'Stake'}
+            </Button>
+          </Box>
         </Box>
       </Box>
     </CustomModal>

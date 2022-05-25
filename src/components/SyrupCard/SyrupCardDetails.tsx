@@ -280,13 +280,7 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
             </Box>
             {syrup.rewardRate?.greaterThan('0') && (
               <Box className='dailyRateWrapper'>
-                <Box
-                  display='flex'
-                  alignItems='center'
-                  justifyContent={isMobile ? 'space-between' : 'flex-start'}
-                  width={isMobile ? 1 : 'auto'}
-                  flexWrap='wrap'
-                >
+                <Box>
                   <Box display='flex' mr={1}>
                     <small className='text-secondary'>{t('yourRate')}:</small>
                   </Box>

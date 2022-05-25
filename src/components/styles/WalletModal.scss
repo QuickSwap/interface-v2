@@ -1,5 +1,9 @@
 @use 'styles/variables' as *;
 
+.walletModalWrapper {
+  max-height: 80vh;
+  overflow: auto;
+}
 .blurb {
   display: flex;
   align-items: center;

@@ -68,7 +68,7 @@ const AnalyticsLiquidityChart: React.FC = () => {
 
   return (
     <>
-      <Box display='flex' justifyContent='space-between'>
+      <Box className='flex justify-between'>
         <span className='text-disabled text-bold'>LIQUIDITY</span>
         <ChartType
           typeTexts={GlobalData.analytics.CHART_DURATION_TEXTS}
@@ -78,7 +78,7 @@ const AnalyticsLiquidityChart: React.FC = () => {
         />
       </Box>
       {globalData ? (
-        <Box mt={0.5} display='flex' alignItems='center'>
+        <Box mt={0.5} className='flex items-center'>
           <h5>${formatCompact(globalData.totalLiquidityUSD)}</h5>
           <Box
             ml={1}

@@ -348,14 +348,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
 
   return (
     <CustomModal open={walletModalOpen} onClose={toggleWalletModal}>
-      <Box
-        maxHeight='80vh'
-        display='flex'
-        flexDirection='column'
-        overflow='auto'
-      >
-        {getModalContent()}
-      </Box>
+      <Box className='walletModalWrapper'>{getModalContent()}</Box>
     </CustomModal>
   );
 };

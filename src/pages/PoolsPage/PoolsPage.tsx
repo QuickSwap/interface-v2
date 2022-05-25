@@ -8,7 +8,7 @@ import 'pages/styles/pools.scss';
 const PoolsPage: React.FC = () => {
   return (
     <Box width='100%' mb={3}>
-      <Box mb={2} className='flex items-center justify-between' width='100%'>
+      <Box className='pageHeading'>
         <h4>Pool</h4>
         <Box className='helpWrapper'>
           <small>Help</small>

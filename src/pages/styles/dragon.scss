@@ -59,3 +59,19 @@
   padding: 16px 24px 16px 12px;
   border-radius: 12px;
 }
+
+.quickTodQuick {
+  margin-top: 20px;
+  width: 100%;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.dragonLairRow {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 12px;
+}

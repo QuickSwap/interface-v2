@@ -7,6 +7,7 @@ import { formatNumber, getEtherscanLink, shortenTx } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import moment from 'moment';
 import { TxnType } from 'constants/index';
+import 'components/styles/TransactionsTable.scss';
 
 interface TransactionsTableProps {
   data: any[];
@@ -228,27 +229,21 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({ data }) => {
   return (
     <Box position='relative'>
       {isMobile && (
-        <Box
-          display='flex'
-          alignItems='center'
-          position='absolute'
-          top={-48}
-          right={0}
-        >
-          <Box padding={1} onClick={() => setTxFilter(-1)}>
+        <Box className='txTableFilterMobile'>
+          <Box onClick={() => setTxFilter(-1)}>
             <p className={txFilter === -1 ? '' : 'text-secondary'}>All</p>
           </Box>
-          <Box padding={1} onClick={() => setTxFilter(TxnType.SWAP)}>
+          <Box onClick={() => setTxFilter(TxnType.SWAP)}>
             <p className={txFilter === TxnType.SWAP ? '' : 'text-secondary'}>
               Swap
             </p>
           </Box>
-          <Box padding={1} onClick={() => setTxFilter(TxnType.ADD)}>
+          <Box onClick={() => setTxFilter(TxnType.ADD)}>
             <p className={txFilter === TxnType.ADD ? '' : 'text-secondary'}>
               Add
             </p>
           </Box>
-          <Box padding={1} onClick={() => setTxFilter(TxnType.REMOVE)}>
+          <Box onClick={() => setTxFilter(TxnType.REMOVE)}>
             <p className={txFilter === TxnType.REMOVE ? '' : 'text-secondary'}>
               Remove
             </p>

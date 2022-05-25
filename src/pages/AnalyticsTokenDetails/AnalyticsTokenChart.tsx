@@ -100,13 +100,13 @@ const AnalyticsTokenChart: React.FC<{ token: any }> = ({ token }) => {
 
   return (
     <>
-      <Box display='flex' flexWrap='wrap' justifyContent='space-between'>
+      <Box className='flex flex-wrap justify-between'>
         <Box mt={1.5}>
           <span>{chartIndexTexts[chartIndex]}</span>
           <Box mt={1}>
             {currentData && currentPercent ? (
               <>
-                <Box display='flex' alignItems='center'>
+                <Box className='flex items-center'>
                   <h4>
                     $
                     {currentData > 100000
@@ -129,7 +129,7 @@ const AnalyticsTokenChart: React.FC<{ token: any }> = ({ token }) => {
             )}
           </Box>
         </Box>
-        <Box display='flex' flexDirection='column' alignItems='flex-end'>
+        <Box className='flex flex-col items-end'>
           <Box mt={1.5}>
             <ChartType
               chartTypes={chartIndexes}

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
-import { Box, Grid, useMediaQuery } from '@material-ui/core';
-import { useTheme } from '@material-ui/core/styles';
+import { Box, Grid } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import { ChainId, Token } from '@uniswap/sdk';
 import {
@@ -28,8 +27,6 @@ import AnalyticsHeader from 'pages/AnalyticsPage/AnalyticsHeader';
 import AnalyticsTokenChart from './AnalyticsTokenChart';
 
 const AnalyticsTokenDetails: React.FC = () => {
-  const { breakpoints } = useTheme();
-  const isMobile = useMediaQuery(breakpoints.down('xs'));
   const history = useHistory();
   const match = useRouteMatch<{ id: string }>();
   const tokenAddress = match.params.id;
@@ -83,17 +80,12 @@ const AnalyticsTokenDetails: React.FC = () => {
       <AnalyticsHeader type='token' data={token} />
       {token ? (
         <>
-          <Box
-            width={1}
-            display='flex'
-            flexWrap='wrap'
-            justifyContent='space-between'
-          >
+          <Box width={1} className='flex flex-wrap justify-between'>
             <Box display='flex'>
               <CurrencyLogo currency={currency} size='32px' />
               <Box ml={1.5}>
-                <Box display='flex' alignItems='center'>
-                  <Box display='flex' alignItems='flex-end' mr={0.5}>
+                <Box className='flex items-center'>
+                  <Box className='flex items-end' mr={0.5}>
                     <p className='heading1'>{token.name} </p>
                     <p className='heading2'>({token.symbol})</p>
                   </Box>
@@ -105,7 +97,7 @@ const AnalyticsTokenDetails: React.FC = () => {
                     <StarUnchecked onClick={() => addBookmarkToken(token.id)} />
                   )}
                 </Box>
-                <Box mt={1.25} display='flex' alignItems='center'>
+                <Box mt={1.25} className='flex items-center'>
                   <h5>${formatNumber(token.priceUSD)}</h5>
                   <Box
                     className={`priceChangeWrapper ${tokenPercentClass}`}
@@ -144,61 +136,34 @@ const AnalyticsTokenDetails: React.FC = () => {
                 <AnalyticsTokenChart token={token} />
               </Grid>
               <Grid item xs={12} sm={12} md={6}>
-                <Box
-                  my={2}
-                  height={1}
-                  display='flex'
-                  flexDirection='column'
-                  alignItems='center'
-                  justifyContent='center'
-                >
-                  <Box
-                    width={isMobile ? 1 : 0.8}
-                    display='flex'
-                    justifyContent='space-between'
-                  >
-                    <Box width={180}>
+                <Box className='analyticsDetailsInfo'>
+                  <Box>
+                    <Box>
                       <span className='text-disabled'>TOTAL LIQUIDITY</span>
-                      <p className={isMobile ? '' : 'h5'}>
-                        ${token.totalLiquidityUSD.toLocaleString()}
-                      </p>
+                      <h5>${token.totalLiquidityUSD.toLocaleString()}</h5>
                     </Box>
-                    <Box width={140}>
+                    <Box textAlign='right'>
                       <span className='text-disabled'>7d Trading Vol</span>
-                      <p className={isMobile ? '' : 'h5'}>
-                        ${token.oneWeekVolumeUSD.toLocaleString()}
-                      </p>
+                      <h5>${token.oneWeekVolumeUSD.toLocaleString()}</h5>
                     </Box>
                   </Box>
-                  <Box
-                    width={isMobile ? 1 : 0.8}
-                    mt={4}
-                    display='flex'
-                    justifyContent='space-between'
-                  >
-                    <Box width={180}>
+                  <Box>
+                    <Box>
                       <span className='text-disabled'>24h Trading Vol</span>
-                      <p className={isMobile ? '' : 'h5'}>
-                        ${token.oneDayVolumeUSD.toLocaleString()}
-                      </p>
+                      <h5>${token.oneDayVolumeUSD.toLocaleString()}</h5>
                     </Box>
-                    <Box width={140}>
+                    <Box textAlign='right'>
                       <span className='text-disabled'>24h FEES</span>
-                      <p className={isMobile ? '' : 'h5'}>
+                      <h5>
                         $
                         {(
                           token.oneDayVolumeUSD * GlobalConst.utils.FEEPERCENT
                         ).toLocaleString()}
-                      </p>
+                      </h5>
                     </Box>
                   </Box>
-                  <Box
-                    width={isMobile ? 1 : 0.8}
-                    mt={4}
-                    display='flex'
-                    justifyContent='space-between'
-                  >
-                    <Box width={180}>
+                  <Box>
+                    <Box>
                       <span className='text-disabled'>Contract Address</span>
                       <h5 className='text-primary'>
                         {chainId ? (

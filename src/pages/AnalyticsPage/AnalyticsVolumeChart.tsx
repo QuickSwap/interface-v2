@@ -164,7 +164,7 @@ const AnalyticsVolumeChart: React.FC = () => {
   return (
     <>
       <Box>
-        <Box display='flex' justifyContent='space-between'>
+        <Box className='flex justify-between'>
           <span className='text-disabled text-bold'>
             VOLUME {selectedVolumeIndex === -1 ? '(24hr)' : ''}
           </span>
@@ -175,15 +175,10 @@ const AnalyticsVolumeChart: React.FC = () => {
             setChartType={setVolumeIndex}
           />
         </Box>
-        <Box
-          mt={0.5}
-          display='flex'
-          alignItems='flex-start'
-          justifyContent='space-between'
-        >
+        <Box mt={0.5} className='flex justify-between'>
           {globalChartData && globalData ? (
             <Box flex={1} mr={2}>
-              <Box display='flex' alignItems='center'>
+              <Box className='flex items-center'>
                 <h5>
                   $
                   {formatCompact(

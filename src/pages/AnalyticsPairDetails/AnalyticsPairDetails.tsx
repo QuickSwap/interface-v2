@@ -130,14 +130,9 @@ const AnalyticsPairDetails: React.FC = () => {
       <AnalyticsHeader type='pair' data={pairData} />
       {pairData ? (
         <>
-          <Box
-            width={1}
-            display='flex'
-            flexWrap='wrap'
-            justifyContent='space-between'
-          >
+          <Box width={1} className='flex flex-wrap justify-between'>
             <Box>
-              <Box display='flex' alignItems='center'>
+              <Box className='flex items-center'>
                 <DoubleCurrencyLogo
                   currency0={currency0}
                   currency1={currency1}
@@ -156,29 +151,14 @@ const AnalyticsPairDetails: React.FC = () => {
                 </Box>
               </Box>
               <Box mt={2} display='flex'>
-                <Box
-                  paddingY={0.75}
-                  paddingX={1.5}
-                  borderRadius={20}
-                  display='flex'
-                  alignItems='center'
-                  className='bg-gray3'
-                >
+                <Box className='analyticsPairRate'>
                   <CurrencyLogo currency={currency0} size='16px' />
                   <small style={{ marginLeft: 6 }}>
                     1 {pairData.token0.symbol} = {token0Rate}{' '}
                     {pairData.token1.symbol}
                   </small>
                 </Box>
-                <Box
-                  padding={0.75}
-                  paddingX={1.5}
-                  ml={2}
-                  borderRadius={20}
-                  display='flex'
-                  alignItems='center'
-                  className='bg-gray3'
-                >
+                <Box ml={1} className='analyticsPairRate'>
                   <CurrencyLogo currency={currency1} size='16px' />
                   <small style={{ marginLeft: 6 }}>
                     1 {pairData.token1.symbol} = {token1Rate}{' '}
@@ -217,18 +197,8 @@ const AnalyticsPairDetails: React.FC = () => {
                 <AnalyticsPairChart pairData={pairData} />
               </Grid>
               <Grid item xs={12} sm={12} md={6}>
-                <Box
-                  my={2}
-                  height={1}
-                  display='flex'
-                  justifyContent='center'
-                  alignItems='center'
-                >
-                  <Box
-                    width={isMobile ? 1 : 0.8}
-                    display='flex'
-                    justifyContent='space-between'
-                  >
+                <Box className='analyticsDetailsInfo'>
+                  <Box>
                     <Box width={212}>
                       <Box>
                         <span className='text-disabled'>
@@ -240,12 +210,8 @@ const AnalyticsPairDetails: React.FC = () => {
                           borderRadius={8}
                           padding={1.5}
                         >
-                          <Box
-                            display='flex'
-                            alignItems='center'
-                            justifyContent='space-between'
-                          >
-                            <Box display='flex' alignItems='center'>
+                          <Box className='flex items-center justify-between'>
+                            <Box className='flex items-center'>
                               <CurrencyLogo currency={currency0} size='16px' />
                               <span style={{ marginLeft: 6 }}>
                                 {pairData.token0.symbol} :
@@ -257,11 +223,9 @@ const AnalyticsPairDetails: React.FC = () => {
                           </Box>
                           <Box
                             mt={1}
-                            display='flex'
-                            alignItems='center'
-                            justifyContent='space-between'
+                            className='flex items-center justify-between'
                           >
-                            <Box display='flex' alignItems='center'>
+                            <Box className='flex items-center'>
                               <CurrencyLogo currency={currency1} size='16px' />
                               <span style={{ marginLeft: 6 }}>
                                 {pairData.token1.symbol} :
@@ -275,30 +239,26 @@ const AnalyticsPairDetails: React.FC = () => {
                       </Box>
                       <Box mt={4}>
                         <span className='text-disabled'>7d Trading Vol</span>
-                        <p className={isMobile ? '' : 'h5'}>
-                          ${pairData.oneWeekVolumeUSD.toLocaleString()}
-                        </p>
+                        <h5>${pairData.oneWeekVolumeUSD.toLocaleString()}</h5>
                       </Box>
                       <Box mt={4}>
                         <span className='text-disabled'>24h FEES</span>
-                        <p className={isMobile ? '' : 'h5'}>${fees}</p>
+                        <h5>${fees}</h5>
                       </Box>
                     </Box>
                     <Box width={140}>
                       <span className='text-disabled'>TOTAL LIQUIDITY</span>
-                      <p className={isMobile ? '' : 'h5'}>
+                      <h5>
                         $
                         {Number(
                           pairData.reserveUSD
                             ? pairData.reserveUSD
                             : pairData.trackedReserveUSD,
                         ).toLocaleString()}
-                      </p>
+                      </h5>
                       <Box mt={4}>
                         <span className='text-disabled'>24h Trading Vol</span>
-                        <p className={isMobile ? '' : 'h5'}>
-                          ${pairData.oneDayVolumeUSD.toLocaleString()}
-                        </p>
+                        <h5>${pairData.oneDayVolumeUSD.toLocaleString()}</h5>
                       </Box>
                       <Box mt={4}>
                         <span className='text-disabled'>Contract Address</span>

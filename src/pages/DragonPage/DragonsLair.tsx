@@ -38,7 +38,7 @@ const DragonsLair: React.FC = () => {
           <span className='text-hint'>Single Stake — Auto compounding</span>
         </Box>
       </Box>
-      <Box display='flex' justifyContent='space-between' mt={1.5}>
+      <Box className='dragonLairRow'>
         <small>Total QUICK</small>
         <small>
           {lairInfo
@@ -48,7 +48,7 @@ const DragonsLair: React.FC = () => {
             : 0}
         </small>
       </Box>
-      <Box display='flex' justifyContent='space-between' mt={1.5}>
+      <Box className='dragonLairRow'>
         <small>TVL:</small>
         <small>
           $
@@ -57,24 +57,15 @@ const DragonsLair: React.FC = () => {
           ).toLocaleString()}
         </small>
       </Box>
-      <Box display='flex' justifyContent='space-between' mt={1.5}>
+      <Box className='dragonLairRow'>
         <small>APY</small>
         <small className='text-success'>{APY}%</small>
       </Box>
-      <Box display='flex' justifyContent='space-between' mt={1.5}>
+      <Box className='dragonLairRow'>
         <small>Your Deposits</small>
         <small>{formatTokenAmount(lairInfo.QUICKBalance)}</small>
       </Box>
-      <Box
-        mt={2.5}
-        width={1}
-        height='40px'
-        display='flex'
-        alignItems='center'
-        justifyContent='center'
-        borderRadius={10}
-        className='border-secondary1'
-      >
+      <Box className='quickTodQuick border-secondary1'>
         <CurrencyLogo currency={returnTokenFromKey('QUICK')} />
         <small style={{ margin: '0 8px' }}>
           {isQUICKRate ? 1 : dQUICKtoQUICK.toLocaleString()} QUICK =

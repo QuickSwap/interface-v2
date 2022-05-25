@@ -64,14 +64,7 @@ const FarmRewards: React.FC<{ farmIndex: number; bulkPairs: any }> = ({
   );
 
   return (
-    <Box
-      display='flex'
-      flexWrap='wrap'
-      my={2}
-      borderRadius={10}
-      py={1.5}
-      className='bg-secondary2'
-    >
+    <Box className='farmRewards'>
       {farmIndex === GlobalConst.farmIndex.LPFARM_INDEX && (
         <>
           <Box

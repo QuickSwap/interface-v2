@@ -132,7 +132,7 @@ const ConvertQUICKPage: React.FC = () => {
   return (
     <Box width='100%' maxWidth={488} id='convertQUICKPage'>
       <h4>{t('convert')} QUICK</h4>
-      <Box className='wrapper'>
+      <Box className='convertQUICKWrapper'>
         <Box className='flex items-center' mb={3}>
           <Box className='iconWrapper'>
             <img src={QUICKIcon} alt='QUICK' />
@@ -245,7 +245,7 @@ const ConvertQUICKPage: React.FC = () => {
             <p className='weight-600'>QUICK(NEW)</p>
           </Box>
         </Box>
-        <Box display='flex' justifyContent='center'>
+        <Box className='flex justify-center'>
           <Button
             disabled={
               approving ||

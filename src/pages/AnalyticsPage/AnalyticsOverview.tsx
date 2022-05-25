@@ -75,14 +75,7 @@ const AnalyticsOverview: React.FC = () => {
           </Box>
         </Grid>
         <Grid item xs={12} sm={12} md={6}>
-          <Box
-            className='panel'
-            width={1}
-            height={1}
-            display='flex'
-            flexDirection='column'
-            justifyContent='space-between'
-          >
+          <Box className='analyticsVolumeChart panel'>
             <AnalyticsVolumeChart />
           </Box>
         </Grid>
@@ -97,7 +90,7 @@ const AnalyticsOverview: React.FC = () => {
         </Box>
       </Box>
       <Box mt={4}>
-        <Box display='flex' justifyContent='space-between' alignItems='center'>
+        <Box className='flex justify-between items-center'>
           <Box className='headingWrapper'>
             <p className='weight-600'>Top Tokens</p>
           </Box>

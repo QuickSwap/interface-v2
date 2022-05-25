@@ -49,13 +49,7 @@ const FarmPage: React.FC = () => {
 
   return (
     <Box width='100%' mb={3} id='farmPage'>
-      <Box
-        display='flex'
-        alignItems='flex-start'
-        justifyContent='space-between'
-        width='100%'
-        mb={2}
-      >
+      <Box className='pageHeading'>
         <Box mr={2}>
           <h4>Farm</h4>
         </Box>

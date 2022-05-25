@@ -37,7 +37,7 @@ const AnalyticsTokens: React.FC = () => {
   return (
     <Box width='100%' mb={3}>
       <TopMovers hideArrow={true} />
-      <Box my={4} px={2} display='flex' flexWrap='wrap' alignItems='center'>
+      <Box my={4} px={2} className='flex flex-wrap items-center'>
         <Box
           className={`tokensFilter ${
             tokensFilter === 0 ? 'text-primary' : 'text-disabled'

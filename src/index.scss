@@ -28,6 +28,13 @@ body {
   }
 }
 
+.pageHeading {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 16px;
+}
+
 .heroBkg {
   position: absolute;
   top: 0;

@@ -11,7 +11,11 @@
   align-items: center;
   padding: 0 16px;
   @include media("screen", "<phone") {
-    padding: 0
+    padding: 0;
+    .dailyRateWrapper {
+      margin: 0 16px 16px;
+      width: calc(100% - 32px);
+    }
   }
 }
 .highlightedCard {
@@ -101,12 +105,11 @@
       margin-right: 0;
     }
   }
-  @include media("screen", "<phone") {
-    margin: 0 16px 16px;
-    width: calc(100% - 32px);
+  @include media("screen", "<phone") {    
     & > div {
       justify-content: space-between;
       margin-bottom: 8px;
+      margin-right: 0;
       width: 100%;
       &:last-child {
         margin-bottom: 0;
@@ -120,7 +123,7 @@
   display: flex;
   flex-wrap: wrap;
   border-top: 1px solid $grey26;
-  align-items: center
+  align-items: center;
 }
 .farmCardMobileRow {
   margin-top: 16px;
