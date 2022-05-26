@@ -23,7 +23,7 @@ const useStyles = makeStyles(({ palette }) => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    margin: '8px 24px 0',
+    margin: '8px 16px 0',
     '& p': {
       color: '#b6b9cc',
     },

@@ -11,7 +11,7 @@ import { formatTokenAmount } from 'utils';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   swapBox: {
-    padding: '16px 24px',
+    padding: 16,
     borderRadius: 10,
     zIndex: 1,
     position: 'relative',
