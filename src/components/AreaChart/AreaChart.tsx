@@ -117,26 +117,11 @@ const AreaChart: React.FC<AreaChartProps> = ({
       theme: dark ? 'dark' : 'light',
       fillSeriesColor: false,
       custom: ({ series, seriesIndex, dataPointIndex }: any) => {
-        return (
-          `<div class="tooltip" style="display: flex; flex-direction: column; box-shadow: none; border-radius: 12px; background: transparent;">` +
-          `<span style="padding: 0.5rem; border: 1px solid ${
-            dark ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.15)'
-          }; border-radius: 12px 12px 0 0; background: ${
-            dark ? 'rgba(0, 0, 0, 0.91)' : 'rgba(255, 255, 255, 0.91)'
-          }; color: ${dark ? '#646464' : '#8D97A0'};">` +
-          moment(dates[dataPointIndex] * 1000).format('MMM DD, YYYY') +
-          '</span>' +
-          `<span style="padding: 0.5rem; border: 1px solid ${
-            dark ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.15)'
-          }; border-top: none; border-radius: 0 0 12px 12px; background: ${
-            dark ? 'rgba(0, 0, 0, 0.91)' : 'rgba(255, 255, 255, 0.91)'
-          }; color: ${dark ? '#646464' : '#8D97A0'};"><b style="color: ${
-            dark ? 'white' : 'rgba(0, 0, 0, 0.91)'
-          };">$` +
-          formatCompact(series[seriesIndex][dataPointIndex]) +
-          '</b></span>' +
-          '</div>'
-        );
+        return `<div class="areaChartTooltip"><small>${moment(
+          dates[dataPointIndex] * 1000,
+        ).format('MMM DD, YYYY')}</small><small><b>$${formatCompact(
+          series[seriesIndex][dataPointIndex],
+        )}</b></small></div>`;
       },
     },
   };

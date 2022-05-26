@@ -17,3 +17,26 @@
     color: $textDisabled;
   }
 }
+
+.areaChartTooltip {
+  display: flex;
+  flex-direction: column;
+  box-shadow: none;
+  border-radius: 12px;
+  background: transparent;
+  & small {
+    padding: 0.5rem;
+    border: 1px solid $divider;
+    background-color: $bgColor;
+    color: $textSecondary;
+    & b {
+      color: $textPrimary;
+    }
+    &:first-child {
+      border-radius: 12px 12px 0 0;
+    }
+    &:last-child {
+      border-radius: 0 0 12px 12px;
+    }
+  }
+}
