@@ -10,7 +10,13 @@ import {
   TradeType,
 } from '@uniswap/sdk';
 import { useMemo } from 'react';
+import { ethers } from 'ethers';
 import { GlobalConst } from 'constants/index';
+const BIPS_BASE = GlobalConst.utils.BIPS_BASE;
+const INITIAL_ALLOWED_SLIPPAGE = GlobalConst.utils.INITIAL_ALLOWED_SLIPPAGE;
+const DEFAULT_DEADLINE_FROM_NOW = GlobalConst.utils.DEFAULT_DEADLINE_FROM_NOW;
+import { ROUTER_ADDRESS, domainType1, GAS_PRICE_LIMIT } from 'constants/index';
+import routerABI from 'constants/abis/meta-router-v2.json';
 import { useTransactionAdder } from 'state/transactions/hooks';
 import {
   calculateGasMargin,
@@ -24,6 +30,9 @@ import { useRouterContract } from './useContract';
 import useTransactionDeadline from './useTransactionDeadline';
 import useENS from './useENS';
 import { Version } from './useToggledVersion';
+import { useBiconomy } from 'context/Biconomy';
+import metaTokens from 'config/biconomy/metaTokens';
+import { fetchGasPrice } from 'utils/prices';
 
 export enum SwapCallbackState {
   INVALID,
@@ -141,10 +150,21 @@ export function useSwapCallback(
   state: SwapCallbackState;
   callback:
     | null
-    | (() => Promise<{ response: TransactionResponse; summary: string }>);
+    | (() => Promise<{
+        response: TransactionResponse;
+        summary: string;
+        isGasless?: boolean;
+      }>);
   error: string | null;
 } {
   const { account, chainId, library } = useActiveWeb3React();
+  const { isGaslessEnabled } = useBiconomy();
+  const gaslessMode = isGaslessEnabled;
+
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const { biconomy, isBiconomyReady } = useBiconomy()!;
+
+  const contractAddress = ROUTER_ADDRESS;
 
   const swapCalls = useSwapCallArguments(
     trade,
@@ -189,6 +209,7 @@ export function useSwapCallback(
       callback: async function onSwap(): Promise<{
         response: TransactionResponse;
         summary: string;
+        isGasless?: boolean;
       }> {
         const estimatedCalls: EstimatedSwapCall[] = await Promise.all(
           swapCalls.map((call) => {
@@ -270,49 +291,190 @@ export function useSwapCallback(
           gasEstimate,
         } = successfulEstimation;
 
-        return contract[methodName](...args, {
-          gasLimit: calculateGasMargin(gasEstimate),
-          ...(value && !isZero(value)
-            ? { value, from: account }
-            : { from: account }),
-        })
-          .then((response: TransactionResponse) => {
-            const inputSymbol = trade.inputAmount.currency.symbol;
-            const outputSymbol = trade.outputAmount.currency.symbol;
-            const inputAmount = formatTokenAmount(trade.inputAmount);
-            const outputAmount = formatTokenAmount(trade.outputAmount);
-
-            const base = `Swap ${inputAmount} ${inputSymbol} for ${outputAmount} ${outputSymbol}`;
-            const withRecipient =
-              recipient === account
-                ? base
-                : `${base} to ${
-                    recipientAddressOrName && isAddress(recipientAddressOrName)
-                      ? shortenAddress(recipientAddressOrName)
-                      : recipientAddressOrName
-                  }`;
-
-            const withVersion =
-              tradeVersion === Version.v2
-                ? withRecipient
-                : `${withRecipient} on ${(tradeVersion as any).toUpperCase()}`;
-
-            addTransaction(response, {
-              summary: withVersion,
-            });
-
-            return { response, summary: withVersion };
+        const fromToken = Object(trade.route.input);
+        let matchingMetaToken;
+        if (fromToken.address) {
+          matchingMetaToken = metaTokens.find(
+            (t) =>
+              t.token.address.toLowerCase() === fromToken.address.toLowerCase(),
+          );
+        }
+        const gasPrice = await fetchGasPrice();
+        const gasPriceInGwei = gasPrice.gasPrice.value;
+        const gasPriceAllowed = gasPriceInGwei > GAS_PRICE_LIMIT ? false : true;
+        if (
+          methodName === 'swapExactETHForTokens' ||
+          methodName === 'swapETHForExactTokens' ||
+          !gaslessMode ||
+          !matchingMetaToken ||
+          !gasPriceAllowed
+        ) {
+          return contract[methodName](...args, {
+            gasLimit: calculateGasMargin(gasEstimate),
+            ...(value && !isZero(value)
+              ? { value, from: account }
+              : { from: account }),
           })
-          .catch((error: any) => {
+            .then((response: TransactionResponse) => {
+              const inputSymbol = trade.inputAmount.currency.symbol;
+              const outputSymbol = trade.outputAmount.currency.symbol;
+              const inputAmount = formatTokenAmount(trade.inputAmount);
+              const outputAmount = formatTokenAmount(trade.outputAmount);
+
+              const base = `Swap ${inputAmount} ${inputSymbol} for ${outputAmount} ${outputSymbol}`;
+              const withRecipient =
+                recipient === account
+                  ? base
+                  : `${base} to ${
+                      recipientAddressOrName &&
+                      isAddress(recipientAddressOrName)
+                        ? shortenAddress(recipientAddressOrName)
+                        : recipientAddressOrName
+                    }`;
+
+              const withVersion =
+                tradeVersion === Version.v2
+                  ? withRecipient
+                  : `${withRecipient} on ${(tradeVersion as any).toUpperCase()}`;
+
+              addTransaction(response, {
+                summary: withVersion,
+              });
+
+              return { response, summary: withVersion };
+            })
+            .catch((error: any) => {
+              // if the user rejected the tx, pass this along
+              if (error?.code === 4001) {
+                throw new Error('Transaction rejected.');
+              } else {
+                // otherwise, the error was unexpected and we need to convey that
+                console.error(`Swap failed`, error, methodName, args, value);
+                throw new Error(`Swap failed: ${error.message}`);
+              }
+            });
+        } else {
+          const biconomyContract = new ethers.Contract(
+            contractAddress,
+            routerABI as any,
+            biconomy.getSignerByAddress(account),
+          );
+
+          const biconomyContractInterface = new ethers.utils.Interface(
+            routerABI,
+          );
+
+          const biconomyNonce = parseInt(
+            await biconomyContract.getNonce(account),
+          );
+
+          const functionSignature = biconomyContractInterface.encodeFunctionData(
+            methodName,
+            args,
+          );
+
+          const message = {
+            nonce: biconomyNonce,
+            functionSignature,
+            from: account,
+          };
+
+          const dataToSign = JSON.stringify({
+            types: {
+              EIP712Domain: domainType1,
+              MetaTransaction: [
+                { name: 'nonce', type: 'uint256' },
+                { name: 'from', type: 'address' },
+                { name: 'functionSignature', type: 'bytes' },
+              ],
+            },
+            domain: {
+              name: 'QUICKSWAP_ROUTER_V2',
+              version: '2',
+              verifyingContract: contractAddress,
+              salt: '0x' + chainId.toString(16).padStart(64, '0'),
+            },
+            primaryType: 'MetaTransaction',
+            message,
+          });
+
+          const signedData = await library.send('eth_signTypedData_v3', [
+            account,
+            dataToSign,
+          ]);
+
+          const { v, r, s } = ethers.utils.splitSignature(signedData);
+
+          let biconomyResponse: any;
+
+          try {
+            const response = await biconomyContract.executeMetaTransaction(
+              account,
+              functionSignature,
+              r,
+              s,
+              v,
+              { from: account, gasLimit: 700000 },
+            );
+            biconomyResponse = response;
+          } catch (e) {
+            const error: any = e;
             // if the user rejected the tx, pass this along
             if (error?.code === 4001) {
               throw new Error('Transaction rejected.');
             } else {
               // otherwise, the error was unexpected and we need to convey that
-              console.error(`Swap failed`, error, methodName, args, value);
-              throw new Error(`Swap failed: ${error.message}`);
+              // Catch grep error response properly for signer and signature mismatch, internal server error etc. any other response than 200
+              console.debug(`Swap failed`, error, methodName, args, value);
+              throw new Error(
+                `Swap failed: Please try again with gasless toggle off.`,
+              );
             }
+          }
+          const inputSymbol = trade.inputAmount.currency.symbol;
+          const outputSymbol = trade.outputAmount.currency.symbol;
+          const inputAmount = trade.inputAmount.toSignificant(3);
+          const outputAmount = trade.outputAmount.toSignificant(3);
+
+          const base = `Swap ${inputAmount} ${inputSymbol} for ${outputAmount} ${outputSymbol}`;
+          const withRecipient =
+            recipient === account
+              ? base
+              : `${base} to ${
+                  recipientAddressOrName && isAddress(recipientAddressOrName)
+                    ? shortenAddress(recipientAddressOrName)
+                    : recipientAddressOrName
+                }`;
+
+          const withVersion =
+            tradeVersion === Version.v2
+              ? withRecipient
+              : `${withRecipient} on ${(tradeVersion as any).toUpperCase()}`;
+
+          if (!biconomyResponse.hash)
+            biconomyResponse.hash = biconomyResponse.transactionHash;
+
+          // Handle the case were necessary data is missing
+          if (!biconomyResponse.hash || !biconomyResponse.wait) {
+            console.error('Unexpected tx response', biconomyResponse);
+            throw new Error(
+              'Unexpected tx response. Please try again with gasless off.',
+            );
+          }
+
+          addTransaction(biconomyResponse, {
+            summary: withVersion,
+            isGasless: true,
           });
+
+          //@notice
+          //it does expect wait
+          return {
+            response: biconomyResponse,
+            summary: withVersion,
+            isGasless: true,
+          };
+        }
       },
       error: null,
     };
@@ -325,5 +487,8 @@ export function useSwapCallback(
     recipientAddressOrName,
     swapCalls,
     addTransaction,
+    gaslessMode,
+    biconomy,
+    contractAddress,
   ]);
 }

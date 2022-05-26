@@ -12,6 +12,10 @@ import {
   GelatoLimitOrdersHistoryPanel,
 } from '@gelatonetwork/limit-orders-react';
 
+import ToggleWithGasPrice from 'components/Biconomy/ToggleWithGasPrice';
+import { useDerivedSwapInfo } from 'state/swap/hooks';
+import { Field } from 'state/swap/actions';
+
 const useStyles = makeStyles(({ palette }) => ({
   swapItem: {
     width: 122,
@@ -65,6 +69,8 @@ const SwapMain: React.FC = () => {
       : undefined,
   );
 
+  const { currencies } = useDerivedSwapInfo();
+
   return (
     <>
       {openSettingsModal && (
@@ -73,6 +79,9 @@ const SwapMain: React.FC = () => {
           onClose={() => setOpenSettingsModal(false)}
         />
       )}
+      <Box display='flex' alignItems='center' height={40} mb={1}>
+        <ToggleWithGasPrice token={currencies[Field.INPUT]} />
+      </Box>
       <Box
         display='flex'
         alignItems='center'

@@ -13,6 +13,9 @@ import { computeSlippageAdjustedAmounts } from 'utils/prices';
 import { calculateGasMargin } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import { useTokenContract } from './useContract';
+import { useBiconomy } from 'context/Biconomy';
+
+import metaTokens from 'config/biconomy/metaTokens';
 
 export enum ApprovalState {
   UNKNOWN,
@@ -26,7 +29,14 @@ export function useApproveCallback(
   amountToApprove?: CurrencyAmount,
   spender?: string,
 ): [ApprovalState, () => Promise<void>] {
-  const { account } = useActiveWeb3React();
+  const { account, chainId, library } = useActiveWeb3React();
+  const gaslessMode = useBiconomy().isGaslessEnabled;
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const { biconomy, isBiconomyReady } = useBiconomy()!;
+
+  if (!chainId) throw new Error('Error');
+  if (!library) throw new Error('Error');
+
   const token =
     amountToApprove instanceof TokenAmount ? amountToApprove.token : undefined;
   const currentAllowance = useTokenAllowance(
@@ -34,6 +44,7 @@ export function useApproveCallback(
     account ?? undefined,
     spender,
   );
+
   const pendingApproval = useHasPendingApproval(token?.address, spender);
 
   // check the current approval status
@@ -79,42 +90,70 @@ export function useApproveCallback(
       return;
     }
 
-    let useExact = false;
-    const estimatedGas = await tokenContract.estimateGas
-      .approve(spender, MaxUint256)
-      .catch(() => {
-        // general fallback for tokens who restrict approval amounts
-        useExact = true;
-        return tokenContract.estimateGas.approve(
-          spender,
-          amountToApprove.raw.toString(),
-        );
-      });
+    const matchingMetaToken = metaTokens.find(
+      (t) => t.token.address.toLowerCase() === token.address.toLowerCase(),
+    );
 
-    return tokenContract
-      .approve(
-        spender,
-        useExact ? amountToApprove.raw.toString() : MaxUint256,
-        {
-          gasLimit: calculateGasMargin(estimatedGas),
-        },
-      )
-      .then(async (response: TransactionResponse) => {
-        addTransaction(response, {
-          summary: 'Approve ' + amountToApprove.currency.symbol,
-          approval: { tokenAddress: token.address, spender: spender },
+    if (gaslessMode && matchingMetaToken) {
+      if (!account) throw new Error('Account not found, user not logged in?');
+      matchingMetaToken.init(library, biconomy, account);
+      if (!matchingMetaToken.approve)
+        throw new Error('Gasless not working, try normally');
+
+      return matchingMetaToken
+        .approve(spender, chainId)
+        .then((response: TransactionResponse) => {
+          //TODO
+          //Validate response for any biconomy related errors. code != 200
+          addTransaction(response, {
+            summary: 'Approve ' + amountToApprove.currency.symbol,
+            approval: { tokenAddress: token.address, spender: spender },
+          });
+        })
+        .catch((error: Error) => {
+          //TODO
+          //Grep the catched error and bubble up error message to the point. recommend to turn off gasless toggle and retry.
+          console.debug('Failed to approve token', error);
+          throw error;
         });
-        try {
-          await response.wait();
-        } catch (e) {
-          console.debug('Failed to approve token', e);
-          throw e;
-        }
-      })
-      .catch((error: Error) => {
-        console.debug('Failed to approve token', error);
-        throw error;
-      });
+    } else {
+      let useExact = false;
+      const estimatedGas = await tokenContract.estimateGas
+        .approve(spender, MaxUint256)
+        .catch(() => {
+          // general fallback for tokens who restrict approval amounts
+          useExact = true;
+          return tokenContract.estimateGas.approve(
+            spender,
+            amountToApprove.raw.toString(),
+          );
+        });
+
+      return tokenContract
+        .approve(
+          spender,
+          useExact ? amountToApprove.raw.toString() : MaxUint256,
+          {
+            gasLimit: calculateGasMargin(estimatedGas),
+          },
+        )
+        .then(async (response: TransactionResponse) => {
+          addTransaction(response, {
+            summary: 'Approve ' + amountToApprove.currency.symbol,
+            approval: { tokenAddress: token.address, spender: spender },
+          });
+          try {
+            await response.wait();
+          } catch (e) {
+            console.debug('Failed to approve token', e);
+            throw e;
+          }
+        })
+        .catch((error: Error) => {
+          console.debug('Failed to approve token', error);
+          throw error;
+        });
+    }
   }, [
     approvalState,
     token,
@@ -122,6 +161,11 @@ export function useApproveCallback(
     amountToApprove,
     spender,
     addTransaction,
+    chainId,
+    gaslessMode,
+    library,
+    account,
+    biconomy,
   ]);
 
   return [approvalState, approve];

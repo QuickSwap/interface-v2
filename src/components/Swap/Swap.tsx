@@ -42,6 +42,9 @@ import {
 import { computeTradePriceBreakdown, warningSeverity } from 'utils/prices';
 import { ReactComponent as PriceExchangeIcon } from 'assets/images/PriceExchangeIcon.svg';
 import { ReactComponent as ExchangeIcon } from 'assets/images/ExchangeIcon.svg';
+import { ReactComponent as EditIcon } from 'assets/images/EditIcon.svg';
+import { useBiconomy } from 'context/Biconomy';
+import { isGaslessEnabledForToken } from 'config/biconomy/metaTokens/utils';
 
 const useStyles = makeStyles(({ palette }) => ({
   exchangeSwap: {
@@ -144,6 +147,8 @@ const Swap: React.FC<{
     typedValue,
   );
   const allTokens = useAllTokens();
+
+  const { isGaslessEnabled, isGaslessAllowed } = useBiconomy();
 
   const showWrap: boolean = wrapType !== WrapType.NOT_APPLICABLE;
   const tradesByVersion = {
@@ -331,6 +336,7 @@ const Swap: React.FC<{
       swapErrorMessage,
       attemptingTxn,
       txHash,
+      isGasless,
     },
     setSwapState,
   ] = useState<{
@@ -340,6 +346,7 @@ const Swap: React.FC<{
     attemptingTxn: boolean;
     swapErrorMessage: string | undefined;
     txHash: string | undefined;
+    isGasless?: boolean;
   }>({
     showConfirm: false,
     txPending: false,
@@ -445,15 +452,20 @@ const Swap: React.FC<{
     if (!swapCallback) {
       return;
     }
+
     setSwapState({
       attemptingTxn: true,
       tradeToConfirm,
       showConfirm,
       swapErrorMessage: undefined,
       txHash: undefined,
+      isGasless:
+        isGaslessEnabled &&
+        isGaslessAllowed &&
+        isGaslessEnabledForToken(Object(trade?.route.input)),
     });
     swapCallback()
-      .then(async ({ response, summary }) => {
+      .then(async ({ response, summary, isGasless }) => {
         setSwapState({
           attemptingTxn: false,
           txPending: true,
@@ -461,6 +473,7 @@ const Swap: React.FC<{
           showConfirm,
           swapErrorMessage: undefined,
           txHash: response.hash,
+          isGasless: !!isGasless,
         });
 
         try {
@@ -475,6 +488,7 @@ const Swap: React.FC<{
             showConfirm,
             swapErrorMessage: undefined,
             txHash: response.hash,
+            isGasless: !!isGasless,
           });
           ReactGA.event({
             category: 'Swap',
@@ -518,12 +532,15 @@ const Swap: React.FC<{
     swapCallback,
     finalizedTransaction,
     trade,
+    isGaslessAllowed,
+    isGaslessEnabled,
   ]);
 
   return (
     <Box>
       {showConfirm && (
         <ConfirmSwapModal
+          isGasless={isGasless}
           isOpen={showConfirm}
           trade={trade}
           originalTrade={tradeToConfirm}

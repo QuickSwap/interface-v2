@@ -39,6 +39,7 @@ interface ConfirmSwapModalProps {
   onConfirm: () => void;
   swapErrorMessage: string | undefined;
   onDismiss: () => void;
+  isGasless?: boolean;
 }
 
 const ConfirmSwapModal: React.FC<ConfirmSwapModalProps> = ({
@@ -50,6 +51,7 @@ const ConfirmSwapModal: React.FC<ConfirmSwapModalProps> = ({
   onDismiss,
   swapErrorMessage,
   isOpen,
+  isGasless,
   attemptingTxn,
   txHash,
   txPending,
@@ -103,6 +105,7 @@ const ConfirmSwapModal: React.FC<ConfirmSwapModalProps> = ({
   return (
     <TransactionConfirmationModal
       isOpen={isOpen}
+      isGasless={isGasless}
       onDismiss={onDismiss}
       attemptingTxn={attemptingTxn}
       hash={txHash}

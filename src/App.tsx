@@ -46,6 +46,8 @@ import 'slick-carousel/slick/slick-theme.css';
 import './i18n';
 import './App.css';
 import { mainTheme } from './theme';
+import { BiconomyProvider } from 'context/Biconomy';
+import { GasPriceProvider } from 'context/GasPrice';
 import Background from 'layouts/Background';
 
 const Web3ProviderNetwork = createWeb3ReactRoot(
@@ -61,12 +63,16 @@ const ThemeProvider: React.FC = ({ children }) => {
 const Providers: React.FC = ({ children }) => {
   return (
     <div>
-      <Suspense fallback={<Background fallback={true} />}>
-        <ThemeProvider>
-          <CssBaseline />
-          {children}
-        </ThemeProvider>
-      </Suspense>
+      <GasPriceProvider>
+        <BiconomyProvider>
+          <Suspense fallback={<Background fallback={true} />}>
+            <ThemeProvider>
+              <CssBaseline />
+              {children}
+            </ThemeProvider>
+          </Suspense>
+        </BiconomyProvider>
+      </GasPriceProvider>
     </div>
   );
 };

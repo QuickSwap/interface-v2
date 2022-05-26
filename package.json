@@ -4,6 +4,7 @@
   "private": true,
   "devDependencies": {
     "@arkane-network/web3-arkane-provider": "^0.23.0",
+    "@biconomy/mexa": "2.0.32",
     "@ethersproject/experimental": "^5.4.0",
     "@gelatonetwork/limit-orders-react": "^2.4.0",
     "@gnosis.pm/safe-apps-sdk": "^4.0.0",
@@ -48,6 +49,7 @@
     "apollo-link-http": "^1.5.17",
     "cids": "^1.1.9",
     "copy-to-clipboard": "^3.2.0",
+    "cross-fetch": "^3.1.4",
     "cypress": "^7.7.0",
     "eslint": "^7.11.0",
     "eslint-config-prettier": "^6.11.0",
@@ -110,7 +112,9 @@
     "async": "^3.2.2",
     "moment": "^2.29.2",
     "ejs": "^3.1.7",
-    "cross-fetch": "^3.1.5"
+    "cross-fetch": "^3.1.5",
+    "@types/react": "17.0.2",
+    "@types/react-dom": "17.0.2"
   },
   "scripts": {
     "analyze": "source-map-explorer 'build/static/js/*.js'",

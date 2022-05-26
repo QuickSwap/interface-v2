@@ -9,6 +9,7 @@ import {
 } from '@uniswap/sdk';
 import { Field } from 'state/swap/actions';
 import { basisPointsToPercent } from 'utils';
+import fetch from 'cross-fetch';
 
 const BASE_FEE = new Percent(JSBI.BigInt(30), JSBI.BigInt(10000));
 const ONE_HUNDRED_PERCENT = new Percent(JSBI.BigInt(10000), JSBI.BigInt(10000));
@@ -73,6 +74,12 @@ export function computeSlippageAdjustedAmounts(
     [Field.INPUT]: trade?.maximumAmountIn(pct),
     [Field.OUTPUT]: trade?.minimumAmountOut(pct),
   };
+}
+
+export async function fetchGasPrice() {
+  const gasPriceAPI = 'https://api.biconomy.io/api/v1/gas-price?networkId=137';
+  const response = await fetch(gasPriceAPI);
+  return response.json();
 }
 
 export function warningSeverity(

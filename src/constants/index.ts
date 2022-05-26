@@ -8,6 +8,11 @@ import {
   arkaneconnect,
   safeApp,
 } from '../connectors';
+import { getAddress } from '@ethersproject/address';
+import usdcABI from './abis/usdc.json';
+import tokenABI from './abis/meta_token.json';
+import quickABI from './abis/quick.json';
+import sandABI from './abis/sand.json';
 import MetamaskIcon from 'assets/images/metamask.png';
 import BlockWalletIcon from 'assets/images/blockwalletIcon.svg';
 import BitKeepIcon from 'assets/images/bitkeep.png';
@@ -45,6 +50,7 @@ export const GlobalConst = {
   },
   addresses: {
     ROUTER_ADDRESS: {
+      // Gasless Router : 0x0bc5c796E14f0AfF59DD6aE0995906c74fF8B2dF
       [ChainId.MATIC]: '0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff',
       [ChainId.MUMBAI]: '0x8954AfA98594b838bda56FE4C12a09D7739D179b',
     }, //'0x6207A65a8bbc87dD02C3109D2c74a6bCE4af1C8c';//
@@ -189,6 +195,16 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   },
 };
 
+export const ROUTER_ADDRESS = '0x0bc5c796E14f0AfF59DD6aE0995906c74fF8B2dF';
+
+export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
+
+export const LAIR_ADDRESS = '0xf28164a485b0b2c90639e47b0f377b4a438a16b1';
+
+export const QUICK_ADDRESS = '0x831753DD7087CaC61aB5644b308642cc1c33Dc13';
+
+export const FACTORY_ADDRESS = '0x5757371414417b8C6CAad45bAeF941aBc7d3Ab32';
+
 export const GlobalData = {
   bases: {
     // used to construct intermediary pairs for trading
@@ -310,6 +326,8 @@ export const GlobalValue = {
   },
 };
 
+export const GAS_PRICE_LIMIT = process.env.REACT_APP_GAS_PRICE_LIMIT || 50;
+
 // a list of tokens by chain
 type ChainTokenList = {
   readonly [chainId in ChainId]: Token[];
@@ -326,3 +344,40 @@ export interface WalletInfo {
   mobile?: true;
   mobileOnly?: true;
 }
+
+// Gasless transactions config
+export const biconomyAPIKey = '7qR2ozzGj.00e22c66-5fff-4027-a096-090da330720c';
+
+export const EIP712_SUPPORTED_TOKENS_DOMAIN_TYPE1: any = {
+  '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619': { abi: tokenABI }, //WETH
+  '0x2791bca1f2de4661ed88a30c99a7a9449aa84174': { abi: usdcABI }, //USDC
+  '0xc2132d05d31c914a87c6611c10748aeb04b58e8f': { abi: tokenABI }, //USDT
+  '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6': { abi: tokenABI }, //WBTC
+  '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063': { abi: tokenABI }, //DAI
+};
+
+export const EIP712_SUPPORTED_TOKENS_DOMAIN_TYPE2: any = {
+  '0xc6c855ad634dcdad23e64da71ba85b8c51e5ad7c': { abi: tokenABI }, //ICE // ICE should be discarded from gasless support altogether
+};
+
+export const PERMIT_ONLY_SUPPORTED_TOKENS: any = {
+  '0x831753dd7087cac61ab5644b308642cc1c33dc13': { abi: quickABI }, //QUICK
+};
+
+export const EIP2771_SUPPORTED_TOKENS: any = {
+  '0xbbba073c31bf03b8acf7c28ef0738decf3695683': { abi: sandABI }, //SAND
+};
+
+export const domainType1 = [
+  { name: 'name', type: 'string' },
+  { name: 'version', type: 'string' },
+  { name: 'verifyingContract', type: 'address' },
+  { name: 'salt', type: 'bytes32' },
+];
+
+export const domainType2 = [
+  { name: 'name', type: 'string' },
+  { name: 'version', type: 'string' },
+  { name: 'chainId', type: 'uint256' },
+  { name: 'verifyingContract', type: 'address' },
+];
