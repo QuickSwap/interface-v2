@@ -509,7 +509,11 @@ const LendDetailPage: React.FC = () => {
                                     .div(
                                       sdk.web3.utils
                                         .toBN(10)
-                                        .pow(asset.underlyingDecimals),
+                                        .pow(
+                                          sdk.web3.utils.toBN(
+                                            asset.underlyingDecimals.toString(),
+                                          ),
+                                        ),
                                     )
                                     .toNumber()
                                 : '?'}{' '}
@@ -691,7 +695,11 @@ const LendDetailPage: React.FC = () => {
                                       .div(
                                         sdk.web3.utils
                                           .toBN(10)
-                                          .pow(asset.underlyingDecimals),
+                                          .pow(
+                                            sdk.web3.utils.toBN(
+                                              asset.underlyingDecimals.toString(),
+                                            ),
+                                          ),
                                       )
                                       .toNumber()
                                   : '?'}{' '}
@@ -728,7 +736,11 @@ const LendDetailPage: React.FC = () => {
                                       .div(
                                         sdk.web3.utils
                                           .toBN(10)
-                                          .pow(asset.underlyingDecimals),
+                                          .pow(
+                                            sdk.web3.utils.toBN(
+                                              asset.underlyingDecimals.toString(),
+                                            ),
+                                          ),
                                       )
                                       .toNumber()
                                   : '?'}{' '}

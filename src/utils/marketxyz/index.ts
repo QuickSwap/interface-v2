@@ -153,7 +153,8 @@ export const repayBorrow = async (
     Number(amount * 10 ** asset.underlyingDecimals.toNumber()).toFixed(0),
   );
 
-  const isRepayingMax = amountBN.eq(asset.borrowBalance) && !isETH;
+  const isRepayingMax =
+    amountBN.eq(sdk.web3.utils.toBN(asset.borrowBalance.toString())) && !isETH;
 
   const max = sdk.web3.utils
     .toBN(2)
