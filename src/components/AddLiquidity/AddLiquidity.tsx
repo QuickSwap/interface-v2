@@ -465,18 +465,19 @@ const AddLiquidity: React.FC<{
             </Box>
           </Box>
         )}
-      <Box className='swapButtonWrapper'>
+      <Box className='swapButtonWrapper flex-wrap'>
         {(approvalA === ApprovalState.NOT_APPROVED ||
           approvalA === ApprovalState.PENDING ||
           approvalB === ApprovalState.NOT_APPROVED ||
           approvalB === ApprovalState.PENDING) &&
           !error && (
-            <Box className='flex justify-between' mb={2}>
+            <Box className='flex fullWidth justify-between' mb={2}>
               {approvalA !== ApprovalState.APPROVED && (
                 <Box
                   width={approvalB !== ApprovalState.APPROVED ? '48%' : '100%'}
                 >
                   <Button
+                    fullWidth
                     onClick={async () => {
                       setApprovingA(true);
                       try {
@@ -503,6 +504,7 @@ const AddLiquidity: React.FC<{
                   width={approvalA !== ApprovalState.APPROVED ? '48%' : '100%'}
                 >
                   <Button
+                    fullWidth
                     onClick={async () => {
                       setApprovingB(true);
                       try {
