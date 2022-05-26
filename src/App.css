@@ -1,3 +1,15 @@
+::-webkit-scrollbar {
+  background: #232734;
+  width: 15px;
+  height: 15px;
+}
+::-webkit-scrollbar-thumb {
+  background: #000;
+  border: 3px solid transparent;
+  border-radius: 300px;
+  -webkit-background-clip: content-box;
+}
+
 .App {
   text-align: center;
 }

@@ -9,11 +9,9 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
     height: 40,
     border: `1px solid ${palette.secondary.dark}`,
     borderRadius: 10,
-    minWidth: 300,
     display: 'flex',
     alignItems: 'center',
     padding: '0 10px',
-    width: '100%',
     '& input': {
       background: 'transparent',
       border: 'none',
@@ -42,12 +40,14 @@ interface SearchInputProps {
   placeholder: string;
   value: string;
   setValue: (val: string) => void;
+  [index: string]: any;
 }
 
 const SearchInput: React.FC<SearchInputProps> = ({
   placeholder,
   value,
   setValue,
+  ...props
 }) => {
   const classes = useStyles();
   const [searchFocused, setSearchFocused] = useState(false);
@@ -57,6 +57,7 @@ const SearchInput: React.FC<SearchInputProps> = ({
         classes.searchInput,
         searchFocused && classes.focusedSearchInput,
       )}
+      {...props}
     >
       <SearchIcon />
       <input
