@@ -9,6 +9,7 @@ import {
 } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { Swap, AddLiquidity } from 'components';
+import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   swapContainer: {
@@ -122,6 +123,7 @@ export const SwapSection: React.FC = () => {
   const { palette, breakpoints } = useTheme();
   const mobileWindowSize = useMediaQuery(breakpoints.down('sm'));
   const [tabIndex, setTabIndex] = useState(SWAP_TAB);
+  const { t } = useTranslation();
 
   return (
     <>
@@ -131,13 +133,13 @@ export const SwapSection: React.FC = () => {
             className={tabIndex === SWAP_TAB ? 'active' : ''}
             onClick={() => setTabIndex(SWAP_TAB)}
           >
-            Swap
+            {t('swap')}
           </Button>
           <Button
             className={tabIndex === LIQUIDITY_TAB ? 'active' : ''}
             onClick={() => setTabIndex(LIQUIDITY_TAB)}
           >
-            Liquidity
+            {t('liquidity')}
           </Button>
         </ButtonGroup>
       </Box>
@@ -153,13 +155,13 @@ export const SwapSection: React.FC = () => {
           <Grid item sm={12} md={6} className={classes.swapInfo}>
             <Typography variant='h4'>
               {tabIndex === SWAP_TAB
-                ? 'Swap tokens at near-zero gas fees'
-                : 'Let your crypto work for you'}
+                ? t('swapSectionShortDesc')
+                : t('liquiditySectionShortDesc')}
             </Typography>
             <Typography variant='body1' style={{ marginTop: '20px' }}>
               {tabIndex === SWAP_TAB
-                ? 'Deposit your Liquidity Provider tokens to receive Rewards in $QUICK on top of LP Fees.'
-                : 'Provide Liquidity and earn 0.25% fee on all trades proportional to your share of the pool. Earn additional rewards by depositing your LP Tokens in Rewards Pools.'}
+                ? t('swapSectionLongDesc')
+                : t('liquiditySectionLongDesc')}
             </Typography>
           </Grid>
         </Grid>

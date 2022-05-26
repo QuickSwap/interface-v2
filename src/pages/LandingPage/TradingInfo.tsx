@@ -5,6 +5,7 @@ import { Skeleton } from '@material-ui/lab';
 import { StakeQuickModal } from 'components';
 import { useLairInfo, useTotalRewardsDistributed } from 'state/stake/hooks';
 import { formatCompact, useLairDQUICKAPY } from 'utils';
+import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   tradingSection: {
@@ -47,6 +48,7 @@ export const TradingInfo: React.FC<{ globalData: any }> = ({ globalData }) => {
   const dQUICKAPY = useLairDQUICKAPY(lairInfo);
 
   const totalRewardsUSD = useTotalRewardsDistributed();
+  const { t } = useTranslation();
 
   return (
     <>
@@ -64,7 +66,7 @@ export const TradingInfo: React.FC<{ globalData: any }> = ({ globalData }) => {
         ) : (
           <Skeleton variant='rect' width={100} height={45} />
         )}
-        <Typography>24H TRANSACTIONS</Typography>
+        <Typography>{t('24hTxs')}</Typography>
       </Box>
       <Box className={classes.tradingSection}>
         {globalData ? (
@@ -77,7 +79,7 @@ export const TradingInfo: React.FC<{ globalData: any }> = ({ globalData }) => {
         ) : (
           <Skeleton variant='rect' width={100} height={45} />
         )}
-        <Typography>24H TRADING VOLUME</Typography>
+        <Typography>{t('24hTradingVol')}</Typography>
       </Box>
       <Box className={classes.tradingSection}>
         {totalRewardsUSD ? (
@@ -90,7 +92,7 @@ export const TradingInfo: React.FC<{ globalData: any }> = ({ globalData }) => {
         ) : (
           <Skeleton variant='rect' width={100} height={45} />
         )}
-        <Typography>24h REWARDS DISTRIBUTED</Typography>
+        <Typography>{t('24hRewardsDistributed')}</Typography>
       </Box>
       <Box className={classes.tradingSection}>
         {globalData ? (
@@ -102,7 +104,7 @@ export const TradingInfo: React.FC<{ globalData: any }> = ({ globalData }) => {
         ) : (
           <Skeleton variant='rect' width={100} height={45} />
         )}
-        <Typography>TOTAL TRADING PAIRS</Typography>
+        <Typography>{t('totalTradingPairs')}</Typography>
       </Box>
       <Box className={classes.tradingSection} pt='20px'>
         {dQUICKAPY ? (
@@ -110,9 +112,9 @@ export const TradingInfo: React.FC<{ globalData: any }> = ({ globalData }) => {
         ) : (
           <Skeleton variant='rect' width={100} height={45} />
         )}
-        <Typography>dQUICK APY</Typography>
+        <Typography>dQUICK {t('apy')}</Typography>
         <Typography variant='h4' onClick={() => setOpenStakeModal(true)}>
-          stake {'>'}
+          {t('stake')} {'>'}
         </Typography>
       </Box>
     </>
