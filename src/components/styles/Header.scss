@@ -199,3 +199,24 @@
     }
   }
 }
+
+.headerIconWrapper {
+  width: 45px;
+  height: 36px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 8px;
+}
+
+.styledPollingDot {
+  width: 15px;
+  height: 15px;
+  min-height: 8px;
+  min-width: 8px;
+  margin-left: 0rem;
+  margin-top: 0px;
+  border-radius: 50%;
+  position: relative;
+  background-color: $successMain;
+}

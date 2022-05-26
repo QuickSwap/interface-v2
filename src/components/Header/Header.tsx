@@ -201,12 +201,8 @@ const Header: React.FC = () => {
         </Box>
       )}
       <Box>
-        <Box
-          width={36}
-          height={36}
-          className='flex items-center justify-center'
-          mr={1}
-        >
+        <Box className='headerIconWrapper'>
+          <Box className='styledPollingDot' />
           <LightIcon />
         </Box>
         {account && (!ethereum || isSupportedNetwork(ethereum)) ? (
