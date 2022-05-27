@@ -10,6 +10,7 @@ import {
   TableCell,
   Switch,
 } from '@material-ui/core';
+import { Skeleton } from '@material-ui/lab';
 
 import { CustomSelect, SmOption } from 'components/CustomSelect';
 import ReactApexChart from 'react-apexcharts';
@@ -176,9 +177,13 @@ const LendDetailPage: React.FC = () => {
             <Box color={'#696c80'} fontSize={'14px'}>
               Total Supply
             </Box>
-            <Box fontSize={'24px'} color={'white'}>
-              {poolData && midUsdFormatter(poolData.totalSuppliedUSD)}
-            </Box>
+            {poolData?.totalSuppliedUSD ? (
+              <Box fontSize={'24px'} color={'white'}>
+                {poolData && midUsdFormatter(poolData.totalSuppliedUSD)}
+              </Box>
+            ) : (
+              <Skeleton variant='rect' height={40} />
+            )}
           </Box>
           <Box
             flex={'1'}
@@ -190,9 +195,13 @@ const LendDetailPage: React.FC = () => {
             <Box color={'#696c80'} fontSize={'14px'}>
               Total Borrowed
             </Box>
-            <Box fontSize={'24px'} color={'white'}>
-              {poolData && midUsdFormatter(poolData.totalBorrowedUSD)}
-            </Box>
+            {poolData?.totalBorrowedUSD ? (
+              <Box fontSize={'24px'} color={'white'}>
+                {poolData && midUsdFormatter(poolData.totalBorrowedUSD)}
+              </Box>
+            ) : (
+              <Skeleton variant='rect' height={40} />
+            )}
           </Box>
           <Box
             flex={'1'}
@@ -204,9 +213,13 @@ const LendDetailPage: React.FC = () => {
             <Box color={'#696c80'} fontSize={'14px'}>
               Liquidity
             </Box>
-            <Box fontSize={'24px'} color={'white'}>
-              {poolData && midUsdFormatter(poolData.totalLiquidityUSD)}
-            </Box>
+            {poolData?.totalLiquidityUSD ? (
+              <Box fontSize={'24px'} color={'white'}>
+                {poolData && midUsdFormatter(poolData.totalLiquidityUSD)}
+              </Box>
+            ) : (
+              <Skeleton variant='rect' height={40} />
+            )}
           </Box>
           <Box
             flex={'1'}
@@ -218,9 +231,13 @@ const LendDetailPage: React.FC = () => {
             <Box color={'#696c80'} fontSize={'14px'}>
               Pool Utilization
             </Box>
-            <Box fontSize={'24px'} color={'white'}>
-              {poolData && midUsdFormatter(poolData.totalBorrowBalanceUSD)}
-            </Box>
+            {poolData?.totalBorrowBalanceUSD ? (
+              <Box fontSize={'24px'} color={'white'}>
+                {poolData && midUsdFormatter(poolData.totalBorrowBalanceUSD)}
+              </Box>
+            ) : (
+              <Skeleton variant='rect' height={40} />
+            )}
           </Box>
         </Box>
         <Box
@@ -311,9 +328,15 @@ const LendDetailPage: React.FC = () => {
                 height={'100%'}
               />
             </Box>
-            <Box sx={{ order: { xs: 3, sm: 3, md: 3 } }}>
-              {borrowLimit ? midUsdFormatter(borrowLimit) : '?'}
-            </Box>
+            {borrowLimit ? (
+              <Box sx={{ order: { xs: 3, sm: 3, md: 3 } }}>
+                {midUsdFormatter(borrowLimit)}
+              </Box>
+            ) : (
+              <Box sx={{ order: { xs: 3, sm: 3, md: 3 } }}>
+                <Skeleton variant='rect' width={60} height={20} />
+              </Box>
+            )}
           </Box>
         </Box>
         <Box
@@ -349,11 +372,13 @@ const LendDetailPage: React.FC = () => {
               </Box>
               <Box mr={'30px'} display={'flex'} fontSize={'14px'}>
                 <Box color={'#c7cad9'}>Your Supply Balance:&nbsp;</Box>
-                <Box color={'white'}>
-                  {poolData
-                    ? midUsdFormatter(poolData.totalSupplyBalanceUSD)
-                    : '?'}
-                </Box>
+                {poolData ? (
+                  <Box color={'white'}>
+                    {midUsdFormatter(poolData.totalSupplyBalanceUSD)}
+                  </Box>
+                ) : (
+                  <Skeleton variant='rect' width={40} height={23} />
+                )}
               </Box>
             </Box>
             <Box display={'flex'} paddingX={'24px'}>
@@ -573,11 +598,13 @@ const LendDetailPage: React.FC = () => {
               </Box>
               <Box mr={'30px'} display={'flex'} fontSize={'14px'}>
                 <Box color={'#c7cad9'}>Your Borrow Balance:&nbsp;</Box>
-                <Box color={'white'}>
-                  {poolData
-                    ? midUsdFormatter(poolData.totalBorrowBalanceUSD)
-                    : '?'}
-                </Box>
+                {poolData ? (
+                  <Box color={'white'}>
+                    {midUsdFormatter(poolData.totalBorrowBalanceUSD)}
+                  </Box>
+                ) : (
+                  <Skeleton variant='rect' width={40} height={23} />
+                )}
               </Box>
             </Box>
             <Box display={'flex'} paddingX={'24px'}>
@@ -806,11 +833,17 @@ const LendDetailPage: React.FC = () => {
                     <Box fontSize={'14px'} fontWeight={'500'} color={'#c7cad9'}>
                       Total Supplied:
                     </Box>
-                    <Box fontSize={'14px'} fontWeight={'500'} color={'#ebecf2'}>
-                      {poolData
-                        ? midUsdFormatter(poolData.totalSuppliedUSD)
-                        : '?'}
-                    </Box>
+                    {poolData ? (
+                      <Box
+                        fontSize={'14px'}
+                        fontWeight={'500'}
+                        color={'#ebecf2'}
+                      >
+                        {midUsdFormatter(poolData.totalSuppliedUSD)}
+                      </Box>
+                    ) : (
+                      <Skeleton variant='rect' width={40} height={23} />
+                    )}
                   </Box>
                 </Box>
                 <Box flex={1}>
@@ -831,11 +864,17 @@ const LendDetailPage: React.FC = () => {
                     <Box fontSize={'14px'} fontWeight={'500'} color={'#c7cad9'}>
                       Total Borrowed:
                     </Box>
-                    <Box fontSize={'14px'} fontWeight={'500'} color={'#ebecf2'}>
-                      {poolData
-                        ? midUsdFormatter(poolData.totalBorrowedUSD)
-                        : '?'}
-                    </Box>
+                    {poolData ? (
+                      <Box
+                        fontSize={'14px'}
+                        fontWeight={'500'}
+                        color={'#ebecf2'}
+                      >
+                        {midUsdFormatter(poolData.totalBorrowedUSD)}
+                      </Box>
+                    ) : (
+                      <Skeleton variant='rect' width={40} height={23} />
+                    )}
                   </Box>
                 </Box>
               </Box>
@@ -864,11 +903,17 @@ const LendDetailPage: React.FC = () => {
                     <Box fontSize={'14px'} fontWeight={'500'} color={'#c7cad9'}>
                       Available Liquidity:
                     </Box>
-                    <Box fontSize={'14px'} fontWeight={'500'} color={'#ebecf2'}>
-                      {poolData
-                        ? midUsdFormatter(poolData.totalLiquidityUSD)
-                        : '?'}
-                    </Box>
+                    {poolData ? (
+                      <Box
+                        fontSize={'14px'}
+                        fontWeight={'500'}
+                        color={'#ebecf2'}
+                      >
+                        {midUsdFormatter(poolData.totalLiquidityUSD)}
+                      </Box>
+                    ) : (
+                      <Skeleton variant='rect' width={40} height={23} />
+                    )}
                   </Box>
                 </Box>
                 <Box flex={1}>
@@ -889,17 +934,23 @@ const LendDetailPage: React.FC = () => {
                     <Box fontSize={'14px'} fontWeight={'500'} color={'#c7cad9'}>
                       Pool Utilization:
                     </Box>
-                    <Box fontSize={'14px'} fontWeight={'500'} color={'#ebecf2'}>
-                      {poolData
-                        ? poolData.totalSuppliedUSD.toString() === '0'
+                    {poolData ? (
+                      <Box
+                        fontSize={'14px'}
+                        fontWeight={'500'}
+                        color={'#ebecf2'}
+                      >
+                        {poolData.totalSuppliedUSD.toString() === '0'
                           ? '0%'
                           : (
                               (poolData.totalBorrowedUSD /
                                 poolData.totalSuppliedUSD) *
                               100
-                            ).toFixed(2) + '%'
-                        : '?'}
-                    </Box>
+                            ).toFixed(2) + '%'}
+                      </Box>
+                    ) : (
+                      <Skeleton variant='rect' width={40} height={23} />
+                    )}
                   </Box>
                 </Box>
               </Box>
@@ -928,13 +979,17 @@ const LendDetailPage: React.FC = () => {
                     <Box fontSize={'14px'} fontWeight={'500'} color={'#c7cad9'}>
                       Upgradeable:
                     </Box>
-                    <Box fontSize={'14px'} fontWeight={'500'} color={'#ebecf2'}>
-                      {extraPoolData
-                        ? extraPoolData.upgradeable
-                          ? 'Yes'
-                          : 'No'
-                        : '?'}
-                    </Box>
+                    {extraPoolData ? (
+                      <Box
+                        fontSize={'14px'}
+                        fontWeight={'500'}
+                        color={'#ebecf2'}
+                      >
+                        {extraPoolData.upgradeable ? 'Yes' : 'No'}
+                      </Box>
+                    ) : (
+                      <Skeleton variant='rect' width={40} height={23} />
+                    )}
                   </Box>
                 </Box>
                 <Box flex={1}>
@@ -955,11 +1010,17 @@ const LendDetailPage: React.FC = () => {
                     <Box fontSize={'14px'} fontWeight={'500'} color={'#c7cad9'}>
                       Admin (copy):
                     </Box>
-                    <Box fontSize={'14px'} fontWeight={'500'} color={'#ebecf2'}>
-                      {extraPoolData && extraPoolData.admin
-                        ? shortenAddress(extraPoolData.admin)
-                        : '?'}
-                    </Box>
+                    {extraPoolData && extraPoolData.admin ? (
+                      <Box
+                        fontSize={'14px'}
+                        fontWeight={'500'}
+                        color={'#ebecf2'}
+                      >
+                        {shortenAddress(extraPoolData.admin)}
+                      </Box>
+                    ) : (
+                      <Skeleton variant='rect' width={40} height={23} />
+                    )}
                   </Box>
                 </Box>
               </Box>
@@ -988,16 +1049,22 @@ const LendDetailPage: React.FC = () => {
                     <Box fontSize={'14px'} fontWeight={'500'} color={'#c7cad9'}>
                       Platform Fee:
                     </Box>
-                    <Box fontSize={'14px'} fontWeight={'500'} color={'#ebecf2'}>
-                      {poolData
-                        ? poolData.assets.length > 0
+                    {poolData ? (
+                      <Box
+                        fontSize={'14px'}
+                        fontWeight={'500'}
+                        color={'#ebecf2'}
+                      >
+                        {poolData.assets.length > 0
                           ? (
                               Number(poolData.assets[0].fuseFee.toString()) /
                               1e16
                             ).toPrecision(2) + '%'
-                          : '10%'
-                        : '?'}
-                    </Box>
+                          : '10%'}
+                      </Box>
+                    ) : (
+                      <Skeleton variant='rect' width={40} height={23} />
+                    )}
                   </Box>
                 </Box>
                 <Box flex={1}>
@@ -1018,15 +1085,21 @@ const LendDetailPage: React.FC = () => {
                     <Box fontSize={'14px'} fontWeight={'500'} color={'#c7cad9'}>
                       Average Admin Fee:
                     </Box>
-                    <Box fontSize={'14px'} fontWeight={'500'} color={'#ebecf2'}>
-                      {poolData
-                        ? poolData.assets.reduce(
-                            (a, b, _, { length }) =>
-                              a + Number(b.adminFee.toString()) / 1e16 / length,
-                            0,
-                          )
-                        : '?'}
-                    </Box>
+                    {poolData ? (
+                      <Box
+                        fontSize={'14px'}
+                        fontWeight={'500'}
+                        color={'#ebecf2'}
+                      >
+                        {poolData.assets.reduce(
+                          (a, b, _, { length }) =>
+                            a + Number(b.adminFee.toString()) / 1e16 / length,
+                          0,
+                        )}
+                      </Box>
+                    ) : (
+                      <Skeleton variant='rect' width={40} height={23} />
+                    )}
                   </Box>
                 </Box>
               </Box>
@@ -1055,11 +1128,17 @@ const LendDetailPage: React.FC = () => {
                     <Box fontSize={'14px'} fontWeight={'500'} color={'#c7cad9'}>
                       Close Factor:
                     </Box>
-                    <Box fontSize={'14px'} fontWeight={'500'} color={'#ebecf2'}>
-                      {extraPoolData
-                        ? extraPoolData.closeFactor / 1e16 + '%'
-                        : '?%'}
-                    </Box>
+                    {extraPoolData ? (
+                      <Box
+                        fontSize={'14px'}
+                        fontWeight={'500'}
+                        color={'#ebecf2'}
+                      >
+                        {extraPoolData.closeFactor / 1e16 + '%'}
+                      </Box>
+                    ) : (
+                      <Skeleton variant='rect' width={40} height={23} />
+                    )}
                   </Box>
                 </Box>
                 <Box flex={1}>
@@ -1080,11 +1159,17 @@ const LendDetailPage: React.FC = () => {
                     <Box fontSize={'14px'} fontWeight={'500'} color={'#c7cad9'}>
                       Liquidation Incentive:
                     </Box>
-                    <Box fontSize={'14px'} fontWeight={'500'} color={'#ebecf2'}>
-                      {extraPoolData
-                        ? extraPoolData.liquidationIncentive / 1e16 - 100 + '%'
-                        : '?%'}
-                    </Box>
+                    {extraPoolData ? (
+                      <Box
+                        fontSize={'14px'}
+                        fontWeight={'500'}
+                        color={'#ebecf2'}
+                      >
+                        {extraPoolData.liquidationIncentive / 1e16 - 100 + '%'}
+                      </Box>
+                    ) : (
+                      <Skeleton variant='rect' width={40} height={23} />
+                    )}
                   </Box>
                 </Box>
               </Box>
@@ -1113,9 +1198,17 @@ const LendDetailPage: React.FC = () => {
                     <Box fontSize={'14px'} fontWeight={'500'} color={'#c7cad9'}>
                       Oracle:
                     </Box>
-                    <Box fontSize={'14px'} fontWeight={'500'} color={'#ebecf2'}>
-                      {extraPoolData && shortenAddress(extraPoolData.oracle)}
-                    </Box>
+                    {extraPoolData ? (
+                      <Box
+                        fontSize={'14px'}
+                        fontWeight={'500'}
+                        color={'#ebecf2'}
+                      >
+                        {shortenAddress(extraPoolData.oracle)}
+                      </Box>
+                    ) : (
+                      <Skeleton variant='rect' width={40} height={23} />
+                    )}
                   </Box>
                 </Box>
                 <Box flex={1}>
@@ -1136,13 +1229,17 @@ const LendDetailPage: React.FC = () => {
                     <Box fontSize={'14px'} fontWeight={'500'} color={'#c7cad9'}>
                       Whitelist:
                     </Box>
-                    <Box fontSize={'14px'} fontWeight={'500'} color={'#ebecf2'}>
-                      {extraPoolData
-                        ? extraPoolData.enforceWhitelist
-                          ? 'Yes'
-                          : 'No'
-                        : '?'}
-                    </Box>
+                    {extraPoolData ? (
+                      <Box
+                        fontSize={'14px'}
+                        fontWeight={'500'}
+                        color={'#ebecf2'}
+                      >
+                        {extraPoolData.enforceWhitelist ? 'Yes' : 'No'}
+                      </Box>
+                    ) : (
+                      <Skeleton variant='rect' width={40} height={23} />
+                    )}
                   </Box>
                 </Box>
               </Box>

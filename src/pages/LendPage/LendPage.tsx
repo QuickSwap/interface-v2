@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState, useMemo } from 'react';
 import Web3 from 'web3';
 import { Box } from '@material-ui/core';
+import { Skeleton } from '@material-ui/lab';
 import { SearchInput } from 'components';
 import { CustomSelect, SmOption } from 'components/CustomSelect';
 import styled from 'styled-components';
@@ -112,9 +113,13 @@ const LendPage: React.FC = () => {
           <Box color={'#696c80'} fontSize={'14px'}>
             Total Supply
           </Box>
-          <Box fontSize={'24px'} color={'white'}>
-            {midUsdFormatter(Number(totalSupply))}
-          </Box>
+          {totalSupply ? (
+            <Box fontSize={'24px'} color={'white'}>
+              {midUsdFormatter(Number(totalSupply))}
+            </Box>
+          ) : (
+            <Skeleton variant='rect' height={40} />
+          )}
         </Box>
         <Box
           flex={'1'}
@@ -126,9 +131,13 @@ const LendPage: React.FC = () => {
           <Box color={'#696c80'} fontSize={'14px'}>
             Total Borrowed
           </Box>
-          <Box fontSize={'24px'} color={'white'}>
-            {midUsdFormatter(Number(totalBorrow))}
-          </Box>
+          {totalBorrow ? (
+            <Box fontSize={'24px'} color={'white'}>
+              {midUsdFormatter(Number())}
+            </Box>
+          ) : (
+            <Skeleton variant='rect' height={40} />
+          )}
         </Box>
         <Box
           flex={'1'}
@@ -140,9 +149,13 @@ const LendPage: React.FC = () => {
           <Box color={'#696c80'} fontSize={'14px'}>
             Liquidity
           </Box>
-          <Box fontSize={'24px'} color={'white'}>
-            {midUsdFormatter(Number(totalLiquidity))}
-          </Box>
+          {totalLiquidity ? (
+            <Box fontSize={'24px'} color={'white'}>
+              {midUsdFormatter(Number(totalLiquidity))}
+            </Box>
+          ) : (
+            <Skeleton variant='rect' height={40} />
+          )}
         </Box>
         <Box
           flex={'1'}
@@ -154,9 +167,13 @@ const LendPage: React.FC = () => {
           <Box color={'#696c80'} fontSize={'14px'}>
             Markets
           </Box>
-          <Box fontSize={'24px'} color={'white'}>
-            {pools.length}
-          </Box>
+          {pools.length ? (
+            <Box fontSize={'24px'} color={'white'}>
+              {pools.length}
+            </Box>
+          ) : (
+            <Skeleton variant='rect' height={40} />
+          )}
         </Box>
       </Box>
       <Box
@@ -213,7 +230,7 @@ const LendPage: React.FC = () => {
               bgcolor={'#232734'}
               display={'flex'}
               flexDirection={'column'}
-              sx={{ minWidth: { xs: '55%', sm: '25%' } }}
+              sx={{ minWidth: { xs: '55%', sm: '25%' }, maxWidth: '31.6%' }}
               onClick={() => {
                 history.push('/lend/detail?poolId=' + poolId);
               }}
