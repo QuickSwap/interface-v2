@@ -133,7 +133,7 @@ const LendPage: React.FC = () => {
           </Box>
           {totalBorrow ? (
             <Box fontSize={'24px'} color={'white'}>
-              {midUsdFormatter(Number())}
+              {midUsdFormatter(Number(totalBorrow))}
             </Box>
           ) : (
             <Skeleton variant='rect' height={40} />
