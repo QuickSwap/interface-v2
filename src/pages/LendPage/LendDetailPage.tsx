@@ -8,9 +8,9 @@ import {
   TableHead,
   TableRow,
   TableCell,
-  Switch,
+  Snackbar,
 } from '@material-ui/core';
-import { Skeleton } from '@material-ui/lab';
+import { Skeleton, Alert } from '@material-ui/lab';
 
 import { CustomSelect, SmOption } from 'components/CustomSelect';
 import ReactApexChart from 'react-apexcharts';
@@ -62,6 +62,11 @@ const LendDetailPage: React.FC = () => {
   const [modalType, setModalType] = useState<'state' | 'quick' | null>(null);
   const [modalIsBorrow, setModalIsBorrow] = useState<boolean>(false);
   const [modalIsConfirm, setModalIsConfirm] = useState<boolean>(false);
+  const [alertShow, setAlertShow] = useState({
+    open: false,
+    msg: '',
+    status: 'success',
+  });
 
   const [openModalType, setOpenModalType] = useState<{
     back: {
@@ -90,6 +95,13 @@ const LendDetailPage: React.FC = () => {
   );
 
   const borrowLimit = useBorrowLimit(poolData?.assets || []);
+  const handleAlertShowClose = () => {
+    setAlertShow({
+      open: false,
+      msg: '',
+      status: 'error',
+    });
+  };
 
   return (
     <>
@@ -554,16 +566,40 @@ const LendDetailPage: React.FC = () => {
                           justifyContent={'flex-end'}
                         >
                           <AntSwitch
-                            defaultChecked={asset.membership}
+                            // defaultChecked={asset.membership}
+                            checked={asset.membership}
                             onChange={() => {
-                              toggleCollateral(
+                              const p = toggleCollateral(
                                 asset,
                                 poolData.pool.comptroller,
                                 account!,
                               );
+                              p.catch((er) => {
+                                setAlertShow({
+                                  open: true,
+                                  msg: er.message,
+                                  status: 'error',
+                                });
+                              });
                             }}
                             inputProps={{ 'aria-label': 'ant design' }}
                           />
+                          <Snackbar
+                            open={alertShow.open}
+                            autoHideDuration={6000}
+                            anchorOrigin={{
+                              vertical: 'bottom',
+                              horizontal: 'left',
+                            }}
+                            onClose={handleAlertShowClose}
+                          >
+                            <Alert
+                              onClose={handleAlertShowClose}
+                              severity={alertShow.status as any}
+                            >
+                              {alertShow.msg}
+                            </Alert>
+                          </Snackbar>
                         </Box>
                       </MuiTableCell>
                     </TableRow>
