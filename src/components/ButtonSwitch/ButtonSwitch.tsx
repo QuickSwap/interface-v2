@@ -59,7 +59,6 @@ const ButtonSwitch: React.FC<ButtonSwitchProps> = ({
                   value === tab.value ? 'tabActive' : 'tabInactive'
                 }`}
                 style={{
-                  minWidth: '0px',
                   minHeight: minHeight,
                   height: minHeight,
                 }}

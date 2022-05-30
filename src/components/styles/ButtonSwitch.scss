@@ -6,9 +6,10 @@
   & .MuiTabs-scroller {
     padding: 0px !important;
   }
-}
-.indicator {
-  display: none;
+  & .indicator {
+    height: 100%;
+    border-radius: 4px;
+  }
 }
 .MuiTab-root {
   &.tab {
@@ -16,6 +17,7 @@
     font-size: 14px;
     font-weight: 400;
     opacity: 1;
+    min-width: 0;
     color: $textSecondary
   }
   &.tabInactive {
@@ -32,9 +34,7 @@
   }
   &.tabActive {
     cursor: default;
-    background-color: $grey28;
     color: $textPrimary;
-    border-radius: 4px;
     z-index: 2;
     & svg path {
       fill: $textPrimary
