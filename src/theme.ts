@@ -10,29 +10,20 @@ const primary = '#448aff';
 const primaryDark = '#1C2938';
 const secondary = '#344252';
 const secondaryLight = '#252833';
-const secondaryDark = '#232734';
-const secondaryContrast = '#2c3242';
 
 const black = '#000000';
 const white = '#ffffff';
 
 const textPrimary = '#c7cad9';
 const textSecondary = '#696c80';
-const textDisabled = '#626680';
-const textHint = '#636780';
 const bgColor = '#12131a';
 const bgPalette = '#1b1e29';
-const greyLight = 'rgba(99, 103, 128, 0.1)';
-const greyBgLight = '#3e4252';
-const greyBg = '#1b1d26';
 
 const successMain = '#0fc679';
 const successDark = '#1DB2D5';
-const successLight = 'rgba(15, 198, 121, 0.1)';
 
 const errorMain = '#ff5252';
 const errorDark = '#f00';
-const errorLight = 'rgba(255, 82, 82, 0.1)';
 
 const divider = 'rgba(130, 177, 255, 0.08)';
 
@@ -65,16 +56,9 @@ export const mainTheme = responsiveFontSizes(
         main: primary,
         dark: primaryDark,
       },
-      grey: {
-        A100: greyLight,
-        A400: greyBgLight,
-        A700: greyBg,
-      },
       secondary: {
         main: secondary,
         light: secondaryLight,
-        dark: secondaryDark,
-        contrastText: secondaryContrast,
       },
       common: {
         black,
@@ -83,8 +67,6 @@ export const mainTheme = responsiveFontSizes(
       text: {
         primary: textPrimary,
         secondary: textSecondary,
-        disabled: textDisabled,
-        hint: textHint,
       },
       background: {
         default: bgColor,
@@ -93,12 +75,10 @@ export const mainTheme = responsiveFontSizes(
       success: {
         main: successMain,
         dark: successDark,
-        light: successLight,
       },
       error: {
         main: errorMain,
         dark: errorDark,
-        light: errorLight,
       },
       divider: divider,
     },
@@ -114,6 +94,7 @@ export const mainTheme = responsiveFontSizes(
     },
     typography: {
       fontFamily: "'Inter', sans-serif",
+      fontWeightRegular: 500,
     },
     overrides: {
       MuiButton: {
