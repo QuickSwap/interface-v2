@@ -5,6 +5,7 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import Skeleton from '@material-ui/lab/Skeleton';
 import { formatCompact, formatNumber } from 'utils';
+import { useTranslation } from 'react-i18next';
 dayjs.extend(utc);
 
 const SwapInfoTx: React.FC<{
@@ -26,6 +27,7 @@ const SwapInfoTx: React.FC<{
   const volume = filteredTxs
     ? filteredTxs.reduce((total, tx) => total + Number(tx.amountUSD), 0)
     : undefined;
+  const { t } = useTranslation();
 
   return (
     <>
@@ -43,7 +45,7 @@ const SwapInfoTx: React.FC<{
       <Box pt={1} px={1}>
         <Box py={1} display='flex' justifyContent='space-between'>
           <Typography variant='body2' color='textSecondary'>
-            Transactions:
+            {t('transactions')}:
           </Typography>
           {filteredTxs ? (
             <Typography variant='body2'>{filteredTxs.length}</Typography>
@@ -54,7 +56,7 @@ const SwapInfoTx: React.FC<{
         <Divider />
         <Box py={1} display='flex' justifyContent='space-between'>
           <Typography variant='body2' color='textSecondary'>
-            Buys:
+            {t('buys')}:
           </Typography>
           <Typography variant='body2'>
             {filteredBuyTxs ? (
@@ -67,7 +69,7 @@ const SwapInfoTx: React.FC<{
         <Divider />
         <Box py={1} display='flex' justifyContent='space-between'>
           <Typography variant='body2' color='textSecondary'>
-            Sells:
+            {t('sells')}:
           </Typography>
           <Typography variant='body2'>
             {filteredSellTxs ? (
@@ -80,7 +82,7 @@ const SwapInfoTx: React.FC<{
         <Divider />
         <Box pt={1} display='flex' justifyContent='space-between'>
           <Typography variant='body2' color='textSecondary'>
-            Volume:
+            {t('volume')}:
           </Typography>
           <Typography variant='body2'>
             {filteredTxs ? (

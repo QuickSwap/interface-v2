@@ -3,6 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Box, Typography, Checkbox } from '@material-ui/core';
 import { Replay } from '@material-ui/icons';
 import { CustomSwitch } from 'components';
+import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles(({ palette }) => ({
   swapFilter: {
@@ -50,7 +51,8 @@ const SwapProFilter: React.FC<SwapProFilterProps> = ({
   setShowTrades,
 }) => {
   const classes = useStyles();
-  const swapPositions = ['left', 'right', 'none'];
+  const { t } = useTranslation();
+  const swapPositions = [t('left'), t('right'), t('none')];
 
   const infoPosItems = swapPositions.map((pos) => {
     return {
@@ -68,7 +70,7 @@ const SwapProFilter: React.FC<SwapProFilterProps> = ({
           disabled={!showTrades}
           onChange={(evt) => setShowChart(evt.target.checked)}
         />
-        <Typography variant='body2'>chart</Typography>
+        <Typography variant='body2'>{t('chart')}</Typography>
       </Box>
       <Box className={classes.checkWrapper}>
         <Checkbox
@@ -76,10 +78,10 @@ const SwapProFilter: React.FC<SwapProFilterProps> = ({
           disabled={!showChart}
           onChange={(evt) => setShowTrades(evt.target.checked)}
         />
-        <Typography variant='body2'>trades</Typography>
+        <Typography variant='body2'>{t('trades')}</Typography>
       </Box>
       <Box display='flex' alignItems='center'>
-        <Typography variant='body2'>INFO:</Typography>
+        <Typography variant='body2'>{t('info')}:</Typography>
         <Box ml={1}>
           <CustomSwitch width={190} height={30} items={infoPosItems} />
         </Box>
@@ -87,7 +89,7 @@ const SwapProFilter: React.FC<SwapProFilterProps> = ({
       <Box
         className={classes.replayButton}
         onClick={() => {
-          setInfoPos('right');
+          setInfoPos(t('right'));
           setShowChart(true);
           setShowTrades(true);
         }}

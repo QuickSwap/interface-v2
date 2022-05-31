@@ -14,6 +14,7 @@ import LiquidityPools from './LiquidityPools';
 import SwapProChartTrade from './SwapProChartTrade';
 import SwapProInfo from './SwapProInfo';
 import SwapProFilter from './SwapProFilter';
+import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   helpWrapper: {
@@ -111,6 +112,8 @@ const SwapPage: React.FC = () => {
     }
   }, [pairId, currentTime]);
 
+  const { t } = useTranslation();
+
   return (
     <Box width='100%' mb={3} id='swap-page'>
       {!isProMode && (
@@ -121,9 +124,9 @@ const SwapPage: React.FC = () => {
           justifyContent='space-between'
           width='100%'
         >
-          <Typography variant='h4'>Swap</Typography>
+          <Typography variant='h4'>{t('swap')}</Typography>
           <Box className={classes.helpWrapper}>
-            <Typography variant='body2'>Help</Typography>
+            <Typography variant='body2'>{t('help')}</Typography>
             <HelpIcon />
           </Box>
         </Box>
@@ -181,13 +184,13 @@ const SwapPage: React.FC = () => {
               padding='0 24px'
               mb={3}
             >
-              <Typography variant='h4'>Swap</Typography>
+              <Typography variant='h4'>{t('swap')}</Typography>
               <Box display='flex' alignItems='center' mr={1}>
                 <Typography
                   variant='caption'
                   style={{ color: palette.text.secondary, marginRight: 8 }}
                 >
-                  PRO MODE
+                  {t('proMode')}
                 </Typography>
                 <ToggleSwitch
                   toggled={isProMode}
