@@ -6,11 +6,13 @@ import { useUSDRewardsandFees } from 'state/stake/hooks';
 import { useActiveWeb3React } from 'hooks';
 import { GlobalConst } from 'constants/index';
 import { returnStakingInfo } from 'utils';
+import { useTranslation } from 'react-i18next';
 
 const FarmRewards: React.FC<{ farmIndex: number; bulkPairs: any }> = ({
   farmIndex,
   bulkPairs,
 }) => {
+  const { t } = useTranslation();
   const { palette, breakpoints } = useTheme();
   const { chainId } = useActiveWeb3React();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
@@ -36,12 +38,12 @@ const FarmRewards: React.FC<{ farmIndex: number; bulkPairs: any }> = ({
       >
         <Box mb={1}>
           <Typography variant='caption' color='textSecondary'>
-            Total Rewards
+            {t('totalRewards')}
           </Typography>
         </Box>
         {farmData.rewardsUSD ? (
           <Typography variant='subtitle2' style={{ fontWeight: 600 }}>
-            ${farmData.rewardsUSD.toLocaleString()} / Day
+            ${farmData.rewardsUSD.toLocaleString()} / {t('day')}
           </Typography>
         ) : (
           <Skeleton width='100%' height='28px' />
@@ -54,7 +56,7 @@ const FarmRewards: React.FC<{ farmIndex: number; bulkPairs: any }> = ({
       >
         <Box mb={1}>
           <Typography variant='caption' color='textSecondary'>
-            Fees [24h]
+            {t('fees24h')}
           </Typography>
         </Box>
         {farmData.stakingFees ? (
@@ -87,11 +89,11 @@ const FarmRewards: React.FC<{ farmIndex: number; bulkPairs: any }> = ({
           >
             <Box mb={1}>
               <Typography variant='caption' color='textSecondary'>
-                Reward Rate
+                {t('rewardRate')}
               </Typography>
             </Box>
             <Typography variant='subtitle2' style={{ fontWeight: 600 }}>
-              {dQuickRewardSum.toLocaleString()} dQuick / Day
+              {dQuickRewardSum.toLocaleString()} dQuick / {t('day')}
             </Typography>
           </Box>
           {getRewardsSection(true)}
