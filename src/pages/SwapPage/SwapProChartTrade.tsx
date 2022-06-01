@@ -10,6 +10,7 @@ import { formatNumber, shortenTx, getEtherscanLink } from 'utils';
 import moment from 'moment';
 import { useActiveWeb3React } from 'hooks';
 import { TableVirtuoso } from 'react-virtuoso';
+import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles(({ palette }) => ({
   splitPane: {
@@ -73,8 +74,8 @@ const SwapProChartTrade: React.FC<{
   transactions,
 }) => {
   const classes = useStyles();
-
   const { chainId } = useActiveWeb3React();
+  const { t } = useTranslation();
 
   const TradesTable = () => (
     <TableVirtuoso
@@ -86,13 +87,13 @@ const SwapProChartTrade: React.FC<{
       }}
       fixedHeaderContent={() => (
         <tr>
-          <th align='left'>date</th>
-          <th align='left'>type</th>
-          <th align='right'>usd</th>
+          <th align='left'>{t('date')}</th>
+          <th align='left'>{t('type')}</th>
+          <th align='right'>{t('usd')}</th>
           <th align='right'>{token1.symbol}</th>
           <th align='right'>{token2.symbol}</th>
-          <th align='right'>price</th>
-          <th align='right'>txn</th>
+          <th align='right'>{t('price')}</th>
+          <th align='right'>{t('txn')}</th>
         </tr>
       )}
       itemContent={(index, tx) => {

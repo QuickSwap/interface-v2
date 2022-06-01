@@ -5,6 +5,7 @@ import { GlobalConst } from 'constants/index';
 import { DoubleCurrencyLogo } from 'components';
 import { formatCompact, getDaysCurrentYear } from 'utils';
 import { useCurrency } from 'hooks/Tokens';
+import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles(({ palette }) => ({
   liquidityContent: {
@@ -26,6 +27,7 @@ const LiquidityPoolRow: React.FC<{
   const { palette, breakpoints } = useTheme();
   const daysCurrentYear = getDaysCurrentYear();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
+  const { t } = useTranslation();
 
   const dayVolumeUSD =
     Number(
@@ -76,7 +78,7 @@ const LiquidityPoolRow: React.FC<{
       >
         {isMobile && (
           <Typography variant='body2' style={{ color: palette.text.secondary }}>
-            TVL
+            {t('tvl')}
           </Typography>
         )}
         <Typography variant='body2'>${formatCompact(liquidity)}</Typography>
@@ -89,7 +91,7 @@ const LiquidityPoolRow: React.FC<{
       >
         {isMobile && (
           <Typography variant='body2' style={{ color: palette.text.secondary }}>
-            24H Volume
+            {t('24hVol')}
           </Typography>
         )}
         <Typography variant='body2'>${formatCompact(volume)}</Typography>
@@ -102,7 +104,7 @@ const LiquidityPoolRow: React.FC<{
       >
         {isMobile && (
           <Typography variant='body2' style={{ color: palette.text.secondary }}>
-            APY
+            {t('apy')}
           </Typography>
         )}
         <Typography
