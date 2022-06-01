@@ -5,6 +5,7 @@ import { ReactComponent as SettingsIcon } from 'assets/images/SettingsIcon.svg';
 import { AddLiquidity, QuestionHelper, SettingsModal } from 'components';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import { useCurrency } from 'hooks/Tokens';
+import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles(() => ({
   headingItem: {
@@ -14,6 +15,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 const SupplyLiquidity: React.FC = () => {
+  const { t } = useTranslation();
   const classes = useStyles();
   const { palette } = useTheme();
   const [openSettingsModal, setOpenSettingsModal] = useState(false);
@@ -39,14 +41,14 @@ const SupplyLiquidity: React.FC = () => {
       )}
       <Box display='flex' justifyContent='space-between' alignItems='center'>
         <Typography variant='body1' style={{ fontWeight: 600 }}>
-          Supply Liquidity
+          {t('supplyLiquidity')}
         </Typography>
         <Box display='flex' alignItems='center'>
           <Box className={classes.headingItem}>
             <QuestionHelper
               size={24}
               color={palette.text.secondary}
-              text='When you add liquidity, you are given pool tokens representing your position. These tokens automatically earn fees proportional to your share of the pool, and can be redeemed at any time.'
+              text={t('supplyLiquidityHelp')}
             />
           </Box>
           <Box className={classes.headingItem}>
