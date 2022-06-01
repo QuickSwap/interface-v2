@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { Box, Typography } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 import Skeleton from '@material-ui/lab/Skeleton';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { useGlobalData } from 'state/application/hooks';
 import {
   formatCompact,
@@ -112,7 +112,7 @@ const AnalyticsLiquidityChart: React.FC = () => {
       )}
       <Box>
         <Typography style={{ color: palette.text.disabled }} variant='caption'>
-          {moment().format('MMM DD, YYYY')}
+          {dayjs().format('MMM DD, YYYY')}
         </Typography>
       </Box>
       <Box mt={2}>
@@ -123,7 +123,7 @@ const AnalyticsLiquidityChart: React.FC = () => {
             )}
             yAxisValues={yAxisValues}
             dates={globalChartData.map((value: any) =>
-              moment(value.date * 1000)
+              dayjs(value.date * 1000)
                 .add(1, 'day')
                 .unix(),
             )}
