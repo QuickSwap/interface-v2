@@ -9,6 +9,7 @@ import { returnDualStakingInfo, returnStakingInfo } from 'utils';
 import FarmRewards from './FarmRewards';
 import FarmsList from './FarmsList';
 import { CustomSwitch } from 'components';
+import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   helpWrapper: {
@@ -38,6 +39,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
 }));
 
 const FarmPage: React.FC = () => {
+  const { t } = useTranslation();
   const classes = useStyles();
   const { chainId } = useActiveWeb3React();
 
@@ -64,12 +66,12 @@ const FarmPage: React.FC = () => {
 
   const farmCategories = [
     {
-      text: 'LP Mining',
+      text: t('lpMining'),
       onClick: () => setFarmIndex(GlobalConst.farmIndex.LPFARM_INDEX),
       condition: farmIndex === GlobalConst.farmIndex.LPFARM_INDEX,
     },
     {
-      text: 'Dual Mining',
+      text: t('dualMining'),
       onClick: () => setFarmIndex(GlobalConst.farmIndex.DUALFARM_INDEX),
       condition: farmIndex === GlobalConst.farmIndex.DUALFARM_INDEX,
     },
@@ -85,10 +87,10 @@ const FarmPage: React.FC = () => {
         mb={2}
       >
         <Box mr={2}>
-          <Typography variant='h4'>Farm</Typography>
+          <Typography variant='h4'>{t('farm')}</Typography>
         </Box>
         <Box className={classes.helpWrapper}>
-          <Typography variant='body2'>Help</Typography>
+          <Typography variant='body2'>{t('help')}</Typography>
           <HelpIcon />
         </Box>
       </Box>
