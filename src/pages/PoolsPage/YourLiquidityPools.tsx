@@ -9,6 +9,7 @@ import { useActiveWeb3React } from 'hooks';
 import { usePairs } from 'data/Reserves';
 import { toV2LiquidityToken, useTrackedTokenPairs } from 'state/user/hooks';
 import { useTokenBalancesWithLoadingIndicator } from 'state/wallet/hooks';
+import { Trans, useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles(({ palette }) => ({
   liquidityText: {
@@ -26,6 +27,7 @@ const useStyles = makeStyles(({ palette }) => ({
 }));
 
 const YourLiquidityPools: React.FC = () => {
+  const { t } = useTranslation();
   const classes = useStyles();
   const { account } = useActiveWeb3React();
   const [openPoolFinder, setOpenPoolFinder] = useState(false);
@@ -80,7 +82,7 @@ const YourLiquidityPools: React.FC = () => {
         />
       )}
       <Typography variant='body1' style={{ fontWeight: 600 }}>
-        Your Liquidity Pools
+        {t('yourliquidityPools')}
       </Typography>
       <Box mt={3}>
         {v2IsLoading ? (
@@ -90,10 +92,12 @@ const YourLiquidityPools: React.FC = () => {
         ) : allV2PairsWithLiquidity.length > 0 ? (
           <Box>
             <Typography variant='body2' className={classes.liquidityText}>
-              Don’t see a pool you joined?{' '}
-              <span onClick={() => setOpenPoolFinder(true)}>Import it</span>
-              .<br />
-              Unstake your LP Tokens from Farms to see them here.
+              <Trans
+                i18nKey='poolMissingComment'
+                components={{
+                  pspan: <span onClick={() => setOpenPoolFinder(true)} />,
+                }}
+              />
             </Typography>
             {allV2PairsWithLiquidity.map((pair, ind) => (
               <Box key={ind} mt={2}>
@@ -112,10 +116,12 @@ const YourLiquidityPools: React.FC = () => {
               className={classes.noLiquidityImage}
             />
             <Typography variant='body2' className={classes.liquidityText}>
-              Don’t see a pool you joined?{' '}
-              <span onClick={() => setOpenPoolFinder(true)}>Import it</span>
-              .<br />
-              Unstake your LP Tokens from Farms to see them here.
+              <Trans
+                i18nKey='poolMissingComment'
+                components={{
+                  pspan: <span onClick={() => setOpenPoolFinder(true)} />,
+                }}
+              />
             </Typography>
           </Box>
         )}
