@@ -7,7 +7,7 @@ import { Height } from '@material-ui/icons';
 import { ReflexContainer, ReflexSplitter, ReflexElement } from 'react-reflex';
 import 'react-reflex/styles.css';
 import { formatNumber, shortenTx, getEtherscanLink } from 'utils';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { useActiveWeb3React } from 'hooks';
 import { TableVirtuoso } from 'react-virtuoso';
 import { useTranslation } from 'react-i18next';
@@ -114,9 +114,9 @@ const SwapProChartTrade: React.FC<{
         return (
           <>
             <td align='left'>
-              {moment
+              {dayjs
                 .unix(tx.transaction.timestamp)
-                .format('MMMM Do h:mm:ss a')}
+                .format('MMM DD, hh:mm:ss a')}
             </td>
             <td className={txType} align='left'>
               {txType.toUpperCase()}
