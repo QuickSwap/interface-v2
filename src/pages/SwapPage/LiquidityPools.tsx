@@ -6,6 +6,7 @@ import { getTokenPairs, getBulkPairData, getEthPrice } from 'utils';
 import { Token } from '@uniswap/sdk';
 import LiquidityPoolRow from './LiquidityPoolRow';
 import { useAllTokens } from 'hooks/Tokens';
+import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles(({ palette }) => ({
   liquidityMain: {
@@ -38,6 +39,7 @@ const LiquidityPools: React.FC<{
   const token1Address = token1.address.toLowerCase();
   const token2Address = token2.address.toLowerCase();
   const allTokenList = useAllTokens();
+  const { t } = useTranslation();
 
   const liquidityPairs = useMemo(
     () =>
@@ -109,7 +111,7 @@ const LiquidityPools: React.FC<{
             variant='h6'
             style={{ color: palette.text.primary, marginRight: 8 }}
           >
-            Liquidity Pools{' '}
+            {t('liquidityPools')}
           </Typography>
           <Typography variant='body2' style={{ color: palette.text.secondary }}>
             ({token1.symbol?.toUpperCase()}, {token2.symbol?.toUpperCase()})
@@ -138,7 +140,7 @@ const LiquidityPools: React.FC<{
                   className={liquidityFilterIndex === 0 ? 'active' : ''}
                   onClick={() => setLiquidityFilterIndex(0)}
                 >
-                  All
+                  {t('all')}
                 </Typography>
                 <Typography
                   variant='body2'
@@ -159,17 +161,17 @@ const LiquidityPools: React.FC<{
                 <>
                   <Box width={0.2}>
                     <Typography variant='body2' align='left'>
-                      TVL
+                      {t('tvl')}
                     </Typography>
                   </Box>
                   <Box width={0.15}>
                     <Typography variant='body2' align='left'>
-                      24h Volume
+                      {t('24hVol')}
                     </Typography>
                   </Box>
                   <Box width={0.15}>
                     <Typography variant='body2' align='right'>
-                      APY
+                      {t('apy')}
                     </Typography>
                   </Box>
                 </>

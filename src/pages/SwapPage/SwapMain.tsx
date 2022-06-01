@@ -11,6 +11,7 @@ import {
   GelatoLimitOrderPanel,
   GelatoLimitOrdersHistoryPanel,
 } from '@gelatonetwork/limit-orders-react';
+import { Trans, useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles(({ palette }) => ({
   swapItem: {
@@ -64,6 +65,7 @@ const SwapMain: React.FC = () => {
       ? (parsedQuery.currency1 as string)
       : undefined,
   );
+  const { t } = useTranslation();
 
   return (
     <>
@@ -88,7 +90,7 @@ const SwapMain: React.FC = () => {
             )}
             onClick={() => setSwapIndex(SWAP_NORMAL)}
           >
-            <Typography variant='body1'>Market</Typography>
+            <Typography variant='body1'>{t('market')}</Typography>
           </Box>
           <Box
             className={cx(
@@ -99,7 +101,7 @@ const SwapMain: React.FC = () => {
             borderRight={isProMode ? `1px solid ${palette.divider}` : ''}
             onClick={() => setSwapIndex(SWAP_LIMIT)}
           >
-            <Typography variant='body1'>Limit</Typography>
+            <Typography variant='body1'>{t('limit')}</Typography>
           </Box>
         </Box>
         <Box display='flex' alignItems='center'>
@@ -109,7 +111,7 @@ const SwapMain: React.FC = () => {
                 variant='caption'
                 style={{ color: palette.text.secondary, marginRight: 8 }}
               >
-                PRO MODE
+                {t('proMode')}
               </Typography>
               <ToggleSwitch
                 toggled={isProMode}
@@ -138,18 +140,20 @@ const SwapMain: React.FC = () => {
             <GelatoLimitOrdersHistoryPanel />
             <Box mt={2} textAlign='center'>
               <Typography variant='body2'>
-                <b>* Disclaimer:</b> Limit Orders on QuickSwap are provided by
-                Gelato, a 3rd party protocol and should be considered in beta.
-                DYOR and use at your own risk. QuickSwap is not responsible.
-                More info can be found&nbsp;
-                <a
-                  style={{ color: palette.text.primary }}
-                  target='_blank'
-                  rel='noopener noreferrer'
-                  href='https://www.certik.org/projects/gelato'
-                >
-                  here.
-                </a>
+                <Trans
+                  i18nKey='limitOrderDisclaimer'
+                  components={{
+                    bold: <b />,
+                    alink: (
+                      <a
+                        style={{ color: palette.text.primary }}
+                        target='_blank'
+                        rel='noopener noreferrer'
+                        href='https://www.certik.org/projects/gelato'
+                      />
+                    ),
+                  }}
+                />
               </Typography>
             </Box>
           </>
