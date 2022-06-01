@@ -36,10 +36,10 @@ const SwapInfoTx: React.FC<{
         value={txFilter}
         onChange={setTxFilter}
         items={[
-          { label: '5m', value: '5_minute' },
-          { label: '1h', value: '1_hour' },
-          { label: '6h', value: '6_hour' },
-          { label: '24h', value: '24_hour' },
+          { label: `5${t('min')}`, value: '5_minute' },
+          { label: `1${t('hour')}`, value: '1_hour' },
+          { label: `6${t('hour')}`, value: '6_hour' },
+          { label: `24${t('hour')}`, value: '24_hour' },
         ]}
       />
       <Box pt={1} px={1}>

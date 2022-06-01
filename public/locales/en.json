@@ -196,5 +196,6 @@
   "left": "left",
   "right": "right",
   "none": "none",
-  "24h": "24h"
+  "hour": "h",
+  "min": "m"
 }
