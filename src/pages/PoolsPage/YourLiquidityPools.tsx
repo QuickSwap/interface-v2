@@ -1,7 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { Pair } from '@uniswap/sdk';
-import { makeStyles } from '@material-ui/core/styles';
-import { Box, Typography } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import Skeleton from '@material-ui/lab/Skeleton';
 import NoLiquidity from 'assets/images/NoLiquidityPool.png';
 import { PoolFinderModal, PoolPositionCard } from 'components';
@@ -11,24 +10,8 @@ import { toV2LiquidityToken, useTrackedTokenPairs } from 'state/user/hooks';
 import { useTokenBalancesWithLoadingIndicator } from 'state/wallet/hooks';
 import { Trans, useTranslation } from 'react-i18next';
 
-const useStyles = makeStyles(({ palette }) => ({
-  liquidityText: {
-    color: palette.text.secondary,
-    '& span': {
-      color: palette.primary.main,
-      cursor: 'pointer',
-    },
-  },
-  noLiquidityImage: {
-    maxWidth: 286,
-    width: '80%',
-    filter: 'grayscale(1)',
-  },
-}));
-
 const YourLiquidityPools: React.FC = () => {
   const { t } = useTranslation();
-  const classes = useStyles();
   const { account } = useActiveWeb3React();
   const [openPoolFinder, setOpenPoolFinder] = useState(false);
   const trackedTokenPairs = useTrackedTokenPairs();
@@ -81,9 +64,7 @@ const YourLiquidityPools: React.FC = () => {
           onClose={() => setOpenPoolFinder(false)}
         />
       )}
-      <Typography variant='body1' style={{ fontWeight: 600 }}>
-        {t('yourliquidityPools')}
-      </Typography>
+      <p className='weight-600'>{t('yourliquidityPools')}</p>
       <Box mt={3}>
         {v2IsLoading ? (
           <Box width={1}>
@@ -91,14 +72,14 @@ const YourLiquidityPools: React.FC = () => {
           </Box>
         ) : allV2PairsWithLiquidity.length > 0 ? (
           <Box>
-            <Typography variant='body2' className={classes.liquidityText}>
+            <small className='liquidityText'>
               <Trans
                 i18nKey='poolMissingComment'
                 components={{
-                  pspan: <span onClick={() => setOpenPoolFinder(true)} />,
+                  pspan: <small onClick={() => setOpenPoolFinder(true)} />,
                 }}
               />
-            </Typography>
+            </small>
             {allV2PairsWithLiquidity.map((pair, ind) => (
               <Box key={ind} mt={2}>
                 <PoolPositionCard
@@ -113,16 +94,16 @@ const YourLiquidityPools: React.FC = () => {
             <img
               src={NoLiquidity}
               alt='No Liquidity'
-              className={classes.noLiquidityImage}
+              className='noLiquidityImage'
             />
-            <Typography variant='body2' className={classes.liquidityText}>
+            <p className='small liquidityText'>
               <Trans
                 i18nKey='poolMissingComment'
                 components={{
-                  pspan: <span onClick={() => setOpenPoolFinder(true)} />,
+                  pspan: <small onClick={() => setOpenPoolFinder(true)} />,
                 }}
               />
-            </Typography>
+            </p>
           </Box>
         )}
       </Box>

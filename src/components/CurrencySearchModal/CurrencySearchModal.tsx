@@ -5,6 +5,7 @@ import { CustomModal } from 'components';
 import useLast from 'hooks/useLast';
 import CurrencySearch from './CurrencySearch';
 import ListSelect from './ListSelect';
+import 'components/styles/CurrencySearchModal.scss';
 
 interface CurrencySearchModalProps {
   isOpen: boolean;

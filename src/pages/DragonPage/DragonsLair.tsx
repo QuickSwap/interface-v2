@@ -1,38 +1,12 @@
 import React, { useState } from 'react';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
-import { Box, Typography } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import { useLairInfo } from 'state/stake/hooks';
 import { CurrencyLogo, StakeQuickModal, UnstakeQuickModal } from 'components';
 import { ReactComponent as PriceExchangeIcon } from 'assets/images/PriceExchangeIcon.svg';
-import {
-  formatNumber,
-  formatTokenAmount,
-  returnTokenFromKey,
-  useLairDQUICKAPY,
-} from 'utils';
+import { formatTokenAmount, returnTokenFromKey, useLairDQUICKAPY } from 'utils';
 import { useUSDCPriceToken } from 'utils/useUSDCPrice';
 
-const useStyles = makeStyles(({ palette }) => ({
-  stakeButton: {
-    width: '100%',
-    height: 48,
-    borderRadius: 10,
-    border: `1px solid ${palette.primary.main}`,
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 24,
-    cursor: 'pointer',
-    '& p': {
-      fontWeight: 600,
-      color: '#ebecf2',
-    },
-  },
-}));
-
 const DragonsLair: React.FC = () => {
-  const classes = useStyles();
-  const { palette } = useTheme();
   const quickPrice = useUSDCPriceToken(returnTokenFromKey('QUICK'));
   const dQUICKPrice = useUSDCPriceToken(returnTokenFromKey('DQUICK'));
   const dQUICKtoQUICK = dQUICKPrice / quickPrice;
@@ -60,93 +34,68 @@ const DragonsLair: React.FC = () => {
       <Box display='flex'>
         <CurrencyLogo currency={returnTokenFromKey('QUICK')} size='32px' />
         <Box ml={1.5}>
-          <Typography
-            variant='body2'
-            style={{ color: palette.text.primary, lineHeight: 1 }}
-          >
-            QUICK
-          </Typography>
-          <Typography variant='caption' style={{ color: palette.text.hint }}>
-            Single Stake — Auto compounding
-          </Typography>
+          <p className='small line-height-1'>QUICK</p>
+          <span className='text-hint'>Single Stake — Auto compounding</span>
         </Box>
       </Box>
-      <Box display='flex' justifyContent='space-between' mt={1.5}>
-        <Typography variant='body2'>Total QUICK</Typography>
-        <Typography variant='body2'>
+      <Box className='dragonLairRow'>
+        <small>Total QUICK</small>
+        <small>
           {lairInfo
             ? lairInfo.totalQuickBalance.toFixed(2, {
                 groupSeparator: ',',
               })
             : 0}
-        </Typography>
+        </small>
       </Box>
-      <Box display='flex' justifyContent='space-between' mt={1.5}>
-        <Typography variant='body2'>TVL:</Typography>
-        <Typography variant='body2'>
+      <Box className='dragonLairRow'>
+        <small>TVL:</small>
+        <small>
           $
           {(
             Number(lairInfo.totalQuickBalance.toExact()) * quickPrice
           ).toLocaleString()}
-        </Typography>
+        </small>
       </Box>
-      <Box display='flex' justifyContent='space-between' mt={1.5}>
-        <Typography variant='body2'>APY</Typography>
-        <Typography variant='body2' style={{ color: palette.success.main }}>
-          {APY}%
-        </Typography>
+      <Box className='dragonLairRow'>
+        <small>APY</small>
+        <small className='text-success'>{APY}%</small>
       </Box>
-      <Box display='flex' justifyContent='space-between' mt={1.5}>
-        <Typography variant='body2'>Your Deposits</Typography>
-        <Typography variant='body2'>
-          {formatTokenAmount(lairInfo.QUICKBalance)}
-        </Typography>
+      <Box className='dragonLairRow'>
+        <small>Your Deposits</small>
+        <small>{formatTokenAmount(lairInfo.QUICKBalance)}</small>
       </Box>
-      <Box
-        mt={2.5}
-        width={1}
-        height='40px'
-        display='flex'
-        alignItems='center'
-        justifyContent='center'
-        borderRadius={10}
-        border={`1px solid ${palette.secondary.light}`}
-      >
+      <Box className='quickTodQuick border-secondary1'>
         <CurrencyLogo currency={returnTokenFromKey('QUICK')} />
-        <Typography variant='body2' style={{ margin: '0 8px' }}>
+        <small style={{ margin: '0 8px' }}>
           {isQUICKRate ? 1 : dQUICKtoQUICK.toLocaleString()} QUICK =
-        </Typography>
+        </small>
         <CurrencyLogo currency={returnTokenFromKey('QUICK')} />
-        <Typography variant='body2' style={{ margin: '0 8px' }}>
+        <small style={{ margin: '0 8px' }}>
           {isQUICKRate ? QUICKtodQUICK.toLocaleString() : 1} dQUICK
-        </Typography>
+        </small>
         <PriceExchangeIcon
-          style={{ cursor: 'pointer' }}
+          className='cursor-pointer'
           onClick={() => setIsQUICKRate(!isQUICKRate)}
         />
       </Box>
       <Box
-        className={classes.stakeButton}
-        bgcolor={palette.primary.main}
+        className='stakeButton bg-primary'
         onClick={() => setOpenStakeModal(true)}
       >
-        <Typography variant='body2'>Stake</Typography>
+        <small>Stake</small>
       </Box>
       <Box
-        className={classes.stakeButton}
-        bgcolor='transparent'
+        className='stakeButton bg-transparent'
         onClick={() => setOpenUnstakeModal(true)}
       >
-        <Typography variant='body2'>Unstake</Typography>
+        <small>Unstake</small>
       </Box>
       <Box mt={3} textAlign='center'>
-        <Typography
-          variant='caption'
-          style={{ color: palette.text.secondary, fontWeight: 500 }}
-        >
+        <span className='text-secondary'>
           ⭐️ When you unstake, the contract will automatically claim QUICK on
           your behalf.
-        </Typography>
+        </span>
       </Box>
     </Box>
   );

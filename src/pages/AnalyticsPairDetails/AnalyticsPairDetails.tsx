@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useHistory, useRouteMatch, Link } from 'react-router-dom';
-import { Box, Typography, Grid, useMediaQuery } from '@material-ui/core';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { Box, Grid, useMediaQuery } from '@material-ui/core';
+import { useTheme } from '@material-ui/core/styles';
 import { Skeleton } from '@material-ui/lab';
 import { ChainId, Token } from '@uniswap/sdk';
-import cx from 'classnames';
 import {
   shortenAddress,
   getEtherscanLink,
@@ -20,67 +19,12 @@ import {
 } from 'components';
 import { getAddress } from '@ethersproject/address';
 import { GlobalConst, TxnType } from 'constants/index';
+import 'pages/styles/analytics.scss';
 import AnalyticsHeader from 'pages/AnalyticsPage/AnalyticsHeader';
 import AnalyticsPairChart from './AnalyticsPairChart';
 
-const useStyles = makeStyles(({ palette, breakpoints }) => ({
-  panel: {
-    background: palette.grey.A700,
-    borderRadius: 20,
-    padding: 24,
-    [breakpoints.down('xs')]: {
-      padding: 12,
-    },
-  },
-  heading1: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: palette.text.primary,
-    lineHeight: 1,
-    [breakpoints.down('xs')]: {
-      fontSize: 22,
-      fontWeight: 600,
-    },
-  },
-  heading2: {
-    fontSize: 32,
-    lineHeight: 1.2,
-    fontWeight: 600,
-    color: palette.text.primary,
-    marginLeft: 6,
-    [breakpoints.down('xs')]: {
-      fontSize: 18,
-    },
-    '& a': {
-      color: palette.text.primary,
-      textDecoration: 'none',
-    },
-  },
-  priceChangeWrapper: {
-    height: 25,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 16,
-    padding: '0 8px',
-  },
-  button: {
-    display: 'flex',
-    alignItems: 'center',
-    height: 40,
-    padding: '0 28px',
-    borderRadius: 10,
-    color: palette.text.primary,
-    cursor: 'pointer',
-  },
-  filledButton: {
-    background: 'linear-gradient(279deg, rgb(0, 76, 230), rgb(61, 113, 255))',
-  },
-}));
-
 const AnalyticsPairDetails: React.FC = () => {
-  const classes = useStyles();
-  const { palette, breakpoints } = useTheme();
+  const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const history = useHistory();
   const match = useRouteMatch<{ id: string }>();
@@ -186,21 +130,16 @@ const AnalyticsPairDetails: React.FC = () => {
       <AnalyticsHeader type='pair' data={pairData} />
       {pairData ? (
         <>
-          <Box
-            width={1}
-            display='flex'
-            flexWrap='wrap'
-            justifyContent='space-between'
-          >
+          <Box width={1} className='flex flex-wrap justify-between'>
             <Box>
-              <Box display='flex' alignItems='center'>
+              <Box className='flex items-center'>
                 <DoubleCurrencyLogo
                   currency0={currency0}
                   currency1={currency1}
                   size={32}
                 />
                 <Box ml={1}>
-                  <Typography className={classes.heading2}>
+                  <p className='heading1'>
                     <Link to={`/analytics/token/${pairData.token0.id}`}>
                       {pairData.token0.symbol}
                     </Link>{' '}
@@ -208,207 +147,122 @@ const AnalyticsPairDetails: React.FC = () => {
                     <Link to={`/analytics/token/${pairData.token1.id}`}>
                       {pairData.token1.symbol}
                     </Link>
-                  </Typography>
+                  </p>
                 </Box>
               </Box>
               <Box mt={2} display='flex'>
-                <Box
-                  paddingY={0.75}
-                  paddingX={1.5}
-                  borderRadius={20}
-                  display='flex'
-                  alignItems='center'
-                  bgcolor={palette.grey.A700}
-                >
+                <Box className='analyticsPairRate'>
                   <CurrencyLogo currency={currency0} size='16px' />
-                  <Typography
-                    variant='body2'
-                    color='textPrimary'
-                    style={{ marginLeft: 6 }}
-                  >
+                  <small style={{ marginLeft: 6 }}>
                     1 {pairData.token0.symbol} = {token0Rate}{' '}
                     {pairData.token1.symbol}
-                  </Typography>
+                  </small>
                 </Box>
-                <Box
-                  padding={0.75}
-                  paddingX={1.5}
-                  ml={2}
-                  borderRadius={20}
-                  display='flex'
-                  alignItems='center'
-                  bgcolor={palette.grey.A700}
-                >
+                <Box ml={1} className='analyticsPairRate'>
                   <CurrencyLogo currency={currency1} size='16px' />
-                  <Typography
-                    variant='body2'
-                    color='textPrimary'
-                    style={{ marginLeft: 6 }}
-                  >
+                  <small style={{ marginLeft: 6 }}>
                     1 {pairData.token1.symbol} = {token1Rate}{' '}
                     {pairData.token0.symbol}
-                  </Typography>
+                  </small>
                 </Box>
               </Box>
             </Box>
             <Box my={2} display='flex'>
               <Box
-                className={classes.button}
+                className='button border-primary'
                 mr={1.5}
-                border={`1px solid ${palette.primary.main}`}
                 onClick={() => {
                   history.push(
                     `/pools?currency0=${pairData.token0.id}&currency1=${pairData.token1.id}`,
                   );
                 }}
               >
-                <Typography variant='body2'>Add Liquidity</Typography>
+                <small>Add Liquidity</small>
               </Box>
               <Box
-                className={cx(classes.button, classes.filledButton)}
+                className='button filledButton'
                 onClick={() => {
                   history.push(
                     `/swap?currency0=${pairData.token0.id}&currency1=${pairData.token1.id}`,
                   );
                 }}
               >
-                <Typography variant='body2'>Swap</Typography>
+                <small>Swap</small>
               </Box>
             </Box>
           </Box>
-          <Box width={1} className={classes.panel} mt={4}>
+          <Box width={1} className='panel' mt={4}>
             <Grid container>
               <Grid item xs={12} sm={12} md={6}>
                 <AnalyticsPairChart pairData={pairData} />
               </Grid>
               <Grid item xs={12} sm={12} md={6}>
-                <Box
-                  my={2}
-                  height={1}
-                  display='flex'
-                  justifyContent='center'
-                  alignItems='center'
-                >
-                  <Box
-                    width={isMobile ? 1 : 0.8}
-                    display='flex'
-                    justifyContent='space-between'
-                  >
+                <Box className='analyticsDetailsInfo'>
+                  <Box>
                     <Box width={212}>
                       <Box>
-                        <Typography
-                          variant='caption'
-                          style={{ color: palette.text.disabled }}
-                        >
+                        <span className='text-disabled'>
                           TOTAL TOKENS LOCKED
-                        </Typography>
+                        </span>
                         <Box
                           mt={1.5}
-                          bgcolor={palette.grey.A400}
+                          className='bg-gray2'
                           borderRadius={8}
                           padding={1.5}
                         >
-                          <Box
-                            display='flex'
-                            alignItems='center'
-                            justifyContent='space-between'
-                          >
-                            <Box display='flex' alignItems='center'>
+                          <Box className='flex items-center justify-between'>
+                            <Box className='flex items-center'>
                               <CurrencyLogo currency={currency0} size='16px' />
-                              <Typography
-                                variant='caption'
-                                color='textPrimary'
-                                style={{ marginLeft: 6 }}
-                              >
+                              <span style={{ marginLeft: 6 }}>
                                 {pairData.token0.symbol} :
-                              </Typography>
+                              </span>
                             </Box>
-                            <Typography variant='caption' color='textPrimary'>
+                            <span>
                               {Number(pairData.reserve0).toLocaleString()}
-                            </Typography>
+                            </span>
                           </Box>
                           <Box
                             mt={1}
-                            display='flex'
-                            alignItems='center'
-                            justifyContent='space-between'
+                            className='flex items-center justify-between'
                           >
-                            <Box display='flex' alignItems='center'>
+                            <Box className='flex items-center'>
                               <CurrencyLogo currency={currency1} size='16px' />
-                              <Typography
-                                variant='caption'
-                                color='textPrimary'
-                                style={{ marginLeft: 6 }}
-                              >
+                              <span style={{ marginLeft: 6 }}>
                                 {pairData.token1.symbol} :
-                              </Typography>
+                              </span>
                             </Box>
-                            <Typography variant='caption' color='textPrimary'>
+                            <span>
                               {Number(pairData.reserve1).toLocaleString()}
-                            </Typography>
+                            </span>
                           </Box>
                         </Box>
                       </Box>
                       <Box mt={4}>
-                        <Typography
-                          variant='caption'
-                          style={{ color: palette.text.disabled }}
-                        >
-                          7d Trading Vol
-                        </Typography>
-                        <Typography variant={isMobile ? 'body1' : 'h5'}>
-                          ${pairData.oneWeekVolumeUSD.toLocaleString()}
-                        </Typography>
+                        <span className='text-disabled'>7d Trading Vol</span>
+                        <h5>${pairData.oneWeekVolumeUSD.toLocaleString()}</h5>
                       </Box>
                       <Box mt={4}>
-                        <Typography
-                          variant='caption'
-                          style={{ color: palette.text.disabled }}
-                        >
-                          24h FEES
-                        </Typography>
-                        <Typography variant={isMobile ? 'body1' : 'h5'}>
-                          ${fees}
-                        </Typography>
+                        <span className='text-disabled'>24h FEES</span>
+                        <h5>${fees}</h5>
                       </Box>
                     </Box>
                     <Box width={140}>
-                      <Typography
-                        variant='caption'
-                        style={{ color: palette.text.disabled }}
-                      >
-                        TOTAL LIQUIDITY
-                      </Typography>
-                      <Typography variant={isMobile ? 'body1' : 'h5'}>
+                      <span className='text-disabled'>TOTAL LIQUIDITY</span>
+                      <h5>
                         $
                         {Number(
                           pairData.reserveUSD
                             ? pairData.reserveUSD
                             : pairData.trackedReserveUSD,
                         ).toLocaleString()}
-                      </Typography>
+                      </h5>
                       <Box mt={4}>
-                        <Typography
-                          variant='caption'
-                          style={{ color: palette.text.disabled }}
-                        >
-                          24h Trading Vol
-                        </Typography>
-                        <Typography variant={isMobile ? 'body1' : 'h5'}>
-                          ${pairData.oneDayVolumeUSD.toLocaleString()}
-                        </Typography>
+                        <span className='text-disabled'>24h Trading Vol</span>
+                        <h5>${pairData.oneDayVolumeUSD.toLocaleString()}</h5>
                       </Box>
                       <Box mt={4}>
-                        <Typography
-                          variant='caption'
-                          style={{ color: palette.text.disabled }}
-                        >
-                          Contract Address
-                        </Typography>
-                        <Typography
-                          variant='h5'
-                          style={{ color: palette.primary.main }}
-                        >
+                        <span className='text-disabled'>Contract Address</span>
+                        <h5 className='text-primary'>
                           {chainId ? (
                             <a
                               href={getEtherscanLink(
@@ -418,17 +272,14 @@ const AnalyticsPairDetails: React.FC = () => {
                               )}
                               target='_blank'
                               rel='noopener noreferrer'
-                              style={{
-                                color: palette.primary.main,
-                                textDecoration: 'none',
-                              }}
+                              className='text-primary no-decoration'
                             >
                               {shortenAddress(pairData.id)}
                             </a>
                           ) : (
                             shortenAddress(pairData.id)
                           )}
-                        </Typography>
+                        </h5>
                       </Box>
                     </Box>
                   </Box>
@@ -437,9 +288,9 @@ const AnalyticsPairDetails: React.FC = () => {
             </Grid>
           </Box>
           <Box width={1} mt={5}>
-            <Typography variant='body1'>Transactions</Typography>
+            <p>Transactions</p>
           </Box>
-          <Box width={1} className={classes.panel} mt={4}>
+          <Box width={1} className='panel' mt={4}>
             {pairTransactionsList ? (
               <TransactionsTable data={pairTransactionsList} />
             ) : (

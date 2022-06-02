@@ -1,30 +1,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Box, Typography } from '@material-ui/core';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { Box } from '@material-ui/core';
 import { TopMovers, TokensTable } from 'components';
 import { useBookmarkTokens } from 'state/application/hooks';
 import { getEthPrice, getTopTokens } from 'utils';
 import { Skeleton } from '@material-ui/lab';
 
-const useStyles = makeStyles(({ palette, breakpoints }) => ({
-  tokensFilter: {
-    cursor: 'pointer',
-    display: 'flex',
-    margin: '8px 16px 8px 0',
-  },
-  panel: {
-    background: palette.grey.A700,
-    borderRadius: 20,
-    padding: 24,
-    [breakpoints.down('xs')]: {
-      padding: 12,
-    },
-  },
-}));
-
 const AnalyticsTokens: React.FC = () => {
-  const classes = useStyles();
-  const { palette } = useTheme();
   const [tokensFilter, setTokensFilter] = useState(0);
 
   const [topTokens, updateTopTokens] = useState<any[] | null>(null);
@@ -55,37 +36,34 @@ const AnalyticsTokens: React.FC = () => {
 
   return (
     <Box width='100%' mb={3}>
-      <TopMovers background={palette.grey.A700} hideArrow={true} />
-      <Box my={4} px={2} display='flex' flexWrap='wrap' alignItems='center'>
+      <TopMovers hideArrow={true} />
+      <Box my={4} px={2} className='flex flex-wrap items-center'>
         <Box
-          className={classes.tokensFilter}
+          className={`tokensFilter ${
+            tokensFilter === 0 ? 'text-primary' : 'text-disabled'
+          }`}
           onClick={() => setTokensFilter(0)}
-          color={
-            tokensFilter === 0 ? palette.primary.main : palette.text.disabled
-          }
         >
-          <Typography variant='h6'>All Cryptos</Typography>
+          <p className='weight-600'>All Cryptos</p>
         </Box>
         <Box
-          className={classes.tokensFilter}
-          color={
-            tokensFilter === 1 ? palette.primary.main : palette.text.disabled
-          }
+          className={`tokensFilter ${
+            tokensFilter === 1 ? 'text-primary' : 'text-disabled'
+          }`}
           onClick={() => setTokensFilter(1)}
         >
-          <Typography variant='h6'>Favourites</Typography>
+          <p className='weight-600'>Favourites</p>
         </Box>
         <Box
-          className={classes.tokensFilter}
-          color={
-            tokensFilter === 2 ? palette.primary.main : palette.text.disabled
-          }
+          className={`tokensFilter ${
+            tokensFilter === 2 ? 'text-primary' : 'text-disabled'
+          }`}
           onClick={() => setTokensFilter(2)}
         >
-          <Typography variant='h6'>New Listing</Typography>
+          <p className='weight-600'>New Listing</p>
         </Box>
       </Box>
-      <Box className={classes.panel}>
+      <Box className='panel'>
         {topTokens && topTokens.length === 200 ? (
           <TokensTable data={tokensFilter === 0 ? topTokens : favoriteTokens} />
         ) : (

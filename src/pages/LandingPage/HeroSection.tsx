@@ -1,46 +1,13 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
-import { Typography, Button, Box } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { Button, Box } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import { isSupportedNetwork, addMaticToMetamask } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import { useWalletModalToggle } from 'state/application/hooks';
 import { useTranslation } from 'react-i18next';
 
-const useStyles = makeStyles(({ palette }) => ({
-  heroSection: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    position: 'relative',
-    textAlign: 'center',
-    zIndex: 2,
-    '& h3': {
-      textTransform: 'uppercase',
-      marginBottom: 20,
-      paddingTop: 9,
-    },
-    '& h1': {
-      fontSize: '55px',
-      fontWeight: 700,
-    },
-    '& h5': {
-      fontSize: '15px',
-      color: palette.text.secondary,
-    },
-    '& > button': {
-      height: 56,
-      width: 194,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-  },
-}));
-
 export const HeroSection: React.FC<{ globalData: any }> = ({ globalData }) => {
-  const classes = useStyles();
   const history = useHistory();
   const { account } = useActiveWeb3React();
   const { ethereum } = window as any;
@@ -48,34 +15,30 @@ export const HeroSection: React.FC<{ globalData: any }> = ({ globalData }) => {
   const { t } = useTranslation();
 
   return (
-    <Box className={classes.heroSection}>
-      <Typography variant='body2' style={{ fontWeight: 'bold' }}>
-        {t('totalValueLocked')}
-      </Typography>
+    <Box className='heroSection'>
+      <small className='text-bold'>{t('totalValueLocked')}</small>
       {globalData ? (
         <Box display='flex' pt='5px'>
-          <Typography variant='h3'>$</Typography>
-          <Typography variant='h1'>
+          <h3>$</h3>
+          <h1>
             {Number(globalData.totalLiquidityUSD).toLocaleString(undefined, {
               maximumFractionDigits: 0,
             })}
-          </Typography>
+          </h1>
         </Box>
       ) : (
         <Box my={1}>
           <Skeleton variant='rect' width={400} height={72} />
         </Box>
       )}
-      <Typography variant='h5'>{t('topAssetExchange')}</Typography>
+      <h5>{t('topAssetExchange')}</h5>
       <Box mt={2} width={200} height={48}>
         <Button
           fullWidth
+          className='bg-blue1 p'
           style={{
-            backgroundColor: '#004ce6',
             borderRadius: '30px',
             height: '100%',
-            fontSize: 16,
-            fontWeight: 500,
           }}
           onClick={() => {
             ethereum && !isSupportedNetwork(ethereum)

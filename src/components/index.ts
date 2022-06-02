@@ -30,10 +30,7 @@ export { default as SettingsModal } from './SettingsModal';
 export { default as StakeQuickModal } from './StakeQuickModal';
 export { default as StakeSyrupModal } from './StakeSyrupModal';
 export { default as UnstakeQuickModal } from './UnstakeQuickModal';
-export {
-  default as FullPositionCard,
-  MinimalPositionCard,
-} from './PositionCard';
+export { default as MinimalPositionCard } from './PositionCard';
 export { default as SyrupCard } from './SyrupCard';
 export { default as FarmCard } from './FarmCard';
 export { default as Swap, AdvancedSwapDetails } from './Swap';

@@ -1,32 +1,8 @@
 import React from 'react';
 import { ChainId, Currency, currencyEquals, ETHER, Token } from '@uniswap/sdk';
-import { Box, Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { Box } from '@material-ui/core';
 import { GlobalData } from 'constants/index';
 import { CurrencyLogo, QuestionHelper } from 'components';
-
-const useStyles = makeStyles(({ palette }) => ({
-  baseWrapper: {
-    borderRadius: 18,
-    display: 'flex',
-    padding: '6px 10px',
-    margin: '4px 8px 4px 0',
-    alignItems: 'center',
-    backgroundColor: palette.secondary.dark,
-    '&:hover': {
-      cursor: 'pointer',
-    },
-    '& p': {
-      marginLeft: 6,
-    },
-  },
-  title: {
-    '& span': {
-      marginRight: 4,
-      color: palette.text.secondary,
-    },
-  },
-}));
 
 interface CommonBasesProps {
   chainId?: ChainId;
@@ -39,16 +15,17 @@ const CommonBases: React.FC<CommonBasesProps> = ({
   onSelect,
   selectedCurrency,
 }) => {
-  const classes = useStyles();
   return (
     <Box mb={2}>
-      <Box display='flex' className={classes.title} my={1.5}>
-        <Typography variant='caption'>Common bases</Typography>
+      <Box display='flex' my={1.5}>
+        <Box mr='6px'>
+          <span>Common bases</span>
+        </Box>
         <QuestionHelper text='These tokens are commonly paired with other tokens.' />
       </Box>
-      <Box display='flex' flexWrap='wrap'>
+      <Box className='flex flex-wrap'>
         <Box
-          className={classes.baseWrapper}
+          className='baseWrapper'
           onClick={() => {
             if (!selectedCurrency || !currencyEquals(selectedCurrency, ETHER)) {
               onSelect(ETHER);
@@ -56,7 +33,7 @@ const CommonBases: React.FC<CommonBasesProps> = ({
           }}
         >
           <CurrencyLogo currency={ETHER} size='24px' />
-          <Typography variant='body2'>MATIC</Typography>
+          <small>MATIC</small>
         </Box>
         {(chainId ? GlobalData.bases.SUGGESTED_BASES[chainId] : []).map(
           (token: Token) => {
@@ -65,12 +42,12 @@ const CommonBases: React.FC<CommonBasesProps> = ({
               selectedCurrency.address === token.address;
             return (
               <Box
-                className={classes.baseWrapper}
+                className='baseWrapper'
                 key={token.address}
                 onClick={() => !selected && onSelect(token)}
               >
                 <CurrencyLogo currency={token} size='24px' />
-                <Typography variant='body2'>{token.symbol}</Typography>
+                <small>{token.symbol}</small>
               </Box>
             );
           },

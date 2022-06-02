@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import { GlobalConst } from 'constants/index';
 
 interface AnalyticsInfoProps {
@@ -10,22 +10,18 @@ const AnalyticsInfo: React.FC<AnalyticsInfoProps> = ({ data }) => {
   return (
     <>
       <Box mr={5}>
-        <Typography variant='body2'>
-          Pairs: {data.pairCount.toLocaleString()}
-        </Typography>
+        <small>Pairs: {data.pairCount.toLocaleString()}</small>
       </Box>
       <Box mr={5}>
-        <Typography variant='body2'>
-          24h Transactions: {data.oneDayTxns.toLocaleString()}
-        </Typography>
+        <small>24h Transactions: {data.oneDayTxns.toLocaleString()}</small>
       </Box>
       <Box>
-        <Typography variant='body2'>
+        <small>
           24h Fees: $
           {(
             data.oneDayVolumeUSD * GlobalConst.utils.FEEPERCENT
           ).toLocaleString()}
-        </Typography>
+        </small>
       </Box>
     </>
   );

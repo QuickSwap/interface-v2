@@ -1,0 +1,14 @@
+@use 'styles/variables' as *;
+@use 'styles/breakpoints' as *;
+
+.stakeButton {
+  & span {
+    font-size: 16px;
+    font-weight: 600;
+  }
+  &.Mui-disabled {
+    border: none;
+    background-image: none;
+    background-color: $secondary1;
+  }
+}

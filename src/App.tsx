@@ -44,7 +44,6 @@ import MulticallUpdater from 'state/multicall/updater';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import './i18n';
-import './App.css';
 import { mainTheme } from './theme';
 import Background from 'layouts/Background';
 

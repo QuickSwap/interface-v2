@@ -1,30 +1,17 @@
 import React from 'react';
-import { Box, Typography, useMediaQuery } from '@material-ui/core';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { Box, useMediaQuery } from '@material-ui/core';
+import { useTheme } from '@material-ui/core/styles';
 import { GlobalConst } from 'constants/index';
 import { DoubleCurrencyLogo } from 'components';
 import { formatCompact, getDaysCurrentYear } from 'utils';
 import { useCurrency } from 'hooks/Tokens';
 import { useTranslation } from 'react-i18next';
 
-const useStyles = makeStyles(({ palette }) => ({
-  liquidityContent: {
-    border: `1px solid ${palette.secondary.dark}`,
-    borderRadius: '10px',
-    marginBottom: '20px',
-    '& p': {
-      color: palette.text.primary,
-      fontWeight: 600,
-    },
-  },
-}));
-
 const LiquidityPoolRow: React.FC<{
   pair: any;
   key: number;
 }> = ({ pair, key }) => {
-  const classes = useStyles();
-  const { palette, breakpoints } = useTheme();
+  const { breakpoints } = useTheme();
   const daysCurrentYear = getDaysCurrentYear();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const { t } = useTranslation();
@@ -52,70 +39,45 @@ const LiquidityPoolRow: React.FC<{
   const token0 = useCurrency(pair.token0.id);
   const token1 = useCurrency(pair.token1.id);
   return (
-    <Box
-      key={key}
-      display='flex'
-      flexWrap='wrap'
-      className={classes.liquidityContent}
-      padding={2}
-    >
-      <Box display='flex' alignItems='center' width={isMobile ? 1 : 0.5}>
+    <Box key={key} className='liquidityContent'>
+      <Box className='flex items-center' width={isMobile ? 1 : 0.5}>
         <DoubleCurrencyLogo
           currency0={token0 ?? undefined}
           currency1={token1 ?? undefined}
           size={28}
         />
-        <Typography variant='body2' style={{ marginLeft: 12 }}>
+        <small style={{ marginLeft: 12 }}>
           {pair.token0.symbol.toUpperCase()} /{' '}
           {pair.token1.symbol.toUpperCase()}
-        </Typography>
+        </small>
       </Box>
       <Box
         width={isMobile ? 1 : 0.2}
         mt={isMobile ? 2.5 : 0}
-        display='flex'
-        justifyContent='space-between'
+        className='flex justify-between'
       >
-        {isMobile && (
-          <Typography variant='body2' style={{ color: palette.text.secondary }}>
-            {t('tvl')}
-          </Typography>
-        )}
-        <Typography variant='body2'>${formatCompact(liquidity)}</Typography>
+        {isMobile && <small className='text-secondary'>{t('tvl')}</small>}
+        <small>${formatCompact(liquidity)}</small>
       </Box>
       <Box
         width={isMobile ? 1 : 0.15}
         mt={isMobile ? 1 : 0}
-        display='flex'
-        justifyContent='space-between'
+        className='flex justify-between'
       >
-        {isMobile && (
-          <Typography variant='body2' style={{ color: palette.text.secondary }}>
-            {t('24hVol')}
-          </Typography>
-        )}
-        <Typography variant='body2'>${formatCompact(volume)}</Typography>
+        {isMobile && <small className='text-secondary'>{t('24hVol')}</small>}
+        <small>${formatCompact(volume)}</small>
       </Box>
       <Box
         width={isMobile ? 1 : 0.15}
         mt={isMobile ? 1 : 0}
-        display='flex'
-        justifyContent={isMobile ? 'space-between' : 'flex-end'}
+        className={`flex ${isMobile ? 'justify-between' : 'justify-end'}`}
       >
-        {isMobile && (
-          <Typography variant='body2' style={{ color: palette.text.secondary }}>
-            {t('apy')}
-          </Typography>
-        )}
-        <Typography
-          variant='body2'
-          align='right'
-          style={{
-            color: apy < 0 ? palette.error.main : palette.success.main,
-          }}
+        {isMobile && <small className='text-secondary'>{t('apy')}</small>}
+        <small
+          className={`text-right ${apy < 0 ? 'text-error' : 'text-success'}`}
         >
           {apy.toFixed(2)}%
-        </Typography>
+        </small>
       </Box>
     </Box>
   );

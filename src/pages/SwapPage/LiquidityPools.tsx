@@ -1,37 +1,18 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Box, Divider, Typography, useMediaQuery } from '@material-ui/core';
+import { Box, Divider, useMediaQuery } from '@material-ui/core';
 import { KeyboardArrowUp, KeyboardArrowDown } from '@material-ui/icons';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { useTheme } from '@material-ui/core/styles';
 import { getTokenPairs, getBulkPairData, getEthPrice } from 'utils';
 import { Token } from '@uniswap/sdk';
 import LiquidityPoolRow from './LiquidityPoolRow';
 import { useAllTokens } from 'hooks/Tokens';
 import { useTranslation } from 'react-i18next';
 
-const useStyles = makeStyles(({ palette }) => ({
-  liquidityMain: {
-    '& p': {
-      color: palette.text.secondary,
-      fontWeight: 600,
-    },
-  },
-  liquidityFilter: {
-    '& p': {
-      cursor: 'pointer',
-      marginRight: 20,
-      '&.active': {
-        color: palette.primary.main,
-      },
-    },
-  },
-}));
-
 const LiquidityPools: React.FC<{
   token1: Token;
   token2: Token;
 }> = ({ token1, token2 }) => {
-  const classes = useStyles();
-  const { palette, breakpoints } = useTheme();
+  const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const [liquidityPoolClosed, setLiquidityPoolClosed] = useState(false);
   const [liquidityFilterIndex, setLiquidityFilterIndex] = useState(0);
@@ -101,25 +82,19 @@ const LiquidityPools: React.FC<{
   return (
     <>
       <Box
-        display='flex'
-        alignItems='center'
-        justifyContent='space-between'
+        className='flex items-center justify-between'
         marginBottom={liquidityPoolClosed ? 0 : '20px'}
       >
-        <Box display='flex' alignItems='center'>
-          <Typography
-            variant='h6'
-            style={{ color: palette.text.primary, marginRight: 8 }}
-          >
+        <Box className='flex items-center'>
+          <p className='weight-600' style={{ marginRight: 8 }}>
             {t('liquidityPools')}
-          </Typography>
-          <Typography variant='body2' style={{ color: palette.text.secondary }}>
+          </p>
+          <small className='text-secondary'>
             ({token1.symbol?.toUpperCase()}, {token2.symbol?.toUpperCase()})
-          </Typography>
+          </small>
         </Box>
         <Box
-          display='flex'
-          style={{ cursor: 'pointer', color: palette.text.secondary }}
+          className='flex cursor-pointer text-secondary'
           onClick={() => setLiquidityPoolClosed(!liquidityPoolClosed)}
         >
           {liquidityPoolClosed ? <KeyboardArrowDown /> : <KeyboardArrowUp />}
@@ -129,50 +104,37 @@ const LiquidityPools: React.FC<{
         <>
           <Divider />
           <Box width={1}>
-            <Box display='flex' padding={2} className={classes.liquidityMain}>
-              <Box
-                display='flex'
-                width={0.5}
-                className={classes.liquidityFilter}
-              >
-                <Typography
-                  variant='body2'
+            <Box padding={2} className='flex liquidityMain'>
+              <Box width={0.5} className='flex liquidityFilter'>
+                <small
                   className={liquidityFilterIndex === 0 ? 'active' : ''}
                   onClick={() => setLiquidityFilterIndex(0)}
                 >
                   {t('all')}
-                </Typography>
-                <Typography
-                  variant='body2'
+                </small>
+                <small
                   className={liquidityFilterIndex === 1 ? 'active' : ''}
                   onClick={() => setLiquidityFilterIndex(1)}
                 >
                   {token1.symbol?.toUpperCase()}
-                </Typography>
-                <Typography
-                  variant='body2'
+                </small>
+                <small
                   className={liquidityFilterIndex === 2 ? 'active' : ''}
                   onClick={() => setLiquidityFilterIndex(2)}
                 >
                   {token2.symbol?.toUpperCase()}
-                </Typography>
+                </small>
               </Box>
               {!isMobile && (
                 <>
                   <Box width={0.2}>
-                    <Typography variant='body2' align='left'>
-                      {t('tvl')}
-                    </Typography>
+                    <small>{t('tvl')}</small>
                   </Box>
                   <Box width={0.15}>
-                    <Typography variant='body2' align='left'>
-                      {t('24hVol')}
-                    </Typography>
+                    <small>{t('24hVol')}</small>
                   </Box>
-                  <Box width={0.15}>
-                    <Typography variant='body2' align='right'>
-                      {t('apy')}
-                    </Typography>
+                  <Box width={0.15} className='text-right'>
+                    <small>{t('apy')}</small>
                   </Box>
                 </>
               )}

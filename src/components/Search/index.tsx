@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef, useMemo } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 import { useHistory } from 'react-router-dom';
-import { Box, Typography } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import { ReactComponent as SearchIcon } from 'assets/images/SearchIcon.svg';
 import { client } from 'apollo/client';
 import { TOKEN_SEARCH, PAIR_SEARCH } from 'apollo/queries';
@@ -10,40 +9,9 @@ import { GlobalConst } from 'constants/index';
 import { CurrencyLogo, DoubleCurrencyLogo } from 'components';
 import { ChainId, Token } from '@uniswap/sdk';
 import { getAddress } from '@ethersproject/address';
-
-const useStyles = makeStyles(({ palette }) => ({
-  searchInput: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: '0 16px',
-    background: palette.grey.A700,
-    height: 46,
-    borderRadius: 10,
-    margin: '12px 0',
-    '& input': {
-      background: 'transparent',
-      border: 'none',
-      outline: 'none',
-      fontSize: 15,
-      fontWeight: 500,
-      minWidth: 240,
-      color: palette.text.primary,
-    },
-  },
-  searchContent: {
-    position: 'absolute',
-    width: '100%',
-    background: palette.grey.A700,
-    borderRadius: 10,
-    padding: 12,
-    zIndex: 2,
-    height: 300,
-    overflowY: 'auto',
-  },
-}));
+import 'components/styles/SearchWidget.scss';
 
 const Search: React.FC = () => {
-  const classes = useStyles();
   const history = useHistory();
   const [searchVal, setSearchVal] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
@@ -241,7 +209,7 @@ const Search: React.FC = () => {
 
   return (
     <Box position='relative'>
-      <Box className={classes.searchInput}>
+      <Box className='searchWidgetInput'>
         <input
           placeholder='Search for tokens, pairs, etc…'
           value={searchVal}
@@ -254,8 +222,8 @@ const Search: React.FC = () => {
         </Box>
       </Box>
       {menuOpen && (
-        <div ref={wrapperRef} className={classes.searchContent}>
-          <Typography variant='body1'>Pairs</Typography>
+        <div ref={wrapperRef} className='searchWidgetContent'>
+          <p>Pairs</p>
           {filteredPairs.slice(0, pairsShown).map((val, ind) => {
             const currency0 = new Token(
               ChainId.MATIC,
@@ -271,9 +239,7 @@ const Search: React.FC = () => {
               <Box
                 mt={1}
                 key={ind}
-                display='flex'
-                alignItems='center'
-                style={{ cursor: 'pointer' }}
+                className='flex items-center cursor-pointer'
                 onClick={() => history.push(`/analytics/pair/${val.id}`)}
               >
                 <DoubleCurrencyLogo
@@ -281,20 +247,20 @@ const Search: React.FC = () => {
                   currency1={currency1}
                   size={28}
                 />
-                <Typography variant='body2' style={{ marginLeft: 8 }}>
+                <small style={{ marginLeft: 8 }}>
                   {val.token0.symbol} - {val.token1.symbol} Pair
-                </Typography>
+                </small>
               </Box>
             );
           })}
-          <Typography
-            variant='body2'
-            style={{ cursor: 'pointer', margin: '8px 0' }}
+          <Box
+            className='cursor-pointer'
             onClick={() => setPairsShown(pairsShown + 5)}
+            margin='8px 0'
           >
-            Show More
-          </Typography>
-          <Typography variant='body1'>Tokens</Typography>
+            <small>Show More</small>
+          </Box>
+          <p>Tokens</p>
           {filteredTokens.slice(0, tokensShown).map((val, ind) => {
             const currency = new Token(
               ChainId.MATIC,
@@ -305,25 +271,25 @@ const Search: React.FC = () => {
               <Box
                 mt={1}
                 key={ind}
-                display='flex'
-                alignItems='center'
-                style={{ cursor: 'pointer' }}
+                className='flex items-center cursor-pointer'
                 onClick={() => history.push(`/analytics/token/${val.id}`)}
               >
                 <CurrencyLogo currency={currency} size='28px' />
-                <Typography variant='body2' style={{ marginLeft: 8 }}>
-                  {val.name} {val.symbol}
-                </Typography>
+                <Box ml={1}>
+                  <small>
+                    {val.name} {val.symbol}
+                  </small>
+                </Box>
               </Box>
             );
           })}
-          <Typography
-            variant='body2'
-            style={{ cursor: 'pointer', marginTop: 8 }}
+          <Box
+            className='cursor-pointer'
+            mt={1}
             onClick={() => setTokensShown(tokensShown + 5)}
           >
-            Show More
-          </Typography>
+            <small>Show More</small>
+          </Box>
         </div>
       )}
     </Box>

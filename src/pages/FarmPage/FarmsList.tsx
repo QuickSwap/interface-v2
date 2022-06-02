@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTheme } from '@material-ui/core/styles';
-import { Box, Typography, Divider, useMediaQuery } from '@material-ui/core';
+import { Box, Divider, useMediaQuery } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import { ArrowUp, ArrowDown } from 'react-feather';
 import {
@@ -42,7 +42,7 @@ interface FarmsListProps {
 
 const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
   const { t } = useTranslation();
-  const { palette, breakpoints } = useTheme();
+  const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
 
   const [pageIndex, setPageIndex] = useState(0);
@@ -340,13 +340,10 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
   });
 
   const renderStakedOnly = () => (
-    <Box display='flex' alignItems='center'>
-      <Typography
-        variant='body2'
-        style={{ color: palette.text.disabled, marginRight: 8 }}
-      >
+    <Box className='flex items-center'>
+      <small className='text-disabled' style={{ marginRight: 8 }}>
         {t('stakedOnly')}
-      </Typography>
+      </small>
       <ToggleSwitch
         toggled={stakedOnly}
         onToggle={() => setStakeOnly(!stakedOnly)}
@@ -369,27 +366,20 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
 
   return (
     <>
-      <Box
-        display='flex'
-        flexWrap='wrap'
-        justifyContent='space-between'
-        alignItems='center'
-        mb={3.5}
-      >
+      <Box className='farmListHeader'>
         <Box>
-          <Typography variant='h5'>{t('earndQUICK')}</Typography>
-          <Typography variant='body2'>
+          <h5>{t('earndQUICK')}</h5>
+          <small>
             {t(
               farmIndex === GlobalConst.farmIndex.LPFARM_INDEX
                 ? 'stakeMessageLP'
                 : 'stakeMessageDual',
             )}
-          </Typography>
+          </small>
         </Box>
-        <Box display='flex' flexWrap='wrap'>
+        <Box className='flex flex-wrap'>
           <Box
-            display='flex'
-            justifyContent='space-between'
+            className='flex justify-between'
             width={returnFullWidthMobile(isMobile)}
           >
             <Box width={isMobile ? 'calc(100% - 150px)' : 1} mr={2} my={2}>
@@ -403,9 +393,7 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
           </Box>
           <Box
             width={returnFullWidthMobile(isMobile)}
-            display='flex'
-            flexWrap='wrap'
-            alignItems='center'
+            className='flex flex-wrap items-center'
           >
             <Box mr={2}>
               <CustomSwitch width={160} height={40} items={farmStatusItems} />
@@ -418,13 +406,10 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
                     menuItems={sortByMobileItems}
                   />
                 </Box>
-                <Box mt={2} width={1} display='flex' alignItems='center'>
-                  <Typography
-                    variant='body2'
-                    style={{ color: palette.text.disabled, marginRight: 8 }}
-                  >
+                <Box mt={2} width={1} className='flex items-center'>
+                  <small className='text-disabled' style={{ marginRight: 8 }}>
                     {sortDesc ? t('sortdesc') : t('sortasc')}
-                  </Typography>
+                  </small>
                   <ToggleSwitch
                     toggled={sortDesc}
                     onToggle={() => setSortDesc(!sortDesc)}
@@ -443,19 +428,14 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
           {sortByDesktopItems.map((item) => (
             <Box
               key={item.index}
-              display='flex'
-              alignItems='center'
               width={item.width}
-              style={{ cursor: 'pointer' }}
+              className={`flex items-center cursor-pointer ${
+                sortBy === item.index ? '' : 'text-secondary'
+              }`}
               justifyContent={item.justify}
               onClick={item.onClick}
-              color={
-                sortBy === item.index
-                  ? palette.text.primary
-                  : palette.text.secondary
-              }
             >
-              <Typography variant='body2'>{item.text}</Typography>
+              <small>{item.text}</small>
               <Box display='flex' ml={0.5}>
                 {sortBy === item.index && sortDesc ? (
                   <ArrowDown size={20} />

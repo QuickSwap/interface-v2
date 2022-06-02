@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
-import { Box, Typography, Grid, useMediaQuery } from '@material-ui/core';
+import { useTheme } from '@material-ui/core/styles';
+import { Box, Grid, useMediaQuery } from '@material-ui/core';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
 import { SwapTokenDetails, ToggleSwitch } from 'components';
 import { useIsProMode } from 'state/application/hooks';
@@ -15,53 +15,11 @@ import SwapProChartTrade from './SwapProChartTrade';
 import SwapProInfo from './SwapProInfo';
 import SwapProFilter from './SwapProFilter';
 import { useTranslation } from 'react-i18next';
-
-const useStyles = makeStyles(({ palette, breakpoints }) => ({
-  helpWrapper: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: '8px 12px',
-    border: `1px solid ${palette.secondary.light}`,
-    borderRadius: 10,
-    '& p': {
-      color: palette.text.hint,
-    },
-    '& svg': {
-      marginLeft: 8,
-    },
-  },
-  wrapper: {
-    padding: (props: any) => (props.isProMode ? '24px 0' : 24),
-    backgroundColor: palette.background.paper,
-    borderRadius: (props: any) => (props.isProMode ? 0 : 20),
-    [breakpoints.down('xs')]: {
-      padding: '16px 12px',
-    },
-  },
-  swapTokenDetails: {
-    backgroundColor: palette.background.paper,
-    borderRadius: 16,
-    width: 'calc(50% - 16px)',
-    [breakpoints.down('md')]: {
-      width: '100%',
-      marginBottom: 16,
-    },
-    [breakpoints.down('sm')]: {
-      width: 'calc(50% - 16px)',
-      margin: 0,
-    },
-    [breakpoints.down('xs')]: {
-      width: '100%',
-      marginTop: 16,
-      marginBottom: 16,
-    },
-  },
-}));
+import 'pages/styles/swap.scss';
 
 const SwapPage: React.FC = () => {
   const { isProMode, updateIsProMode } = useIsProMode();
-  const classes = useStyles({ isProMode });
-  const { palette, breakpoints } = useTheme();
+  const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('sm'));
   const isTablet = useMediaQuery(breakpoints.down('md'));
   const [showChart, setShowChart] = useState(true);
@@ -117,16 +75,10 @@ const SwapPage: React.FC = () => {
   return (
     <Box width='100%' mb={3} id='swap-page'>
       {!isProMode && (
-        <Box
-          mb={2}
-          display='flex'
-          alignItems='center'
-          justifyContent='space-between'
-          width='100%'
-        >
-          <Typography variant='h4'>{t('swap')}</Typography>
-          <Box className={classes.helpWrapper}>
-            <Typography variant='body2'>{t('help')}</Typography>
+        <Box className='pageHeading'>
+          <h4>{t('swap')}</h4>
+          <Box className='helpWrapper'>
+            <small>{t('help')}</small>
             <HelpIcon />
           </Box>
         </Box>
@@ -134,30 +86,25 @@ const SwapPage: React.FC = () => {
       {!isProMode ? (
         <Grid container spacing={4}>
           <Grid item xs={12} sm={12} md={6} lg={5}>
-            <Box className={classes.wrapper}>
+            <Box className='wrapper'>
               <SwapMain />
             </Box>
           </Grid>
           <Grid item xs={12} sm={12} md={6} lg={7}>
-            <Box
-              display='flex'
-              flexWrap='wrap'
-              justifyContent='space-between'
-              width='100%'
-            >
+            <Box className='flex flex-wrap justify-between fullWidth'>
               {token1 && (
-                <Box className={classes.swapTokenDetails}>
+                <Box className='swapTokenDetails'>
                   <SwapTokenDetails token={token1} />
                 </Box>
               )}
               {token2 && (
-                <Box className={classes.swapTokenDetails}>
+                <Box className='swapTokenDetails'>
                   <SwapTokenDetails token={token2} />
                 </Box>
               )}
             </Box>
             {token1 && token2 && (
-              <Box className={classes.wrapper} marginTop='32px'>
+              <Box className='wrapper' marginTop='32px'>
                 <LiquidityPools token1={token1} token2={token2} />
               </Box>
             )}
@@ -165,33 +112,27 @@ const SwapPage: React.FC = () => {
         </Grid>
       ) : (
         <Box
-          borderTop={`1px solid ${palette.divider}`}
-          borderBottom={`1px solid ${palette.divider}`}
-          bgcolor={palette.background.paper}
-          display='flex'
-          flexWrap='wrap'
+          className='border-top border-bottom bg-palette flex flex-wrap'
           minHeight='calc(100vh - 140px)'
         >
           <Box
             width={isMobile ? 1 : '450px'}
             padding='20px 0'
-            borderRight={isMobile ? 'none' : `1px solid ${palette.divider}`}
+            className={isMobile ? '' : 'border-right'}
           >
             <Box
-              display='flex'
-              justifyContent='space-between'
-              alignItems='center'
+              className='flex justify-between items-center'
               padding='0 24px'
               mb={3}
             >
-              <Typography variant='h4'>{t('swap')}</Typography>
-              <Box display='flex' alignItems='center' mr={1}>
-                <Typography
-                  variant='caption'
-                  style={{ color: palette.text.secondary, marginRight: 8 }}
+              <h4>{t('swap')}</h4>
+              <Box className='flex items-center' mr={1}>
+                <span
+                  className='text-secondary text-uppercase'
+                  style={{ marginRight: 8 }}
                 >
                   {t('proMode')}
-                </Typography>
+                </span>
                 <ToggleSwitch
                   toggled={isProMode}
                   onToggle={() => updateIsProMode(!isProMode)}
@@ -202,9 +143,7 @@ const SwapPage: React.FC = () => {
           </Box>
           {infoPos === 'left' && (
             <Box
-              borderLeft={isMobile ? 'none' : `1px solid ${palette.divider}`}
-              borderRight={isMobile ? 'none' : `1px solid ${palette.divider}`}
-              borderTop={isMobile ? `1px solid ${palette.divider}` : 'none'}
+              className={isMobile ? 'border-top' : 'border-left border-right'}
               width={isMobile ? 1 : 250}
             >
               <SwapProInfo
@@ -214,14 +153,7 @@ const SwapPage: React.FC = () => {
               />
             </Box>
           )}
-          <Box
-            flex={isMobile ? 'none' : 1}
-            display='flex'
-            flexDirection='column'
-            maxHeight='100vh'
-            minHeight='500px'
-            width='100%'
-          >
+          <Box className='swapProWrapper'>
             <SwapProFilter
               infoPos={infoPos}
               setInfoPos={setInfoPos}
@@ -244,8 +176,7 @@ const SwapPage: React.FC = () => {
           </Box>
           {infoPos === 'right' && (
             <Box
-              borderLeft={isMobile ? 'none' : `1px solid ${palette.divider}`}
-              borderTop={isTablet ? `1px solid ${palette.divider}` : 'none'}
+              className={isMobile ? 'border-top' : 'border-left'}
               width={isTablet ? 1 : 250}
             >
               <SwapProInfo

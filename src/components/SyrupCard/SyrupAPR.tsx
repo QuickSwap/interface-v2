@@ -1,6 +1,5 @@
 import React from 'react';
-import { Box, Typography } from '@material-ui/core';
-import { useTheme } from '@material-ui/core/styles';
+import { Box } from '@material-ui/core';
 import { SyrupInfo } from 'types';
 import { CurrencyLogo } from 'components';
 import { returnTokenFromKey, getTokenAPRSyrup } from 'utils';
@@ -9,31 +8,21 @@ const SyrupAPR: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
   syrup,
   dQUICKAPY,
 }) => {
-  const { palette } = useTheme();
   const isDQUICKStakingToken = syrup.stakingToken.equals(
     returnTokenFromKey('DQUICK'),
   );
 
   return (
     <>
-      <Typography variant='body2' style={{ color: palette.success.main }}>
+      <small className='text-success'>
         {getTokenAPRSyrup(syrup).toLocaleString()}%
-      </Typography>
+      </small>
       {isDQUICKStakingToken && (
-        <Box display='flex'>
-          <Box
-            borderRadius='4px'
-            border={`1px solid ${palette.grey.A400}`}
-            padding='4px'
-            marginTop='4px'
-            display='flex'
-            alignItems='center'
-          >
-            <CurrencyLogo currency={returnTokenFromKey('QUICK')} size='12px' />
-            <Typography variant='caption' style={{ marginLeft: 4 }}>
-              {dQUICKAPY}% <span style={{ color: palette.text.hint }}>APY</span>
-            </Typography>
-          </Box>
+        <Box className='syrupAPR border-gray2'>
+          <CurrencyLogo currency={returnTokenFromKey('QUICK')} size='12px' />
+          <span style={{ marginLeft: 4 }}>
+            {dQUICKAPY}% <span className='text-hint'>APY</span>
+          </span>
         </Box>
       )}
     </>

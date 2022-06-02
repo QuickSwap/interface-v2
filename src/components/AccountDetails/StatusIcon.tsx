@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import { SUPPORTED_WALLETS } from 'constants/index';
 import { injected, portis } from 'connectors';
 import { useActiveWeb3React } from 'hooks';
@@ -21,17 +21,17 @@ const StatusIcon: React.FC = () => {
     )
     .map((k) => SUPPORTED_WALLETS[k].iconName)[0];
   return (
-    <Box display='flex' alignItems='center'>
+    <Box className='flex items-center'>
       <img src={icon} width={24} alt='wallet icon' />
       {connector === portis && (
         <Box
           ml={1}
-          style={{ cursor: 'pointer' }}
+          className='cursor-pointer'
           onClick={() => {
             portis.portis.showPortis();
           }}
         >
-          <Typography variant='body2'>Show Portis</Typography>
+          <small>Show Portis</small>
         </Box>
       )}
     </Box>

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, Grid, useMediaQuery } from '@material-ui/core';
+import { Box, Grid } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Skeleton from '@material-ui/lab/Skeleton';
 import { ArrowForwardIos } from '@material-ui/icons';
 import dayjs from 'dayjs';
@@ -22,30 +21,8 @@ import AnalyticsVolumeChart from './AnalyticsVolumeChart';
 
 dayjs.extend(utc);
 
-const useStyles = makeStyles(({ palette }) => ({
-  panel: {
-    background: palette.grey.A700,
-    borderRadius: 20,
-  },
-  headingWrapper: {
-    display: 'flex',
-    alignItems: 'center',
-    '& h6': {
-      color: palette.text.disabled,
-    },
-    '& svg': {
-      height: 16,
-      marginLeft: 2,
-      color: '#3d71ff',
-    },
-  },
-}));
-
 const AnalyticsOverview: React.FC = () => {
-  const classes = useStyles();
   const history = useHistory();
-  const { breakpoints } = useTheme();
-  const isMobile = useMediaQuery(breakpoints.down('xs'));
   const { globalData, updateGlobalData } = useGlobalData();
   const [topTokens, updateTopTokens] = useState<any[] | null>(null);
   const [topPairs, updateTopPairs] = useState<any[] | null>(null);
@@ -93,32 +70,18 @@ const AnalyticsOverview: React.FC = () => {
     <Box width='100%' mb={3}>
       <Grid container spacing={4}>
         <Grid item xs={12} sm={12} md={6}>
-          <Box className={classes.panel} padding={isMobile ? 1.5 : 3} width={1}>
+          <Box className='panel' width={1}>
             <AnalyticsLiquidityChart />
           </Box>
         </Grid>
         <Grid item xs={12} sm={12} md={6}>
-          <Box
-            className={classes.panel}
-            padding={isMobile ? 1.5 : 3}
-            width={1}
-            height={1}
-            display='flex'
-            flexDirection='column'
-            justifyContent='space-between'
-          >
+          <Box className='analyticsVolumeChart panel'>
             <AnalyticsVolumeChart />
           </Box>
         </Grid>
       </Grid>
       <Box mt={4}>
-        <Box
-          display='flex'
-          flexWrap='wrap'
-          paddingX={4}
-          paddingY={1.5}
-          className={classes.panel}
-        >
+        <Box className='panel flex flex-wrap'>
           {globalData ? (
             <AnalyticsInfo data={globalData} />
           ) : (
@@ -127,26 +90,20 @@ const AnalyticsOverview: React.FC = () => {
         </Box>
       </Box>
       <Box mt={4}>
-        <Box display='flex' justifyContent='space-between' alignItems='center'>
-          <Box className={classes.headingWrapper}>
-            <Typography variant='h6'>Top Tokens</Typography>
+        <Box className='flex justify-between items-center'>
+          <Box className='headingWrapper'>
+            <p className='weight-600'>Top Tokens</p>
           </Box>
           <Box
-            className={classes.headingWrapper}
-            style={{ cursor: 'pointer' }}
+            className='headingWrapper cursor-pointer'
             onClick={() => history.push(`/analytics/tokens`)}
           >
-            <Typography variant='h6'>See All</Typography>
+            <p className='weight-600'>See All</p>
             <ArrowForwardIos />
           </Box>
         </Box>
       </Box>
-      <Box
-        mt={3}
-        paddingX={isMobile ? 1.5 : 4}
-        paddingY={isMobile ? 1.5 : 3}
-        className={classes.panel}
-      >
+      <Box mt={3} className='panel'>
         {topTokens ? (
           <TokensTable data={topTokens} />
         ) : (
@@ -154,26 +111,20 @@ const AnalyticsOverview: React.FC = () => {
         )}
       </Box>
       <Box mt={4}>
-        <Box display='flex' justifyContent='space-between' alignItems='center'>
-          <Box className={classes.headingWrapper}>
-            <Typography variant='h6'>Top Pairs</Typography>
+        <Box className='flex items-center justify-between'>
+          <Box className='headingWrapper'>
+            <p className='weight-600'>Top Pairs</p>
           </Box>
           <Box
-            className={classes.headingWrapper}
-            style={{ cursor: 'pointer' }}
+            className='headingWrapper cursor-pointer'
             onClick={() => history.push(`/analytics/pairs`)}
           >
-            <Typography variant='h6'>See All</Typography>
+            <p className='weight-600'>See All</p>
             <ArrowForwardIos />
           </Box>
         </Box>
       </Box>
-      <Box
-        mt={3}
-        paddingX={isMobile ? 1.5 : 4}
-        paddingY={isMobile ? 1.5 : 3}
-        className={classes.panel}
-      >
+      <Box mt={3} className='panel'>
         {topPairs ? (
           <PairTable data={topPairs} />
         ) : (
