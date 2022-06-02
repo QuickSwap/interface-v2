@@ -5,7 +5,8 @@ import { useTranslation } from 'react-i18next';
 import { CustomTable } from 'components';
 import { formatNumber, getEtherscanLink, shortenTx } from 'utils';
 import { useActiveWeb3React } from 'hooks';
-import moment from 'moment';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
 import { TxnType } from 'constants/index';
 import 'components/styles/TransactionsTable.scss';
 
@@ -165,7 +166,7 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({ data }) => {
         </Box>
         <Box className='mobileRow'>
           <p>Time</p>
-          <p>{moment(Number(txn.transaction.timestamp) * 1000).fromNow()}</p>
+          <p>{dayjs(Number(txn.transaction.timestamp) * 1000).fromNow()}</p>
         </Box>
       </Box>
     );
@@ -220,7 +221,7 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({ data }) => {
       },
       {
         html: (
-          <p>{moment(Number(txn.transaction.timestamp) * 1000).fromNow()}</p>
+          <p>{dayjs(Number(txn.transaction.timestamp) * 1000).fromNow()}</p>
         ),
       },
     ];

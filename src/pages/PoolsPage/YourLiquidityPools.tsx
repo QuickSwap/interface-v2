@@ -8,8 +8,10 @@ import { useActiveWeb3React } from 'hooks';
 import { usePairs } from 'data/Reserves';
 import { toV2LiquidityToken, useTrackedTokenPairs } from 'state/user/hooks';
 import { useTokenBalancesWithLoadingIndicator } from 'state/wallet/hooks';
+import { Trans, useTranslation } from 'react-i18next';
 
 const YourLiquidityPools: React.FC = () => {
+  const { t } = useTranslation();
   const { account } = useActiveWeb3React();
   const [openPoolFinder, setOpenPoolFinder] = useState(false);
   const trackedTokenPairs = useTrackedTokenPairs();
@@ -62,7 +64,7 @@ const YourLiquidityPools: React.FC = () => {
           onClose={() => setOpenPoolFinder(false)}
         />
       )}
-      <p className='weight-600'>Your Liquidity Pools</p>
+      <p className='weight-600'>{t('yourliquidityPools')}</p>
       <Box mt={3}>
         {v2IsLoading ? (
           <Box width={1}>
@@ -71,10 +73,12 @@ const YourLiquidityPools: React.FC = () => {
         ) : allV2PairsWithLiquidity.length > 0 ? (
           <Box>
             <small className='liquidityText'>
-              Don’t see a pool you joined?{' '}
-              <small onClick={() => setOpenPoolFinder(true)}>Import it</small>
-              .<br />
-              Unstake your LP Tokens from Farms to see them here.
+              <Trans
+                i18nKey='poolMissingComment'
+                components={{
+                  pspan: <small onClick={() => setOpenPoolFinder(true)} />,
+                }}
+              />
             </small>
             {allV2PairsWithLiquidity.map((pair, ind) => (
               <Box key={ind} mt={2}>
@@ -93,10 +97,12 @@ const YourLiquidityPools: React.FC = () => {
               className='noLiquidityImage'
             />
             <p className='small liquidityText'>
-              Don’t see a pool you joined?{' '}
-              <small onClick={() => setOpenPoolFinder(true)}>Import it</small>
-              .<br />
-              Unstake your LP Tokens from Farms to see them here.
+              <Trans
+                i18nKey='poolMissingComment'
+                components={{
+                  pspan: <small onClick={() => setOpenPoolFinder(true)} />,
+                }}
+              />
             </p>
           </Box>
         )}

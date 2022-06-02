@@ -5,6 +5,7 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import Skeleton from '@material-ui/lab/Skeleton';
 import { formatCompact, formatNumber } from 'utils';
+import { useTranslation } from 'react-i18next';
 dayjs.extend(utc);
 
 const SwapInfoTx: React.FC<{
@@ -26,6 +27,7 @@ const SwapInfoTx: React.FC<{
   const volume = filteredTxs
     ? filteredTxs.reduce((total, tx) => total + Number(tx.amountUSD), 0)
     : undefined;
+  const { t } = useTranslation();
 
   return (
     <>
@@ -34,15 +36,15 @@ const SwapInfoTx: React.FC<{
         value={txFilter}
         onChange={setTxFilter}
         items={[
-          { label: '5m', value: '5_minute' },
-          { label: '1h', value: '1_hour' },
-          { label: '6h', value: '6_hour' },
-          { label: '24h', value: '24_hour' },
+          { label: `5${t('min')}`, value: '5_minute' },
+          { label: `1${t('hour')}`, value: '1_hour' },
+          { label: `6${t('hour')}`, value: '6_hour' },
+          { label: `24${t('hour')}`, value: '24_hour' },
         ]}
       />
       <Box className='swapTxInfo'>
         <Box>
-          <small className='text-secondary'>Transactions:</small>
+          <small className='text-secondary'>{t('transactions')}:</small>
           {filteredTxs ? (
             <small>{filteredTxs.length}</small>
           ) : (
@@ -51,7 +53,7 @@ const SwapInfoTx: React.FC<{
         </Box>
         <Divider />
         <Box>
-          <small className='text-secondary'>Buys:</small>
+          <small className='text-secondary'>{t('buys')}:</small>
           <small>
             {filteredBuyTxs ? (
               filteredBuyTxs.length
@@ -62,7 +64,7 @@ const SwapInfoTx: React.FC<{
         </Box>
         <Divider />
         <Box>
-          <small className='text-secondary'>Sells:</small>
+          <small className='text-secondary'>{t('sells')}:</small>
           <small>
             {filteredSellTxs ? (
               filteredSellTxs.length
@@ -73,7 +75,7 @@ const SwapInfoTx: React.FC<{
         </Box>
         <Divider />
         <Box>
-          <small className='text-secondary'>Volume:</small>
+          <small className='text-secondary'>{t('volume')}:</small>
           <small>
             {filteredTxs ? (
               volume > 1000 ? (

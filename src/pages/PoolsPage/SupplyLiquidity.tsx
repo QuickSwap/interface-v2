@@ -4,8 +4,10 @@ import { ReactComponent as SettingsIcon } from 'assets/images/SettingsIcon.svg';
 import { AddLiquidity, QuestionHelper, SettingsModal } from 'components';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import { useCurrency } from 'hooks/Tokens';
+import { useTranslation } from 'react-i18next';
 
 const SupplyLiquidity: React.FC = () => {
+  const { t } = useTranslation();
   const [openSettingsModal, setOpenSettingsModal] = useState(false);
   const parsedQuery = useParsedQueryString();
   const qCurrency0 = useCurrency(
@@ -28,13 +30,13 @@ const SupplyLiquidity: React.FC = () => {
         />
       )}
       <Box className='flex justify-between items-center'>
-        <p className='weight-600'>Supply Liquidity</p>
+        <p className='weight-600'>{t('supplyLiquidity')}</p>
         <Box className='flex items-center'>
           <Box className='headingItem'>
             <QuestionHelper
               size={24}
               className='text-secondary'
-              text='When you add liquidity, you are given pool tokens representing your position. These tokens automatically earn fees proportional to your share of the pool, and can be redeemed at any time.'
+              text={t('supplyLiquidityHelp')}
             />
           </Box>
           <Box className='headingItem'>

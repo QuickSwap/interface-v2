@@ -8,11 +8,12 @@ import { returnDualStakingInfo, returnStakingInfo } from 'utils';
 import FarmRewards from './FarmRewards';
 import FarmsList from './FarmsList';
 import { CustomSwitch } from 'components';
+import { useTranslation } from 'react-i18next';
 import 'pages/styles/farm.scss';
 
 const FarmPage: React.FC = () => {
   const { chainId } = useActiveWeb3React();
-
+  const { t } = useTranslation();
   const [bulkPairs, setBulkPairs] = useState<any>(null);
   const [farmIndex, setFarmIndex] = useState(
     GlobalConst.farmIndex.LPFARM_INDEX,
@@ -36,12 +37,12 @@ const FarmPage: React.FC = () => {
 
   const farmCategories = [
     {
-      text: 'LP Mining',
+      text: t('lpMining'),
       onClick: () => setFarmIndex(GlobalConst.farmIndex.LPFARM_INDEX),
       condition: farmIndex === GlobalConst.farmIndex.LPFARM_INDEX,
     },
     {
-      text: 'Dual Mining',
+      text: t('dualMining'),
       onClick: () => setFarmIndex(GlobalConst.farmIndex.DUALFARM_INDEX),
       condition: farmIndex === GlobalConst.farmIndex.DUALFARM_INDEX,
     },
@@ -51,10 +52,10 @@ const FarmPage: React.FC = () => {
     <Box width='100%' mb={3} id='farmPage'>
       <Box className='pageHeading'>
         <Box mr={2}>
-          <h4>Farm</h4>
+          <h4>{t('farm')}</h4>
         </Box>
         <Box className='helpWrapper'>
-          <small>Help</small>
+          <small>{t('help')}</small>
           <HelpIcon />
         </Box>
       </Box>

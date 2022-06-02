@@ -9,6 +9,7 @@ import {
   GelatoLimitOrderPanel,
   GelatoLimitOrdersHistoryPanel,
 } from '@gelatonetwork/limit-orders-react';
+import { Trans, useTranslation } from 'react-i18next';
 
 const SWAP_NORMAL = 0;
 const SWAP_LIMIT = 1;
@@ -29,6 +30,7 @@ const SwapMain: React.FC = () => {
       ? (parsedQuery.currency1 as string)
       : undefined,
   );
+  const { t } = useTranslation();
 
   return (
     <>
@@ -51,7 +53,7 @@ const SwapMain: React.FC = () => {
             `}
             onClick={() => setSwapIndex(SWAP_NORMAL)}
           >
-            <p>Market</p>
+            <p>{t('market')}</p>
           </Box>
           <Box
             className={`${
@@ -59,14 +61,17 @@ const SwapMain: React.FC = () => {
             } swapItem headingItem ${isProMode ? 'border-right' : ''}`}
             onClick={() => setSwapIndex(SWAP_LIMIT)}
           >
-            <p>Limit</p>
+            <p>{t('limit')}</p>
           </Box>
         </Box>
         <Box className='flex items-center'>
           {!isProMode && (
             <Box className='flex items-center' mr={1}>
-              <span className='text-secondary' style={{ marginRight: 8 }}>
-                PRO MODE
+              <span
+                className='text-secondary text-uppercase'
+                style={{ marginRight: 8 }}
+              >
+                {t('proMode')}
               </span>
               <ToggleSwitch
                 toggled={isProMode}
@@ -92,17 +97,19 @@ const SwapMain: React.FC = () => {
             <GelatoLimitOrdersHistoryPanel />
             <Box mt={2} textAlign='center'>
               <small>
-                <b>* Disclaimer:</b> Limit Orders on QuickSwap are provided by
-                Gelato, a 3rd party protocol and should be considered in beta.
-                DYOR and use at your own risk. QuickSwap is not responsible.
-                More info can be found&nbsp;
-                <a
-                  target='_blank'
-                  rel='noopener noreferrer'
-                  href='https://www.certik.org/projects/gelato'
-                >
-                  here.
-                </a>
+                <Trans
+                  i18nKey='limitOrderDisclaimer'
+                  components={{
+                    bold: <b />,
+                    alink: (
+                      <a
+                        target='_blank'
+                        rel='noopener noreferrer'
+                        href='https://www.certik.org/projects/gelato'
+                      />
+                    ),
+                  }}
+                />
               </small>
             </Box>
           </>

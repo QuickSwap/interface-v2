@@ -5,16 +5,18 @@ import { Skeleton } from '@material-ui/lab';
 import { isSupportedNetwork, addMaticToMetamask } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import { useWalletModalToggle } from 'state/application/hooks';
+import { useTranslation } from 'react-i18next';
 
 export const HeroSection: React.FC<{ globalData: any }> = ({ globalData }) => {
   const history = useHistory();
   const { account } = useActiveWeb3React();
   const { ethereum } = window as any;
   const toggleWalletModal = useWalletModalToggle();
+  const { t } = useTranslation();
 
   return (
     <Box className='heroSection'>
-      <small className='text-bold'>Total Value Locked</small>
+      <small className='text-bold'>{t('totalValueLocked')}</small>
       {globalData ? (
         <Box display='flex' pt='5px'>
           <h3>$</h3>
@@ -29,7 +31,7 @@ export const HeroSection: React.FC<{ globalData: any }> = ({ globalData }) => {
           <Skeleton variant='rect' width={400} height={72} />
         </Box>
       )}
-      <h5>Top Asset Exchange on the Polygon Network</h5>
+      <h5>{t('topAssetExchange')}</h5>
       <Box mt={2} width={200} height={48}>
         <Button
           fullWidth
@@ -47,10 +49,10 @@ export const HeroSection: React.FC<{ globalData: any }> = ({ globalData }) => {
           }}
         >
           {ethereum && !isSupportedNetwork(ethereum)
-            ? 'Switch to Polygon'
+            ? t('switchPolygon')
             : account
-            ? 'Enter App'
-            : 'Connect Wallet'}
+            ? t('enterApp')
+            : t('connectWallet')}
         </Button>
       </Box>
     </Box>

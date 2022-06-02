@@ -4,6 +4,7 @@ import { Skeleton } from '@material-ui/lab';
 import { StakeQuickModal } from 'components';
 import { useLairInfo, useTotalRewardsDistributed } from 'state/stake/hooks';
 import { formatCompact, useLairDQUICKAPY } from 'utils';
+import { useTranslation } from 'react-i18next';
 
 export const TradingInfo: React.FC<{ globalData: any }> = ({ globalData }) => {
   const lairInfo = useLairInfo();
@@ -12,6 +13,7 @@ export const TradingInfo: React.FC<{ globalData: any }> = ({ globalData }) => {
   const dQUICKAPY = useLairDQUICKAPY(lairInfo);
 
   const totalRewardsUSD = useTotalRewardsDistributed();
+  const { t } = useTranslation();
 
   return (
     <>
@@ -27,7 +29,7 @@ export const TradingInfo: React.FC<{ globalData: any }> = ({ globalData }) => {
         ) : (
           <Skeleton variant='rect' width={100} height={45} />
         )}
-        <p>24H TRANSACTIONS</p>
+        <p>{t('24hTxs')}</p>
       </Box>
       <Box className='tradingSection'>
         {globalData ? (
@@ -38,7 +40,7 @@ export const TradingInfo: React.FC<{ globalData: any }> = ({ globalData }) => {
         ) : (
           <Skeleton variant='rect' width={100} height={45} />
         )}
-        <p>24H TRADING VOLUME</p>
+        <p>{t('24hTradingVol')}</p>
       </Box>
       <Box className='tradingSection'>
         {totalRewardsUSD ? (
@@ -49,7 +51,7 @@ export const TradingInfo: React.FC<{ globalData: any }> = ({ globalData }) => {
         ) : (
           <Skeleton variant='rect' width={100} height={45} />
         )}
-        <p>24h REWARDS DISTRIBUTED</p>
+        <p>{t('24hRewardsDistributed')}</p>
       </Box>
       <Box className='tradingSection'>
         {globalData ? (
@@ -61,7 +63,7 @@ export const TradingInfo: React.FC<{ globalData: any }> = ({ globalData }) => {
         ) : (
           <Skeleton variant='rect' width={100} height={45} />
         )}
-        <p>TOTAL TRADING PAIRS</p>
+        <p>{t('totalTradingPairs')}</p>
       </Box>
       <Box className='tradingSection' pt='20px'>
         {dQUICKAPY ? (
@@ -69,8 +71,10 @@ export const TradingInfo: React.FC<{ globalData: any }> = ({ globalData }) => {
         ) : (
           <Skeleton variant='rect' width={100} height={45} />
         )}
-        <p>dQUICK APY</p>
-        <h4 onClick={() => setOpenStakeModal(true)}>stake {'>'}</h4>
+        <p>dQUICK {t('apy')}</p>
+        <h4 onClick={() => setOpenStakeModal(true)}>
+          {t('stake')} {'>'}
+        </h4>
       </Box>
     </>
   );

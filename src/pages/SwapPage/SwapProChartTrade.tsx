@@ -6,9 +6,10 @@ import { Height } from '@material-ui/icons';
 import { ReflexContainer, ReflexSplitter, ReflexElement } from 'react-reflex';
 import 'react-reflex/styles.css';
 import { formatNumber, shortenTx, getEtherscanLink } from 'utils';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { useActiveWeb3React } from 'hooks';
 import { TableVirtuoso } from 'react-virtuoso';
+import { useTranslation } from 'react-i18next';
 
 const SwapProChartTrade: React.FC<{
   showChart: boolean;
@@ -28,6 +29,7 @@ const SwapProChartTrade: React.FC<{
   transactions,
 }) => {
   const { chainId } = useActiveWeb3React();
+  const { t } = useTranslation();
 
   const TradesTable = () => (
     <TableVirtuoso
@@ -37,13 +39,13 @@ const SwapProChartTrade: React.FC<{
       }}
       fixedHeaderContent={() => (
         <tr>
-          <th align='left'>date</th>
-          <th align='left'>type</th>
-          <th align='right'>usd</th>
+          <th align='left'>{t('date')}</th>
+          <th align='left'>{t('type')}</th>
+          <th align='right'>{t('usd')}</th>
           <th align='right'>{token1.symbol}</th>
           <th align='right'>{token2.symbol}</th>
-          <th align='right'>price</th>
-          <th align='right'>txn</th>
+          <th align='right'>{t('price')}</th>
+          <th align='right'>{t('txn')}</th>
         </tr>
       )}
       itemContent={(index, tx) => {
@@ -64,9 +66,9 @@ const SwapProChartTrade: React.FC<{
         return (
           <>
             <td align='left'>
-              {moment
+              {dayjs
                 .unix(tx.transaction.timestamp)
-                .format('MMMM Do h:mm:ss a')}
+                .format('MMM DD, hh:mm:ss a')}
             </td>
             <td className={txType} align='left'>
               {txType.toUpperCase()}

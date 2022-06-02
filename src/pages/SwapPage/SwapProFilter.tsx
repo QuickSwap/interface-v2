@@ -2,6 +2,7 @@ import React from 'react';
 import { Box, Checkbox } from '@material-ui/core';
 import { Replay } from '@material-ui/icons';
 import { CustomSwitch } from 'components';
+import { useTranslation } from 'react-i18next';
 
 interface SwapProFilterProps {
   infoPos: string;
@@ -20,7 +21,8 @@ const SwapProFilter: React.FC<SwapProFilterProps> = ({
   showTrades,
   setShowTrades,
 }) => {
-  const swapPositions = ['left', 'right', 'none'];
+  const { t } = useTranslation();
+  const swapPositions = [t('left'), t('right'), t('none')];
 
   const infoPosItems = swapPositions.map((pos) => {
     return {
@@ -38,7 +40,7 @@ const SwapProFilter: React.FC<SwapProFilterProps> = ({
           disabled={!showTrades}
           onChange={(evt) => setShowChart(evt.target.checked)}
         />
-        <small>chart</small>
+        <small>{t('chart')}</small>
       </Box>
       <Box className='checkWrapper'>
         <Checkbox
@@ -46,10 +48,10 @@ const SwapProFilter: React.FC<SwapProFilterProps> = ({
           disabled={!showChart}
           onChange={(evt) => setShowTrades(evt.target.checked)}
         />
-        <small>trades</small>
+        <small>{t('trades')}</small>
       </Box>
       <Box className='flex items-center'>
-        <small>INFO:</small>
+        <small className='text-uppercase'>{t('info')}:</small>
         <Box ml={1}>
           <CustomSwitch width={190} height={30} items={infoPosItems} />
         </Box>
@@ -57,7 +59,7 @@ const SwapProFilter: React.FC<SwapProFilterProps> = ({
       <Box
         className='replayButton'
         onClick={() => {
-          setInfoPos('right');
+          setInfoPos(t('right'));
           setShowChart(true);
           setShowTrades(true);
         }}

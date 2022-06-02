@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { Box } from '@material-ui/core';
 import Skeleton from '@material-ui/lab/Skeleton';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { useGlobalData } from 'state/application/hooks';
 import {
   formatCompact,
@@ -100,7 +100,7 @@ const AnalyticsLiquidityChart: React.FC = () => {
         </Box>
       )}
       <Box>
-        <span className='text-disabled'>{moment().format('MMM DD, YYYY')}</span>
+        <span className='text-disabled'>{dayjs().format('MMM DD, YYYY')}</span>
       </Box>
       <Box mt={2}>
         {globalChartData ? (
@@ -110,7 +110,7 @@ const AnalyticsLiquidityChart: React.FC = () => {
             )}
             yAxisValues={yAxisValues}
             dates={globalChartData.map((value: any) =>
-              moment(value.date * 1000)
+              dayjs(value.date * 1000)
                 .add(1, 'day')
                 .unix(),
             )}

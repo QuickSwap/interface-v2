@@ -14,6 +14,7 @@ import LiquidityPools from './LiquidityPools';
 import SwapProChartTrade from './SwapProChartTrade';
 import SwapProInfo from './SwapProInfo';
 import SwapProFilter from './SwapProFilter';
+import { useTranslation } from 'react-i18next';
 import 'pages/styles/swap.scss';
 
 const SwapPage: React.FC = () => {
@@ -69,13 +70,15 @@ const SwapPage: React.FC = () => {
     }
   }, [pairId, currentTime]);
 
+  const { t } = useTranslation();
+
   return (
     <Box width='100%' mb={3} id='swap-page'>
       {!isProMode && (
         <Box className='pageHeading'>
-          <h4>Swap</h4>
+          <h4>{t('swap')}</h4>
           <Box className='helpWrapper'>
-            <small>Help</small>
+            <small>{t('help')}</small>
             <HelpIcon />
           </Box>
         </Box>
@@ -122,10 +125,13 @@ const SwapPage: React.FC = () => {
               padding='0 24px'
               mb={3}
             >
-              <h4>Swap</h4>
+              <h4>{t('swap')}</h4>
               <Box className='flex items-center' mr={1}>
-                <span className='text-secondary' style={{ marginRight: 8 }}>
-                  PRO MODE
+                <span
+                  className='text-secondary text-uppercase'
+                  style={{ marginRight: 8 }}
+                >
+                  {t('proMode')}
                 </span>
                 <ToggleSwitch
                   toggled={isProMode}

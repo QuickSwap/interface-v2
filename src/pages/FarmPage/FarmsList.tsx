@@ -26,6 +26,7 @@ import {
 } from 'utils';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 import { useInfiniteLoading } from 'utils/useInfiniteLoading';
+import { useTranslation } from 'react-i18next';
 
 const LOADFARM_COUNT = 10;
 const POOL_COLUMN = 1;
@@ -40,6 +41,7 @@ interface FarmsListProps {
 }
 
 const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
+  const { t } = useTranslation();
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
 
@@ -302,11 +304,21 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
   const { loadMoreRef } = useInfiniteLoading(loadNext);
 
   const sortColumns = [
-    { text: 'Pool', index: POOL_COLUMN, width: 0.3, justify: 'flex-start' },
-    { text: 'TVL', index: TVL_COLUMN, width: 0.2, justify: 'center' },
-    { text: 'Rewards', index: REWARDS_COLUMN, width: 0.25, justify: 'center' },
-    { text: 'APY', index: APY_COLUMN, width: 0.15, justify: 'center' },
-    { text: 'Earned', index: EARNED_COLUMN, width: 0.2, justify: 'flex-end' },
+    { text: t('pool'), index: POOL_COLUMN, width: 0.3, justify: 'flex-start' },
+    { text: t('tvl'), index: TVL_COLUMN, width: 0.2, justify: 'center' },
+    {
+      text: t('rewards'),
+      index: REWARDS_COLUMN,
+      width: 0.25,
+      justify: 'center',
+    },
+    { text: t('apy'), index: APY_COLUMN, width: 0.15, justify: 'center' },
+    {
+      text: t('earned'),
+      index: EARNED_COLUMN,
+      width: 0.2,
+      justify: 'flex-end',
+    },
   ];
 
   const sortByDesktopItems = sortColumns.map((item) => {
@@ -330,7 +342,7 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
   const renderStakedOnly = () => (
     <Box className='flex items-center'>
       <small className='text-disabled' style={{ marginRight: 8 }}>
-        Staked Only
+        {t('stakedOnly')}
       </small>
       <ToggleSwitch
         toggled={stakedOnly}
@@ -341,12 +353,12 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
 
   const farmStatusItems = [
     {
-      text: 'Active',
+      text: t('active'),
       onClick: () => setIsEndedFarm(false),
       condition: !isEndedFarm,
     },
     {
-      text: 'Ended',
+      text: t('ended'),
       onClick: () => setIsEndedFarm(true),
       condition: isEndedFarm,
     },
@@ -356,12 +368,13 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
     <>
       <Box className='farmListHeader'>
         <Box>
-          <h5>Earn dQuick</h5>
+          <h5>{t('earndQUICK')}</h5>
           <small>
-            Stake LP Tokens to earn{' '}
-            {farmIndex === GlobalConst.farmIndex.LPFARM_INDEX
-              ? 'dQUICK + Pool Fees'
-              : 'dQUICK + WMATIC rewards'}
+            {t(
+              farmIndex === GlobalConst.farmIndex.LPFARM_INDEX
+                ? 'stakeMessageLP'
+                : 'stakeMessageDual',
+            )}
           </small>
         </Box>
         <Box className='flex flex-wrap'>
@@ -371,9 +384,7 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
           >
             <Box width={isMobile ? 'calc(100% - 150px)' : 1} mr={2} my={2}>
               <SearchInput
-                placeholder={
-                  isMobile ? 'Search' : 'Search name, symbol or paste address'
-                }
+                placeholder={isMobile ? t('search') : t('searchPlaceHolder')}
                 value={farmSearchInput}
                 setValue={setFarmSearchInput}
               />
@@ -390,11 +401,14 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
             {isMobile ? (
               <>
                 <Box height={40} flex={1}>
-                  <CustomMenu title='Sort By' menuItems={sortByMobileItems} />
+                  <CustomMenu
+                    title={t('sortBy')}
+                    menuItems={sortByMobileItems}
+                  />
                 </Box>
                 <Box mt={2} width={1} className='flex items-center'>
                   <small className='text-disabled' style={{ marginRight: 8 }}>
-                    Sort {sortDesc ? 'Desc' : 'Asc'}
+                    {sortDesc ? t('sortdesc') : t('sortasc')}
                   </small>
                   <ToggleSwitch
                     toggled={sortDesc}

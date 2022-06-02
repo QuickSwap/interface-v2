@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useRouteMatch } from 'react-router-dom';
 import { Box } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import {
   formatCompact,
   getPairChartData,
@@ -138,7 +138,7 @@ const AnalyticsPairChart: React.FC<{ pairData: any }> = ({ pairData }) => {
                   </Box>
                 </Box>
                 <Box>
-                  <span>{moment().format('MMM DD, YYYY')}</span>
+                  <span>{dayjs().format('MMM DD, YYYY')}</span>
                 </Box>
               </>
             ) : (
@@ -171,7 +171,7 @@ const AnalyticsPairChart: React.FC<{ pairData: any }> = ({ pairData }) => {
             data={chartData}
             yAxisValues={getYAXISValuesAnalytics(chartData)}
             dates={pairChartData.map((value: any) =>
-              moment(value.date * 1000)
+              dayjs(value.date * 1000)
                 .add(1, 'day')
                 .unix(),
             )}

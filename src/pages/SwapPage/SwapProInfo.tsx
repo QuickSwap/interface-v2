@@ -7,12 +7,14 @@ import { getTokenInfo, getEthPrice, formatNumber } from 'utils';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import Skeleton from '@material-ui/lab/Skeleton';
 import SwapInfoTx from './SwapInfoTx';
+import { useTranslation } from 'react-i18next';
 
 const SwapProInfo: React.FC<{
   token1?: Token;
   token2?: Token;
   transactions?: any[];
 }> = ({ token1, token2, transactions }) => {
+  const { t } = useTranslation();
   const [token1Data, setToken1Data] = useState<any>(null);
   const [token2Data, setToken2Data] = useState<any>(null);
   const token1Address = token1?.address;
@@ -67,7 +69,7 @@ const SwapProInfo: React.FC<{
             </Box>
             {tokenData ? (
               <span>
-                24h:{' '}
+                {t('24h')}:{' '}
                 <span
                   className={priceUpPercent > 0 ? 'text-success' : 'text-error'}
                 >
@@ -87,7 +89,7 @@ const SwapProInfo: React.FC<{
   return (
     <>
       <Box p={1}>
-        <p>Info:</p>
+        <p className='text-uppercase'>{t('info')}:</p>
       </Box>
       <Divider />
       {currency1 && <TokenInfo currency={currency1} tokenData={token1Data} />}

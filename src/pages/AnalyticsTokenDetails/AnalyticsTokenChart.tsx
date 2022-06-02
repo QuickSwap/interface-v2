@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useRouteMatch } from 'react-router-dom';
 import { Box } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import {
   formatCompact,
   getFormattedPrice,
@@ -121,7 +121,7 @@ const AnalyticsTokenChart: React.FC<{ token: any }> = ({ token }) => {
                   </Box>
                 </Box>
                 <Box>
-                  <span>{moment().format('MMM DD, YYYY')}</span>
+                  <span>{dayjs().format('MMM DD, YYYY')}</span>
                 </Box>
               </>
             ) : (
@@ -154,7 +154,7 @@ const AnalyticsTokenChart: React.FC<{ token: any }> = ({ token }) => {
             data={chartData}
             yAxisValues={getYAXISValuesAnalytics(chartData)}
             dates={tokenChartData.map((value: any) =>
-              moment(value.date * 1000)
+              dayjs(value.date * 1000)
                 .add(1, 'day')
                 .unix(),
             )}

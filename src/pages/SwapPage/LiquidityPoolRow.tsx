@@ -5,6 +5,7 @@ import { GlobalConst } from 'constants/index';
 import { DoubleCurrencyLogo } from 'components';
 import { formatCompact, getDaysCurrentYear } from 'utils';
 import { useCurrency } from 'hooks/Tokens';
+import { useTranslation } from 'react-i18next';
 
 const LiquidityPoolRow: React.FC<{
   pair: any;
@@ -13,6 +14,7 @@ const LiquidityPoolRow: React.FC<{
   const { breakpoints } = useTheme();
   const daysCurrentYear = getDaysCurrentYear();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
+  const { t } = useTranslation();
 
   const dayVolumeUSD =
     Number(
@@ -54,7 +56,7 @@ const LiquidityPoolRow: React.FC<{
         mt={isMobile ? 2.5 : 0}
         className='flex justify-between'
       >
-        {isMobile && <small className='text-secondary'>TVL</small>}
+        {isMobile && <small className='text-secondary'>{t('tvl')}</small>}
         <small>${formatCompact(liquidity)}</small>
       </Box>
       <Box
@@ -62,7 +64,7 @@ const LiquidityPoolRow: React.FC<{
         mt={isMobile ? 1 : 0}
         className='flex justify-between'
       >
-        {isMobile && <small className='text-secondary'>24H Volume</small>}
+        {isMobile && <small className='text-secondary'>{t('24hVol')}</small>}
         <small>${formatCompact(volume)}</small>
       </Box>
       <Box
@@ -70,7 +72,7 @@ const LiquidityPoolRow: React.FC<{
         mt={isMobile ? 1 : 0}
         className={`flex ${isMobile ? 'justify-between' : 'justify-end'}`}
       >
-        {isMobile && <small className='text-secondary'>APY</small>}
+        {isMobile && <small className='text-secondary'>{t('apy')}</small>}
         <small
           className={`text-right ${apy < 0 ? 'text-error' : 'text-success'}`}
         >

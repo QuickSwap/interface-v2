@@ -6,6 +6,7 @@ import { getTokenPairs, getBulkPairData, getEthPrice } from 'utils';
 import { Token } from '@uniswap/sdk';
 import LiquidityPoolRow from './LiquidityPoolRow';
 import { useAllTokens } from 'hooks/Tokens';
+import { useTranslation } from 'react-i18next';
 
 const LiquidityPools: React.FC<{
   token1: Token;
@@ -19,6 +20,7 @@ const LiquidityPools: React.FC<{
   const token1Address = token1.address.toLowerCase();
   const token2Address = token2.address.toLowerCase();
   const allTokenList = useAllTokens();
+  const { t } = useTranslation();
 
   const liquidityPairs = useMemo(
     () =>
@@ -85,7 +87,7 @@ const LiquidityPools: React.FC<{
       >
         <Box className='flex items-center'>
           <p className='weight-600' style={{ marginRight: 8 }}>
-            Liquidity Pools{' '}
+            {t('liquidityPools')}
           </p>
           <small className='text-secondary'>
             ({token1.symbol?.toUpperCase()}, {token2.symbol?.toUpperCase()})
@@ -108,7 +110,7 @@ const LiquidityPools: React.FC<{
                   className={liquidityFilterIndex === 0 ? 'active' : ''}
                   onClick={() => setLiquidityFilterIndex(0)}
                 >
-                  All
+                  {t('all')}
                 </small>
                 <small
                   className={liquidityFilterIndex === 1 ? 'active' : ''}
@@ -126,13 +128,13 @@ const LiquidityPools: React.FC<{
               {!isMobile && (
                 <>
                   <Box width={0.2}>
-                    <small>TVL</small>
+                    <small>{t('tvl')}</small>
                   </Box>
                   <Box width={0.15}>
-                    <small>24h Volume</small>
+                    <small>{t('24hVol')}</small>
                   </Box>
                   <Box width={0.15} className='text-right'>
-                    <small>APY</small>
+                    <small>{t('apy')}</small>
                   </Box>
                 </>
               )}

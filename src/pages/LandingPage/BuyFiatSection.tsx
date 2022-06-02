@@ -3,10 +3,12 @@ import { Button, Box } from '@material-ui/core';
 import FiatMask from 'assets/images/FiatMask.svg';
 import BuyWithFiat from 'assets/images/featured/BuywithFiat.svg';
 import { BuyFiatModal, MoonpayModal } from 'components';
+import { useTranslation } from 'react-i18next';
 
 export const BuyFiatSection: React.FC = () => {
   const [openMenu, setOpenMenu] = useState(false);
   const [showMoonPayWidget, setShowMoonPayWidget] = useState(false);
+  const { t } = useTranslation();
 
   return (
     <Box className='buyFiatContainer'>
@@ -31,11 +33,8 @@ export const BuyFiatSection: React.FC = () => {
         <Box className='buyFiatInfo'>
           <img src={BuyWithFiat} alt='buy with fiat' />
           <Box>
-            <h3>Buy crypto with Fiat</h3>
-            <p className='weight-600'>
-              Simple way to buy or sell crypto with a credit card, bank transfer
-              and more
-            </p>
+            <h3>{t('buyCryptoFiat')}</h3>
+            <p className='weight-600'>{t('buyCryptoFiatDesc')}</p>
           </Box>
         </Box>
         <Box className='buyFiatWrapper'>
@@ -45,7 +44,7 @@ export const BuyFiatSection: React.FC = () => {
               setOpenMenu(true);
             }}
           >
-            Buy Now
+            {t('buyNow')}
           </Button>
         </Box>
       </Box>
