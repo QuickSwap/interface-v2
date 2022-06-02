@@ -1,5 +1,5 @@
 export const getTokenLogoURL = (address) => {
-  const logoExtensions = ['.png', '.webp', '.jpeg', '.svg'];
+  const logoExtensions = ['.png', '.webp', '.jpeg', '.jpg', '.svg'];
   return logoExtensions.map((ext) => {
     try {
       // eslint-disable-next-line @typescript-eslint/no-var-requires
