@@ -3,8 +3,10 @@ import { Box } from '@material-ui/core';
 import { PairTable } from 'components';
 import { getEthPrice, getTopPairs, getBulkPairData } from 'utils';
 import { Skeleton } from '@material-ui/lab';
+import { useTranslation } from 'react-i18next';
 
 const AnalyticsPairs: React.FC = () => {
+  const { t } = useTranslation();
   const [topPairs, updateTopPairs] = useState<any[] | null>(null);
 
   useEffect(() => {
@@ -27,7 +29,7 @@ const AnalyticsPairs: React.FC = () => {
 
   return (
     <Box width='100%' mb={3}>
-      <p>All Pairs</p>
+      <p>{t('allPairs')}</p>
       <Box mt={4} className='panel'>
         {topPairs ? (
           <PairTable data={topPairs} />

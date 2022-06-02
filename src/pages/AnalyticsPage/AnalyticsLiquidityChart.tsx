@@ -13,8 +13,10 @@ import {
 } from 'utils';
 import { GlobalConst, GlobalData } from 'constants/index';
 import { AreaChart, ChartType } from 'components';
+import { useTranslation } from 'react-i18next';
 
 const AnalyticsLiquidityChart: React.FC = () => {
+  const { t } = useTranslation();
   const { globalData } = useGlobalData();
   const [durationIndex, setDurationIndex] = useState(
     GlobalConst.analyticChart.ONE_MONTH_CHART,
@@ -69,7 +71,9 @@ const AnalyticsLiquidityChart: React.FC = () => {
   return (
     <>
       <Box className='flex justify-between'>
-        <span className='text-disabled text-bold'>LIQUIDITY</span>
+        <span className='text-disabled text-bold text-uppercase'>
+          {t('liquidity')}
+        </span>
         <ChartType
           typeTexts={GlobalData.analytics.CHART_DURATION_TEXTS}
           chartTypes={GlobalData.analytics.CHART_DURATIONS}

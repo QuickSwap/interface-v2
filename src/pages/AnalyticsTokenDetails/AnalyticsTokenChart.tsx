@@ -16,17 +16,19 @@ import {
 import { AreaChart, ChartType } from 'components';
 import { getTokenChartData } from 'utils';
 import { GlobalConst, GlobalData } from 'constants/index';
+import { useTranslation } from 'react-i18next';
 
 const CHART_VOLUME = 0;
 const CHART_LIQUIDITY = 1;
 const CHART_PRICE = 2;
 
 const AnalyticsTokenChart: React.FC<{ token: any }> = ({ token }) => {
+  const { t } = useTranslation();
   const match = useRouteMatch<{ id: string }>();
   const tokenAddress = match.params.id;
   const [tokenChartData, updateTokenChartData] = useState<any>(null);
   const chartIndexes = [CHART_VOLUME, CHART_LIQUIDITY, CHART_PRICE];
-  const chartIndexTexts = ['Volume', 'Liquidity', 'Price'];
+  const chartIndexTexts = [t('volume'), t('liquidity'), t('price')];
   const [chartIndex, setChartIndex] = useState(CHART_VOLUME);
   const [durationIndex, setDurationIndex] = useState(
     GlobalConst.analyticChart.ONE_MONTH_CHART,

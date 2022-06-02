@@ -5,6 +5,7 @@ import { ArrowForwardIos } from '@material-ui/icons';
 import Search from 'components/Search';
 import { shortenAddress } from 'utils';
 import 'pages/styles/analytics.scss';
+import { useTranslation } from 'react-i18next';
 
 interface AnalyticHeaderProps {
   data?: any;
@@ -14,11 +15,12 @@ interface AnalyticHeaderProps {
 const AnalyticsHeader: React.FC<AnalyticHeaderProps> = ({ data, type }) => {
   const history = useHistory();
   const { pathname } = useLocation();
+  const { t } = useTranslation();
 
   return (
     <Box width='100%' mb={3}>
       <Box mb={4}>
-        <h4>Quickswap Analytics</h4>
+        <h4>{t('quickswapAnalytics')}</h4>
       </Box>
       <Box
         mb={4}
@@ -34,7 +36,7 @@ const AnalyticsHeader: React.FC<AnalyticHeaderProps> = ({ data, type }) => {
                   history.push('/analytics');
                 }}
               >
-                Analytics
+                {t('analytics')}
               </span>
               <ArrowForwardIos style={{ width: 16 }} />
               <span
@@ -43,7 +45,7 @@ const AnalyticsHeader: React.FC<AnalyticHeaderProps> = ({ data, type }) => {
                   history.push(`/analytics/${type}s`);
                 }}
               >
-                {type === 'token' ? 'Tokens' : 'Pairs'}
+                {type === 'token' ? t('tokens') : t('pairs')}
               </span>
               <ArrowForwardIos style={{ width: 16 }} />
               <span>
@@ -64,21 +66,21 @@ const AnalyticsHeader: React.FC<AnalyticHeaderProps> = ({ data, type }) => {
                   'selectedTab'}`}
                 onClick={() => history.push(`/analytics`)}
               >
-                <p>Overview</p>
+                <p>{t('overview')}</p>
               </Box>
               <Box
                 className={`topTab ${pathname.indexOf('token') > -1 &&
                   'selectedTab'}`}
                 onClick={() => history.push(`/analytics/tokens`)}
               >
-                <p>Tokens</p>
+                <p>{t('tokens')}</p>
               </Box>
               <Box
                 className={`topTab ${pathname.indexOf('pair') > -1 &&
                   'selectedTab'}`}
                 onClick={() => history.push(`/analytics/pairs`)}
               >
-                <p>Pairs</p>
+                <p>{t('pairs')}</p>
               </Box>
             </>
           )}

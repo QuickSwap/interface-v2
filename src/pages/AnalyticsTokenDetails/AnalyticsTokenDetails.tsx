@@ -25,8 +25,10 @@ import { getAddress } from '@ethersproject/address';
 import { GlobalConst } from 'constants/index';
 import AnalyticsHeader from 'pages/AnalyticsPage/AnalyticsHeader';
 import AnalyticsTokenChart from './AnalyticsTokenChart';
+import { useTranslation } from 'react-i18next';
 
 const AnalyticsTokenDetails: React.FC = () => {
+  const { t } = useTranslation();
   const history = useHistory();
   const match = useRouteMatch<{ id: string }>();
   const tokenAddress = match.params.id;
@@ -118,7 +120,7 @@ const AnalyticsTokenDetails: React.FC = () => {
                   history.push(`/pools?currency0=${token.id}&currency1=ETH`);
                 }}
               >
-                <small>Add Liquidity</small>
+                <small>{t('addLiquidity')}</small>
               </Box>
               <Box
                 className='button filledButton'
@@ -126,7 +128,7 @@ const AnalyticsTokenDetails: React.FC = () => {
                   history.push(`/swap?currency0=${token.id}&currency1=ETH`);
                 }}
               >
-                <small>Swap</small>
+                <small>{t('swap')}</small>
               </Box>
             </Box>
           </Box>
@@ -139,21 +141,25 @@ const AnalyticsTokenDetails: React.FC = () => {
                 <Box className='analyticsDetailsInfo'>
                   <Box>
                     <Box>
-                      <span className='text-disabled'>TOTAL LIQUIDITY</span>
+                      <span className='text-disabled'>
+                        {t('totalLiquidity')}
+                      </span>
                       <h5>${token.totalLiquidityUSD.toLocaleString()}</h5>
                     </Box>
                     <Box textAlign='right'>
-                      <span className='text-disabled'>7d Trading Vol</span>
+                      <span className='text-disabled'>{t('7dTradingVol')}</span>
                       <h5>${token.oneWeekVolumeUSD.toLocaleString()}</h5>
                     </Box>
                   </Box>
                   <Box>
                     <Box>
-                      <span className='text-disabled'>24h Trading Vol</span>
+                      <span className='text-disabled'>
+                        {t('24hTradingVol1')}
+                      </span>
                       <h5>${token.oneDayVolumeUSD.toLocaleString()}</h5>
                     </Box>
                     <Box textAlign='right'>
-                      <span className='text-disabled'>24h FEES</span>
+                      <span className='text-disabled'>{t('24hFees')}</span>
                       <h5>
                         $
                         {(
@@ -164,7 +170,9 @@ const AnalyticsTokenDetails: React.FC = () => {
                   </Box>
                   <Box>
                     <Box>
-                      <span className='text-disabled'>Contract Address</span>
+                      <span className='text-disabled'>
+                        {t('contractAddress')}
+                      </span>
                       <h5 className='text-primary'>
                         {chainId ? (
                           <a
@@ -190,7 +198,9 @@ const AnalyticsTokenDetails: React.FC = () => {
             </Grid>
           </Box>
           <Box width={1} mt={5}>
-            <p>{token.symbol} Pools</p>
+            <p>
+              {token.symbol} {t('pools')}
+            </p>
           </Box>
           <Box width={1} className='panel' mt={4}>
             {tokenPairs ? (

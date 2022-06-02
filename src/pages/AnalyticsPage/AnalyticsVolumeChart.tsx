@@ -13,13 +13,15 @@ import {
 } from 'utils';
 import { BarChart, ChartType } from 'components';
 import { GlobalConst, GlobalData } from 'constants/index';
+import { useTranslation } from 'react-i18next';
 
 const DAY_VOLUME = 0;
 const WEEK_VOLUME = 1;
 
 const AnalyticsVolumeChart: React.FC = () => {
+  const { t } = useTranslation();
   const volumeTypes = [DAY_VOLUME, WEEK_VOLUME];
-  const volumeTypeTexts = ['D', 'W'];
+  const volumeTypeTexts = [t('dayAbb'), t('weekAbb')];
   const [volumeIndex, setVolumeIndex] = useState(DAY_VOLUME);
   const [durationIndex, setDurationIndex] = useState(
     GlobalConst.analyticChart.ONE_MONTH_CHART,
@@ -166,7 +168,7 @@ const AnalyticsVolumeChart: React.FC = () => {
       <Box>
         <Box className='flex justify-between'>
           <span className='text-disabled text-bold'>
-            VOLUME {selectedVolumeIndex === -1 ? '(24hr)' : ''}
+            {t('volume')} {selectedVolumeIndex === -1 ? `(${t('24hr')})` : ''}
           </span>
           <ChartType
             chartTypes={volumeTypes}
