@@ -8,10 +8,12 @@ import DragonAlert from './DragonAlert';
 import DragonsLair from './DragonsLair';
 import DragonsSyrup from './DragonsSyrup';
 import 'pages/styles/dragon.scss';
+import { useTranslation } from 'react-i18next';
 
 const DragonPage: React.FC = () => {
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
+  const { t } = useTranslation();
 
   return (
     <Box width='100%' mb={3}>
@@ -28,8 +30,8 @@ const DragonPage: React.FC = () => {
               className='dragonMask'
             />
             <Box className='dragonTitle'>
-              <h5>Dragon’s Lair</h5>
-              <small>Stake QUICK to earn QUICK</small>
+              <h5>{t('dragonLair')}</h5>
+              <small>{t('dragonLairTitle')}</small>
             </Box>
             <DragonsLair />
           </Box>
@@ -40,8 +42,8 @@ const DragonPage: React.FC = () => {
               <img src={isMobile ? DragonBg2 : DragonBg1} alt='Dragon Syrup' />
             </Box>
             <Box className='dragonTitle'>
-              <h5>Dragon’s Syrup</h5>
-              <small>Earn tokens of your choice over time</small>
+              <h5>{t('dragonSyrup')}</h5>
+              <small>{t('dragonSyrupTitle')}</small>
             </Box>
             <DragonsSyrup />
           </Box>

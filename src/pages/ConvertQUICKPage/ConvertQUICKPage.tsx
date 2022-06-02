@@ -147,17 +147,18 @@ const ConvertQUICKPage: React.FC = () => {
           <p className='weight-600'>QUICK(NEW)</p>
         </Box>
         <small className='text-secondary'>
-          <Trans i18nKey='convertQuick'>
-            Convert your QUICK(OLD) to QUICK(NEW). Read more about QUICK token
-            split{' '}
-            <a
-              href='https://quickswap-layer2.medium.com/you-voted-for-a-1-1000-token-split-to-make-quick-more-appealing-9c25c2a2dd7e'
-              rel='noreferrer'
-              target='_blank'
-            >
-              here
-            </a>
-          </Trans>
+          <Trans
+            i18nKey='convertQUICK'
+            components={{
+              alink: (
+                <a
+                  href='https://quickswap-layer2.medium.com/you-voted-for-a-1-1000-token-split-to-make-quick-more-appealing-9c25c2a2dd7e'
+                  rel='noreferrer'
+                  target='_blank'
+                />
+              ),
+            }}
+          />
         </small>
         <Box className='conversionRate'>
           <span>

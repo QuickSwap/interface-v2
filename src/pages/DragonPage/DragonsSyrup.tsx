@@ -21,6 +21,7 @@ import {
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 import { useInfiniteLoading } from 'utils/useInfiniteLoading';
 import { Skeleton } from '@material-ui/lab';
+import { useTranslation } from 'react-i18next';
 
 const LOADSYRUP_COUNT = 10;
 const TOKEN_COLUMN = 1;
@@ -29,6 +30,7 @@ const APR_COLUMN = 3;
 const EARNED_COLUMN = 4;
 
 const DragonsSyrup: React.FC = () => {
+  const { t } = useTranslation();
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const [isEndedSyrup, setIsEndedSyrup] = useState(false);
@@ -156,7 +158,7 @@ const DragonsSyrup: React.FC = () => {
   const renderStakedOnly = () => (
     <Box className='flex items-center'>
       <small className='text-disabled' style={{ marginRight: 8 }}>
-        Staked Only
+        {t('stakedOnly')}
       </small>
       <ToggleSwitch
         toggled={stakedOnly}
@@ -167,12 +169,12 @@ const DragonsSyrup: React.FC = () => {
 
   const syrupStatusItems = [
     {
-      text: 'Active',
+      text: t('active'),
       onClick: () => setIsEndedSyrup(false),
       condition: !isEndedSyrup,
     },
     {
-      text: 'Ended',
+      text: t('ended'),
       onClick: () => setIsEndedSyrup(true),
       condition: isEndedSyrup,
     },
@@ -180,22 +182,22 @@ const DragonsSyrup: React.FC = () => {
 
   const sortColumns = [
     {
-      text: 'Earn',
+      text: t('earn'),
       index: TOKEN_COLUMN,
       width: 0.3,
     },
     {
-      text: 'Deposits',
+      text: t('deposits'),
       index: DEPOSIT_COLUMN,
       width: 0.3,
     },
     {
-      text: 'APR',
+      text: t('apr'),
       index: APR_COLUMN,
       width: 0.2,
     },
     {
-      text: 'Earned',
+      text: t('earned'),
       index: EARNED_COLUMN,
       width: 0.2,
       justify: 'flex-end',
@@ -230,9 +232,7 @@ const DragonsSyrup: React.FC = () => {
         >
           <Box width={isMobile ? 'calc(100% - 150px)' : 1} mr={2} my={2}>
             <SearchInput
-              placeholder={
-                isMobile ? 'Search' : 'Search name, symbol or paste address'
-              }
+              placeholder={isMobile ? t('search') : t('searchPlaceHolder')}
               value={syrupSearchInput}
               setValue={setSyrupSearchInput}
             />
@@ -249,11 +249,11 @@ const DragonsSyrup: React.FC = () => {
           {isMobile ? (
             <>
               <Box height={40} flex={1}>
-                <CustomMenu title='Sort By' menuItems={sortByMobileItems} />
+                <CustomMenu title={t('sortBy')} menuItems={sortByMobileItems} />
               </Box>
               <Box mt={2} width={1} className='flex items-center'>
                 <small className='text-disabled' style={{ marginRight: 8 }}>
-                  Sort {sortDesc ? 'Desc' : 'Asc'}
+                  {sortDesc ? t('sortdesc') : t('sortasc')}
                 </small>
                 <ToggleSwitch
                   toggled={sortDesc}

@@ -5,6 +5,7 @@ import { CurrencyLogo, StakeQuickModal, UnstakeQuickModal } from 'components';
 import { ReactComponent as PriceExchangeIcon } from 'assets/images/PriceExchangeIcon.svg';
 import { formatTokenAmount, returnTokenFromKey, useLairDQUICKAPY } from 'utils';
 import { useUSDCPriceToken } from 'utils/useUSDCPrice';
+import { useTranslation } from 'react-i18next';
 
 const DragonsLair: React.FC = () => {
   const quickPrice = useUSDCPriceToken(returnTokenFromKey('QUICK'));
@@ -16,6 +17,7 @@ const DragonsLair: React.FC = () => {
   const [openUnstakeModal, setOpenUnstakeModal] = useState(false);
   const lairInfo = useLairInfo();
   const APY = useLairDQUICKAPY(lairInfo);
+  const { t } = useTranslation();
 
   return (
     <Box position='relative' zIndex={3}>
@@ -35,11 +37,11 @@ const DragonsLair: React.FC = () => {
         <CurrencyLogo currency={returnTokenFromKey('QUICK')} size='32px' />
         <Box ml={1.5}>
           <p className='small line-height-1'>QUICK</p>
-          <span className='text-hint'>Single Stake — Auto compounding</span>
+          <span className='text-hint'>{t('stakeQUICKTitle')}</span>
         </Box>
       </Box>
       <Box className='dragonLairRow'>
-        <small>Total QUICK</small>
+        <small>{t('total')} QUICK</small>
         <small>
           {lairInfo
             ? lairInfo.totalQuickBalance.toFixed(2, {
@@ -49,7 +51,7 @@ const DragonsLair: React.FC = () => {
         </small>
       </Box>
       <Box className='dragonLairRow'>
-        <small>TVL:</small>
+        <small>{t('tvl')}</small>
         <small>
           $
           {(
@@ -58,11 +60,11 @@ const DragonsLair: React.FC = () => {
         </small>
       </Box>
       <Box className='dragonLairRow'>
-        <small>APY</small>
+        <small>{t('apy')}</small>
         <small className='text-success'>{APY}%</small>
       </Box>
       <Box className='dragonLairRow'>
-        <small>Your Deposits</small>
+        <small>{t('yourdeposits')}</small>
         <small>{formatTokenAmount(lairInfo.QUICKBalance)}</small>
       </Box>
       <Box className='quickTodQuick border-secondary1'>
@@ -83,19 +85,16 @@ const DragonsLair: React.FC = () => {
         className='stakeButton bg-primary'
         onClick={() => setOpenStakeModal(true)}
       >
-        <small>Stake</small>
+        <small>{t('stake')}</small>
       </Box>
       <Box
         className='stakeButton bg-transparent'
         onClick={() => setOpenUnstakeModal(true)}
       >
-        <small>Unstake</small>
+        <small>{t('unstake')}</small>
       </Box>
       <Box mt={3} textAlign='center'>
-        <span className='text-secondary'>
-          ⭐️ When you unstake, the contract will automatically claim QUICK on
-          your behalf.
-        </span>
+        <span className='text-secondary'>{t('unstakeQUICKDesc')}</span>
       </Box>
     </Box>
   );
