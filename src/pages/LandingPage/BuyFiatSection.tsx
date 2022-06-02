@@ -4,6 +4,7 @@ import { makeStyles, useTheme } from '@material-ui/core/styles';
 import FiatMask from 'assets/images/FiatMask.svg';
 import BuyWithFiat from 'assets/images/featured/BuywithFiat.svg';
 import { BuyFiatModal, MoonpayModal } from 'components';
+import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles(({ palette, breakpoints }) => ({
   buyFiatContainer: {
@@ -103,6 +104,7 @@ export const BuyFiatSection: React.FC = () => {
   const classes = useStyles();
   const [openMenu, setOpenMenu] = useState(false);
   const [showMoonPayWidget, setShowMoonPayWidget] = useState(false);
+  const { t } = useTranslation();
 
   return (
     <Box className={classes.buyFiatContainer}>
@@ -127,11 +129,8 @@ export const BuyFiatSection: React.FC = () => {
         <Box className='buyFiatInfo'>
           <img src={BuyWithFiat} alt='buy with fiat' />
           <Box>
-            <Typography variant='h3'>Buy crypto with Fiat</Typography>
-            <Typography variant='h6'>
-              Simple way to buy or sell crypto with a credit card, bank transfer
-              and more
-            </Typography>
+            <Typography variant='h3'>{t('buyCryptoFiat')}</Typography>
+            <Typography variant='h6'>{t('buyCryptoFiatDesc')}</Typography>
           </Box>
         </Box>
         <Box className='buyFiatWrapper'>
@@ -142,7 +141,7 @@ export const BuyFiatSection: React.FC = () => {
               setOpenMenu(true);
             }}
           >
-            Buy Now
+            {t('buyNow')}
           </Button>
         </Box>
       </Box>
