@@ -177,7 +177,7 @@ const AnalyticsVolumeChart: React.FC = () => {
             setChartType={setVolumeIndex}
           />
         </Box>
-        <Box mt={0.5} className='flex justify-between'>
+        <Box mt={0.5} className='flex items-start'>
           {globalChartData && globalData ? (
             <Box flex={1} mr={2}>
               <Box className='flex items-center'>
