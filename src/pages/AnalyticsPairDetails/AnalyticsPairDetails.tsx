@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useHistory, useRouteMatch, Link } from 'react-router-dom';
-import { Box, Grid, useMediaQuery } from '@material-ui/core';
-import { useTheme } from '@material-ui/core/styles';
+import { Box, Grid } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import { ChainId, Token } from '@uniswap/sdk';
 import {
@@ -22,10 +21,10 @@ import { GlobalConst, TxnType } from 'constants/index';
 import 'pages/styles/analytics.scss';
 import AnalyticsHeader from 'pages/AnalyticsPage/AnalyticsHeader';
 import AnalyticsPairChart from './AnalyticsPairChart';
+import { useTranslation } from 'react-i18next';
 
 const AnalyticsPairDetails: React.FC = () => {
-  const { breakpoints } = useTheme();
-  const isMobile = useMediaQuery(breakpoints.down('xs'));
+  const { t } = useTranslation();
   const history = useHistory();
   const match = useRouteMatch<{ id: string }>();
   const pairAddress = match.params.id;
@@ -177,7 +176,7 @@ const AnalyticsPairDetails: React.FC = () => {
                   );
                 }}
               >
-                <small>Add Liquidity</small>
+                <small>{t('addLiquidity')}</small>
               </Box>
               <Box
                 className='button filledButton'
@@ -187,7 +186,7 @@ const AnalyticsPairDetails: React.FC = () => {
                   );
                 }}
               >
-                <small>Swap</small>
+                <small>{t('swap')}</small>
               </Box>
             </Box>
           </Box>
@@ -202,7 +201,7 @@ const AnalyticsPairDetails: React.FC = () => {
                     <Box width={212}>
                       <Box>
                         <span className='text-disabled'>
-                          TOTAL TOKENS LOCKED
+                          {t('totalTokensLocked')}
                         </span>
                         <Box
                           mt={1.5}
@@ -238,16 +237,20 @@ const AnalyticsPairDetails: React.FC = () => {
                         </Box>
                       </Box>
                       <Box mt={4}>
-                        <span className='text-disabled'>7d Trading Vol</span>
+                        <span className='text-disabled'>
+                          {t('7dTradingVol')}
+                        </span>
                         <h5>${pairData.oneWeekVolumeUSD.toLocaleString()}</h5>
                       </Box>
                       <Box mt={4}>
-                        <span className='text-disabled'>24h FEES</span>
+                        <span className='text-disabled'>{t('24hFees')}</span>
                         <h5>${fees}</h5>
                       </Box>
                     </Box>
                     <Box width={140}>
-                      <span className='text-disabled'>TOTAL LIQUIDITY</span>
+                      <span className='text-disabled'>
+                        {t('totalLiquidity')}
+                      </span>
                       <h5>
                         $
                         {Number(
@@ -257,11 +260,15 @@ const AnalyticsPairDetails: React.FC = () => {
                         ).toLocaleString()}
                       </h5>
                       <Box mt={4}>
-                        <span className='text-disabled'>24h Trading Vol</span>
+                        <span className='text-disabled'>
+                          {t('24hTradingVol1')}
+                        </span>
                         <h5>${pairData.oneDayVolumeUSD.toLocaleString()}</h5>
                       </Box>
                       <Box mt={4}>
-                        <span className='text-disabled'>Contract Address</span>
+                        <span className='text-disabled'>
+                          {t('contractAddress')}
+                        </span>
                         <h5 className='text-primary'>
                           {chainId ? (
                             <a
@@ -288,7 +295,7 @@ const AnalyticsPairDetails: React.FC = () => {
             </Grid>
           </Box>
           <Box width={1} mt={5}>
-            <p>Transactions</p>
+            <p>{t('transactions')}</p>
           </Box>
           <Box width={1} className='panel' mt={4}>
             {pairTransactionsList ? (

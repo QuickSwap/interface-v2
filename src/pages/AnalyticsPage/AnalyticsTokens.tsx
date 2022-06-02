@@ -4,8 +4,10 @@ import { TopMovers, TokensTable } from 'components';
 import { useBookmarkTokens } from 'state/application/hooks';
 import { getEthPrice, getTopTokens } from 'utils';
 import { Skeleton } from '@material-ui/lab';
+import { useTranslation } from 'react-i18next';
 
 const AnalyticsTokens: React.FC = () => {
+  const { t } = useTranslation();
   const [tokensFilter, setTokensFilter] = useState(0);
 
   const [topTokens, updateTopTokens] = useState<any[] | null>(null);
@@ -44,7 +46,7 @@ const AnalyticsTokens: React.FC = () => {
           }`}
           onClick={() => setTokensFilter(0)}
         >
-          <p className='weight-600'>All Cryptos</p>
+          <p className='weight-600'>{t('allCryptos')}</p>
         </Box>
         <Box
           className={`tokensFilter ${
@@ -52,7 +54,7 @@ const AnalyticsTokens: React.FC = () => {
           }`}
           onClick={() => setTokensFilter(1)}
         >
-          <p className='weight-600'>Favourites</p>
+          <p className='weight-600'>{t('favourites')}</p>
         </Box>
         <Box
           className={`tokensFilter ${
@@ -60,7 +62,7 @@ const AnalyticsTokens: React.FC = () => {
           }`}
           onClick={() => setTokensFilter(2)}
         >
-          <p className='weight-600'>New Listing</p>
+          <p className='weight-600'>{t('newListing')}</p>
         </Box>
       </Box>
       <Box className='panel'>

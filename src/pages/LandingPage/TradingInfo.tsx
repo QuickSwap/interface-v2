@@ -29,7 +29,7 @@ export const TradingInfo: React.FC<{ globalData: any }> = ({ globalData }) => {
         ) : (
           <Skeleton variant='rect' width={100} height={45} />
         )}
-        <p>{t('24hTxs')}</p>
+        <p className='text-uppercase'>{t('24hTxs')}</p>
       </Box>
       <Box className='tradingSection'>
         {globalData ? (

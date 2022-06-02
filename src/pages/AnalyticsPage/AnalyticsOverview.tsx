@@ -18,10 +18,12 @@ import { TokensTable, PairTable } from 'components';
 import AnalyticsInfo from './AnalyticsInfo';
 import AnalyticsLiquidityChart from './AnalyticsLiquidityChart';
 import AnalyticsVolumeChart from './AnalyticsVolumeChart';
+import { useTranslation } from 'react-i18next';
 
 dayjs.extend(utc);
 
 const AnalyticsOverview: React.FC = () => {
+  const { t } = useTranslation();
   const history = useHistory();
   const { globalData, updateGlobalData } = useGlobalData();
   const [topTokens, updateTopTokens] = useState<any[] | null>(null);
@@ -92,13 +94,13 @@ const AnalyticsOverview: React.FC = () => {
       <Box mt={4}>
         <Box className='flex justify-between items-center'>
           <Box className='headingWrapper'>
-            <p className='weight-600'>Top Tokens</p>
+            <p className='weight-600'>{t('topTokens')}</p>
           </Box>
           <Box
             className='headingWrapper cursor-pointer'
             onClick={() => history.push(`/analytics/tokens`)}
           >
-            <p className='weight-600'>See All</p>
+            <p className='weight-600'>{t('seeAll')}</p>
             <ArrowForwardIos />
           </Box>
         </Box>
@@ -113,13 +115,13 @@ const AnalyticsOverview: React.FC = () => {
       <Box mt={4}>
         <Box className='flex items-center justify-between'>
           <Box className='headingWrapper'>
-            <p className='weight-600'>Top Pairs</p>
+            <p className='weight-600'>{t('topPairs')}</p>
           </Box>
           <Box
             className='headingWrapper cursor-pointer'
             onClick={() => history.push(`/analytics/pairs`)}
           >
-            <p className='weight-600'>See All</p>
+            <p className='weight-600'>{t('seeAll')}</p>
             <ArrowForwardIos />
           </Box>
         </Box>

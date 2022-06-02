@@ -15,12 +15,14 @@ import {
 } from 'utils';
 import { AreaChart, ChartType } from 'components';
 import { GlobalConst, GlobalData } from 'constants/index';
+import { useTranslation } from 'react-i18next';
 
 const CHART_VOLUME = 0;
 const CHART_LIQUIDITY = 1;
 const CHART_FEES = 2;
 
 const AnalyticsPairChart: React.FC<{ pairData: any }> = ({ pairData }) => {
+  const { t } = useTranslation();
   const match = useRouteMatch<{ id: string }>();
   const pairAddress = match.params.id;
   const [pairChartData, setPairChartData] = useState<any[] | null>(null);
@@ -45,7 +47,7 @@ const AnalyticsPairChart: React.FC<{ pairData: any }> = ({ pairData }) => {
       : '-';
   const [chartIndex, setChartIndex] = useState(CHART_VOLUME);
   const chartIndexes = [CHART_VOLUME, CHART_LIQUIDITY, CHART_FEES];
-  const chartIndexTexts = ['Volume', 'Liquidity', 'Fees'];
+  const chartIndexTexts = [t('volume'), t('liquidity'), t('fees')];
 
   const chartData = useMemo(() => {
     if (!pairChartData) return;
