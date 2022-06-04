@@ -197,5 +197,16 @@
   "unstake": "Unstake",
   "unstakeQUICKDesc": "⭐️ When you unstake, the contract will automatically claim QUICK on your behalf.",
   "earn": "Earn",
-  "apr": "APR"
+  "apr": "APR",
+  "connectedWith": "Connected with",
+  "account": "Account",
+  "disconnect": "Disconnect",
+  "change": "Change",
+  "copyAddress": "Copy Address",
+  "viewonBlockExplorer": "View on Block Explorer",
+  "recentTransactions": "Recent Transactions",
+  "clearAll": "Clear all",
+  "transactionsWillAppear": "Your transactions will appear here",
+  "copied": "Copied",
+  "showPortis": "Show Portis"
 }

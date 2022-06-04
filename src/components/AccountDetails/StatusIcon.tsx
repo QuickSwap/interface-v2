@@ -3,8 +3,10 @@ import { Box } from '@material-ui/core';
 import { SUPPORTED_WALLETS } from 'constants/index';
 import { injected, portis } from 'connectors';
 import { useActiveWeb3React } from 'hooks';
+import { useTranslation } from 'react-i18next';
 
 const StatusIcon: React.FC = () => {
+  const { t } = useTranslation();
   const { connector } = useActiveWeb3React();
   const { ethereum } = window as any;
   const isMetaMask = !!(ethereum && !ethereum.isBitKeep && ethereum.isMetaMask);
@@ -31,7 +33,7 @@ const StatusIcon: React.FC = () => {
             portis.portis.showPortis();
           }}
         >
-          <small>Show Portis</small>
+          <small>{t('showPortis')}</small>
         </Box>
       )}
     </Box>

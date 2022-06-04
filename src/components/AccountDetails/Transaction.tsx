@@ -1,6 +1,5 @@
 import React from 'react';
 import { Box, CircularProgress } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
 import { CheckCircle, Triangle } from 'react-feather';
 
 import { useActiveWeb3React } from 'hooks';
