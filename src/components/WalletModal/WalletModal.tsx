@@ -4,8 +4,7 @@ import { WalletConnectConnector } from '@web3-react/walletconnect-connector';
 import React, { useEffect, useState } from 'react';
 import { isMobile } from 'react-device-detect';
 import ReactGA from 'react-ga';
-import { Box, Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { Box } from '@material-ui/core';
 import MetamaskIcon from 'assets/images/metamask.png';
 import { ReactComponent as Close } from 'assets/images/CloseIcon.svg';
 import { fortmatic, injected, portis, safeApp } from 'connectors';
@@ -18,32 +17,7 @@ import { AccountDetails, CustomModal } from 'components';
 
 import Option from './Option';
 import PendingView from './PendingView';
-
-const useStyles = makeStyles(({ palette }) => ({
-  closeIcon: {
-    position: 'absolute',
-    right: '1rem',
-    top: 14,
-    '& svg': {
-      stroke: palette.primary.dark,
-    },
-    '&:hover': {
-      cursor: 'pointer',
-      opacity: 0.6,
-    },
-  },
-  blurb: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexWrap: 'wrap',
-    '& a': {
-      marginLeft: 8,
-      color: palette.primary.main,
-      textDecoration: 'none',
-    },
-  },
-}));
+import 'components/styles/WalletModal.scss';
 
 const WALLET_VIEWS = {
   OPTIONS: 'options',
@@ -63,7 +37,6 @@ const WalletModal: React.FC<WalletModalProps> = ({
   confirmedTransactions,
   ENSName,
 }) => {
-  const classes = useStyles();
   // important that these are destructed from the account-specific web3-react context
   const {
     active,
@@ -309,21 +282,21 @@ const WalletModal: React.FC<WalletModalProps> = ({
       return (
         <Box position='relative'>
           <Box position='absolute' top='16px' right='16px' display='flex'>
-            <Close style={{ cursor: 'pointer' }} onClick={toggleWalletModal} />
+            <Close className='cursor-pointer' onClick={toggleWalletModal} />
           </Box>
           <Box mt={2} textAlign='center'>
-            <Typography variant='subtitle2'>
+            <h6>
               {error instanceof UnsupportedChainIdError
                 ? 'Wrong Network'
                 : 'Error connecting'}
-            </Typography>
+            </h6>
           </Box>
           <Box mt={3} mb={2} textAlign='center'>
-            <Typography variant='body2'>
+            <small>
               {error instanceof UnsupportedChainIdError
                 ? 'Please connect to the appropriate Polygon network.'
                 : 'Error connecting. Try refreshing the page.'}
-            </Typography>
+            </small>
           </Box>
         </Box>
       );
@@ -341,9 +314,9 @@ const WalletModal: React.FC<WalletModalProps> = ({
     }
     return (
       <Box paddingX={3} paddingY={4}>
-        <Box display='flex' justifyContent='space-between'>
-          <Typography variant='h5'>Connect wallet</Typography>
-          <Close style={{ cursor: 'pointer' }} onClick={toggleWalletModal} />
+        <Box className='flex justify-between'>
+          <h5>Connect wallet</h5>
+          <Close className='cursor-pointer' onClick={toggleWalletModal} />
         </Box>
         <Box mt={4}>
           {walletView === WALLET_VIEWS.PENDING ? (
@@ -357,14 +330,14 @@ const WalletModal: React.FC<WalletModalProps> = ({
             getOptions()
           )}
           {walletView !== WALLET_VIEWS.PENDING && (
-            <Box className={classes.blurb}>
-              <Typography variant='body2'>New to Matic?</Typography>
+            <Box className='blurb'>
+              <small>New to Matic?</small>
               <a
                 href='https://docs.matic.network/docs/develop/wallets/getting-started'
                 target='_blank'
                 rel='noopener noreferrer'
               >
-                <Typography variant='body2'>Learn about Wallets ↗</Typography>
+                <small>Learn about Wallets ↗</small>
               </a>
             </Box>
           )}
@@ -375,14 +348,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
 
   return (
     <CustomModal open={walletModalOpen} onClose={toggleWalletModal}>
-      <Box
-        maxHeight='80vh'
-        display='flex'
-        flexDirection='column'
-        overflow='auto'
-      >
-        {getModalContent()}
-      </Box>
+      <Box className='walletModalWrapper'>{getModalContent()}</Box>
     </CustomModal>
   );
 };

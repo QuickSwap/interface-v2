@@ -1,27 +1,27 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Box, Typography } from '@material-ui/core';
-import { useTheme } from '@material-ui/core/styles';
+import { Box } from '@material-ui/core';
 import Skeleton from '@material-ui/lab/Skeleton';
 import { useGlobalData } from 'state/application/hooks';
 import {
   formatCompact,
   getChartData,
   formatDateFromTimeStamp,
-  getPriceColor,
+  getPriceClass,
   getChartDates,
   getChartStartTime,
   getLimitedData,
 } from 'utils';
 import { BarChart, ChartType } from 'components';
 import { GlobalConst, GlobalData } from 'constants/index';
+import { useTranslation } from 'react-i18next';
 
 const DAY_VOLUME = 0;
 const WEEK_VOLUME = 1;
 
 const AnalyticsVolumeChart: React.FC = () => {
-  const { palette } = useTheme();
+  const { t } = useTranslation();
   const volumeTypes = [DAY_VOLUME, WEEK_VOLUME];
-  const volumeTypeTexts = ['D', 'W'];
+  const volumeTypeTexts = [t('dayAbb'), t('weekAbb')];
   const [volumeIndex, setVolumeIndex] = useState(DAY_VOLUME);
   const [durationIndex, setDurationIndex] = useState(
     GlobalConst.analyticChart.ONE_MONTH_CHART,
@@ -159,21 +159,17 @@ const AnalyticsVolumeChart: React.FC = () => {
     }
   }, [globalChartData, volumeIndex]);
 
-  const volumePercentColor = getPriceColor(
+  const volumePercentClass = getPriceClass(
     Number(getVolumePercent(volumeIndex)),
-    palette,
   );
 
   return (
     <>
       <Box>
-        <Box display='flex' justifyContent='space-between'>
-          <Typography
-            variant='caption'
-            style={{ color: palette.text.disabled, fontWeight: 'bold' }}
-          >
-            VOLUME {selectedVolumeIndex === -1 ? '(24hr)' : ''}
-          </Typography>
+        <Box className='flex justify-between'>
+          <span className='text-disabled text-bold'>
+            {t('volume')} {selectedVolumeIndex === -1 ? `(${t('24hr')})` : ''}
+          </span>
           <ChartType
             chartTypes={volumeTypes}
             typeTexts={volumeTypeTexts}
@@ -181,19 +177,11 @@ const AnalyticsVolumeChart: React.FC = () => {
             setChartType={setVolumeIndex}
           />
         </Box>
-        <Box
-          mt={0.5}
-          display='flex'
-          alignItems='flex-start'
-          justifyContent='space-between'
-        >
+        <Box mt={0.5} className='flex items-start'>
           {globalChartData && globalData ? (
             <Box flex={1} mr={2}>
-              <Box display='flex' alignItems='center'>
-                <Typography
-                  variant='h5'
-                  style={{ color: palette.text.primary }}
-                >
+              <Box className='flex items-center'>
+                <h5>
                   $
                   {formatCompact(
                     selectedVolumeIndex > -1
@@ -206,29 +194,23 @@ const AnalyticsVolumeChart: React.FC = () => {
                       ? globalData.oneDayVolumeUSD
                       : globalData.oneWeekVolume,
                   )}
-                </Typography>
+                </h5>
                 <Box
                   ml={1}
                   height={23}
                   px={1}
                   borderRadius={40}
-                  bgcolor={volumePercentColor.bgColor}
-                  color={volumePercentColor.textColor}
+                  className={volumePercentClass}
                 >
-                  <Typography variant='caption'>
+                  <span>
                     {`${getVolumePercent(volumeIndex) > 0 ? '+' : ''}
                       ${getVolumePercent(volumeIndex).toLocaleString()}`}
                     %
-                  </Typography>
+                  </span>
                 </Box>
               </Box>
               <Box height={21}>
-                <Typography
-                  style={{ color: palette.text.disabled }}
-                  variant='caption'
-                >
-                  {volumeDates}
-                </Typography>
+                <span className='text-disabled'>{volumeDates}</span>
               </Box>
             </Box>
           ) : (

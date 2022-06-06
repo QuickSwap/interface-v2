@@ -1,29 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useWeb3React } from '@web3-react/core';
 import { useTranslation } from 'react-i18next';
-import { Box, CircularProgress, Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { Box, CircularProgress } from '@material-ui/core';
 import { network } from 'connectors';
 import { useEagerConnect, useInactiveListener } from 'hooks';
 import { GlobalConst } from 'constants/index';
-
-const useStyles = makeStyles(({}) => ({
-  messageWrapper: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: '20rem',
-  },
-  message: {
-    color: 'black',
-  },
-}));
+import 'components/styles/Web3ReactManager.scss';
 
 const Web3ReactManager: React.FC<{ children: JSX.Element }> = ({
   children,
 }) => {
   const { t } = useTranslation();
-  const classes = useStyles();
   const { active } = useWeb3React();
   const {
     active: networkActive,
@@ -64,8 +51,8 @@ const Web3ReactManager: React.FC<{ children: JSX.Element }> = ({
   // if the account context isn't active, and there's an error on the network context, it's an irrecoverable error
   if (!active && networkError) {
     return (
-      <Box className={classes.messageWrapper}>
-        <Typography className={classes.message}>{t('unknownError')}</Typography>
+      <Box className='messageWrapper'>
+        <p className='message'>{t('unknownError')}</p>
       </Box>
     );
   }
@@ -73,7 +60,7 @@ const Web3ReactManager: React.FC<{ children: JSX.Element }> = ({
   // if neither context is active, spin
   if (!active && !networkActive) {
     return showLoader ? (
-      <Box className={classes.messageWrapper}>
+      <Box className='messageWrapper'>
         <CircularProgress />
       </Box>
     ) : null;

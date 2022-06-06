@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { TransactionResponse } from '@ethersproject/providers';
-import { Box, Typography, useMediaQuery } from '@material-ui/core';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { Box, useMediaQuery } from '@material-ui/core';
+import { useTheme } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { StakingInfo, DualStakingInfo } from 'types';
 import { TokenAmount, Pair } from '@uniswap/sdk';
@@ -33,75 +33,13 @@ import {
 } from 'utils';
 import CircleInfoIcon from 'assets/images/circleinfo.svg';
 
-const useStyles = makeStyles(({ palette, breakpoints }) => ({
-  inputVal: {
-    backgroundColor: palette.background.paper,
-    borderRadius: '10px',
-    height: '50px',
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    '& p': {
-      cursor: 'pointer',
-    },
-  },
-  buttonToken: {
-    backgroundColor: palette.grey.A400,
-    borderRadius: '10px',
-    height: '50px',
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    cursor: 'pointer',
-  },
-  buttonClaim: {
-    backgroundImage:
-      'linear-gradient(280deg, #64fbd3 0%, #00cff3 0%, #0098ff 10%, #004ce6 100%)',
-    borderRadius: '10px',
-    height: '50px',
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    cursor: 'pointer',
-    color: 'white',
-  },
-  buttonWrapper: {
-    minWidth: 250,
-    width: '30%',
-    color: palette.text.secondary,
-    borderRadius: 16,
-    [breakpoints.down('xs')]: {
-      width: '100%',
-      padding: 16,
-      border: `1px solid ${palette.divider}`,
-    },
-  },
-  dailyRateWrapper: {
-    display: 'flex',
-    alignItems: 'center',
-    flexWrap: 'wrap',
-    background: palette.secondary.contrastText,
-    width: '100%',
-    marginBottom: 16,
-    padding: '8px 16px',
-    borderRadius: 10,
-    [breakpoints.down('xs')]: {
-      margin: '0 16px 16px',
-      width: 'calc(100% - 32px)',
-    },
-  },
-}));
-
 const FarmCardDetails: React.FC<{
   stakingInfo: StakingInfo | DualStakingInfo;
   stakingAPY: number;
   isLPFarm?: boolean;
 }> = ({ stakingInfo, stakingAPY, isLPFarm }) => {
-  const classes = useStyles();
   const { t } = useTranslation();
-  const { palette, breakpoints } = useTheme();
+  const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const [stakeAmount, setStakeAmount] = useState('');
   const [attemptStaking, setAttemptStaking] = useState(false);
@@ -320,100 +258,67 @@ const FarmCardDetails: React.FC<{
   return (
     <>
       <Box
-        width='100%'
-        p={2}
-        display='flex'
-        flexDirection='row'
-        flexWrap='wrap'
-        borderTop='1px solid #444444'
-        alignItems='center'
-        justifyContent={stakingInfo?.ended ? 'flex-end' : 'space-between'}
+        className={`farmCardDetails ${
+          stakingInfo?.ended ? 'justify-end' : 'justify-between'
+        }`}
       >
         {stakingInfo && (
           <>
             {isMobile && (
               <>
-                <Box
-                  mt={2}
-                  width={1}
-                  display='flex'
-                  justifyContent='space-between'
-                >
-                  <Typography variant='body2' color='textSecondary'>
-                    {t('tvl')}
-                  </Typography>
-                  <Typography variant='body2'>{tvl}</Typography>
+                <Box className='farmCardMobileRow'>
+                  <small className='text-secondary'>{t('tvl')}</small>
+                  <small>{tvl}</small>
                 </Box>
-                <Box
-                  mt={2}
-                  width={1}
-                  display='flex'
-                  justifyContent='space-between'
-                >
-                  <Typography variant='body2' color='textSecondary'>
-                    {t('rewards')}
-                  </Typography>
+                <Box className='farmCardMobileRow'>
+                  <small className='text-secondary'>{t('rewards')}</small>
                   <Box textAlign='right'>
-                    <Typography variant='body2'>
+                    <small>
                       ${(isLPFarm ? lpRewards : dualRewards).toLocaleString()} /
                       {t('day')}
-                    </Typography>
+                    </small>
                     {isLPFarm ? (
-                      <Typography variant='body2'>{lpPoolRate}</Typography>
+                      <small>{lpPoolRate}</small>
                     ) : (
                       <>
-                        <Typography variant='body2'>{dualPoolRateA}</Typography>
-                        <Typography variant='body2'>{dualPoolRateB}</Typography>
+                        <small>{dualPoolRateA}</small>
+                        <small>{dualPoolRateB}</small>
                       </>
                     )}
                   </Box>
                 </Box>
-                <Box
-                  mt={2}
-                  width={1}
-                  display='flex'
-                  justifyContent='space-between'
-                >
-                  <Box display='flex' alignItems='center'>
-                    <Typography variant='body2' color='textSecondary'>
-                      {t('apy')}
-                    </Typography>
+                <Box className='farmCardMobileRow'>
+                  <Box className='flex items-center'>
+                    <small className='text-secondary'>{t('apy')}</small>
                     <Box ml={0.5} height={16}>
                       <img src={CircleInfoIcon} alt={'arrow up'} />
                     </Box>
                   </Box>
-                  <Box color={palette.success.main}>
-                    <Typography variant='body2'>{apyWithFee}%</Typography>
-                  </Box>
+                  <small className='text-success'>{apyWithFee}%</small>
                 </Box>
               </>
             )}
             {!stakingInfo.ended && (
-              <Box className={classes.buttonWrapper} mt={isMobile ? 2 : 0}>
-                <Box display='flex' justifyContent='space-between'>
-                  <Typography variant='body2'>{t('inwallet')}:</Typography>
-                  <Box
-                    display='flex'
-                    flexDirection='column'
-                    alignItems='flex-end'
-                    justifyContent='flex-start'
-                  >
-                    <Typography variant='body2'>
-                      {formatTokenAmount(userLiquidityUnstaked)} {t('lp')}{' '}
-                      <span>({getUSDString(stakedAmounts?.unStakedUSD)})</span>
-                    </Typography>
+              <Box className='buttonWrapper' mt={isMobile ? 2 : 0}>
+                <Box className='flex justify-between'>
+                  <small>{t('inwallet')}:</small>
+                  <Box className='flex flex-col items-end'>
+                    <small>
+                      {formatTokenAmount(userLiquidityUnstaked)} {t('lp')} (
+                      {getUSDString(stakedAmounts?.unStakedUSD)})
+                    </small>
                     <Link
                       to={`/pools?currency0=${getTokenAddress(
                         token0,
                       )}&currency1=${getTokenAddress(token1)}`}
-                      style={{ color: palette.primary.main }}
+                      className='text-primary'
                     >
                       {t('get')} {currency0?.symbol} / {currency1?.symbol}{' '}
                       {t('lp')}
                     </Link>
                   </Box>
                 </Box>
-                <Box className={classes.inputVal} mb={2} mt={2} p={2}>
+                <Box className='inputVal' mb={2} mt={2} p={2}>
                   <NumericalInput
                     placeholder='0.00'
                     value={stakeAmount}
@@ -422,15 +327,13 @@ const FarmCardDetails: React.FC<{
                       setStakeAmount(value);
                     }}
                   />
-                  <Typography
-                    variant='body2'
-                    style={{
-                      color:
-                        userLiquidityUnstaked &&
-                        userLiquidityUnstaked.greaterThan('0')
-                          ? palette.primary.main
-                          : palette.text.hint,
-                    }}
+                  <small
+                    className={
+                      userLiquidityUnstaked &&
+                      userLiquidityUnstaked.greaterThan('0')
+                        ? 'text-primary'
+                        : 'text-hint'
+                    }
                     onClick={() => {
                       if (
                         userLiquidityUnstaked &&
@@ -443,12 +346,10 @@ const FarmCardDetails: React.FC<{
                     }}
                   >
                     {t('max')}
-                  </Typography>
+                  </small>
                 </Box>
                 <Box
-                  className={
-                    stakeEnabled ? classes.buttonClaim : classes.buttonToken
-                  }
+                  className={stakeEnabled ? 'buttonClaim' : 'buttonToken'}
                   mt={2}
                   p={2}
                   onClick={async () => {
@@ -461,7 +362,7 @@ const FarmCardDetails: React.FC<{
                     }
                   }}
                 >
-                  <Typography variant='body1'>
+                  <p>
                     {attemptStaking
                       ? t('stakingLPTokens')
                       : approval === ApprovalState.APPROVED
@@ -469,19 +370,19 @@ const FarmCardDetails: React.FC<{
                       : approving
                       ? t('approving')
                       : t('approve')}
-                  </Typography>
+                  </p>
                 </Box>
               </Box>
             )}
-            <Box className={classes.buttonWrapper} mx={isMobile ? 0 : 2} my={2}>
-              <Box display='flex' justifyContent='space-between'>
-                <Typography variant='body2'>{t('mydeposits')}:</Typography>
-                <Typography variant='body2'>
-                  {formatTokenAmount(stakingInfo.stakedAmount)} {t('lp')}{' '}
-                  <span>({getUSDString(stakedAmounts?.myStakedUSD)})</span>
-                </Typography>
+            <Box className='buttonWrapper' mx={isMobile ? 0 : 2} my={2}>
+              <Box className='flex justify-between'>
+                <small>{t('mydeposits')}:</small>
+                <small>
+                  {formatTokenAmount(stakingInfo.stakedAmount)} {t('lp')} (
+                  {getUSDString(stakedAmounts?.myStakedUSD)})
+                </small>
               </Box>
-              <Box className={classes.inputVal} mb={2} mt={4.5} p={2}>
+              <Box className='inputVal' mb={2} mt={4.5} p={2}>
                 <NumericalInput
                   placeholder='0.00'
                   value={unstakeAmount}
@@ -490,15 +391,13 @@ const FarmCardDetails: React.FC<{
                     setUnStakeAmount(value);
                   }}
                 />
-                <Typography
-                  variant='body2'
-                  style={{
-                    color:
-                      stakingInfo.stakedAmount &&
-                      stakingInfo.stakedAmount.greaterThan('0')
-                        ? palette.primary.main
-                        : palette.text.hint,
-                  }}
+                <small
+                  className={
+                    stakingInfo.stakedAmount &&
+                    stakingInfo.stakedAmount.greaterThan('0')
+                      ? 'text-primary'
+                      : 'text-hint'
+                  }
                   onClick={() => {
                     if (
                       stakingInfo.stakedAmount &&
@@ -511,12 +410,10 @@ const FarmCardDetails: React.FC<{
                   }}
                 >
                   {t('max')}
-                </Typography>
+                </small>
               </Box>
               <Box
-                className={
-                  unstakeEnabled ? classes.buttonClaim : classes.buttonToken
-                }
+                className={unstakeEnabled ? 'buttonClaim' : 'buttonToken'}
                 mt={2}
                 p={2}
                 onClick={() => {
@@ -525,24 +422,17 @@ const FarmCardDetails: React.FC<{
                   }
                 }}
               >
-                <Typography variant='body1'>
+                <p>
                   {attemptUnstaking
                     ? t('unstakingLPTokens')
                     : t('unstakeLPTokens')}
-                </Typography>
+                </p>
               </Box>
             </Box>
-            <Box className={classes.buttonWrapper}>
-              <Box
-                display='flex'
-                flexDirection='column'
-                alignItems='center'
-                justifyContent='space-between'
-              >
+            <Box className='buttonWrapper'>
+              <Box className='flex flex-col items-center justify-between'>
                 <Box mb={1}>
-                  <Typography variant='body2'>
-                    {t('unclaimedRewards')}:
-                  </Typography>
+                  <small>{t('unclaimedRewards')}:</small>
                 </Box>
                 {isLPFarm ? (
                   <>
@@ -550,11 +440,11 @@ const FarmCardDetails: React.FC<{
                       <CurrencyLogo currency={lpStakingInfo.rewardToken} />
                     </Box>
                     <Box mb={1} textAlign='center'>
-                      <Typography variant='body1' color='textSecondary'>
+                      <p className='text-secondary'>
                         {formatTokenAmount(lpStakingInfo.earnedAmount)}
-                        <span>&nbsp;{lpStakingInfo.rewardToken.symbol}</span>
-                      </Typography>
-                      <Typography variant='body2'>{earnedUSDStr}</Typography>
+                        &nbsp;{lpStakingInfo.rewardToken.symbol}
+                      </p>
+                      <small>{earnedUSDStr}</small>
                     </Box>
                   </>
                 ) : (
@@ -568,23 +458,21 @@ const FarmCardDetails: React.FC<{
                       />
                     </Box>
                     <Box mb={1} textAlign='center'>
-                      <Typography variant='body1'>{earnedUSDStr}</Typography>
-                      <Typography variant='body1' color='textSecondary'>
+                      <p>{earnedUSDStr}</p>
+                      <p className='text-secondary'>
                         {formatTokenAmount(dualStakingInfo.earnedAmountA)}
                         <span>&nbsp;{dualStakingInfo.rewardTokenA.symbol}</span>
-                      </Typography>
-                      <Typography variant='body1' color='textSecondary'>
+                      </p>
+                      <p className='text-secondary'>
                         {formatTokenAmount(dualStakingInfo.earnedAmountB)}
                         <span>&nbsp;{dualStakingInfo.rewardTokenB.symbol}</span>
-                      </Typography>
+                      </p>
                     </Box>
                   </>
                 )}
               </Box>
               <Box
-                className={
-                  claimEnabled ? classes.buttonClaim : classes.buttonToken
-                }
+                className={claimEnabled ? 'buttonClaim' : 'buttonToken'}
                 p={2}
                 onClick={() => {
                   if (claimEnabled) {
@@ -592,34 +480,24 @@ const FarmCardDetails: React.FC<{
                   }
                 }}
               >
-                <Typography variant='body1'>
-                  {attemptClaiming ? t('claiming') : t('claim')}
-                </Typography>
+                <p>{attemptClaiming ? t('claiming') : t('claim')}</p>
               </Box>
             </Box>
           </>
         )}
       </Box>
       {mainRewardRate?.greaterThan('0') && (
-        <Box className={classes.dailyRateWrapper}>
-          <Box
-            display='flex'
-            alignItems='center'
-            justifyContent={isMobile ? 'space-between' : 'flex-start'}
-            mr={isMobile ? 0 : 1.5}
-            width={isMobile ? 1 : 'auto'}
-            mb={isMobile ? 1 : 0}
-            flexWrap='wrap'
-          >
-            <Box display='flex' mr={1}>
-              <Typography variant='body2' color='textSecondary'>
+        <Box className='dailyRateWrapper'>
+          <Box>
+            <Box>
+              <small className='text-secondary'>
                 {t('yourRate', {
                   symbol: isLPFarm ? '' : dualStakingInfo.rewardTokenA.symbol,
                 })}
                 :
-              </Typography>
+              </small>
             </Box>
-            <Typography variant='body2' color='textPrimary'>
+            <small>
               {formatMulDivTokenAmount(
                 mainRewardRate,
                 GlobalConst.utils.ONEDAYSECONDS,
@@ -628,50 +506,34 @@ const FarmCardDetails: React.FC<{
                 ? lpStakingInfo.rewardToken.symbol
                 : dualStakingInfo.rewardTokenA.symbol}{' '}
               / {t('day')}
-            </Typography>
+            </small>
           </Box>
           {!isLPFarm && (
-            <Box
-              display='flex'
-              alignItems='center'
-              justifyContent={isMobile ? 'space-between' : 'flex-start'}
-              mr={isMobile ? 0 : 1.5}
-              width={isMobile ? 1 : 'auto'}
-              mb={isMobile ? 1 : 0}
-              flexWrap='wrap'
-            >
-              <Box display='flex' mr={1}>
-                <Typography variant='body2' color='textSecondary'>
+            <Box>
+              <Box>
+                <small className='text-secondary'>
                   {t('yourRate', {
                     symbol: dualStakingInfo.rewardTokenB.symbol,
                   })}
                   :
-                </Typography>
+                </small>
               </Box>
-              <Typography variant='body2' color='textPrimary'>
+              <small>
                 {formatMulDivTokenAmount(
                   dualStakingInfo.rewardRateB,
                   GlobalConst.utils.ONEDAYSECONDS,
                 )}{' '}
                 {dualStakingInfo.rewardTokenB.symbol} / {t('day')}
-              </Typography>
+              </small>
             </Box>
           )}
-          <Box
-            display='flex'
-            justifyContent={isMobile ? 'space-between' : 'flex-start'}
-            alignItems='center'
-            width={isMobile ? 1 : 'auto'}
-            flexWrap='wrap'
-          >
-            <Box display='flex' mr={1}>
-              <Typography variant='body2' color='textSecondary'>
-                {t('yourFees')}:
-              </Typography>
+          <Box>
+            <Box>
+              <small className='text-secondary'>{t('yourFees')}:</small>
             </Box>
-            <Typography variant='body2' color='textPrimary'>
+            <small>
               ${formatNumber(stakingInfo.accountFee)} / {t('day')}
-            </Typography>
+            </small>
           </Box>
         </Box>
       )}

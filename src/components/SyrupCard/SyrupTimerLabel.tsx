@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, useMediaQuery } from '@material-ui/core';
+import { Box, useMediaQuery } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 
 const SyrupTimerLabel: React.FC<{ exactEnd: number; isEnded: boolean }> = ({
@@ -7,7 +7,7 @@ const SyrupTimerLabel: React.FC<{ exactEnd: number; isEnded: boolean }> = ({
   isEnded,
 }) => {
   const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
-  const { palette, breakpoints } = useTheme();
+  const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
 
   const MINUTE = 60;
@@ -43,30 +43,20 @@ const SyrupTimerLabel: React.FC<{ exactEnd: number; isEnded: boolean }> = ({
           alignItems='center'
           justifyContent='space-between'
         >
-          <Typography
-            variant={isMobile ? 'body2' : 'caption'}
-            style={{ color: palette.text.secondary }}
-          >
+          <p className={`text-secondary ${isMobile ? 'small' : 'caption'}`}>
             Time Remaining
-          </Typography>
-          <Typography
-            variant='body2'
-            style={{
-              color: isMobile ? palette.text.primary : palette.text.secondary,
-            }}
-          >
+          </p>
+          <small className={isMobile ? '' : 'text-secondary'}>
             {`${days}d ${hours
               .toString()
               .padStart(2, '0')}h ${minutes
               .toString()
               .padStart(2, '0')}m ${timeRemaining}s`}
-          </Typography>
+          </small>
         </Box>
       )}
       {(isEnded || !Number.isFinite(timeRemaining)) && (
-        <Typography variant='body2' color='textSecondary'>
-          Rewards Ended
-        </Typography>
+        <small className='text-secondary'>Rewards Ended</small>
       )}
     </>
   );

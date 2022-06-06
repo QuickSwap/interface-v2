@@ -1,13 +1,6 @@
 import { CurrencyAmount, ETHER, Token } from '@uniswap/sdk';
 import React from 'react';
-import {
-  Box,
-  Tooltip,
-  Typography,
-  CircularProgress,
-  ListItem,
-} from '@material-ui/core';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { Box, Tooltip, CircularProgress, ListItem } from '@material-ui/core';
 import { useActiveWeb3React } from 'hooks';
 import { WrappedTokenInfo } from 'state/lists/hooks';
 import { useAddUserToken, useRemoveUserAddedToken } from 'state/user/hooks';
@@ -28,61 +21,15 @@ function currencyKey(currency: Token): string {
     : '';
 }
 
-const useStyles = makeStyles(({ palette }) => ({
-  tag: {
-    fontSize: 14,
-    borderRadius: 4,
-    padding: '0.25rem 0.3rem 0.25rem 0.3rem',
-    maxWidth: '6rem',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap',
-  },
-  currencyRow: {
-    width: '100%',
-    background: 'transparent',
-    display: 'flex',
-    alignItems: 'center',
-    '& > p': {
-      margin: '0 4px',
-    },
-    '& button': {
-      background: 'transparent',
-      padding: 0,
-      minWidth: 'unset',
-      '& svg': {
-        fill: 'white',
-        stroke: 'black',
-      },
-      '& div': {
-        background: 'transparent',
-      },
-    },
-  },
-  currencySymbol: {
-    color: palette.text.primary,
-    lineHeight: 1,
-  },
-  currencyName: {
-    color: palette.text.secondary,
-  },
-}));
-
 function Balance({ balance }: { balance: CurrencyAmount }) {
-  const { palette } = useTheme();
   return (
-    <Typography
-      variant='body2'
-      title={balance.toExact()}
-      style={{ color: palette.text.primary }}
-    >
+    <p className='small' title={balance.toExact()}>
       {formatTokenAmount(balance)}
-    </Typography>
+    </p>
   );
 }
 
 function TokenTags({ currency }: { currency: Token }) {
-  const classes = useStyles();
   if (!(currency instanceof WrappedTokenInfo)) {
     return <span />;
   }
@@ -95,7 +42,7 @@ function TokenTags({ currency }: { currency: Token }) {
   return (
     <Box>
       <Tooltip title={tag.description}>
-        <Box className={classes.tag} key={tag.id}>
+        <Box className='tag' key={tag.id}>
           {tag.name}
         </Box>
       </Tooltip>
@@ -106,7 +53,7 @@ function TokenTags({ currency }: { currency: Token }) {
             .map(({ name, description }) => `${name}: ${description}`)
             .join('; \n')}
         >
-          <Box className={classes.tag}>...</Box>
+          <Box className='tag'>...</Box>
         </Tooltip>
       ) : null}
     </Box>
@@ -131,8 +78,6 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
   isOnSelectedList,
 }) => {
   const { ethereum } = window as any;
-  const classes = useStyles();
-  const { palette } = useTheme();
   const { account, chainId } = useActiveWeb3React();
   const key = currencyKey(currency);
 
@@ -190,17 +135,16 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
         if (!isSelected && !otherSelected) onSelect();
       }}
     >
-      <Box className={classes.currencyRow}>
+      <Box className='currencyRow'>
         {(otherSelected || isSelected) && <TokenSelectedIcon />}
-        <CurrencyLogo currency={currency} size={'32px'} />
+        <CurrencyLogo currency={currency} size='32px' />
         <Box ml={1} height={32}>
-          <Box display='flex' alignItems='center'>
-            <Typography variant='body2' className={classes.currencySymbol}>
-              {currency.symbol}
-            </Typography>
+          <Box className='flex items-center'>
+            <small className='currencySymbol'>{currency.symbol}</small>
             {isMetamask && currency !== ETHER && (
               <Box
-                style={{ cursor: 'pointer', marginLeft: 2 }}
+                className='cursor-pointer'
+                ml='2px'
                 onClick={(event: any) => {
                   addTokenToMetamask(
                     currency.address,
@@ -216,17 +160,13 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
             )}
           </Box>
           {isOnSelectedList ? (
-            <Typography variant='caption' className={classes.currencyName}>
-              {currency.name}
-            </Typography>
+            <span className='currencyName'>{currency.name}</span>
           ) : (
-            <Box display='flex' alignItems='center'>
-              <Typography variant='caption'>
-                {customAdded ? 'Added by user' : 'Found by address'}
-              </Typography>
+            <Box className='flex items-center'>
+              <span>{customAdded ? 'Added by user' : 'Found by address'}</span>
               <Box
                 ml={0.5}
-                color={palette.primary.main}
+                className='text-primary'
                 onClick={(event) => {
                   event.stopPropagation();
                   if (customAdded) {
@@ -237,9 +177,7 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
                   }
                 }}
               >
-                <Typography variant='caption'>
-                  {customAdded ? '(Remove)' : '(Add)'}
-                </Typography>
+                <span>{customAdded ? '(Remove)' : '(Add)'}</span>
               </Box>
             </Box>
           )}
@@ -251,16 +189,13 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
           {balance ? (
             <>
               <Balance balance={balance} />
-              <Typography
-                variant='caption'
-                style={{ color: palette.text.secondary }}
-              >
+              <span className='text-secondary'>
                 $
                 {(
                   Number(balance.toExact()) *
                   (usdPrice ? Number(usdPrice.toSignificant()) : 0)
                 ).toLocaleString()}
-              </Typography>
+              </span>
             </>
           ) : account ? (
             <CircularProgress size={24} color='secondary' />

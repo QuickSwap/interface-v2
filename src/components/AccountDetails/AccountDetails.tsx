@@ -2,32 +2,17 @@ import React, { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { useActiveWeb3React } from 'hooks';
 import { AppDispatch } from 'state';
-import { Box, Typography } from '@material-ui/core';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { Box } from '@material-ui/core';
 import { clearAllTransactions } from 'state/transactions/actions';
 import { shortenAddress, getEtherscanLink } from 'utils';
 import { SUPPORTED_WALLETS } from 'constants/index';
 import { ReactComponent as Close } from 'assets/images/CloseIcon.svg';
 import { injected, walletlink, safeApp } from 'connectors';
 import { ExternalLink as LinkIcon } from 'react-feather';
+import 'components/styles/AccountDetails.scss';
 import StatusIcon from './StatusIcon';
 import Copy from './CopyHelper';
 import Transaction from './Transaction';
-
-const useStyles = makeStyles(({ palette }) => ({
-  addressLink: {
-    textDecoration: 'none',
-    display: 'flex',
-    alignItems: 'center',
-    color: palette.text.primary,
-    '& p': {
-      marginLeft: 4,
-    },
-    '&:hover': {
-      textDecoration: 'underline',
-    },
-  },
-}));
 
 function renderTransactions(transactions: string[]) {
   return (
@@ -55,8 +40,6 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
   openOptions,
 }) => {
   const { chainId, account, connector } = useActiveWeb3React();
-  const classes = useStyles();
-  const { palette } = useTheme();
   const dispatch = useDispatch<AppDispatch>();
 
   function formatConnectorName() {
@@ -78,7 +61,7 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
             (isMetaMask && k === 'METAMASK')),
       )
       .map((k) => SUPPORTED_WALLETS[k].name)[0];
-    return <Typography variant='body2'>Connected with {name}</Typography>;
+    return <small>Connected with {name}</small>;
   }
 
   const clearAllTransactionsCallback = useCallback(() => {
@@ -87,56 +70,45 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
 
   return (
     <Box paddingX={3} paddingY={4}>
-      <Box display='flex' justifyContent='space-between'>
-        <Typography variant='h5'>Account</Typography>
-        <Close style={{ cursor: 'pointer' }} onClick={toggleWalletModal} />
+      <Box className='flex justify-between'>
+        <h5 className='text-bold'>Account</h5>
+        <Close className='cursor-pointer' onClick={toggleWalletModal} />
       </Box>
-      <Box
-        mt={2}
-        padding={2}
-        borderRadius={10}
-        bgcolor={palette.secondary.dark}
-      >
-        <Box display='flex' justifyContent='space-between' alignItems='center'>
+      <Box mt={2} padding={2} borderRadius={10} className='bg-secondary2'>
+        <Box className='flex justify-between items-center'>
           {formatConnectorName()}
-          <Box display='flex' alignItems='center'>
+          <Box className='flex items-center'>
             {connector !== injected &&
               connector !== walletlink &&
               connector !== safeApp && (
-                <Typography
+                <small
                   style={{ cursor: 'pointer', marginRight: 8 }}
                   onClick={() => {
                     (connector as any).close();
                   }}
-                  variant='body2'
                 >
                   Disconnect
-                </Typography>
+                </small>
               )}
             {connector !== safeApp && (
-              <Typography
-                style={{ cursor: 'pointer' }}
+              <small
+                className='cursor-pointer'
                 onClick={() => {
                   openOptions();
                 }}
-                variant='body2'
               >
                 Change
-              </Typography>
+              </small>
             )}
           </Box>
         </Box>
-        <Box display='flex' alignItems='center' my={1.5}>
+        <Box className='flex items-center' my={1.5}>
           <StatusIcon />
-          <Typography
-            variant='h5'
-            style={{ marginLeft: 8 }}
-            id='web3-account-identifier-row'
-          >
+          <h5 style={{ marginLeft: 8 }} id='web3-account-identifier-row'>
             {ENSName ? ENSName : account && shortenAddress(account)}
-          </Typography>
+          </h5>
         </Box>
-        <Box display='flex' justifyContent='space-between' alignItems='center'>
+        <Box className='flex justify-between items-center'>
           {account && (
             <Copy toCopy={account}>
               <span style={{ marginLeft: '4px' }}>Copy Address</span>
@@ -144,7 +116,7 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
           )}
           {chainId && account && (
             <a
-              className={classes.addressLink}
+              className='addressLink'
               href={
                 chainId &&
                 getEtherscanLink(
@@ -157,7 +129,7 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
               rel='noopener noreferrer'
             >
               <LinkIcon size={16} />
-              <Typography variant='body2'>View on Block Explorer</Typography>
+              <small>View on Block Explorer</small>
             </a>
           )}
         </Box>
@@ -165,21 +137,18 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
       {!!pendingTransactions.length || !!confirmedTransactions.length ? (
         <>
           <Box
-            display='flex'
-            justifyContent='space-between'
-            alignItems='center'
-            paddingX={2}
+            className='flex justify-between items-center'
+            px={2}
             pt={2}
             mb={1}
           >
-            <Typography variant='body2'>Recent Transactions</Typography>
-            <Typography
-              variant='body2'
-              style={{ cursor: 'pointer' }}
+            <small>Recent Transactions</small>
+            <small
+              className='cursor-pointer'
               onClick={clearAllTransactionsCallback}
             >
               Clear all
-            </Typography>
+            </small>
           </Box>
           <Box paddingX={2} flex={1} overflow='auto'>
             {renderTransactions(pendingTransactions)}
@@ -188,9 +157,7 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
         </>
       ) : (
         <Box paddingX={2} pt={2}>
-          <Typography variant='body2'>
-            Your transactions will appear here...
-          </Typography>
+          <p>Your transactions will appear here...</p>
         </Box>
       )}
     </Box>

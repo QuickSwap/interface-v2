@@ -1,33 +1,15 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Box, Typography, Divider } from '@material-ui/core';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { Box, Divider } from '@material-ui/core';
 import { getAddress } from '@ethersproject/address';
 import { ChainId, Token } from '@uniswap/sdk';
 import { CurrencyLogo, CustomTable } from 'components';
 import { GlobalConst } from 'constants/index';
-import { formatNumber, getFormattedPrice, getPriceColor } from 'utils';
+import { formatNumber, getFormattedPrice, getPriceClass } from 'utils';
 import { useBookmarkTokens } from 'state/application/hooks';
 import { ReactComponent as StarChecked } from 'assets/images/StarChecked.svg';
 import { ReactComponent as StarUnchecked } from 'assets/images/StarUnchecked.svg';
-
-const useStyles = makeStyles(({}) => ({
-  priceChangeWrapper: {
-    height: 25,
-    padding: '0 12px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 16,
-  },
-  mobileRow: {
-    width: '100%',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    margin: '8px 0',
-  },
-}));
+import 'components/styles/TokensTable.scss';
 
 interface TokensTableProps {
   data: any[];
@@ -71,8 +53,6 @@ const liquidityHeadCellIndex = 4;
 
 const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
   const tokenHeadCells = headCells();
-  const classes = useStyles();
-  const { palette } = useTheme();
   const {
     bookmarkTokens,
     addBookmarkToken,
@@ -86,10 +66,10 @@ const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
       token.symbol,
       token.name,
     );
-    const priceColor = getPriceColor(Number(token.priceChangeUSD), palette);
+    const priceClass = getPriceClass(Number(token.priceChangeUSD));
     return (
       <Box mt={index === 0 ? 0 : 3}>
-        <Box display='flex' alignItems='center' mb={1}>
+        <Box className='flex items-center' mb={1}>
           <Box
             display='flex'
             mr={1}
@@ -109,55 +89,38 @@ const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
             )}
           </Box>
           <Link
+            className='no-decoration'
             to={`/analytics/token/${tokenCurrency.address}`}
-            style={{ textDecoration: 'none' }}
           >
-            <Box display='flex' alignItems='center'>
+            <Box className='flex items-center'>
               <CurrencyLogo currency={tokenCurrency} size='28px' />
               <Box ml={1}>
-                <Typography
-                  variant='body1'
-                  style={{ color: palette.text.primary }}
-                >
+                <p className='text-gray25'>
                   {token.name}{' '}
-                  <span style={{ color: palette.text.hint }}>
-                    ({token.symbol})
-                  </span>
-                </Typography>
+                  <span className='text-hint'>({token.symbol})</span>
+                </p>
               </Box>
             </Box>
           </Link>
         </Box>
         <Divider />
-        <Box className={classes.mobileRow}>
-          <Typography variant='body1'>Price</Typography>
-          <Typography variant='body1'>
-            ${formatNumber(token.priceUSD)}
-          </Typography>
+        <Box className='mobileRow'>
+          <p>Price</p>
+          <p>${formatNumber(token.priceUSD)}</p>
         </Box>
-        <Box className={classes.mobileRow}>
-          <Typography variant='body1'>24H %</Typography>
-          <Box
-            className={classes.priceChangeWrapper}
-            bgcolor={priceColor.bgColor}
-            color={priceColor.textColor}
-          >
-            <Typography variant='body2'>
-              {getFormattedPrice(Number(token.priceChangeUSD))}%
-            </Typography>
+        <Box className='mobileRow'>
+          <p>24H %</p>
+          <Box className={`priceChangeWrapper ${priceClass}`}>
+            <small>{getFormattedPrice(Number(token.priceChangeUSD))}%</small>
           </Box>
         </Box>
-        <Box className={classes.mobileRow}>
-          <Typography variant='body1'>24H Volume</Typography>
-          <Typography variant='body1'>
-            ${Number(token.oneDayVolumeUSD).toLocaleString()}
-          </Typography>
+        <Box className='mobileRow'>
+          <p>24H Volume</p>
+          <p>${Number(token.oneDayVolumeUSD).toLocaleString()}</p>
         </Box>
-        <Box className={classes.mobileRow}>
-          <Typography variant='body1'>Liquidity</Typography>
-          <Typography variant='body1'>
-            ${Number(token.totalLiquidityUSD).toLocaleString()}
-          </Typography>
+        <Box className='mobileRow'>
+          <p>Liquidity</p>
+          <p>${Number(token.totalLiquidityUSD).toLocaleString()}</p>
         </Box>
       </Box>
     );
@@ -171,12 +134,12 @@ const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
       token.symbol,
       token.name,
     );
-    const priceColor = getPriceColor(Number(token.priceChangeUSD), palette);
+    const priceClass = getPriceClass(Number(token.priceChangeUSD));
 
     return [
       {
         html: (
-          <Box display='flex' alignItems='center'>
+          <Box className='flex items-center'>
             <Box
               display='flex'
               mr={1}
@@ -196,21 +159,16 @@ const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
               )}
             </Box>
             <Link
+              className='no-decoration'
               to={`/analytics/token/${tokenCurrency.address}`}
-              style={{ textDecoration: 'none' }}
             >
-              <Box display='flex' alignItems='center'>
+              <Box className='flex items-center'>
                 <CurrencyLogo currency={tokenCurrency} size='28px' />
                 <Box ml={1}>
-                  <Typography
-                    variant='body1'
-                    style={{ color: palette.text.primary }}
-                  >
+                  <p className='text-gray25'>
                     {token.name}{' '}
-                    <span style={{ color: palette.text.hint }}>
-                      ({token.symbol})
-                    </span>
-                  </Typography>
+                    <span className='text-hint'>({token.symbol})</span>
+                  </p>
                 </Box>
               </Box>
             </Link>
@@ -220,41 +178,22 @@ const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
       {
         html: (
           <Box>
-            <Typography>${Number(token.priceUSD).toLocaleString()}</Typography>
+            <p>${Number(token.priceUSD).toLocaleString()}</p>
           </Box>
         ),
       },
       {
         html: (
-          <Box
-            className={classes.priceChangeWrapper}
-            mr={2}
-            bgcolor={priceColor.bgColor}
-            color={priceColor.textColor}
-          >
-            <Typography variant='body2'>
-              {getFormattedPrice(Number(token.priceChangeUSD))}%
-            </Typography>
+          <Box className={`priceChangeWrapper ${priceClass}`} mr={2}>
+            <small>{getFormattedPrice(Number(token.priceChangeUSD))}%</small>
           </Box>
         ),
       },
       {
-        html: (
-          <Box>
-            <Typography>
-              ${Number(token.oneDayVolumeUSD).toLocaleString()}
-            </Typography>
-          </Box>
-        ),
+        html: <p>${Number(token.oneDayVolumeUSD).toLocaleString()}</p>,
       },
       {
-        html: (
-          <Box>
-            <Typography>
-              ${Number(token.totalLiquidityUSD).toLocaleString()}
-            </Typography>
-          </Box>
-        ),
+        html: <p>${Number(token.totalLiquidityUSD).toLocaleString()}</p>,
       },
     ];
   };

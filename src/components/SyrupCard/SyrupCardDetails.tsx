@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Box, Typography, Divider, useMediaQuery } from '@material-ui/core';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { Box, Divider, useMediaQuery } from '@material-ui/core';
+import { useTheme } from '@material-ui/core/styles';
 import { TransactionResponse } from '@ethersproject/providers';
 import { useTranslation } from 'react-i18next';
 import { SyrupInfo } from 'types';
@@ -25,48 +25,17 @@ import SyrupAPR from './SyrupAPR';
 import { useUSDCPriceToken } from 'utils/useUSDCPrice';
 import { GlobalConst } from 'constants/index';
 
-const useStyles = makeStyles(({ palette, breakpoints }) => ({
-  syrupButton: {
-    backgroundImage:
-      'linear-gradient(280deg, #64fbd3 0%, #00cff3 0%, #0098ff 10%, #004ce6 100%)',
-    borderRadius: 10,
-    cursor: 'pointer',
-    width: 134,
-    height: 40,
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    [breakpoints.down('xs')]: {
-      width: '49%',
-    },
-    '& p': {
-      color: palette.text.primary,
-    },
-  },
-  dailyRateWrapper: {
-    display: 'flex',
-    alignItems: 'center',
-    flexWrap: 'wrap',
-    background: palette.secondary.contrastText,
-    width: '100%',
-    marginTop: 16,
-    padding: '8px 16px',
-    borderRadius: 10,
-  },
-}));
-
 const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
   syrup,
   dQUICKAPY,
 }) => {
   const syrupCurrency = unwrappedToken(syrup.token);
-  const { palette, breakpoints } = useTheme();
+  const { breakpoints } = useTheme();
   const { t } = useTranslation();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const [attemptingClaim, setAttemptingClaim] = useState(false);
   const [attemptingUnstake, setAttemptingUnstake] = useState(false);
   const [openStakeModal, setOpenStakeModal] = useState(false);
-  const classes = useStyles();
 
   const stakingTokenPrice = useUSDCPriceToken(syrup.stakingToken);
   const stakingContract = useStakingContract(syrup?.stakingRewardAddress);
@@ -143,43 +112,34 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
   };
 
   const StakeButton = () => (
-    <Box
-      className={classes.syrupButton}
-      onClick={() => setOpenStakeModal(true)}
-    >
-      <Typography variant='body2'>Stake</Typography>
+    <Box className='syrupButton' onClick={() => setOpenStakeModal(true)}>
+      <small>Stake</small>
     </Box>
   );
 
   const UnstakeButton = () => (
     <Box
-      className={classes.syrupButton}
-      style={{ opacity: attemptingUnstake ? 0.6 : 1 }}
+      className={`syrupButton${attemptingUnstake ? ' opacity-disabled' : ''}`}
       onClick={() => {
         if (!attemptingUnstake) {
           onWithdraw();
         }
       }}
     >
-      <Typography variant='body2'>
-        {attemptingUnstake ? 'Unstaking...' : 'Unstake'}
-      </Typography>
+      <small>{attemptingUnstake ? 'Unstaking...' : 'Unstake'}</small>
     </Box>
   );
 
   const ClaimButton = () => (
     <Box
-      className={classes.syrupButton}
-      style={{ opacity: attemptingClaim ? 0.6 : 1 }}
+      className={`syrupButton${attemptingClaim ? ' opacity-disabled' : ''}`}
       onClick={() => {
         if (!attemptingClaim) {
           onClaimReward();
         }
       }}
     >
-      <Typography variant='body2'>
-        {attemptingClaim ? 'Claiming...' : 'Claim'}
-      </Typography>
+      <small>{attemptingClaim ? 'Claiming...' : 'Claim'}</small>
     </Box>
   );
 
@@ -198,44 +158,28 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
           <Box padding={3}>
             {isMobile && (
               <Box mb={3}>
-                <Box display='flex' justifyContent='space-between' mb={2}>
-                  <Typography
-                    variant='body2'
-                    style={{ color: palette.text.secondary }}
-                  >
+                <Box className='flex justify-between' mb={2}>
+                  <small className='text-secondary'>
                     {syrup.stakingToken.symbol} {t('deposits')}:
-                  </Typography>
-                  <Typography variant='body2'>{depositAmount}</Typography>
+                  </small>
+                  <small>{depositAmount}</small>
                 </Box>
-                <Box display='flex' justifyContent='space-between' mb={2}>
-                  <Typography
-                    variant='body2'
-                    style={{ color: palette.text.secondary }}
-                  >
-                    {t('dailyRewards')}:
-                  </Typography>
-                  <Typography variant='body2'>
+                <Box className='flex justify-between' mb={2}>
+                  <small className='text-secondary'>{t('dailyRewards')}:</small>
+                  <small>
                     {syrup.rate >= 1000000
                       ? formatCompact(syrup.rate)
                       : syrup.rate.toLocaleString()}{' '}
                     {syrup.token.symbol}
-                    <span style={{ color: palette.text.secondary }}>
-                      {' '}
-                      / {t('day')}
-                    </span>
-                  </Typography>
+                    <span className='text-secondary'> / {t('day')}</span>
+                  </small>
                 </Box>
                 <Box mb={2}>
                   <SyrupTimerLabel exactEnd={exactEnd} isEnded={syrup?.ended} />
                 </Box>
-                <Box display='flex' justifyContent='space-between' mb={3}>
-                  <Box display='flex' alignItems='center'>
-                    <Typography
-                      variant='body2'
-                      style={{ color: palette.text.secondary }}
-                    >
-                      APR:
-                    </Typography>
+                <Box className='flex justify-between' mb={3}>
+                  <Box className='flex items-center'>
+                    <small className='text-secondary'>APR:</small>
                     <Box ml={0.5} height={16}>
                       <img src={CircleInfoIcon} alt={'arrow up'} />
                     </Box>
@@ -247,26 +191,14 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
                 <Divider />
               </Box>
             )}
-            <Box
-              display='flex'
-              alignItems='center'
-              justifyContent='space-between'
-              mb={1}
-            >
-              <Typography
-                variant='body2'
-                style={{ color: palette.text.secondary }}
-              >
-                {t('inwallet')}
-              </Typography>
-              <Typography variant='body2'>
-                <span style={{ color: palette.text.primary }}>
-                  {userLiquidityUnstaked
-                    ? formatTokenAmount(userLiquidityUnstaked)
-                    : 0}{' '}
-                  {syrup.stakingToken.symbol}
-                </span>
-                <span style={{ color: palette.text.secondary, marginLeft: 4 }}>
+            <Box className='flex items-center justify-between' mb={1}>
+              <small className='text-secondary'>{t('inwallet')}</small>
+              <small>
+                {userLiquidityUnstaked
+                  ? formatTokenAmount(userLiquidityUnstaked)
+                  : 0}{' '}
+                {syrup.stakingToken.symbol}
+                <small className='text-secondary' style={{ marginLeft: 4 }}>
                   $
                   {userLiquidityUnstaked
                     ? (
@@ -274,91 +206,56 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
                         Number(userLiquidityUnstaked.toExact())
                       ).toLocaleString()
                     : 0}
-                </span>
-              </Typography>
+                </small>
+              </small>
             </Box>
-            <Box
-              display='flex'
-              alignItems='center'
-              justifyContent='space-between'
-              mb={1}
-            >
-              <Typography
-                variant='body2'
-                style={{ color: palette.text.secondary }}
-              >
-                {t('staked')}
-              </Typography>
-              <Typography variant='body2'>
-                <span style={{ color: palette.text.primary }}>
-                  {formatTokenAmount(syrup.stakedAmount)}{' '}
-                  {syrup.stakingToken.symbol}
-                </span>
-                <span style={{ color: palette.text.secondary, marginLeft: 4 }}>
+            <Box className='flex items-center justify-between' mb={1}>
+              <small className='text-secondary'>{t('staked')}</small>
+              <small>
+                {formatTokenAmount(syrup.stakedAmount)}{' '}
+                {syrup.stakingToken.symbol}
+                <small className='text-secondary' style={{ marginLeft: 4 }}>
                   {syrup.stakedAmount
                     ? `$${(
                         stakingTokenPrice * Number(syrup.stakedAmount.toExact())
                       ).toLocaleString()}`
                     : '-'}
-                </span>
-              </Typography>
+                </small>
+              </small>
             </Box>
-            <Box
-              display='flex'
-              alignItems='center'
-              justifyContent='space-between'
-              mb={2}
-            >
-              <Typography
-                variant='body2'
-                style={{ color: palette.text.secondary }}
-              >
+            <Box className='flex items-center justify-between' mb={2}>
+              <small className='text-secondary'>
                 {t('earned')} {currency?.symbol}
-              </Typography>
-              <Box display='flex' alignItems='center'>
+              </small>
+              <Box className='flex items-center'>
                 <CurrencyLogo currency={currency} size='16px' />
-                <Typography variant='body2' style={{ marginLeft: 4 }}>
-                  <span style={{ color: palette.text.primary }}>
-                    {formatTokenAmount(syrup.earnedAmount)}
-                  </span>
-                  <span
-                    style={{ color: palette.text.secondary, marginLeft: 4 }}
-                  >
+                <small style={{ marginLeft: 4 }}>
+                  {formatTokenAmount(syrup.earnedAmount)}
+                  <small className='text-secondary' style={{ marginLeft: 4 }}>
                     {getEarnedUSDSyrup(syrup)}
-                  </span>
-                </Typography>
+                  </small>
+                </small>
               </Box>
             </Box>
-            <Box
-              display='flex'
-              flexWrap='wrap'
-              alignItems='center'
-              justifyContent='space-between'
-            >
+            <Box className='flex flex-wrap items-center justify-between'>
               {!isMobile && (
                 <SyrupTimerLabel exactEnd={exactEnd} isEnded={syrup?.ended} />
               )}
               {isMobile ? (
                 <>
                   {syrup.earnedAmount && syrup.earnedAmount.greaterThan('0') && (
-                    <Box
-                      width={1}
-                      mb={1.5}
-                      display='flex'
-                      justifyContent='flex-end'
-                    >
+                    <Box width={1} mb={1.5} className='flex justify-end'>
                       <ClaimButton />
                     </Box>
                   )}
                   <Box
                     width={1}
                     mb={1.5}
-                    display='flex'
-                    justifyContent={
+                    className={`flex ${
                       syrup.stakedAmount && syrup.stakedAmount.greaterThan('0')
-                        ? 'space-between'
-                        : 'flex-end'
-                    }
+                        ? 'justify-between'
+                        : 'justify-end'
+                    }`}
                   >
                     {!syrup.ended && <StakeButton />}
                     {syrup.stakedAmount &&
@@ -366,7 +263,7 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
                   </Box>
                 </>
               ) : (
-                <Box display='flex' flexWrap='wrap' my={1}>
+                <Box className='flex flex-wrap' my={1}>
                   {!syrup.ended && <StakeButton />}
                   {syrup.stakedAmount && syrup.stakedAmount.greaterThan('0') && (
                     <Box ml={1}>
@@ -382,26 +279,18 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
               )}
             </Box>
             {syrup.rewardRate?.greaterThan('0') && (
-              <Box className={classes.dailyRateWrapper}>
-                <Box
-                  display='flex'
-                  alignItems='center'
-                  justifyContent={isMobile ? 'space-between' : 'flex-start'}
-                  width={isMobile ? 1 : 'auto'}
-                  flexWrap='wrap'
-                >
+              <Box className='dailyRateWrapper'>
+                <Box>
                   <Box display='flex' mr={1}>
-                    <Typography variant='body2' color='textSecondary'>
-                      {t('yourRate')}:
-                    </Typography>
+                    <small className='text-secondary'>{t('yourRate')}:</small>
                   </Box>
-                  <Typography variant='body2' color='textPrimary'>
+                  <small>
                     {formatMulDivTokenAmount(
                       syrup.rewardRate,
                       GlobalConst.utils.ONEDAYSECONDS,
                     )}{' '}
                     {syrupCurrency.symbol} / {t('day')}
-                  </Typography>
+                  </small>
                 </Box>
               </Box>
             )}

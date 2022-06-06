@@ -1,28 +1,6 @@
 import React from 'react';
-import { Typography, Box } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import cx from 'classnames';
-
-const useStyles = makeStyles(({ palette }) => ({
-  switchItem: {
-    width: '50%',
-    height: '100%',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    cursor: 'pointer',
-    border: `1px solid ${palette.secondary.dark}`,
-    '& p': {
-      color: palette.text.secondary,
-    },
-  },
-  activeSwitchItem: {
-    background: palette.secondary.dark,
-    '& p': {
-      color: palette.text.primary,
-    },
-  },
-}));
+import { Box } from '@material-ui/core';
+import 'components/styles/CustomSwitch.scss';
 
 interface SwitchItems {
   text: string;
@@ -43,7 +21,6 @@ const CustomSwitch: React.FC<CustomSwitchProps> = ({
   items,
   isLarge,
 }) => {
-  const classes = useStyles();
   return (
     <Box display='flex' width={width} height={height}>
       {items.map((item, index) => {
@@ -53,10 +30,8 @@ const CustomSwitch: React.FC<CustomSwitchProps> = ({
         return (
           <Box
             key={index}
-            className={cx(
-              classes.switchItem,
-              item.condition && classes.activeSwitchItem,
-            )}
+            className={`switchItem${item.condition ? ' activeSwitchItem' : ''}
+            `}
             style={{
               // makes left border radius for the first switch item and right border radius for the last switch item
               borderTopLeftRadius: returnBorderRadius(0),
@@ -66,9 +41,7 @@ const CustomSwitch: React.FC<CustomSwitchProps> = ({
             }}
             onClick={item.onClick}
           >
-            <Typography variant={isLarge ? 'body1' : 'body2'}>
-              {item.text}
-            </Typography>
+            <p className={isLarge ? '' : 'small'}>{item.text}</p>
           </Box>
         );
       })}

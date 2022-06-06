@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Box, Typography, Button, useMediaQuery } from '@material-ui/core';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { Box, Button, useMediaQuery } from '@material-ui/core';
+import { useTheme } from '@material-ui/core/styles';
 import { Pair, JSBI, Percent } from '@uniswap/sdk';
 import { useActiveWeb3React } from 'hooks';
 import { unwrappedToken } from 'utils/wrappedCurrency';
@@ -10,50 +10,7 @@ import { useTotalSupply } from 'data/TotalSupply';
 import { CurrencyLogo, RemoveLiquidityModal } from 'components';
 import { currencyId, formatTokenAmount } from 'utils';
 
-const useStyles = makeStyles(({ palette }) => ({
-  poolButtonRow: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    '& .MuiButton-root': {
-      height: 36,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      cursor: 'pointer',
-      borderRadius: 10,
-      '& a': {
-        textDecoration: 'none',
-      },
-      '& p': {
-        color: palette.text.primary,
-      },
-    },
-    '& .MuiButton-outlined': {
-      width: '49%',
-      background: 'transparent',
-      border: '1px solid #404557',
-    },
-    '& .MuiButton-contained': {
-      width: '24%',
-      border: '1px solid transparent',
-      backgroundImage: 'linear-gradient(286deg, #004ce6, #3d71ff)',
-      backgroundColor: 'transparent',
-    },
-  },
-  cardRow: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 12,
-    '& p': {
-      color: palette.text.primary,
-    },
-  },
-}));
-
 const PoolPositionCardDetails: React.FC<{ pair: Pair }> = ({ pair }) => {
-  const classes = useStyles();
   const history = useHistory();
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
@@ -102,49 +59,43 @@ const PoolPositionCardDetails: React.FC<{ pair: Pair }> = ({ pair }) => {
   return (
     <>
       <Box px={isMobile ? 1.5 : 3} mb={3}>
-        <Box className={classes.cardRow}>
-          <Typography variant='body2'>Your pool tokens:</Typography>
-          <Typography variant='body2'>
-            {formatTokenAmount(userPoolBalance)}
-          </Typography>
+        <Box className='cardRow'>
+          <small>Your pool tokens:</small>
+          <small>{formatTokenAmount(userPoolBalance)}</small>
         </Box>
-        <Box className={classes.cardRow}>
-          <Typography variant='body2'>Pooled {currency0.symbol}:</Typography>
-          <Box display='flex' alignItems='center'>
-            <Typography variant='body2' style={{ marginRight: 10 }}>
-              {formatTokenAmount(token0Deposited)}
-            </Typography>
+        <Box className='cardRow'>
+          <small>Pooled {currency0.symbol}:</small>
+          <Box>
+            <small>{formatTokenAmount(token0Deposited)}</small>
             <CurrencyLogo size='20px' currency={currency0} />
           </Box>
         </Box>
 
-        <Box className={classes.cardRow}>
-          <Typography variant='body2'>Pooled {currency1.symbol}:</Typography>
-          <Box display='flex' alignItems='center'>
-            <Typography variant='body2' style={{ marginRight: 10 }}>
-              {formatTokenAmount(token1Deposited)}
-            </Typography>
+        <Box className='cardRow'>
+          <small>Pooled {currency1.symbol}:</small>
+          <Box>
+            <small>{formatTokenAmount(token1Deposited)}</small>
             <CurrencyLogo size='20px' currency={currency1} />
           </Box>
         </Box>
 
-        <Box className={classes.cardRow}>
-          <Typography variant='body2'>Your pool share:</Typography>
-          <Typography variant='body2'>
+        <Box className='cardRow'>
+          <small>Your pool share:</small>
+          <small>
             {poolTokenPercentage
               ? poolTokenPercentage.toSignificant() + '%'
               : '-'}
-          </Typography>
+          </small>
         </Box>
 
-        <Box className={classes.poolButtonRow}>
+        <Box className='poolButtonRow'>
           <Button
             variant='outlined'
             onClick={() =>
               history.push(`/analytics/pair/${pair.liquidityToken.address}`)
             }
           >
-            <Typography variant='body2'>View Analytics</Typography>
+            <small>View Analytics</small>
           </Button>
           <Button
             variant='contained'
@@ -156,7 +107,7 @@ const PoolPositionCardDetails: React.FC<{ pair: Pair }> = ({ pair }) => {
               );
             }}
           >
-            <Typography variant='body2'>Add</Typography>
+            <small>Add</small>
           </Button>
           <Button
             variant='contained'
@@ -164,7 +115,7 @@ const PoolPositionCardDetails: React.FC<{ pair: Pair }> = ({ pair }) => {
               setOpenRemoveModal(true);
             }}
           >
-            <Typography variant='body2'>Remove</Typography>
+            <small>Remove</small>
           </Button>
         </Box>
       </Box>

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState, useMemo } from 'react';
-import { Box, Button, Typography } from '@material-ui/core';
+import { Box, Button } from '@material-ui/core';
 import {
   CurrencyInput,
   TransactionErrorContent,
@@ -7,7 +7,6 @@ import {
   ConfirmationModalContent,
   DoubleCurrencyLogo,
 } from 'components';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { useWalletModalToggle } from 'state/application/hooks';
 import { TransactionResponse } from '@ethersproject/providers';
 import { BigNumber } from '@ethersproject/bignumber';
@@ -44,72 +43,11 @@ import {
 import { wrappedCurrency } from 'utils/wrappedCurrency';
 import { ReactComponent as AddLiquidityIcon } from 'assets/images/AddLiquidityIcon.svg';
 
-const useStyles = makeStyles(({ palette, breakpoints }) => ({
-  exchangeSwap: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    margin: '16px auto',
-    zIndex: 2,
-    position: 'relative',
-  },
-  swapButtonWrapper: {
-    marginTop: 16,
-    '& button': {
-      height: 56,
-      fontSize: 18,
-      fontWeight: 600,
-      width: (props: any) => (props.showApproveFlow ? '48%' : '100%'),
-      backgroundImage: `linear-gradient(to bottom, ${palette.primary.main}, #004ce6)`,
-      '&.Mui-disabled': {
-        backgroundImage: `linear-gradient(to bottom, ${palette.secondary.dark}, #1d212c)`,
-        color: palette.text.secondary,
-        opacity: 0.5,
-      },
-      '& .content': {
-        display: 'flex',
-        alignItems: 'center',
-        '& > div': {
-          color: 'white',
-          marginLeft: 6,
-        },
-      },
-    },
-  },
-  swapPrice: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    margin: '6px 24px 0',
-    [breakpoints.down('xs')]: {
-      margin: '6px 12px 0',
-    },
-    '& p': {
-      display: 'flex',
-      alignItems: 'center',
-      color: palette.text.primary,
-      '& svg': {
-        marginLeft: 8,
-        width: 16,
-        height: 16,
-        cursor: 'pointer',
-      },
-    },
-  },
-  approveButtons: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    marginBottom: 16,
-  },
-}));
-
 const AddLiquidity: React.FC<{
   currency0?: Currency;
   currency1?: Currency;
-  currencyBg?: string;
-}> = ({ currency0, currency1, currencyBg }) => {
-  const classes = useStyles({});
-  const { palette } = useTheme();
+  currencyBgClass?: string;
+}> = ({ currency0, currency1, currencyBgClass }) => {
   const { t } = useTranslation();
   const [addLiquidityErrorMessage, setAddLiquidityErrorMessage] = useState<
     string | null
@@ -391,15 +329,15 @@ const AddLiquidity: React.FC<{
   const modalHeader = () => {
     return (
       <Box>
-        <Box mt={10} mb={3} display='flex' justifyContent='center'>
+        <Box mt={10} mb={3} className='flex justify-center'>
           <DoubleCurrencyLogo
             currency0={currencies[Field.CURRENCY_A]}
             currency1={currencies[Field.CURRENCY_B]}
             size={48}
           />
         </Box>
-        <Box mb={6} color={palette.text.primary} textAlign='center'>
-          <Typography variant='h6'>
+        <Box mb={6} textAlign='center'>
+          <h6>
             {t('supplyingTokens', liquidityTokenData)}
             <br />
             {t('receiveLPTokens', {
@@ -407,14 +345,14 @@ const AddLiquidity: React.FC<{
               symbolA: currencies[Field.CURRENCY_A]?.symbol,
               symbolB: currencies[Field.CURRENCY_B]?.symbol,
             })}
-          </Typography>
+          </h6>
         </Box>
-        <Box mb={3} color={palette.text.secondary} textAlign='center'>
-          <Typography variant='body2'>
+        <Box mb={3} textAlign='center'>
+          <small className='text-secondary'>
             {t('outputEstimated', { slippage: allowedSlippage / 100 })}
-          </Typography>
+          </small>
         </Box>
-        <Box className={classes.swapButtonWrapper}>
+        <Box className='swapButtonWrapper'>
           <Button onClick={onAddLiquidity}>{t('confirmSupply')}</Button>
         </Box>
       </Box>
@@ -469,9 +407,9 @@ const AddLiquidity: React.FC<{
         handleCurrencySelect={handleCurrencyASelect}
         amount={formattedAmounts[Field.CURRENCY_A]}
         setAmount={onFieldAInput}
-        bgColor={currencyBg}
+        bgClass={currencyBgClass}
       />
-      <Box className={classes.exchangeSwap}>
+      <Box className='exchangeSwap'>
         <AddLiquidityIcon />
       </Box>
       <CurrencyInput
@@ -493,52 +431,53 @@ const AddLiquidity: React.FC<{
         handleCurrencySelect={handleCurrencyBSelect}
         amount={formattedAmounts[Field.CURRENCY_B]}
         setAmount={onFieldBInput}
-        bgColor={currencyBg}
+        bgClass={currencyBgClass}
       />
       {currencies[Field.CURRENCY_A] &&
         currencies[Field.CURRENCY_B] &&
         pairState !== PairState.INVALID &&
         price && (
           <Box my={2}>
-            <Box className={classes.swapPrice}>
-              <Typography variant='body2'>
+            <Box className='swapPrice'>
+              <small>
                 1 {currencies[Field.CURRENCY_A]?.symbol} ={' '}
                 {price.toSignificant(3)} {currencies[Field.CURRENCY_B]?.symbol}{' '}
-              </Typography>
-              <Typography variant='body2'>
+              </small>
+              <small>
                 1 {currencies[Field.CURRENCY_B]?.symbol} ={' '}
                 {price.invert().toSignificant(3)}{' '}
                 {currencies[Field.CURRENCY_A]?.symbol}{' '}
-              </Typography>
+              </small>
             </Box>
-            <Box className={classes.swapPrice}>
-              <Typography variant='body2'>{t('yourPoolShare')}:</Typography>
-              <Typography variant='body2'>
+            <Box className='swapPrice'>
+              <small>{t('yourPoolShare')}:</small>
+              <small>
                 {poolTokenPercentage
                   ? poolTokenPercentage.toSignificant(6) + '%'
                   : '-'}
-              </Typography>
+              </small>
             </Box>
-            <Box className={classes.swapPrice}>
-              <Typography variant='body2'>{t('lpTokenReceived')}:</Typography>
-              <Typography variant='body2'>
+            <Box className='swapPrice'>
+              <small>{t('lpTokenReceived')}:</small>
+              <small>
                 {formatTokenAmount(userPoolBalance)} {t('lpTokens')}
-              </Typography>
+              </small>
             </Box>
           </Box>
         )}
-      <Box className={classes.swapButtonWrapper}>
+      <Box className='swapButtonWrapper flex-wrap'>
         {(approvalA === ApprovalState.NOT_APPROVED ||
           approvalA === ApprovalState.PENDING ||
           approvalB === ApprovalState.NOT_APPROVED ||
           approvalB === ApprovalState.PENDING) &&
           !error && (
-            <Box className={classes.approveButtons}>
+            <Box className='flex fullWidth justify-between' mb={2}>
               {approvalA !== ApprovalState.APPROVED && (
                 <Box
                   width={approvalB !== ApprovalState.APPROVED ? '48%' : '100%'}
                 >
                   <Button
+                    fullWidth
                     onClick={async () => {
                       setApprovingA(true);
                       try {
@@ -565,6 +504,7 @@ const AddLiquidity: React.FC<{
                   width={approvalA !== ApprovalState.APPROVED ? '48%' : '100%'}
                 >
                   <Button
+                    fullWidth
                     onClick={async () => {
                       setApprovingB(true);
                       try {
@@ -589,6 +529,7 @@ const AddLiquidity: React.FC<{
             </Box>
           )}
         <Button
+          fullWidth
           disabled={
             Boolean(account) &&
             (Boolean(error) ||

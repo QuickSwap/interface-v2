@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Typography, Button } from '@material-ui/core';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { Box, Button } from '@material-ui/core';
 import { TransactionResponse } from '@ethersproject/providers';
 import { CustomModal, ColoredSlider, NumericalInput } from 'components';
 import { useDerivedLairInfo } from 'state/stake/hooks';
@@ -15,25 +14,7 @@ import {
   useTransactionFinalizer,
 } from 'state/transactions/hooks';
 import { formatTokenAmount, returnTokenFromKey } from 'utils';
-
-const useStyles = makeStyles(({ palette }) => ({
-  stakeButton: {
-    backgroundImage:
-      'linear-gradient(104deg, #004ce6 -32%, #0098ff 54%, #00cff3 120%, #64fbd3 198%)',
-    backgroundColor: 'transparent',
-    height: 48,
-    width: '48%',
-    borderRadius: 10,
-    '& span': {
-      fontSize: 16,
-      fontWeight: 600,
-    },
-    '&.Mui-disabled': {
-      backgroundImage: 'none',
-      backgroundColor: palette.secondary.dark,
-    },
-  },
-}));
+import 'components/styles/StakeModal.scss';
 
 interface StakeQuickModalProps {
   open: boolean;
@@ -41,8 +22,6 @@ interface StakeQuickModalProps {
 }
 
 const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
-  const classes = useStyles();
-  const { palette } = useTheme();
   const [attempting, setAttempting] = useState(false);
   const { account } = useActiveWeb3React();
   const addTransaction = useTransactionAdder();
@@ -114,28 +93,21 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
   return (
     <CustomModal open={open} onClose={onClose}>
       <Box paddingX={3} paddingY={4}>
-        <Box display='flex' alignItems='center' justifyContent='space-between'>
-          <Typography variant='h5'>Stake QUICK</Typography>
-          <CloseIcon style={{ cursor: 'pointer' }} onClick={onClose} />
+        <Box className='flex items-center justify-between'>
+          <h5>Stake QUICK</h5>
+          <CloseIcon className='cursor-pointer' onClick={onClose} />
         </Box>
         <Box
           mt={3}
-          bgcolor={palette.background.default}
-          border='1px solid rgba(105, 108, 128, 0.12)'
+          className='bg-default border-gray14'
           borderRadius='10px'
           padding='16px'
         >
-          <Box
-            display='flex'
-            alignItems='center'
-            justifyContent='space-between'
-          >
-            <Typography variant='body2'>QUICK</Typography>
-            <Typography variant='body2'>
-              Balance: {formatTokenAmount(quickBalance)}
-            </Typography>
+          <Box className='flex items-center justify-between'>
+            <small>QUICK</small>
+            <small>Balance: {formatTokenAmount(quickBalance)}</small>
           </Box>
-          <Box mt={2} display='flex' alignItems='center'>
+          <Box mt={2} className='flex items-center'>
             <NumericalInput
               placeholder='0'
               value={typedValue}
@@ -150,29 +122,24 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
                 );
               }}
             />
-            <Typography
-              variant='caption'
-              style={{
-                color: palette.primary.main,
-                fontWeight: 'bold',
-                cursor: 'pointer',
-              }}
+            <span
+              className='text-primary text-bold cursor-pointer'
               onClick={() => {
                 setTypedValue(quickBalance ? quickBalance.toExact() : '0');
                 setStakePercent(100);
               }}
             >
               MAX
-            </Typography>
+            </span>
           </Box>
-          <Box display='flex' alignItems='center'>
+          <Box className='flex items-center'>
             <Box flex={1} mr={2} mt={0.5}>
               <ColoredSlider
                 min={1}
                 max={100}
                 step={1}
                 value={stakePercent}
-                onChange={(evt: any, value) => {
+                handleChange={(evt: any, value) => {
                   setStakePercent(value as number);
                   setTypedValue(
                     quickBalance
@@ -187,41 +154,38 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
                 }}
               />
             </Box>
-            <Typography variant='body2'>
-              {Math.min(stakePercent, 100).toLocaleString()}%
-            </Typography>
+            <small>{Math.min(stakePercent, 100).toLocaleString()}%</small>
           </Box>
         </Box>
-        <Box
-          mt={3}
-          display='flex'
-          justifyContent='space-between'
-          alignItems='center'
-        >
-          <Button
-            className={classes.stakeButton}
-            disabled={approving || approval !== ApprovalState.NOT_APPROVED}
-            onClick={async () => {
-              setApproving(true);
-              try {
-                await onAttemptToApprove();
-                setApproving(false);
-              } catch (e) {
-                setApproving(false);
+        <Box className='flex items-center justify-between'>
+          <Box width='48%'>
+            <Button
+              className='stakeButton'
+              disabled={approving || approval !== ApprovalState.NOT_APPROVED}
+              onClick={async () => {
+                setApproving(true);
+                try {
+                  await onAttemptToApprove();
+                  setApproving(false);
+                } catch (e) {
+                  setApproving(false);
+                }
+              }}
+            >
+              {approving ? 'Approving...' : 'Approve'}
+            </Button>
+          </Box>
+          <Box width='48%'>
+            <Button
+              className='stakeButton'
+              disabled={
+                !!error || attempting || approval !== ApprovalState.APPROVED
               }
-            }}
-          >
-            {approving ? 'Approving...' : 'Approve'}
-          </Button>
-          <Button
-            className={classes.stakeButton}
-            disabled={
-              !!error || attempting || approval !== ApprovalState.APPROVED
-            }
-            onClick={onStake}
-          >
-            {attempting ? 'Staking...' : 'Stake'}
-          </Button>
+              onClick={onStake}
+            >
+              {attempting ? 'Staking...' : 'Stake'}
+            </Button>
+          </Box>
         </Box>
       </Box>
     </CustomModal>

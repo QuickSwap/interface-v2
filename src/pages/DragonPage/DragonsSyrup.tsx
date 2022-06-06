@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { useTheme } from '@material-ui/core/styles';
 import { ArrowUp, ArrowDown } from 'react-feather';
-import { Box, Typography, Divider, useMediaQuery } from '@material-ui/core';
+import { Box, Divider, useMediaQuery } from '@material-ui/core';
 import { useSyrupInfo, useOldSyrupInfo, useLairInfo } from 'state/stake/hooks';
 import { SyrupInfo } from 'types';
 import {
@@ -21,6 +21,7 @@ import {
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 import { useInfiniteLoading } from 'utils/useInfiniteLoading';
 import { Skeleton } from '@material-ui/lab';
+import { useTranslation } from 'react-i18next';
 
 const LOADSYRUP_COUNT = 10;
 const TOKEN_COLUMN = 1;
@@ -29,7 +30,8 @@ const APR_COLUMN = 3;
 const EARNED_COLUMN = 4;
 
 const DragonsSyrup: React.FC = () => {
-  const { palette, breakpoints } = useTheme();
+  const { t } = useTranslation();
+  const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const [isEndedSyrup, setIsEndedSyrup] = useState(false);
   const [pageIndex, setPageIndex] = useState(0);
@@ -154,13 +156,10 @@ const DragonsSyrup: React.FC = () => {
   const { loadMoreRef } = useInfiniteLoading(loadNext);
 
   const renderStakedOnly = () => (
-    <Box display='flex' alignItems='center'>
-      <Typography
-        variant='body2'
-        style={{ color: palette.text.disabled, marginRight: 8 }}
-      >
-        Staked Only
-      </Typography>
+    <Box className='flex items-center'>
+      <small className='text-disabled' style={{ marginRight: 8 }}>
+        {t('stakedOnly')}
+      </small>
       <ToggleSwitch
         toggled={stakedOnly}
         onToggle={() => setStakeOnly(!stakedOnly)}
@@ -170,12 +169,12 @@ const DragonsSyrup: React.FC = () => {
 
   const syrupStatusItems = [
     {
-      text: 'Active',
+      text: t('active'),
       onClick: () => setIsEndedSyrup(false),
       condition: !isEndedSyrup,
     },
     {
-      text: 'Ended',
+      text: t('ended'),
       onClick: () => setIsEndedSyrup(true),
       condition: isEndedSyrup,
     },
@@ -183,22 +182,22 @@ const DragonsSyrup: React.FC = () => {
 
   const sortColumns = [
     {
-      text: 'Earn',
+      text: t('earn'),
       index: TOKEN_COLUMN,
       width: 0.3,
     },
     {
-      text: 'Deposits',
+      text: t('deposits'),
       index: DEPOSIT_COLUMN,
       width: 0.3,
     },
     {
-      text: 'APR',
+      text: t('apr'),
       index: APR_COLUMN,
       width: 0.2,
     },
     {
-      text: 'Earned',
+      text: t('earned'),
       index: EARNED_COLUMN,
       width: 0.2,
       justify: 'flex-end',
@@ -225,18 +224,15 @@ const DragonsSyrup: React.FC = () => {
 
   return (
     <>
-      <Box display='flex' flexWrap='wrap' alignItems='center' mb={3.5}>
+      <Box className='flex flex-wrap items-center' mb={3.5}>
         <Box
-          display='flex'
-          justifyContent='space-between'
+          className='flex justify-between'
           width={returnFullWidthMobile(isMobile)}
           flex={isMobile ? 'unset' : 1}
         >
           <Box width={isMobile ? 'calc(100% - 150px)' : 1} mr={2} my={2}>
             <SearchInput
-              placeholder={
-                isMobile ? 'Search' : 'Search name, symbol or paste address'
-              }
+              placeholder={isMobile ? t('search') : t('searchPlaceHolder')}
               value={syrupSearchInput}
               setValue={setSyrupSearchInput}
             />
@@ -245,9 +241,7 @@ const DragonsSyrup: React.FC = () => {
         </Box>
         <Box
           width={returnFullWidthMobile(isMobile)}
-          display='flex'
-          flexWrap='wrap'
-          alignItems='center'
+          className='flex flex-wrap items-center'
         >
           <Box mr={2}>
             <CustomSwitch width={160} height={40} items={syrupStatusItems} />
@@ -255,15 +249,12 @@ const DragonsSyrup: React.FC = () => {
           {isMobile ? (
             <>
               <Box height={40} flex={1}>
-                <CustomMenu title='Sort By' menuItems={sortByMobileItems} />
+                <CustomMenu title={t('sortBy')} menuItems={sortByMobileItems} />
               </Box>
-              <Box mt={2} width={1} display='flex' alignItems='center'>
-                <Typography
-                  variant='body2'
-                  style={{ color: palette.text.disabled, marginRight: 8 }}
-                >
-                  Sort {sortDesc ? 'Desc' : 'Asc'}
-                </Typography>
+              <Box mt={2} width={1} className='flex items-center'>
+                <small className='text-disabled' style={{ marginRight: 8 }}>
+                  {sortDesc ? t('sortdesc') : t('sortasc')}
+                </small>
                 <ToggleSwitch
                   toggled={sortDesc}
                   onToggle={() => setSortDesc(!sortDesc)}
@@ -281,19 +272,14 @@ const DragonsSyrup: React.FC = () => {
           {sortByDesktopItems.map((item) => (
             <Box
               key={item.index}
-              display='flex'
-              alignItems='center'
               width={item.width}
-              style={{ cursor: 'pointer' }}
               justifyContent={item.justify}
               onClick={item.onClick}
-              color={
-                sortBy === item.index
-                  ? palette.text.primary
-                  : palette.text.secondary
-              }
+              className={`flex items-center cursor-pointer ${
+                sortBy === item.index ? '' : 'text-secondary'
+              }`}
             >
-              <Typography variant='body2'>{item.text}</Typography>
+              <small>{item.text}</small>
               <Box display='flex' ml={0.5}>
                 {sortBy === item.index && sortDesc ? (
                   <ArrowDown size={20} />

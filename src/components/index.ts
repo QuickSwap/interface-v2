@@ -8,6 +8,7 @@ export { default as BetaWarningBanner } from './BetaWarningBanner';
 export { default as ChartType } from './ChartType';
 export { default as ColoredSlider } from './ColoredSlider';
 export { default as CustomTooltip } from './CustomTooltip';
+export { default as ButtonSwitch } from './ButtonSwitch';
 export { default as ToggleSwitch } from './ToggleSwitch';
 export { default as CustomMenu } from './CustomMenu';
 export { default as CustomModal } from './CustomModal';
@@ -29,10 +30,7 @@ export { default as SettingsModal } from './SettingsModal';
 export { default as StakeQuickModal } from './StakeQuickModal';
 export { default as StakeSyrupModal } from './StakeSyrupModal';
 export { default as UnstakeQuickModal } from './UnstakeQuickModal';
-export {
-  default as FullPositionCard,
-  MinimalPositionCard,
-} from './PositionCard';
+export { default as MinimalPositionCard } from './PositionCard';
 export { default as SyrupCard } from './SyrupCard';
 export { default as FarmCard } from './FarmCard';
 export { default as Swap, AdvancedSwapDetails } from './Swap';

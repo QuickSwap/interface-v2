@@ -1,35 +1,9 @@
 import React from 'react';
-import { Box, Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { Box } from '@material-ui/core';
 import useENS from 'hooks/useENS';
 import { useActiveWeb3React } from 'hooks';
 import { getEtherscanLink } from 'utils';
-
-const useStyles = makeStyles(({ palette }) => ({
-  addressInput: {
-    border: (props: any) =>
-      `1px solid ${props.error ? palette.error.main : palette.primary.dark}`,
-    borderRadius: 20,
-    padding: '12px 24px',
-    textAlign: 'left',
-    '& input': {
-      width: '100%',
-      fontSize: 20,
-      fontWeight: 'bold',
-      color: (props: any) =>
-        props.error ? palette.error.main : palette.text.primary,
-      background: 'transparent',
-      border: 'none',
-      boxShadow: 'none',
-      outline: 'none',
-      marginTop: 16,
-    },
-    '& a': {
-      color: palette.text.primary,
-      textDecoration: 'none',
-    },
-  },
-}));
+import 'components/styles/AddressInput.scss';
 
 interface AddressInputProps {
   value: string;
@@ -47,12 +21,15 @@ const AddressInput: React.FC<AddressInputProps> = ({
   const { chainId } = useActiveWeb3React();
   const { address, loading, name } = useENS(value);
   const error = Boolean(value.length > 0 && !loading && !address);
-  const classes = useStyles({ error });
 
   return (
-    <Box className={classes.addressInput}>
-      <Box display='flex' justifyContent='space-between' alignItems='center'>
-        <Typography>{label}</Typography>
+    <Box
+      className={`addressInput ${
+        error ? 'border-error' : 'border-primaryDark'
+      }`}
+    >
+      <Box className='flex justify-between items-center'>
+        <p>{label}</p>
         {address && chainId && (
           <a
             href={getEtherscanLink(chainId, name ?? address, 'address')}
@@ -65,6 +42,7 @@ const AddressInput: React.FC<AddressInputProps> = ({
       </Box>
       <input
         value={value}
+        className={error ? 'text-error' : 'text-primaryText'}
         placeholder={placeholder}
         onChange={(evt) => {
           const input = evt.target.value;

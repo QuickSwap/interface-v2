@@ -10,29 +10,20 @@ const primary = '#448aff';
 const primaryDark = '#1C2938';
 const secondary = '#344252';
 const secondaryLight = '#252833';
-const secondaryDark = '#232734';
-const secondaryContrast = '#2c3242';
 
 const black = '#000000';
 const white = '#ffffff';
 
 const textPrimary = '#c7cad9';
 const textSecondary = '#696c80';
-const textDisabled = '#626680';
-const textHint = '#636780';
 const bgColor = '#12131a';
 const bgPalette = '#1b1e29';
-const greyLight = 'rgba(99, 103, 128, 0.1)';
-const greyBgLight = '#3e4252';
-const greyBg = '#1b1d26';
 
 const successMain = '#0fc679';
 const successDark = '#1DB2D5';
-const successLight = 'rgba(15, 198, 121, 0.1)';
 
 const errorMain = '#ff5252';
 const errorDark = '#f00';
-const errorLight = 'rgba(255, 82, 82, 0.1)';
 
 const divider = 'rgba(130, 177, 255, 0.08)';
 
@@ -65,16 +56,9 @@ export const mainTheme = responsiveFontSizes(
         main: primary,
         dark: primaryDark,
       },
-      grey: {
-        A100: greyLight,
-        A400: greyBgLight,
-        A700: greyBg,
-      },
       secondary: {
         main: secondary,
         light: secondaryLight,
-        dark: secondaryDark,
-        contrastText: secondaryContrast,
       },
       common: {
         black,
@@ -83,8 +67,6 @@ export const mainTheme = responsiveFontSizes(
       text: {
         primary: textPrimary,
         secondary: textSecondary,
-        disabled: textDisabled,
-        hint: textHint,
       },
       background: {
         default: bgColor,
@@ -93,77 +75,12 @@ export const mainTheme = responsiveFontSizes(
       success: {
         main: successMain,
         dark: successDark,
-        light: successLight,
       },
       error: {
         main: errorMain,
         dark: errorDark,
-        light: errorLight,
       },
       divider: divider,
-    },
-    typography: {
-      htmlFontSize: 16,
-      fontFamily: "'Inter', sans-serif",
-      fontSize: 14,
-      h1: {
-        fontSize: 60,
-        fontWeight: 'bold',
-        lineHeight: 0.93,
-      },
-      h2: {
-        fontSize: 40,
-        fontWeight: 'bold',
-        lineHeight: 1.2,
-      },
-      h3: {
-        fontSize: 30,
-        fontWeight: 'bold',
-        lineHeight: 1.33,
-      },
-      h4: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        lineHeight: 1.5,
-      },
-      h5: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        lineHeight: 1.5,
-      },
-      h6: {
-        fontSize: 16,
-        fontWeight: 600,
-        lineHeight: 1.5,
-      },
-      subtitle1: {
-        fontSize: 20,
-        lineHeight: 1.5,
-      },
-      subtitle2: {
-        fontSize: 18,
-        lineHeight: 1.56,
-      },
-      body1: {
-        fontSize: 16,
-        fontWeight: 500,
-        lineHeight: 1.5,
-      },
-      body2: {
-        fontSize: 14,
-        fontWeight: 500,
-        lineHeight: 1.57,
-      },
-      caption: {
-        fontSize: 12,
-        fontWeight: 600,
-        lineHeight: 1.33,
-      },
-      overLine: {
-        fontSize: 13,
-        fontWeight: 'bold',
-        lineHeight: 1.69,
-      },
     },
     spacing,
     breakpoints: {
@@ -175,12 +92,13 @@ export const mainTheme = responsiveFontSizes(
         xs,
       },
     },
+    typography: {
+      fontFamily: "'Inter', sans-serif",
+      fontWeightRegular: 500,
+    },
     overrides: {
       MuiButton: {
         root: {
-          fontSize: 14,
-          fontWeight: 'bold',
-          lineHeight: '20px',
           textTransform: 'none',
           backgroundColor: primary,
           color: white,
@@ -193,13 +111,9 @@ export const mainTheme = responsiveFontSizes(
             opacity: 0.3,
           },
         },
-        secondary: {
-          background: secondary,
-        },
-        textPrimary: {
-          background: `linear-gradient(to bottom, ${primary}, #004ce6)`,
-          borderRadius: 50,
-          color: white,
+        label: {
+          fontSize: 16,
+          lineHeight: '20px',
         },
       },
       MuiContainer: {

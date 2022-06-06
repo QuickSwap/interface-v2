@@ -1,43 +1,5 @@
 import React from 'react';
-import { Box, Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-
-const useStyles = makeStyles(({ palette }) => ({
-  infoCard: {
-    backgroundColor: palette.background.paper,
-    outline: 'none',
-    border: `1px solid ${palette.divider}`,
-    borderRadius: 12,
-    width: '100%',
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginTop: '2rem',
-    padding: '1rem',
-    '&:focus': {
-      boxShadow: `0 0 0 1px ${palette.primary.main}`,
-    },
-  },
-  optionCardClickable: {
-    border: `1px solid transparent`,
-    background: palette.secondary.dark,
-    borderRadius: 10,
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    flexWrap: 'wrap',
-    padding: '16px 24px',
-    marginBottom: 16,
-    '&:hover': {
-      cursor: 'pointer',
-      border: `1px solid ${palette.primary.main}`,
-    },
-  },
-  optionLink: {
-    color: palette.text.primary,
-  },
-}));
+import { Box } from '@material-ui/core';
 
 interface OptionProps {
   link?: string | null;
@@ -61,17 +23,14 @@ const Option: React.FC<OptionProps> = ({
   active = false,
   id,
 }) => {
-  const classes = useStyles();
   const content = (
-    <Box className={classes.optionCardClickable} id={id} onClick={onClick}>
-      <Box display='flex' alignItems='center' my={0.5}>
+    <Box className='optionCardClickable' id={id} onClick={onClick}>
+      <Box className='flex items-center' my={0.5}>
         <img src={icon} alt={'Icon'} width={24} />
-        <Typography variant='body1' style={{ marginLeft: 8 }}>
-          {header}
-        </Typography>
+        <p style={{ marginLeft: 8 }}>{header}</p>
       </Box>
       {active && (
-        <Box display='flex' alignItems='center'>
+        <Box className='flex items-center'>
           <Box
             width={10}
             height={10}
@@ -79,12 +38,12 @@ const Option: React.FC<OptionProps> = ({
             mr={1}
             bgcolor='#11eea7'
           />
-          <Typography variant='body2'>Connected</Typography>
+          <small>Connected</small>
         </Box>
       )}
       {subheader && (
         <Box my={0.5} width={1}>
-          <Typography variant='caption'>{subheader}</Typography>
+          <span>{subheader}</span>
         </Box>
       )}
     </Box>
@@ -95,7 +54,7 @@ const Option: React.FC<OptionProps> = ({
         href={link}
         target='_blank'
         rel='noopener noreferrer'
-        className={classes.optionLink}
+        className='optionLink'
       >
         {content}
       </a>

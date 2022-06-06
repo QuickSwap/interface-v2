@@ -7,6 +7,7 @@ import {
 } from 'components';
 import SwapModalHeader from './SwapModalHeader';
 import { formatTokenAmount } from 'utils';
+import 'components/styles/ConfirmSwapModal.scss';
 
 /**
  * Returns true if the trade requires a confirmation of details before we can submit it

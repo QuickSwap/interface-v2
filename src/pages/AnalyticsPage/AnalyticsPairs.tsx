@@ -1,27 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { Box } from '@material-ui/core';
 import { PairTable } from 'components';
 import { getEthPrice, getTopPairs, getBulkPairData } from 'utils';
 import { Skeleton } from '@material-ui/lab';
-
-const useStyles = makeStyles(({ palette, breakpoints }) => ({
-  tokensFilter: {
-    cursor: 'pointer',
-    display: 'flex',
-  },
-  panel: {
-    background: palette.grey.A700,
-    borderRadius: 20,
-    padding: 24,
-    [breakpoints.down('xs')]: {
-      padding: 12,
-    },
-  },
-}));
+import { useTranslation } from 'react-i18next';
 
 const AnalyticsPairs: React.FC = () => {
-  const classes = useStyles();
+  const { t } = useTranslation();
   const [topPairs, updateTopPairs] = useState<any[] | null>(null);
 
   useEffect(() => {
@@ -44,8 +29,8 @@ const AnalyticsPairs: React.FC = () => {
 
   return (
     <Box width='100%' mb={3}>
-      <Typography>All Pairs</Typography>
-      <Box mt={4} className={classes.panel}>
+      <p>{t('allPairs')}</p>
+      <Box mt={4} className='panel'>
         {topPairs ? (
           <PairTable data={topPairs} />
         ) : (

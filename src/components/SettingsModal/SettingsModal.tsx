@@ -1,8 +1,7 @@
 import React, { useState, useMemo } from 'react';
-import { Box, Divider, Typography } from '@material-ui/core';
+import { Box, Divider } from '@material-ui/core';
 import { KeyboardArrowDown } from '@material-ui/icons';
 import { AlertTriangle } from 'react-feather';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
 import {
   CustomModal,
   NumericalInput,
@@ -17,6 +16,7 @@ import {
   useUserSlippageTolerance,
 } from 'state/user/hooks';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
+import 'components/styles/SettingsModal.scss';
 
 enum SlippageError {
   InvalidInput = 'InvalidInput',
@@ -28,41 +28,12 @@ enum DeadlineError {
   InvalidInput = 'InvalidInput',
 }
 
-const useStyles = makeStyles(({ palette }) => ({
-  slippageButton: {
-    width: 62,
-    height: 40,
-    borderRadius: 10,
-    border: `solid 1px ${palette.secondary.light}`,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    cursor: 'pointer',
-    marginRight: 16,
-  },
-  activeSlippageButton: {
-    background: palette.primary.main,
-  },
-  settingsInput: {
-    background: 'transparent',
-    border: 'none',
-    outline: 'none',
-    textAlign: 'right',
-    flex: 1,
-    fontSize: 14,
-    color: 'rgba(212, 229, 255, 0.8)',
-    fontWeight: 500,
-  },
-}));
-
 interface SettingsModalProps {
   open: boolean;
   onClose: () => void;
 }
 
 const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
-  const classes = useStyles();
-  const { palette } = useTheme();
   const [
     userSlippageTolerance,
     setUserslippageTolerance,
@@ -138,66 +109,48 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
     <CustomModal open={open} onClose={onClose}>
       <CustomModal open={expertConfirm} onClose={() => setExpertConfirm(false)}>
         <Box paddingX={3} paddingY={4}>
-          <Box
-            mb={3}
-            display='flex'
-            justifyContent='space-between'
-            alignItems='center'
-          >
-            <Typography variant='h5'>Are you sure?</Typography>
+          <Box mb={3} className='flex justify-between items-center'>
+            <h5>Are you sure?</h5>
             <CloseIcon
-              style={{ cursor: 'pointer' }}
+              className='cursor-pointer'
               onClick={() => setExpertConfirm(false)}
             />
           </Box>
           <Divider />
           <Box mt={2.5} mb={1.5}>
-            <Typography variant='body1'>
+            <p>
               Expert mode turns off the confirm transaction prompt and allows
               high slippage trades that often result in bad rates and lost
               funds.
-            </Typography>
-            <Typography
-              variant='body1'
-              style={{ fontWeight: 'bold', marginTop: 24 }}
-            >
-              ONLY USE THIS MODE IF YOU KNOW WHAT YOU ARE DOING.
-            </Typography>
-            <Typography
-              variant='body1'
-              style={{ fontWeight: 'bold', marginTop: 24 }}
-            >
-              Please type the word &quot;confirm&quot; to enable expert mode.
-            </Typography>
+            </p>
+            <Box mt={3}>
+              <p className='text-bold'>
+                ONLY USE THIS MODE IF YOU KNOW WHAT YOU ARE DOING.
+              </p>
+            </Box>
+            <Box mt={3}>
+              <p className='text-bold'>
+                Please type the word &quot;confirm&quot; to enable expert mode.
+              </p>
+            </Box>
           </Box>
           <Box
             height={40}
             borderRadius={10}
             mb={2.5}
             px={2}
-            display='flex'
-            alignItems='center'
-            bgcolor={palette.background.default}
-            border={`1px solid ${palette.secondary.light}`}
+            className='flex items-center bg-default border-secondary1'
           >
             <input
-              style={{ textAlign: 'left' }}
-              className={classes.settingsInput}
+              className='settingsInput'
               value={expertConfirmText}
               onChange={(e: any) => setExpertConfirmText(e.target.value)}
             />
           </Box>
           <Box
-            style={{
-              cursor: 'pointer',
-              opacity: expertConfirmText === 'confirm' ? 1 : 0.6,
-            }}
-            bgcolor='rgb(255, 104, 113)'
-            height={42}
-            borderRadius={10}
-            display='flex'
-            alignItems='center'
-            justifyContent='center'
+            className={`expertButtonWrapper${
+              expertConfirmText === 'confirm' ? '' : ' opacity-disabled'
+            }`}
             onClick={() => {
               if (expertConfirmText === 'confirm') {
                 toggleExpertMode();
@@ -205,81 +158,64 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
               }
             }}
           >
-            <Typography variant='h6'>Turn on Expert Mode</Typography>
+            <p className='weight-600'>Turn on Expert Mode</p>
           </Box>
         </Box>
       </CustomModal>
       <Box paddingX={3} paddingY={4}>
-        <Box
-          mb={3}
-          display='flex'
-          justifyContent='space-between'
-          alignItems='center'
-        >
-          <Typography variant='h5'>Settings</Typography>
+        <Box mb={3} className='flex justify-between items-center'>
+          <h5>Settings</h5>
           <CloseIcon onClick={onClose} />
         </Box>
         <Divider />
-        <Box my={2.5} display='flex' alignItems='center'>
-          <Typography variant='body1' style={{ marginRight: 6 }}>
-            Slippage Tolerance
-          </Typography>
+        <Box my={2.5} className='flex items-center'>
+          <Box mr='6px'>
+            <p>Slippage Tolerance</p>
+          </Box>
           <QuestionHelper
             size={20}
             text='Your transaction will revert if the price changes unfavorably by more than this percentage.'
           />
         </Box>
         <Box mb={2.5}>
-          <Box display='flex' alignItems='center'>
+          <Box className='flex items-center'>
             <Box
-              className={cx(
-                classes.slippageButton,
-                userSlippageTolerance === 10 && classes.activeSlippageButton,
-              )}
+              className={`slippageButton${
+                userSlippageTolerance === 10 ? ' activeSlippageButton' : ''
+              }`}
               onClick={() => {
                 setSlippageInput('');
                 setUserslippageTolerance(10);
               }}
             >
-              <Typography variant='body2'>0.1%</Typography>
+              <small>0.1%</small>
             </Box>
             <Box
-              className={cx(
-                classes.slippageButton,
-                userSlippageTolerance === 50 && classes.activeSlippageButton,
-              )}
+              className={`slippageButton${
+                userSlippageTolerance === 50 ? ' activeSlippageButton' : ''
+              }`}
               onClick={() => {
                 setSlippageInput('');
                 setUserslippageTolerance(50);
               }}
             >
-              <Typography variant='body2'>0.5%</Typography>
+              <small>0.5%</small>
             </Box>
             <Box
-              className={cx(
-                classes.slippageButton,
-                userSlippageTolerance === 100 && classes.activeSlippageButton,
-              )}
+              className={`slippageButton${
+                userSlippageTolerance === 100 ? ' activeSlippageButton' : ''
+              }`}
               onClick={() => {
                 setSlippageInput('');
                 setUserslippageTolerance(100);
               }}
             >
-              <Typography variant='body2'>1%</Typography>
+              <small>1%</small>
             </Box>
             <Box
-              flex={1}
-              height={40}
-              borderRadius={10}
-              px={2}
-              display='flex'
-              alignItems='center'
-              bgcolor={palette.background.default}
-              border={`1px solid
-                ${
-                  slippageAlert ? palette.primary.main : palette.secondary.light
-                }
-              `}
+              className={`settingsInputWrapper ${
+                slippageAlert ? 'border-primary' : 'border-secondary1'
+              }`}
             >
               {slippageAlert && <AlertTriangle color='#ffa000' size={16} />}
               <NumericalInput
@@ -288,84 +224,62 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
                 fontSize={14}
                 fontWeight={500}
                 align='right'
-                color='rgba(212, 229, 255, 0.8)'
                 onBlur={() => {
                   parseCustomSlippage((userSlippageTolerance / 100).toFixed(2));
                 }}
                 onUserInput={(value) => parseCustomSlippage(value)}
               />
-              <Typography variant='body2'>%</Typography>
+              <small>%</small>
             </Box>
           </Box>
           {slippageError && (
-            <Typography
-              variant='body2'
-              style={{ color: '#ffa000', marginTop: 12 }}
-            >
-              {slippageError === SlippageError.InvalidInput
-                ? 'Enter a valid slippage percentage'
-                : slippageError === SlippageError.RiskyLow
-                ? 'Your transaction may fail'
-                : 'Your transaction may be frontrun'}
-            </Typography>
+            <Box mt={1.5}>
+              <small className='text-yellow3'>
+                {slippageError === SlippageError.InvalidInput
+                  ? 'Enter a valid slippage percentage'
+                  : slippageError === SlippageError.RiskyLow
+                  ? 'Your transaction may fail'
+                  : 'Your transaction may be frontrun'}
+              </small>
+            </Box>
           )}
         </Box>
         <Divider />
-        <Box my={2.5} display='flex' alignItems='center'>
-          <Typography variant='body1' style={{ marginRight: 6 }}>
-            Transaction Deadline
-          </Typography>
+        <Box my={2.5} className='flex items-center'>
+          <Box mr='6px'>
+            <p>Transaction Deadline</p>
+          </Box>
           <QuestionHelper
             size={20}
             text='Your transaction will revert if it is pending for more than this long.'
           />
         </Box>
-        <Box mb={2.5} display='flex' alignItems='center'>
-          <Box
-            height={40}
-            borderRadius={10}
-            px={2}
-            display='flex'
-            alignItems='center'
-            bgcolor={palette.background.default}
-            border={`1px solid ${palette.secondary.light}`}
-            maxWidth={168}
-          >
+        <Box mb={2.5} className='flex items-center'>
+          <Box className='settingsInputWrapper' maxWidth={168}>
             <NumericalInput
               placeholder={(ttl / 60).toString()}
               value={deadlineInput}
               fontSize={14}
               fontWeight={500}
-              color='rgba(212, 229, 255, 0.8)'
               onBlur={() => {
                 parseCustomDeadline((ttl / 60).toString());
               }}
               onUserInput={(value) => parseCustomDeadline(value)}
             />
           </Box>
-          <Typography variant='body2' style={{ marginLeft: 8 }}>
-            minutes
-          </Typography>
+          <Box ml={1}>
+            <small>minutes</small>
+          </Box>
         </Box>
         {deadlineError && (
-          <Typography
-            variant='body2'
-            style={{ color: '#ffa000', marginTop: 12 }}
-          >
-            Enter a valid deadline
-          </Typography>
+          <Box mt={1.5}>
+            <small className='text-yellow3'>Enter a valid deadline</small>
+          </Box>
         )}
         <Divider />
-        <Box
-          my={2.5}
-          display='flex'
-          justifyContent='space-between'
-          alignItems='center'
-        >
-          <Box display='flex' alignItems='center'>
-            <Typography variant='body1' style={{ marginRight: 6 }}>
-              Expert Mode
-            </Typography>
+        <Box my={2.5} className='flex justify-between items-center'>
+          <Box className='flex items-center'>
+            <p style={{ marginRight: 6 }}>Expert Mode</p>
             <QuestionHelper
               size={20}
               text='Bypasses confirmation modals and allows high slippage trades. Use at your own risk.'
@@ -384,15 +298,10 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
           />
         </Box>
         <Divider />
-        <Box
-          mt={2.5}
-          display='flex'
-          justifyContent='space-between'
-          alignItems='center'
-        >
-          <Typography variant='body1'>Language</Typography>
-          <Box display='flex' alignItems='center'>
-            <Typography variant='body1'>English (default)</Typography>
+        <Box mt={2.5} className='flex justify-between items-center'>
+          <p>Language</p>
+          <Box className='flex items-center'>
+            <p>English (default)</p>
             <KeyboardArrowDown />
           </Box>
         </Box>

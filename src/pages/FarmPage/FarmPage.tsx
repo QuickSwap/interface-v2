@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import { Box, Typography } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import { getBulkPairData } from 'state/stake/hooks';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
 import { useActiveWeb3React } from 'hooks';
@@ -9,38 +8,12 @@ import { returnDualStakingInfo, returnStakingInfo } from 'utils';
 import FarmRewards from './FarmRewards';
 import FarmsList from './FarmsList';
 import { CustomSwitch } from 'components';
-
-const useStyles = makeStyles(({ palette, breakpoints }) => ({
-  helpWrapper: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: '8px 12px',
-    border: `1px solid ${palette.secondary.light}`,
-    borderRadius: 10,
-    '& p': {
-      color: palette.text.hint,
-    },
-    '& svg': {
-      marginLeft: 8,
-    },
-  },
-  dragonWrapper: {
-    width: '100%',
-    backgroundColor: palette.background.paper,
-    borderRadius: 20,
-    padding: 32,
-    position: 'relative',
-    overflow: 'hidden',
-    [breakpoints.down('xs')]: {
-      padding: '16px 12px',
-    },
-  },
-}));
+import { useTranslation } from 'react-i18next';
+import 'pages/styles/farm.scss';
 
 const FarmPage: React.FC = () => {
-  const classes = useStyles();
   const { chainId } = useActiveWeb3React();
-
+  const { t } = useTranslation();
   const [bulkPairs, setBulkPairs] = useState<any>(null);
   const [farmIndex, setFarmIndex] = useState(
     GlobalConst.farmIndex.LPFARM_INDEX,
@@ -64,12 +37,12 @@ const FarmPage: React.FC = () => {
 
   const farmCategories = [
     {
-      text: 'LP Mining',
+      text: t('lpMining'),
       onClick: () => setFarmIndex(GlobalConst.farmIndex.LPFARM_INDEX),
       condition: farmIndex === GlobalConst.farmIndex.LPFARM_INDEX,
     },
     {
-      text: 'Dual Mining',
+      text: t('dualMining'),
       onClick: () => setFarmIndex(GlobalConst.farmIndex.DUALFARM_INDEX),
       condition: farmIndex === GlobalConst.farmIndex.DUALFARM_INDEX,
     },
@@ -77,18 +50,12 @@ const FarmPage: React.FC = () => {
 
   return (
     <Box width='100%' mb={3} id='farmPage'>
-      <Box
-        display='flex'
-        alignItems='flex-start'
-        justifyContent='space-between'
-        width='100%'
-        mb={2}
-      >
+      <Box className='pageHeading'>
         <Box mr={2}>
-          <Typography variant='h4'>Farm</Typography>
+          <h4>{t('farm')}</h4>
         </Box>
-        <Box className={classes.helpWrapper}>
-          <Typography variant='body2'>Help</Typography>
+        <Box className='helpWrapper'>
+          <small>{t('help')}</small>
           <HelpIcon />
         </Box>
       </Box>
@@ -101,7 +68,7 @@ const FarmPage: React.FC = () => {
       <Box my={2}>
         <FarmRewards bulkPairs={bulkPairs} farmIndex={farmIndex} />
       </Box>
-      <Box className={classes.dragonWrapper}>
+      <Box className='farmsWrapper'>
         <FarmsList bulkPairs={bulkPairs} farmIndex={farmIndex} />
       </Box>
     </Box>

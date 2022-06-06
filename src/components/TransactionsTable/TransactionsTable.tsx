@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Box, Typography, Divider, useMediaQuery } from '@material-ui/core';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { Box, Divider, useMediaQuery } from '@material-ui/core';
+import { useTheme } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { CustomTable } from 'components';
 import { formatNumber, getEtherscanLink, shortenTx } from 'utils';
@@ -8,25 +8,7 @@ import { useActiveWeb3React } from 'hooks';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { TxnType } from 'constants/index';
-dayjs.extend(relativeTime);
-
-const useStyles = makeStyles(({}) => ({
-  priceChangeWrapper: {
-    height: 25,
-    padding: '0 12px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 16,
-  },
-  mobileRow: {
-    width: '100%',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    margin: '8px 0',
-  },
-}));
+import 'components/styles/TransactionsTable.scss';
 
 interface TransactionsTableProps {
   data: any[];
@@ -40,38 +22,34 @@ const headCells = (
     id: 'description',
     numeric: false,
     label: (
-      <Box display='flex' alignItems='center'>
-        <Typography
-          variant='body2'
-          color={txFilter === -1 ? 'textPrimary' : 'textSecondary'}
+      <Box className='flex items-center'>
+        <small
+          className={txFilter === -1 ? '' : 'text-secondary'}
           onClick={() => setTxFilter(-1)}
         >
           All
-        </Typography>
-        <Typography
-          variant='body2'
-          color={txFilter === TxnType.SWAP ? 'textPrimary' : 'textSecondary'}
+        </small>
+        <small
+          className={txFilter === TxnType.SWAP ? '' : 'text-secondary'}
           onClick={() => setTxFilter(TxnType.SWAP)}
           style={{ marginLeft: 12 }}
         >
           Swap
-        </Typography>
-        <Typography
-          variant='body2'
-          color={txFilter === TxnType.ADD ? 'textPrimary' : 'textSecondary'}
+        </small>
+        <small
+          className={txFilter === TxnType.ADD ? '' : 'text-secondary'}
           onClick={() => setTxFilter(TxnType.ADD)}
           style={{ marginLeft: 12 }}
         >
           Add
-        </Typography>
-        <Typography
-          variant='body2'
-          color={txFilter === TxnType.REMOVE ? 'textPrimary' : 'textSecondary'}
+        </small>
+        <small
+          className={txFilter === TxnType.REMOVE ? '' : 'text-secondary'}
           onClick={() => setTxFilter(TxnType.REMOVE)}
           style={{ marginLeft: 12 }}
         >
           Remove
-        </Typography>
+        </small>
       </Box>
     ),
     sortDisabled: true,
@@ -111,9 +89,8 @@ const headCells = (
 const TransactionsTable: React.FC<TransactionsTableProps> = ({ data }) => {
   const [txFilter, setTxFilter] = useState(-1);
   const txHeadCells = headCells(txFilter, setTxFilter);
-  const classes = useStyles();
   const { chainId } = useActiveWeb3React();
-  const { palette, breakpoints } = useTheme();
+  const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const { t } = useTranslation();
   const getTxString = (txn: any) => {
@@ -143,42 +120,33 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({ data }) => {
               )}
               target='_blank'
               rel='noopener noreferrer'
-              style={{ textDecoration: 'none' }}
+              className='no-decoration'
             >
-              <Typography
-                variant='body1'
-                style={{ color: palette.primary.main }}
-              >
-                {getTxString(txn)}
-              </Typography>
+              <p className='text-primary'>{getTxString(txn)}</p>
             </a>
           ) : (
-            <Typography variant='body1' style={{ color: palette.primary.main }}>
-              {getTxString(txn)}
-            </Typography>
+            <p className='text-primary'>{getTxString(txn)}</p>
           )}
         </Box>
         <Divider />
-        <Box className={classes.mobileRow}>
-          <Typography variant='body1'>Total Value</Typography>
-          <Typography variant='body1' color='textPrimary'>
-            ${Number(txn.amountUSD).toLocaleString()}
-          </Typography>
+        <Box className='mobileRow'>
+          <p>Total Value</p>
+          <p>${Number(txn.amountUSD).toLocaleString()}</p>
         </Box>
-        <Box className={classes.mobileRow}>
-          <Typography variant='body1'>Token Amount</Typography>
-          <Typography variant='body1' color='textPrimary'>
+        <Box className='mobileRow'>
+          <p>Token Amount</p>
+          <p>
             {formatNumber(txn.amount0)} {txn.pair.token0.symbol}
-          </Typography>
+          </p>
         </Box>
-        <Box className={classes.mobileRow}>
-          <Typography variant='body1'>Token Amount</Typography>
-          <Typography variant='body1' color='textPrimary'>
+        <Box className='mobileRow'>
+          <p>Token Amount</p>
+          <p>
             {formatNumber(txn.amount1)} {txn.pair.token1.symbol}
-          </Typography>
+          </p>
         </Box>
-        <Box className={classes.mobileRow}>
-          <Typography variant='body1'>TXN</Typography>
+        <Box className='mobileRow'>
+          <p>TXN</p>
           {chainId ? (
             <a
               href={getEtherscanLink(
@@ -188,26 +156,17 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({ data }) => {
               )}
               target='_blank'
               rel='noopener noreferrer'
-              style={{ textDecoration: 'none' }}
+              className='no-decoration'
             >
-              <Typography
-                variant='body1'
-                style={{ color: palette.primary.main }}
-              >
-                {shortenTx(txn.transaction.id)}
-              </Typography>
+              <p className='text-primary'>{shortenTx(txn.transaction.id)}</p>
             </a>
           ) : (
-            <Typography variant='body1' style={{ color: palette.primary.main }}>
-              {shortenTx(txn.transaction.id)}
-            </Typography>
+            <p className='text-primary'>{shortenTx(txn.transaction.id)}</p>
           )}
         </Box>
-        <Box className={classes.mobileRow}>
-          <Typography variant='body1'>Time</Typography>
-          <Typography variant='body1' color='textPrimary'>
-            {dayjs(Number(txn.transaction.timestamp) * 1000).fromNow()}
-          </Typography>
+        <Box className='mobileRow'>
+          <p>Time</p>
+          <p>{dayjs(Number(txn.transaction.timestamp) * 1000).fromNow()}</p>
         </Box>
       </Box>
     );
@@ -221,37 +180,29 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({ data }) => {
             href={getEtherscanLink(chainId, txn.transaction.id, 'transaction')}
             target='_blank'
             rel='noopener noreferrer'
-            style={{ textDecoration: 'none' }}
+            className='no-decoration'
           >
-            <Typography variant='body1' style={{ color: palette.primary.main }}>
-              {getTxString(txn)}
-            </Typography>
+            <p className='text-primary'>{getTxString(txn)}</p>
           </a>
         ) : (
-          <Typography variant='body1' style={{ color: palette.primary.main }}>
-            {getTxString(txn)}
-          </Typography>
+          <p className='text-primary'>{getTxString(txn)}</p>
         ),
       },
       {
-        html: (
-          <Typography variant='body1' color='textPrimary'>
-            ${Number(txn.amountUSD).toLocaleString()}
-          </Typography>
-        ),
+        html: <p>${Number(txn.amountUSD).toLocaleString()}</p>,
       },
       {
         html: (
-          <Typography variant='body1' color='textPrimary'>
+          <p>
             {formatNumber(txn.amount1)} {txn.pair.token1.symbol}
-          </Typography>
+          </p>
         ),
       },
       {
         html: (
-          <Typography variant='body1' color='textPrimary'>
+          <p>
             {formatNumber(txn.amount0)} {txn.pair.token0.symbol}
-          </Typography>
+          </p>
         ),
       },
       {
@@ -260,23 +211,17 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({ data }) => {
             href={getEtherscanLink(chainId, txn.transaction.id, 'transaction')}
             target='_blank'
             rel='noopener noreferrer'
-            style={{ textDecoration: 'none' }}
+            className='no-decoration'
           >
-            <Typography variant='body1' style={{ color: palette.primary.main }}>
-              {shortenTx(txn.transaction.id)}
-            </Typography>
+            <p className='text-primary'>{shortenTx(txn.transaction.id)}</p>
           </a>
         ) : (
-          <Typography variant='body1' style={{ color: palette.primary.main }}>
-            {shortenTx(txn.transaction.id)}
-          </Typography>
+          <p className='text-primary'>{shortenTx(txn.transaction.id)}</p>
         ),
       },
       {
         html: (
-          <Typography variant='body1' color='textPrimary'>
-            {dayjs(Number(txn.transaction.timestamp) * 1000).fromNow()}
-          </Typography>
+          <p>{dayjs(Number(txn.transaction.timestamp) * 1000).fromNow()}</p>
         ),
       },
     ];
@@ -285,48 +230,24 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({ data }) => {
   return (
     <Box position='relative'>
       {isMobile && (
-        <Box
-          display='flex'
-          alignItems='center'
-          position='absolute'
-          top={-48}
-          right={0}
-        >
-          <Box padding={1} onClick={() => setTxFilter(-1)}>
-            <Typography
-              variant='body1'
-              color={txFilter === -1 ? 'textPrimary' : 'textSecondary'}
-            >
-              All
-            </Typography>
+        <Box className='txTableFilterMobile'>
+          <Box onClick={() => setTxFilter(-1)}>
+            <p className={txFilter === -1 ? '' : 'text-secondary'}>All</p>
           </Box>
-          <Box padding={1} onClick={() => setTxFilter(TxnType.SWAP)}>
-            <Typography
-              variant='body1'
-              color={
-                txFilter === TxnType.SWAP ? 'textPrimary' : 'textSecondary'
-              }
-            >
+          <Box onClick={() => setTxFilter(TxnType.SWAP)}>
+            <p className={txFilter === TxnType.SWAP ? '' : 'text-secondary'}>
               Swap
-            </Typography>
+            </p>
           </Box>
-          <Box padding={1} onClick={() => setTxFilter(TxnType.ADD)}>
-            <Typography
-              variant='body1'
-              color={txFilter === TxnType.ADD ? 'textPrimary' : 'textSecondary'}
-            >
+          <Box onClick={() => setTxFilter(TxnType.ADD)}>
+            <p className={txFilter === TxnType.ADD ? '' : 'text-secondary'}>
               Add
-            </Typography>
+            </p>
           </Box>
-          <Box padding={1} onClick={() => setTxFilter(TxnType.REMOVE)}>
-            <Typography
-              variant='body1'
-              color={
-                txFilter === TxnType.REMOVE ? 'textPrimary' : 'textSecondary'
-              }
-            >
+          <Box onClick={() => setTxFilter(TxnType.REMOVE)}>
+            <p className={txFilter === TxnType.REMOVE ? '' : 'text-secondary'}>
               Remove
-            </Typography>
+            </p>
           </Box>
         </Box>
       )}

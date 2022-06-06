@@ -2,8 +2,7 @@ import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { Currency, CurrencyAmount, JSBI, Token, Trade } from '@uniswap/sdk';
 import ReactGA from 'react-ga';
 import { ArrowDown } from 'react-feather';
-import { Box, Typography, Button, CircularProgress } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { Box, Button, CircularProgress } from '@material-ui/core';
 import { useWalletModalToggle } from 'state/application/hooks';
 import {
   useDerivedSwapInfo,
@@ -42,82 +41,13 @@ import {
 import { computeTradePriceBreakdown, warningSeverity } from 'utils/prices';
 import { ReactComponent as PriceExchangeIcon } from 'assets/images/PriceExchangeIcon.svg';
 import { ReactComponent as ExchangeIcon } from 'assets/images/ExchangeIcon.svg';
-
-const useStyles = makeStyles(({ palette }) => ({
-  exchangeSwap: {
-    cursor: 'pointer',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    margin: '16px auto',
-    zIndex: 2,
-    position: 'relative',
-  },
-  swapPrice: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    background: 'rgb(43, 45, 59, 0.2)',
-    padding: '8px 24px',
-    borderBottomLeftRadius: 10,
-    borderBottomRightRadius: 10,
-    '& p': {
-      display: 'flex',
-      alignItems: 'center',
-      color: '#b6b9cc',
-      '& svg': {
-        marginLeft: 8,
-        width: 16,
-        height: 16,
-        cursor: 'pointer',
-      },
-    },
-  },
-  swapButtonWrapper: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    marginTop: 20,
-    width: '100%',
-    '& button': {
-      borderRadius: '10px',
-      height: 56,
-      fontSize: 18,
-      fontWeight: 600,
-      width: (props: any) => (props.showApproveFlow ? '48%' : '100%'),
-      backgroundImage: `linear-gradient(to bottom, ${palette.primary.main}, #004ce6)`,
-      '&.Mui-disabled': {
-        backgroundImage: `linear-gradient(to bottom, ${palette.secondary.dark}, #1d212c)`,
-        color: palette.text.secondary,
-        opacity: 0.5,
-      },
-      '& .content': {
-        display: 'flex',
-        alignItems: 'center',
-        '& > div': {
-          color: 'white',
-          marginLeft: 6,
-        },
-      },
-    },
-  },
-  recipientInput: {
-    width: '100%',
-    '& .header': {
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      padding: '8px 12px',
-      '& button': {
-        background: 'transparent',
-      },
-    },
-  },
-}));
+import 'components/styles/Swap.scss';
 
 const Swap: React.FC<{
   currency0?: Currency;
   currency1?: Currency;
-  currencyBg?: string;
-}> = ({ currency0, currency1, currencyBg }) => {
+  currencyBgClass?: string;
+}> = ({ currency0, currency1, currencyBgClass }) => {
   const { account } = useActiveWeb3React();
   const { independentField, typedValue, recipient } = useSwapState();
   const {
@@ -209,8 +139,6 @@ const Swap: React.FC<{
       approval === ApprovalState.PENDING ||
       (approvalSubmitted && approval === ApprovalState.APPROVED)) &&
     !(priceImpactSeverity > 3 && !isExpertMode);
-
-  const classes = useStyles({ showApproveFlow });
 
   const toggleWalletModal = useWalletModalToggle();
 
@@ -547,9 +475,9 @@ const Swap: React.FC<{
         handleCurrencySelect={handleCurrencySelect}
         amount={formattedAmounts[Field.INPUT]}
         setAmount={handleTypeInput}
-        bgColor={currencyBg}
+        bgClass={currencyBgClass}
       />
-      <Box className={classes.exchangeSwap}>
+      <Box className='exchangeSwap'>
         <ExchangeIcon onClick={onSwitchTokens} />
       </Box>
       <CurrencyInput
@@ -562,12 +490,12 @@ const Swap: React.FC<{
         handleCurrencySelect={handleOtherCurrencySelect}
         amount={formattedAmounts[Field.OUTPUT]}
         setAmount={handleTypeOutput}
-        bgColor={currencyBg}
+        bgClass={currencyBgClass}
       />
       {trade && trade.executionPrice && (
-        <Box className={classes.swapPrice}>
-          <Typography variant='body2'>Price:</Typography>
-          <Typography variant='body2'>
+        <Box className='swapPrice'>
+          <small>Price:</small>
+          <small>
             1{' '}
             {
               (mainPrice ? currencies[Field.INPUT] : currencies[Field.OUTPUT])
@@ -587,12 +515,12 @@ const Swap: React.FC<{
                 setMainPrice(!mainPrice);
               }}
             />
-          </Typography>
+          </small>
         </Box>
       )}
       {!showWrap && isExpertMode && (
-        <Box className={classes.recipientInput}>
-          <Box className='header'>
+        <Box className='recipientInput'>
+          <Box className='recipientInputHeader'>
             {recipient !== null ? (
               <ArrowDown size='16' color='white' />
             ) : (
@@ -615,42 +543,48 @@ const Swap: React.FC<{
         </Box>
       )}
       <AdvancedSwapDetails trade={trade} />
-      <Box className={classes.swapButtonWrapper}>
+      <Box className='swapButtonWrapper'>
         {showApproveFlow && (
-          <Button
-            color='primary'
-            disabled={
-              approving ||
-              approval !== ApprovalState.NOT_APPROVED ||
-              approvalSubmitted
-            }
-            onClick={async () => {
-              setApproving(true);
-              try {
-                await approveCallback();
-                setApproving(false);
-              } catch (err) {
-                setApproving(false);
+          <Box width='48%'>
+            <Button
+              fullWidth
+              color='primary'
+              disabled={
+                approving ||
+                approval !== ApprovalState.NOT_APPROVED ||
+                approvalSubmitted
               }
-            }}
-          >
-            {approval === ApprovalState.PENDING ? (
-              <Box className='content'>
-                Approving <CircularProgress size={16} />
-              </Box>
-            ) : approvalSubmitted && approval === ApprovalState.APPROVED ? (
-              'Approved'
-            ) : (
-              'Approve ' + currencies[Field.INPUT]?.symbol
-            )}
-          </Button>
+              onClick={async () => {
+                setApproving(true);
+                try {
+                  await approveCallback();
+                  setApproving(false);
+                } catch (err) {
+                  setApproving(false);
+                }
+              }}
+            >
+              {approval === ApprovalState.PENDING ? (
+                <Box className='content'>
+                  Approving <CircularProgress size={16} />
+                </Box>
+              ) : approvalSubmitted && approval === ApprovalState.APPROVED ? (
+                'Approved'
+              ) : (
+                'Approve ' + currencies[Field.INPUT]?.symbol
+              )}
+            </Button>
+          </Box>
         )}
-        <Button
-          disabled={swapButtonDisabled as boolean}
-          onClick={account ? onSwap : connectWallet}
-        >
-          {swapButtonText}
-        </Button>
+        <Box width={showApproveFlow ? '48%' : '100%'}>
+          <Button
+            fullWidth
+            disabled={swapButtonDisabled as boolean}
+            onClick={account ? onSwap : connectWallet}
+          >
+            {swapButtonText}
+          </Button>
+        </Box>
       </Box>
     </Box>
   );

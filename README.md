@@ -12,6 +12,7 @@ Enabling users to:
 
 Useful links:
 - Website: [quickswap.exchange](https://quickswap.exchange/)
+- Beta: [beta.quickswap.exchange](https://beta.quickswap.exchange/)
 - Info: [info.quickswap.exchange](https://info.quickswap.exchange)
 - Twitter: [@QuickswapDEX](https://twitter.com/QuickswapDEX)
 - Reddit: [/r/QuickSwap](https://www.reddit.com/r/QuickSwap)

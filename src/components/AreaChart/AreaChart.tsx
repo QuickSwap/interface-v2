@@ -1,41 +1,10 @@
 import React from 'react';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { Box, Typography } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import Chart from 'react-apexcharts';
 import dayjs from 'dayjs';
 import { useIsDarkMode } from 'state/user/hooks';
 import { formatCompact, formatNumber } from 'utils';
-
-const useStyles = makeStyles(({ palette }) =>
-  createStyles({
-    chartContainer: {
-      flex: 1,
-      marginTop: -20,
-    },
-    categoryValues: {
-      display: 'flex',
-      justifyContent: 'space-between',
-      marginTop: -40,
-      marginRight: 8,
-      '& p': {
-        fontSize: 12,
-        color: palette.text.disabled,
-      },
-    },
-    yAxis: {
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'space-between',
-      marginLeft: 8,
-      marginBottom: 20,
-      '& p': {
-        fontSize: 10,
-        fontWeight: 500,
-        color: palette.text.disabled,
-      },
-    },
-  }),
-);
+import 'components/styles/AreaChart.scss';
 
 export interface AreaChartProps {
   backgroundColor?: string;
@@ -148,26 +117,11 @@ const AreaChart: React.FC<AreaChartProps> = ({
       theme: dark ? 'dark' : 'light',
       fillSeriesColor: false,
       custom: ({ series, seriesIndex, dataPointIndex }: any) => {
-        return (
-          `<div class="tooltip" style="display: flex; flex-direction: column; box-shadow: none; border-radius: 12px; background: transparent;">` +
-          `<span style="padding: 0.5rem; border: 1px solid ${
-            dark ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.15)'
-          }; border-radius: 12px 12px 0 0; background: ${
-            dark ? 'rgba(0, 0, 0, 0.91)' : 'rgba(255, 255, 255, 0.91)'
-          }; color: ${dark ? '#646464' : '#8D97A0'};">` +
-          dayjs(dates[dataPointIndex] * 1000).format('MMM DD, YYYY') +
-          '</span>' +
-          `<span style="padding: 0.5rem; border: 1px solid ${
-            dark ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.15)'
-          }; border-top: none; border-radius: 0 0 12px 12px; background: ${
-            dark ? 'rgba(0, 0, 0, 0.91)' : 'rgba(255, 255, 255, 0.91)'
-          }; color: ${dark ? '#646464' : '#8D97A0'};"><b style="color: ${
-            dark ? 'white' : 'rgba(0, 0, 0, 0.91)'
-          };">$` +
-          formatCompact(series[seriesIndex][dataPointIndex]) +
-          '</b></span>' +
-          '</div>'
-        );
+        return `<div class="areaChartTooltip"><small>${dayjs(
+          dates[dataPointIndex] * 1000,
+        ).format('MMM DD, YYYY')}</small><small><b>$${formatCompact(
+          series[seriesIndex][dataPointIndex],
+        )}</b></small></div>`;
       },
     },
   };
@@ -179,11 +133,9 @@ const AreaChart: React.FC<AreaChartProps> = ({
     },
   ];
 
-  const classes = useStyles();
-
   return (
     <Box display='flex' mt={2.5} width={width}>
-      <Box className={classes.chartContainer}>
+      <Box className='chartContainer'>
         <Chart
           options={options}
           series={series}
@@ -191,20 +143,20 @@ const AreaChart: React.FC<AreaChartProps> = ({
           width='100%'
           height={height}
         />
-        <Box className={classes.categoryValues}>
+        <Box className='categoryValues' mt={-5}>
           {categories.map((val, ind) => (
-            <Typography key={ind}>{val}</Typography>
+            <p key={ind}>{val}</p>
           ))}
         </Box>
       </Box>
       {yAxisValues && (
-        <Box className={classes.yAxis}>
+        <Box className='yAxis'>
           {yAxisValues.map((value, index) => (
-            <Typography key={index}>
+            <p key={index}>
               $
               {// this is to show small numbers less than 0.0001
               value > 0.0001 ? formatCompact(value) : formatNumber(value)}
-            </Typography>
+            </p>
           ))}
         </Box>
       )}
