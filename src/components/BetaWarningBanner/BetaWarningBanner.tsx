@@ -2,20 +2,17 @@ import React, { useState } from 'react';
 import { Box } from '@material-ui/core';
 import { AlertTriangle, XCircle } from 'react-feather';
 import 'components/styles/BetaWarningBanner.scss';
+import { useTranslation } from 'react-i18next';
 
 const BetaWarningBanner: React.FC = () => {
   const [showBanner, setShowBanner] = useState(true);
+  const { t } = useTranslation();
   return (
     <>
       {showBanner && (
         <Box className='warningBanner'>
           <AlertTriangle size={20} />
-          <span className='text-bold'>
-            This site is in beta. By using this software, you understand,
-            acknowledge and accept that Quickswap and/or the underlying software
-            are provided “as is” and “as available” basis and without warranties
-            or representations of any kind either expressed or implied
-          </span>
+          <span className='text-bold'>{t('betaWarningDesc')}</span>
           <Box onClick={() => setShowBanner(false)} className='closeBanner'>
             <XCircle size={20} />
           </Box>
