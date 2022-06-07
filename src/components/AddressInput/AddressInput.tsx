@@ -4,6 +4,7 @@ import useENS from 'hooks/useENS';
 import { useActiveWeb3React } from 'hooks';
 import { getEtherscanLink } from 'utils';
 import 'components/styles/AddressInput.scss';
+import { useTranslation } from 'react-i18next';
 
 interface AddressInputProps {
   value: string;
@@ -21,6 +22,7 @@ const AddressInput: React.FC<AddressInputProps> = ({
   const { chainId } = useActiveWeb3React();
   const { address, loading, name } = useENS(value);
   const error = Boolean(value.length > 0 && !loading && !address);
+  const { t } = useTranslation();
 
   return (
     <Box
@@ -36,7 +38,7 @@ const AddressInput: React.FC<AddressInputProps> = ({
             target='_blank'
             rel='noopener noreferrer'
           >
-            (View on Block Explorer)
+            ({t('viewonBlockExplorer')})
           </a>
         )}
       </Box>
