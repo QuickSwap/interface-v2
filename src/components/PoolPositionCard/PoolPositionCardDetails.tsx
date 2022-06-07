@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Box, Button, useMediaQuery } from '@material-ui/core';
-import { useTheme } from '@material-ui/core/styles';
+import { Box, Button } from '@material-ui/core';
 import { Pair, JSBI, Percent } from '@uniswap/sdk';
 import { useActiveWeb3React } from 'hooks';
 import { unwrappedToken } from 'utils/wrappedCurrency';
@@ -9,11 +8,11 @@ import { useTokenBalance } from 'state/wallet/hooks';
 import { useTotalSupply } from 'data/TotalSupply';
 import { CurrencyLogo, RemoveLiquidityModal } from 'components';
 import { currencyId, formatTokenAmount } from 'utils';
+import { useTranslation } from 'react-i18next';
 
 const PoolPositionCardDetails: React.FC<{ pair: Pair }> = ({ pair }) => {
+  const { t } = useTranslation();
   const history = useHistory();
-  const { breakpoints } = useTheme();
-  const isMobile = useMediaQuery(breakpoints.down('xs'));
 
   const { account } = useActiveWeb3React();
   const [openRemoveModal, setOpenRemoveModal] = useState(false);
@@ -58,13 +57,15 @@ const PoolPositionCardDetails: React.FC<{ pair: Pair }> = ({ pair }) => {
 
   return (
     <>
-      <Box px={isMobile ? 1.5 : 3} mb={3}>
+      <Box className='poolPositionCardDetails'>
         <Box className='cardRow'>
-          <small>Your pool tokens:</small>
+          <small>{t('yourPoolTokens')}:</small>
           <small>{formatTokenAmount(userPoolBalance)}</small>
         </Box>
         <Box className='cardRow'>
-          <small>Pooled {currency0.symbol}:</small>
+          <small>
+            {t('pooled')} {currency0.symbol}:
+          </small>
           <Box>
             <small>{formatTokenAmount(token0Deposited)}</small>
             <CurrencyLogo size='20px' currency={currency0} />
@@ -72,7 +73,9 @@ const PoolPositionCardDetails: React.FC<{ pair: Pair }> = ({ pair }) => {
         </Box>
 
         <Box className='cardRow'>
-          <small>Pooled {currency1.symbol}:</small>
+          <small>
+            {t('pooled')} {currency1.symbol}:
+          </small>
           <Box>
             <small>{formatTokenAmount(token1Deposited)}</small>
             <CurrencyLogo size='20px' currency={currency1} />
@@ -80,7 +83,7 @@ const PoolPositionCardDetails: React.FC<{ pair: Pair }> = ({ pair }) => {
         </Box>
 
         <Box className='cardRow'>
-          <small>Your pool share:</small>
+          <small>{t('yourPoolShare')}:</small>
           <small>
             {poolTokenPercentage
               ? poolTokenPercentage.toSignificant() + '%'
@@ -95,7 +98,7 @@ const PoolPositionCardDetails: React.FC<{ pair: Pair }> = ({ pair }) => {
               history.push(`/analytics/pair/${pair.liquidityToken.address}`)
             }
           >
-            <small>View Analytics</small>
+            <small>{t('viewAnalytics')}</small>
           </Button>
           <Button
             variant='contained'
@@ -107,7 +110,7 @@ const PoolPositionCardDetails: React.FC<{ pair: Pair }> = ({ pair }) => {
               );
             }}
           >
-            <small>Add</small>
+            <small>{t('add')}</small>
           </Button>
           <Button
             variant='contained'
@@ -115,7 +118,7 @@ const PoolPositionCardDetails: React.FC<{ pair: Pair }> = ({ pair }) => {
               setOpenRemoveModal(true);
             }}
           >
-            <small>Remove</small>
+            <small>{t('remove')}</small>
           </Button>
         </Box>
       </Box>

@@ -8,6 +8,7 @@ import { formatTokenAmount } from 'utils';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { DoubleCurrencyLogo } from 'components';
 import 'components/styles/PositionCard.scss';
+import { useTranslation } from 'react-i18next';
 
 interface PositionCardProps {
   pair: Pair;
@@ -20,6 +21,7 @@ export const MinimalPositionCard: React.FC<PositionCardProps> = ({
   border,
   showUnwrapped = false,
 }) => {
+  const { t } = useTranslation();
   const { account } = useActiveWeb3React();
 
   const currency0 = showUnwrapped ? pair.token0 : unwrappedToken(pair.token0);
@@ -67,7 +69,7 @@ export const MinimalPositionCard: React.FC<PositionCardProps> = ({
       {userPoolBalance &&
       JSBI.greaterThan(userPoolBalance.raw, JSBI.BigInt(0)) ? (
         <Box>
-          <p>Your position</p>
+          <p>{t('yourposition')}</p>
           <Box
             className='minimalCardRow'
             onClick={() => setShowMore(!showMore)}
@@ -85,7 +87,7 @@ export const MinimalPositionCard: React.FC<PositionCardProps> = ({
             <p>{formatTokenAmount(userPoolBalance)}</p>
           </Box>
           <Box className='minimalCardRow'>
-            <p>Your pool share:</p>
+            <p>{t('yourPoolShare')}:</p>
             <p>
               {poolTokenPercentage ? poolTokenPercentage.toFixed(6) + '%' : '-'}
             </p>
@@ -104,9 +106,7 @@ export const MinimalPositionCard: React.FC<PositionCardProps> = ({
           <span role='img' aria-label='wizard-icon'>
             ⭐️
           </span>{' '}
-          By adding liquidity you&apos;ll earn 0.25% of all trades on this pair
-          proportional to your share of the pool. Fees are added to the pool,
-          accrue in real time and can be claimed by withdrawing your liquidity.
+          {t('addLiquidityDesc')}
         </p>
       )}
     </Box>

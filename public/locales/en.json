@@ -216,5 +216,14 @@
   "fiatServiceDesc": "Fiat services on Quickswap are provided by third-parties. Quickswap is not associated with, responsible or liable for the performance of these third-party services. Any claims & questions should be addressed with the selected provider.",
   "switchWalletToPolygon": "Please switch your wallet to Polygon Network.",
   "notSupportIframe": "Your browser does not support iframes.",
-  "7dVol": "7d Volume"
+  "7dVol": "7d Volume",
+  "manage": "Manage",
+  "poolAPYDesc": "Earn <pspan>{{ apy }}% APY</pspan> by staking your LP tokens in {{ symbol1 }} / {{ symbol2 }} Farm.",
+  "yourPoolTokens": "Your Pool Tokens",
+  "pooled": "Pooled",
+  "viewAnalytics": "View Analytics",
+  "add": "Add",
+  "remove": "Remove",
+  "yourposition": "Your Position",
+  "addLiquidityDesc": "By adding liquidity you’ll earn 0.25% of all trades on this pair proportional to your share of the pool. Fees are added to the pool, accrue in real time and can be claimed by withdrawing your liquidity."
 }
