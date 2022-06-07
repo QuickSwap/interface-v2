@@ -18,12 +18,14 @@ import { ReactComponent as ThreeDotIcon } from 'assets/images/ThreeDot.svg';
 import { ReactComponent as LightIcon } from 'assets/images/LightIcon.svg';
 import WalletIcon from 'assets/images/WalletIcon.png';
 import 'components/styles/Header.scss';
+import { useTranslation } from 'react-i18next';
 
 const newTransactionsFirst = (a: TransactionDetails, b: TransactionDetails) => {
   return b.addedTime - a.addedTime;
 };
 
 const Header: React.FC = () => {
+  const { t } = useTranslation();
   const { pathname } = useLocation();
   const { account } = useActiveWeb3React();
   const { ethereum } = window as any;
@@ -48,32 +50,37 @@ const Header: React.FC = () => {
   const menuItems = [
     {
       link: '/swap',
-      text: 'Swap',
+      text: t('swap'),
       id: 'swap-page-link',
     },
     {
       link: '/pools',
-      text: 'Pool',
+      text: t('pool'),
       id: 'pools-page-link',
     },
     {
       link: '/farm',
-      text: 'Farm',
+      text: t('farm'),
       id: 'farm-page-link',
     },
     {
       link: '/dragons',
-      text: 'Dragon’s Lair',
+      text: t('dragonLair'),
       id: 'dragons-page-link',
     },
     {
       link: '/convert',
-      text: 'Convert',
+      text: t('convert'),
       id: 'convert-quick',
     },
     {
+      link: '/prdt',
+      text: 'Predictions',
+      id: 'prdt-page-link',
+    },
+    {
       link: '/analytics',
-      text: 'Analytics',
+      text: t('analytics'),
       id: 'analytics-page-link',
     },
   ];
@@ -233,9 +240,9 @@ const Header: React.FC = () => {
             {ethereum && !isSupportedNetwork(ethereum) && (
               <Box className='wrongNetworkWrapper'>
                 <Box className='wrongNetworkContent'>
-                  <small>Please switch your wallet to Polygon Network.</small>
+                  <small>{t('switchWalletToPolygon')}</small>
                   <Box mt={2.5} onClick={addMaticToMetamask}>
-                    Switch to Polygon
+                    {t('switchPolygon')}
                   </Box>
                 </Box>
               </Box>

@@ -18,12 +18,14 @@ import {
 } from 'utils';
 import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
 import 'components/styles/FarmCard.scss';
+import { useTranslation } from 'react-i18next';
 
 const FarmCard: React.FC<{
   stakingInfo: StakingInfo | DualStakingInfo;
   stakingAPY: number;
   isLPFarm?: boolean;
 }> = ({ stakingInfo, stakingAPY, isLPFarm }) => {
+  const { t } = useTranslation();
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const [isExpandCard, setExpandCard] = useState(false);
@@ -102,7 +104,7 @@ const FarmCard: React.FC<{
             {!isExpandCard && (
               <Box width={0.25}>
                 <Box className='flex items-center'>
-                  <span className='text-secondary'>APY</span>
+                  <span className='text-secondary'>{t('apy')}</span>
                   <Box ml={0.5} height={16}>
                     <img src={CircleInfoIcon} alt={'arrow up'} />
                   </Box>
@@ -124,7 +126,8 @@ const FarmCard: React.FC<{
             </Box>
             <Box width={0.25} textAlign='center'>
               <p className='small'>
-                ${(isLPFarm ? lpRewards : dualRewards).toLocaleString()} / day
+                ${(isLPFarm ? lpRewards : dualRewards).toLocaleString()} /{' '}
+                {t('day')}
               </p>
               {isLPFarm ? (
                 <p className='small'>{lpPoolRate}</p>
