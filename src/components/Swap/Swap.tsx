@@ -548,7 +548,6 @@ const Swap: React.FC<{
           <Box width='48%'>
             <Button
               fullWidth
-              color='primary'
               disabled={
                 approving ||
                 approval !== ApprovalState.NOT_APPROVED ||

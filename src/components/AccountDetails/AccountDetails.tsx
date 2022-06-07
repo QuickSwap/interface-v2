@@ -13,6 +13,7 @@ import 'components/styles/AccountDetails.scss';
 import StatusIcon from './StatusIcon';
 import Copy from './CopyHelper';
 import Transaction from './Transaction';
+import { useTranslation } from 'react-i18next';
 
 function renderTransactions(transactions: string[]) {
   return (
@@ -41,6 +42,7 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
 }) => {
   const { chainId, account, connector } = useActiveWeb3React();
   const dispatch = useDispatch<AppDispatch>();
+  const { t } = useTranslation();
 
   function formatConnectorName() {
     const { ethereum } = window as any;
@@ -61,7 +63,11 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
             (isMetaMask && k === 'METAMASK')),
       )
       .map((k) => SUPPORTED_WALLETS[k].name)[0];
-    return <small>Connected with {name}</small>;
+    return (
+      <small>
+        {t('connectedWith')} {name}
+      </small>
+    );
   }
 
   const clearAllTransactionsCallback = useCallback(() => {
@@ -71,7 +77,7 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
   return (
     <Box paddingX={3} paddingY={4}>
       <Box className='flex justify-between'>
-        <h5 className='text-bold'>Account</h5>
+        <h5 className='text-bold'>{t('account')}</h5>
         <Close className='cursor-pointer' onClick={toggleWalletModal} />
       </Box>
       <Box mt={2} padding={2} borderRadius={10} className='bg-secondary2'>
@@ -87,7 +93,7 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
                     (connector as any).close();
                   }}
                 >
-                  Disconnect
+                  {t('disconnect')}
                 </small>
               )}
             {connector !== safeApp && (
@@ -97,7 +103,7 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
                   openOptions();
                 }}
               >
-                Change
+                {t('change')}
               </small>
             )}
           </Box>
@@ -111,7 +117,7 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
         <Box className='flex justify-between items-center'>
           {account && (
             <Copy toCopy={account}>
-              <span style={{ marginLeft: '4px' }}>Copy Address</span>
+              <small>{t('copyAddress')}</small>
             </Copy>
           )}
           {chainId && account && (
@@ -129,7 +135,7 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
               rel='noopener noreferrer'
             >
               <LinkIcon size={16} />
-              <small>View on Block Explorer</small>
+              <small>{t('viewonBlockExplorer')}</small>
             </a>
           )}
         </Box>
@@ -142,12 +148,12 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
             pt={2}
             mb={1}
           >
-            <small>Recent Transactions</small>
+            <small>{t('recentTransactions')}</small>
             <small
               className='cursor-pointer'
               onClick={clearAllTransactionsCallback}
             >
-              Clear all
+              {t('clearAll')}
             </small>
           </Box>
           <Box paddingX={2} flex={1} overflow='auto'>
@@ -157,7 +163,7 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
         </>
       ) : (
         <Box paddingX={2} pt={2}>
-          <p>Your transactions will appear here...</p>
+          <p>{t('transactionsWillAppear')}...</p>
         </Box>
       )}
     </Box>
