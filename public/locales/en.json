@@ -197,5 +197,8 @@
   "unstake": "Unstake",
   "unstakeQUICKDesc": "⭐️ When you unstake, the contract will automatically claim QUICK on your behalf.",
   "earn": "Earn",
-  "apr": "APR"
+  "apr": "APR",
+  "switchWalletToPolygon": "Please switch your wallet to Polygon Network.",
+  "notSupportIframe": "Your browser does not support iframes.",
+  "7dVol": "7d Volume"
 }

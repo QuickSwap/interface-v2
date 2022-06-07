@@ -8,6 +8,7 @@ import { GlobalConst } from 'constants/index';
 import { useBookmarkPairs } from 'state/application/hooks';
 import { ReactComponent as StarChecked } from 'assets/images/StarChecked.svg';
 import { ReactComponent as StarUnchecked } from 'assets/images/StarUnchecked.svg';
+import { useTranslation } from 'react-i18next';
 
 interface TokensTableProps {
   data: any[];
@@ -56,6 +57,7 @@ const headCells = () => [
 const liquidityHeadCellIndex = 1;
 
 const PairTable: React.FC<TokensTableProps> = ({ data }) => {
+  const { t } = useTranslation();
   const pairHeadCells = headCells();
   const {
     bookmarkPairs,
@@ -125,19 +127,19 @@ const PairTable: React.FC<TokensTableProps> = ({ data }) => {
         </Box>
         <Divider />
         <Box className='mobileRow'>
-          <p>Liquidity</p>
+          <p>{t('liquidity')}</p>
           <p>${Number(liquidity).toLocaleString()}</p>
         </Box>
         <Box className='mobileRow'>
-          <p>24h Volume</p>
+          <p>{t('24hVol')}</p>
           <p>${Number(oneDayVolume).toLocaleString()}</p>
         </Box>
         <Box className='mobileRow'>
-          <p>7d Volume</p>
+          <p>{t('7dVol')}</p>
           <p>${Number(oneWeekVolume).toLocaleString()}</p>
         </Box>
         <Box className='mobileRow'>
-          <p>24h Fees</p>
+          <p>{t('24hFees')}</p>
           <p>${oneDayFee}</p>
         </Box>
       </Box>
