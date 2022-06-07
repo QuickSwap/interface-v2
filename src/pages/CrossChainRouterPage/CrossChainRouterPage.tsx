@@ -14,9 +14,8 @@ const CrossChainRouterPage: React.FC = () => {
       </div>
       <div style={{ height: '100%', width: '100%', overflowY: 'auto' }}>
         <iframe
-          title='Predictions Market'
-          allow='payment'
-          frameBorder='1px solid red'
+          title='Cross Chain Swap'
+          frameBorder='1px solid'
           height='900px'
           src='https://app.routerprotocol.com/swap?isWidget=true&widgetId=widget-0101&fromChain=137&toChain=1&fromToken=0x831753DD7087CaC61aB5644b308642cc1c33Dc13&toToken=0x6c28AeF8977c9B773996d0e8376d2EE379446F2f'
           width='100%'
