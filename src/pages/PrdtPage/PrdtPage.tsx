@@ -1,19 +1,16 @@
 import React, { useMemo, useState } from 'react';
 import { Box } from '@material-ui/core';
 import { AlertTriangle } from 'react-feather';
+import { useTranslation } from 'react-i18next';
 import 'pages/styles/prdtPage.scss';
 
 const PrdtPage: React.FC = () => {
+  const { t } = useTranslation();
   return (
     <Box width='100%' id='PrdtPage'>
-      <div className='prdtWarningBanner'>
+      <div className='externalDappWarningBanner'>
         <AlertTriangle size={20} />
-        <span className='text-bold'>
-          This feature is run by an external party. By using this software, you
-          understand acknowledge and accept that the following page is not
-          controlled by Quickswap, and may have issues, bugs or security flaws
-          that quickswap cannot control, use at your own discretion
-        </span>
+        <span className='text-bold'> {t('externalDappWarning')}</span>
       </div>
       <div style={{ height: '100%', width: '100%', overflowY: 'auto' }}>
         <iframe

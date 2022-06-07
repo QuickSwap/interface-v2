@@ -1,10 +1,10 @@
 @use 'styles/variables' as *;
-
+ 
 .errorInput {
   border-color: $errorMain
 }
 
-.prdtWarningBanner {
+.externalDappWarningBanner {
   width: 100%;
   background: $errorMain;
   color: $bgColor;
