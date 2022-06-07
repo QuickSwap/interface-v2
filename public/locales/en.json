@@ -245,5 +245,15 @@
   "fiatServiceDesc": "Fiat services on Quickswap are provided by third-parties. Quickswap is not associated with, responsible or liable for the performance of these third-party services. Any claims & questions should be addressed with the selected provider.",
   "switchWalletToPolygon": "Please switch your wallet to Polygon Network.",
   "notSupportIframe": "Your browser does not support iframes.",
-  "7dVol": "7d Volume"
+  "7dVol": "7d Volume",
+  "importPool": "Import Pool",
+  "poolFound": "Pool Found",
+  "manageThisPool": "Manage this pool",
+  "noLiquidityinPool": "You don’t have liquidity in this pool yet",
+  "nopoolFound": "No pool found",
+  "createPool": "Create pool",
+  "invalidPair": "Invalid pair",
+  "loading": "Loading",
+  "connectWalletToFindPool": "Connect to a wallet to find pools.",
+  "selectTokenFindLiquidity": "Select a token to find your liquidity."
 }
