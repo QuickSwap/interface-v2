@@ -12,7 +12,7 @@ const PrdtPage: React.FC = () => {
           This feature is run by an external party. By using this software, you
           understand acknowledge and accept that the following page is not
           controlled by Quickswap, and may have issues, bugs or security flaws
-          that quickswap cannot control, use at your own descression
+          that quickswap cannot control, use at your own discretion
         </span>
       </div>
       <div style={{ height: '100%', width: '100%', overflowY: 'auto' }}>
