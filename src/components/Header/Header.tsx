@@ -74,6 +74,11 @@ const Header: React.FC = () => {
       id: 'convert-quick',
     },
     {
+      link: '/cross-chain-router',
+      text: 'Cross Chain Router',
+      id: 'cross-chain-router-page',
+    },
+    {
       link: '/analytics',
       text: t('analytics'),
       id: 'analytics-page-link',

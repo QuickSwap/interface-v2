@@ -14,6 +14,7 @@ const LandingPage = lazy(() => import('./pages/LandingPage'));
 const PoolsPage = lazy(() => import('./pages/PoolsPage'));
 const SwapPage = lazy(() => import('./pages/SwapPage'));
 const ConvertQUICKPage = lazy(() => import('./pages/ConvertQUICKPage'));
+const CrossChainRouterPage = lazy(() => import('./pages/CrossChainRouterPage'));
 const AnalyticsTokenDetails = lazy(() =>
   import('./pages/AnalyticsTokenDetails'),
 );
@@ -140,6 +141,11 @@ const App: React.FC = () => {
                     <Route exact path='/convert'>
                       <PageLayout>
                         <ConvertQUICKPage />
+                      </PageLayout>
+                    </Route>
+                    <Route exact path='/cross-chain-router'>
+                      <PageLayout>
+                        <CrossChainRouterPage />
                       </PageLayout>
                     </Route>
                     <Route exact path='/analytics'>
