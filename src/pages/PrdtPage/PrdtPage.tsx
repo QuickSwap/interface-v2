@@ -19,7 +19,7 @@ const PrdtPage: React.FC = () => {
         <iframe
           title='Predictions Market'
           allow='payment'
-          frameBorder='0'
+          frameBorder='1px solid red'
           height='900px'
           src='https://ipfs.fleek.co/ipfs/QmRi3BuUDu5AoWNnKcWJmDwa4WSQSrvZRcyeqf2ApZCwAs/'
           width='100%'
