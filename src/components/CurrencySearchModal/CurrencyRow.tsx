@@ -12,6 +12,7 @@ import { PlusHelper } from 'components/QuestionHelper';
 import { ReactComponent as TokenSelectedIcon } from 'assets/images/TokenSelected.svg';
 import useUSDCPrice from 'utils/useUSDCPrice';
 import { formatTokenAmount } from 'utils';
+import { useTranslation } from 'react-i18next';
 
 function currencyKey(currency: Token): string {
   return currency instanceof Token
@@ -38,7 +39,6 @@ function TokenTags({ currency }: { currency: Token }) {
   if (!tags || tags.length === 0) return <span />;
 
   const tag = tags[0];
-
   return (
     <Box>
       <Tooltip title={tag.description}>
@@ -77,6 +77,8 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
   style,
   isOnSelectedList,
 }) => {
+  const { t } = useTranslation();
+
   const { ethereum } = window as any;
   const { account, chainId } = useActiveWeb3React();
   const key = currencyKey(currency);
@@ -155,7 +157,7 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
                   event.stopPropagation();
                 }}
               >
-                <PlusHelper text='Add to metamask.' />
+                <PlusHelper text={t('addToMetamask')} />
               </Box>
             )}
           </Box>
@@ -163,7 +165,9 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
             <span className='currencyName'>{currency.name}</span>
           ) : (
             <Box className='flex items-center'>
-              <span>{customAdded ? 'Added by user' : 'Found by address'}</span>
+              <span>
+                {customAdded ? t('addedByUser') : t('foundByAddress')}
+              </span>
               <Box
                 ml={0.5}
                 className='text-primary'
@@ -177,7 +181,7 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
                   }
                 }}
               >
-                <span>{customAdded ? '(Remove)' : '(Add)'}</span>
+                <span>{customAdded ? `(${t('remove')})` : `(${t('add')}`}</span>
               </Box>
             </Box>
           )}

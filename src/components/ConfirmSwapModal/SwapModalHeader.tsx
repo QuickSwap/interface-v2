@@ -8,6 +8,7 @@ import useUSDCPrice from 'utils/useUSDCPrice';
 import { computeSlippageAdjustedAmounts } from 'utils/prices';
 import { ReactComponent as ArrowDownIcon } from 'assets/images/ArrowDownIcon.svg';
 import { formatTokenAmount } from 'utils';
+import { useTranslation } from 'react-i18next';
 
 interface SwapModalHeaderProps {
   trade: Trade;
@@ -24,6 +25,7 @@ const SwapModalHeader: React.FC<SwapModalHeaderProps> = ({
   onAcceptChanges,
   onConfirm,
 }) => {
+  const { t } = useTranslation();
   const slippageAdjustedAmounts = useMemo(
     () => computeSlippageAdjustedAmounts(trade, allowedSlippage),
     [trade, allowedSlippage],
@@ -41,7 +43,7 @@ const SwapModalHeader: React.FC<SwapModalHeaderProps> = ({
       </Box>
       <Box className='swapContent'>
         <p>
-          Swap {formatTokenAmount(trade.inputAmount)}{' '}
+          {t('swap')} {formatTokenAmount(trade.inputAmount)}{' '}
           {trade.inputAmount.currency.symbol} ($
           {Number(usdPrice?.toSignificant()) *
             Number(trade.inputAmount.toSignificant(2))}
@@ -57,29 +59,29 @@ const SwapModalHeader: React.FC<SwapModalHeaderProps> = ({
         <Box className='priceUpdate'>
           <Box>
             <AlertTriangle size={20} />
-            <p> Price Updated</p>
+            <p>{t('priceUpdated')}</p>
           </Box>
-          <Button onClick={onAcceptChanges}>Accept</Button>
+          <Button onClick={onAcceptChanges}>{t('accept')}</Button>
         </Box>
       )}
       <Box className='transactionText'>
         {trade.tradeType === TradeType.EXACT_INPUT ? (
           <p className='small'>
-            {`Output is estimated. You will receive at least `}
-            {formatTokenAmount(slippageAdjustedAmounts[Field.OUTPUT])}{' '}
-            {trade.outputAmount.currency.symbol}
-            {' or the transaction will revert.'}
+            {t('outputEstimated1', {
+              amount: formatTokenAmount(slippageAdjustedAmounts[Field.OUTPUT]),
+              symbol: trade.outputAmount.currency.symbol,
+            })}
           </p>
         ) : (
           <p className='small'>
-            {`Input is estimated. You will sell at most `}
-            {formatTokenAmount(slippageAdjustedAmounts[Field.INPUT])}{' '}
-            {trade.inputAmount.currency.symbol}
-            {' or the transaction will revert.'}
+            {t('inputEstimated', {
+              amount: formatTokenAmount(slippageAdjustedAmounts[Field.INPUT]),
+              symbol: trade.inputAmount.currency.symbol,
+            })}
           </p>
         )}
         <Button onClick={onConfirm} className='swapButton'>
-          Confirm Swap
+          {t('confirmSwap')}
         </Button>
       </Box>
     </Box>
