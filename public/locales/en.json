@@ -226,5 +226,8 @@
   "manageLists": "Manage Lists",
   "addList": "Add a list",
   "addListHelper": "Token lists are an open specification for lists of ERC20 tokens. You can use any token list by entering its URL below. Beware that third party token lists can contain fake or malicious ERC20 tokens.",
-  "listPlaceholder": "https:// or ipfs:// or ENS name"
+  "listPlaceholder": "https:// or ipfs:// or ENS name",
+  "switchWalletToPolygon": "Please switch your wallet to Polygon Network.",
+  "notSupportIframe": "Your browser does not support iframes.",
+  "7dVol": "7d Volume"
 }
