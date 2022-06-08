@@ -18,7 +18,7 @@ const PrdtPage: React.FC = () => {
           allow='payment'
           frameBorder='1px solid red'
           height='900px'
-          src='https://cloudflare-ipfs.com/ipfs/QmRi3BuUDu5AoWNnKcWJmDwa4WSQSrvZRcyeqf2ApZCwAs/'
+          src='https://cloudflare-ipfs.com/ipfs/Qma9BHGWNxFYWrQMU2oFme8GFqEo15ehTpE6Qpzy7Zh1cq/'
           width='100%'
         >
           <p>Your browser does not support iframes</p>
