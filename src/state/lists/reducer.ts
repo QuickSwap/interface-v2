@@ -1,7 +1,7 @@
 import { createReducer } from '@reduxjs/toolkit';
 import { getVersionUpgrade, VersionUpgrade } from '@uniswap/token-lists';
 import { TokenList } from '@uniswap/token-lists/dist/types';
-import { DEFAULT_LIST_OF_LISTS, DEFAULT_TOKEN_LIST_URL } from 'constants/lists';
+import { GlobalConst } from 'constants/index';
 import { updateVersion } from 'state/global/actions';
 import {
   acceptListUpdate,
@@ -33,6 +33,10 @@ const NEW_LIST_STATE: ListState = {
   loadingRequestId: null,
   pendingUpdate: null,
 };
+
+const { DEFAULT_TOKEN_LIST_URL } = GlobalConst.utils;
+
+const DEFAULT_LIST_OF_LISTS = [DEFAULT_TOKEN_LIST_URL];
 
 type Mutable<T> = {
   -readonly [P in keyof T]: T[P] extends ReadonlyArray<infer U> ? U[] : T[P];
