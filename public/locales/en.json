@@ -225,5 +225,16 @@
   "add": "Add",
   "remove": "Remove",
   "yourposition": "Your Position",
-  "addLiquidityDesc": "By adding liquidity you’ll earn 0.25% of all trades on this pair proportional to your share of the pool. Fees are added to the pool, accrue in real time and can be claimed by withdrawing your liquidity."
+  "addLiquidityDesc": "By adding liquidity you’ll earn 0.25% of all trades on this pair proportional to your share of the pool. Fees are added to the pool, accrue in real time and can be claimed by withdrawing your liquidity.",
+  "noInputAmounts": "Need to input amounts",
+  "cannotWrap": "Could not wrap",
+  "confirmWithoutApproval": "Attempting to confirm without approval. Please contact support.",
+  "transactionWouldFail": "This transaction would fail. Please contact support.",
+  "removeLiquidityMsg": "Remove {{ amount1 }} {{ symbol1 }} and {{ amount2 }} {{ symbol2 }}",
+  "removingLP": "Removing {{ amount }} {{ symbol1 }} / {{ symbol2 }} LP Tokens",
+  "confirm": "Confirm",
+  "depositLP": "Deposit LP Tokens",
+  "searchTokenPair": "Search for tokens, pairs, etc.",
+  "showMore": "Show More",
+  "pair": "Pair"
 }

@@ -10,6 +10,7 @@ import {
   getStakedAmountStakingInfo,
   getTVLStaking,
 } from 'utils';
+import { useTranslation } from 'react-i18next';
 
 interface RewardSliderItemProps {
   info: StakingInfo;
@@ -20,6 +21,7 @@ const RewardSliderItem: React.FC<RewardSliderItemProps> = ({
   info,
   stakingAPY,
 }) => {
+  const { t } = useTranslation();
   const history = useHistory();
 
   const stakedAmounts = getStakedAmountStakingInfo(info);
@@ -53,20 +55,22 @@ const RewardSliderItem: React.FC<RewardSliderItemProps> = ({
         </h5>
       </Box>
       <Box className='row'>
-        <p className='text-gray22'>24h Fees</p>
+        <p className='text-gray22'>{t('24hFees')}</p>
         <p>${(info?.oneDayFee ?? 0).toLocaleString()}</p>
       </Box>
       <Box className='row'>
-        <p className='text-gray22'>Rewards</p>
-        <p>${rewards.toLocaleString()} / day</p>
+        <p className='text-gray22'>{t('rewards')}</p>
+        <p>
+          ${rewards.toLocaleString()} / {t('day')}
+        </p>
       </Box>
       <Box className='row'>
-        <p className='text-gray22'>TVL</p>
+        <p className='text-gray22'>{t('tvl')}</p>
         <p>{tvl}</p>
       </Box>
       <Box className='row'>
         <p className='text-gray22'>
-          APR
+          {t('apr')}
           <HelpIcon />
         </p>
         <Box className='rewardApyWrapper'>
@@ -82,7 +86,7 @@ const RewardSliderItem: React.FC<RewardSliderItemProps> = ({
             );
           }}
         >
-          Deposit LP Tokens
+          {t('depositLP')}
         </Button>
       </Box>
     </Box>

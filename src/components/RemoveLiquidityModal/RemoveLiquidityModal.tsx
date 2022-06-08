@@ -44,6 +44,7 @@ import { wrappedCurrency } from 'utils/wrappedCurrency';
 import { useTotalSupply } from 'data/TotalSupply';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 import 'components/styles/RemoveLiquidityModal.scss';
+import { useTranslation } from 'react-i18next';
 
 interface RemoveLiquidityModalProps {
   currency0: Currency;
@@ -58,6 +59,7 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
   open,
   onClose,
 }) => {
+  const { t } = useTranslation();
   const [showConfirm, setShowConfirm] = useState(false);
   const [txPending, setTxPending] = useState(false);
   const [approving, setApproving] = useState(false);
@@ -201,13 +203,13 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
 
   const onRemove = async () => {
     if (!chainId || !library || !account || !deadline || !router)
-      throw new Error('missing dependencies');
+      throw new Error(t('missingdependencies'));
     const {
       [Field.CURRENCY_A]: currencyAmountA,
       [Field.CURRENCY_B]: currencyAmountB,
     } = parsedAmounts;
     if (!currencyAmountA || !currencyAmountB) {
-      throw new Error('missing currency amounts');
+      throw new Error(t('noInputAmounts'));
     }
 
     const amountsMin = {
@@ -222,12 +224,12 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
     };
 
     const liquidityAmount = parsedAmounts[Field.LIQUIDITY];
-    if (!liquidityAmount) throw new Error('missing liquidity amount');
+    if (!liquidityAmount) throw new Error(t('noLiquidity'));
 
     const currencyBIsETH = currency1 === ETHER;
     const oneCurrencyIsETH = currency0 === ETHER || currencyBIsETH;
 
-    if (!tokenA || !tokenB) throw new Error('could not wrap');
+    if (!tokenA || !tokenB) throw new Error('cannotWrap');
 
     let methodNames: string[],
       args: Array<string | string[] | number | boolean>;
@@ -266,9 +268,7 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
         ];
       }
     } else {
-      throw new Error(
-        'Attempting to confirm without approval. Please contact support.',
-      );
+      throw new Error(t('confirmWithoutApproval'));
     }
 
     const safeGasEstimates: (BigNumber | undefined)[] = await Promise.all(
@@ -288,7 +288,7 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
 
     // all estimations failed...
     if (indexOfSuccessfulEstimation === -1) {
-      console.error('This transaction would fail. Please contact support.');
+      throw new Error(t('transactionWouldFail'));
     } else {
       const methodName = methodNames[indexOfSuccessfulEstimation];
       const safeGasEstimate = safeGasEstimates[indexOfSuccessfulEstimation];
@@ -300,15 +300,12 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
         .then(async (response: TransactionResponse) => {
           setAttemptingTxn(false);
           setTxPending(true);
-          const summary =
-            'Remove ' +
-            parsedAmounts[Field.CURRENCY_A]?.toSignificant(3) +
-            ' ' +
-            currency0.symbol +
-            ' and ' +
-            parsedAmounts[Field.CURRENCY_B]?.toSignificant(3) +
-            ' ' +
-            currency1.symbol;
+          const summary = t('removeLiquidityMsg', {
+            amount1: formatTokenAmount(parsedAmounts[Field.CURRENCY_A]),
+            symbol1: currency0.symbol,
+            amount2: formatTokenAmount(parsedAmounts[Field.CURRENCY_B]),
+            symbol2: currency1.symbol,
+          });
 
           addTransaction(response, {
             summary,
@@ -324,7 +321,7 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
             setTxPending(false);
           } catch (error) {
             setTxPending(false);
-            setRemoveErrorMessage('There is an error in transaction.');
+            setRemoveErrorMessage(t('errorInTx'));
           }
 
           ReactGA.event({
@@ -353,26 +350,27 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
         </Box>
         <Box mb={6} textAlign='center'>
           <p className='weight-600'>
-            Removing {formattedAmounts[Field.LIQUIDITY]} {currency0.symbol} /{' '}
-            {currency1.symbol} LP Tokens
+            {t('removingLP', {
+              amount: formattedAmounts[Field.LIQUIDITY],
+              symbol1: currency0.symbol,
+              symbol2: currency1.symbol,
+            })}
             <br />
-            You will receive {parsedAmounts[Field.CURRENCY_A]?.toSignificant(
-              2,
-            )}{' '}
-            {currency0.symbol} and{' '}
-            {parsedAmounts[Field.CURRENCY_B]?.toSignificant(2)}{' '}
+            {t('youwillreceive')}{' '}
+            {formatTokenAmount(parsedAmounts[Field.CURRENCY_A])}{' '}
+            {currency0.symbol} {t('and')}{' '}
+            {formatTokenAmount(parsedAmounts[Field.CURRENCY_B])}{' '}
             {currency1.symbol}
           </p>
         </Box>
         <Box mb={3} textAlign='center'>
           <small className='text-secondary'>
-            {`Output is estimated. If the price changes by more than ${allowedSlippage /
-              100}% your transaction will revert.`}
+            {t('outputEstimated', { slippage: allowedSlippage / 100 })}
           </small>
         </Box>
         <Box mt={2}>
           <Button fullWidth className='removeButton' onClick={onRemove}>
-            Confirm
+            {t('confirm')}
           </Button>
         </Box>
       </Box>
