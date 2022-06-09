@@ -133,7 +133,7 @@ const SwapTokenDetails: React.FC<{
             <Box py={1} pl={2}>
               {tokenData ? (
                 <small className='text-secondary'>
-                  {t('24hVol')}: {formatCompact(tokenData?.oneDayVolumeUSD)}
+                  {t('24hVol1')}: {formatCompact(tokenData?.oneDayVolumeUSD)}
                 </small>
               ) : (
                 <Skeleton variant='rect' width={100} height={16} />
