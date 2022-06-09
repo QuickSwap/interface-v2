@@ -232,7 +232,7 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
             {syrup.token.symbol} / {t('day')}
           </p>
         </Box>
-        <Box mt={3} className='flex justify-between items-center'>
+        <Box className='flex justify-between items-center'>
           <Box width='48%'>
             <Button
               className='stakeButton'
