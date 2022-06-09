@@ -10,6 +10,8 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 import { TxnType } from 'constants/index';
 import 'components/styles/TransactionsTable.scss';
 
+dayjs.extend(relativeTime);
+
 interface TransactionsTableProps {
   data: any[];
 }
