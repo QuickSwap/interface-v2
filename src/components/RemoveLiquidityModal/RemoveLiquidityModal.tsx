@@ -177,12 +177,12 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
   );
   const onAttemptToApprove = async () => {
     if (!pairContract || !pair || !library || !deadline) {
-      setErrorMsg('missing dependencies');
+      setErrorMsg(t('missingdependencies'));
       return;
     }
     const liquidityAmount = parsedAmounts[Field.LIQUIDITY];
     if (!liquidityAmount) {
-      setErrorMsg('missing liquidity amount');
+      setErrorMsg(t('missingliquidity'));
       return;
     }
     setApproving(true);
@@ -229,7 +229,7 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
     const currencyBIsETH = currency1 === ETHER;
     const oneCurrencyIsETH = currency0 === ETHER || currencyBIsETH;
 
-    if (!tokenA || !tokenB) throw new Error('cannotWrap');
+    if (!tokenA || !tokenB) throw new Error(t('cannotWrap'));
 
     let methodNames: string[],
       args: Array<string | string[] | number | boolean>;
@@ -395,7 +395,7 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
                 />
               ) : (
                 <ConfirmationModalContent
-                  title='Removing Liquidity'
+                  title={t('removingLiquidity')}
                   onDismiss={handleDismissConfirmation}
                   content={modalHeader}
                 />
@@ -404,8 +404,8 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
             pendingText=''
             modalContent={
               txPending
-                ? 'Submitted transaction to remove liquidity'
-                : 'Successfully removed liquidity'
+                ? t('submittedTxRemoveLiquidity')
+                : t('successRemovedLiquidity')
             }
           />
         )}
@@ -414,7 +414,7 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
             className='text-secondary cursor-pointer'
             onClick={onClose}
           />
-          <h6>Remove Liquidity</h6>
+          <h6>{t('removeLiquidity')}</h6>
           <CloseIcon className='cursor-pointer' onClick={onClose} />
         </Box>
         <Box className='removeLiquidityInput'>
@@ -422,7 +422,9 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
             <small>
               {currency0.symbol} / {currency1.symbol} LP
             </small>
-            <small>Balance: {formatTokenAmount(userPoolBalance)}</small>
+            <small>
+              {t('balance')}: {formatTokenAmount(userPoolBalance)}
+            </small>
           </Box>
           <Box mt={2}>
             <NumericalInput
@@ -454,29 +456,37 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
         </Box>
         <Box className='removeLiquidityInfo bg-secondary1'>
           <Box>
-            <p>Pooled {currency0.symbol}</p>
+            <p>
+              {t('pooled')} {currency0.symbol}
+            </p>
             <Box>
               <p>{formatTokenAmount(token0Deposited)}</p>
               <CurrencyLogo currency={currency0} />
             </Box>
           </Box>
           <Box>
-            <p className='text-blue7'>- Withdraw {currency0.symbol}</p>
+            <p className='text-blue7'>
+              - {t('withdraw')} {currency0.symbol}
+            </p>
             <p className='text-blue7'>{formattedAmounts[Field.CURRENCY_A]}</p>
           </Box>
           <Box>
-            <p>Pooled {currency1.symbol}</p>
+            <p>
+              {t('pooled')} {currency1.symbol}
+            </p>
             <Box>
               <p>{formatTokenAmount(token1Deposited)}</p>
               <CurrencyLogo currency={currency1} />
             </Box>
           </Box>
           <Box>
-            <p className='text-blue7'>- Withdraw {currency1.symbol}</p>
+            <p className='text-blue7'>
+              - {t('withdraw')} {currency1.symbol}
+            </p>
             <p className='text-blue7'>{formattedAmounts[Field.CURRENCY_B]}</p>
           </Box>
           <Box>
-            <p>Your Pool Share</p>
+            <p>{t('yourPoolShare')}</p>
             <p>
               {poolTokenPercentage
                 ? poolTokenPercentage.toSignificant() + '%'
@@ -505,10 +515,10 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
             disabled={approving || approval !== ApprovalState.NOT_APPROVED}
           >
             {approving
-              ? 'Approving...'
+              ? `${t('approving')}...`
               : approval === ApprovalState.APPROVED
-              ? 'Approved'
-              : 'Approve'}
+              ? t('approved')
+              : t('approve')}
           </Button>
           <Button
             className='removeButton'
@@ -517,7 +527,7 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
             }}
             disabled={Boolean(error) || approval !== ApprovalState.APPROVED}
           >
-            {error || 'Remove'}
+            {error || t('remove')}
           </Button>
         </Box>
         <Box mt={2}>

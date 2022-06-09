@@ -9,6 +9,7 @@
   "outputEstimated": "Output is estimated. If the price changes by more than {{ slippage }}% your transaction will revert.",
   "approving": "Approving",
   "approve": "Approve",
+  "approved": "Approved",
   "lpTokenReceived": "LP Tokens Received",
   "lpTokens": "LP Tokens",
   "token": "Token",
@@ -236,5 +237,10 @@
   "depositLP": "Deposit LP Tokens",
   "searchTokenPair": "Search for tokens, pairs, etc.",
   "showMore": "Show More",
-  "pair": "Pair"
+  "pair": "Pair",
+  "removingLiquidity": "Removing Liquidity",
+  "submittedTxRemoveLiquidity": "Submitted transaction to remove liquidity",
+  "successRemovedLiquidity": "Successfully removed liquidity",
+  "balance": "Balance",
+  "withdraw": "Withdraw"
 }
