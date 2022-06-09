@@ -144,7 +144,7 @@ const App: React.FC = () => {
                       </PageLayout>
                     </Route>
                     <Route exact path='/prdt'>
-                      <PageLayout>
+                      <PageLayout name='prdt'>
                         <PrdtPage />
                       </PageLayout>
                     </Route>
