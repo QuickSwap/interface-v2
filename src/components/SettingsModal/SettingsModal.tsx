@@ -8,7 +8,6 @@ import {
   QuestionHelper,
   ToggleSwitch,
 } from 'components';
-import cx from 'classnames';
 import { useSwapActionHandlers } from 'state/swap/hooks';
 import {
   useExpertModeManager,
@@ -17,6 +16,7 @@ import {
 } from 'state/user/hooks';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 import 'components/styles/SettingsModal.scss';
+import { useTranslation } from 'react-i18next';
 
 enum SlippageError {
   InvalidInput = 'InvalidInput',
@@ -34,6 +34,7 @@ interface SettingsModalProps {
 }
 
 const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
+  const { t } = useTranslation();
   const [
     userSlippageTolerance,
     setUserslippageTolerance,
@@ -110,7 +111,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
       <CustomModal open={expertConfirm} onClose={() => setExpertConfirm(false)}>
         <Box paddingX={3} paddingY={4}>
           <Box mb={3} className='flex justify-between items-center'>
-            <h5>Are you sure?</h5>
+            <h5>{t('areyousure')}</h5>
             <CloseIcon
               className='cursor-pointer'
               onClick={() => setExpertConfirm(false)}
@@ -118,31 +119,16 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
           </Box>
           <Divider />
           <Box mt={2.5} mb={1.5}>
-            <p>
-              Expert mode turns off the confirm transaction prompt and allows
-              high slippage trades that often result in bad rates and lost
-              funds.
-            </p>
+            <p>{t('expertModeDesc')}</p>
             <Box mt={3}>
-              <p className='text-bold'>
-                ONLY USE THIS MODE IF YOU KNOW WHAT YOU ARE DOING.
-              </p>
+              <p className='text-bold text-uppercase'>{t('expertModeUse')}</p>
             </Box>
             <Box mt={3}>
-              <p className='text-bold'>
-                Please type the word &quot;confirm&quot; to enable expert mode.
-              </p>
+              <p className='text-bold'>{t('typeConfirmExpertMode')}</p>
             </Box>
           </Box>
-          <Box
-            height={40}
-            borderRadius={10}
-            mb={2.5}
-            px={2}
-            className='flex items-center bg-default border-secondary1'
-          >
+          <Box className='expertConfirmInput'>
             <input
-              className='settingsInput'
               value={expertConfirmText}
               onChange={(e: any) => setExpertConfirmText(e.target.value)}
             />
@@ -158,24 +144,21 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
               }
             }}
           >
-            <p className='weight-600'>Turn on Expert Mode</p>
+            <p className='weight-600'>{t('turnonExpert')}</p>
           </Box>
         </Box>
       </CustomModal>
       <Box paddingX={3} paddingY={4}>
         <Box mb={3} className='flex justify-between items-center'>
-          <h5>Settings</h5>
+          <h5>{t('settings')}</h5>
           <CloseIcon onClick={onClose} />
         </Box>
         <Divider />
         <Box my={2.5} className='flex items-center'>
           <Box mr='6px'>
-            <p>Slippage Tolerance</p>
+            <p>{t('slippageTolerance')}</p>
           </Box>
-          <QuestionHelper
-            size={20}
-            text='Your transaction will revert if the price changes unfavorably by more than this percentage.'
-          />
+          <QuestionHelper size={20} text={t('slippageHelper')} />
         </Box>
         <Box mb={2.5}>
           <Box className='flex items-center'>
@@ -236,10 +219,10 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
             <Box mt={1.5}>
               <small className='text-yellow3'>
                 {slippageError === SlippageError.InvalidInput
-                  ? 'Enter a valid slippage percentage'
+                  ? t('enterValidSlippage')
                   : slippageError === SlippageError.RiskyLow
-                  ? 'Your transaction may fail'
-                  : 'Your transaction may be frontrun'}
+                  ? t('txMayFail')
+                  : t('txMayFrontrun')}
               </small>
             </Box>
           )}
@@ -247,12 +230,9 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
         <Divider />
         <Box my={2.5} className='flex items-center'>
           <Box mr='6px'>
-            <p>Transaction Deadline</p>
+            <p>{t('txDeadline')}</p>
           </Box>
-          <QuestionHelper
-            size={20}
-            text='Your transaction will revert if it is pending for more than this long.'
-          />
+          <QuestionHelper size={20} text={t('txDeadlineHelper')} />
         </Box>
         <Box mb={2.5} className='flex items-center'>
           <Box className='settingsInputWrapper' maxWidth={168}>
@@ -268,22 +248,19 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
             />
           </Box>
           <Box ml={1}>
-            <small>minutes</small>
+            <small>{t('minutes')}</small>
           </Box>
         </Box>
         {deadlineError && (
           <Box mt={1.5}>
-            <small className='text-yellow3'>Enter a valid deadline</small>
+            <small className='text-yellow3'>{t('enterValidDeadline')}</small>
           </Box>
         )}
         <Divider />
         <Box my={2.5} className='flex justify-between items-center'>
           <Box className='flex items-center'>
-            <p style={{ marginRight: 6 }}>Expert Mode</p>
-            <QuestionHelper
-              size={20}
-              text='Bypasses confirmation modals and allows high slippage trades. Use at your own risk.'
-            />
+            <p style={{ marginRight: 6 }}>{t('expertMode')}</p>
+            <QuestionHelper size={20} text={t('expertModeHelper')} />
           </Box>
           <ToggleSwitch
             toggled={expertMode}
@@ -299,9 +276,11 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
         </Box>
         <Divider />
         <Box mt={2.5} className='flex justify-between items-center'>
-          <p>Language</p>
+          <p>{t('language')}</p>
           <Box className='flex items-center'>
-            <p>English (default)</p>
+            <p>
+              {t('english')} ({t('default')})
+            </p>
             <KeyboardArrowDown />
           </Box>
         </Box>
