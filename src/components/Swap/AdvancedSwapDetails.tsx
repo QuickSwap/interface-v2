@@ -49,7 +49,7 @@ export const TradeSummary: React.FC<TradeSummaryProps> = ({
       )}
       <Box className='summaryRow'>
         <Box>
-          <small>Slippage:</small>
+          <small>{t('slippage')}:</small>
           <QuestionHelper text={t('slippageHelper')} />
         </Box>
         <Box
@@ -77,14 +77,14 @@ export const TradeSummary: React.FC<TradeSummaryProps> = ({
       </Box>
       <Box className='summaryRow'>
         <Box>
-          <small>Price Impact:</small>
+          <small>{t('priceimpact')}:</small>
           <QuestionHelper text={t('priceImpactHelper')} />
         </Box>
         <FormattedPriceImpact priceImpact={priceImpactWithoutFee} />
       </Box>
       <Box className='summaryRow'>
         <Box>
-          <small>Liquidity Provider Fee:</small>
+          <small>{t('liquidityProviderFee')}:</small>
           <QuestionHelper text={t('liquidityProviderFeeHelper')} />
         </Box>
         <small>
@@ -93,7 +93,7 @@ export const TradeSummary: React.FC<TradeSummaryProps> = ({
       </Box>
       <Box className='summaryRow'>
         <Box>
-          <small>Route:</small>
+          <small>{t('route')}:</small>
           <QuestionHelper text={t('swapRouteHelper')} />
         </Box>
         <Box>
