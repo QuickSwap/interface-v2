@@ -41,7 +41,7 @@ const SwapMain: React.FC = () => {
         />
       )}
       <Box
-        className={`flex items-center justify-between ${
+        className={`flex flex-wrap items-center justify-between ${
           isProMode ? ' proModeWrapper' : ''
         }`}
       >
@@ -64,7 +64,7 @@ const SwapMain: React.FC = () => {
             <p>{t('limit')}</p>
           </Box>
         </Box>
-        <Box className='flex items-center'>
+        <Box my={1} className='flex items-center'>
           {!isProMode && (
             <Box className='flex items-center' mr={1}>
               <span
