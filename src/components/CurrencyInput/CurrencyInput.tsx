@@ -7,6 +7,7 @@ import { useActiveWeb3React } from 'hooks';
 import useUSDCPrice from 'utils/useUSDCPrice';
 import { formatTokenAmount } from 'utils';
 import 'components/styles/CurrencyInput.scss';
+import { useTranslation } from 'react-i18next';
 
 interface CurrencyInputProps {
   title?: string;
@@ -39,6 +40,7 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
   bgClass,
   id,
 }) => {
+  const { t } = useTranslation();
   const [modalOpen, setModalOpen] = useState(false);
   const { account } = useActiveWeb3React();
   const selectedCurrencyBalance = useCurrencyBalance(
@@ -58,7 +60,7 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
         'bg-secondary2'}`}
     >
       <Box className='flex justify-between' mb={2}>
-        <p>{title || 'You Pay:'}</p>
+        <p>{title || `${t('youPay')}:`}</p>
         <Box display='flex'>
           {account && currency && showHalfButton && (
             <Box className='maxWrapper' onClick={onHalf}>
@@ -67,7 +69,7 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
           )}
           {account && currency && showMaxButton && (
             <Box className='maxWrapper' marginLeft='20px' onClick={onMax}>
-              <small>MAX</small>
+              <small>{t('max')}</small>
             </Box>
           )}
         </Box>
@@ -85,7 +87,7 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
               <p className='token-symbol-container'>{currency?.symbol}</p>
             </>
           ) : (
-            <p>Select a token</p>
+            <p>{t('selectToken')}</p>
           )}
         </Box>
         <Box className='inputWrapper'>
@@ -101,7 +103,7 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
       </Box>
       <Box className='flex justify-between'>
         <small className='text-secondary'>
-          Balance: {formatTokenAmount(selectedCurrencyBalance)}
+          {t('balance')}: {formatTokenAmount(selectedCurrencyBalance)}
         </small>
         <small className='text-secondary'>
           ${(usdPrice * Number(amount)).toLocaleString()}

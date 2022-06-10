@@ -3,6 +3,7 @@ import { ChainId, Currency, currencyEquals, ETHER, Token } from '@uniswap/sdk';
 import { Box } from '@material-ui/core';
 import { GlobalData } from 'constants/index';
 import { CurrencyLogo, QuestionHelper } from 'components';
+import { useTranslation } from 'react-i18next';
 
 interface CommonBasesProps {
   chainId?: ChainId;
@@ -15,13 +16,14 @@ const CommonBases: React.FC<CommonBasesProps> = ({
   onSelect,
   selectedCurrency,
 }) => {
+  const { t } = useTranslation();
   return (
     <Box mb={2}>
       <Box display='flex' my={1.5}>
         <Box mr='6px'>
-          <span>Common bases</span>
+          <span>{t('commonBase')}</span>
         </Box>
-        <QuestionHelper text='These tokens are commonly paired with other tokens.' />
+        <QuestionHelper text={t('commonBaseHelper')} />
       </Box>
       <Box className='flex flex-wrap'>
         <Box

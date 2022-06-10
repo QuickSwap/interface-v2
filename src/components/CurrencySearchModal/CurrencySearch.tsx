@@ -48,7 +48,7 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
   isOpen,
 }) => {
   const { t } = useTranslation();
-  const { account, chainId } = useActiveWeb3React();
+  const { chainId } = useActiveWeb3React();
   const dispatch = useDispatch<AppDispatch>();
   const fixedList = useRef<FixedSizeList>();
 
@@ -159,7 +159,7 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
   return (
     <Box className='currencySearchWrapper'>
       <Box className='currencySearchHeader'>
-        <h6>Select a token</h6>
+        <h6>{t('selectToken')}</h6>
         <CloseIcon onClick={onDismiss} />
       </Box>
       <Box className='searchInputWrapper'>
