@@ -1,12 +1,8 @@
 @use 'styles/variables' as *;
  
-.errorInput {
-  border-color: $errorMain
-}
-
 .externalDappWarningBanner {
   width: 100%;
-  background: $errorMain;
+  background: $grey25;
   color: $bgColor;
   position: relative;
   z-index: 2;

@@ -42,12 +42,14 @@ import { computeTradePriceBreakdown, warningSeverity } from 'utils/prices';
 import { ReactComponent as PriceExchangeIcon } from 'assets/images/PriceExchangeIcon.svg';
 import { ReactComponent as ExchangeIcon } from 'assets/images/ExchangeIcon.svg';
 import 'components/styles/Swap.scss';
+import { useTranslation } from 'react-i18next';
 
 const Swap: React.FC<{
   currency0?: Currency;
   currency1?: Currency;
   currencyBgClass?: string;
 }> = ({ currency0, currency1, currencyBgClass }) => {
+  const { t } = useTranslation();
   const { account } = useActiveWeb3React();
   const { independentField, typedValue, recipient } = useSwapState();
   const {
@@ -178,29 +180,30 @@ const Swap: React.FC<{
   const swapButtonText = useMemo(() => {
     if (account) {
       if (!currencies[Field.INPUT] || !currencies[Field.OUTPUT]) {
-        return 'Select a token';
+        return t('selectToken');
       } else if (
         formattedAmounts[Field.INPUT] === '' &&
         formattedAmounts[Field.OUTPUT] === ''
       ) {
-        return 'Enter Amount';
+        return t('enterAmount');
       } else if (showWrap) {
         return wrapType === WrapType.WRAP
-          ? 'Wrap'
+          ? t('wrap')
           : wrapType === WrapType.UNWRAP
-          ? 'UnWrap'
+          ? t('unWrap')
           : '';
       } else if (noRoute && userHasSpecifiedInputOutput) {
-        return 'Insufficient liquidity for this trade.';
+        return t('insufficientLiquidityTrade');
       } else {
-        return swapInputError ?? 'Swap';
+        return swapInputError ?? t('swap');
       }
     } else {
       return ethereum && !isSupportedNetwork(ethereum)
-        ? 'Switch to Polygon'
-        : 'Connect Wallet';
+        ? t('switchPolygon')
+        : t('connectWallet');
     }
   }, [
+    t,
     formattedAmounts,
     currencies,
     account,
@@ -464,7 +467,7 @@ const Swap: React.FC<{
         />
       )}
       <CurrencyInput
-        title='From:'
+        title={`${t('from')}:`}
         id='swap-currency-input'
         currency={currencies[Field.INPUT]}
         onHalf={handleHalfInput}
@@ -481,7 +484,7 @@ const Swap: React.FC<{
         <ExchangeIcon onClick={onSwitchTokens} />
       </Box>
       <CurrencyInput
-        title='To (estimate):'
+        title={`${t('toEstimate')}:`}
         id='swap-currency-output'
         currency={currencies[Field.OUTPUT]}
         showPrice={Boolean(trade && trade.executionPrice)}
@@ -494,7 +497,7 @@ const Swap: React.FC<{
       />
       {trade && trade.executionPrice && (
         <Box className='swapPrice'>
-          <small>Price:</small>
+          <small>{t('price')}:</small>
           <small>
             1{' '}
             {
@@ -529,13 +532,15 @@ const Swap: React.FC<{
             <Button
               onClick={() => onChangeRecipient(recipient !== null ? null : '')}
             >
-              {recipient !== null ? '- Remove send' : '+ Add a send (optional)'}
+              {recipient !== null
+                ? `- ${t('removeSend')}`
+                : `+ ${t('addSendOptional')}`}
             </Button>
           </Box>
           {recipient !== null && (
             <AddressInput
-              label='Recipient'
-              placeholder='Wallet Address or ENS name'
+              label={t('recipient')}
+              placeholder={t('walletOrENS')}
               value={recipient}
               onChange={onChangeRecipient}
             />
@@ -565,12 +570,12 @@ const Swap: React.FC<{
             >
               {approval === ApprovalState.PENDING ? (
                 <Box className='content'>
-                  Approving <CircularProgress size={16} />
+                  {t('approving')} <CircularProgress size={16} />
                 </Box>
               ) : approvalSubmitted && approval === ApprovalState.APPROVED ? (
-                'Approved'
+                t('approved')
               ) : (
-                'Approve ' + currencies[Field.INPUT]?.symbol
+                `${t('approve')} ${currencies[Field.INPUT]?.symbol}`
               )}
             </Button>
           </Box>

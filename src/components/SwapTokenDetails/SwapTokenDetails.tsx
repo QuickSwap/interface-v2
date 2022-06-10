@@ -19,10 +19,12 @@ import { LineChart } from 'components';
 import { Token } from '@uniswap/sdk';
 import dayjs from 'dayjs';
 import { unwrappedToken } from 'utils/wrappedCurrency';
+import { useTranslation } from 'react-i18next';
 
 const SwapTokenDetails: React.FC<{
   token: Token;
 }> = ({ token }) => {
+  const { t } = useTranslation();
   const currency = unwrappedToken(token);
   const tokenAddress = token.address;
   const { palette } = useTheme();
@@ -120,7 +122,7 @@ const SwapTokenDetails: React.FC<{
             <Box className='border-right-secondary1' py={1}>
               {tokenData ? (
                 <small className='text-secondary'>
-                  TVL: {formatCompact(tokenData?.totalLiquidityUSD)}
+                  {t('tvl')}: {formatCompact(tokenData?.totalLiquidityUSD)}
                 </small>
               ) : (
                 <Skeleton variant='rect' width={100} height={16} />
@@ -131,7 +133,7 @@ const SwapTokenDetails: React.FC<{
             <Box py={1} pl={2}>
               {tokenData ? (
                 <small className='text-secondary'>
-                  24h VOL: {formatCompact(tokenData?.oneDayVolumeUSD)}
+                  {t('24hVol1')}: {formatCompact(tokenData?.oneDayVolumeUSD)}
                 </small>
               ) : (
                 <Skeleton variant='rect' width={100} height={16} />
