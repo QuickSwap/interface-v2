@@ -15,6 +15,7 @@ import {
 } from 'state/transactions/hooks';
 import { formatTokenAmount, returnTokenFromKey } from 'utils';
 import 'components/styles/StakeModal.scss';
+import { useTranslation } from 'react-i18next';
 
 interface StakeQuickModalProps {
   open: boolean;
@@ -22,6 +23,7 @@ interface StakeQuickModalProps {
 }
 
 const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
+  const { t } = useTranslation();
   const [attempting, setAttempting] = useState(false);
   const { account } = useActiveWeb3React();
   const addTransaction = useTransactionAdder();
@@ -51,9 +53,9 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
   );
 
   const onAttemptToApprove = async () => {
-    if (!lairContract) throw new Error('missing dependencies');
+    if (!lairContract) throw new Error(t('missingdependencies'));
     const liquidityAmount = parsedAmount;
-    if (!liquidityAmount) throw new Error('missing liquidity amount');
+    if (!liquidityAmount) throw new Error(t('missingliquidity'));
     return approveCallback();
   };
 
@@ -69,11 +71,11 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
             },
           );
           addTransaction(response, {
-            summary: `Stake QUICK`,
+            summary: `${t('stake')} QUICK`,
           });
           const receipt = await response.wait();
           finalizedTransaction(receipt, {
-            summary: `Deposit dQUICK`,
+            summary: `${t('deposit')} dQUICK`,
           });
           setAttempting(false);
           setStakePercent(0);
@@ -83,9 +85,7 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
         }
       } else {
         setAttempting(false);
-        throw new Error(
-          'Attempting to stake without approval or a signature. Please contact support.',
-        );
+        throw new Error(t('stakewithoutapproval'));
       }
     }
   };
@@ -94,7 +94,7 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
     <CustomModal open={open} onClose={onClose}>
       <Box paddingX={3} paddingY={4}>
         <Box className='flex items-center justify-between'>
-          <h5>Stake QUICK</h5>
+          <h5>{t('stake')} QUICK</h5>
           <CloseIcon className='cursor-pointer' onClick={onClose} />
         </Box>
         <Box
@@ -105,7 +105,9 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
         >
           <Box className='flex items-center justify-between'>
             <small>QUICK</small>
-            <small>Balance: {formatTokenAmount(quickBalance)}</small>
+            <small>
+              {t('balance')}: {formatTokenAmount(quickBalance)}
+            </small>
           </Box>
           <Box mt={2} className='flex items-center'>
             <NumericalInput
@@ -129,7 +131,7 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
                 setStakePercent(100);
               }}
             >
-              MAX
+              {t('max')}
             </span>
           </Box>
           <Box className='flex items-center'>
@@ -172,7 +174,7 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
                 }
               }}
             >
-              {approving ? 'Approving...' : 'Approve'}
+              {approving ? `${t('approving')}...` : t('approve')}
             </Button>
           </Box>
           <Box width='48%'>
@@ -183,7 +185,7 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
               }
               onClick={onStake}
             >
-              {attempting ? 'Staking...' : 'Stake'}
+              {attempting ? `${t('staking')}...` : t('stake')}
             </Button>
           </Box>
         </Box>

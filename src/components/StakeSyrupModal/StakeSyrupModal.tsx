@@ -25,6 +25,7 @@ import {
   getValueTokenDecimals,
   getPartialTokenAmount,
 } from 'utils';
+import { useTranslation } from 'react-i18next';
 
 interface StakeSyrupModalProps {
   open: boolean;
@@ -37,6 +38,7 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
   onClose,
   syrup,
 }) => {
+  const { t } = useTranslation();
   const [attempting, setAttempting] = useState(false);
   const [hash, setHash] = useState('');
   const { account, chainId, library } = useActiveWeb3React();
@@ -87,9 +89,9 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
   const stakingContract = useStakingContract(syrup.stakingRewardAddress);
 
   const onAttemptToApprove = async () => {
-    if (!library || !deadline) throw new Error('missing dependencies');
+    if (!library || !deadline) throw new Error(t('missingdependencies'));
     const liquidityAmount = parsedAmount;
-    if (!liquidityAmount) throw new Error('missing liquidity amount');
+    if (!liquidityAmount) throw new Error(t('missingliquidity'));
     return approveCallback();
   };
 
@@ -101,12 +103,12 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
           .stake(`0x${parsedAmount.raw.toString(16)}`, { gasLimit: 350000 })
           .then(async (response: TransactionResponse) => {
             addTransaction(response, {
-              summary: `Deposit ${syrup.stakingToken.symbol}`,
+              summary: `${t('deposit')} ${syrup.stakingToken.symbol}`,
             });
             try {
               const receipt = await response.wait();
               finalizedTransaction(receipt, {
-                summary: `Deposit ${syrup.stakingToken.symbol}`,
+                summary: `${t('deposit')} ${syrup.stakingToken.symbol}`,
               });
               setAttempting(false);
               setStakePercent(0);
@@ -133,7 +135,7 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
           )
           .then((response: TransactionResponse) => {
             addTransaction(response, {
-              summary: `Deposit liquidity`,
+              summary: t('depositliquidity'),
             });
             setHash(response.hash);
           })
@@ -143,9 +145,7 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
           });
       } else {
         setAttempting(false);
-        throw new Error(
-          'Attempting to stake without approval or a signature. Please contact support.',
-        );
+        throw new Error(t('stakewithoutapproval'));
       }
     }
   };
@@ -154,7 +154,9 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
     <CustomModal open={open} onClose={onClose}>
       <Box paddingX={3} paddingY={4}>
         <Box className='flex justify-between items-center'>
-          <h5>Stake {syrup.stakingToken.symbol}</h5>
+          <h5>
+            {t('stake')} {syrup.stakingToken.symbol}
+          </h5>
           <CloseIcon className='cursor-pointer' onClick={onClose} />
         </Box>
         <Box
@@ -165,7 +167,9 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
         >
           <Box className='flex items-center justify-between'>
             <small>{syrup.stakingToken.symbol}</small>
-            <small>Balance: {formatTokenAmount(maxAmountInput)}</small>
+            <small>
+              {t('balance')}: {formatTokenAmount(maxAmountInput)}
+            </small>
           </Box>
           <Box mt={2} className='flex items-center'>
             <NumericalInput
@@ -197,7 +201,7 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
                 setStakePercent(100);
               }}
             >
-              MAX
+              {t('max')}
             </span>
           </Box>
           <Box className='flex items-center'>
@@ -218,17 +222,17 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
           </Box>
         </Box>
         <Box mt={2} className='flex items-center justify-between'>
-          <p>Daily Rewards</p>
+          <p>{t('dailyRewards')}</p>
           <p>
             {hypotheticalRewardRate
               ? formatNumber(
                   Number(hypotheticalRewardRate.toExact()) * getSecondsOneDay(),
                 )
               : '-'}{' '}
-            {syrup.token.symbol} / day
+            {syrup.token.symbol} / {t('day')}
           </p>
         </Box>
-        <Box mt={3} className='flex justify-between items-center'>
+        <Box className='flex justify-between items-center'>
           <Box width='48%'>
             <Button
               className='stakeButton'
@@ -243,7 +247,7 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
                 }
               }}
             >
-              {approving ? 'Approving...' : 'Approve'}
+              {approving ? `${t('approving')}...` : t('approve')}
             </Button>
           </Box>
           <Box width='48%'>
@@ -254,7 +258,7 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
               }
               onClick={onStake}
             >
-              {attempting ? 'Staking...' : 'Stake'}
+              {attempting ? `${t('staking')}...` : t('stake')}
             </Button>
           </Box>
         </Box>

@@ -7,12 +7,18 @@ import { useIsProMode } from 'state/application/hooks';
 
 export interface PageLayoutProps {
   children: any;
+  name?: string;
 }
 
-const PageLayout: React.FC<PageLayoutProps> = ({ children }) => {
+const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
   const history = useHistory();
   const { isProMode, updateIsProMode } = useIsProMode();
-
+  const getPageWrapperClassName = () => {
+    if (isProMode) {
+      return '';
+    }
+    return name == 'prdt' ? 'pageWrapper-no-max' : 'pageWrapper';
+  };
   useEffect(() => {
     const unlisten = history.listen((location) => {
       updateIsProMode(false);
@@ -27,7 +33,7 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children }) => {
       <BetaWarningBanner />
       <Header />
       {!isProMode && <Background fallback={false} />}
-      <Box className={isProMode ? '' : 'pageWrapper'}>{children}</Box>
+      <Box className={getPageWrapperClassName()}>{children}</Box>
       <Footer />
     </Box>
   );
