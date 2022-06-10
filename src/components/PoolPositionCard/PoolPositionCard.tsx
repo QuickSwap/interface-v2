@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Box, useMediaQuery } from '@material-ui/core';
-import { useTheme } from '@material-ui/core/styles';
+import { Box } from '@material-ui/core';
 import { ChevronDown, ChevronUp } from 'react-feather';
 import { Pair } from '@uniswap/sdk';
 import { unwrappedToken } from 'utils/wrappedCurrency';
@@ -13,11 +12,11 @@ import { DoubleCurrencyLogo } from 'components';
 import { formatAPY, getAPYWithFee, getOneYearFee } from 'utils';
 import PoolPositionCardDetails from './PoolPositionCardDetails';
 import 'components/styles/PoolPositionCard.scss';
+import { Trans, useTranslation } from 'react-i18next';
 
 const PoolPositionCard: React.FC<{ pair: Pair }> = ({ pair }) => {
+  const { t } = useTranslation();
   const [bulkPairData, setBulkPairData] = useState<any>(null);
-  const { breakpoints } = useTheme();
-  const isMobile = useMediaQuery(breakpoints.down('xs'));
 
   const currency0 = unwrappedToken(pair.token0);
   const currency1 = unwrappedToken(pair.token1);
@@ -58,18 +57,11 @@ const PoolPositionCard: React.FC<{ pair: Pair }> = ({ pair }) => {
 
   return (
     <Box
-      width={1}
-      borderRadius={10}
-      className={`border-secondary2 ${
+      className={`poolPositionCard ${
         showMore ? 'bg-secondary2' : 'bg-transparent'
       }`}
-      overflow='hidden'
     >
-      <Box
-        px={isMobile ? 1.5 : 3}
-        py={isMobile ? 2 : 3}
-        className='flex items-center justify-between'
-      >
+      <Box className='poolPositionCardTop'>
         <Box className='flex items-center'>
           <DoubleCurrencyLogo
             currency0={currency0}
@@ -87,18 +79,24 @@ const PoolPositionCard: React.FC<{ pair: Pair }> = ({ pair }) => {
           className='flex items-center text-primary cursor-pointer'
           onClick={() => setShowMore(!showMore)}
         >
-          <p style={{ marginRight: 8 }}>Manage</p>
+          <p style={{ marginRight: 8 }}>{t('manage')}</p>
           {showMore ? <ChevronUp size='20' /> : <ChevronDown size='20' />}
         </Box>
       </Box>
 
       {showMore && <PoolPositionCardDetails pair={pair} />}
       {stakingInfo && !stakingInfo.ended && apyWithFee && (
-        <Box bgcolor='#404557' paddingY={0.75} paddingX={isMobile ? 2 : 3}>
+        <Box className='poolPositionAPYWrapper'>
           <small>
-            Earn <small className='text-success'>{apyWithFee}% APY</small> by
-            staking your LP tokens in {currency0.symbol?.toUpperCase()} /{' '}
-            {currency1.symbol?.toUpperCase()} Farm
+            <Trans
+              i18nKey='poolAPYDesc'
+              values={{
+                apy: apyWithFee,
+                symbol1: currency0.symbol?.toUpperCase(),
+                symbol2: currency1.symbol?.toUpperCase(),
+              }}
+              components={{ pspan: <small className='text-success' /> }}
+            />
           </small>
         </Box>
       )}

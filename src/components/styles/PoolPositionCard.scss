@@ -1,4 +1,5 @@
 @use 'styles/variables' as *;
+@use 'styles/breakpoints' as *;
 
 .poolButtonRow {
   display: flex;
@@ -38,5 +39,34 @@
     & > small {
       margin-right: 10px;
     }
+  }
+}
+.poolPositionAPYWrapper {
+  background-color: $grey12;
+  padding: 6px 24px;
+  @include media("screen", "<phone") {
+    padding: 6px 16px;
+  }
+}
+.poolPositionCardTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px;
+  @include media("screen", "<phone") {
+    padding: 16px 12px;
+  }
+}
+.poolPositionCard {
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid $secondary2;
+  overflow: hidden;
+}
+.poolPositionCardDetails {
+  padding: 24px;
+  margin-bottom: 24px;
+  @include media("screen", "<phone") {
+    padding: 12px;
   }
 }
