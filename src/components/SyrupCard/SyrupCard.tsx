@@ -9,11 +9,13 @@ import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
 import SyrupAPR from './SyrupAPR';
 import SyrupCardDetails from './SyrupCardDetails';
 import 'components/styles/SyrupCard.scss';
+import { useTranslation } from 'react-i18next';
 
 const SyrupCard: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
   syrup,
   dQUICKAPY,
 }) => {
+  const { t } = useTranslation();
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const [expanded, setExpanded] = useState(false);
@@ -57,7 +59,7 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
                     {syrup.rate >= 1000000
                       ? formatCompact(syrup.rate)
                       : syrup.rate.toLocaleString()}
-                    <span className='text-secondary'> / day</span>
+                    <span className='text-secondary'> / {t('day')}</span>
                   </span>
                 </Box>
                 <Box mt={0.25}>
@@ -68,7 +70,7 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
                           syrup.rate * syrup.rewardTokenPriceinUSD
                         ).toLocaleString()
                       : '-'}{' '}
-                    <span className='text-secondary'>/ day</span>
+                    <span className='text-secondary'>/ {t('day')}</span>
                   </span>
                 </Box>
               </Box>

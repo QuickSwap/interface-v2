@@ -9,6 +9,7 @@ import { getEtherscanLink } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import ModalBg from 'assets/images/ModalBG.svg';
 import 'components/styles/TransactionConfirmationModal.scss';
+import { useTranslation } from 'react-i18next';
 
 interface ConfirmationPendingContentProps {
   onDismiss: () => void;
@@ -19,6 +20,7 @@ export const ConfirmationPendingContent: React.FC<ConfirmationPendingContentProp
   onDismiss,
   pendingText,
 }) => {
+  const { t } = useTranslation();
   return (
     <Box padding={4}>
       <Box className='txModalHeader'>
@@ -28,9 +30,9 @@ export const ConfirmationPendingContent: React.FC<ConfirmationPendingContentProp
         <Box my={4} className='flex justify-center'>
           <CircularProgress size={80} />
         </Box>
-        <h5>Waiting For Confirmation</h5>
+        <h5>{t('waitingConfirm')}</h5>
         <p>{pendingText}</p>
-        <span>Please confirm this transaction in your wallet.</span>
+        <span>{t('confirmTxinWallet')}</span>
       </Box>
     </Box>
   );
@@ -51,10 +53,11 @@ export const TransactionSubmittedContent: React.FC<TransactionSubmittedContentPr
   txPending,
   modalContent,
 }) => {
+  const { t } = useTranslation();
   return (
     <Box padding={4}>
       <Box className='txModalHeader'>
-        <h5>Transaction {txPending ? 'Submitted' : 'Completed'}</h5>
+        <h5>{txPending ? t('txSubmitted') : t('txCompleted')}</h5>
         <CloseIcon onClick={onDismiss} />
       </Box>
       {!txPending && (
@@ -73,7 +76,9 @@ export const TransactionSubmittedContent: React.FC<TransactionSubmittedContentPr
             rel='noopener noreferrer'
             style={{ width: '48%', textDecoration: 'none' }}
           >
-            <Button className='txSubmitButton'>View on Block Explorer</Button>
+            <Button className='txSubmitButton'>
+              {t('viewonBlockExplorer')}
+            </Button>
           </a>
         )}
         <Button
@@ -81,7 +86,7 @@ export const TransactionSubmittedContent: React.FC<TransactionSubmittedContentPr
           style={{ width: '48%' }}
           onClick={onDismiss}
         >
-          Close
+          {t('close')}
         </Button>
       </Box>
     </Box>
@@ -119,6 +124,7 @@ export const TransactionErrorContent: React.FC<TransactionErrorContentProps> = (
   message,
   onDismiss,
 }) => {
+  const { t } = useTranslation();
   return (
     <Box padding={4}>
       <Box>
@@ -132,7 +138,7 @@ export const TransactionErrorContent: React.FC<TransactionErrorContentProps> = (
         </Box>
       </Box>
       <Button className='txSubmitButton' onClick={onDismiss}>
-        Dismiss
+        {t('dismiss')}
       </Button>
     </Box>
   );

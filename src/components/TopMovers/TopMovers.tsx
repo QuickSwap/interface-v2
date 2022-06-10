@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Box, useMediaQuery } from '@material-ui/core';
-import { useTheme } from '@material-ui/core/styles';
+import { Box } from '@material-ui/core';
 import { ArrowDropUp, ArrowDropDown } from '@material-ui/icons';
 import Skeleton from '@material-ui/lab/Skeleton';
 import { Token, ChainId } from '@uniswap/sdk';
@@ -8,14 +7,14 @@ import { getAddress } from '@ethersproject/address';
 import { CurrencyLogo } from 'components';
 import { getEthPrice, getTopTokens, getPriceClass, formatNumber } from 'utils';
 import 'components/styles/TopMovers.scss';
+import { useTranslation } from 'react-i18next';
 
 interface TopMoversProps {
   hideArrow?: boolean;
 }
 const TopMovers: React.FC<TopMoversProps> = ({ hideArrow = false }) => {
-  const { breakpoints } = useTheme();
+  const { t } = useTranslation();
   const [topTokens, updateTopTokens] = useState<any[] | null>(null);
-  const smallWindowSize = useMediaQuery(breakpoints.down('xs'));
 
   const topMoverTokens = useMemo(
     () => (topTokens && topTokens.length >= 5 ? topTokens.slice(0, 5) : null),
@@ -35,7 +34,7 @@ const TopMovers: React.FC<TopMoversProps> = ({ hideArrow = false }) => {
 
   return (
     <Box className='bg-palette topMoversWrapper'>
-      <p className='weight-600 text-secondary'>24h TOP MOVERS</p>
+      <p className='weight-600 text-secondary'>{t('24hTopMovers')}</p>
       <Box className='topMoversContent'>
         {topMoverTokens ? (
           <Box>
