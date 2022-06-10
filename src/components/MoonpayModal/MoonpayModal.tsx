@@ -1,5 +1,6 @@
 import React from 'react';
 import { CustomModal } from 'components';
+import { useTranslation } from 'react-i18next';
 
 interface MoonpayModalProps {
   open: boolean;
@@ -7,6 +8,7 @@ interface MoonpayModalProps {
 }
 
 const MoonpayModal: React.FC<MoonpayModalProps> = ({ open, onClose }) => {
+  const { t } = useTranslation();
   return (
     <CustomModal
       open={open}
@@ -23,7 +25,7 @@ const MoonpayModal: React.FC<MoonpayModalProps> = ({ open, onClose }) => {
           src={`https://buy.moonpay.com?apiKey=${process.env.REACT_APP_MOONPAY_KEY}`}
           width='100%'
         >
-          <p>Your browser does not support iframes.</p>
+          <p>{t('notSupportIframe')}</p>
         </iframe>
       </div>
     </CustomModal>

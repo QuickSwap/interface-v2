@@ -10,49 +10,49 @@ import { useBookmarkTokens } from 'state/application/hooks';
 import { ReactComponent as StarChecked } from 'assets/images/StarChecked.svg';
 import { ReactComponent as StarUnchecked } from 'assets/images/StarUnchecked.svg';
 import 'components/styles/TokensTable.scss';
+import { useTranslation } from 'react-i18next';
 
 interface TokensTableProps {
   data: any[];
 }
 
-const headCells = () => [
-  {
-    id: 'tokenName',
-    numeric: false,
-    label: 'Name',
-    sortKey: (item: any) => item.name,
-  },
-  {
-    id: 'tokenPrice',
-    numeric: false,
-    label: 'Price',
-    sortKey: (item: any) => item.priceUSD,
-  },
-  {
-    id: 'tokenUpPercent',
-    numeric: false,
-    label: '24H %',
-    sortKey: (item: any) => item.priceChangeUSD,
-  },
-  {
-    id: 'tokenVolume',
-    numeric: false,
-    label: '24H Volume',
-    sortKey: (item: any) => item.oneDayVolumeUSD,
-  },
-  {
-    id: 'tokenLiquidity',
-    numeric: false,
-    label: 'Liquidity',
-    align: 'right',
-    sortKey: (item: any) => item.totalLiquidityUSD,
-  },
-];
-
 const liquidityHeadCellIndex = 4;
 
 const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
-  const tokenHeadCells = headCells();
+  const { t } = useTranslation();
+  const tokenHeadCells = [
+    {
+      id: 'tokenName',
+      numeric: false,
+      label: t('name'),
+      sortKey: (item: any) => item.name,
+    },
+    {
+      id: 'tokenPrice',
+      numeric: false,
+      label: t('price'),
+      sortKey: (item: any) => item.priceUSD,
+    },
+    {
+      id: 'tokenUpPercent',
+      numeric: false,
+      label: t('24hPer'),
+      sortKey: (item: any) => item.priceChangeUSD,
+    },
+    {
+      id: 'tokenVolume',
+      numeric: false,
+      label: t('24hVol'),
+      sortKey: (item: any) => item.oneDayVolumeUSD,
+    },
+    {
+      id: 'tokenLiquidity',
+      numeric: false,
+      label: t('liquidity'),
+      align: 'right',
+      sortKey: (item: any) => item.totalLiquidityUSD,
+    },
+  ];
   const {
     bookmarkTokens,
     addBookmarkToken,
@@ -105,21 +105,21 @@ const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
         </Box>
         <Divider />
         <Box className='mobileRow'>
-          <p>Price</p>
+          <p>{t('price')}</p>
           <p>${formatNumber(token.priceUSD)}</p>
         </Box>
         <Box className='mobileRow'>
-          <p>24H %</p>
+          <p>{t('24hPer')}</p>
           <Box className={`priceChangeWrapper ${priceClass}`}>
             <small>{getFormattedPrice(Number(token.priceChangeUSD))}%</small>
           </Box>
         </Box>
         <Box className='mobileRow'>
-          <p>24H Volume</p>
+          <p>{t('24hVol')}</p>
           <p>${Number(token.oneDayVolumeUSD).toLocaleString()}</p>
         </Box>
         <Box className='mobileRow'>
-          <p>Liquidity</p>
+          <p>{t('liquidity')}</p>
           <p>${Number(token.totalLiquidityUSD).toLocaleString()}</p>
         </Box>
       </Box>

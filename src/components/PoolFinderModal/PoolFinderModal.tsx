@@ -16,6 +16,7 @@ import { currencyId } from 'utils';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 import { Link } from 'react-router-dom';
 import 'components/styles/PoolFinderModal.scss';
+import { useTranslation } from 'react-i18next';
 
 enum Fields {
   TOKEN0 = 0,
@@ -28,6 +29,7 @@ interface PoolFinderModalProps {
 }
 
 const PoolFinderModal: React.FC<PoolFinderModalProps> = ({ open, onClose }) => {
+  const { t } = useTranslation();
   const { account } = useActiveWeb3React();
 
   const [showSearch, setShowSearch] = useState<boolean>(false);
@@ -88,7 +90,7 @@ const PoolFinderModal: React.FC<PoolFinderModalProps> = ({ open, onClose }) => {
             className='text-secondary cursor-pointer'
             onClick={onClose}
           />
-          <h6>Import Pool</h6>
+          <h6>{t('importPool')}</h6>
           <CloseIcon className='cursor-pointer' onClick={onClose} />
         </Box>
         <Box
@@ -107,7 +109,7 @@ const PoolFinderModal: React.FC<PoolFinderModalProps> = ({ open, onClose }) => {
               </p>
             </Box>
           ) : (
-            <p className='weight-600'>Select a Token</p>
+            <p className='weight-600'>{t('selectToken')}</p>
           )}
         </Box>
         <Box my={1} className='flex justify-center'>
@@ -128,14 +130,14 @@ const PoolFinderModal: React.FC<PoolFinderModalProps> = ({ open, onClose }) => {
               </p>
             </Box>
           ) : (
-            <p className='weight-600'>Select a Token</p>
+            <p className='weight-600'>{t('selectToken')}</p>
           )}
         </Box>
         {hasPosition && (
           <Box textAlign='center' mt={2}>
-            <p>Pool Found!</p>
+            <p>{t('poolFound')}!</p>
             <p className='cursor-pointer text-primary' onClick={onClose}>
-              Manage this pool.
+              {t('manageThisPool')}.
             </p>
           </Box>
         )}
@@ -146,7 +148,7 @@ const PoolFinderModal: React.FC<PoolFinderModalProps> = ({ open, onClose }) => {
                 <MinimalPositionCard pair={pair} border='none' />
               ) : (
                 <Box textAlign='center'>
-                  <p>You don’t have liquidity in this pool yet.</p>
+                  <p>{t('noLiquidityinPool')}.</p>
                   <Link
                     to={`/pools?currency0=${currencyId(
                       currency0,
@@ -154,13 +156,13 @@ const PoolFinderModal: React.FC<PoolFinderModalProps> = ({ open, onClose }) => {
                     className='text-primary no-decoration'
                     onClick={onClose}
                   >
-                    <p>Add liquidity.</p>
+                    <p>{t('addLiquidity')}.</p>
                   </Link>
                 </Box>
               )
             ) : validPairNoLiquidity ? (
               <Box textAlign='center'>
-                <p>No pool found.</p>
+                <p>{t('nopoolFound')}.</p>
                 <Link
                   to={`/pools?currency0=${currencyId(
                     currency0,
@@ -168,19 +170,19 @@ const PoolFinderModal: React.FC<PoolFinderModalProps> = ({ open, onClose }) => {
                   className='text-primary no-decoration'
                   onClick={onClose}
                 >
-                  Create pool.
+                  {t('createPool')}.
                 </Link>
               </Box>
             ) : pairState === PairState.INVALID ? (
-              <p>Invalid pair.</p>
+              <p>{t('invalidPair')}.</p>
             ) : pairState === PairState.LOADING ? (
-              <p>Loading...</p>
+              <p>{t('loading')}...</p>
             ) : null
           ) : (
             <p>
               {!account
-                ? 'Connect to a wallet to find pools'
-                : 'Select a token to find your liquidity.'}
+                ? t('connectWalletToFindPool')
+                : t('selectTokenFindLiquidity')}
             </p>
           )}
         </Box>

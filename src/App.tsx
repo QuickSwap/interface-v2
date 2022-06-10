@@ -14,6 +14,7 @@ const LandingPage = lazy(() => import('./pages/LandingPage'));
 const PoolsPage = lazy(() => import('./pages/PoolsPage'));
 const SwapPage = lazy(() => import('./pages/SwapPage'));
 const ConvertQUICKPage = lazy(() => import('./pages/ConvertQUICKPage'));
+const PrdtPage = lazy(() => import('./pages/PrdtPage'));
 const AnalyticsTokenDetails = lazy(() =>
   import('./pages/AnalyticsTokenDetails'),
 );
@@ -140,6 +141,11 @@ const App: React.FC = () => {
                     <Route exact path='/convert'>
                       <PageLayout>
                         <ConvertQUICKPage />
+                      </PageLayout>
+                    </Route>
+                    <Route exact path='/prdt'>
+                      <PageLayout name='prdt'>
+                        <PrdtPage />
                       </PageLayout>
                     </Route>
                     <Route exact path='/analytics'>

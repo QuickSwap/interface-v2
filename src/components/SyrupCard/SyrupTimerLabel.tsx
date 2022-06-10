@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Box, useMediaQuery } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
+import { useTranslation } from 'react-i18next';
 
 const SyrupTimerLabel: React.FC<{ exactEnd: number; isEnded: boolean }> = ({
   exactEnd,
   isEnded,
 }) => {
+  const { t } = useTranslation();
   const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
@@ -38,13 +40,12 @@ const SyrupTimerLabel: React.FC<{ exactEnd: number; isEnded: boolean }> = ({
     <>
       {!isEnded && Number.isFinite(timeRemaining) && (
         <Box
-          display={isMobile ? 'flex' : 'unset'}
-          flexWrap='wrap'
-          alignItems='center'
-          justifyContent='space-between'
+          className={
+            isMobile ? 'flex flex-wrap items-center justify-center' : ''
+          }
         >
           <p className={`text-secondary ${isMobile ? 'small' : 'caption'}`}>
-            Time Remaining
+            {t('timeRemaining')}
           </p>
           <small className={isMobile ? '' : 'text-secondary'}>
             {`${days}d ${hours
@@ -56,7 +57,7 @@ const SyrupTimerLabel: React.FC<{ exactEnd: number; isEnded: boolean }> = ({
         </Box>
       )}
       {(isEnded || !Number.isFinite(timeRemaining)) && (
-        <small className='text-secondary'>Rewards Ended</small>
+        <small className='text-secondary'>{t('rewardsEnded')}</small>
       )}
     </>
   );

@@ -28,6 +28,19 @@ body {
   }
 }
 
+.pageWrapper-no-max {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  margin: 24px auto;
+  padding: 0 32px;
+  @include media("screen", "<phone") {
+    padding: 0 12px;
+  }
+}
+
 .pageHeading {
   display: flex;
   justify-content: space-between;
@@ -46,6 +59,10 @@ body {
     width: 100%;
     min-width: 1200px;
   }
+}
+
+.hidden {
+  display: none;
 }
 
 .helpWrapper {

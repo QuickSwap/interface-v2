@@ -10,8 +10,10 @@ import { CurrencyLogo, DoubleCurrencyLogo } from 'components';
 import { ChainId, Token } from '@uniswap/sdk';
 import { getAddress } from '@ethersproject/address';
 import 'components/styles/SearchWidget.scss';
+import { useTranslation } from 'react-i18next';
 
 const Search: React.FC = () => {
+  const { t } = useTranslation();
   const history = useHistory();
   const [searchVal, setSearchVal] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
@@ -211,7 +213,7 @@ const Search: React.FC = () => {
     <Box position='relative'>
       <Box className='searchWidgetInput'>
         <input
-          placeholder='Search for tokens, pairs, etc…'
+          placeholder={t('searchTokenPair')}
           value={searchVal}
           ref={menuRef}
           onFocus={() => setMenuOpen(true)}
@@ -223,7 +225,7 @@ const Search: React.FC = () => {
       </Box>
       {menuOpen && (
         <div ref={wrapperRef} className='searchWidgetContent'>
-          <p>Pairs</p>
+          <p>{t('pairs')}</p>
           {filteredPairs.slice(0, pairsShown).map((val, ind) => {
             const currency0 = new Token(
               ChainId.MATIC,
@@ -248,7 +250,7 @@ const Search: React.FC = () => {
                   size={28}
                 />
                 <small style={{ marginLeft: 8 }}>
-                  {val.token0.symbol} - {val.token1.symbol} Pair
+                  {val.token0.symbol} - {val.token1.symbol} {t('pair')}
                 </small>
               </Box>
             );
@@ -258,9 +260,9 @@ const Search: React.FC = () => {
             onClick={() => setPairsShown(pairsShown + 5)}
             margin='8px 0'
           >
-            <small>Show More</small>
+            <small>{t('showMore')}</small>
           </Box>
-          <p>Tokens</p>
+          <p>{t('tokens')}</p>
           {filteredTokens.slice(0, tokensShown).map((val, ind) => {
             const currency = new Token(
               ChainId.MATIC,
@@ -288,7 +290,7 @@ const Search: React.FC = () => {
             mt={1}
             onClick={() => setTokensShown(tokensShown + 5)}
           >
-            <small>Show More</small>
+            <small>{t('showMore')}</small>
           </Box>
         </div>
       )}

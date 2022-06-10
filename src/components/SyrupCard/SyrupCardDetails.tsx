@@ -66,12 +66,12 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
         .getReward({ gasLimit: 350000 })
         .then(async (response: TransactionResponse) => {
           addTransaction(response, {
-            summary: `Claim accumulated` + syrup.token.symbol + `rewards`,
+            summary: t('claimrewards1', { symbol: syrup.token.symbol }),
           });
           try {
             const receipt = await response.wait();
             finalizedTransaction(receipt, {
-              summary: `Claim accumulated` + syrup.token.symbol + `rewards`,
+              summary: t('claimrewards1', { symbol: syrup.token.symbol }),
             });
             setAttemptingClaim(false);
           } catch (e) {
@@ -92,12 +92,12 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
         .exit({ gasLimit: 300000 })
         .then(async (response: TransactionResponse) => {
           addTransaction(response, {
-            summary: `Withdraw deposited liquidity`,
+            summary: t('withdrawliquidity'),
           });
           try {
             const receipt = await response.wait();
             finalizedTransaction(receipt, {
-              summary: `Withdraw deposited dQUICK`,
+              summary: t('withdrawliquidity'),
             });
             setAttemptingUnstake(false);
           } catch (e) {
@@ -113,7 +113,7 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
 
   const StakeButton = () => (
     <Box className='syrupButton' onClick={() => setOpenStakeModal(true)}>
-      <small>Stake</small>
+      <small>{t('stake')}</small>
     </Box>
   );
 
@@ -126,7 +126,7 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
         }
       }}
     >
-      <small>{attemptingUnstake ? 'Unstaking...' : 'Unstake'}</small>
+      <small>{attemptingUnstake ? `${t('unstaking')}...` : t('unstake')}</small>
     </Box>
   );
 
@@ -139,7 +139,7 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
         }
       }}
     >
-      <small>{attemptingClaim ? 'Claiming...' : 'Claim'}</small>
+      <small>{attemptingClaim ? `${t('claiming')}...` : t('claim')}</small>
     </Box>
   );
 
@@ -179,7 +179,7 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
                 </Box>
                 <Box className='flex justify-between' mb={3}>
                   <Box className='flex items-center'>
-                    <small className='text-secondary'>APR:</small>
+                    <small className='text-secondary'>{t('apr')}:</small>
                     <Box ml={0.5} height={16}>
                       <img src={CircleInfoIcon} alt={'arrow up'} />
                     </Box>

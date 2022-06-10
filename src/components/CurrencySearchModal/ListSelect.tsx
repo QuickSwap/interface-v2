@@ -14,6 +14,7 @@ import listVersionLabel from 'utils/listVersionLabel';
 import { parseENSAddress } from 'utils/parseENSAddress';
 import uriToHttp from 'utils/uriToHttp';
 import { QuestionHelper, ListLogo } from 'components';
+import { useTranslation } from 'react-i18next';
 
 function ListOrigin({ listUrl }: { listUrl: string }) {
   const ensName = useMemo(() => parseENSAddress(listUrl)?.ensName, [listUrl]);
@@ -47,6 +48,7 @@ const ListRow = memo(function ListRow({
   listUrl: string;
   onBack: () => void;
 }) {
+  const { t } = useTranslation();
   const listsByUrl = useSelector<AppState, AppState['lists']['byUrl']>(
     (state) => state.lists.byUrl,
   );
@@ -85,11 +87,7 @@ const ListRow = memo(function ListRow({
       action: 'Start Remove List',
       label: listUrl,
     });
-    if (
-      window.prompt(
-        `Please confirm you would like to remove this list by typing REMOVE`,
-      ) === `REMOVE`
-    ) {
+    if (window.prompt(t('confirmRemoveList')) === t('REMOVE').toUpperCase()) {
       ReactGA.event({
         category: 'Lists',
         action: 'Confirm Remove List',
@@ -97,7 +95,7 @@ const ListRow = memo(function ListRow({
       });
       dispatch(removeList(listUrl));
     }
-  }, [dispatch, listUrl]);
+  }, [dispatch, listUrl, t]);
 
   if (!list) return null;
 
@@ -139,16 +137,18 @@ const ListRow = memo(function ListRow({
                 target='_blank'
                 rel='noopener noreferrer'
               >
-                View list
+                {t('viewList')}
               </a>
               <Button
                 onClick={handleRemoveList}
                 disabled={Object.keys(listsByUrl).length === 1}
               >
-                Remove list
+                {t('removeList')}
               </Button>
               {pending && (
-                <Button onClick={handleAcceptListUpdate}>Update list</Button>
+                <Button onClick={handleAcceptListUpdate}>
+                  {t('updateList')}
+                </Button>
               )}
             </Box>
           </Box>
@@ -166,10 +166,10 @@ const ListRow = memo(function ListRow({
             fontSize: '14px',
           }}
         >
-          Selected
+          {t('selected')}
         </Button>
       ) : (
-        <Button onClick={selectThisList}>Select</Button>
+        <Button onClick={selectThisList}>{t('select')}</Button>
       )}
     </Box>
   );
@@ -181,6 +181,7 @@ interface ListSelectProps {
 }
 
 const ListSelect: React.FC<ListSelectProps> = ({ onDismiss, onBack }) => {
+  const { t } = useTranslation();
   const [listUrlInput, setListUrlInput] = useState<string>('');
 
   const dispatch = useDispatch<AppDispatch>();
@@ -261,7 +262,7 @@ const ListSelect: React.FC<ListSelectProps> = ({ onDismiss, onBack }) => {
     <Box className='manageList'>
       <Box className='header'>
         <ArrowLeft onClick={onBack} />
-        <p>Manage Lists</p>
+        <p>{t('manageLists')}</p>
         <CloseIcon onClick={onDismiss} />
       </Box>
 
@@ -269,21 +270,21 @@ const ListSelect: React.FC<ListSelectProps> = ({ onDismiss, onBack }) => {
 
       <Box className='content'>
         <Box>
-          <p>Add a list</p>
-          <QuestionHelper text='Token lists are an open specification for lists of ERC20 tokens. You can use any token list by entering its URL below. Beware that third party token lists can contain fake or malicious ERC20 tokens.' />
+          <p>{t('addList')}</p>
+          <QuestionHelper text={t('addListHelper')} />
         </Box>
         <Box>
           <input
             type='text'
             id='list-add-input'
-            placeholder='https:// or ipfs:// or ENS name'
+            placeholder={t('listPlaceholder')}
             value={listUrlInput}
             onChange={handleInput}
             onKeyDown={handleEnterKey}
             style={{ height: '2.75rem', borderRadius: 12, padding: '12px' }}
           />
           <Button onClick={handleAddList} disabled={!validUrl}>
-            Add
+            {t('add')}
           </Button>
         </Box>
         {addError ? (
