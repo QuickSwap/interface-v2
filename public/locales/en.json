@@ -324,5 +324,7 @@
   "removeSend": "Remove send",
   "addSendOptional": "Add a send (optional)",
   "recipient": "Recipient",
-  "walletOrENS": "Wallet Address or ENS name"
+  "walletOrENS": "Wallet Address or ENS name",
+  "new": "new",
+  "lend": "Lend"
 }

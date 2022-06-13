@@ -85,7 +85,7 @@ const Header: React.FC = () => {
     },
     {
       link: '/lend',
-      text: 'Lend',
+      text: t('lend'),
       id: 'lend-page-link',
       isNew: true,
     },
@@ -143,26 +143,8 @@ const Header: React.FC = () => {
                 pathname.indexOf(val.link) > -1 ? 'active' : 'menuItem'
               }
             >
-              <Box display={'flex'} alignItems={'center'} gridGap={'4px'}>
-                {val.text}
-                {val.isNew ? (
-                  <Box
-                    bgcolor='#1f4627'
-                    width='21px'
-                    height='10px'
-                    fontSize={'6px'}
-                    color={'#64dd17'}
-                    display={'flex'}
-                    alignItems={'center'}
-                    justifyContent={'center'}
-                  >
-                    new
-                  </Box>
-                ) : (
-                  ''
-                )}
-              </Box>
               <small>{val.text}</small>
+              {val.isNew && <small className='newTag'>{t('new')}</small>}
             </Link>
           ))}
           <Box display='flex' className='menuItem'>
