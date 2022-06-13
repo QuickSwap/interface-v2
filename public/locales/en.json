@@ -61,7 +61,7 @@
   "staked": "Staked",
   "earned": "Earned",
   "deposits": "Deposits",
-  "prdtWarning": "The prediction market, chat and all components on this page are designed an hosted by an external third party, use caution when using the compnents as it is not controlled or maintained by Quickswap",
+  "prdtWarning": "The prediction market, chat and all components on this page are designed and hosted by an external third party, use caution when using the components as it is not controlled or maintained by Quickswap",
   "withdrawliquidity": "Withdraw deposited liquidity",
   "claimrewards": "Claim accumulated rewards",
   "claimrewards1": "Claim accumulated {{ symbol }} rewards",
