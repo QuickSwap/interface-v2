@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useActiveWeb3React } from '../index';
 import { MarketSDK } from 'market-sdk';
 import Web3 from 'web3';

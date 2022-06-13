@@ -54,7 +54,6 @@
   align-items: center;
   height: 100%;
   & .menuItem {
-    border-radius: 10px;
     cursor: pointer;
     position: relative;
     & .subMenu {
@@ -85,6 +84,8 @@
     margin-right: 12px;
     color: $textSecondary;
     border-radius: 10px;
+    display: flex;
+    align-items: center;
     & p {
       letter-spacing: normal;
     }
@@ -227,5 +228,9 @@
   height: 10px;
   font-size: 6px;
   border-radius: 4px;
-  color: $successMain
+  color: $successMain;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: 4px;
 }
