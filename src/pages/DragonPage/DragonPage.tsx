@@ -9,18 +9,39 @@ import DragonsLair from './DragonsLair';
 import DragonsSyrup from './DragonsSyrup';
 import 'pages/styles/dragon.scss';
 import { useTranslation } from 'react-i18next';
+import { useLairInfo } from 'state/stake/hooks';
 
 const DragonPage: React.FC = () => {
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const { t } = useTranslation();
+  const lairInfo = useLairInfo();
+  const showOld =
+    Number(lairInfo?.dQUICKBalance?.toFixed(0)) === 0 ? false : true;
 
   return (
     <Box width='100%' mb={3}>
       <DragonAlert />
       <Grid container spacing={4}>
         <Grid item xs={12} sm={12} md={4}>
-          <Box className='dragonWrapper'>
+          {showOld && (
+            <Box className='dragonWrapper'>
+              <Box className='dragonBg'>
+                <img src={DragonBg2} alt='Old Dragon Lair' />
+              </Box>
+              <img
+                src={DragonLairMask}
+                alt='Dragon Mask'
+                className='dragonMask'
+              />
+              <Box className='dragonTitle'>
+                <h5>{t('oldDragonLair')}</h5>
+                <small>{t('oldDragonLairTitle')}</small>
+              </Box>
+              <DragonsLair isNew={false} />
+            </Box>
+          )}
+          <Box className='dragonWrapper' style={{ marginTop: '10px' }}>
             <Box className='dragonBg'>
               <img src={DragonBg2} alt='Dragon Lair' />
             </Box>
@@ -33,7 +54,7 @@ const DragonPage: React.FC = () => {
               <h5>{t('dragonLair')}</h5>
               <small>{t('dragonLairTitle')}</small>
             </Box>
-            <DragonsLair />
+            <DragonsLair isNew={true} />
           </Box>
         </Grid>
         <Grid item xs={12} sm={12} md={8}>
