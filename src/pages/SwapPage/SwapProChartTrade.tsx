@@ -1,5 +1,4 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 import SwapProChart from './SwapProChart';
 import { Token } from '@uniswap/sdk';
 import { Box } from '@material-ui/core';
@@ -7,53 +6,10 @@ import { Height } from '@material-ui/icons';
 import { ReflexContainer, ReflexSplitter, ReflexElement } from 'react-reflex';
 import 'react-reflex/styles.css';
 import { formatNumber, shortenTx, getEtherscanLink } from 'utils';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { useActiveWeb3React } from 'hooks';
 import { TableVirtuoso } from 'react-virtuoso';
-
-const useStyles = makeStyles(({ palette }) => ({
-  splitPane: {
-    '& [data-type=Resizer]': {
-      margin: '8px 0 0',
-    },
-  },
-  tradeTable: {
-    width: '100%',
-    '& thead tr th, & tbody tr td': {
-      borderRight: `1px solid ${palette.divider}`,
-      '&:last-child': {
-        borderRight: 'none',
-      },
-    },
-    '& thead tr th': {
-      position: 'sticky',
-      top: 0,
-      textTransform: 'uppercase',
-      padding: '8px 16px',
-      background: palette.secondary.main,
-      color: palette.text.primary,
-      fontWeight: 'normal',
-    },
-    '& tbody td.sell': {
-      color: palette.error.main,
-      '& a': {
-        color: palette.error.main,
-      },
-    },
-    '& tbody td.buy': {
-      color: palette.success.main,
-      '& a': {
-        color: palette.success.main,
-      },
-    },
-    '& tbody tr td': {
-      padding: '8px 16px',
-      '& a': {
-        textDecoration: 'none',
-      },
-    },
-  },
-}));
+import { useTranslation } from 'react-i18next';
 
 const SwapProChartTrade: React.FC<{
   showChart: boolean;
@@ -72,27 +28,24 @@ const SwapProChartTrade: React.FC<{
   pairTokenReversed,
   transactions,
 }) => {
-  const classes = useStyles();
-
   const { chainId } = useActiveWeb3React();
+  const { t } = useTranslation();
 
   const TradesTable = () => (
     <TableVirtuoso
       data={transactions}
       components={{
-        Table: ({ ...props }) => (
-          <table className={classes.tradeTable} {...props} />
-        ),
+        Table: ({ ...props }) => <table className='tradeTable' {...props} />,
       }}
       fixedHeaderContent={() => (
         <tr>
-          <th align='left'>date</th>
-          <th align='left'>type</th>
-          <th align='right'>usd</th>
+          <th align='left'>{t('date')}</th>
+          <th align='left'>{t('type')}</th>
+          <th align='right'>{t('usd')}</th>
           <th align='right'>{token1.symbol}</th>
           <th align='right'>{token2.symbol}</th>
-          <th align='right'>price</th>
-          <th align='right'>txn</th>
+          <th align='right'>{t('price')}</th>
+          <th align='right'>{t('txn')}</th>
         </tr>
       )}
       itemContent={(index, tx) => {
@@ -113,9 +66,9 @@ const SwapProChartTrade: React.FC<{
         return (
           <>
             <td align='left'>
-              {moment
+              {dayjs
                 .unix(tx.transaction.timestamp)
-                .format('MMMM Do h:mm:ss a')}
+                .format('MMM DD, hh:mm:ss a')}
             </td>
             <td className={txType} align='left'>
               {txType.toUpperCase()}
@@ -171,9 +124,7 @@ const SwapProChartTrade: React.FC<{
           <Box
             width={1}
             height='2px'
-            display='flex'
-            justifyContent='center'
-            alignItems='center'
+            className='flex justify-center items-center'
           >
             <Height />
           </Box>

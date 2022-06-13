@@ -1,8 +1,8 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { Box, Grid, Typography } from '@material-ui/core';
+import React, { useEffect, useState } from 'react';
+import { Box, Grid } from '@material-ui/core';
 import Skeleton from '@material-ui/lab/Skeleton';
 import { ArrowDropUp, ArrowDropDown } from '@material-ui/icons';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { useTheme } from '@material-ui/core/styles';
 import { CurrencyLogo } from 'components';
 import { useBlockNumber, useTokenDetails } from 'state/application/hooks';
 import useCopyClipboard from 'hooks/useCopyClipboard';
@@ -19,20 +19,12 @@ import { LineChart } from 'components';
 import { Token } from '@uniswap/sdk';
 import dayjs from 'dayjs';
 import { unwrappedToken } from 'utils/wrappedCurrency';
-
-const useStyles = makeStyles(({ palette }) => ({
-  success: {
-    color: palette.success.main,
-  },
-  danger: {
-    color: palette.error.main,
-  },
-}));
+import { useTranslation } from 'react-i18next';
 
 const SwapTokenDetails: React.FC<{
   token: Token;
 }> = ({ token }) => {
-  const classes = useStyles();
+  const { t } = useTranslation();
   const currency = unwrappedToken(token);
   const tokenAddress = token.address;
   const { palette } = useTheme();
@@ -84,30 +76,22 @@ const SwapTokenDetails: React.FC<{
 
   return (
     <Box>
-      <Box
-        display='flex'
-        alignItems='center'
-        justifyContent='space-between'
-        px={2}
-        py={1.5}
-      >
-        <Box display='flex' alignItems='center'>
+      <Box className='flex items-center justify-between' px={2} py={1.5}>
+        <Box className='flex items-center'>
           <CurrencyLogo currency={currency} size='28px' />
           <Box ml={1}>
-            <Typography variant='body2'>{currency.symbol}</Typography>
+            <small>{currency.symbol}</small>
             {tokenData ? (
-              <Box display='flex' alignItems='center'>
-                <Typography variant='body2'>
-                  ${formatNumber(tokenData.priceUSD)}
-                </Typography>
+              <Box className='flex items-center'>
+                <small>${formatNumber(tokenData.priceUSD)}</small>
                 <Box
                   ml={0.5}
-                  display='flex'
-                  alignItems='center'
-                  className={priceUp ? classes.success : classes.danger}
+                  className={`flex items-center ${
+                    priceUp ? 'text-success' : 'text-error'
+                  }`}
                 >
                   {priceUp ? <ArrowDropUp /> : <ArrowDropDown />}
-                  <Typography variant='body2'>{priceUpPercent}%</Typography>
+                  <small>{priceUpPercent}%</small>
                 </Box>
               </Box>
             ) : (
@@ -132,21 +116,14 @@ const SwapTokenDetails: React.FC<{
           <Skeleton variant='rect' width={88} height={47} />
         )}
       </Box>
-      <Box
-        borderTop={`1px solid ${palette.secondary.light}`}
-        borderBottom={`1px solid ${palette.secondary.light}`}
-        px={2}
-      >
+      <Box className='border-top-secondary1 border-bottom-secondary1' px={2}>
         <Grid container>
           <Grid item xs={6}>
-            <Box borderRight={`1px solid ${palette.secondary.light}`} py={1}>
+            <Box className='border-right-secondary1' py={1}>
               {tokenData ? (
-                <Typography
-                  variant='body2'
-                  style={{ color: palette.text.secondary }}
-                >
-                  TVL: {formatCompact(tokenData?.totalLiquidityUSD)}
-                </Typography>
+                <small className='text-secondary'>
+                  {t('tvl')}: {formatCompact(tokenData?.totalLiquidityUSD)}
+                </small>
               ) : (
                 <Skeleton variant='rect' width={100} height={16} />
               )}
@@ -155,12 +132,9 @@ const SwapTokenDetails: React.FC<{
           <Grid item xs={6}>
             <Box py={1} pl={2}>
               {tokenData ? (
-                <Typography
-                  variant='body2'
-                  style={{ color: palette.text.secondary }}
-                >
-                  24h VOL: {formatCompact(tokenData?.oneDayVolumeUSD)}
-                </Typography>
+                <small className='text-secondary'>
+                  {t('24hVol1')}: {formatCompact(tokenData?.oneDayVolumeUSD)}
+                </small>
               ) : (
                 <Skeleton variant='rect' width={100} height={16} />
               )}
@@ -168,26 +142,19 @@ const SwapTokenDetails: React.FC<{
           </Grid>
         </Grid>
       </Box>
-      <Box
-        display='flex'
-        justifyContent='space-between'
-        alignItems='center'
-        py={1}
-        px={2}
-      >
+      <Box className='flex justify-between items-center' py={1} px={2}>
         <a
           href={`https://polygonscan.com/token/${tokenAddress}`}
           target='_blank'
           rel='noopener noreferrer'
-          style={{ textDecoration: 'none' }}
+          className='no-decoration'
         >
-          <Typography variant='body2' style={{ color: palette.primary.main }}>
-            {shortenAddress(tokenAddress)}
-          </Typography>
+          <small className='text-primary'>{shortenAddress(tokenAddress)}</small>
         </a>
         <Box
-          display='flex'
-          style={{ cursor: 'pointer', opacity: isCopied ? 0.5 : 1 }}
+          className={`flex cursor-pointer${
+            isCopied ? ' opacity-disabled' : ''
+          }`}
           onClick={() => {
             setCopied(tokenAddress);
           }}

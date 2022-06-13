@@ -7,6 +7,8 @@ import {
 } from 'components';
 import SwapModalHeader from './SwapModalHeader';
 import { formatTokenAmount } from 'utils';
+import 'components/styles/ConfirmSwapModal.scss';
+import { useTranslation } from 'react-i18next';
 
 /**
  * Returns true if the trade requires a confirmation of details before we can submit it
@@ -54,6 +56,7 @@ const ConfirmSwapModal: React.FC<ConfirmSwapModalProps> = ({
   txHash,
   txPending,
 }) => {
+  const { t } = useTranslation();
   const showAcceptChanges = useMemo(
     () =>
       Boolean(
@@ -77,11 +80,12 @@ const ConfirmSwapModal: React.FC<ConfirmSwapModalProps> = ({
   }, [allowedSlippage, onAcceptChanges, showAcceptChanges, trade, onConfirm]);
 
   // text to show while loading
-  const pendingText = `Swapping ${formatTokenAmount(trade?.inputAmount)} ${
-    trade?.inputAmount?.currency?.symbol
-  } for ${formatTokenAmount(trade?.outputAmount)} ${
-    trade?.outputAmount?.currency?.symbol
-  }`;
+  const pendingText = t('swappingFor', {
+    amount1: formatTokenAmount(trade?.inputAmount),
+    symbol1: trade?.inputAmount?.currency?.symbol,
+    amount2: formatTokenAmount(trade?.outputAmount),
+    symbol2: trade?.outputAmount?.currency?.symbol,
+  });
 
   const confirmationContent = useCallback(
     () =>
@@ -92,12 +96,12 @@ const ConfirmSwapModal: React.FC<ConfirmSwapModalProps> = ({
         />
       ) : (
         <ConfirmationModalContent
-          title='Confirm Transaction'
+          title={t('confirmTx')}
           onDismiss={onDismiss}
           content={modalHeader}
         />
       ),
-    [onDismiss, modalHeader, swapErrorMessage],
+    [t, onDismiss, modalHeader, swapErrorMessage],
   );
 
   return (
@@ -109,11 +113,7 @@ const ConfirmSwapModal: React.FC<ConfirmSwapModalProps> = ({
       txPending={txPending}
       content={confirmationContent}
       pendingText={pendingText}
-      modalContent={
-        txPending
-          ? 'Submitted transaction to swap your tokens'
-          : 'Successfully swapped your tokens'
-      }
+      modalContent={txPending ? t('submittedTxSwap') : t('swapSuccess')}
     />
   );
 };

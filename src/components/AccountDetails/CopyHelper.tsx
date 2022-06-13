@@ -1,19 +1,8 @@
 import React from 'react';
-import { Box, Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { Box } from '@material-ui/core';
 import useCopyClipboard from 'hooks/useCopyClipboard';
 import { CheckCircle, Copy } from 'react-feather';
-
-const useStyles = makeStyles(({ palette }) => ({
-  copyIcon: {
-    color: palette.text.primary,
-    display: 'flex',
-    cursor: 'pointer',
-    '&:hover, &:active, &:focus': {
-      color: 'white',
-    },
-  },
-}));
+import { useTranslation } from 'react-i18next';
 
 interface CopyHelperProps {
   toCopy: string;
@@ -22,16 +11,14 @@ interface CopyHelperProps {
 
 const CopyHelper: React.FC<CopyHelperProps> = ({ toCopy, children }) => {
   const [isCopied, setCopied] = useCopyClipboard();
-  const classes = useStyles();
+  const { t } = useTranslation();
 
   return (
-    <Box className={classes.copyIcon} onClick={() => setCopied(toCopy)}>
+    <Box className='copyIcon' onClick={() => setCopied(toCopy)}>
       {isCopied ? (
         <>
           <CheckCircle size='20' />
-          <Typography style={{ marginLeft: 4 }} variant='body2'>
-            Copied
-          </Typography>
+          <small>{t('copied')}</small>
         </>
       ) : (
         <Copy size='20' />

@@ -1,14 +1,13 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useRouteMatch } from 'react-router-dom';
-import { Box, Typography } from '@material-ui/core';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { Box } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import {
   formatCompact,
   getPairChartData,
   getFormattedPrice,
-  getPriceColor,
+  getPriceClass,
   getChartDates,
   getChartStartTime,
   getLimitedData,
@@ -16,25 +15,14 @@ import {
 } from 'utils';
 import { AreaChart, ChartType } from 'components';
 import { GlobalConst, GlobalData } from 'constants/index';
-
-const useStyles = makeStyles(() => ({
-  priceChangeWrapper: {
-    height: 25,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 16,
-    padding: '0 8px',
-  },
-}));
+import { useTranslation } from 'react-i18next';
 
 const CHART_VOLUME = 0;
 const CHART_LIQUIDITY = 1;
 const CHART_FEES = 2;
 
 const AnalyticsPairChart: React.FC<{ pairData: any }> = ({ pairData }) => {
-  const classes = useStyles();
-  const { palette } = useTheme();
+  const { t } = useTranslation();
   const match = useRouteMatch<{ id: string }>();
   const pairAddress = match.params.id;
   const [pairChartData, setPairChartData] = useState<any[] | null>(null);
@@ -59,7 +47,7 @@ const AnalyticsPairChart: React.FC<{ pairData: any }> = ({ pairData }) => {
       : '-';
   const [chartIndex, setChartIndex] = useState(CHART_VOLUME);
   const chartIndexes = [CHART_VOLUME, CHART_LIQUIDITY, CHART_FEES];
-  const chartIndexTexts = ['Volume', 'Liquidity', 'Fees'];
+  const chartIndexTexts = [t('volume'), t('liquidity'), t('fees')];
 
   const chartData = useMemo(() => {
     if (!pairChartData) return;
@@ -127,43 +115,32 @@ const AnalyticsPairChart: React.FC<{ pairData: any }> = ({ pairData }) => {
     fetchPairChartData();
   }, [pairAddress, durationIndex]);
 
-  const currentPercentColor = getPriceColor(Number(currentPercent), palette);
+  const currentPercentClass = getPriceClass(Number(currentPercent));
 
   return (
     <>
-      <Box display='flex' flexWrap='wrap' justifyContent='space-between'>
+      <Box className='flex flex-wrap justify-between'>
         <Box mt={1.5}>
-          <Typography variant='caption'>
-            {chartIndexTexts[chartIndex]}
-          </Typography>
+          <span>{chartIndexTexts[chartIndex]}</span>
           <Box mt={1}>
             {currentPercent && currentData ? (
               <>
-                <Box display='flex' alignItems='center'>
-                  <Typography
-                    variant='h4'
-                    style={{ color: palette.text.primary }}
-                  >
+                <Box className='flex items-center'>
+                  <h4>
                     $
                     {currentData > 100000
                       ? formatCompact(currentData)
                       : currentData.toLocaleString()}
-                  </Typography>
+                  </h4>
                   <Box
-                    className={classes.priceChangeWrapper}
+                    className={`priceChangeWrapper ${currentPercentClass}`}
                     ml={1}
-                    bgcolor={currentPercentColor.bgColor}
-                    color={currentPercentColor.textColor}
                   >
-                    <Typography variant='body2'>
-                      {getFormattedPrice(Number(currentPercent))}%
-                    </Typography>
+                    <small>{getFormattedPrice(Number(currentPercent))}%</small>
                   </Box>
                 </Box>
                 <Box>
-                  <Typography variant='caption'>
-                    {moment().format('MMM DD, YYYY')}
-                  </Typography>
+                  <span>{dayjs().format('MMM DD, YYYY')}</span>
                 </Box>
               </>
             ) : (
@@ -171,7 +148,7 @@ const AnalyticsPairChart: React.FC<{ pairData: any }> = ({ pairData }) => {
             )}
           </Box>
         </Box>
-        <Box display='flex' flexDirection='column' alignItems='flex-end'>
+        <Box className='flex flex-col items-end'>
           <Box mt={1.5}>
             <ChartType
               chartTypes={chartIndexes}
@@ -196,7 +173,7 @@ const AnalyticsPairChart: React.FC<{ pairData: any }> = ({ pairData }) => {
             data={chartData}
             yAxisValues={getYAXISValuesAnalytics(chartData)}
             dates={pairChartData.map((value: any) =>
-              moment(value.date * 1000)
+              dayjs(value.date * 1000)
                 .add(1, 'day')
                 .unix(),
             )}

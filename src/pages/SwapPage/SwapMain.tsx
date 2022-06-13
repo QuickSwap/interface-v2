@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
-import { Box, Typography } from '@material-ui/core';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { Box } from '@material-ui/core';
 import { ReactComponent as SettingsIcon } from 'assets/images/SettingsIcon.svg';
-import cx from 'classnames';
 import { useIsProMode } from 'state/application/hooks';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import { useCurrency } from 'hooks/Tokens';
@@ -11,44 +9,12 @@ import {
   GelatoLimitOrderPanel,
   GelatoLimitOrdersHistoryPanel,
 } from '@gelatonetwork/limit-orders-react';
-
-const useStyles = makeStyles(({ palette }) => ({
-  swapItem: {
-    width: 122,
-    height: 46,
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 8,
-    '& p': {
-      color: palette.text.secondary,
-    },
-  },
-  activeSwap: {
-    background: palette.secondary.dark,
-    '& p': {
-      color: 'white',
-    },
-  },
-  headingItem: {
-    cursor: 'pointer',
-    display: 'flex',
-  },
-  proModeWrapper: {
-    borderTop: `1px solid ${palette.divider}`,
-    borderBottom: `1px solid ${palette.divider}`,
-    '& $swapItem': {
-      borderRadius: 0,
-    },
-  },
-}));
+import { Trans, useTranslation } from 'react-i18next';
 
 const SWAP_NORMAL = 0;
 const SWAP_LIMIT = 1;
 
 const SwapMain: React.FC = () => {
-  const classes = useStyles();
-  const { palette } = useTheme();
   const [swapIndex, setSwapIndex] = useState(SWAP_NORMAL);
   const [openSettingsModal, setOpenSettingsModal] = useState(false);
   const { isProMode, updateIsProMode } = useIsProMode();
@@ -64,6 +30,7 @@ const SwapMain: React.FC = () => {
       ? (parsedQuery.currency1 as string)
       : undefined,
   );
+  const { t } = useTranslation();
 
   return (
     <>
@@ -74,53 +41,45 @@ const SwapMain: React.FC = () => {
         />
       )}
       <Box
-        display='flex'
-        alignItems='center'
-        justifyContent='space-between'
-        className={isProMode ? classes.proModeWrapper : ''}
+        className={`flex flex-wrap items-center justify-between ${
+          isProMode ? ' proModeWrapper' : ''
+        }`}
       >
         <Box display='flex'>
           <Box
-            className={cx(
-              swapIndex === SWAP_NORMAL && classes.activeSwap,
-              classes.swapItem,
-              classes.headingItem,
-            )}
+            className={`${
+              swapIndex === SWAP_NORMAL ? 'activeSwap' : ''
+            } swapItem headingItem
+            `}
             onClick={() => setSwapIndex(SWAP_NORMAL)}
           >
-            <Typography variant='body1'>Market</Typography>
+            <p>{t('market')}</p>
           </Box>
           <Box
-            className={cx(
-              swapIndex === SWAP_LIMIT && classes.activeSwap,
-              classes.swapItem,
-              classes.headingItem,
-            )}
-            borderRight={isProMode ? `1px solid ${palette.divider}` : ''}
+            className={`${
+              swapIndex === SWAP_LIMIT ? 'activeSwap' : ''
+            } swapItem headingItem ${isProMode ? 'border-right' : ''}`}
             onClick={() => setSwapIndex(SWAP_LIMIT)}
           >
-            <Typography variant='body1'>Limit</Typography>
+            <p>{t('limit')}</p>
           </Box>
         </Box>
-        <Box display='flex' alignItems='center'>
+        <Box my={1} className='flex items-center'>
           {!isProMode && (
-            <Box display='flex' alignItems='center' mr={1}>
-              <Typography
-                variant='caption'
-                style={{ color: palette.text.secondary, marginRight: 8 }}
+            <Box className='flex items-center' mr={1}>
+              <span
+                className='text-secondary text-uppercase'
+                style={{ marginRight: 8 }}
               >
-                PRO MODE
-              </Typography>
+                {t('proMode')}
+              </span>
               <ToggleSwitch
                 toggled={isProMode}
                 onToggle={() => updateIsProMode(!isProMode)}
               />
             </Box>
           )}
-          <Box
-            className={classes.headingItem}
-            marginRight={isProMode ? 2.5 : 0}
-          >
+          <Box className='headingItem' marginRight={isProMode ? 2.5 : 0}>
             <SettingsIcon onClick={() => setOpenSettingsModal(true)} />
           </Box>
         </Box>
@@ -137,20 +96,21 @@ const SwapMain: React.FC = () => {
             <GelatoLimitOrderPanel />
             <GelatoLimitOrdersHistoryPanel />
             <Box mt={2} textAlign='center'>
-              <Typography variant='body2'>
-                <b>* Disclaimer:</b> Limit Orders on QuickSwap are provided by
-                Gelato, a 3rd party protocol and should be considered in beta.
-                DYOR and use at your own risk. QuickSwap is not responsible.
-                More info can be found&nbsp;
-                <a
-                  style={{ color: palette.text.primary }}
-                  target='_blank'
-                  rel='noopener noreferrer'
-                  href='https://www.certik.org/projects/gelato'
-                >
-                  here.
-                </a>
-              </Typography>
+              <small>
+                <Trans
+                  i18nKey='limitOrderDisclaimer'
+                  components={{
+                    bold: <b />,
+                    alink: (
+                      <a
+                        target='_blank'
+                        rel='noopener noreferrer'
+                        href='https://www.certik.org/projects/gelato'
+                      />
+                    ),
+                  }}
+                />
+              </small>
             </Box>
           </>
         )}

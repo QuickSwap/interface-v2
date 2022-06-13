@@ -1,8 +1,7 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { Contract } from '@ethersproject/contracts';
 import { ArrowLeft, ArrowDown } from 'react-feather';
-import { Box, Typography, Button } from '@material-ui/core';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { Box, Button } from '@material-ui/core';
 import { Currency, ETHER, JSBI, Percent } from '@uniswap/sdk';
 import ReactGA from 'react-ga';
 import { BigNumber } from '@ethersproject/bignumber';
@@ -44,25 +43,8 @@ import { useRouterContract } from 'hooks/useContract';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
 import { useTotalSupply } from 'data/TotalSupply';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
-
-const useStyles = makeStyles(({ palette }) => ({
-  removeButton: {
-    backgroundImage:
-      'linear-gradient(104deg, #004ce6 -32%, #0098ff 54%, #00cff3 120%, #64fbd3 198%)',
-    backgroundColor: 'transparent',
-    height: 48,
-    width: '48%',
-    borderRadius: 10,
-    '& span': {
-      fontSize: 16,
-      fontWeight: 600,
-    },
-    '&.Mui-disabled': {
-      backgroundImage: 'none',
-      backgroundColor: palette.secondary.dark,
-    },
-  },
-}));
+import 'components/styles/RemoveLiquidityModal.scss';
+import { useTranslation } from 'react-i18next';
 
 interface RemoveLiquidityModalProps {
   currency0: Currency;
@@ -77,8 +59,7 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
   open,
   onClose,
 }) => {
-  const classes = useStyles();
-  const { palette } = useTheme();
+  const { t } = useTranslation();
   const [showConfirm, setShowConfirm] = useState(false);
   const [txPending, setTxPending] = useState(false);
   const [approving, setApproving] = useState(false);
@@ -196,12 +177,12 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
   );
   const onAttemptToApprove = async () => {
     if (!pairContract || !pair || !library || !deadline) {
-      setErrorMsg('missing dependencies');
+      setErrorMsg(t('missingdependencies'));
       return;
     }
     const liquidityAmount = parsedAmounts[Field.LIQUIDITY];
     if (!liquidityAmount) {
-      setErrorMsg('missing liquidity amount');
+      setErrorMsg(t('missingliquidity'));
       return;
     }
     setApproving(true);
@@ -222,13 +203,13 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
 
   const onRemove = async () => {
     if (!chainId || !library || !account || !deadline || !router)
-      throw new Error('missing dependencies');
+      throw new Error(t('missingdependencies'));
     const {
       [Field.CURRENCY_A]: currencyAmountA,
       [Field.CURRENCY_B]: currencyAmountB,
     } = parsedAmounts;
     if (!currencyAmountA || !currencyAmountB) {
-      throw new Error('missing currency amounts');
+      throw new Error(t('noInputAmounts'));
     }
 
     const amountsMin = {
@@ -243,12 +224,12 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
     };
 
     const liquidityAmount = parsedAmounts[Field.LIQUIDITY];
-    if (!liquidityAmount) throw new Error('missing liquidity amount');
+    if (!liquidityAmount) throw new Error(t('noLiquidity'));
 
     const currencyBIsETH = currency1 === ETHER;
     const oneCurrencyIsETH = currency0 === ETHER || currencyBIsETH;
 
-    if (!tokenA || !tokenB) throw new Error('could not wrap');
+    if (!tokenA || !tokenB) throw new Error(t('cannotWrap'));
 
     let methodNames: string[],
       args: Array<string | string[] | number | boolean>;
@@ -287,9 +268,7 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
         ];
       }
     } else {
-      throw new Error(
-        'Attempting to confirm without approval. Please contact support.',
-      );
+      throw new Error(t('confirmWithoutApproval'));
     }
 
     const safeGasEstimates: (BigNumber | undefined)[] = await Promise.all(
@@ -309,7 +288,7 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
 
     // all estimations failed...
     if (indexOfSuccessfulEstimation === -1) {
-      console.error('This transaction would fail. Please contact support.');
+      throw new Error(t('transactionWouldFail'));
     } else {
       const methodName = methodNames[indexOfSuccessfulEstimation];
       const safeGasEstimate = safeGasEstimates[indexOfSuccessfulEstimation];
@@ -321,15 +300,12 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
         .then(async (response: TransactionResponse) => {
           setAttemptingTxn(false);
           setTxPending(true);
-          const summary =
-            'Remove ' +
-            parsedAmounts[Field.CURRENCY_A]?.toSignificant(3) +
-            ' ' +
-            currency0.symbol +
-            ' and ' +
-            parsedAmounts[Field.CURRENCY_B]?.toSignificant(3) +
-            ' ' +
-            currency1.symbol;
+          const summary = t('removeLiquidityMsg', {
+            amount1: formatTokenAmount(parsedAmounts[Field.CURRENCY_A]),
+            symbol1: currency0.symbol,
+            amount2: formatTokenAmount(parsedAmounts[Field.CURRENCY_B]),
+            symbol2: currency1.symbol,
+          });
 
           addTransaction(response, {
             summary,
@@ -345,7 +321,7 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
             setTxPending(false);
           } catch (error) {
             setTxPending(false);
-            setRemoveErrorMessage('There is an error in transaction.');
+            setRemoveErrorMessage(t('errorInTx'));
           }
 
           ReactGA.event({
@@ -365,39 +341,36 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
   const modalHeader = () => {
     return (
       <Box>
-        <Box mt={10} mb={3} display='flex' justifyContent='center'>
+        <Box className='flex justify-center' mt={10} mb={3}>
           <DoubleCurrencyLogo
             currency0={currency0}
             currency1={currency1}
             size={48}
           />
         </Box>
-        <Box mb={6} color={palette.text.primary} textAlign='center'>
-          <Typography variant='h6'>
-            Removing {formattedAmounts[Field.LIQUIDITY]} {currency0.symbol} /{' '}
-            {currency1.symbol} LP Tokens
+        <Box mb={6} textAlign='center'>
+          <p className='weight-600'>
+            {t('removingLP', {
+              amount: formattedAmounts[Field.LIQUIDITY],
+              symbol1: currency0.symbol,
+              symbol2: currency1.symbol,
+            })}
             <br />
-            You will receive {parsedAmounts[Field.CURRENCY_A]?.toSignificant(
-              2,
-            )}{' '}
-            {currency0.symbol} and{' '}
-            {parsedAmounts[Field.CURRENCY_B]?.toSignificant(2)}{' '}
+            {t('youwillreceive')}{' '}
+            {formatTokenAmount(parsedAmounts[Field.CURRENCY_A])}{' '}
+            {currency0.symbol} {t('and')}{' '}
+            {formatTokenAmount(parsedAmounts[Field.CURRENCY_B])}{' '}
             {currency1.symbol}
-          </Typography>
+          </p>
         </Box>
-        <Box mb={3} color={palette.text.secondary} textAlign='center'>
-          <Typography variant='body2'>
-            {`Output is estimated. If the price changes by more than ${allowedSlippage /
-              100}% your transaction will revert.`}
-          </Typography>
+        <Box mb={3} textAlign='center'>
+          <small className='text-secondary'>
+            {t('outputEstimated', { slippage: allowedSlippage / 100 })}
+          </small>
         </Box>
         <Box mt={2}>
-          <Button
-            style={{ width: '100%' }}
-            className={classes.removeButton}
-            onClick={onRemove}
-          >
-            Confirm
+          <Button fullWidth className='removeButton' onClick={onRemove}>
+            {t('confirm')}
           </Button>
         </Box>
       </Box>
@@ -422,7 +395,7 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
                 />
               ) : (
                 <ConfirmationModalContent
-                  title='Removing Liquidity'
+                  title={t('removingLiquidity')}
                   onDismiss={handleDismissConfirmation}
                   content={modalHeader}
                 />
@@ -431,43 +404,27 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
             pendingText=''
             modalContent={
               txPending
-                ? 'Submitted transaction to remove liquidity'
-                : 'Successfully removed liquidity'
+                ? t('submittedTxRemoveLiquidity')
+                : t('successRemovedLiquidity')
             }
           />
         )}
-        <Box display='flex' alignItems='center' justifyContent='space-between'>
+        <Box className='flex items-center justify-between'>
           <ArrowLeft
-            color={palette.text.secondary}
-            style={{ cursor: 'pointer' }}
+            className='text-secondary cursor-pointer'
             onClick={onClose}
           />
-          <Typography
-            variant='subtitle2'
-            style={{ color: palette.text.primary }}
-          >
-            Remove Liquidity
-          </Typography>
-          <CloseIcon style={{ cursor: 'pointer' }} onClick={onClose} />
+          <h6>{t('removeLiquidity')}</h6>
+          <CloseIcon className='cursor-pointer' onClick={onClose} />
         </Box>
-        <Box
-          mt={3}
-          bgcolor={palette.background.default}
-          border='1px solid rgba(105, 108, 128, 0.12)'
-          borderRadius='10px'
-          padding='16px'
-        >
-          <Box
-            display='flex'
-            alignItems='center'
-            justifyContent='space-between'
-          >
-            <Typography variant='body2'>
+        <Box className='removeLiquidityInput'>
+          <Box className='flex items-center justify-between'>
+            <small>
               {currency0.symbol} / {currency1.symbol} LP
-            </Typography>
-            <Typography variant='body2'>
-              Balance: {formatTokenAmount(userPoolBalance)}
-            </Typography>
+            </small>
+            <small>
+              {t('balance')}: {formatTokenAmount(userPoolBalance)}
+            </small>
           </Box>
           <Box mt={2}>
             <NumericalInput
@@ -479,161 +436,102 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
               }}
             />
           </Box>
-          <Box display='flex' alignItems='center'>
+          <Box className='flex items-center'>
             <Box flex={1} mr={2} mt={0.5}>
               <ColoredSlider
                 min={1}
                 max={100}
                 step={1}
                 value={innerLiquidityPercentage}
-                onChange={(evt: any, value) =>
+                handleChange={(event, value) =>
                   setInnerLiquidityPercentage(value as number)
                 }
               />
             </Box>
-            <Typography variant='body2'>
-              {formattedAmounts[Field.LIQUIDITY_PERCENT]}%
-            </Typography>
+            <small>{formattedAmounts[Field.LIQUIDITY_PERCENT]}%</small>
           </Box>
         </Box>
-        <Box display='flex' my={3} justifyContent='center'>
-          <ArrowDown color={palette.text.secondary} />
+        <Box className='flex justify-center' my={3}>
+          <ArrowDown className='text-secondary' />
         </Box>
-        <Box
-          padding='16px'
-          bgcolor={palette.secondary.light}
-          borderRadius='10px'
-        >
-          <Box
-            display='flex'
-            justifyContent='space-between'
-            alignItems='center'
-          >
-            <Typography variant='body1'>Pooled {currency0.symbol}</Typography>
-            <Box display='flex' alignItems='center'>
-              <Typography variant='body1' style={{ marginRight: 6 }}>
-                {formatTokenAmount(token0Deposited)}
-              </Typography>
+        <Box className='removeLiquidityInfo bg-secondary1'>
+          <Box>
+            <p>
+              {t('pooled')} {currency0.symbol}
+            </p>
+            <Box>
+              <p>{formatTokenAmount(token0Deposited)}</p>
               <CurrencyLogo currency={currency0} />
             </Box>
           </Box>
-          <Box
-            mt={1}
-            display='flex'
-            justifyContent='space-between'
-            alignItems='center'
-          >
-            <Typography
-              variant='body1'
-              style={{ color: 'rgba(68, 138, 255, 0.5)' }}
-            >
-              - Withdraw {currency0.symbol}
-            </Typography>
-            <Typography
-              variant='body1'
-              style={{ color: 'rgba(68, 138, 255, 0.5)' }}
-            >
-              {formattedAmounts[Field.CURRENCY_A]}
-            </Typography>
+          <Box>
+            <p className='text-blue7'>
+              - {t('withdraw')} {currency0.symbol}
+            </p>
+            <p className='text-blue7'>{formattedAmounts[Field.CURRENCY_A]}</p>
           </Box>
-          <Box
-            mt={1}
-            display='flex'
-            justifyContent='space-between'
-            alignItems='center'
-          >
-            <Typography variant='body1'>Pooled {currency1.symbol}</Typography>
-            <Box display='flex' alignItems='center'>
-              <Typography variant='body1' style={{ marginRight: 6 }}>
-                {formatTokenAmount(token1Deposited)}
-              </Typography>
+          <Box>
+            <p>
+              {t('pooled')} {currency1.symbol}
+            </p>
+            <Box>
+              <p>{formatTokenAmount(token1Deposited)}</p>
               <CurrencyLogo currency={currency1} />
             </Box>
           </Box>
-          <Box
-            mt={1}
-            display='flex'
-            justifyContent='space-between'
-            alignItems='center'
-          >
-            <Typography
-              variant='body1'
-              style={{ color: 'rgba(68, 138, 255, 0.5)' }}
-            >
-              - Withdraw {currency1.symbol}
-            </Typography>
-            <Typography
-              variant='body1'
-              style={{ color: 'rgba(68, 138, 255, 0.5)' }}
-            >
-              {formattedAmounts[Field.CURRENCY_B]}
-            </Typography>
+          <Box>
+            <p className='text-blue7'>
+              - {t('withdraw')} {currency1.symbol}
+            </p>
+            <p className='text-blue7'>{formattedAmounts[Field.CURRENCY_B]}</p>
           </Box>
-          <Box
-            mt={1}
-            display='flex'
-            justifyContent='space-between'
-            alignItems='center'
-          >
-            <Typography variant='body1'>Your Pool Share</Typography>
-            <Typography variant='body1'>
+          <Box>
+            <p>{t('yourPoolShare')}</p>
+            <p>
               {poolTokenPercentage
                 ? poolTokenPercentage.toSignificant() + '%'
                 : '-'}
-            </Typography>
+            </p>
           </Box>
         </Box>
         {pair && (
-          <Box
-            display='flex'
-            mt={2}
-            px={2}
-            alignItems='center'
-            justifyContent='space-between'
-          >
-            <Typography variant='body2'>
+          <Box className='flex justify-between items-center' mt={2} px={2}>
+            <small>
               1 {currency0.symbol} ={' '}
               {tokenA ? pair.priceOf(tokenA).toSignificant(6) : '-'}{' '}
               {currency1.symbol}
-            </Typography>
-            <Typography variant='body2'>
+            </small>
+            <small>
               1 {currency1.symbol} ={' '}
               {tokenB ? pair.priceOf(tokenB).toSignificant(6) : '-'}{' '}
               {currency0.symbol}
-            </Typography>
+            </small>
           </Box>
         )}
-        <Box
-          mt={2}
-          display='flex'
-          alignItems='center'
-          justifyContent='space-between'
-        >
+        <Box mt={2} className='flex justify-between items-center'>
           <Button
-            className={classes.removeButton}
+            className='removeButton'
             onClick={onAttemptToApprove}
             disabled={approving || approval !== ApprovalState.NOT_APPROVED}
           >
             {approving
-              ? 'Approving...'
+              ? `${t('approving')}...`
               : approval === ApprovalState.APPROVED
-              ? 'Approved'
-              : 'Approve'}
+              ? t('approved')
+              : t('approve')}
           </Button>
           <Button
-            className={classes.removeButton}
+            className='removeButton'
             onClick={() => {
               setShowConfirm(true);
             }}
             disabled={Boolean(error) || approval !== ApprovalState.APPROVED}
           >
-            {error || 'Remove'}
+            {error || t('remove')}
           </Button>
         </Box>
         <Box mt={2}>
-          <Typography variant='body1' style={{ color: palette.error.main }}>
-            {errorMsg}
-          </Typography>
+          <p className='text-error'>{errorMsg}</p>
         </Box>
       </Box>
     </CustomModal>

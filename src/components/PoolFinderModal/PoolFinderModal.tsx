@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Currency, TokenAmount, ETHER, JSBI } from '@uniswap/sdk';
 import { ArrowLeft, Plus } from 'react-feather';
-import { Box, Typography } from '@material-ui/core';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { Box } from '@material-ui/core';
 import {
   CustomModal,
   CurrencyLogo,
@@ -16,18 +15,8 @@ import { useActiveWeb3React } from 'hooks';
 import { currencyId } from 'utils';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 import { Link } from 'react-router-dom';
-
-const useStyles = makeStyles(({ palette }) => ({
-  borderedCard: {
-    border: `1px solid ${palette.divider}`,
-    padding: 8,
-    borderRadius: 10,
-    cursor: 'pointer',
-    '&:hover': {
-      border: `1px solid ${palette.text.primary}`,
-    },
-  },
-}));
+import 'components/styles/PoolFinderModal.scss';
+import { useTranslation } from 'react-i18next';
 
 enum Fields {
   TOKEN0 = 0,
@@ -40,9 +29,7 @@ interface PoolFinderModalProps {
 }
 
 const PoolFinderModal: React.FC<PoolFinderModalProps> = ({ open, onClose }) => {
-  const classes = useStyles();
-  const { palette } = useTheme();
-
+  const { t } = useTranslation();
   const { account } = useActiveWeb3React();
 
   const [showSearch, setShowSearch] = useState<boolean>(false);
@@ -98,44 +85,38 @@ const PoolFinderModal: React.FC<PoolFinderModalProps> = ({ open, onClose }) => {
   return (
     <CustomModal open={open} onClose={onClose}>
       <Box paddingX={3} paddingY={4}>
-        <Box display='flex' alignItems='center' justifyContent='space-between'>
+        <Box className='flex items-center justify-between'>
           <ArrowLeft
-            color={palette.text.secondary}
-            style={{ cursor: 'pointer' }}
+            className='text-secondary cursor-pointer'
             onClick={onClose}
           />
-          <Typography
-            variant='subtitle2'
-            style={{ color: palette.text.primary }}
-          >
-            Import Pool
-          </Typography>
-          <CloseIcon style={{ cursor: 'pointer' }} onClick={onClose} />
+          <h6>{t('importPool')}</h6>
+          <CloseIcon className='cursor-pointer' onClick={onClose} />
         </Box>
         <Box
           mt={2}
-          className={classes.borderedCard}
+          className='borderedCard'
           onClick={() => {
             setShowSearch(true);
             setActiveField(Fields.TOKEN0);
           }}
         >
           {currency0 ? (
-            <Box display='flex' alignItems='center'>
+            <Box className='flex items-center'>
               <CurrencyLogo currency={currency0} size='20px' />
-              <Typography variant='h6' style={{ marginLeft: 6 }}>
+              <p className='weight-600' style={{ marginLeft: 6 }}>
                 {currency0.symbol}
-              </Typography>
+              </p>
             </Box>
           ) : (
-            <Typography variant='h6'>Select a Token</Typography>
+            <p className='weight-600'>{t('selectToken')}</p>
           )}
         </Box>
-        <Box my={1} display='flex' justifyContent='center'>
-          <Plus size='20' color={palette.text.secondary} />
+        <Box my={1} className='flex justify-center'>
+          <Plus size='20' className='text-secondary' />
         </Box>
         <Box
-          className={classes.borderedCard}
+          className='borderedCard'
           onClick={() => {
             setShowSearch(true);
             setActiveField(Fields.TOKEN1);
@@ -144,84 +125,65 @@ const PoolFinderModal: React.FC<PoolFinderModalProps> = ({ open, onClose }) => {
           {currency1 ? (
             <Box display='flex'>
               <CurrencyLogo currency={currency1} />
-              <Typography variant='h6' style={{ marginLeft: 6 }}>
+              <p className='weight-600' style={{ marginLeft: 6 }}>
                 {currency1.symbol}
-              </Typography>
+              </p>
             </Box>
           ) : (
-            <Typography variant='h6'>Select a Token</Typography>
+            <p className='weight-600'>{t('selectToken')}</p>
           )}
         </Box>
         {hasPosition && (
           <Box textAlign='center' mt={2}>
-            <Typography variant='body1'>Pool Found!</Typography>
-            <Typography
-              variant='body1'
-              style={{ cursor: 'pointer', color: palette.primary.main }}
-              onClick={onClose}
-            >
-              Manage this pool.
-            </Typography>
+            <p>{t('poolFound')}!</p>
+            <p className='cursor-pointer text-primary' onClick={onClose}>
+              {t('manageThisPool')}.
+            </p>
           </Box>
         )}
-        <Box
-          mt={2}
-          p={1}
-          borderRadius={10}
-          display='flex'
-          justifyContent='center'
-          border={`1px solid ${palette.divider}`}
-        >
+        <Box className='poolFinderInfo border'>
           {currency0 && currency1 ? (
             pairState === PairState.EXISTS ? (
               hasPosition && pair ? (
                 <MinimalPositionCard pair={pair} border='none' />
               ) : (
                 <Box textAlign='center'>
-                  <Typography>
-                    You don’t have liquidity in this pool yet.
-                  </Typography>
+                  <p>{t('noLiquidityinPool')}.</p>
                   <Link
                     to={`/pools?currency0=${currencyId(
                       currency0,
                     )}&currency1=${currencyId(currency1)}`}
-                    style={{
-                      color: palette.primary.main,
-                      textDecoration: 'none',
-                    }}
+                    className='text-primary no-decoration'
                     onClick={onClose}
                   >
-                    <Typography>Add liquidity.</Typography>
+                    <p>{t('addLiquidity')}.</p>
                   </Link>
                 </Box>
               )
             ) : validPairNoLiquidity ? (
               <Box textAlign='center'>
-                <Typography>No pool found.</Typography>
+                <p>{t('nopoolFound')}.</p>
                 <Link
                   to={`/pools?currency0=${currencyId(
                     currency0,
                   )}&currency1=${currencyId(currency1)}`}
-                  style={{
-                    color: palette.primary.main,
-                    textDecoration: 'none',
-                  }}
+                  className='text-primary no-decoration'
                   onClick={onClose}
                 >
-                  Create pool.
+                  {t('createPool')}.
                 </Link>
               </Box>
             ) : pairState === PairState.INVALID ? (
-              <Typography>Invalid pair.</Typography>
+              <p>{t('invalidPair')}.</p>
             ) : pairState === PairState.LOADING ? (
-              <Typography>Loading...</Typography>
+              <p>{t('loading')}...</p>
             ) : null
           ) : (
-            <Typography>
+            <p>
               {!account
-                ? 'Connect to a wallet to find pools'
-                : 'Select a token to find your liquidity.'}
-            </Typography>
+                ? t('connectWalletToFindPool')
+                : t('selectTokenFindLiquidity')}
+            </p>
           )}
         </Box>
       </Box>

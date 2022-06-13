@@ -1,7 +1,6 @@
 import React from 'react';
-import { Box, Typography, Button } from '@material-ui/core';
+import { Box, Button } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
-import { makeStyles } from '@material-ui/core/styles';
 import { StakingInfo } from 'types';
 import { DoubleCurrencyLogo } from 'components';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon.svg';
@@ -11,56 +10,7 @@ import {
   getStakedAmountStakingInfo,
   getTVLStaking,
 } from 'utils';
-
-const useStyles = makeStyles(({ palette }) => ({
-  rewardsSliderItem: {
-    borderRadius: 32,
-    background: palette.background.paper,
-    padding: '32px 22px',
-    position: 'relative',
-    '& .rewardIcon': {
-      position: 'absolute',
-      display: 'flex',
-      top: 32,
-      left: 22,
-    },
-    '& h5': {
-      marginLeft: 70,
-      textAlign: 'left',
-    },
-    '& .row': {
-      display: 'flex',
-      width: '100%',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      marginTop: 12,
-      '& p': {
-        color: 'rgba(255, 255, 255, 0.47)',
-        display: 'flex',
-        alignItems: 'center',
-        '& svg': {
-          marginLeft: 4,
-        },
-      },
-      '& h4': {
-        color: 'white',
-      },
-      '& h5': {
-        background: 'rgba(15, 198, 121, 0.12)',
-        color: palette.success.main,
-        padding: '0 4px',
-        borderRadius: 5,
-      },
-    },
-    '& button': {
-      height: 40,
-      fontSize: 16,
-      marginTop: 12,
-      background: palette.primary.main,
-      borderRadius: 20,
-    },
-  },
-}));
+import { useTranslation } from 'react-i18next';
 
 interface RewardSliderItemProps {
   info: StakingInfo;
@@ -71,7 +21,7 @@ const RewardSliderItem: React.FC<RewardSliderItemProps> = ({
   info,
   stakingAPY,
 }) => {
-  const classes = useStyles();
+  const { t } = useTranslation();
   const history = useHistory();
 
   const stakedAmounts = getStakedAmountStakingInfo(info);
@@ -90,7 +40,7 @@ const RewardSliderItem: React.FC<RewardSliderItemProps> = ({
   }
 
   return (
-    <Box className={classes.rewardsSliderItem}>
+    <Box className='rewardsSliderItem bg-palette'>
       <Box mb={4}>
         <Box className='rewardIcon'>
           <DoubleCurrencyLogo
@@ -99,45 +49,46 @@ const RewardSliderItem: React.FC<RewardSliderItemProps> = ({
             size={32}
           />
         </Box>
-        <Typography variant='h5'>
+        <h5>
           {info.tokens[0].symbol?.toUpperCase()}-
           {info.tokens[1].symbol?.toUpperCase()}
-        </Typography>
+        </h5>
       </Box>
       <Box className='row'>
-        <Typography>24h Fees</Typography>
-        <Typography component='h4'>
-          ${(info?.oneDayFee ?? 0).toLocaleString()}
-        </Typography>
+        <p className='text-gray22'>{t('24hFees')}</p>
+        <p>${(info?.oneDayFee ?? 0).toLocaleString()}</p>
       </Box>
       <Box className='row'>
-        <Typography>Rewards</Typography>
-        <Typography component='h4'>
-          ${rewards.toLocaleString()} / day
-        </Typography>
+        <p className='text-gray22'>{t('rewards')}</p>
+        <p>
+          ${rewards.toLocaleString()} / {t('day')}
+        </p>
       </Box>
       <Box className='row'>
-        <Typography>TVL</Typography>
-        <Typography component='h4'>{tvl}</Typography>
+        <p className='text-gray22'>{t('tvl')}</p>
+        <p>{tvl}</p>
       </Box>
       <Box className='row'>
-        <Typography>
-          APR
+        <p className='text-gray22'>
+          {t('apr')}
           <HelpIcon />
-        </Typography>
-        <Typography component='h5'>{apyWithFee}%</Typography>
+        </p>
+        <Box className='rewardApyWrapper'>
+          <p className='text-success'>{apyWithFee}%</p>
+        </Box>
       </Box>
-      <Button
-        fullWidth
-        style={{ marginTop: '30px' }}
-        onClick={() => {
-          history.push(
-            `/pools?currency0=${info.tokens[0].address}&currency1=${info.tokens[1].address}`,
-          );
-        }}
-      >
-        Deposit LP Tokens
-      </Button>
+      <Box mt='30px'>
+        <Button
+          fullWidth
+          onClick={() => {
+            history.push(
+              `/pools?currency0=${info.tokens[0].address}&currency1=${info.tokens[1].address}`,
+            );
+          }}
+        >
+          {t('depositLP')}
+        </Button>
+      </Box>
     </Box>
   );
 };

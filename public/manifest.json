@@ -1,21 +1,18 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "QuickSwap",
+  "name": "QuickSwap Interface",
   "icons": [
     {
-      "src": "favicon.ico",
-      "sizes": "64x64 32x32 24x24 16x16",
-      "type": "image/x-icon"
+      "src": "./logo_circle.png",
+      "sizes": "50x150",
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
-      "src": "quickIcon.svg",
+      "src": "./logo_circle.png",
+      "sizes": "50x50",
       "type": "image/png",
-      "sizes": "192x192"
-    },
-    {
-      "src": "quickIcon.svg",
-      "type": "image/png",
-      "sizes": "512x512"
+      "purpose": "any maskable"
     }
   ],
   "start_url": ".",

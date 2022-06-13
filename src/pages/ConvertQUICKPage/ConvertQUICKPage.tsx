@@ -1,8 +1,6 @@
 import React, { useMemo, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import cx from 'classnames';
 import { TransactionResponse } from '@ethersproject/providers';
-import { Box, Typography, Button, CircularProgress } from '@material-ui/core';
+import { Box, Button, CircularProgress } from '@material-ui/core';
 import { Trans, useTranslation } from 'react-i18next';
 import QUICKIcon from 'assets/images/quickIcon.svg';
 import { ReactComponent as QUICKV2Icon } from 'assets/images/QUICKV2.svg';
@@ -24,86 +22,9 @@ import {
   useTransactionFinalizer,
 } from 'state/transactions/hooks';
 import { tryParseAmount } from 'state/swap/hooks';
-
-const useStyles = makeStyles(({ palette, breakpoints }) => ({
-  wrapper: {
-    background: palette.background.default,
-    marginTop: 24,
-    padding: 24,
-    borderRadius: 20,
-    border: `1px solid ${palette.secondary.dark}`,
-  },
-  iconWrapper: {
-    display: 'flex',
-    marginRight: 6,
-    '& svg, & img': {
-      width: 24,
-      height: 24,
-    },
-  },
-  convertArrow: {
-    display: 'flex',
-    '& svg path': {
-      fill: palette.text.secondary,
-    },
-  },
-  conversionRate: {
-    marginTop: 24,
-    border: `1px solid ${palette.secondary.dark}`,
-    padding: '8px 12px',
-    borderRadius: 10,
-    '& span': {
-      fontSize: 13,
-    },
-  },
-  currencyInput: {
-    background: palette.secondary.dark,
-    borderRadius: 10,
-    margin: '8px 0',
-    display: 'flex',
-    alignItems: 'center',
-    height: 63,
-    padding: '0 16px',
-    border: '1px solid transparent',
-    '& input': {
-      flex: 1,
-    },
-    '& h6': {
-      fontSize: 18,
-    },
-  },
-  maxButton: {
-    background: 'rgba(68, 138, 255, 0.24)',
-    color: palette.primary.main,
-    width: 34,
-    height: 18,
-    borderRadius: 4,
-    fontSize: 11,
-    fontWeight: 600,
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    cursor: 'pointer',
-  },
-  convertButton: {
-    maxWidth: 224,
-    height: 40,
-    width: '100%',
-    borderRadius: 20,
-    '&.Mui-disabled': {
-      background: palette.grey.A400,
-    },
-  },
-  errorInput: {
-    borderColor: palette.error.main,
-  },
-  errorText: {
-    color: palette.error.main,
-  },
-}));
+import 'pages/styles/convertQUICK.scss';
 
 const ConvertQUICKPage: React.FC = () => {
-  const classes = useStyles();
   const { t } = useTranslation();
   const { account, library } = useActiveWeb3React();
   const [quickAmount, setQUICKAmount] = useState('');
@@ -210,49 +131,49 @@ const ConvertQUICKPage: React.FC = () => {
 
   return (
     <Box width='100%' maxWidth={488} id='convertQUICKPage'>
-      <Typography variant='h4'>{t('convert')} QUICK</Typography>
-      <Box className={classes.wrapper}>
-        <Box display='flex' alignItems='center' mb={3}>
-          <Box className={classes.iconWrapper}>
+      <h4>{t('convert')} QUICK</h4>
+      <Box className='convertQUICKWrapper'>
+        <Box className='flex items-center' mb={3}>
+          <Box className='iconWrapper'>
             <img src={QUICKIcon} alt='QUICK' />
           </Box>
-          <Typography variant='h6'>QUICK(OLD)</Typography>
-          <Box mx={1.5} className={classes.convertArrow}>
+          <p className='weight-600'>QUICK(OLD)</p>
+          <Box mx={1.5} className='convertArrow'>
             <ArrowForward />
           </Box>
-          <Box className={classes.iconWrapper}>
+          <Box className='iconWrapper'>
             <QUICKV2Icon />
           </Box>
-          <Typography variant='h6'>QUICK(NEW)</Typography>
+          <p className='weight-600'>QUICK(NEW)</p>
         </Box>
-        <Typography variant='body2' color='textSecondary'>
-          <Trans i18nKey='convertQuick'>
-            Convert your QUICK(OLD) to QUICK(NEW). Read more about QUICK token
-            split{' '}
-            <a
-              href='https://quickswap-layer2.medium.com/you-voted-for-a-1-1000-token-split-to-make-quick-more-appealing-9c25c2a2dd7e'
-              rel='noreferrer'
-              target='_blank'
-            >
-              here
-            </a>
-          </Trans>
-        </Typography>
-        <Box className={classes.conversionRate}>
-          <Typography variant='caption'>
+        <small className='text-secondary'>
+          <Trans
+            i18nKey='convertQUICK'
+            components={{
+              alink: (
+                <a
+                  href='https://quickswap-layer2.medium.com/you-voted-for-a-1-1000-token-split-to-make-quick-more-appealing-9c25c2a2dd7e'
+                  rel='noreferrer'
+                  target='_blank'
+                />
+              ),
+            }}
+          />
+        </small>
+        <Box className='conversionRate'>
+          <span>
             {t('conversionRate')}: 1 QUICK(OLD) ={' '}
             {GlobalConst.utils.QUICK_CONVERSION_RATE} QUICK(NEW)
-          </Typography>
+          </span>
         </Box>
         <Box mt={4} mb={2}>
-          <Typography variant='body2' color='textSecondary'>
+          <small className='text-secondary'>
             {t('yourbalance')}: {formatTokenAmount(quickBalance)}
-          </Typography>
+          </small>
           <Box
-            className={cx(
-              classes.currencyInput,
-              isInsufficientQUICK && classes.errorInput,
-            )}
+            className={`currencyInput${
+              isInsufficientQUICK ? ' errorInput' : ''
+            }`}
           >
             <NumericalInput
               placeholder='0.00'
@@ -278,7 +199,7 @@ const ConvertQUICKPage: React.FC = () => {
             />
             <Box
               mr={1}
-              className={classes.maxButton}
+              className='maxButton'
               onClick={() => {
                 if (quickBalance) {
                   setQUICKAmount(quickBalance.toExact());
@@ -293,22 +214,20 @@ const ConvertQUICKPage: React.FC = () => {
             >
               {t('max')}
             </Box>
-            <Typography variant='h6'>QUICK(OLD)</Typography>
+            <p className='weight-600'>QUICK(OLD)</p>
           </Box>
           {isInsufficientQUICK && (
-            <Typography variant='body2' className={classes.errorText}>
+            <small className='text-error'>
               {t('insufficientBalance', { symbol: 'QUICK' })}
-            </Typography>
+            </small>
           )}
         </Box>
-        <Box ml={2} className={classes.convertArrow}>
+        <Box ml={2} className='convertArrow'>
           <ArrowDownward />
         </Box>
         <Box mt={2} mb={4}>
-          <Typography variant='body2' color='textSecondary'>
-            {t('youwillreceive')}:
-          </Typography>
-          <Box className={classes.currencyInput}>
+          <small className='text-secondary'>{t('youwillreceive')}:</small>
+          <Box className='currencyInput'>
             <NumericalInput
               placeholder='0.00'
               value={quickV2Amount}
@@ -324,10 +243,10 @@ const ConvertQUICKPage: React.FC = () => {
                 setQUICKAmount(quickAmount);
               }}
             />
-            <Typography variant='h6'>QUICK(NEW)</Typography>
+            <p className='weight-600'>QUICK(NEW)</p>
           </Box>
         </Box>
-        <Box display='flex' justifyContent='center'>
+        <Box className='flex justify-center'>
           <Button
             disabled={
               approving ||
@@ -336,7 +255,7 @@ const ConvertQUICKPage: React.FC = () => {
               !quickAmount ||
               !Number(quickAmount)
             }
-            className={classes.convertButton}
+            className='convertButton'
             onClick={() => {
               if (approval === ApprovalState.APPROVED) {
                 convertQUICK();
@@ -371,9 +290,7 @@ const ConvertQUICKPage: React.FC = () => {
                     <Box mt={6} mb={5}>
                       <CircularProgress size={80} />
                     </Box>
-                    <Typography variant='body1'>
-                      {quickConvertingText}
-                    </Typography>
+                    <p>{quickConvertingText}</p>
                   </Box>
                 )}
               />

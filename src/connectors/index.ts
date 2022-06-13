@@ -29,7 +29,7 @@ if (typeof NETWORK_URL === 'undefined') {
 }
 
 export const network = new NetworkConnector({
-  urls: { [Number('137')]: 'https://polygon-rpc.com/' },
+  urls: { [Number('137')]: NETWORK_URL },
 });
 
 let networkLibrary: Web3Provider | undefined;

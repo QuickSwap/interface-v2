@@ -1,22 +1,22 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { Box, Typography } from '@material-ui/core';
-import { useTheme } from '@material-ui/core/styles';
+import { Box } from '@material-ui/core';
 import Skeleton from '@material-ui/lab/Skeleton';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { useGlobalData } from 'state/application/hooks';
 import {
   formatCompact,
   getChartData,
-  getPriceColor,
+  getPriceClass,
   getChartDates,
   getChartStartTime,
   getLimitedData,
 } from 'utils';
 import { GlobalConst, GlobalData } from 'constants/index';
 import { AreaChart, ChartType } from 'components';
+import { useTranslation } from 'react-i18next';
 
 const AnalyticsLiquidityChart: React.FC = () => {
-  const { palette } = useTheme();
+  const { t } = useTranslation();
   const { globalData } = useGlobalData();
   const [durationIndex, setDurationIndex] = useState(
     GlobalConst.analyticChart.ONE_MONTH_CHART,
@@ -42,9 +42,8 @@ const AnalyticsLiquidityChart: React.FC = () => {
     fetchChartData();
   }, [updateGlobalChartData, durationIndex]);
 
-  const liquidityPercentColor = getPriceColor(
+  const liquidityPercentClass = getPriceClass(
     globalData ? Number(globalData.liquidityChangeUSD) : 0,
-    palette,
   );
 
   const yAxisValues = useMemo(() => {
@@ -71,13 +70,10 @@ const AnalyticsLiquidityChart: React.FC = () => {
 
   return (
     <>
-      <Box display='flex' justifyContent='space-between'>
-        <Typography
-          variant='caption'
-          style={{ color: palette.text.disabled, fontWeight: 'bold' }}
-        >
-          LIQUIDITY
-        </Typography>
+      <Box className='flex justify-between'>
+        <span className='text-disabled text-bold text-uppercase'>
+          {t('liquidity')}
+        </span>
         <ChartType
           typeTexts={GlobalData.analytics.CHART_DURATION_TEXTS}
           chartTypes={GlobalData.analytics.CHART_DURATIONS}
@@ -86,23 +82,20 @@ const AnalyticsLiquidityChart: React.FC = () => {
         />
       </Box>
       {globalData ? (
-        <Box mt={0.5} display='flex' alignItems='center'>
-          <Typography variant='h5' style={{ color: palette.text.primary }}>
-            ${formatCompact(globalData.totalLiquidityUSD)}
-          </Typography>
+        <Box mt={0.5} className='flex items-center'>
+          <h5>${formatCompact(globalData.totalLiquidityUSD)}</h5>
           <Box
             ml={1}
             height={23}
             px={1}
             borderRadius={40}
-            bgcolor={liquidityPercentColor.bgColor}
-            color={liquidityPercentColor.textColor}
+            className={liquidityPercentClass}
           >
-            <Typography variant='caption'>
+            <span>
               {`${globalData.liquidityChangeUSD > 0 ? '+' : ''}
                       ${globalData.liquidityChangeUSD.toLocaleString()}`}
               %
-            </Typography>
+            </span>
           </Box>
         </Box>
       ) : (
@@ -111,9 +104,7 @@ const AnalyticsLiquidityChart: React.FC = () => {
         </Box>
       )}
       <Box>
-        <Typography style={{ color: palette.text.disabled }} variant='caption'>
-          {moment().format('MMM DD, YYYY')}
-        </Typography>
+        <span className='text-disabled'>{dayjs().format('MMM DD, YYYY')}</span>
       </Box>
       <Box mt={2}>
         {globalChartData ? (
@@ -123,7 +114,7 @@ const AnalyticsLiquidityChart: React.FC = () => {
             )}
             yAxisValues={yAxisValues}
             dates={globalChartData.map((value: any) =>
-              moment(value.date * 1000)
+              dayjs(value.date * 1000)
                 .add(1, 'day')
                 .unix(),
             )}

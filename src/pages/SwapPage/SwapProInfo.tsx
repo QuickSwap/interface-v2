@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import { Box, Typography, Divider } from '@material-ui/core';
+import { Box, Divider } from '@material-ui/core';
 import { SwapHoriz } from '@material-ui/icons';
 import { Currency, Token } from '@uniswap/sdk';
 import { CurrencyLogo } from 'components';
@@ -8,36 +7,14 @@ import { getTokenInfo, getEthPrice, formatNumber } from 'utils';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import Skeleton from '@material-ui/lab/Skeleton';
 import SwapInfoTx from './SwapInfoTx';
-
-const useStyles = makeStyles(({ palette }) => ({
-  success: {
-    color: palette.success.main,
-  },
-  danger: {
-    color: palette.error.main,
-  },
-  swapIcon: {
-    background: '#c5cbe0',
-    width: 16,
-    height: 16,
-    borderRadius: 7,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    color: 'black',
-    cursor: 'pointer',
-    '& svg': {
-      width: 14,
-    },
-  },
-}));
+import { useTranslation } from 'react-i18next';
 
 const SwapProInfo: React.FC<{
   token1?: Token;
   token2?: Token;
   transactions?: any[];
 }> = ({ token1, token2, transactions }) => {
-  const classes = useStyles();
+  const { t } = useTranslation();
   const [token1Data, setToken1Data] = useState<any>(null);
   const [token2Data, setToken2Data] = useState<any>(null);
   const token1Address = token1?.address;
@@ -82,27 +59,23 @@ const SwapProInfo: React.FC<{
         <Box p={1} display='flex'>
           <CurrencyLogo currency={currency} />
           <Box ml={1} flex={1}>
-            <Box display='flex' justifyContent='space-between'>
-              <Typography variant='body2'>{currency.symbol}</Typography>
+            <Box className='flex justify-between'>
+              <small>{currency.symbol}</small>
               {tokenData ? (
-                <Typography variant='body2'>
-                  ${formatNumber(tokenData?.priceUSD)}
-                </Typography>
+                <small>${formatNumber(tokenData?.priceUSD)}</small>
               ) : (
                 <Skeleton width={60} height={14} />
               )}
             </Box>
             {tokenData ? (
-              <Typography variant='caption'>
-                24h:{' '}
+              <span>
+                {t('24h')}:{' '}
                 <span
-                  className={
-                    priceUpPercent > 0 ? classes.success : classes.danger
-                  }
+                  className={priceUpPercent > 0 ? 'text-success' : 'text-error'}
                 >
                   {formatNumber(priceUpPercent)}%
                 </span>
-              </Typography>
+              </span>
             ) : (
               <Skeleton width={60} height={12} />
             )}
@@ -116,7 +89,7 @@ const SwapProInfo: React.FC<{
   return (
     <>
       <Box p={1}>
-        <Typography variant='body1'>Info:</Typography>
+        <p className='text-uppercase'>{t('info')}:</p>
       </Box>
       <Divider />
       {currency1 && <TokenInfo currency={currency1} tokenData={token1Data} />}
@@ -124,17 +97,11 @@ const SwapProInfo: React.FC<{
       {currency1 && currency2 && (
         <>
           <Box py={2} px={1}>
-            <Box
-              mb={1}
-              px={1}
-              display='flex'
-              alignItems='center'
-              justifyContent='space-between'
-            >
-              <Typography variant='body2'>
+            <Box mb={1} px={1} className='flex items-center justify-between'>
+              <small>
                 {currency1.symbol} / {currency2.symbol}
-              </Typography>
-              <Box className={classes.swapIcon}>
+              </small>
+              <Box className='swapIcon'>
                 <SwapHoriz />
               </Box>
             </Box>

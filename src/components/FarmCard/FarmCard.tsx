@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { Box, Typography, useMediaQuery } from '@material-ui/core';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
-import cx from 'classnames';
+import { Box, useMediaQuery } from '@material-ui/core';
+import { useTheme } from '@material-ui/core/styles';
 import { DualStakingInfo, StakingInfo } from 'types';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { DoubleCurrencyLogo, CurrencyLogo } from 'components';
@@ -18,51 +17,16 @@ import {
   formatAPY,
 } from 'utils';
 import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
-
-const useStyles = makeStyles(({ palette, breakpoints }) => ({
-  farmLPCard: {
-    background: palette.secondary.dark,
-    width: '100%',
-    borderRadius: 10,
-    marginTop: 24,
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    padding: '0 16px',
-    [breakpoints.down('xs')]: {
-      padding: 0,
-    },
-  },
-  highlightedCard: {
-    border: `1px solid ${palette.primary.main}`,
-    boxShadow: '0 0 5px 5px rgba(68, 138, 255, 0.3)',
-  },
-  farmLPCardUp: {
-    background: palette.secondary.dark,
-    width: '100%',
-    borderRadius: 10,
-    display: 'flex',
-    alignItems: 'center',
-    padding: '16px 0',
-    cursor: 'pointer',
-    [breakpoints.down('xs')]: {
-      padding: 16,
-    },
-  },
-  farmLPText: {
-    fontSize: 14,
-    fontWeight: 600,
-    color: palette.text.secondary,
-  },
-}));
+import 'components/styles/FarmCard.scss';
+import { useTranslation } from 'react-i18next';
 
 const FarmCard: React.FC<{
   stakingInfo: StakingInfo | DualStakingInfo;
   stakingAPY: number;
   isLPFarm?: boolean;
 }> = ({ stakingInfo, stakingAPY, isLPFarm }) => {
-  const classes = useStyles();
-  const { palette, breakpoints } = useTheme();
+  const { t } = useTranslation();
+  const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const [isExpandCard, setExpandCard] = useState(false);
 
@@ -114,29 +78,24 @@ const FarmCard: React.FC<{
     dualStakingInfo.rateB * dualStakingInfo.rewardTokenBPrice;
 
   const renderPool = (width: number) => (
-    <Box display='flex' alignItems='center' width={width}>
+    <Box className='flex items-center' width={width}>
       <DoubleCurrencyLogo
         currency0={currency0}
         currency1={currency1}
         size={28}
       />
       <Box ml={1.5}>
-        <Typography variant='body2'>
+        <small>
           {currency0.symbol} / {currency1.symbol} LP
-        </Typography>
+        </small>
       </Box>
     </Box>
   );
 
   return (
-    <Box
-      className={cx(
-        classes.farmLPCard,
-        isExpandCard && classes.highlightedCard,
-      )}
-    >
+    <Box className={`farmLPCard ${isExpandCard ? 'highlightedCard' : ''}`}>
       <Box
-        className={classes.farmLPCardUp}
+        className='farmLPCardUp'
         onClick={() => setExpandCard(!isExpandCard)}
       >
         {isMobile ? (
@@ -144,25 +103,18 @@ const FarmCard: React.FC<{
             {renderPool(isExpandCard ? 0.95 : 0.7)}
             {!isExpandCard && (
               <Box width={0.25}>
-                <Box display='flex' alignItems='center'>
-                  <Typography variant='caption' color='textSecondary'>
-                    APY
-                  </Typography>
+                <Box className='flex items-center'>
+                  <span className='text-secondary'>{t('apy')}</span>
                   <Box ml={0.5} height={16}>
                     <img src={CircleInfoIcon} alt={'arrow up'} />
                   </Box>
                 </Box>
-                <Box mt={0.5} color={palette.success.main}>
-                  <Typography variant='body2'>{apyWithFee}%</Typography>
+                <Box mt={0.5}>
+                  <small className='text-success'>{apyWithFee}%</small>
                 </Box>
               </Box>
             )}
-            <Box
-              width={0.05}
-              display='flex'
-              justifyContent='flex-end'
-              color={palette.primary.main}
-            >
+            <Box width={0.05} className='flex justify-end text-primary'>
               {isExpandCard ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
             </Box>
           </>
@@ -170,79 +122,65 @@ const FarmCard: React.FC<{
           <>
             {renderPool(0.3)}
             <Box width={0.2} textAlign='center'>
-              <Typography variant='body2'>{tvl}</Typography>
+              <small>{tvl}</small>
             </Box>
             <Box width={0.25} textAlign='center'>
-              <Typography variant='body2'>
-                ${(isLPFarm ? lpRewards : dualRewards).toLocaleString()} / day
-              </Typography>
+              <p className='small'>
+                ${(isLPFarm ? lpRewards : dualRewards).toLocaleString()} /{' '}
+                {t('day')}
+              </p>
               {isLPFarm ? (
-                <Typography variant='body2'>{lpPoolRate}</Typography>
+                <p className='small'>{lpPoolRate}</p>
               ) : (
                 <>
-                  <Typography variant='body2'>{dualPoolRateA}</Typography>
-                  <Typography variant='body2'>{dualPoolRateB}</Typography>
+                  <p className='small'>{dualPoolRateA}</p>
+                  <p className='small'>{dualPoolRateB}</p>
                 </>
               )}
             </Box>
             <Box
               width={0.15}
-              display='flex'
-              justifyContent='center'
-              alignItems='center'
-              color={palette.success.main}
+              className='flex justify-center items-center text-success'
             >
-              <Typography variant='body2'>{apyWithFee}%</Typography>
+              <small>{apyWithFee}%</small>
               <Box ml={0.5} height={16}>
                 <img src={CircleInfoIcon} alt={'arrow up'} />
               </Box>
             </Box>
             <Box width={0.2} textAlign='right'>
-              <Typography variant='body2'>{earnedUSDStr}</Typography>
+              <small>{earnedUSDStr}</small>
               {isLPFarm ? (
-                <Box
-                  display='flex'
-                  alignItems='center'
-                  justifyContent='flex-end'
-                >
+                <Box className='flex items-center justify-end'>
                   <CurrencyLogo
                     currency={lpStakingInfo.rewardToken}
                     size='16px'
                   />
-                  <Typography variant='body2' style={{ marginLeft: 5 }}>
+                  <small style={{ marginLeft: 5 }}>
                     {formatTokenAmount(lpStakingInfo.earnedAmount)}
-                    <span>&nbsp;{lpStakingInfo.rewardToken.symbol}</span>
-                  </Typography>
+                    &nbsp;{lpStakingInfo.rewardToken.symbol}
+                  </small>
                 </Box>
               ) : (
                 <>
-                  <Box
-                    display='flex'
-                    alignItems='center'
-                    justifyContent='flex-end'
-                  >
+                  <Box className='flex items-center justify-end'>
                     <CurrencyLogo
                       currency={unwrappedToken(dualStakingInfo.rewardTokenA)}
                       size='16px'
                     />
-                    <Typography variant='body2' style={{ marginLeft: 5 }}>
+                    <small style={{ marginLeft: 5 }}>
                       {formatTokenAmount(dualStakingInfo.earnedAmountA)}
-                      <span>&nbsp;{dualStakingInfo.rewardTokenA.symbol}</span>
-                    </Typography>
+                      &nbsp;{dualStakingInfo.rewardTokenA.symbol}
+                    </small>
                   </Box>
-                  <Box
-                    display='flex'
-                    alignItems='center'
-                    justifyContent='flex-end'
-                  >
+                  <Box className='flex items-center justify-end'>
                     <CurrencyLogo
                       currency={unwrappedToken(dualStakingInfo.rewardTokenB)}
                       size='16px'
                     />
-                    <Typography variant='body2' style={{ marginLeft: 5 }}>
+                    <small style={{ marginLeft: 5 }}>
                       {formatTokenAmount(dualStakingInfo.earnedAmountB)}
-                      <span>&nbsp;{dualStakingInfo.rewardTokenB.symbol}</span>
-                    </Typography>
+                      &nbsp;{dualStakingInfo.rewardTokenB.symbol}
+                    </small>
                   </Box>
                 </>
               )}
