@@ -1713,10 +1713,8 @@ export function formatNumber(
 
 export function returnTokenFromKey(key: string): Token {
   if (key === 'MATIC') return GlobalValue.tokens.MATIC;
-  const tokenIndex = Object.keys(tokenData).findIndex(
-    (tokenKey) => tokenKey === key,
-  );
-  const token = Object.values(tokenData)[tokenIndex];
+
+  const token = (tokenData as any)[key];
   return new Token(
     ChainId.MATIC,
     getAddress(token.address),
