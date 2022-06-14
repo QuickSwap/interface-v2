@@ -8,7 +8,7 @@ import { useCurrencyBalance, useTokenBalance } from 'state/wallet/hooks';
 import { useActiveWeb3React } from 'hooks';
 import { GlobalConst } from 'constants/index';
 import { useApproveCallback, ApprovalState } from 'hooks/useApproveCallback';
-import { useLairContract } from 'hooks/useContract';
+import { useNewLairContract } from 'hooks/useContract';
 import {
   useTransactionAdder,
   useTransactionFinalizer,
@@ -30,11 +30,11 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
   const finalizedTransaction = useTransactionFinalizer();
   const quickBalance = useCurrencyBalance(
     account ?? undefined,
-    returnTokenFromKey('QUICK'),
+    returnTokenFromKey('QUICKNEW'),
   );
   const userLiquidityUnstaked = useTokenBalance(
     account ?? undefined,
-    returnTokenFromKey('QUICK'),
+    returnTokenFromKey('QUICKNEW'),
   );
 
   const [typedValue, setTypedValue] = useState('');
@@ -42,14 +42,14 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
   const [approving, setApproving] = useState(false);
   const { parsedAmount, error } = useDerivedLairInfo(
     typedValue,
-    returnTokenFromKey('QUICK'),
+    returnTokenFromKey('QUICKNEW'),
     userLiquidityUnstaked,
   );
 
-  const lairContract = useLairContract();
+  const lairContract = useNewLairContract();
   const [approval, approveCallback] = useApproveCallback(
     parsedAmount,
-    GlobalConst.addresses.LAIR_ADDRESS,
+    GlobalConst.addresses.NEW_LAIR_ADDRESS,
   );
 
   const onAttemptToApprove = async () => {

@@ -497,8 +497,17 @@ export function useUSDCPricesToken(tokens: Token[]) {
     returnTokenFromKey('QUICK'),
     returnTokenFromKey('USDC'),
   );
+  const [, newQuickUsdcPair] = usePair(
+    returnTokenFromKey('QUICKNEW'),
+    returnTokenFromKey('USDC'),
+  );
   const quickPrice = Number(
     quickUsdcPair?.priceOf(returnTokenFromKey('QUICK'))?.toSignificant(6) ?? 0,
+  );
+  const newQuickPrice = Number(
+    newQuickUsdcPair
+      ?.priceOf(returnTokenFromKey('QUICKNEW'))
+      ?.toSignificant(6) ?? 0,
   );
   const filteredTokens = tokens
     .filter((item, pos, self) => {
@@ -507,7 +516,9 @@ export function useUSDCPricesToken(tokens: Token[]) {
     .filter(
       (token) =>
         !token.equals(returnTokenFromKey('QUICK')) &&
-        !token.equals(returnTokenFromKey('DQUICK')),
+        !token.equals(returnTokenFromKey('QUICKNEW')) &&
+        !token.equals(returnTokenFromKey('DQUICK')) &&
+        !token.equals(returnTokenFromKey('DQUICKNEW')),
     );
   const currencies = filteredTokens.map((token) => unwrappedToken(token));
   const usdPrices = useUSDCPrices(currencies);
@@ -519,6 +530,10 @@ export function useUSDCPricesToken(tokens: Token[]) {
       return dQUICKtoQUICK * quickPrice;
     } else if (token.equals(returnTokenFromKey('QUICK'))) {
       return quickPrice;
+    } else if (token.equals(returnTokenFromKey('DQUICKNEW'))) {
+      return dQUICKtoQUICK * newQuickPrice;
+    } else if (token.equals(returnTokenFromKey('QUICKNEW'))) {
+      return newQuickPrice;
     } else {
       const priceObj = usdPricesWithToken.find((item) =>
         item.token.equals(token),

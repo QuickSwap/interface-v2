@@ -1884,9 +1884,11 @@ export function getTokenAPRSyrup(syrup: SyrupInfo) {
     : 0;
 }
 
-export function useLairDQUICKAPY(lair?: LairInfo) {
+export function useLairDQUICKAPY(isNew: boolean, lair?: LairInfo) {
   const daysCurrentYear = getDaysCurrentYear();
-  const dQUICKPrice = useUSDCPriceToken(returnTokenFromKey('DQUICK'));
+  const quickTokenSymbol = isNew ? 'QUICKNEW' : 'QUICK';
+  const quickPrice = useUSDCPriceToken(returnTokenFromKey(quickTokenSymbol));
+  const dQUICKPrice: any = Number(lair?.dQUICKtoQUICK?.toExact()) * quickPrice;
   if (!lair) return '0';
   const dQUICKAPR =
     (((Number(lair.oneDayVol) *
@@ -1896,9 +1898,12 @@ export function useLairDQUICKAPY(lair?: LairInfo) {
       daysCurrentYear) /
     dQUICKPrice;
   if (!dQUICKAPR) return '0';
-  return Number(
-    (Math.pow(1 + dQUICKAPR / daysCurrentYear, daysCurrentYear) - 1) * 100,
-  ).toLocaleString();
+  const temp = Math.pow(1 + dQUICKAPR / daysCurrentYear, daysCurrentYear) - 1;
+  if (temp > 100) {
+    return '> 10000';
+  } else {
+    return Number(temp * 100).toLocaleString();
+  }
 }
 
 export function returnFullWidthMobile(isMobile: boolean) {
