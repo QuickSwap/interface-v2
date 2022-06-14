@@ -49,8 +49,12 @@ import {
 import { BigNumber, BigNumberish } from '@ethersproject/bignumber';
 import { formatUnits } from 'ethers/lib/utils';
 import { AddressZero } from '@ethersproject/constants';
-import { TokenAddressMap } from 'state/lists/hooks';
 import { GlobalConst, GlobalValue, SUPPORTED_WALLETS } from 'constants/index';
+import {
+  TokenAddressMap,
+  useSelectedTokenList,
+  WrappedTokenInfo,
+} from 'state/lists/hooks';
 import tokenData from 'constants/tokens.json';
 import stakeData from 'constants/stake.json';
 import {
@@ -1711,9 +1715,11 @@ export function formatNumber(
   }
 }
 
+// const selectedTokenList = useSelectedTokenList();
+// //TODO: Support Multichain
+// return selectedTokenList[ChainId.MATIC][address];
 export function returnTokenFromKey(key: string): Token {
   if (key === 'MATIC') return GlobalValue.tokens.MATIC;
-
   const token = (tokenData as any)[key];
   return new Token(
     ChainId.MATIC,
@@ -1886,9 +1892,12 @@ export function getTokenAPRSyrup(syrup: SyrupInfo) {
 
 export function useLairDQUICKAPY(isNew: boolean, lair?: LairInfo) {
   const daysCurrentYear = getDaysCurrentYear();
-  const quickTokenSymbol = isNew ? 'QUICKNEW' : 'QUICK';
-  const quickPrice = useUSDCPriceToken(returnTokenFromKey(quickTokenSymbol));
+  const quickToken = isNew
+    ? GlobalValue.tokens.COMMON.NEW_QUICK
+    : GlobalValue.tokens.COMMON.OLD_QUICK;
+  const quickPrice = useUSDCPriceToken(quickToken);
   const dQUICKPrice: any = Number(lair?.dQUICKtoQUICK?.toExact()) * quickPrice;
+
   if (!lair) return '0';
   const dQUICKAPR =
     (((Number(lair.oneDayVol) *
@@ -1953,7 +1962,7 @@ export function getStakedAmountStakingInfo(
   if (!stakingInfo) return;
   const stakingTokenPair = stakingInfo.stakingTokenPair;
   const baseTokenCurrency = unwrappedToken(stakingInfo.baseToken);
-  const empty = unwrappedToken(returnTokenFromKey('EMPTY'));
+  const empty = unwrappedToken(GlobalValue.tokens.COMMON.EMPTY);
   const token0 = stakingInfo.tokens[0];
   const baseToken =
     baseTokenCurrency === empty ? token0 : stakingInfo.baseToken;

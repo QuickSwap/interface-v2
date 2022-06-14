@@ -3,13 +3,16 @@ import { Box } from '@material-ui/core';
 import { useLairInfo, useNewLairInfo } from 'state/stake/hooks';
 import { CurrencyLogo, StakeQuickModal, UnstakeQuickModal } from 'components';
 import { ReactComponent as PriceExchangeIcon } from 'assets/images/PriceExchangeIcon.svg';
-import { formatTokenAmount, returnTokenFromKey, useLairDQUICKAPY } from 'utils';
+import { formatTokenAmount, useLairDQUICKAPY } from 'utils';
 import { useUSDCPriceToken } from 'utils/useUSDCPrice';
 import { useTranslation } from 'react-i18next';
+import { GlobalValue } from 'constants/index';
 
 const DragonsLair: React.FC<{ isNew: boolean }> = ({ isNew }) => {
-  const quickTokenSymbol = isNew ? 'QUICKNEW' : 'QUICK';
-  const quickPrice = useUSDCPriceToken(returnTokenFromKey(quickTokenSymbol));
+  const quickToken = isNew
+    ? GlobalValue.tokens.COMMON.NEW_QUICK
+    : GlobalValue.tokens.COMMON.OLD_QUICK;
+  const quickPrice = useUSDCPriceToken(quickToken);
   const [isQUICKRate, setIsQUICKRate] = useState(false);
   const [openStakeModal, setOpenStakeModal] = useState(false);
   const [openUnstakeModal, setOpenUnstakeModal] = useState(false);
@@ -42,7 +45,7 @@ const DragonsLair: React.FC<{ isNew: boolean }> = ({ isNew }) => {
         />
       )}
       <Box display='flex'>
-        <CurrencyLogo currency={returnTokenFromKey('QUICK')} size='32px' />
+        <CurrencyLogo currency={quickToken} size='32px' />
         <Box ml={1.5}>
           <p className='small line-height-1'>QUICK</p>
           <span className='text-hint'>{t('stakeQUICKTitle')}</span>
@@ -76,11 +79,11 @@ const DragonsLair: React.FC<{ isNew: boolean }> = ({ isNew }) => {
         <small>{formatTokenAmount(lairInfoToUse.QUICKBalance)}</small>
       </Box>
       <Box className='quickTodQuick border-secondary1'>
-        <CurrencyLogo currency={returnTokenFromKey('QUICK')} />
+        <CurrencyLogo currency={quickToken} />
         <small style={{ margin: '0 8px' }}>
           {isQUICKRate ? 1 : dQUICKtoQUICK.toLocaleString()} QUICK =
         </small>
-        <CurrencyLogo currency={returnTokenFromKey('QUICK')} />
+        <CurrencyLogo currency={quickToken} />
         <small style={{ margin: '0 8px' }}>
           {isQUICKRate ? QUICKtodQUICK.toLocaleString() : 1} dQUICK
         </small>

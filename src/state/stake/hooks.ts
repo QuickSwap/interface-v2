@@ -870,7 +870,7 @@ export function useDualStakingInfo(
 
   const baseTokens = info.map((item) => {
     const unwrappedCurrency = unwrappedToken(item.baseToken);
-    const empty = unwrappedToken(returnTokenFromKey('EMPTY'));
+    const empty = unwrappedToken(GlobalValue.tokens.COMMON.EMPTY);
     return unwrappedCurrency === empty ? item.tokens[0] : item.baseToken;
   });
 
@@ -1108,31 +1108,34 @@ export function useLairInfo(): LairInfo {
     getOneDayVolume();
   }, []);
 
+  const oldQuickToken = GlobalValue.tokens.COMMON.OLD_QUICK;
+  const oldDQuickToken = GlobalValue.tokens.COMMON.OLD_DQUICK;
+
   return useMemo(() => {
     return {
       lairAddress: GlobalConst.addresses.LAIR_ADDRESS,
       dQUICKtoQUICK: new TokenAmount(
-        returnTokenFromKey('QUICK'),
+        oldQuickToken,
         JSBI.BigInt(dQuickToQuick?.result?.[0] ?? 0),
       ),
       QUICKtodQUICK: new TokenAmount(
-        returnTokenFromKey('DQUICK'),
+        oldDQuickToken,
         JSBI.BigInt(quickToDQuick?.result?.[0] ?? 0),
       ),
       dQUICKBalance: new TokenAmount(
-        returnTokenFromKey('DQUICK'),
+        oldDQuickToken,
         JSBI.BigInt(dQuickBalance?.result?.[0] ?? 0),
       ),
       QUICKBalance: new TokenAmount(
-        returnTokenFromKey('QUICK'),
+        oldQuickToken,
         JSBI.BigInt(quickBalance?.result?.[0] ?? 0),
       ),
       totalQuickBalance: new TokenAmount(
-        returnTokenFromKey('QUICK'),
+        oldQuickToken,
         JSBI.BigInt(lairsQuickBalance?.result?.[0] ?? 0),
       ),
       dQuickTotalSupply: new TokenAmount(
-        returnTokenFromKey('DQUICK'),
+        oldDQuickToken,
         JSBI.BigInt(_dQuickTotalSupply?.result?.[0] ?? 0),
       ),
       oneDayVol: oneDayVol,
@@ -1170,31 +1173,33 @@ export function useNewLairInfo(): LairInfo {
     getOneDayVolume();
   }, []);
 
+  const newQuickToken = GlobalValue.tokens.COMMON.NEW_QUICK;
+  const newDQuickToken = GlobalValue.tokens.COMMON.NEW_DQUICK;
   return useMemo(() => {
     return {
       lairAddress: GlobalConst.addresses.NEW_LAIR_ADDRESS,
       dQUICKtoQUICK: new TokenAmount(
-        returnTokenFromKey('QUICKNEW'),
+        newQuickToken,
         JSBI.BigInt(dQuickToQuick?.result?.[0] ?? 0),
       ),
       QUICKtodQUICK: new TokenAmount(
-        returnTokenFromKey('DQUICKNEW'),
+        newDQuickToken,
         JSBI.BigInt(quickToDQuick?.result?.[0] ?? 0),
       ),
       dQUICKBalance: new TokenAmount(
-        returnTokenFromKey('DQUICKNEW'),
+        newDQuickToken,
         JSBI.BigInt(dQuickBalance?.result?.[0] ?? 0),
       ),
       QUICKBalance: new TokenAmount(
-        returnTokenFromKey('QUICKNEW'),
+        newQuickToken,
         JSBI.BigInt(quickBalance?.result?.[0] ?? 0),
       ),
       totalQuickBalance: new TokenAmount(
-        returnTokenFromKey('QUICKNEW'),
+        newQuickToken,
         JSBI.BigInt(lairsQuickBalance?.result?.[0] ?? 0),
       ),
       dQuickTotalSupply: new TokenAmount(
-        returnTokenFromKey('DQUICKNEW'),
+        newDQuickToken,
         JSBI.BigInt(_dQuickTotalSupply?.result?.[0] ?? 0),
       ),
       oneDayVol: oneDayVol,
