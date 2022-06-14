@@ -85,8 +85,7 @@ export const GlobalConst = {
       JSBI.BigInt(10000),
     ),
     // the Uniswap Default token list lives here
-    DEFAULT_TOKEN_LIST_URL:
-      'https://unpkg.com/quickswap-default-token-list@1.2.38/build/quickswap-default.tokenlist.json',
+    DEFAULT_TOKEN_LIST_URL: process.env.REACT_APP_TOKEN_LIST_DEFAULT_URL!,
   },
   analyticChart: {
     ONE_MONTH_CHART: 1,
