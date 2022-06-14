@@ -39,6 +39,7 @@ import {
   convertMantissaToAPR,
 } from 'utils/marketxyz';
 import { useBorrowLimit } from 'hooks/marketxyz/useBorrowLimit';
+import { useTranslation } from 'react-i18next';
 
 const QS_PoolDirectory = '0x9180296118C8Deb7c5547eF5c1E798DC0405f350';
 
@@ -52,6 +53,7 @@ const useStyles = makeStyles(({ palette, breakpoints }) => ({
 }));
 
 const LendDetailPage: React.FC = () => {
+  const { t } = useTranslation();
   const history = useHistory();
   const location = useLocation();
   const classes = useStyles();
@@ -176,7 +178,7 @@ const LendDetailPage: React.FC = () => {
           textAlign={'left'}
           color={'#ebecf2'}
         >
-          Leverage assets you believe in
+          {t('lendPageTitle')}
         </Box>
         <Box mt={'23px'} display={'flex'} gridGap={'24px'} flexWrap={'wrap'}>
           <Box
@@ -187,7 +189,7 @@ const LendDetailPage: React.FC = () => {
             borderRadius={'12px'}
           >
             <Box color={'#696c80'} fontSize={'14px'}>
-              Total Supply
+              {t('totalSupply')}
             </Box>
             {poolData?.totalSuppliedUSD ? (
               <Box fontSize={'24px'} color={'white'}>
@@ -205,7 +207,7 @@ const LendDetailPage: React.FC = () => {
             borderRadius={'12px'}
           >
             <Box color={'#696c80'} fontSize={'14px'}>
-              Total Borrowed
+              {t('totalBorrowed')}
             </Box>
             {poolData?.totalBorrowedUSD ? (
               <Box fontSize={'24px'} color={'white'}>
@@ -223,7 +225,7 @@ const LendDetailPage: React.FC = () => {
             borderRadius={'12px'}
           >
             <Box color={'#696c80'} fontSize={'14px'}>
-              Liquidity
+              {t('liquidity')}
             </Box>
             {poolData?.totalLiquidityUSD ? (
               <Box fontSize={'24px'} color={'white'}>
@@ -241,7 +243,7 @@ const LendDetailPage: React.FC = () => {
             borderRadius={'12px'}
           >
             <Box color={'#696c80'} fontSize={'14px'}>
-              Pool Utilization
+              {t('poolUtilization')}
             </Box>
             {poolData?.totalBorrowBalanceUSD ? (
               <Box fontSize={'24px'} color={'white'}>
@@ -276,7 +278,7 @@ const LendDetailPage: React.FC = () => {
               borderRight: { xs: 'none', sm: 'none', md: '1px solid #323548' },
             }}
           >
-            <Box>Borrow limit</Box>
+            <Box>{t('borrowLimit')}</Box>
             <Box ml={'8px'}>
               <Box
                 width={'16px'}
@@ -380,10 +382,10 @@ const LendDetailPage: React.FC = () => {
                 borderLeft={'4px solid #448aff'}
                 lineHeight={'1'}
               >
-                Supply
+                {t('supply')}
               </Box>
               <Box mr={'30px'} display={'flex'} fontSize={'14px'}>
-                <Box color={'#c7cad9'}>Your Supply Balance:&nbsp;</Box>
+                <Box color={'#c7cad9'}>{t('yoursupplybalance')}:&nbsp;</Box>
                 {poolData ? (
                   <Box color={'white'}>
                     {midUsdFormatter(poolData.totalSupplyBalanceUSD)}
@@ -398,7 +400,9 @@ const LendDetailPage: React.FC = () => {
                 <TableHead>
                   <TableRow>
                     <MuiTableCell>
-                      <Box paddingY={'20px'}>Asset / LTV</Box>
+                      <Box paddingY={'20px'}>
+                        {t('asset')} / {t('ltv')}
+                      </Box>
                     </MuiTableCell>
                     <MuiTableCell className={classes.hideCell}>
                       <Box
@@ -406,7 +410,7 @@ const LendDetailPage: React.FC = () => {
                         display={'flex'}
                         justifyContent={'flex-end'}
                       >
-                        Supply APY
+                        {t('supplyapy')}
                       </Box>
                     </MuiTableCell>
                     <MuiTableCell>
@@ -415,7 +419,7 @@ const LendDetailPage: React.FC = () => {
                         display={'flex'}
                         justifyContent={'flex-end'}
                       >
-                        Deposited
+                        {t('deposited')}
                       </Box>
                     </MuiTableCell>
                     <MuiTableCell>
@@ -424,7 +428,7 @@ const LendDetailPage: React.FC = () => {
                         display={'flex'}
                         justifyContent={'flex-end'}
                       >
-                        Collateral
+                        {t('collateral')}
                       </Box>
                     </MuiTableCell>
                   </TableRow>
@@ -465,7 +469,7 @@ const LendDetailPage: React.FC = () => {
                               color={'#696c80'}
                               textAlign={'right'}
                             >
-                              LTV:{' '}
+                              {t('ltv')}:{' '}
                               {sdk &&
                                 asset.collateralFactor
                                   .div(sdk.web3.utils.toBN(1e16))
@@ -630,10 +634,10 @@ const LendDetailPage: React.FC = () => {
                 borderLeft={'4px solid #fc6259'}
                 lineHeight={'1'}
               >
-                Borrow
+                {t('borrow')}
               </Box>
               <Box mr={'30px'} display={'flex'} fontSize={'14px'}>
-                <Box color={'#c7cad9'}>Your Borrow Balance:&nbsp;</Box>
+                <Box color={'#c7cad9'}>{t('yourborrowbalance')}:&nbsp;</Box>
                 {poolData ? (
                   <Box color={'white'}>
                     {midUsdFormatter(poolData.totalBorrowBalanceUSD)}
@@ -648,15 +652,8 @@ const LendDetailPage: React.FC = () => {
                 <TableHead>
                   <TableRow>
                     <MuiTableCell>
-                      <Box paddingY={'20px'}>Asset / LTV</Box>
-                    </MuiTableCell>
-                    <MuiTableCell className={classes.hideCell}>
-                      <Box
-                        paddingY={'20px'}
-                        display={'flex'}
-                        justifyContent={'flex-end'}
-                      >
-                        APR/TVL
+                      <Box paddingY={'20px'}>
+                        {t('asset')} / {t('ltv')}
                       </Box>
                     </MuiTableCell>
                     <MuiTableCell className={classes.hideCell}>
@@ -665,7 +662,16 @@ const LendDetailPage: React.FC = () => {
                         display={'flex'}
                         justifyContent={'flex-end'}
                       >
-                        Borrowed
+                        {t('apr')} / {t('tvl')}
+                      </Box>
+                    </MuiTableCell>
+                    <MuiTableCell className={classes.hideCell}>
+                      <Box
+                        paddingY={'20px'}
+                        display={'flex'}
+                        justifyContent={'flex-end'}
+                      >
+                        {t('borrowed')}
                       </Box>
                     </MuiTableCell>
                     <MuiTableCell>
@@ -674,7 +680,7 @@ const LendDetailPage: React.FC = () => {
                         display={'flex'}
                         justifyContent={'flex-end'}
                       >
-                        Liquidity
+                        {t('liquidity')}
                       </Box>
                     </MuiTableCell>
                   </TableRow>
@@ -867,7 +873,7 @@ const LendDetailPage: React.FC = () => {
                     }}
                   >
                     <Box fontSize={'14px'} fontWeight={'500'} color={'#c7cad9'}>
-                      Total Supplied:
+                      {t('totalSupplied')}:
                     </Box>
                     {poolData ? (
                       <Box
@@ -898,7 +904,7 @@ const LendDetailPage: React.FC = () => {
                     }}
                   >
                     <Box fontSize={'14px'} fontWeight={'500'} color={'#c7cad9'}>
-                      Total Borrowed:
+                      {t('totalBorrowed')}:
                     </Box>
                     {poolData ? (
                       <Box
@@ -937,7 +943,7 @@ const LendDetailPage: React.FC = () => {
                     }}
                   >
                     <Box fontSize={'14px'} fontWeight={'500'} color={'#c7cad9'}>
-                      Available Liquidity:
+                      {t('availableLiquidity')}:
                     </Box>
                     {poolData ? (
                       <Box
@@ -968,7 +974,7 @@ const LendDetailPage: React.FC = () => {
                     }}
                   >
                     <Box fontSize={'14px'} fontWeight={'500'} color={'#c7cad9'}>
-                      Pool Utilization:
+                      {t('poolUtilization')}:
                     </Box>
                     {poolData ? (
                       <Box
@@ -1013,7 +1019,7 @@ const LendDetailPage: React.FC = () => {
                     }}
                   >
                     <Box fontSize={'14px'} fontWeight={'500'} color={'#c7cad9'}>
-                      Upgradeable:
+                      {t('upgradable')}:
                     </Box>
                     {extraPoolData ? (
                       <Box
@@ -1044,7 +1050,7 @@ const LendDetailPage: React.FC = () => {
                     }}
                   >
                     <Box fontSize={'14px'} fontWeight={'500'} color={'#c7cad9'}>
-                      Admin (copy):
+                      {t('admincopy')}:
                     </Box>
                     {extraPoolData && extraPoolData.admin ? (
                       <Box
@@ -1083,7 +1089,7 @@ const LendDetailPage: React.FC = () => {
                     }}
                   >
                     <Box fontSize={'14px'} fontWeight={'500'} color={'#c7cad9'}>
-                      Platform Fee:
+                      {t('platformFee')}:
                     </Box>
                     {poolData ? (
                       <Box
@@ -1119,7 +1125,7 @@ const LendDetailPage: React.FC = () => {
                     }}
                   >
                     <Box fontSize={'14px'} fontWeight={'500'} color={'#c7cad9'}>
-                      Average Admin Fee:
+                      {t('averageAdminFee')}:
                     </Box>
                     {poolData ? (
                       <Box
@@ -1162,7 +1168,7 @@ const LendDetailPage: React.FC = () => {
                     }}
                   >
                     <Box fontSize={'14px'} fontWeight={'500'} color={'#c7cad9'}>
-                      Close Factor:
+                      {t('closeFactor')}:
                     </Box>
                     {extraPoolData ? (
                       <Box
@@ -1193,7 +1199,7 @@ const LendDetailPage: React.FC = () => {
                     }}
                   >
                     <Box fontSize={'14px'} fontWeight={'500'} color={'#c7cad9'}>
-                      Liquidation Incentive:
+                      {t('liquidationIncentive')}:
                     </Box>
                     {extraPoolData ? (
                       <Box
@@ -1232,7 +1238,7 @@ const LendDetailPage: React.FC = () => {
                     }}
                   >
                     <Box fontSize={'14px'} fontWeight={'500'} color={'#c7cad9'}>
-                      Oracle:
+                      {t('oracle')}:
                     </Box>
                     {extraPoolData ? (
                       <Box
@@ -1263,7 +1269,7 @@ const LendDetailPage: React.FC = () => {
                     }}
                   >
                     <Box fontSize={'14px'} fontWeight={'500'} color={'#c7cad9'}>
-                      Whitelist:
+                      {t('whitelist')}:
                     </Box>
                     {extraPoolData ? (
                       <Box
@@ -1343,6 +1349,7 @@ const LendDetailPage: React.FC = () => {
 };
 
 const AssetStats = ({ poolData }: { poolData: PoolData }) => {
+  const { t } = useTranslation();
   const asset = poolData.assets[0];
   const sdk = asset.cToken.sdk;
   const [jrm, setJrm] = useState<JumpRateModel>();
@@ -1397,7 +1404,7 @@ const AssetStats = ({ poolData }: { poolData: PoolData }) => {
         alignItems={'center'}
       >
         <Box px={'30px'} fontSize={'18px'} fontWeight={'500'} lineHeight={'1'}>
-          {asset.underlyingName} Statistics
+          {asset.underlyingName} {t('statistics')}
         </Box>
         <Box mr={'30px'} display={'flex'} fontSize={'14px'}>
           <CustomSelect arrowcolor={'#428afa'}>
@@ -1420,7 +1427,7 @@ const AssetStats = ({ poolData }: { poolData: PoolData }) => {
             border={'solid 1px #3e4252'}
             display={'inline-block'}
           >
-            Current Utilization
+            {t('currentUtilization')}
           </Box>
           <Box mb={'20px'} borderLeft={'1px dashed #484c58'}>
             <ReactApexChart
@@ -1502,11 +1509,11 @@ const AssetStats = ({ poolData }: { poolData: PoolData }) => {
               }}
               series={[
                 {
-                  name: 'Supplier Rates',
+                  name: t('supplierRates'),
                   data: supplierRates?.map(({ y }) => y),
                 },
                 {
-                  name: 'Borrower Rates',
+                  name: t('borrowerRates'),
                   data: borrowerRates?.map(({ y }) => y),
                 },
               ]}
@@ -1528,7 +1535,7 @@ const AssetStats = ({ poolData }: { poolData: PoolData }) => {
             gridGap={'8px'}
           >
             <Box textAlign={'center'} fontSize={'14px'} color={'#c7cad9'}>
-              Collateral Factor:
+              {t('collateralFactor')}:
             </Box>
             <Box textAlign={'center'} fontSize={'14px'} color={'#ebecf2'}>
               {asset.collateralFactor.div(sdk.web3.utils.toBN(1e16)).toNumber()}
@@ -1542,7 +1549,7 @@ const AssetStats = ({ poolData }: { poolData: PoolData }) => {
             gridGap={'8px'}
           >
             <Box textAlign={'center'} fontSize={'14px'} color={'#c7cad9'}>
-              Reserve Factor:
+              {t('reserveFactor')}:
             </Box>
             <Box textAlign={'center'} fontSize={'14px'} color={'#ebecf2'}>
               {asset.reserveFactor.div(sdk.web3.utils.toBN(1e16)).toNumber()}%
@@ -1562,7 +1569,7 @@ const AssetStats = ({ poolData }: { poolData: PoolData }) => {
             gridGap={'8px'}
           >
             <Box textAlign={'center'} fontSize={'14px'} color={'#c7cad9'}>
-              Total Supplied:
+              {t('totalSupplied')}:
             </Box>
             <Box textAlign={'center'} fontSize={'14px'} color={'#ebecf2'}>
               {shortUsdFormatter(asset.totalSupplyUSD)}
@@ -1575,7 +1582,7 @@ const AssetStats = ({ poolData }: { poolData: PoolData }) => {
             gridGap={'8px'}
           >
             <Box textAlign={'center'} fontSize={'14px'} color={'#c7cad9'}>
-              Total Borrowed:
+              {t('totalBorrowed')}:
             </Box>
             <Box textAlign={'center'} fontSize={'14px'} color={'#ebecf2'}>
               {shortUsdFormatter(asset.totalBorrowUSD)}
@@ -1588,7 +1595,7 @@ const AssetStats = ({ poolData }: { poolData: PoolData }) => {
             gridGap={'8px'}
           >
             <Box textAlign={'center'} fontSize={'14px'} color={'#c7cad9'}>
-              Utilization:
+              {t('utilization')}:
             </Box>
             <Box textAlign={'center'} fontSize={'14px'} color={'#ebecf2'}>
               {asset.totalSupplyUSD.toString() === '0'

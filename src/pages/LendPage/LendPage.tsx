@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState } from 'react';
 import Web3 from 'web3';
 import { Box } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
@@ -15,7 +15,7 @@ import {
   fetchPoolData,
   getPoolIdFromComptroller,
 } from 'utils/marketxyz/fetchPoolData';
-import { getEthPrice } from 'utils';
+import { useTranslation } from 'react-i18next';
 
 const QS_PoolDirectory = '0x9180296118C8Deb7c5547eF5c1E798DC0405f350';
 const QS_Pools = ['0x772EdfEDee10029E98AF15359595bB398950416B'];
@@ -24,6 +24,7 @@ const QS_Pools = ['0x772EdfEDee10029E98AF15359595bB398950416B'];
 // const fQSUSDC = '0xE6538102EDE880BdDbEe50C2f763Be02DE164010';
 
 const LendPage: React.FC = () => {
+  const { t } = useTranslation();
   const history = useHistory();
   const { account } = useActiveWeb3React();
   const web3 = new Web3('https://polygon-rpc.com');
@@ -85,7 +86,7 @@ const LendPage: React.FC = () => {
         color={'white'}
         sx={{ display: { xs: 'block', sm: 'block', md: 'none' } }}
       >
-        Lend
+        {t('lend')}
       </Box>
       <AlertBox />
       <Box
@@ -95,12 +96,10 @@ const LendPage: React.FC = () => {
         sx={{ textAlign: { xs: 'left', sm: 'center' } }}
       >
         <Box fontSize={'24px'} fontWeight={'700'}>
-          Leverage assets you believe in
+          {t('lendPageTitle')}
         </Box>
         <Box mt={'16px'} fontSize={'16px'} maxWidth={'520px'}>
-          With Quickswap Lend, you can maximize your yield, contribute to risk
-          management and create unparalleled opportunities to make the most of
-          DeFi.
+          {t('lendPageSubTitle')}
         </Box>
       </Box>
       <Box mt={'48px'} display={'flex'} gridGap={'24px'} flexWrap={'wrap'}>
@@ -112,7 +111,7 @@ const LendPage: React.FC = () => {
           sx={{ minWidth: { xs: '35%', sm: '35%', md: '20%' } }}
         >
           <Box color={'#696c80'} fontSize={'14px'}>
-            Total Supply
+            {t('totalSupply')}
           </Box>
           {totalSupply ? (
             <Box fontSize={'24px'} color={'white'}>
@@ -130,7 +129,7 @@ const LendPage: React.FC = () => {
           sx={{ minWidth: { xs: '35%', sm: '35%', md: '20%' } }}
         >
           <Box color={'#696c80'} fontSize={'14px'}>
-            Total Borrowed
+            {t('totalBorrowed')}
           </Box>
           {totalBorrow ? (
             <Box fontSize={'24px'} color={'white'}>
@@ -148,7 +147,7 @@ const LendPage: React.FC = () => {
           sx={{ minWidth: { xs: '35%', sm: '35%', md: '20%' } }}
         >
           <Box color={'#696c80'} fontSize={'14px'}>
-            Liquidity
+            {t('liquidity')}
           </Box>
           {totalLiquidity ? (
             <Box fontSize={'24px'} color={'white'}>
@@ -166,7 +165,7 @@ const LendPage: React.FC = () => {
           sx={{ minWidth: { xs: '35%', sm: '35%', md: '20%' } }}
         >
           <Box color={'#696c80'} fontSize={'14px'}>
-            Markets
+            {t('markets')}
           </Box>
           {pools.length ? (
             <Box fontSize={'24px'} color={'white'}>
@@ -189,10 +188,10 @@ const LendPage: React.FC = () => {
       >
         <Box display={'flex'} gridGap={'24px'}>
           <Box fontSize={'18px'} fontWeight={'bold'} color={'#448aff'}>
-            All Pools
+            {t('allPools')}
           </Box>
           <Box fontSize={'18px'} fontWeight={'bold'} color={'#626680'}>
-            My Pools
+            {t('myPools')}
           </Box>
         </Box>
         <Box
@@ -211,10 +210,10 @@ const LendPage: React.FC = () => {
             value={searchInput}
             setValue={setSearchInput}
           />
-          <CustomSelect before={'SortBy: '} width={'calc(50% - 8px)'}>
-            <SmOption value={'Rewards'}>Rewards</SmOption>
+          <CustomSelect before={`${t('sortBy')}: `} width={'calc(50% - 8px)'}>
+            <SmOption value={'Rewards'}>{t('rewards')}</SmOption>
             <SmOption value={'Quickswap'}>Quickswap</SmOption>
-            <SmOption value={'PoolTitle'}>PoolTitle</SmOption>
+            <SmOption value={'PoolTitle'}>{t('poolTitle')}</SmOption>
           </CustomSelect>
         </Box>
       </Box>
@@ -264,7 +263,7 @@ const LendPage: React.FC = () => {
                   pb={'24px'}
                 >
                   <Box fontSize={'14px'} color={'#575b73'}>
-                    Total Supply
+                    {t('totalSupply')}
                   </Box>
                   <Box fontSize={'16px'} mt={'10px'}>
                     {midUsdFormatter(totalSuppliedUSD)}
@@ -272,7 +271,7 @@ const LendPage: React.FC = () => {
                 </Box>
                 <Box flex={'1'} textAlign={'center'} pt={'18px'} pb={'24px'}>
                   <Box fontSize={'14px'} color={'#575b73'}>
-                    Total Borrowed
+                    {t('totalBorrowed')}
                   </Box>
                   <Box fontSize={'16px'} mt={'10px'}>
                     {midUsdFormatter(totalBorrowedUSD)}
@@ -280,7 +279,7 @@ const LendPage: React.FC = () => {
                 </Box>
               </Box>
               <Box py={'22px'} textAlign={'center'} fontSize={'16px'}>
-                View Details
+                {t('viewDetails')}
               </Box>
             </Card>
           ),
@@ -291,6 +290,7 @@ const LendPage: React.FC = () => {
 };
 
 const AlertBox: React.FC = () => {
+  const { t } = useTranslation();
   const [visible, setVisible] = useState(true);
   return (
     <>
@@ -334,10 +334,7 @@ const AlertBox: React.FC = () => {
             </Box>
           </Box>
           <Box fontSize={'15px'} sx={{ order: { xs: 3, sm: 3, md: 'unset' } }}>
-            By using this software, you understand, knowledge and accept that
-            Quickswap and/or the underlying software are provided &quot;as
-            is&quot; and &quot;as available&quot; basis and without warranties
-            or representations of any kind either expressed or implied.
+            {t('lendAlertDesc')}
           </Box>
           <Box
             fontSize={'25px'}
