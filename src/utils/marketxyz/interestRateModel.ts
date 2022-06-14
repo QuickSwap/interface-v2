@@ -54,19 +54,22 @@ export default class JumpRateModel {
     if (!this.initialized)
       throw new Error('Interest rate model class not initialized.');
 
-    if (utilizationRate.lte(this.kink!)) {
+    const zeroBN = this.sdk.web3.utils.toBN(0);
+
+    if (utilizationRate.lte(this.kink ?? zeroBN)) {
       return utilizationRate
-        .mul(this.multiplierPerBlock!)
+        .mul(this.multiplierPerBlock ?? zeroBN)
         .div(this.sdk.web3.utils.toBN(1e18))
-        .add(this.baseRatePerBlock!);
+        .add(this.baseRatePerBlock ?? zeroBN);
     } else {
-      const normalRate = this.kink!.mul(this.multiplierPerBlock!)
+      const normalRate = (this.kink ?? zeroBN)
+        .mul(this.multiplierPerBlock ?? zeroBN)
         .div(this.sdk.web3.utils.toBN(1e18))
-        .add(this.baseRatePerBlock!);
-      const excessUtil = utilizationRate.sub(this.kink!);
+        .add(this.baseRatePerBlock ?? zeroBN);
+      const excessUtil = utilizationRate.sub(this.kink ?? zeroBN);
 
       return excessUtil
-        .mul(this.jumpMultiplierPerBlock!)
+        .mul(this.jumpMultiplierPerBlock ?? zeroBN)
         .div(this.sdk.web3.utils.toBN(1e18))
         .add(normalRate);
     }
@@ -76,9 +79,11 @@ export default class JumpRateModel {
     if (!this.initialized)
       throw new Error('Interest rate model class not initialized.');
 
+    const zeroBN = this.sdk.web3.utils.toBN(0);
+
     const oneMinusReserveFactor = this.sdk.web3.utils
       .toBN(1e18)
-      .sub(this.reserveFactorMantissa!);
+      .sub(this.reserveFactorMantissa ?? zeroBN);
     const borrowRate = this.getBorrowRate(utilizationRate);
 
     const rateToPool = borrowRate

@@ -58,9 +58,9 @@ const LendPage: React.FC = () => {
           directory,
         );
 
-        _totalSupplyUSD += poolData!.totalSuppliedUSD;
-        _totalBorrowUSD += poolData!.totalBorrowedUSD;
-        _totalLiquidityUSD += poolData!.totalLiquidityUSD;
+        _totalSupplyUSD += poolData?.totalSuppliedUSD ?? 0;
+        _totalBorrowUSD += poolData?.totalBorrowedUSD ?? 0;
+        _totalLiquidityUSD += poolData?.totalLiquidityUSD ?? 0;
 
         poolsData.push(poolData);
       }
@@ -71,6 +71,7 @@ const LendPage: React.FC = () => {
       setPools(poolsData);
     };
     getPools();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account]);
 
   const [searchInput, setSearchInput] = useState('');

@@ -134,10 +134,14 @@ const App: React.FC = () => {
                         </PageLayout>
                       </Route>
                       <Route exact path='/lend'>
-                        <LendPage />
+                        <PageLayout>
+                          <LendPage />
+                        </PageLayout>
                       </Route>
                       <Route exact path='/lend/detail'>
-                        <LendDetailPage />
+                        <PageLayout>
+                          <LendDetailPage />
+                        </PageLayout>
                       </Route>
                       <Route exact path='/pools'>
                         <PageLayout>

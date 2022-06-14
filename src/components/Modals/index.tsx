@@ -51,7 +51,7 @@ const ModalParent: React.FC<ModalParentProps> = ({
     return () => {
       window.removeEventListener('click', handle);
     };
-  }, []);
+  }, [setOpenModalType]);
 
   return (
     <ModalBack ref={modalBackBox}>

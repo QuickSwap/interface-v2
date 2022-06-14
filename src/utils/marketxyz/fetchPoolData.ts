@@ -59,7 +59,7 @@ export const fetchPoolData = async (
   const sdk = directory.sdk;
   const pool = await directory.pools(poolId, { from: address });
 
-  const lens = new PoolLensV1(sdk, sdk.options!.poolLens);
+  const lens = new PoolLensV1(sdk, sdk.options?.poolLens ?? '');
 
   const summary = await lens.getPoolSummary(pool.comptroller);
   const assets = (await lens.getPoolAssetsWithData(pool.comptroller, {

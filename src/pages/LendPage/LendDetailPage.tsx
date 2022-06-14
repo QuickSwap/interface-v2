@@ -572,7 +572,7 @@ const LendDetailPage: React.FC = () => {
                               const p = toggleCollateral(
                                 asset,
                                 poolData.pool.comptroller,
-                                account!,
+                                account ?? '',
                               );
                               p.catch((er) => {
                                 setAlertShow({
@@ -1286,7 +1286,7 @@ const LendDetailPage: React.FC = () => {
         </Box>
       </Box>
 
-      {modalType && (
+      {modalType && selectedAsset && (
         <ModalParent
           notoolbar={modalNotoolbar}
           notitle={modalNotitle}
@@ -1332,7 +1332,7 @@ const LendDetailPage: React.FC = () => {
               }}
               borrow={modalIsBorrow}
               confirm={modalIsConfirm}
-              asset={selectedAsset!}
+              asset={selectedAsset}
               borrowLimit={borrowLimit}
             />
           )}
@@ -1377,6 +1377,7 @@ const AssetStats = ({ poolData }: { poolData: PoolData }) => {
       setBorrowerRates(borrowerRates);
       setSupplyerRates(supplierRates);
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
