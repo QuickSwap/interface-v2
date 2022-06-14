@@ -3,9 +3,9 @@ import { TokenAmount, Token, Price, Pair } from '@uniswap/sdk';
 export interface LairInfo {
   lairAddress: string;
 
-  dQUICKtoQUICK: TokenAmount
+  dQUICKtoQUICK: TokenAmount;
 
-  QUICKtodQUICK: TokenAmount
+  QUICKtodQUICK: TokenAmount;
 
   dQUICKBalance: TokenAmount;
 

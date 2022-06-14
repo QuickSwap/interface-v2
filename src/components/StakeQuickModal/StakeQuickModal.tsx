@@ -6,14 +6,14 @@ import { useDerivedLairInfo } from 'state/stake/hooks';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 import { useCurrencyBalance, useTokenBalance } from 'state/wallet/hooks';
 import { useActiveWeb3React } from 'hooks';
-import { GlobalConst } from 'constants/index';
+import { GlobalConst, GlobalValue } from 'constants/index';
 import { useApproveCallback, ApprovalState } from 'hooks/useApproveCallback';
 import { useNewLairContract } from 'hooks/useContract';
 import {
   useTransactionAdder,
   useTransactionFinalizer,
 } from 'state/transactions/hooks';
-import { formatTokenAmount, returnTokenFromKey } from 'utils';
+import { formatTokenAmount } from 'utils';
 import 'components/styles/StakeModal.scss';
 import { useTranslation } from 'react-i18next';
 
@@ -28,13 +28,11 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
   const { account } = useActiveWeb3React();
   const addTransaction = useTransactionAdder();
   const finalizedTransaction = useTransactionFinalizer();
-  const quickBalance = useCurrencyBalance(
-    account ?? undefined,
-    returnTokenFromKey('QUICKNEW'),
-  );
+  const quickToken = GlobalValue.tokens.COMMON.NEW_QUICK;
+  const quickBalance = useCurrencyBalance(account ?? undefined, quickToken);
   const userLiquidityUnstaked = useTokenBalance(
     account ?? undefined,
-    returnTokenFromKey('QUICKNEW'),
+    quickToken,
   );
 
   const [typedValue, setTypedValue] = useState('');
@@ -42,7 +40,7 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
   const [approving, setApproving] = useState(false);
   const { parsedAmount, error } = useDerivedLairInfo(
     typedValue,
-    returnTokenFromKey('QUICKNEW'),
+    quickToken,
     userLiquidityUnstaked,
   );
 

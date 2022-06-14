@@ -17,7 +17,6 @@ import WalletConnectIcon from 'assets/images/walletConnectIcon.svg';
 import PortisIcon from 'assets/images/portisIcon.png';
 import VenlyIcon from 'assets/images/venly.svg';
 import GnosisIcon from 'assets/images/gnosis_safe.png';
-import { returnTokenFromKey } from 'utils';
 
 const WETH_ONLY: ChainTokenList = {
   [ChainId.MUMBAI]: [WETH[ChainId.MUMBAI]],
@@ -53,7 +52,7 @@ export const GlobalConst = {
     LAIR_ADDRESS: '0xf28164a485b0b2c90639e47b0f377b4a438a16b1',
     NEW_LAIR_ADDRESS: '0x958d208Cdf087843e9AD98d23823d32E17d723A1',
     QUICK_ADDRESS: '0x831753DD7087CaC61aB5644b308642cc1c33Dc13',
-    NEW_QUICK_ADDRESS: '0xb5c064f955d8e7f38fe0460c556a72987494ee17',
+    NEW_QUICK_ADDRESS: '0xB5C064F955D8e7F38fE0460C556a72987494eE17',
     FACTORY_ADDRESS: '0x5757371414417b8C6CAad45bAeF941aBc7d3Ab32',
     GOVERNANCE_ADDRESS: '0x5e4be8Bc9637f0EAA1A755019e06A68ce081D58F', //TODO: MATIC
     MERKLE_DISTRIBUTOR_ADDRESS: {
@@ -200,83 +199,6 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   },
 };
 
-export const GlobalData = {
-  bases: {
-    // used to construct intermediary pairs for trading
-    BASES_TO_CHECK_TRADES_AGAINST: {
-      ...WETH_ONLY,
-      [ChainId.MATIC]: [
-        ...WETH_ONLY[ChainId.MATIC],
-        returnTokenFromKey('USDC'),
-        returnTokenFromKey('USDT'),
-        returnTokenFromKey('QUICK'),
-        returnTokenFromKey('ETHER'),
-        returnTokenFromKey('WBTC'),
-        returnTokenFromKey('DAI'),
-        returnTokenFromKey('MAUSDC'),
-        returnTokenFromKey('MI'),
-        returnTokenFromKey('CXETH'),
-        returnTokenFromKey('GHST'),
-      ],
-    },
-    // Some tokens can only be swapped via certain pairs, so we override the list of bases that are considered for these tokens.
-    CUSTOM_BASES: { [ChainId.MATIC]: undefined, [ChainId.MUMBAI]: undefined },
-    // used for display in the default list when adding liquidity
-    SUGGESTED_BASES: {
-      ...WETH_ONLY,
-      [ChainId.MATIC]: [
-        ...WETH_ONLY[ChainId.MATIC],
-        returnTokenFromKey('DAI'),
-        returnTokenFromKey('USDC'),
-        returnTokenFromKey('USDT'),
-        returnTokenFromKey('QUICK'),
-        returnTokenFromKey('ETHER'),
-        returnTokenFromKey('WBTC'),
-        returnTokenFromKey('SAND'),
-        returnTokenFromKey('MI'),
-      ],
-    },
-    // used to construct the list of all pairs we consider by default in the frontend
-    BASES_TO_TRACK_LIQUIDITY_FOR: {
-      ...WETH_ONLY,
-      [ChainId.MATIC]: [
-        ...WETH_ONLY[ChainId.MATIC],
-        returnTokenFromKey('DAI'),
-        returnTokenFromKey('USDC'),
-        returnTokenFromKey('USDT'),
-        returnTokenFromKey('QUICK'),
-        returnTokenFromKey('ETHER'),
-        returnTokenFromKey('WBTC'),
-      ],
-    },
-  },
-  pairs: {
-    PINNED_PAIRS: {
-      [ChainId.MATIC]: [
-        [returnTokenFromKey('USDC'), returnTokenFromKey('USDT')],
-        [returnTokenFromKey('USDC'), returnTokenFromKey('DAI')],
-        [returnTokenFromKey('ETHER'), returnTokenFromKey('USDC')],
-        [returnTokenFromKey('WBTC'), returnTokenFromKey('ETHER')],
-        [WETH[ChainId.MATIC], returnTokenFromKey('USDT')],
-        [WETH[ChainId.MATIC], returnTokenFromKey('USDC')],
-        [WETH[ChainId.MATIC], returnTokenFromKey('ETHER')],
-        [returnTokenFromKey('ETHER'), returnTokenFromKey('QUICK')],
-      ],
-      [ChainId.MUMBAI]: undefined,
-    },
-  },
-  analytics: {
-    CHART_DURATIONS: [
-      GlobalConst.analyticChart.ONE_MONTH_CHART,
-      GlobalConst.analyticChart.THREE_MONTH_CHART,
-      GlobalConst.analyticChart.SIX_MONTH_CHART,
-      GlobalConst.analyticChart.ONE_YEAR_CHART,
-      GlobalConst.analyticChart.ALL_CHART,
-    ],
-    CHART_DURATION_TEXTS: ['1M', '3M', '6M', '1Y', 'All'],
-  },
-};
-
 export const GlobalValue = {
   percents: {
     ALLOWED_PRICE_IMPACT_LOW: new Percent( // used for warning states
@@ -302,6 +224,113 @@ export const GlobalValue = {
   },
   tokens: {
     MATIC: WETH[ChainId.MATIC],
+    COMMON: {
+      EMPTY: new Token(
+        ChainId.MATIC,
+        '0x0000000000000000000000000000000000000000',
+        0,
+        'EMPTY',
+        'EMPTY',
+      ),
+      USDC: new Token(
+        ChainId.MATIC,
+        '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
+        6,
+        'USDC',
+        'USDC',
+      ),
+      USDT: new Token(
+        ChainId.MATIC,
+        '0xc2132D05D31c914a87C6611C10748AEb04B58e8F',
+        6,
+        'USDT',
+        'Tether USD',
+      ),
+      OLD_QUICK: new Token(
+        ChainId.MATIC,
+        GlobalConst.addresses.QUICK_ADDRESS,
+        18,
+        'QUICK(OLD)',
+        'Quickswap(OLD)',
+      ),
+      NEW_QUICK: new Token(
+        ChainId.MATIC,
+        GlobalConst.addresses.NEW_QUICK_ADDRESS,
+        18,
+        'QUICK(NEW)',
+        'QuickSwap(NEW)',
+      ),
+      OLD_DQUICK: new Token(
+        ChainId.MATIC,
+        '0xf28164A485B0B2C90639E47b0f377b4a438a16B1',
+        18,
+        'dQUICK',
+        'Dragon QUICK',
+      ),
+      NEW_DQUICK: new Token(
+        ChainId.MATIC,
+        '0x958d208Cdf087843e9AD98d23823d32E17d723A1',
+        18,
+        'dQUICK',
+        'Dragon QUICK',
+      ),
+      WBTC: new Token(
+        ChainId.MATIC,
+        '0x1BFD67037B42Cf73acF2047067bd4F2C47D9BfD6',
+        18,
+        'wBTC',
+        'Wrapped Bitcoin',
+      ),
+      DAI: new Token(
+        ChainId.MATIC,
+        '0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063',
+        18,
+        'DAI',
+        'Dai Stablecoin',
+      ),
+      ETHER: new Token(
+        ChainId.MATIC,
+        '0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619',
+        18,
+        'ETH',
+        'Ether',
+      ),
+      CXETH: new Token(
+        ChainId.MATIC,
+        '0xfe4546feFe124F30788c4Cc1BB9AA6907A7987F9',
+        18,
+        'cxETH',
+        'CelsiusX Wrapped ETH',
+      ),
+      MI: new Token(
+        ChainId.MATIC,
+        '0xa3Fa99A148fA48D14Ed51d610c367C61876997F1',
+        18,
+        'MAI',
+        'miMATIC',
+      ),
+      SAND: new Token(
+        ChainId.MATIC,
+        '0xBbba073C31bF03b8ACf7c28EF0738DeCF3695683',
+        18,
+        'SAND',
+        'SAND',
+      ),
+      MAUSDC: new Token(
+        ChainId.MATIC,
+        '0x9719d867A500Ef117cC201206B8ab51e794d3F82',
+        6,
+        'maUSDC',
+        'Matic Aave interest bearing USDC',
+      ),
+      FRAX: new Token(
+        ChainId.MATIC,
+        '0x45c32fA6DF82ead1e2EF74d17b76547EDdFaFF89',
+        18,
+        'FRAX',
+        'FRAX',
+      ),
+    },
     UNI: {
       [ChainId.MATIC]: new Token(
         ChainId.MATIC,
@@ -318,6 +347,81 @@ export const GlobalValue = {
         'Quickswap',
       ),
     },
+  },
+};
+
+export const GlobalData = {
+  bases: {
+    // used to construct intermediary pairs for trading
+    BASES_TO_CHECK_TRADES_AGAINST: {
+      ...WETH_ONLY,
+      [ChainId.MATIC]: [
+        ...WETH_ONLY[ChainId.MATIC],
+        GlobalValue.tokens.COMMON.USDC,
+        GlobalValue.tokens.COMMON.USDT,
+        GlobalValue.tokens.COMMON.OLD_QUICK,
+        GlobalValue.tokens.COMMON.ETHER,
+        GlobalValue.tokens.COMMON.WBTC,
+        GlobalValue.tokens.COMMON.DAI,
+        GlobalValue.tokens.COMMON.MAUSDC,
+        GlobalValue.tokens.COMMON.MI,
+      ],
+    },
+    // Some tokens can only be swapped via certain pairs, so we override the list of bases that are considered for these tokens.
+    CUSTOM_BASES: { [ChainId.MATIC]: undefined, [ChainId.MUMBAI]: undefined },
+    // used for display in the default list when adding liquidity
+    SUGGESTED_BASES: {
+      ...WETH_ONLY,
+      [ChainId.MATIC]: [
+        ...WETH_ONLY[ChainId.MATIC],
+        GlobalValue.tokens.COMMON.DAI,
+        GlobalValue.tokens.COMMON.USDC,
+        GlobalValue.tokens.COMMON.USDT,
+        GlobalValue.tokens.COMMON.OLD_QUICK,
+        GlobalValue.tokens.COMMON.ETHER,
+        GlobalValue.tokens.COMMON.WBTC,
+        GlobalValue.tokens.COMMON.SAND,
+        GlobalValue.tokens.COMMON.MI,
+      ],
+    },
+    // used to construct the list of all pairs we consider by default in the frontend
+    BASES_TO_TRACK_LIQUIDITY_FOR: {
+      ...WETH_ONLY,
+      [ChainId.MATIC]: [
+        ...WETH_ONLY[ChainId.MATIC],
+        GlobalValue.tokens.COMMON.DAI,
+        GlobalValue.tokens.COMMON.USDC,
+        GlobalValue.tokens.COMMON.USDT,
+        GlobalValue.tokens.COMMON.OLD_QUICK,
+        GlobalValue.tokens.COMMON.ETHER,
+        GlobalValue.tokens.COMMON.WBTC,
+      ],
+    },
+  },
+  pairs: {
+    PINNED_PAIRS: {
+      [ChainId.MATIC]: [
+        [GlobalValue.tokens.COMMON.USDC, GlobalValue.tokens.COMMON.USDT],
+        [GlobalValue.tokens.COMMON.USDC, GlobalValue.tokens.COMMON.DAI],
+        [GlobalValue.tokens.COMMON.ETHER, GlobalValue.tokens.COMMON.USDC],
+        [GlobalValue.tokens.COMMON.WBTC, GlobalValue.tokens.COMMON.ETHER],
+        [WETH[ChainId.MATIC], GlobalValue.tokens.COMMON.USDT],
+        [WETH[ChainId.MATIC], GlobalValue.tokens.COMMON.USDC],
+        [WETH[ChainId.MATIC], GlobalValue.tokens.COMMON.ETHER],
+        [GlobalValue.tokens.COMMON.ETHER, GlobalValue.tokens.COMMON.OLD_QUICK],
+      ],
+      [ChainId.MUMBAI]: undefined,
+    },
+  },
+  analytics: {
+    CHART_DURATIONS: [
+      GlobalConst.analyticChart.ONE_MONTH_CHART,
+      GlobalConst.analyticChart.THREE_MONTH_CHART,
+      GlobalConst.analyticChart.SIX_MONTH_CHART,
+      GlobalConst.analyticChart.ONE_YEAR_CHART,
+      GlobalConst.analyticChart.ALL_CHART,
+    ],
+    CHART_DURATION_TEXTS: ['1M', '3M', '6M', '1Y', 'All'],
   },
 };
 
