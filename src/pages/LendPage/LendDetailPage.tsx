@@ -16,7 +16,7 @@ import { CustomSelect, SmOption } from 'components/CustomSelect';
 import ReactApexChart from 'react-apexcharts';
 import { _100 } from '@uniswap/sdk/dist/constants';
 import { useHistory, useLocation } from 'react-router-dom';
-import AntSwitch from 'components/AntSwitch';
+import ToggleSwitch from 'components/ToggleSwitch';
 
 import ModalParent, {
   QuickModalContent,
@@ -40,6 +40,7 @@ import {
 } from 'utils/marketxyz';
 import { useBorrowLimit } from 'hooks/marketxyz/useBorrowLimit';
 import { useTranslation } from 'react-i18next';
+import { QuestionHelper, CopyHelper } from 'components';
 
 const QS_PoolDirectory = '0x9180296118C8Deb7c5547eF5c1E798DC0405f350';
 
@@ -58,6 +59,7 @@ const LendDetailPage: React.FC = () => {
   const location = useLocation();
   const classes = useStyles();
   const { account } = useActiveWeb3React();
+  const [supplyToggled, setSupplyToggled] = useState(false);
 
   const [modalNotoolbar, setModalNotoolbar] = useState<boolean>(false);
   const [modalNotitle, setModalNotitle] = useState<boolean>(false);
@@ -280,19 +282,7 @@ const LendDetailPage: React.FC = () => {
           >
             <Box>{t('borrowLimit')}</Box>
             <Box ml={'8px'}>
-              <Box
-                width={'16px'}
-                height={'16px'}
-                display={'flex'}
-                justifyContent={'center'}
-                alignItems={'center'}
-                fontSize={'12px'}
-                color={'#63687e'}
-                border={'1px solid #63687e'}
-                borderRadius={'100%'}
-              >
-                ?
-              </Box>
+              <QuestionHelper text={t('borrowLimitHelper')} />
             </Box>
           </Box>
           <Box
@@ -569,24 +559,27 @@ const LendDetailPage: React.FC = () => {
                           display={'flex'}
                           justifyContent={'flex-end'}
                         >
-                          <AntSwitch
+                          <ToggleSwitch
                             // defaultChecked={asset.membership}
-                            checked={asset.membership}
-                            onChange={() => {
-                              const p = toggleCollateral(
-                                asset,
-                                poolData.pool.comptroller,
-                                account ?? '',
-                              );
-                              p.catch((er) => {
-                                setAlertShow({
-                                  open: true,
-                                  msg: er.message,
-                                  status: 'error',
-                                });
-                              });
+                            toggled={asset.membership}
+                            onToggle={() => {
+                              if (!supplyToggled) {
+                                setSupplyToggled(true);
+                                toggleCollateral(
+                                  asset,
+                                  poolData.pool.comptroller,
+                                  account ?? '',
+                                )
+                                  .catch((er) => {
+                                    setAlertShow({
+                                      open: true,
+                                      msg: er.message,
+                                      status: 'error',
+                                    });
+                                  })
+                                  .finally(() => setSupplyToggled(false));
+                              }
                             }}
-                            inputProps={{ 'aria-label': 'ant design' }}
                           />
                           <Snackbar
                             open={alertShow.open}
@@ -846,7 +839,7 @@ const LendDetailPage: React.FC = () => {
                 fontWeight={'500'}
                 lineHeight={'1'}
               >
-                Pool Info
+                {t('poolInfo')}
               </Box>
             </Box>
             <Box display={'flex'} pb={'16px'} flexDirection={'column'}>
@@ -876,13 +869,9 @@ const LendDetailPage: React.FC = () => {
                       {t('totalSupplied')}:
                     </Box>
                     {poolData ? (
-                      <Box
-                        fontSize={'14px'}
-                        fontWeight={'500'}
-                        color={'#ebecf2'}
-                      >
+                      <small className='text-gray29'>
                         {midUsdFormatter(poolData.totalSuppliedUSD)}
-                      </Box>
+                      </small>
                     ) : (
                       <Skeleton variant='rect' width={40} height={23} />
                     )}
@@ -907,13 +896,9 @@ const LendDetailPage: React.FC = () => {
                       {t('totalBorrowed')}:
                     </Box>
                     {poolData ? (
-                      <Box
-                        fontSize={'14px'}
-                        fontWeight={'500'}
-                        color={'#ebecf2'}
-                      >
+                      <small className='text-gray29'>
                         {midUsdFormatter(poolData.totalBorrowedUSD)}
-                      </Box>
+                      </small>
                     ) : (
                       <Skeleton variant='rect' width={40} height={23} />
                     )}
@@ -946,13 +931,9 @@ const LendDetailPage: React.FC = () => {
                       {t('availableLiquidity')}:
                     </Box>
                     {poolData ? (
-                      <Box
-                        fontSize={'14px'}
-                        fontWeight={'500'}
-                        color={'#ebecf2'}
-                      >
+                      <small className='text-gray29'>
                         {midUsdFormatter(poolData.totalLiquidityUSD)}
-                      </Box>
+                      </small>
                     ) : (
                       <Skeleton variant='rect' width={40} height={23} />
                     )}
@@ -977,11 +958,7 @@ const LendDetailPage: React.FC = () => {
                       {t('poolUtilization')}:
                     </Box>
                     {poolData ? (
-                      <Box
-                        fontSize={'14px'}
-                        fontWeight={'500'}
-                        color={'#ebecf2'}
-                      >
+                      <small className='text-gray29'>
                         {poolData.totalSuppliedUSD.toString() === '0'
                           ? '0%'
                           : (
@@ -989,7 +966,7 @@ const LendDetailPage: React.FC = () => {
                                 poolData.totalSuppliedUSD) *
                               100
                             ).toFixed(2) + '%'}
-                      </Box>
+                      </small>
                     ) : (
                       <Skeleton variant='rect' width={40} height={23} />
                     )}
@@ -1018,17 +995,11 @@ const LendDetailPage: React.FC = () => {
                       },
                     }}
                   >
-                    <Box fontSize={'14px'} fontWeight={'500'} color={'#c7cad9'}>
-                      {t('upgradable')}:
-                    </Box>
+                    <small>{t('upgradable')}:</small>
                     {extraPoolData ? (
-                      <Box
-                        fontSize={'14px'}
-                        fontWeight={'500'}
-                        color={'#ebecf2'}
-                      >
+                      <small className='text-gray29'>
                         {extraPoolData.upgradeable ? 'Yes' : 'No'}
-                      </Box>
+                      </small>
                     ) : (
                       <Skeleton variant='rect' width={40} height={23} />
                     )}
@@ -1049,16 +1020,15 @@ const LendDetailPage: React.FC = () => {
                       },
                     }}
                   >
-                    <Box fontSize={'14px'} fontWeight={'500'} color={'#c7cad9'}>
-                      {t('admincopy')}:
-                    </Box>
+                    <small>{t('admin')}:</small>
                     {extraPoolData && extraPoolData.admin ? (
-                      <Box
-                        fontSize={'14px'}
-                        fontWeight={'500'}
-                        color={'#ebecf2'}
-                      >
-                        {shortenAddress(extraPoolData.admin)}
+                      <Box className='flex items-center'>
+                        <small className='text-gray29'>
+                          {shortenAddress(extraPoolData.admin)}
+                        </small>
+                        <Box ml={1}>
+                          <CopyHelper toCopy={extraPoolData.admin} />
+                        </Box>
                       </Box>
                     ) : (
                       <Skeleton variant='rect' width={40} height={23} />
@@ -1088,22 +1058,16 @@ const LendDetailPage: React.FC = () => {
                       },
                     }}
                   >
-                    <Box fontSize={'14px'} fontWeight={'500'} color={'#c7cad9'}>
-                      {t('platformFee')}:
-                    </Box>
+                    <small>{t('platformFee')}:</small>
                     {poolData ? (
-                      <Box
-                        fontSize={'14px'}
-                        fontWeight={'500'}
-                        color={'#ebecf2'}
-                      >
+                      <small className='text-gray29'>
                         {poolData.assets.length > 0
                           ? (
                               Number(poolData.assets[0].fuseFee.toString()) /
                               1e16
                             ).toPrecision(2) + '%'
                           : '10%'}
-                      </Box>
+                      </small>
                     ) : (
                       <Skeleton variant='rect' width={40} height={23} />
                     )}
@@ -1128,17 +1092,13 @@ const LendDetailPage: React.FC = () => {
                       {t('averageAdminFee')}:
                     </Box>
                     {poolData ? (
-                      <Box
-                        fontSize={'14px'}
-                        fontWeight={'500'}
-                        color={'#ebecf2'}
-                      >
+                      <small className='text-gray29'>
                         {poolData.assets.reduce(
                           (a, b, _, { length }) =>
                             a + Number(b.adminFee.toString()) / 1e16 / length,
                           0,
                         )}
-                      </Box>
+                      </small>
                     ) : (
                       <Skeleton variant='rect' width={40} height={23} />
                     )}
@@ -1171,13 +1131,9 @@ const LendDetailPage: React.FC = () => {
                       {t('closeFactor')}:
                     </Box>
                     {extraPoolData ? (
-                      <Box
-                        fontSize={'14px'}
-                        fontWeight={'500'}
-                        color={'#ebecf2'}
-                      >
+                      <small className='text-gray29'>
                         {extraPoolData.closeFactor / 1e16 + '%'}
-                      </Box>
+                      </small>
                     ) : (
                       <Skeleton variant='rect' width={40} height={23} />
                     )}
@@ -1202,13 +1158,9 @@ const LendDetailPage: React.FC = () => {
                       {t('liquidationIncentive')}:
                     </Box>
                     {extraPoolData ? (
-                      <Box
-                        fontSize={'14px'}
-                        fontWeight={'500'}
-                        color={'#ebecf2'}
-                      >
+                      <small className='text-gray29'>
                         {extraPoolData.liquidationIncentive / 1e16 - 100 + '%'}
-                      </Box>
+                      </small>
                     ) : (
                       <Skeleton variant='rect' width={40} height={23} />
                     )}
@@ -1241,13 +1193,9 @@ const LendDetailPage: React.FC = () => {
                       {t('oracle')}:
                     </Box>
                     {extraPoolData ? (
-                      <Box
-                        fontSize={'14px'}
-                        fontWeight={'500'}
-                        color={'#ebecf2'}
-                      >
+                      <small className='text-gray29'>
                         {shortenAddress(extraPoolData.oracle)}
-                      </Box>
+                      </small>
                     ) : (
                       <Skeleton variant='rect' width={40} height={23} />
                     )}
@@ -1272,13 +1220,9 @@ const LendDetailPage: React.FC = () => {
                       {t('whitelist')}:
                     </Box>
                     {extraPoolData ? (
-                      <Box
-                        fontSize={'14px'}
-                        fontWeight={'500'}
-                        color={'#ebecf2'}
-                      >
+                      <small className='text-gray29'>
                         {extraPoolData.enforceWhitelist ? 'Yes' : 'No'}
-                      </Box>
+                      </small>
                     ) : (
                       <Skeleton variant='rect' width={40} height={23} />
                     )}

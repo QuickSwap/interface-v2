@@ -1,15 +1,15 @@
 import React from 'react';
 import { Box } from '@material-ui/core';
 import useCopyClipboard from 'hooks/useCopyClipboard';
-import { CheckCircle, Copy } from 'react-feather';
+import { CheckCircle } from 'react-feather';
 import { useTranslation } from 'react-i18next';
+import { ReactComponent as CopyIcon } from 'assets/images/CopyIcon.svg';
 
 interface CopyHelperProps {
   toCopy: string;
-  children?: React.ReactNode;
 }
 
-const CopyHelper: React.FC<CopyHelperProps> = ({ toCopy, children }) => {
+const CopyHelper: React.FC<CopyHelperProps> = ({ toCopy }) => {
   const [isCopied, setCopied] = useCopyClipboard();
   const { t } = useTranslation();
 
@@ -17,13 +17,12 @@ const CopyHelper: React.FC<CopyHelperProps> = ({ toCopy, children }) => {
     <Box className='copyIcon' onClick={() => setCopied(toCopy)}>
       {isCopied ? (
         <>
-          <CheckCircle size='20' />
+          <CheckCircle size='18' />
           <small>{t('copied')}</small>
         </>
       ) : (
-        <Copy size='20' />
+        <CopyIcon />
       )}
-      {isCopied ? '' : children}
     </Box>
   );
 };

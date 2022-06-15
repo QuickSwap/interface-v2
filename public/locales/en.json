@@ -351,7 +351,7 @@
   "totalSupplied": "Total Supplied",
   "availableLiquidity": "Available Liquidity",
   "upgradable": "Upgradeable",
-  "admincopy": "Admin (copy)",
+  "admin": "Admin",
   "platformFee": "Platform Fee",
   "averageAdminFee": "Average Admin Fee",
   "closeFactor": "Close Factor",
@@ -364,5 +364,7 @@
   "borrowerRates": "Borrower Rates",
   "collateralFactor": "Collateral Factor",
   "reserveFactor": "Reserve Factor",
-  "utilization": "Utilization"
+  "utilization": "Utilization",
+  "poolInfo": "Pool Info",
+  "borrowLimitHelper": "Borrow limit is the maximum value you can borrow marked by the white bar. To increase this limit, you can supply more assets."
 }

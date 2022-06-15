@@ -2,7 +2,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Box, Button, Input, ModalProps, withStyles } from '@material-ui/core';
 import styled, { keyframes } from 'styled-components';
-import AntSwitch from 'components/AntSwitch';
 import { ArrowForward } from '@material-ui/icons';
 import { USDPricedPoolAsset } from 'utils/marketxyz/fetchPoolData';
 import { midUsdFormatter } from 'utils/bigUtils';
@@ -12,6 +11,7 @@ import { convertMantissaToAPR, convertMantissaToAPY } from 'utils/marketxyz';
 
 import { getEthPrice } from 'utils';
 import { useActiveWeb3React } from 'hooks';
+import ToggleSwitch from 'components/ToggleSwitch';
 
 interface ModalParentProps {
   notitle?: boolean;
@@ -516,10 +516,9 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
           alignItems={'center'}
         >
           <Box>Enable as collateral</Box>
-          <AntSwitch
-            inputProps={{ 'aria-label': 'ant design' }}
-            defaultChecked={enableAsCollateral}
-            onChange={() => {
+          <ToggleSwitch
+            toggled={enableAsCollateral}
+            onToggle={() => {
               setEnableAsCollateral(
                 (enableAsCollateral) => !enableAsCollateral,
               );
