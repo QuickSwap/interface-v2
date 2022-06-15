@@ -1,4 +1,14 @@
 import { TokenAmount, Token, Price, Pair } from '@uniswap/sdk';
+import { Version } from '@uniswap/token-lists';
+
+export interface FarmListInfo {
+  readonly name: string;
+  readonly timestamp: string;
+  readonly active: StakingInfoRaw[];
+  readonly closed: StakingInfoRaw[];
+  readonly version: Version;
+  readonly logoURI?: string;
+}
 
 export interface LairInfo {
   lairAddress: string;
@@ -55,6 +65,18 @@ export interface CommonStakingInfo {
     totalStakedAmount?: TokenAmount,
     totalRewardRate?: TokenAmount,
   ) => TokenAmount | undefined;
+}
+
+export interface StakingInfoRaw {
+  tokens: string[];
+  stakingRewardAddress: string;
+  ended: boolean;
+  name: string;
+  lp: string;
+  baseToken: string;
+  rate: number;
+  pair: string;
+  rewardToken: string;
 }
 
 export interface StakingBasic {

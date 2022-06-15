@@ -5,8 +5,9 @@ import { Skeleton } from '@material-ui/lab';
 import { useUSDRewardsandFees } from 'state/stake/hooks';
 import { useActiveWeb3React } from 'hooks';
 import { GlobalConst } from 'constants/index';
-import { returnStakingInfo } from 'utils';
 import { useTranslation } from 'react-i18next';
+import { useFarmInfo } from 'state/farms/hooks';
+import { ChainId } from '@uniswap/sdk';
 
 const FarmRewards: React.FC<{ farmIndex: number; bulkPairs: any }> = ({
   farmIndex,
@@ -20,13 +21,17 @@ const FarmRewards: React.FC<{ farmIndex: number; bulkPairs: any }> = ({
   const farmData = useUSDRewardsandFees(
     farmIndex === GlobalConst.farmIndex.LPFARM_INDEX,
     bulkPairs,
+    chainId ?? ChainId.MATIC,
   );
+
+  const allFarms = useFarmInfo();
+
   const dQuickRewardSum = useMemo(() => {
     if (!chainId) return 0;
-    const stakingData = returnStakingInfo()[chainId] ?? [];
+    const stakingData = allFarms[chainId].filter((x) => !x.ended);
     const rewardSum = stakingData.reduce((total, item) => total + item.rate, 0);
     return rewardSum;
-  }, [chainId]);
+  }, [chainId, allFarms]);
 
   const getRewardsSection = (isLPFarm: boolean) => (
     <>

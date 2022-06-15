@@ -50,11 +50,7 @@ import { BigNumber, BigNumberish } from '@ethersproject/bignumber';
 import { formatUnits } from 'ethers/lib/utils';
 import { AddressZero } from '@ethersproject/constants';
 import { GlobalConst, GlobalValue, SUPPORTED_WALLETS } from 'constants/index';
-import {
-  TokenAddressMap,
-  useSelectedTokenList,
-  WrappedTokenInfo,
-} from 'state/lists/hooks';
+import { TokenAddressMap } from 'state/lists/hooks';
 import tokenData from 'constants/tokens.json';
 import stakeData from 'constants/stake.json';
 import {
@@ -1715,9 +1711,6 @@ export function formatNumber(
   }
 }
 
-// const selectedTokenList = useSelectedTokenList();
-// //TODO: Support Multichain
-// return selectedTokenList[ChainId.MATIC][address];
 export function returnTokenFromKey(key: string): Token {
   if (key === 'MATIC') return GlobalValue.tokens.MATIC;
   const token = (tokenData as any)[key];
@@ -1733,7 +1726,7 @@ export function returnTokenFromKey(key: string): Token {
 export function returnSyrupInfo(
   isOld?: boolean,
 ): {
-  [chainId in ChainId]?: SyrupBasic[];
+  [chainId in ChainId]: SyrupBasic[];
 } {
   const syrupInfo = isOld ? stakeData.oldsyrup : stakeData.syrup;
   return {
@@ -1745,37 +1738,12 @@ export function returnSyrupInfo(
         stakingToken: returnTokenFromKey(info.stakingToken),
       };
     }),
-  };
-}
-
-export function returnStakingInfo(
-  type?: string,
-): {
-  [chainId in ChainId]?: StakingBasic[];
-} {
-  const stakingInfo =
-    type === 'old'
-      ? stakeData.oldstakingrewards
-      : type === 'veryold'
-      ? stakeData.veryoldstakingrewards
-      : stakeData.stakingrewards;
-  return {
-    [ChainId.MATIC]: stakingInfo.map((info: any) => {
-      return {
-        ...info,
-        tokens: [
-          returnTokenFromKey(info.tokens[0]),
-          returnTokenFromKey(info.tokens[1]),
-        ],
-        baseToken: returnTokenFromKey(info.baseToken),
-        rewardToken: returnTokenFromKey(info.rewardToken ?? 'DQUICK'),
-      };
-    }),
+    [ChainId.MUMBAI]: [],
   };
 }
 
 export function returnDualStakingInfo(): {
-  [chainId in ChainId]?: DualStakingBasic[];
+  [chainId in ChainId]: DualStakingBasic[];
 } {
   return {
     [ChainId.MATIC]: stakeData.dualrewards.map((info) => {
@@ -1791,6 +1759,7 @@ export function returnDualStakingInfo(): {
         rewardTokenBBase: returnTokenFromKey(info.rewardTokenBBase),
       };
     }),
+    [ChainId.MUMBAI]: [],
   };
 }
 

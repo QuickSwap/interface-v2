@@ -63,7 +63,7 @@ export default function useUSDCPrice(currency?: Currency): Price | undefined {
         chainId === ChainId.MATIC ? usdcToken : undefined,
       ],
     ],
-    [chainId, wrapped],
+    [chainId, wrapped, daiToken, oldQuickToken, usdcToken, usdtToken],
   );
   const [
     [ethPairState, ethPair],
@@ -202,6 +202,11 @@ export default function useUSDCPrice(currency?: Currency): Price | undefined {
     usdcQuickPairState,
     usdcQuickPair,
     internalWrapped,
+    cxETHToken,
+    daiToken,
+    oldQuickToken,
+    usdcToken,
+    usdtToken,
   ]);
 }
 
