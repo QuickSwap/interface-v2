@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Box } from '@material-ui/core';
 import { ChevronDown, ChevronUp } from 'react-feather';
-import { Pair } from '@uniswap/sdk';
+import { ChainId, Pair } from '@uniswap/sdk';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import {
   useStakingInfo,
@@ -13,15 +13,17 @@ import { formatAPY, getAPYWithFee, getOneYearFee } from 'utils';
 import PoolPositionCardDetails from './PoolPositionCardDetails';
 import 'components/styles/PoolPositionCard.scss';
 import { Trans, useTranslation } from 'react-i18next';
+import { useActiveWeb3React } from 'hooks';
 
 const PoolPositionCard: React.FC<{ pair: Pair }> = ({ pair }) => {
   const { t } = useTranslation();
+  const { chainId } = useActiveWeb3React();
   const [bulkPairData, setBulkPairData] = useState<any>(null);
 
   const currency0 = unwrappedToken(pair.token0);
   const currency1 = unwrappedToken(pair.token1);
 
-  const stakingInfos = useStakingInfo(pair);
+  const stakingInfos = useStakingInfo(chainId ?? ChainId.MATIC, pair);
   const dualStakingInfos = useDualStakingInfo(pair);
   const stakingInfo = useMemo(
     () =>

@@ -5,13 +5,15 @@ import { StakeQuickModal } from 'components';
 import { useLairInfo, useTotalRewardsDistributed } from 'state/stake/hooks';
 import { formatCompact, useLairDQUICKAPY } from 'utils';
 import { useTranslation } from 'react-i18next';
+import { ChainId } from '@uniswap/sdk';
 
 export const TradingInfo: React.FC<{ globalData: any }> = ({ globalData }) => {
   const lairInfo = useLairInfo();
   const [openStakeModal, setOpenStakeModal] = useState(false);
 
   const dQUICKAPY = useLairDQUICKAPY(true, lairInfo);
-  const totalRewardsUSD = useTotalRewardsDistributed();
+  //TODO: Support Multichain
+  const totalRewardsUSD = useTotalRewardsDistributed(ChainId.MATIC);
   const { t } = useTranslation();
 
   return (

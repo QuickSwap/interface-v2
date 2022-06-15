@@ -1,4 +1,11 @@
-import { CurrencyAmount, JSBI, Token, TokenAmount, Pair } from '@uniswap/sdk';
+import {
+  CurrencyAmount,
+  JSBI,
+  Token,
+  TokenAmount,
+  Pair,
+  ChainId,
+} from '@uniswap/sdk';
 import dayjs from 'dayjs';
 import { useMemo, useEffect } from 'react';
 import { usePairs } from 'data/Reserves';
@@ -41,7 +48,6 @@ import {
   getSyrupLPToken,
   initTokenAmountFromCallResult,
   returnDualStakingInfo,
-  returnStakingInfo,
   returnSyrupInfo,
   returnTokenFromKey,
   getCallStateResult,
@@ -55,6 +61,7 @@ import {
   StakingBasic,
   DualStakingBasic,
 } from 'types';
+import { useFarmInfo } from 'state/farms/hooks';
 
 const web3 = new Web3('https://polygon-rpc.com/');
 
@@ -66,14 +73,10 @@ let pairs: any = undefined;
 
 let oneDayVol: any = undefined;
 
-export function useTotalRewardsDistributed() {
-  const { chainId } = useActiveWeb3React();
-
-  const syrupRewardsInfo = chainId ? returnSyrupInfo()[chainId] ?? [] : [];
-  const dualStakingRewardsInfo = chainId
-    ? returnDualStakingInfo()[chainId] ?? []
-    : [];
-  const stakingRewardsInfo = chainId ? returnStakingInfo()[chainId] ?? [] : [];
+export function useTotalRewardsDistributed(chainId: ChainId): number {
+  const syrupRewardsInfo = returnSyrupInfo()[chainId];
+  const dualStakingRewardsInfo = returnDualStakingInfo()[chainId];
+  const stakingRewardsInfo = useFarmInfo()[chainId].filter((x) => !x.ended);
 
   const syrupTokenPairs = usePairs(
     syrupRewardsInfo.map((item) => [
@@ -119,12 +122,16 @@ export function useTotalRewardsDistributed() {
   return syrupRewardsUSD + dualStakingRewardsUSD + stakingRewardsUSD;
 }
 
-export function useUSDRewardsandFees(isLPFarm: boolean, bulkPairData: any) {
-  const { chainId } = useActiveWeb3React();
-  const dualStakingRewardsInfo =
-    chainId && !isLPFarm ? returnDualStakingInfo()[chainId] ?? [] : [];
-  const stakingRewardsInfo =
-    chainId && isLPFarm ? returnStakingInfo()[chainId] ?? [] : [];
+export function useUSDRewardsandFees(
+  isLPFarm: boolean,
+  bulkPairData: any,
+  chainId: ChainId,
+): { rewardsUSD: number; stakingFees: number | null } {
+  const activeFarms = useFarmInfo()[chainId].filter((x) => !x.ended);
+  const stakingRewardsInfo = isLPFarm ? activeFarms : [];
+  const dualStakingRewardsInfo = !isLPFarm
+    ? returnDualStakingInfo()[chainId]
+    : [];
   const rewardsInfos = isLPFarm ? stakingRewardsInfo : dualStakingRewardsInfo;
   const rewardsAddresses = useMemo(
     () => rewardsInfos.map(({ stakingRewardAddress }) => stakingRewardAddress),
@@ -1147,6 +1154,8 @@ export function useLairInfo(): LairInfo {
     lairsQuickBalance,
     dQuickToQuick,
     quickToDQuick,
+    oldDQuickToken,
+    oldQuickToken,
   ]);
 }
 
@@ -1211,34 +1220,32 @@ export function useNewLairInfo(): LairInfo {
     lairsQuickBalance,
     dQuickToQuick,
     quickToDQuick,
+    newDQuickToken,
+    newQuickToken,
   ]);
 }
 
 // gets the staking info from the network for the active chain id
 export function useStakingInfo(
+  chainId: ChainId,
   pairToFilterBy?: Pair | null,
   startIndex?: number,
   endIndex?: number,
   filter?: { search: string; isStaked: boolean },
 ): StakingInfo[] {
-  const { chainId, account } = useActiveWeb3React();
-
+  const { account } = useActiveWeb3React();
+  const activeFarms = useFarmInfo()[chainId].filter((x) => !x.ended);
   const info = useMemo(
     () =>
-      chainId
-        ? returnStakingInfo()
-            [chainId]?.slice(startIndex, endIndex)
-            ?.filter((stakingRewardInfo) =>
-              pairToFilterBy === undefined || pairToFilterBy === null
-                ? getSearchFiltered(
-                    stakingRewardInfo,
-                    filter ? filter.search : '',
-                  )
-                : pairToFilterBy.involvesToken(stakingRewardInfo.tokens[0]) &&
-                  pairToFilterBy.involvesToken(stakingRewardInfo.tokens[1]),
-            ) ?? []
-        : [],
-    [chainId, pairToFilterBy, startIndex, endIndex, filter],
+      activeFarms
+        ?.slice(startIndex, endIndex)
+        ?.filter((stakingRewardInfo) =>
+          pairToFilterBy === undefined || pairToFilterBy === null
+            ? getSearchFiltered(stakingRewardInfo, filter ? filter.search : '')
+            : pairToFilterBy.involvesToken(stakingRewardInfo.tokens[0]) &&
+              pairToFilterBy.involvesToken(stakingRewardInfo.tokens[1]),
+        ),
+    [chainId, pairToFilterBy, startIndex, endIndex, filter, activeFarms],
   );
 
   const uni = chainId ? GlobalValue.tokens.UNI[chainId] : undefined;
@@ -1485,12 +1492,12 @@ export function useOldStakingInfo(
   filter?: { search: string; isStaked: boolean },
 ): StakingInfo[] {
   const { chainId, account } = useActiveWeb3React();
-
+  const oldFarms = useFarmInfo('old');
   const info = useMemo(
     () =>
       chainId
-        ? returnStakingInfo('old')
-            [chainId]?.slice(startIndex, endIndex)
+        ? oldFarms[chainId]
+            ?.slice(startIndex, endIndex)
             ?.filter((stakingRewardInfo) =>
               pairToFilterBy === undefined || pairToFilterBy === null
                 ? getSearchFiltered(
@@ -1501,7 +1508,7 @@ export function useOldStakingInfo(
                   pairToFilterBy.involvesToken(stakingRewardInfo.tokens[1]),
             ) ?? []
         : [],
-    [chainId, pairToFilterBy, startIndex, endIndex, filter],
+    [chainId, pairToFilterBy, startIndex, endIndex, filter, oldFarms],
   );
 
   const uni = chainId ? GlobalValue.tokens.UNI[chainId] : undefined;
@@ -1637,7 +1644,7 @@ export function useOldStakingInfo(
 export function useTotalUniEarned(): TokenAmount | undefined {
   const { chainId } = useActiveWeb3React();
   const uni = chainId ? GlobalValue.tokens.UNI[chainId] : undefined;
-  const newStakingInfos = useStakingInfo();
+  const newStakingInfos = useStakingInfo(chainId ?? ChainId.MATIC);
   const oldStakingInfos = useOldStakingInfo();
   const stakingInfos = newStakingInfos.concat(oldStakingInfos);
 
