@@ -235,8 +235,8 @@ const Header: React.FC = () => {
             }}
           >
             {ethereum && !isSupportedNetwork(ethereum)
-              ? 'Wrong Network'
-              : 'Connect Wallet'}
+              ? t('wrongNetwork')
+              : t('connectWallet')}
             {ethereum && !isSupportedNetwork(ethereum) && (
               <Box className='wrongNetworkWrapper'>
                 <Box className='wrongNetworkContent'>
