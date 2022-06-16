@@ -98,7 +98,7 @@ const LendDetailPage: React.FC = () => {
     account ?? undefined,
   );
 
-  const borrowLimit = useBorrowLimit(poolData?.assets || []);
+  const borrowLimit = useBorrowLimit(poolData?.assets);
   const handleAlertShowClose = () => {
     setAlertShow({
       open: false,
@@ -247,7 +247,7 @@ const LendDetailPage: React.FC = () => {
             <Box color={'#696c80'} fontSize={'14px'}>
               {t('poolUtilization')}
             </Box>
-            {poolData?.totalBorrowBalanceUSD ? (
+            {poolData ? (
               <Box fontSize={'24px'} color={'white'}>
                 {poolData && midUsdFormatter(poolData.totalBorrowBalanceUSD)}
               </Box>
@@ -332,7 +332,7 @@ const LendDetailPage: React.FC = () => {
                 height={'100%'}
               />
             </Box>
-            {borrowLimit ? (
+            {borrowLimit !== undefined ? (
               <Box sx={{ order: { xs: 3, sm: 3, md: 3 } }}>
                 {midUsdFormatter(borrowLimit)}
               </Box>
@@ -1283,7 +1283,7 @@ const LendDetailPage: React.FC = () => {
               borrow={modalIsBorrow}
               confirm={modalIsConfirm}
               asset={selectedAsset}
-              borrowLimit={borrowLimit}
+              borrowLimit={borrowLimit ?? 0}
             />
           )}
         </ModalParent>

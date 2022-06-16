@@ -1,3 +1,4 @@
+import { ChainId } from '@uniswap/sdk';
 import fetch from 'isomorphic-unfetch';
 
 export const ETH_TOKEN_DATA = {
@@ -23,7 +24,10 @@ export interface TokenData {
   extraData: Record<any, any>;
 }
 
-export const fetchTokenData = async (address: string): Promise<TokenData> => {
+export const fetchTokenData = async (
+  address: string,
+  chainId?: ChainId,
+): Promise<TokenData> => {
   if (address === ETH_TOKEN_DATA.address) {
     return ETH_TOKEN_DATA;
   }
@@ -33,8 +37,9 @@ export const fetchTokenData = async (address: string): Promise<TokenData> => {
     if (address === '') {
       throw new Error('address is empty');
     }
+    if (!chainId) throw new Error('Wrong network');
     data = await fetch(
-      'https://sls.market.xyz/api/tokenData?address=' + address,
+      `https://sls.market.xyz/api/tokenData?address=${address}&chainId=${chainId}`,
     ).then((res) => res.json());
 
     data.address = address;

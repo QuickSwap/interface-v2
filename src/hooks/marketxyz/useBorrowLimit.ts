@@ -2,16 +2,19 @@ import { USDPricedPoolAsset } from '../../utils/marketxyz/fetchPoolData';
 import { useMemo } from 'react';
 
 export const useBorrowLimit = (
-  assets: USDPricedPoolAsset[],
+  assets?: USDPricedPoolAsset[],
   options?: { ignoreIsEnabledCheckFor: string },
 ) => {
   const maxBorrow = useMemo(() => {
+    if (!assets) return;
     let maxBorrow = 0;
     for (let i = 0; i < assets.length; i++) {
       const asset = assets[i];
 
       if (
-        options?.ignoreIsEnabledCheckFor === asset.cToken.address ||
+        (options &&
+          options.ignoreIsEnabledCheckFor.toLowerCase() ===
+            asset.cToken.address.toLowerCase()) ||
         asset.membership
       ) {
         maxBorrow +=
@@ -20,7 +23,7 @@ export const useBorrowLimit = (
       }
     }
     return maxBorrow;
-  }, [assets, options?.ignoreIsEnabledCheckFor]);
+  }, [assets, options]);
 
   return maxBorrow;
 };

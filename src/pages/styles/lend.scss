@@ -1,0 +1,13 @@
+@use 'styles/variables' as *;
+@use 'styles/breakpoints' as *;
+
+.lendPageData {
+  flex: 1;
+  background-color: $secondary2;
+  padding: 24px;
+  border-radius: 12px;
+  min-width: 20%;
+  @include media("screen", "<tablet") {
+    min-width: 35%;
+  }
+}

@@ -16,6 +16,7 @@ import {
   getPoolIdFromComptroller,
 } from 'utils/marketxyz/fetchPoolData';
 import { useTranslation } from 'react-i18next';
+import 'pages/styles/lend.scss';
 
 const QS_PoolDirectory = '0x9180296118C8Deb7c5547eF5c1E798DC0405f350';
 const QS_Pools = ['0x772EdfEDee10029E98AF15359595bB398950416B'];
@@ -81,96 +82,53 @@ const LendPage: React.FC = () => {
     <Box width={'100%'}>
       <Box
         mb={'40px'}
-        fontSize={'24px'}
-        fontWeight={'700'}
-        color={'white'}
         sx={{ display: { xs: 'block', sm: 'block', md: 'none' } }}
       >
-        {t('lend')}
+        <h4 className='text-bold'>{t('lend')}</h4>
       </Box>
       <AlertBox />
-      <Box
-        display={'flex'}
-        flexDirection={'column'}
-        alignItems={'center'}
-        sx={{ textAlign: { xs: 'left', sm: 'center' } }}
-      >
-        <Box fontSize={'24px'} fontWeight={'700'}>
-          {t('lendPageTitle')}
-        </Box>
-        <Box mt={'16px'} fontSize={'16px'} maxWidth={'520px'}>
-          {t('lendPageSubTitle')}
+      <Box sx={{ textAlign: { xs: 'left', sm: 'center' } }}>
+        <h4 className='text-bold'>{t('lendPageTitle')}</h4>
+        <Box mt={'16px'} maxWidth={'520px'} marginX='auto'>
+          <p>{t('lendPageSubTitle')}</p>
         </Box>
       </Box>
       <Box mt={'48px'} display={'flex'} gridGap={'24px'} flexWrap={'wrap'}>
-        <Box
-          flex={'1'}
-          bgcolor={'#232734'}
-          p={'24px'}
-          borderRadius={'12px'}
-          sx={{ minWidth: { xs: '35%', sm: '35%', md: '20%' } }}
-        >
-          <Box color={'#696c80'} fontSize={'14px'}>
-            {t('totalSupply')}
-          </Box>
+        <Box className='lendPageData'>
+          <small className='text-secondary'>{t('totalSupply')}</small>
           {totalSupply ? (
-            <Box fontSize={'24px'} color={'white'}>
-              {midUsdFormatter(Number(totalSupply))}
-            </Box>
+            <h4>{midUsdFormatter(Number(totalSupply))}</h4>
           ) : (
             <Skeleton variant='rect' height={40} />
           )}
         </Box>
-        <Box
-          flex={'1'}
-          bgcolor={'#232734'}
-          p={'24px'}
-          borderRadius={'12px'}
-          sx={{ minWidth: { xs: '35%', sm: '35%', md: '20%' } }}
-        >
-          <Box color={'#696c80'} fontSize={'14px'}>
-            {t('totalBorrowed')}
-          </Box>
+        <Box className='lendPageData'>
+          <small className='text-secondary'>{t('totalBorrowed')}</small>
           {totalBorrow ? (
-            <Box fontSize={'24px'} color={'white'}>
-              {midUsdFormatter(Number(totalBorrow))}
-            </Box>
+            <h4>{midUsdFormatter(Number(totalBorrow))}</h4>
           ) : (
             <Skeleton variant='rect' height={40} />
           )}
         </Box>
         <Box
+          className='lendPageData'
           flex={'1'}
           bgcolor={'#232734'}
           p={'24px'}
           borderRadius={'12px'}
           sx={{ minWidth: { xs: '35%', sm: '35%', md: '20%' } }}
         >
-          <Box color={'#696c80'} fontSize={'14px'}>
-            {t('liquidity')}
-          </Box>
+          <small className='text-secondary'>{t('liquidity')}</small>
           {totalLiquidity ? (
-            <Box fontSize={'24px'} color={'white'}>
-              {midUsdFormatter(Number(totalLiquidity))}
-            </Box>
+            <h4>{midUsdFormatter(Number(totalLiquidity))}</h4>
           ) : (
             <Skeleton variant='rect' height={40} />
           )}
         </Box>
-        <Box
-          flex={'1'}
-          bgcolor={'#232734'}
-          p={'24px'}
-          borderRadius={'12px'}
-          sx={{ minWidth: { xs: '35%', sm: '35%', md: '20%' } }}
-        >
-          <Box color={'#696c80'} fontSize={'14px'}>
-            {t('markets')}
-          </Box>
+        <Box className='lendPageData'>
+          <small className='text-secondary'>{t('markets')}</small>
           {pools.length ? (
-            <Box fontSize={'24px'} color={'white'}>
-              {pools.length}
-            </Box>
+            <h4>{pools.length}</h4>
           ) : (
             <Skeleton variant='rect' height={40} />
           )}
@@ -187,12 +145,8 @@ const LendPage: React.FC = () => {
         flexWrap={'wrap'}
       >
         <Box display={'flex'} gridGap={'24px'}>
-          <Box fontSize={'18px'} fontWeight={'bold'} color={'#448aff'}>
-            {t('allPools')}
-          </Box>
-          <Box fontSize={'18px'} fontWeight={'bold'} color={'#626680'}>
-            {t('myPools')}
-          </Box>
+          <h6 className='text-bold text-primary'>{t('allPools')}</h6>
+          <h6 className='text-bold text-secondary'>{t('myPools')}</h6>
         </Box>
         <Box
           maxWidth={'100%'}
@@ -203,10 +157,7 @@ const LendPage: React.FC = () => {
         >
           <SearchInput
             width={'calc(50% - 8px)'}
-            placeholder={
-              // isMobile ? 'Search' : 'Search name, symbol or paste address'
-              'Search'
-            }
+            placeholder={t('search')}
             value={searchInput}
             setValue={setSearchInput}
           />
@@ -262,24 +213,20 @@ const LendPage: React.FC = () => {
                   pt={'18px'}
                   pb={'24px'}
                 >
-                  <Box fontSize={'14px'} color={'#575b73'}>
-                    {t('totalSupply')}
-                  </Box>
-                  <Box fontSize={'16px'} mt={'10px'}>
-                    {midUsdFormatter(totalSuppliedUSD)}
+                  <small className='text-secondary'>{t('totalSupply')}</small>
+                  <Box mt={'10px'}>
+                    <p>{midUsdFormatter(totalSuppliedUSD)}</p>
                   </Box>
                 </Box>
                 <Box flex={'1'} textAlign={'center'} pt={'18px'} pb={'24px'}>
-                  <Box fontSize={'14px'} color={'#575b73'}>
-                    {t('totalBorrowed')}
-                  </Box>
-                  <Box fontSize={'16px'} mt={'10px'}>
-                    {midUsdFormatter(totalBorrowedUSD)}
+                  <small className='text-secondary'>{t('totalBorrowed')}</small>
+                  <Box mt={'10px'}>
+                    <p>{midUsdFormatter(totalBorrowedUSD)}</p>
                   </Box>
                 </Box>
               </Box>
-              <Box py={'22px'} textAlign={'center'} fontSize={'16px'}>
-                {t('viewDetails')}
+              <Box py={'22px'} textAlign={'center'}>
+                <p>{t('viewDetails')}</p>
               </Box>
             </Card>
           ),
