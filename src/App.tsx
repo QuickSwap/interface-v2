@@ -43,6 +43,7 @@ import ListsUpdater from 'state/lists/updater';
 import UserUpdater from 'state/user/updater';
 import MulticallUpdater from 'state/multicall/updater';
 import FarmUpdater from 'state/farms/updater';
+import SyrupUpdater from 'state/syrups/updater';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import './i18n';
@@ -81,6 +82,7 @@ function Updaters() {
       <MulticallUpdater />
       <UserUpdater />
       <FarmUpdater />
+      <SyrupUpdater />
     </>
   );
 }

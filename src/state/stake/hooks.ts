@@ -48,7 +48,6 @@ import {
   getSyrupLPToken,
   initTokenAmountFromCallResult,
   returnDualStakingInfo,
-  returnSyrupInfo,
   returnTokenFromKey,
   getCallStateResult,
 } from 'utils';
@@ -62,6 +61,7 @@ import {
   DualStakingBasic,
 } from 'types';
 import { useFarmInfo } from 'state/farms/hooks';
+import { useSyrupInfo } from 'state/syrups/hooks';
 
 const web3 = new Web3('https://polygon-rpc.com/');
 
@@ -74,7 +74,7 @@ let pairs: any = undefined;
 let oneDayVol: any = undefined;
 
 export function useTotalRewardsDistributed(chainId: ChainId): number {
-  const syrupRewardsInfo = returnSyrupInfo()[chainId];
+  const syrupRewardsInfo = useSyrupInfo()[chainId];
   const dualStakingRewardsInfo = returnDualStakingInfo()[chainId];
   const stakingRewardsInfo = useFarmInfo()[chainId].filter((x) => !x.ended);
 
@@ -195,29 +195,35 @@ export function useUSDRewardsandFees(
   return { rewardsUSD, stakingFees };
 }
 
-export function useSyrupInfo(
+export function useFilteredSyrupInfo(
+  chainId: ChainId,
   tokenToFilterBy?: Token | null,
   startIndex?: number,
   endIndex?: number,
   filter?: { search: string; isStaked: boolean },
 ): SyrupInfo[] {
-  const { chainId, account } = useActiveWeb3React();
+  const { account } = useActiveWeb3React();
   const currentTimestamp = dayjs().unix();
-
+  const allSyrups = useSyrupInfo()[chainId];
   const info = useMemo(
     () =>
-      chainId
-        ? returnSyrupInfo()
-            [chainId]?.slice(startIndex, endIndex)
-            .filter(
-              (syrupInfo) =>
-                syrupInfo.ending > currentTimestamp &&
-                (tokenToFilterBy === undefined || tokenToFilterBy === null
-                  ? getSearchFiltered(syrupInfo, filter ? filter.search : '')
-                  : tokenToFilterBy.equals(syrupInfo.token)),
-            ) ?? []
-        : [],
-    [chainId, tokenToFilterBy, startIndex, endIndex, filter, currentTimestamp],
+      allSyrups
+        .slice(startIndex, endIndex)
+        .filter(
+          (syrupInfo) =>
+            syrupInfo.ending > currentTimestamp &&
+            (tokenToFilterBy === undefined || tokenToFilterBy === null
+              ? getSearchFiltered(syrupInfo, filter ? filter.search : '')
+              : tokenToFilterBy.equals(syrupInfo.token)),
+        ),
+    [
+      tokenToFilterBy,
+      startIndex,
+      endIndex,
+      filter,
+      currentTimestamp,
+      allSyrups,
+    ],
   );
 
   const uni = chainId ? GlobalValue.tokens.UNI[chainId] : undefined;
@@ -399,23 +405,19 @@ export function useSyrupInfo(
 }
 
 export function useOldSyrupInfo(
+  chainId: ChainId,
   tokenToFilterBy?: Token | null,
   startIndex?: number,
   endIndex?: number,
   filter?: { search: string; isStaked: boolean },
 ): SyrupInfo[] {
-  const { chainId, account } = useActiveWeb3React();
+  const { account } = useActiveWeb3React();
   const currentTimestamp = dayjs().unix();
+  const allOldSyrupInfos = useSyrupInfo()[chainId];
 
   const info = useMemo(() => {
-    if (!chainId) return [];
-    const endedSyrupInfos =
-      returnSyrupInfo(false)[chainId]?.filter(
-        (syrupInfo) => syrupInfo.ending <= currentTimestamp,
-      ) ?? [];
-    const oldSyrupInfos = returnSyrupInfo(true)[chainId] ?? [];
-    const allOldSyrupInfos = endedSyrupInfos.concat(oldSyrupInfos);
     return allOldSyrupInfos
+      .filter((x) => x.ending <= currentTimestamp)
       .slice(startIndex, endIndex)
       .filter((syrupInfo) =>
         tokenToFilterBy === undefined || tokenToFilterBy === null
@@ -423,12 +425,12 @@ export function useOldSyrupInfo(
           : tokenToFilterBy.equals(syrupInfo.token),
       );
   }, [
-    chainId,
     tokenToFilterBy,
     startIndex,
     endIndex,
     filter,
     currentTimestamp,
+    allOldSyrupInfos,
   ]);
 
   const uni = chainId ? GlobalValue.tokens.UNI[chainId] : undefined;
@@ -1245,7 +1247,7 @@ export function useStakingInfo(
             : pairToFilterBy.involvesToken(stakingRewardInfo.tokens[0]) &&
               pairToFilterBy.involvesToken(stakingRewardInfo.tokens[1]),
         ),
-    [chainId, pairToFilterBy, startIndex, endIndex, filter, activeFarms],
+    [pairToFilterBy, startIndex, endIndex, filter, activeFarms],
   );
 
   const uni = chainId ? GlobalValue.tokens.UNI[chainId] : undefined;
@@ -1486,29 +1488,25 @@ export function useStakingInfo(
 }
 
 export function useOldStakingInfo(
+  chainId: ChainId,
   pairToFilterBy?: Pair | null,
   startIndex?: number,
   endIndex?: number,
   filter?: { search: string; isStaked: boolean },
 ): StakingInfo[] {
-  const { chainId, account } = useActiveWeb3React();
-  const oldFarms = useFarmInfo('old');
+  const { account } = useActiveWeb3React();
+  const oldFarms = useFarmInfo()[chainId].filter((x) => x.ended);
   const info = useMemo(
     () =>
-      chainId
-        ? oldFarms[chainId]
-            ?.slice(startIndex, endIndex)
-            ?.filter((stakingRewardInfo) =>
-              pairToFilterBy === undefined || pairToFilterBy === null
-                ? getSearchFiltered(
-                    stakingRewardInfo,
-                    filter ? filter.search : '',
-                  )
-                : pairToFilterBy.involvesToken(stakingRewardInfo.tokens[0]) &&
-                  pairToFilterBy.involvesToken(stakingRewardInfo.tokens[1]),
-            ) ?? []
-        : [],
-    [chainId, pairToFilterBy, startIndex, endIndex, filter, oldFarms],
+      oldFarms
+        .slice(startIndex, endIndex)
+        .filter((stakingRewardInfo) =>
+          pairToFilterBy === undefined || pairToFilterBy === null
+            ? getSearchFiltered(stakingRewardInfo, filter ? filter.search : '')
+            : pairToFilterBy.involvesToken(stakingRewardInfo.tokens[0]) &&
+              pairToFilterBy.involvesToken(stakingRewardInfo.tokens[1]),
+        ),
+    [pairToFilterBy, startIndex, endIndex, filter, oldFarms],
   );
 
   const uni = chainId ? GlobalValue.tokens.UNI[chainId] : undefined;
@@ -1645,7 +1643,7 @@ export function useTotalUniEarned(): TokenAmount | undefined {
   const { chainId } = useActiveWeb3React();
   const uni = chainId ? GlobalValue.tokens.UNI[chainId] : undefined;
   const newStakingInfos = useStakingInfo(chainId ?? ChainId.MATIC);
-  const oldStakingInfos = useOldStakingInfo();
+  const oldStakingInfos = useOldStakingInfo(chainId ?? ChainId.MATIC);
   const stakingInfos = newStakingInfos.concat(oldStakingInfos);
 
   return useMemo(() => {

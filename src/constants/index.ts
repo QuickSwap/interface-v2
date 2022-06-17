@@ -88,6 +88,7 @@ export const GlobalConst = {
     DEFAULT_TOKEN_LIST_URL: process.env.REACT_APP_TOKEN_LIST_DEFAULT_URL + '',
     DEFAULT_LP_FARMS_LIST_URL:
       process.env.REACT_APP_STAKING_LIST_DEFAULT_URL + '',
+    DEFAULT_SYRUP_LIST_URL: process.env.REACT_APP_SYRUP_LIST_DEFAULT_URL + '',
   },
   analyticChart: {
     ONE_MONTH_CHART: 1,

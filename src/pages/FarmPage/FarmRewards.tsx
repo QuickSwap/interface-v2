@@ -16,22 +16,20 @@ const FarmRewards: React.FC<{ farmIndex: number; bulkPairs: any }> = ({
   const { t } = useTranslation();
   const { breakpoints } = useTheme();
   const { chainId } = useActiveWeb3React();
+  const defaultChainId = chainId ?? ChainId.MATIC;
   const isMobile = useMediaQuery(breakpoints.down('xs'));
 
   const farmData = useUSDRewardsandFees(
     farmIndex === GlobalConst.farmIndex.LPFARM_INDEX,
     bulkPairs,
-    chainId ?? ChainId.MATIC,
+    defaultChainId,
   );
 
-  const allFarms = useFarmInfo();
-
+  const activeFarms = useFarmInfo()[defaultChainId].filter((x) => !x.ended);
   const dQuickRewardSum = useMemo(() => {
-    if (!chainId) return 0;
-    const stakingData = allFarms[chainId].filter((x) => !x.ended);
-    const rewardSum = stakingData.reduce((total, item) => total + item.rate, 0);
+    const rewardSum = activeFarms.reduce((total, item) => total + item.rate, 0);
     return rewardSum;
-  }, [chainId, allFarms]);
+  }, [activeFarms]);
 
   const getRewardsSection = (isLPFarm: boolean) => (
     <>

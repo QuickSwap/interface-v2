@@ -2,12 +2,12 @@ import { ChainId } from '@uniswap/sdk';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from 'state';
-import { FarmListInfo, StakingInfoRaw, StakingBasic } from 'types';
+import { FarmListInfo, StakingRaw, StakingBasic } from 'types';
 import { Token } from '@uniswap/sdk';
 import { returnTokenFromKey } from 'utils';
 
 export class WrappedStakingInfo implements StakingBasic {
-  public readonly stakingInfo: StakingInfoRaw;
+  public readonly stakingInfo: StakingRaw;
   public readonly chainId: ChainId;
   public readonly stakingRewardAddress: string;
   public readonly pair: string;
@@ -19,7 +19,7 @@ export class WrappedStakingInfo implements StakingBasic {
   public readonly baseToken: Token;
   public readonly rewardToken: Token;
 
-  constructor(stakingInfo: StakingInfoRaw) {
+  constructor(stakingInfo: StakingRaw) {
     this.stakingInfo = stakingInfo;
     //TODO: Support Multichain
     this.chainId = ChainId.MATIC;
@@ -104,40 +104,16 @@ export function useFarmList(url: string | undefined): StakingInfoAddressMap {
   }, [farms, url]);
 }
 
-export function useSelectedListUrl(): string | undefined {
-  return useSelector<AppState, AppState['farms']['selectedListUrl']>(
-    (state) => state.farms.selectedListUrl,
-  );
-}
-
-export function useSelectedFarmList(): StakingInfoAddressMap {
-  return useFarmList(useSelectedListUrl());
+export function useDefaultFarmList(): StakingInfoAddressMap {
+  return useFarmList(process.env.REACT_APP_STAKING_LIST_DEFAULT_URL);
 }
 
 export function useFarmInfo(): {
   [chainId in ChainId]: StakingBasic[];
 } {
   return {
-    [ChainId.MATIC]: Object.values(useSelectedFarmList()[ChainId.MATIC]),
+    [ChainId.MATIC]: Object.values(useDefaultFarmList()[ChainId.MATIC]),
     [ChainId.MUMBAI]: [],
-  };
-}
-
-export function useSelectedFarmInfo(): {
-  current: FarmListInfo | null;
-  pending: FarmListInfo | null;
-  loading: boolean;
-} {
-  const selectedUrl = useSelectedListUrl();
-  const farmsByUrl = useSelector<AppState, AppState['farms']['byUrl']>(
-    (state) => state.farms.byUrl,
-  );
-  const farm = selectedUrl ? farmsByUrl[selectedUrl] : undefined;
-
-  return {
-    current: farm?.current ?? null,
-    pending: farm?.pendingUpdate ?? null,
-    loading: farm?.loadingRequestId !== null,
   };
 }
 

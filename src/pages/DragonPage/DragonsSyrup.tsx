@@ -2,7 +2,11 @@ import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { useTheme } from '@material-ui/core/styles';
 import { ArrowUp, ArrowDown } from 'react-feather';
 import { Box, Divider, useMediaQuery } from '@material-ui/core';
-import { useSyrupInfo, useOldSyrupInfo, useLairInfo } from 'state/stake/hooks';
+import {
+  useFilteredSyrupInfo,
+  useOldSyrupInfo,
+  useLairInfo,
+} from 'state/stake/hooks';
 import { SyrupInfo } from 'types';
 import {
   SyrupCard,
@@ -22,6 +26,8 @@ import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 import { useInfiniteLoading } from 'utils/useInfiniteLoading';
 import { Skeleton } from '@material-ui/lab';
 import { useTranslation } from 'react-i18next';
+import { useActiveWeb3React } from 'hooks';
+import { ChainId } from '@uniswap/sdk';
 
 const LOADSYRUP_COUNT = 10;
 const TOKEN_COLUMN = 1;
@@ -37,6 +43,7 @@ const DragonsSyrup: React.FC = () => {
   const [pageIndex, setPageIndex] = useState(0);
   const [sortBy, setSortBy] = useState(0);
   const [sortDesc, setSortDesc] = useState(false);
+  const { chainId } = useActiveWeb3React();
 
   const [stakedOnly, setStakeOnly] = useState(false);
   const [syrupSearch, setSyrupSearch] = useState('');
@@ -47,14 +54,16 @@ const DragonsSyrup: React.FC = () => {
 
   const lairInfo = useLairInfo();
   const dQUICKAPY = useLairDQUICKAPY(false, lairInfo);
-
-  const addedStakingSyrupInfos = useSyrupInfo(
+  const chainIdOrDefault = chainId ?? ChainId.MATIC;
+  const addedStakingSyrupInfos = useFilteredSyrupInfo(
+    chainIdOrDefault,
     null,
     isEndedSyrup ? 0 : undefined,
     isEndedSyrup ? 0 : undefined,
     { search: syrupSearch, isStaked: stakedOnly },
   );
   const addedOldSyrupInfos = useOldSyrupInfo(
+    chainIdOrDefault,
     null,
     isEndedSyrup ? undefined : 0,
     isEndedSyrup ? undefined : 0,

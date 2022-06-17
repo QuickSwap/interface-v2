@@ -59,8 +59,10 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
     setFarmSearch,
   );
 
+  const defaultChainId = chainId ?? ChainId.MATIC;
+
   const addedLPStakingInfos = useStakingInfo(
-    chainId ?? ChainId.MATIC,
+    defaultChainId,
     null,
     pageloading ||
       farmIndex === GlobalConst.farmIndex.DUALFARM_INDEX ||
@@ -75,6 +77,7 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
     { search: farmSearch, isStaked: stakedOnly },
   );
   const addedLPStakingOldInfos = useOldStakingInfo(
+    defaultChainId,
     null,
     pageloading ||
       farmIndex === GlobalConst.farmIndex.DUALFARM_INDEX ||
