@@ -1723,46 +1723,6 @@ export function returnTokenFromKey(key: string): Token {
   );
 }
 
-export function returnSyrupInfo(
-  isOld?: boolean,
-): {
-  [chainId in ChainId]: SyrupBasic[];
-} {
-  const syrupInfo = isOld ? stakeData.oldsyrup : stakeData.syrup;
-  return {
-    [ChainId.MATIC]: syrupInfo.map((info) => {
-      return {
-        ...info,
-        token: returnTokenFromKey(info.token),
-        baseToken: returnTokenFromKey(info.baseToken),
-        stakingToken: returnTokenFromKey(info.stakingToken),
-      };
-    }),
-    [ChainId.MUMBAI]: [],
-  };
-}
-
-export function returnDualStakingInfo(): {
-  [chainId in ChainId]: DualStakingBasic[];
-} {
-  return {
-    [ChainId.MATIC]: stakeData.dualrewards.map((info) => {
-      return {
-        ...info,
-        tokens: [
-          returnTokenFromKey(info.tokens[0]),
-          returnTokenFromKey(info.tokens[1]),
-        ],
-        baseToken: returnTokenFromKey(info.baseToken),
-        rewardTokenA: returnTokenFromKey(info.rewardTokenA),
-        rewardTokenB: returnTokenFromKey(info.rewardTokenB),
-        rewardTokenBBase: returnTokenFromKey(info.rewardTokenBBase),
-      };
-    }),
-    [ChainId.MUMBAI]: [],
-  };
-}
-
 export function getChartDates(chartData: any[] | null, durationIndex: number) {
   if (chartData) {
     const dates: string[] = [];

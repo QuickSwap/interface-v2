@@ -4,13 +4,14 @@ import { getBulkPairData } from 'state/stake/hooks';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
 import { useActiveWeb3React } from 'hooks';
 import { GlobalConst } from 'constants/index';
-import { returnDualStakingInfo } from 'utils';
 import FarmRewards from './FarmRewards';
 import FarmsList from './FarmsList';
 import { CustomSwitch } from 'components';
 import { useTranslation } from 'react-i18next';
 import 'pages/styles/farm.scss';
 import { useFarmInfo } from 'state/farms/hooks';
+import { useDualFarmInfo } from 'state/dualfarms/hooks';
+import { ChainId } from '@uniswap/sdk';
 
 const FarmPage: React.FC = () => {
   const { chainId } = useActiveWeb3React();
@@ -19,26 +20,16 @@ const FarmPage: React.FC = () => {
   const [farmIndex, setFarmIndex] = useState(
     GlobalConst.farmIndex.LPFARM_INDEX,
   );
-  const allFarms = useFarmInfo();
+  const chainIdOrDefault = chainId ?? ChainId.MATIC;
+  const lpFarms = useFarmInfo();
+  const dualFarms = useDualFarmInfo();
 
   useEffect(() => {
-    if (chainId) {
-      const stakingPairLists = allFarms[chainId]
-        .filter((item) => !item.ended)
-        .map((item) => item.pair);
-      const stakingOldPairLists = allFarms[chainId]
-        .filter((item) => item.ended)
-        .map((item) => item.pair);
-      const dualPairLists = returnDualStakingInfo()[chainId].map(
-        (item) => item.pair,
-      );
-      const pairLists = stakingPairLists
-        .concat(stakingOldPairLists)
-        .concat(dualPairLists);
-      getBulkPairData(pairLists).then((data) => setBulkPairs(data));
-    }
-    return () => setBulkPairs(null);
-  }, [chainId, allFarms]);
+    const stakingPairLists = lpFarms[chainIdOrDefault].map((item) => item.pair);
+    const dualPairLists = dualFarms[chainIdOrDefault].map((item) => item.pair);
+    const pairLists = stakingPairLists.concat(dualPairLists);
+    getBulkPairData(pairLists).then((data) => setBulkPairs(data));
+  }, [chainIdOrDefault, lpFarms, dualFarms]);
 
   const farmCategories = [
     {
