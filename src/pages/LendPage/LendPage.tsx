@@ -2,8 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Web3 from 'web3';
 import { Box } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
-import { SearchInput } from 'components';
-import { CustomSelect, SmOption } from 'components/CustomSelect';
+import { SearchInput, CustomMenu } from 'components';
 import styled from 'styled-components';
 import { useHistory } from 'react-router-dom';
 import { useActiveWeb3React } from 'hooks';
@@ -33,6 +32,8 @@ const LendPage: React.FC = () => {
   const [totalSupply, setTotalSupply] = useState<string>();
   const [totalBorrow, setTotalBorrow] = useState<string>();
   const [totalLiquidity, setTotalLiquidity] = useState<string>();
+  const [lendSortBy, setLendSortBy] = useState<string>(t('rewards'));
+  const lendSortItems = [t('rewards'), 'Quickswap', t('poolTitle')];
 
   const [pools, setPools] = useState<any[]>([]);
 
@@ -145,27 +146,34 @@ const LendPage: React.FC = () => {
         flexWrap={'wrap'}
       >
         <Box display={'flex'} gridGap={'24px'}>
-          <h6 className='text-bold text-primary'>{t('allPools')}</h6>
-          <h6 className='text-bold text-secondary'>{t('myPools')}</h6>
+          <h6 className='text-bold text-primary cursor-pointer'>
+            {t('allPools')}
+          </h6>
+          <h6 className='text-bold text-secondary cursor-pointer'>
+            {t('myPools')}
+          </h6>
         </Box>
         <Box
-          maxWidth={'100%'}
           display={'flex'}
-          justifyContent={'center'}
-          alignItems={'center'}
+          sx={{
+            flexDirection: { xs: 'column', sm: 'row' },
+            width: { xs: '100%', sm: 'unset' },
+          }}
           gridGap={'16px'}
         >
           <SearchInput
-            width={'calc(50% - 8px)'}
             placeholder={t('search')}
             value={searchInput}
             setValue={setSearchInput}
           />
-          <CustomSelect before={`${t('sortBy')}: `} width={'calc(50% - 8px)'}>
-            <SmOption value={'Rewards'}>{t('rewards')}</SmOption>
-            <SmOption value={'Quickswap'}>Quickswap</SmOption>
-            <SmOption value={'PoolTitle'}>{t('poolTitle')}</SmOption>
-          </CustomSelect>
+          <Box sx={{ minWidth: { xs: '100%', sm: '200px' } }} height={40}>
+            <CustomMenu
+              title={`${t('sortBy')}: `}
+              menuItems={lendSortItems.map((item) => {
+                return { text: item, onClick: () => setLendSortBy(item) };
+              })}
+            />
+          </Box>
         </Box>
       </Box>
       <Box display={'flex'} gridGap={'32px'} flexWrap={'wrap'}>
@@ -192,7 +200,7 @@ const LendPage: React.FC = () => {
                 flexDirection={'column'}
                 alignItems={'center'}
               >
-                <Box fontSize={'20px'}>{pool.name}</Box>
+                <h5>{pool.name}</h5>
                 <Box mt={'14px'} display={'flex'} gridGap={'4px'}>
                   <USDTIcon size={'22px'} />
                   <USDTIcon size={'22px'} />
@@ -242,56 +250,21 @@ const AlertBox: React.FC = () => {
   return (
     <>
       {visible ? (
-        <Box
-          mb={'40px'}
-          fontSize={'16px'}
-          bgcolor={'#4b3625'}
-          p={'14px 28px'}
-          borderRadius={'12px'}
-          display={'flex'}
-          justifyContent={'space-between'}
-          gridGap={'22px'}
-          zIndex={'100'}
-          sx={{ flexWrap: { xs: 'wrap', sm: 'wrap', md: 'nowrap' } }}
-        >
-          <Box
-            display={'flex'}
-            alignItems={'center'}
-            sx={{ order: { xs: 1, sm: 1, md: 'unset' } }}
-          >
-            <Box
-              bgcolor={'#261d12'}
-              width={'40px'}
-              height={'40px'}
-              borderRadius={'100%'}
-              fontSize={'18px'}
-              fontWeight={'bold'}
-              color={'#e4c133'}
-              display={'flex'}
-              justifyContent={'center'}
-              alignItems={'center'}
-              gridGap={'16px'}
-            >
-              <svg width={'24px'} height={'24px'} viewBox='0 0 24 24'>
-                <path
-                  d='M12 5.99 19.53 19H4.47L12 5.99M12 2 1 21h22L12 2zm1 14h-2v2h2v-2zm0-6h-2v4h2v-4z'
-                  fill='currentColor'
-                ></path>
-              </svg>
-            </Box>
+        <Box className='lendAlertWrapper'>
+          <Box className='lendAlertBox'>
+            <svg width={'24px'} height={'24px'} viewBox='0 0 24 24'>
+              <path
+                d='M12 5.99 19.53 19H4.47L12 5.99M12 2 1 21h22L12 2zm1 14h-2v2h2v-2zm0-6h-2v4h2v-4z'
+                fill='currentColor'
+              ></path>
+            </svg>
           </Box>
-          <Box fontSize={'15px'} sx={{ order: { xs: 3, sm: 3, md: 'unset' } }}>
-            {t('lendAlertDesc')}
-          </Box>
+          <p>{t('lendAlertDesc')}</p>
           <Box
-            fontSize={'25px'}
-            color={'white'}
-            display={'flex'}
-            alignItems={'center'}
+            className='lendAlertClose'
             onClick={() => {
               setVisible(false);
             }}
-            sx={{ order: { xs: 2, sm: 2, md: 'unset' } }}
           >
             &times;
           </Box>

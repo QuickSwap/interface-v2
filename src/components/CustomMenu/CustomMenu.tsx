@@ -17,18 +17,17 @@ const CustomMenu: React.FC<CustomMenuProps> = ({ title, menuItems }) => {
   const [openMenu, setOpenMenu] = React.useState(false);
   const [menuItem, setMenuItem] = React.useState<CustomMenuItem | null>(null);
   return (
-    <>
-      <Box className='customMenuWrapper' onClick={() => setOpenMenu(!openMenu)}>
+    <Box className='customMenuWrapper'>
+      <Box className='customMenuHeader' onClick={() => setOpenMenu(!openMenu)}>
         <small>
           {title} {menuItem?.text}
         </small>
         {openMenu ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
       </Box>
       {openMenu && (
-        <Box className='menuContent'>
+        <Box className='customMenuContent'>
           {menuItems.map((item, index) => (
             <Box
-              my={1}
               key={index}
               onClick={() => {
                 item.onClick();
@@ -41,7 +40,7 @@ const CustomMenu: React.FC<CustomMenuProps> = ({ title, menuItems }) => {
           ))}
         </Box>
       )}
-    </>
+    </Box>
   );
 };
 

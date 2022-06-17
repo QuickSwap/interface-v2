@@ -40,7 +40,7 @@ import {
 } from 'utils/marketxyz';
 import { useBorrowLimit } from 'hooks/marketxyz/useBorrowLimit';
 import { useTranslation } from 'react-i18next';
-import { QuestionHelper, CopyHelper } from 'components';
+import { QuestionHelper, CopyHelper, CustomMenu } from 'components';
 
 const QS_PoolDirectory = '0x9180296118C8Deb7c5547eF5c1E798DC0405f350';
 
@@ -1350,14 +1350,18 @@ const AssetStats = ({ poolData }: { poolData: PoolData }) => {
         <Box px={'30px'} fontSize={'18px'} fontWeight={'500'} lineHeight={'1'}>
           {asset.underlyingName} {t('statistics')}
         </Box>
-        <Box mr={'30px'} display={'flex'} fontSize={'14px'}>
-          <CustomSelect arrowcolor={'#428afa'}>
-            {poolData.assets.map((asset, i) => (
-              <SmOption key={i} value={i}>
-                {asset.underlyingName}
-              </SmOption>
-            ))}
-          </CustomSelect>
+        <Box mr={'30px'} height={40} minWidth={200}>
+          <CustomMenu
+            title=''
+            menuItems={poolData.assets.map((item) => {
+              return {
+                text: item.underlyingName,
+                onClick: () => {
+                  console.log(item);
+                },
+              };
+            })}
+          />
         </Box>
       </Box>
       <Box flex={1} pb={'16px'} display={'flex'} flexDirection={'column'}>

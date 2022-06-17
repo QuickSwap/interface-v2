@@ -11,3 +11,33 @@
     min-width: 35%;
   }
 }
+
+.lendAlertWrapper {
+  margin-bottom: 40px;
+  padding: 16px;
+  background-color: $yellow5;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  & p {
+    width: calc(100% - 80px);
+  }
+}
+
+.lendAlertBox {
+  background-color: $grey30;
+  width: 40px;
+  height: 40px;
+  border-radius: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  & svg path {
+    fill: $yellow4;
+  }
+}
+
+.lendAlertClose {
+  font-size: 25px;
+}
