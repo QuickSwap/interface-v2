@@ -108,15 +108,6 @@ export function useDefaultFarmList(): StakingInfoAddressMap {
   return useFarmList(process.env.REACT_APP_STAKING_LIST_DEFAULT_URL);
 }
 
-export function useFarmInfo(): {
-  [chainId in ChainId]: StakingBasic[];
-} {
-  return {
-    [ChainId.MATIC]: Object.values(useDefaultFarmList()[ChainId.MATIC]),
-    [ChainId.MUMBAI]: [],
-  };
-}
-
 // returns all downloaded current lists
 export function useAllFarms(): FarmListInfo[] {
   const farms = useSelector<AppState, AppState['farms']['byUrl']>(

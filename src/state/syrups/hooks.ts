@@ -105,15 +105,6 @@ export function useDefaultSyrupList(): SyrupInfoAddressMap {
   return useSyrupList(process.env.REACT_APP_SYRUP_LIST_DEFAULT_URL);
 }
 
-export function useSyrupInfo(): {
-  [chainId in ChainId]: SyrupBasic[];
-} {
-  return {
-    [ChainId.MATIC]: Object.values(useDefaultSyrupList()[ChainId.MATIC]),
-    [ChainId.MUMBAI]: [],
-  };
-}
-
 // returns all downloaded current lists
 export function useAllSyrups(): SyrupListInfo[] {
   const syrups = useSelector<AppState, AppState['syrups']['byUrl']>(

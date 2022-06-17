@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Box } from '@material-ui/core';
 import { getBulkPairData } from 'state/stake/hooks';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
@@ -9,8 +9,8 @@ import FarmsList from './FarmsList';
 import { CustomSwitch } from 'components';
 import { useTranslation } from 'react-i18next';
 import 'pages/styles/farm.scss';
-import { useFarmInfo } from 'state/farms/hooks';
-import { useDualFarmInfo } from 'state/dualfarms/hooks';
+import { useDefaultFarmList } from 'state/farms/hooks';
+import { useDefaultDualFarmList } from 'state/dualfarms/hooks';
 import { ChainId } from '@uniswap/sdk';
 
 const FarmPage: React.FC = () => {
@@ -21,15 +21,22 @@ const FarmPage: React.FC = () => {
     GlobalConst.farmIndex.LPFARM_INDEX,
   );
   const chainIdOrDefault = chainId ?? ChainId.MATIC;
-  const lpFarms = useFarmInfo();
-  const dualFarms = useDualFarmInfo();
+  const lpFarms = useDefaultFarmList();
+  const dualFarms = useDefaultDualFarmList();
+
+  const pairLists = useMemo(() => {
+    const stakingPairLists = Object.values(lpFarms[chainIdOrDefault]).map(
+      (item) => item.pair,
+    );
+    const dualPairLists = Object.values(dualFarms[chainIdOrDefault]).map(
+      (item) => item.pair,
+    );
+    return stakingPairLists.concat(dualPairLists);
+  }, [chainIdOrDefault, lpFarms, dualFarms]);
 
   useEffect(() => {
-    const stakingPairLists = lpFarms[chainIdOrDefault].map((item) => item.pair);
-    const dualPairLists = dualFarms[chainIdOrDefault].map((item) => item.pair);
-    const pairLists = stakingPairLists.concat(dualPairLists);
     getBulkPairData(pairLists).then((data) => setBulkPairs(data));
-  }, [chainIdOrDefault, lpFarms, dualFarms]);
+  }, [pairLists]);
 
   const farmCategories = [
     {

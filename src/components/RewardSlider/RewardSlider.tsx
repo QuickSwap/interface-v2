@@ -10,7 +10,7 @@ import RewardSliderItem from './RewardSliderItem';
 import { useActiveWeb3React } from 'hooks';
 import { getOneYearFee } from 'utils';
 import 'components/styles/RewardSlider.scss';
-import { useFarmInfo } from 'state/farms/hooks';
+import { useDefaultFarmList } from 'state/farms/hooks';
 import { ChainId } from '@uniswap/sdk';
 
 const RewardSlider: React.FC = () => {
@@ -21,13 +21,18 @@ const RewardSlider: React.FC = () => {
   const defaultChainId = chainId ?? ChainId.MATIC;
   const rewardItems = useStakingInfo(defaultChainId, null, 0, 5);
   const [bulkPairs, setBulkPairs] = useState<any>(null);
-  const activeFarms = useFarmInfo()[defaultChainId].filter(
-    (item) => !item.ended,
-  );
+  const farms = useDefaultFarmList()[defaultChainId];
+
+  const stakingPairLists = useMemo(() => {
+    return Object.values(farms)
+      .filter((item) => !item.ended)
+      .slice(0, 5)
+      .map((item) => item.pair);
+  }, [farms]);
+
   useEffect(() => {
-    const stakingPairLists = activeFarms.slice(0, 5).map((item) => item.pair);
     getBulkPairData(stakingPairLists).then((data) => setBulkPairs(data));
-  }, [activeFarms]);
+  }, []);
 
   const stakingAPYs = useMemo(() => {
     if (bulkPairs && rewardItems.length > 0) {

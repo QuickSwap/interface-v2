@@ -119,15 +119,6 @@ export function useDefaultDualFarmList(): DualFarmInfoAddressMap {
   return useDualFarmList(process.env.REACT_APP_DUAL_STAKING_LIST_DEFAULT_URL);
 }
 
-export function useDualFarmInfo(): {
-  [chainId in ChainId]: DualStakingBasic[];
-} {
-  return {
-    [ChainId.MATIC]: Object.values(useDefaultDualFarmList()[ChainId.MATIC]),
-    [ChainId.MUMBAI]: [],
-  };
-}
-
 // returns all downloaded current lists
 export function useAllFarms(): DualFarmListInfo[] {
   const dualFarms = useSelector<AppState, AppState['dualFarms']['byUrl']>(

@@ -6,7 +6,7 @@ import { useUSDRewardsandFees } from 'state/stake/hooks';
 import { useActiveWeb3React } from 'hooks';
 import { GlobalConst } from 'constants/index';
 import { useTranslation } from 'react-i18next';
-import { useFarmInfo } from 'state/farms/hooks';
+import { useDefaultFarmList } from 'state/farms/hooks';
 import { ChainId } from '@uniswap/sdk';
 
 const FarmRewards: React.FC<{ farmIndex: number; bulkPairs: any }> = ({
@@ -25,11 +25,13 @@ const FarmRewards: React.FC<{ farmIndex: number; bulkPairs: any }> = ({
     defaultChainId,
   );
 
-  const activeFarms = useFarmInfo()[defaultChainId].filter((x) => !x.ended);
+  const farms = useDefaultFarmList()[defaultChainId];
   const dQuickRewardSum = useMemo(() => {
-    const rewardSum = activeFarms.reduce((total, item) => total + item.rate, 0);
+    const rewardSum = Object.values(farms)
+      .filter((x) => !x.ended)
+      .reduce((total, item) => total + item.rate, 0);
     return rewardSum;
-  }, [activeFarms]);
+  }, [farms]);
 
   const getRewardsSection = (isLPFarm: boolean) => (
     <>
