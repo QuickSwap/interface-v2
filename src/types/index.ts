@@ -22,8 +22,8 @@ export interface SyrupListInfo {
 export interface DualFarmListInfo {
   readonly name: string;
   readonly timestamp: string;
-  readonly active: StakingRaw[];
-  readonly closed: StakingRaw[];
+  readonly active: DualStakingRaw[];
+  readonly closed: DualStakingRaw[];
   readonly version: Version;
   readonly logoURI?: string;
 }
@@ -147,6 +147,21 @@ export interface StakingInfo extends CommonStakingInfo {
   rate: number;
 
   valueOfTotalStakedAmountInBaseToken?: TokenAmount;
+}
+
+export interface DualStakingRaw {
+  tokens: string[];
+  stakingRewardAddress: string;
+  ended: boolean;
+  name: string;
+  lp: string;
+  baseToken: string;
+  rewardTokenA: string;
+  rewardTokenB: string;
+  rewardTokenBBase: string;
+  rateA: number;
+  rateB: number;
+  pair: string;
 }
 
 export interface DualStakingBasic {

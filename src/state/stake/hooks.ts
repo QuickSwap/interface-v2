@@ -47,7 +47,6 @@ import {
   getOneYearFee,
   getSyrupLPToken,
   initTokenAmountFromCallResult,
-  returnDualStakingInfo,
   returnTokenFromKey,
   getCallStateResult,
 } from 'utils';
@@ -61,6 +60,7 @@ import {
   DualStakingBasic,
 } from 'types';
 import { useFarmInfo } from 'state/farms/hooks';
+import { useDualFarmInfo } from 'state/dualfarms/hooks';
 import { useSyrupInfo } from 'state/syrups/hooks';
 
 const web3 = new Web3('https://polygon-rpc.com/');
@@ -75,7 +75,7 @@ let oneDayVol: any = undefined;
 
 export function useTotalRewardsDistributed(chainId: ChainId): number {
   const syrupRewardsInfo = useSyrupInfo()[chainId];
-  const dualStakingRewardsInfo = returnDualStakingInfo()[chainId];
+  const dualStakingRewardsInfo = useDualFarmInfo()[chainId].filter((x) => !x.ended);
   const stakingRewardsInfo = useFarmInfo()[chainId].filter((x) => !x.ended);
 
   const syrupTokenPairs = usePairs(
@@ -128,9 +128,10 @@ export function useUSDRewardsandFees(
   chainId: ChainId,
 ): { rewardsUSD: number; stakingFees: number | null } {
   const activeFarms = useFarmInfo()[chainId].filter((x) => !x.ended);
+  const activeDualFarms = useDualFarmInfo()[chainId].filter((x) => !x.ended);
   const stakingRewardsInfo = isLPFarm ? activeFarms : [];
   const dualStakingRewardsInfo = !isLPFarm
-    ? returnDualStakingInfo()[chainId]
+    ? activeDualFarms
     : [];
   const rewardsInfos = isLPFarm ? stakingRewardsInfo : dualStakingRewardsInfo;
   const rewardsAddresses = useMemo(
@@ -798,28 +799,29 @@ export function getStakingFees(
 
 // gets the dual rewards staking info from the network for the active chain id
 export function useDualStakingInfo(
+  chainId: ChainId,
   pairToFilterBy?: Pair | null,
   startIndex?: number,
   endIndex?: number,
   filter?: { search: string; isStaked: boolean },
 ): DualStakingInfo[] {
-  const { chainId, account } = useActiveWeb3React();
+  const { account } = useActiveWeb3React();
+  const dualStakingRewardsInfo = useDualFarmInfo();
 
   const info = useMemo(
     () =>
-      chainId
-        ? returnDualStakingInfo()
-            [chainId]?.slice(startIndex, endIndex)
-            ?.filter((stakingRewardInfo) =>
-              pairToFilterBy === undefined || pairToFilterBy === null
-                ? getSearchFiltered(
-                    stakingRewardInfo,
-                    filter ? filter.search : '',
-                  )
-                : pairToFilterBy.involvesToken(stakingRewardInfo.tokens[0]) &&
-                  pairToFilterBy.involvesToken(stakingRewardInfo.tokens[1]),
-            ) ?? []
-        : [],
+        dualStakingRewardsInfo[chainId]
+          .filter((x) => !x.ended)
+          .slice(startIndex, endIndex)
+          .filter((stakingRewardInfo) =>
+            pairToFilterBy === undefined || pairToFilterBy === null
+              ? getSearchFiltered(
+                  stakingRewardInfo,
+                  filter ? filter.search : '',
+                )
+              : pairToFilterBy.involvesToken(stakingRewardInfo.tokens[0]) &&
+                pairToFilterBy.involvesToken(stakingRewardInfo.tokens[1]),
+          ),
     [chainId, pairToFilterBy, startIndex, endIndex, filter],
   );
 
@@ -829,11 +831,6 @@ export function useDualStakingInfo(
     () => info.map(({ stakingRewardAddress }) => stakingRewardAddress),
     [info],
   );
-  // const pairAddresses = useMemo(() => info.map(({ pair }) => pair), [info]);
-
-  // useEffect(() => {
-  //   getDualBulkPairData(pairAddresses);
-  // }, [pairAddresses]);
 
   const accountArg = useMemo(() => [account ?? undefined], [account]);
 
