@@ -13,6 +13,7 @@ import swap from './swap/reducer';
 import mint from './mint/reducer';
 import lists from './lists/reducer';
 import farms from './farms/reducer';
+import syrups from './syrups/reducer';
 import burn from './burn/reducer';
 import multicall from './multicall/reducer';
 
@@ -21,6 +22,7 @@ const PERSISTED_KEYS: string[] = [
   'transactions',
   'lists',
   'farms',
+  'syrups',
   ...GELATO_PERSISTED_KEYS,
 ];
 
@@ -35,6 +37,7 @@ const store = configureStore({
     multicall,
     lists,
     farms,
+    syrups,
     ...gelatoReducers,
   },
   middleware: (getDefaultMiddleware) => [

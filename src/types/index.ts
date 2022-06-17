@@ -4,8 +4,26 @@ import { Version } from '@uniswap/token-lists';
 export interface FarmListInfo {
   readonly name: string;
   readonly timestamp: string;
-  readonly active: StakingInfoRaw[];
-  readonly closed: StakingInfoRaw[];
+  readonly active: StakingRaw[];
+  readonly closed: StakingRaw[];
+  readonly version: Version;
+  readonly logoURI?: string;
+}
+
+export interface SyrupListInfo {
+  readonly name: string;
+  readonly timestamp: string;
+  readonly active: SyrupRaw[];
+  readonly closed: SyrupRaw[];
+  readonly version: Version;
+  readonly logoURI?: string;
+}
+
+export interface DualFarmListInfo {
+  readonly name: string;
+  readonly timestamp: string;
+  readonly active: StakingRaw[];
+  readonly closed: StakingRaw[];
   readonly version: Version;
   readonly logoURI?: string;
 }
@@ -67,7 +85,7 @@ export interface CommonStakingInfo {
   ) => TokenAmount | undefined;
 }
 
-export interface StakingInfoRaw {
+export interface StakingRaw {
   tokens: string[];
   stakingRewardAddress: string;
   ended: boolean;
@@ -89,6 +107,18 @@ export interface StakingBasic {
   rate: number;
   pair: string;
   rewardToken: Token;
+}
+
+export interface SyrupRaw {
+  token: string;
+  stakingRewardAddress: string;
+  ended: boolean;
+  name: string;
+  lp: string;
+  baseToken: string;
+  rate: number;
+  ending: number; //DATE IN UNIX TIMESTAMP
+  stakingToken: string;
 }
 
 export interface SyrupBasic {

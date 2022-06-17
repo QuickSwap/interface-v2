@@ -18,20 +18,16 @@ const RewardSlider: React.FC = () => {
   const { chainId } = useActiveWeb3React();
   const tabletWindowSize = useMediaQuery(theme.breakpoints.down('md'));
   const mobileWindowSize = useMediaQuery(theme.breakpoints.down('sm'));
-  const rewardItems = useStakingInfo(chainId ?? ChainId.MATIC, null, 0, 5);
+  const defaultChainId = chainId ?? ChainId.MATIC;
+  const rewardItems = useStakingInfo(defaultChainId, null, 0, 5);
   const [bulkPairs, setBulkPairs] = useState<any>(null);
-  const allFarms = useFarmInfo();
+  const activeFarms = useFarmInfo()[defaultChainId].filter(
+    (item) => !item.ended,
+  );
   useEffect(() => {
-    if (!chainId) {
-      return;
-    }
-
-    const stakingPairLists = allFarms[chainId]
-      .filter((item) => !item.ended)
-      .slice(0, 5)
-      .map((item) => item.pair);
+    const stakingPairLists = activeFarms.slice(0, 5).map((item) => item.pair);
     getBulkPairData(stakingPairLists).then((data) => setBulkPairs(data));
-  }, [chainId, allFarms]);
+  }, [activeFarms]);
 
   const stakingAPYs = useMemo(() => {
     if (bulkPairs && rewardItems.length > 0) {
