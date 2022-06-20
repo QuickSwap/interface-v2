@@ -52,7 +52,6 @@ import { AddressZero } from '@ethersproject/constants';
 import { GlobalConst, GlobalValue, SUPPORTED_WALLETS } from 'constants/index';
 import { TokenAddressMap } from 'state/lists/hooks';
 import tokenData from 'constants/tokens.json';
-import stakeData from 'constants/stake.json';
 import {
   DualStakingInfo,
   LairInfo,
