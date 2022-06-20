@@ -825,7 +825,14 @@ export function useDualStakingInfo(
             : pairToFilterBy.involvesToken(stakingRewardInfo.tokens[0]) &&
               pairToFilterBy.involvesToken(stakingRewardInfo.tokens[1]),
         ),
-    [chainId, pairToFilterBy, startIndex, endIndex, filter],
+    [
+      chainId,
+      pairToFilterBy,
+      startIndex,
+      endIndex,
+      filter,
+      dualStakingRewardsInfo,
+    ],
   );
 
   const uni = chainId ? GlobalValue.tokens.UNI[chainId] : undefined;

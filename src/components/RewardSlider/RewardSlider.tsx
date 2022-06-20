@@ -32,7 +32,7 @@ const RewardSlider: React.FC = () => {
 
   useEffect(() => {
     getBulkPairData(stakingPairLists).then((data) => setBulkPairs(data));
-  }, []);
+  }, [stakingPairLists]);
 
   const stakingAPYs = useMemo(() => {
     if (bulkPairs && rewardItems.length > 0) {
