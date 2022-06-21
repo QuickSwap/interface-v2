@@ -50,7 +50,11 @@ import { BigNumber, BigNumberish } from '@ethersproject/bignumber';
 import { formatUnits } from 'ethers/lib/utils';
 import { AddressZero } from '@ethersproject/constants';
 import { GlobalConst, GlobalValue, SUPPORTED_WALLETS } from 'constants/index';
-import { TokenAddressMap } from 'state/lists/hooks';
+import {
+  TokenAddressMap,
+  useSelectedTokenList,
+  WrappedTokenInfo,
+} from 'state/lists/hooks';
 import tokenData from 'constants/tokens.json';
 import {
   DualStakingInfo,
@@ -58,11 +62,13 @@ import {
   StakingInfo,
   SyrupBasic,
   SyrupInfo,
+  SyrupRaw,
 } from 'types';
 import { unwrappedToken } from './wrappedCurrency';
 import { useUSDCPriceToken } from './useUSDCPrice';
 import { CallState } from 'state/multicall/hooks';
 import { DualStakingBasic, StakingBasic } from 'types';
+import { useCallback } from 'react';
 import { AbstractConnector } from '@web3-react/abstract-connector';
 import { injected } from 'connectors';
 
@@ -1708,6 +1714,27 @@ export function formatNumber(
   } else {
     return 0;
   }
+}
+
+export function getTokenFromKey(
+  tokenKey: string,
+  tokenMap: TokenAddressMap,
+): Token {
+  //TODO: eventually we need to remove returnTokenFromKey completely
+  const tokenData = returnTokenFromKey(tokenKey);
+  const wrappedTokenInfo = tokenMap[tokenData.chainId][tokenData.address];
+  if (!wrappedTokenInfo) {
+    console.log('missing from token list:' + tokenKey);
+    return tokenData;
+  }
+
+  return new Token(
+    wrappedTokenInfo.chainId,
+    wrappedTokenInfo.address,
+    wrappedTokenInfo.decimals,
+    wrappedTokenInfo.symbol,
+    wrappedTokenInfo.name,
+  );
 }
 
 export function returnTokenFromKey(key: string): Token {
