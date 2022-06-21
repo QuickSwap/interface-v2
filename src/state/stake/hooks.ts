@@ -1252,11 +1252,6 @@ export function useStakingInfo(
     () => info.map(({ stakingRewardAddress }) => stakingRewardAddress),
     [info],
   );
-  // const pairAddresses = useMemo(() => info.map(({ pair }) => pair), [info]);
-
-  // useEffect(() => {
-  //   getBulkPairData(allPairAddress);
-  // }, [allPairAddress]);
 
   const accountArg = useMemo(() => [account ?? undefined], [account]);
 
@@ -1353,8 +1348,6 @@ export function useStakingInfo(
             totalSupplyState,
           );
           const totalRewardRate = new TokenAmount(uni, JSBI.BigInt(rate));
-          //const pair = info[index].pair.toLowerCase();
-          //const fees = (pairData && pairData[pair] ? pairData[pair].oneDayVolumeUSD * 0.0025: 0);
           const totalRewardRate01 = initTokenAmountFromCallResult(
             uni,
             rewardRateState,
@@ -1634,27 +1627,6 @@ export function useOldStakingInfo(
       ? stakingInfo.stakedAmount && stakingInfo.stakedAmount.greaterThan('0')
       : true,
   );
-}
-
-export function useTotalUniEarned(): TokenAmount | undefined {
-  const { chainId } = useActiveWeb3React();
-  const uni = chainId ? GlobalValue.tokens.UNI[chainId] : undefined;
-  const newStakingInfos = useStakingInfo(chainId ?? ChainId.MATIC);
-  const oldStakingInfos = useOldStakingInfo(chainId ?? ChainId.MATIC);
-  const stakingInfos = newStakingInfos.concat(oldStakingInfos);
-
-  return useMemo(() => {
-    if (!uni) return undefined;
-    return (
-      stakingInfos?.reduce(
-        (accumulator, stakingInfo) =>
-          accumulator.add(
-            stakingInfo.earnedAmount ?? new TokenAmount(uni, '0'),
-          ),
-        new TokenAmount(uni, '0'),
-      ) ?? new TokenAmount(uni, '0')
-    );
-  }, [stakingInfos, uni]);
 }
 
 export function useDQUICKtoQUICK() {
