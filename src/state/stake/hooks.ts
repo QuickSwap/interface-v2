@@ -737,31 +737,23 @@ function parseData(data: any, oneDayData: any) {
 }
 
 function getSearchFiltered(info: any, search: string) {
+  const searchLowered = search.toLowerCase();
   if (info.tokens) {
     const infoToken0 = info.tokens[0];
     const infoToken1 = info.tokens[1];
     return (
-      (infoToken0.symbol ?? '').toLowerCase().indexOf(search.toLowerCase()) >
-        -1 ||
-      (infoToken0.name ?? '').toLowerCase().indexOf(search.toLowerCase()) >
-        -1 ||
-      (infoToken0.address ?? '').toLowerCase().indexOf(search.toLowerCase()) >
-        -1 ||
-      (infoToken1.symbol ?? '').toLowerCase().indexOf(search.toLowerCase()) >
-        -1 ||
-      (infoToken1.name ?? '').toLowerCase().indexOf(search.toLowerCase()) >
-        -1 ||
-      (infoToken1.address ?? '').toLowerCase().indexOf(search.toLowerCase()) >
-        -1
+      (infoToken0.symbol ?? '').toLowerCase().indexOf(searchLowered) > -1 ||
+      (infoToken0.name ?? '').toLowerCase().indexOf(searchLowered) > -1 ||
+      (infoToken0.address ?? '').toLowerCase().indexOf(searchLowered) > -1 ||
+      (infoToken1.symbol ?? '').toLowerCase().indexOf(searchLowered) > -1 ||
+      (infoToken1.name ?? '').toLowerCase().indexOf(searchLowered) > -1 ||
+      (infoToken1.address ?? '').toLowerCase().indexOf(searchLowered) > -1
     );
   } else if (info.token) {
     return (
-      (info.token.symbol ?? '').toLowerCase().indexOf(search.toLowerCase()) >
-        -1 ||
-      (info.token.name ?? '').toLowerCase().indexOf(search.toLowerCase()) >
-        -1 ||
-      (info.token.address ?? '').toLowerCase().indexOf(search.toLowerCase()) >
-        -1
+      (info.token.symbol ?? '').toLowerCase().indexOf(searchLowered) > -1 ||
+      (info.token.name ?? '').toLowerCase().indexOf(searchLowered) > -1 ||
+      (info.token.address ?? '').toLowerCase().indexOf(searchLowered) > -1
     );
   } else {
     return false;
