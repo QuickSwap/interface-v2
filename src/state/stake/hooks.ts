@@ -47,7 +47,6 @@ import {
   getOneYearFee,
   getSyrupLPToken,
   initTokenAmountFromCallResult,
-  returnTokenFromKey,
   getCallStateResult,
 } from 'utils';
 
@@ -1300,7 +1299,7 @@ export function useStakingInfo(
 
   const baseTokens = info.map((item) => {
     const unwrappedCurrency = unwrappedToken(item.baseToken);
-    const empty = unwrappedToken(returnTokenFromKey('EMPTY'));
+    const empty = GlobalValue.tokens.COMMON.EMPTY;
     return unwrappedCurrency === empty ? item.tokens[0] : item.baseToken;
   });
   const rewardTokens = info.map((item) => item.rewardToken);
@@ -1680,7 +1679,7 @@ export function useDQUICKtoQUICK() {
   if (dQuickToQuickState.loading || dQuickToQuickState.error) return 0;
   return Number(
     new TokenAmount(
-      returnTokenFromKey('QUICK'),
+      GlobalValue.tokens.COMMON.OLD_QUICK,
       JSBI.BigInt(dQuickToQuickState?.result?.[0] ?? 0),
     ).toExact(),
   );

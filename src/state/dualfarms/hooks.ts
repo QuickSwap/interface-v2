@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { AppState } from 'state';
 import { DualFarmListInfo, DualStakingRaw, DualStakingBasic } from 'types';
 import { Token } from '@uniswap/sdk';
-import { getTokenFromKey, returnTokenFromKey } from 'utils';
+import { getTokenFromKey } from 'utils';
 import { TokenAddressMap, useSelectedTokenList } from 'state/lists/hooks';
 
 export class WrappedDualFarmInfo implements DualStakingBasic {
