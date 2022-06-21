@@ -1738,7 +1738,9 @@ export function getTokenFromKey(
 }
 
 export function returnTokenFromKey(key: string): Token {
-  if (key === 'MATIC') return GlobalValue.tokens.MATIC;
+  if (key === 'MATIC') {
+    return GlobalValue.tokens.MATIC;
+  }
   const token = (tokenData as any)[key];
   return new Token(
     ChainId.MATIC,
