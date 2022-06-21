@@ -439,8 +439,6 @@ export function useOldSyrupInfo(
     allOldSyrupInfos,
   ]);
 
-  const uni = chainId ? GlobalValue.tokens.UNI[chainId] : undefined;
-
   const rewardsAddresses = useMemo(
     () => info.map(({ stakingRewardAddress }) => stakingRewardAddress),
     [info],
@@ -491,7 +489,7 @@ export function useOldSyrupInfo(
   );
 
   return useMemo(() => {
-    if (!chainId || !uni) return [];
+    if (!chainId) return [];
 
     return rewardsAddresses.reduce<SyrupInfo[]>(
       (memo, rewardsAddress, index) => {
@@ -601,7 +599,6 @@ export function useOldSyrupInfo(
     info,
     rewardsAddresses,
     totalSupplies,
-    uni,
     rewardRates,
     stakingTokenPairs,
     usdBaseTokenPrices,
