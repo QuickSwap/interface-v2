@@ -4,7 +4,8 @@ import { useSelector } from 'react-redux';
 import { AppState } from 'state';
 import { FarmListInfo, StakingRaw, StakingBasic } from 'types';
 import { Token } from '@uniswap/sdk';
-import { returnTokenFromKey } from 'utils';
+import { TokenAddressMap, useSelectedTokenList } from 'state/lists/hooks';
+import { getTokenFromKey } from 'utils';
 
 export class WrappedStakingInfo implements StakingBasic {
   public readonly stakingInfo: StakingRaw;
@@ -19,7 +20,7 @@ export class WrappedStakingInfo implements StakingBasic {
   public readonly baseToken: Token;
   public readonly rewardToken: Token;
 
-  constructor(stakingInfo: StakingRaw) {
+  constructor(stakingInfo: StakingRaw, tokenAddressMap: TokenAddressMap) {
     this.stakingInfo = stakingInfo;
     //TODO: Support Multichain
     this.chainId = ChainId.MATIC;
@@ -30,12 +31,15 @@ export class WrappedStakingInfo implements StakingBasic {
     this.lp = stakingInfo.lp;
     this.name = stakingInfo.name;
     //TODO: we should be resolving the following property from the lists state using the address field instead of the key
-    this.baseToken = returnTokenFromKey(stakingInfo.baseToken);
+    this.baseToken = getTokenFromKey(stakingInfo.baseToken, tokenAddressMap);
     this.tokens = [
-      returnTokenFromKey(stakingInfo.tokens[0]),
-      returnTokenFromKey(stakingInfo.tokens[1]),
+      getTokenFromKey(stakingInfo.tokens[0], tokenAddressMap),
+      getTokenFromKey(stakingInfo.tokens[1], tokenAddressMap),
     ];
-    this.rewardToken = returnTokenFromKey(stakingInfo.rewardToken ?? 'DQUICK');
+    this.rewardToken = getTokenFromKey(
+      stakingInfo.rewardToken ?? 'DQUICK',
+      tokenAddressMap,
+    );
   }
 }
 
@@ -60,13 +64,19 @@ const farmCache: WeakMap<FarmListInfo, StakingInfoAddressMap> | null =
     ? new WeakMap<FarmListInfo, StakingInfoAddressMap>()
     : null;
 
-export function listToFarmMap(list: FarmListInfo): StakingInfoAddressMap {
+export function listToFarmMap(
+  list: FarmListInfo,
+  tokenAddressMap: TokenAddressMap,
+): StakingInfoAddressMap {
   const result = farmCache?.get(list);
   if (result) return result;
 
   const map = list.active.concat(list.closed).reduce<StakingInfoAddressMap>(
     (stakingInfoMap, stakingInfo) => {
-      const wrappedStakingInfo = new WrappedStakingInfo(stakingInfo);
+      const wrappedStakingInfo = new WrappedStakingInfo(
+        stakingInfo,
+        tokenAddressMap,
+      );
       if (
         stakingInfoMap[wrappedStakingInfo.chainId][
           wrappedStakingInfo.stakingRewardAddress
@@ -91,17 +101,19 @@ export function useFarmList(url: string | undefined): StakingInfoAddressMap {
   const farms = useSelector<AppState, AppState['farms']['byUrl']>(
     (state) => state.farms.byUrl,
   );
+
+  const tokenMap = useSelectedTokenList();
   return useMemo(() => {
     if (!url) return EMPTY_LIST;
     const current = farms[url]?.current;
     if (!current) return EMPTY_LIST;
     try {
-      return listToFarmMap(current);
+      return listToFarmMap(current, tokenMap);
     } catch (error) {
       console.error('Could not show token list due to error', error);
       return EMPTY_LIST;
     }
-  }, [farms, url]);
+  }, [farms, url, tokenMap]);
 }
 
 export function useDefaultFarmList(): StakingInfoAddressMap {

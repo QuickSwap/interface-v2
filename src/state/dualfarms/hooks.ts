@@ -4,7 +4,8 @@ import { useSelector } from 'react-redux';
 import { AppState } from 'state';
 import { DualFarmListInfo, DualStakingRaw, DualStakingBasic } from 'types';
 import { Token } from '@uniswap/sdk';
-import { returnTokenFromKey } from 'utils';
+import { getTokenFromKey, returnTokenFromKey } from 'utils';
+import { TokenAddressMap, useSelectedTokenList } from 'state/lists/hooks';
 
 export class WrappedDualFarmInfo implements DualStakingBasic {
   public readonly stakingInfo: DualStakingRaw;
@@ -22,7 +23,7 @@ export class WrappedDualFarmInfo implements DualStakingBasic {
   public readonly rateA: number;
   public readonly rateB: number;
 
-  constructor(stakingInfo: DualStakingRaw) {
+  constructor(stakingInfo: DualStakingRaw, tokenAddressMap: TokenAddressMap) {
     this.stakingInfo = stakingInfo;
     //TODO: Support Multichain
     this.chainId = ChainId.MATIC;
@@ -34,15 +35,24 @@ export class WrappedDualFarmInfo implements DualStakingBasic {
     this.rateA = stakingInfo.rateA;
     this.rateB = stakingInfo.rateB;
     //TODO: we should be resolving the following property from the lists state using the address field instead of the key
-    this.baseToken = returnTokenFromKey(stakingInfo.baseToken);
+    this.baseToken = getTokenFromKey(stakingInfo.baseToken, tokenAddressMap);
     this.tokens = [
-      returnTokenFromKey(stakingInfo.tokens[0]),
-      returnTokenFromKey(stakingInfo.tokens[1]),
+      getTokenFromKey(stakingInfo.tokens[0], tokenAddressMap),
+      getTokenFromKey(stakingInfo.tokens[1], tokenAddressMap),
     ];
 
-    this.rewardTokenA = returnTokenFromKey(stakingInfo.rewardTokenA);
-    this.rewardTokenB = returnTokenFromKey(stakingInfo.rewardTokenB);
-    this.rewardTokenBBase = returnTokenFromKey(stakingInfo.rewardTokenBBase);
+    this.rewardTokenA = getTokenFromKey(
+      stakingInfo.rewardTokenA,
+      tokenAddressMap,
+    );
+    this.rewardTokenB = getTokenFromKey(
+      stakingInfo.rewardTokenB,
+      tokenAddressMap,
+    );
+    this.rewardTokenBBase = getTokenFromKey(
+      stakingInfo.rewardTokenBBase,
+      tokenAddressMap,
+    );
   }
 }
 
@@ -69,13 +79,17 @@ const dualFarmCache: WeakMap<DualFarmListInfo, DualFarmInfoAddressMap> | null =
 
 export function listToDualFarmMap(
   list: DualFarmListInfo,
+  tokenAddressMap: TokenAddressMap,
 ): DualFarmInfoAddressMap {
   const result = dualFarmCache?.get(list);
   if (result) return result;
 
   const map = list.active.concat(list.closed).reduce<DualFarmInfoAddressMap>(
     (stakingInfoMap, stakingInfo) => {
-      const wrappedStakingInfo = new WrappedDualFarmInfo(stakingInfo);
+      const wrappedStakingInfo = new WrappedDualFarmInfo(
+        stakingInfo,
+        tokenAddressMap,
+      );
       if (
         stakingInfoMap[wrappedStakingInfo.chainId][
           wrappedStakingInfo.stakingRewardAddress
@@ -102,17 +116,18 @@ export function useDualFarmList(
   const dualFarms = useSelector<AppState, AppState['dualFarms']['byUrl']>(
     (state) => state.dualFarms.byUrl,
   );
+  const tokenMap = useSelectedTokenList();
   return useMemo(() => {
     if (!url) return EMPTY_LIST;
     const current = dualFarms[url]?.current;
     if (!current) return EMPTY_LIST;
     try {
-      return listToDualFarmMap(current);
+      return listToDualFarmMap(current, tokenMap);
     } catch (error) {
       console.error('Could not show token list due to error', error);
       return EMPTY_LIST;
     }
-  }, [dualFarms, url]);
+  }, [dualFarms, url, tokenMap]);
 }
 
 export function useDefaultDualFarmList(): DualFarmInfoAddressMap {

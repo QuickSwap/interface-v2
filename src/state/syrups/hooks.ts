@@ -4,7 +4,8 @@ import { useSelector } from 'react-redux';
 import { AppState } from 'state';
 import { SyrupListInfo, SyrupRaw, SyrupBasic } from 'types';
 import { Token } from '@uniswap/sdk';
-import { returnTokenFromKey } from 'utils';
+import { TokenAddressMap, useSelectedTokenList } from 'state/lists/hooks';
+import { getTokenFromKey } from 'utils';
 
 export class WrappedSyrupInfo implements SyrupBasic {
   public readonly stakingInfo: SyrupRaw;
@@ -19,7 +20,7 @@ export class WrappedSyrupInfo implements SyrupBasic {
   public readonly token: Token;
   public readonly stakingToken: Token;
 
-  constructor(syrupInfo: SyrupRaw) {
+  constructor(syrupInfo: SyrupRaw, tokenAddressMap: TokenAddressMap) {
     this.stakingInfo = syrupInfo;
     //TODO: Support Multichain
     this.chainId = ChainId.MATIC;
@@ -30,9 +31,12 @@ export class WrappedSyrupInfo implements SyrupBasic {
     this.name = syrupInfo.name;
     this.ending = syrupInfo.ending;
     //TODO: we should be resolving the following property from the lists state using the address field instead of the key
-    this.baseToken = returnTokenFromKey(syrupInfo.baseToken);
-    this.stakingToken = returnTokenFromKey(syrupInfo.stakingToken);
-    this.token = returnTokenFromKey(syrupInfo.token);
+    this.baseToken = getTokenFromKey(syrupInfo.baseToken, tokenAddressMap);
+    this.stakingToken = getTokenFromKey(
+      syrupInfo.stakingToken,
+      tokenAddressMap,
+    );
+    this.token = getTokenFromKey(syrupInfo.token, tokenAddressMap);
   }
 }
 
@@ -57,13 +61,16 @@ const syrupCache: WeakMap<SyrupListInfo, SyrupInfoAddressMap> | null =
     ? new WeakMap<SyrupListInfo, SyrupInfoAddressMap>()
     : null;
 
-export function listToSyrupMap(list: SyrupListInfo): SyrupInfoAddressMap {
+export function listToSyrupMap(
+  list: SyrupListInfo,
+  tokenAddressMap: TokenAddressMap,
+): SyrupInfoAddressMap {
   const result = syrupCache?.get(list);
   if (result) return result;
 
   const map = list.active.concat(list.closed).reduce<SyrupInfoAddressMap>(
     (syrupInfoMap, syrup) => {
-      const wrappedSyrupInfo = new WrappedSyrupInfo(syrup);
+      const wrappedSyrupInfo = new WrappedSyrupInfo(syrup, tokenAddressMap);
       if (
         syrupInfoMap[wrappedSyrupInfo.chainId][
           wrappedSyrupInfo.stakingRewardAddress
@@ -88,12 +95,13 @@ export function useSyrupList(url: string | undefined): SyrupInfoAddressMap {
   const syrups = useSelector<AppState, AppState['syrups']['byUrl']>(
     (state) => state.syrups.byUrl,
   );
+  const tokenMap = useSelectedTokenList();
   return useMemo(() => {
     if (!url) return EMPTY_LIST;
     const current = syrups[url]?.current;
     if (!current) return EMPTY_LIST;
     try {
-      return listToSyrupMap(current);
+      return listToSyrupMap(current, tokenMap);
     } catch (error) {
       console.error('Could not show token list due to error', error);
       return EMPTY_LIST;
