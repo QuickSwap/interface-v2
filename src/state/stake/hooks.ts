@@ -792,6 +792,24 @@ export function getStakingFees(
   return { oneYearFeeAPY, oneDayFee, accountFee };
 }
 
+const getHypotheticalRewardRate = (
+  uni: Token,
+  stakedAmount?: TokenAmount,
+  totalStakedAmount?: TokenAmount,
+  totalRewardRate?: TokenAmount,
+): TokenAmount | undefined => {
+  if (!stakedAmount || !totalStakedAmount || !totalRewardRate) return;
+  return new TokenAmount(
+    uni,
+    JSBI.greaterThan(totalStakedAmount.raw, JSBI.BigInt(0))
+      ? JSBI.divide(
+          JSBI.multiply(totalRewardRate.raw, stakedAmount.raw),
+          totalStakedAmount.raw,
+        )
+      : JSBI.BigInt(0),
+  );
+};
+
 // gets the dual rewards staking info from the network for the active chain id
 export function useDualStakingInfo(
   chainId: ChainId,
@@ -945,29 +963,15 @@ export function useDualStakingInfo(
             rewardRateBState,
           );
 
-          const getHypotheticalRewardRate = (
-            stakedAmount?: TokenAmount,
-            totalStakedAmount?: TokenAmount,
-            totalRewardRate?: TokenAmount,
-          ): TokenAmount | undefined => {
-            if (!stakedAmount || !totalStakedAmount || !totalRewardRate) return;
-            return new TokenAmount(
-              uni,
-              JSBI.greaterThan(totalStakedAmount.raw, JSBI.BigInt(0))
-                ? JSBI.divide(
-                    JSBI.multiply(totalRewardRate.raw, stakedAmount.raw),
-                    totalStakedAmount.raw,
-                  )
-                : JSBI.BigInt(0),
-            );
-          };
 
           const individualRewardRateA = getHypotheticalRewardRate(
+            uni,
             stakedAmount,
             totalStakedAmount,
             totalRewardRateA01,
           );
           const individualRewardRateB = getHypotheticalRewardRate(
+            uni,
             stakedAmount,
             totalStakedAmount,
             totalRewardRateB01,
@@ -1041,7 +1045,6 @@ export function useDualStakingInfo(
             totalRewardRateB: totalRewardRateB,
             stakedAmount: stakedAmount,
             totalStakedAmount: totalStakedAmount,
-            getHypotheticalRewardRate,
             baseToken: stakingInfo.baseToken,
             pair: stakingInfo.pair,
             rateA: stakingInfo.rateA,
@@ -1318,15 +1321,7 @@ export function useStakingInfo(
           rewardRateState &&
           !rewardRateState.loading
         ) {
-          // get the LP token
-          const tokens = stakingInfo.tokens;
-          const dummyPair = new Pair(
-            new TokenAmount(tokens[0], '0'),
-            new TokenAmount(tokens[1], '0'),
-          );
 
-          // check for account, if no account set to 0
-          const lp = stakingInfo.lp;
           const rate = web3.utils.toWei(stakingInfo.rate.toString());
           const stakedAmount = initTokenAmountFromCallResult(
             getFarmLPToken(stakingInfo),
@@ -1341,24 +1336,9 @@ export function useStakingInfo(
             uni,
             rewardRateState,
           );
-          const getHypotheticalRewardRate = (
-            stakedAmount?: TokenAmount,
-            totalStakedAmount?: TokenAmount,
-            totalRewardRate?: TokenAmount,
-          ): TokenAmount | undefined => {
-            if (!stakedAmount || !totalStakedAmount || !totalRewardRate) return;
-            return new TokenAmount(
-              uni,
-              JSBI.greaterThan(totalStakedAmount.raw, JSBI.BigInt(0))
-                ? JSBI.divide(
-                    JSBI.multiply(totalRewardRate.raw, stakedAmount.raw),
-                    totalStakedAmount.raw,
-                  )
-                : JSBI.BigInt(0),
-            );
-          };
 
           const individualRewardRate = getHypotheticalRewardRate(
+            uni,
             stakedAmount,
             totalStakedAmount,
             totalRewardRate01,
@@ -1425,7 +1405,6 @@ export function useStakingInfo(
             totalRewardRate: totalRewardRate,
             stakedAmount: stakedAmount,
             totalStakedAmount: totalStakedAmount,
-            getHypotheticalRewardRate,
             baseToken: stakingInfo.baseToken,
             pair: stakingInfo.pair,
             rate: stakingInfo.rate,
@@ -1550,24 +1529,8 @@ export function useOldStakingInfo(
           );
           const totalRewardRate = new TokenAmount(uni, JSBI.BigInt(0));
 
-          const getHypotheticalRewardRate = (
-            stakedAmount?: TokenAmount,
-            totalStakedAmount?: TokenAmount,
-            totalRewardRate?: TokenAmount,
-          ): TokenAmount | undefined => {
-            if (!stakedAmount || !totalStakedAmount || !totalRewardRate) return;
-            return new TokenAmount(
-              uni,
-              JSBI.greaterThan(totalStakedAmount.raw, JSBI.BigInt(0))
-                ? JSBI.divide(
-                    JSBI.multiply(totalRewardRate.raw, stakedAmount.raw),
-                    totalStakedAmount.raw,
-                  )
-                : JSBI.BigInt(0),
-            );
-          };
-
           const individualRewardRate = getHypotheticalRewardRate(
+            uni,
             stakedAmount,
             totalStakedAmount,
             totalRewardRate,
