@@ -41,3 +41,93 @@
 .lendAlertClose {
   font-size: 25px;
 }
+
+.poolDetailsItemWrapper {
+  flex: 1;
+  border-radius: 12px;
+  background-color: $secondary2;
+  min-width: 35%;
+  @include media("screen", "<phone") {
+    min-width: 55%;
+  }  
+}
+
+.poolDetailsItemTop {
+  padding: 0 24px;
+  height: 70px;
+  border-bottom: 1px solid $grey31;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+}
+
+.poolStatsInfoItem {
+  display: flex;
+  justify-content: space-around;
+  padding: 20px 0;
+  border-top: 1px solid $grey31;
+  & > div > p {
+    margin-top: 8px;
+  }
+}
+
+.poolDetailsTableWrapper {
+  display: flex;
+  padding: 12px 24px 16px;
+  & .MuiTableCell-root {
+    padding: 8px 0;
+    &:not(:first-child) {
+      text-align: right;
+    }
+  }
+}
+
+.poolDetailsInfoRow {
+  display: flex;
+  @include media("screen", "<tablet") {
+    flex-direction: column;
+  }
+}
+
+.poolDetailsInfoItem {
+  padding: 20px;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid $grey31;
+  & small:first-child {
+    margin-right: 4px;
+  }
+  & small:last-child {
+    font-weight: 600;
+  }
+  @include media("screen", "<tablet") {
+    justify-content: space-between;
+  }
+}
+
+.poolTableHideCell {
+  display: reverse;
+  @include media("screen", "<tablet") {
+    display: none;
+  }
+}
+
+.lendStatCurrentUtil {
+  margin-left: -5px;
+  padding: 6px 7px;
+  font-size: 10px;
+  border-radius: 4px;
+  border: 1px solid $grey2;
+  display: inline-block;
+}
+
+.poolDetailsItemTag {
+  width: 4px;
+  height: 21px;
+  position: absolute;
+  left: 0;
+  border-top-right-radius: 2px;
+  border-bottom-right-radius: 2px;
+}

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 import {
   Box,
   withStyles,
@@ -12,7 +11,6 @@ import {
 } from '@material-ui/core';
 import { Skeleton, Alert } from '@material-ui/lab';
 
-import { CustomSelect, SmOption } from 'components/CustomSelect';
 import ReactApexChart from 'react-apexcharts';
 import { _100 } from '@uniswap/sdk/dist/constants';
 import { useHistory, useLocation } from 'react-router-dom';
@@ -41,23 +39,14 @@ import {
 import { useBorrowLimit } from 'hooks/marketxyz/useBorrowLimit';
 import { useTranslation } from 'react-i18next';
 import { QuestionHelper, CopyHelper, CustomMenu } from 'components';
+import 'pages/styles/lend.scss';
 
 const QS_PoolDirectory = '0x9180296118C8Deb7c5547eF5c1E798DC0405f350';
-
-const useStyles = makeStyles(({ palette, breakpoints }) => ({
-  hideCell: {
-    display: 'reverse',
-    [breakpoints.down('sm')]: {
-      display: 'none',
-    },
-  },
-}));
 
 const LendDetailPage: React.FC = () => {
   const { t } = useTranslation();
   const history = useHistory();
   const location = useLocation();
-  const classes = useStyles();
   const { account } = useActiveWeb3React();
   const [supplyToggled, setSupplyToggled] = useState(false);
 
@@ -110,20 +99,12 @@ const LendDetailPage: React.FC = () => {
   return (
     <>
       <Box width={'100%'}>
-        <Box
-          display={'flex'}
-          justifyContent={'flex-start'}
-          alignItems={'center'}
-          gridGap={'20px'}
-          flexWrap={'wrap'}
-        >
+        <Box className='flex flex-wrap items-center' gridGap={'20px'}>
           <Box
+            className='flex items-center cursor-pointer'
             onClick={() => {
               history.push('../lend');
             }}
-            display={'flex'}
-            alignItems={'center'}
-            style={{ cursor: 'pointer' }}
           >
             <svg
               data-name='Layer 2'
@@ -149,9 +130,7 @@ const LendDetailPage: React.FC = () => {
               </g>
             </svg>
           </Box>
-          <Box fontSize={'24px'} fontWeight={'bold'} color={'white'}>
-            {poolData?.pool.name}
-          </Box>
+          <h4 className='text-bold'>{poolData?.pool.name}</h4>
           <Box display={'flex'} gridGap={'2px'}>
             {poolData?.assets.map((asset, i) => (
               <USDTIcon key={i} size={'24px'} />
@@ -173,84 +152,40 @@ const LendDetailPage: React.FC = () => {
             </Box> */}
           </Box>
         </Box>
-        <Box
-          mt={'40px'}
-          fontSize={'20px'}
-          fontWeight={'700'}
-          textAlign={'left'}
-          color={'#ebecf2'}
-        >
-          {t('lendPageTitle')}
+        <Box mt={'40px'} textAlign={'left'}>
+          <h5 className='text-gray29'>{t('lendPageTitle')}</h5>
         </Box>
         <Box mt={'23px'} display={'flex'} gridGap={'24px'} flexWrap={'wrap'}>
-          <Box
-            flex={'1'}
-            sx={{ minWidth: { xs: '55%', sm: '35%', md: '20%' } }}
-            bgcolor={'#232734'}
-            p={'24px'}
-            borderRadius={'12px'}
-          >
-            <Box color={'#696c80'} fontSize={'14px'}>
-              {t('totalSupply')}
-            </Box>
+          <Box className='lendPageData'>
+            <small className='text-secondary'>{t('totalSupply')}</small>
             {poolData?.totalSuppliedUSD ? (
-              <Box fontSize={'24px'} color={'white'}>
-                {poolData && midUsdFormatter(poolData.totalSuppliedUSD)}
-              </Box>
+              <h4>{poolData && midUsdFormatter(poolData.totalSuppliedUSD)}</h4>
             ) : (
               <Skeleton variant='rect' height={40} />
             )}
           </Box>
-          <Box
-            flex={'1'}
-            sx={{ minWidth: { xs: '55%', sm: '35%', md: '20%' } }}
-            bgcolor={'#232734'}
-            p={'24px'}
-            borderRadius={'12px'}
-          >
-            <Box color={'#696c80'} fontSize={'14px'}>
-              {t('totalBorrowed')}
-            </Box>
+          <Box className='lendPageData'>
+            <small className='text-secondary'>{t('totalBorrowed')}</small>
             {poolData?.totalBorrowedUSD ? (
-              <Box fontSize={'24px'} color={'white'}>
-                {poolData && midUsdFormatter(poolData.totalBorrowedUSD)}
-              </Box>
+              <h4>{poolData && midUsdFormatter(poolData.totalBorrowedUSD)}</h4>
             ) : (
               <Skeleton variant='rect' height={40} />
             )}
           </Box>
-          <Box
-            flex={'1'}
-            sx={{ minWidth: { xs: '55%', sm: '35%', md: '20%' } }}
-            bgcolor={'#232734'}
-            p={'24px'}
-            borderRadius={'12px'}
-          >
-            <Box color={'#696c80'} fontSize={'14px'}>
-              {t('liquidity')}
-            </Box>
+          <Box className='lendPageData'>
+            <small className='text-secondary'>{t('liquidity')}</small>
             {poolData?.totalLiquidityUSD ? (
-              <Box fontSize={'24px'} color={'white'}>
-                {poolData && midUsdFormatter(poolData.totalLiquidityUSD)}
-              </Box>
+              <h4>{poolData && midUsdFormatter(poolData.totalLiquidityUSD)}</h4>
             ) : (
               <Skeleton variant='rect' height={40} />
             )}
           </Box>
-          <Box
-            flex={'1'}
-            sx={{ minWidth: { xs: '55%', sm: '35%', md: '20%' } }}
-            bgcolor={'#232734'}
-            p={'24px'}
-            borderRadius={'12px'}
-          >
-            <Box color={'#696c80'} fontSize={'14px'}>
-              {t('poolUtilization')}
-            </Box>
+          <Box className='lendPageData'>
+            <small className='text-secondary'>{t('poolUtilization')}</small>
             {poolData ? (
-              <Box fontSize={'24px'} color={'white'}>
+              <h4>
                 {poolData && midUsdFormatter(poolData.totalBorrowBalanceUSD)}
-              </Box>
+              </h4>
             ) : (
               <Skeleton variant='rect' height={40} />
             )}
@@ -350,77 +285,33 @@ const LendDetailPage: React.FC = () => {
           flexWrap={'wrap'}
           sx={{ flexDirection: { sm: 'column', md: 'row' } }}
         >
-          <Box
-            flex={'1'}
-            borderRadius={'20px'}
-            bgcolor={'#232734'}
-            display={'flex'}
-            flexDirection={'column'}
-            sx={{ minWidth: { xs: '55%', sm: '35%' } }}
-          >
-            <Box
-              height={'70px'}
-              borderBottom={'solid 1px #32394d'}
-              display={'flex'}
-              justifyContent={'space-between'}
-              alignItems={'center'}
-            >
-              <Box
-                px={'30px'}
-                fontSize={'18px'}
-                fontWeight={'500'}
-                borderLeft={'4px solid #448aff'}
-                lineHeight={'1'}
-              >
-                {t('supply')}
-              </Box>
-              <Box mr={'30px'} display={'flex'} fontSize={'14px'}>
-                <Box color={'#c7cad9'}>{t('yoursupplybalance')}:&nbsp;</Box>
+          <Box className='poolDetailsItemWrapper'>
+            <Box className='poolDetailsItemTop'>
+              <Box className='poolDetailsItemTag bg-primary' />
+              <h6>{t('supply')}</h6>
+              <Box display={'flex'}>
+                <small>{t('yoursupplybalance')}:&nbsp;</small>
                 {poolData ? (
-                  <Box color={'white'}>
+                  <small className='text-gray29'>
                     {midUsdFormatter(poolData.totalSupplyBalanceUSD)}
-                  </Box>
+                  </small>
                 ) : (
                   <Skeleton variant='rect' width={40} height={23} />
                 )}
               </Box>
             </Box>
-            <Box display={'flex'} paddingX={'24px'}>
+            <Box className='poolDetailsTableWrapper'>
               <Table>
                 <TableHead>
                   <TableRow>
                     <MuiTableCell>
-                      <Box paddingY={'20px'}>
-                        {t('asset')} / {t('ltv')}
-                      </Box>
+                      {t('asset')} / {t('ltv')}
                     </MuiTableCell>
-                    <MuiTableCell className={classes.hideCell}>
-                      <Box
-                        paddingY={'20px'}
-                        display={'flex'}
-                        justifyContent={'flex-end'}
-                      >
-                        {t('supplyapy')}
-                      </Box>
+                    <MuiTableCell className='poolTableHideCell'>
+                      {t('supplyapy')}
                     </MuiTableCell>
-                    <MuiTableCell>
-                      <Box
-                        paddingY={'20px'}
-                        display={'flex'}
-                        justifyContent={'flex-end'}
-                      >
-                        {t('deposited')}
-                      </Box>
-                    </MuiTableCell>
-                    <MuiTableCell>
-                      <Box
-                        paddingY={'20px'}
-                        display={'flex'}
-                        justifyContent={'flex-end'}
-                      >
-                        {t('collateral')}
-                      </Box>
-                    </MuiTableCell>
+                    <MuiTableCell>{t('deposited')}</MuiTableCell>
+                    <MuiTableCell>{t('collateral')}</MuiTableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -433,39 +324,50 @@ const LendDetailPage: React.FC = () => {
                           setModalIsBorrow(false);
                         }}
                       >
-                        <Box
-                          paddingY={'20px'}
-                          display={'flex'}
-                          alignItems={'center'}
-                          gridGap={'16px'}
-                        >
-                          <Box display={'flex'} alignItems={'center'}>
+                        <Box className='flex items-center'>
+                          <Box display={'flex'} mr='16px'>
                             <USDTIcon size={'36px'} />
                           </Box>
-                          <Box
-                            display={'flex'}
-                            flexDirection={'column'}
-                            gridGap={'4px'}
-                          >
-                            <Box
-                              fontSize={'14px'}
-                              color={'#ebecf2'}
-                              textAlign={'right'}
-                            >
+                          <Box>
+                            <small className='text-gray29'>
                               {asset.underlyingName}
-                            </Box>
-                            <Box
-                              fontSize={'13px'}
-                              color={'#696c80'}
-                              textAlign={'right'}
-                            >
+                            </small>
+                            <p className='caption'>
                               {t('ltv')}:{' '}
                               {sdk &&
                                 asset.collateralFactor
                                   .div(sdk.web3.utils.toBN(1e16))
                                   .toNumber()}
                               %
-                            </Box>
+                            </p>
+                          </Box>
+                        </Box>
+                      </ItemTableCell>
+                      <ItemTableCell
+                        className='poolTableHideCell'
+                        onClick={() => {
+                          setSelectedAsset(asset);
+                          setModalType('quick');
+                          setModalIsBorrow(false);
+                        }}
+                      >
+                        <small>
+                          {convertMantissaToAPY(
+                            asset.supplyRatePerBlock,
+                            365,
+                          ).toFixed(2)}
+                          %
+                        </small>
+                        <Box className='flex items-center justify-end'>
+                          <p className='caption'>
+                            {convertMantissaToAPY(
+                              asset.supplyRatePerBlock,
+                              365,
+                            ).toFixed(2)}
+                            %
+                          </p>
+                          <Box ml='2px' className='flex'>
+                            <USDTIcon size={'16px'} />
                           </Box>
                         </Box>
                       </ItemTableCell>
@@ -476,89 +378,28 @@ const LendDetailPage: React.FC = () => {
                           setModalIsBorrow(false);
                         }}
                       >
-                        <Box
-                          paddingY={'20px'}
-                          display={'flex'}
-                          justifyContent={'flex-end'}
-                        >
-                          <Box
-                            ml={'auto'}
-                            display={'inline-flex'}
-                            flexDirection={'column'}
-                            gridGap={'4px'}
-                            color={'#ebecf2'}
-                          >
-                            <Box fontSize={'14px'} textAlign={'right'}>
-                              {convertMantissaToAPY(
-                                asset.supplyRatePerBlock,
-                                365,
-                              ).toFixed(2)}
-                              %
-                            </Box>
-                            <Box fontSize={'13px'} textAlign={'right'}>
-                              {convertMantissaToAPY(
-                                asset.supplyRatePerBlock,
-                                365,
-                              ).toFixed(2)}
-                              %
-                              <USDTIcon size={'12px'} />
-                            </Box>
-                          </Box>
-                        </Box>
-                      </ItemTableCell>
-                      <ItemTableCell
-                        onClick={() => {
-                          setSelectedAsset(asset);
-                          setModalType('quick');
-                          setModalIsBorrow(false);
-                        }}
-                      >
-                        <Box
-                          paddingY={'20px'}
-                          display={'flex'}
-                          justifyContent={'flex-end'}
-                        >
-                          <Box
-                            display={'inline-flex'}
-                            flexDirection={'column'}
-                            gridGap={'4px'}
-                          >
-                            <Box
-                              fontSize={'14px'}
-                              color={'#ebecf2'}
-                              textAlign={'right'}
-                            >
-                              {midUsdFormatter(asset.supplyBalanceUSD)}
-                            </Box>
-                            <Box
-                              fontSize={'13px'}
-                              color={'#696c80'}
-                              textAlign={'right'}
-                            >
-                              {sdk
-                                ? asset.supplyBalance
-                                    .div(
-                                      sdk.web3.utils
-                                        .toBN(10)
-                                        .pow(
-                                          sdk.web3.utils.toBN(
-                                            asset.underlyingDecimals.toString(),
-                                          ),
-                                        ),
-                                    )
-                                    .toNumber()
-                                : '?'}{' '}
-                              {asset.underlyingSymbol}
-                            </Box>
-                          </Box>
-                        </Box>
+                        <small className='text-gray29'>
+                          {midUsdFormatter(asset.supplyBalanceUSD)}
+                        </small>
+                        <p className='caption text-secondary'>
+                          {sdk
+                            ? asset.supplyBalance
+                                .div(
+                                  sdk.web3.utils
+                                    .toBN(10)
+                                    .pow(
+                                      sdk.web3.utils.toBN(
+                                        asset.underlyingDecimals.toString(),
+                                      ),
+                                    ),
+                                )
+                                .toNumber()
+                            : '?'}{' '}
+                          {asset.underlyingSymbol}
+                        </p>
                       </ItemTableCell>
                       <MuiTableCell>
-                        <Box
-                          paddingY={'20px'}
-                          display={'flex'}
-                          justifyContent={'flex-end'}
-                        >
+                        <Box className='flex justify-end'>
                           <ToggleSwitch
                             // defaultChecked={asset.membership}
                             toggled={asset.membership}
@@ -605,77 +446,33 @@ const LendDetailPage: React.FC = () => {
               </Table>
             </Box>
           </Box>
-          <Box
-            flex={'1'}
-            borderRadius={'20px'}
-            bgcolor={'#232734'}
-            display={'flex'}
-            flexDirection={'column'}
-            sx={{ minWidth: { xs: '55%', sm: '35%' } }}
-          >
-            <Box
-              height={'70px'}
-              borderBottom={'solid 1px #32394d'}
-              display={'flex'}
-              justifyContent={'space-between'}
-              alignItems={'center'}
-            >
-              <Box
-                px={'30px'}
-                fontSize={'18px'}
-                fontWeight={'500'}
-                borderLeft={'4px solid #fc6259'}
-                lineHeight={'1'}
-              >
-                {t('borrow')}
-              </Box>
-              <Box mr={'30px'} display={'flex'} fontSize={'14px'}>
-                <Box color={'#c7cad9'}>{t('yourborrowbalance')}:&nbsp;</Box>
+          <Box className='poolDetailsItemWrapper'>
+            <Box className='poolDetailsItemTop'>
+              <Box className='poolDetailsItemTag bg-error' />
+              <h6>{t('borrow')}</h6>
+              <Box display={'flex'}>
+                <small>{t('yourborrowbalance')}:&nbsp;</small>
                 {poolData ? (
-                  <Box color={'white'}>
+                  <small className='text-gray29'>
                     {midUsdFormatter(poolData.totalBorrowBalanceUSD)}
-                  </Box>
+                  </small>
                 ) : (
                   <Skeleton variant='rect' width={40} height={23} />
                 )}
               </Box>
             </Box>
-            <Box display={'flex'} paddingX={'24px'}>
+            <Box className='poolDetailsTableWrapper'>
               <Table>
                 <TableHead>
                   <TableRow>
                     <MuiTableCell>
-                      <Box paddingY={'20px'}>
-                        {t('asset')} / {t('ltv')}
-                      </Box>
+                      {t('asset')} / {t('ltv')}
                     </MuiTableCell>
-                    <MuiTableCell className={classes.hideCell}>
-                      <Box
-                        paddingY={'20px'}
-                        display={'flex'}
-                        justifyContent={'flex-end'}
-                      >
-                        {t('apr')} / {t('tvl')}
-                      </Box>
+                    <MuiTableCell className='poolTableHideCell'>
+                      {t('apr')} / {t('tvl')}
                     </MuiTableCell>
-                    <MuiTableCell className={classes.hideCell}>
-                      <Box
-                        paddingY={'20px'}
-                        display={'flex'}
-                        justifyContent={'flex-end'}
-                      >
-                        {t('borrowed')}
-                      </Box>
-                    </MuiTableCell>
-                    <MuiTableCell>
-                      <Box
-                        paddingY={'20px'}
-                        display={'flex'}
-                        justifyContent={'flex-end'}
-                      >
-                        {t('liquidity')}
-                      </Box>
-                    </MuiTableCell>
+                    <MuiTableCell>{t('borrowed')}</MuiTableCell>
+                    <MuiTableCell>{t('liquidity')}</MuiTableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -694,122 +491,65 @@ const LendDetailPage: React.FC = () => {
                       >
                         <ItemTableCell>
                           <Box
-                            paddingY={'20px'}
                             display={'flex'}
                             alignItems={'center'}
                             gridGap={'16px'}
                           >
-                            <Box
-                              display={'flex'}
-                              alignItems={'center'}
-                              gridGap={'16px'}
-                            >
-                              <USDTIcon size={'36px'} />
-                              <Box
-                                fontSize={'14px'}
-                                color={'#ebecf2'}
-                                textAlign={'right'}
-                              >
-                                {asset.underlyingName}
-                              </Box>
-                            </Box>
+                            <USDTIcon size={'36px'} />
+                            <small className='text-gray29'>
+                              {asset.underlyingName}
+                            </small>
                           </Box>
                         </ItemTableCell>
-                        <ItemTableCell className={classes.hideCell}>
-                          <Box
-                            paddingY={'20px'}
-                            display={'flex'}
-                            justifyContent={'flex-end'}
-                          >
-                            <Box fontSize={'13px'}>
-                              {convertMantissaToAPR(
-                                asset.borrowRatePerBlock,
-                              ).toFixed(2)}
-                              %
-                            </Box>
-                          </Box>
+                        <ItemTableCell className='poolTableHideCell'>
+                          <p className='caption'>
+                            {convertMantissaToAPR(
+                              asset.borrowRatePerBlock,
+                            ).toFixed(2)}
+                            %
+                          </p>
                         </ItemTableCell>
                         <ItemTableCell>
-                          <Box
-                            paddingY={'20px'}
-                            display={'flex'}
-                            justifyContent={'flex-end'}
-                          >
-                            <Box
-                              display={'inline-flex'}
-                              flexDirection={'column'}
-                              gridGap={'4px'}
-                            >
-                              <Box
-                                fontSize={'14px'}
-                                color={'#ebecf2'}
-                                textAlign={'right'}
-                              >
-                                {midUsdFormatter(asset.borrowBalanceUSD)}
-                              </Box>
-                              <Box
-                                fontSize={'13px'}
-                                color={'#696c80'}
-                                textAlign={'right'}
-                              >
-                                {sdk
-                                  ? asset.borrowBalance
-                                      .div(
-                                        sdk.web3.utils
-                                          .toBN(10)
-                                          .pow(
-                                            sdk.web3.utils.toBN(
-                                              asset.underlyingDecimals.toString(),
-                                            ),
-                                          ),
-                                      )
-                                      .toNumber()
-                                  : '?'}{' '}
-                                {asset.underlyingSymbol}
-                              </Box>
-                            </Box>
-                          </Box>
+                          <small className='text-gray29'>
+                            {midUsdFormatter(asset.borrowBalanceUSD)}
+                          </small>
+                          <p className='caption text-secondary'>
+                            {sdk
+                              ? asset.borrowBalance
+                                  .div(
+                                    sdk.web3.utils
+                                      .toBN(10)
+                                      .pow(
+                                        sdk.web3.utils.toBN(
+                                          asset.underlyingDecimals.toString(),
+                                        ),
+                                      ),
+                                  )
+                                  .toNumber()
+                              : '?'}{' '}
+                            {asset.underlyingSymbol}
+                          </p>
                         </ItemTableCell>
                         <ItemTableCell>
-                          <Box
-                            paddingY={'20px'}
-                            display={'flex'}
-                            justifyContent={'flex-end'}
-                          >
-                            <Box
-                              display={'inline-flex'}
-                              flexDirection={'column'}
-                              gridGap={'4px'}
-                            >
-                              <Box
-                                fontSize={'14px'}
-                                color={'#ebecf2'}
-                                textAlign={'right'}
-                              >
-                                {midUsdFormatter(asset.liquidityUSD)}
-                              </Box>
-                              <Box
-                                fontSize={'13px'}
-                                color={'#696c80'}
-                                textAlign={'right'}
-                              >
-                                {sdk
-                                  ? asset.liquidity
-                                      .div(
-                                        sdk.web3.utils
-                                          .toBN(10)
-                                          .pow(
-                                            sdk.web3.utils.toBN(
-                                              asset.underlyingDecimals.toString(),
-                                            ),
-                                          ),
-                                      )
-                                      .toNumber()
-                                  : '?'}{' '}
-                                {asset.underlyingSymbol}
-                              </Box>
-                            </Box>
-                          </Box>
+                          <small className='text-gray29'>
+                            {midUsdFormatter(asset.liquidityUSD)}
+                          </small>
+                          <p className='caption text-secondary'>
+                            {sdk
+                              ? asset.liquidity
+                                  .div(
+                                    sdk.web3.utils
+                                      .toBN(10)
+                                      .pow(
+                                        sdk.web3.utils.toBN(
+                                          asset.underlyingDecimals.toString(),
+                                        ),
+                                      ),
+                                  )
+                                  .toNumber()
+                              : '?'}{' '}
+                            {asset.underlyingSymbol}
+                          </p>
                         </ItemTableCell>
                       </ItemTableRow>
                     );
@@ -818,415 +558,158 @@ const LendDetailPage: React.FC = () => {
               </Table>
             </Box>
           </Box>
-          <Box
-            flex={'1'}
-            borderRadius={'20px'}
-            bgcolor={'#232734'}
-            display={'flex'}
-            flexDirection={'column'}
-            sx={{ minWidth: { xs: '55%', sm: '35%' } }}
-          >
-            <Box
-              height={'70px'}
-              borderBottom={'solid 1px #32394d'}
-              display={'flex'}
-              justifyContent={'space-between'}
-              alignItems={'center'}
-            >
-              <Box
-                px={'30px'}
-                fontSize={'18px'}
-                fontWeight={'500'}
-                lineHeight={'1'}
-              >
-                {t('poolInfo')}
-              </Box>
+          <Box className='poolDetailsItemWrapper'>
+            <Box className='poolDetailsItemTop'>
+              <h6>{t('poolInfo')}</h6>
             </Box>
             <Box display={'flex'} pb={'16px'} flexDirection={'column'}>
-              <Box
-                flex={1}
-                display={'flex'}
-                sx={{
-                  flexDirection: { xs: 'column', sm: 'column', md: 'row' },
-                }}
-              >
-                <Box flex={1}>
-                  <Box
-                    padding={'20px'}
-                    display={'flex'}
-                    alignItems={'center'}
-                    gridGap={'4px'}
-                    borderBottom={'1px solid #32394d'}
-                    sx={{
-                      justifyContent: {
-                        xs: 'space-between',
-                        sm: 'space-between',
-                        md: 'flex-start',
-                      },
-                    }}
-                  >
-                    <Box fontSize={'14px'} fontWeight={'500'} color={'#c7cad9'}>
-                      {t('totalSupplied')}:
-                    </Box>
-                    {poolData ? (
-                      <small className='text-gray29'>
-                        {midUsdFormatter(poolData.totalSuppliedUSD)}
-                      </small>
-                    ) : (
-                      <Skeleton variant='rect' width={40} height={23} />
-                    )}
-                  </Box>
+              <Box className='poolDetailsInfoRow'>
+                <Box className='poolDetailsInfoItem'>
+                  <small>{t('totalSupplied')}:</small>
+                  {poolData ? (
+                    <small className='text-gray29'>
+                      {midUsdFormatter(poolData.totalSuppliedUSD)}
+                    </small>
+                  ) : (
+                    <Skeleton variant='rect' width={40} height={23} />
+                  )}
                 </Box>
-                <Box flex={1}>
-                  <Box
-                    padding={'20px'}
-                    display={'flex'}
-                    alignItems={'center'}
-                    gridGap={'4px'}
-                    borderBottom={'1px solid #32394d'}
-                    sx={{
-                      justifyContent: {
-                        xs: 'space-between',
-                        sm: 'space-between',
-                        md: 'flex-start',
-                      },
-                    }}
-                  >
-                    <Box fontSize={'14px'} fontWeight={'500'} color={'#c7cad9'}>
-                      {t('totalBorrowed')}:
-                    </Box>
-                    {poolData ? (
-                      <small className='text-gray29'>
-                        {midUsdFormatter(poolData.totalBorrowedUSD)}
-                      </small>
-                    ) : (
-                      <Skeleton variant='rect' width={40} height={23} />
-                    )}
-                  </Box>
+                <Box className='poolDetailsInfoItem'>
+                  <small>{t('totalBorrowed')}:</small>
+                  {poolData ? (
+                    <small className='text-gray29'>
+                      {midUsdFormatter(poolData.totalBorrowedUSD)}
+                    </small>
+                  ) : (
+                    <Skeleton variant='rect' width={40} height={23} />
+                  )}
                 </Box>
               </Box>
-              <Box
-                flex={1}
-                display={'flex'}
-                sx={{
-                  flexDirection: { xs: 'column', sm: 'column', md: 'row' },
-                }}
-              >
-                <Box flex={1}>
-                  <Box
-                    padding={'20px'}
-                    display={'flex'}
-                    alignItems={'center'}
-                    gridGap={'4px'}
-                    borderBottom={'1px solid #32394d'}
-                    sx={{
-                      justifyContent: {
-                        xs: 'space-between',
-                        sm: 'space-between',
-                        md: 'flex-start',
-                      },
-                    }}
-                  >
-                    <Box fontSize={'14px'} fontWeight={'500'} color={'#c7cad9'}>
-                      {t('availableLiquidity')}:
-                    </Box>
-                    {poolData ? (
-                      <small className='text-gray29'>
-                        {midUsdFormatter(poolData.totalLiquidityUSD)}
-                      </small>
-                    ) : (
-                      <Skeleton variant='rect' width={40} height={23} />
-                    )}
-                  </Box>
+              <Box className='poolDetailsInfoRow'>
+                <Box className='poolDetailsInfoItem'>
+                  <small>{t('availableLiquidity')}:</small>
+                  {poolData ? (
+                    <small className='text-gray29'>
+                      {midUsdFormatter(poolData.totalLiquidityUSD)}
+                    </small>
+                  ) : (
+                    <Skeleton variant='rect' width={40} height={23} />
+                  )}
                 </Box>
-                <Box flex={1}>
-                  <Box
-                    padding={'20px'}
-                    display={'flex'}
-                    alignItems={'center'}
-                    gridGap={'4px'}
-                    borderBottom={'1px solid #32394d'}
-                    sx={{
-                      justifyContent: {
-                        xs: 'space-between',
-                        sm: 'space-between',
-                        md: 'flex-start',
-                      },
-                    }}
-                  >
-                    <Box fontSize={'14px'} fontWeight={'500'} color={'#c7cad9'}>
-                      {t('poolUtilization')}:
-                    </Box>
-                    {poolData ? (
-                      <small className='text-gray29'>
-                        {poolData.totalSuppliedUSD.toString() === '0'
-                          ? '0%'
-                          : (
-                              (poolData.totalBorrowedUSD /
-                                poolData.totalSuppliedUSD) *
-                              100
-                            ).toFixed(2) + '%'}
-                      </small>
-                    ) : (
-                      <Skeleton variant='rect' width={40} height={23} />
-                    )}
-                  </Box>
+                <Box className='poolDetailsInfoItem'>
+                  <small>{t('poolUtilization')}:</small>
+                  {poolData ? (
+                    <small className='text-gray29'>
+                      {poolData.totalSuppliedUSD.toString() === '0'
+                        ? '0%'
+                        : (
+                            (poolData.totalBorrowedUSD /
+                              poolData.totalSuppliedUSD) *
+                            100
+                          ).toFixed(2) + '%'}
+                    </small>
+                  ) : (
+                    <Skeleton variant='rect' width={40} height={23} />
+                  )}
                 </Box>
               </Box>
-              <Box
-                flex={1}
-                display={'flex'}
-                sx={{
-                  flexDirection: { xs: 'column', sm: 'column', md: 'row' },
-                }}
-              >
-                <Box flex={1}>
-                  <Box
-                    padding={'20px'}
-                    display={'flex'}
-                    alignItems={'center'}
-                    gridGap={'4px'}
-                    borderBottom={'1px solid #32394d'}
-                    sx={{
-                      justifyContent: {
-                        xs: 'space-between',
-                        sm: 'space-between',
-                        md: 'flex-start',
-                      },
-                    }}
-                  >
-                    <small>{t('upgradable')}:</small>
-                    {extraPoolData ? (
-                      <small className='text-gray29'>
-                        {extraPoolData.upgradeable ? 'Yes' : 'No'}
-                      </small>
-                    ) : (
-                      <Skeleton variant='rect' width={40} height={23} />
-                    )}
-                  </Box>
+              <Box className='poolDetailsInfoRow'>
+                <Box className='poolDetailsInfoItem'>
+                  <small>{t('upgradable')}:</small>
+                  {extraPoolData ? (
+                    <small className='text-gray29'>
+                      {extraPoolData.upgradeable ? 'Yes' : 'No'}
+                    </small>
+                  ) : (
+                    <Skeleton variant='rect' width={40} height={23} />
+                  )}
                 </Box>
-                <Box flex={1}>
-                  <Box
-                    padding={'20px'}
-                    display={'flex'}
-                    alignItems={'center'}
-                    gridGap={'4px'}
-                    borderBottom={'1px solid #32394d'}
-                    sx={{
-                      justifyContent: {
-                        xs: 'space-between',
-                        sm: 'space-between',
-                        md: 'flex-start',
-                      },
-                    }}
-                  >
-                    <small>{t('admin')}:</small>
-                    {extraPoolData && extraPoolData.admin ? (
-                      <Box className='flex items-center'>
-                        <small className='text-gray29'>
-                          {shortenAddress(extraPoolData.admin)}
-                        </small>
-                        <Box ml={1}>
-                          <CopyHelper toCopy={extraPoolData.admin} />
-                        </Box>
-                      </Box>
-                    ) : (
-                      <Skeleton variant='rect' width={40} height={23} />
-                    )}
-                  </Box>
+                <Box className='poolDetailsInfoItem'>
+                  <small>{t('admin')}:</small>
+                  {extraPoolData && extraPoolData.admin ? (
+                    <Box className='flex items-center'>
+                      <small className='text-gray29'>
+                        {shortenAddress(extraPoolData.admin)}
+                      </small>
+                      <CopyHelper toCopy={extraPoolData.admin} />
+                    </Box>
+                  ) : (
+                    <Skeleton variant='rect' width={40} height={23} />
+                  )}
                 </Box>
               </Box>
-              <Box
-                flex={1}
-                display={'flex'}
-                sx={{
-                  flexDirection: { xs: 'column', sm: 'column', md: 'row' },
-                }}
-              >
-                <Box flex={1}>
-                  <Box
-                    padding={'20px'}
-                    display={'flex'}
-                    alignItems={'center'}
-                    gridGap={'4px'}
-                    borderBottom={'1px solid #32394d'}
-                    sx={{
-                      justifyContent: {
-                        xs: 'space-between',
-                        sm: 'space-between',
-                        md: 'flex-start',
-                      },
-                    }}
-                  >
-                    <small>{t('platformFee')}:</small>
-                    {poolData ? (
-                      <small className='text-gray29'>
-                        {poolData.assets.length > 0
-                          ? (
-                              Number(poolData.assets[0].fuseFee.toString()) /
-                              1e16
-                            ).toPrecision(2) + '%'
-                          : '10%'}
-                      </small>
-                    ) : (
-                      <Skeleton variant='rect' width={40} height={23} />
-                    )}
-                  </Box>
+              <Box className='poolDetailsInfoRow'>
+                <Box className='poolDetailsInfoItem'>
+                  <small>{t('platformFee')}:</small>
+                  {poolData ? (
+                    <small className='text-gray29'>
+                      {poolData.assets.length > 0
+                        ? (
+                            Number(poolData.assets[0].fuseFee.toString()) / 1e16
+                          ).toPrecision(2) + '%'
+                        : '10%'}
+                    </small>
+                  ) : (
+                    <Skeleton variant='rect' width={40} height={23} />
+                  )}
                 </Box>
-                <Box flex={1}>
-                  <Box
-                    padding={'20px'}
-                    display={'flex'}
-                    alignItems={'center'}
-                    gridGap={'4px'}
-                    borderBottom={'1px solid #32394d'}
-                    sx={{
-                      justifyContent: {
-                        xs: 'space-between',
-                        sm: 'space-between',
-                        md: 'flex-start',
-                      },
-                    }}
-                  >
-                    <Box fontSize={'14px'} fontWeight={'500'} color={'#c7cad9'}>
-                      {t('averageAdminFee')}:
-                    </Box>
-                    {poolData ? (
-                      <small className='text-gray29'>
-                        {poolData.assets.reduce(
-                          (a, b, _, { length }) =>
-                            a + Number(b.adminFee.toString()) / 1e16 / length,
-                          0,
-                        )}
-                      </small>
-                    ) : (
-                      <Skeleton variant='rect' width={40} height={23} />
-                    )}
-                  </Box>
+                <Box className='poolDetailsInfoItem'>
+                  <small>{t('averageAdminFee')}:</small>
+                  {poolData ? (
+                    <small className='text-gray29'>
+                      {poolData.assets.reduce(
+                        (a, b, _, { length }) =>
+                          a + Number(b.adminFee.toString()) / 1e16 / length,
+                        0,
+                      )}
+                    </small>
+                  ) : (
+                    <Skeleton variant='rect' width={40} height={23} />
+                  )}
                 </Box>
               </Box>
-              <Box
-                flex={1}
-                display={'flex'}
-                sx={{
-                  flexDirection: { xs: 'column', sm: 'column', md: 'row' },
-                }}
-              >
-                <Box flex={1}>
-                  <Box
-                    padding={'20px'}
-                    display={'flex'}
-                    alignItems={'center'}
-                    gridGap={'4px'}
-                    borderBottom={'1px solid #32394d'}
-                    sx={{
-                      justifyContent: {
-                        xs: 'space-between',
-                        sm: 'space-between',
-                        md: 'flex-start',
-                      },
-                    }}
-                  >
-                    <Box fontSize={'14px'} fontWeight={'500'} color={'#c7cad9'}>
-                      {t('closeFactor')}:
-                    </Box>
-                    {extraPoolData ? (
-                      <small className='text-gray29'>
-                        {extraPoolData.closeFactor / 1e16 + '%'}
-                      </small>
-                    ) : (
-                      <Skeleton variant='rect' width={40} height={23} />
-                    )}
-                  </Box>
+              <Box className='poolDetailsInfoRow'>
+                <Box className='poolDetailsInfoItem'>
+                  <small>{t('closeFactor')}:</small>
+                  {extraPoolData ? (
+                    <small className='text-gray29'>
+                      {extraPoolData.closeFactor / 1e16 + '%'}
+                    </small>
+                  ) : (
+                    <Skeleton variant='rect' width={40} height={23} />
+                  )}
                 </Box>
-                <Box flex={1}>
-                  <Box
-                    padding={'20px'}
-                    display={'flex'}
-                    alignItems={'center'}
-                    gridGap={'4px'}
-                    borderBottom={'1px solid #32394d'}
-                    sx={{
-                      justifyContent: {
-                        xs: 'space-between',
-                        sm: 'space-between',
-                        md: 'flex-start',
-                      },
-                    }}
-                  >
-                    <Box fontSize={'14px'} fontWeight={'500'} color={'#c7cad9'}>
-                      {t('liquidationIncentive')}:
-                    </Box>
-                    {extraPoolData ? (
-                      <small className='text-gray29'>
-                        {extraPoolData.liquidationIncentive / 1e16 - 100 + '%'}
-                      </small>
-                    ) : (
-                      <Skeleton variant='rect' width={40} height={23} />
-                    )}
-                  </Box>
+                <Box className='poolDetailsInfoItem'>
+                  <small>{t('liquidationIncentive')}:</small>
+                  {extraPoolData ? (
+                    <small className='text-gray29'>
+                      {extraPoolData.liquidationIncentive / 1e16 - 100 + '%'}
+                    </small>
+                  ) : (
+                    <Skeleton variant='rect' width={40} height={23} />
+                  )}
                 </Box>
               </Box>
-              <Box
-                flex={1}
-                display={'flex'}
-                sx={{
-                  flexDirection: { xs: 'column', sm: 'column', md: 'row' },
-                }}
-              >
-                <Box flex={1}>
-                  <Box
-                    padding={'20px'}
-                    display={'flex'}
-                    alignItems={'center'}
-                    gridGap={'4px'}
-                    borderBottom={'1px solid #32394d'}
-                    sx={{
-                      justifyContent: {
-                        xs: 'space-between',
-                        sm: 'space-between',
-                        md: 'flex-start',
-                      },
-                    }}
-                  >
-                    <Box fontSize={'14px'} fontWeight={'500'} color={'#c7cad9'}>
-                      {t('oracle')}:
-                    </Box>
-                    {extraPoolData ? (
-                      <small className='text-gray29'>
-                        {shortenAddress(extraPoolData.oracle)}
-                      </small>
-                    ) : (
-                      <Skeleton variant='rect' width={40} height={23} />
-                    )}
-                  </Box>
+              <Box className='poolDetailsInfoRow'>
+                <Box className='poolDetailsInfoItem'>
+                  <small>{t('oracle')}:</small>
+                  {extraPoolData ? (
+                    <small className='text-gray29'>
+                      {shortenAddress(extraPoolData.oracle)}
+                    </small>
+                  ) : (
+                    <Skeleton variant='rect' width={40} height={23} />
+                  )}
                 </Box>
-                <Box flex={1}>
-                  <Box
-                    padding={'20px'}
-                    display={'flex'}
-                    alignItems={'center'}
-                    gridGap={'4px'}
-                    borderBottom={'1px solid #32394d'}
-                    sx={{
-                      justifyContent: {
-                        xs: 'space-between',
-                        sm: 'space-between',
-                        md: 'flex-start',
-                      },
-                    }}
-                  >
-                    <Box fontSize={'14px'} fontWeight={'500'} color={'#c7cad9'}>
-                      {t('whitelist')}:
-                    </Box>
-                    {extraPoolData ? (
-                      <small className='text-gray29'>
-                        {extraPoolData.enforceWhitelist ? 'Yes' : 'No'}
-                      </small>
-                    ) : (
-                      <Skeleton variant='rect' width={40} height={23} />
-                    )}
-                  </Box>
+                <Box className='poolDetailsInfoItem'>
+                  <small>{t('whitelist')}:</small>
+                  {extraPoolData ? (
+                    <small className='text-gray29'>
+                      {extraPoolData.enforceWhitelist ? 'Yes' : 'No'}
+                    </small>
+                  ) : (
+                    <Skeleton variant='rect' width={40} height={23} />
+                  )}
                 </Box>
               </Box>
             </Box>
@@ -1332,25 +815,12 @@ const AssetStats = ({ poolData }: { poolData: PoolData }) => {
   }, []);
 
   return (
-    <Box
-      flex={'1'}
-      borderRadius={'20px'}
-      bgcolor={'#232734'}
-      display={'flex'}
-      flexDirection={'column'}
-      sx={{ minWidth: { xs: '55%', sm: '35%' } }}
-    >
-      <Box
-        height={'70px'}
-        borderBottom={'solid 1px #32394d'}
-        display={'flex'}
-        justifyContent={'space-between'}
-        alignItems={'center'}
-      >
-        <Box px={'30px'} fontSize={'18px'} fontWeight={'500'} lineHeight={'1'}>
+    <Box className='poolDetailsItemWrapper'>
+      <Box className='poolDetailsItemTop'>
+        <h6>
           {asset.underlyingName} {t('statistics')}
-        </Box>
-        <Box mr={'30px'} height={40} minWidth={200}>
+        </h6>
+        <Box height={40} minWidth={200}>
           <CustomMenu
             title=''
             menuItems={poolData.assets.map((item) => {
@@ -1364,19 +834,9 @@ const AssetStats = ({ poolData }: { poolData: PoolData }) => {
           />
         </Box>
       </Box>
-      <Box flex={1} pb={'16px'} display={'flex'} flexDirection={'column'}>
+      <Box flex={1} pb={'16px'}>
         <Box flex={1} position={'relative'} pt={'10px'} paddingX={'30px'}>
-          <Box
-            ml={'-5px'}
-            mr={'auto'}
-            padding={'6px 7px'}
-            fontSize={'10px'}
-            borderRadius={'4px'}
-            border={'solid 1px #3e4252'}
-            display={'inline-block'}
-          >
-            {t('currentUtilization')}
-          </Box>
+          <Box className='lendStatCurrentUtil'>{t('currentUtilization')}</Box>
           <Box mb={'20px'} borderLeft={'1px dashed #484c58'}>
             <ReactApexChart
               options={{
@@ -1470,88 +930,43 @@ const AssetStats = ({ poolData }: { poolData: PoolData }) => {
             />
           </Box>
         </Box>
-        <Box
-          display={'flex'}
-          justifyContent={'space-around'}
-          paddingY={'20px'}
-          borderTop={'1px solid #32394d'}
-        >
-          <Box
-            display={'flex'}
-            flexDirection={'column'}
-            alignItems={'center'}
-            gridGap={'8px'}
-          >
-            <Box textAlign={'center'} fontSize={'14px'} color={'#c7cad9'}>
-              {t('collateralFactor')}:
-            </Box>
-            <Box textAlign={'center'} fontSize={'14px'} color={'#ebecf2'}>
+        <Box className='poolStatsInfoItem'>
+          <Box>
+            <small>{t('collateralFactor')}:</small>
+            <p className='small text-gray29'>
               {asset.collateralFactor.div(sdk.web3.utils.toBN(1e16)).toNumber()}
               %
-            </Box>
+            </p>
           </Box>
-          <Box
-            display={'flex'}
-            flexDirection={'column'}
-            alignItems={'center'}
-            gridGap={'8px'}
-          >
-            <Box textAlign={'center'} fontSize={'14px'} color={'#c7cad9'}>
-              {t('reserveFactor')}:
-            </Box>
-            <Box textAlign={'center'} fontSize={'14px'} color={'#ebecf2'}>
+          <Box>
+            <small>{t('reserveFactor')}:</small>
+            <p className='small text-gray29'>
               {asset.reserveFactor.div(sdk.web3.utils.toBN(1e16)).toNumber()}%
-            </Box>
+            </p>
           </Box>
         </Box>
-        <Box
-          display={'flex'}
-          justifyContent={'space-around'}
-          paddingY={'20px'}
-          borderTop={'1px solid #32394d'}
-        >
-          <Box
-            display={'flex'}
-            flexDirection={'column'}
-            alignItems={'center'}
-            gridGap={'8px'}
-          >
-            <Box textAlign={'center'} fontSize={'14px'} color={'#c7cad9'}>
-              {t('totalSupplied')}:
-            </Box>
-            <Box textAlign={'center'} fontSize={'14px'} color={'#ebecf2'}>
+        <Box className='poolStatsInfoItem'>
+          <Box>
+            <small>{t('totalSupplied')}:</small>
+            <p className='small text-gray29'>
               {shortUsdFormatter(asset.totalSupplyUSD)}
-            </Box>
+            </p>
           </Box>
-          <Box
-            display={'flex'}
-            flexDirection={'column'}
-            alignItems={'center'}
-            gridGap={'8px'}
-          >
-            <Box textAlign={'center'} fontSize={'14px'} color={'#c7cad9'}>
-              {t('totalBorrowed')}:
-            </Box>
-            <Box textAlign={'center'} fontSize={'14px'} color={'#ebecf2'}>
+          <Box>
+            <small>{t('totalBorrowed')}:</small>
+            <p className='small text-gray29'>
               {shortUsdFormatter(asset.totalBorrowUSD)}
-            </Box>
+            </p>
           </Box>
-          <Box
-            display={'flex'}
-            flexDirection={'column'}
-            alignItems={'center'}
-            gridGap={'8px'}
-          >
-            <Box textAlign={'center'} fontSize={'14px'} color={'#c7cad9'}>
-              {t('utilization')}:
-            </Box>
-            <Box textAlign={'center'} fontSize={'14px'} color={'#ebecf2'}>
+          <Box>
+            <small>{t('utilization')}:</small>
+            <p className='small text-gray29'>
               {asset.totalSupplyUSD.toString() === '0'
                 ? '0%'
                 : ((asset.totalBorrowUSD / asset.totalSupplyUSD) * 100).toFixed(
                     0,
                   ) + '%'}
-            </Box>
+            </p>
           </Box>
         </Box>
       </Box>
