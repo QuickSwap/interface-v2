@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Box } from '@material-ui/core';
-import { useLairInfo, useNewLairInfo } from 'state/stake/hooks';
+import { useOldLairInfo, useNewLairInfo } from 'state/stake/hooks';
 import { CurrencyLogo, StakeQuickModal, UnstakeQuickModal } from 'components';
 import { ReactComponent as PriceExchangeIcon } from 'assets/images/PriceExchangeIcon.svg';
 import { formatTokenAmount, useLairDQUICKAPY } from 'utils';
@@ -16,7 +16,7 @@ const DragonsLair: React.FC<{ isNew: boolean }> = ({ isNew }) => {
   const [isQUICKRate, setIsQUICKRate] = useState(false);
   const [openStakeModal, setOpenStakeModal] = useState(false);
   const [openUnstakeModal, setOpenUnstakeModal] = useState(false);
-  const lairInfo = useLairInfo();
+  const lairInfo = useOldLairInfo();
   const newLairInfo = useNewLairInfo();
   const lairInfoToUse = isNew ? newLairInfo : lairInfo;
   let APY = useLairDQUICKAPY(isNew, lairInfoToUse);
