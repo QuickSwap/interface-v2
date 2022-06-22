@@ -1721,11 +1721,28 @@ export function getTokenFromKey(
   tokenMap: TokenAddressMap,
 ): Token {
   //TODO: eventually we need to remove returnTokenFromKey completely
+  //TODO: we need to support this until the token list also lists our (unwhitelisted tokens)
   const tokenData = returnTokenFromKey(tokenKey);
-  const wrappedTokenInfo = tokenMap[tokenData.chainId][tokenData.address];
+
+  //TODO: New Tokens may not exist in the old token.json, using object.values to enumerate the map
+  // is expensive so we don't want to have to do it everytime we call this method.
+  if (!tokenData) {
+    // Hack: this requires us to enumerate all the values of the token map which can be expensive
+    //
+    const tokensMatchingSymbol = Object.values(tokenMap[ChainId.MATIC]).filter(
+      (t) => (t.symbol ?? '').toUpperCase() == tokenKey.toUpperCase(),
+    );
+    if (tokensMatchingSymbol.length === 0) {
+      console.log('no token exists in the map');
+    }
+
+    return tokensMatchingSymbol[0];
+  }
+
+  const wrappedTokenInfo = tokenMap[tokenData!.chainId][tokenData!.address];
   if (!wrappedTokenInfo) {
     console.log('missing from token list:' + tokenKey);
-    return tokenData;
+    return tokenData!;
   }
 
   return new Token(
@@ -1737,11 +1754,16 @@ export function getTokenFromKey(
   );
 }
 
-export function returnTokenFromKey(key: string): Token {
+export function returnTokenFromKey(key: string): Token | undefined {
   if (key === 'MATIC') {
     return GlobalValue.tokens.MATIC;
   }
   const token = (tokenData as any)[key];
+
+  if (!token) {
+    return;
+  }
+
   return new Token(
     ChainId.MATIC,
     getAddress(token.address),
