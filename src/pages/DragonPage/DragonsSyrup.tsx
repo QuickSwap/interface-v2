@@ -5,7 +5,7 @@ import { Box, Divider, useMediaQuery } from '@material-ui/core';
 import {
   useFilteredSyrupInfo,
   useOldSyrupInfo,
-  useLairInfo,
+  useOldLairInfo,
 } from 'state/stake/hooks';
 import { SyrupInfo } from 'types';
 import {
@@ -52,7 +52,7 @@ const DragonsSyrup: React.FC = () => {
     setSyrupSearch,
   );
 
-  const lairInfo = useLairInfo();
+  const lairInfo = useOldLairInfo();
   const dQUICKAPY = useLairDQUICKAPY(false, lairInfo);
   const chainIdOrDefault = chainId ?? ChainId.MATIC;
   const addedStakingSyrupInfos = useFilteredSyrupInfo(

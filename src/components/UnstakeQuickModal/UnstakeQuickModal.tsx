@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Box, Button } from '@material-ui/core';
 import { CustomModal, ColoredSlider, NumericalInput } from 'components';
-import { useLairInfo, useNewLairInfo } from 'state/stake/hooks';
+import { useOldLairInfo, useNewLairInfo } from 'state/stake/hooks';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 import { TransactionResponse } from '@ethersproject/providers';
 import { useTransactionAdder } from 'state/transactions/hooks';
@@ -24,7 +24,7 @@ const UnstakeQuickModal: React.FC<UnstakeQuickModalProps> = ({
 }) => {
   const [attempting, setAttempting] = useState(false);
   const addTransaction = useTransactionAdder();
-  const lairInfo = useLairInfo();
+  const lairInfo = useOldLairInfo();
   const newLairInfo = useNewLairInfo();
   const laifInfoToUse = isNew ? newLairInfo : lairInfo;
   const dQuickBalance = laifInfoToUse.dQUICKBalance;
