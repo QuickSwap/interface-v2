@@ -942,12 +942,13 @@ export function useDualStakingInfo(
         ) {
           const rateA = web3.utils.toWei(stakingInfo.rateA.toString());
           const rateB = web3.utils.toWei(stakingInfo.rateB.toString());
+          const lpFarmToken = getFarmLPToken(stakingInfo);
           const stakedAmount = initTokenAmountFromCallResult(
-            getFarmLPToken(stakingInfo),
+            lpFarmToken,
             balanceState,
           );
           const totalStakedAmount = initTokenAmountFromCallResult(
-            getFarmLPToken(stakingInfo),
+            lpFarmToken,
             totalSupplyState,
           );
           const totalRewardRateA = new TokenAmount(uni, JSBI.BigInt(rateA));
@@ -962,7 +963,6 @@ export function useDualStakingInfo(
             uni,
             rewardRateBState,
           );
-
 
           const individualRewardRateA = getHypotheticalRewardRate(
             uni,
@@ -1321,14 +1321,14 @@ export function useStakingInfo(
           rewardRateState &&
           !rewardRateState.loading
         ) {
-
           const rate = web3.utils.toWei(stakingInfo.rate.toString());
+          const lpFarmToken = getFarmLPToken(stakingInfo);
           const stakedAmount = initTokenAmountFromCallResult(
-            getFarmLPToken(stakingInfo),
+            lpFarmToken,
             balanceState,
           );
           const totalStakedAmount = initTokenAmountFromCallResult(
-            getFarmLPToken(stakingInfo),
+            lpFarmToken,
             totalSupplyState,
           );
           const totalRewardRate = new TokenAmount(uni, JSBI.BigInt(rate));
@@ -1519,12 +1519,13 @@ export function useOldStakingInfo(
           totalSupplyState &&
           !totalSupplyState.loading
         ) {
+          const lpFarmToken = getFarmLPToken(stakingInfo);
           const stakedAmount = initTokenAmountFromCallResult(
-            getFarmLPToken(stakingInfo),
+            lpFarmToken,
             balanceState,
           );
           const totalStakedAmount = initTokenAmountFromCallResult(
-            getFarmLPToken(stakingInfo),
+            lpFarmToken,
             totalSupplyState,
           );
           const totalRewardRate = new TokenAmount(uni, JSBI.BigInt(0));
@@ -1552,7 +1553,6 @@ export function useOldStakingInfo(
             stakedAmount: stakedAmount,
             totalStakedAmount: totalStakedAmount,
             baseToken: stakingInfo.baseToken,
-            getHypotheticalRewardRate,
             pair: stakingInfo.pair,
             rate: stakingInfo.rate,
             oneYearFeeAPY: 0,
