@@ -233,8 +233,6 @@ export function useFilteredSyrupInfo(
     ],
   );
 
-  const uni = chainId ? GlobalValue.tokens.UNI[chainId] : undefined;
-
   const rewardsAddresses = useMemo(
     () => info.map(({ stakingRewardAddress }) => stakingRewardAddress),
     [info],
@@ -284,7 +282,7 @@ export function useFilteredSyrupInfo(
   );
 
   return useMemo(() => {
-    if (!chainId || !uni) return [];
+    if (!chainId) return [];
 
     return rewardsAddresses.reduce<SyrupInfo[]>(
       (memo, rewardsAddress, index) => {
@@ -399,7 +397,6 @@ export function useFilteredSyrupInfo(
     info,
     rewardsAddresses,
     totalSupplies,
-    uni,
     rewardRates,
     stakingTokenPairs,
     usdBaseTokenPrices,
@@ -793,14 +790,14 @@ export function getStakingFees(
 }
 
 const getHypotheticalRewardRate = (
-  uni: Token,
+  token: Token,
   stakedAmount?: TokenAmount,
   totalStakedAmount?: TokenAmount,
   totalRewardRate?: TokenAmount,
 ): TokenAmount | undefined => {
   if (!stakedAmount || !totalStakedAmount || !totalRewardRate) return;
   return new TokenAmount(
-    uni,
+    token,
     JSBI.greaterThan(totalStakedAmount.raw, JSBI.BigInt(0))
       ? JSBI.divide(
           JSBI.multiply(totalRewardRate.raw, stakedAmount.raw),
@@ -841,8 +838,6 @@ export function useDualStakingInfo(
       dualStakingRewardsInfo,
     ],
   );
-
-  const uni = chainId ? GlobalValue.tokens.UNI[chainId] : undefined;
 
   const rewardsAddresses = useMemo(
     () => info.map(({ stakingRewardAddress }) => stakingRewardAddress),
@@ -910,7 +905,7 @@ export function useDualStakingInfo(
   );
 
   return useMemo(() => {
-    if (!chainId || !uni) return [];
+    if (!chainId) return [];
 
     return rewardsAddresses.reduce<DualStakingInfo[]>(
       (memo, rewardsAddress, index) => {
@@ -937,8 +932,7 @@ export function useDualStakingInfo(
           !totalSupplyState.loading &&
           rewardRateAState &&
           !rewardRateAState.loading &&
-          rewardRateBState &&
-          !rewardRateBState.loading
+          rewardRateBState
         ) {
           const rateA = web3.utils.toWei(stakingInfo.rateA.toString());
           const rateB = web3.utils.toWei(stakingInfo.rateB.toString());
@@ -951,27 +945,38 @@ export function useDualStakingInfo(
             lpFarmToken,
             totalSupplyState,
           );
-          const totalRewardRateA = new TokenAmount(uni, JSBI.BigInt(rateA));
-          const totalRewardRateB = new TokenAmount(uni, JSBI.BigInt(rateB));
+
+          // Previously Uni was used all over the place (which was an abstract to get the quick token)
+          // These rates are just used for informational purposes and the token should should not be used anywhere
+          // instead we will supply a dummy token, until this can be refactored properly.
+          const dummyToken = GlobalValue.tokens.COMMON.EMPTY;
+          const totalRewardRateA = new TokenAmount(
+            dummyToken,
+            JSBI.BigInt(rateA),
+          );
+          const totalRewardRateB = new TokenAmount(
+            dummyToken,
+            JSBI.BigInt(rateB),
+          );
           //const pair = info[index].pair.toLowerCase();
           //const fees = (pairData && pairData[pair] ? pairData[pair].oneDayVolumeUSD * 0.0025: 0);
           const totalRewardRateA01 = initTokenAmountFromCallResult(
-            uni,
+            dummyToken,
             rewardRateAState,
           );
           const totalRewardRateB01 = initTokenAmountFromCallResult(
-            uni,
+            dummyToken,
             rewardRateBState,
           );
 
           const individualRewardRateA = getHypotheticalRewardRate(
-            uni,
+            dummyToken,
             stakedAmount,
             totalStakedAmount,
             totalRewardRateA01,
           );
           const individualRewardRateB = getHypotheticalRewardRate(
-            uni,
+            dummyToken,
             stakedAmount,
             totalStakedAmount,
             totalRewardRateB01,
@@ -1032,11 +1037,11 @@ export function useDualStakingInfo(
             name: stakingInfo.name,
             lp: stakingInfo.lp,
             earnedAmountA: initTokenAmountFromCallResult(
-              uni,
+              dummyToken,
               earnedAAmountState,
             ),
             earnedAmountB: initTokenAmountFromCallResult(
-              uni,
+              dummyToken,
               earnedBAmountState,
             ),
             rewardRateA: individualRewardRateA,
@@ -1075,7 +1080,6 @@ export function useDualStakingInfo(
     info,
     rewardsAddresses,
     totalSupplies,
-    uni,
     rewardRatesA,
     rewardRatesB,
     baseTokens,
@@ -1238,8 +1242,6 @@ export function useStakingInfo(
     [pairToFilterBy, startIndex, endIndex, filter, activeFarms],
   );
 
-  const uni = chainId ? GlobalValue.tokens.UNI[chainId] : undefined;
-
   const rewardsAddresses = useMemo(
     () => info.map(({ stakingRewardAddress }) => stakingRewardAddress),
     [info],
@@ -1297,7 +1299,7 @@ export function useStakingInfo(
   const stakingPairs = usePairs(info.map((item) => item.tokens));
 
   return useMemo(() => {
-    if (!chainId || !uni) return [];
+    if (!chainId) return [];
 
     return rewardsAddresses.reduce<StakingInfo[]>(
       (memo, rewardsAddress, index) => {
@@ -1331,14 +1333,22 @@ export function useStakingInfo(
             lpFarmToken,
             totalSupplyState,
           );
-          const totalRewardRate = new TokenAmount(uni, JSBI.BigInt(rate));
+
+          // Previously Uni was used all over the place (which was an abstract to get the quick token)
+          // These rates are just used for informational purposes and the token should should not be used anywhere
+          // instead we will supply a dummy token, until this can be refactored properly.
+          const dummyToken = GlobalValue.tokens.COMMON.EMPTY;
+          const totalRewardRate = new TokenAmount(
+            dummyToken,
+            JSBI.BigInt(rate),
+          );
           const totalRewardRate01 = initTokenAmountFromCallResult(
-            uni,
+            dummyToken,
             rewardRateState,
           );
 
           const individualRewardRate = getHypotheticalRewardRate(
-            uni,
+            dummyToken,
             stakedAmount,
             totalStakedAmount,
             totalRewardRate01,
@@ -1400,7 +1410,10 @@ export function useStakingInfo(
             lp: stakingInfo.lp,
             rewardToken: stakingInfo.rewardToken,
             rewardTokenPrice,
-            earnedAmount: initTokenAmountFromCallResult(uni, earnedAmountState),
+            earnedAmount: initTokenAmountFromCallResult(
+              dummyToken,
+              earnedAmountState,
+            ),
             rewardRate: individualRewardRate,
             totalRewardRate: totalRewardRate,
             stakedAmount: stakedAmount,
@@ -1430,7 +1443,6 @@ export function useStakingInfo(
     info,
     rewardsAddresses,
     totalSupplies,
-    uni,
     rewardRates,
     usdPricesRewardTokens,
     baseTokens,
@@ -1467,8 +1479,6 @@ export function useOldStakingInfo(
     [pairToFilterBy, startIndex, endIndex, filter, oldFarms],
   );
 
-  const uni = chainId ? GlobalValue.tokens.UNI[chainId] : undefined;
-
   const rewardsAddresses = useMemo(
     () => info.map(({ stakingRewardAddress }) => stakingRewardAddress),
     [info],
@@ -1498,7 +1508,7 @@ export function useOldStakingInfo(
   const stakingPairs = usePairs(info.map((item) => item.tokens));
 
   return useMemo(() => {
-    if (!chainId || !uni) return [];
+    if (!chainId) return [];
 
     return rewardsAddresses.reduce<StakingInfo[]>(
       (memo, rewardsAddress, index) => {
@@ -1528,10 +1538,15 @@ export function useOldStakingInfo(
             lpFarmToken,
             totalSupplyState,
           );
-          const totalRewardRate = new TokenAmount(uni, JSBI.BigInt(0));
+
+          // Previously Uni was used all over the place (which was an abstract to get the quick token)
+          // These rates are just used for informational purposes and the token should should not be used anywhere
+          // instead we will supply a dummy token, until this can be refactored properly.
+          const dummyToken = GlobalValue.tokens.COMMON.EMPTY;
+          const totalRewardRate = new TokenAmount(dummyToken, JSBI.BigInt(0));
 
           const individualRewardRate = getHypotheticalRewardRate(
-            uni,
+            dummyToken,
             stakedAmount,
             totalStakedAmount,
             totalRewardRate,
@@ -1547,7 +1562,10 @@ export function useOldStakingInfo(
             lp: stakingInfo.lp,
             rewardToken: stakingInfo.rewardToken,
             rewardTokenPrice: 0,
-            earnedAmount: initTokenAmountFromCallResult(uni, earnedAmountState),
+            earnedAmount: initTokenAmountFromCallResult(
+              dummyToken,
+              earnedAmountState,
+            ),
             rewardRate: individualRewardRate,
             totalRewardRate: totalRewardRate,
             stakedAmount: stakedAmount,
@@ -1572,7 +1590,6 @@ export function useOldStakingInfo(
     info,
     rewardsAddresses,
     totalSupplies,
-    uni,
     stakingPairs,
   ]).filter((stakingInfo) =>
     filter && filter.isStaked

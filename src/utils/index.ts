@@ -2147,6 +2147,14 @@ export function getPartialTokenAmount(
   return getValueTokenDecimals(partialAmount.toString(), amount.currency);
 }
 
+export function getResultFromCallState(callState: CallState) {
+  if (!callState || !callState.result || !callState.result[0]) {
+    return;
+  }
+
+  return callState.result[0];
+}
+
 export function initTokenAmountFromCallResult(
   token: Token,
   callState?: CallState,
