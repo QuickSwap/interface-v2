@@ -155,6 +155,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
     const { ethereum, web3 } = window as any;
     const isMetamask = ethereum && !ethereum.isBitKeep && ethereum.isMetaMask;
     const isBlockWallet = ethereum && ethereum.isBlockWallet;
+    const isCypherD = ethereum && ethereum.isCypherD;
     const isBitKeep = ethereum && ethereum.isBitKeep;
     return Object.keys(SUPPORTED_WALLETS).map((key) => {
       const option = SUPPORTED_WALLETS[key];
@@ -182,6 +183,8 @@ const WalletModal: React.FC<WalletModalProps> = ({
               active={
                 option.connector === connector &&
                 (connector !== injected ||
+                  isCypherD ===
+                    (option.name === GlobalConst.walletName.CYPHERD) ||
                   isBlockWallet ===
                     (option.name === GlobalConst.walletName.BLOCKWALLET) ||
                   isBitKeep ===
@@ -236,11 +239,16 @@ const WalletModal: React.FC<WalletModalProps> = ({
           !isBlockWallet
         ) {
           return null;
+        } else if (
+          option.name === GlobalConst.walletName.CYPHERD &&
+          !isCypherD
+        ) {
+          return null;
         }
         // likewise for generic
         else if (
           option.name === GlobalConst.walletName.INJECTED &&
-          (isMetamask || isBitKeep || isBlockWallet)
+          (isMetamask || isBitKeep || isBlockWallet || isCypherD)
         ) {
           return null;
         }
@@ -261,6 +269,8 @@ const WalletModal: React.FC<WalletModalProps> = ({
             active={
               option.connector === connector &&
               (connector !== injected ||
+                isCypherD ===
+                  (option.name === GlobalConst.walletName.CYPHERD) ||
                 isBlockWallet ===
                   (option.name === GlobalConst.walletName.BLOCKWALLET) ||
                 isBitKeep ===

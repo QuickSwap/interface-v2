@@ -57,6 +57,29 @@
     border-radius: 10px;
     cursor: pointer;
     position: relative;
+    display: flex;
+    align-items: center;
+    height: 36px;
+    padding: 0 24px;
+    overflow: hidden;
+    .menuItemSparkle {
+      position: absolute;
+      transition: all 0.5s;
+    }
+    .menuItemSparkleTop {
+      top: -20px;
+      margin-left: -10px;
+    }
+    .menuItemSparkleBottom {
+      bottom: -20px;
+      margin-left: -12px;
+    }
+    .menuItemSparkleLeft {
+      left: -20px;
+    }
+    .menuItemSparkleRight {
+      right: -20px;
+    }
     & .subMenu {
       display: none;
       position: absolute;
@@ -73,7 +96,20 @@
       }
     }
     &:hover {
+      color: $textPrimary;
       background: $secondary1;
+      .menuItemSparkleTop {
+        top: 0px;
+      }
+      .menuItemSparkleBottom {
+        bottom: 0px;
+      }
+      .menuItemSparkleLeft {
+        left: 4px;
+      }
+      .menuItemSparkleRight {
+        right: 4px;
+      }
       & .subMenu {
         display: block;
       }
@@ -81,7 +117,6 @@
   }
   & a {
     text-decoration: none;
-    padding: 7.5px 24px;
     margin-right: 12px;
     color: $textSecondary;
     border-radius: 10px;
@@ -91,6 +126,18 @@
     &.active {
       color: $textPrimary;
       background: $secondary1;
+      .menuItemSparkleTop {
+        top: 0px;
+      }
+      .menuItemSparkleBottom {
+        bottom: 0px;
+      }
+      .menuItemSparkleLeft {
+        left: 4px;
+      }
+      .menuItemSparkleRight {
+        right: 4px;
+      }
     }
     &:last-child {
       margin-right: 0,
