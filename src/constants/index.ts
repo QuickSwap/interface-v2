@@ -10,6 +10,7 @@ import {
 } from '../connectors';
 import MetamaskIcon from 'assets/images/metamask.png';
 import BlockWalletIcon from 'assets/images/blockwalletIcon.svg';
+import cypherDIcon from 'assets/images/cypherDIcon.png';
 import BitKeepIcon from 'assets/images/bitkeep.png';
 import CoinbaseWalletIcon from 'assets/images/coinbaseWalletIcon.svg';
 import WalletConnectIcon from 'assets/images/walletConnectIcon.svg';
@@ -101,6 +102,7 @@ export const GlobalConst = {
   },
   walletName: {
     METAMASK: 'Metamask',
+    CYPHERD: 'Cypher D',
     BLOCKWALLET: 'BlockWallet',
     BITKEEP: 'BitKeep',
     INJECTED: 'Injected',
@@ -128,6 +130,14 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
     description: 'BlockWallet browser extension.',
     href: null,
     color: '#1673ff',
+  },
+  CYPHERD: {
+    connector: injected,
+    name: GlobalConst.walletName.CYPHERD,
+    iconName: cypherDIcon,
+    description: 'CypherD browser extension.',
+    href: null,
+    color: '#E8831D',
   },
   BITKEEP: {
     connector: injected,

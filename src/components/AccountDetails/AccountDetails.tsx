@@ -4,7 +4,7 @@ import { useActiveWeb3React } from 'hooks';
 import { AppDispatch } from 'state';
 import { Box } from '@material-ui/core';
 import { clearAllTransactions } from 'state/transactions/actions';
-import { shortenAddress, getEtherscanLink } from 'utils';
+import { shortenAddress, getEtherscanLink, getWalletKeys } from 'utils';
 import { SUPPORTED_WALLETS } from 'constants/index';
 import { ReactComponent as Close } from 'assets/images/CloseIcon.svg';
 import { injected, walletlink, safeApp } from 'connectors';
@@ -45,24 +45,9 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
   const { t } = useTranslation();
 
   function formatConnectorName() {
-    const { ethereum } = window as any;
-    const isMetaMask = !!(
-      ethereum &&
-      !ethereum.isBitKeep &&
-      ethereum.isMetaMask
-    );
-    const isBitkeep = !!(ethereum && ethereum.isBitKeep);
-    const isBlockWallet = !!(ethereum && ethereum.isBlockWallet);
-    const name = Object.keys(SUPPORTED_WALLETS)
-      .filter(
-        (k) =>
-          SUPPORTED_WALLETS[k].connector === connector &&
-          (connector !== injected ||
-            (isBlockWallet && k === 'BLOCKWALLET') ||
-            (isBitkeep && k === 'BITKEEP') ||
-            (isMetaMask && k === 'METAMASK')),
-      )
-      .map((k) => SUPPORTED_WALLETS[k].name)[0];
+    const name = getWalletKeys(connector).map(
+      (k) => SUPPORTED_WALLETS[k].name,
+    )[0];
     return (
       <small>
         {t('connectedWith')} {name}

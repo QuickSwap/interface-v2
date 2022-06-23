@@ -50,8 +50,7 @@ import { BigNumber, BigNumberish } from '@ethersproject/bignumber';
 import { formatUnits } from 'ethers/lib/utils';
 import { AddressZero } from '@ethersproject/constants';
 import { TokenAddressMap } from 'state/lists/hooks';
-import { GlobalConst, GlobalValue } from 'constants/index';
-import { Palette } from '@material-ui/core/styles/createPalette';
+import { GlobalConst, GlobalValue, SUPPORTED_WALLETS } from 'constants/index';
 import tokenData from 'constants/tokens.json';
 import stakeData from 'constants/stake.json';
 import {
@@ -65,6 +64,9 @@ import { unwrappedToken } from './wrappedCurrency';
 import { useUSDCPriceToken } from './useUSDCPrice';
 import { CallState } from 'state/multicall/hooks';
 import { DualStakingBasic, StakingBasic } from 'types';
+import { AbstractConnector } from '@web3-react/abstract-connector';
+import { injected } from 'connectors';
+
 dayjs.extend(utc);
 dayjs.extend(weekOfYear);
 
@@ -1912,6 +1914,25 @@ export function returnFullWidthMobile(isMobile: boolean) {
 
 export function escapeRegExp(string: string): string {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+}
+
+export function getWalletKeys(
+  connector: AbstractConnector | undefined,
+): string[] {
+  const { ethereum } = window as any;
+  const isMetaMask = !!(ethereum && !ethereum.isBitKeep && ethereum.isMetaMask);
+  const isBitkeep = !!(ethereum && ethereum.isBitKeep);
+  const isBlockWallet = !!(ethereum && ethereum.isBlockWallet);
+  const isCypherDWallet = !!(ethereum && ethereum.isCypherD);
+  return Object.keys(SUPPORTED_WALLETS).filter(
+    (k) =>
+      SUPPORTED_WALLETS[k].connector === connector &&
+      (connector !== injected ||
+        (isCypherDWallet && k == 'CYPHERD') ||
+        (isBlockWallet && k === 'BLOCKWALLET') ||
+        (isBitkeep && k === 'BITKEEP') ||
+        (isMetaMask && k === 'METAMASK')),
+  );
 }
 
 export function getTokenAddress(token: Token | undefined) {
