@@ -337,22 +337,6 @@ export const GlobalValue = {
         'FRAX',
       ),
     },
-    UNI: {
-      [ChainId.MATIC]: new Token(
-        ChainId.MATIC,
-        GlobalConst.addresses.QUICK_ADDRESS,
-        18,
-        'QUICK',
-        'Quickswap',
-      ),
-      [ChainId.MUMBAI]: new Token(
-        ChainId.MUMBAI,
-        GlobalConst.addresses.QUICK_ADDRESS,
-        18,
-        'QUICK',
-        'Quickswap',
-      ),
-    },
   },
 };
 
