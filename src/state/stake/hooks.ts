@@ -949,7 +949,7 @@ export function useDualStakingInfo(
           // Previously Uni was used all over the place (which was an abstract to get the quick token)
           // These rates are just used for informational purposes and the token should should not be used anywhere
           // instead we will supply a dummy token, until this can be refactored properly.
-          const dummyToken = GlobalValue.tokens.COMMON.EMPTY;
+          const dummyToken = GlobalValue.tokens.COMMON.NEW_QUICK;
           const totalRewardRateA = new TokenAmount(
             dummyToken,
             JSBI.BigInt(rateA),
@@ -1337,7 +1337,7 @@ export function useStakingInfo(
           // Previously Uni was used all over the place (which was an abstract to get the quick token)
           // These rates are just used for informational purposes and the token should should not be used anywhere
           // instead we will supply a dummy token, until this can be refactored properly.
-          const dummyToken = GlobalValue.tokens.COMMON.EMPTY;
+          const dummyToken = GlobalValue.tokens.COMMON.NEW_QUICK;
           const totalRewardRate = new TokenAmount(
             dummyToken,
             JSBI.BigInt(rate),
@@ -1542,7 +1542,7 @@ export function useOldStakingInfo(
           // Previously Uni was used all over the place (which was an abstract to get the quick token)
           // These rates are just used for informational purposes and the token should should not be used anywhere
           // instead we will supply a dummy token, until this can be refactored properly.
-          const dummyToken = GlobalValue.tokens.COMMON.EMPTY;
+          const dummyToken = GlobalValue.tokens.COMMON.NEW_QUICK;
           const totalRewardRate = new TokenAmount(dummyToken, JSBI.BigInt(0));
 
           const individualRewardRate = getHypotheticalRewardRate(
