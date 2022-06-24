@@ -61,10 +61,6 @@ const ThemeProvider: React.FC = ({ children }) => {
   return <MuiThemeProvider theme={theme}>{children}</MuiThemeProvider>;
 };
 
-import ModalParent, {
-  QuickModalContent,
-  StateModalContent,
-} from 'components/Modals';
 const Providers: React.FC = ({ children }) => {
   return (
     <>

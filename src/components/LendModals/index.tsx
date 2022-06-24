@@ -12,139 +12,32 @@ import { convertMantissaToAPR, convertMantissaToAPY } from 'utils/marketxyz';
 import { getEthPrice } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import ToggleSwitch from 'components/ToggleSwitch';
+import CustomModal from 'components/CustomModal';
 
-interface ModalParentProps {
-  notitle?: boolean;
-  notoolbar?: boolean;
-  setOpenModalType?: any;
-}
-const ModalParent: React.FC<ModalParentProps> = ({
-  notitle,
-  notoolbar,
-  children,
-  setOpenModalType,
-}) => {
-  const [visible, setVisible] = useState(true);
-  const childrenWithProps = React.Children.map(children, (child) => {
-    // Checking isValidElement is the safe way and avoids a typescript
-    // error too.
-    if (React.isValidElement(child)) {
-      return React.cloneElement(child, { setOpenModalType });
-    }
-    return child;
-  });
-
-  const modalContentBox = useRef<any>(null);
-  const modalBackBox = useRef<any>(null);
-
-  useEffect(() => {
-    const handle = (event: any) => {
-      if (
-        event.target === modalBackBox.current
-        // modalContentBox?.current &&
-        // !modalContentBox.current.contains(event.target)
-      ) {
-        setOpenModalType(false);
-      }
-    };
-    window.addEventListener('click', handle);
-    return () => {
-      window.removeEventListener('click', handle);
-    };
-  }, [setOpenModalType]);
-
-  return (
-    <ModalBack ref={modalBackBox}>
-      <ModalBox ref={modalContentBox}>
-        <Box width={'100%'} display={'flex'} flexDirection={'column'}>
-          {!notoolbar && (
-            <Box display={'flex'} justifyContent={'space-between'}>
-              {!notitle && (
-                <Box
-                  fontSize={'20px'}
-                  display={'flex'}
-                  alignItems={'center'}
-                  gridGap={'12px'}
-                >
-                  <LogoIcon size={'32px'} />
-                  Quick
-                </Box>
-              )}
-              <Box
-                ml={'auto'}
-                fontSize={'26px'}
-                lineHeight={'32px'}
-                style={{ cursor: 'pointer' }}
-                onClick={() => {
-                  setOpenModalType(false);
-                }}
-              >
-                &times;
-              </Box>
-            </Box>
-          )}
-          {childrenWithProps}
-        </Box>
-      </ModalBox>
-    </ModalBack>
-  );
-};
-const ModalBack = styled(Box)`
-  position: fixed;
-  top: 0px;
-  left: 0px;
-  background: #12131a06;
-  -webkit-backdrop-filter: blur(9.9px);
-  backdrop-filter: blur(9.9px);
-  width: 100%;
-  height: 100%;
-  box-sizing: border-box;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 100000200;
-`;
-const ModalBox = styled(Box)`
-  margin: auto;
-  background-color: #1b1e29;
-  padding: 28px 24px;
-  border-radius: 20px;
-  border: solid 1px #3e4252;
-`;
-
-interface ModalContentProps {
-  modalSetting: {
-    setModalNotoolbar: { value: any; set: any };
-    setModalNotitle: { value: any; set: any };
-    setModalType: { value: any; set: any };
-    setModalIsBorrow: { value: any; set: any };
-    setModalIsConfirm: { value: any; set: any };
-  };
-}
-
-interface QuickModalContentProps extends ModalContentProps {
+interface QuickModalContentProps {
   confirm?: boolean;
   withdraw?: boolean;
   borrow?: boolean;
   asset: USDPricedPoolAsset;
   borrowLimit: number;
+  open: boolean;
+  onClose: () => void;
 }
 export const QuickModalContent: React.FC<QuickModalContentProps> = ({
-  modalSetting,
   confirm,
   withdraw,
   borrow,
   asset,
   borrowLimit,
+  open,
+  onClose,
 }) => {
   const { account } = useActiveWeb3React();
 
   const [isRepay, setisRepay] = useState(confirm ? true : false);
   const [isWithdraw, setIsWithdraw] = useState(withdraw ? true : false);
   const [value, setValue] = useState<any>(0);
-  const [enableAsCollateral, setEnableAsCollateral] = useState<boolean>(
-    modalSetting.setModalIsConfirm.value,
-  );
+  const [enableAsCollateral, setEnableAsCollateral] = useState<boolean>(false);
 
   const [ethPrice, setEthPrice] = useState<number>();
 
@@ -153,7 +46,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
   }, []);
 
   return (
-    <Box display={'flex'} flexDirection={'column'} width={'480px'}>
+    <CustomModal open={open} onClose={onClose}>
       {!borrow ? (
         <Box
           p={'6px'}
@@ -270,7 +163,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
         display={'flex'}
         justifyContent={'space-between'}
         alignItems={'center'}
-        border={modalSetting.setModalIsConfirm.value && 'solid 1px #448aff'}
+        border={'solid 1px #448aff'}
       >
         <Box display={'flex'} flexDirection={'column'} gridGap={'6px'}>
           <MuiInput
@@ -333,7 +226,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
           <Box display={'flex'} justifyContent={'space-between'}>
             <Box color={'#c7cad9'}>Supplied balance:</Box>
             <Box display={'flex'} alignItems={'center'} gridGap={'10px'}>
-              {!modalSetting.setModalIsConfirm.value ? (
+              {!confirm ? (
                 (
                   Number(asset.supplyBalance.toString()) /
                   10 ** Number(asset.underlyingDecimals.toString())
@@ -371,7 +264,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
           <Box display={'flex'} justifyContent={'space-between'}>
             <Box color={'#c7cad9'}>Borrow Limit:</Box>
             <Box>
-              {!modalSetting.setModalIsConfirm.value ? (
+              {!confirm ? (
                 midUsdFormatter(borrowLimit)
               ) : (
                 <>
@@ -402,7 +295,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
           <Box display={'flex'} justifyContent={'space-between'}>
             <Box color={'#c7cad9'}>Borrowed balance:</Box>
             <Box display={'flex'} alignItems={'center'} gridGap={'10px'}>
-              {!modalSetting.setModalIsConfirm.value ? (
+              {!confirm ? (
                 (
                   Number(asset.borrowBalance.toString()) /
                   10 ** Number(asset.underlyingDecimals.toString())
@@ -433,7 +326,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
           <Box display={'flex'} justifyContent={'space-between'}>
             <Box color={'#c7cad9'}>Supplied balance:</Box>
             <Box display={'flex'} alignItems={'center'} gridGap={'10px'}>
-              {!modalSetting.setModalIsConfirm.value ? (
+              {!confirm ? (
                 (
                   Number(asset.supplyBalance.toString()) /
                   10 ** Number(asset.underlyingDecimals.toString())
@@ -476,7 +369,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
           <Box display={'flex'} justifyContent={'space-between'}>
             <Box color={'#c7cad9'}>Total Debt balance:</Box>
             <Box>
-              {!modalSetting.setModalIsConfirm.value ? (
+              {!confirm ? (
                 (
                   Number(asset.borrowBalance.toString()) /
                   10 ** Number(asset.underlyingDecimals.toString())
@@ -542,9 +435,6 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
             //   fontWeight: '600',
             // }}
             onClick={() => {
-              modalSetting.setModalType.set('state');
-              modalSetting.setModalNotoolbar.set(true);
-
               if (!account) {
                 throw new Error('Wallet not connected');
               }
@@ -583,15 +473,14 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
           </Box>
         )}
       </Box>
-    </Box>
+    </CustomModal>
   );
 };
-interface StateModalContentProps extends ModalContentProps {
+interface StateModalContentProps {
   loading?: boolean;
   setOpenModalType?: any;
 }
 export const StateModalContent: React.FC<StateModalContentProps> = ({
-  modalSetting,
   loading,
   setOpenModalType,
 }) => {
@@ -807,5 +696,3 @@ const MuiInput = withStyles({
     color: '#c7cad9',
   },
 })(Input);
-
-export default ModalParent;

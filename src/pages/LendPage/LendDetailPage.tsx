@@ -16,10 +16,7 @@ import { _100 } from '@uniswap/sdk/dist/constants';
 import { useHistory, useLocation } from 'react-router-dom';
 import ToggleSwitch from 'components/ToggleSwitch';
 
-import ModalParent, {
-  QuickModalContent,
-  StateModalContent,
-} from 'components/Modals';
+import { QuickModalContent } from 'components/LendModals';
 
 import { usePoolData } from 'hooks/marketxyz/usePoolData';
 import { midUsdFormatter, shortUsdFormatter } from 'utils/bigUtils';
@@ -50,8 +47,6 @@ const LendDetailPage: React.FC = () => {
   const { account } = useActiveWeb3React();
   const [supplyToggled, setSupplyToggled] = useState(false);
 
-  const [modalNotoolbar, setModalNotoolbar] = useState<boolean>(false);
-  const [modalNotitle, setModalNotitle] = useState<boolean>(false);
   const [modalType, setModalType] = useState<'state' | 'quick' | null>(null);
   const [modalIsBorrow, setModalIsBorrow] = useState<boolean>(false);
   const [modalIsConfirm, setModalIsConfirm] = useState<boolean>(false);
@@ -720,56 +715,13 @@ const LendDetailPage: React.FC = () => {
       </Box>
 
       {modalType && selectedAsset && (
-        <ModalParent
-          notoolbar={modalNotoolbar}
-          notitle={modalNotitle}
-          setOpenModalType={setModalType}
-        >
-          {modalType === 'state' ? (
-            <StateModalContent
-              modalSetting={{
-                setModalNotoolbar: {
-                  value: modalNotoolbar,
-                  set: setModalNotoolbar,
-                },
-                setModalNotitle: { value: modalNotitle, set: setModalNotitle },
-                setModalType: { value: modalType, set: setModalType },
-                setModalIsBorrow: {
-                  value: modalIsBorrow,
-                  set: setModalIsBorrow,
-                },
-                setModalIsConfirm: {
-                  value: modalIsConfirm,
-                  set: setModalIsConfirm,
-                },
-              }}
-              loading
-            />
-          ) : (
-            <QuickModalContent
-              modalSetting={{
-                setModalNotoolbar: {
-                  value: modalNotoolbar,
-                  set: setModalNotoolbar,
-                },
-                setModalNotitle: { value: modalNotitle, set: setModalNotitle },
-                setModalType: { value: modalType, set: setModalType },
-                setModalIsBorrow: {
-                  value: modalIsBorrow,
-                  set: setModalIsBorrow,
-                },
-                setModalIsConfirm: {
-                  value: modalIsConfirm,
-                  set: setModalIsConfirm,
-                },
-              }}
-              borrow={modalIsBorrow}
-              confirm={modalIsConfirm}
-              asset={selectedAsset}
-              borrowLimit={borrowLimit ?? 0}
-            />
-          )}
-        </ModalParent>
+        <QuickModalContent
+          open={!!selectedAsset}
+          onClose={() => setSelectedAsset(undefined)}
+          borrow={modalIsBorrow}
+          asset={selectedAsset}
+          borrowLimit={borrowLimit ?? 0}
+        />
       )}
     </>
   );
