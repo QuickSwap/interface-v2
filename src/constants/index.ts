@@ -10,6 +10,7 @@ import {
 } from '../connectors';
 import MetamaskIcon from 'assets/images/metamask.png';
 import BlockWalletIcon from 'assets/images/blockwalletIcon.svg';
+import cypherDIcon from 'assets/images/cypherDIcon.png';
 import BitKeepIcon from 'assets/images/bitkeep.png';
 import CoinbaseWalletIcon from 'assets/images/coinbaseWalletIcon.svg';
 import WalletConnectIcon from 'assets/images/walletConnectIcon.svg';
@@ -50,7 +51,9 @@ export const GlobalConst = {
     }, //'0x6207A65a8bbc87dD02C3109D2c74a6bCE4af1C8c';//
     ZERO_ADDRESS: '0x0000000000000000000000000000000000000000',
     LAIR_ADDRESS: '0xf28164a485b0b2c90639e47b0f377b4a438a16b1',
+    NEW_LAIR_ADDRESS: '0x958d208Cdf087843e9AD98d23823d32E17d723A1',
     QUICK_ADDRESS: '0x831753DD7087CaC61aB5644b308642cc1c33Dc13',
+    NEW_QUICK_ADDRESS: '0xb5c064f955d8e7f38fe0460c556a72987494ee17',
     FACTORY_ADDRESS: '0x5757371414417b8C6CAad45bAeF941aBc7d3Ab32',
     GOVERNANCE_ADDRESS: '0x5e4be8Bc9637f0EAA1A755019e06A68ce081D58F', //TODO: MATIC
     MERKLE_DISTRIBUTOR_ADDRESS: {
@@ -99,6 +102,7 @@ export const GlobalConst = {
   },
   walletName: {
     METAMASK: 'Metamask',
+    CYPHERD: 'Cypher D',
     BLOCKWALLET: 'BlockWallet',
     BITKEEP: 'BitKeep',
     INJECTED: 'Injected',
@@ -126,6 +130,14 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
     description: 'BlockWallet browser extension.',
     href: null,
     color: '#1673ff',
+  },
+  CYPHERD: {
+    connector: injected,
+    name: GlobalConst.walletName.CYPHERD,
+    iconName: cypherDIcon,
+    description: 'CypherD browser extension.',
+    href: null,
+    color: '#E8831D',
   },
   BITKEEP: {
     connector: injected,

@@ -61,6 +61,14 @@ export function useQUICKContract(): Contract | null {
   return useContract(GlobalConst.addresses.QUICK_ADDRESS, ERC20_ABI, true);
 }
 
+export function useNewLairContract(): Contract | null {
+  return useContract(GlobalConst.addresses.NEW_LAIR_ADDRESS, LairABI, true);
+}
+
+export function useNewQUICKContract(): Contract | null {
+  return useContract(GlobalConst.addresses.NEW_QUICK_ADDRESS, ERC20_ABI, true);
+}
+
 export function useQUICKConversionContract(): Contract | null {
   return useContract(
     GlobalConst.addresses.QUICK_CONVERSION,

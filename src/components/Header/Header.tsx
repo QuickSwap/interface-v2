@@ -17,6 +17,11 @@ import QuickLogo from 'assets/images/quickLogo.png';
 import { ReactComponent as ThreeDotIcon } from 'assets/images/ThreeDot.svg';
 import { ReactComponent as LightIcon } from 'assets/images/LightIcon.svg';
 import WalletIcon from 'assets/images/WalletIcon.png';
+import NewTag from 'assets/images/NewTag.png';
+import SparkleLeft from 'assets/images/SparkleLeft.svg';
+import SparkleRight from 'assets/images/SparkleRight.svg';
+import SparkleTop from 'assets/images/SparkleTop.svg';
+import SparkleBottom from 'assets/images/SparkleBottom.svg';
 import 'components/styles/Header.scss';
 import { useTranslation } from 'react-i18next';
 
@@ -77,6 +82,7 @@ const Header: React.FC = () => {
       link: '/prdt',
       text: 'Predictions',
       id: 'prdt-page-link',
+      isNew: true,
     },
     {
       link: '/analytics',
@@ -139,12 +145,32 @@ const Header: React.FC = () => {
               to={val.link}
               key={index}
               id={val.id}
-              className={
-                pathname.indexOf(val.link) > -1 ? 'active' : 'menuItem'
-              }
+              className={`menuItem ${
+                pathname.indexOf(val.link) > -1 ? 'active' : ''
+              }`}
             >
               <small>{val.text}</small>
-              {val.isNew && <small className='newTag'>{t('new')}</small>}
+              {val.isNew && (
+                <>
+                  <img src={NewTag} alt='new menu' width={46} />
+                  <img
+                    className='menuItemSparkle menuItemSparkleLeft'
+                    src={SparkleLeft}
+                  />
+                  <img
+                    className='menuItemSparkle menuItemSparkleRight'
+                    src={SparkleRight}
+                  />
+                  <img
+                    className='menuItemSparkle menuItemSparkleBottom'
+                    src={SparkleBottom}
+                  />
+                  <img
+                    className='menuItemSparkle menuItemSparkleTop'
+                    src={SparkleTop}
+                  />
+                </>
+              )}
             </Link>
           ))}
           <Box display='flex' className='menuItem'>

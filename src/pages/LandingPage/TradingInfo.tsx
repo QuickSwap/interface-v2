@@ -10,8 +10,7 @@ export const TradingInfo: React.FC<{ globalData: any }> = ({ globalData }) => {
   const lairInfo = useLairInfo();
   const [openStakeModal, setOpenStakeModal] = useState(false);
 
-  const dQUICKAPY = useLairDQUICKAPY(lairInfo);
-
+  const dQUICKAPY = useLairDQUICKAPY(true, lairInfo);
   const totalRewardsUSD = useTotalRewardsDistributed();
   const { t } = useTranslation();
 

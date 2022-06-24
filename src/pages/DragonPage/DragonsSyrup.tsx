@@ -46,7 +46,7 @@ const DragonsSyrup: React.FC = () => {
   );
 
   const lairInfo = useLairInfo();
-  const dQUICKAPY = useLairDQUICKAPY(lairInfo);
+  const dQUICKAPY = useLairDQUICKAPY(false, lairInfo);
 
   const addedStakingSyrupInfos = useSyrupInfo(
     null,
