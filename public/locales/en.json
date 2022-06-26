@@ -368,5 +368,14 @@
   "reserveFactor": "Reserve Factor",
   "utilization": "Utilization",
   "poolInfo": "Pool Info",
-  "borrowLimitHelper": "Borrow limit is the maximum value you can borrow marked by the white bar. To increase this limit, you can supply more assets."
+  "borrowLimitHelper": "Borrow limit is the maximum value you can borrow marked by the white bar. To increase this limit, you can supply more assets.",
+  "supplyAmount": "Supply Amount",
+  "borrowAmount": "Borrow Amount",
+  "supplied": "Supplied",
+  "repay": "Repay",
+  "suppliedBalance": "Supplied balance",
+  "totalDebtBalance": "Total Debt balance",
+  "borrowedBalance": "Borrowed balance",
+  "borrowAPR": "Borrow APR",
+  "enableAsCollateral": "Enable as collateral"
 }

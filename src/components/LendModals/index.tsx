@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Box, Button, Input, ModalProps, withStyles } from '@material-ui/core';
+import { Box, Button, Input } from '@material-ui/core';
 import styled, { keyframes } from 'styled-components';
 import { ArrowForward } from '@material-ui/icons';
 import { USDPricedPoolAsset } from 'utils/marketxyz/fetchPoolData';
@@ -11,8 +10,12 @@ import { convertMantissaToAPR, convertMantissaToAPY } from 'utils/marketxyz';
 
 import { getEthPrice } from 'utils';
 import { useActiveWeb3React } from 'hooks';
-import ToggleSwitch from 'components/ToggleSwitch';
-import CustomModal from 'components/CustomModal';
+import { ToggleSwitch, CustomModal, ButtonSwitch } from 'components';
+import { useTranslation } from 'react-i18next';
+import ModalBackSvg from '../../assets/images/resource/loadingmodalback.svg';
+import SpinnerImage from '../../assets/images/resource/spinner.svg';
+import SuccessImage from '../../assets/images/resource/success.svg';
+import 'components/styles/LendModal.scss';
 
 interface QuickModalContentProps {
   confirm?: boolean;
@@ -32,12 +35,24 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
   open,
   onClose,
 }) => {
+  const { t } = useTranslation();
   const { account } = useActiveWeb3React();
 
+  const [inputFocused, setInputFocused] = useState(false);
   const [isRepay, setisRepay] = useState(confirm ? true : false);
-  const [isWithdraw, setIsWithdraw] = useState(withdraw ? true : false);
-  const [value, setValue] = useState<any>(0);
+  const [modalType, setModalType] = useState(borrow ? 'borrow' : 'supply');
+  const [value, setValue] = useState('');
   const [enableAsCollateral, setEnableAsCollateral] = useState<boolean>(false);
+  const isWithdraw = modalType === 'withdraw';
+  const buttonDisabled = !account || Number(value) <= 0;
+  const buttonText = useMemo(() => {
+    if (!account) {
+      return t('connectWallet');
+    } else if (Number(value) <= 0) {
+      return t('enterAmount');
+    }
+    return t('confirm');
+  }, [account, t, value]);
 
   const [ethPrice, setEthPrice] = useState<number>();
 
@@ -47,431 +62,283 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
 
   return (
     <CustomModal open={open} onClose={onClose}>
-      {!borrow ? (
-        <Box
-          p={'6px'}
-          mt={'24px'}
-          display={'flex'}
-          borderRadius={'8px'}
-          border={'solid 1px #282d3d'}
-        >
-          <Box
-            flex={1}
-            margin={'0 6px 0 0'}
-            paddingY={'12px'}
-            borderRadius={'6px'}
-            bgcolor={!isWithdraw ? '#282d3d' : 'unset'}
-            color={!isWithdraw ? '#696c80' : 'white'}
-            fontSize={'16px'}
-            fontWeight={'500'}
-            textAlign={'center'}
-            style={{ cursor: 'pointer' }}
-            onClick={() => {
-              setIsWithdraw(false);
-            }}
-          >
-            Supply
-          </Box>
-          <Box
-            flex={1}
-            margin={'0 6px 0 0'}
-            paddingY={'12px'}
-            borderRadius={'6px'}
-            bgcolor={isWithdraw ? '#282d3d' : 'unset'}
-            color={isWithdraw ? '#696c80' : 'white'}
-            fontSize={'16px'}
-            fontWeight={'500'}
-            textAlign={'center'}
-            style={{ cursor: 'pointer' }}
-            onClick={() => {
-              setIsWithdraw(true);
-            }}
-          >
-            Withdraw
-          </Box>
+      <Box className='lendModalWrapper'>
+        <ButtonSwitch
+          height={56}
+          padding={6}
+          value={modalType}
+          onChange={setModalType}
+          items={[
+            {
+              label: borrow ? t('borrow') : t('supply'),
+              value: borrow ? 'borrow' : 'supply',
+            },
+            {
+              label: borrow ? t('repay') : t('withdraw'),
+              value: borrow ? 'repay' : 'withdraw',
+            },
+          ]}
+        />
+        <Box mt={'24px'} className='flex justify-between items-center'>
+          <span className='text-secondary text-uppercase'>
+            {!borrow ? t('supplyAmount') : t('borrowAmount')}
+          </span>
+          {(modalType === 'supply' || modalType === 'repay') && (
+            <p className='caption text-secondary'>
+              {withdraw ? t('supplied') : t('balance')}:{' '}
+              {(
+                Number(asset.underlyingBalance.toString()) /
+                10 ** Number(asset.underlyingDecimals.toString())
+              ).toLocaleString()}{' '}
+              {asset.underlyingSymbol}
+            </p>
+          )}
         </Box>
-      ) : (
         <Box
-          p={'6px'}
-          mt={'24px'}
-          display={'flex'}
-          borderRadius={'8px'}
-          border={'solid 1px #282d3d'}
+          mt={2}
+          className={`lendModalInput ${inputFocused ? 'focused' : ''}`}
         >
-          <Box
-            flex={1}
-            margin={'0 6px 0 0'}
-            paddingY={'12px'}
-            borderRadius={'6px'}
-            bgcolor={!isRepay ? '#282d3d' : 'unset'}
-            color={!isRepay ? '#696c80' : 'white'}
-            fontSize={'16px'}
-            fontWeight={'500'}
-            textAlign={'center'}
-            style={{ cursor: 'pointer' }}
-            onClick={() => {
-              setisRepay(false);
-            }}
-          >
-            Borrow
-          </Box>
-          <Box
-            flex={1}
-            margin={'0 6px 0 0'}
-            paddingY={'12px'}
-            borderRadius={'6px'}
-            bgcolor={isRepay ? '#282d3d' : 'unset'}
-            color={isRepay ? '#696c80' : 'white'}
-            fontSize={'16px'}
-            fontWeight={'500'}
-            textAlign={'center'}
-            style={{ cursor: 'pointer' }}
-            onClick={() => {
-              setisRepay(true);
-            }}
-          >
-            Repay
-          </Box>
-        </Box>
-      )}
-      <Box
-        mt={'24px'}
-        paddingX={'16px'}
-        color={'#696c80'}
-        fontSize={'12px'}
-        fontWeight={'500'}
-        display={'flex'}
-        justifyContent={'space-between'}
-      >
-        {!borrow ? <Box>SUPPLY AMOUNT</Box> : <Box>BORROW AMOUNT</Box>}
-        {!borrow && (
           <Box>
-            Balance:{' '}
-            {(
-              Number(asset.underlyingBalance.toString()) /
-              10 ** Number(asset.underlyingDecimals.toString())
-            ).toFixed(3)}{' '}
-            {asset.underlyingSymbol}
+            <Input
+              type={'text'}
+              disableUnderline={true}
+              placeholder={'0.00'}
+              value={value}
+              onChange={(e) => {
+                setValue(e.currentTarget.value);
+              }}
+            />
+            <p className='span text-secondary'>
+              (
+              {ethPrice
+                ? midUsdFormatter(
+                    ((Number(asset.underlyingPrice.toString()) /
+                      10 ** Number(asset.underlyingDecimals.toString()) /
+                      10 ** 17) *
+                      Number(value)) /
+                      ethPrice,
+                  )
+                : '?'}
+              )
+            </p>
           </Box>
-        )}
-      </Box>
-      <Box
-        mt={'16px'}
-        bgcolor={'#12131a'}
-        padding={'15px 24px'}
-        borderRadius={'10px'}
-        display={'flex'}
-        justifyContent={'space-between'}
-        alignItems={'center'}
-        border={'solid 1px #448aff'}
-      >
-        <Box display={'flex'} flexDirection={'column'} gridGap={'6px'}>
-          <MuiInput
-            type={'text'}
-            disableUnderline={true}
-            placeholder={'0.00'}
-            value={value}
-            onChange={(e) => {
-              setValue(e.currentTarget.value);
-            }}
-          />
-          <Box fontSize={'12px'} fontWeight={'500'} color={'#696c80'}>
-            (
-            {ethPrice
-              ? midUsdFormatter(
-                  ((Number(asset.underlyingPrice.toString()) /
-                    10 ** Number(asset.underlyingDecimals.toString()) /
-                    10 ** 17) *
-                    Number(value)) /
-                    ethPrice,
-                )
-              : '?'}
-            )
-          </Box>
-        </Box>
-        <Box>
           <Box
-            sx={{
-              bgcolor: '#1b2c48',
-              padding: '4px 8px',
-              borderRadius: '4px',
-              fontSize: '13px',
-              fontWeight: '500',
-              color: '#448aff',
-            }}
+            className='lendMaxButton'
             onClick={() => {
               setValue(
                 (
                   Number(asset.underlyingBalance.toString()) /
                   10 ** asset.underlyingDecimals.toNumber()
-                ).toFixed(3),
+                ).toString(),
               );
             }}
           >
-            MAX
+            {t('max')}
           </Box>
         </Box>
-      </Box>
-      {!borrow ? (
-        <Box
-          mt={'24px'}
-          padding={'20px 24px'}
-          borderRadius={'10px'}
-          border={'solid 1px #282d3d'}
-          fontSize={'15px'}
-          display={'flex'}
-          flexDirection={'column'}
-          gridGap={'12px'}
-        >
-          <Box display={'flex'} justifyContent={'space-between'}>
-            <Box color={'#c7cad9'}>Supplied balance:</Box>
-            <Box display={'flex'} alignItems={'center'} gridGap={'10px'}>
-              {!confirm ? (
-                (
-                  Number(asset.supplyBalance.toString()) /
-                  10 ** Number(asset.underlyingDecimals.toString())
-                ).toFixed(3) +
-                ' ' +
-                asset.underlyingSymbol
-              ) : (
-                <>
-                  {(
-                    Number(asset.supplyBalance.toString()) /
-                    10 ** Number(asset.underlyingDecimals.toString())
-                  ).toFixed(3) +
+        <Box my={3} className='lendModalContentWrapper'>
+          {!borrow ? (
+            <>
+              <Box className='lendModalRow'>
+                <p>{t('suppliedBalance')}:</p>
+                <p>
+                  {!confirm ? (
+                    (
+                      Number(asset.supplyBalance.toString()) /
+                      10 ** Number(asset.underlyingDecimals.toString())
+                    ).toFixed(3) +
                     ' ' +
-                    asset.underlyingSymbol}
-                  <ArrowForward fontSize='small' />
-                  {(
-                    Number(asset.supplyBalance.toString()) /
-                      10 ** Number(asset.underlyingDecimals.toString()) +
-                    Number(value)
-                  ).toFixed(3) +
+                    asset.underlyingSymbol
+                  ) : (
+                    <>
+                      {(
+                        Number(asset.supplyBalance.toString()) /
+                        10 ** Number(asset.underlyingDecimals.toString())
+                      ).toFixed(3) +
+                        ' ' +
+                        asset.underlyingSymbol}
+                      <ArrowForward fontSize='small' />
+                      {(
+                        Number(asset.supplyBalance.toString()) /
+                          10 ** Number(asset.underlyingDecimals.toString()) +
+                        Number(value)
+                      ).toFixed(3) +
+                        ' ' +
+                        asset.underlyingSymbol}
+                    </>
+                  )}
+                </p>
+              </Box>
+              <Box className='lendModalRow'>
+                <p>{t('supplyapy')}:</p>
+                <p>{convertMantissaToAPY(asset.supplyRatePerBlock, 365)}%</p>
+              </Box>
+              <Box className='lendModalRow'>
+                <p>{t('borrowLimit')}:</p>
+                <p>
+                  {!confirm ? (
+                    midUsdFormatter(borrowLimit)
+                  ) : (
+                    <>
+                      {midUsdFormatter(borrowLimit)}
+                      <ArrowForward fontSize='small' />
+                      {midUsdFormatter(borrowLimit - Number(value))}
+                    </>
+                  )}
+                </p>
+              </Box>
+              <Box className='lendModalRow'>
+                <p>{t('totalDebtBalance')}:</p>
+                <p>{midUsdFormatter(asset.borrowBalanceUSD)}</p>
+              </Box>
+            </>
+          ) : (
+            <>
+              <Box className='lendModalRow'>
+                <p>{t('borrowedBalance')}:</p>
+                <p>
+                  {!confirm ? (
+                    (
+                      Number(asset.borrowBalance.toString()) /
+                      10 ** Number(asset.underlyingDecimals.toString())
+                    ).toFixed(3) +
                     ' ' +
-                    asset.underlyingSymbol}
-                </>
-              )}
-            </Box>
-          </Box>
-          <Box bgcolor={'#282d3d'} height={'1px'} />
-          <Box display={'flex'} justifyContent={'space-between'}>
-            <Box color={'#c7cad9'}>Supply APY:</Box>
-            <Box color={'#0fc679'}>
-              {convertMantissaToAPY(asset.supplyRatePerBlock, 365)}%
-            </Box>
-          </Box>
-          <Box bgcolor={'#282d3d'} height={'1px'} />
-          <Box display={'flex'} justifyContent={'space-between'}>
-            <Box color={'#c7cad9'}>Borrow Limit:</Box>
-            <Box>
-              {!confirm ? (
-                midUsdFormatter(borrowLimit)
-              ) : (
-                <>
-                  {midUsdFormatter(borrowLimit)}
-                  <ArrowForward fontSize='small' />
-                  {midUsdFormatter(borrowLimit - value)}
-                </>
-              )}
-            </Box>
-          </Box>
-          <Box bgcolor={'#282d3d'} height={'1px'} />
-          <Box display={'flex'} justifyContent={'space-between'}>
-            <Box color={'#c7cad9'}>Total Debt balance:</Box>
-            <Box>{midUsdFormatter(asset.borrowBalanceUSD)}</Box>
-          </Box>
+                    asset.underlyingSymbol
+                  ) : (
+                    <>
+                      {(
+                        Number(asset.borrowBalance.toString()) /
+                        10 ** Number(asset.underlyingDecimals.toString())
+                      ).toFixed(3) +
+                        ' ' +
+                        asset.underlyingSymbol}
+                      <ArrowForward fontSize='small' />
+                      {(
+                        Number(asset.borrowBalance.toString()) /
+                          10 ** Number(asset.underlyingDecimals.toString()) +
+                        Number(value)
+                      ).toFixed(3) +
+                        ' ' +
+                        asset.underlyingSymbol}
+                    </>
+                  )}
+                </p>
+              </Box>
+              <Box className='lendModalRow'>
+                <p>{t('suppliedBalance')}:</p>
+                <p>
+                  {!confirm ? (
+                    (
+                      Number(asset.supplyBalance.toString()) /
+                      10 ** Number(asset.underlyingDecimals.toString())
+                    ).toFixed(3) +
+                    ' ' +
+                    asset.underlyingSymbol
+                  ) : (
+                    <>
+                      {(
+                        Number(asset.supplyBalance.toString()) /
+                        10 ** Number(asset.underlyingDecimals.toString())
+                      ).toFixed(3) +
+                        ' ' +
+                        asset.underlyingSymbol}
+                      <ArrowForward fontSize='small' />
+                      {(
+                        Number(asset.supplyBalance.toString()) /
+                          10 ** Number(asset.underlyingDecimals.toString()) +
+                        Number(value)
+                      ).toFixed(3) +
+                        ' ' +
+                        asset.underlyingSymbol}
+                    </>
+                  )}
+                </p>
+              </Box>
+              <Box className='lendModalRow'>
+                <p>{t('borrowAPR')}:</p>
+                <p>{convertMantissaToAPR(asset.borrowRatePerBlock)}%</p>
+              </Box>
+              <Box className='lendModalRow'>
+                <p>{t('borrowLimit')}:</p>
+                <p>{midUsdFormatter(borrowLimit)}</p>
+              </Box>
+              <Box className='lendModalRow'>
+                <p>{t('totalDebtBalance')}:</p>
+                <p>
+                  {!confirm ? (
+                    (
+                      Number(asset.borrowBalance.toString()) /
+                      10 ** Number(asset.underlyingDecimals.toString())
+                    ).toFixed(3) +
+                    ' ' +
+                    asset.underlyingSymbol
+                  ) : (
+                    <>
+                      {(
+                        Number(asset.borrowBalance.toString()) /
+                        10 ** Number(asset.underlyingDecimals.toString())
+                      ).toFixed(3) +
+                        ' ' +
+                        asset.underlyingSymbol}
+                      <ArrowForward fontSize='small' />
+                      {(
+                        Number(asset.borrowBalance.toString()) /
+                          10 ** Number(asset.underlyingDecimals.toString()) +
+                        Number(value)
+                      ).toFixed(3) +
+                        ' ' +
+                        asset.underlyingSymbol}
+                    </>
+                  )}
+                </p>
+              </Box>
+            </>
+          )}
         </Box>
-      ) : (
-        <Box
-          mt={'24px'}
-          padding={'20px 24px'}
-          borderRadius={'10px'}
-          border={'solid 1px #282d3d'}
-          fontSize={'15px'}
-          display={'flex'}
-          flexDirection={'column'}
-          gridGap={'12px'}
-        >
-          <Box display={'flex'} justifyContent={'space-between'}>
-            <Box color={'#c7cad9'}>Borrowed balance:</Box>
-            <Box display={'flex'} alignItems={'center'} gridGap={'10px'}>
-              {!confirm ? (
-                (
-                  Number(asset.borrowBalance.toString()) /
-                  10 ** Number(asset.underlyingDecimals.toString())
-                ).toFixed(3) +
-                ' ' +
-                asset.underlyingSymbol
-              ) : (
-                <>
-                  {(
-                    Number(asset.borrowBalance.toString()) /
-                    10 ** Number(asset.underlyingDecimals.toString())
-                  ).toFixed(3) +
-                    ' ' +
-                    asset.underlyingSymbol}
-                  <ArrowForward fontSize='small' />
-                  {(
-                    Number(asset.borrowBalance.toString()) /
-                      10 ** Number(asset.underlyingDecimals.toString()) +
-                    Number(value)
-                  ).toFixed(3) +
-                    ' ' +
-                    asset.underlyingSymbol}
-                </>
-              )}
+        {!borrow && !isWithdraw && (
+          <Box className='lendModalContentWrapper'>
+            <Box className='lendModalRow'>
+              <p>{t('enableAsCollateral')}</p>
+              <ToggleSwitch
+                toggled={enableAsCollateral}
+                onToggle={() => {
+                  setEnableAsCollateral(
+                    (enableAsCollateral) => !enableAsCollateral,
+                  );
+                }}
+              />
             </Box>
           </Box>
-          <Box bgcolor={'#282d3d'} height={'1px'} />
-          <Box display={'flex'} justifyContent={'space-between'}>
-            <Box color={'#c7cad9'}>Supplied balance:</Box>
-            <Box display={'flex'} alignItems={'center'} gridGap={'10px'}>
-              {!confirm ? (
-                (
-                  Number(asset.supplyBalance.toString()) /
-                  10 ** Number(asset.underlyingDecimals.toString())
-                ).toFixed(3) +
-                ' ' +
-                asset.underlyingSymbol
-              ) : (
-                <>
-                  {(
-                    Number(asset.supplyBalance.toString()) /
-                    10 ** Number(asset.underlyingDecimals.toString())
-                  ).toFixed(3) +
-                    ' ' +
-                    asset.underlyingSymbol}
-                  <ArrowForward fontSize='small' />
-                  {(
-                    Number(asset.supplyBalance.toString()) /
-                      10 ** Number(asset.underlyingDecimals.toString()) +
-                    Number(value)
-                  ).toFixed(3) +
-                    ' ' +
-                    asset.underlyingSymbol}
-                </>
-              )}
-            </Box>
-          </Box>
-          <Box bgcolor={'#282d3d'} height={'1px'} />
-          <Box display={'flex'} justifyContent={'space-between'}>
-            <Box color={'#c7cad9'}>Borrow APR:</Box>
-            <Box color={'#0fc679'}>
-              {convertMantissaToAPR(asset.borrowRatePerBlock)}%
-            </Box>
-          </Box>
-          <Box bgcolor={'#282d3d'} height={'1px'} />
-          <Box display={'flex'} justifyContent={'space-between'}>
-            <Box color={'#c7cad9'}>Borrow Limit:</Box>
-            <Box>{midUsdFormatter(borrowLimit)}</Box>
-          </Box>
-          <Box bgcolor={'#282d3d'} height={'1px'} />
-          <Box display={'flex'} justifyContent={'space-between'}>
-            <Box color={'#c7cad9'}>Total Debt balance:</Box>
-            <Box>
-              {!confirm ? (
-                (
-                  Number(asset.borrowBalance.toString()) /
-                  10 ** Number(asset.underlyingDecimals.toString())
-                ).toFixed(3) +
-                ' ' +
-                asset.underlyingSymbol
-              ) : (
-                <>
-                  {(
-                    Number(asset.borrowBalance.toString()) /
-                    10 ** Number(asset.underlyingDecimals.toString())
-                  ).toFixed(3) +
-                    ' ' +
-                    asset.underlyingSymbol}
-                  <ArrowForward fontSize='small' />
-                  {(
-                    Number(asset.borrowBalance.toString()) /
-                      10 ** Number(asset.underlyingDecimals.toString()) +
-                    Number(value)
-                  ).toFixed(3) +
-                    ' ' +
-                    asset.underlyingSymbol}
-                </>
-              )}
-            </Box>
-          </Box>
-        </Box>
-      )}
-      {!borrow && !isWithdraw && (
-        <Box
-          mt={'24px'}
-          padding={'22px 24px'}
-          borderRadius={'10px'}
-          border={'solid 1px #282d3d'}
-          display={'flex'}
-          justifyContent={'space-between'}
-          alignItems={'center'}
-        >
-          <Box>Enable as collateral</Box>
-          <ToggleSwitch
-            toggled={enableAsCollateral}
-            onToggle={() => {
-              setEnableAsCollateral(
-                (enableAsCollateral) => !enableAsCollateral,
-              );
-            }}
-          />
-        </Box>
-      )}
-      <Box mt={'24px'} display={'flex'}>
-        {value > 0 ? (
-          <MuiButton
+        )}
+        <Box mt={'24px'}>
+          <Button
             fullWidth
-            style={{
-              cursor: 'pointer',
-            }}
-            // sx={{
-            //   color: '#696c80',
-            //   borderRadius: '10px',
-            //   bgcolor: '#3e4252',
-            //   textAlign: 'center',
-            //   fontSize: '16px',
-            //   fontWeight: '600',
-            // }}
+            disabled={buttonDisabled}
             onClick={() => {
-              if (!account) {
-                throw new Error('Wallet not connected');
-              }
-
-              console.log(value, account);
+              if (!account) return;
               if (borrow) {
                 if (isRepay) {
-                  MarketUtils.repayBorrow(asset, value, account);
+                  MarketUtils.repayBorrow(asset, Number(value), account);
                 } else {
-                  MarketUtils.borrow(asset, value, account);
+                  MarketUtils.borrow(asset, Number(value), account);
                 }
               } else {
                 if (isWithdraw) {
-                  MarketUtils.withdraw(asset, value, account);
+                  MarketUtils.withdraw(asset, Number(value), account);
                 } else {
-                  MarketUtils.supply(asset, value, account, enableAsCollateral);
+                  MarketUtils.supply(
+                    asset,
+                    Number(value),
+                    account,
+                    enableAsCollateral,
+                  );
                 }
               }
             }}
           >
-            Confirm
-            {/* {!modalSetting.setModalIsConfirm.value ? 'Enter amount' : 'Confirm'} */}
-          </MuiButton>
-        ) : (
-          <Box
-            width={'100%'}
-            py={'16px'}
-            borderRadius={'10px'}
-            bgcolor={'#3e4252'}
-            textAlign={'center'}
-            fontSize={'16px'}
-            fontWeight={'600'}
-            color={'#696c80'}
-          >
-            Enter amount
-          </Box>
-        )}
+            {buttonText}
+          </Button>
+        </Box>
       </Box>
     </CustomModal>
   );
@@ -484,6 +351,7 @@ export const StateModalContent: React.FC<StateModalContentProps> = ({
   loading,
   setOpenModalType,
 }) => {
+  const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(loading ? true : false);
   useEffect(() => {
     window.setTimeout(() => {
@@ -494,12 +362,7 @@ export const StateModalContent: React.FC<StateModalContentProps> = ({
     <>
       {isLoading ? (
         <Box position={'relative'} width={'369px'}>
-          <img
-            src={
-              require('../../assets/images/resource/loadingmodalback.svg')
-                .default
-            }
-          />
+          <img src={ModalBackSvg} alt='Modal back' />
           <Box
             position={'absolute'}
             top={'0px'}
@@ -513,11 +376,7 @@ export const StateModalContent: React.FC<StateModalContentProps> = ({
             gridGap={'32px'}
           >
             <Spinner>
-              <img
-                src={
-                  require('../../assets/images/resource/spinner.svg').default
-                }
-              />
+              <img src={SpinnerImage} alt='Spinner' />
             </Spinner>
             <Box fontSize={'18px'} fontWeight={'500'} color={'#c7cad9'}>
               Confirm transaction in your wallet
@@ -532,12 +391,7 @@ export const StateModalContent: React.FC<StateModalContentProps> = ({
             position={'relative'}
             width={'369px'}
           >
-            <img
-              src={
-                require('../../assets/images/resource/loadingmodalback.svg')
-                  .default
-              }
-            />
+            <img src={ModalBackSvg} alt='modalBack' />
             <Box
               position={'absolute'}
               top={'0px'}
@@ -551,14 +405,10 @@ export const StateModalContent: React.FC<StateModalContentProps> = ({
               gridGap={'23px'}
             >
               <Box>
-                <img
-                  src={
-                    require('../../assets/images/resource/success.svg').default
-                  }
-                />
+                <img src={SuccessImage} alt='Success' />
               </Box>
               <Box fontSize={'18px'} fontWeight={'500'} color={'#c7cad9'}>
-                Transaction Submitted
+                {t('txSubmitted')}
               </Box>
             </Box>
           </Box>
@@ -682,17 +532,3 @@ const LogoIcon: React.FC<IconProps> = ({
     </svg>
   );
 };
-
-const MuiButton = withStyles({
-  root: {
-    paddingTop: '16px',
-    paddingBottom: '16px',
-  },
-})(Button);
-const MuiInput = withStyles({
-  root: {
-    fontSize: '20px',
-    fontWeight: 'bolder',
-    color: '#c7cad9',
-  },
-})(Input);
