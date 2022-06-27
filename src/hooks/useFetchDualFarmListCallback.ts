@@ -13,23 +13,18 @@ import { DualFarmListInfo } from 'types';
 export function useFetchDualFarmListCallback(): (
   listUrl: string,
 ) => Promise<DualFarmListInfo> {
-  const { chainId, library } = useActiveWeb3React();
+  const { library } = useActiveWeb3React();
   const dispatch = useDispatch<AppDispatch>();
 
+  //TODO: support multi chain
   const ensResolver = useCallback(
     (ensName: string) => {
-      if (!library || chainId !== ChainId.MUMBAI) {
-        if (NETWORK_CHAIN_ID === ChainId.MUMBAI) {
-          const networkLibrary = getNetworkLibrary();
-          if (networkLibrary) {
-            return resolveENSContentHash(ensName, networkLibrary);
-          }
-        }
+      if (!library) {
         throw new Error('Could not construct mainnet ENS resolver');
       }
       return resolveENSContentHash(ensName, library);
     },
-    [chainId, library],
+    [library],
   );
 
   return useCallback(
