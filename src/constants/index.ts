@@ -115,6 +115,14 @@ export const GlobalConst = {
 };
 
 export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
+  CYPHERD: {
+    connector: injected,
+    name: GlobalConst.walletName.CYPHERD,
+    iconName: cypherDIcon,
+    description: 'CypherD browser extension.',
+    href: null,
+    color: '#E8831D',
+  },
   METAMASK: {
     connector: injected,
     name: GlobalConst.walletName.METAMASK,
@@ -130,14 +138,6 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
     description: 'BlockWallet browser extension.',
     href: null,
     color: '#1673ff',
-  },
-  CYPHERD: {
-    connector: injected,
-    name: GlobalConst.walletName.CYPHERD,
-    iconName: cypherDIcon,
-    description: 'CypherD browser extension.',
-    href: null,
-    color: '#E8831D',
   },
   BITKEEP: {
     connector: injected,
