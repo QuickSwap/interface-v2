@@ -95,7 +95,7 @@ export const supply = async (
 
   const isETH = asset.underlyingToken === ETH_TOKEN_DATA.address;
   const amountBN = sdk.web3.utils.toBN(
-    Number(amount * 10 ** asset.underlyingDecimals.toNumber()).toFixed(0),
+    amount * 10 ** asset.underlyingDecimals.toNumber(),
   );
 
   const comptroller = new Comptroller(
@@ -120,7 +120,6 @@ export const supply = async (
       await call.send({
         from: address,
         value: amountBN.sub(gasWEI),
-
         gasPrice,
         gas: estimatedGas,
       } as any);

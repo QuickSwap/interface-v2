@@ -32,7 +32,14 @@ export async function testForCTokenErrorAndSend(
     throw err;
   }
 
-  return txObject.send({ from: caller });
+  const estimatedGas = await txObject.estimateGas({ from: caller });
+  console.log('bbb', estimatedGas, txObject);
+
+  return txObject.send({
+    from: caller,
+    gasPrice: estimatedGas,
+    gasLimit: estimatedGas,
+  });
 }
 
 export async function testForComptrollerErrorAndSend(

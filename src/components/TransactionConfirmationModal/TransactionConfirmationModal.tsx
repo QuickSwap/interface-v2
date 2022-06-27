@@ -1,6 +1,6 @@
 import { ChainId } from '@uniswap/sdk';
 import React from 'react';
-import { Box, Button, CircularProgress } from '@material-ui/core';
+import { Box, Button } from '@material-ui/core';
 import { CustomModal } from 'components';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 import { ReactComponent as TransactionFailed } from 'assets/images/TransactionFailed.svg';
@@ -8,12 +8,13 @@ import { ReactComponent as TransactionSuccess } from 'assets/images/TransactionS
 import { getEtherscanLink } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import ModalBg from 'assets/images/ModalBG.svg';
+import SpinnerImage from '../../assets/images/spinner.svg';
 import 'components/styles/TransactionConfirmationModal.scss';
 import { useTranslation } from 'react-i18next';
 
 interface ConfirmationPendingContentProps {
   onDismiss: () => void;
-  pendingText: string;
+  pendingText?: string;
 }
 
 export const ConfirmationPendingContent: React.FC<ConfirmationPendingContentProps> = ({
@@ -27,12 +28,12 @@ export const ConfirmationPendingContent: React.FC<ConfirmationPendingContentProp
         <CloseIcon onClick={onDismiss} />
       </Box>
       <Box className='txModalContent'>
-        <Box my={4} className='flex justify-center'>
-          <CircularProgress size={80} />
+        <Box my={4} className='flex justify-center spinner'>
+          <img src={SpinnerImage} alt='Spinner' />
         </Box>
         <h5>{t('waitingConfirm')}</h5>
-        <p>{pendingText}</p>
-        <span>{t('confirmTxinWallet')}</span>
+        {pendingText && <p>{pendingText}</p>}
+        <p>{t('confirmTxinWallet')}</p>
       </Box>
     </Box>
   );
@@ -43,7 +44,7 @@ interface TransactionSubmittedContentProps {
   hash: string | undefined;
   chainId: ChainId;
   txPending?: boolean;
-  modalContent: string;
+  modalContent?: string;
 }
 
 export const TransactionSubmittedContent: React.FC<TransactionSubmittedContentProps> = ({
@@ -65,9 +66,11 @@ export const TransactionSubmittedContent: React.FC<TransactionSubmittedContentPr
           <TransactionSuccess />
         </Box>
       )}
-      <Box className='txModalContent'>
-        <p>{modalContent}</p>
-      </Box>
+      {modalContent && (
+        <Box className='txModalContent'>
+          <p>{modalContent}</p>
+        </Box>
+      )}
       <Box className='flex justify-between' mt={2}>
         {chainId && hash && (
           <a
@@ -150,8 +153,8 @@ interface ConfirmationModalProps {
   hash: string | undefined;
   content: () => React.ReactNode;
   attemptingTxn: boolean;
-  pendingText: string;
-  modalContent: string;
+  pendingText?: string;
+  modalContent?: string;
   txPending?: boolean;
 }
 
