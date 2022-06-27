@@ -1,9 +1,10 @@
-import { CTokenError, ComptrollerError } from 'market-sdk';
+import { CTokenError, ComptrollerError, MarketSDK } from 'market-sdk';
 
 export async function testForCTokenErrorAndSend(
   txObject: any,
   caller: string,
   failMessage: string,
+  sdk: MarketSDK,
 ) {
   let response = await txObject.call({ from: caller });
 
@@ -32,13 +33,20 @@ export async function testForCTokenErrorAndSend(
     throw err;
   }
 
-  const estimatedGas = await txObject.estimateGas({ from: caller });
+  const gasData = await fetch(
+    'https://gasstation-mainnet.matic.network/v2',
+  ).then((res) => res.json());
+  const gasPrice = sdk.web3.utils.toWei(
+    Math.ceil(gasData.standard.maxPriorityFee).toString(),
+    'gwei',
+  );
 
-  return txObject.send({
+  const txRes = await txObject.send({
     from: caller,
-    gasPrice: estimatedGas,
-    gasLimit: estimatedGas,
+    maxPriorityFeePerGas: gasPrice,
   });
+
+  return txRes;
 }
 
 export async function testForComptrollerErrorAndSend(

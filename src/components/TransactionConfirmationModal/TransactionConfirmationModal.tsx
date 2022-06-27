@@ -66,11 +66,9 @@ export const TransactionSubmittedContent: React.FC<TransactionSubmittedContentPr
           <TransactionSuccess />
         </Box>
       )}
-      {modalContent && (
-        <Box className='txModalContent'>
-          <p>{modalContent}</p>
-        </Box>
-      )}
+      <Box className='txModalContent'>
+        <p>{modalContent}</p>
+      </Box>
       <Box className='flex justify-between' mt={2}>
         {chainId && hash && (
           <a

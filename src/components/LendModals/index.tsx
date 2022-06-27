@@ -42,7 +42,6 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
   const [loading, setLoading] = useState(false);
   const [txHash, setTxHash] = useState<string | undefined>(undefined);
   const [txError, setTxError] = useState('');
-  const [txPending, setTxPending] = useState<boolean>(false);
   const [inputFocused, setInputFocused] = useState(false);
   const [modalType, setModalType] = useState(borrow ? 'borrow' : 'supply');
   const [value, setValue] = useState('');
@@ -65,10 +64,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
     Number(asset.borrowBalance.toString()) /
     10 ** Number(asset.underlyingDecimals.toString());
 
-  const showArrow = useMemo(
-    () => (borrow ? supplyBalance : borrowBalance) !== Number(value),
-    [borrow, borrowBalance, supplyBalance, value],
-  );
+  const showArrow = Number(value) > 0;
 
   const [ethPrice, setEthPrice] = useState<number>();
 
@@ -78,13 +74,13 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
 
   return (
     <>
-      {txError || loading ? (
+      {txError || loading || txHash ? (
         <TransactionConfirmationModal
           isOpen={true}
           onDismiss={onClose}
           attemptingTxn={loading}
           hash={txHash}
-          txPending={txPending}
+          txPending={false}
           content={() =>
             txError ? (
               <TransactionErrorContent onDismiss={onClose} message={txError} />
@@ -330,8 +326,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
                         );
                       }
                     }
-                    setTxPending(true);
-                    setTxHash(txResponse.hash);
+                    setTxHash(txResponse.transactionHash);
                     setLoading(false);
                   } catch (e) {
                     console.log(e);

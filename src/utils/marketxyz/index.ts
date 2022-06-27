@@ -132,6 +132,7 @@ export const supply = async (
       cToken.contract.methods.mint(amountBN),
       address,
       'Cannot deposit this amount right now!',
+      sdk,
     );
   }
   if (enableAsCollateral) {
@@ -166,6 +167,7 @@ export const repayBorrow = async (
       cToken.contract.methods.repayBorrow(isRepayingMax ? max : amountBN),
       address,
       'Cannot repay this amount right now!',
+      sdk,
     );
 
     return;
@@ -232,6 +234,7 @@ export const withdraw = (
     cToken.contract.methods.redeemUnderlying(amountBN),
     address,
     'Cannot withdraw this amount right now!',
+    sdk,
   );
 };
 
@@ -251,5 +254,6 @@ export const borrow = (
     cToken.contract.methods.borrow(amountBN),
     address,
     'Cannot borrow this amount right now!',
+    sdk,
   );
 };
