@@ -15,10 +15,8 @@ const DragonPage: React.FC = () => {
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const { t } = useTranslation();
-  const lairInfo = useOldLairInfo();
-  //showing old dragons lair until we're ready to deploy 
+  //showing old dragons lair until we're ready to deploy
   const showOld = true;
-
 
   return (
     <Box width='100%' mb={3}>
