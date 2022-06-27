@@ -1739,10 +1739,10 @@ export function getTokenFromKey(
     return tokensMatchingSymbol[0];
   }
 
-  const wrappedTokenInfo = tokenMap[tokenData!.chainId][tokenData!.address];
+  const wrappedTokenInfo = tokenMap[tokenData.chainId][tokenData.address];
   if (!wrappedTokenInfo) {
     console.log('missing from token list:' + tokenKey);
-    return tokenData!;
+    return tokenData;
   }
 
   return new Token(
