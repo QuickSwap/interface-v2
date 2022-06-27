@@ -47,26 +47,13 @@ const LendDetailPage: React.FC = () => {
   const { account } = useActiveWeb3React();
   const [supplyToggled, setSupplyToggled] = useState(false);
 
-  const [modalType, setModalType] = useState<'state' | 'quick' | null>(null);
   const [modalIsBorrow, setModalIsBorrow] = useState<boolean>(false);
-  const [modalIsConfirm, setModalIsConfirm] = useState<boolean>(false);
   const [alertShow, setAlertShow] = useState({
     open: false,
     msg: '',
     status: 'success',
   });
 
-  const [openModalType, setOpenModalType] = useState<{
-    back: {
-      notoolbar: boolean;
-      notitle: boolean;
-    };
-    content: {
-      type: 'state' | 'quick';
-      borrow: boolean;
-      confirm: boolean;
-    };
-  } | null>(null);
   const [selectedAsset, setSelectedAsset] = useState<USDPricedPoolAsset>();
 
   const { sdk } = useMarket();
@@ -315,7 +302,6 @@ const LendDetailPage: React.FC = () => {
                       <ItemTableCell
                         onClick={() => {
                           setSelectedAsset(asset);
-                          setModalType('quick');
                           setModalIsBorrow(false);
                         }}
                       >
@@ -342,7 +328,6 @@ const LendDetailPage: React.FC = () => {
                         className='poolTableHideCell'
                         onClick={() => {
                           setSelectedAsset(asset);
-                          setModalType('quick');
                           setModalIsBorrow(false);
                         }}
                       >
@@ -369,7 +354,6 @@ const LendDetailPage: React.FC = () => {
                       <ItemTableCell
                         onClick={() => {
                           setSelectedAsset(asset);
-                          setModalType('quick');
                           setModalIsBorrow(false);
                         }}
                       >
@@ -480,7 +464,6 @@ const LendDetailPage: React.FC = () => {
                         key={asset.cToken.address}
                         onClick={() => {
                           setSelectedAsset(asset);
-                          setModalType('quick');
                           setModalIsBorrow(true);
                         }}
                       >
@@ -714,7 +697,7 @@ const LendDetailPage: React.FC = () => {
         </Box>
       </Box>
 
-      {modalType && selectedAsset && (
+      {selectedAsset && (
         <QuickModalContent
           open={!!selectedAsset}
           onClose={() => setSelectedAsset(undefined)}

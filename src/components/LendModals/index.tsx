@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Box, Button, Input } from '@material-ui/core';
+import { Box, Button } from '@material-ui/core';
 import { ArrowForward } from '@material-ui/icons';
 import { USDPricedPoolAsset } from 'utils/marketxyz/fetchPoolData';
 import { midUsdFormatter } from 'utils/bigUtils';
@@ -15,12 +15,12 @@ import {
   ButtonSwitch,
   TransactionConfirmationModal,
   TransactionErrorContent,
+  NumericalInput,
 } from 'components';
 import { useTranslation } from 'react-i18next';
 import 'components/styles/LendModal.scss';
 
 interface QuickModalContentProps {
-  confirm?: boolean;
   withdraw?: boolean;
   borrow?: boolean;
   asset: USDPricedPoolAsset;
@@ -29,7 +29,6 @@ interface QuickModalContentProps {
   onClose: () => void;
 }
 export const QuickModalContent: React.FC<QuickModalContentProps> = ({
-  confirm,
   withdraw,
   borrow,
   asset,
@@ -45,11 +44,9 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
   const [txError, setTxError] = useState('');
   const [txPending, setTxPending] = useState<boolean>(false);
   const [inputFocused, setInputFocused] = useState(false);
-  const [isRepay, setisRepay] = useState(confirm ? true : false);
   const [modalType, setModalType] = useState(borrow ? 'borrow' : 'supply');
   const [value, setValue] = useState('');
   const [enableAsCollateral, setEnableAsCollateral] = useState<boolean>(false);
-  const isWithdraw = modalType === 'withdraw';
   const buttonDisabled = !account || Number(value) <= 0;
   const buttonText = useMemo(() => {
     if (!account) {
@@ -59,6 +56,19 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
     }
     return t('confirm');
   }, [account, t, value]);
+
+  const supplyBalance =
+    Number(asset.supplyBalance.toString()) /
+    10 ** Number(asset.underlyingDecimals.toString());
+
+  const borrowBalance =
+    Number(asset.borrowBalance.toString()) /
+    10 ** Number(asset.underlyingDecimals.toString());
+
+  const showArrow = useMemo(
+    () => (borrow ? supplyBalance : borrowBalance) !== Number(value),
+    [borrow, borrowBalance, supplyBalance, value],
+  );
 
   const [ethPrice, setEthPrice] = useState<number>();
 
@@ -122,13 +132,13 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
               className={`lendModalInput ${inputFocused ? 'focused' : ''}`}
             >
               <Box>
-                <Input
-                  type={'text'}
-                  disableUnderline={true}
+                <NumericalInput
                   placeholder={'0.00'}
                   value={value}
-                  onChange={(e) => {
-                    setValue(e.currentTarget.value);
+                  onFocus={() => setInputFocused(true)}
+                  onBlur={() => setInputFocused(false)}
+                  onUserInput={(val) => {
+                    setValue(val);
                   }}
                 />
                 <p className='span text-secondary'>
@@ -165,48 +175,35 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
                   <Box className='lendModalRow'>
                     <p>{t('suppliedBalance')}:</p>
                     <p>
-                      {!confirm ? (
-                        (
-                          Number(asset.supplyBalance.toString()) /
-                          10 ** Number(asset.underlyingDecimals.toString())
-                        ).toFixed(3) +
-                        ' ' +
+                      {`${supplyBalance.toLocaleString()} ${
                         asset.underlyingSymbol
-                      ) : (
+                      }`}
+                      {showArrow && (
                         <>
-                          {(
-                            Number(asset.supplyBalance.toString()) /
-                            10 ** Number(asset.underlyingDecimals.toString())
-                          ).toFixed(3) +
-                            ' ' +
-                            asset.underlyingSymbol}
                           <ArrowForward fontSize='small' />
-                          {(
-                            Number(asset.supplyBalance.toString()) /
-                              10 **
-                                Number(asset.underlyingDecimals.toString()) +
-                            Number(value)
-                          ).toFixed(3) +
-                            ' ' +
-                            asset.underlyingSymbol}
+                          {`${(
+                            supplyBalance + Number(value)
+                          ).toLocaleString()} ${asset.underlyingSymbol}`}
                         </>
                       )}
                     </p>
                   </Box>
                   <Box className='lendModalRow'>
                     <p>{t('supplyapy')}:</p>
-                    <p>
-                      {convertMantissaToAPY(asset.supplyRatePerBlock, 365)}%
+                    <p className='text-success'>
+                      {convertMantissaToAPY(
+                        asset.supplyRatePerBlock,
+                        365,
+                      ).toLocaleString()}
+                      %
                     </p>
                   </Box>
                   <Box className='lendModalRow'>
                     <p>{t('borrowLimit')}:</p>
                     <p>
-                      {!confirm ? (
-                        midUsdFormatter(borrowLimit)
-                      ) : (
+                      {midUsdFormatter(borrowLimit)}
+                      {showArrow && (
                         <>
-                          {midUsdFormatter(borrowLimit)}
                           <ArrowForward fontSize='small' />
                           {midUsdFormatter(borrowLimit - Number(value))}
                         </>
@@ -223,28 +220,13 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
                   <Box className='lendModalRow'>
                     <p>{t('borrowedBalance')}:</p>
                     <p>
-                      {!confirm ? (
-                        (
-                          Number(asset.borrowBalance.toString()) /
-                          10 ** Number(asset.underlyingDecimals.toString())
-                        ).toFixed(3) +
-                        ' ' +
+                      {`${borrowBalance.toLocaleString()} ${
                         asset.underlyingSymbol
-                      ) : (
+                      }`}
+                      {showArrow && (
                         <>
-                          {(
-                            Number(asset.borrowBalance.toString()) /
-                            10 ** Number(asset.underlyingDecimals.toString())
-                          ).toFixed(3) +
-                            ' ' +
-                            asset.underlyingSymbol}
                           <ArrowForward fontSize='small' />
-                          {(
-                            Number(asset.borrowBalance.toString()) /
-                              10 **
-                                Number(asset.underlyingDecimals.toString()) +
-                            Number(value)
-                          ).toFixed(3) +
+                          {(borrowBalance + Number(value)).toLocaleString() +
                             ' ' +
                             asset.underlyingSymbol}
                         </>
@@ -254,30 +236,15 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
                   <Box className='lendModalRow'>
                     <p>{t('suppliedBalance')}:</p>
                     <p>
-                      {!confirm ? (
-                        (
-                          Number(asset.supplyBalance.toString()) /
-                          10 ** Number(asset.underlyingDecimals.toString())
-                        ).toFixed(3) +
-                        ' ' +
+                      {`${supplyBalance.toLocaleString()} ${
                         asset.underlyingSymbol
-                      ) : (
+                      }`}
+                      {showArrow && (
                         <>
-                          {(
-                            Number(asset.supplyBalance.toString()) /
-                            10 ** Number(asset.underlyingDecimals.toString())
-                          ).toFixed(3) +
-                            ' ' +
-                            asset.underlyingSymbol}
                           <ArrowForward fontSize='small' />
-                          {(
-                            Number(asset.supplyBalance.toString()) /
-                              10 **
-                                Number(asset.underlyingDecimals.toString()) +
-                            Number(value)
-                          ).toFixed(3) +
-                            ' ' +
-                            asset.underlyingSymbol}
+                          {`${(
+                            supplyBalance + Number(value)
+                          ).toLocaleString()} ${asset.underlyingSymbol}`}
                         </>
                       )}
                     </p>
@@ -293,28 +260,13 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
                   <Box className='lendModalRow'>
                     <p>{t('totalDebtBalance')}:</p>
                     <p>
-                      {!confirm ? (
-                        (
-                          Number(asset.borrowBalance.toString()) /
-                          10 ** Number(asset.underlyingDecimals.toString())
-                        ).toFixed(3) +
-                        ' ' +
+                      {`${borrowBalance.toLocaleString()} ${
                         asset.underlyingSymbol
-                      ) : (
+                      }`}
+                      {showArrow && (
                         <>
-                          {(
-                            Number(asset.borrowBalance.toString()) /
-                            10 ** Number(asset.underlyingDecimals.toString())
-                          ).toFixed(3) +
-                            ' ' +
-                            asset.underlyingSymbol}
                           <ArrowForward fontSize='small' />
-                          {(
-                            Number(asset.borrowBalance.toString()) /
-                              10 **
-                                Number(asset.underlyingDecimals.toString()) +
-                            Number(value)
-                          ).toFixed(3) +
+                          {(borrowBalance + Number(value)).toLocaleString() +
                             ' ' +
                             asset.underlyingSymbol}
                         </>
@@ -324,7 +276,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
                 </>
               )}
             </Box>
-            {!borrow && !isWithdraw && (
+            {!borrow && modalType === 'withdraw' && (
               <Box className='lendModalContentWrapper'>
                 <Box className='lendModalRow'>
                   <p>{t('enableAsCollateral')}</p>
@@ -349,7 +301,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
                   let txResponse;
                   try {
                     if (borrow) {
-                      if (isRepay) {
+                      if (modalType === 'repay') {
                         txResponse = await MarketUtils.repayBorrow(
                           asset,
                           Number(value),
@@ -363,7 +315,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
                         );
                       }
                     } else {
-                      if (isWithdraw) {
+                      if (modalType === 'withdraw') {
                         txResponse = await MarketUtils.withdraw(
                           asset,
                           Number(value),

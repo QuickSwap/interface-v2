@@ -29,7 +29,9 @@
   }
   & input {
     font-size: 24px;
-    color: $textPrimary;
+    font-weight: 500;
+    margin-bottom: 6px;
+    padding: 0;
   }
   @include media("screen", "<tablet") {
     padding: 12px 16px;
@@ -67,6 +69,13 @@
   border-bottom: 1px solid $grey32;
   &:last-child {
     border-bottom: none;
+  }
+  & p {
+    display: flex;
+    align-items: center;
+    & svg {
+      margin: 0 4px;
+    }
   }
   @include media("screen", "<tablet") {
     padding: 6px 0;
