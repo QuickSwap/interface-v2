@@ -1,18 +1,18 @@
 import { nanoid } from '@reduxjs/toolkit';
 import { ChainId } from '@uniswap/sdk';
-import { TokenList } from '@uniswap/token-lists';
 import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { getNetworkLibrary, NETWORK_CHAIN_ID } from '../connectors';
 import { AppDispatch } from 'state';
-import { fetchTokenList } from 'state/lists/actions';
-import getTokenList from 'utils/getTokenList';
 import resolveENSContentHash from 'utils/resolveENSContentHash';
 import { useActiveWeb3React } from 'hooks';
+import { fetchDualFarmList } from 'state/dualfarms/actions';
+import getDualFarmList from 'utils/getDualFarmList';
+import { DualFarmListInfo } from 'types';
 
-export function useFetchListCallback(): (
+export function useFetchDualFarmListCallback(): (
   listUrl: string,
-) => Promise<TokenList> {
+) => Promise<DualFarmListInfo> {
   const { library } = useActiveWeb3React();
   const dispatch = useDispatch<AppDispatch>();
 
@@ -30,18 +30,22 @@ export function useFetchListCallback(): (
   return useCallback(
     async (listUrl: string) => {
       const requestId = nanoid();
-      dispatch(fetchTokenList.pending({ requestId, url: listUrl }));
-      return getTokenList(listUrl, ensResolver)
-        .then((tokenList) => {
+      dispatch(fetchDualFarmList.pending({ requestId, url: listUrl }));
+      return getDualFarmList(listUrl, ensResolver)
+        .then((dualFarmList) => {
           dispatch(
-            fetchTokenList.fulfilled({ url: listUrl, tokenList, requestId }),
+            fetchDualFarmList.fulfilled({
+              url: listUrl,
+              dualFarmList,
+              requestId,
+            }),
           );
-          return tokenList;
+          return dualFarmList;
         })
         .catch((error) => {
           console.debug(`Failed to get list at url ${listUrl}`, error);
           dispatch(
-            fetchTokenList.rejected({
+            fetchDualFarmList.rejected({
               url: listUrl,
               requestId,
               errorMessage: error.message,

@@ -17,8 +17,6 @@ import {
   useSingleContractMultipleData,
   useMultipleContractSingleData,
 } from 'state/multicall/hooks';
-import { useUserUnclaimedAmount } from 'state/claim/hooks';
-import { useTotalUniEarned } from 'state/stake/hooks';
 
 /**
  * Returns a map of the given addresses to their eventually consistent ETH balances.
@@ -181,31 +179,4 @@ export function useAllTokenBalances(): {
   ]);
   const balances = useTokenBalances(account ?? undefined, allTokensArray);
   return balances ?? {};
-}
-
-// get the total owned, unclaimed, and unharvested UNI for account
-export function useAggregateUniBalance(): TokenAmount | undefined {
-  const { account, chainId } = useActiveWeb3React();
-
-  const uni = chainId ? GlobalValue.tokens.UNI[chainId] : undefined;
-
-  const uniBalance: TokenAmount | undefined = useTokenBalance(
-    account ?? undefined,
-    uni,
-  );
-  const uniUnclaimed: TokenAmount | undefined = useUserUnclaimedAmount(account);
-  const uniUnHarvested: TokenAmount | undefined = useTotalUniEarned();
-
-  if (!uni) return undefined;
-
-  return new TokenAmount(
-    uni,
-    JSBI.add(
-      JSBI.add(
-        uniBalance?.raw ?? JSBI.BigInt(0),
-        uniUnclaimed?.raw ?? JSBI.BigInt(0),
-      ),
-      uniUnHarvested?.raw ?? JSBI.BigInt(0),
-    ),
-  );
 }

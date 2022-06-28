@@ -1,18 +1,18 @@
 import { nanoid } from '@reduxjs/toolkit';
 import { ChainId } from '@uniswap/sdk';
-import { TokenList } from '@uniswap/token-lists';
 import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { getNetworkLibrary, NETWORK_CHAIN_ID } from '../connectors';
 import { AppDispatch } from 'state';
-import { fetchTokenList } from 'state/lists/actions';
-import getTokenList from 'utils/getTokenList';
 import resolveENSContentHash from 'utils/resolveENSContentHash';
 import { useActiveWeb3React } from 'hooks';
+import { fetchFarmList } from 'state/farms/actions';
+import getFarmList from 'utils/getFarmList';
+import { FarmListInfo } from 'types';
 
-export function useFetchListCallback(): (
+export function useFetchFarmListCallback(): (
   listUrl: string,
-) => Promise<TokenList> {
+) => Promise<FarmListInfo> {
   const { library } = useActiveWeb3React();
   const dispatch = useDispatch<AppDispatch>();
 
@@ -30,18 +30,18 @@ export function useFetchListCallback(): (
   return useCallback(
     async (listUrl: string) => {
       const requestId = nanoid();
-      dispatch(fetchTokenList.pending({ requestId, url: listUrl }));
-      return getTokenList(listUrl, ensResolver)
-        .then((tokenList) => {
+      dispatch(fetchFarmList.pending({ requestId, url: listUrl }));
+      return getFarmList(listUrl, ensResolver)
+        .then((farmList) => {
           dispatch(
-            fetchTokenList.fulfilled({ url: listUrl, tokenList, requestId }),
+            fetchFarmList.fulfilled({ url: listUrl, farmList, requestId }),
           );
-          return tokenList;
+          return farmList;
         })
         .catch((error) => {
           console.debug(`Failed to get list at url ${listUrl}`, error);
           dispatch(
-            fetchTokenList.rejected({
+            fetchFarmList.rejected({
               url: listUrl,
               requestId,
               errorMessage: error.message,

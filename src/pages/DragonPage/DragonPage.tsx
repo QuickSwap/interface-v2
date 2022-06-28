@@ -9,15 +9,14 @@ import DragonsLair from './DragonsLair';
 import DragonsSyrup from './DragonsSyrup';
 import 'pages/styles/dragon.scss';
 import { useTranslation } from 'react-i18next';
-import { useLairInfo } from 'state/stake/hooks';
+import { useOldLairInfo } from 'state/stake/hooks';
 
 const DragonPage: React.FC = () => {
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const { t } = useTranslation();
-  const lairInfo = useLairInfo();
-  const showOld =
-    Number(lairInfo?.dQUICKBalance?.toFixed(0)) === 0 ? false : true;
+  //showing old dragons lair until we're ready to deploy
+  const showOld = true;
 
   return (
     <Box width='100%' mb={3}>

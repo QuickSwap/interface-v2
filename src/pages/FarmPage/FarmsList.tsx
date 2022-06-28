@@ -27,6 +27,8 @@ import {
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 import { useInfiniteLoading } from 'utils/useInfiniteLoading';
 import { useTranslation } from 'react-i18next';
+import { useActiveWeb3React } from 'hooks';
+import { ChainId } from '@uniswap/sdk';
 
 const LOADFARM_COUNT = 10;
 const POOL_COLUMN = 1;
@@ -44,7 +46,7 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
   const { t } = useTranslation();
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
-
+  const { chainId } = useActiveWeb3React();
   const [pageIndex, setPageIndex] = useState(0);
   const [pageloading, setPageLoading] = useState(false); //this is used for not loading farms immediately when user is on farms page
   const [isEndedFarm, setIsEndedFarm] = useState(false);
@@ -57,7 +59,10 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
     setFarmSearch,
   );
 
+  const chainIdOrDefault = chainId ?? ChainId.MATIC;
+
   const addedLPStakingInfos = useStakingInfo(
+    chainIdOrDefault,
     null,
     pageloading ||
       farmIndex === GlobalConst.farmIndex.DUALFARM_INDEX ||
@@ -72,6 +77,7 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
     { search: farmSearch, isStaked: stakedOnly },
   );
   const addedLPStakingOldInfos = useOldStakingInfo(
+    chainIdOrDefault,
     null,
     pageloading ||
       farmIndex === GlobalConst.farmIndex.DUALFARM_INDEX ||
@@ -86,6 +92,7 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
     { search: farmSearch, isStaked: stakedOnly },
   );
   const addedDualStakingInfos = useDualStakingInfo(
+    chainIdOrDefault,
     null,
     pageloading || farmIndex === GlobalConst.farmIndex.LPFARM_INDEX
       ? 0

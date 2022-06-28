@@ -190,15 +190,6 @@ export function useGovernanceContract(): Contract | null {
   );
 }
 
-export function useUniContract(): Contract | null {
-  const { chainId } = useActiveWeb3React();
-  return useContract(
-    chainId ? GlobalValue.tokens.UNI[chainId].address : undefined,
-    UNI_ABI,
-    true,
-  );
-}
-
 export function useStakingContract(
   stakingAddress?: string,
   withSignerIfPossible?: boolean,
