@@ -143,7 +143,7 @@ const SwapTokenDetails: React.FC<{
       </Box>
       <Box className='flex justify-between items-center' py={1} px={2}>
         <a
-          href={`https://polygonscan.com/token/${tokenAddress}`}
+          href={`${process.env.REACT_APP_SCAN_BASE_URL}/token/${tokenAddress}`}
           target='_blank'
           rel='noopener noreferrer'
           className='no-decoration'

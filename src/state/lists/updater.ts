@@ -23,7 +23,6 @@ export default function Updater(): null {
   const isWindowVisible = useIsWindowVisible();
 
   const fetchList = useFetchListCallback();
-
   const fetchAllListsCallback = useCallback(() => {
     if (!isWindowVisible) return;
     Object.keys(lists).forEach((url) =>

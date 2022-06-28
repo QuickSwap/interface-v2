@@ -1,18 +1,18 @@
 import { nanoid } from '@reduxjs/toolkit';
 import { ChainId } from '@uniswap/sdk';
-import { TokenList } from '@uniswap/token-lists';
 import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { getNetworkLibrary, NETWORK_CHAIN_ID } from '../connectors';
 import { AppDispatch } from 'state';
-import { fetchTokenList } from 'state/lists/actions';
-import getTokenList from 'utils/getTokenList';
 import resolveENSContentHash from 'utils/resolveENSContentHash';
 import { useActiveWeb3React } from 'hooks';
+import { fetchSyrupList } from 'state/syrups/actions';
+import getSyrupList from 'utils/getSyrupList';
+import { SyrupListInfo } from 'types';
 
-export function useFetchListCallback(): (
+export function useFetchSyrupListCallback(): (
   listUrl: string,
-) => Promise<TokenList> {
+) => Promise<SyrupListInfo> {
   const { library } = useActiveWeb3React();
   const dispatch = useDispatch<AppDispatch>();
 
@@ -30,18 +30,18 @@ export function useFetchListCallback(): (
   return useCallback(
     async (listUrl: string) => {
       const requestId = nanoid();
-      dispatch(fetchTokenList.pending({ requestId, url: listUrl }));
-      return getTokenList(listUrl, ensResolver)
-        .then((tokenList) => {
+      dispatch(fetchSyrupList.pending({ requestId, url: listUrl }));
+      return getSyrupList(listUrl, ensResolver)
+        .then((syrupList) => {
           dispatch(
-            fetchTokenList.fulfilled({ url: listUrl, tokenList, requestId }),
+            fetchSyrupList.fulfilled({ url: listUrl, syrupList, requestId }),
           );
-          return tokenList;
+          return syrupList;
         })
         .catch((error) => {
           console.debug(`Failed to get list at url ${listUrl}`, error);
           dispatch(
-            fetchTokenList.rejected({
+            fetchSyrupList.rejected({
               url: listUrl,
               requestId,
               errorMessage: error.message,

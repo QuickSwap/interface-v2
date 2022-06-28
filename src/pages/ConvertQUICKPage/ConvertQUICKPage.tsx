@@ -11,11 +11,11 @@ import {
   TransactionConfirmationModal,
   ConfirmationModalContent,
 } from 'components';
-import { formatTokenAmount, returnTokenFromKey } from 'utils';
+import { formatTokenAmount } from 'utils';
 import { useTokenBalance } from 'state/wallet/hooks';
 import { useActiveWeb3React } from 'hooks';
 import { useApproveCallback, ApprovalState } from 'hooks/useApproveCallback';
-import { GlobalConst } from 'constants/index';
+import { GlobalConst, GlobalValue } from 'constants/index';
 import { useQUICKConversionContract } from 'hooks/useContract';
 import {
   useTransactionAdder,
@@ -36,7 +36,7 @@ const ConvertQUICKPage: React.FC = () => {
   const [txHash, setTxHash] = useState('');
   const [txError, setTxError] = useState('');
 
-  const quickToken = returnTokenFromKey('QUICK');
+  const quickToken = GlobalValue.tokens.COMMON.OLD_QUICK;
   const quickBalance = useTokenBalance(account ?? undefined, quickToken);
   const quickConvertContract = useQUICKConversionContract();
   const parsedAmount = tryParseAmount(quickAmount, quickToken);
