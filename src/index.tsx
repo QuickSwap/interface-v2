@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import ReactGA from 'react-ga';
+import './assets/styles/index.scss';
 import { isMobile } from 'react-device-detect';
 import './index.scss';
 import App from './App';

@@ -55,6 +55,7 @@ import 'slick-carousel/slick/slick-theme.css';
 import './i18n';
 import { mainTheme } from './theme';
 import Background from 'layouts/Background';
+import GasUpdater from 'state/application/gasUpdater';
 
 const Web3ProviderNetwork = createWeb3ReactRoot(
   GlobalConst.utils.NetworkContextName,
@@ -89,6 +90,7 @@ function Updaters() {
       <DualFarmUpdater />
       <SyrupUpdater />
       <AnalyticsUpdater />
+      <GasUpdater />
     </>
   );
 }

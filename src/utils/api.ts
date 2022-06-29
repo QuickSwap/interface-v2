@@ -1,5 +1,6 @@
 export async function fetchEternalFarmAPR() {
-  const apiURL = 'https://api.algebra.finance/api/APR/eternalFarmings/';
+  const apiURL =
+    process.env.REACT_APP_V3_FARMS_API_BASE_URL + '/api/APR/eternalFarmings/';
 
   try {
     return await fetch(apiURL).then((v) => v.json());
@@ -9,7 +10,8 @@ export async function fetchEternalFarmAPR() {
 }
 
 export async function fetchLimitFarmAPR() {
-  const apiURL = 'https://api.algebra.finance/api/APR/limitFarmings/';
+  const apiURL =
+    process.env.REACT_APP_V3_FARMS_API_BASE_URL + '/api/APR/limitFarmings/';
 
   try {
     return await fetch(apiURL).then((v) => v.json());
@@ -19,7 +21,8 @@ export async function fetchLimitFarmAPR() {
 }
 
 export async function fetchLimitFarmTVL() {
-  const apiURL = 'https://api.algebra.finance/api/TVL/limitFarmings/';
+  const apiURL =
+    process.env.REACT_APP_V3_FARMS_API_BASE_URL + '/api/TVL/limitFarmings/';
 
   try {
     return await fetch(apiURL).then((v) => v.json());
