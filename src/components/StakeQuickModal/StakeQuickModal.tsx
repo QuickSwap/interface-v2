@@ -8,7 +8,7 @@ import { useCurrencyBalance, useTokenBalance } from 'state/wallet/hooks';
 import { useActiveWeb3React } from 'hooks';
 import { GlobalConst, GlobalValue } from 'constants/index';
 import { useApproveCallback, ApprovalState } from 'hooks/useApproveCallback';
-import { useNewLairContract } from 'hooks/useContract';
+import { useLairContract } from 'hooks/useContract';
 import {
   useTransactionAdder,
   useTransactionFinalizer,
@@ -28,7 +28,7 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
   const { account } = useActiveWeb3React();
   const addTransaction = useTransactionAdder();
   const finalizedTransaction = useTransactionFinalizer();
-  const quickToken = GlobalValue.tokens.COMMON.NEW_QUICK;
+  const quickToken = GlobalValue.tokens.COMMON.OLD_QUICK;
   const quickBalance = useCurrencyBalance(account ?? undefined, quickToken);
   const userLiquidityUnstaked = useTokenBalance(
     account ?? undefined,
@@ -44,10 +44,10 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
     userLiquidityUnstaked,
   );
 
-  const lairContract = useNewLairContract();
+  const lairContract = useLairContract();
   const [approval, approveCallback] = useApproveCallback(
     parsedAmount,
-    GlobalConst.addresses.NEW_LAIR_ADDRESS,
+    GlobalConst.addresses.LAIR_ADDRESS,
   );
 
   const onAttemptToApprove = async () => {
