@@ -106,7 +106,7 @@ export const GlobalConst = {
   },
   walletName: {
     METAMASK: 'Metamask',
-    CYPHERD: 'Cypher D',
+    CYPHERD: 'CypherD',
     BLOCKWALLET: 'BlockWallet',
     BITKEEP: 'BitKeep',
     INJECTED: 'Injected',
