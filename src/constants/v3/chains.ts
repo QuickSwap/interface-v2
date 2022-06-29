@@ -1,10 +1,5 @@
-export enum SupportedChainId {
-  POLYGON = 137,
-}
+import { ChainId } from "@uniswap/sdk";
 
-export const ALL_SUPPORTED_CHAIN_IDS: SupportedChainId[] = [
-  SupportedChainId.POLYGON,
-];
 
 export const L1_CHAIN_IDS = [] as const;
 
@@ -32,7 +27,7 @@ type ChainInfo = { readonly [chainId: number]: L1ChainInfo | L2ChainInfo } & {
   { readonly [chainId in SupportedL1ChainId]: L1ChainInfo };
 
 export const CHAIN_INFO: ChainInfo = {
-  [SupportedChainId.POLYGON]: {
+  [ChainId.MATIC]: {
     docs: 'https://algebra.finance/',
     explorer: 'https://polygonscan.com/',
     infoLink: 'https://algebra.finance',

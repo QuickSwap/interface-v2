@@ -17,6 +17,7 @@ import {
   updateTokenDetails,
   updateIsProMode,
   updateMaticPrice,
+  updateGasPrice,
 } from './actions';
 
 type PopupList = Array<{
@@ -57,6 +58,7 @@ export interface ApplicationState {
   readonly tokenChartData: any;
   readonly tokenDetails: TokenDetail[];
   readonly isProMode: boolean;
+  readonly gasPrice: { fetched: number | null; override: boolean };
 }
 
 const initialState: ApplicationState = {
@@ -72,6 +74,7 @@ const initialState: ApplicationState = {
   tokenChartData: null,
   tokenDetails: [],
   isProMode: false,
+  gasPrice: { fetched: 70, override: true },
 };
 
 export default createReducer(initialState, (builder) =>
@@ -86,6 +89,9 @@ export default createReducer(initialState, (builder) =>
           state.blockNumber[chainId],
         );
       }
+    })
+    .addCase(updateGasPrice, (state, action) => {
+      state.gasPrice = action.payload;
     })
     .addCase(setOpenModal, (state, action) => {
       state.openModal = action.payload;
