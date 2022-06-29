@@ -14,6 +14,7 @@ import usePrevious from 'hooks/usePrevious';
 import { ApplicationModal } from 'state/application/actions';
 import { useModalOpen, useWalletModalToggle } from 'state/application/hooks';
 import { AccountDetails, CustomModal } from 'components';
+import { useTranslation } from 'react-i18next';
 
 import Option from './Option';
 import PendingView from './PendingView';
@@ -37,6 +38,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
   confirmedTransactions,
   ENSName,
 }) => {
+  const { t } = useTranslation();
   // important that these are destructed from the account-specific web3-react context
   const {
     active,
@@ -211,7 +213,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
                 id={`connect-${key}`}
                 key={key}
                 color={'#E8831D'}
-                header={'Install Metamask'}
+                header={t('installMetamask')}
                 subheader={null}
                 link={'https://metamask.io/'}
                 icon={MetamaskIcon}
@@ -297,15 +299,15 @@ const WalletModal: React.FC<WalletModalProps> = ({
           <Box mt={2} textAlign='center'>
             <h6>
               {error instanceof UnsupportedChainIdError
-                ? 'Wrong Network'
-                : 'Error connecting'}
+                ? t('wrongNetwork')
+                : t('errorConnect')}
             </h6>
           </Box>
           <Box mt={3} mb={2} textAlign='center'>
             <small>
               {error instanceof UnsupportedChainIdError
-                ? 'Please connect to the appropriate Polygon network.'
-                : 'Error connecting. Try refreshing the page.'}
+                ? t('connectPolygonNetwork')
+                : t('errorConnectRefresh')}
             </small>
           </Box>
         </Box>
@@ -325,7 +327,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
     return (
       <Box paddingX={3} paddingY={4}>
         <Box className='flex justify-between'>
-          <h5>Connect wallet</h5>
+          <h5>{t('connectWallet')}</h5>
           <Close className='cursor-pointer' onClick={toggleWalletModal} />
         </Box>
         <Box mt={4}>
@@ -341,13 +343,13 @@ const WalletModal: React.FC<WalletModalProps> = ({
           )}
           {walletView !== WALLET_VIEWS.PENDING && (
             <Box className='blurb'>
-              <small>New to Matic?</small>
+              <small>{t('newToMatic')}</small>
               <a
                 href='https://docs.matic.network/docs/develop/wallets/getting-started'
                 target='_blank'
                 rel='noopener noreferrer'
               >
-                <small>Learn about Wallets ↗</small>
+                <small>{t('learnWallet')} ↗</small>
               </a>
             </Box>
           )}

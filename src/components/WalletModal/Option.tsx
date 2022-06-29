@@ -1,5 +1,6 @@
 import React from 'react';
 import { Box } from '@material-ui/core';
+import { useTranslation } from 'react-i18next';
 
 interface OptionProps {
   link?: string | null;
@@ -23,6 +24,7 @@ const Option: React.FC<OptionProps> = ({
   active = false,
   id,
 }) => {
+  const { t } = useTranslation();
   const content = (
     <Box className='optionCardClickable' id={id} onClick={onClick}>
       <Box className='flex items-center' my={0.5}>
@@ -31,14 +33,8 @@ const Option: React.FC<OptionProps> = ({
       </Box>
       {active && (
         <Box className='flex items-center'>
-          <Box
-            width={10}
-            height={10}
-            borderRadius={10}
-            mr={1}
-            bgcolor='#11eea7'
-          />
-          <small>Connected</small>
+          <Box className='optionConnectedDot' />
+          <small>{t('connected')}</small>
         </Box>
       )}
       {subheader && (
