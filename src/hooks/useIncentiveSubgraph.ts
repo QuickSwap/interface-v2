@@ -9,7 +9,7 @@ import {
   FARMING_CENTER,
   FINITE_FARMING,
   NONFUNGIBLE_POSITION_MANAGER_ADDRESSES,
-} from '../constants/v3/addresses';
+} from '../constants/addresses';
 import { BigNumber } from '@ethersproject/bignumber';
 import {
   CURRENT_EVENTS,
@@ -121,16 +121,6 @@ export function useFarmingSubgraph() {
   const provider = library
     ? new providers.Web3Provider(library.provider)
     : undefined;
-
-  async function fetchEternalFarmAPR() {
-    const apiURL = 'https://api.algebra.finance/api/APR/eternalFarmings/';
-
-    try {
-      return await fetch(apiURL).then((v) => v.json());
-    } catch (error) {
-      return {};
-    }
-  }
 
   async function getEvents(events: any[], farming = false) {
     const _events: any[] = [];
@@ -253,7 +243,7 @@ export function useFarmingSubgraph() {
 
       return eternalFarmings[0];
     } catch (err) {
-      // throw new Error('Fetch infinite farming ' + err.message);
+      throw new Error('Fetch infinite farming ' + err.message);
     }
   }
 
@@ -455,355 +445,356 @@ export function useFarmingSubgraph() {
       setHasTransferredPositions(Boolean(positionsTransferred.length));
       setHasTransferredPositionsLoading(false);
     } catch (err) {
-      // throw new Error(
-      //   'Has transferred positions ' + err.code + ' ' + err.message,
-      // );
+      throw new Error(
+        'Has transferred positions ' + err.code + ' ' + err.message,
+      );
     } finally {
       setHasTransferredPositionsLoading(false);
     }
   }
 
-  // async function fetchTransferredPositions(reload?: boolean) {
-  //   if (!chainId || !account) return;
+  async function fetchTransferredPositions(reload?: boolean) {
+    if (!chainId || !account) return;
 
-  //   if (!provider) throw new Error('No provider');
+    if (!provider) throw new Error('No provider');
 
-  //   try {
-  //     setTransferredPositionsLoading(true);
+    try {
+      setTransferredPositionsLoading(true);
 
-  //     const {
-  //       data: { deposits: positionsTransferred },
-  //       errors,
-  //     } = await farmingClient.query<SubgraphResponse<Deposit[]>>({
-  //       query: TRANSFERED_POSITIONS(true),
-  //       fetchPolicy: reload ? 'network-only' : 'cache-first',
-  //       variables: { account },
-  //     });
+      const {
+        data: { deposits: positionsTransferred },
+        errors,
+      } = await farmingClient.query<SubgraphResponse<Deposit[]>>({
+        query: TRANSFERED_POSITIONS(true),
+        fetchPolicy: reload ? 'network-only' : 'cache-first',
+        variables: { account },
+      });
 
-  //     if (errors) {
-  //       const error = errors[0];
-  //       throw new Error(`${error.name} ${error.message}`);
-  //     }
+      if (errors) {
+        const error = errors[0];
+        throw new Error(`${error.name} ${error.message}`);
+      }
 
-  //     if (positionsTransferred.length === 0) {
-  //       setTransferredPositions([]);
-  //       setTransferredPositionsLoading(false);
-  //       return;
-  //     }
+      if (positionsTransferred.length === 0) {
+        setTransferredPositions([]);
+        setTransferredPositionsLoading(false);
+        return;
+      }
 
-  //     const _positions: any[] = [];
+      const _positions: any[] = [];
 
-  //     for (const position of positionsTransferred) {
-  //       const nftContract = new Contract(
-  //         NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId],
-  //         NON_FUN_POS_MAN,
-  //         provider.getSigner(),
-  //       );
+      for (const position of positionsTransferred) {
+        const nftContract = new Contract(
+          NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId],
+          NON_FUN_POS_MAN,
+          provider.getSigner(),
+        );
 
-  //       const {
-  //         tickLower,
-  //         tickUpper,
-  //         liquidity,
-  //         token0,
-  //         token1,
-  //       } = await nftContract.positions(+position.id);
+        const {
+          tickLower,
+          tickUpper,
+          liquidity,
+          token0,
+          token1,
+        } = await nftContract.positions(+position.id);
 
-  //       let _position = {
-  //         ...position,
-  //         tickLower,
-  //         tickUpper,
-  //         liquidity,
-  //         token0,
-  //         token1,
-  //       };
+        let _position = {
+          ...position,
+          tickLower,
+          tickUpper,
+          liquidity,
+          token0,
+          token1,
+        };
 
-  //       if (
-  //         !position.limitFarming &&
-  //         !position.eternalFarming &&
-  //         typeof position.pool === 'string'
-  //       ) {
-  //         const _pool = await fetchPool(position.pool);
-  //         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  //         //@ts-ignore
-  //         _position = { ..._position, pool: _pool };
-  //       }
+        if (
+          !position.limitFarming &&
+          !position.eternalFarming &&
+          typeof position.pool === 'string'
+        ) {
+          const _pool = await fetchPool(position.pool);
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          //@ts-ignore
+          _position = { ..._position, pool: _pool };
+        }
 
-  //       if (position.limitFarming) {
-  //         const finiteFarmingContract = new Contract(
-  //           FINITE_FARMING[chainId],
-  //           FINITE_FARMING_ABI,
-  //           provider.getSigner(),
-  //         );
+        if (position.limitFarming) {
+          const finiteFarmingContract = new Contract(
+            FINITE_FARMING[chainId],
+            FINITE_FARMING_ABI,
+            provider.getSigner(),
+          );
 
-  //         const {
-  //           rewardToken,
-  //           bonusRewardToken,
-  //           pool,
-  //           startTime,
-  //           endTime,
-  //           createdAtTimestamp,
-  //           multiplierToken,
-  //           tokenAmountForTier1,
-  //           tokenAmountForTier2,
-  //           tokenAmountForTier3,
-  //           tier1Multiplier,
-  //           tier2Multiplier,
-  //           tier3Multiplier,
-  //         } = await fetchLimit(position.limitFarming);
+          const {
+            rewardToken,
+            bonusRewardToken,
+            pool,
+            startTime,
+            endTime,
+            createdAtTimestamp,
+            multiplierToken,
+            tokenAmountForTier1,
+            tokenAmountForTier2,
+            tokenAmountForTier3,
+            tier1Multiplier,
+            tier2Multiplier,
+            tier3Multiplier,
+          } = await fetchLimit(position.limitFarming);
 
-  //         const rewardInfo = await finiteFarmingContract.callStatic.getRewardInfo(
-  //           [rewardToken, bonusRewardToken, pool, +startTime, +endTime],
-  //           +position.id,
-  //         );
+          const rewardInfo = await finiteFarmingContract.callStatic.getRewardInfo(
+            [rewardToken, bonusRewardToken, pool, +startTime, +endTime],
+            +position.id,
+          );
 
-  //         const _rewardToken = await fetchToken(rewardToken, true);
-  //         const _bonusRewardToken = await fetchToken(bonusRewardToken, true);
-  //         const _multiplierToken = await fetchToken(multiplierToken, true);
-  //         const _pool = await fetchPool(pool);
+          const _rewardToken = await fetchToken(rewardToken, true);
+          const _bonusRewardToken = await fetchToken(bonusRewardToken, true);
+          const _multiplierToken = await fetchToken(multiplierToken, true);
+          const _pool = await fetchPool(pool);
 
-  //         _position = {
-  //           ..._position,
-  //           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  //           //@ts-ignore
-  //           pool: _pool,
-  //           limitRewardToken: _rewardToken,
-  //           limitBonusRewardToken: _bonusRewardToken,
-  //           limitStartTime: +startTime,
-  //           limitEndTime: +endTime,
-  //           started: +startTime * 1000 < Date.now(),
-  //           ended: +endTime * 1000 < Date.now(),
-  //           createdAtTimestamp: +createdAtTimestamp,
-  //           limitEarned: rewardInfo[0]
-  //             ? formatUnits(
-  //                 BigNumber.from(rewardInfo[0]),
-  //                 _rewardToken.decimals,
-  //               )
-  //             : 0,
-  //           limitBonusEarned: rewardInfo[1]
-  //             ? formatUnits(
-  //                 BigNumber.from(rewardInfo[1]),
-  //                 _bonusRewardToken.decimals,
-  //               )
-  //             : 0,
-  //           multiplierToken: _multiplierToken,
-  //           tokenAmountForTier1,
-  //           tokenAmountForTier2,
-  //           tokenAmountForTier3,
-  //           tier1Multiplier,
-  //           tier2Multiplier,
-  //           tier3Multiplier,
-  //         };
-  //       } else {
-  //         const {
-  //           data: { limitFarmings },
-  //           errors,
-  //         } = await farmingClient.query({
-  //           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  //           //@ts-ignore
-  //           query: FETCH_FINITE_FARM_FROM_POOL([position.pool]),
-  //           fetchPolicy: 'network-only',
-  //         });
+          _position = {
+            ..._position,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            //@ts-ignore
+            pool: _pool,
+            limitRewardToken: _rewardToken,
+            limitBonusRewardToken: _bonusRewardToken,
+            limitStartTime: +startTime,
+            limitEndTime: +endTime,
+            started: +startTime * 1000 < Date.now(),
+            ended: +endTime * 1000 < Date.now(),
+            createdAtTimestamp: +createdAtTimestamp,
+            limitEarned: rewardInfo[0]
+              ? formatUnits(
+                  BigNumber.from(rewardInfo[0]),
+                  _rewardToken.decimals,
+                )
+              : 0,
+            limitBonusEarned: rewardInfo[1]
+              ? formatUnits(
+                  BigNumber.from(rewardInfo[1]),
+                  _bonusRewardToken.decimals,
+                )
+              : 0,
+            multiplierToken: _multiplierToken,
+            tokenAmountForTier1,
+            tokenAmountForTier2,
+            tokenAmountForTier3,
+            tier1Multiplier,
+            tier2Multiplier,
+            tier3Multiplier,
+          };
+        } else {
+          const {
+            data: { limitFarmings },
+            errors,
+          } = await farmingClient.query({
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            //@ts-ignore
+            query: FETCH_FINITE_FARM_FROM_POOL([position.pool]),
+            fetchPolicy: 'network-only',
+          });
 
-  //         if (errors) {
-  //           const error = errors[0];
-  //           throw new Error(`${error.name} ${error.message}`);
-  //         }
+          if (errors) {
+            const error = errors[0];
+            throw new Error(`${error.name} ${error.message}`);
+          }
 
-  //         if (
-  //           limitFarmings.filter(
-  //             (farm: any) => Math.round(Date.now() / 1000) < farm.startTime,
-  //           ).length !== 0
-  //         ) {
-  //           _position = {
-  //             ..._position,
-  //             limitAvailable: true,
-  //           };
-  //         }
-  //       }
+          if (
+            limitFarmings.filter(
+              (farm: any) => Math.round(Date.now() / 1000) < farm.startTime,
+            ).length !== 0
+          ) {
+            _position = {
+              ..._position,
+              limitAvailable: true,
+            };
+          }
+        }
 
-  //       if (position.eternalFarming) {
-  //         const {
-  //           rewardToken,
-  //           bonusRewardToken,
-  //           pool,
-  //           startTime,
-  //           endTime,
-  //           multiplierToken,
-  //           tier1Multiplier,
-  //           tier2Multiplier,
-  //           tier3Multiplier,
-  //           tokenAmountForTier1,
-  //           tokenAmountForTier2,
-  //           tokenAmountForTier3,
-  //         } = await fetchEternalFarming(position.eternalFarming);
+        if (position.eternalFarming) {
+          const {
+            rewardToken,
+            bonusRewardToken,
+            pool,
+            startTime,
+            endTime,
+            multiplierToken,
+            tier1Multiplier,
+            tier2Multiplier,
+            tier3Multiplier,
+            tokenAmountForTier1,
+            tokenAmountForTier2,
+            tokenAmountForTier3,
+          } = await fetchEternalFarming(position.eternalFarming);
 
-  //         const farmingCenterContract = new Contract(
-  //           FARMING_CENTER[chainId],
-  //           FARMING_CENTER_ABI,
-  //           provider.getSigner(),
-  //         );
+          const farmingCenterContract = new Contract(
+            FARMING_CENTER[chainId],
+            FARMING_CENTER_ABI,
+            provider.getSigner(),
+          );
 
-  //         const {
-  //           reward,
-  //           bonusReward,
-  //         } = await farmingCenterContract.callStatic.collectRewards(
-  //           [rewardToken, bonusRewardToken, pool, startTime, endTime],
-  //           +position.id,
-  //           { from: account },
-  //         );
+          const {
+            reward,
+            bonusReward,
+          } = await farmingCenterContract.callStatic.collectRewards(
+            [rewardToken, bonusRewardToken, pool, startTime, endTime],
+            +position.id,
+            { from: account },
+          );
 
-  //         const _rewardToken = await fetchToken(rewardToken, true);
-  //         const _bonusRewardToken = await fetchToken(bonusRewardToken, true);
-  //         const _pool = await fetchPool(pool);
-  //         const _multiplierToken = await fetchToken(multiplierToken);
+          const _rewardToken = await fetchToken(rewardToken, true);
+          const _bonusRewardToken = await fetchToken(bonusRewardToken, true);
+          const _pool = await fetchPool(pool);
+          const _multiplierToken = await fetchToken(multiplierToken);
 
-  //         _position = {
-  //           ..._position,
-  //           eternalRewardToken: _rewardToken,
-  //           eternalBonusRewardToken: _bonusRewardToken,
-  //           eternalStartTime: startTime,
-  //           eternalEndTime: endTime,
-  //           multiplierToken: _multiplierToken,
-  //           tier1Multiplier,
-  //           tier2Multiplier,
-  //           tier3Multiplier,
-  //           tokenAmountForTier1,
-  //           tokenAmountForTier2,
-  //           tokenAmountForTier3,
-  //           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  //           //@ts-ignore
-  //           pool: _pool,
-  //           eternalEarned: formatUnits(
-  //             BigNumber.from(reward),
-  //             _rewardToken.decimals,
-  //           ),
-  //           eternalBonusEarned: formatUnits(
-  //             BigNumber.from(bonusReward),
-  //             _bonusRewardToken.decimals,
-  //           ),
-  //         };
-  //       } else {
-  //         const {
-  //           data: { eternalFarmings },
-  //           errors,
-  //         } = await farmingClient.query({
-  //           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  //           //@ts-ignore
-  //           query: FETCH_ETERNAL_FARM_FROM_POOL([position.pool]),
-  //           fetchPolicy: 'network-only',
-  //         });
+          _position = {
+            ..._position,
+            eternalRewardToken: _rewardToken,
+            eternalBonusRewardToken: _bonusRewardToken,
+            eternalStartTime: startTime,
+            eternalEndTime: endTime,
+            multiplierToken: _multiplierToken,
+            tier1Multiplier,
+            tier2Multiplier,
+            tier3Multiplier,
+            tokenAmountForTier1,
+            tokenAmountForTier2,
+            tokenAmountForTier3,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            //@ts-ignore
+            pool: _pool,
+            eternalEarned: formatUnits(
+              BigNumber.from(reward),
+              _rewardToken.decimals,
+            ),
+            eternalBonusEarned: formatUnits(
+              BigNumber.from(bonusReward),
+              _bonusRewardToken.decimals,
+            ),
+          };
+        } else {
+          const {
+            data: { eternalFarmings },
+            errors,
+          } = await farmingClient.query({
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            //@ts-ignore
+            query: FETCH_ETERNAL_FARM_FROM_POOL([position.pool]),
+            fetchPolicy: 'network-only',
+          });
 
-  //         if (errors) {
-  //           const error = errors[0];
-  //           throw new Error(`${error.name} ${error.message}`);
-  //         }
+          if (errors) {
+            const error = errors[0];
+            throw new Error(`${error.name} ${error.message}`);
+          }
 
-  //         if (
-  //           eternalFarmings.filter(
-  //             (farm: any) => +farm.rewardRate || +farm.bonusRewardRate,
-  //           ).length !== 0
-  //         ) {
-  //           _position = {
-  //             ..._position,
-  //             eternalAvailable: true,
-  //           };
-  //         }
-  //       }
+          if (
+            eternalFarmings.filter(
+              (farm: any) => +farm.rewardRate || +farm.bonusRewardRate,
+            ).length !== 0
+          ) {
+            _position = {
+              ..._position,
+              eternalAvailable: true,
+            };
+          }
+        }
 
-  //       _positions.push(_position);
-  //     }
-  //     setTransferredPositions(_positions);
-  //   } catch (err) {
-  //     throw new Error();
-  //     // 'Transferred positions ' + 'code: ' + err.code + ', ' + err.message,
-  //   } finally {
-  //     setTransferredPositionsLoading(false);
-  //   }
-  // }
+        _positions.push(_position);
+      }
+      setTransferredPositions(_positions);
+    } catch (err) {
+      throw new Error(
+        'Transferred positions ' + 'code: ' + err.code + ', ' + err.message,
+      );
+    } finally {
+      setTransferredPositionsLoading(false);
+    }
+  }
 
-  // async function fetchPositionsOnEternalFarming(reload?: boolean) {
-  //   if (!chainId || !account) return;
+  async function fetchPositionsOnEternalFarming(reload?: boolean) {
+    if (!chainId || !account) return;
 
-  //   if (!provider) throw new Error('No provider');
+    if (!provider) throw new Error('No provider');
 
-  //   setPositionsEternalLoading(true);
+    setPositionsEternalLoading(true);
 
-  //   try {
-  //     const {
-  //       data: { deposits: eternalPositions },
-  //       errors,
-  //     } = await farmingClient.query<SubgraphResponse<Position[]>>({
-  //       query: POSITIONS_ON_ETERNAL_FARMING(),
-  //       fetchPolicy: reload ? 'network-only' : 'cache-first',
-  //       variables: { account },
-  //     });
+    try {
+      const {
+        data: { deposits: eternalPositions },
+        errors,
+      } = await farmingClient.query<SubgraphResponse<Position[]>>({
+        query: POSITIONS_ON_ETERNAL_FARMING(),
+        fetchPolicy: reload ? 'network-only' : 'cache-first',
+        variables: { account },
+      });
 
-  //     if (errors) {
-  //       const error = errors[0];
-  //       throw new Error(`${error.name} ${error.message}`);
-  //     }
+      if (errors) {
+        const error = errors[0];
+        throw new Error(`${error.name} ${error.message}`);
+      }
 
-  //     if (eternalPositions.length === 0) {
-  //       setPositionsEternal([]);
-  //       setPositionsEternalLoading(false);
-  //       return;
-  //     }
+      if (eternalPositions.length === 0) {
+        setPositionsEternal([]);
+        setPositionsEternalLoading(false);
+        return;
+      }
 
-  //     const _positions: TickFarming[] = [];
+      const _positions: TickFarming[] = [];
 
-  //     for (const position of eternalPositions) {
-  //       const nftContract = new Contract(
-  //         NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId],
-  //         NON_FUN_POS_MAN,
-  //         provider.getSigner(),
-  //       );
+      for (const position of eternalPositions) {
+        const nftContract = new Contract(
+          NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId],
+          NON_FUN_POS_MAN,
+          provider.getSigner(),
+        );
 
-  //       const {
-  //         tickLower,
-  //         tickUpper,
-  //         liquidity,
-  //         token0,
-  //         token1,
-  //       } = await nftContract.positions(+position.id);
+        const {
+          tickLower,
+          tickUpper,
+          liquidity,
+          token0,
+          token1,
+        } = await nftContract.positions(+position.id);
 
-  //       let _position: TickFarming = {
-  //         tickLower,
-  //         tickUpper,
-  //         liquidity,
-  //         token0,
-  //         token1,
-  //       };
+        let _position: TickFarming = {
+          tickLower,
+          tickUpper,
+          liquidity,
+          token0,
+          token1,
+        };
 
-  //       const {
-  //         rewardToken,
-  //         bonusRewardToken,
-  //         pool,
-  //         startTime,
-  //         endTime,
-  //       } = await fetchEternalFarming(String(position.eternalFarming));
+        const {
+          rewardToken,
+          bonusRewardToken,
+          pool,
+          startTime,
+          endTime,
+        } = await fetchEternalFarming(String(position.eternalFarming));
 
-  //       const _pool = await fetchPool(pool);
-  //       const _rewardToken = await fetchToken(rewardToken);
-  //       const _bonusRewardToken = await fetchToken(bonusRewardToken);
+        const _pool = await fetchPool(pool);
+        const _rewardToken = await fetchToken(rewardToken);
+        const _bonusRewardToken = await fetchToken(bonusRewardToken);
 
-  //       _position = {
-  //         ..._position,
-  //         ...position,
-  //         pool: _pool,
-  //         rewardToken: _rewardToken,
-  //         bonusRewardToken: _bonusRewardToken,
-  //         startTime,
-  //         endTime,
-  //       };
+        _position = {
+          ..._position,
+          ...position,
+          pool: _pool,
+          rewardToken: _rewardToken,
+          bonusRewardToken: _bonusRewardToken,
+          startTime,
+          endTime,
+        };
 
-  //       _positions.push(_position);
-  //     }
+        _positions.push(_position);
+      }
 
-  //     setPositionsEternal(_positions);
-  //   } catch (error) {
-  //     // throw new Error('Infinite farms loading' + error.code + error.message);
-  //   }
-  // }
+      setPositionsEternal(_positions);
+    } catch (error) {
+      throw new Error('Infinite farms loading' + error.code + error.message);
+    }
+  }
 
   async function fetchPositionsForPool(pool: PoolChartSubgraph) {
     if (!chainId || !account) return;
@@ -986,7 +977,7 @@ export function useFarmingSubgraph() {
     fetchTransferredPositions: {
       transferredPositions,
       transferredPositionsLoading,
-      // fetchTransferredPositionsFn: fetchTransferredPositions,
+      fetchTransferredPositionsFn: fetchTransferredPositions,
     },
     fetchHasTransferredPositions: {
       hasTransferredPositions,
@@ -1003,10 +994,10 @@ export function useFarmingSubgraph() {
       eternalFarmsLoading,
       fetchEternalFarmsFn: fetchEternalFarms,
     },
-    // fetchPositionsOnEternalFarmings: {
-    //   positionsEternal,
-    //   positionsEternalLoading,
-    //   fetchPositionsOnEternalFarmingFn: fetchPositionsOnEternalFarming,
-    // },
+    fetchPositionsOnEternalFarmings: {
+      positionsEternal,
+      positionsEternalLoading,
+      fetchPositionsOnEternalFarmingFn: fetchPositionsOnEternalFarming,
+    },
   };
 }
