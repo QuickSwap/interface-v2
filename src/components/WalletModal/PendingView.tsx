@@ -4,6 +4,7 @@ import { Box, CircularProgress } from '@material-ui/core';
 import { GlobalConst, SUPPORTED_WALLETS } from 'constants/index';
 import { injected } from 'connectors';
 import Option from './Option';
+import { useTranslation } from 'react-i18next';
 
 interface PendingViewProps {
   connector?: AbstractConnector;
@@ -18,6 +19,7 @@ const PendingView: React.FC<PendingViewProps> = ({
   setPendingError,
   tryActivation,
 }) => {
+  const { t } = useTranslation();
   const { ethereum } = window as any;
   const isMetamask = ethereum?.isMetaMask;
   const isBlockWallet = ethereum?.isBlockWallet;
@@ -29,7 +31,7 @@ const PendingView: React.FC<PendingViewProps> = ({
       <Box className='flex items-center justify-center' mb={4}>
         {error ? (
           <Box className='errorGroup'>
-            <p>Error connecting.</p>
+            <p>{t('errorConnect')}</p>
             <Box
               className='errorButton'
               onClick={() => {
@@ -37,13 +39,13 @@ const PendingView: React.FC<PendingViewProps> = ({
                 connector && tryActivation(connector);
               }}
             >
-              Try Again
+              {t('tryagain')}
             </Box>
           </Box>
         ) : (
           <>
             <CircularProgress />
-            <p style={{ marginLeft: 12 }}>Initializing...</p>
+            <p style={{ marginLeft: 12 }}>{t('initializing')}...</p>
           </>
         )}
       </Box>

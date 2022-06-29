@@ -73,6 +73,13 @@
     border: 1px solid $primary;
   }
 }
+.optionConnectedDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 10px;
+  margin-right: 8px;
+  background-color: $successMain;
+}
 .optionLink {
   color: $textPrimary;
 }

@@ -123,7 +123,7 @@
   "type": "type",
   "usd": "usd",
   "price": "Price",
-  "txn": "txn",
+  "txn": "TXN",
   "chart": "chart",
   "trades": "trades",
   "info": "info",
@@ -377,5 +377,18 @@
   "totalDebtBalance": "Total Debt balance",
   "borrowedBalance": "Borrowed balance",
   "borrowAPR": "Borrow APR",
-  "enableAsCollateral": "Enable as collateral"
+  "enableAsCollateral": "Enable as collateral",
+  "totalValue": "Total Value",
+  "tokenAmount": "Token Amount",
+  "time": "Time",
+  "connected": "Connected",
+  "errorConnect": "Error connecting.",
+  "tryagain": "Try Again",
+  "initializing": "Initializing",
+  "installMetamask": "Install Metamask",
+  "wrongNetwork": "Wrong Network",
+  "connectPolygonNetwork": "Please connect to the appropriate Polygon network.",
+  "errorConnectRefresh": "Error connecting. Try refreshing the page.",
+  "newToMatic": "New to Polygon?",
+  "learnWallet": "Learn about Wallets"
 }
