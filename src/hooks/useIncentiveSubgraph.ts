@@ -9,7 +9,7 @@ import {
   FARMING_CENTER,
   FINITE_FARMING,
   NONFUNGIBLE_POSITION_MANAGER_ADDRESSES,
-} from '../constants/v3/addresses';
+} from '../constants/addresses';
 import { BigNumber } from '@ethersproject/bignumber';
 import {
   CURRENT_EVENTS,
@@ -121,16 +121,6 @@ export function useFarmingSubgraph() {
   const provider = library
     ? new providers.Web3Provider(library.provider)
     : undefined;
-
-  async function fetchEternalFarmAPR() {
-    const apiURL = 'https://api.algebra.finance/api/APR/eternalFarmings/';
-
-    try {
-      return await fetch(apiURL).then((v) => v.json());
-    } catch (error) {
-      return {};
-    }
-  }
 
   async function getEvents(events: any[], farming = false) {
     const _events: any[] = [];
@@ -254,7 +244,7 @@ export function useFarmingSubgraph() {
       const result: any = eternalFarmings[0];
       return result;
     } catch (err) {
-      // throw new Error('Fetch infinite farming ' + err.message);
+      throw new Error('Fetch infinite farming ' + err.message);
     }
   }
 
@@ -456,9 +446,9 @@ export function useFarmingSubgraph() {
       setHasTransferredPositions(Boolean(positionsTransferred.length));
       setHasTransferredPositionsLoading(false);
     } catch (err) {
-      // throw new Error(
-      //   'Has transferred positions ' + err.code + ' ' + err.message,
-      // );
+      throw new Error(
+        'Has transferred positions ' + err.code + ' ' + err.message,
+      );
     } finally {
       setHasTransferredPositionsLoading(false);
     }
