@@ -1179,7 +1179,7 @@ function useLairInfo(
 
   return useMemo(() => {
     return {
-      lairAddress: GlobalConst.addresses.NEW_LAIR_ADDRESS,
+      lairAddress: lairAddress,
       dQUICKtoQUICK: new TokenAmount(
         quickToken,
         JSBI.BigInt(dQuickToQuick?.result?.[0] ?? 0),
