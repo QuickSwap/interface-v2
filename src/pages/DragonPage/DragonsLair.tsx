@@ -19,8 +19,7 @@ const DragonsLair: React.FC<{ isNew: boolean }> = ({ isNew }) => {
   const lairInfo = useOldLairInfo();
   const newLairInfo = useNewLairInfo();
   const lairInfoToUse = isNew ? newLairInfo : lairInfo;
-  let APY = useLairDQUICKAPY(isNew, lairInfoToUse);
-  APY = isNew ? APY : '0';
+  const APY = useLairDQUICKAPY(isNew, lairInfoToUse);
   const dQUICKtoQUICK = lairInfoToUse.dQUICKtoQUICK?.toFixed(4, {
     groupSeparator: ',',
   });
@@ -92,7 +91,7 @@ const DragonsLair: React.FC<{ isNew: boolean }> = ({ isNew }) => {
           onClick={() => setIsQUICKRate(!isQUICKRate)}
         />
       </Box>
-      {isNew && (
+      {!isNew && (
         <Box
           className='stakeButton bg-primary'
           onClick={() => setOpenStakeModal(true)}
