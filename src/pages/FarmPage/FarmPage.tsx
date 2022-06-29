@@ -20,6 +20,7 @@ const FarmPage: React.FC = () => {
   const [farmIndex, setFarmIndex] = useState(
     GlobalConst.farmIndex.LPFARM_INDEX,
   );
+  const [isV3, setIsV3] = useState(false);
   const chainIdOrDefault = chainId ?? ChainId.MATIC;
   const lpFarms = useDefaultFarmList();
   const dualFarms = useDefaultDualFarmList();
@@ -41,13 +42,24 @@ const FarmPage: React.FC = () => {
   const farmCategories = [
     {
       text: t('lpMining'),
-      onClick: () => setFarmIndex(GlobalConst.farmIndex.LPFARM_INDEX),
+      onClick: () => {
+        setFarmIndex(GlobalConst.farmIndex.LPFARM_INDEX);
+        setIsV3(false);
+      },
       condition: farmIndex === GlobalConst.farmIndex.LPFARM_INDEX,
     },
     {
       text: t('dualMining'),
-      onClick: () => setFarmIndex(GlobalConst.farmIndex.DUALFARM_INDEX),
+      onClick: () => {
+        setFarmIndex(GlobalConst.farmIndex.DUALFARM_INDEX);
+        setIsV3(false);
+      },
       condition: farmIndex === GlobalConst.farmIndex.DUALFARM_INDEX,
+    },
+    {
+      text: t('v3Mining'),
+      onClick: () => setIsV3(true),
+      condition: isV3,
     },
   ];
 
@@ -68,12 +80,21 @@ const FarmPage: React.FC = () => {
         items={farmCategories}
         isLarge={true}
       />
-      <Box my={2}>
-        <FarmRewards bulkPairs={bulkPairs} farmIndex={farmIndex} />
-      </Box>
-      <Box className='farmsWrapper'>
-        <FarmsList bulkPairs={bulkPairs} farmIndex={farmIndex} />
-      </Box>
+      {!isV3 && (
+        <>
+          <Box my={2}>
+            <FarmRewards bulkPairs={bulkPairs} farmIndex={farmIndex} />
+          </Box>
+          <Box className='farmsWrapper'>
+            <FarmsList bulkPairs={bulkPairs} farmIndex={farmIndex} />
+          </Box>
+        </>
+      )}
+      {isV3 && (
+        <>
+          <Box my={2}>V3 Farms Page should be here</Box>
+        </>
+      )}
     </Box>
   );
 };
