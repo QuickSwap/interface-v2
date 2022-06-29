@@ -1886,12 +1886,9 @@ export function useLairDQUICKAPY(isNew: boolean, lair?: LairInfo) {
       daysCurrentYear) /
     dQUICKPrice;
   if (!dQUICKAPR) return '0';
-  const temp = Math.pow(1 + dQUICKAPR / daysCurrentYear, daysCurrentYear) - 1;
-  if (temp > 100) {
-    return '> 10000';
-  } else {
-    return Number(temp * 100).toLocaleString();
-  }
+  return Number(
+    (Math.pow(1 + dQUICKAPR / daysCurrentYear, daysCurrentYear) - 1) * 100,
+  ).toLocaleString();
 }
 
 export function returnFullWidthMobile(isMobile: boolean) {
