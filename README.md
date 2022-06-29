@@ -11,6 +11,7 @@ Enabling users to:
 - Participate in Dragon's syrup running on QuickSwap protocol
 
 Useful links:
+
 - Website: [quickswap.exchange](https://quickswap.exchange/)
 - Beta: [beta.quickswap.exchange](https://beta.quickswap.exchange/)
 - Info: [info.quickswap.exchange](https://info.quickswap.exchange)
@@ -23,7 +24,6 @@ Useful links:
 To access the QuickSwap Interface, use an IPFS gateway link from the
 [latest release](https://github.com/QuickSwap/interface-v2/releases/latest),
 or visit [quickswap.exchange](https://quickswap.exchange).
-
 
 The QuickSwap interface is hosted on IPFS in a decentralized manner. `quickswap.exchange` just holds a CNAME record to the Cloudflare IPFS gateway. You can use [any](https://ipfs.github.io/public-gateway-checker/) public or private IPFS gateway supporting origin isolation to access QuickSwap interface if for some reason the Cloudflare gateway doesn't work for you
 

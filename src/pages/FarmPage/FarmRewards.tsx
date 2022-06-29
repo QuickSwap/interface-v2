@@ -5,8 +5,9 @@ import { Skeleton } from '@material-ui/lab';
 import { useUSDRewardsandFees } from 'state/stake/hooks';
 import { useActiveWeb3React } from 'hooks';
 import { GlobalConst } from 'constants/index';
-import { returnStakingInfo } from 'utils';
 import { useTranslation } from 'react-i18next';
+import { useDefaultFarmList } from 'state/farms/hooks';
+import { ChainId } from '@uniswap/sdk';
 
 const FarmRewards: React.FC<{ farmIndex: number; bulkPairs: any }> = ({
   farmIndex,
@@ -15,18 +16,22 @@ const FarmRewards: React.FC<{ farmIndex: number; bulkPairs: any }> = ({
   const { t } = useTranslation();
   const { breakpoints } = useTheme();
   const { chainId } = useActiveWeb3React();
+  const defaultChainId = chainId ?? ChainId.MATIC;
   const isMobile = useMediaQuery(breakpoints.down('xs'));
 
   const farmData = useUSDRewardsandFees(
     farmIndex === GlobalConst.farmIndex.LPFARM_INDEX,
     bulkPairs,
+    defaultChainId,
   );
+
+  const farms = useDefaultFarmList()[defaultChainId];
   const dQuickRewardSum = useMemo(() => {
-    if (!chainId) return 0;
-    const stakingData = returnStakingInfo()[chainId] ?? [];
-    const rewardSum = stakingData.reduce((total, item) => total + item.rate, 0);
+    const rewardSum = Object.values(farms)
+      .filter((x) => !x.ended)
+      .reduce((total, item) => total + item.rate, 0);
     return rewardSum;
-  }, [chainId]);
+  }, [farms]);
 
   const getRewardsSection = (isLPFarm: boolean) => (
     <>

@@ -1,45 +1,53 @@
 import React, { useState } from 'react';
 import { Box, Button } from '@material-ui/core';
 import { CustomModal, ColoredSlider, NumericalInput } from 'components';
-import { useLairInfo } from 'state/stake/hooks';
+import { useOldLairInfo, useNewLairInfo } from 'state/stake/hooks';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 import { TransactionResponse } from '@ethersproject/providers';
 import { useTransactionAdder } from 'state/transactions/hooks';
-import { useLairContract } from 'hooks/useContract';
+import { useLairContract, useNewLairContract } from 'hooks/useContract';
 import Web3 from 'web3';
 import { formatTokenAmount } from 'utils';
+import { useTranslation } from 'react-i18next';
 
 const web3 = new Web3();
 
 interface UnstakeQuickModalProps {
   open: boolean;
   onClose: () => void;
+  isNew: boolean;
 }
 
 const UnstakeQuickModal: React.FC<UnstakeQuickModalProps> = ({
   open,
   onClose,
+  isNew,
 }) => {
+  const { t } = useTranslation();
   const [attempting, setAttempting] = useState(false);
   const addTransaction = useTransactionAdder();
-  const lairInfo = useLairInfo();
-  const dQuickBalance = lairInfo.dQUICKBalance;
+  const lairInfo = useOldLairInfo();
+  const newLairInfo = useNewLairInfo();
+  const laifInfoToUse = isNew ? newLairInfo : lairInfo;
+  const dQuickBalance = laifInfoToUse.dQUICKBalance;
   const [typedValue, setTypedValue] = useState('');
   const [stakePercent, setStakePercent] = useState(0);
 
   const lairContract = useLairContract();
+  const newLairContract = useNewLairContract();
+  const lairContractToUse = isNew ? newLairContract : lairContract;
   const error =
     Number(typedValue) > Number(dQuickBalance.toExact()) || !typedValue;
 
   const onWithdraw = () => {
-    if (lairContract && lairInfo?.dQUICKBalance) {
+    if (lairContractToUse && laifInfoToUse?.dQUICKBalance) {
       setAttempting(true);
       const balance = web3.utils.toWei(typedValue, 'ether');
-      lairContract
+      lairContractToUse
         .leave(balance.toString(), { gasLimit: 300000 })
         .then(async (response: TransactionResponse) => {
           addTransaction(response, {
-            summary: `Unstake dQUICK`,
+            summary: `${t('unstake')} dQUICK`,
           });
           await response.wait();
           setAttempting(false);
@@ -55,7 +63,7 @@ const UnstakeQuickModal: React.FC<UnstakeQuickModalProps> = ({
     <CustomModal open={open} onClose={onClose}>
       <Box paddingX={3} paddingY={4}>
         <Box className='flex items-center justify-between'>
-          <h5>Unstake dQUICK</h5>
+          <h5>{t('unstake')} dQUICK</h5>
           <CloseIcon className='cursor-pointer' onClick={onClose} />
         </Box>
         <Box
@@ -66,7 +74,9 @@ const UnstakeQuickModal: React.FC<UnstakeQuickModalProps> = ({
         >
           <Box className='flex items-center justify-between'>
             <small>dQUICK</small>
-            <small>Balance: {formatTokenAmount(dQuickBalance)}</small>
+            <small>
+              {t('balance')}: {formatTokenAmount(dQuickBalance)}
+            </small>
           </Box>
           <Box mt={2} className='flex items-center'>
             <NumericalInput
@@ -90,7 +100,7 @@ const UnstakeQuickModal: React.FC<UnstakeQuickModalProps> = ({
                 setStakePercent(100);
               }}
             >
-              MAX
+              {t('max')}
             </span>
           </Box>
           <Box className='flex items-center'>
@@ -124,7 +134,7 @@ const UnstakeQuickModal: React.FC<UnstakeQuickModalProps> = ({
             disabled={!!error || attempting}
             onClick={onWithdraw}
           >
-            {attempting ? 'Unstaking...' : 'Unstake'}
+            {attempting ? `${t('unstaking')}...` : t('unstake')}
           </Button>
         </Box>
       </Box>

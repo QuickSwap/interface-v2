@@ -1,7 +1,39 @@
 import { TokenAmount, Token, Price, Pair } from '@uniswap/sdk';
+import { Version } from '@uniswap/token-lists';
+
+export interface FarmListInfo {
+  readonly name: string;
+  readonly timestamp: string;
+  readonly active: StakingRaw[];
+  readonly closed: StakingRaw[];
+  readonly version: Version;
+  readonly logoURI?: string;
+}
+
+export interface SyrupListInfo {
+  readonly name: string;
+  readonly timestamp: string;
+  readonly active: SyrupRaw[];
+  readonly closed: SyrupRaw[];
+  readonly version: Version;
+  readonly logoURI?: string;
+}
+
+export interface DualFarmListInfo {
+  readonly name: string;
+  readonly timestamp: string;
+  readonly active: DualStakingRaw[];
+  readonly closed: DualStakingRaw[];
+  readonly version: Version;
+  readonly logoURI?: string;
+}
 
 export interface LairInfo {
   lairAddress: string;
+
+  dQUICKtoQUICK: TokenAmount;
+
+  QUICKtodQUICK: TokenAmount;
 
   dQUICKBalance: TokenAmount;
 
@@ -45,12 +77,18 @@ export interface CommonStakingInfo {
   totalSupply?: TokenAmount;
   usdPrice?: Price;
   stakingTokenPair?: Pair | null;
-  // calculates a hypothetical amount of token distributed to the active account per second.
-  getHypotheticalRewardRate: (
-    stakedAmount?: TokenAmount,
-    totalStakedAmount?: TokenAmount,
-    totalRewardRate?: TokenAmount,
-  ) => TokenAmount | undefined;
+}
+
+export interface StakingRaw {
+  tokens: string[];
+  stakingRewardAddress: string;
+  ended: boolean;
+  name: string;
+  lp: string;
+  baseToken: string;
+  rate: number;
+  pair: string;
+  rewardToken: string;
 }
 
 export interface StakingBasic {
@@ -63,6 +101,18 @@ export interface StakingBasic {
   rate: number;
   pair: string;
   rewardToken: Token;
+}
+
+export interface SyrupRaw {
+  token: string;
+  stakingRewardAddress: string;
+  ended: boolean;
+  name: string;
+  lp: string;
+  baseToken: string;
+  rate: number;
+  ending: number; //DATE IN UNIX TIMESTAMP
+  stakingToken: string;
 }
 
 export interface SyrupBasic {
@@ -91,6 +141,21 @@ export interface StakingInfo extends CommonStakingInfo {
   rate: number;
 
   valueOfTotalStakedAmountInBaseToken?: TokenAmount;
+}
+
+export interface DualStakingRaw {
+  tokens: string[];
+  stakingRewardAddress: string;
+  ended: boolean;
+  name: string;
+  lp: string;
+  baseToken: string;
+  rewardTokenA: string;
+  rewardTokenB: string;
+  rewardTokenBBase: string;
+  rateA: number;
+  rateB: number;
+  pair: string;
 }
 
 export interface DualStakingBasic {

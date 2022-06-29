@@ -15,85 +15,80 @@ interface TransactionsTableProps {
   data: any[];
 }
 
-const headCells = (
-  txFilter: number,
-  setTxFilter: (txFilter: number) => void,
-) => [
-  {
-    id: 'description',
-    numeric: false,
-    label: (
-      <Box className='flex items-center'>
-        <small
-          className={txFilter === -1 ? '' : 'text-secondary'}
-          onClick={() => setTxFilter(-1)}
-        >
-          All
-        </small>
-        <small
-          className={txFilter === TxnType.SWAP ? '' : 'text-secondary'}
-          onClick={() => setTxFilter(TxnType.SWAP)}
-          style={{ marginLeft: 12 }}
-        >
-          Swap
-        </small>
-        <small
-          className={txFilter === TxnType.ADD ? '' : 'text-secondary'}
-          onClick={() => setTxFilter(TxnType.ADD)}
-          style={{ marginLeft: 12 }}
-        >
-          Add
-        </small>
-        <small
-          className={txFilter === TxnType.REMOVE ? '' : 'text-secondary'}
-          onClick={() => setTxFilter(TxnType.REMOVE)}
-          style={{ marginLeft: 12 }}
-        >
-          Remove
-        </small>
-      </Box>
-    ),
-    sortDisabled: true,
-  },
-  {
-    id: 'totalvalue',
-    numeric: false,
-    label: 'Total Value',
-    sortKey: (item: any) => Number(item.amountUSD),
-  },
-  {
-    id: 'tokenamount1',
-    numeric: false,
-    label: 'Token Amount',
-    sortKey: (item: any) => Number(item.amount1),
-  },
-  {
-    id: 'tokenamount2',
-    numeric: false,
-    label: 'Token Amount',
-    sortKey: (item: any) => Number(item.amount0),
-  },
-  {
-    id: 'txn',
-    numeric: false,
-    label: 'TXN',
-    sortKey: (item: any) => item.transaction.id,
-  },
-  {
-    id: 'time',
-    numeric: false,
-    label: 'Time',
-    sortKey: (item: any) => Number(item.transaction.timestamp) * -1,
-  },
-];
-
 const TransactionsTable: React.FC<TransactionsTableProps> = ({ data }) => {
+  const { t } = useTranslation();
   const [txFilter, setTxFilter] = useState(-1);
-  const txHeadCells = headCells(txFilter, setTxFilter);
+  const txHeadCells = [
+    {
+      id: 'description',
+      numeric: false,
+      label: (
+        <Box className='flex items-center'>
+          <small
+            className={txFilter === -1 ? '' : 'text-secondary'}
+            onClick={() => setTxFilter(-1)}
+          >
+            {t('all')}
+          </small>
+          <small
+            className={txFilter === TxnType.SWAP ? '' : 'text-secondary'}
+            onClick={() => setTxFilter(TxnType.SWAP)}
+            style={{ marginLeft: 12 }}
+          >
+            {t('swap')}
+          </small>
+          <small
+            className={txFilter === TxnType.ADD ? '' : 'text-secondary'}
+            onClick={() => setTxFilter(TxnType.ADD)}
+            style={{ marginLeft: 12 }}
+          >
+            {t('add')}
+          </small>
+          <small
+            className={txFilter === TxnType.REMOVE ? '' : 'text-secondary'}
+            onClick={() => setTxFilter(TxnType.REMOVE)}
+            style={{ marginLeft: 12 }}
+          >
+            {t('remove')}
+          </small>
+        </Box>
+      ),
+      sortDisabled: true,
+    },
+    {
+      id: 'totalvalue',
+      numeric: false,
+      label: t('totalValue'),
+      sortKey: (item: any) => Number(item.amountUSD),
+    },
+    {
+      id: 'tokenamount1',
+      numeric: false,
+      label: t('tokenAmount'),
+      sortKey: (item: any) => Number(item.amount1),
+    },
+    {
+      id: 'tokenamount2',
+      numeric: false,
+      label: t('tokenAmount'),
+      sortKey: (item: any) => Number(item.amount0),
+    },
+    {
+      id: 'txn',
+      numeric: false,
+      label: t('txn'),
+      sortKey: (item: any) => item.transaction.id,
+    },
+    {
+      id: 'time',
+      numeric: false,
+      label: t('time'),
+      sortKey: (item: any) => Number(item.transaction.timestamp) * -1,
+    },
+  ];
   const { chainId } = useActiveWeb3React();
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
-  const { t } = useTranslation();
   const getTxString = (txn: any) => {
     const messageData = {
       token0Symbol: txn.pair.token1.symbol,
@@ -131,23 +126,23 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({ data }) => {
         </Box>
         <Divider />
         <Box className='mobileRow'>
-          <p>Total Value</p>
+          <p>{t('totalValue')}</p>
           <p>${Number(txn.amountUSD).toLocaleString()}</p>
         </Box>
         <Box className='mobileRow'>
-          <p>Token Amount</p>
+          <p>{t('tokenAmount')}</p>
           <p>
             {formatNumber(txn.amount0)} {txn.pair.token0.symbol}
           </p>
         </Box>
         <Box className='mobileRow'>
-          <p>Token Amount</p>
+          <p>{t('tokenAmount')}</p>
           <p>
             {formatNumber(txn.amount1)} {txn.pair.token1.symbol}
           </p>
         </Box>
         <Box className='mobileRow'>
-          <p>TXN</p>
+          <p>{t('txn')}</p>
           {chainId ? (
             <a
               href={getEtherscanLink(
@@ -166,7 +161,7 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({ data }) => {
           )}
         </Box>
         <Box className='mobileRow'>
-          <p>Time</p>
+          <p>{t('time')}</p>
           <p>{dayjs(Number(txn.transaction.timestamp) * 1000).fromNow()}</p>
         </Box>
       </Box>
@@ -237,17 +232,17 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({ data }) => {
           </Box>
           <Box onClick={() => setTxFilter(TxnType.SWAP)}>
             <p className={txFilter === TxnType.SWAP ? '' : 'text-secondary'}>
-              Swap
+              {t('swap')}
             </p>
           </Box>
           <Box onClick={() => setTxFilter(TxnType.ADD)}>
             <p className={txFilter === TxnType.ADD ? '' : 'text-secondary'}>
-              Add
+              {t('add')}
             </p>
           </Box>
           <Box onClick={() => setTxFilter(TxnType.REMOVE)}>
             <p className={txFilter === TxnType.REMOVE ? '' : 'text-secondary'}>
-              Remove
+              {t('remove')}
             </p>
           </Box>
         </Box>

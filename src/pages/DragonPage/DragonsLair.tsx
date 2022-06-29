@@ -1,22 +1,32 @@
 import React, { useState } from 'react';
 import { Box } from '@material-ui/core';
-import { useLairInfo } from 'state/stake/hooks';
+import { useOldLairInfo, useNewLairInfo } from 'state/stake/hooks';
 import { CurrencyLogo, StakeQuickModal, UnstakeQuickModal } from 'components';
 import { ReactComponent as PriceExchangeIcon } from 'assets/images/PriceExchangeIcon.svg';
-import { formatTokenAmount, returnTokenFromKey, useLairDQUICKAPY } from 'utils';
+import { formatTokenAmount, useLairDQUICKAPY } from 'utils';
 import { useUSDCPriceToken } from 'utils/useUSDCPrice';
 import { useTranslation } from 'react-i18next';
+import { GlobalValue } from 'constants/index';
 
-const DragonsLair: React.FC = () => {
-  const quickPrice = useUSDCPriceToken(returnTokenFromKey('QUICK'));
-  const dQUICKPrice = useUSDCPriceToken(returnTokenFromKey('DQUICK'));
-  const dQUICKtoQUICK = dQUICKPrice / quickPrice;
-  const QUICKtodQUICK = quickPrice / dQUICKPrice;
+const DragonsLair: React.FC<{ isNew: boolean }> = ({ isNew }) => {
+  const quickToken = isNew
+    ? GlobalValue.tokens.COMMON.NEW_QUICK
+    : GlobalValue.tokens.COMMON.OLD_QUICK;
+  const quickPrice = useUSDCPriceToken(quickToken);
   const [isQUICKRate, setIsQUICKRate] = useState(false);
   const [openStakeModal, setOpenStakeModal] = useState(false);
   const [openUnstakeModal, setOpenUnstakeModal] = useState(false);
-  const lairInfo = useLairInfo();
-  const APY = useLairDQUICKAPY(lairInfo);
+  const lairInfo = useOldLairInfo();
+  const newLairInfo = useNewLairInfo();
+  const lairInfoToUse = isNew ? newLairInfo : lairInfo;
+  let APY = useLairDQUICKAPY(isNew, lairInfoToUse);
+  APY = isNew ? APY : '0';
+  const dQUICKtoQUICK = lairInfoToUse.dQUICKtoQUICK?.toFixed(4, {
+    groupSeparator: ',',
+  });
+  const QUICKtodQUICK = lairInfoToUse.QUICKtodQUICK?.toFixed(4, {
+    groupSeparator: ',',
+  });
   const { t } = useTranslation();
 
   return (
@@ -31,10 +41,11 @@ const DragonsLair: React.FC = () => {
         <UnstakeQuickModal
           open={openUnstakeModal}
           onClose={() => setOpenUnstakeModal(false)}
+          isNew={isNew}
         />
       )}
       <Box display='flex'>
-        <CurrencyLogo currency={returnTokenFromKey('QUICK')} size='32px' />
+        <CurrencyLogo currency={quickToken} size='32px' />
         <Box ml={1.5}>
           <p className='small line-height-1'>QUICK</p>
           <span className='text-hint'>{t('stakeQUICKTitle')}</span>
@@ -43,8 +54,8 @@ const DragonsLair: React.FC = () => {
       <Box className='dragonLairRow'>
         <small>{t('total')} QUICK</small>
         <small>
-          {lairInfo
-            ? lairInfo.totalQuickBalance.toFixed(2, {
+          {lairInfoToUse
+            ? lairInfoToUse.totalQuickBalance.toFixed(2, {
                 groupSeparator: ',',
               })
             : 0}
@@ -55,7 +66,7 @@ const DragonsLair: React.FC = () => {
         <small>
           $
           {(
-            Number(lairInfo.totalQuickBalance.toExact()) * quickPrice
+            Number(lairInfoToUse.totalQuickBalance.toExact()) * quickPrice
           ).toLocaleString()}
         </small>
       </Box>
@@ -65,14 +76,14 @@ const DragonsLair: React.FC = () => {
       </Box>
       <Box className='dragonLairRow'>
         <small>{t('yourdeposits')}</small>
-        <small>{formatTokenAmount(lairInfo.QUICKBalance)}</small>
+        <small>{formatTokenAmount(lairInfoToUse.QUICKBalance)}</small>
       </Box>
       <Box className='quickTodQuick border-secondary1'>
-        <CurrencyLogo currency={returnTokenFromKey('QUICK')} />
+        <CurrencyLogo currency={quickToken} />
         <small style={{ margin: '0 8px' }}>
           {isQUICKRate ? 1 : dQUICKtoQUICK.toLocaleString()} QUICK =
         </small>
-        <CurrencyLogo currency={returnTokenFromKey('QUICK')} />
+        <CurrencyLogo currency={quickToken} />
         <small style={{ margin: '0 8px' }}>
           {isQUICKRate ? QUICKtodQUICK.toLocaleString() : 1} dQUICK
         </small>
@@ -81,12 +92,14 @@ const DragonsLair: React.FC = () => {
           onClick={() => setIsQUICKRate(!isQUICKRate)}
         />
       </Box>
-      <Box
-        className='stakeButton bg-primary'
-        onClick={() => setOpenStakeModal(true)}
-      >
-        <small>{t('stake')}</small>
-      </Box>
+      {isNew && (
+        <Box
+          className='stakeButton bg-primary'
+          onClick={() => setOpenStakeModal(true)}
+        >
+          <small>{t('stake')}</small>
+        </Box>
+      )}
       <Box
         className='stakeButton bg-transparent'
         onClick={() => setOpenUnstakeModal(true)}

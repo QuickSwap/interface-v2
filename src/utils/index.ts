@@ -49,22 +49,29 @@ import {
 import { BigNumber, BigNumberish } from '@ethersproject/bignumber';
 import { formatUnits } from 'ethers/lib/utils';
 import { AddressZero } from '@ethersproject/constants';
-import { TokenAddressMap } from 'state/lists/hooks';
-import { GlobalConst, GlobalValue } from 'constants/index';
-import { Palette } from '@material-ui/core/styles/createPalette';
+import { GlobalConst, GlobalValue, SUPPORTED_WALLETS } from 'constants/index';
+import {
+  TokenAddressMap,
+  useSelectedTokenList,
+  WrappedTokenInfo,
+} from 'state/lists/hooks';
 import tokenData from 'constants/tokens.json';
-import stakeData from 'constants/stake.json';
 import {
   DualStakingInfo,
   LairInfo,
   StakingInfo,
   SyrupBasic,
   SyrupInfo,
+  SyrupRaw,
 } from 'types';
 import { unwrappedToken } from './wrappedCurrency';
 import { useUSDCPriceToken } from './useUSDCPrice';
 import { CallState } from 'state/multicall/hooks';
 import { DualStakingBasic, StakingBasic } from 'types';
+import { useCallback } from 'react';
+import { AbstractConnector } from '@web3-react/abstract-connector';
+import { injected } from 'connectors';
+
 dayjs.extend(utc);
 dayjs.extend(weekOfYear);
 
@@ -1709,12 +1716,54 @@ export function formatNumber(
   }
 }
 
-export function returnTokenFromKey(key: string): Token {
-  if (key === 'MATIC') return GlobalValue.tokens.MATIC;
-  const tokenIndex = Object.keys(tokenData).findIndex(
-    (tokenKey) => tokenKey === key,
+export function getTokenFromKey(
+  tokenKey: string,
+  tokenMap: TokenAddressMap,
+): Token {
+  //TODO: eventually we need to remove returnTokenFromKey completely
+  //TODO: we need to support this until the token list also lists our (unwhitelisted tokens)
+  const tokenData = returnTokenFromKey(tokenKey);
+
+  //TODO: New Tokens may not exist in the old token.json, using object.values to enumerate the map
+  // is expensive so we don't want to have to do it everytime we call this method.
+  if (!tokenData) {
+    // Hack: this requires us to enumerate all the values of the token map which can be expensive
+    //
+    const tokensMatchingSymbol = Object.values(tokenMap[ChainId.MATIC]).filter(
+      (t) => (t.symbol ?? '').toUpperCase() == tokenKey.toUpperCase(),
+    );
+    if (tokensMatchingSymbol.length === 0) {
+      console.log('no token exists in the map');
+    }
+
+    return tokensMatchingSymbol[0];
+  }
+
+  const wrappedTokenInfo = tokenMap[tokenData.chainId][tokenData.address];
+  if (!wrappedTokenInfo) {
+    console.log('missing from token list:' + tokenKey);
+    return tokenData;
+  }
+
+  return new Token(
+    wrappedTokenInfo.chainId,
+    wrappedTokenInfo.address,
+    wrappedTokenInfo.decimals,
+    wrappedTokenInfo.symbol,
+    wrappedTokenInfo.name,
   );
-  const token = Object.values(tokenData)[tokenIndex];
+}
+
+export function returnTokenFromKey(key: string): Token | undefined {
+  if (key === 'MATIC') {
+    return GlobalValue.tokens.MATIC;
+  }
+  const token = (tokenData as any)[key];
+
+  if (!token) {
+    return;
+  }
+
   return new Token(
     ChainId.MATIC,
     getAddress(token.address),
@@ -1722,70 +1771,6 @@ export function returnTokenFromKey(key: string): Token {
     token.symbol,
     token.name,
   );
-}
-
-export function returnSyrupInfo(
-  isOld?: boolean,
-): {
-  [chainId in ChainId]?: SyrupBasic[];
-} {
-  const syrupInfo = isOld ? stakeData.oldsyrup : stakeData.syrup;
-  return {
-    [ChainId.MATIC]: syrupInfo.map((info) => {
-      return {
-        ...info,
-        token: returnTokenFromKey(info.token),
-        baseToken: returnTokenFromKey(info.baseToken),
-        stakingToken: returnTokenFromKey(info.stakingToken),
-      };
-    }),
-  };
-}
-
-export function returnStakingInfo(
-  type?: string,
-): {
-  [chainId in ChainId]?: StakingBasic[];
-} {
-  const stakingInfo =
-    type === 'old'
-      ? stakeData.oldstakingrewards
-      : type === 'veryold'
-      ? stakeData.veryoldstakingrewards
-      : stakeData.stakingrewards;
-  return {
-    [ChainId.MATIC]: stakingInfo.map((info: any) => {
-      return {
-        ...info,
-        tokens: [
-          returnTokenFromKey(info.tokens[0]),
-          returnTokenFromKey(info.tokens[1]),
-        ],
-        baseToken: returnTokenFromKey(info.baseToken),
-        rewardToken: returnTokenFromKey(info.rewardToken ?? 'DQUICK'),
-      };
-    }),
-  };
-}
-
-export function returnDualStakingInfo(): {
-  [chainId in ChainId]?: DualStakingBasic[];
-} {
-  return {
-    [ChainId.MATIC]: stakeData.dualrewards.map((info) => {
-      return {
-        ...info,
-        tokens: [
-          returnTokenFromKey(info.tokens[0]),
-          returnTokenFromKey(info.tokens[1]),
-        ],
-        baseToken: returnTokenFromKey(info.baseToken),
-        rewardTokenA: returnTokenFromKey(info.rewardTokenA),
-        rewardTokenB: returnTokenFromKey(info.rewardTokenB),
-        rewardTokenBBase: returnTokenFromKey(info.rewardTokenBBase),
-      };
-    }),
-  };
 }
 
 export function getChartDates(chartData: any[] | null, durationIndex: number) {
@@ -1884,9 +1869,14 @@ export function getTokenAPRSyrup(syrup: SyrupInfo) {
     : 0;
 }
 
-export function useLairDQUICKAPY(lair?: LairInfo) {
+export function useLairDQUICKAPY(isNew: boolean, lair?: LairInfo) {
   const daysCurrentYear = getDaysCurrentYear();
-  const dQUICKPrice = useUSDCPriceToken(returnTokenFromKey('DQUICK'));
+  const quickToken = isNew
+    ? GlobalValue.tokens.COMMON.NEW_QUICK
+    : GlobalValue.tokens.COMMON.OLD_QUICK;
+  const quickPrice = useUSDCPriceToken(quickToken);
+  const dQUICKPrice: any = Number(lair?.dQUICKtoQUICK?.toExact()) * quickPrice;
+
   if (!lair) return '0';
   const dQUICKAPR =
     (((Number(lair.oneDayVol) *
@@ -1896,9 +1886,12 @@ export function useLairDQUICKAPY(lair?: LairInfo) {
       daysCurrentYear) /
     dQUICKPrice;
   if (!dQUICKAPR) return '0';
-  return Number(
-    (Math.pow(1 + dQUICKAPR / daysCurrentYear, daysCurrentYear) - 1) * 100,
-  ).toLocaleString();
+  const temp = Math.pow(1 + dQUICKAPR / daysCurrentYear, daysCurrentYear) - 1;
+  if (temp > 100) {
+    return '> 10000';
+  } else {
+    return Number(temp * 100).toLocaleString();
+  }
 }
 
 export function returnFullWidthMobile(isMobile: boolean) {
@@ -1907,6 +1900,25 @@ export function returnFullWidthMobile(isMobile: boolean) {
 
 export function escapeRegExp(string: string): string {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+}
+
+export function getWalletKeys(
+  connector: AbstractConnector | undefined,
+): string[] {
+  const { ethereum } = window as any;
+  const isMetaMask = !!(ethereum && !ethereum.isBitKeep && ethereum.isMetaMask);
+  const isBitkeep = !!(ethereum && ethereum.isBitKeep);
+  const isBlockWallet = !!(ethereum && ethereum.isBlockWallet);
+  const isCypherDWallet = !!(ethereum && ethereum.isCypherD);
+  return Object.keys(SUPPORTED_WALLETS).filter(
+    (k) =>
+      SUPPORTED_WALLETS[k].connector === connector &&
+      (connector !== injected ||
+        (isCypherDWallet && k == 'CYPHERD') ||
+        (isBlockWallet && k === 'BLOCKWALLET') ||
+        (isBitkeep && k === 'BITKEEP') ||
+        (isMetaMask && k === 'METAMASK')),
+  );
 }
 
 export function getTokenAddress(token: Token | undefined) {
@@ -1929,7 +1941,7 @@ export function getStakedAmountStakingInfo(
   if (!stakingInfo) return;
   const stakingTokenPair = stakingInfo.stakingTokenPair;
   const baseTokenCurrency = unwrappedToken(stakingInfo.baseToken);
-  const empty = unwrappedToken(returnTokenFromKey('EMPTY'));
+  const empty = unwrappedToken(GlobalValue.tokens.COMMON.EMPTY);
   const token0 = stakingInfo.tokens[0];
   const baseToken =
     baseTokenCurrency === empty ? token0 : stakingInfo.baseToken;
@@ -2133,6 +2145,14 @@ export function getPartialTokenAmount(
   if (percent === 100) return amount.toExact();
   const partialAmount = (Number(amount.toExact()) * percent) / 100;
   return getValueTokenDecimals(partialAmount.toString(), amount.currency);
+}
+
+export function getResultFromCallState(callState: CallState) {
+  if (!callState || !callState.result || !callState.result[0]) {
+    return;
+  }
+
+  return callState.result[0];
 }
 
 export function initTokenAmountFromCallResult(

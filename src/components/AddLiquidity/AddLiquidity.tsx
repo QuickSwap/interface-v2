@@ -13,7 +13,7 @@ import { BigNumber } from '@ethersproject/bignumber';
 import ReactGA from 'react-ga';
 import { useTranslation } from 'react-i18next';
 import { Currency, Token, ETHER, TokenAmount } from '@uniswap/sdk';
-import { GlobalConst } from 'constants/index';
+import { GlobalConst, GlobalValue } from 'constants/index';
 import { useActiveWeb3React } from 'hooks';
 import { useRouterContract } from 'hooks/useContract';
 import useTransactionDeadline from 'hooks/useTransactionDeadline';
@@ -36,7 +36,6 @@ import {
   addMaticToMetamask,
   calculateSlippageAmount,
   calculateGasMargin,
-  returnTokenFromKey,
   isSupportedNetwork,
   formatTokenAmount,
 } from 'utils';
@@ -163,7 +162,10 @@ const AddLiquidity: React.FC<{
     if (currency1) {
       onCurrencySelection(Field.CURRENCY_B, currency1);
     } else {
-      onCurrencySelection(Field.CURRENCY_B, returnTokenFromKey('QUICK'));
+      onCurrencySelection(
+        Field.CURRENCY_B,
+        GlobalValue.tokens.COMMON.OLD_QUICK,
+      );
     }
   }, [onCurrencySelection, currency0, currency1]);
 

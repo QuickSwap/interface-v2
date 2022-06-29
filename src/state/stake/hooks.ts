@@ -1,4 +1,11 @@
-import { CurrencyAmount, JSBI, Token, TokenAmount, Pair } from '@uniswap/sdk';
+import {
+  CurrencyAmount,
+  JSBI,
+  Token,
+  TokenAmount,
+  Pair,
+  ChainId,
+} from '@uniswap/sdk';
 import dayjs from 'dayjs';
 import { useMemo, useEffect } from 'react';
 import { usePairs } from 'data/Reserves';
@@ -24,7 +31,12 @@ import {
 } from 'state/multicall/hooks';
 import { tryParseAmount } from 'state/swap/hooks';
 import Web3 from 'web3';
-import { useLairContract, useQUICKContract } from 'hooks/useContract';
+import {
+  useLairContract,
+  useNewLairContract,
+  useNewQUICKContract,
+  useQUICKContract,
+} from 'hooks/useContract';
 import { useUSDCPrices, useUSDCPricesToken } from 'utils/useUSDCPrice';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { useTotalSupplys } from 'data/TotalSupply';
@@ -35,10 +47,6 @@ import {
   getOneYearFee,
   getSyrupLPToken,
   initTokenAmountFromCallResult,
-  returnDualStakingInfo,
-  returnStakingInfo,
-  returnSyrupInfo,
-  returnTokenFromKey,
   getCallStateResult,
 } from 'utils';
 
@@ -50,6 +58,10 @@ import {
   StakingBasic,
   DualStakingBasic,
 } from 'types';
+import { useDefaultFarmList } from 'state/farms/hooks';
+import { useDefaultDualFarmList } from 'state/dualfarms/hooks';
+import { useDefaultSyrupList } from 'state/syrups/hooks';
+import { Contract } from '@ethersproject/contracts';
 
 const web3 = new Web3('https://polygon-rpc.com/');
 
@@ -61,14 +73,14 @@ let pairs: any = undefined;
 
 let oneDayVol: any = undefined;
 
-export function useTotalRewardsDistributed() {
-  const { chainId } = useActiveWeb3React();
-
-  const syrupRewardsInfo = chainId ? returnSyrupInfo()[chainId] ?? [] : [];
-  const dualStakingRewardsInfo = chainId
-    ? returnDualStakingInfo()[chainId] ?? []
-    : [];
-  const stakingRewardsInfo = chainId ? returnStakingInfo()[chainId] ?? [] : [];
+export function useTotalRewardsDistributed(chainId: ChainId): number {
+  const syrupRewardsInfo = Object.values(useDefaultSyrupList()[chainId]);
+  const dualStakingRewardsInfo = Object.values(
+    useDefaultDualFarmList()[chainId],
+  ).filter((x) => !x.ended);
+  const stakingRewardsInfo = Object.values(
+    useDefaultFarmList()[chainId],
+  ).filter((x) => !x.ended);
 
   const syrupTokenPairs = usePairs(
     syrupRewardsInfo.map((item) => [
@@ -114,12 +126,19 @@ export function useTotalRewardsDistributed() {
   return syrupRewardsUSD + dualStakingRewardsUSD + stakingRewardsUSD;
 }
 
-export function useUSDRewardsandFees(isLPFarm: boolean, bulkPairData: any) {
-  const { chainId } = useActiveWeb3React();
-  const dualStakingRewardsInfo =
-    chainId && !isLPFarm ? returnDualStakingInfo()[chainId] ?? [] : [];
-  const stakingRewardsInfo =
-    chainId && isLPFarm ? returnStakingInfo()[chainId] ?? [] : [];
+export function useUSDRewardsandFees(
+  isLPFarm: boolean,
+  bulkPairData: any,
+  chainId: ChainId,
+): { rewardsUSD: number; stakingFees: number | null } {
+  const activeFarms = Object.values(useDefaultFarmList()[chainId]).filter(
+    (x) => !x.ended,
+  );
+  const activeDualFarms = Object.values(
+    useDefaultDualFarmList()[chainId],
+  ).filter((x) => !x.ended);
+  const stakingRewardsInfo = isLPFarm ? activeFarms : [];
+  const dualStakingRewardsInfo = !isLPFarm ? activeDualFarms : [];
   const rewardsInfos = isLPFarm ? stakingRewardsInfo : dualStakingRewardsInfo;
   const rewardsAddresses = useMemo(
     () => rewardsInfos.map(({ stakingRewardAddress }) => stakingRewardAddress),
@@ -183,32 +202,36 @@ export function useUSDRewardsandFees(isLPFarm: boolean, bulkPairData: any) {
   return { rewardsUSD, stakingFees };
 }
 
-export function useSyrupInfo(
+export function useFilteredSyrupInfo(
+  chainId: ChainId,
   tokenToFilterBy?: Token | null,
   startIndex?: number,
   endIndex?: number,
   filter?: { search: string; isStaked: boolean },
 ): SyrupInfo[] {
-  const { chainId, account } = useActiveWeb3React();
+  const { account } = useActiveWeb3React();
   const currentTimestamp = dayjs().unix();
-
+  const allSyrups = useDefaultSyrupList()[chainId];
   const info = useMemo(
     () =>
-      chainId
-        ? returnSyrupInfo()
-            [chainId]?.slice(startIndex, endIndex)
-            .filter(
-              (syrupInfo) =>
-                syrupInfo.ending > currentTimestamp &&
-                (tokenToFilterBy === undefined || tokenToFilterBy === null
-                  ? getSearchFiltered(syrupInfo, filter ? filter.search : '')
-                  : tokenToFilterBy.equals(syrupInfo.token)),
-            ) ?? []
-        : [],
-    [chainId, tokenToFilterBy, startIndex, endIndex, filter, currentTimestamp],
+      Object.values(allSyrups)
+        .slice(startIndex, endIndex)
+        .filter(
+          (syrupInfo) =>
+            syrupInfo.ending > currentTimestamp &&
+            (tokenToFilterBy === undefined || tokenToFilterBy === null
+              ? getSearchFiltered(syrupInfo, filter ? filter.search : '')
+              : tokenToFilterBy.equals(syrupInfo.token)),
+        ),
+    [
+      tokenToFilterBy,
+      startIndex,
+      endIndex,
+      filter,
+      currentTimestamp,
+      allSyrups,
+    ],
   );
-
-  const uni = chainId ? GlobalValue.tokens.UNI[chainId] : undefined;
 
   const rewardsAddresses = useMemo(
     () => info.map(({ stakingRewardAddress }) => stakingRewardAddress),
@@ -259,7 +282,7 @@ export function useSyrupInfo(
   );
 
   return useMemo(() => {
-    if (!chainId || !uni) return [];
+    if (!chainId) return [];
 
     return rewardsAddresses.reduce<SyrupInfo[]>(
       (memo, rewardsAddress, index) => {
@@ -374,7 +397,6 @@ export function useSyrupInfo(
     info,
     rewardsAddresses,
     totalSupplies,
-    uni,
     rewardRates,
     stakingTokenPairs,
     usdBaseTokenPrices,
@@ -387,23 +409,19 @@ export function useSyrupInfo(
 }
 
 export function useOldSyrupInfo(
+  chainId: ChainId,
   tokenToFilterBy?: Token | null,
   startIndex?: number,
   endIndex?: number,
   filter?: { search: string; isStaked: boolean },
 ): SyrupInfo[] {
-  const { chainId, account } = useActiveWeb3React();
+  const { account } = useActiveWeb3React();
   const currentTimestamp = dayjs().unix();
+  const allOldSyrupInfos = useDefaultSyrupList()[chainId];
 
   const info = useMemo(() => {
-    if (!chainId) return [];
-    const endedSyrupInfos =
-      returnSyrupInfo(false)[chainId]?.filter(
-        (syrupInfo) => syrupInfo.ending <= currentTimestamp,
-      ) ?? [];
-    const oldSyrupInfos = returnSyrupInfo(true)[chainId] ?? [];
-    const allOldSyrupInfos = endedSyrupInfos.concat(oldSyrupInfos);
-    return allOldSyrupInfos
+    return Object.values(allOldSyrupInfos)
+      .filter((x) => x.ending <= currentTimestamp)
       .slice(startIndex, endIndex)
       .filter((syrupInfo) =>
         tokenToFilterBy === undefined || tokenToFilterBy === null
@@ -411,15 +429,13 @@ export function useOldSyrupInfo(
           : tokenToFilterBy.equals(syrupInfo.token),
       );
   }, [
-    chainId,
     tokenToFilterBy,
     startIndex,
     endIndex,
     filter,
     currentTimestamp,
+    allOldSyrupInfos,
   ]);
-
-  const uni = chainId ? GlobalValue.tokens.UNI[chainId] : undefined;
 
   const rewardsAddresses = useMemo(
     () => info.map(({ stakingRewardAddress }) => stakingRewardAddress),
@@ -471,7 +487,7 @@ export function useOldSyrupInfo(
   );
 
   return useMemo(() => {
-    if (!chainId || !uni) return [];
+    if (!chainId) return [];
 
     return rewardsAddresses.reduce<SyrupInfo[]>(
       (memo, rewardsAddress, index) => {
@@ -581,7 +597,6 @@ export function useOldSyrupInfo(
     info,
     rewardsAddresses,
     totalSupplies,
-    uni,
     rewardRates,
     stakingTokenPairs,
     usdBaseTokenPrices,
@@ -720,31 +735,23 @@ function parseData(data: any, oneDayData: any) {
 }
 
 function getSearchFiltered(info: any, search: string) {
+  const searchLowered = search.toLowerCase();
   if (info.tokens) {
     const infoToken0 = info.tokens[0];
     const infoToken1 = info.tokens[1];
     return (
-      (infoToken0.symbol ?? '').toLowerCase().indexOf(search.toLowerCase()) >
-        -1 ||
-      (infoToken0.name ?? '').toLowerCase().indexOf(search.toLowerCase()) >
-        -1 ||
-      (infoToken0.address ?? '').toLowerCase().indexOf(search.toLowerCase()) >
-        -1 ||
-      (infoToken1.symbol ?? '').toLowerCase().indexOf(search.toLowerCase()) >
-        -1 ||
-      (infoToken1.name ?? '').toLowerCase().indexOf(search.toLowerCase()) >
-        -1 ||
-      (infoToken1.address ?? '').toLowerCase().indexOf(search.toLowerCase()) >
-        -1
+      (infoToken0.symbol ?? '').toLowerCase().indexOf(searchLowered) > -1 ||
+      (infoToken0.name ?? '').toLowerCase().indexOf(searchLowered) > -1 ||
+      (infoToken0.address ?? '').toLowerCase().indexOf(searchLowered) > -1 ||
+      (infoToken1.symbol ?? '').toLowerCase().indexOf(searchLowered) > -1 ||
+      (infoToken1.name ?? '').toLowerCase().indexOf(searchLowered) > -1 ||
+      (infoToken1.address ?? '').toLowerCase().indexOf(searchLowered) > -1
     );
   } else if (info.token) {
     return (
-      (info.token.symbol ?? '').toLowerCase().indexOf(search.toLowerCase()) >
-        -1 ||
-      (info.token.name ?? '').toLowerCase().indexOf(search.toLowerCase()) >
-        -1 ||
-      (info.token.address ?? '').toLowerCase().indexOf(search.toLowerCase()) >
-        -1
+      (info.token.symbol ?? '').toLowerCase().indexOf(searchLowered) > -1 ||
+      (info.token.name ?? '').toLowerCase().indexOf(searchLowered) > -1 ||
+      (info.token.address ?? '').toLowerCase().indexOf(searchLowered) > -1
     );
   } else {
     return false;
@@ -782,44 +789,60 @@ export function getStakingFees(
   return { oneYearFeeAPY, oneDayFee, accountFee };
 }
 
+const getHypotheticalRewardRate = (
+  token: Token,
+  stakedAmount?: TokenAmount,
+  totalStakedAmount?: TokenAmount,
+  totalRewardRate?: TokenAmount,
+): TokenAmount | undefined => {
+  if (!stakedAmount || !totalStakedAmount || !totalRewardRate) return;
+  return new TokenAmount(
+    token,
+    JSBI.greaterThan(totalStakedAmount.raw, JSBI.BigInt(0))
+      ? JSBI.divide(
+          JSBI.multiply(totalRewardRate.raw, stakedAmount.raw),
+          totalStakedAmount.raw,
+        )
+      : JSBI.BigInt(0),
+  );
+};
+
 // gets the dual rewards staking info from the network for the active chain id
 export function useDualStakingInfo(
+  chainId: ChainId,
   pairToFilterBy?: Pair | null,
   startIndex?: number,
   endIndex?: number,
   filter?: { search: string; isStaked: boolean },
 ): DualStakingInfo[] {
-  const { chainId, account } = useActiveWeb3React();
+  const { account } = useActiveWeb3React();
+  const dualStakingRewardsInfo = useDefaultDualFarmList();
 
   const info = useMemo(
     () =>
-      chainId
-        ? returnDualStakingInfo()
-            [chainId]?.slice(startIndex, endIndex)
-            ?.filter((stakingRewardInfo) =>
-              pairToFilterBy === undefined || pairToFilterBy === null
-                ? getSearchFiltered(
-                    stakingRewardInfo,
-                    filter ? filter.search : '',
-                  )
-                : pairToFilterBy.involvesToken(stakingRewardInfo.tokens[0]) &&
-                  pairToFilterBy.involvesToken(stakingRewardInfo.tokens[1]),
-            ) ?? []
-        : [],
-    [chainId, pairToFilterBy, startIndex, endIndex, filter],
+      Object.values(dualStakingRewardsInfo[chainId])
+        .filter((x) => !x.ended)
+        .slice(startIndex, endIndex)
+        .filter((stakingRewardInfo) =>
+          pairToFilterBy === undefined || pairToFilterBy === null
+            ? getSearchFiltered(stakingRewardInfo, filter ? filter.search : '')
+            : pairToFilterBy.involvesToken(stakingRewardInfo.tokens[0]) &&
+              pairToFilterBy.involvesToken(stakingRewardInfo.tokens[1]),
+        ),
+    [
+      chainId,
+      pairToFilterBy,
+      startIndex,
+      endIndex,
+      filter,
+      dualStakingRewardsInfo,
+    ],
   );
-
-  const uni = chainId ? GlobalValue.tokens.UNI[chainId] : undefined;
 
   const rewardsAddresses = useMemo(
     () => info.map(({ stakingRewardAddress }) => stakingRewardAddress),
     [info],
   );
-  // const pairAddresses = useMemo(() => info.map(({ pair }) => pair), [info]);
-
-  // useEffect(() => {
-  //   getDualBulkPairData(pairAddresses);
-  // }, [pairAddresses]);
 
   const accountArg = useMemo(() => [account ?? undefined], [account]);
 
@@ -865,7 +888,7 @@ export function useDualStakingInfo(
 
   const baseTokens = info.map((item) => {
     const unwrappedCurrency = unwrappedToken(item.baseToken);
-    const empty = unwrappedToken(returnTokenFromKey('EMPTY'));
+    const empty = unwrappedToken(GlobalValue.tokens.COMMON.EMPTY);
     return unwrappedCurrency === empty ? item.tokens[0] : item.baseToken;
   });
 
@@ -882,7 +905,7 @@ export function useDualStakingInfo(
   );
 
   return useMemo(() => {
-    if (!chainId || !uni) return [];
+    if (!chainId) return [];
 
     return rewardsAddresses.reduce<DualStakingInfo[]>(
       (memo, rewardsAddress, index) => {
@@ -909,55 +932,51 @@ export function useDualStakingInfo(
           !totalSupplyState.loading &&
           rewardRateAState &&
           !rewardRateAState.loading &&
-          rewardRateBState &&
-          !rewardRateBState.loading
+          rewardRateBState
         ) {
           const rateA = web3.utils.toWei(stakingInfo.rateA.toString());
           const rateB = web3.utils.toWei(stakingInfo.rateB.toString());
+          const lpFarmToken = getFarmLPToken(stakingInfo);
           const stakedAmount = initTokenAmountFromCallResult(
-            getFarmLPToken(stakingInfo),
+            lpFarmToken,
             balanceState,
           );
           const totalStakedAmount = initTokenAmountFromCallResult(
-            getFarmLPToken(stakingInfo),
+            lpFarmToken,
             totalSupplyState,
           );
-          const totalRewardRateA = new TokenAmount(uni, JSBI.BigInt(rateA));
-          const totalRewardRateB = new TokenAmount(uni, JSBI.BigInt(rateB));
+
+          // Previously Uni was used all over the place (which was an abstract to get the quick token)
+          // These rates are just used for informational purposes and the token should should not be used anywhere
+          // instead we will supply a dummy token, until this can be refactored properly.
+          const dummyToken = GlobalValue.tokens.COMMON.NEW_QUICK;
+          const totalRewardRateA = new TokenAmount(
+            dummyToken,
+            JSBI.BigInt(rateA),
+          );
+          const totalRewardRateB = new TokenAmount(
+            dummyToken,
+            JSBI.BigInt(rateB),
+          );
           //const pair = info[index].pair.toLowerCase();
           //const fees = (pairData && pairData[pair] ? pairData[pair].oneDayVolumeUSD * 0.0025: 0);
           const totalRewardRateA01 = initTokenAmountFromCallResult(
-            uni,
+            dummyToken,
             rewardRateAState,
           );
           const totalRewardRateB01 = initTokenAmountFromCallResult(
-            uni,
+            dummyToken,
             rewardRateBState,
           );
 
-          const getHypotheticalRewardRate = (
-            stakedAmount?: TokenAmount,
-            totalStakedAmount?: TokenAmount,
-            totalRewardRate?: TokenAmount,
-          ): TokenAmount | undefined => {
-            if (!stakedAmount || !totalStakedAmount || !totalRewardRate) return;
-            return new TokenAmount(
-              uni,
-              JSBI.greaterThan(totalStakedAmount.raw, JSBI.BigInt(0))
-                ? JSBI.divide(
-                    JSBI.multiply(totalRewardRate.raw, stakedAmount.raw),
-                    totalStakedAmount.raw,
-                  )
-                : JSBI.BigInt(0),
-            );
-          };
-
           const individualRewardRateA = getHypotheticalRewardRate(
+            dummyToken,
             stakedAmount,
             totalStakedAmount,
             totalRewardRateA01,
           );
           const individualRewardRateB = getHypotheticalRewardRate(
+            dummyToken,
             stakedAmount,
             totalStakedAmount,
             totalRewardRateB01,
@@ -1018,11 +1037,11 @@ export function useDualStakingInfo(
             name: stakingInfo.name,
             lp: stakingInfo.lp,
             earnedAmountA: initTokenAmountFromCallResult(
-              uni,
+              dummyToken,
               earnedAAmountState,
             ),
             earnedAmountB: initTokenAmountFromCallResult(
-              uni,
+              dummyToken,
               earnedBAmountState,
             ),
             rewardRateA: individualRewardRateA,
@@ -1031,7 +1050,6 @@ export function useDualStakingInfo(
             totalRewardRateB: totalRewardRateB,
             stakedAmount: stakedAmount,
             totalStakedAmount: totalStakedAmount,
-            getHypotheticalRewardRate,
             baseToken: stakingInfo.baseToken,
             pair: stakingInfo.pair,
             rateA: stakingInfo.rateA,
@@ -1062,7 +1080,6 @@ export function useDualStakingInfo(
     info,
     rewardsAddresses,
     totalSupplies,
-    uni,
     rewardRatesA,
     rewardRatesB,
     baseTokens,
@@ -1078,22 +1095,83 @@ export function useDualStakingInfo(
   );
 }
 
-export function useLairInfo(): LairInfo {
+export function useOldLairInfo(): LairInfo {
+  const lairContract = useLairContract();
+  const quickContract = useQUICKContract();
+  const lairAddress = GlobalConst.addresses.LAIR_ADDRESS;
+  const quickToken = GlobalValue.tokens.COMMON.OLD_QUICK;
+  const dQuickToken = GlobalValue.tokens.COMMON.OLD_DQUICK;
+
+  return useLairInfo(
+    lairContract,
+    quickContract,
+    lairAddress,
+    quickToken,
+    dQuickToken,
+  );
+}
+
+export function useNewLairInfo(): LairInfo {
+  const lairContract = useNewLairContract();
+  const quickContract = useNewQUICKContract();
+  const lairAddress = GlobalConst.addresses.NEW_LAIR_ADDRESS;
+  const quickToken = GlobalValue.tokens.COMMON.NEW_QUICK;
+  const dQuickToken = GlobalValue.tokens.COMMON.NEW_DQUICK;
+
+  return useLairInfo(
+    lairContract,
+    quickContract,
+    lairAddress,
+    quickToken,
+    dQuickToken,
+  );
+}
+
+function useLairInfo(
+  lairContract: Contract | null,
+  quickContract: Contract | null,
+  lairAddress: string,
+  quickToken: Token,
+  dQuickToken: Token,
+) {
   const { account } = useActiveWeb3React();
 
   let accountArg = useMemo(() => [account ?? undefined], [account]);
+  const inputs = ['1000000000000000000'];
+  const _dQuickTotalSupply = useSingleCallResult(
+    lairContract,
+    'totalSupply',
+    [],
+  );
 
-  const lair = useLairContract();
-  const quick = useQUICKContract();
+  const quickBalance = useSingleCallResult(
+    lairContract,
+    'QUICKBalance',
+    accountArg,
+  );
+  const dQuickBalance = useSingleCallResult(
+    lairContract,
+    'balanceOf',
+    accountArg,
+  );
+  const dQuickToQuick = useSingleCallResult(
+    lairContract,
+    'dQUICKForQUICK',
+    inputs,
+  );
+  const quickToDQuick = useSingleCallResult(
+    lairContract,
+    'QUICKForDQUICK',
+    inputs,
+  );
 
-  const _dQuickTotalSupply = useSingleCallResult(lair, 'totalSupply', []);
+  accountArg = [GlobalConst.addresses.NEW_LAIR_ADDRESS ?? undefined];
 
-  const quickBalance = useSingleCallResult(lair, 'QUICKBalance', accountArg);
-  const dQuickBalance = useSingleCallResult(lair, 'balanceOf', accountArg);
-
-  accountArg = [GlobalConst.addresses.LAIR_ADDRESS ?? undefined];
-
-  const lairsQuickBalance = useSingleCallResult(quick, 'balanceOf', accountArg);
+  const lairsQuickBalance = useSingleCallResult(
+    quickContract,
+    'balanceOf',
+    accountArg,
+  );
 
   useEffect(() => {
     getOneDayVolume();
@@ -1101,66 +1179,73 @@ export function useLairInfo(): LairInfo {
 
   return useMemo(() => {
     return {
-      lairAddress: GlobalConst.addresses.LAIR_ADDRESS,
+      lairAddress: GlobalConst.addresses.NEW_LAIR_ADDRESS,
+      dQUICKtoQUICK: new TokenAmount(
+        quickToken,
+        JSBI.BigInt(dQuickToQuick?.result?.[0] ?? 0),
+      ),
+      QUICKtodQUICK: new TokenAmount(
+        dQuickToken,
+        JSBI.BigInt(quickToDQuick?.result?.[0] ?? 0),
+      ),
       dQUICKBalance: new TokenAmount(
-        returnTokenFromKey('DQUICK'),
+        dQuickToken,
         JSBI.BigInt(dQuickBalance?.result?.[0] ?? 0),
       ),
       QUICKBalance: new TokenAmount(
-        returnTokenFromKey('QUICK'),
+        quickToken,
         JSBI.BigInt(quickBalance?.result?.[0] ?? 0),
       ),
       totalQuickBalance: new TokenAmount(
-        returnTokenFromKey('QUICK'),
+        quickToken,
         JSBI.BigInt(lairsQuickBalance?.result?.[0] ?? 0),
       ),
       dQuickTotalSupply: new TokenAmount(
-        returnTokenFromKey('DQUICK'),
+        dQuickToken,
         JSBI.BigInt(_dQuickTotalSupply?.result?.[0] ?? 0),
       ),
       oneDayVol: oneDayVol,
     };
-  }, [quickBalance, dQuickBalance, _dQuickTotalSupply, lairsQuickBalance]);
+  }, [
+    quickBalance,
+    dQuickBalance,
+    _dQuickTotalSupply,
+    lairsQuickBalance,
+    dQuickToQuick,
+    quickToDQuick,
+    dQuickToken,
+    quickToken,
+  ]);
 }
 
 // gets the staking info from the network for the active chain id
 export function useStakingInfo(
+  chainId: ChainId,
   pairToFilterBy?: Pair | null,
   startIndex?: number,
   endIndex?: number,
   filter?: { search: string; isStaked: boolean },
 ): StakingInfo[] {
-  const { chainId, account } = useActiveWeb3React();
-
+  const { account } = useActiveWeb3React();
+  const activeFarms = useDefaultFarmList()[chainId];
   const info = useMemo(
     () =>
-      chainId
-        ? returnStakingInfo()
-            [chainId]?.slice(startIndex, endIndex)
-            ?.filter((stakingRewardInfo) =>
-              pairToFilterBy === undefined || pairToFilterBy === null
-                ? getSearchFiltered(
-                    stakingRewardInfo,
-                    filter ? filter.search : '',
-                  )
-                : pairToFilterBy.involvesToken(stakingRewardInfo.tokens[0]) &&
-                  pairToFilterBy.involvesToken(stakingRewardInfo.tokens[1]),
-            ) ?? []
-        : [],
-    [chainId, pairToFilterBy, startIndex, endIndex, filter],
+      Object.values(activeFarms)
+        .filter((x) => !x.ended)
+        .slice(startIndex, endIndex)
+        .filter((stakingRewardInfo) =>
+          pairToFilterBy === undefined || pairToFilterBy === null
+            ? getSearchFiltered(stakingRewardInfo, filter ? filter.search : '')
+            : pairToFilterBy.involvesToken(stakingRewardInfo.tokens[0]) &&
+              pairToFilterBy.involvesToken(stakingRewardInfo.tokens[1]),
+        ),
+    [pairToFilterBy, startIndex, endIndex, filter, activeFarms],
   );
-
-  const uni = chainId ? GlobalValue.tokens.UNI[chainId] : undefined;
 
   const rewardsAddresses = useMemo(
     () => info.map(({ stakingRewardAddress }) => stakingRewardAddress),
     [info],
   );
-  // const pairAddresses = useMemo(() => info.map(({ pair }) => pair), [info]);
-
-  // useEffect(() => {
-  //   getBulkPairData(allPairAddress);
-  // }, [allPairAddress]);
 
   const accountArg = useMemo(() => [account ?? undefined], [account]);
 
@@ -1192,7 +1277,7 @@ export function useStakingInfo(
 
   const baseTokens = info.map((item) => {
     const unwrappedCurrency = unwrappedToken(item.baseToken);
-    const empty = unwrappedToken(returnTokenFromKey('EMPTY'));
+    const empty = GlobalValue.tokens.COMMON.EMPTY;
     return unwrappedCurrency === empty ? item.tokens[0] : item.baseToken;
   });
   const rewardTokens = info.map((item) => item.rewardToken);
@@ -1214,7 +1299,7 @@ export function useStakingInfo(
   const stakingPairs = usePairs(info.map((item) => item.tokens));
 
   return useMemo(() => {
-    if (!chainId || !uni) return [];
+    if (!chainId) return [];
 
     return rewardsAddresses.reduce<StakingInfo[]>(
       (memo, rewardsAddress, index) => {
@@ -1238,49 +1323,32 @@ export function useStakingInfo(
           rewardRateState &&
           !rewardRateState.loading
         ) {
-          // get the LP token
-          const tokens = stakingInfo.tokens;
-          const dummyPair = new Pair(
-            new TokenAmount(tokens[0], '0'),
-            new TokenAmount(tokens[1], '0'),
-          );
-
-          // check for account, if no account set to 0
-          const lp = stakingInfo.lp;
           const rate = web3.utils.toWei(stakingInfo.rate.toString());
+          const lpFarmToken = getFarmLPToken(stakingInfo);
           const stakedAmount = initTokenAmountFromCallResult(
-            getFarmLPToken(stakingInfo),
+            lpFarmToken,
             balanceState,
           );
           const totalStakedAmount = initTokenAmountFromCallResult(
-            getFarmLPToken(stakingInfo),
+            lpFarmToken,
             totalSupplyState,
           );
-          const totalRewardRate = new TokenAmount(uni, JSBI.BigInt(rate));
-          //const pair = info[index].pair.toLowerCase();
-          //const fees = (pairData && pairData[pair] ? pairData[pair].oneDayVolumeUSD * 0.0025: 0);
+
+          // Previously Uni was used all over the place (which was an abstract to get the quick token)
+          // These rates are just used for informational purposes and the token should should not be used anywhere
+          // instead we will supply a dummy token, until this can be refactored properly.
+          const dummyToken = GlobalValue.tokens.COMMON.NEW_QUICK;
+          const totalRewardRate = new TokenAmount(
+            dummyToken,
+            JSBI.BigInt(rate),
+          );
           const totalRewardRate01 = initTokenAmountFromCallResult(
-            uni,
+            dummyToken,
             rewardRateState,
           );
-          const getHypotheticalRewardRate = (
-            stakedAmount?: TokenAmount,
-            totalStakedAmount?: TokenAmount,
-            totalRewardRate?: TokenAmount,
-          ): TokenAmount | undefined => {
-            if (!stakedAmount || !totalStakedAmount || !totalRewardRate) return;
-            return new TokenAmount(
-              uni,
-              JSBI.greaterThan(totalStakedAmount.raw, JSBI.BigInt(0))
-                ? JSBI.divide(
-                    JSBI.multiply(totalRewardRate.raw, stakedAmount.raw),
-                    totalStakedAmount.raw,
-                  )
-                : JSBI.BigInt(0),
-            );
-          };
 
           const individualRewardRate = getHypotheticalRewardRate(
+            dummyToken,
             stakedAmount,
             totalStakedAmount,
             totalRewardRate01,
@@ -1342,12 +1410,14 @@ export function useStakingInfo(
             lp: stakingInfo.lp,
             rewardToken: stakingInfo.rewardToken,
             rewardTokenPrice,
-            earnedAmount: initTokenAmountFromCallResult(uni, earnedAmountState),
+            earnedAmount: initTokenAmountFromCallResult(
+              dummyToken,
+              earnedAmountState,
+            ),
             rewardRate: individualRewardRate,
             totalRewardRate: totalRewardRate,
             stakedAmount: stakedAmount,
             totalStakedAmount: totalStakedAmount,
-            getHypotheticalRewardRate,
             baseToken: stakingInfo.baseToken,
             pair: stakingInfo.pair,
             rate: stakingInfo.rate,
@@ -1373,7 +1443,6 @@ export function useStakingInfo(
     info,
     rewardsAddresses,
     totalSupplies,
-    uni,
     rewardRates,
     usdPricesRewardTokens,
     baseTokens,
@@ -1388,32 +1457,27 @@ export function useStakingInfo(
 }
 
 export function useOldStakingInfo(
+  chainId: ChainId,
   pairToFilterBy?: Pair | null,
   startIndex?: number,
   endIndex?: number,
   filter?: { search: string; isStaked: boolean },
 ): StakingInfo[] {
-  const { chainId, account } = useActiveWeb3React();
-
+  const { account } = useActiveWeb3React();
+  const oldFarms = useDefaultFarmList()[chainId];
   const info = useMemo(
     () =>
-      chainId
-        ? returnStakingInfo('old')
-            [chainId]?.slice(startIndex, endIndex)
-            ?.filter((stakingRewardInfo) =>
-              pairToFilterBy === undefined || pairToFilterBy === null
-                ? getSearchFiltered(
-                    stakingRewardInfo,
-                    filter ? filter.search : '',
-                  )
-                : pairToFilterBy.involvesToken(stakingRewardInfo.tokens[0]) &&
-                  pairToFilterBy.involvesToken(stakingRewardInfo.tokens[1]),
-            ) ?? []
-        : [],
-    [chainId, pairToFilterBy, startIndex, endIndex, filter],
+      Object.values(oldFarms)
+        .filter((x) => x.ended)
+        .slice(startIndex, endIndex)
+        .filter((stakingRewardInfo) =>
+          pairToFilterBy === undefined || pairToFilterBy === null
+            ? getSearchFiltered(stakingRewardInfo, filter ? filter.search : '')
+            : pairToFilterBy.involvesToken(stakingRewardInfo.tokens[0]) &&
+              pairToFilterBy.involvesToken(stakingRewardInfo.tokens[1]),
+        ),
+    [pairToFilterBy, startIndex, endIndex, filter, oldFarms],
   );
-
-  const uni = chainId ? GlobalValue.tokens.UNI[chainId] : undefined;
 
   const rewardsAddresses = useMemo(
     () => info.map(({ stakingRewardAddress }) => stakingRewardAddress),
@@ -1444,7 +1508,7 @@ export function useOldStakingInfo(
   const stakingPairs = usePairs(info.map((item) => item.tokens));
 
   return useMemo(() => {
-    if (!chainId || !uni) return [];
+    if (!chainId) return [];
 
     return rewardsAddresses.reduce<StakingInfo[]>(
       (memo, rewardsAddress, index) => {
@@ -1465,34 +1529,24 @@ export function useOldStakingInfo(
           totalSupplyState &&
           !totalSupplyState.loading
         ) {
+          const lpFarmToken = getFarmLPToken(stakingInfo);
           const stakedAmount = initTokenAmountFromCallResult(
-            getFarmLPToken(stakingInfo),
+            lpFarmToken,
             balanceState,
           );
           const totalStakedAmount = initTokenAmountFromCallResult(
-            getFarmLPToken(stakingInfo),
+            lpFarmToken,
             totalSupplyState,
           );
-          const totalRewardRate = new TokenAmount(uni, JSBI.BigInt(0));
 
-          const getHypotheticalRewardRate = (
-            stakedAmount?: TokenAmount,
-            totalStakedAmount?: TokenAmount,
-            totalRewardRate?: TokenAmount,
-          ): TokenAmount | undefined => {
-            if (!stakedAmount || !totalStakedAmount || !totalRewardRate) return;
-            return new TokenAmount(
-              uni,
-              JSBI.greaterThan(totalStakedAmount.raw, JSBI.BigInt(0))
-                ? JSBI.divide(
-                    JSBI.multiply(totalRewardRate.raw, stakedAmount.raw),
-                    totalStakedAmount.raw,
-                  )
-                : JSBI.BigInt(0),
-            );
-          };
+          // Previously Uni was used all over the place (which was an abstract to get the quick token)
+          // These rates are just used for informational purposes and the token should should not be used anywhere
+          // instead we will supply a dummy token, until this can be refactored properly.
+          const dummyToken = GlobalValue.tokens.COMMON.NEW_QUICK;
+          const totalRewardRate = new TokenAmount(dummyToken, JSBI.BigInt(0));
 
           const individualRewardRate = getHypotheticalRewardRate(
+            dummyToken,
             stakedAmount,
             totalStakedAmount,
             totalRewardRate,
@@ -1508,13 +1562,15 @@ export function useOldStakingInfo(
             lp: stakingInfo.lp,
             rewardToken: stakingInfo.rewardToken,
             rewardTokenPrice: 0,
-            earnedAmount: initTokenAmountFromCallResult(uni, earnedAmountState),
+            earnedAmount: initTokenAmountFromCallResult(
+              dummyToken,
+              earnedAmountState,
+            ),
             rewardRate: individualRewardRate,
             totalRewardRate: totalRewardRate,
             stakedAmount: stakedAmount,
             totalStakedAmount: totalStakedAmount,
             baseToken: stakingInfo.baseToken,
-            getHypotheticalRewardRate,
             pair: stakingInfo.pair,
             rate: stakingInfo.rate,
             oneYearFeeAPY: 0,
@@ -1534,34 +1590,12 @@ export function useOldStakingInfo(
     info,
     rewardsAddresses,
     totalSupplies,
-    uni,
     stakingPairs,
   ]).filter((stakingInfo) =>
     filter && filter.isStaked
       ? stakingInfo.stakedAmount && stakingInfo.stakedAmount.greaterThan('0')
       : true,
   );
-}
-
-export function useTotalUniEarned(): TokenAmount | undefined {
-  const { chainId } = useActiveWeb3React();
-  const uni = chainId ? GlobalValue.tokens.UNI[chainId] : undefined;
-  const newStakingInfos = useStakingInfo();
-  const oldStakingInfos = useOldStakingInfo();
-  const stakingInfos = newStakingInfos.concat(oldStakingInfos);
-
-  return useMemo(() => {
-    if (!uni) return undefined;
-    return (
-      stakingInfos?.reduce(
-        (accumulator, stakingInfo) =>
-          accumulator.add(
-            stakingInfo.earnedAmount ?? new TokenAmount(uni, '0'),
-          ),
-        new TokenAmount(uni, '0'),
-      ) ?? new TokenAmount(uni, '0')
-    );
-  }, [stakingInfos, uni]);
 }
 
 export function useDQUICKtoQUICK() {
@@ -1575,7 +1609,7 @@ export function useDQUICKtoQUICK() {
   if (dQuickToQuickState.loading || dQuickToQuickState.error) return 0;
   return Number(
     new TokenAmount(
-      returnTokenFromKey('QUICK'),
+      GlobalValue.tokens.COMMON.OLD_QUICK,
       JSBI.BigInt(dQuickToQuickState?.result?.[0] ?? 0),
     ).toExact(),
   );
