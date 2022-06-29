@@ -1,0 +1,109 @@
+.farming-tier {
+
+    &-wrapper {
+            margin-left: -1rem;
+            margin-right: -1rem;
+            overflow-x: auto; 
+            scroll-padding: 0 1rem;
+            scroll-snap-type: x mandatory;
+            width: calc(100% + 2rem);
+    }
+
+    align-items: flex-start;
+    color: white;
+    background-color: var(--dark-ebony-clay);
+    border-radius: 8px;
+    padding: 0;
+    border: 1px solid #34434F;
+    transition-duration: .2s;
+    min-width: 147px;
+    margin-right: 1rem;
+    scroll-snap-align: start;
+    white-space: nowrap;
+
+    &[data-selected=true] {
+        border-color: var(--primary);
+        box-shadow: 0 0 8px rgba(39, 151, 255, .45);
+    }
+
+    &:last-of-type {
+        margin-right: 0;
+    }
+
+    &__balance {
+        background-color: var(--ebony-clay);
+        border: 1px solid #34434f;
+
+        &-title {
+            padding: 10px 1rem;
+            background-color: var(--dark-ebony-clay);
+            border-radius: 8px 0 0 8px;
+            border-right: 1px solid #34434f;
+        }
+
+        &-buy {
+            padding: 9px 1rem;
+            border-radius: 0 8px 8px 0;
+            background-color: var(--primary);
+            color: var(--white);
+            font-size: 15px;
+            border: 1px solid var(--primary-weak);
+
+            &:hover {
+                background-color: var(--primary-hover);
+            }
+        }
+    }
+
+    &__hint {
+
+        padding-bottom: 2px ;
+
+        color: #347CC9;
+        & > a {
+            color: inherit;
+        }
+
+        &:hover {
+            // text-decoration: underline;
+            box-shadow: 0 -1px inset currentColor;
+        }
+    }
+
+    &__header {
+        border-radius: 8px 8px 0 0;
+        border-bottom: 1px solid #34434f;
+    }
+    
+    &__body {
+        background-color: var(--ebony-clay);
+        border-radius: 0 0 8px 8px;
+    }
+
+    &__img {
+        font-size: 40px;
+    }
+
+    &__title {
+        font-size: 20px;
+    }
+
+    &__locked, &__rewards {
+        width: 100%;
+        font-size: 15px;
+    }
+
+    &__locked {
+        &-value {
+            color: #57a5ea;
+        }
+    }
+    
+    &__rewards {
+        
+        &-value {
+            color: #33FF89;
+        }
+        
+    }
+}
