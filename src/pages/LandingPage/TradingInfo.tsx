@@ -11,7 +11,7 @@ export const TradingInfo: React.FC<{ globalData: any }> = ({ globalData }) => {
   const lairInfo = useOldLairInfo();
   const [openStakeModal, setOpenStakeModal] = useState(false);
 
-  const dQUICKAPY = useLairDQUICKAPY(true, lairInfo);
+  const dQUICKAPY = useLairDQUICKAPY(false, lairInfo);
   //TODO: Support Multichain
   const totalRewardsUSD = useTotalRewardsDistributed(ChainId.MATIC);
   const { t } = useTranslation();
