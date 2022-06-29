@@ -1165,7 +1165,7 @@ function useLairInfo(
     inputs,
   );
 
-  accountArg = [GlobalConst.addresses.NEW_LAIR_ADDRESS ?? undefined];
+  accountArg = [lairAddress ?? undefined];
 
   const lairsQuickBalance = useSingleCallResult(
     quickContract,
