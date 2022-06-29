@@ -1,21 +1,33 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Box } from '@material-ui/core';
 import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
 import 'components/styles/CustomMenu.scss';
 
 interface CustomMenuItem {
-  text: string;
+  text?: string;
   onClick: () => void;
 }
 
 interface CustomMenuProps {
-  title: string;
+  title?: string;
   menuItems: CustomMenuItem[];
+  selectedValue?: string;
 }
 
-const CustomMenu: React.FC<CustomMenuProps> = ({ title, menuItems }) => {
+const CustomMenu: React.FC<CustomMenuProps> = ({
+  title,
+  menuItems,
+  selectedValue,
+}) => {
   const [openMenu, setOpenMenu] = React.useState(false);
-  const [menuItem, setMenuItem] = React.useState<CustomMenuItem | null>(null);
+  const [menuItem, setMenuItem] = React.useState<CustomMenuItem | undefined>(
+    undefined,
+  );
+  useEffect(() => {
+    if (selectedValue) {
+      setMenuItem(menuItems.find((item) => item.text === selectedValue));
+    }
+  }, [selectedValue, menuItems]);
   return (
     <Box className='customMenuWrapper'>
       <Box className='customMenuHeader' onClick={() => setOpenMenu(!openMenu)}>

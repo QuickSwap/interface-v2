@@ -6,7 +6,7 @@ export const useBorrowLimit = (
   options?: { ignoreIsEnabledCheckFor: string },
 ) => {
   const maxBorrow = useMemo(() => {
-    if (!assets) return;
+    if (!assets) return 0;
     let maxBorrow = 0;
     for (let i = 0; i < assets.length; i++) {
       const asset = assets[i];

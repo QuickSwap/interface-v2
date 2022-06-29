@@ -1,4 +1,5 @@
-import { Comptroller, CTokenV2, MarketSDK } from 'market-sdk';
+import { Comptroller, MarketSDK } from 'market-sdk';
+import { Token, ChainId } from '@uniswap/sdk';
 import { BN } from 'utils/bigUtils';
 import { USDPricedPoolAsset } from './fetchPoolData';
 import { ETH_TOKEN_DATA } from './fetchTokenData';
@@ -17,6 +18,19 @@ export const convertMantissaToAPY = (mantissa: any, dayRange: number) => {
 
 export const convertMantissaToAPR = (mantissa: any) => {
   return (mantissa * BlocksPerDay * 365) / 1e16;
+};
+
+export const getPoolAssetToken = (
+  asset: USDPricedPoolAsset,
+  chainId?: ChainId,
+) => {
+  return new Token(
+    chainId ?? ChainId.MATIC,
+    asset.underlyingToken,
+    Number(asset.underlyingDecimals),
+    asset.underlyingSymbol,
+    asset.underlyingName,
+  );
 };
 
 const fetchGasForCall = async (

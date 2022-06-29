@@ -1,6 +1,116 @@
 @use 'styles/variables' as *;
 @use 'styles/breakpoints' as *;
 
+.lendCard {
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: 500ms;
+  border-radius: 20px;
+  background-color: $secondary2;
+  width: 33%;
+  @include media("screen", "<phone") {
+    width: 100%;
+  }
+  & > div:last-child {
+    transition: 500ms;
+  }
+  &:hover {
+    border-color: $primary;
+    & > div:last-child {
+      color: $primary;
+    }
+  }
+}
+
+.lendCardTop {
+  padding: 28px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.lendCardContent {
+  display: flex;
+  border-top: 1px solid $divider;
+  border-bottom: 1px solid $divider;
+  & > div {
+    flex: 1;
+    text-align: center;
+    padding: 18px 0;
+    border-right: 1px solid $divider;
+    & p {
+      margin-top: 10px;
+    }
+    &:last-child {
+      border-right: none;
+    }
+  }
+}
+
+.lendBorrowLimitWrapper {
+  background-color: $secondary2;
+  height: 40px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  border-radius: 8px;
+  flex-wrap: wrap;
+  @include media("screen", "<phone") {
+    height: auto;
+    padding: 8px 0;
+  }
+}
+
+.lendBorrowLimitText {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  border-right: 1px solid $divider;
+  padding: 0 20px;
+  @include media("screen", "<phone") {
+    width: 100%;
+    padding: 0 12px;
+  }
+}
+
+.lendBorrowLimitLineWrapper {
+  display: flex;
+  align-items: center;
+  padding: 0 30px;
+  flex: 1;
+  @include media("screen", "<phone") {
+    width: 100%;
+    padding: 8px 12px 0;
+  }
+}
+
+.lendBorrowLimitLine {
+  height: 4px;
+  background-color: $grey31;
+  position: relative;
+  flex: 1;
+  & > div {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    width: 6px;
+    border-radius: 4px;
+  }
+  & .lendBorrowLimitNormal {
+    background-color: $successMain;
+    width: 30%;
+    left: 0;
+  }
+  & .lendBorrowLimitWarning {
+    background-color: $yellow1;
+    left: calc(60% - 6px);
+  }
+  & .lendBorrowLimitError {
+    background-color: $errorMain;
+    left: 70%;
+  }
+}
+
 .lendPageData {
   flex: 1;
   background-color: $secondary2;
@@ -43,13 +153,9 @@
 }
 
 .poolDetailsItemWrapper {
-  flex: 1;
   border-radius: 12px;
   background-color: $secondary2;
-  min-width: 35%;
-  @include media("screen", "<phone") {
-    min-width: 55%;
-  }  
+  height: 100%;
 }
 
 .poolDetailsItemTop {
@@ -59,7 +165,12 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
   position: relative;
+  @include media("screen", "<phone") {
+    padding: 12px 24px;
+    height: auto;
+  }
 }
 
 .poolStatsInfoItem {
