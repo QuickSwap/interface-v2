@@ -17,6 +17,7 @@ import dualFarms from './dualfarms/reducer';
 import syrups from './syrups/reducer';
 import burn from './burn/reducer';
 import multicall from './multicall/reducer';
+import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 
 const PERSISTED_KEYS: string[] = [
   'user',
@@ -56,3 +57,5 @@ export default store;
 
 export type AppState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
+export const useAppSelector: TypedUseSelectorHook<AppState> = useSelector
+export const useAppDispatch = () => useDispatch<AppDispatch>()

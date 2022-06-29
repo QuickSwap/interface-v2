@@ -1750,7 +1750,6 @@ export function getTokenFromKey(
 
   const wrappedTokenInfo = tokenMap[tokenData.chainId][tokenData.address];
   if (!wrappedTokenInfo) {
-    console.log('missing from token list:' + tokenKey);
     return tokenData;
   }
 

@@ -138,6 +138,7 @@
     "@material-ui/lab": "^4.0.0-alpha.60",
     "apexcharts": "3.32.1",
     "i18next-http-backend": "^1.4.1",
+    "numbro": "^2.3.6",
     "react-apexcharts": "1.3.9",
     "react-cool-inview": "^2.0.8",
     "react-ga": "^3.3.0",

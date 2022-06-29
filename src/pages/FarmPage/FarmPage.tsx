@@ -46,7 +46,7 @@ const FarmPage: React.FC = () => {
         setFarmIndex(GlobalConst.farmIndex.LPFARM_INDEX);
         setIsV3(false);
       },
-      condition: farmIndex === GlobalConst.farmIndex.LPFARM_INDEX,
+      condition: !isV3 && farmIndex === GlobalConst.farmIndex.LPFARM_INDEX,
     },
     {
       text: t('dualMining'),
@@ -54,7 +54,7 @@ const FarmPage: React.FC = () => {
         setFarmIndex(GlobalConst.farmIndex.DUALFARM_INDEX);
         setIsV3(false);
       },
-      condition: farmIndex === GlobalConst.farmIndex.DUALFARM_INDEX,
+      condition: !isV3 && farmIndex === GlobalConst.farmIndex.DUALFARM_INDEX,
     },
     {
       text: t('v3Mining'),
