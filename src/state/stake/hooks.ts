@@ -1207,6 +1207,7 @@ function useLairInfo(
       oneDayVol: oneDayVol,
     };
   }, [
+    lairAddress,
     quickBalance,
     dQuickBalance,
     _dQuickTotalSupply,
