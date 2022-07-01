@@ -1,4 +1,4 @@
 export enum FarmingType {
-    ETERNAL = 0,
-    FINITE = 1
+  ETERNAL = 0,
+  FINITE = 1,
 }

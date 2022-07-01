@@ -1,3 +1,3 @@
-import { Currency } from '@uniswap/sdk-core'
+import { Currency } from '@uniswap/sdk-core';
 
-export type WrappedCurrency = Currency & { address: string, symbol: string }
+export type WrappedCurrency = Currency & { address: string; symbol: string };
