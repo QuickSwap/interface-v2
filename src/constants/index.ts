@@ -91,6 +91,8 @@ export const GlobalConst = {
     DEFAULT_DUAL_FARMS_LIST_URL:
       process.env.REACT_APP_DUAL_STAKING_LIST_DEFAULT_URL + '',
     DEFAULT_SYRUP_LIST_URL: process.env.REACT_APP_SYRUP_LIST_DEFAULT_URL + '',
+    ANALYTICS_TOKENS_COUNT: 200,
+    ANALYTICS_PAIRS_COUNT: 400,
   },
   analyticChart: {
     ONE_MONTH_CHART: 1,

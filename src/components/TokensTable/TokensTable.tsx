@@ -14,11 +14,15 @@ import { useTranslation } from 'react-i18next';
 
 interface TokensTableProps {
   data: any[];
+  showPagination?: boolean;
 }
 
 const liquidityHeadCellIndex = 4;
 
-const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
+const TokensTable: React.FC<TokensTableProps> = ({
+  data,
+  showPagination = true,
+}) => {
   const { t } = useTranslation();
   const tokenHeadCells = [
     {
@@ -202,7 +206,7 @@ const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
     <CustomTable
       defaultOrderBy={tokenHeadCells[liquidityHeadCellIndex]}
       defaultOrder='desc'
-      showPagination={data.length > GlobalConst.utils.ROWSPERPAGE}
+      showPagination={showPagination}
       headCells={tokenHeadCells}
       rowsPerPage={GlobalConst.utils.ROWSPERPAGE}
       data={data}

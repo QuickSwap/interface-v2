@@ -210,7 +210,7 @@ const Search: React.FC = () => {
   });
 
   return (
-    <Box position='relative'>
+    <Box className='searchWidgetWrapper'>
       <Box className='searchWidgetInput'>
         <input
           placeholder={t('searchTokenPair')}
@@ -225,7 +225,7 @@ const Search: React.FC = () => {
       </Box>
       {menuOpen && (
         <div ref={wrapperRef} className='searchWidgetContent'>
-          <p>{t('pairs')}</p>
+          <h6>{t('pairs')}</h6>
           {filteredPairs.slice(0, pairsShown).map((val, ind) => {
             const currency0 = new Token(
               ChainId.MATIC,
@@ -239,9 +239,8 @@ const Search: React.FC = () => {
             );
             return (
               <Box
-                mt={1}
                 key={ind}
-                className='flex items-center cursor-pointer'
+                className='searchWidgetRow'
                 onClick={() => history.push(`/analytics/pair/${val.id}`)}
               >
                 <DoubleCurrencyLogo
@@ -249,20 +248,20 @@ const Search: React.FC = () => {
                   currency1={currency1}
                   size={28}
                 />
-                <small style={{ marginLeft: 8 }}>
+                <small>
                   {val.token0.symbol} - {val.token1.symbol} {t('pair')}
                 </small>
               </Box>
             );
           })}
           <Box
-            className='cursor-pointer'
+            className='searchWidgetShowMore'
             onClick={() => setPairsShown(pairsShown + 5)}
-            margin='8px 0'
+            margin='8px 0 16px'
           >
             <small>{t('showMore')}</small>
           </Box>
-          <p>{t('tokens')}</p>
+          <h6>{t('tokens')}</h6>
           {filteredTokens.slice(0, tokensShown).map((val, ind) => {
             const currency = new Token(
               ChainId.MATIC,
@@ -271,22 +270,19 @@ const Search: React.FC = () => {
             );
             return (
               <Box
-                mt={1}
                 key={ind}
-                className='flex items-center cursor-pointer'
+                className='searchWidgetRow'
                 onClick={() => history.push(`/analytics/token/${val.id}`)}
               >
                 <CurrencyLogo currency={currency} size='28px' />
-                <Box ml={1}>
-                  <small>
-                    {val.name} {val.symbol}
-                  </small>
-                </Box>
+                <small>
+                  {val.name} {val.symbol}
+                </small>
               </Box>
             );
           })}
           <Box
-            className='cursor-pointer'
+            className='searchWidgetShowMore'
             mt={1}
             onClick={() => setTokensShown(tokensShown + 5)}
           >

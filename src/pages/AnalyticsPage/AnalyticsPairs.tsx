@@ -4,6 +4,7 @@ import { PairTable } from 'components';
 import { getEthPrice, getTopPairs, getBulkPairData } from 'utils';
 import { Skeleton } from '@material-ui/lab';
 import { useTranslation } from 'react-i18next';
+import { GlobalConst } from 'constants/index';
 
 const AnalyticsPairs: React.FC = () => {
   const { t } = useTranslation();
@@ -13,7 +14,7 @@ const AnalyticsPairs: React.FC = () => {
     const fetchTopPairs = async () => {
       updateTopPairs(null);
       const [newPrice] = await getEthPrice();
-      const pairs = await getTopPairs(500);
+      const pairs = await getTopPairs(GlobalConst.utils.ANALYTICS_PAIRS_COUNT);
       const formattedPairs = pairs
         ? pairs.map((pair: any) => {
             return pair.id;
