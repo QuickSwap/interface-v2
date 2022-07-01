@@ -207,7 +207,7 @@ const Search: React.FC = () => {
     return () => {
       document.removeEventListener('click', handleClick);
     };
-  });
+  }, []);
 
   return (
     <Box className='searchWidgetWrapper'>
@@ -257,7 +257,6 @@ const Search: React.FC = () => {
           <Box
             className='searchWidgetShowMore'
             onClick={() => setPairsShown(pairsShown + 5)}
-            margin='8px 0 16px'
           >
             <small>{t('showMore')}</small>
           </Box>
@@ -283,7 +282,6 @@ const Search: React.FC = () => {
           })}
           <Box
             className='searchWidgetShowMore'
-            mt={1}
             onClick={() => setTokensShown(tokensShown + 5)}
           >
             <small>{t('showMore')}</small>
