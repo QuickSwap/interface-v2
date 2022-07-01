@@ -63,6 +63,7 @@ export const PAIR_SEARCH = gql`
   query pairs($tokens: [Bytes]!, $id: String) {
     as0: pairs(where: { token0_in: $tokens }) {
       id
+      trackedReserveETH
       token0 {
         id
         symbol
@@ -78,6 +79,7 @@ export const PAIR_SEARCH = gql`
     }
     as1: pairs(where: { token1_in: $tokens }) {
       id
+      trackedReserveETH
       token0 {
         id
         symbol
@@ -93,6 +95,7 @@ export const PAIR_SEARCH = gql`
     }
     asAddress: pairs(where: { id: $id }) {
       id
+      trackedReserveETH
       token0 {
         id
         symbol
@@ -237,6 +240,7 @@ export const ALL_PAIRS = gql`
       orderDirection: desc
     ) {
       id
+      trackedReserveETH
       token0 {
         id
         symbol

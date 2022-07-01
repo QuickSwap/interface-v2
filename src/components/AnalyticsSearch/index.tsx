@@ -20,7 +20,7 @@ import utc from 'dayjs/plugin/utc';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 dayjs.extend(utc);
 
-const Search: React.FC = () => {
+const AnalyticsSearch: React.FC = () => {
   const { t } = useTranslation();
   const history = useHistory();
   const [searchVal, setSearchVal] = useState('');
@@ -52,21 +52,11 @@ const Search: React.FC = () => {
         return true;
       });
     }
-
     const filtered =
       uniqueTokens && uniqueTokens.length > 0
         ? uniqueTokens
             .sort((tokenA, tokenB) => {
-              if (tokenA?.oneDayVolumeUSD && tokenB?.oneDayVolumeUSD) {
-                return tokenA.oneDayVolumeUSD > tokenB.oneDayVolumeUSD ? -1 : 1;
-              }
-              if (tokenA?.oneDayVolumeUSD && !tokenB?.oneDayVolumeUSD) {
-                return -1;
-              }
-              if (!tokenA?.oneDayVolumeUSD && tokenB?.oneDayVolumeUSD) {
-                return tokenA?.totalLiquidity > tokenB?.totalLiquidity ? -1 : 1;
-              }
-              return 1;
+              return tokenA.oneDayVolumeUSD > tokenB.oneDayVolumeUSD ? -1 : 1;
             })
             .filter((token) => {
               if (GlobalConst.blacklists.TOKEN_BLACKLIST.includes(token.id)) {
@@ -110,57 +100,67 @@ const Search: React.FC = () => {
       });
 
     const filtered = uniquePairs
-      ? uniquePairs.filter((pair) => {
-          if (GlobalConst.blacklists.PAIR_BLACKLIST.includes(pair.id)) {
-            return false;
-          }
-          if (searchVal && searchVal.includes(' ')) {
-            const pairA = searchVal.split(' ')[0]?.toUpperCase();
-            const pairB = searchVal.split(' ')[1]?.toUpperCase();
-            return (
-              (pair.token0.symbol.includes(pairA) ||
-                pair.token0.symbol.includes(pairB)) &&
-              (pair.token1.symbol.includes(pairA) ||
-                pair.token1.symbol.includes(pairB))
-            );
-          }
-          if (searchVal && searchVal.includes('-')) {
-            const pairA = searchVal.split('-')[0]?.toUpperCase();
-            const pairB = searchVal.split('-')[1]?.toUpperCase();
-            return (
-              (pair.token0.symbol.includes(pairA) ||
-                pair.token0.symbol.includes(pairB)) &&
-              (pair.token1.symbol.includes(pairA) ||
-                pair.token1.symbol.includes(pairB))
-            );
-          }
-          const regexMatches = Object.keys(pair).map((field) => {
-            const isAddress = searchVal.slice(0, 2) === '0x';
-            if (field === 'id' && isAddress) {
-              return pair[field].match(
-                new RegExp(escapeRegExp(searchVal), 'i'),
-              );
+      ? uniquePairs
+          .sort((pairA, pairB) => {
+            const pairAReserveETH = Number(pairA?.trackedReserveETH ?? 0);
+            const pairBReserveETH = Number(pairB?.trackedReserveETH ?? 0);
+            return pairAReserveETH > pairBReserveETH ? -1 : 1;
+          })
+          .filter((pair) => {
+            if (GlobalConst.blacklists.PAIR_BLACKLIST.includes(pair.id)) {
+              return false;
             }
-            if (field === 'token0') {
+            if (searchVal && searchVal.includes(' ')) {
+              const pairA = searchVal.split(' ')[0]?.toUpperCase();
+              const pairB = searchVal.split(' ')[1]?.toUpperCase();
               return (
-                pair[field].symbol.match(
-                  new RegExp(escapeRegExp(searchVal), 'i'),
-                ) ||
-                pair[field].name.match(new RegExp(escapeRegExp(searchVal), 'i'))
+                (pair.token0.symbol.includes(pairA) ||
+                  pair.token0.symbol.includes(pairB)) &&
+                (pair.token1.symbol.includes(pairA) ||
+                  pair.token1.symbol.includes(pairB))
               );
             }
-            if (field === 'token1') {
+            if (searchVal && searchVal.includes('-')) {
+              const pairA = searchVal.split('-')[0]?.toUpperCase();
+              const pairB = searchVal.split('-')[1]?.toUpperCase();
               return (
-                pair[field].symbol.match(
-                  new RegExp(escapeRegExp(searchVal), 'i'),
-                ) ||
-                pair[field].name.match(new RegExp(escapeRegExp(searchVal), 'i'))
+                (pair.token0.symbol.includes(pairA) ||
+                  pair.token0.symbol.includes(pairB)) &&
+                (pair.token1.symbol.includes(pairA) ||
+                  pair.token1.symbol.includes(pairB))
               );
             }
-            return false;
-          });
-          return regexMatches.some((m) => m);
-        })
+            const regexMatches = Object.keys(pair).map((field) => {
+              const isAddress = searchVal.slice(0, 2) === '0x';
+              if (field === 'id' && isAddress) {
+                return pair[field].match(
+                  new RegExp(escapeRegExp(searchVal), 'i'),
+                );
+              }
+              if (field === 'token0') {
+                return (
+                  pair[field].symbol.match(
+                    new RegExp(escapeRegExp(searchVal), 'i'),
+                  ) ||
+                  pair[field].name.match(
+                    new RegExp(escapeRegExp(searchVal), 'i'),
+                  )
+                );
+              }
+              if (field === 'token1') {
+                return (
+                  pair[field].symbol.match(
+                    new RegExp(escapeRegExp(searchVal), 'i'),
+                  ) ||
+                  pair[field].name.match(
+                    new RegExp(escapeRegExp(searchVal), 'i'),
+                  )
+                );
+              }
+              return false;
+            });
+            return regexMatches.some((m) => m);
+          })
       : [];
     return filtered;
   }, [searchedPairs, searchVal]);
@@ -241,7 +241,8 @@ const Search: React.FC = () => {
             ) {
               const oneDayHistory = oneDayResult.data.tokens[0];
               const oneDayVolumeUSD =
-                token.tradeVolumeUSD - oneDayHistory.tradeVolumeUSD;
+                (token?.tradeVolumeUSD ?? 0) -
+                (oneDayHistory?.tradeVolumeUSD ?? 0);
               return { ...token, oneDayVolumeUSD };
             }
             return token;
@@ -357,4 +358,4 @@ const Search: React.FC = () => {
   );
 };
 
-export default React.memo(Search);
+export default React.memo(AnalyticsSearch);
