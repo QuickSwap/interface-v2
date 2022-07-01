@@ -43,7 +43,6 @@ import {
   TickFarming,
   TokenSubgraph,
 } from '../models/interfaces';
-import { EthereumWindow } from '../models/types';
 import { Aprs, FutureFarmingEvent } from '../models/interfaces';
 import {
   fetchEternalFarmAPR,
