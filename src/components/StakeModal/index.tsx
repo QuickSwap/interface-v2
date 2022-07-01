@@ -30,8 +30,6 @@ import { useActiveWeb3React } from 'hooks';
 import { Token } from '@uniswap/sdk-core';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
 import { BigNumber } from 'ethers';
-
-import { t, Trans } from '@lingui/macro';
 import { ChainId } from '@uniswap/sdk';
 
 interface StakeModalProps {
@@ -356,7 +354,7 @@ export function StakeModal({
             <CheckCircle size={55} stroke={'var(--green)'} />
             <p
               className={'mt-05'}
-            >{t`Position #${selectedNFT?.id} deposited successfully!`}</p>
+            >{`Position #${selectedNFT?.id} deposited successfully!`}</p>
           </div>
         </div>
       ) : positionsForPoolLoading ? (
@@ -367,7 +365,7 @@ export function StakeModal({
         <div className={'w-100 c-w'}>
           <div className={'mb-1 flex-s-between'}>
             <div>
-              <Trans>Select NFT for farming</Trans>
+              Select NFT for farming
             </div>
             <button className={'bg-t br-0'} onClick={closeHandler}>
               <X size={18} stroke={'var(--white)'} />
@@ -395,7 +393,7 @@ export function StakeModal({
             chunkedPositions &&
             chunkedPositions.length !== 0 && (
               <div className='mv-1 f w-100'>
-                <span className='b' style={{ fontSize: '18px' }}>{t`${
+                <span className='b' style={{ fontSize: '18px' }}>{`${
                   farmingType === FarmingType.FINITE ? '2. ' : ''
                 }Select a Position`}</span>
               </div>
@@ -413,10 +411,10 @@ export function StakeModal({
               <div className={'h-400 f c f-ac f-jc'}>
                 <Frown size={30} stroke={'var(--white)'} />
                 <p className={'mt-1 mb-05'}>
-                  <Trans>No NFT-s for this pool</Trans>
+                  No NFT-s for this pool
                 </p>
                 <p>
-                  <Trans>To take part in this farming event, you need to</Trans>
+                  To take part in this farming event, you need to
                 </p>
                 <NavLink
                   className={
@@ -424,7 +422,7 @@ export function StakeModal({
                   }
                   to={linkToProviding}
                 >
-                  <span>{t`Provide liquidity for ${pool.token0.symbol} / ${pool.token1.symbol}`}</span>
+                  <span>{`Provide liquidity for ${pool.token0.symbol} / ${pool.token1.symbol}`}</span>
                   <ArrowRight className={'ml-05'} size={16} />
                 </NavLink>
               </div>
@@ -468,7 +466,7 @@ export function StakeModal({
                             rel='noopener noreferrer'
                             target='_blank'
                           >
-                            <Trans>View position</Trans>
+                            View position
                           </a>
                         </div>
                       </div>
@@ -503,7 +501,7 @@ export function StakeModal({
               id={'farming-select-tier'}
               className={'btn primary w-100 p-1 farming-select-tier'}
             >
-              <Trans>Select Tier</Trans>
+              Select Tier
             </button>
           ) : selectedTier &&
             !isEnoughALGB &&
@@ -513,7 +511,7 @@ export function StakeModal({
             <button
               disabled
               className='btn primary w-100 p-1'
-            >{t`Not enough ${lockedToken.symbol}`}</button>
+            >{`Not enough ${lockedToken.symbol}`}</button>
           ) : selectedNFT ? (
             <div className={'f mxs_fd-c w-100'}>
               {farmingType === FarmingType.FINITE && selectedTier && (
@@ -529,13 +527,13 @@ export function StakeModal({
                     <span className={'f f-ac f-jc'}>
                       <Loader stroke={'white'} />
                       <span className={'ml-05'}>
-                        <Trans>Approving</Trans>
+                        Approving
                       </span>
                     </span>
                   ) : !showApproval ? (
-                    t`${lockedToken.symbol} Approved`
+                    `${lockedToken.symbol} Approved`
                   ) : (
-                    t`Approve ${lockedToken.symbol}`
+                    `Approve ${lockedToken.symbol}`
                   )}
                 </button>
               )}
@@ -551,13 +549,13 @@ export function StakeModal({
                   <span className={'f f-ac f-jc'}>
                     <Loader stroke={'white'} />
                     <span className={'ml-05'}>
-                      <Trans>Approving</Trans>
+                      Approving
                     </span>
                   </span>
                 ) : NFTsForStake && !NFTsForApprove ? (
-                  t`Position Approved`
+                  `Position Approved`
                 ) : (
-                  t`Approve Position`
+                  `Approve Position`
                 )}
               </button>
               <button
@@ -570,11 +568,11 @@ export function StakeModal({
                   <span className={'f f-ac f-jc'}>
                     <Loader stroke={'white'} />
                     <span className={'ml-05'}>
-                      <Trans>Depositing</Trans>
+                      Depositing
                     </span>
                   </span>
                 ) : (
-                  t`Deposit`
+                  `Deposit`
                 )}
               </button>
             </div>
@@ -584,7 +582,7 @@ export function StakeModal({
               id={'farming-select-nft'}
               className={'btn primary w-100 p-1 farming-select-nft'}
             >
-              <Trans>Select Position</Trans>
+              Select Position
             </button>
           ) : null}
         </div>

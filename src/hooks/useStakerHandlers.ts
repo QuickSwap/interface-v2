@@ -10,7 +10,6 @@ import {
 import { useTransactionAdder } from '../state/transactions/hooks';
 import { useActiveWeb3React } from 'hooks';
 import JSBI from 'jsbi';
-import { useAppSelector } from '../state/hooks';
 import { GAS_PRICE_MULTIPLIER } from './useGasPrice';
 import { TransactionResponse } from '@ethersproject/providers';
 import {
@@ -22,6 +21,7 @@ import {
 import { FarmingType } from '../models/enums';
 import { useTranslation } from 'react-i18next';
 import { toHex } from 'lib/src/utils/calldata';
+import { useAppSelector } from 'state';
 
 export function useStakerHandlers() {
   const { chainId, account, library } = useActiveWeb3React();
@@ -211,7 +211,7 @@ export function useStakerHandlers() {
           error: null,
           farmingType: farmingType === FarmingType.ETERNAL ? 0 : 1,
         });
-      } catch (err) {
+      } catch (err:any) {
         setClaimReward('failed');
         if (err.code !== 4001) {
           throw new Error('Claiming rewards ' + err.message);

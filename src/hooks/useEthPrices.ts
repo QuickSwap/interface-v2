@@ -65,7 +65,7 @@ async function fetchEthPrices(
   client: ApolloClient<NormalizedCacheObject>,
 ): Promise<{ data: EthPrices | undefined; error: boolean }> {
   try {
-    const { data, error } = await client.query<PricesResponse>({
+    const { data, errors } = await client.query<PricesResponse>({
       query: ETH_PRICES,
       variables: {
         block24: blocks[0],
@@ -74,7 +74,7 @@ async function fetchEthPrices(
       },
     });
 
-    if (error) {
+    if (errors) {
       return {
         error: true,
         data: undefined,
