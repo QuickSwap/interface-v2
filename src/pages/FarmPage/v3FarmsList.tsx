@@ -23,9 +23,7 @@ const v3FarmsList: React.FC = () => {
       <Box className='farmListHeader'>
         <Box>
           <h5>{t('earndQUICK')}</h5>
-          <small>
-            {t('v3stakeMessage')}
-          </small>
+          <small>{t('v3stakeMessage')}</small>
         </Box>
       </Box>
     </>

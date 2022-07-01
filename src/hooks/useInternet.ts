@@ -1,7 +1,7 @@
 function getNetworkOnline() {
-    return navigator.onLine
+  return navigator.onLine;
 }
 
 export const useInternet = () => {
-    return getNetworkOnline()
-}
+  return getNetworkOnline();
+};

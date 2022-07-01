@@ -90,4 +90,7 @@ export const updateIsProMode = createAction<boolean>(
   'application/updateIsProMode',
 );
 
-export const updateGasPrice = createAction<{ fetched: number | null, override: boolean }>('application/updateGasPrice')
+export const updateGasPrice = createAction<{
+  fetched: number | null;
+  override: boolean;
+}>('application/updateGasPrice');
