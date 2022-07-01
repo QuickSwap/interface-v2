@@ -3,14 +3,21 @@ import { useHistory } from 'react-router-dom';
 import { Box } from '@material-ui/core';
 import { ReactComponent as SearchIcon } from 'assets/images/SearchIcon.svg';
 import { client } from 'apollo/client';
-import { TOKEN_SEARCH, PAIR_SEARCH } from 'apollo/queries';
-import { getAllTokensOnUniswap, getAllPairsOnUniswap } from 'utils';
+import { TOKEN_SEARCH, PAIR_SEARCH, TOKEN_INFO_OLD } from 'apollo/queries';
+import {
+  getAllTokensOnUniswap,
+  getAllPairsOnUniswap,
+  getBlockFromTimestamp,
+} from 'utils';
 import { GlobalConst } from 'constants/index';
 import { CurrencyLogo, DoubleCurrencyLogo } from 'components';
 import { ChainId, Token } from '@uniswap/sdk';
 import { getAddress } from '@ethersproject/address';
 import 'components/styles/SearchWidget.scss';
 import { useTranslation } from 'react-i18next';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+dayjs.extend(utc);
 
 const Search: React.FC = () => {
   const { t } = useTranslation();
@@ -23,71 +30,82 @@ const Search: React.FC = () => {
   const [searchedPairs, setSearchedPairs] = useState<any[]>([]);
   const [tokensShown, setTokensShown] = useState(3);
   const [pairsShown, setPairsShown] = useState(3);
-  const [allTokens, setAllTokens] = useState<any[]>([]);
-  const [allPairs, setAllPairs] = useState<any[]>([]);
 
   const escapeRegExp = (str: string) => {
     return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   };
 
   const filteredTokens = useMemo(() => {
-    const tokens = allTokens.concat(
-      searchedTokens.filter((searchedToken) => {
-        let included = false;
-        allTokens.map((token) => {
-          if (token.id === searchedToken.id) {
-            included = true;
-          }
-          return true;
-        });
-        return !included;
-      }),
-    );
-    const filtered = tokens
-      ? tokens.filter((token) => {
-          if (GlobalConst.blacklists.TOKEN_BLACKLIST.includes(token.id)) {
-            return false;
-          }
-          const regexMatches = Object.keys(token).map((tokenEntryKey) => {
-            const isAddress = searchVal.slice(0, 2) === '0x';
-            if (tokenEntryKey === 'id' && isAddress) {
-              return token[tokenEntryKey].match(
-                new RegExp(escapeRegExp(searchVal), 'i'),
-              );
-            }
-            if (tokenEntryKey === 'symbol' && !isAddress) {
-              return token[tokenEntryKey].match(
-                new RegExp(escapeRegExp(searchVal), 'i'),
-              );
-            }
-            if (tokenEntryKey === 'name' && !isAddress) {
-              return token[tokenEntryKey].match(
-                new RegExp(escapeRegExp(searchVal), 'i'),
-              );
-            }
-            return false;
-          });
-          return regexMatches.some((m) => m);
-        })
-      : [];
+    const uniqueTokens: any[] = [];
+    const found: any = {};
+    if (searchedTokens && searchedTokens.length > 0) {
+      searchedTokens.map((token) => {
+        if (!found[token.id]) {
+          found[token.id] = true;
+          uniqueTokens.push(token);
+        }
+        return true;
+      });
+    }
+
+    const filtered =
+      uniqueTokens && uniqueTokens.length > 0
+        ? uniqueTokens
+            .sort((tokenA, tokenB) => {
+              if (tokenA?.oneDayVolumeUSD && tokenB?.oneDayVolumeUSD) {
+                return tokenA.oneDayVolumeUSD > tokenB.oneDayVolumeUSD ? -1 : 1;
+              }
+              if (tokenA?.oneDayVolumeUSD && !tokenB?.oneDayVolumeUSD) {
+                return -1;
+              }
+              if (!tokenA?.oneDayVolumeUSD && tokenB?.oneDayVolumeUSD) {
+                return tokenA?.totalLiquidity > tokenB?.totalLiquidity ? -1 : 1;
+              }
+              return 1;
+            })
+            .filter((token) => {
+              if (GlobalConst.blacklists.TOKEN_BLACKLIST.includes(token.id)) {
+                return false;
+              }
+              const regexMatches = Object.keys(token).map((tokenEntryKey) => {
+                const isAddress = searchVal.slice(0, 2) === '0x';
+                if (tokenEntryKey === 'id' && isAddress) {
+                  return token[tokenEntryKey].match(
+                    new RegExp(escapeRegExp(searchVal), 'i'),
+                  );
+                }
+                if (tokenEntryKey === 'symbol' && !isAddress) {
+                  return token[tokenEntryKey].match(
+                    new RegExp(escapeRegExp(searchVal), 'i'),
+                  );
+                }
+                if (tokenEntryKey === 'name' && !isAddress) {
+                  return token[tokenEntryKey].match(
+                    new RegExp(escapeRegExp(searchVal), 'i'),
+                  );
+                }
+                return false;
+              });
+              return regexMatches.some((m) => m);
+            })
+        : [];
     return filtered;
-  }, [allTokens, searchedTokens, searchVal]);
+  }, [searchedTokens, searchVal]);
 
   const filteredPairs = useMemo(() => {
-    const pairs = allPairs.concat(
-      searchedPairs.filter((searchedPair) => {
-        let included = false;
-        allPairs.map((pair) => {
-          if (pair.id === searchedPair.id) {
-            included = true;
-          }
-          return true;
-        });
-        return !included;
-      }),
-    );
-    const filtered = pairs
-      ? pairs.filter((pair) => {
+    const uniquePairs: any[] = [];
+    const pairsFound: any = {};
+    if (searchedPairs && searchedPairs.length > 0)
+      searchedPairs.map((pair) => {
+        if (!pairsFound[pair.id]) {
+          pairsFound[pair.id] = true;
+          uniquePairs.push(pair);
+        }
+        return true;
+      });
+
+    const filtered = uniquePairs
+      ? uniquePairs.filter((pair) => {
           if (GlobalConst.blacklists.PAIR_BLACKLIST.includes(pair.id)) {
             return false;
           }
@@ -140,25 +158,15 @@ const Search: React.FC = () => {
         })
       : [];
     return filtered;
-  }, [allPairs, searchedPairs, searchVal]);
-
-  useEffect(() => {
-    async function fetchAllData() {
-      const tokens = await getAllTokensOnUniswap();
-      const pairs = await getAllPairsOnUniswap();
-      if (tokens) {
-        setAllTokens(tokens);
-      }
-      if (pairs) {
-        setAllPairs(pairs);
-      }
-    }
-    fetchAllData();
-  }, []);
+  }, [searchedPairs, searchVal]);
 
   useEffect(() => {
     async function fetchData() {
       try {
+        const allTokensUniswap = await getAllTokensOnUniswap();
+        const allPairsUniswap = await getAllPairsOnUniswap();
+        let allTokens = allTokensUniswap ?? [];
+        let allPairs = allPairsUniswap ?? [];
         if (searchVal.length > 0) {
           const tokens = await client.query({
             query: TOKEN_SEARCH,
@@ -176,14 +184,66 @@ const Search: React.FC = () => {
             },
           });
 
-          setSearchedPairs(
-            pairs.data.as0.concat(pairs.data.as1).concat(pairs.data.asAddress),
+          const foundPairs = pairs.data.as0
+            .concat(pairs.data.as1)
+            .concat(pairs.data.asAddress);
+
+          allPairs = allPairs.concat(
+            foundPairs.filter((searchedPair: any) => {
+              let included = false;
+              allPairs.map((pair) => {
+                if (pair.id === searchedPair.id) {
+                  included = true;
+                }
+                return true;
+              });
+              return !included;
+            }),
           );
+
           const foundTokens = tokens.data.asSymbol
             .concat(tokens.data.asAddress)
             .concat(tokens.data.asName);
-          setSearchedTokens(foundTokens);
+
+          allTokens = allTokens.concat(
+            foundTokens.filter((searchedToken: any) => {
+              let included = false;
+              allTokens.map((token) => {
+                if (token.id === searchedToken.id) {
+                  included = true;
+                }
+                return true;
+              });
+              return !included;
+            }),
+          );
         }
+
+        const foundTokensWithData = await Promise.all(
+          allTokens.map(async (token: any) => {
+            const utcCurrentTime = dayjs();
+            const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix();
+            const oneDayBlock = await getBlockFromTimestamp(utcOneDayBack);
+            const oneDayResult = await client.query({
+              query: TOKEN_INFO_OLD(oneDayBlock, token.id),
+              fetchPolicy: 'network-only',
+            });
+            if (
+              oneDayResult &&
+              oneDayResult.data &&
+              oneDayResult.data.tokens &&
+              oneDayResult.data.tokens.length > 0
+            ) {
+              const oneDayHistory = oneDayResult.data.tokens[0];
+              const oneDayVolumeUSD =
+                token.tradeVolumeUSD - oneDayHistory.tradeVolumeUSD;
+              return { ...token, oneDayVolumeUSD };
+            }
+            return token;
+          }),
+        );
+        setSearchedTokens(foundTokensWithData);
+        setSearchedPairs(allPairs);
       } catch (e) {
         console.log(e);
       }

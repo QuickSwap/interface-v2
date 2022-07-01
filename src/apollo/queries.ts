@@ -29,6 +29,7 @@ export const TOKEN_SEARCH = gql`
       symbol
       name
       decimals
+      tradeVolumeUSD
       totalLiquidity
     }
     asName: tokens(
@@ -40,6 +41,7 @@ export const TOKEN_SEARCH = gql`
       symbol
       name
       decimals
+      tradeVolumeUSD
       totalLiquidity
     }
     asAddress: tokens(
@@ -51,6 +53,7 @@ export const TOKEN_SEARCH = gql`
       symbol
       name
       decimals
+      tradeVolumeUSD
       totalLiquidity
     }
   }
@@ -219,6 +222,7 @@ export const ALL_TOKENS = gql`
       name
       symbol
       decimals
+      tradeVolumeUSD
       totalLiquidity
     }
   }

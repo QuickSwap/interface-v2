@@ -43,18 +43,13 @@ import {
   ETHER,
   Token,
   TokenAmount,
-  Price,
   Pair,
 } from '@uniswap/sdk';
 import { BigNumber, BigNumberish } from '@ethersproject/bignumber';
 import { formatUnits } from 'ethers/lib/utils';
 import { AddressZero } from '@ethersproject/constants';
 import { GlobalConst, GlobalValue, SUPPORTED_WALLETS } from 'constants/index';
-import {
-  TokenAddressMap,
-  useSelectedTokenList,
-  WrappedTokenInfo,
-} from 'state/lists/hooks';
+import { TokenAddressMap } from 'state/lists/hooks';
 import tokenData from 'constants/tokens.json';
 import {
   DualStakingInfo,
@@ -62,13 +57,11 @@ import {
   StakingInfo,
   SyrupBasic,
   SyrupInfo,
-  SyrupRaw,
 } from 'types';
 import { unwrappedToken } from './wrappedCurrency';
 import { useUSDCPriceToken } from './useUSDCPrice';
 import { CallState } from 'state/multicall/hooks';
 import { DualStakingBasic, StakingBasic } from 'types';
-import { useCallback } from 'react';
 import { AbstractConnector } from '@web3-react/abstract-connector';
 import { injected } from 'connectors';
 
