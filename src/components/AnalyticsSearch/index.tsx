@@ -17,12 +17,17 @@ import 'components/styles/SearchWidget.scss';
 import { useTranslation } from 'react-i18next';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
+import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 dayjs.extend(utc);
 
 const Search: React.FC = () => {
   const { t } = useTranslation();
   const history = useHistory();
   const [searchVal, setSearchVal] = useState('');
+  const [searchValInput, setSearchValInput] = useDebouncedChangeHandler(
+    searchVal,
+    setSearchVal,
+  );
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<any>(null);
   const wrapperRef = useRef<any>(null);
@@ -274,10 +279,10 @@ const Search: React.FC = () => {
       <Box className='searchWidgetInput'>
         <input
           placeholder={t('searchTokenPair')}
-          value={searchVal}
+          value={searchValInput}
           ref={menuRef}
           onFocus={() => setMenuOpen(true)}
-          onChange={(evt) => setSearchVal(evt.target.value)}
+          onChange={(evt) => setSearchValInput(evt.target.value)}
         />
         <Box display='flex'>
           <SearchIcon />
