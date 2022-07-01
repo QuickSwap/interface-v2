@@ -12,6 +12,8 @@ import 'pages/styles/farm.scss';
 import { useDefaultFarmList } from 'state/farms/hooks';
 import { useDefaultDualFarmList } from 'state/dualfarms/hooks';
 import { ChainId } from '@uniswap/sdk';
+import EternalFarmsPage from 'pages/EternalFarmsPage';
+import { useIncentiveSubgraph } from 'hooks/useIncentiveSubgraph';
 
 const FarmPage: React.FC = () => {
   const { chainId } = useActiveWeb3React();
@@ -24,6 +26,14 @@ const FarmPage: React.FC = () => {
   const chainIdOrDefault = chainId ?? ChainId.MATIC;
   const lpFarms = useDefaultFarmList();
   const dualFarms = useDefaultDualFarmList();
+
+  const {
+    fetchEternalFarms: {
+      fetchEternalFarmsFn,
+      eternalFarms,
+      eternalFarmsLoading,
+    },
+  } = useIncentiveSubgraph() || {};
 
   const pairLists = useMemo(() => {
     const stakingPairLists = Object.values(lpFarms[chainIdOrDefault]).map(
@@ -93,6 +103,11 @@ const FarmPage: React.FC = () => {
       {isV3 && (
         <>
           <Box my={2}>V3 Farms Page should be here</Box>
+          <EternalFarmsPage
+            data={eternalFarms}
+            refreshing={eternalFarmsLoading}
+            fetchHandler={() => fetchEternalFarmsFn(true)}
+          />
         </>
       )}
     </Box>
