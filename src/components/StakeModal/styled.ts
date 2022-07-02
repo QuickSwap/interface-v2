@@ -125,7 +125,7 @@ export const NFTPositionLink = styled.a<{ skeleton?: boolean }>`
   font-size: 13px;
 `;
 export const StakeButton = styled.button`
-  background: ${({ theme }) => theme.winterMainButton};
+  background: ${({ theme }) => '#17517c'};
   border: none;
   padding: 1rem;
   font-weight: 600;
@@ -138,11 +138,11 @@ export const StakeButton = styled.button`
   }
 
   &:hover {
-    background: ${({ theme }) => darken(0.05, theme.winterMainButton)};
+    background: ${({ theme }) => darken(0.05, '#17517c')};
   }
 
   &:disabled {
-    background: ${({ theme }) => theme.winterDisabledButton};
+    background: ${({ theme }) => '#17517c'};
     cursor: default;
   }
 `;

@@ -1,3 +1,4 @@
+import React from 'react';
 import { StyledSVG } from './styled';
 
 interface LoaderProps {

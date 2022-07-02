@@ -379,8 +379,7 @@ export const StakeButton = styled.button<{ skeleton?: boolean }>`
     }
 
     &:hover {
-        background-color: ${({ theme }) =>
-          darken(0.05, theme.winterMainButton)};
+        background-color: ${({ theme }) => darken(0.05, theme.blue1)};
     }
 
     ${({ disabled }) =>
@@ -485,7 +484,7 @@ export const SendNFTButton = styled.button`
   padding: 10px 16px;
   width: 100%;
   color: white;
-  background-color: ${({ theme }) => theme.winterMainButton};
+  background-color: ${({ theme }) => theme.blue1};
   border-radius: 8px;
   border: none;
 
@@ -581,7 +580,7 @@ export const CheckOutLink = styled(NavLink)`
   font-weight: 600;
 
   &:hover {
-    background-color: ${({ theme }) => darken(0.05, theme.winterMainButton)}};
+    background-color: ${({ theme }) => darken(0.05, theme.blue1)}};
   }
 `;
 

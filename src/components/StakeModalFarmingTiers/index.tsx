@@ -1,3 +1,4 @@
+import React from 'react';
 import CurrencyLogo from 'components/CurrencyLogo';
 import { useActiveWeb3React } from 'hooks';
 import { WrappedCurrency } from 'models/types';

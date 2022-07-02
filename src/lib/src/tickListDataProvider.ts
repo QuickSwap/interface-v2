@@ -1,5 +1,5 @@
 import { BigintIsh } from '@uniswap/sdk-core';
-import { TickList } from '../utils/tickList';
+import { TickList } from './tickList';
 import { Tick, TickConstructorArgs } from './tick';
 import { TickDataProvider } from './tickDataProvider';
 

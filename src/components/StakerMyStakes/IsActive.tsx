@@ -1,6 +1,9 @@
-import { useToken } from '../../hooks/Tokens';
+import React from 'react';
+import { useToken } from 'hooks/TokensV3';
+import { unwrappedToken } from 'utils/unwrappedToken';
+
 import { usePool } from '../../hooks/usePools';
-import { unwrappedToken } from '../../utils/wrappedCurrency';
+
 import { PositionRange } from './styled';
 
 export function IsActive({ el }: { el: any }) {

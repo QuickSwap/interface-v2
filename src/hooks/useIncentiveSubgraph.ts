@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useActiveWeb3React } from 'hooks';
 import { Contract, providers } from 'ethers';
 import ERC20_ABI from 'constants/abis/erc20.json';
@@ -169,8 +169,7 @@ export function useIncentiveSubgraph() {
       if (errors) {
         const error = errors[0];
         throw new Error(`${error.name} ${error.message}`);
-      } 
-        
+      }
 
       return tokens[0];
     } catch (err) {
@@ -191,7 +190,7 @@ export function useIncentiveSubgraph() {
       if (errors) {
         const error = errors[0];
         throw new Error(`${error.name} ${error.message}`);
-      } 
+      }
 
       return pools[0];
     } catch (err) {
@@ -212,7 +211,7 @@ export function useIncentiveSubgraph() {
       if (errors) {
         const error = errors[0];
         throw new Error(`${error.name} ${error.message}`);
-      } 
+      }
 
       return incentives[0];
     } catch (err) {
@@ -235,10 +234,10 @@ export function useIncentiveSubgraph() {
       if (errors) {
         const error = errors[0];
         throw new Error(`${error.name} ${error.message}`);
-      } 
+      }
 
       return eternalFarmings[0];
-    } catch (err: any) {
+    } catch (err) {
       throw new Error('Fetch infinite farming ' + err.message);
     }
   }
@@ -319,7 +318,7 @@ export function useIncentiveSubgraph() {
       if (errors) {
         const error = errors[0];
         throw new Error(`${error.name} ${error.message}`);
-      } 
+      }
 
       if (futureEvents.length === 0) {
         setFutureEvents([]);
@@ -354,7 +353,7 @@ export function useIncentiveSubgraph() {
       if (errors) {
         const error = errors[0];
         throw new Error(`${error.name} ${error.message}`);
-      } 
+      }
 
       const {
         data: { incentives: futureEvents },
@@ -368,8 +367,7 @@ export function useIncentiveSubgraph() {
       if (_errors) {
         const error = _errors[0];
         throw new Error(`${error.name} ${error.message}`);
-      } 
-
+      }
 
       if (currentEvents.length === 0 && futureEvents.length === 0) {
         setAllEvents({
@@ -435,11 +433,11 @@ export function useIncentiveSubgraph() {
       if (errors) {
         const error = errors[0];
         throw new Error(`${error.name} ${error.message}`);
-      } 
+      }
 
       setHasTransferredPositions(Boolean(positionsTransferred.length));
       setHasTransferredPositionsLoading(false);
-    } catch (err: any) {
+    } catch (err) {
       throw new Error(
         'Has transferred positions ' + err.code + ' ' + err.message,
       );
@@ -508,6 +506,7 @@ export function useIncentiveSubgraph() {
           typeof position.pool === 'string'
         ) {
           const _pool = await fetchPool(position.pool);
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           //@ts-ignore
           _position = { ..._position, pool: _pool };
         }
@@ -547,6 +546,7 @@ export function useIncentiveSubgraph() {
 
           _position = {
             ..._position,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-ignore
             pool: _pool,
             incentiveRewardToken: _rewardToken,
@@ -581,6 +581,7 @@ export function useIncentiveSubgraph() {
             data: { incentives },
             errors,
           } = await farmingClient.query({
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-ignore
             query: FETCH_FINITE_FARM_FROM_POOL([position.pool]),
             fetchPolicy: 'network-only',
@@ -638,6 +639,7 @@ export function useIncentiveSubgraph() {
             eternalBonusRewardToken: _bonusRewardToken,
             eternalStartTime: startTime,
             eternalEndTime: endTime,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-ignore
             pool: _pool,
             eternalEarned: formatUnits(
@@ -654,6 +656,7 @@ export function useIncentiveSubgraph() {
             data: { eternalFarmings },
             errors,
           } = await farmingClient.query({
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-ignore
             query: FETCH_ETERNAL_FARM_FROM_POOL([position.pool]),
             fetchPolicy: 'network-only',
@@ -662,7 +665,7 @@ export function useIncentiveSubgraph() {
           if (errors) {
             const error = errors[0];
             throw new Error(`${error.name} ${error.message}`);
-          } 
+          }
 
           if (
             eternalFarmings.filter(
@@ -679,7 +682,7 @@ export function useIncentiveSubgraph() {
         _positions.push(_position);
       }
       setTransferredPositions(_positions);
-    } catch (err: any) {
+    } catch (err) {
       throw new Error('Transferred positions ' + err.code + ' ' + err.message);
     } finally {
       setTransferredPositionsLoading(false);
@@ -765,7 +768,7 @@ export function useIncentiveSubgraph() {
       }
 
       setPositionsEternal(_positions);
-    } catch (error: any) {
+    } catch (error) {
       throw new Error('Infinite farms loading' + error.code + error.message);
     }
   }
@@ -908,12 +911,14 @@ export function useIncentiveSubgraph() {
         const apr = aprs[farming.id] ? aprs[farming.id] : 200;
 
         _eternalFarmings = [
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           //@ts-ignore
           ..._eternalFarmings,
           {
             ...farming,
             rewardToken,
             bonusRewardToken,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-ignore
             pool,
             apr,

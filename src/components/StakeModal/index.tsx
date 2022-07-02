@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ArrowRight, Check, CheckCircle, Frown, X } from 'react-feather';
 import { useIncentiveSubgraph } from '../../hooks/useIncentiveSubgraph';
 import { useStakerHandlers } from '../../hooks/useStakerHandlers';
@@ -22,7 +22,6 @@ import './index.scss';
 import StakeModalFarmingTiers from 'components/StakeModalFarmingTiers';
 import { IsActive } from 'components/StakerMyStakes/IsActive';
 import { useCurrencyBalance } from 'state/wallet/hooks';
-import { ApprovalState, useApproveCallback } from 'hooks/useApproveCallback';
 import { CurrencyAmount } from '@uniswap/sdk-core';
 import { FARMING_CENTER } from 'constants/addresses';
 import { useActiveWeb3React } from 'hooks';
@@ -31,6 +30,7 @@ import { Token } from '@uniswap/sdk-core';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
 import { BigNumber } from 'ethers';
 import { ChainId } from '@uniswap/sdk';
+import { ApprovalState, useApproveCallback } from 'hooks/useV3ApproveCallback';
 
 interface StakeModalProps {
   event: {
@@ -364,9 +364,7 @@ export function StakeModal({
       ) : (
         <div className={'w-100 c-w'}>
           <div className={'mb-1 flex-s-between'}>
-            <div>
-              Select NFT for farming
-            </div>
+            <div>Select NFT for farming</div>
             <button className={'bg-t br-0'} onClick={closeHandler}>
               <X size={18} stroke={'var(--white)'} />
             </button>
@@ -410,12 +408,8 @@ export function StakeModal({
             {chunkedPositions && chunkedPositions.length === 0 ? (
               <div className={'h-400 f c f-ac f-jc'}>
                 <Frown size={30} stroke={'var(--white)'} />
-                <p className={'mt-1 mb-05'}>
-                  No NFT-s for this pool
-                </p>
-                <p>
-                  To take part in this farming event, you need to
-                </p>
+                <p className={'mt-1 mb-05'}>No NFT-s for this pool</p>
+                <p>To take part in this farming event, you need to</p>
                 <NavLink
                   className={
                     'flex-s-between c-w ph-1 pv-05 bg-p br-8 mt-1 hover-c-ph'
@@ -526,9 +520,7 @@ export function StakeModal({
                   {approval === ApprovalState.PENDING ? (
                     <span className={'f f-ac f-jc'}>
                       <Loader stroke={'white'} />
-                      <span className={'ml-05'}>
-                        Approving
-                      </span>
+                      <span className={'ml-05'}>Approving</span>
                     </span>
                   ) : !showApproval ? (
                     `${lockedToken.symbol} Approved`
@@ -548,9 +540,7 @@ export function StakeModal({
                 {submitLoader && submitState === 0 ? (
                   <span className={'f f-ac f-jc'}>
                     <Loader stroke={'white'} />
-                    <span className={'ml-05'}>
-                      Approving
-                    </span>
+                    <span className={'ml-05'}>Approving</span>
                   </span>
                 ) : NFTsForStake && !NFTsForApprove ? (
                   `Position Approved`
@@ -567,9 +557,7 @@ export function StakeModal({
                 {submitLoader && submitState === 2 ? (
                   <span className={'f f-ac f-jc'}>
                     <Loader stroke={'white'} />
-                    <span className={'ml-05'}>
-                      Depositing
-                    </span>
+                    <span className={'ml-05'}>Depositing</span>
                   </span>
                 ) : (
                   `Deposit`

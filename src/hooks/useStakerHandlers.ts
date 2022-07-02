@@ -211,7 +211,7 @@ export function useStakerHandlers() {
           error: null,
           farmingType: farmingType === FarmingType.ETERNAL ? 0 : 1,
         });
-      } catch (err:any) {
+      } catch (err) {
         setClaimReward('failed');
         if (err.code !== 4001) {
           throw new Error('Claiming rewards ' + err.message);
