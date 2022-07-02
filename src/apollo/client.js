@@ -34,46 +34,26 @@ export const blockClient = new ApolloClient({
 });
 
 export const stakerClient = new ApolloClient({
-  uri: 'https://api.thegraph.com/subgraphs/name/iliaazhel/staker',
+  link: new HttpLink({
+    uri: 'https://api.thegraph.com/subgraphs/name/iliaazhel/staker',
+  }),
   cache: new InMemoryCache(),
-  queryDeduplication: true,
-  defaultOptions: {
-    watchQuery: {
-      fetchPolicy: 'no-cache',
-    },
-    query: {
-      fetchPolicy: 'no-cache',
-      errorPolicy: 'all',
-    },
-  },
+  shouldBatch: true,
 });
 
 export const farmingClient = new ApolloClient({
-  uri: 'https://api.thegraph.com/subgraphs/name/cryptoalgebra/algebra-farming',
+  link: new HttpLink({
+    uri:
+      'https://api.thegraph.com/subgraphs/name/cryptoalgebra/algebra-farming',
+  }),
   cache: new InMemoryCache(),
-  queryDeduplication: true,
-  defaultOptions: {
-    watchQuery: {
-      fetchPolicy: 'no-cache',
-    },
-    query: {
-      fetchPolicy: 'no-cache',
-      errorPolicy: 'all',
-    },
-  },
+  shouldBatch: true,
 });
 
 export const oldFarmingClient = new ApolloClient({
-  uri: 'https://api.thegraph.com/subgraphs/name/iliaazhel/algebra-farming-t',
+  link: new HttpLink({
+    uri: 'https://api.thegraph.com/subgraphs/name/iliaazhel/algebra-farming-t',
+  }),
   cache: new InMemoryCache(),
-  queryDeduplication: true,
-  defaultOptions: {
-    watchQuery: {
-      fetchPolicy: 'no-cache',
-    },
-    query: {
-      fetchPolicy: 'no-cache',
-      errorPolicy: 'all',
-    },
-  },
+  shouldBatch: true,
 });

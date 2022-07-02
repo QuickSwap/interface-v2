@@ -7,7 +7,6 @@ import { WrappedCurrency } from '../../models/types';
 import Loader from '../Loader';
 import { ChevronsUp, Send } from 'react-feather';
 import { Deposit, UnstakingInterface } from '../../models/interfaces';
-import { t, Trans } from '@lingui/macro';
 import { formatAmountTokens } from 'utils/numbers';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
 import { BigNumber } from 'ethers';
@@ -55,11 +54,11 @@ export default function PositionHeader({
       case 0:
         return;
       case 1:
-        return t`Bachelor`;
+        return `Bachelor`;
       case 2:
-        return t`Master`;
+        return `Master`;
       case 3:
-        return t`Professor`;
+        return `Professor`;
       default:
         return;
     }
@@ -85,7 +84,7 @@ export default function PositionHeader({
               rel='noopener noreferrer'
               target='_blank'
             >
-              <Trans>View position</Trans>
+              View position
             </a>
           </div>
         </div>
@@ -115,7 +114,7 @@ export default function PositionHeader({
           />
           <div className={'ml-05'}>
             <div className={'b fs-075'} style={{ marginBottom: '2px' }}>
-              <Trans>POOL</Trans>
+              POOL
             </div>
             <div>{`${el.pool.token0.symbol} / ${el.pool.token1.symbol}`}</div>
           </div>
@@ -136,7 +135,7 @@ export default function PositionHeader({
             </div>
             <div className={'ml-05'}>
               <div className={'b fs-075'} style={{ marginBottom: '2px' }}>
-                <Trans>TIER</Trans>
+                TIER
               </div>
               <div>{tierName}</div>
             </div>
@@ -157,7 +156,7 @@ export default function PositionHeader({
             />
             <div className={'ml-05'}>
               <div className={'b fs-075'} style={{ marginBottom: '2px' }}>
-                <Trans>LOCKED</Trans>
+                LOCKED
               </div>
               <div>{`${formatAmountTokens(
                 +formatUnits(
@@ -188,14 +187,12 @@ export default function PositionHeader({
                   stroke={'var(--white)'}
                   style={{ margin: 'auto' }}
                 />
-                <span className={'ml-05'}>
-                  <Trans>Withdrawing</Trans>
-                </span>
+                <span className={'ml-05'}>Withdrawing</span>
               </>
             ) : (
               <>
                 <ChevronsUp size={'1rem'} />
-                <span className={'ml-05'}>{t`Withdraw`}</span>
+                <span className={'ml-05'}>{`Withdraw`}</span>
               </>
             )}
           </button>
@@ -205,9 +202,7 @@ export default function PositionHeader({
           onClick={() => setSendModal(el.L2tokenId)}
         >
           <Send size={'1rem'} />
-          <span className={'ml-05'}>
-            <Trans>Send</Trans>
-          </span>
+          <span className={'ml-05'}>Send</span>
         </button>
       </div>
     </div>

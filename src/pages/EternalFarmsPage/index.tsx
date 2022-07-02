@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Frown } from 'react-feather';
 import { useTranslation } from 'react-i18next';
 import Loader from '../../components/Loader';

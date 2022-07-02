@@ -243,7 +243,7 @@ export const EventProgressInner = styled.div<{ progress: number }>`
 export const StakeButton = styled.button<{ skeleton: boolean }>`
   width: 100%;
   border: none;
-  background: ${({ theme }) => theme.winterMainButton};
+  background: ${({ theme }) => theme.blue1};
   color: white;
   border-radius: 8px;
   padding: 8px 12px;
@@ -251,11 +251,11 @@ export const StakeButton = styled.button<{ skeleton: boolean }>`
   margin-top: 10px;
 
   &:hover {
-    background-color: ${({ theme }) => darken(0.05, theme.winterMainButton)};
+    background-color: ${({ theme }) => darken(0.05, theme.blue1)};
   }
 
   &:disabled {
-    background-color: ${({ theme }) => theme.winterDisabledButton};
+    background-color: ${({ theme }) => theme.black};
     cursor: default;
   }
 

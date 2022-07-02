@@ -3,7 +3,6 @@ import CurrencyLogo from '../CurrencyLogo';
 import { Token } from '@uniswap/sdk-core';
 import { WrappedCurrency } from '../../models/types';
 import { formatReward } from '../../utils/formatReward';
-import { Trans } from '@lingui/macro';
 
 import './position-card-body-stat.scss';
 
@@ -35,9 +34,7 @@ export default function PositionCardBodyStat({
       className={'f c mxs_fd-c p-1 br-8 mb-1'}
       style={{ backgroundColor: 'var(--ebony-clay)' }}
     >
-      <h3 className={'fs-075 mb-1 ms_mb-0 mxs_mb-0'}>
-        <Trans>Earned rewards</Trans>
-      </h3>
+      <h3 className={'fs-075 mb-1 ms_mb-0 mxs_mb-0'}>Earned rewards</h3>
       <div className='f ms_fd-c mxs_fd-c'>
         {rewardList.map((reward: any, i) => (
           <div

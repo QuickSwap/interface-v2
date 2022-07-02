@@ -22,3 +22,7 @@ export const INFINITE_FARMING_ADDRESS: AddressMap = {
 export const FARMING_CENTER: AddressMap = {
   [ChainId.MATIC]: '0x7060ef7374a081f9a09dbcd3f5c38b2985299044',
 };
+
+export const SWAP_ROUTER_ADDRESSES: AddressMap = {
+  [ChainId.MATIC]: '0x89D6B81A1Ef25894620D05ba843d83B0A296239e',
+};

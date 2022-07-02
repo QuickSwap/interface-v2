@@ -3,7 +3,6 @@ import { CheckCircle } from 'react-feather';
 import { isAddress } from '@ethersproject/address';
 import Loader from '../Loader';
 import { UnstakingInterface } from '../../models/interfaces';
-import { t, Trans } from '@lingui/macro';
 
 interface ModalBodyProps {
   sending: UnstakingInterface;
@@ -34,20 +33,18 @@ export default function ModalBody({
       {sending.state === 'done' ? (
         <div className={'f f-ac f-jc w-100'}>
           <CheckCircle size={'35px'} stroke={'#27AE60'} />
-          <div className={'ml-1'}>{t`NFT was sent!`}</div>
+          <div className={'ml-1'}>{`NFT was sent!`}</div>
         </div>
       ) : (
         <div className={'my-stakes__nft-send'}>
-          <div className={'mb-1 c-p fs-125 b'}>
-            <Trans>Send NFT to another account</Trans>
-          </div>
+          <div className={'mb-1 c-p fs-125 b'}>Send NFT to another account</div>
           <div
             className={'my-stakes__nft-send__warning br-12 p-05 mb-1 c-dec'}
-          >{t`If you send your NFT to another account, you can’t get it back unless you have an access to the recipient’s account.`}</div>
+          >{`If you send your NFT to another account, you can’t get it back unless you have an access to the recipient’s account.`}</div>
           <div className={'mb-1'}>
             <input
               className={'w-100 p-05 br-8'}
-              placeholder={t`Enter a recipient`}
+              placeholder={`Enter a recipient`}
               value={recipient}
               onChange={(v) => {
                 setRecipient(v.target.value);
@@ -69,12 +66,10 @@ export default function ModalBody({
             {sending && sending.id === sendModal && sending.state !== 'done' ? (
               <span className={'f f-ac f-jc'}>
                 <Loader size={'1rem'} stroke={'white'} />
-                <span className={'ml-05'}>
-                  <Trans>Sending</Trans>
-                </span>
+                <span className={'ml-05'}>Sending</span>
               </span>
             ) : (
-              <span>{t`Send NFT`}</span>
+              <span>{`Send NFT`}</span>
             )}
           </button>
         </div>

@@ -1,5 +1,6 @@
+import React from 'react';
 import { Lock, Plus } from 'react-feather';
-import { useActiveWeb3React } from '../../hooks/web3';
+import { useActiveWeb3React } from 'hooks';
 import { useWalletModalToggle } from '../../state/application/hooks';
 import { convertDateTime, getCountdownTime } from '../../utils/time';
 import { getProgress } from '../../utils/getProgress';
@@ -7,14 +8,11 @@ import Loader from '../Loader';
 import CurrencyLogo from '../CurrencyLogo';
 import { LoadingShim } from './styled';
 import { useMemo } from 'react';
-import { convertLocalDate } from '../../utils/convertDate';
 import { Token } from '@uniswap/sdk-core';
 import { WrappedCurrency } from '../../models/types';
 import { formatAmountTokens } from 'utils/numbers';
-import './index.scss';
+// import './index.scss';
 import { Link } from 'react-router-dom';
-
-import { Trans, t } from '@lingui/macro';
 import { ChainId } from '@uniswap/sdk';
 
 interface StakerEventCardProps {
@@ -68,7 +66,7 @@ export function StakerEventCard({
 
     const date = new Date(+startTime * 1000);
 
-    return [convertLocalDate(date), convertDateTime(date)];
+    return [convertDateTime(date), convertDateTime(date)];
   }, [startTime]);
 
   const _endTime = useMemo(() => {
@@ -76,7 +74,7 @@ export function StakerEventCard({
 
     const date = new Date(+endTime * 1000);
 
-    return [convertLocalDate(date), convertDateTime(date)];
+    return [convertDateTime(date), convertDateTime(date)];
   }, [endTime]);
 
   const _enterTime = useMemo(() => {
@@ -84,7 +82,7 @@ export function StakerEventCard({
 
     const date = new Date((+startTime - (3 * 24 + 4) * 60 * 60) * 1000);
 
-    return [convertLocalDate(date), convertDateTime(date)];
+    return [convertDateTime(date), convertDateTime(date)];
   }, [startTime]);
 
   const rewardList = useMemo(() => {
@@ -132,9 +130,7 @@ export function StakerEventCard({
             />
           </div>
           <div>
-            <h3 className={'fs-075 b'}>
-              <Trans>POOL</Trans>
-            </h3>
+            <h3 className={'fs-075 b'}>POOL</h3>
             <div style={{ marginTop: '2px' }}>{`QI / WMATIC`}</div>
           </div>
           {/* {
@@ -145,7 +141,7 @@ export function StakerEventCard({
         </div>
         <div className={'staker-event-card__reward-wrapper mb-05 f c br-8'}>
           <div className='staker-event-card__reward-wrapper-header fs-075 b'>
-            <Trans>REWARDS</Trans>
+            REWARDS
           </div>
           <ul className='staker-event-card__reward-list'>
             {[
@@ -185,15 +181,9 @@ export function StakerEventCard({
         {!eternal && (
           <div className='w-100 staker-event-card__timeline'>
             <div className='w-100 f staker-event-card__timeline-dates'>
-              <div className='w-100 b fs-075 ta-l'>
-                <Trans>Enter</Trans>
-              </div>
-              <div className='w-100 b fs-075 ta-c'>
-                <Trans>Start</Trans>
-              </div>
-              <div className='w-100 b fs-075 ta-r'>
-                <Trans>End</Trans>
-              </div>
+              <div className='w-100 b fs-075 ta-l'>Enter</div>
+              <div className='w-100 b fs-075 ta-c'>Start</div>
+              <div className='w-100 b fs-075 ta-r'>End</div>
             </div>
             <div className='w-100 f mt-05'>
               <div className='f f-ac f-jc staker-event-card__timeline-circle'>
@@ -228,7 +218,7 @@ export function StakerEventCard({
               <div className='w-100 f f-ac'>
                 <div className='staker-event-card__timeline-calendar first ta-c'>
                   <div className='staker-event-card__timeline-calendar-day'>
-                    {convertLocalDate(new Date(1652108400000))}
+                    {convertDateTime(new Date(1652108400000))}
                   </div>
                   <div className='staker-event-card__timeline-calendar-hour'>
                     {convertDateTime(new Date(1652108400000))}
@@ -238,7 +228,7 @@ export function StakerEventCard({
               <div className='w-100 f f-ac f-jc'>
                 <div className='staker-event-card__timeline-calendar second ta-c'>
                   <div className='staker-event-card__timeline-calendar-day'>
-                    {convertLocalDate(new Date(1652382000000))}
+                    {convertDateTime(new Date(1652382000000))}
                   </div>
                   <div className='staker-event-card__timeline-calendar-hour'>
                     {convertDateTime(new Date(1652382000000))}
@@ -251,7 +241,7 @@ export function StakerEventCard({
               >
                 <div className='staker-event-card__timeline-calendar third ta-c'>
                   <div className='staker-event-card__timeline-calendar-day'>
-                    {convertLocalDate(new Date(1652986800000))}
+                    {convertDateTime(new Date(1652986800000))}
                   </div>
                   <div className='staker-event-card__timeline-calendar-hour'>
                     {convertDateTime(new Date(1652986800000))}
@@ -265,7 +255,7 @@ export function StakerEventCard({
           className={'mt-1 fs-085 p-05 br-8 ta-c bg-v'}
           style={{ marginTop: '9px', height: '36px', lineHeight: '19px' }}
         >
-          <Trans>⚡ Upcoming farm</Trans>
+          ⚡ Upcoming farm
         </div>
       </div>
     );
@@ -292,9 +282,7 @@ export function StakerEventCard({
               <span className='mr-05'>
                 <Lock size={'16px'} stroke={'black'} />
               </span>
-              <span>
-                <Trans>This farm is filled</Trans>
-              </span>
+              <span>This farm is filled</span>
             </div>
             <div>
               <Link
@@ -307,7 +295,7 @@ export function StakerEventCard({
                   background: 'var(--primary)',
                 }}
               >
-                <Trans>Infinite WETH farm is available →</Trans>
+                Infinite WETH farm is available →
               </Link>
             </div>
           </div>
@@ -339,9 +327,7 @@ export function StakerEventCard({
           />
         </div>
         <div>
-          <h3 className={'fs-075 b'}>
-            <Trans>POOL</Trans>
-          </h3>
+          <h3 className={'fs-075 b'}>POOL</h3>
           <div
             style={{ marginTop: '2px' }}
           >{`${pool.token0.symbol}/${pool.token1.symbol}`}</div>
@@ -357,7 +343,7 @@ export function StakerEventCard({
       </div>
       <div className={'staker-event-card__reward-wrapper mb-05 f c br-8'}>
         <div className='staker-event-card__reward-wrapper-header fs-075 b'>
-          <Trans>REWARDS</Trans>
+          REWARDS
         </div>
         <ul className='staker-event-card__reward-list'>
           {rewardList?.map((reward: any, i) => (
@@ -393,15 +379,9 @@ export function StakerEventCard({
       {!eternal && (
         <div className='w-100 staker-event-card__timeline'>
           <div className='w-100 f staker-event-card__timeline-dates'>
-            <div className='w-100 b fs-075 ta-l'>
-              <Trans>Enter</Trans>
-            </div>
-            <div className='w-100 b fs-075 ta-c'>
-              <Trans>Start</Trans>
-            </div>
-            <div className='w-100 b fs-075 ta-r'>
-              <Trans>End</Trans>
-            </div>
+            <div className='w-100 b fs-075 ta-l'>Enter</div>
+            <div className='w-100 b fs-075 ta-c'>Start</div>
+            <div className='w-100 b fs-075 ta-r'>End</div>
           </div>
           <div className='w-100 f mt-05'>
             <div className='f f-ac f-jc staker-event-card__timeline-circle'>
@@ -491,7 +471,7 @@ export function StakerEventCard({
           }`}
           onClick={stakeHandler}
         >
-          <span>{locked ? t`Filled` : t`Farm`}</span>
+          <span>{locked ? `Filled` : `Farm`}</span>
         </button>
       ) : active ? (
         <div
@@ -503,14 +483,14 @@ export function StakerEventCard({
             height: '36px',
           }}
         >
-          <Trans>Started!</Trans>
+          Started!
         </div>
       ) : (
         <button
           className={`btn primary w-100 b pv-05 ${!eternal ? 'mt-05' : ''}`}
           onClick={toggleWalletModal}
         >
-          <Trans>Connect Wallet</Trans>
+          Connect Wallet
         </button>
       )}
     </div>

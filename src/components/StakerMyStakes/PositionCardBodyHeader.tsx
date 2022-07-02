@@ -1,4 +1,3 @@
-import { t, Trans } from '@lingui/macro';
 import React, { useMemo } from 'react';
 import { FarmingType } from '../../models/enums';
 import './index.scss';
@@ -49,28 +48,22 @@ export default function PositionCardBodyHeader({
     >
       <span className={'w-100'}>
         <span>
-          {farmingType === FarmingType.FINITE ? t`Limit ` : t`Infinite `}
+          {farmingType === FarmingType.FINITE ? `Limit ` : `Infinite `}
         </span>
         <span>&nbsp;</span>
-        <span>
-          <Trans> Farming</Trans>
-        </span>
+        <span>Farming</span>
       </span>
       {farmingType === FarmingType.ETERNAL &&
         enteredInEternalFarming &&
         eternalFarming && (
           <span className={'fs-085 l w-100 ms_ta-l mxs_ta-l ta-r'}>
-            <span>
-              <Trans>Entered at: </Trans>
-            </span>
+            <span>Entered at:</span>
             <span>{date.slice(0, -3)}</span>
           </span>
         )}
       {farmingType === FarmingType.FINITE && tierMultiplier && (
         <span className={'fs-1 l w-100 ms_ta-l mxs_ta-r ta-r'}>
-          <span>
-            <Trans>Tier bonus: </Trans>
-          </span>
+          <span>Tier bonus:</span>
           <span style={{ color: '#33FF89' }}>{`+${tierMultiplier /
             100}%`}</span>
         </span>
