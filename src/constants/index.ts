@@ -23,6 +23,9 @@ const WETH_ONLY: ChainTokenList = {
   [ChainId.MATIC]: [WETH[ChainId.MATIC]],
 };
 
+// TODO: Remove this constant when supporting multichain
+export const MATIC_CHAIN = ChainId.MATIC;
+
 export enum TxnType {
   SWAP,
   ADD,

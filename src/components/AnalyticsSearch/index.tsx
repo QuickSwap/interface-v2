@@ -9,7 +9,7 @@ import {
   getAllPairsOnUniswap,
   getBlockFromTimestamp,
 } from 'utils';
-import { GlobalConst } from 'constants/index';
+import { GlobalConst, MATIC_CHAIN } from 'constants/index';
 import { CurrencyLogo, DoubleCurrencyLogo } from 'components';
 import { ChainId, Token } from '@uniswap/sdk';
 import { getAddress } from '@ethersproject/address';
@@ -294,12 +294,12 @@ const AnalyticsSearch: React.FC = () => {
           <h6>{t('pairs')}</h6>
           {filteredPairs.slice(0, pairsShown).map((val, ind) => {
             const currency0 = new Token(
-              ChainId.MATIC,
+              MATIC_CHAIN,
               getAddress(val.token0.id),
               val.token0.decimals,
             );
             const currency1 = new Token(
-              ChainId.MATIC,
+              MATIC_CHAIN,
               getAddress(val.token1.id),
               val.token1.decimals,
             );
@@ -307,7 +307,10 @@ const AnalyticsSearch: React.FC = () => {
               <Box
                 key={ind}
                 className='searchWidgetRow'
-                onClick={() => history.push(`/analytics/pair/${val.id}`)}
+                onClick={() => {
+                  history.push(`/analytics/pair/${val.id}`);
+                  setMenuOpen(false);
+                }}
               >
                 <DoubleCurrencyLogo
                   currency0={currency0}
@@ -329,7 +332,7 @@ const AnalyticsSearch: React.FC = () => {
           <h6>{t('tokens')}</h6>
           {filteredTokens.slice(0, tokensShown).map((val, ind) => {
             const currency = new Token(
-              ChainId.MATIC,
+              MATIC_CHAIN,
               getAddress(val.id),
               val.decimals,
             );
@@ -337,7 +340,10 @@ const AnalyticsSearch: React.FC = () => {
               <Box
                 key={ind}
                 className='searchWidgetRow'
-                onClick={() => history.push(`/analytics/token/${val.id}`)}
+                onClick={() => {
+                  history.push(`/analytics/token/${val.id}`);
+                  setMenuOpen(false);
+                }}
               >
                 <CurrencyLogo currency={currency} size='28px' />
                 <small>
