@@ -9,6 +9,7 @@ import { usePairs } from 'data/Reserves';
 import { toV2LiquidityToken, useTrackedTokenPairs } from 'state/user/hooks';
 import { useTokenBalancesWithLoadingIndicator } from 'state/wallet/hooks';
 import { Trans, useTranslation } from 'react-i18next';
+import PoolToggle from './PoolToggle';
 
 const YourLiquidityPools: React.FC = () => {
   const { t } = useTranslation();
@@ -64,7 +65,11 @@ const YourLiquidityPools: React.FC = () => {
           onClose={() => setOpenPoolFinder(false)}
         />
       )}
-      <p className='weight-600'>{t('yourliquidityPools')}</p>
+      <Box className='pageHeading'>
+        <p className='weight-600'>{t('yourliquidityPools')}</p>
+        <PoolToggle />
+      </Box>
+
       <Box mt={3}>
         {v2IsLoading ? (
           <Box width={1}>
