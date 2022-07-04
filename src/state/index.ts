@@ -18,6 +18,7 @@ import syrups from './syrups/reducer';
 import burn from './burn/reducer';
 import multicall from './multicall/reducer';
 import analytics from './analytics/reducer';
+import mintV3 from './mint/v3/reducer';
 
 const PERSISTED_KEYS: string[] = [
   'user',
@@ -37,6 +38,7 @@ const store = configureStore({
     transactions,
     swap,
     mint,
+    mintV3,
     burn,
     multicall,
     lists,

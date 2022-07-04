@@ -11,6 +11,7 @@ import ModalBg from 'assets/images/ModalBG.svg';
 import SpinnerImage from '../../assets/images/spinner.svg';
 import 'components/styles/TransactionConfirmationModal.scss';
 import { useTranslation } from 'react-i18next';
+import { StyledLabel } from 'components/AddLiquidity/CommonStyledElements';
 
 interface ConfirmationPendingContentProps {
   onDismiss: () => void;
@@ -109,6 +110,22 @@ export const ConfirmationModalContent: React.FC<ConfirmationModalContentProps> =
     <Box padding={4}>
       <Box className='txModalHeader'>
         <h5>{title}</h5>
+        <CloseIcon onClick={onDismiss} />
+      </Box>
+      {content()}
+    </Box>
+  );
+};
+
+export const ConfirmationModalContentV3: React.FC<ConfirmationModalContentProps> = ({
+  title,
+  onDismiss,
+  content,
+}) => {
+  return (
+    <Box padding={4}>
+      <Box className='flex justify-between items-center'>
+        <StyledLabel fontSize='16px'>{title}</StyledLabel>
         <CloseIcon onClick={onDismiss} />
       </Box>
       {content()}
