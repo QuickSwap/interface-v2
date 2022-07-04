@@ -178,7 +178,7 @@ const LendDetailPage: React.FC = () => {
           </Box>
           <Box className='lendBorrowLimitLineWrapper'>
             <Box mr='20px'>
-              <span>0.05ETH</span>
+              <span>{midUsdFormatter(Math.min(50, borrowLimit))}</span>
             </Box>
             <Box className='lendBorrowLimitLine'>
               <Box className='lendBorrowLimitNormal' />
