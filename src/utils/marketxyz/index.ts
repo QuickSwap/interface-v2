@@ -3,6 +3,7 @@ import { Token, ChainId } from '@uniswap/sdk';
 import { BN } from 'utils/bigUtils';
 import { USDPricedPoolAsset } from './fetchPoolData';
 import { ETH_TOKEN_DATA } from './fetchTokenData';
+import { getDaysCurrentYear } from 'utils';
 import ERC20_ABI from '../../constants/abis/erc20.json';
 import {
   testForComptrollerErrorAndSend,
@@ -17,7 +18,7 @@ export const convertMantissaToAPY = (mantissa: any, dayRange: number) => {
 };
 
 export const convertMantissaToAPR = (mantissa: any) => {
-  return (mantissa * BlocksPerDay * 365) / 1e16;
+  return (mantissa * BlocksPerDay * getDaysCurrentYear()) / 1e16;
 };
 
 export const getPoolAssetToken = (

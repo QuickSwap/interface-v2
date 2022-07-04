@@ -3,6 +3,7 @@ import { BN } from 'utils/bigUtils';
 import { USDPricedPoolAsset } from './fetchPoolData';
 import { abi as JumpRateModelABI } from '../../constants/abis/marketxyz/JumpRateModel.json';
 import { BlocksPerMin } from '.';
+import { getDaysCurrentYear } from 'utils';
 
 export default class JumpRateModel {
   sdk: MarketSDK;
@@ -108,7 +109,7 @@ export default class JumpRateModel {
             1e18) *
             (BlocksPerMin * 60 * 24) +
             1,
-          365,
+          getDaysCurrentYear(),
         ) -
           1) *
         100;
@@ -123,7 +124,7 @@ export default class JumpRateModel {
             1e18) *
             (BlocksPerMin * 60 * 24) +
             1,
-          365,
+          getDaysCurrentYear(),
         ) -
           1) *
         100;

@@ -21,7 +21,7 @@ import { QuickModalContent } from 'components/LendModals';
 
 import { usePoolData } from 'hooks/marketxyz/usePoolData';
 import { midUsdFormatter, shortUsdFormatter } from 'utils/bigUtils';
-import { shortenAddress } from 'utils';
+import { getDaysCurrentYear, shortenAddress } from 'utils';
 import { useExtraPoolData } from 'hooks/marketxyz/useExtraPoolData';
 import { useActiveWeb3React } from 'hooks';
 import { useMarket } from 'hooks/marketxyz/useMarket';
@@ -267,7 +267,7 @@ const LendDetailPage: React.FC = () => {
                             <small>
                               {convertMantissaToAPY(
                                 asset.supplyRatePerBlock,
-                                365,
+                                getDaysCurrentYear(),
                               ).toFixed(2)}
                               %
                             </small>
@@ -275,7 +275,7 @@ const LendDetailPage: React.FC = () => {
                               <p className='caption'>
                                 {convertMantissaToAPY(
                                   asset.supplyRatePerBlock,
-                                  365,
+                                  getDaysCurrentYear(),
                                 ).toFixed(2)}
                                 %
                               </p>

@@ -1,5 +1,4 @@
 import { ChainId } from '@uniswap/sdk';
-import fetch from 'isomorphic-unfetch';
 
 export const ETH_TOKEN_DATA = {
   symbol: 'ETH',

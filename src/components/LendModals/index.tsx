@@ -7,7 +7,7 @@ import { midUsdFormatter } from 'utils/bigUtils';
 import * as MarketUtils from 'utils/marketxyz';
 import { convertMantissaToAPR, convertMantissaToAPY } from 'utils/marketxyz';
 
-import { getEthPrice } from 'utils';
+import { getDaysCurrentYear, getEthPrice } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import {
   ToggleSwitch,
@@ -189,7 +189,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
                     <p className='text-success'>
                       {convertMantissaToAPY(
                         asset.supplyRatePerBlock,
-                        365,
+                        getDaysCurrentYear(),
                       ).toLocaleString()}
                       %
                     </p>
