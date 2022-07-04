@@ -135,7 +135,6 @@ export function useV3MintActionHandlers(
 
   const onCurrencySelection = useCallback(
     (field: Field, currency: Currency) => {
-      console.log('selected currency ', { field, currency });
       dispatch(
         selectCurrency({
           field,

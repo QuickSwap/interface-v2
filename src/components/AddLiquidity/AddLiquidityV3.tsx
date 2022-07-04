@@ -273,23 +273,14 @@ const AddLiquidityV3: React.FC<{
   //   pair?.liquidityToken,
   // );
 
-  // const atMaxAmounts: { [field in Field]?: TokenAmount } = [
-  //   Field.CURRENCY_A,
-  //   Field.CURRENCY_B,
-  // ].reduce((accumulator, field) => {
-  //   return {
-  //     ...accumulator,
-  //     [field]: maxAmounts[field]?.equalTo(parsedAmounts[field] ?? '0'),
-  //   };
-  // }, {});
-
   const atMaxAmounts: { [field in Field]?: CurrencyAmount<Currency> } = [
     Field.CURRENCY_A,
     Field.CURRENCY_B,
   ].reduce((accumulator, field) => {
     return {
       ...accumulator,
-      [field]: maxAmounts[field]?.equalTo(parsedAmounts[field] ?? '0'),
+      // [field]: maxAmounts[field]?.equalTo(parsedAmounts[field] ?? '0'),
+      [field]: '0',
     };
   }, {});
 
