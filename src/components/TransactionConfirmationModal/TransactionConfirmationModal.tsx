@@ -44,7 +44,7 @@ interface TransactionSubmittedContentProps {
   hash: string | undefined;
   chainId: ChainId;
   txPending?: boolean;
-  modalContent?: string;
+  modalContent: string;
 }
 
 export const TransactionSubmittedContent: React.FC<TransactionSubmittedContentProps> = ({
@@ -152,7 +152,7 @@ interface ConfirmationModalProps {
   content: () => React.ReactNode;
   attemptingTxn: boolean;
   pendingText?: string;
-  modalContent?: string;
+  modalContent: string;
   txPending?: boolean;
 }
 

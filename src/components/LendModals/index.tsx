@@ -89,6 +89,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
           attemptingTxn={loading}
           hash={txHash}
           txPending={false}
+          modalContent=''
           content={() =>
             txError ? (
               <TransactionErrorContent onDismiss={onClose} message={txError} />
