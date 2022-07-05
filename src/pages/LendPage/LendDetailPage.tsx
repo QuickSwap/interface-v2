@@ -34,6 +34,7 @@ import {
   convertMantissaToAPY,
   convertMantissaToAPR,
   getPoolAssetToken,
+  convertBNToNumber,
 } from 'utils/marketxyz';
 import { useBorrowLimit } from 'hooks/marketxyz/useBorrowLimit';
 import { useTranslation } from 'react-i18next';
@@ -298,17 +299,10 @@ const LendDetailPage: React.FC = () => {
                             </small>
                             <p className='caption text-secondary'>
                               {sdk
-                                ? asset.supplyBalance
-                                    .div(
-                                      sdk.web3.utils
-                                        .toBN(10)
-                                        .pow(
-                                          sdk.web3.utils.toBN(
-                                            asset.underlyingDecimals.toString(),
-                                          ),
-                                        ),
-                                    )
-                                    .toNumber()
+                                ? convertBNToNumber(
+                                    asset.supplyBalance,
+                                    asset.underlyingDecimals,
+                                  ).toFixed(2)
                                 : '?'}{' '}
                               {asset.underlyingSymbol}
                             </p>
@@ -434,17 +428,10 @@ const LendDetailPage: React.FC = () => {
                               </small>
                               <p className='caption text-secondary'>
                                 {sdk
-                                  ? asset.borrowBalance
-                                      .div(
-                                        sdk.web3.utils
-                                          .toBN(10)
-                                          .pow(
-                                            sdk.web3.utils.toBN(
-                                              asset.underlyingDecimals.toString(),
-                                            ),
-                                          ),
-                                      )
-                                      .toNumber()
+                                  ? convertBNToNumber(
+                                      asset.borrowBalance,
+                                      asset.underlyingDecimals,
+                                    ).toFixed(2)
                                   : '?'}{' '}
                                 {asset.underlyingSymbol}
                               </p>
@@ -455,17 +442,10 @@ const LendDetailPage: React.FC = () => {
                               </small>
                               <p className='caption text-secondary'>
                                 {sdk
-                                  ? asset.liquidity
-                                      .div(
-                                        sdk.web3.utils
-                                          .toBN(10)
-                                          .pow(
-                                            sdk.web3.utils.toBN(
-                                              asset.underlyingDecimals.toString(),
-                                            ),
-                                          ),
-                                      )
-                                      .toNumber()
+                                  ? convertBNToNumber(
+                                      asset.liquidity,
+                                      asset.underlyingDecimals,
+                                    ).toFixed(2)
                                   : '?'}{' '}
                                 {asset.underlyingSymbol}
                               </p>
@@ -568,7 +548,7 @@ const LendDetailPage: React.FC = () => {
                             ? (
                                 Number(poolData.assets[0].fuseFee.toString()) /
                                 1e16
-                              ).toPrecision(2) + '%'
+                              ).toFixed(2) + '%'
                             : '10%'}
                         </small>
                       ) : (

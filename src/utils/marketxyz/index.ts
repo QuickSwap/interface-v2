@@ -122,6 +122,10 @@ export const supply = async (
     await asset.cToken.contract.methods.comptroller().call(),
   );
 
+  if (enableAsCollateral) {
+    await comptroller.enterMarkets([asset.cToken], { from: address });
+  }
+
   if (isETH) {
     const ethBalance = await sdk.web3.eth.getBalance(address);
 
@@ -136,26 +140,29 @@ export const supply = async (
         cToken.sdk,
       );
 
-      await call.send({
+      const txObj = await call.send({
         from: address,
         value: amountBN.sub(gasWEI),
         gasPrice,
         gas: estimatedGas,
       } as any);
+      return txObj;
     } else {
-      await (cToken.mint as any)({ from: address, value: amountBN });
+      const txObj = await (cToken.mint as any)({
+        from: address,
+        value: amountBN,
+      });
+      return txObj;
     }
   } else {
     await checkAndApproveCToken(asset, amountBN, address);
-    await testForCTokenErrorAndSend(
+    const txObj = await testForCTokenErrorAndSend(
       cToken.contract.methods.mint(amountBN),
       address,
       'Cannot deposit this amount right now!',
       sdk,
     );
-  }
-  if (enableAsCollateral) {
-    await comptroller.enterMarkets([asset.cToken], { from: address });
+    return txObj;
   }
 };
 
@@ -182,14 +189,13 @@ export const repayBorrow = async (
 
   if (!isETH) {
     await checkAndApproveCToken(asset, amountBN, address);
-    await testForCTokenErrorAndSend(
+    const txObj = await testForCTokenErrorAndSend(
       cToken.contract.methods.repayBorrow(isRepayingMax ? max : amountBN),
       address,
       'Cannot repay this amount right now!',
       sdk,
     );
-
-    return;
+    return txObj;
   }
   const ethBalance = await sdk.web3.eth.getBalance(address);
   const call = (cToken.contract.methods.repayBorrow as any)();
@@ -203,18 +209,20 @@ export const repayBorrow = async (
       cToken.sdk,
     );
 
-    await call.send({
+    const txObj = await call.send({
       from: address,
       value: amountBN.sub(gasWEI),
 
       gasPrice,
       gas: estimatedGas,
     } as any);
+    return txObj;
   } else {
-    await call.send({
+    const txObj = await call.send({
       from: address,
       value: amountBN,
     });
+    return txObj;
   }
 };
 
@@ -238,7 +246,7 @@ export const toggleCollateral = (
   }
 };
 
-export const withdraw = (
+export const withdraw = async (
   asset: USDPricedPoolAsset,
   amount: number,
   address: string,
@@ -249,15 +257,16 @@ export const withdraw = (
   const amountBN = sdk.web3.utils.toBN(
     Number(amount * 10 ** asset.underlyingDecimals.toNumber()).toFixed(0),
   );
-  return testForCTokenErrorAndSend(
+  const txObj = await testForCTokenErrorAndSend(
     cToken.contract.methods.redeemUnderlying(amountBN),
     address,
     'Cannot withdraw this amount right now!',
     sdk,
   );
+  return txObj;
 };
 
-export const borrow = (
+export const borrow = async (
   asset: USDPricedPoolAsset,
   amount: number,
   address: string,
@@ -269,10 +278,11 @@ export const borrow = (
     Number(amount * 10 ** asset.underlyingDecimals.toNumber()).toFixed(0),
   );
 
-  return testForCTokenErrorAndSend(
+  const txObj = await testForCTokenErrorAndSend(
     cToken.contract.methods.borrow(amountBN),
     address,
     'Cannot borrow this amount right now!',
     sdk,
   );
+  return txObj;
 };

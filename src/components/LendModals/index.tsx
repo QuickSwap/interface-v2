@@ -288,6 +288,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
                 onClick={async () => {
                   if (!account) return;
                   setLoading(true);
+                  setTxError('');
                   let txResponse;
                   try {
                     if (borrow) {
