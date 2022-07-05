@@ -16,7 +16,7 @@ const SwapInfoTx: React.FC<{
   const subtractTimeType = txFilter.split('_')[1];
   const currentTime = dayjs.utc();
   const firstTime = currentTime
-    .subtract(subtractTimeAmount, subtractTimeType as any)
+    .subtract(subtractTimeAmount, subtractTimeType)
     .unix();
 
   const filteredTxs = transactions?.filter(

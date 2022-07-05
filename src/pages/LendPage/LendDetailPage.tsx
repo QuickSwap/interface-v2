@@ -65,7 +65,7 @@ const LendDetailPage: React.FC = () => {
 
   const { sdk } = useMarket();
   const poolId = location && new URLSearchParams(location.search).get('poolId');
-  const poolData = usePoolData(poolId ?? undefined, QS_PoolDirectory);
+  const poolData = usePoolData(poolId, QS_PoolDirectory);
 
   const tokensData = useTokensData(
     poolData?.assets.map((asset) => asset.underlyingToken) || [],

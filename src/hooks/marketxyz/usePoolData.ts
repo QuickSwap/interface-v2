@@ -11,7 +11,7 @@ import { Comptroller, PoolDirectoryV1 } from 'market-sdk';
 import { useEffect, useState } from 'react';
 
 export const usePoolData = (
-  poolId: string | undefined,
+  poolId: string | null | undefined,
   directory: PoolDirectoryV1 | string,
 ): PoolData | undefined => {
   const { account } = useActiveWeb3React();

@@ -1,16 +1,7 @@
 import { useActiveWeb3React } from 'hooks';
 import { useMemo } from 'react';
-import { useQuery, useQueries } from 'react-query';
+import { useQueries } from 'react-query';
 import { fetchTokenData } from 'utils/marketxyz/fetchTokenData';
-
-export const useTokenData = (address: string) => {
-  const { chainId } = useActiveWeb3React();
-  const { data: tokenData } = useQuery(
-    address + ' tokenData',
-    async () => await fetchTokenData(address, chainId),
-  );
-  return tokenData;
-};
 
 export const useTokensData = (addresses: string[]) => {
   const { chainId } = useActiveWeb3React();
@@ -26,7 +17,7 @@ export const useTokensData = (addresses: string[]) => {
   return useMemo(() => {
     const ret: any[] = [];
 
-    if (!tokensData.length) return null;
+    if (!tokensData.length) return;
 
     // Return null altogether
     tokensData.forEach(({ data }) => {
@@ -34,8 +25,14 @@ export const useTokensData = (addresses: string[]) => {
       ret.push(data);
     });
 
-    if (!ret.length) return null;
+    if (!ret.length) return;
 
     return ret;
   }, [tokensData]);
+};
+
+export const useTokenData = (address: string) => {
+  const tokensData = useTokensData([address]);
+  if (!tokensData) return;
+  return tokensData[0];
 };
