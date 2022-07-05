@@ -4,12 +4,12 @@ import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
 import 'components/styles/CustomMenu.scss';
 
 interface CustomMenuItem {
-  text?: string;
+  text: string;
   onClick: () => void;
 }
 
 interface CustomMenuProps {
-  title?: string;
+  title: string;
   menuItems: CustomMenuItem[];
   selectedValue?: string;
 }

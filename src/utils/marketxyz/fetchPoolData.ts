@@ -6,6 +6,7 @@ import {
   PoolLensV1,
 } from 'market-sdk';
 import Web3 from 'web3';
+import { convertBNToNumber } from '.';
 import { getEthPrice } from '../index';
 
 export interface USDPricedPoolAsset extends PoolAsset {
@@ -19,6 +20,7 @@ export interface USDPricedPoolAsset extends PoolAsset {
 
   isPaused: boolean;
   isSupplyPaused: boolean;
+  usdPrice: number;
 }
 
 export const getPoolIdFromComptroller = async (
@@ -75,7 +77,7 @@ export const fetchPoolData = async (
   let totalSuppliedUSD = 0;
   let totalBorrowedUSD = 0;
 
-  const ethPrice = Web3.utils.toBN(Math.round((await getEthPrice())[0] * 1e2));
+  const [ethPrice] = await getEthPrice();
   const _1e36 = Web3.utils.toBN(10).pow(Web3.utils.toBN(36));
 
   await Promise.all(
@@ -87,55 +89,32 @@ export const fetchPoolData = async (
         asset.cToken.address,
       );
 
+      asset.usdPrice = 1;
+
       asset.supplyBalanceUSD =
-        parseInt(
-          asset.supplyBalance
-            .mul(asset.underlyingPrice)
-            .mul(ethPrice)
-            .div(_1e36)
-            .toString(),
-        ) / 1e2;
+        convertBNToNumber(asset.supplyBalance, asset.underlyingDecimals) *
+        asset.usdPrice;
 
       asset.borrowBalanceUSD =
-        parseInt(
-          asset.borrowBalance
-            .mul(asset.underlyingPrice)
-            .mul(ethPrice)
-            .div(_1e36)
-            .toString(),
-        ) / 1e2;
+        convertBNToNumber(asset.borrowBalance, asset.underlyingDecimals) *
+        asset.usdPrice;
 
       totalSupplyBalanceUSD += asset.supplyBalanceUSD;
       totalBorrowBalanceUSD += asset.borrowBalanceUSD;
 
       asset.totalSupplyUSD =
-        parseInt(
-          asset.totalSupply
-            .mul(asset.underlyingPrice)
-            .mul(ethPrice)
-            .div(_1e36)
-            .toString(),
-        ) / 1e2;
+        convertBNToNumber(asset.totalSupply, asset.underlyingDecimals) *
+        asset.usdPrice;
       asset.totalBorrowUSD =
-        parseInt(
-          asset.totalBorrow
-            .mul(asset.underlyingPrice)
-            .mul(ethPrice)
-            .div(_1e36)
-            .toString(),
-        ) / 1e2;
+        convertBNToNumber(asset.totalBorrow, asset.underlyingDecimals) *
+        asset.usdPrice;
 
       totalSuppliedUSD += asset.totalSupplyUSD;
       totalBorrowedUSD += asset.totalBorrowUSD;
 
       asset.liquidityUSD =
-        parseInt(
-          asset.liquidity
-            .mul(asset.underlyingPrice)
-            .mul(ethPrice)
-            .div(_1e36)
-            .toString(),
-        ) / 1e2;
+        convertBNToNumber(asset.liquidity, asset.underlyingDecimals) *
+        asset.usdPrice;
 
       totalLiquidityUSD += asset.liquidityUSD;
       return asset;

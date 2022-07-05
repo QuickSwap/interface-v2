@@ -1,13 +1,20 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Box, Button } from '@material-ui/core';
 import { ArrowForward } from '@material-ui/icons';
 import { USDPricedPoolAsset } from 'utils/marketxyz/fetchPoolData';
 import { midUsdFormatter } from 'utils/bigUtils';
 
-import * as MarketUtils from 'utils/marketxyz';
-import { convertMantissaToAPR, convertMantissaToAPY } from 'utils/marketxyz';
+import {
+  repayBorrow,
+  borrow as poolBorrow,
+  withdraw as poolWithDraw,
+  supply,
+  convertBNToNumber,
+  convertMantissaToAPR,
+  convertMantissaToAPY,
+} from 'utils/marketxyz';
 
-import { getDaysCurrentYear, getEthPrice } from 'utils';
+import { getDaysCurrentYear } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import {
   ToggleSwitch,
@@ -56,21 +63,22 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
     return t('confirm');
   }, [account, t, value]);
 
-  const supplyBalance =
-    Number(asset.supplyBalance.toString()) /
-    10 ** Number(asset.underlyingDecimals.toString());
+  const supplyBalance = convertBNToNumber(
+    asset.supplyBalance,
+    asset.underlyingDecimals,
+  );
 
-  const borrowBalance =
-    Number(asset.borrowBalance.toString()) /
-    10 ** Number(asset.underlyingDecimals.toString());
+  const borrowBalance = convertBNToNumber(
+    asset.borrowBalance,
+    asset.underlyingDecimals,
+  );
+
+  const underlyingBalance = convertBNToNumber(
+    asset.underlyingBalance,
+    asset.underlyingDecimals,
+  );
 
   const showArrow = Number(value) > 0;
-
-  const [ethPrice, setEthPrice] = useState<number>();
-
-  useEffect(() => {
-    getEthPrice().then(([price]) => setEthPrice(price));
-  }, []);
 
   return (
     <>
@@ -138,28 +146,13 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
                   }}
                 />
                 <p className='span text-secondary'>
-                  (
-                  {ethPrice
-                    ? midUsdFormatter(
-                        ((Number(asset.underlyingPrice.toString()) /
-                          10 ** Number(asset.underlyingDecimals.toString()) /
-                          10 ** 17) *
-                          Number(value)) /
-                          ethPrice,
-                      )
-                    : '?'}
-                  )
+                  ({midUsdFormatter(asset.usdPrice * Number(value))})
                 </p>
               </Box>
               <Box
                 className='lendMaxButton'
                 onClick={() => {
-                  setValue(
-                    (
-                      Number(asset.underlyingBalance.toString()) /
-                      10 ** asset.underlyingDecimals.toNumber()
-                    ).toString(),
-                  );
+                  setValue(underlyingBalance.toString());
                 }}
               >
                 {t('max')}
@@ -298,13 +291,13 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
                   try {
                     if (borrow) {
                       if (modalType === 'repay') {
-                        txResponse = await MarketUtils.repayBorrow(
+                        txResponse = await repayBorrow(
                           asset,
                           Number(value),
                           account,
                         );
                       } else {
-                        txResponse = await MarketUtils.borrow(
+                        txResponse = await poolBorrow(
                           asset,
                           Number(value),
                           account,
@@ -312,13 +305,13 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
                       }
                     } else {
                       if (modalType === 'withdraw') {
-                        txResponse = await MarketUtils.withdraw(
+                        txResponse = await poolWithDraw(
                           asset,
                           Number(value),
                           account,
                         );
                       } else {
-                        txResponse = await MarketUtils.supply(
+                        txResponse = await supply(
                           asset,
                           Number(value),
                           account,

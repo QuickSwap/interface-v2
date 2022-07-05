@@ -66,14 +66,12 @@ const ThemeProvider: React.FC = ({ children }) => {
 
 const Providers: React.FC = ({ children }) => {
   return (
-    <>
-      <Suspense fallback={<Background fallback={true} />}>
-        <ThemeProvider>
-          <CssBaseline />
-          {children}
-        </ThemeProvider>
-      </Suspense>
-    </>
+    <Suspense fallback={<Background fallback={true} />}>
+      <ThemeProvider>
+        <CssBaseline />
+        {children}
+      </ThemeProvider>
+    </Suspense>
   );
 };
 

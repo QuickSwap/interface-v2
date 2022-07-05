@@ -21,6 +21,10 @@ export const convertMantissaToAPR = (mantissa: any) => {
   return (mantissa * BlocksPerDay * getDaysCurrentYear()) / 1e16;
 };
 
+export const convertBNToNumber = (value: BN, decimals: BN) => {
+  return Number(value) / 10 ** Number(decimals);
+};
+
 export const getPoolAssetToken = (
   asset: USDPricedPoolAsset,
   chainId?: ChainId,
