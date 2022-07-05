@@ -43,18 +43,13 @@ import {
   ETHER,
   Token,
   TokenAmount,
-  Price,
   Pair,
 } from '@uniswap/sdk';
 import { BigNumber, BigNumberish } from '@ethersproject/bignumber';
 import { formatUnits } from 'ethers/lib/utils';
 import { AddressZero } from '@ethersproject/constants';
 import { GlobalConst, GlobalValue, SUPPORTED_WALLETS } from 'constants/index';
-import {
-  TokenAddressMap,
-  useSelectedTokenList,
-  WrappedTokenInfo,
-} from 'state/lists/hooks';
+import { TokenAddressMap } from 'state/lists/hooks';
 import tokenData from 'constants/tokens.json';
 import {
   DualStakingInfo,
@@ -62,13 +57,11 @@ import {
   StakingInfo,
   SyrupBasic,
   SyrupInfo,
-  SyrupRaw,
 } from 'types';
 import { unwrappedToken } from './wrappedCurrency';
 import { useUSDCPriceToken } from './useUSDCPrice';
 import { CallState } from 'state/multicall/hooks';
 import { DualStakingBasic, StakingBasic } from 'types';
-import { useCallback } from 'react';
 import { AbstractConnector } from '@web3-react/abstract-connector';
 import { injected } from 'connectors';
 
@@ -437,10 +430,8 @@ export const getTopTokens = async (
   const utcCurrentTime = dayjs();
   const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix();
   const utcTwoDaysBack = utcCurrentTime.subtract(2, 'day').unix();
-  const utcOneWeekBack = utcCurrentTime.subtract(7, 'day').unix();
   const oneDayBlock = await getBlockFromTimestamp(utcOneDayBack);
   const twoDayBlock = await getBlockFromTimestamp(utcTwoDaysBack);
-  const oneWeekBlock = await getBlockFromTimestamp(utcOneWeekBack);
 
   try {
     const current = await client.query({
@@ -458,11 +449,6 @@ export const getTopTokens = async (
       fetchPolicy: 'network-only',
     });
 
-    const oneWeekResult = await client.query({
-      query: TOKENS_DYNAMIC(oneWeekBlock, count),
-      fetchPolicy: 'network-only',
-    });
-
     const oneDayData = oneDayResult?.data?.tokens.reduce(
       (obj: any, cur: any) => {
         return { ...obj, [cur.id]: cur };
@@ -471,13 +457,6 @@ export const getTopTokens = async (
     );
 
     const twoDayData = twoDayResult?.data?.tokens.reduce(
-      (obj: any, cur: any) => {
-        return { ...obj, [cur.id]: cur };
-      },
-      {},
-    );
-
-    const oneWeekData = oneWeekResult?.data?.tokens.reduce(
       (obj: any, cur: any) => {
         return { ...obj, [cur.id]: cur };
       },
@@ -494,7 +473,6 @@ export const getTopTokens = async (
           // let liquidityDataThisToken = liquidityData?.[token.id]
           let oneDayHistory = oneDayData?.[token.id];
           let twoDayHistory = twoDayData?.[token.id];
-          let oneWeekHistory = oneWeekData?.[token.id];
 
           // catch the case where token wasnt in top list in previous days
           if (!oneDayHistory) {
@@ -512,23 +490,12 @@ export const getTopTokens = async (
             twoDayHistory = twoDayResult.data.tokens[0];
           }
 
-          if (!oneWeekHistory) {
-            const oneWeekResult = await client.query({
-              query: TOKEN_DATA(token.id, oneWeekBlock),
-              fetchPolicy: 'network-only',
-            });
-            oneWeekHistory = oneWeekResult.data.tokens[0];
-          }
-
           // calculate percentage changes and daily changes
           const [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(
             data.tradeVolumeUSD,
             oneDayHistory?.tradeVolumeUSD ?? 0,
             twoDayHistory?.tradeVolumeUSD ?? 0,
           );
-
-          const oneWeekVolumeUSD =
-            oneDayHistory.tradeVolumeUSD - oneWeekHistory.tradeVolumeUSD;
 
           const currentLiquidityUSD =
             data?.totalLiquidity * ethPrice * data?.derivedETH;
@@ -549,7 +516,6 @@ export const getTopTokens = async (
           data.priceUSD = data?.derivedETH * ethPrice;
           data.totalLiquidityUSD = currentLiquidityUSD;
           data.oneDayVolumeUSD = oneDayVolumeUSD;
-          data.oneWeekVolumeUSD = oneWeekVolumeUSD;
           data.volumeChangeUSD = volumeChangeUSD;
           data.priceChangeUSD = priceChangeUSD;
           data.liquidityChangeUSD = getPercentChange(

@@ -5,6 +5,7 @@ import { useBookmarkTokens } from 'state/application/hooks';
 import { getEthPrice, getTopTokens } from 'utils';
 import { Skeleton } from '@material-ui/lab';
 import { useTranslation } from 'react-i18next';
+import { GlobalConst } from 'constants/index';
 
 const AnalyticsTokens: React.FC = () => {
   const { t } = useTranslation();
@@ -27,7 +28,11 @@ const AnalyticsTokens: React.FC = () => {
     const fetchTopTokens = async () => {
       updateTopTokens(null); //set top tokens as null to show loading status when fetching tokens data
       const [newPrice, oneDayPrice] = await getEthPrice();
-      const topTokensData = await getTopTokens(newPrice, oneDayPrice, 200);
+      const topTokensData = await getTopTokens(
+        newPrice,
+        oneDayPrice,
+        GlobalConst.utils.ANALYTICS_TOKENS_COUNT,
+      );
       if (topTokensData) {
         updateTopTokens(topTokensData);
       }

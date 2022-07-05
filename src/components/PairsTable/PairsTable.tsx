@@ -10,8 +10,9 @@ import { ReactComponent as StarChecked } from 'assets/images/StarChecked.svg';
 import { ReactComponent as StarUnchecked } from 'assets/images/StarUnchecked.svg';
 import { useTranslation } from 'react-i18next';
 
-interface TokensTableProps {
+interface PairsTableProps {
   data: any[];
+  showPagination?: boolean;
 }
 
 const headCells = () => [
@@ -56,7 +57,10 @@ const headCells = () => [
 
 const liquidityHeadCellIndex = 1;
 
-const PairTable: React.FC<TokensTableProps> = ({ data }) => {
+const PairTable: React.FC<PairsTableProps> = ({
+  data,
+  showPagination = true,
+}) => {
   const { t } = useTranslation();
   const pairHeadCells = headCells();
   const {
@@ -235,7 +239,7 @@ const PairTable: React.FC<TokensTableProps> = ({ data }) => {
     <CustomTable
       defaultOrderBy={pairHeadCells[liquidityHeadCellIndex]}
       defaultOrder='desc'
-      showPagination={data.length > GlobalConst.utils.ROWSPERPAGE}
+      showPagination={showPagination}
       headCells={pairHeadCells}
       rowsPerPage={GlobalConst.utils.ROWSPERPAGE}
       data={data}
