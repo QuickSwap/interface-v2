@@ -140,7 +140,7 @@ const Header: React.FC = () => {
       </Link>
       {!tabletWindowSize && (
         <Box className='mainMenu'>
-          {menuItems.map((val, index) => (
+          {menuItems.slice(0, 7).map((val, index) => (
             <Link
               to={val.link}
               key={index}
@@ -173,16 +173,19 @@ const Header: React.FC = () => {
               )}
             </Link>
           ))}
-          <Box display='flex' className='menuItem'>
+          <Box display='flex' className='menuItem subMenuItem'>
             <ThreeDotIcon />
-            <Box
-              position='absolute'
-              top={32}
-              left={0}
-              width={209}
-              paddingTop={10}
-            >
+            <Box className='subMenuWrapper'>
               <Box className='subMenu'>
+                {menuItems.slice(7, menuItems.length).map((val, index) => (
+                  <Link
+                    to={val.link}
+                    key={index}
+                    onClick={() => setOpenDetailMenu(false)}
+                  >
+                    <small>{val.text}</small>
+                  </Link>
+                ))}
                 {outLinks.map((item, ind) => (
                   <a href={item.link} key={ind}>
                     <small>{item.text}</small>
