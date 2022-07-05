@@ -137,17 +137,7 @@ const AnalyticsSearch: React.FC = () => {
                   new RegExp(escapeRegExp(searchVal), 'i'),
                 );
               }
-              if (field === 'token0') {
-                return (
-                  pair[field].symbol.match(
-                    new RegExp(escapeRegExp(searchVal), 'i'),
-                  ) ||
-                  pair[field].name.match(
-                    new RegExp(escapeRegExp(searchVal), 'i'),
-                  )
-                );
-              }
-              if (field === 'token1') {
+              if (field === 'token0' || field === 'token1') {
                 return (
                   pair[field].symbol.match(
                     new RegExp(escapeRegExp(searchVal), 'i'),
