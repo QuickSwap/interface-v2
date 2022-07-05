@@ -30,7 +30,7 @@ import {
   SWAP_TRANSACTIONS,
   HOURLY_PAIR_RATES,
   GLOBAL_ALLDATA,
-  ETH_ALLPRICE,
+  ETH_PRICE,
   PAIR_ID,
 } from 'apollo/queries';
 import { JsonRpcSigner, Web3Provider } from '@ethersproject/providers';
@@ -250,11 +250,15 @@ export const getEthPrice: () => Promise<number[]> = async () => {
   try {
     const oneDayBlock = await getBlockFromTimestamp(utcOneDayBack);
     const result = await client.query({
-      query: ETH_ALLPRICE(oneDayBlock),
+      query: ETH_PRICE(),
       fetchPolicy: 'network-only',
     });
-    const currentPrice = result?.data['currentPrice'][0].ethPrice;
-    const oneDayBackPrice = result?.data['oneDayBackPrice'][0].ethPrice;
+    const resultOneDay = await client.query({
+      query: ETH_PRICE(oneDayBlock),
+      fetchPolicy: 'network-only',
+    });
+    const currentPrice = result?.data?.bundles[0]?.ethPrice;
+    const oneDayBackPrice = resultOneDay?.data?.bundles[0]?.ethPrice;
 
     priceChangeETH = getPercentChange(currentPrice, oneDayBackPrice);
     ethPrice = currentPrice;

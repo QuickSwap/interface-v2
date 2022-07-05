@@ -9,7 +9,7 @@ import DragonsLair from './DragonsLair';
 import DragonsSyrup from './DragonsSyrup';
 import 'pages/styles/dragon.scss';
 import { useTranslation } from 'react-i18next';
-import { useOldLairInfo } from 'state/stake/hooks';
+import { useNewLairInfo } from 'state/stake/hooks';
 
 const DragonPage: React.FC = () => {
   const { breakpoints } = useTheme();
@@ -17,6 +17,9 @@ const DragonPage: React.FC = () => {
   const { t } = useTranslation();
   //showing old dragons lair until we're ready to deploy
   const showOld = true;
+  const lairInfo = useNewLairInfo();
+  const showNew =
+    Number(lairInfo?.dQUICKBalance?.toFixed(0)) === 0 ? false : true;
 
   return (
     <Box width='100%' mb={3}>
@@ -26,7 +29,7 @@ const DragonPage: React.FC = () => {
           {showOld && (
             <Box className='dragonWrapper' mb='10px'>
               <Box className='dragonBg'>
-                <img src={DragonBg2} alt='Old Dragon Lair' />
+                <img src={DragonBg2} alt='Dragon Lair' />
               </Box>
               <img
                 src={DragonLairMask}
@@ -34,27 +37,29 @@ const DragonPage: React.FC = () => {
                 className='dragonMask'
               />
               <Box className='dragonTitle'>
-                <h5>{t('oldDragonLair')}</h5>
-                <small>{t('oldDragonLairTitle')}</small>
+                <h5>{t('dragonLair')}</h5>
+                <small>{t('dragonLairTitle')}</small>
               </Box>
               <DragonsLair isNew={false} />
             </Box>
           )}
-          <Box className='dragonWrapper'>
-            <Box className='dragonBg'>
-              <img src={DragonBg2} alt='Dragon Lair' />
+          {showNew && (
+            <Box className='dragonWrapper'>
+              <Box className='dragonBg'>
+                <img src={DragonBg2} alt='Dragon Lair' />
+              </Box>
+              <img
+                src={DragonLairMask}
+                alt='Dragon Mask'
+                className='dragonMask'
+              />
+              <Box className='dragonTitle'>
+                <h5>{t('newDragonLair')}</h5>
+                <small>{t('newDragonLairTitle')}</small>
+              </Box>
+              <DragonsLair isNew={true} />
             </Box>
-            <img
-              src={DragonLairMask}
-              alt='Dragon Mask'
-              className='dragonMask'
-            />
-            <Box className='dragonTitle'>
-              <h5>{t('dragonLair')}</h5>
-              <small>{t('dragonLairTitle')}</small>
-            </Box>
-            <DragonsLair isNew={true} />
-          </Box>
+          )}
         </Grid>
         <Grid item xs={12} sm={12} md={8}>
           <Box className='dragonWrapper'>

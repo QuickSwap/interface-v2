@@ -1165,7 +1165,7 @@ function useLairInfo(
     inputs,
   );
 
-  accountArg = [GlobalConst.addresses.NEW_LAIR_ADDRESS ?? undefined];
+  accountArg = [lairAddress ?? undefined];
 
   const lairsQuickBalance = useSingleCallResult(
     quickContract,
@@ -1179,7 +1179,7 @@ function useLairInfo(
 
   return useMemo(() => {
     return {
-      lairAddress: GlobalConst.addresses.NEW_LAIR_ADDRESS,
+      lairAddress: lairAddress,
       dQUICKtoQUICK: new TokenAmount(
         quickToken,
         JSBI.BigInt(dQuickToQuick?.result?.[0] ?? 0),
@@ -1207,6 +1207,7 @@ function useLairInfo(
       oneDayVol: oneDayVol,
     };
   }, [
+    lairAddress,
     quickBalance,
     dQuickBalance,
     _dQuickTotalSupply,

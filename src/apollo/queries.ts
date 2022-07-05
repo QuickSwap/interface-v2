@@ -462,22 +462,6 @@ export const ETH_PRICE: any = (block?: number) => {
   return gql(queryString);
 };
 
-export const ETH_ALLPRICE: any = (block?: number) => {
-  const queryString = `
-    query bundles {
-      oneDayBackPrice: bundles(where: { id: ${GlobalConst.utils.BUNDLE_ID} } block: {number: ${block}}) {
-        id
-        ethPrice
-      }
-      currentPrice: bundles(where: { id: ${GlobalConst.utils.BUNDLE_ID} }) {
-        id
-        ethPrice
-      }
-    }
-  `;
-  return gql(queryString);
-};
-
 export const PAIRS_HISTORICAL_BULK: any = (block: number, pairs: any[]) => {
   let pairsString = `[`;
   pairs.map((pair) => {
