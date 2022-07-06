@@ -120,11 +120,11 @@ const TokensTable: React.FC<TokensTableProps> = ({
         </Box>
         <Box className='mobileRow'>
           <p>{t('24hVol')}</p>
-          <p>${Number(token.oneDayVolumeUSD).toLocaleString()}</p>
+          <p>${formatNumber(token.oneDayVolumeUSD)}</p>
         </Box>
         <Box className='mobileRow'>
           <p>{t('liquidity')}</p>
-          <p>${Number(token.totalLiquidityUSD).toLocaleString()}</p>
+          <p>${formatNumber(token.totalLiquidityUSD)}</p>
         </Box>
       </Box>
     );
@@ -182,7 +182,7 @@ const TokensTable: React.FC<TokensTableProps> = ({
       {
         html: (
           <Box>
-            <p>${Number(token.priceUSD).toLocaleString()}</p>
+            <p>${formatNumber(token.priceUSD)}</p>
           </Box>
         ),
       },
@@ -194,10 +194,10 @@ const TokensTable: React.FC<TokensTableProps> = ({
         ),
       },
       {
-        html: <p>${Number(token.oneDayVolumeUSD).toLocaleString()}</p>,
+        html: <p>${formatNumber(token.oneDayVolumeUSD)}</p>,
       },
       {
-        html: <p>${Number(token.totalLiquidityUSD).toLocaleString()}</p>,
+        html: <p>${formatNumber(token.totalLiquidityUSD)}</p>,
       },
     ];
   };
