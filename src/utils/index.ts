@@ -417,7 +417,7 @@ export const getTokenInfo = async (
               fetchPolicy: 'network-only',
             });
             const result = aaveData.data.pairs[0];
-            data.totalLiquidityUSD = parseFloat(result.reserveUSD) / 2;
+            data.totalLiquidityUSD = Number(result.reserveUSD) / 2;
             data.liquidityChangeUSD = 0;
             data.priceChangeUSD = 0;
           }
@@ -482,20 +482,27 @@ export const getTopTokens = async (
           let oneDayHistory = oneDayData?.[token.id];
           let twoDayHistory = twoDayData?.[token.id];
 
-          // catch the case where token wasnt in top list in previous days
-          if (!oneDayHistory) {
-            const oneDayResult = await client.query({
-              query: TOKEN_DATA(token.id, oneDayBlock),
-              fetchPolicy: 'network-only',
-            });
-            oneDayHistory = oneDayResult.data.tokens[0];
+          // this is because old history data returns exact same data as current data when the old data does not exist
+          if (
+            Number(oneDayHistory?.totalLiquidity ?? 0) ===
+              Number(data?.totalLiquidity ?? 0) &&
+            Number(oneDayHistory?.tradeVolume ?? 0) ===
+              Number(data?.tradeVolume ?? 0) &&
+            Number(oneDayHistory?.derivedETH ?? 0) ===
+              Number(data?.derivedETH ?? 0)
+          ) {
+            oneDayHistory = null;
           }
-          if (!twoDayHistory) {
-            const twoDayResult = await client.query({
-              query: TOKEN_DATA(token.id, twoDayBlock),
-              fetchPolicy: 'network-only',
-            });
-            twoDayHistory = twoDayResult.data.tokens[0];
+
+          if (
+            Number(twoDayHistory?.totalLiquidity ?? 0) ===
+              Number(data?.totalLiquidity ?? 0) &&
+            Number(twoDayHistory?.tradeVolume ?? 0) ===
+              Number(data?.tradeVolume ?? 0) &&
+            Number(twoDayHistory?.derivedETH ?? 0) ===
+              Number(data?.derivedETH ?? 0)
+          ) {
+            twoDayHistory = null;
           }
 
           // calculate percentage changes and daily changes
@@ -508,9 +515,9 @@ export const getTopTokens = async (
           const currentLiquidityUSD =
             data?.totalLiquidity * ethPrice * data?.derivedETH;
           const oldLiquidityUSD =
-            oneDayHistory?.totalLiquidity *
+            (oneDayHistory?.totalLiquidity ?? 0) *
             ethPriceOld *
-            oneDayHistory?.derivedETH;
+            (oneDayHistory?.derivedETH ?? 0);
 
           // percent changes
           const priceChangeUSD = getPercentChange(
@@ -549,7 +556,7 @@ export const getTopTokens = async (
               fetchPolicy: 'network-only',
             });
             const result = aaveData.data.pairs[0];
-            data.totalLiquidityUSD = parseFloat(result.reserveUSD) / 2;
+            data.totalLiquidityUSD = Number(result.reserveUSD) / 2;
             data.liquidityChangeUSD = 0;
             data.priceChangeUSD = 0;
           }
@@ -664,7 +671,7 @@ export const getIntervalTokenData = async (
 
     if (latestBlock) {
       blocks = blocks.filter((b) => {
-        return parseFloat(b.number) <= latestBlock;
+        return Number(b.number) <= latestBlock;
       });
     }
 
@@ -680,7 +687,7 @@ export const getIntervalTokenData = async (
     const values: any[] = [];
     for (const row in result) {
       const timestamp = row.split('t')[1];
-      const derivedETH = parseFloat(result[row]?.derivedETH);
+      const derivedETH = Number(result[row]?.derivedETH ?? 0);
       if (timestamp) {
         values.push({
           timestamp,
@@ -706,8 +713,8 @@ export const getIntervalTokenData = async (
     for (let i = 0; i < values.length - 1; i++) {
       formattedHistory.push({
         timestamp: values[i].timestamp,
-        open: parseFloat(values[i].priceUSD),
-        close: parseFloat(values[i + 1].priceUSD),
+        open: Number(values[i].priceUSD),
+        close: Number(values[i + 1].priceUSD),
       });
     }
 
@@ -822,7 +829,7 @@ export const getTokenChartData = async (
       // add the day index to the set of days
       dayIndexSet.add((data[i].date / oneDay).toFixed(0));
       dayIndexArray.push(data[i]);
-      dayData.dailyVolumeUSD = parseFloat(dayData.dailyVolumeUSD);
+      dayData.dailyVolumeUSD = Number(dayData.dailyVolumeUSD);
     });
 
     // fill in empty days
@@ -891,8 +898,8 @@ export const getPairChartData = async (
       // add the day index to the set of days
       dayIndexSet.add((data[i].date / oneDay).toFixed(0));
       dayIndexArray.push(data[i]);
-      dayData.dailyVolumeUSD = parseFloat(dayData.dailyVolumeUSD);
-      dayData.reserveUSD = parseFloat(dayData.reserveUSD);
+      dayData.dailyVolumeUSD = Number(dayData.dailyVolumeUSD);
+      dayData.reserveUSD = Number(dayData.reserveUSD);
     });
 
     if (data[0]) {
@@ -961,7 +968,7 @@ export const getRateData = async (
 
     if (latestBlock) {
       blocks = blocks.filter((b) => {
-        return parseFloat(b.number) <= latestBlock;
+        return Number(b.number) <= latestBlock;
       });
     }
 
@@ -1135,17 +1142,15 @@ const parseData = (
   );
   const [oneDayVolumeUntracked, volumeChangeUntracked] = get2DayPercentChange(
     data?.untrackedVolumeUSD,
-    oneDayData?.untrackedVolumeUSD
-      ? parseFloat(oneDayData?.untrackedVolumeUSD)
-      : 0,
+    oneDayData?.untrackedVolumeUSD ? Number(oneDayData?.untrackedVolumeUSD) : 0,
     twoDayData?.untrackedVolumeUSD ? twoDayData?.untrackedVolumeUSD : 0,
   );
 
-  const oneWeekVolumeUSD = parseFloat(
+  const oneWeekVolumeUSD = Number(
     oneWeekData ? data?.volumeUSD - oneWeekData?.volumeUSD : data.volumeUSD,
   );
 
-  const oneWeekVolumeUntracked = parseFloat(
+  const oneWeekVolumeUntracked = Number(
     oneWeekData
       ? data?.untrackedVolumeUSD - oneWeekData?.untrackedVolumeUSD
       : data.untrackedVolumeUSD,
@@ -1168,13 +1173,13 @@ const parseData = (
 
   // format if pair hasnt existed for a day or a week
   if (!oneDayData && data && data.createdAtBlockNumber > oneDayBlock) {
-    data.oneDayVolumeUSD = parseFloat(data.volumeUSD);
+    data.oneDayVolumeUSD = Number(data.volumeUSD);
   }
   if (!oneDayData && data) {
-    data.oneDayVolumeUSD = parseFloat(data.volumeUSD);
+    data.oneDayVolumeUSD = Number(data.volumeUSD);
   }
   if (!oneWeekData && data) {
-    data.oneWeekVolumeUSD = parseFloat(data.volumeUSD);
+    data.oneWeekVolumeUSD = Number(data.volumeUSD);
   }
 
   // format incorrect names
