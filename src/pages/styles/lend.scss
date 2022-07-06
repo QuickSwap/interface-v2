@@ -178,8 +178,11 @@
   justify-content: space-around;
   padding: 20px 0;
   border-top: 1px solid $grey31;
-  & > div > p {
-    margin-top: 8px;
+  & > div {
+    text-align: center;
+    & > p {
+      margin-top: 4px;
+    }
   }
 }
 
@@ -223,15 +226,6 @@
   @include media("screen", "<tablet") {
     display: none;
   }
-}
-
-.lendStatCurrentUtil {
-  margin-left: -5px;
-  padding: 6px 7px;
-  font-size: 10px;
-  border-radius: 4px;
-  border: 1px solid $grey2;
-  display: inline-block;
 }
 
 .poolDetailsItemTag {

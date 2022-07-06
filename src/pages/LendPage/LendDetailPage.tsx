@@ -86,6 +86,12 @@ const LendDetailPage: React.FC = () => {
     });
   };
 
+  const poolUtilization = !poolData
+    ? 0
+    : !poolData.totalSuppliedUSD
+    ? 0
+    : (poolData.totalBorrowedUSD / poolData.totalSuppliedUSD) * 100;
+
   return (
     <>
       <Box width={'100%'}>
@@ -162,9 +168,7 @@ const LendDetailPage: React.FC = () => {
           <Box className='lendPageData'>
             <small className='text-secondary'>{t('poolUtilization')}</small>
             {poolData ? (
-              <h4>
-                {poolData && midUsdFormatter(poolData.totalBorrowBalanceUSD)}
-              </h4>
+              <h4>{poolUtilization.toFixed(2) + '%'}</h4>
             ) : (
               <Skeleton variant='rect' height={40} />
             )}
@@ -501,13 +505,7 @@ const LendDetailPage: React.FC = () => {
                       <small>{t('poolUtilization')}:</small>
                       {poolData ? (
                         <small className='text-gray29'>
-                          {poolData.totalSuppliedUSD.toString() === '0'
-                            ? '0%'
-                            : (
-                                (poolData.totalBorrowedUSD /
-                                  poolData.totalSuppliedUSD) *
-                                100
-                              ).toFixed(2) + '%'}
+                          {poolUtilization.toFixed(2) + '%'}
                         </small>
                       ) : (
                         <Skeleton variant='rect' width={40} height={23} />
@@ -678,6 +676,10 @@ const AssetStats = ({ poolData }: { poolData: PoolData }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const currentUtilization = !asset.totalSupplyUSD
+    ? 0
+    : Math.round((asset.totalBorrowUSD / asset.totalSupplyUSD) * 100);
+
   return (
     <Grid item xs={12} sm={12} md={6}>
       <Box className='poolDetailsItemWrapper'>
@@ -702,99 +704,89 @@ const AssetStats = ({ poolData }: { poolData: PoolData }) => {
         </Box>
         <Box flex={1} pb={'16px'}>
           <Box flex={1} position={'relative'} pt={'10px'} paddingX={'30px'}>
-            <Box className='lendStatCurrentUtil'>{t('currentUtilization')}</Box>
-            <Box mb={'20px'} borderLeft={'1px dashed #484c58'}>
-              <ReactApexChart
-                options={{
-                  chart: {
-                    type: 'line',
-                    zoom: {
-                      enabled: false,
-                    },
-                    toolbar: {
-                      show: false,
-                    },
-                  },
-                  dataLabels: {
+            <ReactApexChart
+              options={{
+                chart: {
+                  type: 'line',
+                  zoom: {
                     enabled: false,
                   },
-                  colors: ['#4289ff', '#fa6358'],
-                  markers: {
-                    size: [1, 1],
-                    colors: undefined,
-                    strokeColors: ['#4289ff', '#fa6358'],
-                    discrete: [
-                      {
-                        seriesIndex: 0,
-                        dataPointIndex: 0,
-                        fillColor: '#4289ff',
-                        strokeColor: '#fff',
-                        size: 5,
-                        shape: 'circle',
-                      },
-                      {
-                        seriesIndex: 1,
-                        dataPointIndex: 0,
-                        fillColor: '#fa6358',
-                        strokeColor: '#eee',
-                        size: 5,
-                        shape: 'circle',
-                      },
-                    ],
-                  },
-                  stroke: {
-                    curve: 'smooth',
-                  },
-                  title: {
-                    text: '',
-                    align: 'left',
-                  },
-                  grid: {
-                    show: false,
-                    padding: {
-                      top: 0,
-                      right: 0,
-                      bottom: -10,
-                      left: 5,
-                    },
-                  },
-                  xaxis: {
-                    position: 'top',
-                    axisBorder: {
-                      show: false,
-                    },
-                    labels: {
-                      show: false,
-                    },
-                    axisTicks: {
-                      show: false,
-                    },
-                    categories: supplierRates?.map(({ x }) => x),
-                  },
-                  yaxis: {
+                  toolbar: {
                     show: false,
                   },
-                  tooltip: {
-                    enabled: false,
+                },
+                dataLabels: {
+                  enabled: false,
+                },
+                colors: ['#4289ff', '#fa6358'],
+                markers: {
+                  size: [1, 1],
+                  colors: undefined,
+                  strokeColors: ['#4289ff', '#fa6358'],
+                  discrete: [
+                    {
+                      seriesIndex: 0,
+                      dataPointIndex: currentUtilization,
+                      fillColor: '#4289ff',
+                      strokeColor: '#fff',
+                      size: 5,
+                      shape: 'circle',
+                    },
+                    {
+                      seriesIndex: 1,
+                      dataPointIndex: currentUtilization,
+                      fillColor: '#fa6358',
+                      strokeColor: '#eee',
+                      size: 5,
+                      shape: 'circle',
+                    },
+                  ],
+                },
+                tooltip: {
+                  enabled: true,
+                  marker: {
+                    show: true,
                   },
-                  legend: {
+                },
+                stroke: {
+                  curve: 'smooth',
+                },
+                grid: {
+                  show: false,
+                },
+                xaxis: {
+                  position: 'top',
+                  axisBorder: {
                     show: false,
                   },
-                }}
-                series={[
-                  {
-                    name: t('supplierRates'),
-                    data: supplierRates?.map(({ y }) => y),
+                  labels: {
+                    show: false,
                   },
-                  {
-                    name: t('borrowerRates'),
-                    data: borrowerRates?.map(({ y }) => y),
+                  axisTicks: {
+                    show: false,
                   },
-                ]}
-                type='line'
-                height={'100%'}
-              />
-            </Box>
+                  categories: supplierRates?.map(({ x }) => x),
+                },
+                yaxis: {
+                  show: false,
+                },
+                legend: {
+                  show: false,
+                },
+              }}
+              series={[
+                {
+                  name: t('borrowerRates'),
+                  data: borrowerRates?.map(({ y }) => y),
+                },
+                {
+                  name: t('supplierRates'),
+                  data: supplierRates?.map(({ y }) => y),
+                },
+              ]}
+              type='line'
+              height={'100%'}
+            />
           </Box>
           <Box className='poolStatsInfoItem'>
             <Box>
@@ -828,14 +820,7 @@ const AssetStats = ({ poolData }: { poolData: PoolData }) => {
             </Box>
             <Box>
               <small>{t('utilization')}:</small>
-              <p className='small text-gray29'>
-                {asset.totalSupplyUSD.toString() === '0'
-                  ? '0%'
-                  : (
-                      (asset.totalBorrowUSD / asset.totalSupplyUSD) *
-                      100
-                    ).toFixed(0) + '%'}
-              </p>
+              <p className='small text-gray29'>{currentUtilization + '%'}</p>
             </Box>
           </Box>
         </Box>
