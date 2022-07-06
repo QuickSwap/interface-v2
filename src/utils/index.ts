@@ -325,33 +325,41 @@ export const getTokenInfo = async (
         current?.data?.tokens?.map(async (token: any) => {
           const data = token;
 
-          // let liquidityDataThisToken = liquidityData?.[token.id]
           let oneDayHistory = oneDayData?.[token.id];
           let twoDayHistory = twoDayData?.[token.id];
           let oneWeekHistory = oneWeekData?.[token.id];
 
-          // catch the case where token wasnt in top list in previous days
-          if (!oneDayHistory) {
-            const oneDayResult = await client.query({
-              query: TOKEN_DATA(token.id, oneDayBlock),
-              fetchPolicy: 'network-only',
-            });
-            oneDayHistory = oneDayResult.data.tokens[0];
-          }
-          if (!twoDayHistory) {
-            const twoDayResult = await client.query({
-              query: TOKEN_DATA(token.id, twoDayBlock),
-              fetchPolicy: 'network-only',
-            });
-            twoDayHistory = twoDayResult.data.tokens[0];
+          // this is because old history data returns exact same data as current data when the old data does not exist
+          if (
+            Number(oneDayHistory?.totalLiquidity ?? 0) ===
+              Number(data?.totalLiquidity ?? 0) &&
+            Number(oneDayHistory?.tradeVolume ?? 0) ===
+              Number(data?.tradeVolume ?? 0) &&
+            Number(oneDayHistory?.derivedETH ?? 0) ===
+              Number(data?.derivedETH ?? 0)
+          ) {
+            oneDayHistory = null;
           }
 
-          if (!oneWeekHistory) {
-            const oneWeekResult = await client.query({
-              query: TOKEN_DATA(token.id, oneWeekBlock),
-              fetchPolicy: 'network-only',
-            });
-            oneWeekHistory = oneWeekResult.data.tokens[0];
+          if (
+            Number(twoDayHistory?.totalLiquidity ?? 0) ===
+              Number(data?.totalLiquidity ?? 0) &&
+            Number(twoDayHistory?.tradeVolume ?? 0) ===
+              Number(data?.tradeVolume ?? 0) &&
+            Number(twoDayHistory?.derivedETH ?? 0) ===
+              Number(data?.derivedETH ?? 0)
+          ) {
+            twoDayHistory = null;
+          }
+          if (
+            Number(oneWeekHistory?.totalLiquidity ?? 0) ===
+              Number(data?.totalLiquidity ?? 0) &&
+            Number(oneWeekHistory?.tradeVolume ?? 0) ===
+              Number(data?.tradeVolume ?? 0) &&
+            Number(oneWeekHistory?.derivedETH ?? 0) ===
+              Number(data?.derivedETH ?? 0)
+          ) {
+            oneWeekHistory = null;
           }
 
           // calculate percentage changes and daily changes
@@ -362,14 +370,14 @@ export const getTokenInfo = async (
           );
 
           const oneWeekVolumeUSD =
-            oneDayHistory.tradeVolumeUSD - oneWeekHistory.tradeVolumeUSD;
+            data.tradeVolumeUSD - (oneWeekHistory?.tradeVolumeUSD ?? 0);
 
           const currentLiquidityUSD =
             data?.totalLiquidity * ethPrice * data?.derivedETH;
           const oldLiquidityUSD =
-            oneDayHistory?.totalLiquidity *
+            (oneDayHistory?.totalLiquidity ?? 0) *
             ethPriceOld *
-            oneDayHistory?.derivedETH;
+            (oneDayHistory?.derivedETH ?? 0);
 
           // percent changes
           const priceChangeUSD = getPercentChange(
@@ -1060,6 +1068,40 @@ export const getBulkPairData: (
             });
             oneWeekHistory = newData.data.pairs[0];
           }
+
+          // this is because old history data returns exact same data as current data when the old data does not exist
+          if (
+            Number(oneDayHistory?.reserveUSD ?? 0) ===
+              Number(data?.reserveUSD ?? 0) &&
+            Number(oneDayHistory?.volumeUSD ?? 0) ===
+              Number(data?.volumeUSD ?? 0) &&
+            Number(oneDayHistory?.totalSupply ?? 0) ===
+              Number(data?.totalSupply ?? 0)
+          ) {
+            oneDayHistory = null;
+          }
+
+          if (
+            Number(twoDayHistory?.reserveUSD ?? 0) ===
+              Number(data?.reserveUSD ?? 0) &&
+            Number(twoDayHistory?.volumeUSD ?? 0) ===
+              Number(data?.volumeUSD ?? 0) &&
+            Number(twoDayHistory?.totalSupply ?? 0) ===
+              Number(data?.totalSupply ?? 0)
+          ) {
+            twoDayHistory = null;
+          }
+          if (
+            Number(oneWeekHistory?.reserveUSD ?? 0) ===
+              Number(data?.reserveUSD ?? 0) &&
+            Number(oneWeekHistory?.volumeUSD ?? 0) ===
+              Number(data?.volumeUSD ?? 0) &&
+            Number(oneWeekHistory?.totalSupply ?? 0) ===
+              Number(data?.totalSupply ?? 0)
+          ) {
+            oneWeekHistory = null;
+          }
+
           data = parseData(
             data,
             oneDayHistory,
