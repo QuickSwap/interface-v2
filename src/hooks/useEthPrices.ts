@@ -112,7 +112,7 @@ export function useEthPrices(): EthPrices | undefined {
     [network: string]: EthPrices | undefined;
   }>();
   const [error, setError] = useState(false);
-  const { dataClient } = useClients();
+  const { v3Client } = useClients();
 
   const [t24, t48, tWeek] = useDeltaTimestamps();
   const { blocks, error: blockError } = useBlocksFromTimestamps([
@@ -139,7 +139,7 @@ export function useEthPrices(): EthPrices | undefined {
     async function fetch() {
       const { data, error } = await fetchEthPrices(
         formattedBlocks as [number, number, number],
-        dataClient,
+        v3Client,
       );
       if (error || blockError) {
         setError(true);
@@ -158,7 +158,7 @@ export function useEthPrices(): EthPrices | undefined {
     prices,
     formattedBlocks,
     blockError,
-    dataClient,
+    v3Client,
     indexedPrices,
     chainId,
   ]);

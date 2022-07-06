@@ -54,7 +54,7 @@ import { useEthPrices } from './useEthPrices';
 export function useIncentiveSubgraph() {
   const { chainId, account, library } = useActiveWeb3React();
 
-  const { dataClient, farmingClient, oldFarmingClient } = useClients();
+  const { v3Client, farmingClient, oldFarmingClient } = useClients();
 
   const ethPrices = useEthPrices();
 
@@ -161,7 +161,7 @@ export function useIncentiveSubgraph() {
       const {
         data: { tokens },
         errors,
-      } = await dataClient.query<SubgraphResponse<TokenSubgraph[]>>({
+      } = await v3Client.query<SubgraphResponse<TokenSubgraph[]>>({
         query: FETCH_TOKEN(),
         variables: { tokenId },
       });
@@ -182,7 +182,7 @@ export function useIncentiveSubgraph() {
       const {
         data: { pools },
         errors,
-      } = await dataClient.query<SubgraphResponse<PoolSubgraph[]>>({
+      } = await v3Client.query<SubgraphResponse<PoolSubgraph[]>>({
         query: FETCH_POOL(),
         variables: { poolId },
       });
@@ -900,10 +900,12 @@ export function useIncentiveSubgraph() {
       const aprs: Aprs = await fetchEternalFarmAPR();
 
       let _eternalFarmings: FormattedEternalFarming[] = [];
-
-      for (const farming of eternalFarmings.filter(
-        (farming) => +farming.bonusRewardRate || +farming.rewardRate,
-      )) {
+      // Removed Filter for testing
+      // for (const farming of eternalFarmings.filter(
+      //   (farming) => +farming.bonusRewardRate || +farming.rewardRate,
+      // ))
+      for (const farming of eternalFarmings) {
+        console.log('filtering farm for:' + farming.id);
         const pool = await fetchPool(farming.pool);
         const rewardToken = await fetchToken(farming.rewardToken);
         const bonusRewardToken = await fetchToken(farming.bonusRewardToken);

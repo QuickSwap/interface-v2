@@ -17,7 +17,7 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "useUnknownInCatchVariables": false,
-    "downlevelIteration": true,
+    "downlevelIteration": true
   },
   "include": ["src"]
 }
