@@ -643,19 +643,6 @@ const AssetStats = ({ poolData }: { poolData: PoolData }) => {
   const [jrm, setJrm] = useState<JumpRateModel>();
   const [statsItem, setStatsItem] = useState(asset.underlyingName);
 
-  const utilization =
-    asset.totalSupply.toString() === '0'
-      ? 0
-      : parseFloat(
-          // Use Max.min() to cap util at 100%
-          Math.min(
-            (Number(asset.totalBorrow.toString()) /
-              Number(asset.totalSupply.toString())) *
-              100,
-            100,
-          ).toFixed(0),
-        );
-
   const [borrowerRates, setBorrowerRates] = useState<
     { x: number; y: number }[]
   >();
@@ -682,7 +669,7 @@ const AssetStats = ({ poolData }: { poolData: PoolData }) => {
 
   return (
     <Grid item xs={12} sm={12} md={6}>
-      <Box className='poolDetailsItemWrapper'>
+      <Box className='flex flex-col poolDetailsItemWrapper'>
         <Box className='poolDetailsItemTop'>
           <h6>
             {statsItem} {t('statistics')}
@@ -702,8 +689,8 @@ const AssetStats = ({ poolData }: { poolData: PoolData }) => {
             />
           </Box>
         </Box>
-        <Box flex={1} pb={'16px'}>
-          <Box flex={1} position={'relative'} pt={'10px'} paddingX={'30px'}>
+        <Box className='flex flex-col' flex={1}>
+          <Box flex={1} paddingX={'30px'}>
             <ReactApexChart
               options={{
                 chart: {
@@ -744,8 +731,20 @@ const AssetStats = ({ poolData }: { poolData: PoolData }) => {
                 },
                 tooltip: {
                   enabled: true,
-                  marker: {
-                    show: true,
+                  theme: 'dark',
+                  fillSeriesColor: false,
+                  custom: ({ series, seriesIndex, dataPointIndex }: any) => {
+                    return `<div class="areaChartTooltip"><small class='caption'><b>${dataPointIndex}%</b> ${t(
+                      'utilization',
+                    )}</small><small class='caption'>${t(
+                      'depositAPY',
+                    )}: <b>${series[1][dataPointIndex].toFixed(
+                      2,
+                    )}%</b></small><small class='caption'>${t(
+                      'borrowAPY',
+                    )}: <b>${series[0][dataPointIndex].toFixed(
+                      2,
+                    )}%</b></small></div>`;
                   },
                 },
                 stroke: {
@@ -753,6 +752,9 @@ const AssetStats = ({ poolData }: { poolData: PoolData }) => {
                 },
                 grid: {
                   show: false,
+                  padding: {
+                    top: -36, //this is for increasing the height of chart
+                  },
                 },
                 xaxis: {
                   position: 'top',
@@ -760,7 +762,11 @@ const AssetStats = ({ poolData }: { poolData: PoolData }) => {
                     show: false,
                   },
                   labels: {
-                    show: false,
+                    show: true,
+                    offsetY: -50, //this is for hiding xaxis labels
+                  },
+                  tooltip: {
+                    enabled: false,
                   },
                   axisTicks: {
                     show: false,
@@ -772,6 +778,27 @@ const AssetStats = ({ poolData }: { poolData: PoolData }) => {
                 },
                 legend: {
                   show: false,
+                },
+                annotations: {
+                  xaxis: supplierRates
+                    ? [
+                        {
+                          x: currentUtilization,
+                          borderColor: '#3e4252',
+                          label: {
+                            style: {
+                              color: '#c7cad9',
+                              fontFamily: 'Inter, sans-serif',
+                              fontSize: '12px',
+                              background: 'transparent',
+                            },
+                            borderColor: '#3e4252',
+                            orientation: 'horizontal',
+                            text: t('currentUtilization'),
+                          },
+                        },
+                      ]
+                    : [],
                 },
               }}
               series={[

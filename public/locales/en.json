@@ -392,5 +392,7 @@
   "connectPolygonNetwork": "Please connect to the appropriate Polygon network.",
   "errorConnectRefresh": "Error connecting. Try refreshing the page.",
   "newToMatic": "New to Polygon?",
-  "learnWallet": "Learn about Wallets"
+  "learnWallet": "Learn about Wallets",
+  "depositAPY": "Deposit APY",
+  "borrowAPY": "Borrow APY"
 }
