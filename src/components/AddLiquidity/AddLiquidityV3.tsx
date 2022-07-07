@@ -46,13 +46,20 @@ import { ReactComponent as ArrowDownIcon } from 'assets/images/arrowDown.svg';
 import { ReactComponent as SettingsIcon } from 'assets/images/SettingsIcon.svg';
 
 import RateToggle from 'components/RateToggle';
-import { CurrencySearchModal, CurrencyLogo, NumericalInput } from 'components';
+import { CurrencyLogo } from 'components';
 import RangeCard from './RangeCard';
-import RiskCard from './RiskStatCard';
 import PriceRangeInput from './PriceRangeInput';
-import { LinkButton, StyledLabel } from './CommonStyledElements';
+import {
+  LinkButton,
+  StyledButton,
+  StyledFilledBox,
+  StyledLabel,
+  StyledNumber,
+} from './CommonStyledElements';
 import RiskStatCard from './RiskStatCard';
 import RangeGraph from './RangeGraph';
+import { ConfirmationModalContentV3 } from 'components/TransactionConfirmationModal/TransactionConfirmationModal';
+import CurrencySelect from 'components/CurrencySelect';
 
 const INPUT_RANGE_VALUES = ['Full Range', 'Safe', 'Common', 'Expert'];
 
@@ -140,6 +147,8 @@ const AddLiquidityV3: React.FC<{
     chainId ? GlobalConst.addresses.ROUTER_ADDRESS[chainId] : undefined,
   );
 
+  const [currencyModalOpen, setCurrencyModalOpen] = useState(false);
+
   const userPoolBalance = useTokenBalance(
     account ?? undefined,
     pair?.liquidityToken,
@@ -189,10 +198,6 @@ const AddLiquidityV3: React.FC<{
       setShowConfirm(true);
     }
   };
-
-  //   useEffect(() => {
-  //     console.log('component  ', currencies.CURRENCY_A);
-  //   }, [currencies]);
 
   const router = useRouterContract();
 
@@ -338,41 +343,146 @@ const AddLiquidityV3: React.FC<{
 
   const buttonText = useMemo(() => {
     if (account) {
-      return error ?? t('supply');
+      return error ?? t('Preview');
     } else if (ethereum && !isSupportedNetwork(ethereum)) {
       return t('switchPolygon');
     }
     return t('connectWallet');
   }, [account, ethereum, error, t]);
 
-  const modalHeader = () => {
+  const modalHeaderV3 = () => {
     return (
       <Box>
-        <Box mt={10} mb={3} className='flex justify-center'>
+        <Box className='flex justify-between items-center' mt={2.5} mb={2.5}>
           <DoubleCurrencyLogo
             currency0={currencies[Field.CURRENCY_A]}
             currency1={currencies[Field.CURRENCY_B]}
-            size={48}
+            size={32}
           />
+          <Box
+            bgcolor={' rgba(15, 198, 121, 0.3)'}
+            className='flex items-center'
+            px={1.5}
+            py={0.5}
+            ml={1.5}
+            borderRadius={8}
+          >
+            <Box
+              height={10}
+              width={10}
+              borderRadius={'50%'}
+              bgcolor='#0fc679'
+              mr={1}
+            ></Box>
+            <StyledLabel fontSize='12px' color='#0fc679'>
+              in range
+            </StyledLabel>
+          </Box>
         </Box>
-        <Box mb={6} textAlign='center'>
-          <h6>
-            {t('supplyingTokens', liquidityTokenData)}
-            <br />
-            {t('receiveLPTokens', {
-              amount: formatTokenAmount(liquidityMinted),
-              symbolA: currencies[Field.CURRENCY_A]?.symbol,
-              symbolB: currencies[Field.CURRENCY_B]?.symbol,
-            })}
-          </h6>
+
+        <StyledFilledBox
+          className='flex flex-col items-center justify-evenly'
+          alignSelf='center'
+          justifySelf={'center'}
+          height={100}
+          mt={2}
+        >
+          <Box className='flex justify-between' width='90%'>
+            <Box className='flex items-center'>
+              <CurrencyLogo currency={currency0} size={'28px'} />
+
+              <StyledLabel fontSize='14px' style={{ marginLeft: 5 }}>
+                {t(`${currency0?.symbol}`)}
+              </StyledLabel>
+            </Box>
+
+            <Box>
+              {' '}
+              <StyledNumber fontSize='16px'>0</StyledNumber>
+            </Box>
+          </Box>
+          <Box className='flex justify-between' width='90%'>
+            <Box className='flex items-center'>
+              <CurrencyLogo currency={currency1} size={'28px'} />
+              <StyledLabel fontSize='14px' style={{ marginLeft: 5 }}>
+                {t(`${currency1?.symbol}`)}
+              </StyledLabel>
+            </Box>
+
+            <Box>
+              {' '}
+              <StyledNumber fontSize='16px'>0</StyledNumber>
+            </Box>
+          </Box>
+        </StyledFilledBox>
+
+        <Box
+          className='flex justify-between'
+          alignSelf='center'
+          justifySelf={'center'}
+          mt={2.5}
+        >
+          <StyledLabel fontSize='14px'>{t('Selected range')}</StyledLabel>
+          <Box>Toggle</Box>
         </Box>
-        <Box mb={3} textAlign='center'>
-          <small className='text-secondary'>
-            {t('outputEstimated', { slippage: allowedSlippage / 100 })}
-          </small>
+
+        <Box
+          className='flex justify-between'
+          alignSelf='center'
+          justifySelf={'center'}
+          mt={2.5}
+        >
+          <StyledFilledBox
+            width='48%'
+            className='flex flex-col justify-center items-center'
+            padding={2}
+            textAlign='center'
+          >
+            <StyledLabel color='#696c80'>Min price</StyledLabel>
+            <StyledNumber fontSize='18px'>0.58</StyledNumber>
+            <StyledLabel color='#696c80' style={{ marginBottom: 10 }}>
+              Your position will be 100%
+            </StyledLabel>
+            <StyledLabel color='#696c80'>
+              Composed of MATIC at this price
+            </StyledLabel>
+          </StyledFilledBox>
+          <StyledFilledBox
+            width='48%'
+            // height={120}
+            className='flex flex-col justify-center items-center'
+            padding={2}
+            textAlign='center'
+          >
+            <StyledLabel color='#696c80'>Max price</StyledLabel>
+            <StyledNumber fontSize='18px'>0.58</StyledNumber>
+            <StyledLabel color='#696c80' style={{ marginBottom: 10 }}>
+              Your position will be 100%
+            </StyledLabel>
+            <StyledLabel color='#696c80'>
+              Composed of MATIC at this price
+            </StyledLabel>
+          </StyledFilledBox>
         </Box>
-        <Box className='swapButtonWrapper'>
-          <Button onClick={onAddLiquidity}>{t('confirmSupply')}</Button>
+
+        <Box justifySelf={'center'} alignSelf='center' mt={2.5} mb={2.5}>
+          <StyledFilledBox
+            className='flex flex-col justify-center items-center'
+            height={120}
+          >
+            <StyledLabel color='#696c80'>Max price</StyledLabel>
+            <StyledNumber fontSize='18px'>0.59</StyledNumber>
+            <StyledLabel color='#696c80'>
+              Your position will be 100%
+            </StyledLabel>
+            <StyledLabel color='#696c80'>
+              Composed of USDC at this price
+            </StyledLabel>
+          </StyledFilledBox>
+
+          <Box mt={2.5}>
+            <StyledButton onClick={onAddLiquidity}>{t('Confirm')}</StyledButton>
+          </Box>
         </Box>
       </Box>
     );
@@ -382,10 +492,13 @@ const AddLiquidityV3: React.FC<{
     return INPUT_RANGE_VALUES?.[rangeIndex];
   }, [rangeIndex]);
 
+  const handleOpenModal = useCallback(() => {
+    setCurrencyModalOpen(true);
+  }, [setCurrencyModalOpen]);
+
   return (
     <Box>
       <Box className='flex justify-between items-center'>
-        {/* <p className='weight-600'>{t('supplyLiquidity')}</p> */}
         <StyledLabel fontSize='16px'>{t('supplyLiquidity')}</StyledLabel>
         <Box className='flex items-center'>
           <Box className='headingItem'>
@@ -416,8 +529,7 @@ const AddLiquidityV3: React.FC<{
         </Box>
       </Box>
       <Box className='flex justify-between items-center' mt={2.5}>
-        {' '}
-        Select Pair
+        {t('Select Pair')}
       </Box>
       <Box mt={2.5}>
         {showConfirm && (
@@ -434,10 +546,10 @@ const AddLiquidityV3: React.FC<{
                   message={addLiquidityErrorMessage}
                 />
               ) : (
-                <ConfirmationModalContent
-                  title={t('supplyingliquidity')}
+                <ConfirmationModalContentV3
+                  title={t('Supply Liquidity')}
                   onDismiss={handleDismissConfirmation}
-                  content={modalHeader}
+                  content={modalHeaderV3}
                 />
               )
             }
@@ -448,10 +560,11 @@ const AddLiquidityV3: React.FC<{
           />
         )}
         <Box className='flex justify-between items-center' mt={2.5}>
-          <Box
+          {/* <Box
             className={`currencyButton ${
               currencies.CURRENCY_A ? 'currencySelected' : 'noCurrency'
             }`}
+            onClick={handleOpenModal}
           >
             {currencies.CURRENCY_A ? (
               <>
@@ -464,28 +577,31 @@ const AddLiquidityV3: React.FC<{
             ) : (
               <p>{t('selectToken')}</p>
             )}
-          </Box>
+          </Box> */}
+
+          <CurrencySelect
+            currency={currencies.CURRENCY_A}
+            otherCurrency={currencies.CURRENCY_B}
+            handleCurrencySelect={handleCurrencyASelect}
+            bgClass='token-select-background cursor-pointer'
+            id='select-token-a'
+          >
+            <ArrowDownIcon />
+          </CurrencySelect>
 
           <Box className='exchangeSwap'>
             <AddLiquidityIconV3 />
           </Box>
-          <Box
-            className={`currencyButton ${
-              currencies.CURRENCY_B ? 'currencySelected' : 'noCurrency'
-            }`}
+
+          <CurrencySelect
+            currency={currencies.CURRENCY_B}
+            otherCurrency={currencies.CURRENCY_A}
+            handleCurrencySelect={handleCurrencyBSelect}
+            bgClass='token-select-background cursor-pointer'
+            id='select-token-b'
           >
-            {currencies.CURRENCY_B ? (
-              <>
-                <CurrencyLogo currency={currencies.CURRENCY_B} size={'28px'} />
-                <p className='token-symbol-container' style={{ minWidth: 100 }}>
-                  {currencies.CURRENCY_B?.symbol}
-                </p>
-                <ArrowDownIcon />
-              </>
-            ) : (
-              <p>{t('selectToken')}</p>
-            )}
-          </Box>
+            <ArrowDownIcon />
+          </CurrencySelect>
         </Box>
         <Box className='flex justify-between items-center' mt={2.5}>
           Select range
@@ -514,8 +630,20 @@ const AddLiquidityV3: React.FC<{
         </Box>
 
         <Box className='flex justify-between items-center' mt={2.5} mb={2.5}>
-          <PriceRangeInput />
-          <PriceRangeInput />
+          <PriceRangeInput
+            id='range-input-a'
+            setAmount={(amount) => {
+              console.log(amount);
+            }}
+            amount='0'
+          />
+          <PriceRangeInput
+            id='range-input-b'
+            setAmount={(amount) => {
+              console.log(amount);
+            }}
+            amount='0'
+          />
         </Box>
 
         <RangeGraph />
@@ -575,7 +703,7 @@ const AddLiquidityV3: React.FC<{
           />
         </Box>
 
-        <Box className='swapButtonWrapper flex-wrap'>
+        <Box className='flex-wrap' mt={2.5}>
           {(approvalA === ApprovalState.NOT_APPROVED ||
             approvalA === ApprovalState.PENDING ||
             approvalB === ApprovalState.NOT_APPROVED ||
@@ -588,8 +716,8 @@ const AddLiquidityV3: React.FC<{
                       approvalB !== ApprovalState.APPROVED ? '48%' : '100%'
                     }
                   >
-                    <Button
-                      fullWidth
+                    <StyledButton
+                      // fullWidth
                       onClick={async () => {
                         setApprovingA(true);
                         try {
@@ -610,7 +738,7 @@ const AddLiquidityV3: React.FC<{
                         : `${t('approve')} ${
                             currencies[Field.CURRENCY_A]?.symbol
                           }`}
-                    </Button>
+                    </StyledButton>
                   </Box>
                 )}
                 {approvalB !== ApprovalState.APPROVED && (
@@ -619,7 +747,7 @@ const AddLiquidityV3: React.FC<{
                       approvalA !== ApprovalState.APPROVED ? '48%' : '100%'
                     }
                   >
-                    <Button
+                    <StyledButton
                       fullWidth
                       onClick={async () => {
                         setApprovingB(true);
@@ -641,12 +769,12 @@ const AddLiquidityV3: React.FC<{
                         : `${t('approve')} ${
                             currencies[Field.CURRENCY_B]?.symbol
                           }`}
-                    </Button>
+                    </StyledButton>
                   </Box>
                 )}
               </Box>
             )}
-          <Button
+          {/* <Button
             fullWidth
             disabled={
               Boolean(account) &&
@@ -657,7 +785,19 @@ const AddLiquidityV3: React.FC<{
             onClick={account ? onAdd : connectWallet}
           >
             {buttonText}
-          </Button>
+          </Button> */}
+          <StyledButton
+            disabled={
+              Boolean(account) &&
+              (Boolean(error) ||
+                approvalA !== ApprovalState.APPROVED ||
+                approvalB !== ApprovalState.APPROVED)
+            }
+            onClick={account ? onAdd : connectWallet}
+          >
+            {' '}
+            {buttonText}
+          </StyledButton>
         </Box>
       </Box>
     </Box>

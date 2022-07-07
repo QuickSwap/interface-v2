@@ -3,10 +3,30 @@ import React from 'react';
 import { ReactComponent as AddIcon } from 'assets/images/AddIconBtn.svg';
 import { ReactComponent as RemoveIcon } from 'assets/images/RemoveIconBtn.svg';
 import { StyledBox, StyledLabel, StyledNumber } from './CommonStyledElements';
+import NumericalInput from 'components/NumericalInput';
 
-export default function PriceRangeInput() {
+interface PriceRangeInputProps {
+  label?: string;
+  bottomLabel?: string;
+  id?: string;
+  onMinusClick?: () => void;
+  onPlusClick?: () => void;
+  setAmount: (val: string) => void;
+  amount: string;
+}
+
+const PriceRangeInput: React.FC<PriceRangeInputProps> = ({
+  label,
+  bottomLabel,
+  id,
+  onMinusClick,
+  onPlusClick,
+  amount,
+  setAmount,
+}) => {
   return (
     <StyledBox
+      id={id}
       width={200}
       height={100}
       style={{
@@ -17,26 +37,27 @@ export default function PriceRangeInput() {
       }}
     >
       <StyledLabel fontSize='13px' color='#696c80'>
-        Min Price
+        {label}
       </StyledLabel>
 
-      <Box
-        style={{
-          display: 'flex',
-          flexDirection: 'row',
-          justifyContent: 'space-around',
-          alignItems: 'center',
-          width: '100%',
-        }}
-      >
-        <AddIcon />
-        <StyledNumber fontSize='18px'> 0.47069</StyledNumber>
-        <RemoveIcon />
+      <Box className='flex justify-around items-center' width={'93%'}>
+        <AddIcon className='cursor-pointer' onClick={onMinusClick} />
+        <NumericalInput
+          value={amount}
+          align='center'
+          placeholder='0.00'
+          onUserInput={(val) => {
+            setAmount(val);
+          }}
+        />
+        <RemoveIcon className='cursor-pointer' onClick={onPlusClick} />
       </Box>
 
       <StyledLabel fontSize='13px' color='#696c80'>
-        USDC per MATIC
+        {bottomLabel}
       </StyledLabel>
     </StyledBox>
   );
-}
+};
+
+export default PriceRangeInput;

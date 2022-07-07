@@ -10,7 +10,6 @@ import { CurrencyLogo, RemoveLiquidityModal } from 'components';
 import { currencyId, formatTokenAmount } from 'utils';
 import { useTranslation } from 'react-i18next';
 import {
-  StyledBox,
   StyledDarkBox,
   StyledLabel,
   StyledNumber,
@@ -126,7 +125,21 @@ const PoolPositionCardDetailsV3: React.FC<{ pair: Pair }> = ({ pair }) => {
               </StyledLabel>
             </Box>
 
-            <Box>inputs</Box>
+            <Box className='flex items-center'>
+              <StyledNumber fontSize='16px'>0.1511</StyledNumber>
+              <Box
+                bgcolor={'rgba(68, 138, 255, 0.3)'}
+                className='flex items-center'
+                ml={1}
+                px={0.5}
+                py={0.3}
+                borderRadius={4}
+              >
+                <StyledLabel fontSize='12px' color='#c7cad9'>
+                  36%
+                </StyledLabel>
+              </Box>
+            </Box>
           </Box>
           <Box className='flex justify-between' width='90%'>
             <Box className='flex items-center'>
@@ -136,7 +149,21 @@ const PoolPositionCardDetailsV3: React.FC<{ pair: Pair }> = ({ pair }) => {
               </StyledLabel>
             </Box>
 
-            <Box>inputs</Box>
+            <Box className='flex items-center'>
+              <StyledNumber fontSize='16px'>1.235</StyledNumber>
+              <Box
+                bgcolor={'rgba(68, 138, 255, 0.3)'}
+                className='flex items-center'
+                ml={1}
+                px={0.5}
+                py={0.3}
+                borderRadius={4}
+              >
+                <StyledLabel fontSize='12px' color='#c7cad9'>
+                  64%
+                </StyledLabel>
+              </Box>
+            </Box>
           </Box>
         </StyledDarkBox>
 
@@ -188,7 +215,10 @@ const PoolPositionCardDetailsV3: React.FC<{ pair: Pair }> = ({ pair }) => {
               </StyledLabel>
             </Box>
 
-            <Box>inputs</Box>
+            <Box>
+              {' '}
+              <StyledNumber fontSize='16px'>0</StyledNumber>
+            </Box>
           </Box>
           <Box className='flex justify-between' width='90%'>
             <Box className='flex items-center'>
@@ -198,7 +228,10 @@ const PoolPositionCardDetailsV3: React.FC<{ pair: Pair }> = ({ pair }) => {
               </StyledLabel>
             </Box>
 
-            <Box>inputs</Box>
+            <Box>
+              {' '}
+              <StyledNumber fontSize='16px'>0</StyledNumber>
+            </Box>
           </Box>
         </StyledDarkBox>
 
@@ -272,71 +305,6 @@ const PoolPositionCardDetailsV3: React.FC<{ pair: Pair }> = ({ pair }) => {
           </StyledDarkBox>
         </Box>
       </Box>
-      {/* <Box className='poolPositionCardDetails'>
-        <Box className='cardRow'>
-          <small>{t('yourPoolTokens')}:</small>
-          <small>{formatTokenAmount(userPoolBalance)}</small>
-        </Box>
-        <Box className='cardRow'>
-          <small>
-            {t('pooled')} {currency0.symbol}:
-          </small>
-          <Box>
-            <small>{formatTokenAmount(token0Deposited)}</small>
-            <CurrencyLogo size='20px' currency={currency0} />
-          </Box>
-        </Box>
-
-        <Box className='cardRow'>
-          <small>
-            {t('pooled')} {currency1.symbol}:
-          </small>
-          <Box>
-            <small>{formatTokenAmount(token1Deposited)}</small>
-            <CurrencyLogo size='20px' currency={currency1} />
-          </Box>
-        </Box>
-
-        <Box className='cardRow'>
-          <small>{t('yourPoolShare')}:</small>
-          <small>
-            {poolTokenPercentage
-              ? poolTokenPercentage.toSignificant() + '%'
-              : '-'}
-          </small>
-        </Box>
-
-        <Box className='poolButtonRow'>
-          <Button
-            variant='outlined'
-            onClick={() =>
-              history.push(`/analytics/pair/${pair.liquidityToken.address}`)
-            }
-          >
-            <small>{t('viewAnalytics')}</small>
-          </Button>
-          <Button
-            variant='contained'
-            onClick={() => {
-              history.push(
-                `/pools?currency0=${currencyId(
-                  currency0,
-                )}&currency1=${currencyId(currency1)}`,
-              );
-            }}
-          >
-            <small>{t('add')}</small>
-          </Button>
-          <Button
-            variant='contained'
-            onClick={() => {
-              setOpenRemoveModal(true);
-            }}
-          >
-            <small>{t('remove')}</small>
-          </Button>
-        </Box>
-      </Box> */}
       {openRemoveModal && (
         <RemoveLiquidityModal
           currency0={currency0}

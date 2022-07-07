@@ -124,6 +124,10 @@ body {
   justify-content: space-evenly;
 }
 
+.justify-around {
+  justify-content: space-around;
+}
+
 .flex-wrap {
   flex-wrap: wrap;
 }
@@ -138,4 +142,18 @@ body {
 
 .text-uppercase {
   text-transform: uppercase;
+}
+
+.token-select-background {
+  display: flex;
+  justify-content: space-around;
+  width: 176px;
+  height: 44px;
+  margin: 0 16px 0 0;
+  padding: 10px 12px 10px 10px;
+  border-radius: 22px;
+  background-color: #282d3d;
+  & p {
+    margin-left: 4px;
+  }
 }

@@ -1,4 +1,4 @@
-import { Box } from '@material-ui/core';
+import { Box, Button } from '@material-ui/core';
 import styled from 'styled-components';
 
 export const StyledLabel = styled.div<{ fontSize?: string; color?: string }>`
@@ -71,4 +71,20 @@ export const StyledBox = styled(Box)`
 export const StyledDarkBox = styled(Box)`
   border-radius: 10px;
   background-color: #1b1e29;
+`;
+
+export const StyledButton = styled(Button)<{ height?: string; width?: string }>`
+  height: ${({ height }) => (height ? height : '50px')};
+  width: ${({ width }) => (width ? 'fit-content' : '100%')};
+  border-radius: 16px;
+  background-color: #448aff;
+  font-family: Inter;
+  font-size: 16px;
+  font-weight: 600;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 4.44;
+  letter-spacing: normal;
+  text-align: center;
+  color: #ebecf2;
 `;
