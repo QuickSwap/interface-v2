@@ -909,6 +909,7 @@ export function useIncentiveSubgraph() {
         const pool = await fetchPool(farming.pool);
         const rewardToken = await fetchToken(farming.rewardToken);
         const bonusRewardToken = await fetchToken(farming.bonusRewardToken);
+        const lockedToken = await fetchToken(farming.multiplierToken);
 
         const apr = aprs[farming.id] ? aprs[farming.id] : 200;
 
@@ -920,6 +921,7 @@ export function useIncentiveSubgraph() {
             ...farming,
             rewardToken,
             bonusRewardToken,
+            lockedToken,
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-ignore
             pool,

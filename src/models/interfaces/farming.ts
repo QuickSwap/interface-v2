@@ -35,6 +35,13 @@ export interface EternalFarming {
   bonusReward: string;
   rewardRate: string;
   bonusRewardRate: string;
+  tokenAmountForLevel1: string;
+  tokenAmountForLevel2: string;
+  tokenAmountForLevel3: string;
+  level1multiplier: string;
+  level2multiplier: string;
+  level3multiplier: string;
+  multiplierToken: string;
 }
 
 export interface DetachedEternalFarming extends EternalFarming {
@@ -66,6 +73,13 @@ export interface FormattedEternalFarming {
   rewardRate: string;
   rewardToken: TokenSubgraph;
   startTime: string;
+  tokenAmountForLevel1: string;
+  tokenAmountForLevel2: string;
+  tokenAmountForLevel3: string;
+  level1multiplier: string;
+  level2multiplier: string;
+  level3multiplier: string;
+  lockedToken: TokenSubgraph;
 }
 
 export interface FarmingEvent extends DefaultFarmingEvent {
