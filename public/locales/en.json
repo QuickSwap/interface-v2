@@ -288,7 +288,7 @@
   "timeRemaining": "Time Remaining",
   "rewardsEnded": "Rewards Ended",
   "24hPer": "24H %",
-  "24hTopMovers": "24h TOP MOVERS",
+  "24hMostVolume": "24h MOST VOLUME",
   "waitingConfirm": "Waiting For Confirmation",
   "confirmTxinWallet": "Please confirm this transaction in your wallet.",
   "txSubmitted": "Transaction Submitted",
