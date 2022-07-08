@@ -13,7 +13,7 @@ import { useDefaultFarmList } from 'state/farms/hooks';
 import { useDefaultDualFarmList } from 'state/dualfarms/hooks';
 import { ChainId } from '@uniswap/sdk';
 import EternalFarmsPage from 'pages/EternalFarmsPage';
-import { useIncentiveSubgraph } from 'hooks/useIncentiveSubgraph';
+import { useFarmingSubgraph } from 'hooks/useIncentiveSubgraph';
 
 const FarmPage: React.FC = () => {
   const { chainId } = useActiveWeb3React();
@@ -33,7 +33,7 @@ const FarmPage: React.FC = () => {
       eternalFarms,
       eternalFarmsLoading,
     },
-  } = useIncentiveSubgraph() || {};
+  } = useFarmingSubgraph() || {};
 
   const pairLists = useMemo(() => {
     const stakingPairLists = Object.values(lpFarms[chainIdOrDefault]).map(

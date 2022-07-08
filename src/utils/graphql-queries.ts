@@ -1,10 +1,9 @@
 import gql from 'graphql-tag';
 //import { gql } from '@apollo/client'
 //Farming
-
 export const ONE_FARMING_EVENT = () => gql`
-  query incentive($time: BigInt) {
-    incentives(
+  query limitFarm($time: BigInt) {
+    limitFarmings(
       orderBy: createdAtTimestamp
       orderDirection: desc
       first: 1
@@ -47,9 +46,9 @@ export const FETCH_TOKEN = () => gql`
   }
 `;
 
-export const FETCH_INCENTIVE = () => gql`
-  query fetchIncentive($incentiveId: ID) {
-    incentives(where: { id: $incentiveId }) {
+export const FETCH_LIMIT = () => gql`
+  query fetchLimit($limitId: ID) {
+    limitFarmings(where: { id: $limitId }) {
       id
       rewardToken
       bonusRewardToken
@@ -60,12 +59,13 @@ export const FETCH_INCENTIVE = () => gql`
       bonusReward
       multiplierToken
       createdAtTimestamp
-      level1multiplier
-      level2multiplier
-      level3multiplier
-      algbAmountForLevel1
-      algbAmountForLevel2
-      algbAmountForLevel3
+      tier1Multiplier
+      tier2Multiplier
+      tier3Multiplier
+      tokenAmountForTier1
+      tokenAmountForTier2
+      tokenAmountForTier3
+      enterStartTime
     }
   }
 `;
@@ -84,6 +84,13 @@ export const FETCH_ETERNAL_FARM = () => gql`
       rewardRate
       bonusRewardRate
       isDetached
+      tier1Multiplier
+      tier2Multiplier
+      tier3Multiplier
+      tokenAmountForTier1
+      tokenAmountForTier2
+      tokenAmountForTier3
+      multiplierToken
     }
   }
 `;
@@ -123,7 +130,7 @@ export const FETCH_LIMIT_FARM_FROM_POOL = (pools: string[]) => {
   const now = Math.round(Date.now() / 1000);
   const queryString = `
     query limitFarmingsFromPools {
-      incentives(where: {pool_in: ${poolString}, isDetached: false, endTime_gt: ${now}}) {
+      limitFarmings(where: {pool_in: ${poolString}, isDetached: false, endTime_gt: ${now}}) {
         id
         createdAtTimestamp
         rewardToken
@@ -308,7 +315,7 @@ export const TOTAL_STATS = (block?: number) => {
 
 export const LAST_EVENT = () => gql`
   query lastEvent {
-    incentives(first: 1, orderDirection: desc, orderBy: createdAtTimestamp) {
+    limitFarmings(first: 1, orderDirection: desc, orderBy: createdAtTimestamp) {
       createdAtTimestamp
       id
       startTime
@@ -319,7 +326,7 @@ export const LAST_EVENT = () => gql`
 
 export const FUTURE_EVENTS = () => gql`
   query futureEvents($timestamp: BigInt) {
-    incentives(
+    limitFarmings(
       orderBy: startTime
       orderDirection: asc
       where: { startTime_gt: $timestamp }
@@ -333,20 +340,21 @@ export const FUTURE_EVENTS = () => gql`
       startTime
       endTime
       reward
-      level1multiplier
-      level2multiplier
-      level3multiplier
-      algbAmountForLevel1
-      algbAmountForLevel2
-      algbAmountForLevel3
+      tier1Multiplier
+      tier2Multiplier
+      tier3Multiplier
+      tokenAmountForTier1
+      tokenAmountForTier2
+      tokenAmountForTier3
       multiplierToken
+      enterStartTime
     }
   }
 `;
 
 export const CURRENT_EVENTS = () => gql`
   query currentEvents($startTime: BigInt, $endTime: BigInt) {
-    incentives(
+    limitFarmings(
       orderBy: endTime
       orderDirection: desc
       where: { startTime_lte: $startTime, endTime_gt: $endTime }
@@ -359,12 +367,13 @@ export const CURRENT_EVENTS = () => gql`
       startTime
       endTime
       reward
-      level1multiplier
-      level2multiplier
-      level3multiplier
-      algbAmountForLevel1
-      algbAmountForLevel2
-      algbAmountForLevel3
+      tier1Multiplier
+      tier2Multiplier
+      tier3Multiplier
+      tokenAmountForTier1
+      tokenAmountForTier2
+      tokenAmountForTier3
+      enterStartTime
       multiplierToken
     }
   }
@@ -378,7 +387,7 @@ export const FETCH_FINITE_FARM_FROM_POOL = (pools: string[]) => {
   poolString += ']';
   const queryString = `
       query finiteFarmingsFromPools {
-        incentives(where: {pool_in: ${poolString}, isDetached: false, endTime_gt: ${Math.round(
+        limitFarmings(where: {pool_in: ${poolString}, isDetached: false, endTime_gt: ${Math.round(
     Date.now() / 1000,
   )}}) {
           id
@@ -391,12 +400,13 @@ export const FETCH_FINITE_FARM_FROM_POOL = (pools: string[]) => {
           endTime
           reward
           multiplierToken
-          algbAmountForLevel1
-          algbAmountForLevel2
-          algbAmountForLevel3
-          level1multiplier
-          level2multiplier
-          level3multiplier
+          tokenAmountForTier1
+          tokenAmountForTier2
+          tokenAmountForTier3
+          tier1Multiplier
+          tier2Multiplier
+          tier3Multiplier
+          enterStartTime
         }
       }
       `;
@@ -424,15 +434,17 @@ export const TRANSFERED_POSITIONS = (tierFarming: boolean) => gql`
             owner
             pool
             L2tokenId
-            incentive
+            limitFarming
             eternalFarming
             onFarmingCenter
             ${
               tierFarming
                 ? `
               enteredInEternalFarming
-              algbLocked
-              level`
+              tokensLockedEternal
+              tokensLockedLimit
+              tierLimit
+              tierEternal`
                 : ''
             }
     }
@@ -480,10 +492,14 @@ export const TRANSFERED_POSITIONS_FOR_POOL = () => gql`
       owner
       pool
       L2tokenId
-      incentive
+      limitFarming
       eternalFarming
       onFarmingCenter
       enteredInEternalFarming
+      tokensLockedLimit
+      tokensLockedEternal
+      tierLimit
+      tierEternal
     }
   }
 `;
@@ -534,7 +550,6 @@ export const FULL_POSITIONS = (
               }
               timestamps
             }
-
             q2: positions (where: {id_in: [${positions}] }) {
               owner
               liquidity
@@ -577,6 +592,13 @@ export const INFINITE_EVENTS = gql`
       bonusReward
       rewardRate
       bonusRewardRate
+      tokenAmountForTier1
+      tokenAmountForTier2
+      tokenAmountForTier3
+      tier1Multiplier
+      tier2Multiplier
+      tier3Multiplier
+      multiplierToken
     }
   }
 `;

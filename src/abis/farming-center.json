@@ -2,8 +2,8 @@
   {
     "inputs": [
       {
-        "internalType": "contract IAlgebraIncentiveFarming",
-        "name": "_farming",
+        "internalType": "contract IAlgebraLimitFarming",
+        "name": "_limitFarming",
         "type": "address"
       },
       {
@@ -17,8 +17,8 @@
         "type": "address"
       },
       {
-        "internalType": "contract IERC20Minimal",
-        "name": "_algbAddress",
+        "internalType": "contract IFarmingCenterVault",
+        "name": "_farmingCenterVault",
         "type": "address"
       }
     ],
@@ -157,19 +157,6 @@
     "outputs": [
       {
         "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "algbAddress",
-    "outputs": [
-      {
-        "internalType": "contract IERC20Minimal",
         "name": "",
         "type": "address"
       }
@@ -366,13 +353,31 @@
   {
     "inputs": [
       {
+        "internalType": "contract IAlgebraPool",
+        "name": "pool",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "newVirtualPool",
+        "type": "address"
+      }
+    ],
+    "name": "connectVirtualPool",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "int24",
         "name": "nextTick",
         "type": "int24"
       },
       {
         "internalType": "bool",
-        "name": "zeroForOne",
+        "name": "zeroToOne",
         "type": "bool"
       }
     ],
@@ -397,34 +402,19 @@
         "type": "uint256"
       },
       {
-        "internalType": "bool",
-        "name": "inLimitFarming",
-        "type": "bool"
-      },
-      {
-        "internalType": "int24",
-        "name": "tickLower",
-        "type": "int24"
-      },
-      {
-        "internalType": "int24",
-        "name": "tickUpper",
-        "type": "int24"
-      },
-      {
         "internalType": "uint32",
         "name": "numberOfFarms",
         "type": "uint32"
       },
       {
+        "internalType": "bool",
+        "name": "inLimitFarming",
+        "type": "bool"
+      },
+      {
         "internalType": "address",
         "name": "owner",
         "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "algbLocked",
-        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -468,56 +458,16 @@
         "internalType": "uint256",
         "name": "tokenId",
         "type": "uint256"
-      }
-    ],
-    "name": "enterEternalFarming",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "components": [
-          {
-            "internalType": "contract IERC20Minimal",
-            "name": "rewardToken",
-            "type": "address"
-          },
-          {
-            "internalType": "contract IERC20Minimal",
-            "name": "bonusRewardToken",
-            "type": "address"
-          },
-          {
-            "internalType": "contract IAlgebraPool",
-            "name": "pool",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "startTime",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "endTime",
-            "type": "uint256"
-          }
-        ],
-        "internalType": "struct IIncentiveKey.IncentiveKey",
-        "name": "key",
-        "type": "tuple"
       },
       {
         "internalType": "uint256",
-        "name": "tokenId",
+        "name": "tokensLocked",
         "type": "uint256"
       },
       {
-        "internalType": "uint256",
-        "name": "algbLocked",
-        "type": "uint256"
+        "internalType": "bool",
+        "name": "isLimit",
+        "type": "bool"
       }
     ],
     "name": "enterFarming",
@@ -576,51 +526,11 @@
         "internalType": "uint256",
         "name": "tokenId",
         "type": "uint256"
-      }
-    ],
-    "name": "exitEternalFarming",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "components": [
-          {
-            "internalType": "contract IERC20Minimal",
-            "name": "rewardToken",
-            "type": "address"
-          },
-          {
-            "internalType": "contract IERC20Minimal",
-            "name": "bonusRewardToken",
-            "type": "address"
-          },
-          {
-            "internalType": "contract IAlgebraPool",
-            "name": "pool",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "startTime",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "endTime",
-            "type": "uint256"
-          }
-        ],
-        "internalType": "struct IIncentiveKey.IncentiveKey",
-        "name": "key",
-        "type": "tuple"
       },
       {
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
+        "internalType": "bool",
+        "name": "isLimit",
+        "type": "bool"
       }
     ],
     "name": "exitFarming",
@@ -630,10 +540,10 @@
   },
   {
     "inputs": [],
-    "name": "farming",
+    "name": "farmingCenterVault",
     "outputs": [
       {
-        "internalType": "contract IAlgebraIncentiveFarming",
+        "internalType": "contract IFarmingCenterVault",
         "name": "",
         "type": "address"
       }
@@ -672,7 +582,7 @@
     "outputs": [
       {
         "internalType": "enum IAlgebraVirtualPool.Status",
-        "name": "",
+        "name": "status",
         "type": "uint8"
       }
     ],
@@ -727,6 +637,19 @@
         "internalType": "uint256",
         "name": "tokenId",
         "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "limitFarming",
+    "outputs": [
+      {
+        "internalType": "contract IAlgebraLimitFarming",
+        "name": "",
+        "type": "address"
       }
     ],
     "stateMutability": "view",
@@ -870,13 +793,6 @@
   },
   {
     "inputs": [],
-    "name": "processSwap",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "refundNativeToken",
     "outputs": [],
     "stateMutability": "payable",
@@ -947,24 +863,6 @@
       }
     ],
     "name": "setApprovalForAll",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "contract IAlgebraPool",
-        "name": "pool",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "virtualPool",
-        "type": "address"
-      }
-    ],
-    "name": "setFarmingCenterAddress",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1152,7 +1050,7 @@
     "outputs": [
       {
         "internalType": "address",
-        "name": "incentiveVP",
+        "name": "limitVP",
         "type": "address"
       },
       {

@@ -15,11 +15,11 @@ import { formatAmountTokens } from 'utils/numbers';
 import { Link } from 'react-router-dom';
 import { ChainId } from '@uniswap/sdk';
 
-interface StakerEventCardProps {
+interface FarmingEventCardProps {
   active?: boolean;
   now?: number;
   refreshing?: boolean;
-  stakeHandler?: () => void;
+  farmHandler?: () => void;
   event?: {
     id?: any;
     pool?: any;
@@ -30,6 +30,7 @@ interface StakerEventCardProps {
     bonusReward?: number;
     startTime?: number;
     endTime?: number;
+    enterStartTime?: number;
     apr?: number;
     locked?: boolean;
   };
@@ -37,10 +38,10 @@ interface StakerEventCardProps {
   secret?: boolean;
 }
 
-export function StakerEventCard({
+export function FarmingEventCard({
   active,
   refreshing,
-  stakeHandler,
+  farmHandler,
   now,
   event: {
     pool,
@@ -53,11 +54,11 @@ export function StakerEventCard({
     endTime,
     apr,
     locked,
-    id,
+    enterStartTime,
   } = {},
   eternal,
   secret,
-}: StakerEventCardProps) {
+}: FarmingEventCardProps) {
   const { account } = useActiveWeb3React();
   const toggleWalletModal = useWalletModalToggle();
 
@@ -78,9 +79,9 @@ export function StakerEventCard({
   }, [endTime]);
 
   const _enterTime = useMemo(() => {
-    if (!startTime) return [];
+    if (!enterStartTime) return [];
 
-    const date = new Date((+startTime - (3 * 24 + 4) * 60 * 60) * 1000);
+    const date = new Date(+enterStartTime * 1000);
 
     return [convertDateTime(date), convertDateTime(date)];
   }, [startTime]);
@@ -101,7 +102,7 @@ export function StakerEventCard({
   if (secret) {
     return (
       <div
-        className={'staker-event-card p-1 br-12'}
+        className={'farming-event-card p-1 br-12'}
         data-refreshing={refreshing}
       >
         <div className={'f mb-1'}>
@@ -134,16 +135,16 @@ export function StakerEventCard({
             <div style={{ marginTop: '2px' }}>{`QI / WMATIC`}</div>
           </div>
           {/* {
-                        <div className={"staker-event-card__reward-tier p-05 br-8 ml-a fs-085"}>
-                            <span>👑 Tier</span>
-                        </div>
-                    } */}
+                      <div className={"farming-event-card__reward-tier p-05 br-8 ml-a fs-085"}>
+                          <span>👑 Tier</span>
+                      </div>
+                  } */}
         </div>
-        <div className={'staker-event-card__reward-wrapper mb-05 f c br-8'}>
-          <div className='staker-event-card__reward-wrapper-header fs-075 b'>
+        <div className={'farming-event-card__reward-wrapper mb-05 f c br-8'}>
+          <div className='farming-event-card__reward-wrapper-header fs-075 b'>
             REWARDS
           </div>
-          <ul className='staker-event-card__reward-list'>
+          <ul className='farming-event-card__reward-list'>
             {[
               {
                 token: {
@@ -153,7 +154,7 @@ export function StakerEventCard({
                 amount: '2500',
               },
             ].map((reward: any, i) => (
-              <li key={i} className='staker-event-card__reward-list-item f'>
+              <li key={i} className='farming-event-card__reward-list-item f'>
                 <CurrencyLogo
                   currency={
                     new Token(
@@ -165,7 +166,7 @@ export function StakerEventCard({
                   }
                   size={'30px'}
                 />
-                <span className='staker-event-card__reward-list-item__symbol ml-05'>
+                <span className='farming-event-card__reward-list-item__symbol ml-05'>
                   {reward.token.symbol}
                 </span>
                 <div
@@ -179,19 +180,19 @@ export function StakerEventCard({
           </ul>
         </div>
         {!eternal && (
-          <div className='w-100 staker-event-card__timeline'>
-            <div className='w-100 f staker-event-card__timeline-dates'>
+          <div className='w-100 farming-event-card__timeline'>
+            <div className='w-100 f farming-event-card__timeline-dates'>
               <div className='w-100 b fs-075 ta-l'>Enter</div>
               <div className='w-100 b fs-075 ta-c'>Start</div>
               <div className='w-100 b fs-075 ta-r'>End</div>
             </div>
             <div className='w-100 f mt-05'>
-              <div className='f f-ac f-jc staker-event-card__timeline-circle'>
-                <div className='staker-event-card__timeline-circle__inner active'></div>
+              <div className='f f-ac f-jc farming-event-card__timeline-circle'>
+                <div className='farming-event-card__timeline-circle__inner active'></div>
               </div>
-              <div className='staker-event-card__timeline-line'>
+              <div className='farming-event-card__timeline-line'>
                 <div
-                  className='staker-event-card__timeline-line__inner'
+                  className='farming-event-card__timeline-line__inner'
                   style={{
                     width: active
                       ? '100%'
@@ -199,38 +200,38 @@ export function StakerEventCard({
                   }}
                 ></div>
               </div>
-              <div className='f f-ac f-jc staker-event-card__timeline-circle'>
+              <div className='f f-ac f-jc farming-event-card__timeline-circle'>
                 {active && (
-                  <div className='staker-event-card__timeline-circle__inner'></div>
+                  <div className='farming-event-card__timeline-circle__inner'></div>
                 )}
               </div>
-              <div className='staker-event-card__timeline-line'>
+              <div className='farming-event-card__timeline-line'>
                 {active && (
                   <div
-                    className='w-100 staker-event-card__timeline-line__inner'
+                    className='w-100 farming-event-card__timeline-line__inner'
                     style={{ width: `0%` }}
                   ></div>
                 )}
               </div>
-              <div className='staker-event-card__timeline-circle'></div>
+              <div className='farming-event-card__timeline-circle'></div>
             </div>
             <div className='w-100 f fs-085' style={{ marginTop: '10px' }}>
               <div className='w-100 f f-ac'>
-                <div className='staker-event-card__timeline-calendar first ta-c'>
-                  <div className='staker-event-card__timeline-calendar-day'>
+                <div className='farming-event-card__timeline-calendar first ta-c'>
+                  <div className='farming-event-card__timeline-calendar-day'>
                     {convertDateTime(new Date(1652108400000))}
                   </div>
-                  <div className='staker-event-card__timeline-calendar-hour'>
+                  <div className='farming-event-card__timeline-calendar-hour'>
                     {convertDateTime(new Date(1652108400000))}
                   </div>
                 </div>
               </div>
               <div className='w-100 f f-ac f-jc'>
-                <div className='staker-event-card__timeline-calendar second ta-c'>
-                  <div className='staker-event-card__timeline-calendar-day'>
+                <div className='farming-event-card__timeline-calendar second ta-c'>
+                  <div className='farming-event-card__timeline-calendar-day'>
                     {convertDateTime(new Date(1652382000000))}
                   </div>
-                  <div className='staker-event-card__timeline-calendar-hour'>
+                  <div className='farming-event-card__timeline-calendar-hour'>
                     {convertDateTime(new Date(1652382000000))}
                   </div>
                 </div>
@@ -239,11 +240,11 @@ export function StakerEventCard({
                 className='w-100 f f-jc'
                 style={{ justifyContent: 'flex-end' }}
               >
-                <div className='staker-event-card__timeline-calendar third ta-c'>
-                  <div className='staker-event-card__timeline-calendar-day'>
+                <div className='farming-event-card__timeline-calendar third ta-c'>
+                  <div className='farming-event-card__timeline-calendar-day'>
                     {convertDateTime(new Date(1652986800000))}
                   </div>
-                  <div className='staker-event-card__timeline-calendar-hour'>
+                  <div className='farming-event-card__timeline-calendar-hour'>
                     {convertDateTime(new Date(1652986800000))}
                   </div>
                 </div>
@@ -262,7 +263,10 @@ export function StakerEventCard({
   }
 
   return (
-    <div className={'staker-event-card p-1 br-12'} data-refreshing={refreshing}>
+    <div
+      className={'farming-event-card p-1 br-12'}
+      data-refreshing={refreshing}
+    >
       {refreshing && (
         <LoadingShim>
           <Loader size={'18px'} stroke={'white'} style={{ margin: 'auto' }} />
@@ -287,7 +291,7 @@ export function StakerEventCard({
             <div>
               <Link
                 to={'/farming/infinite-farms'}
-                className={'staker-event-card__infinite-farming-available'}
+                className={'farming-event-card__infinite-farming-available'}
                 style={{
                   padding: '6px 10px',
                   borderRadius: '8px',
@@ -334,20 +338,20 @@ export function StakerEventCard({
         </div>
         {apr && apr > 0 ? (
           <div
-            className={'staker-event-card__reward-apr p-05 br-8 ml-a fs-085'}
+            className={'farming-event-card__reward-apr p-05 br-8 ml-a fs-085'}
           >
             <span>{Math.round(apr)}%</span>
             <span style={{ marginLeft: '5px' }}>APR</span>
           </div>
         ) : null}
       </div>
-      <div className={'staker-event-card__reward-wrapper mb-05 f c br-8'}>
-        <div className='staker-event-card__reward-wrapper-header fs-075 b'>
+      <div className={'farming-event-card__reward-wrapper mb-05 f c br-8'}>
+        <div className='farming-event-card__reward-wrapper-header fs-075 b'>
           REWARDS
         </div>
-        <ul className='staker-event-card__reward-list'>
+        <ul className='farming-event-card__reward-list'>
           {rewardList?.map((reward: any, i) => (
-            <li key={i} className='staker-event-card__reward-list-item f'>
+            <li key={i} className='farming-event-card__reward-list-item f'>
               <CurrencyLogo
                 currency={
                   new Token(
@@ -359,7 +363,7 @@ export function StakerEventCard({
                 }
                 size={'30px'}
               />
-              <span className='staker-event-card__reward-list-item__symbol ml-05'>
+              <span className='farming-event-card__reward-list-item__symbol ml-05'>
                 {reward.token.symbol}
               </span>
               <div
@@ -377,26 +381,28 @@ export function StakerEventCard({
         </ul>
       </div>
       {!eternal && (
-        <div className='w-100 staker-event-card__timeline'>
-          <div className='w-100 f staker-event-card__timeline-dates'>
+        <div className='w-100 farming-event-card__timeline'>
+          <div className='w-100 f farming-event-card__timeline-dates'>
             <div className='w-100 b fs-075 ta-l'>Enter</div>
             <div className='w-100 b fs-075 ta-c'>Start</div>
             <div className='w-100 b fs-075 ta-r'>End</div>
           </div>
           <div className='w-100 f mt-05'>
-            <div className='f f-ac f-jc staker-event-card__timeline-circle'>
+            <div className='f f-ac f-jc farming-event-card__timeline-circle'>
               <div
-                className={`staker-event-card__timeline-circle__inner ${
+                className={`farming-event-card__timeline-circle__inner ${
                   !active ? 'active' : ''
                 }`}
               ></div>
             </div>
-            <div className='staker-event-card__timeline-line'>
+            <div className='farming-event-card__timeline-line'>
               <div
-                className='staker-event-card__timeline-line__inner'
+                className='farming-event-card__timeline-line__inner'
                 style={{
                   width: active
                     ? '100%'
+                    : new Date(enterStartTime! * 1000).getTime() >= Date.now()
+                    ? '0%'
                     : `${getProgress(
                         Number(createdAtTimestamp),
                         startTime,
@@ -405,38 +411,38 @@ export function StakerEventCard({
                 }}
               ></div>
             </div>
-            <div className='f f-ac f-jc staker-event-card__timeline-circle'>
+            <div className='f f-ac f-jc farming-event-card__timeline-circle'>
               {active && (
-                <div className='staker-event-card__timeline-circle__inner active'></div>
+                <div className='farming-event-card__timeline-circle__inner active' />
               )}
             </div>
-            <div className='staker-event-card__timeline-line'>
+            <div className='farming-event-card__timeline-line'>
               {active && (
                 <div
-                  className='w-100 staker-event-card__timeline-line__inner'
+                  className='w-100 farming-event-card__timeline-line__inner'
                   style={{ width: `${getProgress(startTime, endTime, now)}%` }}
                 ></div>
               )}
             </div>
-            <div className='staker-event-card__timeline-circle'></div>
+            <div className='farming-event-card__timeline-circle'></div>
           </div>
           <div className='w-100 f fs-085' style={{ marginTop: '10px' }}>
             <div className='w-100 f f-ac'>
-              <div className='staker-event-card__timeline-calendar first ta-c'>
-                <div className='staker-event-card__timeline-calendar-day'>
+              <div className='farming-event-card__timeline-calendar first ta-c'>
+                <div className='farming-event-card__timeline-calendar-day'>
                   {_enterTime[0]}
                 </div>
-                <div className='staker-event-card__timeline-calendar-hour'>
+                <div className='farming-event-card__timeline-calendar-hour'>
                   {_enterTime[1]}
                 </div>
               </div>
             </div>
             <div className='w-100 f f-ac f-jc'>
-              <div className='staker-event-card__timeline-calendar second ta-c'>
-                <div className='staker-event-card__timeline-calendar-day'>
+              <div className='farming-event-card__timeline-calendar second ta-c'>
+                <div className='farming-event-card__timeline-calendar-day'>
                   {_startTime[0]}
                 </div>
-                <div className='staker-event-card__timeline-calendar-hour'>
+                <div className='farming-event-card__timeline-calendar-hour'>
                   {_startTime[1]}
                 </div>
               </div>
@@ -445,11 +451,11 @@ export function StakerEventCard({
               className='w-100 f f-jc'
               style={{ justifyContent: 'flex-end' }}
             >
-              <div className='staker-event-card__timeline-calendar third ta-c'>
-                <div className='staker-event-card__timeline-calendar-day'>
+              <div className='farming-event-card__timeline-calendar third ta-c'>
+                <div className='farming-event-card__timeline-calendar-day'>
                   {_endTime[0]}
                 </div>
-                <div className='staker-event-card__timeline-calendar-hour'>
+                <div className='farming-event-card__timeline-calendar-hour'>
                   {_endTime[1]}
                 </div>
               </div>
@@ -465,11 +471,15 @@ export function StakerEventCard({
             lineHeight: '19px',
             height: '36px',
           }}
-          disabled={locked}
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          //@ts-ignore
+          disabled={
+            locked || new Date(+enterStartTime * 1000).getTime() >= Date.now()
+          }
           className={`btn primary w-100 b br-8 fs-085 pv-05 ${
             !eternal ? 'mt-05' : ''
           }`}
-          onClick={stakeHandler}
+          onClick={farmHandler}
         >
           <span>{locked ? `Filled` : `Farm`}</span>
         </button>

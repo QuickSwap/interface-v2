@@ -16,7 +16,7 @@ import {
   FETCH_ETERNAL_FARM,
   FETCH_ETERNAL_FARM_FROM_POOL,
   FETCH_FINITE_FARM_FROM_POOL,
-  FETCH_INCENTIVE,
+  FETCH_LIMIT,
   FETCH_POOL,
   FETCH_REWARDS,
   FETCH_TOKEN,
@@ -51,12 +51,9 @@ import {
 } from 'utils/api';
 import { useEthPrices } from './useEthPrices';
 
-export function useIncentiveSubgraph() {
+export function useFarmingSubgraph() {
   const { chainId, account, library } = useActiveWeb3React();
-
   const { v3Client, farmingClient, oldFarmingClient } = useClients();
-
-  const ethPrices = useEthPrices();
 
   const [positionsForPool, setPositionsForPool] = useState<Position[] | null>(
     null,
@@ -125,21 +122,37 @@ export function useIncentiveSubgraph() {
     ? new providers.Web3Provider(library.provider)
     : undefined;
 
-  async function getEvents(events: any[]) {
+  async function fetchEternalFarmAPR() {
+    const apiURL = 'https://api.algebra.finance/api/APR/eternalFarmings/';
+
+    try {
+      return await fetch(apiURL).then((v) => v.json());
+    } catch (error) {
+      return {};
+    }
+  }
+
+  async function getEvents(events: any[], farming = false) {
     const _events: any[] = [];
 
     for (let i = 0; i < events.length; i++) {
       const pool = await fetchPool(events[i].pool);
-      const rewardToken = await fetchToken(events[i].rewardToken);
-      const bonusRewardToken = await fetchToken(events[i].bonusRewardToken);
-      const lockedToken = await fetchToken(events[i].multiplierToken);
+      const rewardToken = await fetchToken(events[i].rewardToken, farming);
+      const bonusRewardToken = await fetchToken(
+        events[i].bonusRewardToken,
+        farming,
+      );
+      const multiplierToken = await fetchToken(
+        events[i].multiplierToken,
+        farming,
+      );
 
       const _event: any = {
         ...events[i],
         pool,
         rewardToken,
         bonusRewardToken,
-        lockedToken,
+        multiplierToken,
         reward: formatUnits(
           BigNumber.from(events[i].reward),
           rewardToken.decimals,
@@ -156,12 +169,14 @@ export function useIncentiveSubgraph() {
     return _events;
   }
 
-  async function fetchToken(tokenId: string) {
+  async function fetchToken(tokenId: string, farming = false) {
     try {
       const {
         data: { tokens },
         errors,
-      } = await v3Client.query<SubgraphResponse<TokenSubgraph[]>>({
+      } = await (farming ? farmingClient : v3Client).query<
+        SubgraphResponse<TokenSubgraph[]>
+      >({
         query: FETCH_TOKEN(),
         variables: { tokenId },
       });
@@ -198,14 +213,14 @@ export function useIncentiveSubgraph() {
     }
   }
 
-  async function fetchIncentive(incentiveId: string) {
+  async function fetchLimit(limitFarmingId: string) {
     try {
       const {
-        data: { incentives },
+        data: { limitFarmings },
         errors,
       } = await farmingClient.query<SubgraphResponse<FutureFarmingEvent[]>>({
-        query: FETCH_INCENTIVE(),
-        variables: { incentiveId },
+        query: FETCH_LIMIT(),
+        variables: { limitFarmingId },
       });
 
       if (errors) {
@@ -213,9 +228,9 @@ export function useIncentiveSubgraph() {
         throw new Error(`${error.name} ${error.message}`);
       }
 
-      return incentives[0];
+      return limitFarmings[0];
     } catch (err) {
-      throw new Error('Fetch incentives ' + err);
+      throw new Error('Fetch limit farmings ' + err);
     }
   }
 
@@ -307,7 +322,7 @@ export function useIncentiveSubgraph() {
       setFutureEventsLoading(true);
 
       const {
-        data: { incentives: futureEvents },
+        data: { limitFarmings: futureEvents },
         errors,
       } = await farmingClient.query<SubgraphResponse<FutureFarmingEvent[]>>({
         query: FUTURE_EVENTS(),
@@ -326,9 +341,9 @@ export function useIncentiveSubgraph() {
         return;
       }
 
-      setFutureEvents(await getEvents(futureEvents));
+      setFutureEvents(await getEvents(futureEvents, true));
     } catch (err) {
-      throw new Error('Future incentives fetching ' + err);
+      throw new Error('Future limit farmings fetching ' + err);
     } finally {
       setFutureEventsLoading(false);
     }
@@ -339,7 +354,7 @@ export function useIncentiveSubgraph() {
 
     try {
       const {
-        data: { incentives: currentEvents },
+        data: { limitFarmings: currentEvents },
         errors,
       } = await farmingClient.query<SubgraphResponse<FarmingEvent[]>>({
         query: CURRENT_EVENTS(),
@@ -356,7 +371,7 @@ export function useIncentiveSubgraph() {
       }
 
       const {
-        data: { incentives: futureEvents },
+        data: { limitFarmings: futureEvents },
         errors: _errors,
       } = await farmingClient.query<SubgraphResponse<FutureFarmingEvent[]>>({
         query: FUTURE_EVENTS(),
@@ -392,6 +407,7 @@ export function useIncentiveSubgraph() {
             active: true,
             apr: aprs[el.id] ? aprs[el.id] : 37,
           })),
+          true,
         ),
         futureEvents: await getEvents(
           futureEvents.map((el) => ({
@@ -402,12 +418,13 @@ export function useIncentiveSubgraph() {
                 : eventTVL[el.id] * price >= EVENT_LOCK,
             apr: aprs[el.id] ? aprs[el.id] : 37,
           })),
+          true,
         ),
       });
 
       setAllEventsLoading(false);
     } catch (err) {
-      throw new Error('Error while fetching current incentives ' + err);
+      throw new Error('Error while fetching current limit farmings ' + err);
     } finally {
       setAllEventsLoading(false);
     }
@@ -501,7 +518,7 @@ export function useIncentiveSubgraph() {
         };
 
         if (
-          !position.incentive &&
+          !position.limitFarming &&
           !position.eternalFarming &&
           typeof position.pool === 'string'
         ) {
@@ -511,7 +528,7 @@ export function useIncentiveSubgraph() {
           _position = { ..._position, pool: _pool };
         }
 
-        if (position.incentive) {
+        if (position.limitFarming) {
           const finiteFarmingContract = new Contract(
             FINITE_FARMING[chainId],
             FINITE_FARMING_ABI,
@@ -526,22 +543,22 @@ export function useIncentiveSubgraph() {
             endTime,
             createdAtTimestamp,
             multiplierToken,
-            algbAmountForLevel1,
-            algbAmountForLevel2,
-            algbAmountForLevel3,
-            level1multiplier,
-            level2multiplier,
-            level3multiplier,
-          } = await fetchIncentive(position.incentive);
+            tokenAmountForTier1,
+            tokenAmountForTier2,
+            tokenAmountForTier3,
+            tier1Multiplier,
+            tier2Multiplier,
+            tier3Multiplier,
+          } = await fetchLimit(position.limitFarming);
 
           const rewardInfo = await finiteFarmingContract.callStatic.getRewardInfo(
             [rewardToken, bonusRewardToken, pool, +startTime, +endTime],
             +position.id,
           );
 
-          const _rewardToken = await fetchToken(rewardToken);
-          const _bonusRewardToken = await fetchToken(bonusRewardToken);
-          const _multiplierToken = await fetchToken(multiplierToken);
+          const _rewardToken = await fetchToken(rewardToken, true);
+          const _bonusRewardToken = await fetchToken(bonusRewardToken, true);
+          const _multiplierToken = await fetchToken(multiplierToken, true);
           const _pool = await fetchPool(pool);
 
           _position = {
@@ -549,36 +566,36 @@ export function useIncentiveSubgraph() {
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-ignore
             pool: _pool,
-            incentiveRewardToken: _rewardToken,
-            incentiveBonusRewardToken: _bonusRewardToken,
-            incentiveStartTime: +startTime,
-            incentiveEndTime: +endTime,
+            limitRewardToken: _rewardToken,
+            limitBonusRewardToken: _bonusRewardToken,
+            limitStartTime: +startTime,
+            limitEndTime: +endTime,
             started: +startTime * 1000 < Date.now(),
             ended: +endTime * 1000 < Date.now(),
             createdAtTimestamp: +createdAtTimestamp,
-            incentiveEarned: rewardInfo[0]
+            limitEarned: rewardInfo[0]
               ? formatUnits(
                   BigNumber.from(rewardInfo[0]),
                   _rewardToken.decimals,
                 )
               : 0,
-            incentiveBonusEarned: rewardInfo[1]
+            limitBonusEarned: rewardInfo[1]
               ? formatUnits(
                   BigNumber.from(rewardInfo[1]),
                   _bonusRewardToken.decimals,
                 )
               : 0,
-            lockedToken: _multiplierToken,
-            algbAmountForLevel1,
-            algbAmountForLevel2,
-            algbAmountForLevel3,
-            level1multiplier,
-            level2multiplier,
-            level3multiplier,
+            multiplierToken: _multiplierToken,
+            tokenAmountForTier1,
+            tokenAmountForTier2,
+            tokenAmountForTier3,
+            tier1Multiplier,
+            tier2Multiplier,
+            tier3Multiplier,
           };
         } else {
           const {
-            data: { incentives },
+            data: { limitFarmings },
             errors,
           } = await farmingClient.query({
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -593,14 +610,13 @@ export function useIncentiveSubgraph() {
           }
 
           if (
-            incentives.filter(
-              (incentive: any) =>
-                Math.round(Date.now() / 1000) < incentive.startTime,
+            limitFarmings.filter(
+              (farm: any) => Math.round(Date.now() / 1000) < farm.startTime,
             ).length !== 0
           ) {
             _position = {
               ..._position,
-              finiteAvailable: true,
+              limitAvailable: true,
             };
           }
         }
@@ -612,6 +628,13 @@ export function useIncentiveSubgraph() {
             pool,
             startTime,
             endTime,
+            multiplierToken,
+            tier1Multiplier,
+            tier2Multiplier,
+            tier3Multiplier,
+            tokenAmountForTier1,
+            tokenAmountForTier2,
+            tokenAmountForTier3,
           } = await fetchEternalFarming(position.eternalFarming);
 
           const farmingCenterContract = new Contract(
@@ -629,9 +652,10 @@ export function useIncentiveSubgraph() {
             { from: account },
           );
 
-          const _rewardToken = await fetchToken(rewardToken);
-          const _bonusRewardToken = await fetchToken(bonusRewardToken);
+          const _rewardToken = await fetchToken(rewardToken, true);
+          const _bonusRewardToken = await fetchToken(bonusRewardToken, true);
           const _pool = await fetchPool(pool);
+          const _multiplierToken = await fetchToken(multiplierToken);
 
           _position = {
             ..._position,
@@ -639,6 +663,13 @@ export function useIncentiveSubgraph() {
             eternalBonusRewardToken: _bonusRewardToken,
             eternalStartTime: startTime,
             eternalEndTime: endTime,
+            multiplierToken: _multiplierToken,
+            tier1Multiplier,
+            tier2Multiplier,
+            tier3Multiplier,
+            tokenAmountForTier1,
+            tokenAmountForTier2,
+            tokenAmountForTier3,
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-ignore
             pool: _pool,
@@ -683,7 +714,9 @@ export function useIncentiveSubgraph() {
       }
       setTransferredPositions(_positions);
     } catch (err) {
-      throw new Error('Transferred positions ' + err.code + ' ' + err.message);
+      throw new Error(
+        'Transferred positions ' + 'code: ' + err.code + ', ' + err.message,
+      );
     } finally {
       setTransferredPositionsLoading(false);
     }
@@ -781,15 +814,15 @@ export function useIncentiveSubgraph() {
 
       const {
         data: { deposits: positionsTransferred },
-        errors: errorTransferred,
+        errors: errorsTransferred,
       } = await farmingClient.query<SubgraphResponse<Position[]>>({
         query: TRANSFERED_POSITIONS_FOR_POOL(),
         fetchPolicy: 'network-only',
         variables: { account, pool: pool.id },
       });
 
-      if (errorTransferred) {
-        const error = errorTransferred[0];
+      if (errorsTransferred) {
+        const error = errorsTransferred[0];
         throw new Error(`${error.name} ${error.message}`);
       }
 
@@ -830,24 +863,15 @@ export function useIncentiveSubgraph() {
         throw new Error(`${error.name} ${error.message}`);
       }
 
-      const {
-        data: { deposits: oldPositionsTransferred },
-        errors: _error,
-      } = await oldFarmingClient.query<SubgraphResponse<Deposit[]>>({
-        query: TRANSFERED_POSITIONS(false),
-        fetchPolicy: 'network-only',
-        variables: { account },
-      });
+      // const { data: { deposits: oldPositionsTransferred }, error: _error } = (await oldFarmingClient.query<SubgraphResponse<Deposit[]>>({
+      //     query: TRANSFERED_POSITIONS(false),
+      //     fetchPolicy: 'network-only',
+      //     variables: { account }
+      // }))
 
-      if (_error) {
-        const error = _error[0];
-        throw new Error(`${error.name} ${error.message}`);
-      }
+      // if (_error) throw new Error(`${_error.name} ${_error.message}`)
 
-      if (
-        positionsTransferred.length === 0 &&
-        oldPositionsTransferred.length === 0
-      ) {
+      if (positionsTransferred.length === 0) {
         setPositionsOnFarmer({
           transferredPositionsIds: [],
           oldTransferredPositionsIds: [],
@@ -860,9 +884,7 @@ export function useIncentiveSubgraph() {
         (position) => position.id,
       );
 
-      const oldTransferredPositionsIds = oldPositionsTransferred.map(
-        (position) => position.id,
-      );
+      const oldTransferredPositionsIds: string[] = [];
 
       setPositionsOnFarmer({
         transferredPositionsIds,
@@ -900,16 +922,16 @@ export function useIncentiveSubgraph() {
       const aprs: Aprs = await fetchEternalFarmAPR();
 
       let _eternalFarmings: FormattedEternalFarming[] = [];
-      // Removed Filter for testing
-      // for (const farming of eternalFarmings.filter(
-      //   (farming) => +farming.bonusRewardRate || +farming.rewardRate,
-      // ))
+      // TODO
+      // .filter(farming => +farming.bonusRewardRate || +farming.rewardRate)
       for (const farming of eternalFarmings) {
-        console.log('filtering farm for:' + farming.id);
         const pool = await fetchPool(farming.pool);
-        const rewardToken = await fetchToken(farming.rewardToken);
-        const bonusRewardToken = await fetchToken(farming.bonusRewardToken);
-        const lockedToken = await fetchToken(farming.multiplierToken);
+        const rewardToken = await fetchToken(farming.rewardToken, true);
+        const bonusRewardToken = await fetchToken(
+          farming.bonusRewardToken,
+          true,
+        );
+        const multiplierToken = await fetchToken(farming.multiplierToken, true);
 
         const apr = aprs[farming.id] ? aprs[farming.id] : 200;
 
@@ -921,7 +943,7 @@ export function useIncentiveSubgraph() {
             ...farming,
             rewardToken,
             bonusRewardToken,
-            lockedToken,
+            multiplierToken,
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-ignore
             pool,

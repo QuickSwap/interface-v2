@@ -23,7 +23,7 @@ import { useTranslation } from 'react-i18next';
 import { toHex } from 'lib/src/utils/calldata';
 import { useAppSelector } from 'state';
 
-export function useStakerHandlers() {
+export function useFarmingHandlers() {
   const { chainId, account, library } = useActiveWeb3React();
   const { t } = useTranslation();
   const provider = library
@@ -49,7 +49,7 @@ export function useStakerHandlers() {
     hash: null,
     id: null,
   });
-  const [stakedHash, setStaked] = useState<DefaultFarming | string>({
+  const [farmedHash, setFarmed] = useState<DefaultFarming | string>({
     hash: null,
     id: null,
   });
@@ -121,7 +121,7 @@ export function useStakerHandlers() {
 
         if (farmingType === FarmingType.ETERNAL) {
           callDatas = [
-            farmingCenterInterface.encodeFunctionData('exitEternalFarming', [
+            farmingCenterInterface.encodeFunctionData('exitFarming', [
               [
                 eternalRewardToken.id,
                 eternalBonusRewardToken.id,
@@ -130,6 +130,7 @@ export function useStakerHandlers() {
                 +eternalEndTime,
               ],
               +token,
+              false,
             ]),
           ];
 
@@ -437,7 +438,7 @@ export function useStakerHandlers() {
     [account, chainId],
   );
 
-  const stakeHandler = useCallback(
+  const farmHandler = useCallback(
     async (
       selectedNFT,
       { rewardToken, bonusRewardToken, pool, startTime, endTime },
@@ -446,7 +447,7 @@ export function useStakerHandlers() {
     ) => {
       if (!account || !provider || !chainId) return;
 
-      setStaked({ hash: null, id: null });
+      setFarmed({ hash: null, id: null });
 
       let current;
 
@@ -460,37 +461,26 @@ export function useStakerHandlers() {
         if (selectedNFT.onFarmingCenter) {
           current = selectedNFT.id;
 
-          let result;
-
-          if (eventType === FarmingType.ETERNAL) {
-            result = await farmingCenterContract.enterEternalFarming(
-              [rewardToken, bonusRewardToken, pool, startTime, endTime],
-              +selectedNFT.id,
-              {
-                gasPrice: gasPrice * GAS_PRICE_MULTIPLIER,
-              },
-            );
-          } else {
-            result = await farmingCenterContract.enterFarming(
-              [rewardToken, bonusRewardToken, pool, startTime, endTime],
-              +selectedNFT.id,
-              selectedTier,
-              {
-                gasPrice: gasPrice * GAS_PRICE_MULTIPLIER,
-              },
-            );
-          }
+          const result = await farmingCenterContract.enterFarming(
+            [rewardToken, bonusRewardToken, pool, startTime, endTime],
+            +selectedNFT.id,
+            selectedTier,
+            eventType === FarmingType.LIMIT,
+            {
+              gasPrice: gasPrice * GAS_PRICE_MULTIPLIER,
+            },
+          );
 
           addTransaction(result, {
             summary: t`NFT #${selectedNFT.id} was deposited!`,
           });
 
-          setStaked({ hash: result.hash, id: selectedNFT.id });
+          setFarmed({ hash: result.hash, id: selectedNFT.id });
         }
       } catch (err) {
-        setStaked('failed');
+        setFarmed('failed');
         if (err instanceof Error) {
-          throw new Error('Staking ' + current + ' ' + err.message);
+          throw new Error('Farming ' + current + ' ' + err.message);
         }
       }
     },
@@ -530,7 +520,7 @@ export function useStakerHandlers() {
       } catch (err) {
         setTransfered('failed');
         if (err instanceof Error) {
-          throw new Error('Staking ' + current + ' ' + err.message);
+          throw new Error('Farming ' + current + ' ' + err.message);
         }
       }
     },
@@ -567,10 +557,9 @@ export function useStakerHandlers() {
             [account, FARMING_CENTER[chainId], selectedNFT.id],
           );
 
-          const result = await nonFunPosManContract.multicall(
-            [approveData, transferData],
-            { gasPrice: gasPrice * GAS_PRICE_MULTIPLIER },
-          );
+          const result = await nonFunPosManContract.multicall([transferData], {
+            gasPrice: gasPrice * GAS_PRICE_MULTIPLIER,
+          });
 
           addTransaction(result, {
             summary: t`NFT #${selectedNFT.id} was approved!`,
@@ -638,8 +627,8 @@ export function useStakerHandlers() {
     approvedHash,
     transferHandler,
     transferedHash,
-    stakeHandler,
-    stakedHash,
+    stakeHandler: farmHandler,
+    stakedHash: farmedHash,
     exitHandler,
     getRewardsHash,
     withdrawHandler,
