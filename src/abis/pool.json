@@ -28,7 +28,7 @@
       {
         "indexed": false,
         "internalType": "uint128",
-        "name": "amount",
+        "name": "liquidityAmount",
         "type": "uint128"
       },
       {
@@ -45,19 +45,6 @@
       }
     ],
     "name": "Burn",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint16",
-        "name": "Fee",
-        "type": "uint16"
-      }
-    ],
-    "name": "ChangeFee",
     "type": "event"
   },
   {
@@ -107,31 +94,32 @@
     "anonymous": false,
     "inputs": [
       {
-        "indexed": true,
-        "internalType": "address",
-        "name": "sender",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "recipient",
-        "type": "address"
+        "indexed": false,
+        "internalType": "uint8",
+        "name": "communityFee0New",
+        "type": "uint8"
       },
       {
         "indexed": false,
-        "internalType": "uint128",
-        "name": "amount0",
-        "type": "uint128"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint128",
-        "name": "amount1",
-        "type": "uint128"
+        "internalType": "uint8",
+        "name": "communityFee1New",
+        "type": "uint8"
       }
     ],
-    "name": "CollectCommunityFee",
+    "name": "CommunityFee",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint16",
+        "name": "fee",
+        "type": "uint16"
+      }
+    ],
+    "name": "Fee",
     "type": "event"
   },
   {
@@ -181,13 +169,13 @@
     "anonymous": false,
     "inputs": [
       {
-        "indexed": false,
+        "indexed": true,
         "internalType": "address",
         "name": "virtualPoolAddress",
         "type": "address"
       }
     ],
-    "name": "IncentiveSet",
+    "name": "Incentive",
     "type": "event"
   },
   {
@@ -207,6 +195,19 @@
       }
     ],
     "name": "Initialize",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint32",
+        "name": "liquidityCooldown",
+        "type": "uint32"
+      }
+    ],
+    "name": "LiquidityCooldown",
     "type": "event"
   },
   {
@@ -239,7 +240,7 @@
       {
         "indexed": false,
         "internalType": "uint128",
-        "name": "amount",
+        "name": "liquidityAmount",
         "type": "uint128"
       },
       {
@@ -256,37 +257,6 @@
       }
     ],
     "name": "Mint",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint8",
-        "name": "communityFee0Old",
-        "type": "uint8"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint8",
-        "name": "communityFee1Old",
-        "type": "uint8"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint8",
-        "name": "communityFee0New",
-        "type": "uint8"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint8",
-        "name": "communityFee1New",
-        "type": "uint8"
-      }
-    ],
-    "name": "SetCommunityFee",
     "type": "event"
   },
   {
@@ -648,7 +618,7 @@
         "type": "uint128"
       }
     ],
-    "stateMutability": "view",
+    "stateMutability": "pure",
     "type": "function"
   },
   {
@@ -675,7 +645,7 @@
       },
       {
         "internalType": "uint128",
-        "name": "_liquidity",
+        "name": "liquidityDesired",
         "type": "uint128"
       },
       {
@@ -697,9 +667,9 @@
         "type": "uint256"
       },
       {
-        "internalType": "uint256",
-        "name": "liquidityAmount",
-        "type": "uint256"
+        "internalType": "uint128",
+        "name": "liquidityActual",
+        "type": "uint128"
       }
     ],
     "stateMutability": "nonpayable",
@@ -722,7 +692,7 @@
       },
       {
         "internalType": "uint32",
-        "name": "lastModificationTimestamp",
+        "name": "lastLiquidityAddTimestamp",
         "type": "uint32"
       },
       {
@@ -802,7 +772,7 @@
       },
       {
         "internalType": "bool",
-        "name": "zeroForOne",
+        "name": "zeroToOne",
         "type": "bool"
       },
       {
@@ -851,7 +821,7 @@
       },
       {
         "internalType": "bool",
-        "name": "zeroForOne",
+        "name": "zeroToOne",
         "type": "bool"
       },
       {
@@ -891,12 +861,12 @@
     "name": "tickSpacing",
     "outputs": [
       {
-        "internalType": "uint8",
+        "internalType": "int24",
         "name": "",
-        "type": "uint8"
+        "type": "int24"
       }
     ],
-    "stateMutability": "view",
+    "stateMutability": "pure",
     "type": "function"
   },
   {

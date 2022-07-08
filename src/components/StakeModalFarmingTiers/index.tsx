@@ -18,7 +18,7 @@ import MasterTierIcon from '../../assets/images/master-tier-icon.png';
 import ProfessorTierIcon from '../../assets/images/professor-tier-icon.png';
 import { ChainId } from '@uniswap/sdk';
 
-export default function StakeModalFarmingTiers({
+export default function FarmModalFarmingTiers({
   tiersLimits,
   tiersMultipliers,
   selectTier,
@@ -33,19 +33,23 @@ export default function StakeModalFarmingTiers({
 
   const [selectedTier, setSelectedTier] = useState<number | undefined>(0);
 
-  const balance = useCurrencyBalance(
-    account ?? undefined,
-    new Token(
-      ChainId.MATIC,
-      lockedToken.id,
-      +lockedToken.decimals,
-      lockedToken.symbol,
-      lockedToken.name,
-    ) ?? undefined,
-  );
-  const _balance = useMemo(() => (!balance ? '' : balance.toSignificant(4)), [
-    balance,
-  ]);
+  const balance = 0;
+  // const balance = useCurrencyBalance(
+  //   account ?? undefined,
+  //   new Token(
+  //     ChainId.MATIC,
+  //     lockedToken.id,
+  //     +lockedToken.decimals,
+  //     lockedToken.symbol,
+  //     lockedToken.name,
+  //   ) ?? undefined,
+  // );
+  // const _balance = useMemo(() => (!balance ? '' : balance.toSignificant(4)), [
+  //   balance,
+  // ]);
+
+  //Testing farms since no locked token is returned
+  const _balance = '666';
 
   const handleTier = useCallback(
     (tier) => {

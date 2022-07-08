@@ -18,7 +18,7 @@ export interface Position {
   owner: string;
   pool: string | PoolSubgraph;
   L2tokenId: string;
-  incentive: string | null;
+  limitFarming: string | null;
   eternalFarming: string | null;
   onFarmingCenter: boolean;
   enteredInEternalFarming: string;
@@ -35,12 +35,12 @@ export interface EternalFarming {
   bonusReward: string;
   rewardRate: string;
   bonusRewardRate: string;
-  tokenAmountForLevel1: string;
-  tokenAmountForLevel2: string;
-  tokenAmountForLevel3: string;
-  level1multiplier: string;
-  level2multiplier: string;
-  level3multiplier: string;
+  tokenAmountForTier1: string;
+  tokenAmountForTier2: string;
+  tokenAmountForTier3: string;
+  tier1Multiplier: string;
+  tier2Multiplier: string;
+  tier3Multiplier: string;
   multiplierToken: string;
 }
 
@@ -73,25 +73,25 @@ export interface FormattedEternalFarming {
   rewardRate: string;
   rewardToken: TokenSubgraph;
   startTime: string;
-  tokenAmountForLevel1: string;
-  tokenAmountForLevel2: string;
-  tokenAmountForLevel3: string;
-  level1multiplier: string;
-  level2multiplier: string;
-  level3multiplier: string;
-  lockedToken: TokenSubgraph;
+  tokenAmountForTier1: string;
+  tokenAmountForTier2: string;
+  tokenAmountForTier3: string;
+  tier1Multiplier: string;
+  tier2Multiplier: string;
+  tier3Multiplier: string;
+  multiplierToken: TokenSubgraph;
 }
 
 export interface FarmingEvent extends DefaultFarmingEvent {
   pool: PoolSubgraph;
   bonusRewardToken: TokenSubgraph;
   rewardToken: TokenSubgraph;
-  level1multiplier: string;
-  level2multiplier: string;
-  level3multiplier: string;
-  algbAmountForLevel1: string;
-  algbAmountForLevel2: string;
-  algbAmountForLevel3: string;
+  tier1Multiplier: string;
+  tier2Multiplier: string;
+  tier3Multiplier: string;
+  tokenAmountForTier1: string;
+  tokenAmountForTier2: string;
+  tokenAmountForTier3: string;
 }
 
 export interface FarmingEventString extends DefaultFarmingEvent {
@@ -104,12 +104,12 @@ export interface FarmingEventString extends DefaultFarmingEvent {
 export interface FutureFarmingEvent extends FarmingEventString {
   createdAtTimestamp: string;
   multiplierToken: string;
-  algbAmountForLevel1: string;
-  algbAmountForLevel2: string;
-  algbAmountForLevel3: string;
-  level1multiplier: string;
-  level2multiplier: string;
-  level3multiplier: string;
+  tokenAmountForTier1: string;
+  tokenAmountForTier2: string;
+  tokenAmountForTier3: string;
+  tier1Multiplier: string;
+  tier2Multiplier: string;
+  tier3Multiplier: string;
 }
 
 export interface Deposit {
@@ -123,18 +123,18 @@ export interface Deposit {
   eternalRewardToken: TokenSubgraph;
   eternalStartTime: string;
   id: string;
-  incentive: null | string;
-  incentiveRewardToken: TokenSubgraph;
-  incentiveEarned: string | number;
-  incentiveBonusEarned: string | number;
-  incentiveBonusRewardToken: TokenSubgraph;
-  incentiveStartTime: number;
+  limitFarming: null | string;
+  limitRewardToken: TokenSubgraph;
+  limitEarned: string | number;
+  limitBonusEarned: string | number;
+  limitBonusRewardToken: TokenSubgraph;
+  limitStartTime: number;
   started: boolean;
-  incentiveEndTime: number;
+  limitEndTime: number;
   createdAtTimestamp: number;
-  incentiveReward: string;
+  limitReward: string;
   ended: boolean;
-  finiteAvailable: boolean;
+  limitAvailable: boolean;
   eternalAvailable: boolean;
   liquidity: BigNumber;
   onFarmingCenter: boolean;
@@ -145,18 +145,12 @@ export interface Deposit {
   token0: string;
   token1: string;
   l2TokenId: string | null;
-  algbLocked: string;
-  level: string;
-  lockedToken: any;
+  tokensLockedEternal: string;
+  tokensLockedLimit: string;
+  tierEternal: string;
+  tierLimit: string;
+  multiplierToken: TokenSubgraph;
   oldFarming?: boolean;
-}
-
-export interface StakeDefault {
-  rewardToken: string;
-  bonusRewardToken: string;
-  pool: string;
-  startTime: string;
-  endTime: string;
 }
 
 export interface DefaultFarming {
@@ -199,10 +193,10 @@ export interface EternalCollectRewardHandlerInterface {
 
 export interface GetRewardsHandlerInterface
   extends EternalCollectRewardHandlerInterface {
-  incentiveRewardToken: TokenSubgraph;
-  incentiveBonusRewardToken: TokenSubgraph;
-  incentiveStartTime: string;
-  incentiveEndTime: string;
+  limitRewardToken: TokenSubgraph;
+  limitBonusRewardToken: TokenSubgraph;
+  limitStartTime: string;
+  limitEndTime: string;
 }
 
 export interface RewardInterface {
@@ -211,7 +205,7 @@ export interface RewardInterface {
   farmingType: number | null;
 }
 
-export interface UnstakingInterface {
+export interface UnfarmingInterface {
   id: string | null;
   state: string | null;
 }

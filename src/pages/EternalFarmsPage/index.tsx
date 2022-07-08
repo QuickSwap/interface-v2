@@ -3,8 +3,8 @@ import { Frown } from 'react-feather';
 import { useTranslation } from 'react-i18next';
 import Loader from '../../components/Loader';
 import Modal from '../../components/Modal';
-import { StakeModal } from '../../components/StakeModal';
-import { StakerEventCard } from '../../components/StakerEventCard';
+import { FarmModal } from '../../components/StakeModal';
+import { FarmingEventCard } from '../../components/StakerEventCard';
 import { FarmingType } from '../../models/enums';
 import './index.scss';
 
@@ -31,7 +31,7 @@ export default function EternalFarmsPage({
         onDismiss={() => console.log()}
       >
         {modalForPool && (
-          <StakeModal
+          <FarmModal
             event={modalForPool}
             closeHandler={() => setModalForPool(null)}
             farmingType={FarmingType.ETERNAL}
@@ -50,9 +50,9 @@ export default function EternalFarmsPage({
       ) : !refreshing && data.length !== 0 ? (
         <div className={'eternal-page__row mb-1 w-100'}>
           {data.map((event: any, j: number) => (
-            <StakerEventCard
+            <FarmingEventCard
               key={j}
-              stakeHandler={() => setModalForPool(event)}
+              farmHandler={() => setModalForPool(event)}
               refreshing={refreshing}
               now={0}
               eternal

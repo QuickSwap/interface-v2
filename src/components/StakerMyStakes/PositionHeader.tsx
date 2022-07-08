@@ -6,18 +6,11 @@ import { Token } from '@uniswap/sdk-core';
 import { WrappedCurrency } from '../../models/types';
 import Loader from '../Loader';
 import { ChevronsUp, Send } from 'react-feather';
-import { Deposit, UnstakingInterface } from '../../models/interfaces';
-import { formatAmountTokens } from 'utils/numbers';
-import { formatUnits, parseUnits } from 'ethers/lib/utils';
-import { BigNumber } from 'ethers';
-
-import BachelorTierIcon from '../../assets/images/bachelor-tier-icon.png';
-import MasterTierIcon from '../../assets/images/master-tier-icon.png';
-import ProfessorTierIcon from '../../assets/images/professor-tier-icon.png';
+import { Deposit, UnfarmingInterface } from '../../models/interfaces';
 
 interface PositionHeaderProps {
   el: Deposit;
-  unstaking: UnstakingInterface;
+  unstaking: UnfarmingInterface;
   setSendModal: any;
   setUnstaking: any;
   withdrawHandler: any;
@@ -30,47 +23,11 @@ export default function PositionHeader({
   withdrawHandler,
   setSendModal,
 }: PositionHeaderProps) {
-  const tierLevel = useMemo(() => {
-    if (!el.algbLocked || !el.lockedToken || !el.level) return;
-
-    switch (+el.level) {
-      case 0:
-        return;
-      case 1:
-        return BachelorTierIcon;
-      case 2:
-        return MasterTierIcon;
-      case 3:
-        return ProfessorTierIcon;
-      default:
-        return;
-    }
-  }, [el]);
-
-  const tierName = useMemo(() => {
-    if (!el.algbLocked || !el.lockedToken || !el.level) return;
-
-    switch (+el.level) {
-      case 0:
-        return;
-      case 1:
-        return `Bachelor`;
-      case 2:
-        return `Master`;
-      case 3:
-        return `Professor`;
-      default:
-        return;
-    }
-  }, [el]);
-
   return (
     <div
-      className={
-        'my-stakes__position-card__header flex-s-between mb-1 br-8 p-1'
-      }
+      className={'my-farms__position-card__header flex-s-between mb-1 br-8 p-1'}
     >
-      <div className={'my-stakes__position-card__header__row'}>
+      <div className={'my-farms__position-card__header__row'}>
         <div className={'f f-ac mxs_ml-0 mxs_mb-1'}>
           <NFTPositionIcon name={el.id}>
             <span>{el.id}</span>
@@ -92,7 +49,7 @@ export default function PositionHeader({
           <CurrencyLogo
             currency={
               new Token(
-                137,
+                97,
                 el.token0,
                 18,
                 el.pool.token0.symbol,
@@ -103,7 +60,7 @@ export default function PositionHeader({
           <CurrencyLogo
             currency={
               new Token(
-                137,
+                97,
                 el.token1,
                 18,
                 el.pool.token1.symbol,
@@ -119,57 +76,9 @@ export default function PositionHeader({
             <div>{`${el.pool.token0.symbol} / ${el.pool.token1.symbol}`}</div>
           </div>
         </div>
-        {el.lockedToken && Boolean(+el.algbLocked) && (
-          <div className={'f f-ac ml-2 mxs_ml-0 mxs_mv-1'}>
-            {/* <CurrencyLogo currency={new Token(137, el.lockedToken.id, 18, el.lockedToken.symbol) as WrappedCurrency} size={"35px"} /> */}
-            <div
-              style={{
-                width: '35px',
-                height: '35px',
-                background: '#324e64',
-                borderRadius: '50%',
-              }}
-              className={'f f-ac f-jc'}
-            >
-              <img src={tierLevel} width={30} height={30} />
-            </div>
-            <div className={'ml-05'}>
-              <div className={'b fs-075'} style={{ marginBottom: '2px' }}>
-                TIER
-              </div>
-              <div>{tierName}</div>
-            </div>
-          </div>
-        )}
-        {el.lockedToken && Boolean(+el.algbLocked) && (
-          <div className={'f f-ac ml-2 mxs_ml-0 mxs_mv-1'}>
-            <CurrencyLogo
-              currency={
-                new Token(
-                  137,
-                  el.lockedToken.id,
-                  18,
-                  el.lockedToken.symbol,
-                ) as WrappedCurrency
-              }
-              size={'35px'}
-            />
-            <div className={'ml-05'}>
-              <div className={'b fs-075'} style={{ marginBottom: '2px' }}>
-                LOCKED
-              </div>
-              <div>{`${formatAmountTokens(
-                +formatUnits(
-                  BigNumber.from(el.algbLocked),
-                  el.lockedToken.decimals,
-                ),
-              )} ${el.lockedToken.symbol}`}</div>
-            </div>
-          </div>
-        )}
       </div>
-      <div className={'my-stakes__position-card__header__row'}>
-        {!el.incentive && !el.eternalFarming && (
+      <div className={'my-farms__position-card__header__row'}>
+        {!el.limitFarming && !el.eternalFarming && (
           <button
             className={'btn c-w f f-ac b pv-05 ph-1 mxs_mv-05 mxs_f-jc'}
             disabled={unstaking.id === el.id && unstaking.state !== 'done'}

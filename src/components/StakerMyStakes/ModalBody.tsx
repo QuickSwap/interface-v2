@@ -2,10 +2,10 @@ import React from 'react';
 import { CheckCircle } from 'react-feather';
 import { isAddress } from '@ethersproject/address';
 import Loader from '../Loader';
-import { UnstakingInterface } from '../../models/interfaces';
+import { UnfarmingInterface } from '../../models/interfaces';
 
 interface ModalBodyProps {
-  sending: UnstakingInterface;
+  sending: UnfarmingInterface;
   recipient: string;
   setRecipient: any;
   setSending: any;

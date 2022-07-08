@@ -1,7 +1,7 @@
 import { isAddress } from '@ethersproject/address';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Frown } from 'react-feather';
-import { useStakerHandlers } from '../../hooks/useStakerHandlers';
+import { useFarmingHandlers } from '../../hooks/useStakerHandlers';
 import { useActiveWeb3React } from 'hooks';
 import { useAllTransactions } from '../../state/transactions/hooks';
 import Loader from '../Loader';
@@ -9,7 +9,7 @@ import Modal from '../Modal';
 import {
   Deposit,
   RewardInterface,
-  UnstakingInterface,
+  UnfarmingInterface,
 } from '../../models/interfaces';
 import { FarmingType } from '../../models/enums';
 import { getCountdownTime } from '../../utils/time';
@@ -49,11 +49,11 @@ export function StakerMyStakes({
     sendNFTL2Hash,
     eternalCollectRewardHash,
     withdrawnHash,
-  } = useStakerHandlers() || {};
+  } = useFarmingHandlers() || {};
 
   const [sendModal, setSendModal] = useState<string | null>(null);
   const [recipient, setRecipient] = useState<string>('');
-  const [sending, setSending] = useState<UnstakingInterface>({
+  const [sending, setSending] = useState<UnfarmingInterface>({
     id: null,
     state: null,
   });
@@ -66,9 +66,9 @@ export function StakerMyStakes({
     farmingType: null,
   });
   const [eternalCollectReward, setEternalCollectReward] = useState<
-    UnstakingInterface
+    UnfarmingInterface
   >({ id: null, state: null });
-  const [unstaking, setUnstaking] = useState<UnstakingInterface>({
+  const [unfarming, setUnfarming] = useState<UnfarmingInterface>({
     id: null,
     state: null,
   });
@@ -83,7 +83,7 @@ export function StakerMyStakes({
     [sortedRecentTransactions, allTransactions],
   );
 
-  const stakedNFTs = useMemo(() => {
+  const farmedNFTs = useMemo(() => {
     if (!shallowPositions) return;
     const _positions = shallowPositions.filter((v) => v.onFarmingCenter);
     return _positions.length > 0 ? _positions : [];
@@ -152,15 +152,15 @@ export function StakerMyStakes({
   }, [eternalCollectRewardHash, confirmed]);
 
   useEffect(() => {
-    if (!unstaking.state) return;
+    if (!unfarming.state) return;
 
     if (typeof withdrawnHash === 'string') {
-      setUnstaking({ id: null, state: null });
+      setUnfarming({ id: null, state: null });
     } else if (
       withdrawnHash &&
       confirmed.includes(String(withdrawnHash.hash))
     ) {
-      setUnstaking({ id: withdrawnHash.id, state: 'done' });
+      setUnfarming({ id: withdrawnHash.id, state: 'done' });
       if (!shallowPositions) return;
       setShallowPositions(
         shallowPositions.map((el) => {
@@ -191,8 +191,8 @@ export function StakerMyStakes({
       setShallowPositions(
         shallowPositions.map((el) => {
           if (el.id === claimRewardHash.id) {
-            if (claimRewardHash.farmingType === FarmingType.FINITE) {
-              el.incentive = null;
+            if (claimRewardHash.farmingType === FarmingType.LIMIT) {
+              el.limitFarming = null;
             } else {
               el.eternalFarming = null;
             }
@@ -221,8 +221,8 @@ export function StakerMyStakes({
       setShallowPositions(
         shallowPositions.map((el) => {
           if (el.id === getRewardsHash.id) {
-            if (getRewardsHash.farmingType === FarmingType.FINITE) {
-              el.incentive = null;
+            if (getRewardsHash.farmingType === FarmingType.LIMIT) {
+              el.limitFarming = null;
             } else {
               el.eternalFarming = null;
             }
@@ -275,9 +275,9 @@ export function StakerMyStakes({
               Stake Rewards
             </Link>
           </div>
-          {stakedNFTs && (
+          {farmedNFTs && (
             <div>
-              {stakedNFTs.map((el, i) => {
+              {farmedNFTs.map((el, i) => {
                 const date = new Date(
                   +el.enteredInEternalFarming * 1000,
                 ).toLocaleString();
@@ -289,9 +289,9 @@ export function StakerMyStakes({
                   >
                     <PositionHeader
                       el={el}
-                      setUnstaking={setUnstaking}
+                      setUnstaking={setUnfarming}
                       setSendModal={setSendModal}
-                      unstaking={unstaking}
+                      unstaking={unfarming}
                       withdrawHandler={withdrawHandler}
                     />
                     <div className={'f cg-1 rg-1 mxs_fd-c'}>
@@ -302,46 +302,45 @@ export function StakerMyStakes({
                       >
                         <PositionCardBodyHeader
                           el={el}
-                          farmingType={FarmingType.FINITE}
+                          farmingType={FarmingType.LIMIT}
                           date={date}
                         />
-                        {el.incentive ? (
+                        {el.limitFarming ? (
                           <>
                             <PositionCardBodyStat
-                              rewardToken={el.incentiveRewardToken}
-                              earned={el.incentiveEarned}
-                              bonusEarned={el.incentiveBonusEarned}
-                              bonusRewardToken={el.incentiveBonusRewardToken}
+                              rewardToken={el.limitRewardToken}
+                              earned={el.limitEarned}
+                              bonusEarned={el.limitBonusEarned}
+                              bonusRewardToken={el.limitBonusRewardToken}
                             />
                             <div className={'f mxs_fd-c'}>
                               {!el.ended &&
-                                el.incentiveEndTime * 1000 > Date.now() && (
+                                el.limitEndTime * 1000 > Date.now() && (
                                   <div className={'f w-100'}>
                                     <div
                                       className={'w-100'}
                                       data-started={
                                         el.started ||
-                                        el.incentiveStartTime * 1000 <
-                                          Date.now()
+                                        el.limitStartTime * 1000 < Date.now()
                                       }
                                     >
                                       {!el.started &&
-                                        el.incentiveStartTime * 1000 >
+                                        el.limitStartTime * 1000 >
                                           Date.now() && (
                                           <div
                                             className={'mb-05 p-r fs-075'}
                                           >{`Starts in ${getCountdownTime(
-                                            el.incentiveStartTime,
+                                            el.limitStartTime,
                                             now,
                                           )}`}</div>
                                         )}
                                       {(el.started ||
-                                        el.incentiveStartTime * 1000 <
+                                        el.limitStartTime * 1000 <
                                           Date.now()) && (
                                         <div
                                           className={'mb-05 p-r fs-075'}
                                         >{`Ends in ${getCountdownTime(
-                                          el.incentiveEndTime,
+                                          el.limitEndTime,
                                           now,
                                         )}`}</div>
                                       )}
@@ -351,14 +350,14 @@ export function StakerMyStakes({
                                         }
                                       >
                                         {!el.started &&
-                                        el.incentiveStartTime * 1000 >
+                                        el.limitStartTime * 1000 >
                                           Date.now() ? (
                                           <div
                                             className={'br-8'}
                                             style={{
                                               width: `${getProgress(
                                                 el.createdAtTimestamp,
-                                                el.incentiveStartTime,
+                                                el.limitStartTime,
                                                 now,
                                               )}%`,
                                             }}
@@ -368,8 +367,8 @@ export function StakerMyStakes({
                                             className={'br-8'}
                                             style={{
                                               width: `${getProgress(
-                                                el.incentiveStartTime,
-                                                el.incentiveEndTime,
+                                                el.limitStartTime,
+                                                el.limitEndTime,
                                                 now,
                                               )}%`,
                                             }}
@@ -378,8 +377,7 @@ export function StakerMyStakes({
                                       </div>
                                     </div>
                                     {!el.started &&
-                                      el.incentiveStartTime * 1000 >
-                                        Date.now() && (
+                                      el.limitStartTime * 1000 > Date.now() && (
                                         <button
                                           className={
                                             'btn primary w-100 ml-1 br-8 b pv-075'
@@ -387,25 +385,25 @@ export function StakerMyStakes({
                                           disabled={
                                             gettingReward.id === el.id &&
                                             gettingReward.farmingType ===
-                                              FarmingType.FINITE &&
+                                              FarmingType.LIMIT &&
                                             gettingReward.state !== 'done'
                                           }
                                           onClick={() => {
                                             setGettingReward({
                                               id: el.id,
                                               state: 'pending',
-                                              farmingType: FarmingType.FINITE,
+                                              farmingType: FarmingType.LIMIT,
                                             });
                                             exitHandler(
                                               el.id,
                                               { ...el },
-                                              FarmingType.FINITE,
+                                              FarmingType.LIMIT,
                                             );
                                           }}
                                         >
                                           {gettingReward &&
                                           gettingReward.farmingType ===
-                                            FarmingType.FINITE &&
+                                            FarmingType.LIMIT &&
                                           gettingReward.id === el.id &&
                                           gettingReward.state !== 'done' ? (
                                             <span>
@@ -423,32 +421,32 @@ export function StakerMyStakes({
                                   </div>
                                 )}
                               {(el.ended ||
-                                el.incentiveEndTime * 1000 < Date.now()) && (
+                                el.limitEndTime * 1000 < Date.now()) && (
                                 <button
                                   className={'btn primary b w-100 pv-075 ph-1'}
                                   disabled={
                                     (gettingReward.id === el.id &&
                                       gettingReward.farmingType ===
-                                        FarmingType.FINITE &&
+                                        FarmingType.LIMIT &&
                                       gettingReward.state !== 'done') ||
-                                    +el.incentiveReward == 0
+                                    +el.limitReward == 0
                                   }
                                   onClick={() => {
                                     setGettingReward({
                                       id: el.id,
                                       state: 'pending',
-                                      farmingType: FarmingType.FINITE,
+                                      farmingType: FarmingType.LIMIT,
                                     });
                                     claimRewardsHandler(
                                       el.id,
                                       { ...el },
-                                      FarmingType.FINITE,
+                                      FarmingType.LIMIT,
                                     );
                                   }}
                                 >
                                   {gettingReward &&
                                   gettingReward.farmingType ===
-                                    FarmingType.FINITE &&
+                                    FarmingType.LIMIT &&
                                   gettingReward.id === el.id &&
                                   gettingReward.state !== 'done' ? (
                                     <div className={'f f-jc f-ac cg-05'}>
@@ -471,7 +469,7 @@ export function StakerMyStakes({
                               'my-stakes__position-card__empty f c f-ac f-jc'
                             }
                           >
-                            {el.finiteAvailable ? (
+                            {el.limitAvailable ? (
                               <CheckOut link={'limit-farms'} />
                             ) : (
                               <span>No limit farms for now</span>
@@ -489,6 +487,7 @@ export function StakerMyStakes({
                           date={date}
                           enteredInEternalFarming={el.enteredInEternalFarming}
                           eternalFarming={el.eternalFarming}
+                          el={el}
                         />
                         {el.eternalFarming ? (
                           <>
