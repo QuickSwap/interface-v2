@@ -13,7 +13,6 @@ import {
   TOKENS_CURRENT,
   TOKENS_DYNAMIC,
   TOKEN_CHART,
-  TOKEN_DATA,
   TOKEN_DATA1,
   TOKEN_DATA2,
   PAIR_CHART,
@@ -1648,10 +1647,12 @@ export function calculateGasMargin(value: BigNumber): BigNumber {
 export function formatDateFromTimeStamp(
   timestamp: number,
   format: string,
-  addedDay = 1,
+  addedDay = 0,
 ) {
-  return dayjs(timestamp * 1000) //multiply 1000 to get timestamp in milliseconds
-    .add(addedDay, 'day') //add days to get correct date
+  return dayjs
+    .unix(timestamp)
+    .add(addedDay, 'day')
+    .utc()
     .format(format);
 }
 
