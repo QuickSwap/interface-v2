@@ -1883,9 +1883,9 @@ export function useLairDQUICKAPY(isNew: boolean, lair?: LairInfo) {
     ? GlobalValue.tokens.COMMON.NEW_QUICK
     : GlobalValue.tokens.COMMON.OLD_QUICK;
   const quickPrice = useUSDCPriceToken(quickToken);
-  const dQUICKPrice: any = Number(lair?.dQUICKtoQUICK?.toExact()) * quickPrice;
 
-  if (!lair) return '0';
+  if (!lair) return '';
+  const dQUICKPrice: any = Number(lair.dQUICKtoQUICK.toExact()) * quickPrice;
   const dQUICKAPR =
     (((Number(lair.oneDayVol) *
       GlobalConst.utils.DQUICKFEE *
@@ -1893,7 +1893,7 @@ export function useLairDQUICKAPY(isNew: boolean, lair?: LairInfo) {
       Number(lair.dQuickTotalSupply.toExact())) *
       daysCurrentYear) /
     dQUICKPrice;
-  if (!dQUICKAPR) return '0';
+  if (!dQUICKAPR) return '';
   const temp = Math.pow(1 + dQUICKAPR / daysCurrentYear, daysCurrentYear) - 1;
   if (temp > 100) {
     return '> 10000';
