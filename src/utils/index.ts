@@ -13,7 +13,6 @@ import {
   TOKENS_CURRENT,
   TOKENS_DYNAMIC,
   TOKEN_CHART,
-  TOKEN_DATA,
   TOKEN_DATA1,
   TOKEN_DATA2,
   PAIR_CHART,
@@ -1526,15 +1525,6 @@ export function maxAmountSpend(
   return currencyAmount;
 }
 
-export function halfAmountSpend(
-  currencyAmount?: CurrencyAmount,
-): CurrencyAmount | undefined {
-  const maxAmount = maxAmountSpend(currencyAmount);
-  if (!maxAmount) return undefined;
-
-  return CurrencyAmount.ether(JSBI.divide(maxAmount.raw, JSBI.BigInt(2)));
-}
-
 export function isTokenOnList(
   defaultTokens: TokenAddressMap,
   currency?: Currency,
@@ -1657,10 +1647,12 @@ export function calculateGasMargin(value: BigNumber): BigNumber {
 export function formatDateFromTimeStamp(
   timestamp: number,
   format: string,
-  addedDay = 1,
+  addedDay = 0,
 ) {
-  return dayjs(timestamp * 1000) //multiply 1000 to get timestamp in milliseconds
-    .add(addedDay, 'day') //add days to get correct date
+  return dayjs
+    .unix(timestamp)
+    .add(addedDay, 'day')
+    .utc()
     .format(format);
 }
 
@@ -1892,9 +1884,9 @@ export function useLairDQUICKAPY(isNew: boolean, lair?: LairInfo) {
     ? GlobalValue.tokens.COMMON.NEW_QUICK
     : GlobalValue.tokens.COMMON.OLD_QUICK;
   const quickPrice = useUSDCPriceToken(quickToken);
-  const dQUICKPrice: any = Number(lair?.dQUICKtoQUICK?.toExact()) * quickPrice;
 
-  if (!lair) return '0';
+  if (!lair) return '';
+  const dQUICKPrice: any = Number(lair.dQUICKtoQUICK.toExact()) * quickPrice;
   const dQUICKAPR =
     (((Number(lair.oneDayVol) *
       GlobalConst.utils.DQUICKFEE *
@@ -1902,7 +1894,7 @@ export function useLairDQUICKAPY(isNew: boolean, lair?: LairInfo) {
       Number(lair.dQuickTotalSupply.toExact())) *
       daysCurrentYear) /
     dQUICKPrice;
-  if (!dQUICKAPR) return '0';
+  if (!dQUICKAPR) return '';
   const temp = Math.pow(1 + dQUICKAPR / daysCurrentYear, daysCurrentYear) - 1;
   if (temp > 100) {
     return '> 10000';
