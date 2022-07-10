@@ -1526,15 +1526,6 @@ export function maxAmountSpend(
   return currencyAmount;
 }
 
-export function halfAmountSpend(
-  currencyAmount?: CurrencyAmount,
-): CurrencyAmount | undefined {
-  const maxAmount = maxAmountSpend(currencyAmount);
-  if (!maxAmount) return undefined;
-
-  return CurrencyAmount.ether(JSBI.divide(maxAmount.raw, JSBI.BigInt(2)));
-}
-
 export function isTokenOnList(
   defaultTokens: TokenAddressMap,
   currency?: Currency,
