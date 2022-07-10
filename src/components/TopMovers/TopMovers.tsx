@@ -34,7 +34,7 @@ const TopMovers: React.FC<TopMoversProps> = ({ hideArrow = false }) => {
 
   return (
     <Box className='bg-palette topMoversWrapper'>
-      <p className='weight-600 text-secondary'>{t('24hTopMovers')}</p>
+      <p className='weight-600 text-secondary'>{t('24hMostVolume')}</p>
       <Box className='topMoversContent'>
         {topMoverTokens ? (
           <Box>
