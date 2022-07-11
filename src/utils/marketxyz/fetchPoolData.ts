@@ -5,7 +5,6 @@ import {
   Pool,
   PoolLensV1,
 } from 'market-sdk';
-import Web3 from 'web3';
 import { convertBNToNumber } from '.';
 import { getEthPrice } from '../index';
 
@@ -78,7 +77,6 @@ export const fetchPoolData = async (
   let totalBorrowedUSD = 0;
 
   const [ethPrice] = await getEthPrice();
-  const _1e36 = Web3.utils.toBN(10).pow(Web3.utils.toBN(36));
 
   await Promise.all(
     assets.map(async (asset) => {
@@ -89,7 +87,10 @@ export const fetchPoolData = async (
         asset.cToken.address,
       );
 
-      asset.usdPrice = 1;
+      asset.usdPrice =
+        (Number(asset.underlyingPrice) / 1e36) *
+        ethPrice *
+        10 ** Number(asset.underlyingDecimals);
 
       asset.supplyBalanceUSD =
         convertBNToNumber(asset.supplyBalance, asset.underlyingDecimals) *

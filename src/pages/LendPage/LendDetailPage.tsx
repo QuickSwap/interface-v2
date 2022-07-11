@@ -25,7 +25,6 @@ import { getDaysCurrentYear, shortenAddress } from 'utils';
 import { useExtraPoolData } from 'hooks/marketxyz/useExtraPoolData';
 import { useActiveWeb3React } from 'hooks';
 import { useMarket } from 'hooks/marketxyz/useMarket';
-import { useTokensData } from 'hooks/marketxyz/useTokenData';
 import { PoolData, USDPricedPoolAsset } from 'utils/marketxyz/fetchPoolData';
 import JumpRateModel from '../../utils/marketxyz/interestRateModel';
 
@@ -67,10 +66,6 @@ const LendDetailPage: React.FC = () => {
   const { sdk } = useMarket();
   const poolId = location && new URLSearchParams(location.search).get('poolId');
   const poolData = usePoolData(poolId, QS_PoolDirectory);
-
-  const tokensData = useTokensData(
-    poolData?.assets.map((asset) => asset.underlyingToken) || [],
-  ) || ['0x0'];
 
   const extraPoolData = useExtraPoolData(
     poolData?.pool.comptroller,
