@@ -14,11 +14,15 @@ import { useTranslation } from 'react-i18next';
 
 interface TokensTableProps {
   data: any[];
+  showPagination?: boolean;
 }
 
 const liquidityHeadCellIndex = 4;
 
-const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
+const TokensTable: React.FC<TokensTableProps> = ({
+  data,
+  showPagination = true,
+}) => {
   const { t } = useTranslation();
   const tokenHeadCells = [
     {
@@ -116,11 +120,11 @@ const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
         </Box>
         <Box className='mobileRow'>
           <p>{t('24hVol')}</p>
-          <p>${Number(token.oneDayVolumeUSD).toLocaleString()}</p>
+          <p>${formatNumber(token.oneDayVolumeUSD)}</p>
         </Box>
         <Box className='mobileRow'>
           <p>{t('liquidity')}</p>
-          <p>${Number(token.totalLiquidityUSD).toLocaleString()}</p>
+          <p>${formatNumber(token.totalLiquidityUSD)}</p>
         </Box>
       </Box>
     );
@@ -178,7 +182,7 @@ const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
       {
         html: (
           <Box>
-            <p>${Number(token.priceUSD).toLocaleString()}</p>
+            <p>${formatNumber(token.priceUSD)}</p>
           </Box>
         ),
       },
@@ -190,10 +194,10 @@ const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
         ),
       },
       {
-        html: <p>${Number(token.oneDayVolumeUSD).toLocaleString()}</p>,
+        html: <p>${formatNumber(token.oneDayVolumeUSD)}</p>,
       },
       {
-        html: <p>${Number(token.totalLiquidityUSD).toLocaleString()}</p>,
+        html: <p>${formatNumber(token.totalLiquidityUSD)}</p>,
       },
     ];
   };
@@ -202,7 +206,7 @@ const TokensTable: React.FC<TokensTableProps> = ({ data }) => {
     <CustomTable
       defaultOrderBy={tokenHeadCells[liquidityHeadCellIndex]}
       defaultOrder='desc'
-      showPagination={data.length > GlobalConst.utils.ROWSPERPAGE}
+      showPagination={showPagination}
       headCells={tokenHeadCells}
       rowsPerPage={GlobalConst.utils.ROWSPERPAGE}
       data={data}

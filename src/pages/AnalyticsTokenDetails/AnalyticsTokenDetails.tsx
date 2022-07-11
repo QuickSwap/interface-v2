@@ -9,16 +9,14 @@ import {
   getFormattedPrice,
   getPriceClass,
   formatNumber,
-} from 'utils';
-import { useActiveWeb3React } from 'hooks';
-import { CurrencyLogo, PairTable } from 'components';
-import { useBookmarkTokens } from 'state/application/hooks';
-import {
   getTokenInfo,
   getEthPrice,
   getTokenPairs2,
   getBulkPairData,
 } from 'utils';
+import { useActiveWeb3React } from 'hooks';
+import { CurrencyLogo, PairTable } from 'components';
+import { useBookmarkTokens } from 'state/application/hooks';
 import { ReactComponent as StarChecked } from 'assets/images/StarChecked.svg';
 import { ReactComponent as StarUnchecked } from 'assets/images/StarUnchecked.svg';
 import { getAddress } from '@ethersproject/address';
@@ -46,18 +44,13 @@ const AnalyticsTokenDetails: React.FC = () => {
 
   useEffect(() => {
     async function fetchTokenInfo() {
+      setToken(null);
+      updateTokenPairs(null);
       const [newPrice, oneDayPrice] = await getEthPrice();
       const tokenInfo = await getTokenInfo(newPrice, oneDayPrice, tokenAddress);
       if (tokenInfo) {
         setToken(tokenInfo[0]);
       }
-    }
-    fetchTokenInfo();
-  }, [tokenAddress]);
-
-  useEffect(() => {
-    async function fetchTokenPairs() {
-      const [newPrice] = await getEthPrice();
       const tokenPairs = await getTokenPairs2(tokenAddress);
       const formattedPairs = tokenPairs
         ? tokenPairs.map((pair: any) => {
@@ -69,9 +62,8 @@ const AnalyticsTokenDetails: React.FC = () => {
         updateTokenPairs(pairData);
       }
     }
-    fetchTokenPairs();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [updateTokenPairs, tokenAddress]);
+    fetchTokenInfo();
+  }, [tokenAddress]);
 
   const tokenPercentClass = getPriceClass(
     token ? Number(token.priceChangeUSD) : 0,
@@ -144,11 +136,11 @@ const AnalyticsTokenDetails: React.FC = () => {
                       <span className='text-disabled'>
                         {t('totalLiquidity')}
                       </span>
-                      <h5>${token.totalLiquidityUSD.toLocaleString()}</h5>
+                      <h5>${formatNumber(token.totalLiquidityUSD)}</h5>
                     </Box>
                     <Box textAlign='right'>
                       <span className='text-disabled'>{t('7dTradingVol')}</span>
-                      <h5>${token.oneWeekVolumeUSD.toLocaleString()}</h5>
+                      <h5>${formatNumber(token.oneWeekVolumeUSD)}</h5>
                     </Box>
                   </Box>
                   <Box>
@@ -156,15 +148,15 @@ const AnalyticsTokenDetails: React.FC = () => {
                       <span className='text-disabled'>
                         {t('24hTradingVol1')}
                       </span>
-                      <h5>${token.oneDayVolumeUSD.toLocaleString()}</h5>
+                      <h5>${formatNumber(token.oneDayVolumeUSD)}</h5>
                     </Box>
                     <Box textAlign='right'>
                       <span className='text-disabled'>{t('24hFees')}</span>
                       <h5>
                         $
-                        {(
-                          token.oneDayVolumeUSD * GlobalConst.utils.FEEPERCENT
-                        ).toLocaleString()}
+                        {formatNumber(
+                          token.oneDayVolumeUSD * GlobalConst.utils.FEEPERCENT,
+                        )}
                       </h5>
                     </Box>
                   </Box>

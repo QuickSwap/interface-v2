@@ -9,6 +9,7 @@ import {
   getPairTransactions,
   getEthPrice,
   getBulkPairData,
+  formatNumber,
 } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import {
@@ -97,13 +98,13 @@ const AnalyticsPairDetails: React.FC = () => {
   const fees =
     pairData && (pairData.oneDayVolumeUSD || pairData.oneDayVolumeUSD === 0)
       ? usingUtVolume
-        ? (
+        ? formatNumber(
             Number(pairData.oneDayVolumeUntracked) *
-            GlobalConst.utils.FEEPERCENT
-          ).toLocaleString()
-        : (
-            Number(pairData.oneDayVolumeUSD) * GlobalConst.utils.FEEPERCENT
-          ).toLocaleString()
+              GlobalConst.utils.FEEPERCENT,
+          )
+        : formatNumber(
+            Number(pairData.oneDayVolumeUSD) * GlobalConst.utils.FEEPERCENT,
+          )
       : '-';
 
   useEffect(() => {
@@ -216,9 +217,7 @@ const AnalyticsPairDetails: React.FC = () => {
                                 {pairData.token0.symbol} :
                               </span>
                             </Box>
-                            <span>
-                              {Number(pairData.reserve0).toLocaleString()}
-                            </span>
+                            <span>{formatNumber(pairData.reserve0)}</span>
                           </Box>
                           <Box
                             mt={1}
@@ -230,9 +229,7 @@ const AnalyticsPairDetails: React.FC = () => {
                                 {pairData.token1.symbol} :
                               </span>
                             </Box>
-                            <span>
-                              {Number(pairData.reserve1).toLocaleString()}
-                            </span>
+                            <span>{formatNumber(pairData.reserve1)}</span>
                           </Box>
                         </Box>
                       </Box>
@@ -240,7 +237,7 @@ const AnalyticsPairDetails: React.FC = () => {
                         <span className='text-disabled'>
                           {t('7dTradingVol')}
                         </span>
-                        <h5>${pairData.oneWeekVolumeUSD.toLocaleString()}</h5>
+                        <h5>${formatNumber(pairData.oneWeekVolumeUSD)}</h5>
                       </Box>
                       <Box mt={4}>
                         <span className='text-disabled'>{t('24hFees')}</span>
@@ -253,17 +250,17 @@ const AnalyticsPairDetails: React.FC = () => {
                       </span>
                       <h5>
                         $
-                        {Number(
+                        {formatNumber(
                           pairData.reserveUSD
                             ? pairData.reserveUSD
                             : pairData.trackedReserveUSD,
-                        ).toLocaleString()}
+                        )}
                       </h5>
                       <Box mt={4}>
                         <span className='text-disabled'>
                           {t('24hTradingVol1')}
                         </span>
-                        <h5>${pairData.oneDayVolumeUSD.toLocaleString()}</h5>
+                        <h5>${formatNumber(pairData.oneDayVolumeUSD)}</h5>
                       </Box>
                       <Box mt={4}>
                         <span className='text-disabled'>

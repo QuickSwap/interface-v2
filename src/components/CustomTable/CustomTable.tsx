@@ -40,9 +40,9 @@ const CustomTable: React.FC<CustomTableProps<any>> = ({
     <Box className='tableContainer'>
       {mobileWindowSize ? (
         <>
-          {data.map((item: any, index: number) => {
-            return mobileHTML(item, index);
-          })}
+          {data.map((item: any, index: number) => (
+            <Box key={index}>{mobileHTML(item, index)}</Box>
+          ))}
         </>
       ) : (
         <DataTable

@@ -29,6 +29,7 @@ export const TOKEN_SEARCH = gql`
       symbol
       name
       decimals
+      tradeVolumeUSD
       totalLiquidity
     }
     asName: tokens(
@@ -40,6 +41,7 @@ export const TOKEN_SEARCH = gql`
       symbol
       name
       decimals
+      tradeVolumeUSD
       totalLiquidity
     }
     asAddress: tokens(
@@ -51,6 +53,7 @@ export const TOKEN_SEARCH = gql`
       symbol
       name
       decimals
+      tradeVolumeUSD
       totalLiquidity
     }
   }
@@ -60,6 +63,7 @@ export const PAIR_SEARCH = gql`
   query pairs($tokens: [Bytes]!, $id: String) {
     as0: pairs(where: { token0_in: $tokens }) {
       id
+      trackedReserveETH
       token0 {
         id
         symbol
@@ -75,6 +79,7 @@ export const PAIR_SEARCH = gql`
     }
     as1: pairs(where: { token1_in: $tokens }) {
       id
+      trackedReserveETH
       token0 {
         id
         symbol
@@ -90,6 +95,7 @@ export const PAIR_SEARCH = gql`
     }
     asAddress: pairs(where: { id: $id }) {
       id
+      trackedReserveETH
       token0 {
         id
         symbol
@@ -219,6 +225,7 @@ export const ALL_TOKENS = gql`
       name
       symbol
       decimals
+      tradeVolumeUSD
       totalLiquidity
     }
   }
@@ -233,6 +240,7 @@ export const ALL_PAIRS = gql`
       orderDirection: desc
     ) {
       id
+      trackedReserveETH
       token0 {
         id
         symbol
@@ -418,10 +426,10 @@ export const TOKEN_DATA1: any = (
 export const TOKEN_DATA2: any = (tokenAddress: string) => {
   const queryString = `
     query tokens {
-      pairs0: pairs(where: {token0: "${tokenAddress}"}, first: 100, orderBy: reserveUSD, orderDirection: desc){
+      pairs0: pairs(where: {token0: "${tokenAddress}"}, first: 50, orderBy: reserveUSD, orderDirection: desc){
         id
       }
-      pairs1: pairs(where: {token1: "${tokenAddress}"}, first: 100, orderBy: reserveUSD, orderDirection: desc){
+      pairs1: pairs(where: {token1: "${tokenAddress}"}, first: 50, orderBy: reserveUSD, orderDirection: desc){
         id
       }
     }
@@ -454,22 +462,6 @@ export const ETH_PRICE: any = (block?: number) => {
   `
     : ` query bundles {
       bundles(where: { id: ${GlobalConst.utils.BUNDLE_ID} }) {
-        id
-        ethPrice
-      }
-    }
-  `;
-  return gql(queryString);
-};
-
-export const ETH_ALLPRICE: any = (block?: number) => {
-  const queryString = `
-    query bundles {
-      oneDayBackPrice: bundles(where: { id: ${GlobalConst.utils.BUNDLE_ID} } block: {number: ${block}}) {
-        id
-        ethPrice
-      }
-      currentPrice: bundles(where: { id: ${GlobalConst.utils.BUNDLE_ID} }) {
         id
         ethPrice
       }

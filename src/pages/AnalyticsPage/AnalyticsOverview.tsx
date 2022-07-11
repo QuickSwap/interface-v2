@@ -43,7 +43,7 @@ const AnalyticsOverview: React.FC = () => {
       const topTokensData = await getTopTokens(
         newPrice,
         oneDayPrice,
-        GlobalConst.utils.ROWSPERPAGE,
+        GlobalConst.utils.ANALYTICS_TOKENS_COUNT,
       );
       if (topTokensData) {
         updateTopTokens(topTokensData);
@@ -52,7 +52,7 @@ const AnalyticsOverview: React.FC = () => {
     const fetchTopPairs = async () => {
       updateTopPairs(null);
       const [newPrice] = await getEthPrice();
-      const pairs = await getTopPairs(GlobalConst.utils.ROWSPERPAGE);
+      const pairs = await getTopPairs(GlobalConst.utils.ANALYTICS_PAIRS_COUNT);
       const formattedPairs = pairs
         ? pairs.map((pair: any) => {
             return pair.id;
@@ -107,7 +107,7 @@ const AnalyticsOverview: React.FC = () => {
       </Box>
       <Box mt={3} className='panel'>
         {topTokens ? (
-          <TokensTable data={topTokens} />
+          <TokensTable data={topTokens} showPagination={false} />
         ) : (
           <Skeleton variant='rect' width='100%' height={150} />
         )}
@@ -128,7 +128,7 @@ const AnalyticsOverview: React.FC = () => {
       </Box>
       <Box mt={3} className='panel'>
         {topPairs ? (
-          <PairTable data={topPairs} />
+          <PairTable data={topPairs} showPagination={false} />
         ) : (
           <Skeleton variant='rect' width='100%' height={150} />
         )}

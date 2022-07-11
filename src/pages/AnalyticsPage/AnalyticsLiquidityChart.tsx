@@ -2,6 +2,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { Box } from '@material-ui/core';
 import Skeleton from '@material-ui/lab/Skeleton';
 import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
 import { useGlobalData } from 'state/application/hooks';
 import {
   formatCompact,
@@ -14,6 +15,7 @@ import {
 import { GlobalConst, GlobalData } from 'constants/index';
 import { AreaChart, ChartType } from 'components';
 import { useTranslation } from 'react-i18next';
+dayjs.extend(utc);
 
 const AnalyticsLiquidityChart: React.FC = () => {
   const { t } = useTranslation();
@@ -104,7 +106,9 @@ const AnalyticsLiquidityChart: React.FC = () => {
         </Box>
       )}
       <Box>
-        <span className='text-disabled'>{dayjs().format('MMM DD, YYYY')}</span>
+        <span className='text-disabled'>
+          {dayjs.utc().format('MMM DD, YYYY')}
+        </span>
       </Box>
       <Box mt={2}>
         {globalChartData ? (
@@ -113,11 +117,7 @@ const AnalyticsLiquidityChart: React.FC = () => {
               Number(value.totalLiquidityUSD),
             )}
             yAxisValues={yAxisValues}
-            dates={globalChartData.map((value: any) =>
-              dayjs(value.date * 1000)
-                .add(1, 'day')
-                .unix(),
-            )}
+            dates={globalChartData.map((value: any) => value.date)}
             width='100%'
             height={250}
             categories={getChartDates(globalChartData, durationIndex)}
