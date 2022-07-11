@@ -25,7 +25,7 @@ import { useAppSelector } from 'state';
 
 export function useFarmingHandlers() {
   const { chainId, account, library } = useActiveWeb3React();
-  const { t } = useTranslation();
+
   const provider = library
     ? new providers.Web3Provider(library.provider)
     : undefined;
@@ -81,19 +81,19 @@ export function useFarmingHandlers() {
     async (
       token,
       {
-        incentiveRewardToken,
-        incentiveBonusRewardToken,
+        limitRewardToken,
+        limitBonusRewardToken,
         pool,
-        incentiveStartTime,
-        incentiveEndTime,
+        limitStartTime,
+        limitEndTime,
         eternalRewardToken,
         eternalBonusRewardToken,
         eternalStartTime,
         eternalEndTime,
         eternalBonusEarned,
         eternalEarned,
-        incentiveBonusEarned,
-        incentiveEarned,
+        limitBonusEarned,
+        limitEarned,
       },
       farmingType,
     ) => {
@@ -164,20 +164,21 @@ export function useFarmingHandlers() {
           callDatas = [
             farmingCenterInterface.encodeFunctionData('exitFarming', [
               [
-                incentiveRewardToken.id,
-                incentiveBonusRewardToken.id,
+                limitRewardToken.id,
+                limitBonusRewardToken.id,
                 pool.id,
-                +incentiveStartTime,
-                +incentiveEndTime,
+                +limitStartTime,
+                +limitEndTime,
               ],
               +token,
+              true,
             ]),
           ];
 
-          if (Boolean(+incentiveEarned)) {
+          if (Boolean(+limitEarned)) {
             callDatas.push(
               farmingCenterInterface.encodeFunctionData('claimReward', [
-                incentiveRewardToken.id,
+                limitRewardToken.id,
                 account,
                 MaxUint128,
                 0,
@@ -185,10 +186,10 @@ export function useFarmingHandlers() {
             );
           }
 
-          if (Boolean(+incentiveBonusEarned)) {
+          if (Boolean(+limitBonusEarned)) {
             callDatas.push(
               farmingCenterInterface.encodeFunctionData('claimReward', [
-                incentiveBonusRewardToken.id,
+                limitBonusRewardToken.id,
                 account,
                 MaxUint128,
                 0,
@@ -203,7 +204,7 @@ export function useFarmingHandlers() {
         }
 
         addTransaction(result, {
-          summary: t`Claiming reward`,
+          summary: `Claiming reward`,
         });
 
         setClaimReward({
@@ -294,7 +295,7 @@ export function useFarmingHandlers() {
         }
 
         addTransaction(result, {
-          summary: t`Claiming reward`,
+          summary: `Claiming reward`,
         });
 
         setEternalCollectReward({ hash: result.hash, id: token });
@@ -336,7 +337,7 @@ export function useFarmingHandlers() {
 
         setClaimHash({ hash: result.hash, id: tokenReward });
         addTransaction(result, {
-          summary: t`Claiming reward`,
+          summary: `Claiming reward`,
         });
       } catch (e) {
         setClaimHash('failed');
@@ -353,11 +354,11 @@ export function useFarmingHandlers() {
     async (
       token,
       {
-        incentiveRewardToken,
-        incentiveBonusRewardToken,
+        limitRewardToken,
+        limitBonusRewardToken,
         pool,
-        incentiveStartTime,
-        incentiveEndTime,
+        limitStartTime,
+        limitEndTime,
       },
       eventType,
     ) => {
@@ -374,11 +375,11 @@ export function useFarmingHandlers() {
 
         const result: TransactionResponse = await farmingCenterContract.exitFarming(
           [
-            incentiveRewardToken.id,
-            incentiveBonusRewardToken.id,
+            limitRewardToken.id,
+            limitBonusRewardToken.id,
             pool.id,
-            +incentiveStartTime,
-            +incentiveEndTime,
+            +limitStartTime,
+            +limitEndTime,
           ],
           +token,
           {
@@ -387,7 +388,7 @@ export function useFarmingHandlers() {
         );
 
         addTransaction(result, {
-          summary: t`Rewards were claimed!`,
+          summary: `Rewards were claimed!`,
         });
 
         setGetRewards({ hash: result.hash, id: token, farmingType: eventType });
@@ -424,7 +425,7 @@ export function useFarmingHandlers() {
         );
 
         addTransaction(result, {
-          summary: t`NFT #${token} was withdrawn!`,
+          summary: `NFT #${token} was withdrawn!`,
         });
 
         setWithdrawn({ hash: result.hash, id: token });
@@ -472,7 +473,7 @@ export function useFarmingHandlers() {
           );
 
           addTransaction(result, {
-            summary: t`NFT #${selectedNFT.id} was deposited!`,
+            summary: `NFT #${selectedNFT.id} was deposited!`,
           });
 
           setFarmed({ hash: result.hash, id: selectedNFT.id });
@@ -512,7 +513,7 @@ export function useFarmingHandlers() {
           });
 
           addTransaction(result, {
-            summary: t`NFT #${selectedNFT.id} was transferred!`,
+            summary: `NFT #${selectedNFT.id} was transferred!`,
           });
 
           setTransfered({ hash: result.hash, id: selectedNFT.id });
@@ -547,11 +548,6 @@ export function useFarmingHandlers() {
         if (!selectedNFT.onFarmingCenter) {
           current = selectedNFT.id;
 
-          const approveData = nonFunPosManInterface.encodeFunctionData(
-            'approve',
-            [FARMING_CENTER[chainId], selectedNFT.id],
-          );
-
           const transferData = nonFunPosManInterface.encodeFunctionData(
             'safeTransferFrom(address,address,uint256)',
             [account, FARMING_CENTER[chainId], selectedNFT.id],
@@ -562,7 +558,7 @@ export function useFarmingHandlers() {
           });
 
           addTransaction(result, {
-            summary: t`NFT #${selectedNFT.id} was approved!`,
+            summary: `NFT #${selectedNFT.id} was approved!`,
           });
 
           setApproved({ hash: result.hash, id: selectedNFT.id });
@@ -608,7 +604,7 @@ export function useFarmingHandlers() {
         );
 
         addTransaction(result, {
-          summary: t`NFT #${l2TokenId} was sent!`,
+          summary: `NFT #${l2TokenId} was sent!`,
         });
 
         setSendNFTL2({ hash: result.hash, id: l2TokenId });
@@ -627,8 +623,8 @@ export function useFarmingHandlers() {
     approvedHash,
     transferHandler,
     transferedHash,
-    stakeHandler: farmHandler,
-    stakedHash: farmedHash,
+    farmHandler,
+    farmedHash,
     exitHandler,
     getRewardsHash,
     withdrawHandler,
