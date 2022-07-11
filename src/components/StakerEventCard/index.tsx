@@ -474,7 +474,8 @@ export function FarmingEventCard({
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           //@ts-ignore
           disabled={
-            locked || new Date(+enterStartTime * 1000).getTime() >= Date.now()
+            locked ||
+            new Date((enterStartTime ?? 0) * 1000).getTime() >= Date.now()
           }
           className={`btn primary w-100 b br-8 fs-085 pv-05 ${
             !eternal ? 'mt-05' : ''

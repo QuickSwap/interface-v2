@@ -35,7 +35,7 @@ export const blockClient = new ApolloClient({
 
 export const v3client = new ApolloClient({
   link: new HttpLink({
-    uri: 'https://api.thegraph.com/subgraphs/name/iliaazhel/algebra',
+    uri: 'https://api.thegraph.com/subgraphs/name/iliaazhel/info-test',
   }),
   cache: new InMemoryCache(),
   shouldBatch: true,
@@ -51,7 +51,7 @@ export const stakerClient = new ApolloClient({
 
 export const farmingClient = new ApolloClient({
   link: new HttpLink({
-    uri: 'https://api.thegraph.com/subgraphs/name/iliaazhel/algebra-farming',
+    uri: 'https://api.thegraph.com/subgraphs/name/iliaazhel/farming-test',
   }),
   cache: new InMemoryCache(),
   shouldBatch: true,
