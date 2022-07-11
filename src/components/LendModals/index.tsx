@@ -210,15 +210,12 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
                   <Box className='lendModalRow'>
                     <p>{t('borrowedBalance')}:</p>
                     <p>
-                      {`${borrowBalance.toLocaleString()} ${
-                        asset.underlyingSymbol
-                      }`}
+                      ${borrowBalance.toLocaleString()}
                       {showArrow && (
                         <>
                           <ArrowForward fontSize='small' />
-                          {(borrowBalance + Number(value)).toLocaleString() +
-                            ' ' +
-                            asset.underlyingSymbol}
+                          {'$' +
+                            (borrowBalance + Number(value)).toLocaleString()}
                         </>
                       )}
                     </p>
@@ -250,15 +247,12 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
                   <Box className='lendModalRow'>
                     <p>{t('totalDebtBalance')}:</p>
                     <p>
-                      {`${borrowBalance.toLocaleString()} ${
-                        asset.underlyingSymbol
-                      }`}
+                      ${borrowBalance.toLocaleString()}
                       {showArrow && (
                         <>
                           <ArrowForward fontSize='small' />
-                          {(borrowBalance + Number(value)).toLocaleString() +
-                            ' ' +
-                            asset.underlyingSymbol}
+                          {'$' +
+                            (borrowBalance + Number(value)).toLocaleString()}
                         </>
                       )}
                     </p>
