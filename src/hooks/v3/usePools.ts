@@ -5,17 +5,14 @@ import { useMultipleContractSingleData } from 'state/multicall/hooks';
 
 import { Interface } from '@ethersproject/abi';
 import abi from '../../constants/abis/v3/pool.json';
-// import { useInternet } from './useInternet';
-// import { useToken } from './Tokens';
 import {
   usePreviousNonEmptyArray,
   usePreviousNonErroredArray,
 } from '../usePrevious';
 import { useActiveWeb3React } from 'hooks';
 import { Pool } from 'v3lib/entities/pool';
-import { computePoolAddress } from 'v3lib/utils/computePoolAddress';
+import { computePoolAddress } from 'hooks/v3/computePoolAddress';
 import { useToken } from 'hooks/Tokens';
-import { wrappedCurrency } from 'utils/wrappedCurrency';
 
 const POOL_STATE_INTERFACE = new Interface(abi);
 
@@ -35,8 +32,8 @@ export function usePools(
     return poolKeys.map(([currencyA, currencyB]) => {
       if (!chainId || !currencyA || !currencyB) return null;
 
-      const tokenA = wrappedCurrency(currencyA ?? undefined, chainId);
-      const tokenB = wrappedCurrency(currencyB ?? undefined, chainId);
+      const tokenA = currencyA?.wrapped;
+      const tokenB = currencyB?.wrapped;
       if (!tokenA || !tokenB || tokenA.equals(tokenB)) return null;
       const [token0, token1] = tokenA.sortsBefore(tokenB)
         ? [tokenA, tokenB]
@@ -48,7 +45,6 @@ export function usePools(
   const poolAddresses: (string | undefined)[] = useMemo(() => {
     const poolDeployerAddress = chainId && POOL_DEPLOYER_ADDRESS[chainId];
 
-    // Todo: fix
     return transformed.map((value) => {
       if (!poolDeployerAddress || !value) return undefined;
       return computePoolAddress({
