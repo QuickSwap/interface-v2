@@ -620,6 +620,7 @@ const LendDetailPage: React.FC = () => {
 
       {selectedAsset && (
         <QuickModalContent
+          comptroller={poolData?.pool.comptroller}
           open={!!selectedAsset}
           onClose={() => setSelectedAsset(undefined)}
           borrow={modalIsBorrow}

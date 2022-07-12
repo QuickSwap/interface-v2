@@ -4,7 +4,7 @@ import { ArrowForward } from '@material-ui/icons';
 import { USDPricedPoolAsset } from 'utils/marketxyz/fetchPoolData';
 import JumpRateModel from 'utils/marketxyz/interestRateModel';
 import { midUsdFormatter } from 'utils/bigUtils';
-
+import { Comptroller } from 'market-sdk';
 import {
   repayBorrow,
   borrow as poolBorrow,
@@ -30,6 +30,7 @@ import 'components/styles/LendModal.scss';
 import { useBorrowLimit } from 'hooks/marketxyz/useBorrowLimit';
 
 interface QuickModalContentProps {
+  comptroller?: Comptroller;
   borrow?: boolean;
   asset: USDPricedPoolAsset;
   borrowLimit: number;
@@ -37,6 +38,7 @@ interface QuickModalContentProps {
   onClose: () => void;
 }
 export const QuickModalContent: React.FC<QuickModalContentProps> = ({
+  comptroller,
   borrow,
   asset,
   borrowLimit,
@@ -69,9 +71,30 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
     USDPricedPoolAsset | undefined
   >(undefined);
 
+  const [maxAmount, setMaxAmount] = useState<number | undefined>(undefined);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (!comptroller || !account) return;
+    (async () => {
+      const underlyingBalance = convertBNToNumber(
+        asset.underlyingBalance,
+        asset.underlyingDecimals,
+      );
+      if (modalType === 'supply') {
+        setMaxAmount(underlyingBalance);
+      } else if (modalType === 'withdraw') {
+        const maxRedeem = await comptroller.contract.methods
+          .getMaxRedeem(account, asset.cToken.address)
+          .call();
+        console.log('ccc', maxRedeem);
+      }
+    })();
+  }, [asset, modalType, comptroller, account]);
+
   useEffect(() => {
     (async () => {
-      if (borrow) {
+      if (modalType === 'borrow' || modalType === 'repay') {
         const updatedBorrowBalance =
           convertBNToNumber(asset.borrowBalance, asset.underlyingDecimals) +
           (modalType === 'repay' ? -1 : 1) * numValue;
@@ -141,7 +164,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
         setUpdatedAsset(updatedAsset);
       }
     })();
-  }, [asset, numValue, modalType, borrow]);
+  }, [asset, numValue, modalType]);
 
   const updatedBorrowLimit = useBorrowLimit(
     updatedAsset ? [updatedAsset] : [],
@@ -154,16 +177,6 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
 
   const supplyBalance = convertBNToNumber(
     asset.supplyBalance,
-    asset.underlyingDecimals,
-  );
-
-  const borrowBalance = convertBNToNumber(
-    asset.borrowBalance,
-    asset.underlyingDecimals,
-  );
-
-  const underlyingBalance = convertBNToNumber(
-    asset.underlyingBalance,
     asset.underlyingDecimals,
   );
 
@@ -242,7 +255,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
               <Box
                 className='lendMaxButton'
                 onClick={() => {
-                  setValue(underlyingBalance.toString());
+                  // setValue(underlyingBalance.toString());
                 }}
               >
                 {t('max')}
