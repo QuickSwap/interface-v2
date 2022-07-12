@@ -323,15 +323,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
                   </Box>
                   <Box className='lendModalRow'>
                     <p>{t('borrowLimit')}:</p>
-                    <p>
-                      {midUsdFormatter(borrowLimit)}
-                      {showArrow && (
-                        <>
-                          <ArrowForward fontSize='small' />
-                          {midUsdFormatter(updatedBorrowLimit)}
-                        </>
-                      )}
-                    </p>
+                    <p>{midUsdFormatter(borrowLimit)}</p>
                   </Box>
                   <Box className='lendModalRow'>
                     <p>{t('totalDebtBalance')}:</p>
