@@ -1,7 +1,8 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Box, Button } from '@material-ui/core';
 import { ArrowForward } from '@material-ui/icons';
 import { USDPricedPoolAsset } from 'utils/marketxyz/fetchPoolData';
+import JumpRateModel from 'utils/marketxyz/interestRateModel';
 import { midUsdFormatter } from 'utils/bigUtils';
 
 import {
@@ -26,9 +27,9 @@ import {
 } from 'components';
 import { useTranslation } from 'react-i18next';
 import 'components/styles/LendModal.scss';
+import { useBorrowLimit } from 'hooks/marketxyz/useBorrowLimit';
 
 interface QuickModalContentProps {
-  withdraw?: boolean;
   borrow?: boolean;
   asset: USDPricedPoolAsset;
   borrowLimit: number;
@@ -36,7 +37,6 @@ interface QuickModalContentProps {
   onClose: () => void;
 }
 export const QuickModalContent: React.FC<QuickModalContentProps> = ({
-  withdraw,
   borrow,
   asset,
   borrowLimit,
@@ -63,6 +63,59 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
     return t('confirm');
   }, [account, t, value]);
 
+  const numValue = isNaN(Number(value)) ? 0 : Number(value);
+
+  const [updatedAsset, setUpdatedAsset] = useState<
+    USDPricedPoolAsset | undefined
+  >(undefined);
+
+  useEffect(() => {
+    (async () => {
+      const updatedSupplyBalance =
+        convertBNToNumber(asset.supplyBalance, asset.underlyingDecimals) +
+        (modalType === 'withdraw' ? -1 : 1) * numValue;
+      const updatedTotalSupplyNum =
+        convertBNToNumber(asset.totalSupply, asset.underlyingDecimals) +
+        (modalType === 'withdraw' ? -1 : 1) * numValue;
+      const web3 = asset.cToken.sdk.web3;
+      const updateTotalSupply = web3.utils.toBN(
+        (
+          updatedTotalSupplyNum *
+          10 ** Number(asset.underlyingDecimals)
+        ).toFixed(0),
+      );
+      const jmpModel = new JumpRateModel(asset.cToken.sdk, asset);
+      await jmpModel.init();
+      const updatedAsset = {
+        ...asset,
+        supplyBalance: web3.utils.toBN(
+          (
+            updatedSupplyBalance *
+            10 ** Number(asset.underlyingDecimals)
+          ).toFixed(0),
+        ),
+        supplyBalanceUSD: updatedSupplyBalance * asset.usdPrice,
+        totalSupply: updateTotalSupply,
+        totalSupplyUSD: updatedTotalSupplyNum * asset.usdPrice,
+        supplyRatePerBlock: jmpModel.getSupplyRate(
+          updatedTotalSupplyNum
+            ? asset.totalBorrow.div(updateTotalSupply)
+            : web3.utils.toBN(0),
+        ),
+      };
+      setUpdatedAsset(updatedAsset);
+    })();
+  }, [asset, numValue, modalType]);
+
+  const updatedBorrowLimit = useBorrowLimit(
+    updatedAsset ? [updatedAsset] : [],
+    enableAsCollateral
+      ? {
+          ignoreIsEnabledCheckFor: asset.cToken.address,
+        }
+      : undefined,
+  );
+
   const supplyBalance = convertBNToNumber(
     asset.supplyBalance,
     asset.underlyingDecimals,
@@ -78,7 +131,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
     asset.underlyingDecimals,
   );
 
-  const showArrow = Number(value) > 0;
+  const showArrow = Number(value) > 0 && updatedAsset;
 
   return (
     <>
@@ -123,7 +176,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
               </span>
               {(modalType === 'supply' || modalType === 'repay') && (
                 <p className='caption text-secondary'>
-                  {withdraw ? t('supplied') : t('balance')}:{' '}
+                  {!borrow ? t('supplied') : t('balance')}:{' '}
                   {(
                     Number(asset.underlyingBalance.toString()) /
                     10 ** Number(asset.underlyingDecimals.toString())
@@ -171,8 +224,9 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
                       {showArrow && (
                         <>
                           <ArrowForward fontSize='small' />
-                          {`${(
-                            supplyBalance + Number(value)
+                          {`${convertBNToNumber(
+                            updatedAsset.supplyBalance,
+                            asset.underlyingDecimals,
                           ).toLocaleString()} ${asset.underlyingSymbol}`}
                         </>
                       )}
@@ -195,7 +249,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
                       {showArrow && (
                         <>
                           <ArrowForward fontSize='small' />
-                          {midUsdFormatter(borrowLimit - Number(value))}
+                          {midUsdFormatter(updatedBorrowLimit)}
                         </>
                       )}
                     </p>
@@ -251,8 +305,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
                       {showArrow && (
                         <>
                           <ArrowForward fontSize='small' />
-                          {'$' +
-                            (borrowBalance + Number(value)).toLocaleString()}
+                          {'$' + updatedAsset.borrowBalanceUSD.toLocaleString()}
                         </>
                       )}
                     </p>
@@ -260,7 +313,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
                 </>
               )}
             </Box>
-            {!borrow && modalType === 'withdraw' && (
+            {!borrow && (
               <Box className='lendModalContentWrapper'>
                 <Box className='lendModalRow'>
                   <p>{t('enableAsCollateral')}</p>
