@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { StyledSelectableBox } from './CommonStyledElements';
 // import ApexCharts from 'apexcharts';
-import Chart from 'react-apexcharts';
+// import Chart from 'react-apexcharts';
 
 export default function RangeGraph() {
   const canvas: any = useRef();
@@ -49,13 +49,13 @@ export default function RangeGraph() {
       className='flex flex-col justify-evenly items-center'
       borderRadius={12}
     >
-      <Chart
+      {/* <Chart
         options={options}
         series={options.series}
         type='line'
         height={250}
         width={400}
-      />
+      /> */}
     </StyledSelectableBox>
   );
 }
