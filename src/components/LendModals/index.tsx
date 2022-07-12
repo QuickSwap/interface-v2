@@ -71,41 +71,77 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
 
   useEffect(() => {
     (async () => {
-      const updatedSupplyBalance =
-        convertBNToNumber(asset.supplyBalance, asset.underlyingDecimals) +
-        (modalType === 'withdraw' ? -1 : 1) * numValue;
-      const updatedTotalSupplyNum =
-        convertBNToNumber(asset.totalSupply, asset.underlyingDecimals) +
-        (modalType === 'withdraw' ? -1 : 1) * numValue;
-      const web3 = asset.cToken.sdk.web3;
-      const updateTotalSupply = web3.utils.toBN(
-        (
-          updatedTotalSupplyNum *
-          10 ** Number(asset.underlyingDecimals)
-        ).toFixed(0),
-      );
-      const jmpModel = new JumpRateModel(asset.cToken.sdk, asset);
-      await jmpModel.init();
-      const updatedAsset = {
-        ...asset,
-        supplyBalance: web3.utils.toBN(
+      if (borrow) {
+        const updatedBorrowBalance =
+          convertBNToNumber(asset.borrowBalance, asset.underlyingDecimals) +
+          (modalType === 'repay' ? -1 : 1) * numValue;
+        const updatedTotalBorrowNum =
+          convertBNToNumber(asset.totalBorrow, asset.underlyingDecimals) +
+          (modalType === 'repay' ? -1 : 1) * numValue;
+        const web3 = asset.cToken.sdk.web3;
+        const updateTotalBorrow = web3.utils.toBN(
           (
-            updatedSupplyBalance *
+            updatedTotalBorrowNum *
             10 ** Number(asset.underlyingDecimals)
           ).toFixed(0),
-        ),
-        supplyBalanceUSD: updatedSupplyBalance * asset.usdPrice,
-        totalSupply: updateTotalSupply,
-        totalSupplyUSD: updatedTotalSupplyNum * asset.usdPrice,
-        supplyRatePerBlock: jmpModel.getSupplyRate(
-          updatedTotalSupplyNum
-            ? asset.totalBorrow.div(updateTotalSupply)
-            : web3.utils.toBN(0),
-        ),
-      };
-      setUpdatedAsset(updatedAsset);
+        );
+        const jmpModel = new JumpRateModel(asset.cToken.sdk, asset);
+        await jmpModel.init();
+        const updatedAsset = {
+          ...asset,
+          borrowBalance: web3.utils.toBN(
+            (
+              updatedBorrowBalance *
+              10 ** Number(asset.underlyingDecimals)
+            ).toFixed(0),
+          ),
+          borrowBalanceUSD: updatedBorrowBalance * asset.usdPrice,
+          totalBorrow: updateTotalBorrow,
+          totalSupplyUSD: updatedTotalBorrowNum * asset.usdPrice,
+          supplyRatePerBlock: jmpModel.getSupplyRate(
+            convertBNToNumber(asset.totalSupply, asset.underlyingDecimals)
+              ? updateTotalBorrow.div(asset.totalSupply)
+              : web3.utils.toBN(0),
+          ),
+        };
+        setUpdatedAsset(updatedAsset);
+      } else {
+        const updatedSupplyBalance =
+          convertBNToNumber(asset.supplyBalance, asset.underlyingDecimals) +
+          (modalType === 'withdraw' ? -1 : 1) * numValue;
+        const updatedTotalSupplyNum =
+          convertBNToNumber(asset.totalSupply, asset.underlyingDecimals) +
+          (modalType === 'withdraw' ? -1 : 1) * numValue;
+        const web3 = asset.cToken.sdk.web3;
+        const updateTotalSupply = web3.utils.toBN(
+          (
+            updatedTotalSupplyNum *
+            10 ** Number(asset.underlyingDecimals)
+          ).toFixed(0),
+        );
+        const jmpModel = new JumpRateModel(asset.cToken.sdk, asset);
+        await jmpModel.init();
+        const updatedAsset = {
+          ...asset,
+          supplyBalance: web3.utils.toBN(
+            (
+              updatedSupplyBalance *
+              10 ** Number(asset.underlyingDecimals)
+            ).toFixed(0),
+          ),
+          supplyBalanceUSD: updatedSupplyBalance * asset.usdPrice,
+          totalSupply: updateTotalSupply,
+          totalSupplyUSD: updatedTotalSupplyNum * asset.usdPrice,
+          supplyRatePerBlock: jmpModel.getSupplyRate(
+            updatedTotalSupplyNum
+              ? asset.totalBorrow.div(updateTotalSupply)
+              : web3.utils.toBN(0),
+          ),
+        };
+        setUpdatedAsset(updatedAsset);
+      }
     })();
-  }, [asset, numValue, modalType]);
+  }, [asset, numValue, modalType, borrow]);
 
   const updatedBorrowLimit = useBorrowLimit(
     updatedAsset ? [updatedAsset] : [],
@@ -264,12 +300,11 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
                   <Box className='lendModalRow'>
                     <p>{t('borrowedBalance')}:</p>
                     <p>
-                      ${borrowBalance.toLocaleString()}
+                      ${asset.borrowBalanceUSD.toLocaleString()}
                       {showArrow && (
                         <>
                           <ArrowForward fontSize='small' />
-                          {'$' +
-                            (borrowBalance + Number(value)).toLocaleString()}
+                          {'$' + updatedAsset.borrowBalanceUSD.toLocaleString()}
                         </>
                       )}
                     </p>
@@ -280,14 +315,6 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
                       {`${supplyBalance.toLocaleString()} ${
                         asset.underlyingSymbol
                       }`}
-                      {showArrow && (
-                        <>
-                          <ArrowForward fontSize='small' />
-                          {`${(
-                            supplyBalance + Number(value)
-                          ).toLocaleString()} ${asset.underlyingSymbol}`}
-                        </>
-                      )}
                     </p>
                   </Box>
                   <Box className='lendModalRow'>
@@ -296,12 +323,20 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
                   </Box>
                   <Box className='lendModalRow'>
                     <p>{t('borrowLimit')}:</p>
-                    <p>{midUsdFormatter(borrowLimit)}</p>
+                    <p>
+                      {midUsdFormatter(borrowLimit)}
+                      {showArrow && (
+                        <>
+                          <ArrowForward fontSize='small' />
+                          {midUsdFormatter(updatedBorrowLimit)}
+                        </>
+                      )}
+                    </p>
                   </Box>
                   <Box className='lendModalRow'>
                     <p>{t('totalDebtBalance')}:</p>
                     <p>
-                      ${borrowBalance.toLocaleString()}
+                      ${asset.borrowBalanceUSD.toLocaleString()}
                       {showArrow && (
                         <>
                           <ArrowForward fontSize='small' />
