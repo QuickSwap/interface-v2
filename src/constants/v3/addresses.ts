@@ -1,3 +1,6 @@
+import { Token } from '@uniswap/sdk-core';
+import { Matic } from 'v3lib/entities/matic';
+import { WMATIC } from 'v3lib/entities/wmatic';
 import { SupportedChainId } from './chains';
 
 type AddressMap = { [chainId: number]: string };
@@ -61,3 +64,23 @@ export const ENS_REGISTRAR_ADDRESSES: AddressMap = {
 export const SOCKS_CONTROLLER_ADDRESSES: AddressMap = {
   [SupportedChainId.POLYGON]: '0x65770b5283117639760beA3F867b69b3697a91dd',
 };
+
+export const WMATIC_EXTENDED: { [chainId: number]: Token } = {
+  ...WMATIC,
+};
+
+export class ExtendedEther extends Matic {
+  private static _cachedEther: { [chainId: number]: ExtendedEther } = {};
+
+  public get wrapped(): Token {
+    if (this.chainId in WMATIC_EXTENDED) return WMATIC_EXTENDED[this.chainId];
+    throw new Error('Unsupported chain ID');
+  }
+
+  public static onChain(chainId: number): ExtendedEther {
+    return (
+      this._cachedEther[chainId] ??
+      (this._cachedEther[chainId] = new ExtendedEther(chainId))
+    );
+  }
+}
