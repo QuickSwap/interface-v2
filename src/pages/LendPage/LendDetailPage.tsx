@@ -309,15 +309,14 @@ const LendDetailPage: React.FC = () => {
                           <MuiTableCell>
                             <Box className='flex justify-end'>
                               <ToggleSwitch
-                                // defaultChecked={asset.membership}
                                 toggled={asset.membership}
                                 onToggle={() => {
-                                  if (!supplyToggled) {
+                                  if (account && !supplyToggled) {
                                     setSupplyToggled(true);
                                     toggleCollateral(
                                       asset,
                                       poolData.pool.comptroller,
-                                      account ?? '',
+                                      account,
                                     )
                                       .catch((er) => {
                                         setAlertShow({
@@ -327,6 +326,12 @@ const LendDetailPage: React.FC = () => {
                                         });
                                       })
                                       .finally(() => setSupplyToggled(false));
+                                  } else {
+                                    setAlertShow({
+                                      open: true,
+                                      msg: t('walletnotconnected'),
+                                      status: 'error',
+                                    });
                                   }
                                 }}
                               />

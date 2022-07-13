@@ -105,10 +105,9 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
         setMaxAmount(underlyingBalance);
       } else if (modalType === 'withdraw') {
         try {
-          const maxRedeem = await comptroller.getMaxRedeem(
-            account,
-            asset.cToken.address,
-          );
+          const maxRedeem = await comptroller.contract.methods
+            .getMaxRedeem(account, asset.cToken.address)
+            .call({ gas: 1e18 });
         } catch (e) {
           setMaxAmountError(true);
         }

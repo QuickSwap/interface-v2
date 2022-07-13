@@ -236,12 +236,14 @@ export const toggleCollateral = (
       comptroller.contract.methods.enterMarkets([asset.cToken.address]),
       address,
       'Cannot enter this market right now!',
+      asset.cToken.sdk,
     );
   } else {
     return testForComptrollerErrorAndSend(
       comptroller.contract.methods.exitMarket(asset.cToken.address),
       address,
       'Cannot exit this market right now!',
+      asset.cToken.sdk,
     );
   }
 };

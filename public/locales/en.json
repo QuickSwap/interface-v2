@@ -397,5 +397,6 @@
   "borrowAPY": "Borrow APY",
   "fetchingMaxAmount": "Fetching Max Amount",
   "exceedMaxAmount": "Exceeds max amount",
-  "errorFetchingMaxAmount": "There is an error while fetching max amount"
+  "errorFetchingMaxAmount": "There is an error while fetching max amount",
+  "walletnotconnected": "Wallet is not connected."
 }

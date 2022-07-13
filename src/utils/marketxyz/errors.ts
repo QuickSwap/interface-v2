@@ -53,6 +53,7 @@ export async function testForComptrollerErrorAndSend(
   txObject: any,
   caller: string,
   failMessage: string,
+  sdk: MarketSDK,
 ) {
   const response = await txObject.call({ from: caller });
 
@@ -60,5 +61,18 @@ export async function testForComptrollerErrorAndSend(
   if (response[0] !== '0') {
     throw new Error(failMessage + ' Code: ' + ComptrollerError[response]);
   }
-  return txObject.send({ from: caller });
+
+  const gasData = await fetch(
+    'https://gasstation-mainnet.matic.network/v2',
+  ).then((res) => res.json());
+  const gasPrice = sdk.web3.utils.toWei(
+    Math.ceil(gasData.standard.maxPriorityFee).toString(),
+    'gwei',
+  );
+
+  const txRes = await txObject.send({
+    from: caller,
+    maxPriorityFeePerGas: gasPrice,
+  });
+  return txRes;
 }
