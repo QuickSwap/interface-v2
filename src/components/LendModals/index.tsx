@@ -28,6 +28,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import 'components/styles/LendModal.scss';
 import { useBorrowLimit } from 'hooks/marketxyz/useBorrowLimit';
+import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 
 interface QuickModalContentProps {
   comptroller?: Comptroller;
@@ -54,16 +55,36 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
   const [inputFocused, setInputFocused] = useState(false);
   const [modalType, setModalType] = useState(borrow ? 'borrow' : 'supply');
   const [value, setValue] = useState('');
+  const [inputValue, setInputValue] = useDebouncedChangeHandler(
+    value,
+    setValue,
+    200,
+  );
+
   const [enableAsCollateral, setEnableAsCollateral] = useState<boolean>(false);
-  const buttonDisabled = !account || Number(value) <= 0;
+  const [maxAmount, setMaxAmount] = useState<number | undefined>(undefined);
+  const [maxAmountError, setMaxAmountError] = useState(false);
+  const buttonDisabled =
+    !account ||
+    Number(value) <= 0 ||
+    maxAmount === undefined ||
+    Number(value) > maxAmount;
   const buttonText = useMemo(() => {
     if (!account) {
       return t('connectWallet');
     } else if (Number(value) <= 0) {
       return t('enterAmount');
+    } else if (maxAmount === undefined) {
+      if (maxAmountError) {
+        return t('errorFetchingMaxAmount');
+      } else {
+        return t('fetchingMaxAmount');
+      }
+    } else if (Number(value) > maxAmount) {
+      return t('exceedMaxAmount');
     }
     return t('confirm');
-  }, [account, t, value]);
+  }, [account, t, value, maxAmount, maxAmountError]);
 
   const numValue = isNaN(Number(value)) ? 0 : Number(value);
 
@@ -71,29 +92,45 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
     USDPricedPoolAsset | undefined
   >(undefined);
 
-  const [maxAmount, setMaxAmount] = useState<number | undefined>(undefined);
-  const [error, setError] = useState('');
-
   useEffect(() => {
     if (!comptroller || !account) return;
     (async () => {
+      setMaxAmount(undefined);
+      setMaxAmountError(false);
       const underlyingBalance = convertBNToNumber(
         asset.underlyingBalance,
         asset.underlyingDecimals,
       );
-      if (modalType === 'supply') {
+      if (modalType === 'supply' || modalType === 'repay') {
         setMaxAmount(underlyingBalance);
       } else if (modalType === 'withdraw') {
-        const maxRedeem = await comptroller.contract.methods
-          .getMaxRedeem(account, asset.cToken.address)
-          .call();
-        console.log('ccc', maxRedeem);
+        try {
+          const maxRedeem = await comptroller.getMaxRedeem(
+            account,
+            asset.cToken.address,
+          );
+        } catch (e) {
+          setMaxAmountError(true);
+        }
+      } else {
+        try {
+          const maxBorrow = await comptroller.contract.methods
+            .getMaxBorrow(account, asset.cToken.address)
+            .call();
+        } catch (e) {
+          setMaxAmountError(true);
+        }
       }
     })();
   }, [asset, modalType, comptroller, account]);
 
   useEffect(() => {
+    if (!numValue) {
+      setUpdatedAsset(undefined);
+      return;
+    }
     (async () => {
+      setUpdatedAsset(undefined);
       if (modalType === 'borrow' || modalType === 'repay') {
         const updatedBorrowBalance =
           convertBNToNumber(asset.borrowBalance, asset.underlyingDecimals) +
@@ -102,12 +139,17 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
           convertBNToNumber(asset.totalBorrow, asset.underlyingDecimals) +
           (modalType === 'repay' ? -1 : 1) * numValue;
         const web3 = asset.cToken.sdk.web3;
-        const updateTotalBorrow = web3.utils.toBN(
+        const updatedTotalBorrow = web3.utils.toBN(
           (
             updatedTotalBorrowNum *
             10 ** Number(asset.underlyingDecimals)
           ).toFixed(0),
         );
+        const totalSupplyNum = convertBNToNumber(
+          asset.totalSupply,
+          asset.underlyingDecimals,
+        );
+
         const jmpModel = new JumpRateModel(asset.cToken.sdk, asset);
         await jmpModel.init();
         const updatedAsset = {
@@ -119,11 +161,13 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
             ).toFixed(0),
           ),
           borrowBalanceUSD: updatedBorrowBalance * asset.usdPrice,
-          totalBorrow: updateTotalBorrow,
-          totalSupplyUSD: updatedTotalBorrowNum * asset.usdPrice,
-          supplyRatePerBlock: jmpModel.getSupplyRate(
-            convertBNToNumber(asset.totalSupply, asset.underlyingDecimals)
-              ? updateTotalBorrow.div(asset.totalSupply)
+          totalBorrow: updatedTotalBorrow,
+          totalBorrowUSD: updatedTotalBorrowNum * asset.usdPrice,
+          borrowRatePerBlock: jmpModel.getBorrowRate(
+            totalSupplyNum
+              ? web3.utils.toBN(
+                  ((updatedTotalBorrowNum / totalSupplyNum) * 1e18).toFixed(0),
+                )
               : web3.utils.toBN(0),
           ),
         };
@@ -136,11 +180,15 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
           convertBNToNumber(asset.totalSupply, asset.underlyingDecimals) +
           (modalType === 'withdraw' ? -1 : 1) * numValue;
         const web3 = asset.cToken.sdk.web3;
-        const updateTotalSupply = web3.utils.toBN(
+        const updatedTotalSupply = web3.utils.toBN(
           (
             updatedTotalSupplyNum *
             10 ** Number(asset.underlyingDecimals)
           ).toFixed(0),
+        );
+        const totalBorrowNum = convertBNToNumber(
+          asset.totalBorrow,
+          asset.underlyingDecimals,
         );
         const jmpModel = new JumpRateModel(asset.cToken.sdk, asset);
         await jmpModel.init();
@@ -153,11 +201,13 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
             ).toFixed(0),
           ),
           supplyBalanceUSD: updatedSupplyBalance * asset.usdPrice,
-          totalSupply: updateTotalSupply,
+          totalSupply: updatedTotalSupply,
           totalSupplyUSD: updatedTotalSupplyNum * asset.usdPrice,
           supplyRatePerBlock: jmpModel.getSupplyRate(
             updatedTotalSupplyNum
-              ? asset.totalBorrow.div(updateTotalSupply)
+              ? web3.utils.toBN(
+                  ((totalBorrowNum / updatedTotalSupplyNum) * 1e18).toFixed(0),
+                )
               : web3.utils.toBN(0),
           ),
         };
@@ -179,6 +229,25 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
     asset.supplyBalance,
     asset.underlyingDecimals,
   );
+
+  const supplyAPY = convertMantissaToAPY(
+    asset.supplyRatePerBlock,
+    getDaysCurrentYear(),
+  );
+  const borrowAPY = convertMantissaToAPR(asset.borrowRatePerBlock);
+
+  const updatedSupplyAPY = convertMantissaToAPY(
+    updatedAsset?.supplyRatePerBlock ?? 0,
+    getDaysCurrentYear(),
+  );
+  const updatedBorrowAPY = convertMantissaToAPR(
+    updatedAsset?.borrowRatePerBlock ?? 0,
+  );
+
+  // If the difference is greater than a 0.1 percentage point change, alert the user
+  const updatedAPYDiffIsLarge = !borrow
+    ? Math.abs(updatedSupplyAPY - supplyAPY) > 0.1
+    : Math.abs(updatedBorrowAPY - borrowAPY) > 0.1;
 
   const showArrow = Number(value) > 0 && updatedAsset;
 
@@ -241,12 +310,10 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
               <Box>
                 <NumericalInput
                   placeholder={'0.00'}
-                  value={value}
+                  value={inputValue}
                   onFocus={() => setInputFocused(true)}
                   onBlur={() => setInputFocused(false)}
-                  onUserInput={(val) => {
-                    setValue(val);
-                  }}
+                  onUserInput={setInputValue}
                 />
                 <p className='span text-secondary'>
                   ({midUsdFormatter(asset.usdPrice * Number(value))})
@@ -255,7 +322,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
               <Box
                 className='lendMaxButton'
                 onClick={() => {
-                  // setValue(underlyingBalance.toString());
+                  setValue((maxAmount ?? 0).toString());
                 }}
               >
                 {t('max')}
@@ -283,12 +350,16 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
                   </Box>
                   <Box className='lendModalRow'>
                     <p>{t('supplyapy')}:</p>
-                    <p className='text-success'>
-                      {convertMantissaToAPY(
-                        asset.supplyRatePerBlock,
-                        getDaysCurrentYear(),
-                      ).toLocaleString()}
-                      %
+                    <p
+                      className={supplyAPY > 0 ? 'text-success' : 'text-error'}
+                    >
+                      {supplyAPY.toLocaleString()}%
+                      {updatedAsset && updatedAPYDiffIsLarge && (
+                        <>
+                          <ArrowForward fontSize='small' />
+                          {`${updatedSupplyAPY.toLocaleString()}%`}
+                        </>
+                      )}
                     </p>
                   </Box>
                   <Box className='lendModalRow'>
@@ -332,7 +403,17 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
                   </Box>
                   <Box className='lendModalRow'>
                     <p>{t('borrowAPR')}:</p>
-                    <p>{convertMantissaToAPR(asset.borrowRatePerBlock)}%</p>
+                    <p
+                      className={borrowAPY > 0 ? 'text-success' : 'text-error'}
+                    >
+                      {borrowAPY.toLocaleString()}%
+                      {updatedAsset && updatedAPYDiffIsLarge && (
+                        <>
+                          <ArrowForward fontSize='small' />
+                          {`${updatedBorrowAPY.toLocaleString()}%`}
+                        </>
+                      )}
+                    </p>
                   </Box>
                   <Box className='lendModalRow'>
                     <p>{t('borrowLimit')}:</p>

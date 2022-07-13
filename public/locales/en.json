@@ -394,5 +394,8 @@
   "newToMatic": "New to Polygon?",
   "learnWallet": "Learn about Wallets",
   "depositAPY": "Deposit APY",
-  "borrowAPY": "Borrow APY"
+  "borrowAPY": "Borrow APY",
+  "fetchingMaxAmount": "Fetching Max Amount",
+  "exceedMaxAmount": "Exceeds max amount",
+  "errorFetchingMaxAmount": "There is an error while fetching max amount"
 }
