@@ -53,6 +53,9 @@ const LendDetailPage: React.FC = () => {
   const location = useLocation();
   const { chainId, account } = useActiveWeb3React();
   const [supplyToggled, setSupplyToggled] = useState(false);
+  const [assetsCollateral, setAssetsCollateral] = useState<
+    { address: string; collateral: boolean }[]
+  >([]);
 
   const [modalIsBorrow, setModalIsBorrow] = useState<boolean>(false);
   const [alertShow, setAlertShow] = useState({
@@ -80,6 +83,17 @@ const LendDetailPage: React.FC = () => {
       status: 'error',
     });
   };
+
+  useEffect(() => {
+    if (!poolData) {
+      setAssetsCollateral([]);
+    } else {
+      const collaterals = poolData.assets.map((asset) => {
+        return { address: asset.cToken.address, collateral: asset.membership };
+      });
+      setAssetsCollateral(collaterals);
+    }
+  }, [poolData]);
 
   const poolUtilization = !poolData
     ? 0
@@ -227,134 +241,165 @@ const LendDetailPage: React.FC = () => {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {poolData?.assets.map((asset, i) => (
-                        <TableRow key={asset.cToken.address}>
-                          <ItemTableCell
-                            onClick={() => {
-                              setSelectedAsset(asset);
-                              setModalIsBorrow(false);
-                            }}
-                          >
-                            <Box className='flex items-center'>
-                              <Box display={'flex'} mr='16px'>
-                                <CurrencyLogo
-                                  currency={getPoolAssetToken(asset, chainId)}
-                                  size={'36px'}
-                                />
+                      {poolData?.assets.map((asset) => {
+                        const assetCollateralIndex = assetsCollateral.findIndex(
+                          ({ address }) =>
+                            address.toLowerCase() ===
+                            asset.cToken.address.toLowerCase(),
+                        );
+                        return (
+                          <TableRow key={asset.cToken.address}>
+                            <ItemTableCell
+                              onClick={() => {
+                                setSelectedAsset(asset);
+                                setModalIsBorrow(false);
+                              }}
+                            >
+                              <Box className='flex items-center'>
+                                <Box display={'flex'} mr='16px'>
+                                  <CurrencyLogo
+                                    currency={getPoolAssetToken(asset, chainId)}
+                                    size={'36px'}
+                                  />
+                                </Box>
+                                <Box>
+                                  <small className='text-gray29'>
+                                    {asset.underlyingName}
+                                  </small>
+                                  <p className='caption'>
+                                    {t('ltv')}:{' '}
+                                    {sdk &&
+                                      asset.collateralFactor
+                                        .div(sdk.web3.utils.toBN(1e16))
+                                        .toNumber()}
+                                    %
+                                  </p>
+                                </Box>
                               </Box>
-                              <Box>
-                                <small className='text-gray29'>
-                                  {asset.underlyingName}
-                                </small>
-                                <p className='caption'>
-                                  {t('ltv')}:{' '}
-                                  {sdk &&
-                                    asset.collateralFactor
-                                      .div(sdk.web3.utils.toBN(1e16))
-                                      .toNumber()}
-                                  %
-                                </p>
-                              </Box>
-                            </Box>
-                          </ItemTableCell>
-                          <ItemTableCell
-                            className='poolTableHideCell'
-                            onClick={() => {
-                              setSelectedAsset(asset);
-                              setModalIsBorrow(false);
-                            }}
-                          >
-                            <small>
-                              {convertMantissaToAPY(
-                                asset.supplyRatePerBlock,
-                                getDaysCurrentYear(),
-                              ).toFixed(2)}
-                              %
-                            </small>
-                            <Box className='flex items-center justify-end'>
-                              <p className='caption'>
+                            </ItemTableCell>
+                            <ItemTableCell
+                              className='poolTableHideCell'
+                              onClick={() => {
+                                setSelectedAsset(asset);
+                                setModalIsBorrow(false);
+                              }}
+                            >
+                              <small>
                                 {convertMantissaToAPY(
                                   asset.supplyRatePerBlock,
                                   getDaysCurrentYear(),
                                 ).toFixed(2)}
                                 %
-                              </p>
-                              <Box ml='2px' className='flex'>
-                                <CurrencyLogo
-                                  currency={getPoolAssetToken(asset, chainId)}
-                                  size={'16px'}
-                                />
+                              </small>
+                              <Box className='flex items-center justify-end'>
+                                <p className='caption'>
+                                  {convertMantissaToAPY(
+                                    asset.supplyRatePerBlock,
+                                    getDaysCurrentYear(),
+                                  ).toFixed(2)}
+                                  %
+                                </p>
+                                <Box ml='2px' className='flex'>
+                                  <CurrencyLogo
+                                    currency={getPoolAssetToken(asset, chainId)}
+                                    size={'16px'}
+                                  />
+                                </Box>
                               </Box>
-                            </Box>
-                          </ItemTableCell>
-                          <ItemTableCell
-                            onClick={() => {
-                              setSelectedAsset(asset);
-                              setModalIsBorrow(false);
-                            }}
-                          >
-                            <small className='text-gray29'>
-                              {midUsdFormatter(asset.supplyBalanceUSD)}
-                            </small>
-                            <p className='caption text-secondary'>
-                              {sdk
-                                ? convertBNToNumber(
-                                    asset.supplyBalance,
-                                    asset.underlyingDecimals,
-                                  ).toFixed(2)
-                                : '?'}{' '}
-                              {asset.underlyingSymbol}
-                            </p>
-                          </ItemTableCell>
-                          <MuiTableCell>
-                            <Box className='flex justify-end'>
-                              <ToggleSwitch
-                                toggled={asset.membership}
-                                onToggle={() => {
-                                  if (account && !supplyToggled) {
-                                    setSupplyToggled(true);
-                                    toggleCollateral(
-                                      asset,
-                                      poolData.pool.comptroller,
-                                      account,
-                                    )
-                                      .catch((er) => {
-                                        setAlertShow({
-                                          open: true,
-                                          msg: er.message,
-                                          status: 'error',
-                                        });
-                                      })
-                                      .finally(() => setSupplyToggled(false));
-                                  } else {
-                                    setAlertShow({
-                                      open: true,
-                                      msg: t('walletnotconnected'),
-                                      status: 'error',
-                                    });
+                            </ItemTableCell>
+                            <ItemTableCell
+                              onClick={() => {
+                                setSelectedAsset(asset);
+                                setModalIsBorrow(false);
+                              }}
+                            >
+                              <small className='text-gray29'>
+                                {midUsdFormatter(asset.supplyBalanceUSD)}
+                              </small>
+                              <p className='caption text-secondary'>
+                                {sdk
+                                  ? convertBNToNumber(
+                                      asset.supplyBalance,
+                                      asset.underlyingDecimals,
+                                    ).toFixed(2)
+                                  : '?'}{' '}
+                                {asset.underlyingSymbol}
+                              </p>
+                            </ItemTableCell>
+                            <MuiTableCell>
+                              <Box className='flex justify-end'>
+                                <ToggleSwitch
+                                  toggled={
+                                    assetCollateralIndex >= 0
+                                      ? assetsCollateral[assetCollateralIndex]
+                                          .collateral
+                                      : false
                                   }
-                                }}
-                              />
-                              <Snackbar
-                                open={alertShow.open}
-                                autoHideDuration={6000}
-                                anchorOrigin={{
-                                  vertical: 'bottom',
-                                  horizontal: 'left',
-                                }}
-                                onClose={handleAlertShowClose}
-                              >
-                                <Alert
+                                  onToggle={() => {
+                                    if (account && !supplyToggled) {
+                                      setSupplyToggled(true);
+                                      toggleCollateral(
+                                        asset,
+                                        poolData.pool.comptroller,
+                                        account,
+                                      )
+                                        .then(() => {
+                                          if (assetCollateralIndex >= 0) {
+                                            setAssetsCollateral([
+                                              ...assetsCollateral.slice(
+                                                0,
+                                                assetCollateralIndex,
+                                              ),
+                                              {
+                                                address: asset.cToken.address,
+                                                collateral: !assetsCollateral[
+                                                  assetCollateralIndex
+                                                ],
+                                              },
+                                              ...assetsCollateral.slice(
+                                                assetCollateralIndex + 1,
+                                              ),
+                                            ]);
+                                          }
+                                        })
+                                        .catch((er) => {
+                                          setAlertShow({
+                                            open: true,
+                                            msg: er.message,
+                                            status: 'error',
+                                          });
+                                        })
+                                        .finally(() => setSupplyToggled(false));
+                                    } else {
+                                      setAlertShow({
+                                        open: true,
+                                        msg: t('walletnotconnected'),
+                                        status: 'error',
+                                      });
+                                    }
+                                  }}
+                                />
+                                <Snackbar
+                                  open={alertShow.open}
+                                  autoHideDuration={6000}
+                                  anchorOrigin={{
+                                    vertical: 'bottom',
+                                    horizontal: 'left',
+                                  }}
                                   onClose={handleAlertShowClose}
-                                  severity={alertShow.status as any}
                                 >
-                                  {alertShow.msg}
-                                </Alert>
-                              </Snackbar>
-                            </Box>
-                          </MuiTableCell>
-                        </TableRow>
-                      ))}
+                                  <Alert
+                                    onClose={handleAlertShowClose}
+                                    severity={alertShow.status as any}
+                                  >
+                                    {alertShow.msg}
+                                  </Alert>
+                                </Snackbar>
+                              </Box>
+                            </MuiTableCell>
+                          </TableRow>
+                        );
+                      })}
                     </TableBody>
                   </Table>
                 </Box>
