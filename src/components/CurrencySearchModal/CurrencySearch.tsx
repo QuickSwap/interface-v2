@@ -199,7 +199,7 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
         </AutoSizer>
       </Box>
 
-      <Box className='footer' />
+      <Box className='currencySearchFooter' />
     </Box>
   );
 };

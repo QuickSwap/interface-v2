@@ -10,6 +10,7 @@
   background: $bgColor;
   backdrop-filter: blur(9.9px);
   border: 1px solid $grey2;
+  overflow: hidden;
   .currencySearchHeader {
     display: flex;
     justify-content: space-between;
@@ -24,19 +25,19 @@
       font-weight: 600,
     }
   }
-  .footer {
-    background-image: linear-gradient(to bottom, $grey15, $bgColor 64%);
-    width: 100%;
-    height: 64px;
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    z-index: 2;
-    border-radius: 20px;
-  }
   @include media("screen", "<phone") {
     height: 90vh;
   }
+}
+.currencySearchFooter {
+  background-image: linear-gradient(to bottom, $grey15, $bgColor 64%);
+  width: 100%;
+  height: 64px;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  z-index: 2;
+  pointer-events: none;
 }
 .searchInputWrapper {
   width: 100%;

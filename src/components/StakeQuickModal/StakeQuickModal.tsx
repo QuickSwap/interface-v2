@@ -157,7 +157,7 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
             <small>{Math.min(stakePercent, 100).toLocaleString()}%</small>
           </Box>
         </Box>
-        <Box className='flex items-center justify-between'>
+        <Box mt={3} className='flex items-center justify-between'>
           <Box width='48%'>
             <Button
               className='stakeButton'
