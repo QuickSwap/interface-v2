@@ -23,19 +23,19 @@ import PositionHeader from './PositionHeader';
 import PositionCardBodyHeader from './PositionCardBodyHeader';
 import PositionCardBodyStat from './PositionCardBodyStat';
 
-interface StakerMyStakesProps {
+interface FarmingMyFarmsProps {
   data: Deposit[] | null;
   refreshing: boolean;
   now: number;
   fetchHandler: () => any;
 }
 
-export function StakerMyStakes({
+export function FarmingMyFarms({
   data,
   refreshing,
   now,
   fetchHandler,
-}: StakerMyStakesProps) {
+}: FarmingMyFarmsProps) {
   const { account } = useActiveWeb3React();
 
   const {
