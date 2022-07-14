@@ -1,4 +1,5 @@
 import { CTokenError, ComptrollerError, MarketSDK } from 'market-sdk';
+import { fetchGasForCall } from '.';
 
 export async function testForCTokenErrorAndSend(
   txObject: any,
@@ -33,17 +34,17 @@ export async function testForCTokenErrorAndSend(
     throw err;
   }
 
-  const gasData = await fetch(
-    'https://gasstation-mainnet.matic.network/v2',
-  ).then((res) => res.json());
-  const gasPrice = sdk.web3.utils.toWei(
-    Math.ceil(gasData.standard.maxPriorityFee).toString(),
-    'gwei',
+  const { gasPrice, estimatedGas } = await fetchGasForCall(
+    txObject,
+    undefined,
+    caller,
+    sdk,
   );
 
   const txRes = await txObject.send({
     from: caller,
-    maxPriorityFeePerGas: gasPrice,
+    gasPrice,
+    estimatedGas,
   });
 
   return txRes;
@@ -62,17 +63,17 @@ export async function testForComptrollerErrorAndSend(
     throw new Error(failMessage + ' Code: ' + ComptrollerError[response]);
   }
 
-  const gasData = await fetch(
-    'https://gasstation-mainnet.matic.network/v2',
-  ).then((res) => res.json());
-  const gasPrice = sdk.web3.utils.toWei(
-    Math.ceil(gasData.standard.maxPriorityFee).toString(),
-    'gwei',
+  const { gasPrice, estimatedGas } = await fetchGasForCall(
+    txObject,
+    undefined,
+    caller,
+    sdk,
   );
 
   const txRes = await txObject.send({
     from: caller,
-    maxPriorityFeePerGas: gasPrice,
+    gasPrice,
+    estimatedGas,
   });
   return txRes;
 }

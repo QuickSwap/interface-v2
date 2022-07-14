@@ -61,7 +61,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
     200,
   );
 
-  const [enableAsCollateral, setEnableAsCollateral] = useState<boolean>(false);
+  const [enableAsCollateral, setEnableAsCollateral] = useState<boolean>(true);
   const [maxAmount, setMaxAmount] = useState<number | undefined>(undefined);
   const [maxAmountError, setMaxAmountError] = useState(false);
   const buttonDisabled =

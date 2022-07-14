@@ -38,9 +38,9 @@ export const getPoolAssetToken = (
   );
 };
 
-const fetchGasForCall = async (
+export const fetchGasForCall = async (
   call: any,
-  amountBN: BN,
+  amountBN: BN | undefined,
   address: string,
   sdk: MarketSDK,
 ) => {
@@ -51,7 +51,7 @@ const fetchGasForCall = async (
           await call.estimateGas({
             from: address,
             // Cut amountBN in half in case it screws up the gas estimation by causing a fail in the event that it accounts for gasPrice > 0 which means there will not be enough ETH (after paying gas)
-            value: amountBN.div(sdk.web3.utils.toBN(2)),
+            value: amountBN ? amountBN.div(sdk.web3.utils.toBN(2)) : undefined,
           })
         ).toString(),
       ) *
@@ -61,13 +61,19 @@ const fetchGasForCall = async (
   );
 
   // Ex: 100 (in GWEI)
-  const { standard } = await fetch('https://gasprice.poa.network').then((res) =>
-    res.json(),
+  const { average } = await fetch(
+    'https://blockscout.com/eth/mainnet/api/v1/gas-price-oracle',
+  ).then((res) => res.json());
+  const gasPrice = sdk.web3.utils.toBN(
+    sdk.web3.utils.toWei(average.toString(), 'gwei').toString(),
   );
-  const gasPrice = sdk.web3.utils.toWei(standard.toString(), 'gwei');
   const gasWEI = estimatedGas.mul(gasPrice);
 
-  return { gasWEI, gasPrice, estimatedGas };
+  return {
+    gasWEI,
+    gasPrice,
+    estimatedGas,
+  };
 };
 
 const checkAndApproveCToken = async (
