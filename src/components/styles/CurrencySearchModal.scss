@@ -10,6 +10,7 @@
   background: $bgColor;
   backdrop-filter: blur(9.9px);
   border: 1px solid $grey2;
+  overflow: hidden;
   .currencySearchHeader {
     display: flex;
     justify-content: space-between;
