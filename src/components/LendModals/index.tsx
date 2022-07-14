@@ -4,7 +4,7 @@ import { ArrowForward } from '@material-ui/icons';
 import { USDPricedPoolAsset } from 'utils/marketxyz/fetchPoolData';
 import JumpRateModel from 'utils/marketxyz/interestRateModel';
 import { midUsdFormatter } from 'utils/bigUtils';
-import { Comptroller } from 'market-sdk';
+import { MarketLensSecondary } from 'market-sdk';
 import {
   repayBorrow,
   borrow as poolBorrow,
@@ -30,8 +30,9 @@ import 'components/styles/LendModal.scss';
 import { useBorrowLimit } from 'hooks/marketxyz/useBorrowLimit';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 
+const lensAddress = '0x4B1dfA99d53FFA6E4c0123956ec4Ac2a6D9F4c75';
+
 interface QuickModalContentProps {
-  comptroller?: Comptroller;
   borrow?: boolean;
   asset: USDPricedPoolAsset;
   borrowLimit: number;
@@ -39,7 +40,6 @@ interface QuickModalContentProps {
   onClose: () => void;
 }
 export const QuickModalContent: React.FC<QuickModalContentProps> = ({
-  comptroller,
   borrow,
   asset,
   borrowLimit,
@@ -93,10 +93,11 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
   >(undefined);
 
   useEffect(() => {
-    if (!comptroller || !account) return;
+    if (!account) return;
     (async () => {
       setMaxAmount(undefined);
       setMaxAmountError(false);
+      const lens = new MarketLensSecondary(asset.cToken.sdk, lensAddress);
       const underlyingBalance = convertBNToNumber(
         asset.underlyingBalance,
         asset.underlyingDecimals,
@@ -105,23 +106,31 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
         setMaxAmount(underlyingBalance);
       } else if (modalType === 'withdraw') {
         try {
-          const maxRedeem = await comptroller.contract.methods
-            .getMaxRedeem(account, asset.cToken.address)
-            .call({ gas: 1e18 });
+          const maxRedeem = await lens.getMaxRedeem(
+            account,
+            asset.cToken.address,
+          );
+          setMaxAmount(
+            Number(maxRedeem) / 10 ** Number(asset.underlyingDecimals),
+          );
         } catch (e) {
           setMaxAmountError(true);
         }
       } else {
         try {
-          const maxBorrow = await comptroller.contract.methods
-            .getMaxBorrow(account, asset.cToken.address)
-            .call();
+          const maxBorrow = await lens.getMaxBorrow(
+            account,
+            asset.cToken.address,
+          );
+          setMaxAmount(
+            Number(maxBorrow) / 10 ** Number(asset.underlyingDecimals),
+          );
         } catch (e) {
           setMaxAmountError(true);
         }
       }
     })();
-  }, [asset, modalType, comptroller, account]);
+  }, [asset, modalType, account]);
 
   useEffect(() => {
     if (!numValue) {
