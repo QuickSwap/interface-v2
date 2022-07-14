@@ -1742,7 +1742,7 @@ export function getTokenFromKey(
       (t) => (t.symbol ?? '').toUpperCase() == tokenKey.toUpperCase(),
     );
     if (tokensMatchingSymbol.length === 0) {
-      console.log('no token exists in the map');
+      console.log('no token exists in the map', tokenKey);
     }
 
     return tokensMatchingSymbol[0];
