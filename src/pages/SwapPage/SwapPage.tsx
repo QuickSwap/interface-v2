@@ -81,17 +81,14 @@ const SwapPage: React.FC = () => {
           pairId,
           Number(transactions[0].transaction.timestamp),
         );
-        console.log('bbb', txns);
         if (txns) {
-          setTransactions([
-            ...txns.filter(
-              (txn) =>
-                !transactions.filter(
-                  (tx) => tx.transaction.id === txn.transaction.id,
-                ).length,
-            ),
-            ...transactions,
-          ]);
+          const filteredTxns = txns.filter(
+            (txn) =>
+              !transactions.filter(
+                (tx) => tx.transaction.id === txn.transaction.id,
+              ).length,
+          );
+          setTransactions([...filteredTxns, ...transactions]);
         }
       }
     })();
