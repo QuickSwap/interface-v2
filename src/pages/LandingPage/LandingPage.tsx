@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Box, Grid, useMediaQuery } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
@@ -104,11 +104,19 @@ const LandingPage: React.FC = () => {
 
   const history = useHistory();
   const { globalData, updateGlobalData } = useGlobalData();
+  const [ethPriceData, setEthPriceData] = useState<
+    | {
+        newPrice: number;
+        oldPrice: number;
+      }
+    | undefined
+  >(undefined);
 
   useEffect(() => {
     async function fetchGlobalData() {
-      const [newPrice, oneDayPrice] = await getEthPrice();
-      const newGlobalData = await getGlobalData(newPrice, oneDayPrice);
+      const [newPrice, oldPrice] = await getEthPrice();
+      setEthPriceData({ newPrice, oldPrice });
+      const newGlobalData = await getGlobalData(newPrice, oldPrice);
       if (newGlobalData) {
         updateGlobalData({ data: newGlobalData });
       }
@@ -139,7 +147,10 @@ const LandingPage: React.FC = () => {
         ))}
       </Box>
       <Box mt={2} width={1}>
-        <TopMovers />
+        <TopMovers
+          ethPrice={ethPriceData?.newPrice}
+          ethPriceOld={ethPriceData?.oldPrice}
+        />
       </Box>
       <Box className='quickInfo'>
         <h4>{t('quickInfoTitle')}</h4>

@@ -11,7 +11,6 @@ import {
   shortenAddress,
   formatCompact,
   getTokenInfo,
-  getEthPrice,
   getIntervalTokenData,
   formatNumber,
 } from 'utils';
@@ -23,7 +22,9 @@ import { useTranslation } from 'react-i18next';
 
 const SwapTokenDetails: React.FC<{
   token: Token;
-}> = ({ token }) => {
+  ethPrice?: number;
+  ethPriceOld?: number;
+}> = ({ token, ethPrice, ethPriceOld }) => {
   const { t } = useTranslation();
   const currency = unwrappedToken(token);
   const tokenAddress = token.address;
@@ -38,7 +39,8 @@ const SwapTokenDetails: React.FC<{
   const prices = priceData ? priceData.map((price: any) => price.close) : [];
 
   useEffect(() => {
-    async function fetchTokenData() {
+    if (!ethPrice || !ethPriceOld) return;
+    (async () => {
       const tokenDetail = tokenDetails.find(
         (item) => item.address === tokenAddress,
       );
@@ -57,8 +59,7 @@ const SwapTokenDetails: React.FC<{
       );
       setPriceData(tokenPriceData);
 
-      const [newPrice, oneDayPrice] = await getEthPrice();
-      const tokenInfo = await getTokenInfo(newPrice, oneDayPrice, tokenAddress);
+      const tokenInfo = await getTokenInfo(ethPrice, ethPriceOld, tokenAddress);
       if (tokenInfo) {
         const token0 = tokenInfo[0];
         setTokenData(token0);
@@ -69,10 +70,9 @@ const SwapTokenDetails: React.FC<{
         };
         updateTokenDetails(tokenDetailToUpdate);
       }
-    }
-    fetchTokenData();
+    })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tokenAddress]);
+  }, [tokenAddress, ethPrice, ethPriceOld]);
 
   return (
     <Box>

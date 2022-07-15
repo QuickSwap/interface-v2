@@ -6,7 +6,7 @@ import { SwapTokenDetails, ToggleSwitch } from 'components';
 import { useIsProMode } from 'state/application/hooks';
 import { useDerivedSwapInfo } from 'state/swap/hooks';
 import { Field } from 'state/swap/actions';
-import { getPairAddress, getSwapTransactions } from 'utils';
+import { getEthPrice, getPairAddress, getSwapTransactions } from 'utils';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
 import { useActiveWeb3React } from 'hooks';
 import SwapMain from './SwapMain';
@@ -34,17 +34,31 @@ const SwapPage: React.FC = () => {
 
   const { currencies } = useDerivedSwapInfo();
   const { chainId } = useActiveWeb3React();
+  const [ethPriceData, setEthPriceData] = useState<
+    | {
+        newPrice: number;
+        oldPrice: number;
+      }
+    | undefined
+  >(undefined);
 
   const token1 = wrappedCurrency(currencies[Field.INPUT], chainId);
   const token2 = wrappedCurrency(currencies[Field.OUTPUT], chainId);
 
-  // this is for refreshing data of trades table every 30 seconds
+  // this is for refreshing data of trades table every 60 seconds
   useEffect(() => {
     const interval = setInterval(() => {
       const _currentTime = Math.floor(Date.now() / 1000);
       setCurrentTime(_currentTime);
-    }, 30000);
+    }, 60000);
     return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    (async () => {
+      const [newPrice, oldPrice] = await getEthPrice();
+      setEthPriceData({ newPrice, oldPrice });
+    })();
   }, []);
 
   useEffect(() => {
@@ -65,10 +79,11 @@ const SwapPage: React.FC = () => {
       const transactions = await getSwapTransactions(pairId);
       setTransactions(transactions);
     }
-    if (pairId) {
+    if (pairId && isProMode) {
+      setTransactions(undefined);
       getTradesData(pairId);
     }
-  }, [pairId, currentTime]);
+  }, [pairId, isProMode, currentTime]);
 
   const { t } = useTranslation();
 
@@ -94,18 +109,30 @@ const SwapPage: React.FC = () => {
             <Box className='flex flex-wrap justify-between fullWidth'>
               {token1 && (
                 <Box className='swapTokenDetails'>
-                  <SwapTokenDetails token={token1} />
+                  <SwapTokenDetails
+                    token={token1}
+                    ethPrice={ethPriceData?.newPrice}
+                    ethPriceOld={ethPriceData?.oldPrice}
+                  />
                 </Box>
               )}
               {token2 && (
                 <Box className='swapTokenDetails'>
-                  <SwapTokenDetails token={token2} />
+                  <SwapTokenDetails
+                    token={token2}
+                    ethPrice={ethPriceData?.newPrice}
+                    ethPriceOld={ethPriceData?.oldPrice}
+                  />
                 </Box>
               )}
             </Box>
             {token1 && token2 && (
               <Box className='wrapper' marginTop='32px'>
-                <LiquidityPools token1={token1} token2={token2} />
+                <LiquidityPools
+                  token1={token1}
+                  token2={token2}
+                  ethPrice={ethPriceData?.newPrice}
+                />
               </Box>
             )}
           </Grid>
@@ -150,6 +177,8 @@ const SwapPage: React.FC = () => {
                 token1={token1}
                 token2={token2}
                 transactions={transactions}
+                ethPrice={ethPriceData?.newPrice}
+                ethPriceOld={ethPriceData?.oldPrice}
               />
             </Box>
           )}
@@ -183,6 +212,8 @@ const SwapPage: React.FC = () => {
                 token1={token1}
                 token2={token2}
                 transactions={transactions}
+                ethPrice={ethPriceData?.newPrice}
+                ethPriceOld={ethPriceData?.oldPrice}
               />
             </Box>
           )}

@@ -48,12 +48,6 @@ export const removePopup = createAction<{ key: string }>(
   'application/removePopup',
 );
 
-export const updateEthPrice = createAction<{
-  price: any;
-  oneDayPrice: any;
-  ethPriceChange: any;
-}>('application/updateEthPrice');
-
 export const updateGlobalData = createAction<{ data: any }>(
   'application/updateGlobalData',
 );

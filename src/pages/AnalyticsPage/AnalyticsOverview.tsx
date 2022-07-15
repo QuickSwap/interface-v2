@@ -28,45 +28,47 @@ const AnalyticsOverview: React.FC = () => {
   const { globalData, updateGlobalData } = useGlobalData();
   const [topTokens, updateTopTokens] = useState<any[] | null>(null);
   const [topPairs, updateTopPairs] = useState<any[] | null>(null);
+  const [ethPrice, setETHPrice] = useState<number | undefined>(undefined);
+  const [ethPriceOld, setETHPriceOld] = useState<number | undefined>(undefined);
 
   useEffect(() => {
-    const fetchGlobalData = async () => {
-      const [newPrice, oneDayPrice] = await getEthPrice();
-      const globalData = await getGlobalData(newPrice, oneDayPrice);
-      if (globalData) {
-        updateGlobalData({ data: globalData });
+    (async () => {
+      const [newPrice, oldPrice] = await getEthPrice();
+      setETHPrice(newPrice);
+      setETHPriceOld(oldPrice);
+    })();
+  }, []);
+
+  useEffect(() => {
+    if (!ethPrice || !ethPriceOld) return;
+    getGlobalData(ethPrice, ethPriceOld).then((data) => {
+      if (data) {
+        updateGlobalData({ data });
       }
-    };
-    const fetchTopTokens = async () => {
-      updateTopTokens(null);
-      const [newPrice, oneDayPrice] = await getEthPrice();
-      const topTokensData = await getTopTokens(
-        newPrice,
-        oneDayPrice,
-        GlobalConst.utils.ANALYTICS_TOKENS_COUNT,
-      );
-      if (topTokensData) {
-        updateTopTokens(topTokensData);
+    });
+
+    getTopTokens(
+      ethPrice,
+      ethPriceOld,
+      GlobalConst.utils.ANALYTICS_TOKENS_COUNT,
+    ).then((data) => {
+      if (data) {
+        updateTopTokens(data);
       }
-    };
-    const fetchTopPairs = async () => {
-      updateTopPairs(null);
-      const [newPrice] = await getEthPrice();
-      const pairs = await getTopPairs(GlobalConst.utils.ANALYTICS_PAIRS_COUNT);
+    });
+
+    getTopPairs(GlobalConst.utils.ANALYTICS_PAIRS_COUNT).then(async (pairs) => {
       const formattedPairs = pairs
         ? pairs.map((pair: any) => {
             return pair.id;
           })
         : [];
-      const pairData = await getBulkPairData(formattedPairs, newPrice);
+      const pairData = await getBulkPairData(formattedPairs, ethPrice);
       if (pairData) {
         updateTopPairs(pairData);
       }
-    };
-    fetchGlobalData();
-    fetchTopTokens();
-    fetchTopPairs();
-  }, [updateGlobalData, updateTopTokens, updateTopPairs]);
+    });
+  }, [updateGlobalData, ethPrice, ethPriceOld]);
 
   return (
     <Box width='100%' mb={3}>

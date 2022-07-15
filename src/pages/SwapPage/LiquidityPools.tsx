@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Box, Divider, useMediaQuery } from '@material-ui/core';
 import { KeyboardArrowUp, KeyboardArrowDown } from '@material-ui/icons';
 import { useTheme } from '@material-ui/core/styles';
-import { getTokenPairs, getBulkPairData, getEthPrice } from 'utils';
+import { getTokenPairs, getBulkPairData } from 'utils';
 import { Token } from '@uniswap/sdk';
 import LiquidityPoolRow from './LiquidityPoolRow';
 import { useAllTokens } from 'hooks/Tokens';
@@ -11,7 +11,8 @@ import { useTranslation } from 'react-i18next';
 const LiquidityPools: React.FC<{
   token1: Token;
   token2: Token;
-}> = ({ token1, token2 }) => {
+  ethPrice?: number;
+}> = ({ token1, token2, ethPrice }) => {
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const [liquidityPoolClosed, setLiquidityPoolClosed] = useState(false);
@@ -52,8 +53,8 @@ const LiquidityPools: React.FC<{
   );
 
   useEffect(() => {
-    async function fetchTokenPairs() {
-      const [newPrice] = await getEthPrice();
+    if (!ethPrice) return;
+    (async () => {
       const tokenPairs = await getTokenPairs(token1Address, token2Address);
 
       const formattedPairs = tokenPairs
@@ -69,15 +70,14 @@ const LiquidityPools: React.FC<{
             })
         : [];
 
-      const pairData = await getBulkPairData(formattedPairs, newPrice);
+      const pairData = await getBulkPairData(formattedPairs, ethPrice);
 
       if (pairData) {
         updateTokenPairs(pairData);
       }
-    }
-    fetchTokenPairs();
+    })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [token1Address, token2Address, whiteListAddressList]);
+  }, [token1Address, token2Address, whiteListAddressList, ethPrice]);
 
   return (
     <>

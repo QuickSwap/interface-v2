@@ -751,7 +751,6 @@ export const getPairAddress = async (
 ) => {
   const pairData = await client.query({
     query: PAIR_ID(token0Address, token1Address),
-    fetchPolicy: 'network-only',
   });
   const pairs =
     pairData && pairData.data
@@ -781,7 +780,6 @@ export const getSwapTransactions = async (pairId: string) => {
           skip,
           lastTime: oneDayAgo,
         },
-        fetchPolicy: 'no-cache',
       });
       if (result.data.swaps.length < 1000) {
         allFound = true;

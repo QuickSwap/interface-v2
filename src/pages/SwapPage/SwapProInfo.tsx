@@ -13,7 +13,9 @@ const SwapProInfo: React.FC<{
   token1?: Token;
   token2?: Token;
   transactions?: any[];
-}> = ({ token1, token2, transactions }) => {
+  ethPrice?: number;
+  ethPriceOld?: number;
+}> = ({ token1, token2, transactions, ethPrice, ethPriceOld }) => {
   const { t } = useTranslation();
   const [token1Data, setToken1Data] = useState<any>(null);
   const [token2Data, setToken2Data] = useState<any>(null);
@@ -23,12 +25,12 @@ const SwapProInfo: React.FC<{
   const currency2 = token2 ? unwrappedToken(token2) : undefined;
 
   useEffect(() => {
-    async function fetchTokenData() {
-      const [newPrice, oneDayPrice] = await getEthPrice();
+    if (!ethPrice || !ethPriceOld) return;
+    (async () => {
       if (token1Address) {
         const tokenInfo = await getTokenInfo(
-          newPrice,
-          oneDayPrice,
+          ethPrice,
+          ethPriceOld,
           token1Address,
         );
         if (tokenInfo) {
@@ -37,17 +39,16 @@ const SwapProInfo: React.FC<{
       }
       if (token2Address) {
         const tokenInfo = await getTokenInfo(
-          newPrice,
-          oneDayPrice,
+          ethPrice,
+          ethPriceOld,
           token2Address,
         );
         if (tokenInfo) {
           setToken2Data(tokenInfo[0]);
         }
       }
-    }
-    fetchTokenData();
-  }, [token1Address, token2Address]);
+    })();
+  }, [token1Address, token2Address, ethPrice, ethPriceOld]);
 
   const TokenInfo: React.FC<{ currency: Currency; tokenData: any }> = ({
     currency,

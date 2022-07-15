@@ -10,13 +10,8 @@ import dayjs from 'dayjs';
 import { useMemo, useEffect } from 'react';
 import { usePairs } from 'data/Reserves';
 
-import { client, healthClient } from 'apollo/client';
-import {
-  GLOBAL_DATA,
-  PAIRS_BULK,
-  PAIRS_HISTORICAL_BULK,
-  SUBGRAPH_HEALTH,
-} from 'apollo/queries';
+import { client } from 'apollo/client';
+import { GLOBAL_DATA, PAIRS_BULK, PAIRS_HISTORICAL_BULK } from 'apollo/queries';
 import { GlobalConst, GlobalValue } from 'constants/index';
 import {
   STAKING_REWARDS_INTERFACE,
@@ -612,8 +607,10 @@ export const getBulkPairData = async (pairList: any) => {
   // if (pairs !== undefined) {
   //   return;
   // }
-  const currentBlock = await web3.eth.getBlockNumber();
-  const oneDayOldBlock = currentBlock - 44000;
+  const utcCurrentTime = dayjs();
+  const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix();
+
+  const oneDayOldBlock = await getBlockFromTimestamp(utcOneDayBack);
 
   try {
     const current = await client.query({
@@ -627,6 +624,7 @@ export const getBulkPairData = async (pairList: any) => {
           query: PAIRS_HISTORICAL_BULK(block, pairList),
           fetchPolicy: 'network-only',
         });
+
         return cResult;
       }),
     );
@@ -638,16 +636,15 @@ export const getBulkPairData = async (pairList: any) => {
       {},
     );
 
-    const pairData = await Promise.all(
+    const pairData =
       current &&
-        current.data.pairs.map(async (pair: any) => {
-          let data = pair;
-          const oneDayHistory = oneDayData?.[pair.id];
+      current.data.pairs.map((pair: any) => {
+        let data = pair;
+        const oneDayHistory = oneDayData?.[pair.id];
 
-          data = parseData(data, oneDayHistory);
-          return data;
-        }),
-    );
+        data = parseData(data, oneDayHistory);
+        return data;
+      });
 
     const object = convertArrayToObject(pairData, 'id');
     if (Object.keys(object).length > 0) {
@@ -665,13 +662,7 @@ const getOneDayVolume = async () => {
   let data: any = {};
   let oneDayData: any = {};
 
-  const healthInfo = await healthClient.query({
-    query: SUBGRAPH_HEALTH,
-  });
-  const current = Number(
-    healthInfo.data.indexingStatusForCurrentVersion.chains[0].latestBlock
-      .number,
-  );
+  const current = await web3.eth.getBlockNumber();
   const utcCurrentTime = dayjs();
   const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix();
 
@@ -681,6 +672,7 @@ const getOneDayVolume = async () => {
     query: GLOBAL_DATA(current),
     fetchPolicy: 'network-only',
   });
+
   data = result.data.uniswapFactories[0];
 
   // fetch the historical data

@@ -6,7 +6,6 @@ import {
   updateBlockNumber,
   ApplicationModal,
   setOpenModal,
-  updateEthPrice,
   updateGlobalData,
   addBookMarkToken,
   removeBookmarkToken,
@@ -102,16 +101,6 @@ export default createReducer(initialState, (builder) =>
         }
       });
     })
-    .addCase(
-      updateEthPrice,
-      (state, { payload: { price, oneDayPrice, ethPriceChange } }) => {
-        state.ethPrice = {
-          price,
-          oneDayPrice,
-          ethPriceChange,
-        };
-      },
-    )
     .addCase(updateGlobalData, (state, { payload: { data } }) => {
       state.globalData = data;
     })

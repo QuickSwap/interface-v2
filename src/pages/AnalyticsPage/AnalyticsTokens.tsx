@@ -13,6 +13,13 @@ const AnalyticsTokens: React.FC = () => {
 
   const [topTokens, updateTopTokens] = useState<any[] | null>(null);
   const { bookmarkTokens } = useBookmarkTokens();
+  const [ethPriceData, setEthPriceData] = useState<
+    | {
+        newPrice: number;
+        oldPrice: number;
+      }
+    | undefined
+  >(undefined);
 
   const favoriteTokens = useMemo(() => {
     if (topTokens) {
@@ -26,11 +33,11 @@ const AnalyticsTokens: React.FC = () => {
 
   useEffect(() => {
     const fetchTopTokens = async () => {
-      updateTopTokens(null); //set top tokens as null to show loading status when fetching tokens data
-      const [newPrice, oneDayPrice] = await getEthPrice();
+      const [newPrice, oldPrice] = await getEthPrice();
+      setEthPriceData({ newPrice, oldPrice });
       const topTokensData = await getTopTokens(
         newPrice,
-        oneDayPrice,
+        oldPrice,
         GlobalConst.utils.ANALYTICS_TOKENS_COUNT,
       );
       if (topTokensData) {
@@ -38,11 +45,15 @@ const AnalyticsTokens: React.FC = () => {
       }
     };
     fetchTopTokens();
-  }, [updateTopTokens]);
+  }, []);
 
   return (
     <Box width='100%' mb={3}>
-      <TopMovers hideArrow={true} />
+      <TopMovers
+        hideArrow={true}
+        ethPrice={ethPriceData?.newPrice}
+        ethPriceOld={ethPriceData?.oldPrice}
+      />
       <Box my={4} px={2} className='flex flex-wrap items-center'>
         <Box
           className={`tokensFilter ${
