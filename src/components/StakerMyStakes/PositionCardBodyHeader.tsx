@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo } from 'react';
 import { FarmingType } from '../../models/enums';
-import './index.scss';
 import { WrappedCurrency } from '../../models/types';
 import { formatAmountTokens } from '../../utils/numbers';
 import { formatUnits } from 'ethers/lib/utils';
