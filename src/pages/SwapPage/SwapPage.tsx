@@ -75,15 +75,39 @@ const SwapPage: React.FC = () => {
   }, [token1?.address, token2?.address]);
 
   useEffect(() => {
+    (async () => {
+      if (pairId && transactions && transactions.length > 0) {
+        const txns = await getSwapTransactions(
+          pairId,
+          Number(transactions[0].transaction.timestamp),
+        );
+        console.log('bbb', txns);
+        if (txns) {
+          setTransactions([
+            ...txns.filter(
+              (txn) =>
+                !transactions.filter(
+                  (tx) => tx.transaction.id === txn.transaction.id,
+                ).length,
+            ),
+            ...transactions,
+          ]);
+        }
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentTime]);
+
+  useEffect(() => {
     async function getTradesData(pairId: string) {
+      setTransactions(undefined);
       const transactions = await getSwapTransactions(pairId);
       setTransactions(transactions);
     }
     if (pairId && isProMode) {
-      setTransactions(undefined);
       getTradesData(pairId);
     }
-  }, [pairId, isProMode, currentTime]);
+  }, [pairId, isProMode]);
 
   const { t } = useTranslation();
 
