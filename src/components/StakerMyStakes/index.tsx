@@ -17,7 +17,6 @@ import { getProgress } from '../../utils/getProgress';
 import { CheckOut } from './CheckOut';
 import { Link, useLocation } from 'react-router-dom';
 import { useSortedRecentTransactions } from '../../hooks/useSortedRecentTransactions';
-import './index.scss';
 import ModalBody from './ModalBody';
 import PositionHeader from './PositionHeader';
 import PositionCardBodyHeader from './PositionCardBodyHeader';

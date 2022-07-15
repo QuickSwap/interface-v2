@@ -50,13 +50,15 @@ export function useToken(tokenAddress?: string): Token | undefined | null {
   if (address) {
     const chainIdOrDefault = chainId ?? ChainId.MATIC;
     const oldToken = tokens[chainIdOrDefault][address];
-    token = new Token(
-      chainIdOrDefault,
-      oldToken.address,
-      oldToken.decimals,
-      oldToken.symbol,
-      oldToken.name,
-    );
+    if (oldToken) {
+      token = new Token(
+        chainIdOrDefault,
+        oldToken.address,
+        oldToken.decimals,
+        oldToken.symbol,
+        oldToken.name,
+      );
+    }
   }
 
   const tokenName = useSingleCallResult(

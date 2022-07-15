@@ -14,6 +14,7 @@ import { useDefaultDualFarmList } from 'state/dualfarms/hooks';
 import { ChainId } from '@uniswap/sdk';
 import EternalFarmsPage from 'pages/EternalFarmsPage';
 import { useFarmingSubgraph } from 'hooks/useIncentiveSubgraph';
+import { FarmingMyFarms } from 'components/StakerMyStakes';
 
 const FarmPage: React.FC = () => {
   const { chainId } = useActiveWeb3React();
@@ -73,6 +74,22 @@ const FarmPage: React.FC = () => {
     },
   ];
 
+  const {
+    fetchRewards: { rewardsResult, fetchRewardsFn, rewardsLoading },
+    fetchAllEvents: { fetchAllEventsFn, allEvents, allEventsLoading },
+    fetchTransferredPositions: {
+      fetchTransferredPositionsFn,
+      transferredPositions,
+      transferredPositionsLoading,
+    },
+    fetchHasTransferredPositions: {
+      fetchHasTransferredPositionsFn,
+      hasTransferredPositions,
+      hasTransferredPositionsLoading,
+    },
+  } = useFarmingSubgraph() || {};
+  const [now, setNow] = useState(Date.now());
+
   return (
     <Box width='100%' mb={3} id='farmPage'>
       <Box className='pageHeading'>
@@ -102,6 +119,15 @@ const FarmPage: React.FC = () => {
       )}
       {isV3 && (
         <>
+          <FarmingMyFarms
+            data={transferredPositions}
+            refreshing={transferredPositionsLoading}
+            fetchHandler={() => {
+              fetchTransferredPositionsFn(true);
+            }}
+            now={now}
+          />
+
           <Box my={2}>V3 Farms Page should be here</Box>
           <EternalFarmsPage
             data={eternalFarms}

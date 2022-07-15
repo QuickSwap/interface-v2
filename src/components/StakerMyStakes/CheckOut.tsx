@@ -1,3 +1,4 @@
+import React from 'react';
 import { CheckOutLink } from './styled';
 
 export function CheckOut({ link }: { link: string }) {
