@@ -1,9 +1,9 @@
 import styled, { css } from 'styled-components/macro';
 import { darken } from 'polished';
-import { skeletonGradient } from '../../theme/styles/skeleton';
-import { stringToColour } from '../../utils/stringToColour';
+import { stringToColour } from 'utils/stringToColour';
 import gradient from 'random-gradient';
 import { NavLink } from 'react-router-dom';
+import { skeletonGradient } from 'theme/styles/skeleton';
 
 export const Stakes = styled.div`
   display: flex;
