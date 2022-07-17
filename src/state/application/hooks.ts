@@ -18,7 +18,7 @@ import {
   updateTokenDetails,
   updateIsProMode,
 } from './actions';
-import { TokenDetail } from './reducer';
+import { ETHPrice, TokenDetail } from './reducer';
 
 export function useBlockNumber(): number | undefined {
   const { chainId } = useActiveWeb3React();
@@ -109,8 +109,8 @@ export function useActivePopups(): AppState['application']['popupList'] {
 }
 
 export function useEthPrice(): {
-  ethPrice: any;
-  updateEthPrice: ({ price, oneDayPrice, ethPriceChange }: any) => void;
+  ethPrice: ETHPrice;
+  updateEthPrice: ({ price, oneDayPrice, ethPriceChange }: ETHPrice) => void;
 } {
   const ethPrice = useSelector((state: AppState) => state.application.ethPrice);
   const dispatch = useDispatch();

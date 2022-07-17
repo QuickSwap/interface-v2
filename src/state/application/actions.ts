@@ -49,9 +49,9 @@ export const removePopup = createAction<{ key: string }>(
 );
 
 export const updateEthPrice = createAction<{
-  price: any;
-  oneDayPrice: any;
-  ethPriceChange: any;
+  price: number;
+  oneDayPrice: number;
+  ethPriceChange: number;
 }>('application/updateEthPrice');
 
 export const updateGlobalData = createAction<{ data: any }>(
