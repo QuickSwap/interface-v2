@@ -5,9 +5,8 @@ import Skeleton from '@material-ui/lab/Skeleton';
 import { ArrowForwardIos } from '@material-ui/icons';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
-import { useGlobalData } from 'state/application/hooks';
+import { useEthPrice, useGlobalData } from 'state/application/hooks';
 import {
-  getEthPrice,
   getTopPairs,
   getTopTokens,
   getGlobalData,
@@ -28,28 +27,19 @@ const AnalyticsOverview: React.FC = () => {
   const { globalData, updateGlobalData } = useGlobalData();
   const [topTokens, updateTopTokens] = useState<any[] | null>(null);
   const [topPairs, updateTopPairs] = useState<any[] | null>(null);
-  const [ethPrice, setETHPrice] = useState<number | undefined>(undefined);
-  const [ethPriceOld, setETHPriceOld] = useState<number | undefined>(undefined);
+  const { ethPrice } = useEthPrice();
 
   useEffect(() => {
-    (async () => {
-      const [newPrice, oldPrice] = await getEthPrice();
-      setETHPrice(newPrice);
-      setETHPriceOld(oldPrice);
-    })();
-  }, []);
-
-  useEffect(() => {
-    if (!ethPrice || !ethPriceOld) return;
-    getGlobalData(ethPrice, ethPriceOld).then((data) => {
+    if (!ethPrice.price || !ethPrice.oneDayPrice) return;
+    getGlobalData(ethPrice.price, ethPrice.oneDayPrice).then((data) => {
       if (data) {
         updateGlobalData({ data });
       }
     });
 
     getTopTokens(
-      ethPrice,
-      ethPriceOld,
+      ethPrice.price,
+      ethPrice.oneDayPrice,
       GlobalConst.utils.ANALYTICS_TOKENS_COUNT,
     ).then((data) => {
       if (data) {
@@ -63,12 +53,12 @@ const AnalyticsOverview: React.FC = () => {
             return pair.id;
           })
         : [];
-      const pairData = await getBulkPairData(formattedPairs, ethPrice);
+      const pairData = await getBulkPairData(formattedPairs, ethPrice.price);
       if (pairData) {
         updateTopPairs(pairData);
       }
     });
-  }, [updateGlobalData, ethPrice, ethPriceOld]);
+  }, [updateGlobalData, ethPrice.price, ethPrice.oneDayPrice]);
 
   return (
     <Box width='100%' mb={3}>

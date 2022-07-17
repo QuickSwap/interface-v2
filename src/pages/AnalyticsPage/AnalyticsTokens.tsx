@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Box } from '@material-ui/core';
 import { TopMovers, TokensTable } from 'components';
 import { useBookmarkTokens, useEthPrice } from 'state/application/hooks';
-import { getEthPrice, getTopTokens } from 'utils';
+import { getTopTokens } from 'utils';
 import { Skeleton } from '@material-ui/lab';
 import { useTranslation } from 'react-i18next';
 import { GlobalConst } from 'constants/index';

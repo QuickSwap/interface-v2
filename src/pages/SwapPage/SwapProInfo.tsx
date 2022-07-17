@@ -3,7 +3,7 @@ import { Box, Divider } from '@material-ui/core';
 import { SwapHoriz } from '@material-ui/icons';
 import { Currency, Token } from '@uniswap/sdk';
 import { CurrencyLogo } from 'components';
-import { getTokenInfo, getEthPrice, formatNumber } from 'utils';
+import { getTokenInfo, formatNumber } from 'utils';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import Skeleton from '@material-ui/lab/Skeleton';
 import SwapInfoTx from './SwapInfoTx';

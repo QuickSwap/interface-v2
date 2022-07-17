@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Box, Grid, useMediaQuery } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
@@ -18,7 +18,7 @@ import { ReactComponent as TelegramIcon } from 'assets/images/social/Telegram.sv
 import { ReactComponent as TwitterIcon } from 'assets/images/social/Twitter.svg';
 import { ReactComponent as YouTubeIcon } from 'assets/images/social/YouTube.svg';
 import { RewardSlider, TopMovers } from 'components';
-import { getEthPrice, getGlobalData } from 'utils';
+import { getGlobalData } from 'utils';
 import { useEthPrice, useGlobalData } from 'state/application/hooks';
 import 'pages/styles/landing.scss';
 import { HeroSection } from './HeroSection';

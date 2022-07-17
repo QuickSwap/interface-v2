@@ -10,13 +10,12 @@ import {
   getPriceClass,
   formatNumber,
   getTokenInfo,
-  getEthPrice,
   getTokenPairs2,
   getBulkPairData,
 } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import { CurrencyLogo, PairTable } from 'components';
-import { useBookmarkTokens } from 'state/application/hooks';
+import { useBookmarkTokens, useEthPrice } from 'state/application/hooks';
 import { ReactComponent as StarChecked } from 'assets/images/StarChecked.svg';
 import { ReactComponent as StarUnchecked } from 'assets/images/StarUnchecked.svg';
 import { getAddress } from '@ethersproject/address';
@@ -41,29 +40,35 @@ const AnalyticsTokenDetails: React.FC = () => {
     addBookmarkToken,
     removeBookmarkToken,
   } = useBookmarkTokens();
+  const { ethPrice } = useEthPrice();
 
   useEffect(() => {
     async function fetchTokenInfo() {
-      setToken(null);
-      updateTokenPairs(null);
-      const [newPrice, oneDayPrice] = await getEthPrice();
-      const tokenInfo = await getTokenInfo(newPrice, oneDayPrice, tokenAddress);
-      if (tokenInfo) {
-        setToken(tokenInfo[0]);
-      }
-      const tokenPairs = await getTokenPairs2(tokenAddress);
-      const formattedPairs = tokenPairs
-        ? tokenPairs.map((pair: any) => {
-            return pair.id;
-          })
-        : [];
-      const pairData = await getBulkPairData(formattedPairs, newPrice);
-      if (pairData) {
-        updateTokenPairs(pairData);
+      if (ethPrice.price && ethPrice.oneDayPrice) {
+        setToken(null);
+        updateTokenPairs(null);
+        const tokenInfo = await getTokenInfo(
+          ethPrice.price,
+          ethPrice.oneDayPrice,
+          tokenAddress,
+        );
+        if (tokenInfo) {
+          setToken(tokenInfo[0]);
+        }
+        const tokenPairs = await getTokenPairs2(tokenAddress);
+        const formattedPairs = tokenPairs
+          ? tokenPairs.map((pair: any) => {
+              return pair.id;
+            })
+          : [];
+        const pairData = await getBulkPairData(formattedPairs, ethPrice.price);
+        if (pairData) {
+          updateTokenPairs(pairData);
+        }
       }
     }
     fetchTokenInfo();
-  }, [tokenAddress]);
+  }, [tokenAddress, ethPrice.price, ethPrice.oneDayPrice]);
 
   const tokenPercentClass = getPriceClass(
     token ? Number(token.priceChangeUSD) : 0,

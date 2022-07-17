@@ -7,7 +7,6 @@ import {
   shortenAddress,
   getEtherscanLink,
   getPairTransactions,
-  getEthPrice,
   getBulkPairData,
   formatNumber,
 } from 'utils';
@@ -23,6 +22,7 @@ import 'pages/styles/analytics.scss';
 import AnalyticsHeader from 'pages/AnalyticsPage/AnalyticsHeader';
 import AnalyticsPairChart from './AnalyticsPairChart';
 import { useTranslation } from 'react-i18next';
+import { useEthPrice } from 'state/application/hooks';
 
 const AnalyticsPairDetails: React.FC = () => {
   const { t } = useTranslation();
@@ -106,13 +106,15 @@ const AnalyticsPairDetails: React.FC = () => {
             Number(pairData.oneDayVolumeUSD) * GlobalConst.utils.FEEPERCENT,
           )
       : '-';
+  const { ethPrice } = useEthPrice();
 
   useEffect(() => {
     async function checkEthPrice() {
-      const [newPrice] = await getEthPrice();
-      const pairInfo = await getBulkPairData([pairAddress], newPrice);
-      if (pairInfo && pairInfo.length > 0) {
-        setPairData(pairInfo[0]);
+      if (ethPrice.price) {
+        const pairInfo = await getBulkPairData([pairAddress], ethPrice.price);
+        if (pairInfo && pairInfo.length > 0) {
+          setPairData(pairInfo[0]);
+        }
       }
     }
     async function fetchTransctions() {
@@ -123,7 +125,7 @@ const AnalyticsPairDetails: React.FC = () => {
     }
     checkEthPrice();
     fetchTransctions();
-  }, [pairAddress]);
+  }, [pairAddress, ethPrice.price]);
 
   return (
     <>
