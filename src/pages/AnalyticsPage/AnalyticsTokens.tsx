@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Box } from '@material-ui/core';
 import { TopMovers, TokensTable } from 'components';
-import { useBookmarkTokens } from 'state/application/hooks';
+import { useBookmarkTokens, useEthPrice } from 'state/application/hooks';
 import { getEthPrice, getTopTokens } from 'utils';
 import { Skeleton } from '@material-ui/lab';
 import { useTranslation } from 'react-i18next';
@@ -13,13 +13,7 @@ const AnalyticsTokens: React.FC = () => {
 
   const [topTokens, updateTopTokens] = useState<any[] | null>(null);
   const { bookmarkTokens } = useBookmarkTokens();
-  const [ethPriceData, setEthPriceData] = useState<
-    | {
-        newPrice: number;
-        oldPrice: number;
-      }
-    | undefined
-  >(undefined);
+  const { ethPrice } = useEthPrice();
 
   const favoriteTokens = useMemo(() => {
     if (topTokens) {
@@ -33,27 +27,23 @@ const AnalyticsTokens: React.FC = () => {
 
   useEffect(() => {
     const fetchTopTokens = async () => {
-      const [newPrice, oldPrice] = await getEthPrice();
-      setEthPriceData({ newPrice, oldPrice });
-      const topTokensData = await getTopTokens(
-        newPrice,
-        oldPrice,
-        GlobalConst.utils.ANALYTICS_TOKENS_COUNT,
-      );
-      if (topTokensData) {
-        updateTopTokens(topTokensData);
+      if (ethPrice.price && ethPrice.oneDayPrice) {
+        const topTokensData = await getTopTokens(
+          ethPrice.price,
+          ethPrice.oneDayPrice,
+          GlobalConst.utils.ANALYTICS_TOKENS_COUNT,
+        );
+        if (topTokensData) {
+          updateTopTokens(topTokensData);
+        }
       }
     };
     fetchTopTokens();
-  }, []);
+  }, [ethPrice.price, ethPrice.oneDayPrice]);
 
   return (
     <Box width='100%' mb={3}>
-      <TopMovers
-        hideArrow={true}
-        ethPrice={ethPriceData?.newPrice}
-        ethPriceOld={ethPriceData?.oldPrice}
-      />
+      <TopMovers hideArrow={true} />
       <Box my={4} px={2} className='flex flex-wrap items-center'>
         <Box
           className={`tokensFilter ${

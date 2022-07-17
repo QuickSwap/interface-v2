@@ -19,7 +19,7 @@ import { ReactComponent as TwitterIcon } from 'assets/images/social/Twitter.svg'
 import { ReactComponent as YouTubeIcon } from 'assets/images/social/YouTube.svg';
 import { RewardSlider, TopMovers } from 'components';
 import { getEthPrice, getGlobalData } from 'utils';
-import { useGlobalData } from 'state/application/hooks';
+import { useEthPrice, useGlobalData } from 'state/application/hooks';
 import 'pages/styles/landing.scss';
 import { HeroSection } from './HeroSection';
 import { TradingInfo } from './TradingInfo';
@@ -104,25 +104,22 @@ const LandingPage: React.FC = () => {
 
   const history = useHistory();
   const { globalData, updateGlobalData } = useGlobalData();
-  const [ethPriceData, setEthPriceData] = useState<
-    | {
-        newPrice: number;
-        oldPrice: number;
-      }
-    | undefined
-  >(undefined);
+  const { ethPrice } = useEthPrice();
 
   useEffect(() => {
     async function fetchGlobalData() {
-      const [newPrice, oldPrice] = await getEthPrice();
-      setEthPriceData({ newPrice, oldPrice });
-      const newGlobalData = await getGlobalData(newPrice, oldPrice);
-      if (newGlobalData) {
-        updateGlobalData({ data: newGlobalData });
+      if (ethPrice.price && ethPrice.oneDayPrice) {
+        const newGlobalData = await getGlobalData(
+          ethPrice.price,
+          ethPrice.oneDayPrice,
+        );
+        if (newGlobalData) {
+          updateGlobalData({ data: newGlobalData });
+        }
       }
     }
     fetchGlobalData();
-  }, [updateGlobalData]);
+  }, [updateGlobalData, ethPrice.price, ethPrice.oneDayPrice]);
 
   return (
     <div id='landing-page' style={{ width: '100%' }}>
@@ -147,10 +144,7 @@ const LandingPage: React.FC = () => {
         ))}
       </Box>
       <Box mt={2} width={1}>
-        <TopMovers
-          ethPrice={ethPriceData?.newPrice}
-          ethPriceOld={ethPriceData?.oldPrice}
-        />
+        <TopMovers />
       </Box>
       <Box className='quickInfo'>
         <h4>{t('quickInfoTitle')}</h4>

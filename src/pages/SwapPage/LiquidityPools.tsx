@@ -7,12 +7,12 @@ import { Token } from '@uniswap/sdk';
 import LiquidityPoolRow from './LiquidityPoolRow';
 import { useAllTokens } from 'hooks/Tokens';
 import { useTranslation } from 'react-i18next';
+import { useEthPrice } from 'state/application/hooks';
 
 const LiquidityPools: React.FC<{
   token1: Token;
   token2: Token;
-  ethPrice?: number;
-}> = ({ token1, token2, ethPrice }) => {
+}> = ({ token1, token2 }) => {
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const [liquidityPoolClosed, setLiquidityPoolClosed] = useState(false);
@@ -22,6 +22,7 @@ const LiquidityPools: React.FC<{
   const token2Address = token2.address.toLowerCase();
   const allTokenList = useAllTokens();
   const { t } = useTranslation();
+  const { ethPrice } = useEthPrice();
 
   const liquidityPairs = useMemo(
     () =>
@@ -53,7 +54,7 @@ const LiquidityPools: React.FC<{
   );
 
   useEffect(() => {
-    if (!ethPrice) return;
+    if (!ethPrice.price) return;
     (async () => {
       const tokenPairs = await getTokenPairs(token1Address, token2Address);
 
@@ -70,14 +71,14 @@ const LiquidityPools: React.FC<{
             })
         : [];
 
-      const pairData = await getBulkPairData(formattedPairs, ethPrice);
+      const pairData = await getBulkPairData(formattedPairs, ethPrice.price);
 
       if (pairData) {
         updateTokenPairs(pairData);
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [token1Address, token2Address, whiteListAddressList, ethPrice]);
+  }, [token1Address, token2Address, whiteListAddressList, ethPrice.price]);
 
   return (
     <>

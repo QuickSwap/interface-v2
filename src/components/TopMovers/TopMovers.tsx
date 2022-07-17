@@ -8,19 +8,15 @@ import { CurrencyLogo } from 'components';
 import { getTopTokens, getPriceClass, formatNumber } from 'utils';
 import 'components/styles/TopMovers.scss';
 import { useTranslation } from 'react-i18next';
+import { useEthPrice } from 'state/application/hooks';
 
 interface TopMoversProps {
   hideArrow?: boolean;
-  ethPrice?: number;
-  ethPriceOld?: number;
 }
-const TopMovers: React.FC<TopMoversProps> = ({
-  hideArrow = false,
-  ethPrice,
-  ethPriceOld,
-}) => {
+const TopMovers: React.FC<TopMoversProps> = ({ hideArrow = false }) => {
   const { t } = useTranslation();
   const [topTokens, updateTopTokens] = useState<any[] | null>(null);
+  const { ethPrice } = useEthPrice();
 
   const topMoverTokens = useMemo(
     () => (topTokens && topTokens.length >= 5 ? topTokens.slice(0, 5) : null),
@@ -28,14 +24,19 @@ const TopMovers: React.FC<TopMoversProps> = ({
   );
 
   useEffect(() => {
-    if (!ethPrice || !ethPriceOld) return;
     (async () => {
-      const topTokensData = await getTopTokens(ethPrice, ethPriceOld, 5);
-      if (topTokensData) {
-        updateTopTokens(topTokensData);
+      if (ethPrice.price && ethPrice.oneDayPrice) {
+        const topTokensData = await getTopTokens(
+          ethPrice.price,
+          ethPrice.oneDayPrice,
+          5,
+        );
+        if (topTokensData) {
+          updateTopTokens(topTokensData);
+        }
       }
     })();
-  }, [updateTopTokens, ethPrice, ethPriceOld]);
+  }, [updateTopTokens, ethPrice.price, ethPrice.oneDayPrice]);
 
   return (
     <Box className='bg-palette topMoversWrapper'>

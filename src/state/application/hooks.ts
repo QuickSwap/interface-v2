@@ -8,6 +8,7 @@ import {
   PopupContent,
   removePopup,
   setOpenModal,
+  updateEthPrice,
   updateGlobalData,
   addBookMarkToken,
   removeBookmarkToken,
@@ -17,7 +18,7 @@ import {
   updateTokenDetails,
   updateIsProMode,
 } from './actions';
-import { TokenDetail } from './reducer';
+import { ETHPrice, TokenDetail } from './reducer';
 
 export function useBlockNumber(): number | undefined {
   const { chainId } = useActiveWeb3React();
@@ -105,6 +106,21 @@ export function useRemovePopup(): (key: string) => void {
 export function useActivePopups(): AppState['application']['popupList'] {
   const list = useSelector((state: AppState) => state.application.popupList);
   return useMemo(() => list.filter((item) => item.show), [list]);
+}
+
+export function useEthPrice(): {
+  ethPrice: ETHPrice;
+  updateEthPrice: ({ price, oneDayPrice, ethPriceChange }: ETHPrice) => void;
+} {
+  const ethPrice = useSelector((state: AppState) => state.application.ethPrice);
+  const dispatch = useDispatch();
+  const _updateETHPrice = useCallback(
+    ({ price, oneDayPrice, ethPriceChange }) => {
+      dispatch(updateEthPrice({ price, oneDayPrice, ethPriceChange }));
+    },
+    [dispatch],
+  );
+  return { ethPrice, updateEthPrice: _updateETHPrice };
 }
 
 export function useGlobalData(): {

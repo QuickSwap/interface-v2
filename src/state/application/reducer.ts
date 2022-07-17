@@ -6,6 +6,7 @@ import {
   updateBlockNumber,
   ApplicationModal,
   setOpenModal,
+  updateEthPrice,
   updateGlobalData,
   addBookMarkToken,
   removeBookmarkToken,
@@ -30,11 +31,17 @@ export interface TokenDetail {
   priceData: any;
 }
 
+export interface ETHPrice {
+  price?: number;
+  oneDayPrice?: number;
+  ethPriceChange?: number;
+}
+
 export interface ApplicationState {
   readonly blockNumber: { readonly [chainId: number]: number };
   readonly popupList: PopupList;
   readonly openModal: ApplicationModal | null;
-  readonly ethPrice: any;
+  readonly ethPrice: ETHPrice;
   readonly globalData: any;
   readonly bookmarkedTokens: string[];
   readonly bookmarkedPairs: string[];
@@ -49,11 +56,7 @@ const initialState: ApplicationState = {
   popupList: [],
   openModal: null,
   globalData: null,
-  ethPrice: {
-    price: null,
-    oneDayPrice: null,
-    ethPriceChange: null,
-  },
+  ethPrice: {},
   bookmarkedTokens: [],
   bookmarkedPairs: [],
   analyticToken: null,
@@ -101,6 +104,16 @@ export default createReducer(initialState, (builder) =>
         }
       });
     })
+    .addCase(
+      updateEthPrice,
+      (state, { payload: { price, oneDayPrice, ethPriceChange } }) => {
+        state.ethPrice = {
+          price,
+          oneDayPrice,
+          ethPriceChange,
+        };
+      },
+    )
     .addCase(updateGlobalData, (state, { payload: { data } }) => {
       state.globalData = data;
     })

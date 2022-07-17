@@ -249,8 +249,10 @@ export const getEthPrice: () => Promise<number[]> = async () => {
       query: ETH_PRICE(oneDayBlock),
       fetchPolicy: 'network-only',
     });
-    const currentPrice = result?.data?.bundles[0]?.ethPrice;
-    const oneDayBackPrice = resultOneDay?.data?.bundles[0]?.ethPrice;
+    const currentPrice = Number(result?.data?.bundles[0]?.ethPrice ?? 0);
+    const oneDayBackPrice = Number(
+      resultOneDay?.data?.bundles[0]?.ethPrice ?? 0,
+    );
 
     priceChangeETH = getPercentChange(currentPrice, oneDayBackPrice);
     ethPrice = currentPrice;

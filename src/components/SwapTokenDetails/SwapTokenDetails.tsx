@@ -4,7 +4,11 @@ import Skeleton from '@material-ui/lab/Skeleton';
 import { ArrowDropUp, ArrowDropDown } from '@material-ui/icons';
 import { useTheme } from '@material-ui/core/styles';
 import { CurrencyLogo } from 'components';
-import { useBlockNumber, useTokenDetails } from 'state/application/hooks';
+import {
+  useBlockNumber,
+  useEthPrice,
+  useTokenDetails,
+} from 'state/application/hooks';
 import useCopyClipboard from 'hooks/useCopyClipboard';
 import { ReactComponent as CopyIcon } from 'assets/images/CopyIcon.svg';
 import {
@@ -22,9 +26,7 @@ import { useTranslation } from 'react-i18next';
 
 const SwapTokenDetails: React.FC<{
   token: Token;
-  ethPrice?: number;
-  ethPriceOld?: number;
-}> = ({ token, ethPrice, ethPriceOld }) => {
+}> = ({ token }) => {
   const { t } = useTranslation();
   const currency = unwrappedToken(token);
   const tokenAddress = token.address;
@@ -37,9 +39,9 @@ const SwapTokenDetails: React.FC<{
   const priceUpPercent = Number(tokenData?.priceChangeUSD).toFixed(2);
   const [isCopied, setCopied] = useCopyClipboard();
   const prices = priceData ? priceData.map((price: any) => price.close) : [];
+  const { ethPrice } = useEthPrice();
 
   useEffect(() => {
-    if (!ethPrice || !ethPriceOld) return;
     (async () => {
       const tokenDetail = tokenDetails.find(
         (item) => item.address === tokenAddress,
@@ -59,20 +61,26 @@ const SwapTokenDetails: React.FC<{
       );
       setPriceData(tokenPriceData);
 
-      const tokenInfo = await getTokenInfo(ethPrice, ethPriceOld, tokenAddress);
-      if (tokenInfo) {
-        const token0 = tokenInfo[0];
-        setTokenData(token0);
-        const tokenDetailToUpdate = {
-          address: tokenAddress,
-          tokenData: token0,
-          priceData: tokenPriceData,
-        };
-        updateTokenDetails(tokenDetailToUpdate);
+      if (ethPrice.price && ethPrice.oneDayPrice) {
+        const tokenInfo = await getTokenInfo(
+          ethPrice.price,
+          ethPrice.oneDayPrice,
+          tokenAddress,
+        );
+        if (tokenInfo) {
+          const token0 = tokenInfo[0];
+          setTokenData(token0);
+          const tokenDetailToUpdate = {
+            address: tokenAddress,
+            tokenData: token0,
+            priceData: tokenPriceData,
+          };
+          updateTokenDetails(tokenDetailToUpdate);
+        }
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tokenAddress, ethPrice, ethPriceOld]);
+  }, [tokenAddress, ethPrice.price, ethPrice.oneDayPrice]);
 
   return (
     <Box>
