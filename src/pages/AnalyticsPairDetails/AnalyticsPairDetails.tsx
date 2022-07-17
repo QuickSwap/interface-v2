@@ -127,6 +127,11 @@ const AnalyticsPairDetails: React.FC = () => {
     fetchTransctions();
   }, [pairAddress, ethPrice.price]);
 
+  useEffect(() => {
+    setPairData(null);
+    setPairTransactions(null);
+  }, [pairAddress]);
+
   return (
     <>
       <AnalyticsHeader type='pair' data={pairData} />

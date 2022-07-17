@@ -45,8 +45,6 @@ const AnalyticsTokenDetails: React.FC = () => {
   useEffect(() => {
     async function fetchTokenInfo() {
       if (ethPrice.price && ethPrice.oneDayPrice) {
-        setToken(null);
-        updateTokenPairs(null);
         const tokenInfo = await getTokenInfo(
           ethPrice.price,
           ethPrice.oneDayPrice,
@@ -69,6 +67,11 @@ const AnalyticsTokenDetails: React.FC = () => {
     }
     fetchTokenInfo();
   }, [tokenAddress, ethPrice.price, ethPrice.oneDayPrice]);
+
+  useEffect(() => {
+    setToken(null);
+    updateTokenPairs(null);
+  }, [tokenAddress]);
 
   const tokenPercentClass = getPriceClass(
     token ? Number(token.priceChangeUSD) : 0,
