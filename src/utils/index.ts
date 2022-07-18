@@ -1731,10 +1731,7 @@ export function formatNumber(
   }
 }
 
-export function getTokenFromKey(
-  tokenKey: string,
-  tokenMap: TokenAddressMap,
-): Token {
+export function getTokenFromKey(tokenKey: string, tokenMap: TokenAddressMap) {
   //TODO: eventually we need to remove returnTokenFromKey completely
   //TODO: we need to support this until the token list also lists our (unwhitelisted tokens)
   const tokenData = returnTokenFromKey(tokenKey);
@@ -1760,13 +1757,7 @@ export function getTokenFromKey(
     return tokenData;
   }
 
-  return new Token(
-    wrappedTokenInfo.chainId,
-    wrappedTokenInfo.address,
-    wrappedTokenInfo.decimals,
-    wrappedTokenInfo.symbol,
-    wrappedTokenInfo.name,
-  );
+  return wrappedTokenInfo;
 }
 
 export function returnTokenFromKey(key: string): Token | undefined {
