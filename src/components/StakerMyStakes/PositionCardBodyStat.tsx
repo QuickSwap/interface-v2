@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import CurrencyLogo from '../CurrencyLogo';
 import { Token } from '@uniswap/sdk-core';
 import { WrappedCurrency } from '../../models/types';
-import { formatReward } from '../../utils/formatReward';
+import { formatReward } from 'utils/formatReward';
 
 import './position-card-body-stat.scss';
 

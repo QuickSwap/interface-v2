@@ -21,6 +21,7 @@ import ModalBody from './ModalBody';
 import PositionHeader from './PositionHeader';
 import PositionCardBodyHeader from './PositionCardBodyHeader';
 import PositionCardBodyStat from './PositionCardBodyStat';
+import './index.scss';
 
 interface FarmingMyFarmsProps {
   data: Deposit[] | null;
@@ -255,20 +256,20 @@ export function FarmingMyFarms({
         />
       </Modal>
       {refreshing || !shallowPositions ? (
-        <div className={'my-stakes__loader flex-s-between f-jc'}>
+        <div className={'my-farms__loader flex-s-between f-jc'}>
           <Loader stroke={'white'} size={'1.5rem'} />
         </div>
       ) : shallowPositions && shallowPositions.length === 0 ? (
-        <div className={'my-stakes__loader flex-s-between f c f-jc'}>
+        <div className={'my-farms__loader flex-s-between f c f-jc'}>
           <Frown size={35} stroke={'white'} />
           <div className={'mt-1'}>No farms</div>
         </div>
       ) : shallowPositions && shallowPositions.length !== 0 ? (
         <>
-          <div className={'my-stakes__ad p-05 br-12 f f-ac f-jc mb-1'}>
+          <div className={'my-farms__ad p-05 br-12 f f-ac f-jc mb-1'}>
             <div className={'mr-1'}>✨ Earn even more Rewards</div>
             <Link
-              className={'my-stakes__ad-link p-05 br-8 hover-cp'}
+              className={'my-farms__ad-link p-05 br-8 hover-cp'}
               to={'/staking'}
             >
               Stake Rewards
@@ -282,7 +283,7 @@ export function FarmingMyFarms({
                 ).toLocaleString();
                 return (
                   <div
-                    className={'my-stakes__position-card p-1 br-12 mb-1'}
+                    className={'my-farms__position-card p-1 br-12 mb-1'}
                     key={i}
                     data-navigatedto={hash == `#${el.id}`}
                   >
@@ -296,7 +297,7 @@ export function FarmingMyFarms({
                     <div className={'f cg-1 rg-1 mxs_fd-c'}>
                       <div
                         className={
-                          'my-stakes__position-card__body w-100 p-1 br-8'
+                          'my-farms__position-card__body w-100 p-1 br-8'
                         }
                       >
                         <PositionCardBodyHeader
@@ -345,7 +346,7 @@ export function FarmingMyFarms({
                                       )}
                                       <div
                                         className={
-                                          'my-stakes__position-card__body__event-progress w-100 br-8 p-025 mt-05'
+                                          'my-farms__position-card__body__event-progress w-100 br-8 p-025 mt-05'
                                         }
                                       >
                                         {!el.started &&
@@ -465,7 +466,7 @@ export function FarmingMyFarms({
                         ) : (
                           <div
                             className={
-                              'my-stakes__position-card__empty f c f-ac f-jc'
+                              'my-farms__position-card__empty f c f-ac f-jc'
                             }
                           >
                             {el.limitAvailable ? (
@@ -478,7 +479,7 @@ export function FarmingMyFarms({
                       </div>
                       <div
                         className={
-                          'my-stakes__position-card__body w-100 p-1 br-8'
+                          'my-farms__position-card__body w-100 p-1 br-8'
                         }
                       >
                         <PositionCardBodyHeader
@@ -571,7 +572,7 @@ export function FarmingMyFarms({
                         ) : (
                           <div
                             className={
-                              'my-stakes__position-card__empty f c f-ac f-jc'
+                              'my-farms__position-card__empty f c f-ac f-jc'
                             }
                           >
                             {el.eternalAvailable ? (
