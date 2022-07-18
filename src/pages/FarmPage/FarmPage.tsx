@@ -127,8 +127,6 @@ const FarmPage: React.FC = () => {
             }}
             now={now}
           />
-
-          <Box my={2}>V3 Farms Page should be here</Box>
           <EternalFarmsPage
             data={eternalFarms}
             refreshing={eternalFarmsLoading}

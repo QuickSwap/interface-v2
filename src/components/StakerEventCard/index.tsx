@@ -11,7 +11,7 @@ import { useMemo } from 'react';
 import { Token } from '@uniswap/sdk-core';
 import { WrappedCurrency } from '../../models/types';
 import { formatAmountTokens } from 'utils/numbers';
-// import './index.scss';
+import './index.scss';
 import { Link } from 'react-router-dom';
 import { ChainId } from '@uniswap/sdk';
 
