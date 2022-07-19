@@ -5,12 +5,15 @@ import { useTheme } from '@material-ui/core/styles';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import { StakingInfo } from 'types';
-import { useStakingInfo, getBulkPairData } from 'state/stake/hooks';
+import {
+  useStakingInfo,
+  getBulkPairData,
+  useDualStakingInfo,
+} from 'state/stake/hooks';
 import RewardSliderItem from './RewardSliderItem';
 import { useActiveWeb3React } from 'hooks';
 import { getOneYearFee } from 'utils';
 import 'components/styles/RewardSlider.scss';
-import { useDefaultFarmList } from 'state/farms/hooks';
 import { ChainId } from '@uniswap/sdk';
 
 const RewardSlider: React.FC = () => {
@@ -19,26 +22,25 @@ const RewardSlider: React.FC = () => {
   const tabletWindowSize = useMediaQuery(theme.breakpoints.down('md'));
   const mobileWindowSize = useMediaQuery(theme.breakpoints.down('sm'));
   const defaultChainId = chainId ?? ChainId.MATIC;
-  const rewardItems = useStakingInfo(defaultChainId, null, 0, 5);
+  const lprewardItems = useStakingInfo(defaultChainId, null, 0, 2);
+  const dualrewardItems = useDualStakingInfo(defaultChainId, null, 0, 1);
   const [bulkPairs, setBulkPairs] = useState<any>(null);
-  const farms = useDefaultFarmList()[defaultChainId];
 
   const stakingPairLists = useMemo(() => {
-    return Object.values(farms)
-      .filter((item) => !item.ended)
-      .slice(0, 5)
-      .map((item) => item.pair);
-  }, [farms]);
+    return lprewardItems
+      .map((item) => item.pair)
+      .concat(dualrewardItems.map((item) => item.pair));
+  }, [dualrewardItems, lprewardItems]);
 
   useEffect(() => {
     getBulkPairData(stakingPairLists).then((data) => setBulkPairs(data));
   }, [stakingPairLists]);
 
   const stakingAPYs = useMemo(() => {
-    if (bulkPairs && rewardItems.length > 0) {
-      return rewardItems.map((info: StakingInfo) => {
-        const oneDayVolume = bulkPairs[info.pair]?.oneDayVolumeUSD;
-        const reserveUSD = bulkPairs[info.pair]?.reserveUSD;
+    if (bulkPairs && stakingPairLists.length > 0) {
+      return stakingPairLists.map((pair) => {
+        const oneDayVolume = bulkPairs[pair]?.oneDayVolumeUSD;
+        const reserveUSD = bulkPairs[pair]?.reserveUSD;
         if (oneDayVolume && reserveUSD) {
           return getOneYearFee(oneDayVolume, reserveUSD);
         } else {
@@ -48,7 +50,7 @@ const RewardSlider: React.FC = () => {
     } else {
       return [];
     }
-  }, [bulkPairs, rewardItems]);
+  }, [bulkPairs, stakingPairLists]);
 
   const rewardSliderSettings = {
     dots: false,
@@ -62,7 +64,14 @@ const RewardSlider: React.FC = () => {
 
   return (
     <Slider {...rewardSliderSettings} className='rewardsSlider'>
-      {rewardItems.map((item, index) => (
+      {lprewardItems.map((item, index) => (
+        <RewardSliderItem
+          key={index}
+          stakingAPY={stakingAPYs[index]}
+          info={item}
+        />
+      ))}
+      {dualrewardItems.map((item, index) => (
         <RewardSliderItem
           key={index}
           stakingAPY={stakingAPYs[index]}
