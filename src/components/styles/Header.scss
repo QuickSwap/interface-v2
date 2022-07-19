@@ -62,6 +62,9 @@
     height: 36px;
     padding: 0 24px;
     overflow: hidden;
+    small {
+      white-space: nowrap;
+    }
     .menuItemSparkle {
       position: absolute;
       transition: all 0.5s;
