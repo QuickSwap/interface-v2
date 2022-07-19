@@ -143,3 +143,13 @@ body {
 .text-uppercase {
   text-transform: uppercase;
 }
+
+.devPassModal {
+  padding: 12px;
+  & input {
+    width: 100%;
+    margin: 8px 0;
+    outline: none;
+    padding: 6px 4px;
+  }
+}
