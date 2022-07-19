@@ -30,7 +30,10 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
   }, [history, updateIsProMode]);
 
   useEffect(() => {
-    if (window.location.host === 'dev.quickswap.exchange') {
+    if (
+      window.location.host !== 'quickswap.exchange' &&
+      window.location.host !== 'localhost:3000'
+    ) {
       setOpenPassModal(true);
     }
   }, []);
