@@ -28,6 +28,7 @@ export function usePools(
 ): [PoolState, Pool | null][] {
   const { chainId } = useActiveWeb3React();
 
+  console.log('pools test ', { poolKeys });
   const transformed: ([Token, Token] | null)[] = useMemo(() => {
     return poolKeys.map(([currencyA, currencyB]) => {
       if (!chainId || !currencyA || !currencyB) return null;
@@ -54,6 +55,7 @@ export function usePools(
       });
     });
   }, [chainId, transformed]);
+  console.log('pool test address', { poolAddresses });
 
   const globalState0s = useMultipleContractSingleData(
     poolAddresses,
@@ -80,6 +82,8 @@ export function usePools(
     POOL_STATE_INTERFACE,
     'liquidity',
   );
+
+  console.log('pool test liquidity', { liquidities });
   const prevLiquidities = usePreviousNonErroredArray(liquidities);
 
   const _liquidities = useMemo(() => {

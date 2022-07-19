@@ -12,7 +12,7 @@ interface PriceRangeInputProps {
   onMinusClick?: () => void;
   onPlusClick?: () => void;
   setAmount: (val: string) => void;
-  amount: string;
+  amount: any;
 }
 
 const PriceRangeInput: React.FC<PriceRangeInputProps> = ({

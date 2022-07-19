@@ -8,7 +8,7 @@ import {
   Token,
 } from '@uniswap/sdk-core';
 import { CurrencyAmount as CurrencyAmountV2 } from '@uniswap/sdk';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { AppState } from '../../index';
 import { tryParseAmount } from '../../swap/v3/hooks';
 import { useCurrencyBalances } from '../../wallet/hooks';
@@ -38,6 +38,7 @@ import {
 } from 'v3lib/utils';
 import { Pool } from 'v3lib/entities/pool';
 import { Position } from 'v3lib/entities/position';
+import { selectCurrency } from '../actions';
 
 export interface IDerivedMintInfo {
   pool?: Pool | null;
@@ -79,6 +80,7 @@ export function useV3MintActionHandlers(
   onLeftRangeInput: (typedValue: string) => void;
   onRightRangeInput: (typedValue: string) => void;
   onStartPriceInput: (typedValue: string) => void;
+  onCurrencySelection: (field: Field, currency: Currency) => void;
 } {
   const dispatch = useAppDispatch();
 
@@ -129,12 +131,30 @@ export function useV3MintActionHandlers(
     [dispatch],
   );
 
+  const onCurrencySelection = useCallback(
+    (field: Field, currency: Currency) => {
+      dispatch(
+        selectCurrency({
+          field,
+          currencyId:
+            currency instanceof Token
+              ? currency.address
+              : currency.isNative
+              ? 'ETH'
+              : '',
+        }),
+      );
+    },
+    [dispatch],
+  );
+
   return {
     onFieldAInput,
     onFieldBInput,
     onLeftRangeInput,
     onRightRangeInput,
     onStartPriceInput,
+    onCurrencySelection,
   };
 }
 
@@ -180,8 +200,15 @@ export function useV3DerivedMintInfo(
     typedValue,
     leftRangeTypedValue,
     rightRangeTypedValue,
-    startPriceTypedValue,
+    // startPriceTypedValue,
   } = useV3MintState();
+  const [startPriceTypedValue] = ['0.5'];
+
+  console.log('type state test', {
+    leftRangeTypedValue,
+    rightRangeTypedValue,
+    startPriceTypedValue,
+  });
 
   const dependentField =
     independentField === Field.CURRENCY_A ? Field.CURRENCY_B : Field.CURRENCY_A;
@@ -229,6 +256,8 @@ export function useV3DerivedMintInfo(
     currencies[Field.CURRENCY_A],
     currencies[Field.CURRENCY_B],
   );
+
+  console.log('pool test', { poolState, pool });
   const noLiquidity = poolState === PoolState.NOT_EXISTS;
 
   const dynamicFee = pool ? pool.fee : 100;
@@ -255,14 +284,25 @@ export function useV3DerivedMintInfo(
                 parsedQuoteAmount.quotient,
               )
             : undefined;
+        console.log('type state test parsedQuote  ', {
+          price: price?.toFixed(),
+          invertPrice,
+        });
         return (invertPrice ? price?.invert() : price) ?? undefined;
       }
       return undefined;
     } else {
       // get the amount of quote currency
+      console.log('type state test token0 price  ', {
+        Tokenprice: pool && token0 && pool.priceOf(token0)?.toFixed(),
+        pool,
+        token0,
+      });
       return pool && token0 ? pool.priceOf(token0) : undefined;
     }
   }, [noLiquidity, startPriceTypedValue, invertPrice, token1, token0, pool]);
+
+  console.log('type state test price ', { finalPrice: price?.toFixed() });
 
   // check for invalid price input (converts to invalid ratio)
   const invalidPrice = useMemo(() => {

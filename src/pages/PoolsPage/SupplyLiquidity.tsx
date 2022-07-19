@@ -58,8 +58,9 @@ const SupplyLiquidity: React.FC<{ isV3: boolean }> = ({ isV3 }) => {
       )}
       {isV3 && (
         <AddLiquidityV3
-          currency0={qCurrency0 ?? undefined}
-          currency1={qCurrency1 ?? undefined}
+          // currencyId0={''}
+          // currencyId1={''}
+          // tokenId={''}
           handleSettingsOpen={setOpenSettingsModal}
         />
       )}

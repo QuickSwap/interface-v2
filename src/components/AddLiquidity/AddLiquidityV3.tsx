@@ -13,6 +13,7 @@ import { BigNumber } from '@ethersproject/bignumber';
 import ReactGA from 'react-ga';
 import { useTranslation } from 'react-i18next';
 import { Currency, Token, CurrencyAmount } from '@uniswap/sdk-core';
+import { Currency as CurrencyV2, Token as TokenV2 } from '@uniswap/sdk';
 import { GlobalConst } from 'constants/index';
 import { useActiveWeb3React } from 'hooks';
 import { useRouterContract } from 'hooks/useContract';
@@ -66,12 +67,20 @@ import RangeGraph from './RangeGraph';
 import { ConfirmationModalContentV3 } from 'components/TransactionConfirmationModal/TransactionConfirmationModal';
 import CurrencySelect from 'components/CurrencySelect';
 import {
+  useInitialTokenPrice,
+  useInitialUSDPrices,
   useV3DerivedMintInfo,
   useV3MintActionHandlers,
   useV3MintState,
 } from 'state/mint/v3/hooks';
 import { useCurrency } from 'hooks/v3/Tokens';
 import { NONFUNGIBLE_POSITION_MANAGER_ADDRESSES } from 'constants/v3/addresses';
+import useUSDCPrice from 'utils/useUSDCPrice';
+import {
+  setInitialTokenPrice,
+  setInitialUSDPrices,
+} from 'state/mint/v3/actions';
+import { useDispatch } from 'react-redux';
 
 const INPUT_RANGE_VALUES = ['Full Range', 'Safe', 'Common', 'Expert'];
 
@@ -98,6 +107,13 @@ const AddLiquidityV3: React.FC<{
   const [rangeIndex, setRangeIndex] = useState(1);
 
   const expertMode = useIsExpertMode();
+  const [selectedCurency0, setSelectedCurrency0] = useState<
+    TokenV2 | undefined
+  >(undefined);
+
+  const [selectedCurency1, setSelectedCurrency1] = useState<
+    TokenV2 | undefined
+  >(undefined);
 
   // v3 min state and hooks
 
@@ -111,8 +127,8 @@ const AddLiquidityV3: React.FC<{
   const existingPosition = undefined; // useDerivedPositionInfo(existingPositionDetails);
   const feeAmount = 100;
 
-  const baseCurrency = useCurrency(currencyId0);
-  const currencyB = useCurrency(currencyId1);
+  const baseCurrency = useCurrency('MATIC');
+  const currencyB = useCurrency('0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174');
   // prevent an error if they input ETH/WETH
   //TODO
   const quoteCurrency =
@@ -121,7 +137,13 @@ const AddLiquidityV3: React.FC<{
       : currencyB;
 
   // mint state
-  const { independentField, typedValue } = useV3MintState();
+  const {
+    independentField,
+    typedValue,
+    leftRangeTypedValue,
+    rightRangeTypedValue,
+    startPriceTypedValue,
+  } = useV3MintState();
 
   const {
     ticks,
@@ -148,9 +170,85 @@ const AddLiquidityV3: React.FC<{
     existingPosition,
   );
 
+  useEffect(() => {
+    console.log('mintInfo', {
+      ticks,
+      pricesAtTicks,
+      position,
+      noLiquidity,
+      currencies,
+      errorMessage,
+      baseCurrency,
+      quoteCurrency,
+    });
+  }, [
+    ticks,
+    pricesAtTicks,
+    position,
+    noLiquidity,
+    currencies,
+    errorMessage,
+    baseCurrency,
+    quoteCurrency,
+  ]);
+
   const pendingText = t('supplyingTokens', 'liquidityTokenData');
 
-  const { onFieldAInput, onFieldBInput } = useV3MintActionHandlers(noLiquidity);
+  const {
+    onFieldAInput,
+    onFieldBInput,
+    onLeftRangeInput,
+    onRightRangeInput,
+    onStartPriceInput,
+    onCurrencySelection,
+  } = useV3MintActionHandlers(noLiquidity);
+
+  //*** */ setting start price state
+  const initialUSDPrices = useInitialUSDPrices();
+  const initialTokenPrice = useInitialTokenPrice();
+
+  const basePriceUSD = useUSDCPrice(baseCurrency ?? undefined);
+  const quotePriceUSD = useUSDCPrice(quoteCurrency ?? undefined);
+
+  const dispatch = useDispatch();
+  useEffect(() => {
+    if (!initialUSDPrices.CURRENCY_A && basePriceUSD) {
+      dispatch(
+        setInitialUSDPrices({
+          field: Field.CURRENCY_A,
+          typedValue: basePriceUSD.toSignificant(8),
+        }),
+      );
+    }
+    if (!initialUSDPrices.CURRENCY_B && quotePriceUSD) {
+      dispatch(
+        setInitialUSDPrices({
+          field: Field.CURRENCY_B,
+          typedValue: quotePriceUSD.toSignificant(8),
+        }),
+      );
+    }
+    if (!initialTokenPrice && basePriceUSD && quotePriceUSD) {
+      dispatch(
+        setInitialTokenPrice({
+          typedValue: String(
+            (
+              +basePriceUSD.toSignificant(8) / +quotePriceUSD.toSignificant(8)
+            ).toFixed(5),
+          ),
+        }),
+      );
+    }
+  }, [basePriceUSD, quotePriceUSD]);
+
+  useEffect(() => {
+    console.log('type state test', initialTokenPrice);
+    if (initialTokenPrice) {
+      onStartPriceInput(initialTokenPrice);
+    }
+  }, [initialTokenPrice]);
+
+  //*** */ setting start price state end
 
   const isValid = !errorMessage && !invalidRange;
 
@@ -215,17 +313,23 @@ const AddLiquidityV3: React.FC<{
     };
   }, {});
 
-  const handleCurrencyASelect = useCallback((currencyA: Currency) => {
-    // onFieldAInput(Field.CURRENCY_A, currencyA);
-  }, []);
+  const handleCurrencyASelect = useCallback(
+    (currencyA: Token) => {
+      onCurrencySelection(Field.CURRENCY_A, currencyA);
+    },
+    [onCurrencySelection],
+  );
 
-  const handleCurrencyBSelect = useCallback((currencyB: Currency) => {
-    // onCurrencySelection(Field.CURRENCY_B, currencyB);
-  }, []);
+  const handleCurrencyBSelect = useCallback(
+    (currencyB: Currency) => {
+      onCurrencySelection(Field.CURRENCY_B, currencyB);
+    },
+    [onCurrencySelection],
+  );
 
   // useEffect(() => {
-  //   if (currency0) {
-  //     onCurrencySelection(Field.CURRENCY_A, currency0);
+  //   if (currencyId0) {
+  //     onCurrencySelection(Field.CURRENCY_A, currencyId0);
   //   } else {
   //     onCurrencySelection(Field.CURRENCY_A, Token.ETHER);
   //   }
@@ -662,17 +766,13 @@ const AddLiquidityV3: React.FC<{
         <Box className='flex justify-between items-center' mt={2.5} mb={2.5}>
           <PriceRangeInput
             id='range-input-a'
-            setAmount={(amount) => {
-              console.log(amount);
-            }}
-            amount='0'
+            setAmount={onLeftRangeInput}
+            amount={leftRangeTypedValue}
           />
           <PriceRangeInput
             id='range-input-b'
-            setAmount={(amount) => {
-              console.log(amount);
-            }}
-            amount='0'
+            setAmount={onRightRangeInput}
+            amount={rightRangeTypedValue}
           />
         </Box>
 
@@ -700,7 +800,10 @@ const AddLiquidityV3: React.FC<{
                   : '',
               )
             }
-            handleCurrencySelect={() => {}}
+            handleCurrencySelect={(currency: any) => {
+              console.log('selected currency', currency);
+              setSelectedCurrency0(currency?.address || currency?.symbol);
+            }}
             amount={formattedAmounts[Field.CURRENCY_A]}
             setAmount={onFieldAInput}
             // bgClass={currencyBgClass}
@@ -726,8 +829,9 @@ const AddLiquidityV3: React.FC<{
             onMax={() =>
               onFieldBInput(maxAmounts[Field.CURRENCY_B]?.toExact() ?? '')
             }
-            handleCurrencySelect={() => {
-              console.log('select');
+            handleCurrencySelect={(currency: any) => {
+              console.log('select', currency);
+              setSelectedCurrency1(currency?.address || currency?.symbol);
             }}
             amount={formattedAmounts[Field.CURRENCY_B]}
             setAmount={onFieldBInput}
