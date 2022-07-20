@@ -1731,30 +1731,20 @@ export function formatNumber(
   }
 }
 
-export function getTokenFromKey(tokenKey: string, tokenMap: TokenAddressMap) {
-  //TODO: eventually we need to remove returnTokenFromKey completely
-  //TODO: we need to support this until the token list also lists our (unwhitelisted tokens)
-  const tokenData = returnTokenFromKey(tokenKey);
-
-  //TODO: New Tokens may not exist in the old token.json, using object.values to enumerate the map
-  // is expensive so we don't want to have to do it everytime we call this method.
-  if (!tokenData) {
-    // Hack: this requires us to enumerate all the values of the token map which can be expensive
-    //
-    const tokensMatchingSymbol = Object.values(tokenMap[ChainId.MATIC]).filter(
-      (t) => (t.symbol ?? '').toUpperCase() == tokenKey.toUpperCase(),
-    );
-    if (tokensMatchingSymbol.length === 0) {
-      console.log('no token exists in the map');
-    }
-
-    return tokensMatchingSymbol[0];
-  }
-
-  const wrappedTokenInfo = tokenMap[tokenData.chainId][tokenData.address];
+export function getTokenFromAddress(
+  tokenAddress: string,
+  chainId: ChainId,
+  tokenMap: TokenAddressMap,
+  tokens: Token[],
+) {
+  const wrappedTokenInfo = tokenMap[chainId][tokenAddress];
   if (!wrappedTokenInfo) {
-    console.log('missing from token list:' + tokenKey);
-    return tokenData;
+    console.log('missing from token list:' + tokenAddress);
+    const token = tokens.find(
+      (item) => item.address.toLowerCase() === tokenAddress.toLowerCase(),
+    );
+    if (!token) return GlobalValue.tokens.COMMON.EMPTY;
+    return token;
   }
 
   return wrappedTokenInfo;
