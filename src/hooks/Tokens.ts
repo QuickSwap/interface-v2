@@ -258,15 +258,16 @@ export function useTokens(
       existingTokens,
     );
   }, [
+    tokenAddresses,
+    validatedUnknownTokenAddresses,
     tokens,
     anyLoading,
-    tokenSet,
-    validatedUnknownTokenAddresses,
-    tokenNames,
-    tokenNamesBytes32,
+    chainId,
+    tokenDecimals,
     symbols,
     symbolsBytes32,
-    tokenDecimals,
+    tokenNames,
+    tokenNamesBytes32,
   ]);
 }
 
