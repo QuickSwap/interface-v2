@@ -148,22 +148,30 @@ export function useDualFarmList(
   );
   const tokenMap = useSelectedTokenList();
   const current = url ? dualFarms[url]?.current : null;
-  const dualTokenAddresses = current?.active
-    .concat(current.closed)
-    .map((item) => [
-      item.baseToken,
-      item.tokens[0],
-      item.tokens[1],
-      item.rewardTokenA,
-      item.rewardTokenB,
-      item.rewardTokenBBase,
-    ])
-    .flat()
-    .filter(
-      (address, _, self) =>
-        !self.find((addr) => address.toLowerCase() === addr.toLowerCase()),
-    );
-  const dualFarmTokens = useTokens(dualTokenAddresses ?? []);
+  const dualTokenAddresses = current
+    ? current.active
+        .concat(current.closed)
+        .map((item) => [
+          item.baseToken,
+          item.tokens[0],
+          item.tokens[1],
+          item.rewardTokenA,
+          item.rewardTokenB,
+          item.rewardTokenBBase,
+        ])
+        .flat()
+        .filter(
+          (address) =>
+            !Object.keys(tokenMap[ChainId.MATIC]).find(
+              (add) => add.toLowerCase() === address.toLowerCase(),
+            ),
+        )
+        .filter(
+          (address, _, self) =>
+            !self.find((addr) => address.toLowerCase() === addr.toLowerCase()),
+        )
+    : [];
+  const dualFarmTokens = useTokens(dualTokenAddresses);
   return useMemo(() => {
     if (!current) return EMPTY_LIST;
     try {
