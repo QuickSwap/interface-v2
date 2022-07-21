@@ -104,7 +104,7 @@
     "eventsource": "^2.0.2",
     "protobufjs": "^6.11.3",
     "shell-quote": "^1.7.3",
-    "terser": "^5.14.2",
+    "terser": "^4.8.1",
     "got": "^11.8.5",
     "jpeg-js": "^0.4.4"
   },
