@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import 'pages/styles/pools.scss';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import PoolToggle from './PoolToggle';
+import { useFarmingSubgraph } from 'hooks/useIncentiveSubgraph';
 
 const PoolsPage: React.FC = () => {
   const parsedQuery = useParsedQueryString();
@@ -14,6 +15,22 @@ const PoolsPage: React.FC = () => {
     parsedQuery && parsedQuery.version ? (parsedQuery.version as string) : 'v3';
 
   const { t } = useTranslation();
+
+  const {
+    fetchRewards: { rewardsResult, fetchRewardsFn, rewardsLoading },
+    fetchAllEvents: { fetchAllEventsFn, allEvents, allEventsLoading },
+    fetchTransferredPositions: {
+      // fetchTransferredPositionsFn,
+      transferredPositions,
+      transferredPositionsLoading,
+    },
+    fetchHasTransferredPositions: {
+      fetchHasTransferredPositionsFn,
+      hasTransferredPositions,
+      hasTransferredPositionsLoading,
+    },
+  } = useFarmingSubgraph() || {};
+
   return (
     <Box width='100%' mb={3}>
       <Box className='pageHeading'>

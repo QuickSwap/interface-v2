@@ -200,9 +200,9 @@ export function useV3DerivedMintInfo(
     typedValue,
     leftRangeTypedValue,
     rightRangeTypedValue,
-    // startPriceTypedValue,
+    startPriceTypedValue,
   } = useV3MintState();
-  const [startPriceTypedValue] = ['0.5'];
+  // const [startPriceTypedValue] = ['0.5'];
 
   console.log('type state test', {
     leftRangeTypedValue,
@@ -257,7 +257,7 @@ export function useV3DerivedMintInfo(
     currencies[Field.CURRENCY_B],
   );
 
-  console.log('pool test', { poolState, pool });
+  console.log('pool test', { poolState, pool, currencies });
   const noLiquidity = poolState === PoolState.NOT_EXISTS;
 
   const dynamicFee = pool ? pool.fee : 100;

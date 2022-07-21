@@ -127,8 +127,10 @@ const AddLiquidityV3: React.FC<{
   const existingPosition = undefined; // useDerivedPositionInfo(existingPositionDetails);
   const feeAmount = 100;
 
-  const baseCurrency = useCurrency('MATIC');
-  const currencyB = useCurrency('0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174');
+  const baseCurrency = useCurrency(
+    '0xe68c76BD4CCeEA3bb6655FF708F847206F3D5b3C',
+  );
+  const currencyB = useCurrency('0x36eE587B148cfB474f1211B1C1EdEF2116285d28');
   // prevent an error if they input ETH/WETH
   //TODO
   const quoteCurrency =

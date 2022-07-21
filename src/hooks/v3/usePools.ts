@@ -1,18 +1,17 @@
 import { POOL_DEPLOYER_ADDRESS } from '../../constants/v3/addresses';
 import { Currency, Token } from '@uniswap/sdk-core';
 import { useMemo } from 'react';
+import { useActiveWeb3React } from 'hooks';
 import { useMultipleContractSingleData } from 'state/multicall/hooks';
 
 import { Interface } from '@ethersproject/abi';
-import abi from '../../constants/abis/v3/pool.json';
-import {
-  usePreviousNonEmptyArray,
-  usePreviousNonErroredArray,
-} from '../usePrevious';
-import { useActiveWeb3React } from 'hooks';
+import abi from '../../abis/pool.json';
+import { computePoolAddress } from './computePoolAddress';
+import { useInternet } from './useInternet';
+import { useToken } from './Tokens';
+
 import { Pool } from 'v3lib/entities/pool';
-import { computePoolAddress } from 'hooks/v3/computePoolAddress';
-import { useToken } from 'hooks/Tokens';
+import { usePreviousNonErroredArray } from 'hooks/usePrevious';
 
 const POOL_STATE_INTERFACE = new Interface(abi);
 
@@ -28,7 +27,6 @@ export function usePools(
 ): [PoolState, Pool | null][] {
   const { chainId } = useActiveWeb3React();
 
-  console.log('pools test ', { poolKeys });
   const transformed: ([Token, Token] | null)[] = useMemo(() => {
     return poolKeys.map(([currencyA, currencyB]) => {
       if (!chainId || !currencyA || !currencyB) return null;
@@ -62,6 +60,7 @@ export function usePools(
     POOL_STATE_INTERFACE,
     'globalState',
   );
+  console.log('pool test address global', { poolAddresses, globalState0s });
   const prevGlobalState0s = usePreviousNonErroredArray(globalState0s);
 
   const _globalState0s = useMemo(() => {
@@ -82,8 +81,6 @@ export function usePools(
     POOL_STATE_INTERFACE,
     'liquidity',
   );
-
-  console.log('pool test liquidity', { liquidities });
   const prevLiquidities = usePreviousNonErroredArray(liquidities);
 
   const _liquidities = useMemo(() => {
@@ -158,9 +155,9 @@ export function usePool(
 }
 
 export function useTokensSymbols(token0: string, token1: string) {
-  //   const internet = useInternet();
+  const internet = useInternet();
   const _token0 = useToken(token0);
   const _token1 = useToken(token1);
 
-  return useMemo(() => [_token0, _token1], [_token0, _token1]);
+  return useMemo(() => [_token0, _token1], [_token0, _token1, internet]);
 }
