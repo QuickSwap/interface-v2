@@ -71,7 +71,7 @@ const LandingPage: React.FC = () => {
       title: 'Reddit',
     },
     {
-      link: 'https://discord.com/invite/XJTM7FV88Y',
+      link: 'https://discord.gg/dSMd7AFH36',
       icon: <DiscordIcon />,
       title: 'Discord',
     },
