@@ -7,6 +7,7 @@ import { Token } from '@uniswap/sdk';
 import { TokenAddressMap, useSelectedTokenList } from 'state/lists/hooks';
 import { getTokenFromAddress } from 'utils';
 import { useTokens } from 'hooks/Tokens';
+import { GlobalConst, GlobalValue } from 'constants/index';
 
 export class WrappedStakingInfo implements StakingBasic {
   public readonly stakingInfo: StakingRaw;
@@ -57,12 +58,14 @@ export class WrappedStakingInfo implements StakingBasic {
         farmTokens,
       ),
     ];
-    this.rewardToken = getTokenFromAddress(
-      stakingInfo.rewardToken,
-      chainId,
-      tokenAddressMap,
-      farmTokens,
-    );
+    this.rewardToken = stakingInfo.rewardToken
+      ? getTokenFromAddress(
+          stakingInfo.rewardToken,
+          chainId,
+          tokenAddressMap,
+          farmTokens,
+        )
+      : GlobalValue.tokens.COMMON.OLD_DQUICK;
   }
 }
 
@@ -92,8 +95,8 @@ export function listToFarmMap(
   tokenAddressMap: TokenAddressMap,
   farmTokens: Token[],
 ): StakingInfoAddressMap {
-  const result = farmCache?.get(list);
-  if (result) return result;
+  // const result = farmCache?.get(list);
+  // if (result) return result;
 
   const map = list.active.concat(list.closed).reduce<StakingInfoAddressMap>(
     (stakingInfoMap, stakingInfo) => {
@@ -119,7 +122,7 @@ export function listToFarmMap(
     },
     { ...EMPTY_LIST },
   );
-  farmCache?.set(list, map);
+  // farmCache?.set(list, map);
   return map;
 }
 
@@ -140,15 +143,13 @@ export function useFarmList(url: string | undefined): StakingInfoAddressMap {
           item.rewardToken,
         ])
         .flat()
+        .filter((item) => !!item)
+        .filter((address) => !tokenMap[ChainId.MATIC][address])
         .filter(
-          (address) =>
-            !Object.keys(tokenMap[ChainId.MATIC]).find(
-              (add) => add.toLowerCase() === address.toLowerCase(),
-            ),
-        )
-        .filter(
-          (address, _, self) =>
-            !self.find((addr) => address.toLowerCase() === addr.toLowerCase()),
+          (addr, ind, self) =>
+            self.findIndex(
+              (address) => address.toLowerCase() === addr.toLowerCase(),
+            ) === ind,
         )
     : [];
   const farmTokens = useTokens(farmTokenAddresses);

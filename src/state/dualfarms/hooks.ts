@@ -167,8 +167,10 @@ export function useDualFarmList(
             ),
         )
         .filter(
-          (address, _, self) =>
-            !self.find((addr) => address.toLowerCase() === addr.toLowerCase()),
+          (address, ind, self) =>
+            self.findIndex(
+              (addr) => address.toLowerCase() === addr.toLowerCase(),
+            ) === ind,
         )
     : [];
   const dualFarmTokens = useTokens(dualTokenAddresses);

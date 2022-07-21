@@ -133,8 +133,10 @@ export function useSyrupList(url: string | undefined): SyrupInfoAddressMap {
             ),
         )
         .filter(
-          (address, _, self) =>
-            !self.find((addr) => address.toLowerCase() === addr.toLowerCase()),
+          (address, ind, self) =>
+            self.findIndex(
+              (addr) => address.toLowerCase() === addr.toLowerCase(),
+            ) === ind,
         )
     : [];
   const syrupTokens = useTokens(syrupTokenAddresses);
