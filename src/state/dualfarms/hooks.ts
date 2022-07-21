@@ -175,7 +175,7 @@ export function useDualFarmList(
     : [];
   const dualFarmTokens = useTokens(dualTokenAddresses);
   return useMemo(() => {
-    if (!current) return EMPTY_LIST;
+    if (!current || !tokenMap) return EMPTY_LIST;
     try {
       return listToDualFarmMap(current, tokenMap, dualFarmTokens ?? []);
     } catch (error) {

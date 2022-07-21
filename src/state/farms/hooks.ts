@@ -154,7 +154,7 @@ export function useFarmList(url: string | undefined): StakingInfoAddressMap {
     : [];
   const farmTokens = useTokens(farmTokenAddresses);
   return useMemo(() => {
-    if (!current) return EMPTY_LIST;
+    if (!current || !tokenMap) return EMPTY_LIST;
     try {
       return listToFarmMap(current, tokenMap, farmTokens ?? []);
     } catch (error) {

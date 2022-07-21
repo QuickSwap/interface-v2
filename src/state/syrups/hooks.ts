@@ -141,7 +141,7 @@ export function useSyrupList(url: string | undefined): SyrupInfoAddressMap {
     : [];
   const syrupTokens = useTokens(syrupTokenAddresses);
   return useMemo(() => {
-    if (!current) return EMPTY_LIST;
+    if (!current || !tokenMap) return EMPTY_LIST;
     try {
       return listToSyrupMap(current, tokenMap, syrupTokens ?? []);
     } catch (error) {
