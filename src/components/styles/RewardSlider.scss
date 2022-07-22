@@ -6,6 +6,9 @@
   display: flex;
   justify-content: space-between;
   margin: 64px auto 56px;
+  & .slick-list {
+    width: 100%
+  }
   & .slick-slide {
     padding: 0 20px;
     @include media("screen", "<phone") {
