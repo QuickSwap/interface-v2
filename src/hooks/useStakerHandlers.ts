@@ -6,7 +6,7 @@ import { useCallback, useState } from 'react';
 import {
   FARMING_CENTER,
   NONFUNGIBLE_POSITION_MANAGER_ADDRESSES,
-} from '../constants/addresses';
+} from '../constants/v3/addresses';
 import { useTransactionAdder } from '../state/transactions/hooks';
 import { useActiveWeb3React } from 'hooks';
 import JSBI from 'jsbi';

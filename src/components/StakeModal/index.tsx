@@ -25,7 +25,7 @@ import { IsActive } from 'components/StakerMyStakes/IsActive';
 import { useCurrencyBalance } from 'state/wallet/hooks';
 import { ApprovalState, useApproveCallback } from 'hooks/useV3ApproveCallback';
 import { CurrencyAmount } from '@uniswap/sdk-core';
-import { FARMING_CENTER } from 'constants/addresses';
+import { FARMING_CENTER } from 'constants/v3/addresses';
 import { useActiveWeb3React } from 'hooks';
 
 import { Token } from '@uniswap/sdk-core';

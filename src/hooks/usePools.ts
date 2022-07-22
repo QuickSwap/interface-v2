@@ -1,4 +1,4 @@
-import { POOL_DEPLOYER_ADDRESS } from '../constants/addresses';
+import { POOL_DEPLOYER_ADDRESS } from '../constants/v3/addresses';
 import { Currency, Token } from '@uniswap/sdk-core';
 import { useMemo } from 'react';
 import { useActiveWeb3React } from 'hooks';
