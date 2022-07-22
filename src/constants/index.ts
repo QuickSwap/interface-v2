@@ -23,6 +23,9 @@ const WETH_ONLY: ChainTokenList = {
   [ChainId.MATIC]: [WETH[ChainId.MATIC]],
 };
 
+// TODO: Remove this constant when supporting multichain
+export const MATIC_CHAIN = ChainId.MATIC;
+
 export enum TxnType {
   SWAP,
   ADD,
@@ -91,6 +94,8 @@ export const GlobalConst = {
     DEFAULT_DUAL_FARMS_LIST_URL:
       process.env.REACT_APP_DUAL_STAKING_LIST_DEFAULT_URL + '',
     DEFAULT_SYRUP_LIST_URL: process.env.REACT_APP_SYRUP_LIST_DEFAULT_URL + '',
+    ANALYTICS_TOKENS_COUNT: 200,
+    ANALYTICS_PAIRS_COUNT: 400,
   },
   analyticChart: {
     ONE_MONTH_CHART: 1,
@@ -283,7 +288,7 @@ export const GlobalValue = {
       WBTC: new Token(
         ChainId.MATIC,
         '0x1BFD67037B42Cf73acF2047067bd4F2C47D9BfD6',
-        18,
+        8,
         'wBTC',
         'Wrapped Bitcoin',
       ),
@@ -336,6 +341,13 @@ export const GlobalValue = {
         'FRAX',
         'FRAX',
       ),
+      GHST: new Token(
+        ChainId.MATIC,
+        '0x385eeac5cb85a38a9a07a70c73e0a3271cfb54a7',
+        18,
+        'GHST',
+        'Aavegotchi GHST Token',
+      ),
     },
   },
 };
@@ -350,10 +362,11 @@ export const GlobalData = {
         GlobalValue.tokens.COMMON.USDC,
         GlobalValue.tokens.COMMON.USDT,
         GlobalValue.tokens.COMMON.OLD_QUICK,
+        GlobalValue.tokens.COMMON.NEW_QUICK,
         GlobalValue.tokens.COMMON.ETHER,
         GlobalValue.tokens.COMMON.WBTC,
         GlobalValue.tokens.COMMON.DAI,
-        GlobalValue.tokens.COMMON.MAUSDC,
+        GlobalValue.tokens.COMMON.GHST,
         GlobalValue.tokens.COMMON.MI,
       ],
     },
@@ -368,6 +381,7 @@ export const GlobalData = {
         GlobalValue.tokens.COMMON.USDC,
         GlobalValue.tokens.COMMON.USDT,
         GlobalValue.tokens.COMMON.OLD_QUICK,
+        GlobalValue.tokens.COMMON.NEW_QUICK,
         GlobalValue.tokens.COMMON.ETHER,
         GlobalValue.tokens.COMMON.WBTC,
         GlobalValue.tokens.COMMON.SAND,
@@ -383,6 +397,7 @@ export const GlobalData = {
         GlobalValue.tokens.COMMON.USDC,
         GlobalValue.tokens.COMMON.USDT,
         GlobalValue.tokens.COMMON.OLD_QUICK,
+        GlobalValue.tokens.COMMON.NEW_QUICK,
         GlobalValue.tokens.COMMON.ETHER,
         GlobalValue.tokens.COMMON.WBTC,
       ],

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Button } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
-import { StakingInfo } from 'types';
+import { DualStakingInfo, StakingInfo } from 'types';
 import { DoubleCurrencyLogo } from 'components';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon.svg';
 import {
@@ -13,7 +13,7 @@ import {
 import { useTranslation } from 'react-i18next';
 
 interface RewardSliderItemProps {
-  info: StakingInfo;
+  info: StakingInfo | DualStakingInfo;
   stakingAPY: number;
 }
 
@@ -30,7 +30,12 @@ const RewardSliderItem: React.FC<RewardSliderItemProps> = ({
     stakedAmounts?.totalStakedBase,
   );
 
-  const rewards = info.rate * info.rewardTokenPrice;
+  const lpInfo = info as StakingInfo;
+  const dualInfo = info as DualStakingInfo;
+  const lprewards = lpInfo.rate * lpInfo.rewardTokenPrice;
+  const dualrewards =
+    dualInfo.rateA * dualInfo.rewardTokenAPrice +
+    dualInfo.rateB * dualInfo.rewardTokenBPrice;
 
   let apyWithFee;
   if (stakingAPY && stakingAPY > 0) {
@@ -61,7 +66,7 @@ const RewardSliderItem: React.FC<RewardSliderItemProps> = ({
       <Box className='row'>
         <p className='text-gray22'>{t('rewards')}</p>
         <p>
-          ${rewards.toLocaleString()} / {t('day')}
+          ${(lprewards ? lprewards : dualrewards).toLocaleString()} / {t('day')}
         </p>
       </Box>
       <Box className='row'>

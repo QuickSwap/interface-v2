@@ -155,11 +155,7 @@ const AnalyticsTokenChart: React.FC<{ token: any }> = ({ token }) => {
           <AreaChart
             data={chartData}
             yAxisValues={getYAXISValuesAnalytics(chartData)}
-            dates={tokenChartData.map((value: any) =>
-              dayjs(value.date * 1000)
-                .add(1, 'day')
-                .unix(),
-            )}
+            dates={tokenChartData.map((value: any) => value.date)}
             width='100%'
             height={240}
             categories={getChartDates(tokenChartData, durationIndex)}

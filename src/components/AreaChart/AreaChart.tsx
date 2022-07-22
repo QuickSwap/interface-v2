@@ -1,9 +1,8 @@
 import React from 'react';
 import { Box } from '@material-ui/core';
 import Chart from 'react-apexcharts';
-import dayjs from 'dayjs';
 import { useIsDarkMode } from 'state/user/hooks';
-import { formatCompact, formatNumber } from 'utils';
+import { formatCompact, formatDateFromTimeStamp, formatNumber } from 'utils';
 import 'components/styles/AreaChart.scss';
 
 export interface AreaChartProps {
@@ -117,9 +116,10 @@ const AreaChart: React.FC<AreaChartProps> = ({
       theme: dark ? 'dark' : 'light',
       fillSeriesColor: false,
       custom: ({ series, seriesIndex, dataPointIndex }: any) => {
-        return `<div class="areaChartTooltip"><small>${dayjs(
-          dates[dataPointIndex] * 1000,
-        ).format('MMM DD, YYYY')}</small><small><b>$${formatCompact(
+        return `<div class="areaChartTooltip"><small>${formatDateFromTimeStamp(
+          dates[dataPointIndex],
+          'MMM DD, YYYY',
+        )}</small><small><b>$${formatCompact(
           series[seriesIndex][dataPointIndex],
         )}</b></small></div>`;
       },

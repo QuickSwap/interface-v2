@@ -8,6 +8,24 @@ body {
   margin: 0;
 }
 
+[data-reach-dialog-overlay] {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 10 !important;
+}
+
+[data-reach-dialog-content] {
+  @include media("screen", "<tablet") {
+    transform: translateY(-90px) !important;
+    max-height: calc(100vh - 120px) !important;
+    min-height: calc(100vh - 120px) !important;
+    border-radius: 20px !important;
+  }
+}
+
 .page {
   background-color: $bgColor;
   width: 100%;
@@ -134,4 +152,14 @@ body {
 
 .text-uppercase {
   text-transform: uppercase;
+}
+
+.devPassModal {
+  padding: 12px;
+  & input {
+    width: 100%;
+    margin: 8px 0;
+    outline: none;
+    padding: 6px 4px;
+  }
 }

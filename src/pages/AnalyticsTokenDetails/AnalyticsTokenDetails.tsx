@@ -9,16 +9,13 @@ import {
   getFormattedPrice,
   getPriceClass,
   formatNumber,
-} from 'utils';
-import { useActiveWeb3React } from 'hooks';
-import { CurrencyLogo, PairTable } from 'components';
-import { useBookmarkTokens } from 'state/application/hooks';
-import {
   getTokenInfo,
-  getEthPrice,
   getTokenPairs2,
   getBulkPairData,
 } from 'utils';
+import { useActiveWeb3React } from 'hooks';
+import { CurrencyLogo, PairTable } from 'components';
+import { useBookmarkTokens, useEthPrice } from 'state/application/hooks';
 import { ReactComponent as StarChecked } from 'assets/images/StarChecked.svg';
 import { ReactComponent as StarUnchecked } from 'assets/images/StarUnchecked.svg';
 import { getAddress } from '@ethersproject/address';
@@ -43,35 +40,38 @@ const AnalyticsTokenDetails: React.FC = () => {
     addBookmarkToken,
     removeBookmarkToken,
   } = useBookmarkTokens();
+  const { ethPrice } = useEthPrice();
 
   useEffect(() => {
     async function fetchTokenInfo() {
-      const [newPrice, oneDayPrice] = await getEthPrice();
-      const tokenInfo = await getTokenInfo(newPrice, oneDayPrice, tokenAddress);
-      if (tokenInfo) {
-        setToken(tokenInfo[0]);
+      if (ethPrice.price && ethPrice.oneDayPrice) {
+        const tokenInfo = await getTokenInfo(
+          ethPrice.price,
+          ethPrice.oneDayPrice,
+          tokenAddress,
+        );
+        if (tokenInfo) {
+          setToken(tokenInfo[0]);
+        }
+        const tokenPairs = await getTokenPairs2(tokenAddress);
+        const formattedPairs = tokenPairs
+          ? tokenPairs.map((pair: any) => {
+              return pair.id;
+            })
+          : [];
+        const pairData = await getBulkPairData(formattedPairs, ethPrice.price);
+        if (pairData) {
+          updateTokenPairs(pairData);
+        }
       }
     }
     fetchTokenInfo();
-  }, [tokenAddress]);
+  }, [tokenAddress, ethPrice.price, ethPrice.oneDayPrice]);
 
   useEffect(() => {
-    async function fetchTokenPairs() {
-      const [newPrice] = await getEthPrice();
-      const tokenPairs = await getTokenPairs2(tokenAddress);
-      const formattedPairs = tokenPairs
-        ? tokenPairs.map((pair: any) => {
-            return pair.id;
-          })
-        : [];
-      const pairData = await getBulkPairData(formattedPairs, newPrice);
-      if (pairData) {
-        updateTokenPairs(pairData);
-      }
-    }
-    fetchTokenPairs();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [updateTokenPairs, tokenAddress]);
+    setToken(null);
+    updateTokenPairs(null);
+  }, [tokenAddress]);
 
   const tokenPercentClass = getPriceClass(
     token ? Number(token.priceChangeUSD) : 0,
@@ -144,11 +144,11 @@ const AnalyticsTokenDetails: React.FC = () => {
                       <span className='text-disabled'>
                         {t('totalLiquidity')}
                       </span>
-                      <h5>${token.totalLiquidityUSD.toLocaleString()}</h5>
+                      <h5>${formatNumber(token.totalLiquidityUSD)}</h5>
                     </Box>
                     <Box textAlign='right'>
                       <span className='text-disabled'>{t('7dTradingVol')}</span>
-                      <h5>${token.oneWeekVolumeUSD.toLocaleString()}</h5>
+                      <h5>${formatNumber(token.oneWeekVolumeUSD)}</h5>
                     </Box>
                   </Box>
                   <Box>
@@ -156,15 +156,15 @@ const AnalyticsTokenDetails: React.FC = () => {
                       <span className='text-disabled'>
                         {t('24hTradingVol1')}
                       </span>
-                      <h5>${token.oneDayVolumeUSD.toLocaleString()}</h5>
+                      <h5>${formatNumber(token.oneDayVolumeUSD)}</h5>
                     </Box>
                     <Box textAlign='right'>
                       <span className='text-disabled'>{t('24hFees')}</span>
                       <h5>
                         $
-                        {(
-                          token.oneDayVolumeUSD * GlobalConst.utils.FEEPERCENT
-                        ).toLocaleString()}
+                        {formatNumber(
+                          token.oneDayVolumeUSD * GlobalConst.utils.FEEPERCENT,
+                        )}
                       </h5>
                     </Box>
                   </Box>

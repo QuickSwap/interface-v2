@@ -137,7 +137,7 @@ const AnalyticsVolumeChart: React.FC = () => {
             globalChartData.week[Math.max(0, selectedVolumeIndex - 1)].date,
           ),
           'MMM DD, YYYY',
-          selectedVolumeIndex > 0 ? 2 : -5,
+          selectedVolumeIndex > 0 ? 1 : -6,
         );
         const weekEnd = formatDateFromTimeStamp(
           Number(globalChartData.week[selectedVolumeIndex].date),

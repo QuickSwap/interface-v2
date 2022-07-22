@@ -92,7 +92,7 @@ const SwapMain: React.FC = () => {
           />
         )}
         {swapIndex === SWAP_LIMIT && (
-          <>
+          <Box className='limitOrderPanel'>
             <GelatoLimitOrderPanel />
             <GelatoLimitOrdersHistoryPanel />
             <Box mt={2} textAlign='center'>
@@ -112,7 +112,7 @@ const SwapMain: React.FC = () => {
                 />
               </small>
             </Box>
-          </>
+          </Box>
         )}
       </Box>
     </>

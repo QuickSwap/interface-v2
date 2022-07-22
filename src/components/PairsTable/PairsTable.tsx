@@ -9,9 +9,11 @@ import { useBookmarkPairs } from 'state/application/hooks';
 import { ReactComponent as StarChecked } from 'assets/images/StarChecked.svg';
 import { ReactComponent as StarUnchecked } from 'assets/images/StarUnchecked.svg';
 import { useTranslation } from 'react-i18next';
+import { formatNumber } from 'utils';
 
-interface TokensTableProps {
+interface PairsTableProps {
   data: any[];
+  showPagination?: boolean;
 }
 
 const headCells = () => [
@@ -56,7 +58,10 @@ const headCells = () => [
 
 const liquidityHeadCellIndex = 1;
 
-const PairTable: React.FC<TokensTableProps> = ({ data }) => {
+const PairTable: React.FC<PairsTableProps> = ({
+  data,
+  showPagination = true,
+}) => {
   const { t } = useTranslation();
   const pairHeadCells = headCells();
   const {
@@ -86,9 +91,9 @@ const PairTable: React.FC<TokensTableProps> = ({ data }) => {
     const oneWeekVolume = pair.oneWeekVolumeUSD
       ? pair.oneWeekVolumeUSD
       : pair.oneWeekVolumeUntracked;
-    const oneDayFee = (
-      Number(oneDayVolume) * GlobalConst.utils.FEEPERCENT
-    ).toLocaleString();
+    const oneDayFee = formatNumber(
+      Number(oneDayVolume) * GlobalConst.utils.FEEPERCENT,
+    );
     return (
       <Box mt={index === 0 ? 0 : 3}>
         <Box className='flex items-center' mb={1}>
@@ -128,15 +133,15 @@ const PairTable: React.FC<TokensTableProps> = ({ data }) => {
         <Divider />
         <Box className='mobileRow'>
           <p>{t('liquidity')}</p>
-          <p>${Number(liquidity).toLocaleString()}</p>
+          <p>${formatNumber(liquidity)}</p>
         </Box>
         <Box className='mobileRow'>
           <p>{t('24hVol')}</p>
-          <p>${Number(oneDayVolume).toLocaleString()}</p>
+          <p>${formatNumber(oneDayVolume)}</p>
         </Box>
         <Box className='mobileRow'>
           <p>{t('7dVol')}</p>
-          <p>${Number(oneWeekVolume).toLocaleString()}</p>
+          <p>${formatNumber(oneWeekVolume)}</p>
         </Box>
         <Box className='mobileRow'>
           <p>{t('24hFees')}</p>
@@ -174,9 +179,9 @@ const PairTable: React.FC<TokensTableProps> = ({ data }) => {
         : pair.oneWeekVolumeUntracked && !isNaN(pair.oneWeekVolumeUntracked)
         ? pair.oneWeekVolumeUntracked
         : 0;
-    const oneDayFee = (
-      Number(oneDayVolume) * GlobalConst.utils.FEEPERCENT
-    ).toLocaleString();
+    const oneDayFee = formatNumber(
+      Number(oneDayVolume) * GlobalConst.utils.FEEPERCENT,
+    );
     return [
       {
         html: (
@@ -217,13 +222,13 @@ const PairTable: React.FC<TokensTableProps> = ({ data }) => {
         ),
       },
       {
-        html: <p>${Number(liquidity).toLocaleString()}</p>,
+        html: <p>${formatNumber(liquidity)}</p>,
       },
       {
-        html: <p>${Number(oneDayVolume).toLocaleString()}</p>,
+        html: <p>${formatNumber(oneDayVolume)}</p>,
       },
       {
-        html: <p>${Number(oneWeekVolume).toLocaleString()}</p>,
+        html: <p>${formatNumber(oneWeekVolume)}</p>,
       },
       {
         html: <p>${oneDayFee}</p>,
@@ -235,7 +240,7 @@ const PairTable: React.FC<TokensTableProps> = ({ data }) => {
     <CustomTable
       defaultOrderBy={pairHeadCells[liquidityHeadCellIndex]}
       defaultOrder='desc'
-      showPagination={data.length > GlobalConst.utils.ROWSPERPAGE}
+      showPagination={showPagination}
       headCells={pairHeadCells}
       rowsPerPage={GlobalConst.utils.ROWSPERPAGE}
       data={data}

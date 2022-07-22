@@ -12,7 +12,16 @@ const BetaWarningBanner: React.FC = () => {
       {showBanner && (
         <Box className='warningBanner'>
           <AlertTriangle size={20} />
-          <span className='text-bold'>{t('betaWarningDesc')}</span>
+          <span className='text-bold'>
+            {t('betaWarningDesc')}
+            <a
+              href={process.env.REACT_APP_LEGACY_APP_URL}
+              target='_blank'
+              rel='noopener noreferrer'
+            >
+              {process.env.REACT_APP_LEGACY_APP_URL}
+            </a>
+          </span>
           <Box onClick={() => setShowBanner(false)} className='closeBanner'>
             <XCircle size={20} />
           </Box>

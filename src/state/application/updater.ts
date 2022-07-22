@@ -4,11 +4,14 @@ import { useActiveWeb3React } from 'hooks';
 import useDebounce from 'hooks/useDebounce';
 import useIsWindowVisible from 'hooks/useIsWindowVisible';
 import { updateBlockNumber } from './actions';
+import { useEthPrice } from './hooks';
+import { getEthPrice } from 'utils';
 
 export default function Updater(): null {
   const { library, chainId } = useActiveWeb3React();
   const { ethereum } = window as any;
   const dispatch = useDispatch();
+  const { ethPrice, updateEthPrice } = useEthPrice();
 
   const windowVisible = useIsWindowVisible();
 
@@ -19,6 +22,8 @@ export default function Updater(): null {
     chainId,
     blockNumber: null,
   });
+
+  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
 
   const blockNumberCallback = useCallback(
     (blockNumber: number) => {
@@ -36,6 +41,23 @@ export default function Updater(): null {
     },
     [chainId, setState],
   );
+
+  // this is for refreshing eth price every 10 mins
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const _currentTime = Math.floor(Date.now() / 1000);
+      setCurrentTime(_currentTime);
+    }, 600000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    (async () => {
+      const [price, oneDayPrice, ethPriceChange] = await getEthPrice();
+      updateEthPrice({ price, oneDayPrice, ethPriceChange });
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentTime]);
 
   // attach/detach listeners
   useEffect(() => {

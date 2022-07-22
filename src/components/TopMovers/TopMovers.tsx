@@ -5,9 +5,10 @@ import Skeleton from '@material-ui/lab/Skeleton';
 import { Token, ChainId } from '@uniswap/sdk';
 import { getAddress } from '@ethersproject/address';
 import { CurrencyLogo } from 'components';
-import { getEthPrice, getTopTokens, getPriceClass, formatNumber } from 'utils';
+import { getTopTokens, getPriceClass, formatNumber } from 'utils';
 import 'components/styles/TopMovers.scss';
 import { useTranslation } from 'react-i18next';
+import { useEthPrice } from 'state/application/hooks';
 
 interface TopMoversProps {
   hideArrow?: boolean;
@@ -15,6 +16,7 @@ interface TopMoversProps {
 const TopMovers: React.FC<TopMoversProps> = ({ hideArrow = false }) => {
   const { t } = useTranslation();
   const [topTokens, updateTopTokens] = useState<any[] | null>(null);
+  const { ethPrice } = useEthPrice();
 
   const topMoverTokens = useMemo(
     () => (topTokens && topTokens.length >= 5 ? topTokens.slice(0, 5) : null),
@@ -22,19 +24,23 @@ const TopMovers: React.FC<TopMoversProps> = ({ hideArrow = false }) => {
   );
 
   useEffect(() => {
-    async function fetchTopTokens() {
-      const [newPrice, oneDayPrice] = await getEthPrice();
-      const topTokensData = await getTopTokens(newPrice, oneDayPrice, 5);
-      if (topTokensData) {
-        updateTopTokens(topTokensData);
+    (async () => {
+      if (ethPrice.price && ethPrice.oneDayPrice) {
+        const topTokensData = await getTopTokens(
+          ethPrice.price,
+          ethPrice.oneDayPrice,
+          5,
+        );
+        if (topTokensData) {
+          updateTopTokens(topTokensData);
+        }
       }
-    }
-    fetchTopTokens();
-  }, [updateTopTokens]);
+    })();
+  }, [updateTopTokens, ethPrice.price, ethPrice.oneDayPrice]);
 
   return (
     <Box className='bg-palette topMoversWrapper'>
-      <p className='weight-600 text-secondary'>{t('24hTopMovers')}</p>
+      <p className='weight-600 text-secondary'>{t('24hMostVolume')}</p>
       <Box className='topMoversContent'>
         {topMoverTokens ? (
           <Box>

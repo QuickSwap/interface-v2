@@ -2,7 +2,7 @@ import React from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { Box } from '@material-ui/core';
 import { ArrowForwardIos } from '@material-ui/icons';
-import Search from 'components/Search';
+import AnalyticsSearch from 'components/AnalyticsSearch';
 import { shortenAddress } from 'utils';
 import 'pages/styles/analytics.scss';
 import { useTranslation } from 'react-i18next';
@@ -86,7 +86,7 @@ const AnalyticsHeader: React.FC<AnalyticHeaderProps> = ({ data, type }) => {
           )}
         </Box>
 
-        <Search />
+        <AnalyticsSearch />
       </Box>
     </Box>
   );

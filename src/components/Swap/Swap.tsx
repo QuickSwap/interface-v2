@@ -35,7 +35,6 @@ import {
   addMaticToMetamask,
   isSupportedNetwork,
   confirmPriceImpactWithoutFee,
-  halfAmountSpend,
   maxAmountSpend,
 } from 'utils';
 import { computeTradePriceBreakdown, warningSeverity } from 'utils/prices';
@@ -294,17 +293,17 @@ const Swap: React.FC<{
     currencyBalances[Field.INPUT],
   );
 
-  const halfAmountInput: CurrencyAmount | undefined = halfAmountSpend(
-    currencyBalances[Field.INPUT],
-  );
-
   const handleMaxInput = useCallback(() => {
     maxAmountInput && onUserInput(Field.INPUT, maxAmountInput.toExact());
   }, [maxAmountInput, onUserInput]);
 
   const handleHalfInput = useCallback(() => {
-    halfAmountInput && onUserInput(Field.INPUT, halfAmountInput.toExact());
-  }, [halfAmountInput, onUserInput]);
+    maxAmountInput &&
+      onUserInput(
+        Field.INPUT,
+        (Number(maxAmountInput.toExact()) / 2).toString(),
+      );
+  }, [maxAmountInput, onUserInput]);
 
   const atMaxAmountInput = Boolean(
     maxAmountInput && parsedAmounts[Field.INPUT]?.equalTo(maxAmountInput),
