@@ -9,7 +9,7 @@ import { TickMath } from './utils/tickMath';
 import { Tick, TickConstructorArgs } from './tick';
 import { NoTickDataProvider, TickDataProvider } from './tickDataProvider';
 import { TickListDataProvider } from './tickListDataProvider';
-import { POOL_DEPLOYER_ADDRESS } from 'constants/addresses';
+import { POOL_DEPLOYER_ADDRESS } from 'constants/v3/addresses';
 import { ChainId } from '@uniswap/sdk';
 import { computePoolAddress } from 'hooks/computePoolAddress';
 
