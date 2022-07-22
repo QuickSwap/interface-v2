@@ -5,9 +5,8 @@ import Skeleton from '@material-ui/lab/Skeleton';
 import { ArrowForwardIos } from '@material-ui/icons';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
-import { useGlobalData } from 'state/application/hooks';
+import { useEthPrice, useGlobalData } from 'state/application/hooks';
 import {
-  getEthPrice,
   getTopPairs,
   getTopTokens,
   getGlobalData,
@@ -28,45 +27,38 @@ const AnalyticsOverview: React.FC = () => {
   const { globalData, updateGlobalData } = useGlobalData();
   const [topTokens, updateTopTokens] = useState<any[] | null>(null);
   const [topPairs, updateTopPairs] = useState<any[] | null>(null);
+  const { ethPrice } = useEthPrice();
 
   useEffect(() => {
-    const fetchGlobalData = async () => {
-      const [newPrice, oneDayPrice] = await getEthPrice();
-      const globalData = await getGlobalData(newPrice, oneDayPrice);
-      if (globalData) {
-        updateGlobalData({ data: globalData });
+    if (!ethPrice.price || !ethPrice.oneDayPrice) return;
+    getGlobalData(ethPrice.price, ethPrice.oneDayPrice).then((data) => {
+      if (data) {
+        updateGlobalData({ data });
       }
-    };
-    const fetchTopTokens = async () => {
-      updateTopTokens(null);
-      const [newPrice, oneDayPrice] = await getEthPrice();
-      const topTokensData = await getTopTokens(
-        newPrice,
-        oneDayPrice,
-        GlobalConst.utils.ANALYTICS_TOKENS_COUNT,
-      );
-      if (topTokensData) {
-        updateTopTokens(topTokensData);
+    });
+
+    getTopTokens(
+      ethPrice.price,
+      ethPrice.oneDayPrice,
+      GlobalConst.utils.ANALYTICS_TOKENS_COUNT,
+    ).then((data) => {
+      if (data) {
+        updateTopTokens(data);
       }
-    };
-    const fetchTopPairs = async () => {
-      updateTopPairs(null);
-      const [newPrice] = await getEthPrice();
-      const pairs = await getTopPairs(GlobalConst.utils.ANALYTICS_PAIRS_COUNT);
+    });
+
+    getTopPairs(GlobalConst.utils.ANALYTICS_PAIRS_COUNT).then(async (pairs) => {
       const formattedPairs = pairs
         ? pairs.map((pair: any) => {
             return pair.id;
           })
         : [];
-      const pairData = await getBulkPairData(formattedPairs, newPrice);
+      const pairData = await getBulkPairData(formattedPairs, ethPrice.price);
       if (pairData) {
         updateTopPairs(pairData);
       }
-    };
-    fetchGlobalData();
-    fetchTopTokens();
-    fetchTopPairs();
-  }, [updateGlobalData, updateTopTokens, updateTopPairs]);
+    });
+  }, [updateGlobalData, ethPrice.price, ethPrice.oneDayPrice]);
 
   return (
     <Box width='100%' mb={3}>

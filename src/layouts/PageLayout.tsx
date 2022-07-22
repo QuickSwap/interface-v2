@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react';
-import { Box } from '@material-ui/core';
+import React, { useEffect, useState } from 'react';
+import { Box, Button } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
-import { Header, Footer, BetaWarningBanner } from 'components';
+import { Header, Footer, BetaWarningBanner, CustomModal } from 'components';
 import Background from './Background';
 import { useIsProMode } from 'state/application/hooks';
 
@@ -13,6 +13,7 @@ export interface PageLayoutProps {
 const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
   const history = useHistory();
   const { isProMode, updateIsProMode } = useIsProMode();
+  const [openPassModal, setOpenPassModal] = useState(false);
   const getPageWrapperClassName = () => {
     if (isProMode) {
       return '';
@@ -28,8 +29,44 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
     };
   }, [history, updateIsProMode]);
 
+  useEffect(() => {
+    if (
+      window.location.host !== 'quickswap.exchange' &&
+      window.location.host !== 'localhost:3000'
+    ) {
+      setOpenPassModal(true);
+    }
+  }, []);
+
+  const PasswordModal = () => {
+    const [devPass, setDevPass] = useState('');
+    const confirmPassword = () => {
+      if (devPass === 'devPass') {
+        setOpenPassModal(false);
+      }
+    };
+    return (
+      <CustomModal open={openPassModal} onClose={confirmPassword}>
+        <Box className='devPassModal'>
+          <p>Please input password to access dev site.</p>
+          <input
+            type='password'
+            value={devPass}
+            onChange={(e) => {
+              setDevPass(e.target.value);
+            }}
+          />
+          <Box textAlign='right'>
+            <Button onClick={confirmPassword}>Confirm</Button>
+          </Box>
+        </Box>
+      </CustomModal>
+    );
+  };
+
   return (
     <Box className='page'>
+      <PasswordModal />
       <BetaWarningBanner />
       <Header />
       {!isProMode && <Background fallback={false} />}

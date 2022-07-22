@@ -6,7 +6,13 @@
   background: $bgPalette;
   border-radius: 20px;
   @include media("screen", "<phone") {
-    padding: '16px 12px'
+    padding: 16px 12px
+  }
+}
+
+.limitOrderPanel {
+  & > div {
+    max-width: unset;
   }
 }
 

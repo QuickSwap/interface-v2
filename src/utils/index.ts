@@ -249,8 +249,10 @@ export const getEthPrice: () => Promise<number[]> = async () => {
       query: ETH_PRICE(oneDayBlock),
       fetchPolicy: 'network-only',
     });
-    const currentPrice = result?.data?.bundles[0]?.ethPrice;
-    const oneDayBackPrice = resultOneDay?.data?.bundles[0]?.ethPrice;
+    const currentPrice = Number(result?.data?.bundles[0]?.ethPrice ?? 0);
+    const oneDayBackPrice = Number(
+      resultOneDay?.data?.bundles[0]?.ethPrice ?? 0,
+    );
 
     priceChangeETH = getPercentChange(currentPrice, oneDayBackPrice);
     ethPrice = currentPrice;
@@ -751,7 +753,6 @@ export const getPairAddress = async (
 ) => {
   const pairData = await client.query({
     query: PAIR_ID(token0Address, token1Address),
-    fetchPolicy: 'network-only',
   });
   const pairs =
     pairData && pairData.data
@@ -763,36 +764,41 @@ export const getPairAddress = async (
   return { pairId, tokenReversed };
 };
 
-export const getSwapTransactions = async (pairId: string) => {
-  try {
-    const oneDayAgo = dayjs
-      .utc()
-      .subtract(1, 'day')
-      .unix();
-
-    let allFound = false;
-    let skip = 0;
-    let swapTx: any[] = [];
-    while (!allFound) {
+export const getSwapTransactions = async (
+  pairId: string,
+  startTime?: number,
+) => {
+  let allFound = false;
+  let swapTx: any[] = [];
+  const oneDayAgo = dayjs
+    .utc()
+    .subtract(1, 'day')
+    .unix();
+  let sTimestamp = startTime ?? oneDayAgo;
+  while (!allFound) {
+    try {
       const result = await txClient.query({
         query: SWAP_TRANSACTIONS,
         variables: {
           allPairs: [pairId],
-          skip,
-          lastTime: oneDayAgo,
+          lastTime: sTimestamp,
         },
-        fetchPolicy: 'no-cache',
       });
       if (result.data.swaps.length < 1000) {
         allFound = true;
       }
-      skip += 1000;
-      swapTx = swapTx.concat(result.data.swaps);
-    }
-    return swapTx;
-  } catch (e) {
-    return;
+      const swaps = result.data.swaps;
+      sTimestamp = Number(swaps[swaps.length - 1].transaction.timestamp);
+      swapTx = swapTx.concat(swaps);
+    } catch (e) {}
   }
+  return swapTx
+    .filter(
+      (item, ind, self) =>
+        ind ===
+        self.findIndex((item1) => item1.transaction.id === item.transaction.id),
+    )
+    .reverse();
 };
 
 export const getTokenChartData = async (
@@ -1725,10 +1731,7 @@ export function formatNumber(
   }
 }
 
-export function getTokenFromKey(
-  tokenKey: string,
-  tokenMap: TokenAddressMap,
-): Token {
+export function getTokenFromKey(tokenKey: string, tokenMap: TokenAddressMap) {
   //TODO: eventually we need to remove returnTokenFromKey completely
   //TODO: we need to support this until the token list also lists our (unwhitelisted tokens)
   const tokenData = returnTokenFromKey(tokenKey);
@@ -1754,13 +1757,7 @@ export function getTokenFromKey(
     return tokenData;
   }
 
-  return new Token(
-    wrappedTokenInfo.chainId,
-    wrappedTokenInfo.address,
-    wrappedTokenInfo.decimals,
-    wrappedTokenInfo.symbol,
-    wrappedTokenInfo.name,
-  );
+  return wrappedTokenInfo;
 }
 
 export function returnTokenFromKey(key: string): Token | undefined {

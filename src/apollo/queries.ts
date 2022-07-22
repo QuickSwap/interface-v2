@@ -682,13 +682,11 @@ export const FILTERED_TRANSACTIONS = gql`
 `;
 
 export const SWAP_TRANSACTIONS = gql`
-  query($allPairs: [Bytes]!, $skip: Int!, $lastTime: Int!) {
+  query($allPairs: [Bytes]!, $lastTime: Int!) {
     swaps(
       first: 1000
       where: { pair_in: $allPairs, timestamp_gte: $lastTime }
-      skip: $skip
       orderBy: timestamp
-      orderDirection: desc
     ) {
       transaction {
         id

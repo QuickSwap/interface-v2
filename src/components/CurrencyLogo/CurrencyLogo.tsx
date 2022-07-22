@@ -28,7 +28,7 @@ const CurrencyLogo: React.FC<CurrencyLogoProps> = ({
 
     if (currency instanceof Token) {
       if (currency instanceof WrappedTokenInfo) {
-        return [...getTokenLogoURL(currency.address), ...uriLocations];
+        return [...uriLocations, ...getTokenLogoURL(currency.address)];
       }
 
       return getTokenLogoURL(currency.address);

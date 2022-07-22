@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Box } from '@material-ui/core';
 import { TopMovers, TokensTable } from 'components';
-import { useBookmarkTokens } from 'state/application/hooks';
-import { getEthPrice, getTopTokens } from 'utils';
+import { useBookmarkTokens, useEthPrice } from 'state/application/hooks';
+import { getTopTokens } from 'utils';
 import { Skeleton } from '@material-ui/lab';
 import { useTranslation } from 'react-i18next';
 import { GlobalConst } from 'constants/index';
@@ -13,6 +13,7 @@ const AnalyticsTokens: React.FC = () => {
 
   const [topTokens, updateTopTokens] = useState<any[] | null>(null);
   const { bookmarkTokens } = useBookmarkTokens();
+  const { ethPrice } = useEthPrice();
 
   const favoriteTokens = useMemo(() => {
     if (topTokens) {
@@ -26,19 +27,19 @@ const AnalyticsTokens: React.FC = () => {
 
   useEffect(() => {
     const fetchTopTokens = async () => {
-      updateTopTokens(null); //set top tokens as null to show loading status when fetching tokens data
-      const [newPrice, oneDayPrice] = await getEthPrice();
-      const topTokensData = await getTopTokens(
-        newPrice,
-        oneDayPrice,
-        GlobalConst.utils.ANALYTICS_TOKENS_COUNT,
-      );
-      if (topTokensData) {
-        updateTopTokens(topTokensData);
+      if (ethPrice.price && ethPrice.oneDayPrice) {
+        const topTokensData = await getTopTokens(
+          ethPrice.price,
+          ethPrice.oneDayPrice,
+          GlobalConst.utils.ANALYTICS_TOKENS_COUNT,
+        );
+        if (topTokensData) {
+          updateTopTokens(topTokensData);
+        }
       }
     };
     fetchTopTokens();
-  }, [updateTopTokens]);
+  }, [ethPrice.price, ethPrice.oneDayPrice]);
 
   return (
     <Box width='100%' mb={3}>
