@@ -9,7 +9,7 @@ import {
   FARMING_CENTER,
   FINITE_FARMING,
   NONFUNGIBLE_POSITION_MANAGER_ADDRESSES,
-} from '../constants/addresses';
+} from '../constants/v3/addresses';
 import { BigNumber } from '@ethersproject/bignumber';
 import {
   CURRENT_EVENTS,
