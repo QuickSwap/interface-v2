@@ -3,7 +3,6 @@ import { Token } from '@uniswap/sdk-core';
 import { Matic } from 'v3lib/entities/matic';
 import { WMATIC } from 'v3lib/entities/wmatic';
 
-
 type AddressMap = { [chainId: number]: string };
 
 export const V3_CORE_FACTORY_ADDRESSES: AddressMap = {

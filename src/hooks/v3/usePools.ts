@@ -2,10 +2,9 @@ import { POOL_DEPLOYER_ADDRESS } from '../../constants/v3/addresses';
 import { Currency, Token } from '@uniswap/sdk-core';
 import { useMemo } from 'react';
 import { useActiveWeb3React } from 'hooks';
-import { useMultipleContractSingleData } from 'state/multicall/hooks';
-
+import { useMultipleContractSingleData } from 'state/multicall/v3/hooks';
 import { Interface } from '@ethersproject/abi';
-import abi from '../../abis/pool.json';
+import abi from 'constants/abis/v3/pool.json';
 import { computePoolAddress } from './computePoolAddress';
 import { useInternet } from './useInternet';
 import { useToken } from './Tokens';

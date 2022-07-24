@@ -3,16 +3,16 @@ import JSBI from 'jsbi';
 import { useMemo } from 'react';
 import { useAllTokens } from 'hooks/Tokens';
 import { useMulticallContract } from 'hooks/useContract';
-import {
-  useMultipleContractSingleData,
-  useSingleContractMultipleData,
-} from 'state/multicall/hooks';
 import { Interface } from '@ethersproject/abi';
 import ERC20ABI from '../../../constants/abis/erc20.json';
 import { Erc20Interface } from 'abis/types/Erc20';
 import usePrevious, { usePreviousNonEmptyObject } from 'hooks/usePrevious';
 import { useActiveWeb3React } from 'hooks';
 import { isAddress } from 'utils';
+import {
+  useMultipleContractSingleData,
+  useSingleContractMultipleData,
+} from 'state/multicall/v3/hooks';
 
 /**
  * Returns a map of the given addresses to their eventually consistent ETH balances.

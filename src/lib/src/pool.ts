@@ -11,7 +11,7 @@ import { NoTickDataProvider, TickDataProvider } from './tickDataProvider';
 import { TickListDataProvider } from './tickListDataProvider';
 import { POOL_DEPLOYER_ADDRESS } from 'constants/v3/addresses';
 import { ChainId } from '@uniswap/sdk';
-import { computePoolAddress } from 'hooks/computePoolAddress';
+import { computePoolAddress } from 'hooks/v3/computePoolAddress';
 
 interface StepComputations {
   sqrtPriceStartX96: JSBI;

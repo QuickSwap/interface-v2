@@ -263,3 +263,25 @@ export function useApproveCallbackFromTrade(
     chainId ? GlobalConst.addresses.ROUTER_ADDRESS[chainId] : undefined,
   );
 }
+
+// wraps useApproveCallback in the context of a swap
+export function useApproveCallbackFromBestTrade(
+  trade?: Trade,
+  allowedSlippage = 0,
+): [ApprovalState, () => Promise<void>] {
+  const { chainId } = useActiveWeb3React();
+  const amountToApprove = useMemo(
+    () =>
+      trade
+        ? computeSlippageAdjustedAmounts(trade, allowedSlippage)[Field.INPUT]
+        : undefined,
+    [trade, allowedSlippage],
+  );
+
+  return useApproveCallback(
+    amountToApprove,
+    chainId
+      ? GlobalConst.addresses.PARASWAP_PROXY_ROUTER_ADDRESS[chainId]
+      : undefined,
+  );
+}

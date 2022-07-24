@@ -1,3 +1,4 @@
+import React from 'react';
 import { darken } from 'polished';
 import { useState } from 'react';
 import styled, { keyframes } from 'styled-components/macro';

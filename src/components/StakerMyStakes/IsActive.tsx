@@ -2,7 +2,7 @@ import React from 'react';
 import { useToken } from 'hooks/TokensV3';
 import { unwrappedToken } from 'utils/unwrappedToken';
 
-import { usePool } from '../../hooks/usePools';
+import { usePool } from 'hooks/usePools';
 
 import { PositionRange } from './styled';
 
@@ -17,6 +17,7 @@ export function IsActive({ el }: { el: any }) {
   const token0 = useToken(token0Address);
   const token1 = useToken(token1Address);
 
+  //TODO: This isn't work we are returning undefined always, maybe due to the type of token
   const currency0 = token0 ? unwrappedToken(token0) : undefined;
   const currency1 = token1 ? unwrappedToken(token1) : undefined;
 
