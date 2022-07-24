@@ -15,6 +15,8 @@ import { ChainId } from '@uniswap/sdk';
 import EternalFarmsPage from 'pages/EternalFarmsPage';
 import { useFarmingSubgraph } from 'hooks/useIncentiveSubgraph';
 import { FarmingMyFarms } from 'components/StakerMyStakes';
+import VersionToggle from 'components/Toggle/VersionToggle';
+import useParsedQueryString from 'hooks/useParsedQueryString';
 
 const FarmPage: React.FC = () => {
   const { chainId } = useActiveWeb3React();
@@ -23,7 +25,6 @@ const FarmPage: React.FC = () => {
   const [farmIndex, setFarmIndex] = useState(
     GlobalConst.farmIndex.LPFARM_INDEX,
   );
-  const [isV3, setIsV3] = useState(false);
   const chainIdOrDefault = chainId ?? ChainId.MATIC;
   const lpFarms = useDefaultFarmList();
   const dualFarms = useDefaultDualFarmList();
@@ -55,22 +56,15 @@ const FarmPage: React.FC = () => {
       text: t('lpMining'),
       onClick: () => {
         setFarmIndex(GlobalConst.farmIndex.LPFARM_INDEX);
-        setIsV3(false);
       },
-      condition: !isV3 && farmIndex === GlobalConst.farmIndex.LPFARM_INDEX,
+      condition: farmIndex === GlobalConst.farmIndex.LPFARM_INDEX,
     },
     {
       text: t('dualMining'),
       onClick: () => {
         setFarmIndex(GlobalConst.farmIndex.DUALFARM_INDEX);
-        setIsV3(false);
       },
-      condition: !isV3 && farmIndex === GlobalConst.farmIndex.DUALFARM_INDEX,
-    },
-    {
-      text: t('v3Mining'),
-      onClick: () => setIsV3(true),
-      condition: isV3,
+      condition: farmIndex === GlobalConst.farmIndex.DUALFARM_INDEX,
     },
   ];
 
@@ -90,25 +84,30 @@ const FarmPage: React.FC = () => {
   } = useFarmingSubgraph() || {};
   const [now, setNow] = useState(Date.now());
 
+  const parsedQuery = useParsedQueryString();
+  const poolVersion =
+    parsedQuery && parsedQuery.version ? (parsedQuery.version as string) : 'v3';
+
   return (
     <Box width='100%' mb={3} id='farmPage'>
       <Box className='pageHeading'>
-        <Box mr={2}>
+        <Box className='flex row items-center'>
           <h4>{t('farm')}</h4>
+          <VersionToggle baseUrl={'farm'} />
         </Box>
         <Box className='helpWrapper'>
           <small>{t('help')}</small>
           <HelpIcon />
         </Box>
       </Box>
-      <CustomSwitch
-        width={300}
-        height={48}
-        items={farmCategories}
-        isLarge={true}
-      />
-      {!isV3 && (
+      {poolVersion !== 'v3' && (
         <>
+          <CustomSwitch
+            width={300}
+            height={48}
+            items={farmCategories}
+            isLarge={true}
+          />
           <Box my={2}>
             <FarmRewards bulkPairs={bulkPairs} farmIndex={farmIndex} />
           </Box>
@@ -117,7 +116,7 @@ const FarmPage: React.FC = () => {
           </Box>
         </>
       )}
-      {isV3 && (
+      {poolVersion === 'v3' && (
         <>
           <FarmingMyFarms
             data={transferredPositions}
