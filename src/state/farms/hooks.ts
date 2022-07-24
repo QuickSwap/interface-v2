@@ -37,7 +37,7 @@ export class WrappedStakingInfo implements StakingBasic {
     this.pair = stakingInfo.pair;
     this.lp = stakingInfo.lp;
     this.name = stakingInfo.name;
-    //TODO: we should be resolving the following property from the lists state using the address field instead of the key
+
     this.baseToken = getTokenFromAddress(
       stakingInfo.baseToken,
       chainId,
@@ -95,8 +95,8 @@ export function listToFarmMap(
   tokenAddressMap: TokenAddressMap,
   farmTokens: Token[],
 ): StakingInfoAddressMap {
-  // const result = farmCache?.get(list);
-  // if (result) return result;
+  const result = farmCache?.get(list);
+  if (result) return result;
 
   const map = list.active.concat(list.closed).reduce<StakingInfoAddressMap>(
     (stakingInfoMap, stakingInfo) => {
@@ -122,7 +122,7 @@ export function listToFarmMap(
     },
     { ...EMPTY_LIST },
   );
-  // farmCache?.set(list, map);
+  farmCache?.set(list, map);
   return map;
 }
 
@@ -133,35 +133,41 @@ export function useFarmList(url: string | undefined): StakingInfoAddressMap {
 
   const tokenMap = useSelectedTokenList();
   const current = url ? farms[url]?.current : null;
-  const farmTokenAddresses = current
-    ? current.active
-        .concat(current.closed)
-        .map((item) => [
-          item.baseToken,
-          item.tokens[0],
-          item.tokens[1],
-          item.rewardToken,
-        ])
-        .flat()
-        .filter((item) => !!item)
-        .filter((address) => !tokenMap[ChainId.MATIC][address])
-        .filter(
-          (addr, ind, self) =>
-            self.findIndex(
-              (address) => address.toLowerCase() === addr.toLowerCase(),
-            ) === ind,
-        )
-    : [];
+  const farmTokenAddresses =
+    current && tokenMap
+      ? current.active
+          .concat(current.closed)
+          .map((item) => [
+            item.baseToken,
+            item.tokens[0],
+            item.tokens[1],
+            item.rewardToken,
+          ])
+          .flat()
+          .filter((item) => !!item)
+          .filter((address) => !tokenMap[ChainId.MATIC][address])
+          .filter(
+            (addr, ind, self) =>
+              self.findIndex(
+                (address) => address.toLowerCase() === addr.toLowerCase(),
+              ) === ind,
+          )
+      : [];
   const farmTokens = useTokens(farmTokenAddresses);
   return useMemo(() => {
-    if (!current || !tokenMap) return EMPTY_LIST;
+    if (
+      !current ||
+      !tokenMap ||
+      farmTokens?.length !== farmTokenAddresses.length
+    )
+      return EMPTY_LIST;
     try {
       return listToFarmMap(current, tokenMap, farmTokens ?? []);
     } catch (error) {
       console.error('Could not show token list due to error', error);
       return EMPTY_LIST;
     }
-  }, [current, farmTokens, tokenMap]);
+  }, [current, farmTokens, farmTokenAddresses.length, tokenMap]);
 }
 
 export function useDefaultFarmList(): StakingInfoAddressMap {

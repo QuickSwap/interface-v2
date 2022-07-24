@@ -40,7 +40,7 @@ export class WrappedDualFarmInfo implements DualStakingBasic {
     this.name = stakingInfo.name;
     this.rateA = stakingInfo.rateA;
     this.rateB = stakingInfo.rateB;
-    //TODO: we should be resolving the following property from the lists state using the address field instead of the key
+
     this.baseToken = getTokenFromAddress(
       stakingInfo.baseToken,
       chainId,
@@ -148,41 +148,43 @@ export function useDualFarmList(
   );
   const tokenMap = useSelectedTokenList();
   const current = url ? dualFarms[url]?.current : null;
-  const dualTokenAddresses = current
-    ? current.active
-        .concat(current.closed)
-        .map((item) => [
-          item.baseToken,
-          item.tokens[0],
-          item.tokens[1],
-          item.rewardTokenA,
-          item.rewardTokenB,
-          item.rewardTokenBBase,
-        ])
-        .flat()
-        .filter(
-          (address) =>
-            !Object.keys(tokenMap[ChainId.MATIC]).find(
-              (add) => add.toLowerCase() === address.toLowerCase(),
-            ),
-        )
-        .filter(
-          (address, ind, self) =>
-            self.findIndex(
-              (addr) => address.toLowerCase() === addr.toLowerCase(),
-            ) === ind,
-        )
-    : [];
+  const dualTokenAddresses =
+    current && tokenMap
+      ? current.active
+          .concat(current.closed)
+          .map((item) => [
+            item.baseToken,
+            item.tokens[0],
+            item.tokens[1],
+            item.rewardTokenA,
+            item.rewardTokenB,
+            item.rewardTokenBBase,
+          ])
+          .flat()
+          .filter((item) => !!item)
+          .filter((address) => !tokenMap[ChainId.MATIC][address])
+          .filter(
+            (address, ind, self) =>
+              self.findIndex(
+                (addr) => address.toLowerCase() === addr.toLowerCase(),
+              ) === ind,
+          )
+      : [];
   const dualFarmTokens = useTokens(dualTokenAddresses);
   return useMemo(() => {
-    if (!current || !tokenMap) return EMPTY_LIST;
+    if (
+      !current ||
+      !tokenMap ||
+      dualFarmTokens?.length !== dualTokenAddresses.length
+    )
+      return EMPTY_LIST;
     try {
       return listToDualFarmMap(current, tokenMap, dualFarmTokens ?? []);
     } catch (error) {
       console.error('Could not show token list due to error', error);
       return EMPTY_LIST;
     }
-  }, [current, dualFarmTokens, tokenMap]);
+  }, [current, dualFarmTokens, dualTokenAddresses.length, tokenMap]);
 }
 
 export function useDefaultDualFarmList(): DualFarmInfoAddressMap {

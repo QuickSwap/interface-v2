@@ -36,7 +36,7 @@ export class WrappedSyrupInfo implements SyrupBasic {
     this.lp = syrupInfo.lp;
     this.name = syrupInfo.name;
     this.ending = syrupInfo.ending;
-    //TODO: we should be resolving the following property from the lists state using the address field instead of the key
+
     this.baseToken = getTokenFromAddress(
       syrupInfo.baseToken,
       chainId,
@@ -121,34 +121,36 @@ export function useSyrupList(url: string | undefined): SyrupInfoAddressMap {
   );
   const tokenMap = useSelectedTokenList();
   const current = url ? syrups[url]?.current : null;
-  const syrupTokenAddresses = current
-    ? current.active
-        .concat(current.closed)
-        .map((item) => [item.baseToken, item.token, item.stakingToken])
-        .flat()
-        .filter(
-          (address) =>
-            !Object.keys(tokenMap[ChainId.MATIC]).find(
-              (add) => add.toLowerCase() === address.toLowerCase(),
-            ),
-        )
-        .filter(
-          (address, ind, self) =>
-            self.findIndex(
-              (addr) => address.toLowerCase() === addr.toLowerCase(),
-            ) === ind,
-        )
-    : [];
+  const syrupTokenAddresses =
+    current && tokenMap
+      ? current.active
+          .concat(current.closed)
+          .map((item) => [item.baseToken, item.token, item.stakingToken])
+          .flat()
+          .filter((item) => !!item)
+          .filter((address) => !tokenMap[ChainId.MATIC][address])
+          .filter(
+            (address, ind, self) =>
+              self.findIndex(
+                (addr) => address.toLowerCase() === addr.toLowerCase(),
+              ) === ind,
+          )
+      : [];
   const syrupTokens = useTokens(syrupTokenAddresses);
   return useMemo(() => {
-    if (!current || !tokenMap) return EMPTY_LIST;
+    if (
+      !current ||
+      !tokenMap ||
+      syrupTokenAddresses.length !== syrupTokens?.length
+    )
+      return EMPTY_LIST;
     try {
       return listToSyrupMap(current, tokenMap, syrupTokens ?? []);
     } catch (error) {
       console.error('Could not show token list due to error', error);
       return EMPTY_LIST;
     }
-  }, [current, tokenMap, syrupTokens]);
+  }, [current, tokenMap, syrupTokenAddresses.length, syrupTokens]);
 }
 
 export function useDefaultSyrupList(): SyrupInfoAddressMap {

@@ -49,7 +49,6 @@ import { formatUnits } from 'ethers/lib/utils';
 import { AddressZero } from '@ethersproject/constants';
 import { GlobalConst, GlobalValue, SUPPORTED_WALLETS } from 'constants/index';
 import { TokenAddressMap } from 'state/lists/hooks';
-import tokenData from 'constants/tokens.json';
 import {
   DualStakingInfo,
   LairInfo,
@@ -1748,25 +1747,6 @@ export function getTokenFromAddress(
   }
 
   return wrappedTokenInfo;
-}
-
-export function returnTokenFromKey(key: string): Token | undefined {
-  if (key === 'MATIC') {
-    return GlobalValue.tokens.MATIC;
-  }
-  const token = (tokenData as any)[key];
-
-  if (!token) {
-    return;
-  }
-
-  return new Token(
-    ChainId.MATIC,
-    getAddress(token.address),
-    token.decimals,
-    token.symbol,
-    token.name,
-  );
 }
 
 export function getChartDates(chartData: any[] | null, durationIndex: number) {
