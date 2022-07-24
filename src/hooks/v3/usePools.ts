@@ -53,14 +53,12 @@ export function usePools(
       });
     });
   }, [chainId, transformed]);
-  console.log('pool test address', { poolAddresses });
 
   const globalState0s = useMultipleContractSingleData(
     poolAddresses,
     POOL_STATE_INTERFACE,
     'globalState',
   );
-  console.log('pool test address global', { poolAddresses, globalState0s });
   const prevGlobalState0s = usePreviousNonErroredArray(globalState0s);
 
   const _globalState0s = useMemo(() => {
