@@ -4,7 +4,6 @@ import { useMediaQuery } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import { StakingInfo } from 'types';
 import {
   useStakingInfo,
   getBulkPairData,
