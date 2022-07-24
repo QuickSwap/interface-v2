@@ -6,7 +6,7 @@ import YourLiquidityPools from './YourLiquidityPools';
 import { useTranslation } from 'react-i18next';
 import 'pages/styles/pools.scss';
 import useParsedQueryString from 'hooks/useParsedQueryString';
-import PoolToggle from './PoolToggle';
+import VersionToggle from '../../components/Toggle/VersionToggle';
 import { useFarmingSubgraph } from 'hooks/useIncentiveSubgraph';
 
 const PoolsPage: React.FC = () => {
@@ -36,7 +36,7 @@ const PoolsPage: React.FC = () => {
       <Box className='pageHeading'>
         <Box className='flex row items-center'>
           <h4>{t('pool')}</h4>
-          <PoolToggle />
+          <VersionToggle baseUrl={'pools'} />
         </Box>
 
         <Box className='helpWrapper' style={{ alignSelf: 'flex-end' }}>

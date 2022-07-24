@@ -9,7 +9,7 @@ import {
 import { Trade as V2Trade } from '@uniswap/v2-sdk';
 import { Trade as V3Trade } from 'lib/src/trade';
 import { useCallback, useMemo } from 'react';
-import { SWAP_ROUTER_ADDRESSES } from '../constants/addresses';
+import { SWAP_ROUTER_ADDRESSES } from '../constants/v3/addresses';
 import {
   useHasPendingApproval,
   useTransactionAdder,
