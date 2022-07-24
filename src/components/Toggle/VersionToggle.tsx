@@ -4,10 +4,15 @@ import { useTranslation } from 'react-i18next';
 import 'pages/styles/pools.scss';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import { StyledLabel } from 'components/AddLiquidity/CommonStyledElements';
-import { ToggleContainer, ToggleInnerContainer } from './styled';
+import {
+  ToggleContainer,
+  ToggleInnerContainer,
+} from '../../pages/PoolsPage/styled';
 import { useHistory } from 'react-router-dom';
 
-const PoolToggle: React.FC = () => {
+const VersionToggle: React.FC<{ baseUrl: string }> = ({
+  baseUrl: baseUrlSegment,
+}) => {
   const parsedQuery = useParsedQueryString();
 
   const history = useHistory();
@@ -18,7 +23,9 @@ const PoolToggle: React.FC = () => {
   const { t } = useTranslation();
 
   const handleToggleAction = useCallback(() => {
-    history.push(`/pools?version=${poolVersion === 'v3' ? 'v2' : 'v3'}`);
+    history.push(
+      `/${baseUrlSegment}?version=${poolVersion === 'v3' ? 'v2' : 'v3'}`,
+    );
   }, [poolVersion, history]);
 
   return (
@@ -44,4 +51,4 @@ const PoolToggle: React.FC = () => {
   );
 };
 
-export default PoolToggle;
+export default VersionToggle;

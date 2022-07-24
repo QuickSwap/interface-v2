@@ -1,5 +1,4 @@
-import { ChainId } from "@uniswap/sdk";
-
+import { ChainId } from '@uniswap/sdk';
 
 export const L1_CHAIN_IDS = [] as const;
 

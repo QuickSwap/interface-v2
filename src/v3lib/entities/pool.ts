@@ -1,14 +1,9 @@
+import { ChainId } from '@uniswap/sdk';
 import { BigintIsh, CurrencyAmount, Price, Token } from '@uniswap/sdk-core';
+import { POOL_DEPLOYER_ADDRESS } from 'constants/v3/addresses';
 import JSBI from 'jsbi';
 import invariant from 'tiny-invariant';
-import {
-  FeeAmount,
-  NEGATIVE_ONE,
-  ONE,
-  POOL_DEPLOYER_ADDRESS,
-  Q192,
-  ZERO,
-} from 'v3lib/utils';
+import { FeeAmount, NEGATIVE_ONE, ONE, Q192, ZERO } from 'v3lib/utils';
 import { computePoolAddress } from '../utils/computePoolAddress';
 import { LiquidityMath } from '../utils/liquidityMath';
 import { SwapMath } from '../utils/swapMath';
@@ -142,7 +137,7 @@ export class Pool {
     initCodeHashManualOverride?: string,
   ): string {
     return computePoolAddress({
-      factoryAddress: POOL_DEPLOYER_ADDRESS,
+      factoryAddress: POOL_DEPLOYER_ADDRESS[ChainId.MATIC],
       fee,
       tokenA,
       tokenB,

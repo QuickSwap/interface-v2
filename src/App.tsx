@@ -46,6 +46,7 @@ import TransactionUpdater from 'state/transactions/updater';
 import ListsUpdater from 'state/lists/updater';
 import UserUpdater from 'state/user/updater';
 import MulticallUpdater from 'state/multicall/updater';
+import MultiCallV3Updater from 'state/multicall/v3/updater';
 import FarmUpdater from 'state/farms/updater';
 import DualFarmUpdater from 'state/dualfarms/updater';
 import SyrupUpdater from 'state/syrups/updater';
@@ -85,6 +86,7 @@ function Updaters() {
       <TransactionUpdater />
       <ListsUpdater />
       <MulticallUpdater />
+      <MultiCallV3Updater />
       <UserUpdater />
       <FarmUpdater />
       <DualFarmUpdater />
