@@ -127,10 +127,13 @@ const AddLiquidityV3: React.FC<{
   const existingPosition = undefined; // useDerivedPositionInfo(existingPositionDetails);
   const feeAmount = 100;
 
-  const baseCurrency = useCurrency(
-    '0xe68c76BD4CCeEA3bb6655FF708F847206F3D5b3C',
-  );
-  const currencyB = useCurrency('0x36eE587B148cfB474f1211B1C1EdEF2116285d28');
+  const TTA = '0xe68c76BD4CCeEA3bb6655FF708F847206F3D5b3C';
+  const TTB = '0x36eE587B148cfB474f1211B1C1EdEF2116285d28';
+  const matic = '0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619';
+  const usdc = '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174';
+  const algebra = '0x0169eC1f8f639B32Eec6D923e24C2A2ff45B9DD6';
+  const baseCurrency = useCurrency(matic);
+  const currencyB = useCurrency(usdc);
   // prevent an error if they input ETH/WETH
   //TODO
   const quoteCurrency =
@@ -165,34 +168,10 @@ const AddLiquidityV3: React.FC<{
     ticksAtLimit,
     dynamicFee,
   } = useV3DerivedMintInfo(
-    baseCurrency ?? undefined,
-    quoteCurrency ?? undefined,
     feeAmount,
     baseCurrency ?? undefined,
     existingPosition,
   );
-
-  useEffect(() => {
-    console.log('mintInfo', {
-      ticks,
-      pricesAtTicks,
-      position,
-      noLiquidity,
-      currencies,
-      errorMessage,
-      baseCurrency,
-      quoteCurrency,
-    });
-  }, [
-    ticks,
-    pricesAtTicks,
-    position,
-    noLiquidity,
-    currencies,
-    errorMessage,
-    baseCurrency,
-    quoteCurrency,
-  ]);
 
   const pendingText = t('supplyingTokens', 'liquidityTokenData');
 
@@ -244,7 +223,6 @@ const AddLiquidityV3: React.FC<{
   }, [basePriceUSD, quotePriceUSD]);
 
   useEffect(() => {
-    console.log('type state test', initialTokenPrice);
     if (initialTokenPrice) {
       onStartPriceInput(initialTokenPrice);
     }
@@ -328,19 +306,6 @@ const AddLiquidityV3: React.FC<{
     },
     [onCurrencySelection],
   );
-
-  // useEffect(() => {
-  //   if (currencyId0) {
-  //     onCurrencySelection(Field.CURRENCY_A, currencyId0);
-  //   } else {
-  //     onCurrencySelection(Field.CURRENCY_A, Token.ETHER);
-  //   }
-  //   if (currency1) {
-  //     onCurrencySelection(Field.CURRENCY_B, currency1);
-  //   } else {
-  //     onCurrencySelection(Field.CURRENCY_B, returnTokenFromKey('USDT'));
-  //   }
-  // }, [onCurrencySelection, currency0, currency1]);
 
   const onAdd = () => {
     if (expertMode) {
@@ -714,8 +679,8 @@ const AddLiquidityV3: React.FC<{
           <CurrencySelect
             currency={currencies.CURRENCY_A}
             otherCurrency={currencies.CURRENCY_B}
-            handleCurrencySelect={() => {
-              console.log('select');
+            handleCurrencySelect={(currency: any) => {
+              handleCurrencyASelect(currency);
             }}
             bgClass='token-select-background cursor-pointer'
             id='select-token-a'
@@ -730,8 +695,8 @@ const AddLiquidityV3: React.FC<{
           <CurrencySelect
             currency={currencies.CURRENCY_B}
             otherCurrency={currencies.CURRENCY_A}
-            handleCurrencySelect={() => {
-              console.log('select');
+            handleCurrencySelect={(currency: any) => {
+              handleCurrencyBSelect(currency);
             }}
             bgClass='token-select-background cursor-pointer'
             id='select-token-b'
@@ -803,8 +768,7 @@ const AddLiquidityV3: React.FC<{
               )
             }
             handleCurrencySelect={(currency: any) => {
-              console.log('selected currency', currency);
-              setSelectedCurrency0(currency?.address || currency?.symbol);
+              handleCurrencyASelect(currency);
             }}
             amount={formattedAmounts[Field.CURRENCY_A]}
             setAmount={onFieldAInput}
@@ -832,8 +796,7 @@ const AddLiquidityV3: React.FC<{
               onFieldBInput(maxAmounts[Field.CURRENCY_B]?.toExact() ?? '')
             }
             handleCurrencySelect={(currency: any) => {
-              console.log('select', currency);
-              setSelectedCurrency1(currency?.address || currency?.symbol);
+              handleCurrencyBSelect(currency);
             }}
             amount={formattedAmounts[Field.CURRENCY_B]}
             setAmount={onFieldBInput}

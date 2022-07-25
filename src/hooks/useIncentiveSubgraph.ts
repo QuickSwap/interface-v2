@@ -122,6 +122,16 @@ export function useFarmingSubgraph() {
     ? new providers.Web3Provider(library.provider)
     : undefined;
 
+  async function fetchEternalFarmAPR() {
+    const apiURL = 'https://api.algebra.finance/api/APR/eternalFarmings/';
+
+    try {
+      return await fetch(apiURL).then((v) => v.json());
+    } catch (error) {
+      return {};
+    }
+  }
+
   async function getEvents(events: any[], farming = false) {
     const _events: any[] = [];
 
@@ -241,9 +251,10 @@ export function useFarmingSubgraph() {
         throw new Error(`${error.name} ${error.message}`);
       }
 
-      return eternalFarmings[0];
+      const result:any = eternalFarmings[0];
+      return result;
     } catch (err) {
-      throw new Error('Fetch infinite farming ' + err.message);
+      // throw new Error('Fetch infinite farming ' + err.message);
     }
   }
 
@@ -445,9 +456,9 @@ export function useFarmingSubgraph() {
       setHasTransferredPositions(Boolean(positionsTransferred.length));
       setHasTransferredPositionsLoading(false);
     } catch (err) {
-      throw new Error(
-        'Has transferred positions ' + err.code + ' ' + err.message,
-      );
+      // throw new Error(
+      //   'Has transferred positions ' + err.code + ' ' + err.message,
+      // );
     } finally {
       setHasTransferredPositionsLoading(false);
     }

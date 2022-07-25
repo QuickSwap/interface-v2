@@ -1,4 +1,5 @@
 import { createReducer } from '@reduxjs/toolkit';
+import { selectCurrency } from './actions';
 import {
   Field,
   resetMintState,
@@ -42,6 +43,12 @@ interface MintState {
   };
   readonly initialTokenPrice: string;
   readonly currentStep: number;
+  readonly [Field.CURRENCY_A]: {
+    readonly currencyId: string | undefined;
+  };
+  readonly [Field.CURRENCY_B]: {
+    readonly currencyId: string | undefined;
+  };
 }
 
 const initialState: MintState = {
@@ -57,6 +64,12 @@ const initialState: MintState = {
   initialUSDPrices: { [Field.CURRENCY_A]: '', [Field.CURRENCY_B]: '' },
   initialTokenPrice: '',
   currentStep: 0,
+  [Field.CURRENCY_A]: {
+    currencyId: '',
+  },
+  [Field.CURRENCY_B]: {
+    currencyId: '',
+  },
 };
 
 export default createReducer<MintState>(initialState, (builder) =>
@@ -127,6 +140,28 @@ export default createReducer<MintState>(initialState, (builder) =>
         ...state,
         preset,
       };
+    })
+    .addCase(selectCurrency, (state, { payload: { currencyId, field } }) => {
+      const otherField =
+        field === Field.CURRENCY_A ? Field.CURRENCY_B : Field.CURRENCY_A;
+      if (currencyId === state[otherField].currencyId) {
+        // the case where we have to swap the order
+        return {
+          ...state,
+          independentField:
+            state.independentField === Field.CURRENCY_A
+              ? Field.CURRENCY_B
+              : Field.CURRENCY_A,
+          [field]: { currencyId: currencyId },
+          [otherField]: { currencyId: state[field].currencyId },
+        };
+      } else {
+        // the normal case
+        return {
+          ...state,
+          [field]: { currencyId: currencyId },
+        };
+      }
     })
     .addCase(setAddLiquidityTxHash, (state, { payload: { txHash } }) => {
       return {

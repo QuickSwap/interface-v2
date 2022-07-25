@@ -49,3 +49,7 @@ export const setInitialTokenPrice = createAction<{ typedValue: string }>(
 export const updateCurrentStep = createAction<{ currentStep: number }>(
   'mintV3/setCurrentStep',
 );
+export const selectCurrency = createAction<{
+  field: Field;
+  currencyId: string;
+}>('mintV3/selectCurrency');
