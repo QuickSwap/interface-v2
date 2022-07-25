@@ -7,7 +7,7 @@ import { Token } from '@uniswap/sdk';
 import { TokenAddressMap, useSelectedTokenList } from 'state/lists/hooks';
 import { getTokenFromAddress } from 'utils';
 import { useTokens } from 'hooks/Tokens';
-import { GlobalConst, GlobalValue } from 'constants/index';
+import { GlobalValue } from 'constants/index';
 
 export class WrappedStakingInfo implements StakingBasic {
   public readonly stakingInfo: StakingRaw;
