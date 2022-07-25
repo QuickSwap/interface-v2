@@ -7,10 +7,6 @@
   transition: 500ms;
   border-radius: 20px;
   background-color: $secondary2;
-  width: 33%;
-  @include media("screen", "<phone") {
-    width: 100%;
-  }
   & > div:last-child {
     transition: 500ms;
   }
@@ -116,10 +112,6 @@
   background-color: $secondary2;
   padding: 24px;
   border-radius: 12px;
-  min-width: 20%;
-  @include media("screen", "<tablet") {
-    min-width: 35%;
-  }
 }
 
 .lendAlertWrapper {

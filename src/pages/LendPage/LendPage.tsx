@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Web3 from 'web3';
-import { Box } from '@material-ui/core';
+import { Box, Grid } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import { SearchInput, CustomMenu, CurrencyLogo } from 'components';
 import { useHistory } from 'react-router-dom';
@@ -15,12 +15,7 @@ import { useTranslation } from 'react-i18next';
 import 'pages/styles/lend.scss';
 import { getPoolAssetToken } from 'utils/marketxyz';
 import { Token } from '@uniswap/sdk';
-
-const QS_PoolDirectory = '0x9180296118C8Deb7c5547eF5c1E798DC0405f350';
-const QS_Pools = ['0x772EdfEDee10029E98AF15359595bB398950416B'];
-// const QS_Pool_Comptroller = '0x772EdfEDee10029E98AF15359595bB398950416B';
-// const QS_Pool_admin = '0x03c91dEc8Ca1c7932305B4B0c15AB3A1F13f2eE6';
-// const fQSUSDC = '0xE6538102EDE880BdDbEe50C2f763Be02DE164010';
+import { GlobalValue } from 'constants/index';
 
 const LendPage: React.FC = () => {
   const { t } = useTranslation();
@@ -33,12 +28,16 @@ const LendPage: React.FC = () => {
   const [totalLiquidity, setTotalLiquidity] = useState<string>();
   const [lendSortBy, setLendSortBy] = useState<string>(t('rewards'));
   const lendSortItems = [t('rewards'), 'Quickswap', t('poolTitle')];
+  const [isMyPools, setIsMyPools] = useState(false);
 
   const [pools, setPools] = useState<any[]>([]);
   useEffect(() => {
     const getPools = async () => {
       const sdk = await MarketSDK.init(web3);
-      const directory = new PoolDirectoryV1(sdk, QS_PoolDirectory);
+      const directory = new PoolDirectoryV1(
+        sdk,
+        GlobalValue.marketSDK.QS_PoolDirectory,
+      );
 
       const allPools = await directory.getAllPools();
       const poolsData = [];
@@ -47,7 +46,7 @@ const LendPage: React.FC = () => {
       let _totalSupplyUSD = 0;
       let _totalLiquidityUSD = 0;
 
-      for (const comptrollerAddress of QS_Pools) {
+      for (const comptrollerAddress of GlobalValue.marketSDK.QS_Pools) {
         const poolId = allPools
           .findIndex((p) => {
             return p.comptroller.address === comptrollerAddress;
@@ -76,6 +75,31 @@ const LendPage: React.FC = () => {
   }, [account]);
 
   const [searchInput, setSearchInput] = useState('');
+  const lendDataArr = [
+    {
+      label: t('totalSupply'),
+      data: totalSupply ? midUsdFormatter(Number(totalSupply)) : undefined,
+    },
+    {
+      label: t('totalBorrowed'),
+      data: totalBorrow ? midUsdFormatter(Number(totalBorrow)) : undefined,
+    },
+    {
+      label: t('liquidity'),
+      data: totalLiquidity
+        ? midUsdFormatter(Number(totalLiquidity))
+        : undefined,
+    },
+    { label: t('markets'), data: pools.length },
+  ];
+
+  const filteredPools = pools.filter(
+    (pool: any) =>
+      pool.pool.name.toLowerCase().includes(searchInput.toLowerCase()) &&
+      (isMyPools
+        ? pool.totalSuppliedUSD > 0 || pool.totalBorrowedUSD > 0
+        : true),
+  );
 
   return (
     <Box width={'100%'}>
@@ -86,46 +110,27 @@ const LendPage: React.FC = () => {
         <h4 className='text-bold'>{t('lend')}</h4>
       </Box>
       <AlertBox />
-      <Box sx={{ textAlign: { xs: 'left', sm: 'center' } }}>
+      <Box mb={3} textAlign='center'>
         <h4 className='text-bold'>{t('lendPageTitle')}</h4>
         <Box mt={'16px'} maxWidth={'520px'} marginX='auto'>
           <p>{t('lendPageSubTitle')}</p>
         </Box>
       </Box>
-      <Box mt={'48px'} display={'flex'} gridGap={'24px'} flexWrap={'wrap'}>
-        <Box className='lendPageData'>
-          <small className='text-secondary'>{t('totalSupply')}</small>
-          {totalSupply ? (
-            <h4>{midUsdFormatter(Number(totalSupply))}</h4>
-          ) : (
-            <Skeleton variant='rect' height={40} />
-          )}
-        </Box>
-        <Box className='lendPageData'>
-          <small className='text-secondary'>{t('totalBorrowed')}</small>
-          {totalBorrow ? (
-            <h4>{midUsdFormatter(Number(totalBorrow))}</h4>
-          ) : (
-            <Skeleton variant='rect' height={40} />
-          )}
-        </Box>
-        <Box className='lendPageData'>
-          <small className='text-secondary'>{t('liquidity')}</small>
-          {totalLiquidity ? (
-            <h4>{midUsdFormatter(Number(totalLiquidity))}</h4>
-          ) : (
-            <Skeleton variant='rect' height={40} />
-          )}
-        </Box>
-        <Box className='lendPageData'>
-          <small className='text-secondary'>{t('markets')}</small>
-          {pools.length ? (
-            <h4>{pools.length}</h4>
-          ) : (
-            <Skeleton variant='rect' height={40} />
-          )}
-        </Box>
-      </Box>
+      <Grid container spacing={3}>
+        {lendDataArr.map((item) => (
+          <Grid key={item.label} item xs={12} sm={6} md={3}>
+            <Box className='lendPageData'>
+              <small className='text-secondary'>{item.label}</small>
+              {item.data ? (
+                <h4>{item.data}</h4>
+              ) : (
+                <Skeleton variant='rect' height={40} />
+              )}
+            </Box>
+          </Grid>
+        ))}
+      </Grid>
+
       <Box
         my={'32px'}
         display={'flex'}
@@ -137,10 +142,20 @@ const LendPage: React.FC = () => {
         flexWrap={'wrap'}
       >
         <Box display={'flex'} gridGap={'24px'}>
-          <h6 className='text-bold text-primary cursor-pointer'>
+          <h6
+            className={`text-bold ${
+              isMyPools ? 'text-secondary' : 'text-primary'
+            } cursor-pointer`}
+            onClick={() => setIsMyPools(false)}
+          >
             {t('allPools')}
           </h6>
-          <h6 className='text-bold text-secondary cursor-pointer'>
+          <h6
+            className={`text-bold ${
+              isMyPools ? 'text-primary' : 'text-secondary'
+            } cursor-pointer`}
+            onClick={() => setIsMyPools(true)}
+          >
             {t('myPools')}
           </h6>
         </Box>
@@ -167,51 +182,58 @@ const LendPage: React.FC = () => {
           </Box>
         </Box>
       </Box>
-      <Box display={'flex'} gridGap={'32px'} flexWrap={'wrap'}>
-        {pools.map(
+      <Grid container spacing={3}>
+        {filteredPools.map(
           (
             { assets, pool, poolId, totalSuppliedUSD, totalBorrowedUSD },
-            index: any,
+            index: number,
           ) => {
             const poolTokens = assets.map((asset: USDPricedPoolAsset) =>
               getPoolAssetToken(asset, chainId),
             );
             return (
-              <Box
-                className='lendCard'
+              <Grid
+                item
+                xs={12}
+                sm={6}
+                md={4}
                 key={index}
                 onClick={() => {
                   history.push('/lend/detail?poolId=' + poolId);
                 }}
               >
-                <Box className='lendCardTop'>
-                  <h5>{pool.name}</h5>
-                  <Box mt={'14px'} display={'flex'} gridGap={'4px'}>
-                    {poolTokens.map((token: Token) => (
-                      <CurrencyLogo key={token.address} currency={token} />
-                    ))}
+                <Box className='lendCard'>
+                  <Box className='lendCardTop'>
+                    <h5>{pool.name}</h5>
+                    <Box mt={'14px'} display={'flex'} gridGap={'4px'}>
+                      {poolTokens.map((token: Token) => (
+                        <CurrencyLogo key={token.address} currency={token} />
+                      ))}
+                    </Box>
+                  </Box>
+                  <Box className='lendCardContent'>
+                    <Box>
+                      <small className='text-secondary'>
+                        {t('totalSupply')}
+                      </small>
+                      <p>{midUsdFormatter(totalSuppliedUSD)}</p>
+                    </Box>
+                    <Box>
+                      <small className='text-secondary'>
+                        {t('totalBorrowed')}
+                      </small>
+                      <p>{midUsdFormatter(totalBorrowedUSD)}</p>
+                    </Box>
+                  </Box>
+                  <Box py={'22px'} textAlign={'center'}>
+                    <p>{t('viewDetails')}</p>
                   </Box>
                 </Box>
-                <Box className='lendCardContent'>
-                  <Box>
-                    <small className='text-secondary'>{t('totalSupply')}</small>
-                    <p>{midUsdFormatter(totalSuppliedUSD)}</p>
-                  </Box>
-                  <Box>
-                    <small className='text-secondary'>
-                      {t('totalBorrowed')}
-                    </small>
-                    <p>{midUsdFormatter(totalBorrowedUSD)}</p>
-                  </Box>
-                </Box>
-                <Box py={'22px'} textAlign={'center'}>
-                  <p>{t('viewDetails')}</p>
-                </Box>
-              </Box>
+              </Grid>
             );
           },
         )}
-      </Box>
+      </Grid>
     </Box>
   );
 };

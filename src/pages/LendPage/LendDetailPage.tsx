@@ -44,8 +44,7 @@ import {
   CurrencyLogo,
 } from 'components';
 import 'pages/styles/lend.scss';
-
-const QS_PoolDirectory = '0x9180296118C8Deb7c5547eF5c1E798DC0405f350';
+import { GlobalValue } from 'constants/index';
 
 const LendDetailPage: React.FC = () => {
   const { t } = useTranslation();
@@ -68,7 +67,7 @@ const LendDetailPage: React.FC = () => {
 
   const { sdk } = useMarket();
   const poolId = location && new URLSearchParams(location.search).get('poolId');
-  const poolData = usePoolData(poolId, QS_PoolDirectory);
+  const poolData = usePoolData(poolId, GlobalValue.marketSDK.QS_PoolDirectory);
 
   const extraPoolData = useExtraPoolData(
     poolData?.pool.comptroller,
@@ -100,6 +99,25 @@ const LendDetailPage: React.FC = () => {
     : !poolData.totalSuppliedUSD
     ? 0
     : (poolData.totalBorrowedUSD / poolData.totalSuppliedUSD) * 100;
+
+  const lendDataArr = [
+    {
+      label: t('totalSupply'),
+      data: poolData ? midUsdFormatter(poolData.totalSuppliedUSD) : undefined,
+    },
+    {
+      label: t('totalBorrowed'),
+      data: poolData ? midUsdFormatter(poolData.totalBorrowedUSD) : undefined,
+    },
+    {
+      label: t('liquidity'),
+      data: poolData ? midUsdFormatter(poolData.totalLiquidityUSD) : undefined,
+    },
+    {
+      label: t('poolUtilization'),
+      data: poolData ? poolUtilization.toFixed(2) + '%' : undefined,
+    },
+  ];
 
   return (
     <>
@@ -146,43 +164,23 @@ const LendDetailPage: React.FC = () => {
             ))}
           </Box>
         </Box>
-        <Box mt={'40px'} textAlign={'left'}>
+        <Box my={'24px'}>
           <h5 className='text-gray29'>{t('lendPageTitle')}</h5>
         </Box>
-        <Box mt={'23px'} display={'flex'} gridGap={'24px'} flexWrap={'wrap'}>
-          <Box className='lendPageData'>
-            <small className='text-secondary'>{t('totalSupply')}</small>
-            {poolData?.totalSuppliedUSD ? (
-              <h4>{poolData && midUsdFormatter(poolData.totalSuppliedUSD)}</h4>
-            ) : (
-              <Skeleton variant='rect' height={40} />
-            )}
-          </Box>
-          <Box className='lendPageData'>
-            <small className='text-secondary'>{t('totalBorrowed')}</small>
-            {poolData?.totalBorrowedUSD ? (
-              <h4>{poolData && midUsdFormatter(poolData.totalBorrowedUSD)}</h4>
-            ) : (
-              <Skeleton variant='rect' height={40} />
-            )}
-          </Box>
-          <Box className='lendPageData'>
-            <small className='text-secondary'>{t('liquidity')}</small>
-            {poolData?.totalLiquidityUSD ? (
-              <h4>{poolData && midUsdFormatter(poolData.totalLiquidityUSD)}</h4>
-            ) : (
-              <Skeleton variant='rect' height={40} />
-            )}
-          </Box>
-          <Box className='lendPageData'>
-            <small className='text-secondary'>{t('poolUtilization')}</small>
-            {poolData ? (
-              <h4>{poolUtilization.toFixed(2) + '%'}</h4>
-            ) : (
-              <Skeleton variant='rect' height={40} />
-            )}
-          </Box>
-        </Box>
+        <Grid container spacing={3}>
+          {lendDataArr.map((item) => (
+            <Grid key={item.label} item xs={12} sm={6} md={3}>
+              <Box className='lendPageData'>
+                <small className='text-secondary'>{item.label}</small>
+                {item.data ? (
+                  <h4>{item.data}</h4>
+                ) : (
+                  <Skeleton variant='rect' height={40} />
+                )}
+              </Box>
+            </Grid>
+          ))}
+        </Grid>
         <Box className='lendBorrowLimitWrapper' mt={'24px'}>
           <Box className='lendBorrowLimitText'>
             <Box>{t('borrowLimit')}</Box>
