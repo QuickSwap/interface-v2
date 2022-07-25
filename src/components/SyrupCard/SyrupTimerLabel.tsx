@@ -41,7 +41,7 @@ const SyrupTimerLabel: React.FC<{ exactEnd: number; isEnded: boolean }> = ({
       {!isEnded && Number.isFinite(timeRemaining) && (
         <Box
           className={
-            isMobile ? 'flex flex-wrap items-center justify-center' : ''
+            isMobile ? 'flex flex-wrap items-center justify-between' : ''
           }
         >
           <p className={`text-secondary ${isMobile ? 'small' : 'caption'}`}>
