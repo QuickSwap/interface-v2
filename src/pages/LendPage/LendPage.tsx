@@ -5,7 +5,7 @@ import { Skeleton } from '@material-ui/lab';
 import { SearchInput, CustomMenu, CurrencyLogo } from 'components';
 import { useHistory } from 'react-router-dom';
 import { useActiveWeb3React } from 'hooks';
-import { MarketSDK, Comptroller, Pool, PoolDirectoryV1 } from 'market-sdk';
+import { MarketSDK, PoolDirectoryV1 } from 'market-sdk';
 import { midUsdFormatter } from 'utils/bigUtils';
 import {
   fetchPoolData,
@@ -23,11 +23,11 @@ const LendPage: React.FC = () => {
   const { chainId, account } = useActiveWeb3React();
   const web3 = new Web3('https://polygon-rpc.com');
 
-  const [totalSupply, setTotalSupply] = useState<string>();
-  const [totalBorrow, setTotalBorrow] = useState<string>();
-  const [totalLiquidity, setTotalLiquidity] = useState<string>();
-  const [lendSortBy, setLendSortBy] = useState<string>(t('rewards'));
-  const lendSortItems = [t('rewards'), 'Quickswap', t('poolTitle')];
+  const [totalSupply, setTotalSupply] = useState('');
+  const [totalBorrow, setTotalBorrow] = useState('');
+  const [totalLiquidity, setTotalLiquidity] = useState('');
+  const [lendSortBy, setLendSortBy] = useState('');
+  const lendSortItems = [t('highestSupply'), t('highestBorrow')];
   const [isMyPools, setIsMyPools] = useState(false);
 
   const [pools, setPools] = useState<any[]>([]);
@@ -93,13 +93,22 @@ const LendPage: React.FC = () => {
     { label: t('markets'), data: pools.length },
   ];
 
-  const filteredPools = pools.filter(
-    (pool: any) =>
-      pool.pool.name.toLowerCase().includes(searchInput.toLowerCase()) &&
-      (isMyPools
-        ? pool.totalSuppliedUSD > 0 || pool.totalBorrowedUSD > 0
-        : true),
-  );
+  const filteredPools = pools
+    .filter(
+      (pool: any) =>
+        pool.pool.name.toLowerCase().includes(searchInput.toLowerCase()) &&
+        (isMyPools
+          ? pool.totalSuppliedUSD > 0 || pool.totalBorrowedUSD > 0
+          : true),
+    )
+    .sort((poolA: any, poolB: any) => {
+      if (lendSortBy === t('highestSupply')) {
+        return poolA.totalSuppliedUSD > poolB.totalSuppliedUSD ? -1 : 1;
+      } else if (lendSortBy === t('highestBorrow')) {
+        return poolA.totalBorrowedUSD > poolB.totalBorrowedUSD ? -1 : 1;
+      }
+      return 0;
+    });
 
   return (
     <Box width={'100%'}>
@@ -172,7 +181,7 @@ const LendPage: React.FC = () => {
             value={searchInput}
             setValue={setSearchInput}
           />
-          <Box sx={{ minWidth: { xs: '100%', sm: '200px' } }} height={40}>
+          <Box sx={{ minWidth: { xs: '100%', sm: '230px' } }} height={40}>
             <CustomMenu
               title={`${t('sortBy')}: `}
               menuItems={lendSortItems.map((item) => {
