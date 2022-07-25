@@ -277,11 +277,13 @@ const FarmCardDetails: React.FC<{
                       ${(isLPFarm ? lpRewards : dualRewards).toLocaleString()} /
                       {t('day')}
                     </small>
+                    <br />
                     {isLPFarm ? (
                       <small>{lpPoolRate}</small>
                     ) : (
                       <>
                         <small>{dualPoolRateA}</small>
+                        <br />
                         <small>{dualPoolRateB}</small>
                       </>
                     )}
