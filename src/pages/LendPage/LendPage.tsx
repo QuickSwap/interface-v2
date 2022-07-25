@@ -30,7 +30,7 @@ const LendPage: React.FC = () => {
   const lendSortItems = [t('highestSupply'), t('highestBorrow')];
   const [isMyPools, setIsMyPools] = useState(false);
 
-  const [pools, setPools] = useState<any[]>([]);
+  const [pools, setPools] = useState<any[] | undefined>(undefined);
   useEffect(() => {
     const getPools = async () => {
       const sdk = await MarketSDK.init(web3);
@@ -90,25 +90,38 @@ const LendPage: React.FC = () => {
         ? midUsdFormatter(Number(totalLiquidity))
         : undefined,
     },
-    { label: t('markets'), data: pools.length },
+    { label: t('markets'), data: pools?.length },
   ];
 
   const filteredPools = pools
-    .filter(
-      (pool: any) =>
-        pool.pool.name.toLowerCase().includes(searchInput.toLowerCase()) &&
-        (isMyPools
-          ? pool.totalSuppliedUSD > 0 || pool.totalBorrowedUSD > 0
-          : true),
-    )
-    .sort((poolA: any, poolB: any) => {
-      if (lendSortBy === t('highestSupply')) {
-        return poolA.totalSuppliedUSD > poolB.totalSuppliedUSD ? -1 : 1;
-      } else if (lendSortBy === t('highestBorrow')) {
-        return poolA.totalBorrowedUSD > poolB.totalBorrowedUSD ? -1 : 1;
-      }
-      return 0;
-    });
+    ? pools
+        .filter(
+          (pool: any) =>
+            (pool.assets.filter(
+              (asset: USDPricedPoolAsset) =>
+                asset.underlyingSymbol
+                  .toLowerCase()
+                  .includes(searchInput.toLowerCase()) ||
+                asset.underlyingName
+                  .toLowerCase()
+                  .includes(searchInput.toLowerCase()),
+            ).length > 0 ||
+              pool.pool.name
+                .toLowerCase()
+                .includes(searchInput.toLowerCase())) &&
+            (isMyPools
+              ? pool.totalSuppliedUSD > 0 || pool.totalBorrowedUSD > 0
+              : true),
+        )
+        .sort((poolA: any, poolB: any) => {
+          if (lendSortBy === t('highestSupply')) {
+            return poolA.totalSuppliedUSD > poolB.totalSuppliedUSD ? -1 : 1;
+          } else if (lendSortBy === t('highestBorrow')) {
+            return poolA.totalBorrowedUSD > poolB.totalBorrowedUSD ? -1 : 1;
+          }
+          return 0;
+        })
+    : undefined;
 
   return (
     <Box width={'100%'}>
@@ -191,58 +204,73 @@ const LendPage: React.FC = () => {
           </Box>
         </Box>
       </Box>
-      <Grid container spacing={3}>
-        {filteredPools.map(
-          (
-            { assets, pool, poolId, totalSuppliedUSD, totalBorrowedUSD },
-            index: number,
-          ) => {
-            const poolTokens = assets.map((asset: USDPricedPoolAsset) =>
-              getPoolAssetToken(asset, chainId),
-            );
-            return (
-              <Grid
-                item
-                xs={12}
-                sm={6}
-                md={4}
-                key={index}
-                onClick={() => {
-                  history.push('/lend/detail?poolId=' + poolId);
-                }}
-              >
-                <Box className='lendCard'>
-                  <Box className='lendCardTop'>
-                    <h5>{pool.name}</h5>
-                    <Box mt={'14px'} display={'flex'} gridGap={'4px'}>
-                      {poolTokens.map((token: Token) => (
-                        <CurrencyLogo key={token.address} currency={token} />
-                      ))}
-                    </Box>
-                  </Box>
-                  <Box className='lendCardContent'>
-                    <Box>
-                      <small className='text-secondary'>
-                        {t('totalSupply')}
-                      </small>
-                      <p>{midUsdFormatter(totalSuppliedUSD)}</p>
-                    </Box>
-                    <Box>
-                      <small className='text-secondary'>
-                        {t('totalBorrowed')}
-                      </small>
-                      <p>{midUsdFormatter(totalBorrowedUSD)}</p>
-                    </Box>
-                  </Box>
-                  <Box py={'22px'} textAlign={'center'}>
-                    <p>{t('viewDetails')}</p>
-                  </Box>
-                </Box>
-              </Grid>
-            );
-          },
-        )}
-      </Grid>
+      {filteredPools ? (
+        <>
+          {filteredPools.length > 0 ? (
+            <Grid container spacing={3}>
+              {filteredPools.map(
+                (
+                  { assets, pool, poolId, totalSuppliedUSD, totalBorrowedUSD },
+                  index: number,
+                ) => {
+                  const poolTokens = assets.map((asset: USDPricedPoolAsset) =>
+                    getPoolAssetToken(asset, chainId),
+                  );
+                  return (
+                    <Grid
+                      item
+                      xs={12}
+                      sm={6}
+                      md={4}
+                      key={index}
+                      onClick={() => {
+                        history.push('/lend/detail?poolId=' + poolId);
+                      }}
+                    >
+                      <Box className='lendCard'>
+                        <Box className='lendCardTop'>
+                          <h5>{pool.name}</h5>
+                          <Box mt={'14px'} display={'flex'} gridGap={'4px'}>
+                            {poolTokens.map((token: Token) => (
+                              <CurrencyLogo
+                                key={token.address}
+                                currency={token}
+                              />
+                            ))}
+                          </Box>
+                        </Box>
+                        <Box className='lendCardContent'>
+                          <Box>
+                            <small className='text-secondary'>
+                              {t('totalSupply')}
+                            </small>
+                            <p>{midUsdFormatter(totalSuppliedUSD)}</p>
+                          </Box>
+                          <Box>
+                            <small className='text-secondary'>
+                              {t('totalBorrowed')}
+                            </small>
+                            <p>{midUsdFormatter(totalBorrowedUSD)}</p>
+                          </Box>
+                        </Box>
+                        <Box py={'22px'} textAlign={'center'}>
+                          <p>{t('viewDetails')}</p>
+                        </Box>
+                      </Box>
+                    </Grid>
+                  );
+                },
+              )}
+            </Grid>
+          ) : (
+            <Box mt='64px' mb='32px' textAlign='center'>
+              <h3>{t('nopoolFound')}</h3>
+            </Box>
+          )}
+        </>
+      ) : (
+        <Skeleton width='100%' height={200} />
+      )}
     </Box>
   );
 };
