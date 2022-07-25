@@ -301,7 +301,7 @@ const FarmCardDetails: React.FC<{
               </>
             )}
             {!stakingInfo.ended && (
-              <Box className='buttonWrapper' mt={isMobile ? 2 : 0}>
+              <Box className='buttonWrapper'>
                 <Box className='flex justify-between'>
                   <small>{t('inwallet')}:</small>
                   <Box className='flex flex-col items-end'>

@@ -9,6 +9,9 @@
   & .dailyRateWrapper {
     margin-bottom: 0;
     margin-top: 16px;
+    @include media("screen", "<phone") {
+      margin-top: 6px;
+    }
   }
 }
 .syrupCardContent {
