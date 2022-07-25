@@ -1742,7 +1742,15 @@ export function getTokenFromAddress(
     const token = tokens.find(
       (item) => item.address.toLowerCase() === tokenAddress.toLowerCase(),
     );
-    if (!token) return GlobalValue.tokens.COMMON.EMPTY;
+    if (!token) {
+      const commonToken = Object.values(GlobalValue.tokens.COMMON).find(
+        (token) => token.address.toLowerCase() === tokenAddress.toLowerCase(),
+      );
+      if (!commonToken) {
+        return GlobalValue.tokens.COMMON.EMPTY;
+      }
+      return commonToken;
+    }
     return token;
   }
 

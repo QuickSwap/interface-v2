@@ -7,6 +7,7 @@ import { Token } from '@uniswap/sdk';
 import { TokenAddressMap, useSelectedTokenList } from 'state/lists/hooks';
 import { getTokenFromAddress } from 'utils';
 import { useTokens } from 'hooks/Tokens';
+import { GlobalValue } from 'constants/index';
 
 export class WrappedSyrupInfo implements SyrupBasic {
   public readonly stakingInfo: SyrupRaw;
@@ -129,6 +130,11 @@ export function useSyrupList(url: string | undefined): SyrupInfoAddressMap {
           .flat()
           .filter((item) => !!item)
           .filter((address) => !tokenMap[ChainId.MATIC][address])
+          .filter((address) =>
+            Object.values(GlobalValue.tokens.COMMON).find(
+              (token) => token.address.toLowerCase() === address.toLowerCase(),
+            ),
+          )
           .filter(
             (address, ind, self) =>
               self.findIndex(
