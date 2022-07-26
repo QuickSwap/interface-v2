@@ -135,6 +135,7 @@ export function useV3MintActionHandlers(
 
   const onCurrencySelection = useCallback(
     (field: Field, currency: Currency) => {
+      console.log('selected currency ', { field, currency });
       dispatch(
         selectCurrency({
           field,
@@ -284,11 +285,13 @@ export function useV3DerivedMintInfo(
                 parsedQuoteAmount.quotient,
               )
             : undefined;
+
         return (invertPrice ? price?.invert() : price) ?? undefined;
       }
       return undefined;
     } else {
       // get the amount of quote currency
+
       return pool && token0 ? pool.priceOf(token0) : undefined;
     }
   }, [noLiquidity, startPriceTypedValue, invertPrice, token1, token0, pool]);
@@ -654,15 +657,15 @@ export function useV3DerivedMintInfo(
     errorCode = errorCode ?? 4;
   }
 
-  if (
-    currencyBAmount &&
-    currencyBalances?.[Field.CURRENCY_B]?.lessThan(currencyBAmount.toExact())
-  ) {
-    errorMessage = t`Insufficient ${
-      currencies[Field.CURRENCY_B]?.symbol
-    } balance`;
-    errorCode = errorCode ?? 5;
-  }
+  // if (
+  //   currencyBAmount &&
+  //   currencyBalances?.[Field.CURRENCY_B]?.lessThan(currencyBAmount.toExact())
+  // ) {
+  //   errorMessage = t`Insufficient ${
+  //     currencies[Field.CURRENCY_B]?.symbol
+  //   } balance`;
+  //   errorCode = errorCode ?? 5;
+  // }
 
   const invalidPool = poolState === PoolState.INVALID;
 

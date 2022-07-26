@@ -10,7 +10,7 @@ export const V3_CORE_FACTORY_ADDRESSES: AddressMap = {
 };
 
 export const POOL_DEPLOYER_ADDRESS: AddressMap = {
-  [ChainId.MATIC]: '0x390e1F04BF44C33F491231E7865fF05E583813C5',
+  [ChainId.MATIC]: '0x218a510d4d6aEA897961ab6Deb74443521A88839',
 };
 
 export const QUOTER_ADDRESSES: AddressMap = {
