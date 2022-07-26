@@ -48,7 +48,6 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const { chainId } = useActiveWeb3React();
   const [pageIndex, setPageIndex] = useState(0);
-  const [pageloading, setPageLoading] = useState(false); //this is used for not loading farms immediately when user is on farms page
   const [isEndedFarm, setIsEndedFarm] = useState(false);
   const [sortBy, setSortBy] = useState(0);
   const [sortDesc, setSortDesc] = useState(false);
@@ -64,14 +63,10 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
   const addedLPStakingInfos = useStakingInfo(
     chainIdOrDefault,
     null,
-    pageloading ||
-      farmIndex === GlobalConst.farmIndex.DUALFARM_INDEX ||
-      isEndedFarm
+    farmIndex === GlobalConst.farmIndex.DUALFARM_INDEX || isEndedFarm
       ? 0
       : undefined,
-    pageloading ||
-      farmIndex === GlobalConst.farmIndex.DUALFARM_INDEX ||
-      isEndedFarm
+    farmIndex === GlobalConst.farmIndex.DUALFARM_INDEX || isEndedFarm
       ? 0
       : undefined,
     { search: farmSearch, isStaked: stakedOnly },
@@ -79,14 +74,10 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
   const addedLPStakingOldInfos = useOldStakingInfo(
     chainIdOrDefault,
     null,
-    pageloading ||
-      farmIndex === GlobalConst.farmIndex.DUALFARM_INDEX ||
-      !isEndedFarm
+    farmIndex === GlobalConst.farmIndex.DUALFARM_INDEX || !isEndedFarm
       ? 0
       : undefined,
-    pageloading ||
-      farmIndex === GlobalConst.farmIndex.DUALFARM_INDEX ||
-      !isEndedFarm
+    farmIndex === GlobalConst.farmIndex.DUALFARM_INDEX || !isEndedFarm
       ? 0
       : undefined,
     { search: farmSearch, isStaked: stakedOnly },
@@ -94,13 +85,9 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
   const addedDualStakingInfos = useDualStakingInfo(
     chainIdOrDefault,
     null,
-    pageloading || farmIndex === GlobalConst.farmIndex.LPFARM_INDEX
-      ? 0
-      : undefined,
-    pageloading || farmIndex === GlobalConst.farmIndex.LPFARM_INDEX
-      ? 0
-      : undefined,
-    { search: farmSearch, isStaked: stakedOnly },
+    farmIndex === GlobalConst.farmIndex.LPFARM_INDEX ? 0 : undefined,
+    farmIndex === GlobalConst.farmIndex.LPFARM_INDEX ? 0 : undefined,
+    { search: farmSearch, isStaked: stakedOnly, isEndedFarm },
   );
 
   const sortIndex = sortDesc ? 1 : -1;

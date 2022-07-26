@@ -805,7 +805,7 @@ export function useDualStakingInfo(
   pairToFilterBy?: Pair | null,
   startIndex?: number,
   endIndex?: number,
-  filter?: { search: string; isStaked: boolean },
+  filter?: { search: string; isStaked: boolean; isEndedFarm: boolean },
 ): DualStakingInfo[] {
   const { account } = useActiveWeb3React();
   const dualStakingRewardsInfo = useDefaultDualFarmList();
@@ -813,7 +813,7 @@ export function useDualStakingInfo(
   const info = useMemo(
     () =>
       Object.values(dualStakingRewardsInfo[chainId])
-        .filter((x) => !x.ended)
+        .filter((x) => (filter?.isEndedFarm ? x.ended : !x.ended))
         .slice(startIndex, endIndex)
         .filter((stakingRewardInfo) =>
           pairToFilterBy === undefined || pairToFilterBy === null
@@ -944,11 +944,11 @@ export function useDualStakingInfo(
           const dummyToken = GlobalValue.tokens.COMMON.NEW_QUICK;
           const totalRewardRateA = new TokenAmount(
             dummyToken,
-            JSBI.BigInt(rateA),
+            JSBI.BigInt(stakingInfo.ended ? 0 : rateA),
           );
           const totalRewardRateB = new TokenAmount(
             dummyToken,
-            JSBI.BigInt(rateB),
+            JSBI.BigInt(stakingInfo.ended ? 0 : rateB),
           );
           //const pair = info[index].pair.toLowerCase();
           //const fees = (pairData && pairData[pair] ? pairData[pair].oneDayVolumeUSD * 0.0025: 0);
@@ -1049,15 +1049,17 @@ export function useDualStakingInfo(
             rewardTokenA: stakingInfo.rewardTokenA,
             rewardTokenB: stakingInfo.rewardTokenB,
             rewardTokenBBase: stakingInfo.rewardTokenBBase,
-            rewardTokenAPrice,
-            rewardTokenBPrice,
+            rewardTokenAPrice: stakingInfo.ended ? 0 : rewardTokenAPrice,
+            rewardTokenBPrice: stakingInfo.ended ? 0 : rewardTokenBPrice,
             tvl,
-            perMonthReturnInRewards,
-            totalSupply,
+            perMonthReturnInRewards: stakingInfo.ended
+              ? undefined
+              : perMonthReturnInRewards,
+            totalSupply: stakingInfo.ended ? undefined : totalSupply,
             usdPrice,
             stakingTokenPair,
-            oneDayFee,
-            accountFee,
+            oneDayFee: stakingInfo.ended ? 0 : oneDayFee,
+            accountFee: stakingInfo.ended ? 0 : accountFee,
           });
         }
         return memo;

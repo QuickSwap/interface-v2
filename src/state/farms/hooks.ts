@@ -5,7 +5,9 @@ import { AppState } from 'state';
 import { FarmListInfo, StakingRaw, StakingBasic } from 'types';
 import { Token } from '@uniswap/sdk';
 import { TokenAddressMap, useSelectedTokenList } from 'state/lists/hooks';
-import { getTokenFromKey } from 'utils';
+import { getTokenFromAddress } from 'utils';
+import { useTokens } from 'hooks/Tokens';
+import { GlobalValue } from 'constants/index';
 
 export class WrappedStakingInfo implements StakingBasic {
   public readonly stakingInfo: StakingRaw;
@@ -20,26 +22,50 @@ export class WrappedStakingInfo implements StakingBasic {
   public readonly baseToken: Token;
   public readonly rewardToken: Token;
 
-  constructor(stakingInfo: StakingRaw, tokenAddressMap: TokenAddressMap) {
+  constructor(
+    stakingInfo: StakingRaw,
+    tokenAddressMap: TokenAddressMap,
+    farmTokens: Token[],
+    chainId: ChainId,
+  ) {
     this.stakingInfo = stakingInfo;
     //TODO: Support Multichain
-    this.chainId = ChainId.MATIC;
+    this.chainId = chainId;
     this.stakingRewardAddress = stakingInfo.stakingRewardAddress;
     this.rate = stakingInfo.rate;
     this.ended = stakingInfo.ended;
     this.pair = stakingInfo.pair;
     this.lp = stakingInfo.lp;
     this.name = stakingInfo.name;
-    //TODO: we should be resolving the following property from the lists state using the address field instead of the key
-    this.baseToken = getTokenFromKey(stakingInfo.baseToken, tokenAddressMap);
-    this.tokens = [
-      getTokenFromKey(stakingInfo.tokens[0], tokenAddressMap),
-      getTokenFromKey(stakingInfo.tokens[1], tokenAddressMap),
-    ];
-    this.rewardToken = getTokenFromKey(
-      stakingInfo.rewardToken ?? 'DQUICK',
+
+    this.baseToken = getTokenFromAddress(
+      stakingInfo.baseToken,
+      chainId,
       tokenAddressMap,
+      farmTokens,
     );
+    this.tokens = [
+      getTokenFromAddress(
+        stakingInfo.tokens[0],
+        chainId,
+        tokenAddressMap,
+        farmTokens,
+      ),
+      getTokenFromAddress(
+        stakingInfo.tokens[1],
+        chainId,
+        tokenAddressMap,
+        farmTokens,
+      ),
+    ];
+    this.rewardToken = stakingInfo.rewardToken
+      ? getTokenFromAddress(
+          stakingInfo.rewardToken,
+          chainId,
+          tokenAddressMap,
+          farmTokens,
+        )
+      : GlobalValue.tokens.COMMON.OLD_DQUICK;
   }
 }
 
@@ -67,6 +93,7 @@ const farmCache: WeakMap<FarmListInfo, StakingInfoAddressMap> | null =
 export function listToFarmMap(
   list: FarmListInfo,
   tokenAddressMap: TokenAddressMap,
+  farmTokens: Token[],
 ): StakingInfoAddressMap {
   const result = farmCache?.get(list);
   if (result) return result;
@@ -76,6 +103,8 @@ export function listToFarmMap(
       const wrappedStakingInfo = new WrappedStakingInfo(
         stakingInfo,
         tokenAddressMap,
+        farmTokens,
+        ChainId.MATIC,
       );
       if (
         stakingInfoMap[wrappedStakingInfo.chainId][
@@ -103,17 +132,52 @@ export function useFarmList(url: string | undefined): StakingInfoAddressMap {
   );
 
   const tokenMap = useSelectedTokenList();
+  const current = url ? farms[url]?.current : null;
+  const farmTokenAddresses =
+    current && tokenMap
+      ? current.active
+          .concat(current.closed)
+          .map((item) => [
+            item.baseToken,
+            item.tokens[0],
+            item.tokens[1],
+            item.rewardToken,
+          ])
+          .flat()
+          .filter((item) => !!item)
+          .filter((address) => !tokenMap[ChainId.MATIC][address])
+          .filter(
+            (address) =>
+              !Object.values(GlobalValue.tokens.COMMON).find(
+                (token) =>
+                  token.address.toLowerCase() === address.toLowerCase(),
+              ),
+          )
+          .filter(
+            (addr, ind, self) =>
+              self.findIndex(
+                (address) => address.toLowerCase() === addr.toLowerCase(),
+              ) === ind,
+          )
+      : [];
+
+  console.log('bbb', farmTokenAddresses);
+
+  const farmTokens = useTokens(farmTokenAddresses);
   return useMemo(() => {
-    if (!url) return EMPTY_LIST;
-    const current = farms[url]?.current;
-    if (!current) return EMPTY_LIST;
+    if (
+      !current ||
+      !tokenMap ||
+      farmTokens?.length !== farmTokenAddresses.length
+    )
+      return EMPTY_LIST;
     try {
-      return listToFarmMap(current, tokenMap);
+      return listToFarmMap(current, tokenMap, farmTokens ?? []);
     } catch (error) {
       console.error('Could not show token list due to error', error);
       return EMPTY_LIST;
     }
-  }, [farms, url, tokenMap]);
+  }, [current, farmTokens, farmTokenAddresses.length, tokenMap]);
 }
 
 export function useDefaultFarmList(): StakingInfoAddressMap {
