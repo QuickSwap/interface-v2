@@ -1,0 +1,107 @@
+:root {
+  --white: #fff;
+  --black: #000;
+  --ebony-clay: #26343F;
+  --ebony-clay-light: #385368;
+  --dark-ebony-clay: #1C2A35;
+  --primary: #2797ff;
+  --primary-disabled: #1F4B72;
+  --primary-hover: #2b7fd1;
+  --primary-weak: #162D41;
+  --light-gray: #838693;
+  --dark-gray: #171E24;
+  --red: #F55755;
+  --mirage: #192732;
+  --green: #33FF89;
+  --violet: #333aa0;
+  --dark-blue: #030b18;
+}
+
+.c {
+  &-lg {
+    color: var(--light-gray);
+  }
+
+  &-w {
+    color: var(--white);
+  }
+
+  &-b {
+    color: var(--black);
+  }
+
+  &-eb {
+    color: var(--ebony-clay);
+  }
+
+  &-dec {
+    color: var(--dark-ebony-clay);
+  }
+
+  &-p {
+    color: var(--primary);
+  }
+
+  &-pd {
+    color: var(--primary-disabled);
+  }
+
+  &-ph {
+    color: var(--primary-hover);
+  }
+
+  &-pw {
+    color: var(--primary-weak);
+  }
+
+  &-dg {
+    color: var(--dark-gray);
+  }
+
+  &-r {
+    color: var(--red);
+  }
+
+  &-m {
+    color: var(--mirage);
+  }
+
+  &-g {
+    color: var(--green);
+  }
+}
+
+.bg {
+  &-t {
+    background: transparent;
+  }
+
+  &-p {
+    background-color: var(--primary);
+  }
+
+  &-lg {
+    background-color: var(--light-gray);
+  }
+
+  &-dg {
+    background-color: var(--dark-gray);
+  }
+
+  &-ec {
+    background-color: var(--ebony-clay);
+  }
+
+  &-ecl {
+    background-color: var(--ebony-clay-light) !important;
+  }
+
+
+  &-pw {
+    background-color: var(--primary-weak);
+  }
+
+  &-v {
+    background-color: var(--violet);
+  }
+}

@@ -44,6 +44,10 @@ import {
   TokenAmount,
   Pair,
 } from '@uniswap/sdk';
+import {
+  CurrencyAmount as CurrencyAmountV3,
+  Currency as CurrencyV3,
+} from '@uniswap/sdk-core';
 import { BigNumber, BigNumberish } from '@ethersproject/bignumber';
 import { formatUnits } from 'ethers/lib/utils';
 import { AddressZero } from '@ethersproject/constants';
@@ -1515,6 +1519,31 @@ export function calculateSlippageAmount(
   ];
 }
 
+export function calculateSlippageAmountV3(
+  value: CurrencyAmountV3<CurrencyV3>,
+  slippage: number,
+): [JSBI, JSBI] {
+  if (slippage < 0 || slippage > 10000) {
+    throw Error(`Unexpected slippage value: ${slippage}`);
+  }
+  return [
+    JSBI.divide(
+      JSBI.multiply(
+        JSBI.BigInt(value.toExact()),
+        JSBI.BigInt(10000 - slippage),
+      ),
+      JSBI.BigInt(10000),
+    ),
+    JSBI.divide(
+      JSBI.multiply(
+        JSBI.BigInt(value.toExact()),
+        JSBI.BigInt(10000 + slippage),
+      ),
+      JSBI.BigInt(10000),
+    ),
+  ];
+}
+
 export function maxAmountSpend(
   currencyAmount?: CurrencyAmount,
 ): CurrencyAmount | undefined {
@@ -1753,7 +1782,6 @@ export function getTokenFromKey(tokenKey: string, tokenMap: TokenAddressMap) {
 
   const wrappedTokenInfo = tokenMap[tokenData.chainId][tokenData.address];
   if (!wrappedTokenInfo) {
-    console.log('missing from token list:' + tokenKey);
     return tokenData;
   }
 

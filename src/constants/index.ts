@@ -109,6 +109,10 @@ export const GlobalConst = {
     LPFARM_INDEX: 0,
     DUALFARM_INDEX: 1,
   },
+  v3FarmIndex: {
+    MY_FARMS_INDEX: 0,
+    ETERNAL_FARMS_INDEX: 1,
+  },
   walletName: {
     METAMASK: 'Metamask',
     CYPHERD: 'CypherD',
@@ -347,6 +351,13 @@ export const GlobalValue = {
         18,
         'GHST',
         'Aavegotchi GHST Token',
+      ),
+      ALGEBRA_POLYGON: new Token(
+        ChainId.MATIC,
+        '0x0169ec1f8f639b32eec6d923e24c2a2ff45b9dd6',
+        18,
+        'ALGB',
+        'Algebra',
       ),
     },
   },

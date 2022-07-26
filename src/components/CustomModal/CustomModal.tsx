@@ -17,6 +17,8 @@ const CustomModal: React.FC<CustomModalProps> = ({
   background,
   overflow,
 }) => {
+  // temp state
+  const isV3 = true;
   return (
     <Modal
       open={open}
@@ -25,7 +27,11 @@ const CustomModal: React.FC<CustomModalProps> = ({
       BackdropProps={{ timeout: 500 }}
     >
       <Fade in={open}>
-        <Box className='modalWrapper' bgcolor={background} overflow={overflow}>
+        <Box
+          className={isV3 ? 'modalWrapperV3' : 'modalWrapper'}
+          bgcolor={background}
+          overflow={overflow}
+        >
           {children}
         </Box>
       </Fade>

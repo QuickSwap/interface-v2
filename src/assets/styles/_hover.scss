@@ -1,0 +1,40 @@
+.hover {
+  &-line {
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  &-op {
+    &:hover {
+      opacity: 0.8;
+      transition: opacity ease-in-out 0.3s;
+    }
+  }
+
+  &-cp {
+    &:hover {
+      color: var(--primary);
+    }
+  }
+
+  &-b {
+    &:hover {
+      border-color: var(--primary-hover);
+      color: var(--primary-hover);
+    }
+  }
+
+  &-c {
+    &-ph {
+      &:hover {
+        background-color: var(--primary-hover);
+      }
+    }
+
+  }
+}
+
+.trans-op {
+  transition: opacity ease-in-out 0.3s;
+}

@@ -8,6 +8,7 @@ import useUSDCPrice from 'utils/useUSDCPrice';
 import { formatTokenAmount } from 'utils';
 import 'components/styles/CurrencyInput.scss';
 import { useTranslation } from 'react-i18next';
+import CurrencySelect from 'components/CurrencySelect';
 
 interface CurrencyInputProps {
   title?: string;
@@ -75,21 +76,12 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
         </Box>
       </Box>
       <Box mb={2}>
-        <Box
-          className={`currencyButton ${
-            currency ? 'currencySelected' : 'noCurrency'
-          }`}
-          onClick={handleOpenModal}
-        >
-          {currency ? (
-            <>
-              <CurrencyLogo currency={currency} size={'28px'} />
-              <p className='token-symbol-container'>{currency?.symbol}</p>
-            </>
-          ) : (
-            <p>{t('selectToken')}</p>
-          )}
-        </Box>
+        <CurrencySelect
+          id={id}
+          currency={currency}
+          otherCurrency={otherCurrency}
+          handleCurrencySelect={handleCurrencySelect}
+        />
         <Box className='inputWrapper'>
           <NumericalInput
             value={amount}
