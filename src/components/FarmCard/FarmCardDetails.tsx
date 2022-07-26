@@ -277,11 +277,13 @@ const FarmCardDetails: React.FC<{
                       ${(isLPFarm ? lpRewards : dualRewards).toLocaleString()} /
                       {t('day')}
                     </small>
+                    <br />
                     {isLPFarm ? (
                       <small>{lpPoolRate}</small>
                     ) : (
                       <>
                         <small>{dualPoolRateA}</small>
+                        <br />
                         <small>{dualPoolRateB}</small>
                       </>
                     )}
@@ -299,7 +301,7 @@ const FarmCardDetails: React.FC<{
               </>
             )}
             {!stakingInfo.ended && (
-              <Box className='buttonWrapper' mt={isMobile ? 2 : 0}>
+              <Box className='buttonWrapper'>
                 <Box className='flex justify-between'>
                   <small>{t('inwallet')}:</small>
                   <Box className='flex flex-col items-end'>
