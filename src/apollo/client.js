@@ -49,6 +49,14 @@ export const v3client = new ApolloClient({
   shouldBatch: true,
 });
 
+export const v3Poolclient = new ApolloClient({
+  link: new HttpLink({
+    uri: 'https://api.thegraph.com/subgraphs/name/cryptoalgebra/algebra',
+  }),
+  cache: new InMemoryCache(),
+  shouldBatch: true,
+});
+
 export const stakerClient = new ApolloClient({
   link: new HttpLink({
     uri: 'https://api.thegraph.com/subgraphs/name/iliaazhel/staker',

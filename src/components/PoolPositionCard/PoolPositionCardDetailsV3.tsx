@@ -13,7 +13,7 @@ import {
   StyledDarkBox,
   StyledLabel,
   StyledNumber,
-} from 'components/AddLiquidity/CommonStyledElements';
+} from 'components/AddLiquidityV3/CommonStyledElements';
 
 const PoolPositionCardDetailsV3: React.FC<{ pair: Pair }> = ({ pair }) => {
   const { t } = useTranslation();

@@ -41,12 +41,12 @@ import {
 } from 'utils';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
 import { ReactComponent as AddLiquidityIcon } from 'assets/images/AddLiquidityIcon.svg';
+import useParsedQueryString from 'hooks/useParsedQueryString';
+import { useCurrency } from 'hooks/Tokens';
 
 const AddLiquidity: React.FC<{
-  currency0?: Currency;
-  currency1?: Currency;
   currencyBgClass?: string;
-}> = ({ currency0, currency1, currencyBgClass }) => {
+}> = ({ currencyBgClass }) => {
   const { t } = useTranslation();
   const [addLiquidityErrorMessage, setAddLiquidityErrorMessage] = useState<
     string | null
@@ -62,6 +62,19 @@ const AddLiquidity: React.FC<{
   const [txHash, setTxHash] = useState('');
   const addTransaction = useTransactionAdder();
   const finalizedTransaction = useTransactionFinalizer();
+
+  // queried currency
+  const parsedQuery = useParsedQueryString();
+  const currency0 = useCurrency(
+    parsedQuery && parsedQuery.currency0
+      ? (parsedQuery.currency0 as string)
+      : undefined,
+  );
+  const currency1 = useCurrency(
+    parsedQuery && parsedQuery.currency1
+      ? (parsedQuery.currency1 as string)
+      : undefined,
+  );
 
   const { independentField, typedValue, otherTypedValue } = useMintState();
   const expertMode = useIsExpertMode();
