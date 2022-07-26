@@ -739,3 +739,22 @@ export const SWAP_TRANSACTIONS = gql`
     }
   }
 `;
+
+export const V3_TICKS: any = (poolAddress: string, skips: number) => {
+  const queryStr = `
+    query allV3Ticks{
+        ticks(
+          first: 1000
+          skip: ${skips}
+          where: { poolAddress: "${poolAddress}" }
+          orderBy: tickIdx
+        ) {
+          tickIdx
+          liquidityNet
+          price0
+          price1
+        }
+      }
+    `;
+  return gql(queryStr);
+};

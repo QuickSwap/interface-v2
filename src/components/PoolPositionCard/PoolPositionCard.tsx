@@ -20,7 +20,7 @@ import {
   StyledFilledBox,
   StyledGreenTag,
   StyledLabel,
-} from 'components/AddLiquidity/CommonStyledElements';
+} from 'components/AddLiquidityV3/CommonStyledElements';
 import { ReactComponent as ExpandIcon } from 'assets/images/expand_circle.svg';
 import { ReactComponent as ExpandIconUp } from 'assets/images/expand_circle_up.svg';
 import { ReactComponent as WarningIcon } from 'assets/images/warning_icon.svg';

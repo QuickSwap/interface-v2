@@ -18,6 +18,7 @@ import {
   updateUserExpertMode,
   updateUserSlippageTolerance,
   toggleURLWarning,
+  updateUserSingleHopOnly,
 } from './actions';
 
 function serializeToken(token: Token): SerializedToken {
@@ -289,3 +290,47 @@ export function useTrackedTokenPairs(): [Token, Token][] {
     return Object.keys(keyed).map((key) => keyed[key]);
   }, [combinedList]);
 }
+
+export function useUserSingleHopOnly(): [
+  boolean,
+  (newSingleHopOnly: boolean) => void,
+] {
+  const dispatch = useDispatch<AppDispatch>();
+
+  const singleHopOnly = useSelector<
+    AppState,
+    AppState['user']['userSingleHopOnly']
+  >((state) => {
+    return state.user.userSingleHopOnly;
+  });
+  // const singleHopOnly = useAppSelector((state) => state.user.userSingleHopOnly);
+
+  const setSingleHopOnly = useCallback(
+    (newSingleHopOnly: boolean) => {
+      dispatch(
+        updateUserSingleHopOnly({ userSingleHopOnly: newSingleHopOnly }),
+      );
+    },
+    [dispatch],
+  );
+
+  return [singleHopOnly, setSingleHopOnly];
+}
+
+// export function useUserTransactionTTL(): [number, (slippage: number) => void] {
+//   const dispatch = useDispatch<AppDispatch>();
+//   const userDeadline = useSelector<AppState, AppState['user']['userDeadline']>(
+//     (state) => {
+//       return state.user.userDeadline;
+//     },
+//   );
+
+//   const setUserDeadline = useCallback(
+//     (userDeadline: number) => {
+//       dispatch(updateUserDeadline({ userDeadline }));
+//     },
+//     [dispatch],
+//   );
+
+//   return [userDeadline, setUserDeadline];
+// }

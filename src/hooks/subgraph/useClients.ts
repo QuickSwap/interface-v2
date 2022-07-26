@@ -3,6 +3,7 @@ import { NormalizedCacheObject } from 'apollo-cache-inmemory';
 import {
   blockClient,
   v3client,
+  v3Poolclient,
   farmingClient,
   stakerClient,
   oldFarmingClient,
@@ -27,6 +28,16 @@ export function useV3Client(): ApolloClient<NormalizedCacheObject> {
       return v3client;
     default:
       return v3client;
+  }
+}
+
+export function useV3PoolClient(): ApolloClient<NormalizedCacheObject> {
+  const { chainId } = useActiveWeb3React();
+  switch (chainId) {
+    case ChainId.MATIC:
+      return v3Poolclient;
+    default:
+      return v3Poolclient;
   }
 }
 
@@ -62,12 +73,14 @@ export function useStakingClient(): ApolloClient<NormalizedCacheObject> {
 
 export function useClients(): {
   v3Client: ApolloClient<NormalizedCacheObject>;
+  v3PoolClient: ApolloClient<NormalizedCacheObject>;
   farmingClient: ApolloClient<NormalizedCacheObject>;
   oldFarmingClient: ApolloClient<NormalizedCacheObject>;
   blockClient: ApolloClient<NormalizedCacheObject>;
   stakingClient: ApolloClient<NormalizedCacheObject>;
 } {
   const v3Client = useV3Client();
+  const v3PoolClient = useV3PoolClient();
   const farmingClient = useFarmingClient();
   const oldFarmingClient = useOldFarmingClient();
   const blockClient = useBlockClient();
@@ -75,6 +88,7 @@ export function useClients(): {
 
   return {
     v3Client,
+    v3PoolClient,
     farmingClient,
     oldFarmingClient,
     blockClient,
