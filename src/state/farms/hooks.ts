@@ -146,10 +146,12 @@ export function useFarmList(url: string | undefined): StakingInfoAddressMap {
           .flat()
           .filter((item) => !!item)
           .filter((address) => !tokenMap[ChainId.MATIC][address])
-          .filter((address) =>
-            Object.values(GlobalValue.tokens.COMMON).find(
-              (token) => token.address.toLowerCase() === address.toLowerCase(),
-            ),
+          .filter(
+            (address) =>
+              !Object.values(GlobalValue.tokens.COMMON).find(
+                (token) =>
+                  token.address.toLowerCase() === address.toLowerCase(),
+              ),
           )
           .filter(
             (addr, ind, self) =>
@@ -158,6 +160,9 @@ export function useFarmList(url: string | undefined): StakingInfoAddressMap {
               ) === ind,
           )
       : [];
+
+  console.log('bbb', farmTokenAddresses);
+
   const farmTokens = useTokens(farmTokenAddresses);
   return useMemo(() => {
     if (
