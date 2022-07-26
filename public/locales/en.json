@@ -140,6 +140,8 @@
   "help": "Help",
   "lpMining": "LP Mining",
   "dualMining": "Dual Mining",
+  "myFarms": "My Farms",
+  "enternalFarms": "Eternal Farms",
   "v3Mining": "V3 Farms",
   "noInfiniteFarms": "No Infinite Farms",
   "totalRewards": "Total Rewards",
