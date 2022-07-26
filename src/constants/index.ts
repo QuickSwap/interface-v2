@@ -109,6 +109,10 @@ export const GlobalConst = {
     LPFARM_INDEX: 0,
     DUALFARM_INDEX: 1,
   },
+  v3FarmIndex: {
+    MY_FARMS_INDEX: 0,
+    ETERNAL_FARMS_INDEX: 1,
+  },
   walletName: {
     METAMASK: 'Metamask',
     CYPHERD: 'CypherD',

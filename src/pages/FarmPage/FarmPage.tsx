@@ -25,6 +25,9 @@ const FarmPage: React.FC = () => {
   const [farmIndex, setFarmIndex] = useState(
     GlobalConst.farmIndex.LPFARM_INDEX,
   );
+  const [v3FarmIndex, setV3FarmIndex] = useState(
+    GlobalConst.v3FarmIndex.ETERNAL_FARMS_INDEX,
+  );
   const chainIdOrDefault = chainId ?? ChainId.MATIC;
   const lpFarms = useDefaultFarmList();
   const dualFarms = useDefaultDualFarmList();
@@ -65,6 +68,23 @@ const FarmPage: React.FC = () => {
         setFarmIndex(GlobalConst.farmIndex.DUALFARM_INDEX);
       },
       condition: farmIndex === GlobalConst.farmIndex.DUALFARM_INDEX,
+    },
+  ];
+
+  const v3FarmCategories = [
+    {
+      text: t('myFarms'),
+      onClick: () => {
+        setV3FarmIndex(GlobalConst.v3FarmIndex.MY_FARMS_INDEX);
+      },
+      condition: v3FarmIndex === GlobalConst.v3FarmIndex.MY_FARMS_INDEX,
+    },
+    {
+      text: t('enternalFarms'),
+      onClick: () => {
+        setV3FarmIndex(GlobalConst.v3FarmIndex.ETERNAL_FARMS_INDEX);
+      },
+      condition: v3FarmIndex === GlobalConst.v3FarmIndex.ETERNAL_FARMS_INDEX,
     },
   ];
 
@@ -118,19 +138,31 @@ const FarmPage: React.FC = () => {
       )}
       {poolVersion === 'v3' && (
         <>
-          <FarmingMyFarms
-            data={transferredPositions}
-            refreshing={transferredPositionsLoading}
-            fetchHandler={() => {
-              fetchTransferredPositionsFn(true);
-            }}
-            now={now}
+          <CustomSwitch
+            width={300}
+            height={48}
+            items={v3FarmCategories}
+            isLarge={true}
           />
-          <EternalFarmsPage
-            data={eternalFarms}
-            refreshing={eternalFarmsLoading}
-            fetchHandler={() => fetchEternalFarmsFn(true)}
-          />
+          <Box my={2}>
+            {v3FarmIndex === GlobalConst.v3FarmIndex.MY_FARMS_INDEX && (
+              <FarmingMyFarms
+                data={transferredPositions}
+                refreshing={transferredPositionsLoading}
+                fetchHandler={() => {
+                  fetchTransferredPositionsFn(true);
+                }}
+                now={now}
+              />
+            )}
+            {v3FarmIndex === GlobalConst.v3FarmIndex.ETERNAL_FARMS_INDEX && (
+              <EternalFarmsPage
+                data={eternalFarms}
+                refreshing={eternalFarmsLoading}
+                fetchHandler={() => fetchEternalFarmsFn(true)}
+              />
+            )}
+          </Box>
         </>
       )}
     </Box>
