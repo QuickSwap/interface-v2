@@ -355,7 +355,9 @@ const AddLiquidity: React.FC<{
           </small>
         </Box>
         <Box className='swapButtonWrapper'>
-          <Button onClick={onAddLiquidity}>{t('confirmSupply')}</Button>
+          <Button fullWidth onClick={onAddLiquidity}>
+            {t('confirmSupply')}
+          </Button>
         </Box>
       </Box>
     );

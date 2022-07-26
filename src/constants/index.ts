@@ -109,6 +109,10 @@ export const GlobalConst = {
     LPFARM_INDEX: 0,
     DUALFARM_INDEX: 1,
   },
+  v3FarmIndex: {
+    MY_FARMS_INDEX: 0,
+    ETERNAL_FARMS_INDEX: 1,
+  },
   walletName: {
     METAMASK: 'Metamask',
     CYPHERD: 'CypherD',
@@ -288,7 +292,7 @@ export const GlobalValue = {
       WBTC: new Token(
         ChainId.MATIC,
         '0x1BFD67037B42Cf73acF2047067bd4F2C47D9BfD6',
-        18,
+        8,
         'wBTC',
         'Wrapped Bitcoin',
       ),

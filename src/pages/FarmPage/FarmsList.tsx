@@ -298,9 +298,12 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
       return 0;
     }
 
-    const oneDayVolume = bulkPairs?.[pairId]?.oneDayVolumeUSD;
-    const reserveUSD = bulkPairs?.[pairId]?.reserveUSD;
-    const oneYearFeeAPY = getOneYearFee(oneDayVolume, reserveUSD);
+    const oneDayVolume = bulkPairs?.[pairId.toLowerCase()]?.oneDayVolumeUSD;
+    const reserveUSD = bulkPairs?.[pairId.toLowerCase()]?.reserveUSD;
+    const oneYearFeeAPY = getOneYearFee(
+      Number(oneDayVolume),
+      Number(reserveUSD),
+    );
     return oneYearFeeAPY;
   };
 

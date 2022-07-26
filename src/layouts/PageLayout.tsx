@@ -66,7 +66,7 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
 
   return (
     <Box className='page'>
-      <PasswordModal />
+      {openPassModal && <PasswordModal />}
       <BetaWarningBanner />
       <Header />
       {!isProMode && <Background fallback={false} />}

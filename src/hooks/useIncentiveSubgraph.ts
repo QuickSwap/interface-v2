@@ -251,7 +251,7 @@ export function useFarmingSubgraph() {
         throw new Error(`${error.name} ${error.message}`);
       }
 
-      const result:any = eternalFarmings[0];
+      const result: any = eternalFarmings[0];
       return result;
     } catch (err) {
       // throw new Error('Fetch infinite farming ' + err.message);
