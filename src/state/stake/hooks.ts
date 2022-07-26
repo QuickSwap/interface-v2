@@ -813,7 +813,7 @@ export function useDualStakingInfo(
   const info = useMemo(
     () =>
       Object.values(dualStakingRewardsInfo[chainId])
-        .filter((x) => x.ended === filter?.isEndedFarm)
+        .filter((x) => (filter?.isEndedFarm ? x.ended : !x.ended))
         .slice(startIndex, endIndex)
         .filter((stakingRewardInfo) =>
           pairToFilterBy === undefined || pairToFilterBy === null
