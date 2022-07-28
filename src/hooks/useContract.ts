@@ -13,6 +13,7 @@ import {
 } from 'constants/abis/argent-wallet-detector';
 import ENS_PUBLIC_RESOLVER_ABI from 'constants/abis/ens-public-resolver.json';
 import ENS_ABI from 'constants/abis/ens-registrar.json';
+import EIP_2612 from 'constants/abis/v3/eip_2612.json'
 import ERC20_ABI, { ERC20_BYTES32_ABI } from 'constants/abis/erc20';
 import { MIGRATOR_ABI, MIGRATOR_ADDRESS } from 'constants/abis/migrator';
 import { STAKING_DUAL_REWARDS_INTERFACE } from 'constants/abis/staking-rewards';
@@ -160,6 +161,10 @@ export function usePairContract(
   withSignerIfPossible?: boolean,
 ): Contract | null {
   return useContract(pairAddress, IUniswapV2PairABI, withSignerIfPossible);
+}
+
+export function useEIP2612Contract(tokenAddress?: string): Contract | null {
+  return useContract(tokenAddress, EIP_2612, false)
 }
 
 export function useMulticallContract(): Contract | null {
