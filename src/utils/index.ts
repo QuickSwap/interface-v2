@@ -767,37 +767,25 @@ export const getSwapTransactions = async (
   pairId: string,
   startTime?: number,
 ) => {
-  let allFound = false;
-  let swapTx: any[] = [];
   const oneDayAgo = dayjs
     .utc()
     .subtract(1, 'day')
     .unix();
-  let sTimestamp = startTime ?? oneDayAgo;
-  while (!allFound) {
-    try {
-      const result = await txClient.query({
-        query: SWAP_TRANSACTIONS,
-        variables: {
-          allPairs: [pairId],
-          lastTime: sTimestamp,
-        },
-      });
-      if (result.data.swaps.length < 1000) {
-        allFound = true;
-      }
-      const swaps = result.data.swaps;
-      sTimestamp = Number(swaps[swaps.length - 1].transaction.timestamp);
-      swapTx = swapTx.concat(swaps);
-    } catch (e) {}
+  const sTimestamp = startTime ?? oneDayAgo;
+  try {
+    const result = await txClient.query({
+      query: SWAP_TRANSACTIONS,
+      variables: {
+        allPairs: [pairId],
+        lastTime: sTimestamp,
+      },
+    });
+    const swaps: any[] = result.data.swaps;
+
+    return swaps;
+  } catch (e) {
+    return;
   }
-  return swapTx
-    .filter(
-      (item, ind, self) =>
-        ind ===
-        self.findIndex((item1) => item1.transaction.id === item.transaction.id),
-    )
-    .reverse();
 };
 
 export const getTokenChartData = async (

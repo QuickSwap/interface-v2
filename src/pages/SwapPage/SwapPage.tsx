@@ -65,7 +65,7 @@ const SwapPage: React.FC = () => {
       if (pairId && transactions && transactions.length > 0) {
         const txns = await getSwapTransactions(
           pairId,
-          Number(transactions[0].transaction.timestamp),
+          Number(transactions[transactions.length - 1].transaction.timestamp),
         );
         if (txns) {
           const filteredTxns = txns.filter(
@@ -184,17 +184,15 @@ const SwapPage: React.FC = () => {
               showTrades={showTrades}
               setShowTrades={setShowTrades}
             />
-            {token1 && token2 && pairId && (
-              <SwapProChartTrade
-                showChart={showChart}
-                showTrades={showTrades}
-                token1={token1}
-                token2={token2}
-                pairAddress={pairId}
-                pairTokenReversed={pairTokenReversed}
-                transactions={transactions}
-              />
-            )}
+            <SwapProChartTrade
+              showChart={showChart}
+              showTrades={showTrades}
+              token1={token1}
+              token2={token2}
+              pairAddress={pairId}
+              pairTokenReversed={pairTokenReversed}
+              transactions={transactions}
+            />
           </Box>
           {infoPos === 'right' && (
             <Box
