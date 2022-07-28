@@ -64,6 +64,7 @@ export const GlobalConst = {
       [ChainId.MUMBAI]: undefined,
     },
     QUICK_CONVERSION: '0x333068d06563a8dfdbf330a0e04a9d128e98bf5a',
+    MATIC_USDT_PAIR: '0x604229c960e5cacf2aaeac8be68ac07ba9df81c3',
   },
   utils: {
     QUICK_CONVERSION_RATE: 1000,
