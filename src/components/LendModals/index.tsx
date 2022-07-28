@@ -29,8 +29,7 @@ import { useTranslation } from 'react-i18next';
 import 'components/styles/LendModal.scss';
 import { useBorrowLimit } from 'hooks/marketxyz/useBorrowLimit';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
-
-const lensAddress = '0x4B1dfA99d53FFA6E4c0123956ec4Ac2a6D9F4c75';
+import { GlobalValue } from 'constants/index';
 
 interface QuickModalContentProps {
   borrow?: boolean;
@@ -97,7 +96,10 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
     (async () => {
       setMaxAmount(undefined);
       setMaxAmountError(false);
-      const lens = new MarketLensSecondary(asset.cToken.sdk, lensAddress);
+      const lens = new MarketLensSecondary(
+        asset.cToken.sdk,
+        GlobalValue.marketSDK.LENS,
+      );
       const underlyingBalance = convertBNToNumber(
         asset.underlyingBalance,
         asset.underlyingDecimals,

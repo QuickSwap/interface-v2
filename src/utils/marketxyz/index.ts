@@ -9,16 +9,24 @@ import {
   testForComptrollerErrorAndSend,
   testForCTokenErrorAndSend,
 } from './errors';
-
-export const BlocksPerMin = 60 / 2;
-export const BlocksPerDay = BlocksPerMin * 60 * 24;
+import { GlobalValue } from 'constants/index';
 
 export const convertMantissaToAPY = (mantissa: any, dayRange: number) => {
-  return (Math.pow((mantissa / 1e18) * BlocksPerDay + 1, dayRange) - 1) * 100;
+  return (
+    (Math.pow(
+      (mantissa / 1e18) * GlobalValue.marketSDK.BLOCKSPERDAY + 1,
+      dayRange,
+    ) -
+      1) *
+    100
+  );
 };
 
 export const convertMantissaToAPR = (mantissa: any) => {
-  return (mantissa * BlocksPerDay * getDaysCurrentYear()) / 1e16;
+  return (
+    (mantissa * GlobalValue.marketSDK.BLOCKSPERDAY * getDaysCurrentYear()) /
+    1e16
+  );
 };
 
 export const convertBNToNumber = (value: BN, decimals: BN) => {
