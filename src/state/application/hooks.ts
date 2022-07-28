@@ -113,6 +113,7 @@ export function useEthPrice(): {
   updateEthPrice: ({ price, oneDayPrice, ethPriceChange }: ETHPrice) => void;
 } {
   const ethPrice = useSelector((state: AppState) => state.application.ethPrice);
+  
   const dispatch = useDispatch();
   const _updateETHPrice = useCallback(
     ({ price, oneDayPrice, ethPriceChange }) => {

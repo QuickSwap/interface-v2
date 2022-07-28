@@ -1,10 +1,10 @@
 import { Interface } from '@ethersproject/abi'
 import { BigintIsh, Currency, CurrencyAmount, Percent, Token, TradeType, validateAndParseAddress } from '@uniswap/sdk-core'
 import invariant from 'tiny-invariant'
-import { ADDRESS_ZERO, Trade } from 'lib/src'
-import { encodeRouteToPath } from './encode-route'
 import { MethodParameters, toHex } from './calldata'
 import abi from '../../abis/swap-router.json'
+import { encodeRouteToPath } from 'lib/src/utils/encodeRouteToPath'
+import { Trade } from 'lib/src/trade'
 
 export interface StandardPermitArguments {
     v: 0 | 1 | 27 | 28

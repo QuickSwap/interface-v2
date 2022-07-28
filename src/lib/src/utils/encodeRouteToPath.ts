@@ -1,6 +1,7 @@
 import { pack } from '@ethersproject/solidity'
 import { Currency, Token } from '@uniswap/sdk-core'
-import { Pool, Route } from 'lib/src'
+import { Pool } from '../pool'
+import { Route } from '../route'
 
 /**
  * Converts a route to a hex encoded path
@@ -25,14 +26,12 @@ export function encodeRouteToPath(route: Route<Currency, Currency>, exactOutput:
                 return {
                     inputToken: outputToken,
                     types: ['address', 'address'],
-                    // path: [inputToken.address, pool.fee, outputToken.address]
                     path: [inputToken.address, outputToken.address]
                 }
             } else {
                 return {
                     inputToken: outputToken,
                     types: [...types, 'address'],
-                    // path: [...path, pool.fee, outputToken.address]
                     path: [...path, outputToken.address]
                 }
             }

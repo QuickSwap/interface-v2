@@ -7,7 +7,7 @@ import { useTransactionAdder } from '../state/transactions/hooks'
 import { SignatureData } from './useERC20Permit'
 import useTransactionDeadline from './useTransactionDeadline'
 import { Version } from './useToggledVersion'
-import { SwapRouter } from '../lib/src'
+// import { SwapRouter } from '../lib/src'
 
 // import abi from '../abis/swap-router.json'
 import { calculateGasMargin, isAddress, isZero, shortenAddress } from 'utils'

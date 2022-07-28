@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Box } from '@material-ui/core';
+import { Box, Button } from '@material-ui/core';
 import { getBulkPairData } from 'state/stake/hooks';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
 import { useActiveWeb3React } from 'hooks';
@@ -31,6 +31,7 @@ const FarmPage: React.FC = () => {
   const chainIdOrDefault = chainId ?? ChainId.MATIC;
   const lpFarms = useDefaultFarmList();
   const dualFarms = useDefaultDualFarmList();
+  const { account } = useActiveWeb3React();
 
   const {
     fetchEternalFarms: {
@@ -144,6 +145,16 @@ const FarmPage: React.FC = () => {
             items={v3FarmCategories}
             isLarge={true}
           />
+          <Box className='helpWrapper'>
+            <Button
+              onClick={() =>
+                account ? fetchTransferredPositionsFn(true) : undefined
+              }
+            >
+              Refresh
+            </Button>
+            <HelpIcon />
+          </Box>
           <Box my={2}>
             {v3FarmIndex === GlobalConst.v3FarmIndex.MY_FARMS_INDEX && (
               <FarmingMyFarms

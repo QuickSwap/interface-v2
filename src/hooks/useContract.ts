@@ -30,28 +30,52 @@ import { useActiveWeb3React } from 'hooks';
 import { abi as LairABI } from 'abis/DragonLair.json';
 import { abi as IUniswapV2Router02ABI } from '@uniswap/v2-periphery/build/IUniswapV2Router02.json';
 import QUICKConversionABI from 'constants/abis/quick-conversion.json';
+import { QUOTER_ADDRESSES } from 'constants/v3/addresses';
+import NewQuoterABI from 'constants/abis/v3/quoter.json'
 
-function useContract(
-  address: string | undefined,
+// function useContract(
+//   address: string | undefined,
+//   ABI: any,
+//   withSignerIfPossible = true,
+// ): Contract | null {
+//   const { library, account } = useActiveWeb3React();
+
+//   return useMemo(() => {
+//     if (!address || !ABI || !library) return null;
+//     try {
+//       return getContract(
+//         address,
+//         ABI,
+//         library,
+//         withSignerIfPossible && account ? account : undefined,
+//       );
+//     } catch (error) {
+//       console.error('Failed to get contract', error);
+//       return null;
+//     }
+//   }, [address, ABI, library, withSignerIfPossible, account]);
+// }
+
+export function useContract<T extends Contract = Contract>(
+  addressOrAddressMap: string | { [chainId: number]: string } | undefined,
   ABI: any,
-  withSignerIfPossible = true,
-): Contract | null {
-  const { library, account } = useActiveWeb3React();
+  withSignerIfPossible = true
+): T | null {
+  const { library, account, chainId } = useActiveWeb3React()
 
   return useMemo(() => {
-    if (!address || !ABI || !library) return null;
-    try {
-      return getContract(
-        address,
-        ABI,
-        library,
-        withSignerIfPossible && account ? account : undefined,
-      );
-    } catch (error) {
-      console.error('Failed to get contract', error);
-      return null;
-    }
-  }, [address, ABI, library, withSignerIfPossible, account]);
+      if (!addressOrAddressMap || !ABI || !library || !chainId) return null
+      let address: string | undefined
+      if (typeof addressOrAddressMap === 'string') address = addressOrAddressMap
+      else address = addressOrAddressMap[chainId]
+      if (!address) return null
+      try {
+          return getContract(address, ABI, library, withSignerIfPossible && account ? account : undefined)
+      } catch (error) {
+          console.error('Failed to get contract', error)
+          return null
+      }
+  }, [addressOrAddressMap, ABI, library, chainId, withSignerIfPossible, account]) as T
 }
 
 export function useLairContract(): Contract | null {
@@ -229,4 +253,8 @@ export function useRouterContract(): Contract | null {
     IUniswapV2Router02ABI,
     Boolean(account),
   );
+}
+
+export function useV3Quoter() {
+  return useContract(QUOTER_ADDRESSES, NewQuoterABI)
 }
