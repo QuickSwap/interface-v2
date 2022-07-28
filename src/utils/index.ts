@@ -779,6 +779,7 @@ export const getSwapTransactions = async (
         allPairs: [pairId],
         lastTime: sTimestamp,
       },
+      fetchPolicy: 'network-only',
     });
     const swaps: any[] = result.data.swaps;
 

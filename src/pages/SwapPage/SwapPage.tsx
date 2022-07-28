@@ -65,15 +65,16 @@ const SwapPage: React.FC = () => {
       if (pairId && transactions && transactions.length > 0) {
         const txns = await getSwapTransactions(
           pairId,
-          Number(transactions[transactions.length - 1].transaction.timestamp),
+          Number(transactions[0].transaction.timestamp),
         );
         if (txns) {
           const filteredTxns = txns.filter(
             (txn) =>
-              !transactions.filter(
+              !transactions.find(
                 (tx) => tx.transaction.id === txn.transaction.id,
-              ).length,
+              ),
           );
+          console.log('ccc', filteredTxns);
           setTransactions([...filteredTxns, ...transactions]);
         }
       }
