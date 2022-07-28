@@ -74,7 +74,6 @@ const SwapPage: React.FC = () => {
                 (tx) => tx.transaction.id === txn.transaction.id,
               ),
           );
-          console.log('ccc', filteredTxns);
           setTransactions([...filteredTxns, ...transactions]);
         }
       }
