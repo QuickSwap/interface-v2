@@ -119,6 +119,87 @@ const LendDetailPage: React.FC = () => {
     },
   ];
 
+  const poolDetails = [
+    {
+      label: t('totalSupplied'),
+      data: poolData ? midUsdFormatter(poolData.totalSuppliedUSD) : undefined,
+    },
+    {
+      label: t('totalBorrowed'),
+      data: poolData ? midUsdFormatter(poolData.totalBorrowedUSD) : undefined,
+    },
+    {
+      label: t('availableLiquidity'),
+      data: poolData ? midUsdFormatter(poolData.totalLiquidityUSD) : undefined,
+    },
+    {
+      label: t('poolUtilization'),
+      data: poolData ? poolUtilization.toFixed(2) + '%' : undefined,
+    },
+    {
+      label: t('upgradable'),
+      data: extraPoolData
+        ? extraPoolData.upgradeable
+          ? 'Yes'
+          : 'No'
+        : undefined,
+    },
+    {
+      label: t('admin'),
+      data: extraPoolData ? (
+        <Box className='flex items-center'>
+          <small className='text-gray29'>
+            {shortenAddress(extraPoolData.admin)}
+          </small>
+          <CopyHelper toCopy={extraPoolData.admin} />
+        </Box>
+      ) : (
+        undefined
+      ),
+    },
+    {
+      label: t('platformFee'),
+      data: poolData
+        ? poolData.assets.length > 0
+          ? (Number(poolData.assets[0].fuseFee.toString()) / 1e16).toFixed(2) +
+            '%'
+          : '10%'
+        : undefined,
+    },
+    {
+      label: t('averageAdminFee'),
+      data: poolData
+        ? poolData.assets.reduce(
+            (a, b, _, { length }) =>
+              a + Number(b.adminFee.toString()) / 1e16 / length,
+            0,
+          )
+        : undefined,
+    },
+    {
+      label: t('closeFactor'),
+      data: extraPoolData ? extraPoolData.closeFactor / 1e16 + '%' : undefined,
+    },
+    {
+      label: t('liquidationIncentive'),
+      data: extraPoolData
+        ? extraPoolData.liquidationIncentive / 1e16 - 100 + '%'
+        : undefined,
+    },
+    {
+      label: t('oracle'),
+      data: extraPoolData ? shortenAddress(extraPoolData.oracle) : undefined,
+    },
+    {
+      label: t('whitelist'),
+      data: extraPoolData
+        ? extraPoolData.enforceWhitelist
+          ? 'Yes'
+          : 'No'
+        : undefined,
+    },
+  ];
+
   return (
     <>
       <Box width={'100%'}>
@@ -510,154 +591,24 @@ const LendDetailPage: React.FC = () => {
                 <Box className='poolDetailsItemTop'>
                   <h6>{t('poolInfo')}</h6>
                 </Box>
-                <Box display={'flex'} pb={'16px'} flexDirection={'column'}>
-                  <Box className='poolDetailsInfoRow'>
-                    <Box className='poolDetailsInfoItem'>
-                      <small>{t('totalSupplied')}:</small>
-                      {poolData ? (
-                        <small className='text-gray29'>
-                          {midUsdFormatter(poolData.totalSuppliedUSD)}
-                        </small>
+                <Grid container>
+                  {poolDetails.map((item, ind) => (
+                    <Grid
+                      item
+                      xs={12}
+                      sm={6}
+                      key={ind}
+                      className='poolDetailsInfoItem'
+                    >
+                      <small>{item.label}:</small>
+                      {item.data ? (
+                        <small className='text-gray29'>{item.data}</small>
                       ) : (
                         <Skeleton variant='rect' width={40} height={23} />
                       )}
-                    </Box>
-                    <Box className='poolDetailsInfoItem'>
-                      <small>{t('totalBorrowed')}:</small>
-                      {poolData ? (
-                        <small className='text-gray29'>
-                          {midUsdFormatter(poolData.totalBorrowedUSD)}
-                        </small>
-                      ) : (
-                        <Skeleton variant='rect' width={40} height={23} />
-                      )}
-                    </Box>
-                  </Box>
-                  <Box className='poolDetailsInfoRow'>
-                    <Box className='poolDetailsInfoItem'>
-                      <small>{t('availableLiquidity')}:</small>
-                      {poolData ? (
-                        <small className='text-gray29'>
-                          {midUsdFormatter(poolData.totalLiquidityUSD)}
-                        </small>
-                      ) : (
-                        <Skeleton variant='rect' width={40} height={23} />
-                      )}
-                    </Box>
-                    <Box className='poolDetailsInfoItem'>
-                      <small>{t('poolUtilization')}:</small>
-                      {poolData ? (
-                        <small className='text-gray29'>
-                          {poolUtilization.toFixed(2) + '%'}
-                        </small>
-                      ) : (
-                        <Skeleton variant='rect' width={40} height={23} />
-                      )}
-                    </Box>
-                  </Box>
-                  <Box className='poolDetailsInfoRow'>
-                    <Box className='poolDetailsInfoItem'>
-                      <small>{t('upgradable')}:</small>
-                      {extraPoolData ? (
-                        <small className='text-gray29'>
-                          {extraPoolData.upgradeable ? 'Yes' : 'No'}
-                        </small>
-                      ) : (
-                        <Skeleton variant='rect' width={40} height={23} />
-                      )}
-                    </Box>
-                    <Box className='poolDetailsInfoItem'>
-                      <small>{t('admin')}:</small>
-                      {extraPoolData && extraPoolData.admin ? (
-                        <Box className='flex items-center'>
-                          <small className='text-gray29'>
-                            {shortenAddress(extraPoolData.admin)}
-                          </small>
-                          <CopyHelper toCopy={extraPoolData.admin} />
-                        </Box>
-                      ) : (
-                        <Skeleton variant='rect' width={40} height={23} />
-                      )}
-                    </Box>
-                  </Box>
-                  <Box className='poolDetailsInfoRow'>
-                    <Box className='poolDetailsInfoItem'>
-                      <small>{t('platformFee')}:</small>
-                      {poolData ? (
-                        <small className='text-gray29'>
-                          {poolData.assets.length > 0
-                            ? (
-                                Number(poolData.assets[0].fuseFee.toString()) /
-                                1e16
-                              ).toFixed(2) + '%'
-                            : '10%'}
-                        </small>
-                      ) : (
-                        <Skeleton variant='rect' width={40} height={23} />
-                      )}
-                    </Box>
-                    <Box className='poolDetailsInfoItem'>
-                      <small>{t('averageAdminFee')}:</small>
-                      {poolData ? (
-                        <small className='text-gray29'>
-                          {poolData.assets.reduce(
-                            (a, b, _, { length }) =>
-                              a + Number(b.adminFee.toString()) / 1e16 / length,
-                            0,
-                          )}
-                        </small>
-                      ) : (
-                        <Skeleton variant='rect' width={40} height={23} />
-                      )}
-                    </Box>
-                  </Box>
-                  <Box className='poolDetailsInfoRow'>
-                    <Box className='poolDetailsInfoItem'>
-                      <small>{t('closeFactor')}:</small>
-                      {extraPoolData ? (
-                        <small className='text-gray29'>
-                          {extraPoolData.closeFactor / 1e16 + '%'}
-                        </small>
-                      ) : (
-                        <Skeleton variant='rect' width={40} height={23} />
-                      )}
-                    </Box>
-                    <Box className='poolDetailsInfoItem'>
-                      <small>{t('liquidationIncentive')}:</small>
-                      {extraPoolData ? (
-                        <small className='text-gray29'>
-                          {extraPoolData.liquidationIncentive / 1e16 -
-                            100 +
-                            '%'}
-                        </small>
-                      ) : (
-                        <Skeleton variant='rect' width={40} height={23} />
-                      )}
-                    </Box>
-                  </Box>
-                  <Box className='poolDetailsInfoRow'>
-                    <Box className='poolDetailsInfoItem'>
-                      <small>{t('oracle')}:</small>
-                      {extraPoolData ? (
-                        <small className='text-gray29'>
-                          {shortenAddress(extraPoolData.oracle)}
-                        </small>
-                      ) : (
-                        <Skeleton variant='rect' width={40} height={23} />
-                      )}
-                    </Box>
-                    <Box className='poolDetailsInfoItem'>
-                      <small>{t('whitelist')}:</small>
-                      {extraPoolData ? (
-                        <small className='text-gray29'>
-                          {extraPoolData.enforceWhitelist ? 'Yes' : 'No'}
-                        </small>
-                      ) : (
-                        <Skeleton variant='rect' width={40} height={23} />
-                      )}
-                    </Box>
-                  </Box>
-                </Box>
+                    </Grid>
+                  ))}
+                </Grid>
               </Box>
             </Grid>
 

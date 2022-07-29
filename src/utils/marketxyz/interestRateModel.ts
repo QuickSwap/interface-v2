@@ -1,7 +1,7 @@
 import { MarketSDK } from 'market-sdk';
 import { BN } from 'utils/bigUtils';
 import { USDPricedPoolAsset } from './fetchPoolData';
-import { abi as JumpRateModelABI } from '../../constants/abis/marketxyz/JumpRateModel.json';
+import JumpRateModelArtifact from 'market-sdk/dist/abi/JumpRateModel.json';
 import { getDaysCurrentYear } from 'utils';
 import { GlobalValue } from 'constants/index';
 
@@ -24,7 +24,7 @@ export default class JumpRateModel {
   async init() {
     const jrmAddress = await this.asset.cToken.interestRateModel();
     const jrm = new this.sdk.web3.eth.Contract(
-      JumpRateModelABI as any,
+      JumpRateModelArtifact.abi as any,
       jrmAddress,
     );
 

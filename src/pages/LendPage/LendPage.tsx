@@ -16,6 +16,7 @@ import 'pages/styles/lend.scss';
 import { getPoolAssetToken } from 'utils/marketxyz';
 import { Token } from '@uniswap/sdk';
 import { GlobalValue } from 'constants/index';
+import LendAlertBox from './LendAlertBox';
 
 const LendPage: React.FC = () => {
   const { t } = useTranslation();
@@ -131,7 +132,7 @@ const LendPage: React.FC = () => {
       >
         <h4 className='text-bold'>{t('lend')}</h4>
       </Box>
-      <AlertBox />
+      <LendAlertBox />
       <Box mb={3} textAlign='center'>
         <h4 className='text-bold'>{t('lendPageTitle')}</h4>
         <Box mt={'16px'} maxWidth={'520px'} marginX='auto'>
@@ -272,38 +273,6 @@ const LendPage: React.FC = () => {
         <Skeleton width='100%' height={200} />
       )}
     </Box>
-  );
-};
-
-const AlertBox: React.FC = () => {
-  const { t } = useTranslation();
-  const [visible, setVisible] = useState(true);
-  return (
-    <>
-      {visible ? (
-        <Box className='lendAlertWrapper'>
-          <Box className='lendAlertBox'>
-            <svg width={'24px'} height={'24px'} viewBox='0 0 24 24'>
-              <path
-                d='M12 5.99 19.53 19H4.47L12 5.99M12 2 1 21h22L12 2zm1 14h-2v2h2v-2zm0-6h-2v4h2v-4z'
-                fill='currentColor'
-              ></path>
-            </svg>
-          </Box>
-          <p>{t('lendAlertDesc')}</p>
-          <Box
-            className='lendAlertClose'
-            onClick={() => {
-              setVisible(false);
-            }}
-          >
-            &times;
-          </Box>
-        </Box>
-      ) : (
-        ''
-      )}
-    </>
   );
 };
 

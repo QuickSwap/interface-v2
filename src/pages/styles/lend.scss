@@ -189,16 +189,8 @@
   }
 }
 
-.poolDetailsInfoRow {
-  display: flex;
-  @include media("screen", "<tablet") {
-    flex-direction: column;
-  }
-}
-
 .poolDetailsInfoItem {
   padding: 20px;
-  flex: 1;
   display: flex;
   align-items: center;
   border-bottom: 1px solid $grey31;
@@ -210,6 +202,9 @@
   }
   @include media("screen", "<tablet") {
     justify-content: space-between;
+  }
+  &:last-child, &:nth-last-of-type(2) {
+    border-bottom: none;
   }
 }
 
