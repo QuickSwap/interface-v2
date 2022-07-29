@@ -9,6 +9,7 @@ import {
   safeApp,
 } from '../connectors';
 import MetamaskIcon from 'assets/images/metamask.png';
+import TallyHoIcon from 'assets/images/tallyho.svg';
 import BlockWalletIcon from 'assets/images/blockwalletIcon.svg';
 import cypherDIcon from 'assets/images/cypherDIcon.png';
 import BitKeepIcon from 'assets/images/bitkeep.png';
@@ -110,6 +111,7 @@ export const GlobalConst = {
     DUALFARM_INDEX: 1,
   },
   walletName: {
+    TALLYHO: 'Tally Ho',
     METAMASK: 'Metamask',
     CYPHERD: 'CypherD',
     BLOCKWALLET: 'BlockWallet',
@@ -131,6 +133,14 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
     description: 'CypherD browser extension.',
     href: null,
     color: '#E8831D',
+  },
+  TALLYHO: {
+    connector: injected,
+    name: GlobalConst.walletName.TALLYHO,
+    iconName: TallyHoIcon,
+    description: 'Open Source community owned wallet.',
+    href: null,
+    color: '#010101'
   },
   METAMASK: {
     connector: injected,
