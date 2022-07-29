@@ -1584,25 +1584,36 @@ export function isTokensOnList(
   });
 }
 
+export enum ExplorerDataType {
+  TRANSACTION = 'transaction',
+  TOKEN = 'token',
+  ADDRESS = 'address',
+  BLOCK = 'block',
+}
+
 export function getEtherscanLink(
   chainId: ChainId,
   data: string,
-  type: 'transaction' | 'token' | 'address' | 'block',
+  type: 'transaction' | 'token' | 'address' | 'block' | ExplorerDataType,
 ): string {
   const prefix =
     'https://' + (chainId === 80001 ? 'mumbai.' : '') + 'polygonscan.com';
 
   switch (type) {
-    case 'transaction': {
+    case 'transaction':
+    case ExplorerDataType.TRANSACTION: {
       return `${prefix}/tx/${data}`;
     }
-    case 'token': {
+    case 'token': 
+    case ExplorerDataType.TOKEN: {
       return `${prefix}/token/${data}`;
     }
-    case 'block': {
+    case 'block': 
+    case ExplorerDataType.BLOCK: {
       return `${prefix}/block/${data}`;
     }
     case 'address':
+    case ExplorerDataType.ADDRESS:
     default: {
       return `${prefix}/address/${data}`;
     }

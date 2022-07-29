@@ -1,35 +1,18 @@
 import { Currency, CurrencyAmount, Token, TradeType } from "@uniswap/sdk-core";
 import { Trade as V3Trade } from "lib/src/trade";
-import { AdvancedSwapDetails } from "components/swap/AdvancedSwapDetails";
-import { MouseoverTooltip, MouseoverTooltipContent } from "components/Tooltip";
 import JSBI from "jsbi";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { ArrowDown, CheckCircle, HelpCircle, Info } from "react-feather";
 import { RouteComponentProps } from "react-router-dom";
 import { Text } from "rebass";
 import { ThemeContext } from "styled-components/macro";
-import AddressInputPanel from "../../components/AddressInputPanel";
-import { ButtonConfirmed, ButtonError } from "../../components/Button";
-import { GreyCard } from "../../components/Card";
-import { AutoColumn } from "../../components/Column";
-import CurrencyInputPanel from "../../components/CurrencyInputPanel";
-
-import Row, { AutoRow } from "../../components/Row";
-import { ArrowWrapper, Dots, SwapCallbackError } from "../../components/swap/styled";
-import SwapHeader from "../../components/swap/SwapHeader";
-import TradePrice from "../../components/swap/TradePrice";
 import { SwitchLocaleLink } from "../../components/SwitchLocaleLink";
-import TokenWarningModal from "../../components/TokenWarningModal";
-
-
 import { Field } from "../../state/swap/actions";
 import { useDefaultsFromURLSearch, useDerivedSwapInfo, useSwapActionHandlers, useSwapState } from "../../state/swap/hooks";
 import { useExpertModeManager, useUserSingleHopOnly } from "../../state/user/hooks";
-import { LinkStyledButton, TYPE } from "../../theme";
-
 import { Helmet } from "react-helmet";
 import ReactGA from "react-ga";
-import Card from "../../shared/components/Card/Card";
+
 import "./index.scss";
 import { useActiveWeb3React } from "hooks";
 import useENSAddress from "hooks/useENSAddress";
@@ -50,7 +33,20 @@ import { V3TradeState } from "hooks/v3/useBestV3Trade";
 import ConfirmSwapModal from "components/ConfirmSwapModal";
 import { confirmPriceImpactWithoutFee } from "utils";
 import { computeFiatValuePriceImpact } from "utils/v3/computeFiatValuePriceImpact";
-import { useAllTokens } from "hooks/v3/Tokens";
+import { useAllTokens, useCurrency } from "hooks/v3/Tokens";
+import Card from "components/v3/Card/Card";
+import { AutoColumn } from "components/v3/Column";
+import Row, { AutoRow } from "components/v3/Row";
+import { GreyCard } from "components/v3/Card";
+import { ButtonConfirmed, ButtonError } from "components/v3/Button";
+import { MouseoverTooltip, MouseoverTooltipContent } from "components/v3/Tooltip";
+import TokenWarningModal from "components/v3/TokenWarningModal";
+import TradePrice from "components/v3/swap/TradePrice";
+import SwapHeader from "components/v3/swap/SwapHeader";
+import AddressInputPanel from "components/v3/AddressInputPanel";
+import { LinkStyledButton } from "theme/components";
+import { ArrowWrapper, Dots, SwapCallbackError } from "components/v3/swap/styled";
+import { AdvancedSwapDetails } from "components/v3/swap/AdvancedSwapDetails";
 
 
 export default function Swap({ history }: RouteComponentProps) {
