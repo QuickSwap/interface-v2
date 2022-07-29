@@ -261,6 +261,56 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
 
   const showArrow = Number(value) > 0 && updatedAsset;
 
+  const lendModalRows = [
+    {
+      label: borrow ? t('borrowedBalance') : t('suppliedBalance'),
+      html: borrow
+        ? midUsdFormatter(asset.borrowBalanceUSD)
+        : `${supplyBalance.toLocaleString()} ${asset.underlyingSymbol}`,
+      showArrow,
+      htmlAfterArrow: updatedAsset
+        ? `${convertBNToNumber(
+            updatedAsset.supplyBalance,
+            asset.underlyingDecimals,
+          ).toLocaleString()} ${asset.underlyingSymbol}`
+        : '',
+    },
+    {
+      label: borrow ? t('suppliedBalance') : t('supplyapy'),
+      html: borrow
+        ? `${supplyBalance.toLocaleString()} ${asset.underlyingSymbol}`
+        : supplyAPY.toLocaleString() + '%',
+      showArrow: borrow ? false : updatedAsset && updatedAPYDiffIsLarge,
+      htmlAfterArrow:
+        borrow || !updatedAsset
+          ? undefined
+          : updatedSupplyAPY.toLocaleString() + '%',
+    },
+    borrow
+      ? {
+          label: t('borrowAPR'),
+          html: borrowAPY.toLocaleString() + '%',
+          showArrow: updatedAsset && updatedAPYDiffIsLarge,
+          htmlAfterArrow: `${updatedBorrowAPY.toLocaleString()}%`,
+        }
+      : undefined,
+    {
+      label: t('borrowLimit'),
+      html: midUsdFormatter(borrowLimit),
+      showArrow: borrow ? false : showArrow,
+      htmlAfterArrow: borrow ? undefined : midUsdFormatter(updatedBorrowLimit),
+    },
+    {
+      label: t('totalDebtBalance'),
+      html: midUsdFormatter(asset.borrowBalanceUSD),
+      showArrow: borrow ? showArrow : false,
+      htmlAfterArrow:
+        borrow && updatedAsset
+          ? midUsdFormatter(updatedAsset.borrowBalanceUSD)
+          : '',
+    },
+  ];
+
   return (
     <>
       {txError || loading || txHash ? (
@@ -339,110 +389,22 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
               </Box>
             </Box>
             <Box my={3} className='lendModalContentWrapper'>
-              {!borrow ? (
-                <>
-                  <Box className='lendModalRow'>
-                    <p>{t('suppliedBalance')}:</p>
+              {lendModalRows
+                .filter((row) => !!row)
+                .map((row, ind) => (
+                  <Box key={ind} className='lendModalRow'>
+                    <p>{row?.label}:</p>
                     <p>
-                      {`${supplyBalance.toLocaleString()} ${
-                        asset.underlyingSymbol
-                      }`}
-                      {showArrow && (
+                      {row?.html}
+                      {row?.showArrow && (
                         <>
                           <ArrowForward fontSize='small' />
-                          {`${convertBNToNumber(
-                            updatedAsset.supplyBalance,
-                            asset.underlyingDecimals,
-                          ).toLocaleString()} ${asset.underlyingSymbol}`}
+                          {row?.htmlAfterArrow}
                         </>
                       )}
                     </p>
                   </Box>
-                  <Box className='lendModalRow'>
-                    <p>{t('supplyapy')}:</p>
-                    <p
-                      className={supplyAPY > 0 ? 'text-success' : 'text-error'}
-                    >
-                      {supplyAPY.toLocaleString()}%
-                      {updatedAsset && updatedAPYDiffIsLarge && (
-                        <>
-                          <ArrowForward fontSize='small' />
-                          {`${updatedSupplyAPY.toLocaleString()}%`}
-                        </>
-                      )}
-                    </p>
-                  </Box>
-                  <Box className='lendModalRow'>
-                    <p>{t('borrowLimit')}:</p>
-                    <p>
-                      {midUsdFormatter(borrowLimit)}
-                      {showArrow && (
-                        <>
-                          <ArrowForward fontSize='small' />
-                          {midUsdFormatter(updatedBorrowLimit)}
-                        </>
-                      )}
-                    </p>
-                  </Box>
-                  <Box className='lendModalRow'>
-                    <p>{t('totalDebtBalance')}:</p>
-                    <p>{midUsdFormatter(asset.borrowBalanceUSD)}</p>
-                  </Box>
-                </>
-              ) : (
-                <>
-                  <Box className='lendModalRow'>
-                    <p>{t('borrowedBalance')}:</p>
-                    <p>
-                      ${asset.borrowBalanceUSD.toLocaleString()}
-                      {showArrow && (
-                        <>
-                          <ArrowForward fontSize='small' />
-                          {'$' + updatedAsset.borrowBalanceUSD.toLocaleString()}
-                        </>
-                      )}
-                    </p>
-                  </Box>
-                  <Box className='lendModalRow'>
-                    <p>{t('suppliedBalance')}:</p>
-                    <p>
-                      {`${supplyBalance.toLocaleString()} ${
-                        asset.underlyingSymbol
-                      }`}
-                    </p>
-                  </Box>
-                  <Box className='lendModalRow'>
-                    <p>{t('borrowAPR')}:</p>
-                    <p
-                      className={borrowAPY > 0 ? 'text-success' : 'text-error'}
-                    >
-                      {borrowAPY.toLocaleString()}%
-                      {updatedAsset && updatedAPYDiffIsLarge && (
-                        <>
-                          <ArrowForward fontSize='small' />
-                          {`${updatedBorrowAPY.toLocaleString()}%`}
-                        </>
-                      )}
-                    </p>
-                  </Box>
-                  <Box className='lendModalRow'>
-                    <p>{t('borrowLimit')}:</p>
-                    <p>{midUsdFormatter(borrowLimit)}</p>
-                  </Box>
-                  <Box className='lendModalRow'>
-                    <p>{t('totalDebtBalance')}:</p>
-                    <p>
-                      ${asset.borrowBalanceUSD.toLocaleString()}
-                      {showArrow && (
-                        <>
-                          <ArrowForward fontSize='small' />
-                          {'$' + updatedAsset.borrowBalanceUSD.toLocaleString()}
-                        </>
-                      )}
-                    </p>
-                  </Box>
-                </>
-              )}
+                ))}
             </Box>
             {!borrow && (
               <Box className='lendModalContentWrapper'>
