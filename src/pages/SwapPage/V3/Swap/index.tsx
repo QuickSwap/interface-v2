@@ -1,6 +1,5 @@
-import { t, Trans } from "@lingui/macro";
 import { Currency, CurrencyAmount, Token, TradeType } from "@uniswap/sdk-core";
-import { Trade as V3Trade } from "lib/src";
+import { Trade as V3Trade } from "lib/src/trade";
 import { AdvancedSwapDetails } from "components/swap/AdvancedSwapDetails";
 import { MouseoverTooltip, MouseoverTooltipContent } from "components/Tooltip";
 import JSBI from "jsbi";
@@ -14,32 +13,22 @@ import { ButtonConfirmed, ButtonError } from "../../components/Button";
 import { GreyCard } from "../../components/Card";
 import { AutoColumn } from "../../components/Column";
 import CurrencyInputPanel from "../../components/CurrencyInputPanel";
-import CurrencyLogo from "../../components/CurrencyLogo";
+
 import Row, { AutoRow } from "../../components/Row";
-import confirmPriceImpactWithoutFee from "../../components/swap/confirmPriceImpactWithoutFee";
-import ConfirmSwapModal from "../../components/swap/ConfirmSwapModal";
 import { ArrowWrapper, Dots, SwapCallbackError } from "../../components/swap/styled";
 import SwapHeader from "../../components/swap/SwapHeader";
 import TradePrice from "../../components/swap/TradePrice";
 import { SwitchLocaleLink } from "../../components/SwitchLocaleLink";
 import TokenWarningModal from "../../components/TokenWarningModal";
-import { useAllTokens, useCurrency } from "../../hooks/Tokens";
-import { V3TradeState } from "../../hooks/useBestV3Trade";
-import { useERC20PermitFromTrade, UseERC20PermitState } from "../../hooks/useERC20Permit";
-import useToggledVersion, { Version } from "../../hooks/useToggledVersion";
-import { useUSDCValue } from "../../hooks/useUSDCPrice";
-import { useWalletModalToggle } from "../../state/application/hooks";
+
+
 import { Field } from "../../state/swap/actions";
 import { useDefaultsFromURLSearch, useDerivedSwapInfo, useSwapActionHandlers, useSwapState } from "../../state/swap/hooks";
 import { useExpertModeManager, useUserSingleHopOnly } from "../../state/user/hooks";
 import { LinkStyledButton, TYPE } from "../../theme";
-import { computeFiatValuePriceImpact } from "../../utils/computeFiatValuePriceImpact";
-import { getTradeVersion } from "../../utils/getTradeVersion";
-import { maxAmountSpend } from "../../utils/maxAmountSpend";
-import { warningSeverity } from "../../utils/prices";
+
 import { Helmet } from "react-helmet";
 import ReactGA from "react-ga";
-import { WrappedCurrency } from "../../models/types";
 import Card from "../../shared/components/Card/Card";
 import "./index.scss";
 import { useActiveWeb3React } from "hooks";
@@ -47,6 +36,21 @@ import useENSAddress from "hooks/useENSAddress";
 import Loader from "components/Loader";
 import { ApprovalState, useApproveCallbackFromTrade } from "hooks/useV3ApproveCallback";
 import { useSwapCallback } from "hooks/useSwapCallback";
+import { useUSDCValue } from "hooks/v3/useUSDCPrice";
+import useWrapCallback, { WrapType } from "hooks/useWrapCallback";
+import { getTradeVersion } from "utils/v3/getTradeVersion";
+import { WrappedCurrency } from "models/types";
+import { useWalletModalToggle } from "state/application/hooks";
+import CurrencyLogo from "components/CurrencyLogo";
+import useToggledVersion, { Version } from "hooks/v3/useToggledVersion";
+import { useERC20PermitFromTrade, UseERC20PermitState } from "hooks/v3/useERC20Permit";
+import { warningSeverity } from "utils/prices";
+import { maxAmountSpend } from "utils/v3/maxAmountSpend";
+import { V3TradeState } from "hooks/v3/useBestV3Trade";
+import ConfirmSwapModal from "components/ConfirmSwapModal";
+import { confirmPriceImpactWithoutFee } from "utils";
+import { computeFiatValuePriceImpact } from "utils/v3/computeFiatValuePriceImpact";
+import { useAllTokens } from "hooks/v3/Tokens";
 
 
 export default function Swap({ history }: RouteComponentProps) {
@@ -210,7 +214,8 @@ export default function Swap({ history }: RouteComponentProps) {
     // @ts-ignore
     const { callback: swapCallback, error: swapCallbackError } = useSwapCallback(trade, allowedSlippage, recipient, signatureData);
 
-    const [singleHopOnly] = useUserSingleHopOnly();
+    // const [singleHopOnly] = useUserSingleHopOnly();
+    const singleHopOnly = false;
 
     const handleSwap = useCallback(() => {
         if (!swapCallback) {
@@ -325,11 +330,11 @@ export default function Swap({ history }: RouteComponentProps) {
                 {/* //TODO */}
                 <meta
                     name={"description"}
-                    content={t`Algebra.Finance is the first concentrated liquidity DEX on Polygon: best rates for traders and liquidity providers on the Polygon Network, with built-in farming and adaptive fees.`}
+                    content={`Algebra.Finance is the first concentrated liquidity DEX on Polygon: best rates for traders and liquidity providers on the Polygon Network, with built-in farming and adaptive fees.`}
                 />
-                <meta name={"keywords"} content={t`best dex, algebra exchange, algebra crypto, algebra finance, algebra dex, defi, polygon dex, exchange on polygon, matic exchange`} />
+                <meta name={"keywords"} content={`best dex, algebra exchange, algebra crypto, algebra finance, algebra dex, defi, polygon dex, exchange on polygon, matic exchange`} />
 
-                <title>{t`Algebra — Swap`}</title>
+                <title>{`Algebra — Swap`}</title>
             </Helmet>
             <TokenWarningModal
                 isOpen={importTokensNotInDefault.length > 0 && !dismissTokenWarning}
@@ -372,7 +377,7 @@ export default function Swap({ history }: RouteComponentProps) {
                         <AutoColumn gap={"md"}>
                             <Card isDark={false} classes={"p-1 br-12"}>
                                 <CurrencyInputPanel
-                                    label={independentField === Field.OUTPUT && !showWrap ? <Trans>From (at most)</Trans> : <Trans>From</Trans>}
+                                    label={independentField === Field.OUTPUT && !showWrap ? "From (at most)" : "From"}
                                     value={formattedAmounts[Field.INPUT]}
                                     showMaxButton={showMaxButton}
                                     currency={currencies[Field.INPUT] as WrappedCurrency}
@@ -412,7 +417,7 @@ export default function Swap({ history }: RouteComponentProps) {
                                 <CurrencyInputPanel
                                     value={formattedAmounts[Field.OUTPUT]}
                                     onUserInput={handleTypeOutput}
-                                    label={independentField === Field.INPUT && !showWrap ? <Trans>To (at least)</Trans> : <Trans>To</Trans>}
+                                    label={independentField === Field.INPUT && !showWrap ? "To (at least)" : "To"}
                                     showMaxButton={false}
                                     hideBalance={false}
                                     fiatValue={fiatValueOutput ?? undefined}
@@ -439,7 +444,7 @@ export default function Swap({ history }: RouteComponentProps) {
                                                 <ArrowDown size="16" color={theme.text2} />
                                             </ArrowWrapper>
                                             <LinkStyledButton id="remove-recipient-button" onClick={() => onChangeRecipient(null)}>
-                                                <Trans>- Remove send</Trans>
+                                                "- Remove send"
                                             </LinkStyledButton>
                                         </AutoRow>
                                         <AddressInputPanel id="recipient" value={recipient} onChange={onChangeRecipient} />
@@ -471,11 +476,11 @@ export default function Swap({ history }: RouteComponentProps) {
                             <div>
                                 {!account ? (
                                     <button className={"btn primary w-100 pv-1 b"} onClick={toggleWalletModal}>
-                                        <Trans>Connect Wallet</Trans>
+                                        "Connect Wallet"
                                     </button>
                                 ) : showWrap ? (
                                     <button className={"btn primary w-100 pv-1 b"} disabled={Boolean(wrapInputError)} onClick={onWrap}>
-                                        {wrapInputError ?? (wrapType === WrapType.WRAP ? <Trans>Wrap</Trans> : wrapType === WrapType.UNWRAP ? <Trans>Unwrap</Trans> : null)}
+                                        {wrapInputError ?? (wrapType === WrapType.WRAP ? "Wrap" : wrapType === WrapType.UNWRAP ? "Unwrap" : null)}
                                     </button>
                                 ) : routeNotFound && userHasSpecifiedInputOutput ? (
                                     <GreyCard
@@ -487,12 +492,12 @@ export default function Swap({ history }: RouteComponentProps) {
                                         <TYPE.main mb="4px">
                                             {isLoadingRoute ? (
                                                 <Dots>
-                                                    <Trans>Loading</Trans>
+                                                    "Loading"
                                                 </Dots>
                                             ) : singleHopOnly ? (
-                                                <Trans>Insufficient liquidity for this trade. Try enabling multi-hop trades.</Trans>
+                                                "Insufficient liquidity for this trade. Try enabling multi-hop trades."
                                             ) : (
-                                                <Trans>Insufficient liquidity for this trade.</Trans>
+                                                "Insufficient liquidity for this trade."
                                             )}
                                         </TYPE.main>
                                     </GreyCard>
@@ -531,9 +536,9 @@ export default function Swap({ history }: RouteComponentProps) {
                                                         <CurrencyLogo currency={currencies[Field.INPUT] as WrappedCurrency} size={"24px"} style={{ marginRight: "8px", flexShrink: 0 }} />
                                                         {/* we need to shorten this string on mobile */}
                                                         {approvalState === ApprovalState.APPROVED || signatureState === UseERC20PermitState.SIGNED ? (
-                                                            <Trans>You can now trade {currencies[Field.INPUT]?.symbol}</Trans>
+                                                            `You can now trade ${currencies[Field.INPUT]?.symbol}`
                                                         ) : (
-                                                            <Trans>Allow Algebra to use your {currencies[Field.INPUT]?.symbol}</Trans>
+                                                            `Allow Algebra to use your ${currencies[Field.INPUT]?.symbol}`
                                                         )}
                                                     </span>
                                                     {approvalState === ApprovalState.PENDING ? (
@@ -543,10 +548,8 @@ export default function Swap({ history }: RouteComponentProps) {
                                                     ) : (
                                                         <MouseoverTooltip
                                                             text={
-                                                                <Trans>
-                                                                    You must give the Algebra smart contracts permission to use your {currencies[Field.INPUT]?.symbol}. You only have to do this once
-                                                                    per token.
-                                                                </Trans>
+                                                                
+                                                                    `You must give the Algebra smart contracts permission to use your " ${currencies[Field.INPUT]?.symbol}. You only have to do this once per token.`
                                                             }
                                                         >
                                                             <HelpCircle size="20" color={"white"} style={{ marginLeft: "8px" }} />
@@ -598,7 +601,7 @@ export default function Swap({ history }: RouteComponentProps) {
                                                 error={isValid && priceImpactSeverity > 2}
                                             >
                                                 <Text fontSize={16} fontWeight={500}>
-                                                    {priceImpactTooHigh ? <Trans>High Price Impact</Trans> : priceImpactSeverity > 2 ? <Trans>Swap Anyway</Trans> : <Trans>Swap</Trans>}
+                                                    {priceImpactTooHigh ? "High Price Impact" : priceImpactSeverity > 2 ? "Swap Anyway" : "Swap"}
                                                 </Text>
                                             </ButtonError>
                                         </AutoColumn>
@@ -627,11 +630,11 @@ export default function Swap({ history }: RouteComponentProps) {
                                             {swapInputError ? (
                                                 swapInputError
                                             ) : priceImpactTooHigh ? (
-                                                <Trans>Price Impact Too High</Trans>
+                                                "Price Impact Too High"
                                             ) : priceImpactSeverity > 2 ? (
-                                                <Trans>Swap Anyway</Trans>
+                                                "Swap Anyway"
                                             ) : (
-                                                <Trans>Swap</Trans>
+                                                "Swap"
                                             )}
                                         </Text>
                                     </ButtonError>

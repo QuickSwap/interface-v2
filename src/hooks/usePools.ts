@@ -6,11 +6,11 @@ import { useMultipleContractSingleData } from '../state/multicall/hooks';
 
 import { Interface } from '@ethersproject/abi';
 import abi from '../abis/pool.json';
-import { computePoolAddress } from './computePoolAddress';
 import { useInternet } from './useInternet';
 import { useToken } from './Tokens';
 import { usePreviousNonErroredArray } from './usePrevious';
 import { Pool } from 'lib/src/pool';
+import { computePoolAddress } from './v3/computePoolAddress';
 
 const POOL_STATE_INTERFACE = new Interface(abi);
 

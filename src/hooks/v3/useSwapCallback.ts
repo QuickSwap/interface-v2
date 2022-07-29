@@ -2,12 +2,11 @@ import { BigNumber } from '@ethersproject/bignumber'
 import { Trade as V3Trade } from 'lib/src/trade';
 import { Currency, Percent, TradeType } from '@uniswap/sdk-core'
 import { useMemo } from 'react'
-import { getTradeVersion } from '../utils/getTradeVersion'
+
 import { useTransactionAdder } from '../state/transactions/hooks'
 import { SignatureData } from './useERC20Permit'
-import useTransactionDeadline from './useTransactionDeadline'
 import { Version } from './useToggledVersion'
-// import { SwapRouter } from '../lib/src'
+
 
 // import abi from '../abis/swap-router.json'
 import { calculateGasMargin, isAddress, isZero, shortenAddress } from 'utils'
@@ -16,6 +15,9 @@ import { SWAP_ROUTER_ADDRESSES } from 'constants/v3/addresses'
 import { useActiveWeb3React } from 'hooks'
 import { useAppSelector } from 'state'
 import { GAS_PRICE_MULTIPLIER } from 'hooks/useGasPrice'
+import { SwapRouter } from 'lib/src/swapRouter';
+import useTransactionDeadline from 'hooks/useTransactionDeadline';
+import { getTradeVersion } from 'utils/v3/getTradeVersion';
 
 enum SwapCallbackState {
     INVALID,

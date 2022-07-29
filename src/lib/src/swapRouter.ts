@@ -1,60 +1,15 @@
 import { Interface } from '@ethersproject/abi'
-import { BigintIsh, Currency, CurrencyAmount, Percent, Token, TradeType, validateAndParseAddress } from '@uniswap/sdk-core'
+import { BigintIsh, Currency, CurrencyAmount, Percent, TradeType, validateAndParseAddress } from '@uniswap/sdk-core'
 import invariant from 'tiny-invariant'
-import { MethodParameters, toHex } from './calldata'
+import { Trade } from './trade'
+import { PermitOptions, SelfPermit } from './selfPermit'
+import { MethodParameters, toHex } from './utils/calldata'
+// import { abi } from '@uniswap/v3-periphery/artifacts/contracts/SwapRouter.sol/SwapRouter.json'
 import abi from 'constants/abis/v3/swap-router.json'
-import { encodeRouteToPath } from 'lib/src/utils/encodeRouteToPath'
-import { Trade } from 'lib/src/trade'
-import { ADDRESS_ZERO } from 'v3lib/utils'
+import { ADDRESS_ZERO } from 'v3lib/utils/v3constants'
+import { encodeRouteToPath } from './utils/encodeRouteToPath'
 
-export interface StandardPermitArguments {
-    v: 0 | 1 | 27 | 28
-    r: string
-    s: string
-    amount: BigintIsh
-    deadline: BigintIsh
-}
-
-export interface AllowedPermitArguments {
-    v: 0 | 1 | 27 | 28
-    r: string
-    s: string
-    nonce: BigintIsh
-    expiry: BigintIsh
-}
-
-export type PermitOptions = StandardPermitArguments | AllowedPermitArguments
-
-// type guard
-function isAllowedPermit(permitOptions: PermitOptions): permitOptions is AllowedPermitArguments {
-    return 'nonce' in permitOptions
-}
-
-export abstract class SelfPermit {
-    public static INTERFACE: Interface = new Interface(abi)
-
-    // protected constructor() { }
-
-    protected static encodePermit(token: Token, options: PermitOptions) {
-        return isAllowedPermit(options)
-            ? SelfPermit.INTERFACE.encodeFunctionData('selfPermitAllowed', [
-                token.address,
-                toHex(options.nonce),
-                toHex(options.expiry),
-                options.v,
-                options.r,
-                options.s
-            ])
-            : SelfPermit.INTERFACE.encodeFunctionData('selfPermit', [
-                token.address,
-                toHex(options.amount),
-                toHex(options.deadline),
-                options.v,
-                options.r,
-                options.s
-            ])
-    }
-}
+// import abi from './swapRouterTestABI.json'
 
 export interface FeeOptions {
     /**
@@ -86,6 +41,11 @@ export interface SwapOptions {
      * When the transaction expires, in epoch seconds.
      */
     deadline: BigintIsh
+
+    /**
+     * Deflationary token.
+     */
+    feeOnTransfer: boolean
 
     /**
      * The optional permit parameters for spending the input.
@@ -130,16 +90,16 @@ export abstract class SwapRouter extends SelfPermit {
         }
 
         const sampleTrade = trades[0]
-        const tokenIn = sampleTrade.route.tokenPath[0]
-        const tokenOut = sampleTrade.route.tokenPath[sampleTrade.route.tokenPath.length - 1]
+        const tokenIn = sampleTrade.inputAmount.currency.wrapped
+        const tokenOut = sampleTrade.outputAmount.currency.wrapped
 
         // All trades should have the same starting and ending token.
         invariant(
-            trades.every(trade => trade.route.tokenPath[0].equals(tokenIn)),
+            trades.every(trade => trade.inputAmount.currency.wrapped.equals(tokenIn)),
             'TOKEN_IN_DIFF'
         )
         invariant(
-            trades.every(trade => trade.route.tokenPath[trade.route.tokenPath.length - 1].equals(tokenOut)),
+            trades.every(trade => trade.outputAmount.currency.wrapped.equals(tokenOut)),
             'TOKEN_OUT_DIFF'
         )
 
@@ -174,65 +134,66 @@ export abstract class SwapRouter extends SelfPermit {
         const deadline = toHex(options.deadline)
 
         for (const trade of trades) {
-            const amountIn: string = toHex(trade.maximumAmountIn(options.slippageTolerance).quotient)
-            const amountOut: string = toHex(trade.minimumAmountOut(options.slippageTolerance).quotient)
+            for (const { route, inputAmount, outputAmount } of trade.swaps) {
+                const amountIn: string = toHex(trade.maximumAmountIn(options.slippageTolerance, inputAmount).quotient)
+                const amountOut: string = toHex(trade.minimumAmountOut(options.slippageTolerance, outputAmount).quotient)
 
-            // flag for whether the trade is single hop or not
-            const singleHop = trade.route.pools.length === 1
+                // flag for whether the trade is single hop or not
+                const singleHop = route.pools.length === 1
 
-            if (singleHop) {
-                if (trade.tradeType === TradeType.EXACT_INPUT) {
-                    const exactInputSingleParams = {
-                        tokenIn: trade.route.tokenPath[0].address,
-                        tokenOut: trade.route.tokenPath[1].address,
-                        fee: trade.route.pools[0].fee,
-                        recipient: routerMustCustody ? ADDRESS_ZERO : recipient,
-                        deadline,
-                        amountIn,
-                        amountOutMinimum: amountOut,
-                        sqrtPriceLimitX96: toHex(options.sqrtPriceLimitX96 ?? 0)
+                if (singleHop) {
+                    if (trade.tradeType === TradeType.EXACT_INPUT) {
+                        const exactInputSingleParams = {
+                            tokenIn: route.tokenPath[0].address,
+                            tokenOut: route.tokenPath[1].address,
+                            fee: route.pools[0].fee,
+                            recipient: routerMustCustody ? ADDRESS_ZERO : recipient,
+                            deadline,
+                            amountIn,
+                            amountOutMinimum: amountOut,
+                            sqrtPriceLimitX96: toHex(options.sqrtPriceLimitX96 ?? 0)
+                        }
+                        calldatas.push(SwapRouter.INTERFACE.encodeFunctionData(options.feeOnTransfer && !inputIsNative ? 'exactInputSingleSupportingFeeOnTransferTokens' : 'exactInputSingle', [exactInputSingleParams]))
+                    } else {
+                        const exactOutputSingleParams = {
+                            tokenIn: route.tokenPath[0].address,
+                            tokenOut: route.tokenPath[1].address,
+                            fee: route.pools[0].fee,
+                            recipient: routerMustCustody ? ADDRESS_ZERO : recipient,
+                            deadline,
+                            amountOut,
+                            amountInMaximum: amountIn,
+                            sqrtPriceLimitX96: toHex(options.sqrtPriceLimitX96 ?? 0)
+                        }
+
+                        calldatas.push(SwapRouter.INTERFACE.encodeFunctionData('exactOutputSingle', [exactOutputSingleParams]))
                     }
-
-                    calldatas.push(SwapRouter.INTERFACE.encodeFunctionData('exactInputSingle', [exactInputSingleParams]))
                 } else {
-                    const exactOutputSingleParams = {
-                        tokenIn: trade.route.tokenPath[0].address,
-                        tokenOut: trade.route.tokenPath[1].address,
-                        fee: trade.route.pools[0].fee,
-                        recipient: routerMustCustody ? ADDRESS_ZERO : recipient,
-                        deadline,
-                        amountOut,
-                        amountInMaximum: amountIn,
-                        sqrtPriceLimitX96: toHex(options.sqrtPriceLimitX96 ?? 0)
+                    invariant(options.sqrtPriceLimitX96 === undefined, 'MULTIHOP_PRICE_LIMIT')
+
+                    const path: string = encodeRouteToPath(route, trade.tradeType === TradeType.EXACT_OUTPUT)
+
+                    if (trade.tradeType === TradeType.EXACT_INPUT) {
+                        const exactInputParams = {
+                            path,
+                            recipient: routerMustCustody ? ADDRESS_ZERO : recipient,
+                            deadline,
+                            amountIn,
+                            amountOutMinimum: amountOut
+                        }
+
+                        calldatas.push(SwapRouter.INTERFACE.encodeFunctionData('exactInput', [exactInputParams]))
+                    } else {
+                        const exactOutputParams = {
+                            path,
+                            recipient: routerMustCustody ? ADDRESS_ZERO : recipient,
+                            deadline,
+                            amountOut,
+                            amountInMaximum: amountIn
+                        }
+
+                        calldatas.push(SwapRouter.INTERFACE.encodeFunctionData('exactOutput', [exactOutputParams]))
                     }
-
-                    calldatas.push(SwapRouter.INTERFACE.encodeFunctionData('exactOutputSingle', [exactOutputSingleParams]))
-                }
-            } else {
-                invariant(options.sqrtPriceLimitX96 === undefined, 'MULTIHOP_PRICE_LIMIT')
-
-                const path: string = encodeRouteToPath(trade.route, trade.tradeType === TradeType.EXACT_OUTPUT)
-
-                if (trade.tradeType === TradeType.EXACT_INPUT) {
-                    const exactInputParams = {
-                        path,
-                        recipient: routerMustCustody ? ADDRESS_ZERO : recipient,
-                        deadline,
-                        amountIn,
-                        amountOutMinimum: amountOut
-                    }
-
-                    calldatas.push(SwapRouter.INTERFACE.encodeFunctionData('exactInput', [exactInputParams]))
-                } else {
-                    const exactOutputParams = {
-                        path,
-                        recipient: routerMustCustody ? ADDRESS_ZERO : recipient,
-                        deadline,
-                        amountOut,
-                        amountInMaximum: amountIn
-                    }
-
-                    calldatas.push(SwapRouter.INTERFACE.encodeFunctionData('exactOutput', [exactOutputParams]))
                 }
             }
         }
@@ -242,7 +203,6 @@ export abstract class SwapRouter extends SelfPermit {
             if (!!options.fee) {
                 const feeRecipient: string = validateAndParseAddress(options.fee.recipient)
                 const fee = toHex(options.fee.fee.multiply(10_000).quotient)
-
                 if (outputIsNative) {
                     calldatas.push(
                         SwapRouter.INTERFACE.encodeFunctionData('unwrapWNativeTokenWithFee', [
@@ -255,7 +215,7 @@ export abstract class SwapRouter extends SelfPermit {
                 } else {
                     calldatas.push(
                         SwapRouter.INTERFACE.encodeFunctionData('sweepTokenWithFee', [
-                            sampleTrade.route.tokenPath[sampleTrade.route.tokenPath.length - 1].address,
+                            sampleTrade.outputAmount.currency.wrapped.address,
                             toHex(totalAmountOut.quotient),
                             recipient,
                             fee,
