@@ -687,6 +687,7 @@ export const SWAP_TRANSACTIONS = gql`
       first: 1000
       where: { pair_in: $allPairs, timestamp_gte: $lastTime }
       orderBy: timestamp
+      orderDirection: desc
     ) {
       transaction {
         id

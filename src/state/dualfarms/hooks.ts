@@ -4,8 +4,10 @@ import { useSelector } from 'react-redux';
 import { AppState } from 'state';
 import { DualFarmListInfo, DualStakingRaw, DualStakingBasic } from 'types';
 import { Token } from '@uniswap/sdk';
-import { getTokenFromKey } from 'utils';
+import { getTokenFromAddress } from 'utils';
 import { TokenAddressMap, useSelectedTokenList } from 'state/lists/hooks';
+import { useTokens } from 'hooks/Tokens';
+import { GlobalValue } from 'constants/index';
 
 export class WrappedDualFarmInfo implements DualStakingBasic {
   public readonly stakingInfo: DualStakingRaw;
@@ -23,10 +25,15 @@ export class WrappedDualFarmInfo implements DualStakingBasic {
   public readonly rateA: number;
   public readonly rateB: number;
 
-  constructor(stakingInfo: DualStakingRaw, tokenAddressMap: TokenAddressMap) {
+  constructor(
+    stakingInfo: DualStakingRaw,
+    tokenAddressMap: TokenAddressMap,
+    dualFarmTokens: Token[],
+    chainId: ChainId,
+  ) {
     this.stakingInfo = stakingInfo;
     //TODO: Support Multichain
-    this.chainId = ChainId.MATIC;
+    this.chainId = chainId;
     this.stakingRewardAddress = stakingInfo.stakingRewardAddress;
     this.ended = stakingInfo.ended;
     this.pair = stakingInfo.pair;
@@ -34,24 +41,45 @@ export class WrappedDualFarmInfo implements DualStakingBasic {
     this.name = stakingInfo.name;
     this.rateA = stakingInfo.rateA;
     this.rateB = stakingInfo.rateB;
-    //TODO: we should be resolving the following property from the lists state using the address field instead of the key
-    this.baseToken = getTokenFromKey(stakingInfo.baseToken, tokenAddressMap);
+
+    this.baseToken = getTokenFromAddress(
+      stakingInfo.baseToken,
+      chainId,
+      tokenAddressMap,
+      dualFarmTokens,
+    );
     this.tokens = [
-      getTokenFromKey(stakingInfo.tokens[0], tokenAddressMap),
-      getTokenFromKey(stakingInfo.tokens[1], tokenAddressMap),
+      getTokenFromAddress(
+        stakingInfo.tokens[0],
+        chainId,
+        tokenAddressMap,
+        dualFarmTokens,
+      ),
+      getTokenFromAddress(
+        stakingInfo.tokens[1],
+        chainId,
+        tokenAddressMap,
+        dualFarmTokens,
+      ),
     ];
 
-    this.rewardTokenA = getTokenFromKey(
+    this.rewardTokenA = getTokenFromAddress(
       stakingInfo.rewardTokenA,
+      chainId,
       tokenAddressMap,
+      dualFarmTokens,
     );
-    this.rewardTokenB = getTokenFromKey(
+    this.rewardTokenB = getTokenFromAddress(
       stakingInfo.rewardTokenB,
+      chainId,
       tokenAddressMap,
+      dualFarmTokens,
     );
-    this.rewardTokenBBase = getTokenFromKey(
+    this.rewardTokenBBase = getTokenFromAddress(
       stakingInfo.rewardTokenBBase,
+      chainId,
       tokenAddressMap,
+      dualFarmTokens,
     );
   }
 }
@@ -80,6 +108,7 @@ const dualFarmCache: WeakMap<DualFarmListInfo, DualFarmInfoAddressMap> | null =
 export function listToDualFarmMap(
   list: DualFarmListInfo,
   tokenAddressMap: TokenAddressMap,
+  dualFarmTokens: Token[],
 ): DualFarmInfoAddressMap {
   const result = dualFarmCache?.get(list);
   if (result) return result;
@@ -89,6 +118,8 @@ export function listToDualFarmMap(
       const wrappedStakingInfo = new WrappedDualFarmInfo(
         stakingInfo,
         tokenAddressMap,
+        dualFarmTokens,
+        ChainId.MATIC,
       );
       if (
         stakingInfoMap[wrappedStakingInfo.chainId][
@@ -117,17 +148,51 @@ export function useDualFarmList(
     (state) => state.dualFarms.byUrl,
   );
   const tokenMap = useSelectedTokenList();
+  const current = url ? dualFarms[url]?.current : null;
+  const dualTokenAddresses =
+    current && tokenMap
+      ? current.active
+          .concat(current.closed)
+          .map((item) => [
+            item.baseToken,
+            item.tokens[0],
+            item.tokens[1],
+            item.rewardTokenA,
+            item.rewardTokenB,
+            item.rewardTokenBBase,
+          ])
+          .flat()
+          .filter((item) => !!item)
+          .filter((address) => !tokenMap[ChainId.MATIC][address])
+          .filter(
+            (address) =>
+              !Object.values(GlobalValue.tokens.COMMON).find(
+                (token) =>
+                  token.address.toLowerCase() === address.toLowerCase(),
+              ),
+          )
+          .filter(
+            (address, ind, self) =>
+              self.findIndex(
+                (addr) => address.toLowerCase() === addr.toLowerCase(),
+              ) === ind,
+          )
+      : [];
+  const dualFarmTokens = useTokens(dualTokenAddresses);
   return useMemo(() => {
-    if (!url) return EMPTY_LIST;
-    const current = dualFarms[url]?.current;
-    if (!current) return EMPTY_LIST;
+    if (
+      !current ||
+      !tokenMap ||
+      dualFarmTokens?.length !== dualTokenAddresses.length
+    )
+      return EMPTY_LIST;
     try {
-      return listToDualFarmMap(current, tokenMap);
+      return listToDualFarmMap(current, tokenMap, dualFarmTokens ?? []);
     } catch (error) {
       console.error('Could not show token list due to error', error);
       return EMPTY_LIST;
     }
-  }, [dualFarms, url, tokenMap]);
+  }, [current, dualFarmTokens, dualTokenAddresses.length, tokenMap]);
 }
 
 export function useDefaultDualFarmList(): DualFarmInfoAddressMap {

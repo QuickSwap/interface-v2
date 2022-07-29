@@ -4,7 +4,6 @@ import { useMediaQuery } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import { StakingInfo } from 'types';
 import {
   useStakingInfo,
   getBulkPairData,
@@ -26,15 +25,21 @@ const RewardSlider: React.FC = () => {
   const dualrewardItems = useDualStakingInfo(defaultChainId, null, 0, 1);
   const [bulkPairs, setBulkPairs] = useState<any>(null);
 
-  const stakingPairLists = useMemo(() => {
+  const stakingPairListStr = useMemo(() => {
     return lprewardItems
       .map((item) => item.pair)
-      .concat(dualrewardItems.map((item) => item.pair));
+      .concat(dualrewardItems.map((item) => item.pair))
+      .join(',');
   }, [dualrewardItems, lprewardItems]);
 
+  const stakingPairLists = stakingPairListStr.split(',');
+
   useEffect(() => {
-    getBulkPairData(stakingPairLists).then((data) => setBulkPairs(data));
-  }, [stakingPairLists]);
+    const stakingPairLists = stakingPairListStr.split(',');
+    if (stakingPairListStr) {
+      getBulkPairData(stakingPairLists).then((data) => setBulkPairs(data));
+    }
+  }, [stakingPairListStr]);
 
   const stakingAPYs = useMemo(() => {
     if (bulkPairs && stakingPairLists.length > 0) {
