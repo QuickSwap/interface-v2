@@ -53,28 +53,26 @@ export const fetchGasForCall = async (
   sdk: MarketSDK,
 ) => {
   const estimatedGas = sdk.web3.utils.toBN(
-    (
-      Number(
-        (
-          await call.estimateGas({
-            from: address,
-            // Cut amountBN in half in case it screws up the gas estimation by causing a fail in the event that it accounts for gasPrice > 0 which means there will not be enough ETH (after paying gas)
-            value: amountBN ? amountBN.div(sdk.web3.utils.toBN(2)) : undefined,
-          })
-        ).toString(),
-      ) *
-      // 50% more gas for limit:
-      1.5
+    Number(
+      (
+        await call.estimateGas({
+          from: address,
+          // Cut amountBN in half in case it screws up the gas estimation by causing a fail in the event that it accounts for gasPrice > 0 which means there will not be enough ETH (after paying gas)
+          value: amountBN ? amountBN.div(sdk.web3.utils.toBN(2)) : undefined,
+        })
+      ).toString(),
     ).toFixed(0),
   );
 
   // Ex: 100 (in GWEI)
-  const { average } = await fetch(
-    'https://blockscout.com/eth/mainnet/api/v1/gas-price-oracle',
+  const { standard } = await fetch(
+    'https://gasstation-mainnet.matic.network/v2',
   ).then((res) => res.json());
 
   const gasPrice = sdk.web3.utils.toBN(
-    sdk.web3.utils.toWei(average.toString(), 'gwei').toString(),
+    sdk.web3.utils
+      .toWei(Math.floor(standard.maxPriorityFee).toString(), 'gwei')
+      .toString(),
   );
   const gasWEI = estimatedGas.mul(gasPrice);
 
@@ -112,9 +110,14 @@ const checkAndApproveCToken = async (
     .gte(amountBN);
 
   if (!hasApprovedEnough) {
-    await underlyingContract.methods
-      .approve(cToken.address, max)
-      .send({ from: address });
+    const call = underlyingContract.methods.approve(cToken.address, max);
+    const { gasPrice, estimatedGas } = await fetchGasForCall(
+      call,
+      undefined,
+      address,
+      sdk,
+    );
+    await call.send({ from: address, gasPrice, estimatedGas });
   }
 };
 
@@ -137,7 +140,7 @@ export const supply = async (
     await asset.cToken.contract.methods.comptroller().call(),
   );
 
-  if (enableAsCollateral) {
+  if (!asset.membership && enableAsCollateral) {
     await testForComptrollerErrorAndSend(
       comptroller.contract.methods.enterMarkets([asset.cToken.address]),
       address,
