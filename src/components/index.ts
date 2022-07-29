@@ -40,6 +40,7 @@ export { default as WalletModal } from './WalletModal';
 export { default as MoonpayModal } from './MoonpayModal';
 export { default as BuyFiatModal } from './BuyFiatModal';
 export { default as AccountDetails } from './AccountDetails';
+export { default as CopyHelper } from './AccountDetails/CopyHelper';
 export { default as Web3ReactManager } from './Web3ReactManager';
 export {
   default as ConfirmSwapModal,

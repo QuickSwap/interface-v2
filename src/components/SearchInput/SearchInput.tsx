@@ -7,12 +7,14 @@ interface SearchInputProps {
   placeholder: string;
   value: string;
   setValue: (val: string) => void;
+  [index: string]: any;
 }
 
 const SearchInput: React.FC<SearchInputProps> = ({
   placeholder,
   value,
   setValue,
+  ...props
 }) => {
   const [searchFocused, setSearchFocused] = useState(false);
   return (

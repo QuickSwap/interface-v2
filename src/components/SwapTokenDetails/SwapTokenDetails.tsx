@@ -3,14 +3,13 @@ import { Box, Grid } from '@material-ui/core';
 import Skeleton from '@material-ui/lab/Skeleton';
 import { ArrowDropUp, ArrowDropDown } from '@material-ui/icons';
 import { useTheme } from '@material-ui/core/styles';
-import { CurrencyLogo } from 'components';
+import { CurrencyLogo, CopyHelper } from 'components';
 import {
   useBlockNumber,
   useEthPrice,
   useTokenDetails,
 } from 'state/application/hooks';
 import useCopyClipboard from 'hooks/useCopyClipboard';
-import { ReactComponent as CopyIcon } from 'assets/images/CopyIcon.svg';
 import {
   shortenAddress,
   formatCompact,
@@ -159,16 +158,7 @@ const SwapTokenDetails: React.FC<{
         >
           <small className='text-primary'>{shortenAddress(tokenAddress)}</small>
         </a>
-        <Box
-          className={`flex cursor-pointer${
-            isCopied ? ' opacity-disabled' : ''
-          }`}
-          onClick={() => {
-            setCopied(tokenAddress);
-          }}
-        >
-          <CopyIcon />
-        </Box>
+        <CopyHelper toCopy={tokenAddress} />
       </Box>
     </Box>
   );

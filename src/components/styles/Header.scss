@@ -54,7 +54,6 @@
   align-items: center;
   height: 100%;
   & .menuItem {
-    border-radius: 10px;
     cursor: pointer;
     position: relative;
     display: flex;
@@ -62,8 +61,13 @@
     height: 36px;
     padding: 0 24px;
     overflow: hidden;
-    small {
+    border-radius: 10px;
+    & small {
       white-space: nowrap;
+    }
+    &.subMenuItem {
+      padding: 0;
+      overflow: visible;
     }
     .menuItemSparkle {
       position: absolute;
@@ -85,16 +89,14 @@
     }
     & .subMenu {
       display: none;
-      position: absolute;
-      left: 0;
-      top: 14px;
-      background: $bgColor;
+      background-color: $secondary2;
       border-radius: 10px;
-      padding: 14px 0;
+      margin-top: 12px;
       & > a {
         padding: 10px 24px;
+        white-space: unset;
         &:hover {
-          color: white;
+          color: $textPrimary;
         }
       }
     }
@@ -120,9 +122,11 @@
   }
   & a {
     text-decoration: none;
-    margin-right: 12px;
+    margin-right: 8px;
     color: $textSecondary;
     border-radius: 10px;
+    display: flex;
+    align-items: center;
     & p {
       letter-spacing: normal;
     }
@@ -149,13 +153,19 @@
 }
 .subMenuWrapper {
   position: absolute;
-  bottom: 72px;
-  right: 12px;
   width: 209px;
-  background-color: $secondary2;
-  border-radius: 20px;
-  padding: '8px 0';
-  border: 1px solid $divider
+  left: 0;
+  border-radius: 10px;
+  top: 32px;
+  @include media("screen", "<tablet") {
+    left: unset;
+    top: unset;
+    background-color: $secondary2;
+    padding: 8px 0;
+    bottom: 72px;
+    right: 12px;
+    border: 1px solid $divider;
+  }
 }
 .accountDetails {
   border: solid 1px $grey2;

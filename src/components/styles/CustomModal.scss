@@ -13,3 +13,8 @@
   outline: none;
   background-color: $bgPalette;
 }
+
+.customModalBackdrop {
+  backdrop-filter: blur(9.9px);
+  background-color: $bgColor;
+}

@@ -25,17 +25,19 @@
   border-radius: 12px;
   background: transparent;
   & small {
-    padding: 0.5rem;
-    border: 1px solid $divider;
+    padding: 6px 10px 0;
     background-color: $bgColor;
     color: $textSecondary;
     & b {
       color: $textPrimary;
     }
     &:first-child {
+      padding: 6px 10px;
+      border-bottom: 1px solid $divider;
       border-radius: 12px 12px 0 0;
     }
     &:last-child {
+      padding: 6px 10px;
       border-radius: 0 0 12px 12px;
     }
   }
