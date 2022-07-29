@@ -339,6 +339,7 @@
   "installMetamask": "Install Metamask",
   "wrongNetwork": "Wrong Network",
   "connectPolygonNetwork": "Please connect to the appropriate Polygon network.",
+  "tallyWallet": "Please either download Tally Ho extension or set as default wallet.",
   "errorConnectRefresh": "Error connecting. Try refreshing the page.",
   "newToMatic": "New to Polygon?",
   "learnWallet": "Learn about Wallets"

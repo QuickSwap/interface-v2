@@ -25,6 +25,7 @@ const PendingView: React.FC<PendingViewProps> = ({
   const isBlockWallet = ethereum?.isBlockWallet;
   const isCypherD = ethereum?.isCypherD;
   const isBitKeep = ethereum?.isBitKeep;
+  const isTallyHo = ethereum?.isTally;
 
   return (
     <Box className='pendingSection'>
@@ -71,7 +72,7 @@ const PendingView: React.FC<PendingViewProps> = ({
             if (isCypherD && option.name !== GlobalConst.walletName.CYPHERD) {
               return null;
             }
-            if (!isCypherD && option.name === GlobalConst.walletName.CYPHERD) {
+            if (isTallyHo && option.name !== GlobalConst.walletName.TALLYHO) {
               return null;
             }
             if (
