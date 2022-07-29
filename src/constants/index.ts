@@ -140,7 +140,7 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
     iconName: TallyHoIcon,
     description: 'Open Source community owned wallet.',
     href: null,
-    color: '#010101'
+    color: '#010101',
   },
   METAMASK: {
     connector: injected,
