@@ -204,7 +204,6 @@ const WalletModal: React.FC<WalletModalProps> = ({
         return null;
       }
 
-
       // overwrite injected when needed
       if (option.connector === injected) {
         // don't show injected if there's no injected provider
