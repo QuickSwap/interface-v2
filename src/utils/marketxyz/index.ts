@@ -72,6 +72,7 @@ export const fetchGasForCall = async (
   const { average } = await fetch(
     'https://blockscout.com/eth/mainnet/api/v1/gas-price-oracle',
   ).then((res) => res.json());
+  
   const gasPrice = sdk.web3.utils.toBN(
     sdk.web3.utils.toWei(average.toString(), 'gwei').toString(),
   );
@@ -137,7 +138,12 @@ export const supply = async (
   );
 
   if (enableAsCollateral) {
-    await comptroller.enterMarkets([asset.cToken], { from: address });
+    await testForComptrollerErrorAndSend(
+      comptroller.contract.methods.enterMarkets([asset.cToken.address]),
+      address,
+      'Cannot enter this market right now!',
+      asset.cToken.sdk,
+    );
   }
 
   if (isETH) {
