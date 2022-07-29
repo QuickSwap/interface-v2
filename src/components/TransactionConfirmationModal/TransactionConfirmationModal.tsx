@@ -10,7 +10,7 @@ import { useActiveWeb3React } from 'hooks';
 import ModalBg from 'assets/images/ModalBG.svg';
 import 'components/styles/TransactionConfirmationModal.scss';
 import { useTranslation } from 'react-i18next';
-import { StyledLabel } from 'components/AddLiquidity/CommonStyledElements';
+import { StyledLabel } from 'components/AddLiquidityV3/CommonStyledElements';
 
 interface ConfirmationPendingContentProps {
   onDismiss: () => void;

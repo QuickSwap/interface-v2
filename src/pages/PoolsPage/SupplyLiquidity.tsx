@@ -5,7 +5,7 @@ import { AddLiquidity, QuestionHelper, SettingsModal } from 'components';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import { useCurrency } from 'hooks/Tokens';
 import { useTranslation } from 'react-i18next';
-import AddLiquidityV3 from 'components/AddLiquidity/AddLiquidityV3';
+import AddLiquidityV3 from 'components/AddLiquidityV3';
 
 const SupplyLiquidity: React.FC<{ isV3: boolean }> = ({ isV3 }) => {
   const { t } = useTranslation();

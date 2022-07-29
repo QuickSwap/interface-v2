@@ -29,6 +29,8 @@ import { useActiveWeb3React } from 'hooks';
 import { abi as LairABI } from 'abis/DragonLair.json';
 import { abi as IUniswapV2Router02ABI } from '@uniswap/v2-periphery/build/IUniswapV2Router02.json';
 import QUICKConversionABI from 'constants/abis/quick-conversion.json';
+import { QUOTER_ADDRESSES } from 'constants/v3/addresses';
+import NewQuoterABI from '../abis/quoter.json';
 
 function useContract(
   address: string | undefined,
@@ -224,4 +226,8 @@ export function useRouterContract(): Contract | null {
     IUniswapV2Router02ABI,
     Boolean(account),
   );
+}
+
+export function useV3Quoter() {
+  return useContract(QUOTER_ADDRESSES[ChainId.MATIC], NewQuoterABI);
 }

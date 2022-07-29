@@ -44,3 +44,7 @@ export const removeSerializedPair = createAction<{
   tokenBAddress: string;
 }>('user/removeSerializedPair');
 export const toggleURLWarning = createAction<void>('app/toggleURLWarning');
+// v3 actions
+export const updateUserSingleHopOnly = createAction<{
+  userSingleHopOnly: boolean;
+}>('user/updateUserSingleHopOnly');

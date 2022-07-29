@@ -14,6 +14,7 @@ import {
   updateUserSlippageTolerance,
   updateUserDeadline,
   toggleURLWarning,
+  updateUserSingleHopOnly,
 } from './actions';
 
 const currentTimestamp = () => new Date().getTime();
@@ -48,6 +49,8 @@ export interface UserState {
 
   timestamp: number;
   URLWarningVisible: boolean;
+  // v3 user states
+  userSingleHopOnly: boolean; // only allow swaps on direct pairs
 }
 
 function pairKey(token0Address: string, token1Address: string) {
@@ -64,6 +67,7 @@ export const initialState: UserState = {
   pairs: {},
   timestamp: currentTimestamp(),
   URLWarningVisible: true,
+  userSingleHopOnly: false,
 };
 
 export default createReducer(initialState, (builder) =>
@@ -146,5 +150,8 @@ export default createReducer(initialState, (builder) =>
     )
     .addCase(toggleURLWarning, (state) => {
       state.URLWarningVisible = !state.URLWarningVisible;
+    })
+    .addCase(updateUserSingleHopOnly, (state, action) => {
+      state.userSingleHopOnly = action.payload.userSingleHopOnly;
     }),
 );

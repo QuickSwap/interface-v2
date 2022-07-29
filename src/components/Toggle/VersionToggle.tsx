@@ -3,7 +3,7 @@ import { Box } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import 'pages/styles/pools.scss';
 import useParsedQueryString from 'hooks/useParsedQueryString';
-import { StyledLabel } from 'components/AddLiquidity/CommonStyledElements';
+import { StyledLabel } from 'components/AddLiquidityV3/CommonStyledElements';
 import {
   ToggleContainer,
   ToggleInnerContainer,
