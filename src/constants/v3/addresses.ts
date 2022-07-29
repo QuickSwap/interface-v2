@@ -6,7 +6,7 @@ import { WMATIC } from 'v3lib/entities/wmatic';
 type AddressMap = { [chainId: number]: string };
 
 export const V3_CORE_FACTORY_ADDRESSES: AddressMap = {
-  [ChainId.MATIC]: '0xd556ED8F399b29504095E606feF34e53Df9B0c14',
+  [ChainId.MATIC]: '0x8C1EB1e5325049B412B7E71337116BEF88a29b3A',
 };
 
 export const POOL_DEPLOYER_ADDRESS: AddressMap = {
@@ -14,11 +14,11 @@ export const POOL_DEPLOYER_ADDRESS: AddressMap = {
 };
 
 export const QUOTER_ADDRESSES: AddressMap = {
-  [ChainId.MATIC]: '0x3dcD9cCB03C217C5D24d867A0142CB0fe8BDcF8B',
+  [ChainId.MATIC]: '0xAaaCfe8F51B8baA4286ea97ddF145e946d5e7f46',
 };
 
 export const SWAP_ROUTER_ADDRESSES: AddressMap = {
-  [ChainId.MATIC]: '0x1a5bC2d507465c3e343Ca4e8B5C37Dd6B580f2C2',
+  [ChainId.MATIC]: '0x89D6B81A1Ef25894620D05ba843d83B0A296239e',
 };
 
 export const NONFUNGIBLE_POSITION_MANAGER_ADDRESSES: AddressMap = {

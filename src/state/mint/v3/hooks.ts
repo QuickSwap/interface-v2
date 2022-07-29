@@ -12,7 +12,7 @@ import { CurrencyAmount as CurrencyAmountV2 } from '@uniswap/sdk';
 import { useCallback, useEffect, useMemo } from 'react';
 import { AppState } from '../../index';
 import { tryParseAmount } from '../../swap/v3/hooks';
-import { useCurrencyBalances } from '../../wallet/hooks';
+import { useCurrencyBalances } from '../../wallet/v3/hooks';
 import {
   Bound,
   Field,
@@ -177,7 +177,7 @@ export function useV3DerivedMintInfo(
     [bound in Bound]?: Price<Token, Token> | undefined;
   };
   currencies: { [field in Field]?: Currency };
-  currencyBalances: { [field in Field]?: CurrencyAmountV2 };
+  currencyBalances: { [field in Field]?: CurrencyAmount<Currency> };
   dependentField: Field;
   parsedAmounts: { [field in Field]?: CurrencyAmount<Currency> };
   position: Position | undefined;
@@ -247,7 +247,7 @@ export function useV3DerivedMintInfo(
     currencies[Field.CURRENCY_B],
   ]);
 
-  const currencyBalances: { [field in Field]?: CurrencyAmountV2 } = {
+  const currencyBalances: { [field in Field]?: CurrencyAmount<Currency> } = {
     [Field.CURRENCY_A]: balances[0],
     [Field.CURRENCY_B]: balances[1],
   };

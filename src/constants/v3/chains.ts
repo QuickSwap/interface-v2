@@ -1,5 +1,13 @@
 import { ChainId } from '@uniswap/sdk';
 
+export enum SupportedChainId {
+  POLYGON = 137,
+}
+
+export const ALL_SUPPORTED_CHAIN_IDS: SupportedChainId[] = [
+  SupportedChainId.POLYGON,
+];
+
 export const L1_CHAIN_IDS = [] as const;
 
 export type SupportedL1ChainId = typeof L1_CHAIN_IDS[number];
