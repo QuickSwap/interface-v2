@@ -72,7 +72,7 @@ export const fetchGasForCall = async (
   const { average } = await fetch(
     'https://blockscout.com/eth/mainnet/api/v1/gas-price-oracle',
   ).then((res) => res.json());
-  
+
   const gasPrice = sdk.web3.utils.toBN(
     sdk.web3.utils.toWei(average.toString(), 'gwei').toString(),
   );
