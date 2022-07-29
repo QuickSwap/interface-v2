@@ -56,7 +56,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
   >();
 
   const [pendingError, setPendingError] = useState<boolean>();
-
+  const [tallyError, setTallyError] = useState<boolean>(false);
   const walletModalOpen = useModalOpen(ApplicationModal.WALLET);
   const toggleWalletModal = useWalletModalToggle();
 
@@ -83,6 +83,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
   useEffect(() => {
     if (walletModalOpen) {
       setPendingError(false);
+      setTallyError(false);
       setWalletView(WALLET_VIEWS.ACCOUNT);
     }
   }, [walletModalOpen]);
@@ -109,6 +110,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
   ]);
 
   const tryActivation = async (connector: AbstractConnector | undefined) => {
+    setTallyError(false);
     let name = '';
     Object.keys(SUPPORTED_WALLETS).map((key) => {
       if (connector === SUPPORTED_WALLETS[key].connector) {
@@ -265,6 +267,8 @@ const WalletModal: React.FC<WalletModalProps> = ({
             onClick={() => {
               option.connector === connector
                 ? setWalletView(WALLET_VIEWS.ACCOUNT)
+                : option.name === GlobalConst.walletName.TALLYHO && isMetamask
+                ? setTallyError(true)
                 : !option.href && tryActivation(option.connector);
             }}
             key={key}
@@ -298,13 +302,6 @@ const WalletModal: React.FC<WalletModalProps> = ({
           <Box position='absolute' top='16px' right='16px' display='flex'>
             <Close className='cursor-pointer' onClick={toggleWalletModal} />
           </Box>
-          <Box mt={2} textAlign='center'>
-            <h6>
-              {error instanceof UnsupportedChainIdError
-                ? t('wrongNetwork')
-                : t('errorConnect')}
-            </h6>
-          </Box>
           <Box mt={3} mb={2} textAlign='center'>
             <small>
               {error instanceof UnsupportedChainIdError
@@ -315,6 +312,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
         </Box>
       );
     }
+
     if (account && walletView === WALLET_VIEWS.ACCOUNT) {
       return (
         <AccountDetails
@@ -333,6 +331,13 @@ const WalletModal: React.FC<WalletModalProps> = ({
           <Close className='cursor-pointer' onClick={toggleWalletModal} />
         </Box>
         <Box mt={4}>
+          {tallyError && (
+            <Box position='relative'>
+              <Box mt={3} mb={2} textAlign='center'>
+                <small>{t('tallyWallet')}</small>
+              </Box>
+            </Box>
+          )}
           {walletView === WALLET_VIEWS.PENDING ? (
             <PendingView
               connector={pendingWallet}
