@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Box } from '@material-ui/core';
 import { ReactComponent as SearchIcon } from 'assets/images/SearchIcon.svg';
-import { client } from 'apollo/client';
+import { clientV2 } from 'apollo/client';
 import { TOKEN_SEARCH, PAIR_SEARCH, TOKEN_INFO_OLD } from 'apollo/queries';
 import {
   getAllTokensOnUniswap,
@@ -163,7 +163,7 @@ const AnalyticsSearch: React.FC = () => {
         let allTokens = allTokensUniswap ?? [];
         let allPairs = allPairsUniswap ?? [];
         if (searchVal.length > 0) {
-          const tokens = await client.query({
+          const tokens = await clientV2.query({
             query: TOKEN_SEARCH,
             variables: {
               value: searchVal ? searchVal.toUpperCase() : '',
@@ -171,7 +171,7 @@ const AnalyticsSearch: React.FC = () => {
             },
           });
 
-          const pairs = await client.query({
+          const pairs = await clientV2.query({
             query: PAIR_SEARCH,
             variables: {
               tokens: tokens.data.asSymbol?.map((t: any) => t.id),
@@ -219,7 +219,7 @@ const AnalyticsSearch: React.FC = () => {
             const utcCurrentTime = dayjs();
             const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix();
             const oneDayBlock = await getBlockFromTimestamp(utcOneDayBack);
-            const oneDayResult = await client.query({
+            const oneDayResult = await clientV2.query({
               query: TOKEN_INFO_OLD(oneDayBlock, token.id),
               fetchPolicy: 'network-only',
             });
