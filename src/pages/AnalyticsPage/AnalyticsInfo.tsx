@@ -16,26 +16,40 @@ const AnalyticsInfo: React.FC<AnalyticsInfoProps> = ({ data }) => {
 
   const list = {
     v2: [
-      { title: t('pairs'), value: data.pairCount, percentChange: null },
-      { title: t('24hTxs'), value: data.oneDayTxns, percentChange: null },
+      {
+        title: t('pairs'),
+        value: data.pairCount?.toLocaleString(),
+        percentChange: null,
+      },
+      {
+        title: t('24hTxs'),
+        value: data.oneDayTxns?.toLocaleString(),
+        percentChange: null,
+      },
       {
         title: t('24hFees'),
-        value: data.oneDayVolumeUSD * GlobalConst.utils.FEEPERCENT,
+        value: `$${(
+          data.oneDayVolumeUSD * GlobalConst.utils.FEEPERCENT
+        )?.toLocaleString()}`,
         percentChange: null,
       },
     ],
     v3: [
       {
         title: t('24hVol'),
-        value: data.volumeUSD,
-        percentChange: data.volumeUSDChange,
+        value: data.volumeUSD?.toLocaleString(),
+        percentChange: `$${data.volumeUSDChange}`,
       },
       {
         title: t('24hFees'),
-        value: data.feesUSD,
-        percentChange: data.feesUSDChange,
+        value: data.feesUSD?.toLocaleString(),
+        percentChange: `$${data.feesUSDChange}`,
       },
-      { title: t('tvl'), value: data.tvlUSD, percentChange: data.tvlUSDChange },
+      {
+        title: t('tvl'),
+        value: `$${data.tvlUSD?.toLocaleString()}`,
+        percentChange: data.tvlUSDChange,
+      },
     ],
   };
 
@@ -48,7 +62,7 @@ const AnalyticsInfo: React.FC<AnalyticsInfoProps> = ({ data }) => {
           mr={i === arr.length - 1 ? 0 : 5}
         >
           <small>
-            {item.title}: ${item.value}
+            {item.title}: {item.value}
           </small>
           {Number.isInteger(item.percentChange) ? (
             <Box

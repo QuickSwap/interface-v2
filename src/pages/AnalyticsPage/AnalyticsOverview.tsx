@@ -71,18 +71,18 @@ const AnalyticsOverview: React.FC = () => {
 
   return (
     <Box width='100%' mb={3}>
-      {/* <Grid container spacing={4}>
+      <Grid container spacing={4}>
         <Grid item xs={12} sm={12} md={6}>
           <Box className='panel' width={1}>
-            <AnalyticsLiquidityChart />
+            {/* <AnalyticsLiquidityChart /> */}
           </Box>
         </Grid>
         <Grid item xs={12} sm={12} md={6}>
           <Box className='analyticsVolumeChart panel'>
-            <AnalyticsVolumeChart />
+            {/* <AnalyticsVolumeChart /> */}
           </Box>
         </Grid>
-      </Grid> */}
+      </Grid>
       <Box mt={4}>
         <Box className='panel flex flex-wrap'>
           {globalData ? (
