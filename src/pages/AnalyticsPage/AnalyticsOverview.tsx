@@ -18,7 +18,7 @@ import AnalyticsInfo from './AnalyticsInfo';
 import AnalyticsLiquidityChart from './AnalyticsLiquidityChart';
 import AnalyticsVolumeChart from './AnalyticsVolumeChart';
 import { useTranslation } from 'react-i18next';
-import { getGlobalDataV3 } from 'utils/v3-graph';
+import { getGlobalDataV3, getTopTokensV3 } from 'utils/v3-graph';
 import { useIsV3 } from 'state/analytics/hooks';
 
 dayjs.extend(utc);
@@ -46,11 +46,15 @@ const AnalyticsOverview: React.FC = () => {
       }
     });
 
-    getTopTokens(
-      ethPrice.price,
-      ethPrice.oneDayPrice,
-      GlobalConst.utils.ANALYTICS_TOKENS_COUNT,
-    ).then((data) => {
+    const topTokensFn = isV3
+      ? getTopTokensV3(ethPrice.price, ethPrice.oneDayPrice)
+      : getTopTokens(
+          ethPrice.price,
+          ethPrice.oneDayPrice,
+          GlobalConst.utils.ANALYTICS_TOKENS_COUNT,
+        );
+
+    topTokensFn.then((data) => {
       if (data) {
         updateTopTokens(data);
       }
