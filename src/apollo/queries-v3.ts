@@ -63,6 +63,78 @@ export const TOKENS_FROM_ADDRESSES_V3 = (
   return gql(queryString);
 };
 
+export const ALL_TOKENS_V3 = gql`
+  query tokens($skip: Int!) {
+    tokens(first: 10, skip: $skip) {
+      id
+      name
+      symbol
+      decimals
+      volumeUSD
+      totalValueLockedUSD
+    }
+  }
+`;
+
+export const TOKEN_SEARCH_V3 = gql`
+  query tokens($value: String, $id: String) {
+    asSymbol: tokens(
+      where: { symbol_contains: $value }
+      orderBy: totalValueLockedUSD
+      orderDirection: desc
+    ) {
+      id
+      symbol
+      name
+      decimals
+      volumeUSD
+      totalValueLockedUSD
+    }
+    asName: tokens(
+      where: { name_contains: $value }
+      orderBy: totalValueLockedUSD
+      orderDirection: desc
+    ) {
+      id
+      symbol
+      name
+      decimals
+      volumeUSD
+      totalValueLockedUSD
+    }
+    asAddress: tokens(
+      where: { id: $id }
+      orderBy: totalValueLockedUSD
+      orderDirection: desc
+    ) {
+      id
+      symbol
+      name
+      decimals
+      volumeUSD
+      totalValueLockedUSD
+    }
+  }
+`;
+
+export const TOKEN_INFO_OLD_V3: any = (block: number, address: string) => {
+  const queryString = `
+      query tokens {
+        tokens(block: {number: ${block}} first: 1, where: {id: "${address}"}) {
+            id
+            name
+            symbol
+            decimals
+            derivedMatic
+            volumeUSD
+            untrackedVolumeUSD
+            totalValueLockedUSD
+        }
+      }
+    `;
+  return gql(queryString);
+};
+
 export const TOP_POOLS_V3 = (count: number) => gql`
   query topPools {
     pools(
@@ -125,3 +197,82 @@ export const PAIRS_FROM_ADDRESSES_V3 = (
         `;
   return gql(queryString);
 };
+
+export const ALL_PAIRS_V3 = gql`
+  query pairs($skip: Int!) {
+    pools(
+      first: 10
+      skip: $skip
+      orderBy: totalValueLockedUSD
+      orderDirection: desc
+    ) {
+      id
+      totalValueLockedUSD
+      token0 {
+        id
+        symbol
+        name
+        decimals
+      }
+      token1 {
+        id
+        symbol
+        name
+        decimals
+      }
+    }
+  }
+`;
+
+export const PAIR_SEARCH_V3 = gql`
+  query pairs($tokens: [Bytes]!, $id: String) {
+    as0: pools(where: { token0_in: $tokens }) {
+      id
+      totalValueLockedUSD
+      token0 {
+        id
+        symbol
+        decimals
+        name
+      }
+      token1 {
+        id
+        symbol
+        decimals
+        name
+      }
+    }
+    as1: pools(where: { token1_in: $tokens }) {
+      id
+      totalValueLockedUSD
+      token0 {
+        id
+        symbol
+        decimals
+        name
+      }
+      token1 {
+        id
+        symbol
+        decimals
+        name
+      }
+    }
+    asAddress: pools(where: { id: $id }) {
+      id
+      totalValueLockedUSD
+      token0 {
+        id
+        symbol
+        decimals
+        name
+      }
+      token1 {
+        id
+        symbol
+        decimals
+        name
+      }
+    }
+  }
+`;

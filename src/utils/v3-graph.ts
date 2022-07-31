@@ -1,5 +1,7 @@
 import { clientV3 } from 'apollo/client';
 import {
+  ALL_PAIRS_V3,
+  ALL_TOKENS_V3,
   GLOBAL_DATA_V3,
   PAIRS_FROM_ADDRESSES_V3,
   TOKENS_FROM_ADDRESSES_V3,
@@ -80,6 +82,8 @@ export async function getGlobalDataV3(): Promise<any> {
 
   return data;
 }
+
+//Tokens
 
 export async function getTopTokensV3(
   ethPrice: number,
@@ -199,6 +203,31 @@ export async function getTopTokensV3(
     return formatted;
   } catch (err) {
     console.error(err);
+  }
+}
+
+export async function getAllTokensV3() {
+  try {
+    let allFound = false;
+    let skipCount = 0;
+    let tokens: any[] = [];
+    while (!allFound) {
+      const result = await clientV3.query({
+        query: ALL_TOKENS_V3,
+        variables: {
+          skip: skipCount,
+        },
+        fetchPolicy: 'network-only',
+      });
+      tokens = tokens.concat(result?.data?.tokens);
+      if (result?.data?.tokens?.length < 10 || tokens.length > 10) {
+        allFound = true;
+      }
+      skipCount = skipCount += 10;
+    }
+    return tokens;
+  } catch (e) {
+    console.log(e);
   }
 }
 
@@ -334,6 +363,31 @@ export async function getTopPairsV3(count = 500) {
     return formatted;
   } catch (err) {
     console.error(err);
+  }
+}
+
+export async function getAllPairsV3() {
+  try {
+    let allFound = false;
+    let pairs: any[] = [];
+    let skipCount = 0;
+    while (!allFound) {
+      const result = await clientV3.query({
+        query: ALL_PAIRS_V3,
+        variables: {
+          skip: skipCount,
+        },
+        fetchPolicy: 'network-only',
+      });
+      skipCount = skipCount + 10;
+      pairs = pairs.concat(result?.data?.pools);
+      if (result?.data?.pools.length < 10 || pairs.length > 10) {
+        allFound = true;
+      }
+    }
+    return pairs;
+  } catch (e) {
+    console.log(e);
   }
 }
 
