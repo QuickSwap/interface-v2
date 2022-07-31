@@ -1,10 +1,10 @@
 import styled, { css } from 'styled-components/macro';
 import { ButtonGray } from '../Button';
 import { darken } from 'polished';
-import { AutoColumn } from 'components/Column';
-import { Input as NumericalInput } from '../NumericalInput';
 // @ts-ignore
 import { ReactComponent as DropDown } from '../../assets/images/dropdown.svg';
+import { AutoColumn } from '../Column';
+import NumericalInput from 'components/NumericalInput';
 
 //index
 export const InputPanel = styled.div<{ hideInput?: boolean }>`
