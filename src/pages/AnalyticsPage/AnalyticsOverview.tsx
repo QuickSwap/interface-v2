@@ -47,7 +47,11 @@ const AnalyticsOverview: React.FC = () => {
     });
 
     const topTokensFn = isV3
-      ? getTopTokensV3(ethPrice.price, ethPrice.oneDayPrice)
+      ? getTopTokensV3(
+          ethPrice.price,
+          ethPrice.oneDayPrice,
+          GlobalConst.utils.ANALYTICS_TOKENS_COUNT,
+        )
       : getTopTokens(
           ethPrice.price,
           ethPrice.oneDayPrice,
@@ -61,7 +65,7 @@ const AnalyticsOverview: React.FC = () => {
     });
 
     const topPairsFn = isV3
-      ? getTopPairsV3()
+      ? getTopPairsV3(GlobalConst.utils.ANALYTICS_PAIRS_COUNT)
       : getBulkPairData(
           GlobalConst.utils.ANALYTICS_PAIRS_COUNT,
           ethPrice.price,

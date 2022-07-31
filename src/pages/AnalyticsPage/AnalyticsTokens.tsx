@@ -6,6 +6,8 @@ import { getTopTokens } from 'utils';
 import { Skeleton } from '@material-ui/lab';
 import { useTranslation } from 'react-i18next';
 import { GlobalConst } from 'constants/index';
+import { useIsV3 } from 'state/analytics/hooks';
+import { getTopTokensV3 } from 'utils/v3-graph';
 
 const AnalyticsTokens: React.FC = () => {
   const { t } = useTranslation();
@@ -14,6 +16,8 @@ const AnalyticsTokens: React.FC = () => {
   const [topTokens, updateTopTokens] = useState<any[] | null>(null);
   const { bookmarkTokens } = useBookmarkTokens();
   const { ethPrice } = useEthPrice();
+
+  const isV3 = useIsV3();
 
   const favoriteTokens = useMemo(() => {
     if (topTokens) {
@@ -28,18 +32,23 @@ const AnalyticsTokens: React.FC = () => {
   useEffect(() => {
     const fetchTopTokens = async () => {
       if (ethPrice.price && ethPrice.oneDayPrice) {
-        const topTokensData = await getTopTokens(
-          ethPrice.price,
-          ethPrice.oneDayPrice,
-          GlobalConst.utils.ANALYTICS_TOKENS_COUNT,
-        );
-        if (topTokensData) {
-          updateTopTokens(topTokensData);
-        }
+        const topTokensFn = isV3
+          ? getTopTokensV3(ethPrice.price, ethPrice.oneDayPrice, 5)
+          : getTopTokens(
+              ethPrice.price,
+              ethPrice.oneDayPrice,
+              GlobalConst.utils.ANALYTICS_TOKENS_COUNT,
+            );
+
+        topTokensFn.then((data) => {
+          if (data) {
+            updateTopTokens(data);
+          }
+        });
       }
     };
     fetchTopTokens();
-  }, [ethPrice.price, ethPrice.oneDayPrice]);
+  }, [ethPrice.price, ethPrice.oneDayPrice, isV3]);
 
   return (
     <Box width='100%' mb={3}>
@@ -71,7 +80,8 @@ const AnalyticsTokens: React.FC = () => {
         </Box>
       </Box>
       <Box className='panel'>
-        {topTokens && topTokens.length === 200 ? (
+        {/* //TODO Why 200? */}
+        {topTokens && (isV3 ? true : topTokens.length === 200) ? (
           <TokensTable data={tokensFilter === 0 ? topTokens : favoriteTokens} />
         ) : (
           <Skeleton variant='rect' width='100%' height={150} />

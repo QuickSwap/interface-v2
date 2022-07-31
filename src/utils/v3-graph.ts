@@ -84,6 +84,7 @@ export async function getGlobalDataV3(): Promise<any> {
 export async function getTopTokensV3(
   ethPrice: number,
   ethPrice24H: number,
+  count = 500,
 ): Promise<any> {
   try {
     const utcCurrentTime = dayjs();
@@ -97,7 +98,7 @@ export async function getTopTokensV3(
     ]);
 
     const topTokensIds = await clientV3.query({
-      query: TOP_TOKENS_V3,
+      query: TOP_TOKENS_V3(count),
       fetchPolicy: 'network-only',
     });
 
@@ -201,7 +202,7 @@ export async function getTopTokensV3(
   }
 }
 
-export async function getTopPairsV3() {
+export async function getTopPairsV3(count = 500) {
   try {
     const utcCurrentTime = dayjs();
 
@@ -220,7 +221,7 @@ export async function getTopPairsV3() {
     ]);
 
     const topPairsIds = await clientV3.query({
-      query: TOP_POOLS_V3,
+      query: TOP_POOLS_V3(count),
       fetchPolicy: 'network-only',
     });
 

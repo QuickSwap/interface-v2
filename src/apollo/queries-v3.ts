@@ -15,10 +15,10 @@ export const GLOBAL_DATA_V3 = (block?: number) => {
   return gql(qString);
 };
 
-export const TOP_TOKENS_V3 = gql`
+export const TOP_TOKENS_V3 = (count: number) => gql`
   query topTokens {
     tokens(
-      first: 50
+      first: ${count}
       orderBy: totalValueLockedUSD
       orderDirection: desc
       subgraphError: allow
@@ -63,10 +63,10 @@ export const TOKENS_FROM_ADDRESSES_V3 = (
   return gql(queryString);
 };
 
-export const TOP_POOLS_V3 = gql`
+export const TOP_POOLS_V3 = (count: number) => gql`
   query topPools {
     pools(
-      first: 50
+      first: ${count}
       orderBy: totalValueLockedUSD
       orderDirection: desc
       subgraphError: allow
