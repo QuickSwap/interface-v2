@@ -45,6 +45,7 @@ import MulticallUpdater from 'state/multicall/updater';
 import FarmUpdater from 'state/farms/updater';
 import DualFarmUpdater from 'state/dualfarms/updater';
 import SyrupUpdater from 'state/syrups/updater';
+import AnalyticsUpdater from 'state/analytics/updater';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import './i18n';
@@ -85,6 +86,7 @@ function Updaters() {
       <FarmUpdater />
       <DualFarmUpdater />
       <SyrupUpdater />
+      <AnalyticsUpdater />
     </>
   );
 }
@@ -154,30 +156,30 @@ const App: React.FC = () => {
                         <PrdtPage />
                       </PageLayout>
                     </Route>
-                    <Route exact path='/analytics'>
+                    <Route exact path='/analytics/:version(v2|v3)'>
                       <PageLayout>
                         <AnalyticsHeader />
                         <AnalyticsOverview />
                       </PageLayout>
                     </Route>
-                    <Route exact path='/analytics/tokens'>
+                    <Route exact path='/analytics/:version(v2|v3)/tokens'>
                       <PageLayout>
                         <AnalyticsHeader />
                         <AnalyticsTokens />
                       </PageLayout>
                     </Route>
-                    <Route exact path='/analytics/pairs'>
+                    <Route exact path='/analytics/:version(v2|v3)/pairs'>
                       <PageLayout>
                         <AnalyticsHeader />
                         <AnalyticsPairs />
                       </PageLayout>
                     </Route>
-                    <Route exact path='/analytics/token/:id'>
+                    <Route exact path='/analytics/:version(v2|v3)/token/:id'>
                       <PageLayout>
                         <AnalyticsTokenDetails />
                       </PageLayout>
                     </Route>
-                    <Route exact path='/analytics/pair/:id'>
+                    <Route exact path='/analytics/:version(v2|v3)/pair/:id'>
                       <PageLayout>
                         <AnalyticsPairDetails />
                       </PageLayout>

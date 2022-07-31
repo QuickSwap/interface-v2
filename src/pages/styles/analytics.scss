@@ -151,3 +151,25 @@
   align-items: center;
   background-color: $grey3;
 }
+
+//V3
+
+.versionToggler {
+  border: 1px solid $grey29;
+  border-radius: 8px;
+  font-size: 13px;
+  cursor: pointer;
+  user-select: none;
+  & > div {
+    border: 2px solid transparent;
+    padding: 6px 13px;
+    border-radius: 8px;
+    color: $textDisabled;
+    &.activeVersion {
+      border-color: $primary;
+      border-radius: 8px;
+      color: $textPrimary;
+      background-color: rgba($color: $primary, $alpha: 0.2);
+    }
+  }
+}
