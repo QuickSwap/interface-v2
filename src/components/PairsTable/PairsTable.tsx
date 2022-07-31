@@ -10,51 +10,12 @@ import { ReactComponent as StarChecked } from 'assets/images/StarChecked.svg';
 import { ReactComponent as StarUnchecked } from 'assets/images/StarUnchecked.svg';
 import { useTranslation } from 'react-i18next';
 import { formatNumber } from 'utils';
+import { useIsV3 } from 'state/analytics/hooks';
 
 interface PairsTableProps {
   data: any[];
   showPagination?: boolean;
 }
-
-const headCells = () => [
-  {
-    id: 'pairName',
-    numeric: false,
-    label: 'Name',
-    sortKey: (pair: any) => pair.token0.symbol + ' ' + pair.token1.symbol,
-  },
-  {
-    id: 'pairLiquidity',
-    numeric: false,
-    label: 'Liquidity',
-    sortKey: (pair: any) =>
-      pair.trackedReserveUSD ? pair.trackedReserveUSD : pair.reserveUSD,
-  },
-  {
-    id: 'pairdayVolume',
-    numeric: false,
-    label: '24h Volume',
-    sortKey: (pair: any) =>
-      pair.oneDayVolumeUSD ? pair.oneDayVolumeUSD : pair.oneDayVolumeUntracked,
-  },
-  {
-    id: 'pairweekVolume',
-    numeric: false,
-    label: '7d Volume',
-    sortKey: (pair: any) =>
-      pair.oneWeekVolumeUSD
-        ? pair.oneWeekVolumeUSD
-        : pair.oneWeekVolumeUntracked,
-  },
-  {
-    id: 'pairdayFee',
-    numeric: false,
-    label: '24h Fees',
-    align: 'right',
-    sortKey: (pair: any) =>
-      pair.oneDayVolumeUSD ? pair.oneDayVolumeUSD : pair.oneDayVolumeUntracked,
-  },
-];
 
 const liquidityHeadCellIndex = 1;
 
@@ -63,7 +24,72 @@ const PairTable: React.FC<PairsTableProps> = ({
   showPagination = true,
 }) => {
   const { t } = useTranslation();
-  const pairHeadCells = headCells();
+  const isV3 = useIsV3();
+
+  const v2SpecificCells = [
+    {
+      id: 'pairdayFee',
+      numeric: false,
+      label: '24h Fees',
+      align: 'right',
+      sortKey: (pair: any) =>
+        pair.oneDayVolumeUSD
+          ? pair.oneDayVolumeUSD
+          : pair.oneDayVolumeUntracked,
+    },
+  ];
+
+  const v3SpecificCells = [
+    {
+      id: 'pairApr',
+      numeric: false,
+      label: 'APR',
+      align: 'right',
+      sortKey: (pair: any) => pair.apr,
+    },
+    {
+      id: 'pairFarmingApr',
+      numeric: false,
+      label: 'Farming APR',
+      align: 'right',
+      sortKey: (pair: any) => pair.farmingApr,
+    },
+  ];
+
+  const headCells = [
+    {
+      id: 'pairName',
+      numeric: false,
+      label: 'Name',
+      sortKey: (pair: any) => pair.token0.symbol + ' ' + pair.token1.symbol,
+    },
+    {
+      id: 'pairLiquidity',
+      numeric: false,
+      label: 'Liquidity',
+      sortKey: (pair: any) =>
+        pair.trackedReserveUSD ? pair.trackedReserveUSD : pair.reserveUSD,
+    },
+    {
+      id: 'pairdayVolume',
+      numeric: false,
+      label: '24h Volume',
+      sortKey: (pair: any) =>
+        pair.oneDayVolumeUSD
+          ? pair.oneDayVolumeUSD
+          : pair.oneDayVolumeUntracked,
+    },
+    {
+      id: 'pairweekVolume',
+      numeric: false,
+      label: '7d Volume',
+      sortKey: (pair: any) =>
+        pair.oneWeekVolumeUSD
+          ? pair.oneWeekVolumeUSD
+          : pair.oneWeekVolumeUntracked,
+    },
+  ].concat(isV3 ? v3SpecificCells : v2SpecificCells);
+
   const {
     bookmarkPairs,
     addBookmarkPair,
@@ -94,6 +120,8 @@ const PairTable: React.FC<PairsTableProps> = ({
     const oneDayFee = formatNumber(
       Number(oneDayVolume) * GlobalConst.utils.FEEPERCENT,
     );
+    const apr = pair.apr;
+    const farmingApr = pair.farmingApr;
     return (
       <Box mt={index === 0 ? 0 : 3}>
         <Box className='flex items-center' mb={1}>
@@ -143,10 +171,25 @@ const PairTable: React.FC<PairsTableProps> = ({
           <p>{t('7dVol')}</p>
           <p>${formatNumber(oneWeekVolume)}</p>
         </Box>
-        <Box className='mobileRow'>
-          <p>{t('24hFees')}</p>
-          <p>${oneDayFee}</p>
-        </Box>
+        {isV3 ? (
+          <>
+            <Box className='mobileRow text-success'>
+              <p>{t('apr')}</p>
+              <p>{apr}%</p>
+            </Box>
+            <Box className='mobileRow text-success'>
+              <p>{t('farmingApr')}</p>
+              <p>{farmingApr}%</p>
+            </Box>
+          </>
+        ) : (
+          <>
+            <Box className='mobileRow'>
+              <p>{t('24hFees')}</p>
+              <p>${oneDayFee}</p>
+            </Box>
+          </>
+        )}
       </Box>
     );
   };
@@ -182,6 +225,23 @@ const PairTable: React.FC<PairsTableProps> = ({
     const oneDayFee = formatNumber(
       Number(oneDayVolume) * GlobalConst.utils.FEEPERCENT,
     );
+    const apr = pair.apr;
+    const farmingApr = pair.farmingApr;
+
+    const v2SpecificRows = [
+      {
+        html: <p>${oneDayFee}</p>,
+      },
+    ];
+
+    const v3SpecificRows = [
+      {
+        html: <p className='text-success'>{apr}%</p>,
+      },
+      {
+        html: <p className='text-success'>{farmingApr}%</p>,
+      },
+    ];
     return [
       {
         html: (
@@ -230,18 +290,15 @@ const PairTable: React.FC<PairsTableProps> = ({
       {
         html: <p>${formatNumber(oneWeekVolume)}</p>,
       },
-      {
-        html: <p>${oneDayFee}</p>,
-      },
-    ];
+    ].concat(isV3 ? v3SpecificRows : v2SpecificRows);
   };
 
   return (
     <CustomTable
-      defaultOrderBy={pairHeadCells[liquidityHeadCellIndex]}
+      defaultOrderBy={headCells[liquidityHeadCellIndex]}
       defaultOrder='desc'
       showPagination={showPagination}
-      headCells={pairHeadCells}
+      headCells={headCells}
       rowsPerPage={GlobalConst.utils.ROWSPERPAGE}
       data={data}
       mobileHTML={mobileHTML}

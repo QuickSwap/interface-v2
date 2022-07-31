@@ -62,3 +62,66 @@ export const TOKENS_FROM_ADDRESSES_V3 = (
 
   return gql(queryString);
 };
+
+export const TOP_POOLS_V3 = gql`
+  query topPools {
+    pools(
+      first: 50
+      orderBy: totalValueLockedUSD
+      orderDirection: desc
+      subgraphError: allow
+    ) {
+      id
+    }
+  }
+`;
+
+export const PAIRS_FROM_ADDRESSES_V3 = (
+  blockNumber: undefined | number,
+  pools: string[],
+) => {
+  let poolString = `[`;
+  pools.map((address) => {
+    return (poolString += `"${address}",`);
+  });
+  poolString += ']';
+  const queryString =
+    `
+        query pools {
+          pools(where: {id_in: ${poolString}},` +
+    (blockNumber ? `block: {number: ${blockNumber}} ,` : ``) +
+    ` orderBy: totalValueLockedUSD, orderDirection: desc, subgraphError: allow) {
+            id
+            fee
+            liquidity
+            sqrtPrice
+            tick
+            token0 {
+                id
+                symbol
+                name
+                decimals
+                derivedMatic
+            }
+            token1 {
+                id
+                symbol
+                name
+                decimals
+                derivedMatic
+            }
+            token0Price
+            token1Price
+            volumeUSD
+            txCount
+            totalValueLockedToken0
+            totalValueLockedToken1
+            totalValueLockedUSD
+            totalValueLockedUSDUntracked
+            untrackedVolumeUSD
+            feesUSD
+          }
+        }
+        `;
+  return gql(queryString);
+};

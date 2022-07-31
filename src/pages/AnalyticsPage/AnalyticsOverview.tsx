@@ -18,7 +18,7 @@ import AnalyticsInfo from './AnalyticsInfo';
 import AnalyticsLiquidityChart from './AnalyticsLiquidityChart';
 import AnalyticsVolumeChart from './AnalyticsVolumeChart';
 import { useTranslation } from 'react-i18next';
-import { getGlobalDataV3, getTopTokensV3 } from 'utils/v3-graph';
+import { getGlobalDataV3, getTopPairsV3, getTopTokensV3 } from 'utils/v3-graph';
 import { useIsV3 } from 'state/analytics/hooks';
 
 dayjs.extend(utc);
@@ -60,15 +60,16 @@ const AnalyticsOverview: React.FC = () => {
       }
     });
 
-    getTopPairs(GlobalConst.utils.ANALYTICS_PAIRS_COUNT).then(async (pairs) => {
-      const formattedPairs = pairs
-        ? pairs.map((pair: any) => {
-            return pair.id;
-          })
-        : [];
-      const pairData = await getBulkPairData(formattedPairs, ethPrice.price);
-      if (pairData) {
-        updateTopPairs(pairData);
+    const topPairsFn = isV3
+      ? getTopPairsV3()
+      : getBulkPairData(
+          GlobalConst.utils.ANALYTICS_PAIRS_COUNT,
+          ethPrice.price,
+        );
+
+    topPairsFn.then((data) => {
+      if (data) {
+        updateTopPairs(data);
       }
     });
   }, [updateGlobalData, ethPrice.price, ethPrice.oneDayPrice, isV3]);

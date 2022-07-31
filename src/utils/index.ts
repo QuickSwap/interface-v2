@@ -1005,13 +1005,20 @@ export const getRateData = async (
 };
 
 export const getBulkPairData: (
-  pairList: any,
+  count: any,
   ethPrice: any,
-) => Promise<any[] | undefined> = async (pairList: any, ethPrice: any) => {
+) => Promise<any[] | undefined> = async (count: any, ethPrice: any) => {
   const [t1, t2, tWeek] = getTimestampsForChanges();
   const a = await getBlocksFromTimestamps([t1, t2, tWeek]);
   const [{ number: b1 }, { number: b2 }, { number: bWeek }] = a;
   try {
+    const pairsIds = await clientV2.query({
+      query: PAIRS_CURRENT(count),
+      fetchPolicy: 'network-only',
+    });
+
+    const pairList = pairsIds.data.pairs.map((pair: any) => pair.id);
+
     const current = await clientV2.query({
       query: PAIRS_BULK1,
       variables: {

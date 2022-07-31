@@ -1,7 +1,9 @@
 import { clientV3 } from 'apollo/client';
 import {
   GLOBAL_DATA_V3,
+  PAIRS_FROM_ADDRESSES_V3,
   TOKENS_FROM_ADDRESSES_V3,
+  TOP_POOLS_V3,
   TOP_TOKENS_V3,
 } from 'apollo/queries-v3';
 import {
@@ -10,6 +12,7 @@ import {
   getPercentChange,
 } from 'utils';
 import dayjs from 'dayjs';
+import { fetchEternalFarmAPR, fetchPoolsAPR } from './aprApi';
 
 export async function getGlobalDataV3(): Promise<any> {
   let data: any = {};
@@ -198,7 +201,142 @@ export async function getTopTokensV3(
   }
 }
 
-//Helpers
+export async function getTopPairsV3() {
+  try {
+    const utcCurrentTime = dayjs();
+
+    const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix();
+    const utcTwoDaysBack = utcCurrentTime.subtract(2, 'day').unix();
+    const utcOneWeekBack = utcCurrentTime.subtract(1, 'week').unix();
+
+    const [
+      oneDayBlock,
+      twoDayBlock,
+      oneWeekBlock,
+    ] = await getBlocksFromTimestamps([
+      utcOneDayBack,
+      utcTwoDaysBack,
+      utcOneWeekBack,
+    ]);
+
+    const topPairsIds = await clientV3.query({
+      query: TOP_POOLS_V3,
+      fetchPolicy: 'network-only',
+    });
+
+    const pairsAddresses = topPairsIds.data.pools.map((el: any) => el.id);
+
+    const pairsCurrent = await fetchPairsByTime(undefined, pairsAddresses);
+    const pairs24 = await fetchPairsByTime(oneDayBlock.number, pairsAddresses);
+    const pairs48 = await fetchPairsByTime(twoDayBlock.number, pairsAddresses);
+    const pairsWeek = await fetchPairsByTime(
+      oneWeekBlock.number,
+      pairsAddresses,
+    );
+
+    const parsedPairs = parsePairsData(pairsCurrent);
+    const parsedPairs24 = parsePairsData(pairs24);
+    const parsedPairs48 = parsePairsData(pairs48);
+    const parsedPairsWeek = parsePairsData(pairsWeek);
+
+    const aprs: any = await fetchPoolsAPR();
+    const farmingAprs: any = await fetchEternalFarmAPR();
+
+    // const farmingAprs = await fetchEternalFarmingsAPRByPool(poolsAddresses)
+    // const _farmingAprs: { [type: string]: number } = farmingAprs.reduce((acc, el) => (
+    //     {
+    //         ...acc,
+    //         [el.pool]: farmAprs[el.id]
+    //     }
+    // ), {})
+
+    // const limitFarms: { [key: string]: number } = await fetchLimitFarmAPR()
+
+    // const filteredFarms: { [key: string]: number } = Object.entries(limitFarms).filter((el) => el[1] >= 0).reduce((acc, el) => ({
+    //     ...acc,
+    //     [el[0]]: el[1]
+    // }), {})
+
+    // const limitAprs = await fetchLimitFarmingsAPRByPool(poolsAddresses)
+    // const _limitAprs: { [type: string]: number } = limitAprs.reduce((acc, el) => ({
+    //     ...acc,
+    //     [el.pool]: filteredFarms[el.id]
+    // }), {})
+
+    const formatted = pairsAddresses.map((address: string) => {
+      const current = parsedPairs[address];
+      const oneDay = parsedPairs24[address];
+      const twoDay = parsedPairs48[address];
+      const week = parsedPairsWeek[address];
+
+      const manageUntrackedVolume =
+        +current.volumeUSD <= 1 ? 'untrackedVolumeUSD' : 'volumeUSD';
+      const manageUntrackedTVL =
+        +current.totalValueLockedUSD <= 1
+          ? 'totalValueLockedUSDUntracked'
+          : 'totalValueLockedUSD';
+
+      const [oneDayVolumeUSD, oneDayVolumeChangeUSD] =
+        current && oneDay && twoDay
+          ? get2DayPercentChange(
+              current[manageUntrackedVolume],
+              oneDay[manageUntrackedVolume],
+              twoDay[manageUntrackedVolume],
+            )
+          : current && oneDay
+          ? [
+              parseFloat(current[manageUntrackedVolume]) -
+                parseFloat(oneDay[manageUntrackedVolume]),
+              0,
+            ]
+          : current
+          ? [parseFloat(current[manageUntrackedVolume]), 0]
+          : [0, 0];
+
+      const oneWeekVolumeUSD =
+        current && week
+          ? parseFloat(current[manageUntrackedVolume]) -
+            parseFloat(week[manageUntrackedVolume])
+          : current
+          ? parseFloat(current[manageUntrackedVolume])
+          : 0;
+
+      const tvlUSD = current ? parseFloat(current[manageUntrackedTVL]) : 0;
+      const tvlUSDChange = getPercentChange(
+        current ? current[manageUntrackedTVL] : undefined,
+        oneDay ? oneDay[manageUntrackedTVL] : undefined,
+      );
+      const aprPercent = aprs[address] ? aprs[address].toFixed(2) : 0;
+      const farmingApr = farmingAprs[address]
+        ? farmingAprs[address].toFixed(2)
+        : 0;
+
+      return {
+        token0: current.token0,
+        token1: current.token1,
+        fee: current.fee,
+        exists: !!current,
+        id: address,
+        oneDayVolumeUSD,
+        oneDayVolumeChangeUSD,
+        oneWeekVolumeUSD,
+        trackedReserveUSD: tvlUSD,
+        tvlUSDChange,
+        totalValueLockedUSD: current[manageUntrackedTVL],
+        apr: aprPercent,
+        farmingApr: farmingApr,
+        // apr: aprPercent,
+        // aprType
+      };
+    });
+
+    return formatted;
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+//Token Helpers
 
 async function fetchTokensByTime(
   blockNumber: number | undefined,
@@ -212,7 +350,7 @@ async function fetchTokensByTime(
 
     return tokens.data.tokens;
   } catch (err) {
-    throw new Error('Tokens fetching by time ' + err);
+    console.error('Tokens fetching by time ' + err);
   }
 }
 
@@ -239,4 +377,31 @@ export function formatTokenName(address: string, name: string) {
     return 'Matic';
   }
   return name;
+}
+
+//Pair helpers
+
+async function fetchPairsByTime(
+  blockNumber: number | undefined,
+  tokenAddresses: string[],
+): Promise<any> {
+  try {
+    const pairs = await clientV3.query({
+      query: PAIRS_FROM_ADDRESSES_V3(blockNumber, tokenAddresses),
+      fetchPolicy: 'network-only',
+    });
+
+    return pairs.data.pools;
+  } catch (err) {
+    console.error('Pairs by time fetching ' + err);
+  }
+}
+
+function parsePairsData(tokenData: any) {
+  return tokenData
+    ? tokenData.reduce((accum: { [address: string]: any }, poolData: any) => {
+        accum[poolData.id] = poolData;
+        return accum;
+      }, {})
+    : {};
 }
