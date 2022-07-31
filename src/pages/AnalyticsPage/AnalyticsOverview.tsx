@@ -18,6 +18,8 @@ import AnalyticsInfo from './AnalyticsInfo';
 import AnalyticsLiquidityChart from './AnalyticsLiquidityChart';
 import AnalyticsVolumeChart from './AnalyticsVolumeChart';
 import { useTranslation } from 'react-i18next';
+import { getGlobalDataV3 } from 'utils/v3-graph';
+import { useIsV3 } from 'state/analytics/hooks';
 
 dayjs.extend(utc);
 
@@ -29,9 +31,16 @@ const AnalyticsOverview: React.FC = () => {
   const [topPairs, updateTopPairs] = useState<any[] | null>(null);
   const { ethPrice } = useEthPrice();
 
+  const isV3 = useIsV3();
+
   useEffect(() => {
     if (!ethPrice.price || !ethPrice.oneDayPrice) return;
-    getGlobalData(ethPrice.price, ethPrice.oneDayPrice).then((data) => {
+
+    const globalDataFn = isV3
+      ? getGlobalDataV3()
+      : getGlobalData(ethPrice.price, ethPrice.oneDayPrice);
+
+    globalDataFn.then((data) => {
       if (data) {
         updateGlobalData({ data });
       }
@@ -58,11 +67,11 @@ const AnalyticsOverview: React.FC = () => {
         updateTopPairs(pairData);
       }
     });
-  }, [updateGlobalData, ethPrice.price, ethPrice.oneDayPrice]);
+  }, [updateGlobalData, ethPrice.price, ethPrice.oneDayPrice, isV3]);
 
   return (
     <Box width='100%' mb={3}>
-      <Grid container spacing={4}>
+      {/* <Grid container spacing={4}>
         <Grid item xs={12} sm={12} md={6}>
           <Box className='panel' width={1}>
             <AnalyticsLiquidityChart />
@@ -73,7 +82,7 @@ const AnalyticsOverview: React.FC = () => {
             <AnalyticsVolumeChart />
           </Box>
         </Grid>
-      </Grid>
+      </Grid> */}
       <Box mt={4}>
         <Box className='panel flex flex-wrap'>
           {globalData ? (
