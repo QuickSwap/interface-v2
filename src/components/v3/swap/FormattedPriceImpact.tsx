@@ -1,5 +1,5 @@
 import { Percent } from '@uniswap/sdk-core';
-import { warningSeverity } from '../../utils/prices';
+import { warningSeverity } from 'utils/v3/prices';
 import { ErrorText } from './styled';
 
 /**

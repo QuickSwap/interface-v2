@@ -6,7 +6,7 @@ import styled, { css } from 'styled-components/macro';
 import { Text } from 'rebass';
 import { AutoColumn } from '../Column';
 import { ButtonPrimary } from '../Button';
-import { TYPE } from '../../theme';
+import { TYPE } from 'theme/index';
 
 export const Wrapper = styled.div`
   position: relative;

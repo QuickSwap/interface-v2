@@ -1,17 +1,10 @@
 import { Pair } from '@uniswap/v2-sdk';
 import { Currency, CurrencyAmount, Percent, Token } from '@uniswap/sdk-core';
 import { ReactNode, useCallback, useMemo, useState } from 'react';
-import { useCurrencyBalance } from '../../state/wallet/hooks';
-import CurrencySearchModal from '../SearchModal/CurrencySearchModal';
-import CurrencyLogo from '../CurrencyLogo';
-import DoubleCurrencyLogo from '../DoubleLogo';
 import { RowBetween, RowFixed } from '../Row';
-import { TYPE } from '../../theme';
-import { useActiveWeb3React } from '../../hooks/web3';
-import { Trans } from '@lingui/macro';
+import { TYPE } from 'theme/index';
 import { FiatValue } from './FiatValue';
-import Loader from '../Loader';
-import useUSDCPrice from '../../hooks/useUSDCPrice';
+
 import {
   Aligner,
   AutoColumnStyled,
@@ -25,7 +18,14 @@ import {
   NumericalInputStyled,
   StyledTokenName,
 } from './styled';
-import { WrappedCurrency } from '../../models/types';
+import { useActiveWeb3React } from 'hooks';
+import useUSDCPrice from 'hooks/v3/useUSDCPrice';
+import Loader from 'components/Loader';
+import { WrappedCurrency } from 'models/types/Currency';
+import CurrencyLogo from 'components/CurrencyLogo';
+import { useCurrencyBalance } from 'state/wallet/v3/hooks';
+import DoubleCurrencyLogo from 'components/DoubleCurrencyLogo';
+import CurrencySearchModal from 'components/CurrencySearchModal';
 
 interface CurrencyInputPanelProps {
   value: string;
@@ -136,10 +136,8 @@ export default function CurrencyInputPanel({
           >
             {/* <Lock /> */}
             <TYPE.label fontSize='14px'>
-              <Trans>
                 Price is outside specified price range. Single-asset deposit
                 only.
-              </Trans>
             </TYPE.label>
           </AutoColumnStyled>
         </FixedContainer>
@@ -184,7 +182,6 @@ export default function CurrencyInputPanel({
                         currency0={pair.token0}
                         currency1={pair.token1}
                         size={24}
-                        margin={true}
                       />
                     </span>
                   ) : currency ? (
@@ -220,9 +217,9 @@ export default function CurrencyInputPanel({
                             balance &&
                             page === 'addLiq' &&
                             +balance.toSignificant(4) < 0.0001 ? (
-                              <Trans>{`Balance: < 0.0001 ${currency.symbol}`}</Trans>
+                              `Balance: < 0.0001 ${currency.symbol}`
                             ) : shallow && showBalance && balance ? (
-                              <Trans>{`Balance: ${balanceString} ${currency.symbol}`}</Trans>
+                              `Balance: ${balanceString} ${currency.symbol}`
                             ) : (
                               currency.symbol
                             )}
@@ -248,7 +245,7 @@ export default function CurrencyInputPanel({
                             )
                           )}
                         </div>
-                      ) : null) || <Trans>Select a token</Trans>}
+                      ) : null) || 'Select a token'}
                     </StyledTokenName>
                   )}
                 </RowFixed>
@@ -272,7 +269,7 @@ export default function CurrencyInputPanel({
                 className='token-amount-input'
                 value={value}
                 disabled={disabled}
-                onUserInput={(val) => {
+                onUserInput={(val: string) => {
                   if (val === '.') val = '0.';
                   onUserInput(val);
                 }}
@@ -297,7 +294,7 @@ export default function CurrencyInputPanel({
           swap && (
             <FiatRow page={page}>
               <RowBetween>
-                <Trans>Updating...</Trans>
+                'Updating...'
               </RowBetween>
             </FiatRow>
           )
@@ -311,8 +308,9 @@ export default function CurrencyInputPanel({
           selectedCurrency={currency}
           otherSelectedCurrency={otherCurrency}
           showCommonBases={showCommonBases}
-          showCurrencyAmount={showCurrencyAmount}
-          disableNonToken={disableNonToken}
+          // TODO: Consider adding support for V3 Functionality
+          // showCurrencyAmount={showCurrencyAmount}
+          // disableNonToken={disableNonToken}
         />
       )}
     </InputPanel>

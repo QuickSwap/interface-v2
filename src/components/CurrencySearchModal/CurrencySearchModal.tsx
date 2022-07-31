@@ -11,7 +11,8 @@ interface CurrencySearchModalProps {
   isOpen: boolean;
   onDismiss: () => void;
   selectedCurrency?: Currency | null;
-  onCurrencySelect: (currency: Currency) => void;
+  //TODO: Ignore typing to support new currency sdk
+  onCurrencySelect: (currency: Currency | any) => void;
   otherSelectedCurrency?: Currency | null;
   showCommonBases?: boolean;
 }
