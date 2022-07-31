@@ -15,6 +15,8 @@ import {
 import { GlobalConst, GlobalData } from 'constants/index';
 import { AreaChart, ChartType } from 'components';
 import { useTranslation } from 'react-i18next';
+import { useIsV3 } from 'state/analytics/hooks';
+import { getChartDataV3 } from 'utils/v3-graph';
 dayjs.extend(utc);
 
 const AnalyticsLiquidityChart: React.FC = () => {
@@ -25,24 +27,33 @@ const AnalyticsLiquidityChart: React.FC = () => {
   );
   const [globalChartData, updateGlobalChartData] = useState<any[] | null>(null);
 
+  const isV3 = useIsV3();
+
   useEffect(() => {
     const fetchChartData = async () => {
       updateGlobalChartData(null);
-      const [newChartData] = await getChartData(
+
+      const duration =
         durationIndex === GlobalConst.analyticChart.ALL_CHART
           ? 0
-          : getChartStartTime(durationIndex),
-      );
-      if (newChartData) {
-        const chartData = getLimitedData(
-          newChartData,
-          GlobalConst.analyticChart.CHART_COUNT,
-        );
-        updateGlobalChartData(chartData);
-      }
+          : getChartStartTime(durationIndex);
+
+      const chartDataFn = isV3
+        ? getChartDataV3(duration)
+        : getChartData(duration);
+
+      chartDataFn.then(([newChartData]) => {
+        if (newChartData) {
+          const chartData = getLimitedData(
+            newChartData,
+            GlobalConst.analyticChart.CHART_COUNT,
+          );
+          updateGlobalChartData(chartData);
+        }
+      });
     };
     fetchChartData();
-  }, [updateGlobalChartData, durationIndex]);
+  }, [updateGlobalChartData, durationIndex, isV3]);
 
   const liquidityPercentClass = getPriceClass(
     globalData ? Number(globalData.liquidityChangeUSD) : 0,
@@ -54,15 +65,19 @@ const AnalyticsLiquidityChart: React.FC = () => {
         Number(value.totalLiquidityUSD),
       );
       // this is for defining the scale for the liquidity values to present in graph. Liquidity values are more than 100M so set the min and max amount with rounding after dividing into 20000000 to show all liquidity values into the graph
-      const minVolume =
-        Math.floor(Math.min(...dailyVolumes) / 20000000) * 20000000;
-      const maxVolume =
-        Math.ceil(Math.max(...dailyVolumes) / 20000000) * 20000000;
+      // const minVolume =
+      //   Math.floor(Math.min(...dailyVolumes) / 20000000) * 20000000;
+      // const maxVolume =
+      //   Math.ceil(Math.max(...dailyVolumes) / 20000000) * 20000000;
+
+      const minVolume = Math.floor(Math.min(...dailyVolumes));
+      const maxVolume = Math.ceil(Math.max(...dailyVolumes));
+
       const values = [];
       // show 10 values in the y axis of the graph
       const step = (maxVolume - minVolume) / 10;
       for (let i = maxVolume; i >= minVolume; i -= step) {
-        values.push(i);
+        values.push(Math.floor(i));
       }
       return values;
     } else {
@@ -116,6 +131,8 @@ const AnalyticsLiquidityChart: React.FC = () => {
             data={globalChartData.map((value: any) =>
               Number(value.totalLiquidityUSD),
             )}
+            strokeColor={isV3 ? '#3e92fe' : '#00dced'}
+            gradientColor={isV3 ? '#448aff' : undefined}
             yAxisValues={yAxisValues}
             dates={globalChartData.map((value: any) => value.date)}
             width='100%'

@@ -4,14 +4,16 @@ import { useActiveWeb3React } from 'hooks';
 import useDebounce from 'hooks/useDebounce';
 import useIsWindowVisible from 'hooks/useIsWindowVisible';
 import { updateBlockNumber } from './actions';
-import { useEthPrice } from './hooks';
+import { useEthPrice, useMaticPrice } from './hooks';
 import { getEthPrice } from 'utils';
+import { getMaticPrice } from 'utils/v3-graph';
 
 export default function Updater(): null {
   const { library, chainId } = useActiveWeb3React();
   const { ethereum } = window as any;
   const dispatch = useDispatch();
   const { ethPrice, updateEthPrice } = useEthPrice();
+  const { maticPrice, updateMaticPrice } = useMaticPrice();
 
   const windowVisible = useIsWindowVisible();
 
@@ -55,6 +57,16 @@ export default function Updater(): null {
     (async () => {
       const [price, oneDayPrice, ethPriceChange] = await getEthPrice();
       updateEthPrice({ price, oneDayPrice, ethPriceChange });
+      const [
+        maticPrice,
+        maticOneDayPrice,
+        maticPriceChange,
+      ] = await getMaticPrice();
+      updateMaticPrice({
+        price: maticPrice,
+        oneDayPrice: maticOneDayPrice,
+        maticPriceChange,
+      });
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentTime]);

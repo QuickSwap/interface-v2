@@ -1,6 +1,7 @@
+import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { useLocation } from 'react-router-dom';
-import { toggleAnalyticsVersion } from './actions';
+import { setAnalyticsLoaded, toggleAnalyticsVersion } from './actions';
 import { useIsV3 } from './hooks';
 
 export default function Updater(): null {
@@ -14,6 +15,10 @@ export default function Updater(): null {
   if (path[1] === 'analytics' && (isV3 ? path[2] === 'v2' : path[2] === 'v3')) {
     dispatch(toggleAnalyticsVersion());
   }
+
+  useEffect(() => {
+    dispatch(setAnalyticsLoaded(false));
+  }, [pathname, isV3, dispatch]);
 
   return null;
 }

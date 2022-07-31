@@ -161,8 +161,6 @@ export function useFarmList(url: string | undefined): StakingInfoAddressMap {
           )
       : [];
 
-  console.log('bbb', farmTokenAddresses);
-
   const farmTokens = useTokens(farmTokenAddresses);
   return useMemo(() => {
     if (

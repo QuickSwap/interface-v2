@@ -14,6 +14,8 @@ import {
 import { BarChart, ChartType } from 'components';
 import { GlobalConst, GlobalData } from 'constants/index';
 import { useTranslation } from 'react-i18next';
+import { useIsV3 } from 'state/analytics/hooks';
+import { getChartDataV3 } from 'utils/v3-graph';
 
 const DAY_VOLUME = 0;
 const WEEK_VOLUME = 1;
@@ -30,28 +32,37 @@ const AnalyticsVolumeChart: React.FC = () => {
   const { globalData } = useGlobalData();
   const [globalChartData, updateGlobalChartData] = useState<any>(null);
 
+  const isV3 = useIsV3();
+
   useEffect(() => {
     const fetchChartData = async () => {
       updateGlobalChartData(null);
-      const [newChartData, newWeeklyData] = await getChartData(
+
+      const duration =
         durationIndex === GlobalConst.analyticChart.ALL_CHART
           ? 0
-          : getChartStartTime(durationIndex),
-      );
-      if (newChartData && newWeeklyData) {
-        const dayItems = getLimitedData(
-          newChartData,
-          GlobalConst.analyticChart.CHART_COUNT,
-        );
-        const weekItems = getLimitedData(
-          newWeeklyData,
-          GlobalConst.analyticChart.CHART_COUNT,
-        );
-        updateGlobalChartData({ day: dayItems, week: weekItems });
-      }
+          : getChartStartTime(durationIndex);
+
+      const chartDataFn = isV3
+        ? getChartDataV3(duration)
+        : getChartData(duration);
+
+      chartDataFn.then(([newChartData, newWeeklyData]) => {
+        if (newChartData && newWeeklyData) {
+          const dayItems = getLimitedData(
+            newChartData,
+            GlobalConst.analyticChart.CHART_COUNT,
+          );
+          const weekItems = getLimitedData(
+            newWeeklyData,
+            GlobalConst.analyticChart.CHART_COUNT,
+          );
+          updateGlobalChartData({ day: dayItems, week: weekItems });
+        }
+      });
     };
     fetchChartData();
-  }, [updateGlobalChartData, durationIndex]);
+  }, [updateGlobalChartData, durationIndex, isV3]);
 
   const liquidityWeeks = useMemo(() => {
     if (globalChartData) {
@@ -204,7 +215,7 @@ const AnalyticsVolumeChart: React.FC = () => {
                 >
                   <span>
                     {`${getVolumePercent(volumeIndex) > 0 ? '+' : ''}
-                      ${getVolumePercent(volumeIndex).toLocaleString()}`}
+                      ${getVolumePercent(volumeIndex)?.toLocaleString()}`}
                     %
                   </span>
                 </Box>
@@ -230,6 +241,7 @@ const AnalyticsVolumeChart: React.FC = () => {
         {globalChartData ? (
           <BarChart
             height={200}
+            isV3={isV3}
             data={barChartData}
             categories={
               volumeIndex === WEEK_VOLUME

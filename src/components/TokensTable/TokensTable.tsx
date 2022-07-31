@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Box, Divider } from '@material-ui/core';
 import { getAddress } from '@ethersproject/address';
@@ -11,6 +11,7 @@ import { ReactComponent as StarChecked } from 'assets/images/StarChecked.svg';
 import { ReactComponent as StarUnchecked } from 'assets/images/StarUnchecked.svg';
 import 'components/styles/TokensTable.scss';
 import { useTranslation } from 'react-i18next';
+import { useIsV3 } from 'state/analytics/hooks';
 
 interface TokensTableProps {
   data: any[];
@@ -24,6 +25,10 @@ const TokensTable: React.FC<TokensTableProps> = ({
   showPagination = true,
 }) => {
   const { t } = useTranslation();
+
+  const isV3 = useIsV3();
+  const version = useMemo(() => `${isV3 ? `v3` : 'v2'}`, [isV3]);
+
   const tokenHeadCells = [
     {
       id: 'tokenName',
@@ -94,7 +99,7 @@ const TokensTable: React.FC<TokensTableProps> = ({
           </Box>
           <Link
             className='no-decoration'
-            to={`/analytics/token/${tokenCurrency.address}`}
+            to={`/analytics/${version}/token/${tokenCurrency.address}`}
           >
             <Box className='flex items-center'>
               <CurrencyLogo currency={tokenCurrency} size='28px' />
@@ -164,7 +169,7 @@ const TokensTable: React.FC<TokensTableProps> = ({
             </Box>
             <Link
               className='no-decoration'
-              to={`/analytics/token/${tokenCurrency.address}`}
+              to={`/analytics/${version}/token/${tokenCurrency.address}`}
             >
               <Box className='flex items-center'>
                 <CurrencyLogo currency={tokenCurrency} size='28px' />

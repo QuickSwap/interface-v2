@@ -16,6 +16,7 @@ import {
   updateBookmarkPairs,
   updateTokenDetails,
   updateIsProMode,
+  updateMaticPrice,
 } from './actions';
 
 type PopupList = Array<{
@@ -37,11 +38,18 @@ export interface ETHPrice {
   ethPriceChange?: number;
 }
 
+export interface MaticPrice {
+  price?: number;
+  oneDayPrice?: number;
+  maticPriceChange?: number;
+}
+
 export interface ApplicationState {
   readonly blockNumber: { readonly [chainId: number]: number };
   readonly popupList: PopupList;
   readonly openModal: ApplicationModal | null;
   readonly ethPrice: ETHPrice;
+  readonly maticPrice: MaticPrice;
   readonly globalData: any;
   readonly bookmarkedTokens: string[];
   readonly bookmarkedPairs: string[];
@@ -57,6 +65,7 @@ const initialState: ApplicationState = {
   openModal: null,
   globalData: null,
   ethPrice: {},
+  maticPrice: {},
   bookmarkedTokens: [],
   bookmarkedPairs: [],
   analyticToken: null,
@@ -111,6 +120,16 @@ export default createReducer(initialState, (builder) =>
           price,
           oneDayPrice,
           ethPriceChange,
+        };
+      },
+    )
+    .addCase(
+      updateMaticPrice,
+      (state, { payload: { price, oneDayPrice, maticPriceChange } }) => {
+        state.maticPrice = {
+          price,
+          oneDayPrice,
+          maticPriceChange,
         };
       },
     )

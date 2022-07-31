@@ -4,6 +4,7 @@ import 'components/styles/BarChart.scss';
 
 export interface BarChartProps {
   data?: Array<number>;
+  isV3: boolean;
   categories?: Array<any>;
   height?: number;
   onHover?: (index: number) => void;
@@ -12,6 +13,7 @@ export interface BarChartProps {
 
 const BarChart: React.FC<BarChartProps> = ({
   data = [],
+  isV3,
   categories,
   height = 200,
   onHover,
@@ -24,7 +26,7 @@ const BarChart: React.FC<BarChartProps> = ({
         {data.map((value, index) => (
           <Box
             key={index}
-            className='barChartItem'
+            className={`barChartItem ${isV3 && 'isV3'}`}
             width={`calc(${100 / data.length}% - 2px)`}
             height={`${Math.max(6, (value / maxValue) * height)}px`} // set min height of bar to 6px for the items with small amount
             onMouseOver={() => onHover && onHover(index)}
@@ -32,7 +34,7 @@ const BarChart: React.FC<BarChartProps> = ({
         ))}
       </Box>
       {categories && data.length > 0 && (
-        <Box className='categoryValues' mt={2}>
+        <Box className={`categoryValues`} mt={2}>
           {categories.map((val, ind) => (
             <p key={ind}>{val}</p>
           ))}
