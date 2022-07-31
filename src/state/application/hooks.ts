@@ -63,6 +63,10 @@ export function useToggleSettingsMenu(): () => void {
   return useToggleModal(ApplicationModal.SETTINGS);
 }
 
+export function useToggleV3SettingsMenu(): () => void {
+  return useToggleModal(ApplicationModal.SETTINGSV3);
+}
+
 export function useShowClaimPopup(): boolean {
   return useModalOpen(ApplicationModal.CLAIM_POPUP);
 }
@@ -113,7 +117,7 @@ export function useEthPrice(): {
   updateEthPrice: ({ price, oneDayPrice, ethPriceChange }: ETHPrice) => void;
 } {
   const ethPrice = useSelector((state: AppState) => state.application.ethPrice);
-  
+
   const dispatch = useDispatch();
   const _updateETHPrice = useCallback(
     ({ price, oneDayPrice, ethPriceChange }) => {

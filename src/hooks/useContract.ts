@@ -13,7 +13,7 @@ import {
 } from 'constants/abis/argent-wallet-detector';
 import ENS_PUBLIC_RESOLVER_ABI from 'constants/abis/ens-public-resolver.json';
 import ENS_ABI from 'constants/abis/ens-registrar.json';
-import EIP_2612 from 'constants/abis/v3/eip_2612.json'
+import EIP_2612 from 'constants/abis/v3/eip_2612.json';
 import ERC20_ABI, { ERC20_BYTES32_ABI } from 'constants/abis/erc20';
 import { MIGRATOR_ABI, MIGRATOR_ADDRESS } from 'constants/abis/migrator';
 import { STAKING_DUAL_REWARDS_INTERFACE } from 'constants/abis/staking-rewards';
@@ -31,7 +31,7 @@ import { abi as LairABI } from 'abis/DragonLair.json';
 import { abi as IUniswapV2Router02ABI } from '@uniswap/v2-periphery/build/IUniswapV2Router02.json';
 import QUICKConversionABI from 'constants/abis/quick-conversion.json';
 import { QUOTER_ADDRESSES } from 'constants/v3/addresses';
-import NewQuoterABI from 'constants/abis/v3/quoter.json'
+import NewQuoterABI from 'constants/abis/v3/quoter.json';
 
 // function useContract(
 //   address: string | undefined,
@@ -59,23 +59,35 @@ import NewQuoterABI from 'constants/abis/v3/quoter.json'
 export function useContract<T extends Contract = Contract>(
   addressOrAddressMap: string | { [chainId: number]: string } | undefined,
   ABI: any,
-  withSignerIfPossible = true
+  withSignerIfPossible = true,
 ): T | null {
-  const { library, account, chainId } = useActiveWeb3React()
+  const { library, account, chainId } = useActiveWeb3React();
 
   return useMemo(() => {
-      if (!addressOrAddressMap || !ABI || !library || !chainId) return null
-      let address: string | undefined
-      if (typeof addressOrAddressMap === 'string') address = addressOrAddressMap
-      else address = addressOrAddressMap[chainId]
-      if (!address) return null
-      try {
-          return getContract(address, ABI, library, withSignerIfPossible && account ? account : undefined)
-      } catch (error) {
-          console.error('Failed to get contract', error)
-          return null
-      }
-  }, [addressOrAddressMap, ABI, library, chainId, withSignerIfPossible, account]) as T
+    if (!addressOrAddressMap || !ABI || !library || !chainId) return null;
+    let address: string | undefined;
+    if (typeof addressOrAddressMap === 'string') address = addressOrAddressMap;
+    else address = addressOrAddressMap[chainId];
+    if (!address) return null;
+    try {
+      return getContract(
+        address,
+        ABI,
+        library,
+        withSignerIfPossible && account ? account : undefined,
+      );
+    } catch (error) {
+      console.error('Failed to get contract', error);
+      return null;
+    }
+  }, [
+    addressOrAddressMap,
+    ABI,
+    library,
+    chainId,
+    withSignerIfPossible,
+    account,
+  ]) as T;
 }
 
 export function useLairContract(): Contract | null {
@@ -188,7 +200,7 @@ export function usePairContract(
 }
 
 export function useEIP2612Contract(tokenAddress?: string): Contract | null {
-  return useContract(tokenAddress, EIP_2612, false)
+  return useContract(tokenAddress, EIP_2612, false);
 }
 
 export function useMulticallContract(): Contract | null {
@@ -256,5 +268,5 @@ export function useRouterContract(): Contract | null {
 }
 
 export function useV3Quoter() {
-  return useContract(QUOTER_ADDRESSES, NewQuoterABI)
+  return useContract(QUOTER_ADDRESSES, NewQuoterABI);
 }

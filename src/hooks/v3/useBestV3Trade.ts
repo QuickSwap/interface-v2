@@ -1,25 +1,25 @@
-import { Currency, CurrencyAmount, TradeType } from '@uniswap/sdk-core'
+import { Currency, CurrencyAmount, TradeType } from '@uniswap/sdk-core';
 
-import { BigNumber } from 'ethers'
-import { useMemo } from 'react'
-import { useAllV3Routes } from './useAllV3Routes'
-import { useSingleContractMultipleData } from 'state/multicall/hooks'
-import { useActiveWeb3React } from 'hooks'
-import { useV3Quoter } from 'hooks/useContract'
-import usePrevious from 'hooks/usePrevious'
-import { Route } from 'lib/src/route'
-import { Trade } from 'lib/src/trade'
-import { encodeRouteToPath } from 'lib/src/utils/encodeRouteToPath'
+import { BigNumber } from 'ethers';
+import { useMemo } from 'react';
+import { useAllV3Routes } from './useAllV3Routes';
+import { useSingleContractMultipleData } from 'state/multicall/hooks';
+import { useActiveWeb3React } from 'hooks';
+import { useV3Quoter } from 'hooks/useContract';
+import usePrevious from 'hooks/usePrevious';
+import { Route } from 'lib/src/route';
+import { Trade } from 'lib/src/trade';
+import { encodeRouteToPath } from 'lib/src/utils/encodeRouteToPath';
 
 export enum V3TradeState {
-    LOADING,
-    INVALID,
-    NO_ROUTE_FOUND,
-    VALID,
-    SYNCING,
+  LOADING,
+  INVALID,
+  NO_ROUTE_FOUND,
+  VALID,
+  SYNCING,
 }
 
-const DEFAULT_GAS_QUOTE = 2_000_000
+const DEFAULT_GAS_QUOTE = 2_000_000;
 
 /**
  * Returns the best v3 trade for a desired exact input swap
@@ -27,94 +27,114 @@ const DEFAULT_GAS_QUOTE = 2_000_000
  * @param currencyOut the desired output currency
  */
 export function useBestV3TradeExactIn(
-    amountIn?: CurrencyAmount<Currency>,
-    currencyOut?: Currency
-): { state: V3TradeState; trade: Trade<Currency, Currency, TradeType.EXACT_INPUT> | null } {
-    const { chainId } = useActiveWeb3React()
-    const quoter = useV3Quoter()
+  amountIn?: CurrencyAmount<Currency>,
+  currencyOut?: Currency,
+): {
+  state: V3TradeState;
+  trade: Trade<Currency, Currency, TradeType.EXACT_INPUT> | null;
+} {
+  const { chainId } = useActiveWeb3React();
+  const quoter = useV3Quoter();
 
-    const { routes, loading: routesLoading } = useAllV3Routes(amountIn?.currency, currencyOut)
+  const { routes, loading: routesLoading } = useAllV3Routes(
+    amountIn?.currency,
+    currencyOut,
+  );
 
-    const quoteExactInInputs = useMemo(() => {
-        return routes.map((route) => [
-            encodeRouteToPath(route, false),
-            amountIn ? `0x${amountIn.quotient.toString(16)}` : undefined
-        ])
-    }, [amountIn, routes])
+  const quoteExactInInputs = useMemo(() => {
+    return routes.map((route) => [
+      encodeRouteToPath(route, false),
+      amountIn ? `0x${amountIn.quotient.toString(16)}` : undefined,
+    ]);
+  }, [amountIn, routes]);
 
-    const quotesResults = useSingleContractMultipleData(quoter, 'quoteExactInput', quoteExactInInputs, {
-        //gasRequired: chainId ? DEFAULT_GAS_QUOTE : undefined
-    })
+  const quotesResults = useSingleContractMultipleData(
+    quoter,
+    'quoteExactInput',
+    quoteExactInInputs,
+    {
+      //gasRequired: chainId ? DEFAULT_GAS_QUOTE : undefined
+    },
+  );
 
-    const trade = useMemo(() => {
-        if (!amountIn || !currencyOut) {
-            return {
-                state: V3TradeState.INVALID,
-                trade: null
-            }
+  const trade = useMemo(() => {
+    if (!amountIn || !currencyOut) {
+      return {
+        state: V3TradeState.INVALID,
+        trade: null,
+      };
+    }
+
+    if (routesLoading || quotesResults.some(({ loading }) => loading)) {
+      return {
+        state: V3TradeState.LOADING,
+        trade: null,
+      };
+    }
+
+    const { bestRoute, amountOut } = quotesResults.reduce(
+      (
+        currentBest: {
+          bestRoute: Route<Currency, Currency> | null;
+          amountOut: BigNumber | null;
+        },
+        { result },
+        i,
+      ) => {
+        if (!result) return currentBest;
+
+        if (currentBest.amountOut === null) {
+          return {
+            bestRoute: routes[i],
+            amountOut: result.amountOut,
+          };
+        } else if (currentBest.amountOut.lt(result.amountOut)) {
+          return {
+            bestRoute: routes[i],
+            amountOut: result.amountOut,
+          };
         }
 
-        if (routesLoading || quotesResults.some(({ loading }) => loading)) {
-            return {
-                state: V3TradeState.LOADING,
-                trade: null
-            }
-        }
+        return currentBest;
+      },
+      {
+        bestRoute: null,
+        amountOut: null,
+      },
+    );
 
-        const { bestRoute, amountOut } = quotesResults.reduce(
-            (currentBest: { bestRoute: Route<Currency, Currency> | null; amountOut: BigNumber | null }, { result }, i) => {
-                if (!result) return currentBest
+    if (!bestRoute || !amountOut) {
+      return {
+        state: V3TradeState.NO_ROUTE_FOUND,
+        trade: null,
+      };
+    }
 
-                if (currentBest.amountOut === null) {
-                    return {
-                        bestRoute: routes[i],
-                        amountOut: result.amountOut
-                    }
-                } else if (currentBest.amountOut.lt(result.amountOut)) {
-                    return {
-                        bestRoute: routes[i],
-                        amountOut: result.amountOut
-                    }
-                }
+    const isSyncing = quotesResults.some(({ syncing }) => syncing);
 
-                return currentBest
-            },
-            {
-                bestRoute: null,
-                amountOut: null
-            }
-        )
+    return {
+      state: isSyncing ? V3TradeState.SYNCING : V3TradeState.VALID,
+      trade: Trade.createUncheckedTrade({
+        route: bestRoute,
+        tradeType: TradeType.EXACT_INPUT,
+        inputAmount: amountIn,
+        outputAmount: CurrencyAmount.fromRawAmount(
+          currencyOut,
+          amountOut.toString(),
+        ),
+      }),
+    };
+  }, [amountIn, currencyOut, quotesResults, routes, routesLoading]);
 
-        if (!bestRoute || !amountOut) {
-            return {
-                state: V3TradeState.NO_ROUTE_FOUND,
-                trade: null
-            }
-        }
+  const prevTrade = usePrevious(trade.trade ? trade : undefined);
 
-        const isSyncing = quotesResults.some(({ syncing }) => syncing)
+  return useMemo(() => {
+    if (!prevTrade) return trade;
 
-        return {
-            state: isSyncing ? V3TradeState.SYNCING : V3TradeState.VALID,
-            trade: Trade.createUncheckedTrade({
-                route: bestRoute,
-                tradeType: TradeType.EXACT_INPUT,
-                inputAmount: amountIn,
-                outputAmount: CurrencyAmount.fromRawAmount(currencyOut, amountOut.toString())
-            })
-        }
-    }, [amountIn, currencyOut, quotesResults, routes, routesLoading])
+    if (!trade.trade && prevTrade.trade) return prevTrade;
 
-    const prevTrade = usePrevious(trade.trade ? trade : undefined)
-
-    return useMemo(() => {
-        if (!prevTrade) return trade
-
-        if (!trade.trade && prevTrade.trade) return prevTrade
-
-        return trade
-    }, [trade])
-
+    return trade;
+  }, [trade]);
 }
 
 /**
@@ -123,94 +143,116 @@ export function useBestV3TradeExactIn(
  * @param amountOut the amount to swap out
  */
 export function useBestV3TradeExactOut(
-    currencyIn?: Currency,
-    amountOut?: CurrencyAmount<Currency>
-): { state: V3TradeState; trade: Trade<Currency, Currency, TradeType.EXACT_OUTPUT> | null } {
-    const { chainId } = useActiveWeb3React()
-    const quoter = useV3Quoter()
+  currencyIn?: Currency,
+  amountOut?: CurrencyAmount<Currency>,
+): {
+  state: V3TradeState;
+  trade: Trade<Currency, Currency, TradeType.EXACT_OUTPUT> | null;
+} {
+  const { chainId } = useActiveWeb3React();
+  const quoter = useV3Quoter();
 
-    const { routes, loading: routesLoading } = useAllV3Routes(currencyIn, amountOut?.currency)
+  const { routes, loading: routesLoading } = useAllV3Routes(
+    currencyIn,
+    amountOut?.currency,
+  );
 
-    const quoteExactOutInputs = useMemo(() => {
-        return routes.map((route) => [
-            encodeRouteToPath(route, true),
-            amountOut ? `0x${amountOut.quotient.toString(16)}` : undefined
-        ])
-    }, [amountOut, routes])
+  const quoteExactOutInputs = useMemo(() => {
+    return routes.map((route) => [
+      encodeRouteToPath(route, true),
+      amountOut ? `0x${amountOut.quotient.toString(16)}` : undefined,
+    ]);
+  }, [amountOut, routes]);
 
-    const quotesResults = useSingleContractMultipleData(quoter, 'quoteExactOutput', quoteExactOutInputs, {
-        //gasRequired: chainId ? DEFAULT_GAS_QUOTE : undefined
-    })
+  const quotesResults = useSingleContractMultipleData(
+    quoter,
+    'quoteExactOutput',
+    quoteExactOutInputs,
+    {
+      //gasRequired: chainId ? DEFAULT_GAS_QUOTE : undefined
+    },
+  );
 
-    const trade = useMemo(() => {
-        if (!amountOut || !currencyIn || quotesResults.some(({ valid }) => !valid)) {
-            return {
-                state: V3TradeState.INVALID,
-                trade: null
-            }
+  const trade = useMemo(() => {
+    if (
+      !amountOut ||
+      !currencyIn ||
+      quotesResults.some(({ valid }) => !valid)
+    ) {
+      return {
+        state: V3TradeState.INVALID,
+        trade: null,
+      };
+    }
+
+    if (routesLoading || quotesResults.some(({ loading }) => loading)) {
+      return {
+        state: V3TradeState.LOADING,
+        trade: null,
+      };
+    }
+
+    const { bestRoute, amountIn } = quotesResults.reduce(
+      (
+        currentBest: {
+          bestRoute: Route<Currency, Currency> | null;
+          amountIn: BigNumber | null;
+        },
+        { result },
+        i,
+      ) => {
+        if (!result) return currentBest;
+
+        if (currentBest.amountIn === null) {
+          return {
+            bestRoute: routes[i],
+            amountIn: result.amountIn,
+          };
+        } else if (currentBest.amountIn.gt(result.amountIn)) {
+          return {
+            bestRoute: routes[i],
+            amountIn: result.amountIn,
+          };
         }
 
-        if (routesLoading || quotesResults.some(({ loading }) => loading)) {
-            return {
-                state: V3TradeState.LOADING,
-                trade: null
-            }
-        }
+        return currentBest;
+      },
+      {
+        bestRoute: null,
+        amountIn: null,
+      },
+    );
 
-        const { bestRoute, amountIn } = quotesResults.reduce(
-            (currentBest: { bestRoute: Route<Currency, Currency> | null; amountIn: BigNumber | null }, { result }, i) => {
-                if (!result) return currentBest
+    if (!bestRoute || !amountIn) {
+      return {
+        state: V3TradeState.NO_ROUTE_FOUND,
+        trade: null,
+      };
+    }
 
+    const isSyncing = quotesResults.some(({ syncing }) => syncing);
 
-                if (currentBest.amountIn === null) {
-                    return {
-                        bestRoute: routes[i],
-                        amountIn: result.amountIn
-                    }
-                } else if (currentBest.amountIn.gt(result.amountIn)) {
-                    return {
-                        bestRoute: routes[i],
-                        amountIn: result.amountIn
-                    }
-                }
+    return {
+      state: isSyncing ? V3TradeState.SYNCING : V3TradeState.VALID,
+      trade: Trade.createUncheckedTrade({
+        route: bestRoute,
+        tradeType: TradeType.EXACT_OUTPUT,
+        inputAmount: CurrencyAmount.fromRawAmount(
+          currencyIn,
+          amountIn.toString(),
+        ),
+        outputAmount: amountOut,
+      }),
+    };
+  }, [amountOut, currencyIn, quotesResults, routes, routesLoading]);
 
-                return currentBest
-            },
-            {
-                bestRoute: null,
-                amountIn: null
-            }
-        )
+  const prevTrade = usePrevious(trade.trade ? trade : undefined);
 
-        if (!bestRoute || !amountIn) {
-            return {
-                state: V3TradeState.NO_ROUTE_FOUND,
-                trade: null
-            }
-        }
+  return useMemo(() => {
+    if (!prevTrade) return trade;
 
-        const isSyncing = quotesResults.some(({ syncing }) => syncing)
+    if (!trade.trade && prevTrade.trade) return prevTrade;
 
-        return {
-            state: isSyncing ? V3TradeState.SYNCING : V3TradeState.VALID,
-            trade: Trade.createUncheckedTrade({
-                route: bestRoute,
-                tradeType: TradeType.EXACT_OUTPUT,
-                inputAmount: CurrencyAmount.fromRawAmount(currencyIn, amountIn.toString()),
-                outputAmount: amountOut
-            })
-        }
-    }, [amountOut, currencyIn, quotesResults, routes, routesLoading])
-
-    const prevTrade = usePrevious(trade.trade ? trade : undefined)
-
-    return useMemo(() => {
-
-        if (!prevTrade) return trade
-
-        if (!trade.trade && prevTrade.trade) return prevTrade
-
-        return trade
-
-    }, [trade])
+    return trade;
+  }, [trade]);
 }

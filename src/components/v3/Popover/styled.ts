@@ -1,5 +1,5 @@
-import styled from 'styled-components/macro'
-import { transparentize } from 'polished'
+import styled from 'styled-components/macro';
+import { transparentize } from 'polished';
 
 export const PopoverContainer = styled.div<{ show: boolean }>`
   z-index: 9999;
@@ -11,10 +11,10 @@ export const PopoverContainer = styled.div<{ show: boolean }>`
   box-shadow: 0 4px 8px 0 ${({ theme }) => transparentize(0.9, theme.shadow1)};
   color: ${({ theme }) => theme.text2};
   border-radius: 8px;
-`
+`;
 export const ReferenceElement = styled.div`
   display: inline-block;
-`
+`;
 export const Arrow = styled.div`
   width: 8px;
   height: 8px;
@@ -64,4 +64,4 @@ export const Arrow = styled.div`
       border-top: none;
     }
   }
-`
+`;

@@ -1604,11 +1604,11 @@ export function getEtherscanLink(
     case ExplorerDataType.TRANSACTION: {
       return `${prefix}/tx/${data}`;
     }
-    case 'token': 
+    case 'token':
     case ExplorerDataType.TOKEN: {
       return `${prefix}/token/${data}`;
     }
-    case 'block': 
+    case 'block':
     case ExplorerDataType.BLOCK: {
       return `${prefix}/block/${data}`;
     }

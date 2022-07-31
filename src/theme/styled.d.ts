@@ -49,9 +49,9 @@ export interface Colors {
   yellow2: Color;
   blue1: Color;
 
-  winterBackground: Color,
-  winterMainButton: Color,
-  winterDisabledButton: Color
+  winterBackground: Color;
+  winterMainButton: Color;
+  winterDisabledButton: Color;
 }
 
 export interface Grids {

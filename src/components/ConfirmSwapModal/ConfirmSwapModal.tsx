@@ -1,7 +1,4 @@
 import { currencyEquals, Trade } from '@uniswap/sdk';
-import { Currency, Percent, TradeType } from '@uniswap/sdk-core'
-import { Trade as V3Trade } from 'lib/src/trade'
-import { Trade as V2Trade } from '@uniswap/v2-sdk'
 import React, { useCallback, useMemo } from 'react';
 import {
   TransactionConfirmationModal,
@@ -33,13 +30,13 @@ function tradeMeaningfullyDiffers(tradeA: Trade, tradeB: Trade): boolean {
 
 interface ConfirmSwapModalProps {
   isOpen: boolean;
-  trade: Trade | V2Trade<Currency, Currency, TradeType> | V3Trade<Currency, Currency, TradeType> | undefined;
-  originalTrade: Trade| V2Trade<Currency, Currency, TradeType> | V3Trade<Currency, Currency, TradeType> | undefined
+  trade: Trade | undefined;
+  originalTrade: Trade | undefined;
   attemptingTxn: boolean;
   txPending?: boolean;
   txHash: string | undefined;
   recipient: string | null;
-  allowedSlippage: number | Percent;
+  allowedSlippage: number;
   onAcceptChanges: () => void;
   onConfirm: () => void;
   swapErrorMessage: string | undefined;

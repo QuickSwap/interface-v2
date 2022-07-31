@@ -18,6 +18,8 @@ import dualFarms from './dualfarms/reducer';
 import syrups from './syrups/reducer';
 import burn from './burn/reducer';
 import multicall from './multicall/reducer';
+import userV3 from './user/v3/reducer';
+import swapV3 from './swap/v3/reducer';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 
 const PERSISTED_KEYS: string[] = [
@@ -34,8 +36,10 @@ const store = configureStore({
   reducer: {
     application,
     user,
+    userV3,
     transactions,
     swap,
+    swapV3,
     mint,
     mintV3,
     burn,
