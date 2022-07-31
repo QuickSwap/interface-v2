@@ -54,6 +54,12 @@ export const updateEthPrice = createAction<{
   ethPriceChange: number;
 }>('application/updateEthPrice');
 
+export const updateMaticPrice = createAction<{
+  price: number;
+  oneDayPrice: number;
+  maticPriceChange: number;
+}>('application/updateMaticPrice');
+
 export const updateGlobalData = createAction<{ data: any }>(
   'application/updateGlobalData',
 );

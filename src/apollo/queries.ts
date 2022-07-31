@@ -367,6 +367,34 @@ export const PAIR_ID: any = (tokenAddress0: string, tokenAddress1: string) => {
   return gql(queryString);
 };
 
+export const IS_PAIR_EXISTS: any = (pairAddress: string) => {
+  const queryString = `
+    query pairs {
+      pair(id: "${pairAddress}"){
+        id
+        token0 {
+          id
+        }
+        token1 {
+          id
+        }
+      }
+    }
+  `;
+  return gql(queryString);
+};
+
+export const IS_TOKEN_EXISTS: any = (tokenAddress: string) => {
+  const queryString = `
+    query tokens {
+      token(id: "${tokenAddress}"){
+        id
+      }
+    }
+  `;
+  return gql(queryString);
+};
+
 export const TOKEN_DATA1: any = (
   tokenAddress: string,
   tokenAddress1: string,

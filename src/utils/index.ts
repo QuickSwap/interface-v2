@@ -5,7 +5,7 @@ import { Contract } from '@ethersproject/contracts';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import weekOfYear from 'dayjs/plugin/weekOfYear';
-import { blockClient, client, txClient } from 'apollo/client';
+import { blockClient, clientV2, txClient } from 'apollo/client';
 import {
   GET_BLOCK,
   GLOBAL_DATA,
@@ -32,6 +32,8 @@ import {
   GLOBAL_ALLDATA,
   ETH_PRICE,
   PAIR_ID,
+  IS_PAIR_EXISTS,
+  IS_TOKEN_EXISTS,
 } from 'apollo/queries';
 import { JsonRpcSigner, Web3Provider } from '@ethersproject/providers';
 import {
@@ -242,11 +244,11 @@ export const getEthPrice: () => Promise<number[]> = async () => {
 
   try {
     const oneDayBlock = await getBlockFromTimestamp(utcOneDayBack);
-    const result = await client.query({
+    const result = await clientV2.query({
       query: ETH_PRICE(),
       fetchPolicy: 'network-only',
     });
-    const resultOneDay = await client.query({
+    const resultOneDay = await clientV2.query({
       query: ETH_PRICE(oneDayBlock),
       fetchPolicy: 'network-only',
     });
@@ -279,22 +281,22 @@ export const getTokenInfo = async (
   const oneWeekBlock = await getBlockFromTimestamp(utcOneWeekBack);
 
   try {
-    const current = await client.query({
+    const current = await clientV2.query({
       query: TOKEN_INFO(address),
       fetchPolicy: 'network-only',
     });
 
-    const oneDayResult = await client.query({
+    const oneDayResult = await clientV2.query({
       query: TOKEN_INFO_OLD(oneDayBlock, address),
       fetchPolicy: 'network-only',
     });
 
-    const twoDayResult = await client.query({
+    const twoDayResult = await clientV2.query({
       query: TOKEN_INFO_OLD(twoDayBlock, address),
       fetchPolicy: 'network-only',
     });
 
-    const oneWeekResult = await client.query({
+    const oneWeekResult = await clientV2.query({
       query: TOKEN_INFO_OLD(oneWeekBlock, address),
       fetchPolicy: 'network-only',
     });
@@ -414,7 +416,7 @@ export const getTokenInfo = async (
 
           // HOTFIX for Aave
           if (data.id === '0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9') {
-            const aaveData = await client.query({
+            const aaveData = await clientV2.query({
               query: PAIR_DATA('0xdfc14d2af169b0d36c4eff567ada9b2e0cae044f'),
               fetchPolicy: 'network-only',
             });
@@ -444,17 +446,17 @@ export const getTopTokens = async (
   const twoDayBlock = await getBlockFromTimestamp(utcTwoDaysBack);
 
   try {
-    const current = await client.query({
+    const current = await clientV2.query({
       query: TOKENS_CURRENT(count),
       fetchPolicy: 'network-only',
     });
 
-    const oneDayResult = await client.query({
+    const oneDayResult = await clientV2.query({
       query: TOKENS_DYNAMIC(oneDayBlock, count),
       fetchPolicy: 'network-only',
     });
 
-    const twoDayResult = await client.query({
+    const twoDayResult = await clientV2.query({
       query: TOKENS_DYNAMIC(twoDayBlock, count),
       fetchPolicy: 'network-only',
     });
@@ -472,6 +474,8 @@ export const getTopTokens = async (
       },
       {},
     );
+
+    console.log('current', current);
 
     const bulkResults = await Promise.all(
       current &&
@@ -553,7 +557,7 @@ export const getTopTokens = async (
 
           // HOTFIX for Aave
           if (data.id === '0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9') {
-            const aaveData = await client.query({
+            const aaveData = await clientV2.query({
               query: PAIR_DATA('0xdfc14d2af169b0d36c4eff567ada9b2e0cae044f'),
               fetchPolicy: 'network-only',
             });
@@ -565,6 +569,7 @@ export const getTopTokens = async (
           return data;
         }),
     );
+    console.log('bul', bulkResults);
     return bulkResults;
   } catch (e) {
     console.log(e);
@@ -595,7 +600,7 @@ export const getTokenPairs = async (
 ) => {
   try {
     // fetch all current and historical data
-    const result = await client.query({
+    const result = await clientV2.query({
       query: TOKEN_DATA1(tokenAddress, tokenAddress1),
       fetchPolicy: 'network-only',
     });
@@ -612,7 +617,7 @@ export const getTokenPairs = async (
 export const getTokenPairs2 = async (tokenAddress: string) => {
   try {
     // fetch all current and historical data
-    const result = await client.query({
+    const result = await clientV2.query({
       query: TOKEN_DATA2(tokenAddress),
       fetchPolicy: 'network-only',
     });
@@ -625,7 +630,7 @@ export const getTokenPairs2 = async (tokenAddress: string) => {
 export const getTopPairs = async (count: number) => {
   try {
     // fetch all current and historical data
-    const result = await client.query({
+    const result = await clientV2.query({
       query: PAIRS_CURRENT(count),
       fetchPolicy: 'network-only',
     });
@@ -679,7 +684,7 @@ export const getIntervalTokenData = async (
 
     const result: any = await splitQuery(
       PRICES_BY_BLOCK,
-      client,
+      clientV2,
       [tokenAddress],
       blocks,
       50,
@@ -752,7 +757,7 @@ export const getPairAddress = async (
   token0Address: string,
   token1Address: string,
 ) => {
-  const pairData = await client.query({
+  const pairData = await clientV2.query({
     query: PAIR_ID(token0Address, token1Address),
   });
   const pairs =
@@ -763,6 +768,36 @@ export const getPairAddress = async (
   const pairId = pairs[0].id;
   const tokenReversed = pairData.data.pairs1.length > 0;
   return { pairId, tokenReversed };
+};
+
+export const isV2PairExists = async (pairAddress: string) => {
+  try {
+    const pair = await clientV2.query({
+      query: IS_PAIR_EXISTS(pairAddress.toLowerCase()),
+    });
+
+    if (pair.errors) {
+      return false;
+    }
+    return pair.data.pair;
+  } catch {
+    return false;
+  }
+};
+
+export const isV2TokenExists = async (tokenAddress: string) => {
+  try {
+    const token = await clientV2.query({
+      query: IS_TOKEN_EXISTS(tokenAddress.toLowerCase()),
+    });
+
+    if (token.errors) {
+      return false;
+    }
+    return token.data.token;
+  } catch {
+    return false;
+  }
 };
 
 export const getSwapTransactions = async (
@@ -801,7 +836,7 @@ export const getTokenChartData = async (
     let allFound = false;
     let skip = 0;
     while (!allFound) {
-      const result = await client.query({
+      const result = await clientV2.query({
         query: TOKEN_CHART,
         variables: {
           startTime: startTime,
@@ -870,7 +905,7 @@ export const getPairChartData = async (
     let allFound = false;
     let skip = 0;
     while (!allFound) {
-      const result = await client.query({
+      const result = await clientV2.query({
         query: PAIR_CHART,
         variables: {
           startTime: startTime,
@@ -969,7 +1004,7 @@ export const getRateData = async (
 
     const result = await splitQuery(
       HOURLY_PAIR_RATES,
-      client,
+      clientV2,
       [pairAddress],
       blocks,
       100,
@@ -1003,7 +1038,7 @@ export const getBulkPairData: (
   const a = await getBlocksFromTimestamps([t1, t2, tWeek]);
   const [{ number: b1 }, { number: b2 }, { number: bWeek }] = a;
   try {
-    const current = await client.query({
+    const current = await clientV2.query({
       query: PAIRS_BULK1,
       variables: {
         allPairs: pairList,
@@ -1013,7 +1048,7 @@ export const getBulkPairData: (
 
     const [oneDayResult, twoDayResult, oneWeekResult] = await Promise.all(
       [b1, b2, bWeek].map(async (block) => {
-        const result = await client.query({
+        const result = await clientV2.query({
           query: PAIRS_HISTORICAL_BULK(block, pairList),
           fetchPolicy: 'network-only',
         });
@@ -1048,7 +1083,7 @@ export const getBulkPairData: (
           let data = pair;
           let oneDayHistory = oneDayData?.[pair.id];
           if (!oneDayHistory) {
-            const newData = await client.query({
+            const newData = await clientV2.query({
               query: PAIR_DATA(pair.id, b1),
               fetchPolicy: 'network-only',
             });
@@ -1056,7 +1091,7 @@ export const getBulkPairData: (
           }
           let twoDayHistory = twoDayData?.[pair.id];
           if (!twoDayHistory) {
-            const newData = await client.query({
+            const newData = await clientV2.query({
               query: PAIR_DATA(pair.id, b2),
               fetchPolicy: 'network-only',
             });
@@ -1064,7 +1099,7 @@ export const getBulkPairData: (
           }
           let oneWeekHistory = oneWeekData?.[pair.id];
           if (!oneWeekHistory) {
-            const newData = await client.query({
+            const newData = await clientV2.query({
               query: PAIR_DATA(pair.id, bWeek),
               fetchPolicy: 'network-only',
             });
@@ -1236,7 +1271,7 @@ export async function getGlobalData(
     ]);
 
     // fetch the global data
-    const result = await client.query({
+    const result = await clientV2.query({
       query: GLOBAL_DATA(),
       fetchPolicy: 'network-only',
     });
@@ -1249,7 +1284,7 @@ export async function getGlobalData(
       { index: 'oneWeekData', block: oneWeekBlock?.number },
       { index: 'twoWeekData', block: twoWeekBlock?.number },
     ];
-    const allData = await client.query({
+    const allData = await clientV2.query({
       query: GLOBAL_ALLDATA(queryReq),
       fetchPolicy: 'network-only',
     });
@@ -1308,7 +1343,7 @@ export async function getAllPairsOnUniswap() {
     let pairs: any[] = [];
     let skipCount = 0;
     while (!allFound) {
-      const result = await client.query({
+      const result = await clientV2.query({
         query: ALL_PAIRS,
         variables: {
           skip: skipCount,
@@ -1333,7 +1368,7 @@ export async function getAllTokensOnUniswap() {
     let skipCount = 0;
     let tokens: any[] = [];
     while (!allFound) {
-      const result = await client.query({
+      const result = await clientV2.query({
         query: ALL_TOKENS,
         variables: {
           skip: skipCount,
@@ -1361,7 +1396,7 @@ export const getChartData = async (oldestDateToFetch: number) => {
 
   try {
     while (!allFound) {
-      const result = await client.query({
+      const result = await clientV2.query({
         query: GLOBAL_CHART,
         variables: {
           startTime: oldestDateToFetch,
