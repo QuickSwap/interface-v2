@@ -1,6 +1,9 @@
 import { Currency, Percent, TradeType } from '@uniswap/sdk-core';
 import { Trade as V2Trade } from '@uniswap/v2-sdk';
-import TransactionConfirmationModal, { ConfirmationModalContent, TransactionErrorContent } from 'components/v3/TransactionConfirmationModal';
+import TransactionConfirmationModal, {
+  ConfirmationModalContent,
+  TransactionErrorContent,
+} from 'components/v3/TransactionConfirmationModal';
 import { Trade as V3Trade } from 'lib/src/trade';
 import { ReactNode, useCallback, useMemo } from 'react';
 import SwapModalFooter from './SwapModalFooter';

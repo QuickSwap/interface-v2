@@ -4,7 +4,6 @@ import { Redirect, RouteComponentProps } from 'react-router-dom';
 import { ApplicationModal, setOpenModal } from 'state/application/actions';
 import { useAppDispatch } from 'state/hooks';
 
-
 // Redirects to swap but only replace the pathname
 export function RedirectPathToSwapOnly({ location }: RouteComponentProps) {
   return <Redirect to={{ ...location, pathname: '/swap' }} />;

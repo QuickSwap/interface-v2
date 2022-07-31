@@ -136,8 +136,7 @@ export default function CurrencyInputPanel({
           >
             {/* <Lock /> */}
             <TYPE.label fontSize='14px'>
-                Price is outside specified price range. Single-asset deposit
-                only.
+              Price is outside specified price range. Single-asset deposit only.
             </TYPE.label>
           </AutoColumnStyled>
         </FixedContainer>
@@ -216,13 +215,11 @@ export default function CurrencyInputPanel({
                             showBalance &&
                             balance &&
                             page === 'addLiq' &&
-                            +balance.toSignificant(4) < 0.0001 ? (
-                              `Balance: < 0.0001 ${currency.symbol}`
-                            ) : shallow && showBalance && balance ? (
-                              `Balance: ${balanceString} ${currency.symbol}`
-                            ) : (
-                              currency.symbol
-                            )}
+                            +balance.toSignificant(4) < 0.0001
+                              ? `Balance: < 0.0001 ${currency.symbol}`
+                              : shallow && showBalance && balance
+                              ? `Balance: ${balanceString} ${currency.symbol}`
+                              : currency.symbol}
                           </span>
                           {showBalance && balance && !shallow ? (
                             <span
@@ -293,9 +290,7 @@ export default function CurrencyInputPanel({
           currency &&
           swap && (
             <FiatRow page={page}>
-              <RowBetween>
-                'Updating...'
-              </RowBetween>
+              <RowBetween>'Updating...'</RowBetween>
             </FiatRow>
           )
         )}

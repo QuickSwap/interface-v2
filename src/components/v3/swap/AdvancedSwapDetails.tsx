@@ -74,11 +74,9 @@ export function AdvancedSwapDetails({
       <RowBetween>
         <RowFixed>
           <TYPE.black fontSize={12} fontWeight={400} color={theme.text2}>
-            {trade.tradeType === TradeType.EXACT_INPUT ? (
-              'Minimum received'
-            ) : (
-              'Maximum sent'
-            )}
+            {trade.tradeType === TradeType.EXACT_INPUT
+              ? 'Minimum received'
+              : 'Maximum sent'}
           </TYPE.black>
         </RowFixed>
         <TYPE.black textAlign='right' fontSize={12} color={theme.text1}>
