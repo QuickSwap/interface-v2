@@ -236,3 +236,7 @@ export interface SyrupInfo {
     totalStakedAmount?: TokenAmount,
   ) => TokenAmount | undefined;
 }
+
+export interface AnalyticsBasic {
+  isV3: boolean;
+}

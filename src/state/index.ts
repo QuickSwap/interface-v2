@@ -17,6 +17,7 @@ import dualFarms from './dualfarms/reducer';
 import syrups from './syrups/reducer';
 import burn from './burn/reducer';
 import multicall from './multicall/reducer';
+import analytics from './analytics/reducer';
 
 const PERSISTED_KEYS: string[] = [
   'user',
@@ -25,6 +26,7 @@ const PERSISTED_KEYS: string[] = [
   'farms',
   'dualFarms',
   'syrups',
+  'analytics',
   ...GELATO_PERSISTED_KEYS,
 ];
 
@@ -41,6 +43,7 @@ const store = configureStore({
     farms,
     dualFarms,
     syrups,
+    analytics,
     ...gelatoReducers,
   },
   middleware: (getDefaultMiddleware) => [
