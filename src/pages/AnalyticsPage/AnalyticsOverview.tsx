@@ -66,9 +66,19 @@ const AnalyticsOverview: React.FC = () => {
 
     const topPairsFn = isV3
       ? getTopPairsV3(GlobalConst.utils.ANALYTICS_PAIRS_COUNT)
-      : getBulkPairData(
-          GlobalConst.utils.ANALYTICS_PAIRS_COUNT,
-          ethPrice.price,
+      : getTopPairs(GlobalConst.utils.ANALYTICS_PAIRS_COUNT).then(
+          async (pairs) => {
+            const formattedPairs = pairs
+              ? pairs.map((pair: any) => {
+                  return pair.id;
+                })
+              : [];
+            const pairData = await getBulkPairData(
+              formattedPairs,
+              ethPrice.price,
+            );
+            return pairData;
+          },
         );
 
     topPairsFn.then((data) => {
