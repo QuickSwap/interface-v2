@@ -59,16 +59,16 @@ const AnalyticsTokenDetails: React.FC = () => {
           }
         });
 
-        // const tokenPairs = await getTokenPairs2(tokenAddress);
-        // const formattedPairs = tokenPairs
-        //   ? tokenPairs.map((pair: any) => {
-        //       return pair.id;
-        //     })
-        //   : [];
-        // const pairData = await getBulkPairData(formattedPairs, ethPrice.price);
-        // if (pairData) {
-        //   updateTokenPairs(pairData);
-        // }
+        const tokenPairs = await getTokenPairs2(tokenAddress);
+        const formattedPairs = tokenPairs
+          ? tokenPairs.map((pair: any) => {
+              return pair.id;
+            })
+          : [];
+        const pairData = await getBulkPairData(formattedPairs, ethPrice.price);
+        if (pairData) {
+          updateTokenPairs(pairData);
+        }
       }
     }
     fetchTokenInfo();

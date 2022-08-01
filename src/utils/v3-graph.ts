@@ -236,8 +236,6 @@ export async function getTokenInfoV3(
     const parsedTokens24 = parseTokensData(tokens24);
     const parsedTokens48 = parseTokensData(tokens48);
 
-    console.log(tokensCurrent, parsedTokens);
-
     const current = parsedTokens[address];
     const oneDay = parsedTokens24[address];
     const twoDay = parsedTokens48[address];
@@ -468,6 +466,108 @@ export async function getTopPairsV3(count = 500) {
     });
 
     return formatted;
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+export async function getPairInfoV3(address: string) {
+  try {
+    const utcCurrentTime = dayjs();
+
+    const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix();
+    const utcTwoDaysBack = utcCurrentTime.subtract(2, 'day').unix();
+    const utcOneWeekBack = utcCurrentTime.subtract(1, 'week').unix();
+
+    const [
+      oneDayBlock,
+      twoDayBlock,
+      oneWeekBlock,
+    ] = await getBlocksFromTimestamps([
+      utcOneDayBack,
+      utcTwoDaysBack,
+      utcOneWeekBack,
+    ]);
+
+    const pairsCurrent = await fetchPairsByTime(undefined, [address]);
+    const pairs24 = await fetchPairsByTime(oneDayBlock.number, [address]);
+    const pairs48 = await fetchPairsByTime(twoDayBlock.number, [address]);
+    const pairsWeek = await fetchPairsByTime(oneWeekBlock.number, [address]);
+
+    const parsedPairs = parsePairsData(pairsCurrent);
+    const parsedPairs24 = parsePairsData(pairs24);
+    const parsedPairs48 = parsePairsData(pairs48);
+    const parsedPairsWeek = parsePairsData(pairsWeek);
+
+    const aprs: any = await fetchPoolsAPR();
+    const farmingAprs: any = await fetchEternalFarmAPR();
+
+    const current = parsedPairs[address];
+    const oneDay = parsedPairs24[address];
+    const twoDay = parsedPairs48[address];
+    const week = parsedPairsWeek[address];
+
+    const manageUntrackedVolume =
+      +current.volumeUSD <= 1 ? 'untrackedVolumeUSD' : 'volumeUSD';
+    const manageUntrackedTVL =
+      +current.totalValueLockedUSD <= 1
+        ? 'totalValueLockedUSDUntracked'
+        : 'totalValueLockedUSD';
+
+    const [oneDayVolumeUSD, oneDayVolumeChangeUSD] =
+      current && oneDay && twoDay
+        ? get2DayPercentChange(
+            current[manageUntrackedVolume],
+            oneDay[manageUntrackedVolume],
+            twoDay[manageUntrackedVolume],
+          )
+        : current && oneDay
+        ? [
+            parseFloat(current[manageUntrackedVolume]) -
+              parseFloat(oneDay[manageUntrackedVolume]),
+            0,
+          ]
+        : current
+        ? [parseFloat(current[manageUntrackedVolume]), 0]
+        : [0, 0];
+
+    const oneWeekVolumeUSD =
+      current && week
+        ? parseFloat(current[manageUntrackedVolume]) -
+          parseFloat(week[manageUntrackedVolume])
+        : current
+        ? parseFloat(current[manageUntrackedVolume])
+        : 0;
+
+    const tvlUSD = current ? parseFloat(current[manageUntrackedTVL]) : 0;
+    const tvlUSDChange = getPercentChange(
+      current ? current[manageUntrackedTVL] : undefined,
+      oneDay ? oneDay[manageUntrackedTVL] : undefined,
+    );
+    const aprPercent = aprs[address] ? aprs[address].toFixed(2) : 0;
+    const farmingApr = farmingAprs[address]
+      ? farmingAprs[address].toFixed(2)
+      : 0;
+
+    return [
+      {
+        token0: current.token0,
+        token1: current.token1,
+        fee: current.fee,
+        exists: !!current,
+        id: address,
+        oneDayVolumeUSD,
+        oneDayVolumeChangeUSD,
+        oneWeekVolumeUSD,
+        trackedReserveUSD: tvlUSD,
+        tvlUSDChange,
+        reserve0: current.totalValueLockedToken0,
+        reserve1: current.totalValueLockedToken1,
+        totalValueLockedUSD: current[manageUntrackedTVL],
+        apr: aprPercent,
+        farmingApr: farmingApr,
+      },
+    ];
   } catch (err) {
     console.error(err);
   }

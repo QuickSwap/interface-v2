@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Box, Divider } from '@material-ui/core';
 import { Link } from 'react-router-dom';
 import { ChainId, Token } from '@uniswap/sdk';
@@ -25,6 +25,7 @@ const PairTable: React.FC<PairsTableProps> = ({
 }) => {
   const { t } = useTranslation();
   const isV3 = useIsV3();
+  const version = useMemo(() => `${isV3 ? `v3` : 'v2'}`, [isV3]);
 
   const v2SpecificCells = [
     {
@@ -143,7 +144,10 @@ const PairTable: React.FC<PairsTableProps> = ({
               <StarUnchecked />
             )}
           </Box>
-          <Link className='no-decoration' to={`/analytics/pair/${pair.id}`}>
+          <Link
+            className='no-decoration'
+            to={`/analytics/${version}/pair/${pair.id}`}
+          >
             <Box className='flex items-center'>
               <DoubleCurrencyLogo
                 currency0={token0}
@@ -264,7 +268,10 @@ const PairTable: React.FC<PairsTableProps> = ({
                 <StarUnchecked />
               )}
             </Box>
-            <Link className='no-decoration' to={`/analytics/pair/${pair.id}`}>
+            <Link
+              className='no-decoration'
+              to={`/analytics/${version}/pair/${pair.id}`}
+            >
               <Box className='flex items-center'>
                 <DoubleCurrencyLogo
                   currency0={token0}
