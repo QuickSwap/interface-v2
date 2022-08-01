@@ -101,23 +101,30 @@ const checkAndApproveCToken = async (
     .pow(sdk.web3.utils.toBN(256))
     .sub(sdk.web3.utils.toBN(1));
 
-  const hasApprovedEnough = sdk.web3.utils
-    .toBN(
-      await underlyingContract.methods
-        .allowance(address, cToken.address)
-        .call(),
-    )
-    .gte(amountBN);
+  try {
+    const hasApprovedEnough = sdk.web3.utils
+      .toBN(
+        await underlyingContract.methods
+          .allowance(address, cToken.address)
+          .call(),
+      )
+      .gte(amountBN);
 
-  if (!hasApprovedEnough) {
-    const call = underlyingContract.methods.approve(cToken.address, max);
-    const { gasPrice, estimatedGas } = await fetchGasForCall(
-      call,
-      undefined,
-      address,
-      sdk,
-    );
-    await call.send({ from: address, gasPrice, estimatedGas });
+    if (!hasApprovedEnough) {
+      const call = underlyingContract.methods.approve(cToken.address, max);
+      const { gasPrice, estimatedGas } = await fetchGasForCall(
+        call,
+        undefined,
+        address,
+        sdk,
+      );
+      await call.send({ from: address, gasPrice, estimatedGas });
+      return true;
+    }
+    return true;
+  } catch (e) {
+    console.log(e);
+    return false;
   }
 };
 
@@ -140,6 +147,7 @@ export const supply = async (
     await asset.cToken.contract.methods.comptroller().call(),
   );
 
+  let collateralEnabled = false;
   if (!asset.membership && enableAsCollateral) {
     await testForComptrollerErrorAndSend(
       comptroller.contract.methods.enterMarkets([asset.cToken.address]),
@@ -147,8 +155,12 @@ export const supply = async (
       'Cannot enter this market right now!',
       asset.cToken.sdk,
     );
+    collateralEnabled = true;
+  } else {
+    collateralEnabled = true;
   }
 
+  if (!collateralEnabled) return;
   if (isETH) {
     const ethBalance = await sdk.web3.eth.getBalance(address);
 
@@ -178,7 +190,8 @@ export const supply = async (
       return txObj;
     }
   } else {
-    await checkAndApproveCToken(asset, amountBN, address);
+    const approved = await checkAndApproveCToken(asset, amountBN, address);
+    if (!approved) return;
     const txObj = await testForCTokenErrorAndSend(
       cToken.contract.methods.mint(amountBN),
       address,
