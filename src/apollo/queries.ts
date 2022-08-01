@@ -426,10 +426,10 @@ export const TOKEN_DATA1: any = (
 export const TOKEN_DATA2: any = (tokenAddress: string) => {
   const queryString = `
     query tokens {
-      pairs0: pairs(where: {token0: "${tokenAddress}"}, first: 50, orderBy: reserveUSD, orderDirection: desc){
+      pairs0: pairs(where: {token0: "${tokenAddress}"}, first: 50, orderBy: trackedReserveETH, orderDirection: desc){
         id
       }
-      pairs1: pairs(where: {token1: "${tokenAddress}"}, first: 50, orderBy: reserveUSD, orderDirection: desc){
+      pairs1: pairs(where: {token1: "${tokenAddress}"}, first: 50, orderBy: trackedReserveETH, orderDirection: desc){
         id
       }
     }
