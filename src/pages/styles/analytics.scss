@@ -173,3 +173,33 @@
     }
   }
 }
+
+.analyticsDetailsInfoV3 {
+  margin: 16px 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  & > div {
+    justify-content: space-between;
+    flex-wrap: wrap;
+    &:not(:first-child) {
+      margin-top: 32px;
+    }
+    & > small {
+      
+    }
+    @include media("screen", "<tablet") {
+      width: 100%;
+    }
+    @include media("screen", "<phone") {
+      &:not(:first-child) {
+        margin-top: 0;
+      }
+      & > div {
+        width: 100%;
+        text-align: left;
+        margin: 16px 0;
+      }
+    }
+  }
+}

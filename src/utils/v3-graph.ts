@@ -206,6 +206,113 @@ export async function getTopTokensV3(
   }
 }
 
+export async function getTokenInfoV3(
+  ethPrice: number,
+  ethPrice24H: number,
+  address: string,
+): Promise<any> {
+  try {
+    const utcCurrentTime = dayjs();
+
+    const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix();
+    const utcTwoDaysBack = utcCurrentTime.subtract(2, 'day').unix();
+    const utcOneWeekBack = utcCurrentTime.subtract(7, 'day').unix();
+
+    const [
+      oneDayBlock,
+      twoDayBlock,
+      oneWeekBlock,
+    ] = await getBlocksFromTimestamps([
+      utcOneDayBack,
+      utcTwoDaysBack,
+      utcOneWeekBack,
+    ]);
+
+    const tokensCurrent = await fetchTokensByTime(undefined, [address]);
+    const tokens24 = await fetchTokensByTime(oneDayBlock.number, [address]);
+    const tokens48 = await fetchTokensByTime(twoDayBlock.number, [address]);
+
+    const parsedTokens = parseTokensData(tokensCurrent);
+    const parsedTokens24 = parseTokensData(tokens24);
+    const parsedTokens48 = parseTokensData(tokens48);
+
+    console.log(tokensCurrent, parsedTokens);
+
+    const current = parsedTokens[address];
+    const oneDay = parsedTokens24[address];
+    const twoDay = parsedTokens48[address];
+
+    const manageUntrackedVolume =
+      +current.volumeUSD <= 1 ? 'untrackedVolumeUSD' : 'volumeUSD';
+    const manageUntrackedTVL =
+      +current.totalValueLockedUSD <= 1
+        ? 'totalValueLockedUSDUntracked'
+        : 'totalValueLockedUSD';
+
+    const [oneDayVolumeUSD, oneDayVolumeChangeUSD] =
+      current && oneDay && twoDay
+        ? get2DayPercentChange(
+            current[manageUntrackedVolume],
+            oneDay[manageUntrackedVolume],
+            twoDay[manageUntrackedVolume],
+          )
+        : current
+        ? [parseFloat(current[manageUntrackedVolume]), 0]
+        : [0, 0];
+
+    const tvlUSD = current ? parseFloat(current[manageUntrackedTVL]) : 0;
+    const tvlUSDChange = getPercentChange(
+      current ? current[manageUntrackedTVL] : undefined,
+      oneDay ? oneDay[manageUntrackedTVL] : undefined,
+    );
+    const tvlToken = current ? parseFloat(current[manageUntrackedTVL]) : 0;
+    const priceUSD = current ? parseFloat(current.derivedMatic) * ethPrice : 0;
+    const priceUSDOneDay = oneDay
+      ? parseFloat(oneDay.derivedMatic) * ethPrice24H
+      : 0;
+
+    const priceChangeUSD =
+      priceUSD && priceUSDOneDay
+        ? getPercentChange(
+            Number(priceUSD.toString()),
+            Number(priceUSDOneDay.toString()),
+          )
+        : 0;
+
+    const txCount =
+      current && oneDay
+        ? parseFloat(current.txCount) - parseFloat(oneDay.txCount)
+        : current
+        ? parseFloat(current.txCount)
+        : 0;
+    const feesUSD =
+      current && oneDay
+        ? parseFloat(current.feesUSD) - parseFloat(oneDay.feesUSD)
+        : current
+        ? parseFloat(current.feesUSD)
+        : 0;
+
+    return {
+      exists: !!current,
+      id: address,
+      name: current ? formatTokenName(address, current.name) : '',
+      symbol: current ? formatTokenSymbol(address, current.symbol) : '',
+      decimals: current ? current.decimals : 18,
+      oneDayVolumeUSD,
+      oneDayVolumeChangeUSD,
+      txCount,
+      tvlUSD,
+      tvlUSDChange,
+      feesUSD,
+      tvlToken,
+      priceUSD,
+      priceChangeUSD,
+    };
+  } catch (err) {
+    console.error(err);
+  }
+}
+
 export async function getAllTokensV3() {
   try {
     let allFound = false;
