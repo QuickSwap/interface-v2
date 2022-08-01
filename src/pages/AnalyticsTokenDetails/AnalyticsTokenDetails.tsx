@@ -12,17 +12,19 @@ import {
   getTokenInfo,
   getTokenPairs2,
   getBulkPairData,
+  getTokenFromAddress,
 } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import { CurrencyLogo, PairTable } from 'components';
 import { useBookmarkTokens, useEthPrice } from 'state/application/hooks';
 import { ReactComponent as StarChecked } from 'assets/images/StarChecked.svg';
 import { ReactComponent as StarUnchecked } from 'assets/images/StarUnchecked.svg';
-import { getAddress } from '@ethersproject/address';
 import { GlobalConst } from 'constants/index';
 import AnalyticsHeader from 'pages/AnalyticsPage/AnalyticsHeader';
 import AnalyticsTokenChart from './AnalyticsTokenChart';
 import { useTranslation } from 'react-i18next';
+import { useSelectedTokenList } from 'state/lists/hooks';
+import { getAddress } from 'ethers/lib/utils';
 
 const AnalyticsTokenDetails: React.FC = () => {
   const { t } = useTranslation();
@@ -31,8 +33,11 @@ const AnalyticsTokenDetails: React.FC = () => {
   const tokenAddress = match.params.id;
   const [token, setToken] = useState<any>(null);
   const { chainId } = useActiveWeb3React();
+  const tokenMap = useSelectedTokenList();
   const currency = token
-    ? new Token(ChainId.MATIC, getAddress(token.id), token.decimals)
+    ? getTokenFromAddress(tokenAddress, chainId ?? ChainId.MATIC, tokenMap, [
+        new Token(ChainId.MATIC, getAddress(token.id), token.decimals),
+      ])
     : undefined;
   const [tokenPairs, updateTokenPairs] = useState<any>(null);
   const {

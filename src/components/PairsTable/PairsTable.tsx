@@ -9,7 +9,8 @@ import { useBookmarkPairs } from 'state/application/hooks';
 import { ReactComponent as StarChecked } from 'assets/images/StarChecked.svg';
 import { ReactComponent as StarUnchecked } from 'assets/images/StarUnchecked.svg';
 import { useTranslation } from 'react-i18next';
-import { formatNumber } from 'utils';
+import { formatNumber, getTokenFromAddress } from 'utils';
+import { useSelectedTokenList } from 'state/lists/hooks';
 
 interface PairsTableProps {
   data: any[];
@@ -69,18 +70,33 @@ const PairTable: React.FC<PairsTableProps> = ({
     addBookmarkPair,
     removeBookmarkPair,
   } = useBookmarkPairs();
+  const tokenMap = useSelectedTokenList();
   const mobileHTML = (pair: any, index: number) => {
-    const token0 = new Token(
+    const token0 = getTokenFromAddress(
+      pair.token0.id,
       ChainId.MATIC,
-      getAddress(pair.token0.id),
-      Number(pair.token0.decimals),
-      pair.token0.symbol,
+      tokenMap,
+      [
+        new Token(
+          ChainId.MATIC,
+          getAddress(pair.token0.id),
+          Number(pair.token0.decimals),
+          pair.token0.symbol,
+        ),
+      ],
     );
-    const token1 = new Token(
+    const token1 = getTokenFromAddress(
+      pair.token1.id,
       ChainId.MATIC,
-      getAddress(pair.token1.id),
-      Number(pair.token1.decimals),
-      pair.token1.symbol,
+      tokenMap,
+      [
+        new Token(
+          ChainId.MATIC,
+          getAddress(pair.token1.id),
+          Number(pair.token1.decimals),
+          pair.token1.symbol,
+        ),
+      ],
     );
     const liquidity = pair.trackedReserveUSD
       ? pair.trackedReserveUSD
@@ -152,17 +168,31 @@ const PairTable: React.FC<PairsTableProps> = ({
   };
 
   const desktopHTML = (pair: any) => {
-    const token0 = new Token(
+    const token0 = getTokenFromAddress(
+      pair.token0.id,
       ChainId.MATIC,
-      getAddress(pair.token0.id),
-      Number(pair.token0.decimals),
-      pair.token0.symbol,
+      tokenMap,
+      [
+        new Token(
+          ChainId.MATIC,
+          getAddress(pair.token0.id),
+          Number(pair.token0.decimals),
+          pair.token0.symbol,
+        ),
+      ],
     );
-    const token1 = new Token(
+    const token1 = getTokenFromAddress(
+      pair.token1.id,
       ChainId.MATIC,
-      getAddress(pair.token1.id),
-      Number(pair.token1.decimals),
-      pair.token1.symbol,
+      tokenMap,
+      [
+        new Token(
+          ChainId.MATIC,
+          getAddress(pair.token1.id),
+          Number(pair.token1.decimals),
+          pair.token1.symbol,
+        ),
+      ],
     );
     const liquidity = pair.trackedReserveUSD
       ? pair.trackedReserveUSD

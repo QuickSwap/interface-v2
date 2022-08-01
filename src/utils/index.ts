@@ -1725,8 +1725,10 @@ export function getTokenFromAddress(
   tokenMap: TokenAddressMap,
   tokens: Token[],
 ) {
-  const wrappedTokenInfo = tokenMap[chainId][tokenAddress];
-  if (!wrappedTokenInfo) {
+  const tokenIndex = Object.keys(tokenMap[chainId]).findIndex(
+    (address) => address.toLowerCase() === tokenAddress.toLowerCase(),
+  );
+  if (tokenIndex === -1) {
     console.log('missing from token list:' + tokenAddress);
     const token = tokens.find(
       (item) => item.address.toLowerCase() === tokenAddress.toLowerCase(),
@@ -1743,7 +1745,7 @@ export function getTokenFromAddress(
     return token;
   }
 
-  return wrappedTokenInfo;
+  return Object.values(tokenMap[chainId])[tokenIndex];
 }
 
 export function getChartDates(chartData: any[] | null, durationIndex: number) {
