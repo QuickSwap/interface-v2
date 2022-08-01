@@ -2,7 +2,7 @@ import styled, { css } from 'styled-components/macro';
 import { ButtonGray } from '../Button';
 import { darken } from 'polished';
 // @ts-ignore
-import { ReactComponent as DropDown } from '../../assets/images/dropdown.svg';
+import { ReactComponent as DropDown } from 'assets/images/dropdown.svg';
 import { AutoColumn } from '../Column';
 import NumericalInput from 'components/NumericalInput';
 

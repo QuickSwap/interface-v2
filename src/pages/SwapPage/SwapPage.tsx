@@ -16,6 +16,9 @@ import SwapProInfo from './SwapProInfo';
 import SwapProFilter from './SwapProFilter';
 import { useTranslation } from 'react-i18next';
 import 'pages/styles/swap.scss';
+import VersionToggle from 'components/Toggle/VersionToggle';
+import useParsedQueryString from 'hooks/useParsedQueryString';
+import SwapV3Page from './V3/Swap';
 
 const SwapPage: React.FC = () => {
   const { isProMode, updateIsProMode } = useIsProMode();
@@ -93,18 +96,22 @@ const SwapPage: React.FC = () => {
   }, [pairId, isProMode]);
 
   const { t } = useTranslation();
+  const parsedQuery = useParsedQueryString();
+  const swapVersion =
+    parsedQuery && parsedQuery.version ? (parsedQuery.version as string) : 'v3';
 
   return (
     <Box width='100%' mb={3} id='swap-page'>
-      {!isProMode && (
-        <Box className='pageHeading'>
-          <h4>{t('swap')}</h4>
-          <Box className='helpWrapper'>
-            <small>{t('help')}</small>
-            <HelpIcon />
-          </Box>
+      <Box className='pageHeading'>
+        <h4>{t('swap')}</h4>
+        <VersionToggle baseUrl={'swap'} />
+        <Box className='helpWrapper'>
+          <small>{t('help')}</small>
+          <HelpIcon />
         </Box>
-      )}
+      </Box>
+      { swapVersion !== 'v3' && (
+        <>
       {!isProMode ? (
         <Grid container spacing={4}>
           <Grid item xs={12} sm={12} md={6} lg={5}>
@@ -209,6 +216,11 @@ const SwapPage: React.FC = () => {
             </Box>
           )}
         </Box>
+      )}
+      </>
+      )}
+      {swapVersion === 'v3' && (
+          <SwapV3Page></SwapV3Page>
       )}
     </Box>
   );

@@ -3,7 +3,7 @@ import { Trade as V3Trade } from 'lib/src/trade';
 import JSBI from 'jsbi';
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { ArrowDown, CheckCircle, HelpCircle, Info } from 'react-feather';
-import { RouteComponentProps } from 'react-router-dom';
+import { RouteComponentProps, useHistory } from 'react-router-dom';
 import { Text } from 'rebass';
 import { ThemeContext } from 'styled-components/macro';
 import { Helmet } from 'react-helmet';
@@ -69,8 +69,9 @@ import { Field } from 'state/swap/v3/actions';
 import confirmPriceImpactWithoutFee from 'components/v3/swap/confirmPriceImpactWithoutFee';
 import ConfirmSwapModal from 'components/v3/swap/ConfirmSwapModal';
 
-export default function Swap({ history }: RouteComponentProps) {
+const SwapV3Page: React.FC = () => {
   const { account } = useActiveWeb3React();
+  const history = useHistory();
   const loadedUrlParams = useDefaultsFromURLSearch();
 
   // token warning stuff
@@ -856,3 +857,5 @@ export default function Swap({ history }: RouteComponentProps) {
     </>
   );
 }
+
+export default SwapV3Page;

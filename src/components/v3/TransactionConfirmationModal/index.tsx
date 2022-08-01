@@ -14,9 +14,9 @@ import {
 import { ButtonLight, ButtonPrimary } from '../Button';
 import { AutoColumn } from '../Column';
 // @ts-ignore
-import Circle from '../../assets/images/blue-loader.svg';
+import Circle from 'assets/images/blue-loader.svg';
 // @ts-ignore
-import MetaMaskLogo from '../../assets/svg/metamask-logo.svg';
+import MetaMaskLogo from 'assets/svg/metamask-logo.svg';
 import { useActiveWeb3React } from 'hooks';
 import useAddTokenToMetamask from 'hooks/v3/useAddTokenToMetamask';
 import {
