@@ -382,7 +382,7 @@ export const TOKEN_DATA1: any = (
           id
         }
       }
-      pairs1: pairs(where: {token0: "${tokenAddress}", token1_not: "${tokenAddress1}"}, first: 2, orderBy: reserveUSD, orderDirection: desc){
+      pairs1: pairs(where: {token0: "${tokenAddress}", token1_not: "${tokenAddress1}"}, first: 2, orderBy: trackedReserveETH, orderDirection: desc){
         id
         token0 {
           id
@@ -391,7 +391,7 @@ export const TOKEN_DATA1: any = (
           id
         }
       }
-      pairs2: pairs(where: {token1: "${tokenAddress}", token0_not: "${tokenAddress1}"}, first: 2, orderBy: reserveUSD, orderDirection: desc){
+      pairs2: pairs(where: {token1: "${tokenAddress}", token0_not: "${tokenAddress1}"}, first: 2, orderBy: trackedReserveETH, orderDirection: desc){
         id
         token0 {
           id
@@ -400,7 +400,7 @@ export const TOKEN_DATA1: any = (
           id
         }
       }
-      pairs3: pairs(where: {token0: "${tokenAddress1}", token1_not: "${tokenAddress}"}, first: 2, orderBy: reserveUSD, orderDirection: desc){
+      pairs3: pairs(where: {token0: "${tokenAddress1}", token1_not: "${tokenAddress}"}, first: 2, orderBy: trackedReserveETH, orderDirection: desc){
         id
         token0 {
           id
@@ -409,7 +409,7 @@ export const TOKEN_DATA1: any = (
           id
         }
       }
-      pairs4: pairs(where: {token1: "${tokenAddress1}", token0_not: "${tokenAddress}"}, first: 2, orderBy: reserveUSD, orderDirection: desc){
+      pairs4: pairs(where: {token1: "${tokenAddress1}", token0_not: "${tokenAddress}"}, first: 2, orderBy: trackedReserveETH, orderDirection: desc){
         id
         token0 {
           id
