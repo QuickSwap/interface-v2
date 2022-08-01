@@ -8,10 +8,10 @@ export enum Field {
 export const selectCurrency = createAction<{
   field: Field;
   currencyId: string;
-}>('swap/selectCurrency');
-export const switchCurrencies = createAction<void>('swap/switchCurrencies');
+}>('swapV3/selectCurrency');
+export const switchCurrencies = createAction<void>('swapV3/switchCurrencies');
 export const typeInput = createAction<{ field: Field; typedValue: string }>(
-  'swap/typeInput',
+  'swapV3/typeInput',
 );
 export const replaceSwapState = createAction<{
   field: Field;
@@ -19,7 +19,7 @@ export const replaceSwapState = createAction<{
   inputCurrencyId?: string;
   outputCurrencyId?: string;
   recipient: string | null;
-}>('swap/replaceSwapState');
+}>('swapV3/replaceSwapState');
 export const setRecipient = createAction<{ recipient: string | null }>(
-  'swap/setRecipient',
+  'swapV3/setRecipient',
 );

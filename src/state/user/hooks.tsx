@@ -31,13 +31,21 @@ function serializeToken(token: Token): SerializedToken {
 }
 
 function deserializeToken(serializedToken: SerializedToken): Token {
-  return new Token(
+  const token = new Token(
     serializedToken.chainId,
     serializedToken.address,
     serializedToken.decimals,
     serializedToken.symbol,
     serializedToken.name,
   );
+
+  //HACK: Since we're adding default properties to the token we know its not native
+  // adding these properties enables support for the new tokens in the Uniswap SDK
+  const extendedToken = token as any;
+  extendedToken.isToken = true;
+  extendedToken.isNative = false;
+
+  return extendedToken;
 }
 
 export function useIsDarkMode(): boolean {
