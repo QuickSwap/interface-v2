@@ -2,9 +2,12 @@ import { clientV3 } from 'apollo/client';
 import {
   ALL_PAIRS_V3,
   ALL_TOKENS_V3,
+  FETCH_TICKS,
   GLOBAL_CHART_V3,
   GLOBAL_DATA_V3,
   PAIRS_FROM_ADDRESSES_V3,
+  PAIR_CHART_V3,
+  PAIR_FEE_CHART_V3,
   TOKENS_FROM_ADDRESSES_V3,
   TOKEN_CHART_V3,
   TOP_POOLS_V3,
@@ -18,6 +21,10 @@ import {
 } from 'utils';
 import dayjs from 'dayjs';
 import { fetchEternalFarmAPR, fetchPoolsAPR } from './aprApi';
+import { Token } from '@uniswap/sdk-core';
+import { TickMath, tickToPrice } from '@uniswap/v3-sdk';
+import { JSBI } from '@uniswap/sdk';
+import keyBy from 'lodash.keyby';
 
 //Global
 
@@ -793,6 +800,358 @@ export async function getAllPairsV3() {
   } catch (e) {
     console.log(e);
   }
+}
+
+export const getPairChartDataV3 = async (
+  pairAddress: string,
+  startTime: number,
+) => {
+  let data: any[] = [];
+  const utcEndTime = dayjs.utc();
+  try {
+    let allFound = false;
+    let skip = 0;
+    while (!allFound) {
+      const result = await clientV3.query({
+        query: PAIR_CHART_V3,
+        variables: {
+          startTime: startTime,
+          pairAddress: pairAddress,
+          skip,
+        },
+        fetchPolicy: 'cache-first',
+      });
+      skip += 1000;
+      console.log(result.data);
+      data = data.concat(result.data.poolDayDatas);
+      if (result.data.poolDayDatas.length < 1000) {
+        allFound = true;
+      }
+    }
+
+    const dayIndexSet = new Set();
+    const dayIndexArray: any[] = [];
+    const oneDay = 24 * 60 * 60;
+    data.forEach((dayData, i) => {
+      // add the day index to the set of days
+      dayIndexSet.add((data[i].date / oneDay).toFixed(0));
+      dayIndexArray.push(data[i]);
+      dayData.dailyVolumeUSD = Number(dayData.volumeUSD);
+      dayData.reserveUSD = Number(dayData.tvlUSD);
+      dayData.token0Price = dayData.token0Price;
+    });
+
+    if (data[0]) {
+      // fill in empty days
+      let timestamp = data[0].date ? data[0].date : startTime;
+      let latestLiquidityUSD = data[0].tvlUSD;
+      let latestTokenPrice = data[0].token0Price;
+      let index = 1;
+      while (timestamp < utcEndTime.unix() - oneDay) {
+        const nextDay = timestamp + oneDay;
+        const currentDayIndex = (nextDay / oneDay).toFixed(0);
+        if (!dayIndexSet.has(currentDayIndex)) {
+          data.push({
+            date: nextDay,
+            dayString: nextDay,
+            dailyVolumeUSD: 0,
+            reserveUSD: latestLiquidityUSD,
+            token0Price: latestTokenPrice,
+          });
+        } else {
+          latestLiquidityUSD = dayIndexArray[index].tvlUSD;
+          latestTokenPrice = dayIndexArray[index].token0Price;
+          index = index + 1;
+        }
+        timestamp = nextDay;
+      }
+    }
+
+    data = data.sort((a, b) => (parseInt(a.date) > parseInt(b.date) ? 1 : -1));
+  } catch (e) {
+    console.log(e);
+  }
+
+  return data;
+};
+
+export async function getPairChartFees(address: string, startTime: number) {
+  let data: any[] = [];
+  const utcEndTime = dayjs.utc();
+  try {
+    let allFound = false;
+    let skip = 0;
+    while (!allFound) {
+      const result = await clientV3.query({
+        query: PAIR_FEE_CHART_V3(),
+        fetchPolicy: 'network-only',
+        variables: { address, startTime, skip },
+      });
+      skip += 1000;
+      data = data.concat(result.data.feeHourDatas);
+      if (result.data.feeHourDatas.length < 1000) {
+        allFound = true;
+      }
+    }
+
+    console.log('aaa', data);
+
+    const dayIndexSet = new Set();
+    const dayIndexArray: any[] = [];
+    const oneDay = 24 * 60 * 60;
+    data.forEach((dayData, i) => {
+      // add the day index to the set of days
+      dayIndexSet.add((Number(data[i].timestamp) / oneDay).toFixed(0));
+      dayIndexArray.push(data[i]);
+      dayData.fee = Number(dayData.fee);
+    });
+
+    if (data[0]) {
+      // fill in empty days
+      let timestamp = data[0].timestamp ? Number(data[0].timestamp) : startTime;
+      let latestFee = data[0].fee;
+      let index = 1;
+      while (timestamp < utcEndTime.unix() - oneDay) {
+        console.log(timestamp);
+        const nextDay = timestamp + oneDay;
+        const currentDayIndex = (nextDay / oneDay).toFixed(0);
+        if (!dayIndexSet.has(currentDayIndex)) {
+          data.push({
+            timestamp: nextDay,
+            dayString: nextDay,
+            fee: latestFee,
+          });
+        } else {
+          latestFee = dayIndexArray[index].fee;
+          index = index + 1;
+        }
+        timestamp = nextDay;
+      }
+    }
+
+    data = data.sort((a, b) =>
+      parseInt(a.timestamp) > parseInt(b.timestamp) ? 1 : -1,
+    );
+  } catch (e) {
+    console.log(e);
+  }
+
+  return data;
+}
+
+export async function getLiquidityChart(address: string) {
+  const numSurroundingTicks = 300;
+  const PRICE_FIXED_DIGITS = 8;
+
+  const pool = await clientV3.query({
+    query: PAIRS_FROM_ADDRESSES_V3(undefined, [address]),
+  });
+
+  const {
+    tick: poolCurrentTick,
+    liquidity,
+    token0: { id: token0Address, decimals: token0Decimals },
+    token1: { id: token1Address, decimals: token1Decimals },
+  } = pool.data.pools[0];
+
+  const poolCurrentTickIdx = parseInt(poolCurrentTick);
+  const tickSpacing = 60;
+
+  const activeTickIdx =
+    Math.floor(poolCurrentTickIdx / tickSpacing) * tickSpacing;
+
+  const tickIdxLowerBound = activeTickIdx - numSurroundingTicks * tickSpacing;
+  const tickIdxUpperBound = activeTickIdx + numSurroundingTicks * tickSpacing;
+
+  async function fetchInitializedTicks(
+    poolAddress: string,
+    tickIdxLowerBound: number,
+    tickIdxUpperBound: number,
+  ) {
+    let surroundingTicks: any = [];
+    let surroundingTicksResult: any = [];
+
+    let skip = 0;
+    do {
+      const ticks = await clientV3.query({
+        query: FETCH_TICKS(),
+        fetchPolicy: 'cache-first',
+        variables: {
+          poolAddress,
+          tickIdxLowerBound,
+          tickIdxUpperBound,
+          skip,
+        },
+      });
+
+      surroundingTicks = ticks.data.ticks;
+      surroundingTicksResult = surroundingTicksResult.concat(surroundingTicks);
+      skip += 1000;
+    } while (surroundingTicks.length > 0);
+
+    return { ticks: surroundingTicksResult, loading: false, error: false };
+  }
+
+  const initializedTicksResult = await fetchInitializedTicks(
+    address,
+    tickIdxLowerBound,
+    tickIdxUpperBound,
+  );
+  if (initializedTicksResult.error || initializedTicksResult.loading) {
+    return {
+      error: initializedTicksResult.error,
+      loading: initializedTicksResult.loading,
+    };
+  }
+
+  const { ticks: initializedTicks } = initializedTicksResult;
+
+  const tickIdxToInitializedTick = keyBy(initializedTicks, 'tickIdx');
+
+  const token0 = new Token(137, token0Address, parseInt(token0Decimals));
+  const token1 = new Token(137, token1Address, parseInt(token1Decimals));
+
+  let activeTickIdxForPrice = activeTickIdx;
+  if (activeTickIdxForPrice < TickMath.MIN_TICK) {
+    activeTickIdxForPrice = TickMath.MIN_TICK;
+  }
+  if (activeTickIdxForPrice > TickMath.MAX_TICK) {
+    activeTickIdxForPrice = TickMath.MAX_TICK;
+  }
+
+  const activeTickProcessed = {
+    liquidityActive: JSBI.BigInt(liquidity),
+    tickIdx: activeTickIdx,
+    liquidityNet: JSBI.BigInt(0),
+    price0: tickToPrice(token0, token1, activeTickIdxForPrice).toFixed(
+      PRICE_FIXED_DIGITS,
+    ),
+    price1: tickToPrice(token1, token0, activeTickIdxForPrice).toFixed(
+      PRICE_FIXED_DIGITS,
+    ),
+    liquidityGross: JSBI.BigInt(0),
+  };
+
+  const activeTick = tickIdxToInitializedTick[activeTickIdx];
+  if (activeTick) {
+    activeTickProcessed.liquidityGross = JSBI.BigInt(activeTick.liquidityGross);
+    activeTickProcessed.liquidityNet = JSBI.BigInt(activeTick.liquidityNet);
+  }
+
+  enum Direction {
+    ASC,
+    DESC,
+  }
+
+  // Computes the numSurroundingTicks above or below the active tick.
+  const computeSurroundingTicks = (
+    activeTickProcessed: any,
+    tickSpacing: number,
+    numSurroundingTicks: number,
+    direction: Direction,
+  ) => {
+    let previousTickProcessed = {
+      ...activeTickProcessed,
+    };
+
+    // Iterate outwards (either up or down depending on 'Direction') from the active tick,
+    // building active liquidity for every tick.
+    let processedTicks = [];
+    for (let i = 0; i < numSurroundingTicks; i++) {
+      const currentTickIdx =
+        direction == Direction.ASC
+          ? previousTickProcessed.tickIdx + tickSpacing
+          : previousTickProcessed.tickIdx - tickSpacing;
+
+      if (
+        currentTickIdx < TickMath.MIN_TICK ||
+        currentTickIdx > TickMath.MAX_TICK
+      ) {
+        break;
+      }
+
+      const currentTickProcessed: any = {
+        liquidityActive: previousTickProcessed.liquidityActive,
+        tickIdx: currentTickIdx,
+        liquidityNet: JSBI.BigInt(0),
+        price0: tickToPrice(token0, token1, currentTickIdx).toFixed(
+          PRICE_FIXED_DIGITS,
+        ),
+        price1: tickToPrice(token1, token0, currentTickIdx).toFixed(
+          PRICE_FIXED_DIGITS,
+        ),
+        liquidityGross: JSBI.BigInt(0),
+      };
+
+      const currentInitializedTick =
+        tickIdxToInitializedTick[currentTickIdx.toString()];
+      if (currentInitializedTick) {
+        currentTickProcessed.liquidityGross = JSBI.BigInt(
+          currentInitializedTick.liquidityGross,
+        );
+        currentTickProcessed.liquidityNet = JSBI.BigInt(
+          currentInitializedTick.liquidityNet,
+        );
+      }
+
+      if (direction == Direction.ASC && currentInitializedTick) {
+        currentTickProcessed.liquidityActive = JSBI.add(
+          previousTickProcessed.liquidityActive,
+          JSBI.BigInt(currentInitializedTick.liquidityNet),
+        );
+      } else if (
+        direction == Direction.DESC &&
+        JSBI.notEqual(previousTickProcessed.liquidityNet, JSBI.BigInt(0))
+      ) {
+        currentTickProcessed.liquidityActive = JSBI.subtract(
+          previousTickProcessed.liquidityActive,
+          previousTickProcessed.liquidityNet,
+        );
+      }
+
+      processedTicks.push(currentTickProcessed);
+      previousTickProcessed = currentTickProcessed;
+    }
+
+    if (direction == Direction.DESC) {
+      processedTicks = processedTicks.reverse();
+    }
+
+    return processedTicks;
+  };
+
+  const subsequentTicks = computeSurroundingTicks(
+    activeTickProcessed,
+    tickSpacing,
+    numSurroundingTicks,
+    Direction.ASC,
+  );
+
+  const previousTicks = computeSurroundingTicks(
+    activeTickProcessed,
+    tickSpacing,
+    numSurroundingTicks,
+    Direction.DESC,
+  );
+
+  const ticksProcessed = previousTicks
+    .concat(activeTickProcessed)
+    .concat(subsequentTicks);
+
+  return {
+    ticksProcessed,
+    tickSpacing,
+    activeTickIdx,
+    token0,
+    token1,
+  };
+  // setTicksResult({
+  //     ticksProcessed,
+  //     tickSpacing,
+  //     activeTickIdx,
+  //     token0,
+  //     token1
+  // })
 }
 
 //Token Helpers

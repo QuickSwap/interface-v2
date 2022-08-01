@@ -319,3 +319,72 @@ export const PAIR_SEARCH_V3 = gql`
     }
   }
 `;
+
+export const PAIR_CHART_V3 = gql`
+  query pairDayDatasV3($pairAddress: Bytes!, $skip: Int!, $startTime: Int!) {
+    poolDayDatas(
+      first: 1000
+      skip: $skip
+      orderBy: date
+      orderDirection: asc
+      where: { pool: $pairAddress, date_gt: $startTime }
+    ) {
+      id
+      date
+      tvlUSD
+      volumeUSD
+      volumeToken0
+      volumeToken1
+      token0Price
+      token1Price
+    }
+  }
+`;
+
+export const PAIR_FEE_CHART_V3 = () => gql`
+  query feeHourData($address: String, $startTime: BigInt) {
+    feeHourDatas(
+      first: 1000
+      skip: $skip
+      orderBy: timestamp
+      orderDirection: asc
+      where: { pool: $address, timestamp_gte: $startTime }
+    ) {
+      id
+      pool
+      fee
+      changesCount
+      timestamp
+      minFee
+      maxFee
+      startFee
+      endFee
+    }
+  }
+`;
+
+export const FETCH_TICKS = () => gql`
+  query surroundingTicks(
+    $poolAddress: String!
+    $tickIdxLowerBound: BigInt!
+    $tickIdxUpperBound: BigInt!
+    $skip: Int!
+  ) {
+    ticks(
+      subgraphError: allow
+      first: 1000
+      skip: $skip
+      where: {
+        poolAddress: $poolAddress
+        tickIdx_lte: $tickIdxUpperBound
+        tickIdx_gte: $tickIdxLowerBound
+      }
+    ) {
+      tickIdx
+      liquidityGross
+      liquidityNet
+      price0
+      price1
+    }
+  }
+`;

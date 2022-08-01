@@ -25,6 +25,7 @@ import { useTranslation } from 'react-i18next';
 import { useEthPrice } from 'state/application/hooks';
 import { useIsV3 } from 'state/analytics/hooks';
 import { getPairInfoV3 } from 'utils/v3-graph';
+import AnalyticsPairLiquidityChartV3 from './AnalyticsPairLiquidityChartV3';
 
 const AnalyticsPairDetails: React.FC = () => {
   const { t } = useTranslation();
@@ -134,7 +135,7 @@ const AnalyticsPairDetails: React.FC = () => {
       }
     }
     checkEthPrice();
-    fetchTransctions();
+    // fetchTransctions();
   }, [pairAddress, ethPrice.price, isV3]);
 
   useEffect(() => {
@@ -146,7 +147,7 @@ const AnalyticsPairDetails: React.FC = () => {
     <Box width={1} className='panel' mt={4}>
       <Grid container>
         <Grid item xs={12} sm={12} md={6}>
-          {/* <AnalyticsPairChart pairData={pairData} /> */}
+          <AnalyticsPairChart pairData={pairData} />
         </Grid>
         <Grid item xs={12} sm={12} md={6}>
           <Box className='analyticsDetailsInfo'>
@@ -280,8 +281,8 @@ const AnalyticsPairDetails: React.FC = () => {
           </Box>
         </Grid>
         <Grid item xs={12} sm={12} md={9}>
-          <Box className='panel'>
-            {/* <AnalyticsPairChart pairData={pairData} /> */}
+          <Box className='panel' mt={2} mb={2} height={'100%'}>
+            <AnalyticsPairChart pairData={pairData} />
           </Box>
         </Grid>
       </Grid>

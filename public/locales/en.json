@@ -187,6 +187,7 @@
   "dayAbb": "D",
   "weekAbb": "W",
   "fees": "Fees",
+  "poolFee": "Pool fee",
   "totalTokensLocked": "Total Tokens Locked",
   "7dTradingVol": "7d Trading Vol",
   "totalLiquidity": "Total Liquidity",
