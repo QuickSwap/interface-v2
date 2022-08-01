@@ -1,5 +1,6 @@
 import { BigintIsh, Token } from '@uniswap/sdk-core';
 import { Interface } from '@ethersproject/abi';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 //@ts-ignore
 import abi from '@uniswap/v3-periphery/artifacts/contracts/interfaces/ISelfPermit.sol/ISelfPermit.json';
 import { toHex } from './utils/calldata';

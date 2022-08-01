@@ -1,6 +1,6 @@
 import { useActiveWeb3React } from 'hooks';
 import useENS from 'hooks/useENS';
-import { ReactNode, useCallback, useContext } from 'react';
+import React, { ReactNode, useCallback, useContext } from 'react';
 import { ThemeContext } from 'styled-components/macro';
 import { TYPE } from 'theme/index';
 import { ExternalLink } from 'theme/components';

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Percent } from '@uniswap/sdk-core';
 import QuestionHelper from '../../QuestionHelper';
 import { TYPE } from 'theme/index';

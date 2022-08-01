@@ -1,3 +1,4 @@
+import React from 'react';
 import { Percent } from '@uniswap/sdk-core';
 import { warningSeverity } from 'utils/v3/prices';
 import { ErrorText } from './styled';

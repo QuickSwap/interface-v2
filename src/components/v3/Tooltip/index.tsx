@@ -1,4 +1,4 @@
-import { ReactNode, useCallback, useState } from 'react';
+import React, { ReactNode, useCallback, useState } from 'react';
 import Popover, { PopoverProps } from '../Popover';
 
 import { TooltipContainer } from './styled';

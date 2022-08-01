@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Text } from 'rebass';
 import { useOnClickOutside } from 'hooks/v3/useOnClickOutside';
 import { TYPE } from 'theme/index';

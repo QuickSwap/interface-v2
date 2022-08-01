@@ -1,5 +1,5 @@
 import { Currency, CurrencyAmount, Percent } from '@uniswap/sdk-core';
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { TYPE } from 'theme/index';
 import { warningSeverity } from 'utils/v3/prices';
 import { useTheme } from 'styled-components';

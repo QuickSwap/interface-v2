@@ -1,7 +1,13 @@
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { Currency, CurrencyAmount, Token, TradeType } from '@uniswap/sdk-core';
 import { Trade as V3Trade } from 'lib/src/trade';
 import JSBI from 'jsbi';
-import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { ArrowDown, CheckCircle, HelpCircle, Info } from 'react-feather';
 import { RouteComponentProps, useHistory } from 'react-router-dom';
 import { Text } from 'rebass';
@@ -287,7 +293,8 @@ const SwapV3Page: React.FC = () => {
   );
 
   // the callback to execute the swap
-  // @ts-ignore
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  //@ts-ignore
   const { callback: swapCallback, error: swapCallbackError } = useSwapCallback(
     trade,
     allowedSlippage,
@@ -398,6 +405,7 @@ const SwapV3Page: React.FC = () => {
 
   const handleAcceptChanges = useCallback(() => {
     setSwapState({
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       //@ts-ignore
       tradeToConfirm: trade,
       swapErrorMessage,
@@ -579,7 +587,7 @@ const SwapV3Page: React.FC = () => {
                         id='remove-recipient-button'
                         onClick={() => onChangeRecipient(null)}
                       >
-                        "- Remove send"
+                        - Remove send
                       </LinkStyledButton>
                     </AutoRow>
                     <AddressInputPanel
@@ -604,6 +612,7 @@ const SwapV3Page: React.FC = () => {
                           setShowInverted={setShowInverted}
                         />
                         <MouseoverTooltipContent
+                          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                           //@ts-ignore
                           onOpen={() => {
                             ReactGA.event({
@@ -631,7 +640,7 @@ const SwapV3Page: React.FC = () => {
                     className={'btn primary w-100 pv-1 b'}
                     onClick={toggleWalletModal}
                   >
-                    "Connect Wallet"
+                    Connect Wallet
                   </button>
                 ) : showWrap ? (
                   <button
@@ -655,7 +664,7 @@ const SwapV3Page: React.FC = () => {
                   >
                     <TYPE.main mb='4px'>
                       {isLoadingRoute ? (
-                        <Dots>"Loading"</Dots>
+                        <Dots>Loading</Dots>
                       ) : singleHopOnly ? (
                         'Insufficient liquidity for this trade. Try enabling multi-hop trades.'
                       ) : (
@@ -755,6 +764,7 @@ const SwapV3Page: React.FC = () => {
                             handleSwap();
                           } else {
                             setSwapState({
+                              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                               //@ts-ignore
                               tradeToConfirm: trade,
                               attemptingTxn: false,
@@ -818,6 +828,7 @@ const SwapV3Page: React.FC = () => {
                         handleSwap();
                       } else {
                         setSwapState({
+                          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                           //@ts-ignore
                           tradeToConfirm: trade,
                           attemptingTxn: false,
@@ -856,6 +867,6 @@ const SwapV3Page: React.FC = () => {
       </div>
     </>
   );
-}
+};
 
 export default SwapV3Page;

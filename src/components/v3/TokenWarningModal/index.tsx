@@ -1,3 +1,4 @@
+import React from 'react';
 import { Token } from '@uniswap/sdk-core';
 import Modal from 'components/Modal';
 

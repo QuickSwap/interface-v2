@@ -1,3 +1,4 @@
+import React from 'react';
 import { useState } from 'react';
 import Tooltip from '../Tooltip';
 import { TextWrapper } from './styled';

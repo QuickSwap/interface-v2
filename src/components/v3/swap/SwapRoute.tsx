@@ -1,7 +1,7 @@
+import React, { Fragment, memo, useContext } from 'react';
 import { Currency, TradeType } from '@uniswap/sdk-core';
 import { Trade as V2Trade } from '@uniswap/v2-sdk';
 import { Trade as V3Trade } from 'lib/src/trade';
-import { Fragment, memo, useContext } from 'react';
 import { ChevronRight } from 'react-feather';
 import { Flex } from 'rebass';
 import { ThemeContext } from 'styled-components/macro';

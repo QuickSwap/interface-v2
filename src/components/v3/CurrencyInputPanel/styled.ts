@@ -1,7 +1,8 @@
 import styled, { css } from 'styled-components/macro';
 import { ButtonGray } from '../Button';
 import { darken } from 'polished';
-// @ts-ignore
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+//@ts-ignore
 import { ReactComponent as DropDown } from 'assets/images/dropdown.svg';
 import { AutoColumn } from '../Column';
 import NumericalInput from 'components/NumericalInput';

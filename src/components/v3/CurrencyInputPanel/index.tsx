@@ -1,3 +1,4 @@
+import React from 'react';
 import { Pair } from '@uniswap/v2-sdk';
 import { Currency, CurrencyAmount, Percent, Token } from '@uniswap/sdk-core';
 import { ReactNode, useCallback, useMemo, useState } from 'react';
@@ -290,7 +291,7 @@ export default function CurrencyInputPanel({
           currency &&
           swap && (
             <FiatRow page={page}>
-              <RowBetween>'Updating...'</RowBetween>
+              <RowBetween>Updating...</RowBetween>
             </FiatRow>
           )
         )}

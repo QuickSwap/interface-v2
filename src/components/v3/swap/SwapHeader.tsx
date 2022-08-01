@@ -1,3 +1,4 @@
+import React from 'react';
 import SettingsTab from '../Settings';
 import { Percent } from '@uniswap/sdk-core';
 

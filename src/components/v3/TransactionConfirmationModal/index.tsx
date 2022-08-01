@@ -2,6 +2,7 @@ import { Currency } from '@uniswap/sdk-core';
 import { ReactNode, useContext, useEffect } from 'react';
 import { ThemeContext } from 'styled-components/macro';
 
+import React from 'react';
 import { Text } from 'rebass';
 import { RowBetween, RowFixed } from '../Row';
 import {
@@ -13,10 +14,12 @@ import {
 } from 'react-feather';
 import { ButtonLight, ButtonPrimary } from '../Button';
 import { AutoColumn } from '../Column';
-// @ts-ignore
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+//@ts-ignore
 import Circle from 'assets/images/blue-loader.svg';
-// @ts-ignore
-import MetaMaskLogo from 'assets/svg/metamask-logo.svg';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+//@ts-ignore
+import MetaMaskLogo from 'assets/images/metamask-logo.svg';
 import { useActiveWeb3React } from 'hooks';
 import useAddTokenToMetamask from 'hooks/v3/useAddTokenToMetamask';
 import {

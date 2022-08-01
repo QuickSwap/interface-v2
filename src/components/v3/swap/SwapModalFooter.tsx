@@ -1,7 +1,7 @@
+import React, { ReactNode } from 'react';
 import { Currency, TradeType } from '@uniswap/sdk-core';
 import { Trade as V2Trade } from '@uniswap/v2-sdk';
 import { Trade as V3Trade } from 'lib/src/trade';
-import { ReactNode } from 'react';
 import { Text } from 'rebass';
 import { SwapCallbackError } from './styled';
 
