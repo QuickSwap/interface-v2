@@ -93,12 +93,12 @@ const AnalyticsOverview: React.FC = () => {
       <Grid container spacing={4}>
         <Grid item xs={12} sm={12} md={6}>
           <Box className='panel' width={1}>
-            {/* <AnalyticsLiquidityChart /> */}
+            <AnalyticsLiquidityChart />
           </Box>
         </Grid>
         <Grid item xs={12} sm={12} md={6}>
           <Box className='analyticsVolumeChart panel'>
-            {/* <AnalyticsVolumeChart /> */}
+            <AnalyticsVolumeChart />
           </Box>
         </Grid>
       </Grid>

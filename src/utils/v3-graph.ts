@@ -2,9 +2,11 @@ import { clientV3 } from 'apollo/client';
 import {
   ALL_PAIRS_V3,
   ALL_TOKENS_V3,
+  GLOBAL_CHART_V3,
   GLOBAL_DATA_V3,
   PAIRS_FROM_ADDRESSES_V3,
   TOKENS_FROM_ADDRESSES_V3,
+  TOKEN_CHART_V3,
   TOP_POOLS_V3,
   TOP_TOKENS_V3,
 } from 'apollo/queries-v3';
@@ -12,9 +14,12 @@ import {
   get2DayPercentChange,
   getBlocksFromTimestamps,
   getPercentChange,
+  getSecondsOneDay,
 } from 'utils';
 import dayjs from 'dayjs';
 import { fetchEternalFarmAPR, fetchPoolsAPR } from './aprApi';
+
+//Global
 
 export async function getGlobalDataV3(): Promise<any> {
   let data: any = {};
@@ -23,58 +28,92 @@ export async function getGlobalDataV3(): Promise<any> {
     const utcCurrentTime = dayjs();
 
     const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix();
+    const utcTwoDaysBack = utcCurrentTime.subtract(2, 'day').unix();
+    const utcOneWeekBack = utcCurrentTime.subtract(1, 'week').unix();
+    const utcTwoWeeksBack = utcCurrentTime.subtract(2, 'week').unix();
 
-    const [oneDayBlock] = await getBlocksFromTimestamps([utcOneDayBack]);
+    // get the blocks needed for time travel queries
+    const [
+      oneDayBlock,
+      twoDayBlock,
+      oneWeekBlock,
+      twoWeekBlock,
+    ] = await getBlocksFromTimestamps([
+      utcOneDayBack,
+      utcTwoDaysBack,
+      utcOneWeekBack,
+      utcTwoWeeksBack,
+    ]);
 
     const dataCurrent = await clientV3.query({
       query: GLOBAL_DATA_V3(),
       fetchPolicy: 'network-only',
     });
 
-    const data24H = await clientV3.query({
+    const dataOneDay = await clientV3.query({
       query: GLOBAL_DATA_V3(oneDayBlock.number),
       fetchPolicy: 'network-only',
     });
 
-    const [statsCurrent, stats24H] = [
+    const dataOneWeek = await clientV3.query({
+      query: GLOBAL_DATA_V3(oneWeekBlock.number),
+      fetchPolicy: 'network-only',
+    });
+
+    const dataTwoWeek = await clientV3.query({
+      query: GLOBAL_DATA_V3(twoWeekBlock.number),
+      fetchPolicy: 'network-only',
+    });
+
+    const [statsCurrent, statsOneDay, statsOneWeek, statsTwoWeek] = [
       dataCurrent.data.factories[0],
-      data24H.data.factories[0],
+      dataOneDay.data.factories[0],
+      dataOneWeek.data.factories[0],
+      dataTwoWeek.data.factories[0],
     ];
 
     const volumeUSD =
-      statsCurrent && stats24H
+      statsCurrent && statsOneDay
         ? parseFloat(statsCurrent.totalVolumeUSD) -
-          parseFloat(stats24H.totalVolumeUSD)
+          parseFloat(statsOneDay.totalVolumeUSD)
         : parseFloat(statsCurrent.totalVolumeUSD);
 
     const volumeUSDChange = getPercentChange(
       statsCurrent ? statsCurrent.totalVolumeUSD : undefined,
-      stats24H ? stats24H.totalVolumeUSD : undefined,
+      statsOneDay ? statsOneDay.totalVolumeUSD : undefined,
     );
 
-    const tvlUSDChange = getPercentChange(
+    const [oneWeekVolume, weeklyVolumeChange] = get2DayPercentChange(
+      statsCurrent.totalVolumeUSD,
+      statsOneWeek.totalVolumeUSD,
+      statsTwoWeek.totalVolumeUSD,
+    );
+
+    const liquidityChangeUSD = getPercentChange(
       statsCurrent ? statsCurrent.totalValueLockedUSD : undefined,
-      stats24H ? stats24H.totalValueLockedUSD : undefined,
+      statsOneDay ? statsOneDay.totalValueLockedUSD : undefined,
     );
 
     const feesUSD =
-      statsCurrent && stats24H
+      statsCurrent && statsOneDay
         ? parseFloat(statsCurrent.totalFeesUSD) -
-          parseFloat(stats24H.totalFeesUSD)
+          parseFloat(statsOneDay.totalFeesUSD)
         : parseFloat(statsCurrent.totalFeesUSD);
 
     const feesUSDChange = getPercentChange(
       statsCurrent ? statsCurrent.totalFeesUSD : undefined,
-      stats24H ? stats24H.totalFeesUSD : undefined,
+      statsOneDay ? statsOneDay.totalFeesUSD : undefined,
     );
 
     data = {
-      tvlUSD: statsCurrent.totalValueLockedUSD,
-      tvlUSDChange,
+      totalLiquidityUSD: statsCurrent.totalValueLockedUSD,
+      liquidityChangeUSD,
       volumeUSD,
       volumeUSDChange,
       feesUSD,
       feesUSDChange,
+      oneWeekVolume,
+      weeklyVolumeChange,
     };
   } catch (e) {
     console.log(e);
@@ -82,6 +121,91 @@ export async function getGlobalDataV3(): Promise<any> {
 
   return data;
 }
+
+export const getChartDataV3 = async (oldestDateToFetch: number) => {
+  let data: any[] = [];
+  const weeklyData: any[] = [];
+  const utcEndTime = dayjs.utc();
+  let skip = 0;
+  let allFound = false;
+
+  try {
+    while (!allFound) {
+      const result = await clientV3.query({
+        query: GLOBAL_CHART_V3,
+        variables: {
+          startTime: oldestDateToFetch,
+          skip,
+        },
+        fetchPolicy: 'network-only',
+      });
+      skip += 1000;
+      data = data.concat(
+        result.data.algebraDayDatas.map((item: any) => {
+          return { ...item, dailyVolumeUSD: Number(item.volumeUSD) };
+        }),
+      );
+      if (result.data.algebraDayDatas.length < 1000) {
+        allFound = true;
+      }
+    }
+
+    if (data) {
+      const dayIndexSet = new Set();
+      const dayIndexArray: any[] = [];
+      const oneDay = 24 * 60 * 60;
+
+      // for each day, parse the daily volume and format for chart array
+      data.forEach((dayData, i) => {
+        // add the day index to the set of days
+        dayIndexSet.add((data[i].date / oneDay).toFixed(0));
+        dayIndexArray.push(data[i]);
+      });
+
+      // fill in empty days ( there will be no day datas if no trades made that day )
+      let timestamp = data[0].date ? data[0].date : oldestDateToFetch;
+      let latestLiquidityUSD = data[0].tvlUSD;
+      let latestDayDats = data[0].mostLiquidTokens;
+      let index = 1;
+      while (timestamp < utcEndTime.unix() - oneDay) {
+        const nextDay = timestamp + oneDay;
+        const currentDayIndex = (nextDay / oneDay).toFixed(0);
+        if (!dayIndexSet.has(currentDayIndex)) {
+          data.push({
+            date: nextDay,
+            dailyVolumeUSD: 0,
+            totalLiquidityUSD: latestLiquidityUSD,
+            mostLiquidTokens: latestDayDats,
+          });
+        } else {
+          latestLiquidityUSD = dayIndexArray[index].tvlUSD;
+          latestDayDats = dayIndexArray[index].mostLiquidTokens;
+          index = index + 1;
+        }
+        timestamp = nextDay;
+      }
+    }
+
+    // format weekly data for weekly sized chunks
+    data = data.sort((a, b) => (parseInt(a.date) > parseInt(b.date) ? 1 : -1));
+    let startIndexWeekly = -1;
+    let currentWeek = -1;
+    data.forEach((entry, i) => {
+      const week = dayjs.utc(dayjs.unix(data[i].date)).week();
+      if (week !== currentWeek) {
+        currentWeek = week;
+        startIndexWeekly++;
+      }
+      weeklyData[startIndexWeekly] = weeklyData[startIndexWeekly] || {};
+      weeklyData[startIndexWeekly].date = data[i].date;
+      weeklyData[startIndexWeekly].weeklyVolumeUSD =
+        (weeklyData[startIndexWeekly].weeklyVolumeUSD ?? 0) + data[i].volumeUSD;
+    });
+  } catch (e) {
+    console.log(e);
+  }
+  return [data, weeklyData];
+};
 
 //Tokens
 
@@ -335,6 +459,79 @@ export async function getAllTokensV3() {
     console.log(e);
   }
 }
+
+export const getTokenChartDataV3 = async (
+  tokenAddress: string,
+  startTime: number,
+) => {
+  let data: any[] = [];
+  const utcEndTime = dayjs.utc();
+  try {
+    let allFound = false;
+    let skip = 0;
+    while (!allFound) {
+      const result = await clientV3.query({
+        query: TOKEN_CHART_V3,
+        variables: {
+          startTime: startTime,
+          tokenAddr: tokenAddress.toLowerCase(),
+          skip,
+        },
+        fetchPolicy: 'network-only',
+      });
+      if (result.data.tokenDayDatas.length < 1000) {
+        allFound = true;
+      }
+      skip += 1000;
+      data = data.concat(result.data.tokenDayDatas);
+    }
+
+    const dayIndexSet = new Set();
+    const dayIndexArray: any[] = [];
+    const oneDay = getSecondsOneDay();
+
+    console.log('Dat', data);
+    data.forEach((dayData, i) => {
+      // add the day index to the set of days
+      dayIndexSet.add((data[i].date / oneDay).toFixed(0));
+      dayIndexArray.push(data[i]);
+      dayData.dailyVolumeUSD = Number(dayData.volumeUSD);
+    });
+
+    // fill in empty days
+    let timestamp = data[0] && data[0].date ? data[0].date : startTime;
+    let latestLiquidityUSD = data[0] && data[0].totalValueLockedUSD;
+    let latestPriceUSD = data[0] && data[0].priceUSD;
+    //let latestPairDatas = data[0] && data[0].mostLiquidPairs
+    let index = 1;
+    while (timestamp < utcEndTime.startOf('minute').unix() - oneDay) {
+      const nextDay = timestamp + oneDay;
+      const currentDayIndex = (nextDay / oneDay).toFixed(0);
+      if (!dayIndexSet.has(currentDayIndex)) {
+        data.push({
+          date: nextDay,
+          dayString: nextDay,
+          dailyVolumeUSD: 0,
+          priceUSD: latestPriceUSD,
+          totalLiquidityUSD: latestLiquidityUSD,
+          //mostLiquidPairs: latestPairDatas,
+        });
+      } else {
+        latestLiquidityUSD = dayIndexArray[index].totalValueLockedUSD;
+        latestPriceUSD = dayIndexArray[index].priceUSD;
+        //latestPairDatas = dayIndexArray[index].mostLiquidPairs
+        index = index + 1;
+      }
+      timestamp = nextDay;
+    }
+    data = data.sort((a, b) => (parseInt(a.date) > parseInt(b.date) ? 1 : -1));
+  } catch (e) {
+    console.log(e);
+  }
+  return data;
+};
+
+//Pairs
 
 export async function getTopPairsV3(count = 500) {
   try {

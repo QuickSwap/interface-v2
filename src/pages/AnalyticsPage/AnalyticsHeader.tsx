@@ -25,7 +25,14 @@ const AnalyticsHeader: React.FC<AnalyticHeaderProps> = ({ data, type }) => {
   const isV3 = useIsV3();
 
   const version = useMemo(() => `${isV3 ? `v3` : 'v2'}`, [isV3]);
-  const activeLink = useMemo(() => pathname.split('/')[3] || '', [pathname]);
+  const activeLink = useMemo(
+    () =>
+      pathname
+        .split('/')
+        .slice(3)
+        .join('/') || '',
+    [pathname],
+  );
 
   return (
     <Box width='100%' mb={3}>

@@ -6,7 +6,9 @@ import { formatCompact, formatDateFromTimeStamp, formatNumber } from 'utils';
 import 'components/styles/AreaChart.scss';
 
 export interface AreaChartProps {
+  strokeColor?: string;
   backgroundColor?: string;
+  gradientColor?: string;
   data?: Array<any>;
   dates?: Array<any>;
   yAxisValues?: Array<number>;
@@ -15,7 +17,9 @@ export interface AreaChartProps {
   height?: number | string;
 }
 const AreaChart: React.FC<AreaChartProps> = ({
+  strokeColor = '#00dced',
   backgroundColor = '#004ce6',
+  gradientColor,
   categories = [],
   data = [],
   dates = [],
@@ -25,8 +29,7 @@ const AreaChart: React.FC<AreaChartProps> = ({
 }) => {
   const dark = useIsDarkMode();
 
-  const strokeColor = '#00dced';
-  const gradientColor = dark ? '#64fbd3' : '#D4F8FB';
+  const _gradientColor = gradientColor || (dark ? '#64fbd3' : '#D4F8FB');
 
   const yMax = yAxisValues
     ? Math.max(...yAxisValues.map((val) => Number(val)))
@@ -62,7 +65,7 @@ const AreaChart: React.FC<AreaChartProps> = ({
     },
     fill: {
       type: 'gradient',
-      colors: [gradientColor],
+      colors: [_gradientColor],
       gradient: {
         gradientToColors: [backgroundColor],
         shadeIntensity: 1,

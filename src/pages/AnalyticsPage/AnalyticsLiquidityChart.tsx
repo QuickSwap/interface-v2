@@ -15,6 +15,8 @@ import {
 import { GlobalConst, GlobalData } from 'constants/index';
 import { AreaChart, ChartType } from 'components';
 import { useTranslation } from 'react-i18next';
+import { useIsV3 } from 'state/analytics/hooks';
+import { getChartDataV3 } from 'utils/v3-graph';
 dayjs.extend(utc);
 
 const AnalyticsLiquidityChart: React.FC = () => {
@@ -25,24 +27,33 @@ const AnalyticsLiquidityChart: React.FC = () => {
   );
   const [globalChartData, updateGlobalChartData] = useState<any[] | null>(null);
 
+  const isV3 = useIsV3();
+
   useEffect(() => {
     const fetchChartData = async () => {
       updateGlobalChartData(null);
-      const [newChartData] = await getChartData(
+
+      const duration =
         durationIndex === GlobalConst.analyticChart.ALL_CHART
           ? 0
-          : getChartStartTime(durationIndex),
-      );
-      if (newChartData) {
-        const chartData = getLimitedData(
-          newChartData,
-          GlobalConst.analyticChart.CHART_COUNT,
-        );
-        updateGlobalChartData(chartData);
-      }
+          : getChartStartTime(durationIndex);
+
+      const chartDataFn = isV3
+        ? getChartDataV3(duration)
+        : getChartData(duration);
+
+      chartDataFn.then(([newChartData]) => {
+        if (newChartData) {
+          const chartData = getLimitedData(
+            newChartData,
+            GlobalConst.analyticChart.CHART_COUNT,
+          );
+          updateGlobalChartData(chartData);
+        }
+      });
     };
     fetchChartData();
-  }, [updateGlobalChartData, durationIndex]);
+  }, [updateGlobalChartData, durationIndex, isV3]);
 
   const liquidityPercentClass = getPriceClass(
     globalData ? Number(globalData.liquidityChangeUSD) : 0,

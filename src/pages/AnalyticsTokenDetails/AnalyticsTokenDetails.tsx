@@ -55,7 +55,7 @@ const AnalyticsTokenDetails: React.FC = () => {
 
         tokenInfoFn.then((tokenInfo) => {
           if (tokenInfo) {
-            setToken(tokenInfo);
+            setToken(tokenInfo[0] || tokenInfo);
           }
         });
 
@@ -83,65 +83,67 @@ const AnalyticsTokenDetails: React.FC = () => {
     token ? Number(token.priceChangeUSD) : 0,
   );
 
-  const V2TokenInfo = () => (
-    <Box width={1} className='panel' mt={4}>
-      <Grid container>
-        <Grid item xs={12} sm={12} md={6}>
-          {/* <AnalyticsTokenChart token={token} /> */}
+  const V2TokenInfo = ({ token }: any) => {
+    return (
+      <Box width={1} className='panel' mt={4}>
+        <Grid container>
+          <Grid item xs={12} sm={12} md={6}>
+            <AnalyticsTokenChart token={token} />
+          </Grid>
+          <Grid item xs={12} sm={12} md={6}>
+            <Box className='analyticsDetailsInfo'>
+              <Box>
+                <Box>
+                  <span className='text-disabled'>{t('totalLiquidity')}</span>
+                  <h5>${formatNumber(token.totalLiquidityUSD)}</h5>
+                </Box>
+                <Box textAlign='right'>
+                  <span className='text-disabled'>{t('7dTradingVol')}</span>
+                  <h5>${formatNumber(token.oneWeekVolumeUSD)}</h5>
+                </Box>
+              </Box>
+              <Box>
+                <Box>
+                  <span className='text-disabled'>{t('24hTradingVol1')}</span>
+                  <h5>${formatNumber(token.oneDayVolumeUSD)}</h5>
+                </Box>
+                <Box textAlign='right'>
+                  <span className='text-disabled'>{t('24hFees')}</span>
+                  <h5>
+                    $
+                    {formatNumber(
+                      token.oneDayVolumeUSD * GlobalConst.utils.FEEPERCENT,
+                    )}
+                  </h5>
+                </Box>
+              </Box>
+              <Box>
+                <Box>
+                  <span className='text-disabled'>{t('contractAddress')}</span>
+                  <h5 className='text-primary'>
+                    {chainId ? (
+                      <a
+                        href={getEtherscanLink(chainId, token.id, 'address')}
+                        target='_blank'
+                        rel='noopener noreferrer'
+                        className='text-primary no-decoration'
+                      >
+                        {shortenAddress(token.id)}
+                      </a>
+                    ) : (
+                      shortenAddress(token.id)
+                    )}
+                  </h5>
+                </Box>
+              </Box>
+            </Box>
+          </Grid>
         </Grid>
-        <Grid item xs={12} sm={12} md={6}>
-          <Box className='analyticsDetailsInfo'>
-            <Box>
-              <Box>
-                <span className='text-disabled'>{t('totalLiquidity')}</span>
-                <h5>${formatNumber(token.totalLiquidityUSD)}</h5>
-              </Box>
-              <Box textAlign='right'>
-                <span className='text-disabled'>{t('7dTradingVol')}</span>
-                <h5>${formatNumber(token.oneWeekVolumeUSD)}</h5>
-              </Box>
-            </Box>
-            <Box>
-              <Box>
-                <span className='text-disabled'>{t('24hTradingVol1')}</span>
-                <h5>${formatNumber(token.oneDayVolumeUSD)}</h5>
-              </Box>
-              <Box textAlign='right'>
-                <span className='text-disabled'>{t('24hFees')}</span>
-                <h5>
-                  $
-                  {formatNumber(
-                    token.oneDayVolumeUSD * GlobalConst.utils.FEEPERCENT,
-                  )}
-                </h5>
-              </Box>
-            </Box>
-            <Box>
-              <Box>
-                <span className='text-disabled'>{t('contractAddress')}</span>
-                <h5 className='text-primary'>
-                  {chainId ? (
-                    <a
-                      href={getEtherscanLink(chainId, token.id, 'address')}
-                      target='_blank'
-                      rel='noopener noreferrer'
-                      className='text-primary no-decoration'
-                    >
-                      {shortenAddress(token.id)}
-                    </a>
-                  ) : (
-                    shortenAddress(token.id)
-                  )}
-                </h5>
-              </Box>
-            </Box>
-          </Box>
-        </Grid>
-      </Grid>
-    </Box>
-  );
+      </Box>
+    );
+  };
 
-  const V3TokenInfo = () => (
+  const V3TokenInfo = ({ token }: any) => (
     <Box width={1}>
       <Grid container spacing={2}>
         <Grid item xs={12} sm={12} md={3}>
@@ -150,7 +152,7 @@ const AnalyticsTokenDetails: React.FC = () => {
               <span className='text-disabled'>{t('tvl')}</span>
               <h5>${formatNumber(token.tvlUSD)}</h5>
               <small className={getPriceClass(Number(token.tvlUSDChange))}>
-                {getFormattedPrice(token.tvlUSDChange)}
+                {formatNumber(token.tvlUSDChange)}
               </small>
             </Box>
             <Box>
@@ -159,7 +161,7 @@ const AnalyticsTokenDetails: React.FC = () => {
               <small
                 className={getPriceClass(Number(token.oneDayVolumeChangeUSD))}
               >
-                {getFormattedPrice(token.oneDayVolumeChangeUSD)}
+                {formatNumber(token.oneDayVolumeChangeUSD)}
               </small>
             </Box>
             <Box>
@@ -178,8 +180,8 @@ const AnalyticsTokenDetails: React.FC = () => {
           </Box>
         </Grid>
         <Grid item xs={12} sm={12} md={9}>
-          <Box className='panel'>
-            {/* <AnalyticsTokenChart token={token} /> */}
+          <Box className='panel' mt={2} mb={2} height={'100%'}>
+            <AnalyticsTokenChart token={token} />
           </Box>
         </Grid>
       </Grid>
@@ -241,7 +243,7 @@ const AnalyticsTokenDetails: React.FC = () => {
               </Box>
             </Box>
           </Box>
-          {isV3 ? <V3TokenInfo /> : <V2TokenInfo />}
+          {isV3 ? <V3TokenInfo token={token} /> : <V2TokenInfo token={token} />}
           <Box width={1} mt={5}>
             <p>
               {token.symbol} {t('pools')}

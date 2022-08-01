@@ -1,5 +1,7 @@
 import gql from 'graphql-tag';
 
+//Global
+
 export const GLOBAL_DATA_V3 = (block?: number) => {
   const qString = `
     query globalData {
@@ -14,6 +16,26 @@ export const GLOBAL_DATA_V3 = (block?: number) => {
   `;
   return gql(qString);
 };
+
+export const GLOBAL_CHART_V3 = gql`
+  query algebraDayDatas($startTime: Int!, $skip: Int!) {
+    algebraDayDatas(
+      first: 500
+      skip: $skip
+      where: { date_gt: $startTime }
+      orderBy: date
+      orderDirection: asc
+    ) {
+      id
+      date
+      volumeUSD
+      feesUSD
+      tvlUSD
+    }
+  }
+`;
+
+//Tokens
 
 export const TOP_TOKENS_V3 = (count: number) => gql`
   query topTokens {
@@ -134,6 +156,27 @@ export const TOKEN_INFO_OLD_V3: any = (block: number, address: string) => {
     `;
   return gql(queryString);
 };
+
+export const TOKEN_CHART_V3 = gql`
+  query tokenDayDatas($tokenAddr: String!, $startTime: Int!) {
+    tokenDayDatas(
+      first: 1000
+      orderBy: date
+      orderDirection: desc
+      where: { token: $tokenAddr, date_gt: $startTime }
+    ) {
+      id
+      date
+      priceUSD
+      totalValueLocked
+      totalValueLockedUSD
+      volume
+      volumeUSD
+    }
+  }
+`;
+
+//Pairs
 
 export const TOP_POOLS_V3 = (count: number) => gql`
   query topPools {
