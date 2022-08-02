@@ -55,7 +55,7 @@ export const fetchPoolData = async (
   address: string | undefined,
   directory: PoolDirectoryV1,
 ): Promise<PoolData | undefined> => {
-  if (!poolId) return undefined;
+  if (!poolId) return;
 
   const sdk = directory.sdk;
   const pool = await directory.pools(poolId, { from: address });

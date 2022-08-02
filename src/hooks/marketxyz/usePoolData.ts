@@ -16,21 +16,23 @@ export const usePoolData = (
 ): PoolData | undefined => {
   const { account } = useActiveWeb3React();
   const { sdk } = useMarket();
-  const [data, setData] = useState<any>();
-
-  useEffect(() => {
-    if (!sdk || !poolId) {
-      return;
-    }
-    const _directory =
-      typeof directory === 'string'
-        ? new PoolDirectoryV1(sdk, directory)
-        : directory;
-
-    fetchPoolData(poolId, account ?? undefined, _directory).then((poolData) =>
-      setData(poolData),
+  const _directory = sdk
+    ? typeof directory === 'string'
+      ? new PoolDirectoryV1(sdk, directory)
+      : directory
+    : undefined;
+  const getPoolData = async () => {
+    if (!_directory) return;
+    const poolData = await fetchPoolData(
+      poolId ?? undefined,
+      account ?? undefined,
+      _directory,
     );
-  }, [sdk, account, directory, poolId]);
+    return poolData;
+  };
+  const { data } = useQuery('FetchPoolData', getPoolData, {
+    refetchInterval: 3000,
+  });
 
   return data;
 };

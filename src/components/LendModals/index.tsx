@@ -63,11 +63,16 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
   const [enableAsCollateral, setEnableAsCollateral] = useState<boolean>(true);
   const [maxAmount, setMaxAmount] = useState<number | undefined>(undefined);
   const [maxAmountError, setMaxAmountError] = useState(false);
+  const [updatedAsset, setUpdatedAsset] = useState<
+    USDPricedPoolAsset | undefined
+  >(undefined);
+
   const buttonDisabled =
     !account ||
     Number(value) <= 0 ||
     maxAmount === undefined ||
-    Number(value) > maxAmount;
+    Number(value) > maxAmount ||
+    !updatedAsset;
   const buttonText = useMemo(() => {
     if (!account) {
       return t('connectWallet');
@@ -86,10 +91,6 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
   }, [account, t, value, maxAmount, maxAmountError]);
 
   const numValue = isNaN(Number(value)) ? 0 : Number(value);
-
-  const [updatedAsset, setUpdatedAsset] = useState<
-    USDPricedPoolAsset | undefined
-  >(undefined);
 
   useEffect(() => {
     if (!account) return;
