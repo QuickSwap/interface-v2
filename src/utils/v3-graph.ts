@@ -5,9 +5,11 @@ import {
   FETCH_TICKS,
   GLOBAL_CHART_V3,
   GLOBAL_DATA_V3,
+  GLOBAL_TRANSACTIONS_V3,
   PAIRS_FROM_ADDRESSES_V3,
   PAIR_CHART_V3,
   PAIR_FEE_CHART_V3,
+  PAIR_TRANSACTIONS_v3,
   TOKENS_FROM_ADDRESSES_V3,
   TOKEN_CHART_V3,
   TOP_POOLS_V3,
@@ -25,6 +27,7 @@ import { Token } from '@uniswap/sdk-core';
 import { TickMath, tickToPrice } from '@uniswap/v3-sdk';
 import { JSBI } from '@uniswap/sdk';
 import keyBy from 'lodash.keyby';
+import { TxnType } from 'constants/index';
 
 //Global
 
@@ -1152,6 +1155,267 @@ export async function getLiquidityChart(address: string) {
   //     token0,
   //     token1
   // })
+}
+
+export async function getPairTransactionsV3(address: string): Promise<any> {
+  const data = await clientV3.query({
+    query: PAIR_TRANSACTIONS_v3,
+    variables: {
+      address: address,
+    },
+    fetchPolicy: 'cache-first',
+  });
+
+  const mints = data.data.mints.map((m: any) => {
+    return {
+      type: TxnType.ADD,
+      transaction: {
+        ...m.transaction,
+        timestamp: m.timestamp,
+      },
+      sender: m.origin,
+      pair: {
+        token0: {
+          symbol: formatTokenSymbol(m.pool.token0.id, m.pool.token0.symbol),
+          id: m.pool.token0.id,
+        },
+        token1: {
+          symbol: formatTokenSymbol(m.pool.token1.id, m.pool.token1.symbol),
+          id: m.pool.token1.id,
+        },
+      },
+      amountUSD: parseFloat(m.amountUSD),
+      amount0: parseFloat(m.amount0),
+      amount1: parseFloat(m.amount1),
+    };
+  });
+  const burns = data.data.burns.map((m: any) => {
+    return {
+      type: TxnType.REMOVE,
+      transaction: {
+        ...m.transaction,
+        timestamp: m.timestamp,
+      },
+      sender: m.owner,
+      pair: {
+        token0: {
+          symbol: formatTokenSymbol(m.pool.token0.id, m.pool.token0.symbol),
+          id: m.pool.token0.id,
+        },
+        token1: {
+          symbol: formatTokenSymbol(m.pool.token1.id, m.pool.token1.symbol),
+          id: m.pool.token1.id,
+        },
+      },
+      amountUSD: parseFloat(m.amountUSD),
+      amount0: parseFloat(m.amount0),
+      amount1: parseFloat(m.amount1),
+    };
+  });
+
+  const swaps = data.data.swaps.map((m: any) => {
+    return {
+      type: TxnType.SWAP,
+      transaction: {
+        ...m.transaction,
+        timestamp: m.timestamp,
+      },
+      sender: m.origin,
+      pair: {
+        token0: {
+          symbol: formatTokenSymbol(m.pool.token0.id, m.pool.token0.symbol),
+          id: m.pool.token0.id,
+        },
+        token1: {
+          symbol: formatTokenSymbol(m.pool.token1.id, m.pool.token1.symbol),
+          id: m.pool.token1.id,
+        },
+      },
+      amountUSD: parseFloat(m.amountUSD),
+      amount0: parseFloat(m.amount0),
+      amount1: parseFloat(m.amount1),
+    };
+  });
+
+  return {
+    mints,
+    burns,
+    swaps,
+  };
+}
+
+export async function getTokenTransactionsV3(address: string): Promise<any> {
+  try {
+    const data = await clientV3.query({
+      query: GLOBAL_TRANSACTIONS_V3,
+      variables: {
+        address: address,
+      },
+      fetchPolicy: 'cache-first',
+    });
+
+    const mints0 = data.data.mintsAs0.map((m: any) => {
+      return {
+        type: TxnType.ADD,
+        transaction: {
+          ...m.transaction,
+          timestamp: m.timestamp,
+        },
+        timestamp: m.timestamp,
+        sender: m.origin,
+        pair: {
+          token0: {
+            symbol: formatTokenSymbol(m.pool.token0.id, m.pool.token0.symbol),
+            id: m.pool.token0.id,
+          },
+          token1: {
+            symbol: formatTokenSymbol(m.pool.token1.id, m.pool.token1.symbol),
+            id: m.pool.token1.id,
+          },
+        },
+        amountUSD: parseFloat(m.amountUSD),
+        amount0: parseFloat(m.amount0),
+        amount1: parseFloat(m.amount1),
+      };
+    });
+    const mints1 = data.data.mintsAs1.map((m: any) => {
+      return {
+        type: TxnType.ADD,
+        transaction: {
+          ...m.transaction,
+          timestamp: m.timestamp,
+        },
+        timestamp: m.timestamp,
+        sender: m.origin,
+        pair: {
+          token0: {
+            symbol: formatTokenSymbol(m.pool.token0.id, m.pool.token0.symbol),
+            id: m.pool.token0.id,
+          },
+          token1: {
+            symbol: formatTokenSymbol(m.pool.token1.id, m.pool.token1.symbol),
+            id: m.pool.token1.id,
+          },
+        },
+        amountUSD: parseFloat(m.amountUSD),
+        amount0: parseFloat(m.amount0),
+        amount1: parseFloat(m.amount1),
+      };
+    });
+
+    const burns0 = data.data.burnsAs0.map((m: any) => {
+      return {
+        type: TxnType.REMOVE,
+        transaction: {
+          ...m.transaction,
+          timestamp: m.timestamp,
+        },
+        timestamp: m.timestamp,
+        sender: m.owner,
+        pair: {
+          token0: {
+            symbol: formatTokenSymbol(m.pool.token0.id, m.pool.token0.symbol),
+            id: m.pool.token0.id,
+          },
+          token1: {
+            symbol: formatTokenSymbol(m.pool.token1.id, m.pool.token1.symbol),
+            id: m.pool.token1.id,
+          },
+        },
+        amountUSD: parseFloat(m.amountUSD),
+        amount0: parseFloat(m.amount0),
+        amount1: parseFloat(m.amount1),
+      };
+    });
+    const burns1 = data.data.burnsAs1.map((m: any) => {
+      return {
+        type: TxnType.REMOVE,
+        transaction: {
+          ...m.transaction,
+          timestamp: m.timestamp,
+        },
+        timestamp: m.timestamp,
+        sender: m.owner,
+        pair: {
+          token0: {
+            symbol: formatTokenSymbol(m.pool.token0.id, m.pool.token0.symbol),
+            id: m.pool.token0.id,
+          },
+          token1: {
+            symbol: formatTokenSymbol(m.pool.token1.id, m.pool.token1.symbol),
+            id: m.pool.token1.id,
+          },
+        },
+        amountUSD: parseFloat(m.amountUSD),
+        amount0: parseFloat(m.amount0),
+        amount1: parseFloat(m.amount1),
+      };
+    });
+
+    const swaps0 = data.data.swapsAs0.map((m: any) => {
+      return {
+        type: TxnType.SWAP,
+        transaction: {
+          ...m.transaction,
+          timestamp: m.timestamp,
+        },
+        timestamp: m.timestamp,
+        sender: m.origin,
+        pair: {
+          token0: {
+            symbol: formatTokenSymbol(m.pool.token0.id, m.pool.token0.symbol),
+            id: m.pool.token0.id,
+          },
+          token1: {
+            symbol: formatTokenSymbol(m.pool.token1.id, m.pool.token1.symbol),
+            id: m.pool.token1.id,
+          },
+        },
+        amountUSD: parseFloat(m.amountUSD),
+        amount0: parseFloat(m.amount0),
+        amount1: parseFloat(m.amount1),
+      };
+    });
+
+    const swaps1 = data.data.swapsAs1.map((m: any) => {
+      return {
+        type: TxnType.SWAP,
+        transaction: {
+          ...m.transaction,
+          timestamp: m.timestamp,
+        },
+        timestamp: m.timestamp,
+        sender: m.origin,
+        pair: {
+          token0: {
+            symbol: formatTokenSymbol(m.pool.token0.id, m.pool.token0.symbol),
+            id: m.pool.token0.id,
+          },
+          token1: {
+            symbol: formatTokenSymbol(m.pool.token1.id, m.pool.token1.symbol),
+            id: m.pool.token1.id,
+          },
+        },
+        amountUSD: parseFloat(m.amountUSD),
+        amount0: parseFloat(m.amount0),
+        amount1: parseFloat(m.amount1),
+      };
+    });
+
+    console.log({
+      mints: [...mints0, ...mints1],
+      burns: [...burns0, ...burns1],
+      swaps: [...swaps0, ...swaps1],
+    });
+
+    return {
+      mints: [...mints0, ...mints1],
+      burns: [...burns0, ...burns1],
+      swaps: [...swaps0, ...swaps1],
+    };
+  } catch {
+    return;
+  }
 }
 
 //Token Helpers

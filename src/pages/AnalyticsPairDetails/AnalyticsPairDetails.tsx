@@ -24,7 +24,7 @@ import AnalyticsPairChart from './AnalyticsPairChart';
 import { useTranslation } from 'react-i18next';
 import { useEthPrice } from 'state/application/hooks';
 import { useIsV3 } from 'state/analytics/hooks';
-import { getPairInfoV3 } from 'utils/v3-graph';
+import { getPairInfoV3, getPairTransactionsV3 } from 'utils/v3-graph';
 import AnalyticsPairLiquidityChartV3 from './AnalyticsPairLiquidityChartV3';
 
 const AnalyticsPairDetails: React.FC = () => {
@@ -129,13 +129,18 @@ const AnalyticsPairDetails: React.FC = () => {
       }
     }
     async function fetchTransctions() {
-      const transactions = await getPairTransactions(pairAddress);
-      if (transactions) {
-        setPairTransactions(transactions);
-      }
+      const pairTransactionsFn = isV3
+        ? getPairTransactionsV3(pairAddress)
+        : getPairTransactions(pairAddress);
+
+      pairTransactionsFn.then((transactions) => {
+        if (transactions) {
+          setPairTransactions(transactions);
+        }
+      });
     }
     checkEthPrice();
-    // fetchTransctions();
+    fetchTransctions();
   }, [pairAddress, ethPrice.price, isV3]);
 
   useEffect(() => {

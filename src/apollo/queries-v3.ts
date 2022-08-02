@@ -388,3 +388,252 @@ export const FETCH_TICKS = () => gql`
     }
   }
 `;
+
+//Transactions
+
+export const PAIR_TRANSACTIONS_v3 = gql`
+  query transactions($address: Bytes!) {
+    mints(
+      first: 100
+      orderBy: timestamp
+      orderDirection: desc
+      where: { pool: $address }
+    ) {
+      timestamp
+      transaction {
+        id
+      }
+      pool {
+        token0 {
+          id
+          symbol
+        }
+        token1 {
+          id
+          symbol
+        }
+      }
+      owner
+      sender
+      origin
+      amount0
+      amount1
+      amountUSD
+    }
+    swaps(
+      first: 100
+      orderBy: timestamp
+      orderDirection: desc
+      where: { pool: $address }
+    ) {
+      timestamp
+      transaction {
+        id
+      }
+      pool {
+        token0 {
+          id
+          symbol
+        }
+        token1 {
+          id
+          symbol
+        }
+      }
+      origin
+      amount0
+      amount1
+      amountUSD
+    }
+    burns(
+      first: 100
+      orderBy: timestamp
+      orderDirection: desc
+      where: { pool: $address }
+    ) {
+      timestamp
+      transaction {
+        id
+      }
+      pool {
+        token0 {
+          id
+          symbol
+        }
+        token1 {
+          id
+          symbol
+        }
+      }
+      owner
+      amount0
+      amount1
+      amountUSD
+    }
+  }
+`;
+
+export const GLOBAL_TRANSACTIONS_V3 = gql`
+  query transactions($address: Bytes!) {
+    mintsAs0: mints(
+      first: 500
+      orderBy: timestamp
+      orderDirection: desc
+      where: { token0: $address }
+      subgraphError: allow
+    ) {
+      timestamp
+      transaction {
+        id
+      }
+      pool {
+        token0 {
+          id
+          symbol
+        }
+        token1 {
+          id
+          symbol
+        }
+      }
+      owner
+      sender
+      origin
+      amount0
+      amount1
+      amountUSD
+    }
+    mintsAs1: mints(
+      first: 500
+      orderBy: timestamp
+      orderDirection: desc
+      where: { token0: $address }
+      subgraphError: allow
+    ) {
+      timestamp
+      transaction {
+        id
+      }
+      pool {
+        token0 {
+          id
+          symbol
+        }
+        token1 {
+          id
+          symbol
+        }
+      }
+      owner
+      sender
+      origin
+      amount0
+      amount1
+      amountUSD
+    }
+    swapsAs0: swaps(
+      first: 500
+      orderBy: timestamp
+      orderDirection: desc
+      where: { token0: $address }
+      subgraphError: allow
+    ) {
+      timestamp
+      transaction {
+        id
+      }
+      pool {
+        token0 {
+          id
+          symbol
+        }
+        token1 {
+          id
+          symbol
+        }
+      }
+      origin
+      amount0
+      amount1
+      amountUSD
+    }
+    swapsAs1: swaps(
+      first: 500
+      orderBy: timestamp
+      orderDirection: desc
+      where: { token1: $address }
+      subgraphError: allow
+    ) {
+      timestamp
+      transaction {
+        id
+      }
+      pool {
+        token0 {
+          id
+          symbol
+        }
+        token1 {
+          id
+          symbol
+        }
+      }
+      origin
+      amount0
+      amount1
+      amountUSD
+    }
+    burnsAs0: burns(
+      first: 500
+      orderBy: timestamp
+      orderDirection: desc
+      where: { token0: $address }
+      subgraphError: allow
+    ) {
+      timestamp
+      transaction {
+        id
+      }
+      pool {
+        token0 {
+          id
+          symbol
+        }
+        token1 {
+          id
+          symbol
+        }
+      }
+      owner
+      amount0
+      amount1
+      amountUSD
+    }
+    burnsAs1: burns(
+      first: 500
+      orderBy: timestamp
+      orderDirection: desc
+      where: { token1: $address }
+      subgraphError: allow
+    ) {
+      timestamp
+      transaction {
+        id
+      }
+      pool {
+        token0 {
+          id
+          symbol
+        }
+        token1 {
+          id
+          symbol
+        }
+      }
+      owner
+      amount0
+      amount1
+      amountUSD
+    }
+  }
+`;

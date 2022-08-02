@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import { Box, Grid } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
@@ -14,17 +14,17 @@ import {
   getBulkPairData,
 } from 'utils';
 import { useActiveWeb3React } from 'hooks';
-import { CurrencyLogo, PairTable } from 'components';
+import { CurrencyLogo, PairTable, TransactionsTable } from 'components';
 import { useBookmarkTokens, useEthPrice } from 'state/application/hooks';
 import { ReactComponent as StarChecked } from 'assets/images/StarChecked.svg';
 import { ReactComponent as StarUnchecked } from 'assets/images/StarUnchecked.svg';
 import { getAddress } from '@ethersproject/address';
-import { GlobalConst } from 'constants/index';
+import { GlobalConst, TxnType } from 'constants/index';
 import AnalyticsHeader from 'pages/AnalyticsPage/AnalyticsHeader';
 import AnalyticsTokenChart from './AnalyticsTokenChart';
 import { useTranslation } from 'react-i18next';
 import { useIsV3 } from 'state/analytics/hooks';
-import { getTokenInfoV3 } from 'utils/v3-graph';
+import { getTokenInfoV3, getTokenTransactionsV3 } from 'utils/v3-graph';
 
 const AnalyticsTokenDetails: React.FC = () => {
   const { t } = useTranslation();
@@ -37,6 +37,7 @@ const AnalyticsTokenDetails: React.FC = () => {
     ? new Token(ChainId.MATIC, getAddress(token.id), token.decimals)
     : undefined;
   const [tokenPairs, updateTokenPairs] = useState<any>(null);
+  const [tokenTransactions, updateTokenTransactions] = useState<any>(null);
   const {
     bookmarkTokens,
     addBookmarkToken,
@@ -45,6 +46,35 @@ const AnalyticsTokenDetails: React.FC = () => {
   const { ethPrice } = useEthPrice();
 
   const isV3 = useIsV3();
+
+  const tokenTransactionsList = useMemo(() => {
+    if (tokenTransactions) {
+      const mints = tokenTransactions.mints.map((item: any) => {
+        return { ...item, type: TxnType.ADD };
+      });
+      const swaps = tokenTransactions.swaps.map((item: any) => {
+        const amount0 = item.amount0Out > 0 ? item.amount0Out : item.amount1Out;
+        const amount1 = item.amount0In > 0 ? item.amount0In : item.amount1In;
+        const token0 =
+          item.amount0Out > 0 ? item.pair.token0 : item.pair.token1;
+        const token1 =
+          item.amount0Out > 0 ? item.pair.token1 : item.pair.token0;
+        return {
+          ...item,
+          amount0,
+          amount1,
+          pair: { token0, token1 },
+          type: TxnType.SWAP,
+        };
+      });
+      const burns = tokenTransactions.burns.map((item: any) => {
+        return { ...item, type: TxnType.REMOVE };
+      });
+      return mints.concat(swaps).concat(burns);
+    } else {
+      return null;
+    }
+  }, [tokenTransactions]);
 
   useEffect(() => {
     async function fetchTokenInfo() {
@@ -58,20 +88,33 @@ const AnalyticsTokenDetails: React.FC = () => {
             setToken(tokenInfo[0] || tokenInfo);
           }
         });
-
-        const tokenPairs = await getTokenPairs2(tokenAddress);
-        const formattedPairs = tokenPairs
-          ? tokenPairs.map((pair: any) => {
-              return pair.id;
-            })
-          : [];
-        const pairData = await getBulkPairData(formattedPairs, ethPrice.price);
-        if (pairData) {
-          updateTokenPairs(pairData);
+      }
+    }
+    async function fetchTransactions() {
+      getTokenTransactionsV3(tokenAddress).then((transactions) => {
+        if (transactions) {
+          updateTokenTransactions(transactions);
         }
+      });
+    }
+    async function fetchPairs() {
+      const tokenPairs = await getTokenPairs2(tokenAddress);
+      const formattedPairs = tokenPairs
+        ? tokenPairs.map((pair: any) => {
+            return pair.id;
+          })
+        : [];
+      const pairData = await getBulkPairData(formattedPairs, ethPrice.price);
+      if (pairData) {
+        updateTokenPairs(pairData);
       }
     }
     fetchTokenInfo();
+    if (isV3) {
+      fetchTransactions();
+    } else {
+      fetchPairs();
+    }
   }, [tokenAddress, ethPrice.price, ethPrice.oneDayPrice, isV3]);
 
   useEffect(() => {
@@ -83,109 +126,139 @@ const AnalyticsTokenDetails: React.FC = () => {
     token ? Number(token.priceChangeUSD) : 0,
   );
 
-  const V2TokenInfo = ({ token }: any) => {
+  const V2TokenInfo = ({ token, tokenPairs }: any) => {
     return (
-      <Box width={1} className='panel' mt={4}>
-        <Grid container>
-          <Grid item xs={12} sm={12} md={6}>
-            <AnalyticsTokenChart token={token} />
+      <>
+        <Box width={1} className='panel' mt={4}>
+          <Grid container>
+            <Grid item xs={12} sm={12} md={6}>
+              <AnalyticsTokenChart token={token} />
+            </Grid>
+            <Grid item xs={12} sm={12} md={6}>
+              <Box className='analyticsDetailsInfo'>
+                <Box>
+                  <Box>
+                    <span className='text-disabled'>{t('totalLiquidity')}</span>
+                    <h5>${formatNumber(token.totalLiquidityUSD)}</h5>
+                  </Box>
+                  <Box textAlign='right'>
+                    <span className='text-disabled'>{t('7dTradingVol')}</span>
+                    <h5>${formatNumber(token.oneWeekVolumeUSD)}</h5>
+                  </Box>
+                </Box>
+                <Box>
+                  <Box>
+                    <span className='text-disabled'>{t('24hTradingVol1')}</span>
+                    <h5>${formatNumber(token.oneDayVolumeUSD)}</h5>
+                  </Box>
+                  <Box textAlign='right'>
+                    <span className='text-disabled'>{t('24hFees')}</span>
+                    <h5>
+                      $
+                      {formatNumber(
+                        token.oneDayVolumeUSD * GlobalConst.utils.FEEPERCENT,
+                      )}
+                    </h5>
+                  </Box>
+                </Box>
+                <Box>
+                  <Box>
+                    <span className='text-disabled'>
+                      {t('contractAddress')}
+                    </span>
+                    <h5 className='text-primary'>
+                      {chainId ? (
+                        <a
+                          href={getEtherscanLink(chainId, token.id, 'address')}
+                          target='_blank'
+                          rel='noopener noreferrer'
+                          className='text-primary no-decoration'
+                        >
+                          {shortenAddress(token.id)}
+                        </a>
+                      ) : (
+                        shortenAddress(token.id)
+                      )}
+                    </h5>
+                  </Box>
+                </Box>
+              </Box>
+            </Grid>
           </Grid>
-          <Grid item xs={12} sm={12} md={6}>
-            <Box className='analyticsDetailsInfo'>
+        </Box>
+        <Box width={1} mt={5}>
+          <p>
+            {token.symbol} {t('pools')}
+          </p>
+        </Box>
+        <Box width={1} className='panel' mt={4}>
+          {tokenPairs ? (
+            <PairTable data={tokenPairs} />
+          ) : (
+            <Skeleton variant='rect' width='100%' height={150} />
+          )}
+        </Box>
+      </>
+    );
+  };
+
+  const V3TokenInfo = ({ token, tokenTransactions }: any) => (
+    <>
+      <Box width={1}>
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={12} md={3}>
+            <Box className='panel analyticsDetailsInfoV3'>
               <Box>
-                <Box>
-                  <span className='text-disabled'>{t('totalLiquidity')}</span>
-                  <h5>${formatNumber(token.totalLiquidityUSD)}</h5>
-                </Box>
-                <Box textAlign='right'>
-                  <span className='text-disabled'>{t('7dTradingVol')}</span>
-                  <h5>${formatNumber(token.oneWeekVolumeUSD)}</h5>
-                </Box>
+                <span className='text-disabled'>{t('tvl')}</span>
+                <h5>${formatNumber(token.tvlUSD)}</h5>
+                <small className={getPriceClass(Number(token.tvlUSDChange))}>
+                  {formatNumber(token.tvlUSDChange)}
+                </small>
               </Box>
               <Box>
-                <Box>
-                  <span className='text-disabled'>{t('24hTradingVol1')}</span>
-                  <h5>${formatNumber(token.oneDayVolumeUSD)}</h5>
-                </Box>
-                <Box textAlign='right'>
-                  <span className='text-disabled'>{t('24hFees')}</span>
-                  <h5>
-                    $
-                    {formatNumber(
-                      token.oneDayVolumeUSD * GlobalConst.utils.FEEPERCENT,
-                    )}
-                  </h5>
-                </Box>
+                <span className='text-disabled'>{t('24hTradingVol1')}</span>
+                <h5>${formatNumber(token.oneDayVolumeUSD)}</h5>
+                <small
+                  className={getPriceClass(Number(token.oneDayVolumeChangeUSD))}
+                >
+                  {formatNumber(token.oneDayVolumeChangeUSD)}
+                </small>
               </Box>
               <Box>
-                <Box>
-                  <span className='text-disabled'>{t('contractAddress')}</span>
-                  <h5 className='text-primary'>
-                    {chainId ? (
-                      <a
-                        href={getEtherscanLink(chainId, token.id, 'address')}
-                        target='_blank'
-                        rel='noopener noreferrer'
-                        className='text-primary no-decoration'
-                      >
-                        {shortenAddress(token.id)}
-                      </a>
-                    ) : (
-                      shortenAddress(token.id)
-                    )}
-                  </h5>
-                </Box>
+                <span className='text-disabled'>{t('7dTradingVol')}</span>
+                <h5>${formatNumber(token.oneWeekVolumeUSD)}</h5>
               </Box>
+              <Box>
+                <span className='text-disabled'>{t('24hFees')}</span>
+                <h5>
+                  $
+                  {formatNumber(
+                    token.oneDayVolumeUSD * GlobalConst.utils.FEEPERCENT,
+                  )}
+                </h5>
+              </Box>
+            </Box>
+          </Grid>
+          <Grid item xs={12} sm={12} md={9}>
+            <Box className='panel' mt={2} mb={2} height={'100%'}>
+              <AnalyticsTokenChart token={token} />
             </Box>
           </Grid>
         </Grid>
       </Box>
-    );
-  };
-
-  const V3TokenInfo = ({ token }: any) => (
-    <Box width={1}>
-      <Grid container spacing={2}>
-        <Grid item xs={12} sm={12} md={3}>
-          <Box className='panel analyticsDetailsInfoV3'>
-            <Box>
-              <span className='text-disabled'>{t('tvl')}</span>
-              <h5>${formatNumber(token.tvlUSD)}</h5>
-              <small className={getPriceClass(Number(token.tvlUSDChange))}>
-                {formatNumber(token.tvlUSDChange)}
-              </small>
-            </Box>
-            <Box>
-              <span className='text-disabled'>{t('24hTradingVol1')}</span>
-              <h5>${formatNumber(token.oneDayVolumeUSD)}</h5>
-              <small
-                className={getPriceClass(Number(token.oneDayVolumeChangeUSD))}
-              >
-                {formatNumber(token.oneDayVolumeChangeUSD)}
-              </small>
-            </Box>
-            <Box>
-              <span className='text-disabled'>{t('7dTradingVol')}</span>
-              <h5>${formatNumber(token.oneWeekVolumeUSD)}</h5>
-            </Box>
-            <Box>
-              <span className='text-disabled'>{t('24hFees')}</span>
-              <h5>
-                $
-                {formatNumber(
-                  token.oneDayVolumeUSD * GlobalConst.utils.FEEPERCENT,
-                )}
-              </h5>
-            </Box>
-          </Box>
-        </Grid>
-        <Grid item xs={12} sm={12} md={9}>
-          <Box className='panel' mt={2} mb={2} height={'100%'}>
-            <AnalyticsTokenChart token={token} />
-          </Box>
-        </Grid>
-      </Grid>
-    </Box>
+      <Box width={1} mt={5}>
+        <p>
+          {token.symbol} {t('transactions')}
+        </p>
+      </Box>
+      <Box width={1} className='panel' mt={4}>
+        {tokenTransactions ? (
+          <TransactionsTable data={tokenTransactions} />
+        ) : (
+          <Skeleton variant='rect' width='100%' height={150} />
+        )}
+      </Box>
+    </>
   );
 
   return (
@@ -243,19 +316,14 @@ const AnalyticsTokenDetails: React.FC = () => {
               </Box>
             </Box>
           </Box>
-          {isV3 ? <V3TokenInfo token={token} /> : <V2TokenInfo token={token} />}
-          <Box width={1} mt={5}>
-            <p>
-              {token.symbol} {t('pools')}
-            </p>
-          </Box>
-          <Box width={1} className='panel' mt={4}>
-            {tokenPairs ? (
-              <PairTable data={tokenPairs} />
-            ) : (
-              <Skeleton variant='rect' width='100%' height={150} />
-            )}
-          </Box>
+          {isV3 ? (
+            <V3TokenInfo
+              token={token}
+              tokenTransactions={tokenTransactionsList}
+            />
+          ) : (
+            <V2TokenInfo token={token} tokenPairs={tokenPairs} />
+          )}
         </>
       ) : (
         <Skeleton width='100%' height={100} />
