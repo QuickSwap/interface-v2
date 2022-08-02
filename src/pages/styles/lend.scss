@@ -180,9 +180,9 @@
 
 .poolDetailsTableWrapper {
   display: flex;
-  padding: 12px 24px 16px;
+  padding: 12px 20px 16px;
   & .MuiTableCell-root {
-    padding: 8px 0;
+    padding: 4px;
     &:not(:first-child) {
       text-align: right;
     }
