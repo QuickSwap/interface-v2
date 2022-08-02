@@ -83,6 +83,12 @@ export const fetchGasForCall = async (
   };
 };
 
+const delay = (t: number) => {
+  return new Promise((resolve) => {
+    setTimeout(resolve, t);
+  });
+};
+
 const checkAndApproveCToken = async (
   asset: USDPricedPoolAsset,
   amountBN: BN,
@@ -110,17 +116,17 @@ const checkAndApproveCToken = async (
       )
       .gte(amountBN);
 
-    if (!hasApprovedEnough) {
-      const call = underlyingContract.methods.approve(cToken.address, max);
-      const { gasPrice, estimatedGas } = await fetchGasForCall(
-        call,
-        undefined,
-        address,
-        sdk,
-      );
-      await call.send({ from: address, gasPrice, estimatedGas });
-      return true;
-    }
+    if (hasApprovedEnough) return true;
+
+    const call = underlyingContract.methods.approve(cToken.address, max);
+    const { gasPrice, estimatedGas } = await fetchGasForCall(
+      call,
+      undefined,
+      address,
+      sdk,
+    );
+    await call.send({ from: address, gasPrice, estimatedGas });
+    await delay(2000);
     return true;
   } catch (e) {
     console.log(e);
