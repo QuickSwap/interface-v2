@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Box, Grid } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
 import Skeleton from '@material-ui/lab/Skeleton';
@@ -37,6 +37,7 @@ const AnalyticsOverview: React.FC = () => {
   const { maticPrice } = useMaticPrice();
 
   const isV3 = useIsV3();
+  const version = useMemo(() => `${isV3 ? `v3` : 'v2'}`, [isV3]);
 
   useEffect(() => {
     if (
@@ -136,7 +137,7 @@ const AnalyticsOverview: React.FC = () => {
           </Box>
           <Box
             className='headingWrapper cursor-pointer'
-            onClick={() => history.push(`/analytics/tokens`)}
+            onClick={() => history.push(`/analytics/${version}/tokens`)}
           >
             <p className='weight-600'>{t('seeAll')}</p>
             <ArrowForwardIos />
@@ -157,7 +158,7 @@ const AnalyticsOverview: React.FC = () => {
           </Box>
           <Box
             className='headingWrapper cursor-pointer'
-            onClick={() => history.push(`/analytics/pairs`)}
+            onClick={() => history.push(`/analytics/${version}/pairs`)}
           >
             <p className='weight-600'>{t('seeAll')}</p>
             <ArrowForwardIos />

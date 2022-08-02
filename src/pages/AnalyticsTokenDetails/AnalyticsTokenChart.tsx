@@ -111,13 +111,15 @@ const AnalyticsTokenChart: React.FC<{ token: any }> = ({ token }) => {
 
   const currentPercentClass = getPriceClass(Number(currentPercent));
 
+  console.log(currentData, currentPercent);
+
   return (
     <>
       <Box className='flex flex-wrap justify-between'>
         <Box mt={1.5}>
           <span>{chartIndexTexts[chartIndex]}</span>
           <Box mt={1}>
-            {currentData && currentPercent ? (
+            {currentData && (currentPercent || currentPercent === 0) ? (
               <>
                 <Box className='flex items-center'>
                   <h4>

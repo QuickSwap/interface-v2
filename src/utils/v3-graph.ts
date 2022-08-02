@@ -1,7 +1,8 @@
-import { clientV3 } from 'apollo/client';
+import { clientV3, farmingClient } from 'apollo/client';
 import {
   ALL_PAIRS_V3,
   ALL_TOKENS_V3,
+  FETCH_ETERNAL_FARM_FROM_POOL_V3,
   FETCH_TICKS,
   GLOBAL_CHART_V3,
   GLOBAL_DATA_V3,
@@ -84,13 +85,13 @@ export async function getGlobalDataV3(): Promise<any> {
       dataTwoWeek.data.factories[0],
     ];
 
-    const volumeUSD =
+    const oneDayVolumeUSD =
       statsCurrent && statsOneDay
         ? parseFloat(statsCurrent.totalVolumeUSD) -
           parseFloat(statsOneDay.totalVolumeUSD)
         : parseFloat(statsCurrent.totalVolumeUSD);
 
-    const volumeUSDChange = getPercentChange(
+    const volumeChangeUSD = getPercentChange(
       statsCurrent ? statsCurrent.totalVolumeUSD : undefined,
       statsOneDay ? statsOneDay.totalVolumeUSD : undefined,
     );
@@ -118,10 +119,10 @@ export async function getGlobalDataV3(): Promise<any> {
     );
 
     data = {
-      totalLiquidityUSD: statsCurrent.totalValueLockedUSD,
+      totalLiquidityUSD: Number(statsCurrent.totalValueLockedUSD).toFixed(2),
       liquidityChangeUSD,
-      volumeUSD,
-      volumeUSDChange,
+      oneDayVolumeUSD,
+      volumeChangeUSD,
       feesUSD,
       feesUSDChange,
       oneWeekVolume,
@@ -245,8 +246,10 @@ export const getChartDataV3 = async (oldestDateToFetch: number) => {
       weeklyData[startIndexWeekly] = weeklyData[startIndexWeekly] || {};
       weeklyData[startIndexWeekly].date = data[i].date;
       weeklyData[startIndexWeekly].weeklyVolumeUSD =
-        (weeklyData[startIndexWeekly].weeklyVolumeUSD ?? 0) + data[i].volumeUSD;
+        (weeklyData[startIndexWeekly].weeklyVolumeUSD ?? 0) +
+        Number(data[i].dailyVolumeUSD);
     });
+    console.log('week', data, weeklyData);
   } catch (e) {
     console.log(e);
   }
@@ -417,7 +420,7 @@ export async function getTokenInfoV3(
         ? 'totalValueLockedUSDUntracked'
         : 'totalValueLockedUSD';
 
-    const [oneDayVolumeUSD, oneDayVolumeChangeUSD] =
+    const [oneDayVolumeUSD, volumeChangeUSD] =
       current && oneDay && twoDay
         ? get2DayPercentChange(
             current[manageUntrackedVolume],
@@ -433,6 +436,7 @@ export async function getTokenInfoV3(
       current ? current[manageUntrackedTVL] : undefined,
       oneDay ? oneDay[manageUntrackedTVL] : undefined,
     );
+
     const tvlToken = current ? parseFloat(current[manageUntrackedTVL]) : 0;
     const priceUSD = current
       ? parseFloat(current.derivedMatic) * maticPrice
@@ -455,6 +459,7 @@ export async function getTokenInfoV3(
         : current
         ? parseFloat(current.txCount)
         : 0;
+
     const feesUSD =
       current && oneDay
         ? parseFloat(current.feesUSD) - parseFloat(oneDay.feesUSD)
@@ -469,7 +474,7 @@ export async function getTokenInfoV3(
       symbol: current ? formatTokenSymbol(address, current.symbol) : '',
       decimals: current ? current.decimals : 18,
       oneDayVolumeUSD,
-      oneDayVolumeChangeUSD,
+      volumeChangeUSD,
       txCount,
       tvlUSD,
       tvlUSDChange,
@@ -477,6 +482,8 @@ export async function getTokenInfoV3(
       tvlToken,
       priceUSD,
       priceChangeUSD,
+      liquidityChangeUSD: tvlUSDChange,
+      totalLiquidityUSD: tvlUSD,
     };
   } catch (err) {
     console.error(err);
@@ -543,7 +550,7 @@ export const getTokenChartDataV3 = async (
       dayIndexSet.add((data[i].date / oneDay).toFixed(0));
       dayIndexArray.push(data[i]);
       dayData.dailyVolumeUSD = Number(dayData.volumeUSD);
-      dayData.totalLiquidityUSD = Number(dayData.tvlUSD);
+      dayData.totalLiquidityUSD = Number(dayData.totalValueLockedUSD);
     });
 
     // fill in empty days
@@ -561,17 +568,16 @@ export const getTokenChartDataV3 = async (
           dailyVolumeUSD: 0,
           priceUSD: latestPriceUSD,
           totalLiquidityUSD: latestLiquidityUSD,
-          //mostLiquidPairs: latestPairDatas,
         });
       } else {
         latestLiquidityUSD = dayIndexArray[index].totalValueLockedUSD;
         latestPriceUSD = dayIndexArray[index].priceUSD;
-        //latestPairDatas = dayIndexArray[index].mostLiquidPairs
         index = index + 1;
       }
       timestamp = nextDay;
     }
     data = data.sort((a, b) => (parseInt(a.date) > parseInt(b.date) ? 1 : -1));
+    console.log('TOTALA', data);
   } catch (e) {
     console.log(e);
   }
@@ -619,7 +625,16 @@ export async function getTopPairsV3(count = 500) {
     const parsedPairsWeek = parsePairsData(pairsWeek);
 
     const aprs: any = await fetchPoolsAPR();
-    const farmingAprs: any = await fetchEternalFarmAPR();
+    const farmAprs: any = await fetchEternalFarmAPR();
+
+    const farmingAprs = await fetchEternalFarmingsAPRByPool(pairsAddresses);
+    const _farmingAprs: { [type: string]: number } = farmingAprs.reduce(
+      (acc: any, el: any) => ({
+        ...acc,
+        [el.pool]: farmAprs[el.id],
+      }),
+      {},
+    );
 
     const formatted = pairsAddresses.map((address: string) => {
       const current = parsedPairs[address];
@@ -665,9 +680,11 @@ export async function getTopPairsV3(count = 500) {
         oneDay ? oneDay[manageUntrackedTVL] : undefined,
       );
       const aprPercent = aprs[address] ? aprs[address].toFixed(2) : null;
-      const farmingApr = farmingAprs[address]
-        ? farmingAprs[address].toFixed(2)
+      const farmingApr = _farmingAprs[address]
+        ? Number(_farmingAprs[address].toFixed(2))
         : null;
+
+      console.log(farmingApr, address, farmingAprs);
 
       return {
         token0: current.token0,
@@ -682,9 +699,7 @@ export async function getTopPairsV3(count = 500) {
         tvlUSDChange,
         totalValueLockedUSD: current[manageUntrackedTVL],
         apr: aprPercent,
-        farmingApr: farmingApr > 0 ? farmingApr : null,
-        // apr: aprPercent,
-        // aprType
+        farmingApr: farmingApr && farmingApr > 0 ? farmingApr : null,
       };
     });
 
@@ -1431,6 +1446,23 @@ export async function getTokenTransactionsV3(address: string): Promise<any> {
     };
   } catch {
     return;
+  }
+}
+
+//Farming
+
+async function fetchEternalFarmingsAPRByPool(
+  poolAddresses: string[],
+): Promise<any> {
+  try {
+    const eternalFarmings = await farmingClient.query({
+      query: FETCH_ETERNAL_FARM_FROM_POOL_V3(poolAddresses),
+      fetchPolicy: 'network-only',
+    });
+
+    return eternalFarmings.data.eternalFarmings;
+  } catch (err) {
+    throw new Error('Eternal fetch error ' + err);
   }
 }
 

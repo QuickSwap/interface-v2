@@ -1,7 +1,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Box } from '@material-ui/core';
 import { TopMovers, TokensTable } from 'components';
-import { useBookmarkTokens, useEthPrice } from 'state/application/hooks';
+import {
+  useBookmarkTokens,
+  useEthPrice,
+  useMaticPrice,
+} from 'state/application/hooks';
 import { getTopTokens } from 'utils';
 import { Skeleton } from '@material-ui/lab';
 import { useTranslation } from 'react-i18next';
@@ -16,6 +20,7 @@ const AnalyticsTokens: React.FC = () => {
   const [topTokens, updateTopTokens] = useState<any[] | null>(null);
   const { bookmarkTokens } = useBookmarkTokens();
   const { ethPrice } = useEthPrice();
+  const { maticPrice } = useMaticPrice();
 
   const isV3 = useIsV3();
 
@@ -31,9 +36,18 @@ const AnalyticsTokens: React.FC = () => {
 
   useEffect(() => {
     const fetchTopTokens = async () => {
-      if (ethPrice.price && ethPrice.oneDayPrice) {
+      if (
+        ethPrice.price &&
+        ethPrice.oneDayPrice &&
+        maticPrice.price &&
+        maticPrice.oneDayPrice
+      ) {
         const topTokensFn = isV3
-          ? getTopTokensV3(ethPrice.price, ethPrice.oneDayPrice, 5)
+          ? getTopTokensV3(
+              maticPrice.price,
+              maticPrice.oneDayPrice,
+              GlobalConst.utils.ANALYTICS_TOKENS_COUNT,
+            )
           : getTopTokens(
               ethPrice.price,
               ethPrice.oneDayPrice,
@@ -48,7 +62,13 @@ const AnalyticsTokens: React.FC = () => {
       }
     };
     fetchTopTokens();
-  }, [ethPrice.price, ethPrice.oneDayPrice, isV3]);
+  }, [
+    ethPrice.price,
+    ethPrice.oneDayPrice,
+    maticPrice.price,
+    maticPrice.oneDayPrice,
+    isV3,
+  ]);
 
   return (
     <Box width='100%' mb={3}>

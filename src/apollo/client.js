@@ -18,6 +18,14 @@ export const clientV3 = new ApolloClient({
   shouldBatch: true,
 });
 
+export const farmingClient = new ApolloClient({
+  link: new HttpLink({
+    uri: process.env.REACT_APP_V3_FARMING_API_URL,
+  }),
+  cache: new InMemoryCache(),
+  shouldBatch: true,
+});
+
 export const txClient = new ApolloClient({
   link: new HttpLink({
     uri: process.env.REACT_APP_TX_GRAPH_API_URL,

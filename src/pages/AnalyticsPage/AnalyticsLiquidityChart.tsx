@@ -65,15 +65,19 @@ const AnalyticsLiquidityChart: React.FC = () => {
         Number(value.totalLiquidityUSD),
       );
       // this is for defining the scale for the liquidity values to present in graph. Liquidity values are more than 100M so set the min and max amount with rounding after dividing into 20000000 to show all liquidity values into the graph
-      const minVolume =
-        Math.floor(Math.min(...dailyVolumes) / 20000000) * 20000000;
-      const maxVolume =
-        Math.ceil(Math.max(...dailyVolumes) / 20000000) * 20000000;
+      // const minVolume =
+      //   Math.floor(Math.min(...dailyVolumes) / 20000000) * 20000000;
+      // const maxVolume =
+      //   Math.ceil(Math.max(...dailyVolumes) / 20000000) * 20000000;
+
+      const minVolume = Math.floor(Math.min(...dailyVolumes));
+      const maxVolume = Math.ceil(Math.max(...dailyVolumes));
+
       const values = [];
       // show 10 values in the y axis of the graph
       const step = (maxVolume - minVolume) / 10;
       for (let i = maxVolume; i >= minVolume; i -= step) {
-        values.push(i);
+        values.push(Math.floor(i));
       }
       return values;
     } else {

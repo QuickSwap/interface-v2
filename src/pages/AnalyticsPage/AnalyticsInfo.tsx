@@ -37,21 +37,23 @@ const AnalyticsInfo: React.FC<AnalyticsInfoProps> = ({ data }) => {
     v3: [
       {
         title: t('24hVol'),
-        value: data.volumeUSD?.toLocaleString(),
-        percentChange: `$${data.volumeUSDChange}`,
+        value: `$${data.oneDayVolumeUSD?.toLocaleString()}`,
+        percentChange: data.volumeChangeUSD,
       },
       {
         title: t('24hFees'),
-        value: data.feesUSD?.toLocaleString(),
-        percentChange: `$${data.feesUSDChange}`,
+        value: `$${data.feesUSD?.toLocaleString()}`,
+        percentChange: data.feesUSDChange,
       },
       {
         title: t('tvl'),
-        value: `$${data.tvlUSD?.toLocaleString()}`,
-        percentChange: data.tvlUSDChange,
+        value: `$${data.totalLiquidityUSD?.toLocaleString()}`,
+        percentChange: data.liquidityChangeUSD,
       },
     ],
   };
+
+  console.log(list.v3);
 
   return (
     <>
@@ -64,7 +66,7 @@ const AnalyticsInfo: React.FC<AnalyticsInfoProps> = ({ data }) => {
           <small>
             {item.title}: {item.value}
           </small>
-          {Number.isInteger(item.percentChange) ? (
+          {item.percentChange !== null ? (
             <Box
               ml={2}
               className={`priceChangeWrapper ${getPriceClass(

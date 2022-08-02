@@ -658,3 +658,31 @@ export const GLOBAL_TRANSACTIONS_V3 = gql`
     }
   }
 `;
+
+//Farming
+
+export const FETCH_ETERNAL_FARM_FROM_POOL_V3 = (pools: string[]) => {
+  let poolString = `[`;
+  pools.map((address) => {
+    return (poolString += `"${address}",`);
+  });
+  poolString += ']';
+  const queryString = `
+      query eternalFarmingsFromPools {
+        eternalFarmings(where: {pool_in: ${poolString}, isDetached: false}) {
+          id
+          rewardToken
+          bonusRewardToken
+          pool
+          startTime
+          endTime
+          reward
+          bonusReward
+          rewardRate
+          bonusRewardRate
+          isDetached
+        }
+      }
+      `;
+  return gql(queryString);
+};
