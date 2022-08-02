@@ -584,27 +584,6 @@ export async function getTopPairsV3(count = 500) {
     const aprs: any = await fetchPoolsAPR();
     const farmingAprs: any = await fetchEternalFarmAPR();
 
-    // const farmingAprs = await fetchEternalFarmingsAPRByPool(poolsAddresses)
-    // const _farmingAprs: { [type: string]: number } = farmingAprs.reduce((acc, el) => (
-    //     {
-    //         ...acc,
-    //         [el.pool]: farmAprs[el.id]
-    //     }
-    // ), {})
-
-    // const limitFarms: { [key: string]: number } = await fetchLimitFarmAPR()
-
-    // const filteredFarms: { [key: string]: number } = Object.entries(limitFarms).filter((el) => el[1] >= 0).reduce((acc, el) => ({
-    //     ...acc,
-    //     [el[0]]: el[1]
-    // }), {})
-
-    // const limitAprs = await fetchLimitFarmingsAPRByPool(poolsAddresses)
-    // const _limitAprs: { [type: string]: number } = limitAprs.reduce((acc, el) => ({
-    //     ...acc,
-    //     [el.pool]: filteredFarms[el.id]
-    // }), {})
-
     const formatted = pairsAddresses.map((address: string) => {
       const current = parsedPairs[address];
       const oneDay = parsedPairs24[address];
@@ -648,10 +627,10 @@ export async function getTopPairsV3(count = 500) {
         current ? current[manageUntrackedTVL] : undefined,
         oneDay ? oneDay[manageUntrackedTVL] : undefined,
       );
-      const aprPercent = aprs[address] ? aprs[address].toFixed(2) : 0;
+      const aprPercent = aprs[address] ? aprs[address].toFixed(2) : null;
       const farmingApr = farmingAprs[address]
         ? farmingAprs[address].toFixed(2)
-        : 0;
+        : null;
 
       return {
         token0: current.token0,
@@ -666,7 +645,7 @@ export async function getTopPairsV3(count = 500) {
         tvlUSDChange,
         totalValueLockedUSD: current[manageUntrackedTVL],
         apr: aprPercent,
-        farmingApr: farmingApr,
+        farmingApr: farmingApr > 0 ? farmingApr : null,
         // apr: aprPercent,
         // aprType
       };

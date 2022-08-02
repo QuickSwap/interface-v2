@@ -177,13 +177,13 @@ const PairTable: React.FC<PairsTableProps> = ({
         </Box>
         {isV3 ? (
           <>
-            <Box className='mobileRow text-success'>
+            <Box className={`mobileRow ${apr ? 'text-success' : ''}`}>
               <p>{t('apr')}</p>
-              <p>{apr}%</p>
+              <p>{apr ? `${apr}%` : '-'}</p>
             </Box>
-            <Box className='mobileRow text-success'>
+            <Box className={`mobileRow ${farmingApr ? 'text-success' : ''}`}>
               <p>{t('farmingApr')}</p>
-              <p>{farmingApr}%</p>
+              <p>{farmingApr ? `${farmingApr}%` : '-'}</p>
             </Box>
           </>
         ) : (
@@ -240,10 +240,18 @@ const PairTable: React.FC<PairsTableProps> = ({
 
     const v3SpecificRows = [
       {
-        html: <p className='text-success'>{apr}%</p>,
+        html: (
+          <p className={`${apr ? 'text-success' : ''}`}>
+            {apr ? `${apr}%` : '-'}
+          </p>
+        ),
       },
       {
-        html: <p className='text-success'>{farmingApr}%</p>,
+        html: (
+          <p className={`${farmingApr ? 'text-success' : ''}`}>
+            {farmingApr ? `${farmingApr}%` : '-'}
+          </p>
+        ),
       },
     ];
     return [
