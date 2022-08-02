@@ -1,5 +1,5 @@
 import JSBI from 'jsbi';
-import { PoolState } from '../../../hooks/v3/usePools';
+import { PoolState, usePool } from 'hooks/v3/usePools';
 import {
   Currency,
   CurrencyAmount,
@@ -22,7 +22,6 @@ import {
   typeStartPriceInput,
 } from './actions';
 import { tryParseTick } from './utils';
-import { usePool } from 'hooks/v3/usePools';
 import { useAppDispatch, useAppSelector } from 'state/hooks';
 import { getTickToPrice } from 'v3lib/utils/getTickToPrice';
 import { GlobalConst } from '../../../constants';

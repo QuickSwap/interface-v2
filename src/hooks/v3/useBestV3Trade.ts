@@ -41,6 +41,10 @@ export function useBestV3TradeExactIn(
     currencyOut,
   );
 
+  if (!routesLoading) {
+    console.log('BP');
+  }
+
   const quoteExactInInputs = useMemo(() => {
     return routes.map((route) => [
       encodeRouteToPath(route, false),
