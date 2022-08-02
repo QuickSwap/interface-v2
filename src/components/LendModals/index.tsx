@@ -270,10 +270,12 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
         : `${supplyBalance.toLocaleString()} ${asset.underlyingSymbol}`,
       showArrow,
       htmlAfterArrow: updatedAsset
-        ? `${convertBNToNumber(
-            updatedAsset.supplyBalance,
-            asset.underlyingDecimals,
-          ).toLocaleString()} ${asset.underlyingSymbol}`
+        ? borrow
+          ? midUsdFormatter(updatedAsset.borrowBalanceUSD)
+          : `${convertBNToNumber(
+              updatedAsset.supplyBalance,
+              asset.underlyingDecimals,
+            ).toLocaleString()} ${asset.underlyingSymbol}`
         : '',
     },
     {
