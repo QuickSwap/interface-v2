@@ -25,9 +25,9 @@ import {
 import AnalyticsPairLiquidityChartV3 from './AnalyticsPairLiquidityChartV3';
 
 const CHART_VOLUME = 0;
-const CHART_LIQUIDITY = 1;
+const CHART_TVL = 1;
 const CHART_FEES = 2;
-const CHART_TVL = 3;
+const CHART_LIQUIDITY = 3;
 const CHART_POOL_FEE = 4;
 const CHART_PRICE = 5;
 
@@ -40,6 +40,8 @@ const AnalyticsPairChart: React.FC<{ pairData: any }> = ({ pairData }) => {
   const [durationIndex, setDurationIndex] = useState(
     GlobalConst.analyticChart.ONE_MONTH_CHART,
   );
+
+  const isV3 = useIsV3();
 
   const usingUtVolume =
     pairData &&
@@ -56,23 +58,23 @@ const AnalyticsPairChart: React.FC<{ pairData: any }> = ({ pairData }) => {
             Number(pairData.oneDayVolumeUSD) * GlobalConst.utils.FEEPERCENT
           ).toLocaleString()
       : '-';
-  const [chartIndex, setChartIndex] = useState(CHART_PRICE);
-  const chartIndexes = [
-    CHART_VOLUME,
-    CHART_LIQUIDITY,
-    CHART_FEES,
-    CHART_TVL,
-    CHART_POOL_FEE,
-    CHART_PRICE,
-  ];
-  const chartIndexTexts = [
-    t('volume'),
-    t('liquidity'),
-    t('fees'),
-    t('tvl'),
-    t('poolFee'),
-    t('price'),
-  ];
+  const [chartIndex, setChartIndex] = useState(CHART_VOLUME);
+  const chartIndexes = [CHART_VOLUME, CHART_TVL, CHART_FEES];
+
+  const chartIndexesV3 = [CHART_LIQUIDITY, CHART_POOL_FEE, CHART_PRICE];
+
+  const chartIndexTexts = [t('volume'), t('tvl'), t('fees')];
+
+  const chartIndexTextsV3 = [t('liquidity'), t('poolFee'), t('price')];
+
+  const _chartIndexes = useMemo(
+    () => chartIndexes.concat(isV3 ? chartIndexesV3 : []),
+    [isV3],
+  );
+  const _chartIndexesTexts: any = useMemo(
+    () => chartIndexTexts.concat(isV3 ? chartIndexTextsV3 : []),
+    [isV3],
+  );
 
   const chartData = useMemo(() => {
     if (!pairChartData || !pairFeeData) return;
@@ -89,24 +91,26 @@ const AnalyticsPairChart: React.FC<{ pairData: any }> = ({ pairData }) => {
         case CHART_TVL:
           return Number(item.reserveUSD);
         case CHART_FEES:
-          return Number(item.dailyVolumeUSD) * GlobalConst.utils.FEEPERCENT;
+          return isV3
+            ? Number(item.feesUSD)
+            : Number(item.dailyVolumeUSD) * GlobalConst.utils.FEEPERCENT;
         case CHART_PRICE:
           return Number(item.token0Price);
         default:
           return;
       }
     });
-  }, [pairChartData, pairFeeData, chartIndex]);
+  }, [pairChartData, pairFeeData, chartIndex, isV3]);
 
   const currentData = useMemo(() => {
     if (!pairData) return;
     switch (chartIndex) {
       case CHART_VOLUME:
         return pairData.oneDayVolumeUSD;
-      case CHART_LIQUIDITY:
+      case CHART_TVL:
         return pairData.reserveUSD ?? pairData.trackedReserveUSD;
       case CHART_FEES:
-        return fees;
+        return isV3 ? pairData.feesUSD : fees;
       case CHART_POOL_FEE:
         return pairData.fee;
       case CHART_PRICE:
@@ -114,25 +118,27 @@ const AnalyticsPairChart: React.FC<{ pairData: any }> = ({ pairData }) => {
       default:
         return;
     }
-  }, [pairData, chartIndex, fees]);
+  }, [pairData, chartIndex, fees, isV3]);
 
   const currentPercent = useMemo(() => {
     if (!pairData) return;
     switch (chartIndex) {
       case CHART_VOLUME:
         return pairData.volumeChangeUSD;
-      case CHART_LIQUIDITY:
+      case CHART_TVL:
         return pairData.liquidityChangeUSD;
       case CHART_FEES:
-        return usingUtVolume
+        return isV3
+          ? pairData.feesUSDChange
+          : usingUtVolume
           ? pairData.volumeChangeUntracked
           : pairData.volumeChangeUSD;
+      case CHART_POOL_FEE:
+        return pairData.poolFeeChange;
       default:
         return;
     }
-  }, [pairData, chartIndex, usingUtVolume]);
-
-  const isV3 = useIsV3();
+  }, [pairData, chartIndex, usingUtVolume, isV3]);
 
   useEffect(() => {
     async function fetchPairChartData() {
@@ -190,7 +196,7 @@ const AnalyticsPairChart: React.FC<{ pairData: any }> = ({ pairData }) => {
         <Box mt={1.5}>
           <span>{chartIndexTexts[chartIndex]}</span>
           <Box mt={1}>
-            {currentPercent && currentData ? (
+            {currentData && (currentPercent || currentPercent === 0) ? (
               <>
                 <Box className='flex items-center'>
                   <h4>
@@ -210,16 +216,16 @@ const AnalyticsPairChart: React.FC<{ pairData: any }> = ({ pairData }) => {
                   <span>{dayjs().format('MMM DD, YYYY')}</span>
                 </Box>
               </>
-            ) : (
+            ) : chartIndex !== CHART_LIQUIDITY ? (
               <Skeleton variant='rect' width='120px' height='30px' />
-            )}
+            ) : null}
           </Box>
         </Box>
         <Box className='flex flex-col items-end'>
           <Box mt={1.5}>
             <ChartType
-              chartTypes={chartIndexes}
-              typeTexts={chartIndexTexts}
+              chartTypes={_chartIndexes}
+              typeTexts={_chartIndexesTexts}
               chartType={chartIndex}
               setChartType={setChartIndex}
             />

@@ -358,6 +358,7 @@ export const PAIR_CHART_V3 = gql`
       volumeToken1
       token0Price
       token1Price
+      feesUSD
     }
   }
 `;
