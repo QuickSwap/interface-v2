@@ -105,8 +105,14 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
         asset.underlyingBalance,
         asset.underlyingDecimals,
       );
-      if (modalType === 'supply' || modalType === 'repay') {
+      if (modalType === 'supply') {
         setMaxAmount(underlyingBalance);
+      } else if (modalType === 'repay') {
+        const debt = convertBNToNumber(
+          asset.borrowBalance,
+          asset.underlyingDecimals,
+        );
+        setMaxAmount(Math.min(underlyingBalance, debt));
       } else if (modalType === 'withdraw') {
         try {
           const maxRedeem = await lens.getMaxRedeem(
