@@ -471,6 +471,8 @@ export const getTopTokens = async (
       {},
     );
 
+    console.log('current', current);
+
     const bulkResults = await Promise.all(
       current &&
         oneDayData &&
@@ -563,6 +565,7 @@ export const getTopTokens = async (
           return data;
         }),
     );
+    console.log('bul', bulkResults);
     return bulkResults;
   } catch (e) {
     console.log(e);

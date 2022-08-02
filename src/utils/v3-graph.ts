@@ -6,6 +6,7 @@ import {
   GLOBAL_CHART_V3,
   GLOBAL_DATA_V3,
   GLOBAL_TRANSACTIONS_V3,
+  MATIC_PRICE_V3,
   PAIRS_FROM_ADDRESSES_V3,
   PAIR_CHART_V3,
   PAIR_FEE_CHART_V3,
@@ -17,6 +18,7 @@ import {
 } from 'apollo/queries-v3';
 import {
   get2DayPercentChange,
+  getBlockFromTimestamp,
   getBlocksFromTimestamps,
   getPercentChange,
   getSecondsOneDay,
@@ -132,6 +134,39 @@ export async function getGlobalDataV3(): Promise<any> {
   return data;
 }
 
+export const getMaticPrice: () => Promise<number[]> = async () => {
+  const utcCurrentTime = dayjs();
+
+  const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix();
+  let maticPrice = 0;
+  let maticPriceOneDay = 0;
+  let priceChangeMatic = 0;
+
+  try {
+    const oneDayBlock = await getBlockFromTimestamp(utcOneDayBack);
+    const result = await clientV3.query({
+      query: MATIC_PRICE_V3(),
+      fetchPolicy: 'network-only',
+    });
+    const resultOneDay = await clientV3.query({
+      query: MATIC_PRICE_V3(oneDayBlock),
+      fetchPolicy: 'network-only',
+    });
+    const currentPrice = Number(result?.data?.bundles[0]?.maticPriceUSD ?? 0);
+    const oneDayBackPrice = Number(
+      resultOneDay?.data?.bundles[0]?.maticPriceUSD ?? 0,
+    );
+
+    priceChangeMatic = getPercentChange(currentPrice, oneDayBackPrice);
+    maticPrice = currentPrice;
+    maticPriceOneDay = oneDayBackPrice;
+  } catch (e) {
+    console.log(e);
+  }
+
+  return [maticPrice, maticPriceOneDay, priceChangeMatic];
+};
+
 export const getChartDataV3 = async (oldestDateToFetch: number) => {
   let data: any[] = [];
   const weeklyData: any[] = [];
@@ -170,6 +205,7 @@ export const getChartDataV3 = async (oldestDateToFetch: number) => {
         // add the day index to the set of days
         dayIndexSet.add((data[i].date / oneDay).toFixed(0));
         dayIndexArray.push(data[i]);
+        dayData.totalLiquidityUSD = Number(dayData.tvlUSD);
       });
 
       // fill in empty days ( there will be no day datas if no trades made that day )
@@ -220,8 +256,8 @@ export const getChartDataV3 = async (oldestDateToFetch: number) => {
 //Tokens
 
 export async function getTopTokensV3(
-  ethPrice: number,
-  ethPrice24H: number,
+  maticPrice: number,
+  maticPrice24H: number,
   count = 500,
 ): Promise<any> {
   try {
@@ -289,10 +325,10 @@ export async function getTopTokensV3(
       );
       const tvlToken = current ? parseFloat(current[manageUntrackedTVL]) : 0;
       const priceUSD = current
-        ? parseFloat(current.derivedMatic) * ethPrice
+        ? parseFloat(current.derivedMatic) * maticPrice
         : 0;
       const priceUSDOneDay = oneDay
-        ? parseFloat(oneDay.derivedMatic) * ethPrice24H
+        ? parseFloat(oneDay.derivedMatic) * maticPrice24H
         : 0;
 
       const priceChangeUSD =
@@ -325,9 +361,9 @@ export async function getTopTokensV3(
         oneDayVolumeUSD,
         volumeUSDChange,
         txCount,
-        tvlUSD,
+        totalLiquidityUSD: tvlUSD,
+        liquidityChangeUSD: tvlUSDChange,
         feesUSD,
-        tvlUSDChange,
         tvlToken,
         priceUSD,
         priceChangeUSD,
@@ -341,8 +377,8 @@ export async function getTopTokensV3(
 }
 
 export async function getTokenInfoV3(
-  ethPrice: number,
-  ethPrice24H: number,
+  maticPrice: number,
+  maticPrice24H: number,
   address: string,
 ): Promise<any> {
   try {
@@ -398,9 +434,11 @@ export async function getTokenInfoV3(
       oneDay ? oneDay[manageUntrackedTVL] : undefined,
     );
     const tvlToken = current ? parseFloat(current[manageUntrackedTVL]) : 0;
-    const priceUSD = current ? parseFloat(current.derivedMatic) * ethPrice : 0;
+    const priceUSD = current
+      ? parseFloat(current.derivedMatic) * maticPrice
+      : 0;
     const priceUSDOneDay = oneDay
-      ? parseFloat(oneDay.derivedMatic) * ethPrice24H
+      ? parseFloat(oneDay.derivedMatic) * maticPrice24H
       : 0;
 
     const priceChangeUSD =
@@ -500,19 +538,18 @@ export const getTokenChartDataV3 = async (
     const dayIndexArray: any[] = [];
     const oneDay = getSecondsOneDay();
 
-    console.log('Dat', data);
     data.forEach((dayData, i) => {
       // add the day index to the set of days
       dayIndexSet.add((data[i].date / oneDay).toFixed(0));
       dayIndexArray.push(data[i]);
       dayData.dailyVolumeUSD = Number(dayData.volumeUSD);
+      dayData.totalLiquidityUSD = Number(dayData.tvlUSD);
     });
 
     // fill in empty days
     let timestamp = data[0] && data[0].date ? data[0].date : startTime;
     let latestLiquidityUSD = data[0] && data[0].totalValueLockedUSD;
     let latestPriceUSD = data[0] && data[0].priceUSD;
-    //let latestPairDatas = data[0] && data[0].mostLiquidPairs
     let index = 1;
     while (timestamp < utcEndTime.startOf('minute').unix() - oneDay) {
       const nextDay = timestamp + oneDay;

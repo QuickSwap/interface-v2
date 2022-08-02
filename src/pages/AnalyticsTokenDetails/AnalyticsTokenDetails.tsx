@@ -15,7 +15,11 @@ import {
 } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import { CurrencyLogo, PairTable, TransactionsTable } from 'components';
-import { useBookmarkTokens, useEthPrice } from 'state/application/hooks';
+import {
+  useBookmarkTokens,
+  useEthPrice,
+  useMaticPrice,
+} from 'state/application/hooks';
 import { ReactComponent as StarChecked } from 'assets/images/StarChecked.svg';
 import { ReactComponent as StarUnchecked } from 'assets/images/StarUnchecked.svg';
 import { getAddress } from '@ethersproject/address';
@@ -44,6 +48,7 @@ const AnalyticsTokenDetails: React.FC = () => {
     removeBookmarkToken,
   } = useBookmarkTokens();
   const { ethPrice } = useEthPrice();
+  const { maticPrice } = useMaticPrice();
 
   const isV3 = useIsV3();
 
@@ -78,9 +83,18 @@ const AnalyticsTokenDetails: React.FC = () => {
 
   useEffect(() => {
     async function fetchTokenInfo() {
-      if (ethPrice.price && ethPrice.oneDayPrice) {
+      if (
+        ethPrice.price &&
+        ethPrice.oneDayPrice &&
+        maticPrice.price &&
+        maticPrice.oneDayPrice
+      ) {
         const tokenInfoFn = isV3
-          ? getTokenInfoV3(ethPrice.price, ethPrice.oneDayPrice, tokenAddress)
+          ? getTokenInfoV3(
+              maticPrice.price,
+              maticPrice.oneDayPrice,
+              tokenAddress,
+            )
           : getTokenInfo(ethPrice.price, ethPrice.oneDayPrice, tokenAddress);
 
         tokenInfoFn.then((tokenInfo) => {
@@ -115,7 +129,14 @@ const AnalyticsTokenDetails: React.FC = () => {
     } else {
       fetchPairs();
     }
-  }, [tokenAddress, ethPrice.price, ethPrice.oneDayPrice, isV3]);
+  }, [
+    tokenAddress,
+    ethPrice.price,
+    ethPrice.oneDayPrice,
+    maticPrice.price,
+    maticPrice.oneDayPrice,
+    isV3,
+  ]);
 
   useEffect(() => {
     setToken(null);

@@ -5,7 +5,11 @@ import Skeleton from '@material-ui/lab/Skeleton';
 import { ArrowForwardIos } from '@material-ui/icons';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
-import { useEthPrice, useGlobalData } from 'state/application/hooks';
+import {
+  useEthPrice,
+  useGlobalData,
+  useMaticPrice,
+} from 'state/application/hooks';
 import {
   getTopPairs,
   getTopTokens,
@@ -30,11 +34,18 @@ const AnalyticsOverview: React.FC = () => {
   const [topTokens, updateTopTokens] = useState<any[] | null>(null);
   const [topPairs, updateTopPairs] = useState<any[] | null>(null);
   const { ethPrice } = useEthPrice();
+  const { maticPrice } = useMaticPrice();
 
   const isV3 = useIsV3();
 
   useEffect(() => {
-    if (!ethPrice.price || !ethPrice.oneDayPrice) return;
+    if (
+      !ethPrice.price ||
+      !ethPrice.oneDayPrice ||
+      !maticPrice.price ||
+      !maticPrice.oneDayPrice
+    )
+      return;
 
     const globalDataFn = isV3
       ? getGlobalDataV3()
@@ -48,8 +59,8 @@ const AnalyticsOverview: React.FC = () => {
 
     const topTokensFn = isV3
       ? getTopTokensV3(
-          ethPrice.price,
-          ethPrice.oneDayPrice,
+          maticPrice.price,
+          maticPrice.oneDayPrice,
           GlobalConst.utils.ANALYTICS_TOKENS_COUNT,
         )
       : getTopTokens(
@@ -86,7 +97,14 @@ const AnalyticsOverview: React.FC = () => {
         updateTopPairs(data);
       }
     });
-  }, [updateGlobalData, ethPrice.price, ethPrice.oneDayPrice, isV3]);
+  }, [
+    updateGlobalData,
+    ethPrice.price,
+    ethPrice.oneDayPrice,
+    maticPrice.price,
+    maticPrice.oneDayPrice,
+    isV3,
+  ]);
 
   return (
     <Box width='100%' mb={3}>

@@ -1,3 +1,4 @@
+import { GlobalConst } from 'constants/index';
 import gql from 'graphql-tag';
 
 //Global
@@ -15,6 +16,26 @@ export const GLOBAL_DATA_V3 = (block?: number) => {
     }
   `;
   return gql(qString);
+};
+
+export const MATIC_PRICE_V3: any = (block?: number) => {
+  const queryString = block
+    ? `
+    query bundles {
+      bundles(where: { id: ${GlobalConst.utils.BUNDLE_ID} } block: {number: ${block}}) {
+        id
+        maticPriceUSD
+      }
+    }
+  `
+    : ` query bundles {
+      bundles(where: { id: ${GlobalConst.utils.BUNDLE_ID} }) {
+        id
+        maticPriceUSD
+      }
+    }
+  `;
+  return gql(queryString);
 };
 
 export const GLOBAL_CHART_V3 = gql`

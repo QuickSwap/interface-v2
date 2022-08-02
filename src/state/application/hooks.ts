@@ -17,8 +17,9 @@ import {
   removeBookmarkPair,
   updateTokenDetails,
   updateIsProMode,
+  updateMaticPrice,
 } from './actions';
-import { ETHPrice, TokenDetail } from './reducer';
+import { ETHPrice, MaticPrice, TokenDetail } from './reducer';
 
 export function useBlockNumber(): number | undefined {
   const { chainId } = useActiveWeb3React();
@@ -121,6 +122,28 @@ export function useEthPrice(): {
     [dispatch],
   );
   return { ethPrice, updateEthPrice: _updateETHPrice };
+}
+
+export function useMaticPrice(): {
+  maticPrice: MaticPrice;
+  updateMaticPrice: ({
+    price,
+    oneDayPrice,
+    maticPriceChange,
+  }: MaticPrice) => void;
+} {
+  const maticPrice = useSelector(
+    (state: AppState) => state.application.maticPrice,
+  );
+
+  const dispatch = useDispatch();
+  const _updateMaticPrice = useCallback(
+    ({ price, oneDayPrice, maticPriceChange }) => {
+      dispatch(updateMaticPrice({ price, oneDayPrice, maticPriceChange }));
+    },
+    [dispatch],
+  );
+  return { maticPrice, updateMaticPrice: _updateMaticPrice };
 }
 
 export function useGlobalData(): {
