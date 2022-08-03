@@ -60,11 +60,11 @@ export class WrappedStakingInfo implements StakingBasic {
     ];
     this.rewardToken = stakingInfo.rewardToken
       ? getTokenFromAddress(
-        stakingInfo.rewardToken,
-        chainId,
-        tokenAddressMap,
-        farmTokens,
-      )
+          stakingInfo.rewardToken,
+          chainId,
+          tokenAddressMap,
+          farmTokens,
+        )
       : GlobalValue.tokens.COMMON.OLD_DQUICK;
   }
 }
@@ -108,7 +108,7 @@ export function listToFarmMap(
       );
       if (
         stakingInfoMap[wrappedStakingInfo.chainId][
-        wrappedStakingInfo.stakingRewardAddress
+          wrappedStakingInfo.stakingRewardAddress
         ] !== undefined
       )
         throw Error('Duplicate farms.');
@@ -136,29 +136,29 @@ export function useFarmList(url: string | undefined): StakingInfoAddressMap {
   const farmTokenAddresses =
     current && tokenMap
       ? current.active
-        .concat(current.closed)
-        .map((item) => [
-          item.baseToken,
-          item.tokens[0],
-          item.tokens[1],
-          item.rewardToken,
-        ])
-        .flat()
-        .filter((item) => !!item)
-        .filter((address) => !tokenMap[ChainId.MATIC][address])
-        .filter(
-          (address) =>
-            !Object.values(GlobalValue.tokens.COMMON).find(
-              (token) =>
-                token.address.toLowerCase() === address.toLowerCase(),
-            ),
-        )
-        .filter(
-          (addr, ind, self) =>
-            self.findIndex(
-              (address) => address.toLowerCase() === addr.toLowerCase(),
-            ) === ind,
-        )
+          .concat(current.closed)
+          .map((item) => [
+            item.baseToken,
+            item.tokens[0],
+            item.tokens[1],
+            item.rewardToken,
+          ])
+          .flat()
+          .filter((item) => !!item)
+          .filter((address) => !tokenMap[ChainId.MATIC][address])
+          .filter(
+            (address) =>
+              !Object.values(GlobalValue.tokens.COMMON).find(
+                (token) =>
+                  token.address.toLowerCase() === address.toLowerCase(),
+              ),
+          )
+          .filter(
+            (addr, ind, self) =>
+              self.findIndex(
+                (address) => address.toLowerCase() === addr.toLowerCase(),
+              ) === ind,
+          )
       : [];
 
   const farmTokens = useTokens(farmTokenAddresses);

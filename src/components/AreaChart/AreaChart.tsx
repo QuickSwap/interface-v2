@@ -124,9 +124,11 @@ const AreaChart: React.FC<AreaChartProps> = ({
         return `<div class="areaChartTooltip"><small>${formatDateFromTimeStamp(
           dates[dataPointIndex],
           'MMM DD, YYYY',
-        )}</small><small><b>$${formatCompact(
+        )}</small><small><b>
+        ${yAxisTicker === '$' ? yAxisTicker : ''}${formatCompact(
           series[seriesIndex][dataPointIndex],
-        )}</b></small></div>`;
+        )}${yAxisTicker === '%' ? yAxisTicker : ''}
+      </b></small></div>`;
       },
     },
   };

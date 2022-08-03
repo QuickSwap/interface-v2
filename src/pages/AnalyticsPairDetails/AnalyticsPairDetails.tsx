@@ -302,7 +302,11 @@ const AnalyticsPairDetails: React.FC = () => {
         </Grid>
         <Grid item xs={12} sm={12} md={9}>
           <Box className='panel' mt={2} mb={2} height={'100%'}>
-            <AnalyticsPairChart pairData={pairData} />
+            <AnalyticsPairChart
+              pairData={pairData}
+              token0Rate={token0Rate}
+              token1Rate={token1Rate}
+            />
           </Box>
         </Grid>
       </Grid>

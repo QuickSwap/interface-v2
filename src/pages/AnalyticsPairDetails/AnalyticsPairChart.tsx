@@ -31,7 +31,11 @@ const CHART_LIQUIDITY = 3;
 const CHART_POOL_FEE = 4;
 const CHART_PRICE = 5;
 
-const AnalyticsPairChart: React.FC<{ pairData: any }> = ({ pairData }) => {
+const AnalyticsPairChart: React.FC<{
+  pairData: any;
+  token0Rate?: any;
+  token1Rate?: any;
+}> = ({ pairData, token0Rate, token1Rate }) => {
   const { t } = useTranslation();
   const match = useRouteMatch<{ id: string }>();
   const pairAddress = match.params.id;
@@ -234,9 +238,27 @@ const AnalyticsPairChart: React.FC<{ pairData: any }> = ({ pairData }) => {
                   <span>{dayjs().format('MMM DD, YYYY')}</span>
                 </Box>
               </>
-            ) : chartIndex !== CHART_LIQUIDITY ? (
+            ) : chartIndex === CHART_LIQUIDITY ? (
+              <Box>
+                <Box className='flex items-center' mb={0.5}>
+                  <Box
+                    width={8}
+                    height={8}
+                    borderRadius={'50%'}
+                    bgcolor={'#64FBD3'}
+                  />
+                  <Box ml={1}>Current price</Box>
+                </Box>
+                <Box
+                  mb={0.5}
+                >{`1 ${pairData.token0.symbol} = ${token0Rate} ${pairData.token1.symbol}`}</Box>
+                <Box
+                  mb={0.5}
+                >{`1 ${pairData.token1.symbol} = ${token1Rate} ${pairData.token0.symbol}`}</Box>
+              </Box>
+            ) : (
               <Skeleton variant='rect' width='120px' height='30px' />
-            ) : null}
+            )}
           </Box>
         </Box>
         <Box className='flex flex-col items-end'>

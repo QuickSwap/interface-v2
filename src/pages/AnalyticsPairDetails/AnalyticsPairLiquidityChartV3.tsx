@@ -12,6 +12,8 @@ import React, {
 import { isAddress } from 'utils';
 import { getLiquidityChart } from 'utils/v3-graph';
 import Chart from 'react-apexcharts';
+import { Box } from '@material-ui/core';
+import '../styles/analytics.scss';
 
 const AnalyticsPairLiquidityChartV3: React.FC<{
   pairData: any;
@@ -147,9 +149,10 @@ const AnalyticsPairLiquidityChartV3: React.FC<{
     if (!formattedData) return;
 
     let idx;
-    for (const i of formattedData) {
-      if (i.isCurrent) {
-        idx = i.index;
+
+    for (let i = 0; i < formattedData.length; i++) {
+      if (formattedData[i].isCurrent) {
+        idx = i;
       }
     }
 
@@ -168,8 +171,10 @@ const AnalyticsPairLiquidityChartV3: React.FC<{
     }
   }, [processedData, zoom]);
 
+  console.log('LIQUIDITY DATA', formattedData);
+
   return (
-    <div>
+    <Box position={'relative'}>
       <Chart
         type={'bar'}
         height={275}
@@ -180,6 +185,12 @@ const AnalyticsPairLiquidityChartV3: React.FC<{
               ? formattedData.map((v) =>
                   v.activeLiquidity >= 0 ? v.activeLiquidity : 0,
                 )
+              : [],
+          },
+          {
+            name: 'Liquidty 2',
+            data: formattedData
+              ? formattedData.map((v) => (v.isCurrent ? v.activeLiquidity : 0))
               : [],
           },
         ]}
@@ -193,6 +204,12 @@ const AnalyticsPairLiquidityChartV3: React.FC<{
             animations: {
               enabled: false,
             },
+          },
+          legend: {
+            show: false,
+          },
+          fill: {
+            opacity: 1,
           },
           plotOptions: {
             bar: {
@@ -235,60 +252,65 @@ const AnalyticsPairLiquidityChartV3: React.FC<{
             enabled: true,
             theme: 'dark',
             fillSeriesColor: false,
-            custom: ({ series, seriesIndex, dataPointIndex }: any) => {
-              return `<div class="areaChartTooltip"><small>${
-                series[seriesIndex][dataPointIndex]
-              }</small><small><b>$${'12'}</b></small></div>`;
+            custom: ({ dataPointIndex }: any) => {
+              return `<div class="areaChartTooltipLiquidity">
+              <small>Tick stats</small>
+              <small>${pairData.token0.symbol} Price: ${
+                formattedData
+                  ? Number(formattedData[dataPointIndex].price0).toLocaleString(
+                      undefined,
+                      {
+                        minimumSignificantDigits: 1,
+                      },
+                    )
+                  : '-'
+              }</small>
+              <small>${pairData.token1.symbol} Price: ${
+                formattedData
+                  ? Number(formattedData[dataPointIndex].price1).toLocaleString(
+                      undefined,
+                      {
+                        minimumSignificantDigits: 1,
+                      },
+                    )
+                  : '-'
+              }</small>
+              ${
+                activeTickIdx && dataPointIndex > activeTickIdx
+                  ? `<small>${pairData.token0.symbol} Locked: ${
+                      formattedData
+                        ? formattedData[dataPointIndex].tvlToken0
+                        : '-'
+                    } ${pairData.token0.symbol}</small>`
+                  : `<small>${pairData.token1.symbol} Locked: ${
+                      formattedData
+                        ? formattedData[dataPointIndex].tvlToken1
+                        : '-'
+                    } ${pairData.token1.symbol}</small>`
+              }
+              </div>`;
             },
           },
         }}
       />
-      <button
-        className={'liquidity-chart__zoom-buttons__button'}
-        disabled={zoom === MAX_ZOOM}
-        onClick={handleZoomIn}
-      >
-        +
-      </button>
-      <button
-        className={'liquidity-chart__zoom-buttons__button'}
-        disabled={zoom === 2}
-        onClick={handleZoomOut}
-      >
-        -
-      </button>
-    </div>
-    // <div className={"w-100 liquidity-chart"} ref={ref}>
-    //     {refreshing ? (
-    //         <div className={"liquidity-chart__mock-loader"}>
-    //             <Loader stroke={"white"} size={"25px"} />
-    //         </div>
-    //     ) : (
-    //         <>
-    //             <div className={"liquidity-chart__zoom-buttons"}>
-    //                 <button className={"liquidity-chart__zoom-buttons__button"} disabled={zoom === MAX_ZOOM} onClick={handleZoomIn}>
-    //                     +
-    //                 </button>
-    //                 <button className={"liquidity-chart__zoom-buttons__button"} disabled={zoom === 2} onClick={handleZoomOut}>
-    //                     -
-    //                 </button>
-    //             </div>
-    //             <BarChart
-    //                 data={formattedData || undefined}
-    //                 activeTickIdx={activeTickIdx}
-    //                 dimensions={{
-    //                     width: isMobile ? (ref && ref.current && ref.current.offsetWidth - 10) || 0 : 1020,
-    //                     height: 400,
-    //                     margin: { top: isMobile ? 80 : 30, right: 20, bottom: isMobile ? 70 : 30, left: isMobile ? 0 : 50 },
-    //                 }}
-    //                 isMobile={isMobile}
-    //             />
-    //         </>
-    //     )}
-    // </div>
+      <Box className='flex' position={'absolute'} right={16} bottom={0}>
+        <button
+          disabled={zoom === MAX_ZOOM}
+          className='liquidityChartButton'
+          onClick={handleZoomIn}
+        >
+          +
+        </button>
+        <button
+          disabled={zoom === 2}
+          className='liquidityChartButton'
+          onClick={handleZoomOut}
+        >
+          -
+        </button>
+      </Box>
+    </Box>
   );
-
-  return <></>;
 };
 
 export default AnalyticsPairLiquidityChartV3;
