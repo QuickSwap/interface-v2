@@ -255,8 +255,8 @@ const AnalyticsPairChart: React.FC<{ pairData: any }> = ({ pairData }) => {
               yAxisValues={getYAXISValuesAnalytics(chartData)}
               dates={_chartData.map((value: any) => value.date)}
               width='100%'
-              strokeColor='#3e92fe'
-              gradientColor='#448aff'
+              strokeColor={isV3 ? '#3e92fe' : '#00dced'}
+              gradientColor={isV3 ? '#448aff' : undefined}
               height={isV3 ? 275 : 240}
               categories={getChartDates(_chartData, durationIndex)}
             />

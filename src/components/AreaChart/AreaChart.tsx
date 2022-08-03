@@ -8,7 +8,7 @@ import 'components/styles/AreaChart.scss';
 export interface AreaChartProps {
   strokeColor?: string;
   backgroundColor?: string;
-  gradientColor?: string;
+  gradientColor?: string | undefined;
   data?: Array<any>;
   dates?: Array<any>;
   yAxisValues?: Array<number>;

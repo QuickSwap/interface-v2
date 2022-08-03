@@ -241,6 +241,7 @@ const AnalyticsVolumeChart: React.FC = () => {
         {globalChartData ? (
           <BarChart
             height={200}
+            isV3={isV3}
             data={barChartData}
             categories={
               volumeIndex === WEEK_VOLUME

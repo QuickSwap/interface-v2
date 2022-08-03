@@ -131,6 +131,8 @@ const AnalyticsLiquidityChart: React.FC = () => {
             data={globalChartData.map((value: any) =>
               Number(value.totalLiquidityUSD),
             )}
+            strokeColor={isV3 ? '#3e92fe' : '#00dced'}
+            gradientColor={isV3 ? '#448aff' : undefined}
             yAxisValues={yAxisValues}
             dates={globalChartData.map((value: any) => value.date)}
             width='100%'
