@@ -24,7 +24,6 @@ const TopMovers: React.FC<TopMoversProps> = ({ hideArrow = false }) => {
   const isV3 = useIsV3();
 
   const topMoverTokens = useMemo(
-    //TODO Uncomment when there will be more data
     () => (topTokens && topTokens.length >= 5 ? topTokens.slice(0, 5) : null),
     [topTokens],
   );
