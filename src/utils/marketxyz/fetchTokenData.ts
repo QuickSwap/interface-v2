@@ -38,7 +38,7 @@ export const fetchTokenData = async (
     }
     if (!chainId) throw new Error('Wrong network');
     data = await fetch(
-      `https://sls.market.xyz/api/tokenData?address=${address}&chainId=${chainId}`,
+      `${process.env.REACT_APP_MARKET_API_URL}/tokenData?address=${address}&chainId=${chainId}`,
     ).then((res) => res.json());
 
     data.address = address;
