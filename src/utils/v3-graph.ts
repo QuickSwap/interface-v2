@@ -812,6 +812,11 @@ export async function getPairInfoV3(address: string) {
       oneDay ? oneDay.token0Price : undefined,
     );
 
+    const token1PriceChange = getPercentChange(
+      current ? current.token1Price : undefined,
+      oneDay ? oneDay.token1Price : undefined,
+    );
+
     const aprPercent = aprs[address] ? aprs[address].toFixed(2) : 0;
     const farmingApr = farmingAprs[address]
       ? farmingAprs[address].toFixed(2)
@@ -841,6 +846,8 @@ export async function getPairInfoV3(address: string) {
         poolFeeChange,
         token0Price: Number(current.token0Price).toFixed(3),
         token0PriceChange,
+        token1Price: Number(current.token1Price).toFixed(3),
+        token1PriceChange,
       },
     ];
   } catch (err) {

@@ -35,6 +35,10 @@ const AnalyticsPairDetails: React.FC = () => {
   const pairAddress = match.params.id;
   const [pairData, setPairData] = useState<any>(null);
   const [pairTransactions, setPairTransactions] = useState<any>(null);
+
+  const isV3 = useIsV3();
+  const version = useMemo(() => `${isV3 ? `v3` : 'v2'}`, [isV3]);
+
   const pairTransactionsList = useMemo(() => {
     if (pairTransactions) {
       const mints = pairTransactions.mints.map((item: any) => {
@@ -79,22 +83,38 @@ const AnalyticsPairDetails: React.FC = () => {
       )
     : undefined;
 
-  const token0Rate =
-    pairData && pairData.reserve0 && pairData.reserve1
-      ? Number(pairData.reserve1) / Number(pairData.reserve0) >= 0.0001
-        ? (Number(pairData.reserve1) / Number(pairData.reserve0)).toFixed(
-            Number(pairData.reserve1) / Number(pairData.reserve0) > 1 ? 2 : 4,
+  const token0Rate = isV3
+    ? pairData && pairData.token0Price
+      ? Number(pairData.token0Price) >= 0.0001
+        ? Number(pairData.token0Price).toFixed(
+            Number(pairData.token0Price) > 1 ? 2 : 4,
           )
         : '< 0.0001'
-      : '-';
-  const token1Rate =
-    pairData && pairData.reserve0 && pairData.reserve1
-      ? Number(pairData.reserve0) / Number(pairData.reserve1) >= 0.0001
-        ? (Number(pairData.reserve0) / Number(pairData.reserve1)).toFixed(
-            Number(pairData.reserve0) / Number(pairData.reserve1) > 1 ? 2 : 4,
+      : '-'
+    : pairData && pairData.reserve0 && pairData.reserve1
+    ? Number(pairData.reserve1) / Number(pairData.reserve0) >= 0.0001
+      ? (Number(pairData.reserve1) / Number(pairData.reserve0)).toFixed(
+          Number(pairData.reserve1) / Number(pairData.reserve0) > 1 ? 2 : 4,
+        )
+      : '< 0.0001'
+    : '-';
+
+  const token1Rate = isV3
+    ? pairData && pairData.token1Price
+      ? Number(pairData.token1Price) >= 0.0001
+        ? Number(pairData.token1Price).toFixed(
+            Number(pairData.token1Price) > 1 ? 2 : 4,
           )
         : '< 0.0001'
-      : '-';
+      : '-'
+    : pairData && pairData.reserve0 && pairData.reserve1
+    ? Number(pairData.reserve0) / Number(pairData.reserve1) >= 0.0001
+      ? (Number(pairData.reserve0) / Number(pairData.reserve1)).toFixed(
+          Number(pairData.reserve0) / Number(pairData.reserve1) > 1 ? 2 : 4,
+        )
+      : '< 0.0001'
+    : '-';
+
   const usingUtVolume =
     pairData &&
     pairData.oneDayVolumeUSD === 0 &&
@@ -111,9 +131,6 @@ const AnalyticsPairDetails: React.FC = () => {
           )
       : '-';
   const { ethPrice } = useEthPrice();
-
-  const isV3 = useIsV3();
-  const version = useMemo(() => `${isV3 ? `v3` : 'v2'}`, [isV3]);
 
   const dispatch = useDispatch();
 

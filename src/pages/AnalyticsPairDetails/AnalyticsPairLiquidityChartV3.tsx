@@ -269,7 +269,7 @@ const AnalyticsPairLiquidityChartV3: React.FC<{
                       },
                     )
                   : '-'
-              }</small>
+              } ${pairData.token1.symbol}</small>
               <small>${pairData.token1.symbol} Price: ${
                 formattedData
                   ? Number(formattedData[dataPointIndex].price1).toLocaleString(
@@ -279,7 +279,7 @@ const AnalyticsPairLiquidityChartV3: React.FC<{
                       },
                     )
                   : '-'
-              }</small>
+              } ${pairData.token0.symbol}</small>
               ${
                 activeTickIdx && dataPointIndex > activeTickIdx
                   ? `<small>${pairData.token0.symbol} Locked: ${
