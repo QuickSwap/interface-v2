@@ -236,7 +236,6 @@ const AnalyticsPairLiquidityChartV3: React.FC<{
             theme: 'dark',
             fillSeriesColor: false,
             custom: ({ series, seriesIndex, dataPointIndex }: any) => {
-              console.log(series, seriesIndex, dataPointIndex);
               return `<div class="areaChartTooltip"><small>${
                 series[seriesIndex][dataPointIndex]
               }</small><small><b>$${'12'}</b></small></div>`;

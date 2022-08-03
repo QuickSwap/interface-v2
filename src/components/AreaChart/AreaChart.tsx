@@ -15,6 +15,7 @@ export interface AreaChartProps {
   categories?: Array<string | null>;
   width?: number | string;
   height?: number | string;
+  yAxisTicker?: string | undefined;
 }
 const AreaChart: React.FC<AreaChartProps> = ({
   strokeColor = '#00dced',
@@ -26,6 +27,7 @@ const AreaChart: React.FC<AreaChartProps> = ({
   yAxisValues,
   width = 500,
   height = 200,
+  yAxisTicker = '$',
 }) => {
   const dark = useIsDarkMode();
 
@@ -156,9 +158,11 @@ const AreaChart: React.FC<AreaChartProps> = ({
         <Box className='yAxis'>
           {yAxisValues.map((value, index) => (
             <p key={index}>
-              $
               {// this is to show small numbers less than 0.0001
-              value > 0.0001 ? formatCompact(value) : formatNumber(value)}
+
+              `${yAxisTicker === '$' ? yAxisTicker : ''}${
+                value > 0.0001 ? formatCompact(value) : formatNumber(value)
+              }${yAxisTicker === '%' ? yAxisTicker : ''}`}
             </p>
           ))}
         </Box>

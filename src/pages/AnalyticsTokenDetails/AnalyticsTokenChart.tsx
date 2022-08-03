@@ -97,7 +97,6 @@ const AnalyticsTokenChart: React.FC<{ token: any }> = ({ token }) => {
 
       tokenChartDataFn.then((chartData) => {
         if (chartData) {
-          console.log(chartData);
           const newChartData = getLimitedData(
             chartData,
             GlobalConst.analyticChart.CHART_COUNT,
@@ -111,15 +110,14 @@ const AnalyticsTokenChart: React.FC<{ token: any }> = ({ token }) => {
 
   const currentPercentClass = getPriceClass(Number(currentPercent));
 
-  console.log(currentData, currentPercent);
-
   return (
     <>
       <Box className='flex flex-wrap justify-between'>
         <Box mt={1.5}>
           <span>{chartIndexTexts[chartIndex]}</span>
           <Box mt={1}>
-            {currentData && (currentPercent || currentPercent === 0) ? (
+            {(currentData || currentData === 0) &&
+            (currentPercent || currentPercent === 0) ? (
               <>
                 <Box className='flex items-center'>
                   <h4>

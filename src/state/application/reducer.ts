@@ -116,7 +116,6 @@ export default createReducer(initialState, (builder) =>
     .addCase(
       updateEthPrice,
       (state, { payload: { price, oneDayPrice, ethPriceChange } }) => {
-        console.log('STATE UPDATEasa', price, oneDayPrice, ethPriceChange);
         state.ethPrice = {
           price,
           oneDayPrice,
@@ -127,7 +126,6 @@ export default createReducer(initialState, (builder) =>
     .addCase(
       updateMaticPrice,
       (state, { payload: { price, oneDayPrice, maticPriceChange } }) => {
-        console.log('STATE UPDATE', price, oneDayPrice, maticPriceChange);
         state.maticPrice = {
           price,
           oneDayPrice,

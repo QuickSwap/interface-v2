@@ -77,12 +77,14 @@ const AnalyticsPairChart: React.FC<{ pairData: any }> = ({ pairData }) => {
   );
 
   const chartData = useMemo(() => {
-    if (!pairChartData || !pairFeeData) return;
+    if (!pairChartData) return;
 
-    if (chartIndex === CHART_POOL_FEE)
+    if (chartIndex === CHART_POOL_FEE) {
+      if (!pairFeeData) return;
       return pairFeeData.map((item: any) => {
         return Number(item.fee) / 1000;
       });
+    }
 
     return pairChartData.map((item: any) => {
       switch (chartIndex) {
@@ -112,7 +114,7 @@ const AnalyticsPairChart: React.FC<{ pairData: any }> = ({ pairData }) => {
       case CHART_FEES:
         return isV3 ? pairData.feesUSD : fees;
       case CHART_POOL_FEE:
-        return pairData.fee;
+        return pairData.fee / 1000;
       case CHART_PRICE:
         return pairData.token0Price;
       default:
@@ -135,10 +137,25 @@ const AnalyticsPairChart: React.FC<{ pairData: any }> = ({ pairData }) => {
           : pairData.volumeChangeUSD;
       case CHART_POOL_FEE:
         return pairData.poolFeeChange;
+      case CHART_PRICE:
+        return pairData.token0PriceChange;
       default:
         return;
     }
   }, [pairData, chartIndex, usingUtVolume, isV3]);
+
+  const chartYTicker = useMemo(() => {
+    if (!pairData) return;
+
+    switch (chartIndex) {
+      case CHART_POOL_FEE:
+        return '%';
+      case CHART_PRICE:
+        return '';
+      default:
+        return '$';
+    }
+  }, [chartIndex]);
 
   useEffect(() => {
     async function fetchPairChartData() {
@@ -148,7 +165,6 @@ const AnalyticsPairChart: React.FC<{ pairData: any }> = ({ pairData }) => {
           ? 0
           : getChartStartTime(durationIndex);
 
-      getPairChartFees(pairAddress, duration).then(console.log);
       const pairChartDataFn = isV3
         ? getPairChartDataV3(pairAddress, duration)
         : getPairChartData(pairAddress, duration);
@@ -196,14 +212,16 @@ const AnalyticsPairChart: React.FC<{ pairData: any }> = ({ pairData }) => {
         <Box mt={1.5}>
           <span>{chartIndexTexts[chartIndex]}</span>
           <Box mt={1}>
-            {currentData && (currentPercent || currentPercent === 0) ? (
+            {(currentData || currentData === 0) &&
+            (currentPercent || currentPercent === 0) ? (
               <>
                 <Box className='flex items-center'>
                   <h4>
-                    $
-                    {currentData > 100000
-                      ? formatCompact(currentData)
-                      : currentData.toLocaleString()}
+                    {`${chartYTicker === '$' ? chartYTicker : ''}${
+                      currentData > 100000
+                        ? formatCompact(currentData)
+                        : currentData.toLocaleString()
+                    }${chartYTicker === '%' ? chartYTicker : ''}`}
                   </h4>
                   <Box
                     className={`priceChangeWrapper ${currentPercentClass}`}
@@ -259,6 +277,7 @@ const AnalyticsPairChart: React.FC<{ pairData: any }> = ({ pairData }) => {
               gradientColor={isV3 ? '#448aff' : undefined}
               height={isV3 ? 275 : 240}
               categories={getChartDates(_chartData, durationIndex)}
+              yAxisTicker={chartYTicker}
             />
           )
         ) : (

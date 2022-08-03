@@ -38,8 +38,6 @@ const AnalyticsToggler: React.FC = () => {
     [pathname],
   );
 
-  console.log(complementAddress);
-
   useEffect(() => {
     const path = activeLink.split('/');
 
