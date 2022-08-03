@@ -916,13 +916,15 @@ export const getPairChartDataV3 = async (
       dayData.dailyVolumeUSD = Number(dayData.volumeUSD);
       dayData.reserveUSD = Number(dayData.tvlUSD);
       dayData.token0Price = dayData.token0Price;
+      dayData.token1Price = dayData.token1Price;
     });
 
     if (data[0]) {
       // fill in empty days
       let timestamp = data[0].date ? data[0].date : startTime;
       let latestLiquidityUSD = data[0].tvlUSD;
-      let latestTokenPrice = data[0].token0Price;
+      let latestToken0Price = data[0].token0Price;
+      let latestToken1Price = data[0].token1Price;
       let index = 1;
       while (timestamp < utcEndTime.unix() - oneDay) {
         const nextDay = timestamp + oneDay;
@@ -933,11 +935,13 @@ export const getPairChartDataV3 = async (
             dayString: nextDay,
             dailyVolumeUSD: 0,
             reserveUSD: latestLiquidityUSD,
-            token0Price: latestTokenPrice,
+            token0Price: latestToken0Price,
+            token1Price: latestToken1Price,
           });
         } else {
           latestLiquidityUSD = dayIndexArray[index].tvlUSD;
-          latestTokenPrice = dayIndexArray[index].token0Price;
+          latestToken0Price = dayIndexArray[index].token0Price;
+          latestToken1Price = dayIndexArray[index].token1Price;
           index = index + 1;
         }
         timestamp = nextDay;

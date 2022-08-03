@@ -217,3 +217,24 @@
   height: 24px;
   margin-left: 10px;
 }
+
+.analyticsPriceChartToggler {
+  border: 1px solid $grey29;
+  border-radius: 8px;
+  font-size: 13px;
+  user-select: none;
+  cursor: pointer;
+  z-index: 2;
+  & > div {
+    border: 2px solid transparent;
+    padding: 6px 13px;
+    border-radius: 8px;
+    color: $textDisabled;
+    &.active {
+      border-color: $primary;
+      border-radius: 8px;
+      color: $textPrimary;
+      background-color: rgba($color: $primary, $alpha: 0.2);
+    }
+  }
+}

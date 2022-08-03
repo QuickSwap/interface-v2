@@ -19,6 +19,7 @@ import { useTranslation } from 'react-i18next';
 import { useIsV3 } from 'state/analytics/hooks';
 import { getPairChartDataV3, getPairChartFees } from 'utils/v3-graph';
 import AnalyticsPairLiquidityChartV3 from './AnalyticsPairLiquidityChartV3';
+import '../styles/analytics.scss';
 
 const CHART_VOLUME = 0;
 const CHART_TVL = 1;
@@ -42,6 +43,8 @@ const AnalyticsPairChart: React.FC<{
   );
 
   const isV3 = useIsV3();
+
+  const [priceChartTokenIdx, setPriceChartTokenIdx] = useState(0);
 
   const usingUtVolume =
     pairData &&
@@ -97,12 +100,14 @@ const AnalyticsPairChart: React.FC<{
             ? Number(item.feesUSD)
             : Number(item.dailyVolumeUSD) * GlobalConst.utils.FEEPERCENT;
         case CHART_PRICE:
-          return Number(item.token0Price);
+          return priceChartTokenIdx
+            ? Number(item.token1Price)
+            : Number(item.token0Price);
         default:
           return;
       }
     });
-  }, [pairChartData, pairFeeData, chartIndex, isV3]);
+  }, [pairChartData, pairFeeData, chartIndex, isV3, priceChartTokenIdx]);
 
   const currentData = useMemo(() => {
     if (!pairData) return;
@@ -116,11 +121,17 @@ const AnalyticsPairChart: React.FC<{
       case CHART_POOL_FEE:
         return pairData.fee / 10000;
       case CHART_PRICE:
-        return pairData.token0Price;
+        return `1 ${
+          priceChartTokenIdx ? pairData.token1.symbol : pairData.token0.symbol
+        } = ${
+          priceChartTokenIdx ? pairData.token1Price : pairData.token0Price
+        } ${
+          priceChartTokenIdx ? pairData.token0.symbol : pairData.token1.symbol
+        }`;
       default:
         return;
     }
-  }, [pairData, chartIndex, fees, isV3]);
+  }, [pairData, chartIndex, fees, isV3, priceChartTokenIdx]);
 
   const currentPercent = useMemo(() => {
     if (!pairData) return;
@@ -208,7 +219,7 @@ const AnalyticsPairChart: React.FC<{
 
   return (
     <>
-      <Box className='flex flex-wrap justify-between'>
+      <Box className='flex flex-wrap justify-between' position={'relative'}>
         <Box mt={1.5}>
           <span>{chartIndexTexts[chartIndex]}</span>
           <Box mt={1}>
@@ -255,6 +266,23 @@ const AnalyticsPairChart: React.FC<{
             ) : (
               <Skeleton variant='rect' width='120px' height='30px' />
             )}
+            {chartIndex === CHART_PRICE ? (
+              <Box
+                className='flex analyticsPriceChartToggler'
+                position={'absolute'}
+                right={40}
+                onClick={() =>
+                  setPriceChartTokenIdx(Number(!priceChartTokenIdx))
+                }
+              >
+                <Box className={`${!priceChartTokenIdx && 'active'}`}>
+                  {pairData.token0.symbol}
+                </Box>
+                <Box className={`${priceChartTokenIdx && 'active'}`}>
+                  {pairData.token1.symbol}
+                </Box>
+              </Box>
+            ) : null}
           </Box>
         </Box>
         <Box className='flex flex-col items-end'>
