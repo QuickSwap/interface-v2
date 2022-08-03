@@ -82,7 +82,7 @@ const AnalyticsPairChart: React.FC<{
     if (chartIndex === CHART_POOL_FEE) {
       if (!pairFeeData) return;
       return pairFeeData.map((item: any) => {
-        return Number(item.fee) / 1000;
+        return Number(item.fee) / 10000;
       });
     }
 
@@ -114,7 +114,7 @@ const AnalyticsPairChart: React.FC<{
       case CHART_FEES:
         return isV3 ? pairData.feesUSD : fees;
       case CHART_POOL_FEE:
-        return pairData.fee / 1000;
+        return pairData.fee / 10000;
       case CHART_PRICE:
         return pairData.token0Price;
       default:
