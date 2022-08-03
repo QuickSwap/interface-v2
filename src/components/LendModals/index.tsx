@@ -10,12 +10,11 @@ import {
   borrow as poolBorrow,
   withdraw as poolWithDraw,
   supply,
-  convertBNToNumber,
   convertMantissaToAPR,
   convertMantissaToAPY,
 } from 'utils/marketxyz';
 
-import { getDaysCurrentYear } from 'utils';
+import { getDaysCurrentYear, convertBNToNumber } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import {
   ToggleSwitch,

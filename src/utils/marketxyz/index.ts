@@ -1,6 +1,6 @@
 import { Comptroller, MarketSDK } from 'market-sdk';
 import { Token, ChainId } from '@uniswap/sdk';
-import BN from 'bn.js';
+import { BN } from 'utils/bigUtils';
 import { USDPricedPoolAsset } from './fetchPoolData';
 import { getDaysCurrentYear } from 'utils';
 import ERC20_ABI from '../../constants/abis/erc20.json';
@@ -26,10 +26,6 @@ export const convertMantissaToAPR = (mantissa: any) => {
     (mantissa * GlobalValue.marketSDK.BLOCKSPERDAY * getDaysCurrentYear()) /
     1e16
   );
-};
-
-export const convertBNToNumber = (value: BN, decimals: BN) => {
-  return Number(value) / 10 ** Number(decimals);
 };
 
 export const getPoolAssetToken = (

@@ -20,7 +20,7 @@ import { QuickModalContent } from 'components/LendModals';
 
 import { usePoolData } from 'hooks/marketxyz/usePoolData';
 import { midUsdFormatter, shortUsdFormatter } from 'utils/bigUtils';
-import { getDaysCurrentYear, shortenAddress } from 'utils';
+import { getDaysCurrentYear, shortenAddress, convertBNToNumber } from 'utils';
 import { useExtraPoolData } from 'hooks/marketxyz/useExtraPoolData';
 import { useActiveWeb3React } from 'hooks';
 import { useMarket } from 'hooks/marketxyz/useMarket';
@@ -31,7 +31,6 @@ import {
   convertMantissaToAPY,
   convertMantissaToAPR,
   getPoolAssetToken,
-  convertBNToNumber,
 } from 'utils/marketxyz';
 import { useBorrowLimit } from 'hooks/marketxyz/useBorrowLimit';
 import { useTranslation } from 'react-i18next';

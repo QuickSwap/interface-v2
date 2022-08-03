@@ -1,5 +1,5 @@
 import { MarketSDK } from 'market-sdk';
-import BN from 'bn.js';
+import { BN } from 'utils/bigUtils';
 import { USDPricedPoolAsset } from './fetchPoolData';
 import JumpRateModelArtifact from 'market-sdk/dist/abi/JumpRateModel.json';
 import { getDaysCurrentYear } from 'utils';
