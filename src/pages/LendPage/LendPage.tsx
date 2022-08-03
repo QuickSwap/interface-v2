@@ -68,7 +68,7 @@ const LendPage: React.FC = () => {
           ? midUsdFormatter(totalLiquidity)
           : undefined,
     },
-    { label: t('markets'), data: pools?.length },
+    { label: t('markets'), data: pools?.filter((pool) => !!pool).length },
   ];
 
   const filteredPools = pools
