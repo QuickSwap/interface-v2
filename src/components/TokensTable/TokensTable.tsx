@@ -5,12 +5,18 @@ import { getAddress } from '@ethersproject/address';
 import { ChainId, Token } from '@uniswap/sdk';
 import { CurrencyLogo, CustomTable } from 'components';
 import { GlobalConst } from 'constants/index';
-import { formatNumber, getFormattedPrice, getPriceClass } from 'utils';
+import {
+  formatNumber,
+  getFormattedPrice,
+  getPriceClass,
+  getTokenFromAddress,
+} from 'utils';
 import { useBookmarkTokens } from 'state/application/hooks';
 import { ReactComponent as StarChecked } from 'assets/images/StarChecked.svg';
 import { ReactComponent as StarUnchecked } from 'assets/images/StarUnchecked.svg';
 import 'components/styles/TokensTable.scss';
 import { useTranslation } from 'react-i18next';
+import { useSelectedTokenList } from 'state/lists/hooks';
 
 interface TokensTableProps {
   data: any[];
@@ -24,6 +30,7 @@ const TokensTable: React.FC<TokensTableProps> = ({
   showPagination = true,
 }) => {
   const { t } = useTranslation();
+  const tokenMap = useSelectedTokenList();
   const tokenHeadCells = [
     {
       id: 'tokenName',
@@ -63,12 +70,19 @@ const TokensTable: React.FC<TokensTableProps> = ({
     removeBookmarkToken,
   } = useBookmarkTokens();
   const mobileHTML = (token: any, index: number) => {
-    const tokenCurrency = new Token(
+    const tokenCurrency = getTokenFromAddress(
+      token.id,
       ChainId.MATIC,
-      getAddress(token.id),
-      Number(token.decimals),
-      token.symbol,
-      token.name,
+      tokenMap,
+      [
+        new Token(
+          ChainId.MATIC,
+          getAddress(token.id),
+          Number(token.decimals),
+          token.symbol,
+          token.name,
+        ),
+      ],
     );
     const priceClass = getPriceClass(Number(token.priceChangeUSD));
     return (
@@ -131,12 +145,19 @@ const TokensTable: React.FC<TokensTableProps> = ({
   };
 
   const desktopHTML = (token: any) => {
-    const tokenCurrency = new Token(
+    const tokenCurrency = getTokenFromAddress(
+      token.id,
       ChainId.MATIC,
-      getAddress(token.id),
-      Number(token.decimals),
-      token.symbol,
-      token.name,
+      tokenMap,
+      [
+        new Token(
+          ChainId.MATIC,
+          getAddress(token.id),
+          Number(token.decimals),
+          token.symbol,
+          token.name,
+        ),
+      ],
     );
     const priceClass = getPriceClass(Number(token.priceChangeUSD));
 

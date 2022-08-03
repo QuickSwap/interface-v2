@@ -192,6 +192,9 @@
   flex-direction: column;
   .reflex-container {
     flex: 1;
+    .top-pane {
+      overflow: hidden;
+    }
   }
   @include media("screen", "<phone") {
     flex: none

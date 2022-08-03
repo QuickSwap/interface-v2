@@ -91,13 +91,22 @@ const FarmCardDetails: React.FC<{
     stakingInfo.stakedAmount,
   );
 
-  const onWithdraw = async () => {
+  const onWithdraw = () => {
     if (stakingInfo && stakingContract && unstakeParsedAmount) {
       setAttemptUnstaking(true);
-      await stakingContract
-        .withdraw(`0x${unstakeParsedAmount.raw.toString(16)}`, {
-          gasLimit: 300000,
-        })
+
+      const txObj =
+        unstakeAmount === stakingInfo.stakedAmount?.toExact()
+          ? stakingContract.exit({
+              gasLimit: 300000,
+            })
+          : stakingContract.withdraw(
+              `0x${unstakeParsedAmount.raw.toString(16)}`,
+              {
+                gasLimit: 300000,
+              },
+            );
+      txObj
         .then(async (response: TransactionResponse) => {
           addTransaction(response, {
             summary: t('withdrawliquidity'),
