@@ -11,9 +11,7 @@ const LendDetailAssetStats: React.FC<{ poolData: PoolData }> = ({
   poolData,
 }) => {
   const { t } = useTranslation();
-  const asset = poolData.assets[0];
-  const sdk = asset.cToken.sdk;
-  const [statsItem, setStatsItem] = useState(asset.underlyingName);
+  const [assetIndex, setAssetIndex] = useState('0');
 
   const [borrowerRates, setBorrowerRates] = useState<
     { x: number; y: number }[]
@@ -21,6 +19,9 @@ const LendDetailAssetStats: React.FC<{ poolData: PoolData }> = ({
   const [supplierRates, setSupplyerRates] = useState<
     { x: number; y: number }[]
   >();
+
+  const asset = poolData.assets[Number(assetIndex)];
+  const sdk = asset.cToken.sdk;
 
   useEffect(() => {
     const _jrm = new JumpRateModel(sdk, asset);
@@ -32,7 +33,7 @@ const LendDetailAssetStats: React.FC<{ poolData: PoolData }> = ({
       setSupplyerRates(supplierRates);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [assetIndex]);
 
   const currentUtilization = !asset.totalSupplyUSD
     ? 0
@@ -43,17 +44,17 @@ const LendDetailAssetStats: React.FC<{ poolData: PoolData }> = ({
       <Box className='flex flex-col poolDetailsItemWrapper'>
         <Box className='poolDetailsItemTop'>
           <h6>
-            {statsItem} {t('statistics')}
+            {asset.underlyingName} {t('statistics')}
           </h6>
           <Box height={40} minWidth={200}>
             <CustomMenu
               title=''
-              selectedValue={statsItem}
-              menuItems={poolData.assets.map((item) => {
+              selectedValue={asset.underlyingName}
+              menuItems={poolData.assets.map((item, index) => {
                 return {
                   text: item.underlyingName,
                   onClick: () => {
-                    setStatsItem(item.underlyingName);
+                    setAssetIndex(index.toString());
                   },
                 };
               })}
