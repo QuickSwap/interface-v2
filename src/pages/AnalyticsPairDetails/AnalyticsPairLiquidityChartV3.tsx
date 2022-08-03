@@ -171,8 +171,6 @@ const AnalyticsPairLiquidityChartV3: React.FC<{
     }
   }, [processedData, zoom]);
 
-  console.log('LIQUIDITY DATA', formattedData);
-
   return (
     <Box position={'relative'}>
       <Chart
