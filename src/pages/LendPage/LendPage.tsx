@@ -1,95 +1,72 @@
-import React, { useEffect, useState } from 'react';
-import Web3 from 'web3';
+import React, { useMemo, useState } from 'react';
 import { Box, Grid } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import { SearchInput, CustomMenu, CurrencyLogo } from 'components';
 import { useHistory } from 'react-router-dom';
 import { useActiveWeb3React } from 'hooks';
-import { MarketSDK, PoolDirectoryV1 } from 'market-sdk';
 import { midUsdFormatter } from 'utils/bigUtils';
-import {
-  fetchPoolData,
-  USDPricedPoolAsset,
-} from 'utils/marketxyz/fetchPoolData';
+import { PoolData, USDPricedPoolAsset } from 'utils/marketxyz/fetchPoolData';
 import { useTranslation } from 'react-i18next';
 import 'pages/styles/lend.scss';
 import { getPoolAssetToken } from 'utils/marketxyz';
 import { Token } from '@uniswap/sdk';
 import { GlobalValue } from 'constants/index';
 import LendAlertBox from './LendAlertBox';
+import { usePoolsData } from 'hooks/marketxyz/usePoolData';
 
 const LendPage: React.FC = () => {
   const { t } = useTranslation();
   const history = useHistory();
-  const { chainId, account } = useActiveWeb3React();
-  const web3 = new Web3('https://polygon-rpc.com');
+  const { chainId } = useActiveWeb3React();
 
-  const [totalSupply, setTotalSupply] = useState('');
-  const [totalBorrow, setTotalBorrow] = useState('');
-  const [totalLiquidity, setTotalLiquidity] = useState('');
   const [lendSortBy, setLendSortBy] = useState('');
   const lendSortItems = [t('highestSupply'), t('highestBorrow')];
   const [isMyPools, setIsMyPools] = useState(false);
 
-  const [pools, setPools] = useState<any[] | undefined>(undefined);
-  useEffect(() => {
-    const getPools = async () => {
-      const sdk = await MarketSDK.init(web3);
-      const directory = new PoolDirectoryV1(
-        sdk,
-        GlobalValue.marketSDK.QS_PoolDirectory,
-      );
+  const pools = usePoolsData(
+    GlobalValue.marketSDK.QS_Pools,
+    GlobalValue.marketSDK.QS_PoolDirectory,
+  );
 
-      const allPools = await directory.getAllPools();
-      const poolsData = [];
+  const totalSupply = useMemo(() => {
+    if (!pools) return undefined;
+    return pools
+      .map((poolData) => poolData?.totalSuppliedUSD ?? 0)
+      .reduce((total, val) => total + val, 0);
+  }, [pools]);
 
-      let _totalBorrowUSD = 0;
-      let _totalSupplyUSD = 0;
-      let _totalLiquidityUSD = 0;
+  const totalBorrow = useMemo(() => {
+    if (!pools) return undefined;
+    return pools
+      .map((poolData) => poolData?.totalBorrowedUSD ?? 0)
+      .reduce((total, val) => total + val, 0);
+  }, [pools]);
 
-      for (const comptrollerAddress of GlobalValue.marketSDK.QS_Pools) {
-        const poolId = allPools
-          .findIndex((p) => {
-            return p.comptroller.address === comptrollerAddress;
-          })
-          .toString();
-        const poolData = await fetchPoolData(
-          poolId,
-          account ?? undefined,
-          directory,
-        );
-
-        _totalSupplyUSD += poolData?.totalSuppliedUSD ?? 0;
-        _totalBorrowUSD += poolData?.totalBorrowedUSD ?? 0;
-        _totalLiquidityUSD += poolData?.totalLiquidityUSD ?? 0;
-
-        poolsData.push(poolData);
-      }
-
-      setTotalSupply(_totalSupplyUSD.toString());
-      setTotalBorrow(_totalBorrowUSD.toString());
-      setTotalLiquidity(_totalLiquidityUSD.toString());
-      setPools(poolsData);
-    };
-    getPools();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [account]);
+  const totalLiquidity = useMemo(() => {
+    if (!pools) return undefined;
+    return pools
+      .map((poolData) => poolData?.totalLiquidityUSD ?? 0)
+      .reduce((total, val) => total + val, 0);
+  }, [pools]);
 
   const [searchInput, setSearchInput] = useState('');
   const lendDataArr = [
     {
       label: t('totalSupply'),
-      data: totalSupply ? midUsdFormatter(Number(totalSupply)) : undefined,
+      data:
+        totalSupply !== undefined ? midUsdFormatter(totalSupply) : undefined,
     },
     {
       label: t('totalBorrowed'),
-      data: totalBorrow ? midUsdFormatter(Number(totalBorrow)) : undefined,
+      data:
+        totalBorrow !== undefined ? midUsdFormatter(totalBorrow) : undefined,
     },
     {
       label: t('liquidity'),
-      data: totalLiquidity
-        ? midUsdFormatter(Number(totalLiquidity))
-        : undefined,
+      data:
+        totalLiquidity !== undefined
+          ? midUsdFormatter(totalLiquidity)
+          : undefined,
     },
     { label: t('markets'), data: pools?.length },
   ];
@@ -97,7 +74,8 @@ const LendPage: React.FC = () => {
   const filteredPools = pools
     ? pools
         .filter(
-          (pool: any) =>
+          (pool: PoolData | undefined) =>
+            pool &&
             (pool.assets.filter(
               (asset: USDPricedPoolAsset) =>
                 asset.underlyingSymbol
@@ -114,11 +92,15 @@ const LendPage: React.FC = () => {
               ? pool.totalSuppliedUSD > 0 || pool.totalBorrowedUSD > 0
               : true),
         )
-        .sort((poolA: any, poolB: any) => {
+        .sort((poolA: PoolData | undefined, poolB: PoolData | undefined) => {
+          const totalSuppliedUSDA = poolA?.totalSuppliedUSD ?? 0;
+          const totalSuppliedUSDB = poolB?.totalSuppliedUSD ?? 0;
+          const totalBorrowedUSDA = poolA?.totalBorrowedUSD ?? 0;
+          const totalBorrowedUSDB = poolB?.totalBorrowedUSD ?? 0;
           if (lendSortBy === t('highestSupply')) {
-            return poolA.totalSuppliedUSD > poolB.totalSuppliedUSD ? -1 : 1;
+            return totalSuppliedUSDA > totalSuppliedUSDB ? -1 : 1;
           } else if (lendSortBy === t('highestBorrow')) {
-            return poolA.totalBorrowedUSD > poolB.totalBorrowedUSD ? -1 : 1;
+            return totalBorrowedUSDA > totalBorrowedUSDB ? -1 : 1;
           }
           return 0;
         })
@@ -209,59 +191,62 @@ const LendPage: React.FC = () => {
         <>
           {filteredPools.length > 0 ? (
             <Grid container spacing={3}>
-              {filteredPools.map(
-                (
-                  { assets, pool, poolId, totalSuppliedUSD, totalBorrowedUSD },
-                  index: number,
-                ) => {
-                  const poolTokens = assets.map((asset: USDPricedPoolAsset) =>
-                    getPoolAssetToken(asset, chainId),
-                  );
-                  return (
-                    <Grid
-                      item
-                      xs={12}
-                      sm={6}
-                      md={4}
-                      key={index}
-                      onClick={() => {
-                        history.push('/lend/detail?poolId=' + poolId);
-                      }}
-                    >
-                      <Box className='lendCard'>
-                        <Box className='lendCardTop'>
-                          <h5>{pool.name}</h5>
-                          <Box mt={'14px'} display={'flex'} gridGap={'4px'}>
-                            {poolTokens.map((token: Token) => (
-                              <CurrencyLogo
-                                key={token.address}
-                                currency={token}
-                              />
-                            ))}
-                          </Box>
-                        </Box>
-                        <Box className='lendCardContent'>
-                          <Box>
-                            <small className='text-secondary'>
-                              {t('totalSupply')}
-                            </small>
-                            <p>{midUsdFormatter(totalSuppliedUSD)}</p>
-                          </Box>
-                          <Box>
-                            <small className='text-secondary'>
-                              {t('totalBorrowed')}
-                            </small>
-                            <p>{midUsdFormatter(totalBorrowedUSD)}</p>
-                          </Box>
-                        </Box>
-                        <Box py={'22px'} textAlign={'center'}>
-                          <p>{t('viewDetails')}</p>
+              {filteredPools.map((poolData, index: number) => {
+                if (!poolData) return <></>;
+                const {
+                  assets,
+                  pool,
+                  poolId,
+                  totalSuppliedUSD,
+                  totalBorrowedUSD,
+                } = poolData;
+                const poolTokens = assets.map((asset: USDPricedPoolAsset) =>
+                  getPoolAssetToken(asset, chainId),
+                );
+                return (
+                  <Grid
+                    item
+                    xs={12}
+                    sm={6}
+                    md={4}
+                    key={index}
+                    onClick={() => {
+                      history.push('/lend/detail?poolId=' + poolId);
+                    }}
+                  >
+                    <Box className='lendCard'>
+                      <Box className='lendCardTop'>
+                        <h5>{pool.name}</h5>
+                        <Box mt={'14px'} display={'flex'} gridGap={'4px'}>
+                          {poolTokens.map((token: Token) => (
+                            <CurrencyLogo
+                              key={token.address}
+                              currency={token}
+                            />
+                          ))}
                         </Box>
                       </Box>
-                    </Grid>
-                  );
-                },
-              )}
+                      <Box className='lendCardContent'>
+                        <Box>
+                          <small className='text-secondary'>
+                            {t('totalSupply')}
+                          </small>
+                          <p>{midUsdFormatter(totalSuppliedUSD)}</p>
+                        </Box>
+                        <Box>
+                          <small className='text-secondary'>
+                            {t('totalBorrowed')}
+                          </small>
+                          <p>{midUsdFormatter(totalBorrowedUSD)}</p>
+                        </Box>
+                      </Box>
+                      <Box py={'22px'} textAlign={'center'}>
+                        <p>{t('viewDetails')}</p>
+                      </Box>
+                    </Box>
+                  </Grid>
+                );
+              })}
             </Grid>
           ) : (
             <Box mt='64px' mb='32px' textAlign='center'>

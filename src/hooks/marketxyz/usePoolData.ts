@@ -10,6 +10,43 @@ import {
 import { Comptroller, PoolDirectoryV1 } from 'market-sdk';
 import { useEffect, useState } from 'react';
 
+export const usePoolsData = (
+  poolAddresses: string[],
+  directory: PoolDirectoryV1 | string,
+) => {
+  const { account } = useActiveWeb3React();
+  const { sdk } = useMarket();
+  const _directory = sdk
+    ? typeof directory === 'string'
+      ? new PoolDirectoryV1(sdk, directory)
+      : directory
+    : undefined;
+  const getPoolsData = async () => {
+    if (!_directory) return;
+    const allPools = await _directory.getAllPools();
+    const poolsData = await Promise.all(
+      poolAddresses.map(async (poolAddress) => {
+        const poolId = allPools.findIndex((p) => {
+          return p.comptroller.address === poolAddress;
+        });
+        if (poolId === -1) return;
+        const poolData = await fetchPoolData(
+          poolId.toString(),
+          account ?? undefined,
+          _directory,
+        );
+        return poolData;
+      }),
+    );
+    return poolsData;
+  };
+  const { data } = useQuery('FetchPoolsData', getPoolsData, {
+    refetchInterval: 3000,
+  });
+
+  return data;
+};
+
 export const usePoolData = (
   poolId: string | null | undefined,
   directory: PoolDirectoryV1 | string,
