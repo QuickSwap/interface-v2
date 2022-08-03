@@ -5,7 +5,7 @@ import {
   Pool,
   PoolLensV1,
 } from 'market-sdk';
-import { convertBNToNumber } from '.';
+import { convertBNToNumber } from 'utils';
 import { getEthPrice } from '../index';
 
 export interface USDPricedPoolAsset extends PoolAsset {

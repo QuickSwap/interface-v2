@@ -1,4 +1,5 @@
 import { getAddress } from '@ethersproject/address';
+import BN from 'bn.js';
 import { ApolloClient } from 'apollo-client';
 import { Contract } from '@ethersproject/contracts';
 import dayjs from 'dayjs';
@@ -2160,3 +2161,7 @@ export function getCallStateResult(callState?: CallState) {
   if (callState && callState.result) return callState.result[0];
   return;
 }
+
+export const convertBNToNumber = (value: BN, decimals: BN) => {
+  return Number(value) / 10 ** Number(decimals);
+};
