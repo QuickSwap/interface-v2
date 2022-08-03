@@ -2,7 +2,6 @@ import { Comptroller, MarketSDK } from 'market-sdk';
 import { Token, ChainId } from '@uniswap/sdk';
 import { BN } from 'utils/bigUtils';
 import { USDPricedPoolAsset } from './fetchPoolData';
-import { ETH_TOKEN_DATA } from './fetchTokenData';
 import { getDaysCurrentYear } from 'utils';
 import ERC20_ABI from '../../constants/abis/erc20.json';
 import {
@@ -145,7 +144,9 @@ export const supply = async (
   const cToken = asset.cToken;
   const sdk = cToken.sdk;
 
-  const isETH = asset.underlyingToken === ETH_TOKEN_DATA.address;
+  const isETH =
+    asset.underlyingToken.toLowerCase() ===
+    GlobalValue.tokens.MATIC.address.toLowerCase();
   const amountBN = sdk.web3.utils.toBN(
     amount * 10 ** asset.underlyingDecimals.toNumber(),
   );
@@ -219,7 +220,9 @@ export const repayBorrow = async (
   const cToken = asset.cToken;
   const sdk = cToken.sdk;
 
-  const isETH = asset.underlyingToken === ETH_TOKEN_DATA.address;
+  const isETH =
+    asset.underlyingToken.toLowerCase() ===
+    GlobalValue.tokens.MATIC.address.toLowerCase();
   const amountBN = sdk.web3.utils.toBN(
     Number(amount * 10 ** asset.underlyingDecimals.toNumber()).toFixed(0),
   );
