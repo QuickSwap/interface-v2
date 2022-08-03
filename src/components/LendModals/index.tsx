@@ -446,12 +446,14 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
                           asset,
                           Number(value),
                           account,
+                          t('cannotRepayMarket'),
                         );
                       } else {
                         txResponse = await poolBorrow(
                           asset,
                           Number(value),
                           account,
+                          t('cannotBorrowMarket'),
                         );
                       }
                     } else {
@@ -460,6 +462,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
                           asset,
                           Number(value),
                           account,
+                          t('cannotWithdrawMarket'),
                         );
                       } else {
                         txResponse = await supply(
@@ -467,6 +470,8 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
                           Number(value),
                           account,
                           enableAsCollateral,
+                          t('cannotEnterMarket'),
+                          t('cannotDepositMarket'),
                         );
                       }
                     }

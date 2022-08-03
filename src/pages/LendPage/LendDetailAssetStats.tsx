@@ -13,7 +13,6 @@ const LendDetailAssetStats: React.FC<{ poolData: PoolData }> = ({
   const { t } = useTranslation();
   const asset = poolData.assets[0];
   const sdk = asset.cToken.sdk;
-  const [jrm, setJrm] = useState<JumpRateModel>();
   const [statsItem, setStatsItem] = useState(asset.underlyingName);
 
   const [borrowerRates, setBorrowerRates] = useState<
@@ -27,7 +26,6 @@ const LendDetailAssetStats: React.FC<{ poolData: PoolData }> = ({
     const _jrm = new JumpRateModel(sdk, asset);
 
     _jrm.init().then(() => {
-      setJrm(_jrm);
       const { borrowerRates, supplierRates } = _jrm.convertIRMtoCurve();
 
       setBorrowerRates(borrowerRates);

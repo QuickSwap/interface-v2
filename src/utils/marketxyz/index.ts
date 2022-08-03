@@ -64,7 +64,7 @@ export const fetchGasForCall = async (
     ).toFixed(0),
   );
 
-  // Ex: 100 (in GWEI)
+  // Get standard max priority fee in matic network
   const { standard } = await fetch(
     'https://gasstation-mainnet.matic.network/v2',
   ).then((res) => res.json());
@@ -139,6 +139,8 @@ export const supply = async (
   amount: number,
   address: string,
   enableAsCollateral: boolean,
+  enterMarketError: string,
+  supplyError: string,
 ) => {
   const cToken = asset.cToken;
   const sdk = cToken.sdk;
@@ -158,7 +160,7 @@ export const supply = async (
     await testForComptrollerErrorAndSend(
       comptroller.contract.methods.enterMarkets([asset.cToken.address]),
       address,
-      'Cannot enter this market right now!',
+      enterMarketError,
       asset.cToken.sdk,
     );
     collateralEnabled = true;
@@ -201,7 +203,7 @@ export const supply = async (
     const txObj = await testForCTokenErrorAndSend(
       cToken.contract.methods.mint(amountBN),
       address,
-      'Cannot deposit this amount right now!',
+      supplyError,
       sdk,
     );
     return txObj;
@@ -212,6 +214,7 @@ export const repayBorrow = async (
   asset: USDPricedPoolAsset,
   amount: number,
   address: string,
+  repayError: string,
 ) => {
   const cToken = asset.cToken;
   const sdk = cToken.sdk;
@@ -234,7 +237,7 @@ export const repayBorrow = async (
     const txObj = await testForCTokenErrorAndSend(
       cToken.contract.methods.repayBorrow(isRepayingMax ? max : amountBN),
       address,
-      'Cannot repay this amount right now!',
+      repayError,
       sdk,
     );
     return txObj;
@@ -272,19 +275,20 @@ export const toggleCollateral = (
   asset: USDPricedPoolAsset,
   comptroller: Comptroller,
   address: string,
+  errorMessage: string,
 ) => {
   if (!asset.membership) {
     return testForComptrollerErrorAndSend(
       comptroller.contract.methods.enterMarkets([asset.cToken.address]),
       address,
-      'Cannot enter this market right now!',
+      errorMessage,
       asset.cToken.sdk,
     );
   } else {
     return testForComptrollerErrorAndSend(
       comptroller.contract.methods.exitMarket(asset.cToken.address),
       address,
-      'Cannot exit this market right now!',
+      errorMessage,
       asset.cToken.sdk,
     );
   }
@@ -294,6 +298,7 @@ export const withdraw = async (
   asset: USDPricedPoolAsset,
   amount: number,
   address: string,
+  withdrawError: string,
 ) => {
   const cToken = asset.cToken;
   const sdk = cToken.sdk;
@@ -304,7 +309,7 @@ export const withdraw = async (
   const txObj = await testForCTokenErrorAndSend(
     cToken.contract.methods.redeemUnderlying(amountBN),
     address,
-    'Cannot withdraw this amount right now!',
+    withdrawError,
     sdk,
   );
   return txObj;
@@ -314,6 +319,7 @@ export const borrow = async (
   asset: USDPricedPoolAsset,
   amount: number,
   address: string,
+  borrowError: string,
 ) => {
   const cToken = asset.cToken;
   const sdk = cToken.sdk;
@@ -325,7 +331,7 @@ export const borrow = async (
   const txObj = await testForCTokenErrorAndSend(
     cToken.contract.methods.borrow(amountBN),
     address,
-    'Cannot borrow this amount right now!',
+    borrowError,
     sdk,
   );
   return txObj;

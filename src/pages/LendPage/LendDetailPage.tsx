@@ -415,6 +415,9 @@ const LendDetailPage: React.FC = () => {
                                         asset,
                                         poolData.pool.comptroller,
                                         account,
+                                        asset.membership
+                                          ? t('cannotExitMarket')
+                                          : t('cannotEnterMarket'),
                                       )
                                         .then(() => {
                                           if (assetCollateralIndex >= 0) {

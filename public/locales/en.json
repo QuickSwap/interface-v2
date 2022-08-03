@@ -399,5 +399,11 @@
   "fetchingMaxAmount": "Fetching Max Amount",
   "exceedMaxAmount": "Exceeds max amount",
   "errorFetchingMaxAmount": "There is an error while fetching max amount",
-  "walletnotconnected": "Wallet is not connected."
+  "walletnotconnected": "Wallet is not connected.",
+  "cannotEnterMarket": "Cannot enter this market right now!",
+  "cannotDepositMarket": "Cannot enter this market right now!",
+  "cannotRepayMarket": "Cannot repay this amount right now!",
+  "cannotExitMarket": "Cannot exit this market right now!",
+  "cannotWithdrawMarket": "Cannot withdraw this amount right now!",
+  "cannotBorrowMarket": "Cannot borrow this amount right now!"
 }
