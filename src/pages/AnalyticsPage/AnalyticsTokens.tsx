@@ -12,10 +12,14 @@ import { useTranslation } from 'react-i18next';
 import { GlobalConst } from 'constants/index';
 import { useIsV3 } from 'state/analytics/hooks';
 import { getTopTokensV3 } from 'utils/v3-graph';
+import { useDispatch } from 'react-redux';
+import { setAnalyticsLoaded } from 'state/analytics/actions';
 
 const AnalyticsTokens: React.FC = () => {
   const { t } = useTranslation();
   const [tokensFilter, setTokensFilter] = useState(0);
+
+  const dispatch = useDispatch();
 
   const [topTokens, updateTopTokens] = useState<any[] | null>(null);
   const { bookmarkTokens } = useBookmarkTokens();
@@ -35,6 +39,8 @@ const AnalyticsTokens: React.FC = () => {
   }, [topTokens, bookmarkTokens]);
 
   useEffect(() => {
+    updateTopTokens(null);
+
     const fetchTopTokens = async () => {
       if (
         ethPrice.price &&
@@ -69,6 +75,12 @@ const AnalyticsTokens: React.FC = () => {
     maticPrice.oneDayPrice,
     isV3,
   ]);
+
+  useEffect(() => {
+    if (topTokens) {
+      dispatch(setAnalyticsLoaded(true));
+    }
+  }, [topTokens]);
 
   return (
     <Box width='100%' mb={3}>

@@ -31,6 +31,8 @@ import {
   GLOBAL_ALLDATA,
   ETH_PRICE,
   PAIR_ID,
+  IS_PAIR_EXISTS,
+  IS_TOKEN_EXISTS,
 } from 'apollo/queries';
 import { JsonRpcSigner, Web3Provider } from '@ethersproject/providers';
 import {
@@ -764,6 +766,36 @@ export const getPairAddress = async (
   const pairId = pairs[0].id;
   const tokenReversed = pairData.data.pairs1.length > 0;
   return { pairId, tokenReversed };
+};
+
+export const isV2PairExists = async (pairAddress: string) => {
+  try {
+    const pair = await clientV2.query({
+      query: IS_PAIR_EXISTS(pairAddress.toLowerCase()),
+    });
+
+    if (pair.errors) {
+      return false;
+    }
+    return pair.data.pair;
+  } catch {
+    return false;
+  }
+};
+
+export const isV2TokenExists = async (tokenAddress: string) => {
+  try {
+    const token = await clientV2.query({
+      query: IS_TOKEN_EXISTS(tokenAddress.toLowerCase()),
+    });
+
+    if (token.errors) {
+      return false;
+    }
+    return token.data.token;
+  } catch {
+    return false;
+  }
 };
 
 export const getSwapTransactions = async (

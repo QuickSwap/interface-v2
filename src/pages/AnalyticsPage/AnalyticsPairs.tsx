@@ -8,15 +8,21 @@ import { GlobalConst } from 'constants/index';
 import { useEthPrice } from 'state/application/hooks';
 import { useIsV3 } from 'state/analytics/hooks';
 import { getTopPairsV3 } from 'utils/v3-graph';
+import { useDispatch } from 'react-redux';
+import { setAnalyticsLoaded } from 'state/analytics/actions';
 
 const AnalyticsPairs: React.FC = () => {
   const { t } = useTranslation();
   const [topPairs, updateTopPairs] = useState<any[] | null>(null);
   const { ethPrice } = useEthPrice();
 
+  const dispatch = useDispatch();
+
   const isV3 = useIsV3();
 
   useEffect(() => {
+    updateTopPairs(null);
+
     const fetchTopPairs = async () => {
       updateTopPairs(null);
       const topPairsFn = isV3
@@ -46,6 +52,12 @@ const AnalyticsPairs: React.FC = () => {
       fetchTopPairs();
     }
   }, [updateTopPairs, ethPrice.price, isV3]);
+
+  useEffect(() => {
+    if (topPairs) {
+      dispatch(setAnalyticsLoaded(true));
+    }
+  }, [topPairs]);
 
   return (
     <Box width='100%' mb={3}>

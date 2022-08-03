@@ -29,6 +29,8 @@ import AnalyticsTokenChart from './AnalyticsTokenChart';
 import { useTranslation } from 'react-i18next';
 import { useIsV3 } from 'state/analytics/hooks';
 import { getTokenInfoV3, getTokenTransactionsV3 } from 'utils/v3-graph';
+import { useDispatch } from 'react-redux';
+import { setAnalyticsLoaded } from 'state/analytics/actions';
 
 const AnalyticsTokenDetails: React.FC = () => {
   const { t } = useTranslation();
@@ -49,6 +51,8 @@ const AnalyticsTokenDetails: React.FC = () => {
   } = useBookmarkTokens();
   const { ethPrice } = useEthPrice();
   const { maticPrice } = useMaticPrice();
+
+  const dispatch = useDispatch();
 
   const isV3 = useIsV3();
 
@@ -82,6 +86,10 @@ const AnalyticsTokenDetails: React.FC = () => {
   }, [tokenTransactions]);
 
   useEffect(() => {
+    setToken(null);
+    updateTokenPairs(null);
+    updateTokenTransactions(null);
+
     async function fetchTokenInfo() {
       if (
         ethPrice.price &&
@@ -142,6 +150,12 @@ const AnalyticsTokenDetails: React.FC = () => {
     setToken(null);
     updateTokenPairs(null);
   }, [tokenAddress]);
+
+  useEffect(() => {
+    if (token && (isV3 ? tokenTransactions : tokenPairs)) {
+      dispatch(setAnalyticsLoaded(true));
+    }
+  }, [token, tokenPairs, tokenTransactions, isV3]);
 
   const tokenPercentClass = getPriceClass(
     token ? Number(token.priceChangeUSD) : 0,

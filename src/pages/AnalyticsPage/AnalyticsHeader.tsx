@@ -7,8 +7,7 @@ import { shortenAddress } from 'utils';
 import 'pages/styles/analytics.scss';
 import { useTranslation } from 'react-i18next';
 import { useIsV3 } from 'state/analytics/hooks';
-import { useDispatch } from 'react-redux';
-import { toggleAnalyticsVersion } from 'state/analytics/actions';
+import AnalyticsToggler from './AnalyticsToggler';
 
 interface AnalyticHeaderProps {
   data?: any;
@@ -20,39 +19,14 @@ const AnalyticsHeader: React.FC<AnalyticHeaderProps> = ({ data, type }) => {
   const { pathname } = useLocation();
   const { t } = useTranslation();
 
-  const dispatch = useDispatch();
-
   const isV3 = useIsV3();
-
   const version = useMemo(() => `${isV3 ? `v3` : 'v2'}`, [isV3]);
-  const activeLink = useMemo(
-    () =>
-      pathname
-        .split('/')
-        .slice(3)
-        .join('/') || '',
-    [pathname],
-  );
 
   return (
     <Box width='100%' mb={3}>
       <Box mb={4} className='flex'>
         <h4>{t('quickswapAnalytics')}</h4>
-        <Box
-          ml={2.5}
-          className='versionToggler flex'
-          onClick={() => {
-            history.push(
-              `/analytics/${isV3 ? 'v2' : 'v3'}${
-                activeLink ? `/${activeLink}` : ''
-              }`,
-            );
-            dispatch(toggleAnalyticsVersion());
-          }}
-        >
-          <div className={`${!isV3 && 'activeVersion'}`}>V2</div>
-          <div className={`${isV3 && 'activeVersion'}`}>V3</div>
-        </Box>
+        <AnalyticsToggler />
       </Box>
       <Box
         mb={4}

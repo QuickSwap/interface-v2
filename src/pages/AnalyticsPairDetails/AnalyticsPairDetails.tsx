@@ -14,6 +14,7 @@ import { useActiveWeb3React } from 'hooks';
 import {
   CurrencyLogo,
   DoubleCurrencyLogo,
+  PairTable,
   TransactionsTable,
 } from 'components';
 import { getAddress } from '@ethersproject/address';
@@ -26,6 +27,8 @@ import { useEthPrice } from 'state/application/hooks';
 import { useIsV3 } from 'state/analytics/hooks';
 import { getPairInfoV3, getPairTransactionsV3 } from 'utils/v3-graph';
 import AnalyticsPairLiquidityChartV3 from './AnalyticsPairLiquidityChartV3';
+import { useDispatch } from 'react-redux';
+import { setAnalyticsLoaded } from 'state/analytics/actions';
 
 const AnalyticsPairDetails: React.FC = () => {
   const { t } = useTranslation();
@@ -114,7 +117,12 @@ const AnalyticsPairDetails: React.FC = () => {
   const isV3 = useIsV3();
   const version = useMemo(() => `${isV3 ? `v3` : 'v2'}`, [isV3]);
 
+  const dispatch = useDispatch();
+
   useEffect(() => {
+    setPairData(null);
+    setPairTransactions(null);
+
     async function checkEthPrice() {
       if (ethPrice.price) {
         const pairInfoFn = isV3
@@ -147,6 +155,13 @@ const AnalyticsPairDetails: React.FC = () => {
     setPairData(null);
     setPairTransactions(null);
   }, [pairAddress]);
+
+  useEffect(() => {
+    //TODO v2 Subgraph for txs is not working, for now always true
+    if (pairData && (isV3 ? pairTransactions : true)) {
+      dispatch(setAnalyticsLoaded(true));
+    }
+  }, [pairData, pairTransactions, isV3]);
 
   const V2PairInfo = () => (
     <Box width={1} className='panel' mt={4}>

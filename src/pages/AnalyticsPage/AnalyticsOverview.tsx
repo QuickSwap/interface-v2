@@ -24,6 +24,8 @@ import AnalyticsVolumeChart from './AnalyticsVolumeChart';
 import { useTranslation } from 'react-i18next';
 import { getGlobalDataV3, getTopPairsV3, getTopTokensV3 } from 'utils/v3-graph';
 import { useIsV3 } from 'state/analytics/hooks';
+import { useDispatch } from 'react-redux';
+import { setAnalyticsLoaded } from 'state/analytics/actions';
 
 dayjs.extend(utc);
 
@@ -36,6 +38,8 @@ const AnalyticsOverview: React.FC = () => {
   const { ethPrice } = useEthPrice();
   const { maticPrice } = useMaticPrice();
 
+  const dispatch = useDispatch();
+
   const isV3 = useIsV3();
   const version = useMemo(() => `${isV3 ? `v3` : 'v2'}`, [isV3]);
 
@@ -47,6 +51,10 @@ const AnalyticsOverview: React.FC = () => {
       !maticPrice.oneDayPrice
     )
       return;
+
+    updateGlobalData({ data: null });
+    updateTopPairs(null);
+    updateTopTokens(null);
 
     const globalDataFn = isV3
       ? getGlobalDataV3()
@@ -106,6 +114,12 @@ const AnalyticsOverview: React.FC = () => {
     maticPrice.oneDayPrice,
     isV3,
   ]);
+
+  useEffect(() => {
+    if (globalData && topTokens && topPairs) {
+      dispatch(setAnalyticsLoaded(true));
+    }
+  }, [globalData, topTokens, topPairs]);
 
   return (
     <Box width='100%' mb={3}>

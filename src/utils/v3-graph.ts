@@ -7,6 +7,8 @@ import {
   GLOBAL_CHART_V3,
   GLOBAL_DATA_V3,
   GLOBAL_TRANSACTIONS_V3,
+  IS_PAIR_EXISTS_V3,
+  IS_TOKEN_EXISTS_V3,
   MATIC_PRICE_V3,
   PAIRS_FROM_ADDRESSES_V3,
   PAIR_CHART_V3,
@@ -88,7 +90,7 @@ export async function getGlobalDataV3(): Promise<any> {
     const oneDayVolumeUSD =
       statsCurrent && statsOneDay
         ? parseFloat(statsCurrent.totalVolumeUSD) -
-        parseFloat(statsOneDay.totalVolumeUSD)
+          parseFloat(statsOneDay.totalVolumeUSD)
         : parseFloat(statsCurrent.totalVolumeUSD);
 
     const volumeChangeUSD = getPercentChange(
@@ -110,7 +112,7 @@ export async function getGlobalDataV3(): Promise<any> {
     const feesUSD =
       statsCurrent && statsOneDay
         ? parseFloat(statsCurrent.totalFeesUSD) -
-        parseFloat(statsOneDay.totalFeesUSD)
+          parseFloat(statsOneDay.totalFeesUSD)
         : parseFloat(statsCurrent.totalFeesUSD);
 
     const feesUSDChange = getPercentChange(
@@ -313,13 +315,13 @@ export async function getTopTokensV3(
       const [oneDayVolumeUSD, volumeUSDChange] =
         current && oneDay && twoDay
           ? get2DayPercentChange(
-            current[manageUntrackedVolume],
-            oneDay[manageUntrackedVolume],
-            twoDay[manageUntrackedVolume],
-          )
+              current[manageUntrackedVolume],
+              oneDay[manageUntrackedVolume],
+              twoDay[manageUntrackedVolume],
+            )
           : current
-            ? [parseFloat(current[manageUntrackedVolume]), 0]
-            : [0, 0];
+          ? [parseFloat(current[manageUntrackedVolume]), 0]
+          : [0, 0];
 
       const tvlUSD = current ? parseFloat(current[manageUntrackedTVL]) : 0;
       const tvlUSDChange = getPercentChange(
@@ -337,23 +339,23 @@ export async function getTopTokensV3(
       const priceChangeUSD =
         priceUSD && priceUSDOneDay
           ? getPercentChange(
-            Number(priceUSD.toString()),
-            Number(priceUSDOneDay.toString()),
-          )
+              Number(priceUSD.toString()),
+              Number(priceUSDOneDay.toString()),
+            )
           : 0;
 
       const txCount =
         current && oneDay
           ? parseFloat(current.txCount) - parseFloat(oneDay.txCount)
           : current
-            ? parseFloat(current.txCount)
-            : 0;
+          ? parseFloat(current.txCount)
+          : 0;
       const feesUSD =
         current && oneDay
           ? parseFloat(current.feesUSD) - parseFloat(oneDay.feesUSD)
           : current
-            ? parseFloat(current.feesUSD)
-            : 0;
+          ? parseFloat(current.feesUSD)
+          : 0;
 
       return {
         exists: !!current,
@@ -423,13 +425,13 @@ export async function getTokenInfoV3(
     const [oneDayVolumeUSD, volumeChangeUSD] =
       current && oneDay && twoDay
         ? get2DayPercentChange(
-          current[manageUntrackedVolume],
-          oneDay[manageUntrackedVolume],
-          twoDay[manageUntrackedVolume],
-        )
+            current[manageUntrackedVolume],
+            oneDay[manageUntrackedVolume],
+            twoDay[manageUntrackedVolume],
+          )
         : current
-          ? [parseFloat(current[manageUntrackedVolume]), 0]
-          : [0, 0];
+        ? [parseFloat(current[manageUntrackedVolume]), 0]
+        : [0, 0];
 
     const tvlUSD = current ? parseFloat(current[manageUntrackedTVL]) : 0;
     const tvlUSDChange = getPercentChange(
@@ -448,24 +450,24 @@ export async function getTokenInfoV3(
     const priceChangeUSD =
       priceUSD && priceUSDOneDay
         ? getPercentChange(
-          Number(priceUSD.toString()),
-          Number(priceUSDOneDay.toString()),
-        )
+            Number(priceUSD.toString()),
+            Number(priceUSDOneDay.toString()),
+          )
         : 0;
 
     const txCount =
       current && oneDay
         ? parseFloat(current.txCount) - parseFloat(oneDay.txCount)
         : current
-          ? parseFloat(current.txCount)
-          : 0;
+        ? parseFloat(current.txCount)
+        : 0;
 
     const feesUSD =
       current && oneDay
         ? parseFloat(current.feesUSD) - parseFloat(oneDay.feesUSD)
         : current
-          ? parseFloat(current.feesUSD)
-          : 0;
+        ? parseFloat(current.feesUSD)
+        : 0;
 
     return {
       exists: !!current,
@@ -584,6 +586,21 @@ export const getTokenChartDataV3 = async (
   return data;
 };
 
+export async function isV3TokenExists(tokenAddress: string) {
+  try {
+    const token = await clientV3.query({
+      query: IS_TOKEN_EXISTS_V3(tokenAddress.toLowerCase()),
+    });
+
+    if (token.errors) {
+      return false;
+    }
+    return token.data.token;
+  } catch {
+    return false;
+  }
+}
+
 //Pairs
 
 export async function getTopPairsV3(count = 500) {
@@ -652,27 +669,27 @@ export async function getTopPairsV3(count = 500) {
       const [oneDayVolumeUSD, oneDayVolumeChangeUSD] =
         current && oneDay && twoDay
           ? get2DayPercentChange(
-            current[manageUntrackedVolume],
-            oneDay[manageUntrackedVolume],
-            twoDay[manageUntrackedVolume],
-          )
+              current[manageUntrackedVolume],
+              oneDay[manageUntrackedVolume],
+              twoDay[manageUntrackedVolume],
+            )
           : current && oneDay
-            ? [
+          ? [
               parseFloat(current[manageUntrackedVolume]) -
-              parseFloat(oneDay[manageUntrackedVolume]),
+                parseFloat(oneDay[manageUntrackedVolume]),
               0,
             ]
-            : current
-              ? [parseFloat(current[manageUntrackedVolume]), 0]
-              : [0, 0];
+          : current
+          ? [parseFloat(current[manageUntrackedVolume]), 0]
+          : [0, 0];
 
       const oneWeekVolumeUSD =
         current && week
           ? parseFloat(current[manageUntrackedVolume]) -
-          parseFloat(week[manageUntrackedVolume])
+            parseFloat(week[manageUntrackedVolume])
           : current
-            ? parseFloat(current[manageUntrackedVolume])
-            : 0;
+          ? parseFloat(current[manageUntrackedVolume])
+          : 0;
 
       const tvlUSD = current ? parseFloat(current[manageUntrackedTVL]) : 0;
       const tvlUSDChange = getPercentChange(
@@ -755,27 +772,27 @@ export async function getPairInfoV3(address: string) {
     const [oneDayVolumeUSD, oneDayVolumeChangeUSD] =
       current && oneDay && twoDay
         ? get2DayPercentChange(
-          current[manageUntrackedVolume],
-          oneDay[manageUntrackedVolume],
-          twoDay[manageUntrackedVolume],
-        )
+            current[manageUntrackedVolume],
+            oneDay[manageUntrackedVolume],
+            twoDay[manageUntrackedVolume],
+          )
         : current && oneDay
-          ? [
+        ? [
             parseFloat(current[manageUntrackedVolume]) -
-            parseFloat(oneDay[manageUntrackedVolume]),
+              parseFloat(oneDay[manageUntrackedVolume]),
             0,
           ]
-          : current
-            ? [parseFloat(current[manageUntrackedVolume]), 0]
-            : [0, 0];
+        : current
+        ? [parseFloat(current[manageUntrackedVolume]), 0]
+        : [0, 0];
 
     const oneWeekVolumeUSD =
       current && week
         ? parseFloat(current[manageUntrackedVolume]) -
-        parseFloat(week[manageUntrackedVolume])
+          parseFloat(week[manageUntrackedVolume])
         : current
-          ? parseFloat(current[manageUntrackedVolume])
-          : 0;
+        ? parseFloat(current[manageUntrackedVolume])
+        : 0;
 
     const tvlUSD = current ? parseFloat(current[manageUntrackedTVL]) : 0;
     const tvlUSDChange = getPercentChange(
@@ -792,7 +809,7 @@ export async function getPairInfoV3(address: string) {
     const poolFeeChange = getPercentChange(
       current ? current.fee : undefined,
       oneDay ? oneDay.fee : undefined,
-    )
+    );
 
     const aprPercent = aprs[address] ? aprs[address].toFixed(2) : 0;
     const farmingApr = farmingAprs[address]
@@ -1465,6 +1482,23 @@ export async function getTokenTransactionsV3(address: string): Promise<any> {
   }
 }
 
+export async function isV3PairExists(pairAddress: string) {
+  try {
+    const pair = await clientV3.query({
+      query: IS_PAIR_EXISTS_V3(pairAddress.toLowerCase()),
+    });
+
+    console.log('FETCHED', pair);
+
+    if (pair.errors) {
+      return false;
+    }
+    return pair.data.pool;
+  } catch {
+    return false;
+  }
+}
+
 //Farming
 
 async function fetchEternalFarmingsAPRByPool(
@@ -1503,9 +1537,9 @@ async function fetchTokensByTime(
 function parseTokensData(tokenData: any) {
   return tokenData
     ? tokenData.reduce((acc: { [address: string]: any }, tokenData: any) => {
-      acc[tokenData.id] = tokenData;
-      return acc;
-    }, {})
+        acc[tokenData.id] = tokenData;
+        return acc;
+      }, {})
     : {};
 }
 
@@ -1546,8 +1580,8 @@ async function fetchPairsByTime(
 function parsePairsData(tokenData: any) {
   return tokenData
     ? tokenData.reduce((accum: { [address: string]: any }, poolData: any) => {
-      accum[poolData.id] = poolData;
-      return accum;
-    }, {})
+        accum[poolData.id] = poolData;
+        return accum;
+      }, {})
     : {};
 }

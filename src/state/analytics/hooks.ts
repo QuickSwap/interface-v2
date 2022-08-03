@@ -15,3 +15,9 @@ export function useIsV3() {
     (state) => state.analytics.isV3,
   );
 }
+
+export function useIsAnalyticsLoaded() {
+  return useSelector<AppState, AppState['analytics']['isLoaded']>(
+    (state) => state.analytics.isLoaded,
+  );
+}

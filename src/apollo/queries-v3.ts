@@ -197,6 +197,17 @@ export const TOKEN_CHART_V3 = gql`
   }
 `;
 
+export const IS_TOKEN_EXISTS_V3: any = (tokenAddress: string) => {
+  const queryString = `
+    query tokens {
+      token(id: "${tokenAddress}"){
+        id
+      }
+    }
+  `;
+  return gql(queryString);
+};
+
 //Pairs
 
 export const TOP_POOLS_V3 = (count: number) => gql`
@@ -384,6 +395,23 @@ export const PAIR_FEE_CHART_V3 = () => gql`
     }
   }
 `;
+
+export const IS_PAIR_EXISTS_V3: any = (pairAddress: string) => {
+  const queryString = `
+    query pools {
+      pool(id: "${pairAddress}"){
+        id
+        token0 {
+          id
+        }
+        token1 {
+          id
+        }
+      }
+    }
+  `;
+  return gql(queryString);
+};
 
 export const FETCH_TICKS = () => gql`
   query surroundingTicks(
