@@ -246,15 +246,19 @@ const AnalyticsTokenDetails: React.FC = () => {
               <Box>
                 <span className='text-disabled'>{t('tvl')}</span>
                 <h5>${formatNumber(token.tvlUSD)}</h5>
-                <small className={getPriceClass(Number(token.tvlUSDChange))}>
-                  {getFormattedPrice(token.tvlUSDChange)}%
+                <small
+                  className={getPriceClass(Number(token.tvlUSDChange) || 0)}
+                >
+                  {getFormattedPrice(token.tvlUSDChange || 0)}%
                 </small>
               </Box>
               <Box>
                 <span className='text-disabled'>{t('24hTradingVol1')}</span>
                 <h5>${formatNumber(token.oneDayVolumeUSD)}</h5>
-                <small className={getPriceClass(Number(token.volumeChangeUSD))}>
-                  {getFormattedPrice(token.volumeChangeUSD)}%
+                <small
+                  className={getPriceClass(Number(token.volumeChangeUSD) || 0)}
+                >
+                  {getFormattedPrice(token.volumeChangeUSD || 0)}%
                 </small>
               </Box>
               <Box>
