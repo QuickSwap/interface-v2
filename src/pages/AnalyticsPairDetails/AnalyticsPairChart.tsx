@@ -17,11 +17,7 @@ import { AreaChart, ChartType } from 'components';
 import { GlobalConst, GlobalData } from 'constants/index';
 import { useTranslation } from 'react-i18next';
 import { useIsV3 } from 'state/analytics/hooks';
-import {
-  getLiquidityChart,
-  getPairChartDataV3,
-  getPairChartFees,
-} from 'utils/v3-graph';
+import { getPairChartDataV3, getPairChartFees } from 'utils/v3-graph';
 import AnalyticsPairLiquidityChartV3 from './AnalyticsPairLiquidityChartV3';
 
 const CHART_VOLUME = 0;
@@ -73,11 +69,11 @@ const AnalyticsPairChart: React.FC<{
 
   const _chartIndexes = useMemo(
     () => chartIndexes.concat(isV3 ? chartIndexesV3 : []),
-    [isV3],
+    [isV3, chartIndexes, chartIndexTextsV3],
   );
   const _chartIndexesTexts: any = useMemo(
     () => chartIndexTexts.concat(isV3 ? chartIndexTextsV3 : []),
-    [isV3],
+    [isV3, chartIndexTexts, chartIndexTextsV3],
   );
 
   const chartData = useMemo(() => {
@@ -159,7 +155,7 @@ const AnalyticsPairChart: React.FC<{
       default:
         return '$';
     }
-  }, [chartIndex]);
+  }, [chartIndex, pairData]);
 
   useEffect(() => {
     async function fetchPairChartData() {

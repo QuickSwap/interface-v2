@@ -80,7 +80,7 @@ const AnalyticsTokens: React.FC = () => {
     if (topTokens) {
       dispatch(setAnalyticsLoaded(true));
     }
-  }, [topTokens]);
+  }, [topTokens, dispatch]);
 
   return (
     <Box width='100%' mb={3}>

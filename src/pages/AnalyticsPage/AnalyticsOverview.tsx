@@ -119,7 +119,7 @@ const AnalyticsOverview: React.FC = () => {
     if (globalData && topTokens && topPairs) {
       dispatch(setAnalyticsLoaded(true));
     }
-  }, [globalData, topTokens, topPairs]);
+  }, [globalData, topTokens, topPairs, dispatch]);
 
   return (
     <Box width='100%' mb={3}>

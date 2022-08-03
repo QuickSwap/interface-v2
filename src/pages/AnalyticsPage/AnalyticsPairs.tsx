@@ -57,7 +57,7 @@ const AnalyticsPairs: React.FC = () => {
     if (topPairs) {
       dispatch(setAnalyticsLoaded(true));
     }
-  }, [topPairs]);
+  }, [topPairs, dispatch]);
 
   return (
     <Box width='100%' mb={3}>

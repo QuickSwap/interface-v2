@@ -29,7 +29,7 @@ const AnalyticsPairLiquidityChartV3: React.FC<{
         updateLiquidtyChartData(data);
       }
     });
-  }, [pairData]);
+  }, [pairData, pairAddress]);
 
   const [zoom, setZoom] = useState(5);
 
@@ -56,7 +56,7 @@ const AnalyticsPairLiquidityChartV3: React.FC<{
     return pairData && formattedAddress0 && formattedAddress1
       ? new Token(137, formattedAddress1, +pairData.token1.decimals)
       : undefined;
-  }, [formattedAddress1, pairData]);
+  }, [formattedAddress0, formattedAddress1, pairData]);
 
   useEffect(() => {
     if (!pairData || !liquidityChartData || !liquidityChartData.ticksProcessed)
@@ -131,7 +131,14 @@ const AnalyticsPairLiquidityChartV3: React.FC<{
     }
 
     processTicks();
-  }, [liquidityChartData, pairAddress, pairData]);
+  }, [
+    liquidityChartData,
+    pairAddress,
+    pairData,
+    MAX_UINT128,
+    _token0,
+    _token1,
+  ]);
 
   const formattedData = useMemo(() => {
     if (!processedData) return undefined;
@@ -157,19 +164,19 @@ const AnalyticsPairLiquidityChartV3: React.FC<{
     }
 
     return idx;
-  }, [formattedData, zoom]);
+  }, [formattedData]);
 
   const handleZoomIn = useCallback(() => {
     if (zoom < MAX_ZOOM) {
       setZoom(zoom + 1);
     }
-  }, [processedData, zoom]);
+  }, [zoom]);
 
   const handleZoomOut = useCallback(() => {
     if (zoom > 0) {
       setZoom(zoom - 1);
     }
-  }, [processedData, zoom]);
+  }, [zoom]);
 
   return (
     <Box position={'relative'}>

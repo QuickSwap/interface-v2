@@ -155,7 +155,7 @@ const AnalyticsTokenDetails: React.FC = () => {
     if (token && (isV3 ? tokenTransactions : tokenPairs)) {
       dispatch(setAnalyticsLoaded(true));
     }
-  }, [token, tokenPairs, tokenTransactions, isV3]);
+  }, [token, tokenPairs, tokenTransactions, isV3, dispatch]);
 
   const tokenPercentClass = getPriceClass(
     token ? Number(token.priceChangeUSD) : 0,

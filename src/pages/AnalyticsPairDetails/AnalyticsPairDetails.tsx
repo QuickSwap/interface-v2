@@ -14,7 +14,6 @@ import { useActiveWeb3React } from 'hooks';
 import {
   CurrencyLogo,
   DoubleCurrencyLogo,
-  PairTable,
   TransactionsTable,
 } from 'components';
 import { getAddress } from '@ethersproject/address';
@@ -26,7 +25,6 @@ import { useTranslation } from 'react-i18next';
 import { useEthPrice } from 'state/application/hooks';
 import { useIsV3 } from 'state/analytics/hooks';
 import { getPairInfoV3, getPairTransactionsV3 } from 'utils/v3-graph';
-import AnalyticsPairLiquidityChartV3 from './AnalyticsPairLiquidityChartV3';
 import { useDispatch } from 'react-redux';
 import { setAnalyticsLoaded } from 'state/analytics/actions';
 
@@ -161,7 +159,7 @@ const AnalyticsPairDetails: React.FC = () => {
     if (pairData && (isV3 ? pairTransactions : true)) {
       dispatch(setAnalyticsLoaded(true));
     }
-  }, [pairData, pairTransactions, isV3]);
+  }, [pairData, pairTransactions, isV3, dispatch]);
 
   const V2PairInfo = () => (
     <Box width={1} className='panel' mt={4}>

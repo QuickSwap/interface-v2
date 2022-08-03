@@ -18,7 +18,7 @@ export default function Updater(): null {
 
   useEffect(() => {
     dispatch(setAnalyticsLoaded(false));
-  }, [pathname, isV3]);
+  }, [pathname, isV3, dispatch]);
 
   return null;
 }

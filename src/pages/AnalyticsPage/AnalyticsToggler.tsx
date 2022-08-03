@@ -88,7 +88,7 @@ const AnalyticsToggler: React.FC = () => {
       );
     }
     dispatch(toggleAnalyticsVersion());
-  }, [isV3, activeLink, complementAddress]);
+  }, [isV3, activeLink, complementAddress, dispatch, history]);
 
   return (
     <Box
