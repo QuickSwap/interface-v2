@@ -337,6 +337,17 @@ const AnalyticsPairDetails: React.FC = () => {
                     </Link>
                   </p>
                 </Box>
+                {isV3 && (
+                  <Box
+                    ml={2}
+                    paddingY={0.5}
+                    paddingX={1}
+                    borderRadius={6}
+                    className='text-primaryText bg-gray30'
+                  >
+                    {pairData.fee / 1000}% Fee
+                  </Box>
+                )}
               </Box>
               <Box mt={2} display='flex'>
                 <Box className='analyticsPairRate'>

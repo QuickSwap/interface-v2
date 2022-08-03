@@ -161,6 +161,17 @@ const PairTable: React.FC<PairsTableProps> = ({
               </Box>
             </Box>
           </Link>
+          {isV3 && (
+            <Box
+              ml={2}
+              paddingY={0.5}
+              paddingX={1}
+              borderRadius={6}
+              className='text-primaryText bg-gray30'
+            >
+              {pair.fee / 1000}% Fee
+            </Box>
+          )}
         </Box>
         <Divider />
         <Box className='mobileRow'>
@@ -293,6 +304,17 @@ const PairTable: React.FC<PairsTableProps> = ({
                 </Box>
               </Box>
             </Link>
+            {isV3 && (
+              <Box
+                ml={2}
+                paddingY={0.5}
+                paddingX={1}
+                borderRadius={6}
+                className='text-primaryText bg-gray30'
+              >
+                {pair.fee / 1000}% Fee
+              </Box>
+            )}
           </Box>
         ),
       },
