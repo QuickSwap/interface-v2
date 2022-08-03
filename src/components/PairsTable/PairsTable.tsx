@@ -169,7 +169,7 @@ const PairTable: React.FC<PairsTableProps> = ({
               borderRadius={6}
               className='text-primaryText bg-gray30'
             >
-              {pair.fee / 1000}% Fee
+              {pair.fee / 10000}% Fee
             </Box>
           )}
         </Box>
@@ -312,7 +312,7 @@ const PairTable: React.FC<PairsTableProps> = ({
                 borderRadius={6}
                 className='text-primaryText bg-gray30'
               >
-                {pair.fee / 1000}% Fee
+                {pair.fee / 10000}% Fee
               </Box>
             )}
           </Box>

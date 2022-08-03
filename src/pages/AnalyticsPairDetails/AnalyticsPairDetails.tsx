@@ -364,7 +364,7 @@ const AnalyticsPairDetails: React.FC = () => {
                     borderRadius={6}
                     className='text-primaryText bg-gray30'
                   >
-                    {pairData.fee / 1000}% Fee
+                    {pairData.fee / 10000}% Fee
                   </Box>
                 )}
               </Box>
