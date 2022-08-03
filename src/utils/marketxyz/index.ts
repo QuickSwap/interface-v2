@@ -1,6 +1,6 @@
 import { Comptroller, MarketSDK } from 'market-sdk';
 import { Token, ChainId } from '@uniswap/sdk';
-import { BN } from 'utils/bigUtils';
+import BN from 'bn.js';
 import { USDPricedPoolAsset } from './fetchPoolData';
 import { getDaysCurrentYear } from 'utils';
 import ERC20_ABI from '../../constants/abis/erc20.json';
