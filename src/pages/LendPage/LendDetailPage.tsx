@@ -19,7 +19,7 @@ import ToggleSwitch from 'components/ToggleSwitch';
 import { QuickModalContent } from 'components/LendModals';
 
 import { usePoolData } from 'hooks/marketxyz/usePoolData';
-import { midUsdFormatter } from 'utils/bigUtils';
+import { midUsdFormatter, shortUsdFormatter } from 'utils/bigUtils';
 import { getDaysCurrentYear, shortenAddress } from 'utils';
 import { useExtraPoolData } from 'hooks/marketxyz/useExtraPoolData';
 import { useActiveWeb3React } from 'hooks';
@@ -329,7 +329,7 @@ const LendDetailPage: React.FC = () => {
                               }}
                             >
                               <Box className='flex items-center'>
-                                <Box display={'flex'} mr='16px'>
+                                <Box display={'flex'} mr='8px'>
                                   <CurrencyLogo
                                     currency={getPoolAssetToken(asset, chainId)}
                                     size={'36px'}
@@ -501,9 +501,7 @@ const LendDetailPage: React.FC = () => {
                   <Table>
                     <TableHead>
                       <TableRow>
-                        <MuiTableCell>
-                          {t('asset')} / {t('ltv')}
-                        </MuiTableCell>
+                        <MuiTableCell>{t('asset')}</MuiTableCell>
                         <MuiTableCell className='poolTableHideCell'>
                           {t('apr')} / {t('tvl')}
                         </MuiTableCell>
@@ -525,15 +523,13 @@ const LendDetailPage: React.FC = () => {
                             }}
                           >
                             <ItemTableCell>
-                              <Box
-                                display={'flex'}
-                                alignItems={'center'}
-                                gridGap={'16px'}
-                              >
-                                <CurrencyLogo
-                                  currency={getPoolAssetToken(asset, chainId)}
-                                  size={'36px'}
-                                />
+                              <Box display={'flex'} alignItems={'center'}>
+                                <Box display='flex' mr='8px'>
+                                  <CurrencyLogo
+                                    currency={getPoolAssetToken(asset, chainId)}
+                                    size={'36px'}
+                                  />
+                                </Box>
                                 <small className='text-gray29'>
                                   {asset.underlyingName}
                                 </small>
@@ -545,6 +541,10 @@ const LendDetailPage: React.FC = () => {
                                   asset.borrowRatePerBlock,
                                 ).toFixed(2)}
                                 %
+                              </p>
+                              <p className='caption text-secondary'>
+                                {shortUsdFormatter(asset.totalSupplyUSD)}{' '}
+                                {t('tvl')}
                               </p>
                             </ItemTableCell>
                             <ItemTableCell>
