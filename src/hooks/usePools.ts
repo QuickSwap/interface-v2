@@ -2,15 +2,14 @@ import { POOL_DEPLOYER_ADDRESS } from '../constants/v3/addresses';
 import { Currency, Token } from '@uniswap/sdk-core';
 import { useMemo } from 'react';
 import { useActiveWeb3React } from 'hooks';
-import { useMultipleContractSingleData } from '../state/multicall/hooks';
-
+import abi from 'constants/abis/v3/pool.json';
 import { Interface } from '@ethersproject/abi';
-import abi from '../abis/pool.json';
 import { useInternet } from './useInternet';
 import { useToken } from './Tokens';
 import { usePreviousNonErroredArray } from './usePrevious';
 import { Pool } from 'lib/src/pool';
 import { computePoolAddress } from './v3/computePoolAddress';
+import { useMultipleContractSingleData } from 'state/multicall/v3/hooks';
 
 const POOL_STATE_INTERFACE = new Interface(abi);
 
@@ -45,6 +44,7 @@ export function usePools(
 
     return transformed.map((value) => {
       if (!poolDeployerAddress || !value) return undefined;
+
       return computePoolAddress({
         poolDeployer: poolDeployerAddress,
         tokenA: value[0],
@@ -58,6 +58,9 @@ export function usePools(
     POOL_STATE_INTERFACE,
     'globalState',
   );
+
+  // TODO: This is a bug, if all of the pool addresses error out, and the last call to use pools was from a different hook
+  // You will get the results which don't match the pool keys
   const prevGlobalState0s = usePreviousNonErroredArray(globalState0s);
 
   const _globalState0s = useMemo(() => {

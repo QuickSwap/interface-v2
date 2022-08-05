@@ -152,6 +152,7 @@ export function useDerivedSwapInfo(): {
     recipient,
   } = useSwapState();
 
+  //TODO: these defaults should come from globalConsts instead
   const inputCurrency = useCurrency(
     inputCurrencyId || '0x0169eC1f8f639B32Eec6D923e24C2A2ff45B9DD6',
   );

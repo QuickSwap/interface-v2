@@ -30,8 +30,9 @@ import { useActiveWeb3React } from 'hooks';
 import { abi as LairABI } from 'abis/DragonLair.json';
 import { abi as IUniswapV2Router02ABI } from '@uniswap/v2-periphery/build/IUniswapV2Router02.json';
 import QUICKConversionABI from 'constants/abis/quick-conversion.json';
-import { QUOTER_ADDRESSES } from 'constants/v3/addresses';
+import { MULTICALL_ADDRESS, QUOTER_ADDRESSES } from 'constants/v3/addresses';
 import NewQuoterABI from 'constants/abis/v3/quoter.json';
+import MULTICALL2_ABI from 'constants/abis/v3/multicall.json';
 
 // function useContract(
 //   address: string | undefined,
@@ -210,6 +211,10 @@ export function useMulticallContract(): Contract | null {
     MULTICALL_ABI,
     false,
   );
+}
+
+export function useMulticall2Contract() {
+  return useContract(MULTICALL_ADDRESS, MULTICALL2_ABI, false);
 }
 
 export function useMerkleDistributorContract(): Contract | null {

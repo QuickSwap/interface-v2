@@ -39,7 +39,7 @@ const WETH_ONLY: ChainTokenList = Object.fromEntries(
 // used to construct intermediary pairs for trading
 export const BASES_TO_CHECK_TRADES_AGAINST: ChainTokenList = {
   ...WETH_ONLY,
-  [ChainId.MATIC]: [...WETH_ONLY[ChainId.MATIC], USDC, USDT, ETHER],
+  [ChainId.MATIC]: [...WETH_ONLY[ChainId.MATIC], USDC],
 };
 
 export const ADDITIONAL_BASES: {
@@ -61,14 +61,7 @@ export const COMMON_BASES: ChainCurrencyList = {
     ExtendedEther.onChain(ChainId.MATIC),
     WMATIC_EXTENDED[ChainId.MATIC],
     USDC,
-    USDT,
     OLD_QUICK,
-    NEW_QUICK,
-    ETHER,
-    WBTC,
-    DAI,
-    GHST,
-    MI,
   ],
 };
 
