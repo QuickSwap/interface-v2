@@ -200,7 +200,13 @@ export function useDualFarmList(
       console.error('Could not show token list due to error', error);
       return EMPTY_LIST;
     }
-  }, [current, dualFarmTokens, dualTokenAddresses.length, tokenMap]);
+  }, [
+    current,
+    dualFarmTokens,
+    chainIdOrDefault,
+    dualTokenAddresses.length,
+    tokenMap,
+  ]);
 }
 
 export function useDefaultDualFarmList(): DualFarmInfoAddressMap {

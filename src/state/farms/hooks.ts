@@ -184,7 +184,13 @@ export function useFarmList(url: string | undefined): StakingInfoAddressMap {
       console.error('Could not show token list due to error', error);
       return EMPTY_LIST;
     }
-  }, [current, farmTokens, farmTokenAddresses.length, tokenMap]);
+  }, [
+    current,
+    farmTokens,
+    farmTokenAddresses.length,
+    chainIdOrDefault,
+    tokenMap,
+  ]);
 }
 
 export function useDefaultFarmList(): StakingInfoAddressMap {

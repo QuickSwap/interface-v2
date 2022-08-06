@@ -10,7 +10,7 @@ import {
   getBlockFromTimestamp,
   getTokenFromAddress,
 } from 'utils';
-import { GlobalConst, MATIC_CHAIN } from 'constants/index';
+import { GlobalConst } from 'constants/index';
 import { CurrencyLogo, DoubleCurrencyLogo } from 'components';
 import { ChainId, Token } from '@uniswap/sdk';
 import { getAddress } from '@ethersproject/address';
@@ -20,6 +20,7 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 import { useSelectedTokenList } from 'state/lists/hooks';
+import { useActiveWeb3React } from 'hooks';
 dayjs.extend(utc);
 
 const AnalyticsSearch: React.FC = () => {
@@ -38,6 +39,8 @@ const AnalyticsSearch: React.FC = () => {
   const [tokensShown, setTokensShown] = useState(3);
   const [pairsShown, setPairsShown] = useState(3);
   const tokenMap = useSelectedTokenList();
+  const { chainId } = useActiveWeb3React();
+  const chainIdOrDefault = chainId ?? ChainId.MATIC;
 
   const escapeRegExp = (str: string) => {
     return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -288,11 +291,11 @@ const AnalyticsSearch: React.FC = () => {
           {filteredPairs.slice(0, pairsShown).map((val, ind) => {
             const currency0 = getTokenFromAddress(
               val.token0.id,
-              MATIC_CHAIN,
+              chainIdOrDefault,
               tokenMap,
               [
                 new Token(
-                  MATIC_CHAIN,
+                  chainIdOrDefault,
                   getAddress(val.token0.id),
                   val.token0.decimals,
                 ),
@@ -300,11 +303,11 @@ const AnalyticsSearch: React.FC = () => {
             );
             const currency1 = getTokenFromAddress(
               val.token1.id,
-              MATIC_CHAIN,
+              chainIdOrDefault,
               tokenMap,
               [
                 new Token(
-                  MATIC_CHAIN,
+                  chainIdOrDefault,
                   getAddress(val.token1.id),
                   val.token1.decimals,
                 ),
@@ -340,9 +343,9 @@ const AnalyticsSearch: React.FC = () => {
           {filteredTokens.slice(0, tokensShown).map((val, ind) => {
             const currency = getTokenFromAddress(
               getAddress(val.id),
-              MATIC_CHAIN,
+              chainIdOrDefault,
               tokenMap,
-              [new Token(MATIC_CHAIN, getAddress(val.id), val.decimals)],
+              [new Token(chainIdOrDefault, getAddress(val.id), val.decimals)],
             );
             return (
               <Box

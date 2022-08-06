@@ -167,7 +167,13 @@ export function useSyrupList(url: string | undefined): SyrupInfoAddressMap {
       console.error('Could not show token list due to error', error);
       return EMPTY_LIST;
     }
-  }, [current, tokenMap, syrupTokenAddresses.length, syrupTokens]);
+  }, [
+    current,
+    tokenMap,
+    chainIdOrDefault,
+    syrupTokenAddresses.length,
+    syrupTokens,
+  ]);
 }
 
 export function useDefaultSyrupList(): SyrupInfoAddressMap {
