@@ -8,6 +8,7 @@ import { getTokenFromAddress } from 'utils';
 import { TokenAddressMap, useSelectedTokenList } from 'state/lists/hooks';
 import { useTokens } from 'hooks/Tokens';
 import { GlobalValue } from 'constants/index';
+import { useActiveWeb3React } from 'hooks';
 
 export class WrappedDualFarmInfo implements DualStakingBasic {
   public readonly stakingInfo: DualStakingRaw;
@@ -32,7 +33,6 @@ export class WrappedDualFarmInfo implements DualStakingBasic {
     chainId: ChainId,
   ) {
     this.stakingInfo = stakingInfo;
-    //TODO: Support Multichain
     this.chainId = chainId;
     this.stakingRewardAddress = stakingInfo.stakingRewardAddress;
     this.ended = stakingInfo.ended;
@@ -109,6 +109,7 @@ export function listToDualFarmMap(
   list: DualFarmListInfo,
   tokenAddressMap: TokenAddressMap,
   dualFarmTokens: Token[],
+  chainId: ChainId,
 ): DualFarmInfoAddressMap {
   const result = dualFarmCache?.get(list);
   if (result) return result;
@@ -119,7 +120,7 @@ export function listToDualFarmMap(
         stakingInfo,
         tokenAddressMap,
         dualFarmTokens,
-        ChainId.MATIC,
+        chainId,
       );
       if (
         stakingInfoMap[wrappedStakingInfo.chainId][
@@ -148,6 +149,8 @@ export function useDualFarmList(
     (state) => state.dualFarms.byUrl,
   );
   const tokenMap = useSelectedTokenList();
+  const { chainId } = useActiveWeb3React();
+  const chainIdOrDefault = chainId ?? ChainId.MATIC;
   const current = url ? dualFarms[url]?.current : null;
   const dualTokenAddresses =
     current && tokenMap
@@ -163,7 +166,7 @@ export function useDualFarmList(
           ])
           .flat()
           .filter((item) => !!item)
-          .filter((address) => !tokenMap[ChainId.MATIC][address])
+          .filter((address) => !tokenMap[chainIdOrDefault][address])
           .filter(
             (address) =>
               !Object.values(GlobalValue.tokens.COMMON).find(
@@ -187,7 +190,12 @@ export function useDualFarmList(
     )
       return EMPTY_LIST;
     try {
-      return listToDualFarmMap(current, tokenMap, dualFarmTokens ?? []);
+      return listToDualFarmMap(
+        current,
+        tokenMap,
+        dualFarmTokens ?? [],
+        chainIdOrDefault,
+      );
     } catch (error) {
       console.error('Could not show token list due to error', error);
       return EMPTY_LIST;

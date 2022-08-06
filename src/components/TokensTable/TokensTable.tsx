@@ -17,6 +17,7 @@ import { ReactComponent as StarUnchecked } from 'assets/images/StarUnchecked.svg
 import 'components/styles/TokensTable.scss';
 import { useTranslation } from 'react-i18next';
 import { useSelectedTokenList } from 'state/lists/hooks';
+import { useActiveWeb3React } from 'hooks';
 
 interface TokensTableProps {
   data: any[];
@@ -31,6 +32,8 @@ const TokensTable: React.FC<TokensTableProps> = ({
 }) => {
   const { t } = useTranslation();
   const tokenMap = useSelectedTokenList();
+  const { chainId } = useActiveWeb3React();
+  const chainIdOrDefault = chainId ?? ChainId.MATIC;
   const tokenHeadCells = [
     {
       id: 'tokenName',
@@ -72,11 +75,11 @@ const TokensTable: React.FC<TokensTableProps> = ({
   const mobileHTML = (token: any, index: number) => {
     const tokenCurrency = getTokenFromAddress(
       token.id,
-      ChainId.MATIC,
+      chainIdOrDefault,
       tokenMap,
       [
         new Token(
-          ChainId.MATIC,
+          chainIdOrDefault,
           getAddress(token.id),
           Number(token.decimals),
           token.symbol,
@@ -147,11 +150,11 @@ const TokensTable: React.FC<TokensTableProps> = ({
   const desktopHTML = (token: any) => {
     const tokenCurrency = getTokenFromAddress(
       token.id,
-      ChainId.MATIC,
+      chainIdOrDefault,
       tokenMap,
       [
         new Token(
-          ChainId.MATIC,
+          chainIdOrDefault,
           getAddress(token.id),
           Number(token.decimals),
           token.symbol,

@@ -33,10 +33,11 @@ const AnalyticsTokenDetails: React.FC = () => {
   const tokenAddress = match.params.id;
   const [token, setToken] = useState<any>(null);
   const { chainId } = useActiveWeb3React();
+  const chainIdOrDefault = chainId ?? ChainId.MATIC;
   const tokenMap = useSelectedTokenList();
   const currency = token
-    ? getTokenFromAddress(tokenAddress, chainId ?? ChainId.MATIC, tokenMap, [
-        new Token(ChainId.MATIC, getAddress(token.id), token.decimals),
+    ? getTokenFromAddress(tokenAddress, chainIdOrDefault, tokenMap, [
+        new Token(chainIdOrDefault, getAddress(token.id), token.decimals),
       ])
     : undefined;
   const [tokenPairs, updateTokenPairs] = useState<any>(null);

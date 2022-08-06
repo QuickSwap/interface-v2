@@ -8,6 +8,7 @@ import { TokenAddressMap, useSelectedTokenList } from 'state/lists/hooks';
 import { getTokenFromAddress } from 'utils';
 import { useTokens } from 'hooks/Tokens';
 import { GlobalValue } from 'constants/index';
+import { useActiveWeb3React } from 'hooks';
 
 export class WrappedStakingInfo implements StakingBasic {
   public readonly stakingInfo: StakingRaw;
@@ -94,6 +95,7 @@ export function listToFarmMap(
   list: FarmListInfo,
   tokenAddressMap: TokenAddressMap,
   farmTokens: Token[],
+  chainId: ChainId,
 ): StakingInfoAddressMap {
   const result = farmCache?.get(list);
   if (result) return result;
@@ -104,7 +106,7 @@ export function listToFarmMap(
         stakingInfo,
         tokenAddressMap,
         farmTokens,
-        ChainId.MATIC,
+        chainId,
       );
       if (
         stakingInfoMap[wrappedStakingInfo.chainId][
@@ -132,6 +134,8 @@ export function useFarmList(url: string | undefined): StakingInfoAddressMap {
   );
 
   const tokenMap = useSelectedTokenList();
+  const { chainId } = useActiveWeb3React();
+  const chainIdOrDefault = chainId ?? ChainId.MATIC;
   const current = url ? farms[url]?.current : null;
   const farmTokenAddresses =
     current && tokenMap
@@ -145,7 +149,7 @@ export function useFarmList(url: string | undefined): StakingInfoAddressMap {
           ])
           .flat()
           .filter((item) => !!item)
-          .filter((address) => !tokenMap[ChainId.MATIC][address])
+          .filter((address) => !tokenMap[chainIdOrDefault][address])
           .filter(
             (address) =>
               !Object.values(GlobalValue.tokens.COMMON).find(
@@ -170,7 +174,12 @@ export function useFarmList(url: string | undefined): StakingInfoAddressMap {
     )
       return EMPTY_LIST;
     try {
-      return listToFarmMap(current, tokenMap, farmTokens ?? []);
+      return listToFarmMap(
+        current,
+        tokenMap,
+        farmTokens ?? [],
+        chainIdOrDefault,
+      );
     } catch (error) {
       console.error('Could not show token list due to error', error);
       return EMPTY_LIST;

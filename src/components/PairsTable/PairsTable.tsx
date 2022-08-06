@@ -11,6 +11,7 @@ import { ReactComponent as StarUnchecked } from 'assets/images/StarUnchecked.svg
 import { useTranslation } from 'react-i18next';
 import { formatNumber, getTokenFromAddress } from 'utils';
 import { useSelectedTokenList } from 'state/lists/hooks';
+import { useActiveWeb3React } from 'hooks';
 
 interface PairsTableProps {
   data: any[];
@@ -71,14 +72,16 @@ const PairTable: React.FC<PairsTableProps> = ({
     removeBookmarkPair,
   } = useBookmarkPairs();
   const tokenMap = useSelectedTokenList();
+  const { chainId } = useActiveWeb3React();
+  const chainIdOrDefault = chainId ?? ChainId.MATIC;
   const mobileHTML = (pair: any, index: number) => {
     const token0 = getTokenFromAddress(
       pair.token0.id,
-      ChainId.MATIC,
+      chainIdOrDefault,
       tokenMap,
       [
         new Token(
-          ChainId.MATIC,
+          chainIdOrDefault,
           getAddress(pair.token0.id),
           Number(pair.token0.decimals),
           pair.token0.symbol,
@@ -87,11 +90,11 @@ const PairTable: React.FC<PairsTableProps> = ({
     );
     const token1 = getTokenFromAddress(
       pair.token1.id,
-      ChainId.MATIC,
+      chainIdOrDefault,
       tokenMap,
       [
         new Token(
-          ChainId.MATIC,
+          chainIdOrDefault,
           getAddress(pair.token1.id),
           Number(pair.token1.decimals),
           pair.token1.symbol,
@@ -170,11 +173,11 @@ const PairTable: React.FC<PairsTableProps> = ({
   const desktopHTML = (pair: any) => {
     const token0 = getTokenFromAddress(
       pair.token0.id,
-      ChainId.MATIC,
+      chainIdOrDefault,
       tokenMap,
       [
         new Token(
-          ChainId.MATIC,
+          chainIdOrDefault,
           getAddress(pair.token0.id),
           Number(pair.token0.decimals),
           pair.token0.symbol,
@@ -183,11 +186,11 @@ const PairTable: React.FC<PairsTableProps> = ({
     );
     const token1 = getTokenFromAddress(
       pair.token1.id,
-      ChainId.MATIC,
+      chainIdOrDefault,
       tokenMap,
       [
         new Token(
-          ChainId.MATIC,
+          chainIdOrDefault,
           getAddress(pair.token1.id),
           Number(pair.token1.decimals),
           pair.token1.symbol,

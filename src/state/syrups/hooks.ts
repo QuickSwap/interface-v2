@@ -8,6 +8,7 @@ import { TokenAddressMap, useSelectedTokenList } from 'state/lists/hooks';
 import { getTokenFromAddress } from 'utils';
 import { useTokens } from 'hooks/Tokens';
 import { GlobalValue } from 'constants/index';
+import { useActiveWeb3React } from 'hooks';
 
 export class WrappedSyrupInfo implements SyrupBasic {
   public readonly stakingInfo: SyrupRaw;
@@ -84,6 +85,7 @@ export function listToSyrupMap(
   list: SyrupListInfo,
   tokenAddressMap: TokenAddressMap,
   syrupTokens: Token[],
+  chainId: ChainId,
 ): SyrupInfoAddressMap {
   const result = syrupCache?.get(list);
   if (result) return result;
@@ -94,7 +96,7 @@ export function listToSyrupMap(
         syrup,
         tokenAddressMap,
         syrupTokens,
-        ChainId.MATIC,
+        chainId,
       );
       if (
         syrupInfoMap[wrappedSyrupInfo.chainId][
@@ -121,6 +123,8 @@ export function useSyrupList(url: string | undefined): SyrupInfoAddressMap {
     (state) => state.syrups.byUrl,
   );
   const tokenMap = useSelectedTokenList();
+  const { chainId } = useActiveWeb3React();
+  const chainIdOrDefault = chainId ?? ChainId.MATIC;
   const current = url ? syrups[url]?.current : null;
   const syrupTokenAddresses =
     current && tokenMap
@@ -129,7 +133,7 @@ export function useSyrupList(url: string | undefined): SyrupInfoAddressMap {
           .map((item) => [item.baseToken, item.token, item.stakingToken])
           .flat()
           .filter((item) => !!item)
-          .filter((address) => !tokenMap[ChainId.MATIC][address])
+          .filter((address) => !tokenMap[chainIdOrDefault][address])
           .filter(
             (address) =>
               !Object.values(GlobalValue.tokens.COMMON).find(
@@ -153,7 +157,12 @@ export function useSyrupList(url: string | undefined): SyrupInfoAddressMap {
     )
       return EMPTY_LIST;
     try {
-      return listToSyrupMap(current, tokenMap, syrupTokens ?? []);
+      return listToSyrupMap(
+        current,
+        tokenMap,
+        syrupTokens ?? [],
+        chainIdOrDefault,
+      );
     } catch (error) {
       console.error('Could not show token list due to error', error);
       return EMPTY_LIST;

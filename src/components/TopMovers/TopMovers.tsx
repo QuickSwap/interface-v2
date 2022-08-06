@@ -9,6 +9,7 @@ import { getTopTokens, getPriceClass, formatNumber } from 'utils';
 import 'components/styles/TopMovers.scss';
 import { useTranslation } from 'react-i18next';
 import { useEthPrice } from 'state/application/hooks';
+import { useActiveWeb3React } from 'hooks';
 
 interface TopMoversProps {
   hideArrow?: boolean;
@@ -17,6 +18,8 @@ const TopMovers: React.FC<TopMoversProps> = ({ hideArrow = false }) => {
   const { t } = useTranslation();
   const [topTokens, updateTopTokens] = useState<any[] | null>(null);
   const { ethPrice } = useEthPrice();
+  const { chainId } = useActiveWeb3React();
+  const chainIdOrDefault = chainId ?? ChainId.MATIC;
 
   const topMoverTokens = useMemo(
     () => (topTokens && topTokens.length >= 5 ? topTokens.slice(0, 5) : null),
@@ -46,7 +49,7 @@ const TopMovers: React.FC<TopMoversProps> = ({ hideArrow = false }) => {
           <Box>
             {topMoverTokens.map((token: any) => {
               const currency = new Token(
-                ChainId.MATIC,
+                chainIdOrDefault,
                 getAddress(token.id),
                 token.decimals,
               );

@@ -34,6 +34,8 @@ const AnalyticsPairDetails: React.FC = () => {
   const tokenMap = useSelectedTokenList();
   const [pairData, setPairData] = useState<any>(null);
   const [pairTransactions, setPairTransactions] = useState<any>(null);
+  const { chainId } = useActiveWeb3React();
+  const chainIdOrDefault = chainId ?? ChainId.MATIC;
   const pairTransactionsList = useMemo(() => {
     if (pairTransactions) {
       const mints = pairTransactions.mints.map((item: any) => {
@@ -62,20 +64,19 @@ const AnalyticsPairDetails: React.FC = () => {
       return null;
     }
   }, [pairTransactions]);
-  const { chainId } = useActiveWeb3React();
   const currency0 = pairData
-    ? getTokenFromAddress(pairData.token0.id, ChainId.MATIC, tokenMap, [
+    ? getTokenFromAddress(pairData.token0.id, chainIdOrDefault, tokenMap, [
         new Token(
-          ChainId.MATIC,
+          chainIdOrDefault,
           getAddress(pairData.token0.id),
           pairData.token0.decimals,
         ),
       ])
     : undefined;
   const currency1 = pairData
-    ? getTokenFromAddress(pairData.token1.id, ChainId.MATIC, tokenMap, [
+    ? getTokenFromAddress(pairData.token1.id, chainIdOrDefault, tokenMap, [
         new Token(
-          ChainId.MATIC,
+          chainIdOrDefault,
           getAddress(pairData.token1.id),
           pairData.token1.decimals,
         ),
