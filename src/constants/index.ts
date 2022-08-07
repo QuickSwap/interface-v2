@@ -47,6 +47,14 @@ export const GlobalConst = {
     ],
   },
   addresses: {
+    PARASWAP_PROXY_ROUTER_ADDRESS: {
+      [ChainId.MATIC]: '0x216b4b4ba9f3e719726886d34a177484278bfcae',
+      [ChainId.MUMBAI]: undefined,
+    },
+    PARASWAP_ROUTER_ADDRESS: {
+      [ChainId.MATIC]: '0xDEF171Fe48CF0115B1d80b88dc8eAB59176FEe57',
+      [ChainId.MUMBAI]: undefined,
+    },
     ROUTER_ADDRESS: {
       [ChainId.MATIC]: '0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff',
       [ChainId.MUMBAI]: '0x8954AfA98594b838bda56FE4C12a09D7739D179b',
