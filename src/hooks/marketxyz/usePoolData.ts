@@ -1,14 +1,8 @@
 import { useQuery } from 'react-query';
 import { useMarket } from './useMarket';
 import { useActiveWeb3React } from '../index';
-import {
-  fetchPoolData,
-  getPoolIdFromComptroller,
-  PoolData,
-} from '../../utils/marketxyz/fetchPoolData';
-
-import { Comptroller, PoolDirectoryV1 } from 'market-sdk';
-import { useEffect, useState } from 'react';
+import { fetchPoolData, PoolData } from '../../utils/marketxyz/fetchPoolData';
+import { PoolDirectoryV1 } from 'market-sdk';
 
 export const usePoolsData = (
   poolAddresses: string[],
