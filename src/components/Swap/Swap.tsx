@@ -42,7 +42,6 @@ import { ReactComponent as PriceExchangeIcon } from 'assets/images/PriceExchange
 import { ReactComponent as ExchangeIcon } from 'assets/images/ExchangeIcon.svg';
 import 'components/styles/Swap.scss';
 import { useTranslation } from 'react-i18next';
-import { useParaswapCallback } from 'hooks/useParaswapCallback';
 
 const Swap: React.FC<{
   currency0?: Currency;
@@ -50,7 +49,7 @@ const Swap: React.FC<{
   currencyBgClass?: string;
 }> = ({ currency0, currency1, currencyBgClass }) => {
   const { t } = useTranslation();
-  const { library, account } = useActiveWeb3React();
+  const { account } = useActiveWeb3React();
   const { independentField, typedValue, recipient } = useSwapState();
   const {
     v1Trade,
@@ -176,11 +175,6 @@ const Swap: React.FC<{
     allowedSlippage,
     recipient,
   );
-
-  const {
-    callback: paraswapCallback,
-    error: paraswapCallbackError,
-  } = useParaswapCallback(trade, allowedSlippage, recipient);
 
   const swapButtonText = useMemo(() => {
     if (account) {
@@ -315,22 +309,6 @@ const Swap: React.FC<{
     maxAmountInput && parsedAmounts[Field.INPUT]?.equalTo(maxAmountInput),
   );
 
-  const onParaswap = () => {
-    if (showWrap && onWrap) {
-      onWrap();
-    } else if (isExpertMode) {
-      handleParaswap();
-    } else {
-      setSwapState({
-        tradeToConfirm: trade,
-        attemptingTxn: false,
-        swapErrorMessage: undefined,
-        showConfirm: true,
-        txHash: undefined,
-      });
-    }
-  };
-
   const onSwap = () => {
     if (showWrap && onWrap) {
       onWrap();
@@ -384,92 +362,6 @@ const Swap: React.FC<{
     }
   }, [attemptingTxn, onUserInput, swapErrorMessage, tradeToConfirm, txHash]);
 
-  const handleParaswap = useCallback(() => {
-    if (
-      priceImpactWithoutFee &&
-      !confirmPriceImpactWithoutFee(priceImpactWithoutFee)
-    ) {
-      return;
-    }
-    if (!paraswapCallback) {
-      return;
-    }
-
-    setSwapState({
-      attemptingTxn: true,
-      tradeToConfirm,
-      showConfirm,
-      swapErrorMessage: undefined,
-      txHash: undefined,
-    });
-    paraswapCallback()
-      .then(async ({ response, summary }) => {
-        setSwapState({
-          attemptingTxn: false,
-          txPending: true,
-          tradeToConfirm,
-          showConfirm,
-          swapErrorMessage: undefined,
-          txHash: response.hash,
-        });
-
-        try {
-          const receipt = await response.wait();
-          finalizedTransaction(receipt, {
-            summary,
-          });
-          setSwapState({
-            attemptingTxn: false,
-            txPending: false,
-            tradeToConfirm,
-            showConfirm,
-            swapErrorMessage: undefined,
-            txHash: response.hash,
-          });
-          ReactGA.event({
-            category: 'Swap',
-            action:
-              recipient === null
-                ? 'Swap w/o Send'
-                : (recipientAddress ?? recipient) === account
-                ? 'Swap w/o Send + recipient'
-                : 'Swap w/ Send',
-            label: [
-              trade?.inputAmount?.currency?.symbol,
-              trade?.outputAmount?.currency?.symbol,
-            ].join('/'),
-          });
-        } catch (error) {
-          setSwapState({
-            attemptingTxn: false,
-            tradeToConfirm,
-            showConfirm,
-            swapErrorMessage: (error as any).message,
-            txHash: undefined,
-          });
-        }
-      })
-      .catch((error) => {
-        setSwapState({
-          attemptingTxn: false,
-          tradeToConfirm,
-          showConfirm,
-          swapErrorMessage: error.message,
-          txHash: undefined,
-        });
-      });
-  }, [
-    tradeToConfirm,
-    account,
-    priceImpactWithoutFee,
-    recipient,
-    recipientAddress,
-    showConfirm,
-    paraswapCallback,
-    finalizedTransaction,
-    trade,
-  ]);
-
   const handleSwap = useCallback(() => {
     if (
       priceImpactWithoutFee &&
@@ -480,7 +372,6 @@ const Swap: React.FC<{
     if (!swapCallback) {
       return;
     }
-
     setSwapState({
       attemptingTxn: true,
       tradeToConfirm,
@@ -695,15 +586,6 @@ const Swap: React.FC<{
             onClick={account ? onSwap : connectWallet}
           >
             {swapButtonText}
-          </Button>
-        </Box>
-        <Box width={showApproveFlow ? '48%' : '100%'}>
-          <Button
-            fullWidth
-            disabled={swapButtonDisabled as boolean}
-            onClick={account ? onParaswap : connectWallet}
-          >
-            Paraswap
           </Button>
         </Box>
       </Box>
