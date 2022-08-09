@@ -10,12 +10,14 @@ import {
   GelatoLimitOrdersHistoryPanel,
 } from '@gelatonetwork/limit-orders-react';
 import { Trans, useTranslation } from 'react-i18next';
+import { SwapBestTrade } from 'components/Swap';
 
-const SWAP_NORMAL = 0;
-const SWAP_LIMIT = 1;
+const SWAP_BEST_TRADE = 0;
+const SWAP_NORMAL = 1;
+const SWAP_LIMIT = 2;
 
 const SwapMain: React.FC = () => {
-  const [swapIndex, setSwapIndex] = useState(SWAP_NORMAL);
+  const [swapIndex, setSwapIndex] = useState(SWAP_BEST_TRADE);
   const [openSettingsModal, setOpenSettingsModal] = useState(false);
   const { isProMode, updateIsProMode } = useIsProMode();
 
@@ -46,6 +48,16 @@ const SwapMain: React.FC = () => {
         }`}
       >
         <Box display='flex'>
+          <Box
+            //TODO: Active class resolution should come from from a func
+            className={`${
+              swapIndex === SWAP_BEST_TRADE ? 'activeSwap' : ''
+            } swapItem headingItem
+            `}
+            onClick={() => setSwapIndex(SWAP_BEST_TRADE)}
+          >
+            <p>{t('bestTrade')}</p>
+          </Box>
           <Box
             className={`${
               swapIndex === SWAP_NORMAL ? 'activeSwap' : ''
@@ -87,6 +99,12 @@ const SwapMain: React.FC = () => {
       <Box padding={isProMode ? '0 24px' : '0'} mt={3.5}>
         {swapIndex === SWAP_NORMAL && (
           <Swap
+            currency0={currency0 ?? undefined}
+            currency1={currency1 ?? undefined}
+          />
+        )}
+        {swapIndex === SWAP_BEST_TRADE && (
+          <SwapBestTrade
             currency0={currency0 ?? undefined}
             currency1={currency1 ?? undefined}
           />

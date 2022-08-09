@@ -189,13 +189,6 @@ export function useParaswapCallback(
   const recipient =
     recipientAddressOrName === null ? account : recipientAddress;
 
-  const [approval, approveCallback] = useApproveCallback(
-    trade?.inputAmount,
-    chainId
-      ? GlobalConst.addresses.PARASWAP_PROXY_ROUTER_ADDRESS[chainId]
-      : undefined,
-  );
-
   return useMemo(() => {
     if (!trade || !library || !account || !chainId) {
       return {
@@ -249,9 +242,6 @@ export function useParaswapCallback(
           console.debug(priceRoute.message);
           throw new Error(priceRoute.message);
         }
-
-        await approveCallback();
-        // await paraswap.approveToken(srcAmount, account, srcToken);
 
         const txParams = await paraswap.buildTx(
           srcToken,
