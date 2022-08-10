@@ -3,7 +3,6 @@ import { Box, useMediaQuery, useTheme } from '@material-ui/core';
 import 'components/styles/AdsTemplate.scss';
 import { useTranslation } from 'react-i18next';
 import V3BannerLargeBg from 'assets/images/v3BannerLargeBg.png';
-import V3BannerMobileBg from 'assets/images/v3BannerMobileBg.png';
 import V3BannerSmallBg from 'assets/images/v3BannerSmallBg.png';
 import V3BannerLargeLogo from 'assets/images/v3BannerLargeLogo.png';
 import V3BannerMobileLogo from 'assets/images/v3BannerMobileLogo.png';
@@ -17,11 +16,7 @@ const AdsTemplate: React.FC<AdsTemplateProps> = ({ isSmall }) => {
   const { t } = useTranslation();
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
-  const adsBg = isMobile
-    ? V3BannerMobileBg
-    : isSmall
-    ? V3BannerSmallBg
-    : V3BannerLargeBg;
+  const adsBg = isMobile || isSmall ? V3BannerSmallBg : V3BannerLargeBg;
   const adsLogo = isMobile
     ? V3BannerMobileLogo
     : isSmall
@@ -29,13 +24,15 @@ const AdsTemplate: React.FC<AdsTemplateProps> = ({ isSmall }) => {
     : V3BannerLargeLogo;
 
   return (
-    <Box width='100%' position='relative'>
-      <img src={adsBg} className='adsBg' />
-      <Box
-        className={`adsContent${
-          isSmall ? ' smallAds' : isMobile ? ' mobileAds' : ''
-        }`}
-      >
+    <Box
+      className={`adsWrapper${
+        isMobile ? ' mobileAds' : isSmall ? ' smallAds' : ''
+      }`}
+    >
+      <Box className='adsBg'>
+        <img src={adsBg} />
+      </Box>
+      <Box className='adsContent'>
         <img src={adsLogo} />
         <Box className='adsText'>
           <p>{t('v3LiquidityLive')}</p>
