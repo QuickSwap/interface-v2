@@ -39,6 +39,9 @@
     }
   }
   &.smallAds, &.mobileAds {
+    & .adsText p {
+      letter-spacing: 0;
+    }
     & .adsButton {
       width: 59px;
       height: 18px;
