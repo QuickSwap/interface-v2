@@ -405,5 +405,7 @@
   "cannotRepayMarket": "Cannot repay this amount right now!",
   "cannotExitMarket": "Cannot exit this market right now!",
   "cannotWithdrawMarket": "Cannot withdraw this amount right now!",
-  "cannotBorrowMarket": "Cannot borrow this amount right now!"
+  "cannotBorrowMarket": "Cannot borrow this amount right now!",
+  "v3LiquidityLive": "V3 LIQUIDITY MINING IS NOW LIVE!",
+  "trynow": "Try now"
 }

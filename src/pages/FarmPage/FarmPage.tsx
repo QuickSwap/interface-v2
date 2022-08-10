@@ -1,12 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Box } from '@material-ui/core';
+import { Box, useMediaQuery, useTheme } from '@material-ui/core';
 import { getBulkPairData } from 'state/stake/hooks';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
 import { useActiveWeb3React } from 'hooks';
 import { GlobalConst } from 'constants/index';
 import FarmRewards from './FarmRewards';
 import FarmsList from './FarmsList';
-import { CustomSwitch } from 'components';
+import { AdsTemplate, CustomSwitch } from 'components';
 import { useTranslation } from 'react-i18next';
 import 'pages/styles/farm.scss';
 import { useDefaultFarmList } from 'state/farms/hooks';
@@ -23,6 +23,8 @@ const FarmPage: React.FC = () => {
   const chainIdOrDefault = chainId ?? ChainId.MATIC;
   const lpFarms = useDefaultFarmList();
   const dualFarms = useDefaultDualFarmList();
+  const { breakpoints } = useTheme();
+  const isTablet = useMediaQuery(breakpoints.down('sm'));
 
   const pairLists = useMemo(() => {
     const stakingPairLists = Object.values(lpFarms[chainIdOrDefault]).map(
@@ -61,6 +63,9 @@ const FarmPage: React.FC = () => {
           <small>{t('help')}</small>
           <HelpIcon />
         </Box>
+      </Box>
+      <Box mb={3}>
+        <AdsTemplate isSmall={isTablet} />
       </Box>
       <CustomSwitch
         width={300}
