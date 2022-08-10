@@ -30,7 +30,7 @@ import { useRouterContract } from './useContract';
 import useTransactionDeadline from './useTransactionDeadline';
 import useENS from './useENS';
 import { Version } from './useToggledVersion';
-import { APIError, ParaSwap, Transaction } from 'paraswap';
+import { constructBuildTx, constructGetRate, constructPartialSDK, constructSimpleSDK, SwapSide } from '@paraswap/sdk';
 import { OptimalRate } from 'paraswap-core';
 import { AddressInput } from 'components';
 import { ethers } from 'ethers';
@@ -172,16 +172,10 @@ export function useParaswapCallback(
 } {
   const { account, chainId, library } = useActiveWeb3React();
   const paraswap = useMemo(() => {
-    const paraswap = new ParaSwap(137);
-    paraswap.setWeb3Provider(library);
-    return paraswap;
-  }, [library, chainId]);
+    const paraswapSDK = constructSimpleSDK({network: <number>chainId, fetch: window.fetch})
 
-  function isError(
-    priceRoute: OptimalRate | Transaction | APIError,
-  ): priceRoute is APIError {
-    return (<APIError>priceRoute).message !== undefined;
-  }
+    return paraswapSDK;
+  }, [library, chainId]);
 
   const addTransaction = useTransactionAdder();
 
@@ -232,31 +226,26 @@ export function useParaswapCallback(
         const lastPathIndex = trade.route.path.length - 1;
         const srcToken = trade.route.path[0].address;
         const destToken = trade.route.path[lastPathIndex].address;
-        const priceRoute = await paraswap.getRate(
+        const priceRoute = await paraswap.getRate({
           srcToken,
           destToken,
-          srcAmount,
-        );
+          amount: srcAmount,
+          userAddress: account,
+          side: SwapSide.SELL,
+          options: {
+            includeDEXS: 'quickswap,quickswapv3',
+          },
+        });
 
-        if (isError(priceRoute)) {
-          console.debug(priceRoute.message);
-          throw new Error(priceRoute.message);
-        }
-
-        const txParams = await paraswap.buildTx(
+        const txParams = await paraswap.buildTx(      {
           srcToken,
           destToken,
           srcAmount,
           destAmount,
           priceRoute,
-          recipient,
-          referrer,
-        );
-
-        if (isError(txParams)) {
-          console.debug(txParams.message);
-          throw new Error(txParams.message);
-        }
+          userAddress: account,
+          partner: referrer,
+        });
 
         const signer = getSigner(library, account);
         const ethersTxParams = convertToEthersTransaction(txParams);
