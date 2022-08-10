@@ -30,7 +30,13 @@ import { useRouterContract } from './useContract';
 import useTransactionDeadline from './useTransactionDeadline';
 import useENS from './useENS';
 import { Version } from './useToggledVersion';
-import { constructBuildTx, constructGetRate, constructPartialSDK, constructSimpleSDK, SwapSide } from '@paraswap/sdk';
+import {
+  constructBuildTx,
+  constructGetRate,
+  constructPartialSDK,
+  constructSimpleSDK,
+  SwapSide,
+} from '@paraswap/sdk';
 import { OptimalRate } from 'paraswap-core';
 import { AddressInput } from 'components';
 import { ethers } from 'ethers';
@@ -172,7 +178,10 @@ export function useParaswapCallback(
 } {
   const { account, chainId, library } = useActiveWeb3React();
   const paraswap = useMemo(() => {
-    const paraswapSDK = constructSimpleSDK({network: <number>chainId, fetch: window.fetch})
+    const paraswapSDK = constructSimpleSDK({
+      network: <number>chainId,
+      fetch: window.fetch,
+    });
 
     return paraswapSDK;
   }, [library, chainId]);
@@ -237,7 +246,7 @@ export function useParaswapCallback(
           },
         });
 
-        const txParams = await paraswap.buildTx(      {
+        const txParams = await paraswap.buildTx({
           srcToken,
           destToken,
           srcAmount,
