@@ -6,7 +6,7 @@ import { useActiveWeb3React } from 'hooks';
 import { GlobalConst } from 'constants/index';
 import FarmRewards from './FarmRewards';
 import FarmsList from './FarmsList';
-import { AdsTemplate, CustomSwitch } from 'components';
+import { AdsSlider, CustomSwitch } from 'components';
 import { useTranslation } from 'react-i18next';
 import 'pages/styles/farm.scss';
 import { useDefaultFarmList } from 'state/farms/hooks';
@@ -65,7 +65,7 @@ const FarmPage: React.FC = () => {
         </Box>
       </Box>
       <Box mb={3}>
-        <AdsTemplate isSmall={isTablet} />
+        <AdsSlider />
       </Box>
       <CustomSwitch
         width={300}
