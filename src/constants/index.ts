@@ -7,6 +7,7 @@ import {
   portis,
   arkaneconnect,
   safeApp,
+  unstopabbledomains,
 } from '../connectors';
 import MetamaskIcon from 'assets/images/metamask.png';
 import BlockWalletIcon from 'assets/images/blockwalletIcon.svg';
@@ -207,6 +208,14 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
     href: null,
     color: '#4196FC',
     mobile: true,
+  },
+  UNSTOPABBLEDOMAINS: {
+    connector: unstopabbledomains,
+    name: 'Unstoppable Domains',
+    iconName: 'unstoppable_domains.png',
+    description: 'Unstoppable Domains',
+    href: null,
+    color: '#E8831D',
   },
 };
 
