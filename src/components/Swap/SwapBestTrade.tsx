@@ -43,6 +43,8 @@ import { ReactComponent as ExchangeIcon } from 'assets/images/ExchangeIcon.svg';
 import 'components/styles/Swap.scss';
 import { useTranslation } from 'react-i18next';
 import { useParaswapCallback } from 'hooks/useParaswapCallback';
+import { useOptimateRateFetcher, useParaswap } from 'hooks/useParaswap';
+import { OptimalRate, SwapSide } from '@paraswap/sdk';
 
 const SwapBestTrade: React.FC<{
   currency0?: Currency;
@@ -172,10 +174,46 @@ const SwapBestTrade: React.FC<{
     [onCurrencySelection],
   );
 
+  const paraswap = useParaswap();
+  const [optimalRate, setOptimalRate] = useState<OptimalRate | undefined>();
+  const [optimalRateLoading, setOptimalRateLoading] = useState<boolean>(false);
+
+  const lastPathIndex = trade ? trade.route.path.length - 1 : 0;
+  const srcToken = trade?.route.path[0].address;
+  const destToken = trade?.route.path[lastPathIndex].address;
+  const srcAmount = trade?.inputAmount
+    .multiply(JSBI.BigInt(10 ** trade.inputAmount.currency.decimals))
+    .toFixed(0);
+
+  useEffect(() => {
+    async function fetchOptimalRate() {
+      if (!srcToken || !destToken || !srcAmount || optimalRateLoading) {
+        return;
+      }
+      setOptimalRateLoading(true);
+      try {
+        const rate = await paraswap.getRate({
+          srcToken,
+          destToken,
+          amount: srcAmount,
+          side: SwapSide.SELL,
+          options: {
+            includeDEXS: 'quickswap,quickswapv3',
+          },
+        });
+        setOptimalRate(rate);
+      } catch (err) {
+        console.error('could not obtain optimal rate', err.code, err.message);
+      }
+      setOptimalRateLoading(false);
+    }
+    fetchOptimalRate();
+  }, [paraswap, srcToken, destToken, srcAmount]);
+
   const {
     callback: paraswapCallback,
     error: paraswapCallbackError,
-  } = useParaswapCallback(trade, allowedSlippage, recipient);
+  } = useParaswapCallback(optimalRate, trade, allowedSlippage, recipient);
 
   const swapButtonText = useMemo(() => {
     if (account) {

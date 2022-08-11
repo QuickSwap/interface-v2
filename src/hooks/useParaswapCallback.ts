@@ -26,25 +26,9 @@ import {
   getSigner,
 } from 'utils';
 import { useActiveWeb3React } from 'hooks';
-import { useRouterContract } from './useContract';
-import useTransactionDeadline from './useTransactionDeadline';
 import useENS from './useENS';
-import { Version } from './useToggledVersion';
-import {
-  constructBuildTx,
-  constructGetRate,
-  constructPartialSDK,
-  constructSimpleSDK,
-  SwapSide,
-} from '@paraswap/sdk';
 import { OptimalRate } from 'paraswap-core';
-import { AddressInput } from 'components';
-import { ethers } from 'ethers';
-import { exception } from 'react-ga';
-import { ChainId } from '@gelatonetwork/limit-orders-react/dist/hooks/useGasPrice';
-import { useApproveCallback } from './useApproveCallback';
-import { MaxUint256 } from '@uniswap/sdk-core';
-
+import { useParaswap } from './useParaswap';
 export enum SwapCallbackState {
   INVALID,
   LOADING,
@@ -66,91 +50,6 @@ interface FailedCall {
   error: Error;
 }
 
-type EstimatedSwapCall = SuccessfulCall | FailedCall;
-
-/**
- * Returns the swap calls that can be used to make the trade
- * @param trade trade to execute
- * @param allowedSlippage user allowed slippage
- * @param recipientAddressOrName
- */
-function useSwapCallArguments(
-  trade: Trade | undefined, // trade to execute, required
-  allowedSlippage: number = GlobalConst.utils.INITIAL_ALLOWED_SLIPPAGE, // in bips
-  recipientAddressOrName: string | null, // the ENS name or address of the recipient of the trade, or null if swap should be returned to sender
-): SwapCall[] {
-  const { account, chainId, library } = useActiveWeb3React();
-
-  const { address: recipientAddress } = useENS(recipientAddressOrName);
-  const recipient =
-    recipientAddressOrName === null ? account : recipientAddress;
-  const deadline = useTransactionDeadline();
-  const contract = useRouterContract();
-
-  return useMemo(() => {
-    const tradeVersion = Version.v2;
-    if (
-      !trade ||
-      !recipient ||
-      !library ||
-      !account ||
-      !tradeVersion ||
-      !chainId
-    )
-      return [];
-
-    if (!contract) {
-      return [];
-    }
-
-    const swapMethods = [];
-
-    switch (tradeVersion) {
-      case Version.v2:
-        swapMethods.push(
-          Router.swapCallParameters(trade, {
-            feeOnTransfer: false,
-            allowedSlippage: new Percent(
-              JSBI.BigInt(allowedSlippage),
-              GlobalConst.utils.BIPS_BASE,
-            ),
-            recipient,
-            ttl: deadline
-              ? deadline.toNumber()
-              : GlobalConst.utils.DEFAULT_DEADLINE_FROM_NOW,
-          }),
-        );
-
-        if (trade.tradeType === TradeType.EXACT_INPUT) {
-          swapMethods.push(
-            Router.swapCallParameters(trade, {
-              feeOnTransfer: true,
-              allowedSlippage: new Percent(
-                JSBI.BigInt(allowedSlippage),
-                GlobalConst.utils.BIPS_BASE,
-              ),
-              recipient,
-              ttl: deadline
-                ? deadline.toNumber()
-                : GlobalConst.utils.DEFAULT_DEADLINE_FROM_NOW,
-            }),
-          );
-        }
-        break;
-    }
-    return swapMethods.map((parameters) => ({ parameters, contract }));
-  }, [
-    account,
-    allowedSlippage,
-    chainId,
-    deadline,
-    library,
-    recipient,
-    trade,
-    contract,
-  ]);
-}
-
 const convertToEthersTransaction = (txParams: any): TransactionRequest => {
   return {
     to: txParams.to,
@@ -166,6 +65,7 @@ const convertToEthersTransaction = (txParams: any): TransactionRequest => {
 // returns a function that will execute a swap, if the parameters are all valid
 // and the user has approved the slippage adjusted input amount for the trade
 export function useParaswapCallback(
+  priceRoute: OptimalRate | undefined,
   trade: Trade | undefined, // trade to execute, required
   allowedSlippage: number = GlobalConst.utils.INITIAL_ALLOWED_SLIPPAGE, // in bips
   recipientAddressOrName: string | null, // the ENS name or address of the recipient of the trade, or null if swap should be returned to sender
@@ -177,14 +77,7 @@ export function useParaswapCallback(
   error: string | null;
 } {
   const { account, chainId, library } = useActiveWeb3React();
-  const paraswap = useMemo(() => {
-    const paraswapSDK = constructSimpleSDK({
-      network: <number>chainId,
-      fetch: window.fetch,
-    });
-
-    return paraswapSDK;
-  }, [library, chainId]);
+  const paraswap = useParaswap();
 
   const addTransaction = useTransactionAdder();
 
@@ -193,7 +86,7 @@ export function useParaswapCallback(
     recipientAddressOrName === null ? account : recipientAddress;
 
   return useMemo(() => {
-    if (!trade || !library || !account || !chainId) {
+    if (!trade || !priceRoute || !library || !account || !chainId) {
       return {
         state: SwapCallbackState.INVALID,
         callback: null,
@@ -235,17 +128,6 @@ export function useParaswapCallback(
         const lastPathIndex = trade.route.path.length - 1;
         const srcToken = trade.route.path[0].address;
         const destToken = trade.route.path[lastPathIndex].address;
-        const priceRoute = await paraswap.getRate({
-          srcToken,
-          destToken,
-          amount: srcAmount,
-          userAddress: account,
-          side: SwapSide.SELL,
-          options: {
-            includeDEXS: 'quickswap,quickswapv3',
-          },
-        });
-
         const txParams = await paraswap.buildTx({
           srcToken,
           destToken,
