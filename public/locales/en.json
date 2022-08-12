@@ -322,7 +322,7 @@
   "english": "English",
   "default": "default",
   "staking": "Staking",
-  "slippage": "Slippage",
+  "slippage": "Max Slippage",
   "priceimpact": "Price Impact",
   "liquidityProviderFee": "Liquidity Provider Fee",
   "route": "Route",

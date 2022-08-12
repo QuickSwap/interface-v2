@@ -15,12 +15,7 @@ import {
 } from 'state/user/hooks';
 import { Field } from 'state/swap/actions';
 import { useAllTokens } from 'hooks/Tokens';
-import {
-  CurrencyInput,
-  ConfirmSwapModal,
-  AdvancedSwapDetails,
-  AddressInput,
-} from 'components';
+import { CurrencyInput, ConfirmSwapModal, AddressInput } from 'components';
 import { useActiveWeb3React } from 'hooks';
 import {
   ApprovalState,
@@ -43,8 +38,9 @@ import { ReactComponent as ExchangeIcon } from 'assets/images/ExchangeIcon.svg';
 import 'components/styles/Swap.scss';
 import { useTranslation } from 'react-i18next';
 import { useParaswapCallback } from 'hooks/useParaswapCallback';
-import { useOptimateRateFetcher, useParaswap } from 'hooks/useParaswap';
+import { useParaswap } from 'hooks/useParaswap';
 import { OptimalRate, SwapSide } from '@paraswap/sdk';
+import { BestTradeAdvancedSwapDetails } from './BestTradeAdvancedSwapDetails';
 
 const SwapBestTrade: React.FC<{
   currency0?: Currency;
@@ -586,7 +582,7 @@ const SwapBestTrade: React.FC<{
           )}
         </Box>
       )}
-      <AdvancedSwapDetails trade={trade} />
+      <BestTradeAdvancedSwapDetails optimalRate={optimalRate} trade={trade} />
       <Box className='swapButtonWrapper'>
         {showApproveFlow && (
           <Box width='48%'>
