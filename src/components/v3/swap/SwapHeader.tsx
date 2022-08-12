@@ -1,5 +1,4 @@
 import React from 'react';
-import SettingsTab from '../Settings';
 import { Percent } from '@uniswap/sdk-core';
 
 interface SwapHeaderProps {
@@ -21,7 +20,6 @@ export default function SwapHeader({
           </span>
         )}
       </div>
-      <SettingsTab placeholderSlippage={allowedSlippage} />
     </div>
   );
 }

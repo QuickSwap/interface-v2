@@ -11,10 +11,12 @@ import {
 } from '@gelatonetwork/limit-orders-react';
 import { Trans, useTranslation } from 'react-i18next';
 import { SwapBestTrade } from 'components/Swap';
+import SwapV3Page from './V3/Swap';
 
 const SWAP_BEST_TRADE = 0;
 const SWAP_NORMAL = 1;
-const SWAP_LIMIT = 2;
+const SWAP_V3 = 2;
+const SWAP_LIMIT = 3;
 
 const SwapMain: React.FC = () => {
   const [swapIndex, setSwapIndex] = useState(SWAP_BEST_TRADE);
@@ -69,6 +71,15 @@ const SwapMain: React.FC = () => {
           </Box>
           <Box
             className={`${
+              swapIndex === SWAP_V3 ? 'activeSwap' : ''
+            } swapItem headingItem
+            `}
+            onClick={() => setSwapIndex(SWAP_V3)}
+          >
+            <p>{t('marketV3')}</p>
+          </Box>
+          <Box
+            className={`${
               swapIndex === SWAP_LIMIT ? 'activeSwap' : ''
             } swapItem headingItem ${isProMode ? 'border-right' : ''}`}
             onClick={() => setSwapIndex(SWAP_LIMIT)}
@@ -97,18 +108,19 @@ const SwapMain: React.FC = () => {
         </Box>
       </Box>
       <Box padding={isProMode ? '0 24px' : '0'} mt={3.5}>
-        {swapIndex === SWAP_NORMAL && (
-          <Swap
-            currency0={currency0 ?? undefined}
-            currency1={currency1 ?? undefined}
-          />
-        )}
         {swapIndex === SWAP_BEST_TRADE && (
           <SwapBestTrade
             currency0={currency0 ?? undefined}
             currency1={currency1 ?? undefined}
           />
         )}
+        {swapIndex === SWAP_NORMAL && (
+          <Swap
+            currency0={currency0 ?? undefined}
+            currency1={currency1 ?? undefined}
+          />
+        )}
+        {swapIndex === SWAP_V3 && <SwapV3Page></SwapV3Page>}
         {swapIndex === SWAP_LIMIT && (
           <Box className='limitOrderPanel'>
             <GelatoLimitOrderPanel />

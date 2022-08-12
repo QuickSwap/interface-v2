@@ -183,7 +183,7 @@ const SwapBestTrade: React.FC<{
 
   useEffect(() => {
     async function fetchOptimalRate() {
-      if (!srcToken || !destToken || !srcAmount || optimalRateLoading) {
+      if (!srcToken || !destToken || !srcAmount) {
         return;
       }
       setOptimalRateLoading(true);
@@ -203,8 +203,10 @@ const SwapBestTrade: React.FC<{
       }
       setOptimalRateLoading(false);
     }
+    //TODO: figure out a way to debounce this
     fetchOptimalRate();
-  }, [paraswap, srcToken, destToken, srcAmount]);
+    // We add the minimumAmoutOut so this function will tie into the existing hooks for trade
+  }, [paraswap, srcToken, destToken, srcAmount, trade?.minimumAmountOut]);
 
   const {
     callback: paraswapCallback,

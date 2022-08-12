@@ -67,13 +67,10 @@ import {
   useSwapActionHandlers,
   useSwapState,
 } from 'state/swap/v3/hooks';
-import {
-  useExpertModeManager,
-  useUserSingleHopOnly,
-} from 'state/user/v3/hooks';
 import { Field } from 'state/swap/v3/actions';
 import confirmPriceImpactWithoutFee from 'components/v3/swap/confirmPriceImpactWithoutFee';
 import ConfirmSwapModal from 'components/v3/swap/ConfirmSwapModal';
+import { useExpertModeManager } from 'state/user/hooks';
 
 const SwapV3Page: React.FC = () => {
   const { account } = useActiveWeb3React();
@@ -302,7 +299,7 @@ const SwapV3Page: React.FC = () => {
     signatureData,
   );
 
-  const [singleHopOnly] = useUserSingleHopOnly();
+  const singleHopOnly = false;
 
   const handleSwap = useCallback(() => {
     if (!swapCallback) {

@@ -84,24 +84,6 @@ export const BestTradeSummary: React.FC<TradeSummaryProps> = ({
         </Box>
         <FormattedPriceImpact priceImpact={priceImpactWithoutFee} />
       </Box>
-      <Box className='summaryRow'>
-        <Box>
-          <small>{t('route')}:</small>
-          <QuestionHelper text={t('swapRouteHelper')} />
-        </Box>
-        <Box>
-          {trade.route.path.map((token, i, path) => {
-            const isLastItem: boolean = i === path.length - 1;
-            return (
-              <small key={i}>
-                {token.symbol}{' '}
-                {// this is not to show the arrow at the end of the trade path
-                isLastItem ? '' : ' > '}
-              </small>
-            );
-          })}
-        </Box>
-      </Box>
     </Box>
   );
 };

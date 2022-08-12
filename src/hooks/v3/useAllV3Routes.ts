@@ -3,8 +3,6 @@ import { useActiveWeb3React } from 'hooks';
 import { Pool } from 'lib/src/pool';
 import { Route } from 'lib/src/route';
 import { useMemo } from 'react';
-import { useUserSingleHopOnly } from 'state/user/v3/hooks';
-// import { useUserSingleHopOnly } from '../state/user/hooks'
 import { useV3SwapPools } from './useV3SwapPools';
 
 /**
@@ -80,7 +78,8 @@ export function useAllV3Routes(
     currencyOut,
   );
 
-  const [singleHopOnly] = useUserSingleHopOnly();
+  const singleHopOnly = false;
+  //const [singleHopOnly] = useUserSingleHopOnly();
 
   return useMemo(() => {
     if (poolsLoading || !chainId || !pools || !currencyIn || !currencyOut)

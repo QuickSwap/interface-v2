@@ -17,8 +17,6 @@ import SwapProFilter from './SwapProFilter';
 import { useTranslation } from 'react-i18next';
 import 'pages/styles/swap.scss';
 import VersionToggle from 'components/Toggle/VersionToggle';
-import useParsedQueryString from 'hooks/useParsedQueryString';
-import SwapV3Page from './V3/Swap';
 
 const SwapPage: React.FC = () => {
   const { isProMode, updateIsProMode } = useIsProMode();
@@ -96,10 +94,6 @@ const SwapPage: React.FC = () => {
   }, [pairId, isProMode]);
 
   const { t } = useTranslation();
-  const parsedQuery = useParsedQueryString();
-  const swapVersion =
-    parsedQuery && parsedQuery.version ? (parsedQuery.version as string) : 'v3';
-
   return (
     <Box width='100%' mb={3} id='swap-page'>
       <Box className='pageHeading'>
@@ -110,118 +104,111 @@ const SwapPage: React.FC = () => {
           <HelpIcon />
         </Box>
       </Box>
-      {swapVersion !== 'v3' && (
-        <>
-          {!isProMode ? (
-            <Grid container spacing={4}>
-              <Grid item xs={12} sm={12} md={6} lg={5}>
-                <Box className='wrapper'>
-                  <SwapMain />
-                </Box>
-              </Grid>
-              <Grid item xs={12} sm={12} md={6} lg={7}>
-                <Box className='flex flex-wrap justify-between fullWidth'>
-                  {token1 && (
-                    <Box className='swapTokenDetails'>
-                      <SwapTokenDetails token={token1} />
-                    </Box>
-                  )}
-                  {token2 && (
-                    <Box className='swapTokenDetails'>
-                      <SwapTokenDetails token={token2} />
-                    </Box>
-                  )}
-                </Box>
-                {token1 && token2 && (
-                  <Box className='wrapper' marginTop='32px'>
-                    <LiquidityPools token1={token1} token2={token2} />
-                  </Box>
-                )}
-              </Grid>
-            </Grid>
-          ) : (
-            <Box
-              className='border-top border-bottom bg-palette flex flex-wrap'
-              minHeight='calc(100vh - 140px)'
-            >
-              <Box
-                width={isMobile ? 1 : '450px'}
-                padding='20px 0'
-                className={isMobile ? '' : 'border-right'}
-              >
-                <Box
-                  className='flex justify-between items-center'
-                  padding='0 24px'
-                  mb={3}
-                >
-                  <h4>{t('swap')}</h4>
-                  <Box className='flex items-center' mr={1}>
-                    <span
-                      className='text-secondary text-uppercase'
-                      style={{ marginRight: 8 }}
-                    >
-                      {t('proMode')}
-                    </span>
-                    <ToggleSwitch
-                      toggled={isProMode}
-                      onToggle={() => updateIsProMode(!isProMode)}
-                    />
-                  </Box>
-                </Box>
-                <SwapMain />
-              </Box>
-              {infoPos === 'left' && (
-                <Box
-                  className={
-                    isMobile ? 'border-top' : 'border-left border-right'
-                  }
-                  width={isMobile ? 1 : 250}
-                >
-                  <SwapProInfo
-                    token1={token1}
-                    token2={token2}
-                    transactions={transactions}
-                  />
+      {!isProMode ? (
+        <Grid container spacing={4}>
+          <Grid item xs={12} sm={12} md={6} lg={5}>
+            <Box className='wrapper'>
+              <SwapMain />
+            </Box>
+          </Grid>
+          <Grid item xs={12} sm={12} md={6} lg={7}>
+            <Box className='flex flex-wrap justify-between fullWidth'>
+              {token1 && (
+                <Box className='swapTokenDetails'>
+                  <SwapTokenDetails token={token1} />
                 </Box>
               )}
-              <Box className='swapProWrapper'>
-                <SwapProFilter
-                  infoPos={infoPos}
-                  setInfoPos={setInfoPos}
-                  showChart={showChart}
-                  setShowChart={setShowChart}
-                  showTrades={showTrades}
-                  setShowTrades={setShowTrades}
-                />
-                {token1 && token2 && pairId && (
-                  <SwapProChartTrade
-                    showChart={showChart}
-                    showTrades={showTrades}
-                    token1={token1}
-                    token2={token2}
-                    pairAddress={pairId}
-                    pairTokenReversed={pairTokenReversed}
-                    transactions={transactions}
-                  />
-                )}
-              </Box>
-              {infoPos === 'right' && (
-                <Box
-                  className={isMobile ? 'border-top' : 'border-left'}
-                  width={isTablet ? 1 : 250}
-                >
-                  <SwapProInfo
-                    token1={token1}
-                    token2={token2}
-                    transactions={transactions}
-                  />
+              {token2 && (
+                <Box className='swapTokenDetails'>
+                  <SwapTokenDetails token={token2} />
                 </Box>
               )}
             </Box>
+            {token1 && token2 && (
+              <Box className='wrapper' marginTop='32px'>
+                <LiquidityPools token1={token1} token2={token2} />
+              </Box>
+            )}
+          </Grid>
+        </Grid>
+      ) : (
+        <Box
+          className='border-top border-bottom bg-palette flex flex-wrap'
+          minHeight='calc(100vh - 140px)'
+        >
+          <Box
+            width={isMobile ? 1 : '450px'}
+            padding='20px 0'
+            className={isMobile ? '' : 'border-right'}
+          >
+            <Box
+              className='flex justify-between items-center'
+              padding='0 24px'
+              mb={3}
+            >
+              <h4>{t('swap')}</h4>
+              <Box className='flex items-center' mr={1}>
+                <span
+                  className='text-secondary text-uppercase'
+                  style={{ marginRight: 8 }}
+                >
+                  {t('proMode')}
+                </span>
+                <ToggleSwitch
+                  toggled={isProMode}
+                  onToggle={() => updateIsProMode(!isProMode)}
+                />
+              </Box>
+            </Box>
+            <SwapMain />
+          </Box>
+          {infoPos === 'left' && (
+            <Box
+              className={isMobile ? 'border-top' : 'border-left border-right'}
+              width={isMobile ? 1 : 250}
+            >
+              <SwapProInfo
+                token1={token1}
+                token2={token2}
+                transactions={transactions}
+              />
+            </Box>
           )}
-        </>
+          <Box className='swapProWrapper'>
+            <SwapProFilter
+              infoPos={infoPos}
+              setInfoPos={setInfoPos}
+              showChart={showChart}
+              setShowChart={setShowChart}
+              showTrades={showTrades}
+              setShowTrades={setShowTrades}
+            />
+            {token1 && token2 && pairId && (
+              <SwapProChartTrade
+                showChart={showChart}
+                showTrades={showTrades}
+                token1={token1}
+                token2={token2}
+                pairAddress={pairId}
+                pairTokenReversed={pairTokenReversed}
+                transactions={transactions}
+              />
+            )}
+          </Box>
+          {infoPos === 'right' && (
+            <Box
+              className={isMobile ? 'border-top' : 'border-left'}
+              width={isTablet ? 1 : 250}
+            >
+              <SwapProInfo
+                token1={token1}
+                token2={token2}
+                transactions={transactions}
+              />
+            </Box>
+          )}
+        </Box>
       )}
-      {swapVersion === 'v3' && <SwapV3Page></SwapV3Page>}
     </Box>
   );
 };

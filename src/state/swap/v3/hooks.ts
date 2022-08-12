@@ -30,9 +30,9 @@ import useENS from 'hooks/useENS';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import { AppState } from 'state';
 import { isAddress } from 'utils';
-import useSwapSlippageTolerance from 'hooks/v3/useSwapSlippageTolerance';
 import { useCurrency } from 'hooks/v3/Tokens';
 import { useCurrencyBalances } from 'state/wallet/v3/hooks';
+import { useUserSlippageTolerance } from 'state/user/hooks';
 
 export function useSwapState(): AppState['swapV3'] {
   return useAppSelector((state) => state.swapV3);
@@ -224,7 +224,11 @@ export function useDerivedSwapInfo(): {
   }
 
   const toggledTrade = v3Trade.trade ?? undefined;
-  const allowedSlippage = useSwapSlippageTolerance(toggledTrade);
+  const [allowedSlippageNum] = useUserSlippageTolerance();
+  const allowedSlippage = new Percent(
+    JSBI.BigInt(allowedSlippageNum),
+    JSBI.BigInt(10000),
+  );
 
   // compare input balance to max input based on version
   const [balanceIn, amountIn] = [
