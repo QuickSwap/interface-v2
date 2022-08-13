@@ -117,7 +117,8 @@ export function useParaswapCallback(
         summary: string;
       }> {
         const pct = basisPointsToPercent(allowedSlippage);
-        const srcAmount = trade.inputAmount
+        const srcAmount = trade
+          .maximumAmountIn(pct)
           .multiply(JSBI.BigInt(10 ** trade.inputAmount.currency.decimals))
           .toFixed(0);
         const minDestAmount = trade

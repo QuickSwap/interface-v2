@@ -31,6 +31,7 @@ import {
   isSupportedNetwork,
   confirmPriceImpactWithoutFee,
   maxAmountSpend,
+  basisPointsToPercent,
 } from 'utils';
 import { computeTradePriceBreakdown, warningSeverity } from 'utils/prices';
 import { ReactComponent as PriceExchangeIcon } from 'assets/images/PriceExchangeIcon.svg';
@@ -179,8 +180,15 @@ const SwapBestTrade: React.FC<{
   const destToken = trade
     ? getBestTradeCurrencyAddress(trade.outputAmount.currency)
     : undefined;
-  const srcAmount = trade?.inputAmount
+  const pct = basisPointsToPercent(allowedSlippage);
+  const srcAmount = trade
+    ?.maximumAmountIn(pct)
     .multiply(JSBI.BigInt(10 ** trade.inputAmount.currency.decimals))
+    .toFixed(0);
+
+  const minDestAmount = trade
+    ?.minimumAmountOut(pct)
+    .multiply(JSBI.BigInt(10 ** trade.outputAmount.currency.decimals))
     .toFixed(0);
 
   useEffect(() => {
@@ -207,8 +215,8 @@ const SwapBestTrade: React.FC<{
     }
     //TODO: figure out a way to debounce this
     fetchOptimalRate();
-    // We add the minimumAmoutOut so this function will tie into the existing hooks for trade
-  }, [paraswap, srcToken, destToken, srcAmount, trade?.minimumAmountOut]);
+    // We add the minDestAmount so this function will tie into the existing hooks for trade
+  }, [paraswap, srcToken, destToken, srcAmount, minDestAmount]);
 
   const {
     callback: paraswapCallback,
