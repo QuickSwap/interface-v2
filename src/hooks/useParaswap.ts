@@ -6,7 +6,16 @@ import {
   SDKFetchMethods,
   SwapSide,
 } from '@paraswap/sdk';
-import { JSBI, Trade } from '@uniswap/sdk';
+import { Currency, ETHER, JSBI, Token, Trade } from '@uniswap/sdk';
+
+const PARASWAP_NATIVE_ADDRESS = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
+export function getBestTradeCurrencyAddress(currency: Currency) {
+  return currency instanceof Token
+    ? currency.address
+    : currency === ETHER
+    ? PARASWAP_NATIVE_ADDRESS
+    : '';
+} 
 
 export function useParaswap() {
   const { account, chainId, library } = useActiveWeb3React();

@@ -28,7 +28,7 @@ import {
 import { useActiveWeb3React } from 'hooks';
 import useENS from './useENS';
 import { OptimalRate } from 'paraswap-core';
-import { useParaswap } from './useParaswap';
+import { getBestTradeCurrencyAddress, useParaswap } from './useParaswap';
 import { SwapSide } from '@paraswap/sdk';
 export enum SwapCallbackState {
   INVALID,
@@ -126,9 +126,12 @@ export function useParaswapCallback(
 
         const referrer = 'Quickswap';
 
-        const lastPathIndex = trade.route.path.length - 1;
-        const srcToken = trade.route.path[0].address;
-        const destToken = trade.route.path[lastPathIndex].address;
+        const srcToken = getBestTradeCurrencyAddress(
+          trade.inputAmount.currency,
+        );
+        const destToken = getBestTradeCurrencyAddress(
+          trade.outputAmount.currency,
+        );
 
         //Update the rate before calling swap
         const rate = await paraswap.getRate({

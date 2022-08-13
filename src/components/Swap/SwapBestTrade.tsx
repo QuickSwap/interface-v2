@@ -38,7 +38,7 @@ import { ReactComponent as ExchangeIcon } from 'assets/images/ExchangeIcon.svg';
 import 'components/styles/Swap.scss';
 import { useTranslation } from 'react-i18next';
 import { useParaswapCallback } from 'hooks/useParaswapCallback';
-import { useParaswap } from 'hooks/useParaswap';
+import { getBestTradeCurrencyAddress, useParaswap } from 'hooks/useParaswap';
 import { OptimalRate, SwapSide } from '@paraswap/sdk';
 import { BestTradeAdvancedSwapDetails } from './BestTradeAdvancedSwapDetails';
 
@@ -173,10 +173,12 @@ const SwapBestTrade: React.FC<{
   const paraswap = useParaswap();
   const [optimalRate, setOptimalRate] = useState<OptimalRate | undefined>();
   const [optimalRateLoading, setOptimalRateLoading] = useState<boolean>(false);
-
-  const lastPathIndex = trade ? trade.route.path.length - 1 : 0;
-  const srcToken = trade?.route.path[0].address;
-  const destToken = trade?.route.path[lastPathIndex].address;
+  const srcToken = trade
+    ? getBestTradeCurrencyAddress(trade.inputAmount.currency)
+    : undefined;
+  const destToken = trade
+    ? getBestTradeCurrencyAddress(trade.outputAmount.currency)
+    : undefined;
   const srcAmount = trade?.inputAmount
     .multiply(JSBI.BigInt(10 ** trade.inputAmount.currency.decimals))
     .toFixed(0);
