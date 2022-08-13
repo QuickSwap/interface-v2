@@ -41,7 +41,6 @@ import {
   addMaticToMetamask,
   calculateSlippageAmount,
   calculateGasMargin,
-  returnTokenFromKey,
   isSupportedNetwork,
   formatTokenAmount,
   calculateSlippageAmountV3,
