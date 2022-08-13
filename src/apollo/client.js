@@ -57,14 +57,6 @@ export const stakerClient = new ApolloClient({
   shouldBatch: true,
 });
 
-export const farmingClient = new ApolloClient({
-  link: new HttpLink({
-    uri: 'https://api.thegraph.com/subgraphs/name/iliaazhel/farming-test',
-  }),
-  cache: new InMemoryCache(),
-  shouldBatch: true,
-});
-
 export const oldFarmingClient = new ApolloClient({
   link: new HttpLink({
     uri: 'https://api.thegraph.com/subgraphs/name/iliaazhel/algebra-farming-t',
