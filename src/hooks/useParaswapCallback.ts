@@ -29,6 +29,7 @@ import { useActiveWeb3React } from 'hooks';
 import useENS from './useENS';
 import { OptimalRate } from 'paraswap-core';
 import { useParaswap } from './useParaswap';
+import { SwapSide } from '@paraswap/sdk';
 export enum SwapCallbackState {
   INVALID,
   LOADING,
@@ -119,21 +120,37 @@ export function useParaswapCallback(
         const srcAmount = trade.inputAmount
           .multiply(JSBI.BigInt(10 ** trade.inputAmount.currency.decimals))
           .toFixed(0);
-        const destAmount = trade
+        const minDestAmount = trade
           .minimumAmountOut(pct)
-          .multiply(JSBI.BigInt(10 ** trade.outputAmount.currency.decimals))
-          .toFixed(0);
+          .multiply(JSBI.BigInt(10 ** trade.outputAmount.currency.decimals));
+
         const referrer = 'Quickswap';
 
         const lastPathIndex = trade.route.path.length - 1;
         const srcToken = trade.route.path[0].address;
         const destToken = trade.route.path[lastPathIndex].address;
+
+        //Update the rate before calling swap
+        const rate = await paraswap.getRate({
+          srcToken,
+          destToken,
+          amount: srcAmount,
+          side: SwapSide.SELL,
+          options: {
+            includeDEXS: 'quickswap,quickswapv3',
+          },
+        });
+
+        if (minDestAmount.greaterThan(JSBI.BigInt(rate.destAmount))) {
+          throw new Error('Price Rate updated beyond expected slipage rate');
+        }
+
         const txParams = await paraswap.buildTx({
           srcToken,
           destToken,
           srcAmount,
-          destAmount,
-          priceRoute,
+          destAmount: minDestAmount.toFixed(0),
+          priceRoute: rate,
           userAddress: account,
           partner: referrer,
         });
