@@ -12,6 +12,7 @@ import {
   supply,
   convertMantissaToAPR,
   convertMantissaToAPY,
+  getPoolAssetToken,
 } from 'utils/marketxyz';
 
 import { getDaysCurrentYear, convertBNToNumber } from 'utils';
@@ -29,6 +30,8 @@ import 'components/styles/LendModal.scss';
 import { useBorrowLimit } from 'hooks/marketxyz/useBorrowLimit';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 import { GlobalValue } from 'constants/index';
+import { useEthPrice } from 'state/application/hooks';
+import useUSDCPrice from 'utils/useUSDCPrice';
 
 interface QuickModalContentProps {
   borrow?: boolean;
@@ -45,7 +48,12 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
   onClose,
 }) => {
   const { t } = useTranslation();
-  const { account } = useActiveWeb3React();
+  const { account, chainId } = useActiveWeb3React();
+  const { ethPrice } = useEthPrice();
+  const assetUSDPriceObj = useUSDCPrice(getPoolAssetToken(asset, chainId));
+  const assetUSDPrice = assetUSDPriceObj
+    ? Number(assetUSDPriceObj.toFixed(asset.underlyingDecimals.toNumber()))
+    : undefined;
 
   const [loading, setLoading] = useState(false);
   const [txHash, setTxHash] = useState<string | undefined>(undefined);
@@ -71,7 +79,12 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
     Number(value) <= 0 ||
     maxAmount === undefined ||
     Number(value) > maxAmount ||
-    !updatedAsset;
+    !updatedAsset ||
+    (modalType === 'borrow'
+      ? !assetUSDPrice ||
+        !ethPrice.price ||
+        Number(value) * assetUSDPrice < 0.05 * ethPrice.price
+      : false);
   const buttonText = useMemo(() => {
     if (!account) {
       return t('connectWallet');
@@ -85,11 +98,31 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
       }
     } else if (Number(value) > maxAmount) {
       return t('exceedMaxAmount');
+    } else if (
+      modalType === 'borrow' &&
+      (!assetUSDPrice ||
+        !ethPrice.price ||
+        Number(value) * assetUSDPrice < 0.05 * ethPrice.price)
+    ) {
+      return t('marketBorrowMinError');
     }
     return t('confirm');
-  }, [account, t, value, maxAmount, maxAmountError]);
+  }, [
+    account,
+    value,
+    maxAmount,
+    modalType,
+    assetUSDPrice,
+    ethPrice.price,
+    t,
+    maxAmountError,
+  ]);
 
   const numValue = isNaN(Number(value)) ? 0 : Number(value);
+
+  useEffect(() => {
+    setValue('');
+  }, [modalType]);
 
   useEffect(() => {
     if (!account) return;
