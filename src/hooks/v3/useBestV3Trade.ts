@@ -1,15 +1,12 @@
 import { Currency, CurrencyAmount, TradeType } from '@uniswap/sdk-core';
-
 import { BigNumber } from 'ethers';
 import { useMemo } from 'react';
 import { useAllV3Routes } from './useAllV3Routes';
+import { useV3Quoter } from 'hooks/useContract';
 import { useSingleContractMultipleData } from 'state/multicall/hooks';
 import { useActiveWeb3React } from 'hooks';
-import { useV3Quoter } from 'hooks/useContract';
+import { Route, Trade } from 'v3lib/entities';
 import usePrevious from 'hooks/usePrevious';
-import { Route } from 'lib/src/route';
-import { Trade } from 'lib/src/trade';
-import { encodeRouteToPath } from 'lib/src/utils/encodeRouteToPath';
 
 export enum V3TradeState {
   LOADING,
@@ -52,9 +49,9 @@ export function useBestV3TradeExactIn(
     quoter,
     'quoteExactInput',
     quoteExactInInputs,
-    {
-      //gasRequired: chainId ? DEFAULT_GAS_QUOTE : undefined
-    },
+    // {
+    //   gasRequired: chainId ? DEFAULT_GAS_QUOTE : undefined,
+    // },
   );
 
   const trade = useMemo(() => {

@@ -1,7 +1,6 @@
 import styled, { css } from 'styled-components/macro';
 import { darken } from 'polished';
 import { stringToColour } from 'utils/stringToColour';
-import gradient from 'random-gradient';
 import { NavLink } from 'react-router-dom';
 import { skeletonGradient } from 'theme/styles/skeleton';
 
@@ -94,7 +93,7 @@ export const NFTPositionIcon = styled.div<{ name: string; skeleton?: boolean }>`
   height: 35px;
   border-radius: 50%;
   margin-top: 2px;
-  background: ${({ name }) => (name ? gradient('token' + name) : '')};
+  background: ${({ name }) => ''};
   ${({ skeleton }) =>
     skeleton &&
     css`

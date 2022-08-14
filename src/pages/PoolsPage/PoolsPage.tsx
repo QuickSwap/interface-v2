@@ -1,13 +1,13 @@
-import React from 'react';
+import React, { lazy } from 'react';
 import { Box, Grid } from '@material-ui/core';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
 import SupplyLiquidity from './SupplyLiquidity';
-import YourLiquidityPools from './YourLiquidityPools';
 import { useTranslation } from 'react-i18next';
 import 'pages/styles/pools.scss';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import VersionToggle from '../../components/Toggle/VersionToggle';
-import { useFarmingSubgraph } from 'hooks/useIncentiveSubgraph';
+const YourLiquidityPools = lazy(() => import('./YourLiquidityPools'));
+const YourV3LiquidityPools = lazy(() => import('./YourV3LiquidityPools'));
 
 const PoolsPage: React.FC = () => {
   const parsedQuery = useParsedQueryString();
@@ -15,21 +15,6 @@ const PoolsPage: React.FC = () => {
     parsedQuery && parsedQuery.version ? (parsedQuery.version as string) : 'v3';
 
   const { t } = useTranslation();
-
-  const {
-    fetchRewards: { rewardsResult, fetchRewardsFn, rewardsLoading },
-    fetchAllEvents: { fetchAllEventsFn, allEvents, allEventsLoading },
-    fetchTransferredPositions: {
-      // fetchTransferredPositionsFn,
-      transferredPositions,
-      transferredPositionsLoading,
-    },
-    fetchHasTransferredPositions: {
-      fetchHasTransferredPositionsFn,
-      hasTransferredPositions,
-      hasTransferredPositionsLoading,
-    },
-  } = useFarmingSubgraph() || {};
 
   return (
     <Box width='100%' mb={3}>
@@ -52,7 +37,11 @@ const PoolsPage: React.FC = () => {
         </Grid>
         <Grid item xs={12} sm={12} md={7}>
           <Box className='wrapper'>
-            <YourLiquidityPools />
+            {poolVersion === 'v2' ? (
+              <YourLiquidityPools />
+            ) : (
+              <YourV3LiquidityPools />
+            )}
           </Box>
         </Grid>
       </Grid>

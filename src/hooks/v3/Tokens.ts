@@ -16,6 +16,7 @@ function useTokensFromMap(
   includeUserAdded: boolean,
 ): { [address: string]: Token } {
   const { chainId } = useActiveWeb3React();
+  // todo: include user added tokens after testing
   const userAddedTokens: Token[] = []; /// useUserAddedTokens();
 
   return useMemo(() => {
@@ -50,10 +51,7 @@ function useTokensFromMap(
 }
 
 export function useAllTokens(): { [address: string]: Token } {
-  const { chainId } = useActiveWeb3React();
-
   const allTokens = useSelectedTokenList();
-
   return useTokensFromMap(allTokens, true);
 }
 
