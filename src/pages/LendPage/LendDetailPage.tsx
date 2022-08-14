@@ -162,11 +162,13 @@ const LendDetailPage: React.FC = () => {
     {
       label: t('averageAdminFee'),
       data: poolData
-        ? poolData.assets.reduce(
-            (a, b, _, { length }) =>
-              a + Number(b.adminFee.toString()) / 1e16 / length,
-            0,
-          )
+        ? poolData.assets
+            .reduce(
+              (a, b, _, { length }) =>
+                a + Number(b.adminFee.toString()) / 1e16 / length,
+              0,
+            )
+            .toLocaleString()
         : undefined,
     },
     {
@@ -234,6 +236,7 @@ const LendDetailPage: React.FC = () => {
                 currency={getPoolAssetToken(asset, chainId)}
                 key={i}
                 size={'24px'}
+                withoutBg={asset.underlyingName.includes('LP')}
               />
             ))}
           </Box>
@@ -332,6 +335,9 @@ const LendDetailPage: React.FC = () => {
                                   <CurrencyLogo
                                     currency={getPoolAssetToken(asset, chainId)}
                                     size={'36px'}
+                                    withoutBg={asset.underlyingName.includes(
+                                      'LP',
+                                    )}
                                   />
                                 </Box>
                                 <Box>
@@ -375,6 +381,9 @@ const LendDetailPage: React.FC = () => {
                                   <CurrencyLogo
                                     currency={getPoolAssetToken(asset, chainId)}
                                     size={'16px'}
+                                    withoutBg={asset.underlyingName.includes(
+                                      'LP',
+                                    )}
                                   />
                                 </Box>
                               </Box>
@@ -527,6 +536,9 @@ const LendDetailPage: React.FC = () => {
                                   <CurrencyLogo
                                     currency={getPoolAssetToken(asset, chainId)}
                                     size={'36px'}
+                                    withoutBg={asset.underlyingName.includes(
+                                      'LP',
+                                    )}
                                   />
                                 </Box>
                                 <small className='text-gray29'>
