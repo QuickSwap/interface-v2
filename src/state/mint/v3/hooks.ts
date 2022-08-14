@@ -7,11 +7,11 @@ import {
   Rounding,
   Token,
 } from '@uniswap/sdk-core';
-import { CurrencyAmount as CurrencyAmountV2 } from '@uniswap/sdk';
-import { useCallback, useEffect, useMemo } from 'react';
+import { Token as TokenV2 } from '@uniswap/sdk';
+import { useCallback, useMemo } from 'react';
 import { AppState } from '../../index';
 import { tryParseAmount } from '../../swap/v3/hooks';
-import { useCurrencyBalances } from '../../wallet/hooks';
+import { useCurrencyBalances } from '../../wallet/v3/hooks';
 import {
   Bound,
   Field,
@@ -24,7 +24,7 @@ import {
 import { tryParseTick } from './utils';
 import { useAppDispatch, useAppSelector } from 'state/hooks';
 import { getTickToPrice } from 'v3lib/utils/getTickToPrice';
-import { GlobalConst } from '../../../constants';
+import { GlobalConst, GlobalValue } from '../../../constants';
 import { useTranslation } from 'react-i18next';
 import { useActiveWeb3React } from 'hooks';
 import {
@@ -37,7 +37,8 @@ import {
 } from 'v3lib/utils';
 import { Pool } from 'v3lib/entities/pool';
 import { Position } from 'v3lib/entities/position';
-import { selectCurrency } from '../actions';
+import { selectCurrency } from './actions';
+import { useCurrency } from 'hooks/v3/Tokens';
 
 export interface IDerivedMintInfo {
   pool?: Pool | null;
@@ -132,14 +133,15 @@ export function useV3MintActionHandlers(
 
   const onCurrencySelection = useCallback(
     (field: Field, currency: Currency) => {
+      console.log('selected currency ', { field, currency });
       dispatch(
         selectCurrency({
           field,
           currencyId:
-            currency instanceof Token
+            currency instanceof TokenV2
               ? currency.address
-              : currency.isNative
-              ? 'ETH'
+              : currency.symbol === 'MATIC'
+              ? 'MATIC'
               : '',
         }),
       );
@@ -158,11 +160,7 @@ export function useV3MintActionHandlers(
 }
 
 export function useV3DerivedMintInfo(
-  currencyA?: Currency,
-  currencyB?: Currency,
   feeAmount?: FeeAmount,
-  baseCurrency?: Currency,
-  // override for existing position
   existingPosition?: Position,
 ): {
   pool?: Pool | null;
@@ -173,7 +171,7 @@ export function useV3DerivedMintInfo(
     [bound in Bound]?: Price<Token, Token> | undefined;
   };
   currencies: { [field in Field]?: Currency };
-  currencyBalances: { [field in Field]?: CurrencyAmountV2 };
+  currencyBalances: { [field in Field]?: CurrencyAmount<Currency> };
   dependentField: Field;
   parsedAmounts: { [field in Field]?: CurrencyAmount<Currency> };
   position: Position | undefined;
@@ -194,32 +192,34 @@ export function useV3DerivedMintInfo(
   const { account, chainId } = useActiveWeb3React();
   const { t } = useTranslation();
 
+  console.log('start mintInfo hook');
   const {
     independentField,
     typedValue,
     leftRangeTypedValue,
     rightRangeTypedValue,
     startPriceTypedValue,
+    [Field.CURRENCY_A]: { currencyId: currencyAId },
+    [Field.CURRENCY_B]: { currencyId: currencyBId },
   } = useV3MintState();
-  // const [startPriceTypedValue] = ['0.5'];
 
-  console.log('type state test', {
-    leftRangeTypedValue,
-    rightRangeTypedValue,
-    startPriceTypedValue,
-  });
+  const currencyA = useCurrency(currencyAId);
+  const currencyB = useCurrency(currencyBId);
 
   const dependentField =
     independentField === Field.CURRENCY_A ? Field.CURRENCY_B : Field.CURRENCY_A;
 
   // currencies
+  // tokens
   const currencies: { [field in Field]?: Currency } = useMemo(
     () => ({
-      [Field.CURRENCY_A]: currencyA,
-      [Field.CURRENCY_B]: currencyB,
+      [Field.CURRENCY_A]: currencyA ?? undefined,
+      [Field.CURRENCY_B]: currencyB ?? undefined,
     }),
     [currencyA, currencyB],
   );
+
+  const baseCurrency = useCurrency(currencyAId);
 
   // formatted with tokens
   // formatted with tokens
@@ -244,7 +244,7 @@ export function useV3DerivedMintInfo(
     currencies[Field.CURRENCY_B],
   ]);
 
-  const currencyBalances: { [field in Field]?: CurrencyAmountV2 } = {
+  const currencyBalances: { [field in Field]?: CurrencyAmount<Currency> } = {
     [Field.CURRENCY_A]: balances[0],
     [Field.CURRENCY_B]: balances[1],
   };
@@ -256,10 +256,9 @@ export function useV3DerivedMintInfo(
     currencies[Field.CURRENCY_B],
   );
 
-  console.log('pool test', { poolState, pool, currencies });
   const noLiquidity = poolState === PoolState.NOT_EXISTS;
 
-  const dynamicFee = pool ? pool.fee : 100;
+  const dynamicFee = pool ? pool?.fee : 100;
 
   // note to parse inputs in reverse
   const invertPrice = Boolean(baseToken && token0 && !baseToken.equals(token0));
@@ -283,25 +282,16 @@ export function useV3DerivedMintInfo(
                 parsedQuoteAmount.quotient,
               )
             : undefined;
-        console.log('type state test parsedQuote  ', {
-          price: price?.toFixed(),
-          invertPrice,
-        });
+
         return (invertPrice ? price?.invert() : price) ?? undefined;
       }
       return undefined;
     } else {
       // get the amount of quote currency
-      console.log('type state test token0 price  ', {
-        Tokenprice: pool && token0 && pool.priceOf(token0)?.toFixed(),
-        pool,
-        token0,
-      });
+
       return pool && token0 ? pool.priceOf(token0) : undefined;
     }
   }, [noLiquidity, startPriceTypedValue, invertPrice, token1, token0, pool]);
-
-  console.log('type state test price ', { finalPrice: price?.toFixed() });
 
   // check for invalid price input (converts to invalid ratio)
   const invalidPrice = useMemo(() => {
@@ -454,7 +444,10 @@ export function useV3DerivedMintInfo(
     | CurrencyAmount<Currency>
     | undefined = tryParseAmount(typedValue, currencies[independentField]);
 
-  const dependentAmount: CurrencyAmount<Currency> | undefined = useMemo(() => {
+  const dependentAmount:
+    | CurrencyAmount<Currency>
+    | null
+    | undefined = useMemo(() => {
     // we wrap the currencies just to get the price in terms of the other token
     const wrappedIndependentAmount = independentAmount?.wrapped;
     const dependentCurrency =
@@ -523,11 +516,11 @@ export function useV3DerivedMintInfo(
     return {
       [Field.CURRENCY_A]:
         independentField === Field.CURRENCY_A
-          ? independentAmount
-          : dependentAmount,
+          ? independentAmount ?? undefined
+          : dependentAmount ?? undefined,
       [Field.CURRENCY_B]:
         independentField === Field.CURRENCY_A
-          ? dependentAmount
+          ? dependentAmount ?? undefined
           : independentAmount,
     };
   }, [dependentAmount, independentAmount, independentField]);
@@ -656,22 +649,12 @@ export function useV3DerivedMintInfo(
 
   if (
     currencyAAmount &&
-    currencyBalances?.[Field.CURRENCY_A]?.lessThan(currencyAAmount.toExact())
+    currencyBalances?.[Field.CURRENCY_A]?.lessThan(currencyAAmount)
   ) {
     errorMessage = t`Insufficient ${
       currencies[Field.CURRENCY_A]?.symbol
     } balance`;
     errorCode = errorCode ?? 4;
-  }
-
-  if (
-    currencyBAmount &&
-    currencyBalances?.[Field.CURRENCY_B]?.lessThan(currencyBAmount.toExact())
-  ) {
-    errorMessage = t`Insufficient ${
-      currencies[Field.CURRENCY_B]?.symbol
-    } balance`;
-    errorCode = errorCode ?? 5;
   }
 
   const invalidPool = poolState === PoolState.INVALID;
