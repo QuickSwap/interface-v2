@@ -1,14 +1,14 @@
 import React from 'react';
-import { useMediaQuery, useTheme } from '@material-ui/core';
+import { Box, useMediaQuery, useTheme } from '@material-ui/core';
 import Slider from 'react-slick';
 import { useDefaultAdsList } from 'state/ads/hooks';
 
 interface AdsSliderProps {
-  isSmall?: boolean;
   sort: string;
+  margin?: string;
 }
 
-const AdsSlider: React.FC<AdsSliderProps> = ({ isSmall, sort }) => {
+const AdsSlider: React.FC<AdsSliderProps> = ({ sort, margin }) => {
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const ads = useDefaultAdsList()[sort];
@@ -25,28 +25,24 @@ const AdsSlider: React.FC<AdsSliderProps> = ({ isSmall, sort }) => {
   };
 
   return ads ? (
-    <Slider {...adsSliderSettings}>
-      {ads.map((item, ind) => (
-        <a
-          key={ind}
-          className='no-outline'
-          href={item.link}
-          target='_blank'
-          rel='noreferrer'
-        >
-          <img
-            src={
-              isMobile
-                ? item.mobileImage
-                : isSmall
-                ? item.smallImage
-                : item.largeImage
-            }
-            width='100%'
-          />
-        </a>
-      ))}
-    </Slider>
+    <Box margin={margin}>
+      <Slider {...adsSliderSettings}>
+        {ads.map((item, ind) => (
+          <a
+            key={ind}
+            className='no-outline'
+            href={item.link}
+            target='_blank'
+            rel='noreferrer'
+          >
+            <img
+              src={isMobile ? item.mobileURL : item.desktopURL}
+              width='100%'
+            />
+          </a>
+        ))}
+      </Slider>
+    </Box>
   ) : (
     <></>
   );

@@ -2,9 +2,8 @@ import { TokenAmount, Token, Price, Pair } from '@uniswap/sdk';
 import { Version } from '@uniswap/token-lists';
 
 export interface AdsRaw {
-  largeImage: string;
-  smallImage: string;
-  mobileImage: string;
+  desktopURL: string;
+  mobileURL: string;
   link: string;
   sort: string;
 }
