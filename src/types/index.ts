@@ -1,6 +1,21 @@
 import { TokenAmount, Token, Price, Pair } from '@uniswap/sdk';
 import { Version } from '@uniswap/token-lists';
 
+export interface AdsRaw {
+  largeImage: string;
+  smallImage: string;
+  mobileImage: string;
+  link: string;
+  sort: string;
+}
+
+export interface AdsListInfo {
+  readonly name: string;
+  readonly timestamp: string;
+  readonly list: AdsRaw[];
+  readonly version: Version;
+}
+
 export interface FarmListInfo {
   readonly name: string;
   readonly timestamp: string;
