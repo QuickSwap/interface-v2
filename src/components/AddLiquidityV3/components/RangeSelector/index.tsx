@@ -24,6 +24,7 @@ import './index.scss';
 import NumericalInput from 'components/NumericalInput';
 import { toToken } from 'constants/v3/routing';
 import { GlobalValue } from 'constants/index';
+import { useBestV3TradeExactIn } from 'hooks/v3/useBestV3Trade';
 
 interface IRangeSelector {
   priceLower: Price<Token, Token> | undefined;

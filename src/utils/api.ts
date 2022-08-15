@@ -30,14 +30,3 @@ export async function fetchLimitFarmTVL() {
     return {};
   }
 }
-
-export async function fetchPoolsAPR() {
-  const apiURL =
-    process.env.REACT_APP_V3_FARMS_API_BASE_URL + '/api/APR/pools/';
-
-  try {
-    return await fetch(apiURL).then((v) => v.json());
-  } catch (error) {
-    return {};
-  }
-}
