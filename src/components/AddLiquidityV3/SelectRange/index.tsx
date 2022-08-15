@@ -22,11 +22,11 @@ import { USDPrices } from '../components/USDPrices';
 import { PoolState } from 'hooks/v3/usePools';
 import { POOL_DEPLOYER_ADDRESS } from 'constants/v3/addresses';
 import { computePoolAddress } from 'hooks/v3/computePoolAddress';
-import { fetchPoolsAPR } from 'utils/api';
 import { useTranslation } from 'react-i18next';
 import LiquidityChartRangeInput from '../components/LiquidityChartRangeInput';
 import { toToken } from 'constants/v3/routing';
 import { GlobalValue } from 'constants/index';
+import { fetchPoolsAPR } from 'utils/aprApi';
 
 interface IRangeSelector {
   currencyA: Currency | null | undefined;

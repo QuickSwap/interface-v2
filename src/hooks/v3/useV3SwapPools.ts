@@ -1,8 +1,8 @@
 import { Currency } from '@uniswap/sdk-core';
-import { Pool } from 'v3lib/entities';
+import { PoolState, usePools } from 'hooks/usePools';
+import { Pool } from 'lib/src/pool';
 import { useMemo } from 'react';
 import { useAllCurrencyCombinations } from './useAllCurrencyCombinations';
-import { PoolState, usePools } from './usePools';
 
 /**
  * Returns all the existing pools that should be considered for swapping between an input currency and an output currency
