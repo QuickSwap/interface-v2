@@ -1,6 +1,5 @@
 import React from 'react';
 import { useMediaQuery, useTheme } from '@material-ui/core';
-import { useTranslation } from 'react-i18next';
 import Slider from 'react-slick';
 import { useDefaultAdsList } from 'state/ads/hooks';
 
@@ -10,7 +9,6 @@ interface AdsSliderProps {
 }
 
 const AdsSlider: React.FC<AdsSliderProps> = ({ isSmall, sort }) => {
-  const { t } = useTranslation();
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const ads = useDefaultAdsList()[sort];
@@ -26,7 +24,7 @@ const AdsSlider: React.FC<AdsSliderProps> = ({ isSmall, sort }) => {
     arrows: false,
   };
 
-  return (
+  return ads ? (
     <Slider {...adsSliderSettings}>
       {ads.map((item, ind) => (
         <a
@@ -49,6 +47,8 @@ const AdsSlider: React.FC<AdsSliderProps> = ({ isSmall, sort }) => {
         </a>
       ))}
     </Slider>
+  ) : (
+    <></>
   );
 };
 
