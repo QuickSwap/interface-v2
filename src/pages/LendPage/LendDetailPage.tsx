@@ -397,7 +397,6 @@ const LendDetailPage: React.FC = () => {
                                       setSupplyToggled(true);
                                       toggleCollateral(
                                         asset,
-                                        poolData.pool.comptroller,
                                         account,
                                         asset.membership
                                           ? t('cannotExitMarket')
@@ -585,7 +584,6 @@ const LendDetailPage: React.FC = () => {
           onClose={() => setSelectedAsset(undefined)}
           borrow={modalIsBorrow}
           asset={selectedAsset}
-          borrowLimit={borrowLimit ?? 0}
         />
       )}
     </>

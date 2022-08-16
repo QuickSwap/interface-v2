@@ -250,7 +250,7 @@ export const repayBorrow = async (
   }
 };
 
-export const toggleCollateralWithoutComptroller = async (
+export const toggleCollateral = async (
   asset: USDPricedPoolAsset,
   address: string,
   errorMessage: string,
@@ -277,29 +277,6 @@ export const toggleCollateralWithoutComptroller = async (
     );
   }
   return txObj;
-};
-
-export const toggleCollateral = (
-  asset: USDPricedPoolAsset,
-  comptroller: Comptroller,
-  address: string,
-  errorMessage: string,
-) => {
-  if (!asset.membership) {
-    return testForComptrollerErrorAndSend(
-      comptroller.contract.methods.enterMarkets([asset.cToken.address]),
-      address,
-      errorMessage,
-      asset.cToken.sdk,
-    );
-  } else {
-    return testForComptrollerErrorAndSend(
-      comptroller.contract.methods.exitMarket(asset.cToken.address),
-      address,
-      errorMessage,
-      asset.cToken.sdk,
-    );
-  }
 };
 
 export const withdraw = async (
