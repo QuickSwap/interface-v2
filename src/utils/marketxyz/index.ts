@@ -86,7 +86,7 @@ export const checkCTokenisApproved = async (
   const cToken = asset.cToken;
   const sdk = cToken.sdk;
   const amountBN = sdk.web3.utils.toBN(
-    amount * 10 ** asset.underlyingDecimals.toNumber(),
+    (amount * 10 ** asset.underlyingDecimals.toNumber()).toFixed(0),
   );
 
   const underlyingContract = new sdk.web3.eth.Contract(
@@ -146,7 +146,7 @@ export const supply = async (
     asset.underlyingToken.toLowerCase() ===
     GlobalValue.tokens.MATIC.address.toLowerCase();
   const amountBN = sdk.web3.utils.toBN(
-    amount * 10 ** asset.underlyingDecimals.toNumber(),
+    (amount * 10 ** asset.underlyingDecimals.toNumber()).toFixed(0),
   );
 
   if (isETH) {
