@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Grid,
@@ -12,7 +12,6 @@ import {
 } from '@material-ui/core';
 import { Skeleton, Alert } from '@material-ui/lab';
 
-import { _100 } from '@uniswap/sdk/dist/constants';
 import { useHistory, useLocation } from 'react-router-dom';
 import ToggleSwitch from 'components/ToggleSwitch';
 

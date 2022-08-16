@@ -111,7 +111,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
     ) {
       return t('marketBorrowMinError');
     } else if (
-      modalType === 'supply' &&
+      (modalType === 'supply' || modalType === 'withdraw') &&
       currentAsset.membership !== enableAsCollateral
     ) {
       if (!currentAsset.membership) {
