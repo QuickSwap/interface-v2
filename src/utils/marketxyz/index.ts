@@ -2,7 +2,7 @@ import { Comptroller, MarketSDK } from 'market-sdk';
 import { Token, ChainId } from '@uniswap/sdk';
 import { BN } from 'utils/bigUtils';
 import { USDPricedPoolAsset } from './fetchPoolData';
-import { getDaysCurrentYear } from 'utils';
+import { convertNumbertoBN, getDaysCurrentYear } from 'utils';
 import ERC20_ABI from '../../constants/abis/erc20.json';
 import {
   testForComptrollerErrorAndSend,
@@ -85,8 +85,10 @@ export const checkCTokenisApproved = async (
 ) => {
   const cToken = asset.cToken;
   const sdk = cToken.sdk;
-  const amountBN = sdk.web3.utils.toBN(
-    (amount * 10 ** asset.underlyingDecimals.toNumber()).toFixed(0),
+  const amountBN = convertNumbertoBN(
+    amount,
+    asset.underlyingDecimals.toNumber(),
+    sdk.web3,
   );
 
   const underlyingContract = new sdk.web3.eth.Contract(
@@ -145,8 +147,10 @@ export const supply = async (
   const isETH =
     asset.underlyingToken.toLowerCase() ===
     GlobalValue.tokens.MATIC.address.toLowerCase();
-  const amountBN = sdk.web3.utils.toBN(
-    (amount * 10 ** asset.underlyingDecimals.toNumber()).toFixed(0),
+  const amountBN = convertNumbertoBN(
+    amount,
+    asset.underlyingDecimals.toNumber(),
+    sdk.web3,
   );
 
   if (isETH) {
@@ -200,8 +204,10 @@ export const repayBorrow = async (
   const isETH =
     asset.underlyingToken.toLowerCase() ===
     GlobalValue.tokens.MATIC.address.toLowerCase();
-  const amountBN = sdk.web3.utils.toBN(
-    Number(amount * 10 ** asset.underlyingDecimals.toNumber()).toFixed(0),
+  const amountBN = convertNumbertoBN(
+    amount,
+    asset.underlyingDecimals.toNumber(),
+    sdk.web3,
   );
 
   const isRepayingMax =
@@ -288,8 +294,10 @@ export const withdraw = async (
   const cToken = asset.cToken;
   const sdk = cToken.sdk;
 
-  const amountBN = sdk.web3.utils.toBN(
-    Number(amount * 10 ** asset.underlyingDecimals.toNumber()).toFixed(0),
+  const amountBN = convertNumbertoBN(
+    amount,
+    asset.underlyingDecimals.toNumber(),
+    sdk.web3,
   );
   const txObj = await testForCTokenErrorAndSend(
     cToken.contract.methods.redeemUnderlying(amountBN),

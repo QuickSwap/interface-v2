@@ -18,7 +18,12 @@ import {
   approveCToken,
 } from 'utils/marketxyz';
 
-import { getDaysCurrentYear, convertBNToNumber, formatNumber } from 'utils';
+import {
+  getDaysCurrentYear,
+  convertBNToNumber,
+  formatNumber,
+  convertNumbertoBN,
+} from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import {
   ToggleSwitch,
@@ -228,11 +233,10 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
           ) +
           (modalType === 'repay' ? -1 : 1) * numValue;
         const web3 = currentAsset.cToken.sdk.web3;
-        const updatedTotalBorrow = web3.utils.toBN(
-          (
-            updatedTotalBorrowNum *
-            10 ** Number(currentAsset.underlyingDecimals)
-          ).toFixed(0),
+        const updatedTotalBorrow = convertNumbertoBN(
+          updatedTotalBorrowNum,
+          Number(currentAsset.underlyingDecimals),
+          web3,
         );
         const totalSupplyNum = convertBNToNumber(
           currentAsset.totalSupply,
@@ -246,19 +250,20 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
         await jmpModel.init();
         const updatedAsset = {
           ...currentAsset,
-          borrowBalance: web3.utils.toBN(
-            (
-              updatedBorrowBalance *
-              10 ** Number(currentAsset.underlyingDecimals)
-            ).toFixed(0),
+          borrowBalance: convertNumbertoBN(
+            updatedBorrowBalance,
+            Number(currentAsset.underlyingDecimals),
+            web3,
           ),
           borrowBalanceUSD: updatedBorrowBalance * currentAsset.usdPrice,
           totalBorrow: updatedTotalBorrow,
           totalBorrowUSD: updatedTotalBorrowNum * currentAsset.usdPrice,
           borrowRatePerBlock: jmpModel.getBorrowRate(
             totalSupplyNum
-              ? web3.utils.toBN(
-                  ((updatedTotalBorrowNum / totalSupplyNum) * 1e18).toFixed(0),
+              ? convertNumbertoBN(
+                  updatedTotalBorrowNum / totalSupplyNum,
+                  18,
+                  web3,
                 )
               : web3.utils.toBN(0),
           ),
@@ -284,11 +289,10 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
           ) +
           (modalType === 'withdraw' ? -1 : 1) * numValue;
         const web3 = currentAsset.cToken.sdk.web3;
-        const updatedTotalSupply = web3.utils.toBN(
-          (
-            updatedTotalSupplyNum *
-            10 ** Number(currentAsset.underlyingDecimals)
-          ).toFixed(0),
+        const updatedTotalSupply = convertNumbertoBN(
+          updatedTotalSupplyNum,
+          Number(currentAsset.underlyingDecimals),
+          web3,
         );
         const totalBorrowNum = convertBNToNumber(
           currentAsset.totalBorrow,
@@ -301,25 +305,25 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
         await jmpModel.init();
         const updatedAsset = {
           ...currentAsset,
-          underlyingBalance: web3.utils.toBN(
-            (
-              updatedUnderlyingBalance *
-              10 ** Number(currentAsset.underlyingDecimals)
-            ).toFixed(0),
+          underlyingBalance: convertNumbertoBN(
+            updatedUnderlyingBalance,
+            Number(currentAsset.underlyingDecimals),
+            web3,
           ),
-          supplyBalance: web3.utils.toBN(
-            (
-              updatedSupplyBalance *
-              10 ** Number(currentAsset.underlyingDecimals)
-            ).toFixed(0),
+          supplyBalance: convertNumbertoBN(
+            updatedSupplyBalance,
+            Number(currentAsset.underlyingDecimals),
+            web3,
           ),
           supplyBalanceUSD: updatedSupplyBalance * currentAsset.usdPrice,
           totalSupply: updatedTotalSupply,
           totalSupplyUSD: updatedTotalSupplyNum * currentAsset.usdPrice,
           supplyRatePerBlock: jmpModel.getSupplyRate(
             updatedTotalSupplyNum
-              ? web3.utils.toBN(
-                  ((totalBorrowNum / updatedTotalSupplyNum) * 1e18).toFixed(0),
+              ? convertNumbertoBN(
+                  totalBorrowNum / updatedTotalSupplyNum,
+                  18,
+                  web3,
                 )
               : web3.utils.toBN(0),
           ),
