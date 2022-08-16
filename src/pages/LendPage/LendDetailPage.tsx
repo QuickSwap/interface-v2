@@ -45,9 +45,6 @@ const LendDetailPage: React.FC = () => {
   const location = useLocation();
   const { chainId, account } = useActiveWeb3React();
   const [supplyToggled, setSupplyToggled] = useState(false);
-  const [assetsCollateral, setAssetsCollateral] = useState<
-    { address: string; collateral: boolean }[]
-  >([]);
 
   const [modalIsBorrow, setModalIsBorrow] = useState<boolean>(false);
   const [alertShow, setAlertShow] = useState({
@@ -75,17 +72,6 @@ const LendDetailPage: React.FC = () => {
       status: 'error',
     });
   };
-
-  useEffect(() => {
-    if (!poolData) {
-      setAssetsCollateral([]);
-    } else {
-      const collaterals = poolData.assets.map((asset) => {
-        return { address: asset.cToken.address, collateral: asset.membership };
-      });
-      setAssetsCollateral(collaterals);
-    }
-  }, [poolData]);
 
   const poolUtilization = !poolData
     ? 0
@@ -317,11 +303,6 @@ const LendDetailPage: React.FC = () => {
                     </TableHead>
                     <TableBody>
                       {poolData?.assets.map((asset) => {
-                        const assetCollateralIndex = assetsCollateral.findIndex(
-                          ({ address }) =>
-                            address.toLowerCase() ===
-                            asset.cToken.address.toLowerCase(),
-                        );
                         return (
                           <TableRow key={asset.cToken.address}>
                             <ItemTableCell
@@ -410,12 +391,7 @@ const LendDetailPage: React.FC = () => {
                             <MuiTableCell>
                               <Box className='flex justify-end'>
                                 <ToggleSwitch
-                                  toggled={
-                                    assetCollateralIndex >= 0
-                                      ? assetsCollateral[assetCollateralIndex]
-                                          .collateral
-                                      : false
-                                  }
+                                  toggled={asset.membership}
                                   onToggle={() => {
                                     if (account && !supplyToggled) {
                                       setSupplyToggled(true);
@@ -428,38 +404,16 @@ const LendDetailPage: React.FC = () => {
                                           : t('cannotEnterMarket'),
                                       )
                                         .then(() => {
-                                          if (assetCollateralIndex >= 0) {
-                                            setAssetsCollateral([
-                                              ...assetsCollateral.slice(
-                                                0,
-                                                assetCollateralIndex,
-                                              ),
-                                              {
-                                                address: asset.cToken.address,
-                                                collateral: !assetsCollateral[
-                                                  assetCollateralIndex
-                                                ],
-                                              },
-                                              ...assetsCollateral.slice(
-                                                assetCollateralIndex + 1,
-                                              ),
-                                            ]);
-                                          }
+                                          setSupplyToggled(false);
                                         })
                                         .catch((er) => {
+                                          setSupplyToggled(false);
                                           setAlertShow({
                                             open: true,
                                             msg: er.message,
                                             status: 'error',
                                           });
-                                        })
-                                        .finally(() => setSupplyToggled(false));
-                                    } else {
-                                      setAlertShow({
-                                        open: true,
-                                        msg: t('walletnotconnected'),
-                                        status: 'error',
-                                      });
+                                        });
                                     }
                                   }}
                                 />

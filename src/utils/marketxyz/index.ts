@@ -78,15 +78,36 @@ export const fetchGasForCall = async (
   };
 };
 
-const delay = (t: number) => {
-  return new Promise((resolve) => {
-    setTimeout(resolve, t);
-  });
+export const checkCTokenisApproved = async (
+  asset: USDPricedPoolAsset,
+  amount: number,
+  address: string,
+) => {
+  const cToken = asset.cToken;
+  const sdk = cToken.sdk;
+  const amountBN = sdk.web3.utils.toBN(
+    amount * 10 ** asset.underlyingDecimals.toNumber(),
+  );
+
+  const underlyingContract = new sdk.web3.eth.Contract(
+    ERC20_ABI as any,
+    asset.underlyingToken,
+  );
+
+  const hasApprovedEnough = sdk.web3.utils
+    .toBN(
+      await underlyingContract.methods
+        .allowance(address, cToken.address)
+        .call(),
+    )
+    .gte(amountBN);
+
+  if (hasApprovedEnough) return true;
+  return false;
 };
 
-const checkAndApproveCToken = async (
+export const approveCToken = async (
   asset: USDPricedPoolAsset,
-  amountBN: BN,
   address: string,
 ) => {
   const cToken = asset.cToken;
@@ -96,45 +117,26 @@ const checkAndApproveCToken = async (
     ERC20_ABI as any,
     asset.underlyingToken,
   );
-
   const max = sdk.web3.utils
     .toBN(2)
     .pow(sdk.web3.utils.toBN(256))
     .sub(sdk.web3.utils.toBN(1));
 
-  try {
-    const hasApprovedEnough = sdk.web3.utils
-      .toBN(
-        await underlyingContract.methods
-          .allowance(address, cToken.address)
-          .call(),
-      )
-      .gte(amountBN);
-
-    if (hasApprovedEnough) return true;
-
-    const call = underlyingContract.methods.approve(cToken.address, max);
-    const { gasPrice, estimatedGas } = await fetchGasForCall(
-      call,
-      undefined,
-      address,
-      sdk,
-    );
-    await call.send({ from: address, gasPrice, estimatedGas });
-    await delay(2000);
-    return true;
-  } catch (e) {
-    console.log(e);
-    return false;
-  }
+  const call = underlyingContract.methods.approve(cToken.address, max);
+  const { gasPrice, estimatedGas } = await fetchGasForCall(
+    call,
+    undefined,
+    address,
+    sdk,
+  );
+  const txObj = await call.send({ from: address, gasPrice, estimatedGas });
+  return txObj;
 };
 
 export const supply = async (
   asset: USDPricedPoolAsset,
   amount: number,
   address: string,
-  enableAsCollateral: boolean,
-  enterMarketError: string,
   supplyError: string,
 ) => {
   const cToken = asset.cToken;
@@ -147,25 +149,6 @@ export const supply = async (
     amount * 10 ** asset.underlyingDecimals.toNumber(),
   );
 
-  const comptroller = new Comptroller(
-    sdk,
-    await asset.cToken.contract.methods.comptroller().call(),
-  );
-
-  let collateralEnabled = false;
-  if (!asset.membership && enableAsCollateral) {
-    await testForComptrollerErrorAndSend(
-      comptroller.contract.methods.enterMarkets([asset.cToken.address]),
-      address,
-      enterMarketError,
-      asset.cToken.sdk,
-    );
-    collateralEnabled = true;
-  } else {
-    collateralEnabled = true;
-  }
-
-  if (!collateralEnabled) return;
   if (isETH) {
     const ethBalance = await sdk.web3.eth.getBalance(address);
 
@@ -195,8 +178,6 @@ export const supply = async (
       return txObj;
     }
   } else {
-    const approved = await checkAndApproveCToken(asset, amountBN, address);
-    if (!approved) return;
     const txObj = await testForCTokenErrorAndSend(
       cToken.contract.methods.mint(amountBN),
       address,
@@ -232,7 +213,6 @@ export const repayBorrow = async (
     .sub(sdk.web3.utils.toBN(1));
 
   if (!isETH) {
-    await checkAndApproveCToken(asset, amountBN, address);
     const txObj = await testForCTokenErrorAndSend(
       cToken.contract.methods.repayBorrow(isRepayingMax ? max : amountBN),
       address,
@@ -268,6 +248,35 @@ export const repayBorrow = async (
     });
     return txObj;
   }
+};
+
+export const toggleCollateralWithoutComptroller = async (
+  asset: USDPricedPoolAsset,
+  address: string,
+  errorMessage: string,
+) => {
+  const sdk = asset.cToken.sdk;
+  const comptroller = new Comptroller(
+    sdk,
+    await asset.cToken.contract.methods.comptroller().call(),
+  );
+  let txObj;
+  if (!asset.membership) {
+    txObj = await testForComptrollerErrorAndSend(
+      comptroller.contract.methods.enterMarkets([asset.cToken.address]),
+      address,
+      errorMessage,
+      asset.cToken.sdk,
+    );
+  } else {
+    txObj = await testForComptrollerErrorAndSend(
+      comptroller.contract.methods.exitMarket(asset.cToken.address),
+      address,
+      errorMessage,
+      asset.cToken.sdk,
+    );
+  }
+  return txObj;
 };
 
 export const toggleCollateral = (

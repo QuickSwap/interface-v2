@@ -13,9 +13,13 @@ import {
   convertMantissaToAPR,
   convertMantissaToAPY,
   getPoolAssetToken,
+  checkCTokenisApproved,
+  toggleCollateral,
+  toggleCollateralWithoutComptroller,
+  approveCToken,
 } from 'utils/marketxyz';
 
-import { getDaysCurrentYear, convertBNToNumber } from 'utils';
+import { getDaysCurrentYear, convertBNToNumber, formatNumber } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import {
   ToggleSwitch,
@@ -55,6 +59,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
     ? Number(assetUSDPriceObj.toFixed(asset.underlyingDecimals.toNumber()))
     : undefined;
 
+  const [assetApproved, setAssetApproved] = useState(false);
   const [loading, setLoading] = useState(false);
   const [txHash, setTxHash] = useState<string | undefined>(undefined);
   const [txError, setTxError] = useState('');
@@ -105,6 +110,20 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
         Number(value) * assetUSDPrice < 0.05 * ethPrice.price)
     ) {
       return t('marketBorrowMinError');
+    } else if (
+      modalType === 'supply' &&
+      asset.membership !== enableAsCollateral
+    ) {
+      if (!asset.membership) {
+        return t('enterMarket');
+      } else {
+        return t('exitMarket');
+      }
+    } else if (
+      (modalType === 'supply' || modalType === 'repay') &&
+      !assetApproved
+    ) {
+      return t('approve');
     }
     return t('confirm');
   }, [
@@ -116,6 +135,9 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
     ethPrice.price,
     t,
     maxAmountError,
+    asset,
+    assetApproved,
+    enableAsCollateral,
   ]);
 
   const numValue = isNaN(Number(value)) ? 0 : Number(value);
@@ -123,6 +145,18 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
   useEffect(() => {
     setValue('');
   }, [modalType]);
+
+  useEffect(() => {
+    if (!account || !Number(value)) return;
+    (async () => {
+      const approved = await checkCTokenisApproved(
+        asset,
+        Number(value),
+        account,
+      );
+      setAssetApproved(approved);
+    })();
+  }, [account, asset, value]);
 
   useEffect(() => {
     if (!account) return;
@@ -305,34 +339,36 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
       label: borrow ? t('borrowedBalance') : t('suppliedBalance'),
       html: borrow
         ? midUsdFormatter(asset.borrowBalanceUSD)
-        : `${supplyBalance.toLocaleString()} ${asset.underlyingSymbol}`,
+        : `${formatNumber(supplyBalance)} ${asset.underlyingSymbol}`,
       showArrow,
       htmlAfterArrow: updatedAsset
         ? borrow
           ? midUsdFormatter(updatedAsset.borrowBalanceUSD)
-          : `${convertBNToNumber(
-              updatedAsset.supplyBalance,
-              asset.underlyingDecimals,
-            ).toLocaleString()} ${asset.underlyingSymbol}`
+          : `${formatNumber(
+              convertBNToNumber(
+                updatedAsset.supplyBalance,
+                asset.underlyingDecimals,
+              ),
+            )} ${asset.underlyingSymbol}`
         : '',
     },
     {
       label: borrow ? t('suppliedBalance') : t('supplyapy'),
       html: borrow
-        ? `${supplyBalance.toLocaleString()} ${asset.underlyingSymbol}`
-        : supplyAPY.toLocaleString() + '%',
+        ? `${formatNumber(supplyBalance)} ${asset.underlyingSymbol}`
+        : formatNumber(supplyAPY) + '%',
       showArrow: borrow ? false : updatedAsset && updatedAPYDiffIsLarge,
       htmlAfterArrow:
         borrow || !updatedAsset
           ? undefined
-          : updatedSupplyAPY.toLocaleString() + '%',
+          : formatNumber(updatedSupplyAPY) + '%',
     },
     borrow
       ? {
           label: t('borrowAPR'),
-          html: borrowAPY.toLocaleString() + '%',
+          html: formatNumber(borrowAPY) + '%',
           showArrow: updatedAsset && updatedAPYDiffIsLarge,
-          htmlAfterArrow: `${updatedBorrowAPY.toLocaleString()}%`,
+          htmlAfterArrow: `${formatNumber(updatedBorrowAPY)}%`,
         }
       : undefined,
     {
@@ -395,11 +431,11 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
               </span>
               {(modalType === 'supply' || modalType === 'repay') && (
                 <p className='caption text-secondary'>
-                  {!borrow ? t('supplied') : t('balance')}:{' '}
-                  {(
+                  {t('balance')}:{' '}
+                  {formatNumber(
                     Number(asset.underlyingBalance.toString()) /
-                    10 ** Number(asset.underlyingDecimals.toString())
-                  ).toLocaleString()}{' '}
+                      10 ** Number(asset.underlyingDecimals.toString()),
+                  )}{' '}
                   {asset.underlyingSymbol}
                 </p>
               )}
@@ -474,12 +510,16 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
                   try {
                     if (borrow) {
                       if (modalType === 'repay') {
-                        txResponse = await repayBorrow(
-                          asset,
-                          Number(value),
-                          account,
-                          t('cannotRepayMarket'),
-                        );
+                        if (!assetApproved) {
+                          txResponse = await approveCToken(asset, account);
+                        } else {
+                          txResponse = await repayBorrow(
+                            asset,
+                            Number(value),
+                            account,
+                            t('cannotRepayMarket'),
+                          );
+                        }
                       } else {
                         txResponse = await poolBorrow(
                           asset,
@@ -490,21 +530,41 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
                       }
                     } else {
                       if (modalType === 'withdraw') {
-                        txResponse = await poolWithDraw(
-                          asset,
-                          Number(value),
-                          account,
-                          t('cannotWithdrawMarket'),
-                        );
+                        if (asset.membership !== enableAsCollateral) {
+                          txResponse = await toggleCollateralWithoutComptroller(
+                            asset,
+                            account,
+                            asset.membership
+                              ? t('cannotExitMarket')
+                              : t('cannotEnterMarket'),
+                          );
+                        } else {
+                          txResponse = await poolWithDraw(
+                            asset,
+                            Number(value),
+                            account,
+                            t('cannotWithdrawMarket'),
+                          );
+                        }
                       } else {
-                        txResponse = await supply(
-                          asset,
-                          Number(value),
-                          account,
-                          enableAsCollateral,
-                          t('cannotEnterMarket'),
-                          t('cannotDepositMarket'),
-                        );
+                        if (asset.membership !== enableAsCollateral) {
+                          txResponse = await toggleCollateralWithoutComptroller(
+                            asset,
+                            account,
+                            asset.membership
+                              ? t('cannotExitMarket')
+                              : t('cannotEnterMarket'),
+                          );
+                        } else if (!assetApproved) {
+                          txResponse = await approveCToken(asset, account);
+                        } else {
+                          txResponse = await supply(
+                            asset,
+                            Number(value),
+                            account,
+                            t('cannotDepositMarket'),
+                          );
+                        }
                       }
                     }
                     setTxHash(txResponse.transactionHash);
