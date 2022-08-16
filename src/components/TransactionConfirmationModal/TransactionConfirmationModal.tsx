@@ -170,6 +170,7 @@ interface ConfirmationModalProps {
   pendingText: string;
   modalContent: string;
   txPending?: boolean;
+  modalWrapper?: string;
 }
 
 const TransactionConfirmationModal: React.FC<ConfirmationModalProps> = ({
@@ -181,6 +182,7 @@ const TransactionConfirmationModal: React.FC<ConfirmationModalProps> = ({
   pendingText,
   content,
   modalContent,
+  modalWrapper,
 }) => {
   const { chainId } = useActiveWeb3React();
 
@@ -188,7 +190,7 @@ const TransactionConfirmationModal: React.FC<ConfirmationModalProps> = ({
 
   // confirmation screen
   return (
-    <CustomModal open={isOpen} onClose={onDismiss}>
+    <CustomModal open={isOpen} onClose={onDismiss} modalWrapper={modalWrapper}>
       <img src={ModalBg} alt='Modal Back' className='txModalBG' />
       <Box position='relative' zIndex={2}>
         {attemptingTxn ? (

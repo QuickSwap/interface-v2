@@ -17,7 +17,7 @@
 .modalWrapperV3 {
   margin: 0px;
   padding: 0px;
-  max-width: 450px;
+  max-width: 750px;
   width: 100%;
   position: absolute;
   top: 50%;
@@ -26,4 +26,18 @@
   transform: translate(-50%, -50%);
   outline: none;
   background-color: $bgPalette;
+}
+
+.modalWrapperNftSelector {
+  margin: 0px;
+  padding: 0px;
+  max-width: 750px;
+  width: 100%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 20px;
+  background-color: #1b1e29;
+
 }

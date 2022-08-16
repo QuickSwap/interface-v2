@@ -14,6 +14,7 @@ import { formatAmountTokens } from 'utils/numbers';
 import './index.scss';
 import { Link } from 'react-router-dom';
 import { ChainId } from '@uniswap/sdk';
+import EternalFarm from './EternalFarmCard';
 
 interface FarmingEventCardProps {
   active?: boolean;
@@ -107,6 +108,7 @@ export function FarmingEventCard({
           <Loader size={'18px'} stroke={'white'} style={{ margin: 'auto' }} />
         </LoadingShim>
       )}
+      {!refreshing && <EternalFarm />}
       {locked && (
         <LoadingShim>
           <div

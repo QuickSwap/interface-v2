@@ -8,6 +8,7 @@ interface CustomModalProps {
   children: any;
   background?: string;
   overflow?: string;
+  modalWrapper?: string;
 }
 
 const CustomModal: React.FC<CustomModalProps> = ({
@@ -16,6 +17,7 @@ const CustomModal: React.FC<CustomModalProps> = ({
   children,
   background,
   overflow,
+  modalWrapper,
 }) => {
   // temp state
   const isV3 = true;
@@ -28,7 +30,13 @@ const CustomModal: React.FC<CustomModalProps> = ({
     >
       <Fade in={open}>
         <Box
-          className={isV3 ? 'modalWrapperV3' : 'modalWrapper'}
+          className={
+            isV3
+              ? modalWrapper
+                ? modalWrapper
+                : 'modalWrapperV3'
+              : 'modalWrapper'
+          }
           bgcolor={background}
           overflow={overflow}
         >

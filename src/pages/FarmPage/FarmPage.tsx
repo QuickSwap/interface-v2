@@ -18,6 +18,7 @@ import { FarmingMyFarms } from 'components/StakerMyStakes';
 import VersionToggle from 'components/Toggle/VersionToggle';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import { useHistory } from 'react-router-dom';
+import V3Farms from 'pages/FarmPage/V3';
 
 const FarmPage: React.FC = () => {
   const { chainId } = useActiveWeb3React();
@@ -150,7 +151,8 @@ const FarmPage: React.FC = () => {
       )}
       {isOnV3 && (
         <>
-          <CustomSwitch
+          <V3Farms />
+          {/* <CustomSwitch
             width={300}
             height={48}
             items={v3FarmCategories}
@@ -184,7 +186,7 @@ const FarmPage: React.FC = () => {
                 fetchHandler={() => fetchEternalFarmsFn(true)}
               />
             )}
-          </Box>
+          </Box> */}
         </>
       )}
     </Box>

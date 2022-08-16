@@ -13,7 +13,7 @@ const SwapInfoTx: React.FC<{
 }> = ({ transactions }) => {
   const [txFilter, setTxFilter] = useState('5_minute');
   const subtractTimeAmount = Number(txFilter.split('_')[0]);
-  const subtractTimeType = txFilter.split('_')[1];
+  const subtractTimeType: any = txFilter.split('_')[1];
   const currentTime = dayjs.utc();
   const firstTime = currentTime
     .subtract(subtractTimeAmount, subtractTimeType)
