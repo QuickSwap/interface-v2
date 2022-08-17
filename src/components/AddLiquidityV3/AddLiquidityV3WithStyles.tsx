@@ -97,7 +97,31 @@ const AddLiquidityV3: React.FC<{
     [Field.CURRENCY_B]: { currencyId: currencyBId },
   } = useV3MintState();
 
-  const derivedMintInfo = useV3DerivedMintInfo(feeAmount);
+  const {
+    ticks,
+    dependentField,
+    pricesAtTicks,
+    parsedAmounts,
+    currencyBalances,
+    position,
+    noLiquidity,
+    currencies,
+    errorMessage,
+    invalidPool,
+    invalidRange,
+    outOfRange,
+    depositADisabled,
+    depositBDisabled,
+    ticksAtLimit,
+    dynamicFee,
+  } = useV3DerivedMintInfo(
+    baseCurrency ?? undefined,
+    quoteCurrency ?? undefined,
+    feeAmount,
+    baseCurrency ?? undefined,
+    existingPosition,
+  );
+
   const prevDerivedMintInfo = usePrevious({ ...derivedMintInfo });
 
   const mintInfo = useMemo(() => {
