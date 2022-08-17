@@ -1,0 +1,29 @@
+.add-liquidity {
+  display: grid;
+  grid-column-gap: 2rem;
+  grid-row-gap: 1rem;
+  grid-template-columns: 1fr;
+  grid-template-rows: max-content;
+  grid-auto-flow: row;
+  border-top: 1px solid #2a7ed2;
+
+  &[data-wide=true] {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  &__bottom {
+    opacity: 1;
+    pointer-events: initial;
+
+    &[disabled] {
+      opacity: 0.2;
+      pointer-events: none;
+    }
+  }
+
+  //  ${({ theme }) => theme.mediaWidth.upToMedium`
+  //grid-template-columns: 1fr;
+  //
+  //  margin-top: 0;
+  //  `};
+}

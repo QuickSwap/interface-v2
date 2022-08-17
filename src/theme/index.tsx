@@ -77,6 +77,10 @@ export function colors(darkMode: boolean): Colors {
     yellow2: '#F3841E',
     blue1: '#2172E5',
 
+    error: darkMode ? '#FD4040' : '#DF1F38',
+    success: darkMode ? '#27AE60' : '#007D35',
+    warning: '#FF8F00',
+
     winterBackground: 'rgba(91, 183, 255, 0.6)',
     winterMainButton: '#008FFF',
     winterDisabledButton: '#17517c',

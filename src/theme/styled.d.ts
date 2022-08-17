@@ -49,6 +49,10 @@ export interface Colors {
   yellow2: Color;
   blue1: Color;
 
+  error: Color
+  success: Color
+  warning: Color
+
   winterBackground: Color;
   winterMainButton: Color;
   winterDisabledButton: Color;
