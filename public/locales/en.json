@@ -406,5 +406,7 @@
   "cannotExitMarket": "Cannot exit this market right now!",
   "cannotWithdrawMarket": "Cannot withdraw this amount right now!",
   "cannotBorrowMarket": "Cannot borrow this amount right now!",
-  "marketBorrowMinError": "cannot borrow less than 0.05 ETH worth of tokens"
+  "marketBorrowMinError": "cannot borrow less than 0.05 ETH worth of tokens",
+  "enterMarket": "Enter Market",
+  "exitMarket": "Exit Market"
 }
