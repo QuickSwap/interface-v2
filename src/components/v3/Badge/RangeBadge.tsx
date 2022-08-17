@@ -1,3 +1,4 @@
+import React from 'react';
 import Badge, { BadgeVariant } from 'components/v3/Badge';
 import styled from 'styled-components/macro';
 import { MouseoverTooltip } from '../Tooltip';
@@ -40,7 +41,7 @@ export default function RangeBadge({ removed, inRange }: RangeBadgeProps) {
           <Badge variant={BadgeVariant.DEFAULT}>
             <AlertCircle width={14} height={14} />
             &nbsp;
-            <BadgeText>'Closed'</BadgeText>
+            <BadgeText>Closed</BadgeText>
           </Badge>
         </MouseoverTooltip>
       ) : inRange ? (

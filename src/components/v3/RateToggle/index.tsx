@@ -1,3 +1,4 @@
+import React from 'react';
 import { Currency } from '@uniswap/sdk-core';
 import Toggle from '../Toggle';
 

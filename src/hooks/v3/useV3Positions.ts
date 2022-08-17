@@ -213,10 +213,11 @@ export function useV3Positions(
     return [];
   }, [positionsOnFarmer, account]);
 
-  //@ts-ignore
   const {
     positions: _positionsOnFarmer,
     loading: _positionsOnFarmerLoading,
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //@ts-ignore
   } = useV3PositionsFromTokenIds(transferredTokenIds);
 
   const oldTransferredTokenIds = useMemo(() => {
@@ -227,10 +228,11 @@ export function useV3Positions(
     return [];
   }, [positionsOnFarmer, account]);
 
-  //@ts-ignore
   const {
     positions: _positionsOnOldFarmer,
     loading: _positionsOnOldFarmerLoading,
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //@ts-ignore
   } = useV3PositionsFromTokenIds(oldTransferredTokenIds);
 
   const combinedPositions = useMemo(() => {

@@ -1,5 +1,5 @@
+import React, { ReactNode } from 'react';
 import { Percent } from '@uniswap/sdk-core';
-import { ReactNode } from 'react';
 import { useAppDispatch } from 'state/hooks';
 import { Link as HistoryLink, useLocation } from 'react-router-dom';
 import { resetMintState } from 'state/mint/actions';
