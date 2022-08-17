@@ -1,4 +1,4 @@
-import { useCallback, useContext, useMemo, useState } from 'react';
+import React, { useCallback, useContext, useMemo, useState } from 'react';
 import { TransactionResponse } from '@ethersproject/providers';
 import { Currency, CurrencyAmount, Percent } from '@uniswap/sdk-core';
 import { useV3NFTPositionManagerContract } from '../../hooks/useContract';
@@ -179,7 +179,7 @@ export default function AddLiquidity() {
 
   const [allowedSlippage] = useUserSlippageTolerance();
   const allowedSlippagePercent: Percent = useMemo(() => {
-    return new Percent(JSBI.BigInt(allowedSlippagePercent), JSBI.BigInt(10000));
+    return new Percent(JSBI.BigInt(allowedSlippage), JSBI.BigInt(10000));
   }, [allowedSlippage]);
 
   async function onAdd() {
