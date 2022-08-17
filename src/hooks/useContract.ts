@@ -30,9 +30,10 @@ import { useActiveWeb3React } from 'hooks';
 import { abi as LairABI } from 'abis/DragonLair.json';
 import { abi as IUniswapV2Router02ABI } from '@uniswap/v2-periphery/build/IUniswapV2Router02.json';
 import QUICKConversionABI from 'constants/abis/quick-conversion.json';
-import { MULTICALL_ADDRESS, QUOTER_ADDRESSES } from 'constants/v3/addresses';
+import { MULTICALL_ADDRESS, NONFUNGIBLE_POSITION_MANAGER_ADDRESSES, QUOTER_ADDRESSES } from 'constants/v3/addresses';
 import NewQuoterABI from 'constants/abis/v3/quoter.json';
 import MULTICALL2_ABI from 'constants/abis/v3/multicall.json';
+import NFTPosMan from 'constants/abis/v3/nft-pos-man.json';
 
 // function useContract(
 //   address: string | undefined,
@@ -274,4 +275,12 @@ export function useRouterContract(): Contract | null {
 
 export function useV3Quoter() {
   return useContract(QUOTER_ADDRESSES, NewQuoterABI);
+}
+
+export function useV3NFTPositionManagerContract(withSignerIfPossible?: boolean) {
+  return useContract(
+      NONFUNGIBLE_POSITION_MANAGER_ADDRESSES,
+      NFTPosMan,
+      withSignerIfPossible
+  )
 }

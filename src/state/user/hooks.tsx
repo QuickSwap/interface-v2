@@ -20,6 +20,7 @@ import {
   toggleURLWarning,
   updateUserSingleHopOnly,
 } from './actions';
+import { basisPointsToPercent } from 'utils';
 
 function serializeToken(token: Token): SerializedToken {
   return {
