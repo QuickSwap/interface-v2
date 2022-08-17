@@ -1724,15 +1724,17 @@ export function calculateGasMargin(value: BigNumber): BigNumber {
     .div(BigNumber.from(10000));
 }
 
-export function calculateGasMarginV3(chainId: number, value: BigNumber, swap?: boolean): BigNumber {
-
+export function calculateGasMarginV3(
+  chainId: number,
+  value: BigNumber,
+  swap?: boolean,
+): BigNumber {
   if (swap) {
-      return value.mul(BigNumber.from(10000 + 2000)).div(BigNumber.from(10000))
+    return value.mul(BigNumber.from(10000 + 2000)).div(BigNumber.from(10000));
   }
 
-  return value.mul(BigNumber.from(10000 + 2000)).div(BigNumber.from(10000))
+  return value.mul(BigNumber.from(10000 + 2000)).div(BigNumber.from(10000));
 }
-
 
 export function formatDateFromTimeStamp(
   timestamp: number,
