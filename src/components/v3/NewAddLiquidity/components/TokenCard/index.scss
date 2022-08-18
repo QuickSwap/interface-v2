@@ -1,0 +1,67 @@
+.token-card {
+
+    background-color: var(--ebony-clay);
+    border-radius: 8px;
+    width: 240px;
+    border: 1px solid #233d65;
+    cursor: pointer;
+    
+    &__balance {
+        font-size: 13px;
+        margin-bottom: 6px;
+    }
+
+    &:hover {
+        
+        .token-card-selector {
+
+            &-chevron {
+                transition-duration: .3s;
+            }
+            &__btn {
+                background-color: #2a4559;
+                .token-card-selector__btn-chevron {
+                    margin-right: 5px;
+                }
+            }
+        }
+
+    
+    }
+
+    &-logo {
+        width: 35px;
+        height: 35px;
+        background-color: #3a4e5d;
+        border-radius: 50%;
+    }
+
+    &-selector {
+        &__btn {
+            border: none;
+            padding: 6px 8px 6px 1rem;
+            border-radius: 8px;
+            background-color: #182732;
+            color: #92b6d1;
+            font-size: 15px;
+            $self: &;
+
+            &-chevron {
+                transition-duration: .3s;
+            }
+
+            &:hover {
+                background-color: #2a4559;
+
+                #{$self}-chevron {
+                    margin-right: 5px;
+                }
+            }
+            // &:hover {
+            //     #{$self}-chevron {
+            //         margin-right: 5px;
+            //     }
+            // }
+        }
+    }
+}

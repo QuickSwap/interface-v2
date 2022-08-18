@@ -1,0 +1,79 @@
+.pool-stats {
+
+    &-wrapper {
+        background-color: var(--ebony-clay);
+        border-radius: 8px;
+        font-size: 15px;
+    }
+
+    &__title {
+        padding: 0.5rem 1rem;
+        border: 1px solid #233d65;
+        border-right: none;
+        border-radius: 8px 0 0 8px;
+        color: #9ed6ff;
+    }
+
+    &__fee, &__apr {
+        padding: 0.5rem 1rem;
+        font-size: 15px;
+        white-space: nowrap;
+    }
+
+    &__fee {
+        background-color: #0d213a;
+        color: #22cbdc;
+        border: 1px solid #133156;
+        border-right: none;
+        
+        &.single {
+            border-radius: 0 8px 8px 0;
+            border-right: 1px solid #133156;
+        }
+    }
+    
+    &__apr {
+        background-color: #2c4b3b;
+        color: #22dc22;
+        border-radius: 0 8px 8px 0;
+        border: 1px solid #31694c;
+    }
+}
+
+
+@media screen and (max-width: 960px) {
+    .pool-stats {
+        &-wrapper {
+
+        }
+
+        &__title {
+            border: none;
+        }
+
+        &__fee, &__apr {
+            width: 100%;
+            text-align: center;
+        }
+
+        &__fee {
+            border-radius: 0 0 0 8px;
+
+            &.single {
+                border-radius: 0 0 8px 8px;
+            }
+        }
+
+        &__apr {
+            border-radius: 0 0 8px 0;
+        }
+    }
+  }
+  
+  @media screen and (max-width: 720px) {
+  
+  }
+  
+  @media screen and (max-width: 500px) {
+  
+  }
