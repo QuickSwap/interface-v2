@@ -2,7 +2,7 @@ import React, { useCallback, useContext, useMemo, useState } from 'react';
 import { TransactionResponse } from '@ethersproject/providers';
 import { Currency, CurrencyAmount, Percent } from '@uniswap/sdk-core';
 import { useV3NFTPositionManagerContract } from '../../hooks/useContract';
-import { RouteComponentProps, useHistory } from 'react-router-dom';
+import { RouteComponentProps, useHistory, useParams } from 'react-router-dom';
 import { Text } from 'rebass';
 import { ThemeContext } from 'styled-components/macro';
 import TransactionConfirmationModal, {
@@ -59,9 +59,12 @@ export default function AddLiquidity() {
   //   history,
   // }: RouteComponentProps<{ currencyIdA?: string; currencyIdB?: string; feeAmount?: string; tokenId?: string }>
   //TODO Fix pools to work with proper routing/token select
-  const tokenId = '20';
-  const currencyIdA = 'MATIC';
-  const currencyIdB = '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174';
+  const params: any = useParams();
+
+  const currencyIdA = params.currencyIdA ?? 'MATIC';
+  const currencyIdB = params.currencyIdB ?? '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174';
+  const tokenId = params.tokenId;
+
   const history = useHistory();
 
   const { account, chainId, library } = useActiveWeb3React();

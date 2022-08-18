@@ -50,7 +50,6 @@ const SupplyLiquidity: React.FC<{ isV3: boolean }> = ({ isV3 }) => {
         </>
       )}
       {/* {isV3 && <AddLiquidityV3 />} */}
-      {isV3 && <NewAddLiquidityPage />}
     </>
   );
 };
