@@ -1,23 +1,24 @@
-import { IPresetArgs, PresetRanges } from "pages/NewAddLiquidity/components/PresetRanges";
-import { RangeSelector } from "pages/NewAddLiquidity/components/RangeSelector";
+import React, { useCallback, useEffect, useMemo } from "react";
+import { IPresetArgs, PresetRanges } from "../../components/PresetRanges";
+import { RangeSelector } from "../../components/RangeSelector";
 import { Currency } from "@uniswap/sdk-core";
 import "./index.scss";
 import { Bound, updateCurrentStep, updateSelectedPreset } from "state/mint/v3/actions";
 import { IDerivedMintInfo, useRangeHopCallbacks, useV3MintActionHandlers, useV3MintState } from "state/mint/v3/hooks";
-import LiquidityChartRangeInput from "components/LiquidityChartRangeInput";
-import { USDPrices } from "pages/NewAddLiquidity/components/USDPrices";
-import useUSDCPrice, { useUSDCValue } from "hooks/useUSDCPrice";
-import { MAI_POLYGON, USDC_POLYGON, USDT_POLYGON } from "constants/tokens";
-import { useCallback, useEffect, useMemo } from "react";
+import { USDPrices } from "../../components/USDPrices";
+import useUSDCPrice, { useUSDCValue } from "hooks/v3/useUSDCPrice";
 import { useAppDispatch } from "state/hooks";
 import { useActivePreset } from "state/mint/v3/hooks";
+import { tryParseAmount } from 'state/swap/v3/hooks';
 import { Presets } from "state/mint/v3/reducer";
-import { StepTitle } from "pages/NewAddLiquidity/components/StepTitle";
-import { PriceFormats } from "pages/NewAddLiquidity/components/PriceFomatToggler";
-import { tryParseAmount } from "state/swap/hooks";
+import { StepTitle } from "../../components/StepTitle";
+import { PriceFormats } from "../../components/PriceFomatToggler";;
 import { useHistory } from "react-router-dom";
-import { t, Trans } from "@lingui/macro";
 import { Helmet } from "react-helmet";
+import LiquidityChartRangeInput from "components/AddLiquidityV3/components/LiquidityChartRangeInput";
+import { GlobalValue } from "constants/index";
+import { toToken } from "constants/v3/routing";
+
 
 interface IRangeSelector {
     currencyA: Currency | null | undefined;
@@ -48,7 +49,10 @@ export function SelectRange({ currencyA, currencyB, mintInfo, isCompleted, addit
     const isStablecoinPair = useMemo(() => {
         if (!currencyA || !currencyB) return false;
 
-        const stablecoins = [USDC_POLYGON.address, USDT_POLYGON.address, MAI_POLYGON.address];
+        const MAI = toToken(GlobalValue.tokens.COMMON.MI);
+        const USDC = toToken(GlobalValue.tokens.COMMON.USDC);
+        const USDT = toToken(GlobalValue.tokens.COMMON.USDT);
+        const stablecoins = [USDC.address, USDT.address, MAI.address];
 
         return stablecoins.includes(currencyA.wrapped.address) && stablecoins.includes(currencyB.wrapped.address);
     }, [currencyA, currencyB]);
@@ -134,7 +138,7 @@ export function SelectRange({ currencyA, currencyB, mintInfo, isCompleted, addit
 
     return (
         <div className="f c">
-            <StepTitle title={t`Select a range`} isCompleted={isCompleted} step={additionalStep ? 3 : 2} />
+            <StepTitle title={`Select a range`} isCompleted={isCompleted} step={additionalStep ? 3 : 2} />
             <div className="f mxs_fd-cr ms_fd-cr">
                 <div className="f c">
                     <div className="mb-1">
@@ -173,12 +177,12 @@ export function SelectRange({ currencyA, currencyB, mintInfo, isCompleted, addit
                         />
                         {mintInfo.outOfRange && (
                             <div className="range__notification out-of-range">
-                                <Trans>Out of range</Trans>
+                                Out of range
                             </div>
                         )}
                         {mintInfo.invalidRange && (
                             <div className="range__notification error w-100">
-                                <Trans>Invalid range</Trans>
+                                Invalid range
                             </div>
                         )}
                     </div>

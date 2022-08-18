@@ -1,26 +1,23 @@
-import { NONFUNGIBLE_POSITION_MANAGER_ADDRESSES } from "constants/addresses";
-import { ZERO_PERCENT } from "constants/misc";
+import React, { useMemo, useState } from "react";
 import { useV3NFTPositionManagerContract } from "hooks/useContract";
 import useTransactionDeadline from "hooks/useTransactionDeadline";
-import { useActiveWeb3React } from "hooks/web3";
-import { useUserSlippageToleranceWithDefault } from "state/user/hooks";
-
-import { NonfungiblePositionManager as NonFunPosMan } from "lib/src/nonfungiblePositionManager";
-
+import { useActiveWeb3React } from "hooks";
+import { useUserSlippageTolerance } from "state/user/hooks";
+import { NonfungiblePositionManager as NonFunPosMan } from 'v3lib/nonfungiblePositionManager';
 import { Percent, Currency } from "@uniswap/sdk-core";
-import { calculateGasMargin } from "utils/calculateGasMargin";
 import { useAppDispatch, useAppSelector } from "state/hooks";
 import { GAS_PRICE_MULTIPLIER } from "hooks/useGasPrice";
-import { t, Trans } from "@lingui/macro";
 import { useAllTransactions, useTransactionAdder } from "state/transactions/hooks";
-import { useMemo, useState } from "react";
-
 import { TransactionResponse } from "@ethersproject/abstract-provider";
 import { IDerivedMintInfo, useAddLiquidityTxHash } from "state/mint/v3/hooks";
-import { ApprovalState, useApproveCallback } from "hooks/useApproveCallback";
+import { ApprovalState, useApproveCallback } from 'hooks/useV3ApproveCallback';
 import { Field } from "state/mint/actions";
-import { useIsNetworkFailedImmediate } from "hooks/useIsNetworkFailed";
 import { setAddLiquidityTxHash } from "state/mint/v3/actions";
+import { ZERO_PERCENT } from "constants/v3/misc";
+import { useIsNetworkFailedImmediate } from "hooks/v3/useIsNetworkFailed";
+import { JSBI } from "@uniswap/sdk";
+import { NONFUNGIBLE_POSITION_MANAGER_ADDRESSES } from "constants/v3/addresses";
+import { calculateGasMarginV3 } from "utils";
 
 interface IAddLiquidityButton {
     baseCurrency: Currency | undefined;
@@ -45,7 +42,10 @@ export function AddLiquidityButton({ baseCurrency, quoteCurrency, mintInfo, hand
 
     const isNetworkFailed = useIsNetworkFailedImmediate();
 
-    const allowedSlippage = useUserSlippageToleranceWithDefault(mintInfo.outOfRange ? ZERO_PERCENT : DEFAULT_ADD_IN_RANGE_SLIPPAGE_TOLERANCE);
+    const [allowedSlippage] = useUserSlippageTolerance();
+    const allowedSlippagePercent: Percent = useMemo(() => {
+      return new Percent(JSBI.BigInt(allowedSlippage), JSBI.BigInt(10000));
+    }, [allowedSlippage]);
 
     const gasPrice = useAppSelector((state) => {
         if (!state.application.gasPrice.fetched) return 36;
@@ -79,7 +79,7 @@ export function AddLiquidityButton({ baseCurrency, quoteCurrency, mintInfo, hand
             const useNative = baseCurrency.isNative ? baseCurrency : quoteCurrency.isNative ? quoteCurrency : undefined;
 
             const { calldata, value } = NonFunPosMan.addCallParameters(mintInfo.position, {
-                slippageTolerance: allowedSlippage,
+                slippageTolerance: allowedSlippagePercent,
                 recipient: account,
                 deadline: deadline.toString(),
                 useNative,
@@ -100,7 +100,7 @@ export function AddLiquidityButton({ baseCurrency, quoteCurrency, mintInfo, hand
                 .then((estimate) => {
                     const newTxn = {
                         ...txn,
-                        gasLimit: calculateGasMargin(chainId, estimate),
+                        gasLimit: calculateGasMarginV3(chainId, estimate),
                         gasPrice: gasPrice * GAS_PRICE_MULTIPLIER,
                     };
 
@@ -110,8 +110,8 @@ export function AddLiquidityButton({ baseCurrency, quoteCurrency, mintInfo, hand
                         .then((response: TransactionResponse) => {
                             addTransaction(response, {
                                 summary: mintInfo.noLiquidity
-                                    ? t`Create pool and add ${baseCurrency?.symbol}/${quoteCurrency?.symbol} liquidity`
-                                    : t`Add ${baseCurrency?.symbol}/${quoteCurrency?.symbol} liquidity`,
+                                    ? `Create pool and add ${baseCurrency?.symbol}/${quoteCurrency?.symbol} liquidity`
+                                    : `Add ${baseCurrency?.symbol}/${quoteCurrency?.symbol} liquidity`,
                             });
 
                             handleAddLiquidity();

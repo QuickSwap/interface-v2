@@ -1,3 +1,4 @@
+import React from "react";
 import { Check } from "react-feather";
 import { Helmet } from "react-helmet";
 import "./index.scss";

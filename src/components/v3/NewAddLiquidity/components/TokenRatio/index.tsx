@@ -1,4 +1,3 @@
-import { Trans } from "@lingui/macro";
 import { Currency } from "@uniswap/sdk-core";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Divide } from "react-feather";
@@ -103,7 +102,7 @@ export function TokenRatio({
             <div className="mb-1 f f-ac">
                 <Divide style={{ display: "block", fill: "currentcolor" }} size={15} />
                 <span className="ml-05">
-                    <Trans>Token ratio</Trans>
+                    Token ratio
                 </span>
             </div>
             <div className="f full-h pos-r">
@@ -141,10 +140,10 @@ export function TokenRatio({
                 </div>
             </div>
             <p className={"mt-1 fs-085"}>
-                <Trans>Token ratio depends on selected price range.</Trans>
+                Token ratio depends on selected price range.
             </p>
             <p className={"mt-05 fs-085"}>
-                <Trans>Ratio adjustment moves it.</Trans>
+                Ratio adjustment moves it.
             </p>
         </div>
     );

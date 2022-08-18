@@ -1,5 +1,4 @@
-import { t, Trans } from "@lingui/macro";
-import { useMemo } from "react";
+import React, { useMemo } from "react";
 import { Layers } from "react-feather";
 import { Presets } from "state/mint/v3/reducer";
 import "./index.scss";
@@ -34,7 +33,7 @@ export function PresetRanges({ isStablecoinPair, activePreset, handlePresetRange
             return [
                 {
                     type: Presets.STABLE,
-                    title: t`Stablecoins`,
+                    title: `Stablecoins`,
                     min: 0.984,
                     max: 1.01,
                     risk: PresetProfits.VERY_LOW,
@@ -45,7 +44,7 @@ export function PresetRanges({ isStablecoinPair, activePreset, handlePresetRange
         return [
             {
                 type: Presets.FULL,
-                title: t`Full range`,
+                title: `Full range`,
                 min: 0,
                 max: Infinity,
                 risk: PresetProfits.VERY_LOW,
@@ -53,7 +52,7 @@ export function PresetRanges({ isStablecoinPair, activePreset, handlePresetRange
             },
             {
                 type: Presets.SAFE,
-                title: t`Safe`,
+                title: `Safe`,
                 min: 0.8,
                 max: 1.4,
                 risk: PresetProfits.LOW,
@@ -61,7 +60,7 @@ export function PresetRanges({ isStablecoinPair, activePreset, handlePresetRange
             },
             {
                 type: Presets.NORMAL,
-                title: t`Common`,
+                title: `Common`,
                 min: 0.9,
                 max: 1.2,
                 risk: PresetProfits.MEDIUM,
@@ -69,7 +68,7 @@ export function PresetRanges({ isStablecoinPair, activePreset, handlePresetRange
             },
             {
                 type: Presets.RISK,
-                title: t`Expert`,
+                title: `Expert`,
                 min: 0.95,
                 max: 1.1,
                 risk: PresetProfits.HIGH,
@@ -125,7 +124,7 @@ export function PresetRanges({ isStablecoinPair, activePreset, handlePresetRange
             <div className="mb-1 f f-ac">
                 <Layers style={{ display: "block", transform: "rotate(90deg)" }} size={15} />
                 <span className="ml-05">
-                    <Trans>Preset ranges</Trans>
+                    Preset ranges
                 </span>
             </div>
             {ranges.map((range, i) => (
@@ -150,7 +149,7 @@ export function PresetRanges({ isStablecoinPair, activePreset, handlePresetRange
                 <div className={`preset-ranges__description ${outOfRange && "mt-2"}`}>
                     <div className="f mb-05">
                         <span>
-                            <Trans>Risk:</Trans>
+                            Risk:
                         </span>
                         <div className="f f-ac f-jc ml-a">
                             {[1, 2, 3, 4, 5].map((_, i) => (
@@ -162,7 +161,7 @@ export function PresetRanges({ isStablecoinPair, activePreset, handlePresetRange
                     </div>
                     <div className="f">
                         <span>
-                            <Trans>Profit:</Trans>
+                            Profit:
                         </span>
                         <div className="f f-ac f-jc ml-a">
                             {[1, 2, 3, 4, 5].map((_, i) => (

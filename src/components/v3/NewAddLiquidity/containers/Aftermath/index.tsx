@@ -1,6 +1,5 @@
-import { Trans } from "@lingui/macro";
+import React, { useEffect, useMemo, useState } from "react";
 import Loader from "components/Loader";
-import { useEffect, useMemo, useState } from "react";
 import { CheckCircle,XCircle } from "react-feather";
 import { Link } from "react-router-dom";
 import { useAppDispatch } from "state/hooks";
@@ -84,10 +83,10 @@ export function Aftermath({ done, Button, rejected }: IAftermath) {
                         <CheckCircle size={"36px"} stroke={"var(--green)"} />
                     </div>
                     <div className="mt-1 fs-125">
-                        <Trans>Liquidity added!</Trans>
+                        Liquidity added!
                     </div>
                     <Link to={"/pool"} className="go-to-pools mt-2">
-                        <Trans>Go to pools</Trans>
+                        Go to pools
                     </Link>
                 </>
             ) : (
@@ -96,7 +95,7 @@ export function Aftermath({ done, Button, rejected }: IAftermath) {
                         <Loader size={"36px"} stroke={"white"} />
                     </div>
                     <div className="mt-1 fs-125">
-                        <Trans>Adding liquidity</Trans>
+                        Adding liquidity
                     </div>
                 </>
             )}

@@ -1,10 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { useCurrency } from "hooks/Tokens";
+import { useCurrency } from "hooks/v3/Tokens";
 import usePrevious from "hooks/usePrevious";
 import { useActiveWeb3React } from "hooks";
 import { NavLink, RouteComponentProps, Switch, useRouteMatch } from "react-router-dom";
 import { useV3DerivedMintInfo, useV3MintState, useV3MintActionHandlers, useInitialUSDPrices, useCurrentStep } from "state/mint/v3/hooks";
-import { currencyId } from "utils/currencyId";
 import { Stepper } from "./components/Stepper";
 import { EnterAmounts } from "./containers/EnterAmounts";
 import { SelectPair } from "./containers/SelectPair";
@@ -16,21 +15,22 @@ import "./index.scss";
 import { WMATIC_EXTENDED } from "constants/tokens";
 import { setInitialTokenPrice, setInitialUSDPrices, updateCurrentStep, updateSelectedPreset } from "state/mint/v3/actions";
 import { Field } from "state/mint/actions";
-import useUSDCPrice from "hooks/useUSDCPrice";
+import useUSDCPrice from "hooks/v3/useUSDCPrice";
 import { PriceFormats, PriceFormatToggler } from "./components/PriceFomatToggler";
 import { AddLiquidityButton } from "./containers/AddLiquidityButton";
 import { ArrowLeft, ChevronLeft, ChevronRight } from "react-feather";
-import { PoolState } from "hooks/usePools";
+import { PoolState } from "hooks/v3/usePools";
 import { RouterGuard } from "./routing/router-guards";
 import { InitialPrice } from "./containers/InitialPrice";
 import { useAppDispatch } from "state/hooks";
-import SettingsTab from "components/Settings";
-import { useUserSlippageToleranceWithDefault } from "state/user/hooks";
-import { ZERO_PERCENT } from "constants/misc";
+// import SettingsTab from "components/Settings";
 import { Aftermath } from "./containers/Aftermath";
 import { useWalletModalToggle } from "state/application/hooks";
-import { t, Trans } from "@lingui/macro";
 import { isMobileOnly } from "react-device-detect";
+import { ZERO_PERCENT } from "constants/v3/misc";
+import { useUserSlippageTolerance } from "state/user/hooks";
+import { JSBI } from "@uniswap/sdk";
+import { currencyId } from "utils/v3/currencyId";
 
 const DEFAULT_ADD_IN_RANGE_SLIPPAGE_TOLERANCE = new Percent(50, 10_000);
 
@@ -186,25 +186,25 @@ export function NewAddLiquidityPage({
         const _stepLinks = [
             {
                 link: "select-pair",
-                title: t`Select a pair`,
+                title: `Select a pair`,
             },
         ];
 
         if (mintInfo.noLiquidity && baseCurrency && quoteCurrency) {
             _stepLinks.push({
                 link: "initial-price",
-                title: t`Set initial price`,
+                title: `Set initial price`,
             });
         }
 
         _stepLinks.push(
             {
                 link: "select-range",
-                title: t`Select a range`,
+                title: `Select a range`,
             },
             {
                 link: "enter-amounts",
-                title: t`Enter amounts`,
+                title: `Enter amounts`,
             }
         );
         return _stepLinks;
@@ -241,8 +241,11 @@ export function NewAddLiquidityPage({
         return Array(currentStep).map((_, i) => i + 1);
     }, [currentStep]);
 
-    const allowedSlippage = useUserSlippageToleranceWithDefault(mintInfo.outOfRange ? ZERO_PERCENT : DEFAULT_ADD_IN_RANGE_SLIPPAGE_TOLERANCE);
-
+    const [allowedSlippage] = useUserSlippageTolerance();
+    const allowedSlippagePercent: Percent = useMemo(() => {
+      return new Percent(JSBI.BigInt(allowedSlippage), JSBI.BigInt(10000));
+    }, [allowedSlippage]);
+    
     const hidePriceFormatter = useMemo(() => {
         if (stepInitialPrice && currentStep < 2) {
             return false;
@@ -305,13 +308,13 @@ export function NewAddLiquidityPage({
             <NavLink className={"c-p mb-1 f hover-op trans-op w-fc"} to={"/pool"}>
                 <ArrowLeft size={"16px"} />
                 <p className={"ml-05"}>
-                    <Trans>Pools</Trans>
+                    Pools
                 </p>
             </NavLink>
             <div className="add-liquidity-page">
                 <div className="add-liquidity-page__header f mxs_fd-c mb-1">
                     <div className="add-liquidity-page__header-title">
-                        <Trans>Add liquidity</Trans>
+                        Add liquidity
                     </div>
                     <div className="ml-a mxs_ml-0 mxs_mt-1 f f-ac ">
                         {!hidePriceFormatter && (
@@ -320,7 +323,9 @@ export function NewAddLiquidityPage({
                             </div>
                         )}
                         <div className="mxs_ml-a">
-                            <SettingsTab placeholderSlippage={allowedSlippage} />
+                            {/*
+                            TODO: Support settings 
+                            <SettingsTab placeholderSlippage={allowedSlippagePercent} /> */}
                         </div>
                     </div>
                 </div>
@@ -358,7 +363,7 @@ export function NewAddLiquidityPage({
                                         setEnd(true);
                                         handleStepChange("aftermath");
                                     }}
-                                    title={t`Retry`}
+                                    title={`Retry`}
                                     setRejected={setRejected}
                                 />
                             </div>
@@ -437,7 +442,7 @@ export function NewAddLiquidityPage({
                                     <ChevronLeft size={18} style={{ marginRight: "5px" }} />
                                     <span className="add-buttons__prev-text">{stepLinks[currentStep - 1].title}</span>
                                     <span className="add-buttons__prev-text--mobile">
-                                        <Trans>Back</Trans>
+                                        Back
                                     </span>
                                 </button>
                             </div>
@@ -451,7 +456,7 @@ export function NewAddLiquidityPage({
                                     setEnd(true);
                                     handleStepChange("aftermath");
                                 }}
-                                title={t`Add liquidity`}
+                                title={`Add liquidity`}
                             />
                         ) : (
                             <button
@@ -471,7 +476,7 @@ export function NewAddLiquidityPage({
                 ) : !account ? (
                     <div className="add-buttons f f-ac f-jc mt-2 mxs_mt-1">
                         <button className="add-buttons__next f f-jc f-ac ml-a" onClick={toggleWalletModal}>
-                            <Trans>Connect Wallet</Trans>
+                            Connect Wallet
                         </button>
                     </div>
                 ) : null}

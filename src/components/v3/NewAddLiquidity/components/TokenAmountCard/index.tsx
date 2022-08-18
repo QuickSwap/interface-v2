@@ -1,22 +1,21 @@
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Check, Lock } from "react-feather";
-
 import { Currency, CurrencyAmount, Token } from "@uniswap/sdk-core";
 
-import "./index.scss";
 import CurrencyLogo from "components/CurrencyLogo";
 import { WrappedCurrency } from "models/types";
 import { useCurrencyBalance } from "state/wallet/hooks";
-import { useActiveWeb3React } from "hooks/web3";
-import useUSDCPrice, { useUSDCValue } from "hooks/useUSDCPrice";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useActiveWeb3React } from "hooks";
+import useUSDCPrice, { useUSDCValue } from "hooks/v3/useUSDCPrice";
 import Input from "components/NumericalInput";
 import Loader from "components/Loader";
 import { PriceFormats } from "../PriceFomatToggler";
-import { tryParseAmount } from "state/swap/hooks";
-import { useBestV3TradeExactIn } from "hooks/useBestV3Trade";
-import { USDC_POLYGON } from "constants/tokens";
+import { tryParseAmount } from "state/swap/v3/hooks";
+import { useBestV3TradeExactIn } from "hooks/v3/useBestV3Trade";
 import { useInitialTokenPrice, useInitialUSDPrices } from "state/mint/v3/hooks";
-import { t, Trans } from "@lingui/macro";
+import "./index.scss";
+import { GlobalValue } from "constants/index";
+import { toToken } from "constants/v3/routing";
 
 interface ITokenAmountCard {
     currency: Currency | undefined | null;
@@ -62,6 +61,7 @@ export function TokenAmountCard({
     const [localTokenValue, setLocalTokenValue] = useState("");
 
     const valueUSD = useUSDCValue(tryParseAmount(value, currency ? (currency.isNative ? currency.wrapped : currency) : undefined), true);
+    const USDC_POLYGON = toToken(GlobalValue.tokens.COMMON.USDC);
     const tokenValue = useBestV3TradeExactIn(tryParseAmount("1", USDC_POLYGON), currency ?? undefined);
 
     const currencyPrice = useUSDCPrice(currency ?? undefined);
@@ -148,10 +148,10 @@ export function TokenAmountCard({
             {locked && (
                 <div className="token-amount-card__locked w-100 full-h pos-a f c f-ac f-jc">
                     <div>
-                        <Trans>Price is outside specified price range.</Trans>
+                        Price is outside specified price range.
                     </div>
                     <div className="mt-05">
-                        <Trans>Single-asset deposit only.</Trans>
+                        Single-asset deposit only.
                     </div>
                 </div>
             )}
@@ -162,13 +162,13 @@ export function TokenAmountCard({
                 <div className="ml-1">
                     <div className="f f-ac mxs_fd-c ms_f-as">
                         <span className="mr-05 mb-025">
-                            <Trans>Balance: </Trans>
+                            Balance:
                         </span>
                         <span>{balanceString}</span>
                     </div>
                     <div>
                         <button onClick={handleMax} disabled={isMax || balance?.toSignificant(5) === "0"} className="token-amount-card__max-btn">
-                            <Trans>MAX</Trans>
+                            MAX
                         </button>
                     </div>
                 </div>
@@ -178,12 +178,12 @@ export function TokenAmountCard({
                             <button className="token-amount-card__approve-btn f f-ac" disabled>
                                 <Loader style={{ marginRight: "3px" }} stroke="white" />
                                 <span>
-                                    <Trans>Approving</Trans>
+                                    Approving
                                 </span>
                             </button>
                         ) : (
                             <button className="token-amount-card__approve-btn" onClick={handleApprove}>
-                                <Trans>Approve</Trans>
+                                Approve
                             </button>
                         )
                     ) : showApproval !== undefined ? (
@@ -192,7 +192,7 @@ export function TokenAmountCard({
                                 <Check size={16} />
                             </span>
                             <span className="fs-085" style={{ marginLeft: "3px" }}>
-                                <Trans>Approved</Trans>
+                                Approved
                             </span>
                         </div>
                     ) : null}
@@ -211,7 +211,7 @@ export function TokenAmountCard({
                     onBlur={handleOnBlur}
                     onUserInput={(val) => (isUSD ? setLocalUSDValue(val.trim()) : setLocalTokenValue(val.trim()))}
                     className={`token-amount-card__input ${isUSD ? "is-usd" : ""} mb-05 w-100`}
-                    placeholder={t`Enter an amount`}
+                    placeholder={`Enter an amount`}
                 />
             </div>
             {error && <div className="token-amount-card__error mt-05">{error}</div>}

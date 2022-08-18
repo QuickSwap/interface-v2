@@ -1,4 +1,3 @@
-import { t } from "@lingui/macro";
 import Loader from "components/Loader";
 import { ReactElement } from "react";
 import "./index.scss";
@@ -20,7 +19,7 @@ export function PoolStats({ fee, apr, noLiquidity, loading }: IPoolStats) {
 
     return (
         <div className="pool-stats-wrapper f f-jb mxs_fd-c w-100">
-            <div className="pool-stats__title f w-100">{noLiquidity ? t`New pool` : t`Current pool stats`}</div>
+            <div className="pool-stats__title f w-100">{noLiquidity ? `New pool` : `Current pool stats`}</div>
             <div className="f">
                 <div className={`pool-stats__fee single`}>
                     <span>{fee}</span>

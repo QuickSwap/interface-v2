@@ -1,25 +1,21 @@
-import { TokenAmountCard } from "pages/NewAddLiquidity/components/TokenAmountCard";
-import { TokenRatio } from "pages/NewAddLiquidity/components/TokenRatio";
-
+import React, { useEffect, useMemo } from "react";
 import { Currency, CurrencyAmount } from "@uniswap/sdk-core";
-
 import "./index.scss";
 import { Field } from "state/mint/actions";
 import { IDerivedMintInfo, useRangeHopCallbacks, useV3MintActionHandlers, useV3MintState } from "state/mint/v3/hooks";
-import { useUSDCValue } from "hooks/useUSDCPrice";
-import { maxAmountSpend } from "utils/maxAmountSpend";
-import { ApprovalState, useApproveCallback } from "hooks/useApproveCallback";
-import { NONFUNGIBLE_POSITION_MANAGER_ADDRESSES } from "constants/addresses";
-import { useActiveWeb3React } from "hooks/web3";
+import { ApprovalState, useApproveCallback } from "hooks/useV3ApproveCallback";
+import { useActiveWeb3React } from "hooks";
 import { Bound, updateCurrentStep } from "state/mint/v3/actions";
-import { useEffect, useMemo } from "react";
-import { tryParseAmount } from "state/swap/hooks";
-
-import { StepTitle } from "pages/NewAddLiquidity/components/StepTitle";
-import { PriceFormats } from "pages/NewAddLiquidity/components/PriceFomatToggler";
 import { useHistory } from "react-router-dom";
 import { useAppDispatch } from "state/hooks";
-import { t, Trans } from "@lingui/macro";
+import { useUSDCValue } from "hooks/v3/useUSDCPrice";
+import { NONFUNGIBLE_POSITION_MANAGER_ADDRESSES } from "constants/v3/addresses";
+import { maxAmountSpend } from "utils/v3/maxAmountSpend";
+import { tryParseAmount } from "state/swap/v3/hooks";
+import { TokenAmountCard } from "../../components/TokenAmountCard";
+import { StepTitle } from "../../components/StepTitle";
+import { PriceFormats } from "../../components/PriceFomatToggler";
+import { TokenRatio } from "../../components/TokenRatio";
 
 interface IEnterAmounts {
     currencyA: Currency | undefined;
@@ -189,10 +185,10 @@ export function EnterAmounts({ currencyA, currencyB, mintInfo, isCompleted, addi
 
     return (
         <div className="f c">
-            <StepTitle title={t`Enter amounts`} isCompleted={isCompleted} step={additionalStep ? 4 : 3} />
+            <StepTitle title={`Enter amounts`} isCompleted={isCompleted} step={additionalStep ? 4 : 3} />
             {mintInfo.invalidRange && (
                 <div className="range__notification error w-100">
-                    <Trans>Invalid range</Trans>
+                    Invalid range
                 </div>
             )}
             <div className="f mxs_fd-cr ms_fd-cr mm_fd-cr">
