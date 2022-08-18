@@ -1,16 +1,14 @@
+import React, { useCallback, useMemo, useState } from "react";
 import { WrappedCurrency } from "models/types";
 import { Token, Currency } from "@uniswap/sdk-core";
-
-import "./index.scss";
 import CurrencyLogo from "components/CurrencyLogo";
 import { ChevronRight } from "react-feather";
-import { useCallback, useMemo, useState } from "react";
-import CurrencySearchModal from "components/SearchModal/CurrencySearchModal";
-import { useActiveWeb3React } from "hooks/web3";
+import { useActiveWeb3React } from "hooks";
 import { useCurrencyBalance } from "state/wallet/hooks";
-import useUSDCPrice, { useUSDCValue } from "hooks/useUSDCPrice";
+import useUSDCPrice, { useUSDCValue } from "hooks/v3/useUSDCPrice";
 import { PriceFormats } from "../PriceFomatToggler";
-import { t, Trans } from "@lingui/macro";
+import CurrencySearchModal from "components/CurrencySearchModal";
+import "./index.scss";
 
 interface ITokenCard {
     handleTokenSelection: (currency: Currency) => void;
@@ -54,8 +52,6 @@ export function TokenCard({ handleTokenSelection, currency, otherCurrency, price
                     selectedCurrency={currency}
                     otherSelectedCurrency={otherCurrency}
                     showCommonBases={true}
-                    showCurrencyAmount={true}
-                    disableNonToken={true}
                 ></CurrencySearchModal>
             )}
             <div className="f mb-1">
@@ -65,10 +61,10 @@ export function TokenCard({ handleTokenSelection, currency, otherCurrency, price
                 <div className={"f c f-jc ml-1"}>
                     {currency && (
                         <div className="token-card__balance b">
-                            <Trans>BALANCE</Trans>
+                            BALANCE
                         </div>
                     )}
-                    <div>{`${priceFormat === PriceFormats.USD && currency ? "$" : ""} ${currency ? _balance : t`Not selected`}`}</div>
+                    <div>{`${priceFormat === PriceFormats.USD && currency ? "$" : ""} ${currency ? _balance : `Not selected`}`}</div>
                 </div>
             </div>
             <div className="token-card-selector">

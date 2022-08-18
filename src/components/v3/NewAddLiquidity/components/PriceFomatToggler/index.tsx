@@ -1,6 +1,5 @@
-import { Trans } from "@lingui/macro";
-import Toggle from "components/Toggle";
-import { useState } from "react";
+import React, { useState } from "react";
+import Toggle from "components/v3/Toggle";
 import "./index.scss";
 
 export enum PriceFormats {
@@ -24,8 +23,8 @@ export function PriceFormatToggler({ handlePriceFormat, currentFormat }: IPriceF
                     handlePriceFormat(+!inputType);
                     setInputType(+!inputType);
                 }}
-                checked={<Trans>USD</Trans>}
-                unchecked={<Trans>Tokens</Trans>}
+                checked={'USD'}
+                unchecked={'Tokens'}
             />
         </div>
     );

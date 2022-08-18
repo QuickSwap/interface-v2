@@ -1,13 +1,10 @@
-import { Trans } from "@lingui/macro";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { DollarSign, StopCircle } from "react-feather";
-
 import { Currency, Token, Price } from "@uniswap/sdk-core";
-
-import "./index.scss";
 import Loader from "components/Loader";
 import { PriceFormats } from "../PriceFomatToggler";
-import { useCallback, useEffect, useMemo, useState } from "react";
 import { useInitialTokenPrice, useInitialUSDPrices } from "state/mint/v3/hooks";
+import "./index.scss";
 
 interface ISelectRangeUSDC {
     currencyA: Currency;
@@ -57,7 +54,7 @@ export function USDPrices({ currencyA, currencyB, currencyAUSDC, currencyBUSDC, 
         <div className={"preset-ranges-wrapper pl-1 mb-2 mxs_pl-0 mxs_mb-2 ms_pl-0 ms_mb-2"}>
             <div className="mb-1 f f-ac">
                 {isUSD ? <StopCircle style={{ display: "block" }} size={15} /> : <DollarSign style={{ display: "block" }} size={15} />}
-                <span className="ml-05">{isUSD ? <Trans>Token Prices</Trans> : <Trans>USD Prices</Trans>}</span>
+                <span className="ml-05">{isUSD ? 'Token Prices' : 'USD Prices'}</span>
             </div>
 
             {hasUSDPrices ? (
@@ -85,7 +82,7 @@ export function USDPrices({ currencyA, currencyB, currencyAUSDC, currencyBUSDC, 
                 <Loader stroke="white" />
             ) : (
                 <div>
-                    <Trans>Can't fetch prices</Trans>
+                    Can't fetch prices
                 </div>
             )}
         </div>

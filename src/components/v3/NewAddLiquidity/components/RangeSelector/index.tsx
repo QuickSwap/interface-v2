@@ -1,17 +1,17 @@
-import { t } from "@lingui/macro";
 import { Price, Token, Currency } from "@uniswap/sdk-core";
 import Input from "components/NumericalInput";
-import { USDC_POLYGON } from "constants/tokens";
-import { useBestV3TradeExactIn } from "hooks/useBestV3Trade";
-import useUSDCPrice, { useUSDCValue } from "hooks/useUSDCPrice";
+import { GlobalValue } from "constants/index";
+import { toToken } from "constants/v3/routing";
+import { useBestV3TradeExactIn } from "hooks/v3/useBestV3Trade";
+import useUSDCPrice, { useUSDCValue } from "hooks/v3/useUSDCPrice";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useAppDispatch } from "state/hooks";
 import { Bound, updateSelectedPreset } from "state/mint/v3/actions";
 import { IDerivedMintInfo, useInitialTokenPrice, useInitialUSDPrices } from "state/mint/v3/hooks";
-import { tryParseAmount } from "state/swap/hooks";
 import { PriceFormats } from "../PriceFomatToggler";
-
+import { tryParseAmount } from 'state/swap/v3/hooks';
 import "./index.scss";
+
 
 interface IRangeSelector {
     priceLower: Price<Token, Token> | undefined;
@@ -153,16 +153,16 @@ export function RangeSelector({
                     tokenB={currencyB ?? undefined}
                     initialPrice={mintInfo.price}
                     disabled={disabled}
-                    title={t`Min price`}
+                    title={`Min price`}
                     priceFormat={priceFormat}
                 />
             </div>
             {mintInfo.price && (
                 <div className="current-price f f-ac mxs_fd-c" style={{ order: isAfterPrice ? 1 : isBeforePrice ? 3 : 2 }}>
                     <div className="mb-05 mxs_mt-05" style={{ whiteSpace: "nowrap" }}>
-                        {initial ? t`Initial ${currencyA?.symbol} to ${isUSD ? "USD" : currencyB?.symbol} price` : t`Current ${currencyA?.symbol} to ${isUSD ? "USD" : currencyB?.symbol} price`}
+                        {initial ? `Initial ${currencyA?.symbol} to ${isUSD ? "USD" : currencyB?.symbol} price` : `Current ${currencyA?.symbol} to ${isUSD ? "USD" : currencyB?.symbol} price`}
                     </div>
-                    <div className="current-price-tip ta-c">{`${currentPrice || t`Loading...`}`}</div>
+                    <div className="current-price-tip ta-c">{`${currentPrice || `Loading...`}`}</div>
                 </div>
             )}
             <div className="max-price mxs_mt-1" style={{ order: isBeforePrice ? 2 : 3 }}>
@@ -178,7 +178,7 @@ export function RangeSelector({
                     tokenB={currencyB ?? undefined}
                     initialPrice={mintInfo.price}
                     disabled={disabled}
-                    title={t`Max price`}
+                    title={`Max price`}
                     priceFormat={priceFormat}
                 />
             </div>
@@ -211,8 +211,9 @@ function RangePart({
         return priceFormat === PriceFormats.USD;
     }, [priceFormat]);
 
+    const USDC = toToken(GlobalValue.tokens.COMMON.USDC);
     const valueUSD = useUSDCValue(tryParseAmount(value === "∞" || value === "0" ? undefined : Number(value).toFixed(5), tokenB), true);
-    const tokenValue = useBestV3TradeExactIn(tryParseAmount("1", USDC_POLYGON), tokenB);
+    const tokenValue = useBestV3TradeExactIn(tryParseAmount("1", USDC), tokenB);
     const usdPriceA = useUSDCPrice(tokenA ?? undefined);
     const usdPriceB = useUSDCPrice(tokenB ?? undefined);
 
@@ -221,7 +222,7 @@ function RangePart({
 
     const handleOnBlur = useCallback(() => {
         if (isUSD && usdPriceB) {
-            if (tokenB?.wrapped.address === USDC_POLYGON.address) {
+            if (tokenB?.wrapped.address === USDC.address) {
                 onUserInput(localUSDValue);
             } else {
                 if (tokenValue && tokenValue.trade) {
@@ -233,14 +234,14 @@ function RangePart({
                 }
             }
         } else if (isUSD && initialUSDPrices.CURRENCY_B) {
-            if (tokenB?.wrapped.address === USDC_POLYGON.address) {
+            if (tokenB?.wrapped.address === USDC.address) {
                 onUserInput(localUSDValue);
             } else {
                 onUserInput(String(+localUSDValue / +initialUSDPrices.CURRENCY_B));
                 setLocalTokenValue(String(+localUSDValue / +initialUSDPrices.CURRENCY_B));
             }
         } else if (isUSD && initialTokenPrice && usdPriceA) {
-            if (tokenB?.wrapped.address === USDC_POLYGON.address) {
+            if (tokenB?.wrapped.address === USDC.address) {
                 onUserInput(localUSDValue);
             } else {
                 onUserInput(String(+localUSDValue * +initialTokenPrice * +usdPriceA.toSignificant(5)));

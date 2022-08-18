@@ -1,22 +1,19 @@
-import { PoolStats } from "pages/NewAddLiquidity/components/PoolStats";
-import { PopularPairs } from "pages/NewAddLiquidity/components/PopularPairs";
-import { TokenCard } from "pages/NewAddLiquidity/components/TokenCard";
-import { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import { PoolStats } from "../../components/PoolStats";
+import { TokenCard } from "../../components/TokenCard";
 import { Plus } from "react-feather";
 import { Currency } from "@uniswap/sdk-core";
 import "./index.scss";
-import { fetchPoolsAPR } from "utils/api";
-import { computePoolAddress } from "hooks/computePoolAddress";
-import { POOL_DEPLOYER_ADDRESS } from "constants/addresses";
 import { useInfoLiquidity } from "hooks/subgraph/useInfoLiquidity";
 import Loader from "components/Loader";
 import { IDerivedMintInfo } from "state/mint/v3/hooks";
 import { PoolState } from "hooks/usePools";
-import { StepTitle } from "pages/NewAddLiquidity/components/StepTitle";
-import { PriceFormats } from "pages/NewAddLiquidity/components/PriceFomatToggler";
+import { StepTitle } from "../../components/StepTitle";
+import { PriceFormats } from "../..//components/PriceFomatToggler";
 import { useHistory } from "react-router-dom";
-import { t } from "@lingui/macro";
-import { Helmet } from "react-helmet";
+import { fetchPoolsAPR } from "utils/aprApi";
+import { computePoolAddress } from "hooks/v3/computePoolAddress";
+import { POOL_DEPLOYER_ADDRESS } from "constants/v3/addresses";
 
 interface ISelectPair {
     baseCurrency: Currency | null | undefined;
@@ -39,7 +36,6 @@ export function SelectPair({
     handleCurrencySwap,
     handleCurrencyASelect,
     handleCurrencyBSelect,
-    handlePopularPairSelection,
 }: ISelectPair) {
     const history = useHistory();
 
@@ -54,14 +50,12 @@ export function SelectPair({
         fetchPopularPoolsFn();
     }, []);
 
-    const farmings: any[] = [];
-
     const feeString = useMemo(() => {
         if (mintInfo.poolState === PoolState.INVALID || mintInfo.poolState === PoolState.LOADING) return <Loader stroke="#22cbdc" />;
 
-        if (mintInfo.noLiquidity) return t`0.01% fee`;
+        if (mintInfo.noLiquidity) return `0.01% fee`;
 
-        return t`${(mintInfo.dynamicFee / 10000).toFixed(3)}% fee`;
+        return `${(mintInfo.dynamicFee / 10000).toFixed(3)}% fee`;
     }, [mintInfo]);
 
     const aprString = useMemo(() => {
@@ -121,9 +115,6 @@ export function SelectPair({
                             ></PoolStats>
                         )}
                     </div>
-                </div>
-                <div className="token-pairs__popular-wrapper mh-2 mxs_ml-0 mxs_mr-0 mm_ml-0 mm_mr-0">
-                    <PopularPairs handlePopularPairSelection={handlePopularPairSelection} pairs={popularPools} farmings={farmings}></PopularPairs>
                 </div>
             </div>
         </div>
