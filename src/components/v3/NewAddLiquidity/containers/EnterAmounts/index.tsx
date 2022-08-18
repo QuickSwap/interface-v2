@@ -1,257 +1,327 @@
-import React, { useEffect, useMemo } from "react";
-import { Currency, CurrencyAmount } from "@uniswap/sdk-core";
-import "./index.scss";
-import { Field } from "state/mint/actions";
-import { IDerivedMintInfo, useRangeHopCallbacks, useV3MintActionHandlers, useV3MintState } from "state/mint/v3/hooks";
-import { ApprovalState, useApproveCallback } from "hooks/useV3ApproveCallback";
-import { useActiveWeb3React } from "hooks";
-import { Bound, updateCurrentStep } from "state/mint/v3/actions";
-import { useHistory } from "react-router-dom";
-import { useAppDispatch } from "state/hooks";
-import { useUSDCValue } from "hooks/v3/useUSDCPrice";
-import { NONFUNGIBLE_POSITION_MANAGER_ADDRESSES } from "constants/v3/addresses";
-import { maxAmountSpend } from "utils/v3/maxAmountSpend";
-import { tryParseAmount } from "state/swap/v3/hooks";
-import { TokenAmountCard } from "../../components/TokenAmountCard";
-import { StepTitle } from "../../components/StepTitle";
-import { PriceFormats } from "../../components/PriceFomatToggler";
-import { TokenRatio } from "../../components/TokenRatio";
+import React, { useEffect, useMemo } from 'react';
+import { Currency, CurrencyAmount } from '@uniswap/sdk-core';
+import './index.scss';
+import { Field } from 'state/mint/actions';
+import {
+  IDerivedMintInfo,
+  useRangeHopCallbacks,
+  useV3MintActionHandlers,
+  useV3MintState,
+} from 'state/mint/v3/hooks';
+import { ApprovalState, useApproveCallback } from 'hooks/useV3ApproveCallback';
+import { useActiveWeb3React } from 'hooks';
+import { Bound, updateCurrentStep } from 'state/mint/v3/actions';
+import { useHistory } from 'react-router-dom';
+import { useAppDispatch } from 'state/hooks';
+import { useUSDCValue } from 'hooks/v3/useUSDCPrice';
+import { NONFUNGIBLE_POSITION_MANAGER_ADDRESSES } from 'constants/v3/addresses';
+import { maxAmountSpend } from 'utils/v3/maxAmountSpend';
+import { tryParseAmount } from 'state/swap/v3/hooks';
+import { TokenAmountCard } from '../../components/TokenAmountCard';
+import { StepTitle } from '../../components/StepTitle';
+import { PriceFormats } from '../../components/PriceFomatToggler';
+import { TokenRatio } from '../../components/TokenRatio';
 
 interface IEnterAmounts {
-    currencyA: Currency | undefined;
-    currencyB: Currency | undefined;
-    mintInfo: IDerivedMintInfo;
-    isCompleted: boolean;
-    additionalStep: boolean;
-    priceFormat: PriceFormats;
-    backStep: number;
+  currencyA: Currency | undefined;
+  currencyB: Currency | undefined;
+  mintInfo: IDerivedMintInfo;
+  isCompleted: boolean;
+  additionalStep: boolean;
+  priceFormat: PriceFormats;
+  backStep: number;
 }
 
-export function EnterAmounts({ currencyA, currencyB, mintInfo, isCompleted, additionalStep, priceFormat, backStep }: IEnterAmounts) {
-    const { chainId } = useActiveWeb3React();
+export function EnterAmounts({
+  currencyA,
+  currencyB,
+  mintInfo,
+  isCompleted,
+  additionalStep,
+  priceFormat,
+  backStep,
+}: IEnterAmounts) {
+  const { chainId } = useActiveWeb3React();
 
-    const { independentField, typedValue } = useV3MintState();
+  const { independentField, typedValue } = useV3MintState();
 
-    const { onFieldAInput, onFieldBInput, onLeftRangeInput, onRightRangeInput } = useV3MintActionHandlers(mintInfo.noLiquidity);
+  const {
+    onFieldAInput,
+    onFieldBInput,
+    onLeftRangeInput,
+    onRightRangeInput,
+  } = useV3MintActionHandlers(mintInfo.noLiquidity);
 
-    // get value and prices at ticks
-    const { [Bound.LOWER]: tickLower, [Bound.UPPER]: tickUpper } = useMemo(() => {
-        return mintInfo.ticks;
-    }, [mintInfo]);
+  // get value and prices at ticks
+  const { [Bound.LOWER]: tickLower, [Bound.UPPER]: tickUpper } = useMemo(() => {
+    return mintInfo.ticks;
+  }, [mintInfo]);
 
-    const { getDecrementLower, getIncrementLower, getDecrementUpper, getIncrementUpper } = useRangeHopCallbacks(
-        currencyA ?? undefined,
-        currencyB ?? undefined,
-        mintInfo.dynamicFee,
-        tickLower,
-        tickUpper,
-        mintInfo.pool
-    );
+  const {
+    getDecrementLower,
+    getIncrementLower,
+    getDecrementUpper,
+    getIncrementUpper,
+  } = useRangeHopCallbacks(
+    currencyA ?? undefined,
+    currencyB ?? undefined,
+    mintInfo.dynamicFee,
+    tickLower,
+    tickUpper,
+    mintInfo.pool,
+  );
 
-    // get formatted amounts
-    const formattedAmounts = {
-        [independentField]: typedValue,
-        [mintInfo.dependentField]: mintInfo.parsedAmounts[mintInfo.dependentField]?.toSignificant(6) ?? "",
+  // get formatted amounts
+  const formattedAmounts = {
+    [independentField]: typedValue,
+    [mintInfo.dependentField]:
+      mintInfo.parsedAmounts[mintInfo.dependentField]?.toSignificant(6) ?? '',
+  };
+
+  const usdcValues = {
+    [Field.CURRENCY_A]: useUSDCValue(
+      mintInfo.parsedAmounts[Field.CURRENCY_A],
+      true,
+    ),
+    [Field.CURRENCY_B]: useUSDCValue(
+      mintInfo.parsedAmounts[Field.CURRENCY_B],
+      true,
+    ),
+  };
+
+  // get the max amounts user can add
+  const maxAmounts: { [field in Field]?: CurrencyAmount<Currency> } = [
+    Field.CURRENCY_A,
+    Field.CURRENCY_B,
+  ].reduce((accumulator, field) => {
+    return {
+      ...accumulator,
+      [field]: maxAmountSpend(mintInfo.currencyBalances[field]),
     };
+  }, {});
 
-    const usdcValues = {
-        [Field.CURRENCY_A]: useUSDCValue(mintInfo.parsedAmounts[Field.CURRENCY_A], true),
-        [Field.CURRENCY_B]: useUSDCValue(mintInfo.parsedAmounts[Field.CURRENCY_B], true),
+  const atMaxAmounts: { [field in Field]?: CurrencyAmount<Currency> } = [
+    Field.CURRENCY_A,
+    Field.CURRENCY_B,
+  ].reduce((accumulator, field) => {
+    return {
+      ...accumulator,
+      [field]: maxAmounts[field]?.equalTo(mintInfo.parsedAmounts[field] ?? '0'),
     };
+  }, {});
 
-    // get the max amounts user can add
-    const maxAmounts: { [field in Field]?: CurrencyAmount<Currency> } = [Field.CURRENCY_A, Field.CURRENCY_B].reduce((accumulator, field) => {
-        return {
-            ...accumulator,
-            [field]: maxAmountSpend(mintInfo.currencyBalances[field]),
-        };
-    }, {});
+  // check whether the user has approved the router on the tokens
+  const [approvalA, approveACallback] = useApproveCallback(
+    mintInfo.parsedAmounts[Field.CURRENCY_A] ||
+      tryParseAmount('1000000000000000000000', currencyA),
+    chainId ? NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId] : undefined,
+  );
+  const [approvalB, approveBCallback] = useApproveCallback(
+    mintInfo.parsedAmounts[Field.CURRENCY_B] ||
+      tryParseAmount('1000000000000000000000', currencyB),
+    chainId ? NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId] : undefined,
+  );
 
-    const atMaxAmounts: { [field in Field]?: CurrencyAmount<Currency> } = [Field.CURRENCY_A, Field.CURRENCY_B].reduce((accumulator, field) => {
-        return {
-            ...accumulator,
-            [field]: maxAmounts[field]?.equalTo(mintInfo.parsedAmounts[field] ?? "0"),
-        };
-    }, {});
+  const showApprovalA = useMemo(() => {
+    if (approvalA === ApprovalState.UNKNOWN) return undefined;
 
-    // check whether the user has approved the router on the tokens
-    const [approvalA, approveACallback] = useApproveCallback(
-        mintInfo.parsedAmounts[Field.CURRENCY_A] || tryParseAmount("1000000000000000000000", currencyA),
-        chainId ? NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId] : undefined
-    );
-    const [approvalB, approveBCallback] = useApproveCallback(
-        mintInfo.parsedAmounts[Field.CURRENCY_B] || tryParseAmount("1000000000000000000000", currencyB),
-        chainId ? NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId] : undefined
-    );
+    if (approvalA === ApprovalState.NOT_APPROVED) return true;
 
-    const showApprovalA = useMemo(() => {
-        if (approvalA === ApprovalState.UNKNOWN) return undefined;
+    return approvalA !== ApprovalState.APPROVED;
+  }, [approvalA]);
 
-        if (approvalA === ApprovalState.NOT_APPROVED) return true;
+  const showApprovalB = useMemo(() => {
+    if (approvalB === ApprovalState.UNKNOWN) return undefined;
 
-        return approvalA !== ApprovalState.APPROVED;
-    }, [approvalA]);
+    if (approvalB === ApprovalState.NOT_APPROVED) return true;
 
-    const showApprovalB = useMemo(() => {
-        if (approvalB === ApprovalState.UNKNOWN) return undefined;
+    return approvalB !== ApprovalState.APPROVED;
+  }, [approvalB]);
 
-        if (approvalB === ApprovalState.NOT_APPROVED) return true;
+  const [token0Ratio, token1Ratio] = useMemo(() => {
+    const currentPrice = mintInfo.price?.toSignificant(5);
 
-        return approvalB !== ApprovalState.APPROVED;
-    }, [approvalB]);
+    const left = mintInfo.lowerPrice.toSignificant(5);
+    const right = mintInfo.upperPrice.toSignificant(5);
 
-    const [token0Ratio, token1Ratio] = useMemo(() => {
-        const currentPrice = mintInfo.price?.toSignificant(5);
+    //TODO
+    if (
+      right === '338490000000000000000000000000000000000000000000000' ||
+      right === '338490000000000000000000000000000000000'
+    )
+      return ['50', '50'];
 
-        const left = mintInfo.lowerPrice.toSignificant(5);
-        const right = mintInfo.upperPrice.toSignificant(5);
+    if (!currentPrice) return ['0', '0'];
 
-        //TODO
-        if (right === "338490000000000000000000000000000000000000000000000" || right === "338490000000000000000000000000000000000") return ["50", "50"];
+    if (!left && !right) return ['0', '0'];
 
-        if (!currentPrice) return ["0", "0"];
+    if (!left && right) return ['0', '100'];
 
-        if (!left && !right) return ["0", "0"];
+    if (!right && left) return ['100', '0'];
 
-        if (!left && right) return ["0", "100"];
+    if (mintInfo.depositADisabled) {
+      return ['0', '100'];
+    }
 
-        if (!right && left) return ["100", "0"];
+    if (mintInfo.depositBDisabled) {
+      return ['100', '0'];
+    }
 
-        if (mintInfo.depositADisabled) {
-            return ["0", "100"];
-        }
+    if (left && right && currentPrice) {
+      const leftRange = +currentPrice - +left;
+      const rightRange = +right - +currentPrice;
 
-        if (mintInfo.depositBDisabled) {
-            return ["100", "0"];
-        }
+      const totalSum = +leftRange + +rightRange;
 
-        if (left && right && currentPrice) {
-            const leftRange = +currentPrice - +left;
-            const rightRange = +right - +currentPrice;
+      const leftRate = (+leftRange * 100) / totalSum;
+      const rightRate = (+rightRange * 100) / totalSum;
 
-            const totalSum = +leftRange + +rightRange;
+      if (mintInfo.invertPrice) {
+        return [String(leftRate), String(rightRate)];
+      } else {
+        return [String(rightRate), String(leftRate)];
+      }
+    }
 
-            const leftRate = (+leftRange * 100) / totalSum;
-            const rightRate = (+rightRange * 100) / totalSum;
+    return ['0', '0'];
+  }, [currencyA, currencyB, mintInfo]);
 
-            if (mintInfo.invertPrice) {
-                return [String(leftRate), String(rightRate)];
-            } else {
-                return [String(rightRate), String(leftRate)];
-            }
-        }
+  const currencyAError = useMemo(() => {
+    if (
+      (mintInfo.errorCode !== 4 && mintInfo.errorCode !== 5) ||
+      !mintInfo.errorMessage ||
+      !currencyA
+    )
+      return;
 
-        return ["0", "0"];
-    }, [currencyA, currencyB, mintInfo]);
+    const erroredToken = mintInfo.errorMessage.split(' ')[1];
 
-    const currencyAError = useMemo(() => {
-        if ((mintInfo.errorCode !== 4 && mintInfo.errorCode !== 5) || !mintInfo.errorMessage || !currencyA) return;
+    if (currencyA.wrapped.symbol === erroredToken) return mintInfo.errorMessage;
 
-        const erroredToken = mintInfo.errorMessage.split(" ")[1];
+    return;
+  }, [mintInfo, currencyA]);
 
-        if (currencyA.wrapped.symbol === erroredToken) return mintInfo.errorMessage;
+  const currencyBError = useMemo(() => {
+    if (
+      (mintInfo.errorCode !== 5 && mintInfo.errorCode !== 4) ||
+      !mintInfo.errorMessage ||
+      !currencyB
+    )
+      return;
 
-        return;
-    }, [mintInfo, currencyA]);
+    const erroredToken = mintInfo.errorMessage.split(' ')[1];
 
-    const currencyBError = useMemo(() => {
-        if ((mintInfo.errorCode !== 5 && mintInfo.errorCode !== 4) || !mintInfo.errorMessage || !currencyB) return;
+    if (currencyB.wrapped.symbol === erroredToken) return mintInfo.errorMessage;
 
-        const erroredToken = mintInfo.errorMessage.split(" ")[1];
+    return;
+  }, [mintInfo, currencyB]);
 
-        if (currencyB.wrapped.symbol === erroredToken) return mintInfo.errorMessage;
+  const history = useHistory();
+  const dispatch = useAppDispatch();
 
-        return;
-    }, [mintInfo, currencyB]);
+  useEffect(() => {
+    return () => {
+      if (history.action === 'POP') {
+        dispatch(updateCurrentStep({ currentStep: backStep }));
+      }
+    };
+  });
 
-    const history = useHistory();
-    const dispatch = useAppDispatch();
+  const leftPrice = useMemo(() => {
+    return mintInfo.invertPrice
+      ? mintInfo.upperPrice.invert()
+      : mintInfo.lowerPrice;
+  }, [mintInfo]);
 
-    useEffect(() => {
-        return () => {
-            if (history.action === "POP") {
-                dispatch(updateCurrentStep({ currentStep: backStep }));
-            }
-        };
-    });
+  const rightPrice = useMemo(() => {
+    return mintInfo.invertPrice
+      ? mintInfo.lowerPrice.invert()
+      : mintInfo.upperPrice;
+  }, [mintInfo]);
 
-    const leftPrice = useMemo(() => {
-        return mintInfo.invertPrice ? mintInfo.upperPrice.invert() : mintInfo.lowerPrice;
-    }, [mintInfo]);
-
-    const rightPrice = useMemo(() => {
-        return mintInfo.invertPrice ? mintInfo.lowerPrice.invert() : mintInfo.upperPrice;
-    }, [mintInfo]);
-
-    return (
-        <div className="f c">
-            <StepTitle title={`Enter amounts`} isCompleted={isCompleted} step={additionalStep ? 4 : 3} />
-            {mintInfo.invalidRange && (
-                <div className="range__notification error w-100">
-                    Invalid range
-                </div>
-            )}
-            <div className="f mxs_fd-cr ms_fd-cr mm_fd-cr">
-                <div className="f c mxs_w-100">
-                    <div className="mb-1" style={{ borderRadius: "8px" }}>
-                        <TokenAmountCard
-                            currency={currencyA}
-                            otherCurrency={currencyB}
-                            value={formattedAmounts[Field.CURRENCY_A]}
-                            fiatValue={usdcValues[Field.CURRENCY_A]}
-                            handleInput={onFieldAInput}
-                            handleMax={() => onFieldAInput(maxAmounts[Field.CURRENCY_A]?.toExact() ?? "")}
-                            showApproval={showApprovalA}
-                            isApproving={approvalA === ApprovalState.PENDING}
-                            handleApprove={approveACallback}
-                            disabled={true}
-                            locked={mintInfo.depositADisabled}
-                            isMax={!!atMaxAmounts[Field.CURRENCY_A]}
-                            error={currencyAError}
-                            priceFormat={priceFormat}
-                            isBase={false}
-                        />
-                    </div>
-                    <div>
-                        <TokenAmountCard
-                            currency={currencyB}
-                            otherCurrency={currencyA}
-                            value={formattedAmounts[Field.CURRENCY_B]}
-                            fiatValue={usdcValues[Field.CURRENCY_B]}
-                            handleInput={onFieldBInput}
-                            handleMax={() => onFieldBInput(maxAmounts[Field.CURRENCY_B]?.toExact() ?? "")}
-                            showApproval={showApprovalB}
-                            isApproving={approvalB === ApprovalState.PENDING}
-                            handleApprove={approveBCallback}
-                            disabled={false}
-                            locked={mintInfo.depositBDisabled}
-                            isMax={!!atMaxAmounts[Field.CURRENCY_B]}
-                            error={currencyBError}
-                            priceFormat={priceFormat}
-                            isBase={true}
-                        />
-                    </div>
-                </div>
-                <div className="full-h ml-2 mxs_ml-0 mxs_mb-2 ms_ml-0 mm_ml-0 mm_mb-1">
-                    <TokenRatio
-                        currencyA={currencyA}
-                        currencyB={currencyB}
-                        token0Ratio={token0Ratio}
-                        token1Ratio={token1Ratio}
-                        decrementLeft={mintInfo.invertPrice ? getIncrementUpper : getDecrementLower}
-                        decrementRight={mintInfo.invertPrice ? getIncrementLower : getDecrementUpper}
-                        incrementLeft={mintInfo.invertPrice ? getDecrementUpper : getIncrementLower}
-                        incrementRight={mintInfo.invertPrice ? getDecrementLower : getIncrementUpper}
-                        incrementDisabled={mintInfo.ticksAtLimit[Bound.UPPER]}
-                        decrementDisabled={mintInfo.ticksAtLimit[Bound.UPPER]}
-                        onUserLeftInput={onLeftRangeInput}
-                        onUserRightInput={onRightRangeInput}
-                        lowerPrice={leftPrice?.toSignificant(5)}
-                        upperPrice={rightPrice?.toSignificant(5)}
-                        disabled={false}
-                    />
-                </div>
-            </div>
+  return (
+    <div className='f c'>
+      <StepTitle
+        title={`Enter amounts`}
+        isCompleted={isCompleted}
+        step={additionalStep ? 4 : 3}
+      />
+      {mintInfo.invalidRange && (
+        <div className='range__notification error w-100'>Invalid range</div>
+      )}
+      <div className='f mxs_fd-cr ms_fd-cr mm_fd-cr'>
+        <div className='f c mxs_w-100'>
+          <div className='mb-1' style={{ borderRadius: '8px' }}>
+            <TokenAmountCard
+              currency={currencyA}
+              otherCurrency={currencyB}
+              value={formattedAmounts[Field.CURRENCY_A]}
+              fiatValue={usdcValues[Field.CURRENCY_A]}
+              handleInput={onFieldAInput}
+              handleMax={() =>
+                onFieldAInput(maxAmounts[Field.CURRENCY_A]?.toExact() ?? '')
+              }
+              showApproval={showApprovalA}
+              isApproving={approvalA === ApprovalState.PENDING}
+              handleApprove={approveACallback}
+              disabled={true}
+              locked={mintInfo.depositADisabled}
+              isMax={!!atMaxAmounts[Field.CURRENCY_A]}
+              error={currencyAError}
+              priceFormat={priceFormat}
+              isBase={false}
+            />
+          </div>
+          <div>
+            <TokenAmountCard
+              currency={currencyB}
+              otherCurrency={currencyA}
+              value={formattedAmounts[Field.CURRENCY_B]}
+              fiatValue={usdcValues[Field.CURRENCY_B]}
+              handleInput={onFieldBInput}
+              handleMax={() =>
+                onFieldBInput(maxAmounts[Field.CURRENCY_B]?.toExact() ?? '')
+              }
+              showApproval={showApprovalB}
+              isApproving={approvalB === ApprovalState.PENDING}
+              handleApprove={approveBCallback}
+              disabled={false}
+              locked={mintInfo.depositBDisabled}
+              isMax={!!atMaxAmounts[Field.CURRENCY_B]}
+              error={currencyBError}
+              priceFormat={priceFormat}
+              isBase={true}
+            />
+          </div>
         </div>
-    );
+        <div className='full-h ml-2 mxs_ml-0 mxs_mb-2 ms_ml-0 mm_ml-0 mm_mb-1'>
+          <TokenRatio
+            currencyA={currencyA}
+            currencyB={currencyB}
+            token0Ratio={token0Ratio}
+            token1Ratio={token1Ratio}
+            decrementLeft={
+              mintInfo.invertPrice ? getIncrementUpper : getDecrementLower
+            }
+            decrementRight={
+              mintInfo.invertPrice ? getIncrementLower : getDecrementUpper
+            }
+            incrementLeft={
+              mintInfo.invertPrice ? getDecrementUpper : getIncrementLower
+            }
+            incrementRight={
+              mintInfo.invertPrice ? getDecrementLower : getIncrementUpper
+            }
+            incrementDisabled={mintInfo.ticksAtLimit[Bound.UPPER]}
+            decrementDisabled={mintInfo.ticksAtLimit[Bound.UPPER]}
+            onUserLeftInput={onLeftRangeInput}
+            onUserRightInput={onRightRangeInput}
+            lowerPrice={leftPrice?.toSignificant(5)}
+            upperPrice={rightPrice?.toSignificant(5)}
+            disabled={false}
+          />
+        </div>
+      </div>
+    </div>
+  );
 }

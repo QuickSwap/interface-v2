@@ -3,6 +3,7 @@ import { Box } from '@material-ui/core';
 import { ReactComponent as SettingsIcon } from 'assets/images/SettingsIcon.svg';
 import { QuestionHelper, SettingsModal } from 'components';
 import { useTranslation } from 'react-i18next';
+import { NewAddLiquidityPage } from 'components/v3/NewAddLiquidity';
 const AddLiquidity = lazy(() => import('components/AddLiquidity'));
 const AddLiquidityV3 = lazy(() => import('components/AddLiquidityV3'));
 
@@ -48,7 +49,8 @@ const SupplyLiquidity: React.FC<{ isV3: boolean }> = ({ isV3 }) => {
           </Box>
         </>
       )}
-      {isV3 && <AddLiquidityV3 />}
+      {/* {isV3 && <AddLiquidityV3 />} */}
+      {isV3 && <NewAddLiquidityPage />}
     </>
   );
 };

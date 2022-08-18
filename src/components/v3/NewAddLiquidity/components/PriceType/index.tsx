@@ -1,6 +1,6 @@
-import React from "react";
-import "./index.scss";
+import React from 'react';
+import './index.scss';
 
 export function PriceType() {
-    return <div></div>;
+  return <div></div>;
 }
