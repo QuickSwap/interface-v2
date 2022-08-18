@@ -1818,7 +1818,6 @@ export function getTokenFromAddress(
     (address) => address.toLowerCase() === tokenAddress.toLowerCase(),
   );
   if (tokenIndex === -1) {
-    console.log('missing from token list:' + tokenAddress);
     const token = tokens.find(
       (item) => item.address.toLowerCase() === tokenAddress.toLowerCase(),
     );
