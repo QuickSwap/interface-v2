@@ -1825,7 +1825,6 @@ export function getTokenFromAddress(
 ) {
   const wrappedTokenInfo = tokenMap[chainId][tokenAddress];
   if (!wrappedTokenInfo) {
-    console.log('missing from token list:' + tokenAddress);
     const token = tokens.find(
       (item) => item.address.toLowerCase() === tokenAddress.toLowerCase(),
     );

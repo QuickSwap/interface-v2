@@ -1,6 +1,6 @@
 import styled from 'styled-components/macro';
 import { darken } from 'polished';
-import { TYPE } from '../../theme';
+import { TYPE } from 'theme/index';
 
 //index
 export const BaseToggleElement = styled.span<{

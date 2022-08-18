@@ -1,4 +1,4 @@
-import { Trans } from '@lingui/macro';
+import React from 'react';
 import { ListToggleElement, StatusText, Wrapper } from './styled';
 
 interface ToggleProps {
@@ -18,13 +18,13 @@ export default function ListToggle({
     <Wrapper id={id} isActive={isActive} onClick={toggle}>
       {isActive && (
         <StatusText fontWeight='600' margin='0 6px' isActive={true}>
-          <Trans>ON</Trans>
+          ON
         </StatusText>
       )}
       <ListToggleElement isActive={isActive} bgColor={bgColor} />
       {!isActive && (
         <StatusText fontWeight='600' margin='0 6px' isActive={false}>
-          <Trans>OFF</Trans>
+          OFF
         </StatusText>
       )}
     </Wrapper>
