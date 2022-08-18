@@ -14,7 +14,7 @@ const SupplyLiquidity: React.FC = () => {
   const { pathname } = useLocation();
   const pathArray = pathname.split('/');
   const qCurrency0 = useCurrency(
-    pathArray.length === 4
+    pathArray.length >= 3
       ? pathArray[2]
       : parsedQuery && parsedQuery.currency0
       ? (parsedQuery.currency0 as string)
