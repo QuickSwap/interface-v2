@@ -5,18 +5,25 @@ import { AddLiquidity, QuestionHelper, SettingsModal } from 'components';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import { useCurrency } from 'hooks/Tokens';
 import { useTranslation } from 'react-i18next';
+import { useLocation } from 'react-router-dom';
 
 const SupplyLiquidity: React.FC = () => {
   const { t } = useTranslation();
   const [openSettingsModal, setOpenSettingsModal] = useState(false);
   const parsedQuery = useParsedQueryString();
+  const { pathname } = useLocation();
+  const pathArray = pathname.split('/');
   const qCurrency0 = useCurrency(
-    parsedQuery && parsedQuery.currency0
+    pathArray.length === 4
+      ? pathArray[2]
+      : parsedQuery && parsedQuery.currency0
       ? (parsedQuery.currency0 as string)
       : undefined,
   );
   const qCurrency1 = useCurrency(
-    parsedQuery && parsedQuery.currency1
+    pathArray.length === 4
+      ? pathArray[3]
+      : parsedQuery && parsedQuery.currency1
       ? (parsedQuery.currency1 as string)
       : undefined,
   );

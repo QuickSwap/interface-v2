@@ -21,13 +21,13 @@ const SwapMain: React.FC = () => {
 
   const parsedQuery = useParsedQueryString();
   const currency0 = useCurrency(
-    parsedQuery && parsedQuery.currency0
-      ? (parsedQuery.currency0 as string)
+    parsedQuery && (parsedQuery.currency0 || parsedQuery.inputCurrency)
+      ? ((parsedQuery.currency0 ?? parsedQuery.inputCurrency) as string)
       : undefined,
   );
   const currency1 = useCurrency(
-    parsedQuery && parsedQuery.currency1
-      ? (parsedQuery.currency1 as string)
+    parsedQuery && (parsedQuery.currency1 || parsedQuery.outputCurrency)
+      ? ((parsedQuery.currency1 ?? parsedQuery.outputCurrency) as string)
       : undefined,
   );
   const { t } = useTranslation();
