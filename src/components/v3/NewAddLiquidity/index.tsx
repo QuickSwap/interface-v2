@@ -6,6 +6,8 @@ import {
   NavLink,
   RouteComponentProps,
   Switch,
+  useHistory,
+  useParams,
   useRouteMatch,
 } from 'react-router-dom';
 import {
@@ -54,20 +56,13 @@ import { currencyId } from 'utils/v3/currencyId';
 const DEFAULT_ADD_IN_RANGE_SLIPPAGE_TOLERANCE = new Percent(50, 10_000);
 
 export function NewAddLiquidityPage() {
-// {
-//   match: {
-//     params: { currencyIdA, currencyIdB },
-//   },
-//   history,
-// }: RouteComponentProps<{
-//   currencyIdA?: string;
-//   currencyIdB?: string;
-//   step?: string;
-// }>
-  const currencyIdA = 'MATIC';
-  const currencyIdB = '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174';
-  const history = useHistory();
+  const params: any = useParams();
 
+  const currencyIdA = params.currencyIdA ?? '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174';
+  const currencyIdB = params.currencyIdB ?? '0xc2132D05D31c914a87C6611C10748AEb04B58e8F';
+  let step = params.step;
+
+  const history = useHistory();
   const [isRejected, setRejected] = useState(false);
 
   const { account, chainId } = useActiveWeb3React();
@@ -363,36 +358,36 @@ export function NewAddLiquidityPage() {
     };
   }, []);
 
-  useEffect(() => {
-    switch (currentStep) {
-      // case 0: {
-      //     history.push(`/add/${currencyIdA}/${currencyIdB}/select-pair`);
-      //     break;
-      // }
-      case 1: {
-        if (!mintInfo.noLiquidity) {
-          history.push(`/add/${currencyIdA}/${currencyIdB}/select-range`);
-        } else {
-          history.push(`/add/${currencyIdA}/${currencyIdB}/initial-price`);
-        }
-        break;
-      }
-      case 2: {
-        if (!mintInfo.noLiquidity) {
-          history.push(`/add/${currencyIdA}/${currencyIdB}/enter-amounts`);
-        } else {
-          history.push(`/add/${currencyIdA}/${currencyIdB}/select-range`);
-        }
-        break;
-      }
-      case 3: {
-        if (mintInfo.noLiquidity) {
-          history.push(`/add/${currencyIdA}/${currencyIdB}/enter-amounts`);
-        }
-        break;
-      }
-    }
-  }, [currencyIdA, currencyIdB, history, currentStep, mintInfo.noLiquidity]);
+  // useEffect(() => {
+  //   switch (currentStep) {
+  //     // case 0: {
+  //     //     history.push(`/add/${currencyIdA}/${currencyIdB}/select-pair`);
+  //     //     break;
+  //     // }
+  //     case 1: {
+  //       if (!mintInfo.noLiquidity) {
+  //         history.push(`/add/${currencyIdA}/${currencyIdB}/select-range`);
+  //       } else {
+  //         history.push(`/add/${currencyIdA}/${currencyIdB}/initial-price`);
+  //       }
+  //       break;
+  //     }
+  //     case 2: {
+  //       if (!mintInfo.noLiquidity) {
+  //         history.push(`/add/${currencyIdA}/${currencyIdB}/enter-amounts`);
+  //       } else {
+  //         history.push(`/add/${currencyIdA}/${currencyIdB}/select-range`);
+  //       }
+  //       break;
+  //     }
+  //     case 3: {
+  //       if (mintInfo.noLiquidity) {
+  //         history.push(`/add/${currencyIdA}/${currencyIdB}/enter-amounts`);
+  //       }
+  //       break;
+  //     }
+  //   }
+  // }, [currencyIdA, currencyIdB, history, currentStep, mintInfo.noLiquidity]);
 
   return (
     <>
@@ -464,8 +459,8 @@ export function NewAddLiquidityPage() {
           />
 
           <RouterGuard
-            path={`/add/${currencyIdA}/${currencyIdB}/enter-amounts`}
-            redirect={`/add/${currencyIdA}/${currencyIdB}/select-pair`}
+            path={`v3pools/add/${currencyIdA}/${currencyIdB}/enter-amounts`}
+            redirect={`v3pools/add/${currencyIdA}/${currencyIdB}/select-pair`}
             allowance={
               stepPair &&
               stepRange &&
@@ -482,8 +477,8 @@ export function NewAddLiquidityPage() {
           />
 
           <RouterGuard
-            path={`/add/${currencyIdA}/${currencyIdB}/select-range`}
-            redirect={`/add/${currencyIdA}/${currencyIdB}/select-pair`}
+            path={`v3pools/add/${currencyIdA}/${currencyIdB}/select-range`}
+            redirect={`v3pools/add/${currencyIdA}/${currencyIdB}/select-pair`}
             allowance={stepPair && currentStep === (stepInitialPrice ? 2 : 1)}
             Component={SelectRange}
             currencyA={baseCurrency}
@@ -497,8 +492,8 @@ export function NewAddLiquidityPage() {
           />
 
           <RouterGuard
-            path={`/add/${currencyIdA}/${currencyIdB}/initial-price`}
-            redirect={`/add/${currencyIdA}/${currencyIdB}/select-pair`}
+            path={`v3pools/add/${currencyIdA}/${currencyIdB}/initial-price`}
+            redirect={`v3pools/add/${currencyIdA}/${currencyIdB}/select-pair`}
             allowance={mintInfo.noLiquidity}
             Component={InitialPrice}
             currencyA={baseCurrency ?? undefined}
@@ -511,7 +506,7 @@ export function NewAddLiquidityPage() {
 
           <RouterGuard
             path={``}
-            redirect={`/add/${currencyIdA}/${currencyIdB}/select-pair`}
+            redirect={`v3pools/add/${currencyIdA}/${currencyIdB}/select-pair`}
             allowance={true}
             Component={SelectPair}
             baseCurrency={baseCurrency}

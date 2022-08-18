@@ -68,6 +68,11 @@ const Header: React.FC = () => {
       id: 'pools-page-link',
     },
     {
+      link: '/v3Pools',
+      text: 'V3 Pools',
+      id: 'v3-pools-page-link',
+    },
+    {
       link: '/farm',
       text: t('farm'),
       id: 'farm-page-link',

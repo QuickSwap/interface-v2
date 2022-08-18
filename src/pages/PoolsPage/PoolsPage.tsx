@@ -30,12 +30,12 @@ const PoolsPage: React.FC = () => {
         </Box>
       </Box>
       <Grid container spacing={4}>
-        <Grid item xs={12} sm={12} md={5}>
+        <Grid item>
           <Box className='wrapper'>
             <SupplyLiquidity isV3={poolVersion === 'v3'} />
           </Box>
         </Grid>
-        <Grid item xs={12} sm={12} md={7}>
+        {/* <Grid item xs={12} sm={12} md={7}>
           <Box className='wrapper'>
             {poolVersion === 'v2' ? (
               <YourLiquidityPools />
@@ -43,7 +43,7 @@ const PoolsPage: React.FC = () => {
               <YourV3LiquidityPools />
             )}
           </Box>
-        </Grid>
+        </Grid> */}
       </Grid>
     </Box>
   );
