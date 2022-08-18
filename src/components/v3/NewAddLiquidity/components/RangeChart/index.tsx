@@ -1,5 +1,5 @@
-import "./index.scss";
+import './index.scss';
 
 export function RangeChart() {
-    return <div className="range-chart-wrapper"></div>;
+  return <div className='range-chart-wrapper'></div>;
 }
