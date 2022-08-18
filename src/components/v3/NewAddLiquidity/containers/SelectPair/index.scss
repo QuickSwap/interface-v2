@@ -1,0 +1,28 @@
+.token-pairs {
+    &-wrapper {
+
+    }
+
+    &-plus {
+        width: 30px;
+        height: 30px;
+        background-color: #547289;
+        border-radius: 50%;
+
+        &.swap-btn {
+            cursor: pointer;
+            &:hover {
+                background-color: #395e7b;
+            }
+        }
+    }
+
+}
+
+@media screen and (max-width: 960px) {
+    .token-pairs {
+        &-plus {
+            transform: rotate(90deg);
+        }
+    }
+}

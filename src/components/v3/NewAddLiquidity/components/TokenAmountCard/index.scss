@@ -1,0 +1,92 @@
+.token-amount-card {
+    &-wrapper {
+        background-color: var(--ebony-clay);
+        border-radius: 8px; 
+        width: 542px;
+        border: 1px solid #233d65;
+    }
+
+    &__locked {
+        left: 0;
+        top: 0;
+        z-index: 1000;
+        background-color: rgba(38, 52, 63, 0.85);
+        border-radius: 8px;
+    }
+
+    &__logo {
+        width: 35px;
+        height: 35px;
+        background: #3a4e5d;
+        border-radius: 50%; 
+    }
+
+    &__input {
+        background-color: #182732 !important;
+        border: 1px solid #233d65 !important;
+        border-radius: 8px !important;
+        color: white !important;
+        padding: 8px 1rem !important;
+        width: 100% !important;
+        font-size: unset !important;
+        text-align: left !important;
+
+        &.is-usd {
+            padding: 8px 1rem 8px 2rem !important;
+        }
+
+        &:focus {
+            border: 1px solid #21cbff !important;
+        }
+    }
+
+    &__error {
+        padding: 8px;
+        background-color: #290505;
+        color: #f31b1b;
+        border: 1px solid #580d0d;
+        border-radius: 8px;
+        text-align: center;
+    }
+
+    &__max-btn {
+        background: transparent;
+        color: #4ca8ef;
+        border: none;
+        padding: 0;
+        font-size: 13px;
+        margin-top: 6px;
+
+        &:disabled {
+            pointer-events: none;
+            color: #506f87;
+        }
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+
+    &__approve-btn {
+        padding: 4px 8px;
+        background-color: #1199c3;
+        border-radius: 6px;
+        border: none;
+        color: white;
+
+        &:hover {
+            background-color: #5aa9c1;
+        }
+    }
+
+    &__approved {
+        color: #3acd3b;
+    }
+
+    &__usd {
+        position: absolute;
+        left: 13px;
+        top: 11px;
+        z-index: 999;
+    }
+}

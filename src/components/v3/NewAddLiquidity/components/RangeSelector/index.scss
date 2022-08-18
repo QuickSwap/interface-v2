@@ -1,0 +1,61 @@
+.range-input {
+    width: 140px !important;
+    background: #26343f !important;
+    color: white !important;
+    border: 1px solid #233d65 !important;
+    padding: 8px 1rem !important;
+    border-radius: 8px !important;
+    font-size: unset !important;
+    text-align: left !important;
+
+    &:focus {
+        border: 1px solid #21cbff !important;
+    }
+
+    &.is-usd {
+        padding: 8px 1rem 8px 2rem !important;
+    }
+
+    &__btn {
+        background-color: transparent;
+        color: white;
+        border: 1px solid #23406d;
+        border-radius: 50%;
+        width: 22px;
+        padding: 0 0 1px 1px;
+
+        &:not(:disabled) {
+            &:hover {
+                background-color: #2a4559;
+            }
+        }
+
+        &:first-of-type {
+            margin-right: 5px;
+        }
+
+        &:disabled {
+            opacity: .6;
+            cursor: default;
+        }
+    }
+
+    &__usd {
+        position: absolute;
+        left: 13px;
+        z-index: 999;
+    }
+}
+
+.current-price {
+    flex-direction: column;
+}
+
+.current-price-tip {
+    background-color: #419fe8;
+    width: fit-content;
+    padding: 9px;
+    border-radius: 10px;
+    margin-top: 6px;
+}
+
