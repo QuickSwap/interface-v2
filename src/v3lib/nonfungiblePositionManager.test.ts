@@ -5,11 +5,11 @@ import {
   Token,
   WETH9,
 } from '@uniswap/sdk-core';
-import { FeeAmount, TICK_SPACINGS } from './constants';
 import { Pool } from './entities/pool';
 import { Position } from './entities/position';
 import { NonfungiblePositionManager } from './nonfungiblePositionManager';
 import { encodeSqrtRatioX96 } from './utils/encodeSqrtRatioX96';
+import { FeeAmount, TICK_SPACINGS } from './utils/v3constants';
 
 describe('NonfungiblePositionManager', () => {
   const token0 = new Token(

@@ -298,7 +298,7 @@ function Remove({ tokenId }: { tokenId: BigNumber }) {
             </TYPE.italic>
             <RowBetween>
               <Text fontSize={16} fontWeight={500}>
-                `{feeValue0?.currency?.symbol} Fees Earned:`
+                {feeValue0?.currency?.symbol} Fees Earned:
               </Text>
               <RowFixed>
                 <Text fontSize={16} fontWeight={500} marginLeft={'6px'}>
@@ -315,7 +315,7 @@ function Remove({ tokenId }: { tokenId: BigNumber }) {
             </RowBetween>
             <RowBetween>
               <Text fontSize={16} fontWeight={500}>
-                `{feeValue1?.currency?.symbol} Fees Earned:`
+                {feeValue1?.currency?.symbol} Fees Earned:
               </Text>
               <RowFixed>
                 <Text fontSize={16} fontWeight={500} marginLeft={'6px'}>
@@ -333,7 +333,7 @@ function Remove({ tokenId }: { tokenId: BigNumber }) {
           </>
         ) : null}
         <ButtonPrimary mt='16px' onClick={burn}>
-          `Remove`
+          Remove
         </ButtonPrimary>
       </AutoColumn>
     );
@@ -379,35 +379,35 @@ function Remove({ tokenId }: { tokenId: BigNumber }) {
             </div>
             <Card isDark={false} classes={'p-1 br-12'}>
               <div>
-                <TYPE.main fontWeight={400}>`Amount`</TYPE.main>
+                <TYPE.main fontWeight={400}>Amount</TYPE.main>
                 <div className={'flex-s-between mv-05 mxs_fd-c'}>
                   <div className={'fs-2 mxs_mv-05 mxs_w-100 mxs_ta-l'}>
-                    `{percentForSlider}%`
+                    {percentForSlider}%
                   </div>
                   <AutoRow gap='4px' justify={'flex-end'}>
                     <button
                       className={'btn secondary pv-05 ph-1 fs-085 hover-b'}
                       onClick={() => onPercentSelect(25)}
                     >
-                      `25%`
+                      25%
                     </button>
                     <button
                       className={'btn secondary pv-05 ph-1 fs-085 hover-b'}
                       onClick={() => onPercentSelect(50)}
                     >
-                      `50%`
+                      50%
                     </button>
                     <button
                       className={'btn secondary pv-05 ph-1 fs-085 hover-b'}
                       onClick={() => onPercentSelect(75)}
                     >
-                      `75%`
+                      75%
                     </button>
                     <button
                       className={'btn secondary pv-05 ph-1 fs-085 hover-b'}
                       onClick={() => onPercentSelect(100)}
                     >
-                      `Max`
+                      Max
                     </button>
                   </AutoRow>
                 </div>
@@ -422,7 +422,7 @@ function Remove({ tokenId }: { tokenId: BigNumber }) {
               <AutoColumn gap='md'>
                 <RowBetween>
                   <Text fontSize={16} fontWeight={500}>
-                    `Pooled {liquidityValue0?.currency?.symbol}:`
+                    Pooled {liquidityValue0?.currency?.symbol}:
                   </Text>
                   <RowFixed>
                     <Text fontSize={16} fontWeight={500} marginLeft={'6px'}>
@@ -441,7 +441,7 @@ function Remove({ tokenId }: { tokenId: BigNumber }) {
                 </RowBetween>
                 <RowBetween>
                   <Text fontSize={16} fontWeight={500}>
-                    `Pooled {liquidityValue1?.currency?.symbol}:`
+                    Pooled {liquidityValue1?.currency?.symbol}:
                   </Text>
                   <RowFixed>
                     <Text fontSize={16} fontWeight={500} marginLeft={'6px'}>
@@ -462,7 +462,7 @@ function Remove({ tokenId }: { tokenId: BigNumber }) {
                   <>
                     <RowBetween>
                       <Text fontSize={16} fontWeight={500}>
-                        `{feeValue0?.currency?.symbol} Fees Earned:`
+                        {feeValue0?.currency?.symbol} Fees Earned:
                       </Text>
                       <RowFixed>
                         <Text fontSize={16} fontWeight={500} marginLeft={'6px'}>

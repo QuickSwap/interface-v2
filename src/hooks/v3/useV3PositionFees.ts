@@ -1,4 +1,4 @@
-import { useSingleCallResult } from 'state/multicall/hooks';
+import { useSingleCallResult } from 'state/multicall/v3/hooks';
 import { useEffect, useState } from 'react';
 import { BigNumber } from '@ethersproject/bignumber';
 import { Pool } from 'v3lib/entities/pool';

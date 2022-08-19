@@ -2,14 +2,14 @@ import { Currency } from '@uniswap/sdk-core';
 import JSBI from 'jsbi';
 import { PoolState, usePool } from './usePools';
 import { useMemo } from 'react';
+import computeSurroundingTicks from 'utils/v3/computeSurroundingTicks';
+import { useAllV3TicksQuery } from 'state/data/enhanced';
+import { AllV3TicksQuery } from 'state/data/generated';
 import { skipToken } from '@reduxjs/toolkit/query/react';
 import ms from 'ms.macro';
-import { AllV3TicksQuery } from 'state/v3Data/generated';
-import { FeeAmount } from 'lib/src/constants';
-import { Pool } from 'v3lib/entities';
-import { useAllV3TicksQuery } from 'state/v3Data/tickHooks';
-import computeSurroundingTicks from 'v3lib/utils/computeSurroundingTicks';
-import { tickToPrice } from 'v3lib/utils';
+import { FeeAmount } from 'v3lib/utils/v3constants';
+import { Pool } from 'v3lib/entities/pool';
+import { tickToPrice } from 'v3lib/utils/priceTickConversions';
 
 const PRICE_FIXED_DIGITS = 8;
 
@@ -45,9 +45,11 @@ export function useAllV3Ticks(
     isUninitialized,
     data,
   } = useAllV3TicksQuery(
-    { poolAddress: poolAddress?.toLowerCase(), skip: 0 },
+    poolAddress
+      ? { poolAddress: poolAddress?.toLowerCase(), skip: 0 }
+      : skipToken,
     {
-      pollingInterval: ms`10m`,
+      pollingInterval: ms`2m`,
     },
   );
 
@@ -60,7 +62,6 @@ export function useAllV3Ticks(
   };
 }
 
-// todo fix crash
 export function usePoolActiveLiquidity(
   currencyA: Currency | undefined,
   currencyB: Currency | undefined,
@@ -73,7 +74,6 @@ export function usePoolActiveLiquidity(
   activeTick: number | undefined;
   data: TickProcessed[] | undefined;
 } {
-  console.log('usePoolActiveLiquidity hook monitor', { currencyA, currencyB });
   const pool = usePool(currencyA, currencyB);
 
   // Find nearest valid tick for pool in case tick is not initialized.
@@ -129,16 +129,6 @@ export function usePoolActiveLiquidity(
         data: undefined,
       };
     }
-
-    // todo: testing changes to fix crash, revert after fix
-    // const activeTickProcessed: TickProcessed = {
-    //   liquidityActive: JSBI.BigInt(pool[1]?.liquidity ?? 0),
-    //   tickIdx: activeTick,
-    //   liquidityNet: JSBI.BigInt(0),
-    //   price0: tickToPrice(token0, token1, activeTick).toFixed(
-    //     PRICE_FIXED_DIGITS,
-    //   ),
-    // };
 
     const activeTickProcessed: TickProcessed = {
       liquidityActive: JSBI.BigInt(pool[1]?.liquidity ?? 0),
