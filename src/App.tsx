@@ -59,6 +59,7 @@ import Background from 'layouts/Background';
 import GasUpdater from 'state/application/gasUpdater';
 import { NewAddLiquidityPage } from 'components/v3/NewAddLiquidity';
 import AddLiquidityV3 from 'components/AddLiquidityV3';
+import RemoveLiquidityV3 from 'components/v3/RemoveLiquidity/RemoveLiquidityV3';
 
 const Web3ProviderNetwork = createWeb3ReactRoot(
   GlobalConst.utils.NetworkContextName,
@@ -168,14 +169,17 @@ const App: React.FC = () => {
                         <NewAddLiquidityPage></NewAddLiquidityPage>
                       </PageLayout>
                     </Route>
-                    <Route exact path='/increase/:currencyIdA?/:currencyIdB?/:tokenId'>
+                    <Route
+                      exact
+                      path='/increase/:currencyIdA?/:currencyIdB?/:tokenId'
+                    >
                       <PageLayout>
                         <AddLiquidityV3></AddLiquidityV3>
                       </PageLayout>
                     </Route>
                     <Route exact path='/remove/:tokenId'>
                       <PageLayout>
-                        {/* <RemoveLiquidityV3></RemoveLiquidityV3> */}
+                        <RemoveLiquidityV3></RemoveLiquidityV3>
                         </PageLayout>
                       </Route>
                       <Route exact path='/farm'>

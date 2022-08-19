@@ -62,7 +62,8 @@ export default function AddLiquidity() {
   const params: any = useParams();
 
   const currencyIdA = params.currencyIdA ?? 'MATIC';
-  const currencyIdB = params.currencyIdB ?? '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174';
+  const currencyIdB =
+    params.currencyIdB ?? '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174';
   const tokenId = params.tokenId;
 
   const history = useHistory();
