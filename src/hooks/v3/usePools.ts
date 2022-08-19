@@ -8,7 +8,6 @@ import abi from 'constants/abis/v3/pool.json';
 import { computePoolAddress } from './computePoolAddress';
 import { useInternet } from './useInternet';
 import { useToken } from './Tokens';
-
 import { Pool } from 'v3lib/entities/pool';
 import { usePreviousNonErroredArray } from 'hooks/usePrevious';
 

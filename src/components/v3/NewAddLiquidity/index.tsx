@@ -58,8 +58,10 @@ const DEFAULT_ADD_IN_RANGE_SLIPPAGE_TOLERANCE = new Percent(50, 10_000);
 export function NewAddLiquidityPage() {
   const params: any = useParams();
 
-  const currencyIdA = params.currencyIdA ?? '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174';
-  const currencyIdB = params.currencyIdB ?? '0xc2132D05D31c914a87C6611C10748AEb04B58e8F';
+  const currencyIdA =
+    params.currencyIdA ?? '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174';
+  const currencyIdB =
+    params.currencyIdB ?? '0xc2132D05D31c914a87C6611C10748AEb04B58e8F';
   let step = params.step;
 
   const history = useHistory();

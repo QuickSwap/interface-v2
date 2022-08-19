@@ -17,6 +17,7 @@ import farms from './farms/reducer';
 import dualFarms from './dualfarms/reducer';
 import syrups from './syrups/reducer';
 import burn from './burn/reducer';
+import burnV3 from './burn/v3/reducer';
 import multicall from './multicall/reducer';
 import analytics from './analytics/reducer';
 import multicallV3 from './multicall/v3/reducer';
@@ -44,6 +45,7 @@ const store = configureStore({
     mint,
     mintV3,
     burn,
+    burnV3,
     multicall,
     multicallV3,
     lists,
