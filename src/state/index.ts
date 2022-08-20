@@ -23,6 +23,7 @@ import analytics from './analytics/reducer';
 import multicallV3 from './multicall/v3/reducer';
 import swapV3 from './swap/v3/reducer';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
+import { api as dataApi } from './data/slice';
 
 const PERSISTED_KEYS: string[] = [
   'user',
@@ -53,10 +54,13 @@ const store = configureStore({
     dualFarms,
     syrups,
     analytics,
+    [dataApi.reducerPath]: dataApi.reducer,
     ...gelatoReducers,
   },
   middleware: (getDefaultMiddleware) => [
-    ...getDefaultMiddleware({ serializableCheck: false, thunk: false }),
+    ...getDefaultMiddleware({ serializableCheck: false, thunk: true }).concat(
+      dataApi.middleware,
+    ),
     save({ states: PERSISTED_KEYS }),
   ],
   preloadedState: load({ states: PERSISTED_KEYS }),

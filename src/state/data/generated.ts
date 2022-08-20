@@ -7363,6 +7363,7 @@ export const PopularPoolsDocument = `
     `;
 
 const injectedRtkApi = api.injectEndpoints({
+  overrideExisting: true,
   endpoints: (build) => ({
     prices: build.query<PricesQuery, PricesQueryVariables>({
       query: (variables) => ({ document: PricesDocument, variables }),
