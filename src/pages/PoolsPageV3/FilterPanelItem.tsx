@@ -1,6 +1,5 @@
 import React from 'react'
-import { Trans } from '@lingui/macro'
-import Toggle from '../../components/Toggle'
+import Toggle from 'components/v3/Toggle'
 
 interface FilterPanelProps {
     item: {
@@ -14,13 +13,13 @@ const FilterPanelItem = ({ item: { title, method, checkValue } }: FilterPanelPro
     return (
         <div>
             <div className={'mb-05 mxs_ta-c'}>
-                <Trans>{title}</Trans>
+                {title}
             </div>
             <Toggle
                 isActive={!checkValue}
                 toggle={() => method(!checkValue)}
-                checked={<Trans>Show</Trans>}
-                unchecked={<Trans>Hide</Trans>}
+                checked={'Show'}
+                unchecked={'Hide'}
             />
         </div>
     )

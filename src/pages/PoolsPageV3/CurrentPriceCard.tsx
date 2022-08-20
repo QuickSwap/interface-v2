@@ -1,8 +1,8 @@
-import React from 'react';
+import React from "react";
 import { Currency } from "@uniswap/sdk-core";
 import { Pool } from "@uniswap/v3-sdk";
-import Card from 'components/v3/Card/Card';
-import { AutoColumn } from 'components/v3/Column';
+import Card from "components/v3/Card/Card";
+import { AutoColumn } from "components/v3/Column";
 
 interface CurrentPriceCardProps {
     inverted?: boolean;

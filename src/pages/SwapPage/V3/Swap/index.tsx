@@ -40,7 +40,7 @@ import { maxAmountSpend } from 'utils/v3/maxAmountSpend';
 import { V3TradeState } from 'hooks/v3/useBestV3Trade';
 import { computeFiatValuePriceImpact } from 'utils/v3/computeFiatValuePriceImpact';
 import { useAllTokens, useCurrency } from 'hooks/v3/Tokens';
-import Card from 'components/v3/Card/Card';
+ 
 import { AutoColumn } from 'components/v3/Column';
 import Row, { AutoRow } from 'components/v3/Row';
 import { GreyCard } from 'components/v3/Card';
@@ -71,6 +71,7 @@ import { Field } from 'state/swap/v3/actions';
 import confirmPriceImpactWithoutFee from 'components/v3/swap/confirmPriceImpactWithoutFee';
 import ConfirmSwapModal from 'components/v3/swap/ConfirmSwapModal';
 import { useExpertModeManager } from 'state/user/hooks';
+import Card from 'components/v3/Card/Card';
 
 const SwapV3Page: React.FC = () => {
   const { account } = useActiveWeb3React();

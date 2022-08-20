@@ -42,7 +42,7 @@ import { Dots } from "./styleds";
 import RateToggle from "components/v3/RateToggle";
 import DoubleCurrencyLogo from "components/DoubleCurrencyLogo";
 import { getRatio } from "utils/v3/getRatio";
-import useInvertrd from "hooks/v3/useInverter";
+import { useInverter } from "hooks/v3/useInverter";
 
 
 function useQuery() {

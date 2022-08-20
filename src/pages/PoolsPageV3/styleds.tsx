@@ -1,11 +1,11 @@
-import React; from 'react'
+import React from 'react'
 import { Text } from 'rebass'
 import styled, { keyframes } from 'styled-components/macro'
-import { AutoColumn } from '../../components/Column'
-import { RowBetween, RowFixed } from '../../components/Row'
-import { ButtonPrimary } from '../../components/Button'
-import Badge from '../../components/Badge'
-import { TYPE } from '../../theme'
+import Badge from 'components/v3/Badge'
+import { TYPE } from 'theme/index'
+import { AutoColumn } from 'components/v3/Column'
+import { RowBetween, RowFixed } from 'components/v3/Row'
+import { ButtonPrimary } from 'components/v3/Button'
 
 const loadingAnimation = keyframes`
     0% {
