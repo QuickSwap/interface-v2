@@ -1,0 +1,25 @@
+.pool {
+  &__header {
+
+  }
+}
+
+@media screen and (max-width: 960px) {
+
+}
+
+@media screen and (max-width: 720px) {
+  .pool {
+    &__header {
+      //flex-direction: column;
+    }
+  }
+}
+
+@media screen and (max-width: 500px) {
+  .pool {
+    &__header {
+      flex-direction: column;
+    }
+  }
+}
