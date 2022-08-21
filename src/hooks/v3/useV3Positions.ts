@@ -3,7 +3,7 @@ import {
   Result,
   useSingleCallResult,
   useSingleContractMultipleData,
-} from 'state/multicall/hooks';
+} from 'state/multicall/v3/hooks';
 import { useEffect, useMemo } from 'react';
 import { BigNumber } from '@ethersproject/bignumber';
 import { useActiveWeb3React } from 'hooks';

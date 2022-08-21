@@ -84,7 +84,7 @@ export function SelectPair({
   useEffect(() => {
     return () => {
       if (history.action === 'POP') {
-        history.push('/pool');
+        history.push('/v3pools');
       }
     };
   }, []);

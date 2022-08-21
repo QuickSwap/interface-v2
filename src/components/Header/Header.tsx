@@ -63,7 +63,7 @@ const Header: React.FC = () => {
       id: 'swap-page-link',
     },
     {
-      link: '/pools',
+      link: '/v3pools',
       text: t('pool'),
       id: 'pools-page-link',
     },

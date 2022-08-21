@@ -277,7 +277,7 @@ export default function AddLiquidity() {
       onFieldAInput('');
       // dont jump to pool page if creating
       if (!mustCreateSeparately) {
-        history.push('/pool');
+        history.push('/v3pools');
       }
     }
     setTxHash('');
