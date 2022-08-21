@@ -3,7 +3,12 @@ import { PoolState, usePool } from 'hooks/v3/usePools';
 import { useToken } from 'hooks/v3/Tokens';
 import { useDerivedPositionInfo } from 'hooks/v3/useDerivedPositionInfo';
 import { useV3PositionFromTokenId } from 'hooks/v3/useV3Positions';
-import { NavLink, RouteComponentProps, useLocation, useParams } from 'react-router-dom';
+import {
+  NavLink,
+  RouteComponentProps,
+  useLocation,
+  useParams,
+} from 'react-router-dom';
 import { unwrappedToken } from 'utils/unwrappedToken';
 import Badge from 'components/v3/Badge';
 import CurrencyLogo from 'components/CurrencyLogo';
@@ -396,7 +401,10 @@ export default function PositionPage() {
         </Card>
       ) : (
         <>
-          <NavLink className={'c-p mb-1 f w-fc hover-op trans-op'} to='/v3Pools'>
+          <NavLink
+            className={'c-p mb-1 f w-fc hover-op trans-op'}
+            to='/v3Pools'
+          >
             ← Back to Pools Overview
           </NavLink>
           <Card classes={'br-24 p-2 mxs_p-1'}>

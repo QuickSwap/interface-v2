@@ -1,3 +1,4 @@
+import React from 'react';
 import { Currency, Token } from '@uniswap/sdk-core';
 import { TYPE } from 'theme/index';
 import CurrencyLogo from '../../components/CurrencyLogo';
