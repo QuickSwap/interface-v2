@@ -161,9 +161,10 @@ const App: React.FC = () => {
                     </Route>
                     <Route exact path='/v3pools'>
                       <PageLayout>
-                        <NewAddLiquidityPage></NewAddLiquidityPage>
+                        <PoolsPageV3></PoolsPageV3>
                       </PageLayout>
                     </Route>
+                    {/* <Route exact strict path="/pool/:tokenId" component={PositionPage} /> */}
                     <Route exact path='/add/:currencyIdA?/:currencyIdB?/:step'>
                       <PageLayout>
                         <NewAddLiquidityPage></NewAddLiquidityPage>
