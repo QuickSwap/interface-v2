@@ -392,7 +392,7 @@ export function NewAddLiquidityPage() {
 
   return (
     <>
-      <NavLink className={'c-p mb-1 f hover-op trans-op w-fc'} to={'/pool'}>
+      <NavLink className={'c-p mb-1 f hover-op trans-op w-fc'} to={'/v3Pools'}>
         <ArrowLeft size={'16px'} />
         <p className={'ml-05'}>Pools</p>
       </NavLink>

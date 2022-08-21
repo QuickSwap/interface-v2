@@ -61,6 +61,7 @@ import { NewAddLiquidityPage } from 'components/v3/NewAddLiquidity';
 import AddLiquidityV3 from 'components/AddLiquidityV3';
 import RemoveLiquidityV3 from 'components/v3/RemoveLiquidity/RemoveLiquidityV3';
 import PoolsPageV3 from 'pages/PoolsPageV3';
+import PositionPage from 'pages/PoolsPageV3/PositionPage';
 
 const Web3ProviderNetwork = createWeb3ReactRoot(
   GlobalConst.utils.NetworkContextName,
@@ -165,8 +166,12 @@ const App: React.FC = () => {
                         <PoolsPageV3></PoolsPageV3>
                       </PageLayout>
                     </Route>
-                    {/* <Route exact strict path="/pool/:tokenId" component={PositionPage} /> */}
-                    <Route exact path='/add/:currencyIdA?/:currencyIdB?/:step'>
+                    <Route exact strict path="/pool/:tokenId">
+                      <PageLayout>
+                        <PositionPage></PositionPage>
+                      </PageLayout>
+                    </Route>
+                    <Route exact path='/add/:currencyIdA?/:currencyIdB?/:step?'>
                       <PageLayout>
                         <NewAddLiquidityPage></NewAddLiquidityPage>
                       </PageLayout>
