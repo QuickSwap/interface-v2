@@ -23,6 +23,7 @@ import {
   convertBNToNumber,
   formatNumber,
   convertNumbertoBN,
+  getBulkPairData,
 } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import {
@@ -40,6 +41,7 @@ import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 import { GlobalValue } from 'constants/index';
 import { useEthPrice } from 'state/application/hooks';
 import useUSDCPrice from 'utils/useUSDCPrice';
+import { Link } from 'react-router-dom';
 
 interface QuickModalContentProps {
   borrow?: boolean;
@@ -438,6 +440,21 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
     }
   };
 
+  const pairAddress = asset.underlyingName.includes('LP')
+    ? asset.underlyingToken
+    : undefined;
+  const [pairData, setPairData] = useState<any>(null);
+
+  useEffect(() => {
+    if (!pairAddress || !ethPrice.price) return;
+    (async () => {
+      const pairInfo = await getBulkPairData([pairAddress], ethPrice.price);
+      if (pairInfo && pairInfo.length > 0) {
+        setPairData(pairInfo[0]);
+      }
+    })();
+  }, [pairAddress, ethPrice.price]);
+
   return (
     <>
       {openTxModal && (
@@ -646,6 +663,16 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
             >
               {buttonText}
             </Button>
+            {asset.underlyingName.includes('LP') && pairData && (
+              <Box mt={2} textAlign='center'>
+                <Link
+                  className='assetLPLink'
+                  to={`/pools?currency0=${pairData.token0.id}&currency1=${pairData.token1.id}`}
+                >
+                  Get {asset.underlyingSymbol} LP ↗
+                </Link>
+              </Box>
+            )}
           </Box>
         </Box>
       </CustomModal>

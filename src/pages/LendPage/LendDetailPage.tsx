@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   Box,
   Grid,
@@ -9,6 +9,7 @@ import {
   TableRow,
   TableCell,
   Snackbar,
+  Button,
 } from '@material-ui/core';
 import { Skeleton, Alert } from '@material-ui/lab';
 
@@ -30,6 +31,7 @@ import {
   convertMantissaToAPY,
   convertMantissaToAPR,
   getPoolAssetToken,
+  checkCTokenisApproved,
 } from 'utils/marketxyz';
 import { useBorrowLimit } from 'hooks/marketxyz/useBorrowLimit';
 import { useTranslation } from 'react-i18next';
@@ -297,19 +299,14 @@ const LendDetailPage: React.FC = () => {
                           {t('supplyapy')}
                         </MuiTableCell>
                         <MuiTableCell>{t('deposited')}</MuiTableCell>
-                        <MuiTableCell>{t('collateral')}</MuiTableCell>
+                        <MuiTableCell></MuiTableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
                       {poolData?.assets.map((asset) => {
                         return (
                           <TableRow key={asset.cToken.address}>
-                            <ItemTableCell
-                              onClick={() => {
-                                setSelectedAsset(asset);
-                                setModalIsBorrow(false);
-                              }}
-                            >
+                            <MuiTableCell>
                               <Box className='flex items-center'>
                                 <Box display={'flex'} mr='8px'>
                                   <CurrencyLogo
@@ -322,7 +319,7 @@ const LendDetailPage: React.FC = () => {
                                 </Box>
                                 <Box>
                                   <small className='text-gray29'>
-                                    {asset.underlyingName}
+                                    {asset.underlyingSymbol}
                                   </small>
                                   <p className='caption'>
                                     {t('ltv')}:{' '}
@@ -334,14 +331,8 @@ const LendDetailPage: React.FC = () => {
                                   </p>
                                 </Box>
                               </Box>
-                            </ItemTableCell>
-                            <ItemTableCell
-                              className='poolTableHideCell'
-                              onClick={() => {
-                                setSelectedAsset(asset);
-                                setModalIsBorrow(false);
-                              }}
-                            >
+                            </MuiTableCell>
+                            <MuiTableCell className='poolTableHideCell'>
                               <small>
                                 {convertMantissaToAPY(
                                   asset.supplyRatePerBlock,
@@ -367,13 +358,8 @@ const LendDetailPage: React.FC = () => {
                                   />
                                 </Box>
                               </Box>
-                            </ItemTableCell>
-                            <ItemTableCell
-                              onClick={() => {
-                                setSelectedAsset(asset);
-                                setModalIsBorrow(false);
-                              }}
-                            >
+                            </MuiTableCell>
+                            <MuiTableCell>
                               <small className='text-gray29'>
                                 {midUsdFormatter(asset.supplyBalanceUSD)}
                               </small>
@@ -386,52 +372,41 @@ const LendDetailPage: React.FC = () => {
                                   : '?'}{' '}
                                 {asset.underlyingSymbol}
                               </p>
-                            </ItemTableCell>
+                            </MuiTableCell>
                             <MuiTableCell>
-                              <Box className='flex justify-end'>
-                                <ToggleSwitch
-                                  toggled={asset.membership}
-                                  onToggle={() => {
-                                    if (account && !supplyToggled) {
-                                      setSupplyToggled(true);
-                                      toggleCollateral(
-                                        asset,
-                                        account,
-                                        asset.membership
-                                          ? t('cannotExitMarket')
-                                          : t('cannotEnterMarket'),
-                                      )
-                                        .then(() => {
-                                          setSupplyToggled(false);
-                                        })
-                                        .catch((er) => {
-                                          setSupplyToggled(false);
-                                          setAlertShow({
-                                            open: true,
-                                            msg: er.message,
-                                            status: 'error',
-                                          });
+                              <Button
+                                disabled={!account || supplyToggled}
+                                onClick={() => {
+                                  if (!asset.membership && account) {
+                                    setSupplyToggled(true);
+                                    toggleCollateral(
+                                      asset,
+                                      account,
+                                      asset.membership
+                                        ? t('cannotExitMarket')
+                                        : t('cannotEnterMarket'),
+                                    )
+                                      .then(() => {
+                                        setSupplyToggled(false);
+                                      })
+                                      .catch((er) => {
+                                        setSupplyToggled(false);
+                                        setAlertShow({
+                                          open: true,
+                                          msg: er.message,
+                                          status: 'error',
                                         });
-                                    }
-                                  }}
-                                />
-                                <Snackbar
-                                  open={alertShow.open}
-                                  autoHideDuration={6000}
-                                  anchorOrigin={{
-                                    vertical: 'bottom',
-                                    horizontal: 'left',
-                                  }}
-                                  onClose={handleAlertShowClose}
-                                >
-                                  <Alert
-                                    onClose={handleAlertShowClose}
-                                    severity={alertShow.status as any}
-                                  >
-                                    {alertShow.msg}
-                                  </Alert>
-                                </Snackbar>
-                              </Box>
+                                      });
+                                  } else {
+                                    setSelectedAsset(asset);
+                                    setModalIsBorrow(false);
+                                  }
+                                }}
+                              >
+                                {!asset.membership
+                                  ? t('enterMarket')
+                                  : t('deposit')}
+                              </Button>
                             </MuiTableCell>
                           </TableRow>
                         );
@@ -467,6 +442,7 @@ const LendDetailPage: React.FC = () => {
                         </MuiTableCell>
                         <MuiTableCell>{t('borrowed')}</MuiTableCell>
                         <MuiTableCell>{t('liquidity')}</MuiTableCell>
+                        <MuiTableCell></MuiTableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
@@ -475,14 +451,8 @@ const LendDetailPage: React.FC = () => {
                           return null;
                         }
                         return (
-                          <ItemTableRow
-                            key={asset.cToken.address}
-                            onClick={() => {
-                              setSelectedAsset(asset);
-                              setModalIsBorrow(true);
-                            }}
-                          >
-                            <ItemTableCell>
+                          <TableRow key={asset.cToken.address}>
+                            <MuiTableCell>
                               <Box display={'flex'} alignItems={'center'}>
                                 <Box display='flex' mr='8px'>
                                   <CurrencyLogo
@@ -494,11 +464,11 @@ const LendDetailPage: React.FC = () => {
                                   />
                                 </Box>
                                 <small className='text-gray29'>
-                                  {asset.underlyingName}
+                                  {asset.underlyingSymbol}
                                 </small>
                               </Box>
-                            </ItemTableCell>
-                            <ItemTableCell className='poolTableHideCell'>
+                            </MuiTableCell>
+                            <MuiTableCell className='poolTableHideCell'>
                               <p className='caption'>
                                 {convertMantissaToAPR(
                                   asset.borrowRatePerBlock,
@@ -509,8 +479,8 @@ const LendDetailPage: React.FC = () => {
                                 {shortUsdFormatter(asset.totalSupplyUSD)}{' '}
                                 {t('tvl')}
                               </p>
-                            </ItemTableCell>
-                            <ItemTableCell>
+                            </MuiTableCell>
+                            <MuiTableCell>
                               <small className='text-gray29'>
                                 {midUsdFormatter(asset.borrowBalanceUSD)}
                               </small>
@@ -523,8 +493,8 @@ const LendDetailPage: React.FC = () => {
                                   : '?'}{' '}
                                 {asset.underlyingSymbol}
                               </p>
-                            </ItemTableCell>
-                            <ItemTableCell>
+                            </MuiTableCell>
+                            <MuiTableCell>
                               <small className='text-gray29'>
                                 {midUsdFormatter(asset.liquidityUSD)}
                               </small>
@@ -537,8 +507,18 @@ const LendDetailPage: React.FC = () => {
                                   : '?'}{' '}
                                 {asset.underlyingSymbol}
                               </p>
-                            </ItemTableCell>
-                          </ItemTableRow>
+                            </MuiTableCell>
+                            <MuiTableCell>
+                              <Button
+                                onClick={() => {
+                                  setSelectedAsset(asset);
+                                  setModalIsBorrow(true);
+                                }}
+                              >
+                                {t('borrow')}
+                              </Button>
+                            </MuiTableCell>
+                          </TableRow>
                         );
                       })}
                     </TableBody>
@@ -593,19 +573,14 @@ const MuiTableCell = withStyles({
   root: {
     padding: '0px',
     borderBottom: 'none',
+    '& button': {
+      height: 36,
+      borderRadius: 10,
+      '& .MuiButton-label': {
+        fontSize: 14,
+      },
+    },
   },
 })(TableCell);
-
-const ItemTableCell = withStyles({
-  root: {
-    cursor: 'pointer',
-  },
-})(MuiTableCell);
-
-const ItemTableRow = withStyles({
-  root: {
-    cursor: 'pointer',
-  },
-})(TableRow);
 
 export default LendDetailPage;
