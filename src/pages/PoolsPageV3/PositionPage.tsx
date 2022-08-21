@@ -30,7 +30,7 @@ import {
 } from 'state/transactions/hooks';
 import { TransactionResponse } from '@ethersproject/providers';
 import { getPriceOrderingFromPositionForUI } from '../../components/v3/PositionListItem';
-import { useSingleCallResult } from 'state/multicall/hooks';
+import { useSingleCallResult } from 'state/multicall/v3/hooks';
 import useUSDCPrice from 'hooks/v3/useUSDCPrice';
 import Loader from 'components/Loader';
 import Toggle from 'components/Toggle';

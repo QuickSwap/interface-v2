@@ -3,7 +3,7 @@ import { Token as TokenV3, CurrencyAmount } from '@uniswap/sdk-core';
 import { useMemo } from 'react';
 
 import { useTokenContract } from 'hooks/useContract';
-import { useSingleCallResult } from 'state/multicall/hooks';
+import { useSingleCallResult } from 'state/multicall/v3/hooks';
 
 export function useTokenAllowance(
   token?: Token,

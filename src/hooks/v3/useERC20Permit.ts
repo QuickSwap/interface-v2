@@ -11,7 +11,7 @@ import { Trade as V3Trade } from 'lib/src/trade';
 import { splitSignature } from 'ethers/lib/utils';
 import { useMemo, useState } from 'react';
 import { SWAP_ROUTER_ADDRESSES } from 'constants/v3/addresses';
-import { useSingleCallResult } from 'state/multicall/hooks';
+import { useSingleCallResult } from 'state/multicall/v3/hooks';
 import { useActiveWeb3React } from 'hooks';
 import useTransactionDeadline from 'hooks/useTransactionDeadline';
 import { useEIP2612Contract } from 'hooks/useContract';

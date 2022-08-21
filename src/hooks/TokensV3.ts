@@ -2,7 +2,7 @@ import { parseBytes32String } from '@ethersproject/strings';
 import { Token } from '@uniswap/sdk-core';
 import { arrayify } from 'ethers/lib/utils';
 import { useMemo } from 'react';
-import { NEVER_RELOAD, useSingleCallResult } from '../state/multicall/hooks';
+import { NEVER_RELOAD, useSingleCallResult } from '../state/multicall/v3/hooks';
 import { isAddress } from '../utils';
 
 import { useActiveWeb3React } from 'hooks';
