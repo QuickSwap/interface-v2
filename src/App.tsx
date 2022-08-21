@@ -60,6 +60,7 @@ import GasUpdater from 'state/application/gasUpdater';
 import { NewAddLiquidityPage } from 'components/v3/NewAddLiquidity';
 import AddLiquidityV3 from 'components/AddLiquidityV3';
 import RemoveLiquidityV3 from 'components/v3/RemoveLiquidity/RemoveLiquidityV3';
+import PoolsPageV3 from 'pages/PoolsPageV3';
 
 const Web3ProviderNetwork = createWeb3ReactRoot(
   GlobalConst.utils.NetworkContextName,

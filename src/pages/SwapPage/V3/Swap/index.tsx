@@ -40,7 +40,7 @@ import { maxAmountSpend } from 'utils/v3/maxAmountSpend';
 import { V3TradeState } from 'hooks/v3/useBestV3Trade';
 import { computeFiatValuePriceImpact } from 'utils/v3/computeFiatValuePriceImpact';
 import { useAllTokens, useCurrency } from 'hooks/v3/Tokens';
- 
+
 import { AutoColumn } from 'components/v3/Column';
 import Row, { AutoRow } from 'components/v3/Row';
 import { GreyCard } from 'components/v3/Card';

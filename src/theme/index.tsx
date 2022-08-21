@@ -8,7 +8,7 @@ import styled, {
 import { useIsDarkMode } from 'state/user/hooks';
 import { Colors } from './styled';
 
-const MEDIA_WIDTHS = {
+export const MEDIA_WIDTHS = {
   upToExtraSmall: 500,
   upToSmall: 720,
   upToMedium: 960,
