@@ -98,7 +98,7 @@ export function Aftermath({ done, Button, rejected }: IAftermath) {
             <CheckCircle size={'36px'} stroke={'var(--green)'} />
           </div>
           <div className='mt-1 fs-125'>Liquidity added!</div>
-          <Link to={'/pool'} className='go-to-pools mt-2'>
+          <Link to={'/v3pools'} className='go-to-pools mt-2'>
             Go to pools
           </Link>
         </>

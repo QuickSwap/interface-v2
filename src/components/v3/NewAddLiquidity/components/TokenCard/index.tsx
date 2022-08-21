@@ -8,6 +8,7 @@ import { useCurrencyBalance } from 'state/wallet/hooks';
 import useUSDCPrice, { useUSDCValue } from 'hooks/v3/useUSDCPrice';
 import { PriceFormats } from '../PriceFomatToggler';
 import CurrencySearchModal from 'components/CurrencySearchModal';
+import { Box } from '@material-ui/core';
 import './index.scss';
 
 interface ITokenCard {
@@ -55,10 +56,37 @@ export function TokenCard({
   }, [priceFormat, balance, balanceUSD]);
 
   return (
-    <div
-      className='token-card p-1 mxs_w-100 mm_w-100'
-      onClick={() => toggleSelectModal(true)}
-    >
+    <Box>
+      <div
+        className='token-card p-1 mxs_w-100 mm_w-100'
+        onClick={() => toggleSelectModal(true)}
+      >
+        <div className='f mb-1'>
+          <div className='token-card-logo'>
+            <CurrencyLogo
+              size={'35px'}
+              currency={currency as WrappedCurrency}
+            ></CurrencyLogo>
+          </div>
+          <div className={'f c f-jc ml-1'}>
+            {currency && <div className='token-card__balance b'>BALANCE</div>}
+            <div>{`${priceFormat === PriceFormats.USD && currency ? '$' : ''} ${
+              currency ? _balance : `Not selected`
+            }`}</div>
+          </div>
+        </div>
+        <div className='token-card-selector'>
+          <button
+            className='token-card-selector__btn f f-ac w-100 f-jb'
+            onClick={() => toggleSelectModal(true)}
+          >
+            <span>{currency ? currency.symbol : 'Select a token'}</span>
+            <span className='token-card-selector__btn-chevron'>
+              <ChevronRight className='ml-05' size={18} />
+            </span>
+          </button>
+        </div>
+      </div>
       {selectModal && (
         <CurrencySearchModal
           isOpen={selectModal}
@@ -69,31 +97,6 @@ export function TokenCard({
           showCommonBases={true}
         ></CurrencySearchModal>
       )}
-      <div className='f mb-1'>
-        <div className='token-card-logo'>
-          <CurrencyLogo
-            size={'35px'}
-            currency={currency as WrappedCurrency}
-          ></CurrencyLogo>
-        </div>
-        <div className={'f c f-jc ml-1'}>
-          {currency && <div className='token-card__balance b'>BALANCE</div>}
-          <div>{`${priceFormat === PriceFormats.USD && currency ? '$' : ''} ${
-            currency ? _balance : `Not selected`
-          }`}</div>
-        </div>
-      </div>
-      <div className='token-card-selector'>
-        <button
-          className='token-card-selector__btn f f-ac w-100 f-jb'
-          onClick={() => toggleSelectModal(true)}
-        >
-          <span>{currency ? currency.symbol : 'Select a token'}</span>
-          <span className='token-card-selector__btn-chevron'>
-            <ChevronRight className='ml-05' size={18} />
-          </span>
-        </button>
-      </div>
-    </div>
+    </Box>
   );
 }
