@@ -1,9 +1,9 @@
-import React from 'react'
-import styled, { css } from 'styled-components/macro'
-import { Link } from 'react-router-dom'
-import { darken } from 'polished'
-import RangeBadge from '../Badge/RangeBadge'
-import { RowBetween } from '../Row'
+import React from 'react';
+import styled, { css } from 'styled-components/macro';
+import { Link } from 'react-router-dom';
+import { darken } from 'polished';
+import RangeBadge from '../Badge/RangeBadge';
+import { RowBetween } from '../Row';
 
 export const LinkRow = styled(Link)<{ onFarming?: boolean }>`
   align-items: center;
@@ -39,12 +39,12 @@ export const LinkRow = styled(Link)<{ onFarming?: boolean }>`
       border: 1px solid #30b2e6;
       background-color: rgba(60, 97, 126, 0.5);
     `}
-`
+`;
 export const PositionHeader = styled(RowBetween)`
   ${({ theme }) => theme.mediaWidth.upToSmall`
     flex-direction: column;
   `}
-`
+`;
 export const OnFarmingBadge = styled(Link)`
   display: flex;
   align-items: center;
@@ -63,14 +63,14 @@ export const OnFarmingBadge = styled(Link)`
   &:hover {
     background-color: ${({}) => darken(0.05, '#30b2e6')};
   }
-`
+`;
 const DataLineItem = styled.div`
   font-size: 14px;
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
   background-color: transparent;
     padding: 12px!important;
 `};
-`
+`;
 export const RangeLineItem = styled(DataLineItem)`
   display: flex;
   flex-direction: row;
@@ -84,7 +84,7 @@ export const RangeLineItem = styled(DataLineItem)`
     border-radius: 12px;
     padding: 8px 0;
 `};
-`
+`;
 export const DoubleArrow = styled.span`
   margin: 0 2px;
   color: white;
@@ -92,7 +92,7 @@ export const DoubleArrow = styled.span`
     margin: 4px;
     padding: 20px;
   `};
-`
+`;
 export const RangeText = styled.span`
   padding: 0.25rem 0.5rem;
   border-radius: 8px;
@@ -100,7 +100,7 @@ export const RangeText = styled.span`
   background-color: transparent;
     padding: 0;
 `};
-`
+`;
 export const ExtentsText = styled.span`
   color: white;
   font-size: 14px;
@@ -108,7 +108,7 @@ export const ExtentsText = styled.span`
   ${({ theme }) => theme.mediaWidth.upToSmall`
     display: none;
   `};
-`
+`;
 export const PrimaryPositionIdData = styled.div`
   display: flex;
   flex-direction: row;
@@ -120,7 +120,7 @@ export const PrimaryPositionIdData = styled.div`
   ${({ theme }) => theme.mediaWidth.upToSmall`
     margin-bottom: 1rem;
   `}
-`
+`;
 export const DataText = styled.div`
   font-weight: 600;
   font-size: 18px;
@@ -128,12 +128,12 @@ export const DataText = styled.div`
   ${({ theme }) => theme.mediaWidth.upToSmall`
     font-size: 14px;
   `};
-`
+`;
 export const StatusBadge = styled(RangeBadge)`
   ${({ theme }) => theme.mediaWidth.upToSmall`
     margin-top: 1rem;
   `}
-`
+`;
 export const StatusRow = styled.div`
   display: flex;
   width: 100%;
@@ -141,4 +141,4 @@ export const StatusRow = styled.div`
   ${({ theme }) => theme.mediaWidth.upToSmall`
   width: fit-content;
   `}
-`
+`;

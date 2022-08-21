@@ -1,6 +1,6 @@
-import { darken } from 'polished'
-import styled from 'styled-components/macro'
-import { MEDIA_WIDTHS } from 'theme'
+import { darken } from 'polished';
+import styled from 'styled-components/macro';
+import { MEDIA_WIDTHS } from 'theme/index';
 
 export const DesktopHeader = styled.div`
   display: none;
@@ -17,7 +17,7 @@ export const DesktopHeader = styled.div`
       margin-right: 12px;
     }
   }
-`
+`;
 export const MobileHeader = styled.div`
   font-size: 16px;
   font-weight: 500;
@@ -25,7 +25,7 @@ export const MobileHeader = styled.div`
   @media screen and (min-width: ${MEDIA_WIDTHS.upToSmall}px) {
     display: none;
   }
-`
+`;
 
 export const OldFarmingWarning = styled.div`
   background-color: #46210a;
@@ -41,7 +41,7 @@ export const OldFarmingWarning = styled.div`
     margin-left: auto;
 
     &:hover {
-      background-color: ${darken(0.1, 'white')}
+      background-color: ${darken(0.1, 'white')};
     }
   }
 
@@ -49,7 +49,7 @@ export const OldFarmingWarning = styled.div`
     margin-left: 0.5rem;
   }
 
-  ${({theme}) => theme.mediaWidth.upToMedium`
+  ${({ theme }) => theme.mediaWidth.upToMedium`
 
   align-items: flex-start;
   flex-direction: column;
@@ -65,5 +65,4 @@ export const OldFarmingWarning = styled.div`
     margin-top: 0.5rem;
   }
 `}
-
-`
+`;
