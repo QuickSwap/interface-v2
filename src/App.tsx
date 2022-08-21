@@ -166,7 +166,7 @@ const App: React.FC = () => {
                         <PoolsPageV3></PoolsPageV3>
                       </PageLayout>
                     </Route>
-                    <Route exact strict path="/pool/:tokenId">
+                    <Route exact strict path='/pool/:tokenId'>
                       <PageLayout>
                         <PositionPage></PositionPage>
                       </PageLayout>
