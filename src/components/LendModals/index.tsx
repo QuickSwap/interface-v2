@@ -23,6 +23,7 @@ import {
   convertBNToNumber,
   formatNumber,
   convertNumbertoBN,
+  getBulkPairData,
 } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import {
@@ -32,14 +33,17 @@ import {
   TransactionConfirmationModal,
   TransactionErrorContent,
   NumericalInput,
+  CurrencyLogo,
 } from 'components';
 import { useTranslation } from 'react-i18next';
 import 'components/styles/LendModal.scss';
+import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 import { useBorrowLimit } from 'hooks/marketxyz/useBorrowLimit';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 import { GlobalValue } from 'constants/index';
 import { useEthPrice } from 'state/application/hooks';
 import useUSDCPrice from 'utils/useUSDCPrice';
+import { Link } from 'react-router-dom';
 
 interface QuickModalContentProps {
   borrow?: boolean;
@@ -376,13 +380,16 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
     : Math.abs(updatedBorrowAPY - borrowAPY) > 0.1;
 
   const showArrow = Number(value) > 0 && updatedAsset;
+  const assetSymbol = currentAsset.underlyingName.includes('LP')
+    ? 'LP'
+    : currentAsset.underlyingSymbol;
 
   const lendModalRows = [
     {
       label: borrow ? t('borrowedBalance') : t('suppliedBalance'),
       html: borrow
         ? midUsdFormatter(currentAsset.borrowBalanceUSD)
-        : `${formatNumber(supplyBalance)} ${currentAsset.underlyingSymbol}`,
+        : `${formatNumber(supplyBalance)} ${assetSymbol}`,
       showArrow,
       htmlAfterArrow: updatedAsset
         ? borrow
@@ -392,13 +399,13 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
                 updatedAsset.supplyBalance,
                 currentAsset.underlyingDecimals,
               ),
-            )} ${currentAsset.underlyingSymbol}`
+            )} ${assetSymbol}`
         : '',
     },
     {
       label: borrow ? t('suppliedBalance') : t('supplyapy'),
       html: borrow
-        ? `${formatNumber(supplyBalance)} ${currentAsset.underlyingSymbol}`
+        ? `${formatNumber(supplyBalance)} ${assetSymbol}`
         : formatNumber(supplyAPY) + '%',
       showArrow: borrow ? false : updatedAsset && updatedAPYDiffIsLarge,
       htmlAfterArrow:
@@ -438,6 +445,21 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
     }
   };
 
+  const pairAddress = asset.underlyingName.includes('LP')
+    ? asset.underlyingToken
+    : undefined;
+  const [pairData, setPairData] = useState<any>(null);
+
+  useEffect(() => {
+    if (!pairAddress || !ethPrice.price) return;
+    (async () => {
+      const pairInfo = await getBulkPairData([pairAddress], ethPrice.price);
+      if (pairInfo && pairInfo.length > 0) {
+        setPairData(pairInfo[0]);
+      }
+    })();
+  }, [pairAddress, ethPrice.price]);
+
   return (
     <>
       {openTxModal && (
@@ -462,6 +484,22 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
       )}
       <CustomModal open={open} onClose={onClose}>
         <Box className='lendModalWrapper'>
+          <Box mt={1} mb={2.5} className='flex items-center justify-between'>
+            <Box className='flex items-center'>
+              <CurrencyLogo
+                currency={getPoolAssetToken(asset, chainId)}
+                withoutBg={asset.underlyingName.includes('LP')}
+                size='36px'
+              />
+              <Box className='flex' ml='6px'>
+                <p className='weight-600'>
+                  {asset.underlyingSymbol +
+                    (asset.underlyingName.includes('LP') ? ' LP' : '')}
+                </p>
+              </Box>
+            </Box>
+            <CloseIcon className='cursor-pointer' onClick={onClose} />
+          </Box>
           <ButtonSwitch
             height={56}
             padding={6}
@@ -489,7 +527,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
                   Number(currentAsset.underlyingBalance.toString()) /
                     10 ** Number(currentAsset.underlyingDecimals.toString()),
                 )}{' '}
-                {currentAsset.underlyingSymbol}
+                {assetSymbol}
               </p>
             )}
           </Box>
@@ -646,6 +684,16 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
             >
               {buttonText}
             </Button>
+            {asset.underlyingName.includes('LP') && pairData && (
+              <Box mt={2} textAlign='center'>
+                <Link
+                  className='assetLPLink'
+                  to={`/pools?currency0=${pairData.token0.id}&currency1=${pairData.token1.id}`}
+                >
+                  Get {asset.underlyingSymbol} LP ↗
+                </Link>
+              </Box>
+            )}
           </Box>
         </Box>
       </CustomModal>

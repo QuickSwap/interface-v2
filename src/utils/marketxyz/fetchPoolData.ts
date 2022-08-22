@@ -131,7 +131,9 @@ export const fetchPoolData = async (
       .map((asset) => {
         return {
           ...asset,
-          underlyingName: asset.underlyingName.replace('Uniswap', 'Quickswap'),
+          underlyingName: asset.underlyingName
+            .replace('Uniswap', '')
+            .replace('/', '-'),
         };
       }),
 

@@ -44,15 +44,15 @@ const LendDetailAssetStats: React.FC<{ poolData: PoolData }> = ({
       <Box className='flex flex-col poolDetailsItemWrapper'>
         <Box className='poolDetailsItemTop'>
           <h6>
-            {asset.underlyingName} {t('statistics')}
+            {asset.underlyingSymbol} {t('statistics')}
           </h6>
           <Box height={40} minWidth={200}>
             <CustomMenu
               title=''
-              selectedValue={asset.underlyingName}
+              selectedValue={asset.underlyingSymbol}
               menuItems={poolData.assets.map((item, index) => {
                 return {
-                  text: item.underlyingName,
+                  text: item.underlyingSymbol,
                   onClick: () => {
                     setAssetIndex(index.toString());
                   },
