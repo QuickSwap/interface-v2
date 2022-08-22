@@ -8,13 +8,11 @@ import {
   TableHead,
   TableRow,
   TableCell,
-  Snackbar,
+  Button,
 } from '@material-ui/core';
-import { Skeleton, Alert } from '@material-ui/lab';
+import { Skeleton } from '@material-ui/lab';
 
-import { _100 } from '@uniswap/sdk/dist/constants';
 import { useHistory, useLocation } from 'react-router-dom';
-import ToggleSwitch from 'components/ToggleSwitch';
 
 import { QuickModalContent } from 'components/LendModals';
 
@@ -44,19 +42,12 @@ const LendDetailPage: React.FC = () => {
   const history = useHistory();
   const location = useLocation();
   const { chainId, account } = useActiveWeb3React();
-  const [supplyToggled, setSupplyToggled] = useState(false);
-  const [assetsCollateral, setAssetsCollateral] = useState<
-    { address: string; collateral: boolean }[]
-  >([]);
 
-  const [modalIsBorrow, setModalIsBorrow] = useState<boolean>(false);
-  const [alertShow, setAlertShow] = useState({
-    open: false,
-    msg: '',
-    status: 'success',
-  });
-
-  const [selectedAsset, setSelectedAsset] = useState<USDPricedPoolAsset>();
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalIsBorrow, setModalIsBorrow] = useState(false);
+  const [selectedAsset, setSelectedAsset] = useState<
+    USDPricedPoolAsset | undefined
+  >(undefined);
 
   const { sdk } = useMarket();
   const poolId = location && new URLSearchParams(location.search).get('poolId');
@@ -68,24 +59,6 @@ const LendDetailPage: React.FC = () => {
   );
 
   const borrowLimit = useBorrowLimit(poolData?.assets);
-  const handleAlertShowClose = () => {
-    setAlertShow({
-      open: false,
-      msg: '',
-      status: 'error',
-    });
-  };
-
-  useEffect(() => {
-    if (!poolData) {
-      setAssetsCollateral([]);
-    } else {
-      const collaterals = poolData.assets.map((asset) => {
-        return { address: asset.cToken.address, collateral: asset.membership };
-      });
-      setAssetsCollateral(collaterals);
-    }
-  }, [poolData]);
 
   const poolUtilization = !poolData
     ? 0
@@ -162,11 +135,13 @@ const LendDetailPage: React.FC = () => {
     {
       label: t('averageAdminFee'),
       data: poolData
-        ? poolData.assets.reduce(
-            (a, b, _, { length }) =>
-              a + Number(b.adminFee.toString()) / 1e16 / length,
-            0,
-          )
+        ? poolData.assets
+            .reduce(
+              (a, b, _, { length }) =>
+                a + Number(b.adminFee.toString()) / 1e16 / length,
+              0,
+            )
+            .toLocaleString()
         : undefined,
     },
     {
@@ -234,6 +209,7 @@ const LendDetailPage: React.FC = () => {
                 currency={getPoolAssetToken(asset, chainId)}
                 key={i}
                 size={'24px'}
+                withoutBg={asset.underlyingName.includes('LP')}
               />
             ))}
           </Box>
@@ -302,41 +278,37 @@ const LendDetailPage: React.FC = () => {
                   <Table>
                     <TableHead>
                       <TableRow>
-                        <MuiTableCell>
+                        <TableCell>
                           {t('asset')} / {t('ltv')}
-                        </MuiTableCell>
-                        <MuiTableCell className='poolTableHideCell'>
+                        </TableCell>
+                        <TableCell className='poolTableHideCell'>
                           {t('supplyapy')}
-                        </MuiTableCell>
-                        <MuiTableCell>{t('deposited')}</MuiTableCell>
-                        <MuiTableCell>{t('collateral')}</MuiTableCell>
+                        </TableCell>
+                        <TableCell>{t('deposited')}</TableCell>
+                        <TableCell></TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
                       {poolData?.assets.map((asset) => {
-                        const assetCollateralIndex = assetsCollateral.findIndex(
-                          ({ address }) =>
-                            address.toLowerCase() ===
-                            asset.cToken.address.toLowerCase(),
-                        );
                         return (
                           <TableRow key={asset.cToken.address}>
-                            <ItemTableCell
-                              onClick={() => {
-                                setSelectedAsset(asset);
-                                setModalIsBorrow(false);
-                              }}
-                            >
+                            <TableCell>
                               <Box className='flex items-center'>
                                 <Box display={'flex'} mr='8px'>
                                   <CurrencyLogo
                                     currency={getPoolAssetToken(asset, chainId)}
                                     size={'36px'}
+                                    withoutBg={asset.underlyingName.includes(
+                                      'LP',
+                                    )}
                                   />
                                 </Box>
                                 <Box>
                                   <small className='text-gray29'>
-                                    {asset.underlyingName}
+                                    {asset.underlyingSymbol +
+                                      (asset.underlyingName.includes('LP')
+                                        ? ' LP'
+                                        : '')}
                                   </small>
                                   <p className='caption'>
                                     {t('ltv')}:{' '}
@@ -348,14 +320,8 @@ const LendDetailPage: React.FC = () => {
                                   </p>
                                 </Box>
                               </Box>
-                            </ItemTableCell>
-                            <ItemTableCell
-                              className='poolTableHideCell'
-                              onClick={() => {
-                                setSelectedAsset(asset);
-                                setModalIsBorrow(false);
-                              }}
-                            >
+                            </TableCell>
+                            <TableCell className='poolTableHideCell'>
                               <small>
                                 {convertMantissaToAPY(
                                   asset.supplyRatePerBlock,
@@ -375,16 +341,14 @@ const LendDetailPage: React.FC = () => {
                                   <CurrencyLogo
                                     currency={getPoolAssetToken(asset, chainId)}
                                     size={'16px'}
+                                    withoutBg={asset.underlyingName.includes(
+                                      'LP',
+                                    )}
                                   />
                                 </Box>
                               </Box>
-                            </ItemTableCell>
-                            <ItemTableCell
-                              onClick={() => {
-                                setSelectedAsset(asset);
-                                setModalIsBorrow(false);
-                              }}
-                            >
+                            </TableCell>
+                            <TableCell>
                               <small className='text-gray29'>
                                 {midUsdFormatter(asset.supplyBalanceUSD)}
                               </small>
@@ -395,83 +359,45 @@ const LendDetailPage: React.FC = () => {
                                       asset.underlyingDecimals,
                                     ).toFixed(2)
                                   : '?'}{' '}
-                                {asset.underlyingSymbol}
+                                {asset.underlyingName.includes('LP')
+                                  ? 'LP'
+                                  : asset.underlyingSymbol}
                               </p>
-                            </ItemTableCell>
-                            <MuiTableCell>
-                              <Box className='flex justify-end'>
-                                <ToggleSwitch
-                                  toggled={
-                                    assetCollateralIndex >= 0
-                                      ? assetsCollateral[assetCollateralIndex]
-                                          .collateral
-                                      : false
-                                  }
-                                  onToggle={() => {
-                                    if (account && !supplyToggled) {
-                                      setSupplyToggled(true);
-                                      toggleCollateral(
-                                        asset,
-                                        poolData.pool.comptroller,
-                                        account,
-                                        asset.membership
-                                          ? t('cannotExitMarket')
-                                          : t('cannotEnterMarket'),
-                                      )
-                                        .then(() => {
-                                          if (assetCollateralIndex >= 0) {
-                                            setAssetsCollateral([
-                                              ...assetsCollateral.slice(
-                                                0,
-                                                assetCollateralIndex,
-                                              ),
-                                              {
-                                                address: asset.cToken.address,
-                                                collateral: !assetsCollateral[
-                                                  assetCollateralIndex
-                                                ],
-                                              },
-                                              ...assetsCollateral.slice(
-                                                assetCollateralIndex + 1,
-                                              ),
-                                            ]);
-                                          }
-                                        })
-                                        .catch((er) => {
-                                          setAlertShow({
-                                            open: true,
-                                            msg: er.message,
-                                            status: 'error',
-                                          });
-                                        })
-                                        .finally(() => setSupplyToggled(false));
-                                    } else {
-                                      setAlertShow({
-                                        open: true,
-                                        msg: t('walletnotconnected'),
-                                        status: 'error',
+                            </TableCell>
+                            <TableCell>
+                              <Button
+                                disabled={
+                                  !account ||
+                                  asset.underlyingToken ===
+                                    selectedAsset?.underlyingToken
+                                }
+                                onClick={() => {
+                                  setSelectedAsset(asset);
+                                  if (!asset.membership && account) {
+                                    toggleCollateral(
+                                      asset,
+                                      account,
+                                      asset.membership
+                                        ? t('cannotExitMarket')
+                                        : t('cannotEnterMarket'),
+                                    )
+                                      .then(() => {
+                                        setSelectedAsset(undefined);
+                                      })
+                                      .catch(() => {
+                                        setSelectedAsset(undefined);
                                       });
-                                    }
-                                  }}
-                                />
-                                <Snackbar
-                                  open={alertShow.open}
-                                  autoHideDuration={6000}
-                                  anchorOrigin={{
-                                    vertical: 'bottom',
-                                    horizontal: 'left',
-                                  }}
-                                  onClose={handleAlertShowClose}
-                                >
-                                  <Alert
-                                    onClose={handleAlertShowClose}
-                                    severity={alertShow.status as any}
-                                  >
-                                    {alertShow.msg}
-                                  </Alert>
-                                </Snackbar>
-                              </Box>
-                            </MuiTableCell>
+                                  } else {
+                                    setModalOpen(true);
+                                    setModalIsBorrow(false);
+                                  }
+                                }}
+                              >
+                                {!asset.membership
+                                  ? t('enterMarket')
+                                  : t('deposit')}
+                              </Button>
+                            </TableCell>
                           </TableRow>
                         );
                       })}
@@ -500,12 +426,13 @@ const LendDetailPage: React.FC = () => {
                   <Table>
                     <TableHead>
                       <TableRow>
-                        <MuiTableCell>{t('asset')}</MuiTableCell>
-                        <MuiTableCell className='poolTableHideCell'>
+                        <TableCell>{t('asset')}</TableCell>
+                        <TableCell className='poolTableHideCell'>
                           {t('apr')} / {t('tvl')}
-                        </MuiTableCell>
-                        <MuiTableCell>{t('borrowed')}</MuiTableCell>
-                        <MuiTableCell>{t('liquidity')}</MuiTableCell>
+                        </TableCell>
+                        <TableCell>{t('borrowed')}</TableCell>
+                        <TableCell>{t('liquidity')}</TableCell>
+                        <TableCell></TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
@@ -514,27 +441,27 @@ const LendDetailPage: React.FC = () => {
                           return null;
                         }
                         return (
-                          <ItemTableRow
-                            key={asset.cToken.address}
-                            onClick={() => {
-                              setSelectedAsset(asset);
-                              setModalIsBorrow(true);
-                            }}
-                          >
-                            <ItemTableCell>
+                          <TableRow key={asset.cToken.address}>
+                            <TableCell>
                               <Box display={'flex'} alignItems={'center'}>
                                 <Box display='flex' mr='8px'>
                                   <CurrencyLogo
                                     currency={getPoolAssetToken(asset, chainId)}
                                     size={'36px'}
+                                    withoutBg={asset.underlyingName.includes(
+                                      'LP',
+                                    )}
                                   />
                                 </Box>
                                 <small className='text-gray29'>
-                                  {asset.underlyingName}
+                                  {asset.underlyingSymbol +
+                                    (asset.underlyingName.includes('LP')
+                                      ? ' LP'
+                                      : '')}
                                 </small>
                               </Box>
-                            </ItemTableCell>
-                            <ItemTableCell className='poolTableHideCell'>
+                            </TableCell>
+                            <TableCell className='poolTableHideCell'>
                               <p className='caption'>
                                 {convertMantissaToAPR(
                                   asset.borrowRatePerBlock,
@@ -545,8 +472,8 @@ const LendDetailPage: React.FC = () => {
                                 {shortUsdFormatter(asset.totalSupplyUSD)}{' '}
                                 {t('tvl')}
                               </p>
-                            </ItemTableCell>
-                            <ItemTableCell>
+                            </TableCell>
+                            <TableCell>
                               <small className='text-gray29'>
                                 {midUsdFormatter(asset.borrowBalanceUSD)}
                               </small>
@@ -557,10 +484,12 @@ const LendDetailPage: React.FC = () => {
                                       asset.underlyingDecimals,
                                     ).toFixed(2)
                                   : '?'}{' '}
-                                {asset.underlyingSymbol}
+                                {asset.underlyingName.includes('LP')
+                                  ? 'LP'
+                                  : asset.underlyingSymbol}
                               </p>
-                            </ItemTableCell>
-                            <ItemTableCell>
+                            </TableCell>
+                            <TableCell>
                               <small className='text-gray29'>
                                 {midUsdFormatter(asset.liquidityUSD)}
                               </small>
@@ -571,10 +500,24 @@ const LendDetailPage: React.FC = () => {
                                       asset.underlyingDecimals,
                                     ).toFixed(2)
                                   : '?'}{' '}
-                                {asset.underlyingSymbol}
+                                {asset.underlyingName.includes('LP')
+                                  ? 'LP'
+                                  : asset.underlyingSymbol}
                               </p>
-                            </ItemTableCell>
-                          </ItemTableRow>
+                            </TableCell>
+                            <TableCell>
+                              <Button
+                                disabled={!account}
+                                onClick={() => {
+                                  setSelectedAsset(asset);
+                                  setModalOpen(true);
+                                  setModalIsBorrow(true);
+                                }}
+                              >
+                                {t('borrow')}
+                              </Button>
+                            </TableCell>
+                          </TableRow>
                         );
                       })}
                     </TableBody>
@@ -613,36 +556,19 @@ const LendDetailPage: React.FC = () => {
         </Box>
       </Box>
 
-      {selectedAsset && (
+      {modalOpen && selectedAsset && (
         <QuickModalContent
-          open={!!selectedAsset}
-          onClose={() => setSelectedAsset(undefined)}
-          borrow={modalIsBorrow}
+          open={modalOpen}
+          onClose={() => {
+            setSelectedAsset(undefined);
+            setModalOpen(false);
+          }}
           asset={selectedAsset}
-          borrowLimit={borrowLimit ?? 0}
+          borrow={modalIsBorrow}
         />
       )}
     </>
   );
 };
-
-const MuiTableCell = withStyles({
-  root: {
-    padding: '0px',
-    borderBottom: 'none',
-  },
-})(TableCell);
-
-const ItemTableCell = withStyles({
-  root: {
-    cursor: 'pointer',
-  },
-})(MuiTableCell);
-
-const ItemTableRow = withStyles({
-  root: {
-    cursor: 'pointer',
-  },
-})(TableRow);
 
 export default LendDetailPage;

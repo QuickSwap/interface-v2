@@ -126,7 +126,16 @@ export const fetchPoolData = async (
     poolId,
     pool,
     summary,
-    assets: assets.sort((a, b) => (b.liquidityUSD > a.liquidityUSD ? 1 : -1)),
+    assets: assets
+      .sort((a, b) => (b.liquidityUSD > a.liquidityUSD ? 1 : -1))
+      .map((asset) => {
+        return {
+          ...asset,
+          underlyingName: asset.underlyingName
+            .replace('Uniswap', '')
+            .replace('/', '-'),
+        };
+      }),
 
     totalLiquidityUSD,
     totalSuppliedUSD,

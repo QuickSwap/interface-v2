@@ -183,8 +183,23 @@
   padding: 12px 20px 16px;
   & .MuiTableCell-root {
     padding: 4px;
+    border-bottom: none;
     &:not(:first-child) {
       text-align: right;
+    }
+    & button {
+      height: 36px;
+      border-radius: 10px;
+      & .MuiButton-label {
+        font-size: 14px;
+      }
+      &.Mui-disabled {
+        background: $grey2;
+        opacity: 1;
+        & .MuiButton-label {
+          color: $textSecondary
+        }
+      }
     }
   }
 }
