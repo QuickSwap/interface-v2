@@ -305,7 +305,10 @@ const LendDetailPage: React.FC = () => {
                                 </Box>
                                 <Box>
                                   <small className='text-gray29'>
-                                    {asset.underlyingSymbol}
+                                    {asset.underlyingSymbol +
+                                      (asset.underlyingName.includes('LP')
+                                        ? ' LP'
+                                        : '')}
                                   </small>
                                   <p className='caption'>
                                     {t('ltv')}:{' '}
@@ -356,7 +359,9 @@ const LendDetailPage: React.FC = () => {
                                       asset.underlyingDecimals,
                                     ).toFixed(2)
                                   : '?'}{' '}
-                                {asset.underlyingSymbol}
+                                {asset.underlyingName.includes('LP')
+                                  ? 'LP'
+                                  : asset.underlyingSymbol}
                               </p>
                             </TableCell>
                             <TableCell>
@@ -449,7 +454,10 @@ const LendDetailPage: React.FC = () => {
                                   />
                                 </Box>
                                 <small className='text-gray29'>
-                                  {asset.underlyingSymbol}
+                                  {asset.underlyingSymbol +
+                                    (asset.underlyingName.includes('LP')
+                                      ? ' LP'
+                                      : '')}
                                 </small>
                               </Box>
                             </TableCell>
@@ -476,7 +484,9 @@ const LendDetailPage: React.FC = () => {
                                       asset.underlyingDecimals,
                                     ).toFixed(2)
                                   : '?'}{' '}
-                                {asset.underlyingSymbol}
+                                {asset.underlyingName.includes('LP')
+                                  ? 'LP'
+                                  : asset.underlyingSymbol}
                               </p>
                             </TableCell>
                             <TableCell>
@@ -490,7 +500,9 @@ const LendDetailPage: React.FC = () => {
                                       asset.underlyingDecimals,
                                     ).toFixed(2)
                                   : '?'}{' '}
-                                {asset.underlyingSymbol}
+                                {asset.underlyingName.includes('LP')
+                                  ? 'LP'
+                                  : asset.underlyingSymbol}
                               </p>
                             </TableCell>
                             <TableCell>
