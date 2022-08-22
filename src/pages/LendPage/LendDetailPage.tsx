@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   Grid,
@@ -8,13 +8,11 @@ import {
   TableHead,
   TableRow,
   TableCell,
-  Snackbar,
   Button,
 } from '@material-ui/core';
-import { Skeleton, Alert } from '@material-ui/lab';
+import { Skeleton } from '@material-ui/lab';
 
 import { useHistory, useLocation } from 'react-router-dom';
-import ToggleSwitch from 'components/ToggleSwitch';
 
 import { QuickModalContent } from 'components/LendModals';
 
@@ -31,7 +29,6 @@ import {
   convertMantissaToAPY,
   convertMantissaToAPR,
   getPoolAssetToken,
-  checkCTokenisApproved,
 } from 'utils/marketxyz';
 import { useBorrowLimit } from 'hooks/marketxyz/useBorrowLimit';
 import { useTranslation } from 'react-i18next';
@@ -45,16 +42,12 @@ const LendDetailPage: React.FC = () => {
   const history = useHistory();
   const location = useLocation();
   const { chainId, account } = useActiveWeb3React();
-  const [supplyToggled, setSupplyToggled] = useState(false);
 
-  const [modalIsBorrow, setModalIsBorrow] = useState<boolean>(false);
-  const [alertShow, setAlertShow] = useState({
-    open: false,
-    msg: '',
-    status: 'success',
-  });
-
-  const [selectedAsset, setSelectedAsset] = useState<USDPricedPoolAsset>();
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalIsBorrow, setModalIsBorrow] = useState(false);
+  const [selectedAsset, setSelectedAsset] = useState<
+    USDPricedPoolAsset | undefined
+  >(undefined);
 
   const { sdk } = useMarket();
   const poolId = location && new URLSearchParams(location.search).get('poolId');
@@ -66,13 +59,6 @@ const LendDetailPage: React.FC = () => {
   );
 
   const borrowLimit = useBorrowLimit(poolData?.assets);
-  const handleAlertShowClose = () => {
-    setAlertShow({
-      open: false,
-      msg: '',
-      status: 'error',
-    });
-  };
 
   const poolUtilization = !poolData
     ? 0
@@ -292,21 +278,21 @@ const LendDetailPage: React.FC = () => {
                   <Table>
                     <TableHead>
                       <TableRow>
-                        <MuiTableCell>
+                        <TableCell>
                           {t('asset')} / {t('ltv')}
-                        </MuiTableCell>
-                        <MuiTableCell className='poolTableHideCell'>
+                        </TableCell>
+                        <TableCell className='poolTableHideCell'>
                           {t('supplyapy')}
-                        </MuiTableCell>
-                        <MuiTableCell>{t('deposited')}</MuiTableCell>
-                        <MuiTableCell></MuiTableCell>
+                        </TableCell>
+                        <TableCell>{t('deposited')}</TableCell>
+                        <TableCell></TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
                       {poolData?.assets.map((asset) => {
                         return (
                           <TableRow key={asset.cToken.address}>
-                            <MuiTableCell>
+                            <TableCell>
                               <Box className='flex items-center'>
                                 <Box display={'flex'} mr='8px'>
                                   <CurrencyLogo
@@ -331,8 +317,8 @@ const LendDetailPage: React.FC = () => {
                                   </p>
                                 </Box>
                               </Box>
-                            </MuiTableCell>
-                            <MuiTableCell className='poolTableHideCell'>
+                            </TableCell>
+                            <TableCell className='poolTableHideCell'>
                               <small>
                                 {convertMantissaToAPY(
                                   asset.supplyRatePerBlock,
@@ -358,8 +344,8 @@ const LendDetailPage: React.FC = () => {
                                   />
                                 </Box>
                               </Box>
-                            </MuiTableCell>
-                            <MuiTableCell>
+                            </TableCell>
+                            <TableCell>
                               <small className='text-gray29'>
                                 {midUsdFormatter(asset.supplyBalanceUSD)}
                               </small>
@@ -372,13 +358,17 @@ const LendDetailPage: React.FC = () => {
                                   : '?'}{' '}
                                 {asset.underlyingSymbol}
                               </p>
-                            </MuiTableCell>
-                            <MuiTableCell>
+                            </TableCell>
+                            <TableCell>
                               <Button
-                                disabled={!account || supplyToggled}
+                                disabled={
+                                  !account ||
+                                  asset.underlyingToken ===
+                                    selectedAsset?.underlyingToken
+                                }
                                 onClick={() => {
+                                  setSelectedAsset(asset);
                                   if (!asset.membership && account) {
-                                    setSupplyToggled(true);
                                     toggleCollateral(
                                       asset,
                                       account,
@@ -387,18 +377,13 @@ const LendDetailPage: React.FC = () => {
                                         : t('cannotEnterMarket'),
                                     )
                                       .then(() => {
-                                        setSupplyToggled(false);
+                                        setSelectedAsset(undefined);
                                       })
-                                      .catch((er) => {
-                                        setSupplyToggled(false);
-                                        setAlertShow({
-                                          open: true,
-                                          msg: er.message,
-                                          status: 'error',
-                                        });
+                                      .catch(() => {
+                                        setSelectedAsset(undefined);
                                       });
                                   } else {
-                                    setSelectedAsset(asset);
+                                    setModalOpen(true);
                                     setModalIsBorrow(false);
                                   }
                                 }}
@@ -407,7 +392,7 @@ const LendDetailPage: React.FC = () => {
                                   ? t('enterMarket')
                                   : t('deposit')}
                               </Button>
-                            </MuiTableCell>
+                            </TableCell>
                           </TableRow>
                         );
                       })}
@@ -436,13 +421,13 @@ const LendDetailPage: React.FC = () => {
                   <Table>
                     <TableHead>
                       <TableRow>
-                        <MuiTableCell>{t('asset')}</MuiTableCell>
-                        <MuiTableCell className='poolTableHideCell'>
+                        <TableCell>{t('asset')}</TableCell>
+                        <TableCell className='poolTableHideCell'>
                           {t('apr')} / {t('tvl')}
-                        </MuiTableCell>
-                        <MuiTableCell>{t('borrowed')}</MuiTableCell>
-                        <MuiTableCell>{t('liquidity')}</MuiTableCell>
-                        <MuiTableCell></MuiTableCell>
+                        </TableCell>
+                        <TableCell>{t('borrowed')}</TableCell>
+                        <TableCell>{t('liquidity')}</TableCell>
+                        <TableCell></TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
@@ -452,7 +437,7 @@ const LendDetailPage: React.FC = () => {
                         }
                         return (
                           <TableRow key={asset.cToken.address}>
-                            <MuiTableCell>
+                            <TableCell>
                               <Box display={'flex'} alignItems={'center'}>
                                 <Box display='flex' mr='8px'>
                                   <CurrencyLogo
@@ -467,8 +452,8 @@ const LendDetailPage: React.FC = () => {
                                   {asset.underlyingSymbol}
                                 </small>
                               </Box>
-                            </MuiTableCell>
-                            <MuiTableCell className='poolTableHideCell'>
+                            </TableCell>
+                            <TableCell className='poolTableHideCell'>
                               <p className='caption'>
                                 {convertMantissaToAPR(
                                   asset.borrowRatePerBlock,
@@ -479,8 +464,8 @@ const LendDetailPage: React.FC = () => {
                                 {shortUsdFormatter(asset.totalSupplyUSD)}{' '}
                                 {t('tvl')}
                               </p>
-                            </MuiTableCell>
-                            <MuiTableCell>
+                            </TableCell>
+                            <TableCell>
                               <small className='text-gray29'>
                                 {midUsdFormatter(asset.borrowBalanceUSD)}
                               </small>
@@ -493,8 +478,8 @@ const LendDetailPage: React.FC = () => {
                                   : '?'}{' '}
                                 {asset.underlyingSymbol}
                               </p>
-                            </MuiTableCell>
-                            <MuiTableCell>
+                            </TableCell>
+                            <TableCell>
                               <small className='text-gray29'>
                                 {midUsdFormatter(asset.liquidityUSD)}
                               </small>
@@ -507,17 +492,19 @@ const LendDetailPage: React.FC = () => {
                                   : '?'}{' '}
                                 {asset.underlyingSymbol}
                               </p>
-                            </MuiTableCell>
-                            <MuiTableCell>
+                            </TableCell>
+                            <TableCell>
                               <Button
+                                disabled={!account}
                                 onClick={() => {
                                   setSelectedAsset(asset);
+                                  setModalOpen(true);
                                   setModalIsBorrow(true);
                                 }}
                               >
                                 {t('borrow')}
                               </Button>
-                            </MuiTableCell>
+                            </TableCell>
                           </TableRow>
                         );
                       })}
@@ -557,30 +544,19 @@ const LendDetailPage: React.FC = () => {
         </Box>
       </Box>
 
-      {selectedAsset && (
+      {modalOpen && selectedAsset && (
         <QuickModalContent
-          open={!!selectedAsset}
-          onClose={() => setSelectedAsset(undefined)}
-          borrow={modalIsBorrow}
+          open={modalOpen}
+          onClose={() => {
+            setSelectedAsset(undefined);
+            setModalOpen(false);
+          }}
           asset={selectedAsset}
+          borrow={modalIsBorrow}
         />
       )}
     </>
   );
 };
-
-const MuiTableCell = withStyles({
-  root: {
-    padding: '0px',
-    borderBottom: 'none',
-    '& button': {
-      height: 36,
-      borderRadius: 10,
-      '& .MuiButton-label': {
-        fontSize: 14,
-      },
-    },
-  },
-})(TableCell);
 
 export default LendDetailPage;
