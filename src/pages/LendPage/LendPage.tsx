@@ -13,6 +13,7 @@ import { Token } from '@uniswap/sdk';
 import { GlobalValue } from 'constants/index';
 import LendAlertBox from './LendAlertBox';
 import { usePoolsData } from 'hooks/marketxyz/usePoolData';
+import AdsSlider from 'components/AdsSlider';
 
 const LendPage: React.FC = () => {
   const { t } = useTranslation();
@@ -115,6 +116,9 @@ const LendPage: React.FC = () => {
         <h4 className='text-bold'>{t('lend')}</h4>
       </Box>
       <LendAlertBox />
+      <Box mt={2} mb={3}>
+        <AdsSlider sort='5' />
+      </Box>
       <Box mb={3} textAlign='center'>
         <h4 className='text-bold'>{t('lendPageTitle')}</h4>
         <Box mt={'16px'} maxWidth={'520px'} marginX='auto'>

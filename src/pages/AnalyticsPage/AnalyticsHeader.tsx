@@ -6,6 +6,7 @@ import AnalyticsSearch from 'components/AnalyticsSearch';
 import { shortenAddress } from 'utils';
 import 'pages/styles/analytics.scss';
 import { useTranslation } from 'react-i18next';
+import AdsSlider from 'components/AdsSlider';
 
 interface AnalyticHeaderProps {
   data?: any;
@@ -19,8 +20,11 @@ const AnalyticsHeader: React.FC<AnalyticHeaderProps> = ({ data, type }) => {
 
   return (
     <Box width='100%' mb={3}>
-      <Box mb={4}>
+      <Box mb={3}>
         <h4>{t('quickswapAnalytics')}</h4>
+      </Box>
+      <Box mb={3}>
+        <AdsSlider sort='6' />
       </Box>
       <Box
         mb={4}

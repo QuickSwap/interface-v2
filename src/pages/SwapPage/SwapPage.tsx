@@ -16,6 +16,7 @@ import SwapProInfo from './SwapProInfo';
 import SwapProFilter from './SwapProFilter';
 import { useTranslation } from 'react-i18next';
 import 'pages/styles/swap.scss';
+import AdsSlider from 'components/AdsSlider';
 
 const SwapPage: React.FC = () => {
   const { isProMode, updateIsProMode } = useIsProMode();
@@ -110,6 +111,9 @@ const SwapPage: React.FC = () => {
           <Grid item xs={12} sm={12} md={6} lg={5}>
             <Box className='wrapper'>
               <SwapMain />
+            </Box>
+            <Box mt={2}>
+              <AdsSlider sort='1' />
             </Box>
           </Grid>
           <Grid item xs={12} sm={12} md={6} lg={7}>

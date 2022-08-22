@@ -17,23 +17,15 @@ const adsCache: WeakMap<AdsListInfo, AdsListMap> | null =
     ? new WeakMap<AdsListInfo, AdsListMap>()
     : null;
 
-export function listToAdsMap(list: AdsListInfo): AdsListMap {
+export function listToAdsMap(list: AdsListInfo): AdsListMap | undefined {
   const result = adsCache?.get(list);
   if (result) return result;
 
-  const map = list.list.reduce<AdsListMap>(
-    (adsListMap, adsRaw) => {
-      return {
-        ...adsListMap,
-        [adsRaw.sort]: {
-          ...adsListMap[adsRaw.sort],
-          adsRaw,
-        },
-      };
-    },
-    { ...EMPTY_LIST },
-  );
-  adsCache?.set(list, map);
+  const map = list.ads.length > 0 ? list.ads[0] : undefined;
+
+  if (map) {
+    adsCache?.set(list, map);
+  }
   return map;
 }
 
@@ -47,7 +39,7 @@ export function useAdsList(url: string | undefined): AdsListMap {
   return useMemo(() => {
     if (!current) return EMPTY_LIST;
     try {
-      return listToAdsMap(current);
+      return listToAdsMap(current) ?? EMPTY_LIST;
     } catch (error) {
       console.error('Could not show token list due to error', error);
       return EMPTY_LIST;

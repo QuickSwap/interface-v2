@@ -32,9 +32,9 @@ export default function Updater(): null {
   // whenever a list is not loaded and not loading, try again to load it
   useEffect(() => {
     Object.keys(ads).forEach((listUrl) => {
-      const farm = ads[listUrl];
+      const adsObj = ads[listUrl];
 
-      if (!farm.current && !farm.loadingRequestId && !farm.error) {
+      if (!adsObj.current && !adsObj.loadingRequestId && !adsObj.error) {
         fetchAdsList(listUrl).catch((error) =>
           console.debug('list added fetching error', error),
         );

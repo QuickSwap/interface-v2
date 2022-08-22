@@ -5,6 +5,7 @@ import SupplyLiquidity from './SupplyLiquidity';
 import YourLiquidityPools from './YourLiquidityPools';
 import { useTranslation } from 'react-i18next';
 import 'pages/styles/pools.scss';
+import AdsSlider from 'components/AdsSlider';
 
 const PoolsPage: React.FC = () => {
   const { t } = useTranslation();
@@ -21,6 +22,9 @@ const PoolsPage: React.FC = () => {
         <Grid item xs={12} sm={12} md={5}>
           <Box className='wrapper'>
             <SupplyLiquidity />
+          </Box>
+          <Box mt={2}>
+            <AdsSlider sort='2' />
           </Box>
         </Grid>
         <Grid item xs={12} sm={12} md={7}>
