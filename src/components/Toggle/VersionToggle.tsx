@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Box } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import 'pages/styles/pools.scss';
@@ -10,29 +10,17 @@ import {
 } from '../../pages/PoolsPage/styled';
 import { useHistory } from 'react-router-dom';
 
-const VersionToggle: React.FC<{ baseUrl: string }> = ({
-  baseUrl: baseUrlSegment,
-}) => {
-  const parsedQuery = useParsedQueryString();
-
-  const history = useHistory();
-
-  const poolVersion =
-    parsedQuery && parsedQuery.version ? (parsedQuery.version as string) : 'v3';
-
+const VersionToggle: React.FC<{
+  isV3: boolean;
+  onToggleV3: (isV3: boolean) => void;
+}> = ({ onToggleV3: onToggleV3, isV3: isV3 }) => {
   const { t } = useTranslation();
-
-  const handleToggleAction = useCallback(() => {
-    history.push(
-      `/${baseUrlSegment}?version=${poolVersion === 'v3' ? 'v2' : 'v3'}`,
-    );
-  }, [poolVersion, history]);
 
   return (
     <Box className='flex row items-center cursor-pointer'>
-      <Box style={{ marginLeft: 15 }} onClick={() => handleToggleAction()}>
+      <Box style={{ marginLeft: 15 }} onClick={() => onToggleV3(!isV3)}>
         <ToggleContainer>
-          <ToggleInnerContainer active={poolVersion === 'v2'}>
+          <ToggleInnerContainer active={!isV3}>
             <StyledLabel
               style={{
                 paddingLeft: 10,
@@ -42,7 +30,7 @@ const VersionToggle: React.FC<{ baseUrl: string }> = ({
             </StyledLabel>
           </ToggleInnerContainer>
 
-          <ToggleInnerContainer active={poolVersion === 'v3'}>
+          <ToggleInnerContainer active={isV3}>
             <StyledLabel color='#c7cad9'>{t('V3')}</StyledLabel>
           </ToggleInnerContainer>
         </ToggleContainer>

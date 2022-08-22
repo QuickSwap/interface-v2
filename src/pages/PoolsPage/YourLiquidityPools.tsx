@@ -9,7 +9,6 @@ import { usePairs } from 'data/Reserves';
 import { toV2LiquidityToken, useTrackedTokenPairs } from 'state/user/hooks';
 import { useTokenBalancesWithLoadingIndicator } from 'state/wallet/hooks';
 import { Trans, useTranslation } from 'react-i18next';
-import VersionToggle from '../../components/Toggle/VersionToggle';
 
 const YourLiquidityPools: React.FC = () => {
   const { t } = useTranslation();
@@ -68,7 +67,6 @@ const YourLiquidityPools: React.FC = () => {
       )}
       <Box className='pageHeading'>
         <p className='weight-600'>{t('yourliquidityPools')}</p>
-        <VersionToggle baseUrl={'farms'} />
       </Box>
 
       <Box mt={3}>

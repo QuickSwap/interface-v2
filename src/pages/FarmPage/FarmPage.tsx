@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Box, Button } from '@material-ui/core';
 import { getBulkPairData } from 'state/stake/hooks';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
@@ -17,6 +17,7 @@ import { useFarmingSubgraph } from 'hooks/useIncentiveSubgraph';
 import { FarmingMyFarms } from 'components/StakerMyStakes';
 import VersionToggle from 'components/Toggle/VersionToggle';
 import useParsedQueryString from 'hooks/useParsedQueryString';
+import { useHistory } from 'react-router-dom';
 
 const FarmPage: React.FC = () => {
   const { chainId } = useActiveWeb3React();
@@ -105,23 +106,33 @@ const FarmPage: React.FC = () => {
   } = useFarmingSubgraph() || {};
   const [now, setNow] = useState(Date.now());
 
+  const history = useHistory();
   const parsedQuery = useParsedQueryString();
   const poolVersion =
     parsedQuery && parsedQuery.version ? (parsedQuery.version as string) : 'v3';
+
+  const isOnV3 = poolVersion === 'v3';
+
+  const handleToggleAction = useCallback(
+    (isV3: boolean) => {
+      history.push(`/farm?version=${isV3 ? 'v3' : 'v2'}`);
+    },
+    [history],
+  );
 
   return (
     <Box width='100%' mb={3} id='farmPage'>
       <Box className='pageHeading'>
         <Box className='flex row items-center'>
           <h4>{t('farm')}</h4>
-          <VersionToggle baseUrl={'farm'} />
+          <VersionToggle isV3={isOnV3} onToggleV3={handleToggleAction} />
         </Box>
         <Box className='helpWrapper'>
           <small>{t('help')}</small>
           <HelpIcon />
         </Box>
       </Box>
-      {poolVersion !== 'v3' && (
+      {!isOnV3 && (
         <>
           <CustomSwitch
             width={300}
@@ -137,7 +148,7 @@ const FarmPage: React.FC = () => {
           </Box>
         </>
       )}
-      {poolVersion === 'v3' && (
+      {isOnV3 && (
         <>
           <CustomSwitch
             width={300}
