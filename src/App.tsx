@@ -8,6 +8,7 @@ import {
 import { Provider } from 'react-redux';
 import { GelatoProvider } from '@gelatonetwork/limit-orders-react';
 import store from 'state';
+import GoogleAnalyticsReporter from './components/GoogleAnalytics/GoogleAnalyticsReporter';
 const DragonPage = lazy(() => import('./pages/DragonPage'));
 const FarmPage = lazy(() => import('./pages/FarmPage'));
 const LandingPage = lazy(() => import('./pages/LandingPage'));
@@ -110,6 +111,7 @@ function Gelato({ children }: { children?: React.ReactNode }) {
 const App: React.FC = () => {
   return (
     <Web3ReactProvider getLibrary={getLibrary}>
+      <Route component={GoogleAnalyticsReporter} />
       <Web3ProviderNetwork getLibrary={getLibrary}>
         <Provider store={store}>
           <Updaters />
