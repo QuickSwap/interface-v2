@@ -63,6 +63,7 @@ import { CallState } from 'state/multicall/hooks';
 import { DualStakingBasic, StakingBasic } from 'types';
 import { AbstractConnector } from '@web3-react/abstract-connector';
 import { injected } from 'connectors';
+import Web3 from 'web3';
 
 dayjs.extend(utc);
 dayjs.extend(weekOfYear);
@@ -2164,4 +2165,17 @@ export function getCallStateResult(callState?: CallState) {
 
 export const convertBNToNumber = (value: BN, decimals: BN) => {
   return Number(value) / 10 ** Number(decimals);
+};
+
+export const convertNumbertoBN = (
+  value: number,
+  decimals: number,
+  web3: Web3,
+) => {
+  const valueWithoutDecimal = Number(value.toFixed(0));
+  const decimalNumber = value - valueWithoutDecimal;
+  return web3.utils
+    .toBN(valueWithoutDecimal)
+    .mul(web3.utils.toBN(10 ** decimals))
+    .add(web3.utils.toBN((decimalNumber * 10 ** decimals).toFixed(0)));
 };

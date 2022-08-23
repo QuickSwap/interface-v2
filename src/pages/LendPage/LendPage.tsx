@@ -222,6 +222,9 @@ const LendPage: React.FC = () => {
                             <CurrencyLogo
                               key={token.address}
                               currency={token}
+                              withoutBg={Boolean(
+                                token.name && token.name.includes('LP'),
+                              )}
                             />
                           ))}
                         </Box>

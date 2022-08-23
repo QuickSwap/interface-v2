@@ -9,6 +9,7 @@ import {
 import { Provider } from 'react-redux';
 import { GelatoProvider } from '@gelatonetwork/limit-orders-react';
 import store from 'state';
+import GoogleAnalyticsReporter from './components/GoogleAnalytics/GoogleAnalyticsReporter';
 const DragonPage = lazy(() => import('./pages/DragonPage'));
 const FarmPage = lazy(() => import('./pages/FarmPage'));
 const LandingPage = lazy(() => import('./pages/LandingPage'));
@@ -114,6 +115,7 @@ const App: React.FC = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <Web3ReactProvider getLibrary={getLibrary}>
+        <Route component={GoogleAnalyticsReporter} />
         <Web3ProviderNetwork getLibrary={getLibrary}>
           <Provider store={store}>
             <Updaters />
