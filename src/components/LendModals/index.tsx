@@ -594,7 +594,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
               fullWidth
               disabled={buttonDisabled}
               onClick={async () => {
-                if (!account) return;
+                if (!account || !chainId) return;
                 setLoading(true);
                 setTxHash(undefined);
                 setTxError('');
@@ -612,6 +612,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
                           Number(value),
                           account,
                           t('cannotRepayMarket'),
+                          chainId,
                         );
                       }
                     } else {
@@ -668,6 +669,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
                           Number(value),
                           account,
                           t('cannotDepositMarket'),
+                          chainId,
                         );
                         updateCurrentAsset();
                       }

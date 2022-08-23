@@ -6,7 +6,7 @@ import { useDerivedLairInfo } from 'state/stake/hooks';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 import { useCurrencyBalance, useTokenBalance } from 'state/wallet/hooks';
 import { useActiveWeb3React } from 'hooks';
-import { GlobalConst, GlobalValue } from 'constants/index';
+import { GlobalConst, GlobalTokens, GlobalValue } from 'constants/index';
 import { useApproveCallback, ApprovalState } from 'hooks/useApproveCallback';
 import { useLairContract } from 'hooks/useContract';
 import {
@@ -25,10 +25,10 @@ interface StakeQuickModalProps {
 const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
   const { t } = useTranslation();
   const [attempting, setAttempting] = useState(false);
-  const { account } = useActiveWeb3React();
+  const { chainId, account } = useActiveWeb3React();
   const addTransaction = useTransactionAdder();
   const finalizedTransaction = useTransactionFinalizer();
-  const quickToken = GlobalValue.tokens.COMMON.OLD_QUICK;
+  const quickToken = chainId ? GlobalTokens[chainId]['OLD_QUICK'] : undefined;
   const quickBalance = useCurrencyBalance(account ?? undefined, quickToken);
   const userLiquidityUnstaked = useTokenBalance(
     account ?? undefined,
@@ -47,7 +47,7 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
   const lairContract = useLairContract();
   const [approval, approveCallback] = useApproveCallback(
     parsedAmount,
-    GlobalConst.addresses.LAIR_ADDRESS,
+    chainId ? GlobalConst.addresses.LAIR_ADDRESS[chainId] : undefined,
   );
 
   const onAttemptToApprove = async () => {

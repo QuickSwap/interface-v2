@@ -18,24 +18,28 @@ import AnalyticsInfo from './AnalyticsInfo';
 import AnalyticsLiquidityChart from './AnalyticsLiquidityChart';
 import AnalyticsVolumeChart from './AnalyticsVolumeChart';
 import { useTranslation } from 'react-i18next';
+import { useActiveWeb3React } from 'hooks';
 
 dayjs.extend(utc);
 
 const AnalyticsOverview: React.FC = () => {
   const { t } = useTranslation();
   const history = useHistory();
+  const { chainId } = useActiveWeb3React();
   const { globalData, updateGlobalData } = useGlobalData();
   const [topTokens, updateTopTokens] = useState<any[] | null>(null);
   const [topPairs, updateTopPairs] = useState<any[] | null>(null);
   const { ethPrice } = useEthPrice();
 
   useEffect(() => {
-    if (!ethPrice.price || !ethPrice.oneDayPrice) return;
-    getGlobalData(ethPrice.price, ethPrice.oneDayPrice).then((data) => {
-      if (data) {
-        updateGlobalData({ data });
-      }
-    });
+    if (!ethPrice.price || !ethPrice.oneDayPrice || !chainId) return;
+    getGlobalData(ethPrice.price, ethPrice.oneDayPrice, chainId).then(
+      (data) => {
+        if (data) {
+          updateGlobalData({ data });
+        }
+      },
+    );
 
     getTopTokens(
       ethPrice.price,
@@ -58,7 +62,7 @@ const AnalyticsOverview: React.FC = () => {
         updateTopPairs(pairData);
       }
     });
-  }, [updateGlobalData, ethPrice.price, ethPrice.oneDayPrice]);
+  }, [updateGlobalData, ethPrice.price, ethPrice.oneDayPrice, chainId]);
 
   return (
     <Box width='100%' mb={3}>

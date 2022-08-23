@@ -7,7 +7,7 @@ import { Token } from '@uniswap/sdk';
 import { getTokenFromAddress } from 'utils';
 import { TokenAddressMap, useSelectedTokenList } from 'state/lists/hooks';
 import { useTokens } from 'hooks/Tokens';
-import { GlobalValue } from 'constants/index';
+import { GlobalTokens } from 'constants/index';
 import { useActiveWeb3React } from 'hooks';
 
 export class WrappedDualFarmInfo implements DualStakingBasic {
@@ -167,12 +167,13 @@ export function useDualFarmList(
           .flat()
           .filter((item) => !!item)
           .filter((address) => !tokenMap[chainIdOrDefault][address])
-          .filter(
-            (address) =>
-              !Object.values(GlobalValue.tokens.COMMON).find(
-                (token) =>
-                  token.address.toLowerCase() === address.toLowerCase(),
-              ),
+          .filter((address) =>
+            chainId
+              ? !Object.values(GlobalTokens[chainId]).find(
+                  (token) =>
+                    token.address.toLowerCase() === address.toLowerCase(),
+                )
+              : true,
           )
           .filter(
             (address, ind, self) =>

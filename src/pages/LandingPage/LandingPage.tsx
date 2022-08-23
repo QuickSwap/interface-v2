@@ -25,11 +25,13 @@ import { HeroSection } from './HeroSection';
 import { TradingInfo } from './TradingInfo';
 import { SwapSection } from './SwapSection';
 import { BuyFiatSection } from './BuyFiatSection';
+import { useActiveWeb3React } from 'hooks';
 
 const LandingPage: React.FC = () => {
   const { breakpoints } = useTheme();
   const mobileWindowSize = useMediaQuery(breakpoints.down('sm'));
   const { t } = useTranslation();
+  const { chainId } = useActiveWeb3React();
 
   const features = [
     {
@@ -108,18 +110,20 @@ const LandingPage: React.FC = () => {
 
   useEffect(() => {
     async function fetchGlobalData() {
-      if (ethPrice.price && ethPrice.oneDayPrice) {
+      if (ethPrice.price && ethPrice.oneDayPrice && chainId) {
         const newGlobalData = await getGlobalData(
           ethPrice.price,
           ethPrice.oneDayPrice,
+          chainId,
         );
+
         if (newGlobalData) {
           updateGlobalData({ data: newGlobalData });
         }
       }
     }
     fetchGlobalData();
-  }, [updateGlobalData, ethPrice.price, ethPrice.oneDayPrice]);
+  }, [updateGlobalData, ethPrice.price, ethPrice.oneDayPrice, chainId]);
 
   return (
     <div id='landing-page' style={{ width: '100%' }}>

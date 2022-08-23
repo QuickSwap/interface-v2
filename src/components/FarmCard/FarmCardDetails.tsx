@@ -40,6 +40,7 @@ const FarmCardDetails: React.FC<{
 }> = ({ stakingInfo, stakingAPY, isLPFarm }) => {
   const { t } = useTranslation();
   const { breakpoints } = useTheme();
+  const { chainId } = useActiveWeb3React();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const [stakeAmount, setStakeAmount] = useState('');
   const [attemptStaking, setAttemptStaking] = useState(false);
@@ -68,6 +69,7 @@ const FarmCardDetails: React.FC<{
   const stakedAmounts = getStakedAmountStakingInfo(
     stakingInfo,
     userLiquidityUnstaked,
+    chainId,
   );
 
   let apyWithFee: number | string = 0;

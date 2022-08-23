@@ -11,6 +11,7 @@ import {
   getTVLStaking,
 } from 'utils';
 import { useTranslation } from 'react-i18next';
+import { useActiveWeb3React } from 'hooks';
 
 interface RewardSliderItemProps {
   info: StakingInfo | DualStakingInfo;
@@ -23,8 +24,9 @@ const RewardSliderItem: React.FC<RewardSliderItemProps> = ({
 }) => {
   const { t } = useTranslation();
   const history = useHistory();
+  const { chainId } = useActiveWeb3React();
 
-  const stakedAmounts = getStakedAmountStakingInfo(info);
+  const stakedAmounts = getStakedAmountStakingInfo(info, undefined, chainId);
   const tvl = getTVLStaking(
     stakedAmounts?.totalStakedUSD,
     stakedAmounts?.totalStakedBase,

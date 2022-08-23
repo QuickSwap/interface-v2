@@ -112,14 +112,18 @@ const SwapProChartTrade: React.FC<{
       <></>
     );
 
+  const chartPairAddress =
+    pairAddress ??
+    (chainId ? GlobalConst.addresses.MATIC_USDT_PAIR[chainId] : undefined);
+
   return (
     <ReflexContainer orientation='horizontal'>
-      {showChart && (
+      {showChart && chartPairAddress && (
         <ReflexElement className='top-pane' minSize={200}>
           <SwapProChart
             pairName={`${token1?.symbol ?? 'MATIC'}/${token2?.symbol ??
               'USDT'}`}
-            pairAddress={pairAddress ?? GlobalConst.addresses.MATIC_USDT_PAIR}
+            pairAddress={chartPairAddress}
             pairTokenReversed={pairTokenReversed}
           />
         </ReflexElement>

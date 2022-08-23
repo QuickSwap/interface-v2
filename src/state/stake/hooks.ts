@@ -12,7 +12,7 @@ import { usePairs } from 'data/Reserves';
 
 import { client } from 'apollo/client';
 import { GLOBAL_DATA, PAIRS_BULK, PAIRS_HISTORICAL_BULK } from 'apollo/queries';
-import { GlobalConst, GlobalValue } from 'constants/index';
+import { GlobalConst, GlobalTokens, GlobalValue } from 'constants/index';
 import {
   STAKING_REWARDS_INTERFACE,
   STAKING_DUAL_REWARDS_INTERFACE,
@@ -658,7 +658,7 @@ export const getBulkPairData = async (pairList: any) => {
   }
 };
 
-const getOneDayVolume = async () => {
+const getOneDayVolume = async (chainId: ChainId) => {
   let data: any = {};
   let oneDayData: any = {};
 
@@ -669,7 +669,7 @@ const getOneDayVolume = async () => {
   const oneDayOldBlock = await getBlockFromTimestamp(utcOneDayBack);
 
   const result = await client.query({
-    query: GLOBAL_DATA(current),
+    query: GLOBAL_DATA(chainId, current),
     fetchPolicy: 'network-only',
   });
 
@@ -677,7 +677,7 @@ const getOneDayVolume = async () => {
 
   // fetch the historical data
   const oneDayResult = await client.query({
-    query: GLOBAL_DATA(oneDayOldBlock),
+    query: GLOBAL_DATA(chainId, oneDayOldBlock),
     fetchPolicy: 'network-only',
   });
   oneDayData = oneDayResult.data.uniswapFactories[0];
@@ -880,7 +880,7 @@ export function useDualStakingInfo(
 
   const baseTokens = info.map((item) => {
     const unwrappedCurrency = unwrappedToken(item.baseToken);
-    const empty = unwrappedToken(GlobalValue.tokens.COMMON.EMPTY);
+    const empty = unwrappedToken(GlobalTokens[chainId]['EMPTY']);
     return unwrappedCurrency === empty ? item.tokens[0] : item.baseToken;
   });
 
@@ -941,7 +941,7 @@ export function useDualStakingInfo(
           // Previously Uni was used all over the place (which was an abstract to get the quick token)
           // These rates are just used for informational purposes and the token should should not be used anywhere
           // instead we will supply a dummy token, until this can be refactored properly.
-          const dummyToken = GlobalValue.tokens.COMMON.NEW_QUICK;
+          const dummyToken = GlobalTokens[chainId]['NEW_QUICK'];
           const totalRewardRateA = new TokenAmount(
             dummyToken,
             JSBI.BigInt(stakingInfo.ended ? 0 : rateA),
@@ -1090,11 +1090,14 @@ export function useDualStakingInfo(
 }
 
 export function useOldLairInfo(): LairInfo {
+  const { chainId } = useActiveWeb3React();
   const lairContract = useLairContract();
   const quickContract = useQUICKContract();
-  const lairAddress = GlobalConst.addresses.LAIR_ADDRESS;
-  const quickToken = GlobalValue.tokens.COMMON.OLD_QUICK;
-  const dQuickToken = GlobalValue.tokens.COMMON.OLD_DQUICK;
+  const lairAddress = chainId
+    ? GlobalConst.addresses.LAIR_ADDRESS[chainId]
+    : undefined;
+  const quickToken = chainId ? GlobalTokens[chainId]['OLD_QUICK'] : undefined;
+  const dQuickToken = chainId ? GlobalTokens[chainId]['OLD_DQUICK'] : undefined;
 
   return useLairInfo(
     lairContract,
@@ -1106,11 +1109,14 @@ export function useOldLairInfo(): LairInfo {
 }
 
 export function useNewLairInfo(): LairInfo {
+  const { chainId } = useActiveWeb3React();
   const lairContract = useNewLairContract();
   const quickContract = useNewQUICKContract();
-  const lairAddress = GlobalConst.addresses.NEW_LAIR_ADDRESS;
-  const quickToken = GlobalValue.tokens.COMMON.NEW_QUICK;
-  const dQuickToken = GlobalValue.tokens.COMMON.NEW_DQUICK;
+  const lairAddress = chainId
+    ? GlobalConst.addresses.NEW_LAIR_ADDRESS[chainId]
+    : undefined;
+  const quickToken = chainId ? GlobalTokens[chainId]['NEW_QUICK'] : undefined;
+  const dQuickToken = chainId ? GlobalTokens[chainId]['NEW_DQUICK'] : undefined;
 
   return useLairInfo(
     lairContract,
@@ -1124,11 +1130,11 @@ export function useNewLairInfo(): LairInfo {
 function useLairInfo(
   lairContract: Contract | null,
   quickContract: Contract | null,
-  lairAddress: string,
-  quickToken: Token,
-  dQuickToken: Token,
+  lairAddress: string | undefined,
+  quickToken: Token | undefined,
+  dQuickToken: Token | undefined,
 ) {
-  const { account } = useActiveWeb3React();
+  const { account, chainId } = useActiveWeb3React();
 
   let accountArg = useMemo(() => [account ?? undefined], [account]);
   const inputs = ['1000000000000000000'];
@@ -1168,36 +1174,50 @@ function useLairInfo(
   );
 
   useEffect(() => {
-    getOneDayVolume();
-  }, []);
+    if (chainId) {
+      getOneDayVolume(chainId);
+    }
+  }, [chainId]);
 
   return useMemo(() => {
     return {
       lairAddress: lairAddress,
-      dQUICKtoQUICK: new TokenAmount(
-        quickToken,
-        JSBI.BigInt(dQuickToQuick?.result?.[0] ?? 0),
-      ),
-      QUICKtodQUICK: new TokenAmount(
-        dQuickToken,
-        JSBI.BigInt(quickToDQuick?.result?.[0] ?? 0),
-      ),
-      dQUICKBalance: new TokenAmount(
-        dQuickToken,
-        JSBI.BigInt(dQuickBalance?.result?.[0] ?? 0),
-      ),
-      QUICKBalance: new TokenAmount(
-        quickToken,
-        JSBI.BigInt(quickBalance?.result?.[0] ?? 0),
-      ),
-      totalQuickBalance: new TokenAmount(
-        quickToken,
-        JSBI.BigInt(lairsQuickBalance?.result?.[0] ?? 0),
-      ),
-      dQuickTotalSupply: new TokenAmount(
-        dQuickToken,
-        JSBI.BigInt(_dQuickTotalSupply?.result?.[0] ?? 0),
-      ),
+      dQUICKtoQUICK: quickToken
+        ? new TokenAmount(
+            quickToken,
+            JSBI.BigInt(dQuickToQuick?.result?.[0] ?? 0),
+          )
+        : undefined,
+      QUICKtodQUICK: dQuickToken
+        ? new TokenAmount(
+            dQuickToken,
+            JSBI.BigInt(quickToDQuick?.result?.[0] ?? 0),
+          )
+        : undefined,
+      dQUICKBalance: dQuickToken
+        ? new TokenAmount(
+            dQuickToken,
+            JSBI.BigInt(dQuickBalance?.result?.[0] ?? 0),
+          )
+        : undefined,
+      QUICKBalance: quickToken
+        ? new TokenAmount(
+            quickToken,
+            JSBI.BigInt(quickBalance?.result?.[0] ?? 0),
+          )
+        : undefined,
+      totalQuickBalance: quickToken
+        ? new TokenAmount(
+            quickToken,
+            JSBI.BigInt(lairsQuickBalance?.result?.[0] ?? 0),
+          )
+        : undefined,
+      dQuickTotalSupply: dQuickToken
+        ? new TokenAmount(
+            dQuickToken,
+            JSBI.BigInt(_dQuickTotalSupply?.result?.[0] ?? 0),
+          )
+        : undefined,
       oneDayVol: oneDayVol,
     };
   }, [
@@ -1272,7 +1292,7 @@ export function useStakingInfo(
 
   const baseTokens = info.map((item) => {
     const unwrappedCurrency = unwrappedToken(item.baseToken);
-    const empty = GlobalValue.tokens.COMMON.EMPTY;
+    const empty = GlobalTokens[chainId]['EMPTY'];
     return unwrappedCurrency === empty ? item.tokens[0] : item.baseToken;
   });
   const rewardTokens = info.map((item) => item.rewardToken);
@@ -1332,7 +1352,7 @@ export function useStakingInfo(
           // Previously Uni was used all over the place (which was an abstract to get the quick token)
           // These rates are just used for informational purposes and the token should should not be used anywhere
           // instead we will supply a dummy token, until this can be refactored properly.
-          const dummyToken = GlobalValue.tokens.COMMON.NEW_QUICK;
+          const dummyToken = GlobalTokens[chainId]['NEW_QUICK'];
           const totalRewardRate = new TokenAmount(
             dummyToken,
             JSBI.BigInt(rate),
@@ -1537,7 +1557,7 @@ export function useOldStakingInfo(
           // Previously Uni was used all over the place (which was an abstract to get the quick token)
           // These rates are just used for informational purposes and the token should should not be used anywhere
           // instead we will supply a dummy token, until this can be refactored properly.
-          const dummyToken = GlobalValue.tokens.COMMON.NEW_QUICK;
+          const dummyToken = GlobalTokens[chainId]['NEW_QUICK'];
           const totalRewardRate = new TokenAmount(dummyToken, JSBI.BigInt(0));
 
           const individualRewardRate = getHypotheticalRewardRate(
@@ -1594,6 +1614,7 @@ export function useOldStakingInfo(
 }
 
 export function useDQUICKtoQUICK() {
+  const { chainId } = useActiveWeb3React();
   const lair = useLairContract();
   const inputs = ['1000000000000000000'];
   const dQuickToQuickState = useSingleCallResult(
@@ -1601,10 +1622,11 @@ export function useDQUICKtoQUICK() {
     'dQUICKForQUICK',
     inputs,
   );
-  if (dQuickToQuickState.loading || dQuickToQuickState.error) return 0;
+  if (!chainId || dQuickToQuickState.loading || dQuickToQuickState.error)
+    return 0;
   return Number(
     new TokenAmount(
-      GlobalValue.tokens.COMMON.OLD_QUICK,
+      GlobalTokens[chainId]['OLD_QUICK'],
       JSBI.BigInt(dQuickToQuickState?.result?.[0] ?? 0),
     ).toExact(),
   );
@@ -1685,7 +1707,7 @@ export function useDerivedStakeInfo(
 
 export function useDerivedLairInfo(
   typedValue: string,
-  stakingToken: Token,
+  stakingToken: Token | undefined,
   userLiquidityUnstaked: TokenAmount | undefined,
 ): {
   parsedAmount?: CurrencyAmount;

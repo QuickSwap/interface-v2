@@ -13,6 +13,7 @@ export const TradingInfo: React.FC<{ globalData: any }> = ({ globalData }) => {
   const [openStakeModal, setOpenStakeModal] = useState(false);
 
   const dQUICKAPY = useLairDQUICKAPY(false, lairInfo);
+  console.log('cc', dQUICKAPY);
   const { chainId } = useActiveWeb3React();
   const chainIdOrDefault = chainId ?? ChainId.MATIC;
   const totalRewardsUSD = useTotalRewardsDistributed(chainIdOrDefault);

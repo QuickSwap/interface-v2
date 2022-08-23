@@ -29,21 +29,21 @@ export interface DualFarmListInfo {
 }
 
 export interface LairInfo {
-  lairAddress: string;
+  lairAddress?: string;
 
-  dQUICKtoQUICK: TokenAmount;
+  dQUICKtoQUICK?: TokenAmount;
 
-  QUICKtodQUICK: TokenAmount;
+  QUICKtodQUICK?: TokenAmount;
 
-  dQUICKBalance: TokenAmount;
+  dQUICKBalance?: TokenAmount;
 
-  QUICKBalance: TokenAmount;
+  QUICKBalance?: TokenAmount;
 
-  totalQuickBalance: TokenAmount;
+  totalQuickBalance?: TokenAmount;
 
-  dQuickTotalSupply: TokenAmount;
+  dQuickTotalSupply?: TokenAmount;
 
-  oneDayVol: number;
+  oneDayVol?: number;
 }
 
 export interface CommonStakingInfo {

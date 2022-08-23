@@ -19,6 +19,7 @@ import {
 import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
 import 'components/styles/FarmCard.scss';
 import { useTranslation } from 'react-i18next';
+import { useActiveWeb3React } from 'hooks';
 
 const FarmCard: React.FC<{
   stakingInfo: StakingInfo | DualStakingInfo;
@@ -29,6 +30,7 @@ const FarmCard: React.FC<{
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const [isExpandCard, setExpandCard] = useState(false);
+  const { chainId } = useActiveWeb3React();
 
   const lpStakingInfo = stakingInfo as StakingInfo;
   const dualStakingInfo = stakingInfo as DualStakingInfo;
@@ -39,7 +41,11 @@ const FarmCard: React.FC<{
   const currency0 = unwrappedToken(token0);
   const currency1 = unwrappedToken(token1);
 
-  const stakedAmounts = getStakedAmountStakingInfo(stakingInfo);
+  const stakedAmounts = getStakedAmountStakingInfo(
+    stakingInfo,
+    undefined,
+    chainId,
+  );
 
   let apyWithFee: number | string = 0;
 

@@ -65,7 +65,12 @@ const AnalyticsSearch: React.FC = () => {
               return tokenA.oneDayVolumeUSD > tokenB.oneDayVolumeUSD ? -1 : 1;
             })
             .filter((token) => {
-              if (GlobalConst.blacklists.TOKEN_BLACKLIST.includes(token.id)) {
+              if (
+                chainId &&
+                GlobalConst.blacklists.TOKEN_BLACKLIST[chainId].includes(
+                  token.id,
+                )
+              ) {
                 return false;
               }
               const regexMatches = Object.keys(token).map((tokenEntryKey) => {
@@ -91,7 +96,7 @@ const AnalyticsSearch: React.FC = () => {
             })
         : [];
     return filtered;
-  }, [searchedTokens, searchVal]);
+  }, [searchedTokens, searchVal, chainId]);
 
   const filteredPairs = useMemo(() => {
     const uniquePairs: any[] = [];
@@ -113,7 +118,10 @@ const AnalyticsSearch: React.FC = () => {
             return pairAReserveETH > pairBReserveETH ? -1 : 1;
           })
           .filter((pair) => {
-            if (GlobalConst.blacklists.PAIR_BLACKLIST.includes(pair.id)) {
+            if (
+              chainId &&
+              GlobalConst.blacklists.PAIR_BLACKLIST[chainId].includes(pair.id)
+            ) {
               return false;
             }
             if (searchVal && searchVal.includes(' ')) {
@@ -159,7 +167,7 @@ const AnalyticsSearch: React.FC = () => {
           })
       : [];
     return filtered;
-  }, [searchedPairs, searchVal]);
+  }, [searchedPairs, searchVal, chainId]);
 
   useEffect(() => {
     async function fetchData() {

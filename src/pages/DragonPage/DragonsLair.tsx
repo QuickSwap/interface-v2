@@ -6,12 +6,16 @@ import { ReactComponent as PriceExchangeIcon } from 'assets/images/PriceExchange
 import { formatTokenAmount, useLairDQUICKAPY } from 'utils';
 import { useUSDCPriceToken } from 'utils/useUSDCPrice';
 import { useTranslation } from 'react-i18next';
-import { GlobalValue } from 'constants/index';
+import { GlobalTokens } from 'constants/index';
+import { useActiveWeb3React } from 'hooks';
 
 const DragonsLair: React.FC<{ isNew: boolean }> = ({ isNew }) => {
-  const quickToken = isNew
-    ? GlobalValue.tokens.COMMON.NEW_QUICK
-    : GlobalValue.tokens.COMMON.OLD_QUICK;
+  const { chainId } = useActiveWeb3React();
+  const quickToken = chainId
+    ? isNew
+      ? GlobalTokens[chainId]['NEW_QUICK']
+      : GlobalTokens[chainId]['OLD_QUICK']
+    : undefined;
   const quickPrice = useUSDCPriceToken(quickToken);
   const [isQUICKRate, setIsQUICKRate] = useState(false);
   const [openStakeModal, setOpenStakeModal] = useState(false);
@@ -53,7 +57,7 @@ const DragonsLair: React.FC<{ isNew: boolean }> = ({ isNew }) => {
       <Box className='dragonLairRow'>
         <small>{t('total')} QUICK</small>
         <small>
-          {lairInfoToUse
+          {lairInfoToUse && lairInfoToUse.totalQuickBalance
             ? lairInfoToUse.totalQuickBalance.toFixed(2, {
                 groupSeparator: ',',
               })
@@ -65,7 +69,11 @@ const DragonsLair: React.FC<{ isNew: boolean }> = ({ isNew }) => {
         <small>
           $
           {(
-            Number(lairInfoToUse.totalQuickBalance.toExact()) * quickPrice
+            Number(
+              lairInfoToUse.totalQuickBalance
+                ? lairInfoToUse.totalQuickBalance.toExact()
+                : 0,
+            ) * (quickPrice ?? 0)
           ).toLocaleString()}
         </small>
       </Box>
@@ -80,11 +88,17 @@ const DragonsLair: React.FC<{ isNew: boolean }> = ({ isNew }) => {
       <Box className='quickTodQuick border-secondary1'>
         <CurrencyLogo currency={quickToken} />
         <small style={{ margin: '0 8px' }}>
-          {isQUICKRate ? 1 : dQUICKtoQUICK.toLocaleString()} QUICK =
+          {isQUICKRate ? 1 : dQUICKtoQUICK ? dQUICKtoQUICK.toLocaleString() : 0}{' '}
+          QUICK =
         </small>
         <CurrencyLogo currency={quickToken} />
         <small style={{ margin: '0 8px' }}>
-          {isQUICKRate ? QUICKtodQUICK.toLocaleString() : 1} dQUICK
+          {isQUICKRate
+            ? QUICKtodQUICK
+              ? QUICKtodQUICK.toLocaleString()
+              : 0
+            : 1}{' '}
+          dQUICK
         </small>
         <PriceExchangeIcon
           className='cursor-pointer'

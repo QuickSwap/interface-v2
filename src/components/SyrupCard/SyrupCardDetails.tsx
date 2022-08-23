@@ -202,7 +202,7 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
                   $
                   {userLiquidityUnstaked
                     ? (
-                        stakingTokenPrice *
+                        (stakingTokenPrice ?? 0) *
                         Number(userLiquidityUnstaked.toExact())
                       ).toLocaleString()
                     : 0}
@@ -217,7 +217,8 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
                 <small className='text-secondary' style={{ marginLeft: 4 }}>
                   {syrup.stakedAmount
                     ? `$${(
-                        stakingTokenPrice * Number(syrup.stakedAmount.toExact())
+                        (stakingTokenPrice ?? 0) *
+                        Number(syrup.stakedAmount.toExact())
                       ).toLocaleString()}`
                     : '-'}
                 </small>

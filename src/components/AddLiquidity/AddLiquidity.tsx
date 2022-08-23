@@ -13,7 +13,7 @@ import { BigNumber } from '@ethersproject/bignumber';
 import ReactGA from 'react-ga';
 import { useTranslation } from 'react-i18next';
 import { Currency, Token, ETHER, TokenAmount } from '@uniswap/sdk';
-import { GlobalConst, GlobalValue } from 'constants/index';
+import { GlobalConst, GlobalTokens, GlobalValue } from 'constants/index';
 import { useActiveWeb3React } from 'hooks';
 import { useRouterContract } from 'hooks/useContract';
 import useTransactionDeadline from 'hooks/useTransactionDeadline';
@@ -162,12 +162,14 @@ const AddLiquidity: React.FC<{
     if (currency1) {
       onCurrencySelection(Field.CURRENCY_B, currency1);
     } else {
-      onCurrencySelection(
-        Field.CURRENCY_B,
-        GlobalValue.tokens.COMMON.OLD_QUICK,
-      );
+      if (chainId) {
+        onCurrencySelection(
+          Field.CURRENCY_B,
+          GlobalTokens[chainId]['OLD_QUICK'],
+        );
+      }
     }
-  }, [onCurrencySelection, currency0, currency1]);
+  }, [onCurrencySelection, currency0, currency1, chainId]);
 
   const onAdd = () => {
     if (expertMode) {

@@ -48,7 +48,12 @@ import {
 import { BigNumber, BigNumberish } from '@ethersproject/bignumber';
 import { formatUnits } from 'ethers/lib/utils';
 import { AddressZero } from '@ethersproject/constants';
-import { GlobalConst, GlobalValue, SUPPORTED_WALLETS } from 'constants/index';
+import {
+  GlobalConst,
+  GlobalTokens,
+  GlobalValue,
+  SUPPORTED_WALLETS,
+} from 'constants/index';
 import { TokenAddressMap } from 'state/lists/hooks';
 import {
   DualStakingInfo,
@@ -64,6 +69,7 @@ import { DualStakingBasic, StakingBasic } from 'types';
 import { AbstractConnector } from '@web3-react/abstract-connector';
 import { injected } from 'connectors';
 import Web3 from 'web3';
+import { useActiveWeb3React } from 'hooks';
 
 dayjs.extend(utc);
 dayjs.extend(weekOfYear);
@@ -1206,6 +1212,7 @@ export function updateNameData(data: BasicData): BasicData | undefined {
 export async function getGlobalData(
   ethPrice: number,
   oldEthPrice: number,
+  chainId: ChainId,
 ): Promise<any> {
   // data for each day , historic data used for % changes
   let data: any = {};
@@ -1237,7 +1244,7 @@ export async function getGlobalData(
 
     // fetch the global data
     const result = await client.query({
-      query: GLOBAL_DATA(),
+      query: GLOBAL_DATA(chainId),
       fetchPolicy: 'network-only',
     });
     data = result.data.uniswapFactories[0];
@@ -1250,7 +1257,7 @@ export async function getGlobalData(
       { index: 'twoWeekData', block: twoWeekBlock?.number },
     ];
     const allData = await client.query({
-      query: GLOBAL_ALLDATA(queryReq),
+      query: GLOBAL_ALLDATA(queryReq, chainId),
       fetchPolicy: 'network-only',
     });
     data = allData.data['result'][0];
@@ -1736,11 +1743,11 @@ export function getTokenFromAddress(
       (item) => item.address.toLowerCase() === tokenAddress.toLowerCase(),
     );
     if (!token) {
-      const commonToken = Object.values(GlobalValue.tokens.COMMON).find(
+      const commonToken = Object.values(GlobalTokens[chainId]).find(
         (token) => token.address.toLowerCase() === tokenAddress.toLowerCase(),
       );
       if (!commonToken) {
-        return GlobalValue.tokens.COMMON.EMPTY;
+        return GlobalTokens[chainId].EMPTY;
       }
       return commonToken;
     }
@@ -1847,19 +1854,24 @@ export function getTokenAPRSyrup(syrup: SyrupInfo) {
 }
 
 export function useLairDQUICKAPY(isNew: boolean, lair?: LairInfo) {
+  const { chainId } = useActiveWeb3React();
   const daysCurrentYear = getDaysCurrentYear();
-  const quickToken = isNew
-    ? GlobalValue.tokens.COMMON.NEW_QUICK
-    : GlobalValue.tokens.COMMON.OLD_QUICK;
+  const quickToken = chainId
+    ? isNew
+      ? GlobalTokens[chainId]['NEW_QUICK']
+      : GlobalTokens[chainId]['OLD_QUICK']
+    : undefined;
   const quickPrice = useUSDCPriceToken(quickToken);
 
   if (!lair) return '';
-  const dQUICKPrice: any = Number(lair.dQUICKtoQUICK.toExact()) * quickPrice;
+  const dQUICKPrice: any =
+    Number(lair.dQUICKtoQUICK ? lair.dQUICKtoQUICK.toExact() : 0) *
+    (quickPrice ?? 0);
   const dQUICKAPR =
-    (((Number(lair.oneDayVol) *
+    (((Number(lair.oneDayVol ?? 0) *
       GlobalConst.utils.DQUICKFEE *
       GlobalConst.utils.DQUICKAPR_MULTIPLIER) /
-      Number(lair.dQuickTotalSupply.toExact())) *
+      Number(lair.dQuickTotalSupply ? lair.dQuickTotalSupply.toExact() : 0)) *
       daysCurrentYear) /
     dQUICKPrice;
   if (!dQUICKAPR) return '';
@@ -1914,11 +1926,14 @@ export function getRewardRate(rate?: TokenAmount, rewardToken?: Token) {
 export function getStakedAmountStakingInfo(
   stakingInfo?: StakingInfo | DualStakingInfo,
   userLiquidityUnstaked?: TokenAmount,
+  chainId?: ChainId,
 ) {
   if (!stakingInfo) return;
   const stakingTokenPair = stakingInfo.stakingTokenPair;
   const baseTokenCurrency = unwrappedToken(stakingInfo.baseToken);
-  const empty = unwrappedToken(GlobalValue.tokens.COMMON.EMPTY);
+  const empty = chainId
+    ? unwrappedToken(GlobalTokens[chainId].EMPTY)
+    : undefined;
   const token0 = stakingInfo.tokens[0];
   const baseToken =
     baseTokenCurrency === empty ? token0 : stakingInfo.baseToken;

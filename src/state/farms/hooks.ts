@@ -7,7 +7,7 @@ import { Token } from '@uniswap/sdk';
 import { TokenAddressMap, useSelectedTokenList } from 'state/lists/hooks';
 import { getTokenFromAddress } from 'utils';
 import { useTokens } from 'hooks/Tokens';
-import { GlobalValue } from 'constants/index';
+import { GlobalTokens, GlobalValue } from 'constants/index';
 import { useActiveWeb3React } from 'hooks';
 
 export class WrappedStakingInfo implements StakingBasic {
@@ -66,7 +66,7 @@ export class WrappedStakingInfo implements StakingBasic {
           tokenAddressMap,
           farmTokens,
         )
-      : GlobalValue.tokens.COMMON.OLD_DQUICK;
+      : GlobalTokens[chainId]['OLD_DQUICK'];
   }
 }
 
@@ -152,7 +152,7 @@ export function useFarmList(url: string | undefined): StakingInfoAddressMap {
           .filter((address) => !tokenMap[chainIdOrDefault][address])
           .filter(
             (address) =>
-              !Object.values(GlobalValue.tokens.COMMON).find(
+              !Object.values(GlobalTokens[chainIdOrDefault]).find(
                 (token) =>
                   token.address.toLowerCase() === address.toLowerCase(),
               ),

@@ -37,7 +37,8 @@ const UnstakeQuickModal: React.FC<UnstakeQuickModalProps> = ({
   const newLairContract = useNewLairContract();
   const lairContractToUse = isNew ? newLairContract : lairContract;
   const error =
-    Number(typedValue) > Number(dQuickBalance.toExact()) || !typedValue;
+    Number(typedValue) > Number(dQuickBalance ? dQuickBalance.toExact() : 0) ||
+    !typedValue;
 
   const onWithdraw = () => {
     if (lairContractToUse && laifInfoToUse?.dQUICKBalance) {

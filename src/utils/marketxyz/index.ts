@@ -8,7 +8,7 @@ import {
   testForComptrollerErrorAndSend,
   testForCTokenErrorAndSend,
 } from './errors';
-import { GlobalValue } from 'constants/index';
+import { GlobalTokens, GlobalValue } from 'constants/index';
 
 export const convertMantissaToAPY = (mantissa: any, dayRange: number) => {
   return (
@@ -140,13 +140,15 @@ export const supply = async (
   amount: number,
   address: string,
   supplyError: string,
+  chainId: ChainId,
 ) => {
   const cToken = asset.cToken;
   const sdk = cToken.sdk;
 
   const isETH =
+    chainId &&
     asset.underlyingToken.toLowerCase() ===
-    GlobalValue.tokens.MATIC.address.toLowerCase();
+      GlobalTokens[chainId]['MATIC'].address.toLowerCase();
   const amountBN = convertNumbertoBN(
     amount,
     asset.underlyingDecimals.toNumber(),
@@ -197,13 +199,14 @@ export const repayBorrow = async (
   amount: number,
   address: string,
   repayError: string,
+  chainId: ChainId,
 ) => {
   const cToken = asset.cToken;
   const sdk = cToken.sdk;
 
   const isETH =
     asset.underlyingToken.toLowerCase() ===
-    GlobalValue.tokens.MATIC.address.toLowerCase();
+    GlobalTokens[chainId]['MATIC'].address.toLowerCase();
   const amountBN = convertNumbertoBN(
     amount,
     asset.underlyingDecimals.toNumber(),

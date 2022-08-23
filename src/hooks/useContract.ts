@@ -54,24 +54,45 @@ function useContract(
 }
 
 export function useLairContract(): Contract | null {
-  return useContract(GlobalConst.addresses.LAIR_ADDRESS, LairABI, true);
+  const { chainId } = useActiveWeb3React();
+  return useContract(
+    chainId ? GlobalConst.addresses.LAIR_ADDRESS[chainId] : undefined,
+    LairABI,
+    true,
+  );
 }
 
 export function useQUICKContract(): Contract | null {
-  return useContract(GlobalConst.addresses.QUICK_ADDRESS, ERC20_ABI, true);
+  const { chainId } = useActiveWeb3React();
+  return useContract(
+    chainId ? GlobalConst.addresses.QUICK_ADDRESS[chainId] : undefined,
+    ERC20_ABI,
+    true,
+  );
 }
 
 export function useNewLairContract(): Contract | null {
-  return useContract(GlobalConst.addresses.NEW_LAIR_ADDRESS, LairABI, true);
+  const { chainId } = useActiveWeb3React();
+  return useContract(
+    chainId ? GlobalConst.addresses.NEW_LAIR_ADDRESS[chainId] : undefined,
+    LairABI,
+    true,
+  );
 }
 
 export function useNewQUICKContract(): Contract | null {
-  return useContract(GlobalConst.addresses.NEW_QUICK_ADDRESS, ERC20_ABI, true);
+  const { chainId } = useActiveWeb3React();
+  return useContract(
+    chainId ? GlobalConst.addresses.NEW_QUICK_ADDRESS[chainId] : undefined,
+    ERC20_ABI,
+    true,
+  );
 }
 
 export function useQUICKConversionContract(): Contract | null {
+  const { chainId } = useActiveWeb3React();
   return useContract(
-    GlobalConst.addresses.QUICK_CONVERSION,
+    chainId ? GlobalConst.addresses.QUICK_CONVERSION[chainId] : undefined,
     QUICKConversionABI,
     true,
   );
@@ -183,8 +204,9 @@ export function useMerkleDistributorContract(): Contract | null {
 }
 
 export function useGovernanceContract(): Contract | null {
+  const { chainId } = useActiveWeb3React();
   return useContract(
-    GlobalConst.addresses.GOVERNANCE_ADDRESS,
+    chainId ? GlobalConst.addresses.GOVERNANCE_ADDRESS[chainId] : undefined,
     GOVERNANCE_ABI,
     true,
   );

@@ -15,7 +15,7 @@ import { formatTokenAmount } from 'utils';
 import { useTokenBalance } from 'state/wallet/hooks';
 import { useActiveWeb3React } from 'hooks';
 import { useApproveCallback, ApprovalState } from 'hooks/useApproveCallback';
-import { GlobalConst, GlobalValue } from 'constants/index';
+import { GlobalConst, GlobalTokens, GlobalValue } from 'constants/index';
 import { useQUICKConversionContract } from 'hooks/useContract';
 import {
   useTransactionAdder,
@@ -26,7 +26,7 @@ import 'pages/styles/convertQUICK.scss';
 
 const ConvertQUICKPage: React.FC = () => {
   const { t } = useTranslation();
-  const { account, library } = useActiveWeb3React();
+  const { account, chainId, library } = useActiveWeb3React();
   const [quickAmount, setQUICKAmount] = useState('');
   const [quickV2Amount, setQUICKV2Amount] = useState('');
   const [approving, setApproving] = useState(false);
@@ -36,7 +36,7 @@ const ConvertQUICKPage: React.FC = () => {
   const [txHash, setTxHash] = useState('');
   const [txError, setTxError] = useState('');
 
-  const quickToken = GlobalValue.tokens.COMMON.OLD_QUICK;
+  const quickToken = chainId ? GlobalTokens[chainId]['OLD_QUICK'] : undefined;
   const quickBalance = useTokenBalance(account ?? undefined, quickToken);
   const quickConvertContract = useQUICKConversionContract();
   const parsedAmount = tryParseAmount(quickAmount, quickToken);
@@ -183,7 +183,7 @@ const ConvertQUICKPage: React.FC = () => {
                 const digits =
                   value.indexOf('.') > -1 ? value.split('.')[1].length : 0;
                 let fixedVal = value;
-                if (digits > quickToken.decimals) {
+                if (quickToken && digits > quickToken.decimals) {
                   fixedVal = Number(value).toFixed(quickToken.decimals);
                 }
                 setQUICKAmount(fixedVal);
@@ -192,7 +192,7 @@ const ConvertQUICKPage: React.FC = () => {
                     Number(fixedVal) * GlobalConst.utils.QUICK_CONVERSION_RATE
                   ).toLocaleString('fullwide', {
                     useGrouping: false,
-                    maximumFractionDigits: quickToken.decimals,
+                    maximumFractionDigits: quickToken?.decimals ?? 0,
                   }),
                 );
               }}
@@ -238,7 +238,7 @@ const ConvertQUICKPage: React.FC = () => {
                   Number(value) / GlobalConst.utils.QUICK_CONVERSION_RATE
                 ).toLocaleString('fullwide', {
                   useGrouping: false,
-                  maximumFractionDigits: quickToken.decimals,
+                  maximumFractionDigits: quickToken?.decimals ?? 0,
                 });
                 setQUICKAmount(quickAmount);
               }}
