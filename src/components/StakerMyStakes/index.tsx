@@ -309,7 +309,7 @@ export function FarmingMyFarms({
             <div className={'mr-1'}>✨ Earn even more Rewards</div>
             <Link
               className={'my-farms__ad-link p-05 br-8 hover-cp'}
-              to={'/staking'}
+              to={'/dragons'}
             >
               Stake Rewards
             </Link>
