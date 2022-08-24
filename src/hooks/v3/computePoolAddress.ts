@@ -26,7 +26,7 @@ export const TICK_SPACINGS: { [amount in FeeAmount]: number } = {
 
 /**
  * Computes a pool address
- * @param poolDeployer The Algebra factory address
+ * @param poolDeployer The Quickswap factory address
  * @param tokenA The first token of the pair, irrespective of sort order
  * @param tokenB The second token of the pair, irrespective of sort order
  * @param fee The fee tier of the pool

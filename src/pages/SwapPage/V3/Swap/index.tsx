@@ -741,7 +741,7 @@ const SwapV3Page: React.FC = () => {
                             />
                           ) : (
                             <MouseoverTooltip
-                              text={`You must give the Algebra smart contracts permission to use your " ${
+                              text={`You must give the Quickswap smart contracts permission to use your " ${
                                 currencies[Field.INPUT]?.symbol
                               }. You only have to do this once per token.`}
                             >

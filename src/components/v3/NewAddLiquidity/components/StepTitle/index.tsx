@@ -13,7 +13,7 @@ export function StepTitle({ title, isCompleted, step }: IStepTitle) {
   return (
     <div className='f f-ac mb-2'>
       <Helmet>
-        <title>{`Algebra — ${title}`}</title>
+        <title>{`Quickswap — ${title}`}</title>
       </Helmet>
       <div
         className={`step-title__circle ${
