@@ -52,7 +52,6 @@ export default function EternalFarmsPage({
         // dummy rendering for ui testing
         <Box padding={2.5} className='flex flex-wrap'>
           <EternalFarm />
-          <EternalFarm />
         </Box>
       ) : !refreshing && data.length !== 0 ? (
         <div className={'eternal-page__row mb-1 w-100'}>
