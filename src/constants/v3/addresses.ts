@@ -5,7 +5,6 @@ import { WMATIC } from 'v3lib/entities/wmatic';
 
 type AddressMap = { [chainId: number]: string };
 
-
 export const V3_CORE_FACTORY_ADDRESSES: AddressMap = {
   [ChainId.MATIC]: '0xd556ED8F399b29504095E606feF34e53Df9B0c14',
 };
