@@ -181,13 +181,13 @@ function swapErrorToUserReadableMessage(error: any): string {
     case 'UniswapV2: TRANSFER_FAILED':
       return `The output token cannot be transferred. There may be an issue with the output token.`;
     case 'UniswapV2: K':
-      return `The Algebra invariant x*y=k was not satisfied by the swap. This usually means one of the tokens you are swapping incorporates custom behavior on transfer.`;
+      return `The Quickswap invariant x*y=k was not satisfied by the swap. This usually means one of the tokens you are swapping incorporates custom behavior on transfer.`;
     case 'Too little received':
     case 'Too much requested':
     case 'STF':
-      return `This transaction will not succeed due to price movement. Try increasing your slippage tolerance. Note: rebase tokens are incompatible with Algebra`;
+      return `This transaction will not succeed due to price movement. Try increasing your slippage tolerance. Note: rebase tokens are incompatible with Quickswap`;
     case 'TF':
-      return `The output token cannot be transferred. There may be an issue with the output token. Note: rebase tokens are incompatible with Algebra.`;
+      return `The output token cannot be transferred. There may be an issue with the output token. Note: rebase tokens are incompatible with Quickswap.`;
     default:
       if (reason?.indexOf('undefined is not an object') !== -1) {
         console.error(error, reason);
@@ -195,7 +195,7 @@ function swapErrorToUserReadableMessage(error: any): string {
       }
       return `Unknown error${
         reason ? `: "${reason}"` : ''
-      }. Try increasing your slippage tolerance. Note: rebase tokens are incompatible with Algebra.`;
+      }. Try increasing your slippage tolerance. Note: rebase tokens are incompatible with Quickswap.`;
   }
 }
 
