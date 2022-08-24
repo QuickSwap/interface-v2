@@ -5,6 +5,7 @@ import { WMATIC } from 'v3lib/entities/wmatic';
 
 type AddressMap = { [chainId: number]: string };
 
+
 export const V3_CORE_FACTORY_ADDRESSES: AddressMap = {
   [ChainId.MATIC]: '0xd556ED8F399b29504095E606feF34e53Df9B0c14',
 };
@@ -38,15 +39,15 @@ export const REAL_STAKER_ADDRESS: AddressMap = {
 };
 
 export const FINITE_FARMING: AddressMap = {
-  [ChainId.MATIC]: '0xc247f1082c1487FF35E9b36634bBF3967a85E408',
+  [ChainId.MATIC]: '0xBFc4Ec9b6669A573304a32854b681d348EA58490',
 };
 
 export const INFINITE_FARMING_ADDRESS: AddressMap = {
-  [ChainId.MATIC]: '0xb894E1c0d61FbF7eaf4056dFadcDe720D46B71e2',
+  [ChainId.MATIC]: '0x9F9A94803808b5899Ac3F13310d524eD9E4aE601',
 };
 
 export const FARMING_CENTER: AddressMap = {
-  [ChainId.MATIC]: '0x258EE55b7E5B8890117cBf444b9cF4ed53688651',
+  [ChainId.MATIC]: '0x9aF039DdBEC415bB135fDea69D065b78858b1341',
 };
 
 export const V2_FACTORY_ADDRESSES: AddressMap = {
