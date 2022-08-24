@@ -1,14 +1,13 @@
 import gql from 'graphql-tag';
-
+//import { gql } from '@apollo/client'
 //Farming
-
 export const ONE_FARMING_EVENT = () => gql`
   query limitFarm($time: BigInt) {
     limitFarmings(
       orderBy: createdAtTimestamp
       orderDirection: desc
       first: 1
-      where: { startTime_gt: $time, isDetached: false }
+      where: { startTime_gt: $time }
     ) {
       startTime
       endTime
@@ -48,8 +47,8 @@ export const FETCH_TOKEN = () => gql`
 `;
 
 export const FETCH_LIMIT = () => gql`
-  query fetchLimit($limitFarmingId: ID) {
-    limitFarmings(where: { id: $limitFarmingId }) {
+  query fetchLimit($limitId: ID) {
+    limitFarmings(where: { id: $limitId }) {
       id
       rewardToken
       bonusRewardToken
@@ -67,8 +66,6 @@ export const FETCH_LIMIT = () => gql`
       tokenAmountForTier2
       tokenAmountForTier3
       enterStartTime
-      isDetached
-      minRangeLength
     }
   }
 `;
@@ -94,7 +91,6 @@ export const FETCH_ETERNAL_FARM = () => gql`
       tokenAmountForTier2
       tokenAmountForTier3
       multiplierToken
-      minRangeLength
     }
   }
 `;
@@ -119,7 +115,6 @@ export const FETCH_ETERNAL_FARM_FROM_POOL = (pools: string[]) => {
           rewardRate
           bonusRewardRate
           isDetached
-          minRangeLength
         }
       }
       `;
@@ -146,7 +141,6 @@ export const FETCH_LIMIT_FARM_FROM_POOL = (pools: string[]) => {
         endTime
         reward
         multiplierToken
-        minRangeLength
       }
     }
     `;
@@ -321,12 +315,7 @@ export const TOTAL_STATS = (block?: number) => {
 
 export const LAST_EVENT = () => gql`
   query lastEvent {
-    limitFarmings(
-      first: 1
-      orderDirection: desc
-      orderBy: createdAtTimestamp
-      where: { isDetached: false }
-    ) {
+    limitFarmings(first: 1, orderDirection: desc, orderBy: createdAtTimestamp) {
       createdAtTimestamp
       id
       startTime
@@ -340,7 +329,7 @@ export const FUTURE_EVENTS = () => gql`
     limitFarmings(
       orderBy: startTime
       orderDirection: asc
-      where: { startTime_gt: $timestamp, isDetached: false }
+      where: { startTime_gt: $timestamp }
     ) {
       id
       createdAtTimestamp
@@ -359,8 +348,6 @@ export const FUTURE_EVENTS = () => gql`
       tokenAmountForTier3
       multiplierToken
       enterStartTime
-      isDetached
-      minRangeLength
     }
   }
 `;
@@ -370,11 +357,7 @@ export const CURRENT_EVENTS = () => gql`
     limitFarmings(
       orderBy: endTime
       orderDirection: desc
-      where: {
-        startTime_lte: $startTime
-        endTime_gt: $endTime
-        isDetached: false
-      }
+      where: { startTime_lte: $startTime, endTime_gt: $endTime }
     ) {
       id
       rewardToken
@@ -392,8 +375,6 @@ export const CURRENT_EVENTS = () => gql`
       tokenAmountForTier3
       enterStartTime
       multiplierToken
-      isDetached
-      minRangeLength
     }
   }
 `;
@@ -426,8 +407,6 @@ export const FETCH_FINITE_FARM_FROM_POOL = (pools: string[]) => {
           tier2Multiplier
           tier3Multiplier
           enterStartTime
-          isDetached
-          minRangeLength
         }
       }
       `;
@@ -458,7 +437,6 @@ export const TRANSFERED_POSITIONS = (tierFarming: boolean) => gql`
             limitFarming
             eternalFarming
             onFarmingCenter
-            rangeLength
             ${
               tierFarming
                 ? `
@@ -504,20 +482,11 @@ export const POSITIONS_ON_ETERNAL_FARMING = () => gql`
 `;
 
 export const TRANSFERED_POSITIONS_FOR_POOL = () => gql`
-  query transferedPositionsForPool(
-    $account: Bytes
-    $pool: Bytes
-    $minRangeLength: BigInt
-  ) {
+  query transferedPositionsForPool($account: Bytes, $pool: Bytes) {
     deposits(
       orderBy: id
       orderDirection: desc
-      where: {
-        owner: $account
-        pool: $pool
-        liquidity_not: "0"
-        rangeLength_gte: $minRangeLength
-      }
+      where: { owner: $account, pool: $pool, liquidity_not: "0" }
     ) {
       id
       owner
@@ -581,7 +550,6 @@ export const FULL_POSITIONS = (
               }
               timestamps
             }
-
             q2: positions (where: {id_in: [${positions}] }) {
               owner
               liquidity
@@ -631,7 +599,6 @@ export const INFINITE_EVENTS = gql`
       tier2Multiplier
       tier3Multiplier
       multiplierToken
-      minRangeLength
     }
   }
 `;

@@ -109,12 +109,6 @@
         "internalType": "address",
         "name": "multiplierToken",
         "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint24",
-        "name": "minimalAllowedPositionWidth",
-        "type": "uint24"
       }
     ],
     "name": "EternalFarmingCreated",
@@ -673,41 +667,29 @@
         "type": "tuple"
       },
       {
-        "components": [
-          {
-            "internalType": "uint256",
-            "name": "reward",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "bonusReward",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint128",
-            "name": "rewardRate",
-            "type": "uint128"
-          },
-          {
-            "internalType": "uint128",
-            "name": "bonusRewardRate",
-            "type": "uint128"
-          },
-          {
-            "internalType": "uint24",
-            "name": "minimalPositionWidth",
-            "type": "uint24"
-          },
-          {
-            "internalType": "address",
-            "name": "multiplierToken",
-            "type": "address"
-          }
-        ],
-        "internalType": "struct IAlgebraEternalFarming.IncentiveParams",
-        "name": "params",
-        "type": "tuple"
+        "internalType": "uint256",
+        "name": "reward",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "bonusReward",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint128",
+        "name": "rewardRate",
+        "type": "uint128"
+      },
+      {
+        "internalType": "uint128",
+        "name": "bonusRewardRate",
+        "type": "uint128"
+      },
+      {
+        "internalType": "address",
+        "name": "multiplierToken",
+        "type": "address"
       },
       {
         "components": [
@@ -1050,11 +1032,6 @@
         "type": "address"
       },
       {
-        "internalType": "uint24",
-        "name": "minimalPositionWidth",
-        "type": "uint24"
-      },
-      {
         "internalType": "uint224",
         "name": "totalLiquidity",
         "type": "uint224"
@@ -1121,12 +1098,12 @@
   {
     "inputs": [
       {
-        "internalType": "address",
+        "internalType": "contract IERC20Minimal",
         "name": "",
         "type": "address"
       },
       {
-        "internalType": "contract IERC20Minimal",
+        "internalType": "address",
         "name": "",
         "type": "address"
       }

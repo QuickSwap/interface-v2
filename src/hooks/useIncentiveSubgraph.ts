@@ -796,10 +796,7 @@ export function useFarmingSubgraph() {
     }
   }
 
-  async function fetchPositionsForPool(
-    pool: PoolChartSubgraph,
-    minRangeLength: string,
-  ) {
+  async function fetchPositionsForPool(pool: PoolChartSubgraph) {
     if (!chainId || !account) return;
 
     try {
@@ -811,7 +808,7 @@ export function useFarmingSubgraph() {
       } = await farmingClient.query<SubgraphResponse<Position[]>>({
         query: TRANSFERED_POSITIONS_FOR_POOL(),
         fetchPolicy: 'network-only',
-        variables: { account, pool: pool.id, minRangeLength },
+        variables: { account, pool: pool.id },
       });
 
       if (errorsTransferred) {
