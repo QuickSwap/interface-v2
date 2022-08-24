@@ -473,7 +473,7 @@ export function FarmModal({
                         >
                           <a
                             className={'fs-085 c-w hover-cp'}
-                            href={`https://app.algebra.finance/#/pool/${+el.id}`}
+                            href={`/#/pool/${+el.id}`}
                             rel='noopener noreferrer'
                             target='_blank'
                           >

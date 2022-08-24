@@ -37,7 +37,7 @@ export default function PositionHeader({
             <a
               style={{ textDecoration: 'underline' }}
               className={'c-w fs-075'}
-              href={`https://app.algebra.finance/#/pool/${+el.id}?onFarming=true`}
+              href={`/#/pool/${+el.id}?onFarming=true`}
               rel='noopener noreferrer'
               target='_blank'
             >
