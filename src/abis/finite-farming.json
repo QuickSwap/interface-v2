@@ -308,12 +308,6 @@
       },
       {
         "indexed": false,
-        "internalType": "uint24",
-        "name": "minimalAllowedPositionWidth",
-        "type": "uint24"
-      },
-      {
-        "indexed": false,
         "internalType": "uint32",
         "name": "enterStartTime",
         "type": "uint32"
@@ -638,11 +632,6 @@
             "internalType": "uint256",
             "name": "bonusReward",
             "type": "uint256"
-          },
-          {
-            "internalType": "uint24",
-            "name": "minimalPositionWidth",
-            "type": "uint24"
           },
           {
             "internalType": "address",
@@ -1003,11 +992,6 @@
         "type": "address"
       },
       {
-        "internalType": "uint24",
-        "name": "minimalPositionWidth",
-        "type": "uint24"
-      },
-      {
         "internalType": "uint224",
         "name": "totalLiquidity",
         "type": "uint224"
@@ -1100,12 +1084,12 @@
   {
     "inputs": [
       {
-        "internalType": "address",
+        "internalType": "contract IERC20Minimal",
         "name": "",
         "type": "address"
       },
       {
-        "internalType": "contract IERC20Minimal",
+        "internalType": "address",
         "name": "",
         "type": "address"
       }

@@ -2,9 +2,11 @@ import { defaultAbiCoder } from '@ethersproject/abi';
 import { getCreate2Address } from '@ethersproject/address';
 import { keccak256 } from '@ethersproject/solidity';
 import { Token } from '@uniswap/sdk-core';
-import { POOL_INIT_CODE_HASH } from 'v3lib/utils/v3constants';
 
 export const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000';
+
+export const POOL_INIT_CODE_HASH =
+  '0xe1970ade7abdb2ad0709066b5086cc324cd391f945aab88b824d6a42e7646c51';
 
 /**
  * The default factory enabled fee amounts, denominated in hundredths of bips.

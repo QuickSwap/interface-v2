@@ -41,6 +41,14 @@ export const blockClient = new ApolloClient({
   cache: new InMemoryCache(),
 });
 
+export const v3client = new ApolloClient({
+  link: new HttpLink({
+    uri: 'https://api.thegraph.com/subgraphs/name/iliaazhel/info-test',
+  }),
+  cache: new InMemoryCache(),
+  shouldBatch: true,
+});
+
 export const v3Poolclient = new ApolloClient({
   link: new HttpLink({
     uri: 'https://api.thegraph.com/subgraphs/name/cryptoalgebra/algebra',

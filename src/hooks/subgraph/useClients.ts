@@ -2,11 +2,11 @@ import { ApolloClient } from 'apollo-client';
 import { NormalizedCacheObject } from 'apollo-cache-inmemory';
 import {
   blockClient,
+  v3client,
   v3Poolclient,
   farmingClient,
   stakerClient,
   oldFarmingClient,
-  clientV3,
 } from '../../apollo/client';
 import { useActiveWeb3React } from 'hooks';
 import { ChainId } from '@uniswap/sdk';
@@ -25,9 +25,9 @@ export function useV3Client(): ApolloClient<NormalizedCacheObject> {
   const { chainId } = useActiveWeb3React();
   switch (chainId) {
     case ChainId.MATIC:
-      return clientV3;
+      return v3client;
     default:
-      return clientV3;
+      return v3client;
   }
 }
 

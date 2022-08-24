@@ -744,7 +744,6 @@ export type Deposit = {
   onFarmingCenter: Scalars['Boolean'];
   owner: Scalars['Bytes'];
   pool: Scalars['Bytes'];
-  rangeLength: Scalars['BigInt'];
   tierEternal: Scalars['BigInt'];
   tierLimit: Scalars['BigInt'];
   tokensLockedEternal: Scalars['BigInt'];
@@ -814,14 +813,6 @@ export type Deposit_Filter = {
   pool_not?: Maybe<Scalars['Bytes']>;
   pool_not_contains?: Maybe<Scalars['Bytes']>;
   pool_not_in?: Maybe<Array<Scalars['Bytes']>>;
-  rangeLength?: Maybe<Scalars['BigInt']>;
-  rangeLength_gt?: Maybe<Scalars['BigInt']>;
-  rangeLength_gte?: Maybe<Scalars['BigInt']>;
-  rangeLength_in?: Maybe<Array<Scalars['BigInt']>>;
-  rangeLength_lt?: Maybe<Scalars['BigInt']>;
-  rangeLength_lte?: Maybe<Scalars['BigInt']>;
-  rangeLength_not?: Maybe<Scalars['BigInt']>;
-  rangeLength_not_in?: Maybe<Array<Scalars['BigInt']>>;
   tierEternal?: Maybe<Scalars['BigInt']>;
   tierEternal_gt?: Maybe<Scalars['BigInt']>;
   tierEternal_gte?: Maybe<Scalars['BigInt']>;
@@ -866,7 +857,6 @@ export enum Deposit_OrderBy {
   OnFarmingCenter = 'onFarmingCenter',
   Owner = 'owner',
   Pool = 'pool',
-  RangeLength = 'rangeLength',
   TierEternal = 'tierEternal',
   TierLimit = 'tierLimit',
   TokensLockedEternal = 'tokensLockedEternal',
@@ -881,7 +871,6 @@ export type EternalFarming = {
   endTime: Scalars['BigInt'];
   id: Scalars['ID'];
   isDetached?: Maybe<Scalars['Boolean']>;
-  minRangeLength: Scalars['BigInt'];
   multiplierToken: Scalars['Bytes'];
   pool: Scalars['Bytes'];
   reward: Scalars['BigInt'];
@@ -942,14 +931,6 @@ export type EternalFarming_Filter = {
   isDetached_in?: Maybe<Array<Scalars['Boolean']>>;
   isDetached_not?: Maybe<Scalars['Boolean']>;
   isDetached_not_in?: Maybe<Array<Scalars['Boolean']>>;
-  minRangeLength?: Maybe<Scalars['BigInt']>;
-  minRangeLength_gt?: Maybe<Scalars['BigInt']>;
-  minRangeLength_gte?: Maybe<Scalars['BigInt']>;
-  minRangeLength_in?: Maybe<Array<Scalars['BigInt']>>;
-  minRangeLength_lt?: Maybe<Scalars['BigInt']>;
-  minRangeLength_lte?: Maybe<Scalars['BigInt']>;
-  minRangeLength_not?: Maybe<Scalars['BigInt']>;
-  minRangeLength_not_in?: Maybe<Array<Scalars['BigInt']>>;
   multiplierToken?: Maybe<Scalars['Bytes']>;
   multiplierToken_contains?: Maybe<Scalars['Bytes']>;
   multiplierToken_in?: Maybe<Array<Scalars['Bytes']>>;
@@ -1055,7 +1036,6 @@ export enum EternalFarming_OrderBy {
   EndTime = 'endTime',
   Id = 'id',
   IsDetached = 'isDetached',
-  MinRangeLength = 'minRangeLength',
   MultiplierToken = 'multiplierToken',
   Pool = 'pool',
   Reward = 'reward',
@@ -1642,7 +1622,6 @@ export type LimitFarming = {
   enterStartTime: Scalars['BigInt'];
   id: Scalars['ID'];
   isDetached?: Maybe<Scalars['Boolean']>;
-  minRangeLength: Scalars['BigInt'];
   multiplierToken: Scalars['Bytes'];
   pool: Scalars['Bytes'];
   reward: Scalars['BigInt'];
@@ -1709,14 +1688,6 @@ export type LimitFarming_Filter = {
   isDetached_in?: Maybe<Array<Scalars['Boolean']>>;
   isDetached_not?: Maybe<Scalars['Boolean']>;
   isDetached_not_in?: Maybe<Array<Scalars['Boolean']>>;
-  minRangeLength?: Maybe<Scalars['BigInt']>;
-  minRangeLength_gt?: Maybe<Scalars['BigInt']>;
-  minRangeLength_gte?: Maybe<Scalars['BigInt']>;
-  minRangeLength_in?: Maybe<Array<Scalars['BigInt']>>;
-  minRangeLength_lt?: Maybe<Scalars['BigInt']>;
-  minRangeLength_lte?: Maybe<Scalars['BigInt']>;
-  minRangeLength_not?: Maybe<Scalars['BigInt']>;
-  minRangeLength_not_in?: Maybe<Array<Scalars['BigInt']>>;
   multiplierToken?: Maybe<Scalars['Bytes']>;
   multiplierToken_contains?: Maybe<Scalars['Bytes']>;
   multiplierToken_in?: Maybe<Array<Scalars['Bytes']>>;
@@ -1809,7 +1780,6 @@ export enum LimitFarming_OrderBy {
   EnterStartTime = 'enterStartTime',
   Id = 'id',
   IsDetached = 'isDetached',
-  MinRangeLength = 'minRangeLength',
   MultiplierToken = 'multiplierToken',
   Pool = 'pool',
   Reward = 'reward',
@@ -4833,7 +4803,6 @@ export type Swap = {
   amount1: Scalars['BigDecimal'];
   amountUSD: Scalars['BigDecimal'];
   id: Scalars['ID'];
-  liquidity: Scalars['BigInt'];
   logIndex?: Maybe<Scalars['BigInt']>;
   origin: Scalars['Bytes'];
   pool: Pool;
@@ -4882,14 +4851,6 @@ export type Swap_Filter = {
   id_lte?: Maybe<Scalars['ID']>;
   id_not?: Maybe<Scalars['ID']>;
   id_not_in?: Maybe<Array<Scalars['ID']>>;
-  liquidity?: Maybe<Scalars['BigInt']>;
-  liquidity_gt?: Maybe<Scalars['BigInt']>;
-  liquidity_gte?: Maybe<Scalars['BigInt']>;
-  liquidity_in?: Maybe<Array<Scalars['BigInt']>>;
-  liquidity_lt?: Maybe<Scalars['BigInt']>;
-  liquidity_lte?: Maybe<Scalars['BigInt']>;
-  liquidity_not?: Maybe<Scalars['BigInt']>;
-  liquidity_not_in?: Maybe<Array<Scalars['BigInt']>>;
   logIndex?: Maybe<Scalars['BigInt']>;
   logIndex_gt?: Maybe<Scalars['BigInt']>;
   logIndex_gte?: Maybe<Scalars['BigInt']>;
@@ -5031,7 +4992,6 @@ export enum Swap_OrderBy {
   Amount1 = 'amount1',
   AmountUsd = 'amountUSD',
   Id = 'id',
-  Liquidity = 'liquidity',
   LogIndex = 'logIndex',
   Origin = 'origin',
   Pool = 'pool',
@@ -6408,7 +6368,6 @@ export type FetchLimitQuery = { __typename?: 'Query' } & {
       | 'tokenAmountForTier3'
       | 'enterStartTime'
       | 'isDetached'
-      | 'minRangeLength'
     >
   >;
 };
@@ -6439,7 +6398,6 @@ export type FetchEternalFarmQuery = { __typename?: 'Query' } & {
       | 'tokenAmountForTier2'
       | 'tokenAmountForTier3'
       | 'multiplierToken'
-      | 'minRangeLength'
     >
   >;
 };
@@ -6633,7 +6591,6 @@ export type FutureEventsQuery = { __typename?: 'Query' } & {
       | 'multiplierToken'
       | 'enterStartTime'
       | 'isDetached'
-      | 'minRangeLength'
     >
   >;
 };
@@ -6664,7 +6621,6 @@ export type CurrentEventsQuery = { __typename?: 'Query' } & {
       | 'enterStartTime'
       | 'multiplierToken'
       | 'isDetached'
-      | 'minRangeLength'
     >
   >;
 };
@@ -6698,7 +6654,6 @@ export type TransferedPositionsQuery = { __typename?: 'Query' } & {
       | 'limitFarming'
       | 'eternalFarming'
       | 'onFarmingCenter'
-      | 'rangeLength'
     >
   >;
 };
@@ -6733,7 +6688,6 @@ export type PositionsOnEternalFarmingQuery = { __typename?: 'Query' } & {
 export type TransferedPositionsForPoolQueryVariables = Exact<{
   account?: Maybe<Scalars['Bytes']>;
   pool?: Maybe<Scalars['Bytes']>;
-  minRangeLength?: Maybe<Scalars['BigInt']>;
 }>;
 
 export type TransferedPositionsForPoolQuery = { __typename?: 'Query' } & {
@@ -6788,7 +6742,6 @@ export type InfiniteFarmsQuery = { __typename?: 'Query' } & {
       | 'tier2Multiplier'
       | 'tier3Multiplier'
       | 'multiplierToken'
-      | 'minRangeLength'
     >
   >;
 };
@@ -6988,7 +6941,6 @@ export const FetchLimitDocument = `
     tokenAmountForTier3
     enterStartTime
     isDetached
-    minRangeLength
   }
 }
     `;
@@ -7013,7 +6965,6 @@ export const FetchEternalFarmDocument = `
     tokenAmountForTier2
     tokenAmountForTier3
     multiplierToken
-    minRangeLength
   }
 }
     `;
@@ -7191,7 +7142,6 @@ export const FutureEventsDocument = `
     multiplierToken
     enterStartTime
     isDetached
-    minRangeLength
   }
 }
     `;
@@ -7219,7 +7169,6 @@ export const CurrentEventsDocument = `
     enterStartTime
     multiplierToken
     isDetached
-    minRangeLength
   }
 }
     `;
@@ -7250,7 +7199,6 @@ export const TransferedPositionsDocument = `
     limitFarming
     eternalFarming
     onFarmingCenter
-    rangeLength
   }
 }
     `;
@@ -7279,11 +7227,11 @@ export const PositionsOnEternalFarmingDocument = `
 }
     `;
 export const TransferedPositionsForPoolDocument = `
-    query transferedPositionsForPool($account: Bytes, $pool: Bytes, $minRangeLength: BigInt) {
+    query transferedPositionsForPool($account: Bytes, $pool: Bytes) {
   deposits(
     orderBy: id
     orderDirection: desc
-    where: {owner: $account, pool: $pool, liquidity_not: "0", rangeLength_gte: $minRangeLength}
+    where: {owner: $account, pool: $pool, liquidity_not: "0"}
   ) {
     id
     owner
@@ -7331,7 +7279,6 @@ export const InfiniteFarmsDocument = `
     tier2Multiplier
     tier3Multiplier
     multiplierToken
-    minRangeLength
   }
 }
     `;
