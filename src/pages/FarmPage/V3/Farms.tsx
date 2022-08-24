@@ -98,14 +98,6 @@ export default function Farms() {
               }}
               now={now}
             />
-            <FarmingMyFarms
-              data={transferredPositions}
-              refreshing={transferredPositionsLoading}
-              fetchHandler={() => {
-                fetchTransferredPositionsFn(true);
-              }}
-              now={now}
-            />
           </Box>
         )}
         {selectedTab?.id === 1 && (
