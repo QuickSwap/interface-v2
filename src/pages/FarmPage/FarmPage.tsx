@@ -12,9 +12,7 @@ import 'pages/styles/farm.scss';
 import { useDefaultFarmList } from 'state/farms/hooks';
 import { useDefaultDualFarmList } from 'state/dualfarms/hooks';
 import { ChainId } from '@uniswap/sdk';
-import EternalFarmsPage from 'pages/EternalFarmsPage';
 import { useFarmingSubgraph } from 'hooks/useIncentiveSubgraph';
-import { FarmingMyFarms } from 'components/StakerMyStakes';
 import VersionToggle from 'components/Toggle/VersionToggle';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import { useHistory } from 'react-router-dom';
@@ -33,15 +31,6 @@ const FarmPage: React.FC = () => {
   const chainIdOrDefault = chainId ?? ChainId.MATIC;
   const lpFarms = useDefaultFarmList();
   const dualFarms = useDefaultDualFarmList();
-  const { account } = useActiveWeb3React();
-
-  const {
-    fetchEternalFarms: {
-      fetchEternalFarmsFn,
-      eternalFarms,
-      eternalFarmsLoading,
-    },
-  } = useFarmingSubgraph() || {};
 
   const pairLists = useMemo(() => {
     const stakingPairLists = Object.values(lpFarms[chainIdOrDefault]).map(
@@ -73,39 +62,6 @@ const FarmPage: React.FC = () => {
       condition: farmIndex === GlobalConst.farmIndex.DUALFARM_INDEX,
     },
   ];
-
-  const v3FarmCategories = [
-    {
-      text: t('myFarms'),
-      onClick: () => {
-        setV3FarmIndex(GlobalConst.v3FarmIndex.MY_FARMS_INDEX);
-      },
-      condition: v3FarmIndex === GlobalConst.v3FarmIndex.MY_FARMS_INDEX,
-    },
-    {
-      text: t('enternalFarms'),
-      onClick: () => {
-        setV3FarmIndex(GlobalConst.v3FarmIndex.ETERNAL_FARMS_INDEX);
-      },
-      condition: v3FarmIndex === GlobalConst.v3FarmIndex.ETERNAL_FARMS_INDEX,
-    },
-  ];
-
-  const {
-    fetchRewards: { rewardsResult, fetchRewardsFn, rewardsLoading },
-    fetchAllEvents: { fetchAllEventsFn, allEvents, allEventsLoading },
-    fetchTransferredPositions: {
-      fetchTransferredPositionsFn,
-      transferredPositions,
-      transferredPositionsLoading,
-    },
-    fetchHasTransferredPositions: {
-      fetchHasTransferredPositionsFn,
-      hasTransferredPositions,
-      hasTransferredPositionsLoading,
-    },
-  } = useFarmingSubgraph() || {};
-  const [now, setNow] = useState(Date.now());
 
   const history = useHistory();
   const parsedQuery = useParsedQueryString();
@@ -149,46 +105,7 @@ const FarmPage: React.FC = () => {
           </Box>
         </>
       )}
-      {isOnV3 && (
-        <>
-          <V3Farms />
-          {/* <CustomSwitch
-            width={300}
-            height={48}
-            items={v3FarmCategories}
-            isLarge={true}
-          />
-          <Box className='helpWrapper'>
-            <Button
-              onClick={() =>
-                account ? fetchTransferredPositionsFn(true) : undefined
-              }
-            >
-              Refresh
-            </Button>
-            <HelpIcon />
-          </Box>
-          <Box my={2}>
-            {v3FarmIndex === GlobalConst.v3FarmIndex.MY_FARMS_INDEX && (
-              <FarmingMyFarms
-                data={transferredPositions}
-                refreshing={transferredPositionsLoading}
-                fetchHandler={() => {
-                  fetchTransferredPositionsFn(true);
-                }}
-                now={now}
-              />
-            )}
-            {v3FarmIndex === GlobalConst.v3FarmIndex.ETERNAL_FARMS_INDEX && (
-              <EternalFarmsPage
-                data={eternalFarms}
-                refreshing={eternalFarmsLoading}
-                fetchHandler={() => fetchEternalFarmsFn(true)}
-              />
-            )}
-          </Box> */}
-        </>
-      )}
+      {isOnV3 && <V3Farms />}
     </Box>
   );
 };
