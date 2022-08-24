@@ -48,6 +48,7 @@ interface FarmModalProps {
     tokenAmountForTier2: string;
     tokenAmountForTier3: string;
     multiplierToken: any;
+    minRangeLength: string;
   };
   closeHandler: () => void;
   farmingType: FarmingType;
@@ -67,6 +68,7 @@ export function FarmModal({
     tokenAmountForTier1,
     tokenAmountForTier2,
     tokenAmountForTier3,
+    minRangeLength,
   },
   closeHandler,
   farmingType,
@@ -106,7 +108,7 @@ export function FarmModal({
   const [selectedTier, setSelectedTier] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchPositionsForPoolFn(pool);
+    fetchPositionsForPoolFn(pool, minRangeLength);
   }, []);
 
   const positionsForStake = useMemo(() => {
