@@ -23,3 +23,25 @@ export const replaceSwapState = createAction<{
 export const setRecipient = createAction<{ recipient: string | null }>(
   'swap/setRecipient',
 );
+
+type SearchSummary = {
+  expectedProfit?: number;
+  expectedUsdProfit?: number;
+  firstTokenAddress?: string;
+  firstTokenAmount?: number;
+  expectedKickbackProfit?: number;
+};
+
+type TransactionArgs = {
+  data: string;
+  destination: string;
+  sender: string;
+  value: string;
+  masterInput: string;
+};
+
+export type DataResponse = {
+  pathFound: boolean;
+  summary?: { searchSummary?: SearchSummary };
+  transactionArgs: TransactionArgs;
+};

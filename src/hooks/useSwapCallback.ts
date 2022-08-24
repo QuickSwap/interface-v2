@@ -12,6 +12,7 @@ import {
 import { useMemo } from 'react';
 import { GlobalConst } from 'constants/index';
 import { useTransactionAdder } from 'state/transactions/hooks';
+import callWallchainAPI from 'utils/wallchainService';
 import {
   calculateGasMargin,
   isZero,
@@ -157,6 +158,14 @@ export function useSwapCallback(
   const { address: recipientAddress } = useENS(recipientAddressOrName);
   const recipient =
     recipientAddressOrName === null ? account : recipientAddress;
+
+  if (swapCalls[0]) {
+    const {
+      contract,
+      parameters: { methodName, args, value },
+    } = swapCalls[0];
+    callWallchainAPI(methodName, args, value, account || '', contract);
+  }
 
   return useMemo(() => {
     if (!trade || !library || !account || !chainId) {
