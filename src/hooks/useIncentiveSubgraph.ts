@@ -926,7 +926,7 @@ export function useFarmingSubgraph() {
         );
         const multiplierToken = await fetchToken(farming.multiplierToken, true);
 
-        const apr = aprs[farming.id] ? aprs[farming.id] : 200;
+        const apr = aprs[farming.id] ? aprs[farming.id] : NaN;
 
         _eternalFarmings = [
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
