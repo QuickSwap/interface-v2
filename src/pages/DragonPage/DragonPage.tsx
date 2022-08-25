@@ -61,7 +61,7 @@ const DragonPage: React.FC = () => {
               <DragonsLair isNew={true} />
             </Box>
           )}
-          <Box mt={2}>
+          <Box maxWidth={isMobile ? '320px' : '352px'} margin='16px auto 0'>
             <AdsSlider sort='4' />
           </Box>
         </Grid>

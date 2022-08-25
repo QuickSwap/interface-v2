@@ -1,6 +1,6 @@
 import React from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
-import { Box } from '@material-ui/core';
+import { Box, useMediaQuery, useTheme } from '@material-ui/core';
 import { ArrowForwardIos } from '@material-ui/icons';
 import AnalyticsSearch from 'components/AnalyticsSearch';
 import { shortenAddress } from 'utils';
@@ -17,13 +17,15 @@ const AnalyticsHeader: React.FC<AnalyticHeaderProps> = ({ data, type }) => {
   const history = useHistory();
   const { pathname } = useLocation();
   const { t } = useTranslation();
+  const { breakpoints } = useTheme();
+  const isMobile = useMediaQuery(breakpoints.down('xs'));
 
   return (
     <Box width='100%' mb={3}>
       <Box mb={3}>
         <h4>{t('quickswapAnalytics')}</h4>
       </Box>
-      <Box mb={3}>
+      <Box maxWidth={isMobile ? '320px' : '1136px'} margin='0 auto 24px'>
         <AdsSlider sort='6' />
       </Box>
       <Box

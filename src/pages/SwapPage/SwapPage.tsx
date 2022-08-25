@@ -21,6 +21,7 @@ import AdsSlider from 'components/AdsSlider';
 const SwapPage: React.FC = () => {
   const { isProMode, updateIsProMode } = useIsProMode();
   const { breakpoints } = useTheme();
+  const isTiny = useMediaQuery(breakpoints.down('xs'));
   const isMobile = useMediaQuery(breakpoints.down('sm'));
   const isTablet = useMediaQuery(breakpoints.down('md'));
   const [showChart, setShowChart] = useState(true);
@@ -112,7 +113,7 @@ const SwapPage: React.FC = () => {
             <Box className='wrapper'>
               <SwapMain />
             </Box>
-            <Box mt={2}>
+            <Box maxWidth={isTiny ? '320px' : '352px'} margin='16px auto 0'>
               <AdsSlider sort='1' />
             </Box>
           </Grid>
@@ -166,6 +167,9 @@ const SwapPage: React.FC = () => {
               </Box>
             </Box>
             <SwapMain />
+            <Box maxWidth={isTiny ? '320px' : '352px'} margin='16px auto 0'>
+              <AdsSlider sort='1' />
+            </Box>
           </Box>
           {infoPos === 'left' && (
             <Box

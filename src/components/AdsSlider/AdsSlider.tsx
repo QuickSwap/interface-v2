@@ -5,10 +5,9 @@ import { useDefaultAdsList } from 'state/ads/hooks';
 
 interface AdsSliderProps {
   sort: string;
-  margin?: string;
 }
 
-const AdsSlider: React.FC<AdsSliderProps> = ({ sort, margin }) => {
+const AdsSlider: React.FC<AdsSliderProps> = ({ sort }) => {
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const ads = useDefaultAdsList()[sort];
@@ -25,24 +24,19 @@ const AdsSlider: React.FC<AdsSliderProps> = ({ sort, margin }) => {
   };
 
   return ads ? (
-    <Box margin={margin}>
-      <Slider {...adsSliderSettings}>
-        {ads.map((item, ind) => (
-          <a
-            key={ind}
-            className='no-outline'
-            href={item.link}
-            target='_blank'
-            rel='noreferrer'
-          >
-            <img
-              src={isMobile ? item.mobileURL : item.desktopURL}
-              width='100%'
-            />
-          </a>
-        ))}
-      </Slider>
-    </Box>
+    <Slider {...adsSliderSettings}>
+      {ads.map((item, ind) => (
+        <a
+          key={ind}
+          className='no-outline'
+          href={item.link}
+          target='_blank'
+          rel='noreferrer'
+        >
+          <img src={isMobile ? item.mobileURL : item.desktopURL} width='100%' />
+        </a>
+      ))}
+    </Slider>
   ) : (
     <></>
   );

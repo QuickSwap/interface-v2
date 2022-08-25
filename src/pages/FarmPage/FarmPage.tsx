@@ -24,7 +24,7 @@ const FarmPage: React.FC = () => {
   const lpFarms = useDefaultFarmList();
   const dualFarms = useDefaultDualFarmList();
   const { breakpoints } = useTheme();
-  const isTablet = useMediaQuery(breakpoints.down('sm'));
+  const isMobile = useMediaQuery(breakpoints.down('xs'));
 
   const pairLists = useMemo(() => {
     const stakingPairLists = Object.values(lpFarms[chainIdOrDefault]).map(
@@ -64,14 +64,16 @@ const FarmPage: React.FC = () => {
           <HelpIcon />
         </Box>
       </Box>
-      <AdsSlider sort='3' margin='0 0 24px' />
+      <Box maxWidth={isMobile ? '320px' : '1136px'} margin='0 auto 24px'>
+        <AdsSlider sort='3' />
+      </Box>
       <CustomSwitch
         width={300}
         height={48}
         items={farmCategories}
         isLarge={true}
       />
-      <Box my={2}>
+      <Box my={3}>
         <FarmRewards bulkPairs={bulkPairs} farmIndex={farmIndex} />
       </Box>
       <Box className='farmsWrapper'>
