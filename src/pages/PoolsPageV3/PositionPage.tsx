@@ -673,6 +673,7 @@ export default function PositionPage() {
                 </div>
                 <CurrentPriceCard
                   inverted={inverted}
+                  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                   //@ts-ignore
                   pool={_pool}
                   currencyQuote={currencyQuote}
