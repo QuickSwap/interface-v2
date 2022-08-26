@@ -7,6 +7,7 @@ import { WrappedTokenInfo } from 'state/lists/hooks';
 import { Logo } from 'components';
 import { getTokenLogoURL } from 'utils/getTokenLogoURL';
 import 'components/styles/CurrencyLogo.scss';
+import { stringToColour } from 'utils/stringToColour';
 
 interface CurrencyLogoProps {
   currency?: Currency;
@@ -51,9 +52,17 @@ const CurrencyLogo: React.FC<CurrencyLogoProps> = ({
       </Box>
     );
   }
-
+  const symbol = currency?.symbol ?? '';
   return (
     <Box
+      style={{
+        ...style,
+        background: stringToColour(symbol).background,
+        color: stringToColour(symbol).text,
+        border: stringToColour(symbol).border,
+
+        fontSize: size === '18px' ? '8px' : size === '24px' ? '12px' : '10px',
+      }}
       width={size}
       height={size}
       borderRadius={withoutBg ? 0 : size}
@@ -62,7 +71,7 @@ const CurrencyLogo: React.FC<CurrencyLogoProps> = ({
       <Logo
         srcs={srcs}
         size={size}
-        alt={`${currency?.symbol ?? 'token'} logo`}
+        alt={`${currency?.symbol ?? '??'} logo`}
       />
     </Box>
   );

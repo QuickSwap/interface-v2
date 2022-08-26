@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { HelpCircle } from 'react-feather';
+import { stringToColour } from 'utils/stringToColour';
+import { StyledLogo } from './styled';
 
 const BAD_SRCS: { [tokenAddress: string]: true } = {};
 
@@ -27,8 +28,20 @@ const Logo: React.FC<LogoProps> = ({ srcs, alt, size = '24px' }) => {
       />
     );
   }
+  return (
+    <StyledLogo
+      size={size}
+      style={{
+        background: stringToColour(alt ?? '').background,
+        color: stringToColour(alt ?? '').text,
+        border: stringToColour(alt ?? '').border,
 
-  return <HelpCircle />;
+        fontSize: size === '18px' ? '8px' : size === '24px' ? '12px' : '10px',
+      }}
+    >
+      {alt?.slice(0, 3).trimEnd()}
+    </StyledLogo>
+  );
 };
 
 export default Logo;
