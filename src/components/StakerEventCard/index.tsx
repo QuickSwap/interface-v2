@@ -108,14 +108,14 @@ export function FarmingEventCard({
   }, [reward, bonusReward, rewardToken, bonusRewardToken]);
 
   return (
-    <>
+    <Box>
       {refreshing && (
         <LoadingShim>
           <Loader size={'18px'} stroke={'white'} style={{ margin: 'auto' }} />
         </LoadingShim>
       )}
       {!refreshing && (
-        <Box ml={1.5} mr={1.5}>
+        <Box ml={1.5} mr={1.5} mt={3} mb={3}>
           <StyledFilledBox
             padding={1.5}
             width={336}
@@ -175,12 +175,15 @@ export function FarmingEventCard({
                         {reward.token.symbol}
                       </StyledLabel>
                       <StyledLabel color='#ebecf2' fontSize='14px'>
-                        {formatAmountTokens(reward.amount, false)}
+                        {formatAmountTokens(
+                          reward.amount / 10 ** reward.token.decimals,
+                          false,
+                        )}
                       </StyledLabel>
                     </Box>
                   </Box>
                 </StyledDarkBox>
-                {i + 1 == rewardList.length && (
+                {i + 1 !== rewardList.length && (
                   <Box
                     className='flex justify-center'
                     mt={-1.5}
@@ -216,6 +219,6 @@ export function FarmingEventCard({
           </StyledFilledBox>
         </Box>
       )}
-    </>
+    </Box>
   );
 }
