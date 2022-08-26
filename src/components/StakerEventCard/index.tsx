@@ -54,59 +54,15 @@ export function FarmingEventCard({
   now,
   event: {
     pool,
-    createdAtTimestamp,
     rewardToken,
     bonusRewardToken,
     reward,
     bonusReward,
-    startTime,
-    endTime,
     apr,
-    locked,
     enterStartTime,
   } = {},
   eternal,
 }: FarmingEventCardProps) {
-  const { account } = useActiveWeb3React();
-  const toggleWalletModal = useWalletModalToggle();
-
-  const _startTime = useMemo(() => {
-    if (!startTime) return [];
-
-    const date = new Date(+startTime * 1000);
-
-    return [convertDateTime(date), convertDateTime(date)];
-  }, [startTime]);
-
-  const _endTime = useMemo(() => {
-    if (!endTime) return [];
-
-    const date = new Date(+endTime * 1000);
-
-    return [convertDateTime(date), convertDateTime(date)];
-  }, [endTime]);
-
-  const _enterTime = useMemo(() => {
-    if (!enterStartTime) return [];
-
-    const date = new Date(+enterStartTime * 1000);
-
-    return [convertDateTime(date), convertDateTime(date)];
-  }, [startTime]);
-
-  const rewardList = useMemo(() => {
-    if (!reward || !bonusReward) return;
-
-    if (rewardToken.id === bonusRewardToken.id) {
-      return [{ token: rewardToken, amount: +reward + +bonusReward }];
-    }
-
-    return [
-      { token: rewardToken, amount: reward },
-      { token: bonusRewardToken, amount: bonusReward },
-    ];
-  }, [reward, bonusReward, rewardToken, bonusRewardToken]);
-
   return (
     <Box>
       {refreshing && (
@@ -149,9 +105,44 @@ export function FarmingEventCard({
                 </StyledLabel>
               </Box>
             </Box>
+            <StyledDarkBox
+              padding={1.5}
+              className='flex items-center '
+              height={56}
+            >
+              <Box className='flex'>
+                <CurrencyLogo
+                  currency={
+                    new Token(
+                      ChainId.MATIC,
+                      rewardToken?.id,
+                      18,
+                      rewardToken?.symbol,
+                    ) as WrappedCurrency
+                  }
+                  size={'30px'}
+                />
 
-            {rewardList?.map((reward: any, i) => (
+                <Box className='flex-col' ml={1.5}>
+                  <StyledLabel color='#696c80' fontSize='12px'>
+                    Reward
+                  </StyledLabel>
+                  <StyledLabel color='#ebecf2' fontSize='14px'>
+                    {rewardToken?.symbol}
+                  </StyledLabel>
+                </Box>
+              </Box>
+            </StyledDarkBox>
+            {bonusRewardToken && (
               <>
+                <Box
+                  className='flex justify-center'
+                  mt={-1.5}
+                  mb={-1.5}
+                  zIndex={1}
+                >
+                  <AddIcon />
+                </Box>
                 <StyledDarkBox
                   padding={1.5}
                   className='flex items-center '
@@ -162,9 +153,9 @@ export function FarmingEventCard({
                       currency={
                         new Token(
                           ChainId.MATIC,
-                          reward.token.id,
+                          bonusRewardToken.id,
                           18,
-                          reward.token.symbol,
+                          bonusRewardToken.symbol,
                         ) as WrappedCurrency
                       }
                       size={'30px'}
@@ -172,29 +163,16 @@ export function FarmingEventCard({
 
                     <Box className='flex-col' ml={1.5}>
                       <StyledLabel color='#696c80' fontSize='12px'>
-                        {reward.token.symbol}
+                        Bonus
                       </StyledLabel>
                       <StyledLabel color='#ebecf2' fontSize='14px'>
-                        {formatAmountTokens(
-                          reward.amount / 10 ** reward.token.decimals,
-                          false,
-                        )}
+                        {bonusRewardToken.symbol}
                       </StyledLabel>
                     </Box>
                   </Box>
                 </StyledDarkBox>
-                {i + 1 !== rewardList.length && (
-                  <Box
-                    className='flex justify-center'
-                    mt={-1.5}
-                    mb={-1.5}
-                    zIndex={1}
-                  >
-                    <AddIcon />
-                  </Box>
-                )}
               </>
-            ))}
+            )}
 
             <StyledDarkBox
               className='flex justify-between items-center mt-1'
