@@ -13,6 +13,8 @@ import {
   useRangeHopCallbacks,
   useV3MintActionHandlers,
   useV3MintState,
+  useInitialTokenPrice,
+  useInitialUSDPrices,
 } from 'state/mint/v3/hooks';
 import { USDPrices } from '../../components/USDPrices';
 import useUSDCPrice, { useUSDCValue } from 'hooks/v3/useUSDCPrice';
@@ -173,6 +175,76 @@ export function SelectRange({
     };
   }, []);
 
+  const initialUSDPrices = useInitialUSDPrices();
+  const initialTokenPrice = useInitialTokenPrice();
+
+  const currentPriceInUSDA = useUSDCValue(
+    tryParseAmount(
+      mintInfo.price
+        ? mintInfo.invertPrice
+          ? Number(mintInfo.price.invert().toSignificant(5)).toFixed(5)
+          : Number(mintInfo.price.toSignificant(5)).toFixed(5)
+        : undefined,
+      currencyB ?? undefined,
+    ),
+    true,
+  );
+
+  const currentPriceInUSDB = useUSDCValue(
+    tryParseAmount(
+      mintInfo.price
+        ? mintInfo.invertPrice
+          ? Number(mintInfo.price.invert().toSignificant(5)).toFixed(5)
+          : Number(mintInfo.price.toSignificant(5)).toFixed(5)
+        : undefined,
+      currencyA ?? undefined,
+    ),
+    true,
+  );
+
+  const currentPrice = useMemo(() => {
+    if (!mintInfo.price) return;
+
+    const isInitialInUSD = Boolean(
+      initialUSDPrices.CURRENCY_A && initialUSDPrices.CURRENCY_B,
+    );
+
+    let _price;
+
+    if (!isUSD) {
+      _price =
+        isUSD && currentPriceInUSDA
+          ? parseFloat(currentPriceInUSDA?.toSignificant(5))
+          : mintInfo.invertPrice
+          ? parseFloat(mintInfo.price.invert().toSignificant(5))
+          : parseFloat(mintInfo.price.toSignificant(5));
+    } else {
+      if (isInitialInUSD) {
+        _price = parseFloat(initialUSDPrices.CURRENCY_A);
+      } else if (currentPriceInUSDA) {
+        _price = parseFloat(currentPriceInUSDA.toSignificant(5));
+      } else if (currentPriceInUSDB) {
+        _price = parseFloat(currentPriceInUSDB.toSignificant(5));
+      }
+    }
+
+    if (Number(_price) <= 0.0001) {
+      return `< ${
+        isUSD && (currentPriceInUSDA || isInitialInUSD) ? '$ ' : ''
+      }0.0001`;
+    } else {
+      return `${
+        isUSD && (currentPriceInUSDA || isInitialInUSD) ? '$ ' : ''
+      }${_price}`;
+    }
+  }, [
+    mintInfo.price,
+    isUSD,
+    initialUSDPrices,
+    initialTokenPrice,
+    currentPriceInUSDA,
+  ]);
+
   return (
     <Box>
       <small className='weight-600'>Select a range</small>
@@ -189,6 +261,19 @@ export function SelectRange({
           price={price}
         />
       </Box>
+      {mintInfo.price && (
+        <Box textAlign='center'>
+          <span>
+            {!!mintInfo.noLiquidity ? `Initial Price:` : `Current Price:`}{' '}
+            {currentPrice ?? ''}{' '}
+            <span className='text-secondary'>
+              {currentPrice
+                ? `${currencyB?.symbol} per ${currencyA?.symbol}`
+                : 'Loading...'}
+            </span>
+          </span>
+        </Box>
+      )}
       <Box my={2}>
         <RangeSelector
           priceLower={priceLower}
@@ -202,7 +287,6 @@ export function SelectRange({
           currencyA={currencyA}
           currencyB={currencyB}
           mintInfo={mintInfo}
-          initial={!!mintInfo.noLiquidity}
           disabled={!startPriceTypedValue && !mintInfo.price}
           isBeforePrice={isBeforePrice}
           isAfterPrice={isAfterPrice}

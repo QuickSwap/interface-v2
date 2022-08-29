@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { TokenCard } from '../../components/TokenCard';
-import { Plus } from 'react-feather';
 import { Currency } from '@uniswap/sdk-core';
 import './index.scss';
 import { useInfoLiquidity } from 'hooks/subgraph/useInfoLiquidity';
@@ -9,6 +8,7 @@ import { StepTitle } from '../../components/StepTitle';
 import { PriceFormats } from '../..//components/PriceFomatToggler';
 import { useHistory } from 'react-router-dom';
 import { Box } from '@material-ui/core';
+import { Add } from '@material-ui/icons';
 import V3CurrencySelect from 'components/v3/CurrencySelect';
 
 interface ISelectPair {
@@ -67,7 +67,7 @@ export function SelectPair({
           />
         </Box>
         <Box mx={1} className='v3PairPlusIcon'>
-          <Plus size={16} />
+          <Add />
         </Box>
         <Box flex={1}>
           <V3CurrencySelect

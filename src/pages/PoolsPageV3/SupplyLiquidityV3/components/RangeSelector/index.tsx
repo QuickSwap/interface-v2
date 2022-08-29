@@ -15,6 +15,8 @@ import {
 import { PriceFormats } from '../PriceFomatToggler';
 import { tryParseAmount } from 'state/swap/v3/hooks';
 import './index.scss';
+import { Box } from '@material-ui/core';
+import { Add, Remove } from '@material-ui/icons';
 
 interface IRangeSelector {
   priceLower: Price<Token, Token> | undefined;
@@ -27,7 +29,6 @@ interface IRangeSelector {
   getIncrementUpper: () => string;
   currencyA: Currency | null | undefined;
   currencyB: Currency | null | undefined;
-  initial: boolean;
   disabled: boolean;
   isBeforePrice: boolean;
   isAfterPrice: boolean;
@@ -67,7 +68,6 @@ export function RangeSelector({
   getIncrementUpper,
   currencyA,
   currencyB,
-  initial,
   disabled,
   isBeforePrice,
   isAfterPrice,
@@ -78,32 +78,6 @@ export function RangeSelector({
   const tokenB = (currencyB ?? undefined)?.wrapped;
 
   const isUSD = useMemo(() => priceFormat === PriceFormats.USD, [priceFormat]);
-  const currentPriceInUSD = useUSDCValue(
-    tryParseAmount(
-      mintInfo.price
-        ? mintInfo.invertPrice
-          ? Number(mintInfo.price.invert().toSignificant(5)).toFixed(5)
-          : Number(mintInfo.price.toSignificant(5)).toFixed(5)
-        : undefined,
-      currencyB ?? undefined,
-    ),
-    true,
-  );
-
-  const currentPriceInUSDB = useUSDCValue(
-    tryParseAmount(
-      mintInfo.price
-        ? mintInfo.invertPrice
-          ? Number(mintInfo.price.invert().toSignificant(5)).toFixed(5)
-          : Number(mintInfo.price.toSignificant(5)).toFixed(5)
-        : undefined,
-      currencyA ?? undefined,
-    ),
-    true,
-  );
-
-  const initialUSDPrices = useInitialUSDPrices();
-  const initialTokenPrice = useInitialTokenPrice();
 
   const isSorted = useMemo(() => {
     return tokenA && tokenB && tokenA.sortsBefore(tokenB);
@@ -117,63 +91,9 @@ export function RangeSelector({
     return isSorted ? priceUpper : priceLower?.invert();
   }, [isSorted, priceUpper, priceLower]);
 
-  const currentPrice = useMemo(() => {
-    if (!mintInfo.price) return;
-
-    const isInitialInUSD = Boolean(
-      initialUSDPrices.CURRENCY_A && initialUSDPrices.CURRENCY_B,
-    );
-
-    let _price;
-
-    if (!isUSD) {
-      _price =
-        isUSD && currentPriceInUSD
-          ? parseFloat(currentPriceInUSD?.toSignificant(5))
-          : mintInfo.invertPrice
-          ? parseFloat(mintInfo.price.invert().toSignificant(5))
-          : parseFloat(mintInfo.price.toSignificant(5));
-    } else {
-      if (isInitialInUSD) {
-        _price = parseFloat(initialUSDPrices.CURRENCY_A);
-      } else if (currentPriceInUSD) {
-        _price = parseFloat(currentPriceInUSD.toSignificant(5));
-      } else if (currentPriceInUSDB) {
-        _price = parseFloat(currentPriceInUSDB.toSignificant(5));
-      }
-    }
-
-    if (Number(_price) <= 0.0001) {
-      return `< ${
-        isUSD && (currentPriceInUSD || isInitialInUSD) ? '$ ' : ''
-      }0.0001${
-        isUSD && (currentPriceInUSD || isInitialInUSD)
-          ? ''
-          : ` ${currencyB?.symbol}`
-      }`;
-    } else {
-      return `${
-        isUSD && (currentPriceInUSD || isInitialInUSD) ? '$ ' : ''
-      }${_price}${
-        isUSD && (currentPriceInUSD || isInitialInUSD)
-          ? ''
-          : ` ${currencyB?.symbol}`
-      }`;
-    }
-  }, [
-    mintInfo.price,
-    isUSD,
-    initialUSDPrices,
-    initialTokenPrice,
-    currentPriceInUSD,
-  ]);
-
   return (
-    <div className='f f-jb mxs_fd-c'>
-      <div
-        className={`min-price mxs_mb-1`}
-        style={{ order: isAfterPrice ? 2 : 1 }}
-      >
+    <Box className='flex justify-between'>
+      <Box width='calc(50% - 8px)'>
         <RangePart
           value={
             mintInfo.ticksAtLimit[Bound.LOWER]
@@ -194,29 +114,8 @@ export function RangeSelector({
           title={`Min price`}
           priceFormat={priceFormat}
         />
-      </div>
-      {mintInfo.price && (
-        <div
-          className='current-price f f-ac mxs_fd-c'
-          style={{ order: isAfterPrice ? 1 : isBeforePrice ? 3 : 2 }}
-        >
-          <div className='mb-05 mxs_mt-05' style={{ whiteSpace: 'nowrap' }}>
-            {initial
-              ? `Initial ${currencyA?.symbol} to ${
-                  isUSD ? 'USD' : currencyB?.symbol
-                } price`
-              : `Current ${currencyA?.symbol} to ${
-                  isUSD ? 'USD' : currencyB?.symbol
-                } price`}
-          </div>
-          <div className='current-price-tip ta-c'>{`${currentPrice ||
-            `Loading...`}`}</div>
-        </div>
-      )}
-      <div
-        className='max-price mxs_mt-1'
-        style={{ order: isBeforePrice ? 2 : 3 }}
-      >
+      </Box>
+      <Box width='calc(50% - 8px)'>
         <RangePart
           value={
             mintInfo.ticksAtLimit[Bound.UPPER]
@@ -236,8 +135,8 @@ export function RangeSelector({
           title={`Max price`}
           priceFormat={priceFormat}
         />
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 }
 
@@ -377,47 +276,52 @@ function RangePart({
   }, [usdPriceB, initialTokenPrice, initialUSDPrices, value]);
 
   return (
-    <div>
-      <div className='mb-05 f f-ac'>
-        <div>{title}</div>
-        <div className='ml-a'>
-          <button
-            onClick={handleDecrement}
-            disabled={decrementDisabled || disabled}
-            className='range-input__btn'
-          >
-            -
-          </button>
-          <button
-            onClick={handleIncrement}
-            disabled={incrementDisabled || disabled}
-            className='range-input__btn'
-          >
-            +
-          </button>
+    <Box className='price-range-part text-center'>
+      <p className='caption text-secondary'>{title}</p>
+      <Box className='price-range-main'>
+        <button
+          onClick={handleDecrement}
+          disabled={decrementDisabled || disabled}
+          className='range-input__btn'
+        >
+          <Remove />
+        </button>
+        <div className='price-range-input'>
+          {isUSD && valueUSD && (
+            <label htmlFor={title} className='range-input__usd'>
+              $
+            </label>
+          )}
+          <Input
+            value={isUSD ? localUSDValue : localTokenValue}
+            id={title}
+            onBlur={handleOnBlur}
+            className={`range-input ${isUSD && valueUSD ? 'is-usd' : ''}`}
+            disabled={disabled || locked}
+            onUserInput={(val) => {
+              isUSD
+                ? setLocalUSDValue(val.trim())
+                : setLocalTokenValue(val.trim());
+              dispatch(updateSelectedPreset({ preset: null }));
+            }}
+            placeholder='0.00'
+          />
         </div>
-      </div>
-      <div className='f pos-r f-ac'>
-        {isUSD && valueUSD && (
-          <label htmlFor={title} className='range-input__usd'>
-            $
-          </label>
-        )}
-        <Input
-          value={isUSD ? localUSDValue : localTokenValue}
-          id={title}
-          onBlur={handleOnBlur}
-          className={`range-input ${isUSD && valueUSD ? 'is-usd' : ''}`}
-          disabled={disabled || locked}
-          onUserInput={(val) => {
-            isUSD
-              ? setLocalUSDValue(val.trim())
-              : setLocalTokenValue(val.trim());
-            dispatch(updateSelectedPreset({ preset: null }));
-          }}
-          placeholder='0.00'
-        />
-      </div>
-    </div>
+        <button
+          onClick={handleIncrement}
+          disabled={incrementDisabled || disabled}
+          className='range-input__btn'
+        >
+          <Add />
+        </button>
+      </Box>
+      {tokenA && tokenB && (
+        <Box mt={1}>
+          <p className='text-secondary caption'>
+            {tokenB?.symbol} per {tokenA?.symbol}
+          </p>
+        </Box>
+      )}
+    </Box>
   );
 }
