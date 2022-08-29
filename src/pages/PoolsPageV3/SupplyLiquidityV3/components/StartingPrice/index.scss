@@ -1,0 +1,186 @@
+.token-price {
+    display: flex; 
+    font-size: 16px;
+
+    &.main {
+        
+        .quote-token {
+            border-radius: 6px;
+            background: #44586a;
+
+            & > * {
+                display: inline-block;
+            }
+        
+            &__symbol {
+                padding: 8px;
+                background: #1c2a35;
+                border-radius: 0 6px 6px 0;
+                border: 2px solid #1c2a35;
+                line-height: normal;
+            }
+        
+            &__separator {
+                line-height: 31px;
+                margin: 0 10px;
+            }
+        
+            &__input {
+                width: 100% !important;
+                padding: 7px 1rem !important;
+                border: 2px solid rgb(51, 102, 255) !important;
+                border-radius: 6px 0px 0px 6px !important;
+                background-color: #0a2a43 !important;
+                font-size: 16px !important;
+                text-align: left !important;
+            }
+
+            &__auto-fetched {
+                line-height: 34px;
+                padding-left: 1rem;
+            }
+        
+        }
+
+        .base-token {
+            display: flex; 
+            border-radius: 6px;
+        
+            &__amount {
+                padding: 8px 0 8px 8px;
+                border: 2px solid #1c2a35;
+                background: #1c2a35;
+                border-radius: 6px 0 0 6px;
+                line-height: normal;
+            }
+        
+            &__symbol {
+                padding: 8px;
+                background: #1c2a35;
+                border-radius: 0 6px 6px 0;
+                border: 2px solid #1c2a35;
+                line-height: normal;
+            }
+        }
+    }
+
+    &.side {
+
+        margin-top: 13px;
+
+        .base-token {
+            display: flex;
+
+            &__amount {
+                margin-right: 4px;
+            }
+        }
+
+        .quote-token {
+            &__symbol {
+                margin-left: 4px;
+            }
+            
+            &__separator {
+                margin: 0 4px;
+            }
+        }
+    }
+}
+
+.usd-price {
+
+    &__wrapper {
+        
+        &.side {
+            margin-top: 13px;
+        }
+
+        &.main {
+
+            // justify-content: space-between;
+
+            .usd-price {
+
+                & > * {
+                    display: inline-block;
+                }
+
+                &__amount {
+                    padding: 8px;
+                    border: 2px solid #1c2a35;
+                    background: #1c2a35;
+                    border-radius: 6px;
+                    display: inline-block;
+                } 
+
+                &__separator {
+                    margin: 0 6px;
+                }
+
+                &__dollar {
+                    padding: 8px;
+                    border: 2px solid #1c2a35;
+                    background: #1c2a35;
+                    border-radius: 6px 0 0 6px;
+                }
+
+                &__price {
+                    padding: 8px 8px 8px 0;
+                    border: 2px solid #1c2a35;
+                    background: #1c2a35;
+                    border-radius: 0 6px 6px 0;
+                }
+
+            }
+        }
+
+    }
+
+    &__input {
+        width: 100px !important;
+        padding: 7px !important;
+        border: 2px solid rgb(51, 102, 255) !important;
+        border-radius: 0 6px 6px 0 !important;
+        background-color: #0a2a43 !important;
+        color: white !important;
+        font-size: 16px !important;
+        text-align: left !important;
+    }
+
+    &-field {
+        &:last-of-type {
+            margin-left: 10px;
+            margin-bottom: 0;
+        }
+    }
+
+}
+
+.auto-fetched, .not-auto-fetched {
+    border-radius: 6px;
+    padding: 6px 12px;
+}
+
+.auto-fetched {
+    background-color: #36f;
+    color: white;
+}
+
+.not-auto-fetched {
+    background-color: #292305;
+    color: #f3a91b;
+}
+
+.reverse {
+    flex-direction: column-reverse;
+}
+
+.starting-price {
+    &-wrapper {
+        width: 542px;
+        background-color: var(--ebony-clay);
+        border-radius: 8px;
+        border: 1px solid #1c314b;
+    }
+}

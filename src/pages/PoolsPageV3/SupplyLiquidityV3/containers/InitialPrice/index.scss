@@ -1,0 +1,32 @@
+.initial-price {
+    &-wrapper {
+
+    }
+
+    &__autofetched, &__not-autofetched {
+        border-radius: 6px;
+        padding: 4px 8px;
+    }
+
+    &__autofetched {
+        background-color: #36f;
+        color: white;
+    }
+
+    &__not-autofetched {
+        background-color: #292305;
+        color: #f3a91b;
+    }
+}
+
+
+@media screen and (max-width: 500px){
+    .initial-price {
+
+       &-wrapper {
+           .preset-ranges-wrapper {
+               margin-bottom: 0!important;
+           }
+       }
+    }
+}
