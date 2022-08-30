@@ -131,6 +131,7 @@ export function AddLiquidityButton({
 
   const handleDismissConfirmation = useCallback(() => {
     setShowConfirm(false);
+    setAddLiquidityErrorMessage('');
     dispatch(setAddLiquidityTxHash({ txHash: '' }));
   }, [dispatch]);
 
@@ -167,6 +168,8 @@ export function AddLiquidityButton({
 
       setRejected && setRejected(false);
 
+      setAttemptingTxn(true);
+
       library
         .getSigner()
         .estimateGas(txn)
@@ -181,6 +184,8 @@ export function AddLiquidityButton({
             .getSigner()
             .sendTransaction(newTxn)
             .then(async (response: TransactionResponse) => {
+              setAttemptingTxn(false);
+              setTxPending(true);
               const summary = mintInfo.noLiquidity
                 ? `Create pool and add ${baseCurrency?.symbol}/${quoteCurrency?.symbol} liquidity`
                 : `Add ${baseCurrency?.symbol}/${quoteCurrency?.symbol} liquidity`;
@@ -350,14 +355,18 @@ export function AddLiquidityButton({
         >
           <Box className='flex justify-between'>
             <Box className='flex items-center'>
-              <CurrencyLogo currency={baseCurrency} size='24px' />
+              <Box className='flex' mr='6px'>
+                <CurrencyLogo currency={baseCurrency} size='24px' />
+              </Box>
               <p>{baseCurrency?.symbol}</p>
             </Box>
             <p>{mintInfo.parsedAmounts[Field.CURRENCY_A]?.toSignificant()}</p>
           </Box>
           <Box mt={2} className='flex justify-between'>
             <Box className='flex items-center'>
-              <CurrencyLogo currency={quoteCurrency} size='24px' />
+              <Box className='flex' mr='6px'>
+                <CurrencyLogo currency={quoteCurrency} size='24px' />
+              </Box>
               <p>{quoteCurrency?.symbol}</p>
             </Box>
             <p>{mintInfo.parsedAmounts[Field.CURRENCY_B]?.toSignificant()}</p>

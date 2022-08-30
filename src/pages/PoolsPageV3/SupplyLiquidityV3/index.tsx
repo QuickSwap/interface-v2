@@ -198,26 +198,26 @@ export function SupplyLiquidityV3() {
   );
 
   const handleCurrencySwap = useCallback(() => {
-    history.push(`/add/${currencyIdB}/${currencyIdA}`);
+    // history.push(`/add/${currencyIdB}/${currencyIdA}`);
     resetState();
   }, [history, handleCurrencySelect, currencyIdA, currencyIdB]);
 
   const handlePopularPairSelection = useCallback((pair: [string, string]) => {
     const WMATIC = '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270';
-    history.push(
-      `/add/${pair[0] === WMATIC ? 'MATIC' : pair[0]}/${
-        pair[1] === WMATIC ? 'MATIC' : pair[1]
-      }`,
-    );
+    // history.push(
+    //   `/add/${pair[0] === WMATIC ? 'MATIC' : pair[0]}/${
+    //     pair[1] === WMATIC ? 'MATIC' : pair[1]
+    //   }`,
+    // );
     resetState();
   }, []);
 
-  const handleStepChange = useCallback(
-    (_step) => {
-      history.push(`/add/${currencyIdA}/${currencyIdB}/${_step}`);
-    },
-    [currencyIdA, currencyIdB, history],
-  );
+  // const handleStepChange = useCallback(
+  //   (_step) => {
+  //     history.push(`/add/${currencyIdA}/${currencyIdB}/${_step}`);
+  //   },
+  //   [currencyIdA, currencyIdB, history],
+  // );
 
   const handlePriceFormat = useCallback((priceFormat: PriceFormats) => {
     setPriceFormat(priceFormat);
@@ -460,7 +460,7 @@ export function SupplyLiquidityV3() {
             quoteCurrency={quoteCurrency ?? undefined}
             mintInfo={mintInfo}
             handleAddLiquidity={() => {
-              handleStepChange('aftermath');
+              // handleStepChange('aftermath');
             }}
             title={expertMode ? `Add liquidity` : 'Preview'}
           />
