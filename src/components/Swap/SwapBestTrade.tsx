@@ -345,11 +345,16 @@ const SwapBestTrade: React.FC<{
   }, [maxAmountInput, onUserInput]);
 
   const handleHalfInput = useCallback(() => {
-    maxAmountInput &&
-      onUserInput(
-        Field.INPUT,
-        (Number(maxAmountInput.toExact()) / 2).toString(),
-      );
+    if (!maxAmountInput) {
+      return;
+    }
+
+    const halvedAmount = maxAmountInput.divide('2');
+
+    onUserInput(
+      Field.INPUT,
+      halvedAmount.toFixed(maxAmountInput.currency.decimals),
+    );
   }, [maxAmountInput, onUserInput]);
 
   const atMaxAmountInput = Boolean(
