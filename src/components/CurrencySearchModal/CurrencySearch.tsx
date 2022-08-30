@@ -171,6 +171,7 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
           ref={inputRef as RefObject<HTMLInputElement>}
           onChange={(e) => setSearchQueryInput(e.target.value)}
           onKeyDown={handleEnter}
+          autoFocus
         />
       </Box>
       {showCommonBases && (
