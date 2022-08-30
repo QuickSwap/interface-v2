@@ -1,92 +1,79 @@
-.token-amount-card {
-    &-wrapper {
-        background-color: var(--ebony-clay);
-        border-radius: 8px; 
-        width: 542px;
-        border: 1px solid #233d65;
+@use 'styles/variables' as *;
+@use 'styles/breakpoints' as *;
+
+.v3-token-amount-card-wrapper {
+    background-color: $secondary1;
+    width: 100%;
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    input {
+        text-align: right;
     }
+}
 
-    &__locked {
-        left: 0;
-        top: 0;
-        z-index: 1000;
-        background-color: rgba(38, 52, 63, 0.85);
-        border-radius: 8px;
+.token-amount-card-logo {
+    height: 36px;
+    padding: 0 8px;
+    display: flex;
+    align-items: center;
+    background-color: $grey12;
+    border-radius: 18px;
+    & p {
+        margin-left: 8px;
     }
+}
 
-    &__logo {
-        width: 35px;
-        height: 35px;
-        background: #3a4e5d;
-        border-radius: 50%; 
+.token-amount-card-balance {
+    display: flex;
+    align-items: center;
+    & small {
+        white-space: nowrap;
     }
-
-    &__input {
-        background-color: #182732 !important;
-        border: 1px solid #233d65 !important;
-        border-radius: 8px !important;
-        color: white !important;
-        padding: 8px 1rem !important;
-        width: 100% !important;
-        font-size: unset !important;
-        text-align: left !important;
-
-        &.is-usd {
-            padding: 8px 1rem 8px 2rem !important;
-        }
-
-        &:focus {
-            border: 1px solid #21cbff !important;
-        }
-    }
-
-    &__error {
-        padding: 8px;
-        background-color: #290505;
-        color: #f31b1b;
-        border: 1px solid #580d0d;
-        border-radius: 8px;
-        text-align: center;
-    }
-
-    &__max-btn {
-        background: transparent;
-        color: #4ca8ef;
+    & button {
+        margin-left: 8px;
+        background-color: transparent;
         border: none;
+        cursor: pointer;
         padding: 0;
-        font-size: 13px;
-        margin-top: 6px;
-
+        & small {
+            color: $primary;
+            font-weight: 600;
+        }
         &:disabled {
-            pointer-events: none;
-            color: #506f87;
-        }
-
-        &:hover {
-            text-decoration: underline;
+            opacity: 0.3;
         }
     }
+}
 
-    &__approve-btn {
-        padding: 4px 8px;
-        background-color: #1199c3;
-        border-radius: 6px;
-        border: none;
-        color: white;
-
-        &:hover {
-            background-color: #5aa9c1;
-        }
+.token-amount-select-token {
+    background-color: $primary;
+    padding: 6px 16px;
+    border-radius: 20px;
+    & p {
+        white-space: nowrap;
     }
+}
 
-    &__approved {
-        color: #3acd3b;
-    }
-
-    &__usd {
-        position: absolute;
-        left: 13px;
-        top: 11px;
-        z-index: 999;
+.token-amount-card-locked {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: $secondary1;
+    border-radius: 12px;
+    opacity: 0.9;
+    left: 0;
+    top: 0;
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    & p {
+        text-align: center;
+        margin-top: 8px;
     }
 }

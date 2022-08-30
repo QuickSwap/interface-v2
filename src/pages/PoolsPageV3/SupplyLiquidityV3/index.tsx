@@ -52,7 +52,7 @@ import { ZERO_PERCENT } from 'constants/v3/misc';
 import { useUserSlippageTolerance } from 'state/user/hooks';
 import { JSBI } from '@uniswap/sdk';
 import { currencyId } from 'utils/v3/currencyId';
-import { Box } from '@material-ui/core';
+import { Box, Button } from '@material-ui/core';
 
 const DEFAULT_ADD_IN_RANGE_SLIPPAGE_TOLERANCE = new Percent(50, 10_000);
 
@@ -382,11 +382,13 @@ export function SupplyLiquidityV3() {
   // }, [currencyIdA, currencyIdB, history, currentStep, mintInfo.noLiquidity]);
 
   return (
-    <Box>
+    <Box overflow='hidden'>
       <Box className='flex justify-between'>
         <p className='weight-600'>Supply Liquidity</p>
         <div className='ml-a mxs_ml-0 mxs_mt-1 f f-ac '>
-          <small className='cursor-pointer text-primary'>Clear all</small>
+          <small className='cursor-pointer text-primary' onClick={resetState}>
+            Clear all
+          </small>
           {!hidePriceFormatter && (
             <Box className='flex' ml={1}>
               <PriceFormatToggler
@@ -401,19 +403,31 @@ export function SupplyLiquidityV3() {
         </div>
       </Box>
       <Box mt={2}>
-        <SelectPair
-          baseCurrency={baseCurrency}
-          quoteCurrency={quoteCurrency}
-          mintInfo={mintInfo}
-          isCompleted={stepPair}
-          handleCurrencySwap={handleCurrencySwap}
-          handleCurrencyASelect={handleCurrencyASelect}
-          handleCurrencyBSelect={handleCurrencyBSelect}
-          handlePopularPairSelection={handlePopularPairSelection}
-          priceFormat={priceFormat}
-        />
+        {account ? (
+          <SelectPair
+            baseCurrency={baseCurrency}
+            quoteCurrency={quoteCurrency}
+            mintInfo={mintInfo}
+            isCompleted={stepPair}
+            handleCurrencySwap={handleCurrencySwap}
+            handleCurrencyASelect={handleCurrencyASelect}
+            handleCurrencyBSelect={handleCurrencyBSelect}
+            handlePopularPairSelection={handlePopularPairSelection}
+            priceFormat={priceFormat}
+          />
+        ) : (
+          <Button
+            className='v3-supply-liquidity-button'
+            onClick={toggleWalletModal}
+          >
+            Connect Wallet
+          </Button>
+        )}
       </Box>
-      <Box mt={2}>
+      <Box mt={4} position='relative'>
+        {(!baseCurrency || !quoteCurrency) && (
+          <Box className='v3-supply-liquidity-overlay' />
+        )}
         <SelectRange
           currencyA={baseCurrency}
           currencyB={quoteCurrency}
@@ -424,7 +438,32 @@ export function SupplyLiquidityV3() {
           priceFormat={priceFormat}
           backStep={stepInitialPrice ? 1 : 0}
         />
+        <Box mt={4}>
+          <EnterAmounts
+            currencyA={baseCurrency ?? undefined}
+            currencyB={currencyB ?? undefined}
+            mintInfo={mintInfo}
+            isCompleted={stepAmounts}
+            additionalStep={stepInitialPrice}
+            priceFormat={priceFormat}
+            backStep={stepInitialPrice ? 2 : 1}
+          />
+        </Box>
+
+        <Box mt={2}>
+          <AddLiquidityButton
+            baseCurrency={baseCurrency ?? undefined}
+            quoteCurrency={quoteCurrency ?? undefined}
+            mintInfo={mintInfo}
+            handleAddLiquidity={() => {
+              setEnd(true);
+              handleStepChange('aftermath');
+            }}
+            title={`Add liquidity`}
+          />
+        </Box>
       </Box>
+
       {/* <InitialPrice
         currencyA={baseCurrency ?? undefined}
         currencyB={currencyB ?? undefined}
@@ -537,61 +576,6 @@ export function SupplyLiquidityV3() {
           priceFormat={priceFormat}
         />
       </Switch> */}
-      {!end && account ? (
-        <div className='add-buttons f f-ac f-jc mt-2'>
-          {currentStep !== 0 && (
-            <div>
-              <button
-                className='add-buttons__prev f'
-                onClick={() => {
-                  dispatch(updateCurrentStep({ currentStep: currentStep - 1 }));
-                  handleStepChange(stepLinks[currentStep - 1].link);
-                }}
-              >
-                <ChevronLeft size={18} style={{ marginRight: '5px' }} />
-                <span className='add-buttons__prev-text'>
-                  {stepLinks[currentStep - 1].title}
-                </span>
-                <span className='add-buttons__prev-text--mobile'>Back</span>
-              </button>
-            </div>
-          )}
-          {currentStep === (stepInitialPrice ? 3 : 2) ? (
-            <AddLiquidityButton
-              baseCurrency={baseCurrency ?? undefined}
-              quoteCurrency={quoteCurrency ?? undefined}
-              mintInfo={mintInfo}
-              handleAddLiquidity={() => {
-                setEnd(true);
-                handleStepChange('aftermath');
-              }}
-              title={`Add liquidity`}
-            />
-          ) : (
-            <button
-              className='add-buttons__next f f-jc f-ac ml-a'
-              disabled={!steps[currentStep]}
-              onClick={() => {
-                dispatch(updateCurrentStep({ currentStep: currentStep + 1 }));
-                isMobileOnly && window.scrollTo(0, 0);
-                handleStepChange(stepLinks[currentStep + 1].link);
-              }}
-            >
-              <span>{stepLinks[currentStep + 1].title}</span>
-              <ChevronRight size={18} style={{ marginLeft: '5px' }} />
-            </button>
-          )}
-        </div>
-      ) : !account ? (
-        <div className='add-buttons f f-ac f-jc mt-2 mxs_mt-1'>
-          <button
-            className='add-buttons__next f f-jc f-ac ml-a'
-            onClick={toggleWalletModal}
-          >
-            Connect Wallet
-          </button>
-        </div>
-      ) : null}
     </Box>
   );
 }

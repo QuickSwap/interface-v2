@@ -21,6 +21,7 @@ import { useIsNetworkFailedImmediate } from 'hooks/v3/useIsNetworkFailed';
 import { JSBI } from '@uniswap/sdk';
 import { NONFUNGIBLE_POSITION_MANAGER_ADDRESSES } from 'constants/v3/addresses';
 import { calculateGasMarginV3 } from 'utils';
+import { Button } from '@material-ui/core';
 
 interface IAddLiquidityButton {
   baseCurrency: Currency | undefined;
@@ -161,12 +162,12 @@ export function AddLiquidityButton({
   }
 
   return (
-    <button
-      className='add-buttons__liquidity ml-a'
+    <Button
+      className='v3-supply-liquidity-button'
       disabled={!isReady}
       onClick={onAdd}
     >
       {title}
-    </button>
+    </Button>
   );
 }

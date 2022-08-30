@@ -287,13 +287,10 @@ function RangePart({
           <Remove />
         </button>
         <div className='price-range-input'>
-          {isUSD && valueUSD && (
-            <label htmlFor={title} className='range-input__usd'>
-              $
-            </label>
-          )}
           <Input
-            value={isUSD ? localUSDValue : localTokenValue}
+            value={
+              isUSD ? (valueUSD ? '$' : '') + localUSDValue : localTokenValue
+            }
             id={title}
             onBlur={handleOnBlur}
             className={`range-input ${isUSD && valueUSD ? 'is-usd' : ''}`}

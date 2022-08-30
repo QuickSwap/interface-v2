@@ -16,7 +16,6 @@ import {
   useInitialTokenPrice,
   useInitialUSDPrices,
 } from 'state/mint/v3/hooks';
-import { USDPrices } from '../../components/USDPrices';
 import useUSDCPrice, { useUSDCValue } from 'hooks/v3/useUSDCPrice';
 import { useAppDispatch } from 'state/hooks';
 import { useActivePreset } from 'state/mint/v3/hooks';
@@ -30,6 +29,7 @@ import LiquidityChartRangeInput from 'components/AddLiquidityV3/components/Liqui
 import { GlobalValue } from 'constants/index';
 import { toToken } from 'constants/v3/routing';
 import { Box } from '@material-ui/core';
+import { ReportProblemOutlined } from '@material-ui/icons';
 
 interface IRangeSelector {
   currencyA: Currency | null | undefined;
@@ -293,7 +293,26 @@ export function SelectRange({
           priceFormat={priceFormat}
         />
       </Box>
-      <Box>
+      {mintInfo.outOfRange && (
+        <Box className='pool-range-chart-warning'>
+          <Box className='pool-range-chart-warning-icon'>
+            <ReportProblemOutlined />
+          </Box>
+          <span>
+            Your position is out of range and will not earn fees or be used in
+            trades until the market price moves into your range.
+          </span>
+        </Box>
+      )}
+      {mintInfo.invalidRange && (
+        <Box className='pool-range-chart-warning'>
+          <Box className='pool-range-chart-warning-icon'>
+            <ReportProblemOutlined />
+          </Box>
+          <span>Invalid range</span>
+        </Box>
+      )}
+      <Box className='pool-range-chart-wrapper'>
         <LiquidityChartRangeInput
           currencyA={currencyA ?? undefined}
           currencyB={currencyB ?? undefined}
@@ -315,12 +334,6 @@ export function SelectRange({
           interactive={false}
           priceFormat={priceFormat}
         />
-        {mintInfo.outOfRange && (
-          <div className='range__notification out-of-range'>Out of range</div>
-        )}
-        {mintInfo.invalidRange && (
-          <div className='range__notification error w-100'>Invalid range</div>
-        )}
       </Box>
     </Box>
   );

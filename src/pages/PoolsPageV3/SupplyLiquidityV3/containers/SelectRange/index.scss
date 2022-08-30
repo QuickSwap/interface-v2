@@ -1,0 +1,38 @@
+@use 'styles/variables' as *;
+@use 'styles/breakpoints' as *;
+
+.pool-range-chart-wrapper {
+  background-color: $grey31;
+  border: 1px solid $secondary1;
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.pool-range-chart-warning {
+  background-color: $yellow4;
+  display: flex;
+  padding: 12px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  & span {
+    flex: 1;
+    margin-left: 12px;
+    color: $yellow5;
+  }
+}
+
+.pool-range-chart-warning-icon {
+  background-color: $secondary1;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 16px;
+  color: $yellow5;
+  & svg {
+    width: 20px;
+  }
+}

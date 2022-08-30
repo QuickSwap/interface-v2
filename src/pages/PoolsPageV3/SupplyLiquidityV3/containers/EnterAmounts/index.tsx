@@ -18,9 +18,11 @@ import { NONFUNGIBLE_POSITION_MANAGER_ADDRESSES } from 'constants/v3/addresses';
 import { maxAmountSpend } from 'utils/v3/maxAmountSpend';
 import { tryParseAmount } from 'state/swap/v3/hooks';
 import { TokenAmountCard } from '../../components/TokenAmountCard';
-import { StepTitle } from '../../components/StepTitle';
 import { PriceFormats } from '../../components/PriceFomatToggler';
 import { TokenRatio } from '../../components/TokenRatio';
+import { Box, Button } from '@material-ui/core';
+import Loader from 'components/Loader';
+import { Check } from '@material-ui/icons';
 
 interface IEnterAmounts {
   currencyA: Currency | undefined;
@@ -141,8 +143,8 @@ export function EnterAmounts({
   const [token0Ratio, token1Ratio] = useMemo(() => {
     const currentPrice = mintInfo.price?.toSignificant(5);
 
-    const left = mintInfo.lowerPrice.toSignificant(5);
-    const right = mintInfo.upperPrice.toSignificant(5);
+    const left = mintInfo.lowerPrice?.toSignificant(5);
+    const right = mintInfo.upperPrice?.toSignificant(5);
 
     //TODO
     if (
@@ -219,82 +221,81 @@ export function EnterAmounts({
   const history = useHistory();
   const dispatch = useAppDispatch();
 
-  useEffect(() => {
-    return () => {
-      if (history.action === 'POP') {
-        dispatch(updateCurrentStep({ currentStep: backStep }));
-      }
-    };
-  });
+  // useEffect(() => {
+  //   return () => {
+  //     if (history.action === 'POP') {
+  //       dispatch(updateCurrentStep({ currentStep: backStep }));
+  //     }
+  //   };
+  // });
 
-  const leftPrice = useMemo(() => {
-    return mintInfo.invertPrice
-      ? mintInfo.upperPrice.invert()
-      : mintInfo.lowerPrice;
-  }, [mintInfo]);
+  // const leftPrice = useMemo(() => {
+  //   return mintInfo.invertPrice
+  //     ? mintInfo.upperPrice.invert()
+  //     : mintInfo.lowerPrice;
+  // }, [mintInfo]);
 
-  const rightPrice = useMemo(() => {
-    return mintInfo.invertPrice
-      ? mintInfo.lowerPrice.invert()
-      : mintInfo.upperPrice;
-  }, [mintInfo]);
+  // const rightPrice = useMemo(() => {
+  //   return mintInfo.invertPrice
+  //     ? mintInfo.lowerPrice.invert()
+  //     : mintInfo.upperPrice;
+  // }, [mintInfo]);
 
   return (
-    <div className='f c'>
-      <StepTitle
-        title={`Enter amounts`}
-        isCompleted={isCompleted}
-        step={additionalStep ? 4 : 3}
-      />
+    <Box>
+      <small className='weight-600'>Deposit Amounts</small>
       {mintInfo.invalidRange && (
         <div className='range__notification error w-100'>Invalid range</div>
       )}
-      <div className='f mxs_fd-cr ms_fd-cr mm_fd-cr'>
-        <div className='f c mxs_w-100'>
-          <div className='mb-1' style={{ borderRadius: '8px' }}>
-            <TokenAmountCard
-              currency={currencyA}
-              otherCurrency={currencyB}
-              value={formattedAmounts[Field.CURRENCY_A]}
-              fiatValue={usdcValues[Field.CURRENCY_A]}
-              handleInput={onFieldAInput}
-              handleMax={() =>
-                onFieldAInput(maxAmounts[Field.CURRENCY_A]?.toExact() ?? '')
-              }
-              showApproval={showApprovalA}
-              isApproving={approvalA === ApprovalState.PENDING}
-              handleApprove={approveACallback}
-              disabled={true}
-              locked={mintInfo.depositADisabled}
-              isMax={!!atMaxAmounts[Field.CURRENCY_A]}
-              error={currencyAError}
-              priceFormat={priceFormat}
-              isBase={false}
-            />
-          </div>
-          <div>
-            <TokenAmountCard
-              currency={currencyB}
-              otherCurrency={currencyA}
-              value={formattedAmounts[Field.CURRENCY_B]}
-              fiatValue={usdcValues[Field.CURRENCY_B]}
-              handleInput={onFieldBInput}
-              handleMax={() =>
-                onFieldBInput(maxAmounts[Field.CURRENCY_B]?.toExact() ?? '')
-              }
-              showApproval={showApprovalB}
-              isApproving={approvalB === ApprovalState.PENDING}
-              handleApprove={approveBCallback}
-              disabled={false}
-              locked={mintInfo.depositBDisabled}
-              isMax={!!atMaxAmounts[Field.CURRENCY_B]}
-              error={currencyBError}
-              priceFormat={priceFormat}
-              isBase={true}
-            />
-          </div>
-        </div>
-        <div className='full-h ml-2 mxs_ml-0 mxs_mb-2 ms_ml-0 mm_ml-0 mm_mb-1'>
+      <Box my={2}>
+        <TokenAmountCard
+          currency={currencyA}
+          otherCurrency={currencyB}
+          value={formattedAmounts[Field.CURRENCY_A]}
+          fiatValue={usdcValues[Field.CURRENCY_A]}
+          handleInput={onFieldAInput}
+          handleHalf={() =>
+            onFieldAInput(
+              maxAmounts[Field.CURRENCY_A]?.divide('2')?.toExact() ?? '',
+            )
+          }
+          handleMax={() =>
+            onFieldAInput(maxAmounts[Field.CURRENCY_A]?.toExact() ?? '')
+          }
+          // showApproval={showApprovalA}
+          // isApproving={approvalA === ApprovalState.PENDING}
+          // handleApprove={approveACallback}
+          locked={mintInfo.depositADisabled}
+          isMax={!!atMaxAmounts[Field.CURRENCY_A]}
+          error={currencyAError}
+          priceFormat={priceFormat}
+          isBase={false}
+        />
+      </Box>
+      <TokenAmountCard
+        currency={currencyB}
+        otherCurrency={currencyA}
+        value={formattedAmounts[Field.CURRENCY_B]}
+        fiatValue={usdcValues[Field.CURRENCY_B]}
+        handleInput={onFieldBInput}
+        handleHalf={() =>
+          onFieldBInput(
+            maxAmounts[Field.CURRENCY_B]?.divide('2')?.toExact() ?? '',
+          )
+        }
+        handleMax={() =>
+          onFieldBInput(maxAmounts[Field.CURRENCY_B]?.toExact() ?? '')
+        }
+        // showApproval={showApprovalB}
+        // isApproving={approvalB === ApprovalState.PENDING}
+        // handleApprove={approveBCallback}
+        locked={mintInfo.depositBDisabled}
+        isMax={!!atMaxAmounts[Field.CURRENCY_B]}
+        error={currencyBError}
+        priceFormat={priceFormat}
+        isBase={true}
+      />
+      {/* <div className='full-h ml-2 mxs_ml-0 mxs_mb-2 ms_ml-0 mm_ml-0 mm_mb-1'>
           <TokenRatio
             currencyA={currencyA}
             currencyB={currencyB}
@@ -320,8 +321,57 @@ export function EnterAmounts({
             upperPrice={rightPrice?.toSignificant(5)}
             disabled={false}
           />
-        </div>
-      </div>
-    </div>
+        </div> */}
+      <Box mt={2} className='flex justify-between'>
+        {showApprovalA !== undefined && (
+          <Box width={showApprovalB === undefined ? '100%' : '49%'}>
+            {showApprovalA ? (
+              approvalA === ApprovalState.PENDING ? (
+                <Box className='token-approve-button-loading'>
+                  <Loader stroke='white' />
+                  <p>Approving {currencyA?.symbol}</p>
+                </Box>
+              ) : (
+                <Button
+                  className='token-approve-button'
+                  onClick={approveACallback}
+                >
+                  <p>Approve {currencyA?.symbol}</p>
+                </Button>
+              )
+            ) : (
+              <Box className='token-approve-button-loading'>
+                <Check />
+                <p>Approved {currencyA?.symbol}</p>
+              </Box>
+            )}
+          </Box>
+        )}
+        {showApprovalB !== undefined && (
+          <Box width={showApprovalA === undefined ? '100%' : '49%'}>
+            {showApprovalB ? (
+              approvalB === ApprovalState.PENDING ? (
+                <Box className='token-approve-button-loading'>
+                  <Loader stroke='white' />
+                  <p>Approving {currencyB?.symbol}</p>
+                </Box>
+              ) : (
+                <Button
+                  className='token-approve-button'
+                  onClick={approveBCallback}
+                >
+                  <p>Approve {currencyB?.symbol}</p>
+                </Button>
+              )
+            ) : (
+              <Box className='token-approve-button-loading'>
+                <Check />
+                <p>Approved {currencyB?.symbol}</p>
+              </Box>
+            )}
+          </Box>
+        )}
+      </Box>
+    </Box>
   );
 }
