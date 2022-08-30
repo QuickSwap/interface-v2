@@ -20,6 +20,10 @@
   background-color: $secondary2;
 }
 
+.bg-yellow3 {
+  background-color: $yellow3;
+}
+
 .bg-blue1 {
   background-color: $blue1;
 }
@@ -132,6 +136,10 @@
   border: 1px solid $primaryDark;
 }
 
+.border-yellow5 {
+  border: 1px solid $yellow5;
+}
+
 .text-error {
   color: $errorMain;
 }
@@ -186,4 +194,12 @@
 
 .text-blue7 {
   color: $blue7;
+}
+
+.text-bgColor {
+  color: $bgColor;
+}
+
+.text-white {
+  color: white;
 }

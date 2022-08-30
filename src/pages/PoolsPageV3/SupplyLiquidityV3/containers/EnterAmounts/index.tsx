@@ -244,9 +244,6 @@ export function EnterAmounts({
   return (
     <Box>
       <small className='weight-600'>Deposit Amounts</small>
-      {mintInfo.invalidRange && (
-        <div className='range__notification error w-100'>Invalid range</div>
-      )}
       <Box my={2}>
         <TokenAmountCard
           currency={currencyA}

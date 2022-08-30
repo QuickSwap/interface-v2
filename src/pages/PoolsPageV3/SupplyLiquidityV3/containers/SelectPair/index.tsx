@@ -47,13 +47,13 @@ export function SelectPair({
     fetchPopularPoolsFn();
   }, []);
 
-  useEffect(() => {
-    return () => {
-      if (history.action === 'POP') {
-        history.push('/v3pools');
-      }
-    };
-  }, []);
+  // useEffect(() => {
+  //   return () => {
+  //     if (history.action === 'POP') {
+  //       history.push('/v3pools');
+  //     }
+  //   };
+  // }, []);
 
   return (
     <Box>

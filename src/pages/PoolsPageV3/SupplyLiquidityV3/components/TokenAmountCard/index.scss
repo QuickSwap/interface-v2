@@ -77,3 +77,14 @@
         margin-top: 8px;
     }
 }
+
+.token-amount-card-error {
+    width: 100%;
+    padding: 8px;
+    bottom: -100%;
+    left: 0;
+    text-align: center;
+    & small {
+        color: $errorMain;
+    }
+}

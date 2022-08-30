@@ -1,13 +1,9 @@
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useState, useMemo } from 'react';
 import { IPresetArgs, PresetRanges } from '../../components/PresetRanges';
 import { RangeSelector } from '../../components/RangeSelector';
 import { Currency } from '@uniswap/sdk-core';
 import './index.scss';
-import {
-  Bound,
-  updateCurrentStep,
-  updateSelectedPreset,
-} from 'state/mint/v3/actions';
+import { Bound, updateSelectedPreset } from 'state/mint/v3/actions';
 import {
   IDerivedMintInfo,
   useRangeHopCallbacks,
@@ -52,6 +48,7 @@ export function SelectRange({
   backStep,
   disabled,
 }: IRangeSelector) {
+  const [fullRangeWarningShown, setFullRangeWarningShown] = useState(true);
   const { startPriceTypedValue } = useV3MintState();
   const history = useHistory();
 
@@ -167,13 +164,13 @@ export function SelectRange({
     [price],
   );
 
-  useEffect(() => {
-    return () => {
-      if (history.action === 'POP') {
-        dispatch(updateCurrentStep({ currentStep: backStep }));
-      }
-    };
-  }, []);
+  // useEffect(() => {
+  //   return () => {
+  //     if (history.action === 'POP') {
+  //       dispatch(updateCurrentStep({ currentStep: backStep }));
+  //     }
+  //   };
+  // }, []);
 
   const initialUSDPrices = useInitialUSDPrices();
   const initialTokenPrice = useInitialTokenPrice();
@@ -293,6 +290,33 @@ export function SelectRange({
           priceFormat={priceFormat}
         />
       </Box>
+      {activePreset === Presets.FULL && fullRangeWarningShown && (
+        <Box className='pool-range-chart-warning border-yellow5'>
+          <Box width={1} className='flex items-center'>
+            <Box className='pool-range-chart-warning-icon'>
+              <ReportProblemOutlined />
+            </Box>
+            <small>Efficiency Comparison</small>
+          </Box>
+          <Box width={1} mt={1} mb={1.5}>
+            <span>
+              Full range positions may earn less fees than concentrated
+              positions. Learn more{' '}
+              <a
+                href='https://quickswap.exchange'
+                target='_blank'
+                rel='noreferrer'
+              >
+                here
+              </a>
+              .
+            </span>
+          </Box>
+          <button onClick={() => setFullRangeWarningShown(false)}>
+            I understand
+          </button>
+        </Box>
+      )}
       {mintInfo.outOfRange && (
         <Box className='pool-range-chart-warning'>
           <Box className='pool-range-chart-warning-icon'>
@@ -309,7 +333,7 @@ export function SelectRange({
           <Box className='pool-range-chart-warning-icon'>
             <ReportProblemOutlined />
           </Box>
-          <span>Invalid range</span>
+          <span>Invalid Range</span>
         </Box>
       )}
       <Box className='pool-range-chart-wrapper'>

@@ -216,54 +216,65 @@ export function TokenAmountCard({
   }, [balance, isUSD, fiatValue, currency]);
 
   return (
-    <Box className='v3-token-amount-card-wrapper'>
-      {locked && (
-        <div className='token-amount-card-locked'>
-          <LockOutlined />
-          <p className='span'>
-            Price is outside specified price range.
-            <br />
-            Single-asset deposit only.
-          </p>
+    <>
+      <Box className='v3-token-amount-card-wrapper'>
+        {locked && (
+          <div className='token-amount-card-locked'>
+            <LockOutlined />
+            <p className='span'>
+              Price is outside specified price range.
+              <br />
+              Single-asset deposit only.
+            </p>
+          </div>
+        )}
+        {currency ? (
+          <Box className='flex flex-col items-start'>
+            <div className='token-amount-card-logo'>
+              <CurrencyLogo
+                size='24px'
+                currency={currency as WrappedCurrency}
+              />
+              <p className='weight-600'>{currency.symbol}</p>
+            </div>
+            <Box mt={1} className='token-amount-card-balance'>
+              <small className='text-secondary'>Balance: {balanceString}</small>
+              {handleHalf && (
+                <button onClick={handleHalf}>
+                  <small>50%</small>
+                </button>
+              )}
+              <button
+                onClick={handleMax}
+                disabled={isMax || balance?.toSignificant(5) === '0'}
+              >
+                <small>MAX</small>
+              </button>
+            </Box>
+          </Box>
+        ) : (
+          <Box className='token-amount-select-token'>
+            <p className='weight-600'>Select a token</p>
+          </Box>
+        )}
+        <NumericalInput
+          value={isUSD ? '$' + localUSDValue : localTokenValue}
+          id={`amount-${currency?.symbol}`}
+          disabled={locked}
+          onBlur={handleOnBlur}
+          onUserInput={(val) =>
+            isUSD
+              ? setLocalUSDValue(val.trim())
+              : setLocalTokenValue(val.trim())
+          }
+          placeholder='0'
+        />
+      </Box>
+      {error && (
+        <div className='token-amount-card-error'>
+          <small>{error}</small>
         </div>
       )}
-      {currency ? (
-        <Box className='flex flex-col items-start'>
-          <div className='token-amount-card-logo'>
-            <CurrencyLogo size='24px' currency={currency as WrappedCurrency} />
-            <p className='weight-600'>{currency.symbol}</p>
-          </div>
-          <Box mt={1} className='token-amount-card-balance'>
-            <small className='text-secondary'>Balance: {balanceString}</small>
-            {handleHalf && (
-              <button onClick={handleHalf}>
-                <small>50%</small>
-              </button>
-            )}
-            <button
-              onClick={handleMax}
-              disabled={isMax || balance?.toSignificant(5) === '0'}
-            >
-              <small>MAX</small>
-            </button>
-          </Box>
-        </Box>
-      ) : (
-        <Box className='token-amount-select-token'>
-          <p className='weight-600'>Select a token</p>
-        </Box>
-      )}
-      <NumericalInput
-        value={isUSD ? '$' + localUSDValue : localTokenValue}
-        id={`amount-${currency?.symbol}`}
-        disabled={locked}
-        onBlur={handleOnBlur}
-        onUserInput={(val) =>
-          isUSD ? setLocalUSDValue(val.trim()) : setLocalTokenValue(val.trim())
-        }
-        placeholder='0'
-      />
-      {error && <div className='token-amount-card-error'>{error}</div>}
-    </Box>
+    </>
   );
 }

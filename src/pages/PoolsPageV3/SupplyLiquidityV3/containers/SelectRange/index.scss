@@ -13,13 +13,26 @@
 .pool-range-chart-warning {
   background-color: $yellow4;
   display: flex;
+  flex-wrap: wrap;
   padding: 12px;
   border-radius: 12px;
   margin-bottom: 12px;
-  & span {
+  & span, & small {
     flex: 1;
-    margin-left: 12px;
     color: $yellow5;
+    & a {
+      color: $yellow5;
+    }
+  }
+  & button {
+    background-color: $yellow5;
+    border: none;
+    color: $bgColor;
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
   }
 }
 
@@ -32,6 +45,7 @@
   align-items: center;
   border-radius: 16px;
   color: $yellow5;
+  margin-right: 8px;
   & svg {
     width: 20px;
   }

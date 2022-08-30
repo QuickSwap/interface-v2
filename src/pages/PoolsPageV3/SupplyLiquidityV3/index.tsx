@@ -49,10 +49,14 @@ import { Aftermath } from './containers/Aftermath';
 import { useWalletModalToggle } from 'state/application/hooks';
 import { isMobileOnly } from 'react-device-detect';
 import { ZERO_PERCENT } from 'constants/v3/misc';
-import { useUserSlippageTolerance } from 'state/user/hooks';
+import { useIsExpertMode, useUserSlippageTolerance } from 'state/user/hooks';
 import { JSBI } from '@uniswap/sdk';
 import { currencyId } from 'utils/v3/currencyId';
 import { Box, Button } from '@material-ui/core';
+import {
+  ConfirmationModalContent,
+  TransactionConfirmationModal,
+} from 'components';
 
 const DEFAULT_ADD_IN_RANGE_SLIPPAGE_TOLERANCE = new Percent(50, 10_000);
 
@@ -75,7 +79,7 @@ export function SupplyLiquidityV3() {
 
   const currentStep = useCurrentStep();
 
-  const [end, setEnd] = useState(false);
+  const expertMode = useIsExpertMode();
 
   const [priceFormat, setPriceFormat] = useState(PriceFormats.TOKEN);
 
@@ -343,12 +347,12 @@ export function SupplyLiquidityV3() {
     }
   }, [hidePriceFormatter]);
 
-  useEffect(() => {
-    return () => {
-      resetState();
-      dispatch(updateCurrentStep({ currentStep: 0 }));
-    };
-  }, []);
+  // useEffect(() => {
+  //   return () => {
+  //     resetState();
+  //     dispatch(updateCurrentStep({ currentStep: 0 }));
+  //   };
+  // }, []);
 
   // useEffect(() => {
   //   switch (currentStep) {
@@ -382,7 +386,7 @@ export function SupplyLiquidityV3() {
   // }, [currencyIdA, currencyIdB, history, currentStep, mintInfo.noLiquidity]);
 
   return (
-    <Box overflow='hidden'>
+    <Box>
       <Box className='flex justify-between'>
         <p className='weight-600'>Supply Liquidity</p>
         <div className='ml-a mxs_ml-0 mxs_mt-1 f f-ac '>
@@ -456,126 +460,12 @@ export function SupplyLiquidityV3() {
             quoteCurrency={quoteCurrency ?? undefined}
             mintInfo={mintInfo}
             handleAddLiquidity={() => {
-              setEnd(true);
               handleStepChange('aftermath');
             }}
-            title={`Add liquidity`}
+            title={expertMode ? `Add liquidity` : 'Preview'}
           />
         </Box>
       </Box>
-
-      {/* <InitialPrice
-        currencyA={baseCurrency ?? undefined}
-        currencyB={currencyB ?? undefined}
-        mintInfo={mintInfo}
-        isCompleted={stepInitialPrice}
-        priceFormat={priceFormat}
-        backStep={0}
-      /> */}
-      {/* <div className='add-liquidity-page__stepper mb-2'>
-        <Stepper
-          currencyA={baseCurrency ?? undefined}
-          currencyB={quoteCurrency ?? undefined}
-          mintInfo={mintInfo}
-          stepLinks={stepLinks}
-          completedSteps={completedSteps}
-          end={end}
-          handleNavigation={(step) => {
-            if (step.isEnabled) {
-              handleStepChange(step.link);
-              setTimeout(
-                () => dispatch(updateCurrentStep({ currentStep: step.step })),
-                10,
-              );
-            }
-          }}
-          priceFormat={priceFormat}
-        />
-      </div> */}
-      {/* <Switch>
-        <RouterGuard
-          path={`/add/${currencyIdA}/${currencyIdB}/aftermath`}
-          redirect={`/add/${currencyIdA}/${currencyIdB}/select-pair`}
-          allowance={stepPair && stepRange && stepAmounts}
-          Component={Aftermath}
-          rejected={isRejected}
-          Button={() => (
-            <div className={'ml-a mr-a mt-1'}>
-              <AddLiquidityButton
-                baseCurrency={baseCurrency ?? undefined}
-                quoteCurrency={quoteCurrency ?? undefined}
-                mintInfo={mintInfo}
-                handleAddLiquidity={() => {
-                  setEnd(true);
-                  handleStepChange('aftermath');
-                }}
-                title={`Retry`}
-                setRejected={setRejected}
-              />
-            </div>
-          )}
-        />
-
-        <RouterGuard
-          path={`/add/${currencyIdA}/${currencyIdB}/enter-amounts`}
-          redirect={`/add/${currencyIdA}/${currencyIdB}/select-pair`}
-          allowance={
-            stepPair && stepRange && currentStep === (stepInitialPrice ? 3 : 2)
-          }
-          Component={EnterAmounts}
-          currencyA={baseCurrency ?? undefined}
-          currencyB={currencyB ?? undefined}
-          mintInfo={mintInfo}
-          isCompleted={stepAmounts}
-          additionalStep={stepInitialPrice}
-          priceFormat={priceFormat}
-          backStep={stepInitialPrice ? 2 : 1}
-        />
-
-        <RouterGuard
-          path={`/add/${currencyIdA}/${currencyIdB}/select-range`}
-          redirect={`/add/${currencyIdA}/${currencyIdB}/select-pair`}
-          allowance={stepPair && currentStep === (stepInitialPrice ? 2 : 1)}
-          Component={SelectRange}
-          currencyA={baseCurrency}
-          currencyB={quoteCurrency}
-          mintInfo={mintInfo}
-          disabled={!stepPair}
-          isCompleted={stepRange}
-          additionalStep={stepInitialPrice}
-          priceFormat={priceFormat}
-          backStep={stepInitialPrice ? 1 : 0}
-        />
-
-        <RouterGuard
-          path={`/add/${currencyIdA}/${currencyIdB}/initial-price`}
-          redirect={`/add/${currencyIdA}/${currencyIdB}/select-pair`}
-          allowance={mintInfo.noLiquidity}
-          Component={InitialPrice}
-          currencyA={baseCurrency ?? undefined}
-          currencyB={currencyB ?? undefined}
-          mintInfo={mintInfo}
-          isCompleted={stepInitialPrice}
-          priceFormat={priceFormat}
-          backStep={0}
-        />
-
-        <RouterGuard
-          path={``}
-          redirect={`/add/${currencyIdA}/${currencyIdB}/select-pair`}
-          allowance={true}
-          Component={SelectPair}
-          baseCurrency={baseCurrency}
-          quoteCurrency={quoteCurrency}
-          mintInfo={mintInfo}
-          isCompleted={stepPair}
-          handleCurrencySwap={handleCurrencySwap}
-          handleCurrencyASelect={handleCurrencyASelect}
-          handleCurrencyBSelect={handleCurrencyBSelect}
-          handlePopularPairSelection={handlePopularPairSelection}
-          priceFormat={priceFormat}
-        />
-      </Switch> */}
     </Box>
   );
 }
