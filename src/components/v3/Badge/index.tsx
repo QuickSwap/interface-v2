@@ -1,7 +1,7 @@
-import React, { PropsWithChildren } from 'react';
-import { readableColor } from 'polished';
-import styled, { DefaultTheme } from 'styled-components/macro';
-import { Color } from 'theme/styled';
+import React from 'react';
+import './index.scss';
+import { Box } from '@material-ui/core';
+import { MouseoverTooltip } from '../Tooltip';
 
 export enum BadgeVariant {
   DEFAULT = 'DEFAULT',
@@ -14,71 +14,39 @@ export enum BadgeVariant {
 
 interface BadgeProps {
   variant?: BadgeVariant;
+  icon?: React.ReactNode;
+  text?: string;
+  tooltip?: string;
 }
 
-function pickBackgroundColor(
-  variant: BadgeVariant | undefined,
-  theme: DefaultTheme,
-): Color {
-  switch (variant) {
-    case BadgeVariant.NEGATIVE:
-      return theme.error;
-    case BadgeVariant.POSITIVE:
-      return '#02365e';
-    case BadgeVariant.PRIMARY:
-      return '#02365e';
-    case BadgeVariant.WARNING:
-      return theme.warning;
-    case BadgeVariant.WARNING_OUTLINE:
-      return 'transparent';
-    default:
-      return '#02365e';
-  }
+export default function Badge({ variant, icon, text, tooltip }: BadgeProps) {
+  const BadgeComponent = () => (
+    <Box
+      className={`v3-badge ${
+        variant === BadgeVariant.WARNING
+          ? 'v3-badge-warning'
+          : variant === BadgeVariant.POSITIVE
+          ? 'v3-badge-success'
+          : ''
+      }`}
+    >
+      {icon && (
+        <Box className='flex' mr='5px'>
+          {icon}
+        </Box>
+      )}
+      <span>{text}</span>
+    </Box>
+  );
+  return (
+    <>
+      {tooltip ? (
+        <MouseoverTooltip text={tooltip}>
+          <BadgeComponent />
+        </MouseoverTooltip>
+      ) : (
+        <BadgeComponent />
+      )}
+    </>
+  );
 }
-
-function pickBorder(
-  variant: BadgeVariant | undefined,
-  theme: DefaultTheme,
-): string {
-  switch (variant) {
-    case BadgeVariant.WARNING_OUTLINE:
-      return `1px solid ${theme.warning}`;
-    default:
-      return 'unset';
-  }
-}
-
-function pickFontColor(
-  variant: BadgeVariant | undefined,
-  theme: DefaultTheme,
-): string {
-  switch (variant) {
-    case BadgeVariant.NEGATIVE:
-      return readableColor(theme.error);
-    case BadgeVariant.POSITIVE:
-      return readableColor(theme.success);
-    case BadgeVariant.WARNING:
-      return readableColor(theme.warning);
-    case BadgeVariant.WARNING_OUTLINE:
-      return theme.warning;
-    default:
-      return readableColor(theme.bg2);
-  }
-}
-
-const Badge = styled.div<PropsWithChildren<BadgeProps>>`
-  align-items: center;
-  background-color: ${({ theme, variant }) =>
-    pickBackgroundColor(variant, theme)};
-  border: ${({ theme, variant }) => pickBorder(variant, theme)};
-  border-radius: 0.5rem;
-  color: ${({ theme, variant }) => pickFontColor(variant, theme)};
-  display: inline-flex;
-  padding: 4px 6px;
-  justify-content: center;
-  font-weight: 500;
-  user-select: none;
-  cursor: default;
-`;
-
-export default Badge;

@@ -424,13 +424,13 @@ export default function PositionPage() {
                   </div>
                   <div className={'f f-ac mxs_w-100'}>
                     <MouseoverTooltip text={`Current pool fee.`}>
-                      <Badge className={'mr-05 fs-085'}>
-                        {new Percent(
+                      <Badge
+                        text={`${new Percent(
                           existingPosition?.pool?.fee || 100,
                           1_000_000,
                         ).toSignificant()}
-                        %
-                      </Badge>
+                        %`}
+                      ></Badge>
                     </MouseoverTooltip>
                     <RangeBadge removed={removed} inRange={inRange} />
                   </div>
@@ -486,9 +486,9 @@ export default function PositionPage() {
                           : formatCurrencyAmount(position?.amount1, 4)}
                       </span>
                       {typeof ratio === 'number' && !removed ? (
-                        <Badge className={'ml-05 fs-075'}>
-                          {inverted ? ratio : 100 - ratio}%
-                        </Badge>
+                        <Badge
+                          text={`${inverted ? ratio : 100 - ratio}%`}
+                        ></Badge>
                       ) : null}
                     </div>
                   </div>
@@ -501,9 +501,9 @@ export default function PositionPage() {
                           : formatCurrencyAmount(position?.amount0, 4)}
                       </span>
                       {typeof ratio === 'number' && !removed ? (
-                        <Badge className={'ml-05 fs-075'}>
-                          {inverted ? 100 - ratio : ratio}%
-                        </Badge>
+                        <Badge
+                          text={`${inverted ? 100 - ratio : ratio}%`}
+                        ></Badge>
                       ) : null}
                     </div>
                   </div>

@@ -1,28 +1,6 @@
 @use 'styles/variables' as *;
 @use 'styles/breakpoints' as *;
 
-.v3-supply-liquidity-badge {
-  height: 24px;
-  padding: 0 8px;
-  display: flex;
-  align-items: center;
-  border-radius: 8px;
-  & span {
-    margin-left: 4px;
-  }
-  & svg {
-    width: 15px;
-    height: 15px;
-  }
-}
-
-.v3-supply-liquidity-success-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 4px;
-  background-color: $successMain;
-}
-
 .v3-supply-liquidity-price-wrapper {
   padding: 4px 12px;
   background-color: $secondary1;

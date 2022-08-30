@@ -4,7 +4,7 @@ import { useV3Positions } from 'hooks/v3/useV3Positions';
 import { useActiveWeb3React } from 'hooks';
 import Loader from 'components/Loader';
 import usePrevious, { usePreviousNonEmptyArray } from 'hooks/usePrevious';
-import PositionList from 'components/v3/PositionList';
+import PositionList from './components/PositionList';
 import FilterPanelItem from '../FilterPanelItem';
 import { PositionPool } from 'models/interfaces';
 import { useShowNewestPosition } from 'state/mint/v3/hooks';
@@ -85,9 +85,8 @@ export function MyLiquidityPoolsV3() {
 
   return (
     <Box className='wrapper'>
-      <div className={'pool__header flex-s-between'}>
-        <span className={'fs-125'}>Pools Overview</span>
-        {/* <div className={'flex-s-between mxs_mv-05'}>
+      <p className='weight-600'>My Liquidity Pools</p>
+      {/* <div className={'flex-s-between mxs_mv-05'}>
             <NavLink
               className={'btn primary p-05 br-8 mr-1'}
               id='join-pool-button'
@@ -103,15 +102,23 @@ export function MyLiquidityPoolsV3() {
               + New Position
             </NavLink>
           </div> */}
-      </div>
       {account && (
-        <div className={'f mb-05 rg-2 cg-2 mxs_f-jc'}>
+        <Box mt={2} className='flex'>
           {filters.map((item, key) => (
             <FilterPanelItem item={item} key={key} />
           ))}
-        </div>
+        </Box>
       )}
-      <main className={'f c f-ac'}>
+      <Box mt={2}>
+        <p className='small text-secondary'>
+          Don’t see a pool you joined?{' '}
+          <a className='text-primary'>Import it.</a>
+        </p>
+        <p className='small text-secondary'>
+          Unstake your LP Tokens from Farms to see them here.
+        </p>
+      </Box>
+      <Box mt={2}>
         {positionsLoading ? (
           <Loader style={{ margin: 'auto' }} stroke='white' size={'2rem'} />
         ) : _filteredPositions && _filteredPositions.length > 0 ? (
@@ -134,7 +141,7 @@ export function MyLiquidityPoolsV3() {
             )}
           </div>
         )}
-      </main>
+      </Box>
     </Box>
   );
 }

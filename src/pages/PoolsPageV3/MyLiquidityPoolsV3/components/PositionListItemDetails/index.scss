@@ -1,0 +1,8 @@
+@use 'styles/variables' as *;
+@use 'styles/breakpoints' as *;
+
+.v3-pool-liquidity-item {
+  background-color: $secondary1;
+  padding: 20px;
+  border-radius: 10px;
+}

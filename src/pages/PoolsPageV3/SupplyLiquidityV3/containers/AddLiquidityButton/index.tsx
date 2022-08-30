@@ -42,6 +42,7 @@ import {
 } from '../../components/PriceFomatToggler';
 import useUSDCPrice, { useUSDCValue } from 'hooks/v3/useUSDCPrice';
 import { tryParseAmount } from 'state/swap/v3/hooks';
+import RangeBadge from 'components/v3/Badge/RangeBadge';
 
 interface IAddLiquidityButton {
   baseCurrency: Currency | undefined;
@@ -327,25 +328,11 @@ export function AddLiquidityButton({
               {baseCurrency?.symbol}-{quoteCurrency?.symbol}
             </h4>
           </Box>
-          <Box
-            className={`v3-supply-liquidity-badge ${
-              mintInfo.outOfRange
-                ? 'text-bgColor bg-yellow3'
-                : 'bg-successLight'
-            }`}
-          >
-            {mintInfo.outOfRange ? (
-              <>
-                <Error />
-                <span>Out of range</span>
-              </>
-            ) : (
-              <>
-                <Box className='v3-supply-liquidity-success-dot' />
-                <span className='text-white'>In range</span>
-              </>
-            )}
-          </Box>
+          <RangeBadge
+            removed={false}
+            withTooltip={false}
+            inRange={!mintInfo.outOfRange}
+          />
         </Box>
         <Box
           mt='20px'
