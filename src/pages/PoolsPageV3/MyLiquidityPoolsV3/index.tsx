@@ -122,7 +122,9 @@ export function MyLiquidityPoolsV3() {
       </Box>
       <Box mt={2}>
         {positionsLoading ? (
-          <Loader style={{ margin: 'auto' }} stroke='white' size={'2rem'} />
+          <Box className='flex justify-center'>
+            <Loader stroke='white' size={'2rem'} />
+          </Box>
         ) : _filteredPositions && _filteredPositions.length > 0 ? (
           <PositionList
             positions={_filteredPositions.sort((posA, posB) =>

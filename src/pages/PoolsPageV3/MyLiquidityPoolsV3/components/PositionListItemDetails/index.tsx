@@ -51,6 +51,7 @@ import { PositionPool } from 'models/interfaces';
 import { Box, Button } from '@material-ui/core';
 import './index.scss';
 import RateToggle from 'components/v3/RateToggle';
+import V3RemoveLiquidityModal from '../V3RemoveLiquidityModal';
 
 interface PositionListItemProps {
   positionDetails: PositionPool;
@@ -62,6 +63,9 @@ export default function PositionListItemDetails({
   const { chainId, account, library } = useActiveWeb3React();
   const { position: existingPosition } = useDerivedPositionInfo(
     positionDetails,
+  );
+  const [openRemoveLiquidityModal, setOpenRemoveLiquidityModal] = useState(
+    false,
   );
 
   const gasPrice = useAppSelector((state) => {
@@ -322,185 +326,201 @@ export default function PositionListItemDetails({
       : false;
 
   return (
-    <Box className='v3-pool-liquidity-item-details'>
-      <Box className='flex items-center justify-between'>
-        <Box>
-          <p className='small weight-600'>Liquidity</p>
-          <Box mt='5px'>
-            <p className='small weight-600'>
-              $
-              {_fiatValueOfLiquidity?.greaterThan(new Fraction(1, 100))
-                ? _fiatValueOfLiquidity.toFixed(2, {
-                    groupSeparator: ',',
-                  })
-                : '-'}
-            </p>
-          </Box>
-        </Box>
-        <Box className='flex'>
-          <Button>Add</Button>
-          <Box ml={1}>
-            <Button>Remove</Button>
-          </Box>
-        </Box>
-      </Box>
-      <Box mt={2} className='v3-pool-item-details-panel'>
-        <Box pt='4px' className='flex justify-between items-center'>
-          <Box className='flex items-center'>
-            <CurrencyLogo currency={currencyQuote} size='24px' />
-            <Box ml={1}>
-              <p>{currencyQuote?.symbol}</p>
-            </Box>
-          </Box>
-          <Box className='flex items-center'>
-            <Box mr={1}>
-              <p>
-                {inverted
-                  ? formatCurrencyAmount(position?.amount0, 4)
-                  : formatCurrencyAmount(position?.amount1, 4)}
-              </p>
-            </Box>
-            {typeof ratio === 'number' && !removed && (
-              <Badge text={`${inverted ? ratio : 100 - ratio}%`}></Badge>
-            )}
-          </Box>
-        </Box>
-        <Box mt='16px' pb='4px' className='flex justify-between items-center'>
-          <Box className='flex items-center'>
-            <CurrencyLogo currency={currencyBase} size='24px' />
-            <Box ml={1}>
-              <p>{currencyBase?.symbol}</p>
-            </Box>
-          </Box>
-          <Box className='flex items-center'>
-            <Box mr={1}>
-              <p>
-                {inverted
-                  ? formatCurrencyAmount(position?.amount1, 4)
-                  : formatCurrencyAmount(position?.amount0, 4)}
-              </p>
-            </Box>
-            {typeof ratio === 'number' && !removed && (
-              <Badge text={`${inverted ? 100 - ratio : ratio}%`}></Badge>
-            )}
-          </Box>
-        </Box>
-      </Box>
-      <Box mt={3} className='flex items-center justify-between'>
-        <Box>
-          <p className='small weight-600'>Unclaimed Fees</p>
-          <Box mt='5px'>
-            <p className='small weight-600'>
-              $
-              {_fiatValueOfFees?.greaterThan(new Fraction(1, 100))
-                ? +_fiatValueOfFees.toFixed(2, { groupSeparator: ',' }) < 0.01
-                  ? '<0.01'
-                  : _fiatValueOfFees?.toFixed(2, {
+    <>
+      {openRemoveLiquidityModal && (
+        <V3RemoveLiquidityModal
+          open={openRemoveLiquidityModal}
+          onClose={() => setOpenRemoveLiquidityModal(false)}
+          position={positionDetails}
+        />
+      )}
+      <Box className='v3-pool-liquidity-item-details'>
+        <Box className='flex items-center justify-between'>
+          <Box>
+            <p className='small weight-600'>Liquidity</p>
+            <Box mt='5px'>
+              <p className='small weight-600'>
+                $
+                {_fiatValueOfLiquidity?.greaterThan(new Fraction(1, 100))
+                  ? _fiatValueOfLiquidity.toFixed(2, {
                       groupSeparator: ',',
                     })
-                : '-'}
+                  : '-'}
+              </p>
+            </Box>
+          </Box>
+          <Box className='flex'>
+            <Button>Add</Button>
+            <Box ml={1}>
+              <Button onClick={() => setOpenRemoveLiquidityModal(true)}>
+                Remove
+              </Button>
+            </Box>
+          </Box>
+        </Box>
+        <Box mt={2} className='v3-pool-item-details-panel'>
+          <Box pt='4px' className='flex justify-between items-center'>
+            <Box className='flex items-center'>
+              <CurrencyLogo currency={currencyQuote} size='24px' />
+              <Box ml={1}>
+                <p>{currencyQuote?.symbol}</p>
+              </Box>
+            </Box>
+            <Box className='flex items-center'>
+              <Box mr={1}>
+                <p>
+                  {inverted
+                    ? formatCurrencyAmount(position?.amount0, 4)
+                    : formatCurrencyAmount(position?.amount1, 4)}
+                </p>
+              </Box>
+              {typeof ratio === 'number' && !removed && (
+                <Badge text={`${inverted ? ratio : 100 - ratio}%`}></Badge>
+              )}
+            </Box>
+          </Box>
+          <Box mt='16px' pb='4px' className='flex justify-between items-center'>
+            <Box className='flex items-center'>
+              <CurrencyLogo currency={currencyBase} size='24px' />
+              <Box ml={1}>
+                <p>{currencyBase?.symbol}</p>
+              </Box>
+            </Box>
+            <Box className='flex items-center'>
+              <Box mr={1}>
+                <p>
+                  {inverted
+                    ? formatCurrencyAmount(position?.amount1, 4)
+                    : formatCurrencyAmount(position?.amount0, 4)}
+                </p>
+              </Box>
+              {typeof ratio === 'number' && !removed && (
+                <Badge text={`${inverted ? 100 - ratio : ratio}%`}></Badge>
+              )}
+            </Box>
+          </Box>
+        </Box>
+        <Box mt={3} className='flex items-center justify-between'>
+          <Box>
+            <p className='small weight-600'>Unclaimed Fees</p>
+            <Box mt='5px'>
+              <p className='small weight-600'>
+                $
+                {_fiatValueOfFees?.greaterThan(new Fraction(1, 100))
+                  ? +_fiatValueOfFees.toFixed(2, { groupSeparator: ',' }) < 0.01
+                    ? '<0.01'
+                    : _fiatValueOfFees?.toFixed(2, {
+                        groupSeparator: ',',
+                      })
+                  : '-'}
+              </p>
+            </Box>
+          </Box>
+          {ownsNFT &&
+            (feeValue0?.greaterThan(0) ||
+              feeValue1?.greaterThan(0) ||
+              !!collectMigrationHash) && (
+              <Button
+                disabled={collecting || !!collectMigrationHash}
+                onClick={collect}
+              >
+                {!!collectMigrationHash && !isCollectPending
+                  ? 'Claimed'
+                  : isCollectPending || collecting
+                  ? 'Claiming'
+                  : 'Claim'}
+              </Button>
+            )}
+        </Box>
+        <Box mt={2} className='v3-pool-item-details-panel'>
+          <Box pt='4px' className='flex justify-between items-center'>
+            <Box className='flex items-center'>
+              <CurrencyLogo currency={feeValueUpper?.currency} size='24px' />
+              <Box ml={1}>
+                <p>{feeValueUpper?.currency?.symbol}</p>
+              </Box>
+            </Box>
+            <p>
+              {feeValueUpper ? formatCurrencyAmount(feeValueUpper, 4) : '-'}
+            </p>
+          </Box>
+          <Box mt='16px' pb='4px' className='flex justify-between items-center'>
+            <Box className='flex items-center'>
+              <CurrencyLogo currency={feeValueLower?.currency} size='24px' />
+              <Box ml={1}>
+                <p>{feeValueLower?.currency?.symbol}</p>
+              </Box>
+            </Box>
+            <p>
+              {feeValueLower ? formatCurrencyAmount(feeValueLower, 4) : '-'}
             </p>
           </Box>
         </Box>
-        {ownsNFT &&
-          (feeValue0?.greaterThan(0) ||
-            feeValue1?.greaterThan(0) ||
-            !!collectMigrationHash) && (
-            <Button
-              disabled={collecting || !!collectMigrationHash}
-              onClick={collect}
-            >
-              {!!collectMigrationHash && !isCollectPending
-                ? 'Claimed'
-                : isCollectPending || collecting
-                ? 'Claiming'
-                : 'Claim'}
-            </Button>
+        <Box mt={3} className='flex items-center justify-between'>
+          <small>Selected Range</small>
+          {currencyBase && currencyQuote && (
+            <RateToggle
+              currencyA={currencyBase}
+              currencyB={currencyQuote}
+              handleRateToggle={() => setManuallyInverted(!manuallyInverted)}
+            />
           )}
-      </Box>
-      <Box mt={2} className='v3-pool-item-details-panel'>
-        <Box pt='4px' className='flex justify-between items-center'>
-          <Box className='flex items-center'>
-            <CurrencyLogo currency={feeValueUpper?.currency} size='24px' />
-            <Box ml={1}>
-              <p>{feeValueUpper?.currency?.symbol}</p>
-            </Box>
-          </Box>
-          <p>{feeValueUpper ? formatCurrencyAmount(feeValueUpper, 4) : '-'}</p>
         </Box>
-        <Box mt='16px' pb='4px' className='flex justify-between items-center'>
-          <Box className='flex items-center'>
-            <CurrencyLogo currency={feeValueLower?.currency} size='24px' />
-            <Box ml={1}>
-              <p>{feeValueLower?.currency?.symbol}</p>
+        <Box mt={2} className='flex justify-between'>
+          {priceLower && (
+            <Box
+              width={priceUpper ? '49%' : '100%'}
+              className='v3-pool-item-details-panel v3-pool-item-details-info'
+            >
+              <p>Min price</p>
+              <h6>{formatTickPrice(priceLower, tickAtLimit, Bound.LOWER)}</h6>
+              <p>
+                {currencyQuote?.symbol} per {currencyBase?.symbol}
+              </p>
+              {inRange && (
+                <p>
+                  Your position will be 100% {currencyBase?.symbol} at this
+                  price.
+                </p>
+              )}
             </Box>
-          </Box>
-          <p>{feeValueLower ? formatCurrencyAmount(feeValueLower, 4) : '-'}</p>
+          )}
+          {priceUpper && (
+            <Box
+              width={priceLower ? '49%' : '100%'}
+              className='v3-pool-item-details-panel v3-pool-item-details-info'
+            >
+              <p>Max price</p>
+              <h6>{formatTickPrice(priceUpper, tickAtLimit, Bound.LOWER)}</h6>
+              <p>
+                {currencyQuote?.symbol} per {currencyBase?.symbol}
+              </p>
+              {inRange && (
+                <p>
+                  Your position will be 100% {currencyQuote?.symbol} at this
+                  price.
+                </p>
+              )}
+            </Box>
+          )}
         </Box>
-      </Box>
-      <Box mt={3} className='flex items-center justify-between'>
-        <small>Selected Range</small>
-        {currencyBase && currencyQuote && (
-          <RateToggle
-            currencyA={currencyBase}
-            currencyB={currencyQuote}
-            handleRateToggle={() => setManuallyInverted(!manuallyInverted)}
-          />
-        )}
-      </Box>
-      <Box mt={2} className='flex justify-between'>
-        {priceLower && (
+        {_pool && (
           <Box
-            width={priceUpper ? '49%' : '100%'}
+            mt={2}
             className='v3-pool-item-details-panel v3-pool-item-details-info'
           >
-            <p>Min price</p>
-            <h6>{formatTickPrice(priceLower, tickAtLimit, Bound.LOWER)}</h6>
+            <p>Current price</p>
+            <h6>
+              {(inverted ? _pool.token1Price : _pool.token0Price).toSignificant(
+                6,
+              )}
+            </h6>
             <p>
               {currencyQuote?.symbol} per {currencyBase?.symbol}
             </p>
-            {inRange && (
-              <p>
-                Your position will be 100% {currencyBase?.symbol} at this price.
-              </p>
-            )}
-          </Box>
-        )}
-        {priceUpper && (
-          <Box
-            width={priceLower ? '49%' : '100%'}
-            className='v3-pool-item-details-panel v3-pool-item-details-info'
-          >
-            <p>Max price</p>
-            <h6>{formatTickPrice(priceUpper, tickAtLimit, Bound.LOWER)}</h6>
-            <p>
-              {currencyQuote?.symbol} per {currencyBase?.symbol}
-            </p>
-            {inRange && (
-              <p>
-                Your position will be 100% {currencyQuote?.symbol} at this
-                price.
-              </p>
-            )}
           </Box>
         )}
       </Box>
-      {_pool && (
-        <Box
-          mt={2}
-          className='v3-pool-item-details-panel v3-pool-item-details-info'
-        >
-          <p>Current price</p>
-          <h6>
-            {(inverted ? _pool.token1Price : _pool.token0Price).toSignificant(
-              6,
-            )}
-          </h6>
-          <p>
-            {currencyQuote?.symbol} per {currencyBase?.symbol}
-          </p>
-        </Box>
-      )}
-    </Box>
+    </>
   );
 }
