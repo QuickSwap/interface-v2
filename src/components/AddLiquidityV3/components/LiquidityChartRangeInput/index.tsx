@@ -10,7 +10,6 @@ import { ZoomLevels } from './types';
 import { Box } from '@material-ui/core';
 import { tryParseAmount } from 'state/swap/v3/hooks';
 import { format } from 'd3';
-import { ChartWrapper } from './styled';
 import { Chart } from './Chart';
 
 const ZOOM_LEVEL: ZoomLevels = {
@@ -226,51 +225,51 @@ export default function LiquidityChartRangeInput({
   );
 
   return (
-    <Box style={{ minHeight: '260px' }}>
+    <Box
+      width={1}
+      minHeight='260px'
+      className='flex justify-center items-center'
+    >
       {isUninitialized ? (
-        <div>Your position will appear here.</div>
+        <p>Your position will appear here.</p>
       ) : isLoading ? (
-        <div>Loading...</div>
+        <p>Loading...</p>
       ) : isError ? (
-        <div>Liquidity data not available.</div>
+        <p>Liquidity data not available.</p>
       ) : !formattedData || formattedData === [] || !price ? (
-        <ChartWrapper>
-          <Chart
-            data={{ series: mockData, current: mockPrice }}
-            dimensions={{ width: 400, height: 175 }}
-            margins={{ top: 10, right: 0, bottom: 20, left: 0 }}
-            styles={{
-              area: {
-                selection: '#008FFF',
-              },
-            }}
-            interactive={interactive}
-            brushLabels={brushLabelValue}
-            brushDomain={brushDomain}
-            onBrushDomainChange={onBrushDomainChangeEnded}
-            zoomLevels={ZOOM_LEVEL}
-            priceFormat={priceFormat}
-          />
-        </ChartWrapper>
+        <Chart
+          data={{ series: mockData, current: mockPrice }}
+          dimensions={{ width: 400, height: 230 }}
+          margins={{ top: 20, right: 0, bottom: 30, left: 0 }}
+          styles={{
+            area: {
+              selection: '#008FFF',
+            },
+          }}
+          interactive={interactive}
+          brushLabels={brushLabelValue}
+          brushDomain={brushDomain}
+          onBrushDomainChange={onBrushDomainChangeEnded}
+          zoomLevels={ZOOM_LEVEL}
+          priceFormat={priceFormat}
+        />
       ) : (
-        <ChartWrapper>
-          <Chart
-            data={{ series: formattedData, current: price }}
-            dimensions={{ width: 400, height: 175 }}
-            margins={{ top: 10, right: 0, bottom: 20, left: 0 }}
-            styles={{
-              area: {
-                selection: '#008FFF',
-              },
-            }}
-            interactive={interactive}
-            brushLabels={brushLabelValue}
-            brushDomain={brushDomain}
-            onBrushDomainChange={onBrushDomainChangeEnded}
-            zoomLevels={ZOOM_LEVEL}
-            priceFormat={priceFormat}
-          />
-        </ChartWrapper>
+        <Chart
+          data={{ series: formattedData, current: price }}
+          dimensions={{ width: 400, height: 230 }}
+          margins={{ top: 20, right: 0, bottom: 30, left: 0 }}
+          styles={{
+            area: {
+              selection: '#008FFF',
+            },
+          }}
+          interactive={interactive}
+          brushLabels={brushLabelValue}
+          brushDomain={brushDomain}
+          onBrushDomainChange={onBrushDomainChangeEnded}
+          zoomLevels={ZOOM_LEVEL}
+          priceFormat={priceFormat}
+        />
       )}
     </Box>
   );

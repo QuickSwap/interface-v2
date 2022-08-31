@@ -1814,15 +1814,10 @@ export function getTokenFromAddress(
   tokenMap: TokenAddressMap,
   tokens: Token[],
 ) {
-<<<<<<< HEAD
-  const wrappedTokenInfo = tokenMap[chainId][tokenAddress];
-  if (!wrappedTokenInfo) {
-=======
   const tokenIndex = Object.keys(tokenMap[chainId]).findIndex(
     (address) => address.toLowerCase() === tokenAddress.toLowerCase(),
   );
   if (tokenIndex === -1) {
->>>>>>> v3-branch-1
     const token = tokens.find(
       (item) => item.address.toLowerCase() === tokenAddress.toLowerCase(),
     );

@@ -37,24 +37,6 @@ export const txClient = new ApolloClient({
 export const blockClient = new ApolloClient({
   link: new HttpLink({
     uri: process.env.REACT_APP_GRAPH_V2_API_URL,
-<<<<<<< HEAD
-  }),
-  cache: new InMemoryCache(),
-});
-
-export const v3Poolclient = new ApolloClient({
-  link: new HttpLink({
-    uri: 'https://api.thegraph.com/subgraphs/name/cryptoalgebra/algebra',
-  }),
-  cache: new InMemoryCache(),
-  shouldBatch: true,
-});
-
-export const stakerClient = new ApolloClient({
-  link: new HttpLink({
-    uri: 'https://api.thegraph.com/subgraphs/name/iliaazhel/staker',
-=======
->>>>>>> v3-branch-1
   }),
   cache: new InMemoryCache(),
   shouldBatch: true,
@@ -79,14 +61,6 @@ export const v3Poolclient = new ApolloClient({
 export const stakerClient = new ApolloClient({
   link: new HttpLink({
     uri: 'https://api.thegraph.com/subgraphs/name/iliaazhel/staker',
-  }),
-  cache: new InMemoryCache(),
-  shouldBatch: true,
-});
-
-export const oldFarmingClient = new ApolloClient({
-  link: new HttpLink({
-    uri: 'https://api.thegraph.com/subgraphs/name/iliaazhel/algebra-farming-t',
   }),
   cache: new InMemoryCache(),
   shouldBatch: true,
