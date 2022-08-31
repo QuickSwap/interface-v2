@@ -32,7 +32,6 @@ import { Percent } from '@uniswap/sdk-core';
 import ReactGA from 'react-ga';
 import { useAppSelector } from 'state/hooks';
 import { useActiveWeb3React } from 'hooks';
-import { isMobileOnly } from 'react-device-detect';
 import { useV3PositionFromTokenId } from 'hooks/v3/useV3Positions';
 import { calculateGasMarginV3 } from 'utils';
 import { ThemeContext } from 'styled-components';
@@ -48,6 +47,7 @@ import ColoredSlider from 'components/ColoredSlider';
 import { JSBI } from '@uniswap/sdk';
 import { useUserSlippageTolerance } from 'state/user/hooks';
 import './index.scss';
+import { formatUnits } from 'ethers/lib/utils';
 
 interface V3RemoveLiquidityModalProps {
   open: boolean;
@@ -400,7 +400,7 @@ export default function V3RemoveLiquidityModal({
           <Box mb={2} className='flex justify-between'>
             <small className='text-secondary'>Amount</small>
             <small className='text-secondary'>
-              Balance: {position.liquidity.toString()}
+              Balance: {formatUnits(position.liquidity)}
             </small>
           </Box>
           <NumericalInput
@@ -409,6 +409,15 @@ export default function V3RemoveLiquidityModal({
             fontSize={28}
             onUserInput={(value) => {
               setTypedValue(value);
+              onPercentSelectForSlider(
+                Math.floor(
+                  Math.min(
+                    (Number(value) / Number(formatUnits(position.liquidity))) *
+                      100,
+                    100,
+                  ),
+                ),
+              );
             }}
           />
           <Box mt={1} className='flex items-center'>
@@ -418,9 +427,15 @@ export default function V3RemoveLiquidityModal({
                 max={100}
                 step={1}
                 value={percentForSlider}
-                handleChange={(event, value) =>
-                  onPercentSelectForSlider(value as number)
-                }
+                handleChange={(event, value) => {
+                  onPercentSelectForSlider(value as number);
+                  setTypedValue(
+                    (
+                      ((value as number) / 100) *
+                      Number(formatUnits(position.liquidity))
+                    ).toString(),
+                  );
+                }}
               />
             </Box>
             <small>{percentForSlider}%</small>
