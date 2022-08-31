@@ -51,6 +51,7 @@ import { PositionPool } from 'models/interfaces';
 import { Box, Button } from '@material-ui/core';
 import './index.scss';
 import RateToggle from 'components/v3/RateToggle';
+import V3IncreaseLiquidityModal from '../V3IncreaseLiquidityModal';
 import V3RemoveLiquidityModal from '../V3RemoveLiquidityModal';
 
 interface PositionListItemProps {
@@ -65,6 +66,9 @@ export default function PositionListItemDetails({
     positionDetails,
   );
   const [openRemoveLiquidityModal, setOpenRemoveLiquidityModal] = useState(
+    false,
+  );
+  const [openIncreaseLiquidityModal, setOpenIncreaseLiquidityModal] = useState(
     false,
   );
 
@@ -327,6 +331,13 @@ export default function PositionListItemDetails({
 
   return (
     <>
+      {openIncreaseLiquidityModal && (
+        <V3IncreaseLiquidityModal
+          open={openIncreaseLiquidityModal}
+          onClose={() => setOpenIncreaseLiquidityModal(false)}
+          positionDetails={positionDetails}
+        />
+      )}
       {openRemoveLiquidityModal && (
         <V3RemoveLiquidityModal
           open={openRemoveLiquidityModal}
@@ -350,7 +361,9 @@ export default function PositionListItemDetails({
             </Box>
           </Box>
           <Box className='flex'>
-            <Button>Add</Button>
+            <Button onClick={() => setOpenIncreaseLiquidityModal(true)}>
+              Add
+            </Button>
             <Box ml={1}>
               <Button onClick={() => setOpenRemoveLiquidityModal(true)}>
                 Remove
