@@ -21,7 +21,9 @@ export const usePoolsData = (
     const poolsData = await Promise.all(
       poolAddresses.map(async (poolAddress) => {
         const poolId = allPools.findIndex((p) => {
-          return p.comptroller.address === poolAddress;
+          return (
+            p.comptroller.address.toLowerCase() === poolAddress.toLowerCase()
+          );
         });
         if (poolId === -1) return;
         const poolData = await fetchPoolData(
