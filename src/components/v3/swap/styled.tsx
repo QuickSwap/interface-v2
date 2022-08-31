@@ -24,7 +24,7 @@ export const ArrowWrapper = styled.button<{ clickable: boolean }>`
   margin-top: -32px;
   margin-bottom: -14px;
   left: calc(50% - 11px);
-  background-color: var(--primary-weak);
+  // background-color: var(--primary-weak);
   opacity: 0.5;
   border: none;
   z-index: 2;
