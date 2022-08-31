@@ -18,6 +18,9 @@ import {
 } from 'state/mint/v3/actions';
 import Input from 'components/NumericalInput';
 import { isMobileOnly } from 'react-device-detect';
+import { Box, Button } from '@material-ui/core';
+import Badge, { BadgeVariant } from 'components/v3/Badge';
+import { Error } from '@material-ui/icons';
 
 interface IPrice {
   baseCurrency: Currency | undefined;
@@ -50,6 +53,9 @@ function TokenPrice({
   changeQuotePriceHandler,
   isSelected,
 }: ITokenPrice) {
+  const [tokenQuotePrice, setTokenQuotePrice] = useState(
+    userQuoteCurrencyToken || '',
+  );
   const baseSymbol = useMemo(() => (baseCurrency ? baseCurrency.symbol : '-'), [
     baseCurrency,
   ]);
@@ -67,39 +73,43 @@ function TokenPrice({
   }, [basePrice, quotePrice]);
 
   return (
-    <div
-      className={`token-price ${
-        isSelected ? 'main' : 'side'
-      } ws-no-wrap mxs_fs-075`}
-    >
-      <div className={'quote-token w-100 f'}>
-        <div className='w-100'>
+    <Box className='v3-pool-starting-token-price'>
+      <Box mr={1}>
+        <small>1 {baseSymbol}</small>
+      </Box>
+      <small> = </small>
+      <Box ml={1} flex={1} className='flex'>
+        <Box className='flex items-center' pr={1}>
+          <small>{quoteSymbol}</small>
+        </Box>
+        <Box flex={1} height='100%' position='relative'>
           {isLocked ? (
-            <div className='f f-ac'>
-              <span className='pl-1'>
+            <Box className='flex items-center'>
+              <Box className='flex' mr='5px'>
                 <Lock size={14} />
-              </span>
-              <span className='quote-token__auto-fetched'>{tokenRatio}</span>
-            </div>
+              </Box>
+              <small>{tokenRatio}</small>
+            </Box>
           ) : isSelected ? (
-            <Input
-              className={`quote-token__input bg-t c-w ol-n`}
-              placeholder={`${baseCurrency?.symbol} in ${quoteCurrency?.symbol}`}
-              value={userQuoteCurrencyToken || ''}
-              onUserInput={(e: string) => changeQuotePriceHandler(e)}
-            />
+            <Box className='v3-pool-starting-token-price-input'>
+              <Input
+                placeholder={`${baseCurrency?.symbol} in ${quoteCurrency?.symbol}`}
+                value={tokenQuotePrice}
+                onUserInput={(e: string) => setTokenQuotePrice(e)}
+              />
+              <Button
+                disabled={!tokenQuotePrice}
+                onClick={() => changeQuotePriceHandler(tokenQuotePrice)}
+              >
+                Confirm
+              </Button>
+            </Box>
           ) : (
-            <span>-</span>
+            <small>-</small>
           )}
-        </div>
-        <div className='quote-token__symbol ml-a'>{quoteSymbol}</div>
-      </div>
-      <div className='quote-token__separator'> = </div>
-      <div className='base-token'>
-        <div className='base-token__amount'>1</div>
-        <div className='base-token__symbol'>{baseSymbol}</div>
-      </div>
-    </div>
+        </Box>
+      </Box>
+    </Box>
   );
 }
 
@@ -454,67 +464,53 @@ export default function StartingPrice({
   }, [priceFormat]);
 
   return (
-    <div
-      className={'f starting-price-wrapper c p-1'}
-      style={{
-        width: isMobileOnly ? '100%' : '542px',
-        backgroundColor: '#26343f',
-      }}
-    >
-      <div className={'flex-s-between'}>
-        {isLocked ? (
-          <span className={'auto-fetched'}>✨ Prices were auto-fetched</span>
-        ) : !basePriceUSD && !quotePriceUSD ? (
-          <span
-            className={'not-auto-fetched'}
-          >{`Can't auto-fetch prices.`}</span>
-        ) : !basePriceUSD ? (
-          <span
-            className={'not-auto-fetched'}
-          >{`Can't auto-fetch ${currencyA?.symbol} price.`}</span>
-        ) : !quotePriceUSD ? (
-          <span
-            className={'not-auto-fetched'}
-          >{`Can't auto-fetch ${currencyB?.symbol} price.`}</span>
-        ) : null}
-      </div>
-      <div className={'br-8 mt-1 f c'}>
-        <div
-          className={`f ${
-            priceFormat === PriceFormats.TOKEN ? 'reverse' : 'c'
-          }`}
-        >
-          {priceFormat === PriceFormats.TOKEN ? (
-            <TokenPrice
-              baseCurrency={currencyA}
-              quoteCurrency={currencyB}
-              basePrice={basePriceUSD}
-              quotePrice={quotePriceUSD}
-              isLocked={isLocked}
-              userQuoteCurrencyToken={userQuoteCurrencyToken}
-              changeQuotePriceHandler={(v: string) => handleTokenChange(v)}
-              isSelected={priceFormat === PriceFormats.TOKEN}
-            ></TokenPrice>
-          ) : (
-            <USDPrice
-              baseCurrency={currencyA}
-              quoteCurrency={currencyB}
-              basePrice={basePriceUSD}
-              quotePrice={quotePriceUSD}
-              isLocked={isLocked}
-              userBaseCurrencyUSD={userBaseCurrencyUSD}
-              userQuoteCurrencyUSD={userQuoteCurrencyUSD}
-              changeBaseCurrencyUSDHandler={(v: string) =>
-                handleUSDChange(Field.CURRENCY_A, v)
-              }
-              changeQuoteCurrencyUSDHandler={(v: string) =>
-                handleUSDChange(Field.CURRENCY_B, v)
-              }
-              isSelected={priceFormat === PriceFormats.USD}
-            ></USDPrice>
-          )}
-        </div>
-      </div>
-    </div>
+    <Box className='v3-pool-liquidity-starting-price'>
+      <Box mb={2} className='flex'>
+        {(isLocked || !basePriceUSD || !quotePriceUSD) && (
+          <Badge
+            text={
+              isLocked
+                ? '✨ Prices were auto-fetched'
+                : !basePriceUSD && !quotePriceUSD
+                ? "Can't auto-fetch prices."
+                : !basePriceUSD
+                ? `Can't auto-fetch ${currencyA?.symbol} price.`
+                : `Can't auto-fetch ${currencyB?.symbol} price.`
+            }
+            variant={isLocked ? BadgeVariant.PRIMARY : BadgeVariant.WARNING}
+            icon={isLocked ? undefined : <Error width={14} height={14} />}
+          />
+        )}
+      </Box>
+      {priceFormat === PriceFormats.TOKEN ? (
+        <TokenPrice
+          baseCurrency={currencyA}
+          quoteCurrency={currencyB}
+          basePrice={basePriceUSD}
+          quotePrice={quotePriceUSD}
+          isLocked={isLocked}
+          userQuoteCurrencyToken={userQuoteCurrencyToken}
+          changeQuotePriceHandler={(v: string) => handleTokenChange(v)}
+          isSelected={priceFormat === PriceFormats.TOKEN}
+        ></TokenPrice>
+      ) : (
+        <USDPrice
+          baseCurrency={currencyA}
+          quoteCurrency={currencyB}
+          basePrice={basePriceUSD}
+          quotePrice={quotePriceUSD}
+          isLocked={isLocked}
+          userBaseCurrencyUSD={userBaseCurrencyUSD}
+          userQuoteCurrencyUSD={userQuoteCurrencyUSD}
+          changeBaseCurrencyUSDHandler={(v: string) =>
+            handleUSDChange(Field.CURRENCY_A, v)
+          }
+          changeQuoteCurrencyUSDHandler={(v: string) =>
+            handleUSDChange(Field.CURRENCY_B, v)
+          }
+          isSelected={priceFormat === PriceFormats.USD}
+        ></USDPrice>
+      )}
+    </Box>
   );
 }

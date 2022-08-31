@@ -105,7 +105,9 @@ export function MyLiquidityPoolsV3() {
       {account && (
         <Box mt={2} className='flex'>
           {filters.map((item, key) => (
-            <FilterPanelItem item={item} key={key} />
+            <Box mr={1} key={key}>
+              <FilterPanelItem item={item} />
+            </Box>
           ))}
         </Box>
       )}

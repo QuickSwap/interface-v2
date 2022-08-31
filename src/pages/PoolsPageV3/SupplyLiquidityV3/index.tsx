@@ -18,6 +18,7 @@ import {
   useCurrentStep,
 } from 'state/mint/v3/hooks';
 import { Stepper } from './components/Stepper';
+import { InitialPrice } from './containers/InitialPrice';
 import { EnterAmounts } from './containers/EnterAmounts';
 import { SelectPair } from './containers/SelectPair';
 import { SelectRange } from './containers/SelectRange';
@@ -42,7 +43,6 @@ import { AddLiquidityButton } from './containers/AddLiquidityButton';
 import { ArrowLeft, ChevronLeft, ChevronRight } from 'react-feather';
 import { PoolState } from 'hooks/v3/usePools';
 import { RouterGuard } from './routing/router-guards';
-import { InitialPrice } from './containers/InitialPrice';
 import { useAppDispatch } from 'state/hooks';
 // import SettingsTab from "components/Settings";
 import { Aftermath } from './containers/Aftermath';
@@ -431,6 +431,18 @@ export function SupplyLiquidityV3() {
       <Box mt={4} position='relative'>
         {(!baseCurrency || !quoteCurrency) && (
           <Box className='v3-supply-liquidity-overlay' />
+        )}
+        {mintInfo.noLiquidity && baseCurrency && quoteCurrency && (
+          <Box mb={2}>
+            <InitialPrice
+              currencyA={baseCurrency ?? undefined}
+              currencyB={currencyB ?? undefined}
+              mintInfo={mintInfo}
+              isCompleted={stepInitialPrice}
+              priceFormat={priceFormat}
+              backStep={0}
+            />
+          </Box>
         )}
         <SelectRange
           currencyA={baseCurrency}

@@ -39,6 +39,7 @@ import useUSDCPrice, { useUSDCValue } from 'hooks/v3/useUSDCPrice';
 import { tryParseAmount } from 'state/swap/v3/hooks';
 import RangeBadge from 'components/v3/Badge/RangeBadge';
 import RateToggle from 'components/v3/RateToggle';
+import { useInverter } from 'hooks/v3/useInverter';
 
 interface IAddLiquidityButton {
   baseCurrency: Currency | undefined;
@@ -222,16 +223,32 @@ export function AddLiquidityButton({
   const initialUSDPrices = useInitialUSDPrices();
 
   const {
-    [Bound.LOWER]: priceLower,
-    [Bound.UPPER]: priceUpper,
+    [Bound.LOWER]: _priceLower,
+    [Bound.UPPER]: _priceUpper,
   } = useMemo(() => {
     return mintInfo.pricesAtTicks;
   }, [mintInfo]);
 
+  const quoteWrapped = quoteCurrency?.wrapped;
+  const baseWrapped = baseCurrency?.wrapped;
+
+  // handle manual inversion
+  const { priceLower, priceUpper, base } = useInverter({
+    priceLower: _priceLower,
+    priceUpper: _priceUpper,
+    quote: quoteWrapped,
+    base: baseWrapped,
+    invert: manuallyInverted,
+  });
+
+  const inverted = quoteWrapped ? base?.equals(quoteWrapped) : undefined;
+  const currencyQuote = inverted ? baseCurrency : quoteCurrency;
+  const currencyBase = inverted ? quoteCurrency : baseCurrency;
+
   const currentPrice = useMemo(() => {
     if (!mintInfo.price) return;
 
-    const _price = mintInfo.invertPrice
+    const _price = inverted
       ? parseFloat(mintInfo.price.invert().toSignificant(5))
       : parseFloat(mintInfo.price.toSignificant(5));
 
@@ -240,7 +257,7 @@ export function AddLiquidityButton({
     } else {
       return _price;
     }
-  }, [mintInfo.price, initialUSDPrices]);
+  }, [mintInfo.price, inverted]);
 
   const modalHeader = () => {
     return (
@@ -292,10 +309,10 @@ export function AddLiquidityButton({
         <Box mt={3}>
           <Box className='flex justify-between items-center'>
             <p>Selected Range</p>
-            {baseCurrency && quoteCurrency && (
+            {currencyBase && currencyQuote && (
               <RateToggle
-                currencyA={baseCurrency}
-                currencyB={quoteCurrency}
+                currencyA={currencyBase}
+                currencyB={currencyQuote}
                 handleRateToggle={() => setManuallyInverted(!manuallyInverted)}
               />
             )}
@@ -310,10 +327,10 @@ export function AddLiquidityButton({
               <p>Min Price</p>
               <h6>{priceLower.toSignificant()}</h6>
               <p>
-                {quoteCurrency?.symbol} per {baseCurrency?.symbol}
+                {currencyQuote?.symbol} per {currencyBase?.symbol}
               </p>
               <p>
-                Your position will be 100% Composed of {baseCurrency?.symbol} at
+                Your position will be 100% Composed of {currencyBase?.symbol} at
                 this price
               </p>
             </Box>
@@ -326,10 +343,10 @@ export function AddLiquidityButton({
               <p>Min Price</p>
               <h6>{priceUpper.toSignificant()}</h6>
               <p>
-                {quoteCurrency?.symbol} per {baseCurrency?.symbol}
+                {currencyQuote?.symbol} per {currencyBase?.symbol}
               </p>
               <p>
-                Your position will be 100% Composed of {quoteCurrency?.symbol}{' '}
+                Your position will be 100% Composed of {currencyQuote?.symbol}{' '}
                 at this price
               </p>
             </Box>
@@ -340,7 +357,7 @@ export function AddLiquidityButton({
             <p>Current Price</p>
             <h6>{currentPrice}</h6>
             <p>
-              {quoteCurrency?.symbol} per {baseCurrency?.symbol}
+              {currencyQuote?.symbol} per {currencyBase?.symbol}
             </p>
           </Box>
         )}

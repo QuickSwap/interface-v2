@@ -27,6 +27,8 @@ export default function Badge({ variant, icon, text, tooltip }: BadgeProps) {
           ? 'v3-badge-warning'
           : variant === BadgeVariant.POSITIVE
           ? 'v3-badge-success'
+          : variant === BadgeVariant.PRIMARY
+          ? 'v3-badge-primary'
           : ''
       }`}
     >
