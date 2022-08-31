@@ -159,34 +159,37 @@ const App: React.FC = () => {
                       <Route exact path='/pools'>
                         <PageLayout>
                           <PoolsPage />
-                      </PageLayout>
-                    </Route>
-                    <Route exact path='/v3pools'>
-                      <PageLayout>
-                        <PoolsPageV3></PoolsPageV3>
-                      </PageLayout>
-                    </Route>
-                    <Route exact strict path='/pool/:tokenId'>
-                      <PageLayout>
-                        <PositionPage></PositionPage>
-                      </PageLayout>
-                    </Route>
-                    <Route exact path='/add/:currencyIdA?/:currencyIdB?/:step?'>
-                      <PageLayout>
-                        <NewAddLiquidityPage></NewAddLiquidityPage>
-                      </PageLayout>
-                    </Route>
-                    <Route
-                      exact
-                      path='/increase/:currencyIdA?/:currencyIdB?/:tokenId'
-                    >
-                      <PageLayout>
-                        <AddLiquidityV3></AddLiquidityV3>
-                      </PageLayout>
-                    </Route>
-                    <Route exact path='/remove/:tokenId'>
-                      <PageLayout>
-                        <RemoveLiquidityV3></RemoveLiquidityV3>
+                        </PageLayout>
+                      </Route>
+                      <Route exact path='/v3pools'>
+                        <PageLayout>
+                          <PoolsPageV3></PoolsPageV3>
+                        </PageLayout>
+                      </Route>
+                      <Route exact strict path='/pool/:tokenId'>
+                        <PageLayout>
+                          <PositionPage></PositionPage>
+                        </PageLayout>
+                      </Route>
+                      <Route
+                        exact
+                        path='/add/:currencyIdA?/:currencyIdB?/:step?'
+                      >
+                        <PageLayout>
+                          <NewAddLiquidityPage></NewAddLiquidityPage>
+                        </PageLayout>
+                      </Route>
+                      <Route
+                        exact
+                        path='/increase/:currencyIdA?/:currencyIdB?/:tokenId'
+                      >
+                        <PageLayout>
+                          <AddLiquidityV3></AddLiquidityV3>
+                        </PageLayout>
+                      </Route>
+                      <Route exact path='/remove/:tokenId'>
+                        <PageLayout>
+                          <RemoveLiquidityV3></RemoveLiquidityV3>
                         </PageLayout>
                       </Route>
                       <Route exact path='/farm'>
@@ -209,30 +212,30 @@ const App: React.FC = () => {
                           <PrdtPage />
                         </PageLayout>
                       </Route>
-                    <Route exact path='/analytics/:version(v2|v3)'>
+                      <Route exact path='/analytics/:version(v2|v3)'>
                         <PageLayout>
                           <AnalyticsHeader />
                           <AnalyticsOverview />
                         </PageLayout>
                       </Route>
-                    <Route exact path='/analytics/:version(v2|v3)/tokens'>
+                      <Route exact path='/analytics/:version(v2|v3)/tokens'>
                         <PageLayout>
                           <AnalyticsHeader />
                           <AnalyticsTokens />
                         </PageLayout>
                       </Route>
-                    <Route exact path='/analytics/:version(v2|v3)/pairs'>
+                      <Route exact path='/analytics/:version(v2|v3)/pairs'>
                         <PageLayout>
                           <AnalyticsHeader />
                           <AnalyticsPairs />
                         </PageLayout>
                       </Route>
-                    <Route exact path='/analytics/:version(v2|v3)/token/:id'>
+                      <Route exact path='/analytics/:version(v2|v3)/token/:id'>
                         <PageLayout>
                           <AnalyticsTokenDetails />
                         </PageLayout>
                       </Route>
-                    <Route exact path='/analytics/:version(v2|v3)/pair/:id'>
+                      <Route exact path='/analytics/:version(v2|v3)/pair/:id'>
                         <PageLayout>
                           <AnalyticsPairDetails />
                         </PageLayout>

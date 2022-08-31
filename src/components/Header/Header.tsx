@@ -95,7 +95,7 @@ const Header: React.FC = () => {
       isNew: true,
     },
     {
-      link: `/analytics/${isV3 ? 'v3' : 'v2'}`
+      link: `/analytics/${isV3 ? 'v3' : 'v2'}`,
       text: t('analytics'),
       id: 'analytics-page-link',
     },
