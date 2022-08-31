@@ -1,17 +1,28 @@
+@use 'styles/variables' as *;
+@use 'styles/breakpoints' as *;
+
 .toggle-button {
-  background-color: var(--dark-gray);
+  background-color: $secondary3;
+  border: 1px solid $grey12;
+  border-radius: 6px;
   width: fit-content;
   cursor: pointer;
   outline: none;
-  padding: 2px;
-  border: none;
+  padding: 1px;
+  display: flex;
 
-  span {
-    padding: 0.25rem 0.6rem;
-    transition-duration: .2s;
+  div {
+    padding: 3px 8px;
+    border-radius: 4px;
+    & span {
+      color: $textSecondary;
+    }
 
     &[data-isactive=true] {
-      background-color: var(--primary);
+      background-color: $bgColor;
+      & span {
+        color: $textPrimary;
+      }
     }
   }
 }

@@ -20,7 +20,9 @@ import { WMATIC_EXTENDED } from 'constants/v3/addresses';
 import { GlobalValue } from 'constants/index';
 import { toToken } from 'constants/v3/routing';
 import { Box } from '@material-ui/core';
+import { ExpandLess, ExpandMore } from '@material-ui/icons';
 import Badge from 'components/v3/Badge';
+import PositionListItemDetails from '../PositionListItemDetails';
 
 interface PositionListItemProps {
   positionDetails: PositionPool;
@@ -183,10 +185,7 @@ export default function PositionListItem({
   }, []);
 
   return (
-    <Box
-      className='v3-pool-liquidity-item'
-      onClick={() => setExpanded(!expanded)}
-    >
+    <Box className='v3-pool-liquidity-item'>
       <Box className='flex items-center'>
         <Box className='flex' mr={1}>
           <DoubleCurrencyLogo
@@ -235,7 +234,7 @@ export default function PositionListItem({
       </Box>
 
       {!expanded && (
-        <Box mt={1}>
+        <Box width={1} mt={1}>
           {priceLower && priceUpper ? (
             <span className='text-secondary'>
               Min{' '}
@@ -248,10 +247,23 @@ export default function PositionListItem({
               } per ${currencyBase?.symbol}`}
             </span>
           ) : (
-            <div className={'f c f-ac f-jc w-100'}>
+            <Box width={1} className='flex justify-center'>
               <Loader size={'1rem'} stroke={'var(--white)'} />
-            </div>
+            </Box>
           )}
+        </Box>
+      )}
+
+      <Box
+        className='v3-pool-liquidity-item-expand'
+        onClick={() => setExpanded(!expanded)}
+      >
+        {expanded ? <ExpandLess /> : <ExpandMore />}
+      </Box>
+
+      {expanded && (
+        <Box mt={3}>
+          <PositionListItemDetails positionDetails={positionDetails} />
         </Box>
       )}
     </Box>

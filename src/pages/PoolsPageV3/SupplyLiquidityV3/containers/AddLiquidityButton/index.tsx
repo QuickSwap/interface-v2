@@ -27,7 +27,6 @@ import { JSBI } from '@uniswap/sdk';
 import { NONFUNGIBLE_POSITION_MANAGER_ADDRESSES } from 'constants/v3/addresses';
 import { calculateGasMarginV3 } from 'utils';
 import { Button, Box } from '@material-ui/core';
-import { Error } from '@material-ui/icons';
 import {
   ConfirmationModalContent,
   CurrencyLogo,
@@ -36,13 +35,10 @@ import {
   TransactionErrorContent,
 } from 'components';
 import './index.scss';
-import {
-  PriceFormats,
-  PriceFormatToggler,
-} from '../../components/PriceFomatToggler';
 import useUSDCPrice, { useUSDCValue } from 'hooks/v3/useUSDCPrice';
 import { tryParseAmount } from 'state/swap/v3/hooks';
 import RangeBadge from 'components/v3/Badge/RangeBadge';
+import RateToggle from 'components/v3/RateToggle';
 
 interface IAddLiquidityButton {
   baseCurrency: Currency | undefined;
@@ -65,11 +61,11 @@ export function AddLiquidityButton({
   const { chainId, library, account } = useActiveWeb3React();
   const [showConfirm, setShowConfirm] = useState(false);
   const [attemptingTxn, setAttemptingTxn] = useState(false);
-  const [priceFormat, setPriceFormat] = useState(PriceFormats.TOKEN);
   const [txPending, setTxPending] = useState(false);
   const [addLiquidityErrorMessage, setAddLiquidityErrorMessage] = useState<
     string | null
   >(null);
+  const [manuallyInverted, setManuallyInverted] = useState(false);
 
   const positionManager = useV3NFTPositionManagerContract();
 
@@ -223,22 +219,7 @@ export function AddLiquidityButton({
     }
   }
 
-  const handlePriceFormat = useCallback((priceFormat: PriceFormats) => {
-    setPriceFormat(priceFormat);
-  }, []);
-
   const initialUSDPrices = useInitialUSDPrices();
-  const usdPriceA = useUSDCPrice(baseCurrency ?? undefined);
-  const usdPriceB = useUSDCPrice(quoteCurrency ?? undefined);
-
-  const hidePriceFormatter = useMemo(() => {
-    return Boolean(
-      !initialUSDPrices.CURRENCY_A &&
-        !initialUSDPrices.CURRENCY_B &&
-        !usdPriceA &&
-        !usdPriceB,
-    );
-  }, [mintInfo, usdPriceA, usdPriceB, initialUSDPrices]);
 
   const {
     [Bound.LOWER]: priceLower,
@@ -247,70 +228,19 @@ export function AddLiquidityButton({
     return mintInfo.pricesAtTicks;
   }, [mintInfo]);
 
-  const isUSD = useMemo(() => {
-    return priceFormat === PriceFormats.USD;
-  }, []);
-
-  const currentPriceInUSDA = useUSDCValue(
-    tryParseAmount(
-      mintInfo.price
-        ? mintInfo.invertPrice
-          ? Number(mintInfo.price.invert().toSignificant(5)).toFixed(5)
-          : Number(mintInfo.price.toSignificant(5)).toFixed(5)
-        : undefined,
-      quoteCurrency,
-    ),
-    true,
-  );
-
-  const currentPriceInUSDB = useUSDCValue(
-    tryParseAmount(
-      mintInfo.price
-        ? mintInfo.invertPrice
-          ? Number(mintInfo.price.invert().toSignificant(5)).toFixed(5)
-          : Number(mintInfo.price.toSignificant(5)).toFixed(5)
-        : undefined,
-      baseCurrency,
-    ),
-    true,
-  );
-
   const currentPrice = useMemo(() => {
     if (!mintInfo.price) return;
 
-    const isInitialInUSD = Boolean(
-      initialUSDPrices.CURRENCY_A && initialUSDPrices.CURRENCY_B,
-    );
-
-    let _price;
-
-    if (!isUSD) {
-      _price =
-        isUSD && currentPriceInUSDA
-          ? parseFloat(currentPriceInUSDA?.toSignificant(5))
-          : mintInfo.invertPrice
-          ? parseFloat(mintInfo.price.invert().toSignificant(5))
-          : parseFloat(mintInfo.price.toSignificant(5));
-    } else {
-      if (isInitialInUSD) {
-        _price = parseFloat(initialUSDPrices.CURRENCY_A);
-      } else if (currentPriceInUSDA) {
-        _price = parseFloat(currentPriceInUSDA.toSignificant(5));
-      } else if (currentPriceInUSDB) {
-        _price = parseFloat(currentPriceInUSDB.toSignificant(5));
-      }
-    }
+    const _price = mintInfo.invertPrice
+      ? parseFloat(mintInfo.price.invert().toSignificant(5))
+      : parseFloat(mintInfo.price.toSignificant(5));
 
     if (Number(_price) <= 0.0001) {
-      return `< ${
-        isUSD && (currentPriceInUSDA || isInitialInUSD) ? '$ ' : ''
-      }0.0001`;
+      return `< 0.0001`;
     } else {
-      return `${
-        isUSD && (currentPriceInUSDA || isInitialInUSD) ? '$ ' : ''
-      }${_price}`;
+      return _price;
     }
-  }, [mintInfo.price, isUSD, initialUSDPrices, currentPriceInUSDA]);
+  }, [mintInfo.price, initialUSDPrices]);
 
   const modalHeader = () => {
     return (
@@ -362,13 +292,12 @@ export function AddLiquidityButton({
         <Box mt={3}>
           <Box className='flex justify-between items-center'>
             <p>Selected Range</p>
-            {!hidePriceFormatter && (
-              <Box className='flex' ml={1}>
-                <PriceFormatToggler
-                  currentFormat={priceFormat}
-                  handlePriceFormat={handlePriceFormat}
-                />
-              </Box>
+            {baseCurrency && quoteCurrency && (
+              <RateToggle
+                currencyA={baseCurrency}
+                currencyB={quoteCurrency}
+                handleRateToggle={() => setManuallyInverted(!manuallyInverted)}
+              />
             )}
           </Box>
         </Box>

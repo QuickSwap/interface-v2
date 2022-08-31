@@ -17,13 +17,13 @@ export default function Toggle({
   unchecked = 'Off',
 }: ToggleProps) {
   return (
-    <button className={'toggle-button f br-12'} id={id} onClick={toggle}>
-      <span className={'br-8 c-w hover-op trans-op'} data-isactive={isActive}>
-        {checked}
-      </span>
-      <span className={'br-8 c-w hover-op trans-op'} data-isactive={!isActive}>
-        {unchecked}
-      </span>
-    </button>
+    <div className='toggle-button' id={id} onClick={toggle}>
+      <div data-isactive={isActive}>
+        <span>{checked}</span>
+      </div>
+      <div data-isactive={!isActive}>
+        <span>{unchecked}</span>
+      </div>
+    </div>
   );
 }

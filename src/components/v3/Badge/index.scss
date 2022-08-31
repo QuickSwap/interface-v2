@@ -8,6 +8,11 @@
   align-items: center;
   background: $primaryLight;
   border-radius: 8px;
+
+  & svg {
+    width: 15px;
+    height: 15px;
+  }
 }
 
 .v3-badge-success {
