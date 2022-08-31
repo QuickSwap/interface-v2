@@ -27,6 +27,9 @@ import CurrencyLogo from 'components/CurrencyLogo';
 import { useCurrencyBalance } from 'state/wallet/v3/hooks';
 import DoubleCurrencyLogo from 'components/DoubleCurrencyLogo';
 import CurrencySearchModal from 'components/CurrencySearchModal';
+import { Box } from '@material-ui/core';
+import NumericalInput from 'components/NumericalInput';
+import { useTranslation } from 'react-i18next';
 
 interface CurrencyInputPanelProps {
   value: string;
@@ -86,6 +89,7 @@ export default function CurrencyInputPanel({
 }: CurrencyInputPanelProps) {
   const [modalOpen, setModalOpen] = useState(false);
   const { account } = useActiveWeb3React();
+  const { t } = useTranslation();
 
   const balance = useCurrencyBalance(
     account ?? undefined,
@@ -143,159 +147,74 @@ export default function CurrencyInputPanel({
         </FixedContainer>
       )}
 
-      <Container hideInput={hideInput}>
-        <InputRow
-          hideCurrency={hideCurrency}
-          style={
-            hideInput
-              ? {
-                  borderRadius: '8px',
-                  padding: `${page === 'pool' ? '0' : ''}`,
-                }
-              : { padding: `${page === 'pool' ? '0' : ''}` }
-          }
-          selected={!onCurrencySelect}
-        >
-          {!hideCurrency && (
-            <CurrencySelect
-              page={page}
-              selected={!!currency}
-              hideInput={hideInput}
-              className='open-currency-select-button'
-              shallow={shallow}
-              swap={swap}
-              disabled={shallow && page !== 'addLiq'}
+      <Box id={id} className='bg-secondary2 swapBox'>
+        <Box mb={2}>
+          <Box>
+            <Box
+              className={`currencyButton  ${'token-select-background-v3'}  ${
+                currency ? 'currencySelected' : 'noCurrency'
+              }`}
               onClick={() => {
                 if (onCurrencySelect) {
                   setModalOpen(true);
                 }
               }}
             >
-              <Aligner
-                centered={centered}
-                title={balance ? balance.toSignificant(4) : ''}
-              >
-                <RowFixed>
-                  {pair ? (
-                    <span style={{ marginRight: '0.5rem' }}>
-                      <DoubleCurrencyLogo
-                        currency0={pair.token0}
-                        currency1={pair.token1}
-                        size={24}
-                      />
-                    </span>
-                  ) : currency ? (
+              {currency ? (
+                <Box className='flex w-100 justify-between items-center'>
+                  <Box className='flex'>
                     <CurrencyLogo
-                      style={{ marginRight: '0.5rem' }}
-                      currency={currency}
-                      size={'24px'}
-                    />
-                  ) : null}
-                  {pair ? (
-                    <StyledTokenName className='pair-name-container'>
-                      {pair?.token0.symbol}:{pair?.token1.symbol}
-                    </StyledTokenName>
-                  ) : (
-                    <StyledTokenName
-                      className='token-symbol-container'
-                      active={Boolean(currency && currency.symbol)}
-                    >
-                      {(currency &&
-                      currency.symbol &&
-                      currency.symbol.length > 20 ? (
-                        currency.symbol.slice(0, 4) +
-                        '...' +
-                        currency.symbol.slice(
-                          currency.symbol.length - 5,
-                          currency.symbol.length,
-                        )
-                      ) : currency ? (
-                        <div style={{ display: 'flex', alignItems: 'center' }}>
-                          <span>
-                            {shallow &&
-                            showBalance &&
-                            balance &&
-                            page === 'addLiq' &&
-                            +balance.toSignificant(4) < 0.0001
-                              ? `Balance: < 0.0001 ${currency.symbol}`
-                              : shallow && showBalance && balance
-                              ? `Balance: ${balanceString} ${currency.symbol}`
-                              : currency.symbol}
-                          </span>
-                          {showBalance && balance && !shallow ? (
-                            <span
-                              style={{
-                                position: 'absolute',
-                                right: 0,
-                                fontSize: '13px',
-                              }}
-                              title={balance.toExact()}
-                            >
-                              {balanceString}
-                            </span>
-                          ) : (
-                            showBalance &&
-                            !balance &&
-                            account && (
-                              <span style={{ position: 'absolute', right: 0 }}>
-                                <Loader />
-                              </span>
-                            )
-                          )}
-                        </div>
-                      ) : null) || 'Select a token'}
-                    </StyledTokenName>
-                  )}
-                </RowFixed>
-              </Aligner>
-            </CurrencySelect>
-          )}
-          {(swap || page === 'addLiq') && !locked && currency && showMaxButton && (
-            <MaxButton page={page} onClick={onMax}>
-              Max
-            </MaxButton>
-          )}
-          {!hideInput && (
-            <>
-              <NumericalInputStyled
-                style={{
-                  backgroundColor: 'transparent',
-                  textAlign: hideCurrency ? 'left' : 'right',
-                  fontSize: '20px',
-                  marginTop: page === 'pool' ? '1rem' : '0',
+                      size={'25px'}
+                      currency={currency as WrappedCurrency}
+                    ></CurrencyLogo>
+                    <p>{currency?.symbol}</p>
+                  </Box>
+                </Box>
+              ) : (
+                <p>{t('selectToken')}</p>
+              )}
+            </Box>
+          </Box>
+
+          <Box className='inputWrapper'>
+            <NumericalInput
+              value={value}
+              align='right'
+              placeholder='0.00'
+              onUserInput={(val) => {
+                if (val === '.') val = '0.';
+                onUserInput(val);
+              }}
+            />
+          </Box>
+        </Box>
+        <Box className='flex justify-between'>
+          <Box display='flex'>
+            <small className='text-secondary'>
+              {'balance'}: {balance?.toSignificant(5)}
+            </small>
+
+            {account && currency && true && (
+              <Box
+                className='maxWrapper'
+                onClick={() => {
+                  console.log('handle half');
                 }}
-                className='token-amount-input'
-                value={value}
-                disabled={disabled}
-                onUserInput={(val: string) => {
-                  if (val === '.') val = '0.';
-                  onUserInput(val);
-                }}
-              />
-            </>
-          )}
-        </InputRow>
-        {!hideInput && !hideBalance && !locked && value ? (
-          <FiatRow shallow={shallow} page={page}>
-            <RowBetween>
-              <FiatValue fiatValue={fiatValue} priceImpact={priceImpact} />
-            </RowBetween>
-          </FiatRow>
-        ) : currency && swap && currentPrice ? (
-          <FiatRow page={page}>
-            <RowBetween>{`1 ${
-              currency.symbol
-            } = $${currentPrice.toFixed()}`}</RowBetween>
-          </FiatRow>
-        ) : (
-          currency &&
-          swap && (
-            <FiatRow page={page}>
-              <RowBetween>Updating...</RowBetween>
-            </FiatRow>
-          )
-        )}
-      </Container>
+              >
+                <small>50%</small>
+              </Box>
+            )}
+            {account && currency && showMaxButton && (
+              <Box className='maxWrapper' marginLeft='20px' onClick={onMax}>
+                <small>{'max'}</small>
+              </Box>
+            )}
+          </Box>
+
+          <small className='text-secondary'>${balanceString}</small>
+        </Box>
+      </Box>
+
       {onCurrencySelect && (
         <CurrencySearchModal
           isOpen={modalOpen}
