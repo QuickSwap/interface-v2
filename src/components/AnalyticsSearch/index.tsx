@@ -49,9 +49,6 @@ const AnalyticsSearch: React.FC = () => {
   const isV3 = useIsV3();
   const version = useMemo(() => `${isV3 ? `v3` : 'v2'}`, [isV3]);
 
-  const isV3 = useIsV3();
-  const version = useMemo(() => `${isV3 ? `v3` : 'v2'}`, [isV3]);
-
   const escapeRegExp = (str: string) => {
     return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   };
