@@ -12,12 +12,14 @@ interface CurrencyLogoProps {
   currency?: Currency;
   size?: string;
   style?: React.CSSProperties;
+  withoutBg?: boolean;
 }
 
 const CurrencyLogo: React.FC<CurrencyLogoProps> = ({
   currency,
   size = '24px',
   style,
+  withoutBg,
 }) => {
   const uriLocations = useHttpLocations(
     currency instanceof WrappedTokenInfo ? currency.logoURI : undefined,
@@ -54,8 +56,8 @@ const CurrencyLogo: React.FC<CurrencyLogoProps> = ({
     <Box
       width={size}
       height={size}
-      borderRadius={size}
-      className='currencyLogo bg-white'
+      borderRadius={withoutBg ? 0 : size}
+      className={`currencyLogo${withoutBg ? '' : ' bg-white'}`}
     >
       <Logo
         srcs={srcs}

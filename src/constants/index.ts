@@ -72,6 +72,7 @@ export const GlobalConst = {
       [ChainId.MUMBAI]: undefined,
     },
     QUICK_CONVERSION: '0x333068d06563a8dfdbf330a0e04a9d128e98bf5a',
+    MATIC_USDT_PAIR: '0x604229c960e5cacf2aaeac8be68ac07ba9df81c3',
   },
   utils: {
     QUICK_CONVERSION_RATE: 1000,
@@ -368,6 +369,16 @@ export const GlobalValue = {
         'Algebra',
       ),
     },
+  },
+  marketSDK: {
+    QS_PoolDirectory: '0xDeFf0321cD7E62Dccc6df90A3C0720E0a3449CB4',
+    QS_Pools: [
+      '0x4514EC28a1e91b0999d803775D716DB0e597992d',
+      '0x11cCE62387D144150EB9ca12D2678795f2DB4873',
+      '0x4e460721539d1643938151DB9f31fd751cDb37E1',
+    ],
+    LENS: '0x4B1dfA99d53FFA6E4c0123956ec4Ac2a6D9F4c75',
+    BLOCKSPERDAY: 0.5 * GlobalConst.utils.ONEDAYSECONDS,
   },
 };
 

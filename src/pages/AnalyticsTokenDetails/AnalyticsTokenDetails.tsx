@@ -12,6 +12,7 @@ import {
   getTokenInfo,
   getTokenPairs2,
   getBulkPairData,
+  getTokenFromAddress,
 } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import { CurrencyLogo, PairTable, TransactionsTable } from 'components';
@@ -22,11 +23,12 @@ import {
 } from 'state/application/hooks';
 import { ReactComponent as StarChecked } from 'assets/images/StarChecked.svg';
 import { ReactComponent as StarUnchecked } from 'assets/images/StarUnchecked.svg';
-import { getAddress } from '@ethersproject/address';
 import { GlobalConst, TxnType } from 'constants/index';
 import AnalyticsHeader from 'pages/AnalyticsPage/AnalyticsHeader';
 import AnalyticsTokenChart from './AnalyticsTokenChart';
 import { useTranslation } from 'react-i18next';
+import { useSelectedTokenList } from 'state/lists/hooks';
+import { getAddress } from 'ethers/lib/utils';
 import { useIsV3 } from 'state/analytics/hooks';
 import { getTokenInfoV3, getTokenTransactionsV3 } from 'utils/v3-graph';
 import { useDispatch } from 'react-redux';
@@ -39,8 +41,11 @@ const AnalyticsTokenDetails: React.FC = () => {
   const tokenAddress = match.params.id.toLowerCase();
   const [token, setToken] = useState<any>(null);
   const { chainId } = useActiveWeb3React();
+  const tokenMap = useSelectedTokenList();
   const currency = token
-    ? new Token(ChainId.MATIC, getAddress(token.id), token.decimals)
+    ? getTokenFromAddress(tokenAddress, chainId ?? ChainId.MATIC, tokenMap, [
+        new Token(ChainId.MATIC, getAddress(token.id), token.decimals),
+      ])
     : undefined;
   const [tokenPairs, updateTokenPairs] = useState<any>(null);
   const [tokenTransactions, updateTokenTransactions] = useState<any>(null);

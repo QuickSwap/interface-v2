@@ -26,7 +26,7 @@ const CustomModal: React.FC<CustomModalProps> = ({
       open={open}
       onClose={onClose}
       BackdropComponent={Backdrop}
-      BackdropProps={{ timeout: 500 }}
+      BackdropProps={{ timeout: 500, classes: { root: 'customModalBackdrop' } }}
     >
       <Fade in={open}>
         <Box

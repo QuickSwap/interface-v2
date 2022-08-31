@@ -101,9 +101,10 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
         </Box>
         <Box className='flex justify-between items-center'>
           {account && (
-            <Copy toCopy={account}>
+            <Box className='flex items-center'>
+              <Copy toCopy={account} />
               <small>{t('copyAddress')}</small>
-            </Copy>
+            </Box>
           )}
           {chainId && account && (
             <a

@@ -10,10 +10,10 @@ export const ChartWrapper = styled.div`
 //Area
 export const Path = styled.path<{ fill: string | undefined }>`
   opacity: 1;
-  stroke: ${({ fill }) => (fill ? '#2797FF' : '#13151c')};
+  stroke: ${({ fill }) => (fill ? '#2797FF' : '#192732')};
   stroke-width: 2px;
   fill: ${({ fill }) =>
-    fill ? 'url(#liquidity-chart-gradient)' : 'transparent'};
+    fill ? 'url(#liquidity-chart-gradient)' : 'rgba(255,255,255,0.02)'};
 `;
 
 //AxisBottom

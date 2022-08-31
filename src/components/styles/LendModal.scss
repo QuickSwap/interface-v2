@@ -1,0 +1,91 @@
+@use 'styles/variables' as *;
+@use 'styles/breakpoints' as *;
+
+.lendModalWrapper {
+  padding: 24px;
+  & .buttonSwitchContainer span{
+    font-size: 16px;
+    font-weight: 500;
+  }
+  & button {
+    height: 56px;
+    border-radius: 10px;
+  }
+  @include media("screen", "<tablet") {
+    padding: 16px;
+  }
+}
+
+.lendModalInput {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 24px;
+  border: 1px solid transparent;
+  background-color: $bgColor;
+  border-radius: 10px;
+  &.focused {
+    border: 1px solid $primary;
+  }
+  & input {
+    font-size: 24px;
+    font-weight: 500;
+    margin-bottom: 6px;
+    padding: 0;
+  }
+  @include media("screen", "<tablet") {
+    padding: 12px 16px;
+  }
+}
+
+.lendMaxButton {
+  width: 45px;
+  height: 24px;
+  border-radius: 4px;
+  background-color: $grey4;
+  color: $primary;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.lendModalContentWrapper {
+  border: 1px solid $grey32;
+  padding: 8px 24px;
+  border-radius: 10px;
+  @include media("screen", "<tablet") {
+    padding: 6px 16px;
+  }
+}
+
+.lendModalRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid $grey32;
+  &:last-child {
+    border-bottom: none;
+  }
+  & p {
+    display: flex;
+    align-items: center;
+    & svg {
+      margin: 0 4px;
+    }
+  }
+  @include media("screen", "<tablet") {
+    padding: 6px 0;
+  }
+}
+
+.assetLPLink {
+  margin-top: 16px;
+  color: $primary;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+}

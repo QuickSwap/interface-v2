@@ -8,6 +8,7 @@ import {
   getAllTokensOnUniswap,
   getAllPairsOnUniswap,
   getBlockFromTimestamp,
+  getTokenFromAddress,
 } from 'utils';
 import { GlobalConst, MATIC_CHAIN } from 'constants/index';
 import { CurrencyLogo, DoubleCurrencyLogo } from 'components';
@@ -18,6 +19,7 @@ import { useTranslation } from 'react-i18next';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
+import { useSelectedTokenList } from 'state/lists/hooks';
 import { useIsV3 } from 'state/analytics/hooks';
 import { getAllPairsV3, getAllTokensV3 } from 'utils/v3-graph';
 import {
@@ -42,6 +44,10 @@ const AnalyticsSearch: React.FC = () => {
   const [searchedPairs, setSearchedPairs] = useState<any[]>([]);
   const [tokensShown, setTokensShown] = useState(3);
   const [pairsShown, setPairsShown] = useState(3);
+  const tokenMap = useSelectedTokenList();
+
+  const isV3 = useIsV3();
+  const version = useMemo(() => `${isV3 ? `v3` : 'v2'}`, [isV3]);
 
   const isV3 = useIsV3();
   const version = useMemo(() => `${isV3 ? `v3` : 'v2'}`, [isV3]);
@@ -301,15 +307,29 @@ const AnalyticsSearch: React.FC = () => {
         <div ref={wrapperRef} className='searchWidgetContent'>
           <h6>{t('pairs')}</h6>
           {filteredPairs.slice(0, pairsShown).map((val, ind) => {
-            const currency0 = new Token(
+            const currency0 = getTokenFromAddress(
+              val.token0.id,
               MATIC_CHAIN,
-              getAddress(val.token0.id),
-              val.token0.decimals,
+              tokenMap,
+              [
+                new Token(
+                  MATIC_CHAIN,
+                  getAddress(val.token0.id),
+                  val.token0.decimals,
+                ),
+              ],
             );
-            const currency1 = new Token(
+            const currency1 = getTokenFromAddress(
+              val.token1.id,
               MATIC_CHAIN,
-              getAddress(val.token1.id),
-              val.token1.decimals,
+              tokenMap,
+              [
+                new Token(
+                  MATIC_CHAIN,
+                  getAddress(val.token1.id),
+                  val.token1.decimals,
+                ),
+              ],
             );
             return (
               <Box
@@ -339,10 +359,11 @@ const AnalyticsSearch: React.FC = () => {
           </Box>
           <h6>{t('tokens')}</h6>
           {filteredTokens.slice(0, tokensShown).map((val, ind) => {
-            const currency = new Token(
-              MATIC_CHAIN,
+            const currency = getTokenFromAddress(
               getAddress(val.id),
-              val.decimals,
+              MATIC_CHAIN,
+              tokenMap,
+              [new Token(MATIC_CHAIN, getAddress(val.id), val.decimals)],
             );
             return (
               <Box
@@ -355,7 +376,7 @@ const AnalyticsSearch: React.FC = () => {
               >
                 <CurrencyLogo currency={currency} size='28px' />
                 <small>
-                  {val.name} {val.symbol}
+                  {val.name} ({val.symbol})
                 </small>
               </Box>
             );

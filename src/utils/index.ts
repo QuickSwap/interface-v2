@@ -1,4 +1,5 @@
 import { getAddress } from '@ethersproject/address';
+import BN from 'bn.js';
 import { ApolloClient } from 'apollo-client';
 import { Contract } from '@ethersproject/contracts';
 import dayjs from 'dayjs';
@@ -68,6 +69,7 @@ import { CallState } from 'state/multicall/hooks';
 import { DualStakingBasic, StakingBasic } from 'types';
 import { AbstractConnector } from '@web3-react/abstract-connector';
 import { injected } from 'connectors';
+import Web3 from 'web3';
 
 dayjs.extend(utc);
 dayjs.extend(weekOfYear);
@@ -806,37 +808,26 @@ export const getSwapTransactions = async (
   pairId: string,
   startTime?: number,
 ) => {
-  let allFound = false;
-  let swapTx: any[] = [];
   const oneDayAgo = dayjs
     .utc()
     .subtract(1, 'day')
     .unix();
-  let sTimestamp = startTime ?? oneDayAgo;
-  while (!allFound) {
-    try {
-      const result = await txClient.query({
-        query: SWAP_TRANSACTIONS,
-        variables: {
-          allPairs: [pairId],
-          lastTime: sTimestamp,
-        },
-      });
-      if (result.data.swaps.length < 1000) {
-        allFound = true;
-      }
-      const swaps = result.data.swaps;
-      sTimestamp = Number(swaps[swaps.length - 1].transaction.timestamp);
-      swapTx = swapTx.concat(swaps);
-    } catch (e) {}
+  const sTimestamp = startTime ?? oneDayAgo;
+  try {
+    const result = await txClient.query({
+      query: SWAP_TRANSACTIONS,
+      variables: {
+        allPairs: [pairId],
+        lastTime: sTimestamp,
+      },
+      fetchPolicy: 'network-only',
+    });
+    const swaps: any[] = result.data.swaps;
+
+    return swaps;
+  } catch (e) {
+    return;
   }
-  return swapTx
-    .filter(
-      (item, ind, self) =>
-        ind ===
-        self.findIndex((item1) => item1.transaction.id === item.transaction.id),
-    )
-    .reverse();
 };
 
 export const getTokenChartData = async (
@@ -1823,8 +1814,15 @@ export function getTokenFromAddress(
   tokenMap: TokenAddressMap,
   tokens: Token[],
 ) {
+<<<<<<< HEAD
   const wrappedTokenInfo = tokenMap[chainId][tokenAddress];
   if (!wrappedTokenInfo) {
+=======
+  const tokenIndex = Object.keys(tokenMap[chainId]).findIndex(
+    (address) => address.toLowerCase() === tokenAddress.toLowerCase(),
+  );
+  if (tokenIndex === -1) {
+>>>>>>> v3-branch-1
     const token = tokens.find(
       (item) => item.address.toLowerCase() === tokenAddress.toLowerCase(),
     );
@@ -1840,7 +1838,7 @@ export function getTokenFromAddress(
     return token;
   }
 
-  return wrappedTokenInfo;
+  return Object.values(tokenMap[chainId])[tokenIndex];
 }
 
 export function getChartDates(chartData: any[] | null, durationIndex: number) {
@@ -2255,3 +2253,20 @@ export function getCallStateResult(callState?: CallState) {
   if (callState && callState.result) return callState.result[0];
   return;
 }
+
+export const convertBNToNumber = (value: BN, decimals: BN) => {
+  return Number(value) / 10 ** Number(decimals);
+};
+
+export const convertNumbertoBN = (
+  value: number,
+  decimals: number,
+  web3: Web3,
+) => {
+  const valueWithoutDecimal = Number(value.toFixed(0));
+  const decimalNumber = value - valueWithoutDecimal;
+  return web3.utils
+    .toBN(valueWithoutDecimal)
+    .mul(web3.utils.toBN(10 ** decimals))
+    .add(web3.utils.toBN((decimalNumber * 10 ** decimals).toFixed(0)));
+};
