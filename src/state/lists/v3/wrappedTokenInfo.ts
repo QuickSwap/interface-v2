@@ -13,14 +13,14 @@ interface TagInfo extends TagDetails {
  * Token instances created from token info on a token list.
  */
 export class WrappedTokenInfo implements Token {
-  public readonly isNative: false = false;
-  public readonly isToken: true = true;
-  public readonly list: TokenList;
+  public readonly isNative = false;
+  public readonly isToken = true;
+  public readonly list: TokenList | undefined;
 
   public readonly tokenInfo: TokenInfo;
   private _checksummedAddress: string | null = null;
 
-  constructor(tokenInfo: TokenInfo, list: TokenList) {
+  constructor(tokenInfo: TokenInfo, list?: TokenList) {
     this.tokenInfo = tokenInfo;
     this.list = list;
   }
@@ -57,7 +57,7 @@ export class WrappedTokenInfo implements Token {
   public get tags(): TagInfo[] {
     if (this._tags !== null) return this._tags;
     if (!this.tokenInfo.tags) return (this._tags = []);
-    const listTags = this.list.tags;
+    const listTags = this.list?.tags;
     if (!listTags) return (this._tags = []);
 
     return (this._tags = this.tokenInfo.tags.map((tagId) => {

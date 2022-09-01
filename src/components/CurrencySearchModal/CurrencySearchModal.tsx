@@ -6,15 +6,18 @@ import useLast from 'hooks/useLast';
 import CurrencySearch from './CurrencySearch';
 import ListSelect from './ListSelect';
 import 'components/styles/CurrencySearchModal.scss';
+import { WrappedTokenInfo } from 'state/lists/v3/wrappedTokenInfo';
+import { TokenInfo } from '@uniswap/token-lists';
 
 interface CurrencySearchModalProps {
   isOpen: boolean;
   onDismiss: () => void;
   selectedCurrency?: Currency | null;
   //TODO: Ignore typing to support new currency sdk
-  onCurrencySelect: (currency: Currency | any) => void;
+  onCurrencySelect: (currency: any) => void;
   otherSelectedCurrency?: Currency | null;
   showCommonBases?: boolean;
+  isV3?: boolean;
 }
 
 const CurrencySearchModal: React.FC<CurrencySearchModalProps> = ({
@@ -24,6 +27,7 @@ const CurrencySearchModal: React.FC<CurrencySearchModalProps> = ({
   selectedCurrency,
   otherSelectedCurrency,
   showCommonBases = false,
+  isV3,
 }) => {
   const [listView, setListView] = useState<boolean>(false);
   const lastOpen = useLast(isOpen);
@@ -36,10 +40,14 @@ const CurrencySearchModal: React.FC<CurrencySearchModalProps> = ({
 
   const handleCurrencySelect = useCallback(
     (currency: Currency) => {
-      onCurrencySelect(currency);
+      if (isV3) {
+        onCurrencySelect(new WrappedTokenInfo(currency as TokenInfo));
+      } else {
+        onCurrencySelect(currency);
+      }
       onDismiss();
     },
-    [onDismiss, onCurrencySelect],
+    [onDismiss, onCurrencySelect, isV3],
   );
 
   const handleClickChangeList = useCallback(() => {

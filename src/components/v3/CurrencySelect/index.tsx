@@ -59,6 +59,7 @@ const V3CurrencySelect: React.FC<CurrencySelectProps> = ({
           selectedCurrency={currency}
           showCommonBases={true}
           otherSelectedCurrency={otherCurrency}
+          isV3={true}
         />
       )}
     </Box>
