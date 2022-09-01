@@ -24,7 +24,7 @@ import { StepTitle } from '../../components/StepTitle';
 import { PriceFormats } from '../../components/PriceFomatToggler';
 import { useHistory } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
-import LiquidityChartRangeInput from 'components/AddLiquidityV3/components/LiquidityChartRangeInput';
+import LiquidityChartRangeInput from 'components/v3/LiquidityChartRangeInput';
 import { GlobalValue } from 'constants/index';
 import { toToken } from 'constants/v3/routing';
 

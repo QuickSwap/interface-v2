@@ -4,7 +4,7 @@ import { FeeAmount } from 'lib/src/constants';
 
 import { ChartEntry } from './types';
 import JSBI from 'jsbi';
-import { PriceFormats } from '../../components/PriceFomatToggler';
+import { PriceFormats } from '../PriceFomatToggler';
 import { usePoolActiveLiquidity } from 'hooks/v3/usePoolTickData';
 import useUSDCPrice from 'hooks/v3/useUSDCPrice';
 

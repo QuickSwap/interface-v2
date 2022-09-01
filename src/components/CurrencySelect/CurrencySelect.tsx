@@ -4,7 +4,6 @@ import { Box } from '@material-ui/core';
 import { CurrencySearchModal, CurrencyLogo } from 'components';
 import 'components/styles/CurrencyInput.scss';
 import { useTranslation } from 'react-i18next';
-import { StyledLabel } from 'components/AddLiquidityV3/CommonStyledElements';
 
 interface CurrencySelectProps {
   title?: string;

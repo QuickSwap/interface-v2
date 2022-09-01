@@ -1,4 +1,4 @@
-import { PriceFormats } from '../../components/PriceFomatToggler';
+import { PriceFormats } from '../PriceFomatToggler';
 
 export interface ChartEntry {
   activeLiquidity: number;

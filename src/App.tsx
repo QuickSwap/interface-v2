@@ -33,6 +33,13 @@ const AnalyticsTokens = lazy(() =>
 const AnalyticsPairs = lazy(() =>
   import('./pages/AnalyticsPage/AnalyticsPairs'),
 );
+const PoolsPageV3 = lazy(() => import('./pages/PoolsPageV3'));
+const RemoveLiquidityV3Page = lazy(() =>
+  import('./pages/PoolsPageV3/RemoveLiquidityPage'),
+);
+const IncreaseLiquidityV3Page = lazy(() =>
+  import('./pages/PoolsPageV3/IncreaseLiquidityPage'),
+);
 
 import { PageLayout } from 'layouts';
 import { getLibrary } from 'utils';
@@ -58,9 +65,6 @@ import { mainTheme } from './theme';
 import Background from 'layouts/Background';
 import GasUpdater from 'state/application/gasUpdater';
 import { NewAddLiquidityPage } from 'components/v3/NewAddLiquidity';
-import AddLiquidityV3 from 'components/AddLiquidityV3';
-import RemoveLiquidityV3 from 'components/v3/RemoveLiquidity/RemoveLiquidityV3';
-import PoolsPageV3 from 'pages/PoolsPageV3';
 import PositionPage from 'pages/PoolsPageV3/PositionPage';
 
 const Web3ProviderNetwork = createWeb3ReactRoot(
@@ -184,12 +188,12 @@ const App: React.FC = () => {
                         path='/increase/:currencyIdA?/:currencyIdB?/:tokenId'
                       >
                         <PageLayout>
-                          <AddLiquidityV3></AddLiquidityV3>
+                          <IncreaseLiquidityV3Page></IncreaseLiquidityV3Page>
                         </PageLayout>
                       </Route>
                       <Route exact path='/remove/:tokenId'>
                         <PageLayout>
-                          <RemoveLiquidityV3></RemoveLiquidityV3>
+                          <RemoveLiquidityV3Page></RemoveLiquidityV3Page>
                         </PageLayout>
                       </Route>
                       <Route exact path='/farm'>

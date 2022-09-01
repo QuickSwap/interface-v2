@@ -3,7 +3,7 @@ import { area, curveStepAfter, ScaleLinear } from 'd3';
 import { Path } from './styled';
 import { ChartEntry } from './types';
 import inRange from 'lodash/inRange';
-import { PriceFormats } from '../../components/PriceFomatToggler';
+import { PriceFormats } from '../PriceFomatToggler';
 
 export const Area = ({
   series,
