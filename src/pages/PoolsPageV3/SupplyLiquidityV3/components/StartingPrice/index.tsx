@@ -130,31 +130,41 @@ function USDPriceField({
     () => (price ? price.toSignificant(5) : `Loading...`),
     [price],
   );
+  const [userUSDVal, setUserUSDVal] = useState(userUSD || '');
 
   return (
-    <div
-      className={`usd-price-field w-100 f ac ws-no-wrap ${
-        isSelected ? 'main' : 'side'
-      } mxs_mb-1 mxs_ml-0`}
-    >
-      <div className='usd-price'>
-        <span className={'usd-price__amount'}>1 {symbol}</span>
-        <span className={'usd-price__separator'}> = </span>
-        <span className={'usd-price__dollar'}>$</span>
+    <Box className='v3-pool-starting-token-price'>
+      <Box mr={1}>
+        <small>1 {symbol}</small>
+      </Box>
+      <small>=</small>
+      <Box ml={1}>
+        <Box className='flex items-center' pr={1}>
+          <small>$</small>
+        </Box>
         {price ? (
-          <span className={`usd-price__price`}>{_price}</span>
+          <small>{_price}</small>
         ) : isSelected ? (
-          <Input
-            className={`ol-n usd-price__input`}
-            value={userUSD || ''}
-            onUserInput={(e: string) => changeHandler(e)}
-            placeholder={`${symbol} in $`}
-          />
+          <Box flex={1} height='100%' position='relative'>
+            <Box className='v3-pool-starting-token-price-input'>
+              <Input
+                value={userUSDVal}
+                onUserInput={(e: string) => setUserUSDVal(e)}
+                placeholder={`${symbol} in $`}
+              />
+              <Button
+                disabled={!userUSDVal}
+                onClick={() => changeHandler(userUSDVal)}
+              >
+                Confirm
+              </Button>
+            </Box>
+          </Box>
         ) : (
-          <span> - </span>
+          <small> - </small>
         )}
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 }
 
@@ -179,11 +189,7 @@ function USDPrice({
   );
 
   return (
-    <div
-      className={`f usd-price__wrapper ${
-        isSelected ? 'main' : 'side'
-      } mxs_fd-c`}
-    >
+    <Box className='flex'>
       <USDPriceField
         symbol={baseSymbol}
         price={basePrice}
@@ -191,14 +197,16 @@ function USDPrice({
         userUSD={userBaseCurrencyUSD}
         changeHandler={changeBaseCurrencyUSDHandler}
       ></USDPriceField>
-      <USDPriceField
-        symbol={quoteSymbol}
-        price={quotePrice}
-        isSelected={isSelected}
-        userUSD={userQuoteCurrencyUSD}
-        changeHandler={changeQuoteCurrencyUSDHandler}
-      ></USDPriceField>
-    </div>
+      <Box ml={1}>
+        <USDPriceField
+          symbol={quoteSymbol}
+          price={quotePrice}
+          isSelected={isSelected}
+          userUSD={userQuoteCurrencyUSD}
+          changeHandler={changeQuoteCurrencyUSDHandler}
+        ></USDPriceField>
+      </Box>
+    </Box>
   );
 }
 

@@ -5,6 +5,9 @@
     background-color: $secondary1;
     border-radius: 10px;
     padding: 16px;
+    & small {
+        white-space: nowrap;
+    }
 }
 
 .v3-pool-starting-token-price {
