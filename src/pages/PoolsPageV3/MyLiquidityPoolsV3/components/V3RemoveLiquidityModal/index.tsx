@@ -11,8 +11,6 @@ import { Box, Button, Divider } from '@material-ui/core';
 import { PositionPool } from 'models/interfaces';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 import { useTranslation } from 'react-i18next';
-import { Redirect, RouteComponentProps, useParams } from 'react-router-dom';
-import { BigNumber } from '@ethersproject/bignumber';
 import {
   useBurnV3ActionHandlers,
   useBurnV3State,
@@ -207,7 +205,6 @@ export default function V3RemoveLiquidityModal({
               ].join('/'),
             });
             setTxnHash(response.hash);
-            setAttemptingTxn(false);
             const summary = `Remove ${liquidityValue0.currency.symbol}/${liquidityValue1.currency.symbol} liquidity`;
             addTransaction(response, {
               summary,

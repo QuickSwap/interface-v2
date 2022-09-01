@@ -30,7 +30,7 @@ export default function RangeBadge({
               ? 'Your position has 0 liquidity, and is not earning fees.'
               : ''
           }
-          variant={BadgeVariant.DEFAULT}
+          variant={BadgeVariant.WARNING}
           icon={<Error width={14} height={14} />}
           text='Closed'
         />

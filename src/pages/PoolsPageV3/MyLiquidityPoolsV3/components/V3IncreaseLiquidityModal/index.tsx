@@ -2,55 +2,46 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { TransactionResponse } from '@ethersproject/providers';
 import { Currency, CurrencyAmount, Percent } from '@uniswap/sdk-core';
 import { useV3NFTPositionManagerContract } from 'hooks/useContract';
-import { RouteComponentProps, useHistory, useParams } from 'react-router-dom';
-import { Text } from 'rebass';
-import { ThemeContext } from 'styled-components/macro';
 import TransactionConfirmationModal, {
   ConfirmationModalContent,
+  TransactionErrorContent,
 } from 'components/TransactionConfirmationModal';
-// import { Review } from './Review';
 import { useActiveWeb3React } from 'hooks';
 import useTransactionDeadline from 'hooks/useTransactionDeadline';
 import { useWalletModalToggle } from 'state/application/hooks';
 import { Bound, Field } from 'state/mint/v3/actions';
-import { useTransactionAdder } from 'state/transactions/hooks';
+import {
+  useTransactionAdder,
+  useTransactionFinalizer,
+} from 'state/transactions/hooks';
 import { useIsExpertMode, useUserSlippageTolerance } from 'state/user/hooks';
 import {
   useV3DerivedMintInfo,
   useV3MintActionHandlers,
   useV3MintState,
 } from 'state/mint/v3/hooks';
-import { useV3PositionFromTokenId } from 'hooks/v3/useV3Positions';
 import { useDerivedPositionInfo } from 'hooks/v3/useDerivedPositionInfo';
-import { BigNumber } from '@ethersproject/bignumber';
-import { AddRemoveTabs } from 'components/v3/NavigationTabs';
 import { NonfungiblePositionManager as NonFunPosMan } from 'v3lib/nonfungiblePositionManager';
 import './index.scss';
 import ReactGA from 'react-ga';
 import { WrappedCurrency } from 'models/types';
-import { useIsNetworkFailed } from 'hooks/v3/useIsNetworkFailed';
 import { ApprovalState, useApproveCallback } from 'hooks/useV3ApproveCallback';
-import { ZERO_PERCENT } from 'constants/v3/misc';
 import { NONFUNGIBLE_POSITION_MANAGER_ADDRESSES } from 'constants/v3/addresses';
-import { AutoColumn } from 'components/v3/Column';
 import { useUSDCValue } from 'hooks/v3/useUSDCPrice';
-import { RowBetween } from 'components/v3/Row';
 import CurrencyInputPanel from 'components/v3/CurrencyInputPanel';
-import { PositionPreview } from 'components/v3/PositionPreview';
 import { maxAmountSpend } from 'utils/v3/maxAmountSpend';
 import { calculateGasMarginV3 } from 'utils';
-import { useCurrency } from 'hooks/v3/Tokens';
-import { ButtonError, ButtonPrimary } from 'components/v3/Button';
+import { useToken } from 'hooks/v3/Tokens';
 import { JSBI } from '@uniswap/sdk';
 import { PositionPool } from 'models/interfaces';
 import { useTranslation } from 'react-i18next';
 import { CustomModal, DoubleCurrencyLogo, CurrencyLogo } from 'components';
-import { Box, Button, Divider } from '@material-ui/core';
+import { Box, Button } from '@material-ui/core';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 import RangeBadge from 'components/v3/Badge/RangeBadge';
-import { unwrappedToken } from 'utils/unwrappedToken';
 import RateToggle from 'components/v3/RateToggle';
 import { formatTickPrice } from 'utils/v3/formatTickPrice';
+import { unwrappedToken } from 'utils/unwrappedToken';
 
 interface V3IncreaseLiquidityModalProps {
   open: boolean;
@@ -65,16 +56,21 @@ export default function V3IncreaseLiquidityModal({
 }: V3IncreaseLiquidityModalProps) {
   const { t } = useTranslation();
 
+  const expertMode = useIsExpertMode();
+  const toggleWalletModal = useWalletModalToggle();
+
   const { chainId, account, library } = useActiveWeb3React();
   const { position: existingPosition } = useDerivedPositionInfo(
     positionDetails,
   );
   const feeAmount = 100;
 
-  const currencyIdA = positionDetails.token0;
-  const currencyIdB = positionDetails.token1;
-  const baseCurrency = useCurrency(currencyIdA);
-  const currencyB = useCurrency(currencyIdB);
+  const token0Id = positionDetails.token0;
+  const token1Id = positionDetails.token1;
+  const token0 = useToken(token0Id);
+  const token1 = useToken(token1Id);
+  const baseCurrency = token0 ? unwrappedToken(token0) : undefined;
+  const currencyB = token1 ? unwrappedToken(token1) : undefined;
   // prevent an error if they input ETH/WETH
   //TODO
   const quoteCurrency =
@@ -85,6 +81,7 @@ export default function V3IncreaseLiquidityModal({
   const positionManager = useV3NFTPositionManagerContract();
   const tokenId = positionDetails.tokenId.toString();
   const addTransaction = useTransactionAdder();
+  const finalizedTransaction = useTransactionFinalizer();
 
   // mint state
   const { independentField, typedValue } = useV3MintState();
@@ -120,7 +117,9 @@ export default function V3IncreaseLiquidityModal({
 
   // modal and loading
   const [showConfirm, setShowConfirm] = useState<boolean>(false);
-  const [attemptingTxn, setAttemptingTxn] = useState<boolean>(false); // clicked confirm
+  const [attemptingTxn, setAttemptingTxn] = useState<boolean>(false);
+  const [txPending, setTxPending] = useState(false);
+  const [increaseErrorMessage, setIncreaseErrorMessage] = useState('');
 
   // txn values
   const deadline = useTransactionDeadline(); // custom from users settings
@@ -174,6 +173,15 @@ export default function V3IncreaseLiquidityModal({
     return new Percent(JSBI.BigInt(allowedSlippage), JSBI.BigInt(10000));
   }, [allowedSlippage]);
 
+  const handleDismissConfirmation = useCallback(() => {
+    setShowConfirm(false);
+    // if there was a tx hash, we want to clear the input
+    if (txHash) {
+      onFieldAInput('');
+    }
+    setTxHash('');
+  }, [onFieldAInput, txHash]);
+
   async function onAdd() {
     if (!chainId || !library || !account) return;
 
@@ -223,12 +231,14 @@ export default function V3IncreaseLiquidityModal({
           return library
             .getSigner()
             .sendTransaction(newTxn)
-            .then((response: TransactionResponse) => {
+            .then(async (response: TransactionResponse) => {
               setAttemptingTxn(false);
+              setTxPending(true);
+              const summary = noLiquidity
+                ? `Create pool and add ${baseCurrency?.symbol}/${quoteCurrency?.symbol} liquidity`
+                : `Add ${baseCurrency?.symbol}/${quoteCurrency?.symbol} liquidity`;
               addTransaction(response, {
-                summary: noLiquidity
-                  ? `Create pool and add ${baseCurrency?.symbol}/${quoteCurrency?.symbol} liquidity`
-                  : `Add ${baseCurrency?.symbol}/${quoteCurrency?.symbol} liquidity`,
+                summary,
               });
               setTxHash(response.hash);
               ReactGA.event({
@@ -239,11 +249,23 @@ export default function V3IncreaseLiquidityModal({
                   currencies[Field.CURRENCY_B]?.symbol,
                 ].join('/'),
               });
+              try {
+                const receipt = await response.wait();
+                finalizedTransaction(receipt, {
+                  summary,
+                });
+                setTxPending(false);
+              } catch (error) {
+                setTxPending(false);
+                setIncreaseErrorMessage(t('errorInTx'));
+              }
             });
         })
         .catch((error) => {
           console.error('Failed to send transaction', error);
           setAttemptingTxn(false);
+          setTxPending(false);
+          setIncreaseErrorMessage(t('errorInTx'));
           // we only care if the error is something _other_ than the user rejected the tx
           if (error?.code !== 4001) {
             console.error(error);
@@ -273,37 +295,65 @@ export default function V3IncreaseLiquidityModal({
     ? existingPosition?.pool.priceOf(existingPosition?.pool.token0)
     : existingPosition?.pool.priceOf(existingPosition?.pool.token1);
 
+  const showApprovalA =
+    approvalA !== ApprovalState.APPROVED && !!parsedAmounts[Field.CURRENCY_A];
+  const showApprovalB =
+    approvalB !== ApprovalState.APPROVED && !!parsedAmounts[Field.CURRENCY_B];
+
+  const modalHeader = () => (
+    <>
+      <Box className='flex justify-center' mt={4} mb={2}>
+        <DoubleCurrencyLogo
+          currency0={currencies[Field.CURRENCY_A]}
+          currency1={currencies[Field.CURRENCY_B]}
+          size={48}
+        />
+      </Box>
+      <Box mb={4} textAlign='center'>
+        <p>
+          Adding {formattedAmounts[Field.CURRENCY_A]}{' '}
+          {currencies[Field.CURRENCY_A]?.symbol} and{' '}
+          {formattedAmounts[Field.CURRENCY_B]}{' '}
+          {currencies[Field.CURRENCY_B]?.symbol}
+        </p>
+      </Box>
+      <Button className='v3-increase-liquidity-button' onClick={onAdd}>
+        Confirm
+      </Button>
+    </>
+  );
+
   return (
     <CustomModal open={open} onClose={onClose}>
-      {/* {showConfirm && (
+      {showConfirm && (
         <TransactionConfirmationModal
           isOpen={showConfirm}
           onDismiss={handleDismissConfirmation}
           attemptingTxn={attemptingTxn}
           txPending={txPending}
-          hash={txnHash}
+          hash={txHash}
           content={() =>
-            removeErrorMessage ? (
+            increaseErrorMessage ? (
               <TransactionErrorContent
                 onDismiss={handleDismissConfirmation}
-                message={removeErrorMessage}
+                message={increaseErrorMessage}
               />
             ) : (
               <ConfirmationModalContent
-                title={t('removingLiquidity')}
+                title='Increasing Liquidity'
                 onDismiss={handleDismissConfirmation}
                 content={modalHeader}
               />
             )
           }
-          pendingText={pendingText}
+          pendingText=''
           modalContent={
             txPending
-              ? t('submittedTxRemoveLiquidity')
-              : t('successRemovedLiquidity')
+              ? 'Submitted transaction to increase liquidity.'
+              : 'Successfully increased liquidity'
           }
         />
-      )} */}
+      )}
       <Box padding={3}>
         <Box className='flex justify-between'>
           <p className='weight-600'>Increase Liquidity</p>
@@ -352,14 +402,14 @@ export default function V3IncreaseLiquidityModal({
             <RateToggle
               currencyA={currencyBase}
               currencyB={currencyQuote}
-              handleRateToggle={() => setCurrencyBase(quoteCurrency)}
+              handleRateToggle={() => setCurrencyBase(currencyQuote)}
             />
           )}
         </Box>
         <Box width={1} mt={2} className='flex justify-between'>
           {priceLower && (
             <Box
-              className='v3-supply-liquidity-price-wrapper'
+              className='v3-increase-liquidity-price-wrapper'
               width={priceUpper ? '49%' : '100%'}
             >
               <p>Min Price</p>
@@ -375,7 +425,7 @@ export default function V3IncreaseLiquidityModal({
           )}
           {priceUpper && (
             <Box
-              className='v3-supply-liquidity-price-wrapper'
+              className='v3-increase-liquidity-price-wrapper'
               width={priceLower ? '49%' : '100%'}
             >
               <p>Min Price</p>
@@ -391,7 +441,7 @@ export default function V3IncreaseLiquidityModal({
           )}
         </Box>
         {currentPrice && (
-          <Box mt={2} className='v3-supply-liquidity-price-wrapper'>
+          <Box mt={2} className='v3-increase-liquidity-price-wrapper'>
             <p>Current Price</p>
             <h6>{currentPrice.toSignificant()}</h6>
             <p>
@@ -402,24 +452,115 @@ export default function V3IncreaseLiquidityModal({
         <Box mt={2}>
           <p>Add more liquidity</p>
         </Box>
-        {/* {showCollectAsWeth && (
-          <Box mb={2} className='flex items-center'>
-            <Box mr={1}>
-              <p>Collect as WMATIC</p>
+        <Box mt={2}>
+          <CurrencyInputPanel
+            value={formattedAmounts[Field.CURRENCY_A]}
+            onUserInput={onFieldAInput}
+            onMax={() => {
+              onFieldAInput(maxAmounts[Field.CURRENCY_A]?.toExact() ?? '');
+            }}
+            showMaxButton={!atMaxAmounts[Field.CURRENCY_A]}
+            currency={currencies[Field.CURRENCY_A] as WrappedCurrency}
+            id='add-liquidity-input-tokena'
+            fiatValue={usdcValues[Field.CURRENCY_A]}
+            showCommonBases
+            locked={depositADisabled}
+            hideInput={depositADisabled}
+            shallow={true}
+            showBalance={!depositADisabled}
+            page={'addLiq'}
+            disabled={false}
+            swap={false}
+          />
+        </Box>
+        <Box mt={2}>
+          <CurrencyInputPanel
+            value={formattedAmounts[Field.CURRENCY_B]}
+            onUserInput={onFieldBInput}
+            onMax={() => {
+              onFieldBInput(maxAmounts[Field.CURRENCY_B]?.toExact() ?? '');
+            }}
+            showMaxButton={!atMaxAmounts[Field.CURRENCY_B]}
+            fiatValue={usdcValues[Field.CURRENCY_B]}
+            currency={currencies[Field.CURRENCY_B] as WrappedCurrency}
+            id='add-liquidity-input-tokenb'
+            showCommonBases
+            locked={depositBDisabled}
+            hideInput={depositBDisabled}
+            showBalance={!depositBDisabled}
+            shallow={true}
+            page={'addLiq'}
+            disabled={false}
+            swap={false}
+          />
+        </Box>
+
+        {(approvalA === ApprovalState.NOT_APPROVED ||
+          approvalA === ApprovalState.PENDING ||
+          approvalB === ApprovalState.NOT_APPROVED ||
+          approvalB === ApprovalState.PENDING) &&
+          isValid && (
+            <Box mt={2} className='flex justify-between'>
+              {showApprovalA && (
+                <Box width={showApprovalB ? '48%' : '100%'}>
+                  <Button
+                    onClick={() => {
+                      approveACallback();
+                    }}
+                    className='v3-increase-liquidity-button'
+                    disabled={approvalA === ApprovalState.PENDING}
+                  >
+                    {approvalA === ApprovalState.PENDING ? (
+                      <p>Approving {currencies[Field.CURRENCY_A]?.symbol}</p>
+                    ) : (
+                      `Approve ${currencies[Field.CURRENCY_A]?.symbol}`
+                    )}
+                  </Button>
+                </Box>
+              )}
+              {showApprovalB && (
+                <Box width={showApprovalA ? '48%' : '100%'}>
+                  <Button
+                    className='v3-increase-liquidity-button'
+                    onClick={() => {
+                      approveBCallback();
+                    }}
+                    disabled={approvalB === ApprovalState.PENDING}
+                  >
+                    {approvalB === ApprovalState.PENDING ? (
+                      <p>Approving {currencies[Field.CURRENCY_B]?.symbol}</p>
+                    ) : (
+                      `Approve ${currencies[Field.CURRENCY_B]?.symbol}`
+                    )}
+                  </Button>
+                </Box>
+              )}
             </Box>
-            <ToggleSwitch
-              toggled={receiveWETH}
-              onToggle={() => setReceiveWETH((receiveWETH) => !receiveWETH)}
-            />
-          </Box>
-        )} */}
-        {/* <Button
-          className='v3-increase-liquidity-button'
-          disabled={removed || percent === 0 || !liquidityValue0}
-          onClick={() => setShowConfirm(true)}
-        >
-          Remove
-        </Button> */}
+          )}
+        <Box mt={2}>
+          <Button
+            className='v3-increase-liquidity-button'
+            disabled={
+              attemptingTxn ||
+              txPending ||
+              noLiquidity ||
+              !isValid ||
+              (approvalA !== ApprovalState.APPROVED && !depositADisabled) ||
+              (approvalB !== ApprovalState.APPROVED && !depositBDisabled)
+            }
+            onClick={() => {
+              if (!account) {
+                toggleWalletModal();
+              } else if (expertMode) {
+                onAdd();
+              } else {
+                setShowConfirm(true);
+              }
+            }}
+          >
+            {noLiquidity ? 'Add' : errorMessage ? errorMessage : 'Preview'}
+          </Button>
+        </Box>
       </Box>
     </CustomModal>
   );
