@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Box } from '@material-ui/core';
+import { Box, Button } from '@material-ui/core';
 import { useV3Positions } from 'hooks/v3/useV3Positions';
 import { useActiveWeb3React } from 'hooks';
 import Loader from 'components/Loader';
@@ -112,15 +112,6 @@ export function MyLiquidityPoolsV3() {
         </Box>
       )}
       <Box mt={2}>
-        <p className='small text-secondary'>
-          Don’t see a pool you joined?{' '}
-          <a className='text-primary'>Import it.</a>
-        </p>
-        <p className='small text-secondary'>
-          Unstake your LP Tokens from Farms to see them here.
-        </p>
-      </Box>
-      <Box mt={2}>
         {positionsLoading ? (
           <Box className='flex justify-center'>
             <Loader stroke='white' size={'2rem'} />
@@ -133,17 +124,16 @@ export function MyLiquidityPoolsV3() {
             newestPosition={newestPosition}
           />
         ) : (
-          <div className={'f c f-ac f-jc h-400 w-100 maw-300'}>
-            You do not have any liquidity positions.
+          <Box textAlign='center'>
+            <p>You do not have any liquidity positions.</p>
             {showConnectAWallet && (
-              <button
-                className={'btn primary pv-05 ph-1 mt-1 w-100'}
-                onClick={toggleWalletModal}
-              >
-                Connect Wallet
-              </button>
+              <Box maxWidth={250} margin='20px auto 0'>
+                <Button fullWidth onClick={toggleWalletModal}>
+                  Connect Wallet
+                </Button>
+              </Box>
             )}
-          </div>
+          </Box>
         )}
       </Box>
     </Box>
