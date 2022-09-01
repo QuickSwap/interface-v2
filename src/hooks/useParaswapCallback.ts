@@ -24,6 +24,7 @@ import {
   basisPointsToPercent,
   getProviderOrSigner,
   getSigner,
+  bipsToPercentPercent,
 } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import useENS from './useENS';
@@ -134,6 +135,8 @@ export function useParaswapCallback(
           trade.outputAmount.currency,
         );
 
+        const pctNum = bipsToPercentPercent(allowedSlippage);
+
         //Update the rate before calling swap
         const rate = await paraswap.getRate({
           srcToken,
@@ -142,9 +145,15 @@ export function useParaswapCallback(
           side: SwapSide.SELL,
           options: {
             includeDEXS: 'quickswap,quickswapv3',
+            maxImpact: pctNum,
           },
         });
 
+        if (rate.maxImpactReached) {
+          throw new Error('This swap exceed the max impact expected');
+        }
+
+        //TODO: we need to support max impact
         if (minDestAmount.greaterThan(JSBI.BigInt(rate.destAmount))) {
           throw new Error('Price Rate updated beyond expected slipage rate');
         }

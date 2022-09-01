@@ -1649,6 +1649,10 @@ export function basisPointsToPercent(num: number): Percent {
   return new Percent(JSBI.BigInt(num), JSBI.BigInt(10000));
 }
 
+export function bipsToPercentPercent(num: number): number {
+  return num / 100;
+}
+
 // shorten the checksummed version of the input address to have 0x + 4 characters at start and end
 export function shortenAddress(address: string, chars = 4): string {
   const parsed = isAddress(address);

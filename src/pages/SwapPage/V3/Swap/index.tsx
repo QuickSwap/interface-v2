@@ -72,6 +72,10 @@ import confirmPriceImpactWithoutFee from 'components/v3/swap/confirmPriceImpactW
 import ConfirmSwapModal from 'components/v3/swap/ConfirmSwapModal';
 import { useExpertModeManager } from 'state/user/hooks';
 import Card from 'components/v3/Card/Card';
+import { ReactComponent as ExchangeIcon } from 'assets/images/ExchangeIcon.svg';
+
+import { Box } from '@material-ui/core';
+import { StyledButton, StyledLabel } from 'components/v3/Common/styledElements';
 
 const SwapV3Page: React.FC = () => {
   const { account } = useActiveWeb3React();
@@ -473,7 +477,7 @@ const SwapV3Page: React.FC = () => {
                         </ContestBannerTitle>
                     </div>
                 </ContestBanner> */}
-        <Card classes={'p-2 br-24'}>
+        <Box>
           <SwapHeader
             allowedSlippage={allowedSlippage}
             dynamicFee={dynamicFee}
@@ -494,81 +498,70 @@ const SwapV3Page: React.FC = () => {
             />
 
             <AutoColumn gap={'md'}>
-              <Card isDark={false} classes={'p-1 br-12'}>
-                <CurrencyInputPanel
-                  label={
-                    independentField === Field.OUTPUT && !showWrap
-                      ? 'From (at most)'
-                      : 'From'
-                  }
-                  value={formattedAmounts[Field.INPUT]}
-                  showMaxButton={showMaxButton}
-                  currency={currencies[Field.INPUT] as WrappedCurrency}
-                  onUserInput={handleTypeInput}
-                  onMax={handleMaxInput}
-                  fiatValue={fiatValueInput ?? undefined}
-                  onCurrencySelect={handleInputSelect}
-                  otherCurrency={currencies[Field.OUTPUT]}
-                  showCommonBases={true}
-                  id='swap-currency-input'
-                  locked={false}
-                  hideCurrency={false}
-                  hideInput={false}
-                  showBalance={true}
-                  disabled={false}
-                  shallow={false}
-                  swap
-                />
-                <ArrowWrapper
-                  clickable
-                  onClick={() => {
-                    setApprovalSubmitted(false); // reset 2 step UI for approvals
-                    onSwitchTokens();
-                  }}
-                >
-                  <svg
-                    width='11'
-                    height='21'
-                    viewBox='0 0 11 21'
-                    fill='none'
-                    xmlns='http://www.w3.org/2000/svg'
-                  >
-                    <path
-                      d='M10.0287 6.01207C10.2509 6.2384 10.6112 6.2384 10.8334 6.01207C11.0555 5.78575 11.0555 5.4188 10.8334 5.19247L5.90232 0.169745C5.68012 -0.0565819 5.31988 -0.0565819 5.09768 0.169745L0.166647 5.19247C-0.055548 5.4188 -0.055548 5.78575 0.166647 6.01207C0.388841 6.2384 0.749091 6.2384 0.971286 6.01207L5.5 1.39915L10.0287 6.01207Z'
-                      fill='#fff'
-                    />
-                    <path
-                      d='M10.0287 14.9879C10.2509 14.7616 10.6112 14.7616 10.8334 14.9879C11.0555 15.2143 11.0555 15.5812 10.8334 15.8075L5.90232 20.8303C5.68012 21.0566 5.31988 21.0566 5.09768 20.8303L0.166646 15.8075C-0.0555484 15.5812 -0.0555484 15.2143 0.166646 14.9879C0.388841 14.7616 0.749091 14.7616 0.971285 14.9879L5.5 19.6009L10.0287 14.9879Z'
-                      fill='#fff'
-                    />
-                  </svg>
-                </ArrowWrapper>
-                <CurrencyInputPanel
-                  value={formattedAmounts[Field.OUTPUT]}
-                  onUserInput={handleTypeOutput}
-                  label={
-                    independentField === Field.INPUT && !showWrap
-                      ? 'To (at least)'
-                      : 'To'
-                  }
-                  showMaxButton={false}
-                  hideBalance={false}
-                  fiatValue={fiatValueOutput ?? undefined}
-                  priceImpact={priceImpact}
-                  currency={currencies[Field.OUTPUT] as WrappedCurrency}
-                  onCurrencySelect={handleOutputSelect}
-                  otherCurrency={currencies[Field.INPUT]}
-                  showCommonBases={true}
-                  id='swap-currency-output'
-                  locked={false}
-                  hideCurrency={false}
-                  hideInput={false}
-                  showBalance={true}
-                  disabled={false}
-                  shallow={false}
-                  swap
-                />
-              </Card>
+              <Box>
+                <Box mt={1.5} mb={1}>
+                  <CurrencyInputPanel
+                    label={
+                      independentField === Field.OUTPUT && !showWrap
+                        ? 'From (at most)'
+                        : 'From'
+                    }
+                    value={formattedAmounts[Field.INPUT]}
+                    showMaxButton={showMaxButton}
+                    currency={currencies[Field.INPUT] as WrappedCurrency}
+                    onUserInput={handleTypeInput}
+                    onMax={handleMaxInput}
+                    fiatValue={fiatValueInput ?? undefined}
+                    onCurrencySelect={handleInputSelect}
+                    otherCurrency={currencies[Field.OUTPUT]}
+                    showCommonBases={true}
+                    id='swap-currency-input'
+                    locked={false}
+                    hideCurrency={false}
+                    hideInput={false}
+                    showBalance={true}
+                    disabled={false}
+                    shallow={false}
+                    swap
+                  />
+                </Box>
+
+                <Box className='exchangeSwap'>
+                  <ExchangeIcon
+                    onClick={() => {
+                      setApprovalSubmitted(false); // reset 2 step UI for approvals
+                      onSwitchTokens();
+                    }}
+                  />
+                </Box>
+                <Box mt={1} mb={1.5}>
+                  <CurrencyInputPanel
+                    value={formattedAmounts[Field.OUTPUT]}
+                    onUserInput={handleTypeOutput}
+                    label={
+                      independentField === Field.INPUT && !showWrap
+                        ? 'To (at least)'
+                        : 'To'
+                    }
+                    showMaxButton={false}
+                    hideBalance={false}
+                    fiatValue={fiatValueOutput ?? undefined}
+                    priceImpact={priceImpact}
+                    currency={currencies[Field.OUTPUT] as WrappedCurrency}
+                    onCurrencySelect={handleOutputSelect}
+                    otherCurrency={currencies[Field.INPUT]}
+                    showCommonBases={true}
+                    id='swap-currency-output'
+                    locked={false}
+                    hideCurrency={false}
+                    hideInput={false}
+                    showBalance={true}
+                    disabled={false}
+                    shallow={false}
+                    swap
+                  />
+                </Box>
+              </Box>
               <div>
                 {recipient !== null && !showWrap ? (
                   <>
@@ -632,15 +625,11 @@ const SwapV3Page: React.FC = () => {
               </div>
               <div>
                 {!account ? (
-                  <button
-                    className={'btn primary w-100 pv-1 b'}
-                    onClick={toggleWalletModal}
-                  >
+                  <StyledButton onClick={toggleWalletModal}>
                     Connect Wallet
-                  </button>
+                  </StyledButton>
                 ) : showWrap ? (
-                  <button
-                    className={'btn primary w-100 pv-1 b'}
+                  <StyledButton
                     disabled={Boolean(wrapInputError)}
                     onClick={onWrap}
                   >
@@ -650,15 +639,16 @@ const SwapV3Page: React.FC = () => {
                         : wrapType === WrapType.UNWRAP
                         ? 'Unwrap'
                         : null)}
-                  </button>
+                  </StyledButton>
                 ) : routeNotFound && userHasSpecifiedInputOutput ? (
-                  <GreyCard
+                  <StyledButton
+                    disabled={routeNotFound && userHasSpecifiedInputOutput}
                     style={{
                       textAlign: 'center',
                       backgroundColor: theme.winterDisabledButton,
                     }}
                   >
-                    <TYPE.main mb='4px'>
+                    <StyledLabel>
                       {isLoadingRoute ? (
                         <Dots>Loading</Dots>
                       ) : singleHopOnly ? (
@@ -666,12 +656,12 @@ const SwapV3Page: React.FC = () => {
                       ) : (
                         'Insufficient liquidity for this trade.'
                       )}
-                    </TYPE.main>
-                  </GreyCard>
+                    </StyledLabel>
+                  </StyledButton>
                 ) : showApproveFlow ? (
                   <AutoRow style={{ flexWrap: 'nowrap', width: '100%' }}>
                     <AutoColumn style={{ width: '100%' }} gap='12px'>
-                      <ButtonConfirmed
+                      <StyledButton
                         onClick={handleApprove}
                         disabled={
                           approvalState !== ApprovalState.NOT_APPROVED ||
@@ -683,13 +673,11 @@ const SwapV3Page: React.FC = () => {
                           color: 'white',
                         }}
                         width='100%'
-                        altDisabledStyle={
-                          approvalState === ApprovalState.PENDING
-                        } // show solid button while waiting
-                        confirmed={
-                          approvalState === ApprovalState.APPROVED ||
-                          signatureState === UseERC20PermitState.SIGNED
-                        }
+
+                        // confirmed={
+                        //   approvalState === ApprovalState.APPROVED ||
+                        //   signatureState === UseERC20PermitState.SIGNED
+                        // }
                       >
                         <AutoRow
                           justify='space-between'
@@ -753,8 +741,8 @@ const SwapV3Page: React.FC = () => {
                             </MouseoverTooltip>
                           )}
                         </AutoRow>
-                      </ButtonConfirmed>
-                      <ButtonError
+                      </StyledButton>
+                      <StyledButton
                         onClick={() => {
                           if (isExpertMode) {
                             handleSwap();
@@ -805,7 +793,6 @@ const SwapV3Page: React.FC = () => {
                             signatureState !== UseERC20PermitState.SIGNED) ||
                           priceImpactTooHigh
                         }
-                        error={isValid && priceImpactSeverity > 2}
                       >
                         <Text fontSize={16} fontWeight={500}>
                           {priceImpactTooHigh
@@ -814,11 +801,11 @@ const SwapV3Page: React.FC = () => {
                             ? 'Swap Anyway'
                             : 'Swap'}
                         </Text>
-                      </ButtonError>
+                      </StyledButton>
                     </AutoColumn>
                   </AutoRow>
                 ) : (
-                  <ButtonError
+                  <StyledButton
                     onClick={() => {
                       if (isExpertMode) {
                         handleSwap();
@@ -838,9 +825,6 @@ const SwapV3Page: React.FC = () => {
                     disabled={
                       !isValid || priceImpactTooHigh || !!swapCallbackError
                     }
-                    error={
-                      isValid && priceImpactSeverity > 2 && !swapCallbackError
-                    }
                   >
                     <Text fontSize={20} fontWeight={500}>
                       {swapInputError
@@ -851,7 +835,7 @@ const SwapV3Page: React.FC = () => {
                         ? 'Swap Anyway'
                         : 'Swap'}
                     </Text>
-                  </ButtonError>
+                  </StyledButton>
                 )}
                 {isExpertMode && swapErrorMessage ? (
                   <SwapCallbackError error={swapErrorMessage} />
@@ -859,7 +843,7 @@ const SwapV3Page: React.FC = () => {
               </div>
             </AutoColumn>
           </div>
-        </Card>
+        </Box>
       </div>
     </>
   );

@@ -32,6 +32,7 @@ import {
   confirmPriceImpactWithoutFee,
   maxAmountSpend,
   basisPointsToPercent,
+  bipsToPercentPercent,
 } from 'utils';
 import { computeTradePriceBreakdown, warningSeverity } from 'utils/prices';
 import { ReactComponent as PriceExchangeIcon } from 'assets/images/PriceExchangeIcon.svg';
@@ -181,6 +182,7 @@ const SwapBestTrade: React.FC<{
     ? getBestTradeCurrencyAddress(trade.outputAmount.currency)
     : undefined;
   const pct = basisPointsToPercent(allowedSlippage);
+  const pctNum = bipsToPercentPercent(allowedSlippage);
   const srcAmount = trade
     ?.maximumAmountIn(pct)
     .multiply(JSBI.BigInt(10 ** trade.inputAmount.currency.decimals))
@@ -205,6 +207,7 @@ const SwapBestTrade: React.FC<{
           side: SwapSide.SELL,
           options: {
             includeDEXS: 'quickswap,quickswapv3',
+            maxImpact: pctNum,
           },
         });
         setOptimalRate(rate);
@@ -216,7 +219,7 @@ const SwapBestTrade: React.FC<{
     //TODO: figure out a way to debounce this
     fetchOptimalRate();
     // We add the minDestAmount so this function will tie into the existing hooks for trade
-  }, [paraswap, srcToken, destToken, srcAmount, minDestAmount]);
+  }, [paraswap, srcToken, destToken, srcAmount, minDestAmount, pctNum]);
 
   const {
     callback: paraswapCallback,
@@ -271,12 +274,18 @@ const SwapBestTrade: React.FC<{
         return (
           !isValid ||
           approval !== ApprovalState.APPROVED ||
-          (priceImpactSeverity > 3 && !isExpertMode)
+          (optimalRate &&
+            !optimalRate.maxImpactReached &&
+            priceImpactSeverity > 3 &&
+            !isExpertMode)
         );
       } else {
         return (
           !isValid ||
-          (priceImpactSeverity > 3 && !isExpertMode) ||
+          (optimalRate &&
+            !optimalRate.maxImpactReached &&
+            priceImpactSeverity > 3 &&
+            !isExpertMode) ||
           !!paraswapCallbackError
         );
       }
@@ -295,6 +304,7 @@ const SwapBestTrade: React.FC<{
     isValid,
     paraswapCallbackError,
     isExpertMode,
+    optimalRate,
   ]);
 
   const [
