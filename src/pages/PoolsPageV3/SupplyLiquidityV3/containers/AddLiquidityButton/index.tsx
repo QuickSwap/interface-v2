@@ -220,8 +220,6 @@ export function AddLiquidityButton({
     }
   }
 
-  const initialUSDPrices = useInitialUSDPrices();
-
   const {
     [Bound.LOWER]: _priceLower,
     [Bound.UPPER]: _priceUpper,

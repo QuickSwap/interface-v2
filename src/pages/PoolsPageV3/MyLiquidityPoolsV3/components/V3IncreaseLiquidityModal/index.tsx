@@ -48,6 +48,9 @@ import { CustomModal, DoubleCurrencyLogo, CurrencyLogo } from 'components';
 import { Box, Button, Divider } from '@material-ui/core';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 import RangeBadge from 'components/v3/Badge/RangeBadge';
+import { unwrappedToken } from 'utils/unwrappedToken';
+import RateToggle from 'components/v3/RateToggle';
+import { formatTickPrice } from 'utils/v3/formatTickPrice';
 
 interface V3IncreaseLiquidityModalProps {
   open: boolean;
@@ -85,8 +88,6 @@ export default function V3IncreaseLiquidityModal({
 
   // mint state
   const { independentField, typedValue } = useV3MintState();
-
-  console.log('ccc', tokenId, ' ', existingPosition);
 
   const {
     ticks,
@@ -256,6 +257,22 @@ export default function V3IncreaseLiquidityModal({
   const removed =
     position?.liquidity && JSBI.equal(position?.liquidity, JSBI.BigInt(0));
 
+  const [currencyBase, setCurrencyBase] = useState(baseCurrency);
+
+  const sorted = currencyBase === baseCurrency;
+  const currencyQuote = sorted ? quoteCurrency : baseCurrency;
+
+  const priceLower = sorted
+    ? existingPosition?.token0PriceLower
+    : existingPosition?.token0PriceUpper.invert();
+  const priceUpper = sorted
+    ? existingPosition?.token0PriceUpper
+    : existingPosition?.token0PriceLower.invert();
+
+  const currentPrice = sorted
+    ? existingPosition?.pool.priceOf(existingPosition?.pool.token0)
+    : existingPosition?.pool.priceOf(existingPosition?.pool.token1);
+
   return (
     <CustomModal open={open} onClose={onClose}>
       {/* {showConfirm && (
@@ -289,59 +306,102 @@ export default function V3IncreaseLiquidityModal({
       )} */}
       <Box padding={3}>
         <Box className='flex justify-between'>
-          <p className='weight-600'>{t('removeLiquidity')}</p>
+          <p className='weight-600'>Increase Liquidity</p>
           <CloseIcon className='cursor-pointer' onClick={onClose} />
         </Box>
         <Box mt={3} className='flex justify-between'>
           <Box className='flex items-center'>
             <Box className='flex' mr={1}>
               <DoubleCurrencyLogo
-                currency0={position?.pool.token0}
-                currency1={position?.pool.token1}
+                currency0={baseCurrency ?? undefined}
+                currency1={quoteCurrency ?? undefined}
                 size={32}
               />
             </Box>
             <h5>
-              {position?.pool.token0.symbol}-{position?.pool.token1.symbol}
+              {baseCurrency?.symbol}-{quoteCurrency?.symbol}
             </h5>
           </Box>
           <RangeBadge removed={removed} inRange={!outOfRange} />
         </Box>
-        {/* <Box my={2} className='v3-remove-liquidity-info-wrapper'>
+        <Box my={2} className='v3-increase-liquidity-info-wrapper'>
           <Box>
-            <p>Pooled {liquidityValue0?.currency?.symbol}</p>
             <Box className='flex items-center'>
-              <p>{liquidityValue0?.toSignificant()}</p>
-              <CurrencyLogo currency={liquidityValue0?.currency} size='20px' />
+              <CurrencyLogo currency={baseCurrency ?? undefined} size='20px' />
+              <p>{baseCurrency?.symbol}</p>
             </Box>
+            <p>{existingPosition?.amount0?.toSignificant()}</p>
           </Box>
           <Box mt={2}>
-            <p>Pooled {liquidityValue1?.currency?.symbol}</p>
             <Box className='flex items-center'>
-              <p>{liquidityValue1?.toSignificant()}</p>
-              <CurrencyLogo currency={liquidityValue1?.currency} size='20px' />
+              <CurrencyLogo currency={quoteCurrency ?? undefined} size='20px' />
+              <p>{quoteCurrency?.symbol}</p>
             </Box>
+            <p>{existingPosition?.amount1?.toSignificant()}</p>
           </Box>
-          {(feeValue0?.greaterThan(0) || feeValue1?.greaterThan(0)) && (
+          {existingPosition?.pool.fee && (
             <Box mt={2}>
-              <Divider />
-              <Box my={2}>
-                <p>{feeValue0?.currency?.symbol} Fees Earned:</p>
-                <Box className='flex items-center'>
-                  <p>{feeValue0?.toSignificant()}</p>
-                  <CurrencyLogo currency={feeValue0?.currency} size='20px' />
-                </Box>
-              </Box>
-              <Box>
-                <p>{feeValue1?.currency?.symbol} Fees Earned:</p>
-                <Box className='flex items-center'>
-                  <p>{feeValue1?.toSignificant()}</p>
-                  <CurrencyLogo currency={feeValue1?.currency} size='20px' />
-                </Box>
-              </Box>
+              <p>Fee</p>
+              <p>{existingPosition?.pool?.fee / 10000}%</p>
             </Box>
           )}
-        </Box> */}
+        </Box>
+        <Box mt={2} className='flex justify-between'>
+          <p>Select Range</p>
+          {currencyBase && currencyQuote && (
+            <RateToggle
+              currencyA={currencyBase}
+              currencyB={currencyQuote}
+              handleRateToggle={() => setCurrencyBase(quoteCurrency)}
+            />
+          )}
+        </Box>
+        <Box width={1} mt={2} className='flex justify-between'>
+          {priceLower && (
+            <Box
+              className='v3-supply-liquidity-price-wrapper'
+              width={priceUpper ? '49%' : '100%'}
+            >
+              <p>Min Price</p>
+              <h6>{formatTickPrice(priceLower, ticksAtLimit, Bound.LOWER)}</h6>
+              <p>
+                {currencyQuote?.symbol} per {currencyBase?.symbol}
+              </p>
+              <p>
+                Your position will be 100% Composed of {currencyBase?.symbol} at
+                this price
+              </p>
+            </Box>
+          )}
+          {priceUpper && (
+            <Box
+              className='v3-supply-liquidity-price-wrapper'
+              width={priceLower ? '49%' : '100%'}
+            >
+              <p>Min Price</p>
+              <h6>{formatTickPrice(priceUpper, ticksAtLimit, Bound.UPPER)}</h6>
+              <p>
+                {currencyQuote?.symbol} per {currencyBase?.symbol}
+              </p>
+              <p>
+                Your position will be 100% Composed of {currencyQuote?.symbol}{' '}
+                at this price
+              </p>
+            </Box>
+          )}
+        </Box>
+        {currentPrice && (
+          <Box mt={2} className='v3-supply-liquidity-price-wrapper'>
+            <p>Current Price</p>
+            <h6>{currentPrice.toSignificant()}</h6>
+            <p>
+              {currencyQuote?.symbol} per {currencyBase?.symbol}
+            </p>
+          </Box>
+        )}
+        <Box mt={2}>
+          <p>Add more liquidity</p>
+        </Box>
         {/* {showCollectAsWeth && (
           <Box mb={2} className='flex items-center'>
             <Box mr={1}>
@@ -354,7 +414,7 @@ export default function V3IncreaseLiquidityModal({
           </Box>
         )} */}
         {/* <Button
-          className='v3-remove-liquidity-button'
+          className='v3-increase-liquidity-button'
           disabled={removed || percent === 0 || !liquidityValue0}
           onClick={() => setShowConfirm(true)}
         >
