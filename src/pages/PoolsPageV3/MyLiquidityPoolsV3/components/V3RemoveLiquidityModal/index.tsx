@@ -58,7 +58,6 @@ export default function V3RemoveLiquidityModal({
 }: V3RemoveLiquidityModalProps) {
   const { t } = useTranslation();
 
-  const [typedValue, setTypedValue] = useState('');
   const prevPosition = usePrevious({ ...position });
   const tokenId = position.tokenId;
   const _position = useMemo(() => {
@@ -394,47 +393,27 @@ export default function V3RemoveLiquidityModal({
         <Box mt={2} className='v3-remove-liquidity-input-wrapper'>
           <Box mb={2} className='flex justify-between'>
             <small className='text-secondary'>Amount</small>
-            <small className='text-secondary'>
-              Balance: {formatUnits(position.liquidity)}
-            </small>
           </Box>
-          <NumericalInput
-            placeholder='0'
-            value={typedValue}
-            fontSize={28}
-            onUserInput={(value) => {
-              setTypedValue(value);
-              onPercentSelectForSlider(
-                Math.floor(
-                  Math.min(
-                    (Number(value) / Number(formatUnits(position.liquidity))) *
-                      100,
-                    100,
-                  ),
-                ),
-              );
+          <Box mb={2} className='flex items-center justify-between'>
+            <h3>{percentForSlider}%</h3>
+            <Box ml={1} className='v3-remove-liquidity-percent-buttons'>
+              <Button onClick={() => onPercentSelectForSlider(25)}>25%</Button>
+              <Button onClick={() => onPercentSelectForSlider(50)}>50%</Button>
+              <Button onClick={() => onPercentSelectForSlider(75)}>75%</Button>
+              <Button onClick={() => onPercentSelectForSlider(100)}>
+                100%
+              </Button>
+            </Box>
+          </Box>
+          <ColoredSlider
+            min={0}
+            max={100}
+            step={1}
+            value={percentForSlider}
+            handleChange={(event, value) => {
+              onPercentSelectForSlider(value as number);
             }}
           />
-          <Box mt={1} className='flex items-center'>
-            <Box flex={1} mr={1}>
-              <ColoredSlider
-                min={1}
-                max={100}
-                step={1}
-                value={percentForSlider}
-                handleChange={(event, value) => {
-                  onPercentSelectForSlider(value as number);
-                  setTypedValue(
-                    (
-                      ((value as number) / 100) *
-                      Number(formatUnits(position.liquidity))
-                    ).toString(),
-                  );
-                }}
-              />
-            </Box>
-            <small>{percentForSlider}%</small>
-          </Box>
         </Box>
         <Box my={2} className='v3-remove-liquidity-info-wrapper'>
           <Box>
@@ -487,7 +466,7 @@ export default function V3RemoveLiquidityModal({
           disabled={removed || percent === 0 || !liquidityValue0}
           onClick={() => setShowConfirm(true)}
         >
-          Remove
+          {percent ? 'Remove' : 'Enter Amount'}
         </Button>
       </Box>
     </CustomModal>

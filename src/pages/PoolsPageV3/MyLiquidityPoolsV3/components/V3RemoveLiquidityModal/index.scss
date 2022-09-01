@@ -26,3 +26,15 @@
   width: 100%;
   border-radius: 10px !important;
 }
+
+.v3-remove-liquidity-percent-buttons {
+  display: flex;
+  justify-content: space-between;
+  flex: 1;
+  max-width: 300px;
+  & button {
+    width: calc(25% - 4px);
+    height: 24px;
+    border-radius: 10px;
+  }
+}

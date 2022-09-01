@@ -5,8 +5,7 @@ import './index.scss';
 import { useInfoLiquidity } from 'hooks/subgraph/useInfoLiquidity';
 import { IDerivedMintInfo } from 'state/mint/v3/hooks';
 import { StepTitle } from '../../components/StepTitle';
-import { PriceFormats } from '../..//components/PriceFomatToggler';
-import { useHistory } from 'react-router-dom';
+import { PriceFormats } from '../../components/PriceFomatToggler';
 import { Box } from '@material-ui/core';
 import { Add } from '@material-ui/icons';
 import V3CurrencySelect from 'components/v3/CurrencySelect';
@@ -17,7 +16,7 @@ interface ISelectPair {
   mintInfo: IDerivedMintInfo;
   isCompleted: boolean;
   priceFormat: PriceFormats;
-  handleCurrencySwap: () => void;
+  handleCurrencySwap?: () => void;
   handleCurrencyASelect: (newCurrency: Currency) => void;
   handleCurrencyBSelect: (newCurrency: Currency) => void;
   handlePopularPairSelection: (pair: [string, string]) => void;
@@ -33,8 +32,6 @@ export function SelectPair({
   handleCurrencyASelect,
   handleCurrencyBSelect,
 }: ISelectPair) {
-  const history = useHistory();
-
   const {
     fetchPopularPools: {
       popularPools,
@@ -46,14 +43,6 @@ export function SelectPair({
   useEffect(() => {
     fetchPopularPoolsFn();
   }, []);
-
-  // useEffect(() => {
-  //   return () => {
-  //     if (history.action === 'POP') {
-  //       history.push('/v3pools');
-  //     }
-  //   };
-  // }, []);
 
   return (
     <Box>

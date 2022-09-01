@@ -200,7 +200,7 @@ export function SupplyLiquidityV3() {
   const handleCurrencySwap = useCallback(() => {
     // history.push(`/add/${currencyIdB}/${currencyIdA}`);
     resetState();
-  }, [history, handleCurrencySelect, currencyIdA, currencyIdB]);
+  }, [handleCurrencySelect, currencyIdA, currencyIdB]);
 
   const handlePopularPairSelection = useCallback((pair: [string, string]) => {
     const WMATIC = '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270';
