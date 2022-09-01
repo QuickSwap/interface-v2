@@ -29,7 +29,9 @@ const PoolsPage: React.FC = () => {
       <Box className='pageHeading'>
         <Box className='flex row items-center'>
           <h4>{t('pool')}</h4>
-          <VersionToggle isV3={false} onToggleV3={handleToggleAction} />
+          <Box ml={2}>
+            <VersionToggle isV3={false} onToggleV3={handleToggleAction} />
+          </Box>
         </Box>
 
         <Box className='helpWrapper' style={{ alignSelf: 'flex-end' }}>

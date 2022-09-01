@@ -282,7 +282,6 @@ function RangePart({
         <button
           onClick={handleDecrement}
           disabled={decrementDisabled || disabled}
-          className='range-input__btn'
         >
           <Remove />
         </button>
@@ -307,7 +306,6 @@ function RangePart({
         <button
           onClick={handleIncrement}
           disabled={incrementDisabled || disabled}
-          className='range-input__btn'
         >
           <Add />
         </button>

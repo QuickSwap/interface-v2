@@ -15,13 +15,15 @@
     & button {
         width: 24px;
         height: 24px;
-        background-color: $textSecondary;
+        background-color: $secondary3;
+        color: $textSecondary;
         border: none;
         cursor: pointer;
         font-size: 20px;
         display: flex;
         justify-content: center;
         align-items: center;
+        border-radius: 12px;
     }
 }
 

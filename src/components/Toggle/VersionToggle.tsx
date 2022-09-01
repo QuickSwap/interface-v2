@@ -1,14 +1,9 @@
 import React, { useCallback, useState } from 'react';
 import { Box } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
-import 'pages/styles/pools.scss';
 import useParsedQueryString from 'hooks/useParsedQueryString';
-import { StyledLabel } from 'components/AddLiquidityV3/CommonStyledElements';
-import {
-  ToggleContainer,
-  ToggleInnerContainer,
-} from '../../pages/PoolsPage/styled';
 import { useHistory } from 'react-router-dom';
+import './index.scss';
 
 const VersionToggle: React.FC<{
   isV3: boolean;
@@ -17,23 +12,13 @@ const VersionToggle: React.FC<{
   const { t } = useTranslation();
 
   return (
-    <Box className='flex row items-center cursor-pointer'>
-      <Box style={{ marginLeft: 15 }} onClick={() => onToggleV3(!isV3)}>
-        <ToggleContainer>
-          <ToggleInnerContainer active={!isV3}>
-            <StyledLabel
-              style={{
-                paddingLeft: 10,
-              }}
-            >
-              {t('V2')}
-            </StyledLabel>
-          </ToggleInnerContainer>
+    <Box className='version-toggle-container' onClick={() => onToggleV3(!isV3)}>
+      <Box className={!isV3 ? 'version-toggle-active' : ''}>
+        <small>{t('V2')}</small>
+      </Box>
 
-          <ToggleInnerContainer active={isV3}>
-            <StyledLabel color='#c7cad9'>{t('V3')}</StyledLabel>
-          </ToggleInnerContainer>
-        </ToggleContainer>
+      <Box className={isV3 ? 'version-toggle-active' : ''}>
+        <small>{t('V3')}</small>
       </Box>
     </Box>
   );

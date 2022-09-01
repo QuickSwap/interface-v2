@@ -64,7 +64,6 @@ import './i18n';
 import { mainTheme } from './theme';
 import Background from 'layouts/Background';
 import GasUpdater from 'state/application/gasUpdater';
-import { NewAddLiquidityPage } from 'components/v3/NewAddLiquidity';
 import PositionPage from 'pages/PoolsPageV3/PositionPage';
 
 const Web3ProviderNetwork = createWeb3ReactRoot(
@@ -180,7 +179,7 @@ const App: React.FC = () => {
                         path='/add/:currencyIdA?/:currencyIdB?/:step?'
                       >
                         <PageLayout>
-                          <NewAddLiquidityPage></NewAddLiquidityPage>
+                          <PoolsPageV3></PoolsPageV3>
                         </PageLayout>
                       </Route>
                       <Route
