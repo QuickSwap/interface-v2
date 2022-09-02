@@ -2,14 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useCurrency } from 'hooks/v3/Tokens';
 import usePrevious from 'hooks/usePrevious';
 import { useActiveWeb3React } from 'hooks';
-import {
-  NavLink,
-  RouteComponentProps,
-  Switch,
-  useHistory,
-  useParams,
-  useRouteMatch,
-} from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import {
   useV3DerivedMintInfo,
   useV3MintState,
@@ -17,7 +10,6 @@ import {
   useInitialUSDPrices,
   useCurrentStep,
 } from 'state/mint/v3/hooks';
-import { Stepper } from './components/Stepper';
 import { InitialPrice } from './containers/InitialPrice';
 import { EnterAmounts } from './containers/EnterAmounts';
 import { SelectPair } from './containers/SelectPair';
@@ -40,7 +32,6 @@ import {
   PriceFormatToggler,
 } from 'components/v3/PriceFomatToggler';
 import { AddLiquidityButton } from './containers/AddLiquidityButton';
-import { ArrowLeft, ChevronLeft, ChevronRight } from 'react-feather';
 import { PoolState } from 'hooks/v3/usePools';
 import { RouterGuard } from './routing/router-guards';
 import { useAppDispatch } from 'state/hooks';
@@ -53,21 +44,27 @@ import { useIsExpertMode, useUserSlippageTolerance } from 'state/user/hooks';
 import { JSBI } from '@uniswap/sdk';
 import { currencyId } from 'utils/v3/currencyId';
 import { Box, Button } from '@material-ui/core';
-import {
-  ConfirmationModalContent,
-  TransactionConfirmationModal,
-} from 'components';
-
-const DEFAULT_ADD_IN_RANGE_SLIPPAGE_TOLERANCE = new Percent(50, 10_000);
 
 export function SupplyLiquidityV3() {
   const params: any = useParams();
+  const currencyIdAParam =
+    params && params.currencyIdA
+      ? params.currencyIdA.toLowerCase() === 'matic' ||
+        params.currencyIdA.toLowerCase() === 'eth'
+        ? 'matic'
+        : params.currencyIdA
+      : undefined;
 
-  const [currencyIdA, setCurrencyIdA] = useState(params.currencyIdA);
-  const [currencyIdB, setCurrencyIdB] = useState(params.currencyIdB);
+  const currencyIdBParam =
+    params && params.currencyIdB
+      ? params.currencyIdB.toLowerCase() === 'matic' ||
+        params.currencyIdB.toLowerCase() === 'eth'
+        ? 'matic'
+        : params.currencyIdB
+      : undefined;
 
-  const history = useHistory();
-  const [isRejected, setRejected] = useState(false);
+  const [currencyIdA, setCurrencyIdA] = useState(currencyIdAParam);
+  const [currencyIdB, setCurrencyIdB] = useState(currencyIdBParam);
 
   const { account, chainId } = useActiveWeb3React();
 

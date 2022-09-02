@@ -1,4 +1,4 @@
-import React, { lazy, useCallback, useState } from 'react';
+import React, { lazy, useState } from 'react';
 import { Box } from '@material-ui/core';
 import { ReactComponent as SettingsIcon } from 'assets/images/SettingsIcon.svg';
 import { QuestionHelper, SettingsModal } from 'components';
@@ -9,13 +9,6 @@ const SupplyLiquidity: React.FC = () => {
   const { t } = useTranslation();
   const [openSettingsModal, setOpenSettingsModal] = useState(false);
 
-  const handleSettingsModalOpen = useCallback(
-    (flag: boolean) => {
-      setOpenSettingsModal(flag);
-    },
-    [openSettingsModal, setOpenSettingsModal],
-  );
-
   return (
     <>
       {openSettingsModal && (
@@ -23,7 +16,7 @@ const SupplyLiquidity: React.FC = () => {
           open={openSettingsModal}
           onClose={() => setOpenSettingsModal(false)}
         />
-      )}{' '}
+      )}
       <Box className='flex justify-between items-center'>
         <p className='weight-600'>{t('supplyLiquidity')}</p>
         <Box className='flex items-center'>

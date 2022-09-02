@@ -9,6 +9,7 @@ import 'components/styles/CurrencySearchModal.scss';
 import { WrappedTokenInfo } from 'state/lists/v3/wrappedTokenInfo';
 import { TokenInfo } from '@uniswap/token-lists';
 import { NativeCurrency } from '@uniswap/sdk-core';
+import { useIsV3 } from 'state/application/hooks';
 
 interface CurrencySearchModalProps {
   isOpen: boolean;
@@ -18,7 +19,6 @@ interface CurrencySearchModalProps {
   onCurrencySelect: (currency: any) => void;
   otherSelectedCurrency?: Currency | null;
   showCommonBases?: boolean;
-  isV3?: boolean;
 }
 
 const CurrencySearchModal: React.FC<CurrencySearchModalProps> = ({
@@ -28,8 +28,8 @@ const CurrencySearchModal: React.FC<CurrencySearchModalProps> = ({
   selectedCurrency,
   otherSelectedCurrency,
   showCommonBases = false,
-  isV3,
 }) => {
+  const { isV3 } = useIsV3();
   const [listView, setListView] = useState<boolean>(false);
   const lastOpen = useLast(isOpen);
 

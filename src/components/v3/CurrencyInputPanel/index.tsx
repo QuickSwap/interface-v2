@@ -223,7 +223,6 @@ export default function CurrencyInputPanel({
           selectedCurrency={currency}
           otherSelectedCurrency={otherCurrency}
           showCommonBases={showCommonBases}
-          isV3={true}
           // TODO: Consider adding support for V3 Functionality
           // showCurrencyAmount={showCurrencyAmount}
           // disableNonToken={disableNonToken}

@@ -95,7 +95,6 @@ export function TokenCard({
           selectedCurrency={currency}
           otherSelectedCurrency={otherCurrency}
           showCommonBases={true}
-          isV3={true}
         ></CurrencySearchModal>
       )}
     </Box>

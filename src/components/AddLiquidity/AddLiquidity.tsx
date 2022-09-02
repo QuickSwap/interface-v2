@@ -43,6 +43,7 @@ import { wrappedCurrency } from 'utils/wrappedCurrency';
 import { ReactComponent as AddLiquidityIcon } from 'assets/images/AddLiquidityIcon.svg';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import { useCurrency } from 'hooks/Tokens';
+import { useParams } from 'react-router-dom';
 
 const AddLiquidity: React.FC<{
   currencyBgClass?: string;
@@ -64,14 +65,25 @@ const AddLiquidity: React.FC<{
   const finalizedTransaction = useTransactionFinalizer();
 
   // queried currency
+  const params: any = useParams();
   const parsedQuery = useParsedQueryString();
   const currency0 = useCurrency(
-    parsedQuery && parsedQuery.currency0
+    params && params.currencyIdA
+      ? params.currencyIdA.toLowerCase() === 'matic' ||
+        params.currencyIdA.toLowerCase() === 'eth'
+        ? 'ETH'
+        : params.currencyIdA
+      : parsedQuery && parsedQuery.currency0
       ? (parsedQuery.currency0 as string)
       : undefined,
   );
   const currency1 = useCurrency(
-    parsedQuery && parsedQuery.currency1
+    params && params.currencyIdB
+      ? params.currencyIdB.toLowerCase() === 'matic' ||
+        params.currencyIdB.toLowerCase() === 'eth'
+        ? 'ETH'
+        : params.currencyIdB
+      : parsedQuery && parsedQuery.currency1
       ? (parsedQuery.currency1 as string)
       : undefined,
   );

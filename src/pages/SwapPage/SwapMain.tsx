@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box } from '@material-ui/core';
 import { ReactComponent as SettingsIcon } from 'assets/images/SettingsIcon.svg';
-import { useIsProMode } from 'state/application/hooks';
+import { useIsProMode, useIsV3 } from 'state/application/hooks';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import { useCurrency } from 'hooks/Tokens';
 import { Swap, SettingsModal, ToggleSwitch } from 'components';
@@ -12,6 +12,7 @@ import {
 import { Trans, useTranslation } from 'react-i18next';
 import { SwapBestTrade } from 'components/Swap';
 import SwapV3Page from './V3/Swap';
+import { useHistory, useParams } from 'react-router-dom';
 
 const SWAP_BEST_TRADE = 0;
 const SWAP_NORMAL = 1;
@@ -23,18 +24,29 @@ const SwapMain: React.FC = () => {
   const [openSettingsModal, setOpenSettingsModal] = useState(false);
   const { isProMode, updateIsProMode } = useIsProMode();
 
+  const { isV3, updateIsV3 } = useIsV3();
+  const params: any = useParams();
+  const history = useHistory();
+  const isOnV3 = params ? params.version === 'v3' : false;
   const parsedQuery = useParsedQueryString();
   const currency0 = useCurrency(
-    parsedQuery && parsedQuery.currency0
-      ? (parsedQuery.currency0 as string)
+    parsedQuery && (parsedQuery.currency0 || parsedQuery.inputCurrency)
+      ? ((parsedQuery.currency0 ?? parsedQuery.inputCurrency) as string)
       : undefined,
   );
   const currency1 = useCurrency(
-    parsedQuery && parsedQuery.currency1
-      ? (parsedQuery.currency1 as string)
+    parsedQuery && (parsedQuery.currency1 || parsedQuery.outputCurrency)
+      ? ((parsedQuery.currency1 ?? parsedQuery.outputCurrency) as string)
       : undefined,
   );
   const { t } = useTranslation();
+
+  useEffect(() => {
+    updateIsV3(isOnV3);
+    if (isOnV3) {
+      setSwapIndex(SWAP_V3);
+    }
+  }, [isOnV3]);
 
   return (
     <>
@@ -56,7 +68,10 @@ const SwapMain: React.FC = () => {
               swapIndex === SWAP_BEST_TRADE ? 'activeSwap' : ''
             } swapItem headingItem
             `}
-            onClick={() => setSwapIndex(SWAP_BEST_TRADE)}
+            onClick={() => {
+              history.push('/swap');
+              setSwapIndex(SWAP_BEST_TRADE);
+            }}
           >
             <p>{t('bestTrade')}</p>
           </Box>
@@ -65,7 +80,10 @@ const SwapMain: React.FC = () => {
               swapIndex === SWAP_NORMAL ? 'activeSwap' : ''
             } swapItem headingItem
             `}
-            onClick={() => setSwapIndex(SWAP_NORMAL)}
+            onClick={() => {
+              history.push('/swap');
+              setSwapIndex(SWAP_NORMAL);
+            }}
           >
             <p>{t('market')}</p>
           </Box>
@@ -74,7 +92,7 @@ const SwapMain: React.FC = () => {
               swapIndex === SWAP_V3 ? 'activeSwap' : ''
             } swapItem headingItem
             `}
-            onClick={() => setSwapIndex(SWAP_V3)}
+            onClick={() => history.push('/swap/v3')}
           >
             <p>{t('marketV3')}</p>
           </Box>
@@ -82,7 +100,10 @@ const SwapMain: React.FC = () => {
             className={`${
               swapIndex === SWAP_LIMIT ? 'activeSwap' : ''
             } swapItem headingItem ${isProMode ? 'border-right' : ''}`}
-            onClick={() => setSwapIndex(SWAP_LIMIT)}
+            onClick={() => {
+              history.push('/swap');
+              setSwapIndex(SWAP_LIMIT);
+            }}
           >
             <p>{t('limit')}</p>
           </Box>
