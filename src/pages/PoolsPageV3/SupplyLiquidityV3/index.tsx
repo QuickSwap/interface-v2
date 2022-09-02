@@ -38,7 +38,7 @@ import useUSDCPrice from 'hooks/v3/useUSDCPrice';
 import {
   PriceFormats,
   PriceFormatToggler,
-} from './components/PriceFomatToggler';
+} from 'components/v3/PriceFomatToggler';
 import { AddLiquidityButton } from './containers/AddLiquidityButton';
 import { ArrowLeft, ChevronLeft, ChevronRight } from 'react-feather';
 import { PoolState } from 'hooks/v3/usePools';

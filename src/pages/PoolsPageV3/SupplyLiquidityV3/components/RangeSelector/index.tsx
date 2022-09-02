@@ -12,7 +12,7 @@ import {
   useInitialTokenPrice,
   useInitialUSDPrices,
 } from 'state/mint/v3/hooks';
-import { PriceFormats } from '../PriceFomatToggler';
+import { PriceFormats } from 'components/v3/PriceFomatToggler';
 import { tryParseAmount } from 'state/swap/v3/hooks';
 import './index.scss';
 import { Box } from '@material-ui/core';

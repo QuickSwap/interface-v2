@@ -1,5 +1,4 @@
 import { Box } from '@material-ui/core';
-import { StyledDarkBox } from 'components/AddLiquidityV3/CommonStyledElements';
 import CustomTabSwitch from 'components/v3/CustomTabSwitch';
 import { useFarmingSubgraph } from 'hooks/useIncentiveSubgraph';
 import useParsedQueryString from 'hooks/useParsedQueryString';
@@ -78,7 +77,7 @@ export default function Farms() {
   console.log(' farms data ', { eternalFarms, transferredPositions });
 
   return (
-    <StyledDarkBox>
+    <Box className='bg-default' borderRadius={10}>
       <Box width='100%' mt={2}>
         <CustomTabSwitch
           width={300}
@@ -108,6 +107,6 @@ export default function Farms() {
           />
         )}
       </Box>
-    </StyledDarkBox>
+    </Box>
   );
 }

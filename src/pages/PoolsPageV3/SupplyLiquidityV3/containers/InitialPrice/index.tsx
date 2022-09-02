@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Currency } from '@uniswap/sdk-core';
 import useUSDCPrice from 'hooks/v3/useUSDCPrice';
-import { PriceFormats } from '../../components/PriceFomatToggler';
+import { PriceFormats } from 'components/v3/PriceFomatToggler';
 import StartingPrice from '../../components/StartingPrice';
 import { USDPrices } from '../../components/USDPrices';
 import { useHistory } from 'react-router-dom';

@@ -5,7 +5,7 @@ import './index.scss';
 import { useInfoLiquidity } from 'hooks/subgraph/useInfoLiquidity';
 import { IDerivedMintInfo } from 'state/mint/v3/hooks';
 import { StepTitle } from '../../components/StepTitle';
-import { PriceFormats } from '../../components/PriceFomatToggler';
+import { PriceFormats } from 'components/v3/PriceFomatToggler';
 import { Box } from '@material-ui/core';
 import { Add } from '@material-ui/icons';
 import V3CurrencySelect from 'components/v3/CurrencySelect';

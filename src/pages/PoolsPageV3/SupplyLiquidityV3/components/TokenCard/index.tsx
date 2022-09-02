@@ -6,7 +6,7 @@ import { ChevronRight } from 'react-feather';
 import { useActiveWeb3React } from 'hooks';
 import { useCurrencyBalance } from 'state/wallet/hooks';
 import useUSDCPrice, { useUSDCValue } from 'hooks/v3/useUSDCPrice';
-import { PriceFormats } from '../PriceFomatToggler';
+import { PriceFormats } from 'components/v3/PriceFomatToggler';
 import CurrencySearchModal from 'components/CurrencySearchModal';
 import { Box } from '@material-ui/core';
 import './index.scss';

@@ -7,7 +7,7 @@ import { useCurrencyBalance } from 'state/wallet/hooks';
 import { useActiveWeb3React } from 'hooks';
 import useUSDCPrice, { useUSDCValue } from 'hooks/v3/useUSDCPrice';
 import Loader from 'components/Loader';
-import { PriceFormats } from '../PriceFomatToggler';
+import { PriceFormats } from 'components/v3/PriceFomatToggler';
 import { tryParseAmount } from 'state/swap/v3/hooks';
 import { useBestV3TradeExactIn } from 'hooks/v3/useBestV3Trade';
 import { useInitialTokenPrice, useInitialUSDPrices } from 'state/mint/v3/hooks';

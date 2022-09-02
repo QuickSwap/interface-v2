@@ -3,7 +3,7 @@ import { Currency, Token, Price } from '@uniswap/sdk-core';
 import useUSDCPrice from 'hooks/v3/useUSDCPrice';
 import './index.scss';
 import { Lock } from 'react-feather';
-import { PriceFormats } from '../PriceFomatToggler';
+import { PriceFormats } from 'components/v3/PriceFomatToggler';
 import {
   IDerivedMintInfo,
   useInitialTokenPrice,

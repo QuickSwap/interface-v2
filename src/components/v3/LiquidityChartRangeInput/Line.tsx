@@ -1,7 +1,6 @@
 import React, { useMemo } from 'react';
 import { ScaleLinear } from 'd3';
 import { StyledLine } from './styled';
-import { StyledLabel } from 'components/AddLiquidityV3/CommonStyledElements';
 
 export const Line = ({
   value,
@@ -24,13 +23,13 @@ export const Line = ({
         <rect
           x={xScale(value) - 22}
           y={0}
-          width={44}
+          width={53}
           height={15}
           fill={'#2797FF'}
           rx={4}
         />
-        <text fill={'white'} fontSize={8} x={xScale(value) - 18} y={10}>
-          <StyledLabel>Curr. price</StyledLabel>
+        <text fill={'white'} fontSize={9} x={xScale(value) - 18} y={11}>
+          Curr. price
         </text>
       </>
     ),

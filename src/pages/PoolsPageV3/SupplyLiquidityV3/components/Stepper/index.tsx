@@ -10,7 +10,7 @@ import {
   useInitialUSDPrices,
 } from 'state/mint/v3/hooks';
 import { Presets } from 'state/mint/v3/reducer';
-import { PriceFormats } from '../PriceFomatToggler';
+import { PriceFormats } from 'components/v3/PriceFomatToggler';
 import './index.scss';
 import { toToken } from 'constants/v3/routing';
 

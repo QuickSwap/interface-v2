@@ -1,7 +1,6 @@
 import React from 'react';
-import Toggle from 'components/Toggle';
+import Toggle from 'components/v3/Toggle';
 import { useState } from 'react';
-import './index.scss';
 
 export enum PriceFormats {
   TOKEN,
@@ -20,16 +19,14 @@ export function PriceFormatToggler({
   const [inputType, setInputType] = useState(currentFormat);
 
   return (
-    <div className='f price-format-toggler'>
-      <Toggle
-        isActive={!!inputType}
-        toggle={() => {
-          handlePriceFormat(+!inputType);
-          setInputType(+!inputType);
-        }}
-        // checked={<div>USD</div>}
-        // unchecked={<div>Tokens</div>}
-      />
-    </div>
+    <Toggle
+      isActive={!!inputType}
+      toggle={() => {
+        handlePriceFormat(+!inputType);
+        setInputType(+!inputType);
+      }}
+      checked={'USD'}
+      unchecked={'Tokens'}
+    />
   );
 }

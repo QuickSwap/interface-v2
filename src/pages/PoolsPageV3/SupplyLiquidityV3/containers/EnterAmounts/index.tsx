@@ -18,7 +18,7 @@ import { NONFUNGIBLE_POSITION_MANAGER_ADDRESSES } from 'constants/v3/addresses';
 import { maxAmountSpend } from 'utils/v3/maxAmountSpend';
 import { tryParseAmount } from 'state/swap/v3/hooks';
 import { TokenAmountCard } from '../../components/TokenAmountCard';
-import { PriceFormats } from '../../components/PriceFomatToggler';
+import { PriceFormats } from 'components/v3/PriceFomatToggler';
 import { TokenRatio } from '../../components/TokenRatio';
 import { Box, Button } from '@material-ui/core';
 import Loader from 'components/Loader';
