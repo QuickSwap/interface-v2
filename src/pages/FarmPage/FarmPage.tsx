@@ -14,9 +14,8 @@ import { useDefaultDualFarmList } from 'state/dualfarms/hooks';
 import { ChainId } from '@uniswap/sdk';
 import { useFarmingSubgraph } from 'hooks/useIncentiveSubgraph';
 import VersionToggle from 'components/Toggle/VersionToggle';
-import useParsedQueryString from 'hooks/useParsedQueryString';
-import { useHistory } from 'react-router-dom';
 import V3Farms from 'pages/FarmPage/V3';
+import { useIsV3 } from 'state/application/hooks';
 
 const FarmPage: React.FC = () => {
   const { chainId } = useActiveWeb3React();
@@ -63,33 +62,23 @@ const FarmPage: React.FC = () => {
     },
   ];
 
-  const history = useHistory();
-  const parsedQuery = useParsedQueryString();
-  const poolVersion =
-    parsedQuery && parsedQuery.version ? (parsedQuery.version as string) : 'v3';
-
-  const isOnV3 = poolVersion === 'v3';
-
-  const handleToggleAction = useCallback(
-    (isV3: boolean) => {
-      history.push(`/farm?version=${isV3 ? 'v3' : 'v2'}`);
-    },
-    [history],
-  );
+  const { isV3 } = useIsV3();
 
   return (
     <Box width='100%' mb={3} id='farmPage'>
       <Box className='pageHeading'>
         <Box className='flex row items-center'>
           <h4>{t('farm')}</h4>
-          <VersionToggle isV3={isOnV3} onToggleV3={handleToggleAction} />
+          <Box ml={2}>
+            <VersionToggle />
+          </Box>
         </Box>
         <Box className='helpWrapper'>
           <small>{t('help')}</small>
           <HelpIcon />
         </Box>
       </Box>
-      {!isOnV3 && (
+      {!isV3 && (
         <>
           <CustomSwitch
             width={300}
@@ -105,7 +94,7 @@ const FarmPage: React.FC = () => {
           </Box>
         </>
       )}
-      {isOnV3 && <V3Farms />}
+      {isV3 && <V3Farms />}
     </Box>
   );
 };

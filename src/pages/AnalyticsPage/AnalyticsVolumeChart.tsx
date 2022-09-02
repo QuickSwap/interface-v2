@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Box } from '@material-ui/core';
 import Skeleton from '@material-ui/lab/Skeleton';
-import { useGlobalData } from 'state/application/hooks';
+import { useGlobalData, useIsV3 } from 'state/application/hooks';
 import {
   formatCompact,
   getChartData,
@@ -14,7 +14,6 @@ import {
 import { BarChart, ChartType } from 'components';
 import { GlobalConst, GlobalData } from 'constants/index';
 import { useTranslation } from 'react-i18next';
-import { useIsV3 } from 'state/analytics/hooks';
 import { getChartDataV3 } from 'utils/v3-graph';
 
 const DAY_VOLUME = 0;
@@ -32,7 +31,7 @@ const AnalyticsVolumeChart: React.FC = () => {
   const { globalData } = useGlobalData();
   const [globalChartData, updateGlobalChartData] = useState<any>(null);
 
-  const isV3 = useIsV3();
+  const { isV3 } = useIsV3();
 
   useEffect(() => {
     const fetchChartData = async () => {

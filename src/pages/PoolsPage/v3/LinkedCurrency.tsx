@@ -1,8 +1,8 @@
 import React from 'react';
 import { Currency, Token } from '@uniswap/sdk-core';
 import { TYPE } from 'theme/index';
-import CurrencyLogo from '../../components/CurrencyLogo';
-import { WrappedCurrency } from '../../models/types';
+import CurrencyLogo from 'components/CurrencyLogo';
+import { WrappedCurrency } from 'models/types';
 import { ExternalLink } from 'theme/components';
 import { getEtherscanLink, ExplorerDataType } from 'utils';
 import { RowFixed } from 'components/v3/Row';

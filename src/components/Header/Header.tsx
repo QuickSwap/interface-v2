@@ -24,7 +24,7 @@ import SparkleTop from 'assets/images/SparkleTop.svg';
 import SparkleBottom from 'assets/images/SparkleBottom.svg';
 import 'components/styles/Header.scss';
 import { useTranslation } from 'react-i18next';
-import { useIsV3 } from 'state/analytics/hooks';
+import { useIsV3 } from 'state/application/hooks';
 
 const newTransactionsFirst = (a: TransactionDetails, b: TransactionDetails) => {
   return b.addedTime - a.addedTime;
@@ -54,21 +54,21 @@ const Header: React.FC = () => {
   const mobileWindowSize = useMediaQuery(theme.breakpoints.down('xs'));
   const toggleWalletModal = useWalletModalToggle();
 
-  const isV3 = useIsV3();
+  const { isV3 } = useIsV3();
 
   const menuItems = [
     {
-      link: '/swap',
+      link: `/swap${isV3 ? '/v3' : ''}`,
       text: t('swap'),
       id: 'swap-page-link',
     },
     {
-      link: '/pools',
+      link: `/pools${isV3 ? '/v3' : ''}`,
       text: t('pool'),
       id: 'pools-page-link',
     },
     {
-      link: '/farm',
+      link: `/farm${isV3 ? '/v3' : ''}`,
       text: t('farm'),
       id: 'farm-page-link',
     },
@@ -95,7 +95,7 @@ const Header: React.FC = () => {
       isNew: true,
     },
     {
-      link: `/analytics/${isV3 ? 'v3' : 'v2'}`,
+      link: `/analytics${isV3 ? '/v3' : ''}`,
       text: t('analytics'),
       id: 'analytics-page-link',
     },

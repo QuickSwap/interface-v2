@@ -15,7 +15,7 @@ import {
 import { GlobalConst, GlobalData } from 'constants/index';
 import { AreaChart, ChartType } from 'components';
 import { useTranslation } from 'react-i18next';
-import { useIsV3 } from 'state/analytics/hooks';
+import { useIsV3 } from 'state/application/hooks';
 import { getChartDataV3 } from 'utils/v3-graph';
 dayjs.extend(utc);
 
@@ -27,7 +27,7 @@ const AnalyticsLiquidityChart: React.FC = () => {
   );
   const [globalChartData, updateGlobalChartData] = useState<any[] | null>(null);
 
-  const isV3 = useIsV3();
+  const { isV3 } = useIsV3();
 
   useEffect(() => {
     const fetchChartData = async () => {

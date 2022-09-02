@@ -10,7 +10,7 @@ import { PositionPool } from 'models/interfaces';
 import { useShowNewestPosition } from 'state/mint/v3/hooks';
 import { useWalletModalToggle } from 'state/application/hooks';
 
-export function MyLiquidityPoolsV3() {
+export default function MyLiquidityPoolsV3() {
   const { account } = useActiveWeb3React();
   const [userHideClosedPositions, setUserHideClosedPositions] = useState(false);
   const [hideFarmingPositions, setHideFarmingPositions] = useState(false);
@@ -84,7 +84,7 @@ export function MyLiquidityPoolsV3() {
   const toggleWalletModal = useWalletModalToggle();
 
   return (
-    <Box className='wrapper'>
+    <Box>
       <p className='weight-600'>My Liquidity Pools</p>
       {/* <div className={'flex-s-between mxs_mv-05'}>
             <NavLink

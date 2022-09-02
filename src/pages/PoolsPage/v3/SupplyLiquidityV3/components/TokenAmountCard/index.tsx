@@ -17,6 +17,7 @@ import { toToken } from 'constants/v3/routing';
 import { Box } from '@material-ui/core';
 import { LockOutlined } from '@material-ui/icons';
 import NumericalInput from 'components/NumericalInput';
+import { ETHER } from '@uniswap/sdk';
 
 interface ITokenAmountCard {
   currency: Currency | undefined | null;
@@ -51,7 +52,7 @@ export function TokenAmountCard({
 
   const balance = useCurrencyBalance(
     account ?? undefined,
-    currency ?? undefined,
+    currency?.isNative ? ETHER : currency ?? undefined,
   );
   const balanceUSD = useUSDCPrice(currency ?? undefined);
 

@@ -16,7 +16,7 @@ import {
 import { AreaChart, ChartType } from 'components';
 import { GlobalConst, GlobalData } from 'constants/index';
 import { useTranslation } from 'react-i18next';
-import { useIsV3 } from 'state/analytics/hooks';
+import { useIsV3 } from 'state/application/hooks';
 import { getPairChartDataV3, getPairChartFees } from 'utils/v3-graph';
 import AnalyticsPairLiquidityChartV3 from './AnalyticsPairLiquidityChartV3';
 import '../styles/analytics.scss';
@@ -42,7 +42,7 @@ const AnalyticsPairChart: React.FC<{
     GlobalConst.analyticChart.ONE_MONTH_CHART,
   );
 
-  const isV3 = useIsV3();
+  const { isV3 } = useIsV3();
 
   const [priceChartTokenIdx, setPriceChartTokenIdx] = useState(0);
 

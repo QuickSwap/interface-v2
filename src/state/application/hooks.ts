@@ -18,6 +18,7 @@ import {
   updateTokenDetails,
   updateIsProMode,
   updateMaticPrice,
+  updateIsV3,
 } from './actions';
 import { ETHPrice, MaticPrice, TokenDetail } from './reducer';
 
@@ -272,4 +273,19 @@ export function useIsProMode(): {
     [dispatch],
   );
   return { isProMode, updateIsProMode: _updateIsProMode };
+}
+
+export function useIsV3(): {
+  isV3: boolean;
+  updateIsV3: (isV3: boolean) => void;
+} {
+  const isV3 = useSelector((state: AppState) => state.application.isV3);
+  const dispatch = useDispatch();
+  const _updateIsV3 = useCallback(
+    (isV3: boolean) => {
+      dispatch(updateIsV3(isV3));
+    },
+    [dispatch],
+  );
+  return { isV3, updateIsV3: _updateIsV3 };
 }

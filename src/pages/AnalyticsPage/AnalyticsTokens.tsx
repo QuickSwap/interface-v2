@@ -5,12 +5,12 @@ import {
   useBookmarkTokens,
   useEthPrice,
   useMaticPrice,
+  useIsV3,
 } from 'state/application/hooks';
 import { getTopTokens } from 'utils';
 import { Skeleton } from '@material-ui/lab';
 import { useTranslation } from 'react-i18next';
 import { GlobalConst } from 'constants/index';
-import { useIsV3 } from 'state/analytics/hooks';
 import { getTopTokensV3 } from 'utils/v3-graph';
 import { useDispatch } from 'react-redux';
 import { setAnalyticsLoaded } from 'state/analytics/actions';
@@ -26,7 +26,7 @@ const AnalyticsTokens: React.FC = () => {
   const { ethPrice } = useEthPrice();
   const { maticPrice } = useMaticPrice();
 
-  const isV3 = useIsV3();
+  const { isV3 } = useIsV3();
 
   const favoriteTokens = useMemo(() => {
     if (topTokens) {

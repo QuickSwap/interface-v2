@@ -8,8 +8,7 @@ import { CurrencyLogo } from 'components';
 import { getTopTokens, getPriceClass, formatNumber } from 'utils';
 import 'components/styles/TopMovers.scss';
 import { useTranslation } from 'react-i18next';
-import { useEthPrice, useMaticPrice } from 'state/application/hooks';
-import { useIsV3 } from 'state/analytics/hooks';
+import { useEthPrice, useMaticPrice, useIsV3 } from 'state/application/hooks';
 import { getTopTokensV3 } from 'utils/v3-graph';
 
 interface TopMoversProps {
@@ -21,7 +20,7 @@ const TopMovers: React.FC<TopMoversProps> = ({ hideArrow = false }) => {
   const { ethPrice } = useEthPrice();
   const { maticPrice } = useMaticPrice();
 
-  const isV3 = useIsV3();
+  const { isV3 } = useIsV3();
 
   const topMoverTokens = useMemo(
     () => (topTokens && topTokens.length >= 5 ? topTokens.slice(0, 5) : null),

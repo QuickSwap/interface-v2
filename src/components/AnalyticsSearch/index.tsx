@@ -20,7 +20,7 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 import { useSelectedTokenList } from 'state/lists/hooks';
-import { useIsV3 } from 'state/analytics/hooks';
+import { useIsV3 } from 'state/application/hooks';
 import { getAllPairsV3, getAllTokensV3 } from 'utils/v3-graph';
 import {
   PAIR_SEARCH_V3,
@@ -46,7 +46,7 @@ const AnalyticsSearch: React.FC = () => {
   const [pairsShown, setPairsShown] = useState(3);
   const tokenMap = useSelectedTokenList();
 
-  const isV3 = useIsV3();
+  const { isV3 } = useIsV3();
   const version = useMemo(() => `${isV3 ? `v3` : 'v2'}`, [isV3]);
 
   const escapeRegExp = (str: string) => {

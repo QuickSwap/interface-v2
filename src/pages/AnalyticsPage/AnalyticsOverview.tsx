@@ -9,6 +9,7 @@ import {
   useEthPrice,
   useGlobalData,
   useMaticPrice,
+  useIsV3,
 } from 'state/application/hooks';
 import {
   getTopPairs,
@@ -23,7 +24,6 @@ import AnalyticsLiquidityChart from './AnalyticsLiquidityChart';
 import AnalyticsVolumeChart from './AnalyticsVolumeChart';
 import { useTranslation } from 'react-i18next';
 import { getGlobalDataV3, getTopPairsV3, getTopTokensV3 } from 'utils/v3-graph';
-import { useIsV3 } from 'state/analytics/hooks';
 import { useDispatch } from 'react-redux';
 import { setAnalyticsLoaded } from 'state/analytics/actions';
 
@@ -40,7 +40,7 @@ const AnalyticsOverview: React.FC = () => {
 
   const dispatch = useDispatch();
 
-  const isV3 = useIsV3();
+  const { isV3 } = useIsV3();
   const version = useMemo(() => `${isV3 ? `v3` : 'v2'}`, [isV3]);
 
   useEffect(() => {

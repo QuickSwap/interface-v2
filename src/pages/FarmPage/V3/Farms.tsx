@@ -77,7 +77,7 @@ export default function Farms() {
   console.log(' farms data ', { eternalFarms, transferredPositions });
 
   return (
-    <Box className='bg-default' borderRadius={10}>
+    <Box className='bg-palette' borderRadius={10}>
       <Box width='100%' mt={2}>
         <CustomTabSwitch
           width={300}

@@ -1,28 +1,19 @@
-import React, { lazy, useCallback } from 'react';
+import React, { lazy } from 'react';
+import { useParams } from 'react-router-dom';
 import { Box, Grid } from '@material-ui/core';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
 import SupplyLiquidity from './SupplyLiquidity';
 import { useTranslation } from 'react-i18next';
 import 'pages/styles/pools.scss';
-import useParsedQueryString from 'hooks/useParsedQueryString';
-import VersionToggle from '../../components/Toggle/VersionToggle';
-import { useHistory } from 'react-router-dom';
+import VersionToggle from 'components/Toggle/VersionToggle';
+import { useIsV3 } from 'state/application/hooks';
+import { SupplyLiquidityV3 } from './v3/SupplyLiquidityV3';
 const YourLiquidityPools = lazy(() => import('./YourLiquidityPools'));
+const MyLiquidityPoolsV3 = lazy(() => import('./v3/MyLiquidityPoolsV3'));
 
 const PoolsPage: React.FC = () => {
-  const parsedQuery = useParsedQueryString();
-  const poolVersion =
-    parsedQuery && parsedQuery.version ? (parsedQuery.version as string) : 'v3';
-
   const { t } = useTranslation();
-  const history = useHistory();
-  const handleToggleAction = useCallback(
-    (isV3: boolean) => {
-      const url = isV3 ? '/v3Pools' : '/pools';
-      history.push(url);
-    },
-    [history],
-  );
+  const { isV3 } = useIsV3();
 
   return (
     <Box width='100%' mb={3}>
@@ -30,7 +21,7 @@ const PoolsPage: React.FC = () => {
         <Box className='flex row items-center'>
           <h4>{t('pool')}</h4>
           <Box ml={2}>
-            <VersionToggle isV3={false} onToggleV3={handleToggleAction} />
+            <VersionToggle />
           </Box>
         </Box>
 
@@ -40,14 +31,14 @@ const PoolsPage: React.FC = () => {
         </Box>
       </Box>
       <Grid container spacing={4}>
-        <Grid item>
+        <Grid item xs={12} sm={12} md={5}>
           <Box className='wrapper'>
-            <SupplyLiquidity />
+            {isV3 ? <SupplyLiquidityV3 /> : <SupplyLiquidity />}
           </Box>
         </Grid>
         <Grid item xs={12} sm={12} md={7}>
           <Box className='wrapper'>
-            <YourLiquidityPools />
+            {isV3 ? <MyLiquidityPoolsV3 /> : <YourLiquidityPools />}
           </Box>
         </Grid>
       </Grid>

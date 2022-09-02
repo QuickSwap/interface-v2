@@ -29,7 +29,7 @@ import {
   useTransactionAdder,
 } from 'state/transactions/hooks';
 import { TransactionResponse } from '@ethersproject/providers';
-import { getPriceOrderingFromPositionForUI } from '../../components/v3/PositionListItem';
+import { getPriceOrderingFromPositionForUI } from 'components/v3/PositionListItem';
 import { useSingleCallResult } from 'state/multicall/v3/hooks';
 import useUSDCPrice from 'hooks/v3/useUSDCPrice';
 import Loader from 'components/Loader';
@@ -37,13 +37,13 @@ import Toggle from 'components/Toggle';
 import { Bound } from 'state/mint/v3/actions';
 import useIsTickAtLimit from 'hooks/v3/useIsTickAtLimit';
 import { formatTickPrice } from 'utils/v3/formatTickPrice';
-import usePrevious from '../../hooks/usePrevious';
+import usePrevious from 'hooks/usePrevious';
 import ReactGA from 'react-ga';
 import { MouseoverTooltip } from 'components/v3/Tooltip';
-import { useAppSelector } from '../../state/hooks';
+import { useAppSelector } from 'state/hooks';
 import { LinkedCurrency } from './LinkedCurrency';
 import { CurrentPriceCard } from './CurrentPriceCard';
-import { WrappedCurrency } from '../../models/types';
+import { WrappedCurrency } from 'models/types';
 import {
   FARMING_CENTER,
   NONFUNGIBLE_POSITION_MANAGER_ADDRESSES,

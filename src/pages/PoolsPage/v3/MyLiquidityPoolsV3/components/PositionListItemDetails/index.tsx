@@ -180,7 +180,6 @@ export default function PositionListItemDetails({
   const isCollectPending = useIsTransactionPending(
     collectMigrationHash ?? undefined,
   );
-  const [showConfirm, setShowConfirm] = useState(false);
 
   // usdc prices always in terms of tokens
   const price0 = useUSDCPrice(token0 ?? undefined);
@@ -208,20 +207,14 @@ export default function PositionListItemDetails({
     return fiatValueOfFees;
   }, [fiatValueOfFees]);
 
-  const fiatValueOfLiquidity: CurrencyAmount<Token> | null = useMemo(() => {
-    if (!price0 || !price1 || !position) return null;
+  const fiatValueOfLiquidity:
+    | CurrencyAmount<Token>
+    | undefined = useMemo(() => {
+    if (!price0 || !price1 || !position) return;
     const amount0 = price0.quote(position.amount0);
     const amount1 = price1.quote(position.amount1);
     return amount0.add(amount1);
   }, [price0, price1, position]);
-
-  const prevFiatValueOfLiquidity = usePrevious(fiatValueOfLiquidity);
-  const _fiatValueOfLiquidity = useMemo(() => {
-    if (!fiatValueOfLiquidity && prevFiatValueOfLiquidity) {
-      return prevFiatValueOfLiquidity;
-    }
-    return fiatValueOfLiquidity;
-  }, [fiatValueOfLiquidity]);
 
   const addTransaction = useTransactionAdder();
   const positionManager = useV3NFTPositionManagerContract();
@@ -351,12 +344,7 @@ export default function PositionListItemDetails({
             <p className='small weight-600'>Liquidity</p>
             <Box mt='5px'>
               <p className='small weight-600'>
-                $
-                {_fiatValueOfLiquidity?.greaterThan(new Fraction(1, 100))
-                  ? _fiatValueOfLiquidity.toFixed(2, {
-                      groupSeparator: ',',
-                    })
-                  : '-'}
+                ${formatCurrencyAmount(fiatValueOfLiquidity, 4)}
               </p>
             </Box>
           </Box>

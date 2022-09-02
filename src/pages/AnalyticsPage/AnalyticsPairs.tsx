@@ -5,8 +5,7 @@ import { getTopPairs, getBulkPairData } from 'utils';
 import { Skeleton } from '@material-ui/lab';
 import { useTranslation } from 'react-i18next';
 import { GlobalConst } from 'constants/index';
-import { useEthPrice } from 'state/application/hooks';
-import { useIsV3 } from 'state/analytics/hooks';
+import { useEthPrice, useIsV3 } from 'state/application/hooks';
 import { getTopPairsV3 } from 'utils/v3-graph';
 import { useDispatch } from 'react-redux';
 import { setAnalyticsLoaded } from 'state/analytics/actions';
@@ -18,7 +17,7 @@ const AnalyticsPairs: React.FC = () => {
 
   const dispatch = useDispatch();
 
-  const isV3 = useIsV3();
+  const { isV3 } = useIsV3();
 
   useEffect(() => {
     updateTopPairs(null);

@@ -20,6 +20,7 @@ import {
   useBookmarkTokens,
   useEthPrice,
   useMaticPrice,
+  useIsV3,
 } from 'state/application/hooks';
 import { ReactComponent as StarChecked } from 'assets/images/StarChecked.svg';
 import { ReactComponent as StarUnchecked } from 'assets/images/StarUnchecked.svg';
@@ -29,7 +30,6 @@ import AnalyticsTokenChart from './AnalyticsTokenChart';
 import { useTranslation } from 'react-i18next';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { getAddress } from 'ethers/lib/utils';
-import { useIsV3 } from 'state/analytics/hooks';
 import { getTokenInfoV3, getTokenTransactionsV3 } from 'utils/v3-graph';
 import { useDispatch } from 'react-redux';
 import { setAnalyticsLoaded } from 'state/analytics/actions';
@@ -59,7 +59,7 @@ const AnalyticsTokenDetails: React.FC = () => {
 
   const dispatch = useDispatch();
 
-  const isV3 = useIsV3();
+  const { isV3 } = useIsV3();
 
   const tokenTransactionsList = useMemo(() => {
     if (tokenTransactions) {

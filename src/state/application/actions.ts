@@ -101,3 +101,5 @@ export const updateGasPrice = createAction<{
   fetched: number | null;
   override: boolean;
 }>('application/updateGasPrice');
+
+export const updateIsV3 = createAction<boolean>('application/updateIsV3');

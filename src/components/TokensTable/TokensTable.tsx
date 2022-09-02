@@ -11,13 +11,12 @@ import {
   getPriceClass,
   getTokenFromAddress,
 } from 'utils';
-import { useBookmarkTokens } from 'state/application/hooks';
+import { useBookmarkTokens, useIsV3 } from 'state/application/hooks';
 import { ReactComponent as StarChecked } from 'assets/images/StarChecked.svg';
 import { ReactComponent as StarUnchecked } from 'assets/images/StarUnchecked.svg';
 import 'components/styles/TokensTable.scss';
 import { useTranslation } from 'react-i18next';
 import { useSelectedTokenList } from 'state/lists/hooks';
-import { useIsV3 } from 'state/analytics/hooks';
 
 interface TokensTableProps {
   data: any[];
@@ -32,7 +31,7 @@ const TokensTable: React.FC<TokensTableProps> = ({
 }) => {
   const { t } = useTranslation();
   const tokenMap = useSelectedTokenList();
-  const isV3 = useIsV3();
+  const { isV3 } = useIsV3();
   const version = useMemo(() => `${isV3 ? `v3` : 'v2'}`, [isV3]);
 
   const tokenHeadCells = [

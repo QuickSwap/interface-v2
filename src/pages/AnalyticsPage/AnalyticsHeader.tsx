@@ -6,8 +6,8 @@ import AnalyticsSearch from 'components/AnalyticsSearch';
 import { shortenAddress } from 'utils';
 import 'pages/styles/analytics.scss';
 import { useTranslation } from 'react-i18next';
-import { useIsV3 } from 'state/analytics/hooks';
-import AnalyticsToggler from './AnalyticsToggler';
+import { useIsV3 } from 'state/application/hooks';
+import VersionToggle from 'components/Toggle/VersionToggle';
 
 interface AnalyticHeaderProps {
   data?: any;
@@ -19,14 +19,16 @@ const AnalyticsHeader: React.FC<AnalyticHeaderProps> = ({ data, type }) => {
   const { pathname } = useLocation();
   const { t } = useTranslation();
 
-  const isV3 = useIsV3();
+  const { isV3 } = useIsV3();
   const version = useMemo(() => `${isV3 ? `v3` : 'v2'}`, [isV3]);
 
   return (
     <Box width='100%' mb={3}>
-      <Box mb={4} className='flex'>
+      <Box mb={4} className='flex items-center'>
         <h4>{t('quickswapAnalytics')}</h4>
-        <AnalyticsToggler />
+        <Box ml={2}>
+          <VersionToggle />
+        </Box>
       </Box>
       <Box
         mb={4}

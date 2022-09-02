@@ -18,7 +18,7 @@ import { getTokenChartData } from 'utils';
 import { GlobalConst, GlobalData } from 'constants/index';
 import { useTranslation } from 'react-i18next';
 import { getTokenChartDataV3 } from 'utils/v3-graph';
-import { useIsV3 } from 'state/analytics/hooks';
+import { useIsV3 } from 'state/application/hooks';
 
 const CHART_VOLUME = 0;
 const CHART_LIQUIDITY = 1;
@@ -80,7 +80,7 @@ const AnalyticsTokenChart: React.FC<{ token: any }> = ({ token }) => {
     }
   }, [token, chartIndex]);
 
-  const isV3 = useIsV3();
+  const { isV3 } = useIsV3();
 
   useEffect(() => {
     async function fetchTokenChartData() {
