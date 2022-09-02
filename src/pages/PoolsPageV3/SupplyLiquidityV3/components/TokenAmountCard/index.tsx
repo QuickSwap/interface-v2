@@ -184,7 +184,7 @@ export function TokenAmountCard({
   ]);
 
   const balanceString = useMemo(() => {
-    if (!balance || !currency) return <Loader stroke={'white'} />;
+    if (!balance || !currency) return 'loading';
 
     const _balance =
       isUSD && balanceUSD
@@ -238,7 +238,18 @@ export function TokenAmountCard({
               <p className='weight-600'>{currency.symbol}</p>
             </div>
             <Box mt={1} className='token-amount-card-balance'>
-              <small className='text-secondary'>Balance: {balanceString}</small>
+              {balanceString === 'loading' ? (
+                <Box className='flex items-center'>
+                  <small className='text-secondary'>Balance: </small>
+                  <Box className='flex' ml='5px'>
+                    <Loader stroke='white' />
+                  </Box>
+                </Box>
+              ) : (
+                <small className='text-secondary'>
+                  Balance: {balanceString}
+                </small>
+              )}
               {handleHalf && (
                 <button onClick={handleHalf}>
                   <small>50%</small>

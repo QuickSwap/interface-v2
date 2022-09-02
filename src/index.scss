@@ -26,6 +26,15 @@ body {
   }
 }
 
+.wrapper {
+  padding: 24px;
+  background: $bgPalette;
+  border-radius: 20px;
+  @include media("screen", "<phone") {
+    padding: 16px 12px
+  }
+}
+
 .page {
   background-color: $bgColor;
   width: 100%;
