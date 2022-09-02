@@ -17,7 +17,6 @@ import {
   TruncatedText,
 } from './styled';
 import { AdvancedSwapDetails } from './AdvancedSwapDetails';
-import Card from '../Card/Card';
 import TradePrice from '../swap/TradePrice';
 import { useUSDCValue } from 'hooks/v3/useUSDCPrice';
 import { isAddress } from 'ethers/lib/utils';
@@ -25,6 +24,8 @@ import { shortenAddress } from 'utils';
 import CurrencyLogo from 'components/CurrencyLogo';
 import { computeFiatValuePriceImpact } from 'utils/v3/computeFiatValuePriceImpact';
 import { WrappedCurrency } from 'models/types';
+import { StyledFilledBox, StyledLabel } from '../Common/styledElements';
+import { Box } from '@material-ui/core';
 
 interface SwapModalHeaderProps {
   trade:
@@ -52,83 +53,98 @@ export default function SwapModalHeader({
 
   return (
     <div>
-      <Card isDark classes={'p-1 br-12 mv-05'}>
-        <div className={'flex-s-between mb-05'}>
-          <span className={'fs-085'}>{'From'}</span>
-          <FiatValue fiatValue={fiatValueInput} />
-        </div>
-        <div className={'flex-s-between'}>
-          <div className={'f f-ac'}>
-            <span className={'mr-05'}>
-              <CurrencyLogo
-                currency={trade.inputAmount.currency as WrappedCurrency}
-                size={'1.5rem'}
-              />
-            </span>
-            <Text fontSize={20} fontWeight={500}>
-              {trade.inputAmount.currency.symbol}
-            </Text>
+      <StyledFilledBox>
+        <Box padding={2} paddingTop={2}>
+          <div className={'flex-s-between mb-1'}>
+            <span className={'fs-085'}>{'From'}</span>
+            <FiatValue fiatValue={fiatValueInput} />
           </div>
-          <RowFixed gap={'0px'}>
-            <TruncatedText
-              fontSize={24}
-              fontWeight={500}
-              color={
-                showAcceptChanges && trade.tradeType === TradeType.EXACT_OUTPUT
-                  ? theme.primary1
-                  : ''
-              }
-            >
-              {trade.inputAmount.toSignificant(6)}
-            </TruncatedText>
-          </RowFixed>
-        </div>
-      </Card>
+
+          <div className={'flex-s-between'}>
+            <div className={'f f-ac'}>
+              <span className={'mr-05'}>
+                <CurrencyLogo
+                  currency={trade.inputAmount.currency as WrappedCurrency}
+                  size={'1.5rem'}
+                />
+              </span>
+              <Text fontSize={16} fontWeight={600}>
+                {trade.inputAmount.currency.symbol}
+              </Text>
+            </div>
+            <RowFixed gap={'0px'}>
+              <TruncatedText
+                fontSize={16}
+                fontWeight={600}
+                color={
+                  showAcceptChanges &&
+                  trade.tradeType === TradeType.EXACT_OUTPUT
+                    ? theme.primary1
+                    : ''
+                }
+              >
+                {trade.inputAmount.toSignificant(6)}
+              </TruncatedText>
+            </RowFixed>
+          </div>
+        </Box>
+      </StyledFilledBox>
       <SwapModalHeaderArrowWrapper>
         <ArrowDown size='1rem' color={theme.text2} />
       </SwapModalHeaderArrowWrapper>
-      <Card isDark classes={'p-1 br-12 mv-05'}>
-        <div className={'flex-s-between fs-085 mb-05'}>
-          {'To'}
-          <FiatValue
-            fiatValue={fiatValueOutput}
-            priceImpact={computeFiatValuePriceImpact(
-              fiatValueInput,
-              fiatValueOutput,
-            )}
-          />
-        </div>
-        <div className={'flex-s-between'}>
-          <div className={'f f-ac'}>
-            <span className={'mr-05'}>
-              <CurrencyLogo
-                currency={trade.outputAmount.currency as WrappedCurrency}
-                size={'1.5rem'}
+      <Box marginTop={1}>
+        <StyledFilledBox>
+          <Box padding={2}>
+            <div className={'flex-s-between fs-08 mb-1'}>
+              {'To'}
+              <FiatValue
+                fiatValue={fiatValueOutput}
+                priceImpact={computeFiatValuePriceImpact(
+                  fiatValueInput,
+                  fiatValueOutput,
+                )}
               />
-            </span>
-            <Text fontSize={20} fontWeight={500}>
-              {trade.outputAmount.currency.symbol}
-            </Text>
-          </div>
-          <RowFixed gap={'0px'}>
-            <TruncatedText fontSize={24} fontWeight={500}>
-              {trade.outputAmount.toSignificant(6)}
-            </TruncatedText>
-          </RowFixed>
-        </div>
-      </Card>
-      <div className={'flex-s-between c-p fs-085 ph-05'}>
+            </div>
+
+            <div className={'flex-s-between'}>
+              <div className={'f f-ac'}>
+                <span className={'mr-05'}>
+                  <CurrencyLogo
+                    currency={trade.outputAmount.currency as WrappedCurrency}
+                    size={'1.5rem'}
+                  />
+                </span>
+                <Text fontSize={16} fontWeight={600}>
+                  {trade.outputAmount.currency.symbol}
+                </Text>
+              </div>
+              <RowFixed gap={'0px'}>
+                <TruncatedText fontSize={16} fontWeight={600}>
+                  {trade.outputAmount.toSignificant(6)}
+                </TruncatedText>
+              </RowFixed>
+            </div>
+          </Box>
+        </StyledFilledBox>
+      </Box>
+
+      <StyledLabel className={'flex-s-between ph-05 mt-1 mb-1'}>
         {'Price'}
         <TradePrice
           price={trade.executionPrice}
           showInverted={showInverted}
           setShowInverted={setShowInverted}
         />
-      </div>
+      </StyledLabel>
 
-      <Card isDark classes={'p-1 br-12 mv-05'}>
-        <AdvancedSwapDetails trade={trade} allowedSlippage={allowedSlippage} />
-      </Card>
+      <StyledFilledBox>
+        <Box padding={1}>
+          <AdvancedSwapDetails
+            trade={trade}
+            allowedSlippage={allowedSlippage}
+          />
+        </Box>
+      </StyledFilledBox>
 
       {showAcceptChanges ? (
         <SwapShowAcceptChanges justify='flex-start' gap={'0px'}>
@@ -157,7 +173,7 @@ export default function SwapModalHeader({
 
       <div>
         {trade.tradeType === TradeType.EXACT_INPUT ? (
-          <div className={'c-p fs-085 i l mt-1'}>
+          <div className={'l mt-1'}>
             {'Output is estimated. You will receive at least '}
             <b>
               {trade.minimumAmountOut(allowedSlippage).toSignificant(6)}{' '}
@@ -166,7 +182,7 @@ export default function SwapModalHeader({
             {' or the transaction will revert.'}
           </div>
         ) : (
-          <div className={'c-p fs-085 i l mt-1'}>
+          <div className={'l mt-1'}>
             {'Input is estimated. You will sell at most '}
             <b>
               {trade.maximumAmountIn(allowedSlippage).toSignificant(6)}{' '}
