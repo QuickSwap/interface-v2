@@ -166,11 +166,7 @@ export default function PositionListItem({
     ? _pool.tickCurrent < _tickLower || _pool.tickCurrent >= _tickUpper
     : false;
 
-  const positionSummaryLink = `/pool/${positionDetails.tokenId}${
-    _onFarming ? '?onFarming=true' : _oldFarming ? '?oldFarming=true' : ''
-  }`;
-
-  const farmingLink = `/farming/farms#${positionDetails.tokenId}`;
+  const farmingLink = `/farm/v3`;
 
   const isNewest = newestPosition
     ? newestPosition === +positionDetails.tokenId
