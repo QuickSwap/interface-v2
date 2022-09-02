@@ -73,12 +73,13 @@ export default function Modal({
                       style: { transform: `translateY(-3rem)` },
                     }
                   : {
-                      style: { width: fitContent ? 'unset' : '700px' },
+                      style: { width: 600 ? 'unset' : '600px' },
                     })}
                 aria-label='dialog content'
                 minHeight={minHeight}
                 maxHeight={maxHeight}
                 mobile={isMobile}
+                style={{ backgroundColor: '#1b1e29' }}
               >
                 {/* prevents the automatic focusing of inputs on mobile by the reach dialog */}
                 {!initialFocusRef && isMobile ? <div tabIndex={1} /> : null}

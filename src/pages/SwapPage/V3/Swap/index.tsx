@@ -433,6 +433,24 @@ const SwapV3Page: React.FC = () => {
     });
   }, [maxInputAmount, onUserInput]);
 
+  const handleHalfInput = useCallback(() => {
+    if (!maxInputAmount) {
+      return;
+    }
+
+    ReactGA.event({
+      category: 'Swap',
+      action: 'Half',
+    });
+
+    const halvedAmount = maxInputAmount.divide('2');
+
+    onUserInput(
+      Field.INPUT,
+      halvedAmount.toFixed(maxInputAmount.currency.decimals),
+    );
+  }, [maxInputAmount, onUserInput]);
+
   const handleOutputSelect = useCallback(
     (outputCurrency) => {
       onCurrencySelection(Field.OUTPUT, outputCurrency);
@@ -508,9 +526,11 @@ const SwapV3Page: React.FC = () => {
                     }
                     value={formattedAmounts[Field.INPUT]}
                     showMaxButton={showMaxButton}
+                    showHalfButton={true}
                     currency={currencies[Field.INPUT] as WrappedCurrency}
                     onUserInput={handleTypeInput}
                     onMax={handleMaxInput}
+                    onHalf={handleHalfInput}
                     fiatValue={fiatValueInput ?? undefined}
                     onCurrencySelect={handleInputSelect}
                     otherCurrency={currencies[Field.OUTPUT]}
@@ -544,6 +564,7 @@ const SwapV3Page: React.FC = () => {
                         : 'To'
                     }
                     showMaxButton={false}
+                    showHalfButton={false}
                     hideBalance={false}
                     fiatValue={fiatValueOutput ?? undefined}
                     priceImpact={priceImpact}
@@ -643,20 +664,18 @@ const SwapV3Page: React.FC = () => {
                 ) : routeNotFound && userHasSpecifiedInputOutput ? (
                   <StyledButton
                     disabled={routeNotFound && userHasSpecifiedInputOutput}
-                    style={{
-                      textAlign: 'center',
-                      backgroundColor: theme.winterDisabledButton,
-                    }}
+                    // style={{
+                    //   textAlign: 'center',
+                    //   backgroundColor: theme.winterDisabledButton,
+                    // }}
                   >
-                    <StyledLabel>
-                      {isLoadingRoute ? (
-                        <Dots>Loading</Dots>
-                      ) : singleHopOnly ? (
-                        'Insufficient liquidity for this trade. Try enabling multi-hop trades.'
-                      ) : (
-                        'Insufficient liquidity for this trade.'
-                      )}
-                    </StyledLabel>
+                    {isLoadingRoute ? (
+                      <Dots>Loading</Dots>
+                    ) : singleHopOnly ? (
+                      'Insufficient liquidity for this trade. Try enabling multi-hop trades.'
+                    ) : (
+                      'Insufficient liquidity for this trade.'
+                    )}
                   </StyledButton>
                 ) : showApproveFlow ? (
                   <AutoRow style={{ flexWrap: 'nowrap', width: '100%' }}>
@@ -673,11 +692,6 @@ const SwapV3Page: React.FC = () => {
                           color: 'white',
                         }}
                         width='100%'
-
-                        // confirmed={
-                        //   approvalState === ApprovalState.APPROVED ||
-                        //   signatureState === UseERC20PermitState.SIGNED
-                        // }
                       >
                         <AutoRow
                           justify='space-between'
@@ -758,33 +772,6 @@ const SwapV3Page: React.FC = () => {
                             });
                           }
                         }}
-                        style={{
-                          backgroundColor:
-                            !isValid ||
-                            (approvalState !== ApprovalState.APPROVED &&
-                              signatureState !== UseERC20PermitState.SIGNED) ||
-                            priceImpactTooHigh ||
-                            priceImpactSeverity
-                              ? theme.winterDisabledButton
-                              : theme.winterMainButton,
-                          color:
-                            !isValid ||
-                            (approvalState !== ApprovalState.APPROVED &&
-                              signatureState !== UseERC20PermitState.SIGNED) ||
-                            priceImpactTooHigh ||
-                            priceImpactSeverity
-                              ? 'rgb(195, 197, 203)'
-                              : 'white',
-                          border:
-                            !isValid ||
-                            (approvalState !== ApprovalState.APPROVED &&
-                              signatureState !== UseERC20PermitState.SIGNED) ||
-                            priceImpactTooHigh ||
-                            priceImpactSeverity
-                              ? '1px solid #073c66'
-                              : `1px solid ${({ theme }: any) =>
-                                  theme.winterMainButton}`,
-                        }}
                         width='100%'
                         id='swap-button'
                         disabled={
@@ -794,13 +781,11 @@ const SwapV3Page: React.FC = () => {
                           priceImpactTooHigh
                         }
                       >
-                        <Text fontSize={16} fontWeight={500}>
-                          {priceImpactTooHigh
-                            ? 'High Price Impact'
-                            : priceImpactSeverity > 2
-                            ? 'Swap Anyway'
-                            : 'Swap'}
-                        </Text>
+                        {priceImpactTooHigh
+                          ? 'High Price Impact'
+                          : priceImpactSeverity > 2
+                          ? 'Swap Anyway'
+                          : 'Swap'}
                       </StyledButton>
                     </AutoColumn>
                   </AutoRow>
@@ -826,15 +811,13 @@ const SwapV3Page: React.FC = () => {
                       !isValid || priceImpactTooHigh || !!swapCallbackError
                     }
                   >
-                    <Text fontSize={20} fontWeight={500}>
-                      {swapInputError
-                        ? swapInputError
-                        : priceImpactTooHigh
-                        ? 'Price Impact Too High'
-                        : priceImpactSeverity > 2
-                        ? 'Swap Anyway'
-                        : 'Swap'}
-                    </Text>
+                    {swapInputError
+                      ? swapInputError
+                      : priceImpactTooHigh
+                      ? 'Price Impact Too High'
+                      : priceImpactSeverity > 2
+                      ? 'Swap Anyway'
+                      : 'Swap'}
                   </StyledButton>
                 )}
                 {isExpertMode && swapErrorMessage ? (

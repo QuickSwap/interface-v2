@@ -1,8 +1,8 @@
 import React from 'react';
 import { useCallback } from 'react';
 import { Currency, Price } from '@uniswap/sdk-core';
-import { Text } from 'rebass';
 import { StyledPriceContainer } from './styled';
+import { StyledLabel } from '../Common/styledElements';
 
 interface TradePriceProps {
   price: Price<Currency, Currency>;
@@ -43,9 +43,7 @@ export default function TradePrice({
       <div
         style={{ alignItems: 'center', display: 'flex', width: 'fit-content' }}
       >
-        <Text fontWeight={500} fontSize={14} color={'var(--primary)'}>
-          {text}
-        </Text>
+        <StyledLabel color={'#c7cad9'}>{text}</StyledLabel>
       </div>
     </StyledPriceContainer>
   );

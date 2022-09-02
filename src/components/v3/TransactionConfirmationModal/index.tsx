@@ -1,9 +1,7 @@
 import { Currency } from '@uniswap/sdk-core';
+import React from 'react';
 import { ReactNode, useContext, useEffect } from 'react';
 import { ThemeContext } from 'styled-components/macro';
-
-import React from 'react';
-import { Text } from 'rebass';
 import { RowBetween, RowFixed } from '../Row';
 import {
   AlertTriangle,
@@ -32,6 +30,7 @@ import {
 import Modal from 'components/Modal';
 import { CloseIcon, CustomLightSpinner } from 'theme/components';
 import { ExplorerDataType, getEtherscanLink } from 'utils';
+import { StyledButton, StyledLabel } from '../Common/styledElements';
 
 interface ConfirmationPendingContentProps {
   onDismiss: () => void;
@@ -60,11 +59,16 @@ function ConfirmationPendingContent({
         />
       </div>
       <div className={'f c f-ac ta-c'}>
-        <span className={'fs-125 c-p mb-05 i-f'}>Waiting For Confirmation</span>
-        <span className={'b c-p i-f mb-05'}>{pendingText}</span>
-        <span className={'fs-075 c-lg'}>
-          Confirm this transaction in your wallet
-        </span>
+        <StyledLabel className=' mb-05' fontSize='16px' color='#c7cad9'>
+          Waiting For Confirmation
+        </StyledLabel>
+        <StyledLabel className=' mb-05' fontSize='14px' color='#c7cad9'>
+          {pendingText}
+        </StyledLabel>
+
+        <StyledLabel className=' mb-05' fontSize='14px' color='#696c80'>
+          {' Confirm this transaction in your wallet'}
+        </StyledLabel>
       </div>
     </div>
   );
@@ -107,16 +111,16 @@ function TransactionSubmittedContent({
         />
       </ConfirmedIcon>
       <AutoColumn gap='12px' justify={'center'}>
-        <Text fontWeight={500} fontSize={20} textAlign='center'>
+        <StyledLabel fontSize={'20px'} className='text-center'>
           Transaction Submitted
-        </Text>
+        </StyledLabel>
         {chainId && hash && (
           <ExternalLink
             href={getEtherscanLink(chainId, hash, ExplorerDataType.TRANSACTION)}
           >
-            <Text fontWeight={500} fontSize={14} color={theme.winterMainButton}>
+            <StyledLabel fontSize={'14px'} color={theme.winterMainButton}>
               View on Explorer
-            </Text>
+            </StyledLabel>
           </ExternalLink>
         )}
         {currencyToAdd && library?.provider?.isMetaMask && (
@@ -143,14 +147,12 @@ function TransactionSubmittedContent({
             )}
           </ButtonLight>
         )}
-        <ButtonPrimary
+        <StyledButton
           onClick={onDismiss}
           style={{ margin: '20px 0 0 0', color: 'white' }}
         >
-          <Text fontWeight={500} fontSize={20}>
-            {inline ? 'Return' : 'Close'}
-          </Text>
-        </ButtonPrimary>
+          {inline ? 'Return' : 'Close'}
+        </StyledButton>
       </AutoColumn>
     </div>
   );
@@ -197,9 +199,7 @@ export function TransactionErrorContent({
     <Wrapper>
       <Section>
         <RowBetween>
-          <Text fontWeight={500} fontSize={20}>
-            Error
-          </Text>
+          <StyledLabel fontSize={'20px'}>Error</StyledLabel>
           <CloseIcon onClick={onDismiss} />
         </RowBetween>
         <AutoColumn
@@ -212,9 +212,8 @@ export function TransactionErrorContent({
             style={{ strokeWidth: 1.5 }}
             size={64}
           />
-          <Text
-            fontWeight={500}
-            fontSize={16}
+          <StyledLabel
+            fontSize={'16px'}
             color={theme.red1}
             style={{
               textAlign: 'center',
@@ -223,11 +222,11 @@ export function TransactionErrorContent({
             }}
           >
             {message}
-          </Text>
+          </StyledLabel>
         </AutoColumn>
       </Section>
       <BottomSection gap='12px'>
-        <ButtonPrimary onClick={onDismiss}>Dismiss</ButtonPrimary>
+        <StyledButton onClick={onDismiss}>Dismiss</StyledButton>
       </BottomSection>
     </Wrapper>
   );
