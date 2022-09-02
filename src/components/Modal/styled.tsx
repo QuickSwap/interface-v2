@@ -39,7 +39,7 @@ export const StyledDialogContent = styled(
     backdrop-filter: blur(6px);
     box-shadow: 0 4px 8px 0
       ${({ theme }) => transparentize(0.95, theme.shadow1)};
-    width: 60vw;
+    width: 450px;
     overflow-y: clip;
     overflow-x: hidden;
     padding: 1rem;
@@ -69,8 +69,8 @@ export const StyledDialogContent = styled(
         css`
           width: 100vw;
           border-radius: 20px 20px 0 0;
-          padding-bottom: 3rem;
-          padding-top: 4rem;
+          max-height: 100vh;
+          align-items: center;
           overflow-y: auto;
         `}
     `}

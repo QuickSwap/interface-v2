@@ -6,8 +6,8 @@ export const PopoverContainer = styled.div<{ show: boolean }>`
   visibility: ${(props) => (props.show ? 'visible' : 'hidden')};
   opacity: ${(props) => (props.show ? 1 : 0)};
   transition: visibility 150ms linear, opacity 150ms linear;
-  background: var(--primary-weak);
-  border: 1px solid var(--primary-weak);
+  background: #282d3d;
+  border: 1px solid #282d3d;
   box-shadow: 0 4px 8px 0 ${({ theme }) => transparentize(0.9, theme.shadow1)};
   color: ${({ theme }) => theme.text2};
   border-radius: 8px;
@@ -27,9 +27,9 @@ export const Arrow = styled.div`
     z-index: 9998;
 
     content: '';
-    border: 1px solid var(--primary-weak);
+    border: 1px solid #282d3d;
     transform: rotate(45deg);
-    background: var(--primary-weak);
+    background: #282d3d;
   }
 
   &.arrow-top {

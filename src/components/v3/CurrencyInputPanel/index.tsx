@@ -35,7 +35,9 @@ interface CurrencyInputPanelProps {
   value: string;
   onUserInput: (value: string) => void;
   onMax?: () => void;
+  onHalf?: () => void;
   showMaxButton: boolean;
+  showHalfButton?: boolean;
   label?: ReactNode;
   onCurrencySelect?: (currency: Currency) => void;
   currency?: WrappedCurrency | null;
@@ -64,7 +66,9 @@ export default function CurrencyInputPanel({
   value,
   onUserInput,
   onMax,
+  onHalf,
   showMaxButton,
+  showHalfButton,
   onCurrencySelect,
   currency,
   otherCurrency,
@@ -194,13 +198,8 @@ export default function CurrencyInputPanel({
               {'balance'}: {balance?.toSignificant(5)}
             </small>
 
-            {account && currency && true && (
-              <Box
-                className='maxWrapper'
-                onClick={() => {
-                  console.log('handle half');
-                }}
-              >
+            {account && currency && showHalfButton && (
+              <Box className='maxWrapper' onClick={onHalf}>
                 <small>50%</small>
               </Box>
             )}

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Percent } from '@uniswap/sdk-core';
+import { StyledLabel } from '../Common/styledElements';
 
 interface SwapHeaderProps {
   allowedSlippage: Percent;
@@ -13,11 +14,13 @@ export default function SwapHeader({
   return (
     <div className={'flex-s-between w-100 mb-1'}>
       <div className={'flex-s-between w-100'}>
-        <span className={'mr-05 b fs-125'}>{'Swap'}</span>
+        <StyledLabel fontSize='16px' color='#c7cad9'>
+          {'Swap'}
+        </StyledLabel>
         {dynamicFee && (
-          <span className={'bg-p pv-025 ph-05 br-8'}>
+          <StyledLabel fontSize='12px' color='#b4b9cc' className={' br-8'}>
             {`Fee is ${dynamicFee / 10000}%`}
-          </span>
+          </StyledLabel>
         )}
       </div>
     </div>
