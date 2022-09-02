@@ -416,8 +416,8 @@ export default function RemoveLiquidityV3({
           </Box>
         </Box>
         {(feeValue0?.greaterThan(0) || feeValue1?.greaterThan(0)) && (
-          <Box mt={2}>
-            <Divider />
+          <>
+            <Box mt={2} width='100%' height='1px' className='border' />
             <Box my={2}>
               <p>{feeValue0?.currency?.symbol} Fees Earned:</p>
               <Box className='flex items-center'>
@@ -432,7 +432,7 @@ export default function RemoveLiquidityV3({
                 <CurrencyLogo currency={feeValue1?.currency} size='20px' />
               </Box>
             </Box>
-          </Box>
+          </>
         )}
       </Box>
       {showCollectAsWeth && (

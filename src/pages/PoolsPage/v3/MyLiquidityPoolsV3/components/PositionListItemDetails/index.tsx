@@ -53,6 +53,12 @@ import './index.scss';
 import RateToggle from 'components/v3/RateToggle';
 import V3IncreaseLiquidityModal from '../V3IncreaseLiquidityModal';
 import V3RemoveLiquidityModal from '../V3RemoveLiquidityModal';
+import {
+  ConfirmationModalContent,
+  ToggleSwitch,
+  TransactionConfirmationModal,
+  TransactionErrorContent,
+} from 'components';
 
 interface PositionListItemProps {
   positionDetails: PositionPool;
@@ -173,13 +179,13 @@ export default function PositionListItemDetails({
     receiveWETH,
   );
 
+  const [collectConfirm, showCollectConfirm] = useState(false);
   const [collecting, setCollecting] = useState<boolean>(false);
   const [collectMigrationHash, setCollectMigrationHash] = useState<
-    string | null
-  >(null);
-  const isCollectPending = useIsTransactionPending(
-    collectMigrationHash ?? undefined,
-  );
+    string | undefined
+  >(undefined);
+  const isCollectPending = useIsTransactionPending(collectMigrationHash);
+  const [collectErrorMessage, setCollectErrorMessage] = useState('');
 
   // usdc prices always in terms of tokens
   const price0 = useUSDCPrice(token0 ?? undefined);
@@ -285,6 +291,7 @@ export default function PositionListItemDetails({
       })
       .catch((error) => {
         setCollecting(false);
+        setCollectErrorMessage('There is error in transaction');
         console.error(error);
       });
   }, [
@@ -322,6 +329,61 @@ export default function PositionListItemDetails({
       ? !below && !above
       : false;
 
+  const showCollectAsWeth = Boolean(
+    (ownsNFT || _onFarming) &&
+      (feeValue0?.greaterThan(0) || feeValue1?.greaterThan(0)) &&
+      currency0 &&
+      currency1 &&
+      (currency0.isNative || currency1.isNative) &&
+      !collectMigrationHash,
+  );
+
+  function modalHeader() {
+    return (
+      <>
+        <Box mt={3} mb={2}>
+          <Box className='flex justify-between'>
+            <Box className='flex items-center'>
+              <CurrencyLogo currency={feeValueUpper?.currency} size={'24px'} />
+              <p className='ml-05'>{feeValueUpper?.currency?.symbol}</p>
+            </Box>
+            <p>
+              {feeValueUpper ? formatCurrencyAmount(feeValueUpper, 4) : '-'}
+            </p>
+          </Box>
+          <Box mt={2} className='flex justify-between'>
+            <Box className='flex items-center'>
+              <CurrencyLogo currency={feeValueLower?.currency} size={'24px'} />
+              <p className='ml-05'>{feeValueLower?.currency?.symbol}</p>
+            </Box>
+            <p>
+              {feeValueLower ? formatCurrencyAmount(feeValueLower, 4) : '-'}
+            </p>
+          </Box>
+        </Box>
+        <Box mb={2} textAlign='center'>
+          <p>Collecting fees will withdraw currently available fees for you.</p>
+        </Box>
+        <Box className='flex justify-center'>
+          <Button
+            fullWidth
+            style={{ maxWidth: 300 }}
+            size='large'
+            onClick={collect}
+          >
+            Collect
+          </Button>
+        </Box>
+      </>
+    );
+  }
+
+  const dismissCollectConfirm = () => {
+    showCollectConfirm(false);
+    setCollectErrorMessage('');
+    setCollectMigrationHash(undefined);
+  };
+
   return (
     <>
       {openIncreaseLiquidityModal && (
@@ -336,6 +398,35 @@ export default function PositionListItemDetails({
           open={openRemoveLiquidityModal}
           onClose={() => setOpenRemoveLiquidityModal(false)}
           position={positionDetails}
+        />
+      )}
+      {collectConfirm && (
+        <TransactionConfirmationModal
+          isOpen={collectConfirm}
+          onDismiss={dismissCollectConfirm}
+          attemptingTxn={collecting}
+          txPending={isCollectPending}
+          hash={collectMigrationHash}
+          content={() =>
+            collectErrorMessage ? (
+              <TransactionErrorContent
+                onDismiss={dismissCollectConfirm}
+                message={collectErrorMessage}
+              />
+            ) : (
+              <ConfirmationModalContent
+                title='Collect Fees'
+                onDismiss={dismissCollectConfirm}
+                content={modalHeader}
+              />
+            )
+          }
+          pendingText=''
+          modalContent={
+            isCollectPending
+              ? 'Submitted Tx to collect fees'
+              : 'Successfully collected fees'
+          }
         />
       )}
       <Box className='v3-pool-liquidity-item-details'>
@@ -423,7 +514,7 @@ export default function PositionListItemDetails({
               !!collectMigrationHash) && (
               <Button
                 disabled={collecting || !!collectMigrationHash}
-                onClick={collect}
+                onClick={() => showCollectConfirm(true)}
               >
                 {!!collectMigrationHash && !isCollectPending
                   ? 'Claimed'
@@ -457,6 +548,17 @@ export default function PositionListItemDetails({
             </p>
           </Box>
         </Box>
+        {showCollectAsWeth && (
+          <Box mt={2} className='flex items-center'>
+            <Box mr={1}>
+              <p>Collect as WMATIC</p>
+            </Box>
+            <ToggleSwitch
+              toggled={receiveWETH}
+              onToggle={() => setReceiveWETH((receiveWETH) => !receiveWETH)}
+            />
+          </Box>
+        )}
         <Box mt={3} className='flex items-center justify-between'>
           <small>Selected Range</small>
           {currencyBase && currencyQuote && (

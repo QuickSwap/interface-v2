@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { usePool } from 'hooks/v3/usePools';
+import { PoolState, usePool } from 'hooks/v3/usePools';
 import { useToken } from 'hooks/v3/Tokens';
 import { Price, Token, Percent } from '@uniswap/sdk-core';
 import Loader from 'components/Loader';
@@ -20,14 +20,16 @@ import { WMATIC_EXTENDED } from 'constants/v3/addresses';
 import { GlobalValue } from 'constants/index';
 import { toToken } from 'constants/v3/routing';
 import { Box } from '@material-ui/core';
+import { useHistory } from 'react-router-dom';
 import { ExpandLess, ExpandMore } from '@material-ui/icons';
-import Badge from 'components/v3/Badge';
+import Badge, { BadgeVariant } from 'components/v3/Badge';
 import PositionListItemDetails from '../PositionListItemDetails';
 
 interface PositionListItemProps {
   positionDetails: PositionPool;
   newestPosition?: number | undefined;
   highlightNewest?: boolean;
+  hideExpand?: boolean;
 }
 
 export function getPriceOrderingFromPositionForUI(
@@ -96,9 +98,11 @@ export default function PositionListItem({
   positionDetails,
   newestPosition,
   highlightNewest,
+  hideExpand = false,
 }: PositionListItemProps) {
+  const history = useHistory();
   const dispatch = useAppDispatch();
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState(hideExpand);
 
   const prevPositionDetails = usePrevious({ ...positionDetails });
   const {
@@ -123,18 +127,15 @@ export default function PositionListItem({
   const token0 = useToken(_token0Address);
   const token1 = useToken(_token1Address);
 
-  const currency0 = token0 ? unwrappedToken(token0) : undefined;
-  const currency1 = token1 ? unwrappedToken(token1) : undefined;
-
   // construct Position from details returned
-  const [, pool] = usePool(currency0 ?? undefined, currency1 ?? undefined);
-  const prevPool = usePrevious(pool);
-  const _pool = useMemo(() => {
-    if (!pool && prevPool) {
-      return prevPool;
+  const [poolState, pool] = usePool(token0 ?? undefined, token1 ?? undefined);
+  const [prevPoolState, prevPool] = usePrevious([poolState, pool]) || [];
+  const [_poolState, _pool] = useMemo(() => {
+    if (!pool && prevPool && prevPoolState) {
+      return [prevPoolState, prevPool];
     }
-    return pool;
-  }, [pool]);
+    return [poolState, pool];
+  }, [pool, poolState]);
 
   const position = useMemo(() => {
     if (_pool) {
@@ -198,24 +199,27 @@ export default function PositionListItem({
           {currencyQuote?.symbol}-{currencyBase?.symbol}
         </p>
         {_onFarming ? (
-          <NavLink
-            className={'flex-s-between btn primary fs-085 p-025 br-8'}
-            to={farmingLink}
+          <Box
+            className='flex items-center bg-primary cursor-pointer'
+            padding='0 5px'
+            height='24px'
+            borderRadius='4px'
+            ml={1}
+            onClick={() => history.push(farmingLink)}
+            color='white'
           >
-            <span>Farming</span>
-            <ArrowRight
-              size={14}
-              color={'white'}
-              style={{ marginLeft: '5px' }}
-            />
-          </NavLink>
+            <p className='caption'>Farming</p>
+            <Box className='flex' ml='5px'>
+              <ArrowRight size={14} />
+            </Box>
+          </Box>
         ) : _oldFarming ? (
-          <span
-            className={'flex-s-between btn primary fs-085 p-025 br-8'}
-            style={{ background: '#46210a', borderColor: '#861f1f' }}
-          >
-            <span>On Old Farming Center</span>
-          </span>
+          <Box ml={1}>
+            <Badge
+              variant={BadgeVariant.WARNING}
+              text='On Old Farming Center'
+            />
+          </Box>
         ) : (
           <div />
         )}
@@ -235,7 +239,12 @@ export default function PositionListItem({
 
       {!expanded && (
         <Box width={1} mt={1}>
-          {priceLower && priceUpper ? (
+          {_poolState === PoolState.LOADING && (
+            <Box width={1} className='flex justify-center'>
+              <Loader size={'1rem'} stroke={'var(--white)'} />
+            </Box>
+          )}
+          {_poolState !== PoolState.LOADING && priceLower && priceUpper && (
             <span className='text-secondary'>
               Min{' '}
               {`${formatTickPrice(priceLower, tickAtLimit, Bound.LOWER)} ${
@@ -246,20 +255,18 @@ export default function PositionListItem({
                 currencyQuote?.symbol
               } per ${currencyBase?.symbol}`}
             </span>
-          ) : (
-            <Box width={1} className='flex justify-center'>
-              <Loader size={'1rem'} stroke={'var(--white)'} />
-            </Box>
           )}
         </Box>
       )}
 
-      <Box
-        className='v3-pool-liquidity-item-expand'
-        onClick={() => setExpanded(!expanded)}
-      >
-        {expanded ? <ExpandLess /> : <ExpandMore />}
-      </Box>
+      {_poolState !== PoolState.LOADING && !hideExpand && (
+        <Box
+          className='v3-pool-liquidity-item-expand'
+          onClick={() => setExpanded(!expanded)}
+        >
+          {expanded ? <ExpandLess /> : <ExpandMore />}
+        </Box>
+      )}
 
       {expanded && (
         <Box mt={3}>
