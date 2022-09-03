@@ -79,7 +79,7 @@ export function EternalFarmCard({
                     new Token(
                       ChainId.MATIC,
                       pool.token0.id,
-                      pool.token0.decimals,
+                      Number(pool.token0.decimals),
                       pool.token0.symbol,
                     ) as WrappedCurrency
                   }
@@ -87,7 +87,7 @@ export function EternalFarmCard({
                     new Token(
                       ChainId.MATIC,
                       pool.token1.id,
-                      pool.token1.decimals,
+                      Number(pool.token1.decimals),
                       pool.token1.symbol,
                     ) as WrappedCurrency
                   }
@@ -99,6 +99,7 @@ export function EternalFarmCard({
                 </StyledLabel>
               </Box>
             </Box>
+            {rewardsToken &&
             <StyledDarkBox
               padding={1.5}
               className='flex items-center '
@@ -109,9 +110,9 @@ export function EternalFarmCard({
                   currency={
                     new Token(
                       ChainId.MATIC,
-                      rewardToken?.id,
-                      rewardToken?.decimals,
-                      rewardToken?.symbol,
+                      rewardToken.id,
+                      Number(rewardToken.decimals_,
+                      rewardToken.symbol,
                     ) as WrappedCurrency
                   }
                   size={'30px'}
@@ -127,6 +128,7 @@ export function EternalFarmCard({
                 </Box>
               </Box>
             </StyledDarkBox>
+            }
             {bonusRewardToken && (
               <>
                 <Box
