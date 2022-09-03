@@ -99,7 +99,7 @@ export function EternalFarmCard({
                 </StyledLabel>
               </Box>
             </Box>
-            {rewardsToken &&
+            {rewardToken &&
             <StyledDarkBox
               padding={1.5}
               className='flex items-center '
@@ -111,7 +111,7 @@ export function EternalFarmCard({
                     new Token(
                       ChainId.MATIC,
                       rewardToken.id,
-                      Number(rewardToken.decimals_,
+                      Number(rewardToken.decimals),
                       rewardToken.symbol,
                     ) as WrappedCurrency
                   }
