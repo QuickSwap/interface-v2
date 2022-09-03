@@ -440,11 +440,17 @@ export default function PositionListItemDetails({
             </Box>
           </Box>
           <Box className='flex'>
-            <Button onClick={() => setOpenIncreaseLiquidityModal(true)}>
+            <Button
+              disabled={_onFarming}
+              onClick={() => setOpenIncreaseLiquidityModal(true)}
+            >
               Add
             </Button>
             <Box ml={1}>
-              <Button onClick={() => setOpenRemoveLiquidityModal(true)}>
+              <Button
+                disabled={_onFarming}
+                onClick={() => setOpenRemoveLiquidityModal(true)}
+              >
                 Remove
               </Button>
             </Box>
