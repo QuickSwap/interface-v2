@@ -3,34 +3,50 @@ import { Token } from '@uniswap/sdk-core';
 import { Matic } from 'v3lib/entities/matic';
 import { WMATIC } from 'v3lib/entities/wmatic';
 
+// {
+//   x"poolDeployer": "0x2D98E2FA9da15aa6dC9581AB097Ced7af697CB92",
+//   x"factory": "0x411b0fAcC3489691f28ad58c47006AF5E3Ab3A28",
+//   "tickLens": "0x5e9793f398c68A55F9C85A965CdB0d0c9a094d70",
+//   x"quoter": "0xa15F0D7377B2A0C0c10db057f641beD21028FC89",
+//   x"swapRouter": "0xf5b509bB0909a69B1c207E495f687a596C168E12",
+//   "nonfungibleTokenPositionDescriptor": "0x557E54e1e7a0D93f99e9D80E6d19e4843f452A2D",
+//   x"nonfungiblePositionManager": "0x8eF88E4c7CfbbaC1C163f7eddd4B578792201de6",
+//   x"v3Migrator": "0x157B9913E00204f8c980bb00aa62E22b0dAb1a63",
+//   x"algebraInterfaceMulticall": "0x6ccb9426CeceE2903FbD97fd833fD1D31c100292",
+//   x"algebraLimitFarming": "0x9923f42a02A82dA63EE0DbbC5f8E311e3DD8A1f8",
+//   x"algebraEternalFarming": "0x8a26436e41d0b5fc4C6Ed36C1976fafBe173444E",
+//   "farmingCenterVault": "0x347E0544b7ac8656c8727F4Ee8e2b7E644b85c17",
+//   "farmingCenter": "0x7F281A8cdF66eF5e9db8434Ec6D97acc1bc01E78"
+// }
+
 type AddressMap = { [chainId: number]: string };
 
 export const V3_CORE_FACTORY_ADDRESSES: AddressMap = {
-  [ChainId.MATIC]: '0xd556ED8F399b29504095E606feF34e53Df9B0c14',
+  [ChainId.MATIC]: '0x411b0fAcC3489691f28ad58c47006AF5E3Ab3A28',
 };
 
 export const POOL_DEPLOYER_ADDRESS: AddressMap = {
-  [ChainId.MATIC]: '0x390e1F04BF44C33F491231E7865fF05E583813C5',
+  [ChainId.MATIC]: '0x2D98E2FA9da15aa6dC9581AB097Ced7af697CB92',
 };
 
 export const QUOTER_ADDRESSES: AddressMap = {
-  [ChainId.MATIC]: '0x3dcD9cCB03C217C5D24d867A0142CB0fe8BDcF8B',
+  [ChainId.MATIC]: '0xa15F0D7377B2A0C0c10db057f641beD21028FC89',
 };
 
 export const SWAP_ROUTER_ADDRESSES: AddressMap = {
-  [ChainId.MATIC]: '0x1a5bC2d507465c3e343Ca4e8B5C37Dd6B580f2C2',
+  [ChainId.MATIC]: '0xf5b509bB0909a69B1c207E495f687a596C168E12',
 };
 
 export const NONFUNGIBLE_POSITION_MANAGER_ADDRESSES: AddressMap = {
-  [ChainId.MATIC]: '0xe8bbDE0e17301EF1B9b1992CBfB1c9B2C2deDc97',
+  [ChainId.MATIC]: '0x8eF88E4c7CfbbaC1C163f7eddd4B578792201de6',
 };
 
 export const MULTICALL_ADDRESS: AddressMap = {
-  [ChainId.MATIC]: '0x672b95814Ee72A167635291d7ac6a5f5Fd3B43AC',
+  [ChainId.MATIC]: '0x6ccb9426CeceE2903FbD97fd833fD1D31c100292',
 };
 
 export const V3_MIGRATOR_ADDRESSES: AddressMap = {
-  [ChainId.MATIC]: '0x3bbFb3299f6685d1bfB1267b5F4DC045b28409E2',
+  [ChainId.MATIC]: '0x157B9913E00204f8c980bb00aa62E22b0dAb1a63',
 };
 
 export const REAL_STAKER_ADDRESS: AddressMap = {
@@ -38,15 +54,15 @@ export const REAL_STAKER_ADDRESS: AddressMap = {
 };
 
 export const FINITE_FARMING: AddressMap = {
-  [ChainId.MATIC]: '0xBFc4Ec9b6669A573304a32854b681d348EA58490',
+  [ChainId.MATIC]: '0x9923f42a02A82dA63EE0DbbC5f8E311e3DD8A1f8',
 };
 
 export const INFINITE_FARMING_ADDRESS: AddressMap = {
-  [ChainId.MATIC]: '0x9F9A94803808b5899Ac3F13310d524eD9E4aE601',
+  [ChainId.MATIC]: '0x8a26436e41d0b5fc4C6Ed36C1976fafBe173444E',
 };
 
 export const FARMING_CENTER: AddressMap = {
-  [ChainId.MATIC]: '0x9aF039DdBEC415bB135fDea69D065b78858b1341',
+  [ChainId.MATIC]: '0x7F281A8cdF66eF5e9db8434Ec6D97acc1bc01E78',
 };
 
 export const V2_FACTORY_ADDRESSES: AddressMap = {
