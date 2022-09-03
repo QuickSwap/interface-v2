@@ -32,7 +32,6 @@ import {
   confirmPriceImpactWithoutFee,
   maxAmountSpend,
   basisPointsToPercent,
-  bipsToPercentPercent,
 } from 'utils';
 import { computeTradePriceBreakdown, warningSeverity } from 'utils/prices';
 import { ReactComponent as PriceExchangeIcon } from 'assets/images/PriceExchangeIcon.svg';
@@ -43,6 +42,7 @@ import { useParaswapCallback } from 'hooks/useParaswapCallback';
 import { getBestTradeCurrencyAddress, useParaswap } from 'hooks/useParaswap';
 import { OptimalRate, SwapSide } from '@paraswap/sdk';
 import { BestTradeAdvancedSwapDetails } from './BestTradeAdvancedSwapDetails';
+import { GlobalValue } from 'constants/index';
 
 const SwapBestTrade: React.FC<{
   currency0?: Currency;
@@ -182,7 +182,6 @@ const SwapBestTrade: React.FC<{
     ? getBestTradeCurrencyAddress(trade.outputAmount.currency)
     : undefined;
   const pct = basisPointsToPercent(allowedSlippage);
-  const pctNum = bipsToPercentPercent(allowedSlippage);
   const srcAmount = trade
     ?.maximumAmountIn(pct)
     .multiply(JSBI.BigInt(10 ** trade.inputAmount.currency.decimals))
@@ -192,6 +191,14 @@ const SwapBestTrade: React.FC<{
     ?.minimumAmountOut(pct)
     .multiply(JSBI.BigInt(10 ** trade.outputAmount.currency.decimals))
     .toFixed(0);
+
+  const maxImpactAllowed = isExpertMode
+    ? 100
+    : Number(
+        GlobalValue.percents.BLOCKED_PRICE_IMPACT_NON_EXPERT.multiply(
+          '100',
+        ).toFixed(4),
+      );
 
   useEffect(() => {
     async function fetchOptimalRate() {
@@ -207,7 +214,7 @@ const SwapBestTrade: React.FC<{
           side: SwapSide.SELL,
           options: {
             includeDEXS: 'quickswap,quickswapv3',
-            maxImpact: pctNum,
+            maxImpact: maxImpactAllowed,
           },
         });
         setOptimalRate(rate);
@@ -219,7 +226,14 @@ const SwapBestTrade: React.FC<{
     //TODO: figure out a way to debounce this
     fetchOptimalRate();
     // We add the minDestAmount so this function will tie into the existing hooks for trade
-  }, [paraswap, srcToken, destToken, srcAmount, minDestAmount, pctNum]);
+  }, [
+    paraswap,
+    srcToken,
+    destToken,
+    srcAmount,
+    minDestAmount,
+    maxImpactAllowed,
+  ]);
 
   const {
     callback: paraswapCallback,
