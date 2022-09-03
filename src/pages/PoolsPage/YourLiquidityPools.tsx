@@ -58,7 +58,6 @@ const YourLiquidityPools: React.FC = () => {
 
   return (
     <>
-      {console.log('start rendering v2 pool positions')}
       {openPoolFinder && (
         <PoolFinderModal
           open={openPoolFinder}
