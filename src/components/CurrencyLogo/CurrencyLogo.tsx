@@ -1,5 +1,5 @@
 import { Currency, currencyEquals, ETHER, Token } from '@uniswap/sdk';
-import { Currency as V3Currency } from '@uniswap/sdk-core';
+import { Currency as V3Currency, Token as V3Token } from '@uniswap/sdk-core';
 import React, { useMemo } from 'react';
 import { Box } from '@material-ui/core';
 import EthereumLogo from 'assets/images/Currency/PolygonSwap.svg';
@@ -46,7 +46,7 @@ const CurrencyLogo: React.FC<CurrencyLogoProps> = ({
         ...getTokenLogoURL(currency.address ?? currency.tokenInfo.address),
       ];
     }
-    if (currency instanceof Token) {
+    if (currency instanceof Token || currency instanceof V3Token) {
       return getTokenLogoURL(currency.address);
     }
 

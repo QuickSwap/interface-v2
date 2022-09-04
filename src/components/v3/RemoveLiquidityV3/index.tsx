@@ -282,9 +282,9 @@ export default function RemoveLiquidityV3({
         {(feeValue0?.greaterThan(0) || feeValue1?.greaterThan(0)) && (
           <Box mt={2}>
             <p>You will also collect fees earned from this position.</p>
-            <Box>
+            <Box mt={2} className='flex justify-between'>
               <p>{feeValue0?.currency?.symbol} Fees Earned:</p>
-              <Box>
+              <Box className='flex items-center'>
                 <p>{feeValue0?.toSignificant()}</p>
                 <Box className='flex' ml={1}>
                   <CurrencyLogo
@@ -294,9 +294,9 @@ export default function RemoveLiquidityV3({
                 </Box>
               </Box>
             </Box>
-            <Box>
+            <Box mt={2} className='flex justify-between'>
               <p>{feeValue1?.currency?.symbol} Fees Earned:</p>
-              <Box>
+              <Box className='flex items-center'>
                 <p>{feeValue1?.toSignificant()}</p>
                 <Box className='flex' ml={1}>
                   <CurrencyLogo

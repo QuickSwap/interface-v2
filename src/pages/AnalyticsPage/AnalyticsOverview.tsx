@@ -45,10 +45,10 @@ const AnalyticsOverview: React.FC = () => {
 
   useEffect(() => {
     if (
-      !ethPrice.price ||
-      !ethPrice.oneDayPrice ||
-      !maticPrice.price ||
-      !maticPrice.oneDayPrice
+      ethPrice.price === undefined ||
+      ethPrice.oneDayPrice === undefined ||
+      maticPrice.price === undefined ||
+      maticPrice.oneDayPrice === undefined
     )
       return;
 

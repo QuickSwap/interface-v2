@@ -30,10 +30,10 @@ const TopMovers: React.FC<TopMoversProps> = ({ hideArrow = false }) => {
   useEffect(() => {
     (async () => {
       if (
-        ethPrice.price &&
-        ethPrice.oneDayPrice &&
-        maticPrice.price &&
-        maticPrice.oneDayPrice
+        ethPrice.price !== undefined &&
+        ethPrice.oneDayPrice !== undefined &&
+        maticPrice.price !== undefined &&
+        maticPrice.oneDayPrice !== undefined
       ) {
         const topTokensFn = isV3
           ? getTopTokensV3(maticPrice.price, maticPrice.oneDayPrice, 5)

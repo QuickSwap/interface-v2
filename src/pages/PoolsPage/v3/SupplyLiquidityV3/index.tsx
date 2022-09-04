@@ -469,7 +469,7 @@ export function SupplyLiquidityV3() {
             quoteCurrency={quoteCurrency ?? undefined}
             mintInfo={mintInfo}
             handleAddLiquidity={() => {
-              // handleStepChange('aftermath');
+              resetState();
             }}
             title={expertMode ? `Add liquidity` : 'Preview'}
           />
