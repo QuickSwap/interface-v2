@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box } from '@material-ui/core';
-import { DoubleCurrencyLogo, Logo } from 'components';
+import { CurrencyLogo, DoubleCurrencyLogo, Logo } from 'components';
 import {
   StyledButton,
   StyledCircle,
@@ -8,8 +8,35 @@ import {
   StyledFilledBox,
   StyledLabel,
 } from 'components/v3/Common/styledElements';
+import { useFarmingHandlers } from 'hooks/useStakerHandlers';
+import { FarmingType } from 'models/enums';
+import Loader from 'components/Loader';
+import { formatReward } from 'utils/formatReward';
+import { Token } from '@uniswap/sdk';
 
-export default function FarmCardDetail() {
+interface FarmCardDetailProps {
+  el: any;
+  setGettingReward: any;
+  setEternalCollectReward: any;
+  eternalCollectReward: any;
+  gettingReward: any;
+}
+
+export default function FarmCardDetail({
+  el,
+  setGettingReward,
+  setEternalCollectReward,
+  eternalCollectReward,
+  gettingReward,
+}: FarmCardDetailProps) {
+  const rewardToken = el.eternalRewardToken;
+  const earned = el.eternalEarned;
+  const bonusEarned = el.eternalBonusEarned;
+  const bonusRewardToken = el.eternalBonusRewardToken;
+
+  const { eternalCollectRewardHandler, claimRewardsHandler } =
+    useFarmingHandlers() || {};
+
   return (
     <Box
       className='flex justify-evenly items-center flex-wrap'
@@ -21,46 +48,13 @@ export default function FarmCardDetail() {
             Infinite Farming
           </StyledLabel>
         </Box>
-        <Box className='flex justify-center items-center' height='60%'>
-          <StyledLabel color='#696c80' fontSize='14px'>
-            No infinite farms for now
-          </StyledLabel>
-        </Box>
-      </StyledDarkBox>
-      <StyledDarkBox
-        width='48%'
-        height={218}
-        padding={1.5}
-        className='flex-col justify-center items-center'
-      >
-        <Box mb={2} className='flex justify-between items-center'>
-          <StyledLabel fontSize='16px' color='#c7cad9'>
-            Limit Farming
-          </StyledLabel>
-          <Box className='flex items-center'>
-            <Box>
-              <StyledLabel fontSize='14px' color='#696c80'>
-                Tier Bonus:
-              </StyledLabel>
-            </Box>
-            <StyledLabel fontSize='14px' color='#0fc679'>
-              +50%
-            </StyledLabel>
-          </Box>
-        </Box>
-
-        {/* when no data  */}
-        {false && (
-          <StyledFilledBox
-            className='flex justify-center items-center'
-            height={91}
-          >
+        {!el.eternalFarming && (
+          <Box className='flex justify-center items-center' height='60%'>
             <StyledLabel color='#696c80' fontSize='14px'>
               No infinite farms for now
             </StyledLabel>
-          </StyledFilledBox>
+          </Box>
         )}
-        {/* when data presnt */}
         {true && (
           <StyledFilledBox
             className='flex flex-col  justify-around  items-center'
@@ -68,26 +62,115 @@ export default function FarmCardDetail() {
           >
             <Box width='90%' className='flex justify-between'>
               <StyledLabel>Ended rewards</StyledLabel>
-              <StyledLabel>Ended bonus</StyledLabel>
+              {bonusRewardToken && <StyledLabel>Ended bonus</StyledLabel>}
             </Box>
             <Box width='90%' className='flex justify-between'>
               <Box className='flex items-center'>
-                <Logo srcs={['']} /> {' < 0.01 WMATIC'}
+                <CurrencyLogo
+                  size={'30px'}
+                  currency={
+                    new Token(137, rewardToken.id, 18, rewardToken.symbol)
+                  }
+                />{' '}
+                {`${formatReward(earned)} ${rewardToken.symbol}`}
               </Box>
-              <Box className='flex items-center'>
-                {' '}
-                <Logo srcs={['']} /> {'< 0.01 QUICK'}
-              </Box>
+              {bonusRewardToken && (
+                <Box className='flex items-center'>
+                  {' '}
+                  <CurrencyLogo
+                    size={'30px'}
+                    currency={
+                      new Token(
+                        137,
+                        bonusRewardToken.id,
+                        18,
+                        bonusRewardToken.symbol,
+                      )
+                    }
+                  />
+                  {` ${formatReward(bonusEarned)} ${bonusRewardToken.symbol}`}
+                </Box>
+              )}
             </Box>
           </StyledFilledBox>
         )}
-
-        <Box marginTop={2}>
-          <StyledButton height='40px'>
-            <StyledLabel color='#ebecf2' fontSize='14px'>
-              Claim & Withdraw
-            </StyledLabel>
+        <Box marginTop={2} className='flex justify-center items-center'>
+          <StyledButton
+            height='40px'
+            width='48%'
+            disabled={
+              (eternalCollectReward.id === el.id &&
+                eternalCollectReward.state !== 'done') ||
+              (el.eternalEarned == 0 && el.eternalBonusEarned == 0)
+            }
+            onClick={() => {
+              setEternalCollectReward({
+                id: el.id,
+                state: 'pending',
+              });
+              eternalCollectRewardHandler(el.id, { ...el });
+            }}
+          >
+            {eternalCollectReward &&
+            eternalCollectReward.id === el.id &&
+            eternalCollectReward.state !== 'done' ? (
+              <>
+                <Loader size={'18px'} stroke={'var(--white)'} />
+                <StyledLabel color='#ebecf2' fontSize='14px'>
+                  {' Claiming'}
+                </StyledLabel>
+              </>
+            ) : (
+              <StyledLabel color='#ebecf2' fontSize='14px'>
+                Claim
+              </StyledLabel>
+            )}
           </StyledButton>
+          <StyledButton
+            height='40px'
+            width='48%'
+            disabled={
+              gettingReward.id === el.id &&
+              gettingReward.farmingType === FarmingType.ETERNAL &&
+              gettingReward.state !== 'done'
+            }
+            onClick={() => {
+              setGettingReward({
+                id: el.id,
+                state: 'pending',
+                farmingType: FarmingType.ETERNAL,
+              });
+              claimRewardsHandler(el.id, { ...el }, FarmingType.ETERNAL);
+            }}
+          >
+            {gettingReward &&
+            gettingReward.id === el.id &&
+            gettingReward.farmingType === FarmingType.ETERNAL &&
+            gettingReward.state !== 'done' ? (
+              <>
+                <Loader size={'18px'} stroke={'var(--white)'} />
+                <StyledLabel color='#ebecf2' fontSize='14px'>
+                  {' Undepositing'}
+                </StyledLabel>
+              </>
+            ) : (
+              <StyledLabel color='#ebecf2' fontSize='14px'>
+                Undeposit
+              </StyledLabel>
+            )}
+          </StyledButton>
+        </Box>
+      </StyledDarkBox>
+      <StyledDarkBox className='flex-col' width='48%' height={220}>
+        <Box padding={1.5}>
+          <StyledLabel fontSize='16px' color='#c7cad9'>
+            Limit Farming
+          </StyledLabel>
+        </Box>
+        <Box className='flex justify-center items-center' height='60%'>
+          <StyledLabel color='#696c80' fontSize='14px'>
+            No Limit farms for now
+          </StyledLabel>
         </Box>
       </StyledDarkBox>
     </Box>

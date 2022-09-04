@@ -12,8 +12,32 @@ import { ReactComponent as ExpandIconUp } from 'assets/images/expand_circle_up.s
 import ProfessorIcon from 'assets/images/professor.webp';
 import QuickToken from 'assets/images/QsToken.webp';
 import FarmCardDetail from './FarmCardDetail';
+import { Deposit, UnfarmingInterface } from '../../models/interfaces';
+import { IsActive } from './IsActive';
+import Loader from 'components/Loader';
+import { Token } from '@uniswap/sdk';
 
-export default function FarmCard() {
+interface FarmCardProps {
+  el: Deposit;
+  unstaking: UnfarmingInterface;
+  setUnstaking: any;
+  withdrawHandler: any;
+  setGettingReward: any;
+  setEternalCollectReward: any;
+  eternalCollectReward: any;
+  gettingReward: any;
+}
+
+export default function FarmCard({
+  el,
+  unstaking,
+  setUnstaking,
+  withdrawHandler,
+  setGettingReward,
+  setEternalCollectReward,
+  eternalCollectReward,
+  gettingReward,
+}: FarmCardProps) {
   const [showMore, setShowMore] = useState(false);
 
   return (
@@ -26,26 +50,31 @@ export default function FarmCard() {
         <Box className='flex justify-around' width='70%'>
           <Box className='flex items-center'>
             <Box mr={2}>
-              <StyledCircle>1845</StyledCircle>
+              <StyledCircle>el.id</StyledCircle>
             </Box>
-
             <Box className='flex-col' ml={0.5} mr={5}>
               <Box>
-                <StyledLabel color='#696c80' fontSize='14px'>
-                  Out of range
-                </StyledLabel>
+                <IsActive el={el} />
               </Box>
 
               <StyledLabel color='#ebecf2' fontSize='14px'>
-                View Positions
+                <a
+                  style={{ textDecoration: 'underline' }}
+                  className={'c-w fs-075'}
+                  href={`/#/pool/${+el.id}?onFarming=true`}
+                  rel='noopener noreferrer'
+                  target='_blank'
+                >
+                  View position
+                </a>
               </StyledLabel>
             </Box>
           </Box>
 
           <Box className='flex items-center'>
             <DoubleCurrencyLogo
-              currency0={undefined}
-              currency1={undefined}
+              currency0={new Token(137, el.token0, 18, el.pool.token0.symbol)}
+              currency1={new Token(137, el.token1, 18, el.pool.token1.symbol)}
               size={30}
             />
             <Box className='flex-col' ml={3}>
@@ -54,49 +83,79 @@ export default function FarmCard() {
               </StyledLabel>
 
               <StyledLabel color='#ebecf2' fontSize='14px'>
-                QUICK/USDC
+                {`${el.pool.token0.symbol} / ${el.pool.token1.symbol}`}
               </StyledLabel>
             </Box>
           </Box>
 
-          {true && (
-            <Box className='flex items-center' ml={3}>
-              <img width='26px' height='32px' src={ProfessorIcon} />
+          <Box className='flex items-center' ml={3}>
+            {false && (
+              <>
+                <img width='26px' height='32px' src={ProfessorIcon} />
 
-              <Box className='flex-col' ml={1.5}>
-                <StyledLabel color='#696c80' fontSize='12px'>
-                  Tier
-                </StyledLabel>
+                <Box className='flex-col' ml={1.5}>
+                  <StyledLabel color='#696c80' fontSize='12px'>
+                    Tier
+                  </StyledLabel>
 
-                <StyledLabel color='#ebecf2' fontSize='14px'>
-                  Professor
-                </StyledLabel>
-              </Box>
-            </Box>
-          )}
+                  <StyledLabel color='#ebecf2' fontSize='14px'>
+                    Professor
+                  </StyledLabel>
+                </Box>
+              </>
+            )}
+          </Box>
 
-          {true && (
-            <Box className='flex items-center' ml={3}>
-              <Logo srcs={[QuickToken]} size={'32px'} alt={`quick`} />
-              <Box className='flex-col' ml={1.5}>
-                <StyledLabel color='#696c80' fontSize='12px'>
-                  Locked
-                </StyledLabel>
+          <Box className='flex items-center' ml={3}>
+            {false && (
+              <>
+                <Logo srcs={[QuickToken]} size={'32px'} alt={`quick`} />
+                <Box className='flex-col' ml={1.5}>
+                  <StyledLabel color='#696c80' fontSize='12px'>
+                    Locked
+                  </StyledLabel>
 
-                <StyledLabel color='#ebecf2' fontSize='14px'>
-                  5 Quick
-                </StyledLabel>
-              </Box>
-            </Box>
-          )}
+                  <StyledLabel color='#ebecf2' fontSize='14px'>
+                    5 Quick
+                  </StyledLabel>
+                </Box>
+              </>
+            )}
+          </Box>
         </Box>
 
         <Box className='flex items-center'>
-          <StyledButton height='40px' width='110px'>
-            <StyledLabel color='#ebecf2' fontSize='14px'>
-              Withdraw
-            </StyledLabel>
-          </StyledButton>
+          {!el.eternalFarming && (
+            <StyledButton
+              height='40px'
+              width='110px'
+              onClick={() => {
+                setUnstaking({ id: el.id, state: 'pending' });
+                withdrawHandler(el.id);
+              }}
+            >
+              {unstaking &&
+              unstaking.id === el.id &&
+              unstaking.state !== 'done' ? (
+                <>
+                  <Loader
+                    size={'1rem'}
+                    stroke={'var(--white)'}
+                    style={{ margin: 'auto' }}
+                  />
+                  <StyledLabel color='#ebecf2' fontSize='14px'>
+                    Withdrawing
+                  </StyledLabel>
+                </>
+              ) : (
+                <>
+                  <StyledLabel color='#ebecf2' fontSize='14px'>
+                    Withdraw
+                  </StyledLabel>
+                </>
+              )}
+            </StyledButton>
+          )}
 
           <Box
             mr={2.5}
@@ -108,7 +167,7 @@ export default function FarmCard() {
           </Box>
         </Box>
       </Box>
-      <Box>{showMore && <FarmCardDetail />}</Box>
+      <Box>{showMore && <FarmCardDetail el={el} />}</Box>
     </StyledFilledBox>
   );
 }
