@@ -5,6 +5,7 @@ import { unwrappedToken } from 'utils/unwrappedToken';
 import { usePool } from 'hooks/usePools';
 
 import { PositionRange } from './styled';
+import { StyledLabel } from 'components/v3/Common/styledElements';
 
 export function IsActive({ el }: { el: any }) {
   const {
@@ -30,11 +31,11 @@ export function IsActive({ el }: { el: any }) {
     : false;
 
   return (
-    <PositionRange>
+    <StyledLabel color='#696c80' fontSize='14px'>
       <svg width='10' height='10' style={{ marginRight: '5px' }}>
         <circle cx='5' r='5' cy='5' fill={outOfRange ? '#f7296d' : '#73f729'} />
       </svg>
-      <span>{outOfRange ? `Out of range` : `In range`}</span>
-    </PositionRange>
+      {outOfRange ? `Out of range` : `In range`}
+    </StyledLabel>
   );
 }

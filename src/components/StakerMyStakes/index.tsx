@@ -18,8 +18,6 @@ import { CheckOut } from './CheckOut';
 import { Link, useLocation } from 'react-router-dom';
 import { useSortedRecentTransactions } from '../../hooks/useSortedRecentTransactions';
 import ModalBody from './ModalBody';
-import PositionHeader from './PositionHeader';
-import PositionCardBodyHeader from './PositionCardBodyHeader';
 import PositionCardBodyStat from './PositionCardBodyStat';
 import './index.scss';
 import {
@@ -56,13 +54,10 @@ export function FarmingMyFarms({
     exitHandler,
     claimRewardsHandler,
     claimRewardHash,
-    sendNFTL2Hash,
     eternalCollectRewardHash,
     withdrawnHash,
   } = useFarmingHandlers() || {};
 
-  const [sendModal, setSendModal] = useState<string | null>(null);
-  const [recipient, setRecipient] = useState<string>('');
   const [sending, setSending] = useState<UnfarmingInterface>({
     id: null,
     state: null,
@@ -109,17 +104,6 @@ export function FarmingMyFarms({
     return _positions.length > 0 ? _positions : [];
   }, [shallowPositions]);
 
-  const sendNFTHandler = useCallback(
-    (v) => {
-      if (!isAddress(recipient) || recipient === account) {
-        return;
-      }
-
-      sendNFTL2Handler(recipient, v);
-    },
-    [recipient],
-  );
-
   useEffect(() => {
     fetchHandler();
   }, [account]);
@@ -127,23 +111,6 @@ export function FarmingMyFarms({
   useEffect(() => {
     setShallowPositions(data);
   }, [data]);
-
-  useEffect(() => {
-    if (!sending.state) return;
-
-    if (typeof sendNFTL2Hash === 'string') {
-      setSending({ id: null, state: null });
-    } else if (
-      sendNFTL2Hash &&
-      confirmed.includes(String(sendNFTL2Hash.hash))
-    ) {
-      setSending({ id: sendNFTL2Hash.id, state: 'done' });
-      if (!shallowPositions) return;
-      setShallowPositions(
-        shallowPositions.filter((el) => el.L2tokenId !== sendNFTL2Hash.id),
-      );
-    }
-  }, [sendNFTL2Hash, confirmed]);
 
   useEffect(() => {
     if (!eternalCollectReward.state) return;
@@ -299,9 +266,8 @@ export function FarmingMyFarms({
         </div>
       ) : shallowPositions && shallowPositions.length === 0 ? (
         <div className={' flex-s-between f c f-jc'}>
-          {/* <Frown size={35} stroke={'white'} /> */}
-          {/* <div className={'mt-1'}>No farms</div> */}
-          <FarmCard />
+          <Frown size={35} stroke={'white'} />
+          <div className={'mt-1'}>No farms</div>
         </div>
       ) : shallowPositions && shallowPositions.length !== 0 ? (
         <>
@@ -326,12 +292,15 @@ export function FarmingMyFarms({
                     key={i}
                     data-navigatedto={hash == `#${el.id}`}
                   >
-                    <PositionHeader
+                    <FarmCard
                       el={el}
                       setUnstaking={setUnfarming}
-                      setSendModal={setSendModal}
                       unstaking={unfarming}
                       withdrawHandler={withdrawHandler}
+                      setGettingReward={setGettingReward}
+                      setEternalCollectReward={setEternalCollectReward}
+                      eternalCollectReward={eternalCollectReward}
+                      gettingReward={gettingReward}
                     />
                     <div className={'f cg-1 rg-1 mxs_fd-c'}>
                       <div
@@ -339,21 +308,8 @@ export function FarmingMyFarms({
                           'my-farms__position-card__body w-100 p-1 br-8'
                         }
                       >
-                        <PositionCardBodyHeader
-                          farmingType={FarmingType.ETERNAL}
-                          date={date}
-                          enteredInEternalFarming={el.enteredInEternalFarming}
-                          eternalFarming={el.eternalFarming}
-                          el={el}
-                        />
                         {el.eternalFarming ? (
                           <>
-                            <PositionCardBodyStat
-                              rewardToken={el.eternalRewardToken}
-                              earned={el.eternalEarned}
-                              bonusEarned={el.eternalBonusEarned}
-                              bonusRewardToken={el.eternalBonusRewardToken}
-                            />
                             <div className={'f mxs_fd-c w-100'}>
                               <button
                                 className={'btn primary w-100 b br-8 pv-075'}
