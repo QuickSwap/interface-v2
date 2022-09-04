@@ -192,13 +192,13 @@ export default function PositionListItem({
       <Box className='flex items-center'>
         <Box className='flex' mr={1}>
           <DoubleCurrencyLogo
-            currency0={currencyBase}
-            currency1={currencyQuote}
+            currency0={currencyQuote}
+            currency1={currencyBase}
             size={24}
           />
         </Box>
         <p>
-          {currencyBase?.symbol}-{currencyQuote?.symbol}
+          {currencyQuote?.symbol}-{currencyBase?.symbol}
         </p>
         {_onFarming ? (
           <Box
