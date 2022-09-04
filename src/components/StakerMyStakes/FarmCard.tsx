@@ -167,7 +167,17 @@ export default function FarmCard({
           </Box>
         </Box>
       </Box>
-      <Box>{showMore && <FarmCardDetail el={el} />}</Box>
+      <Box>
+        {showMore && (
+          <FarmCardDetail
+            el={el}
+            setGettingReward={setGettingReward}
+            setEternalCollectReward={setEternalCollectReward}
+            eternalCollectReward={eternalCollectReward}
+            gettingReward={gettingReward}
+          />
+        )}
+      </Box>
     </StyledFilledBox>
   );
 }
