@@ -99,36 +99,36 @@ export function EternalFarmCard({
                 </StyledLabel>
               </Box>
             </Box>
-            {rewardToken &&
-            <StyledDarkBox
-              padding={1.5}
-              className='flex items-center '
-              height={56}
-            >
-              <Box className='flex'>
-                <CurrencyLogo
-                  currency={
-                    new Token(
-                      ChainId.MATIC,
-                      rewardToken.id,
-                      Number(rewardToken.decimals),
-                      rewardToken.symbol,
-                    ) as WrappedCurrency
-                  }
-                  size={'30px'}
-                />
+            {rewardToken && (
+              <StyledDarkBox
+                padding={1.5}
+                className='flex items-center '
+                height={56}
+              >
+                <Box className='flex'>
+                  <CurrencyLogo
+                    currency={
+                      new Token(
+                        ChainId.MATIC,
+                        rewardToken.id,
+                        Number(rewardToken.decimals),
+                        rewardToken.symbol,
+                      ) as WrappedCurrency
+                    }
+                    size={'30px'}
+                  />
 
-                <Box className='flex-col' ml={1.5}>
-                  <StyledLabel color='#696c80' fontSize='12px'>
-                    Reward
-                  </StyledLabel>
-                  <StyledLabel color='#ebecf2' fontSize='14px'>
-                    {rewardToken?.symbol}
-                  </StyledLabel>
+                  <Box className='flex-col' ml={1.5}>
+                    <StyledLabel color='#696c80' fontSize='12px'>
+                      Reward
+                    </StyledLabel>
+                    <StyledLabel color='#ebecf2' fontSize='14px'>
+                      {rewardToken?.symbol}
+                    </StyledLabel>
+                  </Box>
                 </Box>
-              </Box>
-            </StyledDarkBox>
-            }
+              </StyledDarkBox>
+            )}
             {bonusRewardToken && (
               <>
                 <Box

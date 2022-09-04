@@ -109,8 +109,8 @@ const AnalyticsLiquidityChart: React.FC = () => {
             className={liquidityPercentClass}
           >
             <span>
-              {`${globalData.liquidityChangeUSD > 0 ? '+' : ''}
-                      ${globalData.liquidityChangeUSD.toLocaleString()}`}
+              {`${(globalData.liquidityChangeUSD ?? 0) > 0 ? '+' : ''}
+                      ${(globalData.liquidityChangeUSD ?? 0).toLocaleString()}`}
               %
             </span>
           </Box>
