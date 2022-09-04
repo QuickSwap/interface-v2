@@ -127,8 +127,14 @@ export default function PositionListItem({
   const token0 = useToken(_token0Address);
   const token1 = useToken(_token1Address);
 
+  const currency0 = token0 ? unwrappedToken(token0) : undefined;
+  const currency1 = token1 ? unwrappedToken(token1) : undefined;
+
   // construct Position from details returned
-  const [poolState, pool] = usePool(token0 ?? undefined, token1 ?? undefined);
+  const [poolState, pool] = usePool(
+    currency0 ?? undefined,
+    currency1 ?? undefined,
+  );
   const [prevPoolState, prevPool] = usePrevious([poolState, pool]) || [];
   const [_poolState, _pool] = useMemo(() => {
     if (!pool && prevPool && prevPoolState) {
@@ -186,13 +192,13 @@ export default function PositionListItem({
       <Box className='flex items-center'>
         <Box className='flex' mr={1}>
           <DoubleCurrencyLogo
-            currency0={currencyQuote}
-            currency1={currencyBase}
+            currency0={currencyBase}
+            currency1={currencyQuote}
             size={24}
           />
         </Box>
         <p>
-          {currencyQuote?.symbol}-{currencyBase?.symbol}
+          {currencyBase?.symbol}-{currencyQuote?.symbol}
         </p>
         {_onFarming ? (
           <Box

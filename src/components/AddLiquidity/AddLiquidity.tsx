@@ -426,13 +426,14 @@ const AddLiquidity: React.FC<{
         onMax={() =>
           onFieldAInput(maxAmounts[Field.CURRENCY_A]?.toExact() ?? '')
         }
-        onHalf={() =>
-          onFieldAInput(
-            maxAmounts[Field.CURRENCY_A]
-              ? (Number(maxAmounts[Field.CURRENCY_A]?.toExact()) / 2).toString()
-              : '',
-          )
-        }
+        onHalf={() => {
+          const maxAmount = maxAmounts[Field.CURRENCY_A];
+          if (maxAmount) {
+            onFieldAInput(
+              maxAmount.divide('2').toFixed(maxAmount.currency.decimals),
+            );
+          }
+        }}
         handleCurrencySelect={handleCurrencyASelect}
         amount={formattedAmounts[Field.CURRENCY_A]}
         setAmount={onFieldAInput}
@@ -447,13 +448,14 @@ const AddLiquidity: React.FC<{
         showHalfButton={Boolean(maxAmounts[Field.CURRENCY_B])}
         currency={currencies[Field.CURRENCY_B]}
         showMaxButton={!atMaxAmounts[Field.CURRENCY_B]}
-        onHalf={() =>
-          onFieldBInput(
-            maxAmounts[Field.CURRENCY_B]
-              ? (Number(maxAmounts[Field.CURRENCY_B]?.toExact()) / 2).toString()
-              : '',
-          )
-        }
+        onHalf={() => {
+          const maxAmount = maxAmounts[Field.CURRENCY_B];
+          if (maxAmount) {
+            onFieldBInput(
+              maxAmount.divide('2').toFixed(maxAmount.currency.decimals),
+            );
+          }
+        }}
         onMax={() =>
           onFieldBInput(maxAmounts[Field.CURRENCY_B]?.toExact() ?? '')
         }

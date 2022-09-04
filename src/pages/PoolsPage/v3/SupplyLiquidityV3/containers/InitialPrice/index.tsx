@@ -4,9 +4,9 @@ import useUSDCPrice from 'hooks/v3/useUSDCPrice';
 import { PriceFormats } from 'components/v3/PriceFomatToggler';
 import StartingPrice from '../../components/StartingPrice';
 import { USDPrices } from '../../components/USDPrices';
-import { useHistory } from 'react-router-dom';
+// import { useHistory } from 'react-router-dom';
 import { useAppDispatch } from 'state/hooks';
-import { updateCurrentStep } from 'state/mint/v3/actions';
+// import { updateCurrentStep } from 'state/mint/v3/actions';
 import { IDerivedMintInfo, useV3MintActionHandlers } from 'state/mint/v3/hooks';
 import { Box } from '@material-ui/core';
 
@@ -36,15 +36,15 @@ export function InitialPrice({
 
   const { onStartPriceInput } = useV3MintActionHandlers(mintInfo.noLiquidity);
 
-  const history = useHistory();
+  // const history = useHistory();
 
-  useEffect(() => {
-    return () => {
-      if (history.action === 'POP') {
-        dispatch(updateCurrentStep({ currentStep: backStep }));
-      }
-    };
-  }, []);
+  // useEffect(() => {
+  //   return () => {
+  //     if (history.action === 'POP') {
+  //       dispatch(updateCurrentStep({ currentStep: backStep }));
+  //     }
+  //   };
+  // }, []);
 
   return (
     <Box>
