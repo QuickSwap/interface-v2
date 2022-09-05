@@ -294,11 +294,13 @@ export function FarmingMyFarms({
                   >
                     <FarmCard
                       el={el}
-                      setUnstaking={setUnfarming}
-                      unstaking={unfarming}
                       withdrawHandler={withdrawHandler}
+                      unstaking={unfarming}
+                      setUnstaking={setUnfarming}
                       setGettingReward={setGettingReward}
                       setEternalCollectReward={setEternalCollectReward}
+                      eternalCollectRewardHandler={eternalCollectRewardHandler}
+                      claimRewardsHandler={claimRewardsHandler}
                       eternalCollectReward={eternalCollectReward}
                       gettingReward={gettingReward}
                     />

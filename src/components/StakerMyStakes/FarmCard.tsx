@@ -24,6 +24,8 @@ interface FarmCardProps {
   withdrawHandler: any;
   setGettingReward: any;
   setEternalCollectReward: any;
+  eternalCollectRewardHandler: any;
+  claimRewardsHandler: any;
   eternalCollectReward: any;
   gettingReward: any;
 }
@@ -35,6 +37,8 @@ export default function FarmCard({
   withdrawHandler,
   setGettingReward,
   setEternalCollectReward,
+  eternalCollectRewardHandler,
+  claimRewardsHandler,
   eternalCollectReward,
   gettingReward,
 }: FarmCardProps) {
@@ -50,7 +54,7 @@ export default function FarmCard({
         <Box className='flex justify-around' width='70%'>
           <Box className='flex items-center'>
             <Box mr={2}>
-              <StyledCircle>el.id</StyledCircle>
+              <StyledCircle>{el.id}</StyledCircle>
             </Box>
             <Box className='flex-col' ml={0.5} mr={5}>
               <Box>
@@ -174,6 +178,8 @@ export default function FarmCard({
             setGettingReward={setGettingReward}
             setEternalCollectReward={setEternalCollectReward}
             eternalCollectReward={eternalCollectReward}
+            eternalCollectRewardHandler={eternalCollectRewardHandler}
+            claimRewardsHandler={claimRewardsHandler}
             gettingReward={gettingReward}
           />
         )}
