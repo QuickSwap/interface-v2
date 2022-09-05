@@ -199,7 +199,7 @@ export default function CurrencyInputPanel({
             </small>
 
             {account && currency && showHalfButton && (
-              <Box className='maxWrapper' marginRight='20px' onClick={onHalf}>
+              <Box className='maxWrapper' onClick={onHalf}>
                 <small>50%</small>
               </Box>
             )}
