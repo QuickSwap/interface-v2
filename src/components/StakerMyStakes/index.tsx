@@ -268,7 +268,9 @@ export function FarmingMyFarms({
       ) : shallowPositions && shallowPositions.length === 0 ? (
         <div className={' flex-s-between f c f-jc'}>
           <Frown size={35} stroke={'white'} />
-          <Box mb={3} mt={1}>No farms</Box>
+          <Box mb={3} mt={1}>
+            No farms
+          </Box>
         </div>
       ) : shallowPositions && shallowPositions.length !== 0 ? (
         <>

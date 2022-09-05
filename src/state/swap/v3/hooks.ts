@@ -33,6 +33,7 @@ import { isAddress } from 'utils';
 import { useCurrency } from 'hooks/v3/Tokens';
 import { useCurrencyBalances } from 'state/wallet/v3/hooks';
 import { useUserSlippageTolerance } from 'state/user/hooks';
+import { GlobalConst, GlobalValue } from 'constants/index';
 
 export function useSwapState(): AppState['swapV3'] {
   return useAppSelector((state) => state.swapV3);
@@ -152,12 +153,11 @@ export function useDerivedSwapInfo(): {
     recipient,
   } = useSwapState();
 
-  //TODO: these defaults should come from globalConsts instead
   const inputCurrency = useCurrency(
-    inputCurrencyId || '0x0169eC1f8f639B32Eec6D923e24C2A2ff45B9DD6',
+    inputCurrencyId || GlobalValue.tokens.MATIC.address,
   );
   const outputCurrency = useCurrency(
-    outputCurrencyId || '0x0169eC1f8f639B32Eec6D923e24C2A2ff45B9DD6',
+    outputCurrencyId || GlobalValue.tokens.COMMON.NEW_DQUICK.address,
   );
 
   const recipientLookup = useENS(recipient ?? undefined);
