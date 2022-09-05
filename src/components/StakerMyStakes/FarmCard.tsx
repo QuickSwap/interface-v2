@@ -65,7 +65,7 @@ export default function FarmCard({
                 <a
                   style={{ textDecoration: 'underline' }}
                   className={'c-w fs-075'}
-                  href={`/#/pool/${+el.id}?onFarming=true`}
+                  href={`/#/pool/${+el.id}`}
                   rel='noopener noreferrer'
                   target='_blank'
                 >
