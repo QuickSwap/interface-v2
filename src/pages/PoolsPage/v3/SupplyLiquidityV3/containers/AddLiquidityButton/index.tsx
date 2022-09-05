@@ -129,6 +129,8 @@ export function AddLiquidityButton({
 
   const handleDismissConfirmation = useCallback(() => {
     setShowConfirm(false);
+    setAttemptingTxn(false);
+    setTxPending(false);
     setAddLiquidityErrorMessage('');
     dispatch(setAddLiquidityTxHash({ txHash: '' }));
   }, [dispatch]);
@@ -191,7 +193,6 @@ export function AddLiquidityButton({
                 summary,
               });
 
-              handleAddLiquidity();
               dispatch(setAddLiquidityTxHash({ txHash: response.hash }));
 
               try {
@@ -200,6 +201,7 @@ export function AddLiquidityButton({
                   summary,
                 });
                 setTxPending(false);
+                handleAddLiquidity();
               } catch (error) {
                 setTxPending(false);
                 setAddLiquidityErrorMessage('Error in Tx');
@@ -368,6 +370,12 @@ export function AddLiquidityButton({
     );
   };
 
+  const pendingText = `Adding ${mintInfo.parsedAmounts[
+    Field.CURRENCY_A
+  ]?.toSignificant()} ${baseCurrency?.symbol} and ${mintInfo.parsedAmounts[
+    Field.CURRENCY_B
+  ]?.toSignificant()} ${quoteCurrency?.symbol} liquidity`;
+
   return (
     <>
       {showConfirm && (
@@ -376,6 +384,7 @@ export function AddLiquidityButton({
           onDismiss={handleDismissConfirmation}
           attemptingTxn={attemptingTxn}
           hash={txHash}
+          txPending={txPending}
           content={() =>
             addLiquidityErrorMessage ? (
               <TransactionErrorContent
@@ -390,7 +399,7 @@ export function AddLiquidityButton({
               />
             )
           }
-          pendingText='Loading...'
+          pendingText={pendingText}
           modalContent={
             txPending
               ? 'Submitted Adding Liquidity'

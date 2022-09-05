@@ -170,12 +170,16 @@ export default function IncreaseLiquidityV3({
 
   const handleDismissConfirmation = useCallback(() => {
     setShowConfirm(false);
+    setAttemptingTxn(false);
+    setTxPending(false);
     // if there was a tx hash, we want to clear the input
     if (txHash) {
       onFieldAInput('');
+      onFieldBInput('');
     }
     setTxHash('');
-  }, [onFieldAInput, txHash]);
+    setIncreaseErrorMessage('');
+  }, [onFieldAInput, onFieldBInput, txHash]);
 
   async function onAdd() {
     if (!chainId || !library || !account) return;
@@ -306,7 +310,7 @@ export default function IncreaseLiquidityV3({
       </Box>
       <Box mb={4} textAlign='center'>
         <p>
-          Adding {formattedAmounts[Field.CURRENCY_A]}{' '}
+          Add {formattedAmounts[Field.CURRENCY_A]}{' '}
           {currencies[Field.CURRENCY_A]?.symbol} and{' '}
           {formattedAmounts[Field.CURRENCY_B]}{' '}
           {currencies[Field.CURRENCY_B]?.symbol}
@@ -317,6 +321,12 @@ export default function IncreaseLiquidityV3({
       </Button>
     </>
   );
+
+  const pendingText = `Adding ${formattedAmounts[Field.CURRENCY_A]} ${
+    currencies[Field.CURRENCY_A]?.symbol
+  } and ${formattedAmounts[Field.CURRENCY_B]} ${
+    currencies[Field.CURRENCY_B]?.symbol
+  }`;
 
   return (
     <>
@@ -341,7 +351,7 @@ export default function IncreaseLiquidityV3({
               />
             )
           }
-          pendingText=''
+          pendingText={pendingText}
           modalContent={
             txPending
               ? 'Submitted transaction to increase liquidity.'

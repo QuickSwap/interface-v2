@@ -244,6 +244,8 @@ export default function RemoveLiquidityV3({
     }
     setAttemptingTxn(false);
     setTxnHash('');
+    setTxPending(false);
+    setRemoveErrorMessage('');
   }, [onPercentSelectForSlider, txnHash]);
 
   const pendingText = `Removing ${liquidityValue0?.toSignificant(6)} ${

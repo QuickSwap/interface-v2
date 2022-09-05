@@ -11,8 +11,6 @@ import {
 import { ApprovalState, useApproveCallback } from 'hooks/useV3ApproveCallback';
 import { useActiveWeb3React } from 'hooks';
 import { Bound, updateCurrentStep } from 'state/mint/v3/actions';
-import { useHistory } from 'react-router-dom';
-import { useAppDispatch } from 'state/hooks';
 import { useUSDCValue } from 'hooks/v3/useUSDCPrice';
 import { NONFUNGIBLE_POSITION_MANAGER_ADDRESSES } from 'constants/v3/addresses';
 import { maxAmountSpend } from 'utils/v3/maxAmountSpend';
@@ -217,9 +215,6 @@ export function EnterAmounts({
 
     return;
   }, [mintInfo, currencyB]);
-
-  const history = useHistory();
-  const dispatch = useAppDispatch();
 
   // useEffect(() => {
   //   return () => {

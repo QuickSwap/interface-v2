@@ -123,7 +123,7 @@ export function useApproveCallback(
       .then((response: TransactionResponse) => {
         addTransaction(response, {
           summary:
-            `Approved ` + (amountToApprove.currency.symbol || `LP-tokens`),
+            `Approve ` + (amountToApprove.currency.symbol || `LP-tokens`),
           approval: { tokenAddress: token.address, spender: spender },
         });
       })
