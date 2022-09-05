@@ -30,6 +30,7 @@ import FarmModal from './FarmModalContent';
 import { useTranslation } from 'react-i18next';
 import FarmModalContent from './FarmModalContent';
 import FarmCard from './FarmCard';
+import { Box } from '@material-ui/core';
 
 interface FarmingMyFarmsProps {
   data: Deposit[] | null;
@@ -267,7 +268,9 @@ export function FarmingMyFarms({
       ) : shallowPositions && shallowPositions.length === 0 ? (
         <div className={' flex-s-between f c f-jc'}>
           <Frown size={35} stroke={'white'} />
-          <div className={'mt-1'}>No farms</div>
+          <Box mb={3} mt={1}>
+            No farms
+          </Box>
         </div>
       ) : shallowPositions && shallowPositions.length !== 0 ? (
         <>
@@ -294,109 +297,16 @@ export function FarmingMyFarms({
                   >
                     <FarmCard
                       el={el}
-                      setUnstaking={setUnfarming}
-                      unstaking={unfarming}
                       withdrawHandler={withdrawHandler}
+                      unstaking={unfarming}
+                      setUnstaking={setUnfarming}
                       setGettingReward={setGettingReward}
                       setEternalCollectReward={setEternalCollectReward}
+                      eternalCollectRewardHandler={eternalCollectRewardHandler}
+                      claimRewardsHandler={claimRewardsHandler}
                       eternalCollectReward={eternalCollectReward}
                       gettingReward={gettingReward}
                     />
-                    <div className={'f cg-1 rg-1 mxs_fd-c'}>
-                      <div
-                        className={
-                          'my-farms__position-card__body w-100 p-1 br-8'
-                        }
-                      >
-                        {el.eternalFarming ? (
-                          <>
-                            <div className={'f mxs_fd-c w-100'}>
-                              <button
-                                className={'btn primary w-100 b br-8 pv-075'}
-                                disabled={
-                                  (eternalCollectReward.id === el.id &&
-                                    eternalCollectReward.state !== 'done') ||
-                                  (el.eternalEarned == 0 &&
-                                    el.eternalBonusEarned == 0)
-                                }
-                                onClick={() => {
-                                  setEternalCollectReward({
-                                    id: el.id,
-                                    state: 'pending',
-                                  });
-                                  eternalCollectRewardHandler(el.id, { ...el });
-                                }}
-                              >
-                                {eternalCollectReward &&
-                                eternalCollectReward.id === el.id &&
-                                eternalCollectReward.state !== 'done' ? (
-                                  <div className={'f f-jc f-ac cg-05'}>
-                                    <Loader
-                                      size={'18px'}
-                                      stroke={'var(--white)'}
-                                    />
-                                    Collecting
-                                  </div>
-                                ) : (
-                                  <span>Collect rewards</span>
-                                )}
-                              </button>
-                              <button
-                                className={
-                                  'btn primary w-100 b br-8 ml-1 mxs_ml-0 mxs_mt-1 pv-075'
-                                }
-                                disabled={
-                                  gettingReward.id === el.id &&
-                                  gettingReward.farmingType ===
-                                    FarmingType.ETERNAL &&
-                                  gettingReward.state !== 'done'
-                                }
-                                onClick={() => {
-                                  setGettingReward({
-                                    id: el.id,
-                                    state: 'pending',
-                                    farmingType: FarmingType.ETERNAL,
-                                  });
-                                  claimRewardsHandler(
-                                    el.id,
-                                    { ...el },
-                                    FarmingType.ETERNAL,
-                                  );
-                                }}
-                              >
-                                {gettingReward &&
-                                gettingReward.id === el.id &&
-                                gettingReward.farmingType ===
-                                  FarmingType.ETERNAL &&
-                                gettingReward.state !== 'done' ? (
-                                  <div className={'f f-jc f-ac cg-05'}>
-                                    <Loader
-                                      size={'18px'}
-                                      stroke={'var(--white)'}
-                                    />
-                                    Undepositing
-                                  </div>
-                                ) : (
-                                  <span>Undeposit</span>
-                                )}
-                              </button>
-                            </div>
-                          </>
-                        ) : (
-                          <div
-                            className={
-                              'my-farms__position-card__empty f c f-ac f-jc'
-                            }
-                          >
-                            {el.eternalAvailable ? (
-                              <CheckOut link={'infinite-farms'} />
-                            ) : (
-                              <div>No infinite farms for now</div>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    </div>
                   </div>
                 );
               })}
