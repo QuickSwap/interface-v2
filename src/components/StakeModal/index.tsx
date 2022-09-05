@@ -32,6 +32,8 @@ import { Token } from '@uniswap/sdk-core';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
 import { BigNumber } from 'ethers';
 import { ChainId } from '@uniswap/sdk';
+import { Box } from '@material-ui/core';
+import { StyledCircle, StyledLabel } from 'components/v3/Common/styledElements';
 
 interface FarmModalProps {
   event: {
@@ -465,22 +467,28 @@ export function FarmModal({
                         }
                       }}
                     >
-                      <NFTPositionIcon name={el.id}>{el.id}</NFTPositionIcon>
-                      <div className='ml-1'>
-                        <IsActive el={el} />
-                        <div
-                          className={'farm-modal__nft-position__description'}
-                        >
-                          <a
-                            className={'fs-085 c-w hover-cp'}
-                            href={`/#/pool/${+el.id}`}
-                            rel='noopener noreferrer'
-                            target='_blank'
-                          >
-                            View position
-                          </a>
-                        </div>
-                      </div>
+                      <Box className='flex items-center'>
+                        <Box mr={2}>
+                          <StyledCircle>{el.id}</StyledCircle>
+                        </Box>
+                        <Box className='flex-col' ml={0.5} mr={5}>
+                          <Box>
+                            <IsActive el={el} />
+                          </Box>
+
+                          <StyledLabel color='#ebecf2' fontSize='14px'>
+                            <a
+                              style={{ textDecoration: 'underline' }}
+                              className={'c-w fs-075'}
+                              href={`/#/pool/${+el.id}?onFarming=true`}
+                              rel='noopener noreferrer'
+                              target='_blank'
+                            >
+                              View position
+                            </a>
+                          </StyledLabel>
+                        </Box>
+                      </Box>
                     </div>
                   ))}
                 </div>
