@@ -53,8 +53,6 @@ const AnalyticsInfo: React.FC<AnalyticsInfoProps> = ({ data }) => {
     ],
   };
 
-  console.log(list.v3);
-
   return (
     <>
       {list[isV3 ? 'v3' : 'v2'].map((item, i, arr) => (
