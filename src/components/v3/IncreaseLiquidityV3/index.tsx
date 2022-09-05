@@ -274,19 +274,19 @@ export default function IncreaseLiquidityV3({
   const removed =
     position?.liquidity && JSBI.equal(position?.liquidity, JSBI.BigInt(0));
 
-  const [currencyBase, setCurrencyBase] = useState(baseCurrency);
+  const [manuallyInverted, setManuallyInverted] = useState(false);
 
-  const sorted = currencyBase === baseCurrency;
-  const currencyQuote = sorted ? quoteCurrency : baseCurrency;
+  const currencyBase = manuallyInverted ? baseCurrency : quoteCurrency;
+  const currencyQuote = manuallyInverted ? quoteCurrency : baseCurrency;
 
-  const priceLower = sorted
+  const priceLower = manuallyInverted
     ? existingPosition?.token0PriceLower
     : existingPosition?.token0PriceUpper.invert();
-  const priceUpper = sorted
+  const priceUpper = manuallyInverted
     ? existingPosition?.token0PriceUpper
     : existingPosition?.token0PriceLower.invert();
 
-  const currentPrice = sorted
+  const currentPrice = manuallyInverted
     ? existingPosition?.pool.priceOf(existingPosition?.pool.token0)
     : existingPosition?.pool.priceOf(existingPosition?.pool.token1);
 
@@ -393,7 +393,7 @@ export default function IncreaseLiquidityV3({
           <RateToggle
             currencyA={currencyBase}
             currencyB={currencyQuote}
-            handleRateToggle={() => setCurrencyBase(currencyQuote)}
+            handleRateToggle={() => setManuallyInverted(!manuallyInverted)}
           />
         )}
       </Box>
