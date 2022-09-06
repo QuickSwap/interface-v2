@@ -360,7 +360,7 @@ export function FarmModal({
   const showApproval =
     approval !== ApprovalState.APPROVED && !!_amountForApprove;
 
-  const linkToProviding = `/add/${pool.token0.id}/${pool.token1.id}`;
+  const linkToProviding = `/add/${pool.token0.id}/${pool.token1.id}/v3`;
 
   return (
     <>
@@ -445,12 +445,12 @@ export function FarmModal({
                     opacity:
                       !isEnoughTokenForLock && selectedTier ? '0.5' : '1',
                   }}
-                  className='f mb-1 pl-1 pb-1 pr-1 mxs_pb-0 farm-modal__nft-position-row'
+                  className='f flex-wrap mb-1 mxs_pb-0 farm-modal__nft-position-row'
                   key={i}
                 >
                   {row.map((el, j) => (
                     <div
-                      className={'farm-modal__nft-position p-1 br-8 c-w'}
+                      className={'farm-modal__nft-position br-8 c-w pb-1'}
                       key={j}
                       data-selected={!!selectedNFT && selectedNFT.id === el.id}
                       onClick={(e: any) => {
