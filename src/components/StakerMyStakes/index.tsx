@@ -5,30 +5,15 @@ import { useFarmingHandlers } from '../../hooks/useStakerHandlers';
 import { useActiveWeb3React } from 'hooks';
 import { useAllTransactions } from '../../state/transactions/hooks';
 import Loader from '../Loader';
-import Modal from '../Modal';
 import {
   Deposit,
   RewardInterface,
   UnfarmingInterface,
 } from '../../models/interfaces';
 import { FarmingType } from '../../models/enums';
-import { getCountdownTime } from '../../utils/time';
-import { getProgress } from '../../utils/getProgress';
-import { CheckOut } from './CheckOut';
 import { Link, useLocation } from 'react-router-dom';
 import { useSortedRecentTransactions } from '../../hooks/useSortedRecentTransactions';
-import ModalBody from './ModalBody';
-import PositionCardBodyStat from './PositionCardBodyStat';
 import './index.scss';
-import {
-  TransactionErrorContent,
-  TransactionConfirmationModal,
-  ConfirmationModalContent,
-  DoubleCurrencyLogo,
-} from 'components';
-import FarmModal from './FarmModalContent';
-import { useTranslation } from 'react-i18next';
-import FarmModalContent from './FarmModalContent';
 import FarmCard from './FarmCard';
 import { Box } from '@material-ui/core';
 
@@ -49,7 +34,6 @@ export function FarmingMyFarms({
 
   const {
     getRewardsHash,
-    sendNFTL2Handler,
     eternalCollectRewardHandler,
     withdrawHandler,
     exitHandler,
@@ -59,10 +43,6 @@ export function FarmingMyFarms({
     withdrawnHash,
   } = useFarmingHandlers() || {};
 
-  const [sending, setSending] = useState<UnfarmingInterface>({
-    id: null,
-    state: null,
-  });
   const [shallowPositions, setShallowPositions] = useState<Deposit[] | null>(
     null,
   );
@@ -78,7 +58,6 @@ export function FarmingMyFarms({
     id: null,
     state: null,
   });
-  const [showConfirm, setShowConfirm] = useState(false);
   const [attemptingTxn, setAttemptingTxn] = useState(false);
   const [txPending, setTxPending] = useState(false);
   const [txHash, setTxHash] = useState('');
@@ -86,8 +65,6 @@ export function FarmingMyFarms({
   const [addLiquidityErrorMessage, setAddLiquidityErrorMessage] = useState<
     string | null
   >(null);
-
-  const { t } = useTranslation();
 
   const allTransactions = useAllTransactions();
   const sortedRecentTransactions = useSortedRecentTransactions();
@@ -221,46 +198,8 @@ export function FarmingMyFarms({
     }
   }, [getRewardsHash, confirmed]);
 
-  const handleDismissConfirmation = useCallback(() => {
-    setShowConfirm(false);
-    // todo: handle dismiss
-  }, []);
-
-  const modalContent = () => {
-    return <FarmModalContent />;
-  };
-
   return (
     <>
-      {showConfirm && (
-        <TransactionConfirmationModal
-          isOpen={showConfirm}
-          onDismiss={handleDismissConfirmation}
-          attemptingTxn={attemptingTxn}
-          txPending={txPending}
-          hash={txHash}
-          modalWrapper='modalWrapperNftSelector'
-          content={() =>
-            addLiquidityErrorMessage ? (
-              <TransactionErrorContent
-                onDismiss={handleDismissConfirmation}
-                message={addLiquidityErrorMessage}
-              />
-            ) : (
-              <ConfirmationModalContent
-                title={'Select NFT for farming'}
-                onDismiss={handleDismissConfirmation}
-                content={modalContent}
-              />
-            )
-          }
-          pendingText={'pendingText'}
-          modalContent={
-            txPending ? t('submittedTxLiquidity') : t('successAddedliquidity')
-          }
-        />
-      )}
-
       {refreshing || !shallowPositions ? (
         <div className={'my-farms__loader flex-s-between f-jc'}>
           <Loader stroke={'white'} size={'1.5rem'} />

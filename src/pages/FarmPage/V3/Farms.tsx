@@ -74,8 +74,6 @@ export default function Farms() {
 
   const [now, setNow] = useState(Date.now());
 
-  console.log(' farms data ', { eternalFarms, transferredPositions });
-
   return (
     <Box className='bg-palette' borderRadius={10}>
       <Box width='100%' mt={2}>
