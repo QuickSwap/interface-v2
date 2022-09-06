@@ -43,8 +43,13 @@ export default function FarmCardDetail({
       className='flex justify-evenly items-center flex-wrap'
       marginBottom={2}
     >
-      <StyledDarkBox className='flex-col' width='48%' height={220}>
-        <Box padding={1.5}>
+      <StyledDarkBox
+        padding={1.5}
+        className='flex-col'
+        width='48%'
+        height={220}
+      >
+        <Box>
           <StyledLabel fontSize='16px' color='#c7cad9'>
             Infinite Farming
           </StyledLabel>
@@ -59,6 +64,7 @@ export default function FarmCardDetail({
         {el.eternalFarming && (
           <>
             <StyledFilledBox
+              mt={2}
               className='flex flex-col  justify-around  items-center'
               height={91}
             >
@@ -69,18 +75,19 @@ export default function FarmCardDetail({
               <Box width='90%' className='flex justify-between'>
                 <Box className='flex items-center'>
                   <CurrencyLogo
-                    size={'30px'}
+                    size={'24px'}
                     currency={
                       new Token(137, rewardToken.id, 18, rewardToken.symbol)
                     }
-                  />{' '}
-                  {`${formatReward(earned)} ${rewardToken.symbol}`}
+                  />
+                  <Box ml='6px'>
+                    <p>{`${formatReward(earned)} ${rewardToken.symbol}`}</p>
+                  </Box>
                 </Box>
                 {bonusRewardToken && (
                   <Box className='flex items-center'>
-                    {' '}
                     <CurrencyLogo
-                      size={'30px'}
+                      size={'24px'}
                       currency={
                         new Token(
                           137,
@@ -90,16 +97,20 @@ export default function FarmCardDetail({
                         )
                       }
                     />
-                    {` ${formatReward(bonusEarned)} ${bonusRewardToken.symbol}`}
+                    <Box ml='6px'>
+                      <p>{`${formatReward(bonusEarned)} ${
+                        bonusRewardToken.symbol
+                      }`}</p>
+                    </Box>
                   </Box>
                 )}
               </Box>
             </StyledFilledBox>
 
-            <Box marginTop={2} className='flex justify-center items-center'>
+            <Box marginTop={2} className='flex justify-between items-center'>
               <StyledButton
                 height='40px'
-                width='48%'
+                width='49%'
                 disabled={
                   (eternalCollectReward.id === el.id &&
                     eternalCollectReward.state !== 'done') ||
@@ -130,7 +141,7 @@ export default function FarmCardDetail({
               </StyledButton>
               <StyledButton
                 height='40px'
-                width='48%'
+                width='49%'
                 disabled={
                   gettingReward.id === el.id &&
                   gettingReward.farmingType === FarmingType.ETERNAL &&

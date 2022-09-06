@@ -4,7 +4,7 @@ import { EternalFarmCard } from 'components/StakerEventCard/EternalFarmCard';
 import { Frown } from 'react-feather';
 import { useTranslation } from 'react-i18next';
 import Loader from '../../components/Loader';
-import Modal from '../../components/Modal';
+import { CustomModal } from 'components';
 import { FarmModal } from '../../components/StakeModal';
 import { FarmingType } from '../../models/enums';
 import './index.scss';
@@ -26,11 +26,7 @@ export default function EternalFarmsPage({
 
   return (
     <>
-      <Modal
-        isOpen={!!modalForPool}
-        onHide={() => setModalForPool(null)}
-        onDismiss={() => console.log()}
-      >
+      <CustomModal open={!!modalForPool} onClose={() => setModalForPool(null)}>
         {modalForPool && (
           <FarmModal
             event={modalForPool}
@@ -38,7 +34,7 @@ export default function EternalFarmsPage({
             farmingType={FarmingType.ETERNAL}
           />
         )}
-      </Modal>
+      </CustomModal>
       {refreshing ? (
         <div className={'eternal-page__loader'}>
           <Loader stroke='white' size='1.5rem' />

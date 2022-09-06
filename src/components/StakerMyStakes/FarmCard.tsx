@@ -45,7 +45,7 @@ export default function FarmCard({
   const [showMore, setShowMore] = useState(false);
 
   return (
-    <StyledFilledBox width='95%' borderRadius='16px' mt={1.5} mb={1.5}>
+    <StyledFilledBox borderRadius='16px' mt={1.5} mb={1.5}>
       <Box
         className='flex justify-between items-center flex-wrap'
         height={80}

@@ -1,81 +1,56 @@
-.stake-modal {
+@use 'styles/variables' as *;
+@use 'styles/breakpoints' as *;
 
-  &__nft-row-scroller {
-    position: absolute;
-    z-index: 10;
-    width: 30px;
-    height: 30px;
-    color: var(--black);
-    background-color: var(--white);
-    border-radius: 50%;
-    right: 1rem;
-    padding: 7px 8px;
-    top: 50%;
-    transform: translateY(-50%);
+.v3-farm-stake-modal-wrapper {
+  width: 100%;
+  button {
+    width: 100%;
+    height: 50px;
+    border-radius: 10px;
   }
+}
 
-  &__nft-position {
+.v3-farm-stake-modal-position {
+  background-color: $secondary3;
+  height: 84px;
+  min-width: 250px;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  border-radius: 8px;
+  margin: 0 24px 16px 0;
+  position: relative;
+  cursor: pointer;
+  & a {
+    text-decoration: underline;
+    color: $textPrimary;
+  }
+}
 
-    &-row {
-      margin-left: -1rem;
-      margin-right: -1rem;
-      overflow-x: auto; 
-      scroll-padding: 0 1rem;
-      scroll-snap-type: x mandatory;
-    }
+.v3-farm-stake-modal-position-selected {
+  border: 1px solid $primary;
+  box-shadow: 0 0 5px 5px $blue6;
+}
 
-    display: inline-flex;
-    position: relative;
-    transition-duration: .2s;
-    background-color: var(--dark-ebony-clay);
-    border: 1px solid #34434F;
-    margin-right: 1rem;
-    white-space: nowrap;
-    cursor: pointer;
-    scroll-snap-align: start;
-    width: 164px;
+.v3-farm-stake-position-check {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 16px;
+  height: 16px;
+  border-radius: 8px;
+}
 
-    &:last-of-type {
-      margin-right: 0;
-    }
+.v3-farm-stake-position-unchecked {
+  border: 1px solid $secondary;
+}
 
-    &[data-selected=true] {
-      border-color: var(--primary);
-      box-shadow: 0 0 8px rgba(39, 151, 255, .45);
-    }
-
-    &__description {
-      line-height: 24px;
-      & > a {
-        text-decoration: underline;
-        font-size: 13px;
-      }
-    }
-
-    &__circle {
-      position: absolute;
-      width: 20px;
-      height: 20px;
-      top: 8px;
-      right: 8px;
-      border-radius: 50%;
-      transition-duration: .2s;
-      border: 1px solid var(--primary-disabled);
-
-
-      &[data-selected=true] {
-        border-color: var(--primary);
-        background-color: var(--primary);
-
-        svg {
-          opacity: 1;
-        }
-      }
-
-      svg {
-        transition-duration: .2s;
-        opacity: 0;
-      }
-    }
+.v3-farm-stake-position-checked {
+  background-color: $primary;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  & svg {
+    width: 14px;
   }
 }

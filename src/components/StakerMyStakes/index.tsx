@@ -273,8 +273,8 @@ export function FarmingMyFarms({
           </Box>
         </div>
       ) : shallowPositions && shallowPositions.length !== 0 ? (
-        <>
-          <div className={'my-farms__ad p-05 br-12 f f-ac f-jc mb-1'}>
+        <Box padding='24px'>
+          <div className={'my-farms__ad p-05 br-12 f f-ac f-jc'}>
             <div className={'mr-1'}>✨ Earn even more Rewards</div>
             <Link
               className={'my-farms__ad-link p-05 br-8 hover-cp'}
@@ -291,7 +291,7 @@ export function FarmingMyFarms({
                 ).toLocaleString();
                 return (
                   <div
-                    className={'my-farms__position-card p-1 br-12 mb-1'}
+                    className={'my-farms__position-card p-1 br-12 mt-1'}
                     key={i}
                     data-navigatedto={hash == `#${el.id}`}
                   >
@@ -312,7 +312,7 @@ export function FarmingMyFarms({
               })}
             </div>
           )}
-        </>
+        </Box>
       ) : null}
     </>
   );
