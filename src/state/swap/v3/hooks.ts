@@ -153,12 +153,8 @@ export function useDerivedSwapInfo(): {
     recipient,
   } = useSwapState();
 
-  const inputCurrency = useCurrency(
-    inputCurrencyId || GlobalValue.tokens.MATIC.address,
-  );
-  const outputCurrency = useCurrency(
-    outputCurrencyId || GlobalValue.tokens.COMMON.NEW_DQUICK.address,
-  );
+  const inputCurrency = useCurrency(inputCurrencyId);
+  const outputCurrency = useCurrency(outputCurrencyId);
 
   const recipientLookup = useENS(recipient ?? undefined);
   const to: string | null =
