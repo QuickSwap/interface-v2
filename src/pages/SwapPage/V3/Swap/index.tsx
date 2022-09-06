@@ -481,20 +481,6 @@ const SwapV3Page: React.FC = () => {
         onDismiss={handleDismissTokenWarning}
       />
       <div className={'maw-610 mh-a pos-r swap'}>
-        {/* <ContestBanner to={"/farming/limit-farms"}>
-                    <div style={{ width: "100%" }}>
-                        <ContestIMG></ContestIMG>
-                        <ContestBannerTitle>
-                            <ContestBannerTitleIphone>300% APR</ContestBannerTitleIphone>
-                            <span>
-                                <Trans>&nbsp; only for 1 week</Trans>
-                            </span>
-                            <ContestButton to={"/farming/limit-farms"}>
-                                <Trans>Farm Now</Trans>
-                            </ContestButton>
-                        </ContestBannerTitle>
-                    </div>
-                </ContestBanner> */}
         <Box>
           <SwapHeader
             allowedSlippage={allowedSlippage}
