@@ -12,7 +12,7 @@ import { useWalletModalToggle } from 'state/application/hooks';
 
 export default function MyLiquidityPoolsV3() {
   const { account } = useActiveWeb3React();
-  const [userHideClosedPositions, setUserHideClosedPositions] = useState(false);
+  const [userHideClosedPositions, setUserHideClosedPositions] = useState(true);
   const [hideFarmingPositions, setHideFarmingPositions] = useState(false);
   const { positions, loading: positionsLoading } = useV3Positions(account);
   const prevAccount = usePrevious(account);
@@ -86,22 +86,6 @@ export default function MyLiquidityPoolsV3() {
   return (
     <Box>
       <p className='weight-600'>My Liquidity Pools</p>
-      {/* <div className={'flex-s-between mxs_mv-05'}>
-            <NavLink
-              className={'btn primary p-05 br-8 mr-1'}
-              id='join-pool-button'
-              to={`/migrate`}
-            >
-              Migrate Pool
-            </NavLink>
-            <NavLink
-              className={'btn primary p-05 br-8'}
-              id='join-pool-button'
-              to={`/add`}
-            >
-              + New Position
-            </NavLink>
-          </div> */}
       {account && (
         <Box mt={2} className='flex'>
           {filters.map((item, key) => (

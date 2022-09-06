@@ -126,13 +126,7 @@ export function useBestV3TradeExactIn(
     };
   }, [amountIn, currencyOut, quotesResults, routes, routesLoading]);
 
-  const prevTrade = usePrevious(trade.trade ? trade : undefined);
-
   return useMemo(() => {
-    if (!prevTrade) return trade;
-
-    if (!trade.trade && prevTrade.trade) return prevTrade;
-
     return trade;
   }, [trade]);
 }
@@ -246,13 +240,7 @@ export function useBestV3TradeExactOut(
     };
   }, [amountOut, currencyIn, quotesResults, routes, routesLoading]);
 
-  const prevTrade = usePrevious(trade.trade ? trade : undefined);
-
   return useMemo(() => {
-    if (!prevTrade) return trade;
-
-    if (!trade.trade && prevTrade.trade) return prevTrade;
-
     return trade;
   }, [trade]);
 }
