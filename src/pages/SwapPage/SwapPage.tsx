@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTheme } from '@material-ui/core/styles';
 import { Box, Grid, useMediaQuery } from '@material-ui/core';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
@@ -16,14 +16,9 @@ import SwapProInfo from './SwapProInfo';
 import SwapProFilter from './SwapProFilter';
 import { useTranslation } from 'react-i18next';
 import 'pages/styles/swap.scss';
-import { useHistory } from 'react-router-dom';
-import useParsedQueryString from 'hooks/useParsedQueryString';
 import { ReactComponent as SettingsIcon } from 'assets/images/SettingsIcon.svg';
 
 const SwapPage: React.FC = () => {
-  const history = useHistory();
-  const parsedQuery = useParsedQueryString();
-  const isProModeQuery = parsedQuery && parsedQuery.mode === 'pro';
   const [openSettingsModal, setOpenSettingsModal] = useState(false);
   const { isProMode, updateIsProMode } = useIsProMode();
   const { breakpoints } = useTheme();
@@ -98,10 +93,6 @@ const SwapPage: React.FC = () => {
       getTradesData(pairId);
     }
   }, [pairId, isProMode]);
-
-  useEffect(() => {
-    updateIsProMode(isProModeQuery);
-  }, [isProModeQuery]);
 
   const { t } = useTranslation();
   return (
