@@ -6,7 +6,6 @@ import { useAllV3Routes } from './useAllV3Routes';
 import { useSingleContractMultipleData } from 'state/multicall/v3/hooks';
 import { useActiveWeb3React } from 'hooks';
 import { useV3Quoter } from 'hooks/useContract';
-import usePrevious from 'hooks/usePrevious';
 import { Route } from 'lib/src/route';
 import { Trade } from 'lib/src/trade';
 import { encodeRouteToPath } from 'lib/src/utils/encodeRouteToPath';

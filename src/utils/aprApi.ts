@@ -3,7 +3,7 @@ export async function fetchPoolsAPR() {
 }
 
 export async function fetchEternalFarmAPR() {
-  return fetchAPI(process.env.REACT_APP_POOL_FARMING_APR_URL);
+  return fetchAPI(process.env.REACT_APP_V3_APR_API_BASE_URL);
 }
 
 async function fetchAPI(url: string | undefined) {
