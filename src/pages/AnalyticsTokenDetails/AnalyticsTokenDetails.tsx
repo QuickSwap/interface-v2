@@ -338,7 +338,11 @@ const AnalyticsTokenDetails: React.FC = () => {
                 className='button border-primary'
                 mr={1.5}
                 onClick={() => {
-                  history.push(`/pools?currency0=${token.id}&currency1=ETH`);
+                  history.push(
+                    `/pools${isV3 ? '/v3' : ''}?currency0=${
+                      token.id
+                    }&currency1=ETH`,
+                  );
                 }}
               >
                 <small>{t('addLiquidity')}</small>
@@ -346,7 +350,11 @@ const AnalyticsTokenDetails: React.FC = () => {
               <Box
                 className='button filledButton'
                 onClick={() => {
-                  history.push(`/swap?currency0=${token.id}&currency1=ETH`);
+                  history.push(
+                    `/swap${isV3 ? '/v3' : ''}?currency0=${
+                      token.id
+                    }&currency1=ETH`,
+                  );
                 }}
               >
                 <small>{t('swap')}</small>

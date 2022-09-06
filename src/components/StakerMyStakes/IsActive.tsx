@@ -1,19 +1,18 @@
 import React from 'react';
 import { useToken } from 'hooks/TokensV3';
 import { unwrappedToken } from 'utils/unwrappedToken';
-
+import './index.scss';
 import { usePool } from 'hooks/usePools';
-
-import { PositionRange } from './styled';
-import { StyledLabel } from 'components/v3/Common/styledElements';
+import { Box } from '@material-ui/core';
+import { useV3PositionFromTokenId } from 'hooks/v3/useV3Positions';
 
 export function IsActive({ el }: { el: any }) {
-  const {
-    token0: token0Address,
-    token1: token1Address,
-    tickLower,
-    tickUpper,
-  } = el;
+  const { position: positionDetails } = useV3PositionFromTokenId(el.id);
+
+  const token0Address = positionDetails?.token0;
+  const token1Address = positionDetails?.token1;
+  const tickLower = positionDetails?.tickLower;
+  const tickUpper = positionDetails?.tickUpper;
 
   const token0 = useToken(token0Address);
   const token1 = useToken(token1Address);
@@ -26,16 +25,20 @@ export function IsActive({ el }: { el: any }) {
   const [, pool] = usePool(currency0 ?? undefined, currency1 ?? undefined);
 
   // check if price is within range
-  const outOfRange: boolean = pool
-    ? pool.tickCurrent < tickLower || pool.tickCurrent >= tickUpper
-    : false;
+  const outOfRange: boolean =
+    pool && tickLower && tickUpper
+      ? pool.tickCurrent < tickLower || pool.tickCurrent >= tickUpper
+      : false;
 
   return (
-    <StyledLabel color='#696c80' fontSize='14px'>
-      <svg width='10' height='10' style={{ marginRight: '5px' }}>
-        <circle cx='5' r='5' cy='5' fill={outOfRange ? '#f7296d' : '#73f729'} />
-      </svg>
-      {outOfRange ? `Out of range` : `In range`}
-    </StyledLabel>
+    <Box className='flex items-center'>
+      <Box
+        mr='6px'
+        className={`v3-stake-active-dot ${
+          outOfRange ? 'bg-error' : 'bg-success'
+        }`}
+      />
+      <p className='weight-600'>{outOfRange ? `Out of range` : `In range`}</p>
+    </Box>
   );
 }

@@ -397,7 +397,9 @@ const AnalyticsPairDetails: React.FC = () => {
                 mr={1.5}
                 onClick={() => {
                   history.push(
-                    `/pools?currency0=${pairData.token0.id}&currency1=${pairData.token1.id}`,
+                    `/pools${isV3 ? '/v3' : ''}?currency0=${
+                      pairData.token0.id
+                    }&currency1=${pairData.token1.id}`,
                   );
                 }}
               >
@@ -407,7 +409,9 @@ const AnalyticsPairDetails: React.FC = () => {
                 className='button filledButton'
                 onClick={() => {
                   history.push(
-                    `/swap?currency0=${pairData.token0.id}&currency1=${pairData.token1.id}`,
+                    `/swap${isV3 ? '/v3' : ''}?currency0=${
+                      pairData.token0.id
+                    }&currency1=${pairData.token1.id}`,
                   );
                 }}
               >

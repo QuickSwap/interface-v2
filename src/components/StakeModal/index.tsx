@@ -7,15 +7,6 @@ import { useAllTransactions } from '../../state/transactions/hooks';
 import { useChunkedRows } from '../../utils/chunkForRows';
 import Loader from '../Loader';
 import { FarmingType } from '../../models/enums';
-import {
-  NFTPosition,
-  NFTPositionDescription,
-  NFTPositionIcon,
-  NFTPositionIndex,
-  NFTPositionLink,
-  NFTPositionSelectCircle,
-  NFTPositionsRow,
-} from './styled';
 import { useSortedRecentTransactions } from '../../hooks/useSortedRecentTransactions';
 import { NTFInterface } from '../../models/interfaces';
 import { NavLink } from 'react-router-dom';
@@ -33,6 +24,7 @@ import { formatUnits, parseUnits } from 'ethers/lib/utils';
 import { BigNumber } from 'ethers';
 import { ChainId } from '@uniswap/sdk';
 import { Box } from '@material-ui/core';
+import { Skeleton } from '@material-ui/lab';
 import { StyledCircle, StyledLabel } from 'components/v3/Common/styledElements';
 
 interface FarmModalProps {
@@ -385,7 +377,7 @@ export function FarmModal({
       ) : (
         <div className={`w-100 c-w ${!isTierFarming && 'h-400 pos-r'}`}>
           <div className={'mb-1 flex-s-between'}>
-            <div>Select NFT for farming</div>
+            <h6 className='weight-600'>Select NFT for farming</h6>
             <button className={'bg-t br-0'} onClick={closeHandler}>
               <X size={18} stroke={'var(--white)'} />
             </button>
@@ -476,17 +468,14 @@ export function FarmModal({
                             <IsActive el={el} />
                           </Box>
 
-                          <StyledLabel color='#ebecf2' fontSize='14px'>
-                            <a
-                              style={{ textDecoration: 'underline' }}
-                              className={'c-w fs-075'}
-                              href={`/#/pool/${+el.id}?onFarming=true`}
-                              rel='noopener noreferrer'
-                              target='_blank'
-                            >
-                              View position
-                            </a>
-                          </StyledLabel>
+                          <a
+                            style={{ textDecoration: 'underline' }}
+                            href={`/#/pool/${+el.id}?onFarming=true`}
+                            rel='noopener noreferrer'
+                            target='_blank'
+                          >
+                            <small>View position</small>
+                          </a>
                         </Box>
                       </Box>
                     </div>
@@ -494,18 +483,24 @@ export function FarmModal({
                 </div>
               ))
             ) : (
-              <NFTPositionsRow>
+              <Box className='flex'>
                 {[0, 1, 2].map((el, i) => (
-                  <NFTPosition key={i} skeleton>
-                    <NFTPositionIcon skeleton />
-                    <NFTPositionDescription skeleton>
-                      <NFTPositionIndex skeleton />
-                      <NFTPositionLink skeleton />
-                    </NFTPositionDescription>
-                    <NFTPositionSelectCircle />
-                  </NFTPosition>
+                  <Box
+                    padding='8px'
+                    borderRadius={12}
+                    mr={1}
+                    position='relative'
+                    className='flex items-center border'
+                    key={i}
+                  >
+                    <Skeleton variant='circle' width='40px' height='40px' />
+                    <Box ml={1}>
+                      <Skeleton width={50} height={16} />
+                      <Skeleton width={60} height={20} />
+                    </Box>
+                  </Box>
                 ))}
-              </NFTPositionsRow>
+              </Box>
             )}
           </div>
           {selectedTier === '' &&

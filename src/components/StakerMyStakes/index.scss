@@ -1,5 +1,11 @@
 @import "src/assets/styles/index";
 
+.v3-stake-active-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 4px;
+}
+
 .my-farms {
 
   &__nft-send {

@@ -12,7 +12,7 @@ import {
 import { Trans, useTranslation } from 'react-i18next';
 import { SwapBestTrade } from 'components/Swap';
 import SwapV3Page from './V3/Swap';
-import { useHistory, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 const SWAP_BEST_TRADE = 0;
 const SWAP_NORMAL = 1;
@@ -26,19 +26,18 @@ const SwapMain: React.FC = () => {
 
   const { isV3, updateIsV3 } = useIsV3();
   const params: any = useParams();
-  const history = useHistory();
   const isOnV3 = params ? params.version === 'v3' : false;
   const parsedQuery = useParsedQueryString();
-  const currency0 = useCurrency(
+  const currency0Id =
     parsedQuery && (parsedQuery.currency0 || parsedQuery.inputCurrency)
       ? ((parsedQuery.currency0 ?? parsedQuery.inputCurrency) as string)
-      : undefined,
-  );
-  const currency1 = useCurrency(
+      : undefined;
+  const currency1Id =
     parsedQuery && (parsedQuery.currency1 || parsedQuery.outputCurrency)
       ? ((parsedQuery.currency1 ?? parsedQuery.outputCurrency) as string)
-      : undefined,
-  );
+      : undefined;
+  const currency0 = useCurrency(currency0Id);
+  const currency1 = useCurrency(currency1Id);
   const swapMode = parsedQuery ? parsedQuery.mode : '';
   const { t } = useTranslation();
 
@@ -147,7 +146,14 @@ const SwapMain: React.FC = () => {
             currency1={currency1 ?? undefined}
           />
         )}
-        {swapIndex === SWAP_V3 && <SwapV3Page></SwapV3Page>}
+        {swapIndex === SWAP_V3 && (
+          <SwapV3Page
+            currency0={currency0Id}
+            currency1={
+              currency1Id?.toLowerCase() === 'eth' ? 'matic' : currency1Id
+            }
+          ></SwapV3Page>
+        )}
         {swapIndex === SWAP_LIMIT && (
           <Box className='limitOrderPanel'>
             <GelatoLimitOrderPanel />

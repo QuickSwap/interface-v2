@@ -77,16 +77,23 @@ import { ReactComponent as ExchangeIcon } from 'assets/images/ExchangeIcon.svg';
 import { Box } from '@material-ui/core';
 import { StyledButton, StyledLabel } from 'components/v3/Common/styledElements';
 
-const SwapV3Page: React.FC = () => {
+const SwapV3Page: React.FC<{ currency0?: string; currency1?: string }> = ({
+  currency0,
+  currency1,
+}) => {
   const { account } = useActiveWeb3React();
   const history = useHistory();
   const loadedUrlParams = useDefaultsFromURLSearch();
-
+  const inputCurrencyId = currency0 ?? loadedUrlParams?.inputCurrencyId;
+  const outputCurrencyId = currency1 ?? loadedUrlParams?.outputCurrencyId;
+  const paramInputCurrency = useCurrency(inputCurrencyId);
+  const paramOutputCurrency = useCurrency(outputCurrencyId);
   // token warning stuff
   const [loadedInputCurrency, loadedOutputCurrency] = [
-    useCurrency(loadedUrlParams?.inputCurrencyId),
-    useCurrency(loadedUrlParams?.outputCurrencyId),
+    paramInputCurrency,
+    paramOutputCurrency,
   ];
+
   const [dismissTokenWarning, setDismissTokenWarning] = useState<boolean>(
     false,
   );
@@ -198,7 +205,7 @@ const SwapV3Page: React.FC = () => {
   // reset if they close warning without tokens in params
   const handleDismissTokenWarning = useCallback(() => {
     setDismissTokenWarning(true);
-    history.push('/swap/');
+    history.push('/swap/v3');
   }, [history]);
 
   // modal and loading
@@ -457,6 +464,15 @@ const SwapV3Page: React.FC = () => {
     },
     [onCurrencySelection],
   );
+
+  useEffect(() => {
+    if (paramInputCurrency) {
+      handleInputSelect(paramInputCurrency);
+    }
+    if (paramOutputCurrency) {
+      handleOutputSelect(paramOutputCurrency);
+    }
+  }, [paramInputCurrency, paramOutputCurrency]);
 
   //TODO
   const priceImpactTooHigh = priceImpactSeverity > 3 && !isExpertMode;
