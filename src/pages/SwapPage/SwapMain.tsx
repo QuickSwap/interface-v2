@@ -39,6 +39,7 @@ const SwapMain: React.FC = () => {
       ? ((parsedQuery.currency1 ?? parsedQuery.outputCurrency) as string)
       : undefined,
   );
+  const swapMode = parsedQuery ? parsedQuery.mode : '';
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -61,7 +62,7 @@ const SwapMain: React.FC = () => {
           isProMode ? ' proModeWrapper' : ''
         }`}
       >
-        <Box display='flex'>
+        <Box display='flex' width={1}>
           <Box
             //TODO: Active class resolution should come from from a func
             className={`${
@@ -69,7 +70,7 @@ const SwapMain: React.FC = () => {
             } swapItem headingItem
             `}
             onClick={() => {
-              history.push('/swap');
+              updateIsV3(false);
               setSwapIndex(SWAP_BEST_TRADE);
             }}
           >
@@ -81,7 +82,7 @@ const SwapMain: React.FC = () => {
             } swapItem headingItem
             `}
             onClick={() => {
-              history.push('/swap');
+              updateIsV3(false);
               setSwapIndex(SWAP_NORMAL);
             }}
           >
@@ -92,24 +93,27 @@ const SwapMain: React.FC = () => {
               swapIndex === SWAP_V3 ? 'activeSwap' : ''
             } swapItem headingItem
             `}
-            onClick={() => history.push('/swap/v3')}
+            onClick={() => {
+              updateIsV3(true);
+              setSwapIndex(SWAP_V3);
+            }}
           >
             <p>{t('marketV3')}</p>
           </Box>
           <Box
             className={`${
               swapIndex === SWAP_LIMIT ? 'activeSwap' : ''
-            } swapItem headingItem ${isProMode ? 'border-right' : ''}`}
+            } swapItem headingItem`}
             onClick={() => {
-              history.push('/swap');
+              updateIsV3(false);
               setSwapIndex(SWAP_LIMIT);
             }}
           >
             <p>{t('limit')}</p>
           </Box>
         </Box>
-        <Box my={1} className='flex items-center'>
-          {!isProMode && (
+        {!isProMode && (
+          <Box margin='8px 16px 0' className='flex items-center'>
             <Box className='flex items-center' mr={1}>
               <span
                 className='text-secondary text-uppercase'
@@ -118,15 +122,17 @@ const SwapMain: React.FC = () => {
                 {t('proMode')}
               </span>
               <ToggleSwitch
-                toggled={isProMode}
-                onToggle={() => updateIsProMode(!isProMode)}
+                toggled={false}
+                onToggle={() => {
+                  updateIsProMode(true);
+                }}
               />
             </Box>
-          )}
-          <Box className='headingItem' marginRight={isProMode ? 2.5 : 0}>
-            <SettingsIcon onClick={() => setOpenSettingsModal(true)} />
+            <Box className='headingItem'>
+              <SettingsIcon onClick={() => setOpenSettingsModal(true)} />
+            </Box>
           </Box>
-        </Box>
+        )}
       </Box>
       <Box padding={isProMode ? '0 24px' : '0'} mt={3.5}>
         {swapIndex === SWAP_BEST_TRADE && (

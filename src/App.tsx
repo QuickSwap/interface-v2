@@ -215,24 +215,24 @@ const App: React.FC = () => {
                           <AnalyticsOverview />
                         </PageLayout>
                       </Route>
-                      <Route exact path='/analytics/tokens/:version?'>
+                      <Route exact path='/analytics/:version/tokens'>
                         <PageLayout>
                           <AnalyticsHeader />
                           <AnalyticsTokens />
                         </PageLayout>
                       </Route>
-                      <Route exact path='/analytics/pairs/:version?'>
+                      <Route exact path='/analytics/:version/pairs'>
                         <PageLayout>
                           <AnalyticsHeader />
                           <AnalyticsPairs />
                         </PageLayout>
                       </Route>
-                      <Route exact path='/analytics/token/:id/:version?'>
+                      <Route exact path='/analytics/:version/token/:id'>
                         <PageLayout>
                           <AnalyticsTokenDetails />
                         </PageLayout>
                       </Route>
-                      <Route exact path='/analytics/pair/:id/:version?'>
+                      <Route exact path='/analytics/:version/pair/:id'>
                         <PageLayout>
                           <AnalyticsPairDetails />
                         </PageLayout>

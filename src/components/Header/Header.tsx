@@ -150,7 +150,7 @@ const Header: React.FC = () => {
               key={index}
               id={val.id}
               className={`menuItem ${
-                pathname.indexOf(val.link) > -1 ? 'active' : ''
+                pathname !== '/' && val.link.includes(pathname) ? 'active' : ''
               }`}
             >
               <small>{val.text}</small>

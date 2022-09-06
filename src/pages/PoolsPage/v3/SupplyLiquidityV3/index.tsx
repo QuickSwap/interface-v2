@@ -387,7 +387,16 @@ export function SupplyLiquidityV3() {
       <Box className='flex justify-between'>
         <p className='weight-600'>Supply Liquidity</p>
         <div className='ml-a mxs_ml-0 mxs_mt-1 f f-ac '>
-          <small className='cursor-pointer text-primary' onClick={resetState}>
+          <small
+            className='cursor-pointer text-primary'
+            onClick={() => {
+              setCurrencyIdA(currencyIdAParam);
+              setCurrencyIdB(currencyIdBParam);
+              resetState();
+              onFieldAInput('');
+              onFieldBInput('');
+            }}
+          >
             Clear all
           </small>
           {!hidePriceFormatter && (
@@ -470,6 +479,8 @@ export function SupplyLiquidityV3() {
             mintInfo={mintInfo}
             handleAddLiquidity={() => {
               resetState();
+              onFieldAInput('');
+              onFieldBInput('');
             }}
             title={expertMode ? `Add liquidity` : 'Preview'}
           />

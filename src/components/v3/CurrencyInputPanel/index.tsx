@@ -195,7 +195,7 @@ export default function CurrencyInputPanel({
         <Box className='flex justify-between'>
           <Box display='flex'>
             <small className='text-secondary'>
-              {'balance'}: {balance?.toSignificant(5)}
+              {t('balance')}: {balance?.toSignificant(5)}
             </small>
 
             {account && currency && showHalfButton && (
@@ -204,8 +204,8 @@ export default function CurrencyInputPanel({
               </Box>
             )}
             {account && currency && showMaxButton && (
-              <Box className='maxWrapper' marginLeft='20px' onClick={onMax}>
-                <small>{'max'}</small>
+              <Box className='maxWrapper' onClick={onMax}>
+                <small>{t('max')}</small>
               </Box>
             )}
           </Box>

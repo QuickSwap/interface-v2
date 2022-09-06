@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTheme } from '@material-ui/core/styles';
 import { Box, Grid, useMediaQuery } from '@material-ui/core';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
-import { SwapTokenDetails, ToggleSwitch } from 'components';
+import { SettingsModal, SwapTokenDetails, ToggleSwitch } from 'components';
 import { useIsProMode } from 'state/application/hooks';
 import { useDerivedSwapInfo } from 'state/swap/hooks';
 import { Field } from 'state/swap/actions';
@@ -16,8 +16,10 @@ import SwapProInfo from './SwapProInfo';
 import SwapProFilter from './SwapProFilter';
 import { useTranslation } from 'react-i18next';
 import 'pages/styles/swap.scss';
+import { ReactComponent as SettingsIcon } from 'assets/images/SettingsIcon.svg';
 
 const SwapPage: React.FC = () => {
+  const [openSettingsModal, setOpenSettingsModal] = useState(false);
   const { isProMode, updateIsProMode } = useIsProMode();
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('sm'));
@@ -95,6 +97,12 @@ const SwapPage: React.FC = () => {
   const { t } = useTranslation();
   return (
     <Box width='100%' mb={3} id='swap-page'>
+      {openSettingsModal && (
+        <SettingsModal
+          open={openSettingsModal}
+          onClose={() => setOpenSettingsModal(false)}
+        />
+      )}
       <Box className='pageHeading'>
         <h4>{t('swap')}</h4>
         <Box className='helpWrapper'>
@@ -153,9 +161,14 @@ const SwapPage: React.FC = () => {
                   {t('proMode')}
                 </span>
                 <ToggleSwitch
-                  toggled={isProMode}
-                  onToggle={() => updateIsProMode(!isProMode)}
+                  toggled={true}
+                  onToggle={() => {
+                    updateIsProMode(false);
+                  }}
                 />
+                <Box ml={1} className='headingItem'>
+                  <SettingsIcon onClick={() => setOpenSettingsModal(true)} />
+                </Box>
               </Box>
             </Box>
             <SwapMain />

@@ -412,7 +412,6 @@ export default function StartingPrice({
             ),
           );
         }
-        startPriceHandler('');
       }
 
       if (usdB && usdB !== '0') {
@@ -448,7 +447,6 @@ export default function StartingPrice({
             ),
           );
         }
-        startPriceHandler('');
       }
     },
     [

@@ -159,23 +159,21 @@ export function TokenAmountCard({
   ]);
 
   useEffect(() => {
-    if (value) {
-      if (currencyPrice) {
-        setLocalUSDValue(String(+value * +currencyPrice.toSignificant(5)));
-      } else if (isBase && initialUSDPrices.CURRENCY_B) {
-        setLocalUSDValue(String(+value * +initialUSDPrices.CURRENCY_B));
-      } else if (!isBase && initialUSDPrices.CURRENCY_A) {
-        setLocalUSDValue(String(+value * +initialUSDPrices.CURRENCY_A));
-      } else if (initialTokenPrice && otherCurrencyPrice) {
-        setLocalUSDValue(
-          String(
-            +value * +initialTokenPrice * +otherCurrencyPrice.toSignificant(5),
-          ),
-        );
-      }
-
-      setLocalTokenValue(value);
+    if (currencyPrice) {
+      setLocalUSDValue(String(+value * +currencyPrice.toSignificant(5)));
+    } else if (isBase && initialUSDPrices.CURRENCY_B) {
+      setLocalUSDValue(String(+value * +initialUSDPrices.CURRENCY_B));
+    } else if (!isBase && initialUSDPrices.CURRENCY_A) {
+      setLocalUSDValue(String(+value * +initialUSDPrices.CURRENCY_A));
+    } else if (initialTokenPrice && otherCurrencyPrice) {
+      setLocalUSDValue(
+        String(
+          +value * +initialTokenPrice * +otherCurrencyPrice.toSignificant(5),
+        ),
+      );
     }
+
+    setLocalTokenValue(value);
   }, [
     initialTokenPrice,
     initialUSDPrices,
