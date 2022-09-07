@@ -1,12 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Box } from '@material-ui/core';
-import { CurrencyLogo, DoubleCurrencyLogo, Logo } from 'components';
+import { CurrencyLogo } from 'components';
 import {
   StyledButton,
-  StyledCircle,
   StyledDarkBox,
   StyledFilledBox,
-  StyledLabel,
 } from 'components/v3/Common/styledElements';
 import { useFarmingHandlers } from 'hooks/useStakerHandlers';
 import { FarmingType } from 'models/enums';
@@ -43,36 +41,25 @@ export default function FarmCardDetail({
       className='flex justify-evenly items-center flex-wrap'
       marginBottom={2}
     >
-      <StyledDarkBox
-        padding={1.5}
-        className='flex-col'
-        width='48%'
-        height={220}
-      >
+      <StyledDarkBox padding={1.5} width={1} height={220}>
         <Box>
-          <StyledLabel fontSize='16px' color='#c7cad9'>
-            Infinite Farming
-          </StyledLabel>
+          <p>Infinite Farming</p>
         </Box>
         {!el.eternalFarming && (
           <Box className='flex justify-center items-center' height='60%'>
-            <StyledLabel color='#696c80' fontSize='14px'>
-              No infinite farms for now
-            </StyledLabel>
+            <small className='text-secondary'>No infinite farms for now</small>
           </Box>
         )}
         {el.eternalFarming && (
           <>
-            <StyledFilledBox
-              mt={2}
-              className='flex flex-col  justify-around  items-center'
-              height={91}
-            >
-              <Box width='90%' className='flex justify-between'>
-                <StyledLabel>Ended rewards</StyledLabel>
-                {bonusRewardToken && <StyledLabel>Ended bonus</StyledLabel>}
+            <StyledFilledBox mt={2} p={2}>
+              <Box width={1} className='flex justify-between'>
+                <small className='text-secondary'>Earned rewards</small>
+                {bonusRewardToken && (
+                  <small className='text-secondary'>Earned bonus</small>
+                )}
               </Box>
-              <Box width='90%' className='flex justify-between'>
+              <Box mt={1} width={1} className='flex justify-between'>
                 <Box className='flex items-center'>
                   <CurrencyLogo
                     size={'24px'}
@@ -129,14 +116,12 @@ export default function FarmCardDetail({
                 eternalCollectReward.state !== 'done' ? (
                   <>
                     <Loader size={'18px'} stroke={'var(--white)'} />
-                    <StyledLabel color='#ebecf2' fontSize='14px'>
-                      {' Claiming'}
-                    </StyledLabel>
+                    <Box ml='5px'>
+                      <small>{'Claiming'}</small>
+                    </Box>
                   </>
                 ) : (
-                  <StyledLabel color='#ebecf2' fontSize='14px'>
-                    Claim
-                  </StyledLabel>
+                  <small>Claim</small>
                 )}
               </StyledButton>
               <StyledButton
@@ -162,31 +147,17 @@ export default function FarmCardDetail({
                 gettingReward.state !== 'done' ? (
                   <>
                     <Loader size={'18px'} stroke={'var(--white)'} />
-                    <StyledLabel color='#ebecf2' fontSize='14px'>
-                      {' Undepositing'}
-                    </StyledLabel>
+                    <Box ml='5px'>
+                      <small>{' Undepositing'}</small>
+                    </Box>
                   </>
                 ) : (
-                  <StyledLabel color='#ebecf2' fontSize='14px'>
-                    Undeposit
-                  </StyledLabel>
+                  <small>Undeposit</small>
                 )}
               </StyledButton>
             </Box>
           </>
         )}
-      </StyledDarkBox>
-      <StyledDarkBox className='flex-col' width='48%' height={220}>
-        <Box padding={1.5}>
-          <StyledLabel fontSize='16px' color='#c7cad9'>
-            Limit Farming
-          </StyledLabel>
-        </Box>
-        <Box className='flex justify-center items-center' height='60%'>
-          <StyledLabel color='#696c80' fontSize='14px'>
-            No Limit farms for now
-          </StyledLabel>
-        </Box>
       </StyledDarkBox>
     </Box>
   );
