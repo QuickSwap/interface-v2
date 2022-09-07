@@ -62,7 +62,8 @@ export interface TickFarming {
 }
 
 export interface FormattedEternalFarming {
-  apr: number;
+  apr: number | undefined;
+  tvl: number | undefined;
   bonusReward: string;
   bonusRewardRate: string;
   bonusRewardToken: TokenSubgraph;

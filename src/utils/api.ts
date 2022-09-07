@@ -9,6 +9,17 @@ export async function fetchEternalFarmAPR() {
   }
 }
 
+export async function fetchEternalFarmTVL() {
+  const apiURL =
+    process.env.REACT_APP_V3_APR_API_BASE_URL + '/TVL/eternalFarmings/';
+
+  try {
+    return await fetch(apiURL).then((v) => v.json());
+  } catch (error) {
+    return {};
+  }
+}
+
 export async function fetchLimitFarmAPR() {
   const apiURL =
     process.env.REACT_APP_V3_APR_API_BASE_URL + '/APR/limitFarmings/';

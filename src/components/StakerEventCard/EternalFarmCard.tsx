@@ -25,6 +25,7 @@ import { ReactComponent as AddIcon } from 'assets/images/addIcon.svg';
 import { Box } from '@material-ui/core';
 import { formatUnits } from 'ethers/lib/utils';
 import { formatReward } from 'utils/formatReward';
+import { formatCompact } from 'utils';
 
 interface EternalFarmCardProps {
   active?: boolean;
@@ -44,6 +45,7 @@ interface EternalFarmCardProps {
     enterStartTime?: number;
     apr?: number;
     locked?: boolean;
+    tvl?: number;
   };
   eternal?: boolean;
 }
@@ -61,6 +63,7 @@ export function EternalFarmCard({
     bonusReward,
     apr,
     enterStartTime,
+    tvl,
   } = {},
   eternal,
 }: EternalFarmCardProps) {
@@ -107,7 +110,7 @@ export function EternalFarmCard({
                 borderRadius='4px'
               >
                 <span className='text-success'>
-                  {apr && apr > 0 && apr !== NaN ? Math.round(apr) : '~'}% APR
+                  {apr !== undefined && apr >= 0 ? Math.round(apr) : '~'}% APR
                 </span>
               </Box>
             </Box>
@@ -195,6 +198,13 @@ export function EternalFarmCard({
                   )}
                 </StyledDarkBox>
               </>
+            )}
+
+            {tvl && (
+              <Box mt={2} className='flex justify-between'>
+                <small className='weight-600'>TVL:</small>
+                <small className='weight-600'>${formatCompact(tvl)}</small>
+              </Box>
             )}
 
             <Box marginTop={2}>

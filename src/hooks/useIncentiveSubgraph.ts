@@ -48,6 +48,7 @@ import {
   fetchEternalFarmAPR,
   fetchLimitFarmAPR,
   fetchLimitFarmTVL,
+  fetchEternalFarmTVL,
 } from 'utils/api';
 import { useEthPrices } from './useEthPrices';
 
@@ -913,6 +914,7 @@ export function useFarmingSubgraph() {
       }
 
       const aprs: Aprs = await fetchEternalFarmAPR();
+      const tvls: Aprs = await fetchEternalFarmTVL();
 
       let _eternalFarmings: FormattedEternalFarming[] = [];
       // TODO
@@ -926,7 +928,8 @@ export function useFarmingSubgraph() {
         );
         const multiplierToken = await fetchToken(farming.multiplierToken, true);
 
-        const apr = aprs[farming.id] ? aprs[farming.id] : NaN;
+        const apr = aprs[farming.id];
+        const tvl = tvls[farming.id];
 
         _eternalFarmings = [
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -941,6 +944,7 @@ export function useFarmingSubgraph() {
             //@ts-ignore
             pool,
             apr,
+            tvl,
           },
         ];
       }
