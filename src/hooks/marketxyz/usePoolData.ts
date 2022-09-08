@@ -3,6 +3,7 @@ import { useMarket } from './useMarket';
 import { useActiveWeb3React } from '../index';
 import { fetchPoolData, PoolData } from '../../utils/marketxyz/fetchPoolData';
 import { PoolDirectoryV1 } from 'market-sdk';
+import { useEthPrice } from 'state/application/hooks';
 
 export const usePoolsData = (
   poolAddresses: string[],
@@ -10,6 +11,7 @@ export const usePoolsData = (
 ) => {
   const { account } = useActiveWeb3React();
   const { sdk } = useMarket();
+  const { ethPrice } = useEthPrice();
   const _directory = sdk
     ? typeof directory === 'string'
       ? new PoolDirectoryV1(sdk, directory)
@@ -30,6 +32,7 @@ export const usePoolsData = (
           poolId.toString(),
           account ?? undefined,
           _directory,
+          ethPrice.price ?? 0,
         );
         return poolData;
       }),
@@ -49,6 +52,7 @@ export const usePoolData = (
 ): PoolData | undefined => {
   const { account } = useActiveWeb3React();
   const { sdk } = useMarket();
+  const { ethPrice } = useEthPrice();
   const _directory = sdk
     ? typeof directory === 'string'
       ? new PoolDirectoryV1(sdk, directory)
@@ -60,6 +64,7 @@ export const usePoolData = (
       poolId ?? undefined,
       account ?? undefined,
       _directory,
+      ethPrice.price ?? 0,
     );
     return poolData;
   };
