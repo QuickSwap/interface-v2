@@ -6,7 +6,6 @@ import computeSurroundingTicks from 'utils/v3/computeSurroundingTicks';
 import { useAllV3TicksQuery } from 'state/data/enhanced';
 import { AllV3TicksQuery } from 'state/data/generated';
 import { skipToken } from '@reduxjs/toolkit/query/react';
-import ms from 'ms.macro';
 import { FeeAmount } from 'v3lib/utils/v3constants';
 import { Pool } from 'v3lib/entities/pool';
 import { tickToPrice } from 'v3lib/utils/priceTickConversions';
@@ -49,7 +48,7 @@ export function useAllV3Ticks(
       ? { poolAddress: poolAddress?.toLowerCase(), skip: 0 }
       : skipToken,
     {
-      pollingInterval: ms`2m`,
+      pollingInterval: 120_000,
     },
   );
 
