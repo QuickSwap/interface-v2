@@ -16,10 +16,12 @@ import SwapProInfo from './SwapProInfo';
 import SwapProFilter from './SwapProFilter';
 import { useTranslation } from 'react-i18next';
 import 'pages/styles/swap.scss';
+import AdsSlider from 'components/AdsSlider';
 
 const SwapPage: React.FC = () => {
   const { isProMode, updateIsProMode } = useIsProMode();
   const { breakpoints } = useTheme();
+  const isTiny = useMediaQuery(breakpoints.down('xs'));
   const isMobile = useMediaQuery(breakpoints.down('sm'));
   const isTablet = useMediaQuery(breakpoints.down('md'));
   const [showChart, setShowChart] = useState(true);
@@ -111,6 +113,9 @@ const SwapPage: React.FC = () => {
             <Box className='wrapper'>
               <SwapMain />
             </Box>
+            <Box maxWidth={isTiny ? '320px' : '352px'} margin='16px auto 0'>
+              <AdsSlider sort='1' />
+            </Box>
           </Grid>
           <Grid item xs={12} sm={12} md={6} lg={7}>
             <Box className='flex flex-wrap justify-between fullWidth'>
@@ -162,6 +167,9 @@ const SwapPage: React.FC = () => {
               </Box>
             </Box>
             <SwapMain />
+            <Box maxWidth={isTiny ? '320px' : '352px'} margin='16px auto 0'>
+              <AdsSlider sort='1' />
+            </Box>
           </Box>
           {infoPos === 'left' && (
             <Box
