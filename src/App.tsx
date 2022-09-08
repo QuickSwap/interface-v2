@@ -49,6 +49,7 @@ import MulticallUpdater from 'state/multicall/updater';
 import FarmUpdater from 'state/farms/updater';
 import DualFarmUpdater from 'state/dualfarms/updater';
 import SyrupUpdater from 'state/syrups/updater';
+import AdsUpdater from 'state/ads/updater';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import './i18n';
@@ -87,6 +88,7 @@ function Updaters() {
       <FarmUpdater />
       <DualFarmUpdater />
       <SyrupUpdater />
+      <AdsUpdater />
     </>
   );
 }
@@ -135,11 +137,11 @@ const App: React.FC = () => {
                           <SwapPage />
                         </PageLayout>
                       </Route>
-                      <Route exact path='/lend'>
+                      {/* <Route exact path='/lend'>
                         <PageLayout>
                           <LendPage />
                         </PageLayout>
-                      </Route>
+                      </Route> */}
                       <Route exact path='/lend/detail'>
                         <PageLayout>
                           <LendDetailPage />
