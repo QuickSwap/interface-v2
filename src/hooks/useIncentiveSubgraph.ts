@@ -54,7 +54,7 @@ import { useEthPrices } from './useEthPrices';
 
 export function useFarmingSubgraph() {
   const { chainId, account, library } = useActiveWeb3React();
-  const { v3Client, farmingClient, oldFarmingClient } = useClients();
+  const { v3Client, farmingClient } = useClients();
 
   const [positionsForPool, setPositionsForPool] = useState<Position[] | null>(
     null,

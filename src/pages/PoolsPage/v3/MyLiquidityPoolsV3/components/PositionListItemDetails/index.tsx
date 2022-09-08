@@ -310,7 +310,12 @@ export default function PositionListItemDetails({
     'ownerOf',
     [tokenId],
   ).result?.[0];
-  const ownsNFT = owner === account || positionDetails?.operator === account;
+
+  // NOTE: this may cause poor ux as people might try to claim rewards
+  // for others NFT's however the smart contract will fail since they don't have the rights to claim
+  //Default to true to allow people to claim reward in farming
+  const ownsNFT = true;
+  // const ownsNFT = owner === account || positionDetails?.operator === account;
 
   const feeValueUpper = inverted ? feeValue0 : feeValue1;
   const feeValueLower = inverted ? feeValue1 : feeValue0;
