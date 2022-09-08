@@ -23,6 +23,9 @@ import { Link } from 'react-router-dom';
 import { ChainId } from '@uniswap/sdk';
 import { ReactComponent as AddIcon } from 'assets/images/addIcon.svg';
 import { Box } from '@material-ui/core';
+import { formatUnits } from 'ethers/lib/utils';
+import { formatReward } from 'utils/formatReward';
+import { formatCompact } from 'utils';
 
 interface EternalFarmCardProps {
   active?: boolean;
@@ -42,6 +45,7 @@ interface EternalFarmCardProps {
     enterStartTime?: number;
     apr?: number;
     locked?: boolean;
+    tvl?: number;
   };
   eternal?: boolean;
 }
@@ -59,6 +63,7 @@ export function EternalFarmCard({
     bonusReward,
     apr,
     enterStartTime,
+    tvl,
   } = {},
   eternal,
 }: EternalFarmCardProps) {
@@ -72,7 +77,7 @@ export function EternalFarmCard({
       {!refreshing && (
         <Box ml={1.5} mr={1.5} mt={3} mb={3}>
           <StyledFilledBox padding={1.5} width={336} className='flex flex-col'>
-            <Box mb={1.5} className='flex justify-starts items-center'>
+            <Box mb={1.5} className='flex justify-between items-center'>
               <Box className='flex items-center'>
                 <DoubleCurrencyLogo
                   currency0={
@@ -94,18 +99,28 @@ export function EternalFarmCard({
                   size={30}
                 />
 
-                <StyledLabel className='ml-1' fontSize='14px' color='##ebecf2'>
-                  {`${pool.token0.symbol}/${pool.token1.symbol}`}
-                </StyledLabel>
+                <Box ml='5px'>
+                  <small className='weight-600'>{`${pool.token0.symbol}/${pool.token1.symbol}`}</small>
+                </Box>
+              </Box>
+              <Box
+                className='flex items-center bg-successLight'
+                height='19px'
+                padding='0 4px'
+                borderRadius='4px'
+              >
+                <span className='text-success'>
+                  {apr !== undefined && apr >= 0 ? Math.round(apr) : '~'}% APR
+                </span>
               </Box>
             </Box>
             {rewardToken && (
               <StyledDarkBox
                 padding={1.5}
-                className='flex items-center '
+                className='flex items-center justify-between'
                 height={56}
               >
-                <Box className='flex'>
+                <Box className='flex items-center'>
                   <CurrencyLogo
                     currency={
                       new Token(
@@ -118,15 +133,20 @@ export function EternalFarmCard({
                     size={'30px'}
                   />
 
-                  <Box className='flex-col' ml={1.5}>
-                    <StyledLabel color='#696c80' fontSize='12px'>
-                      Reward
-                    </StyledLabel>
-                    <StyledLabel color='#ebecf2' fontSize='14px'>
-                      {rewardToken?.symbol}
-                    </StyledLabel>
+                  <Box ml={1.5}>
+                    <p className='span text-secondary'>Reward</p>
+                    <small className='weight-600'>{rewardToken?.symbol}</small>
                   </Box>
                 </Box>
+                {reward && (
+                  <small className='weight-600'>
+                    {formatReward(
+                      Number(
+                        formatUnits(reward.toString(), rewardToken.decimals),
+                      ),
+                    )}
+                  </small>
+                )}
               </StyledDarkBox>
             )}
             {bonusRewardToken && (
@@ -141,10 +161,10 @@ export function EternalFarmCard({
                 </Box>
                 <StyledDarkBox
                   padding={1.5}
-                  className='flex items-center '
+                  className='flex items-center justify-between'
                   height={56}
                 >
-                  <Box className='flex'>
+                  <Box className='flex items-center'>
                     <CurrencyLogo
                       currency={
                         new Token(
@@ -157,37 +177,39 @@ export function EternalFarmCard({
                       size={'30px'}
                     />
 
-                    <Box className='flex-col' ml={1.5}>
-                      <StyledLabel color='#696c80' fontSize='12px'>
-                        Bonus
-                      </StyledLabel>
-                      <StyledLabel color='#ebecf2' fontSize='14px'>
+                    <Box ml={1.5}>
+                      <p className='span text-secondary'>Bonus</p>
+                      <small className='weight-600'>
                         {bonusRewardToken.symbol}
-                      </StyledLabel>
+                      </small>
                     </Box>
                   </Box>
+                  {bonusReward && (
+                    <small className='weight-600'>
+                      {formatReward(
+                        Number(
+                          formatUnits(
+                            bonusReward.toString(),
+                            rewardToken.decimals,
+                          ),
+                        ),
+                      )}
+                    </small>
+                  )}
                 </StyledDarkBox>
               </>
             )}
 
-            <StyledDarkBox
-              className='flex justify-between items-center mt-1'
-              height={56}
-              padding={1.5}
-            >
-              <StyledLabel color='#696c80' fontSize='12px'>
-                Overall APR:
-              </StyledLabel>
-              <StyledLabel color='#0fc679' fontSize='14px'>
-                {apr && apr > 0 && apr !== NaN ? Math.round(apr) : 'Unknown'}%
-              </StyledLabel>
-            </StyledDarkBox>
+            {tvl && (
+              <Box mt={2} className='flex justify-between'>
+                <small className='weight-600'>TVL:</small>
+                <small className='weight-600'>${formatCompact(tvl)}</small>
+              </Box>
+            )}
 
             <Box marginTop={2}>
               <StyledButton height='40px' onClick={farmHandler}>
-                <StyledLabel color='#ebecf2' fontSize='14px'>
-                  Farm
-                </StyledLabel>
+                Farm
               </StyledButton>
             </Box>
           </StyledFilledBox>
