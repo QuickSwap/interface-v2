@@ -1,12 +1,11 @@
 import React from 'react';
 import { useActiveWeb3React } from 'hooks';
 import { useState } from 'react';
-import ms from 'ms.macro';
 import useInterval from 'hooks/useInterval';
 import useCurrentBlockTimestamp from 'hooks/useCurrentBlockTimestamp';
 
-const DEFAULT_MS_BEFORE_WARNING = ms`5m`;
-const NETWORK_HEALTH_CHECK_MS = ms`10s`;
+const DEFAULT_MS_BEFORE_WARNING = 300_000;
+const NETWORK_HEALTH_CHECK_MS = 10_000;
 
 const useMachineTimeMs = (updateInterval: number): number => {
   const [now, setNow] = useState(Date.now());
@@ -30,7 +29,7 @@ export function useIsNetworkFailed() {
 }
 
 export function useIsNetworkFailedImmediate() {
-  const machineTime = useMachineTimeMs(ms`1s`);
+  const machineTime = useMachineTimeMs(1000);
   const blockTime = useCurrentBlockTimestamp();
 
   const warning = Boolean(
