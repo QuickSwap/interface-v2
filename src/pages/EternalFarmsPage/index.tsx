@@ -41,7 +41,7 @@ export default function EternalFarmsPage({
         </div>
       ) : !data || data.length === 0 ? (
         <div className={'eternal-page__loader'}>
-          <div>{t('noInfiniteFarms')}</div>
+          <div>{t('noEternalFarms')}</div>
           <Frown size={'2rem'} stroke={'white'} />
         </div>
       ) : !refreshing && data.length !== 0 ? (
