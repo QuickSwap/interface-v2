@@ -107,11 +107,7 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
             i18nKey='learnmoreproject'
             components={{
               alink: (
-                <a
-                  href='https://quickswap-layer2.medium.com/you-voted-for-a-1-1000-token-split-to-make-quick-more-appealing-9c25c2a2dd7e'
-                  rel='noreferrer'
-                  target='_blank'
-                />
+                <a href={syrup.sponsorLink} rel='noreferrer' target='_blank' />
               ),
             }}
           />
