@@ -25,7 +25,7 @@ export default function Farms() {
       link: 'my-farms',
     },
     {
-      text: t('Enternal Farms'),
+      text: t('Eternal Farms'),
       id: 1,
       link: 'eternal-farms',
     },

@@ -37,14 +37,12 @@ export default function FarmCardDetail({ el }: FarmCardDetailProps) {
     >
       <StyledDarkBox padding={1.5} width={1} height={220}>
         <Box>
-          <p>Infinite Farming</p>
+          <p>Eternal Farming</p>
         </Box>
         {!el.eternalFarming && (
           <>
             <Box className='flex justify-center items-center' height='130px'>
-              <small className='text-secondary'>
-                No infinite farms for now
-              </small>
+              <small className='text-secondary'>No Eternal farms for now</small>
             </Box>
             <StyledButton
               height='40px'
