@@ -137,11 +137,11 @@ const App: React.FC = () => {
                           <SwapPage />
                         </PageLayout>
                       </Route>
-                      <Route exact path='/lend'>
+                      {/* <Route exact path='/lend'>
                         <PageLayout>
                           <LendPage />
                         </PageLayout>
-                      </Route>
+                      </Route> */}
                       <Route exact path='/lend/detail'>
                         <PageLayout>
                           <LendDetailPage />
