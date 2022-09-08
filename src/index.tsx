@@ -5,6 +5,7 @@ import { isMobile } from 'react-device-detect';
 import './index.scss';
 import App from './App';
 import { HashRouter } from 'react-router-dom';
+import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 
 const GOOGLE_ANALYTICS_ID: string | undefined =
   process.env.REACT_APP_GOOGLE_ANALYTICS_ID;
@@ -37,3 +38,7 @@ ReactDOM.render(
   </React.StrictMode>,
   document.getElementById('root'),
 );
+
+if (process.env.REACT_APP_SERVICE_WORKER !== 'false') {
+  serviceWorkerRegistration.register();
+}

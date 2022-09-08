@@ -17,19 +17,6 @@
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <script>
-        // Seems like some people are getting whitescreens
-        // Index.html appears to be cached despite the revalidate and max-age:0
-        // This code will unregister any service worker that may have been left behind
-        if(window.navigator && navigator.serviceWorker) {
-          navigator.serviceWorker.getRegistrations()
-          .then(function(registrations) {
-            for(let registration of registrations) {
-              registration.unregister();
-            }
-          });
-        }
-    </script>
     <!--
       Notice the use of %PUBLIC_URL% in the tags above.
       It will be replaced with the URL of the `public` folder during the build.
