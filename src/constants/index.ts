@@ -354,7 +354,7 @@ export const GlobalValue = {
   marketSDK: {
     QS_PoolDirectory: '0xDeFf0321cD7E62Dccc6df90A3C0720E0a3449CB4',
     QS_Pools: [
-      // '0x9BE35bc002235e96deC9d3Af374037aAf62BDeF7',
+      '0x9BE35bc002235e96deC9d3Af374037aAf62BDeF7',
       '0x627742AaFe82EB5129DD33D237FF318eF5F76CBC',
     ],
     LENS: '0x4B1dfA99d53FFA6E4c0123956ec4Ac2a6D9F4c75',
