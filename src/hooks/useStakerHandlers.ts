@@ -7,21 +7,20 @@ import {
   FARMING_CENTER,
   NONFUNGIBLE_POSITION_MANAGER_ADDRESSES,
 } from '../constants/v3/addresses';
-import { useTransactionAdder } from '../state/transactions/hooks';
+import {
+  useTransactionAdder,
+  useTransactionFinalizer,
+} from '../state/transactions/hooks';
 import { useActiveWeb3React } from 'hooks';
 import JSBI from 'jsbi';
 import { GAS_PRICE_MULTIPLIER } from './useGasPrice';
 import { TransactionResponse } from '@ethersproject/providers';
-import {
-  DefaultFarming,
-  DefaultFarmingWithError,
-  GetRewardsHashInterface,
-  GetRewardsHashInterfaceWithError,
-} from '../models/interfaces';
+import { DefaultFarming, DefaultFarmingWithError } from '../models/interfaces';
 import { FarmingType } from '../models/enums';
 import { useTranslation } from 'react-i18next';
 import { toHex } from 'lib/src/utils/calldata';
 import { useAppSelector } from 'state';
+import { useV3StakeData } from 'state/farms/hooks';
 
 export function useFarmingHandlers() {
   const { chainId, account, library } = useActiveWeb3React();
@@ -40,6 +39,7 @@ export function useFarmingHandlers() {
   });
 
   const addTransaction = useTransactionAdder();
+  const finalizeTransaction = useTransactionFinalizer();
 
   const [approvedHash, setApproved] = useState<DefaultFarming | string>({
     hash: null,
@@ -53,19 +53,9 @@ export function useFarmingHandlers() {
     hash: null,
     id: null,
   });
-  const [getRewardsHash, setGetRewards] = useState<
-    GetRewardsHashInterface | string
-  >({ hash: null, id: null, farmingType: null });
-  const [eternalCollectRewardHash, setEternalCollectReward] = useState<
-    DefaultFarming | string
-  >({ hash: null, id: null });
-  const [withdrawnHash, setWithdrawn] = useState<DefaultFarming | string>({
-    hash: null,
-    id: null,
-  });
-  const [claimRewardHash, setClaimReward] = useState<
-    GetRewardsHashInterfaceWithError | string
-  >({ hash: null, id: null, farmingType: null });
+
+  const { updateV3Stake } = useV3StakeData();
+
   const [sendNFTL2Hash, setSendNFTL2] = useState<DefaultFarming | string>({
     hash: null,
     id: null,
@@ -99,7 +89,14 @@ export function useFarmingHandlers() {
     ) => {
       if (!account || !provider || !chainId) return;
 
-      setClaimReward({ hash: null, id: null, farmingType: null });
+      updateV3Stake({
+        selectedTokenId: token,
+        selectedFarmingType: farmingType,
+        txType: 'claimRewards',
+        txConfirmed: false,
+        txHash: '',
+        txError: '',
+      });
 
       const MaxUint128 = toHex(
         JSBI.subtract(
@@ -207,14 +204,17 @@ export function useFarmingHandlers() {
           summary: `Claiming reward`,
         });
 
-        setClaimReward({
-          hash: result.hash,
-          id: token,
-          error: null,
-          farmingType: farmingType === FarmingType.ETERNAL ? 0 : 1,
+        updateV3Stake({ txHash: result.hash });
+
+        const receipt = await result.wait();
+
+        finalizeTransaction(receipt, {
+          summary: `Claimed reward`,
         });
+
+        updateV3Stake({ txConfirmed: true });
       } catch (err) {
-        setClaimReward('failed');
+        updateV3Stake({ txError: 'failed' });
         if (err.code !== 4001) {
           throw new Error('Claiming rewards ' + err.message);
         }
@@ -245,7 +245,14 @@ export function useFarmingHandlers() {
 
       const farmingCenterInterface = new Interface(FARMING_CENTER_ABI);
 
-      setEternalCollectReward({ hash: null, id: null });
+      updateV3Stake({
+        selectedTokenId: token,
+        selectedFarmingType: null,
+        txType: 'eternalCollectReward',
+        txConfirmed: false,
+        txHash: '',
+        txError: '',
+      });
 
       try {
         const MaxUint128 = toHex(
@@ -298,9 +305,17 @@ export function useFarmingHandlers() {
           summary: `Claiming reward`,
         });
 
-        setEternalCollectReward({ hash: result.hash, id: token });
+        updateV3Stake({ txHash: result.hash });
+
+        const receipt = await result.wait();
+
+        finalizeTransaction(receipt, {
+          summary: `Claimed Reward`,
+        });
+
+        updateV3Stake({ txConfirmed: true });
       } catch (err) {
-        setEternalCollectReward('failed');
+        updateV3Stake({ txError: 'failed' });
         if (err instanceof Error) {
           throw new Error('Claiming rewards ' + err.message);
         }
@@ -364,7 +379,14 @@ export function useFarmingHandlers() {
     ) => {
       if (!account || !provider || !chainId) return;
 
-      setGetRewards({ hash: null, id: null, farmingType: null });
+      updateV3Stake({
+        selectedTokenId: token,
+        selectedFarmingType: eventType,
+        txType: 'getRewards',
+        txConfirmed: false,
+        txHash: '',
+        txError: '',
+      });
 
       try {
         const farmingCenterContract = new Contract(
@@ -388,12 +410,20 @@ export function useFarmingHandlers() {
         );
 
         addTransaction(result, {
+          summary: `Claiming Rewards!`,
+        });
+
+        updateV3Stake({ txHash: result.hash });
+
+        const receipt = await result.wait();
+
+        finalizeTransaction(receipt, {
           summary: `Rewards were claimed!`,
         });
 
-        setGetRewards({ hash: result.hash, id: token, farmingType: eventType });
+        updateV3Stake({ txConfirmed: true });
       } catch (err) {
-        setGetRewards('failed');
+        updateV3Stake({ txError: 'failed' });
         if (err instanceof Error) {
           throw new Error('Getting rewards ' + err.message);
         }
@@ -406,7 +436,14 @@ export function useFarmingHandlers() {
     async (token) => {
       if (!account || !provider || !chainId) return;
 
-      setWithdrawn({ hash: null, id: null });
+      updateV3Stake({
+        selectedTokenId: token,
+        selectedFarmingType: null,
+        txType: 'withdraw',
+        txConfirmed: false,
+        txHash: '',
+        txError: '',
+      });
 
       try {
         const farmingCenterContract = new Contract(
@@ -425,12 +462,20 @@ export function useFarmingHandlers() {
         );
 
         addTransaction(result, {
+          summary: `Withdrawing NFT #${token}!`,
+        });
+
+        updateV3Stake({ txHash: result.hash });
+
+        const receipt = await result.wait();
+
+        finalizeTransaction(receipt, {
           summary: `NFT #${token} was withdrawn!`,
         });
 
-        setWithdrawn({ hash: result.hash, id: token });
+        updateV3Stake({ txConfirmed: true });
       } catch (err) {
-        setWithdrawn('failed');
+        updateV3Stake({ txError: 'failed' });
         if (err instanceof Error) {
           throw new Error('Withdrawing ' + err);
         }
@@ -626,15 +671,11 @@ export function useFarmingHandlers() {
     farmHandler,
     farmedHash,
     exitHandler,
-    getRewardsHash,
     withdrawHandler,
-    withdrawnHash,
     claimRewardsHandler,
-    claimRewardHash,
     sendNFTL2Handler,
     sendNFTL2Hash,
     eternalCollectRewardHandler,
-    eternalCollectRewardHash,
     claimReward,
     claimHash,
   };

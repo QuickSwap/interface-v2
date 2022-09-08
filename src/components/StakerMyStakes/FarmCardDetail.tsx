@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Box } from '@material-ui/core';
 import { CurrencyLogo } from 'components';
 import {
@@ -11,30 +11,24 @@ import { FarmingType } from 'models/enums';
 import Loader from 'components/Loader';
 import { formatReward } from 'utils/formatReward';
 import { Token } from '@uniswap/sdk';
+import { useV3StakeData } from 'state/farms/hooks';
 
 interface FarmCardDetailProps {
   el: any;
-  setGettingReward: any;
-  claimRewardsHandler: any;
-  setEternalCollectReward: any;
-  eternalCollectReward: any;
-  eternalCollectRewardHandler: any;
-  gettingReward: any;
 }
 
-export default function FarmCardDetail({
-  el,
-  setGettingReward,
-  setEternalCollectReward,
-  eternalCollectReward,
-  gettingReward,
-  claimRewardsHandler,
-  eternalCollectRewardHandler,
-}: FarmCardDetailProps) {
+export default function FarmCardDetail({ el }: FarmCardDetailProps) {
   const rewardToken = el.eternalRewardToken;
   const earned = el.eternalEarned;
   const bonusEarned = el.eternalBonusEarned;
   const bonusRewardToken = el.eternalBonusRewardToken;
+
+  const { v3Stake } = useV3StakeData();
+  const { txType, selectedTokenId, txConfirmed, txError, selectedFarmingType } =
+    v3Stake ?? {};
+
+  const { eternalCollectRewardHandler, withdrawHandler, claimRewardsHandler } =
+    useFarmingHandlers() || {};
 
   return (
     <Box
@@ -46,9 +40,42 @@ export default function FarmCardDetail({
           <p>Infinite Farming</p>
         </Box>
         {!el.eternalFarming && (
-          <Box className='flex justify-center items-center' height='60%'>
-            <small className='text-secondary'>No infinite farms for now</small>
-          </Box>
+          <>
+            <Box className='flex justify-center items-center' height='130px'>
+              <small className='text-secondary'>
+                No infinite farms for now
+              </small>
+            </Box>
+            <StyledButton
+              height='40px'
+              width='100%'
+              disabled={
+                selectedTokenId === el.id &&
+                txType === 'withdraw' &&
+                !txConfirmed &&
+                !txError
+              }
+              onClick={() => {
+                withdrawHandler(el.id);
+              }}
+            >
+              {selectedTokenId === el.id &&
+              txType === 'withdraw' &&
+              !txConfirmed &&
+              !txError ? (
+                <>
+                  <Loader size={'1rem'} stroke={'var(--white)'} />
+                  <Box ml='5px'>
+                    <small>Withdrawing</small>
+                  </Box>
+                </>
+              ) : (
+                <>
+                  <small>Withdraw</small>
+                </>
+              )}
+            </StyledButton>
+          </>
         )}
         {el.eternalFarming && (
           <>
@@ -99,21 +126,20 @@ export default function FarmCardDetail({
                 height='40px'
                 width='49%'
                 disabled={
-                  (eternalCollectReward.id === el.id &&
-                    eternalCollectReward.state !== 'done') ||
+                  (selectedTokenId === el.id &&
+                    txType === 'eternalCollectReward' &&
+                    !txConfirmed &&
+                    !txError) ||
                   (el.eternalEarned == 0 && el.eternalBonusEarned == 0)
                 }
                 onClick={() => {
-                  setEternalCollectReward({
-                    id: el.id,
-                    state: 'pending',
-                  });
                   eternalCollectRewardHandler(el.id, { ...el });
                 }}
               >
-                {eternalCollectReward &&
-                eternalCollectReward.id === el.id &&
-                eternalCollectReward.state !== 'done' ? (
+                {selectedTokenId === el.id &&
+                txType === 'eternalCollectReward' &&
+                !txConfirmed &&
+                !txError ? (
                   <>
                     <Loader size={'18px'} stroke={'var(--white)'} />
                     <Box ml='5px'>
@@ -128,23 +154,21 @@ export default function FarmCardDetail({
                 height='40px'
                 width='49%'
                 disabled={
-                  gettingReward.id === el.id &&
-                  gettingReward.farmingType === FarmingType.ETERNAL &&
-                  gettingReward.state !== 'done'
+                  selectedTokenId === el.id &&
+                  selectedFarmingType === FarmingType.ETERNAL &&
+                  txType === 'claimRewards' &&
+                  !txConfirmed &&
+                  !txError
                 }
                 onClick={() => {
-                  setGettingReward({
-                    id: el.id,
-                    state: 'pending',
-                    farmingType: FarmingType.ETERNAL,
-                  });
                   claimRewardsHandler(el.id, { ...el }, FarmingType.ETERNAL);
                 }}
               >
-                {gettingReward &&
-                gettingReward.id === el.id &&
-                gettingReward.farmingType === FarmingType.ETERNAL &&
-                gettingReward.state !== 'done' ? (
+                {selectedTokenId === el.id &&
+                selectedFarmingType === FarmingType.ETERNAL &&
+                txType === 'claimRewards' &&
+                !txConfirmed &&
+                !txError ? (
                   <>
                     <Loader size={'18px'} stroke={'var(--white)'} />
                     <Box ml='5px'>

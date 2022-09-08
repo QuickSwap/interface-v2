@@ -3,19 +3,14 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Frown } from 'react-feather';
 import { useFarmingHandlers } from '../../hooks/useStakerHandlers';
 import { useActiveWeb3React } from 'hooks';
-import { useAllTransactions } from '../../state/transactions/hooks';
 import Loader from '../Loader';
-import {
-  Deposit,
-  RewardInterface,
-  UnfarmingInterface,
-} from '../../models/interfaces';
+import { Deposit } from '../../models/interfaces';
 import { FarmingType } from '../../models/enums';
 import { Link, useLocation } from 'react-router-dom';
-import { useSortedRecentTransactions } from '../../hooks/useSortedRecentTransactions';
 import './index.scss';
 import FarmCard from './FarmCard';
 import { Box } from '@material-ui/core';
+import { useV3StakeData } from 'state/farms/hooks';
 
 interface FarmingMyFarmsProps {
   data: Deposit[] | null;
@@ -32,49 +27,24 @@ export function FarmingMyFarms({
 }: FarmingMyFarmsProps) {
   const { account } = useActiveWeb3React();
 
-  const {
-    getRewardsHash,
-    eternalCollectRewardHandler,
-    withdrawHandler,
-    exitHandler,
-    claimRewardsHandler,
-    claimRewardHash,
-    eternalCollectRewardHash,
-    withdrawnHash,
-  } = useFarmingHandlers() || {};
+  const { v3Stake } = useV3StakeData();
+  const { selectedTokenId, txType, txHash, txConfirmed, selectedFarmingType } =
+    v3Stake ?? {};
+
+  console.log(
+    'ccc',
+    selectedTokenId,
+    txType,
+    txHash,
+    txConfirmed,
+    selectedFarmingType,
+  );
 
   const [shallowPositions, setShallowPositions] = useState<Deposit[] | null>(
     null,
   );
-  const [gettingReward, setGettingReward] = useState<RewardInterface>({
-    id: null,
-    state: null,
-    farmingType: null,
-  });
-  const [eternalCollectReward, setEternalCollectReward] = useState<
-    UnfarmingInterface
-  >({ id: null, state: null });
-  const [unfarming, setUnfarming] = useState<UnfarmingInterface>({
-    id: null,
-    state: null,
-  });
-  const [attemptingTxn, setAttemptingTxn] = useState(false);
-  const [txPending, setTxPending] = useState(false);
-  const [txHash, setTxHash] = useState('');
 
-  const [addLiquidityErrorMessage, setAddLiquidityErrorMessage] = useState<
-    string | null
-  >(null);
-
-  const allTransactions = useAllTransactions();
-  const sortedRecentTransactions = useSortedRecentTransactions();
   const { hash } = useLocation();
-
-  const confirmed = useMemo(
-    () =>
-      sortedRecentTransactions.filter((tx) => tx.receipt).map((tx) => tx.hash),
-    [sortedRecentTransactions, allTransactions],
-  );
 
   const farmedNFTs = useMemo(() => {
     if (!shallowPositions) return;
@@ -91,112 +61,56 @@ export function FarmingMyFarms({
   }, [data]);
 
   useEffect(() => {
-    if (!eternalCollectReward.state) return;
-
-    if (typeof eternalCollectRewardHash === 'string') {
-      setEternalCollectReward({ id: null, state: null });
-    } else if (
-      eternalCollectRewardHash &&
-      confirmed.includes(String(eternalCollectRewardHash.hash))
-    ) {
-      setEternalCollectReward({
-        id: eternalCollectRewardHash.id,
-        state: 'done',
-      });
-      if (!shallowPositions) return;
-      setShallowPositions(
-        shallowPositions.map((el) => {
-          if (el.id === eternalCollectRewardHash.id) {
-            el.eternalEarned = 0;
-            el.eternalBonusEarned = 0;
-          }
-          return el;
-        }),
-      );
-    }
-  }, [eternalCollectRewardHash, confirmed]);
-
-  useEffect(() => {
-    if (!unfarming.state) return;
-
-    if (typeof withdrawnHash === 'string') {
-      setUnfarming({ id: null, state: null });
-    } else if (
-      withdrawnHash &&
-      confirmed.includes(String(withdrawnHash.hash))
-    ) {
-      setUnfarming({ id: withdrawnHash.id, state: 'done' });
-      if (!shallowPositions) return;
-      setShallowPositions(
-        shallowPositions.map((el) => {
-          if (el.id === withdrawnHash.id) {
-            el.onFarmingCenter = false;
-          }
-          return el;
-        }),
-      );
-    }
-  }, [withdrawnHash, confirmed]);
-
-  useEffect(() => {
-    if (!gettingReward.state) return;
-
-    if (typeof claimRewardHash === 'string') {
-      setGettingReward({ id: null, state: null, farmingType: null });
-    } else if (
-      claimRewardHash &&
-      confirmed.includes(String(claimRewardHash.hash))
-    ) {
-      setGettingReward({
-        id: claimRewardHash.id,
-        state: 'done',
-        farmingType: claimRewardHash.farmingType,
-      });
-      if (!shallowPositions) return;
-      setShallowPositions(
-        shallowPositions.map((el) => {
-          if (el.id === claimRewardHash.id) {
-            if (claimRewardHash.farmingType === FarmingType.LIMIT) {
-              el.limitFarming = null;
-            } else {
-              el.eternalFarming = null;
+    if (!shallowPositions) return;
+    if (txHash && txConfirmed && selectedTokenId) {
+      if (txType === 'eternalCollectReward') {
+        setShallowPositions(
+          shallowPositions.map((el) => {
+            if (el.id === selectedTokenId) {
+              el.eternalEarned = 0;
+              el.eternalBonusEarned = 0;
             }
-          }
-          return el;
-        }),
-      );
-    }
-  }, [claimRewardHash, confirmed]);
-
-  useEffect(() => {
-    if (!gettingReward.state) return;
-
-    if (typeof getRewardsHash === 'string') {
-      setGettingReward({ id: null, state: null, farmingType: null });
-    } else if (
-      getRewardsHash &&
-      confirmed.includes(String(getRewardsHash.hash))
-    ) {
-      setGettingReward({
-        id: getRewardsHash.id,
-        state: 'done',
-        farmingType: getRewardsHash.farmingType,
-      });
-      if (!shallowPositions) return;
-      setShallowPositions(
-        shallowPositions.map((el) => {
-          if (el.id === getRewardsHash.id) {
-            if (getRewardsHash.farmingType === FarmingType.LIMIT) {
-              el.limitFarming = null;
-            } else {
-              el.eternalFarming = null;
+            return el;
+          }),
+        );
+      } else if (txType === 'withdraw') {
+        setShallowPositions(
+          shallowPositions.map((el) => {
+            if (el.id === selectedTokenId) {
+              el.onFarmingCenter = false;
             }
-          }
-          return el;
-        }),
-      );
+            return el;
+          }),
+        );
+      } else if (txType === 'claimRewards') {
+        setShallowPositions(
+          shallowPositions.map((el) => {
+            if (el.id === selectedTokenId) {
+              if (selectedFarmingType === FarmingType.LIMIT) {
+                el.limitFarming = null;
+              } else {
+                el.eternalFarming = null;
+              }
+            }
+            return el;
+          }),
+        );
+      } else if (txType === 'getRewards') {
+        setShallowPositions(
+          shallowPositions.map((el) => {
+            if (el.id === selectedTokenId) {
+              if (selectedFarmingType === FarmingType.LIMIT) {
+                el.limitFarming = null;
+              } else {
+                el.eternalFarming = null;
+              }
+            }
+            return el;
+          }),
+        );
+      }
     }
-  }, [getRewardsHash, confirmed]);
+  }, [txHash, txConfirmed, selectedTokenId, selectedFarmingType, txType]);
 
   return (
     <>
@@ -234,18 +148,7 @@ export function FarmingMyFarms({
                     key={i}
                     data-navigatedto={hash == `#${el.id}`}
                   >
-                    <FarmCard
-                      el={el}
-                      withdrawHandler={withdrawHandler}
-                      unstaking={unfarming}
-                      setUnstaking={setUnfarming}
-                      setGettingReward={setGettingReward}
-                      setEternalCollectReward={setEternalCollectReward}
-                      eternalCollectRewardHandler={eternalCollectRewardHandler}
-                      claimRewardsHandler={claimRewardsHandler}
-                      eternalCollectReward={eternalCollectReward}
-                      gettingReward={gettingReward}
-                    />
+                    <FarmCard el={el} />
                   </div>
                 );
               })}

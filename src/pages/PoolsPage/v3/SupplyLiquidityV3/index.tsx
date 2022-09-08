@@ -326,21 +326,22 @@ export function SupplyLiquidityV3() {
   }, [allowedSlippage]);
 
   const hidePriceFormatter = useMemo(() => {
-    if (stepInitialPrice && currentStep < 2) {
-      return false;
-    }
+    return true;
+    // if (stepInitialPrice && currentStep < 2) {
+    //   return false;
+    // }
 
-    if (!stepInitialPrice && currentStep < 1) {
-      return false;
-    }
+    // if (!stepInitialPrice && currentStep < 1) {
+    //   return false;
+    // }
 
-    return Boolean(
-      (mintInfo.noLiquidity ? stepInitialPrice : stepPair) &&
-        !initialUSDPrices.CURRENCY_A &&
-        !initialUSDPrices.CURRENCY_B &&
-        !usdPriceA &&
-        !usdPriceB,
-    );
+    // return Boolean(
+    //   (mintInfo.noLiquidity ? stepInitialPrice : stepPair) &&
+    //     !initialUSDPrices.CURRENCY_A &&
+    //     !initialUSDPrices.CURRENCY_B &&
+    //     !usdPriceA &&
+    //     !usdPriceB,
+    // );
   }, [
     mintInfo,
     currentStep,
