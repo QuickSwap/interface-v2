@@ -10,14 +10,13 @@ import {
 } from 'state/mint/v3/hooks';
 import { ApprovalState, useApproveCallback } from 'hooks/useV3ApproveCallback';
 import { useActiveWeb3React } from 'hooks';
-import { Bound, updateCurrentStep } from 'state/mint/v3/actions';
+import { Bound } from 'state/mint/v3/actions';
 import { useUSDCValue } from 'hooks/v3/useUSDCPrice';
 import { NONFUNGIBLE_POSITION_MANAGER_ADDRESSES } from 'constants/v3/addresses';
 import { maxAmountSpend } from 'utils/v3/maxAmountSpend';
 import { tryParseAmount } from 'state/swap/v3/hooks';
 import { TokenAmountCard } from '../../components/TokenAmountCard';
 import { PriceFormats } from 'components/v3/PriceFomatToggler';
-import { TokenRatio } from '../../components/TokenRatio';
 import { Box, Button } from '@material-ui/core';
 import Loader from 'components/Loader';
 import { Check } from '@material-ui/icons';
@@ -112,13 +111,11 @@ export function EnterAmounts({
 
   // check whether the user has approved the router on the tokens
   const [approvalA, approveACallback] = useApproveCallback(
-    mintInfo.parsedAmounts[Field.CURRENCY_A] ||
-      tryParseAmount('1000000000000000000000', currencyA),
+    mintInfo.parsedAmounts[Field.CURRENCY_A] || tryParseAmount('1', currencyA),
     chainId ? NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId] : undefined,
   );
   const [approvalB, approveBCallback] = useApproveCallback(
-    mintInfo.parsedAmounts[Field.CURRENCY_B] ||
-      tryParseAmount('1000000000000000000000', currencyB),
+    mintInfo.parsedAmounts[Field.CURRENCY_B] || tryParseAmount('1', currencyB),
     chainId ? NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId] : undefined,
   );
 
