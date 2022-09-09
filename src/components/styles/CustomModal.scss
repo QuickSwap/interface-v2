@@ -1,9 +1,16 @@
 @use 'styles/variables' as *;
 
+
+
+.customModalBackdrop {
+  backdrop-filter: blur(9.9px);
+  background-color: $bgColor;
+}
+
 .modalWrapper {
   margin: 0px;
   padding: 0px;
-  max-width: 500px;
+  max-width: 750px;
   width: 100%;
   position: absolute;
   top: 50%;
@@ -14,17 +21,13 @@
   background-color: $bgPalette;
 }
 
-.customModalBackdrop {
-  backdrop-filter: blur(9.9px);
-  background-color: $bgColor;
-}
-
 .modalWrapperV3 {
   margin: 0px;
   padding: 0px;
   max-width: 750px;
   max-height: 90vh;
-  overflow-y: auto;
+  // causes the modal to be non-responsive
+  // overflow-y: auto;
   width: 100%;
   position: absolute;
   top: 50%;
