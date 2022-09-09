@@ -241,23 +241,28 @@ export function AddLiquidityButton({
     invert: manuallyInverted,
   });
 
-  const inverted = quoteWrapped ? base?.equals(quoteWrapped) : undefined;
+  const isSorted =
+    baseWrapped && quoteWrapped && baseWrapped.sortsBefore(quoteWrapped);
+  const inverted = isSorted
+    ? quoteWrapped && base?.equals(quoteWrapped)
+    : baseWrapped && base?.equals(baseWrapped);
   const currencyQuote = inverted ? baseCurrency : quoteCurrency;
   const currencyBase = inverted ? quoteCurrency : baseCurrency;
 
   const currentPrice = useMemo(() => {
     if (!mintInfo.price) return;
 
-    const _price = inverted
-      ? parseFloat(mintInfo.price.invert().toSignificant(5))
-      : parseFloat(mintInfo.price.toSignificant(5));
+    const _price =
+      (isSorted && inverted) || (!isSorted && !inverted)
+        ? parseFloat(mintInfo.price.invert().toSignificant(5))
+        : parseFloat(mintInfo.price.toSignificant(5));
 
     if (Number(_price) <= 0.0001) {
       return `< 0.0001`;
     } else {
       return _price;
     }
-  }, [mintInfo.price, inverted]);
+  }, [mintInfo.price, isSorted, inverted]);
 
   const modalHeader = () => {
     return (
