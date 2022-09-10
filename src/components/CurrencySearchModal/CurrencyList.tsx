@@ -30,7 +30,10 @@ const CurrencyList: React.FC<CurrencyListProps> = ({
     [currencies, showETH],
   );
   const selectedTokenList = useSelectedTokenList();
-  const isOnSelectedList = isTokensOnList(selectedTokenList, itemData);
+  const isOnSelectedList = useMemo(
+    () => isTokensOnList(selectedTokenList, itemData),
+    [selectedTokenList, itemData],
+  );
 
   const Row = useCallback(
     ({ data, index, style }) => {
