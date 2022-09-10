@@ -18,8 +18,8 @@ const DragonPage: React.FC = () => {
   //showing old dragons lair until we're ready to deploy
   const showOld = true;
   const lairInfo = useNewLairInfo();
-  const showNew =
-    Number(lairInfo?.dQUICKBalance?.toFixed(0)) === 0 ? false : true;
+  const showNew = true;
+  // Number(lairInfo?.dQUICKBalance?.toFixed(0)) === 0 ? false : true;
 
   return (
     <Box width='100%' mb={3}>
