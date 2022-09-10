@@ -334,7 +334,6 @@ export function useFarmingSubgraph() {
     }
   }
 
-
   async function fetchHasTransferredPositions() {
     if (!chainId || !account) return;
 
@@ -827,8 +826,10 @@ export function useFarmingSubgraph() {
         return;
       }
 
-      const aprs: Aprs = await fetchEternalFarmAPR();
-      const tvls: Aprs = await fetchEternalFarmTVL();
+      // const aprs: Aprs = await fetchEternalFarmAPR();
+      // const tvls = await fetchEternalFarmTVL();
+      const aprs: any = [];
+      const tvls: any = [];
 
       let _eternalFarmings: FormattedEternalFarming[] = [];
       // TODO
