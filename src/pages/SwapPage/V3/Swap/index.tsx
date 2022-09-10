@@ -726,7 +726,7 @@ const SwapV3Page: React.FC<{ currency0?: string; currency1?: string }> = ({
                               ? `You can now trade ${
                                   currencies[Field.INPUT]?.symbol
                                 }`
-                              : `Allow Algebra to use your ${
+                              : `Allow Quickswap to use your ${
                                   currencies[Field.INPUT]?.symbol
                                 }`}
                           </span>
