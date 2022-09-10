@@ -31,15 +31,6 @@ export function FarmingMyFarms({
   const { selectedTokenId, txType, txHash, txConfirmed, selectedFarmingType } =
     v3Stake ?? {};
 
-  console.log(
-    'ccc',
-    selectedTokenId,
-    txType,
-    txHash,
-    txConfirmed,
-    selectedFarmingType,
-  );
-
   const [shallowPositions, setShallowPositions] = useState<Deposit[] | null>(
     null,
   );

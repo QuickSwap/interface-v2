@@ -58,17 +58,10 @@ export default function Farms() {
   } = useFarmingSubgraph() || {};
 
   const {
-    fetchRewards: { rewardsResult, fetchRewardsFn, rewardsLoading },
-    fetchAllEvents: { fetchAllEventsFn, allEvents, allEventsLoading },
     fetchTransferredPositions: {
       fetchTransferredPositionsFn,
       transferredPositions,
       transferredPositionsLoading,
-    },
-    fetchHasTransferredPositions: {
-      fetchHasTransferredPositionsFn,
-      hasTransferredPositions,
-      hasTransferredPositionsLoading,
     },
   } = useFarmingSubgraph() || {};
 

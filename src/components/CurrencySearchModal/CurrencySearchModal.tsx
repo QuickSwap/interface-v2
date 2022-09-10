@@ -75,7 +75,11 @@ const CurrencySearchModal: React.FC<CurrencySearchModalProps> = ({
   }, []);
 
   return (
-    <CustomModal open={isOpen} onClose={onDismiss}>
+    <CustomModal
+      open={isOpen}
+      onClose={onDismiss}
+      modalWrapper={'searchModalWrapper'}
+    >
       {listView ? (
         <ListSelect onDismiss={onDismiss} onBack={handleClickBack} />
       ) : (

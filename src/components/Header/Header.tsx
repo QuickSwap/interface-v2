@@ -86,14 +86,14 @@ const Header: React.FC = () => {
       link: '/prdt',
       text: 'Predictions',
       id: 'prdt-page-link',
-      isNew: true,
+      isNew: false,
     },
-    {
-      link: '/lend',
-      text: t('lend'),
-      id: 'lend-page-link',
-      isNew: true,
-    },
+    // {
+    //   link: '/lend',
+    //   text: t('lend'),
+    //   id: 'lend-page-link',
+    //   isNew: true,
+    // },
     {
       link: `/analytics${isV3 ? '/v3' : ''}`,
       text: t('analytics'),

@@ -39,6 +39,7 @@ const RemoveLiquidityV3Page = lazy(() =>
 const IncreaseLiquidityV3Page = lazy(() =>
   import('./pages/PoolsPage/v3/IncreaseLiquidityPage'),
 );
+const PositionPage = lazy(() => import('./pages/PoolsPage/v3/PositionPage'));
 
 import { PageLayout } from 'layouts';
 import { getLibrary } from 'utils';
@@ -63,7 +64,6 @@ import './i18n';
 import { mainTheme } from './theme';
 import Background from 'layouts/Background';
 import GasUpdater from 'state/application/gasUpdater';
-import PositionPage from 'pages/PoolsPage/v3/PositionPage';
 
 const Web3ProviderNetwork = createWeb3ReactRoot(
   GlobalConst.utils.NetworkContextName,
@@ -148,7 +148,7 @@ const App: React.FC = () => {
                           <SwapPage />
                         </PageLayout>
                       </Route>
-                      <Route exact path='/lend'>
+                      {/* <Route exact path='/lend'>
                         <PageLayout>
                           <LendPage />
                         </PageLayout>
@@ -157,7 +157,7 @@ const App: React.FC = () => {
                         <PageLayout>
                           <LendDetailPage />
                         </PageLayout>
-                      </Route>
+                      </Route> */}
                       <Route exact path='/pools/:version?'>
                         <PageLayout>
                           <PoolsPage />

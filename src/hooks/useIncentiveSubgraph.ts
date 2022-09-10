@@ -91,12 +91,6 @@ export function useFarmingSubgraph() {
     false,
   );
 
-  const [allEvents, setAllEvents] = useState<{
-    currentEvents: FarmingEvent[];
-    futureEvents: FutureFarmingEvent[];
-  } | null>(null);
-  const [allEventsLoading, setAllEventsLoading] = useState<boolean>(false);
-
   const [positionsOnFarmer, setPositionsOnFarmer] = useState<{
     transferredPositionsIds: string[];
     oldTransferredPositionsIds: string[];
@@ -337,87 +331,6 @@ export function useFarmingSubgraph() {
       throw new Error('Future limit farmings fetching ' + err);
     } finally {
       setFutureEventsLoading(false);
-    }
-  }
-
-  async function fetchAllEvents(reload?: boolean) {
-    setAllEventsLoading(true);
-
-    try {
-      const {
-        data: { limitFarmings: currentEvents },
-        errors,
-      } = await farmingClient.query<SubgraphResponse<FarmingEvent[]>>({
-        query: CURRENT_EVENTS(),
-        fetchPolicy: reload ? 'network-only' : 'cache-first',
-        variables: {
-          startTime: Math.round(Date.now() / 1000),
-          endTime: Math.round(Date.now() / 1000),
-        },
-      });
-
-      if (errors) {
-        const error = errors[0];
-        throw new Error(`${error.name} ${error.message}`);
-      }
-
-      const {
-        data: { limitFarmings: futureEvents },
-        errors: _errors,
-      } = await farmingClient.query<SubgraphResponse<FutureFarmingEvent[]>>({
-        query: FUTURE_EVENTS(),
-        fetchPolicy: reload ? 'network-only' : 'cache-first',
-        variables: { timestamp: Math.round(Date.now() / 1000) },
-      });
-
-      if (_errors) {
-        const error = _errors[0];
-        throw new Error(`${error.name} ${error.message}`);
-      }
-
-      if (currentEvents.length === 0 && futureEvents.length === 0) {
-        setAllEvents({
-          currentEvents: [],
-          futureEvents: [],
-        });
-        setAllEventsLoading(false);
-        return;
-      }
-
-      const eventTVL = await fetchLimitFarmTVL();
-      const aprs: Aprs = await fetchLimitFarmAPR();
-
-      const price = 1;
-
-      const EVENT_LOCK = 100_000;
-
-      setAllEvents({
-        currentEvents: await getEvents(
-          currentEvents.map((el) => ({
-            ...el,
-            active: true,
-            apr: aprs[el.id] ? aprs[el.id] : 37,
-          })),
-          true,
-        ),
-        futureEvents: await getEvents(
-          futureEvents.map((el) => ({
-            ...el,
-            locked:
-              eventTVL[el.id] === undefined
-                ? false
-                : eventTVL[el.id] * price >= EVENT_LOCK,
-            apr: aprs[el.id] ? aprs[el.id] : 37,
-          })),
-          true,
-        ),
-      });
-
-      setAllEventsLoading(false);
-    } catch (err) {
-      throw new Error('Error while fetching current limit farmings ' + err);
-    } finally {
-      setAllEventsLoading(false);
     }
   }
 
@@ -913,8 +826,10 @@ export function useFarmingSubgraph() {
         return;
       }
 
-      const aprs: Aprs = await fetchEternalFarmAPR();
-      const tvls: Aprs = await fetchEternalFarmTVL();
+      // const aprs: Aprs = await fetchEternalFarmAPR();
+      // const tvls = await fetchEternalFarmTVL();
+      const aprs: any = [];
+      const tvls: any = [];
 
       let _eternalFarmings: FormattedEternalFarming[] = [];
       // TODO
@@ -970,11 +885,6 @@ export function useFarmingSubgraph() {
       futureEvents,
       futureEventsLoading,
       fetchFutureEventsFn: fetchFutureEvents,
-    },
-    fetchAllEvents: {
-      allEvents,
-      allEventsLoading,
-      fetchAllEventsFn: fetchAllEvents,
     },
     fetchPositionsForPool: {
       positionsForPool,
