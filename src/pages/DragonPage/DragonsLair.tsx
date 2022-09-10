@@ -69,10 +69,12 @@ const DragonsLair: React.FC<{ isNew: boolean }> = ({ isNew }) => {
           ).toLocaleString()}
         </small>
       </Box>
+
       <Box className='dragonLairRow'>
         <small>{t('apy')}</small>
-        <small className='text-success'>{APY}%</small>
+        <small className='text-success'>{isNew ? 'TBD' : `${APY}%`}</small>
       </Box>
+
       <Box className='dragonLairRow'>
         <small>{t('yourdeposits')}</small>
         <small>{formatTokenAmount(lairInfoToUse.QUICKBalance)}</small>
