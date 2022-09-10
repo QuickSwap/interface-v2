@@ -86,6 +86,7 @@ const Header: React.FC = () => {
       link: '/prdt',
       text: 'Predictions',
       id: 'prdt-page-link',
+      isNew: false,
     },
     // {
     //   link: '/lend',
