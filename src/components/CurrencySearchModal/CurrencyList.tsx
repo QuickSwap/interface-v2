@@ -30,7 +30,10 @@ const CurrencyList: React.FC<CurrencyListProps> = ({
     [currencies, showETH],
   );
   const selectedTokenList = useSelectedTokenList();
-  const isOnSelectedList = isTokensOnList(selectedTokenList, itemData);
+  const isOnSelectedList = useMemo(
+    () => isTokensOnList(selectedTokenList, itemData),
+    [selectedTokenList, itemData],
+  );
 
   const Row = useCallback(
     ({ data, index, style }) => {
@@ -42,7 +45,7 @@ const CurrencyList: React.FC<CurrencyListProps> = ({
         otherCurrency && currencyEquals(otherCurrency, currency),
       );
       const handleSelect = () => onCurrencySelect(currency);
-      return index < itemData.length ? (
+      return (
         <CurrencyRow
           style={style}
           currency={currency}
@@ -51,8 +54,6 @@ const CurrencyList: React.FC<CurrencyListProps> = ({
           otherSelected={otherSelected}
           isOnSelectedList={isOnSelectedList[index]}
         />
-      ) : (
-        <Box />
       );
     },
     [
@@ -79,7 +80,7 @@ const CurrencyList: React.FC<CurrencyListProps> = ({
       height={height}
       width='100%'
       itemData={itemData}
-      itemCount={itemData.length + 1}
+      itemCount={itemData.length}
       itemSize={56}
       itemKey={itemKey}
     >
