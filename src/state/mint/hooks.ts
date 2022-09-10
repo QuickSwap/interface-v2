@@ -111,10 +111,13 @@ export function useDerivedMintInfo(): {
       if (tokenA && tokenB && wrappedIndependentAmount && pair) {
         const dependentCurrency =
           dependentField === Field.CURRENCY_B ? currencyB : currencyA;
-        const dependentTokenAmount =
+        const dependentPrice =
           dependentField === Field.CURRENCY_B
-            ? pair.priceOf(tokenA).quote(wrappedIndependentAmount)
-            : pair.priceOf(tokenB).quote(wrappedIndependentAmount);
+            ? pair.priceOf(tokenA)
+            : pair.priceOf(tokenB);
+        const dependentTokenAmount = dependentPrice.quote(
+          wrappedIndependentAmount,
+        );
         return dependentCurrency === ETHER
           ? CurrencyAmount.ether(dependentTokenAmount.raw)
           : dependentTokenAmount;
