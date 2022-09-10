@@ -148,7 +148,7 @@ const App: React.FC = () => {
                           <SwapPage />
                         </PageLayout>
                       </Route>
-                      <Route exact path='/lend'>
+                      {/* <Route exact path='/lend'>
                         <PageLayout>
                           <LendPage />
                         </PageLayout>
@@ -157,7 +157,7 @@ const App: React.FC = () => {
                         <PageLayout>
                           <LendDetailPage />
                         </PageLayout>
-                      </Route>
+                      </Route> */}
                       <Route exact path='/pools/:version?'>
                         <PageLayout>
                           <PoolsPage />
