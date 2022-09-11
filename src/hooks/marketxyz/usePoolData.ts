@@ -20,23 +20,22 @@ export const usePoolsData = (
   const getPoolsData = async () => {
     if (!_directory) return;
     const allPools = await _directory.getAllPools();
-    const poolsData = await Promise.all(
-      poolAddresses.map(async (poolAddress) => {
-        const poolId = allPools.findIndex((p) => {
-          return (
-            p.comptroller.address.toLowerCase() === poolAddress.toLowerCase()
-          );
-        });
-        if (poolId === -1) return;
-        const poolData = await fetchPoolData(
-          poolId.toString(),
-          account ?? undefined,
-          _directory,
-          ethPrice.price ?? 0,
+    const poolsData: any[] = [];
+    for (const poolAddress of poolAddresses) {
+      const poolId = allPools.findIndex((p) => {
+        return (
+          p.comptroller.address.toLowerCase() === poolAddress.toLowerCase()
         );
-        return poolData;
-      }),
-    );
+      });
+      if (poolId === -1) return;
+      const poolData = await fetchPoolData(
+        poolId.toString(),
+        account ?? undefined,
+        _directory,
+        ethPrice.price ?? 0,
+      );
+      poolsData.push(poolData);
+    }
     return poolsData;
   };
   const { data } = useQuery('FetchPoolsData', getPoolsData, {
