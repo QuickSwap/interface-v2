@@ -10,7 +10,6 @@ import DragonsSyrup from './DragonsSyrup';
 import 'pages/styles/dragon.scss';
 import { useTranslation } from 'react-i18next';
 
-
 const DragonPage: React.FC = () => {
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
@@ -24,7 +23,7 @@ const DragonPage: React.FC = () => {
       <DragonAlert />
       <Grid container spacing={4}>
         <Grid item xs={12} sm={12} md={4}>
-        {showNew && (
+          {showNew && (
             <Box className='dragonWrapper'>
               <Box className='dragonBg'>
                 <img src={DragonBg2} alt='Dragon Lair' />
@@ -42,7 +41,7 @@ const DragonPage: React.FC = () => {
             </Box>
           )}
           {showOld && (
-            <Box className='dragonWrapper' mb='10px'>
+            <Box className='dragonWrapper' mt='10px'>
               <Box className='dragonBg'>
                 <img src={DragonBg2} alt='Dragon Lair' />
               </Box>
