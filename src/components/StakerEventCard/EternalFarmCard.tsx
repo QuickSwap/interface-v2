@@ -26,6 +26,7 @@ import { Box } from '@material-ui/core';
 import { formatUnits } from 'ethers/lib/utils';
 import { formatReward } from 'utils/formatReward';
 import { formatCompact } from 'utils';
+import { Aprs } from 'models/interfaces';
 
 interface EternalFarmCardProps {
   active?: boolean;
@@ -38,15 +39,13 @@ interface EternalFarmCardProps {
     createdAtTimestamp?: string;
     rewardToken?: any;
     bonusRewardToken?: any;
-    reward?: number;
-    bonusReward?: number;
-    startTime?: number;
-    endTime?: number;
-    enterStartTime?: number;
-    apr?: number;
+    reward?: string;
+    bonusReward?: string;
     locked?: boolean;
     tvl?: number;
   };
+  aprs: Aprs | undefined;
+  aprsLoading: boolean;
   eternal?: boolean;
 }
 
@@ -56,17 +55,21 @@ export function EternalFarmCard({
   farmHandler,
   now,
   event: {
+    id,
     pool,
     rewardToken,
     bonusRewardToken,
     reward,
     bonusReward,
-    apr,
-    enterStartTime,
     tvl,
   } = {},
+  aprs,
+  aprsLoading,
   eternal,
 }: EternalFarmCardProps) {
+  const apr = aprs ? aprs[id] : undefined;
+  const aprValue =
+    (apr !== undefined && apr >= 0 ? Math.round(apr) : '~') + '% APR';
   return (
     <Box>
       {refreshing && (
@@ -110,7 +113,8 @@ export function EternalFarmCard({
                 borderRadius='4px'
               >
                 <span className='text-success'>
-                  {apr !== undefined && apr >= 0 ? Math.round(apr) : '~'}% APR
+                  {aprsLoading && <Loader stroke='white' />}
+                  {!aprsLoading && <>{aprValue}</>}
                 </span>
               </Box>
             </Box>

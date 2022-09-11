@@ -93,14 +93,12 @@ const DragonsLair: React.FC<{ isNew: boolean }> = ({ isNew }) => {
           onClick={() => setIsQUICKRate(!isQUICKRate)}
         />
       </Box>
-      {!isNew && (
-        <Box
-          className='stakeButton bg-primary'
-          onClick={() => setOpenStakeModal(true)}
-        >
-          <small>{t('stake')}</small>
-        </Box>
-      )}
+      <Box
+        className='stakeButton bg-primary'
+        onClick={() => setOpenStakeModal(true)}
+      >
+        <small>{t('stake')}</small>
+      </Box>
       <Box
         className='stakeButton bg-transparent'
         onClick={() => setOpenUnstakeModal(true)}
