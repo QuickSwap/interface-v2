@@ -44,12 +44,7 @@ import {
   TokenSubgraph,
 } from '../models/interfaces';
 import { Aprs, FutureFarmingEvent } from '../models/interfaces';
-import {
-  fetchEternalFarmAPR,
-  fetchLimitFarmAPR,
-  fetchLimitFarmTVL,
-  fetchEternalFarmTVL,
-} from 'utils/api';
+import { fetchEternalFarmAPR, fetchEternalFarmTVL } from 'utils/api';
 import { useEthPrices } from './useEthPrices';
 
 export function useFarmingSubgraph() {
@@ -103,6 +98,11 @@ export function useFarmingSubgraph() {
     FormattedEternalFarming[] | null
   >(null);
   const [eternalFarmsLoading, setEternalFarmsLoading] = useState<boolean>(
+    false,
+  );
+
+  const [eternalFarmAprs, setEternalFarmAprs] = useState<Aprs | undefined>();
+  const [eternalFarmAprsLoading, setEternalFarmAprsLoading] = useState<boolean>(
     false,
   );
 
@@ -770,14 +770,6 @@ export function useFarmingSubgraph() {
         throw new Error(`${error.name} ${error.message}`);
       }
 
-      // const { data: { deposits: oldPositionsTransferred }, error: _error } = (await oldFarmingClient.query<SubgraphResponse<Deposit[]>>({
-      //     query: TRANSFERED_POSITIONS(false),
-      //     fetchPolicy: 'network-only',
-      //     variables: { account }
-      // }))
-
-      // if (_error) throw new Error(`${_error.name} ${_error.message}`)
-
       if (positionsTransferred.length === 0) {
         setPositionsOnFarmer({
           transferredPositionsIds: [],
@@ -800,6 +792,23 @@ export function useFarmingSubgraph() {
     } catch (err) {
       setPositionsOnFarmerLoading(false);
       throw new Error('Fetching positions on farmer ' + err);
+    }
+  }
+
+  async function fetchEternalFarmAprs() {
+    setEternalFarmAprsLoading(true);
+
+    try {
+      const aprs: Aprs = await fetchEternalFarmAPR();
+      setEternalFarmAprs(aprs);
+    } catch (err) {
+      if (err instanceof Error) {
+        throw new Error(
+          'Error while fetching eternal farms Aprs' + err.message,
+        );
+      }
+    } finally {
+      setEternalFarmAprsLoading(false);
     }
   }
 
@@ -826,9 +835,7 @@ export function useFarmingSubgraph() {
         return;
       }
 
-      // const aprs: Aprs = await fetchEternalFarmAPR();
       // const tvls = await fetchEternalFarmTVL();
-      const aprs: any = [];
       const tvls: any = [];
 
       let _eternalFarmings: FormattedEternalFarming[] = [];
@@ -842,8 +849,6 @@ export function useFarmingSubgraph() {
           true,
         );
         const multiplierToken = await fetchToken(farming.multiplierToken, true);
-
-        const apr = aprs[farming.id];
         const tvl = tvls[farming.id];
 
         _eternalFarmings = [
@@ -858,7 +863,6 @@ export function useFarmingSubgraph() {
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-ignore
             pool,
-            apr,
             tvl,
           },
         ];
@@ -910,6 +914,11 @@ export function useFarmingSubgraph() {
       eternalFarms,
       eternalFarmsLoading,
       fetchEternalFarmsFn: fetchEternalFarms,
+    },
+    fetchEternalFarmAprs: {
+      eternalFarmAprs,
+      eternalFarmAprsLoading,
+      fetchEternalFarmAprsFn: fetchEternalFarmAprs,
     },
     fetchPositionsOnEternalFarmings: {
       positionsEternal,

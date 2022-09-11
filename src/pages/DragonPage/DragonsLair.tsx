@@ -92,7 +92,7 @@ const DragonsLair: React.FC<{ isNew: boolean }> = ({ isNew }) => {
           className='cursor-pointer'
           onClick={() => setIsQUICKRate(!isQUICKRate)}
         />
-      </Box>      
+      </Box>
       <Box
         className='stakeButton bg-primary'
         onClick={() => setOpenStakeModal(true)}

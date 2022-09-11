@@ -8,13 +8,15 @@ import { CustomModal } from 'components';
 import { FarmModal } from '../../components/StakeModal';
 import { FarmingType } from '../../models/enums';
 import './index.scss';
+import { Aprs, FormattedEternalFarming } from 'models/interfaces';
+import { useFarmingSubgraph } from 'hooks/useIncentiveSubgraph';
 
 export default function EternalFarmsPage({
   data,
   refreshing,
   fetchHandler,
 }: {
-  data: any;
+  data: FormattedEternalFarming[] | null;
   refreshing: boolean;
   fetchHandler: () => any;
 }) {
@@ -22,6 +24,18 @@ export default function EternalFarmsPage({
   const { t } = useTranslation();
   useEffect(() => {
     fetchHandler();
+  }, []);
+
+  const {
+    fetchEternalFarmAprs: {
+      fetchEternalFarmAprsFn,
+      eternalFarmAprs,
+      eternalFarmAprsLoading,
+    },
+  } = useFarmingSubgraph() || {};
+
+  useEffect(() => {
+    fetchEternalFarmAprsFn();
   }, []);
 
   return (
@@ -46,13 +60,15 @@ export default function EternalFarmsPage({
         </div>
       ) : !refreshing && data.length !== 0 ? (
         <div className={'eternal-page__row mb-1 w-100'}>
-          {data.map((event: any, j: number) => (
+          {data.map((event: FormattedEternalFarming, j: number) => (
             <EternalFarmCard
               key={j}
-              farmHandler={() => setModalForPool(event)}
+              farmHandler={() => setModalForPool(event as any)}
               refreshing={refreshing}
               now={0}
               eternal
+              aprs={eternalFarmAprs}
+              aprsLoading={eternalFarmAprsLoading}
               event={event}
             />
           ))}
