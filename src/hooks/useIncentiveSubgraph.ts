@@ -45,7 +45,6 @@ import {
 } from '../models/interfaces';
 import { Aprs, FutureFarmingEvent } from '../models/interfaces';
 import { fetchEternalFarmAPR, fetchEternalFarmTVL } from 'utils/api';
-import { useEthPrices } from './useEthPrices';
 
 export function useFarmingSubgraph() {
   const { chainId, account, library } = useActiveWeb3React();
