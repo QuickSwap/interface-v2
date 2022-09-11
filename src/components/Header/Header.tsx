@@ -58,7 +58,7 @@ const Header: React.FC = () => {
 
   const menuItems = [
     {
-      link: `/swap${isV3 ? '/v3' : ''}`,
+      link: '/swap',
       text: t('swap'),
       id: 'swap-page-link',
     },
