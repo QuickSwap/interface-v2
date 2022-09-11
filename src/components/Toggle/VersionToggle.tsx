@@ -21,7 +21,12 @@ const VersionToggle: React.FC = () => {
       <Box
         className={!isV3 ? 'version-toggle-active' : ''}
         onClick={() => {
-          history.push(history.location.pathname.replace('/v3', ''));
+          history.push(
+            history.location.pathname.replace(
+              '/v3',
+              history.location.pathname.includes('/analytics') ? '/v2' : '',
+            ),
+          );
         }}
       >
         <small>{t('V2')}</small>
