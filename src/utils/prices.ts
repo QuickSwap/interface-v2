@@ -16,7 +16,6 @@ const ONE_HUNDRED_PERCENT = new Percent(JSBI.BigInt(10000), JSBI.BigInt(10000));
 const INPUT_FRACTION_AFTER_FEE = ONE_HUNDRED_PERCENT.subtract(BASE_FEE);
 
 export function computePriceImpact(rate: OptimalRate): Percent {
-  //TODO: We need to find a more reliable way to convert the decimal to big int
   const destUSD = JSBI.BigInt((Number(rate.destUSD) * 10 ** 10).toFixed(0));
   const srcUSD = JSBI.BigInt((Number(rate.srcUSD) * 10 ** 10).toFixed(0));
   const priceChange = JSBI.subtract(srcUSD, destUSD);

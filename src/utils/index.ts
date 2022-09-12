@@ -479,8 +479,6 @@ export const getTopTokens = async (
       {},
     );
 
-    console.log('current', current);
-
     const bulkResults = await Promise.all(
       current &&
         oneDayData &&
