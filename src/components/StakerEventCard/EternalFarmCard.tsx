@@ -113,7 +113,7 @@ export function EternalFarmCard({
                 borderRadius='4px'
               >
                 <span className='text-success'>
-                  {aprsLoading && <Loader stroke='white' />}
+                  {aprsLoading && <Loader stroke='#0fc679' />}
                   {!aprsLoading && <>{aprValue}</>}
                 </span>
               </Box>
