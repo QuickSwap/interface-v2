@@ -9,6 +9,7 @@ import {
   getPairTransactions,
   getBulkPairData,
   formatNumber,
+  getTokenFromAddress,
 } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import {
@@ -23,12 +24,14 @@ import AnalyticsHeader from 'pages/AnalyticsPage/AnalyticsHeader';
 import AnalyticsPairChart from './AnalyticsPairChart';
 import { useTranslation } from 'react-i18next';
 import { useEthPrice } from 'state/application/hooks';
+import { useSelectedTokenList } from 'state/lists/hooks';
 
 const AnalyticsPairDetails: React.FC = () => {
   const { t } = useTranslation();
   const history = useHistory();
   const match = useRouteMatch<{ id: string }>();
   const pairAddress = match.params.id;
+  const tokenMap = useSelectedTokenList();
   const [pairData, setPairData] = useState<any>(null);
   const [pairTransactions, setPairTransactions] = useState<any>(null);
   const pairTransactionsList = useMemo(() => {
@@ -61,18 +64,22 @@ const AnalyticsPairDetails: React.FC = () => {
   }, [pairTransactions]);
   const { chainId } = useActiveWeb3React();
   const currency0 = pairData
-    ? new Token(
-        ChainId.MATIC,
-        getAddress(pairData.token0.id),
-        pairData.token0.decimals,
-      )
+    ? getTokenFromAddress(pairData.token0.id, ChainId.MATIC, tokenMap, [
+        new Token(
+          ChainId.MATIC,
+          getAddress(pairData.token0.id),
+          pairData.token0.decimals,
+        ),
+      ])
     : undefined;
   const currency1 = pairData
-    ? new Token(
-        ChainId.MATIC,
-        getAddress(pairData.token1.id),
-        pairData.token1.decimals,
-      )
+    ? getTokenFromAddress(pairData.token1.id, ChainId.MATIC, tokenMap, [
+        new Token(
+          ChainId.MATIC,
+          getAddress(pairData.token1.id),
+          pairData.token1.decimals,
+        ),
+      ])
     : undefined;
 
   const token0Rate =

@@ -16,10 +16,12 @@ import SwapProInfo from './SwapProInfo';
 import SwapProFilter from './SwapProFilter';
 import { useTranslation } from 'react-i18next';
 import 'pages/styles/swap.scss';
+import AdsSlider from 'components/AdsSlider';
 
 const SwapPage: React.FC = () => {
   const { isProMode, updateIsProMode } = useIsProMode();
   const { breakpoints } = useTheme();
+  const isTiny = useMediaQuery(breakpoints.down('xs'));
   const isMobile = useMediaQuery(breakpoints.down('sm'));
   const isTablet = useMediaQuery(breakpoints.down('md'));
   const [showChart, setShowChart] = useState(true);
@@ -70,9 +72,9 @@ const SwapPage: React.FC = () => {
         if (txns) {
           const filteredTxns = txns.filter(
             (txn) =>
-              !transactions.filter(
+              !transactions.find(
                 (tx) => tx.transaction.id === txn.transaction.id,
-              ).length,
+              ),
           );
           setTransactions([...filteredTxns, ...transactions]);
         }
@@ -110,6 +112,9 @@ const SwapPage: React.FC = () => {
           <Grid item xs={12} sm={12} md={6} lg={5}>
             <Box className='wrapper'>
               <SwapMain />
+            </Box>
+            <Box maxWidth={isTiny ? '320px' : '352px'} margin='16px auto 0'>
+              <AdsSlider sort='1' />
             </Box>
           </Grid>
           <Grid item xs={12} sm={12} md={6} lg={7}>
@@ -162,6 +167,9 @@ const SwapPage: React.FC = () => {
               </Box>
             </Box>
             <SwapMain />
+            <Box maxWidth={isTiny ? '320px' : '352px'} margin='16px auto 0'>
+              <AdsSlider sort='1' />
+            </Box>
           </Box>
           {infoPos === 'left' && (
             <Box
@@ -184,17 +192,15 @@ const SwapPage: React.FC = () => {
               showTrades={showTrades}
               setShowTrades={setShowTrades}
             />
-            {token1 && token2 && pairId && (
-              <SwapProChartTrade
-                showChart={showChart}
-                showTrades={showTrades}
-                token1={token1}
-                token2={token2}
-                pairAddress={pairId}
-                pairTokenReversed={pairTokenReversed}
-                transactions={transactions}
-              />
-            )}
+            <SwapProChartTrade
+              showChart={showChart}
+              showTrades={showTrades}
+              token1={token1}
+              token2={token2}
+              pairAddress={pairId}
+              pairTokenReversed={pairTokenReversed}
+              transactions={transactions}
+            />
           </Box>
           {infoPos === 'right' && (
             <Box

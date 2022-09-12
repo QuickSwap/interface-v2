@@ -1,4 +1,5 @@
 import React, { lazy, Suspense } from 'react';
+import { QueryClient, QueryClientProvider } from 'react-query';
 import { createWeb3ReactRoot, Web3ReactProvider } from '@web3-react/core';
 import { Switch, Route } from 'react-router-dom';
 import {
@@ -15,6 +16,8 @@ const LandingPage = lazy(() => import('./pages/LandingPage'));
 const PoolsPage = lazy(() => import('./pages/PoolsPage'));
 const SwapPage = lazy(() => import('./pages/SwapPage'));
 const ConvertQUICKPage = lazy(() => import('./pages/ConvertQUICKPage'));
+// const LendPage = lazy(() => import('./pages/LendPage'));
+// const LendDetailPage = lazy(() => import('./pages/LendPage/LendDetailPage'));
 const PrdtPage = lazy(() => import('./pages/PrdtPage'));
 const AnalyticsTokenDetails = lazy(() =>
   import('./pages/AnalyticsTokenDetails'),
@@ -46,6 +49,7 @@ import MulticallUpdater from 'state/multicall/updater';
 import FarmUpdater from 'state/farms/updater';
 import DualFarmUpdater from 'state/dualfarms/updater';
 import SyrupUpdater from 'state/syrups/updater';
+import AdsUpdater from 'state/ads/updater';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import './i18n';
@@ -64,14 +68,12 @@ const ThemeProvider: React.FC = ({ children }) => {
 
 const Providers: React.FC = ({ children }) => {
   return (
-    <div>
-      <Suspense fallback={<Background fallback={true} />}>
-        <ThemeProvider>
-          <CssBaseline />
-          {children}
-        </ThemeProvider>
-      </Suspense>
-    </div>
+    <Suspense fallback={<Background fallback={true} />}>
+      <ThemeProvider>
+        <CssBaseline />
+        {children}
+      </ThemeProvider>
+    </Suspense>
   );
 };
 
@@ -86,6 +88,7 @@ function Updaters() {
       <FarmUpdater />
       <DualFarmUpdater />
       <SyrupUpdater />
+      <AdsUpdater />
     </>
   );
 }
@@ -108,90 +111,104 @@ function Gelato({ children }: { children?: React.ReactNode }) {
   );
 }
 
+const queryClient = new QueryClient();
+
 const App: React.FC = () => {
   return (
-    <Web3ReactProvider getLibrary={getLibrary}>
-      <Route component={GoogleAnalyticsReporter} />
-      <Web3ProviderNetwork getLibrary={getLibrary}>
-        <Provider store={store}>
-          <Updaters />
-          <Providers>
-            <Popups />
-            <StyledThemeProvider>
-              <Gelato>
-                <Web3ReactManager>
-                  <Switch>
-                    <Route exact path='/'>
-                      <PageLayout>
-                        <LandingPage />
-                      </PageLayout>
-                    </Route>
-                    <Route exact path='/swap'>
-                      <PageLayout>
-                        <SwapPage />
-                      </PageLayout>
-                    </Route>
-                    <Route exact path='/pools'>
-                      <PageLayout>
-                        <PoolsPage />
-                      </PageLayout>
-                    </Route>
-                    <Route exact path='/farm'>
-                      <PageLayout>
-                        <FarmPage />
-                      </PageLayout>
-                    </Route>
-                    <Route exact path='/dragons'>
-                      <PageLayout>
-                        <DragonPage />
-                      </PageLayout>
-                    </Route>
-                    <Route exact path='/convert'>
-                      <PageLayout>
-                        <ConvertQUICKPage />
-                      </PageLayout>
-                    </Route>
-                    <Route exact path='/prdt'>
-                      <PageLayout name='prdt'>
-                        <PrdtPage />
-                      </PageLayout>
-                    </Route>
-                    <Route exact path='/analytics'>
-                      <PageLayout>
-                        <AnalyticsHeader />
-                        <AnalyticsOverview />
-                      </PageLayout>
-                    </Route>
-                    <Route exact path='/analytics/tokens'>
-                      <PageLayout>
-                        <AnalyticsHeader />
-                        <AnalyticsTokens />
-                      </PageLayout>
-                    </Route>
-                    <Route exact path='/analytics/pairs'>
-                      <PageLayout>
-                        <AnalyticsHeader />
-                        <AnalyticsPairs />
-                      </PageLayout>
-                    </Route>
-                    <Route exact path='/analytics/token/:id'>
-                      <PageLayout>
-                        <AnalyticsTokenDetails />
-                      </PageLayout>
-                    </Route>
-                    <Route exact path='/analytics/pair/:id'>
-                      <PageLayout>
-                        <AnalyticsPairDetails />
-                      </PageLayout>
-                    </Route>
-                  </Switch>
-                </Web3ReactManager>
-              </Gelato>
-            </StyledThemeProvider>
-          </Providers>
-        </Provider>
-      </Web3ProviderNetwork>
-    </Web3ReactProvider>
+    <QueryClientProvider client={queryClient}>
+      <Web3ReactProvider getLibrary={getLibrary}>
+        <Route component={GoogleAnalyticsReporter} />
+        <Web3ProviderNetwork getLibrary={getLibrary}>
+          <Provider store={store}>
+            <Updaters />
+            <Providers>
+              <Popups />
+              <StyledThemeProvider>
+                <Gelato>
+                  <Web3ReactManager>
+                    <Switch>
+                      <Route exact path='/'>
+                        <PageLayout>
+                          <LandingPage />
+                        </PageLayout>
+                      </Route>
+                      <Route exact path='/swap'>
+                        <PageLayout>
+                          <SwapPage />
+                        </PageLayout>
+                      </Route>
+                      {/* <Route exact path='/lend'>
+                        <PageLayout>
+                          <LendPage />
+                        </PageLayout>
+                      </Route> */}
+                      {/* <Route exact path='/lend/detail'>
+                        <PageLayout>
+                          <LendDetailPage />
+                        </PageLayout>
+                      </Route> */}
+                      <Route exact path='/pools'>
+                        <PageLayout>
+                          <PoolsPage />
+                        </PageLayout>
+                      </Route>
+                      <Route exact path='/farm'>
+                        <PageLayout>
+                          <FarmPage />
+                        </PageLayout>
+                      </Route>
+                      <Route exact path='/dragons'>
+                        <PageLayout>
+                          <DragonPage />
+                        </PageLayout>
+                      </Route>
+                      <Route exact path='/convert'>
+                        <PageLayout>
+                          <ConvertQUICKPage />
+                        </PageLayout>
+                      </Route>
+                      <Route exact path='/prdt'>
+                        <PageLayout name='prdt'>
+                          <PrdtPage />
+                        </PageLayout>
+                      </Route>
+                      <Route exact path='/analytics'>
+                        <PageLayout>
+                          <AnalyticsHeader />
+                          <AnalyticsOverview />
+                        </PageLayout>
+                      </Route>
+                      <Route exact path='/analytics/tokens'>
+                        <PageLayout>
+                          <AnalyticsHeader />
+                          <AnalyticsTokens />
+                        </PageLayout>
+                      </Route>
+                      <Route exact path='/analytics/pairs'>
+                        <PageLayout>
+                          <AnalyticsHeader />
+                          <AnalyticsPairs />
+                        </PageLayout>
+                      </Route>
+                      <Route exact path='/analytics/token/:id'>
+                        <PageLayout>
+                          <AnalyticsTokenDetails />
+                        </PageLayout>
+                      </Route>
+                      <Route exact path='/analytics/pair/:id'>
+                        <PageLayout>
+                          <AnalyticsPairDetails />
+                        </PageLayout>
+                      </Route>
+                    </Switch>
+                  </Web3ReactManager>
+                </Gelato>
+              </StyledThemeProvider>
+            </Providers>
+          </Provider>
+        </Web3ProviderNetwork>
+      </Web3ReactProvider>
+    </QueryClientProvider>
   );
 };
 

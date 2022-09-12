@@ -1,0 +1,240 @@
+@use 'styles/variables' as *;
+@use 'styles/breakpoints' as *;
+
+.lendCard {
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: 500ms;
+  border-radius: 20px;
+  background-color: $secondary2;
+  & > div:last-child {
+    transition: 500ms;
+  }
+  &:hover {
+    border-color: $primary;
+    & > div:last-child {
+      color: $primary;
+    }
+  }
+}
+
+.lendCardTop {
+  padding: 28px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.lendCardContent {
+  display: flex;
+  border-top: 1px solid $divider;
+  border-bottom: 1px solid $divider;
+  & > div {
+    flex: 1;
+    text-align: center;
+    padding: 18px 0;
+    border-right: 1px solid $divider;
+    & p {
+      margin-top: 10px;
+    }
+    &:last-child {
+      border-right: none;
+    }
+  }
+}
+
+.lendBorrowLimitWrapper {
+  background-color: $secondary2;
+  height: 40px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  border-radius: 8px;
+  flex-wrap: wrap;
+  @include media("screen", "<phone") {
+    height: auto;
+    padding: 8px 0;
+  }
+}
+
+.lendBorrowLimitText {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  border-right: 1px solid $divider;
+  padding: 0 20px;
+  @include media("screen", "<phone") {
+    width: 100%;
+    padding: 0 12px;
+  }
+}
+
+.lendBorrowLimitLineWrapper {
+  display: flex;
+  align-items: center;
+  padding: 0 30px;
+  flex: 1;
+  @include media("screen", "<phone") {
+    width: 100%;
+    padding: 8px 12px 0;
+  }
+}
+
+.lendBorrowLimitLine {
+  height: 4px;
+  background-color: $grey31;
+  position: relative;
+  flex: 1;
+  & > div {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    width: 6px;
+    border-radius: 4px;
+  }
+  & .lendBorrowLimitNormal {
+    background-color: $successMain;
+    width: 30%;
+    left: 0;
+  }
+  & .lendBorrowLimitWarning {
+    background-color: $yellow1;
+    left: calc(60% - 6px);
+  }
+  & .lendBorrowLimitError {
+    background-color: $errorMain;
+    left: 70%;
+  }
+}
+
+.lendPageData {
+  flex: 1;
+  background-color: $secondary2;
+  padding: 24px;
+  border-radius: 12px;
+}
+
+.lendAlertWrapper {
+  margin-bottom: 40px;
+  padding: 16px;
+  background-color: $yellow5;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  & p {
+    width: calc(100% - 80px);
+  }
+}
+
+.lendAlertBox {
+  background-color: $grey30;
+  width: 40px;
+  height: 40px;
+  border-radius: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  & svg path {
+    fill: $yellow4;
+  }
+}
+
+.lendAlertClose {
+  font-size: 25px;
+}
+
+.poolDetailsItemWrapper {
+  border-radius: 12px;
+  background-color: $secondary2;
+  height: 100%;
+}
+
+.poolDetailsItemTop {
+  padding: 0 24px;
+  height: 70px;
+  border-bottom: 1px solid $grey31;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  position: relative;
+  @include media("screen", "<phone") {
+    padding: 12px 24px;
+    height: auto;
+  }
+}
+
+.poolStatsInfoItem {
+  display: flex;
+  justify-content: space-around;
+  padding: 20px 0;
+  border-top: 1px solid $grey31;
+  & > div {
+    text-align: center;
+    & > p {
+      margin-top: 4px;
+    }
+  }
+}
+
+.poolDetailsTableWrapper {
+  display: flex;
+  padding: 12px 20px 16px;
+  & .MuiTableCell-root {
+    padding: 4px;
+    border-bottom: none;
+    &:not(:first-child) {
+      text-align: right;
+    }
+    & button {
+      height: 36px;
+      border-radius: 10px;
+      & .MuiButton-label {
+        font-size: 14px;
+      }
+      &.Mui-disabled {
+        background: $grey2;
+        opacity: 1;
+        & .MuiButton-label {
+          color: $textSecondary
+        }
+      }
+    }
+  }
+}
+
+.poolDetailsInfoItem {
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid $grey31;
+  & small:first-child {
+    margin-right: 4px;
+  }
+  & small:last-child {
+    font-weight: 600;
+  }
+  @include media("screen", "<tablet") {
+    justify-content: space-between;
+  }
+  &:last-child, &:nth-last-of-type(2) {
+    border-bottom: none;
+  }
+}
+
+.poolTableHideCell {
+  display: reverse;
+  @include media("screen", "<tablet") {
+    display: none;
+  }
+}
+
+.poolDetailsItemTag {
+  width: 4px;
+  height: 21px;
+  position: absolute;
+  left: 0;
+  border-top-right-radius: 2px;
+  border-bottom-right-radius: 2px;
+}

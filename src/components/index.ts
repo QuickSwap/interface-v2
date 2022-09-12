@@ -2,6 +2,7 @@ export { default as Header } from './Header';
 export { default as Footer } from './Footer';
 export { default as ListLogo } from './ListLogo';
 export { default as AddressInput } from './AddressInput';
+export { default as AdsSlider } from './AdsSlider';
 export { default as AreaChart } from './AreaChart';
 export { default as BarChart } from './BarChart';
 export { default as BetaWarningBanner } from './BetaWarningBanner';
@@ -40,6 +41,7 @@ export { default as WalletModal } from './WalletModal';
 export { default as MoonpayModal } from './MoonpayModal';
 export { default as BuyFiatModal } from './BuyFiatModal';
 export { default as AccountDetails } from './AccountDetails';
+export { default as CopyHelper } from './AccountDetails/CopyHelper';
 export { default as Web3ReactManager } from './Web3ReactManager';
 export {
   default as ConfirmSwapModal,
