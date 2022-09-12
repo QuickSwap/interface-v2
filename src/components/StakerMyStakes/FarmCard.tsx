@@ -1,7 +1,6 @@
 import { Box } from '@material-ui/core';
-import { DoubleCurrencyLogo, Logo } from 'components';
+import { DoubleCurrencyLogo } from 'components';
 import {
-  StyledButton,
   StyledCircle,
   StyledFilledBox,
   StyledLabel,
@@ -9,8 +8,6 @@ import {
 import React, { useState } from 'react';
 import { ReactComponent as ExpandIcon } from 'assets/images/expand_circle.svg';
 import { ReactComponent as ExpandIconUp } from 'assets/images/expand_circle_up.svg';
-import ProfessorIcon from 'assets/images/professor.webp';
-import QuickToken from 'assets/images/QsToken.webp';
 import FarmCardDetail from './FarmCardDetail';
 import { Deposit } from '../../models/interfaces';
 import { IsActive } from './IsActive';
@@ -69,41 +66,6 @@ export default function FarmCard({ el }: FarmCardProps) {
                 {`${el.pool.token0.symbol} / ${el.pool.token1.symbol}`}
               </StyledLabel>
             </Box>
-          </Box>
-
-          <Box className='flex items-center' ml={3}>
-            {false && (
-              <>
-                <img width='26px' height='32px' src={ProfessorIcon} />
-
-                <Box className='flex-col' ml={1.5}>
-                  <StyledLabel color='#696c80' fontSize='12px'>
-                    Tier
-                  </StyledLabel>
-
-                  <StyledLabel color='#ebecf2' fontSize='14px'>
-                    Professor
-                  </StyledLabel>
-                </Box>
-              </>
-            )}
-          </Box>
-
-          <Box className='flex items-center' ml={3}>
-            {false && (
-              <>
-                <Logo srcs={[QuickToken]} size={'32px'} alt={`quick`} />
-                <Box className='flex-col' ml={1.5}>
-                  <StyledLabel color='#696c80' fontSize='12px'>
-                    Locked
-                  </StyledLabel>
-
-                  <StyledLabel color='#ebecf2' fontSize='14px'>
-                    5 Quick
-                  </StyledLabel>
-                </Box>
-              </>
-            )}
           </Box>
         </Box>
 
