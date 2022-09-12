@@ -213,7 +213,11 @@ const LendDetailPage: React.FC = () => {
                 currency={getPoolAssetToken(asset, chainId)}
                 key={i}
                 size={'24px'}
-                withoutBg={asset.underlyingName.includes('LP')}
+                withoutBg={
+                  asset.underlyingName.includes('LP') ||
+                  asset.underlyingSymbol.includes('am') ||
+                  asset.underlyingSymbol.includes('moo')
+                }
               />
             ))}
           </Box>
@@ -302,9 +306,11 @@ const LendDetailPage: React.FC = () => {
                                   <CurrencyLogo
                                     currency={getPoolAssetToken(asset, chainId)}
                                     size={'36px'}
-                                    withoutBg={asset.underlyingName.includes(
-                                      'LP',
-                                    )}
+                                    withoutBg={
+                                      asset.underlyingName.includes('LP') ||
+                                      asset.underlyingSymbol.includes('am') ||
+                                      asset.underlyingSymbol.includes('moo')
+                                    }
                                   />
                                 </Box>
                                 <Box>
@@ -345,9 +351,11 @@ const LendDetailPage: React.FC = () => {
                                   <CurrencyLogo
                                     currency={getPoolAssetToken(asset, chainId)}
                                     size={'16px'}
-                                    withoutBg={asset.underlyingName.includes(
-                                      'LP',
-                                    )}
+                                    withoutBg={
+                                      asset.underlyingName.includes('LP') ||
+                                      asset.underlyingSymbol.includes('am') ||
+                                      asset.underlyingSymbol.includes('moo')
+                                    }
                                   />
                                 </Box>
                               </Box>
@@ -452,9 +460,11 @@ const LendDetailPage: React.FC = () => {
                                   <CurrencyLogo
                                     currency={getPoolAssetToken(asset, chainId)}
                                     size={'36px'}
-                                    withoutBg={asset.underlyingName.includes(
-                                      'LP',
-                                    )}
+                                    withoutBg={
+                                      asset.underlyingName.includes('LP') ||
+                                      asset.underlyingSymbol.includes('am') ||
+                                      asset.underlyingSymbol.includes('moo')
+                                    }
                                   />
                                 </Box>
                                 <small className='text-gray29'>

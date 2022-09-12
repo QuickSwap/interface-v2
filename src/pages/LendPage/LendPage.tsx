@@ -229,7 +229,10 @@ const LendPage: React.FC = () => {
                               key={token.address}
                               currency={token}
                               withoutBg={Boolean(
-                                token.name && token.name.includes('LP'),
+                                (token.name && token.name.includes('LP')) ||
+                                  (token.symbol &&
+                                    (token.symbol.includes('am') ||
+                                      token.symbol.includes('moo'))),
                               )}
                             />
                           ))}

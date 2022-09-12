@@ -488,7 +488,11 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
             <Box className='flex items-center'>
               <CurrencyLogo
                 currency={getPoolAssetToken(asset, chainId)}
-                withoutBg={asset.underlyingName.includes('LP')}
+                withoutBg={
+                  asset.underlyingName.includes('LP') ||
+                  asset.underlyingSymbol.includes('am') ||
+                  asset.underlyingSymbol.includes('moo')
+                }
                 size='36px'
               />
               <Box className='flex' ml='6px'>
