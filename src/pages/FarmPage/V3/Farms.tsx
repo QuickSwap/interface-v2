@@ -52,10 +52,12 @@ export default function Farms() {
   const {
     fetchEternalFarms: {
       fetchEternalFarmsFn,
-      eternalFarms,
+      // eternalFarms,
       eternalFarmsLoading,
     },
   } = useFarmingSubgraph() || {};
+
+  const eternalFarms = null;
 
   const {
     fetchTransferredPositions: {

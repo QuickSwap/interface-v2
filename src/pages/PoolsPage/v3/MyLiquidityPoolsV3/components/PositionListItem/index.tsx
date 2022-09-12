@@ -112,7 +112,6 @@ export default function PositionListItem({
     tickLower: _tickLower,
     tickUpper: _tickUpper,
     onFarming: _onFarming,
-    oldFarming: _oldFarming,
   } = useMemo(() => {
     if (
       !positionDetails &&
@@ -214,13 +213,6 @@ export default function PositionListItem({
             <Box className='flex' ml='5px'>
               <ArrowRight size={14} />
             </Box>
-          </Box>
-        ) : _oldFarming ? (
-          <Box ml={1}>
-            <Badge
-              variant={BadgeVariant.WARNING}
-              text='On Old Farming Center'
-            />
           </Box>
         ) : (
           <div />

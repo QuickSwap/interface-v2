@@ -1,7 +1,6 @@
 import { ChainId } from '@uniswap/sdk';
 import { Token } from '@uniswap/sdk-core';
 import { Matic } from 'v3lib/entities/matic';
-import { WMATIC } from 'v3lib/entities/wmatic';
 
 // {
 //   x"poolDeployer": "0x2D98E2FA9da15aa6dC9581AB097Ced7af697CB92",
@@ -82,7 +81,13 @@ export const SOCKS_CONTROLLER_ADDRESSES: AddressMap = {
 };
 
 export const WMATIC_EXTENDED: { [chainId: number]: Token } = {
-  ...WMATIC,
+  [ChainId.MATIC]: new Token(
+    ChainId.MATIC,
+    '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+    18,
+    'WMATIC',
+    'Wrapped Matic',
+  ),
 };
 
 export class ExtendedEther extends Matic {

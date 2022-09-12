@@ -252,7 +252,7 @@
   "transactionsWillAppear": "Your transactions will appear here",
   "copied": "Copied",
   "showPortis": "Show Portis",
-  "betaWarningDesc": "You're on the new productions site if you'd like to use the old site please navigate to: ",
+  "betaWarningDesc": "This site is in beta. By using this software, you understand, acknowledge and accept that Quickswap and/or the underlying software are provided “as is” and “as available” basis and without warranties or representations of any kind either expressed or implied.",
   "fiatProviders": "Fiat gateway providers",
   "buy": "Buy",
   "fiatServiceDesc": "Fiat services on Quickswap are provided by third-parties. Quickswap is not associated with, responsible or liable for the performance of these third-party services. Any claims & questions should be addressed with the selected provider.",
