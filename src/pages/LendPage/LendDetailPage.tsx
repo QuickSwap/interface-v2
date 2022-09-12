@@ -287,12 +287,16 @@ const LendDetailPage: React.FC = () => {
                     <TableHead>
                       <TableRow>
                         <TableCell>
-                          {t('asset')} / {t('ltv')}
+                          <Box maxWidth='180px'>
+                            {t('asset')} / {t('ltv')}
+                          </Box>
                         </TableCell>
                         <TableCell className='poolTableHideCell'>
                           {t('supplyapy')}
                         </TableCell>
-                        <TableCell>{t('deposited')}</TableCell>
+                        <TableCell>
+                          <Box maxWidth='150px'>{t('deposited')}</Box>
+                        </TableCell>
                         <TableCell></TableCell>
                       </TableRow>
                     </TableHead>
@@ -301,7 +305,10 @@ const LendDetailPage: React.FC = () => {
                         return (
                           <TableRow key={asset.cToken.address}>
                             <TableCell>
-                              <Box className='flex items-center'>
+                              <Box
+                                className='flex items-center'
+                                maxWidth='180px'
+                              >
                                 <Box display={'flex'} mr='8px'>
                                   <CurrencyLogo
                                     currency={getPoolAssetToken(asset, chainId)}
@@ -313,7 +320,7 @@ const LendDetailPage: React.FC = () => {
                                     }
                                   />
                                 </Box>
-                                <Box>
+                                <Box flex={1}>
                                   <small className='text-gray29'>
                                     {asset.underlyingSymbol +
                                       (asset.underlyingName.includes('LP')
@@ -361,20 +368,22 @@ const LendDetailPage: React.FC = () => {
                               </Box>
                             </TableCell>
                             <TableCell>
-                              <small className='text-gray29'>
-                                {midUsdFormatter(asset.supplyBalanceUSD)}
-                              </small>
-                              <p className='caption text-secondary'>
-                                {sdk
-                                  ? convertBNToNumber(
-                                      asset.supplyBalance,
-                                      asset.underlyingDecimals,
-                                    ).toFixed(2)
-                                  : '?'}{' '}
-                                {asset.underlyingName.includes('LP')
-                                  ? 'LP'
-                                  : asset.underlyingSymbol}
-                              </p>
+                              <Box maxWidth='150px'>
+                                <small className='text-gray29'>
+                                  {midUsdFormatter(asset.supplyBalanceUSD)}
+                                </small>
+                                <p className='caption text-secondary'>
+                                  {sdk
+                                    ? convertBNToNumber(
+                                        asset.supplyBalance,
+                                        asset.underlyingDecimals,
+                                      ).toFixed(2)
+                                    : '?'}{' '}
+                                  {asset.underlyingName.includes('LP')
+                                    ? 'LP'
+                                    : asset.underlyingSymbol}
+                                </p>
+                              </Box>
                             </TableCell>
                             <TableCell>
                               <Button
@@ -455,7 +464,11 @@ const LendDetailPage: React.FC = () => {
                         return (
                           <TableRow key={asset.cToken.address}>
                             <TableCell>
-                              <Box display={'flex'} alignItems={'center'}>
+                              <Box
+                                display={'flex'}
+                                alignItems={'center'}
+                                maxWidth='150px'
+                              >
                                 <Box display='flex' mr='8px'>
                                   <CurrencyLogo
                                     currency={getPoolAssetToken(asset, chainId)}
@@ -488,36 +501,40 @@ const LendDetailPage: React.FC = () => {
                               </p>
                             </TableCell>
                             <TableCell>
-                              <small className='text-gray29'>
-                                {midUsdFormatter(asset.borrowBalanceUSD)}
-                              </small>
-                              <p className='caption text-secondary'>
-                                {sdk
-                                  ? convertBNToNumber(
-                                      asset.borrowBalance,
-                                      asset.underlyingDecimals,
-                                    ).toFixed(2)
-                                  : '?'}{' '}
-                                {asset.underlyingName.includes('LP')
-                                  ? 'LP'
-                                  : asset.underlyingSymbol}
-                              </p>
+                              <Box maxWidth='120px'>
+                                <small className='text-gray29'>
+                                  {midUsdFormatter(asset.borrowBalanceUSD)}
+                                </small>
+                                <p className='caption text-secondary'>
+                                  {sdk
+                                    ? convertBNToNumber(
+                                        asset.borrowBalance,
+                                        asset.underlyingDecimals,
+                                      ).toFixed(2)
+                                    : '?'}{' '}
+                                  {asset.underlyingName.includes('LP')
+                                    ? 'LP'
+                                    : asset.underlyingSymbol}
+                                </p>
+                              </Box>
                             </TableCell>
                             <TableCell>
-                              <small className='text-gray29'>
-                                {midUsdFormatter(asset.liquidityUSD)}
-                              </small>
-                              <p className='caption text-secondary'>
-                                {sdk
-                                  ? convertBNToNumber(
-                                      asset.liquidity,
-                                      asset.underlyingDecimals,
-                                    ).toFixed(2)
-                                  : '?'}{' '}
-                                {asset.underlyingName.includes('LP')
-                                  ? 'LP'
-                                  : asset.underlyingSymbol}
-                              </p>
+                              <Box maxWidth='120px'>
+                                <small className='text-gray29'>
+                                  {midUsdFormatter(asset.liquidityUSD)}
+                                </small>
+                                <p className='caption text-secondary'>
+                                  {sdk
+                                    ? convertBNToNumber(
+                                        asset.liquidity,
+                                        asset.underlyingDecimals,
+                                      ).toFixed(2)
+                                    : '?'}{' '}
+                                  {asset.underlyingName.includes('LP')
+                                    ? 'LP'
+                                    : asset.underlyingSymbol}
+                                </p>
+                              </Box>
                             </TableCell>
                             <TableCell>
                               <Button

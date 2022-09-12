@@ -187,6 +187,9 @@
     &:not(:first-child) {
       text-align: right;
     }
+    & small, & p {
+      word-break: break-all;
+    }
     & button {
       height: 36px;
       border-radius: 10px;
