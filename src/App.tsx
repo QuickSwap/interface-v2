@@ -18,7 +18,6 @@ const SwapPage = lazy(() => import('./pages/SwapPage'));
 const ConvertQUICKPage = lazy(() => import('./pages/ConvertQUICKPage'));
 const LendPage = lazy(() => import('./pages/LendPage'));
 const LendDetailPage = lazy(() => import('./pages/LendPage/LendDetailPage'));
-const PrdtPage = lazy(() => import('./pages/PrdtPage'));
 const AnalyticsTokenDetails = lazy(() =>
   import('./pages/AnalyticsTokenDetails'),
 );
@@ -55,6 +54,7 @@ import 'slick-carousel/slick/slick-theme.css';
 import './i18n';
 import { mainTheme } from './theme';
 import Background from 'layouts/Background';
+import { Redirect, RouteComponentProps } from 'react-router-dom';
 
 const Web3ProviderNetwork = createWeb3ReactRoot(
   GlobalConst.utils.NetworkContextName,
@@ -167,11 +167,13 @@ const App: React.FC = () => {
                           <ConvertQUICKPage />
                         </PageLayout>
                       </Route>
-                      <Route exact path='/prdt'>
-                        <PageLayout name='prdt'>
-                          <PrdtPage />
-                        </PageLayout>
-                      </Route>
+                      <Route
+                        path='/predictions'
+                        component={() => {
+                          window.location.href = `${process.env.REACT_APP_PREDICTIONS_URL}`;
+                          return null;
+                        }}
+                      />
                       <Route exact path='/analytics'>
                         <PageLayout>
                           <AnalyticsHeader />
