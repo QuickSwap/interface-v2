@@ -1,5 +1,5 @@
 import { useQuery } from 'react-query';
-import { useMarket } from './useMarket';
+import { useReadOnlyMarket } from './useMarket';
 import { useActiveWeb3React } from '../index';
 import { fetchPoolData, PoolData } from '../../utils/marketxyz/fetchPoolData';
 import { PoolDirectoryV1 } from 'market-sdk';
@@ -10,7 +10,7 @@ export const usePoolsData = (
   directory: PoolDirectoryV1 | string,
 ) => {
   const { account } = useActiveWeb3React();
-  const { sdk } = useMarket();
+  const { sdk } = useReadOnlyMarket();
   const { ethPrice } = useEthPrice();
   const _directory = sdk
     ? typeof directory === 'string'
@@ -50,7 +50,7 @@ export const usePoolData = (
   directory: PoolDirectoryV1 | string,
 ): PoolData | undefined => {
   const { account } = useActiveWeb3React();
-  const { sdk } = useMarket();
+  const { sdk } = useReadOnlyMarket();
   const { ethPrice } = useEthPrice();
   const _directory = sdk
     ? typeof directory === 'string'

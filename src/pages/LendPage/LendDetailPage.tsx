@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Grid,
-  withStyles,
   Table,
   TableBody,
   TableHead,
@@ -21,7 +20,7 @@ import { midUsdFormatter, shortUsdFormatter } from 'utils/bigUtils';
 import { getDaysCurrentYear, shortenAddress, convertBNToNumber } from 'utils';
 import { useExtraPoolData } from 'hooks/marketxyz/useExtraPoolData';
 import { useActiveWeb3React } from 'hooks';
-import { useMarket } from 'hooks/marketxyz/useMarket';
+import { useMarket, useReadOnlyMarket } from 'hooks/marketxyz/useMarket';
 import { USDPricedPoolAsset } from 'utils/marketxyz/fetchPoolData';
 
 import {
@@ -389,23 +388,26 @@ const LendDetailPage: React.FC = () => {
                               <Button
                                 disabled={
                                   !account ||
+                                  !sdk ||
                                   asset.underlyingToken ===
                                     selectedAsset?.underlyingToken
                                 }
                                 onClick={() => {
                                   setSelectedAsset(asset);
-                                  if (!asset.membership && account) {
+                                  if (!asset.membership && account && sdk) {
                                     toggleCollateral(
                                       asset,
                                       account,
                                       asset.membership
                                         ? t('cannotExitMarket')
                                         : t('cannotEnterMarket'),
+                                      sdk,
                                     )
                                       .then(() => {
                                         setSelectedAsset(undefined);
                                       })
-                                      .catch(() => {
+                                      .catch((e) => {
+                                        console.log('ccc', e);
                                         setSelectedAsset(undefined);
                                       });
                                   } else {
