@@ -20,7 +20,7 @@ import { midUsdFormatter, shortUsdFormatter } from 'utils/bigUtils';
 import { getDaysCurrentYear, shortenAddress, convertBNToNumber } from 'utils';
 import { useExtraPoolData } from 'hooks/marketxyz/useExtraPoolData';
 import { useActiveWeb3React } from 'hooks';
-import { useMarket, useReadOnlyMarket } from 'hooks/marketxyz/useMarket';
+import { useMarket } from 'hooks/marketxyz/useMarket';
 import { USDPricedPoolAsset } from 'utils/marketxyz/fetchPoolData';
 
 import {
