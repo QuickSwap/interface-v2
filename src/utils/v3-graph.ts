@@ -639,18 +639,6 @@ export async function getTopPairsV3(count = 500) {
     const parsedPairs48 = parsePairsData(pairs48);
     const parsedPairsWeek = parsePairsData(pairsWeek);
 
-    const aprs: any = await fetchPoolsAPR();
-    const farmAprs: any = await fetchEternalFarmAPR();
-
-    const farmingAprs = await fetchEternalFarmingsAPRByPool(pairsAddresses);
-    const _farmingAprs: { [type: string]: number } = farmingAprs.reduce(
-      (acc: any, el: any) => ({
-        ...acc,
-        [el.pool]: farmAprs[el.id],
-      }),
-      {},
-    );
-
     const formatted = pairsAddresses.map((address: string) => {
       const current = parsedPairs[address];
       const oneDay = parsedPairs24[address];
@@ -694,10 +682,6 @@ export async function getTopPairsV3(count = 500) {
         current ? current[manageUntrackedTVL] : undefined,
         oneDay ? oneDay[manageUntrackedTVL] : undefined,
       );
-      const aprPercent = aprs[address] ? aprs[address].toFixed(2) : null;
-      const farmingApr = _farmingAprs[address]
-        ? Number(_farmingAprs[address].toFixed(2))
-        : null;
 
       return {
         token0: current.token0,
@@ -711,8 +695,6 @@ export async function getTopPairsV3(count = 500) {
         trackedReserveUSD: tvlUSD,
         tvlUSDChange,
         totalValueLockedUSD: current[manageUntrackedTVL],
-        apr: aprPercent,
-        farmingApr: farmingApr && farmingApr > 0 ? farmingApr : null,
       };
     });
 
@@ -720,6 +702,32 @@ export async function getTopPairsV3(count = 500) {
   } catch (err) {
     console.error(err);
   }
+}
+
+export async function getPairsAPR(pairAddresses: string[]) {
+  const aprs: any = await fetchPoolsAPR();
+  const farmAprs: any = await fetchEternalFarmAPR();
+
+  const farmingAprs = await fetchEternalFarmingsAPRByPool(pairAddresses);
+  const _farmingAprs: {
+    [type: string]: number;
+  } = farmingAprs.reduce(
+    (acc: any, el: any) => ({
+      ...acc,
+      [el.pool]: farmAprs[el.id],
+    }),
+    {},
+  );
+  return pairAddresses.map((address) => {
+    const aprPercent = aprs[address] ? aprs[address].toFixed(2) : null;
+    const farmingApr = _farmingAprs[address]
+      ? Number(_farmingAprs[address].toFixed(2))
+      : null;
+    return {
+      apr: aprPercent,
+      farmingApr: farmingApr && farmingApr > 0 ? farmingApr : null,
+    };
+  });
 }
 
 export async function getPairInfoV3(address: string) {
@@ -1515,7 +1523,7 @@ export async function isV3PairExists(pairAddress: string) {
 
 //Farming
 
-async function fetchEternalFarmingsAPRByPool(
+export async function fetchEternalFarmingsAPRByPool(
   poolAddresses: string[],
 ): Promise<any> {
   try {

@@ -105,8 +105,10 @@ const AnalyticsTokenChart: React.FC<{ token: any }> = ({ token }) => {
         }
       });
     }
-    fetchTokenChartData();
-  }, [updateTokenChartData, tokenAddress, durationIndex, isV3]);
+    if (isV3 !== undefined) {
+      fetchTokenChartData();
+    }
+  }, [tokenAddress, durationIndex, isV3]);
 
   const currentPercentClass = getPriceClass(Number(currentPercent));
 

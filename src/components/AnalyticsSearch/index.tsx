@@ -265,7 +265,9 @@ const AnalyticsSearch: React.FC = () => {
         console.log(e);
       }
     }
-    fetchData();
+    if (isV3 !== undefined) {
+      fetchData();
+    }
   }, [searchVal, isV3]);
 
   const handleClick = (e: any) => {

@@ -30,6 +30,7 @@ const AnalyticsLiquidityChart: React.FC = () => {
   const { isV3 } = useIsV3();
 
   useEffect(() => {
+    if (isV3 === undefined) return;
     const fetchChartData = async () => {
       updateGlobalChartData(null);
 

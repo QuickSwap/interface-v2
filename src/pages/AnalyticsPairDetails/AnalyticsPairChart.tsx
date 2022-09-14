@@ -62,17 +62,25 @@ const AnalyticsPairChart: React.FC<{
           ).toLocaleString()
       : '-';
   const [chartIndex, setChartIndex] = useState(CHART_VOLUME);
-  const chartIndexes = [CHART_VOLUME, CHART_TVL, CHART_FEES];
+  const chartIndexes = useMemo(() => [CHART_VOLUME, CHART_TVL, CHART_FEES], []);
 
-  const chartIndexesV3 = [CHART_LIQUIDITY, CHART_POOL_FEE, CHART_PRICE];
+  const chartIndexesV3 = useMemo(
+    () => [CHART_LIQUIDITY, CHART_POOL_FEE, CHART_PRICE],
+    [],
+  );
 
-  const chartIndexTexts = [t('volume'), t('tvl'), t('fees')];
+  const chartIndexTexts = useMemo(() => [t('volume'), t('tvl'), t('fees')], [
+    t,
+  ]);
 
-  const chartIndexTextsV3 = [t('liquidity'), t('poolFee'), t('price')];
+  const chartIndexTextsV3 = useMemo(
+    () => [t('liquidity'), t('poolFee'), t('price')],
+    [t],
+  );
 
   const _chartIndexes = useMemo(
     () => chartIndexes.concat(isV3 ? chartIndexesV3 : []),
-    [isV3, chartIndexes, chartIndexTextsV3],
+    [isV3, chartIndexes, chartIndexesV3],
   );
   const _chartIndexesTexts: any = useMemo(
     () => chartIndexTexts.concat(isV3 ? chartIndexTextsV3 : []),
@@ -201,7 +209,9 @@ const AnalyticsPairChart: React.FC<{
         }
       });
     }
-    fetchPairChartData();
+    if (isV3 !== undefined) {
+      fetchPairChartData();
+    }
   }, [pairAddress, durationIndex, isV3]);
 
   const _chartData = useMemo(() => {

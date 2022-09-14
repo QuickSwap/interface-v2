@@ -37,17 +37,27 @@ const AnalyticsInfo: React.FC<AnalyticsInfoProps> = ({ data }) => {
     v3: [
       {
         title: t('24hVol'),
-        value: `$${data.oneDayVolumeUSD?.toLocaleString()}`,
+        value: `$${
+          data.oneDayVolumeUSD !== undefined
+            ? data.oneDayVolumeUSD.toLocaleString()
+            : '~'
+        }`,
         percentChange: data.volumeChangeUSD,
       },
       {
         title: t('24hFees'),
-        value: `$${data.feesUSD?.toLocaleString()}`,
+        value: `$${
+          data.feesUSD === undefined ? '~' : data.feesUSD.toLocaleString()
+        }`,
         percentChange: data.feesUSDChange,
       },
       {
         title: t('tvl'),
-        value: `$${data.totalLiquidityUSD?.toLocaleString()}`,
+        value: `$${
+          data.totalLiquidityUSD === undefined
+            ? '~'
+            : data.totalLiquidityUSD.toLocaleString()
+        }`,
         percentChange: data.liquidityChangeUSD,
       },
     ],
@@ -71,9 +81,11 @@ const AnalyticsInfo: React.FC<AnalyticsInfoProps> = ({ data }) => {
                 Number(item.percentChange),
               )}`}
             >
-              <small>{`(${getFormattedPrice(
-                Number(item.percentChange),
-              )}%)`}</small>
+              <small>{`(${
+                item.percentChange
+                  ? getFormattedPrice(Number(item.percentChange))
+                  : '~'
+              }%)`}</small>
             </Box>
           ) : null}
         </Box>
