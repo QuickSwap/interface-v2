@@ -134,10 +134,15 @@ export function useParaswapCallback(
           trade.outputAmount.currency,
         );
 
+        const srcDecimals = trade.inputAmount.currency.decimals;
+        const destDecimals = trade.outputAmount.currency.decimals;
+
         //Update the rate before calling swap
         const rate = await paraswap.getRate({
           srcToken,
           destToken,
+          srcDecimals,
+          destDecimals,
           amount: srcAmount,
           side: SwapSide.SELL,
           options: {

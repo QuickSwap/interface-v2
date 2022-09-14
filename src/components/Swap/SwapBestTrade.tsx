@@ -181,6 +181,9 @@ const SwapBestTrade: React.FC<{
   const destToken = trade
     ? getBestTradeCurrencyAddress(trade.outputAmount.currency)
     : undefined;
+
+  const srcDecimals = trade?.inputAmount.currency.decimals;
+  const destDecimals = trade?.outputAmount.currency.decimals;
   const pct = basisPointsToPercent(allowedSlippage);
   const srcAmount = trade
     ?.maximumAmountIn(pct)
@@ -210,6 +213,8 @@ const SwapBestTrade: React.FC<{
         const rate = await paraswap.getRate({
           srcToken,
           destToken,
+          srcDecimals,
+          destDecimals,
           amount: srcAmount,
           side: SwapSide.SELL,
           options: {
@@ -233,6 +238,8 @@ const SwapBestTrade: React.FC<{
     srcAmount,
     minDestAmount,
     maxImpactAllowed,
+    srcDecimals,
+    destDecimals,
   ]);
 
   const {
