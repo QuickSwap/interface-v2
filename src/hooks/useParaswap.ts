@@ -23,6 +23,7 @@ export function useParaswap() {
     const paraswapSDK = constructSimpleSDK({
       network: <number>chainId,
       fetch: window.fetch,
+      apiURL: process.env.REACT_APP_BEST_TRADE_API_URL,
     });
 
     return paraswapSDK;
