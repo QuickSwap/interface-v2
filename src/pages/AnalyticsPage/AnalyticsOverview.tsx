@@ -23,7 +23,12 @@ import AnalyticsInfo from './AnalyticsInfo';
 import AnalyticsLiquidityChart from './AnalyticsLiquidityChart';
 import AnalyticsVolumeChart from './AnalyticsVolumeChart';
 import { useTranslation } from 'react-i18next';
-import { getGlobalDataV3, getTopPairsV3, getTopTokensV3 } from 'utils/v3-graph';
+import {
+  getGlobalDataV3,
+  getPairsAPR,
+  getTopPairsV3,
+  getTopTokensV3,
+} from 'utils/v3-graph';
 import { useDispatch } from 'react-redux';
 import { setAnalyticsLoaded } from 'state/analytics/actions';
 
@@ -105,6 +110,25 @@ const AnalyticsOverview: React.FC = () => {
     topPairsFn.then((data) => {
       if (data) {
         updateTopPairs(data);
+        if (isV3) {
+          (async () => {
+            try {
+              const aprs = await getPairsAPR(data.map((item: any) => item.id));
+
+              updateTopPairs(
+                data.map((item: any, ind: number) => {
+                  return {
+                    ...item,
+                    apr: aprs[ind].apr,
+                    farmingApr: aprs[ind].farmingApr,
+                  };
+                }),
+              );
+            } catch (e) {
+              console.log(e);
+            }
+          })();
+        }
       }
     });
   }, [
