@@ -14,6 +14,7 @@ const VersionToggle: React.FC = () => {
 
   useEffect(() => {
     updateIsV3(version === 'v3');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [version]);
 
   return (

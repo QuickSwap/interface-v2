@@ -48,7 +48,8 @@ const AnalyticsOverview: React.FC = () => {
       ethPrice.price === undefined ||
       ethPrice.oneDayPrice === undefined ||
       maticPrice.price === undefined ||
-      maticPrice.oneDayPrice === undefined
+      maticPrice.oneDayPrice === undefined ||
+      isV3 === undefined
     )
       return;
 

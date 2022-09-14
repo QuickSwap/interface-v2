@@ -20,7 +20,7 @@ const AnalyticsPairs: React.FC = () => {
   const { isV3 } = useIsV3();
 
   useEffect(() => {
-    updateTopPairs(null);
+    if (isV3 === undefined) return;
 
     const fetchTopPairs = async () => {
       updateTopPairs(null);
@@ -50,7 +50,7 @@ const AnalyticsPairs: React.FC = () => {
     if (ethPrice.price) {
       fetchTopPairs();
     }
-  }, [updateTopPairs, ethPrice.price, isV3]);
+  }, [ethPrice.price, isV3]);
 
   useEffect(() => {
     if (topPairs) {

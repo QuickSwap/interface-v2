@@ -276,7 +276,7 @@ export function useIsProMode(): {
 }
 
 export function useIsV3(): {
-  isV3: boolean;
+  isV3: boolean | undefined;
   updateIsV3: (isV3: boolean) => void;
 } {
   const isV3 = useSelector((state: AppState) => state.application.isV3);
