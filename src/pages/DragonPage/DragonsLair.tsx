@@ -34,6 +34,7 @@ const DragonsLair: React.FC<{ isNew: boolean }> = ({ isNew }) => {
         <StakeQuickModal
           open={openStakeModal}
           onClose={() => setOpenStakeModal(false)}
+          isNew={isNew}
         />
       )}
       {openUnstakeModal && (
