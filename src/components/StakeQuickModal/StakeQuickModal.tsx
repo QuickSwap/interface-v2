@@ -8,7 +8,7 @@ import { useCurrencyBalance, useTokenBalance } from 'state/wallet/hooks';
 import { useActiveWeb3React } from 'hooks';
 import { GlobalConst, GlobalValue } from 'constants/index';
 import { useApproveCallback, ApprovalState } from 'hooks/useApproveCallback';
-import { useLairContract } from 'hooks/useContract';
+import { useLairContract, useNewLairContract } from 'hooks/useContract';
 import {
   useTransactionAdder,
   useTransactionFinalizer,
@@ -20,15 +20,22 @@ import { useTranslation } from 'react-i18next';
 interface StakeQuickModalProps {
   open: boolean;
   onClose: () => void;
+  isNew: boolean;
 }
 
-const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
+const StakeQuickModal: React.FC<StakeQuickModalProps> = ({
+  open,
+  onClose,
+  isNew,
+}) => {
   const { t } = useTranslation();
   const [attempting, setAttempting] = useState(false);
   const { account } = useActiveWeb3React();
   const addTransaction = useTransactionAdder();
   const finalizedTransaction = useTransactionFinalizer();
-  const quickToken = GlobalValue.tokens.COMMON.OLD_QUICK;
+  const quickToken = isNew
+    ? GlobalValue.tokens.COMMON.NEW_QUICK
+    : GlobalValue.tokens.COMMON.OLD_QUICK;
   const quickBalance = useCurrencyBalance(account ?? undefined, quickToken);
   const userLiquidityUnstaked = useTokenBalance(
     account ?? undefined,
@@ -45,13 +52,18 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
   );
 
   const lairContract = useLairContract();
+  const newLairContract = useNewLairContract();
+  const lairContractToUse = isNew ? newLairContract : lairContract;
+
   const [approval, approveCallback] = useApproveCallback(
     parsedAmount,
-    GlobalConst.addresses.LAIR_ADDRESS,
+    isNew
+      ? GlobalConst.addresses.NEW_LAIR_ADDRESS
+      : GlobalConst.addresses.LAIR_ADDRESS,
   );
 
   const onAttemptToApprove = async () => {
-    if (!lairContract) throw new Error(t('missingdependencies'));
+    if (!lairContractToUse) throw new Error(t('missingdependencies'));
     const liquidityAmount = parsedAmount;
     if (!liquidityAmount) throw new Error(t('missingliquidity'));
     return approveCallback();
@@ -59,10 +71,10 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
 
   const onStake = async () => {
     setAttempting(true);
-    if (lairContract && parsedAmount) {
+    if (lairContractToUse && parsedAmount) {
       if (approval === ApprovalState.APPROVED) {
         try {
-          const response: TransactionResponse = await lairContract.enter(
+          const response: TransactionResponse = await lairContractToUse.enter(
             `0x${parsedAmount.raw.toString(16)}`,
             {
               gasLimit: 350000,

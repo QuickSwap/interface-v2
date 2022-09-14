@@ -22,6 +22,7 @@ export const TradingInfo: React.FC<{ globalData: any }> = ({ globalData }) => {
         <StakeQuickModal
           open={openStakeModal}
           onClose={() => setOpenStakeModal(false)}
+          isNew={false}
         />
       )}
       <Box className='tradingSection'>
