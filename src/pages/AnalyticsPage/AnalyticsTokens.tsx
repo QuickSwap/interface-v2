@@ -39,36 +39,40 @@ const AnalyticsTokens: React.FC = () => {
   }, [topTokens, bookmarkTokens]);
 
   useEffect(() => {
+    if (isV3 === undefined) return;
     updateTopTokens(null);
 
-    const fetchTopTokens = async () => {
-      if (
-        ethPrice.price !== undefined &&
-        ethPrice.oneDayPrice !== undefined &&
-        maticPrice.price !== undefined &&
-        maticPrice.oneDayPrice !== undefined &&
-        isV3 !== undefined
-      ) {
-        const topTokensFn = isV3
-          ? getTopTokensV3(
-              maticPrice.price,
-              maticPrice.oneDayPrice,
-              GlobalConst.utils.ANALYTICS_TOKENS_COUNT,
-            )
-          : getTopTokens(
-              ethPrice.price,
-              ethPrice.oneDayPrice,
-              GlobalConst.utils.ANALYTICS_TOKENS_COUNT,
-            );
-
-        topTokensFn.then((data) => {
+    (async () => {
+      if (isV3) {
+        if (
+          maticPrice.price !== undefined &&
+          maticPrice.oneDayPrice !== undefined
+        ) {
+          const data = await getTopTokensV3(
+            maticPrice.price,
+            maticPrice.oneDayPrice,
+            GlobalConst.utils.ANALYTICS_TOKENS_COUNT,
+          );
           if (data) {
             updateTopTokens(data);
           }
-        });
+        }
+      } else {
+        if (
+          ethPrice.price !== undefined &&
+          ethPrice.oneDayPrice !== undefined
+        ) {
+          const data = await getTopTokens(
+            ethPrice.price,
+            ethPrice.oneDayPrice,
+            GlobalConst.utils.ANALYTICS_TOKENS_COUNT,
+          );
+          if (data) {
+            updateTopTokens(data);
+          }
+        }
       }
-    };
-    fetchTopTokens();
+    })();
   }, [
     ethPrice.price,
     ethPrice.oneDayPrice,

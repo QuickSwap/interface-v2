@@ -67,6 +67,8 @@ export default function Updater(): null {
     (async () => {
       const [price, oneDayPrice, ethPriceChange] = await getEthPrice();
       updateEthPrice({ price, oneDayPrice, ethPriceChange });
+    })();
+    (async () => {
       const [
         maticPrice,
         maticOneDayPrice,

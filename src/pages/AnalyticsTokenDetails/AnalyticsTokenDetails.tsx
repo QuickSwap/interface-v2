@@ -91,31 +91,40 @@ const AnalyticsTokenDetails: React.FC = () => {
   }, [tokenTransactions]);
 
   useEffect(() => {
+    if (isV3 === undefined) return;
     setToken(null);
     updateTokenPairs(null);
     updateTokenTransactions(null);
 
     async function fetchTokenInfo() {
-      if (
-        ethPrice.price !== undefined &&
-        ethPrice.oneDayPrice !== undefined &&
-        maticPrice.price !== undefined &&
-        maticPrice.oneDayPrice !== undefined &&
-        isV3 !== undefined
-      ) {
-        const tokenInfoFn = isV3
-          ? getTokenInfoV3(
-              maticPrice.price,
-              maticPrice.oneDayPrice,
-              tokenAddress,
-            )
-          : getTokenInfo(ethPrice.price, ethPrice.oneDayPrice, tokenAddress);
-
-        tokenInfoFn.then((tokenInfo) => {
+      if (isV3) {
+        if (
+          maticPrice.price !== undefined &&
+          maticPrice.oneDayPrice !== undefined
+        ) {
+          const tokenInfo = await getTokenInfoV3(
+            maticPrice.price,
+            maticPrice.oneDayPrice,
+            tokenAddress,
+          );
           if (tokenInfo) {
             setToken(tokenInfo[0] || tokenInfo);
           }
-        });
+        }
+      } else {
+        if (
+          ethPrice.price !== undefined &&
+          ethPrice.oneDayPrice !== undefined
+        ) {
+          const tokenInfo = await getTokenInfo(
+            ethPrice.price,
+            ethPrice.oneDayPrice,
+            tokenAddress,
+          );
+          if (tokenInfo) {
+            setToken(tokenInfo[0] || tokenInfo);
+          }
+        }
       }
     }
     async function fetchTransactions() {
@@ -141,7 +150,9 @@ const AnalyticsTokenDetails: React.FC = () => {
     if (isV3) {
       fetchTransactions();
     } else {
-      fetchPairs();
+      if (ethPrice.price) {
+        fetchPairs();
+      }
     }
   }, [
     tokenAddress,

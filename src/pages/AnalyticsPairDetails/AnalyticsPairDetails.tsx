@@ -145,16 +145,18 @@ const AnalyticsPairDetails: React.FC = () => {
     setPairTransactions(null);
 
     async function fetchPairData() {
-      if (ethPrice.price) {
-        const pairInfoFn = isV3
-          ? getPairInfoV3(pairAddress)
-          : getBulkPairData([pairAddress], ethPrice.price);
-
-        pairInfoFn.then((pairInfo: any) => {
+      if (isV3) {
+        const pairInfo = await getPairInfoV3(pairAddress);
+        if (pairInfo && pairInfo.length > 0) {
+          setPairData(pairInfo[0]);
+        }
+      } else {
+        if (ethPrice.price) {
+          const pairInfo = await getBulkPairData([pairAddress], ethPrice.price);
           if (pairInfo && pairInfo.length > 0) {
             setPairData(pairInfo[0]);
           }
-        });
+        }
       }
     }
     async function fetchTransctions() {
