@@ -14,15 +14,13 @@ export const toToken = (t: {
   return new Token(t.chainId, t.address, t.decimals, t.symbol, t.name);
 };
 
+const DAI = toToken(GlobalValue.tokens.COMMON.DAI);
 const USDC = toToken(GlobalValue.tokens.COMMON.USDC);
 const USDT = toToken(GlobalValue.tokens.COMMON.USDT);
 const OLD_QUICK = toToken(GlobalValue.tokens.COMMON.OLD_QUICK);
 const NEW_QUICK = toToken(GlobalValue.tokens.COMMON.NEW_QUICK);
 const ETHER = toToken(GlobalValue.tokens.COMMON.ETHER);
 const WBTC = toToken(GlobalValue.tokens.COMMON.WBTC);
-const DAI = toToken(GlobalValue.tokens.COMMON.DAI);
-const GHST = toToken(GlobalValue.tokens.COMMON.GHST);
-const MI = toToken(GlobalValue.tokens.COMMON.MI);
 
 type ChainTokenList = {
   readonly [chainId: number]: Token[];
@@ -68,7 +66,16 @@ export const COMMON_BASES: ChainCurrencyList = {
 // used to construct the list of all pairs we consider by default in the frontend
 export const BASES_TO_TRACK_LIQUIDITY_FOR: ChainTokenList = {
   ...WETH_ONLY,
-  [ChainId.MATIC]: [...WETH_ONLY[ChainId.MATIC], USDC, USDT],
+  [ChainId.MATIC]: [
+    ...WETH_ONLY[ChainId.MATIC],
+    DAI,
+    USDC,
+    USDT,
+    OLD_QUICK,
+    NEW_QUICK,
+    ETHER,
+    WBTC,
+  ],
 };
 export const PINNED_PAIRS: { readonly [chainId: number]: [Token, Token][] } = {
   [ChainId.MATIC]: [[USDC, USDT]],
