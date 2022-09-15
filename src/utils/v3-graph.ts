@@ -81,47 +81,70 @@ export async function getGlobalDataV3(): Promise<any> {
     });
 
     const [statsCurrent, statsOneDay, statsOneWeek, statsTwoWeek] = [
-      dataCurrent.data.factories[0],
-      dataOneDay.data.factories[0],
-      dataOneWeek.data.factories[0],
-      dataTwoWeek.data.factories[0],
+      dataCurrent &&
+      dataCurrent.data &&
+      dataCurrent.data.factories &&
+      dataCurrent.data.factories.length > 0
+        ? dataCurrent.data.factories[0]
+        : undefined,
+      dataOneDay &&
+      dataOneDay.data &&
+      dataOneDay.data.factories &&
+      dataOneDay.data.factories.length > 0
+        ? dataOneDay.data.factories[0]
+        : undefined,
+      dataOneWeek &&
+      dataOneWeek.data &&
+      dataOneWeek.data.factories &&
+      dataOneWeek.data.factories.length > 0
+        ? dataOneWeek.data.factories[0]
+        : undefined,
+      dataTwoWeek &&
+      dataTwoWeek.data &&
+      dataTwoWeek.data.factories &&
+      dataTwoWeek.data.factories.length > 0
+        ? dataTwoWeek.data.factories[0]
+        : undefined,
     ];
 
-    const oneDayVolumeUSD =
-      statsCurrent && statsOneDay
-        ? parseFloat(statsCurrent.totalVolumeUSD) -
-          parseFloat(statsOneDay.totalVolumeUSD)
-        : parseFloat(statsCurrent.totalVolumeUSD);
+    const currentVolumeUSD = statsCurrent
+      ? Number(statsCurrent.totalVolumeUSD)
+      : 0;
+    const oneDayBeforeVolumeUSD = statsOneDay
+      ? Number(statsOneDay.totalVolumeUSD)
+      : 0;
+    const oneWeekBeforeVolumeUSD = statsOneWeek
+      ? Number(statsOneWeek.totalVolumeUSD)
+      : 0;
+    const twoWeekBeforeVolumeUSD = statsTwoWeek
+      ? Number(statsTwoWeek.totalVolumeUSD)
+      : 0;
+    const oneDayVolumeUSD = currentVolumeUSD - oneDayBeforeVolumeUSD;
 
     const volumeChangeUSD = getPercentChange(
-      statsCurrent ? statsCurrent.totalVolumeUSD : undefined,
-      statsOneDay ? statsOneDay.totalVolumeUSD : undefined,
+      currentVolumeUSD,
+      oneDayBeforeVolumeUSD,
     );
 
     const [oneWeekVolume, weeklyVolumeChange] = get2DayPercentChange(
-      statsCurrent.totalVolumeUSD,
-      statsOneWeek.totalVolumeUSD,
-      statsTwoWeek.totalVolumeUSD,
+      currentVolumeUSD,
+      oneWeekBeforeVolumeUSD,
+      twoWeekBeforeVolumeUSD,
     );
 
     const liquidityChangeUSD = getPercentChange(
-      statsCurrent ? statsCurrent.totalValueLockedUSD : undefined,
-      statsOneDay ? statsOneDay.totalValueLockedUSD : undefined,
+      statsCurrent ? statsCurrent.totalValueLockedUSD : 0,
+      statsOneDay ? statsOneDay.totalValueLockedUSD : 0,
     );
 
-    const feesUSD =
-      statsCurrent && statsOneDay
-        ? parseFloat(statsCurrent.totalFeesUSD) -
-          parseFloat(statsOneDay.totalFeesUSD)
-        : parseFloat(statsCurrent.totalFeesUSD);
+    const currentFeesUSD = statsCurrent ? Number(statsCurrent.totalFeesUSD) : 0;
+    const oneDayFeesUSD = statsOneDay ? Number(statsOneDay.totalFeesUSD) : 0;
+    const feesUSD = currentFeesUSD - oneDayFeesUSD;
 
-    const feesUSDChange = getPercentChange(
-      statsCurrent ? statsCurrent.totalFeesUSD : undefined,
-      statsOneDay ? statsOneDay.totalFeesUSD : undefined,
-    );
+    const feesUSDChange = getPercentChange(currentFeesUSD, oneDayFeesUSD);
 
     data = {
-      totalLiquidityUSD: Number(statsCurrent.totalValueLockedUSD).toFixed(2),
+      totalLiquidityUSD: Number(statsCurrent.totalValueLockedUSD),
       liquidityChangeUSD,
       oneDayVolumeUSD,
       volumeChangeUSD,
