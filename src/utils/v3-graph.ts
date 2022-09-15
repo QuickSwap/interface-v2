@@ -437,12 +437,16 @@ export async function getTokenInfoV3(
     const oneDay = parsedTokens24[address];
     const twoDay = parsedTokens48[address];
 
-    const manageUntrackedVolume =
-      +current.volumeUSD <= 1 ? 'untrackedVolumeUSD' : 'volumeUSD';
-    const manageUntrackedTVL =
-      +current.totalValueLockedUSD <= 1
+    const manageUntrackedVolume = current
+      ? +current.volumeUSD <= 1
+        ? 'untrackedVolumeUSD'
+        : 'volumeUSD'
+      : '';
+    const manageUntrackedTVL = current
+      ? +current.totalValueLockedUSD <= 1
         ? 'totalValueLockedUSDUntracked'
-        : 'totalValueLockedUSD';
+        : 'totalValueLockedUSD'
+      : '';
 
     const [oneDayVolumeUSD, volumeChangeUSD] =
       current && oneDay && twoDay
@@ -491,24 +495,25 @@ export async function getTokenInfoV3(
         ? parseFloat(current.feesUSD)
         : 0;
 
-    return {
-      exists: !!current,
-      id: address,
-      name: current ? formatTokenName(address, current.name) : '',
-      symbol: current ? formatTokenSymbol(address, current.symbol) : '',
-      decimals: current ? current.decimals : 18,
-      oneDayVolumeUSD,
-      volumeChangeUSD,
-      txCount,
-      tvlUSD,
-      tvlUSDChange,
-      feesUSD,
-      tvlToken,
-      priceUSD,
-      priceChangeUSD,
-      liquidityChangeUSD: tvlUSDChange,
-      totalLiquidityUSD: tvlUSD,
-    };
+    return current
+      ? {
+          id: address,
+          name: current ? formatTokenName(address, current.name) : '',
+          symbol: current ? formatTokenSymbol(address, current.symbol) : '',
+          decimals: current ? current.decimals : 18,
+          oneDayVolumeUSD,
+          volumeChangeUSD,
+          txCount,
+          tvlUSD,
+          tvlUSDChange,
+          feesUSD,
+          tvlToken,
+          priceUSD,
+          priceChangeUSD,
+          liquidityChangeUSD: tvlUSDChange,
+          totalLiquidityUSD: tvlUSD,
+        }
+      : undefined;
   } catch (err) {
     console.error(err);
   }
@@ -789,12 +794,16 @@ export async function getPairInfoV3(address: string) {
     const twoDay = parsedPairs48[address];
     const week = parsedPairsWeek[address];
 
-    const manageUntrackedVolume =
-      +current.volumeUSD <= 1 ? 'untrackedVolumeUSD' : 'volumeUSD';
-    const manageUntrackedTVL =
-      +current.totalValueLockedUSD <= 1
+    const manageUntrackedVolume = current
+      ? +current.volumeUSD <= 1
+        ? 'untrackedVolumeUSD'
+        : 'volumeUSD'
+      : '';
+    const manageUntrackedTVL = current
+      ? +current.totalValueLockedUSD <= 1
         ? 'totalValueLockedUSDUntracked'
-        : 'totalValueLockedUSD';
+        : 'totalValueLockedUSD'
+      : '';
 
     const [oneDayVolumeUSD, oneDayVolumeChangeUSD] =
       current && oneDay && twoDay
@@ -854,32 +863,33 @@ export async function getPairInfoV3(address: string) {
       : 0;
 
     return [
-      {
-        token0: current.token0,
-        token1: current.token1,
-        fee: current.fee,
-        exists: !!current,
-        id: address,
-        oneDayVolumeUSD,
-        oneDayVolumeChangeUSD,
-        oneWeekVolumeUSD,
-        trackedReserveUSD: tvlUSD,
-        tvlUSDChange,
-        reserve0: current.totalValueLockedToken0,
-        reserve1: current.totalValueLockedToken1,
-        totalValueLockedUSD: current[manageUntrackedTVL],
-        apr: aprPercent,
-        farmingApr: farmingApr,
-        volumeChangeUSD: oneDayVolumeChangeUSD,
-        liquidityChangeUSD: tvlUSDChange,
-        feesUSD,
-        feesUSDChange,
-        poolFeeChange,
-        token0Price: Number(current.token0Price).toFixed(3),
-        token0PriceChange,
-        token1Price: Number(current.token1Price).toFixed(3),
-        token1PriceChange,
-      },
+      current
+        ? {
+            token0: current.token0,
+            token1: current.token1,
+            fee: current.fee,
+            id: address,
+            oneDayVolumeUSD,
+            oneDayVolumeChangeUSD,
+            oneWeekVolumeUSD,
+            trackedReserveUSD: tvlUSD,
+            tvlUSDChange,
+            reserve0: current.totalValueLockedToken0,
+            reserve1: current.totalValueLockedToken1,
+            totalValueLockedUSD: current[manageUntrackedTVL],
+            apr: aprPercent,
+            farmingApr: farmingApr,
+            volumeChangeUSD: oneDayVolumeChangeUSD,
+            liquidityChangeUSD: tvlUSDChange,
+            feesUSD,
+            feesUSDChange,
+            poolFeeChange,
+            token0Price: Number(current.token0Price).toFixed(3),
+            token0PriceChange,
+            token1Price: Number(current.token1Price).toFixed(3),
+            token1PriceChange,
+          }
+        : undefined,
     ];
   } catch (err) {
     console.error(err);

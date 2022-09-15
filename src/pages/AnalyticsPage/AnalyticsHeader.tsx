@@ -12,9 +12,14 @@ import VersionToggle from 'components/Toggle/VersionToggle';
 interface AnalyticHeaderProps {
   data?: any;
   type?: string;
+  address?: string;
 }
 
-const AnalyticsHeader: React.FC<AnalyticHeaderProps> = ({ data, type }) => {
+const AnalyticsHeader: React.FC<AnalyticHeaderProps> = ({
+  data,
+  type,
+  address,
+}) => {
   const history = useHistory();
   const { pathname } = useLocation();
   const { t } = useTranslation();
@@ -36,7 +41,7 @@ const AnalyticsHeader: React.FC<AnalyticHeaderProps> = ({ data, type }) => {
         className='flex justify-between flex-wrap'
       >
         <Box marginY={1.5} className='flex items-center'>
-          {type && data && (
+          {type && (
             <Box className='flex items-center text-hint'>
               <span
                 className='link'
@@ -57,12 +62,18 @@ const AnalyticsHeader: React.FC<AnalyticHeaderProps> = ({ data, type }) => {
               </span>
               <ArrowForwardIos style={{ width: 16 }} />
               <span>
-                <span className='text-gray19'>
-                  {type === 'token'
-                    ? data.symbol
-                    : `${data.token0.symbol}/${data.token1.symbol}`}
-                </span>
-                ({shortenAddress(data.id)})
+                {data && (
+                  <span className='text-gray19'>
+                    {type === 'token'
+                      ? data.symbol
+                      : `${data.token0.symbol}/${data.token1.symbol}`}
+                  </span>
+                )}
+                (
+                {data || address
+                  ? shortenAddress(data ? data.id : address)
+                  : ''}
+                )
               </span>
             </Box>
           )}
