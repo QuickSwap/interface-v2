@@ -144,7 +144,7 @@ const AnalyticsPairDetails: React.FC = () => {
     setPairData(null);
     setPairTransactions(null);
 
-    async function checkEthPrice() {
+    async function fetchPairData() {
       if (ethPrice.price) {
         const pairInfoFn = isV3
           ? getPairInfoV3(pairAddress)
@@ -168,8 +168,10 @@ const AnalyticsPairDetails: React.FC = () => {
         }
       });
     }
-    checkEthPrice();
-    fetchTransctions();
+    if (isV3 !== undefined) {
+      fetchPairData();
+      fetchTransctions();
+    }
   }, [pairAddress, ethPrice.price, isV3]);
 
   useEffect(() => {

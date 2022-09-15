@@ -100,7 +100,8 @@ const AnalyticsTokenDetails: React.FC = () => {
         ethPrice.price !== undefined &&
         ethPrice.oneDayPrice !== undefined &&
         maticPrice.price !== undefined &&
-        maticPrice.oneDayPrice !== undefined
+        maticPrice.oneDayPrice !== undefined &&
+        isV3 !== undefined
       ) {
         const tokenInfoFn = isV3
           ? getTokenInfoV3(

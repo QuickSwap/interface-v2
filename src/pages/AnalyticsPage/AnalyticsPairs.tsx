@@ -6,7 +6,7 @@ import { Skeleton } from '@material-ui/lab';
 import { useTranslation } from 'react-i18next';
 import { GlobalConst } from 'constants/index';
 import { useEthPrice, useIsV3 } from 'state/application/hooks';
-import { getTopPairsV3 } from 'utils/v3-graph';
+import { getTopPairsV3, getPairsAPR } from 'utils/v3-graph';
 import { useDispatch } from 'react-redux';
 import { setAnalyticsLoaded } from 'state/analytics/actions';
 
@@ -20,7 +20,7 @@ const AnalyticsPairs: React.FC = () => {
   const { isV3 } = useIsV3();
 
   useEffect(() => {
-    updateTopPairs(null);
+    if (isV3 === undefined) return;
 
     const fetchTopPairs = async () => {
       updateTopPairs(null);
@@ -44,13 +44,34 @@ const AnalyticsPairs: React.FC = () => {
       topPairsFn.then((data) => {
         if (data) {
           updateTopPairs(data);
+          if (isV3) {
+            (async () => {
+              try {
+                const aprs = await getPairsAPR(
+                  data.map((item: any) => item.id),
+                );
+
+                updateTopPairs(
+                  data.map((item: any, ind: number) => {
+                    return {
+                      ...item,
+                      apr: aprs[ind].apr,
+                      farmingApr: aprs[ind].farmingApr,
+                    };
+                  }),
+                );
+              } catch (e) {
+                console.log(e);
+              }
+            })();
+          }
         }
       });
     };
     if (ethPrice.price) {
       fetchTopPairs();
     }
-  }, [updateTopPairs, ethPrice.price, isV3]);
+  }, [ethPrice.price, isV3]);
 
   useEffect(() => {
     if (topPairs) {

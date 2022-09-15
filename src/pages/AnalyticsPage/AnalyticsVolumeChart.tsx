@@ -34,6 +34,7 @@ const AnalyticsVolumeChart: React.FC = () => {
   const { isV3 } = useIsV3();
 
   useEffect(() => {
+    if (isV3 === undefined) return;
     const fetchChartData = async () => {
       updateGlobalChartData(null);
 
@@ -61,7 +62,7 @@ const AnalyticsVolumeChart: React.FC = () => {
       });
     };
     fetchChartData();
-  }, [updateGlobalChartData, durationIndex, isV3]);
+  }, [durationIndex, isV3]);
 
   const liquidityWeeks = useMemo(() => {
     if (globalChartData) {
@@ -214,7 +215,11 @@ const AnalyticsVolumeChart: React.FC = () => {
                 >
                   <span>
                     {`${getVolumePercent(volumeIndex) > 0 ? '+' : ''}
-                      ${getVolumePercent(volumeIndex)?.toLocaleString()}`}
+                      ${
+                        getVolumePercent(volumeIndex) !== undefined
+                          ? getVolumePercent(volumeIndex).toLocaleString()
+                          : '~'
+                      }`}
                     %
                   </span>
                 </Box>
@@ -237,7 +242,7 @@ const AnalyticsVolumeChart: React.FC = () => {
         </Box>
       </Box>
       <Box mt={2}>
-        {globalChartData ? (
+        {globalChartData && isV3 !== undefined ? (
           <BarChart
             height={200}
             isV3={isV3}

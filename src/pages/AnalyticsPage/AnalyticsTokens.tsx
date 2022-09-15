@@ -46,7 +46,8 @@ const AnalyticsTokens: React.FC = () => {
         ethPrice.price !== undefined &&
         ethPrice.oneDayPrice !== undefined &&
         maticPrice.price !== undefined &&
-        maticPrice.oneDayPrice !== undefined
+        maticPrice.oneDayPrice !== undefined &&
+        isV3 !== undefined
       ) {
         const topTokensFn = isV3
           ? getTopTokensV3(
@@ -112,8 +113,7 @@ const AnalyticsTokens: React.FC = () => {
         </Box>
       </Box>
       <Box className='panel'>
-        {/* //TODO Why 200? */}
-        {topTokens && (isV3 ? true : topTokens.length === 200) ? (
+        {topTokens ? (
           <TokensTable data={tokensFilter === 0 ? topTokens : favoriteTokens} />
         ) : (
           <Skeleton variant='rect' width='100%' height={150} />
