@@ -15,7 +15,7 @@ export default function Updater(): null {
   const dispatch = useDispatch();
   const { ethPrice, updateEthPrice } = useEthPrice();
   const { maticPrice, updateMaticPrice } = useMaticPrice();
-  const { updateIsV3 } = useIsV3();
+  const { isV3, updateIsV3 } = useIsV3();
   const params: any = useParams();
   const isOnV3 = params && params.version ? params.version === 'v3' : false;
 
@@ -65,20 +65,28 @@ export default function Updater(): null {
 
   useEffect(() => {
     (async () => {
-      const [price, oneDayPrice, ethPriceChange] = await getEthPrice();
-      updateEthPrice({ price, oneDayPrice, ethPriceChange });
+      try {
+        const [
+          maticPrice,
+          maticOneDayPrice,
+          maticPriceChange,
+        ] = await getMaticPrice();
+        updateMaticPrice({
+          price: maticPrice,
+          oneDayPrice: maticOneDayPrice,
+          maticPriceChange,
+        });
+      } catch (e) {
+        console.log(e);
+      }
     })();
     (async () => {
-      const [
-        maticPrice,
-        maticOneDayPrice,
-        maticPriceChange,
-      ] = await getMaticPrice();
-      updateMaticPrice({
-        price: maticPrice,
-        oneDayPrice: maticOneDayPrice,
-        maticPriceChange,
-      });
+      try {
+        const [price, oneDayPrice, ethPriceChange] = await getEthPrice();
+        updateEthPrice({ price, oneDayPrice, ethPriceChange });
+      } catch (e) {
+        console.log(e);
+      }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentTime]);
