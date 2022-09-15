@@ -1,6 +1,6 @@
 import { Currency } from '@uniswap/sdk-core';
-import React from 'react';
-import { ReactNode, useContext, useEffect } from 'react';
+import React, { ReactNode, useContext, useEffect } from 'react';
+import { Box } from '@material-ui/core';
 import { ThemeContext } from 'styled-components/macro';
 import { RowBetween, RowFixed } from '../Row';
 import {
@@ -10,13 +10,9 @@ import {
   ExternalLink,
   X,
 } from 'react-feather';
-import { ButtonLight, ButtonPrimary } from '../Button';
+import { ButtonLight } from '../Button';
 import { AutoColumn } from '../Column';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-//@ts-ignore
 import Circle from 'assets/images/blue-loader.svg';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-//@ts-ignore
 import MetaMaskLogo from 'assets/images/metamask-logo.svg';
 import { useActiveWeb3React } from 'hooks';
 import useAddTokenToMetamask from 'hooks/v3/useAddTokenToMetamask';
@@ -27,7 +23,7 @@ import {
   StyledLogo,
   Wrapper,
 } from './styled';
-import Modal from 'components/Modal';
+import { CustomModal } from 'components';
 import { CloseIcon, CustomLightSpinner } from 'theme/components';
 import { ExplorerDataType, getEtherscanLink } from 'utils';
 import { StyledButton, StyledLabel } from '../Common/styledElements';
@@ -266,22 +262,24 @@ export default function TransactionConfirmationModal({
   // if on L2 and submitted dont render content, as should auto dismiss
   // need this to skip submitted view during state update ^^
   return (
-    <Modal isOpen={isOpen} onDismiss={onDismiss} maxHeight={90}>
-      {attemptingTxn ? (
-        <ConfirmationPendingContent
-          onDismiss={onDismiss}
-          pendingText={pendingText}
-        />
-      ) : hash ? (
-        <TransactionSubmittedContent
-          chainId={chainId}
-          hash={hash}
-          onDismiss={onDismiss}
-          currencyToAdd={currencyToAdd}
-        />
-      ) : (
-        content()
-      )}
-    </Modal>
+    <CustomModal open={isOpen} onClose={onDismiss}>
+      <Box padding='24px 20px 20px'>
+        {attemptingTxn ? (
+          <ConfirmationPendingContent
+            onDismiss={onDismiss}
+            pendingText={pendingText}
+          />
+        ) : hash ? (
+          <TransactionSubmittedContent
+            chainId={chainId}
+            hash={hash}
+            onDismiss={onDismiss}
+            currencyToAdd={currencyToAdd}
+          />
+        ) : (
+          content()
+        )}
+      </Box>
+    </CustomModal>
   );
 }
