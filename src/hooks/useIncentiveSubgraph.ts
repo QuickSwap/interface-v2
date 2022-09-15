@@ -105,6 +105,11 @@ export function useFarmingSubgraph() {
     false,
   );
 
+  const [eternalFarmTvls, setEternalFarmTvls] = useState<any>();
+  const [eternalFarmTvlsLoading, setEternalFarmTvlsLoading] = useState<boolean>(
+    false,
+  );
+
   const [positionsEternal, setPositionsEternal] = useState<
     TickFarming[] | null
   >(null);
@@ -811,6 +816,23 @@ export function useFarmingSubgraph() {
     }
   }
 
+  async function fetchEternalFarmTvls() {
+    setEternalFarmTvlsLoading(true);
+
+    try {
+      const tvls = await fetchEternalFarmTVL();
+      setEternalFarmTvls(tvls);
+    } catch (err) {
+      if (err instanceof Error) {
+        throw new Error(
+          'Error while fetching eternal farms Tvls' + err.message,
+        );
+      }
+    } finally {
+      setEternalFarmTvlsLoading(false);
+    }
+  }
+
   async function fetchEternalFarms(reload: boolean) {
     setEternalFarmsLoading(true);
 
@@ -834,9 +856,6 @@ export function useFarmingSubgraph() {
         return;
       }
 
-      // const tvls = await fetchEternalFarmTVL();
-      const tvls: any = [];
-
       let _eternalFarmings: FormattedEternalFarming[] = [];
       // TODO
       // .filter(farming => +farming.bonusRewardRate || +farming.rewardRate)
@@ -848,7 +867,6 @@ export function useFarmingSubgraph() {
           true,
         );
         const multiplierToken = await fetchToken(farming.multiplierToken, true);
-        const tvl = tvls[farming.id];
 
         _eternalFarmings = [
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -862,7 +880,6 @@ export function useFarmingSubgraph() {
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-ignore
             pool,
-            tvl,
           },
         ];
       }
@@ -918,6 +935,11 @@ export function useFarmingSubgraph() {
       eternalFarmAprs,
       eternalFarmAprsLoading,
       fetchEternalFarmAprsFn: fetchEternalFarmAprs,
+    },
+    fetchEternalFarmTvls: {
+      eternalFarmTvls,
+      eternalFarmTvlsLoading,
+      fetchEternalFarmTvlsFn: fetchEternalFarmTvls,
     },
     fetchPositionsOnEternalFarmings: {
       positionsEternal,

@@ -42,10 +42,11 @@ interface EternalFarmCardProps {
     reward?: string;
     bonusReward?: string;
     locked?: boolean;
-    tvl?: number;
   };
   aprs: Aprs | undefined;
   aprsLoading: boolean;
+  tvls: any;
+  tvlsLoading: boolean;
   eternal?: boolean;
 }
 
@@ -54,22 +55,18 @@ export function EternalFarmCard({
   refreshing,
   farmHandler,
   now,
-  event: {
-    id,
-    pool,
-    rewardToken,
-    bonusRewardToken,
-    reward,
-    bonusReward,
-    tvl,
-  } = {},
+  event: { id, pool, rewardToken, bonusRewardToken, reward, bonusReward } = {},
   aprs,
   aprsLoading,
+  tvls,
+  tvlsLoading,
   eternal,
 }: EternalFarmCardProps) {
   const apr = aprs ? aprs[id] : undefined;
   const aprValue =
     (apr !== undefined && apr >= 0 ? Math.round(apr) : '~') + '% APR';
+  const tvl = tvls ? tvls[id] : undefined;
+
   return (
     <Box>
       {refreshing && (

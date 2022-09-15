@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { Box } from '@material-ui/core';
 import { EternalFarmCard } from 'components/StakerEventCard/EternalFarmCard';
 import { Frown } from 'react-feather';
 import { useTranslation } from 'react-i18next';
@@ -8,7 +7,7 @@ import { CustomModal } from 'components';
 import { FarmModal } from '../../components/StakeModal';
 import { FarmingType } from '../../models/enums';
 import './index.scss';
-import { Aprs, FormattedEternalFarming } from 'models/interfaces';
+import { FormattedEternalFarming } from 'models/interfaces';
 import { useFarmingSubgraph } from 'hooks/useIncentiveSubgraph';
 
 export default function EternalFarmsPage({
@@ -22,9 +21,6 @@ export default function EternalFarmsPage({
 }) {
   const [modalForPool, setModalForPool] = useState(null);
   const { t } = useTranslation();
-  useEffect(() => {
-    fetchHandler();
-  }, []);
 
   const {
     fetchEternalFarmAprs: {
@@ -32,10 +28,17 @@ export default function EternalFarmsPage({
       eternalFarmAprs,
       eternalFarmAprsLoading,
     },
+    fetchEternalFarmTvls: {
+      fetchEternalFarmTvlsFn,
+      eternalFarmTvls,
+      eternalFarmTvlsLoading,
+    },
   } = useFarmingSubgraph() || {};
 
   useEffect(() => {
+    fetchHandler();
     fetchEternalFarmAprsFn();
+    fetchEternalFarmTvlsFn();
   }, []);
 
   return (
@@ -69,6 +72,8 @@ export default function EternalFarmsPage({
               eternal
               aprs={eternalFarmAprs}
               aprsLoading={eternalFarmAprsLoading}
+              tvls={eternalFarmTvls}
+              tvlsLoading={eternalFarmTvlsLoading}
               event={event}
             />
           ))}
