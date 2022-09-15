@@ -39,29 +39,6 @@ import NewQuoterABI from 'constants/abis/v3/quoter.json';
 import MULTICALL2_ABI from 'constants/abis/v3/multicall.json';
 import NFTPosMan from 'constants/abis/v3/nft-pos-man.json';
 
-// function useContract(
-//   address: string | undefined,
-//   ABI: any,
-//   withSignerIfPossible = true,
-// ): Contract | null {
-//   const { library, account } = useActiveWeb3React();
-
-//   return useMemo(() => {
-//     if (!address || !ABI || !library) return null;
-//     try {
-//       return getContract(
-//         address,
-//         ABI,
-//         library,
-//         withSignerIfPossible && account ? account : undefined,
-//       );
-//     } catch (error) {
-//       console.error('Failed to get contract', error);
-//       return null;
-//     }
-//   }, [address, ABI, library, withSignerIfPossible, account]);
-// }
-
 export function useContract<T extends Contract = Contract>(
   addressOrAddressMap: string | { [chainId: number]: string } | undefined,
   ABI: any,

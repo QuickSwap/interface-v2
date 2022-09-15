@@ -124,7 +124,6 @@ export function FarmModal({
     any[][] | null | undefined
   >(null);
 
-  //TODO
   const _chunked = useChunkedRows(positionsForStake, 1000);
 
   const [submitState, setSubmitState] = useState(0);

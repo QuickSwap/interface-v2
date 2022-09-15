@@ -1,6 +1,6 @@
 import React from 'react';
 import { Token } from '@uniswap/sdk-core';
-import Modal from 'components/Modal';
+import { CustomModal } from 'components';
 
 export default function TokenWarningModal({
   isOpen,
@@ -14,8 +14,8 @@ export default function TokenWarningModal({
   onDismiss: () => void;
 }) {
   return (
-    <Modal isOpen={isOpen} onDismiss={onDismiss} maxHeight={100}>
+    <CustomModal open={isOpen} onClose={onDismiss}>
       {/* TODO: Allow importinf for v3 Swap <ImportToken tokens={tokens} handleCurrencySelect={onConfirm} /> */}
-    </Modal>
+    </CustomModal>
   );
 }
