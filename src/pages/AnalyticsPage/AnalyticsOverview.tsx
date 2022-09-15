@@ -49,88 +49,98 @@ const AnalyticsOverview: React.FC = () => {
   const version = useMemo(() => `${isV3 ? `v3` : 'v2'}`, [isV3]);
 
   useEffect(() => {
-    if (
-      ethPrice.price === undefined ||
-      ethPrice.oneDayPrice === undefined ||
-      maticPrice.price === undefined ||
-      maticPrice.oneDayPrice === undefined ||
-      isV3 === undefined
-    )
-      return;
+    if (isV3 === undefined) return;
 
     updateGlobalData({ data: null });
     updateTopPairs(null);
     updateTopTokens(null);
 
-    const globalDataFn = isV3
-      ? getGlobalDataV3()
-      : getGlobalData(ethPrice.price, ethPrice.oneDayPrice);
-
-    globalDataFn.then((data) => {
-      if (data) {
-        updateGlobalData({ data });
-      }
-    });
-
-    const topTokensFn = isV3
-      ? getTopTokensV3(
-          maticPrice.price,
-          maticPrice.oneDayPrice,
-          GlobalConst.utils.ANALYTICS_TOKENS_COUNT,
-        )
-      : getTopTokens(
-          ethPrice.price,
-          ethPrice.oneDayPrice,
-          GlobalConst.utils.ANALYTICS_TOKENS_COUNT,
-        );
-
-    topTokensFn.then((data) => {
-      if (data) {
-        updateTopTokens(data);
-      }
-    });
-
-    const topPairsFn = isV3
-      ? getTopPairsV3(GlobalConst.utils.ANALYTICS_PAIRS_COUNT)
-      : getTopPairs(GlobalConst.utils.ANALYTICS_PAIRS_COUNT).then(
-          async (pairs) => {
-            const formattedPairs = pairs
-              ? pairs.map((pair: any) => {
-                  return pair.id;
-                })
-              : [];
-            const pairData = await getBulkPairData(
-              formattedPairs,
-              ethPrice.price,
-            );
-            return pairData;
-          },
-        );
-
-    topPairsFn.then((data) => {
-      if (data) {
-        updateTopPairs(data);
-        if (isV3) {
-          (async () => {
-            try {
-              const aprs = await getPairsAPR(data.map((item: any) => item.id));
-
-              updateTopPairs(
-                data.map((item: any, ind: number) => {
-                  return {
-                    ...item,
-                    apr: aprs[ind].apr,
-                    farmingApr: aprs[ind].farmingApr,
-                  };
-                }),
-              );
-            } catch (e) {
-              console.log(e);
-            }
-          })();
+    (async () => {
+      if (isV3) {
+        const data = await getGlobalDataV3();
+        if (data) {
+          updateGlobalData({ data });
+        }
+      } else if (ethPrice.price && ethPrice.oneDayPrice) {
+        const data = await getGlobalData(ethPrice.price, ethPrice.oneDayPrice);
+        if (data) {
+          updateGlobalData({ data });
         }
       }
-    });
+    })();
+
+    (async () => {
+      if (isV3) {
+        if (maticPrice.price && maticPrice.oneDayPrice) {
+          const data = await getTopTokensV3(
+            maticPrice.price,
+            maticPrice.oneDayPrice,
+            GlobalConst.utils.ANALYTICS_TOKENS_COUNT,
+          );
+          if (data) {
+            updateTopTokens(data);
+          }
+        }
+      } else {
+        if (ethPrice.price && ethPrice.oneDayPrice) {
+          const data = await getTopTokens(
+            ethPrice.price,
+            ethPrice.oneDayPrice,
+            GlobalConst.utils.ANALYTICS_TOKENS_COUNT,
+          );
+          if (data) {
+            updateTopTokens(data);
+          }
+        }
+      }
+    })();
+
+    (async () => {
+      if (isV3) {
+        const data = await getTopPairsV3(
+          GlobalConst.utils.ANALYTICS_PAIRS_COUNT,
+        );
+        if (data) {
+          updateTopPairs(data);
+          if (isV3) {
+            (async () => {
+              try {
+                const aprs = await getPairsAPR(
+                  data.map((item: any) => item.id),
+                );
+
+                updateTopPairs(
+                  data.map((item: any, ind: number) => {
+                    return {
+                      ...item,
+                      apr: aprs[ind].apr,
+                      farmingApr: aprs[ind].farmingApr,
+                    };
+                  }),
+                );
+              } catch (e) {
+                console.log(e);
+              }
+            })();
+          }
+        }
+      } else {
+        if (ethPrice.price) {
+          const pairs = await getTopPairs(
+            GlobalConst.utils.ANALYTICS_PAIRS_COUNT,
+          );
+          const formattedPairs = pairs
+            ? pairs.map((pair: any) => {
+                return pair.id;
+              })
+            : [];
+          const data = await getBulkPairData(formattedPairs, ethPrice.price);
+          if (data) {
+            updateTopPairs(data);
+          }
+        }
+      }
+    })();
   }, [
     updateGlobalData,
     ethPrice.price,

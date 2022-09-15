@@ -39,6 +39,7 @@ const AnalyticsTokenDetails: React.FC = () => {
   const history = useHistory();
   const match = useRouteMatch<{ id: string }>();
   const tokenAddress = match.params.id.toLowerCase();
+  const [loadingData, setLoadingData] = useState(false);
   const [token, setToken] = useState<any>(null);
   const { chainId } = useActiveWeb3React();
   const tokenMap = useSelectedTokenList();
@@ -91,31 +92,46 @@ const AnalyticsTokenDetails: React.FC = () => {
   }, [tokenTransactions]);
 
   useEffect(() => {
+    if (isV3 === undefined) return;
+    setLoadingData(true);
     setToken(null);
     updateTokenPairs(null);
     updateTokenTransactions(null);
 
     async function fetchTokenInfo() {
-      if (
-        ethPrice.price !== undefined &&
-        ethPrice.oneDayPrice !== undefined &&
-        maticPrice.price !== undefined &&
-        maticPrice.oneDayPrice !== undefined &&
-        isV3 !== undefined
-      ) {
-        const tokenInfoFn = isV3
-          ? getTokenInfoV3(
+      try {
+        if (isV3) {
+          if (
+            maticPrice.price !== undefined &&
+            maticPrice.oneDayPrice !== undefined
+          ) {
+            const tokenInfo = await getTokenInfoV3(
               maticPrice.price,
               maticPrice.oneDayPrice,
               tokenAddress,
-            )
-          : getTokenInfo(ethPrice.price, ethPrice.oneDayPrice, tokenAddress);
-
-        tokenInfoFn.then((tokenInfo) => {
-          if (tokenInfo) {
-            setToken(tokenInfo[0] || tokenInfo);
+            );
+            if (tokenInfo) {
+              setToken(tokenInfo[0] || tokenInfo);
+            }
           }
-        });
+        } else {
+          if (
+            ethPrice.price !== undefined &&
+            ethPrice.oneDayPrice !== undefined
+          ) {
+            const tokenInfo = await getTokenInfo(
+              ethPrice.price,
+              ethPrice.oneDayPrice,
+              tokenAddress,
+            );
+            if (tokenInfo) {
+              setToken(tokenInfo[0] || tokenInfo);
+            }
+          }
+        }
+        setLoadingData(false);
+      } catch (e) {
+        setLoadingData(false);
       }
     }
     async function fetchTransactions() {
@@ -141,7 +157,9 @@ const AnalyticsTokenDetails: React.FC = () => {
     if (isV3) {
       fetchTransactions();
     } else {
-      fetchPairs();
+      if (ethPrice.price) {
+        fetchPairs();
+      }
     }
   }, [
     tokenAddress,
@@ -301,7 +319,7 @@ const AnalyticsTokenDetails: React.FC = () => {
 
   return (
     <>
-      <AnalyticsHeader type='token' data={token} />
+      <AnalyticsHeader type='token' data={token} address={tokenAddress} />
       {token ? (
         <>
           <Box width={1} className='flex flex-wrap justify-between'>
@@ -371,8 +389,12 @@ const AnalyticsTokenDetails: React.FC = () => {
             <V2TokenInfo token={token} tokenPairs={tokenPairs} />
           )}
         </>
-      ) : (
+      ) : loadingData ? (
         <Skeleton width='100%' height={100} />
+      ) : (
+        <Box py={4}>
+          <h5>This token does not exist</h5>
+        </Box>
       )}
     </>
   );
