@@ -1,21 +1,16 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { Box } from '@material-ui/core';
 import { ChevronDown, ChevronUp } from 'react-feather';
-import { ChainId, Pair } from '@uniswap/sdk';
+import { Pair } from '@uniswap/sdk';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { DoubleCurrencyLogo } from 'components';
-import V2PositionCardDetails from './V2PositionCardDetails';
-import './index.scss';
-import { Trans, useTranslation } from 'react-i18next';
-import { useActiveWeb3React } from 'hooks';
+import V2PositionCardDetails from '../V2PositionCardDetails';
+import { useTranslation } from 'react-i18next';
 
 const PoolPositionCard: React.FC<{ pair: Pair }> = ({ pair }) => {
   const { t } = useTranslation();
-  const { chainId } = useActiveWeb3React();
   const currency0 = unwrappedToken(pair.token0);
   const currency1 = unwrappedToken(pair.token1);
-
-  const pairId = pair.liquidityToken.address;
 
   const [showMore, setShowMore] = useState(false);
 

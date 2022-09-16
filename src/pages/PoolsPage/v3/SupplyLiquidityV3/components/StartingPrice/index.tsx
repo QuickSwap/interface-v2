@@ -84,10 +84,7 @@ function TokenPrice({
         </Box>
         <Box flex={1} height='100%' position='relative'>
           {isLocked ? (
-            <Box className='flex items-center'>
-              <Box className='flex' mr='5px'>
-                <Lock size={14} />
-              </Box>
+            <Box height={1} className='flex items-center'>
               <small>{tokenRatio}</small>
             </Box>
           ) : isSelected ? (

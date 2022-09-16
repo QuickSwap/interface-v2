@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { Box, Button } from '@material-ui/core';
 import { Pair, JSBI, Percent } from '@uniswap/sdk';
@@ -6,8 +6,8 @@ import { useActiveWeb3React } from 'hooks';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { useTokenBalance } from 'state/wallet/hooks';
 import { useTotalSupply } from 'data/TotalSupply';
-import { CurrencyLogo, RemoveLiquidityModal } from 'components';
-import { currencyId, formatTokenAmount } from 'utils';
+import { CurrencyLogo } from 'components';
+import { formatTokenAmount } from 'utils';
 import { useTranslation } from 'react-i18next';
 
 const V2PositionCardDetails: React.FC<{ pair: Pair }> = ({ pair }) => {
@@ -90,7 +90,22 @@ const V2PositionCardDetails: React.FC<{ pair: Pair }> = ({ pair }) => {
           </small>
         </Box>
 
-        <Button className='migratev2LiquidityButton'>
+        <Button
+          className='migratev2LiquidityButton'
+          onClick={() =>
+            history.push(
+              `/migrate/${
+                currency0.symbol?.toLowerCase() === 'matic'
+                  ? 'ETH'
+                  : pair.token0.address
+              }/${
+                currency1.symbol?.toLowerCase() === 'matic'
+                  ? 'ETH'
+                  : pair.token1.address
+              }`,
+            )
+          }
+        >
           <small className='weight-600'>Migrate Liquidity</small>
         </Button>
       </Box>

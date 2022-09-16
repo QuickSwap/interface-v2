@@ -6,7 +6,7 @@ import { QuestionHelper, PoolFinderModal } from 'components';
 import { useActiveWeb3React, useV2LiquidityPools } from 'hooks';
 import Loader from 'components/Loader';
 import V2PositionCard from './components/V2PositionCard';
-import { Trans } from 'react-i18next';
+import './index.scss';
 
 export default function MigrateV2LiquidityPage() {
   const history = useHistory();
@@ -58,17 +58,20 @@ export default function MigrateV2LiquidityPage() {
               <V2PositionCard key={pair.liquidityToken.address} pair={pair} />
             ))
           ) : (
-            <small>There are no v2 liquidity pools</small>
+            <Box textAlign='center'>
+              <small>There are no v2 liquidity pools</small>
+            </Box>
           )}
         </Box>
         <Box mt={2} textAlign='center'>
           <small className='text-secondary'>
-            <Trans
-              i18nKey='poolMissingComment'
-              components={{
-                pspan: <small onClick={() => setOpenPoolFinder(true)} />,
-              }}
-            />
+            Don‘t see your V2 liquidity?{' '}
+            <small
+              className='text-primary cursor-pointer'
+              onClick={() => setOpenPoolFinder(true)}
+            >
+              Import it
+            </small>
           </small>
         </Box>
       </Box>

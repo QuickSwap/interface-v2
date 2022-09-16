@@ -16,18 +16,14 @@ interface IInitialPrice {
   currencyA: Currency | undefined;
   currencyB: Currency | undefined;
   mintInfo: IDerivedMintInfo;
-  isCompleted: boolean;
   priceFormat: PriceFormats;
-  backStep: number;
 }
 
 export function InitialPrice({
   currencyA,
   currencyB,
   mintInfo,
-  isCompleted,
   priceFormat,
-  backStep,
 }: IInitialPrice) {
   const currencyAUSDC = useUSDCPrice(currencyA ?? undefined);
   const currencyBUSDC = useUSDCPrice(currencyB ?? undefined);
