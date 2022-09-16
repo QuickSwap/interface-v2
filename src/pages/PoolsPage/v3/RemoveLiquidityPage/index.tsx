@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Redirect, useParams } from 'react-router-dom';
+import { useParams, useHistory } from 'react-router-dom';
 import { BigNumber } from '@ethersproject/bignumber';
 import { useV3PositionFromTokenId } from 'hooks/v3/useV3Positions';
 import RemoveLiquidityV3 from 'components/v3/RemoveLiquidityV3';
@@ -7,6 +7,7 @@ import { Box } from '@material-ui/core';
 
 export default function RemoveLiquidityV3Page() {
   const params: any = useParams();
+  const history = useHistory();
   const tokenId = params.tokenId;
   const parsedTokenId = useMemo(() => {
     try {
@@ -19,7 +20,8 @@ export default function RemoveLiquidityV3Page() {
   const { position } = useV3PositionFromTokenId(parsedTokenId);
 
   if (!position) {
-    return <Redirect to={{ ...location, pathname: '/v3Pools' }} />;
+    history.push('/pools/v3');
+    return <></>;
   }
 
   return (

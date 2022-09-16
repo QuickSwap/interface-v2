@@ -1,7 +1,8 @@
 import React, { useMemo, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import { Box, Button } from '@material-ui/core';
 import { useV3Positions } from 'hooks/v3/useV3Positions';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React, useV2LiquidityPools } from 'hooks';
 import Loader from 'components/Loader';
 import usePrevious, { usePreviousNonEmptyArray } from 'hooks/usePrevious';
 import PositionList from './components/PositionList';
@@ -12,6 +13,7 @@ import { useWalletModalToggle } from 'state/application/hooks';
 
 export default function MyLiquidityPoolsV3() {
   const { account } = useActiveWeb3React();
+  const history = useHistory();
   const [userHideClosedPositions, setUserHideClosedPositions] = useState(true);
   const [hideFarmingPositions, setHideFarmingPositions] = useState(false);
   const { positions, loading: positionsLoading } = useV3Positions(account);
@@ -83,16 +85,30 @@ export default function MyLiquidityPoolsV3() {
 
   const toggleWalletModal = useWalletModalToggle();
 
+  const { pairs: allV2PairsWithLiquidity } = useV2LiquidityPools(
+    account ?? undefined,
+  );
+
   return (
     <Box>
       <p className='weight-600'>My Liquidity Pools</p>
       {account && (
-        <Box mt={2} className='flex'>
-          {filters.map((item, key) => (
-            <Box mr={1} key={key}>
-              <FilterPanelItem item={item} />
+        <Box mt={2} className='flex justify-between items-center'>
+          <Box className='flex'>
+            {filters.map((item, key) => (
+              <Box mr={1} key={key}>
+                <FilterPanelItem item={item} />
+              </Box>
+            ))}
+          </Box>
+          {allV2PairsWithLiquidity.length > 0 && (
+            <Box
+              className='v3-manage-v2liquidity-button'
+              onClick={() => history.push('/migrate')}
+            >
+              <small className='text-primary'>Migrate V2 Liquidity</small>
             </Box>
-          ))}
+          )}
         </Box>
       )}
       <Box mt={2}>

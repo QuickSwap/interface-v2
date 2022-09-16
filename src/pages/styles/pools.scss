@@ -19,3 +19,13 @@
   width: 80%;
   filter: grayscale(1)
 }
+
+.v3-manage-v2liquidity-button {
+  height: 36px;
+  padding: 0 20px;
+  border-radius: 18px;
+  background-color: $primaryLight;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
