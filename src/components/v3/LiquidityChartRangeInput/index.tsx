@@ -121,30 +121,15 @@ export default function LiquidityChartRangeInput({
       if (leftRangeValue <= 0) {
         leftRangeValue = 1 / 10 ** 6;
       }
-
-      // batch(() => {
-      //   //L-2
-      //   // simulate user input for auto-formatting and other validations
-      //   // if ((!ticksAtLimit[isSorted ? Bound.LOWER : Bound.UPPER] || mode === "handle" || mode === "reset") && leftRangeValue > 0) {
-      //   //     onLeftRangeInput(leftRangeValue.toFixed(6));
-      //   // }
-      //   // if ((!ticksAtLimit[isSorted ? Bound.UPPER : Bound.LOWER] || mode === "reset") && rightRangeValue > 0) {
-      //   //     // todo: remove this check. Upper bound for large numbers
-      //   //     // sometimes fails to parse to tick.
-      //   //     if (rightRangeValue < 1e35) {
-      //   //         onRightRangeInput(rightRangeValue.toFixed(6));
-      //   //     }
-      //   // }
-      // });
     },
-    [isSorted, onLeftRangeInput, onRightRangeInput, ticksAtLimit],
+    [],
   );
 
   interactive = interactive && Boolean(formattedData?.length);
 
   const leftPrice = useMemo(() => {
     return isSorted ? priceLower : priceUpper?.invert();
-  }, [isSorted, priceLower, priceUpper, priceFormat]);
+  }, [isSorted, priceLower, priceUpper]);
 
   //TODO
   const leftPriceUSD = useUSDCValue(
@@ -161,7 +146,7 @@ export default function LiquidityChartRangeInput({
 
   const rightPrice = useMemo(() => {
     return isSorted ? priceUpper : priceLower?.invert();
-  }, [isSorted, priceLower, priceUpper, priceFormat]);
+  }, [isSorted, priceLower, priceUpper]);
 
   const rightPriceUSD = useUSDCValue(
     tryParseAmount(
@@ -236,7 +221,7 @@ export default function LiquidityChartRangeInput({
         <p>Loading...</p>
       ) : isError ? (
         <p>Liquidity data not available.</p>
-      ) : !formattedData || formattedData === [] || !price ? (
+      ) : !formattedData || formattedData.length === 0 || !price ? (
         <Chart
           data={{ series: mockData, current: mockPrice }}
           dimensions={{ width: 400, height: 230 }}

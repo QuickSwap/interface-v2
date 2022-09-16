@@ -81,11 +81,11 @@ const AnalyticsInfo: React.FC<AnalyticsInfoProps> = ({ data }) => {
                 Number(item.percentChange),
               )}`}
             >
-              <small>{`(${
+              <small>{`${
                 item.percentChange
                   ? getFormattedPrice(Number(item.percentChange))
                   : '~'
-              }%)`}</small>
+              }%`}</small>
             </Box>
           ) : null}
         </Box>

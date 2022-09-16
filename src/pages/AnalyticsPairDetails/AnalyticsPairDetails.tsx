@@ -35,6 +35,7 @@ const AnalyticsPairDetails: React.FC = () => {
   const match = useRouteMatch<{ id: string }>();
   const pairAddress = match.params.id;
   const tokenMap = useSelectedTokenList();
+  const [dataLoading, setDataLoading] = useState(false);
   const [pairData, setPairData] = useState<any>(null);
   const [pairTransactions, setPairTransactions] = useState<any>(null);
 
@@ -141,20 +142,31 @@ const AnalyticsPairDetails: React.FC = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
+    setDataLoading(true);
     setPairData(null);
     setPairTransactions(null);
 
     async function fetchPairData() {
-      if (ethPrice.price) {
-        const pairInfoFn = isV3
-          ? getPairInfoV3(pairAddress)
-          : getBulkPairData([pairAddress], ethPrice.price);
-
-        pairInfoFn.then((pairInfo: any) => {
+      try {
+        if (isV3) {
+          const pairInfo = await getPairInfoV3(pairAddress);
           if (pairInfo && pairInfo.length > 0) {
             setPairData(pairInfo[0]);
           }
-        });
+        } else {
+          if (ethPrice.price) {
+            const pairInfo = await getBulkPairData(
+              [pairAddress],
+              ethPrice.price,
+            );
+            if (pairInfo && pairInfo.length > 0) {
+              setPairData(pairInfo[0]);
+            }
+          }
+        }
+        setDataLoading(false);
+      } catch (e) {
+        setDataLoading(false);
       }
     }
     async function fetchTransctions() {
@@ -338,7 +350,7 @@ const AnalyticsPairDetails: React.FC = () => {
 
   return (
     <>
-      <AnalyticsHeader type='pair' data={pairData} />
+      <AnalyticsHeader type='pair' data={pairData} address={pairAddress} />
       {pairData ? (
         <>
           <Box width={1} className='flex flex-wrap justify-between'>
@@ -433,8 +445,12 @@ const AnalyticsPairDetails: React.FC = () => {
             )}
           </Box>
         </>
-      ) : (
+      ) : dataLoading ? (
         <Skeleton width='100%' height={100} />
+      ) : (
+        <Box py={4}>
+          <h5>This pair does not exist</h5>
+        </Box>
       )}
     </>
   );
