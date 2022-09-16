@@ -20,12 +20,7 @@ const CustomModal: React.FC<CustomModalProps> = ({
   modalWrapper,
 }) => {
   return (
-    <Modal
-      open={open}
-      onClose={onClose}
-      BackdropComponent={Backdrop}
-      BackdropProps={{ timeout: 500, classes: { root: 'customModalBackdrop' } }}
-    >
+    <Modal open={open} onClose={onClose}>
       <Fade in={open}>
         <Box
           className={modalWrapper ? modalWrapper : 'modalWrapperV3'}
