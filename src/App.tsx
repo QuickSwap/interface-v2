@@ -54,7 +54,7 @@ import 'slick-carousel/slick/slick-theme.css';
 import './i18n';
 import { mainTheme } from './theme';
 import Background from 'layouts/Background';
-import { Redirect, RouteComponentProps } from 'react-router-dom';
+import { RedirectExternal } from 'components/RedirectExternal/RedirectExternal';
 
 const Web3ProviderNetwork = createWeb3ReactRoot(
   GlobalConst.utils.NetworkContextName,
@@ -167,13 +167,11 @@ const App: React.FC = () => {
                           <ConvertQUICKPage />
                         </PageLayout>
                       </Route>
-                      <Route
-                        path='/predictions'
-                        component={() => {
-                          window.location.href = `${process.env.REACT_APP_PREDICTIONS_URL}`;
-                          return null;
-                        }}
-                      />
+                      <Route exact path='/predictions'>
+                        <RedirectExternal
+                          to={`${process.env.REACT_APP_PREDICTIONS_URL}`}
+                        ></RedirectExternal>
+                      </Route>
                       <Route exact path='/analytics'>
                         <PageLayout>
                           <AnalyticsHeader />
