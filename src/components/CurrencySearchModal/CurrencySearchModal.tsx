@@ -82,7 +82,6 @@ const CurrencySearchModal: React.FC<CurrencySearchModalProps> = ({
         otherSelectedCurrency={otherSelectedCurrency}
         showCommonBases={showCommonBases}
       />
-    
     </CustomModal>
   );
 };
