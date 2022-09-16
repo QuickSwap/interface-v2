@@ -26,7 +26,7 @@ const CurrencySelect: React.FC<CurrencySelectProps> = ({
   const [modalOpen, setModalOpen] = useState(false);
   const handleOpenModal = useCallback(() => {
     setModalOpen(true);
-  }, [setModalOpen]);
+  }, []);
 
   return (
     <Box>

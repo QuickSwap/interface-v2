@@ -1,8 +1,8 @@
-import React, { useCallback, useState } from 'react';
+import React from 'react';
 import { Currency } from '@uniswap/sdk';
 import { Box } from '@material-ui/core';
 import { useCurrencyBalance } from 'state/wallet/hooks';
-import { CurrencySearchModal, CurrencyLogo, NumericalInput } from 'components';
+import { CurrencySearchModal, NumericalInput } from 'components';
 import { useActiveWeb3React } from 'hooks';
 import useUSDCPrice from 'utils/useUSDCPrice';
 import { formatTokenAmount } from 'utils';
@@ -42,17 +42,12 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
   id,
 }) => {
   const { t } = useTranslation();
-  const [modalOpen, setModalOpen] = useState(false);
   const { account } = useActiveWeb3React();
   const selectedCurrencyBalance = useCurrencyBalance(
     account ?? undefined,
     currency,
   );
   const usdPrice = Number(useUSDCPrice(currency)?.toSignificant() ?? 0);
-
-  const handleOpenModal = useCallback(() => {
-    setModalOpen(true);
-  }, [setModalOpen]);
 
   return (
     <Box
@@ -101,18 +96,6 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
           ${(usdPrice * Number(amount)).toLocaleString()}
         </small>
       </Box>
-      {modalOpen && (
-        <CurrencySearchModal
-          isOpen={modalOpen}
-          onDismiss={() => {
-            setModalOpen(false);
-          }}
-          onCurrencySelect={handleCurrencySelect}
-          selectedCurrency={currency}
-          showCommonBases={true}
-          otherSelectedCurrency={otherCurrency}
-        />
-      )}
     </Box>
   );
 };
