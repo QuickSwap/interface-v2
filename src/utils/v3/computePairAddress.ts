@@ -94,6 +94,14 @@ export class Pair {
   private readonly tokenAmounts: [CurrencyAmount<Token>, CurrencyAmount<Token>];
   private readonly exchange: V2Exchanges;
 
+  public get reserveAmount0(): CurrencyAmount<Token> {
+    return this.tokenAmounts[0];
+  }
+
+  public get reserveAmount1(): CurrencyAmount<Token> {
+    return this.tokenAmounts[1];
+  }
+
   public constructor(
     currencyAmountA: CurrencyAmount<Token>,
     tokenAmountB: CurrencyAmount<Token>,
