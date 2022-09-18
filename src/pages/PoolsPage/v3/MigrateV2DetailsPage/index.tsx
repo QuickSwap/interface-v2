@@ -280,9 +280,6 @@ export default function MigrateV2DetailsPage() {
     const ub = v2price.add(maxPriceDiff);
     const lb = v2price.subtract(maxPriceDiff);
 
-    console.log('v3 price' + v3price.toFixed(4));
-    console.log('v2 price' + v2price.toFixed(4));
-
     return v3price.lessThan(lb) || v3price.greaterThan(ub);
   }, [v2SpotPrice, v3SpotPrice]);
 
