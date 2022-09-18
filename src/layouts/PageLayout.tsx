@@ -65,7 +65,7 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
     );
   };
 
-  const showBetaBanner = true;
+  const showBetaBanner = false;
 
   return (
     <Box className='page'>
