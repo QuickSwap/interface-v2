@@ -418,5 +418,7 @@
   "cannotBorrowMarket": "Cannot borrow this amount right now!",
   "marketBorrowMinError": "cannot borrow less than 0.05 ETH worth of tokens",
   "enterMarket": "Enter Market",
-  "exitMarket": "Exit Market"
+  "exitMarket": "Exit Market",
+  "sponsored": "SPONSORED",
+  "learnmoreproject": "Learn more about the project <alink>here</alink>."
 }

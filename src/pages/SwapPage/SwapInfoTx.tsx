@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Box, Divider } from '@material-ui/core';
 import { ButtonSwitch } from 'components';
-import dayjs from 'dayjs';
+import dayjs, { ManipulateType } from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import Skeleton from '@material-ui/lab/Skeleton';
 import { formatCompact, formatNumber } from 'utils';
@@ -16,7 +16,7 @@ const SwapInfoTx: React.FC<{
   const subtractTimeType: any = txFilter.split('_')[1];
   const currentTime = dayjs.utc();
   const firstTime = currentTime
-    .subtract(subtractTimeAmount, subtractTimeType)
+    .subtract(subtractTimeAmount, subtractTimeType as ManipulateType)
     .unix();
 
   const filteredTxs = transactions?.filter(

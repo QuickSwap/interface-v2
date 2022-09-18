@@ -1,6 +1,20 @@
 import { TokenAmount, Token, Price, Pair } from '@uniswap/sdk';
 import { Version } from '@uniswap/token-lists';
 
+export interface AdsRaw {
+  desktopURL: string;
+  mobileURL: string;
+  link: string;
+  sort: string;
+}
+
+export interface AdsListInfo {
+  readonly name: string;
+  readonly timestamp: string;
+  readonly ads: { [key: string]: AdsRaw[] }[];
+  readonly version: Version;
+}
+
 export interface FarmListInfo {
   readonly name: string;
   readonly timestamp: string;
@@ -77,6 +91,9 @@ export interface CommonStakingInfo {
   totalSupply?: TokenAmount;
   usdPrice?: Price;
   stakingTokenPair?: Pair | null;
+
+  sponsored: boolean;
+  sponsorLink: string;
 }
 
 export interface StakingRaw {
@@ -89,6 +106,8 @@ export interface StakingRaw {
   rate: number;
   pair: string;
   rewardToken: string;
+  sponsored: boolean;
+  link: string;
 }
 
 export interface StakingBasic {
@@ -113,6 +132,8 @@ export interface SyrupRaw {
   rate: number;
   ending: number; //DATE IN UNIX TIMESTAMP
   stakingToken: string;
+  sponsored: boolean;
+  link: string;
 }
 
 export interface SyrupBasic {
@@ -156,6 +177,8 @@ export interface DualStakingRaw {
   rateA: number;
   rateB: number;
   pair: string;
+  sponsored: boolean;
+  link: string;
 }
 
 export interface DualStakingBasic {
@@ -235,6 +258,9 @@ export interface SyrupInfo {
     stakedAmount?: TokenAmount,
     totalStakedAmount?: TokenAmount,
   ) => TokenAmount | undefined;
+
+  sponsored: boolean;
+  sponsorLink: string;
 }
 
 export interface AnalyticsBasic {

@@ -210,14 +210,17 @@ export function useFilteredSyrupInfo(
   const info = useMemo(
     () =>
       Object.values(allSyrups)
-        .slice(startIndex, endIndex)
+        .sort((a, b) =>
+          a.stakingInfo.sponsored ? 1 : b.stakingInfo.sponsored ? -1 : 1,
+        )
         .filter(
           (syrupInfo) =>
             syrupInfo.ending > currentTimestamp &&
             (tokenToFilterBy === undefined || tokenToFilterBy === null
               ? getSearchFiltered(syrupInfo, filter ? filter.search : '')
               : tokenToFilterBy.equals(syrupInfo.token)),
-        ),
+        )
+        .slice(startIndex, endIndex),
     [
       tokenToFilterBy,
       startIndex,
@@ -379,6 +382,8 @@ export function useFilteredSyrupInfo(
             valueOfTotalStakedAmountInUSDC: totalStakedAmount
               ? Number(totalStakedAmount.toExact()) * stakingTokenPrice
               : undefined,
+            sponsored: syrupInfo.stakingInfo.sponsored,
+            sponsorLink: syrupInfo.stakingInfo.link,
           });
         }
         return memo;
@@ -579,6 +584,8 @@ export function useOldSyrupInfo(
             valueOfTotalStakedAmountInUSDC: totalStakedAmount
               ? Number(totalStakedAmount.toExact()) * stakingTokenPrice
               : undefined,
+            sponsored: syrupInfo.stakingInfo.sponsored,
+            sponsorLink: syrupInfo.stakingInfo.link,
           });
         }
         return memo;
@@ -814,13 +821,16 @@ export function useDualStakingInfo(
     () =>
       Object.values(dualStakingRewardsInfo[chainId])
         .filter((x) => (filter?.isEndedFarm ? x.ended : !x.ended))
-        .slice(startIndex, endIndex)
+        .sort((a, b) =>
+          a.stakingInfo.sponsored ? 1 : b.stakingInfo.sponsored ? -1 : 1,
+        )
         .filter((stakingRewardInfo) =>
           pairToFilterBy === undefined || pairToFilterBy === null
             ? getSearchFiltered(stakingRewardInfo, filter ? filter.search : '')
             : pairToFilterBy.involvesToken(stakingRewardInfo.tokens[0]) &&
               pairToFilterBy.involvesToken(stakingRewardInfo.tokens[1]),
-        ),
+        )
+        .slice(startIndex, endIndex),
     [
       chainId,
       pairToFilterBy,
@@ -1060,6 +1070,8 @@ export function useDualStakingInfo(
             stakingTokenPair,
             oneDayFee: stakingInfo.ended ? 0 : oneDayFee,
             accountFee: stakingInfo.ended ? 0 : accountFee,
+            sponsored: stakingInfo.stakingInfo.sponsored,
+            sponsorLink: stakingInfo.stakingInfo.link,
           });
         }
         return memo;
@@ -1227,13 +1239,16 @@ export function useStakingInfo(
     () =>
       Object.values(activeFarms)
         .filter((x) => !x.ended)
-        .slice(startIndex, endIndex)
+        .sort((a, b) =>
+          a.stakingInfo.sponsored ? 1 : b.stakingInfo.sponsored ? -1 : 1,
+        )
         .filter((stakingRewardInfo) =>
           pairToFilterBy === undefined || pairToFilterBy === null
             ? getSearchFiltered(stakingRewardInfo, filter ? filter.search : '')
             : pairToFilterBy.involvesToken(stakingRewardInfo.tokens[0]) &&
               pairToFilterBy.involvesToken(stakingRewardInfo.tokens[1]),
-        ),
+        )
+        .slice(startIndex, endIndex),
     [pairToFilterBy, startIndex, endIndex, filter, activeFarms],
   );
 
@@ -1425,6 +1440,8 @@ export function useStakingInfo(
             usdPrice,
             stakingTokenPair,
             totalSupply,
+            sponsored: stakingInfo.stakingInfo.sponsored,
+            sponsorLink: stakingInfo.stakingInfo.link,
           });
         }
         return memo;
@@ -1464,13 +1481,16 @@ export function useOldStakingInfo(
     () =>
       Object.values(oldFarms)
         .filter((x) => x.ended)
-        .slice(startIndex, endIndex)
+        .sort((a, b) =>
+          a.stakingInfo.sponsored ? 1 : b.stakingInfo.sponsored ? -1 : 1,
+        )
         .filter((stakingRewardInfo) =>
           pairToFilterBy === undefined || pairToFilterBy === null
             ? getSearchFiltered(stakingRewardInfo, filter ? filter.search : '')
             : pairToFilterBy.involvesToken(stakingRewardInfo.tokens[0]) &&
               pairToFilterBy.involvesToken(stakingRewardInfo.tokens[1]),
-        ),
+        )
+        .slice(startIndex, endIndex),
     [pairToFilterBy, startIndex, endIndex, filter, oldFarms],
   );
 
@@ -1572,6 +1592,8 @@ export function useOldStakingInfo(
             oneDayFee: 0,
             accountFee: 0,
             stakingTokenPair,
+            sponsored: stakingInfo.stakingInfo.sponsored,
+            sponsorLink: stakingInfo.stakingInfo.link,
           });
         }
         return memo;

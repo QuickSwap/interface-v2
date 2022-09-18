@@ -9,7 +9,7 @@ import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
 import SyrupAPR from './SyrupAPR';
 import SyrupCardDetails from './SyrupCardDetails';
 import 'components/styles/SyrupCard.scss';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 
 const SyrupCard: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
   syrup,
@@ -29,7 +29,10 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
       }`;
 
   return (
-    <Box className='syrupCard'>
+    <Box className={`syrupCard ${syrup.sponsored ? 'syrupSponsoredCard' : ''}`}>
+      {syrup.sponsored && (
+        <Box className='syrupSponsorTag'>{t('sponsored')}</Box>
+      )}
       <Box className='syrupCardContent' onClick={() => setExpanded(!expanded)}>
         {isMobile ? (
           <>
@@ -97,6 +100,18 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
       </Box>
       {expanded && syrup && (
         <SyrupCardDetails syrup={syrup} dQUICKAPY={dQUICKAPY} />
+      )}
+      {syrup.sponsored && syrup.sponsorLink && (
+        <Box className='syrupSponsoredLink'>
+          <Trans
+            i18nKey='learnmoreproject'
+            components={{
+              alink: (
+                <a href={syrup.sponsorLink} rel='noreferrer' target='_blank' />
+              ),
+            }}
+          />
+        </Box>
       )}
     </Box>
   );
