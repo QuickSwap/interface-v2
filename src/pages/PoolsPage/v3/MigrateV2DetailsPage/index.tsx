@@ -265,13 +265,19 @@ export default function MigrateV2DetailsPage() {
   }
 
   const largePriceDifference = useMemo(() => {
-    if (typeof priceDifferenceFraction === 'string') {
-      return true;
+    if (!v2SpotPrice || !v3SpotPrice) {
+      return false;
     }
-    return (
-      priceDifferenceFraction &&
-      !priceDifferenceFraction?.lessThan(JSBI.BigInt(2))
-    );
+    const v2price = v2SpotPrice.asFraction.multiply(100);
+    const v3price = v3SpotPrice.asFraction.multiply(100);
+    const maxPriceDiffernce = v2price.multiply(15);
+    const ub = v2price.add(maxPriceDiffernce);
+    const lb = v2price.subtract(maxPriceDiffernce);
+
+    console.log('v3 price' + v3price.toFixed(4));
+    console.log('v2 price' + v2price.toFixed(4));
+
+    return v3price <= ub && v3price >= lb;
   }, [priceDifferenceFraction]);
 
   const [allowedSlippage] = useUserSlippageTolerance();
