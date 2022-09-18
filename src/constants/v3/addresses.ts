@@ -2,6 +2,13 @@ import { ChainId } from '@uniswap/sdk';
 import { Token } from '@uniswap/sdk-core';
 import { Matic } from 'v3lib/entities/matic';
 
+export enum V2Exchanges {
+  Quickswap = 'Quickswap',
+  SushiSwap = 'Sushiswap',
+  //Uniswap = 'Uniswap',
+}
+
+type ExchangeAddressMap = { [exchange in V2Exchanges]: AddressMap };
 type AddressMap = { [chainId: number]: string };
 
 export const V3_CORE_FACTORY_ADDRESSES: AddressMap = {
@@ -50,6 +57,27 @@ export const FARMING_CENTER: AddressMap = {
 
 export const V2_FACTORY_ADDRESSES: AddressMap = {
   [ChainId.MATIC]: '0x5757371414417b8C6CAad45bAeF941aBc7d3Ab32',
+};
+
+export const EXCHANGE_FACTORY_ADDRESS_MAPS: ExchangeAddressMap = {
+  [V2Exchanges.Quickswap]: {
+    [ChainId.MATIC]: '0x5757371414417b8C6CAad45bAeF941aBc7d3Ab32',
+  },
+  [V2Exchanges.SushiSwap]: {
+    [ChainId.MATIC]: '0xc35dadb65012ec5796536bd9864ed8773abc74c4',
+  },
+};
+
+export const EXCHANGE_PAIR_INIT_HASH_MAPS: ExchangeAddressMap = {
+  [V2Exchanges.Quickswap]: {
+    //TODO: Verify the Pair INIT hash
+    [ChainId.MATIC]:
+      '0x96e8ac4277198ff8b6f785478aa9a39f403cb768dd02cbee326c3e7da348845f',
+  },
+  [V2Exchanges.SushiSwap]: {
+    [ChainId.MATIC]:
+      '0xe18a34eb0e04b04f7a0ac29a6e80748dca96319b42c54d679cb821dca90c6303',
+  },
 };
 
 export const V2_ROUTER_ADDRESS: AddressMap = {

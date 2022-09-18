@@ -19,7 +19,6 @@ import { tryParseAmount } from 'state/swap/v3/hooks';
 import { Presets } from 'state/mint/v3/reducer';
 import { PriceFormats } from 'components/v3/PriceFomatToggler';
 import { useHistory } from 'react-router-dom';
-import { Helmet } from 'react-helmet';
 import LiquidityChartRangeInput from 'components/v3/LiquidityChartRangeInput';
 import { GlobalValue } from 'constants/index';
 import { toToken } from 'constants/v3/routing';
@@ -30,22 +29,14 @@ interface IRangeSelector {
   currencyA: Currency | null | undefined;
   currencyB: Currency | null | undefined;
   mintInfo: IDerivedMintInfo;
-  isCompleted: boolean;
-  additionalStep: boolean;
   priceFormat: PriceFormats;
-  disabled: boolean;
-  backStep: number;
 }
 
 export function SelectRange({
   currencyA,
   currencyB,
   mintInfo,
-  isCompleted,
-  additionalStep,
   priceFormat,
-  backStep,
-  disabled,
 }: IRangeSelector) {
   const [fullRangeWarningShown, setFullRangeWarningShown] = useState(true);
   const { startPriceTypedValue } = useV3MintState();
@@ -156,6 +147,7 @@ export function SelectRange({
       if (preset && preset.type === Presets.FULL) {
         getSetFullRange();
       } else {
+        setFullRangeWarningShown(false);
         onLeftRangeInput(preset ? String(+price * preset.min) : '');
         onRightRangeInput(preset ? String(+price * preset.max) : '');
       }

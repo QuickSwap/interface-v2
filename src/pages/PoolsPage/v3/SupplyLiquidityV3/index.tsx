@@ -465,9 +465,7 @@ export function SupplyLiquidityV3() {
               currencyA={baseCurrency ?? undefined}
               currencyB={currencyB ?? undefined}
               mintInfo={mintInfo}
-              isCompleted={stepInitialPrice}
               priceFormat={priceFormat}
-              backStep={0}
             />
           </Box>
         )}
@@ -475,11 +473,7 @@ export function SupplyLiquidityV3() {
           currencyA={baseCurrency}
           currencyB={quoteCurrency}
           mintInfo={mintInfo}
-          disabled={!stepPair}
-          isCompleted={stepRange}
-          additionalStep={stepInitialPrice}
           priceFormat={priceFormat}
-          backStep={stepInitialPrice ? 1 : 0}
         />
         <Box mt={4}>
           <EnterAmounts
