@@ -9,6 +9,7 @@ import DragonsLair from './DragonsLair';
 import DragonsSyrup from './DragonsSyrup';
 import 'pages/styles/dragon.scss';
 import { useTranslation } from 'react-i18next';
+import AdsSlider from 'components/AdsSlider';
 
 const DragonPage: React.FC = () => {
   const { breakpoints } = useTheme();
@@ -57,6 +58,9 @@ const DragonPage: React.FC = () => {
               <DragonsLair isNew={false} />
             </Box>
           )}
+          <Box maxWidth={isMobile ? '320px' : '352px'} margin='16px auto 0'>
+            <AdsSlider sort='4' />
+          </Box>
         </Grid>
         <Grid item xs={12} sm={12} md={8}>
           <Box className='dragonWrapper'>

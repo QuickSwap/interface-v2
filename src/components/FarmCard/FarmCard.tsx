@@ -18,7 +18,7 @@ import {
 } from 'utils';
 import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
 import 'components/styles/FarmCard.scss';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 
 const FarmCard: React.FC<{
   stakingInfo: StakingInfo | DualStakingInfo;
@@ -93,7 +93,14 @@ const FarmCard: React.FC<{
   );
 
   return (
-    <Box className={`farmLPCard ${isExpandCard ? 'highlightedCard' : ''}`}>
+    <Box
+      className={`farmLPCard ${
+        stakingInfo.sponsored ? 'farmSponsoredCard' : ''
+      } ${isExpandCard ? 'highlightedCard' : ''}`}
+    >
+      {stakingInfo.sponsored && (
+        <Box className='farmSponsorTag'>{t('sponsored')}</Box>
+      )}
       <Box
         className='farmLPCardUp'
         onClick={() => setExpandCard(!isExpandCard)}
@@ -138,11 +145,8 @@ const FarmCard: React.FC<{
                 </>
               )}
             </Box>
-            <Box
-              width={0.15}
-              className='flex justify-center items-center text-success'
-            >
-              <small>{apyWithFee}%</small>
+            <Box width={0.15} className='flex justify-center items-center'>
+              <small className='text-success'>{apyWithFee}%</small>
               <Box ml={0.5} height={16}>
                 <img src={CircleInfoIcon} alt={'arrow up'} />
               </Box>
@@ -195,6 +199,22 @@ const FarmCard: React.FC<{
           stakingAPY={stakingAPY}
           isLPFarm={isLPFarm}
         />
+      )}
+      {stakingInfo.sponsored && stakingInfo.sponsorLink && (
+        <Box className='farmSponsoredLink'>
+          <Trans
+            i18nKey='learnmoreproject'
+            components={{
+              alink: (
+                <a
+                  href={stakingInfo.sponsorLink}
+                  rel='noreferrer'
+                  target='_blank'
+                />
+              ),
+            }}
+          />
+        </Box>
       )}
     </Box>
   );

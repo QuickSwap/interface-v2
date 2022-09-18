@@ -83,9 +83,9 @@ const Header: React.FC = () => {
       id: 'convert-quick',
     },
     {
-      link: '/prdt',
+      link: '/predictions',
       text: 'Predictions',
-      id: 'prdt-page-link',
+      id: 'predictions-page-link',
       isNew: false,
     },
     // {

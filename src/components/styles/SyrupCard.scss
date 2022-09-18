@@ -14,6 +14,50 @@
     }
   }
 }
+.syrupSponsoredCard {
+  border: 1px solid $yellow6;
+  background: $purple2;
+  position: relative;
+  overflow: hidden;
+  p, small {
+    color: $grey29;
+    &.text-success {
+      color: $successMain;
+    }
+  }
+  .syrupLPCardUp {
+    background: transparent;
+  }
+}
+.syrupSponsorTag {
+  height: 16px;
+  display: flex;
+  align-items: center;
+  padding: 0 7px;
+  color: $black1;
+  border-radius: 5px;
+  font-size: 10px;
+  font-weight: 600;
+  background-color: $yellow6;
+  position: absolute;
+  top: 0;
+  left: 16px;
+}
+.syrupSponsoredLink {
+  height: 28px;
+  background: $purple1;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 0 16px;
+  a {
+    color: $primary;
+    text-decoration: none;
+    margin-left: 4px;
+  }
+}
 .syrupCardContent {
   display: flex;
   flex-wrap: wrap;

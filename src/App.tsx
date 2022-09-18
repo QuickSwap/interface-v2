@@ -16,9 +16,8 @@ const LandingPage = lazy(() => import('./pages/LandingPage'));
 const PoolsPage = lazy(() => import('./pages/PoolsPage'));
 const SwapPage = lazy(() => import('./pages/SwapPage'));
 const ConvertQUICKPage = lazy(() => import('./pages/ConvertQUICKPage'));
-const LendPage = lazy(() => import('./pages/LendPage'));
-const LendDetailPage = lazy(() => import('./pages/LendPage/LendDetailPage'));
-const PrdtPage = lazy(() => import('./pages/PrdtPage'));
+// const LendPage = lazy(() => import('./pages/LendPage'));
+// const LendDetailPage = lazy(() => import('./pages/LendPage/LendDetailPage'));
 const AnalyticsTokenDetails = lazy(() =>
   import('./pages/AnalyticsTokenDetails'),
 );
@@ -64,12 +63,14 @@ import FarmUpdater from 'state/farms/updater';
 import DualFarmUpdater from 'state/dualfarms/updater';
 import SyrupUpdater from 'state/syrups/updater';
 import AnalyticsUpdater from 'state/analytics/updater';
+import AdsUpdater from 'state/ads/updater';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import './i18n';
 import { mainTheme } from './theme';
 import Background from 'layouts/Background';
 import GasUpdater from 'state/application/gasUpdater';
+import { RedirectExternal } from 'components/RedirectExternal/RedirectExternal';
 
 const Web3ProviderNetwork = createWeb3ReactRoot(
   GlobalConst.utils.NetworkContextName,
@@ -105,6 +106,7 @@ function Updaters() {
       <DualFarmUpdater />
       <SyrupUpdater />
       <AnalyticsUpdater />
+      <AdsUpdater />
       <GasUpdater />
     </>
   );
@@ -158,8 +160,8 @@ const App: React.FC = () => {
                         <PageLayout>
                           <LendPage />
                         </PageLayout>
-                      </Route>
-                      <Route exact path='/lend/detail'>
+                      </Route> */}
+                      {/* <Route exact path='/lend/detail'>
                         <PageLayout>
                           <LendDetailPage />
                         </PageLayout>
@@ -220,10 +222,10 @@ const App: React.FC = () => {
                           <ConvertQUICKPage />
                         </PageLayout>
                       </Route>
-                      <Route exact path='/prdt'>
-                        <PageLayout name='prdt'>
-                          <PrdtPage />
-                        </PageLayout>
+                      <Route exact path='/predictions'>
+                        <RedirectExternal
+                          to={`${process.env.REACT_APP_PREDICTIONS_URL}`}
+                        ></RedirectExternal>
                       </Route>
                       <Route exact path='/analytics/:version?'>
                         <PageLayout>

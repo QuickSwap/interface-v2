@@ -1,12 +1,13 @@
 import React, { useMemo } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
-import { Box } from '@material-ui/core';
+import { Box, useMediaQuery, useTheme } from '@material-ui/core';
 import { ArrowForwardIos } from '@material-ui/icons';
 import AnalyticsSearch from 'components/AnalyticsSearch';
 import { shortenAddress } from 'utils';
 import 'pages/styles/analytics.scss';
 import { useTranslation } from 'react-i18next';
 import { useIsV3 } from 'state/application/hooks';
+import AdsSlider from 'components/AdsSlider';
 import VersionToggle from 'components/Toggle/VersionToggle';
 
 interface AnalyticHeaderProps {
@@ -23,6 +24,8 @@ const AnalyticsHeader: React.FC<AnalyticHeaderProps> = ({
   const history = useHistory();
   const { pathname } = useLocation();
   const { t } = useTranslation();
+  const { breakpoints } = useTheme();
+  const isMobile = useMediaQuery(breakpoints.down('xs'));
 
   const { isV3 } = useIsV3();
   const version = useMemo(() => `${isV3 ? `v3` : 'v2'}`, [isV3]);
@@ -34,6 +37,9 @@ const AnalyticsHeader: React.FC<AnalyticHeaderProps> = ({
         <Box ml={2}>
           <VersionToggle />
         </Box>
+      </Box>
+      <Box maxWidth={isMobile ? '320px' : '1136px'} margin='0 auto 24px'>
+        <AdsSlider sort='6' />
       </Box>
       <Box
         mb={4}

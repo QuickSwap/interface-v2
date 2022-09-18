@@ -18,6 +18,59 @@
     }
   }
 }
+.farmSponsoredCard {
+  border: 1px solid $yellow6;
+  background: $purple2;
+  position: relative;
+  overflow: hidden;
+  &.highlightedCard {
+    border: 1px solid $yellow6;
+    box-shadow: 0 0 5px 5px $yellow7;
+  }
+  p, small {
+    color: $grey29;
+    &.text-success {
+      color: $successMain;
+    }
+  }
+  .farmLPCardUp {
+    background: transparent;
+  }
+}
+.farmSponsorTag {
+  height: 16px;
+  display: flex;
+  align-items: center;
+  padding: 0 7px;
+  color: $black1;
+  border-radius: 5px;
+  font-size: 10px;
+  font-weight: 600;
+  background-color: $yellow6;
+  position: absolute;
+  top: 0;
+  left: 16px;
+}
+.farmSponsoredLink {
+  height: 28px;
+  background: $purple1;
+  width: calc(100% + 32px);
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 500;
+  margin: 0 -16px;
+  padding: 0 16px;
+  a {
+    color: $primary;
+    text-decoration: none;
+    margin-left: 4px;
+  }
+  @include media("screen", "<phone") {
+    margin: 0;
+    width: 100%;
+  }
+}
 .highlightedCard {
   border: 1px solid $primary;
   box-shadow: 0 0 5px 5px $blue6;

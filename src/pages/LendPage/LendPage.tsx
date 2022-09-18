@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Box, Grid } from '@material-ui/core';
+import { Box, Grid, useMediaQuery, useTheme } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import { SearchInput, CustomMenu, CurrencyLogo } from 'components';
 import { useHistory } from 'react-router-dom';
@@ -13,11 +13,14 @@ import { Token } from '@uniswap/sdk';
 import { GlobalValue } from 'constants/index';
 import LendAlertBox from './LendAlertBox';
 import { usePoolsData } from 'hooks/marketxyz/usePoolData';
+import AdsSlider from 'components/AdsSlider';
 
 const LendPage: React.FC = () => {
   const { t } = useTranslation();
   const history = useHistory();
   const { chainId } = useActiveWeb3React();
+  const { breakpoints } = useTheme();
+  const isMobile = useMediaQuery(breakpoints.down('xs'));
 
   const [lendSortBy, setLendSortBy] = useState('');
   const lendSortItems = [t('highestSupply'), t('highestBorrow')];
@@ -115,6 +118,9 @@ const LendPage: React.FC = () => {
         <h4 className='text-bold'>{t('lend')}</h4>
       </Box>
       <LendAlertBox />
+      <Box maxWidth={isMobile ? '320px' : '1136px'} margin='16px auto 24px'>
+        <AdsSlider sort='5' />
+      </Box>
       <Box mb={3} textAlign='center'>
         <h4 className='text-bold'>{t('lendPageTitle')}</h4>
         <Box mt={'16px'} maxWidth={'520px'} marginX='auto'>
