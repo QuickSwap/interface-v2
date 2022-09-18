@@ -515,6 +515,7 @@ export default function MigrateV2DetailsPage() {
               quoteCurrencyId: currencyId(currency1, ChainId.MATIC),
             });
             setPendingMigrationHash(response.hash);
+            setConfirmingMigration(false);
           });
       })
       .catch((ex) => {
@@ -701,58 +702,6 @@ export default function MigrateV2DetailsPage() {
                 I understand
               </button>
             </Box>
-            // <YellowCard>
-            //   <AutoColumn gap='8px'>
-            //     <RowBetween>
-            //       <TYPE.body fontSize={14}>
-            //         {_isNotUniswap ? 'SushiSwap' : 'QuickSwap'}{' '}
-            //         {invertPrice ? currency1.symbol : currency0.symbol} Price:
-            //       </TYPE.body>
-            //       <TYPE.black fontSize={14}>
-            //         {invertPrice
-            //           ? `${v2SpotPrice?.invert()?.toSignificant(6)} ${
-            //               currency0.symbol
-            //             }`
-            //           : `${v2SpotPrice?.toSignificant(6)} ${currency1.symbol}`}
-            //       </TYPE.black>
-            //     </RowBetween>
-
-            //     <RowBetween>
-            //       <TYPE.body fontSize={14}>{`Quickswap ${
-            //         invertPrice ? currency1.symbol : currency0.symbol
-            //       } Price:`}</TYPE.body>
-            //       <TYPE.black fontSize={14}>
-            //         {invertPrice
-            //           ? `${v3SpotPrice?.invert()?.toSignificant(6)} ${
-            //               currency0.symbol
-            //             }`
-            //           : `${
-            //               Number(v3SpotPrice?.toSignificant(6)) < 0.0001
-            //                 ? '< 0.0001'
-            //                 : v3SpotPrice?.toSignificant(6)
-            //             } ${currency1.symbol}`}
-            //       </TYPE.black>
-            //     </RowBetween>
-
-            //     <RowBetween>
-            //       <TYPE.body fontSize={14} color='inherit'>
-            //         Price Difference:
-            //       </TYPE.body>
-            //       <TYPE.black fontSize={14} color='inherit'>
-            //         {`${
-            //           typeof priceDifferenceFraction !== 'string'
-            //             ? priceDifferenceFraction?.toSignificant(4)
-            //             : priceDifferenceFraction
-            //         }%`}
-            //       </TYPE.black>
-            //     </RowBetween>
-            //   </AutoColumn>
-            //   <TYPE.body
-            //     fontSize={14}
-            //     style={{ marginTop: 8, fontWeight: 400 }}
-            //   >
-            //   </TYPE.body>
-            // </YellowCard>
           )}
         </Box>
         <Box mt={3}>
@@ -770,7 +719,10 @@ export default function MigrateV2DetailsPage() {
             onClick={approve}
           >
             {approval === ApprovalState.PENDING ? (
-              <Dots>Approving</Dots>
+              <>
+                Approving
+                <Dots />
+              </>
             ) : approval === ApprovalState.APPROVED ||
               signatureData !== null ? (
               'Allowed'
@@ -802,7 +754,10 @@ export default function MigrateV2DetailsPage() {
             {isSuccessfullyMigrated ? (
               `Success! View pools`
             ) : isMigrationPending ? (
-              <Dots>Migrating</Dots>
+              <>
+                Migrating
+                <Dots />
+              </>
             ) : networkFailed ? (
               'Connecting to network...'
             ) : (
