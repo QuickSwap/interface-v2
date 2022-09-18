@@ -128,8 +128,6 @@ export default function LiquidityChartRangeInput({
     price,
   ]);
 
-  console.log('bbb', mockData, mockPrice);
-
   const isSorted =
     currencyA &&
     currencyB &&
@@ -230,8 +228,6 @@ export default function LiquidityChartRangeInput({
     },
     [price, priceFormat, ticksAtLimit, mockPrice],
   );
-
-  console.log('ccc', price, ' ', formattedData);
 
   return (
     <Box
