@@ -143,6 +143,10 @@ export async function getGlobalDataV3(): Promise<any> {
 
     const feesUSDChange = getPercentChange(currentFeesUSD, oneDayFeesUSD);
 
+    const currentTxns = statsCurrent ? Number(statsCurrent.txCount) : 0;
+    const oneDayTxns = statsOneDay ? Number(statsOneDay.txCount) : 0;
+    const txCount = currentTxns - oneDayTxns;
+
     data = {
       totalLiquidityUSD: Number(statsCurrent.totalValueLockedUSD),
       liquidityChangeUSD,
@@ -152,6 +156,8 @@ export async function getGlobalDataV3(): Promise<any> {
       feesUSDChange,
       oneWeekVolume,
       weeklyVolumeChange,
+      txCount,
+      poolCount: statsCurrent ? statsCurrent.poolCount : 0,
     };
   } catch (e) {
     console.log(e);
