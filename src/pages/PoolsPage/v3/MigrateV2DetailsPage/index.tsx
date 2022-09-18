@@ -299,7 +299,7 @@ export default function MigrateV2DetailsPage() {
   }, [pool, v2SpotPrice]);
   // the price is either the current v3 price, or the price at the tick
   const sqrtPrice = useMemo(() => {
-    if (!tick) {
+    if (tick === undefined) {
       return;
     }
     return pool?.sqrtRatioX96 ?? TickMath.getSqrtRatioAtTick(tick);
@@ -312,7 +312,7 @@ export default function MigrateV2DetailsPage() {
       token0 &&
       token1 &&
       v2SpotPrice &&
-      tick &&
+      tick !== undefined &&
       sqrtPrice &&
       token0Value &&
       token1Value &&
