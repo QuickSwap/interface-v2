@@ -147,6 +147,7 @@ export function SelectRange({
       if (preset && preset.type === Presets.FULL) {
         getSetFullRange();
       } else {
+        setFullRangeWarningShown(false);
         onLeftRangeInput(preset ? String(+price * preset.min) : '');
         onRightRangeInput(preset ? String(+price * preset.max) : '');
       }

@@ -48,20 +48,27 @@ import { useIsNetworkFailed } from 'hooks/v3/useIsNetworkFailed';
 import { currencyId } from 'utils/v3/currencyId';
 import { unwrappedToken } from 'utils/unwrappedToken';
 import { formatCurrencyAmount } from 'utils/v3/formatCurrencyAmount';
+import { ReportProblemOutlined } from '@material-ui/icons';
 
 export default function MigrateV2DetailsPage() {
   const v2Exchange = V2Exchanges.Quickswap;
   const percentageToMigrate = 100;
   const [feeAmount, setFeeAmount] = useState(FeeAmount.MEDIUM);
+  const [largePriceDiffDismissed, setLargePriceDiffDismissed] = useState(false);
 
   const history = useHistory();
   const params: any = useParams();
-  const _token0 = useToken(params.currencyIdA);
-  const _token1 = useToken(params.currencyIdB);
+  const currencyIdA =
+    params.currencyIdA === 'ETH' ? 'matic' : params.currencyIdA;
+  const currencyIdB =
+    params.currencyIdB === 'ETH' ? 'matic' : params.currencyIdB;
+
+  const _currency0 = useCurrency(currencyIdA);
+  const _currency1 = useCurrency(currencyIdB);
 
   const [, pair] = useV2Pair(
-    _token0 ?? undefined,
-    _token1 ?? undefined,
+    _currency0 ?? undefined,
+    _currency1 ?? undefined,
     v2Exchange,
   );
 
@@ -622,6 +629,81 @@ export default function MigrateV2DetailsPage() {
               </Box>
             )}
         </Box>
+        <Box>
+          {largePriceDifference && !largePriceDiffDismissed && (
+            <Box className='pool-range-chart-warning border-yellow5'>
+              <Box width={1} className='flex items-center'>
+                <Box className='pool-range-chart-warning-icon'>
+                  <ReportProblemOutlined />
+                </Box>
+                <small>Large Price Difference</small>
+              </Box>
+              <Box width={1} mt={1} mb={1.5}>
+                <span>
+                  You should only deposit liquidity into Quickswap at a price
+                  you believe is correct. <br />
+                  If the price seems incorrect, you can either make a swap to
+                  move the price or wait for someone else to do so.
+                </span>
+              </Box>
+              <button onClick={() => setLargePriceDiffDismissed(true)}>
+                I understand
+              </button>
+            </Box>
+            // <YellowCard>
+            //   <AutoColumn gap='8px'>
+            //     <RowBetween>
+            //       <TYPE.body fontSize={14}>
+            //         {_isNotUniswap ? 'SushiSwap' : 'QuickSwap'}{' '}
+            //         {invertPrice ? currency1.symbol : currency0.symbol} Price:
+            //       </TYPE.body>
+            //       <TYPE.black fontSize={14}>
+            //         {invertPrice
+            //           ? `${v2SpotPrice?.invert()?.toSignificant(6)} ${
+            //               currency0.symbol
+            //             }`
+            //           : `${v2SpotPrice?.toSignificant(6)} ${currency1.symbol}`}
+            //       </TYPE.black>
+            //     </RowBetween>
+
+            //     <RowBetween>
+            //       <TYPE.body fontSize={14}>{`Quickswap ${
+            //         invertPrice ? currency1.symbol : currency0.symbol
+            //       } Price:`}</TYPE.body>
+            //       <TYPE.black fontSize={14}>
+            //         {invertPrice
+            //           ? `${v3SpotPrice?.invert()?.toSignificant(6)} ${
+            //               currency0.symbol
+            //             }`
+            //           : `${
+            //               Number(v3SpotPrice?.toSignificant(6)) < 0.0001
+            //                 ? '< 0.0001'
+            //                 : v3SpotPrice?.toSignificant(6)
+            //             } ${currency1.symbol}`}
+            //       </TYPE.black>
+            //     </RowBetween>
+
+            //     <RowBetween>
+            //       <TYPE.body fontSize={14} color='inherit'>
+            //         Price Difference:
+            //       </TYPE.body>
+            //       <TYPE.black fontSize={14} color='inherit'>
+            //         {`${
+            //           typeof priceDifferenceFraction !== 'string'
+            //             ? priceDifferenceFraction?.toSignificant(4)
+            //             : priceDifferenceFraction
+            //         }%`}
+            //       </TYPE.black>
+            //     </RowBetween>
+            //   </AutoColumn>
+            //   <TYPE.body
+            //     fontSize={14}
+            //     style={{ marginTop: 8, fontWeight: 400 }}
+            //   >
+            //   </TYPE.body>
+            // </YellowCard>
+          )}
+        </Box>
         <Box mt={3}>
           <ButtonConfirmed
             className='v3-migrate-details-button'
@@ -657,7 +739,8 @@ export default function MigrateV2DetailsPage() {
               mintInfo.invalidRange ||
               (approval !== ApprovalState.APPROVED && signatureData === null) ||
               confirmingMigration ||
-              isMigrationPending
+              isMigrationPending ||
+              (largePriceDifference && !largePriceDiffDismissed)
             }
             //@ts-ignore
             as={isSuccessfullyMigrated ? Link : null}
