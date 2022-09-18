@@ -39,6 +39,12 @@ const RemoveLiquidityV3Page = lazy(() =>
 const IncreaseLiquidityV3Page = lazy(() =>
   import('./pages/PoolsPage/v3/IncreaseLiquidityPage'),
 );
+const MigrateV2LiquidityPage = lazy(() =>
+  import('./pages/PoolsPage/v3/MigrateV2LiquidityPage'),
+);
+const MigrateV2DetailsPage = lazy(() =>
+  import('./pages/PoolsPage/v3/MigrateV2DetailsPage'),
+);
 const PositionPage = lazy(() => import('./pages/PoolsPage/v3/PositionPage'));
 
 import { PageLayout } from 'layouts';
@@ -161,6 +167,16 @@ const App: React.FC = () => {
                       <Route exact path='/pools/:version?'>
                         <PageLayout>
                           <PoolsPage />
+                        </PageLayout>
+                      </Route>
+                      <Route exact path='/migrate'>
+                        <PageLayout>
+                          <MigrateV2LiquidityPage />
+                        </PageLayout>
+                      </Route>
+                      <Route exact path='/migrate/:currencyIdA/:currencyIdB'>
+                        <PageLayout>
+                          <MigrateV2DetailsPage />
                         </PageLayout>
                       </Route>
                       <Route exact strict path='/pool/:tokenId'>

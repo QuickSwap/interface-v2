@@ -7,7 +7,10 @@ import { formatCompact, useLairDQUICKAPY } from 'utils';
 import { useTranslation } from 'react-i18next';
 import { ChainId } from '@uniswap/sdk';
 
-export const TradingInfo: React.FC<{ globalData: any }> = ({ globalData }) => {
+export const TradingInfo: React.FC<{ globalData: any; v3GlobalData: any }> = ({
+  globalData,
+  v3GlobalData,
+}) => {
   const lairInfo = useOldLairInfo();
   const [openStakeModal, setOpenStakeModal] = useState(false);
 
@@ -25,18 +28,27 @@ export const TradingInfo: React.FC<{ globalData: any }> = ({ globalData }) => {
         />
       )}
       <Box className='tradingSection'>
-        {globalData ? (
-          <h3>{Number(globalData.oneDayTxns).toLocaleString()}</h3>
+        {globalData && v3GlobalData ? (
+          <h3>
+            {(
+              Number(globalData.oneDayTxns) + Number(v3GlobalData.txCount)
+            ).toLocaleString()}
+          </h3>
         ) : (
           <Skeleton variant='rect' width={100} height={45} />
         )}
         <p className='text-uppercase'>{t('24hTxs')}</p>
       </Box>
       <Box className='tradingSection'>
-        {globalData ? (
+        {globalData && v3GlobalData ? (
           <Box display='flex'>
             <h6>$</h6>
-            <h3>{formatCompact(globalData.oneDayVolumeUSD)}</h3>
+            <h3>
+              {formatCompact(
+                Number(globalData.oneDayVolumeUSD) +
+                  Number(v3GlobalData.oneDayVolumeUSD),
+              )}
+            </h3>
           </Box>
         ) : (
           <Skeleton variant='rect' width={100} height={45} />
@@ -55,9 +67,11 @@ export const TradingInfo: React.FC<{ globalData: any }> = ({ globalData }) => {
         <p>{t('24hRewardsDistributed')}</p>
       </Box>
       <Box className='tradingSection'>
-        {globalData ? (
+        {globalData && v3GlobalData ? (
           <h3>
-            {Number(globalData.pairCount).toLocaleString(undefined, {
+            {(
+              Number(globalData.pairCount) + Number(v3GlobalData.poolCount)
+            ).toLocaleString(undefined, {
               maximumFractionDigits: 0,
             })}
           </h3>

@@ -12,6 +12,8 @@ export const GLOBAL_DATA_V3 = (block?: number) => {
         totalValueLockedUSD
         totalValueLockedUSDUntracked
         totalFeesUSD
+        txCount
+        poolCount
       }
     }
   `;

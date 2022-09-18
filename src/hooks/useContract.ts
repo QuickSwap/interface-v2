@@ -15,7 +15,7 @@ import ENS_PUBLIC_RESOLVER_ABI from 'constants/abis/ens-public-resolver.json';
 import ENS_ABI from 'constants/abis/ens-registrar.json';
 import EIP_2612 from 'constants/abis/v3/eip_2612.json';
 import ERC20_ABI, { ERC20_BYTES32_ABI } from 'constants/abis/erc20';
-import { MIGRATOR_ABI, MIGRATOR_ADDRESS } from 'constants/abis/migrator';
+import V2ToV3MigratorABI from 'constants/abis/v3/migrator.json';
 import { STAKING_DUAL_REWARDS_INTERFACE } from 'constants/abis/staking-rewards';
 import UNISOCKS_ABI from 'constants/abis/unisocks.json';
 import WETH_ABI from 'constants/abis/weth.json';
@@ -34,6 +34,7 @@ import {
   MULTICALL_ADDRESS,
   NONFUNGIBLE_POSITION_MANAGER_ADDRESSES,
   QUOTER_ADDRESSES,
+  V3_MIGRATOR_ADDRESSES,
 } from 'constants/v3/addresses';
 import NewQuoterABI from 'constants/abis/v3/quoter.json';
 import MULTICALL2_ABI from 'constants/abis/v3/multicall.json';
@@ -106,8 +107,8 @@ export function useV1FactoryContract(): Contract | null {
   );
 }
 
-export function useV2MigratorContract(): Contract | null {
-  return useContract(MIGRATOR_ADDRESS, MIGRATOR_ABI, true);
+export function useV2ToV3MigratorContract() {
+  return useContract(V3_MIGRATOR_ADDRESSES, V2ToV3MigratorABI, true);
 }
 
 export function useV1ExchangeContract(
