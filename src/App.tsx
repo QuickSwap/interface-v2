@@ -46,7 +46,6 @@ const MigrateV2DetailsPage = lazy(() =>
   import('./pages/PoolsPage/v3/MigrateV2DetailsPage'),
 );
 const PositionPage = lazy(() => import('./pages/PoolsPage/v3/PositionPage'));
-const MigrateV2Pair = lazy(() => import('./pages/MigrateV2/MigrateV2Pair'));
 
 import { PageLayout } from 'layouts';
 import { getLibrary } from 'utils';
@@ -221,12 +220,6 @@ const App: React.FC = () => {
                           <ConvertQUICKPage />
                         </PageLayout>
                       </Route>
-                      <Route
-                        exact
-                        strict
-                        path='/migrate/:address'
-                        component={MigrateV2Pair}
-                      />
                       <Route exact path='/prdt'>
                         <PageLayout name='prdt'>
                           <PrdtPage />
