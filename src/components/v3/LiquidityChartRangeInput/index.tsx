@@ -64,14 +64,20 @@ export default function LiquidityChartRangeInput({
   const currencyBUSD = useUSDCPrice(currencyB);
 
   const mockData = useMemo(() => {
-    if (formattedData) return [];
+    if (formattedData && formattedData.length > 0) return [];
 
-    if (!initialPrice) return [];
+    if (!initialPrice && !price) return [];
 
     if (priceFormat === PriceFormats.TOKEN) {
       return [
-        { activeLiquidity: 0, price0: +initialPrice * ZOOM_LEVEL.initialMin },
-        { activeLiquidity: 0, price0: +initialPrice * ZOOM_LEVEL.initialMax },
+        {
+          activeLiquidity: 0,
+          price0: (price ?? +initialPrice) * ZOOM_LEVEL.initialMin,
+        },
+        {
+          activeLiquidity: 0,
+          price0: (price ?? +initialPrice) * ZOOM_LEVEL.initialMax,
+        },
       ];
     } else {
       if (currencyBUSD || (initialUSDPrices.CURRENCY_B && initialPrice)) {
@@ -90,15 +96,22 @@ export default function LiquidityChartRangeInput({
       }
       return [];
     }
-  }, [initialPrice, initialUSDPrices, currencyBUSD, priceFormat]);
+  }, [
+    formattedData,
+    initialPrice,
+    price,
+    priceFormat,
+    currencyBUSD,
+    initialUSDPrices.CURRENCY_B,
+  ]);
 
   const mockPrice = useMemo(() => {
-    if (formattedData) return 0;
+    if (formattedData && formattedData.length > 0) return 0;
 
-    if (!initialPrice) return 0;
+    if (!initialPrice && !price) return 0;
 
     if (priceFormat === PriceFormats.TOKEN) {
-      if (initialPrice) return +initialPrice;
+      return price ?? +initialPrice;
     } else {
       if (currencyBUSD) return +currencyBUSD.toSignificant(5) * +initialPrice;
       if (initialUSDPrices.CURRENCY_B)
@@ -106,7 +119,16 @@ export default function LiquidityChartRangeInput({
     }
 
     return 0;
-  }, [initialPrice, initialUSDPrices, currencyBUSD, priceFormat]);
+  }, [
+    initialPrice,
+    initialUSDPrices,
+    currencyBUSD,
+    priceFormat,
+    formattedData,
+    price,
+  ]);
+
+  console.log('bbb', mockData, mockPrice);
 
   const isSorted =
     currencyA &&
@@ -208,6 +230,8 @@ export default function LiquidityChartRangeInput({
     },
     [price, priceFormat, ticksAtLimit, mockPrice],
   );
+
+  console.log('ccc', price, ' ', formattedData);
 
   return (
     <Box
