@@ -200,6 +200,10 @@ export default function MigrateV2DetailsPage() {
     mintInfo.ticks.UPPER,
     formattedAmounts[Field.CURRENCY_A],
     formattedAmounts[Field.CURRENCY_B],
+    onFieldAInput,
+    onFieldBInput,
+    token0Deposited,
+    token1Deposited,
   ]);
 
   // set up v3 pool
@@ -271,43 +275,62 @@ export default function MigrateV2DetailsPage() {
   }, [priceDifferenceFraction]);
 
   const [allowedSlippage] = useUserSlippageTolerance();
-  const allowedSlippagePct = new Percent(
-    JSBI.BigInt(allowedSlippage),
-    JSBI.BigInt(10000),
+  const allowedSlippagePct = useMemo(
+    () => new Percent(JSBI.BigInt(allowedSlippage), JSBI.BigInt(10000)),
+    [allowedSlippage],
   );
 
   // the v3 tick is either the pool's tickCurrent, or the tick closest to the v2 spot price
-  const tick = v2SpotPrice
-    ? pool?.tickCurrent ?? priceToClosestTick(v2SpotPrice)
-    : undefined;
+  const tick = useMemo(() => {
+    if (!v2SpotPrice) {
+      return;
+    }
+
+    return pool?.tickCurrent ?? priceToClosestTick(v2SpotPrice);
+  }, [pool, v2SpotPrice]);
   // the price is either the current v3 price, or the price at the tick
-  const sqrtPrice = tick
-    ? pool?.sqrtRatioX96 ?? TickMath.getSqrtRatioAtTick(tick)
-    : undefined;
+  const sqrtPrice = useMemo(() => {
+    if (!tick) {
+      return;
+    }
+    return pool?.sqrtRatioX96 ?? TickMath.getSqrtRatioAtTick(tick);
+  }, [tick, pool]);
 
-  let position: Position | undefined = undefined;
-
-  if (
-    typeof tickLower === 'number' &&
-    typeof tickUpper === 'number' &&
-    token0 &&
-    token1 &&
-    v2SpotPrice &&
-    tick &&
-    sqrtPrice &&
-    token0Value &&
-    token1Value &&
-    !mintInfo.invalidRange
-  ) {
-    position = Position.fromAmounts({
-      pool: pool ?? new Pool(token0, token1, feeAmount, sqrtPrice, 0, tick, []),
-      tickLower,
-      tickUpper,
-      amount0: token0Value.quotient,
-      amount1: token1Value.quotient,
-      useFullPrecision: true, // we want full precision for the theoretical position
-    });
-  }
+  const position = useMemo(() => {
+    if (
+      typeof tickLower === 'number' &&
+      typeof tickUpper === 'number' &&
+      token0 &&
+      token1 &&
+      v2SpotPrice &&
+      tick &&
+      sqrtPrice &&
+      token0Value &&
+      token1Value &&
+      !mintInfo.invalidRange
+    ) {
+      return Position.fromAmounts({
+        pool:
+          pool ?? new Pool(token0, token1, feeAmount, sqrtPrice, 0, tick, []),
+        tickLower,
+        tickUpper,
+        amount0: token0Value.quotient,
+        amount1: token1Value.quotient,
+        useFullPrecision: true, // we want full precision for the theoretical position
+      });
+    }
+  }, [
+    tickLower,
+    tickUpper,
+    token0,
+    token1,
+    v2SpotPrice,
+    tick,
+    sqrtPrice,
+    token0Value,
+    token1Value,
+    mintInfo.invalidRange,
+  ]);
 
   const { amount0: v3Amount0Min, amount1: v3Amount1Min } = useMemo(
     () =>
@@ -470,7 +493,8 @@ export default function MigrateV2DetailsPage() {
             setPendingMigrationHash(response.hash);
           });
       })
-      .catch(() => {
+      .catch((ex) => {
+        console.log(ex);
         setConfirmingMigration(false);
       });
   }, [
