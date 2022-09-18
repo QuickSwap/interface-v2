@@ -3,7 +3,12 @@ import { Box, Button } from '@material-ui/core';
 import { useHistory, useParams } from 'react-router-dom';
 import { ReactComponent as ArrowLeft } from 'assets/images/ArrowLeft.svg';
 import { ReactComponent as ArrowDown } from 'assets/images/ArrowDown1.svg';
-import { CurrencyLogo, DoubleCurrencyLogo, QuestionHelper } from 'components';
+import {
+  BetaWarningBanner,
+  CurrencyLogo,
+  DoubleCurrencyLogo,
+  QuestionHelper,
+} from 'components';
 import { useActiveWeb3React } from 'hooks';
 import Loader from 'components/Loader';
 import { useCurrency, useToken } from 'hooks/v3/Tokens';
@@ -553,6 +558,9 @@ export default function MigrateV2DetailsPage() {
           </Box>
         </Box>
         <Box mt={3}>
+          <BetaWarningBanner />
+        </Box>
+        <Box mt={3}>
           <small>
             This tool will safely migrate your V2 liquidity to V3. The process
             is completely trust-less thanks to{' '}
@@ -668,7 +676,7 @@ export default function MigrateV2DetailsPage() {
                 <Box className='pool-range-chart-warning-icon'>
                   <ReportProblemOutlined />
                 </Box>
-                <small>Large Price Difference</small>
+                <small>Price Impact Larger than 15%</small>
               </Box>
               <Box width={1} mt={1} mb={1.5}>
                 <span>
