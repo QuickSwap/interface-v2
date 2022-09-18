@@ -91,10 +91,12 @@ const AnalyticsPairDetails: React.FC = () => {
     : undefined;
 
   const token0Rate = isV3
-    ? pairData && pairData.token0Price
-      ? Number(pairData.token0Price) >= 0.0001
-        ? Number(pairData.token0Price).toFixed(
-            Number(pairData.token0Price) > 1 ? 2 : 4,
+    ? // According to the graph Token1Price is the number of token 1s per token 0
+      // So we need to invert these
+      pairData && pairData.token1Price
+      ? Number(pairData.token1Price) >= 0.0001
+        ? Number(pairData.token1Price).toFixed(
+            Number(pairData.token1Price) > 1 ? 2 : 4,
           )
         : '< 0.0001'
       : '-'
@@ -106,11 +108,13 @@ const AnalyticsPairDetails: React.FC = () => {
       : '< 0.0001'
     : '-';
 
+  // According to the graph Token0Price is the number of token 0's per token 1
+  // So we need to invert these
   const token1Rate = isV3
-    ? pairData && pairData.token1Price
-      ? Number(pairData.token1Price) >= 0.0001
-        ? Number(pairData.token1Price).toFixed(
-            Number(pairData.token1Price) > 1 ? 2 : 4,
+    ? pairData && pairData.token0Price
+      ? Number(pairData.token0Price) >= 0.0001
+        ? Number(pairData.token0Price).toFixed(
+            Number(pairData.token0Price) > 1 ? 2 : 4,
           )
         : '< 0.0001'
       : '-'
