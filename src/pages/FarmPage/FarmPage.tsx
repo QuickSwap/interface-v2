@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Box, Button } from '@material-ui/core';
 import { Box, useMediaQuery, useTheme } from '@material-ui/core';
 import { getBulkPairData } from 'state/stake/hooks';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
@@ -80,7 +79,8 @@ const FarmPage: React.FC = () => {
           <small>{t('help')}</small>
           <HelpIcon />
         </Box>
-      </Box>      <Box maxWidth={isMobile ? '320px' : '1136px'} margin='0 auto 24px'>
+      </Box>{' '}
+      <Box maxWidth={isMobile ? '320px' : '1136px'} margin='0 auto 24px'>
         <AdsSlider sort='3' />
       </Box>
       {!isV3 && (
