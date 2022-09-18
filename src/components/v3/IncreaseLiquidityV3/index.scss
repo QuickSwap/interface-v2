@@ -1,0 +1,37 @@
+@use 'styles/variables' as *;
+@use 'styles/breakpoints' as *;
+
+.v3-increase-liquidity-info-wrapper {
+  padding: 16px;
+  border-radius: 10px;
+  background-color: $secondary1;
+  & > div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    & .currencyLogo {
+      margin-right: 5px;
+    }
+  }
+}
+
+.v3-increase-liquidity-button {
+  height: 50px;
+  width: 100%;
+  border-radius: 10px !important;
+}
+
+.v3-increase-liquidity-price-wrapper {
+  padding: 4px 12px;
+  background-color: $secondary1;
+  border: 1px solid $secondary3;
+  border-radius: 12px;
+  text-align: center;
+  & p {
+    font-size: 13px;
+    color: $textSecondary;
+  }
+  & p, & h6{
+    margin: 8px 0;
+  }
+}

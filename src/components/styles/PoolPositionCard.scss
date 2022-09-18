@@ -28,19 +28,6 @@
     color: $textPrimary;
   }
 }
-.cardRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 12px;
-  & > div {
-    display: flex;
-    align-items: center;
-    & > small {
-      margin-right: 10px;
-    }
-  }
-}
 .poolPositionAPYWrapper {
   background-color: $grey12;
   padding: 6px 24px;

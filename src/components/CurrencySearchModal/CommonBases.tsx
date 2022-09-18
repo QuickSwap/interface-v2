@@ -39,14 +39,18 @@ const CommonBases: React.FC<CommonBasesProps> = ({
         </Box>
         {(chainId ? GlobalData.bases.SUGGESTED_BASES[chainId] : []).map(
           (token: Token) => {
-            const selected =
-              selectedCurrency instanceof Token &&
-              selectedCurrency.address === token.address;
+            const selected = Boolean(
+              selectedCurrency && currencyEquals(selectedCurrency, token),
+            );
             return (
               <Box
                 className='baseWrapper'
                 key={token.address}
-                onClick={() => !selected && onSelect(token)}
+                onClick={() => {
+                  if (!selected) {
+                    onSelect(token);
+                  }
+                }}
               >
                 <CurrencyLogo currency={token} size='24px' />
                 <small>{token.symbol}</small>

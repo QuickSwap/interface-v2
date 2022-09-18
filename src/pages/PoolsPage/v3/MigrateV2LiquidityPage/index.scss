@@ -1,0 +1,31 @@
+@use 'styles/variables' as *;
+@use 'styles/breakpoints' as *;
+
+.migratev2PositionCardTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 16px;
+  @include media("screen", "<phone") {
+    padding: 16px 12px;
+  }
+}
+.migratev2PositionCard {
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid $secondary2;
+  overflow: hidden;
+}
+
+.migratev2PositionCardDetails {
+  padding: 10px 16px 0;
+  margin-bottom: 24px;
+  @include media("screen", "<phone") {
+    padding: 12px;
+  }
+}
+.migratev2LiquidityButton {
+  height: 36px;
+  width: 100%;
+  border-radius: 10px;
+}

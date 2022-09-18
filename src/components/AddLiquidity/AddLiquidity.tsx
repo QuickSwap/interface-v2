@@ -41,12 +41,13 @@ import {
 } from 'utils';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
 import { ReactComponent as AddLiquidityIcon } from 'assets/images/AddLiquidityIcon.svg';
+import useParsedQueryString from 'hooks/useParsedQueryString';
+import { useCurrency } from 'hooks/Tokens';
+import { useParams } from 'react-router-dom';
 
 const AddLiquidity: React.FC<{
-  currency0?: Currency;
-  currency1?: Currency;
   currencyBgClass?: string;
-}> = ({ currency0, currency1, currencyBgClass }) => {
+}> = ({ currencyBgClass }) => {
   const { t } = useTranslation();
   const [addLiquidityErrorMessage, setAddLiquidityErrorMessage] = useState<
     string | null
@@ -62,6 +63,30 @@ const AddLiquidity: React.FC<{
   const [txHash, setTxHash] = useState('');
   const addTransaction = useTransactionAdder();
   const finalizedTransaction = useTransactionFinalizer();
+
+  // queried currency
+  const params: any = useParams();
+  const parsedQuery = useParsedQueryString();
+  const currency0 = useCurrency(
+    params && params.currencyIdA
+      ? params.currencyIdA.toLowerCase() === 'matic' ||
+        params.currencyIdA.toLowerCase() === 'eth'
+        ? 'ETH'
+        : params.currencyIdA
+      : parsedQuery && parsedQuery.currency0
+      ? (parsedQuery.currency0 as string)
+      : undefined,
+  );
+  const currency1 = useCurrency(
+    params && params.currencyIdB
+      ? params.currencyIdB.toLowerCase() === 'matic' ||
+        params.currencyIdB.toLowerCase() === 'eth'
+        ? 'ETH'
+        : params.currencyIdB
+      : parsedQuery && parsedQuery.currency1
+      ? (parsedQuery.currency1 as string)
+      : undefined,
+  );
 
   const { independentField, typedValue, otherTypedValue } = useMintState();
   const expertMode = useIsExpertMode();
@@ -401,13 +426,14 @@ const AddLiquidity: React.FC<{
         onMax={() =>
           onFieldAInput(maxAmounts[Field.CURRENCY_A]?.toExact() ?? '')
         }
-        onHalf={() =>
-          onFieldAInput(
-            maxAmounts[Field.CURRENCY_A]
-              ? (Number(maxAmounts[Field.CURRENCY_A]?.toExact()) / 2).toString()
-              : '',
-          )
-        }
+        onHalf={() => {
+          const maxAmount = maxAmounts[Field.CURRENCY_A];
+          if (maxAmount) {
+            onFieldAInput(
+              maxAmount.divide('2').toFixed(maxAmount.currency.decimals),
+            );
+          }
+        }}
         handleCurrencySelect={handleCurrencyASelect}
         amount={formattedAmounts[Field.CURRENCY_A]}
         setAmount={onFieldAInput}
@@ -422,13 +448,14 @@ const AddLiquidity: React.FC<{
         showHalfButton={Boolean(maxAmounts[Field.CURRENCY_B])}
         currency={currencies[Field.CURRENCY_B]}
         showMaxButton={!atMaxAmounts[Field.CURRENCY_B]}
-        onHalf={() =>
-          onFieldBInput(
-            maxAmounts[Field.CURRENCY_B]
-              ? (Number(maxAmounts[Field.CURRENCY_B]?.toExact()) / 2).toString()
-              : '',
-          )
-        }
+        onHalf={() => {
+          const maxAmount = maxAmounts[Field.CURRENCY_B];
+          if (maxAmount) {
+            onFieldBInput(
+              maxAmount.divide('2').toFixed(maxAmount.currency.decimals),
+            );
+          }
+        }}
         onMax={() =>
           onFieldBInput(maxAmounts[Field.CURRENCY_B]?.toExact() ?? '')
         }

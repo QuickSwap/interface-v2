@@ -1,0 +1,52 @@
+@use 'styles/variables' as *;
+@use 'styles/breakpoints' as *;
+
+.preset-buttons {
+    display: flex;
+    justify-content: space-between;
+    button {
+        width: calc(25% - 4px);
+        height: 28px;
+        background-color: $secondary1;
+        border-radius: 6px;
+        box-shadow: none;
+        border: none;
+        cursor: pointer;
+        & p {
+            color: $textSecondary;
+        }
+        &.active-preset {
+            border: 1px solid $primary;
+            & p {
+                color: $textPrimary;
+            }
+        }
+    }
+}
+
+.preset-range-info {
+    border-radius: 6px;
+    border: 1px solid $secondary1;
+    background: $grey31;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    width: calc(50% - 4px);
+    & > div {
+        width: 100%;
+    }
+}
+
+.preset-range-circle {
+    width: 10px;
+    height: 10px;
+    margin-left: 5px;
+    border-radius: 50%;
+    overflow: hidden;
+    background-color: $textSecondary;
+}
+
+.preset-range-circle-active {
+    position: relative;
+    height: 10px;
+}

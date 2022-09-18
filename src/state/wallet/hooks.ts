@@ -1,11 +1,12 @@
 import { GlobalValue } from 'constants/index';
 import {
+  ChainId,
   Currency,
   CurrencyAmount,
   ETHER,
   JSBI,
-  Token,
   TokenAmount,
+  Token,
 } from '@uniswap/sdk';
 import { useMemo } from 'react';
 import ERC20_INTERFACE from 'constants/abis/erc20';
@@ -65,12 +66,27 @@ export function useETHBalances(
  */
 export function useTokenBalancesWithLoadingIndicator(
   address?: string,
-  tokens?: (Token | undefined)[],
+  tokens?: (
+    | {
+        chainId: ChainId;
+        address: string;
+        decimals: number;
+        symbol?: string;
+        name?: string;
+      }
+    | undefined
+  )[],
 ): [{ [tokenAddress: string]: TokenAmount | undefined }, boolean] {
-  const validatedTokens: Token[] = useMemo(
+  const validatedTokens: any[] = useMemo(
     () =>
       tokens?.filter(
-        (t?: Token): t is Token => isAddress(t?.address) !== false,
+        (t?: {
+          chainId: ChainId;
+          address: string;
+          decimals: number;
+          symbol?: string;
+          name?: string;
+        }): any => isAddress(t?.address) !== false,
       ) ?? [],
     [tokens],
   );
@@ -115,7 +131,16 @@ export function useTokenBalancesWithLoadingIndicator(
 
 export function useTokenBalances(
   address?: string,
-  tokens?: (Token | undefined)[],
+  tokens?: (
+    | {
+        chainId: ChainId;
+        address: string;
+        decimals: number;
+        symbol?: string;
+        name?: string;
+      }
+    | undefined
+  )[],
 ): { [tokenAddress: string]: TokenAmount | undefined } {
   return useTokenBalancesWithLoadingIndicator(address, tokens)[0];
 }
@@ -123,7 +148,13 @@ export function useTokenBalances(
 // get the balance for a single token/account combo
 export function useTokenBalance(
   account?: string,
-  token?: Token,
+  token?: {
+    chainId: ChainId;
+    address: string;
+    decimals: number;
+    symbol?: string;
+    name?: string;
+  },
 ): TokenAmount | undefined {
   const tokenBalances = useTokenBalances(account, [token]);
   if (!token) return undefined;
@@ -136,9 +167,9 @@ export function useCurrencyBalances(
 ): (CurrencyAmount | undefined)[] {
   const tokens = useMemo(
     () =>
-      currencies?.filter(
-        (currency): currency is Token => currency instanceof Token,
-      ) ?? [],
+      currencies
+        ?.filter((currency) => currency !== ETHER)
+        .map((currency) => currency as Token) ?? [],
     [currencies],
   );
 
@@ -153,8 +184,14 @@ export function useCurrencyBalances(
     () =>
       currencies?.map((currency) => {
         if (!account || !currency) return undefined;
-        if (currency instanceof Token) return tokenBalances[currency.address];
         if (currency === ETHER) return ethBalance[account];
+        if (currency) {
+          const address = (currency as Token).address;
+          if (!address) {
+            return undefined;
+          }
+          return tokenBalances[address];
+        }
         return undefined;
       }) ?? [],
     [account, currencies, ethBalance, tokenBalances],

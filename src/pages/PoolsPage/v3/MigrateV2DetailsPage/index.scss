@@ -1,0 +1,26 @@
+@use 'styles/variables' as *;
+@use 'styles/breakpoints' as *;
+
+.v3-migrate-details-box {
+  background-color: $grey31;
+  border-radius: 10px;
+  padding: 16px;
+  border: 1px solid $secondary3;
+}
+
+.v3-migrate-details-row {
+  display: flex;
+  justify-content: space-between;
+  .currencyLogo {
+    margin-right: 6px;
+  }
+}
+
+.v3-migrate-details-button {
+  width: 100%;
+  height: 50px;
+  border-radius: 10px;
+  &.Mui-disabled {
+    background-color: $grey2;
+  }
+}

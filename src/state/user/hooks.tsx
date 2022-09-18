@@ -18,7 +18,9 @@ import {
   updateUserExpertMode,
   updateUserSlippageTolerance,
   toggleURLWarning,
+  updateUserSingleHopOnly,
 } from './actions';
+import { basisPointsToPercent } from 'utils';
 
 function serializeToken(token: Token): SerializedToken {
   return {
@@ -31,13 +33,21 @@ function serializeToken(token: Token): SerializedToken {
 }
 
 function deserializeToken(serializedToken: SerializedToken): Token {
-  return new Token(
+  const token = new Token(
     serializedToken.chainId,
     serializedToken.address,
     serializedToken.decimals,
     serializedToken.symbol,
     serializedToken.name,
   );
+
+  //HACK: Since we're adding default properties to the token we know its not native
+  // adding these properties enables support for the new tokens in the Uniswap SDK
+  const extendedToken = token as any;
+  extendedToken.isToken = true;
+  extendedToken.isNative = false;
+
+  return extendedToken;
 }
 
 export function useIsDarkMode(): boolean {
@@ -281,3 +291,47 @@ export function useTrackedTokenPairs(): [Token, Token][] {
     return Object.keys(keyed).map((key) => keyed[key]);
   }, [combinedList]);
 }
+
+export function useUserSingleHopOnly(): [
+  boolean,
+  (newSingleHopOnly: boolean) => void,
+] {
+  const dispatch = useDispatch<AppDispatch>();
+
+  const singleHopOnly = useSelector<
+    AppState,
+    AppState['user']['userSingleHopOnly']
+  >((state) => {
+    return state.user.userSingleHopOnly;
+  });
+  // const singleHopOnly = useAppSelector((state) => state.user.userSingleHopOnly);
+
+  const setSingleHopOnly = useCallback(
+    (newSingleHopOnly: boolean) => {
+      dispatch(
+        updateUserSingleHopOnly({ userSingleHopOnly: newSingleHopOnly }),
+      );
+    },
+    [dispatch],
+  );
+
+  return [singleHopOnly, setSingleHopOnly];
+}
+
+// export function useUserTransactionTTL(): [number, (slippage: number) => void] {
+//   const dispatch = useDispatch<AppDispatch>();
+//   const userDeadline = useSelector<AppState, AppState['user']['userDeadline']>(
+//     (state) => {
+//       return state.user.userDeadline;
+//     },
+//   );
+
+//   const setUserDeadline = useCallback(
+//     (userDeadline: number) => {
+//       dispatch(updateUserDeadline({ userDeadline }));
+//     },
+//     [dispatch],
+//   );
+
+//   return [userDeadline, setUserDeadline];
+// }
