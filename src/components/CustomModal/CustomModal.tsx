@@ -9,6 +9,7 @@ interface CustomModalProps {
   background?: string;
   overflow?: string;
   modalWrapper?: string;
+  hideBackdrop?: boolean;
 }
 
 const CustomModal: React.FC<CustomModalProps> = ({
@@ -18,9 +19,19 @@ const CustomModal: React.FC<CustomModalProps> = ({
   background,
   overflow,
   modalWrapper,
+  hideBackdrop,
 }) => {
   return (
-    <Modal open={open} onClose={onClose}>
+    <Modal
+      open={open}
+      onClose={onClose}
+      BackdropComponent={hideBackdrop ? undefined : Backdrop}
+      BackdropProps={
+        hideBackdrop
+          ? undefined
+          : { timeout: 500, classes: { root: 'customModalBackdrop' } }
+      }
+    >
       <Fade in={open}>
         <Box
           className={modalWrapper ? modalWrapper : 'modalWrapperV3'}
