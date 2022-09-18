@@ -77,10 +77,10 @@ export default function MigrateV2DetailsPage() {
 
   //Pairs sort the tokens to assure a single pair is created
   //so we will use the pairs to determin the tokens
-  const token0 = reserve0?.currency;
-  const token1 = reserve1?.currency;
+  const token0 = useToken(reserve0?.currency.address);
+  const token1 = useToken(reserve1?.currency.address);
 
-  const [poolState, pool] = usePool(token0, token1);
+  const [poolState, pool] = usePool(token0 ?? undefined, token1 ?? undefined);
 
   const currency0 = useMemo(() => {
     if (!token0) {
@@ -268,16 +268,18 @@ export default function MigrateV2DetailsPage() {
     if (!v2SpotPrice || !v3SpotPrice) {
       return false;
     }
-    const v2price = v2SpotPrice.asFraction.multiply(100);
+
+    const v2PriceOriginal = v2SpotPrice.asFraction;
+    const v2price = v2PriceOriginal.multiply(100);
     const v3price = v3SpotPrice.asFraction.multiply(100);
-    const maxPriceDiffernce = v2price.multiply(15);
-    const ub = v2price.add(maxPriceDiffernce);
-    const lb = v2price.subtract(maxPriceDiffernce);
+    const maxPriceDiff = v2PriceOriginal.multiply(15);
+    const ub = v2price.add(maxPriceDiff);
+    const lb = v2price.subtract(maxPriceDiff);
 
     console.log('v3 price' + v3price.toFixed(4));
     console.log('v2 price' + v2price.toFixed(4));
 
-    return v3price <= ub && v3price >= lb;
+    return v3price.lessThan(lb) || v3price.greaterThan(ub);
   }, [priceDifferenceFraction]);
 
   const [allowedSlippage] = useUserSlippageTolerance();
