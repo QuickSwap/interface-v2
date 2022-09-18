@@ -143,7 +143,7 @@ export function useToken(tokenAddress?: string): Token | undefined | null {
 
   return useMemo(() => {
     if (token) return token;
-    if (!chainId || !address) return undefined;
+    if (!chainId || !address) return null;
     if (decimals.loading || symbol.loading || tokenName.loading) return null;
     if (decimals.result) {
       return new Token(
