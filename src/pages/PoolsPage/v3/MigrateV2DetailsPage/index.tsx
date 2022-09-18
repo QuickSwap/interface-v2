@@ -47,7 +47,6 @@ import { Bound } from 'state/mint/v3/actions';
 import { useUserSlippageTolerance } from 'state/user/hooks';
 import { Pool, Position } from 'v3lib/entities';
 import { V2Exchanges } from 'constants/v3/addresses';
-import { ButtonConfirmed } from 'components/v3/Button';
 import { Dots } from '../styleds';
 import { useIsNetworkFailed } from 'hooks/v3/useIsNetworkFailed';
 import { currencyId } from 'utils/v3/currencyId';
@@ -285,7 +284,7 @@ export default function MigrateV2DetailsPage() {
     console.log('v2 price' + v2price.toFixed(4));
 
     return v3price.lessThan(lb) || v3price.greaterThan(ub);
-  }, [priceDifferenceFraction]);
+  }, [v2SpotPrice, v3SpotPrice]);
 
   const [allowedSlippage] = useUserSlippageTolerance();
   const allowedSlippagePct = useMemo(
@@ -343,6 +342,8 @@ export default function MigrateV2DetailsPage() {
     token0Value,
     token1Value,
     mintInfo.invalidRange,
+    pool,
+    feeAmount,
   ]);
 
   const { amount0: v3Amount0Min, amount1: v3Amount1Min } = useMemo(
@@ -355,6 +356,16 @@ export default function MigrateV2DetailsPage() {
           },
     [position, allowedSlippagePct],
   );
+
+  const v3Amount0MinCurrency = useMemo(() => {
+    if (!v3Amount0Min || !token0) return;
+    return CurrencyAmount.fromRawAmount(token0, v3Amount0Min);
+  }, [token0, v3Amount0Min]);
+
+  const v3Amount1MinCurrency = useMemo(() => {
+    if (!v3Amount1Min || !token1) return;
+    return CurrencyAmount.fromRawAmount(token1, v3Amount1Min);
+  }, [token1, v3Amount1Min]);
 
   const refund0 = useMemo(() => {
     if (!token0 || !token0Value) {
@@ -632,8 +643,8 @@ export default function MigrateV2DetailsPage() {
               <CurrencyLogo currency={currency0 ?? undefined} size='20px' />
               <p>{currency0?.symbol}</p>
             </Box>
-            {v3Amount0Min !== undefined ? (
-              <p>{v3Amount0Min.toLocaleString()}</p>
+            {v3Amount0MinCurrency ? (
+              <p>{v3Amount0MinCurrency.toSignificant(2)}</p>
             ) : mintInfo.ticks.LOWER && mintInfo.ticks.UPPER ? (
               <Loader stroke='white' size='24px' />
             ) : (
@@ -645,8 +656,8 @@ export default function MigrateV2DetailsPage() {
               <CurrencyLogo currency={currency1 ?? undefined} size='20px' />
               <p>{currency1?.symbol}</p>
             </Box>
-            {v3Amount1Min !== undefined ? (
-              <p>{v3Amount1Min.toLocaleString()}</p>
+            {v3Amount1MinCurrency ? (
+              <p>{v3Amount1MinCurrency.toSignificant(2)}</p>
             ) : mintInfo.ticks.LOWER && mintInfo.ticks.UPPER ? (
               <Loader stroke='white' size='24px' />
             ) : (
@@ -745,12 +756,10 @@ export default function MigrateV2DetailsPage() {
           )}
         </Box>
         <Box mt={3}>
-          <ButtonConfirmed
+          <Button
             className='v3-migrate-details-button'
-            confirmed={
-              approval === ApprovalState.APPROVED || signatureData !== null
-            }
             disabled={
+              approval === ApprovalState.APPROVED ||
               approval !== ApprovalState.NOT_APPROVED ||
               signatureData !== null ||
               !v3Amount0Min ||
@@ -764,14 +773,14 @@ export default function MigrateV2DetailsPage() {
               <Dots>Approving</Dots>
             ) : approval === ApprovalState.APPROVED ||
               signatureData !== null ? (
-              <span>Allowed</span>
+              'Allowed'
             ) : (
-              <span>Allow LP token migration</span>
+              'Allow LP token migration'
             )}
-          </ButtonConfirmed>
+          </Button>
         </Box>
         <Box mt={2}>
-          <ButtonConfirmed
+          <Button
             className='v3-migrate-details-button'
             disabled={
               !v3Amount0Min ||
@@ -782,22 +791,24 @@ export default function MigrateV2DetailsPage() {
               isMigrationPending ||
               (largePriceDifference && !largePriceDiffDismissed)
             }
-            //@ts-ignore
-            as={isSuccessfullyMigrated ? Link : null}
-            to={`/pool`}
-            //@ts-ignore
-            onClick={isSuccessfullyMigrated ? null : migrate}
+            onClick={() => {
+              if (isSuccessfullyMigrated) {
+                history.push('/pools/v3');
+              } else {
+                migrate();
+              }
+            }}
           >
             {isSuccessfullyMigrated ? (
               `Success! View pools`
             ) : isMigrationPending ? (
               <Dots>Migrating</Dots>
             ) : networkFailed ? (
-              <span>Connecting to network...</span>
+              'Connecting to network...'
             ) : (
-              <span>Migrate</span>
+              'Migrate'
             )}
-          </ButtonConfirmed>
+          </Button>
         </Box>
       </Box>
     </>
