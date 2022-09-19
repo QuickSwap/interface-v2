@@ -37,10 +37,12 @@ interface EternalFarmCardProps {
     id?: any;
     pool?: any;
     createdAtTimestamp?: string;
+    rewardRate?: string;
     rewardToken?: any;
     bonusRewardToken?: any;
     reward?: string;
     bonusReward?: string;
+    bonusRewardRate?: string;
     locked?: boolean;
   };
   aprs: Aprs | undefined;
@@ -55,7 +57,14 @@ export function EternalFarmCard({
   refreshing,
   farmHandler,
   now,
-  event: { id, pool, rewardToken, bonusRewardToken, reward, bonusReward } = {},
+  event: {
+    id,
+    pool,
+    rewardToken,
+    bonusRewardToken,
+    rewardRate,
+    bonusRewardRate,
+  } = {},
   aprs,
   aprsLoading,
   tvls,
@@ -139,13 +148,14 @@ export function EternalFarmCard({
                     <small className='weight-600'>{rewardToken?.symbol}</small>
                   </Box>
                 </Box>
-                {reward && (
+                {rewardRate && (
                   <small className='weight-600'>
                     {formatReward(
-                      Number(
-                        formatUnits(reward.toString(), rewardToken.decimals),
-                      ),
-                    )}
+                      Number(formatUnits(rewardRate, rewardToken.decimals)) *
+                        3600 *
+                        24,
+                    )}{' '}
+                    / day
                   </small>
                 )}
               </StyledDarkBox>
@@ -185,23 +195,23 @@ export function EternalFarmCard({
                       </small>
                     </Box>
                   </Box>
-                  {bonusReward && (
+                  {bonusRewardRate && (
                     <small className='weight-600'>
                       {formatReward(
                         Number(
-                          formatUnits(
-                            bonusReward.toString(),
-                            rewardToken.decimals,
-                          ),
-                        ),
-                      )}
+                          formatUnits(bonusRewardRate, rewardToken.decimals),
+                        ) *
+                          3600 *
+                          24,
+                      )}{' '}
+                      / day
                     </small>
                   )}
                 </StyledDarkBox>
               </>
             )}
 
-            {tvl && (
+            {!!tvl && (
               <Box mt={2} className='flex justify-between'>
                 <small className='weight-600'>TVL:</small>
                 <small className='weight-600'>${formatCompact(tvl)}</small>
