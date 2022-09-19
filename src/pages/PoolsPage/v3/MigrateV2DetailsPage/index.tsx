@@ -680,7 +680,7 @@ export default function MigrateV2DetailsPage() {
         </Box>
         <Box>
           {largePriceDifference && !largePriceDiffDismissed && (
-            <Box className='pool-range-chart-warning border-yellow5'>
+            <Box mt={2} className='pool-range-chart-warning border-error'>
               <Box width={1} className='flex items-center'>
                 <Box className='pool-range-chart-warning-icon'>
                   <ReportProblemOutlined />
@@ -691,6 +691,16 @@ export default function MigrateV2DetailsPage() {
                 <span>
                   You should only deposit liquidity into Quickswap at a price
                   you believe is correct. <br />
+                  <br />
+                  {v2SpotPrice && (
+                    <>Estimated V2 Spot Price: ${v2SpotPrice?.toFixed(4)}</>
+                  )}
+                  <br />
+                  {v3SpotPrice && (
+                    <> Estimated V3 Spot Price: ${v3SpotPrice?.toFixed(4)}</>
+                  )}
+                  <br />
+                  <br />
                   If the price seems incorrect, you can either make a swap to
                   move the price or wait for someone else to do so.
                 </span>

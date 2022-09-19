@@ -12,7 +12,6 @@ import 'pages/styles/farm.scss';
 import { useDefaultFarmList } from 'state/farms/hooks';
 import { useDefaultDualFarmList } from 'state/dualfarms/hooks';
 import { ChainId } from '@uniswap/sdk';
-import { useFarmingSubgraph } from 'hooks/useIncentiveSubgraph';
 import VersionToggle from 'components/Toggle/VersionToggle';
 import V3Farms from 'pages/FarmPage/V3';
 import { useIsV3 } from 'state/application/hooks';
