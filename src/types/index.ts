@@ -11,7 +11,7 @@ export interface AdsRaw {
 export interface AdsListInfo {
   readonly name: string;
   readonly timestamp: string;
-  readonly ads: { [key: string]: AdsRaw[] }[];
+  readonly ads: { data: { [key: string]: AdsRaw[] }; config: any }[];
   readonly version: Version;
 }
 

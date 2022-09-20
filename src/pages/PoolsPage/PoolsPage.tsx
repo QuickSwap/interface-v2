@@ -39,7 +39,7 @@ const PoolsPage: React.FC = () => {
             {isV3 ? <SupplyLiquidityV3 /> : <SupplyLiquidity />}
           </Box>
           <Box maxWidth={isMobile ? '320px' : '352px'} margin='16px auto 0'>
-            <AdsSlider sort='2' />
+            <AdsSlider sort='pools' />
           </Box>
         </Grid>
         <Grid item xs={12} sm={12} md={7}>

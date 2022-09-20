@@ -39,7 +39,7 @@ const AnalyticsHeader: React.FC<AnalyticHeaderProps> = ({
         </Box>
       </Box>
       <Box maxWidth={isMobile ? '320px' : '1136px'} margin='0 auto 24px'>
-        <AdsSlider sort='6' />
+        <AdsSlider sort='analytics' />
       </Box>
       <Box
         mb={4}
