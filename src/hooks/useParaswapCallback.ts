@@ -13,7 +13,7 @@ import {
   TradeType,
 } from '@uniswap/sdk';
 import { useMemo } from 'react';
-import { GlobalConst } from 'constants/index';
+import { GlobalConst, GlobalValue } from 'constants/index';
 import { useTransactionAdder } from 'state/transactions/hooks';
 import {
   calculateGasMargin,
@@ -30,6 +30,7 @@ import useENS from './useENS';
 import { OptimalRate } from 'paraswap-core';
 import { getBestTradeCurrencyAddress, useParaswap } from './useParaswap';
 import { SwapSide } from '@paraswap/sdk';
+import { useExpertModeManager } from 'state/user/hooks';
 export enum SwapCallbackState {
   INVALID,
   LOADING,
@@ -86,6 +87,7 @@ export function useParaswapCallback(
   const recipient =
     recipientAddressOrName === null ? account : recipientAddress;
 
+  const [isExpertMode] = useExpertModeManager();
   return useMemo(() => {
     if (!trade || !priceRoute || !library || !account || !chainId) {
       return {
@@ -125,7 +127,7 @@ export function useParaswapCallback(
           .minimumAmountOut(pct)
           .multiply(JSBI.BigInt(10 ** trade.outputAmount.currency.decimals));
 
-        const referrer = 'Quickswap';
+        const referrer = 'quickswapv3';
 
         const srcToken = getBestTradeCurrencyAddress(
           trade.inputAmount.currency,
@@ -137,6 +139,14 @@ export function useParaswapCallback(
         const srcDecimals = trade.inputAmount.currency.decimals;
         const destDecimals = trade.outputAmount.currency.decimals;
 
+        const maxImpactAllowed = isExpertMode
+          ? 100
+          : Number(
+              GlobalValue.percents.BLOCKED_PRICE_IMPACT_NON_EXPERT.multiply(
+                '100',
+              ).toFixed(4),
+            );
+
         //Update the rate before calling swap
         const rate = await paraswap.getRate({
           srcToken,
@@ -147,6 +157,8 @@ export function useParaswapCallback(
           side: SwapSide.SELL,
           options: {
             includeDEXS: 'quickswap,quickswapv3',
+            partner: 'quickswapv3',
+            maxImpact: maxImpactAllowed,
           },
         });
 
