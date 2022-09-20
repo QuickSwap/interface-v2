@@ -4,13 +4,16 @@ import { AppState } from 'state';
 import { AdsListInfo, AdsRaw } from 'types';
 
 export type AdsListMap = Readonly<{
-  [sort: string]: Readonly<AdsRaw[]>;
+  data: {
+    [sort: string]: Readonly<AdsRaw[]>;
+  };
+  config: any;
 }>;
 
 /**
  * An empty result, useful as a default.
  */
-const EMPTY_LIST: AdsListMap = {};
+const EMPTY_LIST: AdsListMap = { data: {}, config: {} };
 
 const adsCache: WeakMap<AdsListInfo, AdsListMap> | null =
   typeof WeakMap !== 'undefined'

@@ -173,7 +173,7 @@ const LendDetailPage: React.FC = () => {
     <>
       <Box width={'100%'}>
         <Box mb={3}>
-          <AdsSlider sort='5' />
+          <AdsSlider sort='lend' />
         </Box>
         <Box className='flex flex-wrap items-center' gridGap={'20px'}>
           <Box
