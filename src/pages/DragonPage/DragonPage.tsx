@@ -59,7 +59,7 @@ const DragonPage: React.FC = () => {
             </Box>
           )}
           <Box maxWidth={isMobile ? '320px' : '352px'} margin='16px auto 0'>
-            <AdsSlider sort='4' />
+            <AdsSlider sort='dragons' />
           </Box>
         </Grid>
         <Grid item xs={12} sm={12} md={8}>
