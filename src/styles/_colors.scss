@@ -140,6 +140,10 @@
   border: 1px solid $yellow5;
 }
 
+.border-error {
+  border: 1px solid $errorMain;
+}
+
 .text-error {
   color: $errorMain;
 }
