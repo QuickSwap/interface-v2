@@ -36,6 +36,7 @@ import { QuestionHelper, CopyHelper, CurrencyLogo } from 'components';
 import 'pages/styles/lend.scss';
 import { GlobalValue } from 'constants/index';
 import LendDetailAssetStats from './LendDetailAssetStats';
+import AdsSlider from 'components/AdsSlider';
 
 const LendDetailPage: React.FC = () => {
   const { t } = useTranslation();
@@ -171,6 +172,9 @@ const LendDetailPage: React.FC = () => {
   return (
     <>
       <Box width={'100%'}>
+        <Box mb={3}>
+          <AdsSlider sort='5' />
+        </Box>
         <Box className='flex flex-wrap items-center' gridGap={'20px'}>
           <Box
             className='flex items-center cursor-pointer'

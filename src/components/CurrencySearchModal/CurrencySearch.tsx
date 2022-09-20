@@ -12,13 +12,11 @@ import ReactGA from 'react-ga';
 import { Box, Divider } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
-import { FixedSizeList } from 'react-window';
 import { useActiveWeb3React } from 'hooks';
 import { useAllTokens, useToken } from 'hooks/Tokens';
 import { useSelectedListInfo } from 'state/lists/hooks';
 import { selectList } from 'state/lists/actions';
 import { GlobalConst } from 'constants/index';
-import AutoSizer from 'react-virtualized-auto-sizer';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 import { ReactComponent as SearchIcon } from 'assets/images/SearchIcon.svg';
 import CommonBases from './CommonBases';
@@ -50,12 +48,10 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
   const { t } = useTranslation();
   const { chainId } = useActiveWeb3React();
   const dispatch = useDispatch<AppDispatch>();
-  const fixedList = useRef<FixedSizeList>();
 
   const handleInput = useCallback((input: string) => {
     const checksummedInput = isAddress(input);
     setSearchQuery(checksummedInput || input);
-    fixedList.current?.scrollTo(0);
   }, []);
 
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -171,6 +167,7 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
           ref={inputRef as RefObject<HTMLInputElement>}
           onChange={(e) => setSearchQueryInput(e.target.value)}
           onKeyDown={handleEnter}
+          autoFocus
         />
       </Box>
       {showCommonBases && (
@@ -184,19 +181,13 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
       <Divider />
 
       <Box flex={1}>
-        <AutoSizer disableWidth>
-          {({ height }) => (
-            <CurrencyList
-              showETH={showETH}
-              height={height}
-              currencies={filteredSortedTokens}
-              onCurrencySelect={handleCurrencySelect}
-              otherCurrency={otherSelectedCurrency}
-              selectedCurrency={selectedCurrency}
-              fixedListRef={fixedList}
-            />
-          )}
-        </AutoSizer>
+        <CurrencyList
+          showETH={showETH}
+          currencies={filteredSortedTokens}
+          onCurrencySelect={handleCurrencySelect}
+          otherCurrency={otherSelectedCurrency}
+          selectedCurrency={selectedCurrency}
+        />
       </Box>
 
       <Box className='currencySearchFooter' />

@@ -1,7 +1,6 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useHistory } from 'react-router-dom';
-import { Box, Grid, useMediaQuery } from '@material-ui/core';
-import { useTheme } from '@material-ui/core/styles';
+import { Box, Grid } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import Motif from 'assets/images/Motif.svg';
 import BuyWithFiat from 'assets/images/featured/BuywithFiat.svg';
@@ -18,18 +17,13 @@ import { ReactComponent as TelegramIcon } from 'assets/images/social/Telegram.sv
 import { ReactComponent as TwitterIcon } from 'assets/images/social/Twitter.svg';
 import { ReactComponent as YouTubeIcon } from 'assets/images/social/YouTube.svg';
 import { RewardSlider, TopMovers } from 'components';
-import { getGlobalData } from 'utils';
-import { useEthPrice, useGlobalData } from 'state/application/hooks';
 import 'pages/styles/landing.scss';
-import { HeroSection } from './HeroSection';
-import { TradingInfo } from './TradingInfo';
 import { SwapSection } from './SwapSection';
 import { BuyFiatSection } from './BuyFiatSection';
 import { useActiveWeb3React } from 'hooks';
+import { GlobalSection } from './GlobalSection';
 
 const LandingPage: React.FC = () => {
-  const { breakpoints } = useTheme();
-  const mobileWindowSize = useMediaQuery(breakpoints.down('sm'));
   const { t } = useTranslation();
   const { chainId } = useActiveWeb3React();
 
@@ -105,34 +99,10 @@ const LandingPage: React.FC = () => {
   ];
 
   const history = useHistory();
-  const { globalData, updateGlobalData } = useGlobalData();
-  const { ethPrice } = useEthPrice();
-
-  useEffect(() => {
-    async function fetchGlobalData() {
-      if (ethPrice.price && ethPrice.oneDayPrice && chainId) {
-        const newGlobalData = await getGlobalData(
-          ethPrice.price,
-          ethPrice.oneDayPrice,
-          chainId,
-        );
-
-        if (newGlobalData) {
-          updateGlobalData({ data: newGlobalData });
-        }
-      }
-    }
-    fetchGlobalData();
-  }, [updateGlobalData, ethPrice.price, ethPrice.oneDayPrice, chainId]);
 
   return (
     <div id='landing-page' style={{ width: '100%' }}>
-      <Box margin={mobileWindowSize ? '64px 0' : '100px 0 80px'}>
-        <HeroSection globalData={globalData} />
-      </Box>
-      <Box className='flex tradingInfo'>
-        <TradingInfo globalData={globalData} />
-      </Box>
+      <GlobalSection />
       <Box className='smallCommunityContainer'>
         {socialicons.map((val, ind) => (
           <a

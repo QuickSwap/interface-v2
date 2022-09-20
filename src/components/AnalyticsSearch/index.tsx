@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Box } from '@material-ui/core';
 import { ReactComponent as SearchIcon } from 'assets/images/SearchIcon.svg';
-import { client } from 'apollo/client';
+import { clientV2, clientV3 } from 'apollo/client';
 import { TOKEN_SEARCH, PAIR_SEARCH, TOKEN_INFO_OLD } from 'apollo/queries';
 import {
   getAllTokensOnUniswap,
@@ -21,6 +21,13 @@ import utc from 'dayjs/plugin/utc';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { useActiveWeb3React } from 'hooks';
+import { useIsV3 } from 'state/application/hooks';
+import { getAllPairsV3, getAllTokensV3 } from 'utils/v3-graph';
+import {
+  PAIR_SEARCH_V3,
+  TOKEN_INFO_OLD_V3,
+  TOKEN_SEARCH_V3,
+} from 'apollo/queries-v3';
 dayjs.extend(utc);
 
 const AnalyticsSearch: React.FC = () => {
@@ -41,6 +48,9 @@ const AnalyticsSearch: React.FC = () => {
   const tokenMap = useSelectedTokenList();
   const { chainId } = useActiveWeb3React();
   const chainIdOrDefault = chainId ?? ChainId.MATIC;
+
+  const { isV3 } = useIsV3();
+  const version = useMemo(() => `${isV3 ? `v3` : 'v2'}`, [isV3]);
 
   const escapeRegExp = (str: string) => {
     return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -172,13 +182,21 @@ const AnalyticsSearch: React.FC = () => {
   useEffect(() => {
     async function fetchData() {
       try {
-        const allTokensUniswap = await getAllTokensOnUniswap();
-        const allPairsUniswap = await getAllPairsOnUniswap();
+        const allTokensFn = isV3 ? getAllTokensV3 : getAllTokensOnUniswap;
+        const allPairsFn = isV3 ? getAllPairsV3 : getAllPairsOnUniswap;
+
+        const client = isV3 ? clientV3 : clientV2;
+        const tokenSearchQuery = isV3 ? TOKEN_SEARCH_V3 : TOKEN_SEARCH;
+        const pairSearchQuery = isV3 ? PAIR_SEARCH_V3 : PAIR_SEARCH;
+        const oldTokenQuery = isV3 ? TOKEN_INFO_OLD_V3 : TOKEN_INFO_OLD;
+
+        const allTokensUniswap = await allTokensFn();
+        const allPairsUniswap = await allPairsFn();
         let allTokens = allTokensUniswap ?? [];
         let allPairs = allPairsUniswap ?? [];
         if (searchVal.length > 0) {
           const tokens = await client.query({
-            query: TOKEN_SEARCH,
+            query: tokenSearchQuery,
             variables: {
               value: searchVal ? searchVal.toUpperCase() : '',
               id: searchVal,
@@ -186,7 +204,7 @@ const AnalyticsSearch: React.FC = () => {
           });
 
           const pairs = await client.query({
-            query: PAIR_SEARCH,
+            query: pairSearchQuery,
             variables: {
               tokens: tokens.data.asSymbol?.map((t: any) => t.id),
               id: searchVal,
@@ -234,7 +252,7 @@ const AnalyticsSearch: React.FC = () => {
             const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix();
             const oneDayBlock = await getBlockFromTimestamp(utcOneDayBack);
             const oneDayResult = await client.query({
-              query: TOKEN_INFO_OLD(oneDayBlock, token.id),
+              query: oldTokenQuery(oneDayBlock, token.id),
               fetchPolicy: 'network-only',
             });
             if (
@@ -258,8 +276,10 @@ const AnalyticsSearch: React.FC = () => {
         console.log(e);
       }
     }
-    fetchData();
-  }, [searchVal]);
+    if (isV3 !== undefined) {
+      fetchData();
+    }
+  }, [searchVal, isV3]);
 
   const handleClick = (e: any) => {
     if (
@@ -326,7 +346,7 @@ const AnalyticsSearch: React.FC = () => {
                 key={ind}
                 className='searchWidgetRow'
                 onClick={() => {
-                  history.push(`/analytics/pair/${val.id}`);
+                  history.push(`/analytics/${version}/pair/${val.id}`);
                   setMenuOpen(false);
                 }}
               >
@@ -360,7 +380,7 @@ const AnalyticsSearch: React.FC = () => {
                 key={ind}
                 className='searchWidgetRow'
                 onClick={() => {
-                  history.push(`/analytics/token/${val.id}`);
+                  history.push(`/analytics/${version}/token/${val.id}`);
                   setMenuOpen(false);
                 }}
               >

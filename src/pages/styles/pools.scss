@@ -1,15 +1,6 @@
 @use 'styles/variables' as *;
 @use 'styles/breakpoints' as *;
 
-.wrapper {
-  padding: 24px;
-  background: $bgPalette;
-  border-radius: 20px;
-  @include media("screen", "<phone") {
-    padding: 16px 12px
-  }
-}
-
 .headingItem {
   cursor: pointer;
   display: flex
@@ -27,4 +18,14 @@
   max-width: 286px;
   width: 80%;
   filter: grayscale(1)
+}
+
+.v3-manage-v2liquidity-button {
+  height: 36px;
+  padding: 0 20px;
+  border-radius: 18px;
+  background-color: $primaryLight;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
 }

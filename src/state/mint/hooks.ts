@@ -111,13 +111,21 @@ export function useDerivedMintInfo(): {
       if (tokenA && tokenB && wrappedIndependentAmount && pair) {
         const dependentCurrency =
           dependentField === Field.CURRENCY_B ? currencyB : currencyA;
-        const dependentTokenAmount =
+        const independentPrice =
           dependentField === Field.CURRENCY_B
-            ? pair.priceOf(tokenA).quote(wrappedIndependentAmount)
-            : pair.priceOf(tokenB).quote(wrappedIndependentAmount);
-        return dependentCurrency === ETHER
-          ? CurrencyAmount.ether(dependentTokenAmount.raw)
-          : dependentTokenAmount;
+            ? pair.priceOf(tokenA)
+            : pair.priceOf(tokenB);
+        try {
+          const dependentTokenAmount = independentPrice.quote(
+            wrappedIndependentAmount,
+          );
+          return dependentCurrency === ETHER
+            ? CurrencyAmount.ether(dependentTokenAmount.raw)
+            : dependentTokenAmount;
+        } catch (error) {
+          // should fail if the user specifies too many decimal places of precision (or maybe exceed max uint?)
+          console.debug('Failed to quote amount', error);
+        }
       }
       return undefined;
     } else {

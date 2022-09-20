@@ -20,6 +20,10 @@
   background-color: $secondary2;
 }
 
+.bg-yellow3 {
+  background-color: $yellow3;
+}
+
 .bg-blue1 {
   background-color: $blue1;
 }
@@ -36,12 +40,28 @@
   background-color: $grey3;
 }
 
+.bg-gray30 {
+  background-color: $grey30;
+}
+
+.bg-gray31 {
+  background-color: $grey31;
+}
+
 .bg-transparent {
   background-color: transparent;
 }
 
 .bg-primary {
   background-color: $primary;
+}
+
+.bg-primaryLight {
+  background-color: $primaryLight;
+}
+
+.bg-success {
+  background-color: $successMain;
 }
 
 .bg-successLight {
@@ -116,6 +136,14 @@
   border: 1px solid $primaryDark;
 }
 
+.border-yellow5 {
+  border: 1px solid $yellow5;
+}
+
+.border-error {
+  border: 1px solid $errorMain;
+}
+
 .text-error {
   color: $errorMain;
 }
@@ -174,4 +202,12 @@
 
 .text-blue7 {
   color: $blue7;
+}
+
+.text-bgColor {
+  color: $bgColor;
+}
+
+.text-white {
+  color: white;
 }

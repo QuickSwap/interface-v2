@@ -7,4 +7,4 @@ export { default as AnalyticsPage } from './AnalyticsPage';
 export { default as AnalyticsTokenDetails } from './AnalyticsTokenDetails';
 export { default as AnalyticsPairDetails } from './AnalyticsPairDetails';
 export { default as ConvertQUICKPage } from './ConvertQUICKPage';
-export { default as PrdtPage } from './PrdtPage';
+export { default as EternalFarmsPage } from './EternalFarmsPage';

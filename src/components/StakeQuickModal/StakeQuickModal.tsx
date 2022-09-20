@@ -8,7 +8,7 @@ import { useCurrencyBalance, useTokenBalance } from 'state/wallet/hooks';
 import { useActiveWeb3React } from 'hooks';
 import { GlobalConst, GlobalTokens, GlobalValue } from 'constants/index';
 import { useApproveCallback, ApprovalState } from 'hooks/useApproveCallback';
-import { useLairContract } from 'hooks/useContract';
+import { useLairContract, useNewLairContract } from 'hooks/useContract';
 import {
   useTransactionAdder,
   useTransactionFinalizer,
@@ -20,15 +20,22 @@ import { useTranslation } from 'react-i18next';
 interface StakeQuickModalProps {
   open: boolean;
   onClose: () => void;
+  isNew?: boolean;
 }
 
-const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
+const StakeQuickModal: React.FC<StakeQuickModalProps> = ({
+  open,
+  onClose,
+  isNew,
+}) => {
   const { t } = useTranslation();
   const [attempting, setAttempting] = useState(false);
   const { chainId, account } = useActiveWeb3React();
   const addTransaction = useTransactionAdder();
   const finalizedTransaction = useTransactionFinalizer();
-  const quickToken = chainId ? GlobalTokens[chainId]['OLD_QUICK'] : undefined;
+  const quickToken = chainId
+    ? GlobalTokens[chainId][isNew ? 'NEW_QUICK' : 'OLD_QUICK']
+    : undefined;
   const quickBalance = useCurrencyBalance(account ?? undefined, quickToken);
   const userLiquidityUnstaked = useTokenBalance(
     account ?? undefined,
@@ -45,9 +52,11 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
   );
 
   const lairContract = useLairContract();
+  const newLairContract = useNewLairContract();
+  const lairContractToUse = isNew ? newLairContract : lairContract;
   const [approval, approveCallback] = useApproveCallback(
     parsedAmount,
-    chainId ? GlobalConst.addresses.LAIR_ADDRESS[chainId] : undefined,
+    lairContractToUse?.address,
   );
 
   const onAttemptToApprove = async () => {
@@ -59,10 +68,10 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({ open, onClose }) => {
 
   const onStake = async () => {
     setAttempting(true);
-    if (lairContract && parsedAmount) {
+    if (lairContractToUse && parsedAmount) {
       if (approval === ApprovalState.APPROVED) {
         try {
-          const response: TransactionResponse = await lairContract.enter(
+          const response: TransactionResponse = await lairContractToUse.enter(
             `0x${parsedAmount.raw.toString(16)}`,
             {
               gasLimit: 350000,

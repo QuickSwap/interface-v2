@@ -7,7 +7,10 @@ import { useActiveWeb3React } from 'hooks';
 import { useWalletModalToggle } from 'state/application/hooks';
 import { useTranslation } from 'react-i18next';
 
-export const HeroSection: React.FC<{ globalData: any }> = ({ globalData }) => {
+export const HeroSection: React.FC<{ globalData: any; v3GlobalData: any }> = ({
+  globalData,
+  v3GlobalData,
+}) => {
   const history = useHistory();
   const { account } = useActiveWeb3React();
   const { ethereum } = window as any;
@@ -17,11 +20,14 @@ export const HeroSection: React.FC<{ globalData: any }> = ({ globalData }) => {
   return (
     <Box className='heroSection'>
       <small className='text-bold'>{t('totalValueLocked')}</small>
-      {globalData ? (
+      {globalData && v3GlobalData ? (
         <Box display='flex' pt='5px'>
           <h3>$</h3>
           <h1>
-            {Number(globalData.totalLiquidityUSD).toLocaleString(undefined, {
+            {(
+              Number(globalData.totalLiquidityUSD) +
+              Number(v3GlobalData.totalLiquidityUSD)
+            ).toLocaleString(undefined, {
               maximumFractionDigits: 0,
             })}
           </h1>

@@ -16,9 +16,8 @@ const LandingPage = lazy(() => import('./pages/LandingPage'));
 const PoolsPage = lazy(() => import('./pages/PoolsPage'));
 const SwapPage = lazy(() => import('./pages/SwapPage'));
 const ConvertQUICKPage = lazy(() => import('./pages/ConvertQUICKPage'));
-const LendPage = lazy(() => import('./pages/LendPage'));
-const LendDetailPage = lazy(() => import('./pages/LendPage/LendDetailPage'));
-const PrdtPage = lazy(() => import('./pages/PrdtPage'));
+// const LendPage = lazy(() => import('./pages/LendPage'));
+// const LendDetailPage = lazy(() => import('./pages/LendPage/LendDetailPage'));
 const AnalyticsTokenDetails = lazy(() =>
   import('./pages/AnalyticsTokenDetails'),
 );
@@ -33,6 +32,19 @@ const AnalyticsTokens = lazy(() =>
 const AnalyticsPairs = lazy(() =>
   import('./pages/AnalyticsPage/AnalyticsPairs'),
 );
+const RemoveLiquidityV3Page = lazy(() =>
+  import('./pages/PoolsPage/v3/RemoveLiquidityPage'),
+);
+const IncreaseLiquidityV3Page = lazy(() =>
+  import('./pages/PoolsPage/v3/IncreaseLiquidityPage'),
+);
+const MigrateV2LiquidityPage = lazy(() =>
+  import('./pages/PoolsPage/v3/MigrateV2LiquidityPage'),
+);
+const MigrateV2DetailsPage = lazy(() =>
+  import('./pages/PoolsPage/v3/MigrateV2DetailsPage'),
+);
+const PositionPage = lazy(() => import('./pages/PoolsPage/v3/PositionPage'));
 
 import { PageLayout } from 'layouts';
 import { getLibrary } from 'utils';
@@ -46,14 +58,19 @@ import TransactionUpdater from 'state/transactions/updater';
 import ListsUpdater from 'state/lists/updater';
 import UserUpdater from 'state/user/updater';
 import MulticallUpdater from 'state/multicall/updater';
+import MultiCallV3Updater from 'state/multicall/v3/updater';
 import FarmUpdater from 'state/farms/updater';
 import DualFarmUpdater from 'state/dualfarms/updater';
 import SyrupUpdater from 'state/syrups/updater';
+import AnalyticsUpdater from 'state/analytics/updater';
+import AdsUpdater from 'state/ads/updater';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import './i18n';
 import { mainTheme } from './theme';
 import Background from 'layouts/Background';
+import GasUpdater from 'state/application/gasUpdater';
+import { RedirectExternal } from 'components/RedirectExternal/RedirectExternal';
 
 const Web3ProviderNetwork = createWeb3ReactRoot(
   GlobalConst.utils.NetworkContextName,
@@ -83,10 +100,14 @@ function Updaters() {
       <TransactionUpdater />
       <ListsUpdater />
       <MulticallUpdater />
+      <MultiCallV3Updater />
       <UserUpdater />
       <FarmUpdater />
       <DualFarmUpdater />
       <SyrupUpdater />
+      <AnalyticsUpdater />
+      <AdsUpdater />
+      <GasUpdater />
     </>
   );
 }
@@ -130,27 +151,63 @@ const App: React.FC = () => {
                           <LandingPage />
                         </PageLayout>
                       </Route>
-                      <Route exact path='/swap'>
+                      <Route exact path='/swap/:version?'>
                         <PageLayout>
                           <SwapPage />
                         </PageLayout>
                       </Route>
-                      <Route exact path='/lend'>
+                      {/* <Route exact path='/lend'>
                         <PageLayout>
                           <LendPage />
                         </PageLayout>
-                      </Route>
-                      <Route exact path='/lend/detail'>
+                      </Route> */}
+                      {/* <Route exact path='/lend/detail'>
                         <PageLayout>
                           <LendDetailPage />
                         </PageLayout>
-                      </Route>
-                      <Route exact path='/pools'>
+                      </Route> */}
+                      <Route exact path='/pools/:version?'>
                         <PageLayout>
                           <PoolsPage />
                         </PageLayout>
                       </Route>
-                      <Route exact path='/farm'>
+                      <Route exact path='/migrate'>
+                        <PageLayout>
+                          <MigrateV2LiquidityPage />
+                        </PageLayout>
+                      </Route>
+                      <Route exact path='/migrate/:currencyIdA/:currencyIdB'>
+                        <PageLayout>
+                          <MigrateV2DetailsPage />
+                        </PageLayout>
+                      </Route>
+                      <Route exact strict path='/pool/:tokenId'>
+                        <PageLayout>
+                          <PositionPage></PositionPage>
+                        </PageLayout>
+                      </Route>
+                      <Route
+                        exact
+                        path='/add/:currencyIdA?/:currencyIdB?/:version?'
+                      >
+                        <PageLayout>
+                          <PoolsPage></PoolsPage>
+                        </PageLayout>
+                      </Route>
+                      <Route
+                        exact
+                        path='/increase/:currencyIdA?/:currencyIdB?/:tokenId'
+                      >
+                        <PageLayout>
+                          <IncreaseLiquidityV3Page></IncreaseLiquidityV3Page>
+                        </PageLayout>
+                      </Route>
+                      <Route exact path='/remove/:tokenId'>
+                        <PageLayout>
+                          <RemoveLiquidityV3Page></RemoveLiquidityV3Page>
+                        </PageLayout>
+                      </Route>
+                      <Route exact path='/farm/:version?'>
                         <PageLayout>
                           <FarmPage />
                         </PageLayout>
@@ -165,35 +222,35 @@ const App: React.FC = () => {
                           <ConvertQUICKPage />
                         </PageLayout>
                       </Route>
-                      <Route exact path='/prdt'>
-                        <PageLayout name='prdt'>
-                          <PrdtPage />
-                        </PageLayout>
+                      <Route exact path='/predictions'>
+                        <RedirectExternal
+                          to={`${process.env.REACT_APP_PREDICTIONS_URL}`}
+                        ></RedirectExternal>
                       </Route>
-                      <Route exact path='/analytics'>
+                      <Route exact path='/analytics/:version?'>
                         <PageLayout>
                           <AnalyticsHeader />
                           <AnalyticsOverview />
                         </PageLayout>
                       </Route>
-                      <Route exact path='/analytics/tokens'>
+                      <Route exact path='/analytics/:version/tokens'>
                         <PageLayout>
                           <AnalyticsHeader />
                           <AnalyticsTokens />
                         </PageLayout>
                       </Route>
-                      <Route exact path='/analytics/pairs'>
+                      <Route exact path='/analytics/:version/pairs'>
                         <PageLayout>
                           <AnalyticsHeader />
                           <AnalyticsPairs />
                         </PageLayout>
                       </Route>
-                      <Route exact path='/analytics/token/:id'>
+                      <Route exact path='/analytics/:version/token/:id'>
                         <PageLayout>
                           <AnalyticsTokenDetails />
                         </PageLayout>
                       </Route>
-                      <Route exact path='/analytics/pair/:id'>
+                      <Route exact path='/analytics/:version/pair/:id'>
                         <PageLayout>
                           <AnalyticsPairDetails />
                         </PageLayout>

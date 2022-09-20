@@ -26,6 +26,29 @@ body {
   }
 }
 
+.wrapper {
+  padding: 24px;
+  background: $bgPalette;
+  border-radius: 20px;
+  @include media("screen", "<phone") {
+    padding: 16px 12px
+  }
+}
+
+.cardRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  & > div {
+    display: flex;
+    align-items: center;
+    & > small {
+      margin-right: 10px;
+    }
+  }
+}
+
 .page {
   background-color: $bgColor;
   width: 100%;
@@ -102,6 +125,10 @@ body {
   cursor: pointer;
 }
 
+.no-outline {
+  outline: none;
+}
+
 .no-decoration {
   text-decoration: none;
 }
@@ -138,6 +165,14 @@ body {
   justify-content: space-between;
 }
 
+.justify-evenly {
+  justify-content: space-evenly;
+}
+
+.justify-around {
+  justify-content: space-around;
+}
+
 .flex-wrap {
   flex-wrap: wrap;
 }
@@ -161,5 +196,19 @@ body {
     margin: 8px 0;
     outline: none;
     padding: 6px 4px;
+  }
+}
+
+.token-select-background {
+  display: flex;
+  justify-content: space-around;
+  width: 176px;
+  height: 44px;
+  margin: 0 16px 0 0;
+  padding: 10px 12px 10px 10px;
+  border-radius: 22px;
+  background-color: #282d3d;
+  & p {
+    margin-left: 4px;
   }
 }

@@ -1,0 +1,53 @@
+@use 'styles/variables' as *;
+@use 'styles/breakpoints' as *;
+
+.pool-range-chart-wrapper {
+  background-color: $grey31;
+  border: 1px solid $secondary1;
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.pool-range-chart-warning {
+  background-color: $yellow4;
+  display: flex;
+  flex-wrap: wrap;
+  padding: 12px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  align-items: center;
+  & span, & small {
+    flex: 1;
+    color: $yellow5;
+    & a {
+      color: $yellow5;
+    }
+  }
+  & button {
+    background-color: $yellow5;
+    border: none;
+    color: $bgColor;
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+}
+
+.pool-range-chart-warning-icon {
+  background-color: $secondary1;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 16px;
+  color: $yellow5;
+  margin-right: 8px;
+  & svg {
+    width: 20px;
+  }
+}

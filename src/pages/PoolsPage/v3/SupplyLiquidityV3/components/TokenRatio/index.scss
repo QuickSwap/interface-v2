@@ -1,0 +1,11 @@
+.token-ratio {
+
+    width: 280px; 
+    height: 20px;
+    border-radius: 8px;
+    background: grey;
+
+    &__part {
+        transition-duration: .2s;
+    }
+}

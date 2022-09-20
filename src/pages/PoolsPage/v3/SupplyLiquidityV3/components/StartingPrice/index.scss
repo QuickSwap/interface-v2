@@ -1,0 +1,46 @@
+@use 'styles/variables' as *;
+@use 'styles/breakpoints' as *;
+
+.v3-pool-liquidity-starting-price {
+    background-color: $secondary1;
+    border-radius: 10px;
+    padding: 16px;
+    & small {
+        white-space: nowrap;
+    }
+}
+
+.v3-pool-starting-token-price {
+    display: flex;
+    align-items: center;
+    & > div {
+        background-color: $bgColor;
+        border-radius: 8px;
+        height: 32px;
+        padding: 0 8px;
+        display: flex;
+        align-items: center;
+    }
+}
+
+.v3-pool-starting-token-price-input {
+    border: 1px solid $primary;
+    display: flex;
+    height: 100%;
+    width: calc(100% + 8px);
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+    padding-left: 8px;
+    & input {
+        font-size: 14px;
+        color: $textPrimary;
+        font-weight: 500;
+    }
+    & button {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+        & span {
+            font-size: 12px;
+        }
+    }
+}

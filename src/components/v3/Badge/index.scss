@@ -1,0 +1,30 @@
+@use 'styles/variables' as *;
+@use 'styles/breakpoints' as *;
+
+.v3-badge {
+  padding: 0 8px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  background: $primaryLight;
+  border-radius: 8px;
+  color: white;
+
+  & svg {
+    width: 15px;
+    height: 15px;
+  }
+}
+
+.v3-badge-success {
+  background-color: $successLight;
+}
+
+.v3-badge-warning {
+  background-color: $yellow3;
+  color: $bgColor;
+}
+
+.v3-badge-primary {
+  background-color: $purple;
+}
