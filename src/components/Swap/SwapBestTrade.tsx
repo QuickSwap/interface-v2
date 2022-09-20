@@ -1,5 +1,12 @@
-import React, { useState, useMemo, useCallback, useEffect } from 'react';
-import { Currency, CurrencyAmount, JSBI, Token, Trade } from '@uniswap/sdk';
+import React, {
+  useState,
+  useMemo,
+  useCallback,
+  useEffect,
+  useRef,
+} from 'react';
+import { JSBI, Token, Trade, Currency as CurrencyV2 } from '@uniswap/sdk';
+import { Currency, CurrencyAmount } from '@uniswap/sdk-core';
 import ReactGA from 'react-ga';
 import { ArrowDown } from 'react-feather';
 import { Box, Button, CircularProgress } from '@material-ui/core';
@@ -45,8 +52,8 @@ import { BestTradeAdvancedSwapDetails } from './BestTradeAdvancedSwapDetails';
 import { GlobalValue } from 'constants/index';
 
 const SwapBestTrade: React.FC<{
-  currency0?: Currency;
-  currency1?: Currency;
+  currency0?: CurrencyV2;
+  currency1?: CurrencyV2;
   currencyBgClass?: string;
 }> = ({ currency0, currency1, currencyBgClass }) => {
   const { t } = useTranslation();
@@ -73,6 +80,8 @@ const SwapBestTrade: React.FC<{
     typedValue,
   );
   const allTokens = useAllTokens();
+  const [swapType, setSwapType] = useState<SwapSide>(SwapSide.SELL);
+  const [optimalRate, setOptimalRate] = useState<OptimalRate | undefined>();
 
   const showWrap: boolean = wrapType !== WrapType.NOT_APPLICABLE;
   const tradesByVersion = {
@@ -80,6 +89,7 @@ const SwapBestTrade: React.FC<{
     [Version.v2]: v2Trade,
   };
   const trade = showWrap ? undefined : tradesByVersion[toggledVersion];
+
   const {
     onSwitchTokens,
     onCurrencySelection,
@@ -95,23 +105,58 @@ const SwapBestTrade: React.FC<{
   );
   const dependentField: Field =
     independentField === Field.INPUT ? Field.OUTPUT : Field.INPUT;
+  const inputCurrency = currencies[Field.INPUT];
+  const outputCurrency = currencies[Field.OUTPUT];
+
   const parsedAmounts = useMemo(() => {
+    const parsedAmountInput =
+      inputCurrency && parsedAmount
+        ? CurrencyAmount.fromRawAmount(
+            inputCurrency as Currency,
+            parsedAmount.raw,
+          )
+        : undefined;
+    const parsedAmountOutput =
+      outputCurrency && parsedAmount
+        ? CurrencyAmount.fromRawAmount(
+            outputCurrency as Currency,
+            parsedAmount.raw,
+          )
+        : undefined;
+
     return showWrap
       ? {
-          [Field.INPUT]: parsedAmount,
-          [Field.OUTPUT]: parsedAmount,
+          [Field.INPUT]: parsedAmountInput,
+          [Field.OUTPUT]: parsedAmountOutput,
         }
       : {
           [Field.INPUT]:
             independentField === Field.INPUT
-              ? parsedAmount
-              : trade?.inputAmount,
+              ? parsedAmountInput
+              : optimalRate && outputCurrency
+              ? CurrencyAmount.fromRawAmount(
+                  inputCurrency as Currency,
+                  JSBI.BigInt(optimalRate.srcAmount),
+                )
+              : undefined,
           [Field.OUTPUT]:
             independentField === Field.OUTPUT
-              ? parsedAmount
-              : trade?.outputAmount,
+              ? parsedAmountOutput
+              : optimalRate && outputCurrency
+              ? CurrencyAmount.fromRawAmount(
+                  outputCurrency as Currency,
+                  JSBI.BigInt(optimalRate.destAmount),
+                )
+              : undefined,
         };
-  }, [parsedAmount, independentField, trade, showWrap]);
+  }, [
+    parsedAmount,
+    independentField,
+    showWrap,
+    optimalRate,
+    inputCurrency,
+    outputCurrency,
+  ]);
   const formattedAmounts = useMemo(() => {
     return {
       [independentField]: typedValue,
@@ -173,27 +218,28 @@ const SwapBestTrade: React.FC<{
   );
 
   const paraswap = useParaswap();
-  const [optimalRate, setOptimalRate] = useState<OptimalRate | undefined>();
   const [optimalRateLoading, setOptimalRateLoading] = useState<boolean>(false);
-  const srcToken = trade
-    ? getBestTradeCurrencyAddress(trade.inputAmount.currency)
+
+  const srcToken = inputCurrency
+    ? getBestTradeCurrencyAddress(inputCurrency)
     : undefined;
-  const destToken = trade
-    ? getBestTradeCurrencyAddress(trade.outputAmount.currency)
+  const destToken = outputCurrency
+    ? getBestTradeCurrencyAddress(outputCurrency)
     : undefined;
 
-  const srcDecimals = trade?.inputAmount.currency.decimals;
-  const destDecimals = trade?.outputAmount.currency.decimals;
+  const srcDecimals = inputCurrency?.decimals;
+  const destDecimals = outputCurrency?.decimals;
+  const tradeDecimals = swapType === SwapSide.SELL ? srcDecimals : destDecimals;
   const pct = basisPointsToPercent(allowedSlippage);
-  const srcAmount = trade
-    ?.maximumAmountIn(pct)
-    .multiply(JSBI.BigInt(10 ** trade.inputAmount.currency.decimals))
-    .toFixed(0);
+  const srcAmount =
+    parsedAmount && tradeDecimals
+      ? parsedAmount.multiply(JSBI.BigInt(10 ** tradeDecimals)).toFixed(0)
+      : undefined;
 
-  const minDestAmount = trade
-    ?.minimumAmountOut(pct)
-    .multiply(JSBI.BigInt(10 ** trade.outputAmount.currency.decimals))
-    .toFixed(0);
+  // const minDestAmount = trade
+  //   ?.minimumAmountOut(pct)
+  //   .multiply(JSBI.BigInt(10 ** trade.outputAmount.currency.decimals))
+  //   .toFixed(0);
 
   const maxImpactAllowed = isExpertMode
     ? 100
@@ -208,6 +254,7 @@ const SwapBestTrade: React.FC<{
       if (!srcToken || !destToken || !srcAmount) {
         return;
       }
+
       setOptimalRateLoading(true);
       try {
         const rate = await paraswap.getRate({
@@ -216,30 +263,30 @@ const SwapBestTrade: React.FC<{
           srcDecimals,
           destDecimals,
           amount: srcAmount,
-          side: SwapSide.SELL,
+          side: swapType,
           options: {
             includeDEXS: 'quickswap,quickswapv3',
             maxImpact: maxImpactAllowed,
           },
         });
+        console.log('bbb', rate);
         setOptimalRate(rate);
       } catch (err) {
         console.error('could not obtain optimal rate', err.code, err.message);
       }
       setOptimalRateLoading(false);
     }
-    //TODO: figure out a way to debounce this
     fetchOptimalRate();
     // We add the minDestAmount so this function will tie into the existing hooks for trade
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    paraswap,
     srcToken,
     destToken,
     srcAmount,
-    minDestAmount,
     maxImpactAllowed,
     srcDecimals,
     destDecimals,
+    swapType,
   ]);
 
   const {
@@ -357,19 +404,26 @@ const SwapBestTrade: React.FC<{
   const handleTypeInput = useCallback(
     (value: string) => {
       onUserInput(Field.INPUT, value);
+      setSwapType(SwapSide.SELL);
     },
     [onUserInput],
   );
   const handleTypeOutput = useCallback(
     (value: string) => {
       onUserInput(Field.OUTPUT, value);
+      setSwapType(SwapSide.BUY);
     },
     [onUserInput],
   );
 
-  const maxAmountInput: CurrencyAmount | undefined = maxAmountSpend(
-    currencyBalances[Field.INPUT],
-  );
+  const maxAmountInputV2 = maxAmountSpend(currencyBalances[Field.INPUT]);
+  const maxAmountInput =
+    maxAmountInputV2 && inputCurrency
+      ? CurrencyAmount.fromRawAmount(
+          inputCurrency as Currency,
+          maxAmountInputV2.raw,
+        )
+      : undefined;
 
   const handleMaxInput = useCallback(() => {
     maxAmountInput && onUserInput(Field.INPUT, maxAmountInput.toExact());
