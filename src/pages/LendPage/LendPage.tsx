@@ -119,7 +119,7 @@ const LendPage: React.FC = () => {
       </Box>
       <LendAlertBox />
       <Box maxWidth={isMobile ? '320px' : '1136px'} margin='16px auto 24px'>
-        <AdsSlider sort='5' />
+        <AdsSlider sort='lend' />
       </Box>
       <Box mb={3} textAlign='center'>
         <h4 className='text-bold'>{t('lendPageTitle')}</h4>

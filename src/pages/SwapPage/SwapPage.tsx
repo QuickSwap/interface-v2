@@ -114,7 +114,7 @@ const SwapPage: React.FC = () => {
               <SwapMain />
             </Box>
             <Box maxWidth={isTiny ? '320px' : '352px'} margin='16px auto 0'>
-              <AdsSlider sort='1' />
+              <AdsSlider sort='swap' />
             </Box>
           </Grid>
           <Grid item xs={12} sm={12} md={6} lg={7}>
@@ -168,7 +168,7 @@ const SwapPage: React.FC = () => {
             </Box>
             <SwapMain />
             <Box maxWidth={isTiny ? '320px' : '352px'} margin='16px auto 0'>
-              <AdsSlider sort='1' />
+              <AdsSlider sort='swap' />
             </Box>
           </Box>
           {infoPos === 'left' && (

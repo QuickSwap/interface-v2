@@ -65,7 +65,7 @@ const FarmPage: React.FC = () => {
         </Box>
       </Box>
       <Box maxWidth={isMobile ? '320px' : '1136px'} margin='0 auto 24px'>
-        <AdsSlider sort='3' />
+        <AdsSlider sort='farms' />
       </Box>
       <CustomSwitch
         width={300}
