@@ -26,7 +26,7 @@ const AnalyticsHeader: React.FC<AnalyticHeaderProps> = ({ data, type }) => {
         <h4>{t('quickswapAnalytics')}</h4>
       </Box>
       <Box maxWidth={isMobile ? '320px' : '1136px'} margin='0 auto 24px'>
-        <AdsSlider sort='6' />
+        <AdsSlider sort='analytics' />
       </Box>
       <Box
         mb={4}

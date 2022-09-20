@@ -10,13 +10,17 @@ interface AdsSliderProps {
 const AdsSlider: React.FC<AdsSliderProps> = ({ sort }) => {
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
-  const ads = useDefaultAdsList()[sort];
+  const adsData = useDefaultAdsList();
+  const ads = adsData.data[sort];
 
   const adsSliderSettings = {
     dots: false,
     infinite: true,
     autoplay: true,
-    autoplaySpeed: 25000,
+    autoplaySpeed:
+      adsData.config && adsData.config.autoPlaySpeed
+        ? adsData.config.autoPlaySpeed
+        : 20000,
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
