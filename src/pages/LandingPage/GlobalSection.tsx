@@ -6,20 +6,23 @@ import { HeroSection } from './HeroSection';
 import { TradingInfo } from './TradingInfo';
 import { getGlobalData } from 'utils';
 import { getGlobalDataV3 } from 'utils/v3-graph';
+import { useActiveWeb3React } from 'hooks';
 
 export const GlobalSection: React.FC = () => {
   const { globalData, updateGlobalData } = useGlobalData();
   const { breakpoints } = useTheme();
+  const { chainId } = useActiveWeb3React();
   const mobileWindowSize = useMediaQuery(breakpoints.down('sm'));
   const [v3GlobalData, updateV3GlobalData] = useState<any>(undefined);
   const { ethPrice } = useEthPrice();
 
   useEffect(() => {
     async function fetchGlobalData() {
-      if (ethPrice.price && ethPrice.oneDayPrice) {
+      if (ethPrice.price && ethPrice.oneDayPrice && chainId) {
         const newGlobalData = await getGlobalData(
           ethPrice.price,
           ethPrice.oneDayPrice,
+          chainId,
         );
         if (newGlobalData) {
           updateGlobalData({ data: newGlobalData });
@@ -29,7 +32,7 @@ export const GlobalSection: React.FC = () => {
       updateV3GlobalData(globalDataV3);
     }
     fetchGlobalData();
-  }, [updateGlobalData, ethPrice.price, ethPrice.oneDayPrice]);
+  }, [updateGlobalData, ethPrice.price, ethPrice.oneDayPrice, chainId]);
 
   return (
     <>

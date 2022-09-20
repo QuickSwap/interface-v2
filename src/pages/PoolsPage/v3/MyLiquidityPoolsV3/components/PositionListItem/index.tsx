@@ -17,13 +17,15 @@ import { formatTickPrice } from 'utils/v3/formatTickPrice';
 import DoubleCurrencyLogo from 'components/DoubleCurrencyLogo';
 import { Position } from 'v3lib/entities/position';
 import { WMATIC_EXTENDED } from 'constants/v3/addresses';
-import { GlobalValue } from 'constants/index';
+import { GlobalTokens } from 'constants/index';
 import { toToken } from 'constants/v3/routing';
 import { Box } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
 import { ExpandLess, ExpandMore } from '@material-ui/icons';
 import Badge, { BadgeVariant } from 'components/v3/Badge';
 import PositionListItemDetails from '../PositionListItemDetails';
+import { ChainId } from '@uniswap/sdk';
+import { useActiveWeb3React } from 'hooks';
 
 interface PositionListItemProps {
   positionDetails: PositionPool;
@@ -34,21 +36,22 @@ interface PositionListItemProps {
 
 export function getPriceOrderingFromPositionForUI(
   position?: Position,
+  chainId?: ChainId,
 ): {
   priceLower?: Price<Token, Token>;
   priceUpper?: Price<Token, Token>;
   quote?: Token;
   base?: Token;
 } {
-  if (!position) {
+  if (!position || !chainId) {
     return {};
   }
 
   const token0 = position.amount0.currency;
   const token1 = position.amount1.currency;
 
-  const USDC = toToken(GlobalValue.tokens.COMMON.USDC);
-  const USDT = toToken(GlobalValue.tokens.COMMON.USDT);
+  const USDC = toToken(GlobalTokens[chainId]['USDC']);
+  const USDT = toToken(GlobalTokens[chainId]['USDT']);
 
   // if token0 is a dollar-stable asset, set it as the quote token
   // const stables = [USDC_BINANCE, USDC_KOVAN]
@@ -100,6 +103,7 @@ export default function PositionListItem({
   highlightNewest,
   hideExpand = false,
 }: PositionListItemProps) {
+  const { chainId } = useActiveWeb3React();
   const history = useHistory();
   const dispatch = useAppDispatch();
   const [expanded, setExpanded] = useState(hideExpand);
@@ -162,7 +166,7 @@ export default function PositionListItem({
     priceUpper,
     quote,
     base,
-  } = getPriceOrderingFromPositionForUI(position);
+  } = getPriceOrderingFromPositionForUI(position, chainId);
   const currencyQuote = quote && unwrappedToken(quote);
   const currencyBase = base && unwrappedToken(base);
 

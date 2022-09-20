@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Price, Token, Currency } from '@uniswap/sdk-core';
 import Input from 'components/NumericalInput';
-import { GlobalValue } from 'constants/index';
+import { GlobalTokens } from 'constants/index';
 import { toToken } from 'constants/v3/routing';
 import { useBestV3TradeExactIn } from 'hooks/v3/useBestV3Trade';
 import useUSDCPrice, { useUSDCValue } from 'hooks/v3/useUSDCPrice';
@@ -17,6 +17,7 @@ import { tryParseAmount } from 'state/swap/v3/hooks';
 import './index.scss';
 import { Box } from '@material-ui/core';
 import { Add, Remove } from '@material-ui/icons';
+import { useActiveWeb3React } from 'hooks';
 
 interface IRangeSelector {
   priceLower: Price<Token, Token> | undefined;
@@ -158,6 +159,7 @@ function RangePart({
 }: IRangePart) {
   const [localUSDValue, setLocalUSDValue] = useState('');
   const [localTokenValue, setLocalTokenValue] = useState('');
+  const { chainId } = useActiveWeb3React();
 
   const dispatch = useAppDispatch();
 
@@ -165,7 +167,7 @@ function RangePart({
     return priceFormat === PriceFormats.USD;
   }, [priceFormat]);
 
-  const USDC = toToken(GlobalValue.tokens.COMMON.USDC);
+  const USDC = chainId ? toToken(GlobalTokens[chainId]['USDC']) : undefined;
   const valueUSD = useUSDCValue(
     tryParseAmount(
       value === '∞' || value === '0' ? undefined : Number(value).toFixed(5),
@@ -182,7 +184,7 @@ function RangePart({
 
   const handleOnBlur = useCallback(() => {
     if (isUSD && usdPriceB) {
-      if (tokenB?.wrapped.address === USDC.address) {
+      if (tokenB?.wrapped.address === USDC?.address) {
         onUserInput(localUSDValue);
       } else {
         if (tokenValue && tokenValue.trade) {
@@ -200,7 +202,7 @@ function RangePart({
         }
       }
     } else if (isUSD && initialUSDPrices.CURRENCY_B) {
-      if (tokenB?.wrapped.address === USDC.address) {
+      if (tokenB?.wrapped.address === USDC?.address) {
         onUserInput(localUSDValue);
       } else {
         onUserInput(String(+localUSDValue / +initialUSDPrices.CURRENCY_B));
@@ -209,7 +211,7 @@ function RangePart({
         );
       }
     } else if (isUSD && initialTokenPrice && usdPriceA) {
-      if (tokenB?.wrapped.address === USDC.address) {
+      if (tokenB?.wrapped.address === USDC?.address) {
         onUserInput(localUSDValue);
       } else {
         onUserInput(

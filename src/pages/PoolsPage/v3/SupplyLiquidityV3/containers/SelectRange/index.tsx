@@ -12,7 +12,7 @@ import {
   useInitialTokenPrice,
   useInitialUSDPrices,
 } from 'state/mint/v3/hooks';
-import useUSDCPrice, { useUSDCValue } from 'hooks/v3/useUSDCPrice';
+import { useUSDCValue } from 'hooks/v3/useUSDCPrice';
 import { useAppDispatch } from 'state/hooks';
 import { useActivePreset } from 'state/mint/v3/hooks';
 import { tryParseAmount } from 'state/swap/v3/hooks';
@@ -20,10 +20,11 @@ import { Presets } from 'state/mint/v3/reducer';
 import { PriceFormats } from 'components/v3/PriceFomatToggler';
 import { useHistory } from 'react-router-dom';
 import LiquidityChartRangeInput from 'components/v3/LiquidityChartRangeInput';
-import { GlobalValue } from 'constants/index';
+import { GlobalTokens } from 'constants/index';
 import { toToken } from 'constants/v3/routing';
 import { Box } from '@material-ui/core';
 import { ReportProblemOutlined } from '@material-ui/icons';
+import { useActiveWeb3React } from 'hooks';
 
 interface IRangeSelector {
   currencyA: Currency | null | undefined;
@@ -38,6 +39,7 @@ export function SelectRange({
   mintInfo,
   priceFormat,
 }: IRangeSelector) {
+  const { chainId } = useActiveWeb3React();
   const [fullRangeWarningShown, setFullRangeWarningShown] = useState(true);
   const { startPriceTypedValue } = useV3MintState();
   const history = useHistory();
@@ -45,27 +47,24 @@ export function SelectRange({
   const dispatch = useAppDispatch();
   const activePreset = useActivePreset();
 
-  const currencyAUSDC = useUSDCPrice(currencyA ?? undefined);
-  const currencyBUSDC = useUSDCPrice(currencyB ?? undefined);
-
   //TODO - create one main isUSD
   const isUSD = useMemo(() => {
     return priceFormat === PriceFormats.USD;
   }, []);
 
   const isStablecoinPair = useMemo(() => {
-    if (!currencyA || !currencyB) return false;
+    if (!currencyA || !currencyB || !chainId) return false;
 
-    const MAI = toToken(GlobalValue.tokens.COMMON.MI);
-    const USDC = toToken(GlobalValue.tokens.COMMON.USDC);
-    const USDT = toToken(GlobalValue.tokens.COMMON.USDT);
+    const MAI = toToken(GlobalTokens[chainId]['MI']);
+    const USDC = toToken(GlobalTokens[chainId]['USDC']);
+    const USDT = toToken(GlobalTokens[chainId]['USDT']);
     const stablecoins = [USDC.address, USDT.address, MAI.address];
 
     return (
       stablecoins.includes(currencyA.wrapped.address) &&
       stablecoins.includes(currencyB.wrapped.address)
     );
-  }, [currencyA, currencyB]);
+  }, [currencyA, currencyB, chainId]);
 
   // get value and prices at ticks
   const { [Bound.LOWER]: tickLower, [Bound.UPPER]: tickUpper } = useMemo(() => {
@@ -103,15 +102,15 @@ export function SelectRange({
 
   const isSorted = useMemo(() => {
     return tokenA && tokenB && tokenA.sortsBefore(tokenB);
-  }, [tokenA, tokenB, mintInfo]);
+  }, [tokenA, tokenB]);
 
   const leftPrice = useMemo(() => {
     return isSorted ? priceLower : priceUpper?.invert();
-  }, [isSorted, priceLower, priceUpper, mintInfo]);
+  }, [isSorted, priceLower, priceUpper]);
 
   const rightPrice = useMemo(() => {
     return isSorted ? priceUpper : priceLower?.invert();
-  }, [isSorted, priceUpper, priceLower, mintInfo]);
+  }, [isSorted, priceUpper, priceLower]);
 
   const price = useMemo(() => {
     if (!mintInfo.price) return;
@@ -227,10 +226,12 @@ export function SelectRange({
     }
   }, [
     mintInfo.price,
+    mintInfo.invertPrice,
+    initialUSDPrices.CURRENCY_A,
+    initialUSDPrices.CURRENCY_B,
     isUSD,
-    initialUSDPrices,
-    initialTokenPrice,
     currentPriceInUSDA,
+    currentPriceInUSDB,
   ]);
 
   return (

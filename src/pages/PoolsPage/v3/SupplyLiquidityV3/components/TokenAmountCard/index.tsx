@@ -12,7 +12,7 @@ import { tryParseAmount } from 'state/swap/v3/hooks';
 import { useBestV3TradeExactIn } from 'hooks/v3/useBestV3Trade';
 import { useInitialTokenPrice, useInitialUSDPrices } from 'state/mint/v3/hooks';
 import './index.scss';
-import { GlobalValue } from 'constants/index';
+import { GlobalTokens } from 'constants/index';
 import { toToken } from 'constants/v3/routing';
 import { Box } from '@material-ui/core';
 import { LockOutlined } from '@material-ui/icons';
@@ -48,7 +48,7 @@ export function TokenAmountCard({
   priceFormat,
   isBase,
 }: ITokenAmountCard) {
-  const { account } = useActiveWeb3React();
+  const { account, chainId } = useActiveWeb3React();
 
   const balance = useCurrencyBalance(
     account ?? undefined,
@@ -66,7 +66,9 @@ export function TokenAmountCard({
     ),
     true,
   );
-  const USDC_POLYGON = toToken(GlobalValue.tokens.COMMON.USDC);
+  const USDC_POLYGON = chainId
+    ? toToken(GlobalTokens[chainId]['USDC'])
+    : undefined;
   const tokenValue = useBestV3TradeExactIn(
     tryParseAmount('1', USDC_POLYGON),
     currency ?? undefined,
@@ -83,7 +85,7 @@ export function TokenAmountCard({
   }, [priceFormat]);
 
   const handleOnBlur = useCallback(() => {
-    if (currency?.wrapped.address === USDC_POLYGON.address) {
+    if (currency?.wrapped.address === USDC_POLYGON?.address) {
       handleInput(localUSDValue);
       return;
     }

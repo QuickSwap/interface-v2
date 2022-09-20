@@ -1,7 +1,7 @@
 // a list of tokens by chain
 import { ChainId } from '@uniswap/sdk';
 import { Currency, Token } from '@uniswap/sdk-core';
-import { GlobalValue } from 'constants/index';
+import { GlobalTokens } from 'constants/index';
 import { ExtendedEther, WMATIC_EXTENDED } from 'constants/tokens';
 
 export const toToken = (t: {
@@ -13,14 +13,6 @@ export const toToken = (t: {
 }): Token => {
   return new Token(t.chainId, t.address, t.decimals, t.symbol, t.name);
 };
-
-const DAI = toToken(GlobalValue.tokens.COMMON.DAI);
-const USDC = toToken(GlobalValue.tokens.COMMON.USDC);
-const USDT = toToken(GlobalValue.tokens.COMMON.USDT);
-const OLD_QUICK = toToken(GlobalValue.tokens.COMMON.OLD_QUICK);
-const NEW_QUICK = toToken(GlobalValue.tokens.COMMON.NEW_QUICK);
-const ETHER = toToken(GlobalValue.tokens.COMMON.ETHER);
-const WBTC = toToken(GlobalValue.tokens.COMMON.WBTC);
 
 type ChainTokenList = {
   readonly [chainId: number]: Token[];
@@ -37,7 +29,10 @@ const WETH_ONLY: ChainTokenList = Object.fromEntries(
 // used to construct intermediary pairs for trading
 export const BASES_TO_CHECK_TRADES_AGAINST: ChainTokenList = {
   ...WETH_ONLY,
-  [ChainId.MATIC]: [...WETH_ONLY[ChainId.MATIC], USDC],
+  [ChainId.MATIC]: [
+    ...WETH_ONLY[ChainId.MATIC],
+    toToken(GlobalTokens[ChainId.MATIC]['USDC']),
+  ],
 };
 
 export const ADDITIONAL_BASES: {
@@ -58,8 +53,8 @@ export const COMMON_BASES: ChainCurrencyList = {
   [ChainId.MATIC]: [
     ExtendedEther.onChain(ChainId.MATIC),
     WMATIC_EXTENDED[ChainId.MATIC],
-    USDC,
-    OLD_QUICK,
+    toToken(GlobalTokens[ChainId.MATIC]['USDC']),
+    toToken(GlobalTokens[ChainId.MATIC]['OLD_QUICK']),
   ],
 };
 
@@ -68,15 +63,20 @@ export const BASES_TO_TRACK_LIQUIDITY_FOR: ChainTokenList = {
   ...WETH_ONLY,
   [ChainId.MATIC]: [
     ...WETH_ONLY[ChainId.MATIC],
-    DAI,
-    USDC,
-    USDT,
-    OLD_QUICK,
-    NEW_QUICK,
-    ETHER,
-    WBTC,
+    toToken(GlobalTokens[ChainId.MATIC]['DAI']),
+    toToken(GlobalTokens[ChainId.MATIC]['USDC']),
+    toToken(GlobalTokens[ChainId.MATIC]['USDT']),
+    toToken(GlobalTokens[ChainId.MATIC]['OLD_QUICK']),
+    toToken(GlobalTokens[ChainId.MATIC]['NEW_QUICK']),
+    toToken(GlobalTokens[ChainId.MATIC]['ETHER']),
+    toToken(GlobalTokens[ChainId.MATIC]['WBTC']),
   ],
 };
 export const PINNED_PAIRS: { readonly [chainId: number]: [Token, Token][] } = {
-  [ChainId.MATIC]: [[USDC, USDT]],
+  [ChainId.MATIC]: [
+    [
+      toToken(GlobalTokens[ChainId.MATIC]['USDC']),
+      toToken(GlobalTokens[ChainId.MATIC]['USDT']),
+    ],
+  ],
 };
