@@ -31,7 +31,13 @@ import {
 } from 'utils/marketxyz';
 import { useBorrowLimit } from 'hooks/marketxyz/useBorrowLimit';
 import { useTranslation } from 'react-i18next';
-import { QuestionHelper, CopyHelper, CurrencyLogo } from 'components';
+import {
+  QuestionHelper,
+  CopyHelper,
+  CurrencyLogo,
+  TransactionConfirmationModal,
+  TransactionErrorContent,
+} from 'components';
 import 'pages/styles/lend.scss';
 import { GlobalValue } from 'constants/index';
 import LendDetailAssetStats from './LendDetailAssetStats';
@@ -43,6 +49,10 @@ const LendDetailPage: React.FC = () => {
   const location = useLocation();
   const { chainId, account } = useActiveWeb3React();
 
+  const [txLoading, setTxLoading] = useState(false);
+  const [openTxModal, setOpenTxModal] = useState(false);
+  const [txHash, setTxHash] = useState<string | undefined>(undefined);
+  const [txError, setTxError] = useState<string | undefined>(undefined);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalIsBorrow, setModalIsBorrow] = useState(false);
   const [selectedAsset, setSelectedAsset] = useState<
@@ -395,6 +405,10 @@ const LendDetailPage: React.FC = () => {
                                 onClick={() => {
                                   setSelectedAsset(asset);
                                   if (!asset.membership && account && sdk) {
+                                    setTxLoading(true);
+                                    setTxHash(undefined);
+                                    setTxError('');
+                                    setOpenTxModal(true);
                                     toggleCollateral(
                                       asset,
                                       account,
@@ -403,11 +417,14 @@ const LendDetailPage: React.FC = () => {
                                         : t('cannotEnterMarket'),
                                       sdk,
                                     )
-                                      .then(() => {
+                                      .then((txResponse) => {
+                                        setTxHash(txResponse.transactionHash);
+                                        setTxLoading(false);
                                         setSelectedAsset(undefined);
                                       })
                                       .catch((e) => {
-                                        console.log('ccc', e);
+                                        setTxError(t('errorInTx'));
+                                        setTxLoading(false);
                                         setSelectedAsset(undefined);
                                       });
                                   } else {
@@ -598,6 +615,26 @@ const LendDetailPage: React.FC = () => {
           }}
           asset={selectedAsset}
           borrow={modalIsBorrow}
+        />
+      )}
+      {openTxModal && (
+        <TransactionConfirmationModal
+          isOpen={openTxModal}
+          onDismiss={() => setOpenTxModal(false)}
+          attemptingTxn={txLoading}
+          hash={txHash}
+          txPending={false}
+          modalContent=''
+          content={() =>
+            txError ? (
+              <TransactionErrorContent
+                onDismiss={() => setOpenTxModal(false)}
+                message={txError}
+              />
+            ) : (
+              <></>
+            )
+          }
         />
       )}
     </>

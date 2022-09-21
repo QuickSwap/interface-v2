@@ -697,7 +697,6 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
                   setTxHash(txResponse.transactionHash);
                   setLoading(false);
                 } catch (e) {
-                  console.log(e);
                   setTxError(t('errorInTx'));
                   setLoading(false);
                 }
