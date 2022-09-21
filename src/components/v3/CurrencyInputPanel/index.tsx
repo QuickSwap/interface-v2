@@ -1,6 +1,12 @@
 import React from 'react';
 import { Pair } from '@uniswap/v2-sdk';
-import { Currency, CurrencyAmount, Percent, Token } from '@uniswap/sdk-core';
+import {
+  Currency,
+  CurrencyAmount,
+  Percent,
+  Token,
+  Fraction,
+} from '@uniswap/sdk-core';
 import { ReactNode, useCallback, useMemo, useState } from 'react';
 import { RowBetween, RowFixed } from '../Row';
 import { TYPE } from 'theme/index';
@@ -30,6 +36,7 @@ import CurrencySearchModal from 'components/CurrencySearchModal';
 import { Box } from '@material-ui/core';
 import NumericalInput from 'components/NumericalInput';
 import { useTranslation } from 'react-i18next';
+import JSBI from 'jsbi';
 
 interface CurrencyInputPanelProps {
   value: string;
@@ -102,11 +109,25 @@ export default function CurrencyInputPanel({
 
   const currentPrice = useUSDCPrice(currency ?? undefined);
 
+  const valueAsUsd = useMemo(() => {
+    if (!currentPrice || value === undefined || !currency) {
+      return undefined;
+    }
+
+    const factor = 10 ** currency.decimals;
+    return currentPrice.quote(
+      CurrencyAmount.fromRawAmount(
+        currency,
+        JSBI.BigInt(factor * Number(value)),
+      ),
+    );
+  }, [currentPrice, currency, value]);
+
   const handleDismissSearch = useCallback(() => {
     setModalOpen(false);
   }, [setModalOpen]);
 
-  const balanceString = useMemo(() => {
+  const balanceAsUsdc = useMemo(() => {
     if (!balance) return 'Loading...';
 
     const _balance = balance.toFixed();
@@ -210,7 +231,7 @@ export default function CurrencyInputPanel({
             )}
           </Box>
 
-          <small className='text-secondary'>${balanceString}</small>
+          <small className='text-secondary'>${valueAsUsd?.toFixed(2)}</small>
         </Box>
       </Box>
 
