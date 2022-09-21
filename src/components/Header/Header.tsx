@@ -1,32 +1,41 @@
-import React, { useMemo, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
 import { Box, useMediaQuery } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
+import { ReactComponent as LightIcon } from 'assets/images/LightIcon.svg';
+import NewTag from 'assets/images/NewTag.png';
+import QuickIcon from 'assets/images/quickIcon.svg';
+import QuickLogo from 'assets/images/quickLogo.png';
+import SparkleBottom from 'assets/images/SparkleBottom.svg';
+import SparkleLeft from 'assets/images/SparkleLeft.svg';
+import SparkleRight from 'assets/images/SparkleRight.svg';
+import SparkleTop from 'assets/images/SparkleTop.svg';
+import { ReactComponent as ThreeDotIcon } from 'assets/images/ThreeDot.svg';
+import WalletIcon from 'assets/images/WalletIcon.png';
+import { WalletModal } from 'components';
+import 'components/styles/Header.scss';
+import { useActiveWeb3React } from 'hooks';
+import useENSName from 'hooks/useENSName';
+import React, { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Link, useLocation } from 'react-router-dom';
 import { useWalletModalToggle } from 'state/application/hooks';
 import {
   isTransactionRecent,
   useAllTransactions,
 } from 'state/transactions/hooks';
 import { TransactionDetails } from 'state/transactions/reducer';
-import { shortenAddress, addMaticToMetamask, isSupportedNetwork } from 'utils';
-import useENSName from 'hooks/useENSName';
-import { WalletModal } from 'components';
-import { useActiveWeb3React } from 'hooks';
-import QuickIcon from 'assets/images/quickIcon.svg';
-import QuickLogo from 'assets/images/quickLogo.png';
-import { ReactComponent as ThreeDotIcon } from 'assets/images/ThreeDot.svg';
-import { ReactComponent as LightIcon } from 'assets/images/LightIcon.svg';
-import WalletIcon from 'assets/images/WalletIcon.png';
-import NewTag from 'assets/images/NewTag.png';
-import SparkleLeft from 'assets/images/SparkleLeft.svg';
-import SparkleRight from 'assets/images/SparkleRight.svg';
-import SparkleTop from 'assets/images/SparkleTop.svg';
-import SparkleBottom from 'assets/images/SparkleBottom.svg';
-import 'components/styles/Header.scss';
-import { useTranslation } from 'react-i18next';
+import { addMaticToMetamask, isSupportedNetwork, shortenAddress } from 'utils';
 
 const newTransactionsFirst = (a: TransactionDetails, b: TransactionDetails) => {
   return b.addedTime - a.addedTime;
+};
+
+const getPredictionPath = () => {
+  const predictionPath = process?.env?.REACT_APP_PREDICTIONS_URL || '';
+  if (predictionPath.startsWith('http')) {
+    return predictionPath;
+  } else {
+    return 'https://' + predictionPath;
+  }
 };
 
 const Header: React.FC = () => {
@@ -82,6 +91,8 @@ const Header: React.FC = () => {
       link: '/predictions',
       text: 'Predictions',
       id: 'predictions-page-link',
+      isExternal: true,
+      externalLink: getPredictionPath(),
       isNew: true,
     },
     // {
@@ -217,16 +228,25 @@ const Header: React.FC = () => {
               {openDetailMenu && (
                 <Box className='subMenuWrapper'>
                   <Box className='subMenu'>
-                    {menuItems.slice(4, menuItems.length).map((val, index) => (
-                      <Link
-                        to={val.link}
-                        key={index}
-                        className='menuItem'
-                        onClick={() => setOpenDetailMenu(false)}
-                      >
-                        <small>{val.text}</small>
-                      </Link>
-                    ))}
+                    {menuItems.slice(4, menuItems.length).map((val, index) => {
+                      return val.isExternal ? (
+                        <a
+                          href={val.externalLink}
+                          target='_blank'
+                          rel='noopener noreferrer'
+                        >
+                          <small>{val.text}</small>
+                        </a>
+                      ) : (
+                        <Link
+                          to={val.link}
+                          key={index}
+                          onClick={() => setOpenDetailMenu(false)}
+                        >
+                          <small>{val.text}</small>
+                        </Link>
+                      );
+                    })}
                     {outLinks.map((item, ind) => (
                       <a
                         href={item.link}
