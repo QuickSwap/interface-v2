@@ -1,6 +1,6 @@
 import { ChainId } from '@uniswap/sdk';
-import { useMemo } from 'react';
-import { useSelector } from 'react-redux';
+import { useCallback, useMemo } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'state';
 import { FarmListInfo, StakingRaw, StakingBasic } from 'types';
 import { Token } from '@uniswap/sdk';
@@ -8,6 +8,8 @@ import { TokenAddressMap, useSelectedTokenList } from 'state/lists/hooks';
 import { getTokenFromAddress } from 'utils';
 import { useTokens } from 'hooks/Tokens';
 import { GlobalValue } from 'constants/index';
+import { updateV3Stake } from './actions';
+import { FarmingType } from 'models/enums';
 
 export class WrappedStakingInfo implements StakingBasic {
   public readonly stakingInfo: StakingRaw;
@@ -195,4 +197,27 @@ export function useAllFarms(): FarmListInfo[] {
         .filter((l): l is FarmListInfo => Boolean(l)),
     [farms],
   );
+}
+
+export function useV3StakeData() {
+  const v3Stake = useSelector<AppState, AppState['farms']['v3Stake']>(
+    (state) => state.farms.v3Stake,
+  );
+
+  const dispatch = useDispatch();
+  const _updateV3Stake = useCallback(
+    (v3Stake: {
+      txType?: string;
+      txHash?: string;
+      txConfirmed?: boolean;
+      selectedTokenId?: string;
+      selectedFarmingType?: FarmingType | null;
+      txError?: string;
+    }) => {
+      dispatch(updateV3Stake(v3Stake));
+    },
+    [dispatch],
+  );
+
+  return { v3Stake, updateV3Stake: _updateV3Stake };
 }

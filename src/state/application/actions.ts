@@ -23,6 +23,7 @@ export type PopupContent =
 export enum ApplicationModal {
   WALLET,
   SETTINGS,
+  SETTINGSV3,
   SELF_CLAIM,
   ADDRESS_CLAIM,
   CLAIM_POPUP,
@@ -53,6 +54,12 @@ export const updateEthPrice = createAction<{
   oneDayPrice: number;
   ethPriceChange: number;
 }>('application/updateEthPrice');
+
+export const updateMaticPrice = createAction<{
+  price: number;
+  oneDayPrice: number;
+  maticPriceChange: number;
+}>('application/updateMaticPrice');
 
 export const updateGlobalData = createAction<{ data: any }>(
   'application/updateGlobalData',
@@ -89,3 +96,10 @@ export const updateTokenDetails = createAction<TokenDetail>(
 export const updateIsProMode = createAction<boolean>(
   'application/updateIsProMode',
 );
+
+export const updateGasPrice = createAction<{
+  fetched: number | null;
+  override: boolean;
+}>('application/updateGasPrice');
+
+export const updateIsV3 = createAction<boolean>('application/updateIsV3');

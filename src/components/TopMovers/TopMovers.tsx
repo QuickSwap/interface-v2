@@ -8,7 +8,8 @@ import { CurrencyLogo } from 'components';
 import { getTopTokens, getPriceClass, formatNumber } from 'utils';
 import 'components/styles/TopMovers.scss';
 import { useTranslation } from 'react-i18next';
-import { useEthPrice } from 'state/application/hooks';
+import { useEthPrice, useMaticPrice, useIsV3 } from 'state/application/hooks';
+import { getTopTokensV3 } from 'utils/v3-graph';
 
 interface TopMoversProps {
   hideArrow?: boolean;
@@ -17,6 +18,9 @@ const TopMovers: React.FC<TopMoversProps> = ({ hideArrow = false }) => {
   const { t } = useTranslation();
   const [topTokens, updateTopTokens] = useState<any[] | null>(null);
   const { ethPrice } = useEthPrice();
+  const { maticPrice } = useMaticPrice();
+
+  const { isV3 } = useIsV3();
 
   const topMoverTokens = useMemo(
     () => (topTokens && topTokens.length >= 5 ? topTokens.slice(0, 5) : null),
@@ -25,18 +29,32 @@ const TopMovers: React.FC<TopMoversProps> = ({ hideArrow = false }) => {
 
   useEffect(() => {
     (async () => {
-      if (ethPrice.price && ethPrice.oneDayPrice) {
-        const topTokensData = await getTopTokens(
-          ethPrice.price,
-          ethPrice.oneDayPrice,
-          5,
-        );
-        if (topTokensData) {
-          updateTopTokens(topTokensData);
-        }
+      if (
+        ethPrice.price !== undefined &&
+        ethPrice.oneDayPrice !== undefined &&
+        maticPrice.price !== undefined &&
+        maticPrice.oneDayPrice !== undefined &&
+        isV3 !== undefined
+      ) {
+        const topTokensFn = isV3
+          ? getTopTokensV3(maticPrice.price, maticPrice.oneDayPrice, 5)
+          : getTopTokens(ethPrice.price, ethPrice.oneDayPrice, 5);
+
+        topTokensFn.then((data: any) => {
+          if (data) {
+            updateTopTokens(data);
+          }
+        });
       }
     })();
-  }, [updateTopTokens, ethPrice.price, ethPrice.oneDayPrice]);
+  }, [
+    updateTopTokens,
+    ethPrice.price,
+    ethPrice.oneDayPrice,
+    maticPrice.price,
+    maticPrice.oneDayPrice,
+    isV3,
+  ]);
 
   return (
     <Box className='bg-palette topMoversWrapper'>

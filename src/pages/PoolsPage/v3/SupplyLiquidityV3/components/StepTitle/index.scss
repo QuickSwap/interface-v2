@@ -1,0 +1,16 @@
+.step-title {
+        &__circle {
+           width: 30px;
+           height: 30px;
+           border-radius: 50%;
+           border: 2px solid #4ea3e5;
+   
+           &.done {
+             background-color: #26a626;
+             border-color: #26a626;
+           }
+        }
+        &__text {
+         font-size: 18px;
+        }
+}

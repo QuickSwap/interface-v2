@@ -262,3 +262,7 @@ export interface SyrupInfo {
   sponsored: boolean;
   sponsorLink: string;
 }
+
+export interface AnalyticsBasic {
+  isV3: boolean;
+}

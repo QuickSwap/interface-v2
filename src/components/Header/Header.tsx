@@ -1,29 +1,29 @@
-import React, { useMemo, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
 import { Box, useMediaQuery } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
-import { useWalletModalToggle } from 'state/application/hooks';
+import { ReactComponent as LightIcon } from 'assets/images/LightIcon.svg';
+import NewTag from 'assets/images/NewTag.png';
+import QuickIcon from 'assets/images/quickIcon.svg';
+import QuickLogo from 'assets/images/quickLogo.png';
+import SparkleBottom from 'assets/images/SparkleBottom.svg';
+import SparkleLeft from 'assets/images/SparkleLeft.svg';
+import SparkleRight from 'assets/images/SparkleRight.svg';
+import SparkleTop from 'assets/images/SparkleTop.svg';
+import { ReactComponent as ThreeDotIcon } from 'assets/images/ThreeDot.svg';
+import WalletIcon from 'assets/images/WalletIcon.png';
+import { WalletModal } from 'components';
+import 'components/styles/Header.scss';
+import { useActiveWeb3React } from 'hooks';
+import useENSName from 'hooks/useENSName';
+import React, { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Link, useLocation } from 'react-router-dom';
+import { useIsV3, useWalletModalToggle } from 'state/application/hooks';
 import {
   isTransactionRecent,
   useAllTransactions,
 } from 'state/transactions/hooks';
 import { TransactionDetails } from 'state/transactions/reducer';
-import { shortenAddress, addMaticToMetamask, isSupportedNetwork } from 'utils';
-import useENSName from 'hooks/useENSName';
-import { WalletModal } from 'components';
-import { useActiveWeb3React } from 'hooks';
-import QuickIcon from 'assets/images/quickIcon.svg';
-import QuickLogo from 'assets/images/quickLogo.png';
-import { ReactComponent as ThreeDotIcon } from 'assets/images/ThreeDot.svg';
-import { ReactComponent as LightIcon } from 'assets/images/LightIcon.svg';
-import WalletIcon from 'assets/images/WalletIcon.png';
-import NewTag from 'assets/images/NewTag.png';
-import SparkleLeft from 'assets/images/SparkleLeft.svg';
-import SparkleRight from 'assets/images/SparkleRight.svg';
-import SparkleTop from 'assets/images/SparkleTop.svg';
-import SparkleBottom from 'assets/images/SparkleBottom.svg';
-import 'components/styles/Header.scss';
-import { useTranslation } from 'react-i18next';
+import { addMaticToMetamask, isSupportedNetwork, shortenAddress } from 'utils';
 
 const newTransactionsFirst = (a: TransactionDetails, b: TransactionDetails) => {
   return b.addedTime - a.addedTime;
@@ -52,6 +52,17 @@ const Header: React.FC = () => {
   const tabletWindowSize = useMediaQuery(theme.breakpoints.down('sm'));
   const mobileWindowSize = useMediaQuery(theme.breakpoints.down('xs'));
   const toggleWalletModal = useWalletModalToggle();
+
+  const { isV3 } = useIsV3();
+  const getPredictionPath = () => {
+    const predictionPath = process?.env?.REACT_APP_PREDICTIONS_URL || '';
+    if (predictionPath.startsWith('http')) {
+      return predictionPath;
+    } else {
+      return 'https://' + predictionPath;
+    }
+  };
+
   const menuItems = [
     {
       link: '/swap',
@@ -59,12 +70,12 @@ const Header: React.FC = () => {
       id: 'swap-page-link',
     },
     {
-      link: '/pools',
+      link: `/pools${isV3 ? '/v3' : ''}`,
       text: t('pool'),
       id: 'pools-page-link',
     },
     {
-      link: '/farm',
+      link: `/farm${isV3 ? '/v3' : ''}`,
       text: t('farm'),
       id: 'farm-page-link',
     },
@@ -82,7 +93,9 @@ const Header: React.FC = () => {
       link: '/predictions',
       text: 'Predictions',
       id: 'predictions-page-link',
-      isNew: true,
+      isExternal: true,
+      externalLink: getPredictionPath(),
+      isNew: false,
     },
     // {
     //   link: '/lend',
@@ -91,7 +104,7 @@ const Header: React.FC = () => {
     //   isNew: true,
     // },
     {
-      link: '/analytics',
+      link: `/analytics${isV3 ? '/v3' : ''}`,
       text: t('analytics'),
       id: 'analytics-page-link',
     },
@@ -146,7 +159,7 @@ const Header: React.FC = () => {
               key={index}
               id={val.id}
               className={`menuItem ${
-                pathname.indexOf(val.link) > -1 ? 'active' : ''
+                pathname !== '/' && val.link.includes(pathname) ? 'active' : ''
               }`}
             >
               <small>{val.text}</small>
@@ -177,15 +190,25 @@ const Header: React.FC = () => {
             <ThreeDotIcon />
             <Box className='subMenuWrapper'>
               <Box className='subMenu'>
-                {menuItems.slice(7, menuItems.length).map((val, index) => (
-                  <Link
-                    to={val.link}
-                    key={index}
-                    onClick={() => setOpenDetailMenu(false)}
-                  >
-                    <small>{val.text}</small>
-                  </Link>
-                ))}
+                {menuItems.slice(7, menuItems.length).map((val, index) => {
+                  return val.isExternal ? (
+                    <a
+                      href={val.externalLink}
+                      target='_blank'
+                      rel='noopener noreferrer'
+                    >
+                      <small>{val.text}</small>
+                    </a>
+                  ) : (
+                    <Link
+                      to={val.link}
+                      key={index}
+                      onClick={() => setOpenDetailMenu(false)}
+                    >
+                      <small>{val.text}</small>
+                    </Link>
+                  );
+                })}
                 {outLinks.map((item, ind) => (
                   <a href={item.link} key={ind}>
                     <small>{item.text}</small>
@@ -217,16 +240,25 @@ const Header: React.FC = () => {
               {openDetailMenu && (
                 <Box className='subMenuWrapper'>
                   <Box className='subMenu'>
-                    {menuItems.slice(4, menuItems.length).map((val, index) => (
-                      <Link
-                        to={val.link}
-                        key={index}
-                        className='menuItem'
-                        onClick={() => setOpenDetailMenu(false)}
-                      >
-                        <small>{val.text}</small>
-                      </Link>
-                    ))}
+                    {menuItems.slice(4, menuItems.length).map((val, index) => {
+                      return val.isExternal ? (
+                        <a
+                          href={val.externalLink}
+                          target='_blank'
+                          rel='noopener noreferrer'
+                        >
+                          <small>{val.text}</small>
+                        </a>
+                      ) : (
+                        <Link
+                          to={val.link}
+                          key={index}
+                          onClick={() => setOpenDetailMenu(false)}
+                        >
+                          <small>{val.text}</small>
+                        </Link>
+                      );
+                    })}
                     {outLinks.map((item, ind) => (
                       <a
                         href={item.link}

@@ -1,13 +1,14 @@
-import React, { useCallback, useState } from 'react';
+import React from 'react';
 import { Currency } from '@uniswap/sdk';
 import { Box } from '@material-ui/core';
 import { useCurrencyBalance } from 'state/wallet/hooks';
-import { CurrencySearchModal, CurrencyLogo, NumericalInput } from 'components';
+import { CurrencySearchModal, NumericalInput } from 'components';
 import { useActiveWeb3React } from 'hooks';
 import useUSDCPrice from 'utils/useUSDCPrice';
 import { formatTokenAmount } from 'utils';
 import 'components/styles/CurrencyInput.scss';
 import { useTranslation } from 'react-i18next';
+import CurrencySelect from 'components/CurrencySelect';
 
 interface CurrencyInputProps {
   title?: string;
@@ -41,17 +42,12 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
   id,
 }) => {
   const { t } = useTranslation();
-  const [modalOpen, setModalOpen] = useState(false);
   const { account } = useActiveWeb3React();
   const selectedCurrencyBalance = useCurrencyBalance(
     account ?? undefined,
     currency,
   );
   const usdPrice = Number(useUSDCPrice(currency)?.toSignificant() ?? 0);
-
-  const handleOpenModal = useCallback(() => {
-    setModalOpen(true);
-  }, [setModalOpen]);
 
   return (
     <Box
@@ -75,21 +71,12 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
         </Box>
       </Box>
       <Box mb={2}>
-        <Box
-          className={`currencyButton ${
-            currency ? 'currencySelected' : 'noCurrency'
-          }`}
-          onClick={handleOpenModal}
-        >
-          {currency ? (
-            <>
-              <CurrencyLogo currency={currency} size={'28px'} />
-              <p className='token-symbol-container'>{currency?.symbol}</p>
-            </>
-          ) : (
-            <p>{t('selectToken')}</p>
-          )}
-        </Box>
+        <CurrencySelect
+          id={id}
+          currency={currency}
+          otherCurrency={otherCurrency}
+          handleCurrencySelect={handleCurrencySelect}
+        />
         <Box className='inputWrapper'>
           <NumericalInput
             value={amount}
@@ -109,18 +96,6 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
           ${(usdPrice * Number(amount)).toLocaleString()}
         </small>
       </Box>
-      {modalOpen && (
-        <CurrencySearchModal
-          isOpen={modalOpen}
-          onDismiss={() => {
-            setModalOpen(false);
-          }}
-          onCurrencySelect={handleCurrencySelect}
-          selectedCurrency={currency}
-          showCommonBases={true}
-          otherSelectedCurrency={otherCurrency}
-        />
-      )}
     </Box>
   );
 };
