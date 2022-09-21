@@ -131,33 +131,17 @@ export function useParaswapCallback(
         const srcToken = priceRoute.srcToken;
         const destToken = priceRoute.destToken;
 
-        const srcDecimals = priceRoute.srcDecimals;
-        const destDecimals = priceRoute.destDecimals;
-
-        //Update the rate before calling swap
-        const rate = await paraswap.getRate({
-          srcToken,
-          destToken,
-          srcDecimals,
-          destDecimals,
-          amount: srcAmount,
-          side: priceRoute.side,
-          options: {
-            includeDEXS: 'quickswap,quickswapv3',
-          },
-        });
-
         //TODO: we need to support max impact
-        if (minDestAmount.greaterThan(JSBI.BigInt(rate.destAmount))) {
+        if (minDestAmount.greaterThan(JSBI.BigInt(priceRoute.destAmount))) {
           throw new Error('Price Rate updated beyond expected slipage rate');
         }
 
         const txParams = await paraswap.buildTx({
           srcToken,
           destToken,
-          srcAmount: rate.srcAmount,
+          srcAmount: priceRoute.srcAmount,
           destAmount: minDestAmount.toFixed(0),
-          priceRoute: rate,
+          priceRoute: priceRoute,
           userAddress: account,
           partner: referrer,
         });
@@ -169,9 +153,10 @@ export function useParaswapCallback(
           .then((response: TransactionResponse) => {
             const inputSymbol = trade.inputAmount.currency.symbol;
             const outputSymbol = trade.outputAmount.currency.symbol;
-            const inputAmount = Number(rate.srcAmount) / 10 ** rate.srcDecimals;
+            const inputAmount =
+              Number(priceRoute.srcAmount) / 10 ** priceRoute.srcDecimals;
             const outputAmount =
-              Number(rate.destAmount) / 10 ** rate.destDecimals;
+              Number(priceRoute.destAmount) / 10 ** priceRoute.destDecimals;
 
             const base = `Swap ${inputAmount.toLocaleString()} ${inputSymbol} for ${outputAmount.toLocaleString()} ${outputSymbol}`;
             const withRecipient =
