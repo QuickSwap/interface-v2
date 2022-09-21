@@ -82,6 +82,8 @@ const Header: React.FC = () => {
       link: '/predictions',
       text: 'Predictions',
       id: 'predictions-page-link',
+      isExternal: true,
+      externalLink: process?.env?.REACT_APP_PREDICTIONS_URL || '',
       isNew: true,
     },
     // {
@@ -217,16 +219,26 @@ const Header: React.FC = () => {
               {openDetailMenu && (
                 <Box className='subMenuWrapper'>
                   <Box className='subMenu'>
-                    {menuItems.slice(4, menuItems.length).map((val, index) => (
-                      <Link
-                        to={val.link}
-                        key={index}
-                        className='menuItem'
-                        onClick={() => setOpenDetailMenu(false)}
-                      >
-                        <small>{val.text}</small>
-                      </Link>
-                    ))}
+                    {menuItems.slice(4, menuItems.length).map((val, index) => {
+                      return val.isExternal ? (
+                        <a
+                          href={val.externalLink}
+                          target='_blank'
+                          key={index}
+                          rel='noopener noreferrer'
+                        >
+                          <small>{val.text}</small>
+                        </a>
+                      ) : (
+                        <Link
+                          to={val.link}
+                          key={index}
+                          onClick={() => setOpenDetailMenu(false)}
+                        >
+                          <small>{val.text}</small>
+                        </Link>
+                      );
+                    })}
                     {outLinks.map((item, ind) => (
                       <a
                         href={item.link}
