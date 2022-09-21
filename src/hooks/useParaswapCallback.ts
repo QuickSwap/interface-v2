@@ -117,25 +117,22 @@ export function useParaswapCallback(
         summary: string;
       }> {
         const pct = basisPointsToPercent(allowedSlippage);
-        const srcAmount = trade
-          .maximumAmountIn(pct)
-          .multiply(JSBI.BigInt(10 ** trade.inputAmount.currency.decimals))
-          .toFixed(0);
+
+        const srcAmount =
+          priceRoute.side === SwapSide.SELL
+            ? priceRoute.srcAmount
+            : priceRoute.destAmount;
         const minDestAmount = trade
           .minimumAmountOut(pct)
           .multiply(JSBI.BigInt(10 ** trade.outputAmount.currency.decimals));
 
         const referrer = 'Quickswap';
 
-        const srcToken = getBestTradeCurrencyAddress(
-          trade.inputAmount.currency,
-        );
-        const destToken = getBestTradeCurrencyAddress(
-          trade.outputAmount.currency,
-        );
+        const srcToken = priceRoute.srcToken;
+        const destToken = priceRoute.destToken;
 
-        const srcDecimals = trade.inputAmount.currency.decimals;
-        const destDecimals = trade.outputAmount.currency.decimals;
+        const srcDecimals = priceRoute.srcDecimals;
+        const destDecimals = priceRoute.destDecimals;
 
         //Update the rate before calling swap
         const rate = await paraswap.getRate({
@@ -144,7 +141,7 @@ export function useParaswapCallback(
           srcDecimals,
           destDecimals,
           amount: srcAmount,
-          side: SwapSide.SELL,
+          side: priceRoute.side,
           options: {
             includeDEXS: 'quickswap,quickswapv3',
           },
@@ -158,7 +155,7 @@ export function useParaswapCallback(
         const txParams = await paraswap.buildTx({
           srcToken,
           destToken,
-          srcAmount,
+          srcAmount: rate.srcAmount,
           destAmount: minDestAmount.toFixed(0),
           priceRoute: rate,
           userAddress: account,
@@ -172,10 +169,11 @@ export function useParaswapCallback(
           .then((response: TransactionResponse) => {
             const inputSymbol = trade.inputAmount.currency.symbol;
             const outputSymbol = trade.outputAmount.currency.symbol;
-            const inputAmount = formatTokenAmount(trade.inputAmount);
-            const outputAmount = formatTokenAmount(trade.outputAmount);
+            const inputAmount = Number(rate.srcAmount) / 10 ** rate.srcDecimals;
+            const outputAmount =
+              Number(rate.destAmount) / 10 ** rate.destDecimals;
 
-            const base = `Swap ${inputAmount} ${inputSymbol} for ${outputAmount} ${outputSymbol}`;
+            const base = `Swap ${inputAmount.toLocaleString()} ${inputSymbol} for ${outputAmount.toLocaleString()} ${outputSymbol}`;
             const withRecipient =
               recipient === account
                 ? base
@@ -206,11 +204,13 @@ export function useParaswapCallback(
     };
   }, [
     trade,
+    priceRoute,
     library,
     account,
     chainId,
     recipient,
     recipientAddressOrName,
+    allowedSlippage,
     paraswap,
     addTransaction,
   ]);
