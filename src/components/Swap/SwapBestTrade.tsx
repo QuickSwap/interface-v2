@@ -219,6 +219,7 @@ const SwapBestTrade: React.FC<{
           side: SwapSide.SELL,
           options: {
             includeDEXS: 'quickswap,quickswapv3',
+            partner: 'quickswapv3',
             maxImpact: maxImpactAllowed,
           },
         });
