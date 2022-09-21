@@ -119,60 +119,31 @@ export function useParaswapCallback(
         summary: string;
       }> {
         const pct = basisPointsToPercent(allowedSlippage);
-        const srcAmount = trade
-          .maximumAmountIn(pct)
-          .multiply(JSBI.BigInt(10 ** trade.inputAmount.currency.decimals))
-          .toFixed(0);
+
+        const srcAmount =
+          priceRoute.side === SwapSide.SELL
+            ? priceRoute.srcAmount
+            : priceRoute.destAmount;
         const minDestAmount = trade
           .minimumAmountOut(pct)
           .multiply(JSBI.BigInt(10 ** trade.outputAmount.currency.decimals));
 
         const referrer = 'quickswapv3';
 
-        const srcToken = getBestTradeCurrencyAddress(
-          trade.inputAmount.currency,
-        );
-        const destToken = getBestTradeCurrencyAddress(
-          trade.outputAmount.currency,
-        );
-
-        const srcDecimals = trade.inputAmount.currency.decimals;
-        const destDecimals = trade.outputAmount.currency.decimals;
-
-        const maxImpactAllowed = isExpertMode
-          ? 100
-          : Number(
-              GlobalValue.percents.BLOCKED_PRICE_IMPACT_NON_EXPERT.multiply(
-                '100',
-              ).toFixed(4),
-            );
-
-        //Update the rate before calling swap
-        const rate = await paraswap.getRate({
-          srcToken,
-          destToken,
-          srcDecimals,
-          destDecimals,
-          amount: srcAmount,
-          side: SwapSide.SELL,
-          options: {
-            includeDEXS: 'quickswap,quickswapv3',
-            partner: 'quickswapv3',
-            maxImpact: maxImpactAllowed,
-          },
-        });
+        const srcToken = priceRoute.srcToken;
+        const destToken = priceRoute.destToken;
 
         //TODO: we need to support max impact
-        if (minDestAmount.greaterThan(JSBI.BigInt(rate.destAmount))) {
+        if (minDestAmount.greaterThan(JSBI.BigInt(priceRoute.destAmount))) {
           throw new Error('Price Rate updated beyond expected slipage rate');
         }
 
         const txParams = await paraswap.buildTx({
           srcToken,
           destToken,
-          srcAmount,
+          srcAmount: priceRoute.srcAmount,
           destAmount: minDestAmount.toFixed(0),
-          priceRoute: rate,
+          priceRoute: priceRoute,
           userAddress: account,
           partner: referrer,
         });
@@ -184,10 +155,12 @@ export function useParaswapCallback(
           .then((response: TransactionResponse) => {
             const inputSymbol = trade.inputAmount.currency.symbol;
             const outputSymbol = trade.outputAmount.currency.symbol;
-            const inputAmount = formatTokenAmount(trade.inputAmount);
-            const outputAmount = formatTokenAmount(trade.outputAmount);
+            const inputAmount =
+              Number(priceRoute.srcAmount) / 10 ** priceRoute.srcDecimals;
+            const outputAmount =
+              Number(priceRoute.destAmount) / 10 ** priceRoute.destDecimals;
 
-            const base = `Swap ${inputAmount} ${inputSymbol} for ${outputAmount} ${outputSymbol}`;
+            const base = `Swap ${inputAmount.toLocaleString()} ${inputSymbol} for ${outputAmount.toLocaleString()} ${outputSymbol}`;
             const withRecipient =
               recipient === account
                 ? base
@@ -218,11 +191,13 @@ export function useParaswapCallback(
     };
   }, [
     trade,
+    priceRoute,
     library,
     account,
     chainId,
     recipient,
     recipientAddressOrName,
+    allowedSlippage,
     paraswap,
     addTransaction,
   ]);
