@@ -85,6 +85,8 @@ export type StakingInfoAddressMap = Readonly<
 const EMPTY_LIST: StakingInfoAddressMap = {
   [ChainId.MUMBAI]: {},
   [ChainId.MATIC]: {},
+  [ChainId.DOGECHAIN]: {},
+  [ChainId.DOEGCHAIN_TESTNET]: {},
 };
 
 const farmCache: WeakMap<FarmListInfo, StakingInfoAddressMap> | null =

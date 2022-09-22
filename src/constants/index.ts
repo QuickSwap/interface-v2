@@ -21,6 +21,8 @@ import GnosisIcon from 'assets/images/gnosis_safe.png';
 const WETH_ONLY: ChainTokenList = {
   [ChainId.MUMBAI]: [WETH[ChainId.MUMBAI]],
   [ChainId.MATIC]: [WETH[ChainId.MATIC]],
+  [ChainId.DOEGCHAIN_TESTNET]: [WETH[ChainId.DOEGCHAIN_TESTNET]],
+  [ChainId.DOGECHAIN]: [WETH[ChainId.DOGECHAIN]],
 };
 
 // TODO: Remove this constant when supporting multichain
@@ -50,14 +52,20 @@ export const GlobalConst = {
     PARASWAP_PROXY_ROUTER_ADDRESS: {
       [ChainId.MATIC]: '0x216b4b4ba9f3e719726886d34a177484278bfcae',
       [ChainId.MUMBAI]: undefined,
+      [ChainId.DOEGCHAIN_TESTNET]: undefined,
+      [ChainId.DOGECHAIN]: undefined,
     },
     PARASWAP_ROUTER_ADDRESS: {
       [ChainId.MATIC]: '0xDEF171Fe48CF0115B1d80b88dc8eAB59176FEe57',
       [ChainId.MUMBAI]: undefined,
+      [ChainId.DOEGCHAIN_TESTNET]: undefined,
+      [ChainId.DOGECHAIN]: undefined,
     },
     ROUTER_ADDRESS: {
       [ChainId.MATIC]: '0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff',
       [ChainId.MUMBAI]: '0x8954AfA98594b838bda56FE4C12a09D7739D179b',
+      [ChainId.DOEGCHAIN_TESTNET]: undefined,
+      [ChainId.DOGECHAIN]: undefined,
     }, //'0x6207A65a8bbc87dD02C3109D2c74a6bCE4af1C8c';//
     ZERO_ADDRESS: '0x0000000000000000000000000000000000000000',
     LAIR_ADDRESS: '0xf28164a485b0b2c90639e47b0f377b4a438a16b1',
@@ -70,6 +78,8 @@ export const GlobalConst = {
       // TODO: specify merkle distributor for mainnet
       [ChainId.MATIC]: '0x4087F566796b46eEB01A38174c06E2f9924eAea8', //TODO: MATIC
       [ChainId.MUMBAI]: undefined,
+      [ChainId.DOEGCHAIN_TESTNET]: undefined,
+      [ChainId.DOGECHAIN]: undefined,
     },
     QUICK_CONVERSION: '0x333068d06563a8dfdbf330a0e04a9d128e98bf5a',
     MATIC_USDT_PAIR: '0x604229c960e5cacf2aaeac8be68ac07ba9df81c3',
@@ -395,7 +405,12 @@ export const GlobalData = {
       ],
     },
     // Some tokens can only be swapped via certain pairs, so we override the list of bases that are considered for these tokens.
-    CUSTOM_BASES: { [ChainId.MATIC]: undefined, [ChainId.MUMBAI]: undefined },
+    CUSTOM_BASES: {
+      [ChainId.MATIC]: undefined,
+      [ChainId.MUMBAI]: undefined,
+      [ChainId.DOEGCHAIN_TESTNET]: undefined,
+      [ChainId.DOGECHAIN]: undefined,
+    },
     // used for display in the default list when adding liquidity
     SUGGESTED_BASES: {
       ...WETH_ONLY,
@@ -440,6 +455,8 @@ export const GlobalData = {
         [GlobalValue.tokens.COMMON.ETHER, GlobalValue.tokens.COMMON.OLD_QUICK],
       ],
       [ChainId.MUMBAI]: undefined,
+      [ChainId.DOEGCHAIN_TESTNET]: undefined,
+      [ChainId.DOGECHAIN]: undefined,
     },
   },
   analytics: {

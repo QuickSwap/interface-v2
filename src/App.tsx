@@ -72,6 +72,8 @@ import Background from 'layouts/Background';
 import GasUpdater from 'state/application/gasUpdater';
 import { RedirectExternal } from 'components/RedirectExternal/RedirectExternal';
 
+import { getConfig } from 'config/index';
+
 const Web3ProviderNetwork = createWeb3ReactRoot(
   GlobalConst.utils.NetworkContextName,
 );
@@ -133,6 +135,8 @@ function Gelato({ children }: { children?: React.ReactNode }) {
 const queryClient = new QueryClient();
 
 const App: React.FC = () => {
+  const { chainId } = useActiveWeb3React();
+  const config = getConfig(chainId);
   return (
     <QueryClientProvider client={queryClient}>
       <Web3ReactProvider getLibrary={getLibrary}>

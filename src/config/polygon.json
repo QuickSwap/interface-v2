@@ -1,0 +1,40 @@
+{
+    "v3": true,
+    "v2": true,
+    "swap" :{
+        "available": true,
+        "bestTrade": true,
+        "v2": true,
+        "v3": true
+    },
+    "pool": {
+        "available": true,
+        "v2": true,
+        "v3": true
+    },
+    "farm": {
+        "available": true,
+        "v2": true,
+        "v3": true
+    },
+    "lair": {
+        "available": true,
+        "oldLair": true,
+        "newLair": true,
+        "syrup": true
+    },
+    "convert": {
+        "available": true
+    },
+    "predictions": {
+        "available": true
+    },
+    "analytics": {
+        "available": true,
+        "v2": true,
+        "v3": true
+    },
+    "lending": {
+        "available": true
+    }
+}
