@@ -3,19 +3,13 @@
     "v2": true,
     "swap" :{
         "available": true,
-        "bestTrade": true,
-        "v2": true,
-        "v3": true
+        "bestTrade": true
     },
     "pool": {
-        "available": true,
-        "v2": true,
-        "v3": true
+        "available": true
     },
     "farm": {
-        "available": true,
-        "v2": true,
-        "v3": true
+        "available": true
     },
     "lair": {
         "available": true,
@@ -30,11 +24,12 @@
         "available": true
     },
     "analytics": {
-        "available": true,
-        "v2": true,
-        "v3": true
+        "available": true
     },
     "lending": {
+        "available": false
+    },
+    "migrate": {
         "available": true
     }
 }

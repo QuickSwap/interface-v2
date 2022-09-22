@@ -54,7 +54,12 @@ import {
 import { BigNumber, BigNumberish } from '@ethersproject/bignumber';
 import { formatUnits } from 'ethers/lib/utils';
 import { AddressZero } from '@ethersproject/constants';
-import { GlobalConst, GlobalValue, SUPPORTED_WALLETS } from 'constants/index';
+import {
+  GlobalConst,
+  GlobalValue,
+  SUPPORTED_CHAINIDS,
+  SUPPORTED_WALLETS,
+} from 'constants/index';
 import { TokenAddressMap } from 'state/lists/hooks';
 import {
   DualStakingInfo,
@@ -2171,7 +2176,7 @@ export function getEarnedUSDDualFarm(stakingInfo: DualStakingInfo | undefined) {
 }
 
 export function isSupportedNetwork(ethereum: any) {
-  return Number(ethereum.chainId) === 137;
+  return SUPPORTED_CHAINIDS.includes(Number(ethereum.chainId));
 }
 
 export function getPageItemsToLoad(index: number, countsPerPage: number) {
