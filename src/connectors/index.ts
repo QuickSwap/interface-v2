@@ -39,7 +39,7 @@ export function getNetworkLibrary(): Web3Provider {
 }
 
 export const injected = new InjectedConnector({
-  supportedChainIds: [137, 80001],
+  supportedChainIds: [137, 80001, 568, 2000],
 });
 
 export const safeApp = new SafeAppConnector();

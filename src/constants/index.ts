@@ -147,6 +147,7 @@ export const GlobalConst = {
   },
 };
 
+export const SUPPORTED_CHAINIDS = [137, 80001, 2000, 568];
 export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   CYPHERD: {
     connector: injected,
