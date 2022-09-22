@@ -27,7 +27,7 @@ import {
   getSecondsOneDay,
 } from 'utils';
 import dayjs from 'dayjs';
-import { fetchEternalFarmAPR, fetchPoolsAPR } from './aprApi';
+import { fetchEternalFarmAPR, fetchPoolsAPR } from './api';
 import { Token } from '@uniswap/sdk-core';
 import { TickMath, tickToPrice } from '@uniswap/v3-sdk';
 import { JSBI } from '@uniswap/sdk';
@@ -741,17 +741,19 @@ export async function getTopPairsV3(count = 500) {
 export async function getPairsAPR(pairAddresses: string[]) {
   const aprs: any = await fetchPoolsAPR();
   const farmAprs: any = await fetchEternalFarmAPR();
-
-  const farmingAprs = await fetchEternalFarmingsAPRByPool(pairAddresses);
+  const farmsFromPairAddresses = await fetchEternalFarmingsAPRByPool(
+    pairAddresses,
+  );
   const _farmingAprs: {
     [type: string]: number;
-  } = farmingAprs.reduce(
+  } = farmsFromPairAddresses.reduce(
     (acc: any, el: any) => ({
       ...acc,
       [el.pool]: farmAprs[el.id],
     }),
     {},
   );
+
   return pairAddresses.map((address) => {
     const aprPercent = aprs[address] ? aprs[address].toFixed(2) : null;
     const farmingApr = _farmingAprs[address]
