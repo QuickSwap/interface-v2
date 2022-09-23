@@ -5281,10 +5281,10 @@
     "tiny-invariant" "^1.1.0"
     "toformat" "^2.0.0"
 
-"@uniswap/sdk@npm:quickswap-sdk@3.0.10":
-  "integrity" "sha512-Yzc0VvWo2wlTUpMVLti51Oj9GhIYqxHQUqEI+gPuZA9IDGjEiiNDOSnWEIApIMibTNmETxs6j6GRRVGntLdcTw=="
-  "resolved" "https://registry.npmjs.org/quickswap-sdk/-/quickswap-sdk-3.0.10.tgz"
-  "version" "3.0.10"
+"@uniswap/sdk@npm:quickswap-sdk@3.0.12":
+  "integrity" "sha512-ouCs2PhSnM2FTd0aPfk6GP59s2KMoHLzuEa8JLFUtkH/aiEQCiQcq0vPlGd5P2oL45upPls0ICSKYAl0ko7XXQ=="
+  "resolved" "https://registry.npmjs.org/quickswap-sdk/-/quickswap-sdk-3.0.12.tgz"
+  "version" "3.0.12"
   dependencies:
     "@uniswap/v2-core" "^1.0.0"
     "big.js" "^5.2.2"

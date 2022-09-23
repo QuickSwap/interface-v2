@@ -1,4 +1,4 @@
-import { Currency, currencyEquals, ETHER, Token } from '@uniswap/sdk';
+import { ChainId, Currency, currencyEquals, ETHER, Token } from '@uniswap/sdk';
 import { Currency as V3Currency, Token as V3Token } from '@uniswap/sdk-core';
 import React, { useMemo } from 'react';
 import { Box } from '@material-ui/core';
@@ -15,6 +15,7 @@ interface CurrencyLogoProps {
   size?: string;
   style?: React.CSSProperties;
   withoutBg?: boolean;
+  chainId?: ChainId;
 }
 
 const CurrencyLogo: React.FC<CurrencyLogoProps> = ({
@@ -22,7 +23,11 @@ const CurrencyLogo: React.FC<CurrencyLogoProps> = ({
   size = '24px',
   style,
   withoutBg,
+  chainId,
 }) => {
+  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
+  const nativeCurrency = ETHER[chainIdToUse];
+
   const uriLocations = useHttpLocations(
     currency instanceof WrappedTokenInfo ||
       currency instanceof V3WrappedTokenInfo
@@ -33,7 +38,8 @@ const CurrencyLogo: React.FC<CurrencyLogoProps> = ({
   const srcs: string[] = useMemo(() => {
     if (
       currency &&
-      (currencyEquals(currency, ETHER) || (currency as V3Currency).isNative)
+      (currencyEquals(currency, nativeCurrency) ||
+        (currency as V3Currency).isNative)
     )
       return [];
 
@@ -55,7 +61,8 @@ const CurrencyLogo: React.FC<CurrencyLogoProps> = ({
 
   if (
     currency &&
-    (currencyEquals(currency, ETHER) || (currency as V3Currency).isNative)
+    (currencyEquals(currency, nativeCurrency) ||
+      (currency as V3Currency).isNative)
   ) {
     return (
       <Box

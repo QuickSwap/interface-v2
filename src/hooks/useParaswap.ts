@@ -1,18 +1,16 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useActiveWeb3React } from 'hooks';
-import {
-  constructSimpleSDK,
-  OptimalRate,
-  SDKFetchMethods,
-  SwapSide,
-} from '@paraswap/sdk';
-import { Currency, ETHER, JSBI, Token, Trade } from '@uniswap/sdk';
+import { constructSimpleSDK } from '@paraswap/sdk';
+import { ChainId, Currency, ETHER, JSBI, Token, Trade } from '@uniswap/sdk';
 
 const PARASWAP_NATIVE_ADDRESS = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
-export function getBestTradeCurrencyAddress(currency: Currency) {
+export function getBestTradeCurrencyAddress(
+  currency: Currency,
+  chainId: ChainId,
+) {
   return currency instanceof Token
     ? currency.address
-    : currency === ETHER
+    : currency === ETHER[chainId]
     ? PARASWAP_NATIVE_ADDRESS
     : '';
 }

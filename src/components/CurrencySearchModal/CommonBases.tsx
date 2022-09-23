@@ -17,6 +17,9 @@ const CommonBases: React.FC<CommonBasesProps> = ({
   selectedCurrency,
 }) => {
   const { t } = useTranslation();
+
+  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
+  const nativeCurrency = ETHER[chainIdToUse];
   return (
     <Box mb={2}>
       <Box display='flex' my={1.5}>
@@ -29,13 +32,20 @@ const CommonBases: React.FC<CommonBasesProps> = ({
         <Box
           className='baseWrapper'
           onClick={() => {
-            if (!selectedCurrency || !currencyEquals(selectedCurrency, ETHER)) {
-              onSelect(ETHER);
+            if (
+              !selectedCurrency ||
+              !currencyEquals(selectedCurrency, nativeCurrency)
+            ) {
+              onSelect(nativeCurrency);
             }
           }}
         >
-          <CurrencyLogo currency={ETHER} size='24px' />
-          <small>MATIC</small>
+          <CurrencyLogo
+            currency={nativeCurrency}
+            size='24px'
+            chainId={chainId}
+          />
+          <small>{nativeCurrency.name}</small>
         </Box>
         {(chainId ? GlobalData.bases.SUGGESTED_BASES[chainId] : []).map(
           (token: Token) => {
@@ -52,7 +62,7 @@ const CommonBases: React.FC<CommonBasesProps> = ({
                   }
                 }}
               >
-                <CurrencyLogo currency={token} size='24px' />
+                <CurrencyLogo currency={token} size='24px' chainId={chainId} />
                 <small>{token.symbol}</small>
               </Box>
             );

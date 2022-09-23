@@ -4,18 +4,14 @@
     "swap" :{
         "available": true,
         "bestTrade": false,
-        "v2": false,
-        "v3": true
+        "proMode": false,
+        "limitOrder": false
     },
     "pool": {
-        "available": true,
-        "v2": false,
-        "v3": true
+        "available": true
     },
     "farm": {
-        "available": true,
-        "v2": false,
-        "v3": true
+        "available": true
     },
     "lair": {
         "available": false,
@@ -30,9 +26,7 @@
         "available": false
     },
     "analytics": {
-        "available": true,
-        "v2": false,
-        "v3": true
+        "available": true
     },
     "lending": {
         "available": false

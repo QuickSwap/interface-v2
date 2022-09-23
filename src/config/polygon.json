@@ -3,7 +3,9 @@
     "v2": true,
     "swap" :{
         "available": true,
-        "bestTrade": true
+        "bestTrade": true,
+        "proMode": true,
+        "limitOrder": false
     },
     "pool": {
         "available": true

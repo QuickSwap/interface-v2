@@ -12,7 +12,7 @@ export function wrappedCurrency(
   currency: Currency | undefined,
   chainId: ChainId | undefined,
 ): Token | undefined {
-  return chainId && currency === ETHER
+  return chainId && currency === ETHER[chainId ? chainId : ChainId.MATIC]
     ? WETH[chainId]
     : currency instanceof Token && currency.chainId === chainId
     ? currency
@@ -33,6 +33,6 @@ export function wrappedCurrencyAmount(
 }
 
 export function unwrappedToken(token: Token): Currency {
-  if (token.equals(WETH[token.chainId])) return ETHER;
+  if (token.equals(WETH[token.chainId])) return ETHER[token.chainId];
   return token;
 }
