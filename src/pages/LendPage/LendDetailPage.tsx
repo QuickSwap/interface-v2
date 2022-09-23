@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Grid,
-  withStyles,
   Table,
   TableBody,
   TableHead,
@@ -32,7 +31,13 @@ import {
 } from 'utils/marketxyz';
 import { useBorrowLimit } from 'hooks/marketxyz/useBorrowLimit';
 import { useTranslation } from 'react-i18next';
-import { QuestionHelper, CopyHelper, CurrencyLogo } from 'components';
+import {
+  QuestionHelper,
+  CopyHelper,
+  CurrencyLogo,
+  TransactionConfirmationModal,
+  TransactionErrorContent,
+} from 'components';
 import 'pages/styles/lend.scss';
 import { GlobalValue } from 'constants/index';
 import LendDetailAssetStats from './LendDetailAssetStats';
@@ -44,6 +49,10 @@ const LendDetailPage: React.FC = () => {
   const location = useLocation();
   const { chainId, account } = useActiveWeb3React();
 
+  const [txLoading, setTxLoading] = useState(false);
+  const [openTxModal, setOpenTxModal] = useState(false);
+  const [txHash, setTxHash] = useState<string | undefined>(undefined);
+  const [txError, setTxError] = useState<string | undefined>(undefined);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalIsBorrow, setModalIsBorrow] = useState(false);
   const [selectedAsset, setSelectedAsset] = useState<
@@ -213,7 +222,11 @@ const LendDetailPage: React.FC = () => {
                 currency={getPoolAssetToken(asset, chainId)}
                 key={i}
                 size={'24px'}
-                withoutBg={asset.underlyingName.includes('LP')}
+                withoutBg={
+                  asset.underlyingName.includes('LP') ||
+                  asset.underlyingSymbol.includes('am') ||
+                  asset.underlyingSymbol.includes('moo')
+                }
               />
             ))}
           </Box>
@@ -283,12 +296,16 @@ const LendDetailPage: React.FC = () => {
                     <TableHead>
                       <TableRow>
                         <TableCell>
-                          {t('asset')} / {t('ltv')}
+                          <Box maxWidth='180px'>
+                            {t('asset')} / {t('ltv')}
+                          </Box>
                         </TableCell>
                         <TableCell className='poolTableHideCell'>
                           {t('supplyapy')}
                         </TableCell>
-                        <TableCell>{t('deposited')}</TableCell>
+                        <TableCell>
+                          <Box maxWidth='150px'>{t('deposited')}</Box>
+                        </TableCell>
                         <TableCell></TableCell>
                       </TableRow>
                     </TableHead>
@@ -297,17 +314,22 @@ const LendDetailPage: React.FC = () => {
                         return (
                           <TableRow key={asset.cToken.address}>
                             <TableCell>
-                              <Box className='flex items-center'>
+                              <Box
+                                className='flex items-center'
+                                maxWidth='180px'
+                              >
                                 <Box display={'flex'} mr='8px'>
                                   <CurrencyLogo
                                     currency={getPoolAssetToken(asset, chainId)}
                                     size={'36px'}
-                                    withoutBg={asset.underlyingName.includes(
-                                      'LP',
-                                    )}
+                                    withoutBg={
+                                      asset.underlyingName.includes('LP') ||
+                                      asset.underlyingSymbol.includes('am') ||
+                                      asset.underlyingSymbol.includes('moo')
+                                    }
                                   />
                                 </Box>
-                                <Box>
+                                <Box flex={1}>
                                   <small className='text-gray29'>
                                     {asset.underlyingSymbol +
                                       (asset.underlyingName.includes('LP')
@@ -345,50 +367,64 @@ const LendDetailPage: React.FC = () => {
                                   <CurrencyLogo
                                     currency={getPoolAssetToken(asset, chainId)}
                                     size={'16px'}
-                                    withoutBg={asset.underlyingName.includes(
-                                      'LP',
-                                    )}
+                                    withoutBg={
+                                      asset.underlyingName.includes('LP') ||
+                                      asset.underlyingSymbol.includes('am') ||
+                                      asset.underlyingSymbol.includes('moo')
+                                    }
                                   />
                                 </Box>
                               </Box>
                             </TableCell>
                             <TableCell>
-                              <small className='text-gray29'>
-                                {midUsdFormatter(asset.supplyBalanceUSD)}
-                              </small>
-                              <p className='caption text-secondary'>
-                                {sdk
-                                  ? convertBNToNumber(
-                                      asset.supplyBalance,
-                                      asset.underlyingDecimals,
-                                    ).toFixed(2)
-                                  : '?'}{' '}
-                                {asset.underlyingName.includes('LP')
-                                  ? 'LP'
-                                  : asset.underlyingSymbol}
-                              </p>
+                              <Box maxWidth='150px'>
+                                <small className='text-gray29'>
+                                  {midUsdFormatter(asset.supplyBalanceUSD)}
+                                </small>
+                                <p className='caption text-secondary'>
+                                  {sdk
+                                    ? convertBNToNumber(
+                                        asset.supplyBalance,
+                                        asset.underlyingDecimals,
+                                      ).toFixed(2)
+                                    : '?'}{' '}
+                                  {asset.underlyingName.includes('LP')
+                                    ? 'LP'
+                                    : asset.underlyingSymbol}
+                                </p>
+                              </Box>
                             </TableCell>
                             <TableCell>
                               <Button
                                 disabled={
                                   !account ||
+                                  !sdk ||
                                   asset.underlyingToken ===
                                     selectedAsset?.underlyingToken
                                 }
                                 onClick={() => {
                                   setSelectedAsset(asset);
-                                  if (!asset.membership && account) {
+                                  if (!asset.membership && account && sdk) {
+                                    setTxLoading(true);
+                                    setTxHash(undefined);
+                                    setTxError('');
+                                    setOpenTxModal(true);
                                     toggleCollateral(
                                       asset,
                                       account,
                                       asset.membership
                                         ? t('cannotExitMarket')
                                         : t('cannotEnterMarket'),
+                                      sdk,
                                     )
-                                      .then(() => {
+                                      .then((txResponse) => {
+                                        setTxHash(txResponse.transactionHash);
+                                        setTxLoading(false);
                                         setSelectedAsset(undefined);
                                       })
-                                      .catch(() => {
+                                      .catch((e) => {
+                                        setTxError(t('errorInTx'));
+                                        setTxLoading(false);
                                         setSelectedAsset(undefined);
                                       });
                                   } else {
@@ -447,14 +483,20 @@ const LendDetailPage: React.FC = () => {
                         return (
                           <TableRow key={asset.cToken.address}>
                             <TableCell>
-                              <Box display={'flex'} alignItems={'center'}>
+                              <Box
+                                display={'flex'}
+                                alignItems={'center'}
+                                maxWidth='150px'
+                              >
                                 <Box display='flex' mr='8px'>
                                   <CurrencyLogo
                                     currency={getPoolAssetToken(asset, chainId)}
                                     size={'36px'}
-                                    withoutBg={asset.underlyingName.includes(
-                                      'LP',
-                                    )}
+                                    withoutBg={
+                                      asset.underlyingName.includes('LP') ||
+                                      asset.underlyingSymbol.includes('am') ||
+                                      asset.underlyingSymbol.includes('moo')
+                                    }
                                   />
                                 </Box>
                                 <small className='text-gray29'>
@@ -478,36 +520,40 @@ const LendDetailPage: React.FC = () => {
                               </p>
                             </TableCell>
                             <TableCell>
-                              <small className='text-gray29'>
-                                {midUsdFormatter(asset.borrowBalanceUSD)}
-                              </small>
-                              <p className='caption text-secondary'>
-                                {sdk
-                                  ? convertBNToNumber(
-                                      asset.borrowBalance,
-                                      asset.underlyingDecimals,
-                                    ).toFixed(2)
-                                  : '?'}{' '}
-                                {asset.underlyingName.includes('LP')
-                                  ? 'LP'
-                                  : asset.underlyingSymbol}
-                              </p>
+                              <Box maxWidth='120px'>
+                                <small className='text-gray29'>
+                                  {midUsdFormatter(asset.borrowBalanceUSD)}
+                                </small>
+                                <p className='caption text-secondary'>
+                                  {sdk
+                                    ? convertBNToNumber(
+                                        asset.borrowBalance,
+                                        asset.underlyingDecimals,
+                                      ).toFixed(2)
+                                    : '?'}{' '}
+                                  {asset.underlyingName.includes('LP')
+                                    ? 'LP'
+                                    : asset.underlyingSymbol}
+                                </p>
+                              </Box>
                             </TableCell>
                             <TableCell>
-                              <small className='text-gray29'>
-                                {midUsdFormatter(asset.liquidityUSD)}
-                              </small>
-                              <p className='caption text-secondary'>
-                                {sdk
-                                  ? convertBNToNumber(
-                                      asset.liquidity,
-                                      asset.underlyingDecimals,
-                                    ).toFixed(2)
-                                  : '?'}{' '}
-                                {asset.underlyingName.includes('LP')
-                                  ? 'LP'
-                                  : asset.underlyingSymbol}
-                              </p>
+                              <Box maxWidth='120px'>
+                                <small className='text-gray29'>
+                                  {midUsdFormatter(asset.liquidityUSD)}
+                                </small>
+                                <p className='caption text-secondary'>
+                                  {sdk
+                                    ? convertBNToNumber(
+                                        asset.liquidity,
+                                        asset.underlyingDecimals,
+                                      ).toFixed(2)
+                                    : '?'}{' '}
+                                  {asset.underlyingName.includes('LP')
+                                    ? 'LP'
+                                    : asset.underlyingSymbol}
+                                </p>
+                              </Box>
                             </TableCell>
                             <TableCell>
                               <Button
@@ -569,6 +615,26 @@ const LendDetailPage: React.FC = () => {
           }}
           asset={selectedAsset}
           borrow={modalIsBorrow}
+        />
+      )}
+      {openTxModal && (
+        <TransactionConfirmationModal
+          isOpen={openTxModal}
+          onDismiss={() => setOpenTxModal(false)}
+          attemptingTxn={txLoading}
+          hash={txHash}
+          txPending={false}
+          modalContent=''
+          content={() =>
+            txError ? (
+              <TransactionErrorContent
+                onDismiss={() => setOpenTxModal(false)}
+                message={txError}
+              />
+            ) : (
+              <></>
+            )
+          }
         />
       )}
     </>

@@ -1,4 +1,4 @@
-import { Comptroller, MarketSDK } from 'market-sdk';
+import { Comptroller, CToken, MarketSDK } from 'market-sdk';
 import { Token, ChainId } from '@uniswap/sdk';
 import { BN } from 'utils/bigUtils';
 import { USDPricedPoolAsset } from './fetchPoolData';
@@ -111,9 +111,9 @@ export const checkCTokenisApproved = async (
 export const approveCToken = async (
   asset: USDPricedPoolAsset,
   address: string,
+  sdk: MarketSDK,
 ) => {
   const cToken = asset.cToken;
-  const sdk = cToken.sdk;
 
   const underlyingContract = new sdk.web3.eth.Contract(
     ERC20_ABI as any,
@@ -140,9 +140,9 @@ export const supply = async (
   amount: number,
   address: string,
   supplyError: string,
+  sdk: MarketSDK,
 ) => {
-  const cToken = asset.cToken;
-  const sdk = cToken.sdk;
+  const cToken = new CToken(sdk, asset.cToken.address);
 
   const isETH =
     asset.underlyingToken.toLowerCase() ===
@@ -164,7 +164,7 @@ export const supply = async (
         call,
         amountBN,
         address,
-        cToken.sdk,
+        sdk,
       );
 
       const txObj = await call.send({
@@ -197,9 +197,9 @@ export const repayBorrow = async (
   amount: number,
   address: string,
   repayError: string,
+  sdk: MarketSDK,
 ) => {
-  const cToken = asset.cToken;
-  const sdk = cToken.sdk;
+  const cToken = new CToken(sdk, asset.cToken.address);
 
   const isETH =
     asset.underlyingToken.toLowerCase() ===
@@ -236,7 +236,7 @@ export const repayBorrow = async (
       call,
       amountBN,
       address,
-      cToken.sdk,
+      sdk,
     );
 
     const txObj = await call.send({
@@ -260,8 +260,8 @@ export const toggleCollateral = async (
   asset: USDPricedPoolAsset,
   address: string,
   errorMessage: string,
+  sdk: MarketSDK,
 ) => {
-  const sdk = asset.cToken.sdk;
   const comptroller = new Comptroller(
     sdk,
     await asset.cToken.contract.methods.comptroller().call(),
@@ -272,14 +272,14 @@ export const toggleCollateral = async (
       comptroller.contract.methods.enterMarkets([asset.cToken.address]),
       address,
       errorMessage,
-      asset.cToken.sdk,
+      sdk,
     );
   } else {
     txObj = await testForComptrollerErrorAndSend(
       comptroller.contract.methods.exitMarket(asset.cToken.address),
       address,
       errorMessage,
-      asset.cToken.sdk,
+      sdk,
     );
   }
   return txObj;
@@ -290,9 +290,9 @@ export const withdraw = async (
   amount: number,
   address: string,
   withdrawError: string,
+  sdk: MarketSDK,
 ) => {
-  const cToken = asset.cToken;
-  const sdk = cToken.sdk;
+  const cToken = new CToken(sdk, asset.cToken.address);
 
   const amountBN = convertNumbertoBN(
     amount,
@@ -313,9 +313,9 @@ export const borrow = async (
   amount: number,
   address: string,
   borrowError: string,
+  sdk: MarketSDK,
 ) => {
-  const cToken = asset.cToken;
-  const sdk = cToken.sdk;
+  const cToken = new CToken(sdk, asset.cToken.address);
 
   const amountBN = sdk.web3.utils.toBN(
     Number(amount * 10 ** asset.underlyingDecimals.toNumber()).toFixed(0),

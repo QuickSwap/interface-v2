@@ -86,12 +86,12 @@ const Header: React.FC = () => {
       externalLink: process?.env?.REACT_APP_PREDICTIONS_URL || '',
       isNew: true,
     },
-    // {
-    //   link: '/lend',
-    //   text: t('lend'),
-    //   id: 'lend-page-link',
-    //   isNew: true,
-    // },
+    {
+      link: '/lend',
+      text: t('lend'),
+      id: 'lend-page-link',
+      isNew: true,
+    },
     {
       link: '/analytics',
       text: t('analytics'),
