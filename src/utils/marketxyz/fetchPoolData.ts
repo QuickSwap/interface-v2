@@ -62,11 +62,14 @@ export const fetchPoolData = async (
 
   const lens = new PoolLensV1(sdk, sdk.options?.poolLens ?? '');
 
-  const summary = await lens.getPoolSummary(pool.comptroller);
-  const assets = (await lens.getPoolAssetsWithData(pool.comptroller, {
-    from: address,
-    gas: 1e18,
-  })) as USDPricedPoolAsset[];
+  const [summary, poolAssets] = await Promise.all([
+    lens.getPoolSummary(pool.comptroller),
+    lens.getPoolAssetsWithData(pool.comptroller, {
+      from: address,
+      gas: 1e18,
+    }),
+  ]);
+  const assets = poolAssets as USDPricedPoolAsset[];
 
   let totalLiquidityUSD = 0;
 
