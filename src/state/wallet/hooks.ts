@@ -23,6 +23,7 @@ import {
  * Returns a map of the given addresses to their eventually consistent ETH balances.
  */
 export function useETHBalances(
+  chainId: ChainId,
   uncheckedAddresses?: (string | undefined)[],
 ): {
   [address: string]: CurrencyAmount | undefined;
@@ -51,13 +52,17 @@ export function useETHBalances(
       addresses.reduce<{ [address: string]: CurrencyAmount }>(
         (memo, address, i) => {
           const value = results?.[i]?.result?.[0];
-          if (value)
-            memo[address] = CurrencyAmount.ether(JSBI.BigInt(value.toString()));
+          if (value) {
+            memo[address] = CurrencyAmount.ether(
+              JSBI.BigInt(value.toString()),
+              chainId,
+            );
+          }
           return memo;
         },
         {},
       ),
-    [addresses, results],
+    [addresses, results, chainId],
   );
 }
 
@@ -165,26 +170,30 @@ export function useCurrencyBalances(
   account?: string,
   currencies?: (Currency | undefined)[],
 ): (CurrencyAmount | undefined)[] {
+  const { chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
+  const nativeCurrency = ETHER[chainIdToUse];
+
   const tokens = useMemo(
     () =>
       currencies
-        ?.filter((currency) => currency !== ETHER)
+        ?.filter((currency) => currency !== nativeCurrency)
         .map((currency) => currency as Token) ?? [],
-    [currencies],
+    [currencies, nativeCurrency],
   );
 
   const tokenBalances = useTokenBalances(account, tokens);
   const containsETH: boolean = useMemo(
-    () => currencies?.some((currency) => currency === ETHER) ?? false,
-    [currencies],
+    () => currencies?.some((currency) => currency === nativeCurrency) ?? false,
+    [currencies, nativeCurrency],
   );
-  const ethBalance = useETHBalances(containsETH ? [account] : []);
+  const ethBalance = useETHBalances(chainIdToUse, containsETH ? [account] : []);
 
   return useMemo(
     () =>
       currencies?.map((currency) => {
         if (!account || !currency) return undefined;
-        if (currency === ETHER) return ethBalance[account];
+        if (currency === nativeCurrency) return ethBalance[account];
         if (currency) {
           const address = (currency as Token).address;
           if (!address) {
@@ -194,7 +203,7 @@ export function useCurrencyBalances(
         }
         return undefined;
       }) ?? [],
-    [account, currencies, ethBalance, tokenBalances],
+    [account, currencies, ethBalance, tokenBalances, nativeCurrency],
   );
 }
 

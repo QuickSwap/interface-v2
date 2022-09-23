@@ -28,7 +28,7 @@ import {
 import { useActiveWeb3React } from 'hooks';
 import useENS from './useENS';
 import { OptimalRate } from 'paraswap-core';
-import { getBestTradeCurrencyAddress, useParaswap } from './useParaswap';
+import { useParaswap } from './useParaswap';
 import { SwapSide } from '@paraswap/sdk';
 import { useExpertModeManager } from 'state/user/hooks';
 export enum SwapCallbackState {

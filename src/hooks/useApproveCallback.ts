@@ -1,6 +1,12 @@
 import { MaxUint256 } from '@ethersproject/constants';
 import { TransactionResponse } from '@ethersproject/providers';
-import { Trade, TokenAmount, CurrencyAmount, ETHER } from '@uniswap/sdk';
+import {
+  Trade,
+  TokenAmount,
+  CurrencyAmount,
+  ETHER,
+  ChainId,
+} from '@uniswap/sdk';
 import { CurrencyAmount as CurrencyAmountV3 } from '@uniswap/sdk-core';
 import { useCallback, useMemo } from 'react';
 import { GlobalConst } from 'constants/index';
@@ -28,7 +34,9 @@ export function useApproveCallback(
   amountToApprove?: CurrencyAmount,
   spender?: string,
 ): [ApprovalState, () => Promise<void>] {
-  const { account } = useActiveWeb3React();
+  const { account, chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
+  const nativeCurrency = ETHER[chainIdToUse];
   const token =
     amountToApprove instanceof TokenAmount ? amountToApprove.token : undefined;
   const currentAllowance = useTokenAllowance(
@@ -41,7 +49,8 @@ export function useApproveCallback(
   // check the current approval status
   const approvalState: ApprovalState = useMemo(() => {
     if (!amountToApprove || !spender) return ApprovalState.UNKNOWN;
-    if (amountToApprove.currency === ETHER) return ApprovalState.APPROVED;
+    if (amountToApprove.currency === nativeCurrency)
+      return ApprovalState.APPROVED;
     // we might not have enough data to know whether or not we need to approve
     if (!currentAllowance) return ApprovalState.UNKNOWN;
 

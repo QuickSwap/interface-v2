@@ -1522,8 +1522,8 @@ export function confirmPriceImpactWithoutFee(
   return true;
 }
 
-export function currencyId(currency: Currency): string {
-  if (currency === ETHER) return 'ETH';
+export function currencyId(currency: Currency, chainId: ChainId): string {
+  if (currency === ETHER[chainId]) return 'ETH';
   if (currency instanceof Token) return currency.address;
   throw new Error('invalid currency');
 }
@@ -1573,38 +1573,30 @@ export function calculateSlippageAmountV3(
 }
 
 export function maxAmountSpend(
+  chainId: ChainId,
   currencyAmount?: CurrencyAmount,
 ): CurrencyAmount | undefined {
   if (!currencyAmount) return undefined;
-  if (currencyAmount.currency === ETHER) {
+  if (currencyAmount.currency === ETHER[chainId]) {
     if (JSBI.greaterThan(currencyAmount.raw, GlobalConst.utils.MIN_ETH)) {
       return CurrencyAmount.ether(
         JSBI.subtract(currencyAmount.raw, GlobalConst.utils.MIN_ETH),
+        chainId,
       );
     } else {
-      return CurrencyAmount.ether(JSBI.BigInt(0));
+      return CurrencyAmount.ether(JSBI.BigInt(0), chainId);
     }
   }
   return currencyAmount;
 }
 
-export function isTokenOnList(
-  defaultTokens: TokenAddressMap,
-  currency?: Currency,
-): boolean {
-  if (currency === ETHER) return true;
-  return Boolean(
-    currency instanceof Token &&
-      defaultTokens[currency.chainId]?.[currency.address],
-  );
-}
-
 export function isTokensOnList(
   defaultTokens: TokenAddressMap,
   currencies: (Currency | undefined)[],
+  chainId: ChainId,
 ): boolean[] {
   return currencies.map((currency) => {
-    if (currency === ETHER) return true;
+    if (currency === ETHER[chainId]) return true;
     return Boolean(
       currency instanceof Token &&
         defaultTokens[currency.chainId]?.[currency.address],

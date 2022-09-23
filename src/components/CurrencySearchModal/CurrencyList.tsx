@@ -1,4 +1,4 @@
-import { currencyEquals, Token, Currency } from '@uniswap/sdk';
+import { currencyEquals, Token, Currency, ChainId } from '@uniswap/sdk';
 import React, { useMemo, useCallback } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 import { useSelectedTokenList } from 'state/lists/hooks';
@@ -11,6 +11,7 @@ interface CurrencyListProps {
   onCurrencySelect: (currency: Token) => void;
   otherCurrency?: Currency | null;
   showETH: boolean;
+  chainId: ChainId;
 }
 
 const CurrencyList: React.FC<CurrencyListProps> = ({
@@ -19,14 +20,16 @@ const CurrencyList: React.FC<CurrencyListProps> = ({
   onCurrencySelect,
   otherCurrency,
   showETH,
+  chainId,
 }) => {
+  const nativeCurrency = Token.ETHER[chainId];
   const itemData = useMemo(
-    () => (showETH ? [Token.ETHER, ...currencies] : currencies),
+    () => (showETH ? [nativeCurrency, ...currencies] : currencies),
     [currencies, showETH],
   );
   const selectedTokenList = useSelectedTokenList();
   const isOnSelectedList = useMemo(
-    () => isTokensOnList(selectedTokenList, itemData),
+    () => isTokensOnList(selectedTokenList, itemData, chainId),
     [selectedTokenList, itemData],
   );
 

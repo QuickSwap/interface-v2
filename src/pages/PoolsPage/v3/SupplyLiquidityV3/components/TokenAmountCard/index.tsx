@@ -17,7 +17,7 @@ import { toToken } from 'constants/v3/routing';
 import { Box } from '@material-ui/core';
 import { LockOutlined } from '@material-ui/icons';
 import NumericalInput from 'components/NumericalInput';
-import { ETHER } from '@uniswap/sdk';
+import { ChainId, ETHER } from '@uniswap/sdk';
 
 interface ITokenAmountCard {
   currency: Currency | undefined | null;
@@ -48,11 +48,13 @@ export function TokenAmountCard({
   priceFormat,
   isBase,
 }: ITokenAmountCard) {
-  const { account } = useActiveWeb3React();
+  const { account, chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
+  const nativeCurrency = ETHER[chainIdToUse];
 
   const balance = useCurrencyBalance(
     account ?? undefined,
-    currency?.isNative ? ETHER : currency ?? undefined,
+    currency?.isNative ? nativeCurrency : currency ?? undefined,
   );
   const balanceUSD = useUSDCPrice(currency ?? undefined);
 

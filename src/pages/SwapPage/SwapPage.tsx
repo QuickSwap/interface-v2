@@ -18,6 +18,7 @@ import { useTranslation } from 'react-i18next';
 import 'pages/styles/swap.scss';
 import { ReactComponent as SettingsIcon } from 'assets/images/SettingsIcon.svg';
 import AdsSlider from 'components/AdsSlider';
+import { getConfig } from '../../config/index';
 
 const SwapPage: React.FC = () => {
   const [openSettingsModal, setOpenSettingsModal] = useState(false);
@@ -41,6 +42,13 @@ const SwapPage: React.FC = () => {
 
   const token1 = wrappedCurrency(currencies[Field.INPUT], chainId);
   const token2 = wrappedCurrency(currencies[Field.OUTPUT], chainId);
+
+  const config = getConfig(chainId);
+
+  const v2 = config['v2'];
+  const v3 = config['v3'];
+  const showBestTrade = config['swap']['bestTrade'];
+  const showProMode = config['swap']['proMode'];
 
   // this is for refreshing data of trades table every 60 seconds
   useEffect(() => {
@@ -91,10 +99,10 @@ const SwapPage: React.FC = () => {
       const transactions = await getSwapTransactions(pairId);
       setTransactions(transactions);
     }
-    if (pairId && isProMode) {
+    if (pairId && isProMode && showProMode) {
       getTradesData(pairId);
     }
-  }, [pairId, isProMode]);
+  }, [pairId, isProMode, showProMode]);
 
   const { t } = useTranslation();
   return (
@@ -112,7 +120,7 @@ const SwapPage: React.FC = () => {
           <HelpIcon />
         </Box>
       </Box>
-      {!isProMode ? (
+      {!isProMode || !showProMode ? (
         <Grid container spacing={4}>
           <Grid item xs={12} sm={12} md={6} lg={5}>
             <Box className='wrapper'>

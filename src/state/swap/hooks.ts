@@ -1,6 +1,7 @@
 //import useENS from 'hooks/useENS';
 import { parseUnits } from '@ethersproject/units';
 import {
+  ChainId,
   Currency,
   CurrencyAmount,
   ETHER,
@@ -42,6 +43,9 @@ export function useSwapActionHandlers(): {
   onChangeRecipient: (recipient: string | null) => void;
 } {
   const dispatch = useDispatch<AppDispatch>();
+  const { chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
+  const nativeCurrency = ETHER[chainIdToUse];
   const onCurrencySelection = useCallback(
     (field: Field, currency: Currency) => {
       dispatch(
@@ -50,7 +54,7 @@ export function useSwapActionHandlers(): {
           currencyId:
             currency instanceof Token
               ? currency.address
-              : currency === ETHER
+              : currency === nativeCurrency
               ? 'ETH'
               : '',
         }),
@@ -98,7 +102,7 @@ export function tryParseAmount(
     if (typedValueParsed !== '0') {
       return currency instanceof Token
         ? new TokenAmount(currency, JSBI.BigInt(typedValueParsed))
-        : CurrencyAmount.ether(JSBI.BigInt(typedValueParsed));
+        : CurrencyAmount.ether(JSBI.BigInt(typedValueParsed), ChainId.MATIC); // TODO: CHANGE THIS
     }
   } catch (error) {
     // should fail if the user specifies too many decimal places of precision (or maybe exceed max uint?)
