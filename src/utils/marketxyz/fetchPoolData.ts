@@ -6,7 +6,6 @@ import {
   PoolLensV1,
 } from 'market-sdk';
 import { convertBNToNumber } from 'utils';
-import { getEthPrice } from '../index';
 
 export interface USDPricedPoolAsset extends PoolAsset {
   supplyBalanceUSD: number;
@@ -54,6 +53,7 @@ export const fetchPoolData = async (
   poolId: string | undefined,
   address: string | undefined,
   directory: PoolDirectoryV1,
+  ethPrice: number,
 ): Promise<PoolData | undefined> => {
   if (!poolId) return;
 
@@ -62,11 +62,14 @@ export const fetchPoolData = async (
 
   const lens = new PoolLensV1(sdk, sdk.options?.poolLens ?? '');
 
-  const summary = await lens.getPoolSummary(pool.comptroller);
-  const assets = (await lens.getPoolAssetsWithData(pool.comptroller, {
-    from: address,
-    gas: 1e18,
-  })) as USDPricedPoolAsset[];
+  const [summary, poolAssets] = await Promise.all([
+    lens.getPoolSummary(pool.comptroller),
+    lens.getPoolAssetsWithData(pool.comptroller, {
+      from: address,
+      gas: 1e18,
+    }),
+  ]);
+  const assets = poolAssets as USDPricedPoolAsset[];
 
   let totalLiquidityUSD = 0;
 
@@ -75,8 +78,6 @@ export const fetchPoolData = async (
 
   let totalSuppliedUSD = 0;
   let totalBorrowedUSD = 0;
-
-  const [ethPrice] = await getEthPrice();
 
   await Promise.all(
     assets.map(async (asset) => {
