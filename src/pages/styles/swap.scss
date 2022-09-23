@@ -1,15 +1,6 @@
 @use 'styles/variables' as *;
 @use 'styles/breakpoints' as *;
 
-.wrapper {
-  padding: 24px;
-  background: $bgPalette;
-  border-radius: 20px;
-  @include media("screen", "<phone") {
-    padding: 16px 12px
-  }
-}
-
 .limitOrderPanel {
   & > div {
     max-width: unset;
@@ -36,7 +27,7 @@
 }
 
 .swapItem {
-  width: 122px;
+  padding: 0 16px;
   height: 46px;
   display: flex;
   justify-content: center;

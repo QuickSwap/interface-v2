@@ -1,0 +1,91 @@
+.title {
+  font-size: 40px;
+  font-weight: 600;
+  font-family: 'Montserrat', sans-serif;
+  color: inherit;
+
+  & > * {
+    font: inherit;
+    color: inherit;
+  }
+}
+
+.i {
+  font-style: italic;
+}
+
+.b {
+  font-weight: 600;
+}
+
+.l {
+  font-weight: 400;
+}
+
+.fs {
+  &-05 {
+    font-size: .5rem;
+  }
+  &-075 {
+    font-size: .75rem;
+  }
+
+  &-085 {
+    font-size: .85rem;
+  }
+
+  &-095 {
+    font-size: .95rem;
+  }
+
+  &-1 {
+    font-size: 1rem;
+  }
+
+  &-125 {
+    font-size: 1.25rem;
+  }
+
+  &-15 {
+    font-size: 1.5rem;
+  }
+
+  &-175 {
+    font-size: 1.75rem;
+  }
+
+  &-2 {
+    font-size: 2rem;
+  }
+}
+
+.ta {
+  &-c {
+    text-align: center;
+  }
+
+  &-l {
+    text-align: left;
+  }
+
+  &-r {
+    text-align: right;
+  }
+}
+
+.ws-no-wrap {
+  white-space: nowrap;
+}
+
+@media (max-width: 560px) {
+  .title {
+    text-align: center;
+  }
+}
+
+@media (max-width: 340px) {
+  .title {
+    font-size: 30px !important;
+    line-height: 40px;
+  }
+}

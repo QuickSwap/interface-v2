@@ -1,0 +1,27 @@
+@use 'styles/variables' as *;
+@use 'styles/breakpoints' as *;
+
+.version-toggle-container {
+  height: 28px;
+  display: flex;
+  border: 1px solid $divider;
+  border-radius: 8px;
+  & > div {
+    padding: 0 12px;
+    display: flex;
+    align-items: center;
+    border-radius: 8px;
+    cursor: pointer;
+    & small {
+      color: $textSecondary;
+    }
+    &.version-toggle-active {
+      background-color: $primaryLight;
+      border: 1px solid $primary;
+      & small {
+        color: $textPrimary;
+      }
+    }
+  }
+}
+

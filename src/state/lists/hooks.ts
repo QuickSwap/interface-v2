@@ -17,6 +17,8 @@ export interface TagInfo extends TagDetails {
 export class WrappedTokenInfo extends Token {
   public readonly tokenInfo: TokenInfo;
   public readonly tags: TagInfo[];
+  public readonly isNative: boolean;
+  public readonly isToken: boolean;
   constructor(tokenInfo: TokenInfo, tags: TagInfo[]) {
     super(
       tokenInfo.chainId,
@@ -27,6 +29,9 @@ export class WrappedTokenInfo extends Token {
     );
     this.tokenInfo = tokenInfo;
     this.tags = tags;
+    // Initialize Default values on V3 Style Tokens
+    this.isNative = false;
+    this.isToken = true;
   }
   public get logoURI(): string | undefined {
     return this.tokenInfo.logoURI;

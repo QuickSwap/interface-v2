@@ -1,0 +1,33 @@
+@use 'styles/variables' as *;
+
+.switchItem {
+  width: 50%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  border: 1px solid $secondary1;
+  & p {
+    color: $textSecondary;
+  }
+}
+.activeSwitchItem {
+  background: 'red'
+  & p {
+    color: $textPrimary;
+  }
+}
+
+.tabText {
+  font-family: Inter;
+  font-size: 16px;
+  font-weight: 500;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 4.75;
+  letter-spacing: normal;
+  text-align: center;
+  color: #696c80;
+  text-transform: none;
+}

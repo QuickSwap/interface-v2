@@ -1,0 +1,44 @@
+@use 'styles/variables' as *;
+@use 'styles/breakpoints' as *;
+
+.v3-remove-liquidity-input-wrapper {
+  padding: 16px;
+  border-radius: 10px;
+  background-color: $bgColor;
+  h3 {
+    width: 90px;
+  }
+}
+
+.v3-remove-liquidity-info-wrapper {
+  padding: 16px;
+  border-radius: 10px;
+  background-color: $secondary1;
+  & > div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    & .currencyLogo {
+      margin-left: 5px;
+    }
+  }
+}
+
+.v3-remove-liquidity-button {
+  height: 50px;
+  width: 100%;
+  border-radius: 10px !important;
+}
+
+.v3-remove-liquidity-percent-buttons {
+  display: flex;
+  justify-content: space-between;
+  flex: 1;
+  max-width: 300px;
+  & button {
+    width: calc(25% - 4px);
+    height: 24px;
+    border-radius: 10px;
+    margin-left: 8px;
+  }
+}

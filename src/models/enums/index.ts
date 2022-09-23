@@ -1,0 +1,1 @@
+export { FarmingType } from './farming';

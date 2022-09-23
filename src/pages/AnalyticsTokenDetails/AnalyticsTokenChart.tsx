@@ -17,6 +17,8 @@ import { AreaChart, ChartType } from 'components';
 import { getTokenChartData } from 'utils';
 import { GlobalConst, GlobalData } from 'constants/index';
 import { useTranslation } from 'react-i18next';
+import { getTokenChartDataV3 } from 'utils/v3-graph';
+import { useIsV3 } from 'state/application/hooks';
 
 const CHART_VOLUME = 0;
 const CHART_LIQUIDITY = 1;
@@ -78,25 +80,35 @@ const AnalyticsTokenChart: React.FC<{ token: any }> = ({ token }) => {
     }
   }, [token, chartIndex]);
 
+  const { isV3 } = useIsV3();
+
   useEffect(() => {
     async function fetchTokenChartData() {
       updateTokenChartData(null);
-      const chartData = await getTokenChartData(
-        tokenAddress,
+
+      const duration =
         durationIndex === GlobalConst.analyticChart.ALL_CHART
           ? 0
-          : getChartStartTime(durationIndex),
-      );
-      if (chartData) {
-        const newChartData = getLimitedData(
-          chartData,
-          GlobalConst.analyticChart.CHART_COUNT,
-        );
-        updateTokenChartData(newChartData);
-      }
+          : getChartStartTime(durationIndex);
+
+      const tokenChartDataFn = isV3
+        ? getTokenChartDataV3(tokenAddress, duration)
+        : getTokenChartData(tokenAddress, duration);
+
+      tokenChartDataFn.then((chartData) => {
+        if (chartData) {
+          const newChartData = getLimitedData(
+            chartData,
+            GlobalConst.analyticChart.CHART_COUNT,
+          );
+          updateTokenChartData(newChartData);
+        }
+      });
     }
-    fetchTokenChartData();
-  }, [updateTokenChartData, tokenAddress, durationIndex]);
+    if (isV3 !== undefined) {
+      fetchTokenChartData();
+    }
+  }, [tokenAddress, durationIndex, isV3]);
 
   const currentPercentClass = getPriceClass(Number(currentPercent));
 
@@ -106,7 +118,8 @@ const AnalyticsTokenChart: React.FC<{ token: any }> = ({ token }) => {
         <Box mt={1.5}>
           <span>{chartIndexTexts[chartIndex]}</span>
           <Box mt={1}>
-            {currentData && currentPercent ? (
+            {(currentData || currentData === 0) &&
+            (currentPercent || currentPercent === 0) ? (
               <>
                 <Box className='flex items-center'>
                   <h4>
@@ -157,7 +170,9 @@ const AnalyticsTokenChart: React.FC<{ token: any }> = ({ token }) => {
             yAxisValues={getYAXISValuesAnalytics(chartData)}
             dates={tokenChartData.map((value: any) => value.date)}
             width='100%'
-            height={240}
+            strokeColor={isV3 ? '#3e92fe' : '#00dced'}
+            gradientColor={isV3 ? '#448aff' : undefined}
+            height={isV3 ? 275 : 240}
             categories={getChartDates(tokenChartData, durationIndex)}
           />
         ) : (

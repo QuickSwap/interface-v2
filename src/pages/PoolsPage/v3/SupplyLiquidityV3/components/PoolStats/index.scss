@@ -1,0 +1,11 @@
+@use 'styles/variables' as *;
+@use 'styles/breakpoints' as *;
+
+.poolStatsWrapper {
+    height: 19px;
+    padding: 0 4px;
+    border-radius: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
