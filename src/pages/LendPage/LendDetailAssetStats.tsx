@@ -190,7 +190,7 @@ const LendDetailAssetStats: React.FC<{ poolData: PoolData }> = ({
           <Box className='poolStatsInfoItem'>
             <Box>
               <small>{t('collateralFactor')}:</small>
-              <p className='small text-gray29'>
+              <p className='small'>
                 {asset.collateralFactor
                   .div(sdk.web3.utils.toBN(1e16))
                   .toNumber()}
@@ -199,7 +199,7 @@ const LendDetailAssetStats: React.FC<{ poolData: PoolData }> = ({
             </Box>
             <Box>
               <small>{t('reserveFactor')}:</small>
-              <p className='small text-gray29'>
+              <p className='small'>
                 {asset.reserveFactor.div(sdk.web3.utils.toBN(1e16)).toNumber()}%
               </p>
             </Box>
@@ -207,19 +207,15 @@ const LendDetailAssetStats: React.FC<{ poolData: PoolData }> = ({
           <Box className='poolStatsInfoItem'>
             <Box>
               <small>{t('totalSupplied')}:</small>
-              <p className='small text-gray29'>
-                {shortUsdFormatter(asset.totalSupplyUSD)}
-              </p>
+              <p className='small'>{shortUsdFormatter(asset.totalSupplyUSD)}</p>
             </Box>
             <Box>
               <small>{t('totalBorrowed')}:</small>
-              <p className='small text-gray29'>
-                {shortUsdFormatter(asset.totalBorrowUSD)}
-              </p>
+              <p className='small'>{shortUsdFormatter(asset.totalBorrowUSD)}</p>
             </Box>
             <Box>
               <small>{t('utilization')}:</small>
-              <p className='small text-gray29'>{currentUtilization + '%'}</p>
+              <p className='small'>{currentUtilization + '%'}</p>
             </Box>
           </Box>
         </Box>
