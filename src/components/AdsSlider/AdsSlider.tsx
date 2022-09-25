@@ -13,6 +13,9 @@ const AdsSlider: React.FC<AdsSliderProps> = ({ sort }) => {
   const adsData = useDefaultAdsList();
   const ads = adsData.data[sort];
 
+  const startIndex =
+    ads && ads.length > 0 ? Math.floor(Math.random() * ads.length) : 0;
+
   const adsSliderSettings = {
     dots: false,
     infinite: true,
@@ -22,6 +25,7 @@ const AdsSlider: React.FC<AdsSliderProps> = ({ sort }) => {
         ? adsData.config.autoPlaySpeed
         : 20000,
     speed: 500,
+    initialSlide: startIndex,
     slidesToShow: 1,
     slidesToScroll: 1,
     arrows: false,
@@ -46,4 +50,4 @@ const AdsSlider: React.FC<AdsSliderProps> = ({ sort }) => {
   );
 };
 
-export default AdsSlider;
+export default React.memo(AdsSlider);

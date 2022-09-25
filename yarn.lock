@@ -7637,10 +7637,10 @@ caniuse-api@^3.0.0:
     lodash.memoize "^4.1.2"
     lodash.uniq "^4.5.0"
 
-caniuse-lite@^1.0.0, caniuse-lite@^1.0.30000981, caniuse-lite@^1.0.30001109, caniuse-lite@^1.0.30001370:
-  version "1.0.30001376"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001376.tgz#af2450833e5a06873fbb030a9556ca9461a2736d"
-  integrity sha512-I27WhtOQ3X3v3it9gNs/oTpoE5KpwmqKR5oKPA8M0G7uMXh9Ty81Q904HpKUrM30ei7zfcL5jE7AXefgbOfMig==
+caniuse-lite@^1.0.0, caniuse-lite@^1.0.30000981, caniuse-lite@^1.0.30001109, caniuse-lite@^1.0.30001317:
+  version "1.0.30001393"
+  resolved "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30001393.tgz"
+  integrity sha512-N/od11RX+Gsk+1qY/jbPa0R6zJupEa0lxeBG598EbrtblxVCTJsQwbRBm6+V+rxpc5lHKdsXb9RY83cZIPLseA==
 
 capture-exit@^2.0.0:
   version "2.0.0"
@@ -14967,10 +14967,10 @@ map-visit@^1.0.0:
   dependencies:
     object-visit "^1.0.0"
 
-market-sdk@^2.1.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/market-sdk/-/market-sdk-2.1.0.tgz#cfb8e3440a14e6901ce086026c1f26d93b87f42c"
-  integrity sha512-XnKuGP4j/ccuQZHCMXnVJQXsBiy6HiUU77cwbvvJ7Nulg0Y9NP4WMcGKPQMjF2th+4jIo+xcSzUMZQRZaCJpfA==
+market-sdk@^2.2.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/market-sdk/-/market-sdk-2.2.0.tgz#a99c8867e1105fd8cf242ae961cb9dc96e11bd36"
+  integrity sha512-WpLuNa9ko2hiwodEXzNbtnLoXQULNk/jOTZ3iWTPF+r3Y6ingF/JYt3NDsX9xYT4iqKISNdLdYl0MAJo2zLx/Q==
   dependencies:
     bn.js "^5.2.0"
     web3 "^1.7.0"
