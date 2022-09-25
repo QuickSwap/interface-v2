@@ -110,6 +110,7 @@ export const GlobalConst = {
   farmIndex: {
     LPFARM_INDEX: 0,
     DUALFARM_INDEX: 1,
+    OTHER_LP_INDEX: 2,
   },
   walletName: {
     METAMASK: 'Metamask',

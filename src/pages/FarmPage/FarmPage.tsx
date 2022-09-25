@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Box, useMediaQuery, useTheme } from '@material-ui/core';
+import { Box, useMediaQuery, useTheme, Button } from '@material-ui/core';
 import { getBulkPairData } from 'state/stake/hooks';
+import { ReactComponent as ExitIcon } from 'assets/images/ExitIcon.svg';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
 import { useActiveWeb3React } from 'hooks';
 import { GlobalConst } from 'constants/index';
@@ -47,6 +48,13 @@ const FarmPage: React.FC = () => {
       condition: farmIndex === GlobalConst.farmIndex.LPFARM_INDEX,
     },
     {
+      text: 'Other LP Mining',
+      onClick: () => {
+        setFarmIndex(GlobalConst.farmIndex.OTHER_LP_INDEX);
+      },
+      condition: farmIndex === GlobalConst.farmIndex.OTHER_LP_INDEX,
+    },
+    {
       text: t('dualMining'),
       onClick: () => setFarmIndex(GlobalConst.farmIndex.DUALFARM_INDEX),
       condition: farmIndex === GlobalConst.farmIndex.DUALFARM_INDEX,
@@ -67,14 +75,36 @@ const FarmPage: React.FC = () => {
       <Box maxWidth={isMobile ? '320px' : '1136px'} margin='0 auto 24px'>
         <AdsSlider sort='farms' />
       </Box>
-      <CustomSwitch
-        width={300}
-        height={48}
-        items={farmCategories}
-        isLarge={true}
-      />
+      <Box className='flex flex-wrap justify-between'>
+        <CustomSwitch
+          width={450}
+          height={48}
+          items={farmCategories}
+          isLarge={true}
+        />
+        {farmIndex === GlobalConst.farmIndex.OTHER_LP_INDEX && (
+          <Box className='flex'>
+            <Button className='btn-xl mr-1'>Create A Farm</Button>
+            {/*
+            <Box className='flex btn-xl btn-exit'>
+              <Box className='flex flex-col' my={'auto'} mx={1}>
+                <Box fontSize={10}>DISCONNECT</Box>
+                <Box fontWeight={'bold'}>0x04…324b</Box>
+              </Box>
+              <Box className='flex' my={'auto'} ml={2} mr={1}>
+                <ExitIcon />
+              </Box>
+            </Box>
+            */}
+          </Box>
+        )}
+      </Box>
       <Box my={3}>
-        <FarmRewards bulkPairs={bulkPairs} farmIndex={farmIndex} />
+        {farmIndex !== GlobalConst.farmIndex.OTHER_LP_INDEX ? (
+          <FarmRewards bulkPairs={bulkPairs} farmIndex={farmIndex} />
+        ) : (
+          <></>
+        )}
       </Box>
       <Box className='farmsWrapper'>
         <FarmsList bulkPairs={bulkPairs} farmIndex={farmIndex} />

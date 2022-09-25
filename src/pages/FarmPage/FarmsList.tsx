@@ -365,11 +365,19 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
     <>
       <Box className='farmListHeader'>
         <Box>
-          <h5>{t('earndQUICK')}</h5>
+          <h5>
+            {t(
+              farmIndex === GlobalConst.farmIndex.OTHER_LP_INDEX
+                ? 'earnRewards'
+                : 'earndQUICK',
+            )}
+          </h5>
           <small>
             {t(
               farmIndex === GlobalConst.farmIndex.LPFARM_INDEX
                 ? 'stakeMessageLP'
+                : farmIndex === GlobalConst.farmIndex.OTHER_LP_INDEX
+                ? 'stakeMessageOtherLP'
                 : 'stakeMessageDual',
             )}
           </small>
