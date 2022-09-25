@@ -4,6 +4,7 @@
   "private": true,
   "devDependencies": {
     "@arkane-network/web3-arkane-provider": "^0.23.0",
+    "@cryption/dapp-factory-sdk": "^0.4.47",
     "@ethersproject/experimental": "^5.4.0",
     "@gelatonetwork/limit-orders-react": "^2.4.0",
     "@gnosis.pm/safe-apps-sdk": "^4.0.0",
