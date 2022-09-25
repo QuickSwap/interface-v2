@@ -135,6 +135,10 @@ export const fetchPoolData = async (
           underlyingName: asset.underlyingName
             .replace('Uniswap', '')
             .replace('/', '-'),
+          underlyingSymbol:
+            asset.underlyingSymbol.toLowerCase() === 'mimatic'
+              ? 'MAI'
+              : asset.underlyingSymbol,
         };
       }),
 
