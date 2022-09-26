@@ -15,7 +15,10 @@ const PoolsPage: React.FC = () => {
     <Box width='100%' mb={3}>
       <Box className='pageHeading'>
         <h4>{t('pool')}</h4>
-        <Box className='helpWrapper'>
+        <Box
+          className='helpWrapper'
+          onClick={() => window.open('https://t.me/QuickSwapDEX', '_blank')}
+        >
           <small>{t('help')}</small>
           <HelpIcon />
         </Box>

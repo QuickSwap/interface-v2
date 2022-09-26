@@ -59,7 +59,10 @@ const FarmPage: React.FC = () => {
         <Box mr={2}>
           <h4>{t('farm')}</h4>
         </Box>
-        <Box className='helpWrapper'>
+        <Box
+          className='helpWrapper'
+          onClick={() => window.open('https://t.me/QuickSwapDEX', '_blank')}
+        >
           <small>{t('help')}</small>
           <HelpIcon />
         </Box>

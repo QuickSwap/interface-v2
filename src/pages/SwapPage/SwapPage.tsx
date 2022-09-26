@@ -101,7 +101,10 @@ const SwapPage: React.FC = () => {
       {!isProMode && (
         <Box className='pageHeading'>
           <h4>{t('swap')}</h4>
-          <Box className='helpWrapper'>
+          <Box
+            className='helpWrapper'
+            onClick={() => window.open('https://t.me/QuickSwapDEX', '_blank')}
+          >
             <small>{t('help')}</small>
             <HelpIcon />
           </Box>
