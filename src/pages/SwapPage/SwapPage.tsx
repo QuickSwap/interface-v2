@@ -95,16 +95,22 @@ const SwapPage: React.FC = () => {
   }, [pairId, isProMode]);
 
   const { t } = useTranslation();
+  const helpURL = process.env.REACT_APP_HELP_URL;
 
   return (
     <Box width='100%' mb={3} id='swap-page'>
       {!isProMode && (
         <Box className='pageHeading'>
           <h4>{t('swap')}</h4>
-          <Box className='helpWrapper'>
-            <small>{t('help')}</small>
-            <HelpIcon />
-          </Box>
+          {helpURL && (
+            <Box
+              className='helpWrapper'
+              onClick={() => window.open(helpURL, '_blank')}
+            >
+              <small>{t('help')}</small>
+              <HelpIcon />
+            </Box>
+          )}
         </Box>
       )}
       {!isProMode ? (
