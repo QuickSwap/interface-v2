@@ -4,13 +4,11 @@ import './index.scss';
 import { Field } from 'state/mint/actions';
 import {
   IDerivedMintInfo,
-  useRangeHopCallbacks,
   useV3MintActionHandlers,
   useV3MintState,
 } from 'state/mint/v3/hooks';
 import { ApprovalState, useApproveCallback } from 'hooks/useV3ApproveCallback';
 import { useActiveWeb3React } from 'hooks';
-import { Bound } from 'state/mint/v3/actions';
 import { useUSDCValue } from 'hooks/v3/useUSDCPrice';
 import { NONFUNGIBLE_POSITION_MANAGER_ADDRESSES } from 'constants/v3/addresses';
 import { maxAmountSpend } from 'utils/v3/maxAmountSpend';
@@ -47,28 +45,28 @@ export function EnterAmounts({
   const {
     onFieldAInput,
     onFieldBInput,
-    onLeftRangeInput,
-    onRightRangeInput,
+    // onLeftRangeInput,
+    // onRightRangeInput,
   } = useV3MintActionHandlers(mintInfo.noLiquidity);
 
   // get value and prices at ticks
-  const { [Bound.LOWER]: tickLower, [Bound.UPPER]: tickUpper } = useMemo(() => {
-    return mintInfo.ticks;
-  }, [mintInfo]);
+  // const { [Bound.LOWER]: tickLower, [Bound.UPPER]: tickUpper } = useMemo(() => {
+  //   return mintInfo.ticks;
+  // }, [mintInfo]);
 
-  const {
-    getDecrementLower,
-    getIncrementLower,
-    getDecrementUpper,
-    getIncrementUpper,
-  } = useRangeHopCallbacks(
-    currencyA ?? undefined,
-    currencyB ?? undefined,
-    mintInfo.dynamicFee,
-    tickLower,
-    tickUpper,
-    mintInfo.pool,
-  );
+  // const {
+  //   getDecrementLower,
+  //   getIncrementLower,
+  //   getDecrementUpper,
+  //   getIncrementUpper,
+  // } = useRangeHopCallbacks(
+  //   currencyA ?? undefined,
+  //   currencyB ?? undefined,
+  //   mintInfo.dynamicFee,
+  //   tickLower,
+  //   tickUpper,
+  //   mintInfo.pool,
+  // );
 
   // get formatted amounts
   const formattedAmounts = {
@@ -212,14 +210,6 @@ export function EnterAmounts({
 
     return;
   }, [mintInfo, currencyB]);
-
-  // useEffect(() => {
-  //   return () => {
-  //     if (history.action === 'POP') {
-  //       dispatch(updateCurrentStep({ currentStep: backStep }));
-  //     }
-  //   };
-  // });
 
   // const leftPrice = useMemo(() => {
   //   return mintInfo.invertPrice

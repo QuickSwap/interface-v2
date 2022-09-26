@@ -8,7 +8,6 @@ import { Bound, setShowNewestPosition } from 'state/mint/v3/actions';
 import { ArrowRight } from 'react-feather';
 import usePrevious from 'hooks/usePrevious';
 import { PositionPool } from 'models/interfaces';
-import { NavLink } from 'react-router-dom';
 import RangeBadge from 'components/v3/Badge/RangeBadge';
 import { useAppDispatch } from 'state/hooks';
 import './index.scss';

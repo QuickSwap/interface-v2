@@ -18,7 +18,6 @@ import { useActivePreset } from 'state/mint/v3/hooks';
 import { tryParseAmount } from 'state/swap/v3/hooks';
 import { Presets } from 'state/mint/v3/reducer';
 import { PriceFormats } from 'components/v3/PriceFomatToggler';
-import { useHistory } from 'react-router-dom';
 import LiquidityChartRangeInput from 'components/v3/LiquidityChartRangeInput';
 import { GlobalValue } from 'constants/index';
 import { toToken } from 'constants/v3/routing';
@@ -40,13 +39,9 @@ export function SelectRange({
 }: IRangeSelector) {
   const [fullRangeWarningShown, setFullRangeWarningShown] = useState(true);
   const { startPriceTypedValue } = useV3MintState();
-  const history = useHistory();
 
   const dispatch = useAppDispatch();
   const activePreset = useActivePreset();
-
-  const currencyAUSDC = useUSDCPrice(currencyA ?? undefined);
-  const currencyBUSDC = useUSDCPrice(currencyB ?? undefined);
 
   //TODO - create one main isUSD
   const isUSD = useMemo(() => {
@@ -154,14 +149,6 @@ export function SelectRange({
     },
     [price],
   );
-
-  // useEffect(() => {
-  //   return () => {
-  //     if (history.action === 'POP') {
-  //       dispatch(updateCurrentStep({ currentStep: backStep }));
-  //     }
-  //   };
-  // }, []);
 
   const initialUSDPrices = useInitialUSDPrices();
   const initialTokenPrice = useInitialTokenPrice();

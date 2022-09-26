@@ -173,7 +173,7 @@ export function TokenAmountCard({
       );
     }
 
-    setLocalTokenValue(value);
+    setLocalTokenValue(value ?? '');
   }, [
     initialTokenPrice,
     initialUSDPrices,
