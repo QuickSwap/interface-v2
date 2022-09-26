@@ -7,6 +7,7 @@ import {
   useStakingInfo,
   useOldStakingInfo,
   useDualStakingInfo,
+  useOtherLpStackingInfo,
 } from 'state/stake/hooks';
 import { StakingInfo, DualStakingInfo, CommonStakingInfo } from 'types';
 import {
