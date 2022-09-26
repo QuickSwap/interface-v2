@@ -19,6 +19,7 @@ import 'pages/styles/swap.scss';
 import { ReactComponent as SettingsIcon } from 'assets/images/SettingsIcon.svg';
 import AdsSlider from 'components/AdsSlider';
 import { getConfig } from '../../config/index';
+import { ChainId } from '@uniswap/sdk';
 
 const SwapPage: React.FC = () => {
   const [openSettingsModal, setOpenSettingsModal] = useState(false);
@@ -39,15 +40,12 @@ const SwapPage: React.FC = () => {
 
   const { currencies } = useDerivedSwapInfo();
   const { chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ?? ChainId.MATIC;
+  const token1 = wrappedCurrency(currencies[Field.INPUT], chainIdToUse);
+  const token2 = wrappedCurrency(currencies[Field.OUTPUT], chainIdToUse);
 
-  const token1 = wrappedCurrency(currencies[Field.INPUT], chainId);
-  const token2 = wrappedCurrency(currencies[Field.OUTPUT], chainId);
+  const config = getConfig(chainIdToUse);
 
-  const config = getConfig(chainId);
-
-  const v2 = config['v2'];
-  const v3 = config['v3'];
-  const showBestTrade = config['swap']['bestTrade'];
   const showProMode = config['swap']['proMode'];
 
   // this is for refreshing data of trades table every 60 seconds
@@ -61,7 +59,11 @@ const SwapPage: React.FC = () => {
 
   useEffect(() => {
     async function getPairId(token1Address: string, token2Address: string) {
-      const pairData = await getPairAddress(token1Address, token2Address);
+      const pairData = await getPairAddress(
+        token1Address,
+        token2Address,
+        chainIdToUse,
+      );
       if (pairData) {
         setPairTokenReversed(pairData.tokenReversed);
         setPairId(pairData.pairId);
@@ -76,6 +78,7 @@ const SwapPage: React.FC = () => {
     (async () => {
       if (pairId && transactions && transactions.length > 0) {
         const txns = await getSwapTransactions(
+          chainIdToUse,
           pairId,
           Number(transactions[0].transaction.timestamp),
         );
@@ -96,7 +99,7 @@ const SwapPage: React.FC = () => {
   useEffect(() => {
     async function getTradesData(pairId: string) {
       setTransactions(undefined);
-      const transactions = await getSwapTransactions(pairId);
+      const transactions = await getSwapTransactions(chainIdToUse, pairId);
       setTransactions(transactions);
     }
     if (pairId && isProMode && showProMode) {

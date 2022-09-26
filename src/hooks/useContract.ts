@@ -81,8 +81,12 @@ export function useContract<T extends Contract = Contract>(
   ]) as T;
 }
 
-export function useLairContract(): Contract | null {
-  return useContract(LAIR_ADDRESS, LairABI, true);
+export function useLairContract(chainId?: ChainId): Contract | null {
+  return useContract(
+    chainId ? LAIR_ADDRESS[chainId] : LAIR_ADDRESS,
+    LairABI,
+    true,
+  );
 }
 
 export function useQUICKContract(): Contract | null {

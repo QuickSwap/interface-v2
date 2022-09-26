@@ -61,7 +61,7 @@ const AnalyticsOverview: React.FC = () => {
 
     (async () => {
       if (isV3) {
-        const data = await getGlobalDataV3();
+        const data = await getGlobalDataV3(chainIdToUse);
         if (data) {
           updateGlobalData({ data });
         }
@@ -70,6 +70,7 @@ const AnalyticsOverview: React.FC = () => {
           ethPrice.price,
           ethPrice.oneDayPrice,
           V2_FACTORY_ADDRESSES[chainIdToUse],
+          chainIdToUse,
         );
         if (data) {
           updateGlobalData({ data });
@@ -84,6 +85,7 @@ const AnalyticsOverview: React.FC = () => {
             maticPrice.price,
             maticPrice.oneDayPrice,
             GlobalConst.utils.ANALYTICS_TOKENS_COUNT,
+            chainIdToUse,
           );
           if (data) {
             updateTopTokens(data);
@@ -95,6 +97,7 @@ const AnalyticsOverview: React.FC = () => {
             ethPrice.price,
             ethPrice.oneDayPrice,
             GlobalConst.utils.ANALYTICS_TOKENS_COUNT,
+            chainIdToUse,
           );
           if (data) {
             updateTopTokens(data);
@@ -107,6 +110,7 @@ const AnalyticsOverview: React.FC = () => {
       if (isV3) {
         const data = await getTopPairsV3(
           GlobalConst.utils.ANALYTICS_PAIRS_COUNT,
+          chainIdToUse,
         );
         if (data) {
           updateTopPairs(data);
@@ -115,6 +119,7 @@ const AnalyticsOverview: React.FC = () => {
               try {
                 const aprs = await getPairsAPR(
                   data.map((item: any) => item.id),
+                  chainIdToUse,
                 );
 
                 updateTopPairs(
@@ -136,13 +141,18 @@ const AnalyticsOverview: React.FC = () => {
         if (ethPrice.price) {
           const pairs = await getTopPairs(
             GlobalConst.utils.ANALYTICS_PAIRS_COUNT,
+            chainIdToUse,
           );
           const formattedPairs = pairs
             ? pairs.map((pair: any) => {
                 return pair.id;
               })
             : [];
-          const data = await getBulkPairData(formattedPairs, ethPrice.price);
+          const data = await getBulkPairData(
+            formattedPairs,
+            ethPrice.price,
+            chainIdToUse,
+          );
           if (data) {
             updateTopPairs(data);
           }

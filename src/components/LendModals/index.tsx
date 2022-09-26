@@ -456,7 +456,11 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
   useEffect(() => {
     if (!pairAddress || !ethPrice.price) return;
     (async () => {
-      const pairInfo = await getBulkPairData([pairAddress], ethPrice.price);
+      const pairInfo = await getBulkPairData(
+        [pairAddress],
+        ethPrice.price,
+        chainIdToUse,
+      );
       if (pairInfo && pairInfo.length > 0) {
         setPairData(pairInfo[0]);
       }

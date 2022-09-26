@@ -43,7 +43,9 @@ const FarmPage: React.FC = () => {
   }, [chainIdOrDefault, lpFarms, dualFarms]);
 
   useEffect(() => {
-    getBulkPairData(pairLists).then((data) => setBulkPairs(data));
+    getBulkPairData(chainIdOrDefault, pairLists).then((data) =>
+      setBulkPairs(data),
+    );
   }, [pairLists]);
 
   const farmCategories = [

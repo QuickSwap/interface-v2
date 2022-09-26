@@ -19,6 +19,8 @@ import { GlobalConst, GlobalData } from 'constants/index';
 import { useTranslation } from 'react-i18next';
 import { getTokenChartDataV3 } from 'utils/v3-graph';
 import { useIsV3 } from 'state/application/hooks';
+import { useActiveWeb3React } from 'hooks';
+import { ChainId } from '@uniswap/sdk';
 
 const CHART_VOLUME = 0;
 const CHART_LIQUIDITY = 1;
@@ -35,6 +37,8 @@ const AnalyticsTokenChart: React.FC<{ token: any }> = ({ token }) => {
   const [durationIndex, setDurationIndex] = useState(
     GlobalConst.analyticChart.ONE_MONTH_CHART,
   );
+  const { chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ?? ChainId.MATIC;
 
   const chartData = useMemo(() => {
     if (!tokenChartData) return;
@@ -92,8 +96,8 @@ const AnalyticsTokenChart: React.FC<{ token: any }> = ({ token }) => {
           : getChartStartTime(durationIndex);
 
       const tokenChartDataFn = isV3
-        ? getTokenChartDataV3(tokenAddress, duration)
-        : getTokenChartData(tokenAddress, duration);
+        ? getTokenChartDataV3(tokenAddress, duration, chainIdToUse)
+        : getTokenChartData(tokenAddress, duration, chainIdToUse);
 
       tokenChartDataFn.then((chartData) => {
         if (chartData) {

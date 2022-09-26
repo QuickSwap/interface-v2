@@ -10,6 +10,8 @@ import 'components/styles/TopMovers.scss';
 import { useTranslation } from 'react-i18next';
 import { useEthPrice, useMaticPrice, useIsV3 } from 'state/application/hooks';
 import { getTopTokensV3 } from 'utils/v3-graph';
+import { useActiveWeb3React } from 'hooks';
+import { getConfig } from '../../config/index';
 
 interface TopMoversProps {
   hideArrow?: boolean;
@@ -19,8 +21,13 @@ const TopMovers: React.FC<TopMoversProps> = ({ hideArrow = false }) => {
   const [topTokens, updateTopTokens] = useState<any[] | null>(null);
   const { ethPrice } = useEthPrice();
   const { maticPrice } = useMaticPrice();
+  const { chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ?? ChainId.MATIC;
+  const config = getConfig(chainIdToUse);
 
   const { isV3 } = useIsV3();
+  const v2 = config['v2'];
+  const v3 = config['v3'];
 
   const topMoverTokens = useMemo(
     () => (topTokens && topTokens.length >= 5 ? topTokens.slice(0, 5) : null),
@@ -36,9 +43,27 @@ const TopMovers: React.FC<TopMoversProps> = ({ hideArrow = false }) => {
         maticPrice.oneDayPrice !== undefined &&
         isV3 !== undefined
       ) {
-        const topTokensFn = isV3
-          ? getTopTokensV3(maticPrice.price, maticPrice.oneDayPrice, 5)
-          : getTopTokens(ethPrice.price, ethPrice.oneDayPrice, 5);
+        const topTokensFn =
+          isV3 && v3
+            ? getTopTokensV3(
+                maticPrice.price,
+                maticPrice.oneDayPrice,
+                5,
+                chainIdToUse,
+              )
+            : v2
+            ? getTopTokens(
+                ethPrice.price,
+                ethPrice.oneDayPrice,
+                5,
+                chainIdToUse,
+              )
+            : getTopTokensV3(
+                maticPrice.price,
+                maticPrice.oneDayPrice,
+                5,
+                chainIdToUse,
+              );
 
         topTokensFn.then((data: any) => {
           if (data) {

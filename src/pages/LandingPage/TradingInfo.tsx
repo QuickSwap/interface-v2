@@ -6,15 +6,20 @@ import { useOldLairInfo, useTotalRewardsDistributed } from 'state/stake/hooks';
 import { formatCompact, useLairDQUICKAPY } from 'utils';
 import { useTranslation } from 'react-i18next';
 import { ChainId } from '@uniswap/sdk';
+import { useActiveWeb3React } from 'hooks';
+import { getConfig } from '../../config/index';
 
 export const TradingInfo: React.FC<{ globalData: any; v3GlobalData: any }> = ({
   globalData,
   v3GlobalData,
 }) => {
-  const lairInfo = useOldLairInfo();
+  const lairInfo = useOldLairInfo(ChainId.MATIC);
   const [openStakeModal, setOpenStakeModal] = useState(false);
-
+  const { chainId } = useActiveWeb3React();
   const dQUICKAPY = useLairDQUICKAPY(false, lairInfo);
+  const config = getConfig(chainId);
+  const oldLair = config['lair']['oldLair'];
+  const newLair = config['lair']['newLair'];
   //TODO: Support Multichain
   const totalRewardsUSD = useTotalRewardsDistributed(ChainId.MATIC);
   const { t } = useTranslation();
@@ -80,17 +85,20 @@ export const TradingInfo: React.FC<{ globalData: any; v3GlobalData: any }> = ({
         )}
         <p>{t('totalTradingPairs')}</p>
       </Box>
-      <Box className='tradingSection' pt='20px'>
-        {dQUICKAPY ? (
-          <h3>{dQUICKAPY.toLocaleString()}%</h3>
-        ) : (
-          <Skeleton variant='rect' width={100} height={45} />
-        )}
-        <p>dQUICK {t('apy')}</p>
-        <h4 onClick={() => setOpenStakeModal(true)}>
-          {t('stake')} {'>'}
-        </h4>
-      </Box>
+      {oldLair ||
+        (newLair && (
+          <Box className='tradingSection' pt='20px'>
+            {dQUICKAPY ? (
+              <h3>{dQUICKAPY.toLocaleString()}%</h3>
+            ) : (
+              <Skeleton variant='rect' width={100} height={45} />
+            )}
+            <p>dQUICK {t('apy')}</p>
+            <h4 onClick={() => setOpenStakeModal(true)}>
+              {t('stake')} {'>'}
+            </h4>
+          </Box>
+        ))}
     </>
   );
 };
