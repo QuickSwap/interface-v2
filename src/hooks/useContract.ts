@@ -19,7 +19,7 @@ import V2ToV3MigratorABI from 'constants/abis/v3/migrator.json';
 import { STAKING_DUAL_REWARDS_INTERFACE } from 'constants/abis/staking-rewards';
 import UNISOCKS_ABI from 'constants/abis/unisocks.json';
 import WETH_ABI from 'constants/abis/weth.json';
-import { MULTICALL_ABI, MULTICALL_NETWORKS } from 'constants/multicall';
+import { MULTICALL_ABI } from 'constants/multicall';
 import {
   V1_EXCHANGE_ABI,
   V1_FACTORY_ABI,
@@ -35,6 +35,13 @@ import {
   NONFUNGIBLE_POSITION_MANAGER_ADDRESSES,
   QUOTER_ADDRESSES,
   V3_MIGRATOR_ADDRESSES,
+  MULTICALL_NETWORKS,
+  V2_ROUTER_ADDRESS,
+  LAIR_ADDRESS,
+  QUICK_ADDRESS,
+  NEW_LAIR_ADDRESS,
+  NEW_QUICK_ADDRESS,
+  QUICK_CONVERSION,
 } from 'constants/v3/addresses';
 import NewQuoterABI from 'constants/abis/v3/quoter.json';
 import MULTICALL2_ABI from 'constants/abis/v3/multicall.json';
@@ -75,27 +82,23 @@ export function useContract<T extends Contract = Contract>(
 }
 
 export function useLairContract(): Contract | null {
-  return useContract(GlobalConst.addresses.LAIR_ADDRESS, LairABI, true);
+  return useContract(LAIR_ADDRESS, LairABI, true);
 }
 
 export function useQUICKContract(): Contract | null {
-  return useContract(GlobalConst.addresses.QUICK_ADDRESS, ERC20_ABI, true);
+  return useContract(QUICK_ADDRESS, ERC20_ABI, true);
 }
 
 export function useNewLairContract(): Contract | null {
-  return useContract(GlobalConst.addresses.NEW_LAIR_ADDRESS, LairABI, true);
+  return useContract(NEW_LAIR_ADDRESS, LairABI, true);
 }
 
 export function useNewQUICKContract(): Contract | null {
-  return useContract(GlobalConst.addresses.NEW_QUICK_ADDRESS, ERC20_ABI, true);
+  return useContract(NEW_QUICK_ADDRESS, ERC20_ABI, true);
 }
 
 export function useQUICKConversionContract(): Contract | null {
-  return useContract(
-    GlobalConst.addresses.QUICK_CONVERSION,
-    QUICKConversionABI,
-    true,
-  );
+  return useContract(QUICK_CONVERSION, QUICKConversionABI, true);
 }
 
 export function useV1FactoryContract(): Contract | null {
@@ -200,25 +203,6 @@ export function useMulticall2Contract() {
   return useContract(MULTICALL_ADDRESS, MULTICALL2_ABI, false);
 }
 
-export function useMerkleDistributorContract(): Contract | null {
-  const { chainId } = useActiveWeb3React();
-  return useContract(
-    chainId
-      ? GlobalConst.addresses.MERKLE_DISTRIBUTOR_ADDRESS[chainId]
-      : undefined,
-    MERKLE_DISTRIBUTOR_ABI,
-    true,
-  );
-}
-
-export function useGovernanceContract(): Contract | null {
-  return useContract(
-    GlobalConst.addresses.GOVERNANCE_ADDRESS,
-    GOVERNANCE_ABI,
-    true,
-  );
-}
-
 export function useStakingContract(
   stakingAddress?: string,
   withSignerIfPossible?: boolean,
@@ -249,7 +233,7 @@ export function useSocksController(): Contract | null {
 export function useRouterContract(): Contract | null {
   const { chainId, account } = useActiveWeb3React();
   return useContract(
-    chainId ? GlobalConst.addresses.ROUTER_ADDRESS[chainId] : undefined,
+    chainId ? V2_ROUTER_ADDRESS[chainId] : undefined,
     IUniswapV2Router02ABI,
     Boolean(account),
   );

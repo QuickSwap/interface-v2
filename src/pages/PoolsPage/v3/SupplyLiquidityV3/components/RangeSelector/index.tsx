@@ -17,6 +17,8 @@ import { tryParseAmount } from 'state/swap/v3/hooks';
 import './index.scss';
 import { Box } from '@material-ui/core';
 import { Add, Remove } from '@material-ui/icons';
+import { USDC } from 'constants/v3/addresses';
+import { ChainId } from '@uniswap/sdk';
 
 interface IRangeSelector {
   priceLower: Price<Token, Token> | undefined;
@@ -165,7 +167,9 @@ function RangePart({
     return priceFormat === PriceFormats.USD;
   }, [priceFormat]);
 
-  const USDC = toToken(GlobalValue.tokens.COMMON.USDC);
+  const USDC_TOKEN = toToken(
+    USDC[tokenA?.chainId ? tokenA.chainId : ChainId.MATIC],
+  );
   const valueUSD = useUSDCValue(
     tryParseAmount(
       value === '∞' || value === '0' ? undefined : Number(value).toFixed(5),
@@ -173,7 +177,10 @@ function RangePart({
     ),
     true,
   );
-  const tokenValue = useBestV3TradeExactIn(tryParseAmount('1', USDC), tokenB);
+  const tokenValue = useBestV3TradeExactIn(
+    tryParseAmount('1', USDC_TOKEN),
+    tokenB,
+  );
   const usdPriceA = useUSDCPrice(tokenA ?? undefined);
   const usdPriceB = useUSDCPrice(tokenB ?? undefined);
 
@@ -182,7 +189,7 @@ function RangePart({
 
   const handleOnBlur = useCallback(() => {
     if (isUSD && usdPriceB) {
-      if (tokenB?.wrapped.address === USDC.address) {
+      if (tokenB?.wrapped.address === USDC_TOKEN.address) {
         onUserInput(localUSDValue);
       } else {
         if (tokenValue && tokenValue.trade) {
@@ -200,7 +207,7 @@ function RangePart({
         }
       }
     } else if (isUSD && initialUSDPrices.CURRENCY_B) {
-      if (tokenB?.wrapped.address === USDC.address) {
+      if (tokenB?.wrapped.address === USDC_TOKEN.address) {
         onUserInput(localUSDValue);
       } else {
         onUserInput(String(+localUSDValue / +initialUSDPrices.CURRENCY_B));
@@ -209,7 +216,7 @@ function RangePart({
         );
       }
     } else if (isUSD && initialTokenPrice && usdPriceA) {
-      if (tokenB?.wrapped.address === USDC.address) {
+      if (tokenB?.wrapped.address === USDC_TOKEN.address) {
         onUserInput(localUSDValue);
       } else {
         onUserInput(

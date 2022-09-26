@@ -75,6 +75,8 @@ import { DualStakingBasic, StakingBasic } from 'types';
 import { AbstractConnector } from '@web3-react/abstract-connector';
 import { injected } from 'connectors';
 import Web3 from 'web3';
+import { useActiveWeb3React } from 'hooks';
+import { NEW_QUICK, OLD_QUICK } from 'constants/v3/addresses';
 
 dayjs.extend(utc);
 dayjs.extend(weekOfYear);
@@ -1248,6 +1250,7 @@ export function updateNameData(data: BasicData): BasicData | undefined {
 export async function getGlobalData(
   ethPrice: number,
   oldEthPrice: number,
+  factory: string,
 ): Promise<any> {
   // data for each day , historic data used for % changes
   let data: any = {};
@@ -1279,7 +1282,7 @@ export async function getGlobalData(
 
     // fetch the global data
     const result = await clientV2.query({
-      query: GLOBAL_DATA(),
+      query: GLOBAL_DATA(factory),
       fetchPolicy: 'network-only',
     });
     data = result.data.uniswapFactories[0];
@@ -1292,7 +1295,7 @@ export async function getGlobalData(
       { index: 'twoWeekData', block: twoWeekBlock?.number },
     ];
     const allData = await clientV2.query({
-      query: GLOBAL_ALLDATA(queryReq),
+      query: GLOBAL_ALLDATA(queryReq, factory),
       fetchPolicy: 'network-only',
     });
     data = allData.data['result'][0];
@@ -1929,9 +1932,9 @@ export function getTokenAPRSyrup(syrup: SyrupInfo) {
 
 export function useLairDQUICKAPY(isNew: boolean, lair?: LairInfo) {
   const daysCurrentYear = getDaysCurrentYear();
-  const quickToken = isNew
-    ? GlobalValue.tokens.COMMON.NEW_QUICK
-    : GlobalValue.tokens.COMMON.OLD_QUICK;
+  const { chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
+  const quickToken = isNew ? NEW_QUICK[chainIdToUse] : OLD_QUICK[chainIdToUse];
   const quickPrice = useUSDCPriceToken(quickToken);
 
   if (!lair) return '';

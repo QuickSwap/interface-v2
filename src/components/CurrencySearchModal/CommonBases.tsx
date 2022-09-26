@@ -1,9 +1,9 @@
 import React from 'react';
 import { ChainId, Currency, currencyEquals, ETHER, Token } from '@uniswap/sdk';
 import { Box } from '@material-ui/core';
-import { GlobalData } from 'constants/index';
 import { CurrencyLogo, QuestionHelper } from 'components';
 import { useTranslation } from 'react-i18next';
+import { SUGGESTED_BASES } from 'constants/v3/addresses';
 
 interface CommonBasesProps {
   chainId?: ChainId;
@@ -47,27 +47,25 @@ const CommonBases: React.FC<CommonBasesProps> = ({
           />
           <small>{nativeCurrency.name}</small>
         </Box>
-        {(chainId ? GlobalData.bases.SUGGESTED_BASES[chainId] : []).map(
-          (token: Token) => {
-            const selected = Boolean(
-              selectedCurrency && currencyEquals(selectedCurrency, token),
-            );
-            return (
-              <Box
-                className='baseWrapper'
-                key={token.address}
-                onClick={() => {
-                  if (!selected) {
-                    onSelect(token);
-                  }
-                }}
-              >
-                <CurrencyLogo currency={token} size='24px' chainId={chainId} />
-                <small>{token.symbol}</small>
-              </Box>
-            );
-          },
-        )}
+        {(chainId ? SUGGESTED_BASES[chainId] : []).map((token: Token) => {
+          const selected = Boolean(
+            selectedCurrency && currencyEquals(selectedCurrency, token),
+          );
+          return (
+            <Box
+              className='baseWrapper'
+              key={token.address}
+              onClick={() => {
+                if (!selected) {
+                  onSelect(token);
+                }
+              }}
+            >
+              <CurrencyLogo currency={token} size='24px' chainId={chainId} />
+              <small>{token.symbol}</small>
+            </Box>
+          );
+        })}
       </Box>
     </Box>
   );

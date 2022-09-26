@@ -13,6 +13,17 @@ import { useActiveWeb3React } from 'hooks';
 import { unwrappedToken, wrappedCurrency } from './wrappedCurrency';
 import { useDQUICKtoQUICK } from 'state/stake/hooks';
 import { GlobalValue } from 'constants/index';
+import {
+  CXETH,
+  DAI,
+  ETHER,
+  NEW_DQUICK,
+  NEW_QUICK,
+  OLD_DQUICK,
+  OLD_QUICK,
+  USDC,
+  USDT,
+} from 'constants/v3/addresses';
 
 /**
  * Returns the price in USDC of the input currency
@@ -20,16 +31,17 @@ import { GlobalValue } from 'constants/index';
  */
 export default function useUSDCPrice(currency?: Currency): Price | undefined {
   const { chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
   let wrapped = wrappedCurrency(currency, chainId);
   const internalWrapped = wrapped;
-  if (wrapped?.equals(GlobalValue.tokens.COMMON.CXETH)) {
-    wrapped = wrappedCurrency(GlobalValue.tokens.COMMON.ETHER, chainId);
+  if (wrapped?.equals(CXETH[chainIdToUse])) {
+    wrapped = wrappedCurrency(ETHER[chainIdToUse], chainId);
   }
-  const oldQuickToken = GlobalValue.tokens.COMMON.OLD_QUICK;
-  const usdcToken = GlobalValue.tokens.COMMON.USDC;
-  const usdtToken = GlobalValue.tokens.COMMON.USDT;
-  const daiToken = GlobalValue.tokens.COMMON.DAI;
-  const cxETHToken = GlobalValue.tokens.COMMON.CXETH;
+  const oldQuickToken = OLD_QUICK[chainIdToUse];
+  const usdcToken = USDC[chainIdToUse];
+  const usdtToken = USDT[chainIdToUse];
+  const daiToken = DAI[chainIdToUse];
+  const cxETHToken = CXETH[chainIdToUse];
   const tokenPairs: [Currency | undefined, Currency | undefined][] = useMemo(
     () => [
       [
@@ -215,12 +227,14 @@ export default function useUSDCPrice(currency?: Currency): Price | undefined {
 //Investigate more fully
 export function useUSDCPrices(currencies: Currency[]): (Price | undefined)[] {
   const { chainId } = useActiveWeb3React();
-  const oldQuickToken = GlobalValue.tokens.COMMON.OLD_QUICK;
-  const usdcToken = GlobalValue.tokens.COMMON.USDC;
-  const usdtToken = GlobalValue.tokens.COMMON.USDT;
-  const daiToken = GlobalValue.tokens.COMMON.DAI;
-  const cxETHToken = GlobalValue.tokens.COMMON.CXETH;
-  const ETHToken = GlobalValue.tokens.COMMON.CXETH;
+  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
+
+  const oldQuickToken = OLD_QUICK[chainIdToUse];
+  const usdcToken = USDC[chainIdToUse];
+  const usdtToken = USDT[chainIdToUse];
+  const daiToken = DAI[chainIdToUse];
+  const cxETHToken = CXETH[chainIdToUse];
+  const ETHToken = CXETH[chainIdToUse];
   const wrappedCurrencies = currencies.map((currency) => {
     let wrapped = wrappedCurrency(currency, chainId);
     if (wrapped?.equals(cxETHToken)) {
@@ -387,11 +401,11 @@ export function useUSDCPrices(currencies: Currency[]): (Price | undefined)[] {
 
 export function useUSDCPricesToken(tokens: Token[]) {
   const dQUICKtoQUICK = useDQUICKtoQUICK();
-  const oldQuickToken = GlobalValue.tokens.COMMON.OLD_QUICK;
-  const oldDQuickToken = GlobalValue.tokens.COMMON.OLD_DQUICK;
-  const newQuickToken = GlobalValue.tokens.COMMON.NEW_QUICK;
-  const newDQuickToken = GlobalValue.tokens.COMMON.NEW_DQUICK;
-  const usdcToken = GlobalValue.tokens.COMMON.USDC;
+  const oldQuickToken = OLD_QUICK[tokens[0].chainId];
+  const oldDQuickToken = OLD_DQUICK[tokens[0].chainId];
+  const newQuickToken = NEW_QUICK[tokens[0].chainId];
+  const newDQuickToken = NEW_DQUICK[tokens[0].chainId];
+  const usdcToken = USDC[tokens[0].chainId];
   const [, quickUsdcPair] = usePair(oldQuickToken, usdcToken);
   const [, newQuickUsdcPair] = usePair(newQuickToken, usdcToken);
   const quickPrice = Number(

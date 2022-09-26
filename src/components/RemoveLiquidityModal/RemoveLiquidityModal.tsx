@@ -45,6 +45,7 @@ import { useTotalSupply } from 'data/TotalSupply';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 import 'components/styles/RemoveLiquidityModal.scss';
 import { useTranslation } from 'react-i18next';
+import { V2_ROUTER_ADDRESS } from 'constants/v3/addresses';
 
 interface RemoveLiquidityModalProps {
   currency0: Currency;
@@ -174,7 +175,7 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
   );
   const [approval, approveCallback] = useApproveCallback(
     parsedAmounts[Field.LIQUIDITY],
-    chainId ? GlobalConst.addresses.ROUTER_ADDRESS[chainId] : undefined,
+    chainId ? V2_ROUTER_ADDRESS[chainId] : undefined,
   );
   const onAttemptToApprove = async () => {
     if (!pairContract || !pair || !library || !deadline) {

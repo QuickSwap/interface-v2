@@ -8,8 +8,8 @@ import utc from 'dayjs/plugin/utc';
 import {
   useEthPrice,
   useGlobalData,
-  useMaticPrice,
   useIsV3,
+  useMaticPrice,
 } from 'state/application/hooks';
 import {
   getTopPairs,
@@ -31,6 +31,9 @@ import {
 } from 'utils/v3-graph';
 import { useDispatch } from 'react-redux';
 import { setAnalyticsLoaded } from 'state/analytics/actions';
+import { ChainId } from '@uniswap/sdk';
+import { useActiveWeb3React } from 'hooks';
+import { V2_FACTORY_ADDRESSES } from 'constants/v3/addresses';
 
 dayjs.extend(utc);
 
@@ -42,7 +45,8 @@ const AnalyticsOverview: React.FC = () => {
   const [topPairs, updateTopPairs] = useState<any[] | null>(null);
   const { ethPrice } = useEthPrice();
   const { maticPrice } = useMaticPrice();
-
+  const { chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
   const dispatch = useDispatch();
 
   const { isV3 } = useIsV3();
@@ -62,7 +66,11 @@ const AnalyticsOverview: React.FC = () => {
           updateGlobalData({ data });
         }
       } else if (ethPrice.price && ethPrice.oneDayPrice) {
-        const data = await getGlobalData(ethPrice.price, ethPrice.oneDayPrice);
+        const data = await getGlobalData(
+          ethPrice.price,
+          ethPrice.oneDayPrice,
+          V2_FACTORY_ADDRESSES[chainIdToUse],
+        );
         if (data) {
           updateGlobalData({ data });
         }
