@@ -9,16 +9,21 @@ import { PoolData, USDPricedPoolAsset } from 'utils/marketxyz/fetchPoolData';
 import { useTranslation } from 'react-i18next';
 import 'pages/styles/lend.scss';
 import { getPoolAssetToken } from 'utils/marketxyz';
-import { Token } from '@uniswap/sdk';
+import { ChainId, Token } from '@uniswap/sdk';
 import { GlobalValue } from 'constants/index';
 import LendAlertBox from './LendAlertBox';
 import { usePoolsData } from 'hooks/marketxyz/usePoolData';
 import AdsSlider from 'components/AdsSlider';
+import {
+  LENDING_QS_POOL_DIRECTORY,
+  LENDING_QS_POOLS,
+} from 'constants/v3/addresses';
 
 const LendPage: React.FC = () => {
   const { t } = useTranslation();
   const history = useHistory();
   const { chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
 
@@ -27,8 +32,8 @@ const LendPage: React.FC = () => {
   const [isMyPools, setIsMyPools] = useState(false);
 
   const pools = usePoolsData(
-    GlobalValue.marketSDK.QS_Pools,
-    GlobalValue.marketSDK.QS_PoolDirectory,
+    LENDING_QS_POOLS[chainIdToUse],
+    LENDING_QS_POOL_DIRECTORY[chainIdToUse],
   );
 
   const totalSupply = useMemo(() => {

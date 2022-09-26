@@ -1,6 +1,8 @@
 {
     "v3": true,
     "v2": true,
+    "rpc": "https://polygon-rpc.com/",
+    "chainId": 137,
     "swap" :{
         "available": true,
         "bestTrade": true,

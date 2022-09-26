@@ -6,12 +6,15 @@ import { ReactComponent as PriceExchangeIcon } from 'assets/images/PriceExchange
 import { formatTokenAmount, useLairDQUICKAPY } from 'utils';
 import { useUSDCPriceToken } from 'utils/useUSDCPrice';
 import { useTranslation } from 'react-i18next';
-import { GlobalValue } from 'constants/index';
+import { useActiveWeb3React } from 'hooks';
+import { ChainId } from '@uniswap/sdk';
+import { NEW_QUICK, OLD_QUICK } from 'constants/v3/addresses';
 
 const DragonsLair: React.FC<{ isNew: boolean }> = ({ isNew }) => {
-  const quickToken = isNew
-    ? GlobalValue.tokens.COMMON.NEW_QUICK
-    : GlobalValue.tokens.COMMON.OLD_QUICK;
+  const { chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
+
+  const quickToken = isNew ? NEW_QUICK[chainIdToUse] : OLD_QUICK[chainIdToUse];
   const quickPrice = useUSDCPriceToken(quickToken);
   const [isQUICKRate, setIsQUICKRate] = useState(false);
   const [openStakeModal, setOpenStakeModal] = useState(false);

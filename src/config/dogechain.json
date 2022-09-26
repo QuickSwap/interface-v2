@@ -1,6 +1,8 @@
 {
     "v3": true,
     "v2": false,
+    "rpc": "https://dogechain.ankr.com",
+    "chainId": 2000,
     "swap" :{
         "available": true,
         "bestTrade": false,

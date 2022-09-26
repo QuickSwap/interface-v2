@@ -24,6 +24,9 @@ import { GlobalValue } from 'constants/index';
 import { toToken } from 'constants/v3/routing';
 import { Box } from '@material-ui/core';
 import { ReportProblemOutlined } from '@material-ui/icons';
+import { useActiveWeb3React } from 'hooks';
+import { ChainId } from '@uniswap/sdk';
+import { MI, USDC, USDT } from 'constants/v3/addresses';
 
 interface IRangeSelector {
   currencyA: Currency | null | undefined;
@@ -40,13 +43,14 @@ export function SelectRange({
 }: IRangeSelector) {
   const [fullRangeWarningShown, setFullRangeWarningShown] = useState(true);
   const { startPriceTypedValue } = useV3MintState();
-  const history = useHistory();
-
+  //const history = useHistory();
+  const { chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
   const dispatch = useAppDispatch();
   const activePreset = useActivePreset();
 
-  const currencyAUSDC = useUSDCPrice(currencyA ?? undefined);
-  const currencyBUSDC = useUSDCPrice(currencyB ?? undefined);
+  //const currencyAUSDC = useUSDCPrice(currencyA ?? undefined);
+  //const currencyBUSDC = useUSDCPrice(currencyB ?? undefined);
 
   //TODO - create one main isUSD
   const isUSD = useMemo(() => {
@@ -56,10 +60,14 @@ export function SelectRange({
   const isStablecoinPair = useMemo(() => {
     if (!currencyA || !currencyB) return false;
 
-    const MAI = toToken(GlobalValue.tokens.COMMON.MI);
-    const USDC = toToken(GlobalValue.tokens.COMMON.USDC);
-    const USDT = toToken(GlobalValue.tokens.COMMON.USDT);
-    const stablecoins = [USDC.address, USDT.address, MAI.address];
+    const MAI_TOKEN = toToken(MI[chainIdToUse]);
+    const USDC_TOKEN = toToken(USDC[chainIdToUse]);
+    const USDT_TOKEN = toToken(USDT[chainIdToUse]);
+    const stablecoins = [
+      USDC_TOKEN.address,
+      USDT_TOKEN.address,
+      MAI_TOKEN.address,
+    ];
 
     return (
       stablecoins.includes(currencyA.wrapped.address) &&

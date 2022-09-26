@@ -37,13 +37,15 @@ import 'pages/styles/lend.scss';
 import { GlobalValue } from 'constants/index';
 import LendDetailAssetStats from './LendDetailAssetStats';
 import AdsSlider from 'components/AdsSlider';
+import { ChainId } from '@uniswap/sdk';
+import { LENDING_QS_POOL_DIRECTORY } from 'constants/v3/addresses';
 
 const LendDetailPage: React.FC = () => {
   const { t } = useTranslation();
   const history = useHistory();
   const location = useLocation();
   const { chainId, account } = useActiveWeb3React();
-
+  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
   const [modalOpen, setModalOpen] = useState(false);
   const [modalIsBorrow, setModalIsBorrow] = useState(false);
   const [selectedAsset, setSelectedAsset] = useState<
@@ -52,7 +54,7 @@ const LendDetailPage: React.FC = () => {
 
   const { sdk } = useMarket();
   const poolId = location && new URLSearchParams(location.search).get('poolId');
-  const poolData = usePoolData(poolId, GlobalValue.marketSDK.QS_PoolDirectory);
+  const poolData = usePoolData(poolId, LENDING_QS_POOL_DIRECTORY[chainIdToUse]);
 
   const extraPoolData = useExtraPoolData(
     poolData?.pool.comptroller,

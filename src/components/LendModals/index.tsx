@@ -44,6 +44,8 @@ import { GlobalValue } from 'constants/index';
 import { useEthPrice } from 'state/application/hooks';
 import useUSDCPrice from 'utils/useUSDCPrice';
 import { Link } from 'react-router-dom';
+import { ChainId } from '@uniswap/sdk';
+import { LENDING_LENS } from 'constants/v3/addresses';
 
 interface QuickModalContentProps {
   borrow?: boolean;
@@ -59,6 +61,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
 }) => {
   const { t } = useTranslation();
   const { account, chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
   const { ethPrice } = useEthPrice();
   const assetUSDPriceObj = useUSDCPrice(getPoolAssetToken(asset, chainId));
   const assetUSDPrice = assetUSDPriceObj
@@ -174,7 +177,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
       setMaxAmountError(false);
       const lens = new MarketLensSecondary(
         currentAsset.cToken.sdk,
-        GlobalValue.marketSDK.LENS,
+        LENDING_LENS[chainIdToUse],
       );
       const underlyingBalance = convertBNToNumber(
         currentAsset.underlyingBalance,

@@ -21,6 +21,10 @@ import { calculateGasMargin } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import { useTokenContract } from './useContract';
 import { Currency } from '@uniswap/sdk-core';
+import {
+  PARASWAP_PROXY_ROUTER_ADDRESS,
+  V2_ROUTER_ADDRESS,
+} from 'constants/v3/addresses';
 
 export enum ApprovalState {
   UNKNOWN,
@@ -261,7 +265,7 @@ export function useApproveCallbackFromTrade(
 
   return useApproveCallback(
     amountToApprove,
-    chainId ? GlobalConst.addresses.ROUTER_ADDRESS[chainId] : undefined,
+    chainId ? V2_ROUTER_ADDRESS[chainId] : undefined,
   );
 }
 
@@ -281,8 +285,6 @@ export function useApproveCallbackFromBestTrade(
 
   return useApproveCallback(
     amountToApprove,
-    chainId
-      ? GlobalConst.addresses.PARASWAP_PROXY_ROUTER_ADDRESS[chainId]
-      : undefined,
+    chainId ? PARASWAP_PROXY_ROUTER_ADDRESS[chainId] : undefined,
   );
 }

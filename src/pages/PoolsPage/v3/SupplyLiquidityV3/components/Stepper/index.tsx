@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react';
 import { Currency } from '@uniswap/sdk-core';
-import { GlobalValue } from 'constants/index';
 import useUSDCPrice from 'hooks/v3/useUSDCPrice';
 import { isMobileOnly } from 'react-device-detect';
 import { Bound } from 'state/mint/v3/actions';
@@ -13,6 +12,9 @@ import { Presets } from 'state/mint/v3/reducer';
 import { PriceFormats } from 'components/v3/PriceFomatToggler';
 import './index.scss';
 import { toToken } from 'constants/v3/routing';
+import { USDC } from 'constants/v3/addresses';
+import { useActiveWeb3React } from 'hooks';
+import { ChainId } from '@uniswap/sdk';
 
 interface IStepperNavigation {
   isEnabled: boolean;
@@ -43,20 +45,22 @@ export function Stepper({
 }: IStepper) {
   const baseTokenUSD = useUSDCPrice(currencyA);
   const rangeTokenUSD = useUSDCPrice(currencyB);
+  const { chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
 
   const initialUSDPrices = useInitialUSDPrices();
-  const USDC = toToken(GlobalValue.tokens.COMMON.USDC);
+  const USDC_TOKEN = toToken(USDC[chainIdToUse]);
 
   const isUSD = useMemo(() => {
     return priceFormat === PriceFormats.USD;
   }, [priceFormat]);
 
   const isUSDCB = useMemo(() => {
-    return currencyB && currencyB.wrapped.address === USDC.address;
+    return currencyB && currencyB.wrapped.address === USDC_TOKEN.address;
   }, [currencyB]);
 
   const isUSDCA = useMemo(() => {
-    return currencyA && currencyA.wrapped.address === USDC.address;
+    return currencyA && currencyA.wrapped.address === USDC_TOKEN.address;
   }, [currencyA]);
 
   const {

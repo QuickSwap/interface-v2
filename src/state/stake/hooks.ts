@@ -57,6 +57,16 @@ import { useDefaultFarmList } from 'state/farms/hooks';
 import { useDefaultDualFarmList } from 'state/dualfarms/hooks';
 import { useDefaultSyrupList } from 'state/syrups/hooks';
 import { Contract } from '@ethersproject/contracts';
+import {
+  LAIR_ADDRESS,
+  NEW_DQUICK,
+  NEW_LAIR_ADDRESS,
+  NEW_QUICK,
+  OLD_DQUICK,
+  OLD_QUICK,
+  V2_FACTORY_ADDRESSES,
+} from 'constants/v3/addresses';
+import { getConfig } from '../../config/index';
 
 const web3 = new Web3('https://polygon-rpc.com/');
 
@@ -665,10 +675,10 @@ export const getBulkPairData = async (pairList: any) => {
   }
 };
 
-const getOneDayVolume = async () => {
+const getOneDayVolume = async (config: any) => {
   let data: any = {};
   let oneDayData: any = {};
-
+  const web3 = new Web3(config.rpc);
   const current = await web3.eth.getBlockNumber();
   const utcCurrentTime = dayjs();
   const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix();
@@ -676,7 +686,7 @@ const getOneDayVolume = async () => {
   const oneDayOldBlock = await getBlockFromTimestamp(utcOneDayBack);
 
   const result = await clientV2.query({
-    query: GLOBAL_DATA(current),
+    query: GLOBAL_DATA(V2_FACTORY_ADDRESSES[config.chainId], current),
     fetchPolicy: 'network-only',
   });
 
@@ -684,7 +694,7 @@ const getOneDayVolume = async () => {
 
   // fetch the historical data
   const oneDayResult = await clientV2.query({
-    query: GLOBAL_DATA(oneDayOldBlock),
+    query: GLOBAL_DATA(V2_FACTORY_ADDRESSES[config.chainId], oneDayOldBlock),
     fetchPolicy: 'network-only',
   });
   oneDayData = oneDayResult.data.uniswapFactories[0];
@@ -951,7 +961,7 @@ export function useDualStakingInfo(
           // Previously Uni was used all over the place (which was an abstract to get the quick token)
           // These rates are just used for informational purposes and the token should should not be used anywhere
           // instead we will supply a dummy token, until this can be refactored properly.
-          const dummyToken = GlobalValue.tokens.COMMON.NEW_QUICK;
+          const dummyToken = NEW_QUICK[chainId];
           const totalRewardRateA = new TokenAmount(
             dummyToken,
             JSBI.BigInt(stakingInfo.ended ? 0 : rateA),
@@ -1104,9 +1114,11 @@ export function useDualStakingInfo(
 export function useOldLairInfo(): LairInfo {
   const lairContract = useLairContract();
   const quickContract = useQUICKContract();
-  const lairAddress = GlobalConst.addresses.LAIR_ADDRESS;
-  const quickToken = GlobalValue.tokens.COMMON.OLD_QUICK;
-  const dQuickToken = GlobalValue.tokens.COMMON.OLD_DQUICK;
+  const { chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
+  const lairAddress = LAIR_ADDRESS[chainIdToUse];
+  const quickToken = OLD_QUICK[chainIdToUse];
+  const dQuickToken = OLD_DQUICK[chainIdToUse];
 
   return useLairInfo(
     lairContract,
@@ -1120,9 +1132,11 @@ export function useOldLairInfo(): LairInfo {
 export function useNewLairInfo(): LairInfo {
   const lairContract = useNewLairContract();
   const quickContract = useNewQUICKContract();
-  const lairAddress = GlobalConst.addresses.NEW_LAIR_ADDRESS;
-  const quickToken = GlobalValue.tokens.COMMON.NEW_QUICK;
-  const dQuickToken = GlobalValue.tokens.COMMON.NEW_DQUICK;
+  const { chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
+  const lairAddress = NEW_LAIR_ADDRESS[chainIdToUse];
+  const quickToken = NEW_QUICK[chainIdToUse];
+  const dQuickToken = NEW_DQUICK[chainIdToUse];
 
   return useLairInfo(
     lairContract,
@@ -1140,8 +1154,8 @@ function useLairInfo(
   quickToken: Token,
   dQuickToken: Token,
 ) {
-  const { account } = useActiveWeb3React();
-
+  const { account, chainId } = useActiveWeb3React();
+  const config = getConfig(chainId ? chainId : ChainId.MATIC);
   let accountArg = useMemo(() => [account ?? undefined], [account]);
   const inputs = ['1000000000000000000'];
   const _dQuickTotalSupply = useSingleCallResult(
@@ -1180,8 +1194,8 @@ function useLairInfo(
   );
 
   useEffect(() => {
-    getOneDayVolume();
-  }, []);
+    getOneDayVolume(config);
+  }, [config]);
 
   return useMemo(() => {
     return {
@@ -1347,7 +1361,7 @@ export function useStakingInfo(
           // Previously Uni was used all over the place (which was an abstract to get the quick token)
           // These rates are just used for informational purposes and the token should should not be used anywhere
           // instead we will supply a dummy token, until this can be refactored properly.
-          const dummyToken = GlobalValue.tokens.COMMON.NEW_QUICK;
+          const dummyToken = NEW_QUICK[chainId];
           const totalRewardRate = new TokenAmount(
             dummyToken,
             JSBI.BigInt(rate),
@@ -1557,7 +1571,7 @@ export function useOldStakingInfo(
           // Previously Uni was used all over the place (which was an abstract to get the quick token)
           // These rates are just used for informational purposes and the token should should not be used anywhere
           // instead we will supply a dummy token, until this can be refactored properly.
-          const dummyToken = GlobalValue.tokens.COMMON.NEW_QUICK;
+          const dummyToken = NEW_QUICK[chainId];
           const totalRewardRate = new TokenAmount(dummyToken, JSBI.BigInt(0));
 
           const individualRewardRate = getHypotheticalRewardRate(
@@ -1617,6 +1631,8 @@ export function useOldStakingInfo(
 
 export function useDQUICKtoQUICK() {
   const lair = useLairContract();
+  const { chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
   const inputs = ['1000000000000000000'];
   const dQuickToQuickState = useSingleCallResult(
     lair,
@@ -1624,9 +1640,10 @@ export function useDQUICKtoQUICK() {
     inputs,
   );
   if (dQuickToQuickState.loading || dQuickToQuickState.error) return 0;
+
   return Number(
     new TokenAmount(
-      GlobalValue.tokens.COMMON.OLD_QUICK,
+      OLD_QUICK[chainIdToUse],
       JSBI.BigInt(dQuickToQuickState?.result?.[0] ?? 0),
     ).toExact(),
   );

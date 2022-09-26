@@ -68,9 +68,7 @@ export default function PositionListItemDetails({
   positionDetails,
 }: PositionListItemProps) {
   const { chainId, account, library } = useActiveWeb3React();
-  const { position: existingPosition } = useDerivedPositionInfo(
-    positionDetails,
-  );
+
   const [openRemoveLiquidityModal, setOpenRemoveLiquidityModal] = useState(
     false,
   );
