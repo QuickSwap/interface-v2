@@ -45,6 +45,7 @@ import {
   getCallStateResult,
 } from 'utils';
 
+import { useCNTFarmList } from 'state/otherfarms/hooks';
 import {
   SyrupInfo,
   LairInfo,
@@ -805,6 +806,22 @@ const getHypotheticalRewardRate = (
       : JSBI.BigInt(0),
   );
 };
+
+// get other lp farms (CNT)
+export function useOtherLpStackingInfo(
+  chainId: ChainId,
+  pairToFilterBy?: Pair | null,
+  startIndex?: number,
+  endIndex?: number,
+  filter?: { search: string; isStaked: boolean; isEndedFarm: boolean },
+): Array<DualStakingInfo | StakingInfo> {
+  const { account } = useActiveWeb3React();
+
+  // Get the CNT Farms
+  useCNTFarmList(chainId || ChainId.MATIC, account);
+
+  return [];
+}
 
 // gets the dual rewards staking info from the network for the active chain id
 export function useDualStakingInfo(
