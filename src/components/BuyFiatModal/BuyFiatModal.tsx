@@ -9,6 +9,7 @@ import { CustomModal } from 'components';
 import { useActiveWeb3React, useInitTransak } from 'hooks';
 import 'components/styles/BuyFiatModal.scss';
 import { useTranslation } from 'react-i18next';
+import { CoinbaseButton } from 'hooks/OnRamps/useCoinbase';
 
 interface BuyFiatModalProps {
   open: boolean;
@@ -33,6 +34,9 @@ const BuyFiatModal: React.FC<BuyFiatModalProps> = ({
         <Box className='flex justify-between items-center'>
           <h6>{t('fiatProviders')}</h6>
           <CloseIcon className='cursor-pointer' onClick={onClose} />
+        </Box>
+        <Box className='paymentBox'>
+          <CoinbaseButton/>
         </Box>
         <Box className='paymentBox'>
           <img src={Moonpay} alt='moonpay' />
