@@ -52,6 +52,7 @@ const FarmPage: React.FC = () => {
       condition: farmIndex === GlobalConst.farmIndex.DUALFARM_INDEX,
     },
   ];
+  const helpURL = process.env.REACT_APP_HELP_URL;
 
   return (
     <Box width='100%' mb={3} id='farmPage'>
@@ -59,13 +60,15 @@ const FarmPage: React.FC = () => {
         <Box mr={2}>
           <h4>{t('farm')}</h4>
         </Box>
-        <Box
-          className='helpWrapper'
-          onClick={() => window.open('https://t.me/QuickSwapDEX', '_blank')}
-        >
-          <small>{t('help')}</small>
-          <HelpIcon />
-        </Box>
+        {helpURL && (
+          <Box
+            className='helpWrapper'
+            onClick={() => window.open(helpURL, '_blank')}
+          >
+            <small>{t('help')}</small>
+            <HelpIcon />
+          </Box>
+        )}
       </Box>
       <Box maxWidth={isMobile ? '320px' : '1136px'} margin='0 auto 24px'>
         <AdsSlider sort='farms' />

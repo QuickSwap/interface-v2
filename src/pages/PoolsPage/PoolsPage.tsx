@@ -11,17 +11,21 @@ const PoolsPage: React.FC = () => {
   const { t } = useTranslation();
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
+  const helpURL = process.env.REACT_APP_HELP_URL;
+
   return (
     <Box width='100%' mb={3}>
       <Box className='pageHeading'>
         <h4>{t('pool')}</h4>
-        <Box
-          className='helpWrapper'
-          onClick={() => window.open('https://t.me/QuickSwapDEX', '_blank')}
-        >
-          <small>{t('help')}</small>
-          <HelpIcon />
-        </Box>
+        {helpURL && (
+          <Box
+            className='helpWrapper'
+            onClick={() => window.open(helpURL, '_blank')}
+          >
+            <small>{t('help')}</small>
+            <HelpIcon />
+          </Box>
+        )}
       </Box>
       <Grid container spacing={4}>
         <Grid item xs={12} sm={12} md={5}>
