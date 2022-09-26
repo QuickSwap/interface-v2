@@ -26,12 +26,13 @@ export const GlobalSection: React.FC = () => {
           ethPrice.price,
           ethPrice.oneDayPrice,
           V2_FACTORY_ADDRESSES[chainIdToUse],
+          chainIdToUse,
         );
         if (newGlobalData) {
           updateGlobalData({ data: newGlobalData });
         }
       }
-      const globalDataV3 = await getGlobalDataV3();
+      const globalDataV3 = await getGlobalDataV3(chainIdToUse);
       updateV3GlobalData(globalDataV3);
     }
     fetchGlobalData();

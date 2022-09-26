@@ -5,7 +5,7 @@ import { Contract } from '@ethersproject/contracts';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import weekOfYear from 'dayjs/plugin/weekOfYear';
-import { blockClient, clientV2, txClient } from 'apollo/client';
+import { blockClient, clientV2, clientV3, txClient } from 'apollo/client';
 import {
   GET_BLOCK,
   GLOBAL_DATA,
@@ -77,6 +77,8 @@ import { injected } from 'connectors';
 import Web3 from 'web3';
 import { useActiveWeb3React } from 'hooks';
 import { NEW_QUICK, OLD_QUICK } from 'constants/v3/addresses';
+import { getConfig } from 'config';
+import { MATIC_PRICE_V3 } from 'apollo/queries-v3';
 
 dayjs.extend(utc);
 dayjs.extend(weekOfYear);
@@ -109,8 +111,11 @@ const TOKEN_OVERRIDES: {
   },
 };
 
-export async function getBlockFromTimestamp(timestamp: number): Promise<any> {
-  const result = await blockClient.query({
+export async function getBlockFromTimestamp(
+  timestamp: number,
+  chainId: ChainId,
+): Promise<any> {
+  const result = await blockClient[chainId].query({
     query: GET_BLOCK,
     variables: {
       timestampFrom: timestamp,
@@ -195,6 +200,7 @@ export async function splitQuery(
 export async function getBlocksFromTimestamps(
   timestamps: number[],
   skipCount = 500,
+  chainId: ChainId,
 ): Promise<
   {
     timestamp: string;
@@ -207,7 +213,7 @@ export async function getBlocksFromTimestamps(
 
   const fetchedData: any = await splitQuery(
     GET_BLOCKS,
-    blockClient,
+    blockClient[chainId],
     [],
     timestamps,
     skipCount,
@@ -247,19 +253,22 @@ export const get2DayPercentChange = (
 
 export const getEthPrice: () => Promise<number[]> = async () => {
   const utcCurrentTime = dayjs();
-
   const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix();
   let ethPrice = 0;
   let ethPriceOneDay = 0;
   let priceChangeETH = 0;
 
   try {
-    const oneDayBlock = await getBlockFromTimestamp(utcOneDayBack);
-    const result = await clientV2.query({
+    const oneDayBlock = await getBlockFromTimestamp(
+      utcOneDayBack,
+      ChainId.MATIC,
+    );
+
+    const result = await clientV2[ChainId.MATIC].query({
       query: ETH_PRICE(),
       fetchPolicy: 'network-only',
     });
-    const resultOneDay = await clientV2.query({
+    const resultOneDay = await clientV2[ChainId.MATIC].query({
       query: ETH_PRICE(oneDayBlock),
       fetchPolicy: 'network-only',
     });
@@ -282,32 +291,33 @@ export const getTokenInfo = async (
   ethPrice: number,
   ethPriceOld: number,
   address: string,
+  chainId: ChainId,
 ) => {
   const utcCurrentTime = dayjs();
   const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix();
   const utcTwoDaysBack = utcCurrentTime.subtract(2, 'day').unix();
   const utcOneWeekBack = utcCurrentTime.subtract(7, 'day').unix();
-  const oneDayBlock = await getBlockFromTimestamp(utcOneDayBack);
-  const twoDayBlock = await getBlockFromTimestamp(utcTwoDaysBack);
-  const oneWeekBlock = await getBlockFromTimestamp(utcOneWeekBack);
+  const oneDayBlock = await getBlockFromTimestamp(utcOneDayBack, chainId);
+  const twoDayBlock = await getBlockFromTimestamp(utcTwoDaysBack, chainId);
+  const oneWeekBlock = await getBlockFromTimestamp(utcOneWeekBack, chainId);
 
   try {
-    const current = await clientV2.query({
+    const current = await clientV2[chainId].query({
       query: TOKEN_INFO(address),
       fetchPolicy: 'network-only',
     });
 
-    const oneDayResult = await clientV2.query({
+    const oneDayResult = await clientV2[chainId].query({
       query: TOKEN_INFO_OLD(oneDayBlock, address),
       fetchPolicy: 'network-only',
     });
 
-    const twoDayResult = await clientV2.query({
+    const twoDayResult = await clientV2[chainId].query({
       query: TOKEN_INFO_OLD(twoDayBlock, address),
       fetchPolicy: 'network-only',
     });
 
-    const oneWeekResult = await clientV2.query({
+    const oneWeekResult = await clientV2[chainId].query({
       query: TOKEN_INFO_OLD(oneWeekBlock, address),
       fetchPolicy: 'network-only',
     });
@@ -427,7 +437,7 @@ export const getTokenInfo = async (
 
           // HOTFIX for Aave
           if (data.id === '0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9') {
-            const aaveData = await clientV2.query({
+            const aaveData = await clientV2[chainId].query({
               query: PAIR_DATA('0xdfc14d2af169b0d36c4eff567ada9b2e0cae044f'),
               fetchPolicy: 'network-only',
             });
@@ -449,25 +459,26 @@ export const getTopTokens = async (
   ethPrice: number,
   ethPriceOld: number,
   count = 500,
+  chainId: ChainId,
 ) => {
   const utcCurrentTime = dayjs();
   const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix();
   const utcTwoDaysBack = utcCurrentTime.subtract(2, 'day').unix();
-  const oneDayBlock = await getBlockFromTimestamp(utcOneDayBack);
-  const twoDayBlock = await getBlockFromTimestamp(utcTwoDaysBack);
+  const oneDayBlock = await getBlockFromTimestamp(utcOneDayBack, chainId);
+  const twoDayBlock = await getBlockFromTimestamp(utcTwoDaysBack, chainId);
 
   try {
-    const current = await clientV2.query({
+    const current = await clientV2[chainId].query({
       query: TOKENS_CURRENT(count),
       fetchPolicy: 'network-only',
     });
 
-    const oneDayResult = await clientV2.query({
+    const oneDayResult = await clientV2[chainId].query({
       query: TOKENS_DYNAMIC(oneDayBlock, count),
       fetchPolicy: 'network-only',
     });
 
-    const twoDayResult = await clientV2.query({
+    const twoDayResult = await clientV2[chainId].query({
       query: TOKENS_DYNAMIC(twoDayBlock, count),
       fetchPolicy: 'network-only',
     });
@@ -566,7 +577,7 @@ export const getTopTokens = async (
 
           // HOTFIX for Aave
           if (data.id === '0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9') {
-            const aaveData = await clientV2.query({
+            const aaveData = await clientV2[chainId].query({
               query: PAIR_DATA('0xdfc14d2af169b0d36c4eff567ada9b2e0cae044f'),
               fetchPolicy: 'network-only',
             });
@@ -606,10 +617,11 @@ export const getTimestampsForChanges: () => number[] = () => {
 export const getTokenPairs = async (
   tokenAddress: string,
   tokenAddress1: string,
+  chainId: ChainId,
 ) => {
   try {
     // fetch all current and historical data
-    const result = await clientV2.query({
+    const result = await clientV2[chainId].query({
       query: TOKEN_DATA1(tokenAddress, tokenAddress1),
       fetchPolicy: 'network-only',
     });
@@ -623,10 +635,13 @@ export const getTokenPairs = async (
   }
 };
 
-export const getTokenPairs2 = async (tokenAddress: string) => {
+export const getTokenPairs2 = async (
+  tokenAddress: string,
+  chainId: ChainId,
+) => {
   try {
     // fetch all current and historical data
-    const result = await clientV2.query({
+    const result = await clientV2[chainId].query({
       query: TOKEN_DATA2(tokenAddress),
       fetchPolicy: 'network-only',
     });
@@ -636,10 +651,10 @@ export const getTokenPairs2 = async (tokenAddress: string) => {
   }
 };
 
-export const getTopPairs = async (count: number) => {
+export const getTopPairs = async (count: number, chainId: ChainId) => {
   try {
     // fetch all current and historical data
-    const result = await clientV2.query({
+    const result = await clientV2[chainId].query({
       query: PAIRS_CURRENT(count),
       fetchPolicy: 'network-only',
     });
@@ -658,6 +673,7 @@ export const getIntervalTokenData = async (
   startTime: number,
   interval = 3600,
   latestBlock: number | undefined,
+  chainId: ChainId,
 ) => {
   const utcEndTime = dayjs.utc();
   let time = startTime;
@@ -678,7 +694,7 @@ export const getIntervalTokenData = async (
   // once you have all the timestamps, get the blocks for each timestamp in a bulk query
   let blocks;
   try {
-    blocks = await getBlocksFromTimestamps(timestamps, 100);
+    blocks = await getBlocksFromTimestamps(timestamps, 100, chainId);
 
     // catch failing case
     if (!blocks || blocks.length === 0) {
@@ -693,7 +709,7 @@ export const getIntervalTokenData = async (
 
     const result: any = await splitQuery(
       PRICES_BY_BLOCK,
-      clientV2,
+      clientV2[chainId],
       [tokenAddress],
       blocks,
       50,
@@ -742,9 +758,12 @@ export const getIntervalTokenData = async (
   }
 };
 
-export const getPairTransactions = async (pairAddress: string) => {
+export const getPairTransactions = async (
+  pairAddress: string,
+  chainId: ChainId,
+) => {
   try {
-    const result = await txClient.query({
+    const result = await txClient[chainId].query({
       query: FILTERED_TRANSACTIONS,
       variables: {
         allPairs: [pairAddress],
@@ -765,8 +784,9 @@ export const getPairTransactions = async (pairAddress: string) => {
 export const getPairAddress = async (
   token0Address: string,
   token1Address: string,
+  chainId: ChainId,
 ) => {
-  const pairData = await clientV2.query({
+  const pairData = await clientV2[chainId].query({
     query: PAIR_ID(token0Address, token1Address),
   });
   const pairs =
@@ -779,37 +799,8 @@ export const getPairAddress = async (
   return { pairId, tokenReversed };
 };
 
-export const isV2PairExists = async (pairAddress: string) => {
-  try {
-    const pair = await clientV2.query({
-      query: IS_PAIR_EXISTS(pairAddress.toLowerCase()),
-    });
-
-    if (pair.errors) {
-      return false;
-    }
-    return pair.data.pair;
-  } catch {
-    return false;
-  }
-};
-
-export const isV2TokenExists = async (tokenAddress: string) => {
-  try {
-    const token = await clientV2.query({
-      query: IS_TOKEN_EXISTS(tokenAddress.toLowerCase()),
-    });
-
-    if (token.errors) {
-      return false;
-    }
-    return token.data.token;
-  } catch {
-    return false;
-  }
-};
-
 export const getSwapTransactions = async (
+  chainId: ChainId,
   pairId: string,
   startTime?: number,
 ) => {
@@ -819,7 +810,7 @@ export const getSwapTransactions = async (
     .unix();
   const sTimestamp = startTime ?? oneDayAgo;
   try {
-    const result = await txClient.query({
+    const result = await txClient[chainId].query({
       query: SWAP_TRANSACTIONS,
       variables: {
         allPairs: [pairId],
@@ -838,6 +829,7 @@ export const getSwapTransactions = async (
 export const getTokenChartData = async (
   tokenAddress: string,
   startTime: number,
+  chainId: ChainId,
 ) => {
   let data: any[] = [];
   const utcEndTime = dayjs.utc();
@@ -845,7 +837,7 @@ export const getTokenChartData = async (
     let allFound = false;
     let skip = 0;
     while (!allFound) {
-      const result = await clientV2.query({
+      const result = await clientV2[chainId].query({
         query: TOKEN_CHART,
         variables: {
           startTime: startTime,
@@ -907,6 +899,7 @@ export const getTokenChartData = async (
 export const getPairChartData = async (
   pairAddress: string,
   startTime: number,
+  chainId: ChainId,
 ) => {
   let data: any[] = [];
   const utcEndTime = dayjs.utc();
@@ -914,7 +907,7 @@ export const getPairChartData = async (
     let allFound = false;
     let skip = 0;
     while (!allFound) {
-      const result = await clientV2.query({
+      const result = await clientV2[chainId].query({
         query: PAIR_CHART,
         variables: {
           startTime: startTime,
@@ -972,82 +965,20 @@ export const getPairChartData = async (
   return data;
 };
 
-export const getRateData = async (
-  pairAddress: string,
-  latestBlock: number,
-  interval: number,
-  startTime: number,
-  pairTokenReversed: boolean,
-) => {
-  try {
-    const utcEndTime = dayjs.utc();
-    let time = startTime;
-
-    // create an array of hour start times until we reach current hour
-    const timestamps = [];
-    while (time <= utcEndTime.unix()) {
-      timestamps.push(time);
-      time += interval;
-    }
-
-    // backout if invalid timestamp format
-    if (timestamps.length === 0) {
-      return [];
-    }
-
-    // once you have all the timestamps, get the blocks for each timestamp in a bulk query
-    let blocks;
-
-    blocks = await getBlocksFromTimestamps(timestamps, 100);
-
-    // catch failing case
-    if (!blocks || blocks?.length === 0) {
-      return [];
-    }
-
-    if (latestBlock) {
-      blocks = blocks.filter((b) => {
-        return Number(b.number) <= latestBlock;
-      });
-    }
-
-    const result = await splitQuery(
-      HOURLY_PAIR_RATES,
-      clientV2,
-      [pairAddress],
-      blocks,
-      100,
-    );
-
-    // format token ETH price results
-    const values = [];
-    for (const row in result) {
-      const timestamp = row.split('t')[1];
-      if (timestamp) {
-        values.push({
-          timestamp,
-          rate: pairTokenReversed
-            ? Number(result[row]?.token0Price)
-            : Number(result[row]?.token1Price),
-        });
-      }
-    }
-    return values;
-  } catch (e) {
-    console.log(e);
-    return [];
-  }
-};
-
 export const getBulkPairData: (
   pairList: any,
   ethPrice: any,
-) => Promise<any[] | undefined> = async (pairList: any, ethPrice: any) => {
+  chainId: ChainId,
+) => Promise<any[] | undefined> = async (
+  pairList: any,
+  ethPrice: any,
+  chainId: ChainId,
+) => {
   const [t1, t2, tWeek] = getTimestampsForChanges();
-  const a = await getBlocksFromTimestamps([t1, t2, tWeek]);
+  const a = await getBlocksFromTimestamps([t1, t2, tWeek], 500, chainId);
   const [{ number: b1 }, { number: b2 }, { number: bWeek }] = a;
   try {
-    const current = await clientV2.query({
+    const current = await clientV2[chainId].query({
       query: PAIRS_BULK1,
       variables: {
         allPairs: pairList,
@@ -1057,7 +988,7 @@ export const getBulkPairData: (
 
     const [oneDayResult, twoDayResult, oneWeekResult] = await Promise.all(
       [b1, b2, bWeek].map(async (block) => {
-        const result = await clientV2.query({
+        const result = await clientV2[chainId].query({
           query: PAIRS_HISTORICAL_BULK(block, pairList),
           fetchPolicy: 'network-only',
         });
@@ -1092,7 +1023,7 @@ export const getBulkPairData: (
           let data = pair;
           let oneDayHistory = oneDayData?.[pair.id];
           if (!oneDayHistory) {
-            const newData = await clientV2.query({
+            const newData = await clientV2[chainId].query({
               query: PAIR_DATA(pair.id, b1),
               fetchPolicy: 'network-only',
             });
@@ -1100,7 +1031,7 @@ export const getBulkPairData: (
           }
           let twoDayHistory = twoDayData?.[pair.id];
           if (!twoDayHistory) {
-            const newData = await clientV2.query({
+            const newData = await clientV2[chainId].query({
               query: PAIR_DATA(pair.id, b2),
               fetchPolicy: 'network-only',
             });
@@ -1108,7 +1039,7 @@ export const getBulkPairData: (
           }
           let oneWeekHistory = oneWeekData?.[pair.id];
           if (!oneWeekHistory) {
-            const newData = await clientV2.query({
+            const newData = await clientV2[chainId].query({
               query: PAIR_DATA(pair.id, bWeek),
               fetchPolicy: 'network-only',
             });
@@ -1251,6 +1182,7 @@ export async function getGlobalData(
   ethPrice: number,
   oldEthPrice: number,
   factory: string,
+  chainId: ChainId,
 ): Promise<any> {
   // data for each day , historic data used for % changes
   let data: any = {};
@@ -1273,15 +1205,14 @@ export async function getGlobalData(
       twoDayBlock,
       oneWeekBlock,
       twoWeekBlock,
-    ] = await getBlocksFromTimestamps([
-      utcOneDayBack,
-      utcTwoDaysBack,
-      utcOneWeekBack,
-      utcTwoWeeksBack,
-    ]);
+    ] = await getBlocksFromTimestamps(
+      [utcOneDayBack, utcTwoDaysBack, utcOneWeekBack, utcTwoWeeksBack],
+      500,
+      chainId,
+    );
 
     // fetch the global data
-    const result = await clientV2.query({
+    const result = await clientV2[chainId].query({
       query: GLOBAL_DATA(factory),
       fetchPolicy: 'network-only',
     });
@@ -1294,7 +1225,7 @@ export async function getGlobalData(
       { index: 'oneWeekData', block: oneWeekBlock?.number },
       { index: 'twoWeekData', block: twoWeekBlock?.number },
     ];
-    const allData = await clientV2.query({
+    const allData = await clientV2[chainId].query({
       query: GLOBAL_ALLDATA(queryReq, factory),
       fetchPolicy: 'network-only',
     });
@@ -1347,13 +1278,13 @@ export async function getGlobalData(
   return data;
 }
 
-export async function getAllPairsOnUniswap() {
+export async function getAllPairsOnUniswap(chainId: ChainId) {
   try {
     let allFound = false;
     let pairs: any[] = [];
     let skipCount = 0;
     while (!allFound) {
-      const result = await clientV2.query({
+      const result = await clientV2[chainId].query({
         query: ALL_PAIRS,
         variables: {
           skip: skipCount,
@@ -1372,13 +1303,13 @@ export async function getAllPairsOnUniswap() {
   }
 }
 
-export async function getAllTokensOnUniswap() {
+export async function getAllTokensOnUniswap(chainId: ChainId) {
   try {
     let allFound = false;
     let skipCount = 0;
     let tokens: any[] = [];
     while (!allFound) {
-      const result = await clientV2.query({
+      const result = await clientV2[chainId].query({
         query: ALL_TOKENS,
         variables: {
           skip: skipCount,
@@ -1397,7 +1328,10 @@ export async function getAllTokensOnUniswap() {
   }
 }
 
-export const getChartData = async (oldestDateToFetch: number) => {
+export const getChartData = async (
+  oldestDateToFetch: number,
+  chainId: ChainId,
+) => {
   let data: any[] = [];
   const weeklyData: any[] = [];
   const utcEndTime = dayjs.utc();
@@ -1406,7 +1340,7 @@ export const getChartData = async (oldestDateToFetch: number) => {
 
   try {
     while (!allFound) {
-      const result = await clientV2.query({
+      const result = await clientV2[chainId].query({
         query: GLOBAL_CHART,
         variables: {
           startTime: oldestDateToFetch,
@@ -1933,9 +1867,20 @@ export function getTokenAPRSyrup(syrup: SyrupInfo) {
 export function useLairDQUICKAPY(isNew: boolean, lair?: LairInfo) {
   const daysCurrentYear = getDaysCurrentYear();
   const { chainId } = useActiveWeb3React();
-  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
+  let chainIdToUse = chainId ? chainId : ChainId.MATIC;
+  const config = getConfig(chainIdToUse);
+  const newLair = config['lair']['newLair'];
+  const oldLair = config['lair']['oldLair'];
+
+  chainIdToUse = isNew
+    ? newLair
+      ? chainIdToUse
+      : ChainId.MATIC
+    : oldLair
+    ? chainIdToUse
+    : ChainId.MATIC;
   const quickToken = isNew ? NEW_QUICK[chainIdToUse] : OLD_QUICK[chainIdToUse];
-  const quickPrice = useUSDCPriceToken(quickToken);
+  const quickPrice = useUSDCPriceToken(quickToken, chainIdToUse);
 
   if (!lair) return '';
   const dQUICKPrice: any = Number(lair.dQUICKtoQUICK.toExact()) * quickPrice;

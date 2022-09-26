@@ -71,6 +71,7 @@ const AnalyticsPairDetails: React.FC = () => {
     }
   }, [pairTransactions]);
   const { chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ?? ChainId.MATIC;
   const currency0 = pairData
     ? getTokenFromAddress(pairData.token0.id, ChainId.MATIC, tokenMap, [
         new Token(
@@ -153,7 +154,7 @@ const AnalyticsPairDetails: React.FC = () => {
     async function fetchPairData() {
       try {
         if (isV3) {
-          const pairInfo = await getPairInfoV3(pairAddress);
+          const pairInfo = await getPairInfoV3(pairAddress, chainIdToUse);
           if (pairInfo && pairInfo.length > 0) {
             setPairData(pairInfo[0]);
           }
@@ -162,6 +163,7 @@ const AnalyticsPairDetails: React.FC = () => {
             const pairInfo = await getBulkPairData(
               [pairAddress],
               ethPrice.price,
+              chainIdToUse,
             );
             if (pairInfo && pairInfo.length > 0) {
               setPairData(pairInfo[0]);
@@ -175,8 +177,8 @@ const AnalyticsPairDetails: React.FC = () => {
     }
     async function fetchTransctions() {
       const pairTransactionsFn = isV3
-        ? getPairTransactionsV3(pairAddress)
-        : getPairTransactions(pairAddress);
+        ? getPairTransactionsV3(pairAddress, chainIdToUse)
+        : getPairTransactions(pairAddress, chainIdToUse);
 
       pairTransactionsFn.then((transactions) => {
         if (transactions) {

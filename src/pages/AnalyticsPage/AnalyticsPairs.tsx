@@ -9,6 +9,8 @@ import { useEthPrice, useIsV3 } from 'state/application/hooks';
 import { getTopPairsV3, getPairsAPR } from 'utils/v3-graph';
 import { useDispatch } from 'react-redux';
 import { setAnalyticsLoaded } from 'state/analytics/actions';
+import { useActiveWeb3React } from 'hooks';
+import { ChainId } from '@uniswap/sdk';
 
 const AnalyticsPairs: React.FC = () => {
   const { t } = useTranslation();
@@ -18,6 +20,8 @@ const AnalyticsPairs: React.FC = () => {
   const dispatch = useDispatch();
 
   const { isV3 } = useIsV3();
+  const { chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ?? ChainId.MATIC;
 
   useEffect(() => {
     if (isV3 === undefined) return;
@@ -27,11 +31,15 @@ const AnalyticsPairs: React.FC = () => {
       if (isV3) {
         const data = await getTopPairsV3(
           GlobalConst.utils.ANALYTICS_PAIRS_COUNT,
+          chainIdToUse,
         );
         if (data) {
           updateTopPairs(data);
           try {
-            const aprs = await getPairsAPR(data.map((item: any) => item.id));
+            const aprs = await getPairsAPR(
+              data.map((item: any) => item.id),
+              chainIdToUse,
+            );
 
             updateTopPairs(
               data.map((item: any, ind: number) => {
@@ -50,13 +58,18 @@ const AnalyticsPairs: React.FC = () => {
         if (ethPrice.price) {
           const pairs = await getTopPairs(
             GlobalConst.utils.ANALYTICS_PAIRS_COUNT,
+            chainIdToUse,
           );
           const formattedPairs = pairs
             ? pairs.map((pair: any) => {
                 return pair.id;
               })
             : [];
-          const data = await getBulkPairData(formattedPairs, ethPrice.price);
+          const data = await getBulkPairData(
+            formattedPairs,
+            ethPrice.price,
+            chainIdToUse,
+          );
           if (data) {
             updateTopPairs(data);
           }

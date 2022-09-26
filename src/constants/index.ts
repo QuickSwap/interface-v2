@@ -17,17 +17,6 @@ import WalletConnectIcon from 'assets/images/walletConnectIcon.svg';
 import PortisIcon from 'assets/images/portisIcon.png';
 import VenlyIcon from 'assets/images/venly.svg';
 import GnosisIcon from 'assets/images/gnosis_safe.png';
-import { NEW_QUICK_ADDRESS, QUICK_ADDRESS } from './v3/addresses';
-
-const WETH_ONLY: ChainTokenList = {
-  [ChainId.MUMBAI]: [WETH[ChainId.MUMBAI]],
-  [ChainId.MATIC]: [WETH[ChainId.MATIC]],
-  [ChainId.DOEGCHAIN_TESTNET]: [WETH[ChainId.DOEGCHAIN_TESTNET]],
-  [ChainId.DOGECHAIN]: [WETH[ChainId.DOGECHAIN]],
-};
-
-// TODO: Remove this constant when supporting multichain
-export const MATIC_CHAIN = ChainId.MATIC;
 
 export enum TxnType {
   SWAP,
@@ -254,11 +243,6 @@ export const GlobalData = {
     ],
     CHART_DURATION_TEXTS: ['1M', '3M', '6M', '1Y', 'All'],
   },
-};
-
-// a list of tokens by chain
-type ChainTokenList = {
-  readonly [chainId in ChainId]: Token[];
 };
 
 export interface WalletInfo {

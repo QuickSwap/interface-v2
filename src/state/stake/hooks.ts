@@ -108,9 +108,11 @@ export function useTotalRewardsDistributed(chainId: ChainId): number {
 
   const rewardTokenAPrices = useUSDCPricesToken(
     dualStakingRewardsInfo.map((item) => item.rewardTokenA),
+    chainId,
   );
   const rewardTokenBPrices = useUSDCPricesToken(
     dualStakingRewardsInfo.map((item) => item.rewardTokenB),
+    chainId,
   );
   const dualStakingRewardsUSD = dualStakingRewardsInfo.reduce(
     (total, item, index) =>
@@ -122,6 +124,7 @@ export function useTotalRewardsDistributed(chainId: ChainId): number {
 
   const rewardTokenPrices = useUSDCPricesToken(
     stakingRewardsInfo.map((item) => item.rewardToken),
+    chainId,
   );
   const stakingRewardsUSD = stakingRewardsInfo.reduce(
     (total, item, index) => total + item.rate * rewardTokenPrices[index],
@@ -152,12 +155,17 @@ export function useUSDRewardsandFees(
   const stakingRewardTokens = stakingRewardsInfo.map(
     (item) => item.rewardToken,
   );
-  const stakingRewardTokenPrices = useUSDCPricesToken(stakingRewardTokens);
+  const stakingRewardTokenPrices = useUSDCPricesToken(
+    stakingRewardTokens,
+    chainId,
+  );
   const dualStakingRewardTokenAPrices = useUSDCPricesToken(
     dualStakingRewardsInfo.map((item) => item.rewardTokenA),
+    chainId,
   );
   const dualStakingRewardTokenBPrices = useUSDCPricesToken(
     dualStakingRewardsInfo.map((item) => item.rewardTokenB),
+    chainId,
   );
   const rewardPairs = useMemo(() => rewardsInfos.map(({ pair }) => pair), [
     rewardsInfos,
@@ -287,6 +295,7 @@ export function useFilteredSyrupInfo(
 
   const stakingTokenPrices = useUSDCPricesToken(
     info.map((item) => item.stakingToken),
+    chainId,
   );
 
   return useMemo(() => {
@@ -494,6 +503,7 @@ export function useOldSyrupInfo(
 
   const stakingTokenPrices = useUSDCPricesToken(
     info.map((item) => item.stakingToken),
+    chainId,
   );
 
   return useMemo(() => {
@@ -620,24 +630,24 @@ export function useOldSyrupInfo(
   );
 }
 
-export const getBulkPairData = async (pairList: any) => {
+export const getBulkPairData = async (chainId: ChainId, pairList: any) => {
   // if (pairs !== undefined) {
   //   return;
   // }
   const utcCurrentTime = dayjs();
   const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix();
 
-  const oneDayOldBlock = await getBlockFromTimestamp(utcOneDayBack);
+  const oneDayOldBlock = await getBlockFromTimestamp(utcOneDayBack, chainId);
 
   try {
-    const current = await clientV2.query({
+    const current = await clientV2[chainId].query({
       query: PAIRS_BULK(pairList),
       fetchPolicy: 'network-only',
     });
 
     const [oneDayResult] = await Promise.all(
       [oneDayOldBlock].map(async (block) => {
-        const cResult = await clientV2.query({
+        const cResult = await clientV2[chainId].query({
           query: PAIRS_HISTORICAL_BULK(block, pairList),
           fetchPolicy: 'network-only',
         });
@@ -683,9 +693,12 @@ const getOneDayVolume = async (config: any) => {
   const utcCurrentTime = dayjs();
   const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix();
 
-  const oneDayOldBlock = await getBlockFromTimestamp(utcOneDayBack);
+  const oneDayOldBlock = await getBlockFromTimestamp(
+    utcOneDayBack,
+    config.chainId,
+  );
 
-  const result = await clientV2.query({
+  const result = await clientV2[config.chainId].query({
     query: GLOBAL_DATA(V2_FACTORY_ADDRESSES[config.chainId], current),
     fetchPolicy: 'network-only',
   });
@@ -693,7 +706,7 @@ const getOneDayVolume = async (config: any) => {
   data = result.data.uniswapFactories[0];
 
   // fetch the historical data
-  const oneDayResult = await clientV2.query({
+  const oneDayResult = await clientV2[config.chainId].query({
     query: GLOBAL_DATA(V2_FACTORY_ADDRESSES[config.chainId], oneDayOldBlock),
     fetchPolicy: 'network-only',
   });
@@ -911,9 +924,11 @@ export function useDualStakingInfo(
   const stakingPairs = usePairs(info.map((item) => item.tokens));
   const rewardTokenAPrices = useUSDCPricesToken(
     info.map((item) => item.rewardTokenA),
+    chainId,
   );
   const rewardTokenBPrices = useUSDCPricesToken(
     info.map((item) => item.rewardTokenB),
+    chainId,
   );
 
   return useMemo(() => {
@@ -1111,11 +1126,15 @@ export function useDualStakingInfo(
   );
 }
 
-export function useOldLairInfo(): LairInfo {
+export function useOldLairInfo(chainIdParam?: ChainId): LairInfo {
   const lairContract = useLairContract();
   const quickContract = useQUICKContract();
   const { chainId } = useActiveWeb3React();
-  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
+  const chainIdToUse = chainIdParam
+    ? chainIdParam
+    : chainId
+    ? chainId
+    : ChainId.MATIC;
   const lairAddress = LAIR_ADDRESS[chainIdToUse];
   const quickToken = OLD_QUICK[chainIdToUse];
   const dQuickToken = OLD_DQUICK[chainIdToUse];
@@ -1126,6 +1145,7 @@ export function useOldLairInfo(): LairInfo {
     lairAddress,
     quickToken,
     dQuickToken,
+    chainIdToUse,
   );
 }
 
@@ -1144,6 +1164,7 @@ export function useNewLairInfo(): LairInfo {
     lairAddress,
     quickToken,
     dQuickToken,
+    chainIdToUse,
   );
 }
 
@@ -1153,9 +1174,10 @@ function useLairInfo(
   lairAddress: string,
   quickToken: Token,
   dQuickToken: Token,
+  chainIdToUse: ChainId,
 ) {
-  const { account, chainId } = useActiveWeb3React();
-  const config = getConfig(chainId ? chainId : ChainId.MATIC);
+  const { account } = useActiveWeb3React();
+  const config = getConfig(chainIdToUse);
   let accountArg = useMemo(() => [account ?? undefined], [account]);
   const inputs = ['1000000000000000000'];
   const _dQuickTotalSupply = useSingleCallResult(
@@ -1307,7 +1329,7 @@ export function useStakingInfo(
   const rewardTokens = info.map((item) => item.rewardToken);
 
   const usdPrices = useUSDCPrices(baseTokens);
-  const usdPricesRewardTokens = useUSDCPricesToken(rewardTokens);
+  const usdPricesRewardTokens = useUSDCPricesToken(rewardTokens, chainId);
   const totalSupplys = useTotalSupplys(
     info.map((item) => {
       const lp = item.lp;
@@ -1630,9 +1652,14 @@ export function useOldStakingInfo(
 }
 
 export function useDQUICKtoQUICK() {
-  const lair = useLairContract();
   const { chainId } = useActiveWeb3React();
-  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
+  let chainIdToUse = chainId ? chainId : ChainId.MATIC;
+  const config = getConfig(chainIdToUse);
+  const oldLair = config['lair']['oldLair'];
+
+  chainIdToUse = oldLair ? chainIdToUse : ChainId.MATIC;
+  const lair = useLairContract(chainIdToUse);
+
   const inputs = ['1000000000000000000'];
   const dQuickToQuickState = useSingleCallResult(
     lair,

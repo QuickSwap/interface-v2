@@ -200,12 +200,26 @@ export const USDC: { [chainId: number]: Token } = {
     'USDC',
     'USDC',
   ),
+  [ChainId.DOGECHAIN]: new Token(
+    ChainId.DOGECHAIN,
+    '0x765277EebeCA2e31912C9946eAe1021199B39C61',
+    6,
+    'USDC',
+    'USDC',
+  ),
 };
 
 export const USDT: { [chainId: number]: Token } = {
   [ChainId.MATIC]: new Token(
     ChainId.MATIC,
     '0xc2132D05D31c914a87C6611C10748AEb04B58e8F',
+    6,
+    'USDT',
+    'Tether USD',
+  ),
+  [ChainId.DOGECHAIN]: new Token(
+    ChainId.DOGECHAIN,
+    '0xE3F5a90F9cb311505cd691a46596599aA1A0AD7D',
     6,
     'USDT',
     'Tether USD',
@@ -260,6 +274,13 @@ export const WBTC: { [chainId: number]: Token } = {
     'wBTC',
     'Wrapped Bitcoin',
   ),
+  [ChainId.DOGECHAIN]: new Token(
+    ChainId.DOGECHAIN,
+    '0xfA9343C3897324496A05fC75abeD6bAC29f8A40f',
+    8,
+    'wBTC',
+    'Wrapped Bitcoin',
+  ),
 };
 
 export const DAI: { [chainId: number]: Token } = {
@@ -270,12 +291,26 @@ export const DAI: { [chainId: number]: Token } = {
     'DAI',
     'Dai Stablecoin',
   ),
+  [ChainId.DOGECHAIN]: new Token(
+    ChainId.DOGECHAIN,
+    '0x639A647fbe20b6c8ac19E48E2de44ea792c62c5C',
+    18,
+    'DAI',
+    'Dai Stablecoin',
+  ),
 };
 
 export const ETHER: { [chainId: number]: Token } = {
   [ChainId.MATIC]: new Token(
     ChainId.MATIC,
     '0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619',
+    18,
+    'ETH',
+    'Ether',
+  ),
+  [ChainId.DOGECHAIN]: new Token(
+    ChainId.DOGECHAIN,
+    '0xB44a9B6905aF7c801311e8F4E76932ee959c663C',
     18,
     'ETH',
     'Ether',
@@ -296,6 +331,13 @@ export const MI: { [chainId: number]: Token } = {
   [ChainId.MATIC]: new Token(
     ChainId.MATIC,
     '0xa3Fa99A148fA48D14Ed51d610c367C61876997F1',
+    18,
+    'MAI',
+    'miMATIC',
+  ),
+  [ChainId.DOGECHAIN]: new Token(
+    ChainId.DOGECHAIN,
+    '0xb84Df10966a5D7e1ab46D9276F55d57bD336AFC7',
     18,
     'MAI',
     'miMATIC',

@@ -30,13 +30,13 @@ import dayjs from 'dayjs';
 import { fetchEternalFarmAPR, fetchPoolsAPR } from './api';
 import { Token } from '@uniswap/sdk-core';
 import { TickMath, tickToPrice } from '@uniswap/v3-sdk';
-import { JSBI } from '@uniswap/sdk';
+import { ChainId, JSBI } from '@uniswap/sdk';
 import keyBy from 'lodash.keyby';
 import { TxnType } from 'constants/index';
 
 //Global
 
-export async function getGlobalDataV3(): Promise<any> {
+export async function getGlobalDataV3(chainId: ChainId): Promise<any> {
   let data: any = {};
 
   try {
@@ -53,29 +53,28 @@ export async function getGlobalDataV3(): Promise<any> {
       twoDayBlock,
       oneWeekBlock,
       twoWeekBlock,
-    ] = await getBlocksFromTimestamps([
-      utcOneDayBack,
-      utcTwoDaysBack,
-      utcOneWeekBack,
-      utcTwoWeeksBack,
-    ]);
+    ] = await getBlocksFromTimestamps(
+      [utcOneDayBack, utcTwoDaysBack, utcOneWeekBack, utcTwoWeeksBack],
+      500,
+      chainId,
+    );
 
-    const dataCurrent = await clientV3.query({
+    const dataCurrent = await clientV3[chainId].query({
       query: GLOBAL_DATA_V3(),
       fetchPolicy: 'network-only',
     });
 
-    const dataOneDay = await clientV3.query({
+    const dataOneDay = await clientV3[chainId].query({
       query: GLOBAL_DATA_V3(oneDayBlock.number),
       fetchPolicy: 'network-only',
     });
 
-    const dataOneWeek = await clientV3.query({
+    const dataOneWeek = await clientV3[chainId].query({
       query: GLOBAL_DATA_V3(oneWeekBlock.number),
       fetchPolicy: 'network-only',
     });
 
-    const dataTwoWeek = await clientV3.query({
+    const dataTwoWeek = await clientV3[chainId].query({
       query: GLOBAL_DATA_V3(twoWeekBlock.number),
       fetchPolicy: 'network-only',
     });
@@ -166,7 +165,9 @@ export async function getGlobalDataV3(): Promise<any> {
   return data;
 }
 
-export const getMaticPrice: () => Promise<number[]> = async () => {
+export const getMaticPrice: (chainId: ChainId) => Promise<number[]> = async (
+  chainId: ChainId,
+) => {
   const utcCurrentTime = dayjs();
 
   const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix();
@@ -175,12 +176,13 @@ export const getMaticPrice: () => Promise<number[]> = async () => {
   let priceChangeMatic = 0;
 
   try {
-    const oneDayBlock = await getBlockFromTimestamp(utcOneDayBack);
-    const result = await clientV3.query({
+    const oneDayBlock = await getBlockFromTimestamp(utcOneDayBack, chainId);
+    const client = clientV3[chainId];
+    const result = await client.query({
       query: MATIC_PRICE_V3(),
       fetchPolicy: 'network-only',
     });
-    const resultOneDay = await clientV3.query({
+    const resultOneDay = await client.query({
       query: MATIC_PRICE_V3(oneDayBlock),
       fetchPolicy: 'network-only',
     });
@@ -199,7 +201,10 @@ export const getMaticPrice: () => Promise<number[]> = async () => {
   return [maticPrice, maticPriceOneDay, priceChangeMatic];
 };
 
-export const getChartDataV3 = async (oldestDateToFetch: number) => {
+export const getChartDataV3 = async (
+  oldestDateToFetch: number,
+  chainId: ChainId,
+) => {
   let data: any[] = [];
   const weeklyData: any[] = [];
   const utcEndTime = dayjs.utc();
@@ -208,7 +213,7 @@ export const getChartDataV3 = async (oldestDateToFetch: number) => {
 
   try {
     while (!allFound) {
-      const result = await clientV3.query({
+      const result = await clientV3[chainId].query({
         query: GLOBAL_CHART_V3,
         variables: {
           startTime: oldestDateToFetch,
@@ -292,6 +297,7 @@ export async function getTopTokensV3(
   maticPrice: number,
   maticPrice24H: number,
   count = 500,
+  chainId: ChainId,
 ): Promise<any> {
   try {
     const utcCurrentTime = dayjs();
@@ -299,12 +305,13 @@ export async function getTopTokensV3(
     const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix();
     const utcTwoDaysBack = utcCurrentTime.subtract(2, 'day').unix();
 
-    const [oneDayBlock, twoDayBlock] = await getBlocksFromTimestamps([
-      utcOneDayBack,
-      utcTwoDaysBack,
-    ]);
+    const [oneDayBlock, twoDayBlock] = await getBlocksFromTimestamps(
+      [utcOneDayBack, utcTwoDaysBack],
+      500,
+      chainId,
+    );
 
-    const topTokensIds = await clientV3.query({
+    const topTokensIds = await clientV3[chainId].query({
       query: TOP_TOKENS_V3(count),
       fetchPolicy: 'network-only',
     });
@@ -313,15 +320,21 @@ export async function getTopTokensV3(
       (el: any) => el.id,
     );
 
-    const tokensCurrent = await fetchTokensByTime(undefined, tokenAddresses);
+    const tokensCurrent = await fetchTokensByTime(
+      undefined,
+      tokenAddresses,
+      chainId,
+    );
 
     const tokens24 = await fetchTokensByTime(
       oneDayBlock.number,
       tokenAddresses,
+      chainId,
     );
     const tokens48 = await fetchTokensByTime(
       twoDayBlock.number,
       tokenAddresses,
+      chainId,
     );
 
     const parsedTokens = parseTokensData(tokensCurrent);
@@ -413,6 +426,7 @@ export async function getTokenInfoV3(
   maticPrice: number,
   maticPrice24H: number,
   address: string,
+  chainId: ChainId,
 ): Promise<any> {
   try {
     const utcCurrentTime = dayjs();
@@ -425,15 +439,27 @@ export async function getTokenInfoV3(
       oneDayBlock,
       twoDayBlock,
       oneWeekBlock,
-    ] = await getBlocksFromTimestamps([
-      utcOneDayBack,
-      utcTwoDaysBack,
-      utcOneWeekBack,
-    ]);
+    ] = await getBlocksFromTimestamps(
+      [utcOneDayBack, utcTwoDaysBack, utcOneWeekBack],
+      500,
+      chainId,
+    );
 
-    const tokensCurrent = await fetchTokensByTime(undefined, [address]);
-    const tokens24 = await fetchTokensByTime(oneDayBlock.number, [address]);
-    const tokens48 = await fetchTokensByTime(twoDayBlock.number, [address]);
+    const tokensCurrent = await fetchTokensByTime(
+      undefined,
+      [address],
+      chainId,
+    );
+    const tokens24 = await fetchTokensByTime(
+      oneDayBlock.number,
+      [address],
+      chainId,
+    );
+    const tokens48 = await fetchTokensByTime(
+      twoDayBlock.number,
+      [address],
+      chainId,
+    );
 
     const parsedTokens = parseTokensData(tokensCurrent);
     const parsedTokens24 = parseTokensData(tokens24);
@@ -525,13 +551,13 @@ export async function getTokenInfoV3(
   }
 }
 
-export async function getAllTokensV3() {
+export async function getAllTokensV3(chainId: ChainId) {
   try {
     let allFound = false;
     let skipCount = 0;
     let tokens: any[] = [];
     while (!allFound) {
-      const result = await clientV3.query({
+      const result = await clientV3[chainId].query({
         query: ALL_TOKENS_V3,
         variables: {
           skip: skipCount,
@@ -553,6 +579,7 @@ export async function getAllTokensV3() {
 export const getTokenChartDataV3 = async (
   tokenAddress: string,
   startTime: number,
+  chainId: ChainId,
 ) => {
   let data: any[] = [];
   const utcEndTime = dayjs.utc();
@@ -560,7 +587,7 @@ export const getTokenChartDataV3 = async (
     let allFound = false;
     let skip = 0;
     while (!allFound) {
-      const result = await clientV3.query({
+      const result = await clientV3[chainId].query({
         query: TOKEN_CHART_V3,
         variables: {
           startTime: startTime,
@@ -618,24 +645,7 @@ export const getTokenChartDataV3 = async (
   return data;
 };
 
-export async function isV3TokenExists(tokenAddress: string) {
-  try {
-    const token = await clientV3.query({
-      query: IS_TOKEN_EXISTS_V3(tokenAddress.toLowerCase()),
-    });
-
-    if (token.errors) {
-      return false;
-    }
-    return token.data.token;
-  } catch {
-    return false;
-  }
-}
-
-//Pairs
-
-export async function getTopPairsV3(count = 500) {
+export async function getTopPairsV3(count = 500, chainId: ChainId) {
   try {
     const utcCurrentTime = dayjs();
 
@@ -647,25 +657,38 @@ export async function getTopPairsV3(count = 500) {
       oneDayBlock,
       twoDayBlock,
       oneWeekBlock,
-    ] = await getBlocksFromTimestamps([
-      utcOneDayBack,
-      utcTwoDaysBack,
-      utcOneWeekBack,
-    ]);
+    ] = await getBlocksFromTimestamps(
+      [utcOneDayBack, utcTwoDaysBack, utcOneWeekBack],
+      500,
+      chainId,
+    );
 
-    const topPairsIds = await clientV3.query({
+    const topPairsIds = await clientV3[chainId].query({
       query: TOP_POOLS_V3(count),
       fetchPolicy: 'network-only',
     });
 
     const pairsAddresses = topPairsIds.data.pools.map((el: any) => el.id);
 
-    const pairsCurrent = await fetchPairsByTime(undefined, pairsAddresses);
-    const pairs24 = await fetchPairsByTime(oneDayBlock.number, pairsAddresses);
-    const pairs48 = await fetchPairsByTime(twoDayBlock.number, pairsAddresses);
+    const pairsCurrent = await fetchPairsByTime(
+      undefined,
+      pairsAddresses,
+      chainId,
+    );
+    const pairs24 = await fetchPairsByTime(
+      oneDayBlock.number,
+      pairsAddresses,
+      chainId,
+    );
+    const pairs48 = await fetchPairsByTime(
+      twoDayBlock.number,
+      pairsAddresses,
+      chainId,
+    );
     const pairsWeek = await fetchPairsByTime(
       oneWeekBlock.number,
       pairsAddresses,
+      chainId,
     );
 
     const parsedPairs = parsePairsData(pairsCurrent);
@@ -738,11 +761,15 @@ export async function getTopPairsV3(count = 500) {
   }
 }
 
-export async function getPairsAPR(pairAddresses: string[]) {
+export async function getPairsAPR(pairAddresses: string[], chainId: ChainId) {
   const aprs: any = await fetchPoolsAPR();
   const farmAprs: any = await fetchEternalFarmAPR();
   const farmsFromPairAddresses = await fetchEternalFarmingsAPRByPool(
     pairAddresses,
+  );
+  const farmingAprs = await fetchEternalFarmingsAPRByPool(
+    pairAddresses,
+    chainId,
   );
   const _farmingAprs: {
     [type: string]: number;
@@ -766,7 +793,7 @@ export async function getPairsAPR(pairAddresses: string[]) {
   });
 }
 
-export async function getPairInfoV3(address: string) {
+export async function getPairInfoV3(address: string, chainId: ChainId) {
   try {
     const utcCurrentTime = dayjs();
 
@@ -778,16 +805,28 @@ export async function getPairInfoV3(address: string) {
       oneDayBlock,
       twoDayBlock,
       oneWeekBlock,
-    ] = await getBlocksFromTimestamps([
-      utcOneDayBack,
-      utcTwoDaysBack,
-      utcOneWeekBack,
-    ]);
+    ] = await getBlocksFromTimestamps(
+      [utcOneDayBack, utcTwoDaysBack, utcOneWeekBack],
+      500,
+      chainId,
+    );
 
-    const pairsCurrent = await fetchPairsByTime(undefined, [address]);
-    const pairs24 = await fetchPairsByTime(oneDayBlock.number, [address]);
-    const pairs48 = await fetchPairsByTime(twoDayBlock.number, [address]);
-    const pairsWeek = await fetchPairsByTime(oneWeekBlock.number, [address]);
+    const pairsCurrent = await fetchPairsByTime(undefined, [address], chainId);
+    const pairs24 = await fetchPairsByTime(
+      oneDayBlock.number,
+      [address],
+      chainId,
+    );
+    const pairs48 = await fetchPairsByTime(
+      twoDayBlock.number,
+      [address],
+      chainId,
+    );
+    const pairsWeek = await fetchPairsByTime(
+      oneWeekBlock.number,
+      [address],
+      chainId,
+    );
 
     const parsedPairs = parsePairsData(pairsCurrent);
     const parsedPairs24 = parsePairsData(pairs24);
@@ -904,13 +943,13 @@ export async function getPairInfoV3(address: string) {
   }
 }
 
-export async function getAllPairsV3() {
+export async function getAllPairsV3(chainId: ChainId) {
   try {
     let allFound = false;
     let pairs: any[] = [];
     let skipCount = 0;
     while (!allFound) {
-      const result = await clientV3.query({
+      const result = await clientV3[chainId].query({
         query: ALL_PAIRS_V3,
         variables: {
           skip: skipCount,
@@ -932,6 +971,7 @@ export async function getAllPairsV3() {
 export const getPairChartDataV3 = async (
   pairAddress: string,
   startTime: number,
+  chainId: ChainId,
 ) => {
   let data: any[] = [];
   const utcEndTime = dayjs.utc();
@@ -939,7 +979,7 @@ export const getPairChartDataV3 = async (
     let allFound = false;
     let skip = 0;
     while (!allFound) {
-      const result = await clientV3.query({
+      const result = await clientV3[chainId].query({
         query: PAIR_CHART_V3,
         variables: {
           startTime: startTime,
@@ -1005,14 +1045,18 @@ export const getPairChartDataV3 = async (
   return data;
 };
 
-export async function getPairChartFees(address: string, startTime: number) {
+export async function getPairChartFees(
+  address: string,
+  startTime: number,
+  chainId: ChainId,
+) {
   let data: any[] = [];
   const utcEndTime = dayjs.utc();
   try {
     let allFound = false;
     let skip = 0;
     while (!allFound) {
-      const result = await clientV3.query({
+      const result = await clientV3[chainId].query({
         query: PAIR_FEE_CHART_V3(),
         fetchPolicy: 'network-only',
         variables: { address, startTime, skip },
@@ -1071,11 +1115,11 @@ export async function getPairChartFees(address: string, startTime: number) {
   return data;
 }
 
-export async function getLiquidityChart(address: string) {
+export async function getLiquidityChart(address: string, chainId: ChainId) {
   const numSurroundingTicks = 300;
   const PRICE_FIXED_DIGITS = 8;
 
-  const pool = await clientV3.query({
+  const pool = await clientV3[chainId].query({
     query: PAIRS_FROM_ADDRESSES_V3(undefined, [address]),
   });
 
@@ -1105,7 +1149,7 @@ export async function getLiquidityChart(address: string) {
 
     let skip = 0;
     do {
-      const ticks = await clientV3.query({
+      const ticks = await clientV3[chainId].query({
         query: FETCH_TICKS(),
         fetchPolicy: 'cache-first',
         variables: {
@@ -1286,8 +1330,11 @@ export async function getLiquidityChart(address: string) {
   // })
 }
 
-export async function getPairTransactionsV3(address: string): Promise<any> {
-  const data = await clientV3.query({
+export async function getPairTransactionsV3(
+  address: string,
+  chainId: ChainId,
+): Promise<any> {
+  const data = await clientV3[chainId].query({
     query: PAIR_TRANSACTIONS_v3,
     variables: {
       address: address,
@@ -1373,9 +1420,12 @@ export async function getPairTransactionsV3(address: string): Promise<any> {
   };
 }
 
-export async function getTokenTransactionsV3(address: string): Promise<any> {
+export async function getTokenTransactionsV3(
+  address: string,
+  chainId: ChainId,
+): Promise<any> {
   try {
-    const data = await clientV3.query({
+    const data = await clientV3[chainId].query({
       query: GLOBAL_TRANSACTIONS_V3,
       variables: {
         address: address,
@@ -1547,9 +1597,9 @@ export async function getTokenTransactionsV3(address: string): Promise<any> {
   }
 }
 
-export async function isV3PairExists(pairAddress: string) {
+export async function isV3PairExists(pairAddress: string, chainId: ChainId) {
   try {
-    const pair = await clientV3.query({
+    const pair = await clientV3[chainId].query({
       query: IS_PAIR_EXISTS_V3(pairAddress.toLowerCase()),
     });
 
@@ -1566,9 +1616,10 @@ export async function isV3PairExists(pairAddress: string) {
 
 export async function fetchEternalFarmingsAPRByPool(
   poolAddresses: string[],
+  chainId: ChainId,
 ): Promise<any> {
   try {
-    const eternalFarmings = await farmingClient.query({
+    const eternalFarmings = await farmingClient[chainId].query({
       query: FETCH_ETERNAL_FARM_FROM_POOL_V3(poolAddresses),
       fetchPolicy: 'network-only',
     });
@@ -1584,9 +1635,10 @@ export async function fetchEternalFarmingsAPRByPool(
 async function fetchTokensByTime(
   blockNumber: number | undefined,
   tokenAddresses: string[],
+  chainId: ChainId,
 ): Promise<any> {
   try {
-    const tokens = await clientV3.query({
+    const tokens = await clientV3[chainId].query({
       query: TOKENS_FROM_ADDRESSES_V3(blockNumber, tokenAddresses),
       fetchPolicy: 'network-only',
     });
@@ -1627,9 +1679,10 @@ export function formatTokenName(address: string, name: string) {
 async function fetchPairsByTime(
   blockNumber: number | undefined,
   tokenAddresses: string[],
+  chainId: ChainId,
 ): Promise<any> {
   try {
-    const pairs = await clientV3.query({
+    const pairs = await clientV3[chainId].query({
       query: PAIRS_FROM_ADDRESSES_V3(blockNumber, tokenAddresses),
       fetchPolicy: 'network-only',
     });

@@ -37,7 +37,9 @@ const RewardSlider: React.FC = () => {
   useEffect(() => {
     const stakingPairLists = stakingPairListStr.split(',');
     if (stakingPairListStr) {
-      getBulkPairData(stakingPairLists).then((data) => setBulkPairs(data));
+      getBulkPairData(defaultChainId, stakingPairLists).then((data) =>
+        setBulkPairs(data),
+      );
     }
   }, [stakingPairListStr]);
 
