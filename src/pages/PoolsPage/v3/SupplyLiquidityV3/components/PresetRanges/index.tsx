@@ -1,5 +1,4 @@
 import React, { useMemo, useEffect, useState } from 'react';
-import { Layers } from 'react-feather';
 import { Currency } from '@uniswap/sdk-core';
 import { PoolStats } from '../PoolStats';
 import { IDerivedMintInfo } from 'state/mint/v3/hooks';
@@ -170,9 +169,7 @@ export function PresetRanges({
       tokenB: quoteCurrency.wrapped,
     }).toLowerCase();
 
-    return aprs[poolAddress]
-      ? `${aprs[poolAddress].toFixed(2)}% APR`
-      : undefined;
+    return aprs[poolAddress] ? aprs[poolAddress].toFixed(2) : undefined;
   }, [baseCurrency, quoteCurrency, aprs]);
 
   return (

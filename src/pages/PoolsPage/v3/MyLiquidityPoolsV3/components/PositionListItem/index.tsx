@@ -8,7 +8,6 @@ import { Bound, setShowNewestPosition } from 'state/mint/v3/actions';
 import { ArrowRight } from 'react-feather';
 import usePrevious from 'hooks/usePrevious';
 import { PositionPool } from 'models/interfaces';
-import { NavLink } from 'react-router-dom';
 import RangeBadge from 'components/v3/Badge/RangeBadge';
 import { useAppDispatch } from 'state/hooks';
 import './index.scss';
@@ -222,10 +221,7 @@ export default function PositionListItem({
         </Box>
         <Box ml={1}>
           <Badge
-            text={`${new Percent(
-              positionDetails.fee || 100,
-              1_000_000,
-            ).toSignificant()}
+            text={`${new Percent(pool?.fee || 100, 1_000_000).toSignificant()}
                         %`}
           ></Badge>
         </Box>
