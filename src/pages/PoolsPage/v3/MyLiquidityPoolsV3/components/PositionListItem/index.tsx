@@ -221,10 +221,7 @@ export default function PositionListItem({
         </Box>
         <Box ml={1}>
           <Badge
-            text={`${new Percent(
-              positionDetails.fee || 100,
-              1_000_000,
-            ).toSignificant()}
+            text={`${new Percent(pool?.fee || 100, 1_000_000).toSignificant()}
                         %`}
           ></Badge>
         </Box>
