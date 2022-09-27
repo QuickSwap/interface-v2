@@ -28,7 +28,7 @@ const SwapMain: React.FC = () => {
   const { chainId } = useActiveWeb3React();
   const { isV3, updateIsV3 } = useIsV3();
   const params: any = useParams();
-  const isOnV3 = params ? params.version === 'v3' : false;
+  let isOnV3 = params ? params.version === 'v3' : false;
   const parsedQuery = useParsedQueryString();
   const currency0Id =
     parsedQuery && (parsedQuery.currency0 || parsedQuery.inputCurrency)
@@ -58,6 +58,10 @@ const SwapMain: React.FC = () => {
     if (!showBestTrade) {
       const tradeIndex = v2 ? SWAP_NORMAL : SWAP_V3;
       setSwapIndex(tradeIndex);
+      if (tradeIndex === SWAP_V3) {
+        isOnV3 = true;
+        updateIsV3(true);
+      }
     }
   }, [isOnV3, showBestTrade, v2]);
 
@@ -98,6 +102,7 @@ const SwapMain: React.FC = () => {
               `}
               onClick={() => {
                 updateIsV3(false);
+                isOnV3 = false;
                 setSwapIndex(SWAP_NORMAL);
               }}
             >
@@ -112,6 +117,7 @@ const SwapMain: React.FC = () => {
               `}
               onClick={() => {
                 updateIsV3(true);
+                isOnV3 = true;
                 setSwapIndex(SWAP_V3);
               }}
             >
@@ -125,6 +131,7 @@ const SwapMain: React.FC = () => {
               } swapItem headingItem`}
               onClick={() => {
                 updateIsV3(false);
+                isOnV3 = false;
                 setSwapIndex(SWAP_LIMIT);
               }}
             >

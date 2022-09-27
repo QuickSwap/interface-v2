@@ -176,8 +176,9 @@ export async function splitQuery(
       end = skip + skipCount;
     }
     const sliced = list.slice(skip, end);
+    const queryStr = query(...vars, sliced);
     const result = await localClient.query({
-      query: query(...vars, sliced),
+      query: queryStr,
       fetchPolicy: 'network-only',
     });
     fetchedData = {
@@ -589,7 +590,6 @@ export const getTopTokens = async (
           return data;
         }),
     );
-    console.log('bul', bulkResults);
     return bulkResults;
   } catch (e) {
     console.log(e);

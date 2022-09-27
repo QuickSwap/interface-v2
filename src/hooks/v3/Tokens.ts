@@ -9,6 +9,8 @@ import { useActiveWeb3React } from 'hooks';
 import { useBytes32TokenContract, useTokenContract } from 'hooks/useContract';
 import { ExtendedEther, WMATIC_EXTENDED } from 'constants/v3/addresses';
 import { TokenAddressMap, useSelectedTokenList } from 'state/lists/v3/hooks';
+import { ChainId } from '@uniswap/sdk';
+import { CHAIN_INFO } from 'constants/v3/chains';
 
 // reduce token map into standard address <-> Token mapping, optionally include user added tokens
 function useTokensFromMap(
@@ -182,14 +184,22 @@ export function useCurrency(
   currencyId: string | undefined,
 ): Currency | null | undefined {
   const { chainId } = useActiveWeb3React();
-  let isETH;
-  if (chainId === 137) {
-    isETH = currencyId?.toUpperCase() === 'MATIC';
-  }
+  const chainIdToUse = chainId ?? ChainId.MATIC;
+
+  const chainInfo = CHAIN_INFO[chainIdToUse];
+  const isETH = currencyId?.toUpperCase() === chainInfo.nativeCurrencySymbol;
 
   const token = useToken(isETH ? undefined : currencyId);
   const extendedEther = useMemo(
-    () => (chainId ? ExtendedEther.onChain(chainId) : undefined),
+    () =>
+      chainId
+        ? ExtendedEther.onChain(
+            chainIdToUse,
+            chainInfo.nativeCurrencyDecimals,
+            chainInfo.nativeCurrencySymbol,
+            chainInfo.nativeCurrencyName,
+          )
+        : undefined,
     [chainId],
   );
   const weth = chainId ? WMATIC_EXTENDED[chainId] : undefined;

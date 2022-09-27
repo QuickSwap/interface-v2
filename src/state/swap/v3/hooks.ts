@@ -33,10 +33,12 @@ import { isAddress } from 'utils';
 import { useCurrency } from 'hooks/v3/Tokens';
 import { useCurrencyBalances } from 'state/wallet/v3/hooks';
 import { useUserSlippageTolerance } from 'state/user/hooks';
-import { GlobalConst, GlobalValue } from 'constants/index';
+import { WrappedTokenInfo } from 'state/lists/v3/wrappedTokenInfo';
 
 export function useSwapState(): AppState['swapV3'] {
-  return useAppSelector((state) => state.swapV3);
+  return useAppSelector((state) => {
+    return state.swapV3;
+  });
 }
 
 export function useSwapActionHandlers(): {
@@ -47,14 +49,6 @@ export function useSwapActionHandlers(): {
 } {
   const dispatch = useAppDispatch();
 
-  const { chainId } = useActiveWeb3React();
-
-  let symbol: string;
-
-  if (chainId === 137) {
-    symbol = 'MATIC';
-  }
-
   const onCurrencySelection = useCallback(
     (field: Field, currency: Currency) => {
       dispatch(
@@ -62,8 +56,14 @@ export function useSwapActionHandlers(): {
           field,
           currencyId: currency.isToken
             ? currency.address
+              ? currency.address
+              : currency instanceof WrappedTokenInfo
+              ? currency.tokenInfo.address
+              : ''
             : currency.isNative
-            ? 'MATIC'
+            ? currency.symbol
+              ? currency.symbol
+              : ''
             : '',
         }),
       );

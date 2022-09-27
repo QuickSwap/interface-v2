@@ -3,6 +3,7 @@
     "v2": true,
     "rpc": "https://polygon-rpc.com/",
     "chainId": 137,
+    "nativeCurrencyImage": "/polygon.svg",
     "swap" :{
         "available": true,
         "bestTrade": true,
