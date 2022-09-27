@@ -15,6 +15,7 @@ import { ChainId } from '@uniswap/sdk';
 import VersionToggle from 'components/Toggle/VersionToggle';
 import V3Farms from 'pages/FarmPage/V3';
 import { useIsV3 } from 'state/application/hooks';
+import { getConfig } from '../../config/index';
 
 const FarmPage: React.FC = () => {
   const { chainId } = useActiveWeb3React();
@@ -26,27 +27,43 @@ const FarmPage: React.FC = () => {
   const [v3FarmIndex, setV3FarmIndex] = useState(
     GlobalConst.v3FarmIndex.ETERNAL_FARMS_INDEX,
   );
-  const chainIdOrDefault = chainId ?? ChainId.MATIC;
+  const chainIdToUse = chainId ?? ChainId.MATIC;
+  const config = getConfig(chainIdToUse);
+  const farms = config['farm']['available'];
+  const v3 = config['v3'];
+  const v2 = config['v2'];
+  const { isV3, updateIsV3 } = useIsV3();
+
   const lpFarms = useDefaultFarmList();
   const dualFarms = useDefaultDualFarmList();
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
 
   const pairLists = useMemo(() => {
-    const stakingPairLists = Object.values(lpFarms[chainIdOrDefault]).map(
+    const stakingPairLists = Object.values(lpFarms[chainIdToUse]).map(
       (item) => item.pair,
     );
-    const dualPairLists = Object.values(dualFarms[chainIdOrDefault]).map(
+    const dualPairLists = Object.values(dualFarms[chainIdToUse]).map(
       (item) => item.pair,
     );
     return stakingPairLists.concat(dualPairLists);
-  }, [chainIdOrDefault, lpFarms, dualFarms]);
+  }, [chainIdToUse, lpFarms, dualFarms]);
 
   useEffect(() => {
-    getBulkPairData(chainIdOrDefault, pairLists).then((data) =>
-      setBulkPairs(data),
-    );
+    getBulkPairData(chainIdToUse, pairLists).then((data) => setBulkPairs(data));
   }, [pairLists]);
+
+  useEffect(() => {
+    updateIsV3(
+      v2 === true && v3 === true
+        ? isV3 === true
+          ? true
+          : false
+        : v2
+        ? false
+        : true,
+    );
+  }, [v2, v3, isV3]);
 
   const farmCategories = [
     {
@@ -64,17 +81,17 @@ const FarmPage: React.FC = () => {
       condition: farmIndex === GlobalConst.farmIndex.DUALFARM_INDEX,
     },
   ];
-
-  const { isV3 } = useIsV3();
-
   return (
     <Box width='100%' mb={3} id='farmPage'>
       <Box className='pageHeading'>
         <Box className='flex row items-center'>
           <h4>{t('farm')}</h4>
-          <Box ml={2}>
-            <VersionToggle />
-          </Box>
+          {v2 && v3 && (
+            <Box ml={2}>
+              <VersionToggle />
+            </Box>
+          )}
+          ;
         </Box>
         <Box className='helpWrapper'>
           <small>{t('help')}</small>
@@ -84,7 +101,7 @@ const FarmPage: React.FC = () => {
       <Box maxWidth={isMobile ? '320px' : '1136px'} margin='0 auto 24px'>
         <AdsSlider sort='farms' />
       </Box>
-      {!isV3 && (
+      {!isV3 && v2 && (
         <>
           <CustomSwitch
             width={300}
@@ -100,7 +117,7 @@ const FarmPage: React.FC = () => {
           </Box>
         </>
       )}
-      {isV3 && <V3Farms />}
+      {isV3 && v3 && <V3Farms />}
     </Box>
   );
 };
