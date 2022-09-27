@@ -173,7 +173,7 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
       </Box>
       {showCommonBases && (
         <CommonBases
-          chainId={chainId}
+          chainId={chainIdToUse}
           onSelect={handleCurrencySelect}
           selectedCurrency={selectedCurrency}
         />
@@ -183,7 +183,7 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
 
       <Box flex={1}>
         <CurrencyList
-          chainId={chainId ? chainId : ChainId.MATIC}
+          chainId={chainIdToUse}
           showETH={showETH}
           currencies={filteredSortedTokens}
           onCurrencySelect={handleCurrencySelect}

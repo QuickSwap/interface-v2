@@ -3,6 +3,7 @@
     "v2": false,
     "rpc": "https://dogechain.ankr.com",
     "chainId": 2000,
+    "nativeCurrencyImage": "/doge.png",
     "swap" :{
         "available": true,
         "bestTrade": false,

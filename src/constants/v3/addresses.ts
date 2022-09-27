@@ -2,6 +2,7 @@ import { ChainId, WETH } from '@uniswap/sdk';
 import { Token } from '@uniswap/sdk';
 import { Token as TokenV3 } from '@uniswap/sdk-core';
 import { Matic } from 'v3lib/entities/matic';
+import { V3Currency } from 'v3lib/entities/v3Currency';
 
 export enum V2Exchanges {
   Quickswap = 'Quickswap',
@@ -32,6 +33,15 @@ export const toV3Token = (t: {
   name?: string;
 }): TokenV3 => {
   return new TokenV3(t.chainId, t.address, t.decimals, t.symbol, t.name);
+};
+
+export const toV3Currency = (t: {
+  chainId: number;
+  decimals: number;
+  symbol?: string;
+  name?: string;
+}): V3Currency => {
+  return new V3Currency(t.chainId, t.decimals, t.symbol, t.name);
 };
 
 export const MULTICALL_NETWORKS: { [chainId in ChainId]: string } = {
@@ -190,6 +200,13 @@ export const WMATIC_EXTENDED: { [chainId: number]: TokenV3 } = {
     'WMATIC',
     'Wrapped Matic',
   ),
+  [ChainId.DOGECHAIN]: new TokenV3(
+    ChainId.DOGECHAIN,
+    '0xB7ddC6414bf4F5515b52D8BdD69973Ae205ff101',
+    18,
+    'WWDOGE',
+    'Wrapped WDOGE',
+  ),
 };
 
 export const USDC: { [chainId: number]: Token } = {
@@ -344,6 +361,26 @@ export const MI: { [chainId: number]: Token } = {
   ),
 };
 
+export const DC: { [chainId: number]: Token } = {
+  [ChainId.DOGECHAIN]: new Token(
+    ChainId.DOGECHAIN,
+    '0x7b4328c127b85369d9f82ca0503b000d09cf9180',
+    18,
+    'DC',
+    'Dogechain Token',
+  ),
+};
+
+export const DD: { [chainId: number]: Token } = {
+  [ChainId.DOGECHAIN]: new Token(
+    ChainId.DOGECHAIN,
+    '0x582daef1f36d6009f64b74519cfd612a8467be18',
+    18,
+    'DD',
+    'Doge Dragon',
+  ),
+};
+
 export const V2_BASES_TO_CHECK_TRADES_AGAINST: {
   [ChainId: number]: Token[];
 } = {
@@ -377,6 +414,12 @@ export const V3_BASES_TO_CHECK_TRADES_AGAINST: {
     WMATIC_EXTENDED[ChainId.MATIC],
     toV3Token(USDC[ChainId.MATIC]),
   ],
+  [ChainId.DOGECHAIN]: [
+    WMATIC_EXTENDED[ChainId.DOGECHAIN],
+    toV3Token(USDC[ChainId.DOGECHAIN]),
+    toV3Token(DC[ChainId.DOGECHAIN]),
+    toV3Token(DD[ChainId.DOGECHAIN]),
+  ],
 };
 
 export const SUGGESTED_BASES: {
@@ -392,6 +435,15 @@ export const SUGGESTED_BASES: {
     ETHER[ChainId.MATIC],
     WBTC[ChainId.MATIC],
     MI[ChainId.MATIC],
+  ],
+  [ChainId.DOGECHAIN]: [
+    USDC[ChainId.DOGECHAIN],
+    USDT[ChainId.DOGECHAIN],
+    ETHER[ChainId.DOGECHAIN],
+    WBTC[ChainId.DOGECHAIN],
+    MI[ChainId.DOGECHAIN],
+    DD[ChainId.DOGECHAIN],
+    DC[ChainId.DOGECHAIN],
   ],
 };
 
@@ -422,6 +474,14 @@ export const V3_BASES_TO_TRACK_LIQUIDITY_FOR: {
     toV3Token(NEW_QUICK[ChainId.MATIC]),
     toV3Token(ETHER[ChainId.MATIC]),
     toV3Token(WBTC[ChainId.MATIC]),
+  ],
+  [ChainId.DOGECHAIN]: [
+    WMATIC_EXTENDED[ChainId.DOGECHAIN],
+    toV3Token(USDC[ChainId.DOGECHAIN]),
+    toV3Token(USDT[ChainId.DOGECHAIN]),
+    toV3Token(ETHER[ChainId.DOGECHAIN]),
+    toV3Token(DD[ChainId.DOGECHAIN]),
+    toV3Token(DC[ChainId.DOGECHAIN]),
   ],
 };
 
@@ -455,7 +515,7 @@ export const V3_PINNED_PAIRS: {
   ],
 };
 
-export class ExtendedEther extends Matic {
+export class ExtendedEther extends V3Currency {
   private static _cachedEther: { [chainId: number]: ExtendedEther } = {};
 
   public get wrapped(): TokenV3 {
@@ -463,10 +523,20 @@ export class ExtendedEther extends Matic {
     throw new Error('Unsupported chain ID');
   }
 
-  public static onChain(chainId: number): ExtendedEther {
+  public static onChain(
+    chainId: number,
+    decimals: number,
+    symbol?: string,
+    name?: string,
+  ): ExtendedEther {
     return (
       this._cachedEther[chainId] ??
-      (this._cachedEther[chainId] = new ExtendedEther(chainId))
+      (this._cachedEther[chainId] = new ExtendedEther(
+        chainId,
+        decimals,
+        symbol,
+        name,
+      ))
     );
   }
 }

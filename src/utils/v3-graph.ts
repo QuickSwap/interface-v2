@@ -18,6 +18,7 @@ import {
   TOKEN_CHART_V3,
   TOP_POOLS_V3,
   TOP_TOKENS_V3,
+  V3_PRICES_BY_BLOCK,
 } from 'apollo/queries-v3';
 import {
   get2DayPercentChange,
@@ -33,6 +34,7 @@ import { TickMath, tickToPrice } from '@uniswap/v3-sdk';
 import { ChainId, JSBI } from '@uniswap/sdk';
 import keyBy from 'lodash.keyby';
 import { TxnType } from 'constants/index';
+import ApolloClient from 'apollo-client';
 
 //Global
 
@@ -421,6 +423,135 @@ export async function getTopTokensV3(
     console.error(err);
   }
 }
+
+export async function splitQuery(
+  query: any,
+  localClient: ApolloClient<any>,
+  vars: any[],
+  list: any[],
+  skipCount = 100,
+): Promise<any> {
+  let fetchedData = {};
+  let allFound = false;
+  let skip = 0;
+
+  while (!allFound) {
+    let end = list.length;
+    if (skip + skipCount < list.length) {
+      end = skip + skipCount;
+    }
+    const sliced = list.slice(skip, end);
+    const queryStr = query(...vars, sliced);
+    const result = await localClient.query({
+      query: queryStr,
+      fetchPolicy: 'network-only',
+    });
+    fetchedData = {
+      ...fetchedData,
+      ...result.data,
+    };
+    if (
+      Object.keys(result.data).length < skipCount ||
+      skip + skipCount > list.length
+    ) {
+      allFound = true;
+    } else {
+      skip += skipCount;
+    }
+  }
+
+  return fetchedData;
+}
+
+export const getIntervalTokenDataV3 = async (
+  tokenAddress: string,
+  startTime: number,
+  interval = 3600,
+  latestBlock: number | undefined,
+  chainId: ChainId,
+) => {
+  const utcEndTime = dayjs.utc();
+  let time = startTime;
+
+  // create an array of hour start times until we reach current hour
+  // buffer by half hour to catch case where graph isnt synced to latest block
+  const timestamps = [];
+  while (time < utcEndTime.unix()) {
+    timestamps.push(time);
+    time += interval;
+  }
+
+  // backout if invalid timestamp format
+  if (timestamps.length === 0) {
+    return [];
+  }
+
+  // once you have all the timestamps, get the blocks for each timestamp in a bulk query
+  let blocks;
+  try {
+    blocks = await getBlocksFromTimestamps(timestamps, 100, chainId);
+
+    // catch failing case
+    if (!blocks || blocks.length === 0) {
+      return [];
+    }
+
+    if (latestBlock) {
+      blocks = blocks.filter((b) => {
+        return Number(b.number) <= latestBlock;
+      });
+    }
+
+    const result: any = await splitQuery(
+      V3_PRICES_BY_BLOCK,
+      clientV3[chainId],
+      [tokenAddress],
+      blocks,
+      50,
+    );
+
+    // format token ETH price results
+    const values: any[] = [];
+    for (const row in result) {
+      const timestamp = row.split('t')[1];
+      const derivedETH = Number(result[row]?.derivedETH ?? 0);
+      if (timestamp) {
+        values.push({
+          timestamp,
+          derivedETH,
+        });
+      }
+    }
+
+    // go through eth usd prices and assign to original values array
+    let index = 0;
+    for (const brow in result) {
+      const timestamp = brow.split('b')[1];
+      if (timestamp) {
+        values[index].priceUSD =
+          result[brow].ethPrice * values[index].derivedETH;
+        index += 1;
+      }
+    }
+
+    const formattedHistory = [];
+
+    // for each hour, construct the open and close price
+    for (let i = 0; i < values.length - 1; i++) {
+      formattedHistory.push({
+        timestamp: values[i].timestamp,
+        open: Number(values[i].priceUSD),
+        close: Number(values[i + 1].priceUSD),
+      });
+    }
+
+    return formattedHistory;
+  } catch (e) {
+    console.log(e);
+    console.log('error fetching blocks');
+    return [];
+  }
+};
 
 export async function getTokenInfoV3(
   maticPrice: number,

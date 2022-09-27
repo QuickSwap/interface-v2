@@ -85,20 +85,19 @@ export const TradingInfo: React.FC<{ globalData: any; v3GlobalData: any }> = ({
         )}
         <p>{t('totalTradingPairs')}</p>
       </Box>
-      {oldLair ||
-        (newLair && (
-          <Box className='tradingSection' pt='20px'>
-            {dQUICKAPY ? (
-              <h3>{dQUICKAPY.toLocaleString()}%</h3>
-            ) : (
-              <Skeleton variant='rect' width={100} height={45} />
-            )}
-            <p>dQUICK {t('apy')}</p>
-            <h4 onClick={() => setOpenStakeModal(true)}>
-              {t('stake')} {'>'}
-            </h4>
-          </Box>
-        ))}
+      {(oldLair || newLair) && (
+        <Box className='tradingSection' pt='20px'>
+          {dQUICKAPY ? (
+            <h3>{dQUICKAPY.toLocaleString()}%</h3>
+          ) : (
+            <Skeleton variant='rect' width={100} height={45} />
+          )}
+          <p>dQUICK {t('apy')}</p>
+          <h4 onClick={() => setOpenStakeModal(true)}>
+            {t('stake')} {'>'}
+          </h4>
+        </Box>
+      )}
     </>
   );
 };

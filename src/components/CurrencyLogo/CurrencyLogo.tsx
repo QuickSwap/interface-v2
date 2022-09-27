@@ -9,13 +9,13 @@ import { WrappedTokenInfo as V3WrappedTokenInfo } from 'state/lists/v3/wrappedTo
 import { Logo } from 'components';
 import { getTokenLogoURL } from 'utils/getTokenLogoURL';
 import 'components/styles/CurrencyLogo.scss';
+import { useActiveWeb3React } from 'hooks';
 
 interface CurrencyLogoProps {
   currency?: Currency;
   size?: string;
   style?: React.CSSProperties;
   withoutBg?: boolean;
-  chainId?: ChainId;
 }
 
 const CurrencyLogo: React.FC<CurrencyLogoProps> = ({
@@ -23,11 +23,11 @@ const CurrencyLogo: React.FC<CurrencyLogoProps> = ({
   size = '24px',
   style,
   withoutBg,
-  chainId,
 }) => {
+  const { chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ? chainId : ChainId.MATIC;
   const nativeCurrency = ETHER[chainIdToUse];
-
+  const nativeCurrencyImage = '/' + currency?.symbol + '.png';
   const uriLocations = useHttpLocations(
     currency instanceof WrappedTokenInfo ||
       currency instanceof V3WrappedTokenInfo
@@ -72,7 +72,11 @@ const CurrencyLogo: React.FC<CurrencyLogoProps> = ({
         borderRadius={size}
         className='currencyLogo'
       >
-        <img className='ethereumLogo' src={EthereumLogo} alt='Ethereum Logo' />
+        <img
+          className='ethereumLogo'
+          src={nativeCurrencyImage}
+          alt='Native Currency Logo'
+        />
       </Box>
     );
   }

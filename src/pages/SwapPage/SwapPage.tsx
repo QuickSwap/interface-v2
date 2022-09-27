@@ -3,11 +3,12 @@ import { useTheme } from '@material-ui/core/styles';
 import { Box, Grid, useMediaQuery } from '@material-ui/core';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
 import { SettingsModal, SwapTokenDetails, ToggleSwitch } from 'components';
-import { useIsProMode } from 'state/application/hooks';
+import { useIsProMode, useIsV3 } from 'state/application/hooks';
 import { useDerivedSwapInfo } from 'state/swap/hooks';
+import { useDerivedSwapInfo as useDerivedSwapInfoV3 } from 'state/swap/v3/hooks';
 import { Field } from 'state/swap/actions';
 import { getPairAddress, getSwapTransactions } from 'utils';
-import { wrappedCurrency } from 'utils/wrappedCurrency';
+import { wrappedCurrency, wrappedCurrencyV3 } from 'utils/wrappedCurrency';
 import { useActiveWeb3React } from 'hooks';
 import SwapMain from './SwapMain';
 import LiquidityPools from './LiquidityPools';
@@ -37,12 +38,17 @@ const SwapPage: React.FC = () => {
   );
   const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
   const [infoPos, setInfoPos] = useState('right');
-
+  const { isV3 } = useIsV3();
   const { currencies } = useDerivedSwapInfo();
+  const { currencies: currenciesV3 } = useDerivedSwapInfoV3();
+
   const { chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ?? ChainId.MATIC;
   const token1 = wrappedCurrency(currencies[Field.INPUT], chainIdToUse);
   const token2 = wrappedCurrency(currencies[Field.OUTPUT], chainIdToUse);
+
+  const token1V3 = wrappedCurrencyV3(currenciesV3[Field.INPUT], chainIdToUse);
+  const token2V3 = wrappedCurrencyV3(currenciesV3[Field.OUTPUT], chainIdToUse);
 
   const config = getConfig(chainIdToUse);
 
@@ -133,25 +139,47 @@ const SwapPage: React.FC = () => {
               <AdsSlider sort='swap' />
             </Box>
           </Grid>
-          <Grid item xs={12} sm={12} md={6} lg={7}>
-            <Box className='flex flex-wrap justify-between fullWidth'>
-              {token1 && (
-                <Box className='swapTokenDetails'>
-                  <SwapTokenDetails token={token1} />
-                </Box>
-              )}
-              {token2 && (
-                <Box className='swapTokenDetails'>
-                  <SwapTokenDetails token={token2} />
-                </Box>
-              )}
-            </Box>
-            {token1 && token2 && (
-              <Box className='wrapper' marginTop='32px'>
-                <LiquidityPools token1={token1} token2={token2} />
+          {isV3 ? (
+            <Grid item xs={12} sm={12} md={6} lg={7}>
+              <Box className='flex flex-wrap justify-between fullWidth'>
+                {token1V3 && (
+                  <Box className='swapTokenDetails'>
+                    <SwapTokenDetails token={token1V3} />
+                  </Box>
+                )}
+                {token2V3 && (
+                  <Box className='swapTokenDetails'>
+                    <SwapTokenDetails token={token2V3} />
+                  </Box>
+                )}
               </Box>
-            )}
-          </Grid>
+              {token1 && token2 && (
+                <Box className='wrapper' marginTop='32px'>
+                  <LiquidityPools token1={token1} token2={token2} />
+                </Box>
+              )}
+            </Grid>
+          ) : (
+            <Grid item xs={12} sm={12} md={6} lg={7}>
+              <Box className='flex flex-wrap justify-between fullWidth'>
+                {token1 && (
+                  <Box className='swapTokenDetails'>
+                    <SwapTokenDetails token={token1} />
+                  </Box>
+                )}
+                {token2 && (
+                  <Box className='swapTokenDetails'>
+                    <SwapTokenDetails token={token2} />
+                  </Box>
+                )}
+              </Box>
+              {token1 && token2 && (
+                <Box className='wrapper' marginTop='32px'>
+                  <LiquidityPools token1={token1} token2={token2} />
+                </Box>
+              )}
+            </Grid>
+          )}
         </Grid>
       ) : (
         <Box
