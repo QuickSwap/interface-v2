@@ -138,7 +138,7 @@ const App: React.FC = () => {
   const { chainId } = useActiveWeb3React();
   const config = getConfig(chainId);
   const showSwap = config['swap']['available'];
-  const showPool = config['pool']['available'];
+  const showPool = config['pools']['available'];
   const showFarm = config['farm']['available'];
   const showLair = config['lair']['available'];
   const showConvert = config['convert']['available'];

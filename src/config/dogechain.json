@@ -10,7 +10,7 @@
         "proMode": false,
         "limitOrder": false
     },
-    "pool": {
+    "pools": {
         "available": true
     },
     "farm": {
