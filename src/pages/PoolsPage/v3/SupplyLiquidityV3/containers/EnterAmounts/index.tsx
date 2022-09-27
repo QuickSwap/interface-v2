@@ -54,6 +54,7 @@ export function EnterAmounts({
   //   return mintInfo.ticks;
   // }, [mintInfo]);
 
+  // this code may be needed when we are going to show token ratio component
   // const {
   //   getDecrementLower,
   //   getIncrementLower,
