@@ -14,7 +14,6 @@ interface ISelectPair {
   baseCurrency: Currency | null | undefined;
   quoteCurrency: Currency | null | undefined;
   mintInfo: IDerivedMintInfo;
-  isCompleted: boolean;
   priceFormat: PriceFormats;
   handleCurrencySwap?: () => void;
   handleCurrencyASelect: (newCurrency: Currency) => void;
@@ -26,7 +25,6 @@ export function SelectPair({
   baseCurrency,
   quoteCurrency,
   mintInfo,
-  isCompleted,
   priceFormat,
   handleCurrencySwap,
   handleCurrencyASelect,

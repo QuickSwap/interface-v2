@@ -23,20 +23,14 @@ interface IEnterAmounts {
   currencyA: Currency | undefined;
   currencyB: Currency | undefined;
   mintInfo: IDerivedMintInfo;
-  isCompleted: boolean;
-  additionalStep: boolean;
   priceFormat: PriceFormats;
-  backStep: number;
 }
 
 export function EnterAmounts({
   currencyA,
   currencyB,
   mintInfo,
-  isCompleted,
-  additionalStep,
   priceFormat,
-  backStep,
 }: IEnterAmounts) {
   const { chainId } = useActiveWeb3React();
 

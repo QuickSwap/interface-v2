@@ -28,9 +28,5 @@ export function formatPrice(
     return '-';
   }
 
-  if (parseFloat(price.toFixed(sigFigs)) < 0.0001) {
-    return '<0.0001';
-  }
-
   return price.toSignificant(sigFigs);
 }
