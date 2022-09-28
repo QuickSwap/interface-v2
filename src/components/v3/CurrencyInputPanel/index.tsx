@@ -1,42 +1,20 @@
 import React from 'react';
 import { Pair } from '@uniswap/v2-sdk';
-import {
-  Currency,
-  CurrencyAmount,
-  Percent,
-  Token,
-  Fraction,
-} from '@uniswap/sdk-core';
+import { Currency, CurrencyAmount, Percent, Token } from '@uniswap/sdk-core';
 import { ReactNode, useCallback, useMemo, useState } from 'react';
-import { RowBetween, RowFixed } from '../Row';
-import { TYPE } from 'theme/index';
-import { FiatValue } from './FiatValue';
+import { LockOutlined } from '@material-ui/icons';
 
-import {
-  Aligner,
-  AutoColumnStyled,
-  Container,
-  CurrencySelect,
-  FiatRow,
-  FixedContainer,
-  InputPanel,
-  InputRow,
-  MaxButton,
-  NumericalInputStyled,
-  StyledTokenName,
-} from './styled';
 import { useActiveWeb3React } from 'hooks';
 import useUSDCPrice from 'hooks/v3/useUSDCPrice';
-import Loader from 'components/Loader';
 import { WrappedCurrency } from 'models/types/Currency';
 import CurrencyLogo from 'components/CurrencyLogo';
 import { useCurrencyBalance } from 'state/wallet/v3/hooks';
-import DoubleCurrencyLogo from 'components/DoubleCurrencyLogo';
 import CurrencySearchModal from 'components/CurrencySearchModal';
 import { Box } from '@material-ui/core';
 import NumericalInput from 'components/NumericalInput';
 import { useTranslation } from 'react-i18next';
 import JSBI from 'jsbi';
+import './index.scss';
 
 interface CurrencyInputPanelProps {
   value: string;
@@ -147,29 +125,14 @@ export default function CurrencyInputPanel({
   }, [balance]);
 
   return (
-    <InputPanel id={id} hideInput={hideInput} {...rest}>
+    <Box className='v3-currency-input-panel'>
       {locked && (
-        <FixedContainer
-          style={{ height: `${page === 'pool' ? '40px' : '80px'}` }}
-        >
-          <AutoColumnStyled
-            gap='sm'
-            justify='center'
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              width: '100%',
-              marginTop: '18px',
-              position: 'absolute',
-              bottom: '10%',
-            }}
-          >
-            {/* <Lock /> */}
-            <TYPE.label fontSize='14px'>
-              Price is outside specified price range. Single-asset deposit only.
-            </TYPE.label>
-          </AutoColumnStyled>
-        </FixedContainer>
+        <Box className='v3-currency-input-lock-wrapper'>
+          <LockOutlined />
+          <small>
+            Price is outside specified price range. Single-asset deposit only.
+          </small>
+        </Box>
       )}
 
       <Box id={id} className='bg-secondary2 swapBox'>
@@ -248,6 +211,6 @@ export default function CurrencyInputPanel({
           // disableNonToken={disableNonToken}
         />
       )}
-    </InputPanel>
+    </Box>
   );
 }

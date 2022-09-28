@@ -62,15 +62,15 @@ import {
 
 interface PositionListItemProps {
   positionDetails: PositionPool;
+  ownsNFT: boolean;
 }
 
 export default function PositionListItemDetails({
   positionDetails,
+  ownsNFT,
 }: PositionListItemProps) {
   const { chainId, account, library } = useActiveWeb3React();
-  const { position: existingPosition } = useDerivedPositionInfo(
-    positionDetails,
-  );
+
   const [openRemoveLiquidityModal, setOpenRemoveLiquidityModal] = useState(
     false,
   );
@@ -305,17 +305,9 @@ export default function PositionListItemDetails({
     library,
   ]);
 
-  const owner = useSingleCallResult(
-    !!tokenId ? positionManager : null,
-    'ownerOf',
-    [tokenId],
-  ).result?.[0];
-
   // NOTE: this may cause poor ux as people might try to claim rewards
   // for others NFT's however the smart contract will fail since they don't have the rights to claim
   //Default to true to allow people to claim reward in farming
-  const ownsNFT = true;
-  // const ownsNFT = owner === account || positionDetails?.operator === account;
 
   const feeValueUpper = inverted ? feeValue0 : feeValue1;
   const feeValueLower = inverted ? feeValue1 : feeValue0;
@@ -444,19 +436,21 @@ export default function PositionListItemDetails({
               </p>
             </Box>
           </Box>
-          <Box className='flex'>
-            <Button onClick={() => setOpenIncreaseLiquidityModal(true)}>
-              Add
-            </Button>
-            <Box ml={1}>
-              <Button
-                disabled={_onFarming}
-                onClick={() => setOpenRemoveLiquidityModal(true)}
-              >
-                Remove
+          {ownsNFT && (
+            <Box className='flex'>
+              <Button onClick={() => setOpenIncreaseLiquidityModal(true)}>
+                Add
               </Button>
+              <Box ml={1}>
+                <Button
+                  disabled={_onFarming || _liquidity.eq(0)}
+                  onClick={() => setOpenRemoveLiquidityModal(true)}
+                >
+                  Remove
+                </Button>
+              </Box>
             </Box>
-          </Box>
+          )}
         </Box>
         <Box mt={2} className='v3-pool-item-details-panel'>
           <Box pt='4px' className='flex justify-between items-center'>
