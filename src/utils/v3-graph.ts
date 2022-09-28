@@ -348,6 +348,10 @@ export async function getTopTokensV3(
       const oneDay = parsedTokens24[address];
       const twoDay = parsedTokens48[address];
 
+      if (!current) {
+        return;
+      }
+
       const manageUntrackedVolume =
         +current.volumeUSD <= 1 ? 'untrackedVolumeUSD' : 'volumeUSD';
       const manageUntrackedTVL =
@@ -418,7 +422,11 @@ export async function getTopTokensV3(
       };
     });
 
-    return formatted;
+    const filtered = formatted.filter((token: any) => {
+      return token !== undefined;
+    });
+
+    return filtered;
   } catch (err) {
     console.error(err);
   }
@@ -833,6 +841,9 @@ export async function getTopPairsV3(count = 500, chainId: ChainId) {
       const twoDay = parsedPairs48[address];
       const week = parsedPairsWeek[address];
 
+      if (!current) {
+        return;
+      }
       const manageUntrackedVolume =
         +current.volumeUSD <= 1 ? 'untrackedVolumeUSD' : 'volumeUSD';
       const manageUntrackedTVL =
@@ -886,7 +897,11 @@ export async function getTopPairsV3(count = 500, chainId: ChainId) {
       };
     });
 
-    return formatted;
+    const filtered = formatted.filter((pair: any) => {
+      return pair !== undefined;
+    });
+
+    return filtered;
   } catch (err) {
     console.error(err);
   }
