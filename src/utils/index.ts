@@ -47,6 +47,7 @@ import {
   TokenAmount,
   Pair,
 } from '@uniswap/sdk';
+import { Token as TokenV3 } from '@uniswap/sdk-core';
 import {
   CurrencyAmount as CurrencyAmountV3,
   Currency as CurrencyV3,
@@ -61,6 +62,7 @@ import {
   SUPPORTED_WALLETS,
 } from 'constants/index';
 import { TokenAddressMap } from 'state/lists/hooks';
+import { TokenAddressMap as TokenAddressMapV3 } from 'state/lists/v3/hooks';
 import {
   DualStakingInfo,
   LairInfo,
@@ -1766,6 +1768,22 @@ export function getTokenFromAddress(
   }
 
   return Object.values(tokenMap[chainId])[tokenIndex];
+}
+
+export function getV3TokenFromAddress(
+  tokenAddress: string,
+  chainId: ChainId,
+  tokenMap: TokenAddressMapV3,
+) {
+  const tokenIndex = Object.keys(tokenMap[chainId]).findIndex(
+    (address) => address.toLowerCase() === tokenAddress.toLowerCase(),
+  );
+  if (tokenIndex === -1) {
+    return undefined;
+  }
+
+  const token = Object.values(tokenMap[chainId])[tokenIndex];
+  return token;
 }
 
 export function getChartDates(chartData: any[] | null, durationIndex: number) {

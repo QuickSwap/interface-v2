@@ -7,9 +7,13 @@ import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import EternalFarmsPage from 'pages/EternalFarmsPage';
 import { FarmingMyFarms } from 'components/StakerMyStakes';
+import { useActiveWeb3React } from 'hooks';
+import { ChainId } from '@uniswap/sdk';
 
 export default function Farms() {
   const { t } = useTranslation();
+  const { chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ?? ChainId.MATIC;
 
   const parsedQuery = useParsedQueryString();
 
@@ -87,6 +91,7 @@ export default function Farms() {
                 fetchTransferredPositionsFn(true);
               }}
               now={now}
+              chainId={chainIdToUse}
             />
           </Box>
         )}
@@ -95,6 +100,7 @@ export default function Farms() {
             data={eternalFarms}
             refreshing={eternalFarmsLoading}
             fetchHandler={() => fetchEternalFarmsFn(true)}
+            chainId={chainIdToUse}
           />
         )}
       </Box>

@@ -1,7 +1,5 @@
-import { isAddress } from '@ethersproject/address';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Frown } from 'react-feather';
-import { useFarmingHandlers } from '../../hooks/useStakerHandlers';
 import { useActiveWeb3React } from 'hooks';
 import Loader from '../Loader';
 import { Deposit } from '../../models/interfaces';
@@ -11,12 +9,15 @@ import './index.scss';
 import FarmCard from './FarmCard';
 import { Box } from '@material-ui/core';
 import { useV3StakeData } from 'state/farms/hooks';
+import { ChainId } from '@uniswap/sdk';
+import { getConfig } from '../../config/index';
 
 interface FarmingMyFarmsProps {
   data: Deposit[] | null;
   refreshing: boolean;
   now: number;
   fetchHandler: () => any;
+  chainId: ChainId;
 }
 
 export function FarmingMyFarms({
@@ -24,9 +25,11 @@ export function FarmingMyFarms({
   refreshing,
   now,
   fetchHandler,
+  chainId,
 }: FarmingMyFarmsProps) {
   const { account } = useActiveWeb3React();
-
+  const config = getConfig(chainId);
+  const lair = config['lair']['available'];
   const { v3Stake } = useV3StakeData();
   const { selectedTokenId, txType, txHash, txConfirmed, selectedFarmingType } =
     v3Stake ?? {};
@@ -118,28 +121,27 @@ export function FarmingMyFarms({
         </div>
       ) : shallowPositions && shallowPositions.length !== 0 ? (
         <Box padding='24px'>
-          <div className={'my-farms__ad p-05 br-12 f f-ac f-jc'}>
-            <div className={'mr-1'}>✨ Earn even more Rewards</div>
-            <Link
-              className={'my-farms__ad-link p-05 br-8 hover-cp'}
-              to={'/dragons'}
-            >
-              Stake Rewards
-            </Link>
-          </div>
+          {lair && (
+            <div className={'my-farms__ad p-05 br-12 f f-ac f-jc'}>
+              <div className={'mr-1'}>✨ Earn even more Rewards</div>
+              <Link
+                className={'my-farms__ad-link p-05 br-8 hover-cp'}
+                to={'/dragons'}
+              >
+                Stake Rewards
+              </Link>
+            </div>
+          )}
           {farmedNFTs && (
             <div>
               {farmedNFTs.map((el, i) => {
-                const date = new Date(
-                  +el.enteredInEternalFarming * 1000,
-                ).toLocaleString();
                 return (
                   <div
                     className={'my-farms__position-card p-1 br-12 mt-1'}
                     key={i}
                     data-navigatedto={hash == `#${el.id}`}
                   >
-                    <FarmCard el={el} />
+                    <FarmCard el={el} chainId={chainId} />
                   </div>
                 );
               })}
