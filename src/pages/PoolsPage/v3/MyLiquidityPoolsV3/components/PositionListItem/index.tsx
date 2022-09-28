@@ -29,6 +29,7 @@ interface PositionListItemProps {
   newestPosition?: number | undefined;
   highlightNewest?: boolean;
   hideExpand?: boolean;
+  ownsNFT?: boolean;
 }
 
 export function getPriceOrderingFromPositionForUI(
@@ -98,6 +99,7 @@ export default function PositionListItem({
   newestPosition,
   highlightNewest,
   hideExpand = false,
+  ownsNFT = true,
 }: PositionListItemProps) {
   const history = useHistory();
   const dispatch = useAppDispatch();
@@ -270,7 +272,10 @@ export default function PositionListItem({
 
       {expanded && (
         <Box mt={3}>
-          <PositionListItemDetails positionDetails={positionDetails} />
+          <PositionListItemDetails
+            positionDetails={positionDetails}
+            ownsNFT={ownsNFT}
+          />
         </Box>
       )}
     </Box>

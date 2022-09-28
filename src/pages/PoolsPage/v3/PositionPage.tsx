@@ -1,21 +1,24 @@
 import React, { useEffect, useMemo } from 'react';
-import { PoolState, usePool } from 'hooks/v3/usePools';
-import { useToken } from 'hooks/v3/Tokens';
-import { useV3PositionFromTokenId } from 'hooks/v3/useV3Positions';
+import {
+  useV3PositionFromTokenId,
+  useV3Positions,
+} from 'hooks/v3/useV3Positions';
 import { NavLink, useParams } from 'react-router-dom';
 import { BigNumber } from '@ethersproject/bignumber';
 import Loader from 'components/Loader';
 import usePrevious from 'hooks/usePrevious';
 import { Box } from '@material-ui/core';
 import PositionListItem from './MyLiquidityPoolsV3/components/PositionListItem';
-import { useFarmingSubgraph } from 'hooks/useIncentiveSubgraph';
 import { useActiveWeb3React } from 'hooks';
 import { PositionPool } from 'models/interfaces';
+import { useSingleCallResult } from 'state/multicall/v3/hooks';
+import { useV3NFTPositionManagerContract } from 'hooks/useContract';
+import { FARMING_CENTER } from 'constants/v3/addresses';
 
 export default function PositionPage() {
   const params: any = useParams();
   const tokenIdFromUrl = params.tokenId;
-  const { account } = useActiveWeb3React();
+  const { account, chainId } = useActiveWeb3React();
 
   const parsedTokenId = tokenIdFromUrl
     ? BigNumber.from(tokenIdFromUrl)
@@ -24,21 +27,17 @@ export default function PositionPage() {
     parsedTokenId,
   );
 
-  const {
-    fetchPositionsOnFarmer: { positionsOnFarmer, fetchPositionsOnFarmerFn },
-  } = useFarmingSubgraph();
+  const { loading: positionLoading, positions } = useV3Positions(account);
+  const ownsNFT =
+    positions &&
+    !!positions.find((item) => item.tokenId.toString() === tokenIdFromUrl);
 
-  useEffect(() => {
-    if (account) {
-      fetchPositionsOnFarmerFn(account);
-    }
-  }, [account]);
-
-  const farmTokenIds = positionsOnFarmer
-    ? positionsOnFarmer.oldTransferredPositionsIds.concat(
-        positionsOnFarmer.transferredPositionsIds,
-      )
-    : [];
+  const positionManager = useV3NFTPositionManagerContract();
+  const owner = useSingleCallResult(
+    !!parsedTokenId ? positionManager : null,
+    'ownerOf',
+    [parsedTokenId],
+  ).result?.[0];
 
   const prevPositionDetails = usePrevious({ ..._positionDetails });
   const {
@@ -61,31 +60,19 @@ export default function PositionPage() {
   const positionDetails: PositionPool | undefined = _positionDetails
     ? {
         ..._positionDetails,
-        onFarming: farmTokenIds.includes(tokenIdFromUrl.toString()),
+        onFarming: chainId && owner === FARMING_CENTER[chainId],
       }
     : undefined;
 
-  const token0 = useToken(_token0Address);
-  const token1 = useToken(_token1Address);
-
-  // construct Position from details returned
-  const [poolState, pool] = usePool(token0 ?? undefined, token1 ?? undefined);
-  const [prevPoolState, prevPool] = usePrevious([poolState, pool]) || [];
-  const [_poolState, _pool] = useMemo(() => {
-    if (!pool && prevPool && prevPoolState) {
-      return [prevPoolState, prevPool];
-    }
-    return [poolState, pool];
-  }, [pool, poolState]);
-
   return (
     <>
-      {(loading || _poolState === PoolState.LOADING) && (
+      {(loading || positionLoading) && (
         <Box padding={4} className='flex justify-center'>
           <Loader stroke={'white'} size={'2rem'} />
         </Box>
       )}
-      {!loading && _poolState !== PoolState.LOADING && positionDetails && (
+
+      {!loading && !positionLoading && (
         <>
           <Box mb={2}>
             <NavLink
@@ -96,10 +83,15 @@ export default function PositionPage() {
               ← Back to Pools Overview
             </NavLink>
           </Box>
-          <PositionListItem
-            positionDetails={positionDetails}
-            hideExpand={true}
-          />
+          {positionDetails ? (
+            <PositionListItem
+              positionDetails={positionDetails}
+              hideExpand={true}
+              ownsNFT={ownsNFT}
+            />
+          ) : (
+            <p>NFT does not exist</p>
+          )}
         </>
       )}
     </>
