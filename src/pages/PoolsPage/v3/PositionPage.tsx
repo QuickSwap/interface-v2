@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { PoolState, usePool } from 'hooks/v3/usePools';
 import { useToken } from 'hooks/v3/Tokens';
 import { useV3PositionFromTokenId } from 'hooks/v3/useV3Positions';
@@ -8,19 +8,39 @@ import Loader from 'components/Loader';
 import usePrevious from 'hooks/usePrevious';
 import { Box } from '@material-ui/core';
 import PositionListItem from './MyLiquidityPoolsV3/components/PositionListItem';
+import { useFarmingSubgraph } from 'hooks/useIncentiveSubgraph';
+import { useActiveWeb3React } from 'hooks';
+import { PositionPool } from 'models/interfaces';
 
 export default function PositionPage() {
   const params: any = useParams();
   const tokenIdFromUrl = params.tokenId;
+  const { account } = useActiveWeb3React();
 
   const parsedTokenId = tokenIdFromUrl
     ? BigNumber.from(tokenIdFromUrl)
     : undefined;
-  const { loading, position: positionDetails } = useV3PositionFromTokenId(
+  const { loading, position: _positionDetails } = useV3PositionFromTokenId(
     parsedTokenId,
   );
 
-  const prevPositionDetails = usePrevious({ ...positionDetails });
+  const {
+    fetchPositionsOnFarmer: { positionsOnFarmer, fetchPositionsOnFarmerFn },
+  } = useFarmingSubgraph();
+
+  useEffect(() => {
+    if (account) {
+      fetchPositionsOnFarmerFn(account);
+    }
+  }, [account]);
+
+  const farmTokenIds = positionsOnFarmer
+    ? positionsOnFarmer.oldTransferredPositionsIds.concat(
+        positionsOnFarmer.transferredPositionsIds,
+      )
+    : [];
+
+  const prevPositionDetails = usePrevious({ ..._positionDetails });
   const {
     token0: _token0Address,
     token1: _token1Address,
@@ -29,14 +49,21 @@ export default function PositionPage() {
     tickUpper: _tickUpper,
   } = useMemo(() => {
     if (
-      !positionDetails &&
+      !_positionDetails &&
       prevPositionDetails &&
       prevPositionDetails.liquidity
     ) {
       return { ...prevPositionDetails };
     }
-    return { ...positionDetails };
-  }, [positionDetails]);
+    return { ..._positionDetails };
+  }, [_positionDetails]);
+
+  const positionDetails: PositionPool | undefined = _positionDetails
+    ? {
+        ..._positionDetails,
+        onFarming: farmTokenIds.includes(tokenIdFromUrl.toString()),
+      }
+    : undefined;
 
   const token0 = useToken(_token0Address);
   const token1 = useToken(_token1Address);
