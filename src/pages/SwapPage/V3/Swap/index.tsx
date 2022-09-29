@@ -43,7 +43,6 @@ import { useAllTokens, useCurrency } from 'hooks/v3/Tokens';
 
 import { AutoColumn } from 'components/v3/Column';
 import Row, { AutoRow } from 'components/v3/Row';
-import { GreyCard } from 'components/v3/Card';
 import { ButtonConfirmed, ButtonError } from 'components/v3/Button';
 import {
   MouseoverTooltip,
@@ -71,7 +70,6 @@ import { Field } from 'state/swap/v3/actions';
 import confirmPriceImpactWithoutFee from 'components/v3/swap/confirmPriceImpactWithoutFee';
 import ConfirmSwapModal from 'components/v3/swap/ConfirmSwapModal';
 import { useExpertModeManager } from 'state/user/hooks';
-import Card from 'components/v3/Card/Card';
 import { ReactComponent as ExchangeIcon } from 'assets/images/ExchangeIcon.svg';
 
 import { Box } from '@material-ui/core';

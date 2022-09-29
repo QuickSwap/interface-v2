@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Box, Grid } from '@material-ui/core';
 import { EternalFarmCard } from 'components/StakerEventCard/EternalFarmCard';
 import { Frown } from 'react-feather';
 import { useTranslation } from 'react-i18next';
@@ -52,33 +53,36 @@ export default function EternalFarmsPage({
           />
         )}
       </CustomModal>
-      {refreshing ? (
-        <div className={'eternal-page__loader'}>
-          <Loader stroke='white' size='1.5rem' />
-        </div>
-      ) : !data || data.length === 0 ? (
-        <div className={'eternal-page__loader'}>
-          <div>{t('noEternalFarms')}</div>
-          <Frown size={'2rem'} stroke={'white'} />
-        </div>
-      ) : !refreshing && data.length !== 0 ? (
-        <div className={'eternal-page__row mb-1 w-100'}>
-          {data.map((event: FormattedEternalFarming, j: number) => (
-            <EternalFarmCard
-              key={j}
-              farmHandler={() => setModalForPool(event as any)}
-              refreshing={refreshing}
-              now={0}
-              eternal
-              aprs={eternalFarmAprs}
-              aprsLoading={eternalFarmAprsLoading}
-              tvls={eternalFarmTvls}
-              tvlsLoading={eternalFarmTvlsLoading}
-              event={event}
-            />
-          ))}
-        </div>
-      ) : null}
+      <Box padding={2}>
+        {refreshing ? (
+          <div className={'eternal-page__loader'}>
+            <Loader stroke='white' size='1.5rem' />
+          </div>
+        ) : !data || data.length === 0 ? (
+          <div className={'eternal-page__loader'}>
+            <div>{t('noEternalFarms')}</div>
+            <Frown size={'2rem'} stroke={'white'} />
+          </div>
+        ) : !refreshing && data.length !== 0 ? (
+          <Grid container spacing={2}>
+            {data.map((event: FormattedEternalFarming, j: number) => (
+              <Grid item xs={12} sm={6} md={4} key={j}>
+                <EternalFarmCard
+                  farmHandler={() => setModalForPool(event as any)}
+                  refreshing={refreshing}
+                  now={0}
+                  eternal
+                  aprs={eternalFarmAprs}
+                  aprsLoading={eternalFarmAprsLoading}
+                  tvls={eternalFarmTvls}
+                  tvlsLoading={eternalFarmTvlsLoading}
+                  event={event}
+                />
+              </Grid>
+            ))}
+          </Grid>
+        ) : null}
+      </Box>
     </>
   );
 }
