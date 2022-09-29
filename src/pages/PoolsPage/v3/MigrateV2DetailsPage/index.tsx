@@ -47,7 +47,6 @@ import { Bound } from 'state/mint/v3/actions';
 import { useUserSlippageTolerance } from 'state/user/hooks';
 import { Pool, Position } from 'v3lib/entities';
 import { V2Exchanges } from 'constants/v3/addresses';
-import { Dots } from '../styleds';
 import { useIsNetworkFailed } from 'hooks/v3/useIsNetworkFailed';
 import { currencyId } from 'utils/v3/currencyId';
 import { unwrappedToken } from 'utils/unwrappedToken';
@@ -728,7 +727,7 @@ export default function MigrateV2DetailsPage() {
             {approval === ApprovalState.PENDING ? (
               <>
                 Approving
-                <Dots />
+                <span className='loadingDots' />
               </>
             ) : approval === ApprovalState.APPROVED ||
               signatureData !== null ? (
@@ -763,7 +762,7 @@ export default function MigrateV2DetailsPage() {
             ) : isMigrationPending ? (
               <>
                 Migrating
-                <Dots />
+                <span className='loadingDots' />
               </>
             ) : networkFailed ? (
               'Connecting to network...'
