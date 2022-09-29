@@ -8,7 +8,6 @@ import usePrevious, { usePreviousNonEmptyArray } from 'hooks/usePrevious';
 import PositionList from './components/PositionList';
 import FilterPanelItem from '../FilterPanelItem';
 import { PositionPool } from 'models/interfaces';
-import { useShowNewestPosition } from 'state/mint/v3/hooks';
 import { useWalletModalToggle } from 'state/application/hooks';
 
 export default function MyLiquidityPoolsV3() {
@@ -44,11 +43,11 @@ export default function MyLiquidityPoolsV3() {
 
   const farmingPositions = useMemo(
     () => positions?.filter((el) => el.onFarming),
-    [positions, account, prevAccount],
+    [positions],
   );
   const inRangeWithOutFarmingPositions = useMemo(
     () => openPositions.filter((el) => !el.onFarming),
-    [openPositions, account, prevAccount],
+    [openPositions],
   );
 
   const filteredPositions = useMemo(
@@ -58,11 +57,11 @@ export default function MyLiquidityPoolsV3() {
       ...(userHideClosedPositions ? [] : closedPositions),
     ],
     [
+      hideFarmingPositions,
+      farmingPositions,
       inRangeWithOutFarmingPositions,
       userHideClosedPositions,
-      hideFarmingPositions,
-      account,
-      prevAccount,
+      closedPositions,
     ],
   );
   const prevFilteredPositions = usePreviousNonEmptyArray(filteredPositions);
@@ -73,13 +72,11 @@ export default function MyLiquidityPoolsV3() {
       return prevFilteredPositions;
     }
     return filteredPositions;
-  }, [filteredPositions, account, prevAccount]);
-
-  const showNewestPosition = useShowNewestPosition();
+  }, [prevFilteredPositions, filteredPositions, account, prevAccount]);
 
   const newestPosition = useMemo(() => {
     return Math.max(..._filteredPositions.map((position) => +position.tokenId));
-  }, [showNewestPosition, _filteredPositions]);
+  }, [_filteredPositions]);
 
   const showConnectAWallet = Boolean(!account);
 
