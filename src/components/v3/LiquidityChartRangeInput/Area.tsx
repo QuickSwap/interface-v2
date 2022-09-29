@@ -39,5 +39,5 @@ export const Area = ({
         }
       />
     ),
-    [fill, series, xScale, xValue, yScale, yValue, priceFormat],
+    [fill, series, xScale, xValue, yScale, yValue],
   );

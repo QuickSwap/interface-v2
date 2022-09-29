@@ -19,7 +19,7 @@ export function FiatValue({ fiatValue, priceImpact }: FiatValueProps) {
     if (severity < 1) return 'white';
     if (severity < 3) return theme.yellow1;
     return theme.red1;
-  }, [priceImpact, theme.green1, theme.red1, theme.text3, theme.yellow1]);
+  }, [priceImpact, theme.green1, theme.red1, theme.yellow1]);
 
   return (
     <TYPE.body fontSize={14} color={fiatValue ? 'white' : 'white'}>

@@ -3,7 +3,6 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ArrowRight, CheckCircle, Frown, X } from 'react-feather';
 import { useFarmingSubgraph } from '../../hooks/useIncentiveSubgraph';
 import { useFarmingHandlers } from '../../hooks/useStakerHandlers';
-import { useAllTransactions } from '../../state/transactions/hooks';
 import { useChunkedRows } from '../../utils/chunkForRows';
 import Loader from '../Loader';
 import { FarmingType } from '../../models/enums';
@@ -119,7 +118,7 @@ export function FarmModal({
 
       return true;
     });
-  }, [positionsForPool]);
+  }, [farmingType, pool.id, positionsForPool]);
   const [chunkedPositions, setChunkedPositions] = useState<
     any[][] | null | undefined
   >(null);
@@ -131,14 +130,12 @@ export function FarmModal({
 
   useEffect(() => setChunkedPositions(_chunked), [_chunked]);
 
-  const allTransactions = useAllTransactions();
-
   const sortedRecentTransactions = useSortedRecentTransactions();
 
   const confirmed = useMemo(
     () =>
       sortedRecentTransactions.filter((tx) => tx.receipt).map((tx) => tx.hash),
-    [sortedRecentTransactions, allTransactions],
+    [sortedRecentTransactions],
   );
 
   const filterNFTs = useCallback(
@@ -154,12 +151,12 @@ export function FarmModal({
 
   const NFTsForApprove = useMemo(
     () => filterNFTs((v: NTFInterface) => !v.onFarmingCenter),
-    [selectedNFT, submitState],
+    [filterNFTs],
   );
 
   const NFTsForStake = useMemo(
     () => filterNFTs((v: NTFInterface) => v.onFarmingCenter),
-    [selectedNFT, submitState],
+    [filterNFTs],
   );
 
   useEffect(() => {
@@ -299,6 +296,7 @@ export function FarmModal({
     }
   }, [
     balance,
+    multiplierToken.decimals,
     selectedTier,
     tokenAmountForTier1,
     tokenAmountForTier2,
@@ -326,7 +324,12 @@ export function FarmModal({
 
       if (!isEnoughTokenForLock || tier === '') setSelectedNFT(null);
     },
-    [isEnoughTokenForLock, selectedTier],
+    [
+      isEnoughTokenForLock,
+      tokenAmountForTier1,
+      tokenAmountForTier2,
+      tokenAmountForTier3,
+    ],
   );
 
   const _amountForApprove = useMemo(() => {

@@ -1,7 +1,5 @@
-import { isAddress } from '@ethersproject/address';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Frown } from 'react-feather';
-import { useFarmingHandlers } from '../../hooks/useStakerHandlers';
 import { useActiveWeb3React } from 'hooks';
 import Loader from '../Loader';
 import { Deposit } from '../../models/interfaces';

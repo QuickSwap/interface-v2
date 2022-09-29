@@ -128,53 +128,53 @@ export function EnterAmounts({
     return approvalB !== ApprovalState.APPROVED;
   }, [approvalB]);
 
-  const [token0Ratio, token1Ratio] = useMemo(() => {
-    const currentPrice = mintInfo.price?.toSignificant(5);
+  // const [token0Ratio, token1Ratio] = useMemo(() => {
+  //   const currentPrice = mintInfo.price?.toSignificant(5);
 
-    const left = mintInfo.lowerPrice?.toSignificant(5);
-    const right = mintInfo.upperPrice?.toSignificant(5);
+  //   const left = mintInfo.lowerPrice?.toSignificant(5);
+  //   const right = mintInfo.upperPrice?.toSignificant(5);
 
-    //TODO
-    if (
-      right === '338490000000000000000000000000000000000000000000000' ||
-      right === '338490000000000000000000000000000000000'
-    )
-      return ['50', '50'];
+  //   //TODO
+  //   if (
+  //     right === '338490000000000000000000000000000000000000000000000' ||
+  //     right === '338490000000000000000000000000000000000'
+  //   )
+  //     return ['50', '50'];
 
-    if (!currentPrice) return ['0', '0'];
+  //   if (!currentPrice) return ['0', '0'];
 
-    if (!left && !right) return ['0', '0'];
+  //   if (!left && !right) return ['0', '0'];
 
-    if (!left && right) return ['0', '100'];
+  //   if (!left && right) return ['0', '100'];
 
-    if (!right && left) return ['100', '0'];
+  //   if (!right && left) return ['100', '0'];
 
-    if (mintInfo.depositADisabled) {
-      return ['0', '100'];
-    }
+  //   if (mintInfo.depositADisabled) {
+  //     return ['0', '100'];
+  //   }
 
-    if (mintInfo.depositBDisabled) {
-      return ['100', '0'];
-    }
+  //   if (mintInfo.depositBDisabled) {
+  //     return ['100', '0'];
+  //   }
 
-    if (left && right && currentPrice) {
-      const leftRange = +currentPrice - +left;
-      const rightRange = +right - +currentPrice;
+  //   if (left && right && currentPrice) {
+  //     const leftRange = +currentPrice - +left;
+  //     const rightRange = +right - +currentPrice;
 
-      const totalSum = +leftRange + +rightRange;
+  //     const totalSum = +leftRange + +rightRange;
 
-      const leftRate = (+leftRange * 100) / totalSum;
-      const rightRate = (+rightRange * 100) / totalSum;
+  //     const leftRate = (+leftRange * 100) / totalSum;
+  //     const rightRate = (+rightRange * 100) / totalSum;
 
-      if (mintInfo.invertPrice) {
-        return [String(leftRate), String(rightRate)];
-      } else {
-        return [String(rightRate), String(leftRate)];
-      }
-    }
+  //     if (mintInfo.invertPrice) {
+  //       return [String(leftRate), String(rightRate)];
+  //     } else {
+  //       return [String(rightRate), String(leftRate)];
+  //     }
+  //   }
 
-    return ['0', '0'];
-  }, [currencyA, currencyB, mintInfo]);
+  //   return ['0', '0'];
+  // }, [currencyA, currencyB, mintInfo]);
 
   const currencyAError = useMemo(() => {
     if (
