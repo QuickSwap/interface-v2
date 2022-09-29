@@ -9,7 +9,6 @@ import {
   useRangeHopCallbacks,
   useV3MintActionHandlers,
   useV3MintState,
-  useInitialTokenPrice,
   useInitialUSDPrices,
 } from 'state/mint/v3/hooks';
 import useUSDCPrice, { useUSDCValue } from 'hooks/v3/useUSDCPrice';
@@ -46,7 +45,7 @@ export function SelectRange({
   //TODO - create one main isUSD
   const isUSD = useMemo(() => {
     return priceFormat === PriceFormats.USD;
-  }, []);
+  }, [priceFormat]);
 
   const isStablecoinPair = useMemo(() => {
     if (!currencyA || !currencyB) return false;
@@ -98,15 +97,15 @@ export function SelectRange({
 
   const isSorted = useMemo(() => {
     return tokenA && tokenB && tokenA.sortsBefore(tokenB);
-  }, [tokenA, tokenB, mintInfo]);
+  }, [tokenA, tokenB]);
 
   const leftPrice = useMemo(() => {
     return isSorted ? priceLower : priceUpper?.invert();
-  }, [isSorted, priceLower, priceUpper, mintInfo]);
+  }, [isSorted, priceLower, priceUpper]);
 
   const rightPrice = useMemo(() => {
     return isSorted ? priceUpper : priceLower?.invert();
-  }, [isSorted, priceUpper, priceLower, mintInfo]);
+  }, [isSorted, priceUpper, priceLower]);
 
   const price = useMemo(() => {
     if (!mintInfo.price) return;
@@ -147,11 +146,10 @@ export function SelectRange({
         onRightRangeInput(preset ? String(+price * preset.max) : '');
       }
     },
-    [price],
+    [dispatch, getSetFullRange, onLeftRangeInput, onRightRangeInput, price],
   );
 
   const initialUSDPrices = useInitialUSDPrices();
-  const initialTokenPrice = useInitialTokenPrice();
 
   const currentPriceInUSDA = useUSDCValue(
     tryParseAmount(
@@ -214,10 +212,12 @@ export function SelectRange({
     }
   }, [
     mintInfo.price,
+    mintInfo.invertPrice,
+    initialUSDPrices.CURRENCY_A,
+    initialUSDPrices.CURRENCY_B,
     isUSD,
-    initialUSDPrices,
-    initialTokenPrice,
     currentPriceInUSDA,
+    currentPriceInUSDB,
   ]);
 
   return (
