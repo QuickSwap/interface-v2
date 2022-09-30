@@ -36,32 +36,9 @@ export function EnterAmounts({
 
   const { independentField, typedValue } = useV3MintState();
 
-  const {
-    onFieldAInput,
-    onFieldBInput,
-    // onLeftRangeInput,
-    // onRightRangeInput,
-  } = useV3MintActionHandlers(mintInfo.noLiquidity);
-
-  // get value and prices at ticks
-  // const { [Bound.LOWER]: tickLower, [Bound.UPPER]: tickUpper } = useMemo(() => {
-  //   return mintInfo.ticks;
-  // }, [mintInfo]);
-
-  // this code may be needed when we are going to show token ratio component
-  // const {
-  //   getDecrementLower,
-  //   getIncrementLower,
-  //   getDecrementUpper,
-  //   getIncrementUpper,
-  // } = useRangeHopCallbacks(
-  //   currencyA ?? undefined,
-  //   currencyB ?? undefined,
-  //   mintInfo.dynamicFee,
-  //   tickLower,
-  //   tickUpper,
-  //   mintInfo.pool,
-  // );
+  const { onFieldAInput, onFieldBInput } = useV3MintActionHandlers(
+    mintInfo.noLiquidity,
+  );
 
   // get formatted amounts
   const formattedAmounts = {
@@ -128,54 +105,6 @@ export function EnterAmounts({
     return approvalB !== ApprovalState.APPROVED;
   }, [approvalB]);
 
-  // const [token0Ratio, token1Ratio] = useMemo(() => {
-  //   const currentPrice = mintInfo.price?.toSignificant(5);
-
-  //   const left = mintInfo.lowerPrice?.toSignificant(5);
-  //   const right = mintInfo.upperPrice?.toSignificant(5);
-
-  //   //TODO
-  //   if (
-  //     right === '338490000000000000000000000000000000000000000000000' ||
-  //     right === '338490000000000000000000000000000000000'
-  //   )
-  //     return ['50', '50'];
-
-  //   if (!currentPrice) return ['0', '0'];
-
-  //   if (!left && !right) return ['0', '0'];
-
-  //   if (!left && right) return ['0', '100'];
-
-  //   if (!right && left) return ['100', '0'];
-
-  //   if (mintInfo.depositADisabled) {
-  //     return ['0', '100'];
-  //   }
-
-  //   if (mintInfo.depositBDisabled) {
-  //     return ['100', '0'];
-  //   }
-
-  //   if (left && right && currentPrice) {
-  //     const leftRange = +currentPrice - +left;
-  //     const rightRange = +right - +currentPrice;
-
-  //     const totalSum = +leftRange + +rightRange;
-
-  //     const leftRate = (+leftRange * 100) / totalSum;
-  //     const rightRate = (+rightRange * 100) / totalSum;
-
-  //     if (mintInfo.invertPrice) {
-  //       return [String(leftRate), String(rightRate)];
-  //     } else {
-  //       return [String(rightRate), String(leftRate)];
-  //     }
-  //   }
-
-  //   return ['0', '0'];
-  // }, [currencyA, currencyB, mintInfo]);
-
   const currencyAError = useMemo(() => {
     if (
       (mintInfo.errorCode !== 4 && mintInfo.errorCode !== 5) ||
@@ -206,18 +135,6 @@ export function EnterAmounts({
     return;
   }, [mintInfo, currencyB]);
 
-  // const leftPrice = useMemo(() => {
-  //   return mintInfo.invertPrice
-  //     ? mintInfo.upperPrice.invert()
-  //     : mintInfo.lowerPrice;
-  // }, [mintInfo]);
-
-  // const rightPrice = useMemo(() => {
-  //   return mintInfo.invertPrice
-  //     ? mintInfo.lowerPrice.invert()
-  //     : mintInfo.upperPrice;
-  // }, [mintInfo]);
-
   return (
     <Box>
       <small className='weight-600'>Deposit Amounts</small>
@@ -236,9 +153,6 @@ export function EnterAmounts({
           handleMax={() =>
             onFieldAInput(maxAmounts[Field.CURRENCY_A]?.toExact() ?? '')
           }
-          // showApproval={showApprovalA}
-          // isApproving={approvalA === ApprovalState.PENDING}
-          // handleApprove={approveACallback}
           locked={mintInfo.depositADisabled}
           isMax={!!atMaxAmounts[Field.CURRENCY_A]}
           error={currencyAError}
@@ -260,42 +174,13 @@ export function EnterAmounts({
         handleMax={() =>
           onFieldBInput(maxAmounts[Field.CURRENCY_B]?.toExact() ?? '')
         }
-        // showApproval={showApprovalB}
-        // isApproving={approvalB === ApprovalState.PENDING}
-        // handleApprove={approveBCallback}
         locked={mintInfo.depositBDisabled}
         isMax={!!atMaxAmounts[Field.CURRENCY_B]}
         error={currencyBError}
         priceFormat={priceFormat}
         isBase={true}
       />
-      {/* <div className='full-h ml-2 mxs_ml-0 mxs_mb-2 ms_ml-0 mm_ml-0 mm_mb-1'>
-          <TokenRatio
-            currencyA={currencyA}
-            currencyB={currencyB}
-            token0Ratio={token0Ratio}
-            token1Ratio={token1Ratio}
-            decrementLeft={
-              mintInfo.invertPrice ? getIncrementUpper : getDecrementLower
-            }
-            decrementRight={
-              mintInfo.invertPrice ? getIncrementLower : getDecrementUpper
-            }
-            incrementLeft={
-              mintInfo.invertPrice ? getDecrementUpper : getIncrementLower
-            }
-            incrementRight={
-              mintInfo.invertPrice ? getDecrementLower : getIncrementUpper
-            }
-            incrementDisabled={mintInfo.ticksAtLimit[Bound.UPPER]}
-            decrementDisabled={mintInfo.ticksAtLimit[Bound.UPPER]}
-            onUserLeftInput={onLeftRangeInput}
-            onUserRightInput={onRightRangeInput}
-            lowerPrice={leftPrice?.toSignificant(5)}
-            upperPrice={rightPrice?.toSignificant(5)}
-            disabled={false}
-          />
-        </div> */}
+
       <Box mt={2} className='flex justify-between'>
         {showApprovalA !== undefined && (
           <Box width={showApprovalB === undefined ? '100%' : '49%'}>

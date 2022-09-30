@@ -197,31 +197,11 @@ export function SupplyLiquidityV3() {
     [handleCurrencySelect],
   );
 
-  // maybe needed when we need function to swap tokens when supplying liquidity
-  // const handleCurrencySwap = useCallback(() => {
-  //   history.push(`/add/${currencyIdB}/${currencyIdA}`);
-  //   resetState();
-  // }, [handleCurrencySelect, currencyIdA, currencyIdB]);
-
-  // const handlePopularPairSelection = useCallback((pair: [string, string]) => {
-  //   const WMATIC = '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270';
-  //   history.push(
-  //     `/add/${pair[0] === WMATIC ? 'MATIC' : pair[0]}/${
-  //       pair[1] === WMATIC ? 'MATIC' : pair[1]
-  //     }`,
-  //   );
-  //   resetState();
-  // }, []);
-
   const handlePriceFormat = useCallback((priceFormat: PriceFormats) => {
     setPriceFormat(priceFormat);
   }, []);
 
-  // const [allowedSlippage] = useUserSlippageTolerance();
-  // const allowedSlippagePercent: Percent = useMemo(() => {
-  //   return new Percent(JSBI.BigInt(allowedSlippage), JSBI.BigInt(10000));
-  // }, [allowedSlippage]);
-
+  // hide token/usd toggler for now
   // const hidePriceFormatter = useMemo(() => {
   //   return true;
 
