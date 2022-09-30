@@ -14,6 +14,7 @@ import useUSDCPrice from 'utils/useUSDCPrice';
 import { formatTokenAmount } from 'utils';
 import { useTranslation } from 'react-i18next';
 
+//TODO Investigate: shouldnt this key return 'ETH' not 'ETHER'
 function currencyKey(currency: Token): string {
   return currency instanceof Token
     ? currency.address

@@ -171,13 +171,13 @@ const SwapBestTrade: React.FC<{
   const srcToken = inputCurrency
     ? getBestTradeCurrencyAddress(
         inputCurrency,
-        chainId ? chainId : ChainId.MATIC,
+        chainIdToUse,
       )
     : undefined;
   const destToken = outputCurrency
     ? getBestTradeCurrencyAddress(
         outputCurrency,
-        chainId ? chainId : ChainId.MATIC,
+        chainIdToUse,
       )
     : undefined;
 

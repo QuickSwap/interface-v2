@@ -91,6 +91,7 @@ export function useDerivedMintInfo(): {
 
   // amounts
   const independentAmount: CurrencyAmount | undefined = tryParseAmount(
+    chainIdToUse,
     typedValue,
     currencies[independentField],
   );

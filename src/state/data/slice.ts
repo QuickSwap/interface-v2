@@ -9,9 +9,10 @@ import { ClientError, gql, GraphQLClient } from 'graphql-request';
 import { AppState } from 'state';
 
 // List of supported subgraphs. Note that the app currently only support one active subgraph at a time
-// const CHAIN_SUBGRAPH_URL: Record<number, string> = {
-//   [SupportedChainId.POLYGON]: process.env.REACT_APP_GRAPH_V3_137_API_URL
-// }
+const CHAIN_SUBGRAPH_URL: Record<number, string> = {
+  [ChainId.MATIC]: `${process.env.REACT_APP_GRAPH_V3_137_API_URL}`,
+  [ChainId.DOGECHAIN]: `${process.env.REACT_APP_GRAPH_V3_2000_API_URL}`,
+}
 
 export const api = createApi({
   reducerPath: 'dataApi',
@@ -87,12 +88,9 @@ function graphqlRequestBaseQuery(): BaseQueryFn<
 > {
   return async ({ document, variables }, { getState }: BaseQueryApi) => {
     try {
-      // const chainId = (getState() as AppState).application.chainId
-      // const subgraphUrl = chainId ? CHAIN_SUBGRAPH_URL[chainId] : undefined
-
-      //TODO: support multichain
-      const chainId = ChainId.MATIC;
-      const subgraphUrl = process.env.REACT_APP_GRAPH_V3_137_API_URL;
+      //TODO: Add ChainId To application
+      const chainId = (getState() as AppState).application.chainId
+      const subgraphUrl = chainId ? CHAIN_SUBGRAPH_URL[chainId] : undefined
 
       if (!subgraphUrl) {
         return {

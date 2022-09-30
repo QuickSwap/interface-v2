@@ -41,7 +41,7 @@ const ConvertQUICKPage: React.FC = () => {
   const quickToken = OLD_QUICK[chainIdToUse];
   const quickBalance = useTokenBalance(account ?? undefined, quickToken);
   const quickConvertContract = useQUICKConversionContract();
-  const parsedAmount = tryParseAmount(quickAmount, quickToken);
+  const parsedAmount = tryParseAmount(chainIdToUse, quickAmount, quickToken);
   const [approval, approveCallback] = useApproveCallback(
     parsedAmount,
     quickConvertContract?.address,

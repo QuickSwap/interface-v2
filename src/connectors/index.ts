@@ -9,8 +9,41 @@ import { FortmaticConnector } from './Fortmatic';
 import { ArkaneConnector } from './Arkane';
 import { NetworkConnector } from './NetworkConnector';
 import { SafeAppConnector } from './SafeApp';
+import { ChainId } from '@uniswap/sdk';
 
 const POLLING_INTERVAL = 12000;
+
+export interface NetworkInfo
+{
+  rpcUrl: string;
+  scanUrl: string;
+}
+
+export type NetworkInfoChainMap = Readonly<
+  {
+    [chainId in ChainId]: NetworkInfo;
+  }
+>;
+
+export const networkInfoMap: NetworkInfoChainMap = {
+  [ChainId.MATIC]: { 
+    rpcUrl: 'https://polygon-rpc.com/',
+    scanUrl: 'https://polygonscan.com/',
+  },
+  [ChainId.DOGECHAIN]: { 
+    rpcUrl: 'https://dogechain.ankr.com',
+    scanUrl: 'https://explorer.dogechain.dog/',
+  },
+  [ChainId.MUMBAI]: { 
+    rpcUrl: 'https://rpc-mumbai.maticvigil.com/',
+    scanUrl: 'https://mumbai.polygonscan.com/',
+  },
+  [ChainId.DOEGCHAIN_TESTNET]: { 
+    rpcUrl: 'https://rpc-testnet.dogechain.dog',
+    scanUrl: ': https://explorer-testnet.dogechain.dog',
+  },
+
+}
 
 const NETWORK_URL = 'https://polygon-rpc.com/';
 // const FORMATIC_KEY = 'pk_live_F937DF033A1666BF'
@@ -19,18 +52,18 @@ const FORMATIC_KEY = process.env.REACT_APP_FORTMATIC_KEY;
 const PORTIS_ID = process.env.REACT_APP_PORTIS_ID;
 
 export const NETWORK_CHAIN_ID: number = parseInt(
-  process.env.REACT_APP_CHAIN_ID ?? '1',
+  process.env.REACT_APP_CHAIN_ID ?? '137',
 );
 
-if (typeof NETWORK_URL === 'undefined') {
-  throw new Error(
-    `REACT_APP_NETWORK_URL must be a defined environment variable`,
-  );
+export const rpcMap = { 
+  [ChainId.MATIC]: networkInfoMap[ChainId.MATIC].rpcUrl,
+  [ChainId.MUMBAI]: networkInfoMap[ChainId.MUMBAI].rpcUrl,
+  [ChainId.DOGECHAIN]: networkInfoMap[ChainId.DOGECHAIN].rpcUrl,
+  [ChainId.DOEGCHAIN_TESTNET]: networkInfoMap[ChainId.DOEGCHAIN_TESTNET].rpcUrl,
 }
 
 export const network = new NetworkConnector({
-  urls: { [Number('137')]: NETWORK_URL },
-});
+  urls: rpcMap });
 
 let networkLibrary: Web3Provider | undefined;
 export function getNetworkLibrary(): Web3Provider {
@@ -38,15 +71,17 @@ export function getNetworkLibrary(): Web3Provider {
     networkLibrary ?? new Web3Provider(network.provider as any));
 }
 
+const supportedChainIds: number[] = [ChainId.MATIC, ChainId.DOGECHAIN, ChainId.MUMBAI, ChainId.DOEGCHAIN_TESTNET];
+
 export const injected = new InjectedConnector({
-  supportedChainIds: [137, 80001, 568, 2000],
+  supportedChainIds: supportedChainIds,
 });
 
-export const safeApp = new SafeAppConnector();
+export const safeApp = new SafeAppConnector({supportedChainIds});
 
 // mainnet only
 export const walletconnect = new WalletConnectConnector({
-  rpc: { 137: NETWORK_URL },
+  rpc: rpcMap,
   bridge: 'https://bridge.walletconnect.org',
   qrcode: true,
 });

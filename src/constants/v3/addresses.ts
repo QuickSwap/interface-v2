@@ -329,18 +329,10 @@ export const ETHER: { [chainId: number]: Token } = {
     ChainId.DOGECHAIN,
     '0xB44a9B6905aF7c801311e8F4E76932ee959c663C',
     18,
+    //TODO: this should really have a difference symbol but we use 'ETH' hardcoded to represent native
+    //Due to Uniswap SDK implmentation
     'ETH',
     'Ether',
-  ),
-};
-
-export const CXETH: { [chainId: number]: Token } = {
-  [ChainId.MATIC]: new Token(
-    ChainId.MATIC,
-    '0xfe4546feFe124F30788c4Cc1BB9AA6907A7987F9',
-    18,
-    'cxETH',
-    'CelsiusX Wrapped ETH',
   ),
 };
 
