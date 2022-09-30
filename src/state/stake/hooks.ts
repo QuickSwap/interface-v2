@@ -1127,15 +1127,11 @@ export function useDualStakingInfo(
   );
 }
 
-export function useOldLairInfo(chainIdParam?: ChainId): LairInfo {
+export function useOldLairInfo(): LairInfo | undefined {
   const lairContract = useLairContract();
   const quickContract = useQUICKContract();
   const { chainId } = useActiveWeb3React();
-  const chainIdToUse = chainIdParam
-    ? chainIdParam
-    : chainId
-    ? chainId
-    : ChainId.MATIC;
+  const chainIdToUse = chainId ?? ChainId.MATIC;
   const lairAddress = LAIR_ADDRESS[chainIdToUse];
   const quickToken = OLD_QUICK[chainIdToUse];
   const dQuickToken = OLD_DQUICK[chainIdToUse];
@@ -1150,7 +1146,7 @@ export function useOldLairInfo(chainIdParam?: ChainId): LairInfo {
   );
 }
 
-export function useNewLairInfo(): LairInfo {
+export function useNewLairInfo(): LairInfo | undefined {
   const lairContract = useNewLairContract();
   const quickContract = useNewQUICKContract();
   const { chainId } = useActiveWeb3React();
@@ -1221,6 +1217,10 @@ function useLairInfo(
   }, [config]);
 
   return useMemo(() => {
+    if (!quickToken || !dQuickToQuick) {
+      return;
+    }
+
     return {
       lairAddress: lairAddress,
       dQUICKtoQUICK: new TokenAmount(
