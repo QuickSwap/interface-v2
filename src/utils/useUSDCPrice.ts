@@ -38,7 +38,6 @@ export default function useUSDCPrice(currency?: Currency): Price | undefined {
   let wrapped = wrappedCurrency(currency, chainId);
   const internalWrapped = wrapped;
 
-
   const tokenPairs: [Currency | undefined, Currency | undefined][] = useMemo(
     () => [
       [

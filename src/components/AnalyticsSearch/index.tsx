@@ -177,12 +177,14 @@ const AnalyticsSearch: React.FC = () => {
   useEffect(() => {
     async function fetchData() {
       try {
-        const allTokensFn = (!v2 || isV3) ? getAllTokensV3 : getAllTokensOnUniswap;
-        const allPairsFn = (!v2 || isV3) ? getAllPairsV3 : getAllPairsOnUniswap;
-        const client = (!v2 || isV3) ? clientV3[chainIdToUse] : clientV2[chainIdToUse]
-        const tokenSearchQuery = (!v2 || isV3) ? TOKEN_SEARCH_V3 : TOKEN_SEARCH;
-        const pairSearchQuery = (!v2 || isV3) ? PAIR_SEARCH_V3 : PAIR_SEARCH;
-        const oldTokenQuery = (!v2 || isV3) ? TOKEN_INFO_OLD_V3: TOKEN_INFO_OLD;
+        const allTokensFn =
+          !v2 || isV3 ? getAllTokensV3 : getAllTokensOnUniswap;
+        const allPairsFn = !v2 || isV3 ? getAllPairsV3 : getAllPairsOnUniswap;
+        const client =
+          !v2 || isV3 ? clientV3[chainIdToUse] : clientV2[chainIdToUse];
+        const tokenSearchQuery = !v2 || isV3 ? TOKEN_SEARCH_V3 : TOKEN_SEARCH;
+        const pairSearchQuery = !v2 || isV3 ? PAIR_SEARCH_V3 : PAIR_SEARCH;
+        const oldTokenQuery = !v2 || isV3 ? TOKEN_INFO_OLD_V3 : TOKEN_INFO_OLD;
 
         const allTokensUniswap = await allTokensFn(chainIdToUse);
         const allPairsUniswap = await allPairsFn(chainIdToUse);

@@ -84,7 +84,9 @@ export default function Updater(): null {
     })();
     (async () => {
       try {
-        const [price, oneDayPrice, ethPriceChange] = await getEthPrice(chainIdToUse);
+        const [price, oneDayPrice, ethPriceChange] = await getEthPrice(
+          chainIdToUse,
+        );
         updateEthPrice({ price, oneDayPrice, ethPriceChange });
       } catch (e) {
         console.log(e);
