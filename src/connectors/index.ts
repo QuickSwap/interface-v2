@@ -62,6 +62,7 @@ export const rpcMap = {
 
 export const network = new NetworkConnector({
   urls: rpcMap,
+  defaultChainId: ChainId.MATIC,
 });
 
 let networkLibrary: Web3Provider | undefined;
