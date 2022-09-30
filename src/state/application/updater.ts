@@ -84,14 +84,14 @@ export default function Updater(): null {
     })();
     (async () => {
       try {
-        const [price, oneDayPrice, ethPriceChange] = await getEthPrice();
+        const [price, oneDayPrice, ethPriceChange] = await getEthPrice(chainIdToUse);
         updateEthPrice({ price, oneDayPrice, ethPriceChange });
       } catch (e) {
         console.log(e);
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTime]);
+  }, [currentTime, chainIdToUse]);
 
   // attach/detach listeners
   useEffect(() => {

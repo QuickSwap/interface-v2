@@ -1684,9 +1684,10 @@ export function useDerivedSyrupInfo(
   parsedAmount?: CurrencyAmount;
   error?: string;
 } {
-  const { account } = useActiveWeb3React();
-
+  const { account, chainId} = useActiveWeb3React();
+  const chainIdToUse = chainId ?? ChainId.MATIC;
   const parsedInput: CurrencyAmount | undefined = tryParseAmount(
+    chainIdToUse,
     typedValue,
     stakingToken,
   );
@@ -1721,9 +1722,10 @@ export function useDerivedStakeInfo(
   parsedAmount?: CurrencyAmount;
   error?: string;
 } {
-  const { account } = useActiveWeb3React();
-
+  const { account, chainId} = useActiveWeb3React();
+  const chainIdToUse = chainId ?? ChainId.MATIC;
   const parsedInput: CurrencyAmount | undefined = tryParseAmount(
+    chainIdToUse,
     typedValue,
     stakingToken,
   );
@@ -1757,9 +1759,10 @@ export function useDerivedLairInfo(
   parsedAmount?: CurrencyAmount;
   error?: string;
 } {
-  const { account } = useActiveWeb3React();
-
+  const { account, chainId} = useActiveWeb3React();
+  const chainIdToUse = chainId ?? ChainId.MATIC;
   const parsedInput: CurrencyAmount | undefined = tryParseAmount(
+    chainIdToUse,
     typedValue,
     stakingToken,
   );
@@ -1793,9 +1796,10 @@ export function useDerivedUnstakeInfo(
   parsedAmount?: CurrencyAmount;
   error?: string;
 } {
-  const { account } = useActiveWeb3React();
-
+  const { account, chainId} = useActiveWeb3React();
+  const chainIdToUse = chainId ?? ChainId.MATIC;
   const parsedInput: CurrencyAmount | undefined = tryParseAmount(
+    chainIdToUse,
     typedValue,
     stakingAmount.token,
   );
@@ -1827,9 +1831,11 @@ export function useDerivedUnstakeLairInfo(
   parsedAmount?: CurrencyAmount;
   error?: string;
 } {
-  const { account } = useActiveWeb3React();
+  const { account, chainId} = useActiveWeb3React();
+  const chainIdToUse = chainId ?? ChainId.MATIC;
 
   const parsedInput: CurrencyAmount | undefined = tryParseAmount(
+    chainIdToUse,
     typedValue,
     stakingAmount.token,
   );
