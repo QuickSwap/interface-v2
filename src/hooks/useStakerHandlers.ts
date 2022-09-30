@@ -2,7 +2,7 @@ import NON_FUN_POS_MAN from 'abis/non-fun-pos-man.json';
 import FARMING_CENTER_ABI from 'abis/farming-center.json';
 import { Contract, providers } from 'ethers';
 import { Interface } from 'ethers/lib/utils';
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useMemo } from 'react';
 import {
   FARMING_CENTER,
   NONFUNGIBLE_POSITION_MANAGER_ADDRESSES,
@@ -25,11 +25,10 @@ import { useV3StakeData } from 'state/farms/hooks';
 export function useFarmingHandlers() {
   const { chainId, account, library } = useActiveWeb3React();
 
-  const provider = library
-    ? new providers.Web3Provider(library.provider)
-    : undefined;
-
-  const farmingCenterInterface = new Interface(FARMING_CENTER_ABI);
+  const provider = useMemo(() => {
+    if (!library) return;
+    return new providers.Web3Provider(library.provider);
+  }, [library]);
 
   const gasPrice = useAppSelector((state) => {
     if (!state.application.gasPrice.fetched) return 36;
@@ -220,7 +219,15 @@ export function useFarmingHandlers() {
         }
       }
     },
-    [account, chainId],
+    [
+      account,
+      addTransaction,
+      chainId,
+      finalizeTransaction,
+      gasPrice,
+      provider,
+      updateV3Stake,
+    ],
   );
 
   //collect rewards and claim than
@@ -321,7 +328,15 @@ export function useFarmingHandlers() {
         }
       }
     },
-    [account, chainId],
+    [
+      account,
+      addTransaction,
+      chainId,
+      finalizeTransaction,
+      gasPrice,
+      provider,
+      updateV3Stake,
+    ],
   );
 
   const claimReward = useCallback(
@@ -361,7 +376,7 @@ export function useFarmingHandlers() {
         }
       }
     },
-    [account, chainId],
+    [account, addTransaction, chainId, gasPrice, provider],
   );
 
   //exit from basic farming before the start
@@ -429,7 +444,15 @@ export function useFarmingHandlers() {
         }
       }
     },
-    [account, chainId],
+    [
+      account,
+      addTransaction,
+      chainId,
+      finalizeTransaction,
+      gasPrice,
+      provider,
+      updateV3Stake,
+    ],
   );
 
   const withdrawHandler = useCallback(
@@ -481,7 +504,15 @@ export function useFarmingHandlers() {
         }
       }
     },
-    [account, chainId],
+    [
+      account,
+      addTransaction,
+      chainId,
+      finalizeTransaction,
+      gasPrice,
+      provider,
+      updateV3Stake,
+    ],
   );
 
   const farmHandler = useCallback(
@@ -530,7 +561,7 @@ export function useFarmingHandlers() {
         }
       }
     },
-    [account, chainId],
+    [account, addTransaction, chainId, gasPrice, provider],
   );
 
   const transferHandler = useCallback(
@@ -570,7 +601,7 @@ export function useFarmingHandlers() {
         }
       }
     },
-    [account, chainId],
+    [account, addTransaction, chainId, gasPrice, provider],
   );
 
   const approveHandler = useCallback(
@@ -615,7 +646,7 @@ export function useFarmingHandlers() {
         }
       }
     },
-    [account, chainId],
+    [account, addTransaction, chainId, gasPrice, provider],
   );
 
   const sendNFTL2Handler = useCallback(
@@ -630,6 +661,8 @@ export function useFarmingHandlers() {
           FARMING_CENTER_ABI,
           provider.getSigner(),
         );
+
+        const farmingCenterInterface = new Interface(FARMING_CENTER_ABI);
 
         const approveData = farmingCenterInterface.encodeFunctionData(
           'approve',
@@ -660,7 +693,7 @@ export function useFarmingHandlers() {
         }
       }
     },
-    [account, chainId],
+    [account, addTransaction, chainId, gasPrice, provider],
   );
 
   return {

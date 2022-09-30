@@ -179,30 +179,27 @@ export default function MigrateV2DetailsPage() {
       mintInfo.parsedAmounts[mintInfo.dependentField]?.toSignificant(6) ?? '',
   };
 
+  const amountCurrencyA = formattedAmounts[Field.CURRENCY_A];
+  const amountCurrencyB = formattedAmounts[Field.CURRENCY_B];
+
   useEffect(() => {
     if (
       mintInfo.ticks.LOWER &&
       mintInfo.ticks.UPPER &&
-      ((!formattedAmounts[Field.CURRENCY_A] &&
-        !formattedAmounts[Field.CURRENCY_B]) ||
-        Number(formattedAmounts[Field.CURRENCY_A]) >
-          Number(token0Deposited?.toExact() ?? '0') ||
-        Number(formattedAmounts[Field.CURRENCY_B]) >
-          Number(token1Deposited?.toExact() ?? '0'))
+      ((!amountCurrencyA && !amountCurrencyB) ||
+        Number(amountCurrencyA) > Number(token0Deposited?.toExact() ?? '0') ||
+        Number(amountCurrencyB) > Number(token1Deposited?.toExact() ?? '0'))
     ) {
       onFieldAInput(token0Deposited?.toExact() ?? '');
-      if (
-        Number(formattedAmounts[Field.CURRENCY_B]) >
-        Number(token1Deposited?.toExact() ?? '0')
-      ) {
+      if (Number(amountCurrencyB) > Number(token1Deposited?.toExact() ?? '0')) {
         onFieldBInput(token1Deposited?.toExact() ?? '');
       }
     }
   }, [
     mintInfo.ticks.LOWER,
     mintInfo.ticks.UPPER,
-    formattedAmounts[Field.CURRENCY_A],
-    formattedAmounts[Field.CURRENCY_B],
+    amountCurrencyA,
+    amountCurrencyB,
     onFieldAInput,
     onFieldBInput,
     token0Deposited,
@@ -412,7 +409,7 @@ export default function MigrateV2DetailsPage() {
   const approve = useCallback(async () => {
     // sushi has to be manually approved
     await approveManually();
-  }, [gatherPermitSignature, approveManually]);
+  }, [approveManually]);
 
   const addTransaction = useTransactionAdder();
   const isMigrationPending = useIsTransactionPending(
@@ -525,7 +522,6 @@ export default function MigrateV2DetailsPage() {
     blockTimestamp,
     token0,
     token1,
-    feeAmount,
     userPoolBalance,
     tickLower,
     tickUpper,
@@ -539,6 +535,7 @@ export default function MigrateV2DetailsPage() {
     pair,
     currency0,
     currency1,
+    v2Exchange,
   ]);
 
   const isSuccessfullyMigrated =

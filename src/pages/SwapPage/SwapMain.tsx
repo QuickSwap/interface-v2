@@ -46,6 +46,7 @@ const SwapMain: React.FC = () => {
     if (isOnV3) {
       setSwapIndex(SWAP_V3);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOnV3]);
 
   return (

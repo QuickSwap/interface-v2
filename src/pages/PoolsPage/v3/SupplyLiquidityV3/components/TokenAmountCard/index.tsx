@@ -150,12 +150,18 @@ export function TokenAmountCard({
       handleInput(localTokenValue);
     }
   }, [
-    localTokenValue,
-    localUSDValue,
-    tokenValue,
-    valueUSD,
+    currency?.wrapped.address,
+    USDC_POLYGON.address,
+    isUSD,
     currencyPrice,
+    isBase,
+    initialTokenPrice,
+    otherCurrencyPrice,
+    initialUSDPrices.CURRENCY_A,
+    initialUSDPrices.CURRENCY_B,
     handleInput,
+    localUSDValue,
+    localTokenValue,
   ]);
 
   useEffect(() => {
@@ -175,6 +181,7 @@ export function TokenAmountCard({
 
     setLocalTokenValue(value ?? '');
   }, [
+    isBase,
     initialTokenPrice,
     initialUSDPrices,
     currencyPrice,
@@ -212,7 +219,7 @@ export function TokenAmountCard({
     }
 
     return `${isUSD ? '$ ' : ''}${_balance}`;
-  }, [balance, isUSD, fiatValue, currency]);
+  }, [balance, currency, isUSD, balanceUSD]);
 
   return (
     <>

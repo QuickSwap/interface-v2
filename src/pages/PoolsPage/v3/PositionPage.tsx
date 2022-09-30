@@ -55,7 +55,7 @@ export default function PositionPage() {
       return { ...prevPositionDetails };
     }
     return { ..._positionDetails };
-  }, [_positionDetails]);
+  }, [_positionDetails, prevPositionDetails]);
 
   const positionDetails: PositionPool | undefined = _positionDetails
     ? {

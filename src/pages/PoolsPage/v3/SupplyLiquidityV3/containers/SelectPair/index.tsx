@@ -1,10 +1,8 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { TokenCard } from '../../components/TokenCard';
+import React, { useEffect } from 'react';
 import { Currency } from '@uniswap/sdk-core';
 import './index.scss';
 import { useInfoLiquidity } from 'hooks/subgraph/useInfoLiquidity';
 import { IDerivedMintInfo } from 'state/mint/v3/hooks';
-import { StepTitle } from '../../components/StepTitle';
 import { PriceFormats } from 'components/v3/PriceFomatToggler';
 import { Box } from '@material-ui/core';
 import { Add } from '@material-ui/icons';
@@ -40,6 +38,7 @@ export function SelectPair({
 
   useEffect(() => {
     fetchPopularPoolsFn();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

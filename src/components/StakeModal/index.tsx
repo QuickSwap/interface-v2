@@ -103,6 +103,7 @@ export function FarmModal({
 
   useEffect(() => {
     fetchPositionsForPoolFn(pool, minRangeLength);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const positionsForStake = useMemo(() => {
@@ -226,7 +227,7 @@ export function FarmModal({
     setSubmitLoader(true);
     setSubmitState(0);
     approveHandler(selectedNFT);
-  }, [selectedNFT, submitState]);
+  }, [approveHandler, selectedNFT]);
 
   const farmNFTs = useCallback(
     (eventType: FarmingType) => {
@@ -245,7 +246,16 @@ export function FarmModal({
         selectedTier || 0,
       );
     },
-    [selectedNFT, submitState, selectedTier],
+    [
+      farmHandler,
+      selectedNFT,
+      pool.id,
+      rewardToken.id,
+      bonusRewardToken.id,
+      startTime,
+      endTime,
+      selectedTier,
+    ],
   );
 
   const balance = useCurrencyBalance(

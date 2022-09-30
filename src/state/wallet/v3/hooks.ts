@@ -71,7 +71,7 @@ export function useETHBalances(
       return prevBalances;
 
     return balances;
-  }, [balances]);
+  }, [balances, prevBalances]);
 }
 
 /**
@@ -124,7 +124,7 @@ export function useTokenBalancesWithLoadingIndicator(
 
   const anyLoading: boolean = useMemo(
     () => balances.some((callState) => callState.loading),
-    [_balances],
+    [balances],
   );
 
   return useMemo(() => {
@@ -137,7 +137,7 @@ export function useTokenBalancesWithLoadingIndicator(
       return [prevBalances, anyLoading];
 
     return [_balances, anyLoading];
-  }, [anyLoading, _balances]);
+  }, [prevBalances, _balances, anyLoading]);
 }
 
 export function useTokenBalances(

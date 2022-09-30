@@ -104,7 +104,7 @@ export default function PositionListItemDetails({
       return { ...prevPositionDetails };
     }
     return { ...positionDetails };
-  }, [positionDetails]);
+  }, [positionDetails, prevPositionDetails]);
 
   const removed = _liquidity?.eq(0);
 
@@ -125,7 +125,7 @@ export default function PositionListItemDetails({
       return [prevPoolState, prevPool];
     }
     return [poolState, pool];
-  }, [pool, poolState]);
+  }, [pool, poolState, prevPool, prevPoolState]);
 
   const position = useMemo(() => {
     if (
@@ -211,7 +211,7 @@ export default function PositionListItemDetails({
       return prevFiatValueOfFees;
     }
     return fiatValueOfFees;
-  }, [fiatValueOfFees]);
+  }, [fiatValueOfFees, prevFiatValueOfFees]);
 
   const fiatValueOfLiquidity:
     | CurrencyAmount<Token>
@@ -301,8 +301,10 @@ export default function PositionListItemDetails({
     positionManager,
     account,
     tokenId,
-    addTransaction,
     library,
+    _onFarming,
+    gasPrice,
+    addTransaction,
   ]);
 
   // NOTE: this may cause poor ux as people might try to claim rewards

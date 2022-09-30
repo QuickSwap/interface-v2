@@ -117,7 +117,16 @@ export function AddLiquidityButton({
         !txHash &&
         !isNetworkFailed,
     );
-  }, [mintInfo, approvalA, approvalB]);
+  }, [
+    mintInfo.depositADisabled,
+    mintInfo.depositBDisabled,
+    mintInfo.errorMessage,
+    mintInfo.invalidRange,
+    approvalA,
+    approvalB,
+    txHash,
+    isNetworkFailed,
+  ]);
 
   const onAddLiquidity = () => {
     if (expertMode) {

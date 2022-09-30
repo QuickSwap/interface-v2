@@ -19,11 +19,13 @@ export default function GasUpdater(): null {
 
   useEffect(() => {
     fetchGasPrice();
-  }, [dispatch, block]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [block]);
 
   useEffect(() => {
     if (!gasPrice.fetched) return;
     dispatch(updateGasPrice(gasPrice));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gasPrice, gasPriceLoading]);
 
   return null;

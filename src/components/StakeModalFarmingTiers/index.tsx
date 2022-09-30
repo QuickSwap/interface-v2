@@ -67,7 +67,7 @@ export default function StakeModalFarmingTiers({
       setSelectedTier(tier);
       selectTier(tier);
     },
-    [selectedTier],
+    [selectTier, selectedTier],
   );
 
   const tiersList = useMemo(() => {
@@ -94,7 +94,7 @@ export default function StakeModalFarmingTiers({
         earn: +tiersMultipliers.high,
       },
     ];
-  }, [tiersLimits, tiersMultipliers, balance]);
+  }, [tiersLimits, tiersMultipliers]);
 
   return (
     <div className='f c'>
