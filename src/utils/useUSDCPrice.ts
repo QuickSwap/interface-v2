@@ -35,7 +35,7 @@ export default function useUSDCPrice(currency?: Currency): Price | undefined {
   const usdtToken = USDT[chainIdToUse];
   const daiToken = DAI[chainIdToUse];
 
-  let wrapped = wrappedCurrency(currency, chainId);
+  const wrapped = wrappedCurrency(currency, chainId);
   const internalWrapped = wrapped;
 
   const tokenPairs: [Currency | undefined, Currency | undefined][] = useMemo(
@@ -218,7 +218,7 @@ export function useUSDCPrices(currencies: Currency[]): (Price | undefined)[] {
   const usdtToken = USDT[chainIdToUse];
   const daiToken = DAI[chainIdToUse];
   const wrappedCurrencies = currencies.map((currency) => {
-    let wrapped = wrappedCurrency(currency, chainId);
+    const wrapped = wrappedCurrency(currency, chainId);
     return wrapped;
   });
   const tokenPairs: [Currency | undefined, Currency | undefined][] = [];
