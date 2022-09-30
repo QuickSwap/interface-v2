@@ -1,5 +1,9 @@
 import { ApolloClient } from 'apollo-client';
-import { InMemoryCache, NormalizedCache, NormalizedCacheObject } from 'apollo-cache-inmemory';
+import {
+  InMemoryCache,
+  NormalizedCache,
+  NormalizedCacheObject,
+} from 'apollo-cache-inmemory';
 import { HttpLink } from 'apollo-link-http';
 import { ChainId } from '@uniswap/sdk';
 

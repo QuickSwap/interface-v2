@@ -13,8 +13,7 @@ import { ChainId } from '@uniswap/sdk';
 
 const POLLING_INTERVAL = 12000;
 
-export interface NetworkInfo
-{
+export interface NetworkInfo {
   rpcUrl: string;
   scanUrl: string;
 }
@@ -26,24 +25,23 @@ export type NetworkInfoChainMap = Readonly<
 >;
 
 export const networkInfoMap: NetworkInfoChainMap = {
-  [ChainId.MATIC]: { 
+  [ChainId.MATIC]: {
     rpcUrl: 'https://polygon-rpc.com/',
     scanUrl: 'https://polygonscan.com/',
   },
-  [ChainId.DOGECHAIN]: { 
+  [ChainId.DOGECHAIN]: {
     rpcUrl: 'https://dogechain.ankr.com',
     scanUrl: 'https://explorer.dogechain.dog/',
   },
-  [ChainId.MUMBAI]: { 
+  [ChainId.MUMBAI]: {
     rpcUrl: 'https://rpc-mumbai.maticvigil.com/',
     scanUrl: 'https://mumbai.polygonscan.com/',
   },
-  [ChainId.DOEGCHAIN_TESTNET]: { 
+  [ChainId.DOEGCHAIN_TESTNET]: {
     rpcUrl: 'https://rpc-testnet.dogechain.dog',
     scanUrl: ': https://explorer-testnet.dogechain.dog',
   },
-
-}
+};
 
 const NETWORK_URL = 'https://polygon-rpc.com/';
 // const FORMATIC_KEY = 'pk_live_F937DF033A1666BF'
@@ -55,15 +53,16 @@ export const NETWORK_CHAIN_ID: number = parseInt(
   process.env.REACT_APP_CHAIN_ID ?? '137',
 );
 
-export const rpcMap = { 
+export const rpcMap = {
   [ChainId.MATIC]: networkInfoMap[ChainId.MATIC].rpcUrl,
   [ChainId.MUMBAI]: networkInfoMap[ChainId.MUMBAI].rpcUrl,
   [ChainId.DOGECHAIN]: networkInfoMap[ChainId.DOGECHAIN].rpcUrl,
   [ChainId.DOEGCHAIN_TESTNET]: networkInfoMap[ChainId.DOEGCHAIN_TESTNET].rpcUrl,
-}
+};
 
 export const network = new NetworkConnector({
-  urls: rpcMap });
+  urls: rpcMap,
+});
 
 let networkLibrary: Web3Provider | undefined;
 export function getNetworkLibrary(): Web3Provider {
@@ -71,13 +70,18 @@ export function getNetworkLibrary(): Web3Provider {
     networkLibrary ?? new Web3Provider(network.provider as any));
 }
 
-const supportedChainIds: number[] = [ChainId.MATIC, ChainId.DOGECHAIN, ChainId.MUMBAI, ChainId.DOEGCHAIN_TESTNET];
+const supportedChainIds: number[] = [
+  ChainId.MATIC,
+  ChainId.DOGECHAIN,
+  ChainId.MUMBAI,
+  ChainId.DOEGCHAIN_TESTNET,
+];
 
 export const injected = new InjectedConnector({
   supportedChainIds: supportedChainIds,
 });
 
-export const safeApp = new SafeAppConnector({supportedChainIds});
+export const safeApp = new SafeAppConnector({ supportedChainIds });
 
 // mainnet only
 export const walletconnect = new WalletConnectConnector({

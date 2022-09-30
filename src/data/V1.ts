@@ -25,9 +25,7 @@ import {
   useSingleCallResult,
   useSingleContractMultipleData,
 } from 'state/multicall/hooks';
-import {
-  useTokenBalances,
-} from 'state/wallet/hooks';
+import { useTokenBalances } from 'state/wallet/hooks';
 
 export function useV1ExchangeAddress(
   tokenAddress?: string,

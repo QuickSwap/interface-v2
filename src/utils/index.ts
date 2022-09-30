@@ -254,7 +254,9 @@ export const get2DayPercentChange = (
   return [currentChange, adjustedPercentChange];
 };
 
-export const getEthPrice: (chainId: ChainId) => Promise<number[]> = async (chainId: ChainId) => {
+export const getEthPrice: (chainId: ChainId) => Promise<number[]> = async (
+  chainId: ChainId,
+) => {
   const utcCurrentTime = dayjs();
   const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix();
   let ethPrice = 0;
@@ -262,10 +264,7 @@ export const getEthPrice: (chainId: ChainId) => Promise<number[]> = async (chain
   let priceChangeETH = 0;
 
   try {
-    const oneDayBlock = await getBlockFromTimestamp(
-      utcOneDayBack,
-      chainId,
-    );
+    const oneDayBlock = await getBlockFromTimestamp(utcOneDayBack, chainId);
 
     const result = await clientV2[chainId].query({
       query: ETH_PRICE(),
