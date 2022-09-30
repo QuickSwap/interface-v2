@@ -15,7 +15,7 @@ export const TradingInfo: React.FC<{ globalData: any; v3GlobalData: any }> = ({
 }) => {
   const { chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ?? ChainId.MATIC;
-  const lairInfo = useOldLairInfo(chainIdToUse);
+  const lairInfo = useOldLairInfo();
   const [openStakeModal, setOpenStakeModal] = useState(false);
 
   const dQUICKAPY = useLairDQUICKAPY(false, lairInfo);

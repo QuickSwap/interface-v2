@@ -23,10 +23,10 @@ const DragonsLair: React.FC<{ isNew: boolean }> = ({ isNew }) => {
   const newLairInfo = useNewLairInfo();
   const lairInfoToUse = isNew ? newLairInfo : lairInfo;
   const APY = useLairDQUICKAPY(isNew, lairInfoToUse);
-  const dQUICKtoQUICK = lairInfoToUse.dQUICKtoQUICK?.toFixed(4, {
+  const dQUICKtoQUICK = lairInfoToUse?.dQUICKtoQUICK?.toFixed(4, {
     groupSeparator: ',',
   });
-  const QUICKtodQUICK = lairInfoToUse.QUICKtodQUICK?.toFixed(4, {
+  const QUICKtodQUICK = lairInfoToUse?.QUICKtodQUICK?.toFixed(4, {
     groupSeparator: ',',
   });
   const { t } = useTranslation();
@@ -68,8 +68,9 @@ const DragonsLair: React.FC<{ isNew: boolean }> = ({ isNew }) => {
         <small>{t('tvl')}</small>
         <small>
           $
-          {(
-            Number(lairInfoToUse.totalQuickBalance.toExact()) * quickPrice
+          {(lairInfoToUse
+            ? Number(lairInfoToUse.totalQuickBalance.toExact()) * quickPrice
+            : 0
           ).toLocaleString()}
         </small>
       </Box>
@@ -81,16 +82,16 @@ const DragonsLair: React.FC<{ isNew: boolean }> = ({ isNew }) => {
 
       <Box className='dragonLairRow'>
         <small>{t('yourdeposits')}</small>
-        <small>{formatTokenAmount(lairInfoToUse.QUICKBalance)}</small>
+        <small>{formatTokenAmount(lairInfoToUse?.QUICKBalance)}</small>
       </Box>
       <Box className='quickTodQuick border-secondary1'>
         <CurrencyLogo currency={quickToken} />
         <small style={{ margin: '0 8px' }}>
-          {isQUICKRate ? 1 : dQUICKtoQUICK.toLocaleString()} QUICK =
+          {isQUICKRate ? 1 : dQUICKtoQUICK?.toLocaleString()} QUICK =
         </small>
         <CurrencyLogo currency={quickToken} />
         <small style={{ margin: '0 8px' }}>
-          {isQUICKRate ? QUICKtodQUICK.toLocaleString() : 1} dQUICK
+          {isQUICKRate ? QUICKtodQUICK?.toLocaleString() : 1} dQUICK
         </small>
         <PriceExchangeIcon
           className='cursor-pointer'
