@@ -40,6 +40,7 @@ export default function EternalFarmsPage({
     fetchHandler();
     fetchEternalFarmAprsFn();
     fetchEternalFarmTvlsFn();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

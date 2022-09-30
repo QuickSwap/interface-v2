@@ -64,7 +64,7 @@ function useV3PositionsFromTokenIds(
       });
     }
     return undefined;
-  }, [loading, error, results, tokenIds, account]);
+  }, [loading, error, results, tokenIds]);
 
   const prevPositions = usePreviousNonEmptyArray(positions || []);
 
@@ -113,7 +113,15 @@ function useV3PositionsFromTokenIds(
         tokenId: inputs[i][0],
       })),
     };
-  }, [prevPositions, positions, inputs, account]);
+  }, [
+    prevAccount,
+    account,
+    loading,
+    positions,
+    prevPositions,
+    tokenIds,
+    inputs,
+  ]);
 }
 
 interface UseV3PositionResults {
@@ -156,6 +164,7 @@ export function useV3Positions(
     if (account) {
       fetchPositionsOnFarmerFn(account);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account]);
 
   const tokenIdsArgs = useMemo(() => {
@@ -211,14 +220,14 @@ export function useV3Positions(
     }
 
     return [];
-  }, [positionsOnFarmer, account]);
+  }, [positionsOnFarmer]);
 
   const {
     positions: _positionsOnFarmer,
     loading: _positionsOnFarmerLoading,
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    //@ts-ignore
-  } = useV3PositionsFromTokenIds(transferredTokenIds);
+  } = useV3PositionsFromTokenIds(
+    transferredTokenIds.map((id) => BigNumber.from(id)),
+  );
 
   const oldTransferredTokenIds = useMemo(() => {
     if (positionsOnFarmer && positionsOnFarmer.oldTransferredPositionsIds) {
@@ -226,14 +235,14 @@ export function useV3Positions(
     }
 
     return [];
-  }, [positionsOnFarmer, account]);
+  }, [positionsOnFarmer]);
 
   const {
     positions: _positionsOnOldFarmer,
     loading: _positionsOnOldFarmerLoading,
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    //@ts-ignore
-  } = useV3PositionsFromTokenIds(oldTransferredTokenIds);
+  } = useV3PositionsFromTokenIds(
+    oldTransferredTokenIds.map((id) => BigNumber.from(id)),
+  );
 
   const combinedPositions = useMemo(() => {
     if (positions && _positionsOnFarmer && _positionsOnOldFarmer) {
@@ -251,7 +260,7 @@ export function useV3Positions(
     }
 
     return undefined;
-  }, [positions, _positionsOnFarmer, account]);
+  }, [positions, _positionsOnFarmer, _positionsOnOldFarmer]);
 
   return {
     loading:
