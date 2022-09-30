@@ -169,16 +169,10 @@ const SwapBestTrade: React.FC<{
   const paraswap = useParaswap();
 
   const srcToken = inputCurrency
-    ? getBestTradeCurrencyAddress(
-        inputCurrency,
-        chainId ? chainId : ChainId.MATIC,
-      )
+    ? getBestTradeCurrencyAddress(inputCurrency, chainIdToUse)
     : undefined;
   const destToken = outputCurrency
-    ? getBestTradeCurrencyAddress(
-        outputCurrency,
-        chainId ? chainId : ChainId.MATIC,
-      )
+    ? getBestTradeCurrencyAddress(outputCurrency, chainIdToUse)
     : undefined;
 
   const srcDecimals = inputCurrency?.decimals;

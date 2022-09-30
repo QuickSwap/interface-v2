@@ -1,21 +1,55 @@
 import { ApolloClient } from 'apollo-client';
-import { InMemoryCache } from 'apollo-cache-inmemory';
+import {
+  InMemoryCache,
+  NormalizedCache,
+  NormalizedCacheObject,
+} from 'apollo-cache-inmemory';
 import { HttpLink } from 'apollo-link-http';
 import { ChainId } from '@uniswap/sdk';
 
-export const clientV2: { [chainId: number]: any } = {
+export type ApolloChainMap = Readonly<
+  {
+    [chainId in ChainId]: ApolloClient<NormalizedCacheObject>;
+  }
+>;
+
+export const clientV2: ApolloChainMap = {
   [ChainId.MATIC]: new ApolloClient({
     link: new HttpLink({
       uri: process.env.REACT_APP_GRAPH_V2_137_API_URL,
     }),
     cache: new InMemoryCache(),
   }),
+  [ChainId.DOGECHAIN]: new ApolloClient({
+    link: new HttpLink({
+      uri: process.env.REACT_APP_GRAPH_V2_2000_API_URL,
+    }),
+    cache: new InMemoryCache(),
+  }),
+  [ChainId.DOEGCHAIN_TESTNET]: new ApolloClient({
+    link: new HttpLink({
+      uri: process.env.REACT_APP_GRAPH_V2_568_API_URL,
+    }),
+    cache: new InMemoryCache(),
+  }),
+  [ChainId.MUMBAI]: new ApolloClient({
+    link: new HttpLink({
+      uri: process.env.REACT_APP_GRAPH_V2_80001_API_URL,
+    }),
+    cache: new InMemoryCache(),
+  }),
 };
 
-export const clientV3: { [chainId: number]: any } = {
+export const clientV3: ApolloChainMap = {
   [ChainId.MATIC]: new ApolloClient({
     link: new HttpLink({
       uri: process.env.REACT_APP_GRAPH_V3_137_API_URL,
+    }),
+    cache: new InMemoryCache(),
+  }),
+  [ChainId.MUMBAI]: new ApolloClient({
+    link: new HttpLink({
+      uri: process.env.REACT_APP_GRAPH_V3_80001_API_URL,
     }),
     cache: new InMemoryCache(),
   }),
@@ -25,9 +59,15 @@ export const clientV3: { [chainId: number]: any } = {
     }),
     cache: new InMemoryCache(),
   }),
+  [ChainId.DOEGCHAIN_TESTNET]: new ApolloClient({
+    link: new HttpLink({
+      uri: process.env.REACT_APP_GRAPH_V3_568_API_URL,
+    }),
+    cache: new InMemoryCache(),
+  }),
 };
 
-export const farmingClient: { [chainId: number]: any } = {
+export const farmingClient: ApolloChainMap = {
   [ChainId.MATIC]: new ApolloClient({
     link: new HttpLink({
       uri: process.env.REACT_APP_V3_FARMING_API_137_URL,
@@ -40,18 +80,48 @@ export const farmingClient: { [chainId: number]: any } = {
     }),
     cache: new InMemoryCache(),
   }),
+  [ChainId.MUMBAI]: new ApolloClient({
+    link: new HttpLink({
+      uri: process.env.REACT_APP_V3_FARMING_API_80001_URL,
+    }),
+    cache: new InMemoryCache(),
+  }),
+  [ChainId.DOEGCHAIN_TESTNET]: new ApolloClient({
+    link: new HttpLink({
+      uri: process.env.REACT_APP_V3_FARMING_API_568_URL,
+    }),
+    cache: new InMemoryCache(),
+  }),
 };
 
-export const txClient: { [chainId: number]: any } = {
+export const txClient: ApolloChainMap = {
   [ChainId.MATIC]: new ApolloClient({
     link: new HttpLink({
       uri: process.env.REACT_APP_GRAPH_V2_137_API_URL,
     }),
     cache: new InMemoryCache(),
   }),
+  [ChainId.DOGECHAIN]: new ApolloClient({
+    link: new HttpLink({
+      uri: process.env.REACT_APP_GRAPH_V2_2000_API_URL,
+    }),
+    cache: new InMemoryCache(),
+  }),
+  [ChainId.MUMBAI]: new ApolloClient({
+    link: new HttpLink({
+      uri: process.env.REACT_APP_GRAPH_V2_80001_API_URL,
+    }),
+    cache: new InMemoryCache(),
+  }),
+  [ChainId.DOEGCHAIN_TESTNET]: new ApolloClient({
+    link: new HttpLink({
+      uri: process.env.REACT_APP_GRAPH_V2_568_API_URL,
+    }),
+    cache: new InMemoryCache(),
+  }),
 };
 
-export const blockClient: { [chainId: number]: any } = {
+export const blockClient: ApolloChainMap = {
   [ChainId.MATIC]: new ApolloClient({
     link: new HttpLink({
       uri: process.env.REACT_APP_GRAPH_V2_137_API_URL,
@@ -61,6 +131,18 @@ export const blockClient: { [chainId: number]: any } = {
   [ChainId.DOGECHAIN]: new ApolloClient({
     link: new HttpLink({
       uri: process.env.REACT_APP_GRAPH_2000_BLOCK_CLIENT_API_URL,
+    }),
+    cache: new InMemoryCache(),
+  }),
+  [ChainId.MUMBAI]: new ApolloClient({
+    link: new HttpLink({
+      uri: process.env.REACT_APP_GRAPH_V2_80001_API_URL,
+    }),
+    cache: new InMemoryCache(),
+  }),
+  [ChainId.DOEGCHAIN_TESTNET]: new ApolloClient({
+    link: new HttpLink({
+      uri: process.env.REACT_APP_GRAPH_568_BLOCK_CLIENT_API_URL,
     }),
     cache: new InMemoryCache(),
   }),

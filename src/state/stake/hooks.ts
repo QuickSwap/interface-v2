@@ -698,7 +698,8 @@ const getOneDayVolume = async (config: any) => {
     config.chainId,
   );
 
-  const result = await clientV2[config.chainId].query({
+  const chainId: ChainId = config.chainId;
+  const result = await clientV2[chainId].query({
     query: GLOBAL_DATA(V2_FACTORY_ADDRESSES[config.chainId], current),
     fetchPolicy: 'network-only',
   });
@@ -706,7 +707,7 @@ const getOneDayVolume = async (config: any) => {
   data = result.data.uniswapFactories[0];
 
   // fetch the historical data
-  const oneDayResult = await clientV2[config.chainId].query({
+  const oneDayResult = await clientV2[chainId].query({
     query: GLOBAL_DATA(V2_FACTORY_ADDRESSES[config.chainId], oneDayOldBlock),
     fetchPolicy: 'network-only',
   });
@@ -1684,9 +1685,10 @@ export function useDerivedSyrupInfo(
   parsedAmount?: CurrencyAmount;
   error?: string;
 } {
-  const { account } = useActiveWeb3React();
-
+  const { account, chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ?? ChainId.MATIC;
   const parsedInput: CurrencyAmount | undefined = tryParseAmount(
+    chainIdToUse,
     typedValue,
     stakingToken,
   );
@@ -1721,9 +1723,10 @@ export function useDerivedStakeInfo(
   parsedAmount?: CurrencyAmount;
   error?: string;
 } {
-  const { account } = useActiveWeb3React();
-
+  const { account, chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ?? ChainId.MATIC;
   const parsedInput: CurrencyAmount | undefined = tryParseAmount(
+    chainIdToUse,
     typedValue,
     stakingToken,
   );
@@ -1757,9 +1760,10 @@ export function useDerivedLairInfo(
   parsedAmount?: CurrencyAmount;
   error?: string;
 } {
-  const { account } = useActiveWeb3React();
-
+  const { account, chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ?? ChainId.MATIC;
   const parsedInput: CurrencyAmount | undefined = tryParseAmount(
+    chainIdToUse,
     typedValue,
     stakingToken,
   );
@@ -1793,9 +1797,10 @@ export function useDerivedUnstakeInfo(
   parsedAmount?: CurrencyAmount;
   error?: string;
 } {
-  const { account } = useActiveWeb3React();
-
+  const { account, chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ?? ChainId.MATIC;
   const parsedInput: CurrencyAmount | undefined = tryParseAmount(
+    chainIdToUse,
     typedValue,
     stakingAmount.token,
   );
@@ -1827,9 +1832,11 @@ export function useDerivedUnstakeLairInfo(
   parsedAmount?: CurrencyAmount;
   error?: string;
 } {
-  const { account } = useActiveWeb3React();
+  const { account, chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ?? ChainId.MATIC;
 
   const parsedInput: CurrencyAmount | undefined = tryParseAmount(
+    chainIdToUse,
     typedValue,
     stakingAmount.token,
   );
