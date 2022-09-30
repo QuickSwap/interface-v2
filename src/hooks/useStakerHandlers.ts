@@ -40,15 +40,7 @@ export function useFarmingHandlers() {
   const addTransaction = useTransactionAdder();
   const finalizeTransaction = useTransactionFinalizer();
 
-  const [approvedHash, setApproved] = useState<DefaultFarming | string>({
-    hash: null,
-    id: null,
-  });
   const [transferedHash, setTransfered] = useState<DefaultFarming | string>({
-    hash: null,
-    id: null,
-  });
-  const [farmedHash, setFarmed] = useState<DefaultFarming | string>({
     hash: null,
     id: null,
   });
@@ -524,7 +516,14 @@ export function useFarmingHandlers() {
     ) => {
       if (!account || !provider || !chainId) return;
 
-      setFarmed({ hash: null, id: null });
+      updateV3Stake({
+        selectedTokenId: selectedNFT.id,
+        selectedFarmingType: null,
+        txType: 'farm',
+        txConfirmed: false,
+        txHash: '',
+        txError: '',
+      });
 
       let current;
 
@@ -552,16 +551,32 @@ export function useFarmingHandlers() {
             summary: `NFT #${selectedNFT.id} was deposited!`,
           });
 
-          setFarmed({ hash: result.hash, id: selectedNFT.id });
+          updateV3Stake({ txHash: result.hash });
+
+          const receipt = await result.wait();
+
+          finalizeTransaction(receipt, {
+            summary: `NFT #${selectedNFT.id} was deposited!`,
+          });
+
+          updateV3Stake({ txConfirmed: true });
         }
       } catch (err) {
-        setFarmed('failed');
+        updateV3Stake({ txError: 'failed' });
         if (err instanceof Error) {
           throw new Error('Farming ' + current + ' ' + err.message);
         }
       }
     },
-    [account, addTransaction, chainId, gasPrice, provider],
+    [
+      account,
+      addTransaction,
+      chainId,
+      finalizeTransaction,
+      gasPrice,
+      provider,
+      updateV3Stake,
+    ],
   );
 
   const transferHandler = useCallback(
@@ -608,7 +623,14 @@ export function useFarmingHandlers() {
     async (selectedNFT) => {
       if (!account || !provider || !chainId) return;
 
-      setApproved({ hash: null, id: null });
+      updateV3Stake({
+        selectedTokenId: selectedNFT.id,
+        selectedFarmingType: null,
+        txType: 'farmApprove',
+        txConfirmed: false,
+        txHash: '',
+        txError: '',
+      });
 
       let current;
 
@@ -637,16 +659,32 @@ export function useFarmingHandlers() {
             summary: `NFT #${selectedNFT.id} was approved!`,
           });
 
-          setApproved({ hash: result.hash, id: selectedNFT.id });
+          updateV3Stake({ txHash: result.hash });
+
+          const receipt = await result.wait();
+
+          finalizeTransaction(receipt, {
+            summary: `NFT #${selectedNFT.id} was approved!`,
+          });
+
+          updateV3Stake({ txConfirmed: true });
         }
       } catch (err) {
-        setApproved('failed');
+        updateV3Stake({ txError: 'failed' });
         if (err instanceof Error) {
           throw new Error('Approving NFT ' + current + ' ' + err.message);
         }
       }
     },
-    [account, addTransaction, chainId, gasPrice, provider],
+    [
+      account,
+      addTransaction,
+      chainId,
+      finalizeTransaction,
+      gasPrice,
+      provider,
+      updateV3Stake,
+    ],
   );
 
   const sendNFTL2Handler = useCallback(
@@ -698,11 +736,9 @@ export function useFarmingHandlers() {
 
   return {
     approveHandler,
-    approvedHash,
     transferHandler,
     transferedHash,
     farmHandler,
-    farmedHash,
     exitHandler,
     withdrawHandler,
     claimRewardsHandler,

@@ -6,7 +6,6 @@ import { useFarmingHandlers } from '../../hooks/useStakerHandlers';
 import { useChunkedRows } from '../../utils/chunkForRows';
 import Loader from '../Loader';
 import { FarmingType } from '../../models/enums';
-import { useSortedRecentTransactions } from '../../hooks/useSortedRecentTransactions';
 import { NTFInterface } from '../../models/interfaces';
 import { NavLink } from 'react-router-dom';
 import './index.scss';
@@ -26,6 +25,7 @@ import { Box, Button } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import { Check } from '@material-ui/icons';
 import { StyledCircle, StyledLabel } from 'components/v3/Common/styledElements';
+import { useV3StakeData } from 'state/farms/hooks';
 
 interface FarmModalProps {
   event: {
@@ -96,8 +96,11 @@ export function FarmModal({
     },
   } = useFarmingSubgraph() || {};
 
-  const { approveHandler, approvedHash, farmHandler, farmedHash } =
-    useFarmingHandlers() || {};
+  const { v3Stake } = useV3StakeData();
+  const { txType, selectedTokenId, txConfirmed, txHash, txError } =
+    v3Stake ?? {};
+
+  const { approveHandler, farmHandler } = useFarmingHandlers() || {};
 
   const [selectedTier, setSelectedTier] = useState<string | null>(null);
 
@@ -131,14 +134,6 @@ export function FarmModal({
 
   useEffect(() => setChunkedPositions(_chunked), [_chunked]);
 
-  const sortedRecentTransactions = useSortedRecentTransactions();
-
-  const confirmed = useMemo(
-    () =>
-      sortedRecentTransactions.filter((tx) => tx.receipt).map((tx) => tx.hash),
-    [sortedRecentTransactions],
-  );
-
   const filterNFTs = useCallback(
     (fn) => {
       if (!selectedNFT) return;
@@ -161,11 +156,11 @@ export function FarmModal({
   );
 
   useEffect(() => {
-    if (!approvedHash || (approvedHash && submitState !== 0)) return;
-
-    if (typeof approvedHash === 'string') {
+    if (!chunkedPositions || submitState !== (txType === 'farmApprove' ? 0 : 2))
+      return;
+    if (txError) {
       setSubmitLoader(false);
-    } else if (approvedHash.hash && confirmed.includes(approvedHash.hash)) {
+    } else if (txHash && txConfirmed && selectedTokenId) {
       const _newChunked: any = [];
 
       if (chunkedPositions) {
@@ -173,7 +168,7 @@ export function FarmModal({
           const _newRow: any = [];
 
           for (const position of row) {
-            if (position.id === approvedHash.id) {
+            if (position.id === selectedTokenId) {
               position.onFarmingCenter = true;
               setSelectedNFT((old) => ({
                 ...old,
@@ -187,41 +182,23 @@ export function FarmModal({
       }
 
       setChunkedPositions(_newChunked);
-      setSubmitState(1);
       setSubmitLoader(false);
-    }
-  }, [approvedHash, confirmed]);
-
-  useEffect(() => {
-    if (!farmedHash || (farmedHash && submitState !== 2)) return;
-
-    if (typeof farmedHash === 'string') {
-      setSubmitLoader(false);
-    } else if (farmedHash.hash && confirmed.includes(farmedHash.hash)) {
-      const _newChunked: any = [];
-
-      if (chunkedPositions) {
-        for (const row of chunkedPositions) {
-          const _newRow: any = [];
-
-          for (const position of row) {
-            if (position.id === farmedHash.id) {
-              position.onFarmingCenter = true;
-              setSelectedNFT((old) => ({
-                ...old,
-                onFarmingCenter: true,
-              }));
-            }
-            _newRow.push(position);
-          }
-          _newChunked.push(_newRow);
-        }
+      if (txType === 'farmApprove') {
+        setSubmitState(1);
+      } else if (txType === 'farm') {
+        setSubmitState(3);
       }
-      setChunkedPositions(_newChunked);
-      setSubmitState(3);
-      setSubmitLoader(false);
     }
-  }, [farmedHash, confirmed]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    chunkedPositions?.length,
+    selectedTokenId,
+    submitState,
+    txConfirmed,
+    txError,
+    txHash,
+    txType,
+  ]);
 
   const approveNFTs = useCallback(() => {
     setSubmitLoader(true);
