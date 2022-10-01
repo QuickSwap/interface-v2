@@ -21,11 +21,17 @@ export const usePoolsData = (
   const getPoolsData = async () => {
     if (!_directory) return;
     const allPools = await _directory.getAllPools();
-    const poolsData: any[] = [];
-    for (const poolAddress of poolAddresses) {
-      const poolId = allPools.findIndex((p) => {
-        return (
-          p.comptroller.address.toLowerCase() === poolAddress.toLowerCase()
+    const poolsData = await Promise.all(
+      poolAddresses.map(async (poolAddress) => {
+        const poolId = allPools.findIndex((p) => {
+          return p.comptroller.address.toLowerCase() === poolAddress.toLowerCase();
+        });
+        if (poolId === -1) return;
+        const poolData = await fetchPoolData(
+          chainIdToUse,
+          poolId.toString(),
+          account ?? undefined,
+          _directory,
         );
       });
       if (poolId === -1) return;
