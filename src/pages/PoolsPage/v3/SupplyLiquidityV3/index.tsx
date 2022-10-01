@@ -22,7 +22,6 @@ import { WMATIC_EXTENDED } from 'constants/v3/addresses';
 import {
   setInitialTokenPrice,
   setInitialUSDPrices,
-  updateCurrentStep,
   updateSelectedPreset,
 } from 'state/mint/v3/actions';
 import { Field } from 'state/mint/actions';
@@ -86,8 +85,6 @@ export function SupplyLiquidityV3() {
   const dispatch = useAppDispatch();
 
   const feeAmount = 100;
-
-  const currentStep = useCurrentStep();
 
   const expertMode = useIsExpertMode();
 
@@ -242,84 +239,6 @@ export function SupplyLiquidityV3() {
     onStartPriceInput('');
   }
 
-  const stepLinks = useMemo(() => {
-    const _stepLinks = [
-      {
-        link: 'select-pair',
-        title: `Select a pair`,
-      },
-    ];
-
-    if (mintInfo.noLiquidity && baseCurrency && quoteCurrency) {
-      _stepLinks.push({
-        link: 'initial-price',
-        title: `Set initial price`,
-      });
-    }
-
-    _stepLinks.push(
-      {
-        link: 'select-range',
-        title: `Select a range`,
-      },
-      {
-        link: 'enter-amounts',
-        title: `Enter amounts`,
-      },
-    );
-    return _stepLinks;
-  }, [baseCurrency, quoteCurrency, mintInfo]);
-
-  const stepPair = useMemo(() => {
-    return Boolean(
-      baseCurrency &&
-        quoteCurrency &&
-        mintInfo.poolState !== PoolState.INVALID &&
-        mintInfo.poolState !== PoolState.LOADING,
-    );
-  }, [baseCurrency, quoteCurrency, mintInfo]);
-
-  const stepRange = useMemo(() => {
-    return Boolean(
-      mintInfo.lowerPrice &&
-        mintInfo.upperPrice &&
-        !mintInfo.invalidRange &&
-        account,
-    );
-  }, [mintInfo]);
-
-  const stepAmounts = useMemo(() => {
-    if (mintInfo.outOfRange) {
-      return Boolean(
-        mintInfo.parsedAmounts[Field.CURRENCY_A] ||
-          (mintInfo.parsedAmounts[Field.CURRENCY_B] && account),
-      );
-    }
-    return Boolean(
-      mintInfo.parsedAmounts[Field.CURRENCY_A] &&
-        mintInfo.parsedAmounts[Field.CURRENCY_B] &&
-        account,
-    );
-  }, [mintInfo]);
-
-  const stepInitialPrice = useMemo(() => {
-    return mintInfo.noLiquidity
-      ? Boolean(+startPriceTypedValue && account)
-      : false;
-  }, [mintInfo, startPriceTypedValue]);
-
-  const steps = useMemo(() => {
-    if (mintInfo.noLiquidity) {
-      return [stepPair, stepInitialPrice, stepRange, stepAmounts];
-    }
-
-    return [stepPair, stepRange, stepAmounts];
-  }, [stepPair, stepRange, stepAmounts, stepInitialPrice, mintInfo]);
-
-  const completedSteps = useMemo(() => {
-    return Array(currentStep).map((_, i) => i + 1);
-  }, [currentStep]);
-
   const [allowedSlippage] = useUserSlippageTolerance();
   const allowedSlippagePercent: Percent = useMemo(() => {
     return new Percent(JSBI.BigInt(allowedSlippage), JSBI.BigInt(10000));
@@ -327,13 +246,6 @@ export function SupplyLiquidityV3() {
 
   const hidePriceFormatter = useMemo(() => {
     return true;
-    // if (stepInitialPrice && currentStep < 2) {
-    //   return false;
-    // }
-
-    // if (!stepInitialPrice && currentStep < 1) {
-    //   return false;
-    // }
 
     // return Boolean(
     //   (mintInfo.noLiquidity ? stepInitialPrice : stepPair) &&
@@ -342,15 +254,7 @@ export function SupplyLiquidityV3() {
     //     !usdPriceA &&
     //     !usdPriceB,
     // );
-  }, [
-    mintInfo,
-    currentStep,
-    stepRange,
-    stepInitialPrice,
-    usdPriceA,
-    usdPriceB,
-    initialUSDPrices,
-  ]);
+  }, [mintInfo, usdPriceA, usdPriceB, initialUSDPrices]);
 
   useEffect(() => {
     if (hidePriceFormatter) {
@@ -439,7 +343,6 @@ export function SupplyLiquidityV3() {
             baseCurrency={baseCurrency}
             quoteCurrency={quoteCurrency}
             mintInfo={mintInfo}
-            isCompleted={stepPair}
             handleCurrencySwap={handleCurrencySwap}
             handleCurrencyASelect={handleCurrencyASelect}
             handleCurrencyBSelect={handleCurrencyBSelect}
@@ -480,10 +383,7 @@ export function SupplyLiquidityV3() {
             currencyA={baseCurrency ?? undefined}
             currencyB={currencyB ?? undefined}
             mintInfo={mintInfo}
-            isCompleted={stepAmounts}
-            additionalStep={stepInitialPrice}
             priceFormat={priceFormat}
-            backStep={stepInitialPrice ? 2 : 1}
           />
         </Box>
 

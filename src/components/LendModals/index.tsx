@@ -44,6 +44,7 @@ import { GlobalValue } from 'constants/index';
 import { useEthPrice } from 'state/application/hooks';
 import useUSDCPrice from 'utils/useUSDCPrice';
 import { Link } from 'react-router-dom';
+import { useMarket } from 'hooks/marketxyz/useMarket';
 import { ChainId } from '@uniswap/sdk';
 import { LENDING_LENS } from 'constants/v3/addresses';
 
@@ -60,6 +61,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
   onClose,
 }) => {
   const { t } = useTranslation();
+  const { sdk } = useMarket();
   const { account, chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ? chainId : ChainId.MATIC;
   const { ethPrice } = useEthPrice();
@@ -93,6 +95,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
   const buttonDisabled =
     !account ||
     loading ||
+    !sdk ||
     Number(value) <= 0 ||
     maxAmount === undefined ||
     Number(value) > maxAmount ||
@@ -495,7 +498,11 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
             <Box className='flex items-center'>
               <CurrencyLogo
                 currency={getPoolAssetToken(asset, chainId)}
-                withoutBg={asset.underlyingName.includes('LP')}
+                withoutBg={
+                  asset.underlyingName.includes('LP') ||
+                  asset.underlyingSymbol.includes('am') ||
+                  asset.underlyingSymbol.includes('moo')
+                }
                 size='36px'
               />
               <Box className='flex' ml='6px'>
@@ -601,7 +608,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
               fullWidth
               disabled={buttonDisabled}
               onClick={async () => {
-                if (!account) return;
+                if (!account || !sdk) return;
                 setLoading(true);
                 setTxHash(undefined);
                 setTxError('');
@@ -611,7 +618,11 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
                   if (borrow) {
                     if (modalType === 'repay') {
                       if (!assetApproved) {
-                        txResponse = await approveCToken(currentAsset, account);
+                        txResponse = await approveCToken(
+                          currentAsset,
+                          account,
+                          sdk,
+                        );
                         setAssetApproved(true);
                       } else {
                         txResponse = await repayBorrow(
@@ -619,6 +630,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
                           Number(value),
                           account,
                           t('cannotRepayMarket'),
+                          sdk,
                         );
                       }
                     } else {
@@ -627,6 +639,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
                         Number(value),
                         account,
                         t('cannotBorrowMarket'),
+                        sdk,
                       );
                     }
                     updateCurrentAsset();
@@ -639,6 +652,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
                           currentAsset.membership
                             ? t('cannotExitMarket')
                             : t('cannotEnterMarket'),
+                          sdk,
                         );
                         setCurrentAsset({
                           ...currentAsset,
@@ -650,6 +664,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
                           Number(value),
                           account,
                           t('cannotWithdrawMarket'),
+                          sdk,
                         );
                         updateCurrentAsset();
                       }
@@ -661,13 +676,18 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
                           currentAsset.membership
                             ? t('cannotExitMarket')
                             : t('cannotEnterMarket'),
+                          sdk,
                         );
                         setCurrentAsset({
                           ...currentAsset,
                           membership: !currentAsset.membership,
                         });
                       } else if (!assetApproved) {
-                        txResponse = await approveCToken(currentAsset, account);
+                        txResponse = await approveCToken(
+                          currentAsset,
+                          account,
+                          sdk,
+                        );
                         setAssetApproved(true);
                       } else {
                         txResponse = await supply(
@@ -675,6 +695,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
                           Number(value),
                           account,
                           t('cannotDepositMarket'),
+                          sdk,
                         );
                         updateCurrentAsset();
                       }
@@ -683,7 +704,6 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
                   setTxHash(txResponse.transactionHash);
                   setLoading(false);
                 } catch (e) {
-                  console.log(e);
                   setTxError(t('errorInTx'));
                   setLoading(false);
                 }
