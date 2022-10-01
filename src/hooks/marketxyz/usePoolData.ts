@@ -1,5 +1,5 @@
 import { useQuery } from 'react-query';
-import { useReadOnlyMarket } from './useMarket';
+import { useMarket, useReadOnlyMarket } from './useMarket';
 import { useActiveWeb3React } from '../index';
 import { fetchPoolData, PoolData } from '../../utils/marketxyz/fetchPoolData';
 import { PoolDirectoryV1 } from 'market-sdk';
@@ -12,7 +12,7 @@ export const usePoolsData = (
 ) => {
   const { account, chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ?? ChainId.MATIC;
-  const { ethPrice } = useEthPrice();
+  const { sdk } = useMarket();
   const _directory = sdk
     ? typeof directory === 'string'
       ? new PoolDirectoryV1(sdk, directory)
@@ -30,11 +30,10 @@ export const usePoolsData = (
       });
       if (poolId === -1) return;
       const poolData = await fetchPoolData(
-          chainIdToUse,
+        chainIdToUse,
         poolId.toString(),
         account ?? undefined,
         _directory,
-        ethPrice.price ?? 0,
       );
       poolsData.push(poolData);
     }
@@ -67,7 +66,6 @@ export const usePoolData = (
       poolId ?? undefined,
       account ?? undefined,
       _directory,
-      ethPrice.price ?? 0,
     );
     return poolData;
   };

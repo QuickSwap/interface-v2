@@ -910,16 +910,13 @@ export async function getTopPairsV3(count = 500, chainId: ChainId) {
 export async function getPairsAPR(pairAddresses: string[], chainId: ChainId) {
   const aprs: any = await fetchPoolsAPR();
   const farmAprs: any = await fetchEternalFarmAPR();
-  const farmsFromPairAddresses = await fetchEternalFarmingsAPRByPool(
-    pairAddresses,
-  );
   const farmingAprs = await fetchEternalFarmingsAPRByPool(
     pairAddresses,
     chainId,
   );
   const _farmingAprs: {
     [type: string]: number;
-  } = farmsFromPairAddresses.reduce(
+  } = farmingAprs.reduce(
     (acc: any, el: any) => ({
       ...acc,
       [el.pool]: farmAprs[el.id],

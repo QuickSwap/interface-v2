@@ -6,7 +6,7 @@ import {
   Pool,
   PoolLensV1,
 } from 'market-sdk';
-import { convertBNToNumber } from 'utils';
+import { convertBNToNumber, getEthPrice } from 'utils';
 
 export interface USDPricedPoolAsset extends PoolAsset {
   supplyBalanceUSD: number;
@@ -55,7 +55,6 @@ export const fetchPoolData = async (
   poolId: string | undefined,
   address: string | undefined,
   directory: PoolDirectoryV1,
-  ethPrice: number,
 ): Promise<PoolData | undefined> => {
   if (!poolId) return;
 
