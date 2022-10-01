@@ -10,7 +10,7 @@ import {
   getBlockFromTimestamp,
   getTokenFromAddress,
 } from 'utils';
-import { GlobalConst, MATIC_CHAIN } from 'constants/index';
+import { GlobalConst } from 'constants/index';
 import { CurrencyLogo, DoubleCurrencyLogo } from 'components';
 import { ChainId, Token } from '@uniswap/sdk';
 import { getAddress } from '@ethersproject/address';
@@ -27,12 +27,18 @@ import {
   TOKEN_INFO_OLD_V3,
   TOKEN_SEARCH_V3,
 } from 'apollo/queries-v3';
+import { useActiveWeb3React } from 'hooks';
+import { getConfig } from '../../config/index';
 dayjs.extend(utc);
 
 const AnalyticsSearch: React.FC = () => {
   const { t } = useTranslation();
   const history = useHistory();
   const [searchVal, setSearchVal] = useState('');
+  const { chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ?? ChainId.MATIC;
+  const config = getConfig(chainIdToUse);
+  const v2 = config['v2'];
   const [searchValInput, setSearchValInput] = useDebouncedChangeHandler(
     searchVal,
     setSearchVal,
@@ -171,16 +177,17 @@ const AnalyticsSearch: React.FC = () => {
   useEffect(() => {
     async function fetchData() {
       try {
-        const allTokensFn = isV3 ? getAllTokensV3 : getAllTokensOnUniswap;
-        const allPairsFn = isV3 ? getAllPairsV3 : getAllPairsOnUniswap;
+        const allTokensFn =
+          !v2 || isV3 ? getAllTokensV3 : getAllTokensOnUniswap;
+        const allPairsFn = !v2 || isV3 ? getAllPairsV3 : getAllPairsOnUniswap;
+        const client =
+          !v2 || isV3 ? clientV3[chainIdToUse] : clientV2[chainIdToUse];
+        const tokenSearchQuery = !v2 || isV3 ? TOKEN_SEARCH_V3 : TOKEN_SEARCH;
+        const pairSearchQuery = !v2 || isV3 ? PAIR_SEARCH_V3 : PAIR_SEARCH;
+        const oldTokenQuery = !v2 || isV3 ? TOKEN_INFO_OLD_V3 : TOKEN_INFO_OLD;
 
-        const client = isV3 ? clientV3 : clientV2;
-        const tokenSearchQuery = isV3 ? TOKEN_SEARCH_V3 : TOKEN_SEARCH;
-        const pairSearchQuery = isV3 ? PAIR_SEARCH_V3 : PAIR_SEARCH;
-        const oldTokenQuery = isV3 ? TOKEN_INFO_OLD_V3 : TOKEN_INFO_OLD;
-
-        const allTokensUniswap = await allTokensFn();
-        const allPairsUniswap = await allPairsFn();
+        const allTokensUniswap = await allTokensFn(chainIdToUse);
+        const allPairsUniswap = await allPairsFn(chainIdToUse);
         let allTokens = allTokensUniswap ?? [];
         let allPairs = allPairsUniswap ?? [];
         if (searchVal.length > 0) {
@@ -239,7 +246,10 @@ const AnalyticsSearch: React.FC = () => {
           allTokens.map(async (token: any) => {
             const utcCurrentTime = dayjs();
             const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix();
-            const oneDayBlock = await getBlockFromTimestamp(utcOneDayBack);
+            const oneDayBlock = await getBlockFromTimestamp(
+              utcOneDayBack,
+              chainIdToUse,
+            );
             const oneDayResult = await client.query({
               query: oldTokenQuery(oneDayBlock, token.id),
               fetchPolicy: 'network-only',
@@ -308,11 +318,11 @@ const AnalyticsSearch: React.FC = () => {
           {filteredPairs.slice(0, pairsShown).map((val, ind) => {
             const currency0 = getTokenFromAddress(
               val.token0.id,
-              MATIC_CHAIN,
+              chainIdToUse,
               tokenMap,
               [
                 new Token(
-                  MATIC_CHAIN,
+                  chainIdToUse,
                   getAddress(val.token0.id),
                   val.token0.decimals,
                 ),
@@ -320,11 +330,11 @@ const AnalyticsSearch: React.FC = () => {
             );
             const currency1 = getTokenFromAddress(
               val.token1.id,
-              MATIC_CHAIN,
+              chainIdToUse,
               tokenMap,
               [
                 new Token(
-                  MATIC_CHAIN,
+                  chainIdToUse,
                   getAddress(val.token1.id),
                   val.token1.decimals,
                 ),
@@ -360,9 +370,9 @@ const AnalyticsSearch: React.FC = () => {
           {filteredTokens.slice(0, tokensShown).map((val, ind) => {
             const currency = getTokenFromAddress(
               getAddress(val.id),
-              MATIC_CHAIN,
+              chainIdToUse,
               tokenMap,
-              [new Token(MATIC_CHAIN, getAddress(val.id), val.decimals)],
+              [new Token(chainIdToUse, getAddress(val.id), val.decimals)],
             );
             return (
               <Box

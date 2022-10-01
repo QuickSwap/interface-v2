@@ -11,13 +11,15 @@ import { ReactComponent as ExpandIconUp } from 'assets/images/expand_circle_up.s
 import FarmCardDetail from './FarmCardDetail';
 import { Deposit } from '../../models/interfaces';
 import { IsActive } from './IsActive';
-import { Token } from '@uniswap/sdk';
+import { ChainId, Token } from '@uniswap/sdk';
+import { WrappedTokenInfo } from 'state/lists/v3/wrappedTokenInfo';
 
 interface FarmCardProps {
   el: Deposit;
+  chainId: ChainId;
 }
 
-export default function FarmCard({ el }: FarmCardProps) {
+export default function FarmCard({ el, chainId }: FarmCardProps) {
   const [showMore, setShowMore] = useState(false);
 
   return (
@@ -53,8 +55,26 @@ export default function FarmCard({ el }: FarmCardProps) {
 
           <Box className='flex items-center'>
             <DoubleCurrencyLogo
-              currency0={new Token(137, el.token0, 18, el.pool.token0.symbol)}
-              currency1={new Token(137, el.token1, 18, el.pool.token1.symbol)}
+              currency0={
+                el.pool.token0 instanceof WrappedTokenInfo
+                  ? el.pool.token0
+                  : new Token(
+                      chainId,
+                      el.token0,
+                      Number(el.pool.token0.decimals),
+                      el.pool.token0.symbol,
+                    )
+              }
+              currency1={
+                el.pool.token1 instanceof WrappedTokenInfo
+                  ? el.pool.token1
+                  : new Token(
+                      chainId,
+                      el.token1,
+                      Number(el.pool.token1.decimals),
+                      el.pool.token1.symbol,
+                    )
+              }
               size={30}
             />
             <Box className='flex-col' ml={3}>

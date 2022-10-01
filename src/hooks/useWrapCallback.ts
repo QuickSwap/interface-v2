@@ -1,4 +1,4 @@
-import { Currency, currencyEquals, ETHER, WETH } from '@uniswap/sdk';
+import { ChainId, Currency, currencyEquals, ETHER, WETH } from '@uniswap/sdk';
 import { useMemo } from 'react';
 import { tryParseAmount } from 'state/swap/hooks';
 import { useTransactionAdder } from 'state/transactions/hooks';
@@ -30,13 +30,15 @@ export default function useWrapCallback(
   inputError?: string;
 } {
   const { chainId, account } = useActiveWeb3React();
+  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
+  const nativeCurrency = ETHER[chainIdToUse];
   const wethContract = useWETHContract();
   const balance = useCurrencyBalance(account ?? undefined, inputCurrency);
   // we can always parse the amount typed as the input currency, since wrapping is 1:1
-  const inputAmount = useMemo(() => tryParseAmount(typedValue, inputCurrency), [
-    inputCurrency,
-    typedValue,
-  ]);
+  const inputAmount = useMemo(
+    () => tryParseAmount(chainIdToUse, typedValue, inputCurrency),
+    [inputCurrency, typedValue],
+  );
   const addTransaction = useTransactionAdder();
 
   return useMemo(() => {
@@ -47,7 +49,7 @@ export default function useWrapCallback(
       inputAmount && balance && !balance.lessThan(inputAmount);
 
     if (
-      inputCurrency === ETHER &&
+      inputCurrency === nativeCurrency &&
       currencyEquals(WETH[chainId], outputCurrency)
     ) {
       return {
@@ -73,7 +75,7 @@ export default function useWrapCallback(
       };
     } else if (
       currencyEquals(WETH[chainId], inputCurrency) &&
-      outputCurrency === ETHER
+      outputCurrency === nativeCurrency
     ) {
       return {
         wrapType: WrapType.UNWRAP,

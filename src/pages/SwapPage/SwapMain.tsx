@@ -13,6 +13,8 @@ import { Trans, useTranslation } from 'react-i18next';
 import { SwapBestTrade } from 'components/Swap';
 import SwapV3Page from './V3/Swap';
 import { useParams } from 'react-router-dom';
+import { getConfig } from '../../config/index';
+import { useActiveWeb3React } from 'hooks';
 
 const SWAP_BEST_TRADE = 0;
 const SWAP_NORMAL = 1;
@@ -23,10 +25,10 @@ const SwapMain: React.FC = () => {
   const [swapIndex, setSwapIndex] = useState(SWAP_BEST_TRADE);
   const [openSettingsModal, setOpenSettingsModal] = useState(false);
   const { isProMode, updateIsProMode } = useIsProMode();
-
+  const { chainId } = useActiveWeb3React();
   const { isV3, updateIsV3 } = useIsV3();
   const params: any = useParams();
-  const isOnV3 = params ? params.version === 'v3' : false;
+  let isOnV3 = params ? params.version === 'v3' : false;
   const parsedQuery = useParsedQueryString();
   const currency0Id =
     parsedQuery && (parsedQuery.currency0 || parsedQuery.inputCurrency)
@@ -40,13 +42,28 @@ const SwapMain: React.FC = () => {
   const currency1 = useCurrency(currency1Id);
   const swapMode = parsedQuery ? parsedQuery.mode : '';
   const { t } = useTranslation();
+  const config = getConfig(chainId);
+  const v2 = config['v2'];
+  const v3 = config['v3'];
+  const showBestTrade = config['swap']['bestTrade'];
+  const showProMode = config['swap']['proMode'];
+  const showLimitOrder = config['swap']['limitOrder'];
 
   useEffect(() => {
     updateIsV3(isOnV3);
     if (isOnV3) {
       setSwapIndex(SWAP_V3);
     }
-  }, [isOnV3]);
+
+    if (!showBestTrade) {
+      const tradeIndex = v2 ? SWAP_NORMAL : SWAP_V3;
+      setSwapIndex(tradeIndex);
+      if (tradeIndex === SWAP_V3) {
+        isOnV3 = true;
+        updateIsV3(true);
+      }
+    }
+  }, [isOnV3, showBestTrade, v2]);
 
   return (
     <>
@@ -62,56 +79,67 @@ const SwapMain: React.FC = () => {
         }`}
       >
         <Box display='flex' width={1}>
-          <Box
-            //TODO: Active class resolution should come from from a func
-            className={`${
-              swapIndex === SWAP_BEST_TRADE ? 'activeSwap' : ''
-            } swapItem headingItem
-            `}
-            onClick={() => {
-              updateIsV3(false);
-              setSwapIndex(SWAP_BEST_TRADE);
-            }}
-          >
-            <p>{t('bestTrade')}</p>
-          </Box>
-          <Box
-            className={`${
-              swapIndex === SWAP_NORMAL ? 'activeSwap' : ''
-            } swapItem headingItem
-            `}
-            onClick={() => {
-              updateIsV3(false);
-              setSwapIndex(SWAP_NORMAL);
-            }}
-          >
-            <p>{t('market')}</p>
-          </Box>
-          <Box
-            className={`${
-              swapIndex === SWAP_V3 ? 'activeSwap' : ''
-            } swapItem headingItem
-            `}
-            onClick={() => {
-              updateIsV3(true);
-              setSwapIndex(SWAP_V3);
-            }}
-          >
-            <p>{t('marketV3')}</p>
-          </Box>
-          <Box
-            className={`${
-              swapIndex === SWAP_LIMIT ? 'activeSwap' : ''
-            } swapItem headingItem`}
-            onClick={() => {
-              updateIsV3(false);
-              setSwapIndex(SWAP_LIMIT);
-            }}
-          >
-            <p>{t('limit')}</p>
-          </Box>
+          {showBestTrade && (
+            <Box
+              //TODO: Active class resolution should come from from a func
+              className={`${
+                swapIndex === SWAP_BEST_TRADE ? 'activeSwap' : ''
+              } swapItem headingItem
+              `}
+              onClick={() => {
+                updateIsV3(false);
+                setSwapIndex(SWAP_BEST_TRADE);
+              }}
+            >
+              <p>{t('bestTrade')}</p>
+            </Box>
+          )}
+          {v2 && (
+            <Box
+              className={`${
+                swapIndex === SWAP_NORMAL ? 'activeSwap' : ''
+              } swapItem headingItem
+              `}
+              onClick={() => {
+                updateIsV3(false);
+                isOnV3 = false;
+                setSwapIndex(SWAP_NORMAL);
+              }}
+            >
+              <p>{t('market')}</p>
+            </Box>
+          )}
+          {v3 && (
+            <Box
+              className={`${
+                swapIndex === SWAP_V3 ? 'activeSwap' : ''
+              } swapItem headingItem
+              `}
+              onClick={() => {
+                updateIsV3(true);
+                isOnV3 = true;
+                setSwapIndex(SWAP_V3);
+              }}
+            >
+              <p>{t('marketV3')}</p>
+            </Box>
+          )}
+          {showLimitOrder && (
+            <Box
+              className={`${
+                swapIndex === SWAP_LIMIT ? 'activeSwap' : ''
+              } swapItem headingItem`}
+              onClick={() => {
+                updateIsV3(false);
+                isOnV3 = false;
+                setSwapIndex(SWAP_LIMIT);
+              }}
+            >
+              <p>{t('limit')}</p>
+            </Box>
+          )}
         </Box>
-        {!isProMode && (
+        {!isProMode && showProMode && (
           <Box margin='8px 16px 0' className='flex items-center'>
             <Box className='flex items-center' mr={1}>
               <span
@@ -134,19 +162,19 @@ const SwapMain: React.FC = () => {
         )}
       </Box>
       <Box padding={isProMode ? '0 24px' : '0'} mt={3.5}>
-        {swapIndex === SWAP_BEST_TRADE && (
+        {swapIndex === SWAP_BEST_TRADE && showBestTrade && (
           <SwapBestTrade
             currency0={currency0 ?? undefined}
             currency1={currency1 ?? undefined}
           />
         )}
-        {swapIndex === SWAP_NORMAL && (
+        {swapIndex === SWAP_NORMAL && v2 && (
           <Swap
             currency0={currency0 ?? undefined}
             currency1={currency1 ?? undefined}
           />
         )}
-        {swapIndex === SWAP_V3 && (
+        {swapIndex === SWAP_V3 && v3 && (
           <SwapV3Page
             currency0={currency0Id}
             currency1={
@@ -154,7 +182,7 @@ const SwapMain: React.FC = () => {
             }
           ></SwapV3Page>
         )}
-        {swapIndex === SWAP_LIMIT && (
+        {swapIndex === SWAP_LIMIT && showLimitOrder && (
           <Box className='limitOrderPanel'>
             <GelatoLimitOrderPanel />
             <GelatoLimitOrdersHistoryPanel />

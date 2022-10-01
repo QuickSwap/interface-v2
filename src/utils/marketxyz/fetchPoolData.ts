@@ -1,3 +1,4 @@
+import { ChainId } from '@uniswap/sdk';
 import {
   PoolDirectoryV1,
   PoolAsset,
@@ -5,7 +6,7 @@ import {
   Pool,
   PoolLensV1,
 } from 'market-sdk';
-import { convertBNToNumber } from 'utils';
+import { convertBNToNumber, getEthPrice } from 'utils';
 
 export interface USDPricedPoolAsset extends PoolAsset {
   supplyBalanceUSD: number;
@@ -50,10 +51,10 @@ export interface PoolData {
 }
 
 export const fetchPoolData = async (
+  chainId: ChainId,
   poolId: string | undefined,
   address: string | undefined,
   directory: PoolDirectoryV1,
-  ethPrice: number,
 ): Promise<PoolData | undefined> => {
   if (!poolId) return;
 
@@ -79,6 +80,7 @@ export const fetchPoolData = async (
   let totalSuppliedUSD = 0;
   let totalBorrowedUSD = 0;
 
+  const [ethPrice] = await getEthPrice(chainId);
   await Promise.all(
     assets.map(async (asset) => {
       asset.isPaused = await pool.comptroller.borrowGuardianPaused(

@@ -29,7 +29,7 @@ const UnstakeQuickModal: React.FC<UnstakeQuickModalProps> = ({
   const lairInfo = useOldLairInfo();
   const newLairInfo = useNewLairInfo();
   const laifInfoToUse = isNew ? newLairInfo : lairInfo;
-  const dQuickBalance = laifInfoToUse.dQUICKBalance;
+  const dQuickBalance = laifInfoToUse?.dQUICKBalance;
   const [typedValue, setTypedValue] = useState('');
   const [stakePercent, setStakePercent] = useState(0);
 
@@ -37,7 +37,7 @@ const UnstakeQuickModal: React.FC<UnstakeQuickModalProps> = ({
   const newLairContract = useNewLairContract();
   const lairContractToUse = isNew ? newLairContract : lairContract;
   const error =
-    Number(typedValue) > Number(dQuickBalance.toExact()) || !typedValue;
+    Number(typedValue) > Number(dQuickBalance?.toExact()) || !typedValue;
 
   const onWithdraw = () => {
     if (lairContractToUse && laifInfoToUse?.dQUICKBalance) {

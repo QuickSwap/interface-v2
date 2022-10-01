@@ -1,3 +1,5 @@
+import { WrappedTokenInfo } from 'state/lists/v3/wrappedTokenInfo';
+
 export interface PoolSubgraph {
   fee: string;
   feesUSD: string;
@@ -25,8 +27,8 @@ export interface PoolAddressSubgraph {
 export interface PoolChartSubgraph {
   id: string;
   fee: string;
-  token0: TokenSubgraph;
-  token1: TokenSubgraph;
+  token0: TokenSubgraph | WrappedTokenInfo;
+  token1: TokenSubgraph | WrappedTokenInfo;
   sqrtPrice: string;
   liquidity: string;
   tick: string;

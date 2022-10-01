@@ -1,9 +1,9 @@
 import React from 'react';
 import { ChainId, Currency, currencyEquals, ETHER, Token } from '@uniswap/sdk';
 import { Box } from '@material-ui/core';
-import { GlobalData } from 'constants/index';
 import { CurrencyLogo, QuestionHelper } from 'components';
 import { useTranslation } from 'react-i18next';
+import { SUGGESTED_BASES } from 'constants/v3/addresses';
 
 interface CommonBasesProps {
   chainId?: ChainId;
@@ -17,6 +17,9 @@ const CommonBases: React.FC<CommonBasesProps> = ({
   selectedCurrency,
 }) => {
   const { t } = useTranslation();
+
+  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
+  const nativeCurrency = ETHER[chainIdToUse];
   return (
     <Box mb={2}>
       <Box display='flex' my={1.5}>
@@ -29,35 +32,36 @@ const CommonBases: React.FC<CommonBasesProps> = ({
         <Box
           className='baseWrapper'
           onClick={() => {
-            if (!selectedCurrency || !currencyEquals(selectedCurrency, ETHER)) {
-              onSelect(ETHER);
+            if (
+              !selectedCurrency ||
+              !currencyEquals(selectedCurrency, nativeCurrency)
+            ) {
+              onSelect(nativeCurrency);
             }
           }}
         >
-          <CurrencyLogo currency={ETHER} size='24px' />
-          <small>MATIC</small>
+          <CurrencyLogo currency={nativeCurrency} size='24px' />
+          <small>{nativeCurrency.name}</small>
         </Box>
-        {(chainId ? GlobalData.bases.SUGGESTED_BASES[chainId] : []).map(
-          (token: Token) => {
-            const selected = Boolean(
-              selectedCurrency && currencyEquals(selectedCurrency, token),
-            );
-            return (
-              <Box
-                className='baseWrapper'
-                key={token.address}
-                onClick={() => {
-                  if (!selected) {
-                    onSelect(token);
-                  }
-                }}
-              >
-                <CurrencyLogo currency={token} size='24px' />
-                <small>{token.symbol}</small>
-              </Box>
-            );
-          },
-        )}
+        {(chainId ? SUGGESTED_BASES[chainId] : []).map((token: Token) => {
+          const selected = Boolean(
+            selectedCurrency && currencyEquals(selectedCurrency, token),
+          );
+          return (
+            <Box
+              className='baseWrapper'
+              key={token.address}
+              onClick={() => {
+                if (!selected) {
+                  onSelect(token);
+                }
+              }}
+            >
+              <CurrencyLogo currency={token} size='24px' />
+              <small>{token.symbol}</small>
+            </Box>
+          );
+        })}
       </Box>
     </Box>
   );

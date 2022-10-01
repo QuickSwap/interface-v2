@@ -12,12 +12,12 @@ import { tryParseAmount } from 'state/swap/v3/hooks';
 import { useBestV3TradeExactIn } from 'hooks/v3/useBestV3Trade';
 import { useInitialTokenPrice, useInitialUSDPrices } from 'state/mint/v3/hooks';
 import './index.scss';
-import { GlobalValue } from 'constants/index';
 import { toToken } from 'constants/v3/routing';
 import { Box } from '@material-ui/core';
 import { LockOutlined } from '@material-ui/icons';
 import NumericalInput from 'components/NumericalInput';
-import { ETHER } from '@uniswap/sdk';
+import { ChainId, ETHER } from '@uniswap/sdk';
+import { USDC } from 'constants/v3/addresses';
 
 interface ITokenAmountCard {
   currency: Currency | undefined | null;
@@ -48,11 +48,13 @@ export function TokenAmountCard({
   priceFormat,
   isBase,
 }: ITokenAmountCard) {
-  const { account } = useActiveWeb3React();
+  const { account, chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
+  const nativeCurrency = ETHER[chainIdToUse];
 
   const balance = useCurrencyBalance(
     account ?? undefined,
-    currency?.isNative ? ETHER : currency ?? undefined,
+    currency?.isNative ? nativeCurrency : currency ?? undefined,
   );
   const balanceUSD = useUSDCPrice(currency ?? undefined);
 
@@ -66,7 +68,7 @@ export function TokenAmountCard({
     ),
     true,
   );
-  const USDC_POLYGON = toToken(GlobalValue.tokens.COMMON.USDC);
+  const USDC_POLYGON = toToken(USDC[chainIdToUse]);
   const tokenValue = useBestV3TradeExactIn(
     tryParseAmount('1', USDC_POLYGON),
     currency ?? undefined,

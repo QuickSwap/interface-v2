@@ -398,6 +398,31 @@ export const PAIR_FEE_CHART_V3 = () => gql`
   }
 `;
 
+export const V3_PRICES_BY_BLOCK: any = (
+  tokenAddress: string,
+  blocks: any[],
+) => {
+  let queryString = 'query blocks {';
+  queryString += blocks.map(
+    (block) => `
+      t${block.timestamp}:token(id:"${tokenAddress}", block: { number: ${block.number} }) { 
+        derivedMatic
+      }
+    `,
+  );
+  queryString += ',';
+  queryString += blocks.map(
+    (block) => `
+      b${block.timestamp}: bundle(id:"1", block: { number: ${block.number} }) { 
+        maticPriceUSD
+      }
+    `,
+  );
+
+  queryString += '}';
+  return gql(queryString);
+};
+
 export const IS_PAIR_EXISTS_V3: any = (pairAddress: string) => {
   const queryString = `
     query pools {

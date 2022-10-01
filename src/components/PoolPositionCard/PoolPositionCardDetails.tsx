@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Box, Button } from '@material-ui/core';
-import { Pair, JSBI, Percent } from '@uniswap/sdk';
+import { Pair, JSBI, Percent, ChainId } from '@uniswap/sdk';
 import { useActiveWeb3React } from 'hooks';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { useTokenBalance } from 'state/wallet/hooks';
@@ -14,7 +14,7 @@ const PoolPositionCardDetails: React.FC<{ pair: Pair }> = ({ pair }) => {
   const { t } = useTranslation();
   const history = useHistory();
 
-  const { account } = useActiveWeb3React();
+  const { account, chainId } = useActiveWeb3React();
   const [openRemoveModal, setOpenRemoveModal] = useState(false);
 
   const currency0 = unwrappedToken(pair.token0);
@@ -106,7 +106,11 @@ const PoolPositionCardDetails: React.FC<{ pair: Pair }> = ({ pair }) => {
               history.push(
                 `/pools?currency0=${currencyId(
                   currency0,
-                )}&currency1=${currencyId(currency1)}`,
+                  chainId ? chainId : ChainId.MATIC,
+                )}&currency1=${currencyId(
+                  currency1,
+                  chainId ? chainId : ChainId.MATIC,
+                )}`,
               );
             }}
           >
