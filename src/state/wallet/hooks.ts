@@ -3,7 +3,7 @@ import {
   ChainId,
   Currency,
   CurrencyAmount,
-  ETHER,
+  ETHER as NATIVE,
   JSBI,
   TokenAmount,
   Token,
@@ -172,7 +172,7 @@ export function useCurrencyBalances(
 ): (CurrencyAmount | undefined)[] {
   const { chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ? chainId : ChainId.MATIC;
-  const nativeCurrency = ETHER[chainIdToUse];
+  const nativeCurrency = NATIVE[chainIdToUse];
 
   const tokens = useMemo(
     () =>

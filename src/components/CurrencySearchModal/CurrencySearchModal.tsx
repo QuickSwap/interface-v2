@@ -63,7 +63,7 @@ const CurrencySearchModal: React.FC<CurrencySearchModalProps> = ({
       }
       onDismiss();
     },
-    [onDismiss, onCurrencySelect, isV3],
+    [onDismiss, onCurrencySelect, isV3, nativeCurrency],
   );
 
   const handleClickChangeList = useCallback(() => {

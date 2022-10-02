@@ -1,4 +1,10 @@
-import { ChainId, Currency, currencyEquals, ETHER, Token } from '@uniswap/sdk';
+import {
+  ChainId,
+  Currency,
+  currencyEquals,
+  ETHER as NATIVE,
+  Token,
+} from '@uniswap/sdk';
 import { Currency as V3Currency, Token as V3Token } from '@uniswap/sdk-core';
 import React, { useMemo } from 'react';
 import { Box } from '@material-ui/core';
@@ -25,7 +31,7 @@ const CurrencyLogo: React.FC<CurrencyLogoProps> = ({
 }) => {
   const { chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ? chainId : ChainId.MATIC;
-  const nativeCurrency = ETHER[chainIdToUse];
+  const nativeCurrency = NATIVE[chainIdToUse];
   const nativeCurrencyImage = '/' + currency?.symbol + '.png';
   const uriLocations = useHttpLocations(
     currency instanceof WrappedTokenInfo ||
@@ -56,7 +62,7 @@ const CurrencyLogo: React.FC<CurrencyLogoProps> = ({
     }
 
     return [];
-  }, [currency, uriLocations]);
+  }, [currency, uriLocations, nativeCurrency]);
 
   if (
     currency &&

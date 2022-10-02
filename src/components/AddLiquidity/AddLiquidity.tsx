@@ -191,7 +191,7 @@ const AddLiquidity: React.FC<{
     } else {
       onCurrencySelection(Field.CURRENCY_B, NEW_QUICK[chainIdToUse]);
     }
-  }, [onCurrencySelection, currency0, currency1]);
+  }, [onCurrencySelection, currency0, currency1, chainIdToUse, nativeCurrency]);
 
   const onAdd = () => {
     if (expertMode) {

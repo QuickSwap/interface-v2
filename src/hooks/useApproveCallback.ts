@@ -4,7 +4,7 @@ import {
   Trade,
   TokenAmount,
   CurrencyAmount,
-  ETHER,
+  ETHER as NATIVE,
   ChainId,
 } from '@uniswap/sdk';
 import { CurrencyAmount as CurrencyAmountV3 } from '@uniswap/sdk-core';
@@ -40,7 +40,7 @@ export function useApproveCallback(
 ): [ApprovalState, () => Promise<void>] {
   const { account, chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ? chainId : ChainId.MATIC;
-  const nativeCurrency = ETHER[chainIdToUse];
+  const nativeCurrency = NATIVE[chainIdToUse];
   const token =
     amountToApprove instanceof TokenAmount ? amountToApprove.token : undefined;
   const currentAllowance = useTokenAllowance(
@@ -64,7 +64,13 @@ export function useApproveCallback(
         ? ApprovalState.PENDING
         : ApprovalState.NOT_APPROVED
       : ApprovalState.APPROVED;
-  }, [amountToApprove, currentAllowance, pendingApproval, spender]);
+  }, [
+    amountToApprove,
+    currentAllowance,
+    pendingApproval,
+    spender,
+    nativeCurrency,
+  ]);
 
   const tokenContract = useTokenContract(token?.address);
   const addTransaction = useTransactionAdder();

@@ -43,7 +43,7 @@ export default function useWrapCallback(
   // we can always parse the amount typed as the input currency, since wrapping is 1:1
   const inputAmount = useMemo(
     () => tryParseAmount(chainIdToUse, typedValue, inputCurrency),
-    [inputCurrency, typedValue],
+    [inputCurrency, typedValue, chainIdToUse],
   );
   const addTransaction = useTransactionAdder();
 
@@ -115,5 +115,6 @@ export default function useWrapCallback(
     inputAmount,
     balance,
     addTransaction,
+    nativeCurrency,
   ]);
 }

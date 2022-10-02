@@ -59,6 +59,7 @@ export function useETHBalances(
     [addresses, chainId, results],
   );
 
+  //TODO: Investigate (algebras use) of use previous here, may cause adverse side effects
   const prevBalances = usePreviousNonEmptyObject(balances);
 
   return useMemo(() => {

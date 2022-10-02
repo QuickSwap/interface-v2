@@ -18,6 +18,7 @@ function useTokensFromMap(
   includeUserAdded: boolean,
 ): { [address: string]: Token } {
   const { chainId } = useActiveWeb3React();
+  //TODO: we need to fix this so that it works per chain
   const userAddedTokens: Token[] = []; /// useUserAddedTokens();
 
   return useMemo(() => {
@@ -194,7 +195,7 @@ export function useCurrency(
     () =>
       chainId
         ? ExtendedEther.onChain(
-            chainIdToUse,
+            chainId,
             chainInfo.nativeCurrencyDecimals,
             chainInfo.nativeCurrencySymbol,
             chainInfo.nativeCurrencyName,

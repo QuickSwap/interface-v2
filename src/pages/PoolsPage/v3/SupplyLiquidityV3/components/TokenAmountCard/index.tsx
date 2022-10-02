@@ -158,7 +158,14 @@ export function TokenAmountCard({
     valueUSD,
     currencyPrice,
     handleInput,
-    USDC_V3.address
+    USDC_V3.address,
+    currency?.wrapped.address,
+    initialTokenPrice,
+    initialUSDPrices.CURRENCY_A,
+    initialUSDPrices.CURRENCY_B,
+    isBase,
+    isUSD,
+    otherCurrencyPrice,
   ]);
 
   useEffect(() => {

@@ -249,6 +249,7 @@ function RangePart({
     valueUSD,
     usdPriceB,
     onUserInput,
+    USDC_TOKEN.address,
   ]);
 
   // for button clicks

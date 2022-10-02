@@ -44,11 +44,11 @@ export default function MyLiquidityPoolsV3() {
 
   const farmingPositions = useMemo(
     () => positions?.filter((el) => el.onFarming),
-    [positions, account, prevAccount],
+    [positions],
   );
   const inRangeWithOutFarmingPositions = useMemo(
     () => openPositions.filter((el) => !el.onFarming),
-    [openPositions, account, prevAccount],
+    [openPositions],
   );
 
   const filteredPositions = useMemo(

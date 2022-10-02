@@ -40,7 +40,7 @@ export function SelectPair({
 
   useEffect(() => {
     fetchPopularPoolsFn();
-  }, []);
+  }, [fetchPopularPoolsFn]);
 
   return (
     <Box>

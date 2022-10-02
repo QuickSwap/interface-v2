@@ -1,5 +1,5 @@
 import React from 'react';
-import { ChainId, Currency, currencyEquals, ETHER, Token } from '@uniswap/sdk';
+import { ChainId, Currency, currencyEquals, ETHER as NATIVE, Token } from '@uniswap/sdk';
 import { Box } from '@material-ui/core';
 import { CurrencyLogo, QuestionHelper } from 'components';
 import { useTranslation } from 'react-i18next';
@@ -19,7 +19,7 @@ const CommonBases: React.FC<CommonBasesProps> = ({
   const { t } = useTranslation();
 
   const chainIdToUse = chainId ? chainId : ChainId.MATIC;
-  const nativeCurrency = ETHER[chainIdToUse];
+  const nativeCurrency = NATIVE[chainIdToUse];
   return (
     <Box mb={2}>
       <Box display='flex' my={1.5}>

@@ -220,7 +220,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
         }
       }
     })();
-  }, [currentAsset, modalType, account]);
+  }, [currentAsset, modalType, account, chainIdToUse]);
 
   useEffect(() => {
     if (!numValue) {
@@ -468,7 +468,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
         setPairData(pairInfo[0]);
       }
     })();
-  }, [pairAddress, ethPrice.price]);
+  }, [pairAddress, ethPrice.price, chainIdToUse]);
 
   return (
     <>

@@ -51,7 +51,7 @@ export function SelectRange({
   //TODO - create one main isUSD
   const isUSD = useMemo(() => {
     return priceFormat === PriceFormats.USD;
-  }, []);
+  }, [priceFormat]);
 
   const isStablecoinPair = useMemo(() => {
     if (!currencyA || !currencyB) return false;
@@ -107,15 +107,15 @@ export function SelectRange({
 
   const isSorted = useMemo(() => {
     return tokenA && tokenB && tokenA.sortsBefore(tokenB);
-  }, [tokenA, tokenB, mintInfo]);
+  }, [tokenA, tokenB]);
 
   const leftPrice = useMemo(() => {
     return isSorted ? priceLower : priceUpper?.invert();
-  }, [isSorted, priceLower, priceUpper, mintInfo]);
+  }, [isSorted, priceLower, priceUpper]);
 
   const rightPrice = useMemo(() => {
     return isSorted ? priceUpper : priceLower?.invert();
-  }, [isSorted, priceUpper, priceLower, mintInfo]);
+  }, [isSorted, priceUpper, priceLower]);
 
   const price = useMemo(() => {
     if (!mintInfo.price) return;
@@ -156,7 +156,7 @@ export function SelectRange({
         onRightRangeInput(preset ? String(+price * preset.max) : '');
       }
     },
-    [price],
+    [price, dispatch, getSetFullRange, onLeftRangeInput, onLeftRangeInput],
   );
 
   const initialUSDPrices = useInitialUSDPrices();

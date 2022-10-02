@@ -1,4 +1,4 @@
-import { ChainId, CurrencyAmount, ETHER, Token } from '@uniswap/sdk';
+import { ChainId, CurrencyAmount, ETHER as NATIVE, Token } from '@uniswap/sdk';
 import React from 'react';
 import { Box, Tooltip, CircularProgress, ListItem } from '@material-ui/core';
 import { useActiveWeb3React } from 'hooks';
@@ -18,7 +18,7 @@ import { useTranslation } from 'react-i18next';
 function currencyKey(currency: Token): string {
   return currency instanceof Token
     ? currency.address
-    : currency === ETHER
+    : currency === NATIVE
     ? 'ETHER'
     : '';
 }
@@ -84,7 +84,7 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
   const { account, chainId } = useActiveWeb3React();
   const key = currencyKey(currency);
   const chainIdToUse = chainId ? chainId : ChainId.MATIC;
-  const nativeCurrency = ETHER[chainIdToUse];
+  const nativeCurrency = NATIVE[chainIdToUse];
   const usdPrice = useUSDCPrice(currency);
   const balance = useCurrencyBalance(account ?? undefined, currency);
   const customAdded = useIsUserAddedToken(currency);

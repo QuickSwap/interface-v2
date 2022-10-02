@@ -42,7 +42,7 @@ import {
   Percent,
   JSBI,
   Currency,
-  ETHER,
+  ETHER as NATIVE,
   Token,
   TokenAmount,
   Pair,
@@ -1461,7 +1461,7 @@ export function confirmPriceImpactWithoutFee(
 }
 
 export function currencyId(currency: Currency, chainId: ChainId): string {
-  if (currency === ETHER[chainId]) return 'ETH';
+  if (currency === NATIVE[chainId]) return 'ETH';
   if (currency instanceof Token) return currency.address;
   throw new Error('invalid currency');
 }
@@ -1515,7 +1515,7 @@ export function maxAmountSpend(
   currencyAmount?: CurrencyAmount,
 ): CurrencyAmount | undefined {
   if (!currencyAmount) return undefined;
-  if (currencyAmount.currency === ETHER[chainId]) {
+  if (currencyAmount.currency === NATIVE[chainId]) {
     if (JSBI.greaterThan(currencyAmount.raw, GlobalConst.utils.MIN_ETH)) {
       return CurrencyAmount.ether(
         JSBI.subtract(currencyAmount.raw, GlobalConst.utils.MIN_ETH),
@@ -1534,7 +1534,7 @@ export function isTokensOnList(
   chainId: ChainId,
 ): boolean[] {
   return currencies.map((currency) => {
-    if (currency === ETHER[chainId]) return true;
+    if (currency === NATIVE[chainId]) return true;
     return Boolean(
       currency instanceof Token &&
         defaultTokens[currency.chainId]?.[currency.address],
