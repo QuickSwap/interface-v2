@@ -65,7 +65,7 @@ const AnalyticsVolumeChart: React.FC = () => {
       });
     };
     fetchChartData();
-  }, [durationIndex, isV3]);
+  }, [durationIndex, isV3, chainIdToUse]);
 
   const liquidityWeeks = useMemo(() => {
     if (globalChartData) {

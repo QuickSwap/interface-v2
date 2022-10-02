@@ -57,7 +57,7 @@ export function useV2Pairs(
             })
           : undefined;
       }),
-    [tokens],
+    [tokens, v2Exchange],
   );
 
   const results = useMultipleContractSingleData(

@@ -148,6 +148,7 @@ export function useDerivedMintInfo(): {
     chainId,
     currencyB,
     pair,
+    chainIdToUse,
   ]);
   const parsedAmounts: {
     [field in Field]: CurrencyAmount | undefined;
@@ -311,7 +312,7 @@ export function useMintActionHandlers(
         }),
       );
     },
-    [dispatch],
+    [dispatch, chainId],
   );
 
   return {

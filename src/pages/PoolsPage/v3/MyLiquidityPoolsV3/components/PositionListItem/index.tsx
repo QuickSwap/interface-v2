@@ -68,8 +68,7 @@ export function getPriceOrderingFromPositionForUI(
 
   // if token1 is an ETH-/BTC-stable asset, set it as the base token
   //TODO
-  // const bases = [...Object.valuWNATIVE_EXTENDEDDED), WBTC]
-  const bases = [...Object.values(WMATIC_EXTENDED)];
+  const bases = [...Object.values(WNATIVE_EXTENDED)];
   if (bases.some((base) => base.equals(token1))) {
     return {
       priceLower: position.token0PriceUpper.invert(),

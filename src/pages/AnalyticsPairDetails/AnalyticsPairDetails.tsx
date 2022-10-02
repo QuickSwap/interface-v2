@@ -190,7 +190,7 @@ const AnalyticsPairDetails: React.FC = () => {
       fetchPairData();
       fetchTransctions();
     }
-  }, [pairAddress, ethPrice.price, isV3]);
+  }, [pairAddress, ethPrice.price, isV3, chainIdToUse]);
 
   useEffect(() => {
     setPairData(null);

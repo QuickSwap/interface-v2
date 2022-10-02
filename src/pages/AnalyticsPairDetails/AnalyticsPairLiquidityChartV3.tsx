@@ -32,7 +32,7 @@ const AnalyticsPairLiquidityChartV3: React.FC<{
         updateLiquidtyChartData(data);
       }
     });
-  }, [pairData, pairAddress]);
+  }, [pairData, pairAddress, chainIdToUse]);
 
   const [zoom, setZoom] = useState(5);
 
