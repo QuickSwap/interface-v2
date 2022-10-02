@@ -2,7 +2,7 @@ import {
   Currency,
   Token,
   CurrencyAmount,
-  ETHER,
+  ETHER as NATIVE,
   JSBI,
   Pair,
   Percent,
@@ -44,7 +44,7 @@ export function useDerivedMintInfo(): {
 } {
   const { account, chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ? chainId : ChainId.MATIC;
-  const nativeCurrency = ETHER[chainIdToUse];
+  const nativeCurrency = NATIVE[chainIdToUse];
   const {
     independentField,
     typedValue,
@@ -305,7 +305,7 @@ export function useMintActionHandlers(
           currencyId:
             currency instanceof Token
               ? currency.address
-              : currency === ETHER[chainId]
+              : currency === NATIVE[chainId]
               ? 'ETH'
               : '',
         }),

@@ -51,7 +51,7 @@ const FarmPage: React.FC = () => {
 
   useEffect(() => {
     getBulkPairData(chainIdToUse, pairLists).then((data) => setBulkPairs(data));
-  }, [pairLists]);
+  }, [pairLists, chainIdToUse]);
 
   useEffect(() => {
     updateIsV3(

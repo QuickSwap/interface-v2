@@ -18,7 +18,7 @@ import { SelectRange } from './containers/SelectRange';
 import { Currency, Percent } from '@uniswap/sdk-core';
 
 import './index.scss';
-import { WMATIC_EXTENDED } from 'constants/v3/addresses';
+import { WNATIVE_EXTENDED } from 'constants/v3/addresses';
 import {
   setInitialTokenPrice,
   setInitialUSDPrices,
@@ -172,12 +172,12 @@ export function SupplyLiquidityV3() {
         const isETHOrWETHNew =
           currencyIdNew === chainSymbol ||
           (chainId !== undefined &&
-            currencyIdNew === WMATIC_EXTENDED[chainId]?.address);
+            currencyIdNew === WNATIVE_EXTENDED[chainId]?.address);
         const isETHOrWETHOther =
           currencyIdOther !== undefined &&
           (currencyIdOther === chainSymbol ||
             (chainId !== undefined &&
-              currencyIdOther === WMATIC_EXTENDED[chainId]?.address));
+              currencyIdOther === WNATIVE_EXTENDED[chainId]?.address));
 
         if (isETHOrWETHNew && isETHOrWETHOther) {
           return [currencyIdNew, undefined];

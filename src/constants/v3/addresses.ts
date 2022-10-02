@@ -192,7 +192,7 @@ export const LENDING_QS_POOLS: { [chainId: number]: string[] } = {
   ],
 };
 
-export const WMATIC_EXTENDED: { [chainId: number]: TokenV3 } = {
+export const WNATIVE_EXTENDED: { [chainId: number]: TokenV3 } = {
   [ChainId.MATIC]: new TokenV3(
     ChainId.MATIC,
     '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
@@ -329,8 +329,6 @@ export const ETHER: { [chainId: number]: Token } = {
     ChainId.DOGECHAIN,
     '0xB44a9B6905aF7c801311e8F4E76932ee959c663C',
     18,
-    //TODO: this should really have a difference symbol but we use 'ETH' hardcoded to represent native
-    //Due to Uniswap SDK implmentation
     'ETH',
     'Ether',
   ),
@@ -374,7 +372,7 @@ export const DD: { [chainId: number]: Token } = {
 };
 
 export const V2_BASES_TO_CHECK_TRADES_AGAINST: {
-  [ChainId: number]: Token[];
+  [chainId: number]: Token[];
 } = {
   [ChainId.MATIC]: [
     ...WETH_ONLY[ChainId.MATIC],
@@ -387,6 +385,14 @@ export const V2_BASES_TO_CHECK_TRADES_AGAINST: {
     DAI[ChainId.MATIC],
     //GHST,
     MI[ChainId.MATIC],
+  ],
+  [ChainId.DOGECHAIN]: [
+    USDC[ChainId.DOGECHAIN],
+    USDT[ChainId.DOGECHAIN],
+    ETHER[ChainId.DOGECHAIN],
+    DD[ChainId.DOGECHAIN],
+    DC[ChainId.DOGECHAIN],
+    MI[ChainId.DOGECHAIN],
   ],
 };
 
@@ -403,11 +409,11 @@ export const V3_BASES_TO_CHECK_TRADES_AGAINST: {
   [ChainId: number]: TokenV3[];
 } = {
   [ChainId.MATIC]: [
-    WMATIC_EXTENDED[ChainId.MATIC],
+    WNATIVE_EXTENDED[ChainId.MATIC],
     toV3Token(USDC[ChainId.MATIC]),
   ],
   [ChainId.DOGECHAIN]: [
-    WMATIC_EXTENDED[ChainId.DOGECHAIN],
+    WNATIVE_EXTENDED[ChainId.DOGECHAIN],
     toV3Token(USDC[ChainId.DOGECHAIN]),
     toV3Token(DC[ChainId.DOGECHAIN]),
     toV3Token(DD[ChainId.DOGECHAIN]),
@@ -458,7 +464,7 @@ export const V3_BASES_TO_TRACK_LIQUIDITY_FOR: {
   [ChainId: number]: TokenV3[];
 } = {
   [ChainId.MATIC]: [
-    WMATIC_EXTENDED[ChainId.MATIC],
+    WNATIVE_EXTENDED[ChainId.MATIC],
     toV3Token(DAI[ChainId.MATIC]),
     toV3Token(USDC[ChainId.MATIC]),
     toV3Token(USDT[ChainId.MATIC]),
@@ -468,7 +474,7 @@ export const V3_BASES_TO_TRACK_LIQUIDITY_FOR: {
     toV3Token(WBTC[ChainId.MATIC]),
   ],
   [ChainId.DOGECHAIN]: [
-    WMATIC_EXTENDED[ChainId.DOGECHAIN],
+    WNATIVE_EXTENDED[ChainId.DOGECHAIN],
     toV3Token(USDC[ChainId.DOGECHAIN]),
     toV3Token(USDT[ChainId.DOGECHAIN]),
     toV3Token(ETHER[ChainId.DOGECHAIN]),
@@ -511,7 +517,7 @@ export class ExtendedEther extends V3Currency {
   private static _cachedEther: { [chainId: number]: ExtendedEther } = {};
 
   public get wrapped(): TokenV3 {
-    if (this.chainId in WMATIC_EXTENDED) return WMATIC_EXTENDED[this.chainId];
+    if (this.chainId in WNATIVE_EXTENDED) return WNATIVE_EXTENDED[this.chainId];
     throw new Error('Unsupported chain ID');
   }
 

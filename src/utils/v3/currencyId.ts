@@ -1,13 +1,10 @@
 import { Currency } from '@uniswap/sdk-core';
+import { ChainId, ETHER } from '@uniswap/sdk';
+import { CurrentPriceCard } from 'pages/PoolsPage/v3/CurrentPriceCard';
 
-export function currencyId(currency: Currency, chainId: number): string {
-  let chainSymbol = 'MATIC';
-
-  if (chainId === 137) {
-    chainSymbol = 'MATIC';
+export function currencyId(currency: Currency, chainId: ChainId): string {
+  if (currency.isToken) {
+    return currency.address;
   }
-
-  if (currency.isNative) return chainSymbol;
-  if (currency.isToken) return currency.address;
-  throw new Error('invalid currency');
+  return ETHER[chainId].symbol ?? 'MATIC';
 }

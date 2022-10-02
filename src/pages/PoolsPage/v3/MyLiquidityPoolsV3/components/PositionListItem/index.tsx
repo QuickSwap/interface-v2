@@ -15,7 +15,7 @@ import useIsTickAtLimit from 'hooks/v3/useIsTickAtLimit';
 import { formatTickPrice } from 'utils/v3/formatTickPrice';
 import DoubleCurrencyLogo from 'components/DoubleCurrencyLogo';
 import { Position } from 'v3lib/entities/position';
-import { USDC, USDT, WMATIC_EXTENDED } from 'constants/v3/addresses';
+import { USDC, USDT, WNATIVE_EXTENDED } from 'constants/v3/addresses';
 import { GlobalValue } from 'constants/index';
 import { toToken } from 'constants/v3/routing';
 import { Box } from '@material-ui/core';
@@ -68,7 +68,7 @@ export function getPriceOrderingFromPositionForUI(
 
   // if token1 is an ETH-/BTC-stable asset, set it as the base token
   //TODO
-  // const bases = [...Object.values(WMATIC_EXTENDED), WBTC]
+  // const bases = [...Object.valuWNATIVE_EXTENDEDDED), WBTC]
   const bases = [...Object.values(WMATIC_EXTENDED)];
   if (bases.some((base) => base.equals(token1))) {
     return {

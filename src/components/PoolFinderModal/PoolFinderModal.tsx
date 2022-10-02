@@ -1,5 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Currency, TokenAmount, ETHER, JSBI, ChainId } from '@uniswap/sdk';
+import {
+  Currency,
+  TokenAmount,
+  ETHER as NATIVE,
+  JSBI,
+  ChainId,
+} from '@uniswap/sdk';
 import { ArrowLeft, Plus } from 'react-feather';
 import { Box } from '@material-ui/core';
 import {
@@ -35,7 +41,7 @@ const PoolFinderModal: React.FC<PoolFinderModalProps> = ({ open, onClose }) => {
   const [showSearch, setShowSearch] = useState<boolean>(false);
   const [activeField, setActiveField] = useState<number>(Fields.TOKEN1);
   const chainIdToUse = chainId ? chainId : ChainId.MATIC;
-  const nativeCurrency = ETHER[chainIdToUse];
+  const nativeCurrency = NATIVE[chainIdToUse];
   const [currency0, setCurrency0] = useState<Currency | null>(nativeCurrency);
   const [currency1, setCurrency1] = useState<Currency | null>(null);
 

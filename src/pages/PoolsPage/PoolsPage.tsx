@@ -49,7 +49,6 @@ const PoolsPage: React.FC = () => {
               <VersionToggle />
             </Box>
           )}
-          ;
         </Box>
 
         <Box className='helpWrapper' style={{ alignSelf: 'flex-end' }}>

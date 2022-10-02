@@ -1,4 +1,10 @@
-import { ChainId, Currency, currencyEquals, ETHER, WETH } from '@uniswap/sdk';
+import {
+  ChainId,
+  Currency,
+  currencyEquals,
+  ETHER as NATIVE,
+  WETH,
+} from '@uniswap/sdk';
 import { useMemo } from 'react';
 import { tryParseAmount } from 'state/swap/hooks';
 import { useTransactionAdder } from 'state/transactions/hooks';
@@ -31,7 +37,7 @@ export default function useWrapCallback(
 } {
   const { chainId, account } = useActiveWeb3React();
   const chainIdToUse = chainId ? chainId : ChainId.MATIC;
-  const nativeCurrency = ETHER[chainIdToUse];
+  const nativeCurrency = NATIVE[chainIdToUse];
   const wethContract = useWETHContract();
   const balance = useCurrencyBalance(account ?? undefined, inputCurrency);
   // we can always parse the amount typed as the input currency, since wrapping is 1:1

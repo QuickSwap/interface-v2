@@ -12,7 +12,7 @@ import { TransactionResponse } from '@ethersproject/providers';
 import { BigNumber } from '@ethersproject/bignumber';
 import ReactGA from 'react-ga';
 import { useTranslation } from 'react-i18next';
-import { Currency, Token, ETHER, TokenAmount, ChainId } from '@uniswap/sdk';
+import { Currency, ETHER as NATIVE, TokenAmount, ChainId } from '@uniswap/sdk';
 import { useActiveWeb3React } from 'hooks';
 import { useRouterContract } from 'hooks/useContract';
 import useTransactionDeadline from 'hooks/useTransactionDeadline';
@@ -55,7 +55,7 @@ const AddLiquidity: React.FC<{
 
   const { account, chainId, library } = useActiveWeb3React();
   const chainIdToUse = chainId ? chainId : ChainId.MATIC;
-  const nativeCurrency = Token.ETHER[chainIdToUse];
+  const nativeCurrency = NATIVE[chainIdToUse];
 
   const [showConfirm, setShowConfirm] = useState(false);
   const [attemptingTxn, setAttemptingTxn] = useState(false);

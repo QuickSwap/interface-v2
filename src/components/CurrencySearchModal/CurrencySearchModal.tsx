@@ -1,4 +1,9 @@
-import { ChainId, Currency, currencyEquals, ETHER } from '@uniswap/sdk';
+import {
+  ChainId,
+  Currency,
+  currencyEquals,
+  ETHER as NATIVE,
+} from '@uniswap/sdk';
 import React, { useCallback, useEffect, useState } from 'react';
 import ReactGA from 'react-ga';
 import { CustomModal } from 'components';
@@ -34,7 +39,7 @@ const CurrencySearchModal: React.FC<CurrencySearchModalProps> = ({
   const lastOpen = useLast(isOpen);
   const { chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ? chainId : ChainId.MATIC;
-  const nativeCurrency = ETHER[chainIdToUse];
+  const nativeCurrency = NATIVE[chainIdToUse];
   useEffect(() => {
     if (isOpen && !lastOpen) {
       setListView(false);

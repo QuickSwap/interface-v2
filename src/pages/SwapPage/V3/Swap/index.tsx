@@ -73,7 +73,7 @@ import { ReactComponent as ExchangeIcon } from 'assets/images/ExchangeIcon.svg';
 import { Box } from '@material-ui/core';
 import { StyledButton } from 'components/v3/Common/styledElements';
 import { toV3Currency } from 'constants/v3/addresses';
-import { ChainId } from '@uniswap/sdk';
+import { ChainId, ETHER as NATIVE } from '@uniswap/sdk';
 
 const SwapV3Page: React.FC<{ currency0?: string; currency1?: string }> = ({
   currency0,
@@ -81,7 +81,7 @@ const SwapV3Page: React.FC<{ currency0?: string; currency1?: string }> = ({
 }) => {
   const { account, chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ?? ChainId.MATIC;
-  const nativeCurrency = TokenV2.ETHER[chainIdToUse];
+  const nativeCurrency = NATIVE[chainIdToUse];
   const history = useHistory();
   const loadedUrlParams = useDefaultsFromURLSearch();
   const inputCurrencyId = currency0 ?? loadedUrlParams?.inputCurrencyId;

@@ -1,6 +1,6 @@
 import invariant from 'tiny-invariant';
 import { Currency, NativeCurrency, Token } from '@uniswap/sdk-core';
-import { WMATIC_EXTENDED } from 'constants/v3/addresses';
+import { WNATIVE_EXTENDED } from 'constants/v3/addresses';
 
 /**
  * Ether is the main usage of a 'native' currency, i.e. for Ethereum mainnet and all testnets
@@ -13,7 +13,7 @@ export class Matic extends NativeCurrency {
   }
 
   public get wrapped(): Token {
-    const weth9 = WMATIC_EXTENDED[this.chainId];
+    const weth9 = WNATIVE_EXTENDED[this.chainId];
     invariant(!!weth9, 'WRAPPED');
     return weth9;
   }

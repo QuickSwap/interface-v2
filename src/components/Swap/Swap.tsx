@@ -6,6 +6,7 @@ import {
   JSBI,
   Token,
   Trade,
+  ETHER as NATIVE,
 } from '@uniswap/sdk';
 import ReactGA from 'react-ga';
 import { ArrowDown } from 'react-feather';
@@ -58,7 +59,7 @@ const Swap: React.FC<{
   const { t } = useTranslation();
   const { account, chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ? chainId : ChainId.MATIC;
-  const nativeCurrency = Token.ETHER[chainIdToUse];
+  const nativeCurrency = NATIVE[chainIdToUse];
   const { independentField, typedValue, recipient } = useSwapState();
   const {
     v1Trade,

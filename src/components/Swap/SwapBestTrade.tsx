@@ -13,6 +13,7 @@ import {
   TradeType,
   Fraction,
   ChainId,
+  ETHER as NATIVE,
 } from '@uniswap/sdk';
 import { Currency, CurrencyAmount } from '@uniswap/sdk-core';
 import ReactGA from 'react-ga';
@@ -70,7 +71,7 @@ const SwapBestTrade: React.FC<{
   const { account, chainId } = useActiveWeb3React();
   const { independentField, typedValue, recipient } = useSwapState();
   const chainIdToUse = chainId ? chainId : ChainId.MATIC;
-  const nativeCurrency = Token.ETHER[chainIdToUse];
+  const nativeCurrency = NATIVE[chainIdToUse];
   const {
     v1Trade,
     v2Trade,

@@ -31,7 +31,7 @@ import { calculateGasMarginV3 } from 'utils';
 import usePrevious from 'hooks/usePrevious';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 import { GAS_PRICE_MULTIPLIER } from 'hooks/useGasPrice';
-import { WMATIC_EXTENDED } from 'constants/v3/addresses';
+import { WNATIVE_EXTENDED } from 'constants/v3/addresses';
 import { NonfungiblePositionManager } from 'v3lib/nonfungiblePositionManager';
 import { WrappedCurrency } from 'models/types';
 import RangeBadge from 'components/v3/Badge/RangeBadge';
@@ -326,10 +326,10 @@ export default function RemoveLiquidityV3({
       (liquidityValue0.currency.isNative ||
         liquidityValue1.currency.isNative ||
         liquidityValue0.currency.wrapped.equals(
-          WMATIC_EXTENDED[liquidityValue0.currency.chainId],
+          WNATIVE_EXTENDED[liquidityValue0.currency.chainId],
         ) ||
         liquidityValue1.currency.wrapped.equals(
-          WMATIC_EXTENDED[liquidityValue1.currency.chainId],
+          WNATIVE_EXTENDED[liquidityValue1.currency.chainId],
         )),
   );
 

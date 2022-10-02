@@ -7,7 +7,7 @@ import { isAddress } from 'utils';
 
 import { useActiveWeb3React } from 'hooks';
 import { useBytes32TokenContract, useTokenContract } from 'hooks/useContract';
-import { ExtendedEther, WMATIC_EXTENDED } from 'constants/v3/addresses';
+import { ExtendedEther, WNATIVE_EXTENDED } from 'constants/v3/addresses';
 import { TokenAddressMap, useSelectedTokenList } from 'state/lists/v3/hooks';
 import { ChainId } from '@uniswap/sdk';
 import { CHAIN_INFO } from 'constants/v3/chains';
@@ -202,7 +202,7 @@ export function useCurrency(
         : undefined,
     [chainId],
   );
-  const weth = chainId ? WMATIC_EXTENDED[chainId] : undefined;
+  const weth = chainId ? WNATIVE_EXTENDED[chainId] : undefined;
   if (weth?.address?.toLowerCase() === currencyId?.toLowerCase()) return weth;
   return isETH ? extendedEther : token;
 }
