@@ -1,9 +1,9 @@
 import { Currency, Token } from '@uniswap/sdk-core';
 import {
-  V3_BASES_TO_CHECK_TRADES_AGAINST,
-  V3_CUSTOM_BASES,
-} from 'constants/v3/addresses';
-import { ADDITIONAL_BASES } from 'constants/v3/routing';
+  ADDITIONAL_BASES,
+  BASES_TO_CHECK_TRADES_AGAINST,
+  CUSTOM_BASES,
+} from 'constants/v3/routing';
 import { useActiveWeb3React } from 'hooks';
 import { useMemo } from 'react';
 
@@ -20,7 +20,7 @@ export function useAllCurrencyCombinations(
   const bases: Token[] = useMemo(() => {
     if (!chainId) return [];
 
-    const common = V3_BASES_TO_CHECK_TRADES_AGAINST[chainId] ?? [];
+    const common = BASES_TO_CHECK_TRADES_AGAINST[chainId] ?? [];
     const additionalA = tokenA
       ? ADDITIONAL_BASES[chainId]?.[tokenA.address] ?? []
       : [];
@@ -73,7 +73,7 @@ export function useAllCurrencyCombinations(
             // optionally filter out some pairs for tokens with custom bases defined
             .filter(([tokenA, tokenB]) => {
               if (!chainId) return true;
-              const customBases = V3_CUSTOM_BASES[chainId];
+              const customBases = CUSTOM_BASES[chainId];
 
               const customBasesA: Token[] | undefined =
                 customBases?.[tokenA.address];

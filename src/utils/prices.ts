@@ -63,7 +63,6 @@ export function computeTradePriceBreakdown(
         )
       : CurrencyAmount.ether(
           realizedLPFee.multiply(trade.inputAmount.raw).quotient,
-          trade.route.pairs[0].chainId,
         ));
 
   return {

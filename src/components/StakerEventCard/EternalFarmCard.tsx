@@ -27,7 +27,6 @@ import { formatUnits } from 'ethers/lib/utils';
 import { formatReward } from 'utils/formatReward';
 import { formatCompact } from 'utils';
 import { Aprs } from 'models/interfaces';
-import { WrappedTokenInfo } from 'state/lists/v3/wrappedTokenInfo';
 
 interface EternalFarmCardProps {
   active?: boolean;
@@ -51,7 +50,6 @@ interface EternalFarmCardProps {
   tvls: any;
   tvlsLoading: boolean;
   eternal?: boolean;
-  chainId: ChainId;
 }
 
 export function EternalFarmCard({
@@ -72,12 +70,12 @@ export function EternalFarmCard({
   tvls,
   tvlsLoading,
   eternal,
-  chainId,
 }: EternalFarmCardProps) {
   const apr = aprs ? aprs[id] : undefined;
   const aprValue =
     (apr !== undefined && apr >= 0 ? Math.round(apr) : '~') + '% APR';
   const tvl = tvls ? tvls[id] : undefined;
+
   return (
     <Box>
       {refreshing && (
@@ -92,24 +90,20 @@ export function EternalFarmCard({
               <Box className='flex items-center'>
                 <DoubleCurrencyLogo
                   currency0={
-                    pool.token0 instanceof WrappedTokenInfo
-                      ? pool.token0
-                      : new Token(
-                          chainId,
-                          pool.token0.address,
-                          Number(pool.token0.decimals),
-                          pool.token0.symbol,
-                        )
+                    new Token(
+                      ChainId.MATIC,
+                      pool.token0.id,
+                      Number(pool.token0.decimals),
+                      pool.token0.symbol,
+                    ) as WrappedCurrency
                   }
                   currency1={
-                    pool.token1 instanceof WrappedTokenInfo
-                      ? pool.token1
-                      : new Token(
-                          chainId,
-                          pool.token1.address,
-                          Number(pool.token1.decimals),
-                          pool.token1.symbol,
-                        )
+                    new Token(
+                      ChainId.MATIC,
+                      pool.token1.id,
+                      Number(pool.token1.decimals),
+                      pool.token1.symbol,
+                    ) as WrappedCurrency
                   }
                   size={30}
                 />

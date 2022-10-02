@@ -18,7 +18,7 @@ import { SelectRange } from './containers/SelectRange';
 import { Currency, Percent } from '@uniswap/sdk-core';
 
 import './index.scss';
-import { WMATIC_EXTENDED } from 'constants/v3/addresses';
+import { WMATIC_EXTENDED } from 'constants/tokens';
 import {
   setInitialTokenPrice,
   setInitialUSDPrices,

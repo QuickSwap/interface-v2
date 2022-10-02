@@ -15,7 +15,7 @@ import { formatTokenAmount } from 'utils';
 import { useTokenBalance } from 'state/wallet/hooks';
 import { useActiveWeb3React } from 'hooks';
 import { useApproveCallback, ApprovalState } from 'hooks/useApproveCallback';
-import { GlobalConst } from 'constants/index';
+import { GlobalConst, GlobalValue } from 'constants/index';
 import { useQUICKConversionContract } from 'hooks/useContract';
 import {
   useTransactionAdder,
@@ -23,12 +23,10 @@ import {
 } from 'state/transactions/hooks';
 import { tryParseAmount } from 'state/swap/hooks';
 import 'pages/styles/convertQUICK.scss';
-import { ChainId } from '@uniswap/sdk';
-import { OLD_QUICK } from 'constants/v3/addresses';
 
 const ConvertQUICKPage: React.FC = () => {
   const { t } = useTranslation();
-  const { account, library, chainId } = useActiveWeb3React();
+  const { account, library } = useActiveWeb3React();
   const [quickAmount, setQUICKAmount] = useState('');
   const [quickV2Amount, setQUICKV2Amount] = useState('');
   const [approving, setApproving] = useState(false);
@@ -37,11 +35,11 @@ const ConvertQUICKPage: React.FC = () => {
   const [txPending, setTxPending] = useState(false);
   const [txHash, setTxHash] = useState('');
   const [txError, setTxError] = useState('');
-  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
-  const quickToken = OLD_QUICK[chainIdToUse];
+
+  const quickToken = GlobalValue.tokens.COMMON.OLD_QUICK;
   const quickBalance = useTokenBalance(account ?? undefined, quickToken);
   const quickConvertContract = useQUICKConversionContract();
-  const parsedAmount = tryParseAmount(chainIdToUse, quickAmount, quickToken);
+  const parsedAmount = tryParseAmount(quickAmount, quickToken);
   const [approval, approveCallback] = useApproveCallback(
     parsedAmount,
     quickConvertContract?.address,

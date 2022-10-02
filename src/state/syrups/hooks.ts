@@ -73,8 +73,6 @@ export type SyrupInfoAddressMap = Readonly<
 const EMPTY_LIST: SyrupInfoAddressMap = {
   [ChainId.MUMBAI]: {},
   [ChainId.MATIC]: {},
-  [ChainId.DOGECHAIN]: {},
-  [ChainId.DOEGCHAIN_TESTNET]: {},
 };
 
 const syrupCache: WeakMap<SyrupListInfo, SyrupInfoAddressMap> | null =

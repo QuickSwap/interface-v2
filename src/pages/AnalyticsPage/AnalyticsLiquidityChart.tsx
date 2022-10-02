@@ -17,8 +17,6 @@ import { AreaChart, ChartType } from 'components';
 import { useTranslation } from 'react-i18next';
 import { useIsV3 } from 'state/application/hooks';
 import { getChartDataV3 } from 'utils/v3-graph';
-import { useActiveWeb3React } from 'hooks';
-import { ChainId } from '@uniswap/sdk';
 dayjs.extend(utc);
 
 const AnalyticsLiquidityChart: React.FC = () => {
@@ -28,8 +26,7 @@ const AnalyticsLiquidityChart: React.FC = () => {
     GlobalConst.analyticChart.ONE_MONTH_CHART,
   );
   const [globalChartData, updateGlobalChartData] = useState<any[] | null>(null);
-  const { chainId } = useActiveWeb3React();
-  const chainIdToUse = chainId ?? ChainId.MATIC;
+
   const { isV3 } = useIsV3();
 
   useEffect(() => {
@@ -43,8 +40,8 @@ const AnalyticsLiquidityChart: React.FC = () => {
           : getChartStartTime(durationIndex);
 
       const chartDataFn = isV3
-        ? getChartDataV3(duration, chainIdToUse)
-        : getChartData(duration, chainIdToUse);
+        ? getChartDataV3(duration)
+        : getChartData(duration);
 
       chartDataFn.then(([newChartData]) => {
         if (newChartData) {

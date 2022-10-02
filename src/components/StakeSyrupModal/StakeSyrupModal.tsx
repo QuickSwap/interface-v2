@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Box, Button } from '@material-ui/core';
-import { ChainId, TokenAmount } from '@uniswap/sdk';
+import { TokenAmount } from '@uniswap/sdk';
 import { TransactionResponse } from '@ethersproject/providers';
 import { CustomModal, ColoredSlider, NumericalInput } from 'components';
 import { useDerivedSyrupInfo } from 'state/stake/hooks';
@@ -51,10 +51,7 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
   const [typedValue, setTypedValue] = useState('');
   const [stakePercent, setStakePercent] = useState(0);
   const [approving, setApproving] = useState(false);
-  const maxAmountInput = maxAmountSpend(
-    chainId ? chainId : ChainId.MATIC,
-    userLiquidityUnstaked,
-  );
+  const maxAmountInput = maxAmountSpend(userLiquidityUnstaked);
   const { parsedAmount, error } = useDerivedSyrupInfo(
     typedValue,
     syrup.stakedAmount?.token,

@@ -7,8 +7,6 @@ import { CurrencyLogo, CopyHelper } from 'components';
 import {
   useBlockNumber,
   useEthPrice,
-  useIsV3,
-  useMaticPrice,
   useTokenDetails,
 } from 'state/application/hooks';
 import useCopyClipboard from 'hooks/useCopyClipboard';
@@ -20,21 +18,17 @@ import {
   formatNumber,
 } from 'utils';
 import { LineChart } from 'components';
-import { ChainId, Token } from '@uniswap/sdk';
-import { Token as TokenV3 } from '@uniswap/sdk-core';
+import { Token } from '@uniswap/sdk';
 import dayjs from 'dayjs';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { useTranslation } from 'react-i18next';
-import { getIntervalTokenDataV3, getTokenInfoV3 } from 'utils/v3-graph';
-import { useActiveWeb3React } from 'hooks';
-import { getConfig } from '../../config/index';
 
 const SwapTokenDetails: React.FC<{
-  token: Token | TokenV3;
+  token: Token;
 }> = ({ token }) => {
   const { t } = useTranslation();
   const currency = unwrappedToken(token);
-  const tokenAddress = token.address.toLowerCase();
+  const tokenAddress = token.address;
   const { palette } = useTheme();
   const latestBlock = useBlockNumber();
   const { tokenDetails, updateTokenDetails } = useTokenDetails();
@@ -45,16 +39,11 @@ const SwapTokenDetails: React.FC<{
   const [isCopied, setCopied] = useCopyClipboard();
   const prices = priceData ? priceData.map((price: any) => price.close) : [];
   const { ethPrice } = useEthPrice();
-  const { maticPrice } = useMaticPrice();
-  const { chainId } = useActiveWeb3React();
-  const { isV3 } = useIsV3();
-  const chainIdToUse = chainId ?? ChainId.MATIC;
-  const config = getConfig(chainIdToUse);
-  const v2 = config['v2'];
+
   useEffect(() => {
     (async () => {
       const tokenDetail = tokenDetails.find(
-        (item) => item.address.toLowerCase() === tokenAddress,
+        (item) => item.address === tokenAddress,
       );
       setTokenData(tokenDetail?.tokenData);
       setPriceData(tokenDetail?.priceData);
@@ -63,51 +52,19 @@ const SwapTokenDetails: React.FC<{
         .subtract(1, 'day')
         .startOf('hour')
         .unix();
+      const tokenPriceData = await getIntervalTokenData(
+        tokenAddress,
+        startTime,
+        3600,
+        latestBlock,
+      );
+      setPriceData(tokenPriceData);
 
-      let tokenPriceData = undefined;
-
-      if ((!v2 || isV3) && maticPrice.price && maticPrice.oneDayPrice) {
-        tokenPriceData = await getIntervalTokenDataV3(
-          tokenAddress,
-          startTime,
-          3600,
-          latestBlock,
-          chainIdToUse,
-        );
-        setPriceData(tokenPriceData);
-      } else if (v2 && ethPrice.price && ethPrice.oneDayPrice) {
-        tokenPriceData = await getIntervalTokenData(
-          tokenAddress,
-          startTime,
-          3600,
-          latestBlock,
-          chainIdToUse,
-        );
-        setPriceData(tokenPriceData);
-      }
-      if ((!v2 || isV3) && maticPrice.price && maticPrice.oneDayPrice) {
-        const tokenInfo = await getTokenInfoV3(
-          maticPrice.price,
-          maticPrice.oneDayPrice,
-          tokenAddress,
-          chainIdToUse,
-        );
-        if (tokenInfo) {
-          const token0 = tokenInfo[0];
-          setTokenData(token0);
-          const tokenDetailToUpdate = {
-            address: tokenAddress,
-            tokenData: token0,
-            priceData: tokenPriceData,
-          };
-          updateTokenDetails(tokenDetailToUpdate);
-        }
-      } else if (v2 && ethPrice.price && ethPrice.oneDayPrice) {
+      if (ethPrice.price && ethPrice.oneDayPrice) {
         const tokenInfo = await getTokenInfo(
           ethPrice.price,
           ethPrice.oneDayPrice,
           tokenAddress,
-          chainIdToUse,
         );
         if (tokenInfo) {
           const token0 = tokenInfo[0];

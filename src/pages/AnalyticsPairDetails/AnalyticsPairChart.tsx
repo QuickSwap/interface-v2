@@ -20,8 +20,6 @@ import { useIsV3 } from 'state/application/hooks';
 import { getPairChartDataV3, getPairChartFees } from 'utils/v3-graph';
 import AnalyticsPairLiquidityChartV3 from './AnalyticsPairLiquidityChartV3';
 import '../styles/analytics.scss';
-import { useActiveWeb3React } from 'hooks';
-import { ChainId } from '@uniswap/sdk';
 
 const CHART_VOLUME = 0;
 const CHART_TVL = 1;
@@ -43,8 +41,7 @@ const AnalyticsPairChart: React.FC<{
   const [durationIndex, setDurationIndex] = useState(
     GlobalConst.analyticChart.ONE_MONTH_CHART,
   );
-  const { chainId } = useActiveWeb3React();
-  const chainIdToUse = chainId ?? ChainId.MATIC;
+
   const { isV3 } = useIsV3();
 
   const [priceChartTokenIdx, setPriceChartTokenIdx] = useState(0);
@@ -188,12 +185,12 @@ const AnalyticsPairChart: React.FC<{
           : getChartStartTime(durationIndex);
 
       const pairChartDataFn = isV3
-        ? getPairChartDataV3(pairAddress, duration, chainIdToUse)
-        : getPairChartData(pairAddress, duration, chainIdToUse);
+        ? getPairChartDataV3(pairAddress, duration)
+        : getPairChartData(pairAddress, duration);
 
       Promise.all(
         [pairChartDataFn].concat(
-          isV3 ? [getPairChartFees(pairAddress, duration, chainIdToUse)] : [],
+          isV3 ? [getPairChartFees(pairAddress, duration)] : [],
         ),
       ).then(([chartData, feeChartData]) => {
         if (chartData && chartData.length > 0) {

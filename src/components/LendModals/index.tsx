@@ -45,8 +45,6 @@ import { useEthPrice } from 'state/application/hooks';
 import useUSDCPrice from 'utils/useUSDCPrice';
 import { Link } from 'react-router-dom';
 import { useMarket } from 'hooks/marketxyz/useMarket';
-import { ChainId } from '@uniswap/sdk';
-import { LENDING_LENS } from 'constants/v3/addresses';
 
 interface QuickModalContentProps {
   borrow?: boolean;
@@ -63,7 +61,6 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
   const { t } = useTranslation();
   const { sdk } = useMarket();
   const { account, chainId } = useActiveWeb3React();
-  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
   const { ethPrice } = useEthPrice();
   const assetUSDPriceObj = useUSDCPrice(getPoolAssetToken(asset, chainId));
   const assetUSDPrice = assetUSDPriceObj
@@ -180,7 +177,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
       setMaxAmountError(false);
       const lens = new MarketLensSecondary(
         currentAsset.cToken.sdk,
-        LENDING_LENS[chainIdToUse],
+        GlobalValue.marketSDK.LENS,
       );
       const underlyingBalance = convertBNToNumber(
         currentAsset.underlyingBalance,
@@ -459,11 +456,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
   useEffect(() => {
     if (!pairAddress || !ethPrice.price) return;
     (async () => {
-      const pairInfo = await getBulkPairData(
-        [pairAddress],
-        ethPrice.price,
-        chainIdToUse,
-      );
+      const pairInfo = await getBulkPairData([pairAddress], ethPrice.price);
       if (pairInfo && pairInfo.length > 0) {
         setPairData(pairInfo[0]);
       }

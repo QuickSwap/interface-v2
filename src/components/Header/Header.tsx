@@ -25,7 +25,7 @@ import SparkleBottom from 'assets/images/SparkleBottom.svg';
 import 'components/styles/Header.scss';
 import { useTranslation } from 'react-i18next';
 import { useIsV3 } from 'state/application/hooks';
-import { getConfig } from 'config/index';
+
 const newTransactionsFirst = (a: TransactionDetails, b: TransactionDetails) => {
   return b.addedTime - a.addedTime;
 };
@@ -54,81 +54,54 @@ const Header: React.FC = () => {
   const mobileWindowSize = useMediaQuery(theme.breakpoints.down('xs'));
   const toggleWalletModal = useWalletModalToggle();
 
-  const { chainId } = useActiveWeb3React();
-  const config = getConfig(chainId);
-  const showSwap = config['swap']['available'];
-  const showPool = config['pools']['available'];
-  const showFarm = config['farm']['available'];
-  const showLair = config['lair']['available'];
-  const showConvert = config['convert']['available'];
-  const showPredictions = config['predictions']['available'];
-  const showAnalytics = config['analytics']['available'];
-  const showLending = config['lending']['available'];
-
   const { isV3 } = useIsV3();
 
-  const menuItems = [];
-
-  if (showSwap) {
-    menuItems.push({
+  const menuItems = [
+    {
       link: '/swap',
       text: t('swap'),
       id: 'swap-page-link',
-    });
-  }
-  if (showPool) {
-    menuItems.push({
+    },
+    {
       link: `/pools${isV3 ? '/v3' : ''}`,
       text: t('pool'),
       id: 'pools-page-link',
-    });
-  }
-  if (showFarm) {
-    menuItems.push({
+    },
+    {
       link: `/farm${isV3 ? '/v3' : ''}`,
       text: t('farm'),
       id: 'farm-page-link',
-    });
-  }
-  if (showLair) {
-    menuItems.push({
+    },
+    {
       link: '/dragons',
       text: t('dragonLair'),
       id: 'dragons-page-link',
-    });
-  }
-  if (showConvert) {
-    menuItems.push({
+    },
+    {
       link: '/convert',
       text: t('convert'),
       id: 'convert-quick',
-    });
-  }
-  if (showPredictions) {
-    menuItems.push({
+    },
+    {
       link: '/predictions',
       text: 'Predictions',
       id: 'predictions-page-link',
       isExternal: true,
       externalLink: process?.env?.REACT_APP_PREDICTIONS_URL || '',
       isNew: true,
-      });
-  }
-  if (showLending) {
-    menuItems.push({
+    },
+    {
       link: '/lend',
       text: t('lend'),
       id: 'lend-page-link',
       isNew: true,
-    });
-  }
-  if (showAnalytics) {
-    menuItems.push({
+    },
+    {
       link: `/analytics${isV3 ? '/v3' : ''}`,
       text: t('analytics'),
       id: 'analytics-page-link',
-    });
-  }
+    },
+  ];
 
   const outLinks: any[] = [
     // {

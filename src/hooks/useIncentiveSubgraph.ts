@@ -45,14 +45,10 @@ import {
 } from '../models/interfaces';
 import { Aprs, FutureFarmingEvent } from '../models/interfaces';
 import { fetchEternalFarmAPR, fetchEternalFarmTVL } from 'utils/api';
-import { useSelectedTokenList } from 'state/lists/v3/hooks';
-import { getV3TokenFromAddress } from 'utils';
-import { ChainId } from '@uniswap/sdk';
 
 export function useFarmingSubgraph() {
   const { chainId, account, library } = useActiveWeb3React();
   const { v3Client, farmingClient } = useClients();
-  const tokenMap = useSelectedTokenList();
 
   const [positionsForPool, setPositionsForPool] = useState<Position[] | null>(
     null,
@@ -435,24 +431,9 @@ export function useFarmingSubgraph() {
           typeof position.pool === 'string'
         ) {
           const _pool = await fetchPool(position.pool);
-          const token0 = getV3TokenFromAddress(
-            _pool.token0.id,
-            chainId,
-            tokenMap,
-          );
-          const token1 = getV3TokenFromAddress(
-            _pool.token1.id,
-            chainId,
-            tokenMap,
-          );
-          const newPool = {
-            ..._pool,
-            token0: token0 ? token0.token : _pool.token0,
-            token1: token1 ? token1.token : _pool.token1,
-          };
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           //@ts-ignore
-          _position = { ..._position, pool: newPool };
+          _position = { ..._position, pool: _pool };
         }
 
         if (position.limitFarming) {
@@ -488,27 +469,11 @@ export function useFarmingSubgraph() {
           const _multiplierToken = await fetchToken(multiplierToken, true);
           const _pool = await fetchPool(pool);
 
-          const token0 = getV3TokenFromAddress(
-            _pool.token0.id,
-            chainId,
-            tokenMap,
-          );
-          const token1 = getV3TokenFromAddress(
-            _pool.token1.id,
-            chainId,
-            tokenMap,
-          );
-          const newPool = {
-            ..._pool,
-            token0: token0 ? token0.token : _pool.token0,
-            token1: token1 ? token1.token : _pool.token1,
-          };
-
           _position = {
             ..._position,
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-ignore
-            pool: newPool,
+            pool: _pool,
             limitRewardToken: _rewardToken,
             limitBonusRewardToken: _bonusRewardToken,
             limitStartTime: +startTime,
@@ -598,22 +563,6 @@ export function useFarmingSubgraph() {
           const _rewardToken = await fetchToken(rewardToken, true);
           const _bonusRewardToken = await fetchToken(bonusRewardToken, true);
           const _pool = await fetchPool(pool);
-
-          const token0 = getV3TokenFromAddress(
-            _pool.token0.id,
-            chainId,
-            tokenMap,
-          );
-          const token1 = getV3TokenFromAddress(
-            _pool.token1.id,
-            chainId,
-            tokenMap,
-          );
-          const newPool = {
-            ..._pool,
-            token0: token0 ? token0.token : _pool.token0,
-            token1: token1 ? token1.token : _pool.token1,
-          };
           const _multiplierToken = await fetchToken(multiplierToken);
 
           _position = {
@@ -631,7 +580,7 @@ export function useFarmingSubgraph() {
             tokenAmountForTier3,
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-ignore
-            pool: newPool,
+            pool: _pool,
             eternalEarned: formatUnits(
               BigNumber.from(reward),
               _rewardToken.decimals,
@@ -917,21 +866,6 @@ export function useFarmingSubgraph() {
           farming.bonusRewardToken,
           true,
         );
-        const wrappedToken0 = getV3TokenFromAddress(
-          pool.token0.id,
-          chainId ?? ChainId.MATIC,
-          tokenMap,
-        );
-        const wrappedToken1 = getV3TokenFromAddress(
-          pool.token1.id,
-          chainId ?? ChainId.MATIC,
-          tokenMap,
-        );
-        const newPool = {
-          ...pool,
-          token0: wrappedToken0 ? wrappedToken0.token : pool.token0,
-          token1: wrappedToken1 ? wrappedToken1.token : pool.token1,
-        };
         const multiplierToken = await fetchToken(farming.multiplierToken, true);
 
         _eternalFarmings = [
@@ -945,7 +879,7 @@ export function useFarmingSubgraph() {
             multiplierToken,
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-ignore
-            pool: newPool,
+            pool,
           },
         ];
       }

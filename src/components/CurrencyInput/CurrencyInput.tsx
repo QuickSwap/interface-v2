@@ -2,7 +2,7 @@ import React from 'react';
 import { Currency } from '@uniswap/sdk';
 import { Box } from '@material-ui/core';
 import { useCurrencyBalance } from 'state/wallet/hooks';
-import { NumericalInput } from 'components';
+import { CurrencySearchModal, NumericalInput } from 'components';
 import { useActiveWeb3React } from 'hooks';
 import useUSDCPrice from 'utils/useUSDCPrice';
 import { formatTokenAmount } from 'utils';

@@ -9,18 +9,15 @@ import { FarmingType } from '../../models/enums';
 import './index.scss';
 import { FormattedEternalFarming } from 'models/interfaces';
 import { useFarmingSubgraph } from 'hooks/useIncentiveSubgraph';
-import { ChainId } from '@uniswap/sdk';
 
 export default function EternalFarmsPage({
   data,
   refreshing,
   fetchHandler,
-  chainId,
 }: {
   data: FormattedEternalFarming[] | null;
   refreshing: boolean;
   fetchHandler: () => any;
-  chainId: ChainId;
 }) {
   const [modalForPool, setModalForPool] = useState(null);
   const { t } = useTranslation();
@@ -78,7 +75,6 @@ export default function EternalFarmsPage({
               tvls={eternalFarmTvls}
               tvlsLoading={eternalFarmTvlsLoading}
               event={event}
-              chainId={chainId}
             />
           ))}
         </div>

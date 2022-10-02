@@ -15,8 +15,6 @@ import { BarChart, ChartType } from 'components';
 import { GlobalConst, GlobalData } from 'constants/index';
 import { useTranslation } from 'react-i18next';
 import { getChartDataV3 } from 'utils/v3-graph';
-import { useActiveWeb3React } from 'hooks';
-import { ChainId } from '@uniswap/sdk';
 
 const DAY_VOLUME = 0;
 const WEEK_VOLUME = 1;
@@ -32,8 +30,7 @@ const AnalyticsVolumeChart: React.FC = () => {
   const [selectedVolumeIndex, setSelectedVolumeIndex] = useState(-1);
   const { globalData } = useGlobalData();
   const [globalChartData, updateGlobalChartData] = useState<any>(null);
-  const { chainId } = useActiveWeb3React();
-  const chainIdToUse = chainId ?? ChainId.MATIC;
+
   const { isV3 } = useIsV3();
 
   useEffect(() => {
@@ -47,8 +44,8 @@ const AnalyticsVolumeChart: React.FC = () => {
           : getChartStartTime(durationIndex);
 
       const chartDataFn = isV3
-        ? getChartDataV3(duration, chainIdToUse)
-        : getChartData(duration, chainIdToUse);
+        ? getChartDataV3(duration)
+        : getChartData(duration);
 
       chartDataFn.then(([newChartData, newWeeklyData]) => {
         if (newChartData && newWeeklyData) {

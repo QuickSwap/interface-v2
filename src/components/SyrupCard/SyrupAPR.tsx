@@ -4,20 +4,16 @@ import { SyrupInfo } from 'types';
 import { CurrencyLogo } from 'components';
 import { getTokenAPRSyrup } from 'utils';
 import { useTranslation } from 'react-i18next';
-import { useActiveWeb3React } from 'hooks';
-import { ChainId } from '@uniswap/sdk';
-import { OLD_DQUICK, OLD_QUICK } from 'constants/v3/addresses';
+import { GlobalValue } from 'constants/index';
 
 const SyrupAPR: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
   syrup,
   dQUICKAPY,
 }) => {
   const { t } = useTranslation();
-  const { chainId } = useActiveWeb3React();
-  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
 
   const isDQUICKStakingToken = syrup.stakingToken.equals(
-    OLD_DQUICK[chainIdToUse],
+    GlobalValue.tokens.COMMON.OLD_DQUICK,
   );
 
   return (
@@ -27,7 +23,10 @@ const SyrupAPR: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
       </small>
       {isDQUICKStakingToken && (
         <Box className='syrupAPR border-gray2'>
-          <CurrencyLogo currency={OLD_QUICK[chainIdToUse]} size='12px' />
+          <CurrencyLogo
+            currency={GlobalValue.tokens.COMMON.OLD_QUICK}
+            size='12px'
+          />
           <span style={{ marginLeft: 4 }}>
             {dQUICKAPY}% <span className='text-hint'>{t('apy')}</span>
           </span>

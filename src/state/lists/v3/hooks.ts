@@ -21,8 +21,6 @@ type Mutable<T> = {
 const EMPTY_LIST: TokenAddressMap = {
   [ChainId.MUMBAI]: {},
   [ChainId.MATIC]: {},
-  [ChainId.DOEGCHAIN_TESTNET]: {},
-  [ChainId.DOGECHAIN]: {},
 };
 
 const listCache: WeakMap<TokenList, TokenAddressMap> | null =

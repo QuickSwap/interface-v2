@@ -107,12 +107,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
   };
 
   return (
-    <CustomModal open={open} onClose={onClose} hideBackdrop={true}>
-      <CustomModal
-        open={expertConfirm}
-        hideBackdrop={true}
-        onClose={() => setExpertConfirm(false)}
-      >
+    <CustomModal open={open} onClose={onClose}>
+      <CustomModal open={expertConfirm} onClose={() => setExpertConfirm(false)}>
         <Box paddingX={3} paddingY={4}>
           <Box mb={3} className='flex justify-between items-center'>
             <h5>{t('areyousure')}</h5>

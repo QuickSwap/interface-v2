@@ -98,8 +98,6 @@ export type DualFarmInfoAddressMap = Readonly<
 const EMPTY_LIST: DualFarmInfoAddressMap = {
   [ChainId.MUMBAI]: {},
   [ChainId.MATIC]: {},
-  [ChainId.DOGECHAIN]: {},
-  [ChainId.DOEGCHAIN_TESTNET]: {},
 };
 
 const dualFarmCache: WeakMap<DualFarmListInfo, DualFarmInfoAddressMap> | null =

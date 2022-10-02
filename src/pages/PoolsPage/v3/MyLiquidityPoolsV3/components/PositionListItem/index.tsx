@@ -15,15 +15,14 @@ import useIsTickAtLimit from 'hooks/v3/useIsTickAtLimit';
 import { formatTickPrice } from 'utils/v3/formatTickPrice';
 import DoubleCurrencyLogo from 'components/DoubleCurrencyLogo';
 import { Position } from 'v3lib/entities/position';
-import { USDC, USDT, WMATIC_EXTENDED } from 'constants/v3/addresses';
+import { WMATIC_EXTENDED } from 'constants/v3/addresses';
 import { GlobalValue } from 'constants/index';
 import { toToken } from 'constants/v3/routing';
 import { Box } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
 import { ExpandLess, ExpandMore } from '@material-ui/icons';
-import Badge from 'components/v3/Badge';
+import Badge, { BadgeVariant } from 'components/v3/Badge';
 import PositionListItemDetails from '../PositionListItemDetails';
-import { ChainId } from '@uniswap/sdk';
 
 interface PositionListItemProps {
   positionDetails: PositionPool;
@@ -44,19 +43,16 @@ export function getPriceOrderingFromPositionForUI(
   if (!position) {
     return {};
   }
-  const chainIdToUse = position.pool.token0.chainId
-    ? position.pool.token0.chainId
-    : ChainId.MATIC;
 
   const token0 = position.amount0.currency;
   const token1 = position.amount1.currency;
 
-  const USDC_TOKEN = toToken(USDC[chainIdToUse]);
-  const USDT_TOKEN = toToken(USDT[chainIdToUse]);
+  const USDC = toToken(GlobalValue.tokens.COMMON.USDC);
+  const USDT = toToken(GlobalValue.tokens.COMMON.USDT);
 
   // if token0 is a dollar-stable asset, set it as the quote token
   // const stables = [USDC_BINANCE, USDC_KOVAN]
-  const stables = [USDC_TOKEN, USDT_TOKEN];
+  const stables = [USDC, USDT];
   if (stables.some((stable) => stable.equals(token0))) {
     return {
       priceLower: position.token0PriceUpper.invert(),

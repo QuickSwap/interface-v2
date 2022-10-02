@@ -1,7 +1,6 @@
 //import useENS from 'hooks/useENS';
 import { parseUnits } from '@ethersproject/units';
 import {
-  ChainId,
   Currency,
   CurrencyAmount,
   ETHER,
@@ -43,9 +42,6 @@ export function useSwapActionHandlers(): {
   onChangeRecipient: (recipient: string | null) => void;
 } {
   const dispatch = useDispatch<AppDispatch>();
-  const { chainId } = useActiveWeb3React();
-  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
-  const nativeCurrency = ETHER[chainIdToUse];
   const onCurrencySelection = useCallback(
     (field: Field, currency: Currency) => {
       dispatch(
@@ -54,7 +50,7 @@ export function useSwapActionHandlers(): {
           currencyId:
             currency instanceof Token
               ? currency.address
-              : currency === nativeCurrency
+              : currency === ETHER
               ? 'ETH'
               : '',
         }),
@@ -91,7 +87,6 @@ export function useSwapActionHandlers(): {
 
 // try to parse a user entered amount for a given token
 export function tryParseAmount(
-  chainId: ChainId,
   value?: string,
   currency?: Currency,
 ): CurrencyAmount | undefined {
@@ -103,7 +98,7 @@ export function tryParseAmount(
     if (typedValueParsed !== '0') {
       return currency instanceof Token
         ? new TokenAmount(currency, JSBI.BigInt(typedValueParsed))
-        : CurrencyAmount.ether(JSBI.BigInt(typedValueParsed), chainId); // TODO: CHANGE THIS
+        : CurrencyAmount.ether(JSBI.BigInt(typedValueParsed));
     }
   } catch (error) {
     // should fail if the user specifies too many decimal places of precision (or maybe exceed max uint?)
@@ -142,8 +137,8 @@ export function useDerivedSwapInfo(): {
   inputError?: string;
   v1Trade: Trade | undefined;
 } {
-  const { account, chainId } = useActiveWeb3React();
-  const chainIdToUse = chainId ?? ChainId.MATIC;
+  const { account } = useActiveWeb3React();
+
   const {
     independentField,
     typedValue,
@@ -164,7 +159,6 @@ export function useDerivedSwapInfo(): {
 
   const isExactIn: boolean = independentField === Field.INPUT;
   const parsedAmount = tryParseAmount(
-    chainIdToUse,
     typedValue,
     (isExactIn ? inputCurrency : outputCurrency) ?? undefined,
   );

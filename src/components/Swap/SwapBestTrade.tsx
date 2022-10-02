@@ -12,7 +12,6 @@ import {
   Currency as CurrencyV2,
   TradeType,
   Fraction,
-  ChainId,
 } from '@uniswap/sdk';
 import { Currency, CurrencyAmount } from '@uniswap/sdk-core';
 import ReactGA from 'react-ga';
@@ -67,10 +66,8 @@ const SwapBestTrade: React.FC<{
   currencyBgClass?: string;
 }> = ({ currency0, currency1, currencyBgClass }) => {
   const { t } = useTranslation();
-  const { account, chainId } = useActiveWeb3React();
+  const { account } = useActiveWeb3React();
   const { independentField, typedValue, recipient } = useSwapState();
-  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
-  const nativeCurrency = Token.ETHER[chainIdToUse];
   const {
     v1Trade,
     v2Trade,
@@ -169,10 +166,10 @@ const SwapBestTrade: React.FC<{
   const paraswap = useParaswap();
 
   const srcToken = inputCurrency
-    ? getBestTradeCurrencyAddress(inputCurrency, chainIdToUse)
+    ? getBestTradeCurrencyAddress(inputCurrency)
     : undefined;
   const destToken = outputCurrency
-    ? getBestTradeCurrencyAddress(outputCurrency, chainIdToUse)
+    ? getBestTradeCurrencyAddress(outputCurrency)
     : undefined;
 
   const srcDecimals = inputCurrency?.decimals;
@@ -415,10 +412,7 @@ const SwapBestTrade: React.FC<{
     [onUserInput],
   );
 
-  const maxAmountInputV2 = maxAmountSpend(
-    chainIdToUse,
-    currencyBalances[Field.INPUT],
-  );
+  const maxAmountInputV2 = maxAmountSpend(currencyBalances[Field.INPUT]);
   const maxAmountInput =
     maxAmountInputV2 && inputCurrency
       ? CurrencyAmount.fromRawAmount(
@@ -465,7 +459,7 @@ const SwapBestTrade: React.FC<{
   };
 
   useEffect(() => {
-    onCurrencySelection(Field.INPUT, nativeCurrency);
+    onCurrencySelection(Field.INPUT, Token.ETHER);
   }, [onCurrencySelection, allTokens]);
 
   useEffect(() => {

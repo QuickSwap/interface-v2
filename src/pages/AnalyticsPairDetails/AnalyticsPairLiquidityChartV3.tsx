@@ -1,4 +1,4 @@
-import { ChainId, JSBI } from '@uniswap/sdk';
+import { JSBI } from '@uniswap/sdk';
 import { CurrencyAmount, Token } from '@uniswap/sdk-core';
 import { Pool, TickMath } from '@uniswap/v3-sdk';
 import { BigNumber } from 'ethers';
@@ -14,7 +14,6 @@ import { getLiquidityChart } from 'utils/v3-graph';
 import Chart from 'react-apexcharts';
 import { Box } from '@material-ui/core';
 import '../styles/analytics.scss';
-import { useActiveWeb3React } from 'hooks';
 
 const AnalyticsPairLiquidityChartV3: React.FC<{
   pairData: any;
@@ -23,11 +22,9 @@ const AnalyticsPairLiquidityChartV3: React.FC<{
   const [liquidityChartData, updateLiquidtyChartData] = useState<any | null>(
     null,
   );
-  const { chainId } = useActiveWeb3React();
-  const chainIdToUse = chainId ?? ChainId.MATIC;
 
   useEffect(() => {
-    getLiquidityChart(pairAddress, chainIdToUse).then((data) => {
+    getLiquidityChart(pairAddress).then((data) => {
       if (!data.error) {
         updateLiquidtyChartData(data);
       }

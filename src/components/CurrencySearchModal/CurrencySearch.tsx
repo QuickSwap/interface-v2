@@ -1,4 +1,4 @@
-import { ChainId, Currency, ETHER, Token } from '@uniswap/sdk';
+import { Currency, ETHER, Token } from '@uniswap/sdk';
 import React, {
   KeyboardEvent,
   RefObject,
@@ -48,8 +48,7 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
   const { t } = useTranslation();
   const { chainId } = useActiveWeb3React();
   const dispatch = useDispatch<AppDispatch>();
-  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
-  const nativeCurrency = ETHER[chainIdToUse];
+
   const handleInput = useCallback((input: string) => {
     const checksummedInput = isAddress(input);
     setSearchQuery(checksummedInput || input);
@@ -128,7 +127,7 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
       if (e.key === 'Enter') {
         const s = searchQuery.toLowerCase().trim();
         if (s === 'eth') {
-          handleCurrencySelect(nativeCurrency);
+          handleCurrencySelect(ETHER);
         } else if (filteredSortedTokens.length > 0) {
           if (
             filteredSortedTokens[0].symbol?.toLowerCase() ===
@@ -173,7 +172,7 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
       </Box>
       {showCommonBases && (
         <CommonBases
-          chainId={chainIdToUse}
+          chainId={chainId}
           onSelect={handleCurrencySelect}
           selectedCurrency={selectedCurrency}
         />
@@ -183,7 +182,6 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
 
       <Box flex={1}>
         <CurrencyList
-          chainId={chainIdToUse}
           showETH={showETH}
           currencies={filteredSortedTokens}
           onCurrencySelect={handleCurrencySelect}

@@ -6,29 +6,31 @@ import { ChainId } from '@uniswap/sdk';
 
 export function useBlockClient(): ApolloClient<NormalizedCacheObject> {
   const { chainId } = useActiveWeb3React();
-  const chainIdToUse = chainId ?? ChainId.MATIC;
   switch (chainId) {
     case ChainId.MATIC:
-      return blockClient[chainIdToUse];
+      return blockClient;
     default:
-      return blockClient[chainIdToUse];
+      return blockClient;
   }
 }
 
 export function useV3Client(): ApolloClient<NormalizedCacheObject> {
   const { chainId } = useActiveWeb3React();
-  const chainIdToUse = chainId ?? ChainId.MATIC;
-  return clientV3[chainIdToUse];
+  switch (chainId) {
+    case ChainId.MATIC:
+      return clientV3;
+    default:
+      return clientV3;
+  }
 }
 
 export function useFarmingClient(): ApolloClient<NormalizedCacheObject> {
   const { chainId } = useActiveWeb3React();
-  const chainIdToUse = chainId ?? ChainId.MATIC;
   switch (chainId) {
     case ChainId.MATIC:
-      return farmingClient[chainIdToUse];
+      return farmingClient;
     default:
-      return farmingClient[chainIdToUse];
+      return farmingClient;
   }
 }
 

@@ -13,9 +13,6 @@ interface L1ChainInfo {
   readonly explorer: string;
   readonly infoLink: string;
   readonly label: string;
-  readonly nativeCurrencySymbol: string;
-  readonly nativeCurrencyName: string;
-  readonly nativeCurrencyDecimals: number;
 }
 
 interface L2ChainInfo extends L1ChainInfo {
@@ -34,17 +31,5 @@ export const CHAIN_INFO: ChainInfo = {
     explorer: 'https://polygonscan.com/',
     infoLink: 'https://algebra.finance',
     label: 'Polygon',
-    nativeCurrencySymbol: 'MATIC',
-    nativeCurrencyName: 'Matic',
-    nativeCurrencyDecimals: 18,
-  },
-  [ChainId.DOGECHAIN]: {
-    docs: 'https://algebra.finance/',
-    explorer: 'https://explorer.dogechain.dog',
-    infoLink: 'https://algebra.finance',
-    label: 'DOGECHAIN',
-    nativeCurrencySymbol: 'WDOGE',
-    nativeCurrencyName: 'Wrapped Doge',
-    nativeCurrencyDecimals: 18,
   },
 };

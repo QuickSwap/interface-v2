@@ -1,9 +1,30 @@
 import { Currency, CurrencyAmount, Price, Token } from '@uniswap/sdk-core';
 import { useActiveWeb3React } from 'hooks';
 import { useMemo } from 'react';
+import { GlobalValue } from 'constants/index';
 import { useBestV3TradeExactOut } from './useBestV3Trade';
-import { ChainId } from '@uniswap/sdk';
-import { toV3Token, USDC } from 'constants/v3/addresses';
+
+// Stablecoin amounts used when calculating spot price for a given currency.
+// The amount is large enough to filter low liquidity pairs.
+
+// Two different consts used as a hack for allLiquidity flag in useUSDCPrice fn.
+// Doing another way makes amounts in EnterAmount stuck somehow.
+const USDC = GlobalValue.tokens.COMMON.USDC;
+const USDC_V3_TOKEN = new Token(
+  USDC.chainId,
+  USDC.address,
+  USDC.decimals,
+  USDC.symbol,
+  USDC.name,
+);
+const STABLECOIN_AMOUNT_OUT_ALL: CurrencyAmount<Token> = CurrencyAmount.fromRawAmount(
+  USDC_V3_TOKEN,
+  1,
+);
+const STABLECOIN_AMOUNT_OUT_FILTERED: CurrencyAmount<Token> = CurrencyAmount.fromRawAmount(
+  USDC_V3_TOKEN,
+  100_000e1,
+);
 
 /**
  * Returns the price in USDC of the input currency
@@ -14,18 +35,6 @@ export default function useUSDCPrice(
   allLiquidity?: boolean,
 ): Price<Currency, Token> | undefined {
   const { chainId } = useActiveWeb3React();
-  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
-
-  const USDC_TOKEN = USDC[chainIdToUse];
-  const USDC_V3_TOKEN = toV3Token(USDC_TOKEN);
-  const STABLECOIN_AMOUNT_OUT_ALL: CurrencyAmount<Token> = CurrencyAmount.fromRawAmount(
-    USDC_V3_TOKEN,
-    1,
-  );
-  const STABLECOIN_AMOUNT_OUT_FILTERED: CurrencyAmount<Token> = CurrencyAmount.fromRawAmount(
-    USDC_V3_TOKEN,
-    100_000e1,
-  );
 
   const amountOut = chainId
     ? allLiquidity

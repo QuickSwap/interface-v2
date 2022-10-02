@@ -8,8 +8,8 @@ import utc from 'dayjs/plugin/utc';
 import {
   useEthPrice,
   useGlobalData,
-  useIsV3,
   useMaticPrice,
+  useIsV3,
 } from 'state/application/hooks';
 import {
   getTopPairs,
@@ -31,9 +31,6 @@ import {
 } from 'utils/v3-graph';
 import { useDispatch } from 'react-redux';
 import { setAnalyticsLoaded } from 'state/analytics/actions';
-import { ChainId } from '@uniswap/sdk';
-import { useActiveWeb3React } from 'hooks';
-import { V2_FACTORY_ADDRESSES } from 'constants/v3/addresses';
 
 dayjs.extend(utc);
 
@@ -45,8 +42,7 @@ const AnalyticsOverview: React.FC = () => {
   const [topPairs, updateTopPairs] = useState<any[] | null>(null);
   const { ethPrice } = useEthPrice();
   const { maticPrice } = useMaticPrice();
-  const { chainId } = useActiveWeb3React();
-  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
+
   const dispatch = useDispatch();
 
   const { isV3 } = useIsV3();
@@ -61,17 +57,12 @@ const AnalyticsOverview: React.FC = () => {
 
     (async () => {
       if (isV3) {
-        const data = await getGlobalDataV3(chainIdToUse);
+        const data = await getGlobalDataV3();
         if (data) {
           updateGlobalData({ data });
         }
       } else if (ethPrice.price && ethPrice.oneDayPrice) {
-        const data = await getGlobalData(
-          ethPrice.price,
-          ethPrice.oneDayPrice,
-          V2_FACTORY_ADDRESSES[chainIdToUse],
-          chainIdToUse,
-        );
+        const data = await getGlobalData(ethPrice.price, ethPrice.oneDayPrice);
         if (data) {
           updateGlobalData({ data });
         }
@@ -85,7 +76,6 @@ const AnalyticsOverview: React.FC = () => {
             maticPrice.price,
             maticPrice.oneDayPrice,
             GlobalConst.utils.ANALYTICS_TOKENS_COUNT,
-            chainIdToUse,
           );
           if (data) {
             updateTopTokens(data);
@@ -97,7 +87,6 @@ const AnalyticsOverview: React.FC = () => {
             ethPrice.price,
             ethPrice.oneDayPrice,
             GlobalConst.utils.ANALYTICS_TOKENS_COUNT,
-            chainIdToUse,
           );
           if (data) {
             updateTopTokens(data);
@@ -110,7 +99,6 @@ const AnalyticsOverview: React.FC = () => {
       if (isV3) {
         const data = await getTopPairsV3(
           GlobalConst.utils.ANALYTICS_PAIRS_COUNT,
-          chainIdToUse,
         );
         if (data) {
           updateTopPairs(data);
@@ -119,7 +107,6 @@ const AnalyticsOverview: React.FC = () => {
               try {
                 const aprs = await getPairsAPR(
                   data.map((item: any) => item.id),
-                  chainIdToUse,
                 );
 
                 updateTopPairs(
@@ -141,18 +128,13 @@ const AnalyticsOverview: React.FC = () => {
         if (ethPrice.price) {
           const pairs = await getTopPairs(
             GlobalConst.utils.ANALYTICS_PAIRS_COUNT,
-            chainIdToUse,
           );
           const formattedPairs = pairs
             ? pairs.map((pair: any) => {
                 return pair.id;
               })
             : [];
-          const data = await getBulkPairData(
-            formattedPairs,
-            ethPrice.price,
-            chainIdToUse,
-          );
+          const data = await getBulkPairData(formattedPairs, ethPrice.price);
           if (data) {
             updateTopPairs(data);
           }

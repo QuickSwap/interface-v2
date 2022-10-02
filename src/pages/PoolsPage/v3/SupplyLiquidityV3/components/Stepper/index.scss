@@ -1,0 +1,60 @@
+.stepper {
+
+    &__step {
+
+        margin: -0.5rem 0;
+        padding: 0.5rem 1rem;
+        user-select: none;
+
+        &.clickable {
+            &:hover {
+                background-color: #344858;
+                cursor: pointer;
+            }
+        }
+    }
+
+    &__circle {
+        width: 25px;
+        height: 25px;
+        border-radius: 50%;
+        background-color: #395d79;
+        color: white;
+        font-size: 13px;
+        
+        &.done {
+            background-color: #26a626;
+            color: white;
+        }
+
+        &.current {
+            background-color: #21cbff;
+            color: #093542;
+        }
+
+        &-current {
+            color: #21cbff;
+        }
+    }
+}
+
+.progress-circle {
+    border-radius: 50%;
+    height: 40px;
+    width: 40px;
+    background-color: rgb(248, 248, 248);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: black;
+}
+
+.progress-circle-wrapper {
+    border-radius: 50%;
+    height: 50px;
+    width: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+}

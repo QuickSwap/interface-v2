@@ -1,12 +1,5 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
-import {
-  ChainId,
-  Currency,
-  CurrencyAmount,
-  JSBI,
-  Token,
-  Trade,
-} from '@uniswap/sdk';
+import { Currency, CurrencyAmount, JSBI, Token, Trade } from '@uniswap/sdk';
 import ReactGA from 'react-ga';
 import { ArrowDown } from 'react-feather';
 import { Box, Button, CircularProgress } from '@material-ui/core';
@@ -56,9 +49,7 @@ const Swap: React.FC<{
   currencyBgClass?: string;
 }> = ({ currency0, currency1, currencyBgClass }) => {
   const { t } = useTranslation();
-  const { account, chainId } = useActiveWeb3React();
-  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
-  const nativeCurrency = Token.ETHER[chainIdToUse];
+  const { account } = useActiveWeb3React();
   const { independentField, typedValue, recipient } = useSwapState();
   const {
     v1Trade,
@@ -299,7 +290,6 @@ const Swap: React.FC<{
   );
 
   const maxAmountInput: CurrencyAmount | undefined = maxAmountSpend(
-    chainIdToUse,
     currencyBalances[Field.INPUT],
   );
 
@@ -341,7 +331,7 @@ const Swap: React.FC<{
   };
 
   useEffect(() => {
-    onCurrencySelection(Field.INPUT, nativeCurrency);
+    onCurrencySelection(Field.INPUT, Token.ETHER);
   }, [onCurrencySelection, allTokens]);
 
   useEffect(() => {

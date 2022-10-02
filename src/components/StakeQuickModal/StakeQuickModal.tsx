@@ -6,6 +6,7 @@ import { useDerivedLairInfo } from 'state/stake/hooks';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 import { useCurrencyBalance, useTokenBalance } from 'state/wallet/hooks';
 import { useActiveWeb3React } from 'hooks';
+import { GlobalValue } from 'constants/index';
 import { useApproveCallback, ApprovalState } from 'hooks/useApproveCallback';
 import { useLairContract, useNewLairContract } from 'hooks/useContract';
 import {
@@ -15,8 +16,6 @@ import {
 import { formatTokenAmount } from 'utils';
 import 'components/styles/StakeModal.scss';
 import { useTranslation } from 'react-i18next';
-import { NEW_QUICK, OLD_QUICK } from 'constants/v3/addresses';
-import { ChainId } from '@uniswap/sdk';
 
 interface StakeQuickModalProps {
   open: boolean;
@@ -31,11 +30,12 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({
 }) => {
   const { t } = useTranslation();
   const [attempting, setAttempting] = useState(false);
-  const { account, chainId } = useActiveWeb3React();
-  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
+  const { account } = useActiveWeb3React();
   const addTransaction = useTransactionAdder();
   const finalizedTransaction = useTransactionFinalizer();
-  const quickToken = isNew ? NEW_QUICK[chainIdToUse] : OLD_QUICK[chainIdToUse];
+  const quickToken = isNew
+    ? GlobalValue.tokens.COMMON.NEW_QUICK
+    : GlobalValue.tokens.COMMON.OLD_QUICK;
   const quickBalance = useCurrencyBalance(account ?? undefined, quickToken);
   const userLiquidityUnstaked = useTokenBalance(
     account ?? undefined,

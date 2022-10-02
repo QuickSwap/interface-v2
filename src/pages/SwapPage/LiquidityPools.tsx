@@ -3,7 +3,7 @@ import { Box, Divider, useMediaQuery } from '@material-ui/core';
 import { KeyboardArrowUp, KeyboardArrowDown } from '@material-ui/icons';
 import { useTheme } from '@material-ui/core/styles';
 import { getTokenPairs, getBulkPairData } from 'utils';
-import { ChainId, Token } from '@uniswap/sdk';
+import { Token } from '@uniswap/sdk';
 import LiquidityPoolRow from './LiquidityPoolRow';
 import { useAllTokens } from 'hooks/Tokens';
 import { useTranslation } from 'react-i18next';
@@ -56,11 +56,7 @@ const LiquidityPools: React.FC<{
   useEffect(() => {
     if (!ethPrice.price) return;
     (async () => {
-      const tokenPairs = await getTokenPairs(
-        token1Address,
-        token2Address,
-        token1.chainId ?? ChainId.MATIC,
-      );
+      const tokenPairs = await getTokenPairs(token1Address, token2Address);
 
       const formattedPairs = tokenPairs
         ? tokenPairs
@@ -75,11 +71,7 @@ const LiquidityPools: React.FC<{
             })
         : [];
 
-      const pairData = await getBulkPairData(
-        formattedPairs,
-        ethPrice.price,
-        token1.chainId,
-      );
+      const pairData = await getBulkPairData(formattedPairs, ethPrice.price);
 
       if (pairData) {
         updateTokenPairs(pairData);

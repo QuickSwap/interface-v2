@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Divider } from '@material-ui/core';
 import { SwapHoriz } from '@material-ui/icons';
-import { ChainId, Currency, Token } from '@uniswap/sdk';
+import { Currency, Token } from '@uniswap/sdk';
 import { CurrencyLogo } from 'components';
 import { getTokenInfo, formatNumber } from 'utils';
 import { unwrappedToken } from 'utils/wrappedCurrency';
@@ -9,7 +9,6 @@ import Skeleton from '@material-ui/lab/Skeleton';
 import SwapInfoTx from './SwapInfoTx';
 import { useTranslation } from 'react-i18next';
 import { useEthPrice } from 'state/application/hooks';
-import { useActiveWeb3React } from 'hooks';
 
 const SwapProInfo: React.FC<{
   token1?: Token;
@@ -24,8 +23,6 @@ const SwapProInfo: React.FC<{
   const currency1 = token1 ? unwrappedToken(token1) : undefined;
   const currency2 = token2 ? unwrappedToken(token2) : undefined;
   const { ethPrice } = useEthPrice();
-  const { chainId } = useActiveWeb3React();
-  const chainIdToUse = chainId ?? ChainId.MATIC;
 
   useEffect(() => {
     (async () => {
@@ -35,7 +32,6 @@ const SwapProInfo: React.FC<{
             ethPrice.price,
             ethPrice.oneDayPrice,
             token1Address,
-            chainIdToUse,
           );
           if (tokenInfo) {
             setToken1Data(tokenInfo[0]);
@@ -46,7 +42,6 @@ const SwapProInfo: React.FC<{
             ethPrice.price,
             ethPrice.oneDayPrice,
             token2Address,
-            chainIdToUse,
           );
           if (tokenInfo) {
             setToken2Data(tokenInfo[0]);

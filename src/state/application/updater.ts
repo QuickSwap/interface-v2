@@ -8,7 +8,6 @@ import { useEthPrice, useIsV3, useMaticPrice } from './hooks';
 import { getEthPrice } from 'utils';
 import { getMaticPrice } from 'utils/v3-graph';
 import { useParams } from 'react-router-dom';
-import { ChainId } from '@uniswap/sdk';
 
 export default function Updater(): null {
   const { library, chainId } = useActiveWeb3React();
@@ -21,7 +20,6 @@ export default function Updater(): null {
   const isOnV3 = params && params.version ? params.version === 'v3' : false;
 
   const windowVisible = useIsWindowVisible();
-  const chainIdToUse = chainId ?? ChainId.MATIC;
 
   const [state, setState] = useState<{
     chainId: number | undefined;
@@ -72,7 +70,7 @@ export default function Updater(): null {
           maticPrice,
           maticOneDayPrice,
           maticPriceChange,
-        ] = await getMaticPrice(chainIdToUse);
+        ] = await getMaticPrice();
         updateMaticPrice({
           price: maticPrice,
           oneDayPrice: maticOneDayPrice,
@@ -84,16 +82,14 @@ export default function Updater(): null {
     })();
     (async () => {
       try {
-        const [price, oneDayPrice, ethPriceChange] = await getEthPrice(
-          chainIdToUse,
-        );
+        const [price, oneDayPrice, ethPriceChange] = await getEthPrice();
         updateEthPrice({ price, oneDayPrice, ethPriceChange });
       } catch (e) {
         console.log(e);
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTime, chainIdToUse]);
+  }, [currentTime]);
 
   // attach/detach listeners
   useEffect(() => {

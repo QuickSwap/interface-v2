@@ -1,15 +1,15 @@
-import { ChainId, Currency, currencyEquals, ETHER } from '@uniswap/sdk';
+import { Currency, currencyEquals, ETHER } from '@uniswap/sdk';
 import React, { useCallback, useEffect, useState } from 'react';
 import ReactGA from 'react-ga';
 import { CustomModal } from 'components';
 import useLast from 'hooks/useLast';
 import CurrencySearch from './CurrencySearch';
+import ListSelect from './ListSelect';
 import 'components/styles/CurrencySearchModal.scss';
 import { WrappedTokenInfo } from 'state/lists/v3/wrappedTokenInfo';
 import { TokenInfo } from '@uniswap/token-lists';
 import { NativeCurrency } from '@uniswap/sdk-core';
 import { useIsV3 } from 'state/application/hooks';
-import { useActiveWeb3React } from 'hooks';
 
 interface CurrencySearchModalProps {
   isOpen: boolean;
@@ -32,9 +32,7 @@ const CurrencySearchModal: React.FC<CurrencySearchModalProps> = ({
   const { isV3 } = useIsV3();
   const [listView, setListView] = useState<boolean>(false);
   const lastOpen = useLast(isOpen);
-  const { chainId } = useActiveWeb3React();
-  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
-  const nativeCurrency = ETHER[chainIdToUse];
+
   useEffect(() => {
     if (isOpen && !lastOpen) {
       setListView(false);
@@ -44,9 +42,9 @@ const CurrencySearchModal: React.FC<CurrencySearchModalProps> = ({
   const handleCurrencySelect = useCallback(
     (currency: Currency) => {
       if (isV3) {
-        if (currencyEquals(currency, nativeCurrency)) {
+        if (currencyEquals(currency, ETHER)) {
           onCurrencySelect({
-            ...nativeCurrency,
+            ...ETHER,
             isNative: true,
             isToken: false,
           } as NativeCurrency);

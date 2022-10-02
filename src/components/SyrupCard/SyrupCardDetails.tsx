@@ -24,7 +24,6 @@ import CircleInfoIcon from 'assets/images/circleinfo.svg';
 import SyrupAPR from './SyrupAPR';
 import { useUSDCPriceToken } from 'utils/useUSDCPrice';
 import { GlobalConst } from 'constants/index';
-import { ChainId } from '@uniswap/sdk';
 
 const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
   syrup,
@@ -37,9 +36,8 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
   const [attemptingClaim, setAttemptingClaim] = useState(false);
   const [attemptingUnstake, setAttemptingUnstake] = useState(false);
   const [openStakeModal, setOpenStakeModal] = useState(false);
-  const { chainId } = useActiveWeb3React();
-  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
-  const stakingTokenPrice = useUSDCPriceToken(syrup.stakingToken, chainIdToUse);
+
+  const stakingTokenPrice = useUSDCPriceToken(syrup.stakingToken);
   const stakingContract = useStakingContract(syrup?.stakingRewardAddress);
   const addTransaction = useTransactionAdder();
   const finalizedTransaction = useTransactionFinalizer();
