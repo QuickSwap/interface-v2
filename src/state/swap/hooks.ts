@@ -4,7 +4,7 @@ import {
   ChainId,
   Currency,
   CurrencyAmount,
-  ETHER,
+  ETHER as NATIVE,
   JSBI,
   Token,
   TokenAmount,
@@ -45,7 +45,7 @@ export function useSwapActionHandlers(): {
   const dispatch = useDispatch<AppDispatch>();
   const { chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ? chainId : ChainId.MATIC;
-  const nativeCurrency = ETHER[chainIdToUse];
+  const nativeCurrency = NATIVE[chainIdToUse];
   const onCurrencySelection = useCallback(
     (field: Field, currency: Currency) => {
       dispatch(
@@ -60,7 +60,7 @@ export function useSwapActionHandlers(): {
         }),
       );
     },
-    [dispatch],
+    [dispatch, nativeCurrency],
   );
 
   const onSwitchTokens = useCallback(() => {

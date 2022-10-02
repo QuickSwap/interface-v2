@@ -63,7 +63,7 @@ const FarmPage: React.FC = () => {
         ? false
         : true,
     );
-  }, [v2, v3, isV3]);
+  }, [v2, v3, isV3, updateIsV3]);
 
   const farmCategories = [
     {

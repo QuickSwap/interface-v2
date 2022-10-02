@@ -54,7 +54,13 @@ const SwapProInfo: React.FC<{
         }
       }
     })();
-  }, [token1Address, token2Address, ethPrice.price, ethPrice.oneDayPrice, chainIdToUse]);
+  }, [
+    token1Address,
+    token2Address,
+    ethPrice.price,
+    ethPrice.oneDayPrice,
+    chainIdToUse,
+  ]);
 
   const TokenInfo: React.FC<{ currency: Currency; tokenData: any }> = ({
     currency,

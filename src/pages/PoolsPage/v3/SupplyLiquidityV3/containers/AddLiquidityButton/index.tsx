@@ -117,7 +117,7 @@ export function AddLiquidityButton({
         !txHash &&
         !isNetworkFailed,
     );
-  }, [mintInfo, approvalA, approvalB]);
+  }, [mintInfo, approvalA, approvalB, isNetworkFailed, txHash]);
 
   const onAddLiquidity = () => {
     if (expertMode) {

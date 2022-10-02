@@ -16,7 +16,7 @@ import { toToken } from 'constants/v3/routing';
 import { Box } from '@material-ui/core';
 import { LockOutlined } from '@material-ui/icons';
 import NumericalInput from 'components/NumericalInput';
-import { ChainId, ETHER } from '@uniswap/sdk';
+import { ChainId, ETHER as NATIVE } from '@uniswap/sdk';
 import { USDC } from 'constants/v3/addresses';
 
 interface ITokenAmountCard {
@@ -50,7 +50,7 @@ export function TokenAmountCard({
 }: ITokenAmountCard) {
   const { account, chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ? chainId : ChainId.MATIC;
-  const nativeCurrency = ETHER[chainIdToUse];
+  const nativeCurrency = NATIVE[chainIdToUse];
 
   const balance = useCurrencyBalance(
     account ?? undefined,
@@ -68,9 +68,9 @@ export function TokenAmountCard({
     ),
     true,
   );
-  const USDC_POLYGON = toToken(USDC[chainIdToUse]);
+  const USDC_V3 = toToken(USDC[chainIdToUse]);
   const tokenValue = useBestV3TradeExactIn(
-    tryParseAmount('1', USDC_POLYGON),
+    tryParseAmount('1', USDC_V3),
     currency ?? undefined,
   );
 
@@ -85,7 +85,7 @@ export function TokenAmountCard({
   }, [priceFormat]);
 
   const handleOnBlur = useCallback(() => {
-    if (currency?.wrapped.address === USDC_POLYGON.address) {
+    if (currency?.wrapped.address === USDC_V3.address) {
       handleInput(localUSDValue);
       return;
     }
@@ -158,6 +158,7 @@ export function TokenAmountCard({
     valueUSD,
     currencyPrice,
     handleInput,
+    USDC_V3.address
   ]);
 
   useEffect(() => {

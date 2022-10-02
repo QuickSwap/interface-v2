@@ -79,6 +79,7 @@ const TopMovers: React.FC<TopMoversProps> = ({ hideArrow = false }) => {
     maticPrice.price,
     maticPrice.oneDayPrice,
     isV3,
+    chainIdToUse,
   ]);
 
   return (

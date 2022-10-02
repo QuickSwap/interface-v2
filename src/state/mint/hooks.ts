@@ -149,6 +149,7 @@ export function useDerivedMintInfo(): {
     currencyB,
     pair,
     chainIdToUse,
+    nativeCurrency,
   ]);
   const parsedAmounts: {
     [field in Field]: CurrencyAmount | undefined;

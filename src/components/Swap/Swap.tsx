@@ -343,7 +343,7 @@ const Swap: React.FC<{
 
   useEffect(() => {
     onCurrencySelection(Field.INPUT, nativeCurrency);
-  }, [onCurrencySelection, allTokens]);
+  }, [onCurrencySelection, allTokens, nativeCurrency]);
 
   useEffect(() => {
     if (currency0) {
