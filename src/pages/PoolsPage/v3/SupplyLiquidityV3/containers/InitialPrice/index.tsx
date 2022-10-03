@@ -1,12 +1,7 @@
 import React, { useEffect } from 'react';
 import { Currency } from '@uniswap/sdk-core';
-import useUSDCPrice from 'hooks/v3/useUSDCPrice';
 import { PriceFormats } from 'components/v3/PriceFomatToggler';
 import StartingPrice from '../../components/StartingPrice';
-import { USDPrices } from '../../components/USDPrices';
-// import { useHistory } from 'react-router-dom';
-import { useAppDispatch } from 'state/hooks';
-// import { updateCurrentStep } from 'state/mint/v3/actions';
 import { IDerivedMintInfo, useV3MintActionHandlers } from 'state/mint/v3/hooks';
 import { Box } from '@material-ui/core';
 
@@ -25,22 +20,11 @@ export function InitialPrice({
   mintInfo,
   priceFormat,
 }: IInitialPrice) {
-  const currencyAUSDC = useUSDCPrice(currencyA ?? undefined);
-  const currencyBUSDC = useUSDCPrice(currencyB ?? undefined);
-
-  const dispatch = useAppDispatch();
+  // may be needed when we enabled token, usd toggler
+  // const currencyAUSDC = useUSDCPrice(currencyA ?? undefined);
+  // const currencyBUSDC = useUSDCPrice(currencyB ?? undefined);
 
   const { onStartPriceInput } = useV3MintActionHandlers(mintInfo.noLiquidity);
-
-  // const history = useHistory();
-
-  // useEffect(() => {
-  //   return () => {
-  //     if (history.action === 'POP') {
-  //       dispatch(updateCurrentStep({ currentStep: backStep }));
-  //     }
-  //   };
-  // }, []);
 
   return (
     <Box>

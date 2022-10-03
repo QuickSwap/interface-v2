@@ -60,7 +60,7 @@ export function PresetRanges({
           type: Presets.STABLE,
           title: `Stablecoins`,
           min: 0.984,
-          max: 1.01,
+          max: 1.016,
           risk: PresetProfits.VERY_LOW,
           profit: PresetProfits.HIGH,
         },

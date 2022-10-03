@@ -139,6 +139,7 @@ export function SelectRange({
       dispatch(updateSelectedPreset({ preset: preset ? preset.type : null }));
 
       if (preset && preset.type === Presets.FULL) {
+        setFullRangeWarningShown(true);
         getSetFullRange();
       } else {
         setFullRangeWarningShown(false);
