@@ -1,6 +1,5 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useCurrency } from 'hooks/v3/Tokens';
-import usePrevious from 'hooks/usePrevious';
 import { useActiveWeb3React } from 'hooks';
 import { useParams } from 'react-router-dom';
 import {
@@ -97,33 +96,13 @@ export function SupplyLiquidityV3() {
       ? undefined
       : currencyB;
 
-  const derivedMintInfo = useV3DerivedMintInfo(
+  const mintInfo = useV3DerivedMintInfo(
     baseCurrency ?? undefined,
     quoteCurrency ?? undefined,
     feeAmount,
     baseCurrency ?? undefined,
     undefined,
   );
-  const prevDerivedMintInfo = usePrevious({ ...derivedMintInfo });
-
-  const mintInfo = useMemo(() => {
-    if (
-      (!derivedMintInfo.pool ||
-        !derivedMintInfo.price ||
-        derivedMintInfo.noLiquidity) &&
-      prevDerivedMintInfo
-    ) {
-      return {
-        ...prevDerivedMintInfo,
-        pricesAtTicks: derivedMintInfo.pricesAtTicks,
-        ticks: derivedMintInfo.ticks,
-        parsedAmounts: derivedMintInfo.parsedAmounts,
-      };
-    }
-    return {
-      ...derivedMintInfo,
-    };
-  }, [derivedMintInfo, prevDerivedMintInfo]);
 
   const {
     onFieldAInput,
