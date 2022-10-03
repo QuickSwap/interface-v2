@@ -59,8 +59,8 @@ export function PresetRanges({
         {
           type: Presets.STABLE,
           title: `Stablecoins`,
-          min: 0.984,
-          max: 1.01,
+          min: Number(price ?? 1) * 0.982,
+          max: Number(price ?? 1) * 1.018,
           risk: PresetProfits.VERY_LOW,
           profit: PresetProfits.HIGH,
         },
@@ -100,7 +100,7 @@ export function PresetRanges({
         profit: PresetProfits.HIGH,
       },
     ];
-  }, [isStablecoinPair]);
+  }, [isStablecoinPair, price]);
 
   const risk = useMemo(() => {
     if (!priceUpper || !priceLower || !price) return;
