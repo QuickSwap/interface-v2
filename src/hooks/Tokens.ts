@@ -1,5 +1,11 @@
 import { parseBytes32String } from '@ethersproject/strings';
-import { Currency, ETHER as NATIVE, Token, currencyEquals, ChainId } from '@uniswap/sdk';
+import {
+  Currency,
+  ETHER as NATIVE,
+  Token,
+  currencyEquals,
+  ChainId,
+} from '@uniswap/sdk';
 import { useMemo } from 'react';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import {

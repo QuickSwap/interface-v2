@@ -1,5 +1,11 @@
 import React from 'react';
-import { ChainId, Currency, currencyEquals, ETHER as NATIVE, Token } from '@uniswap/sdk';
+import {
+  ChainId,
+  Currency,
+  currencyEquals,
+  ETHER as NATIVE,
+  Token,
+} from '@uniswap/sdk';
 import { Box } from '@material-ui/core';
 import { CurrencyLogo, QuestionHelper } from 'components';
 import { useTranslation } from 'react-i18next';

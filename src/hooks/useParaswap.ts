@@ -1,7 +1,14 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useActiveWeb3React } from 'hooks';
 import { constructSimpleSDK } from '@paraswap/sdk';
-import { ChainId, Currency, ETHER as NATIVE, JSBI, Token, Trade } from '@uniswap/sdk';
+import {
+  ChainId,
+  Currency,
+  ETHER as NATIVE,
+  JSBI,
+  Token,
+  Trade,
+} from '@uniswap/sdk';
 
 const PARASWAP_NATIVE_ADDRESS = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
 export function getBestTradeCurrencyAddress(
