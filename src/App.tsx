@@ -38,12 +38,12 @@ const RemoveLiquidityV3Page = lazy(() =>
 const IncreaseLiquidityV3Page = lazy(() =>
   import('./pages/PoolsPage/v3/IncreaseLiquidityPage'),
 );
-const MigrateV2LiquidityPage = lazy(() =>
-  import('./pages/PoolsPage/v3/MigrateV2LiquidityPage'),
-);
-const MigrateV2DetailsPage = lazy(() =>
-  import('./pages/PoolsPage/v3/MigrateV2DetailsPage'),
-);
+// const MigrateV2LiquidityPage = lazy(() =>
+//   import('./pages/PoolsPage/v3/MigrateV2LiquidityPage'),
+// );
+// const MigrateV2DetailsPage = lazy(() =>
+//   import('./pages/PoolsPage/v3/MigrateV2DetailsPage'),
+// );
 const PositionPage = lazy(() => import('./pages/PoolsPage/v3/PositionPage'));
 
 import { PageLayout } from 'layouts';
@@ -171,7 +171,7 @@ const App: React.FC = () => {
                           <PoolsPage />
                         </PageLayout>
                       </Route>
-                      <Route exact path='/migrate'>
+                      {/* <Route exact path='/migrate'>
                         <PageLayout>
                           <MigrateV2LiquidityPage />
                         </PageLayout>
@@ -180,7 +180,7 @@ const App: React.FC = () => {
                         <PageLayout>
                           <MigrateV2DetailsPage />
                         </PageLayout>
-                      </Route>
+                      </Route> */}
                       <Route exact strict path='/pool/:tokenId'>
                         <PageLayout>
                           <PositionPage></PositionPage>

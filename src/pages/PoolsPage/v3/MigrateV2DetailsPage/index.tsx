@@ -547,13 +547,13 @@ export default function MigrateV2DetailsPage() {
     <>
       <Box className='wrapper' maxWidth='464px' width='100%'>
         <Box className='flex justify-between items-center'>
-          <Box
+          {/* <Box
             className='flex cursor-pointer'
             onClick={() => history.push('/migrate')}
           >
             <ArrowLeft />
           </Box>
-          <p className='weight-600'>Migrate V2 Liquidity</p>
+          <p className='weight-600'>Migrate V2 Liquidity</p> */}
           <Box
             width={28}
             height={28}
