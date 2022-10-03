@@ -40,6 +40,7 @@ import ColoredSlider from 'components/ColoredSlider';
 import { JSBI } from '@uniswap/sdk';
 import { useUserSlippageTolerance } from 'state/user/hooks';
 import './index.scss';
+import { useDefaultGasPrice } from 'hooks/useDefaultGasPrice';
 
 interface RemoveLiquidityV3Props {
   position: PositionPool;
@@ -59,13 +60,6 @@ export default function RemoveLiquidityV3({
     return { ...position };
   }, [position]);
 
-  const gasPrice = useAppSelector((state) => {
-    if (!state.application.gasPrice.fetched) return 36;
-    return state.application.gasPrice.override
-      ? 36
-      : state.application.gasPrice.fetched;
-  });
-
   // flag for receiving WETH
   const [receiveWETH, setReceiveWETH] = useState(false);
 
@@ -73,6 +67,8 @@ export default function RemoveLiquidityV3({
   const { percent } = useBurnV3State();
 
   const { account, chainId, library } = useActiveWeb3React();
+
+  const gasPrice = useDefaultGasPrice(chainId);
 
   const derivedInfo = useDerivedV3BurnInfo(position, receiveWETH);
   const prevDerivedInfo = usePrevious({ ...derivedInfo });

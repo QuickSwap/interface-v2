@@ -20,6 +20,8 @@ import { useTokenAllowance } from './useTokenAllowance';
 import { GAS_PRICE_MULTIPLIER } from './useGasPrice';
 import { useAppSelector } from 'state';
 import { calculateGasMargin } from 'utils';
+import { useDefaultGasPrice } from './useDefaultGasPrice';
+import { ChainId } from '@uniswap/sdk';
 
 export enum ApprovalState {
   UNKNOWN = 'UNKNOWN',
@@ -44,12 +46,7 @@ export function useApproveCallback(
   );
   const pendingApproval = useHasPendingApproval(token?.address, spender);
 
-  const gasPrice = useAppSelector((state) => {
-    if (!state.application.gasPrice.fetched) return 36;
-    return state.application.gasPrice.override
-      ? 36
-      : state.application.gasPrice.fetched;
-  });
+  const gasPrice = useDefaultGasPrice(chainId);
 
   // check the current approval status
   const approvalState: ApprovalState = useMemo(() => {

@@ -16,6 +16,7 @@ import { SwapRouter } from 'lib/src/swapRouter';
 import useTransactionDeadline from 'hooks/useTransactionDeadline';
 import { getTradeVersion } from 'utils/v3/getTradeVersion';
 import { useTransactionAdder } from 'state/transactions/hooks';
+import { useDefaultGasPrice } from 'hooks/useDefaultGasPrice';
 
 enum SwapCallbackState {
   INVALID,
@@ -222,12 +223,7 @@ export function useSwapCallback(
 
   const addTransaction = useTransactionAdder();
 
-  const gasPrice = useAppSelector((state) => {
-    if (!state.application.gasPrice.fetched) return 36;
-    return state.application.gasPrice.override
-      ? 36
-      : state.application.gasPrice.fetched;
-  });
+  const gasPrice = useDefaultGasPrice(chainId);
 
   const { address: recipientAddress } = useENS(recipientAddressOrName);
   const recipient =

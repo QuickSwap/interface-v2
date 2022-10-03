@@ -59,6 +59,7 @@ import {
   TransactionConfirmationModal,
   TransactionErrorContent,
 } from 'components';
+import { useDefaultGasPrice } from 'hooks/useDefaultGasPrice';
 
 interface PositionListItemProps {
   positionDetails: PositionPool;
@@ -78,12 +79,7 @@ export default function PositionListItemDetails({
     false,
   );
 
-  const gasPrice = useAppSelector((state) => {
-    if (!state.application.gasPrice.fetched) return 36;
-    return state.application.gasPrice.override
-      ? 36
-      : state.application.gasPrice.fetched;
-  });
+  const gasPrice = useDefaultGasPrice(chainId);
 
   const { tokenId } = positionDetails || {};
 

@@ -40,6 +40,7 @@ import { tryParseAmount } from 'state/swap/v3/hooks';
 import RangeBadge from 'components/v3/Badge/RangeBadge';
 import RateToggle from 'components/v3/RateToggle';
 import { useInverter } from 'hooks/v3/useInverter';
+import { useDefaultGasPrice } from 'hooks/useDefaultGasPrice';
 
 interface IAddLiquidityButton {
   baseCurrency: Currency | undefined;
@@ -85,12 +86,7 @@ export function AddLiquidityButton({
     return new Percent(JSBI.BigInt(allowedSlippage), JSBI.BigInt(10000));
   }, [allowedSlippage]);
 
-  const gasPrice = useAppSelector((state) => {
-    if (!state.application.gasPrice.fetched) return 36;
-    return state.application.gasPrice.override
-      ? 36
-      : state.application.gasPrice.fetched;
-  });
+  const gasPrice = useDefaultGasPrice(chainId);
 
   const addTransaction = useTransactionAdder();
   const finalizedTransaction = useTransactionFinalizer();

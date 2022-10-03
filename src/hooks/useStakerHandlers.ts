@@ -21,6 +21,8 @@ import { useTranslation } from 'react-i18next';
 import { toHex } from 'lib/src/utils/calldata';
 import { useAppSelector } from 'state';
 import { useV3StakeData } from 'state/farms/hooks';
+import { useDefaultGasPrice } from './useDefaultGasPrice';
+import { ChainId } from '@uniswap/sdk';
 
 export function useFarmingHandlers() {
   const { chainId, account, library } = useActiveWeb3React();
@@ -31,12 +33,7 @@ export function useFarmingHandlers() {
 
   const farmingCenterInterface = new Interface(FARMING_CENTER_ABI);
 
-  const gasPrice = useAppSelector((state) => {
-    if (!state.application.gasPrice.fetched) return 36;
-    return state.application.gasPrice.override
-      ? 36
-      : state.application.gasPrice.fetched;
-  });
+  const gasPrice = useDefaultGasPrice(chainId);
 
   const addTransaction = useTransactionAdder();
   const finalizeTransaction = useTransactionFinalizer();

@@ -16,11 +16,13 @@ interface L1ChainInfo {
   readonly nativeCurrencySymbol: string;
   readonly nativeCurrencyName: string;
   readonly nativeCurrencyDecimals: number;
+  readonly defaultGasPrice: number;
 }
 
 interface L2ChainInfo extends L1ChainInfo {
   readonly bridge: string;
   readonly logoUrl: string;
+  readonly defaultGasPrice: number;
 }
 
 type ChainInfo = { readonly [chainId: number]: L1ChainInfo | L2ChainInfo } & {
@@ -37,6 +39,9 @@ export const CHAIN_INFO: ChainInfo = {
     nativeCurrencySymbol: 'MATIC',
     nativeCurrencyName: 'Matic',
     nativeCurrencyDecimals: 18,
+    defaultGasPrice: Number(
+      process.env.REACT_APP_DEFAULT_GAS_PRICE_137 ?? '50',
+    ),
   },
   [ChainId.DOGECHAIN]: {
     docs: 'https://algebra.finance/',
@@ -46,5 +51,8 @@ export const CHAIN_INFO: ChainInfo = {
     nativeCurrencySymbol: 'WDOGE',
     nativeCurrencyName: 'Wrapped Doge',
     nativeCurrencyDecimals: 18,
+    defaultGasPrice: Number(
+      process.env.REACT_APP_DEFAULT_GAS_PRICE_2000 ?? '60',
+    ),
   },
 };
