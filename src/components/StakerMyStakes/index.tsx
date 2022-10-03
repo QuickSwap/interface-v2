@@ -1,7 +1,5 @@
-import { isAddress } from '@ethersproject/address';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Frown } from 'react-feather';
-import { useFarmingHandlers } from '../../hooks/useStakerHandlers';
 import { useActiveWeb3React } from 'hooks';
 import Loader from '../Loader';
 import { Deposit } from '../../models/interfaces';
@@ -15,14 +13,12 @@ import { useV3StakeData } from 'state/farms/hooks';
 interface FarmingMyFarmsProps {
   data: Deposit[] | null;
   refreshing: boolean;
-  now: number;
   fetchHandler: () => any;
 }
 
 export function FarmingMyFarms({
   data,
   refreshing,
-  now,
   fetchHandler,
 }: FarmingMyFarmsProps) {
   const { account } = useActiveWeb3React();
@@ -45,6 +41,7 @@ export function FarmingMyFarms({
 
   useEffect(() => {
     fetchHandler();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account]);
 
   useEffect(() => {
@@ -101,6 +98,7 @@ export function FarmingMyFarms({
         );
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [txHash, txConfirmed, selectedTokenId, selectedFarmingType, txType]);
 
   return (

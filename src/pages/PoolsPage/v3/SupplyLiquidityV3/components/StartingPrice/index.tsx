@@ -282,7 +282,14 @@ export default function StartingPrice({
         }),
       );
     }
-  }, [basePriceUSD, quotePriceUSD]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    basePriceUSD,
+    initialTokenPrice,
+    initialUSDPrices.CURRENCY_A,
+    initialUSDPrices.CURRENCY_B,
+    quotePriceUSD,
+  ]);
 
   const isUSD = useMemo(() => priceFormat === PriceFormats.USD, [priceFormat]);
 
@@ -343,7 +350,14 @@ export default function StartingPrice({
         }
       }
     },
-    [basePriceUSD, quotePriceUSD, initialUSDPrices],
+    [
+      dispatch,
+      startPriceHandler,
+      initialUSDPrices.CURRENCY_B,
+      initialUSDPrices.CURRENCY_A,
+      quotePriceUSD,
+      basePriceUSD,
+    ],
   );
 
   const handleTokenChange = useCallback(
@@ -447,11 +461,13 @@ export default function StartingPrice({
       }
     },
     [
-      userBaseCurrencyUSD,
-      userQuoteCurrencyUSD,
+      dispatch,
+      startPriceHandler,
+      basePriceUSD,
+      initialUSDPrices.CURRENCY_A,
+      initialUSDPrices.CURRENCY_B,
+      quotePriceUSD,
       initialTokenPrice,
-      initialUSDPrices,
-      handleUSDChange,
     ],
   );
 
@@ -460,10 +476,12 @@ export default function StartingPrice({
       startPriceHandler(initialTokenPrice);
       setUserQuoteCurrencyToken(initialTokenPrice);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialTokenPrice]);
 
   useEffect(() => {
     dispatch(updateSelectedPreset({ preset: null }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [priceFormat]);
 
   return (

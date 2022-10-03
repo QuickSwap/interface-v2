@@ -2,7 +2,7 @@ import { Box } from '@material-ui/core';
 import CustomTabSwitch from 'components/v3/CustomTabSwitch';
 import { useFarmingSubgraph } from 'hooks/useIncentiveSubgraph';
 import useParsedQueryString from 'hooks/useParsedQueryString';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import EternalFarmsPage from 'pages/EternalFarmsPage';
@@ -18,24 +18,27 @@ export default function Farms() {
   const currentTabQueried =
     parsedQuery && parsedQuery.tab ? (parsedQuery.tab as string) : 'my-farms';
 
-  const v3FarmCategories = [
-    {
-      text: t('My Farms'),
-      id: 0,
-      link: 'my-farms',
-    },
-    {
-      text: t('Eternal Farms'),
-      id: 1,
-      link: 'eternal-farms',
-    },
-  ];
+  const v3FarmCategories = useMemo(
+    () => [
+      {
+        text: t('My Farms'),
+        id: 0,
+        link: 'my-farms',
+      },
+      {
+        text: t('Eternal Farms'),
+        id: 1,
+        link: 'eternal-farms',
+      },
+    ],
+    [t],
+  );
   const handleTabSwitch = useCallback(
     (event, selectedIndex) => {
       const tab = v3FarmCategories?.[selectedIndex];
       history.push(`?tab=${tab?.link}`);
     },
-    [currentTabQueried, history],
+    [history, v3FarmCategories],
   );
 
   const selectedTab = useMemo(() => {
@@ -47,7 +50,7 @@ export default function Farms() {
     } else {
       return tab;
     }
-  }, [currentTabQueried]);
+  }, [currentTabQueried, v3FarmCategories]);
 
   const {
     fetchEternalFarms: {
@@ -64,8 +67,6 @@ export default function Farms() {
       transferredPositionsLoading,
     },
   } = useFarmingSubgraph() || {};
-
-  const [now, setNow] = useState(Date.now());
 
   return (
     <Box className='bg-palette' borderRadius={10}>
@@ -86,7 +87,6 @@ export default function Farms() {
               fetchHandler={() => {
                 fetchTransferredPositionsFn(true);
               }}
-              now={now}
             />
           </Box>
         )}

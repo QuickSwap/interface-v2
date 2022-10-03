@@ -19,7 +19,7 @@ export function useChunkedRows(arr: any[], inRow: number) {
     }
 
     return _arr;
-  }, [arr]);
+  }, [arr, inRow]);
 
   return chunked;
 }

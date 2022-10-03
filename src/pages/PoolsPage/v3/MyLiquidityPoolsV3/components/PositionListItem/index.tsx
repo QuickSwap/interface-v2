@@ -122,7 +122,7 @@ export default function PositionListItem({
       return { ...prevPositionDetails };
     }
     return { ...positionDetails };
-  }, [positionDetails]);
+  }, [positionDetails, prevPositionDetails]);
 
   const token0 = useToken(_token0Address);
   const token1 = useToken(_token1Address);
@@ -141,7 +141,7 @@ export default function PositionListItem({
       return [prevPoolState, prevPool];
     }
     return [poolState, pool];
-  }, [pool, poolState]);
+  }, [pool, poolState, prevPool, prevPoolState]);
 
   const position = useMemo(() => {
     if (_pool) {
@@ -185,6 +185,7 @@ export default function PositionListItem({
       dispatch(setShowNewestPosition({ showNewestPosition: false }));
       document.querySelector('#newest')?.scrollIntoView({ behavior: 'smooth' });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

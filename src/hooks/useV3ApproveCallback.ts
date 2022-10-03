@@ -139,6 +139,7 @@ export function useApproveCallback(
     spender,
     addTransaction,
     chainId,
+    gasPrice,
   ]);
 
   return [approvalState, approve];

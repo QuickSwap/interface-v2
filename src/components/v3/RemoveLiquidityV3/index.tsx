@@ -50,14 +50,7 @@ export default function RemoveLiquidityV3({
 }: RemoveLiquidityV3Props) {
   const { t } = useTranslation();
 
-  const prevPosition = usePrevious({ ...position });
   const tokenId = position.tokenId;
-  const _position = useMemo(() => {
-    if (!position && prevPosition) {
-      return { ...prevPosition };
-    }
-    return { ...position };
-  }, [position]);
 
   const gasPrice = useAppSelector((state) => {
     if (!state.application.gasPrice.fetched) return 36;
@@ -104,7 +97,7 @@ export default function RemoveLiquidityV3({
       error: derivedInfo.error,
       ...derivedInfo,
     };
-  }, [derivedInfo]);
+  }, [derivedInfo, prevDerivedInfo]);
 
   const { onPercentSelect } = useBurnV3ActionHandlers();
 
@@ -220,20 +213,23 @@ export default function RemoveLiquidityV3({
         console.error(error);
       });
   }, [
-    tokenId,
+    positionManager,
     liquidityValue0,
     liquidityValue1,
     deadline,
-    allowedSlippagePercent,
     account,
-    addTransaction,
-    positionManager,
     chainId,
     feeValue0,
     feeValue1,
-    library,
-    liquidityPercentage,
     positionSDK,
+    liquidityPercentage,
+    library,
+    tokenId,
+    allowedSlippagePercent,
+    gasPrice,
+    addTransaction,
+    finalizedTransaction,
+    t,
   ]);
 
   const handleDismissConfirmation = useCallback(() => {

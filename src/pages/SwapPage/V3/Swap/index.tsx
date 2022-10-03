@@ -9,12 +9,10 @@ import { Currency, CurrencyAmount, Token, TradeType } from '@uniswap/sdk-core';
 import { Trade as V3Trade } from 'lib/src/trade';
 import JSBI from 'jsbi';
 import { ArrowDown, CheckCircle, HelpCircle, Info } from 'react-feather';
-import { RouteComponentProps, useHistory } from 'react-router-dom';
-import { Text } from 'rebass';
+import { useHistory } from 'react-router-dom';
 import { ThemeContext } from 'styled-components/macro';
 import { Helmet } from 'react-helmet';
 import ReactGA from 'react-ga';
-import { TYPE } from 'theme/index';
 import './index.scss';
 import { useActiveWeb3React } from 'hooks';
 import useENSAddress from 'hooks/useENSAddress';
@@ -43,8 +41,6 @@ import { useAllTokens, useCurrency } from 'hooks/v3/Tokens';
 
 import { AutoColumn } from 'components/v3/Column';
 import Row, { AutoRow } from 'components/v3/Row';
-import { GreyCard } from 'components/v3/Card';
-import { ButtonConfirmed, ButtonError } from 'components/v3/Button';
 import {
   MouseoverTooltip,
   MouseoverTooltipContent,
@@ -71,11 +67,10 @@ import { Field } from 'state/swap/v3/actions';
 import confirmPriceImpactWithoutFee from 'components/v3/swap/confirmPriceImpactWithoutFee';
 import ConfirmSwapModal from 'components/v3/swap/ConfirmSwapModal';
 import { useExpertModeManager } from 'state/user/hooks';
-import Card from 'components/v3/Card/Card';
 import { ReactComponent as ExchangeIcon } from 'assets/images/ExchangeIcon.svg';
 
 import { Box } from '@material-ui/core';
-import { StyledButton, StyledLabel } from 'components/v3/Common/styledElements';
+import { StyledButton } from 'components/v3/Common/styledElements';
 
 const SwapV3Page: React.FC<{ currency0?: string; currency1?: string }> = ({
   currency0,
@@ -281,7 +276,13 @@ const SwapV3Page: React.FC<{ currency0?: string; currency1?: string }> = ({
         label: [trade?.inputAmount.currency.symbol, toggledVersion].join('/'),
       });
     }
-  }, [approveCallback, gatherPermitSignature, signatureState]);
+  }, [
+    approveCallback,
+    gatherPermitSignature,
+    signatureState,
+    toggledVersion,
+    trade?.inputAmount.currency.symbol,
+  ]);
 
   // check if user has gone through approval process, used to show two step buttons, reset on token change
   const [approvalSubmitted, setApprovalSubmitted] = useState<boolean>(false);
@@ -302,8 +303,7 @@ const SwapV3Page: React.FC<{ currency0?: string; currency1?: string }> = ({
   );
 
   // the callback to execute the swap
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  //@ts-ignore
+
   const { callback: swapCallback, error: swapCallbackError } = useSwapCallback(
     trade,
     allowedSlippage,
@@ -371,7 +371,6 @@ const SwapV3Page: React.FC<{ currency0?: string; currency1?: string }> = ({
     recipientAddress,
     account,
     trade,
-    singleHopOnly,
   ]);
 
   // errors
@@ -414,8 +413,6 @@ const SwapV3Page: React.FC<{ currency0?: string; currency1?: string }> = ({
 
   const handleAcceptChanges = useCallback(() => {
     setSwapState({
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      //@ts-ignore
       tradeToConfirm: trade,
       swapErrorMessage,
       txHash,
@@ -472,6 +469,7 @@ const SwapV3Page: React.FC<{ currency0?: string; currency1?: string }> = ({
     if (paramOutputCurrency) {
       handleOutputSelect(paramOutputCurrency);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paramInputCurrency, paramOutputCurrency]);
 
   //TODO
