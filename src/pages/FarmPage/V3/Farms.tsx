@@ -52,22 +52,6 @@ export default function Farms() {
     }
   }, [currentTabQueried, v3FarmCategories]);
 
-  const {
-    fetchEternalFarms: {
-      fetchEternalFarmsFn,
-      eternalFarms,
-      eternalFarmsLoading,
-    },
-  } = useFarmingSubgraph() || {};
-
-  const {
-    fetchTransferredPositions: {
-      fetchTransferredPositionsFn,
-      transferredPositions,
-      transferredPositionsLoading,
-    },
-  } = useFarmingSubgraph() || {};
-
   return (
     <Box className='bg-palette' borderRadius={10}>
       <Box width='100%' mt={2}>
@@ -81,22 +65,10 @@ export default function Farms() {
 
         {selectedTab?.id === 0 && (
           <Box mt={2}>
-            <FarmingMyFarms
-              data={transferredPositions}
-              refreshing={transferredPositionsLoading}
-              fetchHandler={() => {
-                fetchTransferredPositionsFn(true);
-              }}
-            />
+            <FarmingMyFarms />
           </Box>
         )}
-        {selectedTab?.id === 1 && (
-          <EternalFarmsPage
-            data={eternalFarms}
-            refreshing={eternalFarmsLoading}
-            fetchHandler={() => fetchEternalFarmsFn(true)}
-          />
-        )}
+        {selectedTab?.id === 1 && <EternalFarmsPage />}
       </Box>
     </Box>
   );

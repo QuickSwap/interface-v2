@@ -9,19 +9,18 @@ import './index.scss';
 import FarmCard from './FarmCard';
 import { Box } from '@material-ui/core';
 import { useV3StakeData } from 'state/farms/hooks';
+import { useFarmingSubgraph } from 'hooks/useIncentiveSubgraph';
 
-interface FarmingMyFarmsProps {
-  data: Deposit[] | null;
-  refreshing: boolean;
-  fetchHandler: () => any;
-}
-
-export function FarmingMyFarms({
-  data,
-  refreshing,
-  fetchHandler,
-}: FarmingMyFarmsProps) {
+export function FarmingMyFarms() {
   const { account } = useActiveWeb3React();
+
+  const {
+    fetchTransferredPositions: {
+      fetchTransferredPositionsFn,
+      transferredPositions,
+      transferredPositionsLoading,
+    },
+  } = useFarmingSubgraph() || {};
 
   const { v3Stake } = useV3StakeData();
   const { selectedTokenId, txType, txHash, txConfirmed, selectedFarmingType } =
@@ -40,13 +39,21 @@ export function FarmingMyFarms({
   }, [shallowPositions]);
 
   useEffect(() => {
-    fetchHandler();
+    fetchTransferredPositionsFn(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account]);
 
   useEffect(() => {
-    setShallowPositions(data);
-  }, [data]);
+    if (txType === 'farm' && txConfirmed) {
+      fetchTransferredPositionsFn(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [txType, txConfirmed]);
+
+  useEffect(() => {
+    setShallowPositions(transferredPositions);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [transferredPositions?.length]);
 
   useEffect(() => {
     if (!shallowPositions) return;
@@ -103,7 +110,7 @@ export function FarmingMyFarms({
 
   return (
     <>
-      {refreshing || !shallowPositions ? (
+      {transferredPositionsLoading || !shallowPositions ? (
         <div className={'my-farms__loader flex-s-between f-jc'}>
           <Loader stroke={'white'} size={'1.5rem'} />
         </div>
