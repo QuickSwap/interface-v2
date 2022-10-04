@@ -146,7 +146,7 @@ export const supply = async (
 
   const isETH =
     asset.underlyingToken.toLowerCase() ===
-    GlobalValue.tokens.MATIC.address.toLowerCase();
+    GlobalValue.tokens.COMMON.EMPTY.address.toLowerCase();
   const amountBN = convertNumbertoBN(
     amount,
     asset.underlyingDecimals.toNumber(),
@@ -175,7 +175,7 @@ export const supply = async (
       } as any);
       return txObj;
     } else {
-      const txObj = await (cToken.mint as any)({
+      const txObj = await (cToken.contract.methods.mint as any)({
         from: address,
         value: amountBN,
       });
@@ -203,7 +203,7 @@ export const repayBorrow = async (
 
   const isETH =
     asset.underlyingToken.toLowerCase() ===
-    GlobalValue.tokens.MATIC.address.toLowerCase();
+    GlobalValue.tokens.COMMON.EMPTY.address.toLowerCase();
   const amountBN = convertNumbertoBN(
     amount,
     asset.underlyingDecimals.toNumber(),
