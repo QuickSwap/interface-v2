@@ -24,11 +24,11 @@ export default function FarmCard({ el }: FarmCardProps) {
     <StyledFilledBox borderRadius='16px' mt={1.5} mb={1.5}>
       <Box
         className='flex justify-between items-center flex-wrap'
-        height={80}
+        py={2}
         borderRadius={10}
       >
-        <Box className='flex justify-around' width='70%'>
-          <Box className='flex items-center'>
+        <Box className='flex flex-wrap justify-around' width='70%'>
+          <Box className='flex items-center' my={1}>
             <Box mr={2}>
               <StyledCircle>{el.id}</StyledCircle>
             </Box>
@@ -51,7 +51,7 @@ export default function FarmCard({ el }: FarmCardProps) {
             </Box>
           </Box>
 
-          <Box className='flex items-center'>
+          <Box className='flex items-center' my={1}>
             <DoubleCurrencyLogo
               currency0={new Token(137, el.token0, 18, el.pool.token0.symbol)}
               currency1={new Token(137, el.token1, 18, el.pool.token1.symbol)}

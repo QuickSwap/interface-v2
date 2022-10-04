@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Box } from '@material-ui/core';
+import { Box, useMediaQuery, useTheme } from '@material-ui/core';
 import { CurrencyLogo } from 'components';
 import {
   StyledButton,
@@ -30,12 +30,12 @@ export default function FarmCardDetail({ el }: FarmCardDetailProps) {
   const { eternalCollectRewardHandler, withdrawHandler, claimRewardsHandler } =
     useFarmingHandlers() || {};
 
+  const { breakpoints } = useTheme();
+  const isMobile = useMediaQuery(breakpoints.down('xs'));
+
   return (
-    <Box
-      className='flex justify-evenly items-center flex-wrap'
-      marginBottom={2}
-    >
-      <StyledDarkBox padding={1.5} width={1} height={220}>
+    <Box className='flex justify-evenly items-center flex-wrap'>
+      <StyledDarkBox padding={1.5} width={1}>
         <Box>
           <p>Eternal Farming</p>
         </Box>
@@ -77,27 +77,36 @@ export default function FarmCardDetail({ el }: FarmCardDetailProps) {
         )}
         {el.eternalFarming && (
           <>
-            <StyledFilledBox mt={2} p={2}>
-              <Box width={1} className='flex justify-between'>
+            <StyledFilledBox className='flex flex-wrap' mt={2} p={2}>
+              <Box width={!isMobile && bonusRewardToken ? 0.5 : 1}>
                 <small className='text-secondary'>Earned rewards</small>
-                {bonusRewardToken && (
-                  <small className='text-secondary'>Earned bonus</small>
-                )}
-              </Box>
-              <Box mt={1} width={1} className='flex justify-between'>
-                <Box className='flex items-center'>
-                  <CurrencyLogo
-                    size={'24px'}
-                    currency={
-                      new Token(137, rewardToken.id, 18, rewardToken.symbol)
-                    }
-                  />
-                  <Box ml='6px'>
-                    <p>{`${formatReward(earned)} ${rewardToken.symbol}`}</p>
+                <Box mt={1}>
+                  <Box className='flex items-center'>
+                    <CurrencyLogo
+                      size={'24px'}
+                      currency={
+                        new Token(137, rewardToken.id, 18, rewardToken.symbol)
+                      }
+                    />
+                    <Box ml='6px'>
+                      <p>{`${formatReward(earned)} ${rewardToken.symbol}`}</p>
+                    </Box>
                   </Box>
                 </Box>
-                {bonusRewardToken && (
-                  <Box className='flex items-center'>
+              </Box>
+              {bonusRewardToken && (
+                <Box
+                  mt={isMobile ? 2 : 0}
+                  width={!isMobile ? 0.5 : 1}
+                  textAlign={isMobile ? 'left' : 'right'}
+                >
+                  <small className='text-secondary'>Earned bonus</small>
+                  <Box
+                    mt={1}
+                    className={`flex items-center ${
+                      isMobile ? '' : 'justify-end'
+                    }`}
+                  >
                     <CurrencyLogo
                       size={'24px'}
                       currency={
@@ -115,14 +124,17 @@ export default function FarmCardDetail({ el }: FarmCardDetailProps) {
                       }`}</p>
                     </Box>
                   </Box>
-                )}
-              </Box>
+                </Box>
+              )}
             </StyledFilledBox>
 
-            <Box marginTop={2} className='flex justify-between items-center'>
+            <Box
+              marginTop={2}
+              className='flex justify-between items-center flex-wrap'
+            >
               <StyledButton
                 height='40px'
-                width='49%'
+                width={isMobile ? '100%' : '49%'}
                 disabled={
                   (selectedTokenId === el.id &&
                     txType === 'eternalCollectReward' &&
@@ -150,7 +162,8 @@ export default function FarmCardDetail({ el }: FarmCardDetailProps) {
               </StyledButton>
               <StyledButton
                 height='40px'
-                width='49%'
+                width={isMobile ? '100%' : '49%'}
+                style={{ marginTop: isMobile ? '16px' : 0 }}
                 disabled={
                   selectedTokenId === el.id &&
                   selectedFarmingType === FarmingType.ETERNAL &&
