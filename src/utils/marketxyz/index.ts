@@ -9,6 +9,7 @@ import {
   testForCTokenErrorAndSend,
 } from './errors';
 import { GlobalValue } from 'constants/index';
+import { BigNumber } from 'ethers';
 
 export const convertMantissaToAPY = (mantissa: any, dayRange: number) => {
   return (
@@ -137,7 +138,7 @@ export const approveCToken = async (
 
 export const supply = async (
   asset: USDPricedPoolAsset,
-  amount: number,
+  amount: BigNumber,
   address: string,
   supplyError: string,
   sdk: MarketSDK,
@@ -147,11 +148,7 @@ export const supply = async (
   const isETH =
     asset.underlyingToken.toLowerCase() ===
     GlobalValue.tokens.COMMON.EMPTY.address.toLowerCase();
-  const amountBN = convertNumbertoBN(
-    amount,
-    asset.underlyingDecimals.toNumber(),
-    sdk.web3,
-  );
+  const amountBN = sdk.web3.utils.toBN(amount.toString());
 
   if (isETH) {
     const ethBalance = await sdk.web3.eth.getBalance(address);
@@ -194,7 +191,7 @@ export const supply = async (
 
 export const repayBorrow = async (
   asset: USDPricedPoolAsset,
-  amount: number,
+  amount: BigNumber,
   address: string,
   repayError: string,
   sdk: MarketSDK,
@@ -204,11 +201,7 @@ export const repayBorrow = async (
   const isETH =
     asset.underlyingToken.toLowerCase() ===
     GlobalValue.tokens.COMMON.EMPTY.address.toLowerCase();
-  const amountBN = convertNumbertoBN(
-    amount,
-    asset.underlyingDecimals.toNumber(),
-    sdk.web3,
-  );
+  const amountBN = sdk.web3.utils.toBN(amount.toString());
 
   const isRepayingMax =
     amountBN.eq(sdk.web3.utils.toBN(asset.borrowBalance.toString())) && !isETH;
@@ -287,18 +280,14 @@ export const toggleCollateral = async (
 
 export const withdraw = async (
   asset: USDPricedPoolAsset,
-  amount: number,
+  amount: BigNumber,
   address: string,
   withdrawError: string,
   sdk: MarketSDK,
 ) => {
   const cToken = new CToken(sdk, asset.cToken.address);
 
-  const amountBN = convertNumbertoBN(
-    amount,
-    asset.underlyingDecimals.toNumber(),
-    sdk.web3,
-  );
+  const amountBN = sdk.web3.utils.toBN(amount.toString());
   const txObj = await testForCTokenErrorAndSend(
     cToken.contract.methods.redeemUnderlying(amountBN),
     address,
@@ -310,16 +299,14 @@ export const withdraw = async (
 
 export const borrow = async (
   asset: USDPricedPoolAsset,
-  amount: number,
+  amount: BigNumber,
   address: string,
   borrowError: string,
   sdk: MarketSDK,
 ) => {
   const cToken = new CToken(sdk, asset.cToken.address);
 
-  const amountBN = sdk.web3.utils.toBN(
-    Number(amount * 10 ** asset.underlyingDecimals.toNumber()).toFixed(0),
-  );
+  const amountBN = sdk.web3.utils.toBN(amount.toString());
 
   const txObj = await testForCTokenErrorAndSend(
     cToken.contract.methods.borrow(amountBN),
