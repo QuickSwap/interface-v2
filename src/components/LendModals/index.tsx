@@ -258,8 +258,6 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
     })();
   }, [currentAsset, modalType, account]);
 
-  console.log('ccc', maxAmount);
-
   useEffect(() => {
     if (!numValue) {
       setUpdatedAsset(undefined);
