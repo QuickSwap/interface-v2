@@ -170,6 +170,8 @@ const AddLiquidity: React.FC<{
   }, [onCurrencySelection, currency0, currency1]);
 
   const onAdd = () => {
+    setAddLiquidityErrorMessage(null);
+    setTxHash('');
     if (expertMode) {
       onAddLiquidity();
     } else {
