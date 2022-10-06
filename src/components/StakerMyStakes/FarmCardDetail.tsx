@@ -12,6 +12,7 @@ import Loader from 'components/Loader';
 import { formatReward } from 'utils/formatReward';
 import { Token } from '@uniswap/sdk';
 import { useV3StakeData } from 'state/farms/hooks';
+import { useActiveWeb3React } from 'hooks';
 
 interface FarmCardDetailProps {
   el: any;
@@ -22,6 +23,8 @@ export default function FarmCardDetail({ el }: FarmCardDetailProps) {
   const earned = el.eternalEarned;
   const bonusEarned = el.eternalBonusEarned;
   const bonusRewardToken = el.eternalBonusRewardToken;
+
+  const { chainId } = useActiveWeb3React();
 
   const { v3Stake } = useV3StakeData();
   const { txType, selectedTokenId, txConfirmed, txError, selectedFarmingType } =
@@ -82,12 +85,20 @@ export default function FarmCardDetail({ el }: FarmCardDetailProps) {
                 <small className='text-secondary'>Earned rewards</small>
                 <Box mt={1}>
                   <Box className='flex items-center'>
-                    <CurrencyLogo
-                      size={'24px'}
-                      currency={
-                        new Token(137, rewardToken.id, 18, rewardToken.symbol)
-                      }
-                    />
+                    {chainId && (
+                      <CurrencyLogo
+                        size={'24px'}
+                        currency={
+                          new Token(
+                            chainId,
+                            rewardToken.id,
+                            Number(rewardToken.decimals),
+                            rewardToken.symbol,
+                          )
+                        }
+                      />
+                    )}
+
                     <Box ml='6px'>
                       <p>{`${formatReward(earned)} ${rewardToken.symbol}`}</p>
                     </Box>
@@ -107,17 +118,19 @@ export default function FarmCardDetail({ el }: FarmCardDetailProps) {
                       isMobile ? '' : 'justify-end'
                     }`}
                   >
-                    <CurrencyLogo
-                      size={'24px'}
-                      currency={
-                        new Token(
-                          137,
-                          bonusRewardToken.id,
-                          18,
-                          bonusRewardToken.symbol,
-                        )
-                      }
-                    />
+                    {chainId && (
+                      <CurrencyLogo
+                        size={'24px'}
+                        currency={
+                          new Token(
+                            chainId,
+                            bonusRewardToken.id,
+                            Number(bonusRewardToken.decimals),
+                            bonusRewardToken.symbol,
+                          )
+                        }
+                      />
+                    )}
                     <Box ml='6px'>
                       <p>{`${formatReward(bonusEarned)} ${
                         bonusRewardToken.symbol

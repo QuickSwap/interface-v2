@@ -12,6 +12,7 @@ import FarmCardDetail from './FarmCardDetail';
 import { Deposit } from '../../models/interfaces';
 import { IsActive } from './IsActive';
 import { Token } from '@uniswap/sdk';
+import { useActiveWeb3React } from 'hooks';
 
 interface FarmCardProps {
   el: Deposit;
@@ -19,6 +20,10 @@ interface FarmCardProps {
 
 export default function FarmCard({ el }: FarmCardProps) {
   const [showMore, setShowMore] = useState(false);
+  const { chainId } = useActiveWeb3React();
+
+  const token0 = el.pool.token0;
+  const token1 = el.pool.token1;
 
   return (
     <StyledFilledBox borderRadius='16px' mt={1.5} mb={1.5}>
@@ -52,18 +57,35 @@ export default function FarmCard({ el }: FarmCardProps) {
           </Box>
 
           <Box className='flex items-center' my={1}>
-            <DoubleCurrencyLogo
-              currency0={new Token(137, el.token0, 18, el.pool.token0.symbol)}
-              currency1={new Token(137, el.token1, 18, el.pool.token1.symbol)}
-              size={30}
-            />
+            {chainId && (
+              <DoubleCurrencyLogo
+                currency0={
+                  new Token(
+                    chainId,
+                    token0.id,
+                    Number(token0.decimals),
+                    token0.symbol,
+                  )
+                }
+                currency1={
+                  new Token(
+                    chainId,
+                    token1.id,
+                    Number(token1.decimals),
+                    token1.symbol,
+                  )
+                }
+                size={30}
+              />
+            )}
+
             <Box className='flex-col' ml={3}>
               <StyledLabel color='#696c80' fontSize='12px'>
                 Pool
               </StyledLabel>
 
               <StyledLabel color='#ebecf2' fontSize='14px'>
-                {`${el.pool.token0.symbol} / ${el.pool.token1.symbol}`}
+                {`${token0.symbol} / ${token1.symbol}`}
               </StyledLabel>
             </Box>
           </Box>
