@@ -106,7 +106,10 @@ export function tryParseAmount<T extends Currency>(
     return undefined;
   }
   try {
-    const typedValueParsed = parseUnits(value, currency.decimals).toString();
+    const typedValueParsed = parseUnits(
+      value !== 'NaN' ? value : '0',
+      currency.decimals,
+    ).toString();
     if (typedValueParsed !== '0') {
       return CurrencyAmount.fromRawAmount(
         currency,
