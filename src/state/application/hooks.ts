@@ -17,8 +17,10 @@ import {
   removeBookmarkPair,
   updateTokenDetails,
   updateIsProMode,
+  updateMaticPrice,
+  updateIsV3,
 } from './actions';
-import { ETHPrice, TokenDetail } from './reducer';
+import { ETHPrice, MaticPrice, TokenDetail } from './reducer';
 
 export function useBlockNumber(): number | undefined {
   const { chainId } = useActiveWeb3React();
@@ -61,6 +63,10 @@ export function useWalletModalToggle(): () => void {
 
 export function useToggleSettingsMenu(): () => void {
   return useToggleModal(ApplicationModal.SETTINGS);
+}
+
+export function useToggleV3SettingsMenu(): () => void {
+  return useToggleModal(ApplicationModal.SETTINGSV3);
 }
 
 export function useShowClaimPopup(): boolean {
@@ -113,6 +119,7 @@ export function useEthPrice(): {
   updateEthPrice: ({ price, oneDayPrice, ethPriceChange }: ETHPrice) => void;
 } {
   const ethPrice = useSelector((state: AppState) => state.application.ethPrice);
+
   const dispatch = useDispatch();
   const _updateETHPrice = useCallback(
     ({ price, oneDayPrice, ethPriceChange }) => {
@@ -121,6 +128,28 @@ export function useEthPrice(): {
     [dispatch],
   );
   return { ethPrice, updateEthPrice: _updateETHPrice };
+}
+
+export function useMaticPrice(): {
+  maticPrice: MaticPrice;
+  updateMaticPrice: ({
+    price,
+    oneDayPrice,
+    maticPriceChange,
+  }: MaticPrice) => void;
+} {
+  const maticPrice = useSelector(
+    (state: AppState) => state.application.maticPrice,
+  );
+
+  const dispatch = useDispatch();
+  const _updateMaticPrice = useCallback(
+    ({ price, oneDayPrice, maticPriceChange }) => {
+      dispatch(updateMaticPrice({ price, oneDayPrice, maticPriceChange }));
+    },
+    [dispatch],
+  );
+  return { maticPrice, updateMaticPrice: _updateMaticPrice };
 }
 
 export function useGlobalData(): {
@@ -244,4 +273,19 @@ export function useIsProMode(): {
     [dispatch],
   );
   return { isProMode, updateIsProMode: _updateIsProMode };
+}
+
+export function useIsV3(): {
+  isV3: boolean | undefined;
+  updateIsV3: (isV3: boolean) => void;
+} {
+  const isV3 = useSelector((state: AppState) => state.application.isV3);
+  const dispatch = useDispatch();
+  const _updateIsV3 = useCallback(
+    (isV3: boolean) => {
+      dispatch(updateIsV3(isV3));
+    },
+    [dispatch],
+  );
+  return { isV3, updateIsV3: _updateIsV3 };
 }

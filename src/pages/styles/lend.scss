@@ -117,7 +117,7 @@
 .lendAlertWrapper {
   margin-bottom: 40px;
   padding: 16px;
-  background-color: $yellow5;
+  background-color: $yellow4;
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -128,7 +128,7 @@
 }
 
 .lendAlertBox {
-  background-color: $grey30;
+  background-color: $grey29;
   width: 40px;
   height: 40px;
   border-radius: 20px;
@@ -136,7 +136,7 @@
   justify-content: center;
   align-items: center;
   & svg path {
-    fill: $yellow4;
+    fill: $yellow5;
   }
 }
 

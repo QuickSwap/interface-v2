@@ -34,6 +34,7 @@ const DragonsLair: React.FC<{ isNew: boolean }> = ({ isNew }) => {
         <StakeQuickModal
           open={openStakeModal}
           onClose={() => setOpenStakeModal(false)}
+          isNew={isNew}
         />
       )}
       {openUnstakeModal && (
@@ -69,10 +70,12 @@ const DragonsLair: React.FC<{ isNew: boolean }> = ({ isNew }) => {
           ).toLocaleString()}
         </small>
       </Box>
+
       <Box className='dragonLairRow'>
         <small>{t('apy')}</small>
-        <small className='text-success'>{APY}%</small>
+        <small className='text-success'>{isNew ? 'TBD' : `${APY}%`}</small>
       </Box>
+
       <Box className='dragonLairRow'>
         <small>{t('yourdeposits')}</small>
         <small>{formatTokenAmount(lairInfoToUse.QUICKBalance)}</small>
@@ -91,14 +94,12 @@ const DragonsLair: React.FC<{ isNew: boolean }> = ({ isNew }) => {
           onClick={() => setIsQUICKRate(!isQUICKRate)}
         />
       </Box>
-      {!isNew && (
-        <Box
-          className='stakeButton bg-primary'
-          onClick={() => setOpenStakeModal(true)}
-        >
-          <small>{t('stake')}</small>
-        </Box>
-      )}
+      <Box
+        className='stakeButton bg-primary'
+        onClick={() => setOpenStakeModal(true)}
+      >
+        <small>{t('stake')}</small>
+      </Box>
       <Box
         className='stakeButton bg-transparent'
         onClick={() => setOpenUnstakeModal(true)}

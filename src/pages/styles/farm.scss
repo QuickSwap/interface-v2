@@ -28,3 +28,11 @@
   padding: 12px 0;
   background-color: $secondary2;
 }
+
+.v3-farm-tabs-wrapper {
+  padding: 0 16px;
+  border-bottom: 1px solid $secondary3;
+  & .customTabWrapper {
+    margin-bottom: -2px;
+  }
+}

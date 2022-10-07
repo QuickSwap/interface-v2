@@ -6,27 +6,32 @@ import { formatCompact, formatDateFromTimeStamp, formatNumber } from 'utils';
 import 'components/styles/AreaChart.scss';
 
 export interface AreaChartProps {
+  strokeColor?: string;
   backgroundColor?: string;
+  gradientColor?: string | undefined;
   data?: Array<any>;
   dates?: Array<any>;
   yAxisValues?: Array<number>;
   categories?: Array<string | null>;
   width?: number | string;
   height?: number | string;
+  yAxisTicker?: string | undefined;
 }
 const AreaChart: React.FC<AreaChartProps> = ({
+  strokeColor = '#00dced',
   backgroundColor = '#004ce6',
+  gradientColor,
   categories = [],
   data = [],
   dates = [],
   yAxisValues,
   width = 500,
   height = 200,
+  yAxisTicker = '$',
 }) => {
   const dark = useIsDarkMode();
 
-  const strokeColor = '#00dced';
-  const gradientColor = dark ? '#64fbd3' : '#D4F8FB';
+  const _gradientColor = gradientColor || (dark ? '#64fbd3' : '#D4F8FB');
 
   const yMax = yAxisValues
     ? Math.max(...yAxisValues.map((val) => Number(val)))
@@ -62,7 +67,7 @@ const AreaChart: React.FC<AreaChartProps> = ({
     },
     fill: {
       type: 'gradient',
-      colors: [gradientColor],
+      colors: [_gradientColor],
       gradient: {
         gradientToColors: [backgroundColor],
         shadeIntensity: 1,
@@ -119,9 +124,11 @@ const AreaChart: React.FC<AreaChartProps> = ({
         return `<div class="areaChartTooltip"><small>${formatDateFromTimeStamp(
           dates[dataPointIndex],
           'MMM DD, YYYY',
-        )}</small><small><b>$${formatCompact(
+        )}</small><small><b>
+        ${yAxisTicker === '$' ? yAxisTicker : ''}${formatCompact(
           series[seriesIndex][dataPointIndex],
-        )}</b></small></div>`;
+        )}${yAxisTicker === '%' ? yAxisTicker : ''}
+      </b></small></div>`;
       },
     },
   };
@@ -153,9 +160,11 @@ const AreaChart: React.FC<AreaChartProps> = ({
         <Box className='yAxis'>
           {yAxisValues.map((value, index) => (
             <p key={index}>
-              $
               {// this is to show small numbers less than 0.0001
-              value > 0.0001 ? formatCompact(value) : formatNumber(value)}
+
+              `${yAxisTicker === '$' ? yAxisTicker : ''}${
+                value > 0.0001 ? formatCompact(value) : formatNumber(value)
+              }${yAxisTicker === '%' ? yAxisTicker : ''}`}
             </p>
           ))}
         </Box>

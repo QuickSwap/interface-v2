@@ -8,6 +8,28 @@ body {
   margin: 0;
 }
 
+.loadingDots {
+  &::after {
+    display: inline-block;
+    animation: ellipsis 1.25s infinite;
+    content: '.';
+    width: 1em;
+    text-align: left;
+  }
+
+  @keyframes ellipsis {
+    0% {
+      content: '.';
+    }
+    33% {
+      content: '..';
+    }
+    66% {
+      content: '...';
+    }
+  }
+}
+
 [data-reach-dialog-overlay] {
   position: fixed;
   top: 0;
@@ -23,6 +45,29 @@ body {
     max-height: calc(100vh - 120px) !important;
     min-height: calc(100vh - 120px) !important;
     border-radius: 20px !important;
+  }
+}
+
+.wrapper {
+  padding: 24px;
+  background: $bgPalette;
+  border-radius: 20px;
+  @include media("screen", "<phone") {
+    padding: 16px 12px
+  }
+}
+
+.cardRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  & > div {
+    display: flex;
+    align-items: center;
+    & > small {
+      margin-right: 10px;
+    }
   }
 }
 
@@ -143,6 +188,14 @@ body {
   justify-content: space-between;
 }
 
+.justify-evenly {
+  justify-content: space-evenly;
+}
+
+.justify-around {
+  justify-content: space-around;
+}
+
 .flex-wrap {
   flex-wrap: wrap;
 }
@@ -166,5 +219,19 @@ body {
     margin: 8px 0;
     outline: none;
     padding: 6px 4px;
+  }
+}
+
+.token-select-background {
+  display: flex;
+  justify-content: space-around;
+  width: 176px;
+  height: 44px;
+  margin: 0 16px 0 0;
+  padding: 10px 12px 10px 10px;
+  border-radius: 22px;
+  background-color: #282d3d;
+  & p {
+    margin-left: 4px;
   }
 }

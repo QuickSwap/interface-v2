@@ -129,9 +129,7 @@ const LendDetailPage: React.FC = () => {
       label: t('admin'),
       data: extraPoolData ? (
         <Box className='flex items-center'>
-          <small className='text-gray29'>
-            {shortenAddress(extraPoolData.admin)}
-          </small>
+          <small>{shortenAddress(extraPoolData.admin)}</small>
           <CopyHelper toCopy={extraPoolData.admin} />
         </Box>
       ) : (
@@ -237,7 +235,7 @@ const LendDetailPage: React.FC = () => {
           </Box>
         </Box>
         <Box my={'24px'}>
-          <h5 className='text-gray29'>{t('lendPageTitle')}</h5>
+          <h5>{t('lendPageTitle')}</h5>
         </Box>
         <Grid container spacing={3}>
           {lendDataArr.map((item) => (
@@ -288,7 +286,7 @@ const LendDetailPage: React.FC = () => {
                   <Box display={'flex'}>
                     <small>{t('yoursupplybalance')}:&nbsp;</small>
                     {poolData ? (
-                      <small className='text-gray29'>
+                      <small>
                         {midUsdFormatter(poolData.totalSupplyBalanceUSD)}
                       </small>
                     ) : (
@@ -335,7 +333,7 @@ const LendDetailPage: React.FC = () => {
                                   />
                                 </Box>
                                 <Box flex={1}>
-                                  <small className='text-gray29'>
+                                  <small>
                                     {asset.underlyingSymbol +
                                       (asset.underlyingName.includes('LP')
                                         ? ' LP'
@@ -383,7 +381,7 @@ const LendDetailPage: React.FC = () => {
                             </TableCell>
                             <TableCell>
                               <Box maxWidth='150px'>
-                                <small className='text-gray29'>
+                                <small>
                                   {midUsdFormatter(asset.supplyBalanceUSD)}
                                 </small>
                                 <p className='caption text-secondary'>
@@ -459,7 +457,7 @@ const LendDetailPage: React.FC = () => {
                   <Box display={'flex'}>
                     <small>{t('yourborrowbalance')}:&nbsp;</small>
                     {poolData ? (
-                      <small className='text-gray29'>
+                      <small>
                         {midUsdFormatter(poolData.totalBorrowBalanceUSD)}
                       </small>
                     ) : (
@@ -509,7 +507,7 @@ const LendDetailPage: React.FC = () => {
                                     }
                                   />
                                 </Box>
-                                <small className='text-gray29'>
+                                <small>
                                   {asset.underlyingSymbol +
                                     (asset.underlyingName.includes('LP')
                                       ? ' LP'
@@ -531,7 +529,7 @@ const LendDetailPage: React.FC = () => {
                             </TableCell>
                             <TableCell>
                               <Box maxWidth='120px'>
-                                <small className='text-gray29'>
+                                <small>
                                   {midUsdFormatter(asset.borrowBalanceUSD)}
                                 </small>
                                 <p className='caption text-secondary'>
@@ -549,7 +547,7 @@ const LendDetailPage: React.FC = () => {
                             </TableCell>
                             <TableCell>
                               <Box maxWidth='120px'>
-                                <small className='text-gray29'>
+                                <small>
                                   {midUsdFormatter(asset.liquidityUSD)}
                                 </small>
                                 <p className='caption text-secondary'>
@@ -603,7 +601,7 @@ const LendDetailPage: React.FC = () => {
                     >
                       <small>{item.label}:</small>
                       {item.data ? (
-                        <small className='text-gray29'>{item.data}</small>
+                        <small>{item.data}</small>
                       ) : (
                         <Skeleton variant='rect' width={40} height={23} />
                       )}

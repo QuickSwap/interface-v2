@@ -1,4 +1,5 @@
 import { ActionCreatorWithPayload, createAction } from '@reduxjs/toolkit';
+import { FarmingType } from 'models/enums';
 import { FarmListInfo } from 'types';
 
 export const fetchFarmList: Readonly<{
@@ -22,3 +23,12 @@ export const fetchFarmList: Readonly<{
 export const acceptFarmUpdate = createAction<string>(
   'lists/acceptFarmListUpdate',
 );
+
+export const updateV3Stake = createAction<{
+  txType?: string;
+  txHash?: string;
+  txConfirmed?: boolean;
+  selectedTokenId?: string;
+  selectedFarmingType?: FarmingType | null;
+  txError?: string;
+}>('farms/updateV3Stake');

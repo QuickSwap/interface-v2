@@ -9,7 +9,7 @@
   align-items: center;
   cursor: pointer;
   & p {
-    color: $textDisabled
+    color: $textDisabled;
   }
 }
 
@@ -38,7 +38,7 @@
   background: $grey3;
   border-radius: 20px;
   padding: 24px;
-  @include media("screen", "<phone") {
+  @include media('screen', '<phone') {
     padding: 12px;
   }
 }
@@ -56,7 +56,7 @@
   align-items: center;
   & h6 {
     color: $textDisabled;
-  };
+  }
   & svg {
     height: 16px;
     margin-left: 2;
@@ -82,7 +82,7 @@
     color: $textPrimary;
     text-decoration: none;
   }
-  @include media("screen", "<phone") {
+  @include media('screen', '<phone') {
     font-size: 22px;
     font-weight: 600;
   }
@@ -94,8 +94,8 @@
   font-weight: 600;
   color: $textHint;
   margin-left: 6px;
-  @include media("screen", "<phone") {
-    font-size: 18px
+  @include media('screen', '<phone') {
+    font-size: 18px;
   }
 }
 
@@ -110,7 +110,7 @@
 }
 
 .filledButton {
-  background: linear-gradient(279deg, rgb(0, 76, 230), rgb(61, 113, 255))
+  background: linear-gradient(279deg, rgb(0, 76, 230), rgb(61, 113, 255));
 }
 
 .analyticsDetailsInfo {
@@ -128,10 +128,10 @@
     &:not(:first-child) {
       margin-top: 32px;
     }
-    @include media("screen", "<tablet") {
+    @include media('screen', '<tablet') {
       width: 100%;
     }
-    @include media("screen", "<phone") {
+    @include media('screen', '<phone') {
       &:not(:first-child) {
         margin-top: 0;
       }
@@ -150,4 +150,91 @@
   display: flex;
   align-items: center;
   background-color: $grey3;
+}
+
+//V3
+
+.versionToggler {
+  border: 1px solid $grey29;
+  border-radius: 8px;
+  font-size: 13px;
+  user-select: none;
+  cursor: pointer;
+  & > div {
+    border: 2px solid transparent;
+    padding: 6px 13px;
+    border-radius: 8px;
+    color: $textDisabled;
+    &.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    &.activeVersion {
+      border-color: $primary;
+      border-radius: 8px;
+      color: $textPrimary;
+      background-color: rgba($color: $primary, $alpha: 0.2);
+    }
+  }
+}
+
+.analyticsDetailsInfoV3 {
+  margin: 16px 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  & > div {
+    justify-content: space-between;
+    flex-wrap: wrap;
+    &:not(:first-child) {
+      margin-top: 32px;
+    }
+    & > small {
+    }
+    @include media('screen', '<tablet') {
+      width: 100%;
+    }
+    @include media('screen', '<phone') {
+      &:not(:first-child) {
+        margin-top: 0;
+      }
+      & > div {
+        width: 100%;
+        text-align: left;
+        margin: 16px 0;
+      }
+    }
+  }
+}
+
+.liquidityChartButton {
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  background-color: #282d3d;
+  color: white;
+  width: 24px;
+  height: 24px;
+  margin-left: 10px;
+}
+
+.analyticsPriceChartToggler {
+  border: 1px solid $grey29;
+  border-radius: 8px;
+  font-size: 13px;
+  user-select: none;
+  cursor: pointer;
+  z-index: 2;
+  & > div {
+    border: 2px solid transparent;
+    padding: 6px 13px;
+    border-radius: 8px;
+    color: $textDisabled;
+    &.active {
+      border-color: $primary;
+      border-radius: 8px;
+      color: $textPrimary;
+      background-color: rgba($color: $primary, $alpha: 0.2);
+    }
+  }
 }
