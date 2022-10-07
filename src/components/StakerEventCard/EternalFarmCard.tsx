@@ -74,6 +74,7 @@ export function EternalFarmCard({
   const aprValue =
     (apr !== undefined && apr >= 0 ? Math.round(apr) : '~') + '% APR';
   const tvl = tvls ? tvls[id] : undefined;
+  const { chainId } = useActiveWeb3React();
 
   return (
     <Box className='flex justify-center'>
@@ -89,25 +90,27 @@ export function EternalFarmCard({
         >
           <Box mb={1.5} className='flex justify-between items-center'>
             <Box className='flex items-center'>
-              <DoubleCurrencyLogo
-                currency0={
-                  new Token(
-                    ChainId.MATIC,
-                    pool.token0.id,
-                    Number(pool.token0.decimals),
-                    pool.token0.symbol,
-                  ) as WrappedCurrency
-                }
-                currency1={
-                  new Token(
-                    ChainId.MATIC,
-                    pool.token1.id,
-                    Number(pool.token1.decimals),
-                    pool.token1.symbol,
-                  ) as WrappedCurrency
-                }
-                size={30}
-              />
+              {chainId && (
+                <DoubleCurrencyLogo
+                  currency0={
+                    new Token(
+                      chainId,
+                      pool.token0.id,
+                      Number(pool.token0.decimals),
+                      pool.token0.symbol,
+                    ) as WrappedCurrency
+                  }
+                  currency1={
+                    new Token(
+                      chainId,
+                      pool.token1.id,
+                      Number(pool.token1.decimals),
+                      pool.token1.symbol,
+                    ) as WrappedCurrency
+                  }
+                  size={30}
+                />
+              )}
 
               <Box ml='5px'>
                 <small className='weight-600'>{`${pool.token0.symbol}/${pool.token1.symbol}`}</small>
@@ -132,17 +135,19 @@ export function EternalFarmCard({
               height={56}
             >
               <Box className='flex items-center'>
-                <CurrencyLogo
-                  currency={
-                    new Token(
-                      ChainId.MATIC,
-                      rewardToken.id,
-                      Number(rewardToken.decimals),
-                      rewardToken.symbol,
-                    ) as WrappedCurrency
-                  }
-                  size={'30px'}
-                />
+                {chainId && (
+                  <CurrencyLogo
+                    currency={
+                      new Token(
+                        chainId,
+                        rewardToken.id,
+                        Number(rewardToken.decimals),
+                        rewardToken.symbol,
+                      ) as WrappedCurrency
+                    }
+                    size={'30px'}
+                  />
+                )}
 
                 <Box ml={1.5}>
                   <p className='span text-secondary'>Reward</p>
@@ -177,17 +182,19 @@ export function EternalFarmCard({
                 height={56}
               >
                 <Box className='flex items-center'>
-                  <CurrencyLogo
-                    currency={
-                      new Token(
-                        ChainId.MATIC,
-                        bonusRewardToken.id,
-                        18,
-                        bonusRewardToken.symbol,
-                      ) as WrappedCurrency
-                    }
-                    size={'30px'}
-                  />
+                  {chainId && (
+                    <CurrencyLogo
+                      currency={
+                        new Token(
+                          chainId,
+                          bonusRewardToken.id,
+                          Number(bonusRewardToken.decimals),
+                          bonusRewardToken.symbol,
+                        ) as WrappedCurrency
+                      }
+                      size={'30px'}
+                    />
+                  )}
 
                   <Box ml={1.5}>
                     <p className='span text-secondary'>Bonus</p>

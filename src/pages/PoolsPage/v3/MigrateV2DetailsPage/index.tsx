@@ -15,7 +15,6 @@ import { useCurrency, useToken } from 'hooks/v3/Tokens';
 import './index.scss';
 import { useTokenBalance } from 'state/wallet/v3/hooks';
 import { CurrencyAmount, Fraction, Percent, Price } from '@uniswap/sdk-core';
-import { formatTokenAmount } from 'utils';
 import {
   useV3DerivedMintInfo,
   useV3MintActionHandlers,
@@ -26,7 +25,6 @@ import { InitialPrice } from '../SupplyLiquidityV3/containers/InitialPrice';
 import { SelectRange } from '../SupplyLiquidityV3/containers/SelectRange';
 import { PriceFormats } from 'components/v3/PriceFomatToggler';
 import { Field } from 'state/mint/actions';
-import { maxAmountSpend } from 'utils/v3/maxAmountSpend';
 import { ApprovalState, useApproveCallback } from 'hooks/useV3ApproveCallback';
 import { useV2LiquidityTokenPermit } from 'hooks/v3/useERC20Permit';
 import {
@@ -56,8 +54,9 @@ import { ReportProblemOutlined } from '@material-ui/icons';
 export default function MigrateV2DetailsPage() {
   const v2Exchange = V2Exchanges.Quickswap;
   const percentageToMigrate = 100;
-  const [feeAmount, setFeeAmount] = useState(FeeAmount.MEDIUM);
+  const feeAmount = FeeAmount.MEDIUM;
   const [largePriceDiffDismissed, setLargePriceDiffDismissed] = useState(false);
+  const [attemptApproving, setAttemptApproving] = useState(false);
 
   const history = useHistory();
   const params: any = useParams();
@@ -408,7 +407,12 @@ export default function MigrateV2DetailsPage() {
 
   const approve = useCallback(async () => {
     // sushi has to be manually approved
-    await approveManually();
+    try {
+      await approveManually();
+      setAttemptApproving(false);
+    } catch (e) {
+      setAttemptApproving(false);
+    }
   }, [approveManually]);
 
   const addTransaction = useTransactionAdder();
@@ -502,10 +506,7 @@ export default function MigrateV2DetailsPage() {
             });
 
             addTransaction(response, {
-              //@ts-ignore
-              type: TransactionType.MIGRATE_LIQUIDITY_V3,
-              baseCurrencyId: currencyId(currency0, ChainId.MATIC),
-              quoteCurrencyId: currencyId(currency1, ChainId.MATIC),
+              summary: `Migrating ${currency0.symbol}-${currency1.symbol} LP to V3`,
             });
             setPendingMigrationHash(response.hash);
             setConfirmingMigration(false);
@@ -547,13 +548,13 @@ export default function MigrateV2DetailsPage() {
     <>
       <Box className='wrapper' maxWidth='464px' width='100%'>
         <Box className='flex justify-between items-center'>
-          {/* <Box
+          <Box
             className='flex cursor-pointer'
             onClick={() => history.push('/migrate')}
           >
             <ArrowLeft />
           </Box>
-          <p className='weight-600'>Migrate V2 Liquidity</p> */}
+          <p className='weight-600'>Migrate V2 Liquidity</p>
           <Box
             width={28}
             height={28}
@@ -711,6 +712,7 @@ export default function MigrateV2DetailsPage() {
           <Button
             className='v3-migrate-details-button'
             disabled={
+              attemptApproving ||
               approval === ApprovalState.APPROVED ||
               approval !== ApprovalState.NOT_APPROVED ||
               signatureData !== null ||
@@ -719,9 +721,12 @@ export default function MigrateV2DetailsPage() {
               mintInfo.invalidRange ||
               confirmingMigration
             }
-            onClick={approve}
+            onClick={() => {
+              setAttemptApproving(true);
+              approve();
+            }}
           >
-            {approval === ApprovalState.PENDING ? (
+            {attemptApproving || approval === ApprovalState.PENDING ? (
               <>
                 Approving
                 <span className='loadingDots' />
@@ -756,7 +761,7 @@ export default function MigrateV2DetailsPage() {
           >
             {isSuccessfullyMigrated ? (
               `Success! View pools`
-            ) : isMigrationPending ? (
+            ) : confirmingMigration || isMigrationPending ? (
               <>
                 Migrating
                 <span className='loadingDots' />

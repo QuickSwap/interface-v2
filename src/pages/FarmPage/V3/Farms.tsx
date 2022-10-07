@@ -1,6 +1,5 @@
 import { Box } from '@material-ui/core';
 import CustomTabSwitch from 'components/v3/CustomTabSwitch';
-import { useFarmingSubgraph } from 'hooks/useIncentiveSubgraph';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import React, { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -52,51 +51,23 @@ export default function Farms() {
     }
   }, [currentTabQueried, v3FarmCategories]);
 
-  const {
-    fetchEternalFarms: {
-      fetchEternalFarmsFn,
-      eternalFarms,
-      eternalFarmsLoading,
-    },
-  } = useFarmingSubgraph() || {};
-
-  const {
-    fetchTransferredPositions: {
-      fetchTransferredPositionsFn,
-      transferredPositions,
-      transferredPositionsLoading,
-    },
-  } = useFarmingSubgraph() || {};
-
   return (
     <Box className='bg-palette' borderRadius={10}>
       <Box width='100%' mt={2}>
-        <CustomTabSwitch
-          width={300}
-          height={58}
-          items={v3FarmCategories}
-          selectedItem={selectedTab}
-          handleTabChange={handleTabSwitch}
-        />
-
-        {selectedTab?.id === 0 && (
-          <Box mt={2}>
-            <FarmingMyFarms
-              data={transferredPositions}
-              refreshing={transferredPositionsLoading}
-              fetchHandler={() => {
-                fetchTransferredPositionsFn(true);
-              }}
-            />
-          </Box>
-        )}
-        {selectedTab?.id === 1 && (
-          <EternalFarmsPage
-            data={eternalFarms}
-            refreshing={eternalFarmsLoading}
-            fetchHandler={() => fetchEternalFarmsFn(true)}
+        <Box className='v3-farm-tabs-wrapper'>
+          <CustomTabSwitch
+            width={300}
+            height={67}
+            items={v3FarmCategories}
+            selectedItem={selectedTab}
+            handleTabChange={handleTabSwitch}
           />
-        )}
+        </Box>
+
+        <Box mt={2}>
+          {selectedTab?.id === 0 && <FarmingMyFarms />}
+          {selectedTab?.id === 1 && <EternalFarmsPage />}
+        </Box>
       </Box>
     </Box>
   );

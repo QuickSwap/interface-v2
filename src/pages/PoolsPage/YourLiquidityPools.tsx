@@ -27,12 +27,14 @@ const YourLiquidityPools: React.FC = () => {
       )}
       <Box className='pageHeading'>
         <p className='weight-600'>{t('yourliquidityPools')}</p>
-        {/* <Box
-          className='v3-manage-v2liquidity-button'
-          onClick={() => history.push('/migrate')}
-        >
-          <small className='text-primary'>Migrate Liquidity to V3</small>
-        </Box> */}
+        {/* {!v2IsLoading && allV2PairsWithLiquidity.length > 0 && (
+          <Box
+            className='v3-manage-v2liquidity-button'
+            onClick={() => history.push('/migrate')}
+          >
+            <small className='text-primary'>Migrate Liquidity to V3</small>
+          </Box>
+        )} */}
       </Box>
 
       <Box mt={3}>

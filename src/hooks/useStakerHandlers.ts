@@ -192,7 +192,7 @@ export function useFarmingHandlers() {
         }
 
         addTransaction(result, {
-          summary: `Claiming reward`,
+          summary: `Undeposit from NFT #${token}`,
         });
 
         updateV3Stake({ txHash: result.hash });
@@ -200,14 +200,14 @@ export function useFarmingHandlers() {
         const receipt = await result.wait();
 
         finalizeTransaction(receipt, {
-          summary: `Claimed reward`,
+          summary: `Undeposited from NFT #${token}`,
         });
 
         updateV3Stake({ txConfirmed: true });
       } catch (err) {
         updateV3Stake({ txError: 'failed' });
         if (err.code !== 4001) {
-          throw new Error('Claiming rewards ' + err.message);
+          throw new Error('Undeposit ' + err.message);
         }
       }
     },

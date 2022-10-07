@@ -109,6 +109,13 @@ export function FarmModal({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    if (txType === 'farm' && txConfirmed) {
+      fetchPositionsForPoolFn(pool, minRangeLength);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [txType, txConfirmed]);
+
   const positionsForStake = useMemo(() => {
     if (!positionsForPool) return [];
 

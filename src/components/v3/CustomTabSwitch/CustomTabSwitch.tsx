@@ -24,7 +24,7 @@ const CustomTabSwitch: React.FC<CustomTabSwitchProps> = ({
   handleTabChange,
 }) => {
   return (
-    <Box width={width}>
+    <Box className='customTabWrapper' width={width} height={height}>
       <Tabs
         value={selectedItem?.id}
         onChange={handleTabChange}
