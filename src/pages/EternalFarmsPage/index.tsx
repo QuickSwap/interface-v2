@@ -51,7 +51,7 @@ export default function EternalFarmsPage() {
           />
         )}
       </CustomModal>
-      <Box padding={2}>
+      <Box px={2} py={3}>
         {eternalFarmsLoading ? (
           <div className={'eternal-page__loader'}>
             <Loader stroke='white' size='1.5rem' />
