@@ -1,0 +1,90 @@
+@use 'styles/variables' as *;
+@use 'styles/breakpoints' as *;
+
+.v3-token-amount-card-wrapper {
+    background-color: $secondary1;
+    width: 100%;
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    input {
+        text-align: right;
+    }
+}
+
+.token-amount-card-logo {
+    height: 36px;
+    padding: 0 8px;
+    display: flex;
+    align-items: center;
+    background-color: $grey12;
+    border-radius: 18px;
+    & p {
+        margin-left: 8px;
+    }
+}
+
+.token-amount-card-balance {
+    display: flex;
+    align-items: center;
+    & small {
+        white-space: nowrap;
+    }
+    & button {
+        margin-left: 8px;
+        background-color: transparent;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+        & small {
+            color: $primary;
+            font-weight: 600;
+        }
+        &:disabled {
+            opacity: 0.3;
+        }
+    }
+}
+
+.token-amount-select-token {
+    background-color: $primary;
+    padding: 6px 16px;
+    border-radius: 20px;
+    & p {
+        white-space: nowrap;
+    }
+}
+
+.token-amount-card-locked {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: $secondary1;
+    border-radius: 12px;
+    opacity: 0.9;
+    left: 0;
+    top: 0;
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    & p {
+        text-align: center;
+        margin-top: 8px;
+    }
+}
+
+.token-amount-card-error {
+    width: 100%;
+    padding: 8px;
+    bottom: -100%;
+    left: 0;
+    text-align: center;
+    & small {
+        color: $errorMain;
+    }
+}

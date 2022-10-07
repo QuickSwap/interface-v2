@@ -16,6 +16,9 @@ import {
   updateBookmarkPairs,
   updateTokenDetails,
   updateIsProMode,
+  updateMaticPrice,
+  updateGasPrice,
+  updateIsV3,
 } from './actions';
 
 type PopupList = Array<{
@@ -37,11 +40,18 @@ export interface ETHPrice {
   ethPriceChange?: number;
 }
 
+export interface MaticPrice {
+  price?: number;
+  oneDayPrice?: number;
+  maticPriceChange?: number;
+}
+
 export interface ApplicationState {
   readonly blockNumber: { readonly [chainId: number]: number };
   readonly popupList: PopupList;
   readonly openModal: ApplicationModal | null;
   readonly ethPrice: ETHPrice;
+  readonly maticPrice: MaticPrice;
   readonly globalData: any;
   readonly bookmarkedTokens: string[];
   readonly bookmarkedPairs: string[];
@@ -49,6 +59,8 @@ export interface ApplicationState {
   readonly tokenChartData: any;
   readonly tokenDetails: TokenDetail[];
   readonly isProMode: boolean;
+  readonly gasPrice: { fetched: number | null; override: boolean };
+  readonly isV3: boolean | undefined;
 }
 
 const initialState: ApplicationState = {
@@ -57,12 +69,15 @@ const initialState: ApplicationState = {
   openModal: null,
   globalData: null,
   ethPrice: {},
+  maticPrice: {},
   bookmarkedTokens: [],
   bookmarkedPairs: [],
   analyticToken: null,
   tokenChartData: null,
   tokenDetails: [],
   isProMode: false,
+  gasPrice: { fetched: 70, override: true },
+  isV3: undefined,
 };
 
 export default createReducer(initialState, (builder) =>
@@ -77,6 +92,9 @@ export default createReducer(initialState, (builder) =>
           state.blockNumber[chainId],
         );
       }
+    })
+    .addCase(updateGasPrice, (state, action) => {
+      state.gasPrice = action.payload;
     })
     .addCase(setOpenModal, (state, action) => {
       state.openModal = action.payload;
@@ -111,6 +129,16 @@ export default createReducer(initialState, (builder) =>
           price,
           oneDayPrice,
           ethPriceChange,
+        };
+      },
+    )
+    .addCase(
+      updateMaticPrice,
+      (state, { payload: { price, oneDayPrice, maticPriceChange } }) => {
+        state.maticPrice = {
+          price,
+          oneDayPrice,
+          maticPriceChange,
         };
       },
     )
@@ -171,5 +199,8 @@ export default createReducer(initialState, (builder) =>
     })
     .addCase(updateIsProMode, (state, { payload }) => {
       state.isProMode = payload;
+    })
+    .addCase(updateIsV3, (state, { payload }) => {
+      state.isV3 = payload;
     }),
 );

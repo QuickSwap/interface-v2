@@ -1,0 +1,49 @@
+.btn {
+  border: none;
+  border-radius: 12px;
+
+  &.primary {
+    background-color: var(--primary);
+    color: var(--white);
+    border: 1px solid var(--primary);
+    &:hover {
+      background-color: var(--primary-hover);
+      border-color: var(--primary-hover);
+    }
+
+    &:disabled {
+      background-color: var(--primary-disabled);
+      border-color: var(--primary-disabled);
+      cursor: default;
+    }
+  }
+
+  &.primary-weak {
+    background-color: var(--primary-weak);
+    color: var(--white);
+    border: 1px solid var(--primary-weak);
+    &:hover {
+      background-color: var(--primary-hover);
+      border-color: var(--primary-hover);
+    }
+
+    &:disabled {
+      background-color: var(--primary-disabled);
+      border-color: var(--primary-disabled);
+      cursor: default;
+    }
+  }
+
+
+
+  &.secondary {
+    background-color: transparent;
+    color: var(--primary);
+    border: 1px solid var(--primary);
+    border-radius: 8px;
+
+    &:hover {
+     opacity: 1;
+    }
+  }
+}

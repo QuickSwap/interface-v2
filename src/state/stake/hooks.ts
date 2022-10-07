@@ -10,7 +10,7 @@ import dayjs from 'dayjs';
 import { useMemo, useEffect } from 'react';
 import { usePairs } from 'data/Reserves';
 
-import { client } from 'apollo/client';
+import { clientV2 } from 'apollo/client';
 import { GLOBAL_DATA, PAIRS_BULK, PAIRS_HISTORICAL_BULK } from 'apollo/queries';
 import { GlobalConst, GlobalValue } from 'constants/index';
 import {
@@ -620,14 +620,14 @@ export const getBulkPairData = async (pairList: any) => {
   const oneDayOldBlock = await getBlockFromTimestamp(utcOneDayBack);
 
   try {
-    const current = await client.query({
+    const current = await clientV2.query({
       query: PAIRS_BULK(pairList),
       fetchPolicy: 'network-only',
     });
 
     const [oneDayResult] = await Promise.all(
       [oneDayOldBlock].map(async (block) => {
-        const cResult = await client.query({
+        const cResult = await clientV2.query({
           query: PAIRS_HISTORICAL_BULK(block, pairList),
           fetchPolicy: 'network-only',
         });
@@ -675,7 +675,7 @@ const getOneDayVolume = async () => {
 
   const oneDayOldBlock = await getBlockFromTimestamp(utcOneDayBack);
 
-  const result = await client.query({
+  const result = await clientV2.query({
     query: GLOBAL_DATA(current),
     fetchPolicy: 'network-only',
   });
@@ -683,7 +683,7 @@ const getOneDayVolume = async () => {
   data = result.data.uniswapFactories[0];
 
   // fetch the historical data
-  const oneDayResult = await client.query({
+  const oneDayResult = await clientV2.query({
     query: GLOBAL_DATA(oneDayOldBlock),
     fetchPolicy: 'network-only',
   });

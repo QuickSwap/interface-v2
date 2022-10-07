@@ -24,6 +24,7 @@ import SparkleTop from 'assets/images/SparkleTop.svg';
 import SparkleBottom from 'assets/images/SparkleBottom.svg';
 import 'components/styles/Header.scss';
 import { useTranslation } from 'react-i18next';
+import { useIsV3 } from 'state/application/hooks';
 
 const newTransactionsFirst = (a: TransactionDetails, b: TransactionDetails) => {
   return b.addedTime - a.addedTime;
@@ -52,6 +53,9 @@ const Header: React.FC = () => {
   const tabletWindowSize = useMediaQuery(theme.breakpoints.down('sm'));
   const mobileWindowSize = useMediaQuery(theme.breakpoints.down('xs'));
   const toggleWalletModal = useWalletModalToggle();
+
+  const { isV3 } = useIsV3();
+
   const menuItems = [
     {
       link: '/swap',
@@ -59,12 +63,12 @@ const Header: React.FC = () => {
       id: 'swap-page-link',
     },
     {
-      link: '/pools',
+      link: `/pools${isV3 ? '/v3' : ''}`,
       text: t('pool'),
       id: 'pools-page-link',
     },
     {
-      link: '/farm',
+      link: `/farm${isV3 ? '/v3' : ''}`,
       text: t('farm'),
       id: 'farm-page-link',
     },
@@ -93,7 +97,7 @@ const Header: React.FC = () => {
       isNew: true,
     },
     {
-      link: '/analytics',
+      link: `/analytics${isV3 ? '/v3' : ''}`,
       text: t('analytics'),
       id: 'analytics-page-link',
     },
@@ -148,7 +152,7 @@ const Header: React.FC = () => {
               key={index}
               id={val.id}
               className={`menuItem ${
-                pathname.indexOf(val.link) > -1 ? 'active' : ''
+                pathname !== '/' && val.link.includes(pathname) ? 'active' : ''
               }`}
             >
               <small>{val.text}</small>

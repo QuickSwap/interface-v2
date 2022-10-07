@@ -5,31 +5,71 @@ import { getTopPairs, getBulkPairData } from 'utils';
 import { Skeleton } from '@material-ui/lab';
 import { useTranslation } from 'react-i18next';
 import { GlobalConst } from 'constants/index';
-import { useEthPrice } from 'state/application/hooks';
+import { useEthPrice, useIsV3 } from 'state/application/hooks';
+import { getTopPairsV3, getPairsAPR } from 'utils/v3-graph';
+import { useDispatch } from 'react-redux';
+import { setAnalyticsLoaded } from 'state/analytics/actions';
 
 const AnalyticsPairs: React.FC = () => {
   const { t } = useTranslation();
   const [topPairs, updateTopPairs] = useState<any[] | null>(null);
   const { ethPrice } = useEthPrice();
 
+  const dispatch = useDispatch();
+
+  const { isV3 } = useIsV3();
+
   useEffect(() => {
-    const fetchTopPairs = async () => {
+    if (isV3 === undefined) return;
+
+    (async () => {
       updateTopPairs(null);
-      const pairs = await getTopPairs(GlobalConst.utils.ANALYTICS_PAIRS_COUNT);
-      const formattedPairs = pairs
-        ? pairs.map((pair: any) => {
-            return pair.id;
-          })
-        : [];
-      const pairData = await getBulkPairData(formattedPairs, ethPrice.price);
-      if (pairData) {
-        updateTopPairs(pairData);
+      if (isV3) {
+        const data = await getTopPairsV3(
+          GlobalConst.utils.ANALYTICS_PAIRS_COUNT,
+        );
+        if (data) {
+          updateTopPairs(data);
+          try {
+            const aprs = await getPairsAPR(data.map((item: any) => item.id));
+
+            updateTopPairs(
+              data.map((item: any, ind: number) => {
+                return {
+                  ...item,
+                  apr: aprs[ind].apr,
+                  farmingApr: aprs[ind].farmingApr,
+                };
+              }),
+            );
+          } catch (e) {
+            console.log(e);
+          }
+        }
+      } else {
+        if (ethPrice.price) {
+          const pairs = await getTopPairs(
+            GlobalConst.utils.ANALYTICS_PAIRS_COUNT,
+          );
+          const formattedPairs = pairs
+            ? pairs.map((pair: any) => {
+                return pair.id;
+              })
+            : [];
+          const data = await getBulkPairData(formattedPairs, ethPrice.price);
+          if (data) {
+            updateTopPairs(data);
+          }
+        }
       }
-    };
-    if (ethPrice.price) {
-      fetchTopPairs();
+    })();
+  }, [ethPrice.price, isV3]);
+
+  useEffect(() => {
+    if (topPairs) {
+      dispatch(setAnalyticsLoaded(true));
     }
-  }, [updateTopPairs, ethPrice.price]);
+  }, [topPairs, dispatch]);
 
   return (
     <Box width='100%' mb={3}>

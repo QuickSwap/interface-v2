@@ -1,0 +1,156 @@
+@import "src/assets/styles/index";
+
+.v3-stake-active-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 4px;
+}
+
+.my-farms {
+
+  &__nft-send {
+
+    input {
+      border: none;
+    }
+
+    &__warning {
+      background-color: var(--red);
+    }
+  }
+
+  &__loader {
+    height: 400px;
+  }
+
+  &__position-card {
+    background-color: var(--ebony-clay);
+
+    &:last-child {
+      margin-bottom: 10;
+    }
+
+
+    &__header {
+      background-color: var(--dark-ebony-clay);
+
+      &__row {
+        display: flex;
+      }
+
+      a {
+        &:hover {
+          color: var(--primary);
+        }
+      }
+
+      button {
+        background-color: var(--dark-gray);
+        border-radius: 4px;
+
+        &:hover {
+          color: var(--primary);
+        }
+      }
+    }
+
+    &__body {
+      background-color: var(--dark-ebony-clay);
+      min-height: 277px;
+
+      h3 {
+        text-transform: uppercase;
+      }
+
+      &__event-progress {
+        background-color: var(--white);
+        height: 16px;
+        position: relative;
+
+        div {
+          transition-duration: .5s;
+          background-color: var(--primary);
+          height: 100%;
+
+          @include skeleton-gradient()
+
+        }
+      }
+    }
+
+    &__empty {
+      height: calc(100% - 2rem);
+      min-height: 160px;
+    }
+  }
+
+  &__ad {
+    background-color: #285aecc4;
+    color: var(--white);
+    border: '1px solid #36f';
+
+    &-link {
+      background: var(--white);
+    }
+  }
+
+}
+
+@media screen and (max-width: 500px) {
+
+  .my-farms {
+
+    &__ad {
+      flex-direction: column;
+      row-gap: .5rem;
+      padding: .75rem;
+
+      &-link {
+        width: 100%;
+        text-align: center;
+      }
+    }
+
+    &__nft-send {
+
+    }
+
+
+    &__position-card {
+
+      &__header {
+        flex-direction: column;
+
+        &__row {
+          flex-direction: column;
+          width: 100%;
+
+        }
+      }
+
+      &__body {
+
+      }
+    }
+  }
+
+  .farming-card-header {
+    flex-direction: column;
+    align-items: start;
+    justify-content: start;
+    text-align: start;
+
+    & > span {
+      margin-top: .25rem;
+      margin-bottom: .25rem;
+
+      &:first-child {
+        margin-top: 0;
+      }
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+}
