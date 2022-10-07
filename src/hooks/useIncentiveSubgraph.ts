@@ -33,7 +33,6 @@ import {
   Deposit,
   DetachedEternalFarming,
   EternalFarming,
-  FarmingEvent,
   FormattedEternalFarming,
   FormattedRewardInterface,
   PoolChartSubgraph,
@@ -42,8 +41,9 @@ import {
   SubgraphResponse,
   TickFarming,
   TokenSubgraph,
+  Aprs,
+  FutureFarmingEvent,
 } from '../models/interfaces';
-import { Aprs, FutureFarmingEvent } from '../models/interfaces';
 import { fetchEternalFarmAPR, fetchEternalFarmTVL } from 'utils/api';
 
 export function useFarmingSubgraph() {

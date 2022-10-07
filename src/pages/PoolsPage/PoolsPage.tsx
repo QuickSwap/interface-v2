@@ -18,6 +18,8 @@ const PoolsPage: React.FC = () => {
 
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
+  const helpURL = process.env.REACT_APP_HELP_URL;
+
   return (
     <Box width='100%' mb={3}>
       <Box className='pageHeading'>
@@ -28,10 +30,15 @@ const PoolsPage: React.FC = () => {
           </Box>
         </Box>
 
-        <Box className='helpWrapper' style={{ alignSelf: 'flex-end' }}>
-          <small>{t('help')}</small>
-          <HelpIcon />
-        </Box>
+        {helpURL && (
+          <Box
+            className='helpWrapper'
+            onClick={() => window.open(helpURL, '_blank')}
+          >
+            <small>{t('help')}</small>
+            <HelpIcon />
+          </Box>
+        )}
       </Box>
       <Grid container spacing={4}>
         <Grid item xs={12} sm={12} md={5}>

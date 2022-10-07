@@ -334,6 +334,13 @@ export const GlobalValue = {
         'MAI',
         'miMATIC',
       ),
+      VERSA: new Token(
+        ChainId.MATIC,
+        '0x8497842420cFdbc97896C2353D75d89Fc8D5Be5D',
+        18,
+        'VERSA',
+        'VersaGames',
+      ),
       SAND: new Token(
         ChainId.MATIC,
         '0xBbba073C31bF03b8ACf7c28EF0738DeCF3695683',
@@ -392,6 +399,7 @@ export const GlobalData = {
         GlobalValue.tokens.COMMON.DAI,
         GlobalValue.tokens.COMMON.GHST,
         GlobalValue.tokens.COMMON.MI,
+        GlobalValue.tokens.COMMON.VERSA,
       ],
     },
     // Some tokens can only be swapped via certain pairs, so we override the list of bases that are considered for these tokens.
@@ -424,6 +432,7 @@ export const GlobalData = {
         GlobalValue.tokens.COMMON.NEW_QUICK,
         GlobalValue.tokens.COMMON.ETHER,
         GlobalValue.tokens.COMMON.WBTC,
+        GlobalValue.tokens.COMMON.VERSA,
       ],
     },
   },

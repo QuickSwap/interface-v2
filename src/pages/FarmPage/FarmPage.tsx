@@ -62,6 +62,7 @@ const FarmPage: React.FC = () => {
       condition: farmIndex === GlobalConst.farmIndex.DUALFARM_INDEX,
     },
   ];
+  const helpURL = process.env.REACT_APP_HELP_URL;
 
   const { isV3 } = useIsV3();
 
@@ -74,11 +75,16 @@ const FarmPage: React.FC = () => {
             <VersionToggle />
           </Box>
         </Box>
-        <Box className='helpWrapper'>
-          <small>{t('help')}</small>
-          <HelpIcon />
-        </Box>
-      </Box>{' '}
+        {helpURL && (
+          <Box
+            className='helpWrapper'
+            onClick={() => window.open(helpURL, '_blank')}
+          >
+            <small>{t('help')}</small>
+            <HelpIcon />
+          </Box>
+        )}
+      </Box>
       <Box maxWidth={isMobile ? '320px' : '1136px'} margin='0 auto 24px'>
         <AdsSlider sort='farms' />
       </Box>

@@ -17,7 +17,12 @@ import { QuickModalContent } from 'components/LendModals';
 
 import { usePoolData } from 'hooks/marketxyz/usePoolData';
 import { midUsdFormatter, shortUsdFormatter } from 'utils/bigUtils';
-import { getDaysCurrentYear, shortenAddress, convertBNToNumber } from 'utils';
+import {
+  getDaysCurrentYear,
+  shortenAddress,
+  convertBNToNumber,
+  formatCompact,
+} from 'utils';
 import { useExtraPoolData } from 'hooks/marketxyz/useExtraPoolData';
 import { useActiveWeb3React } from 'hooks';
 import { useMarket } from 'hooks/marketxyz/useMarket';
@@ -464,12 +469,18 @@ const LendDetailPage: React.FC = () => {
                   <Table>
                     <TableHead>
                       <TableRow>
-                        <TableCell>{t('asset')}</TableCell>
+                        <TableCell>
+                          <Box maxWidth={150}>{t('asset')}</Box>
+                        </TableCell>
                         <TableCell className='poolTableHideCell'>
                           {t('apr')} / {t('tvl')}
                         </TableCell>
-                        <TableCell>{t('borrowed')}</TableCell>
-                        <TableCell>{t('liquidity')}</TableCell>
+                        <TableCell>
+                          <Box maxWidth='120px'>{t('borrowed')}</Box>
+                        </TableCell>
+                        <TableCell>
+                          <Box maxWidth='120px'>{t('liquidity')}</Box>
+                        </TableCell>
                         <TableCell></TableCell>
                       </TableRow>
                     </TableHead>
@@ -482,8 +493,7 @@ const LendDetailPage: React.FC = () => {
                           <TableRow key={asset.cToken.address}>
                             <TableCell>
                               <Box
-                                display={'flex'}
-                                alignItems={'center'}
+                                className='flex items-center'
                                 maxWidth='150px'
                               >
                                 <Box display='flex' mr='8px'>
@@ -542,10 +552,12 @@ const LendDetailPage: React.FC = () => {
                                 </small>
                                 <p className='caption text-secondary'>
                                   {sdk
-                                    ? convertBNToNumber(
-                                        asset.liquidity,
-                                        asset.underlyingDecimals,
-                                      ).toFixed(2)
+                                    ? formatCompact(
+                                        convertBNToNumber(
+                                          asset.liquidity,
+                                          asset.underlyingDecimals,
+                                        ),
+                                      )
                                     : '?'}{' '}
                                   {asset.underlyingName.includes('LP')
                                     ? 'LP'
