@@ -679,41 +679,39 @@ export async function getTopPairsV3(count = 500) {
       const twoDay = parsedPairs48[address];
       const week = parsedPairsWeek[address];
 
+      if (!current) return;
+
       const manageUntrackedVolume =
         +current.volumeUSD <= 1 ? 'untrackedVolumeUSD' : 'volumeUSD';
+
       const manageUntrackedTVL =
         +current.totalValueLockedUSD <= 1
           ? 'totalValueLockedUSDUntracked'
           : 'totalValueLockedUSD';
 
       const [oneDayVolumeUSD, oneDayVolumeChangeUSD] =
-        current && oneDay && twoDay
+        oneDay && twoDay
           ? get2DayPercentChange(
               current[manageUntrackedVolume],
               oneDay[manageUntrackedVolume],
               twoDay[manageUntrackedVolume],
             )
-          : current && oneDay
+          : oneDay
           ? [
               parseFloat(current[manageUntrackedVolume]) -
                 parseFloat(oneDay[manageUntrackedVolume]),
               0,
             ]
-          : current
-          ? [parseFloat(current[manageUntrackedVolume]), 0]
-          : [0, 0];
+          : [parseFloat(current[manageUntrackedVolume]), 0];
 
-      const oneWeekVolumeUSD =
-        current && week
-          ? parseFloat(current[manageUntrackedVolume]) -
-            parseFloat(week[manageUntrackedVolume])
-          : current
-          ? parseFloat(current[manageUntrackedVolume])
-          : 0;
+      const oneWeekVolumeUSD = week
+        ? parseFloat(current[manageUntrackedVolume]) -
+          parseFloat(week[manageUntrackedVolume])
+        : parseFloat(current[manageUntrackedVolume]);
 
-      const tvlUSD = current ? parseFloat(current[manageUntrackedTVL]) : 0;
+      const tvlUSD = parseFloat(current[manageUntrackedTVL]);
       const tvlUSDChange = getPercentChange(
-        current ? current[manageUntrackedTVL] : undefined,
+        current[manageUntrackedTVL],
         oneDay ? oneDay[manageUntrackedTVL] : undefined,
       );
 
@@ -721,7 +719,6 @@ export async function getTopPairsV3(count = 500) {
         token0: current.token0,
         token1: current.token1,
         fee: current.fee,
-        exists: !!current,
         id: address,
         oneDayVolumeUSD,
         oneDayVolumeChangeUSD,
