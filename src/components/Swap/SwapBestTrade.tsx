@@ -209,7 +209,7 @@ const SwapBestTrade: React.FC<{
         options: {
           includeDEXS: 'quickswap,quickswapv3',
           maxImpact: maxImpactAllowed,
-          partner: 'quickswapv3'
+          partner: 'quickswapv3',
         },
       });
       return rate;
