@@ -241,3 +241,17 @@
   border-top-right-radius: 2px;
   border-bottom-right-radius: 2px;
 }
+
+.maiAlertWrapper {
+  background-color: $yellow4;
+  padding: 16px;
+  border-radius: 12px;
+  margin: 8px 0;
+  & p {
+    word-break: unset !important;
+    & span {
+      color: $yellow5;
+      font-size: 16px;
+    }  
+  }
+}

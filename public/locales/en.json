@@ -420,5 +420,7 @@
   "enterMarket": "Enter Market",
   "exitMarket": "Exit Market",
   "sponsored": "SPONSORED",
-  "learnmoreproject": "Learn more about the project <alink>here</alink>."
+  "learnmoreproject": "Learn more about the project <alink>here</alink>.",
+  "pleaseNote": "Please Note",
+  "maiNote": "MAI is an overcollateralized USD stablecoin backed solely by decentralized tokens."
 }
