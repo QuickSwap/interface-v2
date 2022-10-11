@@ -4,33 +4,21 @@ import {
   TransactionResponse,
   TransactionRequest,
 } from '@ethersproject/providers';
-import {
-  JSBI,
-  Percent,
-  Router,
-  SwapParameters,
-  Trade,
-  TradeType,
-} from '@uniswap/sdk';
+import { JSBI, SwapParameters, Trade } from '@uniswap/sdk';
 import { useMemo } from 'react';
-import { GlobalConst, GlobalValue } from 'constants/index';
+import { GlobalConst } from 'constants/index';
 import { useTransactionAdder } from 'state/transactions/hooks';
 import {
-  calculateGasMargin,
-  isZero,
   isAddress,
   shortenAddress,
-  formatTokenAmount,
   basisPointsToPercent,
-  getProviderOrSigner,
   getSigner,
 } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import useENS from './useENS';
 import { OptimalRate } from 'paraswap-core';
-import { getBestTradeCurrencyAddress, useParaswap } from './useParaswap';
+import { useParaswap } from './useParaswap';
 import { SwapSide } from '@paraswap/sdk';
-import { useExpertModeManager } from 'state/user/hooks';
 export enum SwapCallbackState {
   INVALID,
   LOADING,
@@ -87,7 +75,6 @@ export function useParaswapCallback(
   const recipient =
     recipientAddressOrName === null ? account : recipientAddress;
 
-  const [isExpertMode] = useExpertModeManager();
   return useMemo(() => {
     if (!trade || !priceRoute || !library || !account || !chainId) {
       return {
@@ -129,9 +116,22 @@ export function useParaswapCallback(
           .multiply(JSBI.BigInt(10 ** trade.outputAmount.currency.decimals));
 
         const referrer = 'quickswapv3';
+        const taxTokens = [
+          '0x37eb60f78e06c4bb2a5f836b0fc6bccbbaa995b3',
+          '0xf0f9d895aca5c8678f706fb8216fa22957685a13',
+        ];
 
         const srcToken = priceRoute.srcToken;
         const destToken = priceRoute.destToken;
+
+        if (
+          taxTokens.includes(srcToken.toLowerCase()) ||
+          taxTokens.includes(destToken.toLowerCase())
+        ) {
+          throw new Error(
+            'For tax or rebase tokens, switch to V2 instead of best trade',
+          );
+        }
 
         //TODO: we need to support max impact
         if (minDestAmount.greaterThan(JSBI.BigInt(priceRoute.destAmount))) {
