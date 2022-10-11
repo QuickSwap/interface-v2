@@ -98,14 +98,14 @@ export default function MyLiquidityPoolsV3() {
               </Box>
             ))}
           </Box>
-          {/* {allV2PairsWithLiquidity.length > 0 && (
+          {allV2PairsWithLiquidity.length > 0 && (
             <Box
               className='v3-manage-v2liquidity-button'
               onClick={() => history.push('/migrate')}
             >
               <small className='text-primary'>Migrate V2 Liquidity</small>
             </Box>
-          )} */}
+          )}
         </Box>
       )}
       <Box mt={2}>
