@@ -97,10 +97,11 @@ const AnalyticsOverview: React.FC = () => {
 
     (async () => {
       if (isV3) {
-        const data = await getTopPairsV3(
+        const pairsData = await getTopPairsV3(
           GlobalConst.utils.ANALYTICS_PAIRS_COUNT,
         );
-        if (data) {
+        if (pairsData) {
+          const data = pairsData.filter((item: any) => !!item);
           updateTopPairs(data);
           if (isV3) {
             (async () => {
