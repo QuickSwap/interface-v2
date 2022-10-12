@@ -490,94 +490,112 @@ const LendDetailPage: React.FC = () => {
                           return null;
                         }
                         return (
-                          <TableRow key={asset.cToken.address}>
-                            <TableCell>
-                              <Box
-                                className='flex items-center'
-                                maxWidth='150px'
-                              >
-                                <Box display='flex' mr='8px'>
-                                  <CurrencyLogo
-                                    currency={getPoolAssetToken(asset, chainId)}
-                                    size={'36px'}
-                                    withoutBg={
-                                      asset.underlyingName.includes('LP') ||
-                                      asset.underlyingSymbol.includes('am') ||
-                                      asset.underlyingSymbol.includes('moo')
-                                    }
-                                  />
+                          <>
+                            <TableRow key={asset.cToken.address}>
+                              <TableCell>
+                                <Box
+                                  className='flex items-center'
+                                  maxWidth='150px'
+                                >
+                                  <Box display='flex' mr='8px'>
+                                    <CurrencyLogo
+                                      currency={getPoolAssetToken(
+                                        asset,
+                                        chainId,
+                                      )}
+                                      size={'36px'}
+                                      withoutBg={
+                                        asset.underlyingName.includes('LP') ||
+                                        asset.underlyingSymbol.includes('am') ||
+                                        asset.underlyingSymbol.includes('moo')
+                                      }
+                                    />
+                                  </Box>
+                                  <small>
+                                    {asset.underlyingSymbol +
+                                      (asset.underlyingName.includes('LP')
+                                        ? ' LP'
+                                        : '')}
+                                  </small>
                                 </Box>
-                                <small>
-                                  {asset.underlyingSymbol +
-                                    (asset.underlyingName.includes('LP')
-                                      ? ' LP'
-                                      : '')}
-                                </small>
-                              </Box>
-                            </TableCell>
-                            <TableCell className='poolTableHideCell'>
-                              <p className='caption'>
-                                {convertMantissaToAPR(
-                                  asset.borrowRatePerBlock,
-                                ).toFixed(2)}
-                                %
-                              </p>
-                              <p className='caption text-secondary'>
-                                {shortUsdFormatter(asset.totalSupplyUSD)}{' '}
-                                {t('tvl')}
-                              </p>
-                            </TableCell>
-                            <TableCell>
-                              <Box maxWidth='120px'>
-                                <small>
-                                  {midUsdFormatter(asset.borrowBalanceUSD)}
-                                </small>
-                                <p className='caption text-secondary'>
-                                  {sdk
-                                    ? convertBNToNumber(
-                                        asset.borrowBalance,
-                                        asset.underlyingDecimals,
-                                      ).toFixed(2)
-                                    : '?'}{' '}
-                                  {asset.underlyingName.includes('LP')
-                                    ? 'LP'
-                                    : asset.underlyingSymbol}
+                              </TableCell>
+                              <TableCell className='poolTableHideCell'>
+                                <p className='caption'>
+                                  {convertMantissaToAPR(
+                                    asset.borrowRatePerBlock,
+                                  ).toFixed(2)}
+                                  %
                                 </p>
-                              </Box>
-                            </TableCell>
-                            <TableCell>
-                              <Box maxWidth='120px'>
-                                <small>
-                                  {midUsdFormatter(asset.liquidityUSD)}
-                                </small>
                                 <p className='caption text-secondary'>
-                                  {sdk
-                                    ? formatCompact(
-                                        convertBNToNumber(
-                                          asset.liquidity,
+                                  {shortUsdFormatter(asset.totalSupplyUSD)}{' '}
+                                  {t('tvl')}
+                                </p>
+                              </TableCell>
+                              <TableCell>
+                                <Box maxWidth='120px'>
+                                  <small>
+                                    {midUsdFormatter(asset.borrowBalanceUSD)}
+                                  </small>
+                                  <p className='caption text-secondary'>
+                                    {sdk
+                                      ? convertBNToNumber(
+                                          asset.borrowBalance,
                                           asset.underlyingDecimals,
-                                        ),
-                                      )
-                                    : '?'}{' '}
-                                  {asset.underlyingName.includes('LP')
-                                    ? 'LP'
-                                    : asset.underlyingSymbol}
-                                </p>
-                              </Box>
-                            </TableCell>
-                            <TableCell>
-                              <Button
-                                disabled={!account}
-                                onClick={() => {
-                                  setSelectedAsset(asset);
-                                  setModalOpen(true);
-                                  setModalIsBorrow(true);
-                                }}
-                              >
-                                {t('borrow')}
-                              </Button>
-                            </TableCell>
-                          </TableRow>
+                                        ).toFixed(2)
+                                      : '?'}{' '}
+                                    {asset.underlyingName.includes('LP')
+                                      ? 'LP'
+                                      : asset.underlyingSymbol}
+                                  </p>
+                                </Box>
+                              </TableCell>
+                              <TableCell>
+                                <Box maxWidth='120px'>
+                                  <small>
+                                    {midUsdFormatter(asset.liquidityUSD)}
+                                  </small>
+                                  <p className='caption text-secondary'>
+                                    {sdk
+                                      ? formatCompact(
+                                          convertBNToNumber(
+                                            asset.liquidity,
+                                            asset.underlyingDecimals,
+                                          ),
+                                        )
+                                      : '?'}{' '}
+                                    {asset.underlyingName.includes('LP')
+                                      ? 'LP'
+                                      : asset.underlyingSymbol}
+                                  </p>
+                                </Box>
+                              </TableCell>
+                              <TableCell>
+                                <Button
+                                  disabled={!account}
+                                  onClick={() => {
+                                    setSelectedAsset(asset);
+                                    setModalOpen(true);
+                                    setModalIsBorrow(true);
+                                  }}
+                                >
+                                  {t('borrow')}
+                                </Button>
+                              </TableCell>
+                            </TableRow>
+                            {asset.underlyingToken.toLowerCase() ===
+                              GlobalValue.tokens.COMMON.MI.address.toLowerCase() && (
+                              <TableRow>
+                                <TableCell colSpan={5}>
+                                  <Box className='maiAlertWrapper'>
+                                    <p>
+                                      <span>{t('pleaseNote')}:</span>{' '}
+                                      {t('maiNote')}
+                                    </p>
+                                  </Box>
+                                </TableCell>
+                              </TableRow>
+                            )}
+                          </>
                         );
                       })}
                     </TableBody>
