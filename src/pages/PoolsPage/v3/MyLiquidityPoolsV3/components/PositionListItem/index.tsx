@@ -30,6 +30,7 @@ interface PositionListItemProps {
   newestPosition?: number | undefined;
   highlightNewest?: boolean;
   hideExpand?: boolean;
+  ownsNFT?: boolean;
 }
 
 export function getPriceOrderingFromPositionForUI(
@@ -102,6 +103,7 @@ export default function PositionListItem({
   newestPosition,
   highlightNewest,
   hideExpand = false,
+  ownsNFT = true,
 }: PositionListItemProps) {
   const history = useHistory();
   const dispatch = useAppDispatch();
@@ -192,82 +194,92 @@ export default function PositionListItem({
   return (
     <Box className='v3-pool-liquidity-item'>
       <Box className='flex items-center'>
-        <Box className='flex' mr={1}>
-          <DoubleCurrencyLogo
-            currency0={currencyQuote}
-            currency1={currencyBase}
-            size={24}
-          />
+        <Box className='v3-pool-item-tokenId-wrapper'>
+          <p>NFT ID:</p>
+          <span>{positionDetails.tokenId.toString()}</span>
         </Box>
-        <p>
-          {currencyQuote?.symbol}-{currencyBase?.symbol}
-        </p>
-        {_onFarming ? (
-          <Box
-            className='flex items-center bg-primary cursor-pointer'
-            padding='0 5px'
-            height='24px'
-            borderRadius='4px'
-            ml={1}
-            onClick={() => history.push(farmingLink)}
-            color='white'
-          >
-            <p className='caption'>Farming</p>
-            <Box className='flex' ml='5px'>
-              <ArrowRight size={14} />
+        <Box>
+          <Box className='flex items-center'>
+            <Box className='flex' mr={1}>
+              <DoubleCurrencyLogo
+                currency0={currencyQuote}
+                currency1={currencyBase}
+                size={24}
+              />
+            </Box>
+            <p>
+              {currencyQuote?.symbol}-{currencyBase?.symbol}
+            </p>
+            {_onFarming ? (
+              <Box
+                className='flex items-center bg-primary cursor-pointer'
+                padding='0 5px'
+                height='24px'
+                borderRadius='4px'
+                ml={1}
+                onClick={() => history.push(farmingLink)}
+                color='white'
+              >
+                <p className='caption'>Farming</p>
+                <Box className='flex' ml='5px'>
+                  <ArrowRight size={14} />
+                </Box>
+              </Box>
+            ) : (
+              <div />
+            )}
+            <Box ml={1}>
+              <RangeBadge removed={removed} inRange={!outOfRange} />
+            </Box>
+            <Box ml={1}>
+              <Badge
+                text={`${new Percent(
+                  pool?.fee || 100,
+                  1_000_000,
+                ).toSignificant()}
+                        %`}
+              ></Badge>
             </Box>
           </Box>
-        ) : (
-          <div />
-        )}
-        <Box ml={1}>
-          <RangeBadge removed={removed} inRange={!outOfRange} />
-        </Box>
-        <Box ml={1}>
-          <Badge
-            text={`${new Percent(
-              positionDetails.fee || 100,
-              1_000_000,
-            ).toSignificant()}
-                        %`}
-          ></Badge>
+
+          {!expanded && (
+            <Box width={1} mt={1}>
+              {_poolState === PoolState.LOADING && (
+                <Box width={1} className='flex justify-center'>
+                  <Loader size={'1rem'} stroke={'var(--white)'} />
+                </Box>
+              )}
+              {_poolState !== PoolState.LOADING && priceLower && priceUpper && (
+                <span className='text-secondary'>
+                  Min{' '}
+                  {`${formatTickPrice(priceLower, tickAtLimit, Bound.LOWER)} ${
+                    currencyQuote?.symbol
+                  } per ${currencyBase?.symbol}`}
+                  {' <'}-{'> '}Max{' '}
+                  {`${formatTickPrice(priceUpper, tickAtLimit, Bound.UPPER)} ${
+                    currencyQuote?.symbol
+                  } per ${currencyBase?.symbol}`}
+                </span>
+              )}
+            </Box>
+          )}
+          {_poolState !== PoolState.LOADING && !hideExpand && (
+            <Box
+              className='v3-pool-liquidity-item-expand'
+              onClick={() => setExpanded(!expanded)}
+            >
+              {expanded ? <ExpandLess /> : <ExpandMore />}
+            </Box>
+          )}
         </Box>
       </Box>
 
-      {!expanded && (
-        <Box width={1} mt={1}>
-          {_poolState === PoolState.LOADING && (
-            <Box width={1} className='flex justify-center'>
-              <Loader size={'1rem'} stroke={'var(--white)'} />
-            </Box>
-          )}
-          {_poolState !== PoolState.LOADING && priceLower && priceUpper && (
-            <span className='text-secondary'>
-              Min{' '}
-              {`${formatTickPrice(priceLower, tickAtLimit, Bound.LOWER)} ${
-                currencyQuote?.symbol
-              } per ${currencyBase?.symbol}`}
-              {' <'}-{'> '}Max{' '}
-              {`${formatTickPrice(priceUpper, tickAtLimit, Bound.UPPER)} ${
-                currencyQuote?.symbol
-              } per ${currencyBase?.symbol}`}
-            </span>
-          )}
-        </Box>
-      )}
-
-      {_poolState !== PoolState.LOADING && !hideExpand && (
-        <Box
-          className='v3-pool-liquidity-item-expand'
-          onClick={() => setExpanded(!expanded)}
-        >
-          {expanded ? <ExpandLess /> : <ExpandMore />}
-        </Box>
-      )}
-
       {expanded && (
         <Box mt={3}>
-          <PositionListItemDetails positionDetails={positionDetails} />
+          <PositionListItemDetails
+            positionDetails={positionDetails}
+            ownsNFT={ownsNFT}
+          />
         </Box>
       )}
     </Box>

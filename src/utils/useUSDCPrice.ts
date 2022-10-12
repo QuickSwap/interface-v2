@@ -13,7 +13,6 @@ import { useActiveWeb3React } from 'hooks';
 import { unwrappedToken, wrappedCurrency } from './wrappedCurrency';
 import { useDQUICKtoQUICK } from 'state/stake/hooks';
 import {
-  CXETH,
   DAI,
   ETHER,
   NEW_DQUICK,
@@ -35,13 +34,9 @@ export default function useUSDCPrice(currency?: Currency): Price | undefined {
   const usdcToken = USDC[chainIdToUse];
   const usdtToken = USDT[chainIdToUse];
   const daiToken = DAI[chainIdToUse];
-  const cxETHToken = CXETH[chainIdToUse];
 
-  let wrapped = wrappedCurrency(currency, chainId);
+  const wrapped = wrappedCurrency(currency, chainId);
   const internalWrapped = wrapped;
-  if (cxETHToken && wrapped?.equals(cxETHToken)) {
-    wrapped = wrappedCurrency(ETHER[chainIdToUse], chainId);
-  }
 
   const tokenPairs: [Currency | undefined, Currency | undefined][] = useMemo(
     () => [
@@ -127,15 +122,6 @@ export default function useUSDCPrice(currency?: Currency): Price | undefined {
     ) {
       const price = usdcPair.priceOf(wrapped);
 
-      if (internalWrapped?.equals(cxETHToken)) {
-        return new Price(
-          cxETHToken,
-          usdcToken,
-          price.denominator,
-          price.numerator,
-        );
-      }
-
       return new Price(currency, usdcToken, price.denominator, price.numerator);
     }
     if (
@@ -216,7 +202,6 @@ export default function useUSDCPrice(currency?: Currency): Price | undefined {
     usdcQuickPairState,
     usdcQuickPair,
     internalWrapped,
-    cxETHToken,
     daiToken,
     oldQuickToken,
     usdcToken,
@@ -224,9 +209,6 @@ export default function useUSDCPrice(currency?: Currency): Price | undefined {
   ]);
 }
 
-//TODO: the majority of these functions share alot of common logic,
-//There also seems to be bugs, sometimes the CXETH Pair returns CXEth, sometimes ETH
-//Investigate more fully
 export function useUSDCPrices(currencies: Currency[]): (Price | undefined)[] {
   const { chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ? chainId : ChainId.MATIC;
@@ -235,13 +217,8 @@ export function useUSDCPrices(currencies: Currency[]): (Price | undefined)[] {
   const usdcToken = USDC[chainIdToUse];
   const usdtToken = USDT[chainIdToUse];
   const daiToken = DAI[chainIdToUse];
-  const cxETHToken = CXETH[chainIdToUse];
-  const ETHToken = CXETH[chainIdToUse];
   const wrappedCurrencies = currencies.map((currency) => {
-    let wrapped = wrappedCurrency(currency, chainId);
-    if (wrapped?.equals(cxETHToken)) {
-      wrapped = wrappedCurrency(ETHToken, chainId);
-    }
+    const wrapped = wrappedCurrency(currency, chainId);
     return wrapped;
   });
   const tokenPairs: [Currency | undefined, Currency | undefined][] = [];
@@ -329,14 +306,6 @@ export function useUSDCPrices(currencies: Currency[]): (Price | undefined)[] {
       usdcPair.reserveOf(usdcToken).greaterThan(ethPairETHUSDCValue)
     ) {
       const price = usdcPair.priceOf(wrapped);
-      if (internalWrapped?.equals(cxETHToken)) {
-        return new Price(
-          cxETHToken,
-          usdcToken,
-          price.denominator,
-          price.numerator,
-        );
-      }
       return new Price(currency, usdcToken, price.denominator, price.numerator);
     }
     if (

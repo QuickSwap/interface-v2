@@ -1,5 +1,4 @@
 import React, { useMemo, useEffect, useState } from 'react';
-import { Layers } from 'react-feather';
 import { Currency } from '@uniswap/sdk-core';
 import { PoolStats } from '../PoolStats';
 import { IDerivedMintInfo } from 'state/mint/v3/hooks';
@@ -7,7 +6,7 @@ import { Presets } from 'state/mint/v3/reducer';
 import { Box, Grid } from '@material-ui/core';
 import { PoolState } from 'hooks/usePools';
 import Loader from 'components/Loader';
-import { fetchPoolsAPR } from 'utils/aprApi';
+import { fetchPoolsAPR } from 'utils/api';
 import { computePoolAddress } from 'hooks/v3/computePoolAddress';
 import { POOL_DEPLOYER_ADDRESS } from 'constants/v3/addresses';
 import './index.scss';
@@ -170,9 +169,7 @@ export function PresetRanges({
       tokenB: quoteCurrency.wrapped,
     }).toLowerCase();
 
-    return aprs[poolAddress]
-      ? `${aprs[poolAddress].toFixed(2)}% APR`
-      : undefined;
+    return aprs[poolAddress] ? aprs[poolAddress].toFixed(2) : undefined;
   }, [baseCurrency, quoteCurrency, aprs]);
 
   return (

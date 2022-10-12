@@ -1,0 +1,25 @@
+@use 'styles/variables' as *;
+@use 'styles/breakpoints' as *;
+
+.v3-currency-input-panel {
+  position: relative;
+}
+
+.v3-currency-input-lock-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: $secondary1;
+  border-radius: 12px;
+  opacity: 0.9;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  & small {
+    margin-top: 8px;
+  }
+}

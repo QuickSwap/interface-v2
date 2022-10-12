@@ -43,7 +43,7 @@ import { ReactComponent as AddLiquidityIcon } from 'assets/images/AddLiquidityIc
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import { useCurrency } from 'hooks/Tokens';
 import { useParams } from 'react-router-dom';
-import { OLD_QUICK, V2_ROUTER_ADDRESS } from 'constants/v3/addresses';
+import { NEW_QUICK, V2_ROUTER_ADDRESS } from 'constants/v3/addresses';
 
 const AddLiquidity: React.FC<{
   currencyBgClass?: string;
@@ -189,7 +189,7 @@ const AddLiquidity: React.FC<{
     if (currency1) {
       onCurrencySelection(Field.CURRENCY_B, currency1);
     } else {
-      onCurrencySelection(Field.CURRENCY_B, OLD_QUICK[chainIdToUse]);
+      onCurrencySelection(Field.CURRENCY_B, NEW_QUICK[chainIdToUse]);
     }
   }, [onCurrencySelection, currency0, currency1]);
 

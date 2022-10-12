@@ -36,7 +36,7 @@ const AnalyticsSearch: React.FC = () => {
   const history = useHistory();
   const [searchVal, setSearchVal] = useState('');
   const { chainId } = useActiveWeb3React();
-  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
+  const chainIdToUse = chainId ?? ChainId.MATIC;
   const config = getConfig(chainIdToUse);
   const v2 = config['v2'];
   const [searchValInput, setSearchValInput] = useDebouncedChangeHandler(
@@ -177,37 +177,14 @@ const AnalyticsSearch: React.FC = () => {
   useEffect(() => {
     async function fetchData() {
       try {
-        const allTokensFn = v2
-          ? isV3
-            ? getAllTokensV3
-            : getAllTokensOnUniswap
-          : getAllTokensV3;
-        const allPairsFn = v2
-          ? isV3
-            ? getAllPairsV3
-            : getAllPairsOnUniswap
-          : getAllPairsV3;
-
-        const client = v2
-          ? isV3
-            ? clientV3[chainIdToUse]
-            : clientV2[chainIdToUse]
-          : clientV3[chainIdToUse];
-        const tokenSearchQuery = v2
-          ? isV3
-            ? TOKEN_SEARCH_V3
-            : TOKEN_SEARCH
-          : TOKEN_SEARCH_V3;
-        const pairSearchQuery = v2
-          ? isV3
-            ? PAIR_SEARCH_V3
-            : PAIR_SEARCH
-          : PAIR_SEARCH_V3;
-        const oldTokenQuery = v2
-          ? isV3
-            ? TOKEN_INFO_OLD_V3
-            : TOKEN_INFO_OLD
-          : TOKEN_INFO_OLD_V3;
+        const allTokensFn =
+          !v2 || isV3 ? getAllTokensV3 : getAllTokensOnUniswap;
+        const allPairsFn = !v2 || isV3 ? getAllPairsV3 : getAllPairsOnUniswap;
+        const client =
+          !v2 || isV3 ? clientV3[chainIdToUse] : clientV2[chainIdToUse];
+        const tokenSearchQuery = !v2 || isV3 ? TOKEN_SEARCH_V3 : TOKEN_SEARCH;
+        const pairSearchQuery = !v2 || isV3 ? PAIR_SEARCH_V3 : PAIR_SEARCH;
+        const oldTokenQuery = !v2 || isV3 ? TOKEN_INFO_OLD_V3 : TOKEN_INFO_OLD;
 
         const allTokensUniswap = await allTokensFn(chainIdToUse);
         const allPairsUniswap = await allPairsFn(chainIdToUse);

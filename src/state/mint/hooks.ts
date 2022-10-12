@@ -91,13 +91,18 @@ export function useDerivedMintInfo(): {
 
   // amounts
   const independentAmount: CurrencyAmount | undefined = tryParseAmount(
+    chainIdToUse,
     typedValue,
     currencies[independentField],
   );
   const dependentAmount: CurrencyAmount | undefined = useMemo(() => {
     if (noLiquidity) {
       if (otherTypedValue && currencies[dependentField]) {
-        return tryParseAmount(otherTypedValue, currencies[dependentField]);
+        return tryParseAmount(
+          chainIdToUse,
+          otherTypedValue,
+          currencies[dependentField],
+        );
       }
       return undefined;
     } else if (independentAmount) {
