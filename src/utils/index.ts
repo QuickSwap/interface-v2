@@ -406,6 +406,8 @@ export const getTokenInfo = async (
             currentLiquidityUSD ?? 0,
             oldLiquidityUSD ?? 0,
           );
+          data.symbol =
+            data.symbol.toLowerCase() === 'mimatic' ? 'MAI' : data.symbol;
 
           // new tokens
           if (!oneDayHistory && data) {
@@ -545,6 +547,8 @@ export const getTopTokens = async (
             currentLiquidityUSD ?? 0,
             oldLiquidityUSD ?? 0,
           );
+          data.symbol =
+            data.symbol.toLowerCase() === 'mimatic' ? 'MAI' : data.symbol;
 
           // new tokens
           if (!oneDayHistory && data) {
@@ -1195,6 +1199,20 @@ const parseData = (
   data.oneDayVolumeUntracked = oneDayVolumeUntracked;
   data.oneWeekVolumeUntracked = oneWeekVolumeUntracked;
   data.volumeChangeUntracked = volumeChangeUntracked;
+  data.token0 = {
+    ...data.token0,
+    symbol:
+      data.token0.symbol.toLowerCase() === 'mimatic'
+        ? 'MAI'
+        : data.token0.symbol,
+  };
+  data.token1 = {
+    ...data.token1,
+    symbol:
+      data.token1.symbol.toLowerCase() === 'mimatic'
+        ? 'MAI'
+        : data.token1.symbol,
+  };
 
   // set liquidity properties
   data.trackedReserveUSD = data.trackedReserveETH * ethPrice;
