@@ -19,8 +19,7 @@ import { tryParseAmount } from 'state/swap/v3/hooks';
 import { Presets } from 'state/mint/v3/reducer';
 import { PriceFormats } from 'components/v3/PriceFomatToggler';
 import LiquidityChartRangeInput from 'components/v3/LiquidityChartRangeInput';
-import { GlobalValue } from 'constants/index';
-import { toToken } from 'consthttps://github.com/QuickSwap/interface-v2/pull/372/conflict?name=src%252Fpages%252FPoolsPage%252Fv3%252FSupplyLiquidityV3%252Fcontainers%252FSelectRange%252Findex.tsx&ancestor_oid=2d278dcd74d24642a07f3c0017ded87b3c01f130&base_oid=b4926ecf30e5459019b746673a16360d18a05f8a&head_oid=1d722ac30e539e90523085e4ea8c228c05b8ed92ants/v3/routing';
+import { toToken } from 'constants/v3/routing';
 import { Box } from '@material-ui/core';
 import { ReportProblemOutlined } from '@material-ui/icons';
 import { useActiveWeb3React } from 'hooks';
@@ -56,13 +55,15 @@ export function SelectRange({
   const isStablecoinPair = useMemo(() => {
     if (!currencyA || !currencyB) return false;
 
-    const MAI_TOKEN = toToken(MI[chainIdToUse]);
+    const MAI_TOKEN = MI[chainIdToUse] ? toToken(MI[chainIdToUse]) : undefined;
     const USDC_TOKEN = toToken(USDC[chainIdToUse]);
-    const USDT_TOKEN = toToken(USDT[chainIdToUse]);
+    const USDT_TOKEN = USDT[chainIdToUse]
+      ? toToken(USDT[chainIdToUse])
+      : undefined;
     const stablecoins = [
       USDC_TOKEN.address,
-      USDT_TOKEN.address,
-      MAI_TOKEN.address,
+      USDT_TOKEN?.address,
+      MAI_TOKEN?.address,
     ];
 
     return (

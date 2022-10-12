@@ -109,6 +109,7 @@ export const SUPPORTED_CHAINIDS = [
   ChainId.MUMBAI,
   ChainId.DOGECHAIN,
   ChainId.DOEGCHAIN_TESTNET,
+  ChainId.ZKTESTNET,
 ];
 export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   CYPHERD: {

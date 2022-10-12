@@ -112,7 +112,7 @@ const Header: React.FC = () => {
       isExternal: true,
       externalLink: process?.env?.REACT_APP_PREDICTIONS_URL || '',
       isNew: true,
-      });
+    });
   }
   if (showLending) {
     menuItems.push({

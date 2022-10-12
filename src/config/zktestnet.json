@@ -1,0 +1,38 @@
+{
+    "v3": true,
+    "v2": false,
+    "rpc": "https://public.zkevm-test.net:2083",
+    "chainId": 1402,
+    "nativeCurrencyImage": "/doge.png",
+    "swap": {
+      "available": true,
+      "bestTrade": false,
+      "proMode": false,
+      "limitOrder": false
+    },
+    "pools": {
+      "available": true
+    },
+    "farm": {
+      "available": false
+    },
+    "lair": {
+      "available": false,
+      "oldLair": false,
+      "newLair": false,
+      "syrup": false
+    },
+    "convert": {
+      "available": false
+    },
+    "predictions": {
+      "available": false
+    },
+    "analytics": {
+      "available": false
+    },
+    "lending": {
+      "available": false
+    }
+  }
+  

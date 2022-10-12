@@ -1,5 +1,5 @@
 import { useQuery } from 'react-query';
-import { useMarket, useReadOnlyMarket } from './useMarket';
+import { useReadOnlyMarket } from './useMarket';
 import { useActiveWeb3React } from '../index';
 import { fetchPoolData, PoolData } from '../../utils/marketxyz/fetchPoolData';
 import { PoolDirectoryV1 } from 'market-sdk';
@@ -10,9 +10,10 @@ export const usePoolsData = (
   poolAddresses: string[],
   directory: PoolDirectoryV1 | string,
 ) => {
-  const { account, chainId } = useActiveWeb3React();
+  const { chainId, account } = useActiveWeb3React();
   const chainIdToUse = chainId ?? ChainId.MATIC;
-  const { sdk } = useMarket();
+  const { sdk } = useReadOnlyMarket();
+  const { ethPrice } = useEthPrice();
   const _directory = sdk
     ? typeof directory === 'string'
       ? new PoolDirectoryV1(sdk, directory)
@@ -21,17 +22,11 @@ export const usePoolsData = (
   const getPoolsData = async () => {
     if (!_directory) return;
     const allPools = await _directory.getAllPools();
-    const poolsData = await Promise.all(
-      poolAddresses.map(async (poolAddress) => {
-        const poolId = allPools.findIndex((p) => {
-          return p.comptroller.address.toLowerCase() === poolAddress.toLowerCase();
-        });
-        if (poolId === -1) return;
-        const poolData = await fetchPoolData(
-          chainIdToUse,
-          poolId.toString(),
-          account ?? undefined,
-          _directory,
+    const poolsData: any[] = [];
+    for (const poolAddress of poolAddresses) {
+      const poolId = allPools.findIndex((p) => {
+        return (
+          p.comptroller.address.toLowerCase() === poolAddress.toLowerCase()
         );
       });
       if (poolId === -1) return;
@@ -40,6 +35,7 @@ export const usePoolsData = (
         poolId.toString(),
         account ?? undefined,
         _directory,
+        ethPrice.price ?? 0,
       );
       poolsData.push(poolData);
     }
@@ -56,7 +52,7 @@ export const usePoolData = (
   poolId: string | null | undefined,
   directory: PoolDirectoryV1 | string,
 ): PoolData | undefined => {
-  const { account, chainId } = useActiveWeb3React();
+  const { chainId, account } = useActiveWeb3React();
   const chainIdToUse = chainId ?? ChainId.MATIC;
   const { sdk } = useReadOnlyMarket();
   const { ethPrice } = useEthPrice();
@@ -72,6 +68,7 @@ export const usePoolData = (
       poolId ?? undefined,
       account ?? undefined,
       _directory,
+      ethPrice.price ?? 0,
     );
     return poolData;
   };

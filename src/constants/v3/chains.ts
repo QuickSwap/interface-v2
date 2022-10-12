@@ -47,4 +47,13 @@ export const CHAIN_INFO: ChainInfo = {
     nativeCurrencyName: 'Wrapped Doge',
     nativeCurrencyDecimals: 18,
   },
+  [ChainId.ZKTESTNET]: {
+    docs: 'https://algebra.finance/',
+    explorer: 'https://public.zkevm-test.net:8443',
+    infoLink: 'https://algebra.finance',
+    label: 'ZKTESTNET',
+    nativeCurrencySymbol: 'ETH',
+    nativeCurrencyName: 'Wrapped ETHER',
+    nativeCurrencyDecimals: 18,
+  },
 };

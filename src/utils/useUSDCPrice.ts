@@ -59,11 +59,15 @@ export default function useUSDCPrice(currency?: Currency): Price | undefined {
         usdcToken ? usdcToken : undefined,
       ],
       [
-        wrapped?.equals(usdtToken) ? undefined : wrapped,
+        usdtToken
+          ? wrapped?.equals(usdtToken)
+            ? undefined
+            : wrapped
+          : wrapped,
         usdtToken ? usdtToken : undefined,
       ],
       [
-        wrapped?.equals(daiToken) ? undefined : wrapped,
+        daiToken ? (wrapped?.equals(daiToken) ? undefined : wrapped) : wrapped,
         daiToken ? daiToken : undefined,
       ],
       [chainId ? WETH[chainId] : undefined, usdcToken ? usdcToken : undefined],

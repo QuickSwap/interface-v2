@@ -274,11 +274,12 @@ export function TokenAmountCard({
           id={`amount-${currency?.symbol}`}
           disabled={locked}
           onBlur={handleOnBlur}
-          onUserInput={(val) =>
+          onUserInput={(val) => {
+            handleInput(val.trim());
             isUSD
               ? setLocalUSDValue(val.trim())
-              : setLocalTokenValue(val.trim())
-          }
+              : setLocalTokenValue(val.trim());
+          }}
           placeholder='0'
         />
       </Box>

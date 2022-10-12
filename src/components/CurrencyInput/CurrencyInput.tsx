@@ -1,5 +1,5 @@
 import React from 'react';
-import { Currency } from '@uniswap/sdk';
+import { ChainId, Currency, ETHER } from '@uniswap/sdk';
 import { Box } from '@material-ui/core';
 import { useCurrencyBalance } from 'state/wallet/hooks';
 import { NumericalInput } from 'components';
@@ -42,7 +42,15 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
   id,
 }) => {
   const { t } = useTranslation();
-  const { account } = useActiveWeb3React();
+  const { chainId, account } = useActiveWeb3React();
+  const chainIdToUse = chainId ?? ChainId.MATIC;
+
+  if (!currency && otherCurrency) {
+    currency = otherCurrency;
+    otherCurrency = undefined;
+  } else if (!currency) {
+    currency = ETHER[chainIdToUse];
+  }
   const selectedCurrencyBalance = useCurrencyBalance(
     account ?? undefined,
     currency,

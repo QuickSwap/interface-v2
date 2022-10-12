@@ -23,6 +23,7 @@ const WETH_ONLY: ChainTokenList = {
   [ChainId.MATIC]: [WETH[ChainId.MATIC]],
   [ChainId.DOEGCHAIN_TESTNET]: [WETH[ChainId.DOEGCHAIN_TESTNET]],
   [ChainId.DOGECHAIN]: [WETH[ChainId.DOGECHAIN]],
+  [ChainId.ZKTESTNET]: [WETH[ChainId.ZKTESTNET]],
 };
 
 export const toV3Token = (t: {
@@ -49,36 +50,43 @@ export const MULTICALL_NETWORKS: { [chainId in ChainId]: string } = {
   [ChainId.MATIC]: '0x02817C1e3543c2d908a590F5dB6bc97f933dB4BD',
   [ChainId.DOEGCHAIN_TESTNET]: '0x02817C1e3543c2d908a590F5dB6bc97f933dB4BD',
   [ChainId.DOGECHAIN]: '0x0110B3b142031F85a80Afdc9C7bcAA80dAfe7C63',
+  [ChainId.ZKTESTNET]: '0x81D880BfaB1f7f08816D9bd4571E2f5953532287',
 };
 
 export const V3_CORE_FACTORY_ADDRESSES: AddressMap = {
   [ChainId.MATIC]: '0x411b0fAcC3489691f28ad58c47006AF5E3Ab3A28',
   [ChainId.DOGECHAIN]: '0xd2480162Aa7F02Ead7BF4C127465446150D58452',
+  [ChainId.ZKTESTNET]: '0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff',
 };
 
 export const POOL_DEPLOYER_ADDRESS: AddressMap = {
   [ChainId.MATIC]: '0x2D98E2FA9da15aa6dC9581AB097Ced7af697CB92',
   [ChainId.DOGECHAIN]: '0x56c2162254b0E4417288786eE402c2B41d4e181e',
+  [ChainId.ZKTESTNET]: '0x5757371414417b8C6CAad45bAeF941aBc7d3Ab32',
 };
 
 export const QUOTER_ADDRESSES: AddressMap = {
   [ChainId.MATIC]: '0xa15F0D7377B2A0C0c10db057f641beD21028FC89',
   [ChainId.DOGECHAIN]: '0xd8E1E7009802c914b0d39B31Fc1759A865b727B1',
+  [ChainId.ZKTESTNET]: '0xc7efb32470dEE601959B15f1f923e017C6A918cA',
 };
 
 export const SWAP_ROUTER_ADDRESSES: AddressMap = {
   [ChainId.MATIC]: '0xf5b509bB0909a69B1c207E495f687a596C168E12',
   [ChainId.DOGECHAIN]: '0x4aE2bD0666c76C7f39311b9B3e39b53C8D7C43Ea',
+  [ChainId.ZKTESTNET]: '0x4857Dfd11c712e862eC362cEee29F7974B70EfcD',
 };
 
 export const NONFUNGIBLE_POSITION_MANAGER_ADDRESSES: AddressMap = {
   [ChainId.MATIC]: '0x8eF88E4c7CfbbaC1C163f7eddd4B578792201de6',
   [ChainId.DOGECHAIN]: '0x0b012055F770AE7BB7a8303968A7Fb6088A2296e',
+  [ChainId.ZKTESTNET]: '0x61530d6E1c7A47BBB3e48e8b8EdF7569DcFeE121',
 };
 
 export const MULTICALL_ADDRESS: AddressMap = {
   [ChainId.MATIC]: '0x6ccb9426CeceE2903FbD97fd833fD1D31c100292',
   [ChainId.DOGECHAIN]: '0x23602819a9E2B1C8eC7605356D5b0F1FBB10ddA5',
+  [ChainId.ZKTESTNET]: '0x450c0ff30A17B8F6ccBEc25e41e4461cF89719d7',
 };
 
 export const V3_MIGRATOR_ADDRESSES: AddressMap = {
@@ -207,6 +215,13 @@ export const WMATIC_EXTENDED: { [chainId: number]: TokenV3 } = {
     'WWDOGE',
     'Wrapped WDOGE',
   ),
+  [ChainId.ZKTESTNET]: new TokenV3(
+    ChainId.ZKTESTNET,
+    '0xE9CC37904875B459Fa5D0FE37680d36F1ED55e38',
+    18,
+    'WETH',
+    'Wrapped ETHER',
+  ),
 };
 
 export const USDC: { [chainId: number]: Token } = {
@@ -215,14 +230,21 @@ export const USDC: { [chainId: number]: Token } = {
     '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
     6,
     'USDC',
-    'USDC',
+    'USD Coin',
   ),
   [ChainId.DOGECHAIN]: new Token(
     ChainId.DOGECHAIN,
     '0x765277EebeCA2e31912C9946eAe1021199B39C61',
     6,
     'USDC',
+    'USD Coin',
+  ),
+  [ChainId.ZKTESTNET]: new Token(
+    ChainId.ZKTESTNET,
+    '0x6c28AeF8977c9B773996d0e8376d2EE379446F2f',
+    6,
     'USDC',
+    'USD Coin',
   ),
 };
 
@@ -437,6 +459,7 @@ export const SUGGESTED_BASES: {
     DD[ChainId.DOGECHAIN],
     DC[ChainId.DOGECHAIN],
   ],
+  [ChainId.ZKTESTNET]: [USDC[ChainId.ZKTESTNET]],
 };
 
 export const V2_BASES_TO_TRACK_LIQUIDITY_FOR: {
@@ -474,6 +497,10 @@ export const V3_BASES_TO_TRACK_LIQUIDITY_FOR: {
     toV3Token(ETHER[ChainId.DOGECHAIN]),
     toV3Token(DD[ChainId.DOGECHAIN]),
     toV3Token(DC[ChainId.DOGECHAIN]),
+  ],
+  [ChainId.DOGECHAIN]: [
+    WMATIC_EXTENDED[ChainId.ZKTESTNET],
+    toV3Token(USDC[ChainId.ZKTESTNET]),
   ],
 };
 

@@ -52,12 +52,14 @@ export function getPriceOrderingFromPositionForUI(
   const token1 = position.amount1.currency;
 
   const USDC_TOKEN = toToken(USDC[chainIdToUse]);
-  const USDT_TOKEN = toToken(USDT[chainIdToUse]);
+  const USDT_TOKEN = USDT[chainIdToUse]
+    ? toToken(USDT[chainIdToUse])
+    : undefined;
 
   // if token0 is a dollar-stable asset, set it as the quote token
   // const stables = [USDC_BINANCE, USDC_KOVAN]
   const stables = [USDC_TOKEN, USDT_TOKEN];
-  if (stables.some((stable) => stable.equals(token0))) {
+  if (stables.some((stable) => stable?.equals(token0))) {
     return {
       priceLower: position.token0PriceUpper.invert(),
       priceUpper: position.token0PriceLower.invert(),

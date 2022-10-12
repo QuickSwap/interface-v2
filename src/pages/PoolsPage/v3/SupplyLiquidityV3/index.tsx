@@ -161,6 +161,12 @@ export function SupplyLiquidityV3() {
       if (chainId === 137) {
         chainSymbol = 'MATIC';
       }
+      if (chainId === 2000) {
+        chainSymbol = 'WDOGE';
+      }
+      if (chainId === 1402) {
+        chainSymbol = 'ETH';
+      }
 
       resetState();
 

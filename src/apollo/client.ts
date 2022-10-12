@@ -38,6 +38,12 @@ export const clientV2: ApolloChainMap = {
     }),
     cache: new InMemoryCache(),
   }),
+  [ChainId.ZKTESTNET]: new ApolloClient({
+    link: new HttpLink({
+      uri: process.env.REACT_APP_GRAPH_V2_1402_API_URL,
+    }),
+    cache: new InMemoryCache(),
+  }),
 };
 
 export const clientV3: ApolloChainMap = {
@@ -62,6 +68,12 @@ export const clientV3: ApolloChainMap = {
   [ChainId.DOEGCHAIN_TESTNET]: new ApolloClient({
     link: new HttpLink({
       uri: process.env.REACT_APP_GRAPH_V3_568_API_URL,
+    }),
+    cache: new InMemoryCache(),
+  }),
+  [ChainId.ZKTESTNET]: new ApolloClient({
+    link: new HttpLink({
+      uri: process.env.REACT_APP_GRAPH_V3_1402_API_URL,
     }),
     cache: new InMemoryCache(),
   }),
@@ -92,6 +104,12 @@ export const farmingClient: ApolloChainMap = {
     }),
     cache: new InMemoryCache(),
   }),
+  [ChainId.ZKTESTNET]: new ApolloClient({
+    link: new HttpLink({
+      uri: process.env.REACT_APP_V3_FARMING_API_1402_URL,
+    }),
+    cache: new InMemoryCache(),
+  }),
 };
 
 export const txClient: ApolloChainMap = {
@@ -119,6 +137,12 @@ export const txClient: ApolloChainMap = {
     }),
     cache: new InMemoryCache(),
   }),
+  [ChainId.ZKTESTNET]: new ApolloClient({
+    link: new HttpLink({
+      uri: process.env.REACT_APP_GRAPH_V2_1402_API_URL,
+    }),
+    cache: new InMemoryCache(),
+  }),
 };
 
 export const blockClient: ApolloChainMap = {
@@ -143,6 +167,12 @@ export const blockClient: ApolloChainMap = {
   [ChainId.DOEGCHAIN_TESTNET]: new ApolloClient({
     link: new HttpLink({
       uri: process.env.REACT_APP_GRAPH_568_BLOCK_CLIENT_API_URL,
+    }),
+    cache: new InMemoryCache(),
+  }),
+  [ChainId.ZKTESTNET]: new ApolloClient({
+    link: new HttpLink({
+      uri: process.env.REACT_APP_GRAPH_1402_BLOCK_CLIENT_API_URL,
     }),
     cache: new InMemoryCache(),
   }),
