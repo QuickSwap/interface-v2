@@ -67,7 +67,7 @@ const DragonsLair: React.FC<{ isNew: boolean }> = ({ isNew }) => {
           $
           {(
             Number(lairInfoToUse.totalQuickBalance.toExact()) * quickPrice
-          ).toLocaleString()}
+          ).toLocaleString('us')}
         </small>
       </Box>
 
@@ -83,11 +83,11 @@ const DragonsLair: React.FC<{ isNew: boolean }> = ({ isNew }) => {
       <Box className='quickTodQuick border-secondary1'>
         <CurrencyLogo currency={quickToken} />
         <small style={{ margin: '0 8px' }}>
-          {isQUICKRate ? 1 : dQUICKtoQUICK.toLocaleString()} QUICK =
+          {isQUICKRate ? 1 : Number(dQUICKtoQUICK).toLocaleString('us')} QUICK =
         </small>
         <CurrencyLogo currency={quickToken} />
         <small style={{ margin: '0 8px' }}>
-          {isQUICKRate ? QUICKtodQUICK.toLocaleString() : 1} dQUICK
+          {isQUICKRate ? Number(QUICKtodQUICK).toLocaleString('us') : 1} dQUICK
         </small>
         <PriceExchangeIcon
           className='cursor-pointer'

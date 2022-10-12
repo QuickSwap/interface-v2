@@ -56,10 +56,10 @@ const AnalyticsPairChart: React.FC<{
         ? (
             Number(pairData.oneDayVolumeUntracked) *
             GlobalConst.utils.FEEPERCENT
-          ).toLocaleString()
+          ).toLocaleString('us')
         : (
             Number(pairData.oneDayVolumeUSD) * GlobalConst.utils.FEEPERCENT
-          ).toLocaleString()
+          ).toLocaleString('us')
       : '-';
   const [chartIndex, setChartIndex] = useState(CHART_VOLUME);
   const chartIndexes = useMemo(() => [CHART_VOLUME, CHART_TVL, CHART_FEES], []);
@@ -241,7 +241,7 @@ const AnalyticsPairChart: React.FC<{
                     {`${chartYTicker === '$' ? chartYTicker : ''}${
                       currentData > 100000
                         ? formatCompact(currentData)
-                        : currentData.toLocaleString()
+                        : currentData.toLocaleString('us')
                     }${chartYTicker === '%' ? chartYTicker : ''}`}
                   </h4>
                   <Box

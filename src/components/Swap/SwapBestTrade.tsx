@@ -651,7 +651,7 @@ const SwapBestTrade: React.FC<{
               (mainPrice ? currencies[Field.INPUT] : currencies[Field.OUTPUT])
                 ?.symbol
             }{' '}
-            = {(mainPrice ? paraRate : 1 / paraRate).toLocaleString()}{' '}
+            = {(mainPrice ? paraRate : 1 / paraRate).toLocaleString('us')}{' '}
             {
               (mainPrice ? currencies[Field.OUTPUT] : currencies[Field.INPUT])
                 ?.symbol

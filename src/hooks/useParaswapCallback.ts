@@ -160,7 +160,11 @@ export function useParaswapCallback(
             const outputAmount =
               Number(priceRoute.destAmount) / 10 ** priceRoute.destDecimals;
 
-            const base = `Swap ${inputAmount.toLocaleString()} ${inputSymbol} for ${outputAmount.toLocaleString()} ${outputSymbol}`;
+            const base = `Swap ${inputAmount.toLocaleString(
+              'us',
+            )} ${inputSymbol} for ${outputAmount.toLocaleString(
+              'us',
+            )} ${outputSymbol}`;
             const withRecipient =
               recipient === account
                 ? base

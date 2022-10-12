@@ -154,7 +154,7 @@ const LendDetailPage: React.FC = () => {
                 a + Number(b.adminFee.toString()) / 1e16 / length,
               0,
             )
-            .toLocaleString()
+            .toLocaleString('us')
         : undefined,
     },
     {
