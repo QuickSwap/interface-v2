@@ -53,7 +53,7 @@ export const CHAIN_INFO: ChainInfo = {
     infoLink: 'https://algebra.finance',
     label: 'ZKTESTNET',
     nativeCurrencySymbol: 'ETH',
-    nativeCurrencyName: 'Wrapped ETHER',
+    nativeCurrencyName: 'Ether',
     nativeCurrencyDecimals: 18,
   },
 };
