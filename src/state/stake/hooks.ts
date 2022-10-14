@@ -216,6 +216,7 @@ export function useFilteredSyrupInfo(
         .filter(
           (syrupInfo) =>
             syrupInfo.ending > currentTimestamp &&
+            !syrupInfo.ended &&
             (tokenToFilterBy === undefined || tokenToFilterBy === null
               ? getSearchFiltered(syrupInfo, filter ? filter.search : '')
               : tokenToFilterBy.equals(syrupInfo.token)),
@@ -421,7 +422,7 @@ export function useOldSyrupInfo(
 
   const info = useMemo(() => {
     return Object.values(allOldSyrupInfos)
-      .filter((x) => x.ending <= currentTimestamp)
+      .filter((x) => x.ending <= currentTimestamp || x.ended)
       .slice(startIndex, endIndex)
       .filter((syrupInfo) =>
         tokenToFilterBy === undefined || tokenToFilterBy === null

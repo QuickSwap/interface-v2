@@ -351,7 +351,15 @@ const SwapBestTrade: React.FC<{
             !optimalRate.maxImpactReached &&
             priceImpactSeverity > 3 &&
             !isExpertMode) ||
-          !!paraswapCallbackError
+          !!paraswapCallbackError ||
+          (optimalRate &&
+            !parsedAmounts[Field.INPUT]?.equalTo(
+              JSBI.BigInt(optimalRate.srcAmount),
+            )) ||
+          (optimalRate &&
+            !parsedAmounts[Field.OUTPUT]?.equalTo(
+              JSBI.BigInt(optimalRate.destAmount),
+            ))
         );
       }
     } else {
@@ -360,16 +368,17 @@ const SwapBestTrade: React.FC<{
   }, [
     account,
     showWrap,
-    wrapInputError,
     noRoute,
     userHasSpecifiedInputOutput,
     showApproveFlow,
-    approval,
-    priceImpactSeverity,
+    wrapInputError,
     isValid,
-    paraswapCallbackError,
-    isExpertMode,
+    approval,
     optimalRate,
+    priceImpactSeverity,
+    isExpertMode,
+    parsedAmounts,
+    paraswapCallbackError,
   ]);
 
   const [
@@ -643,7 +652,7 @@ const SwapBestTrade: React.FC<{
               (mainPrice ? currencies[Field.INPUT] : currencies[Field.OUTPUT])
                 ?.symbol
             }{' '}
-            = {(mainPrice ? paraRate : 1 / paraRate).toLocaleString()}{' '}
+            = {(mainPrice ? paraRate : 1 / paraRate).toLocaleString('us')}{' '}
             {
               (mainPrice ? currencies[Field.OUTPUT] : currencies[Field.INPUT])
                 ?.symbol

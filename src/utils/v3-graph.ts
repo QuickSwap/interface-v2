@@ -870,8 +870,20 @@ export async function getPairInfoV3(address: string) {
     return [
       current
         ? {
-            token0: current.token0,
-            token1: current.token1,
+            token0: {
+              ...current.token0,
+              symbol:
+                current.token0.symbol.toLowerCase() === 'mimatic'
+                  ? 'MAI'
+                  : current.token0.symbol,
+            },
+            token1: {
+              ...current.token1,
+              symbol:
+                current.token1.symbol.toLowerCase() === 'mimatic'
+                  ? 'MAI'
+                  : current.token1.symbol,
+            },
             fee: current.fee,
             id: address,
             oneDayVolumeUSD,
@@ -1608,6 +1620,8 @@ const WETH_ADDRESSES = ['0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270'];
 export function formatTokenSymbol(address: string, symbol: string) {
   if (WETH_ADDRESSES.includes(address)) {
     return 'MATIC';
+  } else if (symbol.toLowerCase() === 'mimatic') {
+    return 'MAI';
   }
   return symbol;
 }

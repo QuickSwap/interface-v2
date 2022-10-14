@@ -137,7 +137,7 @@ export function FarmingMyFarms() {
               {farmedNFTs.map((el, i) => {
                 const date = new Date(
                   +el.enteredInEternalFarming * 1000,
-                ).toLocaleString();
+                ).toLocaleString('us');
                 return (
                   <div
                     className={'my-farms__position-card p-1 br-12 mt-1'}

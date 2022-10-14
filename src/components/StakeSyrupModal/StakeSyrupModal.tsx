@@ -218,7 +218,7 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
                 }}
               />
             </Box>
-            <small>{Math.min(stakePercent, 100).toLocaleString()}%</small>
+            <small>{Math.min(stakePercent, 100).toLocaleString('us')}%</small>
           </Box>
         </Box>
         <Box mt={2} className='flex items-center justify-between'>

@@ -19,7 +19,7 @@ const SyrupAPR: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
   return (
     <>
       <small className='text-success'>
-        {getTokenAPRSyrup(syrup).toLocaleString()}%
+        {getTokenAPRSyrup(syrup).toLocaleString('us')}%
       </small>
       {isDQUICKStakingToken && (
         <Box className='syrupAPR border-gray2'>

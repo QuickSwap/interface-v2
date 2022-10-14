@@ -217,7 +217,7 @@ const AnalyticsVolumeChart: React.FC = () => {
                     {`${getVolumePercent(volumeIndex) > 0 ? '+' : ''}
                       ${
                         getVolumePercent(volumeIndex) !== undefined
-                          ? getVolumePercent(volumeIndex).toLocaleString()
+                          ? getVolumePercent(volumeIndex).toLocaleString('us')
                           : '~'
                       }`}
                     %

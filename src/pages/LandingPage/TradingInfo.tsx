@@ -32,7 +32,7 @@ export const TradingInfo: React.FC<{ globalData: any; v3GlobalData: any }> = ({
           <h3>
             {(
               Number(globalData.oneDayTxns) + Number(v3GlobalData.txCount)
-            ).toLocaleString()}
+            ).toLocaleString('us')}
           </h3>
         ) : (
           <Skeleton variant='rect' width={100} height={45} />
@@ -59,7 +59,7 @@ export const TradingInfo: React.FC<{ globalData: any; v3GlobalData: any }> = ({
         {totalRewardsUSD ? (
           <Box display='flex'>
             <h6>$</h6>
-            <h3>{totalRewardsUSD.toLocaleString()}</h3>
+            <h3>{totalRewardsUSD.toLocaleString('us')}</h3>
           </Box>
         ) : (
           <Skeleton variant='rect' width={100} height={45} />
@@ -82,7 +82,7 @@ export const TradingInfo: React.FC<{ globalData: any; v3GlobalData: any }> = ({
       </Box>
       <Box className='tradingSection' pt='20px'>
         {dQUICKAPY ? (
-          <h3>{dQUICKAPY.toLocaleString()}%</h3>
+          <h3>{Number(dQUICKAPY).toLocaleString('us')}%</h3>
         ) : (
           <Skeleton variant='rect' width={100} height={45} />
         )}

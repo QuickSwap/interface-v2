@@ -406,6 +406,8 @@ export const getTokenInfo = async (
             currentLiquidityUSD ?? 0,
             oldLiquidityUSD ?? 0,
           );
+          data.symbol =
+            data.symbol.toLowerCase() === 'mimatic' ? 'MAI' : data.symbol;
 
           // new tokens
           if (!oneDayHistory && data) {
@@ -545,6 +547,8 @@ export const getTopTokens = async (
             currentLiquidityUSD ?? 0,
             oldLiquidityUSD ?? 0,
           );
+          data.symbol =
+            data.symbol.toLowerCase() === 'mimatic' ? 'MAI' : data.symbol;
 
           // new tokens
           if (!oneDayHistory && data) {
@@ -1195,6 +1199,20 @@ const parseData = (
   data.oneDayVolumeUntracked = oneDayVolumeUntracked;
   data.oneWeekVolumeUntracked = oneWeekVolumeUntracked;
   data.volumeChangeUntracked = volumeChangeUntracked;
+  data.token0 = {
+    ...data.token0,
+    symbol:
+      data.token0.symbol.toLowerCase() === 'mimatic'
+        ? 'MAI'
+        : data.token0.symbol,
+  };
+  data.token1 = {
+    ...data.token1,
+    symbol:
+      data.token1.symbol.toLowerCase() === 'mimatic'
+        ? 'MAI'
+        : data.token1.symbol,
+  };
 
   // set liquidity properties
   data.trackedReserveUSD = data.trackedReserveETH * ethPrice;
@@ -1744,7 +1762,7 @@ export function getFormattedPrice(price: number) {
     return '>-0.001';
   } else {
     const beforeSign = price > 0 ? '+' : '';
-    return beforeSign + price.toLocaleString();
+    return beforeSign + price.toLocaleString('us');
   }
 }
 
@@ -1783,7 +1801,7 @@ export function formatAPY(apy: number) {
   if (apy > 100000000) {
     return '>100000000';
   } else {
-    return apy.toLocaleString();
+    return apy.toLocaleString('us');
   }
 }
 
@@ -1797,7 +1815,7 @@ export function formatNumber(
   if (absNumber > 0) {
     const digits = Math.ceil(Math.log10(1 / absNumber));
     if (digits < 3) {
-      return Number(unformatted).toLocaleString();
+      return Number(unformatted).toLocaleString('us');
     } else {
       return Number(unformatted).toFixed(digits + showDigits);
     }
@@ -1951,7 +1969,7 @@ export function useLairDQUICKAPY(isNew: boolean, lair?: LairInfo) {
   if (temp > 100) {
     return '> 10000';
   } else {
-    return Number(temp * 100).toLocaleString();
+    return Number(temp * 100).toLocaleString('us');
   }
 }
 
@@ -2094,7 +2112,7 @@ export function formatTokenAmount(
   if (!amount) return '-';
   const amountStr = amount.toExact();
   if (Math.abs(Number(amountStr)) > 1) {
-    return Number(amountStr).toLocaleString();
+    return Number(amountStr).toLocaleString('us');
   }
   return amount.toSignificant(digits);
 }
@@ -2114,7 +2132,7 @@ export function formatMulDivTokenAmount(
   if (operator === 'mul') resultAmount = exactAmount * Number(otherAmount);
   else resultAmount = exactAmount / Number(otherAmount);
 
-  if (Math.abs(resultAmount) > 1) return resultAmount.toLocaleString();
+  if (Math.abs(resultAmount) > 1) return resultAmount.toLocaleString('us');
 
   if (operator === 'mul')
     return amount.multiply(otherAmount.toString()).toSignificant(digits);
@@ -2135,7 +2153,7 @@ export function getUSDString(usdValue?: CurrencyAmount) {
   if (!usdValue) return '$0';
   const value = Number(usdValue.toExact());
   if (value > 0 && value < 0.001) return '< $0.001';
-  return `$${value.toLocaleString()}`;
+  return `$${value.toLocaleString('us')}`;
 }
 
 export function getEarnedUSDSyrup(syrup?: SyrupInfo) {
@@ -2143,7 +2161,7 @@ export function getEarnedUSDSyrup(syrup?: SyrupInfo) {
   const earnedUSD =
     Number(syrup.earnedAmount.toExact()) * Number(syrup.rewardTokenPriceinUSD);
   if (earnedUSD > 0 && earnedUSD < 0.001) return '< $0.001';
-  return `$${earnedUSD.toLocaleString()}`;
+  return `$${earnedUSD.toLocaleString('us')}`;
 }
 
 export function getEarnedUSDLPFarm(stakingInfo: StakingInfo | undefined) {
@@ -2153,7 +2171,7 @@ export function getEarnedUSDLPFarm(stakingInfo: StakingInfo | undefined) {
   if (earnedUSD < 0.001 && earnedUSD > 0) {
     return '< $0.001';
   }
-  return `$${earnedUSD.toLocaleString()}`;
+  return `$${earnedUSD.toLocaleString('us')}`;
 }
 
 export function getEarnedUSDDualFarm(stakingInfo: DualStakingInfo | undefined) {
@@ -2167,7 +2185,7 @@ export function getEarnedUSDDualFarm(stakingInfo: DualStakingInfo | undefined) {
   if (earnedUSD < 0.001 && earnedUSD > 0) {
     return '< $0.001';
   }
-  return `$${earnedUSD.toLocaleString()}`;
+  return `$${earnedUSD.toLocaleString('us')}`;
 }
 
 export function isSupportedNetwork(ethereum: any) {

@@ -1,3 +1,4 @@
+import { GlobalValue } from 'constants/index';
 import {
   PoolDirectoryV1,
   PoolAsset,
@@ -125,7 +126,10 @@ export const fetchPoolData = async (
 
   return {
     poolId,
-    pool,
+    pool: {
+      ...pool,
+      name: pool.name.replace('IB', 'Interest Bearing'),
+    },
     summary,
     assets: assets
       .sort((a, b) => (b.liquidityUSD > a.liquidityUSD ? 1 : -1))
@@ -136,7 +140,8 @@ export const fetchPoolData = async (
             .replace('Uniswap', '')
             .replace('/', '-'),
           underlyingSymbol:
-            asset.underlyingSymbol.toLowerCase() === 'mimatic'
+            asset.underlyingToken.toLowerCase() ===
+            GlobalValue.tokens.COMMON.MI.address.toLowerCase()
               ? 'MAI'
               : asset.underlyingSymbol,
         };

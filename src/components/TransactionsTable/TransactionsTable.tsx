@@ -127,7 +127,7 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({ data }) => {
         <Divider />
         <Box className='mobileRow'>
           <p>{t('totalValue')}</p>
-          <p>${Number(txn.amountUSD).toLocaleString()}</p>
+          <p>${Number(txn.amountUSD).toLocaleString('us')}</p>
         </Box>
         <Box className='mobileRow'>
           <p>{t('tokenAmount')}</p>
@@ -185,7 +185,7 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({ data }) => {
         ),
       },
       {
-        html: <p>${Number(txn.amountUSD).toLocaleString()}</p>,
+        html: <p>${Number(txn.amountUSD).toLocaleString('us')}</p>,
       },
       {
         html: (

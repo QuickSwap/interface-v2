@@ -4,33 +4,21 @@ import {
   TransactionResponse,
   TransactionRequest,
 } from '@ethersproject/providers';
-import {
-  JSBI,
-  Percent,
-  Router,
-  SwapParameters,
-  Trade,
-  TradeType,
-} from '@uniswap/sdk';
+import { JSBI, SwapParameters, Trade } from '@uniswap/sdk';
 import { useMemo } from 'react';
-import { GlobalConst, GlobalValue } from 'constants/index';
+import { GlobalConst } from 'constants/index';
 import { useTransactionAdder } from 'state/transactions/hooks';
 import {
-  calculateGasMargin,
-  isZero,
   isAddress,
   shortenAddress,
-  formatTokenAmount,
   basisPointsToPercent,
-  getProviderOrSigner,
   getSigner,
 } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import useENS from './useENS';
 import { OptimalRate } from 'paraswap-core';
-import { getBestTradeCurrencyAddress, useParaswap } from './useParaswap';
+import { useParaswap } from './useParaswap';
 import { SwapSide } from '@paraswap/sdk';
-import { useExpertModeManager } from 'state/user/hooks';
 export enum SwapCallbackState {
   INVALID,
   LOADING,
@@ -87,7 +75,6 @@ export function useParaswapCallback(
   const recipient =
     recipientAddressOrName === null ? account : recipientAddress;
 
-  const [isExpertMode] = useExpertModeManager();
   return useMemo(() => {
     if (!trade || !priceRoute || !library || !account || !chainId) {
       return {
@@ -160,7 +147,11 @@ export function useParaswapCallback(
             const outputAmount =
               Number(priceRoute.destAmount) / 10 ** priceRoute.destDecimals;
 
-            const base = `Swap ${inputAmount.toLocaleString()} ${inputSymbol} for ${outputAmount.toLocaleString()} ${outputSymbol}`;
+            const base = `Swap ${inputAmount.toLocaleString(
+              'us',
+            )} ${inputSymbol} for ${outputAmount.toLocaleString(
+              'us',
+            )} ${outputSymbol}`;
             const withRecipient =
               recipient === account
                 ? base

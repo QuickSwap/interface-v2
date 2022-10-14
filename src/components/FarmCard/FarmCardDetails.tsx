@@ -283,8 +283,11 @@ const FarmCardDetails: React.FC<{
                   <small className='text-secondary'>{t('rewards')}</small>
                   <Box textAlign='right'>
                     <small>
-                      ${(isLPFarm ? lpRewards : dualRewards).toLocaleString()} /
-                      {t('day')}
+                      $
+                      {(isLPFarm ? lpRewards : dualRewards).toLocaleString(
+                        'us',
+                      )}{' '}
+                      /{t('day')}
                     </small>
                     <br />
                     {isLPFarm ? (
