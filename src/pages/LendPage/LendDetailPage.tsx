@@ -137,27 +137,6 @@ const LendDetailPage: React.FC = () => {
       ),
     },
     {
-      label: t('platformFee'),
-      data: poolData
-        ? poolData.assets.length > 0
-          ? (Number(poolData.assets[0].fuseFee.toString()) / 1e16).toFixed(2) +
-            '%'
-          : '10%'
-        : undefined,
-    },
-    {
-      label: t('averageAdminFee'),
-      data: poolData
-        ? poolData.assets
-            .reduce(
-              (a, b, _, { length }) =>
-                a + Number(b.adminFee.toString()) / 1e16 / length,
-              0,
-            )
-            .toLocaleString('us')
-        : undefined,
-    },
-    {
       label: t('closeFactor'),
       data: extraPoolData ? extraPoolData.closeFactor / 1e16 + '%' : undefined,
     },
@@ -314,6 +293,9 @@ const LendDetailPage: React.FC = () => {
                     </TableHead>
                     <TableBody>
                       {poolData?.assets.map((asset) => {
+                        if (asset.isSupplyPaused) {
+                          return <></>;
+                        }
                         return (
                           <TableRow key={asset.cToken.address}>
                             <TableCell>
