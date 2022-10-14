@@ -227,6 +227,11 @@ const App: React.FC = () => {
                           to={`${process.env.REACT_APP_PREDICTIONS_URL}`}
                         ></RedirectExternal>
                       </Route>
+                      <Route exact path='/gamehub'>
+                        <RedirectExternal
+                          to={`${process.env.REACT_APP_GAMEHUB_URL}`}
+                        ></RedirectExternal>
+                      </Route>
                       <Route exact path='/analytics/:version?'>
                         <PageLayout>
                           <AnalyticsHeader />
