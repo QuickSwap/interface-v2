@@ -116,22 +116,9 @@ export function useParaswapCallback(
           .multiply(JSBI.BigInt(10 ** trade.outputAmount.currency.decimals));
 
         const referrer = 'quickswapv3';
-        const taxTokens = [
-          '0x37eb60f78e06c4bb2a5f836b0fc6bccbbaa995b3',
-          '0xf0f9d895aca5c8678f706fb8216fa22957685a13',
-        ];
 
         const srcToken = priceRoute.srcToken;
         const destToken = priceRoute.destToken;
-
-        if (
-          taxTokens.includes(srcToken.toLowerCase()) ||
-          taxTokens.includes(destToken.toLowerCase())
-        ) {
-          throw new Error(
-            'For tax or rebase tokens, switch to V2 instead of best trade',
-          );
-        }
 
         //TODO: we need to support max impact
         if (minDestAmount.greaterThan(JSBI.BigInt(priceRoute.destAmount))) {
@@ -160,7 +147,11 @@ export function useParaswapCallback(
             const outputAmount =
               Number(priceRoute.destAmount) / 10 ** priceRoute.destDecimals;
 
-            const base = `Swap ${inputAmount.toLocaleString()} ${inputSymbol} for ${outputAmount.toLocaleString()} ${outputSymbol}`;
+            const base = `Swap ${inputAmount.toLocaleString(
+              'us',
+            )} ${inputSymbol} for ${outputAmount.toLocaleString(
+              'us',
+            )} ${outputSymbol}`;
             const withRecipient =
               recipient === account
                 ? base

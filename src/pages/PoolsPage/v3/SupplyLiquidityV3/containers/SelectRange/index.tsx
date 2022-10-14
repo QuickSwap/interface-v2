@@ -50,10 +50,11 @@ export function SelectRange({
   const isStablecoinPair = useMemo(() => {
     if (!currencyA || !currencyB) return false;
 
+    const DAI = toToken(GlobalValue.tokens.COMMON.DAI);
     const MAI = toToken(GlobalValue.tokens.COMMON.MI);
     const USDC = toToken(GlobalValue.tokens.COMMON.USDC);
     const USDT = toToken(GlobalValue.tokens.COMMON.USDT);
-    const stablecoins = [USDC.address, USDT.address, MAI.address];
+    const stablecoins = [DAI.address, USDC.address, USDT.address, MAI.address];
 
     return (
       stablecoins.includes(currencyA.wrapped.address) &&

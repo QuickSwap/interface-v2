@@ -93,7 +93,7 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
           {t('balance')}: {formatTokenAmount(selectedCurrencyBalance)}
         </small>
         <small className='text-secondary'>
-          ${(usdPrice * Number(amount)).toLocaleString()}
+          ${(usdPrice * Number(amount)).toLocaleString('us')}
         </small>
       </Box>
     </Box>

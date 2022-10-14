@@ -61,12 +61,13 @@ const RewardSliderItem: React.FC<RewardSliderItemProps> = ({
       </Box>
       <Box className='row'>
         <p className='text-gray22'>{t('24hFees')}</p>
-        <p>${(info?.oneDayFee ?? 0).toLocaleString()}</p>
+        <p>${(info?.oneDayFee ?? 0).toLocaleString('us')}</p>
       </Box>
       <Box className='row'>
         <p className='text-gray22'>{t('rewards')}</p>
         <p>
-          ${(lprewards ? lprewards : dualrewards).toLocaleString()} / {t('day')}
+          ${(lprewards ? lprewards : dualrewards).toLocaleString('us')} /{' '}
+          {t('day')}
         </p>
       </Box>
       <Box className='row'>

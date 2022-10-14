@@ -196,7 +196,23 @@ export function useFarmingSubgraph() {
         throw new Error(`${error.name} ${error.message}`);
       }
 
-      return pools[0];
+      return {
+        ...pools[0],
+        token0: {
+          ...pools[0].token0,
+          symbol:
+            pools[0].token0.symbol.toLowerCase() === 'mimatic'
+              ? 'MAI'
+              : pools[0].token0.symbol,
+        },
+        token1: {
+          ...pools[0].token1,
+          symbol:
+            pools[0].token1.symbol.toLowerCase() === 'mimatic'
+              ? 'MAI'
+              : pools[0].token1.symbol,
+        },
+      };
     } catch (err) {
       throw new Error('Fetch pools ' + err);
     }
