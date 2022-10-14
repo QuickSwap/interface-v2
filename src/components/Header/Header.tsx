@@ -78,11 +78,6 @@ const Header: React.FC = () => {
       id: 'dragons-page-link',
     },
     {
-      link: '/convert',
-      text: t('convert'),
-      id: 'convert-quick',
-    },
-    {
       link: '/predictions',
       text: 'Predictions',
       id: 'predictions-page-link',
@@ -91,10 +86,23 @@ const Header: React.FC = () => {
       isNew: true,
     },
     {
+      link: '/gamehub',
+      text: 'GameHub',
+      id: 'gamehub-page-link',
+      isExternal: true,
+      externalLink: process?.env?.REACT_APP_GAMEHUB_URL || '',
+      isNew: true,
+    },
+    {
       link: '/lend',
       text: t('lend'),
       id: 'lend-page-link',
       isNew: true,
+    },
+    {
+      link: '/convert',
+      text: t('convert'),
+      id: 'convert-quick',
     },
     {
       link: `/analytics${isV3 ? '/v3' : ''}`,
