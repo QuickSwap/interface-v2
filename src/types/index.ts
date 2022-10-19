@@ -24,6 +24,8 @@ export interface FarmListInfo {
   readonly logoURI?: string;
 }
 
+export interface CNTFarmListInfo extends FarmListInfo {}
+
 export interface SyrupListInfo {
   readonly name: string;
   readonly timestamp: string;
@@ -181,6 +183,8 @@ export interface DualStakingRaw {
   link: string;
 }
 
+export type OtherStackingRaw = StakingRaw | DualStakingRaw;
+
 export interface DualStakingBasic {
   tokens: [Token, Token];
   stakingRewardAddress: string;
@@ -216,6 +220,8 @@ export interface DualStakingInfo extends CommonStakingInfo {
   rewardTokenAPrice: number;
   rewardTokenBPrice: number;
 }
+
+export type OtherStackingInfo = StakingInfo | DualStakingInfo;
 
 export interface SyrupInfo {
   // the address of the reward contract

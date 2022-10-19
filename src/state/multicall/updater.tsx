@@ -31,7 +31,6 @@ async function fetchChunk(
   chunk: Call[],
   blockNumber: number,
 ): Promise<{ success: boolean; returnData: string }[]> {
-  console.debug('Fetching chunk', chunk, blockNumber);
   try {
     const { returnData } = await multicall.callStatic.tryBlockAndAggregate(
       false,

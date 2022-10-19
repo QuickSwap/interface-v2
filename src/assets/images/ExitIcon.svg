@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20">
+    <defs>
+        <clipPath id="w1tvmy8u2a">
+            <path data-name="Rectangle 21243" style="fill:current" d="M0 0h11.6v19.6H0z"/>
+        </clipPath>
+    </defs>
+    <g data-name="Group 22803">
+        <g data-name="Layer 2">
+            <g data-name="invisible box">
+                <path data-name="Rectangle 21240" style="fill:none" d="M0 0h20v20H0z"/>
+            </g>
+            <g data-name="Layer 6">
+                <g data-name="Group 22800">
+                    <path data-name="Path 12005" d="m25.769 17.224-2.961-3a.787.787 0 0 0-1.012-.075.712.712 0 0 0-.075 1.124L23.445 17h-8.7a.75.75 0 1 0 0 1.5h8.7l-1.724 1.724a.712.712 0 0 0 .075 1.124.787.787 0 0 0 1.012-.075l2.961-3a.712.712 0 0 0 0-1.049z" transform="translate(-7.166 -8.168)" style="fill:current"/>
+                </g>
+            </g>
+        </g>
+        <g data-name="Group 22802">
+            <g data-name="Group 22801" style="clip-path:url(#w1tvmy8u2a)">
+                <path data-name="Path 12006" d="M8.8 19.6h-6A2.8 2.8 0 0 1 0 16.8v-14A2.8 2.8 0 0 1 2.8 0h6a2.8 2.8 0 0 1 2.8 2.8v2.75H10V2.8a1.2 1.2 0 0 0-1.2-1.2h-6a1.2 1.2 0 0 0-1.2 1.2v14A1.2 1.2 0 0 0 2.8 18h6a1.2 1.2 0 0 0 1.2-1.2v-3.25h1.6v3.25a2.8 2.8 0 0 1-2.8 2.8" style="fill:current"/>
+            </g>
+        </g>
+    </g>
+</svg>

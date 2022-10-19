@@ -14,6 +14,7 @@ import mint from './mint/reducer';
 import mintV3 from './mint/v3/reducer';
 import lists from './lists/reducer';
 import farms from './farms/reducer';
+import cntFarms from './cnt/reducer';
 import dualFarms from './dualfarms/reducer';
 import syrups from './syrups/reducer';
 import burn from './burn/reducer';
@@ -32,6 +33,7 @@ const PERSISTED_KEYS: string[] = [
   'lists',
   'farms',
   'dualFarms',
+  'cntFarms',
   'syrups',
   'analytics',
   ...GELATO_PERSISTED_KEYS,
@@ -53,6 +55,7 @@ const store = configureStore({
     lists,
     farms,
     dualFarms,
+    cntFarms,
     syrups,
     analytics,
     ads,

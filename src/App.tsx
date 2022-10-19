@@ -60,6 +60,7 @@ import UserUpdater from 'state/user/updater';
 import MulticallUpdater from 'state/multicall/updater';
 import MultiCallV3Updater from 'state/multicall/v3/updater';
 import FarmUpdater from 'state/farms/updater';
+import CNTFarmUpdater from 'state/cnt/updater';
 import DualFarmUpdater from 'state/dualfarms/updater';
 import SyrupUpdater from 'state/syrups/updater';
 import AnalyticsUpdater from 'state/analytics/updater';
@@ -103,6 +104,7 @@ function Updaters() {
       <MultiCallV3Updater />
       <UserUpdater />
       <FarmUpdater />
+      <CNTFarmUpdater />
       <DualFarmUpdater />
       <SyrupUpdater />
       <AnalyticsUpdater />
