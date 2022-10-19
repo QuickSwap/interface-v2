@@ -177,6 +177,49 @@ export const FETCH_POOL = () => gql`
   }
 `;
 
+export const FETCH_POOL_FROM_TOKENS = () => gql`
+  query fetchPoolFromTokens($token0: String, $token1: String) {
+    pools0: pools(where: { token0: $token0, token1: $token1 }) {
+      id
+      fee
+      token0 {
+        id
+        decimals
+        symbol
+      }
+      token1 {
+        id
+        decimals
+        symbol
+      }
+      sqrtPrice
+      liquidity
+      tick
+      feesUSD
+      untrackedFeesUSD
+    }
+    pools1: pools(where: { token0: $token1, token1: $token0 }) {
+      id
+      fee
+      token0 {
+        id
+        decimals
+        symbol
+      }
+      token1 {
+        id
+        decimals
+        symbol
+      }
+      sqrtPrice
+      liquidity
+      tick
+      feesUSD
+      untrackedFeesUSD
+    }
+  }
+`;
+
 export const CHART_FEE_POOL_DATA = () => gql`
   query feeHourData(
     $pool: String

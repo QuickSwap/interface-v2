@@ -333,12 +333,16 @@ export async function getTopTokensV3(
       const oneDay = parsedTokens24[address];
       const twoDay = parsedTokens48[address];
 
-      const manageUntrackedVolume =
-        +current.volumeUSD <= 1 ? 'untrackedVolumeUSD' : 'volumeUSD';
-      const manageUntrackedTVL =
-        +current.totalValueLockedUSD <= 1
+      const manageUntrackedVolume = current
+        ? +current.volumeUSD <= 1
+          ? 'untrackedVolumeUSD'
+          : 'volumeUSD'
+        : '';
+      const manageUntrackedTVL = current
+        ? +current.totalValueLockedUSD <= 1
           ? 'totalValueLockedUSDUntracked'
-          : 'totalValueLockedUSD';
+          : 'totalValueLockedUSD'
+        : '';
 
       const [oneDayVolumeUSD, volumeUSDChange] =
         current && oneDay && twoDay

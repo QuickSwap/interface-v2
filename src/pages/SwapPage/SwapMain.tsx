@@ -24,9 +24,10 @@ const SwapMain: React.FC = () => {
   const [openSettingsModal, setOpenSettingsModal] = useState(false);
   const { isProMode, updateIsProMode } = useIsProMode();
 
-  const { isV3, updateIsV3 } = useIsV3();
+  const { updateIsV3 } = useIsV3();
   const params: any = useParams();
   const isOnV3 = params ? params.version === 'v3' : false;
+  const isOnV2 = params ? params.version === 'v2' : false;
   const parsedQuery = useParsedQueryString();
   const currency0Id =
     parsedQuery && (parsedQuery.currency0 || parsedQuery.inputCurrency)
@@ -38,16 +39,17 @@ const SwapMain: React.FC = () => {
       : undefined;
   const currency0 = useCurrency(currency0Id);
   const currency1 = useCurrency(currency1Id);
-  const swapMode = parsedQuery ? parsedQuery.mode : '';
   const { t } = useTranslation();
 
   useEffect(() => {
     updateIsV3(isOnV3);
     if (isOnV3) {
       setSwapIndex(SWAP_V3);
+    } else if (isOnV2) {
+      setSwapIndex(SWAP_NORMAL);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOnV3]);
+  }, [isOnV3, isOnV2]);
 
   return (
     <>
