@@ -257,8 +257,6 @@ export function SelectRange({
     currentPriceInUSDB,
   ]);
 
-  console.log('ccc', minRangeLength);
-
   return (
     <Box>
       <small className='weight-600'>Select a range</small>

@@ -374,7 +374,7 @@ const AnalyticsPairDetails: React.FC = () => {
                     </Link>{' '}
                     /{' '}
                     <Link
-                      to={`/analytics/${version}token/${pairData.token1.id}`}
+                      to={`/analytics/${version}/token/${pairData.token1.id}`}
                     >
                       {pairData.token1.symbol}
                     </Link>
