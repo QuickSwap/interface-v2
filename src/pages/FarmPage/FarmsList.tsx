@@ -7,7 +7,7 @@ import {
   useStakingInfo,
   useOldStakingInfo,
   useDualStakingInfo,
-  useOtherLpStackingInfo,
+  useCNTStakingInfo,
 } from 'state/stake/hooks';
 import {
   StakingInfo,
@@ -96,7 +96,7 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
     { search: farmSearch, isStaked: stakedOnly, isEndedFarm },
   );
 
-  const addedOtherLpStackingInfos = useOtherLpStackingInfo(
+  const addedCNTStakingInfos = useCNTStakingInfo(
     chainIdOrDefault,
     null,
     farmIndex === GlobalConst.farmIndex.LPFARM_INDEX ? 0 : undefined,
@@ -302,7 +302,7 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
   ]);
 
   const sortedOtherLpStakingInfo = useMemo(() => {
-    const otherLpStackingInfo = addedOtherLpStackingInfos.filter(
+    const otherLpStackingInfo = addedCNTStakingInfos.filter(
       (info) => info.ended === isEndedFarm,
     );
     return otherLpStackingInfo.sort((a, b) => {
@@ -320,7 +320,7 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
       return 1;
     });
   }, [
-    addedOtherLpStackingInfos,
+    addedCNTStakingInfos,
     isEndedFarm,
     sortBy,
     sortByToken,
@@ -584,6 +584,7 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
             key={index}
             stakingInfo={info}
             stakingAPY={getPoolApy(info?.pair)}
+            isLPFarm={true}
           />
         ))}
       <div ref={loadMoreRef} />

@@ -11,6 +11,7 @@ import { AdsSlider, CustomSwitch } from 'components';
 import { useTranslation } from 'react-i18next';
 import 'pages/styles/farm.scss';
 import { useDefaultFarmList } from 'state/farms/hooks';
+import { useDefaultCNTFarmList } from 'state/cnt/hooks';
 import { useDefaultDualFarmList } from 'state/dualfarms/hooks';
 import { ChainId } from '@uniswap/sdk';
 
@@ -23,6 +24,7 @@ const FarmPage: React.FC = () => {
   );
   const chainIdOrDefault = chainId ?? ChainId.MATIC;
   const lpFarms = useDefaultFarmList();
+  const cntFarms = useDefaultCNTFarmList(chainIdOrDefault);
   const dualFarms = useDefaultDualFarmList();
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
@@ -34,8 +36,13 @@ const FarmPage: React.FC = () => {
     const dualPairLists = Object.values(dualFarms[chainIdOrDefault]).map(
       (item) => item.pair,
     );
-    return stakingPairLists.concat(dualPairLists);
-  }, [chainIdOrDefault, lpFarms, dualFarms]);
+
+    const cntPairLists = Object.values(cntFarms[chainIdOrDefault]).map(
+      (item) => item.pair,
+    );
+
+    return stakingPairLists.concat(dualPairLists).concat(cntPairLists);
+  }, [chainIdOrDefault, lpFarms, dualFarms, cntFarms]);
 
   useEffect(() => {
     getBulkPairData(pairLists).then((data) => setBulkPairs(data));

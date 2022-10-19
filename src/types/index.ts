@@ -24,7 +24,7 @@ export interface FarmListInfo {
   readonly logoURI?: string;
 }
 
-export type OtherFarmListInfo = FarmListInfo | DualFarmListInfo;
+export interface CNTFarmListInfo extends FarmListInfo {}
 
 export interface SyrupListInfo {
   readonly name: string;
