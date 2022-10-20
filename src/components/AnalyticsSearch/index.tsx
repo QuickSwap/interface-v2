@@ -3,16 +3,15 @@ import { useHistory } from 'react-router-dom';
 import { Box } from '@material-ui/core';
 import { ReactComponent as SearchIcon } from 'assets/images/SearchIcon.svg';
 import { clientV2, clientV3 } from 'apollo/client';
-import { TOKEN_SEARCH, PAIR_SEARCH, TOKEN_INFO_OLD } from 'apollo/queries';
+import { TOKEN_SEARCH, PAIR_SEARCH } from 'apollo/queries';
 import {
   getAllTokensOnUniswap,
   getAllPairsOnUniswap,
-  getBlockFromTimestamp,
   getTokenFromAddress,
 } from 'utils';
 import { GlobalConst, MATIC_CHAIN } from 'constants/index';
 import { CurrencyLogo, DoubleCurrencyLogo } from 'components';
-import { ChainId, Token } from '@uniswap/sdk';
+import { Token } from '@uniswap/sdk';
 import { getAddress } from '@ethersproject/address';
 import 'components/styles/SearchWidget.scss';
 import { useTranslation } from 'react-i18next';
@@ -22,11 +21,7 @@ import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { useIsV3 } from 'state/application/hooks';
 import { getAllPairsV3, getAllTokensV3 } from 'utils/v3-graph';
-import {
-  PAIR_SEARCH_V3,
-  TOKEN_INFO_OLD_V3,
-  TOKEN_SEARCH_V3,
-} from 'apollo/queries-v3';
+import { PAIR_SEARCH_V3, TOKEN_SEARCH_V3 } from 'apollo/queries-v3';
 dayjs.extend(utc);
 
 const AnalyticsSearch: React.FC = () => {
