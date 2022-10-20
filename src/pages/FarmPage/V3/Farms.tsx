@@ -20,12 +20,12 @@ export default function Farms() {
   const v3FarmCategories = useMemo(
     () => [
       {
-        text: t('My Farms'),
+        text: t('myFarms'),
         id: 0,
         link: 'my-farms',
       },
       {
-        text: t('Eternal Farms'),
+        text: t('farms'),
         id: 1,
         link: 'eternal-farms',
       },

@@ -139,6 +139,7 @@
   "yourliquidityPools": "Your Liquidity Pools",
   "poolMissingComment": "Don’t see a pool you joined? <pspan>Import it</pspan>.<br/> Unstake your LP Tokens from Farms to see them here.",
   "farm": "Farm",
+  "farms": "Farms",
   "farmingApr": "Farming APR",
   "help": "Help",
   "lpMining": "LP Mining",
