@@ -7,10 +7,10 @@ import {
   ChainId,
 } from '@uniswap/sdk';
 import dayjs from 'dayjs';
-import { useMemo, useEffect } from 'react';
+import { useMemo, useEffect, useState } from 'react';
 import { usePairs } from 'data/Reserves';
 
-import { clientV2 } from 'apollo/client';
+import { clientV2, clientV3 } from 'apollo/client';
 import { GLOBAL_DATA, PAIRS_BULK, PAIRS_HISTORICAL_BULK } from 'apollo/queries';
 import { GlobalConst, GlobalValue } from 'constants/index';
 import {
@@ -57,6 +57,7 @@ import { useDefaultFarmList } from 'state/farms/hooks';
 import { useDefaultDualFarmList } from 'state/dualfarms/hooks';
 import { useDefaultSyrupList } from 'state/syrups/hooks';
 import { Contract } from '@ethersproject/contracts';
+import { GLOBAL_DATA_V3 } from 'apollo/queries-v3';
 
 const web3 = new Web3('https://polygon-rpc.com/');
 
@@ -703,6 +704,54 @@ const getOneDayVolume = async () => {
   return oneDayVolumeUSD;
 };
 
+const getOneDayVolumeV3 = async () => {
+  let data: any = {};
+  let oneDayData: any = {};
+
+  const current = await web3.eth.getBlockNumber();
+  const utcCurrentTime = dayjs();
+  const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix();
+
+  const oneDayOldBlock = await getBlockFromTimestamp(utcOneDayBack);
+
+  const result = await clientV3.query({
+    query: GLOBAL_DATA_V3(current),
+    fetchPolicy: 'network-only',
+  });
+
+  data =
+    result &&
+    result.data &&
+    result.data.factories &&
+    result.data.factories.length > 0
+      ? result.data.factories[0]
+      : undefined;
+
+  // fetch the historical data
+  const oneDayResult = await clientV3.query({
+    query: GLOBAL_DATA_V3(oneDayOldBlock),
+    fetchPolicy: 'network-only',
+  });
+  oneDayData =
+    oneDayResult &&
+    oneDayResult.data &&
+    oneDayResult.data.factories &&
+    oneDayResult.data.factories.length > 0
+      ? oneDayResult.data.factories[0]
+      : undefined;
+
+  let oneDayVolumeUSD: any = 0;
+
+  if (data && oneDayData) {
+    oneDayVolumeUSD = get2DayPercentChange(
+      data.totalVolumeUSD,
+      oneDayData.totalVolumeUSD ? oneDayData.totalVolumeUSD : 0,
+    );
+  }
+
+  return oneDayVolumeUSD;
+};
+
 const convertArrayToObject = (array: any, key: any) => {
   const initialValue = {};
   return array.reduce((obj: any, item: any) => {
@@ -1180,8 +1229,14 @@ function useLairInfo(
     accountArg,
   );
 
+  const [oneDayVolume, setOneDayVolume] = useState(0);
+
   useEffect(() => {
-    getOneDayVolume();
+    (async () => {
+      const v2OneDayVol = await getOneDayVolume();
+      const v3OneDayVol = await getOneDayVolumeV3();
+      setOneDayVolume(v2OneDayVol + v3OneDayVol);
+    })();
   }, []);
 
   return useMemo(() => {
@@ -1211,7 +1266,7 @@ function useLairInfo(
         dQuickToken,
         JSBI.BigInt(_dQuickTotalSupply?.result?.[0] ?? 0),
       ),
-      oneDayVol: oneDayVol,
+      oneDayVol: oneDayVolume,
     };
   }, [
     lairAddress,
@@ -1223,6 +1278,7 @@ function useLairInfo(
     quickToDQuick,
     dQuickToken,
     quickToken,
+    oneDayVolume,
   ]);
 }
 
