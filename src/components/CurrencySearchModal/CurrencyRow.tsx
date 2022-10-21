@@ -181,7 +181,9 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
                   }
                 }}
               >
-                <span>{customAdded ? `(${t('remove')})` : `(${t('add')}`}</span>
+                <span>
+                  {customAdded ? `(${t('remove')})` : `(${t('add')})`}
+                </span>
               </Box>
             </Box>
           )}

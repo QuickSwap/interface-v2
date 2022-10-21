@@ -1,7 +1,7 @@
+import React, { useCallback, useMemo } from 'react';
 import { Box } from '@material-ui/core';
 import CustomTabSwitch from 'components/v3/CustomTabSwitch';
 import useParsedQueryString from 'hooks/useParsedQueryString';
-import React, { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import EternalFarmsPage from 'pages/EternalFarmsPage';
@@ -15,17 +15,19 @@ export default function Farms() {
   const history = useHistory();
 
   const currentTabQueried =
-    parsedQuery && parsedQuery.tab ? (parsedQuery.tab as string) : 'my-farms';
+    parsedQuery && parsedQuery.tab
+      ? (parsedQuery.tab as string)
+      : 'eternal-farms';
 
   const v3FarmCategories = useMemo(
     () => [
       {
-        text: t('My Farms'),
+        text: t('myFarms'),
         id: 0,
         link: 'my-farms',
       },
       {
-        text: t('Eternal Farms'),
+        text: t('farms'),
         id: 1,
         link: 'eternal-farms',
       },

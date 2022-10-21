@@ -2,8 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { Box } from '@material-ui/core';
 import { ReactComponent as SettingsIcon } from 'assets/images/SettingsIcon.svg';
 import { useIsProMode, useIsV3 } from 'state/application/hooks';
-import useParsedQueryString from 'hooks/useParsedQueryString';
-import { useCurrency } from 'hooks/Tokens';
 import { Swap, SettingsModal, ToggleSwitch } from 'components';
 import {
   GelatoLimitOrderPanel,
@@ -28,17 +26,7 @@ const SwapMain: React.FC = () => {
   const params: any = useParams();
   const isOnV3 = params ? params.version === 'v3' : false;
   const isOnV2 = params ? params.version === 'v2' : false;
-  const parsedQuery = useParsedQueryString();
-  const currency0Id =
-    parsedQuery && (parsedQuery.currency0 || parsedQuery.inputCurrency)
-      ? ((parsedQuery.currency0 ?? parsedQuery.inputCurrency) as string)
-      : undefined;
-  const currency1Id =
-    parsedQuery && (parsedQuery.currency1 || parsedQuery.outputCurrency)
-      ? ((parsedQuery.currency1 ?? parsedQuery.outputCurrency) as string)
-      : undefined;
-  const currency0 = useCurrency(currency0Id);
-  const currency1 = useCurrency(currency1Id);
+
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -137,26 +125,9 @@ const SwapMain: React.FC = () => {
         )}
       </Box>
       <Box padding={isProMode ? '0 24px' : '0'} mt={3.5}>
-        {swapIndex === SWAP_BEST_TRADE && (
-          <SwapBestTrade
-            currency0={currency0 ?? undefined}
-            currency1={currency1 ?? undefined}
-          />
-        )}
-        {swapIndex === SWAP_NORMAL && (
-          <Swap
-            currency0={currency0 ?? undefined}
-            currency1={currency1 ?? undefined}
-          />
-        )}
-        {swapIndex === SWAP_V3 && (
-          <SwapV3Page
-            currency0={currency0Id}
-            currency1={
-              currency1Id?.toLowerCase() === 'eth' ? 'matic' : currency1Id
-            }
-          ></SwapV3Page>
-        )}
+        {swapIndex === SWAP_BEST_TRADE && <SwapBestTrade />}
+        {swapIndex === SWAP_NORMAL && <Swap />}
+        {swapIndex === SWAP_V3 && <SwapV3Page />}
         {swapIndex === SWAP_LIMIT && (
           <Box className='limitOrderPanel'>
             <GelatoLimitOrderPanel />

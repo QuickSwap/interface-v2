@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Box, useMediaQuery, useTheme } from '@material-ui/core';
 import { getBulkPairData } from 'state/stake/hooks';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
@@ -22,9 +22,6 @@ const FarmPage: React.FC = () => {
   const [bulkPairs, setBulkPairs] = useState<any>(null);
   const [farmIndex, setFarmIndex] = useState(
     GlobalConst.farmIndex.LPFARM_INDEX,
-  );
-  const [v3FarmIndex, setV3FarmIndex] = useState(
-    GlobalConst.v3FarmIndex.ETERNAL_FARMS_INDEX,
   );
   const chainIdOrDefault = chainId ?? ChainId.MATIC;
   const lpFarms = useDefaultFarmList();

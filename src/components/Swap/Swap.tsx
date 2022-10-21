@@ -1,10 +1,11 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
-import { Currency, CurrencyAmount, JSBI, Token, Trade } from '@uniswap/sdk';
+import { CurrencyAmount, JSBI, Trade, Token } from '@uniswap/sdk';
 import ReactGA from 'react-ga';
 import { ArrowDown } from 'react-feather';
 import { Box, Button, CircularProgress } from '@material-ui/core';
 import { useWalletModalToggle } from 'state/application/hooks';
 import {
+  useDefaultsFromURLSearch,
   useDerivedSwapInfo,
   useSwapActionHandlers,
   useSwapState,
@@ -14,7 +15,6 @@ import {
   useUserSlippageTolerance,
 } from 'state/user/hooks';
 import { Field } from 'state/swap/actions';
-import { useAllTokens } from 'hooks/Tokens';
 import {
   CurrencyInput,
   ConfirmSwapModal,
@@ -42,12 +42,49 @@ import { ReactComponent as PriceExchangeIcon } from 'assets/images/PriceExchange
 import { ReactComponent as ExchangeIcon } from 'assets/images/ExchangeIcon.svg';
 import 'components/styles/Swap.scss';
 import { useTranslation } from 'react-i18next';
+import TokenWarningModal from 'components/v3/TokenWarningModal';
+import { useHistory } from 'react-router-dom';
+import { useAllTokens, useCurrency } from 'hooks/Tokens';
 
 const Swap: React.FC<{
-  currency0?: Currency;
-  currency1?: Currency;
   currencyBgClass?: string;
-}> = ({ currency0, currency1, currencyBgClass }) => {
+}> = ({ currencyBgClass }) => {
+  const loadedUrlParams = useDefaultsFromURLSearch();
+  const history = useHistory();
+
+  // token warning stuff
+  const [loadedInputCurrency, loadedOutputCurrency] = [
+    useCurrency(loadedUrlParams?.inputCurrencyId),
+    useCurrency(loadedUrlParams?.outputCurrencyId),
+  ];
+  const [dismissTokenWarning, setDismissTokenWarning] = useState<boolean>(
+    false,
+  );
+  const urlLoadedTokens: Token[] = useMemo(
+    () =>
+      [loadedInputCurrency, loadedOutputCurrency]?.filter(
+        (c): c is Token => c instanceof Token,
+      ) ?? [],
+    [loadedInputCurrency, loadedOutputCurrency],
+  );
+  const handleConfirmTokenWarning = useCallback(() => {
+    setDismissTokenWarning(true);
+  }, []);
+
+  // reset if they close warning without tokens in params
+  const handleDismissTokenWarning = useCallback(() => {
+    setDismissTokenWarning(true);
+    history.push('/swap/v2');
+  }, [history]);
+
+  // dismiss warning if all imported tokens are in active lists
+  const defaultTokens = useAllTokens();
+  const importTokensNotInDefault =
+    urlLoadedTokens &&
+    urlLoadedTokens.filter((token: Token) => {
+      return !Boolean(token.address in defaultTokens);
+    });
+
   const { t } = useTranslation();
   const { account } = useActiveWeb3React();
   const { independentField, typedValue, recipient } = useSwapState();
@@ -71,7 +108,6 @@ const Swap: React.FC<{
     currencies[Field.OUTPUT],
     typedValue,
   );
-  const allTokens = useAllTokens();
 
   const showWrap: boolean = wrapType !== WrapType.NOT_APPLICABLE;
   const tradesByVersion = {
@@ -330,19 +366,6 @@ const Swap: React.FC<{
     }
   };
 
-  useEffect(() => {
-    onCurrencySelection(Field.INPUT, Token.ETHER);
-  }, [onCurrencySelection, allTokens]);
-
-  useEffect(() => {
-    if (currency0) {
-      onCurrencySelection(Field.INPUT, currency0);
-    }
-    if (currency1) {
-      onCurrencySelection(Field.OUTPUT, currency1);
-    }
-  }, [onCurrencySelection, currency0, currency1]);
-
   const handleAcceptChanges = useCallback(() => {
     setSwapState({
       tradeToConfirm: trade,
@@ -454,6 +477,12 @@ const Swap: React.FC<{
 
   return (
     <Box>
+      <TokenWarningModal
+        isOpen={importTokensNotInDefault.length > 0 && !dismissTokenWarning}
+        tokens={importTokensNotInDefault}
+        onConfirm={handleConfirmTokenWarning}
+        onDismiss={handleDismissTokenWarning}
+      />
       {showConfirm && (
         <ConfirmSwapModal
           isOpen={showConfirm}
