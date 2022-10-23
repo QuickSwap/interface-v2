@@ -72,15 +72,12 @@ import { ReactComponent as ExchangeIcon } from 'assets/images/ExchangeIcon.svg';
 import { Box } from '@material-ui/core';
 import { StyledButton } from 'components/v3/Common/styledElements';
 
-const SwapV3Page: React.FC<{ currency0?: string; currency1?: string }> = ({
-  currency0,
-  currency1,
-}) => {
+const SwapV3Page: React.FC = () => {
   const { account } = useActiveWeb3React();
   const history = useHistory();
   const loadedUrlParams = useDefaultsFromURLSearch();
-  const inputCurrencyId = currency0 ?? loadedUrlParams?.inputCurrencyId;
-  const outputCurrencyId = currency1 ?? loadedUrlParams?.outputCurrencyId;
+  const inputCurrencyId = loadedUrlParams?.inputCurrencyId;
+  const outputCurrencyId = loadedUrlParams?.outputCurrencyId;
   const paramInputCurrency = useCurrency(inputCurrencyId);
   const paramOutputCurrency = useCurrency(outputCurrencyId);
   // token warning stuff

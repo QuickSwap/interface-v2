@@ -5,7 +5,13 @@ import { Contract } from '@ethersproject/contracts';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import weekOfYear from 'dayjs/plugin/weekOfYear';
-import { blockClient, clientV2, txClient } from 'apollo/client';
+import {
+  blockClient,
+  clientV2,
+  txClient,
+  clientV3,
+  farmingClient,
+} from 'apollo/client';
 import {
   GET_BLOCK,
   GLOBAL_DATA,
@@ -70,6 +76,10 @@ import { DualStakingBasic, StakingBasic } from 'types';
 import { AbstractConnector } from '@web3-react/abstract-connector';
 import { injected } from 'connectors';
 import Web3 from 'web3';
+import {
+  FETCH_ETERNAL_FARM_FROM_POOL,
+  FETCH_POOL_FROM_TOKENS,
+} from './graphql-queries';
 
 dayjs.extend(utc);
 dayjs.extend(weekOfYear);
@@ -2285,4 +2295,45 @@ export const convertNumbertoBN = (
     .add(
       web3.utils.toBN(Math.floor(decimalNumber * 10 ** decimals).toString()),
     );
+};
+
+export const getEternalFarmFromTokens = async (
+  token0: string,
+  token1: string,
+) => {
+  try {
+    const result = await clientV3.query({
+      query: FETCH_POOL_FROM_TOKENS(),
+      variables: { token0, token1 },
+      fetchPolicy: 'network-only',
+    });
+    const poolID =
+      result &&
+      result.data &&
+      result.data.pools0 &&
+      result.data.pools0.length > 0
+        ? result.data.pools0[0].id
+        : result &&
+          result.data &&
+          result.data.pools1 &&
+          result.data.pools1.length > 0
+        ? result.data.pools1[0].id
+        : undefined;
+    if (!poolID) return;
+    const eternalFarmResult = await farmingClient.query({
+      query: FETCH_ETERNAL_FARM_FROM_POOL([poolID]),
+      fetchPolicy: 'network-only',
+    });
+    const eternalFarm =
+      eternalFarmResult &&
+      eternalFarmResult.data &&
+      eternalFarmResult.data.eternalFarmings &&
+      eternalFarmResult.data.eternalFarmings.length > 0
+        ? eternalFarmResult.data.eternalFarmings[0]
+        : undefined;
+
+    return eternalFarm;
+  } catch (e) {
+    return;
+  }
 };

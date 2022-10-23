@@ -78,19 +78,19 @@ const Header: React.FC = () => {
       id: 'dragons-page-link',
     },
     {
+      link: '/gamehub',
+      text: 'Gaming Hub',
+      id: 'gamehub-page-link',
+      isExternal: true,
+      externalLink: process?.env?.REACT_APP_GAMEHUB_URL || '',
+      isNew: true,
+    },
+    {
       link: '/predictions',
       text: 'Predictions',
       id: 'predictions-page-link',
       isExternal: true,
       externalLink: process?.env?.REACT_APP_PREDICTIONS_URL || '',
-      isNew: true,
-    },
-    {
-      link: '/gamehub',
-      text: 'GameHub',
-      id: 'gamehub-page-link',
-      isExternal: true,
-      externalLink: process?.env?.REACT_APP_GAMEHUB_URL || '',
       isNew: true,
     },
     {
