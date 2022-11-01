@@ -21,7 +21,6 @@ const DragonPage: React.FC = () => {
 
   return (
     <Box width='100%' mb={3}>
-      <DragonAlert />
       <Grid container spacing={4}>
         <Grid item xs={12} sm={12} md={4}>
           {showNew && (
