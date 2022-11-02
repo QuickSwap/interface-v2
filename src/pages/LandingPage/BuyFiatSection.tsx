@@ -2,12 +2,13 @@ import React, { useState } from 'react';
 import { Button, Box } from '@material-ui/core';
 import FiatMask from 'assets/images/FiatMask.svg';
 import BuyWithFiat from 'assets/images/featured/BuywithFiat.svg';
-import { BuyFiatModal, MoonpayModal } from 'components';
+import { BuyFiatModal, MoonpayModal, BinanceModal } from 'components';
 import { useTranslation } from 'react-i18next';
 
 export const BuyFiatSection: React.FC = () => {
   const [openMenu, setOpenMenu] = useState(false);
   const [showMoonPayWidget, setShowMoonPayWidget] = useState(false);
+  const [showBinanceWidget, setShowBinanceWidgetWidget] = useState(false);
   const { t } = useTranslation();
 
   return (
@@ -18,12 +19,22 @@ export const BuyFiatSection: React.FC = () => {
           onClose={() => setShowMoonPayWidget(false)}
         />
       )}
+      {showBinanceWidget && (
+        <BinanceModal
+          open={showBinanceWidget}
+          onClose={() => setShowBinanceWidgetWidget(false)}
+        />
+      )}
       {openMenu && (
         <BuyFiatModal
           open={openMenu}
           onClose={() => setOpenMenu(false)}
           buyMoonpay={() => {
             setShowMoonPayWidget(true);
+            setOpenMenu(false);
+          }}
+          buyBinance={() => {
+            setShowBinanceWidgetWidget(true);
             setOpenMenu(false);
           }}
         />
