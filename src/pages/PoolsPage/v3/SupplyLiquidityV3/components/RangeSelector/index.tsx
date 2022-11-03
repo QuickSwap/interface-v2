@@ -249,7 +249,7 @@ function RangePart({
     initialTokenPrice,
     usdPriceA,
     tokenB?.wrapped.address,
-    USDC.address,
+    USDC_TOKEN.address,
     onUserInput,
     localUSDValue,
     tokenValue,
