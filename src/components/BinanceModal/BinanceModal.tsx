@@ -22,7 +22,11 @@ const BinanceModal: React.FC<BinanceModalProps> = ({ open, onClose }) => {
           allow='accelerometer; autoplay; camera; gyroscope; payment'
           frameBorder='0'
           height='600px'
-          src={`https://sandbox.bifinity.org/en/pre-connect?merchantCode=quickswap_test&timestamp=${new Date().getTime()}`}
+          src={`${
+            process.env.REACT_APP_BINANCE_CNT_URL
+          }/en/pre-connect?merchantCode=${
+            process.env.REACT_APP_BINANCE_MERCHANT_CODE
+          }&timestamp=${new Date().getTime()}`}
           width='100%'
         >
           <p>{t('notSupportIframe')}</p>
