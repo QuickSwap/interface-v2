@@ -72,5 +72,5 @@ export function useDensityChartData({
       error,
       formattedData: !isLoading && !isUninitialized ? formatData() : undefined,
     };
-  }, [isLoading, isUninitialized, isError, error, formatData, priceFormat]);
+  }, [isLoading, isUninitialized, isError, error, formatData]);
 }

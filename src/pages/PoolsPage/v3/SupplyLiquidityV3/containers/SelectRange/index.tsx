@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useMemo } from 'react';
+import React, { useCallback, useState, useMemo, useEffect } from 'react';
 import { IPresetArgs, PresetRanges } from '../../components/PresetRanges';
 import { RangeSelector } from '../../components/RangeSelector';
 import { Currency } from '@uniswap/sdk-core';
@@ -9,7 +9,6 @@ import {
   useRangeHopCallbacks,
   useV3MintActionHandlers,
   useV3MintState,
-  useInitialTokenPrice,
   useInitialUSDPrices,
 } from 'state/mint/v3/hooks';
 import useUSDCPrice, { useUSDCValue } from 'hooks/v3/useUSDCPrice';
@@ -24,7 +23,8 @@ import { Box } from '@material-ui/core';
 import { ReportProblemOutlined } from '@material-ui/icons';
 import { useActiveWeb3React } from 'hooks';
 import { ChainId } from '@uniswap/sdk';
-import { MI, USDC, USDT } from 'constants/v3/addresses';
+import { MI, USDC, USDT, DAI } from 'constants/v3/addresses';
+import { getEternalFarmFromTokens } from 'utils';
 
 interface IRangeSelector {
   currencyA: Currency | null | undefined;
@@ -50,7 +50,7 @@ export function SelectRange({
   //TODO - create one main isUSD
   const isUSD = useMemo(() => {
     return priceFormat === PriceFormats.USD;
-  }, []);
+  }, [priceFormat]);
 
   const isStablecoinPair = useMemo(() => {
     if (!currencyA || !currencyB) return false;
@@ -60,10 +60,12 @@ export function SelectRange({
     const USDT_TOKEN = USDT[chainIdToUse]
       ? toToken(USDT[chainIdToUse])
       : undefined;
+    const DAI_TOKEN = toToken(DAI[chainIdToUse]);
     const stablecoins = [
       USDC_TOKEN.address,
       USDT_TOKEN?.address,
       MAI_TOKEN?.address,
+      DAI_TOKEN.address,
     ];
 
     return (
@@ -108,15 +110,15 @@ export function SelectRange({
 
   const isSorted = useMemo(() => {
     return tokenA && tokenB && tokenA.sortsBefore(tokenB);
-  }, [tokenA, tokenB, mintInfo]);
+  }, [tokenA, tokenB]);
 
   const leftPrice = useMemo(() => {
     return isSorted ? priceLower : priceUpper?.invert();
-  }, [isSorted, priceLower, priceUpper, mintInfo]);
+  }, [isSorted, priceLower, priceUpper]);
 
   const rightPrice = useMemo(() => {
     return isSorted ? priceUpper : priceLower?.invert();
-  }, [isSorted, priceUpper, priceLower, mintInfo]);
+  }, [isSorted, priceUpper, priceLower]);
 
   const price = useMemo(() => {
     if (!mintInfo.price) return;
@@ -125,6 +127,40 @@ export function SelectRange({
       ? mintInfo.price.invert().toSignificant(5)
       : mintInfo.price.toSignificant(5);
   }, [mintInfo]);
+
+  const leftPricePercent =
+    leftPrice && price
+      ? ((Number(leftPrice.toSignificant(5)) - Number(price)) / Number(price)) *
+        100
+      : 0;
+  const rightPricePercent =
+    rightPrice && price
+      ? ((Number(rightPrice.toSignificant(5)) - Number(price)) /
+          Number(price)) *
+        100
+      : 0;
+
+  const currencyAID = currencyA?.wrapped.address.toLowerCase();
+  const currencyBID = currencyB?.wrapped.address.toLowerCase();
+
+  const [minRangeLength, setMinRangeLength] = useState<number | undefined>(
+    undefined,
+  );
+
+  useEffect(() => {
+    setMinRangeLength(undefined);
+    if (!currencyAID || !currencyBID) return;
+    (async () => {
+      const eternalFarm = await getEternalFarmFromTokens(
+        currencyAID,
+        currencyBID,
+      );
+      const minRangeLength = eternalFarm
+        ? Number(eternalFarm.minRangeLength) / 100
+        : undefined;
+      setMinRangeLength(minRangeLength);
+    })();
+  }, [currencyAID, currencyBID]);
 
   const currentPriceInUSD = useUSDCValue(
     tryParseAmount(Number(price).toFixed(5), currencyB ?? undefined),
@@ -150,6 +186,7 @@ export function SelectRange({
       dispatch(updateSelectedPreset({ preset: preset ? preset.type : null }));
 
       if (preset && preset.type === Presets.FULL) {
+        setFullRangeWarningShown(true);
         getSetFullRange();
       } else {
         setFullRangeWarningShown(false);
@@ -157,11 +194,10 @@ export function SelectRange({
         onRightRangeInput(preset ? String(+price * preset.max) : '');
       }
     },
-    [price],
+    [dispatch, getSetFullRange, onLeftRangeInput, onRightRangeInput, price],
   );
 
   const initialUSDPrices = useInitialUSDPrices();
-  const initialTokenPrice = useInitialTokenPrice();
 
   const currentPriceInUSDA = useUSDCValue(
     tryParseAmount(
@@ -224,10 +260,12 @@ export function SelectRange({
     }
   }, [
     mintInfo.price,
+    mintInfo.invertPrice,
+    initialUSDPrices.CURRENCY_A,
+    initialUSDPrices.CURRENCY_B,
     isUSD,
-    initialUSDPrices,
-    initialTokenPrice,
     currentPriceInUSDA,
+    currentPriceInUSDB,
   ]);
 
   return (
@@ -305,14 +343,29 @@ export function SelectRange({
           </button>
         </Box>
       )}
+      {leftPrice &&
+        rightPrice &&
+        minRangeLength !== undefined &&
+        rightPricePercent - leftPricePercent < minRangeLength && (
+          <Box className='pool-range-chart-warning'>
+            <Box className='pool-range-chart-warning-icon'>
+              <ReportProblemOutlined />
+            </Box>
+            <span>
+              Warning: The minimum price range to earn farming rewards for this
+              liquidity position is {minRangeLength}%
+            </span>
+          </Box>
+        )}
       {mintInfo.outOfRange && (
         <Box className='pool-range-chart-warning'>
           <Box className='pool-range-chart-warning-icon'>
             <ReportProblemOutlined />
           </Box>
           <span>
-            Your position is out of range and will not earn fees or be used in
-            trades until the market price moves into your range.
+            Warning: The price range for this liquidity position is not eligible
+            for farming rewards. To become eligible for rewards, please increase
+            your range
           </span>
         </Box>
       )}

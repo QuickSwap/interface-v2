@@ -139,6 +139,7 @@
   "yourliquidityPools": "Your Liquidity Pools",
   "poolMissingComment": "Don’t see a pool you joined? <pspan>Import it</pspan>.<br/> Unstake your LP Tokens from Farms to see them here.",
   "farm": "Farm",
+  "farms": "Farms",
   "farmingApr": "Farming APR",
   "help": "Help",
   "lpMining": "LP Mining",
@@ -205,7 +206,7 @@
   "pools": "Pools",
   "dragonAlertDesc": "As of May 2022, you can stake QUICK(NEW) in Syrup Pools. Note that there are some Syrup Pools that will still accept QUICK(OLD) for staking, until they run out of rewards.",
   "dragonLairTitle": "Stake QUICK to earn QUICK",
-  "oldDragonLairTitle": "Withdraw and convert to new QUICK",
+  "oldDragonLairTitle": "QUICK (old)  is no longer giving rewards. You can withdraw and convert to new QUICK to continue staking in the new Lair",
   "newDragonLairTitle": "Withdraw your new QUICK for now",
   "dragonSyrup": "Dragon’s Syrup",
   "dragonSyrupTitle": "Earn tokens of your choice over time",
@@ -420,5 +421,7 @@
   "enterMarket": "Enter Market",
   "exitMarket": "Exit Market",
   "sponsored": "SPONSORED",
-  "learnmoreproject": "Learn more about the project <alink>here</alink>."
+  "learnmoreproject": "Learn more about the project <alink>here</alink>.",
+  "pleaseNote": "Please Note",
+  "maiNote": "MAI is an overcollateralized USD stablecoin backed solely by decentralized tokens."
 }

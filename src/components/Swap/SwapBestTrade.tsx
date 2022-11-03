@@ -1,25 +1,12 @@
-import React, {
-  useState,
-  useMemo,
-  useCallback,
-  useEffect,
-  useRef,
-} from 'react';
-import {
-  JSBI,
-  Token,
-  Trade,
-  Currency as CurrencyV2,
-  TradeType,
-  Fraction,
-  ChainId,
-} from '@uniswap/sdk';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
+import { JSBI, Trade, Token, TradeType, Fraction } from '@uniswap/sdk';
 import { Currency, CurrencyAmount } from '@uniswap/sdk-core';
 import ReactGA from 'react-ga';
 import { ArrowDown } from 'react-feather';
 import { Box, Button, CircularProgress } from '@material-ui/core';
 import { useWalletModalToggle } from 'state/application/hooks';
 import {
+  useDefaultsFromURLSearch,
   useDerivedSwapInfo,
   useSwapActionHandlers,
   useSwapState,
@@ -29,13 +16,12 @@ import {
   useUserSlippageTolerance,
 } from 'state/user/hooks';
 import { Field } from 'state/swap/actions';
-import { useAllTokens } from 'hooks/Tokens';
+import { useHistory } from 'react-router-dom';
 import { CurrencyInput, ConfirmSwapModal, AddressInput } from 'components';
 import { useActiveWeb3React } from 'hooks';
 import {
   ApprovalState,
   useApproveCallbackFromBestTrade,
-  useApproveCallbackFromTrade,
 } from 'hooks/useApproveCallback';
 import { useTransactionFinalizer } from 'state/transactions/hooks';
 import useENSAddress from 'hooks/useENSAddress';
@@ -60,12 +46,48 @@ import { BestTradeAdvancedSwapDetails } from './BestTradeAdvancedSwapDetails';
 import { GlobalValue } from 'constants/index';
 import { useQuery } from 'react-query';
 import { ONE } from 'lib/src/internalConstants';
+import { useAllTokens, useCurrency } from 'hooks/Tokens';
+import TokenWarningModal from 'components/v3/TokenWarningModal';
 
 const SwapBestTrade: React.FC<{
-  currency0?: CurrencyV2;
-  currency1?: CurrencyV2;
   currencyBgClass?: string;
-}> = ({ currency0, currency1, currencyBgClass }) => {
+}> = ({ currencyBgClass }) => {
+  const history = useHistory();
+  const loadedUrlParams = useDefaultsFromURLSearch();
+
+  // token warning stuff
+  const [loadedInputCurrency, loadedOutputCurrency] = [
+    useCurrency(loadedUrlParams?.inputCurrencyId),
+    useCurrency(loadedUrlParams?.outputCurrencyId),
+  ];
+  const [dismissTokenWarning, setDismissTokenWarning] = useState<boolean>(
+    false,
+  );
+  const urlLoadedTokens: Token[] = useMemo(
+    () =>
+      [loadedInputCurrency, loadedOutputCurrency]?.filter(
+        (c): c is Token => c instanceof Token,
+      ) ?? [],
+    [loadedInputCurrency, loadedOutputCurrency],
+  );
+  const handleConfirmTokenWarning = useCallback(() => {
+    setDismissTokenWarning(true);
+  }, []);
+
+  // reset if they close warning without tokens in params
+  const handleDismissTokenWarning = useCallback(() => {
+    setDismissTokenWarning(true);
+    history.push('/swap');
+  }, [history]);
+
+  // dismiss warning if all imported tokens are in active lists
+  const defaultTokens = useAllTokens();
+  const importTokensNotInDefault =
+    urlLoadedTokens &&
+    urlLoadedTokens.filter((token: Token) => {
+      return !Boolean(token.address in defaultTokens);
+    });
+
   const { t } = useTranslation();
   const { account, chainId } = useActiveWeb3React();
   const { independentField, typedValue, recipient } = useSwapState();
@@ -91,7 +113,6 @@ const SwapBestTrade: React.FC<{
     currencies[Field.OUTPUT],
     typedValue,
   );
-  const allTokens = useAllTokens();
   const [swapType, setSwapType] = useState<SwapSide>(SwapSide.SELL);
 
   const showWrap: boolean = wrapType !== WrapType.NOT_APPLICABLE;
@@ -212,6 +233,7 @@ const SwapBestTrade: React.FC<{
         options: {
           includeDEXS: 'quickswap,quickswapv3',
           maxImpact: maxImpactAllowed,
+          partner: 'quickswapv3',
         },
       });
       return rate;
@@ -353,7 +375,15 @@ const SwapBestTrade: React.FC<{
             !optimalRate.maxImpactReached &&
             priceImpactSeverity > 3 &&
             !isExpertMode) ||
-          !!paraswapCallbackError
+          !!paraswapCallbackError ||
+          (optimalRate &&
+            !parsedAmounts[Field.INPUT]?.equalTo(
+              JSBI.BigInt(optimalRate.srcAmount),
+            )) ||
+          (optimalRate &&
+            !parsedAmounts[Field.OUTPUT]?.equalTo(
+              JSBI.BigInt(optimalRate.destAmount),
+            ))
         );
       }
     } else {
@@ -362,16 +392,17 @@ const SwapBestTrade: React.FC<{
   }, [
     account,
     showWrap,
-    wrapInputError,
     noRoute,
     userHasSpecifiedInputOutput,
     showApproveFlow,
-    approval,
-    priceImpactSeverity,
+    wrapInputError,
     isValid,
-    paraswapCallbackError,
-    isExpertMode,
+    approval,
     optimalRate,
+    priceImpactSeverity,
+    isExpertMode,
+    parsedAmounts,
+    paraswapCallbackError,
   ]);
 
   const [
@@ -463,19 +494,6 @@ const SwapBestTrade: React.FC<{
       });
     }
   };
-
-  useEffect(() => {
-    onCurrencySelection(Field.INPUT, nativeCurrency);
-  }, [onCurrencySelection, allTokens]);
-
-  useEffect(() => {
-    if (currency0) {
-      onCurrencySelection(Field.INPUT, currency0);
-    }
-    if (currency1) {
-      onCurrencySelection(Field.OUTPUT, currency1);
-    }
-  }, [onCurrencySelection, currency0, currency1]);
 
   const handleAcceptChanges = useCallback(() => {
     setSwapState({
@@ -594,6 +612,12 @@ const SwapBestTrade: React.FC<{
 
   return (
     <Box>
+      <TokenWarningModal
+        isOpen={importTokensNotInDefault.length > 0 && !dismissTokenWarning}
+        tokens={importTokensNotInDefault}
+        onConfirm={handleConfirmTokenWarning}
+        onDismiss={handleDismissTokenWarning}
+      />
       {showConfirm && (
         <ConfirmSwapModal
           isOpen={showConfirm}
@@ -648,7 +672,7 @@ const SwapBestTrade: React.FC<{
               (mainPrice ? currencies[Field.INPUT] : currencies[Field.OUTPUT])
                 ?.symbol
             }{' '}
-            = {(mainPrice ? paraRate : 1 / paraRate).toLocaleString()}{' '}
+            = {(mainPrice ? paraRate : 1 / paraRate).toLocaleString('us')}{' '}
             {
               (mainPrice ? currencies[Field.OUTPUT] : currencies[Field.INPUT])
                 ?.symbol

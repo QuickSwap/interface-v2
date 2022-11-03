@@ -29,11 +29,12 @@ const AnalyticsPairs: React.FC = () => {
     (async () => {
       updateTopPairs(null);
       if (isV3) {
-        const data = await getTopPairsV3(
+        const pairsData = await getTopPairsV3(
           GlobalConst.utils.ANALYTICS_PAIRS_COUNT,
           chainIdToUse,
         );
-        if (data) {
+        if (pairsData) {
+          const data = pairsData.filter((item: any) => !!item);
           updateTopPairs(data);
           try {
             const aprs = await getPairsAPR(

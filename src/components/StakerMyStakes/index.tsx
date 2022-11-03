@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Frown } from 'react-feather';
 import { useActiveWeb3React } from 'hooks';
 import Loader from '../Loader';
@@ -9,27 +9,26 @@ import './index.scss';
 import FarmCard from './FarmCard';
 import { Box } from '@material-ui/core';
 import { useV3StakeData } from 'state/farms/hooks';
+import { useFarmingSubgraph } from 'hooks/useIncentiveSubgraph';
+
 import { ChainId } from '@uniswap/sdk';
 import { getConfig } from '../../config/index';
 
 interface FarmingMyFarmsProps {
-  data: Deposit[] | null;
-  refreshing: boolean;
-  now: number;
-  fetchHandler: () => any;
   chainId: ChainId;
 }
 
-export function FarmingMyFarms({
-  data,
-  refreshing,
-  now,
-  fetchHandler,
-  chainId,
-}: FarmingMyFarmsProps) {
+export function FarmingMyFarms({ chainId }: FarmingMyFarmsProps) {
   const { account } = useActiveWeb3React();
   const config = getConfig(chainId);
   const lair = config['lair']['available'];
+  const {
+    fetchTransferredPositions: {
+      fetchTransferredPositionsFn,
+      transferredPositions,
+      transferredPositionsLoading,
+    },
+  } = useFarmingSubgraph() || {};
   const { v3Stake } = useV3StakeData();
   const { selectedTokenId, txType, txHash, txConfirmed, selectedFarmingType } =
     v3Stake ?? {};
@@ -47,12 +46,21 @@ export function FarmingMyFarms({
   }, [shallowPositions]);
 
   useEffect(() => {
-    fetchHandler();
+    fetchTransferredPositionsFn(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account]);
 
   useEffect(() => {
-    setShallowPositions(data);
-  }, [data]);
+    if (txType === 'farm' && txConfirmed) {
+      fetchTransferredPositionsFn(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [txType, txConfirmed]);
+
+  useEffect(() => {
+    setShallowPositions(transferredPositions);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [transferredPositions?.length]);
 
   useEffect(() => {
     if (!shallowPositions) return;
@@ -104,11 +112,12 @@ export function FarmingMyFarms({
         );
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [txHash, txConfirmed, selectedTokenId, selectedFarmingType, txType]);
 
   return (
     <>
-      {refreshing || !shallowPositions ? (
+      {transferredPositionsLoading || !shallowPositions ? (
         <div className={'my-farms__loader flex-s-between f-jc'}>
           <Loader stroke={'white'} size={'1.5rem'} />
         </div>
@@ -135,6 +144,9 @@ export function FarmingMyFarms({
           {farmedNFTs && (
             <div>
               {farmedNFTs.map((el, i) => {
+                const date = new Date(
+                  +el.enteredInEternalFarming * 1000,
+                ).toLocaleString('us');
                 return (
                   <div
                     className={'my-farms__position-card p-1 br-12 mt-1'}

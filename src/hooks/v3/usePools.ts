@@ -6,7 +6,6 @@ import { useMultipleContractSingleData } from 'state/multicall/v3/hooks';
 import { Interface } from '@ethersproject/abi';
 import abi from 'constants/abis/v3/pool.json';
 import { computePoolAddress } from './computePoolAddress';
-import { useInternet } from './useInternet';
 import { useToken } from './Tokens';
 import { Pool } from 'v3lib/entities/pool';
 import { usePreviousNonErroredArray } from 'hooks/usePrevious';
@@ -71,7 +70,7 @@ export function usePools(
       return prevGlobalState0s;
 
     return globalState0s;
-  }, [poolAddresses, globalState0s]);
+  }, [prevGlobalState0s, globalState0s]);
 
   const liquidities = useMultipleContractSingleData(
     poolAddresses,
@@ -91,7 +90,7 @@ export function usePools(
       return prevLiquidities;
 
     return liquidities;
-  }, [poolAddresses, liquidities]);
+  }, [prevLiquidities, liquidities]);
 
   return useMemo(() => {
     return poolKeys.map((_key, index) => {
@@ -152,9 +151,8 @@ export function usePool(
 }
 
 export function useTokensSymbols(token0: string, token1: string) {
-  const internet = useInternet();
   const _token0 = useToken(token0);
   const _token1 = useToken(token1);
 
-  return useMemo(() => [_token0, _token1], [_token0, _token1, internet]);
+  return useMemo(() => [_token0, _token1], [_token0, _token1]);
 }

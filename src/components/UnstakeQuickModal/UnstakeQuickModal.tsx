@@ -125,7 +125,7 @@ const UnstakeQuickModal: React.FC<UnstakeQuickModalProps> = ({
                 }}
               />
             </Box>
-            <small>{Math.min(stakePercent, 100).toLocaleString()}%</small>
+            <small>{Math.min(stakePercent, 100).toLocaleString('us')}%</small>
           </Box>
         </Box>
         <Box mt={3}>

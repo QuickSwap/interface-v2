@@ -18,19 +18,19 @@ const AnalyticsInfo: React.FC<AnalyticsInfoProps> = ({ data }) => {
     v2: [
       {
         title: t('pairs'),
-        value: data.pairCount?.toLocaleString(),
+        value: data.pairCount?.toLocaleString('us'),
         percentChange: null,
       },
       {
         title: t('24hTxs'),
-        value: data.oneDayTxns?.toLocaleString(),
+        value: data.oneDayTxns?.toLocaleString('us'),
         percentChange: null,
       },
       {
         title: t('24hFees'),
         value: `$${(
           data.oneDayVolumeUSD * GlobalConst.utils.FEEPERCENT
-        )?.toLocaleString()}`,
+        )?.toLocaleString('us')}`,
         percentChange: null,
       },
     ],
@@ -39,7 +39,7 @@ const AnalyticsInfo: React.FC<AnalyticsInfoProps> = ({ data }) => {
         title: t('24hVol'),
         value: `$${
           data.oneDayVolumeUSD !== undefined
-            ? data.oneDayVolumeUSD.toLocaleString()
+            ? data.oneDayVolumeUSD.toLocaleString('us')
             : '~'
         }`,
         percentChange: data.volumeChangeUSD,
@@ -47,7 +47,7 @@ const AnalyticsInfo: React.FC<AnalyticsInfoProps> = ({ data }) => {
       {
         title: t('24hFees'),
         value: `$${
-          data.feesUSD === undefined ? '~' : data.feesUSD.toLocaleString()
+          data.feesUSD === undefined ? '~' : data.feesUSD.toLocaleString('us')
         }`,
         percentChange: data.feesUSDChange,
       },
@@ -56,7 +56,7 @@ const AnalyticsInfo: React.FC<AnalyticsInfoProps> = ({ data }) => {
         value: `$${
           data.totalLiquidityUSD === undefined
             ? '~'
-            : data.totalLiquidityUSD.toLocaleString()
+            : data.totalLiquidityUSD.toLocaleString('us')
         }`,
         percentChange: data.liquidityChangeUSD,
       },

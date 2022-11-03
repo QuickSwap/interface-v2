@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Box, useMediaQuery, useTheme } from '@material-ui/core';
 import { getBulkPairData } from 'state/stake/hooks';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
@@ -23,9 +23,6 @@ const FarmPage: React.FC = () => {
   const [bulkPairs, setBulkPairs] = useState<any>(null);
   const [farmIndex, setFarmIndex] = useState(
     GlobalConst.farmIndex.LPFARM_INDEX,
-  );
-  const [v3FarmIndex, setV3FarmIndex] = useState(
-    GlobalConst.v3FarmIndex.ETERNAL_FARMS_INDEX,
   );
   const chainIdToUse = chainId ?? ChainId.MATIC;
   const config = getConfig(chainIdToUse);
@@ -81,6 +78,8 @@ const FarmPage: React.FC = () => {
       condition: farmIndex === GlobalConst.farmIndex.DUALFARM_INDEX,
     },
   ];
+  const helpURL = process.env.REACT_APP_HELP_URL;
+
   return (
     <Box width='100%' mb={3} id='farmPage'>
       <Box className='pageHeading'>
@@ -93,11 +92,16 @@ const FarmPage: React.FC = () => {
           )}
           ;
         </Box>
-        <Box className='helpWrapper'>
-          <small>{t('help')}</small>
-          <HelpIcon />
-        </Box>
-      </Box>{' '}
+        {helpURL && (
+          <Box
+            className='helpWrapper'
+            onClick={() => window.open(helpURL, '_blank')}
+          >
+            <small>{t('help')}</small>
+            <HelpIcon />
+          </Box>
+        )}
+      </Box>
       <Box maxWidth={isMobile ? '320px' : '1136px'} margin='0 auto 24px'>
         <AdsSlider sort='farms' />
       </Box>

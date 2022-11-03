@@ -1,8 +1,7 @@
+import React, { useCallback, useMemo } from 'react';
 import { Box } from '@material-ui/core';
 import CustomTabSwitch from 'components/v3/CustomTabSwitch';
-import { useFarmingSubgraph } from 'hooks/useIncentiveSubgraph';
 import useParsedQueryString from 'hooks/useParsedQueryString';
-import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import EternalFarmsPage from 'pages/EternalFarmsPage';
@@ -20,26 +19,31 @@ export default function Farms() {
   const history = useHistory();
 
   const currentTabQueried =
-    parsedQuery && parsedQuery.tab ? (parsedQuery.tab as string) : 'my-farms';
+    parsedQuery && parsedQuery.tab
+      ? (parsedQuery.tab as string)
+      : 'eternal-farms';
 
-  const v3FarmCategories = [
-    {
-      text: t('My Farms'),
-      id: 0,
-      link: 'my-farms',
-    },
-    {
-      text: t('Eternal Farms'),
-      id: 1,
-      link: 'eternal-farms',
-    },
-  ];
+  const v3FarmCategories = useMemo(
+    () => [
+      {
+        text: t('myFarms'),
+        id: 0,
+        link: 'my-farms',
+      },
+      {
+        text: t('farms'),
+        id: 1,
+        link: 'eternal-farms',
+      },
+    ],
+    [t],
+  );
   const handleTabSwitch = useCallback(
     (event, selectedIndex) => {
       const tab = v3FarmCategories?.[selectedIndex];
       history.push(`?tab=${tab?.link}`);
     },
-    [currentTabQueried, history],
+    [history, v3FarmCategories],
   );
 
   const selectedTab = useMemo(() => {
@@ -51,58 +55,25 @@ export default function Farms() {
     } else {
       return tab;
     }
-  }, [currentTabQueried]);
-
-  const {
-    fetchEternalFarms: {
-      fetchEternalFarmsFn,
-      eternalFarms,
-      eternalFarmsLoading,
-    },
-  } = useFarmingSubgraph() || {};
-
-  const {
-    fetchTransferredPositions: {
-      fetchTransferredPositionsFn,
-      transferredPositions,
-      transferredPositionsLoading,
-    },
-  } = useFarmingSubgraph() || {};
-
-  const [now, setNow] = useState(Date.now());
+  }, [currentTabQueried, v3FarmCategories]);
 
   return (
     <Box className='bg-palette' borderRadius={10}>
       <Box width='100%' mt={2}>
-        <CustomTabSwitch
-          width={300}
-          height={58}
-          items={v3FarmCategories}
-          selectedItem={selectedTab}
-          handleTabChange={handleTabSwitch}
-        />
-
-        {selectedTab?.id === 0 && (
-          <Box mt={2}>
-            <FarmingMyFarms
-              data={transferredPositions}
-              refreshing={transferredPositionsLoading}
-              fetchHandler={() => {
-                fetchTransferredPositionsFn(true);
-              }}
-              now={now}
-              chainId={chainIdToUse}
-            />
-          </Box>
-        )}
-        {selectedTab?.id === 1 && (
-          <EternalFarmsPage
-            data={eternalFarms}
-            refreshing={eternalFarmsLoading}
-            fetchHandler={() => fetchEternalFarmsFn(true)}
-            chainId={chainIdToUse}
+        <Box className='v3-farm-tabs-wrapper'>
+          <CustomTabSwitch
+            width={300}
+            height={67}
+            items={v3FarmCategories}
+            selectedItem={selectedTab}
+            handleTabChange={handleTabSwitch}
           />
-        )}
+        </Box>
+
+        <Box mt={2}>
+          {selectedTab?.id === 0 && <FarmingMyFarms chainId={chainIdToUse} />}
+          {selectedTab?.id === 1 && <EternalFarmsPage chainId={chainIdToUse} />}
+        </Box>
       </Box>
     </Box>
   );

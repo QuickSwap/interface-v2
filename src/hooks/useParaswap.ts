@@ -1,7 +1,7 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { useActiveWeb3React } from 'hooks';
 import { constructSimpleSDK } from '@paraswap/sdk';
-import { ChainId, Currency, ETHER, JSBI, Token, Trade } from '@uniswap/sdk';
+import { ChainId, Currency, ETHER, Token } from '@uniswap/sdk';
 
 const PARASWAP_NATIVE_ADDRESS = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
 export function getBestTradeCurrencyAddress(
@@ -16,7 +16,7 @@ export function getBestTradeCurrencyAddress(
 }
 
 export function useParaswap() {
-  const { account, chainId, library } = useActiveWeb3React();
+  const { chainId } = useActiveWeb3React();
   return useMemo(() => {
     const paraswapSDK = constructSimpleSDK({
       network: <number>chainId,
@@ -24,5 +24,5 @@ export function useParaswap() {
     });
 
     return paraswapSDK;
-  }, [library, chainId]);
+  }, [chainId]);
 }

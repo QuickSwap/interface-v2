@@ -22,7 +22,7 @@ export function useTokenAllowance(
     if (!allowance && prevAllowance) return prevAllowance;
 
     return allowance;
-  }, [allowance, token, owner, spender]);
+  }, [allowance, prevAllowance]);
 
   return useMemo(
     () =>

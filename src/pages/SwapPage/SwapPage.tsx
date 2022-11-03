@@ -114,6 +114,7 @@ const SwapPage: React.FC = () => {
   }, [pairId, isProMode, showProMode]);
 
   const { t } = useTranslation();
+  const helpURL = process.env.REACT_APP_HELP_URL;
   return (
     <Box width='100%' mb={3} id='swap-page'>
       {openSettingsModal && (
@@ -122,14 +123,21 @@ const SwapPage: React.FC = () => {
           onClose={() => setOpenSettingsModal(false)}
         />
       )}
-      <Box className='pageHeading'>
-        <h4>{t('swap')}</h4>
-        <Box className='helpWrapper'>
-          <small>{t('help')}</small>
-          <HelpIcon />
+      {!isProMode && (
+        <Box className='pageHeading'>
+          <h4>{t('swap')}</h4>
+          {helpURL && (
+            <Box
+              className='helpWrapper'
+              onClick={() => window.open(helpURL, '_blank')}
+            >
+              <small>{t('help')}</small>
+              <HelpIcon />
+            </Box>
+          )}
         </Box>
-      </Box>
-      {!isProMode || !showProMode ? (
+      )}
+      {!isProMode ? (
         <Grid container spacing={4}>
           <Grid item xs={12} sm={12} md={6} lg={5}>
             <Box className='wrapper'>

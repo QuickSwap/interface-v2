@@ -4,25 +4,14 @@ import {
   TransactionResponse,
   TransactionRequest,
 } from '@ethersproject/providers';
-import {
-  JSBI,
-  Percent,
-  Router,
-  SwapParameters,
-  Trade,
-  TradeType,
-} from '@uniswap/sdk';
+import { JSBI, SwapParameters, Trade } from '@uniswap/sdk';
 import { useMemo } from 'react';
-import { GlobalConst, GlobalValue } from 'constants/index';
+import { GlobalConst } from 'constants/index';
 import { useTransactionAdder } from 'state/transactions/hooks';
 import {
-  calculateGasMargin,
-  isZero,
   isAddress,
   shortenAddress,
-  formatTokenAmount,
   basisPointsToPercent,
-  getProviderOrSigner,
   getSigner,
 } from 'utils';
 import { useActiveWeb3React } from 'hooks';
@@ -30,7 +19,6 @@ import useENS from './useENS';
 import { OptimalRate } from 'paraswap-core';
 import { useParaswap } from './useParaswap';
 import { SwapSide } from '@paraswap/sdk';
-import { useExpertModeManager } from 'state/user/hooks';
 export enum SwapCallbackState {
   INVALID,
   LOADING,
@@ -87,7 +75,6 @@ export function useParaswapCallback(
   const recipient =
     recipientAddressOrName === null ? account : recipientAddress;
 
-  const [isExpertMode] = useExpertModeManager();
   return useMemo(() => {
     if (!trade || !priceRoute || !library || !account || !chainId) {
       return {
@@ -138,54 +125,66 @@ export function useParaswapCallback(
           throw new Error('Price Rate updated beyond expected slipage rate');
         }
 
-        const txParams = await paraswap.buildTx({
-          srcToken,
-          destToken,
-          srcAmount: priceRoute.srcAmount,
-          destAmount: minDestAmount.toFixed(0),
-          priceRoute: priceRoute,
-          userAddress: account,
-          partner: referrer,
-        });
-
-        const signer = getSigner(library, account);
-        const ethersTxParams = convertToEthersTransaction(txParams);
-        return signer
-          .sendTransaction(ethersTxParams)
-          .then((response: TransactionResponse) => {
-            const inputSymbol = trade.inputAmount.currency.symbol;
-            const outputSymbol = trade.outputAmount.currency.symbol;
-            const inputAmount =
-              Number(priceRoute.srcAmount) / 10 ** priceRoute.srcDecimals;
-            const outputAmount =
-              Number(priceRoute.destAmount) / 10 ** priceRoute.destDecimals;
-
-            const base = `Swap ${inputAmount.toLocaleString()} ${inputSymbol} for ${outputAmount.toLocaleString()} ${outputSymbol}`;
-            const withRecipient =
-              recipient === account
-                ? base
-                : `${base} to ${
-                    recipientAddressOrName && isAddress(recipientAddressOrName)
-                      ? shortenAddress(recipientAddressOrName)
-                      : recipientAddressOrName
-                  }`;
-
-            const withVersion = withRecipient;
-
-            addTransaction(response, {
-              summary: withVersion,
-            });
-
-            return { response, summary: withVersion };
-          })
-          .catch((error: any) => {
-            // if the user rejected the tx, pass this along
-            if (error?.code === 4001) {
-              throw new Error('Transaction rejected.');
-            } else {
-              throw new Error(`Swap failed: ${error.message}`);
-            }
+        try {
+          const txParams = await paraswap.buildTx({
+            srcToken,
+            destToken,
+            srcAmount: priceRoute.srcAmount,
+            destAmount: minDestAmount.toFixed(0),
+            priceRoute: priceRoute,
+            userAddress: account,
+            partner: referrer,
           });
+
+          const signer = getSigner(library, account);
+          const ethersTxParams = convertToEthersTransaction(txParams);
+          return signer
+            .sendTransaction(ethersTxParams)
+            .then((response: TransactionResponse) => {
+              const inputSymbol = trade.inputAmount.currency.symbol;
+              const outputSymbol = trade.outputAmount.currency.symbol;
+              const inputAmount =
+                Number(priceRoute.srcAmount) / 10 ** priceRoute.srcDecimals;
+              const outputAmount =
+                Number(priceRoute.destAmount) / 10 ** priceRoute.destDecimals;
+
+              const base = `Swap ${inputAmount.toLocaleString(
+                'us',
+              )} ${inputSymbol} for ${outputAmount.toLocaleString(
+                'us',
+              )} ${outputSymbol}`;
+              const withRecipient =
+                recipient === account
+                  ? base
+                  : `${base} to ${
+                      recipientAddressOrName &&
+                      isAddress(recipientAddressOrName)
+                        ? shortenAddress(recipientAddressOrName)
+                        : recipientAddressOrName
+                    }`;
+
+              const withVersion = withRecipient;
+
+              addTransaction(response, {
+                summary: withVersion,
+              });
+
+              return { response, summary: withVersion };
+            })
+            .catch((error: any) => {
+              // if the user rejected the tx, pass this along
+              if (error?.code === 4001) {
+                throw new Error('Transaction rejected.');
+              } else {
+                throw new Error(`Swap failed: ${error.message}`);
+              }
+            });
+        } catch (e) {
+          console.log(e);
+          throw new Error(
+            'For rebase or taxed tokens, try market V2 instead of best trade.',
+          );
+        }
       },
       error: null,
     };

@@ -11,21 +11,16 @@ import { FormattedEternalFarming } from 'models/interfaces';
 import { useFarmingSubgraph } from 'hooks/useIncentiveSubgraph';
 import { ChainId } from '@uniswap/sdk';
 
-export default function EternalFarmsPage({
-  data,
-  refreshing,
-  fetchHandler,
-  chainId,
-}: {
-  data: FormattedEternalFarming[] | null;
-  refreshing: boolean;
-  fetchHandler: () => any;
-  chainId: ChainId;
-}) {
+export default function EternalFarmsPage({ chainId }: { chainId: ChainId }) {
   const [modalForPool, setModalForPool] = useState(null);
   const { t } = useTranslation();
 
   const {
+    fetchEternalFarms: {
+      fetchEternalFarmsFn,
+      eternalFarms,
+      eternalFarmsLoading,
+    },
     fetchEternalFarmAprs: {
       fetchEternalFarmAprsFn,
       eternalFarmAprs,
@@ -39,9 +34,10 @@ export default function EternalFarmsPage({
   } = useFarmingSubgraph() || {};
 
   useEffect(() => {
-    fetchHandler();
+    fetchEternalFarmsFn(true);
     fetchEternalFarmAprsFn();
     fetchEternalFarmTvlsFn();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -55,34 +51,36 @@ export default function EternalFarmsPage({
           />
         )}
       </CustomModal>
-      {refreshing ? (
-        <div className={'eternal-page__loader'}>
-          <Loader stroke='white' size='1.5rem' />
-        </div>
-      ) : !data || data.length === 0 ? (
-        <div className={'eternal-page__loader'}>
-          <div>{t('noEternalFarms')}</div>
-          <Frown size={'2rem'} stroke={'white'} />
-        </div>
-      ) : !refreshing && data.length !== 0 ? (
-        <div className={'eternal-page__row mb-1 w-100'}>
-          {data.map((event: FormattedEternalFarming, j: number) => (
-            <EternalFarmCard
-              key={j}
-              farmHandler={() => setModalForPool(event as any)}
-              refreshing={refreshing}
-              now={0}
-              eternal
-              aprs={eternalFarmAprs}
-              aprsLoading={eternalFarmAprsLoading}
-              tvls={eternalFarmTvls}
-              tvlsLoading={eternalFarmTvlsLoading}
-              event={event}
-              chainId={chainId}
-            />
-          ))}
-        </div>
-      ) : null}
+      <Box px={2} py={3}>
+        {eternalFarmsLoading ? (
+          <div className={'eternal-page__loader'}>
+            <Loader stroke='white' size='1.5rem' />
+          </div>
+        ) : !eternalFarms || eternalFarms.length === 0 ? (
+          <div className={'eternal-page__loader'}>
+            <div>{t('noEternalFarms')}</div>
+            <Frown size={'2rem'} stroke={'white'} />
+          </div>
+        ) : !eternalFarmsLoading && eternalFarms.length !== 0 ? (
+          <Grid container spacing={2}>
+            {eternalFarms.map((event: FormattedEternalFarming, j: number) => (
+              <Grid item xs={12} sm={6} md={4} key={j}>
+                <EternalFarmCard
+                  farmHandler={() => setModalForPool(event as any)}
+                  refreshing={eternalFarmsLoading}
+                  now={0}
+                  eternal
+                  aprs={eternalFarmAprs}
+                  aprsLoading={eternalFarmAprsLoading}
+                  tvls={eternalFarmTvls}
+                  tvlsLoading={eternalFarmTvlsLoading}
+                  event={event}
+                />
+              </Grid>
+            ))}
+          </Grid>
+        ) : null}
+      </Box>
     </>
   );
 }

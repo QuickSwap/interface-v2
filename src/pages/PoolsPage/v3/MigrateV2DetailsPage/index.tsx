@@ -15,7 +15,6 @@ import { useCurrency, useToken } from 'hooks/v3/Tokens';
 import './index.scss';
 import { useTokenBalance } from 'state/wallet/v3/hooks';
 import { CurrencyAmount, Fraction, Percent, Price } from '@uniswap/sdk-core';
-import { formatTokenAmount } from 'utils';
 import {
   useV3DerivedMintInfo,
   useV3MintActionHandlers,
@@ -26,7 +25,6 @@ import { InitialPrice } from '../SupplyLiquidityV3/containers/InitialPrice';
 import { SelectRange } from '../SupplyLiquidityV3/containers/SelectRange';
 import { PriceFormats } from 'components/v3/PriceFomatToggler';
 import { Field } from 'state/mint/actions';
-import { maxAmountSpend } from 'utils/v3/maxAmountSpend';
 import { ApprovalState, useApproveCallback } from 'hooks/useV3ApproveCallback';
 import { useV2LiquidityTokenPermit } from 'hooks/v3/useERC20Permit';
 import {
@@ -47,7 +45,6 @@ import { Bound } from 'state/mint/v3/actions';
 import { useUserSlippageTolerance } from 'state/user/hooks';
 import { Pool, Position } from 'v3lib/entities';
 import { V2Exchanges } from 'constants/v3/addresses';
-import { Dots } from '../styleds';
 import { useIsNetworkFailed } from 'hooks/v3/useIsNetworkFailed';
 import { currencyId } from 'utils/v3/currencyId';
 import { unwrappedToken } from 'utils/unwrappedToken';
@@ -57,8 +54,9 @@ import { ReportProblemOutlined } from '@material-ui/icons';
 export default function MigrateV2DetailsPage() {
   const v2Exchange = V2Exchanges.Quickswap;
   const percentageToMigrate = 100;
-  const [feeAmount, setFeeAmount] = useState(FeeAmount.MEDIUM);
+  const feeAmount = FeeAmount.MEDIUM;
   const [largePriceDiffDismissed, setLargePriceDiffDismissed] = useState(false);
+  const [attemptApproving, setAttemptApproving] = useState(false);
 
   const history = useHistory();
   const params: any = useParams();
@@ -180,30 +178,27 @@ export default function MigrateV2DetailsPage() {
       mintInfo.parsedAmounts[mintInfo.dependentField]?.toSignificant(6) ?? '',
   };
 
+  const amountCurrencyA = formattedAmounts[Field.CURRENCY_A];
+  const amountCurrencyB = formattedAmounts[Field.CURRENCY_B];
+
   useEffect(() => {
     if (
       mintInfo.ticks.LOWER &&
       mintInfo.ticks.UPPER &&
-      ((!formattedAmounts[Field.CURRENCY_A] &&
-        !formattedAmounts[Field.CURRENCY_B]) ||
-        Number(formattedAmounts[Field.CURRENCY_A]) >
-          Number(token0Deposited?.toExact() ?? '0') ||
-        Number(formattedAmounts[Field.CURRENCY_B]) >
-          Number(token1Deposited?.toExact() ?? '0'))
+      ((!amountCurrencyA && !amountCurrencyB) ||
+        Number(amountCurrencyA) > Number(token0Deposited?.toExact() ?? '0') ||
+        Number(amountCurrencyB) > Number(token1Deposited?.toExact() ?? '0'))
     ) {
       onFieldAInput(token0Deposited?.toExact() ?? '');
-      if (
-        Number(formattedAmounts[Field.CURRENCY_B]) >
-        Number(token1Deposited?.toExact() ?? '0')
-      ) {
+      if (Number(amountCurrencyB) > Number(token1Deposited?.toExact() ?? '0')) {
         onFieldBInput(token1Deposited?.toExact() ?? '');
       }
     }
   }, [
     mintInfo.ticks.LOWER,
     mintInfo.ticks.UPPER,
-    formattedAmounts[Field.CURRENCY_A],
-    formattedAmounts[Field.CURRENCY_B],
+    amountCurrencyA,
+    amountCurrencyB,
     onFieldAInput,
     onFieldBInput,
     token0Deposited,
@@ -412,8 +407,13 @@ export default function MigrateV2DetailsPage() {
 
   const approve = useCallback(async () => {
     // sushi has to be manually approved
-    await approveManually();
-  }, [gatherPermitSignature, approveManually]);
+    try {
+      await approveManually();
+      setAttemptApproving(false);
+    } catch (e) {
+      setAttemptApproving(false);
+    }
+  }, [approveManually]);
 
   const addTransaction = useTransactionAdder();
   const isMigrationPending = useIsTransactionPending(
@@ -506,10 +506,7 @@ export default function MigrateV2DetailsPage() {
             });
 
             addTransaction(response, {
-              //@ts-ignore
-              type: TransactionType.MIGRATE_LIQUIDITY_V3,
-              baseCurrencyId: currencyId(currency0, ChainId.MATIC),
-              quoteCurrencyId: currencyId(currency1, ChainId.MATIC),
+              summary: `Migrating ${currency0.symbol}-${currency1.symbol} LP to V3`,
             });
             setPendingMigrationHash(response.hash);
             setConfirmingMigration(false);
@@ -526,7 +523,6 @@ export default function MigrateV2DetailsPage() {
     blockTimestamp,
     token0,
     token1,
-    feeAmount,
     userPoolBalance,
     tickLower,
     tickUpper,
@@ -540,6 +536,7 @@ export default function MigrateV2DetailsPage() {
     pair,
     currency0,
     currency1,
+    v2Exchange,
   ]);
 
   const isSuccessfullyMigrated =
@@ -715,6 +712,7 @@ export default function MigrateV2DetailsPage() {
           <Button
             className='v3-migrate-details-button'
             disabled={
+              attemptApproving ||
               approval === ApprovalState.APPROVED ||
               approval !== ApprovalState.NOT_APPROVED ||
               signatureData !== null ||
@@ -723,12 +721,15 @@ export default function MigrateV2DetailsPage() {
               mintInfo.invalidRange ||
               confirmingMigration
             }
-            onClick={approve}
+            onClick={() => {
+              setAttemptApproving(true);
+              approve();
+            }}
           >
-            {approval === ApprovalState.PENDING ? (
+            {attemptApproving || approval === ApprovalState.PENDING ? (
               <>
                 Approving
-                <Dots />
+                <span className='loadingDots' />
               </>
             ) : approval === ApprovalState.APPROVED ||
               signatureData !== null ? (
@@ -760,10 +761,10 @@ export default function MigrateV2DetailsPage() {
           >
             {isSuccessfullyMigrated ? (
               `Success! View pools`
-            ) : isMigrationPending ? (
+            ) : confirmingMigration || isMigrationPending ? (
               <>
                 Migrating
-                <Dots />
+                <span className='loadingDots' />
               </>
             ) : networkFailed ? (
               'Connecting to network...'

@@ -414,6 +414,7 @@ export function useSwapCallback(
     recipient,
     recipientAddressOrName,
     swapCalls,
+    gasPrice,
     addTransaction,
   ]);
 }

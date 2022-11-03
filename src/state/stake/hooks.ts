@@ -7,10 +7,10 @@ import {
   ChainId,
 } from '@uniswap/sdk';
 import dayjs from 'dayjs';
-import { useMemo, useEffect } from 'react';
+import { useMemo, useEffect, useState } from 'react';
 import { usePairs } from 'data/Reserves';
 
-import { clientV2 } from 'apollo/client';
+import { clientV2, clientV3 } from 'apollo/client';
 import { GLOBAL_DATA, PAIRS_BULK, PAIRS_HISTORICAL_BULK } from 'apollo/queries';
 import { GlobalConst, GlobalValue } from 'constants/index';
 import {
@@ -67,6 +67,7 @@ import {
   V2_FACTORY_ADDRESSES,
 } from 'constants/v3/addresses';
 import { getConfig } from '../../config/index';
+import { GLOBAL_DATA_V3 } from 'apollo/queries-v3';
 
 const web3 = new Web3('https://polygon-rpc.com/');
 
@@ -234,6 +235,7 @@ export function useFilteredSyrupInfo(
         .filter(
           (syrupInfo) =>
             syrupInfo.ending > currentTimestamp &&
+            !syrupInfo.ended &&
             (tokenToFilterBy === undefined || tokenToFilterBy === null
               ? getSearchFiltered(syrupInfo, filter ? filter.search : '')
               : tokenToFilterBy.equals(syrupInfo.token)),
@@ -440,7 +442,7 @@ export function useOldSyrupInfo(
 
   const info = useMemo(() => {
     return Object.values(allOldSyrupInfos)
-      .filter((x) => x.ending <= currentTimestamp)
+      .filter((x) => x.ending <= currentTimestamp || x.ended)
       .slice(startIndex, endIndex)
       .filter((syrupInfo) =>
         tokenToFilterBy === undefined || tokenToFilterBy === null
@@ -721,6 +723,55 @@ const getOneDayVolume = async (config: any) => {
       oneDayData.totalVolumeUSD ? oneDayData.totalVolumeUSD : 0,
     );
     oneDayVol = oneDayVolumeUSD;
+  }
+
+  return oneDayVolumeUSD;
+};
+
+const getOneDayVolumeV3 = async (config: any) => {
+  let data: any = {};
+  let oneDayData: any = {};
+
+  const current = await web3.eth.getBlockNumber();
+  const utcCurrentTime = dayjs();
+  const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix();
+
+  const chainId: ChainId = config.chainId;
+  const oneDayOldBlock = await getBlockFromTimestamp(utcOneDayBack, chainId);
+
+  const result = await clientV3[chainId].query({
+    query: GLOBAL_DATA_V3(current),
+    fetchPolicy: 'network-only',
+  });
+
+  data =
+    result &&
+    result.data &&
+    result.data.factories &&
+    result.data.factories.length > 0
+      ? result.data.factories[0]
+      : undefined;
+
+  // fetch the historical data
+  const oneDayResult = await clientV3[chainId].query({
+    query: GLOBAL_DATA_V3(oneDayOldBlock),
+    fetchPolicy: 'network-only',
+  });
+  oneDayData =
+    oneDayResult &&
+    oneDayResult.data &&
+    oneDayResult.data.factories &&
+    oneDayResult.data.factories.length > 0
+      ? oneDayResult.data.factories[0]
+      : undefined;
+
+  let oneDayVolumeUSD: any = 0;
+
+  if (data && oneDayData) {
+    oneDayVolumeUSD = get2DayPercentChange(
+      data.totalVolumeUSD,
+      oneDayData.totalVolumeUSD ? oneDayData.totalVolumeUSD : 0,
+    );
   }
 
   return oneDayVolumeUSD;
@@ -1212,8 +1263,14 @@ function useLairInfo(
     accountArg,
   );
 
+  const [oneDayVolume, setOneDayVolume] = useState(0);
+
   useEffect(() => {
-    getOneDayVolume(config);
+    (async () => {
+      const v2OneDayVol = await getOneDayVolume(config);
+      const v3OneDayVol = await getOneDayVolumeV3(config);
+      setOneDayVolume(v2OneDayVol + v3OneDayVol);
+    })();
   }, [config]);
 
   return useMemo(() => {
@@ -1247,7 +1304,7 @@ function useLairInfo(
         dQuickToken,
         JSBI.BigInt(_dQuickTotalSupply?.result?.[0] ?? 0),
       ),
-      oneDayVol: oneDayVol,
+      oneDayVol: oneDayVolume,
     };
   }, [
     lairAddress,
@@ -1259,6 +1316,7 @@ function useLairInfo(
     quickToDQuick,
     dQuickToken,
     quickToken,
+    oneDayVolume,
   ]);
 }
 

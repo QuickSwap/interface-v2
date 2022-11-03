@@ -348,16 +348,16 @@ export async function getTopTokensV3(
       const oneDay = parsedTokens24[address];
       const twoDay = parsedTokens48[address];
 
-      if (!current) {
-        return;
-      }
-
-      const manageUntrackedVolume =
-        +current.volumeUSD <= 1 ? 'untrackedVolumeUSD' : 'volumeUSD';
-      const manageUntrackedTVL =
-        +current.totalValueLockedUSD <= 1
+      const manageUntrackedVolume = current
+        ? +current.volumeUSD <= 1
+          ? 'untrackedVolumeUSD'
+          : 'volumeUSD'
+        : '';
+      const manageUntrackedTVL = current
+        ? +current.totalValueLockedUSD <= 1
           ? 'totalValueLockedUSDUntracked'
-          : 'totalValueLockedUSD';
+          : 'totalValueLockedUSD'
+        : '';
 
       const [oneDayVolumeUSD, volumeUSDChange] =
         current && oneDay && twoDay
@@ -841,44 +841,39 @@ export async function getTopPairsV3(count = 500, chainId: ChainId) {
       const twoDay = parsedPairs48[address];
       const week = parsedPairsWeek[address];
 
-      if (!current) {
-        return;
-      }
+      if (!current) return;
+
       const manageUntrackedVolume =
         +current.volumeUSD <= 1 ? 'untrackedVolumeUSD' : 'volumeUSD';
+
       const manageUntrackedTVL =
         +current.totalValueLockedUSD <= 1
           ? 'totalValueLockedUSDUntracked'
           : 'totalValueLockedUSD';
 
       const [oneDayVolumeUSD, oneDayVolumeChangeUSD] =
-        current && oneDay && twoDay
+        oneDay && twoDay
           ? get2DayPercentChange(
               current[manageUntrackedVolume],
               oneDay[manageUntrackedVolume],
               twoDay[manageUntrackedVolume],
             )
-          : current && oneDay
+          : oneDay
           ? [
               parseFloat(current[manageUntrackedVolume]) -
                 parseFloat(oneDay[manageUntrackedVolume]),
               0,
             ]
-          : current
-          ? [parseFloat(current[manageUntrackedVolume]), 0]
-          : [0, 0];
+          : [parseFloat(current[manageUntrackedVolume]), 0];
 
-      const oneWeekVolumeUSD =
-        current && week
-          ? parseFloat(current[manageUntrackedVolume]) -
-            parseFloat(week[manageUntrackedVolume])
-          : current
-          ? parseFloat(current[manageUntrackedVolume])
-          : 0;
+      const oneWeekVolumeUSD = week
+        ? parseFloat(current[manageUntrackedVolume]) -
+          parseFloat(week[manageUntrackedVolume])
+        : parseFloat(current[manageUntrackedVolume]);
 
-      const tvlUSD = current ? parseFloat(current[manageUntrackedTVL]) : 0;
+      const tvlUSD = parseFloat(current[manageUntrackedTVL]);
       const tvlUSDChange = getPercentChange(
-        current ? current[manageUntrackedTVL] : undefined,
+        current[manageUntrackedTVL],
         oneDay ? oneDay[manageUntrackedTVL] : undefined,
       );
 
@@ -886,7 +881,6 @@ export async function getTopPairsV3(count = 500, chainId: ChainId) {
         token0: current.token0,
         token1: current.token1,
         fee: current.fee,
-        exists: !!current,
         id: address,
         oneDayVolumeUSD,
         oneDayVolumeChangeUSD,
@@ -1055,8 +1049,20 @@ export async function getPairInfoV3(address: string, chainId: ChainId) {
     return [
       current
         ? {
-            token0: current.token0,
-            token1: current.token1,
+            token0: {
+              ...current.token0,
+              symbol:
+                current.token0.symbol.toLowerCase() === 'mimatic'
+                  ? 'MAI'
+                  : current.token0.symbol,
+            },
+            token1: {
+              ...current.token1,
+              symbol:
+                current.token1.symbol.toLowerCase() === 'mimatic'
+                  ? 'MAI'
+                  : current.token1.symbol,
+            },
             fee: current.fee,
             id: address,
             oneDayVolumeUSD,
@@ -1806,6 +1812,8 @@ const WETH_ADDRESSES = ['0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270'];
 export function formatTokenSymbol(address: string, symbol: string) {
   if (WETH_ADDRESSES.includes(address)) {
     return 'MATIC';
+  } else if (symbol.toLowerCase() === 'mimatic') {
+    return 'MAI';
   }
   return symbol;
 }

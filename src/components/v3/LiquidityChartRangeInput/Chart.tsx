@@ -60,7 +60,6 @@ export function Chart({
 
     return scales;
   }, [
-    priceFormat,
     current,
     zoomLevels.initialMin,
     zoomLevels.initialMax,

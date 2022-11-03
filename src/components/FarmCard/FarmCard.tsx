@@ -133,7 +133,7 @@ const FarmCard: React.FC<{
             </Box>
             <Box width={0.25} textAlign='center'>
               <p className='small'>
-                ${(isLPFarm ? lpRewards : dualRewards).toLocaleString()} /{' '}
+                ${(isLPFarm ? lpRewards : dualRewards).toLocaleString('us')} /{' '}
                 {t('day')}
               </p>
               {isLPFarm ? (

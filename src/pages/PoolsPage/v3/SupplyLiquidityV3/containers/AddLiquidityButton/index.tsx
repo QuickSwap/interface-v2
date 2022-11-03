@@ -8,20 +8,14 @@ import { Percent, Currency } from '@uniswap/sdk-core';
 import { useAppDispatch, useAppSelector } from 'state/hooks';
 import { GAS_PRICE_MULTIPLIER } from 'hooks/useGasPrice';
 import {
-  useAllTransactions,
   useTransactionAdder,
   useTransactionFinalizer,
 } from 'state/transactions/hooks';
 import { TransactionResponse } from '@ethersproject/abstract-provider';
-import {
-  IDerivedMintInfo,
-  useAddLiquidityTxHash,
-  useInitialUSDPrices,
-} from 'state/mint/v3/hooks';
+import { IDerivedMintInfo, useAddLiquidityTxHash } from 'state/mint/v3/hooks';
 import { ApprovalState, useApproveCallback } from 'hooks/useV3ApproveCallback';
 import { Field } from 'state/mint/actions';
 import { Bound, setAddLiquidityTxHash } from 'state/mint/v3/actions';
-import { ZERO_PERCENT } from 'constants/v3/misc';
 import { useIsNetworkFailedImmediate } from 'hooks/v3/useIsNetworkFailed';
 import { JSBI } from '@uniswap/sdk';
 import { NONFUNGIBLE_POSITION_MANAGER_ADDRESSES } from 'constants/v3/addresses';
@@ -35,8 +29,6 @@ import {
   TransactionErrorContent,
 } from 'components';
 import './index.scss';
-import useUSDCPrice, { useUSDCValue } from 'hooks/v3/useUSDCPrice';
-import { tryParseAmount } from 'state/swap/v3/hooks';
 import RangeBadge from 'components/v3/Badge/RangeBadge';
 import RateToggle from 'components/v3/RateToggle';
 import { useInverter } from 'hooks/v3/useInverter';
@@ -117,7 +109,16 @@ export function AddLiquidityButton({
         !txHash &&
         !isNetworkFailed,
     );
-  }, [mintInfo, approvalA, approvalB]);
+  }, [
+    mintInfo.depositADisabled,
+    mintInfo.depositBDisabled,
+    mintInfo.errorMessage,
+    mintInfo.invalidRange,
+    approvalA,
+    approvalB,
+    txHash,
+    isNetworkFailed,
+  ]);
 
   const onAddLiquidity = () => {
     if (expertMode) {
@@ -203,16 +204,35 @@ export function AddLiquidityButton({
                 setTxPending(false);
                 handleAddLiquidity();
               } catch (error) {
+                console.error('Failed to send transaction', error);
                 setTxPending(false);
-                setAddLiquidityErrorMessage('Error in Tx');
+                setAddLiquidityErrorMessage(
+                  error?.code === 4001
+                    ? 'Transaction Rejected.'
+                    : 'There is an error in the transaction.',
+                );
               }
+            })
+            .catch((err) => {
+              console.error('Failed to send transaction', err);
+              setAttemptingTxn(false);
+              setAddLiquidityErrorMessage(
+                err?.code === 4001
+                  ? 'Transaction Rejected.'
+                  : 'There is an error in the transaction.',
+              );
             });
         })
         .catch((error) => {
           console.error('Failed to send transaction', error);
           // we only care if the error is something _other_ than the user rejected the tx
           setRejected && setRejected(true);
-          setAddLiquidityErrorMessage('Error in Tx');
+          setAttemptingTxn(false);
+          setAddLiquidityErrorMessage(
+            error?.code === 4001
+              ? 'Transaction Rejected.'
+              : 'There is an error in the transaction.',
+          );
           if (error?.code !== 4001) {
             console.error(error);
           }

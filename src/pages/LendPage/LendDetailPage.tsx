@@ -17,7 +17,12 @@ import { QuickModalContent } from 'components/LendModals';
 
 import { usePoolData } from 'hooks/marketxyz/usePoolData';
 import { midUsdFormatter, shortUsdFormatter } from 'utils/bigUtils';
-import { getDaysCurrentYear, shortenAddress, convertBNToNumber } from 'utils';
+import {
+  getDaysCurrentYear,
+  shortenAddress,
+  convertBNToNumber,
+  formatCompact,
+} from 'utils';
 import { useExtraPoolData } from 'hooks/marketxyz/useExtraPoolData';
 import { useActiveWeb3React } from 'hooks';
 import { useMarket } from 'hooks/marketxyz/useMarket';
@@ -132,27 +137,6 @@ const LendDetailPage: React.FC = () => {
       ) : (
         undefined
       ),
-    },
-    {
-      label: t('platformFee'),
-      data: poolData
-        ? poolData.assets.length > 0
-          ? (Number(poolData.assets[0].fuseFee.toString()) / 1e16).toFixed(2) +
-            '%'
-          : '10%'
-        : undefined,
-    },
-    {
-      label: t('averageAdminFee'),
-      data: poolData
-        ? poolData.assets
-            .reduce(
-              (a, b, _, { length }) =>
-                a + Number(b.adminFee.toString()) / 1e16 / length,
-              0,
-            )
-            .toLocaleString()
-        : undefined,
     },
     {
       label: t('closeFactor'),
@@ -311,6 +295,9 @@ const LendDetailPage: React.FC = () => {
                     </TableHead>
                     <TableBody>
                       {poolData?.assets.map((asset) => {
+                        if (asset.isSupplyPaused) {
+                          return <></>;
+                        }
                         return (
                           <TableRow key={asset.cToken.address}>
                             <TableCell>
@@ -466,12 +453,18 @@ const LendDetailPage: React.FC = () => {
                   <Table>
                     <TableHead>
                       <TableRow>
-                        <TableCell>{t('asset')}</TableCell>
+                        <TableCell>
+                          <Box maxWidth={150}>{t('asset')}</Box>
+                        </TableCell>
                         <TableCell className='poolTableHideCell'>
                           {t('apr')} / {t('tvl')}
                         </TableCell>
-                        <TableCell>{t('borrowed')}</TableCell>
-                        <TableCell>{t('liquidity')}</TableCell>
+                        <TableCell>
+                          <Box maxWidth='120px'>{t('borrowed')}</Box>
+                        </TableCell>
+                        <TableCell>
+                          <Box maxWidth='120px'>{t('liquidity')}</Box>
+                        </TableCell>
                         <TableCell></TableCell>
                       </TableRow>
                     </TableHead>
@@ -481,93 +474,112 @@ const LendDetailPage: React.FC = () => {
                           return null;
                         }
                         return (
-                          <TableRow key={asset.cToken.address}>
-                            <TableCell>
-                              <Box
-                                display={'flex'}
-                                alignItems={'center'}
-                                maxWidth='150px'
-                              >
-                                <Box display='flex' mr='8px'>
-                                  <CurrencyLogo
-                                    currency={getPoolAssetToken(asset, chainId)}
-                                    size={'36px'}
-                                    withoutBg={
-                                      asset.underlyingName.includes('LP') ||
-                                      asset.underlyingSymbol.includes('am') ||
-                                      asset.underlyingSymbol.includes('moo')
-                                    }
-                                  />
+                          <>
+                            <TableRow key={asset.cToken.address}>
+                              <TableCell>
+                                <Box
+                                  className='flex items-center'
+                                  maxWidth='150px'
+                                >
+                                  <Box display='flex' mr='8px'>
+                                    <CurrencyLogo
+                                      currency={getPoolAssetToken(
+                                        asset,
+                                        chainId,
+                                      )}
+                                      size={'36px'}
+                                      withoutBg={
+                                        asset.underlyingName.includes('LP') ||
+                                        asset.underlyingSymbol.includes('am') ||
+                                        asset.underlyingSymbol.includes('moo')
+                                      }
+                                    />
+                                  </Box>
+                                  <small>
+                                    {asset.underlyingSymbol +
+                                      (asset.underlyingName.includes('LP')
+                                        ? ' LP'
+                                        : '')}
+                                  </small>
                                 </Box>
-                                <small>
-                                  {asset.underlyingSymbol +
-                                    (asset.underlyingName.includes('LP')
-                                      ? ' LP'
-                                      : '')}
-                                </small>
-                              </Box>
-                            </TableCell>
-                            <TableCell className='poolTableHideCell'>
-                              <p className='caption'>
-                                {convertMantissaToAPR(
-                                  asset.borrowRatePerBlock,
-                                ).toFixed(2)}
-                                %
-                              </p>
-                              <p className='caption text-secondary'>
-                                {shortUsdFormatter(asset.totalSupplyUSD)}{' '}
-                                {t('tvl')}
-                              </p>
-                            </TableCell>
-                            <TableCell>
-                              <Box maxWidth='120px'>
-                                <small>
-                                  {midUsdFormatter(asset.borrowBalanceUSD)}
-                                </small>
-                                <p className='caption text-secondary'>
-                                  {sdk
-                                    ? convertBNToNumber(
-                                        asset.borrowBalance,
-                                        asset.underlyingDecimals,
-                                      ).toFixed(2)
-                                    : '?'}{' '}
-                                  {asset.underlyingName.includes('LP')
-                                    ? 'LP'
-                                    : asset.underlyingSymbol}
+                              </TableCell>
+                              <TableCell className='poolTableHideCell'>
+                                <p className='caption'>
+                                  {convertMantissaToAPR(
+                                    asset.borrowRatePerBlock,
+                                  ).toFixed(2)}
+                                  %
                                 </p>
-                              </Box>
-                            </TableCell>
-                            <TableCell>
-                              <Box maxWidth='120px'>
-                                <small>
-                                  {midUsdFormatter(asset.liquidityUSD)}
-                                </small>
                                 <p className='caption text-secondary'>
-                                  {sdk
-                                    ? convertBNToNumber(
-                                        asset.liquidity,
-                                        asset.underlyingDecimals,
-                                      ).toFixed(2)
-                                    : '?'}{' '}
-                                  {asset.underlyingName.includes('LP')
-                                    ? 'LP'
-                                    : asset.underlyingSymbol}
+                                  {shortUsdFormatter(asset.totalSupplyUSD)}{' '}
+                                  {t('tvl')}
                                 </p>
-                              </Box>
-                            </TableCell>
-                            <TableCell>
-                              <Button
-                                disabled={!account}
-                                onClick={() => {
-                                  setSelectedAsset(asset);
-                                  setModalOpen(true);
-                                  setModalIsBorrow(true);
-                                }}
-                              >
-                                {t('borrow')}
-                              </Button>
-                            </TableCell>
-                          </TableRow>
+                              </TableCell>
+                              <TableCell>
+                                <Box maxWidth='120px'>
+                                  <small>
+                                    {midUsdFormatter(asset.borrowBalanceUSD)}
+                                  </small>
+                                  <p className='caption text-secondary'>
+                                    {sdk
+                                      ? convertBNToNumber(
+                                          asset.borrowBalance,
+                                          asset.underlyingDecimals,
+                                        ).toFixed(2)
+                                      : '?'}{' '}
+                                    {asset.underlyingName.includes('LP')
+                                      ? 'LP'
+                                      : asset.underlyingSymbol}
+                                  </p>
+                                </Box>
+                              </TableCell>
+                              <TableCell>
+                                <Box maxWidth='120px'>
+                                  <small>
+                                    {midUsdFormatter(asset.liquidityUSD)}
+                                  </small>
+                                  <p className='caption text-secondary'>
+                                    {sdk
+                                      ? formatCompact(
+                                          convertBNToNumber(
+                                            asset.liquidity,
+                                            asset.underlyingDecimals,
+                                          ),
+                                        )
+                                      : '?'}{' '}
+                                    {asset.underlyingName.includes('LP')
+                                      ? 'LP'
+                                      : asset.underlyingSymbol}
+                                  </p>
+                                </Box>
+                              </TableCell>
+                              <TableCell>
+                                <Button
+                                  disabled={!account}
+                                  onClick={() => {
+                                    setSelectedAsset(asset);
+                                    setModalOpen(true);
+                                    setModalIsBorrow(true);
+                                  }}
+                                >
+                                  {t('borrow')}
+                                </Button>
+                              </TableCell>
+                            </TableRow>
+                            {asset.underlyingToken.toLowerCase() ===
+                              GlobalValue.tokens.COMMON.MI.address.toLowerCase() && (
+                              <TableRow>
+                                <TableCell colSpan={5}>
+                                  <Box className='maiAlertWrapper'>
+                                    <p>
+                                      <span>{t('pleaseNote')}:</span>{' '}
+                                      {t('maiNote')}
+                                    </p>
+                                  </Box>
+                                </TableCell>
+                              </TableRow>
+                            )}
+                          </>
                         );
                       })}
                     </TableBody>

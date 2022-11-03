@@ -1,21 +1,17 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useCurrency } from 'hooks/v3/Tokens';
-import usePrevious from 'hooks/usePrevious';
 import { useActiveWeb3React } from 'hooks';
 import { useParams } from 'react-router-dom';
 import {
   useV3DerivedMintInfo,
-  useV3MintState,
   useV3MintActionHandlers,
-  useInitialUSDPrices,
-  useCurrentStep,
 } from 'state/mint/v3/hooks';
 import { InitialPrice } from './containers/InitialPrice';
 import { EnterAmounts } from './containers/EnterAmounts';
 import { SelectPair } from './containers/SelectPair';
 import { SelectRange } from './containers/SelectRange';
 
-import { Currency, Percent } from '@uniswap/sdk-core';
+import { Currency } from '@uniswap/sdk-core';
 
 import './index.scss';
 import { WMATIC_EXTENDED } from 'constants/v3/addresses';
@@ -25,27 +21,19 @@ import {
   updateSelectedPreset,
 } from 'state/mint/v3/actions';
 import { Field } from 'state/mint/actions';
-import useUSDCPrice from 'hooks/v3/useUSDCPrice';
 import {
   PriceFormats,
   PriceFormatToggler,
 } from 'components/v3/PriceFomatToggler';
 import { AddLiquidityButton } from './containers/AddLiquidityButton';
-import { PoolState } from 'hooks/v3/usePools';
-import { RouterGuard } from './routing/router-guards';
-import { useAppDispatch } from 'state/hooks';
-// import SettingsTab from "components/Settings";
-import { Aftermath } from './containers/Aftermath';
 import { useWalletModalToggle } from 'state/application/hooks';
-import { isMobileOnly } from 'react-device-detect';
-import { ZERO_PERCENT } from 'constants/v3/misc';
-import { useIsExpertMode, useUserSlippageTolerance } from 'state/user/hooks';
-import { JSBI } from '@uniswap/sdk';
+import { useIsExpertMode } from 'state/user/hooks';
 import { currencyId } from 'utils/v3/currencyId';
 import { Box, Button } from '@material-ui/core';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import { SettingsModal } from 'components';
 import { ReactComponent as SettingsIcon } from 'assets/images/SettingsIcon.svg';
+import { useAppDispatch } from 'state/hooks';
 
 export function SupplyLiquidityV3() {
   const params: any = useParams();
@@ -96,6 +84,7 @@ export function SupplyLiquidityV3() {
     onFieldBInput('');
     onLeftRangeInput('');
     onRightRangeInput('');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currencyIdA, currencyIdB]);
 
   const baseCurrency = useCurrency(currencyIdA);
@@ -107,37 +96,13 @@ export function SupplyLiquidityV3() {
       ? undefined
       : currencyB;
 
-  const derivedMintInfo = useV3DerivedMintInfo(
+  const mintInfo = useV3DerivedMintInfo(
     baseCurrency ?? undefined,
     quoteCurrency ?? undefined,
     feeAmount,
     baseCurrency ?? undefined,
     undefined,
   );
-  const prevDerivedMintInfo = usePrevious({ ...derivedMintInfo });
-
-  const mintInfo = useMemo(() => {
-    if (
-      (!derivedMintInfo.pool ||
-        !derivedMintInfo.price ||
-        derivedMintInfo.noLiquidity) &&
-      prevDerivedMintInfo
-    ) {
-      return {
-        ...prevDerivedMintInfo,
-        pricesAtTicks: derivedMintInfo.pricesAtTicks,
-        ticks: derivedMintInfo.ticks,
-        parsedAmounts: derivedMintInfo.parsedAmounts,
-      };
-    }
-    return {
-      ...derivedMintInfo,
-    };
-  }, [derivedMintInfo, baseCurrency, quoteCurrency]);
-
-  const initialUSDPrices = useInitialUSDPrices();
-  const usdPriceA = useUSDCPrice(baseCurrency ?? undefined);
-  const usdPriceB = useUSDCPrice(quoteCurrency ?? undefined);
 
   const {
     onFieldAInput,
@@ -147,7 +112,13 @@ export function SupplyLiquidityV3() {
     onStartPriceInput,
   } = useV3MintActionHandlers(mintInfo.noLiquidity);
 
-  const { startPriceTypedValue } = useV3MintState();
+  const resetState = useCallback(() => {
+    dispatch(updateSelectedPreset({ preset: null }));
+    dispatch(setInitialTokenPrice({ typedValue: '' }));
+    dispatch(setInitialUSDPrices({ field: Field.CURRENCY_A, typedValue: '' }));
+    dispatch(setInitialUSDPrices({ field: Field.CURRENCY_B, typedValue: '' }));
+    onStartPriceInput('');
+  }, [dispatch, onStartPriceInput]);
 
   const handleCurrencySelect = useCallback(
     (
@@ -192,7 +163,7 @@ export function SupplyLiquidityV3() {
         }
       }
     },
-    [chainId],
+    [chainId, resetState],
   );
 
   const handleCurrencyASelect = useCallback(
@@ -211,101 +182,31 @@ export function SupplyLiquidityV3() {
     [handleCurrencySelect],
   );
 
-  const handleCurrencySwap = useCallback(() => {
-    // history.push(`/add/${currencyIdB}/${currencyIdA}`);
-    resetState();
-  }, [handleCurrencySelect, currencyIdA, currencyIdB]);
-
-  const handlePopularPairSelection = useCallback((pair: [string, string]) => {
-    const WMATIC = '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270';
-    // history.push(
-    //   `/add/${pair[0] === WMATIC ? 'MATIC' : pair[0]}/${
-    //     pair[1] === WMATIC ? 'MATIC' : pair[1]
-    //   }`,
-    // );
-    resetState();
-  }, []);
-
-  // const handleStepChange = useCallback(
-  //   (_step) => {
-  //     history.push(`/add/${currencyIdA}/${currencyIdB}/${_step}`);
-  //   },
-  //   [currencyIdA, currencyIdB, history],
-  // );
-
   const handlePriceFormat = useCallback((priceFormat: PriceFormats) => {
     setPriceFormat(priceFormat);
   }, []);
 
-  function resetState() {
-    dispatch(updateSelectedPreset({ preset: null }));
-    dispatch(setInitialTokenPrice({ typedValue: '' }));
-    dispatch(setInitialUSDPrices({ field: Field.CURRENCY_A, typedValue: '' }));
-    dispatch(setInitialUSDPrices({ field: Field.CURRENCY_B, typedValue: '' }));
-    onStartPriceInput('');
-  }
+  // hide token/usd toggler for now
+  // const hidePriceFormatter = useMemo(() => {
+  //   return true;
 
-  const [allowedSlippage] = useUserSlippageTolerance();
-  const allowedSlippagePercent: Percent = useMemo(() => {
-    return new Percent(JSBI.BigInt(allowedSlippage), JSBI.BigInt(10000));
-  }, [allowedSlippage]);
-
-  const hidePriceFormatter = useMemo(() => {
-    return true;
-
-    // return Boolean(
-    //   (mintInfo.noLiquidity ? stepInitialPrice : stepPair) &&
-    //     !initialUSDPrices.CURRENCY_A &&
-    //     !initialUSDPrices.CURRENCY_B &&
-    //     !usdPriceA &&
-    //     !usdPriceB,
-    // );
-  }, [mintInfo, usdPriceA, usdPriceB, initialUSDPrices]);
+  //   // return Boolean(
+  //   //   (mintInfo.noLiquidity ? stepInitialPrice : stepPair) &&
+  //   //     !initialUSDPrices.CURRENCY_A &&
+  //   //     !initialUSDPrices.CURRENCY_B &&
+  //   //     !usdPriceA &&
+  //   //     !usdPriceB,
+  //   // );
+  // }, [mintInfo, usdPriceA, usdPriceB, initialUSDPrices]);
+  const hidePriceFormatter = true;
 
   useEffect(() => {
     if (hidePriceFormatter) {
       handlePriceFormat(PriceFormats.TOKEN);
       setPriceFormat(PriceFormats.TOKEN);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hidePriceFormatter]);
-
-  // useEffect(() => {
-  //   return () => {
-  //     resetState();
-  //     dispatch(updateCurrentStep({ currentStep: 0 }));
-  //   };
-  // }, []);
-
-  // useEffect(() => {
-  //   switch (currentStep) {
-  //     // case 0: {
-  //     //     history.push(`/add/${currencyIdA}/${currencyIdB}/select-pair`);
-  //     //     break;
-  //     // }
-  //     case 1: {
-  //       if (!mintInfo.noLiquidity) {
-  //         history.push(`/add/${currencyIdA}/${currencyIdB}/select-range`);
-  //       } else {
-  //         history.push(`/add/${currencyIdA}/${currencyIdB}/initial-price`);
-  //       }
-  //       break;
-  //     }
-  //     case 2: {
-  //       if (!mintInfo.noLiquidity) {
-  //         history.push(`/add/${currencyIdA}/${currencyIdB}/enter-amounts`);
-  //       } else {
-  //         history.push(`/add/${currencyIdA}/${currencyIdB}/select-range`);
-  //       }
-  //       break;
-  //     }
-  //     case 3: {
-  //       if (mintInfo.noLiquidity) {
-  //         history.push(`/add/${currencyIdA}/${currencyIdB}/enter-amounts`);
-  //       }
-  //       break;
-  //     }
-  //   }
-  // }, [currencyIdA, currencyIdB, history, currentStep, mintInfo.noLiquidity]);
 
   return (
     <Box>
@@ -349,10 +250,9 @@ export function SupplyLiquidityV3() {
             baseCurrency={baseCurrency}
             quoteCurrency={quoteCurrency}
             mintInfo={mintInfo}
-            handleCurrencySwap={handleCurrencySwap}
             handleCurrencyASelect={handleCurrencyASelect}
             handleCurrencyBSelect={handleCurrencyBSelect}
-            handlePopularPairSelection={handlePopularPairSelection}
+            handlePopularPairSelection={resetState}
             priceFormat={priceFormat}
           />
         ) : (

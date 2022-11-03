@@ -206,7 +206,14 @@ export default function LiquidityChartRangeInput({
       parseFloat(leftPrice.toSignificant(5)),
       parseFloat(rightPrice.toSignificant(5)),
     ];
-  }, [leftPrice, rightPrice, leftPriceUSD, rightPriceUSD, priceFormat]);
+  }, [
+    leftPrice,
+    rightPrice,
+    priceFormat,
+    leftPriceUSD,
+    rightPriceUSD,
+    initialUSDPrices.CURRENCY_B,
+  ]);
 
   const brushLabelValue = useCallback(
     (d: 'w' | 'e', x: number) => {
@@ -226,7 +233,7 @@ export default function LiquidityChartRangeInput({
         ? `${format(Math.abs(percent) > 1 ? '.2~s' : '.2~f')(percent)}%`
         : '';
     },
-    [price, priceFormat, ticksAtLimit, mockPrice],
+    [price, ticksAtLimit, mockPrice],
   );
 
   return (

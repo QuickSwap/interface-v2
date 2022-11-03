@@ -21,7 +21,6 @@ const DragonPage: React.FC = () => {
 
   return (
     <Box width='100%' mb={3}>
-      <DragonAlert />
       <Grid container spacing={4}>
         <Grid item xs={12} sm={12} md={4}>
           {showNew && (
@@ -36,14 +35,14 @@ const DragonPage: React.FC = () => {
               />
               <Box className='dragonTitle'>
                 <h5>{t('newDragonLair')}</h5>
-                <small>{t('newDragonLairTitle')}</small>
+                <small>{t('dragonLairTitle')}</small>
               </Box>
               <DragonsLair isNew={true} />
             </Box>
           )}
           {showOld && (
             <Box className='dragonWrapper' mt='10px'>
-              <Box className='dragonBg'>
+              <Box className='dragonBg' style={{ maxHeight: 170 }}>
                 <img src={DragonBg2} alt='Dragon Lair' />
               </Box>
               <img
@@ -51,9 +50,9 @@ const DragonPage: React.FC = () => {
                 alt='Dragon Mask'
                 className='dragonMask'
               />
-              <Box className='dragonTitle'>
+              <Box className='dragonTitle' width='85%'>
                 <h5>{t('dragonLair')}</h5>
-                <small>{t('dragonLairTitle')}</small>
+                <small>{t('oldDragonLairTitle')}</small>
               </Box>
               <DragonsLair isNew={false} />
             </Box>

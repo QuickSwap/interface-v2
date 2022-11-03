@@ -12,7 +12,6 @@ import FarmCardDetail from './FarmCardDetail';
 import { Deposit } from '../../models/interfaces';
 import { IsActive } from './IsActive';
 import { ChainId, Token } from '@uniswap/sdk';
-import { WrappedTokenInfo } from 'state/lists/v3/wrappedTokenInfo';
 
 interface FarmCardProps {
   el: Deposit;
@@ -22,15 +21,18 @@ interface FarmCardProps {
 export default function FarmCard({ el, chainId }: FarmCardProps) {
   const [showMore, setShowMore] = useState(false);
 
+  const token0 = el.pool.token0;
+  const token1 = el.pool.token1;
+
   return (
     <StyledFilledBox borderRadius='16px' mt={1.5} mb={1.5}>
       <Box
         className='flex justify-between items-center flex-wrap'
-        height={80}
+        py={2}
         borderRadius={10}
       >
-        <Box className='flex justify-around' width='70%'>
-          <Box className='flex items-center'>
+        <Box className='flex flex-wrap justify-around' width='70%'>
+          <Box className='flex items-center' my={1}>
             <Box mr={2}>
               <StyledCircle>{el.id}</StyledCircle>
             </Box>
@@ -53,37 +55,36 @@ export default function FarmCard({ el, chainId }: FarmCardProps) {
             </Box>
           </Box>
 
-          <Box className='flex items-center'>
-            <DoubleCurrencyLogo
-              currency0={
-                el.pool.token0 instanceof WrappedTokenInfo
-                  ? el.pool.token0
-                  : new Token(
-                      chainId,
-                      el.token0,
-                      Number(el.pool.token0.decimals),
-                      el.pool.token0.symbol,
-                    )
-              }
-              currency1={
-                el.pool.token1 instanceof WrappedTokenInfo
-                  ? el.pool.token1
-                  : new Token(
-                      chainId,
-                      el.token1,
-                      Number(el.pool.token1.decimals),
-                      el.pool.token1.symbol,
-                    )
-              }
-              size={30}
-            />
+          <Box className='flex items-center' my={1}>
+            {chainId && (
+              <DoubleCurrencyLogo
+                currency0={
+                  new Token(
+                    chainId,
+                    token0.address,
+                    Number(token0.decimals),
+                    token0.symbol,
+                  )
+                }
+                currency1={
+                  new Token(
+                    chainId,
+                    token1.address,
+                    Number(token1.decimals),
+                    token1.symbol,
+                  )
+                }
+                size={30}
+              />
+            )}
+
             <Box className='flex-col' ml={3}>
               <StyledLabel color='#696c80' fontSize='12px'>
                 Pool
               </StyledLabel>
 
               <StyledLabel color='#ebecf2' fontSize='14px'>
-                {`${el.pool.token0.symbol} / ${el.pool.token1.symbol}`}
+                {`${token0.symbol} / ${token1.symbol}`}
               </StyledLabel>
             </Box>
           </Box>

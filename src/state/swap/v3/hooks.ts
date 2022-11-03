@@ -295,11 +295,11 @@ export function queryParametersToSwapState(
   chainId: number,
 ): SwapState {
   let inputCurrency = parseCurrencyFromURLParameter(
-    parsedQs.inputCurrency,
+    parsedQs.currency0 ?? parsedQs.inputCurrency,
     chainId,
   );
   let outputCurrency = parseCurrencyFromURLParameter(
-    parsedQs.outputCurrency,
+    parsedQs.currency1 ?? parsedQs.outputCurrency,
     chainId,
   );
   if (inputCurrency === '' && outputCurrency === '') {

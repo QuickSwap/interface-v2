@@ -3,11 +3,10 @@ import { useHistory } from 'react-router-dom';
 import { Box } from '@material-ui/core';
 import { ReactComponent as SearchIcon } from 'assets/images/SearchIcon.svg';
 import { clientV2, clientV3 } from 'apollo/client';
-import { TOKEN_SEARCH, PAIR_SEARCH, TOKEN_INFO_OLD } from 'apollo/queries';
+import { TOKEN_SEARCH, PAIR_SEARCH } from 'apollo/queries';
 import {
   getAllTokensOnUniswap,
   getAllPairsOnUniswap,
-  getBlockFromTimestamp,
   getTokenFromAddress,
 } from 'utils';
 import { GlobalConst } from 'constants/index';
@@ -22,13 +21,9 @@ import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { useIsV3 } from 'state/application/hooks';
 import { getAllPairsV3, getAllTokensV3 } from 'utils/v3-graph';
-import {
-  PAIR_SEARCH_V3,
-  TOKEN_INFO_OLD_V3,
-  TOKEN_SEARCH_V3,
-} from 'apollo/queries-v3';
 import { useActiveWeb3React } from 'hooks';
 import { getConfig } from '../../config/index';
+import { PAIR_SEARCH_V3, TOKEN_SEARCH_V3 } from 'apollo/queries-v3';
 dayjs.extend(utc);
 
 const AnalyticsSearch: React.FC = () => {
@@ -75,7 +70,10 @@ const AnalyticsSearch: React.FC = () => {
       uniqueTokens && uniqueTokens.length > 0
         ? uniqueTokens
             .sort((tokenA, tokenB) => {
-              return tokenA.oneDayVolumeUSD > tokenB.oneDayVolumeUSD ? -1 : 1;
+              return Number(tokenA.tradeVolumeUSD) >
+                Number(tokenB.tradeVolumeUSD)
+                ? -1
+                : 1;
             })
             .filter((token) => {
               if (GlobalConst.blacklists.TOKEN_BLACKLIST.includes(token.id)) {
@@ -184,7 +182,6 @@ const AnalyticsSearch: React.FC = () => {
           !v2 || isV3 ? clientV3[chainIdToUse] : clientV2[chainIdToUse];
         const tokenSearchQuery = !v2 || isV3 ? TOKEN_SEARCH_V3 : TOKEN_SEARCH;
         const pairSearchQuery = !v2 || isV3 ? PAIR_SEARCH_V3 : PAIR_SEARCH;
-        const oldTokenQuery = !v2 || isV3 ? TOKEN_INFO_OLD_V3 : TOKEN_INFO_OLD;
 
         const allTokensUniswap = await allTokensFn(chainIdToUse);
         const allPairsUniswap = await allPairsFn(chainIdToUse);
@@ -242,34 +239,7 @@ const AnalyticsSearch: React.FC = () => {
           );
         }
 
-        const foundTokensWithData = await Promise.all(
-          allTokens.map(async (token: any) => {
-            const utcCurrentTime = dayjs();
-            const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix();
-            const oneDayBlock = await getBlockFromTimestamp(
-              utcOneDayBack,
-              chainIdToUse,
-            );
-            const oneDayResult = await client.query({
-              query: oldTokenQuery(oneDayBlock, token.id),
-              fetchPolicy: 'network-only',
-            });
-            if (
-              oneDayResult &&
-              oneDayResult.data &&
-              oneDayResult.data.tokens &&
-              oneDayResult.data.tokens.length > 0
-            ) {
-              const oneDayHistory = oneDayResult.data.tokens[0];
-              const oneDayVolumeUSD =
-                (token?.tradeVolumeUSD ?? 0) -
-                (oneDayHistory?.tradeVolumeUSD ?? 0);
-              return { ...token, oneDayVolumeUSD };
-            }
-            return token;
-          }),
-        );
-        setSearchedTokens(foundTokensWithData);
+        setSearchedTokens(allTokens);
         setSearchedPairs(allPairs);
       } catch (e) {
         console.log(e);
@@ -278,7 +248,7 @@ const AnalyticsSearch: React.FC = () => {
     if (isV3 !== undefined) {
       fetchData();
     }
-  }, [searchVal, isV3]);
+  }, [searchVal, isV3, v2, chainIdToUse]);
 
   const handleClick = (e: any) => {
     if (

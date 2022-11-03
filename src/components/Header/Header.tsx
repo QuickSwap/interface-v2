@@ -64,6 +64,7 @@ const Header: React.FC = () => {
   const showPredictions = config['predictions']['available'];
   const showAnalytics = config['analytics']['available'];
   const showLending = config['lending']['available'];
+  const showGamingHub = config['gamingHub']['available'];
 
   const { isV3 } = useIsV3();
 
@@ -111,6 +112,16 @@ const Header: React.FC = () => {
       id: 'predictions-page-link',
       isExternal: true,
       externalLink: process?.env?.REACT_APP_PREDICTIONS_URL || '',
+      isNew: true,
+    });
+  }
+  if (showGamingHub) {
+    menuItems.push({
+      link: '/gamehub',
+      text: 'Gaming Hub',
+      id: 'gamehub-page-link',
+      isExternal: true,
+      externalLink: process?.env?.REACT_APP_GAMEHUB_URL || '',
       isNew: true,
     });
   }

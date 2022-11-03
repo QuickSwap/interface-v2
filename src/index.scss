@@ -8,6 +8,28 @@ body {
   margin: 0;
 }
 
+.loadingDots {
+  &::after {
+    display: inline-block;
+    animation: ellipsis 1.25s infinite;
+    content: '.';
+    width: 1em;
+    text-align: left;
+  }
+
+  @keyframes ellipsis {
+    0% {
+      content: '.';
+    }
+    33% {
+      content: '..';
+    }
+    66% {
+      content: '...';
+    }
+  }
+}
+
 [data-reach-dialog-overlay] {
   position: fixed;
   top: 0;
@@ -112,6 +134,7 @@ body {
   padding: 8px 12px;
   border: 1px solid $secondary2;
   border-radius: 10px;
+  cursor: pointer;
   & p {
     color: $textHint;
   }

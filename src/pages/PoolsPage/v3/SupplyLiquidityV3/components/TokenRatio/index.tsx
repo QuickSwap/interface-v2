@@ -55,7 +55,12 @@ export function TokenRatio({
       setRDecButton(false);
     }
     onUserLeftInput(decrementLeft());
-  }, [disableLeftIncButton, decrementLeft, onUserLeftInput]);
+  }, [
+    disableLeftIncButton,
+    disableRightDecButton,
+    decrementLeft,
+    onUserLeftInput,
+  ]);
 
   const handleDecrementRight = useCallback(() => {
     onUserRightInput(decrementRight());
@@ -96,9 +101,8 @@ export function TokenRatio({
     }
     onUserRightInput(incrementRight());
   }, [
+    disableLeftIncButton,
     disableRightDecButton,
-    upperPrice,
-    lowerPrice,
     incrementRight,
     onUserRightInput,
   ]);

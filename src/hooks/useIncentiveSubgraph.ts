@@ -33,7 +33,6 @@ import {
   Deposit,
   DetachedEternalFarming,
   EternalFarming,
-  FarmingEvent,
   FormattedEternalFarming,
   FormattedRewardInterface,
   PoolChartSubgraph,
@@ -42,8 +41,9 @@ import {
   SubgraphResponse,
   TickFarming,
   TokenSubgraph,
+  Aprs,
+  FutureFarmingEvent,
 } from '../models/interfaces';
-import { Aprs, FutureFarmingEvent } from '../models/interfaces';
 import { fetchEternalFarmAPR, fetchEternalFarmTVL } from 'utils/api';
 import { useSelectedTokenList } from 'state/lists/v3/hooks';
 import { getV3TokenFromAddress } from 'utils';
@@ -200,7 +200,23 @@ export function useFarmingSubgraph() {
         throw new Error(`${error.name} ${error.message}`);
       }
 
-      return pools[0];
+      return {
+        ...pools[0],
+        token0: {
+          ...pools[0].token0,
+          symbol:
+            pools[0].token0.symbol.toLowerCase() === 'mimatic'
+              ? 'MAI'
+              : pools[0].token0.symbol,
+        },
+        token1: {
+          ...pools[0].token1,
+          symbol:
+            pools[0].token1.symbol.toLowerCase() === 'mimatic'
+              ? 'MAI'
+              : pools[0].token1.symbol,
+        },
+      };
     } catch (err) {
       throw new Error('Fetch pools ' + err);
     }

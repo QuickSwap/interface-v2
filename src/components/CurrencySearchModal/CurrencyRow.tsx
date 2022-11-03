@@ -179,7 +179,9 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
                   }
                 }}
               >
-                <span>{customAdded ? `(${t('remove')})` : `(${t('add')}`}</span>
+                <span>
+                  {customAdded ? `(${t('remove')})` : `(${t('add')})`}
+                </span>
               </Box>
             </Box>
           )}
@@ -196,7 +198,7 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
                 {(
                   Number(balance.toExact()) *
                   (usdPrice ? Number(usdPrice.toSignificant()) : 0)
-                ).toLocaleString()}
+                ).toLocaleString('us')}
               </span>
             </>
           ) : account ? (

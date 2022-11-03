@@ -6,7 +6,7 @@ import React, {
   useState,
 } from 'react';
 import { Currency, CurrencyAmount, Token, TradeType } from '@uniswap/sdk-core';
-import { Token as TokenV2 } from '@uniswap/sdk';
+import { Token as TokenV2, ChainId } from '@uniswap/sdk';
 import { Trade as V3Trade } from 'lib/src/trade';
 import JSBI from 'jsbi';
 import { ArrowDown, CheckCircle, HelpCircle, Info } from 'react-feather';
@@ -73,19 +73,15 @@ import { ReactComponent as ExchangeIcon } from 'assets/images/ExchangeIcon.svg';
 import { Box } from '@material-ui/core';
 import { StyledButton } from 'components/v3/Common/styledElements';
 import { toV3Currency } from 'constants/v3/addresses';
-import { ChainId } from '@uniswap/sdk';
 
-const SwapV3Page: React.FC<{ currency0?: string; currency1?: string }> = ({
-  currency0,
-  currency1,
-}) => {
+const SwapV3Page: React.FC = () => {
   const { account, chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ?? ChainId.MATIC;
   const nativeCurrency = TokenV2.ETHER[chainIdToUse];
   const history = useHistory();
   const loadedUrlParams = useDefaultsFromURLSearch();
-  const inputCurrencyId = currency0 ?? loadedUrlParams?.inputCurrencyId;
-  const outputCurrencyId = currency1 ?? loadedUrlParams?.outputCurrencyId;
+  const inputCurrencyId = loadedUrlParams?.inputCurrencyId;
+  const outputCurrencyId = loadedUrlParams?.outputCurrencyId;
   const paramInputCurrency = useCurrency(inputCurrencyId);
   const paramOutputCurrency = useCurrency(outputCurrencyId);
   // token warning stuff
@@ -281,7 +277,13 @@ const SwapV3Page: React.FC<{ currency0?: string; currency1?: string }> = ({
         label: [trade?.inputAmount.currency.symbol, toggledVersion].join('/'),
       });
     }
-  }, [approveCallback, gatherPermitSignature, signatureState]);
+  }, [
+    approveCallback,
+    gatherPermitSignature,
+    signatureState,
+    toggledVersion,
+    trade?.inputAmount.currency.symbol,
+  ]);
 
   // check if user has gone through approval process, used to show two step buttons, reset on token change
   const [approvalSubmitted, setApprovalSubmitted] = useState<boolean>(false);
@@ -302,8 +304,7 @@ const SwapV3Page: React.FC<{ currency0?: string; currency1?: string }> = ({
   );
 
   // the callback to execute the swap
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  //@ts-ignore
+
   const { callback: swapCallback, error: swapCallbackError } = useSwapCallback(
     trade,
     allowedSlippage,
@@ -371,7 +372,6 @@ const SwapV3Page: React.FC<{ currency0?: string; currency1?: string }> = ({
     recipientAddress,
     account,
     trade,
-    singleHopOnly,
   ]);
 
   // errors
@@ -414,8 +414,6 @@ const SwapV3Page: React.FC<{ currency0?: string; currency1?: string }> = ({
 
   const handleAcceptChanges = useCallback(() => {
     setSwapState({
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      //@ts-ignore
       tradeToConfirm: trade,
       swapErrorMessage,
       txHash,
@@ -484,6 +482,7 @@ const SwapV3Page: React.FC<{ currency0?: string; currency1?: string }> = ({
     if (paramOutputCurrency) {
       handleOutputSelect(paramOutputCurrency);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paramInputCurrency, paramOutputCurrency]);
 
   //TODO

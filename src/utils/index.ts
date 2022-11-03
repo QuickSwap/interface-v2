@@ -5,7 +5,13 @@ import { Contract } from '@ethersproject/contracts';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import weekOfYear from 'dayjs/plugin/weekOfYear';
-import { blockClient, clientV2, clientV3, txClient } from 'apollo/client';
+import {
+  blockClient,
+  clientV2,
+  txClient,
+  clientV3,
+  farmingClient,
+} from 'apollo/client';
 import {
   GET_BLOCK,
   GLOBAL_DATA,
@@ -81,6 +87,10 @@ import { useActiveWeb3React } from 'hooks';
 import { NEW_QUICK, OLD_QUICK } from 'constants/v3/addresses';
 import { getConfig } from 'config';
 import { MATIC_PRICE_V3 } from 'apollo/queries-v3';
+import {
+  FETCH_ETERNAL_FARM_FROM_POOL,
+  FETCH_POOL_FROM_TOKENS,
+} from './graphql-queries';
 
 dayjs.extend(utc);
 dayjs.extend(weekOfYear);
@@ -425,6 +435,8 @@ export const getTokenInfo = async (
             currentLiquidityUSD ?? 0,
             oldLiquidityUSD ?? 0,
           );
+          data.symbol =
+            data.symbol.toLowerCase() === 'mimatic' ? 'MAI' : data.symbol;
 
           // new tokens
           if (!oneDayHistory && data) {
@@ -565,6 +577,8 @@ export const getTopTokens = async (
             currentLiquidityUSD ?? 0,
             oldLiquidityUSD ?? 0,
           );
+          data.symbol =
+            data.symbol.toLowerCase() === 'mimatic' ? 'MAI' : data.symbol;
 
           // new tokens
           if (!oneDayHistory && data) {
@@ -1134,6 +1148,20 @@ const parseData = (
   data.oneDayVolumeUntracked = oneDayVolumeUntracked;
   data.oneWeekVolumeUntracked = oneWeekVolumeUntracked;
   data.volumeChangeUntracked = volumeChangeUntracked;
+  data.token0 = {
+    ...data.token0,
+    symbol:
+      data.token0.symbol.toLowerCase() === 'mimatic'
+        ? 'MAI'
+        : data.token0.symbol,
+  };
+  data.token1 = {
+    ...data.token1,
+    symbol:
+      data.token1.symbol.toLowerCase() === 'mimatic'
+        ? 'MAI'
+        : data.token1.symbol,
+  };
 
   // set liquidity properties
   data.trackedReserveUSD = data.trackedReserveETH * ethPrice;
@@ -1679,7 +1707,7 @@ export function getFormattedPrice(price: number) {
     return '>-0.001';
   } else {
     const beforeSign = price > 0 ? '+' : '';
-    return beforeSign + price.toLocaleString();
+    return beforeSign + price.toLocaleString('us');
   }
 }
 
@@ -1718,7 +1746,7 @@ export function formatAPY(apy: number) {
   if (apy > 100000000) {
     return '>100000000';
   } else {
-    return apy.toLocaleString();
+    return apy.toLocaleString('us');
   }
 }
 
@@ -1732,7 +1760,7 @@ export function formatNumber(
   if (absNumber > 0) {
     const digits = Math.ceil(Math.log10(1 / absNumber));
     if (digits < 3) {
-      return Number(unformatted).toLocaleString();
+      return Number(unformatted).toLocaleString('us');
     } else {
       return Number(unformatted).toFixed(digits + showDigits);
     }
@@ -1913,7 +1941,7 @@ export function useLairDQUICKAPY(isNew: boolean, lair?: LairInfo) {
   if (temp > 100) {
     return '> 10000';
   } else {
-    return Number(temp * 100).toLocaleString();
+    return Number(temp * 100).toLocaleString('us');
   }
 }
 
@@ -2056,7 +2084,7 @@ export function formatTokenAmount(
   if (!amount) return '-';
   const amountStr = amount.toExact();
   if (Math.abs(Number(amountStr)) > 1) {
-    return Number(amountStr).toLocaleString();
+    return Number(amountStr).toLocaleString('us');
   }
   return amount.toSignificant(digits);
 }
@@ -2076,7 +2104,7 @@ export function formatMulDivTokenAmount(
   if (operator === 'mul') resultAmount = exactAmount * Number(otherAmount);
   else resultAmount = exactAmount / Number(otherAmount);
 
-  if (Math.abs(resultAmount) > 1) return resultAmount.toLocaleString();
+  if (Math.abs(resultAmount) > 1) return resultAmount.toLocaleString('us');
 
   if (operator === 'mul')
     return amount.multiply(otherAmount.toString()).toSignificant(digits);
@@ -2097,7 +2125,7 @@ export function getUSDString(usdValue?: CurrencyAmount) {
   if (!usdValue) return '$0';
   const value = Number(usdValue.toExact());
   if (value > 0 && value < 0.001) return '< $0.001';
-  return `$${value.toLocaleString()}`;
+  return `$${value.toLocaleString('us')}`;
 }
 
 export function getEarnedUSDSyrup(syrup?: SyrupInfo) {
@@ -2105,7 +2133,7 @@ export function getEarnedUSDSyrup(syrup?: SyrupInfo) {
   const earnedUSD =
     Number(syrup.earnedAmount.toExact()) * Number(syrup.rewardTokenPriceinUSD);
   if (earnedUSD > 0 && earnedUSD < 0.001) return '< $0.001';
-  return `$${earnedUSD.toLocaleString()}`;
+  return `$${earnedUSD.toLocaleString('us')}`;
 }
 
 export function getEarnedUSDLPFarm(stakingInfo: StakingInfo | undefined) {
@@ -2115,7 +2143,7 @@ export function getEarnedUSDLPFarm(stakingInfo: StakingInfo | undefined) {
   if (earnedUSD < 0.001 && earnedUSD > 0) {
     return '< $0.001';
   }
-  return `$${earnedUSD.toLocaleString()}`;
+  return `$${earnedUSD.toLocaleString('us')}`;
 }
 
 export function getEarnedUSDDualFarm(stakingInfo: DualStakingInfo | undefined) {
@@ -2129,7 +2157,7 @@ export function getEarnedUSDDualFarm(stakingInfo: DualStakingInfo | undefined) {
   if (earnedUSD < 0.001 && earnedUSD > 0) {
     return '< $0.001';
   }
-  return `$${earnedUSD.toLocaleString()}`;
+  return `$${earnedUSD.toLocaleString('us')}`;
 }
 
 export function isSupportedNetwork(ethereum: any) {
@@ -2210,7 +2238,9 @@ export function getCallStateResult(callState?: CallState) {
 }
 
 export const convertBNToNumber = (value: BN, decimals: BN) => {
-  return Number(value) / 10 ** Number(decimals);
+  return Number(
+    formatUnits(BigNumber.from(value.toString()), Number(decimals)),
+  );
 };
 
 export const convertNumbertoBN = (
@@ -2218,10 +2248,54 @@ export const convertNumbertoBN = (
   decimals: number,
   web3: Web3,
 ) => {
-  const valueWithoutDecimal = Number(value.toFixed(0));
+  const valueWithoutDecimal = Math.floor(value);
   const decimalNumber = value - valueWithoutDecimal;
+
   return web3.utils
     .toBN(valueWithoutDecimal)
     .mul(web3.utils.toBN(10 ** decimals))
-    .add(web3.utils.toBN((decimalNumber * 10 ** decimals).toFixed(0)));
+    .add(
+      web3.utils.toBN(Math.floor(decimalNumber * 10 ** decimals).toString()),
+    );
+};
+
+export const getEternalFarmFromTokens = async (
+  token0: string,
+  token1: string,
+) => {
+  try {
+    const result = await clientV3.query({
+      query: FETCH_POOL_FROM_TOKENS(),
+      variables: { token0, token1 },
+      fetchPolicy: 'network-only',
+    });
+    const poolID =
+      result &&
+      result.data &&
+      result.data.pools0 &&
+      result.data.pools0.length > 0
+        ? result.data.pools0[0].id
+        : result &&
+          result.data &&
+          result.data.pools1 &&
+          result.data.pools1.length > 0
+        ? result.data.pools1[0].id
+        : undefined;
+    if (!poolID) return;
+    const eternalFarmResult = await farmingClient.query({
+      query: FETCH_ETERNAL_FARM_FROM_POOL([poolID]),
+      fetchPolicy: 'network-only',
+    });
+    const eternalFarm =
+      eternalFarmResult &&
+      eternalFarmResult.data &&
+      eternalFarmResult.data.eternalFarmings &&
+      eternalFarmResult.data.eternalFarmings.length > 0
+        ? eternalFarmResult.data.eternalFarmings[0]
+        : undefined;
+
+    return eternalFarm;
+  } catch (e) {
+    return;
+  }
 };

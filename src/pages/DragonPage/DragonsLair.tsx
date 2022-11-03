@@ -68,16 +68,15 @@ const DragonsLair: React.FC<{ isNew: boolean }> = ({ isNew }) => {
         <small>{t('tvl')}</small>
         <small>
           $
-          {(lairInfoToUse
-            ? Number(lairInfoToUse.totalQuickBalance.toExact()) * quickPrice
-            : 0
-          ).toLocaleString()}
+          {(
+            Number(lairInfoToUse.totalQuickBalance.toExact()) * quickPrice
+          ).toLocaleString('us')}
         </small>
       </Box>
 
       <Box className='dragonLairRow'>
         <small>{t('apy')}</small>
-        <small className='text-success'>{isNew ? 'TBD' : `${APY}%`}</small>
+        <small className='text-success'>{APY}%</small>
       </Box>
 
       <Box className='dragonLairRow'>
@@ -87,23 +86,25 @@ const DragonsLair: React.FC<{ isNew: boolean }> = ({ isNew }) => {
       <Box className='quickTodQuick border-secondary1'>
         <CurrencyLogo currency={quickToken} />
         <small style={{ margin: '0 8px' }}>
-          {isQUICKRate ? 1 : dQUICKtoQUICK?.toLocaleString()} QUICK =
+          {isQUICKRate ? 1 : Number(dQUICKtoQUICK).toLocaleString('us')} QUICK =
         </small>
         <CurrencyLogo currency={quickToken} />
         <small style={{ margin: '0 8px' }}>
-          {isQUICKRate ? QUICKtodQUICK?.toLocaleString() : 1} dQUICK
+          {isQUICKRate ? Number(QUICKtodQUICK).toLocaleString('us') : 1} dQUICK
         </small>
         <PriceExchangeIcon
           className='cursor-pointer'
           onClick={() => setIsQUICKRate(!isQUICKRate)}
         />
       </Box>
-      <Box
-        className='stakeButton bg-primary'
-        onClick={() => setOpenStakeModal(true)}
-      >
-        <small>{t('stake')}</small>
-      </Box>
+      {isNew && (
+        <Box
+          className='stakeButton bg-primary'
+          onClick={() => setOpenStakeModal(true)}
+        >
+          <small>{t('stake')}</small>
+        </Box>
+      )}
       <Box
         className='stakeButton bg-transparent'
         onClick={() => setOpenUnstakeModal(true)}

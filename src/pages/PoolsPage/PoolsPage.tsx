@@ -38,6 +38,7 @@ const PoolsPage: React.FC = () => {
         : true,
     );
   }, [v2, v3, isV3]);
+  const helpURL = process.env.REACT_APP_HELP_URL;
 
   return (
     <Box width='100%' mb={3}>
@@ -52,10 +53,15 @@ const PoolsPage: React.FC = () => {
           ;
         </Box>
 
-        <Box className='helpWrapper' style={{ alignSelf: 'flex-end' }}>
-          <small>{t('help')}</small>
-          <HelpIcon />
-        </Box>
+        {helpURL && (
+          <Box
+            className='helpWrapper'
+            onClick={() => window.open(helpURL, '_blank')}
+          >
+            <small>{t('help')}</small>
+            <HelpIcon />
+          </Box>
+        )}
       </Box>
       <Grid container spacing={4}>
         <Grid item xs={12} sm={12} md={5}>

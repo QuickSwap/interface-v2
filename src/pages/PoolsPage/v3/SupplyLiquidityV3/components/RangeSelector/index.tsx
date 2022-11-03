@@ -243,12 +243,17 @@ function RangePart({
       onUserInput(localTokenValue);
     }
   }, [
-    localTokenValue,
+    isUSD,
+    usdPriceB,
+    initialUSDPrices.CURRENCY_B,
+    initialTokenPrice,
+    usdPriceA,
+    tokenB?.wrapped.address,
+    USDC.address,
+    onUserInput,
     localUSDValue,
     tokenValue,
-    valueUSD,
-    usdPriceB,
-    onUserInput,
+    localTokenValue,
   ]);
 
   // for button clicks
@@ -280,7 +285,7 @@ function RangePart({
       setLocalTokenValue('');
       setLocalUSDValue('');
     }
-  }, [usdPriceB, initialTokenPrice, initialUSDPrices, value]);
+  }, [usdPriceB, initialTokenPrice, initialUSDPrices, value, usdPriceA]);
 
   return (
     <Box className='price-range-part text-center'>

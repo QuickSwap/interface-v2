@@ -56,7 +56,7 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
 
   const depositAmount =
     syrup && syrup.valueOfTotalStakedAmountInUSDC
-      ? `$${Number(syrup.valueOfTotalStakedAmountInUSDC).toLocaleString()}`
+      ? `$${Number(syrup.valueOfTotalStakedAmountInUSDC).toLocaleString('us')}`
       : `${formatTokenAmount(syrup?.totalStakedAmount)} ${
           syrup?.stakingToken.symbol
         }`;
@@ -171,7 +171,7 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
                   <small>
                     {syrup.rate >= 1000000
                       ? formatCompact(syrup.rate)
-                      : syrup.rate.toLocaleString()}{' '}
+                      : syrup.rate.toLocaleString('us')}{' '}
                     {syrup.token.symbol}
                     <span className='text-secondary'> / {t('day')}</span>
                   </small>
@@ -206,7 +206,7 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
                     ? (
                         stakingTokenPrice *
                         Number(userLiquidityUnstaked.toExact())
-                      ).toLocaleString()
+                      ).toLocaleString('us')
                     : 0}
                 </small>
               </small>
@@ -220,7 +220,7 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
                   {syrup.stakedAmount
                     ? `$${(
                         stakingTokenPrice * Number(syrup.stakedAmount.toExact())
-                      ).toLocaleString()}`
+                      ).toLocaleString('us')}`
                     : '-'}
                 </small>
               </small>

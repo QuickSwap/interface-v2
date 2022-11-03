@@ -128,7 +128,7 @@ export default function PositionListItem({
       return { ...prevPositionDetails };
     }
     return { ...positionDetails };
-  }, [positionDetails]);
+  }, [positionDetails, prevPositionDetails]);
 
   const token0 = useToken(_token0Address);
   const token1 = useToken(_token1Address);
@@ -147,7 +147,7 @@ export default function PositionListItem({
       return [prevPoolState, prevPool];
     }
     return [poolState, pool];
-  }, [pool, poolState]);
+  }, [pool, poolState, prevPool, prevPoolState]);
 
   const position = useMemo(() => {
     if (_pool) {
@@ -191,49 +191,58 @@ export default function PositionListItem({
       dispatch(setShowNewestPosition({ showNewestPosition: false }));
       document.querySelector('#newest')?.scrollIntoView({ behavior: 'smooth' });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <Box className='v3-pool-liquidity-item'>
-      <Box className='flex items-center'>
+      <Box
+        width={
+          _poolState !== PoolState.LOADING && !hideExpand
+            ? 'calc(100% - 32px)'
+            : '100%'
+        }
+        className='flex items-center'
+      >
         <Box className='v3-pool-item-tokenId-wrapper'>
           <p>NFT ID:</p>
           <span>{positionDetails.tokenId.toString()}</span>
         </Box>
-        <Box>
-          <Box className='flex items-center'>
-            <Box className='flex' mr={1}>
-              <DoubleCurrencyLogo
-                currency0={currencyQuote}
-                currency1={currencyBase}
-                size={24}
-              />
+        <Box flex={1}>
+          <Box className='flex items-center flex-wrap' my={-0.5}>
+            <Box className='flex items-center' mr={1} my={0.5}>
+              <Box className='flex' mr={1}>
+                <DoubleCurrencyLogo
+                  currency0={currencyQuote}
+                  currency1={currencyBase}
+                  size={24}
+                />
+              </Box>
+              <p>
+                {currencyQuote?.symbol}-{currencyBase?.symbol}
+              </p>
             </Box>
-            <p>
-              {currencyQuote?.symbol}-{currencyBase?.symbol}
-            </p>
-            {_onFarming ? (
+            {_onFarming && (
               <Box
                 className='flex items-center bg-primary cursor-pointer'
                 padding='0 5px'
                 height='24px'
-                borderRadius='4px'
-                ml={1}
+                borderRadius='8px'
+                mr={1}
+                my={0.5}
                 onClick={() => history.push(farmingLink)}
                 color='white'
               >
-                <p className='caption'>Farming</p>
-                <Box className='flex' ml='5px'>
-                  <ArrowRight size={14} />
+                <p className='span'>Farming</p>
+                <Box className='flex' ml='3px'>
+                  <ArrowRight size={12} />
                 </Box>
               </Box>
-            ) : (
-              <div />
             )}
-            <Box ml={1}>
+            <Box mr={1} my={0.5}>
               <RangeBadge removed={removed} inRange={!outOfRange} />
             </Box>
-            <Box ml={1}>
+            <Box my={0.5}>
               <Badge
                 text={`${new Percent(
                   pool?.fee || 100,

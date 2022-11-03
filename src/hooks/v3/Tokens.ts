@@ -18,7 +18,6 @@ function useTokensFromMap(
   includeUserAdded: boolean,
 ): { [address: string]: Token } {
   const { chainId } = useActiveWeb3React();
-  const userAddedTokens: Token[] = []; /// useUserAddedTokens();
 
   return useMemo(() => {
     if (!chainId) return {};
@@ -30,6 +29,8 @@ function useTokensFromMap(
       newMap[address] = tokenMap[chainId][address].token;
       return newMap;
     }, {});
+
+    const userAddedTokens: Token[] = []; /// useUserAddedTokens();
 
     if (includeUserAdded) {
       return (
@@ -48,7 +49,7 @@ function useTokensFromMap(
     }
 
     return mapWithoutUrls;
-  }, [chainId, userAddedTokens, tokenMap, includeUserAdded]);
+  }, [chainId, tokenMap, includeUserAdded]);
 }
 
 export function useAllTokens(): { [address: string]: Token } {

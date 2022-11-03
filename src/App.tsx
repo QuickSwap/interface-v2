@@ -16,8 +16,8 @@ const LandingPage = lazy(() => import('./pages/LandingPage'));
 const PoolsPage = lazy(() => import('./pages/PoolsPage'));
 const SwapPage = lazy(() => import('./pages/SwapPage'));
 const ConvertQUICKPage = lazy(() => import('./pages/ConvertQUICKPage'));
-const LendPage = lazy(() => import('./pages/LendPage'));
-const LendDetailPage = lazy(() => import('./pages/LendPage/LendDetailPage'));
+// const LendPage = lazy(() => import('./pages/LendPage'));
+// const LendDetailPage = lazy(() => import('./pages/LendPage/LendDetailPage'));
 const AnalyticsTokenDetails = lazy(() =>
   import('./pages/AnalyticsTokenDetails'),
 );
@@ -38,12 +38,12 @@ const RemoveLiquidityV3Page = lazy(() =>
 const IncreaseLiquidityV3Page = lazy(() =>
   import('./pages/PoolsPage/v3/IncreaseLiquidityPage'),
 );
-const MigrateV2LiquidityPage = lazy(() =>
-  import('./pages/PoolsPage/v3/MigrateV2LiquidityPage'),
-);
-const MigrateV2DetailsPage = lazy(() =>
-  import('./pages/PoolsPage/v3/MigrateV2DetailsPage'),
-);
+// const MigrateV2LiquidityPage = lazy(() =>
+//   import('./pages/PoolsPage/v3/MigrateV2LiquidityPage'),
+// );
+// const MigrateV2DetailsPage = lazy(() =>
+//   import('./pages/PoolsPage/v3/MigrateV2DetailsPage'),
+// );
 const PositionPage = lazy(() => import('./pages/PoolsPage/v3/PositionPage'));
 
 import { PageLayout } from 'layouts';
@@ -144,7 +144,7 @@ const App: React.FC = () => {
   const showConvert = config['convert']['available'];
   const showPredictions = config['predictions']['available'];
   const showAnalytics = config['analytics']['available'];
-  const showLending = config['lending']['available'];
+  // const showLending = config['lending']['available'];
   const showMigrate = config['migrate']['available'];
   const v2 = config['v2'];
   const v3 = config['v3'];
@@ -173,7 +173,7 @@ const App: React.FC = () => {
                           </PageLayout>
                         </Route>
                       )}
-                      {showLending && (
+                      {/* {showLending && (
                         <Route exact path='/lend'>
                           <PageLayout>
                             <LendPage />
@@ -186,7 +186,7 @@ const App: React.FC = () => {
                             <LendDetailPage />
                           </PageLayout>
                         </Route>
-                      )}
+                      )} */}
                       {showPool && (
                         <Route exact path='/pools/:version?'>
                           <PageLayout>
@@ -228,7 +228,7 @@ const App: React.FC = () => {
                           </PageLayout>
                         </Route>
                       )}
-                      {showMigrate && (
+                      {/* {showMigrate && (
                         <Route exact path='/migrate'>
                           <PageLayout>
                             <MigrateV2LiquidityPage />
@@ -241,7 +241,7 @@ const App: React.FC = () => {
                             <MigrateV2DetailsPage />
                           </PageLayout>
                         </Route>
-                      )}
+                      )} */}
                       {showFarm && (
                         <Route exact path='/farm/:version?'>
                           <PageLayout>

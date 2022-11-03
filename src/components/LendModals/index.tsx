@@ -40,13 +40,14 @@ import 'components/styles/LendModal.scss';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 import { useBorrowLimit } from 'hooks/marketxyz/useBorrowLimit';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
-import { GlobalValue } from 'constants/index';
 import { useEthPrice } from 'state/application/hooks';
 import useUSDCPrice from 'utils/useUSDCPrice';
 import { Link } from 'react-router-dom';
 import { useMarket } from 'hooks/marketxyz/useMarket';
 import { ChainId } from '@uniswap/sdk';
 import { LENDING_LENS } from 'constants/v3/addresses';
+import { formatUnits, parseUnits } from 'ethers/lib/utils';
+import { BigNumber } from 'ethers';
 
 interface QuickModalContentProps {
   borrow?: boolean;
@@ -66,8 +67,9 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
   const chainIdToUse = chainId ? chainId : ChainId.MATIC;
   const { ethPrice } = useEthPrice();
   const assetUSDPriceObj = useUSDCPrice(getPoolAssetToken(asset, chainId));
+  const assetDecimals = asset.underlyingDecimals.toNumber();
   const assetUSDPrice = assetUSDPriceObj
-    ? Number(assetUSDPriceObj.toFixed(asset.underlyingDecimals.toNumber()))
+    ? parseUnits(assetUSDPriceObj.toFixed(assetDecimals), assetDecimals)
     : undefined;
 
   const [assetApproved, setAssetApproved] = useState(false);
@@ -85,44 +87,82 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
   );
 
   const [enableAsCollateral, setEnableAsCollateral] = useState<boolean>(true);
-  const [maxAmount, setMaxAmount] = useState<number | undefined>(undefined);
+  const [maxAmount, setMaxAmount] = useState<BigNumber | undefined>(undefined);
   const [maxAmountError, setMaxAmountError] = useState(false);
   const [currentAsset, setCurrentAsset] = useState<USDPricedPoolAsset>(asset);
   const [updatedAsset, setUpdatedAsset] = useState<
     USDPricedPoolAsset | undefined
   >(undefined);
 
+  const valueBN = useMemo(() => {
+    const digitStr = value.substring(value.indexOf('.'));
+    const decimalStr = value.substring(0, value.indexOf('.'));
+    let valueStr = '0';
+    if (!value.length) {
+      valueStr = '0';
+    } else if (value.indexOf('.') === -1) {
+      valueStr = value;
+    } else if (digitStr.length === 1) {
+      valueStr = decimalStr;
+    } else if (digitStr.length > assetDecimals + 1) {
+      valueStr = decimalStr + digitStr.slice(0, assetDecimals + 1);
+    } else {
+      valueStr = decimalStr + digitStr;
+    }
+    return parseUnits(valueStr, assetDecimals);
+  }, [value, assetDecimals]);
+
+  const minBorrowAmountBN = useMemo(() => {
+    if (!ethPrice.price) return;
+    const amountStr = (ethPrice.price * 0.05).toString();
+    const digitStr = amountStr.substring(amountStr.indexOf('.'));
+    const decimalStr = amountStr.substring(0, amountStr.indexOf('.'));
+    let amountStrDigits = '0';
+    if (!amountStr.length) {
+      amountStrDigits = '0';
+    } else if (amountStr.indexOf('.') === -1) {
+      amountStrDigits = amountStr;
+    } else if (digitStr.length === 1) {
+      amountStrDigits = decimalStr;
+    } else if (digitStr.length > assetDecimals + 1) {
+      amountStrDigits = decimalStr + digitStr.slice(0, assetDecimals + 1);
+    } else {
+      amountStrDigits = decimalStr + digitStr;
+    }
+    return parseUnits(amountStrDigits, assetDecimals);
+  }, [ethPrice.price, assetDecimals]);
+
   const buttonDisabled =
     !account ||
     loading ||
     !sdk ||
     Number(value) <= 0 ||
-    maxAmount === undefined ||
-    Number(value) > maxAmount ||
+    !maxAmount ||
+    valueBN.gt(maxAmount) ||
     !updatedAsset ||
     (modalType === 'borrow'
       ? !assetUSDPrice ||
-        !ethPrice.price ||
-        Number(value) * assetUSDPrice < 0.05 * ethPrice.price
+        !minBorrowAmountBN ||
+        valueBN.mul(assetUSDPrice).lt(minBorrowAmountBN)
       : false);
   const buttonText = useMemo(() => {
     if (!account) {
       return t('connectWallet');
-    } else if (Number(value) <= 0) {
+    } else if (valueBN.lte(BigNumber.from('0'))) {
       return t('enterAmount');
-    } else if (maxAmount === undefined) {
+    } else if (!maxAmount) {
       if (maxAmountError) {
         return t('errorFetchingMaxAmount');
       } else {
         return t('fetchingMaxAmount');
       }
-    } else if (Number(value) > maxAmount) {
+    } else if (valueBN.gt(maxAmount)) {
       return t('exceedMaxAmount');
     } else if (
       modalType === 'borrow' &&
       (!assetUSDPrice ||
-        !ethPrice.price ||
-        Number(value) * assetUSDPrice < 0.05 * ethPrice.price)
+        !minBorrowAmountBN ||
+        valueBN.mul(assetUSDPrice).lt(minBorrowAmountBN))
     ) {
       return t('marketBorrowMinError');
     } else if (
@@ -143,16 +183,16 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
     return t('confirm');
   }, [
     account,
-    value,
+    valueBN,
     maxAmount,
     modalType,
     assetUSDPrice,
-    ethPrice.price,
+    minBorrowAmountBN,
+    currentAsset.membership,
+    enableAsCollateral,
+    assetApproved,
     t,
     maxAmountError,
-    currentAsset,
-    assetApproved,
-    enableAsCollateral,
   ]);
 
   const numValue = isNaN(Number(value)) ? 0 : Number(value);
@@ -182,27 +222,27 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
         currentAsset.cToken.sdk,
         LENDING_LENS[chainIdToUse],
       );
-      const underlyingBalance = convertBNToNumber(
-        currentAsset.underlyingBalance,
-        currentAsset.underlyingDecimals,
+      const assetBalanceBN = parseUnits(
+        currentAsset.underlyingBalance.toString(),
+        0,
+      );
+      const borrowBalanceBN = parseUnits(
+        currentAsset.borrowBalance.toString(),
+        0,
       );
       if (modalType === 'supply') {
-        setMaxAmount(underlyingBalance);
+        setMaxAmount(assetBalanceBN);
       } else if (modalType === 'repay') {
-        const debt = convertBNToNumber(
-          currentAsset.borrowBalance,
-          currentAsset.underlyingDecimals,
+        setMaxAmount(
+          assetBalanceBN.gt(borrowBalanceBN) ? borrowBalanceBN : assetBalanceBN,
         );
-        setMaxAmount(Math.min(underlyingBalance, debt));
       } else if (modalType === 'withdraw') {
         try {
           const maxRedeem = await lens.getMaxRedeem(
             account,
             currentAsset.cToken.address,
           );
-          setMaxAmount(
-            Number(maxRedeem) / 10 ** Number(currentAsset.underlyingDecimals),
-          );
+          setMaxAmount(parseUnits(maxRedeem, 0));
         } catch (e) {
           setMaxAmountError(true);
         }
@@ -212,9 +252,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
             account,
             currentAsset.cToken.address,
           );
-          setMaxAmount(
-            Number(maxBorrow) / 10 ** Number(currentAsset.underlyingDecimals),
-          );
+          setMaxAmount(parseUnits(maxBorrow, 0));
         } catch (e) {
           setMaxAmountError(true);
         }
@@ -564,7 +602,9 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
             <Box
               className='lendMaxButton'
               onClick={() => {
-                setValue((maxAmount ?? 0).toString());
+                setValue(
+                  maxAmount ? formatUnits(maxAmount, assetDecimals) : '0',
+                );
               }}
             >
               {t('max')}
@@ -627,7 +667,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
                       } else {
                         txResponse = await repayBorrow(
                           currentAsset,
-                          Number(value),
+                          valueBN,
                           account,
                           t('cannotRepayMarket'),
                           sdk,
@@ -636,7 +676,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
                     } else {
                       txResponse = await poolBorrow(
                         currentAsset,
-                        Number(value),
+                        valueBN,
                         account,
                         t('cannotBorrowMarket'),
                         sdk,
@@ -661,7 +701,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
                       } else {
                         txResponse = await poolWithDraw(
                           currentAsset,
-                          Number(value),
+                          valueBN,
                           account,
                           t('cannotWithdrawMarket'),
                           sdk,
@@ -692,7 +732,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
                       } else {
                         txResponse = await supply(
                           currentAsset,
-                          Number(value),
+                          valueBN,
                           account,
                           t('cannotDepositMarket'),
                           sdk,
