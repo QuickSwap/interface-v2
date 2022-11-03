@@ -5,7 +5,6 @@ import {
   StyledDarkBox,
   StyledFilledBox,
 } from 'components/v3/Common/styledElements';
-import { useActiveWeb3React } from 'hooks';
 import Loader from '../Loader';
 import CurrencyLogo from '../CurrencyLogo';
 import { Token } from '@uniswap/sdk-core';
@@ -68,7 +67,6 @@ export function EternalFarmCard({
   const aprValue =
     (apr !== undefined && apr >= 0 ? Math.round(apr) : '~') + '% APR';
   const tvl = tvls ? tvls[id] : undefined;
-  const { chainId } = useActiveWeb3React();
 
   return (
     <Box className='flex justify-center'>

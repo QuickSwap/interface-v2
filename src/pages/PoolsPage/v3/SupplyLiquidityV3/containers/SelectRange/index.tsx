@@ -149,18 +149,19 @@ export function SelectRange({
 
   useEffect(() => {
     setMinRangeLength(undefined);
-    if (!currencyAID || !currencyBID) return;
+    if (!currencyAID || !currencyBID || !chainId) return;
     (async () => {
       const eternalFarm = await getEternalFarmFromTokens(
         currencyAID,
         currencyBID,
+        chainId,
       );
       const minRangeLength = eternalFarm
         ? Number(eternalFarm.minRangeLength) / 100
         : undefined;
       setMinRangeLength(minRangeLength);
     })();
-  }, [currencyAID, currencyBID]);
+  }, [currencyAID, currencyBID, chainId]);
 
   const currentPriceInUSD = useUSDCValue(
     tryParseAmount(Number(price).toFixed(5), currencyB ?? undefined),

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Box, Grid } from '@material-ui/core';
 import { EternalFarmCard } from 'components/StakerEventCard/EternalFarmCard';
 import { Frown } from 'react-feather';
 import { useTranslation } from 'react-i18next';
@@ -75,6 +76,7 @@ export default function EternalFarmsPage({ chainId }: { chainId: ChainId }) {
                   tvls={eternalFarmTvls}
                   tvlsLoading={eternalFarmTvlsLoading}
                   event={event}
+                  chainId={chainId}
                 />
               </Grid>
             ))}

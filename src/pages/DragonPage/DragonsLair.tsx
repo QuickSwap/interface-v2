@@ -68,9 +68,11 @@ const DragonsLair: React.FC<{ isNew: boolean }> = ({ isNew }) => {
         <small>{t('tvl')}</small>
         <small>
           $
-          {(
-            Number(lairInfoToUse.totalQuickBalance.toExact()) * quickPrice
-          ).toLocaleString('us')}
+          {lairInfoToUse
+            ? (
+                Number(lairInfoToUse.totalQuickBalance.toExact()) * quickPrice
+              ).toLocaleString('us')
+            : 0}
         </small>
       </Box>
 

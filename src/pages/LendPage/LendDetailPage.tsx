@@ -44,11 +44,10 @@ import {
   TransactionErrorContent,
 } from 'components';
 import 'pages/styles/lend.scss';
-import { GlobalValue } from 'constants/index';
 import LendDetailAssetStats from './LendDetailAssetStats';
 import AdsSlider from 'components/AdsSlider';
 import { ChainId } from '@uniswap/sdk';
-import { LENDING_QS_POOL_DIRECTORY } from 'constants/v3/addresses';
+import { MI, LENDING_QS_POOL_DIRECTORY } from 'constants/v3/addresses';
 
 const LendDetailPage: React.FC = () => {
   const { t } = useTranslation();
@@ -566,19 +565,20 @@ const LendDetailPage: React.FC = () => {
                                 </Button>
                               </TableCell>
                             </TableRow>
-                            {asset.underlyingToken.toLowerCase() ===
-                              GlobalValue.tokens.COMMON.MI.address.toLowerCase() && (
-                              <TableRow>
-                                <TableCell colSpan={5}>
-                                  <Box className='maiAlertWrapper'>
-                                    <p>
-                                      <span>{t('pleaseNote')}:</span>{' '}
-                                      {t('maiNote')}
-                                    </p>
-                                  </Box>
-                                </TableCell>
-                              </TableRow>
-                            )}
+                            {chainId &&
+                              asset.underlyingToken.toLowerCase() ===
+                                MI[chainId].address.toLowerCase() && (
+                                <TableRow>
+                                  <TableCell colSpan={5}>
+                                    <Box className='maiAlertWrapper'>
+                                      <p>
+                                        <span>{t('pleaseNote')}:</span>{' '}
+                                        {t('maiNote')}
+                                      </p>
+                                    </Box>
+                                  </TableCell>
+                                </TableRow>
+                              )}
                           </>
                         );
                       })}

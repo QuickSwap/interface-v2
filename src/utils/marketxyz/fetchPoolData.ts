@@ -1,5 +1,4 @@
 import { ChainId } from '@uniswap/sdk';
-import { GlobalValue } from 'constants/index';
 import { MI } from 'constants/v3/addresses';
 import {
   PoolDirectoryV1,

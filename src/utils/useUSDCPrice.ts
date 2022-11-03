@@ -205,7 +205,6 @@ export default function useUSDCPrice(currency?: Currency): Price | undefined {
     quickPair,
     usdcQuickPairState,
     usdcQuickPair,
-    internalWrapped,
     daiToken,
     oldQuickToken,
     usdcToken,

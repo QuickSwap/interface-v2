@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
-import { JSBI, Trade, Token, TradeType, Fraction } from '@uniswap/sdk';
+import { JSBI, Trade, Token, TradeType, Fraction, ChainId } from '@uniswap/sdk';
 import { Currency, CurrencyAmount } from '@uniswap/sdk-core';
 import ReactGA from 'react-ga';
 import { ArrowDown } from 'react-feather';

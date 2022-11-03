@@ -2262,9 +2262,10 @@ export const convertNumbertoBN = (
 export const getEternalFarmFromTokens = async (
   token0: string,
   token1: string,
+  chainId: ChainId,
 ) => {
   try {
-    const result = await clientV3.query({
+    const result = await clientV3[chainId].query({
       query: FETCH_POOL_FROM_TOKENS(),
       variables: { token0, token1 },
       fetchPolicy: 'network-only',
@@ -2282,7 +2283,7 @@ export const getEternalFarmFromTokens = async (
         ? result.data.pools1[0].id
         : undefined;
     if (!poolID) return;
-    const eternalFarmResult = await farmingClient.query({
+    const eternalFarmResult = await farmingClient[chainId].query({
       query: FETCH_ETERNAL_FARM_FROM_POOL([poolID]),
       fetchPolicy: 'network-only',
     });
