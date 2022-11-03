@@ -16,8 +16,8 @@ const LandingPage = lazy(() => import('./pages/LandingPage'));
 const PoolsPage = lazy(() => import('./pages/PoolsPage'));
 const SwapPage = lazy(() => import('./pages/SwapPage'));
 const ConvertQUICKPage = lazy(() => import('./pages/ConvertQUICKPage'));
-const LendPage = lazy(() => import('./pages/LendPage'));
-const LendDetailPage = lazy(() => import('./pages/LendPage/LendDetailPage'));
+// const LendPage = lazy(() => import('./pages/LendPage'));
+// const LendDetailPage = lazy(() => import('./pages/LendPage/LendDetailPage'));
 const AnalyticsTokenDetails = lazy(() =>
   import('./pages/AnalyticsTokenDetails'),
 );
@@ -156,7 +156,7 @@ const App: React.FC = () => {
                           <SwapPage />
                         </PageLayout>
                       </Route>
-                      <Route exact path='/lend'>
+                      {/* <Route exact path='/lend'>
                         <PageLayout>
                           <LendPage />
                         </PageLayout>
@@ -165,7 +165,7 @@ const App: React.FC = () => {
                         <PageLayout>
                           <LendDetailPage />
                         </PageLayout>
-                      </Route>
+                      </Route> */}
                       <Route exact path='/pools/:version?'>
                         <PageLayout>
                           <PoolsPage />

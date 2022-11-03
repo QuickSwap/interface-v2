@@ -4,7 +4,6 @@ import { Box, Grid, useMediaQuery } from '@material-ui/core';
 import DragonBg1 from 'assets/images/DragonBg1.svg';
 import DragonBg2 from 'assets/images/DragonBg2.svg';
 import DragonLairMask from 'assets/images/DragonLairMask.svg';
-import DragonAlert from './DragonAlert';
 import DragonsLair from './DragonsLair';
 import DragonsSyrup from './DragonsSyrup';
 import 'pages/styles/dragon.scss';
@@ -21,7 +20,6 @@ const DragonPage: React.FC = () => {
 
   return (
     <Box width='100%' mb={3}>
-      <DragonAlert />
       <Grid container spacing={4}>
         <Grid item xs={12} sm={12} md={4}>
           {showNew && (
