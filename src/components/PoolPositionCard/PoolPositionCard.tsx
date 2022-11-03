@@ -43,7 +43,7 @@ const PoolPositionCard: React.FC<{ pair: Pair }> = ({ pair }) => {
       setBulkPairData(data),
     );
     return () => setBulkPairData(null);
-  }, [pairId]);
+  }, [pairId, chainIdOrDefault]);
 
   const [showMore, setShowMore] = useState(false);
 

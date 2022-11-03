@@ -56,7 +56,7 @@ const CurrencyLogo: React.FC<CurrencyLogoProps> = ({
     }
 
     return [];
-  }, [currency, uriLocations]);
+  }, [currency, nativeCurrency, uriLocations]);
 
   if (
     currency &&

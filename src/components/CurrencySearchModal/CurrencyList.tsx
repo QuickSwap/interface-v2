@@ -25,12 +25,12 @@ const CurrencyList: React.FC<CurrencyListProps> = ({
   const nativeCurrency = Token.ETHER[chainId];
   const itemData = useMemo(
     () => (showETH ? [nativeCurrency, ...currencies] : currencies),
-    [currencies, showETH],
+    [currencies, nativeCurrency, showETH],
   );
   const selectedTokenList = useSelectedTokenList();
   const isOnSelectedList = useMemo(
     () => isTokensOnList(selectedTokenList, itemData, chainId),
-    [selectedTokenList, itemData],
+    [selectedTokenList, itemData, chainId],
   );
 
   const Row = useCallback(

@@ -36,5 +36,8 @@
   },
   "migrate": {
     "available": true
+  },
+  "gamingHub": {
+    "available": true
   }
 }

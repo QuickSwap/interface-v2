@@ -140,7 +140,7 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
         }
       }
     },
-    [filteredSortedTokens, handleCurrencySelect, searchQuery],
+    [filteredSortedTokens, handleCurrencySelect, nativeCurrency, searchQuery],
   );
 
   // manage focus on modal show

@@ -23,6 +23,7 @@ const SwapMain: React.FC = () => {
   const [swapIndex, setSwapIndex] = useState(SWAP_BEST_TRADE);
   const [openSettingsModal, setOpenSettingsModal] = useState(false);
   const { isProMode, updateIsProMode } = useIsProMode();
+  const { chainId } = useActiveWeb3React();
 
   const { updateIsV3 } = useIsV3();
   const params: any = useParams();
@@ -84,7 +85,6 @@ const SwapMain: React.FC = () => {
               `}
               onClick={() => {
                 updateIsV3(false);
-                isOnV3 = false;
                 setSwapIndex(SWAP_NORMAL);
               }}
             >
@@ -99,7 +99,6 @@ const SwapMain: React.FC = () => {
               `}
               onClick={() => {
                 updateIsV3(true);
-                isOnV3 = true;
                 setSwapIndex(SWAP_V3);
               }}
             >
@@ -113,7 +112,6 @@ const SwapMain: React.FC = () => {
               } swapItem headingItem`}
               onClick={() => {
                 updateIsV3(false);
-                isOnV3 = false;
                 setSwapIndex(SWAP_LIMIT);
               }}
             >

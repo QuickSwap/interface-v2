@@ -41,7 +41,7 @@ const RewardSlider: React.FC = () => {
         setBulkPairs(data),
       );
     }
-  }, [stakingPairListStr]);
+  }, [chainIdOrDefault, stakingPairListStr]);
 
   const stakingAPYs = useMemo(() => {
     if (bulkPairs && stakingPairLists.length > 0) {
