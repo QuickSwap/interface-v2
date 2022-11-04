@@ -215,7 +215,7 @@ const AnalyticsPairChart: React.FC<{
     if (isV3 !== undefined) {
       fetchPairChartData();
     }
-  }, [pairAddress, durationIndex, isV3]);
+  }, [pairAddress, durationIndex, isV3, chainIdToUse]);
 
   const _chartData = useMemo(() => {
     if (!pairData || !pairChartData) return;

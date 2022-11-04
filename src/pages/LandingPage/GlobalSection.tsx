@@ -36,7 +36,7 @@ export const GlobalSection: React.FC = () => {
       updateV3GlobalData(globalDataV3);
     }
     fetchGlobalData();
-  }, [updateGlobalData, ethPrice.price, ethPrice.oneDayPrice]);
+  }, [updateGlobalData, ethPrice.price, ethPrice.oneDayPrice, chainIdToUse]);
 
   return (
     <>

@@ -140,14 +140,16 @@ export function useDerivedMintInfo(): {
     }
   }, [
     noLiquidity,
+    independentAmount,
     otherTypedValue,
     currencies,
     dependentField,
-    independentAmount,
-    currencyA,
+    chainIdToUse,
     chainId,
+    currencyA,
     currencyB,
     pair,
+    nativeCurrency,
   ]);
   const parsedAmounts: {
     [field in Field]: CurrencyAmount | undefined;
@@ -311,7 +313,7 @@ export function useMintActionHandlers(
         }),
       );
     },
-    [dispatch],
+    [chainId, dispatch],
   );
 
   return {

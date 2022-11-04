@@ -72,7 +72,7 @@ export function SelectRange({
       stablecoins.includes(currencyA.wrapped.address) &&
       stablecoins.includes(currencyB.wrapped.address)
     );
-  }, [currencyA, currencyB]);
+  }, [chainIdToUse, currencyA, currencyB]);
 
   // get value and prices at ticks
   const { [Bound.LOWER]: tickLower, [Bound.UPPER]: tickUpper } = useMemo(() => {

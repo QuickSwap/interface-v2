@@ -201,7 +201,13 @@ export function useCurrency(
             chainInfo.nativeCurrencyName,
           )
         : undefined,
-    [chainId],
+    [
+      chainId,
+      chainIdToUse,
+      chainInfo.nativeCurrencyDecimals,
+      chainInfo.nativeCurrencyName,
+      chainInfo.nativeCurrencySymbol,
+    ],
   );
   const weth = chainId ? WMATIC_EXTENDED[chainId] : undefined;
   if (weth?.address?.toLowerCase() === currencyId?.toLowerCase()) return weth;

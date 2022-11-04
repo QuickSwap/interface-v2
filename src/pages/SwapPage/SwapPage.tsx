@@ -78,7 +78,7 @@ const SwapPage: React.FC = () => {
     if (token1?.address && token2?.address) {
       getPairId(token1?.address, token2?.address);
     }
-  }, [token1?.address, token2?.address]);
+  }, [chainIdToUse, token1?.address, token2?.address]);
 
   useEffect(() => {
     (async () => {
@@ -111,7 +111,7 @@ const SwapPage: React.FC = () => {
     if (pairId && isProMode && showProMode) {
       getTradesData(pairId);
     }
-  }, [pairId, isProMode, showProMode]);
+  }, [pairId, isProMode, showProMode, chainIdToUse]);
 
   const { t } = useTranslation();
   const helpURL = process.env.REACT_APP_HELP_URL;

@@ -60,7 +60,7 @@ export function useSwapActionHandlers(): {
         }),
       );
     },
-    [dispatch],
+    [dispatch, nativeCurrency],
   );
 
   const onSwitchTokens = useCallback(() => {

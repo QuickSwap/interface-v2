@@ -77,7 +77,7 @@ const AnalyticsPairs: React.FC = () => {
         }
       }
     })();
-  }, [ethPrice.price, isV3]);
+  }, [chainIdToUse, ethPrice.price, isV3]);
 
   useEffect(() => {
     if (topPairs) {

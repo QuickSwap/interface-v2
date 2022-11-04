@@ -57,7 +57,7 @@ const AnalyticsLiquidityChart: React.FC = () => {
       });
     };
     fetchChartData();
-  }, [updateGlobalChartData, durationIndex, isV3]);
+  }, [updateGlobalChartData, durationIndex, isV3, chainIdToUse]);
 
   const liquidityPercentClass = getPriceClass(
     globalData ? Number(globalData.liquidityChangeUSD) : 0,

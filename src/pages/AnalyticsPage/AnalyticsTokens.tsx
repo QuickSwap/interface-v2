@@ -84,6 +84,7 @@ const AnalyticsTokens: React.FC = () => {
     maticPrice.price,
     maticPrice.oneDayPrice,
     isV3,
+    chainIdToUse,
   ]);
 
   useEffect(() => {
