@@ -50,7 +50,6 @@ const PoolsPage: React.FC = () => {
               <VersionToggle />
             </Box>
           )}
-          ;
         </Box>
 
         {helpURL && (

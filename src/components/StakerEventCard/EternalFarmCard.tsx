@@ -87,7 +87,7 @@ export function EternalFarmCard({
                   currency0={
                     new Token(
                       chainId,
-                      pool.token0.id,
+                      pool.token0.id ?? pool.token0.address,
                       Number(pool.token0.decimals),
                       pool.token0.symbol,
                     ) as WrappedCurrency
@@ -95,7 +95,7 @@ export function EternalFarmCard({
                   currency1={
                     new Token(
                       chainId,
-                      pool.token1.id,
+                      pool.token1.id ?? pool.token1.address,
                       Number(pool.token1.decimals),
                       pool.token1.symbol,
                     ) as WrappedCurrency

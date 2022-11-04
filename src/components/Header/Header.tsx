@@ -98,11 +98,14 @@ const Header: React.FC = () => {
       id: 'dragons-page-link',
     });
   }
-  if (showConvert) {
+  if (showGamingHub) {
     menuItems.push({
-      link: '/convert',
-      text: t('convert'),
-      id: 'convert-quick',
+      link: '/gamehub',
+      text: 'Gaming Hub',
+      id: 'gamehub-page-link',
+      isExternal: true,
+      externalLink: process?.env?.REACT_APP_GAMEHUB_URL || '',
+      isNew: true,
     });
   }
   if (showPredictions) {
@@ -115,14 +118,11 @@ const Header: React.FC = () => {
       isNew: true,
     });
   }
-  if (showGamingHub) {
+  if (showConvert) {
     menuItems.push({
-      link: '/gamehub',
-      text: 'Gaming Hub',
-      id: 'gamehub-page-link',
-      isExternal: true,
-      externalLink: process?.env?.REACT_APP_GAMEHUB_URL || '',
-      isNew: true,
+      link: '/convert',
+      text: t('convert'),
+      id: 'convert-quick',
     });
   }
   if (showLending) {

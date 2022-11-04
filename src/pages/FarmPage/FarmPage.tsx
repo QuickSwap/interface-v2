@@ -47,8 +47,12 @@ const FarmPage: React.FC = () => {
   }, [chainIdToUse, lpFarms, dualFarms]);
 
   useEffect(() => {
-    getBulkPairData(chainIdToUse, pairLists).then((data) => setBulkPairs(data));
-  }, [pairLists]);
+    if (!isV3) {
+      getBulkPairData(chainIdToUse, pairLists).then((data) =>
+        setBulkPairs(data),
+      );
+    }
+  }, [isV3, pairLists, chainIdToUse]);
 
   useEffect(() => {
     updateIsV3(
@@ -90,7 +94,6 @@ const FarmPage: React.FC = () => {
               <VersionToggle />
             </Box>
           )}
-          ;
         </Box>
         {helpURL && (
           <Box

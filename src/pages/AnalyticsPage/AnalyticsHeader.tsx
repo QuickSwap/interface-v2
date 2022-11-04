@@ -59,7 +59,6 @@ const AnalyticsHeader: React.FC<AnalyticHeaderProps> = ({
             <VersionToggle />
           </Box>
         )}
-        ;
       </Box>
       <Box maxWidth={isMobile ? '320px' : '1136px'} margin='0 auto 24px'>
         <AdsSlider sort='analytics' />
