@@ -48,6 +48,7 @@ async function fetchChunk(
         if (
           !success &&
           returnData.length === 2 &&
+          gasUsed &&
           gasUsed.gte(
             Math.floor((chunk[i].gasRequired ?? DEFAULT_GAS_REQUIRED) * 0.95),
           )

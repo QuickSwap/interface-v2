@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   ButtonGroup,
   Button,
@@ -9,6 +9,10 @@ import {
 import { useTheme } from '@material-ui/core/styles';
 import { Swap, AddLiquidity } from 'components';
 import { useTranslation } from 'react-i18next';
+import { getConfig } from 'config';
+import { useActiveWeb3React } from 'hooks';
+import SwapV3Page from 'pages/SwapPage/V3/Swap';
+import { useIsV3 } from 'state/application/hooks';
 
 const SWAP_TAB = 0;
 const LIQUIDITY_TAB = 1;
@@ -18,6 +22,18 @@ export const SwapSection: React.FC = () => {
   const mobileWindowSize = useMediaQuery(breakpoints.down('sm'));
   const [tabIndex, setTabIndex] = useState(SWAP_TAB);
   const { t } = useTranslation();
+  const { chainId } = useActiveWeb3React();
+  const config = getConfig(chainId);
+  const v2 = config['v2'];
+  const v3 = config['v3'];
+  const isOnV3 = !v2 && !!v3;
+  const { updateIsV3 } = useIsV3();
+
+  useEffect(() => {
+    if (isOnV3) {
+      updateIsV3(true);
+    }
+  }, [isOnV3]);
 
   return (
     <>
@@ -41,7 +57,11 @@ export const SwapSection: React.FC = () => {
         <Grid container spacing={mobileWindowSize ? 0 : 8} alignItems='center'>
           <Grid item sm={12} md={6}>
             {tabIndex === SWAP_TAB ? (
-              <Swap currencyBgClass='bg-palette' />
+              v2 ? (
+                <Swap currencyBgClass='bg-palette' />
+              ) : (
+                <SwapV3Page />
+              )
             ) : (
               <AddLiquidity currencyBgClass='bg-palette' />
             )}
