@@ -60,7 +60,7 @@ export interface ApplicationState {
   readonly tokenDetails: TokenDetail[];
   readonly isProMode: boolean;
   readonly gasPrice: { fetched: number | null; override: boolean };
-  readonly isV3: boolean | undefined;
+  readonly isV3: boolean;
 }
 
 const initialState: ApplicationState = {
@@ -77,7 +77,7 @@ const initialState: ApplicationState = {
   tokenDetails: [],
   isProMode: false,
   gasPrice: { fetched: 70, override: true },
-  isV3: undefined,
+  isV3: true,
 };
 
 export default createReducer(initialState, (builder) =>

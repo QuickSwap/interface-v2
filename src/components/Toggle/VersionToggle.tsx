@@ -10,7 +10,7 @@ const VersionToggle: React.FC = () => {
   const { isV3, updateIsV3 } = useIsV3();
   const params: any = useParams();
   const history = useHistory();
-  const version = params ? params.version : 'v2';
+  const version = params ? params.version : 'v3';
 
   useEffect(() => {
     updateIsV3(version === 'v3');
@@ -23,10 +23,9 @@ const VersionToggle: React.FC = () => {
         className={!isV3 ? 'version-toggle-active' : ''}
         onClick={() => {
           history.push(
-            history.location.pathname.replace(
-              '/v3',
-              history.location.pathname.includes('/analytics') ? '/v2' : '',
-            ),
+            params && params.version
+              ? history.location.pathname.replace('/' + params.version, '/v2')
+              : history.location.pathname + '/v2',
           );
         }}
       >

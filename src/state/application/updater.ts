@@ -17,7 +17,7 @@ export default function Updater(): null {
   const { maticPrice, updateMaticPrice } = useMaticPrice();
   const { isV3, updateIsV3 } = useIsV3();
   const params: any = useParams();
-  const isOnV3 = params && params.version ? params.version === 'v3' : false;
+  const isOnV3 = params && params.version ? params.version === 'v3' : true;
 
   const windowVisible = useIsWindowVisible();
 
