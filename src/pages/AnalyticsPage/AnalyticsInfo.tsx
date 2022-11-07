@@ -1,8 +1,8 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Box } from '@material-ui/core';
 import { GlobalConst } from 'constants/index';
 import { useTranslation } from 'react-i18next';
-import { useIsV3 } from 'state/application/hooks';
+import { useIsV2 } from 'state/application/hooks';
 import { getFormattedPrice, getPriceClass } from 'utils';
 
 interface AnalyticsInfoProps {
@@ -12,7 +12,7 @@ interface AnalyticsInfoProps {
 const AnalyticsInfo: React.FC<AnalyticsInfoProps> = ({ data }) => {
   const { t } = useTranslation();
 
-  const { isV3 } = useIsV3();
+  const { isV2 } = useIsV2();
 
   const list = {
     v2: [
@@ -65,7 +65,7 @@ const AnalyticsInfo: React.FC<AnalyticsInfoProps> = ({ data }) => {
 
   return (
     <>
-      {list[isV3 ? 'v3' : 'v2'].map((item, i, arr) => (
+      {list[isV2 ? 'v2' : 'v3'].map((item, i, arr) => (
         <Box
           className='flex items-center'
           key={i}

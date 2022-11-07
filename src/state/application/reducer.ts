@@ -18,7 +18,7 @@ import {
   updateIsProMode,
   updateMaticPrice,
   updateGasPrice,
-  updateIsV3,
+  updateIsV2,
 } from './actions';
 
 type PopupList = Array<{
@@ -60,7 +60,7 @@ export interface ApplicationState {
   readonly tokenDetails: TokenDetail[];
   readonly isProMode: boolean;
   readonly gasPrice: { fetched: number | null; override: boolean };
-  readonly isV3: boolean;
+  readonly isV2: boolean | undefined;
 }
 
 const initialState: ApplicationState = {
@@ -77,7 +77,7 @@ const initialState: ApplicationState = {
   tokenDetails: [],
   isProMode: false,
   gasPrice: { fetched: 70, override: true },
-  isV3: true,
+  isV2: undefined,
 };
 
 export default createReducer(initialState, (builder) =>
@@ -200,7 +200,7 @@ export default createReducer(initialState, (builder) =>
     .addCase(updateIsProMode, (state, { payload }) => {
       state.isProMode = payload;
     })
-    .addCase(updateIsV3, (state, { payload }) => {
-      state.isV3 = payload;
+    .addCase(updateIsV2, (state, { payload }) => {
+      state.isV2 = payload;
     }),
 );

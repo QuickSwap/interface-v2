@@ -14,7 +14,7 @@ import { useDefaultDualFarmList } from 'state/dualfarms/hooks';
 import { ChainId } from '@uniswap/sdk';
 import VersionToggle from 'components/Toggle/VersionToggle';
 import V3Farms from 'pages/FarmPage/V3';
-import { useIsV3 } from 'state/application/hooks';
+import { useIsV2 } from 'state/application/hooks';
 
 const FarmPage: React.FC = () => {
   const { chainId } = useActiveWeb3React();
@@ -61,7 +61,7 @@ const FarmPage: React.FC = () => {
   ];
   const helpURL = process.env.REACT_APP_HELP_URL;
 
-  const { isV3 } = useIsV3();
+  const { isV2 } = useIsV2();
 
   return (
     <Box width='100%' mb={3} id='farmPage'>
@@ -85,7 +85,7 @@ const FarmPage: React.FC = () => {
       <Box maxWidth={isMobile ? '320px' : '1136px'} margin='0 auto 24px'>
         <AdsSlider sort='farms' />
       </Box>
-      {!isV3 && (
+      {isV2 && (
         <>
           <CustomSwitch
             width={300}
@@ -101,7 +101,7 @@ const FarmPage: React.FC = () => {
           </Box>
         </>
       )}
-      {isV3 && <V3Farms />}
+      {!isV2 && <V3Farms />}
     </Box>
   );
 };

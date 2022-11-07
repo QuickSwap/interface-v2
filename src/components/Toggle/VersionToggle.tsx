@@ -3,24 +3,24 @@ import { Box } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useParams } from 'react-router-dom';
 import './index.scss';
-import { useIsV3 } from 'state/application/hooks';
+import { useIsV2 } from 'state/application/hooks';
 
 const VersionToggle: React.FC = () => {
   const { t } = useTranslation();
-  const { isV3, updateIsV3 } = useIsV3();
+  const { isV2, updateIsV2 } = useIsV2();
   const params: any = useParams();
   const history = useHistory();
   const version = params ? params.version : 'v3';
 
   useEffect(() => {
-    updateIsV3(version === 'v3');
+    updateIsV2(version === 'v2');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [version]);
 
   return (
     <Box className='version-toggle-container'>
       <Box
-        className={!isV3 ? 'version-toggle-active' : ''}
+        className={isV2 ? 'version-toggle-active' : ''}
         onClick={() => {
           history.push(
             params && params.version
@@ -33,7 +33,7 @@ const VersionToggle: React.FC = () => {
       </Box>
 
       <Box
-        className={isV3 ? 'version-toggle-active' : ''}
+        className={!isV2 ? 'version-toggle-active' : ''}
         onClick={() => {
           history.push(
             params && params.version

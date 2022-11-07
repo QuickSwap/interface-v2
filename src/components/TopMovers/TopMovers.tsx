@@ -8,7 +8,7 @@ import { CurrencyLogo } from 'components';
 import { getTopTokens, getPriceClass, formatNumber } from 'utils';
 import 'components/styles/TopMovers.scss';
 import { useTranslation } from 'react-i18next';
-import { useEthPrice, useMaticPrice, useIsV3 } from 'state/application/hooks';
+import { useEthPrice, useMaticPrice, useIsV2 } from 'state/application/hooks';
 import { getTopTokensV3 } from 'utils/v3-graph';
 
 interface TopMoversProps {
@@ -20,7 +20,7 @@ const TopMovers: React.FC<TopMoversProps> = ({ hideArrow = false }) => {
   const { ethPrice } = useEthPrice();
   const { maticPrice } = useMaticPrice();
 
-  const { isV3 } = useIsV3();
+  const { isV2 } = useIsV2();
 
   const topMoverTokens = useMemo(
     () => (topTokens && topTokens.length >= 5 ? topTokens.slice(0, 5) : null),
@@ -34,11 +34,11 @@ const TopMovers: React.FC<TopMoversProps> = ({ hideArrow = false }) => {
         ethPrice.oneDayPrice !== undefined &&
         maticPrice.price !== undefined &&
         maticPrice.oneDayPrice !== undefined &&
-        isV3 !== undefined
+        isV2 !== undefined
       ) {
-        const topTokensFn = isV3
-          ? getTopTokensV3(maticPrice.price, maticPrice.oneDayPrice, 5)
-          : getTopTokens(ethPrice.price, ethPrice.oneDayPrice, 5);
+        const topTokensFn = isV2
+          ? getTopTokens(ethPrice.price, ethPrice.oneDayPrice, 5)
+          : getTopTokensV3(maticPrice.price, maticPrice.oneDayPrice, 5);
 
         topTokensFn.then((data: any) => {
           if (data) {
@@ -53,7 +53,7 @@ const TopMovers: React.FC<TopMoversProps> = ({ hideArrow = false }) => {
     ethPrice.oneDayPrice,
     maticPrice.price,
     maticPrice.oneDayPrice,
-    isV3,
+    isV2,
   ]);
 
   return (

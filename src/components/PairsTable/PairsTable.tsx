@@ -5,7 +5,7 @@ import { ChainId, Token } from '@uniswap/sdk';
 import { getAddress } from '@ethersproject/address';
 import { DoubleCurrencyLogo, CustomTable } from 'components';
 import { GlobalConst } from 'constants/index';
-import { useBookmarkPairs, useIsV3 } from 'state/application/hooks';
+import { useBookmarkPairs, useIsV2 } from 'state/application/hooks';
 import { ReactComponent as StarChecked } from 'assets/images/StarChecked.svg';
 import { ReactComponent as StarUnchecked } from 'assets/images/StarUnchecked.svg';
 import { useTranslation } from 'react-i18next';
@@ -24,8 +24,8 @@ const PairTable: React.FC<PairsTableProps> = ({
   showPagination = true,
 }) => {
   const { t } = useTranslation();
-  const { isV3 } = useIsV3();
-  const version = useMemo(() => `${isV3 ? `v3` : 'v2'}`, [isV3]);
+  const { isV2 } = useIsV2();
+  const version = useMemo(() => `${isV2 ? `v2` : 'v3'}`, [isV2]);
 
   const v2SpecificCells = [
     {
@@ -89,7 +89,7 @@ const PairTable: React.FC<PairsTableProps> = ({
           ? pair.oneWeekVolumeUSD
           : pair.oneWeekVolumeUntracked,
     },
-  ].concat(isV3 ? v3SpecificCells : v2SpecificCells);
+  ].concat(isV2 ? v2SpecificCells : v3SpecificCells);
 
   const {
     bookmarkPairs,
@@ -176,7 +176,7 @@ const PairTable: React.FC<PairsTableProps> = ({
               </Box>
             </Box>
           </Link>
-          {isV3 && (
+          {!isV2 && (
             <Box
               ml={2}
               paddingY={0.5}
@@ -201,7 +201,7 @@ const PairTable: React.FC<PairsTableProps> = ({
           <p>{t('7dVol')}</p>
           <p>${formatNumber(oneWeekVolume)}</p>
         </Box>
-        {isV3 ? (
+        {!isV2 ? (
           <>
             <Box className={`mobileRow ${apr ? 'text-success' : ''}`}>
               <p>{t('apr')}</p>
@@ -333,7 +333,7 @@ const PairTable: React.FC<PairsTableProps> = ({
                 </Box>
               </Box>
             </Link>
-            {isV3 && (
+            {!isV2 && (
               <Box
                 ml={2}
                 paddingY={0.5}
@@ -356,7 +356,7 @@ const PairTable: React.FC<PairsTableProps> = ({
       {
         html: <p>${formatNumber(oneWeekVolume)}</p>,
       },
-    ].concat(isV3 ? v3SpecificRows : v2SpecificRows);
+    ].concat(isV2 ? v2SpecificRows : v3SpecificRows);
   };
 
   return (
