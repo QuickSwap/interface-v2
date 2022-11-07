@@ -55,6 +55,7 @@ import V3IncreaseLiquidityModal from '../V3IncreaseLiquidityModal';
 import V3RemoveLiquidityModal from '../V3RemoveLiquidityModal';
 import {
   ConfirmationModalContent,
+  CustomTooltip,
   ToggleSwitch,
   TransactionConfirmationModal,
   TransactionErrorContent,
@@ -444,12 +445,23 @@ export default function PositionListItemDetails({
                 Add
               </Button>
               <Box ml={1}>
-                <Button
-                  disabled={_onFarming || _liquidity.eq(0)}
-                  onClick={() => setOpenRemoveLiquidityModal(true)}
-                >
-                  Remove
-                </Button>
+                {_onFarming || _liquidity.eq(0) ? (
+                  <CustomTooltip
+                    title={
+                      _onFarming
+                        ? 'You must remove your NFT from the farm before you can remove liquidity'
+                        : 'No liquidity for this position.'
+                    }
+                  >
+                    <div className='button bg-primary'>
+                      <span>Remove</span>
+                    </div>
+                  </CustomTooltip>
+                ) : (
+                  <Button onClick={() => setOpenRemoveLiquidityModal(true)}>
+                    Remove
+                  </Button>
+                )}
               </Box>
             </Box>
           )}
