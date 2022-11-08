@@ -238,11 +238,12 @@ export async function getBlocksFromTimestamps(
       if (fetchedData[t].length > 0) {
         blocks.push({
           timestamp: t.split('t')[1],
-          number: fetchedData[t][0]['number'],
+          number: Number(fetchedData[t][0]['number']),
         });
       }
     }
   }
+
   return blocks;
 }
 
