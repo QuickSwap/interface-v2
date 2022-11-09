@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, useMediaQuery } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
@@ -9,8 +9,7 @@ import { CustomModal } from 'components';
 import { useActiveWeb3React, useInitTransak } from 'hooks';
 import 'components/styles/BuyFiatModal.scss';
 import { useTranslation } from 'react-i18next';
-import type { CBPayInstanceType } from '@coinbase/cbpay-js';
-import { initOnRamp } from '@coinbase/cbpay-js';
+import { CBPayInstanceType, initOnRamp } from '@coinbase/cbpay-js';
 
 interface BuyFiatModalProps {
   open: boolean;
@@ -30,46 +29,52 @@ const BuyFiatModal: React.FC<BuyFiatModalProps> = ({
   const mobileWindowSize = useMediaQuery(breakpoints.down('sm'));
   const { initTransak } = useInitTransak();
   const { t } = useTranslation();
-  const [onrampInstance, setOnrampInstance] = useState<CBPayInstanceType | null>();
+  const [
+    onrampInstance,
+    setOnrampInstance,
+  ] = useState<CBPayInstanceType | null>();
 
   useEffect(() => {
     if (!account) return;
-    initOnRamp({
-      appId: '2eb63e45-7e6e-4699-908c-b1079d5d7436',
-      widgetParameters: {
-        destinationWallets: [
-          {
-            address: account,
-            blockchains: ['ethereum', 'avalanche-c-chain', 'polygon'],
-          },
-        ],
+    initOnRamp(
+      {
+        appId: '2eb63e45-7e6e-4699-908c-b1079d5d7436',
+        widgetParameters: {
+          destinationWallets: [
+            {
+              address: account,
+              blockchains: ['polygon'],
+            },
+          ],
+        },
+        onSuccess: () => {
+          console.log('success');
+        },
+        onExit: () => {
+          console.log('exit');
+        },
+        onEvent: (event) => {
+          console.log('event', event);
+        },
+        experienceLoggedIn: 'popup',
+        experienceLoggedOut: 'popup',
+        closeOnExit: true,
+        closeOnSuccess: true,
       },
-      onSuccess: () => {
-        console.log('success');
+      (_, instance) => {
+        setOnrampInstance(instance);
       },
-      onExit: () => {
-        console.log('exit');
-      },
-      onEvent: (event) => {
-        console.log('event', event);
-      },
-      experienceLoggedIn: 'popup',
-      experienceLoggedOut: 'popup',
-      closeOnExit: true,
-      closeOnSuccess: true,
-    }, (_, instance) => {
-      setOnrampInstance(instance);
-    });
+    );
 
     return () => {
       onrampInstance?.destroy();
     };
-  }, []);
+  }, [account, onrampInstance]);
 
   const buyWithCoinbase = () => {
     onClose();
     onrampInstance?.open();
-  }
+  };
 
   return (
     <CustomModal open={open} onClose={onClose}>
