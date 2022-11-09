@@ -38,7 +38,7 @@ const BuyFiatModal: React.FC<BuyFiatModalProps> = ({
     if (!account) return;
     initOnRamp(
       {
-        appId: '2eb63e45-7e6e-4699-908c-b1079d5d7436',
+        appId: process.env.REACT_APP_COINBASE_APP_ID,
         widgetParameters: {
           destinationWallets: [
             {
