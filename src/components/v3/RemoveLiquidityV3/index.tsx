@@ -171,7 +171,6 @@ export default function RemoveLiquidityV3({
         const newTxn = {
           ...txn,
           gasLimit: calculateGasMarginV3(chainId, estimate),
-          gasPrice: gasPrice * GAS_PRICE_MULTIPLIER,
         };
 
         return library
@@ -226,7 +225,6 @@ export default function RemoveLiquidityV3({
     library,
     tokenId,
     allowedSlippagePercent,
-    gasPrice,
     addTransaction,
     finalizedTransaction,
     t,

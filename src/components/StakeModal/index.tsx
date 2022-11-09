@@ -349,7 +349,8 @@ export function FarmModal({
   const showApproval =
     approval !== ApprovalState.APPROVED && !!_amountForApprove;
 
-  const linkToProviding = `/add/${pool.token0.id}/${pool.token1.id}/v3`;
+  const linkToProviding = `/add/${pool.token0.id ?? pool.token0.address}/${pool
+    .token1.id ?? pool.token1.address}/v3`;
 
   return (
     <Box padding='20px 16px'>

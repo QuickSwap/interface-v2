@@ -178,7 +178,6 @@ export function AddLiquidityButton({
           const newTxn = {
             ...txn,
             gasLimit: calculateGasMarginV3(chainId, estimate),
-            gasPrice: gasPrice * GAS_PRICE_MULTIPLIER,
           };
 
           return library
