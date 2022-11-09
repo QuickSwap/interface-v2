@@ -56,6 +56,19 @@ const Header: React.FC = () => {
 
   const { isV3 } = useIsV3();
 
+  const onRampItem = useMemo(() => {
+    if (account && process.env.REACT_APP_COINBASE_API_KEY) {
+      const link = `https://pay.coinbase.com/buy/select-asset?appId=${process.env.REACT_APP_COINBASE_API_KEY}&destinationWallets=%5B%7B%22address%22%3A%22${account}%22%2C%22blockchains%22%3A%5B%22polygon%22%5D%7D%5D`;
+
+      return {
+        link,
+        text: t('buy-onramp'),
+        id: 'onramp-link',
+        external: true,
+      };
+    }
+  }, [account]);
+
   const menuItems = [
     {
       link: '/swap',
@@ -112,6 +125,7 @@ const Header: React.FC = () => {
   ];
 
   const outLinks: any[] = [
+    onRampItem,
     // {
     //   link: '/',
     //   text: 'Governance',
@@ -224,7 +238,7 @@ const Header: React.FC = () => {
                 <small>{val.text}</small>
               </Link>
             ))}
-            <Box className='flex menuItem'>
+            <Box className='menuItem flex'>
               <ThreeDotIcon
                 onClick={() => setOpenDetailMenu(!openDetailMenu)}
               />

@@ -423,5 +423,6 @@
   "sponsored": "SPONSORED",
   "learnmoreproject": "Learn more about the project <alink>here</alink>.",
   "pleaseNote": "Please Note",
-  "maiNote": "MAI is an overcollateralized USD stablecoin backed solely by decentralized tokens."
+  "maiNote": "MAI is an overcollateralized USD stablecoin backed solely by decentralized tokens.",
+  "buy-onramp": "Purchase Crypto with Fiat"
 }
