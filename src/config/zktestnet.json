@@ -2,6 +2,7 @@
   "v3": true,
   "v2": false,
   "rpc": "https://public.zkevm-test.net:2083",
+  "blockExplorer": "https://explorer.public.zkevm-test.net",
   "chainId": 1402,
   "nativeCurrencyImage": "/doge.png",
   "swap": {

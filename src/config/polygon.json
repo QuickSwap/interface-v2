@@ -2,6 +2,7 @@
   "v3": true,
   "v2": true,
   "rpc": "https://polygon-rpc.com/",
+  "blockExplorer": "https://polygonscan.com",
   "chainId": 137,
   "nativeCurrencyImage": "/polygon.svg",
   "swap": {

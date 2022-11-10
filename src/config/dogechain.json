@@ -2,6 +2,7 @@
   "v3": true,
   "v2": false,
   "rpc": "https://dogechain.ankr.com",
+  "blockExplorer": "https://explorer.dogechain.dog",
   "chainId": 2000,
   "nativeCurrencyImage": "/doge.png",
   "swap": {
