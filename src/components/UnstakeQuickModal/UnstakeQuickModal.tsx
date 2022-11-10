@@ -4,10 +4,13 @@ import { CustomModal, ColoredSlider, NumericalInput } from 'components';
 import { useOldLairInfo, useNewLairInfo } from 'state/stake/hooks';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 import { TransactionResponse } from '@ethersproject/providers';
-import { useTransactionAdder } from 'state/transactions/hooks';
+import {
+  useTransactionAdder,
+  useTransactionFinalizer,
+} from 'state/transactions/hooks';
 import { useLairContract, useNewLairContract } from 'hooks/useContract';
 import Web3 from 'web3';
-import { formatTokenAmount } from 'utils';
+import { calculateGasMargin, formatTokenAmount } from 'utils';
 import { useTranslation } from 'react-i18next';
 
 const web3 = new Web3();
@@ -26,6 +29,7 @@ const UnstakeQuickModal: React.FC<UnstakeQuickModalProps> = ({
   const { t } = useTranslation();
   const [attempting, setAttempting] = useState(false);
   const addTransaction = useTransactionAdder();
+  const finalizedTransaction = useTransactionFinalizer();
   const lairInfo = useOldLairInfo();
   const newLairInfo = useNewLairInfo();
   const laifInfoToUse = isNew ? newLairInfo : lairInfo;
@@ -39,23 +43,30 @@ const UnstakeQuickModal: React.FC<UnstakeQuickModalProps> = ({
   const error =
     Number(typedValue) > Number(dQuickBalance?.toExact()) || !typedValue;
 
-  const onWithdraw = () => {
+  const onWithdraw = async () => {
     if (lairContractToUse && laifInfoToUse?.dQUICKBalance) {
       setAttempting(true);
       const balance = web3.utils.toWei(typedValue, 'ether');
-      lairContractToUse
-        .leave(balance.toString(), { gasLimit: 300000 })
-        .then(async (response: TransactionResponse) => {
-          addTransaction(response, {
-            summary: `${t('unstake')} dQUICK`,
-          });
-          await response.wait();
-          setAttempting(false);
-        })
-        .catch((error: any) => {
-          setAttempting(false);
-          console.log(error);
+      try {
+        const estimatedGas = await lairContractToUse.estimateGas.leave(
+          balance.toString(),
+        );
+        const response: TransactionResponse = await lairContractToUse.leave(
+          balance.toString(),
+          { gasLimit: calculateGasMargin(estimatedGas) },
+        );
+        addTransaction(response, {
+          summary: `${t('unstake')} dQUICK`,
         });
+        const receipt = await response.wait();
+        finalizedTransaction(receipt, {
+          summary: `${t('unstake')} dQUICK`,
+        });
+        setAttempting(false);
+      } catch (error) {
+        setAttempting(false);
+        console.log(error);
+      }
     }
   };
 

@@ -8,8 +8,8 @@ import utc from 'dayjs/plugin/utc';
 import {
   useEthPrice,
   useGlobalData,
-  useIsV3,
   useMaticPrice,
+  useIsV2,
 } from 'state/application/hooks';
 import {
   getTopPairs,
@@ -49,18 +49,18 @@ const AnalyticsOverview: React.FC = () => {
   const chainIdToUse = chainId ? chainId : ChainId.MATIC;
   const dispatch = useDispatch();
 
-  const { isV3 } = useIsV3();
-  const version = useMemo(() => `${isV3 ? `v3` : 'v2'}`, [isV3]);
+  const { isV2 } = useIsV2();
+  const version = useMemo(() => `${isV2 ? `v2` : 'v3'}`, [isV2]);
 
   useEffect(() => {
-    if (isV3 === undefined) return;
+    if (isV2 === undefined) return;
 
     updateGlobalData({ data: null });
     updateTopPairs(null);
     updateTopTokens(null);
 
     (async () => {
-      if (isV3) {
+      if (!isV2) {
         const data = await getGlobalDataV3(chainIdToUse);
         if (data) {
           updateGlobalData({ data });
@@ -79,7 +79,7 @@ const AnalyticsOverview: React.FC = () => {
     })();
 
     (async () => {
-      if (isV3) {
+      if (!isV2) {
         if (maticPrice.price && maticPrice.oneDayPrice) {
           const data = await getTopTokensV3(
             maticPrice.price,
@@ -107,7 +107,7 @@ const AnalyticsOverview: React.FC = () => {
     })();
 
     (async () => {
-      if (isV3) {
+      if (!isV2) {
         const pairsData = await getTopPairsV3(
           GlobalConst.utils.ANALYTICS_PAIRS_COUNT,
           chainIdToUse,
@@ -115,7 +115,7 @@ const AnalyticsOverview: React.FC = () => {
         if (pairsData) {
           const data = pairsData.filter((item: any) => !!item);
           updateTopPairs(data);
-          if (isV3) {
+          if (!isV2) {
             (async () => {
               try {
                 const aprs = await getPairsAPR(
@@ -166,7 +166,7 @@ const AnalyticsOverview: React.FC = () => {
     ethPrice.oneDayPrice,
     maticPrice.price,
     maticPrice.oneDayPrice,
-    isV3,
+    isV2,
     chainIdToUse,
   ]);
 

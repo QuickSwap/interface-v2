@@ -6,6 +6,7 @@ export { default as AdsSlider } from './AdsSlider';
 export { default as AreaChart } from './AreaChart';
 export { default as BarChart } from './BarChart';
 export { default as BetaWarningBanner } from './BetaWarningBanner';
+export { default as BinanceModal } from './BinanceModal';
 export { default as ChartType } from './ChartType';
 export { default as ColoredSlider } from './ColoredSlider';
 export { default as CustomTooltip } from './CustomTooltip';

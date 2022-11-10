@@ -24,7 +24,7 @@ import SparkleTop from 'assets/images/SparkleTop.svg';
 import SparkleBottom from 'assets/images/SparkleBottom.svg';
 import 'components/styles/Header.scss';
 import { useTranslation } from 'react-i18next';
-import { useIsV3 } from 'state/application/hooks';
+import { useIsV2 } from 'state/application/hooks';
 import { getConfig } from 'config/index';
 const newTransactionsFirst = (a: TransactionDetails, b: TransactionDetails) => {
   return b.addedTime - a.addedTime;
@@ -65,8 +65,7 @@ const Header: React.FC = () => {
   const showAnalytics = config['analytics']['available'];
   const showLending = config['lending']['available'];
   const showGamingHub = config['gamingHub']['available'];
-
-  const { isV3 } = useIsV3();
+  const { isV2 } = useIsV2();
 
   const menuItems = [];
 
@@ -79,14 +78,14 @@ const Header: React.FC = () => {
   }
   if (showPool) {
     menuItems.push({
-      link: `/pools${isV3 ? '/v3' : ''}`,
+      link: `/pools${isV2 ? '/v2' : ''}`,
       text: t('pool'),
       id: 'pools-page-link',
     });
   }
   if (showFarm) {
     menuItems.push({
-      link: `/farm${isV3 ? '/v3' : ''}`,
+      link: `/farm${isV2 ? '/v2' : ''}`,
       text: t('farm'),
       id: 'farm-page-link',
     });
@@ -135,7 +134,7 @@ const Header: React.FC = () => {
   }
   if (showAnalytics) {
     menuItems.push({
-      link: `/analytics${isV3 ? '/v3' : ''}`,
+      link: `/analytics${isV2 ? '/v2' : ''}`,
       text: t('analytics'),
       id: 'analytics-page-link',
     });

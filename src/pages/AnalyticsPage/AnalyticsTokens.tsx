@@ -5,7 +5,7 @@ import {
   useBookmarkTokens,
   useEthPrice,
   useMaticPrice,
-  useIsV3,
+  useIsV2,
 } from 'state/application/hooks';
 import { getTopTokens } from 'utils';
 import { Skeleton } from '@material-ui/lab';
@@ -29,7 +29,7 @@ const AnalyticsTokens: React.FC = () => {
   const { maticPrice } = useMaticPrice();
   const { chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ?? ChainId.MATIC;
-  const { isV3 } = useIsV3();
+  const { isV2 } = useIsV2();
 
   const favoriteTokens = useMemo(() => {
     if (topTokens) {
@@ -42,11 +42,11 @@ const AnalyticsTokens: React.FC = () => {
   }, [topTokens, bookmarkTokens]);
 
   useEffect(() => {
-    if (isV3 === undefined) return;
+    if (isV2 === undefined) return;
     updateTopTokens(null);
 
     (async () => {
-      if (isV3) {
+      if (!isV2) {
         if (
           maticPrice.price !== undefined &&
           maticPrice.oneDayPrice !== undefined
@@ -83,7 +83,7 @@ const AnalyticsTokens: React.FC = () => {
     ethPrice.oneDayPrice,
     maticPrice.price,
     maticPrice.oneDayPrice,
-    isV3,
+    isV2,
     chainIdToUse,
   ]);
 

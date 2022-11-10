@@ -12,7 +12,7 @@ import {
   useTransactionAdder,
   useTransactionFinalizer,
 } from 'state/transactions/hooks';
-import { formatTokenAmount } from 'utils';
+import { calculateGasMargin, formatTokenAmount } from 'utils';
 import 'components/styles/StakeModal.scss';
 import { useTranslation } from 'react-i18next';
 import { NEW_QUICK, OLD_QUICK } from 'constants/v3/addresses';
@@ -71,10 +71,13 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({
     if (lairContractToUse && parsedAmount) {
       if (approval === ApprovalState.APPROVED) {
         try {
+          const estimatedGas = await lairContractToUse.estimateGas.enter(
+            `0x${parsedAmount.raw.toString(16)}`,
+          );
           const response: TransactionResponse = await lairContractToUse.enter(
             `0x${parsedAmount.raw.toString(16)}`,
             {
-              gasLimit: 350000,
+              gasLimit: calculateGasMargin(estimatedGas),
             },
           );
           addTransaction(response, {
@@ -82,7 +85,7 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({
           });
           const receipt = await response.wait();
           finalizedTransaction(receipt, {
-            summary: `${t('deposit')} dQUICK`,
+            summary: `${t('stake')} dQUICK`,
           });
           setAttempting(false);
           setStakePercent(0);

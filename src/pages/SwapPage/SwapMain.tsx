@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Box } from '@material-ui/core';
 import { ReactComponent as SettingsIcon } from 'assets/images/SettingsIcon.svg';
-import { useIsProMode, useIsV3 } from 'state/application/hooks';
+import { useIsProMode, useIsV2 } from 'state/application/hooks';
 import { Swap, SettingsModal, ToggleSwitch } from 'components';
 import {
   GelatoLimitOrderPanel,
@@ -25,7 +25,7 @@ const SwapMain: React.FC = () => {
   const { isProMode, updateIsProMode } = useIsProMode();
   const { chainId } = useActiveWeb3React();
 
-  const { updateIsV3 } = useIsV3();
+  const { updateIsV2 } = useIsV2();
   const params: any = useParams();
   const isOnV3 = params ? params.version === 'v3' : false;
   const isOnV2 = params ? params.version === 'v2' : false;
@@ -39,7 +39,7 @@ const SwapMain: React.FC = () => {
   const showLimitOrder = config['swap']['limitOrder'];
 
   useEffect(() => {
-    updateIsV3(isOnV3);
+    updateIsV2(isOnV2);
     if (isOnV3) {
       setSwapIndex(SWAP_V3);
     } else if (isOnV2) {
@@ -76,9 +76,9 @@ const SwapMain: React.FC = () => {
               className={`${
                 swapIndex === SWAP_BEST_TRADE ? 'activeSwap' : ''
               } swapItem headingItem
-              `}
+            `}
               onClick={() => {
-                updateIsV3(false);
+                updateIsV2(false);
                 setSwapIndex(SWAP_BEST_TRADE);
               }}
             >
@@ -90,9 +90,9 @@ const SwapMain: React.FC = () => {
               className={`${
                 swapIndex === SWAP_NORMAL ? 'activeSwap' : ''
               } swapItem headingItem
-              `}
+            `}
               onClick={() => {
-                updateIsV3(false);
+                updateIsV2(true);
                 setSwapIndex(SWAP_NORMAL);
               }}
             >
@@ -104,9 +104,9 @@ const SwapMain: React.FC = () => {
               className={`${
                 swapIndex === SWAP_V3 ? 'activeSwap' : ''
               } swapItem headingItem
-              `}
+            `}
               onClick={() => {
-                updateIsV3(true);
+                updateIsV2(false);
                 setSwapIndex(SWAP_V3);
               }}
             >
@@ -119,7 +119,7 @@ const SwapMain: React.FC = () => {
                 swapIndex === SWAP_LIMIT ? 'activeSwap' : ''
               } swapItem headingItem`}
               onClick={() => {
-                updateIsV3(false);
+                updateIsV2(false);
                 setSwapIndex(SWAP_LIMIT);
               }}
             >

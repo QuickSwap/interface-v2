@@ -95,7 +95,7 @@ const PoolPositionCardDetails: React.FC<{ pair: Pair }> = ({ pair }) => {
           <Button
             variant='outlined'
             onClick={() =>
-              history.push(`/analytics/pair/${pair.liquidityToken.address}`)
+              history.push(`/analytics/v2/pair/${pair.liquidityToken.address}`)
             }
           >
             <small>{t('viewAnalytics')}</small>
@@ -104,7 +104,7 @@ const PoolPositionCardDetails: React.FC<{ pair: Pair }> = ({ pair }) => {
             variant='contained'
             onClick={() => {
               history.push(
-                `/pools?currency0=${currencyId(
+                `/pools/v2?currency0=${currencyId(
                   currency0,
                   chainId ? chainId : ChainId.MATIC,
                 )}&currency1=${currencyId(

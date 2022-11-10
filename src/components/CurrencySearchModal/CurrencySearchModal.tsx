@@ -8,7 +8,7 @@ import 'components/styles/CurrencySearchModal.scss';
 import { WrappedTokenInfo } from 'state/lists/v3/wrappedTokenInfo';
 import { TokenInfo } from '@uniswap/token-lists';
 import { NativeCurrency } from '@uniswap/sdk-core';
-import { useIsV3 } from 'state/application/hooks';
+import { useIsV2 } from 'state/application/hooks';
 import { useActiveWeb3React } from 'hooks';
 
 interface CurrencySearchModalProps {
@@ -29,7 +29,7 @@ const CurrencySearchModal: React.FC<CurrencySearchModalProps> = ({
   otherSelectedCurrency,
   showCommonBases = false,
 }) => {
-  const { isV3 } = useIsV3();
+  const { isV2 } = useIsV2();
   const [listView, setListView] = useState<boolean>(false);
   const lastOpen = useLast(isOpen);
   const { chainId } = useActiveWeb3React();
@@ -43,7 +43,7 @@ const CurrencySearchModal: React.FC<CurrencySearchModalProps> = ({
 
   const handleCurrencySelect = useCallback(
     (currency: Currency) => {
-      if (isV3) {
+      if (!isV2) {
         if (currencyEquals(currency, nativeCurrency)) {
           onCurrencySelect({
             ...nativeCurrency,
@@ -58,7 +58,7 @@ const CurrencySearchModal: React.FC<CurrencySearchModalProps> = ({
       }
       onDismiss();
     },
-    [isV3, onDismiss, nativeCurrency, onCurrencySelect],
+    [onDismiss, onCurrencySelect, isV2],
   );
 
   const handleClickChangeList = useCallback(() => {

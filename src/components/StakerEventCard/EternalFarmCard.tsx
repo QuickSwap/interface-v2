@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { DoubleCurrencyLogo } from 'components';
 import {
   StyledButton,
@@ -7,7 +7,7 @@ import {
 } from 'components/v3/Common/styledElements';
 import Loader from '../Loader';
 import CurrencyLogo from '../CurrencyLogo';
-import { Token } from '@uniswap/sdk-core';
+import { Token } from '@uniswap/sdk';
 import { WrappedCurrency } from '../../models/types';
 import './index.scss';
 import { ChainId } from '@uniswap/sdk';
@@ -15,8 +15,10 @@ import { ReactComponent as AddIcon } from 'assets/images/addIcon.svg';
 import { Box } from '@material-ui/core';
 import { formatUnits } from 'ethers/lib/utils';
 import { formatReward } from 'utils/formatReward';
-import { formatCompact } from 'utils';
+import { formatCompact, getTokenFromAddress } from 'utils';
 import { Aprs } from 'models/interfaces';
+import { useSelectedTokenList } from 'state/lists/hooks';
+import { getAddress } from 'ethers/lib/utils';
 
 interface EternalFarmCardProps {
   active?: boolean;
@@ -68,6 +70,27 @@ export function EternalFarmCard({
     (apr !== undefined && apr >= 0 ? Math.round(apr) : '~') + '% APR';
   const tvl = tvls ? tvls[id] : undefined;
 
+  const tokenMap = useSelectedTokenList();
+  const token0 = chainId
+    ? getTokenFromAddress(pool.token0.id, chainId, tokenMap, [
+        new Token(
+          ChainId.MATIC,
+          getAddress(pool.token0.id),
+          pool.token0.decimals,
+        ),
+      ])
+    : undefined;
+
+  const token1 = chainId
+    ? getTokenFromAddress(pool.token1.id, chainId, tokenMap, [
+        new Token(
+          ChainId.MATIC,
+          getAddress(pool.token1.id),
+          pool.token1.decimals,
+        ),
+      ])
+    : undefined;
+
   return (
     <Box className='flex justify-center'>
       {refreshing && (
@@ -82,24 +105,10 @@ export function EternalFarmCard({
         >
           <Box mb={1.5} className='flex justify-between items-center'>
             <Box className='flex items-center'>
-              {chainId && (
+              {token0 && token1 && (
                 <DoubleCurrencyLogo
-                  currency0={
-                    new Token(
-                      chainId,
-                      pool.token0.id ?? pool.token0.address,
-                      Number(pool.token0.decimals),
-                      pool.token0.symbol,
-                    ) as WrappedCurrency
-                  }
-                  currency1={
-                    new Token(
-                      chainId,
-                      pool.token1.id ?? pool.token1.address,
-                      Number(pool.token1.decimals),
-                      pool.token1.symbol,
-                    ) as WrappedCurrency
-                  }
+                  currency0={token0}
+                  currency1={token1}
                   size={30}
                 />
               )}

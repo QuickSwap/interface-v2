@@ -14,7 +14,7 @@ import { useDefaultDualFarmList } from 'state/dualfarms/hooks';
 import { ChainId } from '@uniswap/sdk';
 import VersionToggle from 'components/Toggle/VersionToggle';
 import V3Farms from 'pages/FarmPage/V3';
-import { useIsV3 } from 'state/application/hooks';
+import { useIsV2 } from 'state/application/hooks';
 import { getConfig } from '../../config/index';
 
 const FarmPage: React.FC = () => {
@@ -29,7 +29,7 @@ const FarmPage: React.FC = () => {
   const farms = config['farm']['available'];
   const v3 = config['v3'];
   const v2 = config['v2'];
-  const { isV3, updateIsV3 } = useIsV3();
+  const { isV2, updateIsV2 } = useIsV2();
 
   const lpFarms = useDefaultFarmList();
   const dualFarms = useDefaultDualFarmList();
@@ -47,24 +47,16 @@ const FarmPage: React.FC = () => {
   }, [chainIdToUse, lpFarms, dualFarms]);
 
   useEffect(() => {
-    if (!isV3) {
+    if (isV2) {
       getBulkPairData(chainIdToUse, pairLists).then((data) =>
         setBulkPairs(data),
       );
     }
-  }, [isV3, pairLists, chainIdToUse]);
+  }, [isV2, pairLists, chainIdToUse]);
 
   useEffect(() => {
-    updateIsV3(
-      v2 === true && v3 === true
-        ? isV3 === true
-          ? true
-          : false
-        : v2
-        ? false
-        : true,
-    );
-  }, [v2, v3, isV3]);
+    updateIsV2(v2 && v3 ? (isV2 === true ? true : false) : v2 ? true : false);
+  }, [v2, v3, isV2]);
 
   const farmCategories = [
     {
@@ -108,7 +100,7 @@ const FarmPage: React.FC = () => {
       <Box maxWidth={isMobile ? '320px' : '1136px'} margin='0 auto 24px'>
         <AdsSlider sort='farms' />
       </Box>
-      {!isV3 && v2 && (
+      {isV2 && v2 && (
         <>
           <CustomSwitch
             width={300}
@@ -124,7 +116,7 @@ const FarmPage: React.FC = () => {
           </Box>
         </>
       )}
-      {isV3 && v3 && <V3Farms />}
+      {!isV2 && v3 && <V3Farms />}
     </Box>
   );
 };

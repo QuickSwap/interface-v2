@@ -6,7 +6,7 @@ import AnalyticsSearch from 'components/AnalyticsSearch';
 import { shortenAddress } from 'utils';
 import 'pages/styles/analytics.scss';
 import { useTranslation } from 'react-i18next';
-import { useIsV3 } from 'state/application/hooks';
+import { useIsV2 } from 'state/application/hooks';
 import AdsSlider from 'components/AdsSlider';
 import VersionToggle from 'components/Toggle/VersionToggle';
 import { getConfig } from '../../config/index';
@@ -35,20 +35,12 @@ const AnalyticsHeader: React.FC<AnalyticHeaderProps> = ({
   const farms = config['farm']['available'];
   const v3 = config['v3'];
   const v2 = config['v2'];
-  const { isV3, updateIsV3 } = useIsV3();
-  const version = useMemo(() => `${isV3 ? `v3` : 'v2'}`, [isV3]);
+  const { isV2, updateIsV2 } = useIsV2();
+  const version = useMemo(() => `${isV2 ? `v2` : 'v3'}`, [isV2]);
 
   useEffect(() => {
-    updateIsV3(
-      v2 === true && v3 === true
-        ? isV3 === true
-          ? true
-          : false
-        : v2
-        ? false
-        : true,
-    );
-  }, [v2, v3, isV3]);
+    updateIsV2(v2 && v3 ? (isV2 === true ? true : false) : v2 ? true : false);
+  }, [v2, v3, isV2]);
 
   return (
     <Box width='100%' mb={3}>

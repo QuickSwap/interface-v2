@@ -23,7 +23,7 @@ import 'pages/styles/analytics.scss';
 import AnalyticsHeader from 'pages/AnalyticsPage/AnalyticsHeader';
 import AnalyticsPairChart from './AnalyticsPairChart';
 import { useTranslation } from 'react-i18next';
-import { useEthPrice, useIsV3 } from 'state/application/hooks';
+import { useEthPrice, useIsV2 } from 'state/application/hooks';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { getPairInfoV3, getPairTransactionsV3 } from 'utils/v3-graph';
 import { useDispatch } from 'react-redux';
@@ -39,8 +39,8 @@ const AnalyticsPairDetails: React.FC = () => {
   const [pairData, setPairData] = useState<any>(null);
   const [pairTransactions, setPairTransactions] = useState<any>(null);
 
-  const { isV3 } = useIsV3();
-  const version = useMemo(() => `${isV3 ? `v3` : 'v2'}`, [isV3]);
+  const { isV2 } = useIsV2();
+  const version = useMemo(() => `${!isV2 ? `v3` : 'v2'}`, [isV2]);
 
   const pairTransactionsList = useMemo(() => {
     if (pairTransactions) {
@@ -91,7 +91,7 @@ const AnalyticsPairDetails: React.FC = () => {
       ])
     : undefined;
 
-  const token0Rate = isV3
+  const token0Rate = !isV2
     ? // According to the graph Token1Price is the number of token 1s per token 0
       // So we need to invert these
       pairData && pairData.token1Price
@@ -111,7 +111,7 @@ const AnalyticsPairDetails: React.FC = () => {
 
   // According to the graph Token0Price is the number of token 0's per token 1
   // So we need to invert these
-  const token1Rate = isV3
+  const token1Rate = !isV2
     ? pairData && pairData.token0Price
       ? Number(pairData.token0Price) >= 0.0001
         ? Number(pairData.token0Price).toFixed(
@@ -153,7 +153,7 @@ const AnalyticsPairDetails: React.FC = () => {
 
     async function fetchPairData() {
       try {
-        if (isV3) {
+        if (!isV2) {
           const pairInfo = await getPairInfoV3(pairAddress, chainIdToUse);
           if (pairInfo && pairInfo.length > 0) {
             setPairData(pairInfo[0]);
@@ -176,7 +176,7 @@ const AnalyticsPairDetails: React.FC = () => {
       }
     }
     async function fetchTransctions() {
-      const pairTransactionsFn = isV3
+      const pairTransactionsFn = !isV2
         ? getPairTransactionsV3(pairAddress, chainIdToUse)
         : getPairTransactions(pairAddress, chainIdToUse);
 
@@ -186,11 +186,11 @@ const AnalyticsPairDetails: React.FC = () => {
         }
       });
     }
-    if (isV3 !== undefined) {
+    if (isV2 !== undefined) {
       fetchPairData();
       fetchTransctions();
     }
-  }, [pairAddress, ethPrice.price, isV3, chainIdToUse]);
+  }, [pairAddress, ethPrice.price, isV2, chainIdToUse]);
 
   useEffect(() => {
     setPairData(null);
@@ -199,10 +199,10 @@ const AnalyticsPairDetails: React.FC = () => {
 
   useEffect(() => {
     //TODO v2 Subgraph for txs is not working, for now always true
-    if (pairData && (isV3 ? pairTransactions : true)) {
+    if (pairData && (!isV2 ? pairTransactions : true)) {
       dispatch(setAnalyticsLoaded(true));
     }
-  }, [pairData, pairTransactions, isV3, dispatch]);
+  }, [pairData, pairTransactions, isV2, dispatch]);
 
   const V2PairInfo = () => (
     <Box width={1} className='panel' mt={4}>
@@ -382,7 +382,7 @@ const AnalyticsPairDetails: React.FC = () => {
                     </Link>
                   </p>
                 </Box>
-                {isV3 && (
+                {!isV2 && (
                   <Box
                     ml={2}
                     paddingY={0.5}
@@ -417,7 +417,7 @@ const AnalyticsPairDetails: React.FC = () => {
                 mr={1.5}
                 onClick={() => {
                   history.push(
-                    `/pools${isV3 ? '/v3' : ''}?currency0=${
+                    `/pools${isV2 ? '/v2' : '/v3'}?currency0=${
                       pairData.token0.id
                     }&currency1=${pairData.token1.id}`,
                   );
@@ -429,7 +429,7 @@ const AnalyticsPairDetails: React.FC = () => {
                 className='button filledButton'
                 onClick={() => {
                   history.push(
-                    `/swap${isV3 ? '/v3' : ''}?currency0=${
+                    `/swap${isV2 ? '/v2' : '/v3'}?currency0=${
                       pairData.token0.id
                     }&currency1=${pairData.token1.id}`,
                   );
@@ -439,7 +439,7 @@ const AnalyticsPairDetails: React.FC = () => {
               </Box>
             </Box>
           </Box>
-          {isV3 ? <V3PairInfo /> : <V2PairInfo />}
+          {!isV2 ? <V3PairInfo /> : <V2PairInfo />}
           <Box width={1} mt={5}>
             <p>{t('transactions')}</p>
           </Box>
