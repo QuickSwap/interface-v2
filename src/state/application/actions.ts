@@ -102,4 +102,4 @@ export const updateGasPrice = createAction<{
   override: boolean;
 }>('application/updateGasPrice');
 
-export const updateIsV3 = createAction<boolean>('application/updateIsV3');
+export const updateIsV2 = createAction<boolean>('application/updateIsV2');
