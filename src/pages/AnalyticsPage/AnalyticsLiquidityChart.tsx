@@ -15,7 +15,7 @@ import {
 import { GlobalConst, GlobalData } from 'constants/index';
 import { AreaChart, ChartType } from 'components';
 import { useTranslation } from 'react-i18next';
-import { useIsV3 } from 'state/application/hooks';
+import { useIsV2 } from 'state/application/hooks';
 import { getChartDataV3 } from 'utils/v3-graph';
 dayjs.extend(utc);
 
@@ -27,10 +27,10 @@ const AnalyticsLiquidityChart: React.FC = () => {
   );
   const [globalChartData, updateGlobalChartData] = useState<any[] | null>(null);
 
-  const { isV3 } = useIsV3();
+  const { isV2 } = useIsV2();
 
   useEffect(() => {
-    if (isV3 === undefined) return;
+    if (isV2 === undefined) return;
     const fetchChartData = async () => {
       updateGlobalChartData(null);
 
@@ -39,9 +39,9 @@ const AnalyticsLiquidityChart: React.FC = () => {
           ? 0
           : getChartStartTime(durationIndex);
 
-      const chartDataFn = isV3
-        ? getChartDataV3(duration)
-        : getChartData(duration);
+      const chartDataFn = isV2
+        ? getChartData(duration)
+        : getChartDataV3(duration);
 
       chartDataFn.then(([newChartData]) => {
         if (newChartData) {
@@ -54,7 +54,7 @@ const AnalyticsLiquidityChart: React.FC = () => {
       });
     };
     fetchChartData();
-  }, [updateGlobalChartData, durationIndex, isV3]);
+  }, [updateGlobalChartData, durationIndex, isV2]);
 
   const liquidityPercentClass = getPriceClass(
     globalData ? Number(globalData.liquidityChangeUSD) : 0,
@@ -138,8 +138,8 @@ const AnalyticsLiquidityChart: React.FC = () => {
             data={globalChartData.map((value: any) =>
               Number(value.totalLiquidityUSD),
             )}
-            strokeColor={isV3 ? '#3e92fe' : '#00dced'}
-            gradientColor={isV3 ? '#448aff' : undefined}
+            strokeColor={isV2 ? '#00dced' : '#3e92fe'}
+            gradientColor={isV2 ? undefined : '#448aff'}
             yAxisValues={yAxisValues}
             dates={globalChartData.map((value: any) => value.date)}
             width='100%'

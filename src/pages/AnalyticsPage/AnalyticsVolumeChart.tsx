@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Box } from '@material-ui/core';
 import Skeleton from '@material-ui/lab/Skeleton';
-import { useGlobalData, useIsV3 } from 'state/application/hooks';
+import { useGlobalData, useIsV2 } from 'state/application/hooks';
 import {
   formatCompact,
   getChartData,
@@ -31,10 +31,10 @@ const AnalyticsVolumeChart: React.FC = () => {
   const { globalData } = useGlobalData();
   const [globalChartData, updateGlobalChartData] = useState<any>(null);
 
-  const { isV3 } = useIsV3();
+  const { isV2 } = useIsV2();
 
   useEffect(() => {
-    if (isV3 === undefined) return;
+    if (isV2 === undefined) return;
     const fetchChartData = async () => {
       updateGlobalChartData(null);
 
@@ -43,7 +43,7 @@ const AnalyticsVolumeChart: React.FC = () => {
           ? 0
           : getChartStartTime(durationIndex);
 
-      const chartDataFn = isV3
+      const chartDataFn = !isV2
         ? getChartDataV3(duration)
         : getChartData(duration);
 
@@ -62,7 +62,7 @@ const AnalyticsVolumeChart: React.FC = () => {
       });
     };
     fetchChartData();
-  }, [durationIndex, isV3]);
+  }, [durationIndex, isV2]);
 
   const liquidityWeeks = useMemo(() => {
     if (globalChartData) {
@@ -242,10 +242,10 @@ const AnalyticsVolumeChart: React.FC = () => {
         </Box>
       </Box>
       <Box mt={2}>
-        {globalChartData && isV3 !== undefined ? (
+        {globalChartData && isV2 !== undefined ? (
           <BarChart
             height={200}
-            isV3={isV3}
+            isV3={!isV2}
             data={barChartData}
             categories={
               volumeIndex === WEEK_VOLUME

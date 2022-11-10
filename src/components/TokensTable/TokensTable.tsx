@@ -11,7 +11,7 @@ import {
   getPriceClass,
   getTokenFromAddress,
 } from 'utils';
-import { useBookmarkTokens, useIsV3 } from 'state/application/hooks';
+import { useBookmarkTokens, useIsV2 } from 'state/application/hooks';
 import { ReactComponent as StarChecked } from 'assets/images/StarChecked.svg';
 import { ReactComponent as StarUnchecked } from 'assets/images/StarUnchecked.svg';
 import 'components/styles/TokensTable.scss';
@@ -31,8 +31,8 @@ const TokensTable: React.FC<TokensTableProps> = ({
 }) => {
   const { t } = useTranslation();
   const tokenMap = useSelectedTokenList();
-  const { isV3 } = useIsV3();
-  const version = useMemo(() => `${isV3 ? `v3` : 'v2'}`, [isV3]);
+  const { isV2 } = useIsV2();
+  const version = useMemo(() => `${isV2 ? `v2` : 'v3'}`, [isV2]);
 
   const tokenHeadCells = [
     {

@@ -7,14 +7,14 @@ import { useTranslation } from 'react-i18next';
 import 'pages/styles/pools.scss';
 import VersionToggle from 'components/Toggle/VersionToggle';
 import AdsSlider from 'components/AdsSlider';
-import { useIsV3 } from 'state/application/hooks';
+import { useIsV2 } from 'state/application/hooks';
 import { SupplyLiquidityV3 } from './v3/SupplyLiquidityV3';
 const YourLiquidityPools = lazy(() => import('./YourLiquidityPools'));
 const MyLiquidityPoolsV3 = lazy(() => import('./v3/MyLiquidityPoolsV3'));
 
 const PoolsPage: React.FC = () => {
   const { t } = useTranslation();
-  const { isV3 } = useIsV3();
+  const { isV2 } = useIsV2();
 
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
@@ -43,7 +43,7 @@ const PoolsPage: React.FC = () => {
       <Grid container spacing={4}>
         <Grid item xs={12} sm={12} md={5}>
           <Box className='wrapper'>
-            {isV3 ? <SupplyLiquidityV3 /> : <SupplyLiquidity />}
+            {!isV2 ? <SupplyLiquidityV3 /> : <SupplyLiquidity />}
           </Box>
           <Box maxWidth={isMobile ? '320px' : '352px'} margin='16px auto 0'>
             <AdsSlider sort='pools' />
@@ -51,7 +51,7 @@ const PoolsPage: React.FC = () => {
         </Grid>
         <Grid item xs={12} sm={12} md={7}>
           <Box className='wrapper'>
-            {isV3 ? <MyLiquidityPoolsV3 /> : <YourLiquidityPools />}
+            {!isV2 ? <MyLiquidityPoolsV3 /> : <YourLiquidityPools />}
           </Box>
         </Grid>
       </Grid>

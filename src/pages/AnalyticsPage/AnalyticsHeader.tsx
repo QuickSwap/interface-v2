@@ -6,7 +6,7 @@ import AnalyticsSearch from 'components/AnalyticsSearch';
 import { shortenAddress } from 'utils';
 import 'pages/styles/analytics.scss';
 import { useTranslation } from 'react-i18next';
-import { useIsV3 } from 'state/application/hooks';
+import { useIsV2 } from 'state/application/hooks';
 import AdsSlider from 'components/AdsSlider';
 import VersionToggle from 'components/Toggle/VersionToggle';
 
@@ -27,8 +27,8 @@ const AnalyticsHeader: React.FC<AnalyticHeaderProps> = ({
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
 
-  const { isV3 } = useIsV3();
-  const version = useMemo(() => `${isV3 ? `v3` : 'v2'}`, [isV3]);
+  const { isV2 } = useIsV2();
+  const version = useMemo(() => `${isV2 ? `v2` : 'v3'}`, [isV2]);
 
   return (
     <Box width='100%' mb={3}>

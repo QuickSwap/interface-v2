@@ -16,7 +16,7 @@ import {
 import { AreaChart, ChartType } from 'components';
 import { GlobalConst, GlobalData } from 'constants/index';
 import { useTranslation } from 'react-i18next';
-import { useIsV3 } from 'state/application/hooks';
+import { useIsV2 } from 'state/application/hooks';
 import { getPairChartDataV3, getPairChartFees } from 'utils/v3-graph';
 import AnalyticsPairLiquidityChartV3 from './AnalyticsPairLiquidityChartV3';
 import '../styles/analytics.scss';
@@ -42,7 +42,7 @@ const AnalyticsPairChart: React.FC<{
     GlobalConst.analyticChart.ONE_MONTH_CHART,
   );
 
-  const { isV3 } = useIsV3();
+  const { isV2 } = useIsV2();
 
   const [priceChartTokenIdx, setPriceChartTokenIdx] = useState(0);
 
@@ -79,12 +79,12 @@ const AnalyticsPairChart: React.FC<{
   );
 
   const _chartIndexes = useMemo(
-    () => chartIndexes.concat(isV3 ? chartIndexesV3 : []),
-    [isV3, chartIndexes, chartIndexesV3],
+    () => chartIndexes.concat(isV2 ? [] : chartIndexesV3),
+    [isV2, chartIndexes, chartIndexesV3],
   );
   const _chartIndexesTexts: any = useMemo(
-    () => chartIndexTexts.concat(isV3 ? chartIndexTextsV3 : []),
-    [isV3, chartIndexTexts, chartIndexTextsV3],
+    () => chartIndexTexts.concat(isV2 ? [] : chartIndexTextsV3),
+    [isV2, chartIndexTexts, chartIndexTextsV3],
   );
 
   const chartData = useMemo(() => {
@@ -104,9 +104,9 @@ const AnalyticsPairChart: React.FC<{
         case CHART_TVL:
           return Number(item.reserveUSD);
         case CHART_FEES:
-          return isV3
-            ? Number(item.feesUSD)
-            : Number(item.dailyVolumeUSD) * GlobalConst.utils.FEEPERCENT;
+          return isV2
+            ? Number(item.dailyVolumeUSD) * GlobalConst.utils.FEEPERCENT
+            : Number(item.feesUSD);
         case CHART_PRICE:
           return priceChartTokenIdx
             ? Number(item.token1Price)
@@ -115,7 +115,7 @@ const AnalyticsPairChart: React.FC<{
           return;
       }
     });
-  }, [pairChartData, pairFeeData, chartIndex, isV3, priceChartTokenIdx]);
+  }, [pairChartData, pairFeeData, chartIndex, isV2, priceChartTokenIdx]);
 
   const currentData = useMemo(() => {
     if (!pairData) return;
@@ -125,7 +125,7 @@ const AnalyticsPairChart: React.FC<{
       case CHART_TVL:
         return pairData.reserveUSD ?? pairData.trackedReserveUSD;
       case CHART_FEES:
-        return isV3 ? pairData.feesUSD : fees;
+        return isV2 ? fees : pairData.feesUSD;
       case CHART_POOL_FEE:
         return pairData.fee / 10000;
       case CHART_PRICE:
@@ -139,7 +139,7 @@ const AnalyticsPairChart: React.FC<{
       default:
         return;
     }
-  }, [pairData, chartIndex, fees, isV3, priceChartTokenIdx]);
+  }, [pairData, chartIndex, fees, isV2, priceChartTokenIdx]);
 
   const currentPercent = useMemo(() => {
     if (!pairData) return;
@@ -149,7 +149,7 @@ const AnalyticsPairChart: React.FC<{
       case CHART_TVL:
         return pairData.liquidityChangeUSD;
       case CHART_FEES:
-        return isV3
+        return !isV2
           ? pairData.feesUSDChange
           : usingUtVolume
           ? pairData.volumeChangeUntracked
@@ -161,7 +161,7 @@ const AnalyticsPairChart: React.FC<{
       default:
         return;
     }
-  }, [pairData, chartIndex, usingUtVolume, isV3]);
+  }, [pairData, chartIndex, usingUtVolume, isV2]);
 
   const chartYTicker = useMemo(() => {
     if (!pairData) return;
@@ -184,13 +184,13 @@ const AnalyticsPairChart: React.FC<{
           ? 0
           : getChartStartTime(durationIndex);
 
-      const pairChartDataFn = isV3
+      const pairChartDataFn = !isV2
         ? getPairChartDataV3(pairAddress, duration)
         : getPairChartData(pairAddress, duration);
 
       Promise.all(
         [pairChartDataFn].concat(
-          isV3 ? [getPairChartFees(pairAddress, duration)] : [],
+          !isV2 ? [getPairChartFees(pairAddress, duration)] : [],
         ),
       ).then(([chartData, feeChartData]) => {
         if (chartData && chartData.length > 0) {
@@ -209,21 +209,21 @@ const AnalyticsPairChart: React.FC<{
         }
       });
     }
-    if (isV3 !== undefined) {
+    if (isV2 !== undefined) {
       fetchPairChartData();
     }
-  }, [pairAddress, durationIndex, isV3]);
+  }, [pairAddress, durationIndex, isV2]);
 
   const _chartData = useMemo(() => {
     if (!pairData || !pairChartData) return;
-    if (isV3 && !pairFeeData) return;
+    if (!isV2 && !pairFeeData) return;
     switch (chartIndex) {
       case CHART_POOL_FEE:
         return pairFeeData;
       default:
         return pairChartData;
     }
-  }, [pairData, chartIndex, pairFeeData, pairChartData, isV3]);
+  }, [pairData, chartIndex, pairFeeData, pairChartData, isV2]);
 
   const currentPercentClass = getPriceClass(Number(currentPercent));
 
@@ -329,9 +329,9 @@ const AnalyticsPairChart: React.FC<{
               yAxisValues={getYAXISValuesAnalytics(chartData)}
               dates={_chartData.map((value: any) => value.date)}
               width='100%'
-              strokeColor={isV3 ? '#3e92fe' : '#00dced'}
-              gradientColor={isV3 ? '#448aff' : undefined}
-              height={isV3 ? 275 : 240}
+              strokeColor={!isV2 ? '#3e92fe' : '#00dced'}
+              gradientColor={!isV2 ? '#448aff' : undefined}
+              height={!isV2 ? 275 : 240}
               categories={getChartDates(_chartData, durationIndex)}
               yAxisTicker={chartYTicker}
             />

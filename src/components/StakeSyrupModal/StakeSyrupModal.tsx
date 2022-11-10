@@ -24,6 +24,7 @@ import {
   getExactTokenAmount,
   getValueTokenDecimals,
   getPartialTokenAmount,
+  calculateGasMargin,
 } from 'utils';
 import { useTranslation } from 'react-i18next';
 
@@ -40,7 +41,6 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
 }) => {
   const { t } = useTranslation();
   const [attempting, setAttempting] = useState(false);
-  const [hash, setHash] = useState('');
   const { account, chainId, library } = useActiveWeb3React();
   const addTransaction = useTransactionAdder();
   const finalizedTransaction = useTransactionFinalizer();
@@ -99,50 +99,61 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
     setAttempting(true);
     if (stakingContract && parsedAmount && deadline) {
       if (approval === ApprovalState.APPROVED) {
-        stakingContract
-          .stake(`0x${parsedAmount.raw.toString(16)}`, { gasLimit: 350000 })
-          .then(async (response: TransactionResponse) => {
-            addTransaction(response, {
-              summary: `${t('deposit')} ${syrup.stakingToken.symbol}`,
-            });
-            try {
-              const receipt = await response.wait();
-              finalizedTransaction(receipt, {
-                summary: `${t('deposit')} ${syrup.stakingToken.symbol}`,
-              });
-              setAttempting(false);
-              setStakePercent(0);
-              setTypedValue('');
-            } catch (e) {
-              setAttempting(false);
-              setStakePercent(0);
-              setTypedValue('');
-            }
-          })
-          .catch((error: any) => {
-            setAttempting(false);
-            console.log(error);
+        try {
+          const estimatedGas = await stakingContract.estimateGas.stake(
+            `0x${parsedAmount.raw.toString(16)}`,
+          );
+          const response: TransactionResponse = await stakingContract.stake(
+            `0x${parsedAmount.raw.toString(16)}`,
+            {
+              gasLimit: calculateGasMargin(estimatedGas),
+            },
+          );
+          addTransaction(response, {
+            summary: `${t('deposit')} ${syrup.stakingToken.symbol}`,
           });
+          const receipt = await response.wait();
+          finalizedTransaction(receipt, {
+            summary: `${t('deposit')} ${syrup.stakingToken.symbol}`,
+          });
+          setAttempting(false);
+          setStakePercent(0);
+          setTypedValue('');
+        } catch (error) {
+          setAttempting(false);
+          setStakePercent(0);
+          setTypedValue('');
+          console.log(error);
+        }
       } else if (signatureData) {
-        stakingContract
-          .stakeWithPermit(
+        try {
+          const estimatedGas = await stakingContract.estimateGas.stakeWithPermit(
             `0x${parsedAmount.raw.toString(16)}`,
             signatureData.deadline,
             signatureData.v,
             signatureData.r,
             signatureData.s,
-            { gasLimit: 350000 },
-          )
-          .then((response: TransactionResponse) => {
-            addTransaction(response, {
-              summary: t('depositliquidity'),
-            });
-            setHash(response.hash);
-          })
-          .catch((error: any) => {
-            setAttempting(false);
-            console.log(error);
+          );
+          const response: TransactionResponse = await stakingContract.stakeWithPermit(
+            `0x${parsedAmount.raw.toString(16)}`,
+            signatureData.deadline,
+            signatureData.v,
+            signatureData.r,
+            signatureData.s,
+            { gasLimit: calculateGasMargin(estimatedGas) },
+          );
+          addTransaction(response, {
+            summary: t('depositliquidity'),
           });
+          const receipt = await response.wait();
+          finalizedTransaction(receipt, {
+            summary: t('depositliquidity'),
+          });
+          setAttempting(false);
+        } catch (error) {
+          setAttempting(false);
+          console.log(error);
+        }
       } else {
         setAttempting(false);
         throw new Error(t('stakewithoutapproval'));
