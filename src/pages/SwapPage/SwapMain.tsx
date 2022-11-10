@@ -49,8 +49,8 @@ const SwapMain: React.FC = () => {
     if (!showBestTrade) {
       const tradeIndex = v2 ? SWAP_NORMAL : SWAP_V3;
       setSwapIndex(tradeIndex);
-      if (tradeIndex === SWAP_V3) {
-        updateIsV3(true);
+      if (tradeIndex === SWAP_NORMAL) {
+        updateIsV2(true);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

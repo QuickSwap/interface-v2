@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next';
 import { getConfig } from 'config';
 import { useActiveWeb3React } from 'hooks';
 import SwapV3Page from 'pages/SwapPage/V3/Swap';
-import { useIsV3 } from 'state/application/hooks';
+import { useIsV2 } from 'state/application/hooks';
 
 const SWAP_TAB = 0;
 const LIQUIDITY_TAB = 1;
@@ -26,14 +26,14 @@ export const SwapSection: React.FC = () => {
   const config = getConfig(chainId);
   const v2 = config['v2'];
   const v3 = config['v3'];
-  const isOnV3 = !v2 && !!v3;
-  const { updateIsV3 } = useIsV3();
+  const isOnV2 = !!v2 && !v3;
+  const { updateIsV2 } = useIsV2();
 
   useEffect(() => {
-    if (isOnV3) {
-      updateIsV3(true);
+    if (isOnV2) {
+      updateIsV2(true);
     }
-  }, [isOnV3]);
+  }, [isOnV2]);
 
   return (
     <>

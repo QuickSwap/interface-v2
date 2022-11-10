@@ -26,18 +26,11 @@ const PoolsPage: React.FC = () => {
 
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
+  const { updateIsV2 } = useIsV2();
 
   useEffect(() => {
-    updateIsV3(
-      v2 === true && v3 === true
-        ? isV3 === true
-          ? true
-          : false
-        : v2
-        ? false
-        : true,
-    );
-  }, [v2, v3, isV3]);
+    updateIsV2(v2 && v3 ? (isV2 === true ? true : false) : v2 ? true : false);
+  }, [v2, v3, isV2]);
   const helpURL = process.env.REACT_APP_HELP_URL;
 
   return (

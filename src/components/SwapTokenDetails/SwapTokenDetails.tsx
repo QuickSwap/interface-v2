@@ -7,7 +7,7 @@ import { CurrencyLogo, CopyHelper } from 'components';
 import {
   useBlockNumber,
   useEthPrice,
-  useIsV3,
+  useIsV2,
   useMaticPrice,
   useTokenDetails,
 } from 'state/application/hooks';
@@ -47,7 +47,7 @@ const SwapTokenDetails: React.FC<{
   const { ethPrice } = useEthPrice();
   const { maticPrice } = useMaticPrice();
   const { chainId } = useActiveWeb3React();
-  const { isV3 } = useIsV3();
+  const { isV2 } = useIsV2();
   const chainIdToUse = chainId ?? ChainId.MATIC;
   const config = getConfig(chainIdToUse);
   const v2 = config['v2'];
@@ -66,7 +66,7 @@ const SwapTokenDetails: React.FC<{
 
       let tokenPriceData = undefined;
 
-      if ((!v2 || isV3) && maticPrice.price && maticPrice.oneDayPrice) {
+      if ((!v2 || !isV2) && maticPrice.price && maticPrice.oneDayPrice) {
         tokenPriceData = await getIntervalTokenDataV3(
           tokenAddress,
           startTime,
@@ -85,7 +85,7 @@ const SwapTokenDetails: React.FC<{
         );
         setPriceData(tokenPriceData);
       }
-      if ((!v2 || isV3) && maticPrice.price && maticPrice.oneDayPrice) {
+      if ((!v2 || !isV2) && maticPrice.price && maticPrice.oneDayPrice) {
         const tokenInfo = await getTokenInfoV3(
           maticPrice.price,
           maticPrice.oneDayPrice,
