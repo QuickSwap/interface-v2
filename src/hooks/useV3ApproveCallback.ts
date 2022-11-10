@@ -117,7 +117,6 @@ export function useApproveCallback(
         useExact ? amountToApprove.quotient.toString() : MaxUint256,
         {
           gasLimit: calculateGasMargin(estimatedGas),
-          gasPrice: gasPrice * GAS_PRICE_MULTIPLIER,
         },
       )
       .then((response: TransactionResponse) => {
@@ -139,7 +138,6 @@ export function useApproveCallback(
     spender,
     addTransaction,
     chainId,
-    gasPrice,
   ]);
 
   return [approvalState, approve];

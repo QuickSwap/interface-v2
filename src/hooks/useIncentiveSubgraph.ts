@@ -927,43 +927,50 @@ export function useFarmingSubgraph() {
       // TODO
       // .filter(farming => +farming.bonusRewardRate || +farming.rewardRate)
       for (const farming of eternalFarmings) {
-        const pool = await fetchPool(farming.pool);
-        const rewardToken = await fetchToken(farming.rewardToken, true);
-        const bonusRewardToken = await fetchToken(
-          farming.bonusRewardToken,
-          true,
-        );
-        const wrappedToken0 = getV3TokenFromAddress(
-          pool.token0.id,
-          chainId ?? ChainId.MATIC,
-          tokenMap,
-        );
-        const wrappedToken1 = getV3TokenFromAddress(
-          pool.token1.id,
-          chainId ?? ChainId.MATIC,
-          tokenMap,
-        );
-        const newPool = {
-          ...pool,
-          token0: wrappedToken0 ? wrappedToken0.token : pool.token0,
-          token1: wrappedToken1 ? wrappedToken1.token : pool.token1,
-        };
-        const multiplierToken = await fetchToken(farming.multiplierToken, true);
+        try {
+          const pool = await fetchPool(farming.pool);
+          const rewardToken = await fetchToken(farming.rewardToken, true);
+          const bonusRewardToken = await fetchToken(
+            farming.bonusRewardToken,
+            true,
+          );
+          const wrappedToken0 = getV3TokenFromAddress(
+            pool.token0.id,
+            chainId ?? ChainId.MATIC,
+            tokenMap,
+          );
+          const wrappedToken1 = getV3TokenFromAddress(
+            pool.token1.id,
+            chainId ?? ChainId.MATIC,
+            tokenMap,
+          );
+          const newPool = {
+            ...pool,
+            token0: wrappedToken0 ? wrappedToken0.token : pool.token0,
+            token1: wrappedToken1 ? wrappedToken1.token : pool.token1,
+          };
+          const multiplierToken = await fetchToken(
+            farming.multiplierToken,
+            true,
+          );
 
-        _eternalFarmings = [
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          //@ts-ignore
-          ..._eternalFarmings,
-          {
-            ...farming,
-            rewardToken,
-            bonusRewardToken,
-            multiplierToken,
+          _eternalFarmings = [
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-ignore
-            pool: newPool,
-          },
-        ];
+            ..._eternalFarmings,
+            {
+              ...farming,
+              rewardToken,
+              bonusRewardToken,
+              multiplierToken,
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              //@ts-ignore
+              pool: newPool,
+            },
+          ];
+        } catch (e) {
+          console.log(e);
+        }
       }
 
       setEternalFarms(_eternalFarmings);
