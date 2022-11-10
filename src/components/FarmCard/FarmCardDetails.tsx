@@ -8,7 +8,10 @@ import { TokenAmount, Pair } from '@uniswap/sdk';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { usePairContract, useStakingContract } from 'hooks/useContract';
 import { useDerivedStakeInfo } from 'state/stake/hooks';
-import { useTransactionAdder } from 'state/transactions/hooks';
+import {
+  useTransactionAdder,
+  useTransactionFinalizer,
+} from 'state/transactions/hooks';
 import { useTokenBalance } from 'state/wallet/hooks';
 import { CurrencyLogo, NumericalInput } from 'components';
 import { Link } from 'react-router-dom';
@@ -30,6 +33,7 @@ import {
   getEarnedUSDDualFarm,
   getExactTokenAmount,
   formatNumber,
+  calculateGasMargin,
 } from 'utils';
 import CircleInfoIcon from 'assets/images/circleinfo.svg';
 
@@ -56,6 +60,7 @@ const FarmCardDetails: React.FC<{
 
   const { account, library } = useActiveWeb3React();
   const addTransaction = useTransactionAdder();
+  const finalizedTransaction = useTransactionFinalizer();
 
   const currency0 = token0 ? unwrappedToken(token0) : undefined;
   const currency1 = token1 ? unwrappedToken(token1) : undefined;
@@ -91,60 +96,63 @@ const FarmCardDetails: React.FC<{
     stakingInfo.stakedAmount,
   );
 
-  const onWithdraw = () => {
+  const onWithdraw = async () => {
     if (stakingInfo && stakingContract && unstakeParsedAmount) {
       setAttemptUnstaking(true);
 
-      const txObj =
-        unstakeAmount === stakingInfo.stakedAmount?.toExact()
-          ? stakingContract.exit({
-              gasLimit: 300000,
-            })
-          : stakingContract.withdraw(
-              `0x${unstakeParsedAmount.raw.toString(16)}`,
-              {
-                gasLimit: 300000,
-              },
-            );
-      txObj
-        .then(async (response: TransactionResponse) => {
-          addTransaction(response, {
-            summary: t('withdrawliquidity'),
+      try {
+        let response: TransactionResponse;
+        if (unstakeAmount === stakingInfo.stakedAmount?.toExact()) {
+          const estimatedGas = await stakingContract.estimateGas.exit();
+          response = await stakingContract.exit({
+            gasLimit: calculateGasMargin(estimatedGas),
           });
-          try {
-            await response.wait();
-            setAttemptUnstaking(false);
-          } catch (error) {
-            setAttemptUnstaking(false);
-          }
-        })
-        .catch((error: any) => {
-          setAttemptUnstaking(false);
-          console.log(error);
+        } else {
+          const estimatedGas = await stakingContract.estimateGas.withdraw(
+            `0x${unstakeParsedAmount.raw.toString(16)}`,
+          );
+          response = await stakingContract.withdraw(
+            `0x${unstakeParsedAmount.raw.toString(16)}`,
+            {
+              gasLimit: calculateGasMargin(estimatedGas),
+            },
+          );
+        }
+        addTransaction(response, {
+          summary: t('withdrawliquidity'),
         });
+        const receipt = await response.wait();
+        finalizedTransaction(receipt, {
+          summary: t('withdrawliquidity'),
+        });
+        setAttemptUnstaking(false);
+      } catch (error) {
+        setAttemptUnstaking(false);
+        console.log(error);
+      }
     }
   };
 
   const onClaimReward = async () => {
     if (stakingContract && stakingInfo && stakingInfo.stakedAmount) {
       setAttemptClaiming(true);
-      await stakingContract
-        .getReward({ gasLimit: 350000 })
-        .then(async (response: TransactionResponse) => {
-          addTransaction(response, {
-            summary: t('claimrewards'),
-          });
-          try {
-            await response.wait();
-            setAttemptClaiming(false);
-          } catch (error) {
-            setAttemptClaiming(false);
-          }
-        })
-        .catch((error: any) => {
-          setAttemptClaiming(false);
-          console.log(error);
+      try {
+        const estimatedGas = await stakingContract.estimateGas.getReward();
+        const response: TransactionResponse = await stakingContract.getReward({
+          gasLimit: calculateGasMargin(estimatedGas),
         });
+        addTransaction(response, {
+          summary: t('claimrewards'),
+        });
+        const receipt = await response.wait();
+        finalizedTransaction(receipt, {
+          summary: t('claimrewards'),
+        });
+        setAttemptClaiming(false);
+      } catch (error) {
+        setAttemptClaiming(false);
+        console.log(error);
+      }
     }
   };
 
@@ -174,25 +182,28 @@ const FarmCardDetails: React.FC<{
   const onStake = async () => {
     if (stakingContract && parsedAmount && deadline) {
       setAttemptStaking(true);
-      stakingContract
-        .stake(`0x${parsedAmount.raw.toString(16)}`, {
-          gasLimit: 350000,
-        })
-        .then(async (response: TransactionResponse) => {
-          addTransaction(response, {
-            summary: t('depositliquidity'),
-          });
-          try {
-            await response.wait();
-            setAttemptStaking(false);
-          } catch (error) {
-            setAttemptStaking(false);
-          }
-        })
-        .catch((error: any) => {
-          setAttemptStaking(false);
-          console.log(error);
+      try {
+        const estimatedGas = await stakingContract.estimateGas.stake(
+          `0x${parsedAmount.raw.toString(16)}`,
+        );
+        const response: TransactionResponse = await stakingContract.stake(
+          `0x${parsedAmount.raw.toString(16)}`,
+          {
+            gasLimit: calculateGasMargin(estimatedGas),
+          },
+        );
+        addTransaction(response, {
+          summary: t('depositliquidity'),
         });
+        const receipt = await response.wait();
+        finalizedTransaction(receipt, {
+          summary: t('depositliquidity'),
+        });
+        setAttemptStaking(false);
+      } catch (error) {
+        setAttemptStaking(false);
+        console.log(error);
+      }
     } else {
       throw new Error(t('stakewithoutapproval'));
     }

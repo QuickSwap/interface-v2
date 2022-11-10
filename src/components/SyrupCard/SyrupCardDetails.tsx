@@ -14,6 +14,7 @@ import {
   useTransactionFinalizer,
 } from 'state/transactions/hooks';
 import {
+  calculateGasMargin,
   formatCompact,
   formatMulDivTokenAmount,
   formatTokenAmount,
@@ -24,6 +25,7 @@ import CircleInfoIcon from 'assets/images/circleinfo.svg';
 import SyrupAPR from './SyrupAPR';
 import { useUSDCPriceToken } from 'utils/useUSDCPrice';
 import { GlobalConst } from 'constants/index';
+import { formatUnits } from 'ethers/lib/utils';
 
 const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
   syrup,
@@ -62,52 +64,46 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
   const onClaimReward = async () => {
     if (syrup && stakingContract && syrup.stakedAmount) {
       setAttemptingClaim(true);
-      await stakingContract
-        .getReward({ gasLimit: 350000 })
-        .then(async (response: TransactionResponse) => {
-          addTransaction(response, {
-            summary: t('claimrewards1', { symbol: syrup.token.symbol }),
-          });
-          try {
-            const receipt = await response.wait();
-            finalizedTransaction(receipt, {
-              summary: t('claimrewards1', { symbol: syrup.token.symbol }),
-            });
-            setAttemptingClaim(false);
-          } catch (e) {
-            setAttemptingClaim(false);
-          }
-        })
-        .catch((error: any) => {
-          setAttemptingClaim(false);
-          console.log(error);
+      try {
+        const estimatedGas = await stakingContract.estimateGas.getReward();
+        const response: TransactionResponse = await stakingContract.getReward({
+          gasLimit: calculateGasMargin(estimatedGas),
         });
+        addTransaction(response, {
+          summary: t('claimrewards1', { symbol: syrup.token.symbol }),
+        });
+        const receipt = await response.wait();
+        finalizedTransaction(receipt, {
+          summary: t('claimrewards1', { symbol: syrup.token.symbol }),
+        });
+        setAttemptingClaim(false);
+      } catch (error) {
+        setAttemptingClaim(false);
+        console.log(error);
+      }
     }
   };
 
   const onWithdraw = async () => {
     if (syrup && stakingContract && syrup.stakedAmount) {
       setAttemptingUnstake(true);
-      await stakingContract
-        .exit({ gasLimit: 300000 })
-        .then(async (response: TransactionResponse) => {
-          addTransaction(response, {
-            summary: t('withdrawliquidity'),
-          });
-          try {
-            const receipt = await response.wait();
-            finalizedTransaction(receipt, {
-              summary: t('withdrawliquidity'),
-            });
-            setAttemptingUnstake(false);
-          } catch (e) {
-            setAttemptingUnstake(false);
-          }
-        })
-        .catch((error: any) => {
-          setAttemptingUnstake(false);
-          console.log(error);
+      try {
+        const estimatedGas = await stakingContract.estimateGas.exit();
+        const response: TransactionResponse = await stakingContract.exit({
+          gasLimit: calculateGasMargin(estimatedGas),
         });
+        addTransaction(response, {
+          summary: t('withdrawliquidity'),
+        });
+        const receipt = await response.wait();
+        finalizedTransaction(receipt, {
+          summary: t('withdrawliquidity'),
+        });
+        setAttemptingUnstake(false);
+      } catch (error) {
+        setAttemptingUnstake(false);
+        console.log(error);
+      }
     }
   };
 
