@@ -40,7 +40,7 @@ const CurrencySearchModal: React.FC<CurrencySearchModalProps> = ({
 
   const handleCurrencySelect = useCallback(
     (currency: Currency) => {
-      if (isV2) {
+      if (!isV2) {
         if (currencyEquals(currency, ETHER)) {
           onCurrencySelect({
             ...ETHER,
