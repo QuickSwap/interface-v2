@@ -3,8 +3,8 @@ import { Box, useMediaQuery } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon2.svg';
-import Moonpay from 'assets/images/Moonpay.svg';
 import Transak from 'assets/images/Transak.png';
+import CoinbasePay from 'assets/images/coinbasePay.png';
 import { CustomModal } from 'components';
 import { useActiveWeb3React, useInitTransak } from 'hooks';
 import 'components/styles/BuyFiatModal.scss';
@@ -21,7 +21,6 @@ interface BuyFiatModalProps {
 const BuyFiatModal: React.FC<BuyFiatModalProps> = ({
   open,
   onClose,
-  buyMoonpay,
   buyBinance,
 }) => {
   const { account } = useActiveWeb3React();
@@ -35,7 +34,7 @@ const BuyFiatModal: React.FC<BuyFiatModalProps> = ({
   ] = useState<CBPayInstanceType | null>();
 
   useEffect(() => {
-    if (!account) return;
+    if (!account || !process.env.REACT_APP_COINBASE_APP_ID) return;
     initOnRamp(
       {
         appId: process.env.REACT_APP_COINBASE_APP_ID,
@@ -84,8 +83,14 @@ const BuyFiatModal: React.FC<BuyFiatModalProps> = ({
           <CloseIcon className='cursor-pointer' onClick={onClose} />
         </Box>
         <Box className='paymentBox'>
-          <img src={Moonpay} alt='moonpay' />
-          <Box className='buyButton' onClick={buyMoonpay}>
+          <h5>Binance Connect</h5>
+          <Box className='buyButton' onClick={buyBinance}>
+            {t('buy')}
+          </Box>
+        </Box>
+        <Box className='paymentBox'>
+          <img src={CoinbasePay} alt='coinbase pay' />
+          <Box className='buyButton' onClick={buyWithCoinbase}>
             {t('buy')}
           </Box>
         </Box>
@@ -98,18 +103,6 @@ const BuyFiatModal: React.FC<BuyFiatModalProps> = ({
               initTransak(account, mobileWindowSize);
             }}
           >
-            {t('buy')}
-          </Box>
-        </Box>
-        <Box className='paymentBox'>
-          <h5>Binance Connect</h5>
-          <Box className='buyButton' onClick={buyBinance}>
-            {t('buy')}
-          </Box>
-        </Box>
-        <Box className='paymentBox'>
-          <h5>Coinbase</h5>
-          <Box className='buyButton' onClick={buyWithCoinbase}>
             {t('buy')}
           </Box>
         </Box>
