@@ -71,10 +71,12 @@ const DragonsLair: React.FC<{ isNew: boolean }> = ({ isNew }) => {
         </small>
       </Box>
 
-      <Box className='dragonLairRow'>
-        <small>{t('apy')}</small>
-        <small className='text-success'>{APY}%</small>
-      </Box>
+      {isNew && (
+        <Box className='dragonLairRow'>
+          <small>{t('apy')}</small>
+          <small className='text-success'> {APY}%</small>
+        </Box>
+      )}
 
       <Box className='dragonLairRow'>
         <small>{t('yourdeposits')}</small>

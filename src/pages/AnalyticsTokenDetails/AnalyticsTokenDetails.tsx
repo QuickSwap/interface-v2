@@ -20,7 +20,7 @@ import {
   useBookmarkTokens,
   useEthPrice,
   useMaticPrice,
-  useIsV3,
+  useIsV2,
 } from 'state/application/hooks';
 import { ReactComponent as StarChecked } from 'assets/images/StarChecked.svg';
 import { ReactComponent as StarUnchecked } from 'assets/images/StarUnchecked.svg';
@@ -60,7 +60,7 @@ const AnalyticsTokenDetails: React.FC = () => {
 
   const dispatch = useDispatch();
 
-  const { isV3 } = useIsV3();
+  const { isV2 } = useIsV2();
 
   const tokenTransactionsList = useMemo(() => {
     if (tokenTransactions) {
@@ -92,7 +92,7 @@ const AnalyticsTokenDetails: React.FC = () => {
   }, [tokenTransactions]);
 
   useEffect(() => {
-    if (isV3 === undefined) return;
+    if (isV2 === undefined) return;
     setLoadingData(true);
     setToken(null);
     updateTokenPairs(null);
@@ -100,7 +100,7 @@ const AnalyticsTokenDetails: React.FC = () => {
 
     async function fetchTokenInfo() {
       try {
-        if (isV3) {
+        if (!isV2) {
           if (
             maticPrice.price !== undefined &&
             maticPrice.oneDayPrice !== undefined
@@ -154,7 +154,7 @@ const AnalyticsTokenDetails: React.FC = () => {
       }
     }
     fetchTokenInfo();
-    if (isV3) {
+    if (!isV2) {
       fetchTransactions();
     } else {
       if (ethPrice.price) {
@@ -167,7 +167,7 @@ const AnalyticsTokenDetails: React.FC = () => {
     ethPrice.oneDayPrice,
     maticPrice.price,
     maticPrice.oneDayPrice,
-    isV3,
+    isV2,
   ]);
 
   useEffect(() => {
@@ -176,10 +176,10 @@ const AnalyticsTokenDetails: React.FC = () => {
   }, [tokenAddress]);
 
   useEffect(() => {
-    if (token && (isV3 ? tokenTransactions : tokenPairs)) {
+    if (token && (!isV2 ? tokenTransactions : tokenPairs)) {
       dispatch(setAnalyticsLoaded(true));
     }
-  }, [token, tokenPairs, tokenTransactions, isV3, dispatch]);
+  }, [token, tokenPairs, tokenTransactions, isV2, dispatch]);
 
   const tokenPercentClass = getPriceClass(
     token ? Number(token.priceChangeUSD) : 0,
@@ -358,7 +358,7 @@ const AnalyticsTokenDetails: React.FC = () => {
                 mr={1.5}
                 onClick={() => {
                   history.push(
-                    `/pools${isV3 ? '/v3' : ''}?currency0=${
+                    `/pools${isV2 ? '/v2' : '/v3'}?currency0=${
                       token.id
                     }&currency1=ETH`,
                   );
@@ -370,7 +370,7 @@ const AnalyticsTokenDetails: React.FC = () => {
                 className='button filledButton'
                 onClick={() => {
                   history.push(
-                    `/swap${isV3 ? '/v3' : ''}?currency0=${
+                    `/swap${isV2 ? '/v2' : ''}?currency0=${
                       token.id
                     }&currency1=ETH`,
                   );
@@ -380,7 +380,7 @@ const AnalyticsTokenDetails: React.FC = () => {
               </Box>
             </Box>
           </Box>
-          {isV3 ? (
+          {!isV2 ? (
             <V3TokenInfo
               token={token}
               tokenTransactions={tokenTransactionsList}
