@@ -18,6 +18,7 @@ import { useTranslation } from 'react-i18next';
 import 'pages/styles/swap.scss';
 import { ReactComponent as SettingsIcon } from 'assets/images/SettingsIcon.svg';
 import AdsSlider from 'components/AdsSlider';
+import { SwapBuySellWidget } from './BuySellWidget';
 
 const SwapPage: React.FC = () => {
   const [openSettingsModal, setOpenSettingsModal] = useState(false);
@@ -148,6 +149,7 @@ const SwapPage: React.FC = () => {
                 <LiquidityPools token1={token1} token2={token2} />
               </Box>
             )}
+            <SwapBuySellWidget />
           </Grid>
         </Grid>
       ) : (

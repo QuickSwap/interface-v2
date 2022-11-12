@@ -200,3 +200,64 @@
     justify-content: space-between;
   }
 }
+
+.buySellWidgetContainer {
+  display: flex;
+  flex-direction: column;
+  margin-top: 2rem;
+  width: 100%;
+  & > .row {
+    background-color: transparent;
+    display: flex;
+    height: 3rem;
+    width: 100%;
+    & > div {
+      min-width: 3rem;
+      & > img {
+        background-color: transparent;
+        width: 3rem;
+        height: 3rem;
+      }
+
+      img.wallet {
+        position: absolute;
+        margin-top: 4px;
+      }
+    }
+
+    & > div.heading {
+      margin-left: 2rem;
+      margin-right: auto;
+      margin-top: auto;
+      margin-bottom: auto;
+      font-size: 16px;
+    }
+
+    .sub-heading {
+      font-size: 12px;
+      color: $textSecondary;
+      margin-top: 6px;
+
+      & > img.spritz {
+        margin-top: -6px;
+        margin-left: 0.25rem;
+        height: 20px;
+        position: absolute;
+      }
+    }
+
+    a.button {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      background-color: $primary;
+      text-decoration: none;
+      color: white;
+      padding: 6px 12px;
+      border-radius: 38px;
+      & p {
+        margin-left: 4px;
+      }
+    }
+  }
+}
