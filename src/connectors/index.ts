@@ -9,6 +9,7 @@ import { FortmaticConnector } from './Fortmatic';
 import { ArkaneConnector } from './Arkane';
 import { NetworkConnector } from './NetworkConnector';
 import { SafeAppConnector } from './SafeApp';
+import { TrustWalletConnector } from './TrustWalletConnector';
 
 const POLLING_INTERVAL = 12000;
 
@@ -49,6 +50,11 @@ export const walletconnect = new WalletConnectConnector({
   rpc: { 137: NETWORK_URL },
   bridge: 'https://bridge.walletconnect.org',
   qrcode: true,
+});
+
+// mainnet only
+export const trustconnect = new TrustWalletConnector({
+  supportedChainIds: [137],
 });
 
 // mainnet only

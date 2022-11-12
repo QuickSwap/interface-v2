@@ -396,6 +396,8 @@
   "tokenAmount": "Token Amount",
   "time": "Time",
   "connected": "Connected",
+  "install": "Install",
+  "notInstalled": "Not Installed",
   "errorConnect": "Error connecting.",
   "tryagain": "Try Again",
   "initializing": "Initializing",

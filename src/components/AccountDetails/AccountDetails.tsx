@@ -7,7 +7,7 @@ import { clearAllTransactions } from 'state/transactions/actions';
 import { shortenAddress, getEtherscanLink, getWalletKeys } from 'utils';
 import { SUPPORTED_WALLETS } from 'constants/index';
 import { ReactComponent as Close } from 'assets/images/CloseIcon.svg';
-import { injected, walletlink, safeApp } from 'connectors';
+import { injected, walletlink, safeApp, trustconnect } from 'connectors';
 import { ExternalLink as LinkIcon } from 'react-feather';
 import 'components/styles/AccountDetails.scss';
 import StatusIcon from './StatusIcon';
@@ -71,6 +71,7 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
           <Box className='flex items-center'>
             {connector !== injected &&
               connector !== walletlink &&
+              connector !== trustconnect &&
               connector !== safeApp && (
                 <small
                   style={{ cursor: 'pointer', marginRight: 8 }}
