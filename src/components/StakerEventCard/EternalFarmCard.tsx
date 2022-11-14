@@ -95,8 +95,6 @@ export function EternalFarmCard({
         ])
       : undefined;
 
-  console.log('cc', tokenMap, ' ', pool.token0, pool.token1);
-
   return (
     <Box className='flex justify-center'>
       {refreshing && (

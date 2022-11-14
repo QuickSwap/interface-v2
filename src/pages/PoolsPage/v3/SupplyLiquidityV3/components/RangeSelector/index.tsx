@@ -19,6 +19,7 @@ import { Box } from '@material-ui/core';
 import { Add, Remove } from '@material-ui/icons';
 import { USDC } from 'constants/v3/addresses';
 import { ChainId } from '@uniswap/sdk';
+import { useActiveWeb3React } from 'hooks';
 
 interface IRangeSelector {
   priceLower: Price<Token, Token> | undefined;
@@ -160,6 +161,7 @@ function RangePart({
 }: IRangePart) {
   const [localUSDValue, setLocalUSDValue] = useState('');
   const [localTokenValue, setLocalTokenValue] = useState('');
+  const { chainId } = useActiveWeb3React();
 
   const dispatch = useAppDispatch();
 
@@ -168,7 +170,7 @@ function RangePart({
   }, [priceFormat]);
 
   const USDC_TOKEN = toToken(
-    USDC[tokenA?.chainId ? tokenA.chainId : ChainId.MATIC],
+    USDC[tokenA?.chainId ? tokenA.chainId : chainId ?? ChainId.MATIC],
   );
   const valueUSD = useUSDCValue(
     tryParseAmount(
