@@ -1,4 +1,5 @@
 import { ChainId, CurrencyAmount, ETHER, Token } from '@uniswap/sdk';
+import { Currency as V3Currency } from '@uniswap/sdk-core';
 import React from 'react';
 import { Box, Tooltip, CircularProgress, ListItem } from '@material-ui/core';
 import { useActiveWeb3React } from 'hooks';
@@ -141,23 +142,25 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
         <Box ml={1} height={32}>
           <Box className='flex items-center'>
             <small className='currencySymbol'>{currency.symbol}</small>
-            {isMetamask && currency !== nativeCurrency && (
-              <Box
-                className='cursor-pointer'
-                ml='2px'
-                onClick={(event: any) => {
-                  addTokenToMetamask(
-                    currency.address,
-                    currency.symbol,
-                    currency.decimals,
-                    getTokenLogoURL(currency.address),
-                  );
-                  event.stopPropagation();
-                }}
-              >
-                <PlusHelper text={t('addToMetamask')} />
-              </Box>
-            )}
+            {isMetamask &&
+              currency !== nativeCurrency &&
+              !(currency as V3Currency).isNative && (
+                <Box
+                  className='cursor-pointer'
+                  ml='2px'
+                  onClick={(event: any) => {
+                    addTokenToMetamask(
+                      currency.address,
+                      currency.symbol,
+                      currency.decimals,
+                      getTokenLogoURL(currency.address),
+                    );
+                    event.stopPropagation();
+                  }}
+                >
+                  <PlusHelper text={t('addToMetamask')} />
+                </Box>
+              )}
           </Box>
           {isOnSelectedList ? (
             <span className='currencyName'>{currency.name}</span>

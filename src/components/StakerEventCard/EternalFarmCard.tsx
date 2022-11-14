@@ -71,25 +71,31 @@ export function EternalFarmCard({
   const tvl = tvls ? tvls[id] : undefined;
 
   const tokenMap = useSelectedTokenList();
-  const token0 = chainId
-    ? getTokenFromAddress(pool.token0.id, chainId, tokenMap, [
-        new Token(
-          ChainId.MATIC,
-          getAddress(pool.token0.id),
-          pool.token0.decimals,
-        ),
-      ])
-    : undefined;
+  const token0Address = pool.token0.id ?? pool.token0.address;
+  const token1Address = pool.token1.id ?? pool.token1.address;
+  const token0 =
+    chainId && token0Address
+      ? getTokenFromAddress(token0Address, chainId, tokenMap, [
+          new Token(
+            ChainId.MATIC,
+            getAddress(token0Address),
+            pool.token0.decimals,
+          ),
+        ])
+      : undefined;
 
-  const token1 = chainId
-    ? getTokenFromAddress(pool.token1.id, chainId, tokenMap, [
-        new Token(
-          ChainId.MATIC,
-          getAddress(pool.token1.id),
-          pool.token1.decimals,
-        ),
-      ])
-    : undefined;
+  const token1 =
+    chainId && token1Address
+      ? getTokenFromAddress(token1Address, chainId, tokenMap, [
+          new Token(
+            ChainId.MATIC,
+            getAddress(token1Address),
+            pool.token1.decimals,
+          ),
+        ])
+      : undefined;
+
+  console.log('cc', tokenMap, ' ', pool.token0, pool.token1);
 
   return (
     <Box className='flex justify-center'>

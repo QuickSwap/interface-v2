@@ -7,7 +7,7 @@ import CurrencySearch from './CurrencySearch';
 import 'components/styles/CurrencySearchModal.scss';
 import { WrappedTokenInfo } from 'state/lists/v3/wrappedTokenInfo';
 import { TokenInfo } from '@uniswap/token-lists';
-import { NativeCurrency } from '@uniswap/sdk-core';
+import { NativeCurrency, Currency as CurrencyV3 } from '@uniswap/sdk-core';
 import { useIsV2 } from 'state/application/hooks';
 import { useActiveWeb3React } from 'hooks';
 
@@ -44,7 +44,7 @@ const CurrencySearchModal: React.FC<CurrencySearchModalProps> = ({
   const handleCurrencySelect = useCallback(
     (currency: Currency) => {
       if (!isV2) {
-        if (currencyEquals(currency, nativeCurrency)) {
+        if ((currency as CurrencyV3).isNative) {
           onCurrencySelect({
             ...nativeCurrency,
             isNative: true,

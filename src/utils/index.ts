@@ -53,7 +53,6 @@ import {
   TokenAmount,
   Pair,
 } from '@uniswap/sdk';
-import { Token as TokenV3 } from '@uniswap/sdk-core';
 import {
   CurrencyAmount as CurrencyAmountV3,
   Currency as CurrencyV3,
@@ -1563,7 +1562,8 @@ export function isTokensOnList(
   chainId: ChainId,
 ): boolean[] {
   return currencies.map((currency) => {
-    if (currency === ETHER[chainId]) return true;
+    if (currency === ETHER[chainId] || (currency as CurrencyV3).isNative)
+      return true;
     return Boolean(
       currency instanceof Token &&
         defaultTokens[currency.chainId]?.[currency.address],

@@ -13,6 +13,7 @@ import { useWETHContract } from './useContract';
 import { formatTokenAmount } from 'utils';
 import { toV3Token } from 'constants/v3/addresses';
 import { useIsV2 } from 'state/application/hooks';
+import { WrappedTokenInfo } from 'state/lists/v3/wrappedTokenInfo';
 
 export enum WrapType {
   NOT_APPLICABLE,
@@ -64,13 +65,29 @@ export default function useWrapCallback(
       name: WETH[chainId].name,
     });
 
+    const outputCurrencyAddress =
+      (outputCurrency as WrappedTokenInfo).tokenInfo &&
+      (outputCurrency as WrappedTokenInfo).tokenInfo.address
+        ? (outputCurrency as WrappedTokenInfo).tokenInfo.address
+        : (outputCurrency as V3Token).address
+        ? (outputCurrency as V3Token).address
+        : undefined;
+
+    const inputCurrencyAddress =
+      (inputCurrency as WrappedTokenInfo).tokenInfo &&
+      (inputCurrency as WrappedTokenInfo).tokenInfo.address
+        ? (inputCurrency as WrappedTokenInfo).tokenInfo.address
+        : (inputCurrency as V3Token).address
+        ? (inputCurrency as V3Token).address
+        : undefined;
+
     if (
       isV2
         ? inputCurrency === nativeCurrency &&
           currencyEquals(WETH[chainId], outputCurrency)
         : (inputCurrency as V3Currency).isNative &&
-          wETHV3.address.toLowerCase() ===
-            (outputCurrency as V3Token).address.toLowerCase()
+          outputCurrencyAddress &&
+          wETHV3.address.toLowerCase() === outputCurrencyAddress.toLowerCase()
     ) {
       return {
         wrapType: WrapType.WRAP,
@@ -97,8 +114,8 @@ export default function useWrapCallback(
       isV2
         ? currencyEquals(WETH[chainId], inputCurrency) &&
           outputCurrency === nativeCurrency
-        : wETHV3.address.toLowerCase() ===
-            (inputCurrency as V3Token).address.toLowerCase() &&
+        : inputCurrencyAddress &&
+          wETHV3.address.toLowerCase() === inputCurrencyAddress.toLowerCase() &&
           (outputCurrency as V3Currency).isNative
     ) {
       return {

@@ -167,10 +167,7 @@ export default function CurrencyInputPanel({
               {currency ? (
                 <Box className='flex w-100 justify-between items-center'>
                   <Box className='flex'>
-                    <CurrencyLogo
-                      size={'25px'}
-                      currency={currency as WrappedCurrency}
-                    ></CurrencyLogo>
+                    <CurrencyLogo size={'25px'} currency={currency} />
                     <p>{currency?.symbol}</p>
                   </Box>
                 </Box>

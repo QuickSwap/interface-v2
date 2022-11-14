@@ -39,7 +39,7 @@ const SwapMain: React.FC = () => {
   const showLimitOrder = config['swap']['limitOrder'];
 
   useEffect(() => {
-    updateIsV2(!isOnV2 && !isOnV3 ? true : isOnV2);
+    updateIsV2(!isOnV2 && !isOnV3 && showBestTrade ? true : isOnV2);
     if (isOnV3) {
       setSwapIndex(SWAP_V3);
     } else if (isOnV2) {
