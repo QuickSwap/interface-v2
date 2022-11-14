@@ -8,10 +8,13 @@ import {
   WETH,
 } from '@uniswap/sdk';
 
-import { Currency as CurrencyV3, Token as TokenV3 } from '@uniswap/sdk-core';
+import {
+  Currency as CurrencyV3,
+  Token as TokenV3,
+  NativeCurrency,
+} from '@uniswap/sdk-core';
 import { WMATIC_EXTENDED } from 'constants/v3/addresses';
 import { WrappedTokenInfo } from 'state/lists/v3/wrappedTokenInfo';
-import { V3Currency } from 'v3lib/entities/v3Currency';
 
 export function wrappedCurrency(
   currency: Currency | undefined,
@@ -50,15 +53,19 @@ export function wrappedCurrencyAmount(
     : undefined;
 }
 
-export function unwrappedToken(token: Token | TokenV3): Currency {
+export function unwrappedToken(token: Token | TokenV3) {
   if (token instanceof Token && token.equals(WETH[token.chainId]))
     return ETHER[token.chainId];
-  if (token instanceof TokenV3 && token.equals(WMATIC_EXTENDED[token.chainId]))
-    return new V3Currency(
-      token.chainId,
-      token.decimals,
-      token.symbol,
-      token.name,
-    );
+  if (
+    token instanceof TokenV3 &&
+    token.equals(WMATIC_EXTENDED[token.chainId])
+  ) {
+    const nativeCurrency = ETHER[token.chainId as ChainId];
+    return {
+      ...nativeCurrency,
+      isNative: true,
+      isToken: false,
+    } as NativeCurrency;
+  }
   return token;
 }
