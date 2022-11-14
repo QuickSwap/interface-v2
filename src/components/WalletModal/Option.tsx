@@ -13,6 +13,7 @@ interface OptionProps {
   icon: string;
   active?: boolean;
   id: string;
+  installLink?: string | null;
 }
 
 const Option: React.FC<OptionProps> = ({
@@ -23,6 +24,7 @@ const Option: React.FC<OptionProps> = ({
   icon,
   active = false,
   id,
+  installLink = null,
 }) => {
   const { t } = useTranslation();
   const content = (
@@ -35,6 +37,11 @@ const Option: React.FC<OptionProps> = ({
         <Box className='flex items-center'>
           <Box className='optionConnectedDot' />
           <small>{t('connected')}</small>
+        </Box>
+      )}
+      {!active && installLink && (
+        <Box className='flex items-center'>
+          <small className='installBtn'>{t('install')}</small>
         </Box>
       )}
       {subheader && (
@@ -51,6 +58,19 @@ const Option: React.FC<OptionProps> = ({
         target='_blank'
         rel='noopener noreferrer'
         className='optionLink'
+      >
+        {content}
+      </a>
+    );
+  }
+
+  if (installLink !== null) {
+    return (
+      <a
+        href={installLink}
+        target='_blank'
+        rel='noopener noreferrer'
+        className='installLink'
       >
         {content}
       </a>

@@ -83,3 +83,15 @@
 .optionLink {
   color: $textPrimary;
 }
+
+.installLink {
+  color: $textPrimary;
+  text-decoration: none;
+}
+
+.installBtn {
+  padding: 0.5rem 1rem;
+  color: $textPrimary;
+  background-color: $primary;
+  border-radius: 4rem !important;
+}
