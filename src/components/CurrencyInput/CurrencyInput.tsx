@@ -42,15 +42,8 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
   id,
 }) => {
   const { t } = useTranslation();
-  const { chainId, account } = useActiveWeb3React();
-  const chainIdToUse = chainId ?? ChainId.MATIC;
+  const { account } = useActiveWeb3React();
 
-  if (!currency && otherCurrency) {
-    currency = otherCurrency;
-    otherCurrency = undefined;
-  } else if (!currency) {
-    currency = ETHER[chainIdToUse];
-  }
   const selectedCurrencyBalance = useCurrencyBalance(
     account ?? undefined,
     currency,
