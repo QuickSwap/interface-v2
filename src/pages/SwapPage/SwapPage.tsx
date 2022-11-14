@@ -126,6 +126,16 @@ const SwapPage: React.FC = () => {
             <Box className='wrapper'>
               <SwapMain />
             </Box>
+            <div
+              className='_0cbf1c3d417e250a'
+              data-zone='cc76a1c1756c4d62a9223c3ea3c9c6e7'
+              style={{
+                width: isTiny ? 320 : 352,
+                height: isTiny ? 50 : 80,
+                display: 'inline-block',
+                margin: '0 auto',
+              }}
+            />
             <Box maxWidth={isTiny ? '320px' : '352px'} margin='16px auto 0'>
               <AdsSlider sort='swap' />
             </Box>
