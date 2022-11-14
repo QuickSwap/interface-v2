@@ -7,7 +7,7 @@ import ReactGA from 'react-ga';
 import { Box } from '@material-ui/core';
 import MetamaskIcon from 'assets/images/metamask.png';
 import { ReactComponent as Close } from 'assets/images/CloseIcon.svg';
-import { fortmatic, injected, portis, safeApp } from 'connectors';
+import { fortmatic, injected, portis, safeApp, trustconnect } from 'connectors';
 import { OVERLAY_READY } from 'connectors/Fortmatic';
 import { GlobalConst, SUPPORTED_WALLETS } from 'constants/index';
 import usePrevious from 'hooks/usePrevious';
@@ -15,6 +15,9 @@ import { ApplicationModal } from 'state/application/actions';
 import { useModalOpen, useWalletModalToggle } from 'state/application/hooks';
 import { AccountDetails, CustomModal } from 'components';
 import { useTranslation } from 'react-i18next';
+
+import { InjectedConnector } from '@web3-react/injected-connector';
+import { TrustWalletConnector } from 'connectors/TrustWalletConnector';
 
 import Option from './Option';
 import PendingView from './PendingView';
@@ -110,9 +113,17 @@ const WalletModal: React.FC<WalletModalProps> = ({
 
   const tryActivation = async (connector: AbstractConnector | undefined) => {
     let name = '';
+    let found = false;
+    const { ethereum } = window as any;
+
     Object.keys(SUPPORTED_WALLETS).map((key) => {
       if (connector === SUPPORTED_WALLETS[key].connector) {
-        return (name = SUPPORTED_WALLETS[key].name);
+        if (found == false) {
+          found = true;
+          return (name = SUPPORTED_WALLETS[key].name);
+        } else {
+          return true;
+        }
       }
       return true;
     });
@@ -125,12 +136,30 @@ const WalletModal: React.FC<WalletModalProps> = ({
     setPendingWallet(connector); // set wallet for pending view
     setWalletView(WALLET_VIEWS.PENDING);
 
+    if (connector instanceof InjectedConnector) {
+      const { _oldMetaMask } = window as any;
+      if (_oldMetaMask) {
+        window.ethereum = _oldMetaMask;
+        name = GlobalConst.walletName.METAMASK;
+      }
+    }
+
     // if the connector is walletconnect and the user has already tried to connect, manually reset the connector
     if (
       connector instanceof WalletConnectConnector &&
       connector.walletConnectProvider?.wc?.uri
     ) {
       connector.walletConnectProvider = undefined;
+    }
+
+    if (connector instanceof TrustWalletConnector) {
+      const { trustwallet } = window as any;
+      if (trustwallet) {
+        if (window.ethereum && window.ethereum.isMetaMask) {
+          (window as any)['_oldMetaMask'] = window.ethereum;
+        }
+        window.ethereum = trustwallet;
+      }
     }
 
     connector &&
@@ -152,13 +181,26 @@ const WalletModal: React.FC<WalletModalProps> = ({
 
   // get wallets user can switch too, depending on device/browser
   function getOptions() {
-    const { ethereum, web3 } = window as any;
-    const isMetamask = ethereum && !ethereum.isBitKeep && ethereum.isMetaMask;
+    const { ethereum, web3, trustwallet, _oldMetaMask } = window as any;
+    const isMetamask =
+      ethereum && !ethereum.isBitKeep && (ethereum.isMetaMask || _oldMetaMask);
     const isBlockWallet = ethereum && ethereum.isBlockWallet;
     const isCypherD = ethereum && ethereum.isCypherD;
     const isBitKeep = ethereum && ethereum.isBitKeep;
+    const isTrustWallet = ethereum && ethereum.isTrustWallet;
+
+    // is trust wallet installed?
+    const isTrustWalledInstalled = trustwallet !== undefined;
+
     return Object.keys(SUPPORTED_WALLETS).map((key) => {
       const option = SUPPORTED_WALLETS[key];
+
+      if (option.connector === trustconnect) {
+        if (!isTrustWalledInstalled) {
+          option.installLink = process.env.REACT_APP_TRUST_WALLET_INSTALL_LINK;
+        }
+      }
+
       //disable safe app by in the list
       if (option.connector === safeApp) {
         return null;
@@ -197,6 +239,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
               header={option.name}
               subheader={null}
               icon={option.iconName}
+              installLink={option.installLink}
             />
           );
         }
@@ -283,6 +326,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
             header={option.name}
             subheader={null} //use option.descriptio to bring back multi-line
             icon={option.iconName}
+            installLink={option.installLink}
           />
         )
       );
