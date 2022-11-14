@@ -1,5 +1,10 @@
 import { Button } from '@material-ui/core';
-import { BinanceModal, BuyFiatModal, MoonpayModal } from 'components';
+import {
+  BinanceModal,
+  BuyFiatModal,
+  MoonpayModal,
+  BuyWithCoinbaseModal,
+} from 'components';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -11,6 +16,7 @@ const BuyFiatButton: React.FC<BuyFiatButtonProps> = ({ fullWidth }) => {
   const [openMenu, setOpenMenu] = useState(false);
   const [showMoonPayWidget, setShowMoonPayWidget] = useState(false);
   const [showBinanceWidget, setShowBinanceWidgetWidget] = useState(false);
+  const [showCoinbaseWidget, setShowCoinbaseWidgetWidget] = useState(false);
   const { t } = useTranslation();
 
   return (
@@ -32,6 +38,12 @@ const BuyFiatButton: React.FC<BuyFiatButtonProps> = ({ fullWidth }) => {
           onClose={() => setShowBinanceWidgetWidget(false)}
         />
       )}
+      {showCoinbaseWidget && (
+        <BuyWithCoinbaseModal
+          open={showCoinbaseWidget}
+          onClose={() => setShowCoinbaseWidgetWidget(false)}
+        />
+      )}
       {openMenu && (
         <BuyFiatModal
           open={openMenu}
@@ -46,6 +58,10 @@ const BuyFiatButton: React.FC<BuyFiatButtonProps> = ({ fullWidth }) => {
           }}
           buyBinance={() => {
             setShowBinanceWidgetWidget(true);
+            setOpenMenu(false);
+          }}
+          buyWithCoinbase={() => {
+            setShowCoinbaseWidgetWidget(true);
             setOpenMenu(false);
           }}
         />

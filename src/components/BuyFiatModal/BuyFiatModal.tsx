@@ -16,6 +16,7 @@ interface BuyFiatModalProps {
   onClose: () => void;
   buyMoonpay: () => void;
   buyBinance: () => void;
+  buyWithCoinbase: () => void;
 }
 
 const BuyFiatModal: React.FC<BuyFiatModalProps> = ({
@@ -56,7 +57,7 @@ const BuyFiatModal: React.FC<BuyFiatModalProps> = ({
           onEvent: (event) => {
             console.log('event', event);
           },
-          experienceLoggedIn: 'popup',
+          experienceLoggedIn: 'embedded',
           experienceLoggedOut: 'popup',
           closeOnExit: true,
           closeOnSuccess: true,
