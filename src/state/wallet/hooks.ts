@@ -8,6 +8,7 @@ import {
   TokenAmount,
   Token,
 } from '@uniswap/sdk';
+import { Currency as V3Currency, Token as V3Token } from '@uniswap/sdk-core';
 import { useMemo } from 'react';
 import ERC20_INTERFACE from 'constants/abis/erc20';
 import { useAllTokens } from 'hooks/Tokens';
@@ -18,6 +19,7 @@ import {
   useSingleContractMultipleData,
   useMultipleContractSingleData,
 } from 'state/multicall/hooks';
+import { useIsV2 } from 'state/application/hooks';
 
 /**
  * Returns a map of the given addresses to their eventually consistent ETH balances.
@@ -173,19 +175,29 @@ export function useCurrencyBalances(
   const { chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ? chainId : ChainId.MATIC;
   const nativeCurrency = ETHER[chainIdToUse];
+  const { isV2 } = useIsV2();
 
   const tokens = useMemo(
     () =>
       currencies
-        ?.filter((currency) => currency !== nativeCurrency)
+        ?.filter((currency) =>
+          isV2
+            ? currency !== nativeCurrency
+            : currency && !(currency as V3Currency).isNative,
+        )
         .map((currency) => currency as Token) ?? [],
-    [currencies, nativeCurrency],
+    [currencies, nativeCurrency, isV2],
   );
 
   const tokenBalances = useTokenBalances(account, tokens);
   const containsETH: boolean = useMemo(
-    () => currencies?.some((currency) => currency === nativeCurrency) ?? false,
-    [currencies, nativeCurrency],
+    () =>
+      currencies?.some((currency) =>
+        isV2
+          ? currency === nativeCurrency
+          : currency && (currency as V3Currency).isNative,
+      ) ?? false,
+    [currencies, nativeCurrency, isV2],
   );
   const ethBalance = useETHBalances(chainIdToUse, containsETH ? [account] : []);
 
@@ -193,7 +205,12 @@ export function useCurrencyBalances(
     () =>
       currencies?.map((currency) => {
         if (!account || !currency) return undefined;
-        if (currency === nativeCurrency) return ethBalance[account];
+        if (
+          isV2
+            ? currency === nativeCurrency
+            : currency && (currency as V3Currency).isNative
+        )
+          return ethBalance[account];
         if (currency) {
           const address = (currency as Token).address;
           if (!address) {
@@ -203,7 +220,7 @@ export function useCurrencyBalances(
         }
         return undefined;
       }) ?? [],
-    [account, currencies, ethBalance, tokenBalances, nativeCurrency],
+    [account, currencies, ethBalance, tokenBalances, nativeCurrency, isV2],
   );
 }
 
