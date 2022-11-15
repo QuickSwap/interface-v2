@@ -48,6 +48,8 @@ interface EternalFarmCardProps {
   };
   aprs: Aprs | undefined;
   aprsLoading: boolean;
+  poolAprs: Aprs | undefined;
+  poolAprsLoading: boolean;
   tvls: any;
   tvlsLoading: boolean;
   eternal?: boolean;
@@ -68,6 +70,8 @@ export function EternalFarmCard({
   } = {},
   aprs,
   aprsLoading,
+  poolAprs,
+  poolAprsLoading,
   tvls,
   tvlsLoading,
   eternal,
@@ -75,6 +79,10 @@ export function EternalFarmCard({
   const apr = aprs ? aprs[id] : undefined;
   const aprValue =
     (apr !== undefined && apr >= 0 ? Math.round(apr) : '~') + '% APR';
+  const poolApr = poolAprs ? poolAprs[pool.id] : undefined;
+  const poolAprValue =
+    (poolApr !== undefined && poolApr >= 0 ? Math.round(poolApr) : '~') +
+    '% APR';
   const tvl = tvls ? tvls[id] : undefined;
   const { chainId } = useActiveWeb3React();
 
@@ -125,16 +133,30 @@ export function EternalFarmCard({
                 <small className='weight-600'>{`${pool.token0.symbol}/${pool.token1.symbol}`}</small>
               </Box>
             </Box>
-            <Box
-              className='flex items-center bg-successLight'
-              height='19px'
-              padding='0 4px'
-              borderRadius='4px'
-            >
-              <span className='text-success'>
-                {aprsLoading && <Loader stroke='#0fc679' />}
-                {!aprsLoading && <>{aprValue}</>}
-              </span>
+            <Box className='flex'>
+              <Box
+                className='flex items-center bg-successLight'
+                height='19px'
+                padding='0 4px'
+                borderRadius='4px'
+                mr='6px'
+              >
+                <span className='text-success'>
+                  {poolAprsLoading && <Loader stroke='#0fc679' />}
+                  {!poolAprsLoading && <>{poolAprValue}</>}
+                </span>
+              </Box>
+              <Box
+                className='flex items-center bg-successLight'
+                height='19px'
+                padding='0 4px'
+                borderRadius='4px'
+              >
+                <span className='text-success'>
+                  {aprsLoading && <Loader stroke='#0fc679' />}
+                  {!aprsLoading && <>{aprValue}</>}
+                </span>
+              </Box>
             </Box>
           </Box>
           {rewardToken && (
