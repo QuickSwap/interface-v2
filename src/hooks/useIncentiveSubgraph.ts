@@ -867,10 +867,11 @@ export function useFarmingSubgraph() {
   }
 
   async function fetchEternalFarmAprs() {
+    if (!chainId) return;
     setEternalFarmAprsLoading(true);
 
     try {
-      const aprs: Aprs = await fetchEternalFarmAPR();
+      const aprs: Aprs = await fetchEternalFarmAPR(chainId);
       setEternalFarmAprs(aprs);
     } catch (err) {
       if (err instanceof Error) {
@@ -884,10 +885,11 @@ export function useFarmingSubgraph() {
   }
 
   async function fetchEternalFarmTvls() {
+    if (!chainId) return;
     setEternalFarmTvlsLoading(true);
 
     try {
-      const tvls = await fetchEternalFarmTVL();
+      const tvls = await fetchEternalFarmTVL(chainId);
       setEternalFarmTvls(tvls);
     } catch (err) {
       if (err instanceof Error) {

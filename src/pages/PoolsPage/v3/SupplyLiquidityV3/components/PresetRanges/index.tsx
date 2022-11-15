@@ -10,6 +10,7 @@ import { fetchPoolsAPR } from 'utils/api';
 import { computePoolAddress } from 'hooks/v3/computePoolAddress';
 import { POOL_DEPLOYER_ADDRESS } from 'constants/v3/addresses';
 import './index.scss';
+import { useActiveWeb3React } from 'hooks';
 
 export interface IPresetArgs {
   type: Presets;
@@ -47,11 +48,13 @@ export function PresetRanges({
   price,
   priceUpper,
 }: IPresetRanges) {
+  const { chainId } = useActiveWeb3React();
   const [aprs, setAprs] = useState<undefined | { [key: string]: number }>();
 
   useEffect(() => {
-    fetchPoolsAPR().then(setAprs);
-  }, []);
+    if (!chainId) return;
+    fetchPoolsAPR(chainId).then(setAprs);
+  }, [chainId]);
 
   const ranges = useMemo(() => {
     if (isStablecoinPair)

@@ -902,8 +902,8 @@ export async function getTopPairsV3(count = 500, chainId: ChainId) {
 }
 
 export async function getPairsAPR(pairAddresses: string[], chainId: ChainId) {
-  const aprs: any = await fetchPoolsAPR();
-  const farmAprs: any = await fetchEternalFarmAPR();
+  const aprs: any = await fetchPoolsAPR(chainId);
+  const farmAprs: any = await fetchEternalFarmAPR(chainId);
   const farmingAprs = await fetchEternalFarmingsAPRByPool(
     pairAddresses,
     chainId,
@@ -970,8 +970,8 @@ export async function getPairInfoV3(address: string, chainId: ChainId) {
     const parsedPairs48 = parsePairsData(pairs48);
     const parsedPairsWeek = parsePairsData(pairsWeek);
 
-    const aprs: any = await fetchPoolsAPR();
-    const farmingAprs: any = await fetchEternalFarmAPR();
+    const aprs: any = await fetchPoolsAPR(chainId);
+    const farmingAprs: any = await fetchEternalFarmAPR(chainId);
 
     const current = parsedPairs[address];
     const oneDay = parsedPairs24[address];
