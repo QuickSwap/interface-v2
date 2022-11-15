@@ -9,6 +9,7 @@ import { getGlobalDataV3 } from 'utils/v3-graph';
 import { useActiveWeb3React } from 'hooks';
 import { ChainId } from '@uniswap/sdk';
 import { V2_FACTORY_ADDRESSES } from 'constants/v3/addresses';
+import { getConfig } from 'config';
 
 export const GlobalSection: React.FC = () => {
   const { globalData, updateGlobalData } = useGlobalData();
@@ -18,10 +19,13 @@ export const GlobalSection: React.FC = () => {
   const { ethPrice } = useEthPrice();
   const { chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ? chainId : ChainId.MATIC;
+  const config = getConfig(chainIdToUse);
+  const v2 = config['v2'];
+  const v3 = config['v3'];
 
   useEffect(() => {
     async function fetchGlobalData() {
-      if (ethPrice.price && ethPrice.oneDayPrice) {
+      if (v2 && ethPrice.price && ethPrice.oneDayPrice) {
         const newGlobalData = await getGlobalData(
           ethPrice.price,
           ethPrice.oneDayPrice,
@@ -32,11 +36,20 @@ export const GlobalSection: React.FC = () => {
           updateGlobalData({ data: newGlobalData });
         }
       }
-      const globalDataV3 = await getGlobalDataV3(chainIdToUse);
-      updateV3GlobalData(globalDataV3);
+      if (v3) {
+        const globalDataV3 = await getGlobalDataV3(chainIdToUse);
+        updateV3GlobalData(globalDataV3);
+      }
     }
     fetchGlobalData();
-  }, [updateGlobalData, ethPrice.price, ethPrice.oneDayPrice, chainIdToUse]);
+  }, [
+    updateGlobalData,
+    ethPrice.price,
+    ethPrice.oneDayPrice,
+    chainIdToUse,
+    v2,
+    v3,
+  ]);
 
   return (
     <>

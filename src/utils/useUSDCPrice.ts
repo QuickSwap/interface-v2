@@ -390,10 +390,16 @@ export function useUSDCPricesToken(tokens: Token[], chainId: ChainId) {
   );
   const filteredTokens = tokens
     .filter((item, pos, self) => {
-      return self.findIndex((token) => token.equals(item)) == pos;
+      return (
+        self.findIndex((token) => token && item && token.equals(item)) == pos
+      );
     })
     .filter(
       (token) =>
+        oldQuickToken &&
+        newQuickToken &&
+        oldDQuickToken &&
+        newDQuickToken &&
         !token.equals(oldQuickToken) &&
         !token.equals(newQuickToken) &&
         !token.equals(oldDQuickToken) &&
@@ -405,17 +411,17 @@ export function useUSDCPricesToken(tokens: Token[], chainId: ChainId) {
     return { token, price: Number(usdPrices[index]?.toSignificant(6) ?? 0) };
   });
   return tokens.map((token) => {
-    if (token.equals(oldDQuickToken)) {
+    if (token && oldDQuickToken && token.equals(oldDQuickToken)) {
       return dQUICKtoQUICK * quickPrice;
-    } else if (token.equals(oldQuickToken)) {
+    } else if (token && oldQuickToken && token.equals(oldQuickToken)) {
       return quickPrice;
-    } else if (token.equals(newDQuickToken)) {
+    } else if (token && newDQuickToken && token.equals(newDQuickToken)) {
       return dQUICKtoQUICK * newQuickPrice * 1000;
-    } else if (token.equals(newQuickToken)) {
+    } else if (token && newQuickToken && token.equals(newQuickToken)) {
       return newQuickPrice;
     } else {
-      const priceObj = usdPricesWithToken.find((item) =>
-        item.token.equals(token),
+      const priceObj = usdPricesWithToken.find(
+        (item) => item.token && token && item.token.equals(token),
       );
       return priceObj?.price ?? 0;
     }

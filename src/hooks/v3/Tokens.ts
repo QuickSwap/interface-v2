@@ -188,7 +188,6 @@ export function useCurrency(
   const chainIdToUse = chainId ?? ChainId.MATIC;
 
   const chainInfo = CHAIN_INFO[chainIdToUse];
-  console.log(CHAIN_INFO);
 
   const isETH =
     chainInfo &&
