@@ -7,6 +7,7 @@ import {
   portis,
   arkaneconnect,
   safeApp,
+  trustconnect,
 } from '../connectors';
 import MetamaskIcon from 'assets/images/metamask.png';
 import BlockWalletIcon from 'assets/images/blockwalletIcon.svg';
@@ -17,6 +18,7 @@ import WalletConnectIcon from 'assets/images/walletConnectIcon.svg';
 import PortisIcon from 'assets/images/portisIcon.png';
 import VenlyIcon from 'assets/images/venly.svg';
 import GnosisIcon from 'assets/images/gnosis_safe.png';
+import TrustIcon from 'assets/images/trust.png';
 
 export enum TxnType {
   SWAP,
@@ -92,6 +94,7 @@ export const GlobalConst = {
   },
   walletName: {
     METAMASK: 'Metamask',
+    TRUST_WALLET: 'Trust Wallet',
     CYPHERD: 'CypherD',
     BLOCKWALLET: 'BlockWallet',
     BITKEEP: 'BitKeep',
@@ -125,6 +128,14 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
     name: GlobalConst.walletName.METAMASK,
     iconName: MetamaskIcon,
     description: 'Easy-to-use browser extension.',
+    href: null,
+    color: '#E8831D',
+  },
+  TRUST_WALLET: {
+    connector: trustconnect,
+    name: GlobalConst.walletName.TRUST_WALLET,
+    iconName: TrustIcon,
+    description: 'Trust wallet extension.',
     href: null,
     color: '#E8831D',
   },
@@ -261,4 +272,5 @@ export interface WalletInfo {
   primary?: true;
   mobile?: true;
   mobileOnly?: true;
+  installLink?: string | null;
 }

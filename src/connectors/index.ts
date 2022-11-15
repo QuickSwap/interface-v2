@@ -10,6 +10,7 @@ import { ArkaneConnector } from './Arkane';
 import { NetworkConnector } from './NetworkConnector';
 import { SafeAppConnector } from './SafeApp';
 import { ChainId } from '@uniswap/sdk';
+import { TrustWalletConnector } from './TrustWalletConnector';
 
 const POLLING_INTERVAL = 12000;
 
@@ -95,6 +96,11 @@ export const walletconnect = new WalletConnectConnector({
   rpc: rpcMap,
   bridge: 'https://bridge.walletconnect.org',
   qrcode: true,
+});
+
+// mainnet only
+export const trustconnect = new TrustWalletConnector({
+  supportedChainIds: [137],
 });
 
 // mainnet only

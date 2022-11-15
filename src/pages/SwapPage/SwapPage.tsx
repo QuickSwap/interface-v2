@@ -21,6 +21,7 @@ import { ReactComponent as SettingsIcon } from 'assets/images/SettingsIcon.svg';
 import AdsSlider from 'components/AdsSlider';
 import { getConfig } from '../../config/index';
 import { ChainId } from '@uniswap/sdk';
+import { SwapBuySellWidget } from './BuySellWidget';
 
 const SwapPage: React.FC = () => {
   const [openSettingsModal, setOpenSettingsModal] = useState(false);
@@ -186,6 +187,7 @@ const SwapPage: React.FC = () => {
                   <LiquidityPools token1={token1} token2={token2} />
                 </Box>
               )}
+              <SwapBuySellWidget />
             </Grid>
           )}
         </Grid>
