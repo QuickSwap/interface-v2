@@ -5,7 +5,9 @@ import {
 } from '@cryption/dapp-factory-sdk/dist/sdkViews/FarmsAndPools/FarmService/fetchFarms';
 import { ChainId } from '@uniswap/sdk';
 import { CNTFarmListInfo, StakingRaw } from 'types';
+import Web3 from 'web3';
 
+const web3 = new Web3();
 const TOKEN_PREFS = [
   'USDC',
   'ETHER',
@@ -50,7 +52,7 @@ function cntAdapter(input: IFarmRewardsData | IFullFarm): StakingRaw {
   } = input;
 
   const { address, rewardsPerToken } = rewardToken;
-
+  const rewardValue: any = web3.utils.fromWei(rewardsPerToken);
   let isEnded = true;
 
   if ('periodFinish' in input) {
@@ -69,7 +71,7 @@ function cntAdapter(input: IFarmRewardsData | IFullFarm): StakingRaw {
     lp: '',
     name: '',
     pair: inputToken,
-    rate: Number(rewardsPerToken),
+    rate: Number(rewardValue) * 86400,
     rewardToken: address,
     sponsored: false,
     stakingRewardAddress: id,
