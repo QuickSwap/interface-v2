@@ -56,6 +56,10 @@ const SwapMain: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOnV3, showBestTrade, isOnV2]);
 
+  const swapItemClass = (index: number) => {
+    return `${swapIndex === index ? 'activeSwap' : ''} swapItem headingItem`;
+  };
+
   return (
     <>
       {openSettingsModal && (
@@ -72,11 +76,7 @@ const SwapMain: React.FC = () => {
         <Box display='flex' width={1}>
           {showBestTrade && (
             <Box
-              //TODO: Active class resolution should come from from a func
-              className={`${
-                swapIndex === SWAP_BEST_TRADE ? 'activeSwap' : ''
-              } swapItem headingItem
-            `}
+              className={swapItemClass(SWAP_BEST_TRADE)}
               onClick={() => {
                 updateIsV2(true);
                 setSwapIndex(SWAP_BEST_TRADE);
@@ -87,10 +87,7 @@ const SwapMain: React.FC = () => {
           )}
           {v2 && (
             <Box
-              className={`${
-                swapIndex === SWAP_NORMAL ? 'activeSwap' : ''
-              } swapItem headingItem
-            `}
+              className={swapItemClass(SWAP_NORMAL)}
               onClick={() => {
                 updateIsV2(true);
                 setSwapIndex(SWAP_NORMAL);
@@ -101,10 +98,7 @@ const SwapMain: React.FC = () => {
           )}
           {v3 && (
             <Box
-              className={`${
-                swapIndex === SWAP_V3 ? 'activeSwap' : ''
-              } swapItem headingItem
-            `}
+              className={swapItemClass(SWAP_V3)}
               onClick={() => {
                 updateIsV2(false);
                 setSwapIndex(SWAP_V3);
@@ -115,9 +109,7 @@ const SwapMain: React.FC = () => {
           )}
           {showLimitOrder && (
             <Box
-              className={`${
-                swapIndex === SWAP_LIMIT ? 'activeSwap' : ''
-              } swapItem headingItem`}
+              className={swapItemClass(SWAP_LIMIT)}
               onClick={() => {
                 updateIsV2(false);
                 setSwapIndex(SWAP_LIMIT);

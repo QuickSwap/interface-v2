@@ -119,7 +119,7 @@
     justify-content: center;
     margin-top: 48px;
     & > div {
-      margin: 16;
+      margin: 16px;
       text-align: center;
       width: 120px;
       & a {
@@ -127,17 +127,23 @@
         color: $textPrimary;
         &:hover {
           color: white;
-          & svg path {
-            fill: white;
-          }
         }
+      }
+      &.svgFill a:hover svg path {
+        fill: white;
       }
       & svg {
         width: 64px;
         height: 64px;
-        & path {
-          fill: $textPrimary;
-        }
+      }
+      &.svgFill svg path {
+        fill: $textPrimary;
+      }
+      &.noFill svg {
+        opacity: 0.8;
+      }
+      &.noFill a:hover svg {
+        opacity: 1;
       }
     }
   }
@@ -154,16 +160,24 @@
   background: $grey8;
   backdrop-filter: blur(30px);
   z-index: 10;
-  & svg {
-    width: 32px;
-    height: 32px;
-    cursor: pointer;
+  & .svgFill svg {
     &:hover path {
       fill: $textPrimary
     }
     & path {
       fill: $textSecondary
     }
+  }
+  & .noFill svg {
+    opacity: 0.5;
+    &:hover {
+      opacity: 1;
+    }
+  }
+  & svg {
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
   }
   @include media("screen", "<tablet") {
     display: none;
