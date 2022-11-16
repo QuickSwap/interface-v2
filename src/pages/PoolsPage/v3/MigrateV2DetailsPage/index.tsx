@@ -50,6 +50,7 @@ import { currencyId } from 'utils/v3/currencyId';
 import { unwrappedToken } from 'utils/unwrappedToken';
 import { formatCurrencyAmount } from 'utils/v3/formatCurrencyAmount';
 import { ReportProblemOutlined } from '@material-ui/icons';
+import { calculateGasMargin } from 'utils';
 
 export default function MigrateV2DetailsPage() {
   const v2Exchange = V2Exchanges.Quickswap;
@@ -495,9 +496,9 @@ export default function MigrateV2DetailsPage() {
 
     migrator.estimateGas
       .multicall(data)
-      .then(() => {
+      .then((estimateGas) => {
         return migrator
-          .multicall(data, { gasLimit: 10000000 })
+          .multicall(data, { gasLimit: calculateGasMargin(estimateGas) })
           .then((response: TransactionResponse) => {
             ReactGA.event({
               category: 'Migrate',
