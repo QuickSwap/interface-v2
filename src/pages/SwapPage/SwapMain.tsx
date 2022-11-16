@@ -30,7 +30,7 @@ const SwapMain: React.FC = () => {
   const { t } = useTranslation();
 
   useEffect(() => {
-    updateIsV2(isOnV2);
+    updateIsV2(!isOnV2 && !isOnV3 ? true : isOnV2);
     if (isOnV3) {
       setSwapIndex(SWAP_V3);
     } else if (isOnV2) {
@@ -60,7 +60,7 @@ const SwapMain: React.FC = () => {
             } swapItem headingItem
             `}
             onClick={() => {
-              updateIsV2(false);
+              updateIsV2(true);
               setSwapIndex(SWAP_BEST_TRADE);
             }}
           >
