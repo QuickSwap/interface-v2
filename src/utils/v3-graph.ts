@@ -522,11 +522,11 @@ export const getIntervalTokenDataV3 = async (
     const values: any[] = [];
     for (const row in result) {
       const timestamp = row.split('t')[1];
-      const derivedETH = Number(result[row]?.derivedETH ?? 0);
+      const derivedMatic = Number(result[row]?.derivedMatic ?? 0);
       if (timestamp) {
         values.push({
           timestamp,
-          derivedETH,
+          derivedMatic,
         });
       }
     }
@@ -537,7 +537,7 @@ export const getIntervalTokenDataV3 = async (
       const timestamp = brow.split('b')[1];
       if (timestamp) {
         values[index].priceUSD =
-          result[brow].ethPrice * values[index].derivedETH;
+          result[brow].maticPriceUSD * values[index].derivedMatic;
         index += 1;
       }
     }

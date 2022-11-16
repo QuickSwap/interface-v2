@@ -92,11 +92,10 @@ const SwapTokenDetails: React.FC<{
           chainIdToUse,
         );
         if (tokenInfo) {
-          const token0 = tokenInfo[0];
-          setTokenData(token0);
+          setTokenData(tokenInfo);
           const tokenDetailToUpdate = {
             address: tokenAddress,
-            tokenData: token0,
+            tokenData: tokenInfo,
             priceData: tokenPriceData,
           };
           updateTokenDetails(tokenDetailToUpdate);
