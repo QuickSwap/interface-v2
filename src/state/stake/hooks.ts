@@ -58,6 +58,7 @@ import { useDefaultDualFarmList } from 'state/dualfarms/hooks';
 import { useDefaultSyrupList } from 'state/syrups/hooks';
 import { Contract } from '@ethersproject/contracts';
 import { GLOBAL_DATA_V3 } from 'apollo/queries-v3';
+import { useDefaultCNTFarmList } from 'state/cnt/hooks';
 
 const web3 = new Web3('https://polygon-rpc.com/');
 
@@ -855,6 +856,252 @@ const getHypotheticalRewardRate = (
       : JSBI.BigInt(0),
   );
 };
+
+export function useCNTStakingInfo(
+  chainId: ChainId,
+  pairToFilterBy?: Pair | null,
+  startIndex?: number,
+  endIndex?: number,
+  filter?: { search: string; isStaked: boolean; isEndedFarm: boolean },
+): Array<DualStakingInfo | StakingInfo> {
+  const { account } = useActiveWeb3React();
+  const activeFarms = useDefaultCNTFarmList(chainId)[chainId];
+
+  const info = useMemo(
+    () =>
+      Object.values(activeFarms)
+        .filter((x) => (filter?.isEndedFarm ? x.ended : !x.ended))
+        .sort((a, b) =>
+          a.stakingInfo.sponsored ? 1 : b.stakingInfo.sponsored ? -1 : 1,
+        )
+        .filter((stakingRewardInfo) =>
+          pairToFilterBy === undefined || pairToFilterBy === null
+            ? getSearchFiltered(stakingRewardInfo, filter ? filter.search : '')
+            : pairToFilterBy.involvesToken(stakingRewardInfo.tokens[0]) &&
+              pairToFilterBy.involvesToken(stakingRewardInfo.tokens[1]),
+        )
+        .slice(startIndex, endIndex),
+    [pairToFilterBy, startIndex, endIndex, filter, activeFarms],
+  );
+
+  const rewardsAddresses = useMemo(
+    () => info.map(({ stakingRewardAddress }) => stakingRewardAddress),
+    [info],
+  );
+
+  const accountArg = useMemo(() => [account ?? undefined], [account]);
+
+  // get all the info from the staking rewards contracts
+  const balances = useMultipleContractSingleData(
+    rewardsAddresses,
+    STAKING_REWARDS_INTERFACE,
+    'balanceOf',
+    accountArg,
+  );
+
+  const earnedAmounts = useMultipleContractSingleData(
+    rewardsAddresses,
+    STAKING_REWARDS_INTERFACE,
+    'earned',
+    accountArg,
+  );
+  const totalSupplies = useMultipleContractSingleData(
+    rewardsAddresses,
+    STAKING_REWARDS_INTERFACE,
+    'totalSupply',
+  );
+
+  const rewardRates = useMultipleContractSingleData(
+    rewardsAddresses,
+    STAKING_REWARDS_INTERFACE,
+    'rewardRate',
+    undefined,
+    NEVER_RELOAD,
+  );
+
+  const baseTokens = info.map((item) => {
+    const unwrappedCurrency = unwrappedToken(item.baseToken);
+    const empty = GlobalValue.tokens.COMMON.EMPTY;
+    return unwrappedCurrency === empty ? item.tokens[0] : item.baseToken;
+  });
+
+  const rewardTokens = info.map((item) => item.rewardToken);
+
+  const usdPrices = useUSDCPrices(baseTokens);
+  const usdPricesRewardTokens = useUSDCPricesToken(rewardTokens);
+  const totalSupplys = useTotalSupplys(
+    info.map((item) => {
+      const lp = item.lp;
+      const dummyPair = new Pair(
+        new TokenAmount(item.tokens[0], '0'),
+        new TokenAmount(item.tokens[1], '0'),
+      );
+      return lp && lp !== ''
+        ? new Token(137, lp, 18, 'SLP', 'Staked LP')
+        : dummyPair.liquidityToken;
+    }),
+  );
+  const stakingPairs = usePairs(info.map((item) => item.tokens));
+
+  return useMemo(() => {
+    if (!chainId) return [];
+
+    return rewardsAddresses.reduce<StakingInfo[]>(
+      (memo, rewardsAddress, index) => {
+        // these two are dependent on account
+        const balanceState = balances[index];
+        const earnedAmountState = earnedAmounts[index];
+
+        // these get fetched regardless of account
+        const totalSupplyState = totalSupplies[index];
+        const rewardRateState = rewardRates[index];
+        const stakingInfo = info[index];
+        const rewardTokenPrice = usdPricesRewardTokens[index];
+
+        if (
+          // these may be undefined if not logged in
+          !balanceState?.loading &&
+          !earnedAmountState?.loading &&
+          // always need these
+          totalSupplyState &&
+          !totalSupplyState.loading &&
+          rewardRateState &&
+          !rewardRateState.loading
+        ) {
+          const rate = web3.utils.toWei(stakingInfo.rate.toString());
+          const lpFarmToken = getFarmLPToken(stakingInfo);
+          const stakedAmount = initTokenAmountFromCallResult(
+            lpFarmToken,
+            balanceState,
+          );
+          const totalStakedAmount = initTokenAmountFromCallResult(
+            lpFarmToken,
+            totalSupplyState,
+          );
+
+          // Previously Uni was used all over the place (which was an abstract to get the quick token)
+          // These rates are just used for informational purposes and the token should should not be used anywhere
+          // instead we will supply a dummy token, until this can be refactored properly.
+          const dummyToken = GlobalValue.tokens.COMMON.NEW_QUICK;
+          const totalRewardRate = new TokenAmount(
+            dummyToken,
+            JSBI.BigInt(rate),
+          );
+          const totalRewardRate01 = initTokenAmountFromCallResult(
+            dummyToken,
+            rewardRateState,
+          );
+
+          const individualRewardRate = getHypotheticalRewardRate(
+            dummyToken,
+            stakedAmount,
+            totalStakedAmount,
+            totalRewardRate01,
+          );
+
+          const { oneYearFeeAPY, oneDayFee, accountFee } = getStakingFees(
+            stakingInfo,
+            balanceState,
+            totalSupplyState,
+          );
+
+          let valueOfTotalStakedAmountInBaseToken: TokenAmount | undefined;
+
+          const [, stakingTokenPair] = stakingPairs[index];
+          const totalSupply = totalSupplys[index];
+          const usdPrice = usdPrices[index];
+
+          if (
+            totalSupply &&
+            stakingTokenPair &&
+            baseTokens[index] &&
+            totalStakedAmount
+          ) {
+            // take the total amount of LP tokens staked, multiply by ETH value of all LP tokens, divide by all LP tokens
+            valueOfTotalStakedAmountInBaseToken = new TokenAmount(
+              baseTokens[index],
+              JSBI.divide(
+                JSBI.multiply(
+                  JSBI.multiply(
+                    totalStakedAmount.raw,
+                    stakingTokenPair.reserveOf(baseTokens[index]).raw,
+                  ),
+                  JSBI.BigInt(2), // this is b/c the value of LP shares are ~double the value of the WETH they entitle owner to
+                ),
+                totalSupply.raw,
+              ),
+            );
+          }
+
+          const valueOfTotalStakedAmountInUSDC =
+            valueOfTotalStakedAmountInBaseToken &&
+            usdPrice?.quote(valueOfTotalStakedAmountInBaseToken);
+
+          const tvl = valueOfTotalStakedAmountInUSDC
+            ? valueOfTotalStakedAmountInUSDC.toExact()
+            : valueOfTotalStakedAmountInBaseToken?.toExact();
+
+          const perMonthReturnInRewards =
+            (Number(stakingInfo.rate) *
+              rewardTokenPrice *
+              (getDaysCurrentYear() / 12)) /
+            Number(valueOfTotalStakedAmountInUSDC?.toExact());
+
+          memo.push({
+            stakingRewardAddress: rewardsAddress,
+            tokens: stakingInfo.tokens,
+            ended: stakingInfo.ended,
+            name: stakingInfo.name,
+            lp: stakingInfo.lp,
+            rewardToken: stakingInfo.rewardToken,
+            rewardTokenPrice,
+            earnedAmount: initTokenAmountFromCallResult(
+              dummyToken,
+              earnedAmountState,
+            ),
+            rewardRate: individualRewardRate,
+            totalRewardRate: totalRewardRate,
+            stakedAmount: stakedAmount,
+            totalStakedAmount: totalStakedAmount,
+            baseToken: stakingInfo.baseToken,
+            pair: stakingInfo.pair,
+            rate: stakingInfo.rate,
+            oneYearFeeAPY: oneYearFeeAPY,
+            oneDayFee,
+            accountFee,
+            tvl,
+            perMonthReturnInRewards,
+            valueOfTotalStakedAmountInBaseToken,
+            usdPrice,
+            stakingTokenPair,
+            totalSupply,
+            sponsored: stakingInfo.stakingInfo.sponsored,
+            sponsorLink: stakingInfo.stakingInfo.link,
+          });
+        }
+        return memo;
+      },
+      [],
+    );
+  }, [
+    balances,
+    chainId,
+    earnedAmounts,
+    info,
+    rewardsAddresses,
+    totalSupplies,
+    rewardRates,
+    usdPricesRewardTokens,
+    baseTokens,
+    totalSupplys,
+    usdPrices,
+    stakingPairs,
+  ]).filter((stakingInfo) =>
+    filter && filter.isStaked
+      ? stakingInfo.stakedAmount && stakingInfo.stakedAmount.greaterThan('0')
+      : true,
+  );
+}
 
 // gets the dual rewards staking info from the network for the active chain id
 export function useDualStakingInfo(
