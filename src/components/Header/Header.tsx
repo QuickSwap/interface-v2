@@ -25,6 +25,7 @@ import SparkleBottom from 'assets/images/SparkleBottom.svg';
 import 'components/styles/Header.scss';
 import { useTranslation } from 'react-i18next';
 import { useIsV2 } from 'state/application/hooks';
+import useDeviceWidth from 'hooks/useDeviceWidth';
 
 const newTransactionsFirst = (a: TransactionDetails, b: TransactionDetails) => {
   return b.addedTime - a.addedTime;
@@ -53,6 +54,19 @@ const Header: React.FC = () => {
   const tabletWindowSize = useMediaQuery(theme.breakpoints.down('sm'));
   const mobileWindowSize = useMediaQuery(theme.breakpoints.down('xs'));
   const toggleWalletModal = useWalletModalToggle();
+  const deviceWidth = useDeviceWidth();
+
+  const menuItemCountToShow = useMemo(() => {
+    if (deviceWidth > 1370) {
+      return 7;
+    } else if (deviceWidth > 1270) {
+      return 6;
+    } else if (deviceWidth > 1092) {
+      return 5;
+    } else {
+      return 4;
+    }
+  }, [deviceWidth]);
 
   const { isV2 } = useIsV2();
 
@@ -154,7 +168,7 @@ const Header: React.FC = () => {
       </Link>
       {!tabletWindowSize && (
         <Box className='mainMenu'>
-          {menuItems.slice(0, 7).map((val, index) => (
+          {menuItems.slice(0, menuItemCountToShow).map((val, index) => (
             <Link
               to={val.link}
               key={index}
@@ -187,27 +201,32 @@ const Header: React.FC = () => {
               )}
             </Link>
           ))}
-          <Box display='flex' className='menuItem subMenuItem'>
-            <ThreeDotIcon />
-            <Box className='subMenuWrapper'>
-              <Box className='subMenu'>
-                {menuItems.slice(7, menuItems.length).map((val, index) => (
-                  <Link
-                    to={val.link}
-                    key={index}
-                    onClick={() => setOpenDetailMenu(false)}
-                  >
-                    <small>{val.text}</small>
-                  </Link>
-                ))}
-                {outLinks.map((item, ind) => (
-                  <a href={item.link} key={ind}>
-                    <small>{item.text}</small>
-                  </a>
-                ))}
+          {menuItems.slice(menuItemCountToShow, menuItems.length).length >
+            0 && (
+            <Box display='flex' className='menuItem subMenuItem'>
+              <ThreeDotIcon />
+              <Box className='subMenuWrapper'>
+                <Box className='subMenu'>
+                  {menuItems
+                    .slice(menuItemCountToShow, menuItems.length)
+                    .map((val, index) => (
+                      <Link
+                        to={val.link}
+                        key={index}
+                        onClick={() => setOpenDetailMenu(false)}
+                      >
+                        <small>{val.text}</small>
+                      </Link>
+                    ))}
+                  {outLinks.map((item, ind) => (
+                    <a href={item.link} key={ind}>
+                      <small>{item.text}</small>
+                    </a>
+                  ))}
+                </Box>
               </Box>
             </Box>
-          </Box>
+          )}
         </Box>
       )}
       {tabletWindowSize && (
