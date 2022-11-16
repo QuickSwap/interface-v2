@@ -17,15 +17,18 @@ export function useV3DistributedRewards(chainId: ChainId) {
         .map(({ rewardToken }) => rewardToken.id)
         .concat(eternalFarms.map(({ bonusRewardToken }) => bonusRewardToken.id))
     : [];
-  const rewardTokenAddressStr = allRewardTokenAddresses
-    .filter(
-      (address, index) =>
-        allRewardTokenAddresses.findIndex(
-          (tokenAddress) =>
-            address.toLowerCase() === tokenAddress.toLowerCase(),
-        ) === index,
-    )
-    .join(',');
+  const rewardTokenAddressStr =
+    allRewardTokenAddresses.length > 0
+      ? allRewardTokenAddresses
+          .filter(
+            (address, index) =>
+              allRewardTokenAddresses.findIndex(
+                (tokenAddress) =>
+                  address.toLowerCase() === tokenAddress.toLowerCase(),
+              ) === index,
+          )
+          .join(',')
+      : '';
   const [rewardTokenPrices, setRewardTokenPrices] = useState<
     { address: string; price: number }[] | undefined
   >(undefined);
@@ -34,7 +37,7 @@ export function useV3DistributedRewards(chainId: ChainId) {
 
   useEffect(() => {
     (async () => {
-      if (chainId) {
+      if (chainId && rewardTokenAddressStr) {
         const tokenAddresses = rewardTokenAddressStr.split(',');
         const tokenPrices = await Promise.all(
           tokenAddresses.map(async (tokenAddress) => {
@@ -57,7 +60,12 @@ export function useV3DistributedRewards(chainId: ChainId) {
             };
           }),
         );
-        setRewardTokenPrices(tokenPrices);
+        if (
+          maticPrice.price !== undefined &&
+          maticPrice.oneDayPrice !== undefined
+        ) {
+          setRewardTokenPrices(tokenPrices);
+        }
       }
     })();
   }, [
@@ -67,44 +75,45 @@ export function useV3DistributedRewards(chainId: ChainId) {
     maticPrice.oneDayPrice,
   ]);
 
-  const totalRewardsUSD = eternalFarms
-    ? eternalFarms.reduce((total, farm, ind) => {
-        const farmRewardRate =
-          Number(
-            formatUnits(farm.rewardRate, Number(farm.rewardToken.decimals)),
-          ) *
-          3600 *
-          24;
-        const farmBonusRewardRate =
-          Number(
-            formatUnits(
-              farm.bonusRewardRate,
-              Number(farm.bonusRewardToken.decimals),
-            ),
-          ) *
-          3600 *
-          24;
-        const rewardTokenPrice = rewardTokenPrices
-          ? rewardTokenPrices.find(
+  const totalRewardsUSD =
+    eternalFarms && rewardTokenPrices
+      ? eternalFarms.reduce((total, farm) => {
+          const farmRewardRate =
+            Number(
+              formatUnits(farm.rewardRate, Number(farm.rewardToken.decimals)),
+            ) *
+            3600 *
+            24;
+          const farmBonusRewardRate =
+            Number(
+              formatUnits(
+                farm.bonusRewardRate,
+                Number(farm.bonusRewardToken.decimals),
+              ),
+            ) *
+            3600 *
+            24;
+          const rewardTokenPrice =
+            rewardTokenPrices.find(
               (item) =>
                 item.address.toLowerCase() ===
                 farm.rewardToken.id.toLowerCase(),
-            )?.price ?? 0
-          : 0;
-        const bonusRewardTokenPrice = rewardTokenPrices
-          ? rewardTokenPrices.find(
+            )?.price ?? 0;
+
+          const bonusRewardTokenPrice =
+            rewardTokenPrices.find(
               (item) =>
                 item.address.toLowerCase() ===
                 farm.bonusRewardToken.id.toLowerCase(),
-            )?.price ?? 0
-          : 0;
-        const totalUSD =
-          total +
-          farmRewardRate * rewardTokenPrice +
-          farmBonusRewardRate * bonusRewardTokenPrice;
-        return totalUSD;
-      }, 0)
-    : undefined;
+            )?.price ?? 0;
+
+          const totalUSD =
+            total +
+            farmRewardRate * rewardTokenPrice +
+            farmBonusRewardRate * bonusRewardTokenPrice;
+          return totalUSD;
+        }, 0)
+      : undefined;
 
   return totalRewardsUSD;
 }

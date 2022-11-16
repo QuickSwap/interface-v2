@@ -1730,12 +1730,6 @@ export async function getTokenTransactionsV3(
       };
     });
 
-    console.log({
-      mints: [...mints0, ...mints1],
-      burns: [...burns0, ...burns1],
-      swaps: [...swaps0, ...swaps1],
-    });
-
     return {
       mints: [...mints0, ...mints1],
       burns: [...burns0, ...burns1],
