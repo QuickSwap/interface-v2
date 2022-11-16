@@ -21,6 +21,11 @@ export default function EternalFarmsPage() {
       eternalFarms,
       eternalFarmsLoading,
     },
+    fetchEternalFarmPoolAprs: {
+      fetchEternalFarmPoolAprsFn,
+      eternalFarmPoolAprs,
+      eternalFarmPoolAprsLoading,
+    },
     fetchEternalFarmAprs: {
       fetchEternalFarmAprsFn,
       eternalFarmAprs,
@@ -35,6 +40,7 @@ export default function EternalFarmsPage() {
 
   useEffect(() => {
     fetchEternalFarmsFn(true);
+    fetchEternalFarmPoolAprsFn();
     fetchEternalFarmAprsFn();
     fetchEternalFarmTvlsFn();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -70,6 +76,8 @@ export default function EternalFarmsPage() {
                   refreshing={eternalFarmsLoading}
                   now={0}
                   eternal
+                  poolAprs={eternalFarmPoolAprs}
+                  poolAprsLoading={eternalFarmPoolAprsLoading}
                   aprs={eternalFarmAprs}
                   aprsLoading={eternalFarmAprsLoading}
                   tvls={eternalFarmTvls}
