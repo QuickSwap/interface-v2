@@ -8,6 +8,7 @@ import {
   arkaneconnect,
   safeApp,
   trustconnect,
+  unstopabbledomains,
 } from '../connectors';
 import MetamaskIcon from 'assets/images/metamask.png';
 import BlockWalletIcon from 'assets/images/blockwalletIcon.svg';
@@ -19,6 +20,7 @@ import PortisIcon from 'assets/images/portisIcon.png';
 import VenlyIcon from 'assets/images/venly.svg';
 import GnosisIcon from 'assets/images/gnosis_safe.png';
 import TrustIcon from 'assets/images/trust.png';
+import UnstoppableDomainsIcon from 'assets/images/unstoppableDomains.png';
 
 const WETH_ONLY: ChainTokenList = {
   [ChainId.MUMBAI]: [WETH[ChainId.MUMBAI]],
@@ -232,6 +234,14 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
     href: null,
     color: '#4196FC',
     mobile: true,
+  },
+  UNSTOPABBLEDOMAINS: {
+    connector: unstopabbledomains,
+    name: 'Unstoppable Domains',
+    iconName: UnstoppableDomainsIcon,
+    description: 'Unstoppable Domains',
+    href: null,
+    color: '#E8831D',
   },
 };
 
