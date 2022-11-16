@@ -44,7 +44,11 @@ import {
   Aprs,
   FutureFarmingEvent,
 } from '../models/interfaces';
-import { fetchEternalFarmAPR, fetchEternalFarmTVL } from 'utils/api';
+import {
+  fetchEternalFarmAPR,
+  fetchEternalFarmTVL,
+  fetchPoolsAPR,
+} from 'utils/api';
 import { useSelectedTokenList } from 'state/lists/v3/hooks';
 import { getV3TokenFromAddress } from 'utils';
 import { ChainId } from '@uniswap/sdk';
@@ -103,6 +107,13 @@ export function useFarmingSubgraph() {
   const [eternalFarmsLoading, setEternalFarmsLoading] = useState<boolean>(
     false,
   );
+
+  const [eternalFarmPoolAprs, setEternalFarmPoolAprs] = useState<
+    Aprs | undefined
+  >();
+  const [eternalFarmPoolAprsLoading, setEternalFarmPoolAprsLoading] = useState<
+    boolean
+  >(false);
 
   const [eternalFarmAprs, setEternalFarmAprs] = useState<Aprs | undefined>();
   const [eternalFarmAprsLoading, setEternalFarmAprsLoading] = useState<boolean>(
@@ -866,6 +877,24 @@ export function useFarmingSubgraph() {
     }
   }
 
+  async function fetchEternalFarmPoolAprs() {
+    if (!chainId) return;
+    setEternalFarmPoolAprsLoading(true);
+
+    try {
+      const aprs: Aprs = await fetchPoolsAPR(chainId);
+      setEternalFarmPoolAprs(aprs);
+    } catch (err) {
+      if (err instanceof Error) {
+        throw new Error(
+          'Error while fetching eternal farms pool Aprs' + err.message,
+        );
+      }
+    } finally {
+      setEternalFarmPoolAprsLoading(false);
+    }
+  }
+
   async function fetchEternalFarmAprs() {
     if (!chainId) return;
     setEternalFarmAprsLoading(true);
@@ -1021,6 +1050,11 @@ export function useFarmingSubgraph() {
       eternalFarms,
       eternalFarmsLoading,
       fetchEternalFarmsFn: fetchEternalFarms,
+    },
+    fetchEternalFarmPoolAprs: {
+      eternalFarmPoolAprs,
+      eternalFarmPoolAprsLoading,
+      fetchEternalFarmPoolAprsFn: fetchEternalFarmPoolAprs,
     },
     fetchEternalFarmAprs: {
       eternalFarmAprs,
