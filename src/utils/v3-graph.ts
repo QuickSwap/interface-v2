@@ -17,6 +17,7 @@ import {
   TOKENS_FROM_ADDRESSES_V3,
   TOKEN_CHART_V3,
   TOP_POOLS_V3,
+  TOP_POOLS_V3_TOKEN,
   TOP_TOKENS_V3,
 } from 'apollo/queries-v3';
 import {
@@ -663,6 +664,108 @@ export async function getTopPairsV3(count = 500) {
     });
 
     const pairsAddresses = topPairsIds.data.pools.map((el: any) => el.id);
+
+    const pairsCurrent = await fetchPairsByTime(undefined, pairsAddresses);
+    const pairs24 = await fetchPairsByTime(oneDayBlock.number, pairsAddresses);
+    const pairs48 = await fetchPairsByTime(twoDayBlock.number, pairsAddresses);
+    const pairsWeek = await fetchPairsByTime(
+      oneWeekBlock.number,
+      pairsAddresses,
+    );
+
+    const parsedPairs = parsePairsData(pairsCurrent);
+    const parsedPairs24 = parsePairsData(pairs24);
+    const parsedPairs48 = parsePairsData(pairs48);
+    const parsedPairsWeek = parsePairsData(pairsWeek);
+
+    const formatted = pairsAddresses.map((address: string) => {
+      const current = parsedPairs[address];
+      const oneDay = parsedPairs24[address];
+      const twoDay = parsedPairs48[address];
+      const week = parsedPairsWeek[address];
+
+      if (!current) return;
+
+      const manageUntrackedVolume =
+        +current.volumeUSD <= 1 ? 'untrackedVolumeUSD' : 'volumeUSD';
+
+      const manageUntrackedTVL =
+        +current.totalValueLockedUSD <= 1
+          ? 'totalValueLockedUSDUntracked'
+          : 'totalValueLockedUSD';
+
+      const [oneDayVolumeUSD, oneDayVolumeChangeUSD] =
+        oneDay && twoDay
+          ? get2DayPercentChange(
+              current[manageUntrackedVolume],
+              oneDay[manageUntrackedVolume],
+              twoDay[manageUntrackedVolume],
+            )
+          : oneDay
+          ? [
+              parseFloat(current[manageUntrackedVolume]) -
+                parseFloat(oneDay[manageUntrackedVolume]),
+              0,
+            ]
+          : [parseFloat(current[manageUntrackedVolume]), 0];
+
+      const oneWeekVolumeUSD = week
+        ? parseFloat(current[manageUntrackedVolume]) -
+          parseFloat(week[manageUntrackedVolume])
+        : parseFloat(current[manageUntrackedVolume]);
+
+      const tvlUSD = parseFloat(current[manageUntrackedTVL]);
+      const tvlUSDChange = getPercentChange(
+        current[manageUntrackedTVL],
+        oneDay ? oneDay[manageUntrackedTVL] : undefined,
+      );
+
+      return {
+        token0: current.token0,
+        token1: current.token1,
+        fee: current.fee,
+        id: address,
+        oneDayVolumeUSD,
+        oneDayVolumeChangeUSD,
+        oneWeekVolumeUSD,
+        trackedReserveUSD: tvlUSD,
+        tvlUSDChange,
+        totalValueLockedUSD: current[manageUntrackedTVL],
+      };
+    });
+
+    return formatted;
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+export async function getTopPairsV3ByToken(tokenAddress: string) {
+  try {
+    const utcCurrentTime = dayjs();
+
+    const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix();
+    const utcTwoDaysBack = utcCurrentTime.subtract(2, 'day').unix();
+    const utcOneWeekBack = utcCurrentTime.subtract(1, 'week').unix();
+
+    const [
+      oneDayBlock,
+      twoDayBlock,
+      oneWeekBlock,
+    ] = await getBlocksFromTimestamps([
+      utcOneDayBack,
+      utcTwoDaysBack,
+      utcOneWeekBack,
+    ]);
+
+    const topPairsIds = await clientV3.query({
+      query: TOP_POOLS_V3_TOKEN(tokenAddress),
+      fetchPolicy: 'network-only',
+    });
+
+    const pairsAddresses = topPairsIds.data.pools0
+      .concat(topPairsIds.data.pools1)
+      .map((el: any) => el.id);
 
     const pairsCurrent = await fetchPairsByTime(undefined, pairsAddresses);
     const pairs24 = await fetchPairsByTime(oneDayBlock.number, pairsAddresses);
