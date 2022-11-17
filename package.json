@@ -135,6 +135,7 @@
   "license": "GPL-3.0-or-later",
   "dependencies": {
     "@coinbase/cbpay-js": "^1.6.0",
+    "@cryption/dapp-factory-sdk": "0.5.25",
     "@material-ui/core": "^4.12.3",
     "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "^4.0.0-alpha.60",
