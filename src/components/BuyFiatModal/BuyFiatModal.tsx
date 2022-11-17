@@ -3,13 +3,14 @@ import { Box, useMediaQuery } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon2.svg';
-import Moonpay from 'assets/images/Moonpay.svg';
 import Transak from 'assets/images/Transak.png';
+import BinanceConnect from 'assets/images/binanceConnect.png';
+import CoinbasePay from 'assets/images/coinbasePay.png';
 import { CustomModal } from 'components';
 import { useActiveWeb3React, useInitTransak } from 'hooks';
 import 'components/styles/BuyFiatModal.scss';
 import { useTranslation } from 'react-i18next';
-import { CBPayInstanceType, initOnRamp } from '@coinbase/cbpay-js';
+import { initOnRamp } from '@coinbase/cbpay-js';
 
 interface BuyFiatModalProps {
   open: boolean;
@@ -21,7 +22,6 @@ interface BuyFiatModalProps {
 const BuyFiatModal: React.FC<BuyFiatModalProps> = ({
   open,
   onClose,
-  buyMoonpay,
   buyBinance,
 }) => {
   const { account } = useActiveWeb3React();
@@ -29,51 +29,40 @@ const BuyFiatModal: React.FC<BuyFiatModalProps> = ({
   const mobileWindowSize = useMediaQuery(breakpoints.down('sm'));
   const { initTransak } = useInitTransak();
   const { t } = useTranslation();
-  const [
-    onrampInstance,
-    setOnrampInstance,
-  ] = useState<CBPayInstanceType | null>();
-
-  useEffect(() => {
-    if (!account) return;
-    initOnRamp(
-      {
-        appId: process.env.REACT_APP_COINBASE_APP_ID || '',
-        widgetParameters: {
-          destinationWallets: [
-            {
-              address: account,
-              blockchains: ['polygon'],
-            },
-          ],
-        },
-        onSuccess: () => {
-          console.log('success');
-        },
-        onExit: () => {
-          console.log('exit');
-        },
-        onEvent: (event) => {
-          console.log('event', event);
-        },
-        experienceLoggedIn: 'popup',
-        experienceLoggedOut: 'popup',
-        closeOnExit: true,
-        closeOnSuccess: true,
-      },
-      (_, instance) => {
-        setOnrampInstance(instance);
-      },
-    );
-
-    return () => {
-      onrampInstance?.destroy();
-    };
-  }, [account, onrampInstance]);
 
   const buyWithCoinbase = () => {
-    onClose();
-    onrampInstance?.open();
+    if (account && process.env.REACT_APP_COINBASE_APP_ID) {
+      initOnRamp(
+        {
+          appId: process.env.REACT_APP_COINBASE_APP_ID,
+          widgetParameters: {
+            destinationWallets: [
+              {
+                address: account,
+                blockchains: ['polygon'],
+              },
+            ],
+          },
+          onSuccess: () => {
+            console.log('success');
+          },
+          onExit: () => {
+            console.log('exit');
+          },
+          onEvent: (event) => {
+            console.log('event', event);
+          },
+          experienceLoggedIn: 'embedded',
+          experienceLoggedOut: 'popup',
+          closeOnExit: true,
+          closeOnSuccess: true,
+        },
+        (_, instance) => {
+          instance?.open();
+          onClose();
+        },
+      );
+    }
   };
 
   return (
@@ -84,8 +73,14 @@ const BuyFiatModal: React.FC<BuyFiatModalProps> = ({
           <CloseIcon className='cursor-pointer' onClick={onClose} />
         </Box>
         <Box className='paymentBox'>
-          <img src={Moonpay} alt='moonpay' />
-          <Box className='buyButton' onClick={buyMoonpay}>
+          <img src={BinanceConnect} alt='binance connect' />
+          <Box className='buyButton' onClick={buyBinance}>
+            {t('buy')}
+          </Box>
+        </Box>
+        <Box className='paymentBox'>
+          <img src={CoinbasePay} alt='coinbase pay' />
+          <Box className='buyButton' onClick={buyWithCoinbase}>
             {t('buy')}
           </Box>
         </Box>
@@ -98,18 +93,6 @@ const BuyFiatModal: React.FC<BuyFiatModalProps> = ({
               initTransak(account, mobileWindowSize);
             }}
           >
-            {t('buy')}
-          </Box>
-        </Box>
-        <Box className='paymentBox'>
-          <h5>Binance Connect</h5>
-          <Box className='buyButton' onClick={buyBinance}>
-            {t('buy')}
-          </Box>
-        </Box>
-        <Box className='paymentBox'>
-          <h5>Coinbase</h5>
-          <Box className='buyButton' onClick={buyWithCoinbase}>
             {t('buy')}
           </Box>
         </Box>

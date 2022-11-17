@@ -831,7 +831,6 @@ export function useFarmingSubgraph() {
 
     try {
       const aprs: Aprs = await fetchPoolsAPR();
-      console.log('ccc', aprs);
       setEternalFarmPoolAprs(aprs);
     } catch (err) {
       if (err instanceof Error) {
