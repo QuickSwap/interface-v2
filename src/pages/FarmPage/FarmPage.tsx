@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Box, useMediaQuery, useTheme } from '@material-ui/core';
+import { Box, useMediaQuery, useTheme, Button } from '@material-ui/core';
 import { getBulkPairData } from 'state/stake/hooks';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
 import { useActiveWeb3React } from 'hooks';
@@ -10,6 +10,7 @@ import { AdsSlider, CustomSwitch } from 'components';
 import { useTranslation } from 'react-i18next';
 import 'pages/styles/farm.scss';
 import { useDefaultFarmList } from 'state/farms/hooks';
+import { useDefaultCNTFarmList } from 'state/cnt/hooks';
 import { useDefaultDualFarmList } from 'state/dualfarms/hooks';
 import { ChainId } from '@uniswap/sdk';
 import VersionToggle from 'components/Toggle/VersionToggle';
@@ -25,6 +26,7 @@ const FarmPage: React.FC = () => {
   );
   const chainIdOrDefault = chainId ?? ChainId.MATIC;
   const lpFarms = useDefaultFarmList();
+  const cntFarms = useDefaultCNTFarmList(chainIdOrDefault);
   const dualFarms = useDefaultDualFarmList();
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
@@ -36,8 +38,12 @@ const FarmPage: React.FC = () => {
     const dualPairLists = Object.values(dualFarms[chainIdOrDefault]).map(
       (item) => item.pair,
     );
-    return stakingPairLists.concat(dualPairLists);
-  }, [chainIdOrDefault, lpFarms, dualFarms]);
+    const cntPairLists = Object.values(cntFarms[chainIdOrDefault]).map(
+      (item) => item.pair,
+    );
+
+    return stakingPairLists.concat(dualPairLists).concat(cntPairLists);
+  }, [chainIdOrDefault, lpFarms, dualFarms, cntFarms]);
 
   useEffect(() => {
     getBulkPairData(pairLists).then((data) => setBulkPairs(data));
@@ -50,6 +56,13 @@ const FarmPage: React.FC = () => {
         setFarmIndex(GlobalConst.farmIndex.LPFARM_INDEX);
       },
       condition: farmIndex === GlobalConst.farmIndex.LPFARM_INDEX,
+    },
+    {
+      text: t('otherLPMining'),
+      onClick: () => {
+        setFarmIndex(GlobalConst.farmIndex.OTHER_LP_INDEX);
+      },
+      condition: farmIndex === GlobalConst.farmIndex.OTHER_LP_INDEX,
     },
     {
       text: t('dualMining'),
@@ -87,15 +100,29 @@ const FarmPage: React.FC = () => {
       </Box>
       {isV2 && (
         <>
-          <CustomSwitch
-            width={300}
-            height={48}
-            items={farmCategories}
-            isLarge={true}
-          />
-          <Box my={2}>
-            <FarmRewards bulkPairs={bulkPairs} farmIndex={farmIndex} />
+          {/* Custom switch layer */}
+          <Box className='flex flex-wrap justify-between'>
+            <CustomSwitch
+              width={450}
+              height={48}
+              items={farmCategories}
+              isLarge={true}
+            />
+            {farmIndex === GlobalConst.farmIndex.OTHER_LP_INDEX && (
+              <Box className='flex'>
+                <Button className='btn-xl'>Create A Farm</Button>
+              </Box>
+            )}
           </Box>
+
+          {/* Rewards */}
+          <Box my={3}>
+            {farmIndex !== GlobalConst.farmIndex.OTHER_LP_INDEX && (
+              <FarmRewards bulkPairs={bulkPairs} farmIndex={farmIndex} />
+            )}
+          </Box>
+
+          {/* Farms List */}
           <Box className='farmsWrapper'>
             <FarmsList bulkPairs={bulkPairs} farmIndex={farmIndex} />
           </Box>
