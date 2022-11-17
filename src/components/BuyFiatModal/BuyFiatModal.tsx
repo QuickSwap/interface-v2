@@ -34,8 +34,6 @@ const BuyFiatModal: React.FC<BuyFiatModalProps> = ({
   const { initTransak } = useInitTransak();
   const { t } = useTranslation();
 
-  console.log('ccc', onrampInstance, openCoinbase);
-
   useEffect(() => {
     if (!account || !process.env.REACT_APP_COINBASE_APP_ID) return;
     if (openCoinbase && !onrampInstance) {
@@ -91,7 +89,6 @@ const BuyFiatModal: React.FC<BuyFiatModalProps> = ({
   }, [onClose, onrampInstance]);
 
   const buyWithCoinbase = () => {
-    console.log('cc', onrampInstance);
     if (!openCoinbase) {
       setOpenCoinbase(true);
     }
