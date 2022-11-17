@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Box, useMediaQuery } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
@@ -10,7 +10,7 @@ import { CustomModal } from 'components';
 import { useActiveWeb3React, useInitTransak } from 'hooks';
 import 'components/styles/BuyFiatModal.scss';
 import { useTranslation } from 'react-i18next';
-import { initOnRamp } from '@coinbase/cbpay-js';
+import { CBPayInstanceType, initOnRamp } from '@coinbase/cbpay-js';
 
 interface BuyFiatModalProps {
   open: boolean;
@@ -25,13 +25,16 @@ const BuyFiatModal: React.FC<BuyFiatModalProps> = ({
   buyBinance,
 }) => {
   const { account } = useActiveWeb3React();
+  const onrampInstance = useRef<CBPayInstanceType>();
+  const [openCoinbase, setOpenCoinbase] = useState(false);
   const { breakpoints } = useTheme();
   const mobileWindowSize = useMediaQuery(breakpoints.down('sm'));
   const { initTransak } = useInitTransak();
   const { t } = useTranslation();
 
-  const buyWithCoinbase = () => {
-    if (account && process.env.REACT_APP_COINBASE_APP_ID) {
+  useEffect(() => {
+    if (!account || !process.env.REACT_APP_COINBASE_APP_ID) return;
+    if (openCoinbase) {
       initOnRamp(
         {
           appId: process.env.REACT_APP_COINBASE_APP_ID,
@@ -58,11 +61,32 @@ const BuyFiatModal: React.FC<BuyFiatModalProps> = ({
           closeOnSuccess: true,
         },
         (_, instance) => {
-          instance?.open();
-          onClose();
+          if (instance) {
+            onrampInstance.current = instance;
+          }
         },
       );
+    } else {
+      if (onrampInstance.current) {
+        onrampInstance.current.destroy();
+        onrampInstance.current = undefined;
+      }
     }
+    return () => {
+      onrampInstance.current?.destroy();
+    };
+  }, [account, openCoinbase]);
+
+  useEffect(() => {
+    if (onrampInstance.current) {
+      onrampInstance.current.open();
+      setOpenCoinbase(false);
+      onClose();
+    }
+  }, [onClose]);
+
+  const buyWithCoinbase = () => {
+    setOpenCoinbase(true);
   };
 
   return (
