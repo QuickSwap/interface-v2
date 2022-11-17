@@ -18886,9 +18886,9 @@ react-countdown-circle-timer@^2.5.4:
     use-elapsed-time "2.1.8"
 
 react-countdown@^2.3.2:
-  version "2.3.3"
-  resolved "https://registry.yarnpkg.com/react-countdown/-/react-countdown-2.3.3.tgz#e80ca7a7e3f4dc21b8f754d52c656a45d32550da"
-  integrity sha512-z/AS1ccdb45Fd8/1AGt9m2UIJvPUZHViL+EfWyJsI7H+99aUFnDIhN9NTGtM4n5OhhYH+Ne1UvX/u1Ejw6RGzg==
+  version "2.3.4"
+  resolved "https://registry.yarnpkg.com/react-countdown/-/react-countdown-2.3.4.tgz#2533a166d33b47c109c22fa5a88142823f93e09a"
+  integrity sha512-AvtZOnxBYLAVDjvVoXQ9I3asZEnCHIIr1uqKdIayhaTJQTKtZvmLgK/620HjO5TP5Jce9cJCw9t1JQL/TA8gJg==
   dependencies:
     prop-types "^15.7.2"
 
