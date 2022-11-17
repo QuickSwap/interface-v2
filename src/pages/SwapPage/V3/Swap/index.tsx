@@ -463,28 +463,6 @@ const SwapV3Page: React.FC = () => {
     [onCurrencySelection],
   );
 
-  useEffect(() => {
-    onCurrencySelection(
-      Field.INPUT,
-      toV3Currency({
-        chainId: chainIdToUse,
-        decimals: nativeCurrency.decimals,
-        symbol: nativeCurrency.symbol,
-        name: nativeCurrency.name,
-      }),
-    );
-  }, [chainIdToUse, nativeCurrency]);
-
-  useEffect(() => {
-    if (paramInputCurrency) {
-      handleInputSelect(paramInputCurrency);
-    }
-    if (paramOutputCurrency) {
-      handleOutputSelect(paramOutputCurrency);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paramInputCurrency, paramOutputCurrency]);
-
   //TODO
   const priceImpactTooHigh = priceImpactSeverity > 3 && !isExpertMode;
 

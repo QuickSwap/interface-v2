@@ -252,16 +252,12 @@ export function useDerivedSwapInfo(): {
 }
 
 function parseCurrencyFromURLParameter(urlParam: any, chainId: number): string {
-  let chainSymbol;
-
-  if (chainId === 137) {
-    chainSymbol = 'MATIC';
-  }
-
   if (typeof urlParam === 'string') {
     const valid = isAddress(urlParam);
     if (valid) return valid;
-    if (urlParam.toUpperCase() === chainSymbol) return chainSymbol;
+    if (urlParam.toUpperCase() === 'ETH' || urlParam.toUpperCase() === 'MATIC')
+      return 'ETH';
+    if (!valid) return 'ETH';
   }
   return '';
 }
@@ -302,11 +298,9 @@ export function queryParametersToSwapState(
     parsedQs.currency1 ?? parsedQs.outputCurrency,
     chainId,
   );
-  if (inputCurrency === '' && outputCurrency === '') {
+  if (!inputCurrency && !outputCurrency) {
     // default to ETH input
-    if (chainId === 137) {
-      inputCurrency = 'MATIC';
-    }
+    inputCurrency = 'ETH';
   } else if (inputCurrency === outputCurrency) {
     // clear output if identical
     outputCurrency = '';

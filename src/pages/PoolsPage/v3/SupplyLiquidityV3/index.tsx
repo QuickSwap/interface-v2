@@ -42,24 +42,24 @@ export function SupplyLiquidityV3() {
     params && params.currencyIdA
       ? params.currencyIdA.toLowerCase() === 'matic' ||
         params.currencyIdA.toLowerCase() === 'eth'
-        ? 'matic'
+        ? 'eth'
         : params.currencyIdA
       : parsedQuery && parsedQuery.currency0
       ? (parsedQuery.currency0 as string).toLowerCase() === 'eth' ||
         (parsedQuery.currency0 as string).toLowerCase() === 'matic'
-        ? 'matic'
+        ? 'eth'
         : (parsedQuery.currency0 as string)
       : undefined;
   const currencyIdBParam =
     params && params.currencyIdB
       ? params.currencyIdB.toLowerCase() === 'matic' ||
         params.currencyIdB.toLowerCase() === 'eth'
-        ? 'matic'
+        ? 'eth'
         : params.currencyIdB
       : parsedQuery && parsedQuery.currency1
       ? (parsedQuery.currency1 as string).toLowerCase() === 'eth' ||
         (parsedQuery.currency1 as string).toLowerCase() === 'matic'
-        ? 'matic'
+        ? 'eth'
         : (parsedQuery.currency1 as string)
       : undefined;
 
