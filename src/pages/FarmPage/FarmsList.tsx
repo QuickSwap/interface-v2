@@ -7,8 +7,14 @@ import {
   useStakingInfo,
   useOldStakingInfo,
   useDualStakingInfo,
+  useCNTStakingInfo,
 } from 'state/stake/hooks';
-import { StakingInfo, DualStakingInfo, CommonStakingInfo } from 'types';
+import {
+  StakingInfo,
+  DualStakingInfo,
+  CommonStakingInfo,
+  OtherStackingInfo,
+} from 'types';
 import {
   FarmCard,
   ToggleSwitch,
@@ -46,7 +52,7 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
   const { t } = useTranslation();
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
-  const { chainId } = useActiveWeb3React();
+  const { chainId, account } = useActiveWeb3React();
   const [pageIndex, setPageIndex] = useState(0);
   const [isEndedFarm, setIsEndedFarm] = useState(false);
   const [sortBy, setSortBy] = useState(0);
@@ -81,6 +87,13 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
       ? 0
       : undefined,
     { search: farmSearch, isStaked: stakedOnly },
+  );
+  const addedCNTStakingInfos = useCNTStakingInfo(
+    chainIdOrDefault,
+    null,
+    farmIndex === GlobalConst.farmIndex.LPFARM_INDEX ? 0 : undefined,
+    farmIndex === GlobalConst.farmIndex.LPFARM_INDEX ? 0 : undefined,
+    { search: farmSearch, isStaked: stakedOnly, isEndedFarm },
   );
   const addedDualStakingInfos = useDualStakingInfo(
     chainIdOrDefault,
@@ -126,6 +139,27 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
         a.rateA * a.rewardTokenAPrice + a.rateB * a.rewardTokenBPrice;
       const bRewards =
         b.rateA * b.rewardTokenAPrice + b.rateB * b.rewardTokenBPrice;
+      return (aRewards > bRewards ? -1 : 1) * sortIndex;
+    },
+    [sortIndex],
+  );
+
+  const getReward = (obj: OtherStackingInfo) => {
+    if ('totalRewardRate' in obj) {
+      return getExactTokenAmount(obj.totalRewardRate);
+    } else if ('rateA' in obj) {
+      return (
+        obj.rateA * obj.rewardTokenAPrice + obj.rateB * obj.rewardTokenBPrice
+      );
+    } else {
+      return 0;
+    }
+  };
+
+  const sortByRewardOther = useCallback(
+    (a: OtherStackingInfo, b: OtherStackingInfo) => {
+      const aRewards = getReward(a);
+      const bRewards = getReward(b);
       return (aRewards > bRewards ? -1 : 1) * sortIndex;
     },
     [sortIndex],
@@ -180,6 +214,28 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
       const earnedB =
         getExactTokenAmount(b.earnedAmountA) * b.rewardTokenAPrice +
         getExactTokenAmount(b.earnedAmountB) * b.rewardTokenBPrice;
+      return (earnedA > earnedB ? -1 : 1) * sortIndex;
+    },
+    [sortIndex],
+  );
+
+  const getEarnedAmount = (obj: OtherStackingInfo): number => {
+    if ('earnedAmount' in obj) {
+      return getExactTokenAmount(obj.earnedAmount);
+    } else if ('earnedAmountA' in obj) {
+      return (
+        getExactTokenAmount(obj.earnedAmountA) * obj.rewardTokenAPrice +
+        getExactTokenAmount(obj.earnedAmountB) * obj.rewardTokenBPrice
+      );
+    } else {
+      return 0;
+    }
+  };
+
+  const sortByEarnedOther = useCallback(
+    (a: OtherStackingInfo, b: OtherStackingInfo) => {
+      const earnedA: number = getEarnedAmount(a);
+      const earnedB: number = getEarnedAmount(b);
       return (earnedA > earnedB ? -1 : 1) * sortIndex;
     },
     [sortIndex],
@@ -244,6 +300,35 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
     sortByEarnedDual,
   ]);
 
+  const sortedOtherLpStakingInfo = useMemo(() => {
+    const otherLpStackingInfo = addedCNTStakingInfos.filter(
+      (info) => info.ended === isEndedFarm,
+    );
+    return otherLpStackingInfo.sort((a, b) => {
+      if (sortBy === POOL_COLUMN) {
+        return sortByToken(a, b);
+      } else if (sortBy === TVL_COLUMN) {
+        return sortByTVL(a, b);
+      } else if (sortBy === REWARDS_COLUMN) {
+        return sortByRewardOther(a, b);
+      } else if (sortBy === APY_COLUMN) {
+        return sortByAPY(a, b);
+      } else if (sortBy === EARNED_COLUMN) {
+        return sortByEarnedOther(a, b);
+      }
+      return 1;
+    });
+  }, [
+    addedCNTStakingInfos,
+    isEndedFarm,
+    sortBy,
+    sortByToken,
+    sortByTVL,
+    sortByRewardOther,
+    sortByAPY,
+    sortByEarnedOther,
+  ]);
+
   const addedStakingInfos = useMemo(
     () =>
       farmIndex === GlobalConst.farmIndex.DUALFARM_INDEX
@@ -270,6 +355,15 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
         )
       : null;
   }, [sortedLPStakingInfos, pageIndex]);
+
+  const otherLpStackingInfos = useMemo(() => {
+    return sortedOtherLpStakingInfo
+      ? sortedOtherLpStakingInfo.slice(
+          0,
+          getPageItemsToLoad(pageIndex, LOADFARM_COUNT),
+        )
+      : null;
+  }, [sortedOtherLpStakingInfo, pageIndex]);
 
   const stakingDualInfos = useMemo(() => {
     return sortedStakingDualInfos
@@ -365,11 +459,19 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
     <>
       <Box className='farmListHeader'>
         <Box>
-          <h5>{t('earndQUICK')}</h5>
+          <h5>
+            {t(
+              farmIndex === GlobalConst.farmIndex.OTHER_LP_INDEX
+                ? 'earnRewards'
+                : 'earndQUICK',
+            )}
+          </h5>
           <small>
             {t(
               farmIndex === GlobalConst.farmIndex.LPFARM_INDEX
                 ? 'stakeMessageLP'
+                : farmIndex === GlobalConst.farmIndex.OTHER_LP_INDEX
+                ? 'stakeMessageOtherLP'
                 : 'stakeMessageDual',
             )}
           </small>
@@ -472,6 +574,16 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
             key={index}
             stakingInfo={info}
             stakingAPY={getPoolApy(info?.pair)}
+          />
+        ))}
+      {farmIndex === GlobalConst.farmIndex.OTHER_LP_INDEX &&
+        otherLpStackingInfos &&
+        otherLpStackingInfos.map((info: OtherStackingInfo, index) => (
+          <FarmCard
+            key={index}
+            stakingInfo={info}
+            stakingAPY={getPoolApy(info?.pair)}
+            isLPFarm={true}
           />
         ))}
       <div ref={loadMoreRef} />
