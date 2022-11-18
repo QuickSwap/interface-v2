@@ -1,10 +1,9 @@
-import { fetchFarms } from '@cryption/dapp-factory-sdk';
-import {
-  IFarmRewardsData,
-  IFullFarm,
-} from '@cryption/dapp-factory-sdk/dist/sdkViews/FarmsAndPools/FarmService/fetchFarms';
+// import {
+//   IFarmRewardsData,
+//   IFullFarm,
+// } from '@cryption/dapp-factory-sdk/dist/sdkViews/FarmsAndPools/FarmService/fetchFarms';
 import { ChainId } from '@uniswap/sdk';
-import { CNTFarmListInfo, StakingRaw } from 'types';
+import { CNTFarmListInfo } from 'types';
 import Web3 from 'web3';
 
 const web3 = new Web3();
@@ -39,6 +38,7 @@ function identifyBaseToken(
   return token0Address;
 }
 
+/*
 function cntAdapter(input: IFarmRewardsData | IFullFarm): StakingRaw {
   const currentDate = Math.floor(new Date().getTime() / 1000);
   const {
@@ -78,12 +78,28 @@ function cntAdapter(input: IFarmRewardsData | IFullFarm): StakingRaw {
     tokens: [token0Address, token1Address],
   };
 }
+*/
 
 export default async function getCNTFarmList(
   chainId: ChainId,
   account: string | null | undefined,
   resolveENSContentHash: (ensName: string) => Promise<string>,
 ): Promise<CNTFarmListInfo> {
+  const info: CNTFarmListInfo = {
+    active: [],
+    closed: [],
+    name: 'CNT Farm List',
+    timestamp: new Date().getTime().toString(),
+    version: {
+      major: 1,
+      minor: 0,
+      patch: 0,
+    },
+  };
+
+  return info;
+
+  /*
   return fetchFarms(chainId || ChainId.MATIC, 1, [], account || undefined).then(
     (response) => {
       const farms: Array<IFarmRewardsData | IFullFarm> = response.data;
@@ -105,4 +121,5 @@ export default async function getCNTFarmList(
       return info;
     },
   );
+  */
 }
