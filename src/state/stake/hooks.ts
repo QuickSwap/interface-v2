@@ -953,7 +953,7 @@ export function useCNTStakingInfo(
   const rewardTokens = info.map((item) => item.rewardToken);
 
   const usdPrices = useUSDCPrices(baseTokens);
-  const usdPricesRewardTokens = useUSDCPricesToken(rewardTokens);
+  const usdPricesRewardTokens = useUSDCPricesToken(rewardTokens, chainId);
   const totalSupplys = useTotalSupplys(
     info.map((item) => {
       const lp = item.lp;
@@ -1007,7 +1007,7 @@ export function useCNTStakingInfo(
           // Previously Uni was used all over the place (which was an abstract to get the quick token)
           // These rates are just used for informational purposes and the token should should not be used anywhere
           // instead we will supply a dummy token, until this can be refactored properly.
-          const dummyToken = GlobalValue.tokens.COMMON.NEW_QUICK;
+          const dummyToken = NEW_QUICK[chainId];
           const totalRewardRate = new TokenAmount(
             dummyToken,
             JSBI.BigInt(rate),

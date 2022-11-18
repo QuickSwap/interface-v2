@@ -225,6 +225,29 @@ export const TOP_POOLS_V3 = (count: number) => gql`
   }
 `;
 
+export const TOP_POOLS_V3_TOKEN = (address: string) => gql`
+  query topPools {
+    pools0: pools(
+      first: 100
+      where: {token0_contains_nocase: "${address}"}
+      orderBy: totalValueLockedUSD
+      orderDirection: desc
+      subgraphError: allow
+    ) {
+      id
+    }
+    pools1: pools(
+      first: 100
+      where: {token1_contains_nocase: "${address}"}
+      orderBy: totalValueLockedUSD
+      orderDirection: desc
+      subgraphError: allow
+    ) {
+      id
+    }
+  }
+`;
+
 export const PAIRS_FROM_ADDRESSES_V3 = (
   blockNumber: undefined | number,
   pools: string[],

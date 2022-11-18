@@ -30,7 +30,12 @@ import AnalyticsTokenChart from './AnalyticsTokenChart';
 import { useTranslation } from 'react-i18next';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { getAddress } from 'ethers/lib/utils';
-import { getTokenInfoV3, getTokenTransactionsV3 } from 'utils/v3-graph';
+import {
+  getPairsAPR,
+  getTokenInfoV3,
+  getTokenTransactionsV3,
+  getTopPairsV3ByToken,
+} from 'utils/v3-graph';
 import { useDispatch } from 'react-redux';
 import { setAnalyticsLoaded } from 'state/analytics/actions';
 
@@ -162,8 +167,34 @@ const AnalyticsTokenDetails: React.FC = () => {
         updateTokenPairs(pairData);
       }
     }
+    async function fetchPairsV3() {
+      const tokenPairs = await getTopPairsV3ByToken(tokenAddress, chainIdToUse);
+      if (tokenPairs) {
+        const data = tokenPairs.filter((item: any) => !!item);
+        updateTokenPairs(data);
+        try {
+          const aprs = await getPairsAPR(
+            data.map((item: any) => item.id),
+            chainIdToUse,
+          );
+
+          updateTokenPairs(
+            data.map((item: any, ind: number) => {
+              return {
+                ...item,
+                apr: aprs[ind].apr,
+                farmingApr: aprs[ind].farmingApr,
+              };
+            }),
+          );
+        } catch (e) {
+          console.log(e);
+        }
+      }
+    }
     fetchTokenInfo();
     if (!isV2) {
+      fetchPairsV3();
       fetchTransactions();
     } else {
       if (ethPrice.price) {
@@ -311,6 +342,18 @@ const AnalyticsTokenDetails: React.FC = () => {
             </Box>
           </Grid>
         </Grid>
+      </Box>
+      <Box width={1} mt={5}>
+        <p>
+          {token.symbol} {t('pools')}
+        </p>
+      </Box>
+      <Box width={1} className='panel' mt={4}>
+        {tokenPairs ? (
+          <PairTable data={tokenPairs} />
+        ) : (
+          <Skeleton variant='rect' width='100%' height={150} />
+        )}
       </Box>
       <Box width={1} mt={5}>
         <p>
