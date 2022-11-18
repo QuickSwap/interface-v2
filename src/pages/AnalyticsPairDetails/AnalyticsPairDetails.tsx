@@ -73,18 +73,18 @@ const AnalyticsPairDetails: React.FC = () => {
   const { chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ?? ChainId.MATIC;
   const currency0 = pairData
-    ? getTokenFromAddress(pairData.token0.id, ChainId.MATIC, tokenMap, [
+    ? getTokenFromAddress(pairData.token0.id, chainIdToUse, tokenMap, [
         new Token(
-          ChainId.MATIC,
+          chainIdToUse,
           getAddress(pairData.token0.id),
           pairData.token0.decimals,
         ),
       ])
     : undefined;
   const currency1 = pairData
-    ? getTokenFromAddress(pairData.token1.id, ChainId.MATIC, tokenMap, [
+    ? getTokenFromAddress(pairData.token1.id, chainIdToUse, tokenMap, [
         new Token(
-          ChainId.MATIC,
+          chainIdToUse,
           getAddress(pairData.token1.id),
           pairData.token1.decimals,
         ),

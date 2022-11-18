@@ -67,7 +67,8 @@ export function FarmModal({
   closeHandler,
   farmingType,
 }: FarmModalProps) {
-  const { account } = useActiveWeb3React();
+  const { account, chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ?? ChainId.MATIC;
 
   const isTierFarming = useMemo(
     () =>
@@ -246,7 +247,7 @@ export function FarmModal({
     account ?? undefined,
     multiplierToken
       ? new Token(
-          ChainId.MATIC,
+          chainIdToUse,
           multiplierToken.id,
           +multiplierToken.decimals,
           multiplierToken.symbol,
@@ -331,7 +332,7 @@ export function FarmModal({
 
     return CurrencyAmount.fromRawAmount(
       new Token(
-        ChainId.MATIC,
+        chainIdToUse,
         multiplierToken.id,
         +multiplierToken.decimals,
         multiplierToken.symbol,
@@ -339,11 +340,11 @@ export function FarmModal({
       ),
       selectedTier,
     );
-  }, [selectedTier, multiplierToken]);
+  }, [selectedTier, multiplierToken, chainIdToUse]);
 
   const [approval, approveCallback] = useApproveCallback(
     _amountForApprove,
-    FARMING_CENTER[ChainId.MATIC],
+    FARMING_CENTER[chainIdToUse],
   );
 
   const showApproval =

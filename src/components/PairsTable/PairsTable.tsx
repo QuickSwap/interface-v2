@@ -11,6 +11,7 @@ import { ReactComponent as StarUnchecked } from 'assets/images/StarUnchecked.svg
 import { useTranslation } from 'react-i18next';
 import { formatNumber, getTokenFromAddress } from 'utils';
 import { useSelectedTokenList } from 'state/lists/hooks';
+import { useActiveWeb3React } from 'hooks';
 
 interface PairsTableProps {
   data: any[];
@@ -25,6 +26,8 @@ const PairTable: React.FC<PairsTableProps> = ({
 }) => {
   const { t } = useTranslation();
   const { isV2 } = useIsV2();
+  const { chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ?? ChainId.MATIC;
   const version = useMemo(() => `${isV2 ? `v2` : 'v3'}`, [isV2]);
 
   const v2SpecificCells = [
@@ -104,32 +107,22 @@ const PairTable: React.FC<PairsTableProps> = ({
   } = useBookmarkPairs();
   const tokenMap = useSelectedTokenList();
   const mobileHTML = (pair: any, index: number) => {
-    const token0 = getTokenFromAddress(
-      pair.token0.id,
-      ChainId.MATIC,
-      tokenMap,
-      [
-        new Token(
-          ChainId.MATIC,
-          getAddress(pair.token0.id),
-          Number(pair.token0.decimals),
-          pair.token0.symbol,
-        ),
-      ],
-    );
-    const token1 = getTokenFromAddress(
-      pair.token1.id,
-      ChainId.MATIC,
-      tokenMap,
-      [
-        new Token(
-          ChainId.MATIC,
-          getAddress(pair.token1.id),
-          Number(pair.token1.decimals),
-          pair.token1.symbol,
-        ),
-      ],
-    );
+    const token0 = getTokenFromAddress(pair.token0.id, chainIdToUse, tokenMap, [
+      new Token(
+        chainIdToUse,
+        getAddress(pair.token0.id),
+        Number(pair.token0.decimals),
+        pair.token0.symbol,
+      ),
+    ]);
+    const token1 = getTokenFromAddress(pair.token1.id, chainIdToUse, tokenMap, [
+      new Token(
+        chainIdToUse,
+        getAddress(pair.token1.id),
+        Number(pair.token1.decimals),
+        pair.token1.symbol,
+      ),
+    ]);
     const liquidity = pair.trackedReserveUSD
       ? pair.trackedReserveUSD
       : pair.reserveUSD ?? 0;
@@ -237,32 +230,22 @@ const PairTable: React.FC<PairsTableProps> = ({
   };
 
   const desktopHTML = (pair: any) => {
-    const token0 = getTokenFromAddress(
-      pair.token0.id,
-      ChainId.MATIC,
-      tokenMap,
-      [
-        new Token(
-          ChainId.MATIC,
-          getAddress(pair.token0.id),
-          Number(pair.token0.decimals),
-          pair.token0.symbol,
-        ),
-      ],
-    );
-    const token1 = getTokenFromAddress(
-      pair.token1.id,
-      ChainId.MATIC,
-      tokenMap,
-      [
-        new Token(
-          ChainId.MATIC,
-          getAddress(pair.token1.id),
-          Number(pair.token1.decimals),
-          pair.token1.symbol,
-        ),
-      ],
-    );
+    const token0 = getTokenFromAddress(pair.token0.id, chainIdToUse, tokenMap, [
+      new Token(
+        chainIdToUse,
+        getAddress(pair.token0.id),
+        Number(pair.token0.decimals),
+        pair.token0.symbol,
+      ),
+    ]);
+    const token1 = getTokenFromAddress(pair.token1.id, chainIdToUse, tokenMap, [
+      new Token(
+        chainIdToUse,
+        getAddress(pair.token1.id),
+        Number(pair.token1.decimals),
+        pair.token1.symbol,
+      ),
+    ]);
     const liquidity = pair.trackedReserveUSD
       ? pair.trackedReserveUSD
       : pair.reserveUSD ?? 0;

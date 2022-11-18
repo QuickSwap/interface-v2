@@ -84,22 +84,14 @@ export function EternalFarmCard({
   const token0 =
     chainId && token0Address
       ? getTokenFromAddress(token0Address, chainId, tokenMap, [
-          new Token(
-            ChainId.MATIC,
-            getAddress(token0Address),
-            pool.token0.decimals,
-          ),
+          new Token(chainId, getAddress(token0Address), pool.token0.decimals),
         ])
       : undefined;
 
   const token1 =
     chainId && token1Address
       ? getTokenFromAddress(token1Address, chainId, tokenMap, [
-          new Token(
-            ChainId.MATIC,
-            getAddress(token1Address),
-            pool.token1.decimals,
-          ),
+          new Token(chainId, getAddress(token1Address), pool.token1.decimals),
         ])
       : undefined;
 

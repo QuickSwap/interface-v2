@@ -84,7 +84,7 @@ const TopMovers: React.FC<TopMoversProps> = ({ hideArrow = false }) => {
           <Box>
             {topMoverTokens.map((token: any) => {
               const currency = new Token(
-                ChainId.MATIC,
+                chainIdToUse,
                 getAddress(token.id),
                 token.decimals,
               );
