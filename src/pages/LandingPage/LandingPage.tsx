@@ -16,6 +16,7 @@ import { ReactComponent as RedditIcon } from 'assets/images/social/Reddit.svg';
 import { ReactComponent as TelegramIcon } from 'assets/images/social/Telegram.svg';
 import { ReactComponent as TwitterIcon } from 'assets/images/social/Twitter.svg';
 import { ReactComponent as YouTubeIcon } from 'assets/images/social/YouTube.svg';
+import { ReactComponent as GeckoterminalIcon } from 'assets/images/social/Geckoterminal.svg';
 import { RewardSlider, TopMovers } from 'components';
 import 'pages/styles/landing.scss';
 import { SwapSection } from './SwapSection';
@@ -94,6 +95,11 @@ const LandingPage: React.FC = () => {
       icon: <CoingeckoIcon />,
       title: 'CoinGecko',
     },
+    {
+      link: 'https://www.geckoterminal.com/polygon_pos/quickswap_v3/pools',
+      icon: <GeckoterminalIcon />,
+      title: 'GeckoTerminal',
+    },
   ];
 
   const history = useHistory();
@@ -109,7 +115,15 @@ const LandingPage: React.FC = () => {
             key={ind}
             rel='noopener noreferrer'
           >
-            <Box display='flex' mx={1.5}>
+            <Box
+              display='flex'
+              mx={1.5}
+              className={
+                val.title.toLowerCase() === 'geckoterminal'
+                  ? 'noFill'
+                  : 'svgFill'
+              }
+            >
               {val.icon}
             </Box>
           </a>
@@ -163,7 +177,14 @@ const LandingPage: React.FC = () => {
         </Box>
         <Box className='socialContent'>
           {socialicons.map((val, ind) => (
-            <Box key={ind}>
+            <Box
+              key={ind}
+              className={
+                val.title.toLowerCase() === 'geckoterminal'
+                  ? 'noFill'
+                  : 'svgFill'
+              }
+            >
               <a href={val.link} target='_blank' rel='noopener noreferrer'>
                 {val.icon}
                 <p>{val.title}</p>
