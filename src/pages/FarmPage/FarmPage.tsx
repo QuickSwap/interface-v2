@@ -57,13 +57,13 @@ const FarmPage: React.FC = () => {
       },
       condition: farmIndex === GlobalConst.farmIndex.LPFARM_INDEX,
     },
-    {
-      text: t('otherLPMining'),
-      onClick: () => {
-        setFarmIndex(GlobalConst.farmIndex.OTHER_LP_INDEX);
-      },
-      condition: farmIndex === GlobalConst.farmIndex.OTHER_LP_INDEX,
-    },
+    // {
+    //   text: t('otherLPMining'),
+    //   onClick: () => {
+    //     setFarmIndex(GlobalConst.farmIndex.OTHER_LP_INDEX);
+    //   },
+    //   condition: farmIndex === GlobalConst.farmIndex.OTHER_LP_INDEX,
+    // },
     {
       text: t('dualMining'),
       onClick: () => {
@@ -103,7 +103,7 @@ const FarmPage: React.FC = () => {
           {/* Custom switch layer */}
           <Box className='flex flex-wrap justify-between'>
             <CustomSwitch
-              width={450}
+              width={300}
               height={48}
               items={farmCategories}
               isLarge={true}
