@@ -12,6 +12,9 @@ import FarmCardDetail from './FarmCardDetail';
 import { Deposit } from '../../models/interfaces';
 import { IsActive } from './IsActive';
 import { ChainId, Token } from '@uniswap/sdk';
+import { getTokenFromAddress } from 'utils';
+import { useSelectedTokenList } from 'state/lists/hooks';
+import { getAddress } from 'ethers/lib/utils';
 
 interface FarmCardProps {
   el: Deposit;
@@ -21,8 +24,33 @@ interface FarmCardProps {
 export default function FarmCard({ el, chainId }: FarmCardProps) {
   const [showMore, setShowMore] = useState(false);
 
-  const token0 = el.pool.token0;
-  const token1 = el.pool.token1;
+  const tokenMap = useSelectedTokenList();
+  const poolToken0 = el.pool.token0 as any;
+  const poolToken1 = el.pool.token1 as any;
+  const token0Address = poolToken0.id ?? poolToken0.address;
+  const token1Address = poolToken1.id ?? poolToken1.address;
+
+  const token0 =
+    chainId && token0Address
+      ? getTokenFromAddress(token0Address, chainId, tokenMap, [
+          new Token(
+            chainId,
+            getAddress(token0Address),
+            Number(el.pool.token0.decimals),
+          ),
+        ])
+      : undefined;
+
+  const token1 =
+    chainId && token1Address
+      ? getTokenFromAddress(token1Address, chainId, tokenMap, [
+          new Token(
+            chainId,
+            getAddress(token1Address),
+            Number(el.pool.token1.decimals),
+          ),
+        ])
+      : undefined;
 
   return (
     <StyledFilledBox borderRadius='16px' mt={1.5} mb={1.5}>
@@ -55,39 +83,25 @@ export default function FarmCard({ el, chainId }: FarmCardProps) {
             </Box>
           </Box>
 
-          <Box className='flex items-center' my={1}>
-            {chainId && (
+          {token0 && token1 && (
+            <Box className='flex items-center' my={1}>
               <DoubleCurrencyLogo
-                currency0={
-                  new Token(
-                    chainId,
-                    token0.address,
-                    Number(token0.decimals),
-                    token0.symbol,
-                  )
-                }
-                currency1={
-                  new Token(
-                    chainId,
-                    token1.address,
-                    Number(token1.decimals),
-                    token1.symbol,
-                  )
-                }
+                currency0={token0}
+                currency1={token1}
                 size={30}
               />
-            )}
 
-            <Box className='flex-col' ml={3}>
-              <StyledLabel color='#696c80' fontSize='12px'>
-                Pool
-              </StyledLabel>
+              <Box className='flex-col' ml={3}>
+                <StyledLabel color='#696c80' fontSize='12px'>
+                  Pool
+                </StyledLabel>
 
-              <StyledLabel color='#ebecf2' fontSize='14px'>
-                {`${token0.symbol} / ${token1.symbol}`}
-              </StyledLabel>
+                <StyledLabel color='#ebecf2' fontSize='14px'>
+                  {`${token0.symbol} / ${token1.symbol}`}
+                </StyledLabel>
+              </Box>
             </Box>
-          </Box>
+          )}
         </Box>
 
         <Box className='flex items-center'>

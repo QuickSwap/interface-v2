@@ -1583,8 +1583,8 @@ export function getEtherscanLink(
   data: string,
   type: 'transaction' | 'token' | 'address' | 'block' | ExplorerDataType,
 ): string {
-  const prefix =
-    'https://' + (chainId === 80001 ? 'mumbai.' : '') + 'polygonscan.com';
+  const config = getConfig(chainId);
+  const prefix = config.blockExplorer;
 
   switch (type) {
     case 'transaction':
