@@ -247,14 +247,12 @@ export default function MigrateV2DetailsPage() {
   const v3SpotPrice =
     poolState === PoolState.EXISTS ? pool?.token0Price : undefined;
 
-  let priceDifferenceFraction: Fraction | string | undefined =
+  let priceDifferenceFraction =
     v2SpotPrice && v3SpotPrice
-      ? v2SpotPrice.divide(v3SpotPrice).greaterThan(10000)
-        ? '> 1000'
-        : v3SpotPrice
-            .divide(v2SpotPrice)
-            .subtract(1)
-            .multiply(100)
+      ? v3SpotPrice
+          .divide(v2SpotPrice)
+          .subtract(1)
+          .multiply(100)
       : undefined;
 
   if (
@@ -265,19 +263,14 @@ export default function MigrateV2DetailsPage() {
   }
 
   const largePriceDifference = useMemo(() => {
-    if (!v2SpotPrice || !v3SpotPrice) {
+    if (!priceDifferenceFraction) {
       return false;
     }
 
-    const v2PriceOriginal = v2SpotPrice.asFraction;
-    const v2price = v2PriceOriginal.multiply(100);
-    const v3price = v3SpotPrice.asFraction.multiply(100);
-    const maxPriceDiff = v2PriceOriginal.multiply(15);
-    const ub = v2price.add(maxPriceDiff);
-    const lb = v2price.subtract(maxPriceDiff);
+    return !priceDifferenceFraction.lessThan(JSBI.BigInt(2));
+  }, [priceDifferenceFraction]);
 
-    return v3price.lessThan(lb) || v3price.greaterThan(ub);
-  }, [v2SpotPrice, v3SpotPrice]);
+  console.log('ccc', priceDifferenceFraction?.toSignificant(6));
 
   const [allowedSlippage] = useUserSlippageTolerance();
   const allowedSlippagePct = useMemo(
@@ -683,7 +676,7 @@ export default function MigrateV2DetailsPage() {
                 <Box className='pool-range-chart-warning-icon'>
                   <ReportProblemOutlined />
                 </Box>
-                <small>Price Impact Larger than 15%</small>
+                <small>Price Impact Larger than 2%</small>
               </Box>
               <Box width={1} mt={1} mb={1.5}>
                 <span>
