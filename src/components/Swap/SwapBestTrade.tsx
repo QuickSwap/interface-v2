@@ -142,6 +142,7 @@ const SwapBestTrade: React.FC<{
   const noRoute = !route;
 
   const { priceImpactWithoutFee } = computeTradePriceBreakdown(trade);
+  const [optimalRateError, setOptimalRateError] = useState('');
   const [approvalSubmitted, setApprovalSubmitted] = useState<boolean>(false);
   const { ethereum } = window as any;
   const [mainPrice, setMainPrice] = useState(true);
@@ -234,8 +235,10 @@ const SwapBestTrade: React.FC<{
           partner: 'quickswapv3',
         },
       });
+      setOptimalRateError('');
       return rate;
     } catch (err) {
+      setOptimalRateError(err.message);
       return;
     }
   };
@@ -330,8 +333,12 @@ const SwapBestTrade: React.FC<{
           : '';
       } else if (noRoute && userHasSpecifiedInputOutput) {
         return t('insufficientLiquidityTrade');
+      } else if (
+        optimalRateError === 'ESTIMATED_LOSS_GREATER_THAN_MAX_IMPACT'
+      ) {
+        return `Price impact is more than ${maxImpactAllowed}%. You want to continue?`;
       } else {
-        return swapInputError ?? t('swap');
+        return (optimalRateError || swapInputError) ?? t('swap');
       }
     } else {
       return ethereum && !isSupportedNetwork(ethereum)
@@ -349,6 +356,8 @@ const SwapBestTrade: React.FC<{
     showWrap,
     wrapType,
     swapInputError,
+    optimalRateError,
+    maxImpactAllowed,
   ]);
 
   const swapButtonDisabled = useMemo(() => {
@@ -742,7 +751,7 @@ const SwapBestTrade: React.FC<{
         <Box width={showApproveFlow ? '48%' : '100%'}>
           <Button
             fullWidth
-            disabled={swapButtonDisabled as boolean}
+            disabled={(optimalRateError || swapButtonDisabled) as boolean}
             onClick={account ? onParaswap : connectWallet}
           >
             {swapButtonText}

@@ -14,7 +14,7 @@ import { getProgress } from '../../utils/getProgress';
 import Loader from '../Loader';
 import CurrencyLogo from '../CurrencyLogo';
 import { useMemo } from 'react';
-import { Token } from '@uniswap/sdk-core';
+import { Token } from '@uniswap/sdk';
 import { WrappedCurrency } from '../../models/types';
 import { formatAmountTokens } from 'utils/numbers';
 import './index.scss';
@@ -24,8 +24,10 @@ import { ReactComponent as AddIcon } from 'assets/images/addIcon.svg';
 import { Box } from '@material-ui/core';
 import { formatUnits } from 'ethers/lib/utils';
 import { formatReward } from 'utils/formatReward';
-import { formatCompact } from 'utils';
+import { formatCompact, getTokenFromAddress } from 'utils';
 import { Aprs } from 'models/interfaces';
+import { useSelectedTokenList } from 'state/lists/hooks';
+import { getAddress } from 'ethers/lib/utils';
 
 interface EternalFarmCardProps {
   active?: boolean;
@@ -46,6 +48,8 @@ interface EternalFarmCardProps {
   };
   aprs: Aprs | undefined;
   aprsLoading: boolean;
+  poolAprs: Aprs | undefined;
+  poolAprsLoading: boolean;
   tvls: any;
   tvlsLoading: boolean;
   eternal?: boolean;
@@ -66,6 +70,8 @@ export function EternalFarmCard({
   } = {},
   aprs,
   aprsLoading,
+  poolAprs,
+  poolAprsLoading,
   tvls,
   tvlsLoading,
   eternal,
@@ -73,8 +79,33 @@ export function EternalFarmCard({
   const apr = aprs ? aprs[id] : undefined;
   const aprValue =
     (apr !== undefined && apr >= 0 ? Math.round(apr) : '~') + '% APR';
+  const poolApr = poolAprs ? poolAprs[pool.id] : undefined;
+  const poolAprValue =
+    (poolApr !== undefined && poolApr >= 0 ? Math.round(poolApr) : '~') +
+    '% APR';
   const tvl = tvls ? tvls[id] : undefined;
   const { chainId } = useActiveWeb3React();
+
+  const tokenMap = useSelectedTokenList();
+  const token0 = chainId
+    ? getTokenFromAddress(pool.token0.id, chainId, tokenMap, [
+        new Token(
+          ChainId.MATIC,
+          getAddress(pool.token0.id),
+          pool.token0.decimals,
+        ),
+      ])
+    : undefined;
+
+  const token1 = chainId
+    ? getTokenFromAddress(pool.token1.id, chainId, tokenMap, [
+        new Token(
+          ChainId.MATIC,
+          getAddress(pool.token1.id),
+          pool.token1.decimals,
+        ),
+      ])
+    : undefined;
 
   return (
     <Box className='flex justify-center'>
@@ -90,24 +121,10 @@ export function EternalFarmCard({
         >
           <Box mb={1.5} className='flex justify-between items-center'>
             <Box className='flex items-center'>
-              {chainId && (
+              {token0 && token1 && (
                 <DoubleCurrencyLogo
-                  currency0={
-                    new Token(
-                      chainId,
-                      pool.token0.id,
-                      Number(pool.token0.decimals),
-                      pool.token0.symbol,
-                    ) as WrappedCurrency
-                  }
-                  currency1={
-                    new Token(
-                      chainId,
-                      pool.token1.id,
-                      Number(pool.token1.decimals),
-                      pool.token1.symbol,
-                    ) as WrappedCurrency
-                  }
+                  currency0={token0}
+                  currency1={token1}
                   size={30}
                 />
               )}
@@ -116,16 +133,30 @@ export function EternalFarmCard({
                 <small className='weight-600'>{`${pool.token0.symbol}/${pool.token1.symbol}`}</small>
               </Box>
             </Box>
-            <Box
-              className='flex items-center bg-successLight'
-              height='19px'
-              padding='0 4px'
-              borderRadius='4px'
-            >
-              <span className='text-success'>
-                {aprsLoading && <Loader stroke='#0fc679' />}
-                {!aprsLoading && <>{aprValue}</>}
-              </span>
+            <Box className='flex'>
+              <Box
+                className='flex items-center bg-successLight'
+                height='19px'
+                padding='0 4px'
+                borderRadius='4px'
+                mr='6px'
+              >
+                <span className='text-success'>
+                  {poolAprsLoading && <Loader stroke='#0fc679' />}
+                  {!poolAprsLoading && <>{poolAprValue}</>}
+                </span>
+              </Box>
+              <Box
+                className='flex items-center bg-successLight'
+                height='19px'
+                padding='0 4px'
+                borderRadius='4px'
+              >
+                <span className='text-success'>
+                  {aprsLoading && <Loader stroke='#0fc679' />}
+                  {!aprsLoading && <>{aprValue}</>}
+                </span>
+              </Box>
             </Box>
           </Box>
           {rewardToken && (

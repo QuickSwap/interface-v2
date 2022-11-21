@@ -18,7 +18,7 @@ import { getTokenChartData } from 'utils';
 import { GlobalConst, GlobalData } from 'constants/index';
 import { useTranslation } from 'react-i18next';
 import { getTokenChartDataV3 } from 'utils/v3-graph';
-import { useIsV3 } from 'state/application/hooks';
+import { useIsV2 } from 'state/application/hooks';
 
 const CHART_VOLUME = 0;
 const CHART_LIQUIDITY = 1;
@@ -80,7 +80,7 @@ const AnalyticsTokenChart: React.FC<{ token: any }> = ({ token }) => {
     }
   }, [token, chartIndex]);
 
-  const { isV3 } = useIsV3();
+  const { isV2 } = useIsV2();
 
   useEffect(() => {
     async function fetchTokenChartData() {
@@ -91,7 +91,7 @@ const AnalyticsTokenChart: React.FC<{ token: any }> = ({ token }) => {
           ? 0
           : getChartStartTime(durationIndex);
 
-      const tokenChartDataFn = isV3
+      const tokenChartDataFn = !isV2
         ? getTokenChartDataV3(tokenAddress, duration)
         : getTokenChartData(tokenAddress, duration);
 
@@ -105,10 +105,10 @@ const AnalyticsTokenChart: React.FC<{ token: any }> = ({ token }) => {
         }
       });
     }
-    if (isV3 !== undefined) {
+    if (isV2 !== undefined) {
       fetchTokenChartData();
     }
-  }, [tokenAddress, durationIndex, isV3]);
+  }, [tokenAddress, durationIndex, isV2]);
 
   const currentPercentClass = getPriceClass(Number(currentPercent));
 
@@ -170,9 +170,9 @@ const AnalyticsTokenChart: React.FC<{ token: any }> = ({ token }) => {
             yAxisValues={getYAXISValuesAnalytics(chartData)}
             dates={tokenChartData.map((value: any) => value.date)}
             width='100%'
-            strokeColor={isV3 ? '#3e92fe' : '#00dced'}
-            gradientColor={isV3 ? '#448aff' : undefined}
-            height={isV3 ? 275 : 240}
+            strokeColor={!isV2 ? '#3e92fe' : '#00dced'}
+            gradientColor={!isV2 ? '#448aff' : undefined}
+            height={!isV2 ? 275 : 240}
             categories={getChartDates(tokenChartData, durationIndex)}
           />
         ) : (

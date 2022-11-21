@@ -19,7 +19,7 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 import { useSelectedTokenList } from 'state/lists/hooks';
-import { useIsV3 } from 'state/application/hooks';
+import { useIsV2 } from 'state/application/hooks';
 import { getAllPairsV3, getAllTokensV3 } from 'utils/v3-graph';
 import { PAIR_SEARCH_V3, TOKEN_SEARCH_V3 } from 'apollo/queries-v3';
 dayjs.extend(utc);
@@ -41,8 +41,8 @@ const AnalyticsSearch: React.FC = () => {
   const [pairsShown, setPairsShown] = useState(3);
   const tokenMap = useSelectedTokenList();
 
-  const { isV3 } = useIsV3();
-  const version = useMemo(() => `${isV3 ? `v3` : 'v2'}`, [isV3]);
+  const { isV2 } = useIsV2();
+  const version = useMemo(() => `${isV2 ? `v2` : 'v3'}`, [isV2]);
 
   const escapeRegExp = (str: string) => {
     return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -169,12 +169,12 @@ const AnalyticsSearch: React.FC = () => {
   useEffect(() => {
     async function fetchData() {
       try {
-        const allTokensFn = isV3 ? getAllTokensV3 : getAllTokensOnUniswap;
-        const allPairsFn = isV3 ? getAllPairsV3 : getAllPairsOnUniswap;
+        const allTokensFn = isV2 ? getAllTokensOnUniswap : getAllTokensV3;
+        const allPairsFn = isV2 ? getAllPairsOnUniswap : getAllPairsV3;
 
-        const client = isV3 ? clientV3 : clientV2;
-        const tokenSearchQuery = isV3 ? TOKEN_SEARCH_V3 : TOKEN_SEARCH;
-        const pairSearchQuery = isV3 ? PAIR_SEARCH_V3 : PAIR_SEARCH;
+        const client = isV2 ? clientV2 : clientV3;
+        const tokenSearchQuery = isV2 ? TOKEN_SEARCH : TOKEN_SEARCH_V3;
+        const pairSearchQuery = isV2 ? PAIR_SEARCH : PAIR_SEARCH_V3;
 
         const allTokensUniswap = await allTokensFn();
         const allPairsUniswap = await allPairsFn();
@@ -238,10 +238,10 @@ const AnalyticsSearch: React.FC = () => {
         console.log(e);
       }
     }
-    if (isV3 !== undefined) {
+    if (isV2 !== undefined) {
       fetchData();
     }
-  }, [searchVal, isV3]);
+  }, [searchVal, isV2]);
 
   const handleClick = (e: any) => {
     if (
