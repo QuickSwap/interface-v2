@@ -130,11 +130,12 @@ const SwapPage: React.FC = () => {
             <Box className='flex justify-center' mt={2}>
               <div
                 className='_0cbf1c3d417e250a'
-                data-zone='ffc9b86ecee14f15aa52a5524c6205a6'
+                data-zone='caabfdc5c9dd4e4a88dfada9b2912b2a'
                 style={{
                   width: 468,
                   height: 60,
                   display: 'inline-block',
+                  margin: '0 auto',
                 }}
               />
             </Box>
