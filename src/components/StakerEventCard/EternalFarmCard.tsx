@@ -89,20 +89,34 @@ export function EternalFarmCard({
   const tokenMap = useSelectedTokenList();
   const token0 = chainId
     ? getTokenFromAddress(pool.token0.id, chainId, tokenMap, [
-        new Token(
-          ChainId.MATIC,
-          getAddress(pool.token0.id),
-          pool.token0.decimals,
-        ),
+        new Token(chainId, getAddress(pool.token0.id), pool.token0.decimals),
       ])
     : undefined;
 
   const token1 = chainId
     ? getTokenFromAddress(pool.token1.id, chainId, tokenMap, [
+        new Token(chainId, getAddress(pool.token1.id), pool.token1.decimals),
+      ])
+    : undefined;
+
+  const farmRewardToken = chainId
+    ? getTokenFromAddress(rewardToken.id, chainId, tokenMap, [
         new Token(
-          ChainId.MATIC,
-          getAddress(pool.token1.id),
-          pool.token1.decimals,
+          chainId,
+          rewardToken.id,
+          Number(rewardToken.decimals),
+          rewardToken.symbol,
+        ),
+      ])
+    : undefined;
+
+  const farmBonusRewardToken = chainId
+    ? getTokenFromAddress(bonusRewardToken.id, chainId, tokenMap, [
+        new Token(
+          chainId,
+          bonusRewardToken.id,
+          Number(bonusRewardToken.decimals),
+          bonusRewardToken.symbol,
         ),
       ])
     : undefined;
@@ -175,18 +189,8 @@ export function EternalFarmCard({
               height={56}
             >
               <Box className='flex items-center'>
-                {chainId && (
-                  <CurrencyLogo
-                    currency={
-                      new Token(
-                        chainId,
-                        rewardToken.id,
-                        Number(rewardToken.decimals),
-                        rewardToken.symbol,
-                      ) as WrappedCurrency
-                    }
-                    size={'30px'}
-                  />
+                {farmRewardToken && (
+                  <CurrencyLogo currency={farmRewardToken} size={'30px'} />
                 )}
 
                 <Box ml={1.5}>
@@ -222,16 +226,9 @@ export function EternalFarmCard({
                 height={56}
               >
                 <Box className='flex items-center'>
-                  {chainId && (
+                  {farmBonusRewardToken && (
                     <CurrencyLogo
-                      currency={
-                        new Token(
-                          chainId,
-                          bonusRewardToken.id,
-                          Number(bonusRewardToken.decimals),
-                          bonusRewardToken.symbol,
-                        ) as WrappedCurrency
-                      }
+                      currency={farmBonusRewardToken}
                       size={'30px'}
                     />
                   )}
