@@ -22,14 +22,19 @@ import { useCurrencyBalances } from 'state/wallet/hooks';
 import {
   Field,
   replaceSwapState,
+  RouterTypeParams,
   selectCurrency,
+  setBestRoute,
   setRecipient,
+  setSwapDelay,
+  SwapDelay,
   switchCurrencies,
   typeInput,
 } from './actions';
 import { SwapState } from './reducer';
 import { useUserSlippageTolerance } from 'state/user/hooks';
 import { computeSlippageAdjustedAmounts } from 'utils/prices';
+import { RouterTypes, SmartRouter } from 'constants/index';
 
 export function useSwapState(): AppState['swap'] {
   return useSelector<AppState, AppState['swap']>((state) => state.swap);
@@ -40,6 +45,8 @@ export function useSwapActionHandlers(): {
   onSwitchTokens: () => void;
   onUserInput: (field: Field, typedValue: string) => void;
   onChangeRecipient: (recipient: string | null) => void;
+  onSetSwapDelay: (swapDelay: SwapDelay) => void;
+  onBestRoute: (bestRoute: RouterTypeParams) => void;
 } {
   const dispatch = useDispatch<AppDispatch>();
   const onCurrencySelection = useCallback(
@@ -77,11 +84,27 @@ export function useSwapActionHandlers(): {
     [dispatch],
   );
 
+  const onSetSwapDelay = useCallback(
+    (swapDelay: SwapDelay) => {
+      dispatch(setSwapDelay({ swapDelay }))
+    },
+    [dispatch],
+  )
+
+  const onBestRoute = useCallback(
+    (bestRoute: RouterTypeParams) => {
+      dispatch(setBestRoute({ bestRoute }))
+    },
+    [dispatch],
+  )
+
   return {
     onSwitchTokens,
     onCurrencySelection,
     onUserInput,
     onChangeRecipient,
+    onSetSwapDelay,
+    onBestRoute
   };
 }
 
@@ -297,6 +320,8 @@ export function queryParametersToSwapState(parsedQs: ParsedQs): SwapState {
     typedValue: parseTokenAmountURLParameter(parsedQs.exactAmount),
     independentField: parseIndependentFieldURLParameter(parsedQs.exactField),
     recipient,
+    swapDelay: SwapDelay.INIT,
+    bestRoute: { routerType: RouterTypes.QUICKSWAP, smartRouter: SmartRouter.QUICKSWAP }
   };
 }
 
@@ -329,6 +354,8 @@ export function useDefaultsFromURLSearch():
         inputCurrencyId: parsed[Field.INPUT].currencyId,
         outputCurrencyId: parsed[Field.OUTPUT].currencyId,
         recipient: parsed.recipient,
+        swapDelay: SwapDelay.INIT,
+        bestRoute: { routerType: RouterTypes.QUICKSWAP, smartRouter: SmartRouter.QUICKSWAP }
       }),
     );
 

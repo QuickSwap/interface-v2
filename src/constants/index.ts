@@ -34,6 +34,45 @@ export enum TxnType {
   REMOVE,
 }
 
+export enum RouterTypes {
+  QUICKSWAP = 'QUICKSWAP',
+  SMART = 'SMART',
+  BONUS = 'BONUS',
+}
+
+export enum SmartRouter {
+  PARASWAP = 'PARASWAP',
+  QUICKSWAP = 'QUICKSWAP',
+}
+
+export const WALLCHAIN_PARAMS = {
+  [ChainId.MATIC]: {
+    [SmartRouter.PARASWAP]: {
+      apiURL: 'https://matic.wallchains.com/upgrade_txn/',
+      apiKey: '91b92acd-e8fd-49c3-80fd-db2bc58bb8cf'
+    },
+    [SmartRouter.QUICKSWAP]: {
+      apiURL: 'https://matic.wallchains.com/upgrade_txn/',
+      apiKey: '50eaf751-196d-4fe0-9506-b983f7c83735'
+    },  
+  },
+  [ChainId.MUMBAI]: {
+    [SmartRouter.PARASWAP]: {
+      apiURL: '',
+      apiKey: ''
+    },
+    [SmartRouter.QUICKSWAP]: {
+      apiURL: '',
+      apiKey: ''
+    },  
+  }
+}
+
+export const BONUS_CUTOFF_AMOUNT = {
+  [ChainId.MUMBAI]: 0,
+  [ChainId.MATIC]: 0
+}
+
 export const GlobalConst = {
   blacklists: {
     TOKEN_BLACKLIST: [
