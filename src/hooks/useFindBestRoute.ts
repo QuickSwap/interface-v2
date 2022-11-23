@@ -39,10 +39,14 @@ const useFindBestRoute = () => {
   const bestTradeExactIn = useTradeExactIn(
     isExactIn ? parsedAmount : undefined,
     outputCurrency ?? undefined,
+    swapDelay,
+    onSetSwapDelay,
   );
   const bestTradeExactOut = useTradeExactOut(
     inputCurrency ?? undefined,
     !isExactIn ? parsedAmount : undefined,
+    swapDelay,
+    onSetSwapDelay,
   );
   const v2Trade = isExactIn ? bestTradeExactIn : bestTradeExactOut;
 

@@ -67,11 +67,6 @@ export default function callWallchainAPI(
   // Allowing transactions to be checked even if no user is connected
   const activeAccount = account || '0x0000000000000000000000000000000000000000';
 
-  console.log(
-    'aaa',
-    `${WALLCHAIN_PARAMS[chainId][smartRouter].apiURL}?key=${WALLCHAIN_PARAMS[chainId][smartRouter].apiKey}`,
-  );
-
   // If the intiial call fails APE router will be the default router
   return fetch(
     `${WALLCHAIN_PARAMS[chainId][smartRouter].apiURL}?key=${WALLCHAIN_PARAMS[chainId][smartRouter].apiKey}`,
