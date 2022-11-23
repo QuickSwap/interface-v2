@@ -11,6 +11,7 @@ import { useActiveWeb3React, useInitTransak } from 'hooks';
 import 'components/styles/BuyFiatModal.scss';
 import { useTranslation } from 'react-i18next';
 import { CBPayInstanceType, initOnRamp } from '@coinbase/cbpay-js';
+import { useWalletModalToggle } from 'state/application/hooks';
 
 interface BuyFiatModalProps {
   open: boolean;
@@ -32,6 +33,7 @@ const BuyFiatModal: React.FC<BuyFiatModalProps> = ({
   const { breakpoints } = useTheme();
   const mobileWindowSize = useMediaQuery(breakpoints.down('sm'));
   const { initTransak } = useInitTransak();
+  const toggleWalletModal = useWalletModalToggle();
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -57,7 +59,7 @@ const BuyFiatModal: React.FC<BuyFiatModalProps> = ({
           onEvent: (event) => {
             console.log('event', event);
           },
-          experienceLoggedIn: 'embedded',
+          experienceLoggedIn: 'new_tab',
           experienceLoggedOut: 'popup',
           closeOnExit: true,
           closeOnSuccess: true,
@@ -89,7 +91,9 @@ const BuyFiatModal: React.FC<BuyFiatModalProps> = ({
   }, [onClose, onrampInstance]);
 
   const buyWithCoinbase = () => {
-    if (!openCoinbase) {
+    if (!account) {
+      toggleWalletModal();
+    } else if (!openCoinbase) {
       setOpenCoinbase(true);
     }
   };
@@ -109,8 +113,8 @@ const BuyFiatModal: React.FC<BuyFiatModalProps> = ({
         </Box>
         <Box className='paymentBox'>
           <img src={CoinbasePay} alt='coinbase pay' />
-          <Box className='buyButton' onClick={buyWithCoinbase}>
-            {t('buy')}
+          <Box className={'buyButton'} onClick={buyWithCoinbase}>
+            {account ? t('buy') : t('connectWallet')}
           </Box>
         </Box>
         <Box className='paymentBox'>
