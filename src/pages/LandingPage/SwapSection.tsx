@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   ButtonGroup,
   Button,
@@ -9,6 +9,7 @@ import {
 import { useTheme } from '@material-ui/core/styles';
 import { Swap, AddLiquidity } from 'components';
 import { useTranslation } from 'react-i18next';
+import { useIsV2 } from 'state/application/hooks';
 
 const SWAP_TAB = 0;
 const LIQUIDITY_TAB = 1;
@@ -18,6 +19,12 @@ export const SwapSection: React.FC = () => {
   const mobileWindowSize = useMediaQuery(breakpoints.down('sm'));
   const [tabIndex, setTabIndex] = useState(SWAP_TAB);
   const { t } = useTranslation();
+  const { updateIsV2 } = useIsV2();
+
+  useEffect(() => {
+    updateIsV2(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <>
