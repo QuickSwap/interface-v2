@@ -15,6 +15,7 @@ import {
   updateUserDeadline,
   toggleURLWarning,
   updateUserSingleHopOnly,
+  updateUserBonusRouter,
 } from './actions';
 
 const currentTimestamp = () => new Date().getTime();
@@ -27,6 +28,7 @@ export interface UserState {
   matchesDarkMode: boolean; // whether the dark mode media query matches
 
   userExpertMode: boolean;
+  userBonusRouterDisabled: boolean;
 
   // user defined slippage tolerance in bips, used in all txns
   userSlippageTolerance: number;
@@ -61,6 +63,7 @@ export const initialState: UserState = {
   userDarkMode: null,
   matchesDarkMode: false,
   userExpertMode: false,
+  userBonusRouterDisabled: false,
   userSlippageTolerance: GlobalConst.utils.INITIAL_ALLOWED_SLIPPAGE,
   userDeadline: GlobalConst.utils.DEFAULT_DEADLINE_FROM_NOW,
   tokens: {},
@@ -153,5 +156,8 @@ export default createReducer(initialState, (builder) =>
     })
     .addCase(updateUserSingleHopOnly, (state, action) => {
       state.userSingleHopOnly = action.payload.userSingleHopOnly;
+    })
+    .addCase(updateUserBonusRouter, (state, action) => {
+      state.userSingleHopOnly = action.payload.userBonusRouterDisabled;
     }),
 );

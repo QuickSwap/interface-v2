@@ -35,6 +35,7 @@ import { SwapState } from './reducer';
 import { useUserSlippageTolerance } from 'state/user/hooks';
 import { computeSlippageAdjustedAmounts } from 'utils/prices';
 import { RouterTypes, SmartRouter } from 'constants/index';
+import useFindBestRoute from 'hooks/useFindBestRoute';
 
 export function useSwapState(): AppState['swap'] {
   return useSelector<AppState, AppState['swap']>((state) => state.swap);
@@ -86,17 +87,17 @@ export function useSwapActionHandlers(): {
 
   const onSetSwapDelay = useCallback(
     (swapDelay: SwapDelay) => {
-      dispatch(setSwapDelay({ swapDelay }))
+      dispatch(setSwapDelay({ swapDelay }));
     },
     [dispatch],
-  )
+  );
 
   const onBestRoute = useCallback(
     (bestRoute: RouterTypeParams) => {
-      dispatch(setBestRoute({ bestRoute }))
+      dispatch(setBestRoute({ bestRoute }));
     },
     [dispatch],
-  )
+  );
 
   return {
     onSwitchTokens,
@@ -104,7 +105,7 @@ export function useSwapActionHandlers(): {
     onUserInput,
     onChangeRecipient,
     onSetSwapDelay,
-    onBestRoute
+    onBestRoute,
   };
 }
 
@@ -186,16 +187,17 @@ export function useDerivedSwapInfo(): {
     (isExactIn ? inputCurrency : outputCurrency) ?? undefined,
   );
 
-  const bestTradeExactIn = useTradeExactIn(
-    isExactIn ? parsedAmount : undefined,
-    outputCurrency ?? undefined,
-  );
-  const bestTradeExactOut = useTradeExactOut(
-    inputCurrency ?? undefined,
-    !isExactIn ? parsedAmount : undefined,
-  );
+  // const bestTradeExactIn = useTradeExactIn(
+  //   isExactIn ? parsedAmount : undefined,
+  //   outputCurrency ?? undefined,
+  // );
+  // const bestTradeExactOut = useTradeExactOut(
+  //   inputCurrency ?? undefined,
+  //   !isExactIn ? parsedAmount : undefined,
+  // );
 
-  const v2Trade = isExactIn ? bestTradeExactIn : bestTradeExactOut;
+  // const v2Trade = isExactIn ? bestTradeExactIn : bestTradeExactOut;
+  const { v2Trade, bestTradeExactIn, bestTradeExactOut } = useFindBestRoute();
 
   const currencyBalances = {
     [Field.INPUT]: relevantTokenBalances[0],
@@ -321,7 +323,10 @@ export function queryParametersToSwapState(parsedQs: ParsedQs): SwapState {
     independentField: parseIndependentFieldURLParameter(parsedQs.exactField),
     recipient,
     swapDelay: SwapDelay.INIT,
-    bestRoute: { routerType: RouterTypes.QUICKSWAP, smartRouter: SmartRouter.QUICKSWAP }
+    bestRoute: {
+      routerType: RouterTypes.QUICKSWAP,
+      smartRouter: SmartRouter.QUICKSWAP,
+    },
   };
 }
 
@@ -355,7 +360,10 @@ export function useDefaultsFromURLSearch():
         outputCurrencyId: parsed[Field.OUTPUT].currencyId,
         recipient: parsed.recipient,
         swapDelay: SwapDelay.INIT,
-        bestRoute: { routerType: RouterTypes.QUICKSWAP, smartRouter: SmartRouter.QUICKSWAP }
+        bestRoute: {
+          routerType: RouterTypes.QUICKSWAP,
+          smartRouter: SmartRouter.QUICKSWAP,
+        },
       }),
     );
 

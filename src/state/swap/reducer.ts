@@ -39,7 +39,10 @@ const initialState: SwapState = {
   },
   recipient: null,
   swapDelay: SwapDelay.INIT,
-  bestRoute: { routerType: RouterTypes.QUICKSWAP, smartRouter: SmartRouter.QUICKSWAP },
+  bestRoute: {
+    routerType: RouterTypes.QUICKSWAP,
+    smartRouter: SmartRouter.QUICKSWAP,
+  },
 };
 
 export default createReducer<SwapState>(initialState, (builder) =>
@@ -114,9 +117,9 @@ export default createReducer<SwapState>(initialState, (builder) =>
       state.recipient = recipient;
     })
     .addCase(setSwapDelay, (state, { payload: { swapDelay } }) => {
-      state.swapDelay = swapDelay
+      state.swapDelay = swapDelay;
     })
     .addCase(setBestRoute, (state, { payload: { bestRoute } }) => {
-      state.bestRoute = bestRoute
+      state.bestRoute = bestRoute;
     }),
 );

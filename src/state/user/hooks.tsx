@@ -19,8 +19,8 @@ import {
   updateUserSlippageTolerance,
   toggleURLWarning,
   updateUserSingleHopOnly,
+  updateUserBonusRouter,
 } from './actions';
-import { basisPointsToPercent } from 'utils';
 
 function serializeToken(token: Token): SerializedToken {
   return {
@@ -91,6 +91,24 @@ export function useExpertModeManager(): [boolean, () => void] {
   }, [expertMode, dispatch]);
 
   return [expertMode, toggleSetExpertMode];
+}
+
+export function useBonusRouterManager(): [boolean, () => void] {
+  const dispatch = useDispatch<AppDispatch>();
+  const bonusRouterDisabled = useSelector<
+    AppState,
+    AppState['user']['userBonusRouterDisabled']
+  >((state) => {
+    return state.user.userBonusRouterDisabled;
+  });
+
+  const toggleSetBonusRouter = useCallback(() => {
+    dispatch(
+      updateUserBonusRouter({ userBonusRouterDisabled: !bonusRouterDisabled }),
+    );
+  }, [bonusRouterDisabled, dispatch]);
+
+  return [bonusRouterDisabled, toggleSetBonusRouter];
 }
 
 export function useUserSlippageTolerance(): [

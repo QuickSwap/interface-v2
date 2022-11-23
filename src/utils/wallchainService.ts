@@ -1,7 +1,12 @@
-import { ChainId } from '@uniswap/sdk'
-import { RouterTypes, SmartRouter, BONUS_CUTOFF_AMOUNT, WALLCHAIN_PARAMS } from 'constants/index'
-import { Contract } from 'ethers'
-import { SwapDelay, RouterTypeParams, DataResponse } from 'state/swap/actions'
+import { ChainId } from '@uniswap/sdk';
+import {
+  RouterTypes,
+  SmartRouter,
+  BONUS_CUTOFF_AMOUNT,
+  WALLCHAIN_PARAMS,
+} from 'constants/index';
+import { Contract } from 'ethers';
+import { SwapDelay, RouterTypeParams, DataResponse } from 'state/swap/actions';
 
 const wallchainResponseIsValid = (
   dataResponse: DataResponse,
@@ -12,17 +17,25 @@ const wallchainResponseIsValid = (
 ) => {
   if (!dataResponse.pathFound) {
     // Opportunity was not found -> response should be ignored -> valid.
-    return false
+    return false;
   }
-  if (dataResponse && dataResponse.summary &&  dataResponse.summary.searchSummary && dataResponse.summary.searchSummary.expectedUsdProfit && BONUS_CUTOFF_AMOUNT[chainId] > dataResponse.summary.searchSummary.expectedUsdProfit * 0.3) {
-      return false
+  if (
+    dataResponse &&
+    dataResponse.summary &&
+    dataResponse.summary.searchSummary &&
+    dataResponse.summary.searchSummary.expectedUsdProfit &&
+    BONUS_CUTOFF_AMOUNT[chainId] >
+      dataResponse.summary.searchSummary.expectedUsdProfit * 0.3
+  ) {
+    return false;
   }
   return (
-    dataResponse.transactionArgs.destination.toLowerCase() === contractAddress.toLowerCase() &&
+    dataResponse.transactionArgs.destination.toLowerCase() ===
+      contractAddress.toLowerCase() &&
     dataResponse.transactionArgs.value.toLowerCase() === value.toLowerCase() &&
     dataResponse.transactionArgs.sender.toLowerCase() === account.toLowerCase()
-  )
-}
+  );
+};
 
 /**
  * Call Wallchain API to analyze the expected opportunity.
@@ -49,10 +62,15 @@ export default function callWallchainAPI(
   onBestRoute: (bestRoute: RouterTypeParams) => void,
   onSetSwapDelay: (swapDelay: SwapDelay) => void,
 ): Promise<any> {
-  onSetSwapDelay(SwapDelay.FETCHING_BONUS)
-  const encodedData = contract.interface.encodeFunctionData(methodName, args)
+  onSetSwapDelay(SwapDelay.FETCHING_BONUS);
+  const encodedData = contract.interface.encodeFunctionData(methodName, args);
   // Allowing transactions to be checked even if no user is connected
-  const activeAccount = account || '0x0000000000000000000000000000000000000000'
+  const activeAccount = account || '0x0000000000000000000000000000000000000000';
+
+  console.log(
+    'aaa',
+    `${WALLCHAIN_PARAMS[chainId][smartRouter].apiURL}?key=${WALLCHAIN_PARAMS[chainId][smartRouter].apiKey}`,
+  );
 
   // If the intiial call fails APE router will be the default router
   return fetch(
@@ -70,30 +88,43 @@ export default function callWallchainAPI(
   )
     .then((response) => {
       if (response.ok) {
-        return response.json()
+        return response.json();
       }
-      console.error('Wallchain Error', response.status, response.statusText)
-      onBestRoute({ routerType, smartRouter })
-      onSetSwapDelay(SwapDelay.SWAP_REFRESH)
-      return null
+      console.error('Wallchain Error', response.status, response.statusText);
+      onBestRoute({ routerType, smartRouter });
+      onSetSwapDelay(SwapDelay.SWAP_REFRESH);
+      return null;
     })
     .then((responseJson) => {
+      console.log('ccc', responseJson);
       if (responseJson) {
-        const dataResonse: DataResponse = responseJson
-        if (wallchainResponseIsValid(dataResonse, value, activeAccount, contract.address, chainId)) {
-          onBestRoute({ routerType: RouterTypes.BONUS, smartRouter, bonusRouter: dataResonse })
-          onSetSwapDelay(SwapDelay.SWAP_REFRESH)
+        const dataResponse: DataResponse = responseJson;
+        if (
+          wallchainResponseIsValid(
+            dataResponse,
+            value,
+            activeAccount,
+            contract.address,
+            chainId,
+          )
+        ) {
+          onBestRoute({
+            routerType: RouterTypes.BONUS,
+            smartRouter,
+            bonusRouter: dataResponse,
+          });
+          onSetSwapDelay(SwapDelay.SWAP_REFRESH);
         } else {
-          onBestRoute({ routerType, smartRouter })
-          onSetSwapDelay(SwapDelay.SWAP_REFRESH)
+          onBestRoute({ routerType, smartRouter });
+          onSetSwapDelay(SwapDelay.SWAP_REFRESH);
         }
       }
-      onSetSwapDelay(SwapDelay.SWAP_REFRESH)
-      return null
+      onSetSwapDelay(SwapDelay.SWAP_REFRESH);
+      return null;
     })
     .catch((error) => {
-      onBestRoute({ routerType, smartRouter })
-      onSetSwapDelay(SwapDelay.SWAP_REFRESH)
-      console.error('Wallchain Error', error)
-    })
+      onBestRoute({ routerType, smartRouter });
+      onSetSwapDelay(SwapDelay.SWAP_REFRESH);
+      console.error('Wallchain Error', error);
+    });
 }

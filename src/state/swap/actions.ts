@@ -17,33 +17,32 @@ export enum SwapDelay {
 }
 
 type SearchSummary = {
-  expectedProfit?: number
-  expectedUsdProfit?: number
-  firstTokenAddress?: string
-  firstTokenAmount?: number
-  expectedKickbackProfit?: number
-}
+  expectedProfit?: number;
+  expectedUsdProfit?: number;
+  firstTokenAddress?: string;
+  firstTokenAmount?: number;
+  expectedKickbackProfit?: number;
+};
 
 type TransactionArgs = {
-  data: string
-  destination: string
-  sender: string
-  value: string
-  masterInput: string
-}
+  data: string;
+  destination: string;
+  sender: string;
+  value: string;
+  masterInput: string;
+};
 
 export type DataResponse = {
-  pathFound: boolean
-  summary?: { searchSummary?: SearchSummary }
-  transactionArgs: TransactionArgs
-}
+  pathFound: boolean;
+  summary?: { searchSummary?: SearchSummary };
+  transactionArgs: TransactionArgs;
+};
 
 export interface RouterTypeParams {
-  routerType: RouterTypes
-  smartRouter: SmartRouter
-  bonusRouter?: DataResponse
+  routerType: RouterTypes;
+  smartRouter: SmartRouter;
+  bonusRouter?: DataResponse;
 }
-
 
 export const selectCurrency = createAction<{
   field: Field;
@@ -53,8 +52,12 @@ export const switchCurrencies = createAction<void>('swap/switchCurrencies');
 export const typeInput = createAction<{ field: Field; typedValue: string }>(
   'swap/typeInput',
 );
-export const setSwapDelay = createAction<{ swapDelay: SwapDelay }>('swap/swapDelay')
-export const setBestRoute = createAction<{ bestRoute: RouterTypeParams }>('swap/bestRoute')
+export const setSwapDelay = createAction<{ swapDelay: SwapDelay }>(
+  'swap/swapDelay',
+);
+export const setBestRoute = createAction<{ bestRoute: RouterTypeParams }>(
+  'swap/bestRoute',
+);
 export const replaceSwapState = createAction<{
   field: Field;
   typedValue: string;
