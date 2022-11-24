@@ -29,7 +29,6 @@ const BuyFiatModal: React.FC<BuyFiatModalProps> = ({
   const [onrampInstance, setOnRampInstance] = useState<
     CBPayInstanceType | undefined
   >(undefined);
-  const [isCoinbaseReady, setIsCoinbaseReady] = useState(false);
   const { breakpoints } = useTheme();
   const mobileWindowSize = useMediaQuery(breakpoints.down('sm'));
   const { initTransak } = useInitTransak();
@@ -66,7 +65,6 @@ const BuyFiatModal: React.FC<BuyFiatModalProps> = ({
       (_, instance) => {
         if (instance) {
           setOnRampInstance(instance);
-          setIsCoinbaseReady(true);
         }
       },
     );
@@ -79,8 +77,9 @@ const BuyFiatModal: React.FC<BuyFiatModalProps> = ({
   const buyWithCoinbase = () => {
     if (!account) {
       toggleWalletModal();
-    } else if (isCoinbaseReady) {
-      onrampInstance?.open();
+    } else if (onrampInstance) {
+      onrampInstance.open();
+      setOnRampInstance(undefined);
       onClose();
     }
   };
@@ -102,7 +101,7 @@ const BuyFiatModal: React.FC<BuyFiatModalProps> = ({
           <img src={CoinbasePay} alt='coinbase pay' />
           <Box
             className={`buyButton ${
-              account && !isCoinbaseReady ? 'disabled' : ''
+              account && !onrampInstance ? 'disabled' : ''
             }`}
             onClick={buyWithCoinbase}
           >
