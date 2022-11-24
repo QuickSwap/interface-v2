@@ -37,6 +37,7 @@ const BuyFiatModal: React.FC<BuyFiatModalProps> = ({
 
   useEffect(() => {
     if (!account || !process.env.REACT_APP_COINBASE_APP_ID) return;
+
     initOnRamp(
       {
         appId: process.env.REACT_APP_COINBASE_APP_ID,
@@ -63,11 +64,13 @@ const BuyFiatModal: React.FC<BuyFiatModalProps> = ({
         closeOnSuccess: true,
       },
       (_, instance) => {
+        console.log('ccc', instance);
         if (instance) {
           setOnRampInstance(instance);
         }
       },
     );
+
     return () => {
       onrampInstance?.destroy();
     };
@@ -79,7 +82,6 @@ const BuyFiatModal: React.FC<BuyFiatModalProps> = ({
       toggleWalletModal();
     } else if (onrampInstance) {
       onrampInstance.open();
-      setOnRampInstance(undefined);
       onClose();
     }
   };
