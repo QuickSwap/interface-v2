@@ -34,7 +34,6 @@ import {
   maxAmountSpend,
   basisPointsToPercent,
 } from 'utils';
-import { computeTradePriceBreakdown, warningSeverity } from 'utils/prices';
 import { ReactComponent as PriceExchangeIcon } from 'assets/images/PriceExchangeIcon.svg';
 import { ReactComponent as ExchangeIcon } from 'assets/images/ExchangeIcon.svg';
 import 'components/styles/Swap.scss';
@@ -141,20 +140,17 @@ const SwapBestTrade: React.FC<{
   const route = trade?.route;
   const noRoute = !route;
 
-  const { priceImpactWithoutFee } = computeTradePriceBreakdown(trade);
   const [optimalRateError, setOptimalRateError] = useState('');
   const [approvalSubmitted, setApprovalSubmitted] = useState<boolean>(false);
   const { ethereum } = window as any;
   const [mainPrice, setMainPrice] = useState(true);
-  const priceImpactSeverity = warningSeverity(priceImpactWithoutFee);
   const isValid = !swapInputError;
 
   const showApproveFlow =
     !swapInputError &&
     (approval === ApprovalState.NOT_APPROVED ||
       approval === ApprovalState.PENDING ||
-      (approvalSubmitted && approval === ApprovalState.APPROVED)) &&
-    !(priceImpactSeverity > 3 && !isExpertMode);
+      (approvalSubmitted && approval === ApprovalState.APPROVED));
 
   const toggleWalletModal = useWalletModalToggle();
 
@@ -370,18 +366,12 @@ const SwapBestTrade: React.FC<{
         return (
           !isValid ||
           approval !== ApprovalState.APPROVED ||
-          (optimalRate &&
-            !optimalRate.maxImpactReached &&
-            priceImpactSeverity > 3 &&
-            !isExpertMode)
+          (optimalRate && !optimalRate.maxImpactReached && !isExpertMode)
         );
       } else {
         return (
           !isValid ||
-          (optimalRate &&
-            !optimalRate.maxImpactReached &&
-            priceImpactSeverity > 3 &&
-            !isExpertMode) ||
+          (optimalRate && !optimalRate.maxImpactReached && !isExpertMode) ||
           !!paraswapCallbackError ||
           (optimalRate &&
             !parsedAmounts[Field.INPUT]?.equalTo(
@@ -406,7 +396,6 @@ const SwapBestTrade: React.FC<{
     isValid,
     approval,
     optimalRate,
-    priceImpactSeverity,
     isExpertMode,
     parsedAmounts,
     paraswapCallbackError,
@@ -524,12 +513,6 @@ const SwapBestTrade: React.FC<{
   }, [attemptingTxn, onUserInput, swapErrorMessage, tradeToConfirm, txHash]);
 
   const handleParaswap = useCallback(() => {
-    if (
-      priceImpactWithoutFee &&
-      !confirmPriceImpactWithoutFee(priceImpactWithoutFee)
-    ) {
-      return;
-    }
     if (!paraswapCallback) {
       return;
     }
@@ -600,7 +583,6 @@ const SwapBestTrade: React.FC<{
   }, [
     tradeToConfirm,
     account,
-    priceImpactWithoutFee,
     recipient,
     recipientAddress,
     showConfirm,

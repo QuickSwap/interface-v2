@@ -9,7 +9,6 @@ import {
   useEthPrice,
   useTokenDetails,
 } from 'state/application/hooks';
-import useCopyClipboard from 'hooks/useCopyClipboard';
 import {
   shortenAddress,
   formatCompact,
@@ -36,7 +35,6 @@ const SwapTokenDetails: React.FC<{
   const [priceData, setPriceData] = useState<any>(null);
   const priceUp = Number(tokenData?.priceChangeUSD) > 0;
   const priceUpPercent = Number(tokenData?.priceChangeUSD).toFixed(2);
-  const [isCopied, setCopied] = useCopyClipboard();
   const prices = priceData ? priceData.map((price: any) => price.close) : [];
   const { ethPrice } = useEthPrice();
 
