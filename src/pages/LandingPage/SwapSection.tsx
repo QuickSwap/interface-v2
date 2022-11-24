@@ -33,6 +33,7 @@ export const SwapSection: React.FC = () => {
     if (isOnV2) {
       updateIsV2(true);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOnV2]);
 
   return (

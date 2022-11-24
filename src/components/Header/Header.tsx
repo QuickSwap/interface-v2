@@ -26,6 +26,7 @@ import 'components/styles/Header.scss';
 import { useTranslation } from 'react-i18next';
 import { useIsV2 } from 'state/application/hooks';
 import { getConfig } from 'config/index';
+
 const newTransactionsFirst = (a: TransactionDetails, b: TransactionDetails) => {
   return b.addedTime - a.addedTime;
 };
@@ -78,14 +79,14 @@ const Header: React.FC = () => {
   }
   if (showPool) {
     menuItems.push({
-      link: `/pools${isV2 ? '/v2' : ''}`,
+      link: `/pools`,
       text: t('pool'),
       id: 'pools-page-link',
     });
   }
   if (showFarm) {
     menuItems.push({
-      link: `/farm${isV2 ? '/v2' : ''}`,
+      link: `/farm`,
       text: t('farm'),
       id: 'farm-page-link',
     });
@@ -134,7 +135,7 @@ const Header: React.FC = () => {
   }
   if (showAnalytics) {
     menuItems.push({
-      link: `/analytics${isV2 ? '/v2' : ''}`,
+      link: `/analytics`,
       text: t('analytics'),
       id: 'analytics-page-link',
     });
