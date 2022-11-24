@@ -38,38 +38,39 @@ const BuyFiatModal: React.FC<BuyFiatModalProps> = ({
   useEffect(() => {
     if (!account || !process.env.REACT_APP_COINBASE_APP_ID) return;
 
-    initOnRamp(
-      {
-        appId: process.env.REACT_APP_COINBASE_APP_ID,
-        widgetParameters: {
-          destinationWallets: [
-            {
-              address: account,
-              blockchains: ['polygon'],
-            },
-          ],
+    if (!onrampInstance) {
+      initOnRamp(
+        {
+          appId: process.env.REACT_APP_COINBASE_APP_ID,
+          widgetParameters: {
+            destinationWallets: [
+              {
+                address: account,
+                blockchains: ['polygon'],
+              },
+            ],
+          },
+          onSuccess: () => {
+            console.log('success');
+          },
+          onExit: () => {
+            console.log('exit');
+          },
+          onEvent: (event) => {
+            console.log('event', event);
+          },
+          experienceLoggedIn: 'embedded',
+          experienceLoggedOut: 'embedded',
+          closeOnExit: true,
+          closeOnSuccess: true,
         },
-        onSuccess: () => {
-          console.log('success');
+        (_, instance) => {
+          if (instance) {
+            setOnRampInstance(instance);
+          }
         },
-        onExit: () => {
-          console.log('exit');
-        },
-        onEvent: (event) => {
-          console.log('event', event);
-        },
-        experienceLoggedIn: 'embedded',
-        experienceLoggedOut: 'embedded',
-        closeOnExit: true,
-        closeOnSuccess: true,
-      },
-      (_, instance) => {
-        console.log('ccc', instance);
-        if (instance) {
-          setOnRampInstance(instance);
-        }
-      },
-    );
+      );
+    }
 
     return () => {
       onrampInstance?.destroy();
