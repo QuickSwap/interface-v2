@@ -58,8 +58,8 @@ const BuyFiatModal: React.FC<BuyFiatModalProps> = ({
         onEvent: (event) => {
           console.log('event', event);
         },
-        experienceLoggedIn: 'popup',
-        experienceLoggedOut: 'popup',
+        experienceLoggedIn: 'embedded',
+        experienceLoggedOut: 'embedded',
         closeOnExit: true,
         closeOnSuccess: true,
       },
@@ -72,18 +72,16 @@ const BuyFiatModal: React.FC<BuyFiatModalProps> = ({
     );
     return () => {
       onrampInstance?.destroy();
-      setOnRampInstance(undefined);
-      setIsCoinbaseReady(false);
     };
-  }, [account, onrampInstance]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [account]);
 
   const buyWithCoinbase = () => {
     if (!account) {
       toggleWalletModal();
     } else if (isCoinbaseReady) {
       onrampInstance?.open();
-      setOnRampInstance(undefined);
-      setIsCoinbaseReady(false);
+      onClose();
     }
   };
 
