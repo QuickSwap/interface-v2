@@ -607,6 +607,7 @@ const SwapBestTrade: React.FC<{
       {showConfirm && (
         <ConfirmSwapModal
           isOpen={showConfirm}
+          optimalRate={optimalRate}
           trade={trade}
           originalTrade={tradeToConfirm}
           onAcceptChanges={handleAcceptChanges}

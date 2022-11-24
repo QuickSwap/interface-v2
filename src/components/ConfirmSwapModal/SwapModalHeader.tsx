@@ -9,9 +9,11 @@ import { computeSlippageAdjustedAmounts } from 'utils/prices';
 import { ReactComponent as ArrowDownIcon } from 'assets/images/ArrowDownIcon.svg';
 import { formatTokenAmount } from 'utils';
 import { useTranslation } from 'react-i18next';
+import { OptimalRate } from '@paraswap/sdk';
 
 interface SwapModalHeaderProps {
   trade: Trade;
+  optimalRate?: OptimalRate;
   allowedSlippage: number;
   showAcceptChanges: boolean;
   onAcceptChanges: () => void;
@@ -20,6 +22,7 @@ interface SwapModalHeaderProps {
 
 const SwapModalHeader: React.FC<SwapModalHeaderProps> = ({
   trade,
+  optimalRate,
   allowedSlippage,
   showAcceptChanges,
   onAcceptChanges,
@@ -43,15 +46,30 @@ const SwapModalHeader: React.FC<SwapModalHeaderProps> = ({
       </Box>
       <Box className='swapContent'>
         <p>
-          {t('swap')} {formatTokenAmount(trade.inputAmount)}{' '}
+          {t('swap')}{' '}
+          {optimalRate
+            ? (
+                Number(optimalRate.srcAmount) /
+                10 ** optimalRate.srcDecimals
+              ).toLocaleString('us')
+            : formatTokenAmount(trade.inputAmount)}{' '}
           {trade.inputAmount.currency.symbol} ($
-          {Number(usdPrice?.toSignificant()) *
-            Number(trade.inputAmount.toSignificant(2))}
+          {(
+            Number(usdPrice?.toSignificant()) *
+            (optimalRate
+              ? Number(optimalRate.srcAmount) / 10 ** optimalRate.srcDecimals
+              : Number(trade.inputAmount.toSignificant()))
+          ).toLocaleString('us')}
           )
         </p>
         <ArrowDownIcon />
         <p>
-          {formatTokenAmount(trade.outputAmount)}{' '}
+          {optimalRate
+            ? (
+                Number(optimalRate.destAmount) /
+                10 ** optimalRate.destDecimals
+              ).toLocaleString('us')
+            : formatTokenAmount(trade.outputAmount)}{' '}
           {trade.outputAmount.currency.symbol}
         </p>
       </Box>
