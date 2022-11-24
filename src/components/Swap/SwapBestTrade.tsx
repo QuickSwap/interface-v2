@@ -332,7 +332,7 @@ const SwapBestTrade: React.FC<{
       } else if (
         optimalRateError === 'ESTIMATED_LOSS_GREATER_THAN_MAX_IMPACT'
       ) {
-        return `Price impact is more than ${maxImpactAllowed}%. You want to continue?`;
+        return `Price impact is more than ${maxImpactAllowed}%. Please use v2 or v3.`;
       } else {
         return (optimalRateError || swapInputError) ?? t('swap');
       }
@@ -366,12 +366,12 @@ const SwapBestTrade: React.FC<{
         return (
           !isValid ||
           approval !== ApprovalState.APPROVED ||
-          (optimalRate && !optimalRate.maxImpactReached && !isExpertMode)
+          (optimalRate && optimalRate.maxImpactReached && !isExpertMode)
         );
       } else {
         return (
           !isValid ||
-          (optimalRate && !optimalRate.maxImpactReached && !isExpertMode) ||
+          (optimalRate && optimalRate.maxImpactReached && !isExpertMode) ||
           !!paraswapCallbackError ||
           (optimalRate &&
             !parsedAmounts[Field.INPUT]?.equalTo(
