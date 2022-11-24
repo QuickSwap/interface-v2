@@ -36,52 +36,53 @@ const BuyFiatModal: React.FC<BuyFiatModalProps> = ({
   const { t } = useTranslation();
 
   useEffect(() => {
-    if (!account || !process.env.REACT_APP_COINBASE_APP_ID) return;
+    if (!account || !process.env.REACT_APP_COINBASE_APP_ID || !open) return;
 
-    initOnRamp(
-      {
-        appId: process.env.REACT_APP_COINBASE_APP_ID,
-        widgetParameters: {
-          destinationWallets: [
-            {
-              address: account,
-              blockchains: ['polygon'],
-            },
-          ],
+    if (!onrampInstance) {
+      initOnRamp(
+        {
+          appId: process.env.REACT_APP_COINBASE_APP_ID,
+          widgetParameters: {
+            destinationWallets: [
+              {
+                address: account,
+                blockchains: ['polygon'],
+              },
+            ],
+          },
+          onSuccess: () => {
+            console.log('success');
+          },
+          onExit: () => {
+            console.log('exit');
+          },
+          onEvent: (event) => {
+            console.log('event', event);
+          },
+          experienceLoggedIn: 'embedded',
+          experienceLoggedOut: 'embedded',
+          closeOnExit: true,
+          closeOnSuccess: true,
         },
-        onSuccess: () => {
-          console.log('success');
+        (_, instance) => {
+          if (instance) {
+            setOnRampInstance(instance);
+          }
         },
-        onExit: () => {
-          console.log('exit');
-        },
-        onEvent: (event) => {
-          console.log('event', event);
-        },
-        experienceLoggedIn: 'embedded',
-        experienceLoggedOut: 'embedded',
-        closeOnExit: true,
-        closeOnSuccess: true,
-      },
-      (_, instance) => {
-        if (instance) {
-          setOnRampInstance(instance);
-        }
-      },
-    );
+      );
+    }
 
     return () => {
       onrampInstance?.destroy();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [account]);
+  }, [account, open]);
 
   const buyWithCoinbase = () => {
     if (!account) {
       toggleWalletModal();
     } else if (onrampInstance) {
       onrampInstance.open();
-      onClose();
     }
   };
 
