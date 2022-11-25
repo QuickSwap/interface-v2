@@ -58,7 +58,7 @@ const BuyFiatModal: React.FC<BuyFiatModalProps> = ({
             console.log('exit');
           },
           onEvent: (event) => {
-            console.log('event', event);
+            console.log('evt', event);
           },
           experienceLoggedIn: 'embedded',
           experienceLoggedOut: 'embedded',
