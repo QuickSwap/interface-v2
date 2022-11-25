@@ -1,4 +1,4 @@
-import { currencyEquals, Trade } from '@uniswap/sdk';
+import { currencyEquals, JSBI, Trade } from '@uniswap/sdk';
 import React, { useCallback, useMemo } from 'react';
 import {
   TransactionConfirmationModal,
@@ -9,6 +9,8 @@ import SwapModalHeader from './SwapModalHeader';
 import { formatTokenAmount } from 'utils';
 import 'components/styles/ConfirmSwapModal.scss';
 import { useTranslation } from 'react-i18next';
+import { OptimalRate } from '@paraswap/sdk';
+import { CurrencyAmount } from '@uniswap/sdk-core';
 
 /**
  * Returns true if the trade requires a confirmation of details before we can submit it
@@ -30,6 +32,7 @@ function tradeMeaningfullyDiffers(tradeA: Trade, tradeB: Trade): boolean {
 
 interface ConfirmSwapModalProps {
   isOpen: boolean;
+  optimalRate?: OptimalRate;
   trade: Trade | undefined;
   originalTrade: Trade | undefined;
   attemptingTxn: boolean;
@@ -45,6 +48,7 @@ interface ConfirmSwapModalProps {
 
 const ConfirmSwapModal: React.FC<ConfirmSwapModalProps> = ({
   trade,
+  optimalRate,
   originalTrade,
   onAcceptChanges,
   allowedSlippage,
@@ -60,30 +64,43 @@ const ConfirmSwapModal: React.FC<ConfirmSwapModalProps> = ({
   const showAcceptChanges = useMemo(
     () =>
       Boolean(
-        trade &&
+        !optimalRate &&
+          trade &&
           originalTrade &&
           tradeMeaningfullyDiffers(trade, originalTrade),
       ),
-    [originalTrade, trade],
+    [originalTrade, trade, optimalRate],
   );
 
   const modalHeader = useCallback(() => {
     return trade ? (
       <SwapModalHeader
         trade={trade}
+        optimalRate={optimalRate}
         allowedSlippage={allowedSlippage}
         onConfirm={onConfirm}
         showAcceptChanges={showAcceptChanges}
         onAcceptChanges={onAcceptChanges}
       />
     ) : null;
-  }, [allowedSlippage, onAcceptChanges, showAcceptChanges, trade, onConfirm]);
+  }, [
+    allowedSlippage,
+    onAcceptChanges,
+    optimalRate,
+    showAcceptChanges,
+    trade,
+    onConfirm,
+  ]);
 
   // text to show while loading
   const pendingText = t('swappingFor', {
-    amount1: formatTokenAmount(trade?.inputAmount),
+    amount1: optimalRate
+      ? Number(optimalRate.srcAmount) / 10 ** optimalRate.srcDecimals
+      : formatTokenAmount(trade?.inputAmount),
     symbol1: trade?.inputAmount?.currency?.symbol,
-    amount2: formatTokenAmount(trade?.outputAmount),
+    amount2: optimalRate
+      ? Number(optimalRate.destAmount) / 10 ** optimalRate.destDecimals
+      : formatTokenAmount(trade?.outputAmount),
     symbol2: trade?.outputAmount?.currency?.symbol,
   });
 
