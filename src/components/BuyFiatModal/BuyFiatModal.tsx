@@ -29,6 +29,7 @@ const BuyFiatModal: React.FC<BuyFiatModalProps> = ({
   const [onrampInstance, setOnRampInstance] = useState<
     CBPayInstanceType | undefined
   >(undefined);
+  const [coinbaseReady, setCoinbaseReady] = useState(false);
   const { breakpoints } = useTheme();
   const mobileWindowSize = useMediaQuery(breakpoints.down('sm'));
   const { initTransak } = useInitTransak();
@@ -36,52 +37,55 @@ const BuyFiatModal: React.FC<BuyFiatModalProps> = ({
   const { t } = useTranslation();
 
   useEffect(() => {
-    if (!account || !process.env.REACT_APP_COINBASE_APP_ID) return;
+    if (!account || !process.env.REACT_APP_COINBASE_APP_ID || !open) return;
 
-    initOnRamp(
-      {
-        appId: process.env.REACT_APP_COINBASE_APP_ID,
-        widgetParameters: {
-          destinationWallets: [
-            {
-              address: account,
-              blockchains: ['polygon'],
-            },
-          ],
+    if (!coinbaseReady) {
+      initOnRamp(
+        {
+          appId: process.env.REACT_APP_COINBASE_APP_ID,
+          widgetParameters: {
+            destinationWallets: [
+              {
+                address: account,
+                blockchains: ['polygon'],
+              },
+            ],
+          },
+          onSuccess: () => {
+            console.log('success');
+          },
+          onExit: () => {
+            console.log('exit');
+          },
+          onEvent: (event) => {
+            console.log('evt', event);
+          },
+          experienceLoggedIn: 'embedded',
+          experienceLoggedOut: 'embedded',
+          closeOnExit: true,
+          closeOnSuccess: true,
         },
-        onSuccess: () => {
-          console.log('success');
+        (_, instance) => {
+          if (instance) {
+            setOnRampInstance(instance);
+            setCoinbaseReady(true);
+          }
         },
-        onExit: () => {
-          console.log('exit');
-        },
-        onEvent: (event) => {
-          console.log('event', event);
-        },
-        experienceLoggedIn: 'embedded',
-        experienceLoggedOut: 'embedded',
-        closeOnExit: true,
-        closeOnSuccess: true,
-      },
-      (_, instance) => {
-        if (instance) {
-          setOnRampInstance(instance);
-        }
-      },
-    );
+      );
+    }
 
     return () => {
       onrampInstance?.destroy();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [account]);
+  }, [account, open, coinbaseReady]);
 
   const buyWithCoinbase = () => {
     if (!account) {
       toggleWalletModal();
     } else if (onrampInstance) {
       onrampInstance.open();
-      onClose();
+      setCoinbaseReady(false);
     }
   };
 
@@ -102,7 +106,7 @@ const BuyFiatModal: React.FC<BuyFiatModalProps> = ({
           <img src={CoinbasePay} alt='coinbase pay' />
           <Box
             className={`buyButton ${
-              account && !onrampInstance ? 'disabled' : ''
+              account && !coinbaseReady ? 'disabled' : ''
             }`}
             onClick={buyWithCoinbase}
           >
