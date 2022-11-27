@@ -13,6 +13,7 @@ import {
   useExpertModeManager,
   useUserTransactionTTL,
   useUserSlippageTolerance,
+  useBonusRouterManager,
 } from 'state/user/hooks';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 import 'components/styles/SettingsModal.scss';
@@ -42,6 +43,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
   const [ttl, setTtl] = useUserTransactionTTL();
   const { onChangeRecipient } = useSwapActionHandlers();
   const [expertMode, toggleExpertMode] = useExpertModeManager();
+  const [bonusRouterDisabled, toggleSetBonusRouter] = useBonusRouterManager();
   const [slippageInput, setSlippageInput] = useState('');
   const [deadlineInput, setDeadlineInput] = useState('');
   const [expertConfirm, setExpertConfirm] = useState(false);
@@ -272,6 +274,16 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
                 setExpertConfirm(true);
               }
             }}
+          />
+        </Box>
+        <Divider />
+        <Box my={2.5} className='flex justify-between items-center'>
+          <Box className='flex items-center'>
+            <p style={{ marginRight: 6 }}>{t('disableBonusRouter')}</p>
+          </Box>
+          <ToggleSwitch
+            toggled={bonusRouterDisabled}
+            onToggle={toggleSetBonusRouter}
           />
         </Box>
         <Divider />

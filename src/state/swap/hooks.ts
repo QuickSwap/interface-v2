@@ -197,16 +197,6 @@ export function useDerivedSwapInfo(): {
     (isExactIn ? inputCurrency : outputCurrency) ?? undefined,
   );
 
-  // const bestTradeExactIn = useTradeExactIn(
-  //   isExactIn ? parsedAmount : undefined,
-  //   outputCurrency ?? undefined,
-  // );
-  // const bestTradeExactOut = useTradeExactOut(
-  //   inputCurrency ?? undefined,
-  //   !isExactIn ? parsedAmount : undefined,
-  // );
-
-  // const v2Trade = isExactIn ? bestTradeExactIn : bestTradeExactOut;
   const { v2Trade, bestTradeExactIn, bestTradeExactOut } = useFindBestRoute();
 
   const currencyBalances = {

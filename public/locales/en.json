@@ -432,5 +432,6 @@
   "maiNote": "MAI is an overcollateralized USD stablecoin backed solely by decentralized tokens.",
   "earnRewards": "Earn Rewards",
   "stakeMessageOtherLP": "Stake LP tokens to earn reward tokens",
-  "otherLPMining": "Other LP Mining"
+  "otherLPMining": "Other LP Mining",
+  "disableBonusRouter": "Disable Bonus Router"
 }

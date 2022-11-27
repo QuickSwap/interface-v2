@@ -158,6 +158,6 @@ export default createReducer(initialState, (builder) =>
       state.userSingleHopOnly = action.payload.userSingleHopOnly;
     })
     .addCase(updateUserBonusRouter, (state, action) => {
-      state.userSingleHopOnly = action.payload.userBonusRouterDisabled;
+      state.userBonusRouterDisabled = action.payload.userBonusRouterDisabled;
     }),
 );
