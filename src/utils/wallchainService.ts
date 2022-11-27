@@ -91,7 +91,6 @@ export default function callWallchainAPI(
       return null;
     })
     .then((responseJson) => {
-      console.log('ccc', responseJson);
       if (responseJson) {
         const dataResponse: DataResponse = responseJson;
         if (

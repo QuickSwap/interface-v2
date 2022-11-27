@@ -10,7 +10,7 @@ import {
   Trade,
 } from '@uniswap/sdk';
 import { ParsedQs } from 'qs';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useActiveWeb3React } from 'hooks';
 import { useCurrency } from 'hooks/Tokens';
@@ -50,6 +50,7 @@ export function useSwapActionHandlers(): {
   onBestRoute: (bestRoute: RouterTypeParams) => void;
 } {
   const dispatch = useDispatch<AppDispatch>();
+  const timer = useRef<any>(null);
   const onCurrencySelection = useCallback(
     (field: Field, currency: Currency) => {
       dispatch(
@@ -67,6 +68,13 @@ export function useSwapActionHandlers(): {
     [dispatch],
   );
 
+  const onSetSwapDelay = useCallback(
+    (swapDelay: SwapDelay) => {
+      dispatch(setSwapDelay({ swapDelay }));
+    },
+    [dispatch],
+  );
+
   const onSwitchTokens = useCallback(() => {
     dispatch(switchCurrencies());
   }, [dispatch]);
@@ -74,20 +82,22 @@ export function useSwapActionHandlers(): {
   const onUserInput = useCallback(
     (field: Field, typedValue: string) => {
       dispatch(typeInput({ field, typedValue }));
+      if (!typedValue) {
+        onSetSwapDelay(SwapDelay.INIT);
+        return;
+      }
+      onSetSwapDelay(SwapDelay.USER_INPUT);
+      clearTimeout(timer.current);
+      timer.current = setTimeout(() => {
+        onSetSwapDelay(SwapDelay.USER_INPUT_COMPLETE);
+      }, 300);
     },
-    [dispatch],
+    [dispatch, onSetSwapDelay],
   );
 
   const onChangeRecipient = useCallback(
     (recipient: string | null) => {
       dispatch(setRecipient({ recipient }));
-    },
-    [dispatch],
-  );
-
-  const onSetSwapDelay = useCallback(
-    (swapDelay: SwapDelay) => {
-      dispatch(setSwapDelay({ swapDelay }));
     },
     [dispatch],
   );

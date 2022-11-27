@@ -101,6 +101,8 @@ function useAllCommonPairs(currencyA?: Currency, currencyB?: Currency): Pair[] {
 /**
  * Returns the best trade for the exact amount of tokens in to the given token out
  */
+
+let bestTradeExactIn: Trade | null = null;
 export function useTradeExactIn(
   currencyAmountIn?: CurrencyAmount,
   currencyOut?: Currency,
@@ -111,7 +113,16 @@ export function useTradeExactIn(
     currencyAmountIn?.currency,
     currencyOut,
   );
-  return useMemo(() => {
+  bestTradeExactIn = useMemo(() => {
+    if (!currencyAmountIn) {
+      return null;
+    }
+    if (
+      swapDelay !== SwapDelay.USER_INPUT_COMPLETE &&
+      swapDelay !== SwapDelay.SWAP_REFRESH
+    ) {
+      return bestTradeExactIn;
+    }
     if (swapDelay !== SwapDelay.SWAP_REFRESH && onSetSwapDelay) {
       onSetSwapDelay(SwapDelay.SWAP_COMPLETE);
     }
@@ -125,11 +136,14 @@ export function useTradeExactIn(
     }
     return null;
   }, [allowedPairs, currencyAmountIn, currencyOut, onSetSwapDelay, swapDelay]);
+
+  return bestTradeExactIn;
 }
 
 /**
  * Returns the best trade for the token in to the exact amount of token out
  */
+let bestTradeExactOut: Trade | null = null;
 export function useTradeExactOut(
   currencyIn?: Currency,
   currencyAmountOut?: CurrencyAmount,
@@ -141,7 +155,14 @@ export function useTradeExactOut(
     currencyAmountOut?.currency,
   );
 
-  return useMemo(() => {
+  bestTradeExactOut = useMemo(() => {
+    if (!currencyAmountOut) return null;
+    if (
+      swapDelay !== SwapDelay.USER_INPUT_COMPLETE &&
+      swapDelay !== SwapDelay.SWAP_REFRESH
+    ) {
+      return bestTradeExactOut;
+    }
     if (swapDelay !== SwapDelay.SWAP_REFRESH && onSetSwapDelay) {
       onSetSwapDelay(SwapDelay.SWAP_COMPLETE);
     }
@@ -155,4 +176,6 @@ export function useTradeExactOut(
     }
     return null;
   }, [allowedPairs, currencyIn, currencyAmountOut, onSetSwapDelay, swapDelay]);
+
+  return bestTradeExactOut;
 }
