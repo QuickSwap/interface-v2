@@ -30,7 +30,6 @@ import useToggledVersion, { Version } from 'hooks/useToggledVersion';
 import {
   addMaticToMetamask,
   isSupportedNetwork,
-  confirmPriceImpactWithoutFee,
   maxAmountSpend,
   basisPointsToPercent,
 } from 'utils';
@@ -242,6 +241,8 @@ const SwapBestTrade: React.FC<{
   const { data: optimalRate } = useQuery('fetchOptimalRate', fetchOptimalRate, {
     refetchInterval: 1000,
   });
+
+  console.log('ccc', optimalRate);
 
   const parsedAmounts = useMemo(() => {
     const parsedAmountInput =

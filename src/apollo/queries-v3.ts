@@ -248,6 +248,55 @@ export const TOP_POOLS_V3_TOKEN = (address: string) => gql`
   }
 `;
 
+export const TOP_POOLS_V3_TOKENS = (address: string, address1: string) => gql`
+  query topPools {
+    pools0: pools(
+      where: {token0_contains_nocase: "${address}", token1_contains_nocase: "${address1}"}
+      orderBy: totalValueLockedUSD
+      orderDirection: desc
+      subgraphError: allow
+    ) {
+      id
+    }
+    pools1: pools(
+      first: 5
+      where: {token0_contains_nocase: "${address}", token1_not_contains_nocase: "${address1}"}
+      orderBy: totalValueLockedUSD
+      orderDirection: desc
+      subgraphError: allow
+    ) {
+      id
+    }
+    pools2: pools(
+      first: 5
+      where: {token0_not_contains_nocase: "${address}", token1_contains_nocase: "${address1}"}
+      orderBy: totalValueLockedUSD
+      orderDirection: desc
+      subgraphError: allow
+    ) {
+      id
+    }
+    pools3: pools(
+      first: 5
+      where: {token0_contains_nocase: "${address1}", token1_not_contains_nocase: "${address}"}
+      orderBy: totalValueLockedUSD
+      orderDirection: desc
+      subgraphError: allow
+    ) {
+      id
+    }
+    pools4: pools(
+      first: 5
+      where: {token0_not_contains_nocase: "${address1}", token1_contains_nocase: "${address}"}
+      orderBy: totalValueLockedUSD
+      orderDirection: desc
+      subgraphError: allow
+    ) {
+      id
+    }
+  }
+`;
+
 export const PAIRS_FROM_ADDRESSES_V3 = (
   blockNumber: undefined | number,
   pools: string[],
@@ -738,5 +787,30 @@ export const FETCH_ETERNAL_FARM_FROM_POOL_V3 = (pools: string[]) => {
         }
       }
       `;
+  return gql(queryString);
+};
+
+export const PRICES_BY_BLOCK_V3: any = (
+  tokenAddress: string,
+  blocks: any[],
+) => {
+  let queryString = 'query blocks {';
+  queryString += blocks.map(
+    (block) => `
+      t${block.timestamp}:token(id:"${tokenAddress}", block: { number: ${block.number} }) { 
+        derivedMatic
+      }
+    `,
+  );
+  queryString += ',';
+  queryString += blocks.map(
+    (block) => `
+      b${block.timestamp}: bundle(id:"1", block: { number: ${block.number} }) { 
+        maticPriceUSD
+      }
+    `,
+  );
+
+  queryString += '}';
   return gql(queryString);
 };
