@@ -1,7 +1,17 @@
 import { MaxUint256 } from '@ethersproject/constants';
 import { TransactionResponse } from '@ethersproject/providers';
-import { Trade, TokenAmount, CurrencyAmount, ETHER } from '@uniswap/sdk';
-import { CurrencyAmount as CurrencyAmountV3 } from '@uniswap/sdk-core';
+import {
+  Trade,
+  TokenAmount,
+  CurrencyAmount,
+  ETHER,
+  Fraction,
+  Percent,
+} from '@uniswap/sdk';
+import {
+  CurrencyAmount as CurrencyAmountV3,
+  Currency,
+} from '@uniswap/sdk-core';
 import { useCallback, useMemo } from 'react';
 import { GlobalConst } from 'constants/index';
 import { useTokenAllowance, useTokenAllowanceV3 } from 'data/Allowances';
@@ -14,7 +24,8 @@ import { computeSlippageAdjustedAmounts } from 'utils/prices';
 import { calculateGasMargin } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import { useTokenContract } from './useContract';
-import { Currency } from '@uniswap/sdk-core';
+import { OptimalRate } from '@paraswap/sdk';
+import { ONE } from 'v3lib/utils';
 
 export enum ApprovalState {
   UNKNOWN,
@@ -258,20 +269,24 @@ export function useApproveCallbackFromTrade(
 
 // wraps useApproveCallback in the context of a swap
 export function useApproveCallbackFromBestTrade(
-  trade?: Trade,
-  allowedSlippage = 0,
+  allowedSlippage: Percent,
+  currency?: Currency,
+  optimalRate?: OptimalRate,
 ): [ApprovalState, () => Promise<void>] {
   const { chainId } = useActiveWeb3React();
   const amountToApprove = useMemo(
     () =>
-      trade
-        ? computeSlippageAdjustedAmounts(trade, allowedSlippage)[Field.INPUT]
+      optimalRate
+        ? new Fraction(ONE).add(allowedSlippage).multiply(optimalRate.srcAmount)
+            .quotient
         : undefined,
-    [trade, allowedSlippage],
+    [optimalRate, allowedSlippage],
   );
 
-  return useApproveCallback(
-    amountToApprove,
+  return useApproveCallbackV3(
+    amountToApprove && currency
+      ? CurrencyAmountV3.fromRawAmount(currency, amountToApprove)
+      : undefined,
     chainId
       ? GlobalConst.addresses.PARASWAP_PROXY_ROUTER_ADDRESS[chainId]
       : undefined,

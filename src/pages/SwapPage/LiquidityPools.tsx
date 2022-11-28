@@ -33,6 +33,8 @@ const LiquidityPools: React.FC<{
               (item: any, pos: number, self: any[]) =>
                 self.findIndex(
                   (item1: any) =>
+                    item &&
+                    item1 &&
                     item.token0.symbol === item1.token0.symbol &&
                     item.token1.symbol === item1.token1.symbol,
                 ) === pos,
