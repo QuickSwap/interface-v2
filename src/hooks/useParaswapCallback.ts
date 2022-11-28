@@ -5,8 +5,8 @@ import {
   TransactionRequest,
 } from '@ethersproject/providers';
 import { JSBI, SwapParameters, Trade } from '@uniswap/sdk';
-import { useMemo } from 'react';
-import { GlobalConst } from 'constants/index';
+import { useMemo, useState } from 'react';
+import { GlobalConst, RouterTypes, SmartRouter } from 'constants/index';
 import { useTransactionAdder } from 'state/transactions/hooks';
 import {
   isAddress,
@@ -18,7 +18,12 @@ import { useActiveWeb3React } from 'hooks';
 import useENS from './useENS';
 import { OptimalRate } from 'paraswap-core';
 import { useParaswap } from './useParaswap';
-import { SwapSide } from '@paraswap/sdk';
+import { SwapSide, TransactionParams } from '@paraswap/sdk';
+import ParaswapABI from 'constants/abis/ParaSwap_ABI.json';
+import { useContract } from './useContract';
+import callWallchainAPI from 'utils/wallchainService';
+import { useSwapActionHandlers } from 'state/swap/hooks';
+
 export enum SwapCallbackState {
   INVALID,
   LOADING,
@@ -68,12 +73,18 @@ export function useParaswapCallback(
 } {
   const { account, chainId, library } = useActiveWeb3React();
   const paraswap = useParaswap();
+  const { onBestRoute, onSetSwapDelay } = useSwapActionHandlers();
 
   const addTransaction = useTransactionAdder();
 
   const { address: recipientAddress } = useENS(recipientAddressOrName);
   const recipient =
     recipientAddressOrName === null ? account : recipientAddress;
+
+  const paraswapContract = useContract(
+    priceRoute?.contractAddress,
+    ParaswapABI,
+  );
 
   return useMemo(() => {
     if (!trade || !priceRoute || !library || !account || !chainId) {
@@ -99,32 +110,59 @@ export function useParaswapCallback(
       }
     }
 
+    const pct = basisPointsToPercent(allowedSlippage);
+
+    const srcAmount =
+      priceRoute.side === SwapSide.SELL
+        ? priceRoute.srcAmount
+        : priceRoute.destAmount;
+    const minDestAmount = trade
+      .minimumAmountOut(pct)
+      .multiply(JSBI.BigInt(10 ** trade.outputAmount.currency.decimals));
+
+    const referrer = 'quickswapv3';
+
+    const srcToken = priceRoute.srcToken;
+    const destToken = priceRoute.destToken;
+
+    //TODO: we need to support max impact
+    if (minDestAmount.greaterThan(JSBI.BigInt(priceRoute.destAmount))) {
+      throw new Error('Price Rate updated beyond expected slipage rate');
+    }
+
+    paraswap
+      .buildTx({
+        srcToken,
+        destToken,
+        srcAmount: priceRoute.srcAmount,
+        destAmount: minDestAmount.toFixed(0),
+        priceRoute: priceRoute,
+        userAddress: account,
+        partner: referrer,
+      })
+      .then((txParams) => {
+        if (txParams.data && paraswapContract) {
+          callWallchainAPI(
+            priceRoute.contractMethod,
+            txParams.data,
+            txParams.value,
+            chainId,
+            account,
+            paraswapContract,
+            SmartRouter.PARASWAP,
+            RouterTypes.SMART,
+            onBestRoute,
+            onSetSwapDelay,
+          );
+        }
+      });
+
     return {
       state: SwapCallbackState.VALID,
       callback: async function onSwap(): Promise<{
         response: TransactionResponse;
         summary: string;
       }> {
-        const pct = basisPointsToPercent(allowedSlippage);
-
-        const srcAmount =
-          priceRoute.side === SwapSide.SELL
-            ? priceRoute.srcAmount
-            : priceRoute.destAmount;
-        const minDestAmount = trade
-          .minimumAmountOut(pct)
-          .multiply(JSBI.BigInt(10 ** trade.outputAmount.currency.decimals));
-
-        const referrer = 'quickswapv3';
-
-        const srcToken = priceRoute.srcToken;
-        const destToken = priceRoute.destToken;
-
-        //TODO: we need to support max impact
-        if (minDestAmount.greaterThan(JSBI.BigInt(priceRoute.destAmount))) {
-          throw new Error('Price Rate updated beyond expected slipage rate');
-        }
-
         try {
           const txParams = await paraswap.buildTx({
             srcToken,
@@ -199,5 +237,8 @@ export function useParaswapCallback(
     allowedSlippage,
     paraswap,
     addTransaction,
+    onBestRoute,
+    onSetSwapDelay,
+    paraswapContract,
   ]);
 }

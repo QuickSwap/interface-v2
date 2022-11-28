@@ -52,7 +52,7 @@ const wallchainResponseIsValid = (
  */
 export default function callWallchainAPI(
   methodName: string,
-  args: (string | string[])[],
+  args: string | (string | string[])[],
   value: string,
   chainId: ChainId,
   account: string,
@@ -63,7 +63,13 @@ export default function callWallchainAPI(
   onSetSwapDelay: (swapDelay: SwapDelay) => void,
 ): Promise<any> {
   onSetSwapDelay(SwapDelay.FETCHING_BONUS);
-  const encodedData = contract.interface.encodeFunctionData(methodName, args);
+  const encodedData =
+    typeof args === 'string'
+      ? args
+      : contract.interface.encodeFunctionData(
+          methodName,
+          args as (string | string[])[],
+        );
   // Allowing transactions to be checked even if no user is connected
   const activeAccount = account || '0x0000000000000000000000000000000000000000';
 
