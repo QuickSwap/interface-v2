@@ -342,11 +342,13 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
             label: [currency0.symbol, currency1.symbol].join('/'),
           });
         })
-        .catch((error: Error) => {
+        .catch((error: any) => {
           setAttemptingTxn(false);
           // we only care if the error is something _other_ than the user rejected the tx
           console.error(error);
-          setRemoveErrorMessage(t('errorInTx'));
+          setRemoveErrorMessage(
+            error.code === 4001 ? t('txRejected') : t('errorInTx'),
+          );
         });
     }
   };
