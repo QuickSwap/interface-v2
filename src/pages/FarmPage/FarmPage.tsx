@@ -129,6 +129,43 @@ const FarmPage: React.FC = () => {
         </>
       )}
       {!isV2 && <V3Farms />}
+      {isMobile ? (
+        <Box className='flex justify-center' mt={2}>
+          <div
+            className='_0cbf1c3d417e250a'
+            data-zone='568de4b313b74ec694986be82e600aa6'
+            style={{
+              width: 320,
+              height: 50,
+              display: 'inline-block',
+              margin: '0 auto',
+            }}
+          />
+        </Box>
+      ) : (
+        <Box className='flex justify-center' mt={2}>
+          <div
+            className='_0cbf1c3d417e250a'
+            data-zone='5545e36b39a24be28cb2ca0095bb4ce1'
+            style={{
+              width: 728,
+              height: 90,
+              display: 'inline-block',
+              margin: '0 auto',
+            }}
+          />
+          <div
+            className='_0cbf1c3d417e250a'
+            data-zone='906ff59e07f044ecb8fbf6f8237e1d2e'
+            style={{
+              width: 970,
+              height: 90,
+              display: 'inline-block',
+              margin: '0 auto',
+            }}
+          />
+        </Box>
+      )}
     </Box>
   );
 };
