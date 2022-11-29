@@ -54,6 +54,11 @@ const LiquidityPools: React.FC<{
                 );
               }
             })
+            .sort((pair1: any, pair2: any) =>
+              Number(pair1.trackedReserveUSD) > Number(pair2.trackedReserveUSD)
+                ? -1
+                : 1,
+            )
             .slice(0, 5)
         : [],
     [tokenPairs, liquidityFilterIndex, token1Address, token2Address],
@@ -89,15 +94,7 @@ const LiquidityPools: React.FC<{
       const pairData = await getBulkPairData(formattedPairs, ethPrice.price);
 
       if (pairData) {
-        updateTokenPairs(
-          pairData
-            .concat(tokenPairsV3)
-            .sort((pair1: any, pair2: any) =>
-              Number(pair1.trackedReserveUSD) > Number(pair2.trackedReserveUSD)
-                ? -1
-                : 1,
-            ),
-        );
+        updateTokenPairs(pairData.concat(tokenPairsV3));
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
