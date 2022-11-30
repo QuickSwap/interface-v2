@@ -239,3 +239,25 @@ body {
 .rounded {
   border-radius: 4rem !important;
 }
+
+.btn-xl {
+  height: 48px !important;
+  border-radius: 10px !important;
+  padding-left: 16px !important;
+  padding-right: 16px !important;
+  cursor: pointer;
+}
+
+.mr-1 {
+  margin-right: 1rem !important;
+}
+
+.btn-exit {
+  background-color: #1e2f50 !important;
+  color: #448aff !important;
+  fill: #448aff !important;
+}
+
+.btn-exit:hover {
+  opacity: 85%;
+}

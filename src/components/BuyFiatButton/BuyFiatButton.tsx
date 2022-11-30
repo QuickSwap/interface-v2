@@ -14,12 +14,7 @@ const BuyFiatButton: React.FC<BuyFiatButtonProps> = ({ fullWidth }) => {
   const { t } = useTranslation();
 
   return (
-    <Button
-      className={`rounded ${fullWidth ? 'fullWidth' : ''} `}
-      onClick={() => {
-        setOpenMenu(true);
-      }}
-    >
+    <>
       {showMoonPayWidget && (
         <MoonpayModal
           open={showMoonPayWidget}
@@ -32,26 +27,29 @@ const BuyFiatButton: React.FC<BuyFiatButtonProps> = ({ fullWidth }) => {
           onClose={() => setShowBinanceWidgetWidget(false)}
         />
       )}
-      {openMenu && (
-        <BuyFiatModal
-          open={openMenu}
-          onClose={() => {
-            setTimeout(() => {
-              setOpenMenu(false);
-            }, 10);
-          }}
-          buyMoonpay={() => {
-            setShowMoonPayWidget(true);
-            setOpenMenu(false);
-          }}
-          buyBinance={() => {
-            setShowBinanceWidgetWidget(true);
-            setOpenMenu(false);
-          }}
-        />
-      )}
-      <small>{t('buyNow')}</small>
-    </Button>
+      <BuyFiatModal
+        open={openMenu}
+        onClose={() => {
+          setOpenMenu(false);
+        }}
+        buyMoonpay={() => {
+          setShowMoonPayWidget(true);
+          setOpenMenu(false);
+        }}
+        buyBinance={() => {
+          setShowBinanceWidgetWidget(true);
+          setOpenMenu(false);
+        }}
+      />
+      <Button
+        className={`rounded ${fullWidth ? 'fullWidth' : ''} `}
+        onClick={() => {
+          setOpenMenu(true);
+        }}
+      >
+        <small>{t('buyNow')}</small>
+      </Button>
+    </>
   );
 };
 

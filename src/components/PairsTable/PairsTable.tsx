@@ -34,9 +34,11 @@ const PairTable: React.FC<PairsTableProps> = ({
       label: '24h Fees',
       align: 'right',
       sortKey: (pair: any) =>
-        pair.oneDayVolumeUSD
-          ? pair.oneDayVolumeUSD
-          : pair.oneDayVolumeUntracked,
+        pair.oneWeekVolumeUSD && !isNaN(pair.oneWeekVolumeUSD)
+          ? pair.oneWeekVolumeUSD
+          : pair.oneWeekVolumeUntracked && !isNaN(pair.oneWeekVolumeUntracked)
+          ? pair.oneWeekVolumeUntracked
+          : 0,
     },
   ];
 
@@ -46,14 +48,14 @@ const PairTable: React.FC<PairsTableProps> = ({
       numeric: false,
       label: 'APR',
       align: 'right',
-      sortKey: (pair: any) => pair.apr,
+      sortKey: (pair: any) => Number(pair.apr),
     },
     {
       id: 'pairFarmingApr',
       numeric: false,
       label: 'Farming APR',
       align: 'right',
-      sortKey: (pair: any) => pair.farmingApr,
+      sortKey: (pair: any) => Number(pair.farmingApr),
     },
   ];
 
@@ -69,25 +71,29 @@ const PairTable: React.FC<PairsTableProps> = ({
       numeric: false,
       label: 'Liquidity',
       sortKey: (pair: any) =>
-        pair.trackedReserveUSD ? pair.trackedReserveUSD : pair.reserveUSD,
+        pair.trackedReserveUSD ? pair.trackedReserveUSD : pair.reserveUSD ?? 0,
     },
     {
       id: 'pairdayVolume',
       numeric: false,
       label: '24h Volume',
       sortKey: (pair: any) =>
-        pair.oneDayVolumeUSD
+        pair.oneDayVolumeUSD && !isNaN(pair.oneDayVolumeUSD)
           ? pair.oneDayVolumeUSD
-          : pair.oneDayVolumeUntracked,
+          : pair.oneDayVolumeUntracked && !isNaN(pair.oneDayVolumeUntracked)
+          ? pair.oneDayVolumeUntracked
+          : 0,
     },
     {
       id: 'pairweekVolume',
       numeric: false,
       label: '7d Volume',
       sortKey: (pair: any) =>
-        pair.oneWeekVolumeUSD
+        pair.oneWeekVolumeUSD && !isNaN(pair.oneWeekVolumeUSD)
           ? pair.oneWeekVolumeUSD
-          : pair.oneWeekVolumeUntracked,
+          : pair.oneWeekVolumeUntracked && !isNaN(pair.oneWeekVolumeUntracked)
+          ? pair.oneWeekVolumeUntracked
+          : 0,
     },
   ].concat(isV2 ? v2SpecificCells : v3SpecificCells);
 
@@ -126,13 +132,19 @@ const PairTable: React.FC<PairsTableProps> = ({
     );
     const liquidity = pair.trackedReserveUSD
       ? pair.trackedReserveUSD
-      : pair.reserveUSD;
-    const oneDayVolume = pair.oneDayVolumeUSD
-      ? pair.oneDayVolumeUSD
-      : pair.oneDayVolumeUntracked;
-    const oneWeekVolume = pair.oneWeekVolumeUSD
-      ? pair.oneWeekVolumeUSD
-      : pair.oneWeekVolumeUntracked;
+      : pair.reserveUSD ?? 0;
+    const oneDayVolume =
+      pair.oneDayVolumeUSD && !isNaN(pair.oneDayVolumeUSD)
+        ? pair.oneDayVolumeUSD
+        : pair.oneDayVolumeUntracked && !isNaN(pair.oneDayVolumeUntracked)
+        ? pair.oneDayVolumeUntracked
+        : 0;
+    const oneWeekVolume =
+      pair.oneWeekVolumeUSD && !isNaN(pair.oneWeekVolumeUSD)
+        ? pair.oneWeekVolumeUSD
+        : pair.oneWeekVolumeUntracked && !isNaN(pair.oneWeekVolumeUntracked)
+        ? pair.oneWeekVolumeUntracked
+        : 0;
     const oneDayFee = formatNumber(
       Number(oneDayVolume) * GlobalConst.utils.FEEPERCENT,
     );
@@ -253,7 +265,7 @@ const PairTable: React.FC<PairsTableProps> = ({
     );
     const liquidity = pair.trackedReserveUSD
       ? pair.trackedReserveUSD
-      : pair.reserveUSD;
+      : pair.reserveUSD ?? 0;
     const oneDayVolume =
       pair.oneDayVolumeUSD && !isNaN(pair.oneDayVolumeUSD)
         ? pair.oneDayVolumeUSD

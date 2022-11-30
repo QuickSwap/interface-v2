@@ -103,6 +103,8 @@ export const GlobalConst = {
     DEFAULT_TOKEN_LIST_URL: process.env.REACT_APP_TOKEN_LIST_DEFAULT_URL + '',
     DEFAULT_LP_FARMS_LIST_URL:
       process.env.REACT_APP_STAKING_LIST_DEFAULT_URL + '',
+    DEFAULT_CNT_FARMS_LIST_URL:
+      process.env.REACT_APP_CNT_STAKING_LIST_DEFAULT_URL + '',
     DEFAULT_DUAL_FARMS_LIST_URL:
       process.env.REACT_APP_DUAL_STAKING_LIST_DEFAULT_URL + '',
     DEFAULT_SYRUP_LIST_URL: process.env.REACT_APP_SYRUP_LIST_DEFAULT_URL + '',
@@ -120,6 +122,7 @@ export const GlobalConst = {
   farmIndex: {
     LPFARM_INDEX: 0,
     DUALFARM_INDEX: 1,
+    OTHER_LP_INDEX: 2,
   },
   v3FarmIndex: {
     MY_FARMS_INDEX: 0,

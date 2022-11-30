@@ -24,7 +24,6 @@ import SparkleTop from 'assets/images/SparkleTop.svg';
 import SparkleBottom from 'assets/images/SparkleBottom.svg';
 import 'components/styles/Header.scss';
 import { useTranslation } from 'react-i18next';
-import { useIsV2 } from 'state/application/hooks';
 import useDeviceWidth from 'hooks/useDeviceWidth';
 
 const newTransactionsFirst = (a: TransactionDetails, b: TransactionDetails) => {
@@ -68,8 +67,6 @@ const Header: React.FC = () => {
     }
   }, [deviceWidth]);
 
-  const { isV2 } = useIsV2();
-
   const menuItems = [
     {
       link: '/swap',
@@ -77,12 +74,12 @@ const Header: React.FC = () => {
       id: 'swap-page-link',
     },
     {
-      link: `/pools${isV2 ? '/v2' : ''}`,
+      link: `/pools`,
       text: t('pool'),
       id: 'pools-page-link',
     },
     {
-      link: `/farm${isV2 ? '/v2' : ''}`,
+      link: `/farm`,
       text: t('farm'),
       id: 'farm-page-link',
     },
@@ -119,7 +116,7 @@ const Header: React.FC = () => {
       id: 'convert-quick',
     },
     {
-      link: `/analytics${isV2 ? '/v2' : ''}`,
+      link: `/analytics`,
       text: t('analytics'),
       id: 'analytics-page-link',
     },
