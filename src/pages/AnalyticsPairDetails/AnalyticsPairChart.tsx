@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useRouteMatch } from 'react-router-dom';
-import { Box } from '@material-ui/core';
+import { Box, Divider, useMediaQuery, useTheme } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import dayjs from 'dayjs';
 import {
@@ -27,6 +27,10 @@ const CHART_FEES = 2;
 const CHART_LIQUIDITY = 3;
 const CHART_POOL_FEE = 4;
 const CHART_PRICE = 5;
+const CHART_TXS = 6;
+const CHART_APY_IL = 7;
+const CHART_RESERVE = 8;
+const CHART_ASSET = 9;
 
 const AnalyticsPairChart: React.FC<{
   pairData: any;
@@ -43,8 +47,13 @@ const AnalyticsPairChart: React.FC<{
   );
 
   const { isV2 } = useIsV2();
+  const { breakpoints } = useTheme();
+  const isMobile = useMediaQuery(breakpoints.down('sm'));
 
   const [priceChartTokenIdx, setPriceChartTokenIdx] = useState(0);
+  const [apyVisionData, setAPYVisionData] = useState<any>(undefined);
+  const apyVisionURL = process.env.REACT_APP_APY_VISION_BASE_URL;
+  const apyVisionAccessToken = process.env.REACT_APP_APY_VISION_ACCESS_TOKEN;
 
   const usingUtVolume =
     pairData &&
@@ -64,6 +73,11 @@ const AnalyticsPairChart: React.FC<{
   const [chartIndex, setChartIndex] = useState(CHART_VOLUME);
   const chartIndexes = useMemo(() => [CHART_VOLUME, CHART_TVL, CHART_FEES], []);
 
+  const chartIndexesAPYVision = useMemo(
+    () => [CHART_TXS, CHART_APY_IL, CHART_RESERVE, CHART_ASSET],
+    [],
+  );
+
   const chartIndexesV3 = useMemo(
     () => [CHART_LIQUIDITY, CHART_POOL_FEE, CHART_PRICE],
     [],
@@ -73,22 +87,32 @@ const AnalyticsPairChart: React.FC<{
     t,
   ]);
 
+  const chartIndexTextsAPYVision = useMemo(
+    () => [t('transactions'), t('apyIL'), t('reservevol'), t('assetGrowth')],
+    [t],
+  );
+
   const chartIndexTextsV3 = useMemo(
     () => [t('liquidity'), t('poolFee'), t('price')],
     [t],
   );
 
   const _chartIndexes = useMemo(
-    () => chartIndexes.concat(isV2 ? [] : chartIndexesV3),
-    [isV2, chartIndexes, chartIndexesV3],
+    () => chartIndexes.concat(isV2 ? chartIndexesAPYVision : chartIndexesV3),
+    [chartIndexes, isV2, chartIndexesAPYVision, chartIndexesV3],
   );
   const _chartIndexesTexts: any = useMemo(
-    () => chartIndexTexts.concat(isV2 ? [] : chartIndexTextsV3),
-    [isV2, chartIndexTexts, chartIndexTextsV3],
+    () =>
+      chartIndexTexts.concat(
+        isV2 ? chartIndexTextsAPYVision : chartIndexTextsV3,
+      ),
+    [chartIndexTexts, isV2, chartIndexTextsAPYVision, chartIndexTextsV3],
   );
 
   const chartData = useMemo(() => {
     if (!pairChartData) return;
+
+    if (chartIndexesAPYVision.includes(chartIndex)) return;
 
     if (chartIndex === CHART_POOL_FEE) {
       if (!pairFeeData) return;
@@ -115,7 +139,14 @@ const AnalyticsPairChart: React.FC<{
           return;
       }
     });
-  }, [pairChartData, pairFeeData, chartIndex, isV2, priceChartTokenIdx]);
+  }, [
+    pairChartData,
+    chartIndexesAPYVision,
+    chartIndex,
+    pairFeeData,
+    isV2,
+    priceChartTokenIdx,
+  ]);
 
   const currentData = useMemo(() => {
     if (!pairData) return;
@@ -214,6 +245,19 @@ const AnalyticsPairChart: React.FC<{
     }
   }, [pairAddress, durationIndex, isV2]);
 
+  useEffect(() => {
+    if (!apyVisionURL || !apyVisionAccessToken) return;
+    (async () => {
+      const apyResponse = await fetch(
+        `${apyVisionURL}/api/v1/pools/${pairAddress.toLowerCase()}?accessToken=${apyVisionAccessToken}`,
+      );
+      const apyData = await apyResponse.json();
+      if (apyData && apyData.length > 0) {
+        setAPYVisionData(apyData[0]);
+      }
+    })();
+  }, [apyVisionAccessToken, apyVisionURL, pairAddress]);
+
   const _chartData = useMemo(() => {
     if (!pairData || !pairChartData) return;
     if (!isV2 && !pairFeeData) return;
@@ -229,117 +273,128 @@ const AnalyticsPairChart: React.FC<{
 
   return (
     <>
-      <Box className='flex flex-wrap justify-between' position={'relative'}>
-        <Box mt={1.5}>
-          <span>{chartIndexTexts[chartIndex]}</span>
-          <Box mt={1}>
-            {(currentData || currentData === 0) &&
-            (currentPercent || currentPercent === 0) ? (
-              <>
-                <Box className='flex items-center'>
-                  <h4>
-                    {`${chartYTicker === '$' ? chartYTicker : ''}${
-                      currentData > 100000
-                        ? formatCompact(currentData)
-                        : currentData.toLocaleString('us')
-                    }${chartYTicker === '%' ? chartYTicker : ''}`}
-                  </h4>
+      <ChartType
+        chartTypes={_chartIndexes}
+        typeTexts={_chartIndexesTexts}
+        chartType={chartIndex}
+        setChartType={setChartIndex}
+        size='big'
+        textClass='text-secondary'
+      />
+      <Box mt={2} mx={isMobile ? -1.5 : -3}>
+        <Divider />
+      </Box>
+      {!chartIndexesAPYVision.includes(chartIndex) && (
+        <Box className='flex flex-wrap justify-between' position='relative'>
+          <Box mt={2}>
+            <span>{chartIndexTexts[chartIndex]}</span>
+            <Box mt={1}>
+              {(currentData || currentData === 0) &&
+              (currentPercent || currentPercent === 0) ? (
+                <>
+                  <Box className='flex items-center'>
+                    <h4>
+                      {`${chartYTicker === '$' ? chartYTicker : ''}${
+                        currentData > 100000
+                          ? formatCompact(currentData)
+                          : currentData.toLocaleString('us')
+                      }${chartYTicker === '%' ? chartYTicker : ''}`}
+                    </h4>
+                    <Box
+                      className={`priceChangeWrapper ${currentPercentClass}`}
+                      ml={1}
+                    >
+                      <small>
+                        {getFormattedPrice(Number(currentPercent))}%
+                      </small>
+                    </Box>
+                  </Box>
+                  <Box>
+                    <span>{dayjs().format('MMM DD, YYYY')}</span>
+                  </Box>
+                </>
+              ) : chartIndex === CHART_LIQUIDITY ? (
+                <Box>
+                  <Box className='flex items-center' mb={0.5}>
+                    <Box
+                      width={8}
+                      height={8}
+                      borderRadius={'50%'}
+                      bgcolor={'#64FBD3'}
+                    />
+                    <Box ml={1}>Current price</Box>
+                  </Box>
                   <Box
-                    className={`priceChangeWrapper ${currentPercentClass}`}
-                    ml={1}
-                  >
-                    <small>{getFormattedPrice(Number(currentPercent))}%</small>
+                    mb={0.5}
+                  >{`1 ${pairData.token0.symbol} = ${token0Rate} ${pairData.token1.symbol}`}</Box>
+                  <Box
+                    mb={0.5}
+                  >{`1 ${pairData.token1.symbol} = ${token1Rate} ${pairData.token0.symbol}`}</Box>
+                </Box>
+              ) : (
+                <Skeleton variant='rect' width='120px' height='30px' />
+              )}
+              {chartIndex === CHART_PRICE ? (
+                <Box
+                  className='flex analyticsPriceChartToggler'
+                  position={'absolute'}
+                  right={40}
+                  onClick={() =>
+                    setPriceChartTokenIdx(Number(!priceChartTokenIdx))
+                  }
+                >
+                  <Box className={`${!priceChartTokenIdx && 'active'}`}>
+                    {pairData.token0.symbol}
+                  </Box>
+                  <Box className={`${priceChartTokenIdx && 'active'}`}>
+                    {pairData.token1.symbol}
                   </Box>
                 </Box>
-                <Box>
-                  <span>{dayjs().format('MMM DD, YYYY')}</span>
-                </Box>
-              </>
-            ) : chartIndex === CHART_LIQUIDITY ? (
-              <Box>
-                <Box className='flex items-center' mb={0.5}>
-                  <Box
-                    width={8}
-                    height={8}
-                    borderRadius={'50%'}
-                    bgcolor={'#64FBD3'}
-                  />
-                  <Box ml={1}>Current price</Box>
-                </Box>
-                <Box
-                  mb={0.5}
-                >{`1 ${pairData.token0.symbol} = ${token0Rate} ${pairData.token1.symbol}`}</Box>
-                <Box
-                  mb={0.5}
-                >{`1 ${pairData.token1.symbol} = ${token1Rate} ${pairData.token0.symbol}`}</Box>
+              ) : null}
+            </Box>
+          </Box>
+          <Box className='flex flex-col items-end'>
+            {chartIndex !== CHART_LIQUIDITY && (
+              <Box mt={1.5}>
+                <ChartType
+                  chartTypes={GlobalData.analytics.CHART_DURATIONS}
+                  typeTexts={GlobalData.analytics.CHART_DURATION_TEXTS}
+                  chartType={durationIndex}
+                  setChartType={setDurationIndex}
+                />
               </Box>
-            ) : (
-              <Skeleton variant='rect' width='120px' height='30px' />
             )}
-            {chartIndex === CHART_PRICE ? (
-              <Box
-                className='flex analyticsPriceChartToggler'
-                position={'absolute'}
-                right={40}
-                onClick={() =>
-                  setPriceChartTokenIdx(Number(!priceChartTokenIdx))
-                }
-              >
-                <Box className={`${!priceChartTokenIdx && 'active'}`}>
-                  {pairData.token0.symbol}
-                </Box>
-                <Box className={`${priceChartTokenIdx && 'active'}`}>
-                  {pairData.token1.symbol}
-                </Box>
-              </Box>
-            ) : null}
           </Box>
         </Box>
-        <Box className='flex flex-col items-end'>
-          <Box mt={1.5}>
-            <ChartType
-              chartTypes={_chartIndexes}
-              typeTexts={_chartIndexesTexts}
-              chartType={chartIndex}
-              setChartType={setChartIndex}
-            />
-          </Box>
-          {chartIndex !== CHART_LIQUIDITY && (
-            <Box mt={1.5}>
-              <ChartType
-                chartTypes={GlobalData.analytics.CHART_DURATIONS}
-                typeTexts={GlobalData.analytics.CHART_DURATION_TEXTS}
-                chartType={durationIndex}
-                setChartType={setDurationIndex}
+      )}
+      {chartIndexesAPYVision.includes(chartIndex) ? (
+        <></>
+      ) : (
+        <Box mt={2} width={1}>
+          {chartData && _chartData ? (
+            chartIndex === CHART_LIQUIDITY ? (
+              <AnalyticsPairLiquidityChartV3
+                pairData={pairData}
+                pairAddress={pairAddress}
               />
-            </Box>
+            ) : (
+              <AreaChart
+                data={chartData}
+                yAxisValues={getYAXISValuesAnalytics(chartData)}
+                dates={_chartData.map((value: any) => value.date)}
+                width='100%'
+                strokeColor='#3e92fe'
+                gradientColor='#448aff'
+                height={!isV2 ? 275 : 240}
+                categories={getChartDates(_chartData, durationIndex)}
+                yAxisTicker={chartYTicker}
+              />
+            )
+          ) : (
+            <Skeleton variant='rect' width='100%' height={217} />
           )}
         </Box>
-      </Box>
-      <Box mt={2} width={1}>
-        {chartData && _chartData ? (
-          chartIndex === CHART_LIQUIDITY ? (
-            <AnalyticsPairLiquidityChartV3
-              pairData={pairData}
-              pairAddress={pairAddress}
-            />
-          ) : (
-            <AreaChart
-              data={chartData}
-              yAxisValues={getYAXISValuesAnalytics(chartData)}
-              dates={_chartData.map((value: any) => value.date)}
-              width='100%'
-              strokeColor={!isV2 ? '#3e92fe' : '#00dced'}
-              gradientColor={!isV2 ? '#448aff' : undefined}
-              height={!isV2 ? 275 : 240}
-              categories={getChartDates(_chartData, durationIndex)}
-              yAxisTicker={chartYTicker}
-            />
-          )
-        ) : (
-          <Skeleton variant='rect' width='100%' height={217} />
-        )}
-      </Box>
+      )}
     </>
   );
 };

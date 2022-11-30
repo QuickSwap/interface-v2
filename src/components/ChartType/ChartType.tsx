@@ -7,6 +7,8 @@ interface ChartTypeProps {
   chartTypes: number[];
   chartType: number;
   setChartType: (chartType: number) => void;
+  size?: string;
+  textClass?: string;
 }
 
 const ChartType: React.FC<ChartTypeProps> = ({
@@ -14,18 +16,20 @@ const ChartType: React.FC<ChartTypeProps> = ({
   chartTypes,
   chartType,
   setChartType,
+  size = 'small',
+  textClass = 'text-primaryText',
 }) => {
   return (
     <Box className='flex items-center'>
       {chartTypes.map((value, index) => (
         <Box
           key={index}
-          className={`chartType ${
-            chartType === value ? 'bg-gray2' : 'transparent'
+          className={`chartType${size == 'big' ? ' chartType_big' : ''} ${
+            chartType === value ? 'bg-gray2 chartType_selected' : 'transparent'
           }`}
           onClick={() => setChartType(value)}
         >
-          <span>{typeTexts[index]}</span>
+          <span className={textClass}>{typeTexts[index]}</span>
         </Box>
       ))}
     </Box>
