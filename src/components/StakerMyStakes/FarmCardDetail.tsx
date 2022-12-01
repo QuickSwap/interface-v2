@@ -13,6 +13,8 @@ import { formatReward } from 'utils/formatReward';
 import { Token } from '@uniswap/sdk';
 import { useV3StakeData } from 'state/farms/hooks';
 import { useActiveWeb3React } from 'hooks';
+import { getTokenFromAddress } from 'utils';
+import { useSelectedTokenList } from 'state/lists/hooks';
 
 interface FarmCardDetailProps {
   el: any;
@@ -35,6 +37,31 @@ export default function FarmCardDetail({ el }: FarmCardDetailProps) {
 
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
+
+  const tokenMap = useSelectedTokenList();
+  const farmRewardToken =
+    chainId && rewardToken
+      ? getTokenFromAddress(rewardToken.id, chainId, tokenMap, [
+          new Token(
+            chainId,
+            rewardToken.id,
+            Number(rewardToken.decimals),
+            rewardToken.symbol,
+          ),
+        ])
+      : undefined;
+
+  const farmBonusRewardToken =
+    chainId && bonusRewardToken
+      ? getTokenFromAddress(bonusRewardToken.id, chainId, tokenMap, [
+          new Token(
+            chainId,
+            bonusRewardToken.id,
+            Number(bonusRewardToken.decimals),
+            bonusRewardToken.symbol,
+          ),
+        ])
+      : undefined;
 
   return (
     <Box className='flex justify-evenly items-center flex-wrap'>
@@ -85,18 +112,8 @@ export default function FarmCardDetail({ el }: FarmCardDetailProps) {
                 <small className='text-secondary'>Earned rewards</small>
                 <Box mt={1}>
                   <Box className='flex items-center'>
-                    {chainId && (
-                      <CurrencyLogo
-                        size={'24px'}
-                        currency={
-                          new Token(
-                            chainId,
-                            rewardToken.id,
-                            Number(rewardToken.decimals),
-                            rewardToken.symbol,
-                          )
-                        }
-                      />
+                    {farmRewardToken && (
+                      <CurrencyLogo size={'24px'} currency={farmRewardToken} />
                     )}
 
                     <Box ml='6px'>
@@ -105,7 +122,7 @@ export default function FarmCardDetail({ el }: FarmCardDetailProps) {
                   </Box>
                 </Box>
               </Box>
-              {bonusRewardToken && (
+              {farmBonusRewardToken && (
                 <Box
                   mt={isMobile ? 2 : 0}
                   width={!isMobile ? 0.5 : 1}
@@ -118,22 +135,13 @@ export default function FarmCardDetail({ el }: FarmCardDetailProps) {
                       isMobile ? '' : 'justify-end'
                     }`}
                   >
-                    {chainId && (
-                      <CurrencyLogo
-                        size={'24px'}
-                        currency={
-                          new Token(
-                            chainId,
-                            bonusRewardToken.id,
-                            Number(bonusRewardToken.decimals),
-                            bonusRewardToken.symbol,
-                          )
-                        }
-                      />
-                    )}
+                    <CurrencyLogo
+                      size={'24px'}
+                      currency={farmBonusRewardToken}
+                    />
                     <Box ml='6px'>
                       <p>{`${formatReward(bonusEarned)} ${
-                        bonusRewardToken.symbol
+                        farmBonusRewardToken.symbol
                       }`}</p>
                     </Box>
                   </Box>

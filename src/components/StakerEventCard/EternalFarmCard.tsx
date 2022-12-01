@@ -77,39 +77,51 @@ export function EternalFarmCard({
   const { chainId } = useActiveWeb3React();
 
   const tokenMap = useSelectedTokenList();
-  const token0 = chainId
-    ? getTokenFromAddress(pool.token0.id, chainId, tokenMap, [
-        new Token(chainId, getAddress(pool.token0.id), pool.token0.decimals),
-      ])
-    : undefined;
+  const token0 =
+    chainId && pool.token0
+      ? getTokenFromAddress(pool.token0.id, chainId, tokenMap, [
+          new Token(
+            chainId,
+            getAddress(pool.token0.id),
+            Number(pool.token0.decimals),
+          ),
+        ])
+      : undefined;
 
-  const token1 = chainId
-    ? getTokenFromAddress(pool.token1.id, chainId, tokenMap, [
-        new Token(chainId, getAddress(pool.token1.id), pool.token1.decimals),
-      ])
-    : undefined;
+  const token1 =
+    chainId && pool.token1
+      ? getTokenFromAddress(pool.token1.id, chainId, tokenMap, [
+          new Token(
+            chainId,
+            getAddress(pool.token1.id),
+            Number(pool.token1.decimals),
+          ),
+        ])
+      : undefined;
 
-  const farmRewardToken = chainId
-    ? getTokenFromAddress(rewardToken.id, chainId, tokenMap, [
-        new Token(
-          chainId,
-          rewardToken.id,
-          Number(rewardToken.decimals),
-          rewardToken.symbol,
-        ),
-      ])
-    : undefined;
+  const farmRewardToken =
+    chainId && rewardToken
+      ? getTokenFromAddress(rewardToken.id, chainId, tokenMap, [
+          new Token(
+            chainId,
+            rewardToken.id,
+            Number(rewardToken.decimals),
+            rewardToken.symbol,
+          ),
+        ])
+      : undefined;
 
-  const farmBonusRewardToken = chainId
-    ? getTokenFromAddress(bonusRewardToken.id, chainId, tokenMap, [
-        new Token(
-          chainId,
-          bonusRewardToken.id,
-          Number(bonusRewardToken.decimals),
-          bonusRewardToken.symbol,
-        ),
-      ])
-    : undefined;
+  const farmBonusRewardToken =
+    chainId && bonusRewardToken
+      ? getTokenFromAddress(bonusRewardToken.id, chainId, tokenMap, [
+          new Token(
+            chainId,
+            bonusRewardToken.id,
+            Number(bonusRewardToken.decimals),
+            bonusRewardToken.symbol,
+          ),
+        ])
+      : undefined;
 
   return (
     <Box className='flex justify-center' height='100%'>
