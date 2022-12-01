@@ -432,5 +432,6 @@
   "maiNote": "MAI is an overcollateralized USD stablecoin backed solely by decentralized tokens.",
   "earnRewards": "Earn Rewards",
   "stakeMessageOtherLP": "Stake LP tokens to earn reward tokens",
-  "otherLPMining": "Other LP Mining"
+  "otherLPMining": "Other LP Mining",
+  "removeLiquidityError1": "There is an error in transaction. Please increase your slippage."
 }
