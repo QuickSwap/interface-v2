@@ -12,14 +12,19 @@ import {
   getChartStartTime,
   getLimitedData,
   getYAXISValuesAnalytics,
+  getTokenFromAddress,
 } from 'utils';
-import { AreaChart, ChartType } from 'components';
+import { AreaChart, ChartType, ColumnChart } from 'components';
 import { GlobalConst, GlobalData } from 'constants/index';
 import { useTranslation } from 'react-i18next';
 import { useIsV2 } from 'state/application/hooks';
 import { getPairChartDataV3, getPairChartFees } from 'utils/v3-graph';
 import AnalyticsPairLiquidityChartV3 from './AnalyticsPairLiquidityChartV3';
 import '../styles/analytics.scss';
+import { useSelectedTokenList } from 'state/lists/hooks';
+import { ChainId, Token } from '@uniswap/sdk';
+import { getAddress } from 'ethers/lib/utils';
+import useUSDCPrice from 'utils/useUSDCPrice';
 
 const CHART_VOLUME = 0;
 const CHART_TVL = 1;
@@ -271,6 +276,123 @@ const AnalyticsPairChart: React.FC<{
 
   const currentPercentClass = getPriceClass(Number(currentPercent));
 
+  console.log('cc', apyVisionData);
+
+  const apyChartData = useMemo(() => {
+    if (!apyVisionData) return;
+    switch (chartIndex) {
+      case CHART_APY_IL:
+        return [
+          {
+            name: 'Fees APY',
+            data: [
+              apyVisionData.fee_apys_inception,
+              apyVisionData.fee_apys_90d,
+              apyVisionData.fee_apys_60d,
+              apyVisionData.fee_apys_30d,
+              apyVisionData.fee_apys_14d,
+              apyVisionData.fee_apys_7d,
+              apyVisionData.fee_apys_1d,
+            ],
+          },
+          {
+            name: 'IL APY',
+            data: [
+              apyVisionData.il_apys_inception,
+              apyVisionData.il_apys_90d,
+              apyVisionData.il_apys_60d,
+              apyVisionData.il_apys_30d,
+              apyVisionData.il_apys_14d,
+              apyVisionData.il_apys_7d,
+              apyVisionData.il_apys_1d,
+            ],
+          },
+          {
+            name: 'Net APY',
+            data: [
+              apyVisionData.fee_apys_inception -
+                apyVisionData.il_apys_inception,
+              apyVisionData.fee_apys_90d - apyVisionData.il_apys_90d,
+              apyVisionData.fee_apys_60d - apyVisionData.il_apys_60d,
+              apyVisionData.fee_apys_30d - apyVisionData.il_apys_30d,
+              apyVisionData.fee_apys_14d - apyVisionData.il_apys_14d,
+              apyVisionData.fee_apys_7d - apyVisionData.il_apys_7d,
+              apyVisionData.fee_apys_1d - apyVisionData.il_apys_1d,
+            ],
+          },
+        ];
+      case CHART_ASSET:
+        const asset0Prices = [
+          apyVisionData.prices[0].avg_usd_since_inception,
+          apyVisionData.prices[0].usd_90d,
+          apyVisionData.prices[0].usd_60d,
+          apyVisionData.prices[0].usd_30d,
+          apyVisionData.prices[0].usd_14d,
+          apyVisionData.prices[0].usd_7d,
+          apyVisionData.prices[0].usd_1d,
+        ];
+        const asset1Prices = [
+          apyVisionData.prices[1].avg_usd_since_inception,
+          apyVisionData.prices[1].usd_90d,
+          apyVisionData.prices[1].usd_60d,
+          apyVisionData.prices[1].usd_30d,
+          apyVisionData.prices[1].usd_14d,
+          apyVisionData.prices[1].usd_7d,
+          apyVisionData.prices[1].usd_1d,
+        ];
+        const hodlMinusIls = [
+          apyVisionData.hodl_minus_il_return_pcts_inception,
+          apyVisionData.hodl_minus_il_return_pcts_90d,
+          apyVisionData.hodl_minus_il_return_pcts_60d,
+          apyVisionData.hodl_minus_il_return_pcts_30d,
+          apyVisionData.hodl_minus_il_return_pcts_14d,
+          apyVisionData.hodl_minus_il_return_pcts_7d,
+          apyVisionData.hodl_minus_il_return_pcts_1d,
+        ];
+        return [
+          {
+            name: apyVisionData.prices[0].symbol,
+            data: asset0Prices.map(
+              (price: number) =>
+                (1000 / price) * apyVisionData.prices[0].baseline_usd,
+            ),
+          },
+          {
+            name: apyVisionData.prices[1].symbol,
+            data: asset1Prices.map(
+              (price: number) =>
+                (1000 / price) * apyVisionData.prices[1].baseline_usd,
+            ),
+          },
+          {
+            name: '50% 50%',
+            data: asset0Prices.map(
+              (price: number, index: number) =>
+                (500 / price) * apyVisionData.prices[0].baseline_usd +
+                (500 / asset1Prices[index]) *
+                  apyVisionData.prices[1].baseline_usd,
+            ),
+          },
+          {
+            name: 'Curr Liq Pool Value',
+            data: hodlMinusIls.map((value: number) => value * 10 + 1000),
+          },
+        ];
+      default:
+        return;
+    }
+  }, [apyVisionData, chartIndex]);
+
+  const apyChartCategories = [
+    'Inception*',
+    '90D Avg',
+    '60D Avg',
+    '30D Avg',
+    '14D Avg',
+    '7D Avg',
+    'Yesterday',
+  ];
+
   return (
     <>
       <ChartType
@@ -368,7 +490,15 @@ const AnalyticsPairChart: React.FC<{
         </Box>
       )}
       {chartIndexesAPYVision.includes(chartIndex) ? (
-        <></>
+        apyChartData && (
+          <ColumnChart
+            categories={apyChartCategories}
+            data={apyChartData}
+            width='100%'
+            height='100%'
+            valueSuffix={chartIndex === CHART_ASSET ? 'USD' : '%'}
+          />
+        )
       ) : (
         <Box mt={2} width={1}>
           {chartData && _chartData ? (
