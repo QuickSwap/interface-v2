@@ -30,6 +30,7 @@ const FarmPage: React.FC = () => {
   const dualFarms = useDefaultDualFarmList();
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
+  const OTHER_FARM_LINK = process.env.REACT_APP_OTHER_LP_CREATE_A_FARM_LINK;
 
   const pairLists = useMemo(() => {
     const stakingPairLists = Object.values(lpFarms[chainIdOrDefault]).map(
@@ -57,13 +58,13 @@ const FarmPage: React.FC = () => {
       },
       condition: farmIndex === GlobalConst.farmIndex.LPFARM_INDEX,
     },
-    // {
-    //   text: t('otherLPMining'),
-    //   onClick: () => {
-    //     setFarmIndex(GlobalConst.farmIndex.OTHER_LP_INDEX);
-    //   },
-    //   condition: farmIndex === GlobalConst.farmIndex.OTHER_LP_INDEX,
-    // },
+    {
+      text: t('otherLPMining'),
+      onClick: () => {
+        setFarmIndex(GlobalConst.farmIndex.OTHER_LP_INDEX);
+      },
+      condition: farmIndex === GlobalConst.farmIndex.OTHER_LP_INDEX,
+    },
     {
       text: t('dualMining'),
       onClick: () => {
@@ -103,14 +104,21 @@ const FarmPage: React.FC = () => {
           {/* Custom switch layer */}
           <Box className='flex flex-wrap justify-between'>
             <CustomSwitch
-              width={300}
+              width={450}
               height={48}
               items={farmCategories}
               isLarge={true}
             />
             {farmIndex === GlobalConst.farmIndex.OTHER_LP_INDEX && (
               <Box className='flex'>
-                <Button className='btn-xl'>Create A Farm</Button>
+                <a
+                  className='rounded button'
+                  target='_blank'
+                  rel='noreferrer'
+                  href={OTHER_FARM_LINK}
+                >
+                  Create A Farm
+                </a>
               </Box>
             )}
           </Box>

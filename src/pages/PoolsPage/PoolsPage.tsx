@@ -1,5 +1,4 @@
 import React, { lazy } from 'react';
-import { useParams } from 'react-router-dom';
 import { Box, Grid, useMediaQuery, useTheme } from '@material-ui/core';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
 import SupplyLiquidity from './SupplyLiquidity';
