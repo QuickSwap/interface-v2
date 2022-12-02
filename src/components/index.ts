@@ -16,6 +16,7 @@ export { default as CustomMenu } from './CustomMenu';
 export { default as CustomModal } from './CustomModal';
 export { default as CustomSwitch } from './CustomSwitch';
 export { default as CurrencyInput } from './CurrencyInput';
+export { default as MixedChart } from './MixedChart';
 export { default as ColumnChart } from './ColumnChart';
 export { default as LineChart } from './LineChart';
 export { default as Popups } from './Popups';

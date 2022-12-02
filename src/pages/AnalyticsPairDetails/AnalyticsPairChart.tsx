@@ -12,19 +12,14 @@ import {
   getChartStartTime,
   getLimitedData,
   getYAXISValuesAnalytics,
-  getTokenFromAddress,
 } from 'utils';
-import { AreaChart, ChartType, ColumnChart } from 'components';
+import { AreaChart, ChartType, MixedChart, ColumnChart } from 'components';
 import { GlobalConst, GlobalData } from 'constants/index';
 import { useTranslation } from 'react-i18next';
 import { useIsV2 } from 'state/application/hooks';
 import { getPairChartDataV3, getPairChartFees } from 'utils/v3-graph';
 import AnalyticsPairLiquidityChartV3 from './AnalyticsPairLiquidityChartV3';
 import '../styles/analytics.scss';
-import { useSelectedTokenList } from 'state/lists/hooks';
-import { ChainId, Token } from '@uniswap/sdk';
-import { getAddress } from 'ethers/lib/utils';
-import useUSDCPrice from 'utils/useUSDCPrice';
 
 const CHART_VOLUME = 0;
 const CHART_TVL = 1;
@@ -282,72 +277,73 @@ const AnalyticsPairChart: React.FC<{
     if (!apyVisionData) return;
     switch (chartIndex) {
       case CHART_APY_IL:
+        const feeAPYs = [
+          apyVisionData.fee_apys_inception ?? 0,
+          apyVisionData.fee_apys_90d ?? 0,
+          apyVisionData.fee_apys_60d ?? 0,
+          apyVisionData.fee_apys_30d ?? 0,
+          apyVisionData.fee_apys_14d ?? 0,
+          apyVisionData.fee_apys_7d ?? 0,
+          apyVisionData.fee_apys_1d ?? 0,
+        ];
+        const ilAPYs = [
+          apyVisionData.fee_apys_inception ?? 0,
+          apyVisionData.fee_apys_90d ?? 0,
+          apyVisionData.fee_apys_60d ?? 0,
+          apyVisionData.fee_apys_30d ?? 0,
+          apyVisionData.fee_apys_14d ?? 0,
+          apyVisionData.fee_apys_7d ?? 0,
+          apyVisionData.fee_apys_1d ?? 0,
+        ];
         return [
           {
             name: 'Fees APY',
-            data: [
-              apyVisionData.fee_apys_inception,
-              apyVisionData.fee_apys_90d,
-              apyVisionData.fee_apys_60d,
-              apyVisionData.fee_apys_30d,
-              apyVisionData.fee_apys_14d,
-              apyVisionData.fee_apys_7d,
-              apyVisionData.fee_apys_1d,
-            ],
+            data: feeAPYs,
           },
           {
             name: 'IL APY',
-            data: [
-              apyVisionData.il_apys_inception,
-              apyVisionData.il_apys_90d,
-              apyVisionData.il_apys_60d,
-              apyVisionData.il_apys_30d,
-              apyVisionData.il_apys_14d,
-              apyVisionData.il_apys_7d,
-              apyVisionData.il_apys_1d,
-            ],
+            data: ilAPYs,
           },
           {
             name: 'Net APY',
-            data: [
-              apyVisionData.fee_apys_inception -
-                apyVisionData.il_apys_inception,
-              apyVisionData.fee_apys_90d - apyVisionData.il_apys_90d,
-              apyVisionData.fee_apys_60d - apyVisionData.il_apys_60d,
-              apyVisionData.fee_apys_30d - apyVisionData.il_apys_30d,
-              apyVisionData.fee_apys_14d - apyVisionData.il_apys_14d,
-              apyVisionData.fee_apys_7d - apyVisionData.il_apys_7d,
-              apyVisionData.fee_apys_1d - apyVisionData.il_apys_1d,
-            ],
+            data: feeAPYs.map((apy, index) => apy - ilAPYs[index]),
           },
         ];
       case CHART_ASSET:
+        const apyVisionPrice0 =
+          apyVisionData.prices && apyVisionData.prices.length > 0
+            ? apyVisionData.prices[0]
+            : undefined;
+        const apyVisionPrice1 =
+          apyVisionData.prices && apyVisionData.prices.length > 1
+            ? apyVisionData.prices[1]
+            : undefined;
         const asset0Prices = [
-          apyVisionData.prices[0].avg_usd_since_inception,
-          apyVisionData.prices[0].usd_90d,
-          apyVisionData.prices[0].usd_60d,
-          apyVisionData.prices[0].usd_30d,
-          apyVisionData.prices[0].usd_14d,
-          apyVisionData.prices[0].usd_7d,
-          apyVisionData.prices[0].usd_1d,
+          apyVisionPrice0?.avg_usd_since_inception ?? 0,
+          apyVisionPrice0?.usd_90d ?? 0,
+          apyVisionPrice0?.usd_60d ?? 0,
+          apyVisionPrice0?.usd_30d ?? 0,
+          apyVisionPrice0?.usd_14d ?? 0,
+          apyVisionPrice0?.usd_7d ?? 0,
+          apyVisionPrice0?.usd_1d ?? 0,
         ];
         const asset1Prices = [
-          apyVisionData.prices[1].avg_usd_since_inception,
-          apyVisionData.prices[1].usd_90d,
-          apyVisionData.prices[1].usd_60d,
-          apyVisionData.prices[1].usd_30d,
-          apyVisionData.prices[1].usd_14d,
-          apyVisionData.prices[1].usd_7d,
-          apyVisionData.prices[1].usd_1d,
+          apyVisionPrice1?.avg_usd_since_inception ?? 0,
+          apyVisionPrice1?.usd_90d ?? 0,
+          apyVisionPrice1?.usd_60d ?? 0,
+          apyVisionPrice1?.usd_30d ?? 0,
+          apyVisionPrice1?.usd_14d ?? 0,
+          apyVisionPrice1?.usd_7d ?? 0,
+          apyVisionPrice1?.usd_1d ?? 0,
         ];
         const hodlMinusIls = [
-          apyVisionData.hodl_minus_il_return_pcts_inception,
-          apyVisionData.hodl_minus_il_return_pcts_90d,
-          apyVisionData.hodl_minus_il_return_pcts_60d,
-          apyVisionData.hodl_minus_il_return_pcts_30d,
-          apyVisionData.hodl_minus_il_return_pcts_14d,
-          apyVisionData.hodl_minus_il_return_pcts_7d,
-          apyVisionData.hodl_minus_il_return_pcts_1d,
+          apyVisionData.hodl_minus_il_return_pcts_inception ?? 0,
+          apyVisionData.hodl_minus_il_return_pcts_90d ?? 0,
+          apyVisionData.hodl_minus_il_return_pcts_60d ?? 0,
+          apyVisionData.hodl_minus_il_return_pcts_30d ?? 0,
+          apyVisionData.hodl_minus_il_return_pcts_14d ?? 0,
+          apyVisionData.hodl_minus_il_return_pcts_7d ?? 0,
+          apyVisionData.hodl_minus_il_return_pcts_1d ?? 0,
         ];
         return [
           {
@@ -376,6 +372,85 @@ const AnalyticsPairChart: React.FC<{
           {
             name: 'Curr Liq Pool Value',
             data: hodlMinusIls.map((value: number) => value * 10 + 1000),
+          },
+        ];
+      case CHART_RESERVE:
+        const apyReserves = [
+          apyVisionData.avg_reserves_inception ?? 0,
+          apyVisionData.avg_reserves_90d ?? 0,
+          apyVisionData.avg_reserves_60d ?? 0,
+          apyVisionData.avg_reserves_30d ?? 0,
+          apyVisionData.avg_reserves_14d ?? 0,
+          apyVisionData.avg_reserves_7d ?? 0,
+          apyVisionData.avg_reserves_1d ?? 0,
+        ];
+        const apyVolumes = [
+          apyVisionData.avg_volume_inception ?? 0,
+          apyVisionData.avg_volume_90d ?? 0,
+          apyVisionData.avg_volume_60d ?? 0,
+          apyVisionData.avg_volume_30d ?? 0,
+          apyVisionData.avg_volume_14d ?? 0,
+          apyVisionData.avg_volume_7d ?? 0,
+          apyVisionData.avg_volume_1d ?? 0,
+        ];
+        return [
+          { name: 'Reserve', type: 'column', data: apyReserves },
+          {
+            name: 'Volume',
+            type: 'line',
+            data: apyVolumes.map((value) => Number(value.toFixed(3))),
+          },
+          {
+            name: 'V/R Ratio',
+            type: 'line',
+            data: apyReserves.map((value, ind) =>
+              value > 0 ? Number((apyVolumes[ind] / value).toFixed(3)) : 0,
+            ),
+          },
+        ];
+      case CHART_TXS:
+        const apyTxs = [
+          apyVisionData.avg_txns_inception ?? 0,
+          apyVisionData.avg_txns_90d ?? 0,
+          apyVisionData.avg_txns_60d ?? 0,
+          apyVisionData.avg_txns_30d ?? 0,
+          apyVisionData.avg_txns_14d ?? 0,
+          apyVisionData.avg_txns_7d ?? 0,
+          apyVisionData.avg_txns_1d ?? 0,
+        ];
+        const apySwapValues = [
+          apyVisionData.avg_swap_value_usd_inception ?? 0,
+          apyVisionData.avg_swap_value_usd_90d ?? 0,
+          apyVisionData.avg_swap_value_usd_60d ?? 0,
+          apyVisionData.avg_swap_value_usd_30d ?? 0,
+          apyVisionData.avg_swap_value_usd_14d ?? 0,
+          apyVisionData.avg_swap_value_usd_7d ?? 0,
+          apyVisionData.avg_swap_value_usd_1d ?? 0,
+        ];
+        const apyMedianSwapValues = [
+          apyVisionData.median_swap_value_inception ?? 0,
+          apyVisionData.median_swap_value_90d ?? 0,
+          apyVisionData.median_swap_value_60d ?? 0,
+          apyVisionData.median_swap_value_30d ?? 0,
+          apyVisionData.median_swap_value_14d ?? 0,
+          apyVisionData.median_swap_value_7d ?? 0,
+          apyVisionData.median_swap_value_1d ?? 0,
+        ];
+        return [
+          {
+            name: 'Avg # Txns',
+            type: 'line',
+            data: apyTxs.map((value) => Number(value.toFixed(2))),
+          },
+          {
+            name: 'Avg Swap Size',
+            type: 'line',
+            data: apySwapValues.map((value) => Number(value.toFixed(2))),
+          },
+          {
+            name: 'Median Swap Size',
+            type: 'line',
+            data: apyMedianSwapValues.map((value) => Number(value.toFixed(2))),
           },
         ];
       default:
@@ -491,13 +566,31 @@ const AnalyticsPairChart: React.FC<{
       )}
       {chartIndexesAPYVision.includes(chartIndex) ? (
         apyChartData && (
-          <ColumnChart
-            categories={apyChartCategories}
-            data={apyChartData}
-            width='100%'
-            height='100%'
-            valueSuffix={chartIndex === CHART_ASSET ? 'USD' : '%'}
-          />
+          <>
+            {(chartIndex === CHART_APY_IL || chartIndex === CHART_ASSET) && (
+              <ColumnChart
+                categories={apyChartCategories}
+                data={apyChartData}
+                width='100%'
+                height='100%'
+                valueSuffix={
+                  chartIndex === CHART_ASSET
+                    ? 'USD'
+                    : chartIndex === CHART_APY_IL
+                    ? '%'
+                    : ''
+                }
+              />
+            )}
+            {(chartIndex === CHART_RESERVE || chartIndex === CHART_TXS) && (
+              <MixedChart
+                categories={apyChartCategories}
+                data={apyChartData}
+                width='100%'
+                height='100%'
+              />
+            )}
+          </>
         )
       ) : (
         <Box mt={2} width={1}>

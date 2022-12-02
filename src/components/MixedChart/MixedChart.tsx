@@ -3,19 +3,17 @@ import Chart from 'react-apexcharts';
 import { useIsDarkMode } from 'state/user/hooks';
 import 'components/styles/AreaChart.scss';
 
-export interface ColumnChartProps {
+export interface MixedChartProps {
   data?: Array<any>;
   categories?: Array<string | null>;
   width?: number | string;
   height?: number | string;
-  valueSuffix?: string;
 }
-const ColumnChart: React.FC<ColumnChartProps> = ({
+const MixedChart: React.FC<MixedChartProps> = ({
   categories = [],
   data = [],
   width = 500,
   height = 200,
-  valueSuffix,
 }) => {
   const dark = useIsDarkMode();
   const lineSeries = data
@@ -39,13 +37,13 @@ const ColumnChart: React.FC<ColumnChartProps> = ({
       },
     },
     dataLabels: {
-      enabled: false,
+      enabled: true,
       enabledOnSeries: lineSeries,
     },
     stroke: {
       show: true,
       width: 2,
-      colors: ['transparent'],
+      curve: 'smooth' as any,
     },
     xaxis: {
       categories,
@@ -58,14 +56,25 @@ const ColumnChart: React.FC<ColumnChartProps> = ({
     fill: {
       opacity: 1,
     },
-    yaxis: {
-      labels: {
-        formatter: (y: number) => y.toFixed(0),
-        style: {
-          colors: ['#c7cad9'],
+    yaxis: [
+      {
+        labels: {
+          formatter: (y: number) => y.toFixed(0),
+          style: {
+            colors: ['#c7cad9'],
+          },
         },
       },
-    },
+      {
+        opposite: true,
+        labels: {
+          formatter: (y: number) => y.toFixed(0),
+          style: {
+            colors: ['#c7cad9'],
+          },
+        },
+      },
+    ],
     legend: {
       labels: {
         colors: '#c7cad9',
@@ -76,11 +85,12 @@ const ColumnChart: React.FC<ColumnChartProps> = ({
       theme: dark ? 'dark' : 'light',
       fillSeriesColor: false,
       custom: ({ series, seriesIndex, dataPointIndex, w }: any) => {
-        return `<div class="areaChartTooltip"><small>${
-          w.globals.seriesNames[seriesIndex]
-        }</small><small><b>${series[seriesIndex][dataPointIndex].toLocaleString(
+        const seriesName = w.globals.seriesNames[seriesIndex];
+        return `<div class="areaChartTooltip"><small>${seriesName}</small><small><b>${
+          seriesName !== 'V/R Ratio' && seriesName !== 'Avg # Txns' ? '$ ' : ''
+        }${series[seriesIndex][dataPointIndex].toLocaleString(
           'us',
-        )} ${valueSuffix}</b></small></div>`;
+        )}</b></small></div>`;
       },
     },
   };
@@ -89,11 +99,11 @@ const ColumnChart: React.FC<ColumnChartProps> = ({
     <Chart
       options={options}
       series={data}
-      type='bar'
+      type='line'
       width={width}
       height={height}
     />
   );
 };
 
-export default ColumnChart;
+export default MixedChart;
