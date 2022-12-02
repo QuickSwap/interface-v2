@@ -4,6 +4,8 @@ import { useHistory } from 'react-router-dom';
 import { Header, Footer, BetaWarningBanner, CustomModal } from 'components';
 import Background from './Background';
 import { useIsProMode } from 'state/application/hooks';
+import { useActiveWeb3React } from 'hooks';
+import { useArcxAnalytics } from '@arcxmoney/analytics';
 
 export interface PageLayoutProps {
   children: any;
@@ -12,6 +14,8 @@ export interface PageLayoutProps {
 
 const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
   const history = useHistory();
+  const { chainId, account } = useActiveWeb3React();
+  const arcxSDK = useArcxAnalytics();
   const { isProMode, updateIsProMode } = useIsProMode();
   const [openPassModal, setOpenPassModal] = useState(false);
   const getPageWrapperClassName = () => {
@@ -38,6 +42,14 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
       setOpenPassModal(true);
     }
   }, []);
+
+  useEffect(() => {
+    (async () => {
+      if (arcxSDK && account && chainId) {
+        await arcxSDK.connectWallet({ account, chain: chainId });
+      }
+    })();
+  }, [account, chainId, arcxSDK]);
 
   const PasswordModal = () => {
     const [devPass, setDevPass] = useState('');
