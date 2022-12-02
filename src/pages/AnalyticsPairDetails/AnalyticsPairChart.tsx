@@ -271,8 +271,6 @@ const AnalyticsPairChart: React.FC<{
 
   const currentPercentClass = getPriceClass(Number(currentPercent));
 
-  console.log('cc', apyVisionData);
-
   const apyChartData = useMemo(() => {
     if (!apyVisionData) return;
     switch (chartIndex) {

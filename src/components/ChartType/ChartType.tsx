@@ -20,7 +20,7 @@ const ChartType: React.FC<ChartTypeProps> = ({
   textClass = 'text-primaryText',
 }) => {
   return (
-    <Box className='flex items-center'>
+    <Box className='flex items-center flex-wrap'>
       {chartTypes.map((value, index) => (
         <Box
           key={index}
