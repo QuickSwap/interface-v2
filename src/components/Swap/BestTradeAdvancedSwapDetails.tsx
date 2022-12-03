@@ -1,14 +1,9 @@
-import { Trade, TradeType } from '@uniswap/sdk';
+import { Currency, Fraction, Percent } from '@uniswap/sdk';
 import React, { useState } from 'react';
 import { Box } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
-import { Field } from 'state/swap/actions';
 import { useUserSlippageTolerance } from 'state/user/hooks';
-import {
-  computePriceImpact,
-  computeSlippageAdjustedAmounts,
-  computeTradePriceBreakdown,
-} from 'utils/prices';
+import { computePriceImpact } from 'utils/prices';
 import {
   QuestionHelper,
   FormattedPriceImpact,
@@ -16,30 +11,36 @@ import {
   SettingsModal,
 } from 'components';
 import { ReactComponent as EditIcon } from 'assets/images/EditIcon.svg';
-import { formatTokenAmount } from 'utils';
-import { OptimalRate } from '@paraswap/sdk';
+import { basisPointsToPercent } from 'utils';
+import { OptimalRate, SwapSide } from '@paraswap/sdk';
+import { ONE } from 'v3lib/utils';
 
 interface TradeSummaryProps {
   optimalRate: OptimalRate;
-  trade: Trade;
-  allowedSlippage: number;
+  allowedSlippage: Percent;
+  inputCurrency: Currency;
+  outputCurrency: Currency;
 }
 
 export const BestTradeSummary: React.FC<TradeSummaryProps> = ({
   optimalRate,
-  trade,
   allowedSlippage,
+  inputCurrency,
+  outputCurrency,
 }) => {
   const [openSettingsModal, setOpenSettingsModal] = useState(false);
   const { t } = useTranslation();
 
   const priceImpactWithoutFee = computePriceImpact(optimalRate);
-  const isExactIn = trade.tradeType === TradeType.EXACT_INPUT;
-  const slippageAdjustedAmounts = computeSlippageAdjustedAmounts(
-    trade,
-    allowedSlippage,
-  );
-  const tradeAmount = isExactIn ? trade.outputAmount : trade.inputAmount;
+  const isExactIn = optimalRate.side === SwapSide.SELL;
+  const currency = isExactIn ? outputCurrency : inputCurrency;
+  const tradeAmount = isExactIn
+    ? new Fraction(ONE)
+        .add(allowedSlippage)
+        .invert()
+        .multiply(optimalRate.destAmount).quotient
+    : new Fraction(ONE).add(allowedSlippage).multiply(optimalRate.srcAmount)
+        .quotient;
 
   return (
     <Box mt={1.5}>
@@ -58,7 +59,7 @@ export const BestTradeSummary: React.FC<TradeSummaryProps> = ({
           onClick={() => setOpenSettingsModal(true)}
           className='swapSlippage'
         >
-          <small>{allowedSlippage / 100}%</small>
+          <small>{Number(allowedSlippage.toSignificant()) / 100}%</small>
           <EditIcon />
         </Box>
       </Box>
@@ -69,12 +70,13 @@ export const BestTradeSummary: React.FC<TradeSummaryProps> = ({
         </Box>
         <Box>
           <small>
-            {formatTokenAmount(
-              slippageAdjustedAmounts[isExactIn ? Field.OUTPUT : Field.INPUT],
-            )}{' '}
-            {tradeAmount.currency.symbol}
+            {(
+              Number(tradeAmount.toString()) /
+              10 ** currency.decimals
+            ).toLocaleString('us')}{' '}
+            {currency.symbol}
           </small>
-          <CurrencyLogo currency={tradeAmount.currency} size='16px' />
+          <CurrencyLogo currency={currency} size='16px' />
         </Box>
       </Box>
       <Box className='summaryRow'>
@@ -90,22 +92,26 @@ export const BestTradeSummary: React.FC<TradeSummaryProps> = ({
 
 export interface BestTradeAdvancedSwapDetailsProps {
   optimalRate?: OptimalRate;
-  trade?: Trade;
+  inputCurrency?: Currency;
+  outputCurrency?: Currency;
 }
 
 export const BestTradeAdvancedSwapDetails: React.FC<BestTradeAdvancedSwapDetailsProps> = ({
   optimalRate,
-  trade,
+  inputCurrency,
+  outputCurrency,
 }) => {
   const [allowedSlippage] = useUserSlippageTolerance();
+  const pct = basisPointsToPercent(allowedSlippage);
 
   return (
     <>
-      {trade && optimalRate && (
+      {inputCurrency && outputCurrency && optimalRate && (
         <BestTradeSummary
           optimalRate={optimalRate}
-          trade={trade}
-          allowedSlippage={allowedSlippage}
+          inputCurrency={inputCurrency}
+          outputCurrency={outputCurrency}
+          allowedSlippage={pct}
         />
       )}
     </>

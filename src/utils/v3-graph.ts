@@ -14,10 +14,12 @@ import {
   PAIR_CHART_V3,
   PAIR_FEE_CHART_V3,
   PAIR_TRANSACTIONS_v3,
+  PRICES_BY_BLOCK_V3,
   TOKENS_FROM_ADDRESSES_V3,
   TOKEN_CHART_V3,
   TOP_POOLS_V3,
   TOP_POOLS_V3_TOKEN,
+  TOP_POOLS_V3_TOKENS,
   TOP_TOKENS_V3,
 } from 'apollo/queries-v3';
 import {
@@ -26,6 +28,7 @@ import {
   getBlocksFromTimestamps,
   getPercentChange,
   getSecondsOneDay,
+  splitQuery,
 } from 'utils';
 import dayjs from 'dayjs';
 import { fetchEternalFarmAPR, fetchPoolsAPR } from './api';
@@ -765,6 +768,114 @@ export async function getTopPairsV3ByToken(tokenAddress: string) {
 
     const pairsAddresses = topPairsIds.data.pools0
       .concat(topPairsIds.data.pools1)
+      .map((el: any) => el.id);
+
+    const pairsCurrent = await fetchPairsByTime(undefined, pairsAddresses);
+    const pairs24 = await fetchPairsByTime(oneDayBlock.number, pairsAddresses);
+    const pairs48 = await fetchPairsByTime(twoDayBlock.number, pairsAddresses);
+    const pairsWeek = await fetchPairsByTime(
+      oneWeekBlock.number,
+      pairsAddresses,
+    );
+
+    const parsedPairs = parsePairsData(pairsCurrent);
+    const parsedPairs24 = parsePairsData(pairs24);
+    const parsedPairs48 = parsePairsData(pairs48);
+    const parsedPairsWeek = parsePairsData(pairsWeek);
+
+    const formatted = pairsAddresses.map((address: string) => {
+      const current = parsedPairs[address];
+      const oneDay = parsedPairs24[address];
+      const twoDay = parsedPairs48[address];
+      const week = parsedPairsWeek[address];
+
+      if (!current) return;
+
+      const manageUntrackedVolume =
+        +current.volumeUSD <= 1 ? 'untrackedVolumeUSD' : 'volumeUSD';
+
+      const manageUntrackedTVL =
+        +current.totalValueLockedUSD <= 1
+          ? 'totalValueLockedUSDUntracked'
+          : 'totalValueLockedUSD';
+
+      const [oneDayVolumeUSD, oneDayVolumeChangeUSD] =
+        oneDay && twoDay
+          ? get2DayPercentChange(
+              current[manageUntrackedVolume],
+              oneDay[manageUntrackedVolume],
+              twoDay[manageUntrackedVolume],
+            )
+          : oneDay
+          ? [
+              parseFloat(current[manageUntrackedVolume]) -
+                parseFloat(oneDay[manageUntrackedVolume]),
+              0,
+            ]
+          : [parseFloat(current[manageUntrackedVolume]), 0];
+
+      const oneWeekVolumeUSD = week
+        ? parseFloat(current[manageUntrackedVolume]) -
+          parseFloat(week[manageUntrackedVolume])
+        : parseFloat(current[manageUntrackedVolume]);
+
+      const tvlUSD = parseFloat(current[manageUntrackedTVL]);
+      const tvlUSDChange = getPercentChange(
+        current[manageUntrackedTVL],
+        oneDay ? oneDay[manageUntrackedTVL] : undefined,
+      );
+
+      return {
+        token0: current.token0,
+        token1: current.token1,
+        fee: current.fee,
+        id: address,
+        oneDayVolumeUSD,
+        oneDayVolumeChangeUSD,
+        oneWeekVolumeUSD,
+        trackedReserveUSD: tvlUSD,
+        tvlUSDChange,
+        totalValueLockedUSD: current[manageUntrackedTVL],
+      };
+    });
+
+    return formatted;
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+export async function getTopPairsV3ByTokens(
+  tokenAddress: string,
+  tokenAddress1: string,
+) {
+  try {
+    const utcCurrentTime = dayjs();
+
+    const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix();
+    const utcTwoDaysBack = utcCurrentTime.subtract(2, 'day').unix();
+    const utcOneWeekBack = utcCurrentTime.subtract(1, 'week').unix();
+
+    const [
+      oneDayBlock,
+      twoDayBlock,
+      oneWeekBlock,
+    ] = await getBlocksFromTimestamps([
+      utcOneDayBack,
+      utcTwoDaysBack,
+      utcOneWeekBack,
+    ]);
+
+    const topPairsIds = await clientV3.query({
+      query: TOP_POOLS_V3_TOKENS(tokenAddress, tokenAddress1),
+      fetchPolicy: 'network-only',
+    });
+
+    const pairsAddresses = topPairsIds.data.pools0
+      .concat(topPairsIds.data.pools1)
+      .concat(topPairsIds.data.pools2)
+      .concat(topPairsIds.data.pools3)
+      .concat(topPairsIds.data.pools4)
       .map((el: any) => el.id);
 
     const pairsCurrent = await fetchPairsByTime(undefined, pairsAddresses);
@@ -1766,3 +1877,92 @@ function parsePairsData(tokenData: any) {
       }, {})
     : {};
 }
+
+export const getIntervalTokenDataV3 = async (
+  tokenAddress: string,
+  startTime: number,
+  interval = 3600,
+  latestBlock: number | undefined,
+) => {
+  const utcEndTime = dayjs.utc();
+  let time = startTime;
+
+  // create an array of hour start times until we reach current hour
+  // buffer by half hour to catch case where graph isnt synced to latest block
+  const timestamps = [];
+  while (time < utcEndTime.unix()) {
+    timestamps.push(time);
+    time += interval;
+  }
+
+  // backout if invalid timestamp format
+  if (timestamps.length === 0) {
+    return [];
+  }
+
+  // once you have all the timestamps, get the blocks for each timestamp in a bulk query
+  let blocks;
+  try {
+    blocks = await getBlocksFromTimestamps(timestamps, 100);
+
+    // catch failing case
+    if (!blocks || blocks.length === 0) {
+      return [];
+    }
+
+    if (latestBlock) {
+      blocks = blocks.filter((b) => {
+        return Number(b.number) <= latestBlock;
+      });
+    }
+
+    const result: any = await splitQuery(
+      PRICES_BY_BLOCK_V3,
+      clientV3,
+      [tokenAddress],
+      blocks,
+      50,
+    );
+
+    // format token ETH price results
+    const values: any[] = [];
+    for (const row in result) {
+      const timestamp = row.split('t')[1];
+      const derivedMatic = Number(result[row]?.derivedMatic ?? 0);
+      if (timestamp) {
+        values.push({
+          timestamp,
+          derivedMatic,
+        });
+      }
+    }
+
+    // go through eth usd prices and assign to original values array
+    let index = 0;
+    for (const brow in result) {
+      const timestamp = brow.split('b')[1];
+      if (timestamp) {
+        values[index].priceUSD =
+          result[brow].maticPriceUSD * values[index].derivedMatic;
+        index += 1;
+      }
+    }
+
+    const formattedHistory = [];
+
+    // for each hour, construct the open and close price
+    for (let i = 0; i < values.length - 1; i++) {
+      formattedHistory.push({
+        timestamp: values[i].timestamp,
+        open: Number(values[i].priceUSD),
+        close: Number(values[i + 1].priceUSD),
+      });
+    }
+
+    return formattedHistory;
+  } catch (e) {
+    console.log(e);
+    console.log('error fetching blocks');
+    return [];
+  }
+};
