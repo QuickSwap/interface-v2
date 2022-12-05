@@ -10,17 +10,12 @@ const VersionToggle: React.FC = () => {
   const { isV2, updateIsV2 } = useIsV2();
   const params: any = useParams();
   const history = useHistory();
-  const version = params ? params.version : 'v3';
+  const version = params && params.version ? params.version : 'v3';
 
   useEffect(() => {
     updateIsV2(version === 'v2');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [version]);
-
-  useEffect(() => {
-    updateIsV2(false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   return (
     <Box className='version-toggle-container'>
