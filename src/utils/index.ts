@@ -585,7 +585,6 @@ export const getTopTokens = async (
           return data;
         }),
     );
-    console.log('bul', bulkResults);
     return bulkResults;
   } catch (e) {
     console.log(e);
