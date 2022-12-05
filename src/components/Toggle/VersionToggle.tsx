@@ -17,6 +17,11 @@ const VersionToggle: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [version]);
 
+  useEffect(() => {
+    updateIsV2(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <Box className='version-toggle-container'>
       <Box
