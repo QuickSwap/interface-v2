@@ -2,7 +2,6 @@ import {
   ChainId,
   Currency,
   currencyEquals,
-  JSBI,
   Price,
   WETH,
   Token,
@@ -97,12 +96,6 @@ export default function useUSDCPrice(currency?: Currency): Price | undefined {
     if (wrapped.equals(usdcToken)) {
       return new Price(usdcToken, usdcToken, '1', '1');
     }
-
-    const ethPairETHAmount = ethPair?.reserveOf(WETH[chainId]);
-    const ethPairETHUSDCValue: JSBI =
-      ethPairETHAmount && usdcEthPair
-        ? usdcEthPair.priceOf(WETH[chainId]).quote(ethPairETHAmount).raw
-        : JSBI.BigInt(0);
 
     // all other tokens
     // first try the usdc pair
@@ -286,12 +279,6 @@ export function useUSDCPrices(currencies: Currency[]): (Price | undefined)[] {
     if (wrapped.equals(usdcToken)) {
       return new Price(usdcToken, usdcToken, '1', '1');
     }
-
-    const ethPairETHAmount = ethPair?.reserveOf(WETH[chainId]);
-    const ethPairETHUSDCValue: JSBI =
-      ethPairETHAmount && usdcEthPair
-        ? usdcEthPair.priceOf(WETH[chainId]).quote(ethPairETHAmount).raw
-        : JSBI.BigInt(0);
 
     // all other tokens
     // first try the usdc pair
