@@ -1,12 +1,5 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
-import {
-  CurrencyAmount,
-  JSBI,
-  Trade,
-  Token,
-  ETHER,
-  currencyEquals,
-} from '@uniswap/sdk';
+import { CurrencyAmount, JSBI, Trade, Token, ETHER } from '@uniswap/sdk';
 import ReactGA from 'react-ga';
 import { ArrowDown } from 'react-feather';
 import { Box, Button, CircularProgress } from '@material-ui/core';
@@ -218,7 +211,7 @@ const Swap: React.FC<{
   useEffect(() => {
     if (parsedCurrency0) {
       onCurrencySelection(Field.INPUT, parsedCurrency0);
-    } else {
+    } else if (history.location.pathname !== '/') {
       redirectWithCurrency(ETHER, true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
