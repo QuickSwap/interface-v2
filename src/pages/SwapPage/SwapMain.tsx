@@ -57,14 +57,15 @@ const SwapMain: React.FC = () => {
 
   useEffect(() => {
     updateIsV2(!isOnV2 && !isOnV3 ? true : isOnV2);
-    console.log('ccc', isOnV2, isOnV3);
-    if (!isOnV3 && isOnV2) {
-      redirectWithSwapType(SWAP_NORMAL);
-    } else {
-      redirectWithSwapType(SWAP_BEST_TRADE);
+    if (!swapType) {
+      if (!isOnV3 && isOnV2) {
+        redirectWithSwapType(SWAP_NORMAL);
+      } else {
+        redirectWithSwapType(SWAP_BEST_TRADE);
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOnV3, isOnV2]);
+  }, [isOnV3, isOnV2, swapType]);
 
   useEffect(() => {
     if (swapType) {
