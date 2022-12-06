@@ -102,20 +102,10 @@ export function useParaswapCallback(
         response: TransactionResponse;
         summary: string;
       }> {
-        const srcAmount =
-          priceRoute.side === SwapSide.SELL
-            ? priceRoute.srcAmount
-            : priceRoute.destAmount;
-        // const minDestAmount =
-        //   .minimumAmountOut(pct)
-        //   .multiply(JSBI.BigInt(10 ** trade.outputAmount.currency.decimals));
-
         const minDestAmount = new Fraction(ONE)
           .add(allowedSlippage)
           .invert()
           .multiply(priceRoute.destAmount).quotient;
-
-        console.log('ccc', minDestAmount.toString());
 
         const referrer = 'quickswapv3';
 

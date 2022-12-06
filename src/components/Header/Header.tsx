@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Box, useMediaQuery } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
-import { useWalletModalToggle } from 'state/application/hooks';
+import { useIsV2, useWalletModalToggle } from 'state/application/hooks';
 import {
   isTransactionRecent,
   useAllTransactions,
@@ -149,6 +149,8 @@ const Header: React.FC = () => {
     // },
   ];
 
+  const { updateIsV2 } = useIsV2();
+
   return (
     <Box className='header'>
       <WalletModal
@@ -173,6 +175,9 @@ const Header: React.FC = () => {
               className={`menuItem ${
                 pathname !== '/' && val.link.includes(pathname) ? 'active' : ''
               }`}
+              onClick={() => {
+                updateIsV2(false);
+              }}
             >
               <small>{val.text}</small>
               {val.isNew && (
@@ -210,7 +215,10 @@ const Header: React.FC = () => {
                       <Link
                         to={val.link}
                         key={index}
-                        onClick={() => setOpenDetailMenu(false)}
+                        onClick={() => {
+                          setOpenDetailMenu(false);
+                          updateIsV2(false);
+                        }}
                       >
                         <small>{val.text}</small>
                       </Link>
@@ -261,7 +269,10 @@ const Header: React.FC = () => {
                         <Link
                           to={val.link}
                           key={index}
-                          onClick={() => setOpenDetailMenu(false)}
+                          onClick={() => {
+                            setOpenDetailMenu(false);
+                            updateIsV2(false);
+                          }}
                         >
                           <small>{val.text}</small>
                         </Link>
