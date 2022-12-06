@@ -59,7 +59,7 @@ export const BestTradeSummary: React.FC<TradeSummaryProps> = ({
           onClick={() => setOpenSettingsModal(true)}
           className='swapSlippage'
         >
-          <small>{Number(allowedSlippage.toSignificant()) / 100}%</small>
+          <small>{Number(allowedSlippage.toSignificant())}%</small>
           <EditIcon />
         </Box>
       </Box>
