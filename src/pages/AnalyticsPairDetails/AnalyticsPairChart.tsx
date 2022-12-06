@@ -285,13 +285,13 @@ const AnalyticsPairChart: React.FC<{
           apyVisionData.fee_apys_1d ?? 0,
         ];
         const ilAPYs = [
-          apyVisionData.fee_apys_inception ?? 0,
-          apyVisionData.fee_apys_90d ?? 0,
-          apyVisionData.fee_apys_60d ?? 0,
-          apyVisionData.fee_apys_30d ?? 0,
-          apyVisionData.fee_apys_14d ?? 0,
-          apyVisionData.fee_apys_7d ?? 0,
-          apyVisionData.fee_apys_1d ?? 0,
+          apyVisionData.il_apys_inception ?? 0,
+          apyVisionData.il_apys_90d ?? 0,
+          apyVisionData.il_apys_60d ?? 0,
+          apyVisionData.il_apys_30d ?? 0,
+          apyVisionData.il_apys_14d ?? 0,
+          apyVisionData.il_apys_7d ?? 0,
+          apyVisionData.il_apys_1d ?? 0,
         ];
         return [
           {
@@ -317,7 +317,7 @@ const AnalyticsPairChart: React.FC<{
             ? apyVisionData.prices[1]
             : undefined;
         const asset0Prices = [
-          apyVisionPrice0?.avg_usd_since_inception ?? 0,
+          apyVisionPrice0?.inception ?? 0,
           apyVisionPrice0?.usd_90d ?? 0,
           apyVisionPrice0?.usd_60d ?? 0,
           apyVisionPrice0?.usd_30d ?? 0,
@@ -326,7 +326,7 @@ const AnalyticsPairChart: React.FC<{
           apyVisionPrice0?.usd_1d ?? 0,
         ];
         const asset1Prices = [
-          apyVisionPrice1?.avg_usd_since_inception ?? 0,
+          apyVisionPrice1?.inception ?? 0,
           apyVisionPrice1?.usd_90d ?? 0,
           apyVisionPrice1?.usd_60d ?? 0,
           apyVisionPrice1?.usd_30d ?? 0,
