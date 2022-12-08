@@ -383,6 +383,41 @@ export const GlobalValue = {
         'GHST',
         'Aavegotchi GHST Token',
       ),
+      BOB: new Token(
+        ChainId.MATIC,
+        '0xB0B195aEFA3650A6908f15CdaC7D92F8a5791B0B',
+        18,
+        'BOB',
+        'BOB',
+      ),
+      axlUSDC: new Token(
+        ChainId.MATIC,
+        '0x750e4C4984a9e0f12978eA6742Bc1c5D248f40ed',
+        18,
+        'axlUSDC',
+        'Axelar Wrapped USDC',
+      ),
+      TUSD: new Token(
+        ChainId.MATIC,
+        '0x2e1AD108fF1D8C782fcBbB89AAd783aC49586756',
+        18,
+        'TUSD',
+        'TrueUSD',
+      ),
+      UND: new Token(
+        ChainId.MATIC,
+        '0x1eBA4B44C4F8cc2695347C6a78F0B7a002d26413',
+        18,
+        'UND',
+        'Unbound Dollar',
+      ),
+      USDD: new Token(
+        ChainId.MATIC,
+        '0xFFA4D863C96e743A2e1513824EA006B8D0353C57',
+        18,
+        'USDD',
+        'Decentralized USD',
+      ),
     },
   },
   marketSDK: {
@@ -475,6 +510,17 @@ export const GlobalData = {
     ],
     CHART_DURATION_TEXTS: ['1M', '3M', '6M', '1Y', 'All'],
   },
+  stableCoins: [
+    GlobalValue.tokens.COMMON.USDC,
+    GlobalValue.tokens.COMMON.USDT,
+    GlobalValue.tokens.COMMON.MI,
+    GlobalValue.tokens.COMMON.DAI,
+    GlobalValue.tokens.COMMON.axlUSDC,
+    GlobalValue.tokens.COMMON.BOB,
+    GlobalValue.tokens.COMMON.TUSD,
+    GlobalValue.tokens.COMMON.UND,
+    GlobalValue.tokens.COMMON.USDD,
+  ],
 };
 
 // a list of tokens by chain
