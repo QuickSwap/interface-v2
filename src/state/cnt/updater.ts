@@ -18,7 +18,7 @@ export default function Updater(): null {
   const fetchCNTFarmList = useCNTFarmListCallback();
   const fetchAllListsCallback = useCallback(() => {
     if (!isWindowVisible) return;
-    // console.log('list of cnt farms => ', cntFarms);
+
     Object.keys(cntFarms).forEach((url) =>
       fetchCNTFarmList(url).catch((error) =>
         console.debug('interval list fetching error', error),

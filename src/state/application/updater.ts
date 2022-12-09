@@ -4,20 +4,16 @@ import { useActiveWeb3React } from 'hooks';
 import useDebounce from 'hooks/useDebounce';
 import useIsWindowVisible from 'hooks/useIsWindowVisible';
 import { updateBlockNumber } from './actions';
-import { useEthPrice, useIsV2, useMaticPrice } from './hooks';
+import { useEthPrice, useMaticPrice } from './hooks';
 import { getEthPrice } from 'utils';
 import { getMaticPrice } from 'utils/v3-graph';
-import { useParams } from 'react-router-dom';
 
 export default function Updater(): null {
   const { library, chainId } = useActiveWeb3React();
   const { ethereum } = window as any;
   const dispatch = useDispatch();
-  const { ethPrice, updateEthPrice } = useEthPrice();
-  const { maticPrice, updateMaticPrice } = useMaticPrice();
-  const { updateIsV2 } = useIsV2();
-  const params: any = useParams();
-  const isOnV2 = params && params.version ? params.version === 'v2' : false;
+  const { updateEthPrice } = useEthPrice();
+  const { updateMaticPrice } = useMaticPrice();
 
   const windowVisible = useIsWindowVisible();
 
@@ -47,12 +43,6 @@ export default function Updater(): null {
     },
     [chainId, setState],
   );
-
-  // update version when loading app according to router param
-  useEffect(() => {
-    updateIsV2(isOnV2);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOnV2]);
 
   // this is for refreshing eth price every 10 mins
   useEffect(() => {
