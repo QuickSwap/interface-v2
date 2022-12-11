@@ -18,7 +18,7 @@ import { tryParseAmount } from 'state/swap/v3/hooks';
 import { Presets } from 'state/mint/v3/reducer';
 import { PriceFormats } from 'components/v3/PriceFomatToggler';
 import LiquidityChartRangeInput from 'components/v3/LiquidityChartRangeInput';
-import { GlobalValue } from 'constants/index';
+import { GlobalData, GlobalValue } from 'constants/index';
 import { toToken } from 'constants/v3/routing';
 import { Box } from '@material-ui/core';
 import { ReportProblemOutlined } from '@material-ui/icons';
@@ -51,11 +51,7 @@ export function SelectRange({
   const isStablecoinPair = useMemo(() => {
     if (!currencyA || !currencyB) return false;
 
-    const DAI = toToken(GlobalValue.tokens.COMMON.DAI);
-    const MAI = toToken(GlobalValue.tokens.COMMON.MI);
-    const USDC = toToken(GlobalValue.tokens.COMMON.USDC);
-    const USDT = toToken(GlobalValue.tokens.COMMON.USDT);
-    const stablecoins = [DAI.address, USDC.address, USDT.address, MAI.address];
+    const stablecoins = GlobalData.stableCoins.map((token) => token.address);
 
     return (
       stablecoins.includes(currencyA.wrapped.address) &&
