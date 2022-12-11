@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
-import { CurrencyAmount, JSBI, Trade, Token } from '@uniswap/sdk';
+import { CurrencyAmount, JSBI, Trade, Token, ETHER } from '@uniswap/sdk';
 import ReactGA from 'react-ga';
 import { ArrowDown } from 'react-feather';
 import { Box, Button, CircularProgress } from '@material-ui/core';
@@ -45,6 +45,8 @@ import { useTranslation } from 'react-i18next';
 import TokenWarningModal from 'components/v3/TokenWarningModal';
 import { useHistory } from 'react-router-dom';
 import { useAllTokens, useCurrency } from 'hooks/Tokens';
+import useParsedQueryString from 'hooks/useParsedQueryString';
+import useSwapRedirects from 'hooks/useSwapRedirect';
 
 const Swap: React.FC<{
   currencyBgClass?: string;
@@ -74,7 +76,7 @@ const Swap: React.FC<{
   // reset if they close warning without tokens in params
   const handleDismissTokenWarning = useCallback(() => {
     setDismissTokenWarning(true);
-    history.push('/swap/v2');
+    history.push('/swap?swapIndex=1');
   }, [history]);
 
   // dismiss warning if all imported tokens are in active lists
@@ -116,7 +118,6 @@ const Swap: React.FC<{
   };
   const trade = showWrap ? undefined : tradesByVersion[toggledVersion];
   const {
-    onSwitchTokens,
     onCurrencySelection,
     onUserInput,
     onChangeRecipient,
@@ -193,18 +194,45 @@ const Swap: React.FC<{
     }
   };
 
+  const parsedQs = useParsedQueryString();
+  const { redirectWithCurrency, redirectWithSwitch } = useSwapRedirects();
+
   const handleCurrencySelect = useCallback(
     (inputCurrency) => {
       setApprovalSubmitted(false); // reset 2 step UI for approvals
-      onCurrencySelection(Field.INPUT, inputCurrency);
+      redirectWithCurrency(inputCurrency, true);
     },
-    [onCurrencySelection],
+    [redirectWithCurrency],
   );
 
+  const parsedCurrency0Id = (parsedQs.currency0 ??
+    parsedQs.inputCurrency) as string;
+  const parsedCurrency0 = useCurrency(parsedCurrency0Id);
+  useEffect(() => {
+    if (parsedCurrency0) {
+      onCurrencySelection(Field.INPUT, parsedCurrency0);
+    } else if (history.location.pathname !== '/') {
+      redirectWithCurrency(ETHER, true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [parsedCurrency0Id]);
+
   const handleOtherCurrencySelect = useCallback(
-    (outputCurrency) => onCurrencySelection(Field.OUTPUT, outputCurrency),
-    [onCurrencySelection],
+    (outputCurrency) => {
+      redirectWithCurrency(outputCurrency, false);
+    },
+    [redirectWithCurrency],
   );
+
+  const parsedCurrency1Id = (parsedQs.currency1 ??
+    parsedQs.outputCurrency) as string;
+  const parsedCurrency1 = useCurrency(parsedCurrency1Id);
+  useEffect(() => {
+    if (parsedCurrency1) {
+      onCurrencySelection(Field.OUTPUT, parsedCurrency1);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [parsedCurrency1Id]);
 
   const { callback: swapCallback, error: swapCallbackError } = useSwapCallback(
     trade,
@@ -514,7 +542,7 @@ const Swap: React.FC<{
         bgClass={currencyBgClass}
       />
       <Box className='exchangeSwap'>
-        <ExchangeIcon onClick={onSwitchTokens} />
+        <ExchangeIcon onClick={redirectWithSwitch} />
       </Box>
       <CurrencyInput
         title={`${t('toEstimate')}:`}
