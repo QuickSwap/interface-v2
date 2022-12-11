@@ -8,6 +8,7 @@ import LiquidityPoolRow from './LiquidityPoolRow';
 import { useAllTokens } from 'hooks/Tokens';
 import { useTranslation } from 'react-i18next';
 import { useEthPrice } from 'state/application/hooks';
+import { getTopPairsV3ByTokens } from 'utils/v3-graph';
 
 const LiquidityPools: React.FC<{
   token1: Token;
@@ -28,6 +29,16 @@ const LiquidityPools: React.FC<{
     () =>
       tokenPairs
         ? tokenPairs
+            .filter(
+              (item: any, pos: number, self: any[]) =>
+                self.findIndex(
+                  (item1: any) =>
+                    item &&
+                    item1 &&
+                    item.token0.symbol === item1.token0.symbol &&
+                    item.token1.symbol === item1.token1.symbol,
+                ) === pos,
+            )
             .filter((pair: any) => {
               if (liquidityFilterIndex === 0) {
                 return true;
@@ -43,6 +54,11 @@ const LiquidityPools: React.FC<{
                 );
               }
             })
+            .sort((pair1: any, pair2: any) =>
+              Number(pair1.trackedReserveUSD) > Number(pair2.trackedReserveUSD)
+                ? -1
+                : 1,
+            )
             .slice(0, 5)
         : [],
     [tokenPairs, liquidityFilterIndex, token1Address, token2Address],
@@ -57,6 +73,10 @@ const LiquidityPools: React.FC<{
     if (!ethPrice.price) return;
     (async () => {
       const tokenPairs = await getTokenPairs(token1Address, token2Address);
+      const tokenPairsV3 = await getTopPairsV3ByTokens(
+        token1Address.toLowerCase(),
+        token2Address.toLowerCase(),
+      );
 
       const formattedPairs = tokenPairs
         ? tokenPairs
@@ -74,7 +94,7 @@ const LiquidityPools: React.FC<{
       const pairData = await getBulkPairData(formattedPairs, ethPrice.price);
 
       if (pairData) {
-        updateTokenPairs(pairData);
+        updateTokenPairs(pairData.concat(tokenPairsV3));
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -3,8 +3,9 @@ import { useTheme } from '@material-ui/core/styles';
 import { Box, Grid, useMediaQuery } from '@material-ui/core';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
 import { SettingsModal, SwapTokenDetails, ToggleSwitch } from 'components';
-import { useIsProMode } from 'state/application/hooks';
+import { useIsProMode, useIsV2 } from 'state/application/hooks';
 import { useDerivedSwapInfo } from 'state/swap/hooks';
+import { useDerivedSwapInfo as useDerivedSwapInfoV3 } from 'state/swap/v3/hooks';
 import { Field } from 'state/swap/actions';
 import { getPairAddress, getSwapTransactions } from 'utils';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
@@ -19,6 +20,7 @@ import 'pages/styles/swap.scss';
 import { ReactComponent as SettingsIcon } from 'assets/images/SettingsIcon.svg';
 import AdsSlider from 'components/AdsSlider';
 import { SwapBuySellWidget } from './BuySellWidget';
+import { Token } from '@uniswap/sdk';
 
 const SwapPage: React.FC = () => {
   const [openSettingsModal, setOpenSettingsModal] = useState(false);
@@ -38,10 +40,15 @@ const SwapPage: React.FC = () => {
   const [infoPos, setInfoPos] = useState('right');
 
   const { currencies } = useDerivedSwapInfo();
+  const { currencies: currenciesV3 } = useDerivedSwapInfoV3();
   const { chainId } = useActiveWeb3React();
 
   const token1 = wrappedCurrency(currencies[Field.INPUT], chainId);
   const token2 = wrappedCurrency(currencies[Field.OUTPUT], chainId);
+
+  const token1V3 = currenciesV3[Field.INPUT]?.wrapped;
+  const token2V3 = currenciesV3[Field.OUTPUT]?.wrapped;
+  const { isV2 } = useIsV2();
 
   // this is for refreshing data of trades table every 60 seconds
   useEffect(() => {
@@ -133,20 +140,38 @@ const SwapPage: React.FC = () => {
           </Grid>
           <Grid item xs={12} sm={12} md={6} lg={7}>
             <Box className='flex flex-wrap justify-between fullWidth'>
-              {token1 && (
+              {isV2 && token1 && (
                 <Box className='swapTokenDetails'>
                   <SwapTokenDetails token={token1} />
                 </Box>
               )}
-              {token2 && (
+              {isV2 && token2 && (
                 <Box className='swapTokenDetails'>
                   <SwapTokenDetails token={token2} />
                 </Box>
               )}
+              {!isV2 && token1V3 && (
+                <Box className='swapTokenDetails'>
+                  <SwapTokenDetails token={token1V3 as Token} />
+                </Box>
+              )}
+              {!isV2 && token2V3 && (
+                <Box className='swapTokenDetails'>
+                  <SwapTokenDetails token={token2V3 as Token} />
+                </Box>
+              )}
             </Box>
-            {token1 && token2 && (
+            {isV2 && token1 && token2 && (
               <Box className='wrapper' marginTop='32px'>
                 <LiquidityPools token1={token1} token2={token2} />
+              </Box>
+            )}
+            {!isV2 && token1V3 && token2V3 && (
+              <Box className='wrapper' marginTop='32px'>
+                <LiquidityPools
+                  token1={token1V3 as Token}
+                  token2={token2V3 as Token}
+                />
               </Box>
             )}
             <SwapBuySellWidget />
