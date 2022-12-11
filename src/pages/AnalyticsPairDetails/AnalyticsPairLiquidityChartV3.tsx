@@ -29,7 +29,7 @@ const AnalyticsPairLiquidityChartV3: React.FC<{
         updateLiquidtyChartData(data);
       }
     });
-  }, [pairData, pairAddress]);
+  }, [pairAddress]);
 
   const [zoom, setZoom] = useState(5);
 
@@ -59,7 +59,12 @@ const AnalyticsPairLiquidityChartV3: React.FC<{
   }, [formattedAddress0, formattedAddress1, pairData]);
 
   useEffect(() => {
-    if (!pairData || !liquidityChartData || !liquidityChartData.ticksProcessed)
+    if (
+      !pairData ||
+      !liquidityChartData ||
+      !liquidityChartData.ticksProcessed ||
+      !liquidityChartData.ticksProcessed.length
+    )
       return;
 
     async function processTicks() {
@@ -131,14 +136,8 @@ const AnalyticsPairLiquidityChartV3: React.FC<{
     }
 
     processTicks();
-  }, [
-    liquidityChartData,
-    pairAddress,
-    pairData,
-    MAX_UINT128,
-    _token0,
-    _token1,
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [liquidityChartData, pairData, _token0, _token1]);
 
   const formattedData = useMemo(() => {
     if (!processedData) return undefined;
