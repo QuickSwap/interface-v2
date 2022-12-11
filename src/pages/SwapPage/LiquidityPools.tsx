@@ -80,6 +80,7 @@ const LiquidityPools: React.FC<{
       const tokenPairsV3 = await getTopPairsV3ByTokens(
         token1Address.toLowerCase(),
         token2Address.toLowerCase(),
+        token1.chainId ?? ChainId.MATIC,
       );
 
       const formattedPairs = tokenPairs

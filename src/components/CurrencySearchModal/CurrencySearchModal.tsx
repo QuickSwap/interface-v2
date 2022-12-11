@@ -1,4 +1,4 @@
-import { ChainId, Currency, currencyEquals, ETHER } from '@uniswap/sdk';
+import { ChainId, Currency, ETHER } from '@uniswap/sdk';
 import React, { useCallback, useEffect, useState } from 'react';
 import ReactGA from 'react-ga';
 import { CustomModal } from 'components';
@@ -58,7 +58,7 @@ const CurrencySearchModal: React.FC<CurrencySearchModalProps> = ({
       }
       onDismiss();
     },
-    [onDismiss, onCurrencySelect, isV2],
+    [isV2, onDismiss, onCurrencySelect, nativeCurrency],
   );
 
   const handleClickChangeList = useCallback(() => {

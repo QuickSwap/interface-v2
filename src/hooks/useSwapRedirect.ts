@@ -1,4 +1,5 @@
-import { currencyEquals, ETHER } from '@uniswap/sdk';
+import { ChainId, currencyEquals, ETHER } from '@uniswap/sdk';
+import { useActiveWeb3React } from 'hooks';
 import { useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import useParsedQueryString from './useParsedQueryString';
@@ -7,12 +8,14 @@ export default function useSwapRedirects() {
   const history = useHistory();
   const currentPath = history.location.pathname + history.location.search;
   const parsedQs = useParsedQueryString();
+  const { chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ?? ChainId.MATIC;
 
   const redirectWithCurrency = useCallback(
     (currency: any, isInput: boolean, isV2 = true) => {
       let redirectPath = '';
       const currencyId = (isV2
-      ? currencyEquals(currency, ETHER)
+      ? currencyEquals(currency, ETHER[chainIdToUse])
       : currency.isNative)
         ? 'ETH'
         : currency.address;
@@ -55,7 +58,15 @@ export default function useSwapRedirects() {
       }
       history.push(redirectPath);
     },
-    [currentPath, history, parsedQs],
+    [
+      chainIdToUse,
+      currentPath,
+      history,
+      parsedQs.currency0,
+      parsedQs.currency1,
+      parsedQs.inputCurrency,
+      parsedQs.outputCurrency,
+    ],
   );
 
   const redirectWithSwitch = useCallback(() => {

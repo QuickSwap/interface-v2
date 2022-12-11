@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useHistory, useParams } from 'react-router-dom';
 import './index.scss';
 import { useIsV2 } from 'state/application/hooks';
-import { GlobalConst } from 'constants/index';
+import { NEW_QUICK_ADDRESS } from 'constants/v3/addresses';
 
 const VersionToggle: React.FC = () => {
   const { t } = useTranslation();
@@ -19,7 +19,6 @@ const VersionToggle: React.FC = () => {
   }, [version]);
 
   const redirectWithVersion = (version: string) => {
-    const newQuickAddress = GlobalConst.addresses.NEW_QUICK_ADDRESS;
     const versionParam = params ? params.version : undefined;
     const currencyIdAParam = params ? params.currencyIdA : undefined;
     const currencyIdBParam = params ? params.currencyIdB : undefined;
@@ -28,7 +27,7 @@ const VersionToggle: React.FC = () => {
       : history.location.pathname +
         (history.location.pathname.includes('/add')
           ? (currencyIdAParam ? '' : `/ETH`) +
-            (currencyIdBParam ? '' : `/${newQuickAddress}`)
+            (currencyIdBParam ? '' : `/${NEW_QUICK_ADDRESS}`)
           : '') +
         `/${version}`;
     history.push(

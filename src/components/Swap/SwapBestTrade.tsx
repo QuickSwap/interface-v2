@@ -1,9 +1,5 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
-<<<<<<< HEAD
-import { JSBI, Trade, Token, TradeType, Fraction, ChainId } from '@uniswap/sdk';
-=======
-import { JSBI, Trade, Token, currencyEquals, ETHER } from '@uniswap/sdk';
->>>>>>> dev
+import { JSBI, Trade, Token, ChainId, ETHER } from '@uniswap/sdk';
 import { Currency, CurrencyAmount } from '@uniswap/sdk-core';
 import ReactGA from 'react-ga';
 import { ArrowDown } from 'react-feather';
@@ -94,7 +90,6 @@ const SwapBestTrade: React.FC<{
   const { account, chainId } = useActiveWeb3React();
   const { independentField, typedValue, recipient } = useSwapState();
   const chainIdToUse = chainId ? chainId : ChainId.MATIC;
-  const nativeCurrency = Token.ETHER[chainIdToUse];
   const {
     currencyBalances,
     parsedAmount,

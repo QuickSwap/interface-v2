@@ -1,9 +1,12 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
-<<<<<<< HEAD
-import { ChainId, CurrencyAmount, JSBI, Token, Trade } from '@uniswap/sdk';
-=======
-import { CurrencyAmount, JSBI, Trade, Token, ETHER } from '@uniswap/sdk';
->>>>>>> dev
+import {
+  CurrencyAmount,
+  JSBI,
+  Trade,
+  Token,
+  ChainId,
+  ETHER,
+} from '@uniswap/sdk';
 import ReactGA from 'react-ga';
 import { ArrowDown } from 'react-feather';
 import { Box, Button, CircularProgress } from '@material-ui/core';
@@ -94,7 +97,6 @@ const Swap: React.FC<{
   const { t } = useTranslation();
   const { account, chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ? chainId : ChainId.MATIC;
-  const nativeCurrency = Token.ETHER[chainIdToUse];
   const { independentField, typedValue, recipient } = useSwapState();
   const {
     v1Trade,
