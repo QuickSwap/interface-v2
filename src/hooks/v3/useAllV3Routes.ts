@@ -82,11 +82,12 @@ export function useAllV3Routes(
   //const [singleHopOnly] = useUserSingleHopOnly();
 
   return useMemo(() => {
-    if (poolsLoading || !chainId || !pools || !currencyIn || !currencyOut)
+    if (poolsLoading || !chainId || !pools || !currencyIn || !currencyOut) {
       return {
         loading: true,
         routes: [],
       };
+    }
 
     //Hack
     // const singleIfWrapped = (currencyIn.isNative || currencyOut.isNative)

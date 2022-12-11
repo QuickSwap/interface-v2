@@ -98,19 +98,10 @@ const AnalyticsTokenDetails: React.FC = () => {
   }, [tokenTransactions]);
 
   useEffect(() => {
-    if (isV2 === undefined) return;
-    setLoadingData(true);
-    setToken(null);
-    updateTokenPairs(null);
-    updateTokenTransactions(null);
-
     async function fetchTokenInfo() {
       try {
         if (!isV2) {
-          if (
-            maticPrice.price !== undefined &&
-            maticPrice.oneDayPrice !== undefined
-          ) {
+          if (maticPrice.price && maticPrice.oneDayPrice) {
             const tokenInfo = await getTokenInfoV3(
               maticPrice.price,
               maticPrice.oneDayPrice,
@@ -120,12 +111,10 @@ const AnalyticsTokenDetails: React.FC = () => {
             if (tokenInfo) {
               setToken(tokenInfo[0] || tokenInfo);
             }
+            setLoadingData(false);
           }
         } else {
-          if (
-            ethPrice.price !== undefined &&
-            ethPrice.oneDayPrice !== undefined
-          ) {
+          if (ethPrice.price && ethPrice.oneDayPrice) {
             const tokenInfo = await getTokenInfo(
               ethPrice.price,
               ethPrice.oneDayPrice,
@@ -135,9 +124,9 @@ const AnalyticsTokenDetails: React.FC = () => {
             if (tokenInfo) {
               setToken(tokenInfo[0] || tokenInfo);
             }
+            setLoadingData(false);
           }
         }
-        setLoadingData(false);
       } catch (e) {
         setLoadingData(false);
       }
@@ -192,13 +181,15 @@ const AnalyticsTokenDetails: React.FC = () => {
         }
       }
     }
-    fetchTokenInfo();
-    if (!isV2) {
-      fetchPairsV3();
-      fetchTransactions();
-    } else {
-      if (ethPrice.price) {
-        fetchPairs();
+    if (isV2 !== undefined) {
+      fetchTokenInfo();
+      if (!isV2) {
+        fetchPairsV3();
+        fetchTransactions();
+      } else {
+        if (ethPrice.price) {
+          fetchPairs();
+        }
       }
     }
   }, [
@@ -212,9 +203,11 @@ const AnalyticsTokenDetails: React.FC = () => {
   ]);
 
   useEffect(() => {
+    setLoadingData(true);
     setToken(null);
     updateTokenPairs(null);
-  }, [tokenAddress]);
+    updateTokenTransactions(null);
+  }, [tokenAddress, isV2]);
 
   useEffect(() => {
     if (token && (!isV2 ? tokenTransactions : tokenPairs)) {

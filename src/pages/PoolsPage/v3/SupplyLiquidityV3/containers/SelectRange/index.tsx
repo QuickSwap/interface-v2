@@ -23,7 +23,7 @@ import { Box } from '@material-ui/core';
 import { ReportProblemOutlined } from '@material-ui/icons';
 import { useActiveWeb3React } from 'hooks';
 import { ChainId } from '@uniswap/sdk';
-import { MI, USDC, USDT, DAI } from 'constants/v3/addresses';
+import { StableCoins } from 'constants/v3/addresses';
 import { getEternalFarmFromTokens } from 'utils';
 
 interface IRangeSelector {
@@ -55,18 +55,7 @@ export function SelectRange({
   const isStablecoinPair = useMemo(() => {
     if (!currencyA || !currencyB) return false;
 
-    const MAI_TOKEN = MI[chainIdToUse] ? toToken(MI[chainIdToUse]) : undefined;
-    const USDC_TOKEN = toToken(USDC[chainIdToUse]);
-    const USDT_TOKEN = USDT[chainIdToUse]
-      ? toToken(USDT[chainIdToUse])
-      : undefined;
-    const DAI_TOKEN = toToken(DAI[chainIdToUse]);
-    const stablecoins = [
-      USDC_TOKEN.address,
-      USDT_TOKEN?.address,
-      MAI_TOKEN?.address,
-      DAI_TOKEN.address,
-    ];
+    const stablecoins = StableCoins[chainIdToUse].map((token) => token.address);
 
     return (
       stablecoins.includes(currencyA.wrapped.address) &&

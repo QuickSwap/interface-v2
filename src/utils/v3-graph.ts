@@ -18,8 +18,9 @@ import {
   TOKEN_CHART_V3,
   TOP_POOLS_V3,
   TOP_POOLS_V3_TOKEN,
+  TOP_POOLS_V3_TOKENS,
   TOP_TOKENS_V3,
-  V3_PRICES_BY_BLOCK,
+  PRICES_BY_BLOCK_V3,
 } from 'apollo/queries-v3';
 import {
   get2DayPercentChange,
@@ -512,7 +513,7 @@ export const getIntervalTokenDataV3 = async (
     }
 
     const result: any = await splitQuery(
-      V3_PRICES_BY_BLOCK,
+      PRICES_BY_BLOCK_V3,
       clientV3[chainId],
       [tokenAddress],
       blocks,
@@ -1020,6 +1021,128 @@ export async function getTopPairsV3ByToken(
   }
 }
 
+export async function getTopPairsV3ByTokens(
+  tokenAddress: string,
+  tokenAddress1: string,
+  chainId: ChainId,
+) {
+  try {
+    const utcCurrentTime = dayjs();
+
+    const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix();
+    const utcTwoDaysBack = utcCurrentTime.subtract(2, 'day').unix();
+    const utcOneWeekBack = utcCurrentTime.subtract(1, 'week').unix();
+
+    const [
+      oneDayBlock,
+      twoDayBlock,
+      oneWeekBlock,
+    ] = await getBlocksFromTimestamps(
+      [utcOneDayBack, utcTwoDaysBack, utcOneWeekBack],
+      500,
+      chainId,
+    );
+
+    const topPairsIds = await clientV3[chainId].query({
+      query: TOP_POOLS_V3_TOKENS(tokenAddress, tokenAddress1),
+      fetchPolicy: 'network-only',
+    });
+
+    const pairsAddresses = topPairsIds.data.pools0
+      .concat(topPairsIds.data.pools1)
+      .concat(topPairsIds.data.pools2)
+      .concat(topPairsIds.data.pools3)
+      .concat(topPairsIds.data.pools4)
+      .map((el: any) => el.id);
+
+    const pairsCurrent = await fetchPairsByTime(
+      undefined,
+      pairsAddresses,
+      chainId,
+    );
+    const pairs24 = await fetchPairsByTime(
+      oneDayBlock.number,
+      pairsAddresses,
+      chainId,
+    );
+    const pairs48 = await fetchPairsByTime(
+      twoDayBlock.number,
+      pairsAddresses,
+      chainId,
+    );
+    const pairsWeek = await fetchPairsByTime(
+      oneWeekBlock.number,
+      pairsAddresses,
+      chainId,
+    );
+
+    const parsedPairs = parsePairsData(pairsCurrent);
+    const parsedPairs24 = parsePairsData(pairs24);
+    const parsedPairs48 = parsePairsData(pairs48);
+    const parsedPairsWeek = parsePairsData(pairsWeek);
+
+    const formatted = pairsAddresses.map((address: string) => {
+      const current = parsedPairs[address];
+      const oneDay = parsedPairs24[address];
+      const twoDay = parsedPairs48[address];
+      const week = parsedPairsWeek[address];
+
+      if (!current) return;
+
+      const manageUntrackedVolume =
+        +current.volumeUSD <= 1 ? 'untrackedVolumeUSD' : 'volumeUSD';
+
+      const manageUntrackedTVL =
+        +current.totalValueLockedUSD <= 1
+          ? 'totalValueLockedUSDUntracked'
+          : 'totalValueLockedUSD';
+
+      const [oneDayVolumeUSD, oneDayVolumeChangeUSD] =
+        oneDay && twoDay
+          ? get2DayPercentChange(
+              current[manageUntrackedVolume],
+              oneDay[manageUntrackedVolume],
+              twoDay[manageUntrackedVolume],
+            )
+          : oneDay
+          ? [
+              parseFloat(current[manageUntrackedVolume]) -
+                parseFloat(oneDay[manageUntrackedVolume]),
+              0,
+            ]
+          : [parseFloat(current[manageUntrackedVolume]), 0];
+
+      const oneWeekVolumeUSD = week
+        ? parseFloat(current[manageUntrackedVolume]) -
+          parseFloat(week[manageUntrackedVolume])
+        : parseFloat(current[manageUntrackedVolume]);
+
+      const tvlUSD = parseFloat(current[manageUntrackedTVL]);
+      const tvlUSDChange = getPercentChange(
+        current[manageUntrackedTVL],
+        oneDay ? oneDay[manageUntrackedTVL] : undefined,
+      );
+
+      return {
+        token0: current.token0,
+        token1: current.token1,
+        fee: current.fee,
+        id: address,
+        oneDayVolumeUSD,
+        oneDayVolumeChangeUSD,
+        oneWeekVolumeUSD,
+        trackedReserveUSD: tvlUSD,
+        tvlUSDChange,
+        totalValueLockedUSD: current[manageUntrackedTVL],
+      };
+    });
+
+    return formatted;
+  } catch (err) {
+    console.error(err);
+  }
+}
+
 export async function getPairsAPR(pairAddresses: string[], chainId: ChainId) {
   const aprs: any = await fetchPoolsAPR(chainId);
   const farmAprs: any = await fetchEternalFarmAPR(chainId);
@@ -1027,6 +1150,7 @@ export async function getPairsAPR(pairAddresses: string[], chainId: ChainId) {
     pairAddresses,
     chainId,
   );
+
   const _farmingAprs: {
     [type: string]: number;
   } = farmingAprs.reduce(

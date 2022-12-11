@@ -2,7 +2,6 @@ import {
   ChainId,
   Currency,
   currencyEquals,
-  JSBI,
   Price,
   WETH,
   Token,
@@ -111,36 +110,18 @@ export default function useUSDCPrice(currency?: Currency): Price | undefined {
       return new Price(usdcToken, usdcToken, '1', '1');
     }
 
-    const ethPairETHAmount = ethPair?.reserveOf(WETH[chainId]);
-    const ethPairETHUSDCValue: JSBI =
-      ethPairETHAmount && usdcEthPair
-        ? usdcEthPair.priceOf(WETH[chainId]).quote(ethPairETHAmount).raw
-        : JSBI.BigInt(0);
-
     // all other tokens
     // first try the usdc pair
-    if (
-      usdcPairState === PairState.EXISTS &&
-      usdcPair &&
-      usdcPair.reserveOf(usdcToken).greaterThan(ethPairETHUSDCValue)
-    ) {
+    if (usdcPairState === PairState.EXISTS && usdcPair) {
       const price = usdcPair.priceOf(wrapped);
 
       return new Price(currency, usdcToken, price.denominator, price.numerator);
     }
-    if (
-      usdtPairState === PairState.EXISTS &&
-      usdtPair &&
-      usdtPair.reserveOf(usdtToken).greaterThan(ethPairETHUSDCValue)
-    ) {
+    if (usdtPairState === PairState.EXISTS && usdtPair) {
       const price = usdtPair.priceOf(wrapped);
       return new Price(currency, usdtToken, price.denominator, price.numerator);
     }
-    if (
-      daiPairState === PairState.EXISTS &&
-      daiPair &&
-      daiPair.reserveOf(daiToken).greaterThan(ethPairETHUSDCValue)
-    ) {
+    if (daiPairState === PairState.EXISTS && daiPair) {
       const price = daiPair.priceOf(wrapped);
       return new Price(currency, daiToken, price.denominator, price.numerator);
     }
@@ -295,35 +276,17 @@ export function useUSDCPrices(currencies: Currency[]): (Price | undefined)[] {
       return new Price(usdcToken, usdcToken, '1', '1');
     }
 
-    const ethPairETHAmount = ethPair?.reserveOf(WETH[chainId]);
-    const ethPairETHUSDCValue: JSBI =
-      ethPairETHAmount && usdcEthPair
-        ? usdcEthPair.priceOf(WETH[chainId]).quote(ethPairETHAmount).raw
-        : JSBI.BigInt(0);
-
     // all other tokens
     // first try the usdc pair
-    if (
-      usdcPairState === PairState.EXISTS &&
-      usdcPair &&
-      usdcPair.reserveOf(usdcToken).greaterThan(ethPairETHUSDCValue)
-    ) {
+    if (usdcPairState === PairState.EXISTS && usdcPair) {
       const price = usdcPair.priceOf(wrapped);
       return new Price(currency, usdcToken, price.denominator, price.numerator);
     }
-    if (
-      usdtPairState === PairState.EXISTS &&
-      usdtPair &&
-      usdtPair.reserveOf(usdtToken).greaterThan(ethPairETHUSDCValue)
-    ) {
+    if (usdtPairState === PairState.EXISTS && usdtPair) {
       const price = usdtPair.priceOf(wrapped);
       return new Price(currency, usdtToken, price.denominator, price.numerator);
     }
-    if (
-      daiPairState === PairState.EXISTS &&
-      daiPair &&
-      daiPair.reserveOf(daiToken).greaterThan(ethPairETHUSDCValue)
-    ) {
+    if (daiPairState === PairState.EXISTS && daiPair) {
       const price = daiPair.priceOf(wrapped);
       return new Price(currency, daiToken, price.denominator, price.numerator);
     }

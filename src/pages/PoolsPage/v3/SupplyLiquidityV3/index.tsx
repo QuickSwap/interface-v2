@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useCurrency } from 'hooks/v3/Tokens';
 import { useActiveWeb3React } from 'hooks';
-import { useParams } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import {
   useV3DerivedMintInfo,
   useV3MintActionHandlers,
@@ -34,6 +34,7 @@ import useParsedQueryString from 'hooks/useParsedQueryString';
 import { SettingsModal } from 'components';
 import { ReactComponent as SettingsIcon } from 'assets/images/SettingsIcon.svg';
 import { useAppDispatch } from 'state/hooks';
+import usePoolsRedirect from 'hooks/usePoolsRedirect';
 
 export function SupplyLiquidityV3() {
   const params: any = useParams();
@@ -166,21 +167,55 @@ export function SupplyLiquidityV3() {
     [chainId, resetState],
   );
 
+  const { redirectWithCurrency, redirectWithSwitch } = usePoolsRedirect();
+
   const handleCurrencyASelect = useCallback(
     (currencyANew: Currency) => {
-      const [idA] = handleCurrencySelect(currencyANew);
-      setCurrencyIdA(idA);
+      const isSwichRedirect = currencyANew.isNative
+        ? currencyIdBParam === 'matic'
+        : currencyANew.address.toLowerCase() === currencyIdBParam.toLowerCase();
+      if (isSwichRedirect) {
+        redirectWithSwitch(currencyANew, true, false);
+      } else {
+        redirectWithCurrency(currencyANew, true, false);
+      }
     },
-    [handleCurrencySelect],
+    [redirectWithCurrency, currencyIdBParam, redirectWithSwitch],
   );
+
+  useEffect(() => {
+    if (currencyIdAParam) {
+      setCurrencyIdA(currencyIdAParam);
+      if (baseCurrency) {
+        handleCurrencySelect(baseCurrency);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currencyIdAParam]);
 
   const handleCurrencyBSelect = useCallback(
     (currencyBNew: Currency) => {
-      const [idB] = handleCurrencySelect(currencyBNew);
-      setCurrencyIdB(idB);
+      const isSwichRedirect = currencyBNew.isNative
+        ? currencyIdAParam === 'matic'
+        : currencyBNew.address.toLowerCase() === currencyIdAParam.toLowerCase();
+      if (isSwichRedirect) {
+        redirectWithSwitch(currencyBNew, false, false);
+      } else {
+        redirectWithCurrency(currencyBNew, false, false);
+      }
     },
-    [handleCurrencySelect],
+    [redirectWithCurrency, currencyIdAParam, redirectWithSwitch],
   );
+
+  useEffect(() => {
+    if (currencyIdBParam) {
+      setCurrencyIdB(currencyIdBParam);
+      if (currencyB) {
+        handleCurrencySelect(currencyB);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currencyIdBParam]);
 
   const handlePriceFormat = useCallback((priceFormat: PriceFormats) => {
     setPriceFormat(priceFormat);

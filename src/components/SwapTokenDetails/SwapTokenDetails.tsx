@@ -11,7 +11,6 @@ import {
   useMaticPrice,
   useTokenDetails,
 } from 'state/application/hooks';
-import useCopyClipboard from 'hooks/useCopyClipboard';
 import {
   shortenAddress,
   formatCompact,
@@ -62,6 +61,23 @@ const SwapTokenDetails: React.FC<{
         .subtract(1, 'day')
         .startOf('hour')
         .unix();
+      const tokenPriceDataV2 = await getIntervalTokenData(
+        tokenAddress,
+        startTime,
+        3600,
+        latestBlock,
+        chainIdToUse,
+      );
+      const tokenPriceDataV3 = await getIntervalTokenDataV3(
+        tokenAddress.toLowerCase(),
+        startTime,
+        3600,
+        latestBlock,
+        chainIdToUse,
+      );
+      const tokenPriceIsV2 = !!tokenPriceDataV2.find(
+        (item) => item.open && item.close,
+      );
 
       let tokenPriceData = undefined;
 
@@ -107,8 +123,9 @@ const SwapTokenDetails: React.FC<{
           tokenAddress,
           chainIdToUse,
         );
-        if (tokenInfo) {
-          const token0 = tokenInfo[0];
+        const token0 =
+          tokenInfo && tokenInfo.length > 0 ? tokenInfo[0] : tokenInfo;
+        if (token0 && token0.priceUSD) {
           setTokenData(token0);
           const tokenDetailToUpdate = {
             address: tokenAddress,
@@ -116,11 +133,37 @@ const SwapTokenDetails: React.FC<{
             priceData: tokenPriceData,
           };
           updateTokenDetails(tokenDetailToUpdate);
+        } else if (maticPrice.price && maticPrice.oneDayPrice) {
+          const tokenInfoV3 = await getTokenInfoV3(
+            maticPrice.price,
+            maticPrice.oneDayPrice,
+            tokenAddress.toLowerCase(),
+            chainIdToUse,
+          );
+          const tokenV3 =
+            tokenInfoV3 && tokenInfoV3.length > 0
+              ? tokenInfoV3[0]
+              : tokenInfoV3;
+          if (tokenV3) {
+            setTokenData(tokenV3);
+            const tokenDetailToUpdate = {
+              address: tokenAddress,
+              tokenData: tokenV3,
+              priceData: tokenPriceData,
+            };
+            updateTokenDetails(tokenDetailToUpdate);
+          }
         }
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tokenAddress, ethPrice.price, ethPrice.oneDayPrice]);
+  }, [
+    tokenAddress,
+    ethPrice.price,
+    ethPrice.oneDayPrice,
+    maticPrice.price,
+    maticPrice.oneDayPrice,
+  ]);
 
   return (
     <Box>

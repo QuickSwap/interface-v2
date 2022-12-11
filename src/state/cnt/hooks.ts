@@ -169,8 +169,6 @@ export function useCNTFarmList(
           )
       : [];
 
-  // console.log('#farmTokenAddresses => ', farmTokenAddresses);
-
   const farmTokens = useTokens(farmTokenAddresses);
   return useMemo(() => {
     if (

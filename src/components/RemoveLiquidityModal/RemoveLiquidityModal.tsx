@@ -204,13 +204,16 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
   const router = useRouterContract();
 
   const onRemove = async () => {
-    if (!chainId || !library || !account || !deadline || !router)
+    if (!chainId || !library || !account || !deadline || !router) {
+      setRemoveErrorMessage(t('missingdependencies'));
       throw new Error(t('missingdependencies'));
+    }
     const {
       [Field.CURRENCY_A]: currencyAmountA,
       [Field.CURRENCY_B]: currencyAmountB,
     } = parsedAmounts;
     if (!currencyAmountA || !currencyAmountB) {
+      setRemoveErrorMessage(t('noInputAmounts'));
       throw new Error(t('noInputAmounts'));
     }
 
@@ -226,12 +229,18 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
     };
 
     const liquidityAmount = parsedAmounts[Field.LIQUIDITY];
-    if (!liquidityAmount) throw new Error(t('noLiquidity'));
+    if (!liquidityAmount) {
+      setRemoveErrorMessage(t('noLiquidity'));
+      throw new Error(t('noLiquidity'));
+    }
 
     const currencyBIsETH = currency1 === nativeCurrency;
     const oneCurrencyIsETH = currency0 === nativeCurrency || currencyBIsETH;
 
-    if (!tokenA || !tokenB) throw new Error(t('cannotWrap'));
+    if (!tokenA || !tokenB) {
+      setRemoveErrorMessage(t('cannotWrap'));
+      throw new Error(t('cannotWrap'));
+    }
 
     let methodNames: string[],
       args: Array<string | string[] | number | boolean>;
@@ -270,6 +279,7 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
         ];
       }
     } else {
+      setRemoveErrorMessage(t('confirmWithoutApproval'));
       throw new Error(t('confirmWithoutApproval'));
     }
 
@@ -279,7 +289,8 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
           .then(calculateGasMargin)
           .catch((error) => {
             console.error(`estimateGas failed`, methodName, args, error);
-            return undefined;
+            setRemoveErrorMessage(t('removeLiquidityError1'));
+            throw new Error(t('removeLiquidityError1'));
           }),
       ),
     );
@@ -290,6 +301,7 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
 
     // all estimations failed...
     if (indexOfSuccessfulEstimation === -1) {
+      setRemoveErrorMessage(t('transactionWouldFail'));
       throw new Error(t('transactionWouldFail'));
     } else {
       const methodName = methodNames[indexOfSuccessfulEstimation];
@@ -332,10 +344,13 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
             label: [currency0.symbol, currency1.symbol].join('/'),
           });
         })
-        .catch((error: Error) => {
+        .catch((error: any) => {
           setAttemptingTxn(false);
           // we only care if the error is something _other_ than the user rejected the tx
           console.error(error);
+          setRemoveErrorMessage(
+            error.code === 4001 ? t('txRejected') : t('errorInTx'),
+          );
         });
     }
   };
@@ -525,6 +540,7 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
           <Button
             className='removeButton'
             onClick={() => {
+              setRemoveErrorMessage('');
               setShowConfirm(true);
             }}
             disabled={Boolean(error) || approval !== ApprovalState.APPROVED}

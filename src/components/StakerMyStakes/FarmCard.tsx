@@ -12,6 +12,7 @@ import FarmCardDetail from './FarmCardDetail';
 import { Deposit } from '../../models/interfaces';
 import { IsActive } from './IsActive';
 import { ChainId, Token } from '@uniswap/sdk';
+import { useActiveWeb3React } from 'hooks';
 import { getTokenFromAddress } from 'utils';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { getAddress } from 'ethers/lib/utils';

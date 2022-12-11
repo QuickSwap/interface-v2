@@ -395,6 +395,56 @@ export const DD: { [chainId: number]: Token } = {
   ),
 };
 
+export const BOB: { [chainId: number]: Token } = {
+  [ChainId.MATIC]: new Token(
+    ChainId.MATIC,
+    '0xB0B195aEFA3650A6908f15CdaC7D92F8a5791B0B',
+    18,
+    'BOB',
+    'BOB',
+  ),
+};
+
+export const axlUSDC: { [chainId: number]: Token } = {
+  [ChainId.MATIC]: new Token(
+    ChainId.MATIC,
+    '0x750e4C4984a9e0f12978eA6742Bc1c5D248f40ed',
+    18,
+    'axlUSDC',
+    'Axelar Wrapped USDC',
+  ),
+};
+
+export const TUSD: { [chainId: number]: Token } = {
+  [ChainId.MATIC]: new Token(
+    ChainId.MATIC,
+    '0x2e1AD108fF1D8C782fcBbB89AAd783aC49586756',
+    18,
+    'TUSD',
+    'TrueUSD',
+  ),
+};
+
+export const UND: { [chainId: number]: Token } = {
+  [ChainId.MATIC]: new Token(
+    ChainId.MATIC,
+    '0x1eBA4B44C4F8cc2695347C6a78F0B7a002d26413',
+    18,
+    'UND',
+    'Unbound Dollar',
+  ),
+};
+
+export const USDD: { [chainId: number]: Token } = {
+  [ChainId.MATIC]: new Token(
+    ChainId.MATIC,
+    '0xFFA4D863C96e743A2e1513824EA006B8D0353C57',
+    18,
+    'USDD',
+    'Decentralized USD',
+  ),
+};
+
 export const V2_BASES_TO_CHECK_TRADES_AGAINST: {
   [ChainId: number]: Token[];
 } = {
@@ -409,6 +459,20 @@ export const V2_BASES_TO_CHECK_TRADES_AGAINST: {
     DAI[ChainId.MATIC],
     //GHST,
     MI[ChainId.MATIC],
+  ],
+};
+
+export const StableCoins: { [ChainId: number]: Token[] } = {
+  [ChainId.MATIC]: [
+    USDC[ChainId.MATIC],
+    USDT[ChainId.MATIC],
+    MI[ChainId.MATIC],
+    DAI[ChainId.MATIC],
+    axlUSDC[ChainId.MATIC],
+    BOB[ChainId.MATIC],
+    TUSD[ChainId.MATIC],
+    UND[ChainId.MATIC],
+    USDD[ChainId.MATIC],
   ],
 };
 

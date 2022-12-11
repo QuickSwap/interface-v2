@@ -55,10 +55,6 @@ const AnalyticsOverview: React.FC = () => {
   useEffect(() => {
     if (isV2 === undefined) return;
 
-    updateGlobalData({ data: null });
-    updateTopPairs(null);
-    updateTopTokens(null);
-
     (async () => {
       if (!isV2) {
         const data = await getGlobalDataV3(chainIdToUse);
@@ -169,6 +165,15 @@ const AnalyticsOverview: React.FC = () => {
     isV2,
     chainIdToUse,
   ]);
+
+  useEffect(() => {
+    if (isV2 !== undefined) {
+      updateGlobalData({ data: null });
+      updateTopPairs(null);
+      updateTopTokens(null);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isV2]);
 
   useEffect(() => {
     if (globalData && topTokens && topPairs) {

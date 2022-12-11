@@ -35,34 +35,33 @@ const TopMovers: React.FC<TopMoversProps> = ({ hideArrow = false }) => {
   );
 
   useEffect(() => {
-    (async () => {
-      if (
-        ethPrice.price !== undefined &&
-        ethPrice.oneDayPrice !== undefined &&
-        maticPrice.price !== undefined &&
-        maticPrice.oneDayPrice !== undefined &&
-        isV2 !== undefined
-      ) {
-        const topTokensFn =
-          isV2 && v2
-            ? getTopTokens(
-                ethPrice.price,
-                ethPrice.oneDayPrice,
-                5,
-                chainIdToUse,
-              )
-            : getTopTokensV3(
-                maticPrice.price,
-                maticPrice.oneDayPrice,
-                5,
-                chainIdToUse,
-              );
+    if (isV2 === undefined) return;
 
-        topTokensFn.then((data: any) => {
+    (async () => {
+      if (isV2) {
+        if (ethPrice.price && ethPrice.oneDayPrice) {
+          const data = await getTopTokens(
+            ethPrice.price,
+            ethPrice.oneDayPrice,
+            5,
+            chainIdToUse,
+          );
           if (data) {
             updateTopTokens(data);
           }
-        });
+        }
+      } else {
+        if (maticPrice.price && maticPrice.oneDayPrice) {
+          const data = await getTopTokensV3(
+            maticPrice.price,
+            maticPrice.oneDayPrice,
+            5,
+            chainIdToUse,
+          );
+          if (data) {
+            updateTopTokens(data);
+          }
+        }
       }
     })();
   }, [

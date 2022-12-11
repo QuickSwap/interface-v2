@@ -7,8 +7,8 @@
   padding: 32px;
   position: relative;
   overflow: hidden;
-  @include media("screen", "<phone") {
-    padding: 24px 16px
+  @include media('screen', '<phone') {
+    padding: 24px 16px;
   }
 }
 
@@ -35,4 +35,22 @@
   & .customTabWrapper {
     margin-bottom: -2px;
   }
+}
+
+a.button {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  background-color: $primary;
+  text-decoration: none;
+  color: white;
+  padding: 0.5rem 1.5rem;
+  border-radius: 38px;
+  & p {
+    margin-left: 4px;
+  }
+}
+
+a.button:hover {
+  opacity: 0.9
 }

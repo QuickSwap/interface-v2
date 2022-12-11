@@ -43,7 +43,6 @@ const AnalyticsTokens: React.FC = () => {
 
   useEffect(() => {
     if (isV2 === undefined) return;
-    updateTopTokens(null);
 
     (async () => {
       if (!isV2) {
@@ -92,6 +91,12 @@ const AnalyticsTokens: React.FC = () => {
       dispatch(setAnalyticsLoaded(true));
     }
   }, [topTokens, dispatch]);
+
+  useEffect(() => {
+    if (isV2) {
+      updateTopTokens(null);
+    }
+  }, [isV2]);
 
   return (
     <Box width='100%' mb={3}>

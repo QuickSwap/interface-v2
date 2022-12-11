@@ -1,16 +1,14 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { DoubleCurrencyLogo } from 'components';
 import {
   StyledButton,
   StyledDarkBox,
   StyledFilledBox,
 } from 'components/v3/Common/styledElements';
-import Loader from '../Loader';
 import CurrencyLogo from '../CurrencyLogo';
-import { Token } from '@uniswap/sdk';
-import { WrappedCurrency } from '../../models/types';
+import { Token, ChainId } from '@uniswap/sdk';
+import Loader from '../Loader';
 import './index.scss';
-import { ChainId } from '@uniswap/sdk';
 import { ReactComponent as AddIcon } from 'assets/images/addIcon.svg';
 import { Box } from '@material-ui/core';
 import { formatUnits } from 'ethers/lib/utils';
@@ -71,10 +69,10 @@ export function EternalFarmCard({
 }: EternalFarmCardProps) {
   const apr = aprs ? aprs[id] : undefined;
   const aprValue =
-    (apr !== undefined && apr >= 0 ? Math.round(apr) : '~') + '% APR';
+    (apr !== undefined && apr >= 0 ? formatCompact(apr) : '~') + '% APR';
   const poolApr = poolAprs ? poolAprs[pool.id] : undefined;
   const poolAprValue =
-    (poolApr !== undefined && poolApr >= 0 ? Math.round(poolApr) : '~') +
+    (poolApr !== undefined && poolApr >= 0 ? formatCompact(poolApr) : '~') +
     '% APR';
   const tvl = tvls ? tvls[id] : undefined;
 
@@ -84,41 +82,51 @@ export function EternalFarmCard({
   const token0 =
     chainId && token0Address
       ? getTokenFromAddress(token0Address, chainId, tokenMap, [
-          new Token(chainId, getAddress(token0Address), pool.token0.decimals),
+          new Token(
+            chainId,
+            getAddress(token0Address),
+            Number(pool.token0.decimals),
+          ),
         ])
       : undefined;
 
   const token1 =
     chainId && token1Address
       ? getTokenFromAddress(token1Address, chainId, tokenMap, [
-          new Token(chainId, getAddress(token1Address), pool.token1.decimals),
+          new Token(
+            chainId,
+            getAddress(token1Address),
+            Number(pool.token1.decimals),
+          ),
         ])
       : undefined;
 
-  const farmRewardToken = chainId
-    ? getTokenFromAddress(rewardToken.id, chainId, tokenMap, [
-        new Token(
-          chainId,
-          rewardToken.id,
-          Number(rewardToken.decimals),
-          rewardToken.symbol,
-        ),
-      ])
-    : undefined;
+  const farmRewardToken =
+    chainId && rewardToken
+      ? getTokenFromAddress(rewardToken.id, chainId, tokenMap, [
+          new Token(
+            chainId,
+            rewardToken.id,
+            Number(rewardToken.decimals),
+            rewardToken.symbol,
+          ),
+        ])
+      : undefined;
 
-  const farmBonusRewardToken = chainId
-    ? getTokenFromAddress(bonusRewardToken.id, chainId, tokenMap, [
-        new Token(
-          chainId,
-          bonusRewardToken.id,
-          Number(bonusRewardToken.decimals),
-          bonusRewardToken.symbol,
-        ),
-      ])
-    : undefined;
+  const farmBonusRewardToken =
+    chainId && bonusRewardToken
+      ? getTokenFromAddress(bonusRewardToken.id, chainId, tokenMap, [
+          new Token(
+            chainId,
+            bonusRewardToken.id,
+            Number(bonusRewardToken.decimals),
+            bonusRewardToken.symbol,
+          ),
+        ])
+      : undefined;
 
   return (
-    <Box className='flex justify-center'>
+    <Box className='flex justify-center' height='100%'>
       {refreshing && (
         <Loader size={'18px'} stroke={'white'} style={{ margin: 'auto' }} />
       )}
@@ -126,10 +134,11 @@ export function EternalFarmCard({
         <StyledFilledBox
           padding={1.5}
           width='100%'
-          maxWidth={336}
+          height='100%'
+          maxWidth={380}
           className='flex flex-col'
         >
-          <Box mb={1.5} className='flex justify-between items-center'>
+          <Box mb={1.5} flex={1} className='flex justify-between items-center'>
             <Box className='flex items-center'>
               {token0 && token1 && (
                 <DoubleCurrencyLogo
@@ -144,13 +153,12 @@ export function EternalFarmCard({
               </Box>
             </Box>
             <Box className='flex'>
-              <Box mr='6px'>
+              <Box mx='6px'>
                 <Box ml='3px'>
                   <small className='weight-600'>Pool</small>
                 </Box>
                 <Box
                   className='flex items-center bg-successLight'
-                  height='19px'
                   padding='0 4px'
                   borderRadius='4px'
                 >
@@ -166,7 +174,6 @@ export function EternalFarmCard({
                 </Box>
                 <Box
                   className='flex items-center bg-successLight'
-                  height='19px'
                   padding='0 4px'
                   borderRadius='4px'
                 >
@@ -240,7 +247,7 @@ export function EternalFarmCard({
                   <small className='weight-600'>
                     {formatReward(
                       Number(
-                        formatUnits(bonusRewardRate, rewardToken.decimals),
+                        formatUnits(bonusRewardRate, bonusRewardToken.decimals),
                       ) *
                         3600 *
                         24,

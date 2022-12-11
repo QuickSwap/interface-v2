@@ -147,10 +147,6 @@ const AnalyticsPairDetails: React.FC = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    setDataLoading(true);
-    setPairData(null);
-    setPairTransactions(null);
-
     async function fetchPairData() {
       try {
         if (!isV2) {
@@ -158,6 +154,7 @@ const AnalyticsPairDetails: React.FC = () => {
           if (pairInfo && pairInfo.length > 0) {
             setPairData(pairInfo[0]);
           }
+          setDataLoading(false);
         } else {
           if (ethPrice.price) {
             const pairInfo = await getBulkPairData(
@@ -168,9 +165,9 @@ const AnalyticsPairDetails: React.FC = () => {
             if (pairInfo && pairInfo.length > 0) {
               setPairData(pairInfo[0]);
             }
+            setDataLoading(false);
           }
         }
-        setDataLoading(false);
       } catch (e) {
         setDataLoading(false);
       }
@@ -186,16 +183,17 @@ const AnalyticsPairDetails: React.FC = () => {
         }
       });
     }
-    if (isV2 !== undefined) {
+    if (isV2 !== undefined && ethPrice.price) {
       fetchPairData();
       fetchTransctions();
     }
   }, [pairAddress, ethPrice.price, isV2, chainIdToUse]);
 
   useEffect(() => {
+    setDataLoading(true);
     setPairData(null);
     setPairTransactions(null);
-  }, [pairAddress]);
+  }, [pairAddress, isV2]);
 
   useEffect(() => {
     //TODO v2 Subgraph for txs is not working, for now always true
