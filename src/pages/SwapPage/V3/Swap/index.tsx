@@ -462,7 +462,7 @@ const SwapV3Page: React.FC = () => {
         isToken: false,
         wrapped: WMATIC_EXTENDED[chainId],
       } as NativeCurrency;
-      redirectWithCurrency(nativeCurrency, true);
+      redirectWithCurrency(nativeCurrency, true, false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [parsedCurrency0Id]);
