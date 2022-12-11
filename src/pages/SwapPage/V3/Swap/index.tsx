@@ -85,7 +85,6 @@ import { WMATIC_EXTENDED } from 'constants/v3/addresses';
 const SwapV3Page: React.FC = () => {
   const { account, chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ?? ChainId.MATIC;
-  const nativeCurrency = TokenV2.ETHER[chainIdToUse];
   const history = useHistory();
   const loadedUrlParams = useDefaultsFromURLSearch();
   const inputCurrencyId = loadedUrlParams?.inputCurrencyId;
@@ -464,7 +463,7 @@ const SwapV3Page: React.FC = () => {
         isToken: false,
         wrapped: WMATIC_EXTENDED[chainId],
       } as NativeCurrency;
-      redirectWithCurrency(nativeCurrency, true);
+      redirectWithCurrency(nativeCurrency, true, false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [parsedCurrency0Id]);

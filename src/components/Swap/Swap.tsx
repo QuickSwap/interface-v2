@@ -220,10 +220,10 @@ const Swap: React.FC<{
     if (parsedCurrency0) {
       onCurrencySelection(Field.INPUT, parsedCurrency0);
     } else if (history.location.pathname !== '/') {
-      redirectWithCurrency(ETHER, true);
+      redirectWithCurrency(ETHER[chainIdToUse], true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [parsedCurrency0Id]);
+  }, [parsedCurrency0Id, chainIdToUse]);
 
   const handleOtherCurrencySelect = useCallback(
     (outputCurrency) => {
