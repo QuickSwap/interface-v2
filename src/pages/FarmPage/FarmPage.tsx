@@ -59,18 +59,18 @@ const FarmPage: React.FC = () => {
       condition: farmIndex === GlobalConst.farmIndex.LPFARM_INDEX,
     },
     {
-      text: t('otherLPMining'),
-      onClick: () => {
-        setFarmIndex(GlobalConst.farmIndex.OTHER_LP_INDEX);
-      },
-      condition: farmIndex === GlobalConst.farmIndex.OTHER_LP_INDEX,
-    },
-    {
       text: t('dualMining'),
       onClick: () => {
         setFarmIndex(GlobalConst.farmIndex.DUALFARM_INDEX);
       },
       condition: farmIndex === GlobalConst.farmIndex.DUALFARM_INDEX,
+    },
+    {
+      text: t('otherLPMining'),
+      onClick: () => {
+        setFarmIndex(GlobalConst.farmIndex.OTHER_LP_INDEX);
+      },
+      condition: farmIndex === GlobalConst.farmIndex.OTHER_LP_INDEX,
     },
   ];
   const helpURL = process.env.REACT_APP_HELP_URL;
@@ -107,17 +107,21 @@ const FarmPage: React.FC = () => {
               width={450}
               height={48}
               items={farmCategories}
-              isLarge={true}
+              isLarge={!isMobile}
             />
             {farmIndex === GlobalConst.farmIndex.OTHER_LP_INDEX && (
-              <Box className='flex'>
+              <Box
+                className={`flex ${isMobile ? 'mx-auto mt-1 fullWidth' : ''}`}
+              >
                 <a
-                  className='rounded button'
+                  className={`button ${
+                    isMobile ? 'rounded-md fullWidth' : 'rounded'
+                  }`}
                   target='_blank'
                   rel='noreferrer'
                   href={OTHER_FARM_LINK}
                 >
-                  Create A Farm
+                  <p className='text-center fullWidth'>{t('createAFarm')}</p>
                 </a>
               </Box>
             )}
