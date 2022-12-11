@@ -79,27 +79,11 @@ const SwapTokenDetails: React.FC<{
         (item) => item.open && item.close,
       );
 
-      let tokenPriceData = undefined;
+      const tokenPriceData = tokenPriceIsV2
+        ? tokenPriceDataV2
+        : tokenPriceDataV3;
+      setPriceData(tokenPriceData);
 
-      if ((!v2 || !isV2) && maticPrice.price && maticPrice.oneDayPrice) {
-        tokenPriceData = await getIntervalTokenDataV3(
-          tokenAddress,
-          startTime,
-          3600,
-          latestBlock,
-          chainIdToUse,
-        );
-        setPriceData(tokenPriceData);
-      } else if (v2 && ethPrice.price && ethPrice.oneDayPrice) {
-        tokenPriceData = await getIntervalTokenData(
-          tokenAddress,
-          startTime,
-          3600,
-          latestBlock,
-          chainIdToUse,
-        );
-        setPriceData(tokenPriceData);
-      }
       if ((!v2 || !isV2) && maticPrice.price && maticPrice.oneDayPrice) {
         const tokenInfo = await getTokenInfoV3(
           maticPrice.price,
