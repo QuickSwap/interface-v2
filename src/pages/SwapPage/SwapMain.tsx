@@ -65,16 +65,21 @@ const SwapMain: React.FC = () => {
   };
 
   useEffect(() => {
-    updateIsV2(!isOnV2 && !isOnV3 && showBestTrade ? true : isOnV2);
+    updateIsV2(!isOnV2 && !isOnV3 ? true : isOnV2);
     if (!swapType) {
       if (!isOnV3 && isOnV2) {
         redirectWithSwapType(SWAP_NORMAL);
       } else {
-        redirectWithSwapType(SWAP_BEST_TRADE);
+        if (showBestTrade) {
+          redirectWithSwapType(SWAP_BEST_TRADE);
+        } else {
+          const defaultSwapType = v2 ? SWAP_NORMAL : SWAP_V3;
+          redirectWithSwapType(defaultSwapType);
+        }
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOnV3, isOnV2, swapType]);
+  }, [isOnV3, isOnV2, swapType, v2]);
 
   useEffect(() => {
     if (swapType) {

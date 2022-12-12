@@ -55,7 +55,9 @@ export function SelectRange({
   const isStablecoinPair = useMemo(() => {
     if (!currencyA || !currencyB) return false;
 
-    const stablecoins = StableCoins[chainIdToUse].map((token) => token.address);
+    const stablecoins = StableCoins[chainIdToUse]
+      ? StableCoins[chainIdToUse].map((token) => token.address)
+      : [];
 
     return (
       stablecoins.includes(currencyA.wrapped.address) &&

@@ -570,8 +570,6 @@ export function useFarmingHandlers() {
             eventType === FarmingType.LIMIT,
           );
 
-          console.log('ccc', estimatedGas);
-
           const result = await farmingCenterContract.enterFarming(
             [rewardToken, bonusRewardToken, pool, startTime, endTime],
             +selectedNFT.id,

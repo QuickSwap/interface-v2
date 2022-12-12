@@ -1,5 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Currency, CurrencyAmount, Token } from '@uniswap/sdk-core';
+import {
+  Currency,
+  CurrencyAmount,
+  Token,
+  NativeCurrency,
+} from '@uniswap/sdk-core';
 
 import CurrencyLogo from 'components/CurrencyLogo';
 import { WrappedCurrency } from 'models/types';
@@ -17,7 +22,7 @@ import { Box } from '@material-ui/core';
 import { LockOutlined } from '@material-ui/icons';
 import NumericalInput from 'components/NumericalInput';
 import { ChainId, ETHER } from '@uniswap/sdk';
-import { USDC } from 'constants/v3/addresses';
+import { USDC, WMATIC_EXTENDED } from 'constants/v3/addresses';
 
 interface ITokenAmountCard {
   currency: Currency | undefined | null;
@@ -50,7 +55,12 @@ export function TokenAmountCard({
 }: ITokenAmountCard) {
   const { account, chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ? chainId : ChainId.MATIC;
-  const nativeCurrency = ETHER[chainIdToUse];
+  const nativeCurrency = {
+    ...ETHER[chainIdToUse],
+    isNative: true,
+    isToken: false,
+    wrapped: WMATIC_EXTENDED[chainIdToUse],
+  } as NativeCurrency;
 
   const balance = useCurrencyBalance(
     account ?? undefined,
