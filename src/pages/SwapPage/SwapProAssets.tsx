@@ -115,7 +115,6 @@ const SwapProAssets: React.FC = ({}) => {
       if (price !== undefined && oneDayPrice !== undefined) {
         getTopTokensV3(price, oneDayPrice, count).then((data) => {
           if (Array.isArray(data)) {
-            console.log('Data => ', data);
             data.forEach((d) => {
               d.searchVal = (
                 (d.symbol || '') + '-' + ('' || d.name) || ''
@@ -163,7 +162,6 @@ const SwapProAssets: React.FC = ({}) => {
   };
 
   const filteredTokensData = useMemo(() => {
-    console.log('Search Query => ', searchQuery);
     const result: Token[] = performFilteration(topTokens || []);
     if (mobileWindowSize) {
       return result.slice(0, 20);

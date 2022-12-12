@@ -30,7 +30,6 @@ import {
 import { SwapState } from './reducer';
 import { useUserSlippageTolerance } from 'state/user/hooks';
 import { computeSlippageAdjustedAmounts } from 'utils/prices';
-import { GlobalValue } from 'constants/index';
 
 export function useSwapState(): AppState['swap'] {
   return useSelector<AppState, AppState['swap']>((state) => state.swap);
@@ -149,9 +148,7 @@ export function useDerivedSwapInfo(): {
   } = useSwapState();
 
   const inputCurrency = useCurrency(inputCurrencyId);
-  const outputCurrency = useCurrency(
-    outputCurrencyId || GlobalValue.tokens.COMMON.USDC.address,
-  );
+  const outputCurrency = useCurrency(outputCurrencyId);
   //const recipientLookup = useENS(recipient ?? undefined);
   const to: string | null = (recipient === null ? account : recipient) ?? null;
 

@@ -22,7 +22,6 @@ const SwapProTransactions: React.FC<SwapProTransactionsProps> = ({
   const [filteredData, setFilteredData] = useState<any[]>([]);
 
   useEffect(() => {
-    // console.log('Transactions => ', data);
     if (Array.isArray(data) && data.length > 0) {
       const sample = data[0];
       const token0 = sample.pair.token0;

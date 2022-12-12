@@ -17,7 +17,6 @@ import 'pages/styles/swap.scss';
 import AdsSlider from 'components/AdsSlider';
 import { SwapBuySellWidget } from './BuySellWidget';
 import { Token } from '@uniswap/sdk';
-import { GlobalValue } from 'constants/index';
 import SwapProMain from './SwapProMain';
 
 const SwapPage: React.FC = () => {
@@ -36,9 +35,7 @@ const SwapPage: React.FC = () => {
   const { chainId } = useActiveWeb3React();
 
   const token1 = wrappedCurrency(currencies[Field.INPUT], chainId);
-  const token2 =
-    wrappedCurrency(currencies[Field.OUTPUT], chainId) ||
-    GlobalValue.tokens.COMMON.USDC;
+  const token2 = wrappedCurrency(currencies[Field.OUTPUT], chainId);
 
   const token1V3 = currenciesV3[Field.INPUT]?.wrapped;
   const token2V3 = currenciesV3[Field.OUTPUT]?.wrapped;
