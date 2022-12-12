@@ -97,11 +97,8 @@
   "payBills": "Pay IRL bills with your web3 wallet",
   "poweredBy": "Powered by",
   "buyCryptoFiat": "Buy crypto with Fiat",
-  "payWithCrypto": "Pay with crypto ↗",
-  "assets": "Assets",
   "buyCryptoFiatDesc": "Simple way to buy or sell crypto with a credit card, bank transfer and more",
   "buyNow": "Buy Now",
-  "payWithCrypto": "Pay with crypto",
   "enterApp": "Enter App",
   "swap": "Swap",
   "liquidity": "Liquidity",
@@ -436,5 +433,8 @@
   "stakeMessageOtherLP": "Stake LP tokens to earn reward tokens",
   "otherLPMining": "Other Mining",
   "createAFarm": "Create a Farm",
-  "removeLiquidityError1": "There is an error in transaction. Please increase your slippage."
+  "removeLiquidityError1": "There is an error in transaction. Please increase your slippage.",
+  "payWithCrypto": "Pay with crypto ↗",
+  "payWithFiatArrow": "Buy with fiat ↗",
+  "assets": "Assets"
 }
