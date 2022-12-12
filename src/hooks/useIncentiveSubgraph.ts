@@ -588,14 +588,7 @@ export function useFarmingSubgraph() {
           );
 
           const _rewardToken = await fetchToken(rewardToken, true);
-          const _bonusRewardToken = await fetchToken(
-            pool.toLowerCase() === '0x0db644468cd5c664a354e31aa1f6dba1d1dead47'
-              ? '0xc5102fe9359fd9a28f877a67e36b0f050d81a3cc'
-              : bonusRewardToken,
-            pool.toLowerCase() === '0x0db644468cd5c664a354e31aa1f6dba1d1dead47'
-              ? false
-              : true,
-          );
+          const _bonusRewardToken = await fetchToken(bonusRewardToken, true);
           const _pool = await fetchPool(pool);
           const _multiplierToken = await fetchToken(multiplierToken);
 
@@ -914,13 +907,9 @@ export function useFarmingSubgraph() {
         const pool = await fetchPool(farming.pool);
         const rewardToken = await fetchToken(farming.rewardToken, true);
         const bonusRewardToken = await fetchToken(
-          pool.id.toLowerCase() === '0x0db644468cd5c664a354e31aa1f6dba1d1dead47'
-            ? '0xc5102fe9359fd9a28f877a67e36b0f050d81a3cc'
-            : farming.bonusRewardToken,
-          pool.id.toLowerCase() === '0x0db644468cd5c664a354e31aa1f6dba1d1dead47'
-            ? false
-            : true,
-        ); // manually set bonus reward token as HOP for WETH/HOP farm
+          farming.bonusRewardToken,
+          true,
+        );
         const multiplierToken = await fetchToken(farming.multiplierToken, true);
 
         _eternalFarmings = [
