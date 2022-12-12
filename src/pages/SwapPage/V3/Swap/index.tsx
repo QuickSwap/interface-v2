@@ -434,9 +434,17 @@ const SwapV3Page: React.FC = () => {
     (inputCurrency) => {
       setApprovalSubmitted(false); // reset 2 step UI for approvals
       if (
-        (inputCurrency.isNative && currencies[Field.OUTPUT]?.isNative) ||
-        inputCurrency.address.toLowerCase() ===
-          currencies[Field.OUTPUT]?.wrapped.address.toLowerCase()
+        (inputCurrency &&
+          inputCurrency.isNative &&
+          currencies[Field.OUTPUT] &&
+          currencies[Field.OUTPUT]?.isNative) ||
+        (inputCurrency &&
+          inputCurrency.address &&
+          currencies[Field.OUTPUT] &&
+          currencies[Field.OUTPUT]?.wrapped &&
+          currencies[Field.OUTPUT]?.wrapped.address &&
+          inputCurrency.address.toLowerCase() ===
+            currencies[Field.OUTPUT]?.wrapped.address.toLowerCase())
       ) {
         redirectWithSwitch();
       } else {
