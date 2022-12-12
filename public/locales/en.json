@@ -97,6 +97,8 @@
   "payBills": "Pay IRL bills with your web3 wallet",
   "poweredBy": "Powered by",
   "buyCryptoFiat": "Buy crypto with Fiat",
+  "payWithCrypto": "Pay with crypto ↗",
+  "assets": "Assets",
   "buyCryptoFiatDesc": "Simple way to buy or sell crypto with a credit card, bank transfer and more",
   "buyNow": "Buy Now",
   "payWithCrypto": "Pay with crypto",

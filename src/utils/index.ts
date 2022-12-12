@@ -1776,13 +1776,13 @@ export function getFormattedPrice(price: number) {
 }
 
 // set different bg and text colors for price percent badge according to price.
-export function getPriceClass(price: number) {
+export function getPriceClass(price: number, transparent = false) {
   if (price > 0) {
-    return 'bg-successLight text-success';
+    return transparent ? 'text-success' : 'bg-successLight text-success';
   } else if (price === 0) {
-    return 'bg-gray1 text-hint';
+    return transparent ? 'text-hint' : 'bg-gray1 text-hint';
   } else {
-    return 'bg-errorLight text-error';
+    return transparent ? 'text-error' : 'bg-errorLight text-error';
   }
 }
 

@@ -12,39 +12,33 @@ import { wrappedCurrency } from 'utils/wrappedCurrency';
 import { useActiveWeb3React } from 'hooks';
 import SwapMain from './SwapMain';
 import LiquidityPools from './LiquidityPools';
-import SwapProChartTrade from './SwapProChartTrade';
-import SwapProInfo from './SwapProInfo';
-import SwapProFilter from './SwapProFilter';
 import { useTranslation } from 'react-i18next';
 import 'pages/styles/swap.scss';
-import { ReactComponent as SettingsIcon } from 'assets/images/SettingsIcon.svg';
 import AdsSlider from 'components/AdsSlider';
 import { SwapBuySellWidget } from './BuySellWidget';
 import { Token } from '@uniswap/sdk';
+import { GlobalValue } from 'constants/index';
+import SwapProMain from './SwapProMain';
 
 const SwapPage: React.FC = () => {
   const [openSettingsModal, setOpenSettingsModal] = useState(false);
   const { isProMode, updateIsProMode } = useIsProMode();
   const { breakpoints } = useTheme();
   const isTiny = useMediaQuery(breakpoints.down('xs'));
-  const isMobile = useMediaQuery(breakpoints.down('sm'));
-  const isTablet = useMediaQuery(breakpoints.down('md'));
-  const [showChart, setShowChart] = useState(true);
-  const [showTrades, setShowTrades] = useState(true);
   const [pairId, setPairId] = useState<string | undefined>(undefined);
   const [pairTokenReversed, setPairTokenReversed] = useState(false);
   const [transactions, setTransactions] = useState<any[] | undefined>(
     undefined,
   );
   const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
-  const [infoPos, setInfoPos] = useState('right');
-
   const { currencies } = useDerivedSwapInfo();
   const { currencies: currenciesV3 } = useDerivedSwapInfoV3();
   const { chainId } = useActiveWeb3React();
 
   const token1 = wrappedCurrency(currencies[Field.INPUT], chainId);
-  const token2 = wrappedCurrency(currencies[Field.OUTPUT], chainId);
+  const token2 =
+    wrappedCurrency(currencies[Field.OUTPUT], chainId) ||
+    GlobalValue.tokens.COMMON.USDC;
 
   const token1V3 = currenciesV3[Field.INPUT]?.wrapped;
   const token2V3 = currenciesV3[Field.OUTPUT]?.wrapped;
@@ -52,6 +46,9 @@ const SwapPage: React.FC = () => {
 
   // this is for refreshing data of trades table every 60 seconds
   useEffect(() => {
+    if (!isProMode) {
+      updateIsProMode(true);
+    }
     const interval = setInterval(() => {
       const _currentTime = Math.floor(Date.now() / 1000);
       setCurrentTime(_currentTime);
@@ -178,88 +175,13 @@ const SwapPage: React.FC = () => {
           </Grid>
         </Grid>
       ) : (
-        <Box
-          className='border-top border-bottom bg-palette flex flex-wrap'
-          minHeight='calc(100vh - 140px)'
-        >
-          <Box
-            width={isMobile ? 1 : '450px'}
-            padding='20px 0'
-            className={isMobile ? '' : 'border-right'}
-          >
-            <Box
-              className='flex justify-between items-center'
-              padding='0 24px'
-              mb={3}
-            >
-              <h4>{t('swap')}</h4>
-              <Box className='flex items-center' mr={1}>
-                <span
-                  className='text-secondary text-uppercase'
-                  style={{ marginRight: 8 }}
-                >
-                  {t('proMode')}
-                </span>
-                <ToggleSwitch
-                  toggled={true}
-                  onToggle={() => {
-                    updateIsProMode(false);
-                  }}
-                />
-                <Box ml={1} className='headingItem'>
-                  <SettingsIcon onClick={() => setOpenSettingsModal(true)} />
-                </Box>
-              </Box>
-            </Box>
-            <SwapMain />
-            <Box maxWidth={isTiny ? '320px' : '352px'} margin='16px auto 0'>
-              <AdsSlider sort='swap' />
-            </Box>
-          </Box>
-          {infoPos === 'left' && (
-            <Box
-              className={isMobile ? 'border-top' : 'border-left border-right'}
-              width={isMobile ? 1 : 250}
-            >
-              <SwapProInfo
-                token1={token1}
-                token2={token2}
-                transactions={transactions}
-              />
-            </Box>
-          )}
-          <Box className='swapProWrapper'>
-            <SwapProFilter
-              infoPos={infoPos}
-              setInfoPos={setInfoPos}
-              showChart={showChart}
-              setShowChart={setShowChart}
-              showTrades={showTrades}
-              setShowTrades={setShowTrades}
-            />
-            <SwapProChartTrade
-              showChart={showChart}
-              showTrades={showTrades}
-              token1={token1}
-              token2={token2}
-              pairAddress={pairId}
-              pairTokenReversed={pairTokenReversed}
-              transactions={transactions}
-            />
-          </Box>
-          {infoPos === 'right' && (
-            <Box
-              className={isMobile ? 'border-top' : 'border-left'}
-              width={isTablet ? 1 : 250}
-            >
-              <SwapProInfo
-                token1={token1}
-                token2={token2}
-                transactions={transactions}
-              />
-            </Box>
-          )}
-        </Box>
+        <SwapProMain
+          pairId={pairId}
+          pairTokenReversed={pairTokenReversed}
+          token1={token1}
+          token2={token2}
+          transactions={transactions}
+        />
       )}
     </Box>
   );

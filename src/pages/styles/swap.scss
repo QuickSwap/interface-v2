@@ -185,6 +185,11 @@
     flex: 1;
     .top-pane {
       overflow: hidden;
+
+      iframe {
+        max-height: 100vh;
+        min-height: 500px;
+      }
     }
   }
   @include media("screen", "<phone") {
@@ -260,4 +265,12 @@
       }
     }
   }
+}
+
+div.sell {
+  color: $errorMain;
+}
+
+div.buy {
+  color: $successMain;
 }
