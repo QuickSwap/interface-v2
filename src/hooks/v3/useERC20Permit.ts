@@ -229,19 +229,6 @@ function useERC20Permit(
           .send('eth_signTypedData_v4', [account, data])
           .then(splitSignature)
           .then((signature) => {
-            console.log('eth v4', {
-              v: signature.v,
-              r: signature.r,
-              s: signature.s,
-              deadline: signatureDeadline,
-              ...(allowed ? { allowed } : { amount: value }),
-              nonce: nonceNumber,
-              chainId,
-              owner: account,
-              spender,
-              tokenAddress,
-              permitType: permitInfo.type,
-            });
             setSignatureData({
               v: signature.v,
               r: signature.r,
