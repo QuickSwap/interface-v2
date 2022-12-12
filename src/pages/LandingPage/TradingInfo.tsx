@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Box } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import { StakeQuickModal } from 'components';
-import { useOldLairInfo, useTotalRewardsDistributed } from 'state/stake/hooks';
+import { useNewLairInfo, useTotalRewardsDistributed } from 'state/stake/hooks';
 import { formatCompact, useLairDQUICKAPY } from 'utils';
 import { useTranslation } from 'react-i18next';
 import { ChainId } from '@uniswap/sdk';
@@ -11,10 +11,10 @@ export const TradingInfo: React.FC<{ globalData: any; v3GlobalData: any }> = ({
   globalData,
   v3GlobalData,
 }) => {
-  const lairInfo = useOldLairInfo();
+  const lairInfo = useNewLairInfo();
   const [openStakeModal, setOpenStakeModal] = useState(false);
 
-  const dQUICKAPY = useLairDQUICKAPY(false, lairInfo);
+  const dQUICKAPY = useLairDQUICKAPY(true, lairInfo);
   //TODO: Support Multichain
   const totalRewardsUSD = useTotalRewardsDistributed(ChainId.MATIC);
   const { t } = useTranslation();
@@ -82,7 +82,7 @@ export const TradingInfo: React.FC<{ globalData: any; v3GlobalData: any }> = ({
       </Box>
       <Box className='tradingSection' pt='20px'>
         {dQUICKAPY ? (
-          <h3>{Number(dQUICKAPY).toLocaleString('us')}%</h3>
+          <h3>{dQUICKAPY}%</h3>
         ) : (
           <Skeleton variant='rect' width={100} height={45} />
         )}
