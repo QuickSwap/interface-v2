@@ -22,7 +22,7 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
   };
   useEffect(() => {
     const unlisten = history.listen((location) => {
-      updateIsProMode(false);
+      // updateIsProMode(false);
     });
     return function cleanup() {
       unlisten();

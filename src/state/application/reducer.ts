@@ -75,7 +75,7 @@ const initialState: ApplicationState = {
   analyticToken: null,
   tokenChartData: null,
   tokenDetails: [],
-  isProMode: false,
+  isProMode: true,
   gasPrice: { fetched: 70, override: true },
   isV2: undefined,
 };
