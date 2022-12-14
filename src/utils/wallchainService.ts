@@ -61,7 +61,7 @@ export default function callWallchainAPI(
   routerType: RouterTypes,
   onBestRoute: (bestRoute: RouterTypeParams) => void,
   onSetSwapDelay: (swapDelay: SwapDelay) => void,
-): Promise<any> {
+): Promise<DataResponse | null> {
   onSetSwapDelay(SwapDelay.FETCHING_BONUS);
   const encodedData =
     typeof args === 'string'
@@ -114,11 +114,11 @@ export default function callWallchainAPI(
             bonusRouter: dataResponse,
           });
           onSetSwapDelay(SwapDelay.SWAP_REFRESH);
-          return dataResponse;
         } else {
           onBestRoute({ routerType, smartRouter });
           onSetSwapDelay(SwapDelay.SWAP_REFRESH);
         }
+        return dataResponse;
       }
       onSetSwapDelay(SwapDelay.SWAP_REFRESH);
       return null;
@@ -127,5 +127,6 @@ export default function callWallchainAPI(
       onBestRoute({ routerType, smartRouter });
       onSetSwapDelay(SwapDelay.SWAP_REFRESH);
       console.error('Wallchain Error', error);
+      return null;
     });
 }

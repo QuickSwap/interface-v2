@@ -11,19 +11,24 @@ import {
   Currency,
   Percent,
 } from '@uniswap/sdk';
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { GlobalConst, RouterTypes, SmartRouter } from 'constants/index';
 import { useTransactionAdder } from 'state/transactions/hooks';
-import { isAddress, shortenAddress, getSigner } from 'utils';
+import {
+  isAddress,
+  shortenAddress,
+  getSigner,
+  calculateGasMargin,
+} from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import useENS from './useENS';
 import { OptimalRate } from 'paraswap-core';
 import { useParaswap } from './useParaswap';
-import { SwapSide } from '@paraswap/sdk';
 import ParaswapABI from 'constants/abis/ParaSwap_ABI.json';
+import SwapRouterABI from 'constants/abis/SwapRouterABI.json';
 import { useContract } from './useContract';
 import callWallchainAPI from 'utils/wallchainService';
-import { useSwapActionHandlers, useSwapState } from 'state/swap/hooks';
+import { useSwapActionHandlers } from 'state/swap/hooks';
 import { ONE } from 'v3lib/utils';
 
 export enum SwapCallbackState {
@@ -89,8 +94,10 @@ export function useParaswapCallback(
     ParaswapABI,
   );
 
-  const { bestRoute } = useSwapState();
-  const masterInput = bestRoute.bonusRouter?.transactionArgs.masterInput;
+  const swapRouterContract = useContract(
+    chainId ? GlobalConst.addresses.SWAP_ROUTER_ADDRESS[chainId] : undefined,
+    SwapRouterABI,
+  );
 
   return useMemo(() => {
     if (!priceRoute || !library || !account || !chainId) {
@@ -136,8 +143,9 @@ export function useParaswapCallback(
         response: TransactionResponse;
         summary: string;
       }> {
+        let txParams;
         try {
-          const txParams = await paraswap.buildTx({
+          txParams = await paraswap.buildTx({
             srcToken,
             destToken,
             srcAmount: priceRoute.srcAmount,
@@ -146,28 +154,45 @@ export function useParaswapCallback(
             userAddress: account,
             partner: referrer,
           });
+        } catch (e) {
+          console.log(e);
+          throw new Error(
+            'For rebase or taxed tokens, try market V2 instead of best trade.',
+          );
+        }
 
-          if (txParams.data && paraswapContract) {
-            callWallchainAPI(
-              priceRoute.contractMethod,
-              txParams.data,
-              txParams.value,
-              chainId,
-              account,
-              paraswapContract,
-              SmartRouter.PARASWAP,
-              RouterTypes.SMART,
-              onBestRoute,
-              onSetSwapDelay,
-            );
-          }
+        if (txParams.data && paraswapContract) {
+          const response = await callWallchainAPI(
+            priceRoute.contractMethod,
+            txParams.data,
+            txParams.value,
+            chainId,
+            account,
+            paraswapContract,
+            SmartRouter.PARASWAP,
+            RouterTypes.SMART,
+            onBestRoute,
+            onSetSwapDelay,
+          );
 
-          const signer = getSigner(library, account);
-          const ethersTxParams = convertToEthersTransaction(txParams);
-
-          return signer
-            .sendTransaction(ethersTxParams)
-            .then((response: TransactionResponse) => {
+          if (
+            response &&
+            response.pathFound &&
+            response.transactionArgs.masterInput &&
+            swapRouterContract
+          ) {
+            try {
+              const estimatedGas = await swapRouterContract.estimateGas.simpleSwap(
+                txParams.data,
+                response.transactionArgs.masterInput,
+              );
+              const swapResponse: TransactionResponse = await swapRouterContract.simpleSwap(
+                txParams.data,
+                response.transactionArgs.masterInput,
+                {
+                  gasLimit: calculateGasMargin(estimatedGas),
+                },
+              );
               const inputSymbol = inputCurrency?.symbol;
               const outputSymbol = outputCurrency?.symbol;
               const inputAmount =
@@ -192,25 +217,59 @@ export function useParaswapCallback(
 
               const withVersion = withRecipient;
 
-              addTransaction(response, {
+              addTransaction(swapResponse, {
                 summary: withVersion,
               });
 
-              return { response, summary: withVersion };
-            })
-            .catch((error: any) => {
-              // if the user rejected the tx, pass this along
+              return { response: swapResponse, summary: withVersion };
+            } catch (error) {
               if (error?.code === 4001) {
                 throw new Error('Transaction rejected.');
               } else {
                 throw new Error(`Swap failed: ${error.message}`);
               }
-            });
-        } catch (e) {
-          console.log(e);
-          throw new Error(
-            'For rebase or taxed tokens, try market V2 instead of best trade.',
-          );
+            }
+          }
+        }
+
+        const signer = getSigner(library, account);
+        const ethersTxParams = convertToEthersTransaction(txParams);
+        try {
+          const response = await signer.sendTransaction(ethersTxParams);
+          const inputSymbol = inputCurrency?.symbol;
+          const outputSymbol = outputCurrency?.symbol;
+          const inputAmount =
+            Number(priceRoute.srcAmount) / 10 ** priceRoute.srcDecimals;
+          const outputAmount =
+            Number(priceRoute.destAmount) / 10 ** priceRoute.destDecimals;
+
+          const base = `Swap ${inputAmount.toLocaleString(
+            'us',
+          )} ${inputSymbol} for ${outputAmount.toLocaleString(
+            'us',
+          )} ${outputSymbol}`;
+          const withRecipient =
+            recipient === account
+              ? base
+              : `${base} to ${
+                  recipientAddressOrName && isAddress(recipientAddressOrName)
+                    ? shortenAddress(recipientAddressOrName)
+                    : recipientAddressOrName
+                }`;
+
+          const withVersion = withRecipient;
+
+          addTransaction(response, {
+            summary: withVersion,
+          });
+
+          return { response, summary: withVersion };
+        } catch (error) {
+          if (error?.code === 4001) {
+            throw new Error('Transaction rejected.');
+          } else {
+            throw new Error(`Swap failed: ${error.message}`);
+          }
         }
       },
       error: null,
@@ -221,14 +280,15 @@ export function useParaswapCallback(
     account,
     chainId,
     recipient,
-    recipientAddressOrName,
     allowedSlippage,
+    recipientAddressOrName,
     paraswap,
-    addTransaction,
+    paraswapContract,
     onBestRoute,
     onSetSwapDelay,
-    paraswapContract,
-    inputCurrency,
-    outputCurrency,
+    swapRouterContract,
+    inputCurrency?.symbol,
+    outputCurrency?.symbol,
+    addTransaction,
   ]);
 }
