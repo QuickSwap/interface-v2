@@ -30,6 +30,7 @@ import {
 import { SwapState } from './reducer';
 import { useUserSlippageTolerance } from 'state/user/hooks';
 import { computeSlippageAdjustedAmounts } from 'utils/prices';
+import { GlobalData } from 'constants/index';
 
 export function useSwapState(): AppState['swap'] {
   return useSelector<AppState, AppState['swap']>((state) => state.swap);
@@ -226,6 +227,24 @@ export function useDerivedSwapInfo(): {
   if (balanceIn && amountIn && balanceIn.lessThan(amountIn)) {
     inputError = 'Insufficient ' + amountIn.currency.symbol + ' balance';
   }
+
+  const [_, setUserSlippageTolerance] = useUserSlippageTolerance();
+
+  useEffect(() => {
+    const stableCoinAddresses = GlobalData.stableCoins.map((token) =>
+      token.address.toLowerCase(),
+    );
+    if (
+      inputCurrencyId &&
+      outputCurrencyId &&
+      stableCoinAddresses.includes(inputCurrencyId.toLowerCase()) &&
+      stableCoinAddresses.includes(outputCurrencyId.toLowerCase())
+    ) {
+      setUserSlippageTolerance(10);
+    } else {
+      setUserSlippageTolerance(50);
+    }
+  }, [inputCurrencyId, outputCurrencyId, setUserSlippageTolerance]);
 
   return {
     currencies,
