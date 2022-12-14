@@ -109,7 +109,6 @@ const WalletModal: React.FC<WalletModalProps> = ({
   const tryActivation = async (connector: AbstractConnector | undefined) => {
     let name = '';
     let found = false;
-    const { ethereum } = window as any;
 
     Object.keys(SUPPORTED_WALLETS).map((key) => {
       if (connector === SUPPORTED_WALLETS[key].connector) {
@@ -162,7 +161,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
         .then(() => setError(undefined))
         .catch((error) => {
           if (error instanceof UnsupportedChainIdError) {
-            setError(error); // a little janky...can't use setError because the connector isn't set
+            setError(error);
           } else {
             setPendingError(true);
           }
