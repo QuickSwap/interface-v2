@@ -614,7 +614,9 @@ const Swap: React.FC<{
         </Box>
       )}
       {fetchingBestRoute ? (
-        <>Fetching Best Route...</>
+        <Box mt={2} className='flex justify-center'>
+          <p>Fetching Best Route...</p>
+        </Box>
       ) : (
         <AdvancedSwapDetails trade={trade} />
       )}

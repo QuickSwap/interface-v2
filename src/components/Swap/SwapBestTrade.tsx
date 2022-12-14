@@ -88,7 +88,7 @@ const SwapBestTrade: React.FC<{
 
   const { t } = useTranslation();
   const { account } = useActiveWeb3React();
-  const { independentField, typedValue, recipient, swapDelay } = useSwapState();
+  const { independentField, typedValue, recipient } = useSwapState();
   const {
     currencyBalances,
     parsedAmount,
@@ -613,11 +613,6 @@ const SwapBestTrade: React.FC<{
       (Number(optimalRate.srcAmount) * 10 ** optimalRate.destDecimals)
     : undefined;
 
-  const fetchingBestRoute =
-    swapDelay === SwapDelay.USER_INPUT ||
-    swapDelay === SwapDelay.FETCHING_SWAP ||
-    swapDelay === SwapDelay.FETCHING_BONUS;
-
   return (
     <Box>
       <TokenWarningModal
@@ -721,15 +716,13 @@ const SwapBestTrade: React.FC<{
           )}
         </Box>
       )}
-      {fetchingBestRoute ? (
-        <>Fetching Best Route...</>
-      ) : (
+      {
         <BestTradeAdvancedSwapDetails
           optimalRate={optimalRate}
           inputCurrency={inputCurrency}
           outputCurrency={outputCurrency}
         />
-      )}
+      }
       <Box className='swapButtonWrapper'>
         {showApproveFlow && (
           <Box width='48%'>

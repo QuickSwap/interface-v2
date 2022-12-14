@@ -97,7 +97,6 @@ export default function callWallchainAPI(
       return null;
     })
     .then((responseJson) => {
-      console.log('ccc', responseJson);
       if (responseJson) {
         const dataResponse: DataResponse = responseJson;
         if (
@@ -115,6 +114,7 @@ export default function callWallchainAPI(
             bonusRouter: dataResponse,
           });
           onSetSwapDelay(SwapDelay.SWAP_REFRESH);
+          return dataResponse;
         } else {
           onBestRoute({ routerType, smartRouter });
           onSetSwapDelay(SwapDelay.SWAP_REFRESH);

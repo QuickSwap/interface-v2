@@ -23,7 +23,7 @@ import { SwapSide } from '@paraswap/sdk';
 import ParaswapABI from 'constants/abis/ParaSwap_ABI.json';
 import { useContract } from './useContract';
 import callWallchainAPI from 'utils/wallchainService';
-import { useSwapActionHandlers } from 'state/swap/hooks';
+import { useSwapActionHandlers, useSwapState } from 'state/swap/hooks';
 import { ONE } from 'v3lib/utils';
 
 export enum SwapCallbackState {
@@ -89,6 +89,9 @@ export function useParaswapCallback(
     ParaswapABI,
   );
 
+  const { bestRoute } = useSwapState();
+  const masterInput = bestRoute.bonusRouter?.transactionArgs.masterInput;
+
   return useMemo(() => {
     if (!priceRoute || !library || !account || !chainId) {
       return {
@@ -127,33 +130,6 @@ export function useParaswapCallback(
       .invert()
       .multiply(priceRoute.destAmount).quotient;
 
-    paraswap
-      .buildTx({
-        srcToken,
-        destToken,
-        srcAmount: priceRoute.srcAmount,
-        destAmount: minDestAmount.toString(),
-        priceRoute: priceRoute,
-        userAddress: account,
-        partner: referrer,
-      })
-      .then((txParams) => {
-        if (txParams.data && paraswapContract) {
-          callWallchainAPI(
-            priceRoute.contractMethod,
-            txParams.data,
-            txParams.value,
-            chainId,
-            account,
-            paraswapContract,
-            SmartRouter.PARASWAP,
-            RouterTypes.SMART,
-            onBestRoute,
-            onSetSwapDelay,
-          );
-        }
-      });
-
     return {
       state: SwapCallbackState.VALID,
       callback: async function onSwap(): Promise<{
@@ -171,8 +147,24 @@ export function useParaswapCallback(
             partner: referrer,
           });
 
+          if (txParams.data && paraswapContract) {
+            callWallchainAPI(
+              priceRoute.contractMethod,
+              txParams.data,
+              txParams.value,
+              chainId,
+              account,
+              paraswapContract,
+              SmartRouter.PARASWAP,
+              RouterTypes.SMART,
+              onBestRoute,
+              onSetSwapDelay,
+            );
+          }
+
           const signer = getSigner(library, account);
           const ethersTxParams = convertToEthersTransaction(txParams);
+
           return signer
             .sendTransaction(ethersTxParams)
             .then((response: TransactionResponse) => {
