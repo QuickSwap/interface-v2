@@ -11,7 +11,12 @@ import './index.scss';
 import { FormattedEternalFarming } from 'models/interfaces';
 import { useFarmingSubgraph } from 'hooks/useIncentiveSubgraph';
 
-export default function EternalFarmsPage() {
+const EternalFarmsPage: React.FC<{
+  farmFilter: number;
+  search: string;
+  sortBy: number;
+  sortDesc: boolean;
+}> = ({ farmFilter, search }) => {
   const [modalForPool, setModalForPool] = useState(null);
   const { t } = useTranslation();
 
@@ -91,4 +96,6 @@ export default function EternalFarmsPage() {
       </Box>
     </>
   );
-}
+};
+
+export default EternalFarmsPage;

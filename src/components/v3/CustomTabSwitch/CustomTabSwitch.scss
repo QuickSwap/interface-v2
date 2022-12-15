@@ -4,36 +4,25 @@
 .customTabWrapper {
   display: flex;
   align-items: center;
-}
-
-.customTabSeparator {
-  width: 1px;
-  background-color: $textSecondary;
-}
-
-.customTab {
-  padding: 0 16px;
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  margin-right: 8px;
-  & small {
-    color: $textSecondary;
-  }
-  @include media("screen", "<tablet") {
-    padding: 0 8px;
-  }
-  @include media("screen", "<phone") {
-    & small {
-      font-size: 12px;
+  & .MuiTabs-root {
+    & button {
+      min-width: unset;
+      max-width: none;
+      padding: 6px 0;
+      margin: 0 12px;
+      &.Mui-selected {
+        span {
+          color: $textPrimary;
+        }
+      }
+      & span {
+        font-size: 14px;
+        color: $textSecondary;
+        text-transform: none;
+      }
     }
-  }
-}
-
-.selectedCustomTab {
-  background-color: $grey32;
-  border-radius: 8px;
-  & small {
-    color: $black1;
+    & .MuiTabs-indicator {
+      background-color: $textPrimary;
+    }
   }
 }

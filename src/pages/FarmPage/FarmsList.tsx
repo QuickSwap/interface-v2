@@ -21,6 +21,7 @@ import {
   CustomMenu,
   SearchInput,
   CustomSwitch,
+  SortColumns,
 } from 'components';
 import { GlobalConst } from 'constants/index';
 import {
@@ -523,27 +524,12 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
       </Box>
       <Divider />
       {!isMobile && (
-        <Box mt={2.5} display='flex' paddingX={2}>
-          {sortByDesktopItems.map((item) => (
-            <Box
-              key={item.index}
-              width={item.width}
-              className={`flex items-center cursor-pointer ${
-                sortBy === item.index ? '' : 'text-secondary'
-              }`}
-              justifyContent={item.justify}
-              onClick={item.onClick}
-            >
-              <small>{item.text}</small>
-              <Box display='flex' ml={0.5}>
-                {sortBy === item.index && sortDesc ? (
-                  <ArrowDown size={20} />
-                ) : (
-                  <ArrowUp size={20} />
-                )}
-              </Box>
-            </Box>
-          ))}
+        <Box mt={2.5}>
+          <SortColumns
+            sortColumns={sortByDesktopItems}
+            selectedSort={sortBy}
+            sortDesc={sortDesc}
+          />
         </Box>
       )}
       {(farmIndex === GlobalConst.farmIndex.LPFARM_INDEX && !stakingInfos) ||

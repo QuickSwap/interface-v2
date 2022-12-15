@@ -1,13 +1,15 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { Box, useMediaQuery, useTheme } from '@material-ui/core';
+import CustomSelector from 'components/v3/CustomSelector';
 import CustomTabSwitch from 'components/v3/CustomTabSwitch';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import EternalFarmsPage from 'pages/EternalFarmsPage';
+import GammaFarmsPage from 'pages/GammaFarmsPage';
 import { FarmingMyFarms } from 'components/StakerMyStakes';
-import { TabItem } from 'components/v3/CustomTabSwitch/CustomTabSwitch';
-import { SearchInput } from 'components';
+import { SelectorItem } from 'components/v3/CustomSelector/CustomSelector';
+import { SearchInput, SortColumns } from 'components';
 
 export default function Farms() {
   const { t } = useTranslation();
@@ -44,14 +46,14 @@ export default function Farms() {
     ],
     [t],
   );
-  const handleTabSwitch = useCallback(
-    (selectedTab: TabItem) => {
-      history.push(`?tab=${selectedTab?.link}`);
+  const onChangeFarmCategory = useCallback(
+    (selected: SelectorItem) => {
+      history.push(`?tab=${selected?.link}`);
     },
     [history],
   );
 
-  const selectedTab = useMemo(() => {
+  const selectedFarmCategory = useMemo(() => {
     const tab = v3FarmCategories.find(
       (item) => item?.link === currentTabQueried,
     );
@@ -62,16 +64,86 @@ export default function Farms() {
     }
   }, [currentTabQueried, v3FarmCategories]);
 
+  const farmFilters = useMemo(
+    () => [
+      {
+        text: 'All Farms',
+        id: 0,
+      },
+      {
+        text: 'StableCoins',
+        id: 1,
+      },
+      {
+        text: 'Blue chips',
+        id: 2,
+      },
+      {
+        text: 'Stable LPs',
+        id: 3,
+      },
+      {
+        text: 'Other LPs',
+        id: 4,
+      },
+    ],
+    [],
+  );
+  const [farmFilter, setFarmFilter] = useState(farmFilters[0]);
+
   const [searchValue, setSearchValue] = useState('');
+
+  const [sortBy, setSortBy] = useState(0);
+  const [sortDesc, setSortDesc] = useState(false);
+  const POOL_COLUMN = 1;
+  const TVL_COLUMN = 2;
+  const REWARDS_COLUMN = 3;
+  const POOLAPR_COLUMN = 4;
+  const FARMAPR_COLUMN = 5;
+  const sortColumns = [
+    { text: t('pool'), index: POOL_COLUMN, width: 0.3, justify: 'flex-start' },
+    { text: t('tvl'), index: TVL_COLUMN, width: 0.2, justify: 'center' },
+    {
+      text: t('rewards'),
+      index: REWARDS_COLUMN,
+      width: 0.25,
+      justify: 'center',
+    },
+    {
+      text: t('poolAPR'),
+      index: POOLAPR_COLUMN,
+      width: 0.15,
+      justify: 'center',
+    },
+    {
+      text: t('farmAPR'),
+      index: FARMAPR_COLUMN,
+      width: 0.2,
+      justify: 'flex-end',
+    },
+  ];
+  const sortByDesktopItems = sortColumns.map((item) => {
+    return {
+      ...item,
+      onClick: () => {
+        if (sortBy === item.index) {
+          setSortDesc(!sortDesc);
+        } else {
+          setSortBy(item.index);
+          setSortDesc(false);
+        }
+      },
+    };
+  });
 
   return (
     <Box className='bg-palette' borderRadius={10}>
       <Box pt={2} px={2} className='flex flex-wrap justify-between'>
-        <CustomTabSwitch
+        <CustomSelector
           height={36}
           items={v3FarmCategories}
-          selectedItem={selectedTab}
-          handleTabChange={handleTabSwitch}
+          selectedItem={selectedFarmCategory}
+          handleChange={onChangeFarmCategory}
         />
         <Box
           mt={isMobile ? 2 : 0}
@@ -87,9 +159,44 @@ export default function Farms() {
         </Box>
       </Box>
 
+      {selectedFarmCategory.id !== 0 && (
+        <>
+          <Box mt={2} pl='12px' className='bg-secondary1'>
+            <CustomTabSwitch
+              items={farmFilters}
+              selectedItem={farmFilter}
+              handleTabChange={setFarmFilter}
+              height={50}
+            />
+          </Box>
+          <Box mt={2}>
+            <SortColumns
+              sortColumns={sortByDesktopItems}
+              selectedSort={sortBy}
+              sortDesc={sortDesc}
+            />
+          </Box>
+        </>
+      )}
+
       <Box mt={2}>
-        {selectedTab?.id === 0 && <FarmingMyFarms />}
-        {selectedTab?.id === 1 && <EternalFarmsPage />}
+        {selectedFarmCategory?.id === 0 && <FarmingMyFarms />}
+        {selectedFarmCategory?.id === 1 && (
+          <EternalFarmsPage
+            farmFilter={farmFilter.id}
+            search={searchValue}
+            sortBy={sortBy}
+            sortDesc={sortDesc}
+          />
+        )}
+        {selectedFarmCategory?.id === 2 && (
+          <GammaFarmsPage
+            farmFilter={farmFilter.id}
+            search={searchValue}
+            sortBy={sortBy}
+            sortDesc={sortDesc}
+          />
+        )}
       </Box>
     </Box>
   );
