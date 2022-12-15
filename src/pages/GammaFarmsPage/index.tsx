@@ -37,7 +37,6 @@ const GammaFarmsPage: React.FC<{
             {gammaFarms.map((event: FormattedEternalFarming, j: number) => (
               <Grid item xs={12} sm={6} md={4} key={j}>
                 <EternalFarmCard
-                  refreshing={gammaFarmsLoading}
                   now={0}
                   eternal
                   poolAprs={undefined}

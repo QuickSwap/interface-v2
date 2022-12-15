@@ -10,6 +10,7 @@ import GammaFarmsPage from 'pages/GammaFarmsPage';
 import { FarmingMyFarms } from 'components/StakerMyStakes';
 import { SelectorItem } from 'components/v3/CustomSelector/CustomSelector';
 import { SearchInput, SortColumns } from 'components';
+import { GlobalConst } from 'constants/index';
 
 export default function Farms() {
   const { t } = useTranslation();
@@ -95,31 +96,37 @@ export default function Farms() {
 
   const [sortBy, setSortBy] = useState(0);
   const [sortDesc, setSortDesc] = useState(false);
-  const POOL_COLUMN = 1;
-  const TVL_COLUMN = 2;
-  const REWARDS_COLUMN = 3;
-  const POOLAPR_COLUMN = 4;
-  const FARMAPR_COLUMN = 5;
+
   const sortColumns = [
-    { text: t('pool'), index: POOL_COLUMN, width: 0.3, justify: 'flex-start' },
-    { text: t('tvl'), index: TVL_COLUMN, width: 0.2, justify: 'center' },
+    {
+      text: t('pool'),
+      index: GlobalConst.utils.v3FarmSortBy.pool,
+      width: 0.3,
+      justify: 'flex-start',
+    },
+    {
+      text: t('tvl'),
+      index: GlobalConst.utils.v3FarmSortBy.tvl,
+      width: 0.2,
+      justify: 'flex-start',
+    },
     {
       text: t('rewards'),
-      index: REWARDS_COLUMN,
+      index: GlobalConst.utils.v3FarmSortBy.rewards,
       width: 0.25,
-      justify: 'center',
+      justify: 'flex-start',
     },
     {
       text: t('poolAPR'),
-      index: POOLAPR_COLUMN,
+      index: GlobalConst.utils.v3FarmSortBy.poolAPR,
       width: 0.15,
-      justify: 'center',
+      justify: 'flex-start',
     },
     {
       text: t('farmAPR'),
-      index: FARMAPR_COLUMN,
+      index: GlobalConst.utils.v3FarmSortBy.farmAPR,
       width: 0.2,
-      justify: 'flex-end',
+      justify: 'flex-start',
     },
   ];
   const sortByDesktopItems = sortColumns.map((item) => {
@@ -169,35 +176,35 @@ export default function Farms() {
               height={50}
             />
           </Box>
-          <Box mt={2}>
-            <SortColumns
-              sortColumns={sortByDesktopItems}
-              selectedSort={sortBy}
-              sortDesc={sortDesc}
-            />
+          <Box mt={2} px={3.5}>
+            <Box width='85%'>
+              <SortColumns
+                sortColumns={sortByDesktopItems}
+                selectedSort={sortBy}
+                sortDesc={sortDesc}
+              />
+            </Box>
           </Box>
         </>
       )}
 
-      <Box mt={2}>
-        {selectedFarmCategory?.id === 0 && <FarmingMyFarms />}
-        {selectedFarmCategory?.id === 1 && (
-          <EternalFarmsPage
-            farmFilter={farmFilter.id}
-            search={searchValue}
-            sortBy={sortBy}
-            sortDesc={sortDesc}
-          />
-        )}
-        {selectedFarmCategory?.id === 2 && (
-          <GammaFarmsPage
-            farmFilter={farmFilter.id}
-            search={searchValue}
-            sortBy={sortBy}
-            sortDesc={sortDesc}
-          />
-        )}
-      </Box>
+      {selectedFarmCategory?.id === 0 && <FarmingMyFarms />}
+      {selectedFarmCategory?.id === 1 && (
+        <EternalFarmsPage
+          farmFilter={farmFilter.id}
+          search={searchValue}
+          sortBy={sortBy}
+          sortDesc={sortDesc}
+        />
+      )}
+      {selectedFarmCategory?.id === 2 && (
+        <GammaFarmsPage
+          farmFilter={farmFilter.id}
+          search={searchValue}
+          sortBy={sortBy}
+          sortDesc={sortDesc}
+        />
+      )}
     </Box>
   );
 }

@@ -110,6 +110,13 @@ export const GlobalConst = {
     DEFAULT_SYRUP_LIST_URL: process.env.REACT_APP_SYRUP_LIST_DEFAULT_URL + '',
     ANALYTICS_TOKENS_COUNT: 200,
     ANALYTICS_PAIRS_COUNT: 400,
+    v3FarmSortBy: {
+      pool: 1,
+      tvl: 2,
+      rewards: 3,
+      poolAPR: 4,
+      farmAPR: 5,
+    },
   },
   analyticChart: {
     ONE_MONTH_CHART: 1,

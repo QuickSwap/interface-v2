@@ -20,6 +20,7 @@ import {
   FETCH_POOL,
   FETCH_REWARDS,
   FETCH_TOKEN,
+  FETCH_TOKEN_V3,
   FUTURE_EVENTS,
   HAS_TRANSFERED_POSITIONS,
   INFINITE_EVENTS,
@@ -177,7 +178,7 @@ export function useFarmingSubgraph() {
       } = await (farming ? farmingClient : v3Client).query<
         SubgraphResponse<TokenSubgraph[]>
       >({
-        query: FETCH_TOKEN(),
+        query: farming ? FETCH_TOKEN() : FETCH_TOKEN_V3(),
         variables: { tokenId },
       });
 
@@ -905,11 +906,8 @@ export function useFarmingSubgraph() {
       // .filter(farming => +farming.bonusRewardRate || +farming.rewardRate)
       for (const farming of eternalFarmings) {
         const pool = await fetchPool(farming.pool);
-        const rewardToken = await fetchToken(farming.rewardToken, true);
-        const bonusRewardToken = await fetchToken(
-          farming.bonusRewardToken,
-          true,
-        );
+        const rewardToken = await fetchToken(farming.rewardToken);
+        const bonusRewardToken = await fetchToken(farming.bonusRewardToken);
         const multiplierToken = await fetchToken(farming.multiplierToken, true);
 
         _eternalFarmings = [

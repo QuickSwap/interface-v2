@@ -23,7 +23,7 @@ const SortColumns: React.FC<SortColumnsProps> = ({
   sortDesc,
 }) => {
   return (
-    <Box display='flex' paddingX={2}>
+    <Box className='flex items-center'>
       {sortColumns.map((item) => (
         <Box
           key={item.index}

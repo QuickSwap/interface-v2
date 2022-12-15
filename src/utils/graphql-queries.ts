@@ -47,6 +47,18 @@ export const FETCH_TOKEN = () => gql`
   }
 `;
 
+export const FETCH_TOKEN_V3 = () => gql`
+  query fetchTokenV3($tokenId: ID) {
+    tokens(where: { id: $tokenId }) {
+      id
+      symbol
+      name
+      decimals
+      derivedMatic
+    }
+  }
+`;
+
 export const FETCH_LIMIT = () => gql`
   query fetchLimit($limitFarmingId: ID) {
     limitFarmings(where: { id: $limitFarmingId }) {

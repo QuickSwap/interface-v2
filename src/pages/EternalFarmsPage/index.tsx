@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { Box, Grid } from '@material-ui/core';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Box } from '@material-ui/core';
 import { EternalFarmCard } from 'components/StakerEventCard/EternalFarmCard';
 import { Frown } from 'react-feather';
 import { useTranslation } from 'react-i18next';
@@ -10,15 +10,20 @@ import { FarmingType } from '../../models/enums';
 import './index.scss';
 import { FormattedEternalFarming } from 'models/interfaces';
 import { useFarmingSubgraph } from 'hooks/useIncentiveSubgraph';
+import { GlobalConst } from 'constants/index';
+import { useMaticPrice } from 'state/application/hooks';
+import { formatUnits } from 'ethers/lib/utils';
 
 const EternalFarmsPage: React.FC<{
   farmFilter: number;
   search: string;
   sortBy: number;
   sortDesc: boolean;
-}> = ({ farmFilter, search }) => {
+}> = ({ farmFilter, search, sortBy, sortDesc }) => {
   const [modalForPool, setModalForPool] = useState(null);
   const { t } = useTranslation();
+
+  const { v3FarmSortBy } = GlobalConst.utils;
 
   const {
     fetchEternalFarms: {
@@ -51,6 +56,144 @@ const EternalFarmsPage: React.FC<{
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const sortDescKey = sortDesc ? -1 : 1;
+
+  const eternalFarmsFiltered = useMemo(() => {
+    if (!eternalFarms || !eternalFarms.length) return [];
+    return eternalFarms
+      .filter((farm) => {
+        const farmToken0Name =
+          farm && farm.pool && farm.pool.token0 && farm.pool.token0.name
+            ? farm.pool.token0.name
+            : '';
+        const farmToken1Name =
+          farm && farm.pool && farm.pool.token1 && farm.pool.token1.name
+            ? farm.pool.token1.name
+            : '';
+        const farmToken0Symbol =
+          farm && farm.pool && farm.pool.token0 && farm.pool.token0.symbol
+            ? farm.pool.token0.symbol
+            : '';
+        const farmToken1Symbol =
+          farm && farm.pool && farm.pool.token1 && farm.pool.token1.symbol
+            ? farm.pool.token1.symbol
+            : '';
+        const farmToken0Id =
+          farm && farm.pool && farm.pool.token0 && farm.pool.token0.id
+            ? farm.pool.token0.id
+            : '';
+        const farmToken1Id =
+          farm && farm.pool && farm.pool.token1 && farm.pool.token1.id
+            ? farm.pool.token1.id
+            : '';
+        return (
+          farmToken0Name.toLowerCase().includes(search) ||
+          farmToken1Name.toLowerCase().includes(search) ||
+          farmToken0Symbol.toLowerCase().includes(search) ||
+          farmToken1Symbol.toLowerCase().includes(search) ||
+          farmToken0Id.toLowerCase().includes(search) ||
+          farmToken1Id.toLowerCase().includes(search)
+        );
+      })
+      .sort((farm1, farm2) => {
+        const farm1TokenStr =
+          farm1.pool.token0.symbol + '/' + farm1.pool.token1.symbol;
+        const farm2TokenStr =
+          farm2.pool.token0.symbol + '/' + farm2.pool.token1.symbol;
+        if (sortBy === v3FarmSortBy.tvl) {
+          const farm1TVL =
+            eternalFarmTvls && farm1 && farm1.id
+              ? Number(eternalFarmTvls[farm1.id])
+              : 0;
+          const farm2TVL =
+            eternalFarmTvls && farm2 && farm2.id
+              ? Number(eternalFarmTvls[farm2.id])
+              : 0;
+          return farm1TVL > farm2TVL ? sortDescKey : -1 * sortDescKey;
+        } else if (sortBy === v3FarmSortBy.farmAPR) {
+          const farm1FarmAPR =
+            eternalFarmAprs && farm1 && farm1.id
+              ? Number(eternalFarmAprs[farm1.id])
+              : 0;
+          const farm2FarmAPR =
+            eternalFarmAprs && farm2 && farm2.id
+              ? Number(eternalFarmAprs[farm2.id])
+              : 0;
+          return farm1FarmAPR > farm2FarmAPR ? sortDescKey : -1 * sortDescKey;
+        } else if (sortBy === v3FarmSortBy.poolAPR) {
+          const farm1PoolAPR =
+            eternalFarmPoolAprs && farm1 && farm1.pool && farm1.pool.id
+              ? Number(eternalFarmPoolAprs[farm1.pool.id])
+              : 0;
+          const farm2PoolAPR =
+            eternalFarmPoolAprs && farm2 && farm2.pool && farm2.pool.id
+              ? Number(eternalFarmPoolAprs[farm2.pool.id])
+              : 0;
+          return farm1PoolAPR > farm2PoolAPR ? sortDescKey : -1 * sortDescKey;
+        } else if (sortBy === v3FarmSortBy.rewards) {
+          const farm1Reward =
+            farm1 &&
+            farm1.rewardRate &&
+            farm1.rewardToken &&
+            farm1.rewardToken.decimals &&
+            farm1.rewardToken.derivedMatic
+              ? Number(
+                  formatUnits(farm1.rewardRate, farm1.rewardToken.decimals),
+                ) * Number(farm1.rewardToken.derivedMatic)
+              : 0;
+          const farm1BonusReward =
+            farm1 &&
+            farm1.bonusRewardRate &&
+            farm1.bonusRewardToken &&
+            farm1.bonusRewardToken.decimals &&
+            farm1.bonusRewardToken.derivedMatic
+              ? Number(
+                  formatUnits(
+                    farm1.bonusRewardRate,
+                    farm1.bonusRewardToken.decimals,
+                  ),
+                ) * Number(farm1.bonusRewardToken.derivedMatic)
+              : 0;
+          const farm2Reward =
+            farm2 &&
+            farm2.rewardRate &&
+            farm2.rewardToken &&
+            farm2.rewardToken.decimals &&
+            farm2.rewardToken.derivedMatic
+              ? Number(
+                  formatUnits(farm2.rewardRate, farm2.rewardToken.decimals),
+                ) * Number(farm2.rewardToken.derivedMatic)
+              : 0;
+          const farm2BonusReward =
+            farm2 &&
+            farm2.bonusRewardRate &&
+            farm2.bonusRewardToken &&
+            farm2.bonusRewardToken.decimals &&
+            farm2.bonusRewardToken.derivedMatic
+              ? Number(
+                  formatUnits(
+                    farm2.bonusRewardRate,
+                    farm2.bonusRewardToken.decimals,
+                  ),
+                ) * Number(farm2.bonusRewardToken.derivedMatic)
+              : 0;
+          return farm1Reward + farm1BonusReward > farm2Reward + farm2BonusReward
+            ? sortDescKey
+            : -1 * sortDescKey;
+        }
+        return farm1TokenStr > farm2TokenStr ? sortDescKey : -1 * sortDescKey;
+      });
+  }, [
+    eternalFarmAprs,
+    eternalFarmPoolAprs,
+    eternalFarmTvls,
+    eternalFarms,
+    search,
+    sortBy,
+    sortDescKey,
+    v3FarmSortBy,
+  ]);
+
   return (
     <>
       <CustomModal open={!!modalForPool} onClose={() => setModalForPool(null)}>
@@ -62,36 +205,37 @@ const EternalFarmsPage: React.FC<{
           />
         )}
       </CustomModal>
-      <Box px={2} py={3}>
+      <Box p={2}>
         {eternalFarmsLoading ? (
           <div className={'eternal-page__loader'}>
             <Loader stroke='white' size='1.5rem' />
           </div>
-        ) : !eternalFarms || eternalFarms.length === 0 ? (
+        ) : eternalFarmsFiltered.length === 0 ? (
           <div className={'eternal-page__loader'}>
             <div>{t('noEternalFarms')}</div>
             <Frown size={'2rem'} stroke={'white'} />
           </div>
-        ) : !eternalFarmsLoading && eternalFarms.length !== 0 ? (
-          <Grid container spacing={2}>
-            {eternalFarms.map((event: FormattedEternalFarming, j: number) => (
-              <Grid item xs={12} sm={6} md={4} key={j}>
-                <EternalFarmCard
-                  farmHandler={() => setModalForPool(event as any)}
-                  refreshing={eternalFarmsLoading}
-                  now={0}
-                  eternal
-                  poolAprs={eternalFarmPoolAprs}
-                  poolAprsLoading={eternalFarmPoolAprsLoading}
-                  aprs={eternalFarmAprs}
-                  aprsLoading={eternalFarmAprsLoading}
-                  tvls={eternalFarmTvls}
-                  tvlsLoading={eternalFarmTvlsLoading}
-                  event={event}
-                />
-              </Grid>
-            ))}
-          </Grid>
+        ) : !eternalFarmsLoading && eternalFarmsFiltered.length > 0 ? (
+          <>
+            {eternalFarmsFiltered.map(
+              (event: FormattedEternalFarming, j: number) => (
+                <Box mb={2} key={j}>
+                  <EternalFarmCard
+                    farmHandler={() => setModalForPool(event as any)}
+                    now={0}
+                    eternal
+                    poolAprs={eternalFarmPoolAprs}
+                    poolAprsLoading={eternalFarmPoolAprsLoading}
+                    aprs={eternalFarmAprs}
+                    aprsLoading={eternalFarmAprsLoading}
+                    tvls={eternalFarmTvls}
+                    tvlsLoading={eternalFarmTvlsLoading}
+                    event={event}
+                  />
+                </Box>
+              ),
+            )}
+          </>
         ) : null}
       </Box>
     </>
