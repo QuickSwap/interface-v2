@@ -1,16 +1,20 @@
-import React, { useCallback, useMemo } from 'react';
-import { Box } from '@material-ui/core';
+import React, { useCallback, useMemo, useState } from 'react';
+import { Box, useMediaQuery, useTheme } from '@material-ui/core';
 import CustomTabSwitch from 'components/v3/CustomTabSwitch';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import EternalFarmsPage from 'pages/EternalFarmsPage';
 import { FarmingMyFarms } from 'components/StakerMyStakes';
+import { TabItem } from 'components/v3/CustomTabSwitch/CustomTabSwitch';
+import { SearchInput } from 'components';
 
 export default function Farms() {
   const { t } = useTranslation();
 
   const parsedQuery = useParsedQueryString();
+  const { breakpoints } = useTheme();
+  const isMobile = useMediaQuery(breakpoints.down('xs'));
 
   const history = useHistory();
 
@@ -27,19 +31,24 @@ export default function Farms() {
         link: 'my-farms',
       },
       {
-        text: t('farms'),
+        text: t('quickswapFarms'),
         id: 1,
         link: 'eternal-farms',
+      },
+      {
+        text: t('gammaFarms'),
+        id: 2,
+        link: 'gamma-farms',
+        hasSeparator: true,
       },
     ],
     [t],
   );
   const handleTabSwitch = useCallback(
-    (event, selectedIndex) => {
-      const tab = v3FarmCategories?.[selectedIndex];
-      history.push(`?tab=${tab?.link}`);
+    (selectedTab: TabItem) => {
+      history.push(`?tab=${selectedTab?.link}`);
     },
-    [history, v3FarmCategories],
+    [history],
   );
 
   const selectedTab = useMemo(() => {
@@ -53,23 +62,34 @@ export default function Farms() {
     }
   }, [currentTabQueried, v3FarmCategories]);
 
+  const [searchValue, setSearchValue] = useState('');
+
   return (
     <Box className='bg-palette' borderRadius={10}>
-      <Box width='100%' mt={2}>
-        <Box className='v3-farm-tabs-wrapper'>
-          <CustomTabSwitch
-            width={300}
-            height={67}
-            items={v3FarmCategories}
-            selectedItem={selectedTab}
-            handleTabChange={handleTabSwitch}
+      <Box pt={2} px={2} className='flex flex-wrap justify-between'>
+        <CustomTabSwitch
+          height={36}
+          items={v3FarmCategories}
+          selectedItem={selectedTab}
+          handleTabChange={handleTabSwitch}
+        />
+        <Box
+          mt={isMobile ? 2 : 0}
+          ml={isMobile ? 0 : 2}
+          width={isMobile ? 1 : 200}
+        >
+          <SearchInput
+            placeholder='Search'
+            value={searchValue}
+            setValue={setSearchValue}
+            isIconAfter
           />
         </Box>
+      </Box>
 
-        <Box mt={2}>
-          {selectedTab?.id === 0 && <FarmingMyFarms />}
-          {selectedTab?.id === 1 && <EternalFarmsPage />}
-        </Box>
+      <Box mt={2}>
+        {selectedTab?.id === 0 && <FarmingMyFarms />}
+        {selectedTab?.id === 1 && <EternalFarmsPage />}
       </Box>
     </Box>
   );

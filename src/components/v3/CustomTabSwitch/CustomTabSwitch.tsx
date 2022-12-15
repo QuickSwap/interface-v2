@@ -1,45 +1,48 @@
 import React from 'react';
-import { Box, Tab, Tabs } from '@material-ui/core';
+import { Box, Divider } from '@material-ui/core';
 import './CustomTabSwitch.scss';
 
-interface tabItem {
+export interface TabItem {
   text: string;
   id: number;
   link: string;
+  hasSeparator?: boolean;
 }
 
 interface CustomTabSwitchProps {
-  width: number;
   height: number;
-  items: tabItem[];
-  selectedItem: tabItem;
-  handleTabChange: (event: any, value: any) => void;
+  items: TabItem[];
+  selectedItem: TabItem;
+  handleTabChange: (item: TabItem) => void;
 }
 
 const CustomTabSwitch: React.FC<CustomTabSwitchProps> = ({
-  width,
   height,
   items,
   selectedItem,
   handleTabChange,
 }) => {
   return (
-    <Box className='customTabWrapper' width={width} height={height}>
-      <Tabs
-        value={selectedItem?.id}
-        onChange={handleTabChange}
-        textColor='primary'
-        indicatorColor='primary'
-      >
-        {items?.map((_item) => (
-          <Tab
-            value={_item?.id}
-            key={_item?.id}
-            className='tabText'
-            label={_item.text}
-          />
-        ))}
-      </Tabs>
+    <Box className='customTabWrapper'>
+      {items.map((item) => (
+        <>
+          {item.hasSeparator && (
+            <Box mr={1} height={height} className='customTabSeparator' />
+          )}
+          <Box
+            key={item.id}
+            height={height}
+            className={`customTab ${
+              item.id === selectedItem.id ? 'selectedCustomTab' : ''
+            }`}
+            onClick={() => {
+              handleTabChange(item);
+            }}
+          >
+            <small>{item.text}</small>
+          </Box>
+        </>
+      ))}
     </Box>
   );
 };

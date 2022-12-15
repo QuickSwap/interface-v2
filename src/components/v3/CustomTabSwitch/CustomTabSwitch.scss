@@ -1,45 +1,39 @@
 @use 'styles/variables' as *;
-
-.switchItem {
-  width: 50%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  border: 1px solid $secondary1;
-  & p {
-    color: $textSecondary;
-  }
-}
-
-.activeSwitchItem {
-  background: 'red'
-  & p {
-    color: $textPrimary;
-  }
-}
-
-.tabText {
-  text-align: center;
-  color: #696c80;
-  & span {
-    font-family: Inter;
-    font-size: 16px;
-    font-weight: 500;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 4.75;
-    letter-spacing: normal;
-    text-transform: none;
-  }
-}
+@use 'styles/breakpoints' as *;
 
 .customTabWrapper {
-  .MuiTabs-root {
-    height: 100%;
-    .MuiTabs-flexContainer {
-      height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.customTabSeparator {
+  width: 1px;
+  background-color: $textSecondary;
+}
+
+.customTab {
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  margin-right: 8px;
+  & small {
+    color: $textSecondary;
+  }
+  @include media("screen", "<tablet") {
+    padding: 0 8px;
+  }
+  @include media("screen", "<phone") {
+    & small {
+      font-size: 12px;
     }
+  }
+}
+
+.selectedCustomTab {
+  background-color: $grey32;
+  border-radius: 8px;
+  & small {
+    color: $black1;
   }
 }
