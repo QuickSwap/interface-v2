@@ -504,9 +504,17 @@ const SwapV3Page: React.FC = () => {
   const handleOutputSelect = useCallback(
     (outputCurrency) => {
       if (
-        (outputCurrency.isNative && currencies[Field.INPUT]?.isNative) ||
-        outputCurrency.address.toLowerCase() ===
-          currencies[Field.INPUT]?.wrapped.address.toLowerCase()
+        (outputCurrency &&
+          outputCurrency.isNative &&
+          currencies[Field.INPUT] &&
+          currencies[Field.INPUT]?.isNative) ||
+        (outputCurrency &&
+          outputCurrency.address &&
+          currencies[Field.INPUT] &&
+          currencies[Field.INPUT]?.wrapped &&
+          currencies[Field.INPUT]?.wrapped.address &&
+          outputCurrency.address.toLowerCase() ===
+            currencies[Field.INPUT]?.wrapped.address.toLowerCase())
       ) {
         redirectWithSwitch();
       } else {
