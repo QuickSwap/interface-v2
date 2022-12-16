@@ -31,8 +31,6 @@ const SwapProTransactions: React.FC<SwapProTransactionsProps> = ({
       setSymbol1(sample.pair.token0.symbol);
       setSymbol2(sample.pair.token1.symbol);
 
-      console.log('txn data => ', data.slice(0, 2));
-
       data.forEach((tx) => {
         const txType = Number(tx.amount0In) > 0 ? 'sell' : 'buy';
         const txAmount0 =
