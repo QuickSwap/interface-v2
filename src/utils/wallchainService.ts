@@ -61,6 +61,7 @@ export default function callWallchainAPI(
   routerType: RouterTypes,
   onBestRoute: (bestRoute: RouterTypeParams) => void,
   onSetSwapDelay: (swapDelay: SwapDelay) => void,
+  priority?: number,
 ): Promise<DataResponse | null> {
   onSetSwapDelay(SwapDelay.FETCHING_BONUS);
   const encodedData =
@@ -75,7 +76,9 @@ export default function callWallchainAPI(
 
   // If the intiial call fails APE router will be the default router
   return fetch(
-    `${WALLCHAIN_PARAMS[chainId][smartRouter].apiURL}?key=${WALLCHAIN_PARAMS[chainId][smartRouter].apiKey}`,
+    `${WALLCHAIN_PARAMS[chainId][smartRouter].apiURL}?key=${
+      WALLCHAIN_PARAMS[chainId][smartRouter].apiKey
+    }${priority ? `&priority=${priority}` : ''}`,
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

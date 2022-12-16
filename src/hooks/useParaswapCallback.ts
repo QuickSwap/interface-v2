@@ -14,18 +14,12 @@ import {
 import { useMemo } from 'react';
 import { GlobalConst, RouterTypes, SmartRouter } from 'constants/index';
 import { useTransactionAdder } from 'state/transactions/hooks';
-import {
-  isAddress,
-  shortenAddress,
-  getSigner,
-  calculateGasMargin,
-} from 'utils';
+import { isAddress, shortenAddress, getSigner } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import useENS from './useENS';
 import { OptimalRate } from 'paraswap-core';
 import { useParaswap } from './useParaswap';
 import ParaswapABI from 'constants/abis/ParaSwap_ABI.json';
-import SwapRouterABI from 'constants/abis/SwapRouterABI.json';
 import { useContract } from './useContract';
 import callWallchainAPI from 'utils/wallchainService';
 import { useSwapActionHandlers } from 'state/swap/hooks';
@@ -92,11 +86,6 @@ export function useParaswapCallback(
   const paraswapContract = useContract(
     priceRoute?.contractAddress,
     ParaswapABI,
-  );
-
-  const swapRouterContract = useContract(
-    chainId ? GlobalConst.addresses.SWAP_ROUTER_ADDRESS[chainId] : undefined,
-    SwapRouterABI,
   );
 
   return useMemo(() => {
@@ -173,62 +162,20 @@ export function useParaswapCallback(
             RouterTypes.SMART,
             onBestRoute,
             onSetSwapDelay,
+            100,
           );
 
+          const swapRouterAddress = chainId
+            ? GlobalConst.addresses.SWAP_ROUTER_ADDRESS[chainId]
+            : undefined;
           if (
             response &&
             response.pathFound &&
-            response.transactionArgs.masterInput &&
-            swapRouterContract
+            response.transactionArgs.data &&
+            swapRouterAddress
           ) {
-            try {
-              const estimatedGas = await swapRouterContract.estimateGas.simpleSwap(
-                txParams.data,
-                response.transactionArgs.masterInput,
-              );
-              const swapResponse: TransactionResponse = await swapRouterContract.simpleSwap(
-                txParams.data,
-                response.transactionArgs.masterInput,
-                {
-                  gasLimit: calculateGasMargin(estimatedGas),
-                },
-              );
-              const inputSymbol = inputCurrency?.symbol;
-              const outputSymbol = outputCurrency?.symbol;
-              const inputAmount =
-                Number(priceRoute.srcAmount) / 10 ** priceRoute.srcDecimals;
-              const outputAmount =
-                Number(priceRoute.destAmount) / 10 ** priceRoute.destDecimals;
-
-              const base = `Swap ${inputAmount.toLocaleString(
-                'us',
-              )} ${inputSymbol} for ${outputAmount.toLocaleString(
-                'us',
-              )} ${outputSymbol}`;
-              const withRecipient =
-                recipient === account
-                  ? base
-                  : `${base} to ${
-                      recipientAddressOrName &&
-                      isAddress(recipientAddressOrName)
-                        ? shortenAddress(recipientAddressOrName)
-                        : recipientAddressOrName
-                    }`;
-
-              const withVersion = withRecipient;
-
-              addTransaction(swapResponse, {
-                summary: withVersion,
-              });
-
-              return { response: swapResponse, summary: withVersion };
-            } catch (error) {
-              if (error?.code === 4001) {
-                throw new Error('Transaction rejected.');
-              } else {
-                throw new Error(`Swap failed: ${error.message}`);
-              }
-            }
+            txParams.to = swapRouterAddress;
+            txParams.data = response.transactionArgs.data;
           }
         }
 
@@ -286,7 +233,6 @@ export function useParaswapCallback(
     paraswapContract,
     onBestRoute,
     onSetSwapDelay,
-    swapRouterContract,
     inputCurrency?.symbol,
     outputCurrency?.symbol,
     addTransaction,
