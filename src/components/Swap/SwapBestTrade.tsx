@@ -1,5 +1,12 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
-import { JSBI, Trade, Token, currencyEquals, ETHER } from '@uniswap/sdk';
+import {
+  JSBI,
+  Trade,
+  Token,
+  currencyEquals,
+  ETHER,
+  Fraction,
+} from '@uniswap/sdk';
 import { Currency, CurrencyAmount } from '@uniswap/sdk-core';
 import ReactGA from 'react-ga';
 import { ArrowDown } from 'react-feather';
@@ -46,6 +53,7 @@ import { useAllTokens, useCurrency } from 'hooks/Tokens';
 import TokenWarningModal from 'components/v3/TokenWarningModal';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import useSwapRedirects from 'hooks/useSwapRedirect';
+import { ONE } from 'v3lib/utils';
 
 const SwapBestTrade: React.FC<{
   currencyBgClass?: string;
@@ -129,7 +137,7 @@ const SwapBestTrade: React.FC<{
   const [approvalSubmitted, setApprovalSubmitted] = useState<boolean>(false);
   const { ethereum } = window as any;
   const [mainPrice, setMainPrice] = useState(true);
-  const isValid = !swapInputError;
+  const isValid = !swapInputError && !optimalRateError;
 
   //TODO: move to utils
   const connectWallet = () => {
@@ -354,6 +362,24 @@ const SwapBestTrade: React.FC<{
   );
 
   const noRoute = !optimalRate || optimalRate.bestRoute.length < 0;
+  const swapInputAmountWithSlippage = optimalRate
+    ? CurrencyAmount.fromRawAmount(
+        inputCurrency as Currency,
+        (optimalRate.side === SwapSide.BUY
+          ? new Fraction(ONE).add(pct)
+          : new Fraction(ONE)
+        ).multiply(optimalRate.srcAmount).quotient,
+      )
+    : undefined;
+
+  const swapInputBalanceCurrency = currencyBalances[Field.INPUT];
+
+  const swapInputBalance = swapInputBalanceCurrency
+    ? CurrencyAmount.fromRawAmount(
+        inputCurrency as Currency,
+        swapInputBalanceCurrency.raw.toString(),
+      )
+    : undefined;
 
   const swapButtonText = useMemo(() => {
     if (account) {
@@ -370,14 +396,22 @@ const SwapBestTrade: React.FC<{
           : wrapType === WrapType.UNWRAP
           ? t('unWrap')
           : '';
-      } else if (noRoute && userHasSpecifiedInputOutput) {
-        return t('insufficientLiquidityTrade');
       } else if (
         optimalRateError === 'ESTIMATED_LOSS_GREATER_THAN_MAX_IMPACT'
       ) {
         return `Price impact is more than ${maxImpactAllowed}%. Please use v2 or v3.`;
+      } else if (optimalRateError || swapInputError) {
+        return optimalRateError || swapInputError;
+      } else if (noRoute && userHasSpecifiedInputOutput) {
+        return t('insufficientLiquidityTrade');
+      } else if (
+        swapInputAmountWithSlippage &&
+        swapInputBalance &&
+        swapInputAmountWithSlippage.greaterThan(swapInputBalance)
+      ) {
+        return `Insufficient ${currencies[Field.INPUT]?.symbol} Balance`;
       } else {
-        return (optimalRateError || swapInputError) ?? t('swap');
+        return t('swap');
       }
     } else {
       return ethereum && !isSupportedNetwork(ethereum)
@@ -385,18 +419,20 @@ const SwapBestTrade: React.FC<{
         : t('connectWallet');
     }
   }, [
-    t,
-    formattedAmounts,
-    currencies,
     account,
-    ethereum,
+    currencies,
+    formattedAmounts,
+    showWrap,
+    optimalRateError,
+    swapInputError,
     noRoute,
     userHasSpecifiedInputOutput,
-    showWrap,
+    swapInputAmountWithSlippage,
+    swapInputBalance,
+    t,
     wrapType,
-    swapInputError,
-    optimalRateError,
     maxImpactAllowed,
+    ethereum,
   ]);
 
   const swapButtonDisabled = useMemo(() => {
@@ -423,7 +459,10 @@ const SwapBestTrade: React.FC<{
           (optimalRate &&
             !parsedAmounts[Field.OUTPUT]?.equalTo(
               JSBI.BigInt(optimalRate.destAmount),
-            ))
+            )) ||
+          (swapInputAmountWithSlippage &&
+            swapInputBalance &&
+            swapInputAmountWithSlippage.greaterThan(swapInputBalance))
         );
       }
     } else {
@@ -440,8 +479,10 @@ const SwapBestTrade: React.FC<{
     approval,
     optimalRate,
     isExpertMode,
-    parsedAmounts,
     paraswapCallbackError,
+    parsedAmounts,
+    swapInputAmountWithSlippage,
+    swapInputBalance,
   ]);
 
   const [
@@ -496,6 +537,7 @@ const SwapBestTrade: React.FC<{
 
   const handleMaxInput = useCallback(() => {
     maxAmountInput && onUserInput(Field.INPUT, maxAmountInput.toExact());
+    setSwapType(SwapSide.SELL);
   }, [maxAmountInput, onUserInput]);
 
   const handleHalfInput = useCallback(() => {
@@ -509,6 +551,7 @@ const SwapBestTrade: React.FC<{
       Field.INPUT,
       halvedAmount.toFixed(maxAmountInput.currency.decimals),
     );
+    setSwapType(SwapSide.SELL);
   }, [maxAmountInput, onUserInput]);
 
   const atMaxAmountInput = Boolean(
