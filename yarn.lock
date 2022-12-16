@@ -256,6 +256,13 @@
     tslib "^2.3.0"
     zen-observable-ts "^1.2.5"
 
+"@arcxmoney/analytics@^1.1.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@arcxmoney/analytics/-/analytics-1.3.0.tgz#a0e7128bc074059dd12cc25f84136a2cc9d41c4d"
+  integrity sha512-9LUBpqALT8/s9oEmuRerNVzQS9Ln6ngmcNm/D7+wpVcffunLNszBPF21XHup51+O1PgL8DJJx4J3t9z7jAIqAA==
+  dependencies:
+    "@restless/sanitizers" "^0.2.5"
+
 "@arkane-network/arkane-connect@1.24.0":
   version "1.24.0"
   resolved "https://registry.yarnpkg.com/@arkane-network/arkane-connect/-/arkane-connect-1.24.0.tgz#01649bf6c6a4aa24970724b7c1c4864dd05b3ed2"
@@ -3689,6 +3696,11 @@
     redux "^4.1.2"
     redux-thunk "^2.4.1"
     reselect "^4.1.5"
+
+"@restless/sanitizers@^0.2.5":
+  version "0.2.5"
+  resolved "https://registry.yarnpkg.com/@restless/sanitizers/-/sanitizers-0.2.5.tgz#96a5cfa3edb52abd8fa14e77798738f3a067dbec"
+  integrity sha512-utsOFwv5owNnbj8HijF7uML/AURgUl5YvY4S2gpxQsrp2D1EP/4rQU/HSyYdIQaL89BoZ/5NHveRJrcFyuHo/w==
 
 "@rollup/plugin-node-resolve@^7.1.1":
   version "7.1.3"
