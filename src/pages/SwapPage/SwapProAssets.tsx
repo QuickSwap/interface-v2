@@ -75,7 +75,7 @@ const SwapProAssets: React.FC = ({}) => {
       sortDisabled: true,
     },
     // {
-    //   id: 'oneDayVolumeUSD',
+    //   id: 'totalLiquidityUSD',
     //   numeric: true,
     //   label: t('Volume'),
     //   sortDisabled: true,
@@ -98,10 +98,10 @@ const SwapProAssets: React.FC = ({}) => {
                 (d.symbol || '') + '-' + ('' || d.name) || ''
               ).toLowerCase();
               d.numericVol = Number(d.oneDayVolumeUSD);
-              d.kmbVol = toKMB(d.numericVol);
+              d.kmbVol = toKMB(d.totalLiquidityUSD);
             });
 
-            data.sort((a, b) => b.numericVol - a.numericVol);
+            data.sort((a, b) => b.totalLiquidityUSD - a.totalLiquidityUSD);
           }
           updateTopTokens(data || []);
           setTimeout(() => {
@@ -119,11 +119,11 @@ const SwapProAssets: React.FC = ({}) => {
               d.searchVal = (
                 (d.symbol || '') + '-' + ('' || d.name) || ''
               ).toLowerCase();
-              d.numericVol = Number(d.oneDayVolumeUSD);
+              d.numericVol = Number(d.totalLiquidityUSD);
               d.kmbVol = toKMB(d.numericVol);
             });
 
-            data.sort((a, b) => b.numericVol - a.numericVol);
+            data.sort((a, b) => b.totalLiquidityUSD - a.totalLiquidityUSD);
           }
 
           updateTopTokens(data || []);
@@ -142,6 +142,7 @@ const SwapProAssets: React.FC = ({}) => {
   ]);
 
   const performFilteration = (data: Array<any>) => {
+    console.log('Data came for filteration => ', data);
     if (Array.isArray(data) && searchQueryInput) {
       const toSearch = searchQueryInput.toLowerCase().trim();
       if (toSearch) {
@@ -163,11 +164,12 @@ const SwapProAssets: React.FC = ({}) => {
 
   const filteredTokensData = useMemo(() => {
     const result: Token[] = performFilteration(topTokens || []);
-    if (mobileWindowSize) {
-      return result.slice(0, 20);
-    } else {
-      return result;
-    }
+    return result.slice(0, 10);
+    // if (mobileWindowSize) {
+    //   return result.slice(0, 20);
+    // } else {
+    //   return result;
+    // }
   }, [searchQuery, topTokens, mobileWindowSize]);
 
   function toKMB(value: any) {
@@ -225,9 +227,9 @@ const SwapProAssets: React.FC = ({}) => {
           </Box>
         </Box>
         <Box className='mobileRow'>
-          <p>{t('volume')}</p>
+          <p>{t('liquidity')}</p>
           <p>
-            <small>{token.kmbVol}</small>
+            <small>${token.totalLiquidityUSD.toLocaleString('us')}</small>
           </p>
         </Box>
       </Box>
@@ -308,11 +310,13 @@ const SwapProAssets: React.FC = ({}) => {
         {topTokens ? (
           <CustomTable
             headCells={tokenHeadCells}
+            emptyMessage={'No token found'}
             rowsPerPage={GlobalConst.utils.ROWSPERPAGE}
             defaultOrderBy={4}
             data={filteredTokensData}
             desktopHTML={desktopHTML}
             mobileHTML={mobileHTML}
+            showPagination={false}
           />
         ) : (
           <Skeleton variant='rect' width={'100%'} height={150}></Skeleton>
