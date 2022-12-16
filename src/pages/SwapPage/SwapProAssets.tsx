@@ -142,7 +142,6 @@ const SwapProAssets: React.FC = ({}) => {
   ]);
 
   const performFilteration = (data: Array<any>) => {
-    console.log('Data came for filteration => ', data);
     if (Array.isArray(data) && searchQueryInput) {
       const toSearch = searchQueryInput.toLowerCase().trim();
       if (toSearch) {
