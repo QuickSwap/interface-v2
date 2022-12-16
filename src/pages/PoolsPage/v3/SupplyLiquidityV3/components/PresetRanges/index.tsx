@@ -27,6 +27,7 @@ interface IPresetRanges {
   priceLower: string | undefined;
   priceUpper: string | undefined;
   price: string | undefined;
+  isGamma?: boolean;
 }
 
 enum PresetProfits {
@@ -46,6 +47,7 @@ export function PresetRanges({
   priceLower,
   price,
   priceUpper,
+  isGamma = false,
 }: IPresetRanges) {
   const [aprs, setAprs] = useState<undefined | { [key: string]: number }>();
 
@@ -54,6 +56,27 @@ export function PresetRanges({
   }, []);
 
   const ranges = useMemo(() => {
+    if (isGamma) {
+      return [
+        {
+          type: Presets.GAMMA_WIDE,
+          title: `Wide`,
+          min: 0.984,
+          max: 1.016,
+          risk: PresetProfits.VERY_LOW,
+          profit: PresetProfits.HIGH,
+        },
+        {
+          type: Presets.GAMMA_NARROW,
+          title: `Narrow`,
+          min: 0.984,
+          max: 1.016,
+          risk: PresetProfits.VERY_LOW,
+          profit: PresetProfits.HIGH,
+        },
+      ];
+    }
+
     if (isStablecoinPair)
       return [
         {
@@ -100,7 +123,7 @@ export function PresetRanges({
         profit: PresetProfits.HIGH,
       },
     ];
-  }, [isStablecoinPair]);
+  }, [isStablecoinPair, isGamma]);
 
   const risk = useMemo(() => {
     if (!priceUpper || !priceLower || !price) return;
@@ -192,59 +215,63 @@ export function PresetRanges({
           </button>
         ))}
       </Box>
-      <Box className='flex justify-between'>
-        {_risk && !mintInfo.invalidRange && !isStablecoinPair && (
-          <Box className='preset-range-info'>
-            <Box px='12px' className='flex items-center justify-between'>
-              <span>Risk:</span>
-              <Box className='flex items-center'>
-                {[1, 2, 3, 4, 5].map((_, i) => (
-                  <div key={i} className='preset-range-circle'>
-                    <Box
-                      key={i}
-                      left={`calc(-100% + ${_risk[i]}%)`}
-                      className='preset-range-circle-active bg-error'
-                    />
-                  </div>
-                ))}
+      {!isGamma && (
+        <>
+          <Box className='flex justify-between'>
+            {_risk && !mintInfo.invalidRange && !isStablecoinPair && (
+              <Box className='preset-range-info'>
+                <Box px='12px' className='flex items-center justify-between'>
+                  <span>Risk:</span>
+                  <Box className='flex items-center'>
+                    {[1, 2, 3, 4, 5].map((_, i) => (
+                      <div key={i} className='preset-range-circle'>
+                        <Box
+                          key={i}
+                          left={`calc(-100% + ${_risk[i]}%)`}
+                          className='preset-range-circle-active bg-error'
+                        />
+                      </div>
+                    ))}
+                  </Box>
+                </Box>
+                <Box
+                  mt={1}
+                  px='12px'
+                  className='flex  items-center justify-between'
+                >
+                  <span>Profit:</span>
+                  <Box className='flex items-center'>
+                    {[1, 2, 3, 4, 5].map((_, i) => (
+                      <div key={i} className='preset-range-circle'>
+                        <Box
+                          key={i}
+                          left={`calc(-100% + ${_risk[i]}%)`}
+                          className='preset-range-circle-active bg-success'
+                        />
+                      </div>
+                    ))}
+                  </Box>
+                </Box>
               </Box>
-            </Box>
-            <Box
-              mt={1}
-              px='12px'
-              className='flex  items-center justify-between'
-            >
-              <span>Profit:</span>
-              <Box className='flex items-center'>
-                {[1, 2, 3, 4, 5].map((_, i) => (
-                  <div key={i} className='preset-range-circle'>
-                    <Box
-                      key={i}
-                      left={`calc(-100% + ${_risk[i]}%)`}
-                      className='preset-range-circle-active bg-success'
-                    />
-                  </div>
-                ))}
+            )}
+            {baseCurrency && quoteCurrency && (
+              <Box className='preset-range-info'>
+                <Box padding='10px 12px'>
+                  <PoolStats
+                    fee={feeString}
+                    apr={aprString}
+                    loading={
+                      mintInfo.poolState === PoolState.LOADING ||
+                      mintInfo.poolState === PoolState.INVALID
+                    }
+                    noLiquidity={mintInfo.noLiquidity}
+                  ></PoolStats>
+                </Box>
               </Box>
-            </Box>
+            )}
           </Box>
-        )}
-        {baseCurrency && quoteCurrency && (
-          <Box className='preset-range-info'>
-            <Box padding='10px 12px'>
-              <PoolStats
-                fee={feeString}
-                apr={aprString}
-                loading={
-                  mintInfo.poolState === PoolState.LOADING ||
-                  mintInfo.poolState === PoolState.INVALID
-                }
-                noLiquidity={mintInfo.noLiquidity}
-              ></PoolStats>
-            </Box>
-          </Box>
-        )}
-      </Box>
+        </>
+      )}
     </Box>
   );
 }

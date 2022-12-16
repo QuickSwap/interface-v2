@@ -11,18 +11,21 @@ import {
   useV3MintState,
   useInitialUSDPrices,
 } from 'state/mint/v3/hooks';
-import useUSDCPrice, { useUSDCValue } from 'hooks/v3/useUSDCPrice';
+import { useUSDCValue } from 'hooks/v3/useUSDCPrice';
 import { useAppDispatch } from 'state/hooks';
 import { useActivePreset } from 'state/mint/v3/hooks';
 import { tryParseAmount } from 'state/swap/v3/hooks';
 import { Presets } from 'state/mint/v3/reducer';
 import { PriceFormats } from 'components/v3/PriceFomatToggler';
 import LiquidityChartRangeInput from 'components/v3/LiquidityChartRangeInput';
-import { GlobalData, GlobalValue } from 'constants/index';
-import { toToken } from 'constants/v3/routing';
-import { Box } from '@material-ui/core';
+import { GlobalData } from 'constants/index';
+import { Box, ButtonGroup, Button } from '@material-ui/core';
 import { ReportProblemOutlined } from '@material-ui/icons';
 import { getEternalFarmFromTokens } from 'utils';
+import GammaLogo from 'assets/images/gammaLogo.png';
+
+const MANUAL_RANGE = 1;
+const GAMMA_RANGE = 2;
 
 interface IRangeSelector {
   currencyA: Currency | null | undefined;
@@ -37,6 +40,7 @@ export function SelectRange({
   mintInfo,
   priceFormat,
 }: IRangeSelector) {
+  const [rangeType, setRangeType] = useState(MANUAL_RANGE);
   const [fullRangeWarningShown, setFullRangeWarningShown] = useState(true);
   const { startPriceTypedValue } = useV3MintState();
 
@@ -256,6 +260,35 @@ export function SelectRange({
   return (
     <Box>
       <small className='weight-600'>Select a range</small>
+      <Box className='buttonGroup poolRangeButtonGroup'>
+        <ButtonGroup>
+          <Button
+            className={rangeType === MANUAL_RANGE ? 'active' : ''}
+            onClick={() => setRangeType(MANUAL_RANGE)}
+          >
+            Manual
+          </Button>
+          <Button
+            className={rangeType === GAMMA_RANGE ? 'active' : ''}
+            onClick={() => setRangeType(GAMMA_RANGE)}
+          >
+            <Box className='flex items-start'>
+              <span>Automatic</span>
+              <Box ml='3px' className='poolRangeBetaBox'>
+                BETA
+              </Box>
+            </Box>
+          </Button>
+        </ButtonGroup>
+      </Box>
+      {rangeType === GAMMA_RANGE && (
+        <>
+          <Box my={1.5} className='poolRangePowerGamma'>
+            <span className='text-secondary'>Powered by</span>
+            <img src={GammaLogo} alt='Gamma Logo' />
+          </Box>
+        </>
+      )}
       <Box my={1}>
         <PresetRanges
           mintInfo={mintInfo}
@@ -267,101 +300,125 @@ export function SelectRange({
           priceLower={leftPrice?.toSignificant(5)}
           priceUpper={rightPrice?.toSignificant(5)}
           price={price}
+          isGamma={rangeType === GAMMA_RANGE}
         />
       </Box>
-      {mintInfo.price && (
-        <Box textAlign='center'>
-          <span>
-            {!!mintInfo.noLiquidity ? `Initial Price:` : `Current Price:`}{' '}
-            {currentPrice ?? ''}{' '}
-            <span className='text-secondary'>
-              {currentPrice
-                ? `${currencyB?.symbol} per ${currencyA?.symbol}`
-                : 'Loading...'}
-            </span>
-          </span>
+      {rangeType === GAMMA_RANGE && (
+        <Box my={2}>
+          <small className='text-secondary'>
+            Liquidity ranges are automatically rebalanced when certain rebalance
+            triggers are met. In determining the width of the ranges, the goal
+            is to optimize fee revenue and volumes while taking into account a
+            years’ worth of volatility to control for impermanent loss.{' '}
+            <a
+              href='https://quickswap.exchange'
+              target='_blank'
+              rel='noreferrer'
+              className='text-primary'
+            >
+              Learn more
+            </a>
+          </small>
         </Box>
       )}
-      <Box my={2}>
-        <RangeSelector
-          priceLower={priceLower}
-          priceUpper={priceUpper}
-          getDecrementLower={getDecrementLower}
-          getIncrementLower={getIncrementLower}
-          getDecrementUpper={getDecrementUpper}
-          getIncrementUpper={getIncrementUpper}
-          onLeftRangeInput={onLeftRangeInput}
-          onRightRangeInput={onRightRangeInput}
-          currencyA={currencyA}
-          currencyB={currencyB}
-          mintInfo={mintInfo}
-          disabled={!startPriceTypedValue && !mintInfo.price}
-          isBeforePrice={isBeforePrice}
-          isAfterPrice={isAfterPrice}
-          priceFormat={priceFormat}
-        />
-      </Box>
-      {activePreset === Presets.FULL && fullRangeWarningShown && (
-        <Box className='pool-range-chart-warning border-yellow5'>
-          <Box width={1} className='flex items-center'>
-            <Box className='pool-range-chart-warning-icon'>
-              <ReportProblemOutlined />
+      {rangeType === MANUAL_RANGE && (
+        <>
+          {mintInfo.price && (
+            <Box textAlign='center'>
+              <span>
+                {!!mintInfo.noLiquidity ? `Initial Price:` : `Current Price:`}{' '}
+                {currentPrice ?? ''}{' '}
+                <span className='text-secondary'>
+                  {currentPrice
+                    ? `${currencyB?.symbol} per ${currencyA?.symbol}`
+                    : 'Loading...'}
+                </span>
+              </span>
             </Box>
-            <small>Efficiency Comparison</small>
+          )}
+          <Box my={2}>
+            <RangeSelector
+              priceLower={priceLower}
+              priceUpper={priceUpper}
+              getDecrementLower={getDecrementLower}
+              getIncrementLower={getIncrementLower}
+              getDecrementUpper={getDecrementUpper}
+              getIncrementUpper={getIncrementUpper}
+              onLeftRangeInput={onLeftRangeInput}
+              onRightRangeInput={onRightRangeInput}
+              currencyA={currencyA}
+              currencyB={currencyB}
+              mintInfo={mintInfo}
+              disabled={!startPriceTypedValue && !mintInfo.price}
+              isBeforePrice={isBeforePrice}
+              isAfterPrice={isAfterPrice}
+              priceFormat={priceFormat}
+            />
           </Box>
-          <Box width={1} mt={1} mb={1.5}>
-            <span>
-              Full range positions may earn less fees than concentrated
-              positions. Learn more{' '}
-              <a
-                href='https://quickswap.exchange'
-                target='_blank'
-                rel='noreferrer'
-              >
-                here
-              </a>
-              .
-            </span>
-          </Box>
-          <button onClick={() => setFullRangeWarningShown(false)}>
-            I understand
-          </button>
-        </Box>
-      )}
-      {leftPrice &&
-        rightPrice &&
-        minRangeLength !== undefined &&
-        rightPricePercent - leftPricePercent < minRangeLength && (
-          <Box className='pool-range-chart-warning'>
-            <Box className='pool-range-chart-warning-icon'>
-              <ReportProblemOutlined />
+          {activePreset === Presets.FULL && fullRangeWarningShown && (
+            <Box className='pool-range-chart-warning border-yellow5'>
+              <Box width={1} className='flex items-center'>
+                <Box className='pool-range-chart-warning-icon'>
+                  <ReportProblemOutlined />
+                </Box>
+                <small>Efficiency Comparison</small>
+              </Box>
+              <Box width={1} mt={1} mb={1.5}>
+                <span>
+                  Full range positions may earn less fees than concentrated
+                  positions. Learn more{' '}
+                  <a
+                    href='https://quickswap.exchange'
+                    target='_blank'
+                    rel='noreferrer'
+                  >
+                    here
+                  </a>
+                  .
+                </span>
+              </Box>
+              <button onClick={() => setFullRangeWarningShown(false)}>
+                I understand
+              </button>
             </Box>
-            <span>
-              Warning: The minimum price range to earn farming rewards for this
-              liquidity position is {minRangeLength}%
-            </span>
-          </Box>
-        )}
-      {mintInfo.outOfRange && (
-        <Box className='pool-range-chart-warning'>
-          <Box className='pool-range-chart-warning-icon'>
-            <ReportProblemOutlined />
-          </Box>
-          <span>
-            Warning: The price range for this liquidity position is not eligible
-            for farming rewards. To become eligible for rewards, please increase
-            your range
-          </span>
-        </Box>
+          )}
+          {leftPrice &&
+            rightPrice &&
+            minRangeLength !== undefined &&
+            rightPricePercent - leftPricePercent < minRangeLength && (
+              <Box className='pool-range-chart-warning'>
+                <Box className='pool-range-chart-warning-icon'>
+                  <ReportProblemOutlined />
+                </Box>
+                <span>
+                  Warning: The minimum price range to earn farming rewards for
+                  this liquidity position is {minRangeLength}%
+                </span>
+              </Box>
+            )}
+          {mintInfo.outOfRange && (
+            <Box className='pool-range-chart-warning'>
+              <Box className='pool-range-chart-warning-icon'>
+                <ReportProblemOutlined />
+              </Box>
+              <span>
+                Warning: The price range for this liquidity position is not
+                eligible for farming rewards. To become eligible for rewards,
+                please increase your range
+              </span>
+            </Box>
+          )}
+          {mintInfo.invalidRange && (
+            <Box className='pool-range-chart-warning'>
+              <Box className='pool-range-chart-warning-icon'>
+                <ReportProblemOutlined />
+              </Box>
+              <span>Invalid Range</span>
+            </Box>
+          )}
+        </>
       )}
-      {mintInfo.invalidRange && (
-        <Box className='pool-range-chart-warning'>
-          <Box className='pool-range-chart-warning-icon'>
-            <ReportProblemOutlined />
-          </Box>
-          <span>Invalid Range</span>
-        </Box>
-      )}
+
       <Box className='pool-range-chart-wrapper'>
         <LiquidityChartRangeInput
           currencyA={currencyA ?? undefined}
