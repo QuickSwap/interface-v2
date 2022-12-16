@@ -4,7 +4,6 @@ import {
   Currency,
   CurrencyAmount,
   ETHER,
-  Fraction,
   JSBI,
   Token,
   TokenAmount,
@@ -17,7 +16,7 @@ import { useActiveWeb3React } from 'hooks';
 import { useCurrency } from 'hooks/Tokens';
 import { useTradeExactIn, useTradeExactOut } from 'hooks/Trades';
 import useParsedQueryString from 'hooks/useParsedQueryString';
-import { basisPointsToPercent, isAddress } from 'utils';
+import { isAddress } from 'utils';
 import { AppDispatch, AppState } from 'state';
 import { useCurrencyBalances } from 'state/wallet/hooks';
 import {
@@ -32,7 +31,6 @@ import { SwapState } from './reducer';
 import { useUserSlippageTolerance } from 'state/user/hooks';
 import { computeSlippageAdjustedAmounts } from 'utils/prices';
 import { GlobalData } from 'constants/index';
-import { ONE } from 'v3lib/utils';
 
 export function useSwapState(): AppState['swap'] {
   return useSelector<AppState, AppState['swap']>((state) => state.swap);
