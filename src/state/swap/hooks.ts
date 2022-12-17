@@ -139,6 +139,8 @@ export function useDerivedSwapInfo(): {
   v1Trade: Trade | undefined;
 } {
   const { account } = useActiveWeb3React();
+  const parsedQuery = useParsedQueryString();
+  const swapType = parsedQuery ? parsedQuery.swapIndex : undefined;
 
   const {
     independentField,
@@ -224,7 +226,12 @@ export function useDerivedSwapInfo(): {
     slippageAdjustedAmounts ? slippageAdjustedAmounts[Field.INPUT] : null,
   ];
 
-  if (balanceIn && amountIn && balanceIn.lessThan(amountIn)) {
+  if (
+    swapType !== '0' &&
+    balanceIn &&
+    amountIn &&
+    balanceIn.lessThan(amountIn)
+  ) {
     inputError = 'Insufficient ' + amountIn.currency.symbol + ' balance';
   }
 
