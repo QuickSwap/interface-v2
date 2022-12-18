@@ -90,6 +90,10 @@ import {
   FETCH_ETERNAL_FARM_FROM_POOL,
   FETCH_POOL_FROM_TOKENS,
 } from './graphql-queries';
+import { useEffect, useState } from 'react';
+import { useEthPrice } from 'state/application/hooks';
+import { getGlobalDataV3 } from './v3-graph';
+import { V2_FACTORY_ADDRESSES } from 'constants/v3/addresses';
 
 dayjs.extend(utc);
 dayjs.extend(weekOfYear);
@@ -1927,16 +1931,38 @@ export function useLairDQUICKAPY(isNew: boolean, lair?: LairInfo) {
     : ChainId.MATIC;
   const quickToken = isNew ? NEW_QUICK[chainIdToUse] : OLD_QUICK[chainIdToUse];
   const quickPrice = useUSDCPriceToken(quickToken, chainIdToUse);
+  const [feesPercent, setFeesPercent] = useState(0);
+  const { ethPrice } = useEthPrice();
+
+  useEffect(() => {
+    (async () => {
+      let feePercent = 0;
+      if (ethPrice.price && ethPrice.oneDayPrice) {
+        const v3Data = await getGlobalDataV3(chainIdToUse);
+        const v2data = await getGlobalData(
+          ethPrice.price,
+          ethPrice.oneDayPrice,
+          V2_FACTORY_ADDRESSES[chainIdToUse],
+          chainIdToUse,
+        );
+        if (v2data && v3Data) {
+          feePercent +=
+            Number(v3Data.feesUSD ?? 0) / 7.5 +
+            (Number(v2data.oneDayVolumeUSD) * GlobalConst.utils.FEEPERCENT) /
+              14.7;
+        } else if (v3Data) {
+          feePercent += Number(v3Data.feesUSD ?? 0) / 7.5;
+        }
+        setFeesPercent(feePercent);
+      }
+    })();
+  }, [ethPrice.oneDayPrice, ethPrice.price, chainIdToUse]);
 
   if (!lair) return '';
-  const dQUICKPrice: any = Number(lair.dQUICKtoQUICK.toExact()) * quickPrice;
+
   const dQUICKAPR =
-    (((Number(lair.oneDayVol) *
-      GlobalConst.utils.DQUICKFEE *
-      GlobalConst.utils.DQUICKAPR_MULTIPLIER) /
-      Number(lair.dQuickTotalSupply.toExact())) *
-      daysCurrentYear) /
-    dQUICKPrice;
+    (feesPercent * daysCurrentYear) /
+    (Number(lair.totalQuickBalance.toExact()) * quickPrice);
   if (!dQUICKAPR) return '';
   const temp = Math.pow(1 + dQUICKAPR / daysCurrentYear, daysCurrentYear) - 1;
   if (temp > 100) {

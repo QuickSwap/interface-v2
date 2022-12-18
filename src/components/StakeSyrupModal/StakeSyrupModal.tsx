@@ -164,6 +164,10 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
     }
   };
 
+  const rateDecimalDifference =
+    (syrup.stakedAmount?.token.decimals ?? 0) -
+    (syrup.rewardRate?.token.decimals ?? 0);
+
   return (
     <CustomModal open={open} onClose={onClose}>
       <Box paddingX={3} paddingY={4}>
@@ -240,7 +244,9 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
           <p>
             {hypotheticalRewardRate
               ? formatNumber(
-                  Number(hypotheticalRewardRate.toExact()) * getSecondsOneDay(),
+                  (Number(hypotheticalRewardRate.toExact()) /
+                    10 ** rateDecimalDifference) *
+                    getSecondsOneDay(),
                 )
               : '-'}{' '}
             {syrup.token.symbol} / {t('day')}

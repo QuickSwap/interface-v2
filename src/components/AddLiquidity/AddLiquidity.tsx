@@ -179,7 +179,10 @@ const AddLiquidity: React.FC<{
     (currencyA: any) => {
       const isSwichRedirect = currencyEquals(currencyA, ETHER[chainIdToUse])
         ? currency1Id === 'ETH'
-        : currencyA.address.toLowerCase() === currency1Id.toLowerCase();
+        : currency1Id &&
+          currencyA &&
+          currencyA.address &&
+          currencyA.address.toLowerCase() === currency1Id.toLowerCase();
       if (isSwichRedirect) {
         redirectWithSwitch(currencyA, true);
       } else {
@@ -200,7 +203,10 @@ const AddLiquidity: React.FC<{
     (currencyB: any) => {
       const isSwichRedirect = currencyEquals(currencyB, ETHER[chainIdToUse])
         ? currency0Id === 'ETH'
-        : currencyB.address.toLowerCase() === currency0Id.toLowerCase();
+        : currencyB &&
+          currencyB.address &&
+          currency0Id &&
+          currencyB.address.toLowerCase() === currency0Id.toLowerCase();
       if (isSwichRedirect) {
         redirectWithSwitch(currencyB, false);
       } else {

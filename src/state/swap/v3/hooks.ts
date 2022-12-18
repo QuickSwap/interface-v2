@@ -34,6 +34,8 @@ import { useCurrency } from 'hooks/v3/Tokens';
 import { useCurrencyBalances } from 'state/wallet/v3/hooks';
 import { useUserSlippageTolerance } from 'state/user/hooks';
 import { WrappedTokenInfo } from 'state/lists/v3/wrappedTokenInfo';
+import { StableCoins } from 'constants/v3/addresses';
+import { ChainId } from '@uniswap/sdk';
 
 export function useSwapState(): AppState['swapV3'] {
   return useAppSelector((state) => {
@@ -146,7 +148,8 @@ export function useDerivedSwapInfo(): {
   V3Trade<Currency, Currency, TradeType> | undefined;
   allowedSlippage: Percent;
 } {
-  const { account } = useActiveWeb3React();
+  const { account, chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ?? ChainId.MATIC;
 
   const {
     independentField,
@@ -223,7 +226,10 @@ export function useDerivedSwapInfo(): {
   }
 
   const toggledTrade = v3Trade.trade ?? undefined;
-  const [allowedSlippageNum] = useUserSlippageTolerance();
+  const [
+    allowedSlippageNum,
+    setUserSlippageTolerance,
+  ] = useUserSlippageTolerance();
   const allowedSlippage = new Percent(
     JSBI.BigInt(allowedSlippageNum),
     JSBI.BigInt(10000),
@@ -238,6 +244,27 @@ export function useDerivedSwapInfo(): {
   if (balanceIn && amountIn && balanceIn.lessThan(amountIn)) {
     inputError = `Insufficient ${amountIn.currency.symbol} balance`;
   }
+
+  useEffect(() => {
+    const stableCoinAddresses = StableCoins[chainIdToUse].map((token) =>
+      token.address.toLowerCase(),
+    );
+    if (
+      inputCurrencyId &&
+      outputCurrencyId &&
+      stableCoinAddresses.includes(inputCurrencyId.toLowerCase()) &&
+      stableCoinAddresses.includes(outputCurrencyId.toLowerCase())
+    ) {
+      setUserSlippageTolerance(10);
+    } else {
+      setUserSlippageTolerance(50);
+    }
+  }, [
+    inputCurrencyId,
+    outputCurrencyId,
+    setUserSlippageTolerance,
+    chainIdToUse,
+  ]);
 
   return {
     currencies,

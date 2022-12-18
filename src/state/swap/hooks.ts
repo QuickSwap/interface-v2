@@ -31,6 +31,8 @@ import {
 import { SwapState } from './reducer';
 import { useUserSlippageTolerance } from 'state/user/hooks';
 import { computeSlippageAdjustedAmounts } from 'utils/prices';
+import { GlobalData } from 'constants/index';
+import { StableCoins } from 'constants/v3/addresses';
 
 export function useSwapState(): AppState['swap'] {
   return useSelector<AppState, AppState['swap']>((state) => state.swap);
@@ -144,6 +146,9 @@ export function useDerivedSwapInfo(): {
 } {
   const { account, chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ?? ChainId.MATIC;
+  const parsedQuery = useParsedQueryString();
+  const swapType = parsedQuery ? parsedQuery.swapIndex : undefined;
+
   const {
     independentField,
     typedValue,
@@ -229,9 +234,37 @@ export function useDerivedSwapInfo(): {
     slippageAdjustedAmounts ? slippageAdjustedAmounts[Field.INPUT] : null,
   ];
 
-  if (balanceIn && amountIn && balanceIn.lessThan(amountIn)) {
+  if (
+    swapType !== '0' &&
+    balanceIn &&
+    amountIn &&
+    balanceIn.lessThan(amountIn)
+  ) {
     inputError = 'Insufficient ' + amountIn.currency.symbol + ' balance';
   }
+
+  const [_, setUserSlippageTolerance] = useUserSlippageTolerance();
+
+  useEffect(() => {
+    const stableCoinAddresses = StableCoins[chainIdToUse].map((token) =>
+      token.address.toLowerCase(),
+    );
+    if (
+      inputCurrencyId &&
+      outputCurrencyId &&
+      stableCoinAddresses.includes(inputCurrencyId.toLowerCase()) &&
+      stableCoinAddresses.includes(outputCurrencyId.toLowerCase())
+    ) {
+      setUserSlippageTolerance(10);
+    } else {
+      setUserSlippageTolerance(50);
+    }
+  }, [
+    inputCurrencyId,
+    outputCurrencyId,
+    setUserSlippageTolerance,
+    chainIdToUse,
+  ]);
 
   return {
     currencies,

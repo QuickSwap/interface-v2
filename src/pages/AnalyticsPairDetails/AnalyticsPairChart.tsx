@@ -231,7 +231,7 @@ const AnalyticsPairChart: React.FC<{
   const currentPercentClass = getPriceClass(Number(currentPercent));
 
   return (
-    <>
+    <Box className='flex flex-col' height='100%'>
       <Box className='flex flex-wrap justify-between' position={'relative'}>
         <Box mt={1.5}>
           <span>{chartIndexTexts[chartIndex]}</span>
@@ -319,7 +319,7 @@ const AnalyticsPairChart: React.FC<{
           )}
         </Box>
       </Box>
-      <Box mt={2} width={1}>
+      <Box mt={2} width={1} flex={1}>
         {chartData && _chartData ? (
           chartIndex === CHART_LIQUIDITY ? (
             <AnalyticsPairLiquidityChartV3
@@ -343,7 +343,7 @@ const AnalyticsPairChart: React.FC<{
           <Skeleton variant='rect' width='100%' height={217} />
         )}
       </Box>
-    </>
+    </Box>
   );
 };
 

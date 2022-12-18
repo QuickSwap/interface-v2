@@ -141,6 +141,10 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
     </Box>
   );
 
+  const rateDecimalDifference =
+    (syrup.stakedAmount?.token.decimals ?? 0) -
+    (syrup.rewardRate?.token.decimals ?? 0);
+
   return (
     <>
       {openStakeModal && syrup && (
@@ -285,7 +289,8 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
                   <small>
                     {formatMulDivTokenAmount(
                       syrup.rewardRate,
-                      GlobalConst.utils.ONEDAYSECONDS,
+                      GlobalConst.utils.ONEDAYSECONDS /
+                        10 ** rateDecimalDifference,
                     )}{' '}
                     {syrupCurrency.symbol} / {t('day')}
                   </small>

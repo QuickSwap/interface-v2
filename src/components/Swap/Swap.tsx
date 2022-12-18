@@ -6,6 +6,7 @@ import {
   Token,
   ChainId,
   ETHER,
+  currencyEquals,
 } from '@uniswap/sdk';
 import ReactGA from 'react-ga';
 import { ArrowDown } from 'react-feather';
@@ -204,17 +205,30 @@ const Swap: React.FC<{
 
   const parsedQs = useParsedQueryString();
   const { redirectWithCurrency, redirectWithSwitch } = useSwapRedirects();
+  const parsedCurrency0Id = (parsedQs.currency0 ??
+    parsedQs.inputCurrency) as string;
+  const parsedCurrency1Id = (parsedQs.currency1 ??
+    parsedQs.outputCurrency) as string;
 
   const handleCurrencySelect = useCallback(
     (inputCurrency) => {
       setApprovalSubmitted(false); // reset 2 step UI for approvals
-      redirectWithCurrency(inputCurrency, true);
+      const isSwichRedirect = currencyEquals(inputCurrency, ETHER[chainIdToUse])
+        ? parsedCurrency1Id === 'ETH'
+        : parsedCurrency1Id &&
+          inputCurrency &&
+          inputCurrency.address &&
+          inputCurrency.address.toLowerCase() ===
+            parsedCurrency1Id.toLowerCase();
+      if (isSwichRedirect) {
+        redirectWithSwitch();
+      } else {
+        redirectWithCurrency(inputCurrency, true);
+      }
     },
-    [redirectWithCurrency],
+    [parsedCurrency1Id, redirectWithCurrency, redirectWithSwitch, chainIdToUse],
   );
 
-  const parsedCurrency0Id = (parsedQs.currency0 ??
-    parsedQs.inputCurrency) as string;
   const parsedCurrency0 = useCurrency(parsedCurrency0Id);
   useEffect(() => {
     if (parsedCurrency0) {
@@ -227,13 +241,25 @@ const Swap: React.FC<{
 
   const handleOtherCurrencySelect = useCallback(
     (outputCurrency) => {
-      redirectWithCurrency(outputCurrency, false);
+      const isSwichRedirect = currencyEquals(
+        outputCurrency,
+        ETHER[chainIdToUse],
+      )
+        ? parsedCurrency0Id === 'ETH'
+        : parsedCurrency0Id &&
+          outputCurrency &&
+          outputCurrency.address &&
+          outputCurrency.address.toLowerCase() ===
+            parsedCurrency0Id.toLowerCase();
+      if (isSwichRedirect) {
+        redirectWithSwitch();
+      } else {
+        redirectWithCurrency(outputCurrency, false);
+      }
     },
-    [redirectWithCurrency],
+    [parsedCurrency0Id, redirectWithCurrency, redirectWithSwitch, chainIdToUse],
   );
 
-  const parsedCurrency1Id = (parsedQs.currency1 ??
-    parsedQs.outputCurrency) as string;
   const parsedCurrency1 = useCurrency(parsedCurrency1Id);
   useEffect(() => {
     if (parsedCurrency1) {
