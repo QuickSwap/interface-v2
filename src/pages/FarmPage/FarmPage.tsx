@@ -30,7 +30,7 @@ const FarmPage: React.FC = () => {
   const farms = config['farm']['available'];
   const v3 = config['v3'];
   const v2 = config['v2'];
-  const { isV2, updateIsV2 } = useIsV2();
+  const { isV2 } = useIsV2();
 
   const lpFarms = useDefaultFarmList();
   const cntFarms = useDefaultCNTFarmList(chainIdToUse);
@@ -60,10 +60,6 @@ const FarmPage: React.FC = () => {
       );
     }
   }, [isV2, pairLists, chainIdToUse]);
-
-  useEffect(() => {
-    updateIsV2(v2 && v3 ? (isV2 === true ? true : false) : v2 ? true : false);
-  }, [v2, v3, isV2]);
 
   const farmCategories = [
     {

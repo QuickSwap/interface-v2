@@ -26,12 +26,7 @@ const PoolsPage: React.FC = () => {
 
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
-  const { updateIsV2 } = useIsV2();
 
-  useEffect(() => {
-    updateIsV2(v2 && v3 ? (isV2 === true ? true : false) : v2 ? true : false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [v2, v3, isV2]);
   const helpURL = process.env.REACT_APP_HELP_URL;
 
   return (

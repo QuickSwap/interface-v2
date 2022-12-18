@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Box, Grid } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
@@ -22,6 +22,7 @@ import 'pages/styles/landing.scss';
 import { SwapSection } from './SwapSection';
 import { BuyFiatSection } from './BuyFiatSection';
 import { GlobalSection } from './GlobalSection';
+import { useIsV2 } from 'state/application/hooks';
 
 const LandingPage: React.FC = () => {
   const { t } = useTranslation();
@@ -103,6 +104,11 @@ const LandingPage: React.FC = () => {
   ];
 
   const history = useHistory();
+  const { updateIsV2 } = useIsV2();
+
+  useEffect(() => {
+    updateIsV2(false);
+  }, [updateIsV2]);
 
   return (
     <div id='landing-page' style={{ width: '100%' }}>
