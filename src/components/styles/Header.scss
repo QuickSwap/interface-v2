@@ -273,8 +273,8 @@
 }
 
 .styledPollingDot {
-  width: 15px;
-  height: 15px;
+  width: 6px;
+  height: 6px;
   min-height: 8px;
   min-width: 8px;
   margin-left: 0rem;
@@ -282,4 +282,32 @@
   border-radius: 50%;
   position: relative;
   background-color: $successMain;
+  position: absolute;
+  right: -2px;
+  top: -2px;
+}
+
+.networkSelection {
+  background-color: $secondary1;
+  display: flex;
+  align-items: center;
+  margin-right: 12px;
+  height: 36px;
+  border-radius: 10px;
+  padding: 0 8px 0 12px;
+  cursor: pointer;
+  img {
+    width: 18px;
+  }
+  svg {
+    width: 18px;
+    height: 18px;
+    margin-left: 4px;
+  }
+}
+
+.networkSelectionImage {
+  position: relative;
+  display: flex;
+  margin-right: 8px;
 }

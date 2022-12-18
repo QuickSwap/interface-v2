@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Box, useMediaQuery } from '@material-ui/core';
+import { KeyboardArrowDown } from '@material-ui/icons';
 import { useTheme } from '@material-ui/core/styles';
 import { useIsV2, useWalletModalToggle } from 'state/application/hooks';
 import {
@@ -10,12 +11,12 @@ import {
 import { TransactionDetails } from 'state/transactions/reducer';
 import { shortenAddress, addMaticToMetamask, isSupportedNetwork } from 'utils';
 import useENSName from 'hooks/useENSName';
-import { WalletModal } from 'components';
+import { WalletModal, NetworkSelectionModal } from 'components';
 import { useActiveWeb3React } from 'hooks';
 import QuickIcon from 'assets/images/quickIcon.svg';
 import QuickLogo from 'assets/images/quickLogo.png';
 import { ReactComponent as ThreeDotIcon } from 'assets/images/ThreeDot.svg';
-import { ReactComponent as LightIcon } from 'assets/images/LightIcon.svg';
+// import { ReactComponent as LightIcon } from 'assets/images/LightIcon.svg';
 import WalletIcon from 'assets/images/WalletIcon.png';
 import NewTag from 'assets/images/NewTag.png';
 import SparkleLeft from 'assets/images/SparkleLeft.svg';
@@ -38,6 +39,9 @@ const Header: React.FC = () => {
   const { ethereum } = window as any;
   const { ENSName } = useENSName(account ?? undefined);
   const [openDetailMenu, setOpenDetailMenu] = useState(false);
+  const [openNetworkSelectionModal, setOpenNetworkSelectionModal] = useState(
+    false,
+  );
   const theme = useTheme();
   const allTransactions = useAllTransactions();
   const sortedRecentTransactions = useMemo(() => {
@@ -71,15 +75,16 @@ const Header: React.FC = () => {
   }, []);
 
   const menuItemCountToShow = useMemo(() => {
-    if (deviceWidth > 1370) {
+    if (deviceWidth > 1540) {
       return 7;
-    } else if (deviceWidth > 1270) {
+    } else if (deviceWidth > 1430) {
       return 6;
-    } else if (deviceWidth > 1092) {
+    } else if (deviceWidth > 1260) {
       return 5;
-    } else {
+    } else if (deviceWidth > 1080) {
       return 4;
     }
+    return 3;
   }, [deviceWidth]);
 
   const { chainId } = useActiveWeb3React();
@@ -199,6 +204,10 @@ const Header: React.FC = () => {
 
   return (
     <Box className={`header ${tabletWindowSize ? '' : headerClass}`}>
+      <NetworkSelectionModal
+        open={openNetworkSelectionModal}
+        onClose={() => setOpenNetworkSelectionModal(false)}
+      />
       <WalletModal
         ENSName={ENSName ?? undefined}
         pendingTransactions={pending}
@@ -208,7 +217,7 @@ const Header: React.FC = () => {
         <img
           src={mobileWindowSize ? QuickIcon : QuickLogo}
           alt='QuickLogo'
-          height={60}
+          height={mobileWindowSize ? 40 : 60}
         />
       </Link>
       {!tabletWindowSize && (
@@ -341,10 +350,22 @@ const Header: React.FC = () => {
         </Box>
       )}
       <Box>
-        <Box className='headerIconWrapper'>
-          <Box className='styledPollingDot' />
+        {/* <Box className='headerIconWrapper'>
           <LightIcon />
-        </Box>
+        </Box> */}
+        {ethereum && isSupportedNetwork(ethereum) && (
+          <Box
+            className='networkSelection'
+            onClick={() => setOpenNetworkSelectionModal(true)}
+          >
+            <Box className='networkSelectionImage'>
+              <Box className='styledPollingDot' />
+              <img src={config['nativeCurrencyImage']} alt='network Image' />
+            </Box>
+            <small className='weight-600'>{config['networkName']}</small>
+            <KeyboardArrowDown />
+          </Box>
+        )}
         {account && (!ethereum || isSupportedNetwork(ethereum)) ? (
           <Box
             id='web3-status-connected'

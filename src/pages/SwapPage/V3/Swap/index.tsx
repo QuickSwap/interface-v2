@@ -464,7 +464,7 @@ const SwapV3Page: React.FC = () => {
     if (!chainId) return;
     if (parsedCurrency0) {
       onCurrencySelection(Field.INPUT, parsedCurrency0);
-    } else {
+    } else if (history.location.pathname !== '/') {
       const nativeCurrency = {
         ...ETHER[chainId],
         isNative: true,

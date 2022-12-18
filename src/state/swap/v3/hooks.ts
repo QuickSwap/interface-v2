@@ -246,9 +246,11 @@ export function useDerivedSwapInfo(): {
   }
 
   useEffect(() => {
-    const stableCoinAddresses = StableCoins[chainIdToUse].map((token) =>
-      token.address.toLowerCase(),
-    );
+    const stableCoins = StableCoins[chainIdToUse];
+    const stableCoinAddresses =
+      stableCoins && stableCoins.length > 0
+        ? stableCoins.map((token) => token.address.toLowerCase())
+        : [];
     if (
       inputCurrencyId &&
       outputCurrencyId &&

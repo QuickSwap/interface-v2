@@ -2327,3 +2327,32 @@ export const getEternalFarmFromTokens = async (
     return;
   }
 };
+
+export const switchNetwork = (chainId: ChainId) => {
+  const config = getConfig(chainId);
+  const { ethereum } = window as any;
+  const chainIdHex = chainId.toString(16);
+  if (ethereum) {
+    ethereum
+      .request({
+        method: 'wallet_addEthereumChain',
+        params: [
+          {
+            chainId: `0x${chainIdHex}`,
+            chainName: `${config['networkName']} Network`,
+            rpcUrls: [config['rpc']],
+            iconUrls: [`/${config['nativeCurrencyImage']}`],
+            blockExplorerUrls: [config['blockExplorer']],
+            nativeCurrency: config['nativeCurrency'],
+          },
+        ], // you must have access to the specified account
+      })
+      .catch((error: any) => {
+        if (error.code === 4001) {
+          console.log('We can encrypt anything without the key.');
+        } else {
+          console.error(error);
+        }
+      });
+  }
+};

@@ -3,8 +3,14 @@
   "v2": false,
   "rpc": "https://public.zkevm-test.net:2083",
   "blockExplorer": "https://explorer.public.zkevm-test.net",
+  "networkName": "Polygon zkEVM",
   "chainId": 1402,
-  "nativeCurrencyImage": "/doge.png",
+  "nativeCurrencyImage": "/polygon.svg",
+  "nativeCurrency": {
+    "name": "Matic Token",
+    "symbol": "MATIC",
+    "decimals": 18
+  },
   "swap": {
     "available": true,
     "bestTrade": false,

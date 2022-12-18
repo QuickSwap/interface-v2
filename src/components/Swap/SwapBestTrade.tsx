@@ -188,7 +188,10 @@ const SwapBestTrade: React.FC<{
 
   const handleOtherCurrencySelect = useCallback(
     (outputCurrency) => {
-      const isSwichRedirect = currencyEquals(outputCurrency, ETHER)
+      const isSwichRedirect = currencyEquals(
+        outputCurrency,
+        ETHER[chainIdToUse],
+      )
         ? parsedCurrency0Id === 'ETH'
         : parsedCurrency0Id &&
           outputCurrency &&
@@ -201,7 +204,7 @@ const SwapBestTrade: React.FC<{
         redirectWithCurrency(outputCurrency, false);
       }
     },
-    [parsedCurrency0Id, redirectWithCurrency, redirectWithSwitch],
+    [parsedCurrency0Id, redirectWithCurrency, redirectWithSwitch, chainIdToUse],
   );
 
   const parsedCurrency1 = useCurrency(parsedCurrency1Id);

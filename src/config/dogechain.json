@@ -3,8 +3,15 @@
   "v2": false,
   "rpc": "https://dogechain.ankr.com",
   "blockExplorer": "https://explorer.dogechain.dog",
+  "networkName": "DogeChain",
+  "isMainnet": true,
   "chainId": 2000,
   "nativeCurrencyImage": "/doge.png",
+  "nativeCurrency": {
+    "name": "Wrapped Doge",
+    "symbol": "WDOGE",
+    "decimals": 18
+  },
   "swap": {
     "available": true,
     "bestTrade": false,

@@ -137,146 +137,7 @@ function Gelato({ children }: { children?: React.ReactNode }) {
 
 const queryClient = new QueryClient();
 
-const AppContent = () => (
-  <QueryClientProvider client={queryClient}>
-    <Web3ReactProvider getLibrary={getLibrary}>
-      <Route component={GoogleAnalyticsReporter} />
-      <Web3ProviderNetwork getLibrary={getLibrary}>
-        <Provider store={store}>
-          <Updaters />
-          <Providers>
-            <Popups />
-            <StyledThemeProvider>
-              <Gelato>
-                <Web3ReactManager>
-                  <Switch>
-                    <Route exact path='/'>
-                      <PageLayout>
-                        <LandingPage />
-                      </PageLayout>
-                    </Route>
-                    <Route exact path='/swap/:version?'>
-                      <PageLayout>
-                        <SwapPage />
-                      </PageLayout>
-                    </Route>
-                    {/* <Route exact path='/lend'>
-                    <PageLayout>
-                      <LendPage />
-                    </PageLayout>
-                  </Route>
-                  <Route exact path='/lend/detail'>
-                    <PageLayout>
-                      <LendDetailPage />
-                    </PageLayout>
-                  </Route> */}
-                    <Route exact path='/pools/:version?'>
-                      <PageLayout>
-                        <PoolsPage />
-                      </PageLayout>
-                    </Route>
-                    {/* <Route exact path='/migrate'>
-                    <PageLayout>
-                      <MigrateV2LiquidityPage />
-                    </PageLayout>
-                  </Route>
-                  <Route exact path='/migrate/:currencyIdA/:currencyIdB'>
-                    <PageLayout>
-                      <MigrateV2DetailsPage />
-                    </PageLayout>
-                  </Route> */}
-                    <Route exact strict path='/pool/:tokenId'>
-                      <PageLayout>
-                        <PositionPage></PositionPage>
-                      </PageLayout>
-                    </Route>
-                    <Route
-                      exact
-                      path='/add/:currencyIdA?/:currencyIdB?/:version?'
-                    >
-                      <PageLayout>
-                        <PoolsPage></PoolsPage>
-                      </PageLayout>
-                    </Route>
-                    <Route
-                      exact
-                      path='/increase/:currencyIdA?/:currencyIdB?/:tokenId'
-                    >
-                      <PageLayout>
-                        <IncreaseLiquidityV3Page></IncreaseLiquidityV3Page>
-                      </PageLayout>
-                    </Route>
-                    <Route exact path='/remove/:tokenId'>
-                      <PageLayout>
-                        <RemoveLiquidityV3Page></RemoveLiquidityV3Page>
-                      </PageLayout>
-                    </Route>
-                    <Route exact path='/farm/:version?'>
-                      <PageLayout>
-                        <FarmPage />
-                      </PageLayout>
-                    </Route>
-                    <Route exact path='/dragons'>
-                      <PageLayout>
-                        <DragonPage />
-                      </PageLayout>
-                    </Route>
-                    <Route exact path='/convert'>
-                      <PageLayout>
-                        <ConvertQUICKPage />
-                      </PageLayout>
-                    </Route>
-                    <Route exact path='/predictions'>
-                      <RedirectExternal
-                        to={`${process.env.REACT_APP_PREDICTIONS_URL}`}
-                      ></RedirectExternal>
-                    </Route>
-                    <Route exact path='/gamehub'>
-                      <RedirectExternal
-                        to={`${process.env.REACT_APP_GAMEHUB_URL}`}
-                      ></RedirectExternal>
-                    </Route>
-                    <Route exact path='/analytics/:version?'>
-                      <PageLayout>
-                        <AnalyticsHeader />
-                        <AnalyticsOverview />
-                      </PageLayout>
-                    </Route>
-                    <Route exact path='/analytics/:version/tokens'>
-                      <PageLayout>
-                        <AnalyticsHeader />
-                        <AnalyticsTokens />
-                      </PageLayout>
-                    </Route>
-                    <Route exact path='/analytics/:version/pairs'>
-                      <PageLayout>
-                        <AnalyticsHeader />
-                        <AnalyticsPairs />
-                      </PageLayout>
-                    </Route>
-                    <Route exact path='/analytics/:version/token/:id'>
-                      <PageLayout>
-                        <AnalyticsTokenDetails />
-                      </PageLayout>
-                    </Route>
-                    <Route exact path='/analytics/:version/pair/:id'>
-                      <PageLayout>
-                        <AnalyticsPairDetails />
-                      </PageLayout>
-                    </Route>
-                  </Switch>
-                </Web3ReactManager>
-              </Gelato>
-            </StyledThemeProvider>
-          </Providers>
-        </Provider>
-      </Web3ProviderNetwork>
-    </Web3ReactProvider>
-  </QueryClientProvider>
-);
-
-const App: React.FC = () => {
-<<<<<<< HEAD
+const AppContent = () => {
   const { chainId } = useActiveWeb3React();
   const config = getConfig(chainId);
   const showSwap = config['swap']['available'];
@@ -285,6 +146,7 @@ const App: React.FC = () => {
   const showLair = config['lair']['available'];
   const showConvert = config['convert']['available'];
   const showPredictions = config['predictions']['available'];
+  const showGamingHub = config['gamingHub']['available'];
   const showAnalytics = config['analytics']['available'];
   // const showLending = config['lending']['available'];
   const showMigrate = config['migrate']['available'];
@@ -315,20 +177,16 @@ const App: React.FC = () => {
                           </PageLayout>
                         </Route>
                       )}
-                      {/* {showLending && (
-                        <Route exact path='/lend'>
-                          <PageLayout>
-                            <LendPage />
-                          </PageLayout>
-                        </Route>
-                      )}
-                      {showLending && (
-                        <Route exact path='/lend/detail'>
-                          <PageLayout>
-                            <LendDetailPage />
-                          </PageLayout>
-                        </Route>
-                      )} */}
+                      {/* <Route exact path='/lend'>
+                    <PageLayout>
+                      <LendPage />
+                    </PageLayout>
+                  </Route>
+                  <Route exact path='/lend/detail'>
+                    <PageLayout>
+                      <LendDetailPage />
+                    </PageLayout>
+                  </Route> */}
                       {showPool && (
                         <Route exact path='/pools/:version?'>
                           <PageLayout>
@@ -336,6 +194,7 @@ const App: React.FC = () => {
                           </PageLayout>
                         </Route>
                       )}
+
                       {showPool && v3 && (
                         <Route exact strict path='/pool/:tokenId'>
                           <PageLayout>
@@ -343,7 +202,7 @@ const App: React.FC = () => {
                           </PageLayout>
                         </Route>
                       )}
-                      {showPool && v2 && (
+                      {showPool && (
                         <Route
                           exact
                           path='/add/:currencyIdA?/:currencyIdB?/:version?'
@@ -412,8 +271,15 @@ const App: React.FC = () => {
                           ></RedirectExternal>
                         </Route>
                       )}
+                      {showGamingHub && (
+                        <Route exact path='/gamehub'>
+                          <RedirectExternal
+                            to={`${process.env.REACT_APP_GAMEHUB_URL}`}
+                          ></RedirectExternal>
+                        </Route>
+                      )}
                       {showAnalytics && (
-                        <div>
+                        <>
                           <Route exact path='/analytics/:version?'>
                             <PageLayout>
                               <AnalyticsHeader />
@@ -442,7 +308,7 @@ const App: React.FC = () => {
                               <AnalyticsPairDetails />
                             </PageLayout>
                           </Route>
-                        </div>
+                        </>
                       )}
                     </Switch>
                   </Web3ReactManager>
@@ -453,7 +319,10 @@ const App: React.FC = () => {
         </Web3ProviderNetwork>
       </Web3ReactProvider>
     </QueryClientProvider>
-=======
+  );
+};
+
+const App: React.FC = () => {
   const arcXAPIKey = process.env.REACT_APP_ARCX_API_KEY;
 
   return arcXAPIKey ? (
@@ -462,7 +331,6 @@ const App: React.FC = () => {
     </ArcxAnalyticsProvider>
   ) : (
     <AppContent />
->>>>>>> dev
   );
 };
 

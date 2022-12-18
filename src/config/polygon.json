@@ -4,7 +4,14 @@
   "rpc": "https://polygon-rpc.com/",
   "blockExplorer": "https://polygonscan.com",
   "chainId": 137,
+  "isMainnet": true,
+  "networkName": "Polygon",
   "nativeCurrencyImage": "/polygon.svg",
+  "nativeCurrency": {
+    "name": "Matic Token",
+    "symbol": "MATIC",
+    "decimals": 18
+  },
   "swap": {
     "available": true,
     "bestTrade": true,
