@@ -32,7 +32,7 @@ import { useUSDCValue } from 'hooks/v3/useUSDCPrice';
 import useWrapCallback, { WrapType } from 'hooks/useWrapCallback';
 import { getTradeVersion } from 'utils/v3/getTradeVersion';
 import { WrappedCurrency } from 'models/types';
-import { useWalletModalToggle } from 'state/application/hooks';
+import { useIsProMode, useWalletModalToggle } from 'state/application/hooks';
 import CurrencyLogo from 'components/CurrencyLogo';
 import useToggledVersion, { Version } from 'hooks/v3/useToggledVersion';
 import {
@@ -82,9 +82,16 @@ import { ETHER } from '@uniswap/sdk';
 import { WMATIC_EXTENDED } from 'constants/v3/addresses';
 import useSwapRedirects from 'hooks/useSwapRedirect';
 
-const SwapV3Page: React.FC = () => {
+interface SwapV3PageProps {
+  currencyBgClass?: string;
+}
+
+const SwapV3Page: React.FC<SwapV3PageProps> = ({
+  currencyBgClass = 'bg-secondary2',
+}) => {
   const { account, chainId } = useActiveWeb3React();
   const history = useHistory();
+  const { isProMode, updateIsProMode } = useIsProMode();
   const loadedUrlParams = useDefaultsFromURLSearch();
   const inputCurrencyId = loadedUrlParams?.inputCurrencyId;
   const outputCurrencyId = loadedUrlParams?.outputCurrencyId;
@@ -591,6 +598,8 @@ const SwapV3Page: React.FC = () => {
                     disabled={false}
                     shallow={false}
                     swap
+                    color={isProMode ? 'white' : 'secondary'}
+                    bgClass={isProMode ? 'swap-bg-highlight' : currencyBgClass}
                   />
                 </Box>
 
@@ -628,6 +637,8 @@ const SwapV3Page: React.FC = () => {
                     disabled={false}
                     shallow={false}
                     swap
+                    color={isProMode ? 'white' : 'secondary'}
+                    bgClass={isProMode ? 'swap-bg-highlight' : currencyBgClass}
                   />
                 </Box>
               </Box>

@@ -45,12 +45,18 @@
   }
 }
 
+.swap-bg-highlight {
+  background-color: #404557;
+  color: white;
+}
+
 .headingItem {
   cursor: pointer;
   display: flex;
 }
 
 .proModeWrapper {
+  background-image: linear-gradient(to bottom, #282d3d, #282d3d);
   border-top: 1px solid $divider;
   border-bottom: 1px solid $divider;
   .swapItem {

@@ -86,7 +86,7 @@ const SwapProAssets: React.FC = ({}) => {
     if (isV2 === undefined) return;
 
     // Reset the top tokens
-    updateTopTokens(null);
+    // updateTopTokens(null);
     const count = GlobalConst.utils.ANALYTICS_TOKENS_COUNT;
     if (isV2) {
       const { price, oneDayPrice } = ethPrice;

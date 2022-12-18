@@ -177,7 +177,15 @@ const SwapMain: React.FC = () => {
           </Box>
         )}
       </Box>
-      <Box padding={isProMode ? '0 24px 24px' : '0'} mt={3.5}>
+      <Box
+        style={{
+          backgroundImage: isProMode
+            ? 'linear-gradient(to bottom, #282d3d, #1b1e29)'
+            : '',
+        }}
+        padding={isProMode ? '0 24px 24px' : '0'}
+        pt={3.5}
+      >
         {swapType === SWAP_BEST_TRADE && <SwapBestTrade />}
         {swapType === SWAP_NORMAL && <Swap />}
         {swapType === SWAP_V3 && <SwapV3Page />}
