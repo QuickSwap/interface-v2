@@ -441,9 +441,17 @@ const SwapV3Page: React.FC<SwapV3PageProps> = ({
     (inputCurrency) => {
       setApprovalSubmitted(false); // reset 2 step UI for approvals
       if (
-        (inputCurrency.isNative && currencies[Field.OUTPUT]?.isNative) ||
-        inputCurrency.address.toLowerCase() ===
-          currencies[Field.OUTPUT]?.wrapped.address.toLowerCase()
+        (inputCurrency &&
+          inputCurrency.isNative &&
+          currencies[Field.OUTPUT] &&
+          currencies[Field.OUTPUT]?.isNative) ||
+        (inputCurrency &&
+          inputCurrency.address &&
+          currencies[Field.OUTPUT] &&
+          currencies[Field.OUTPUT]?.wrapped &&
+          currencies[Field.OUTPUT]?.wrapped.address &&
+          inputCurrency.address.toLowerCase() ===
+            currencies[Field.OUTPUT]?.wrapped.address.toLowerCase())
       ) {
         redirectWithSwitch();
       } else {
@@ -469,7 +477,7 @@ const SwapV3Page: React.FC<SwapV3PageProps> = ({
         isToken: false,
         wrapped: WMATIC_EXTENDED[chainId],
       } as NativeCurrency;
-      redirectWithCurrency(nativeCurrency, true);
+      redirectWithCurrency(nativeCurrency, true, false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [parsedCurrency0Id]);
@@ -503,9 +511,17 @@ const SwapV3Page: React.FC<SwapV3PageProps> = ({
   const handleOutputSelect = useCallback(
     (outputCurrency) => {
       if (
-        (outputCurrency.isNative && currencies[Field.INPUT]?.isNative) ||
-        outputCurrency.address.toLowerCase() ===
-          currencies[Field.INPUT]?.wrapped.address.toLowerCase()
+        (outputCurrency &&
+          outputCurrency.isNative &&
+          currencies[Field.INPUT] &&
+          currencies[Field.INPUT]?.isNative) ||
+        (outputCurrency &&
+          outputCurrency.address &&
+          currencies[Field.INPUT] &&
+          currencies[Field.INPUT]?.wrapped &&
+          currencies[Field.INPUT]?.wrapped.address &&
+          outputCurrency.address.toLowerCase() ===
+            currencies[Field.INPUT]?.wrapped.address.toLowerCase())
       ) {
         redirectWithSwitch();
       } else {
