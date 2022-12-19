@@ -84,10 +84,10 @@ body {
   display: flex;
   align-items: center;
   flex-direction: column;
-  margin: 24px auto;
-  padding: 0 32px;
-  @include media("screen", "<phone") {
-    padding: 0 12px;
+  margin: 0 auto;
+  padding: 112px 32px 0;
+  @include media("screen", "<tablet") {
+    padding: 24px 12px 0;
   }
 }
 

@@ -32,7 +32,7 @@ import { useUSDCValue } from 'hooks/v3/useUSDCPrice';
 import useWrapCallback, { WrapType } from 'hooks/useWrapCallback';
 import { getTradeVersion } from 'utils/v3/getTradeVersion';
 import { WrappedCurrency } from 'models/types';
-import { useWalletModalToggle } from 'state/application/hooks';
+import { useIsProMode, useWalletModalToggle } from 'state/application/hooks';
 import CurrencyLogo from 'components/CurrencyLogo';
 import useToggledVersion, { Version } from 'hooks/v3/useToggledVersion';
 import {
@@ -82,9 +82,16 @@ import { ETHER } from '@uniswap/sdk';
 import { WMATIC_EXTENDED } from 'constants/v3/addresses';
 import useSwapRedirects from 'hooks/useSwapRedirect';
 
-const SwapV3Page: React.FC = () => {
+interface SwapV3PageProps {
+  currencyBgClass?: string;
+}
+
+const SwapV3Page: React.FC<SwapV3PageProps> = ({
+  currencyBgClass = 'bg-secondary2',
+}) => {
   const { account, chainId } = useActiveWeb3React();
   const history = useHistory();
+  const { isProMode, updateIsProMode } = useIsProMode();
   const loadedUrlParams = useDefaultsFromURLSearch();
   const inputCurrencyId = loadedUrlParams?.inputCurrencyId;
   const outputCurrencyId = loadedUrlParams?.outputCurrencyId;
@@ -434,9 +441,17 @@ const SwapV3Page: React.FC = () => {
     (inputCurrency) => {
       setApprovalSubmitted(false); // reset 2 step UI for approvals
       if (
-        (inputCurrency.isNative && currencies[Field.OUTPUT]?.isNative) ||
-        inputCurrency.address.toLowerCase() ===
-          currencies[Field.OUTPUT]?.wrapped.address.toLowerCase()
+        (inputCurrency &&
+          inputCurrency.isNative &&
+          currencies[Field.OUTPUT] &&
+          currencies[Field.OUTPUT]?.isNative) ||
+        (inputCurrency &&
+          inputCurrency.address &&
+          currencies[Field.OUTPUT] &&
+          currencies[Field.OUTPUT]?.wrapped &&
+          currencies[Field.OUTPUT]?.wrapped.address &&
+          inputCurrency.address.toLowerCase() ===
+            currencies[Field.OUTPUT]?.wrapped.address.toLowerCase())
       ) {
         redirectWithSwitch();
       } else {
@@ -462,7 +477,7 @@ const SwapV3Page: React.FC = () => {
         isToken: false,
         wrapped: WMATIC_EXTENDED[chainId],
       } as NativeCurrency;
-      redirectWithCurrency(nativeCurrency, true);
+      redirectWithCurrency(nativeCurrency, true, false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [parsedCurrency0Id]);
@@ -496,9 +511,17 @@ const SwapV3Page: React.FC = () => {
   const handleOutputSelect = useCallback(
     (outputCurrency) => {
       if (
-        (outputCurrency.isNative && currencies[Field.INPUT]?.isNative) ||
-        outputCurrency.address.toLowerCase() ===
-          currencies[Field.INPUT]?.wrapped.address.toLowerCase()
+        (outputCurrency &&
+          outputCurrency.isNative &&
+          currencies[Field.INPUT] &&
+          currencies[Field.INPUT]?.isNative) ||
+        (outputCurrency &&
+          outputCurrency.address &&
+          currencies[Field.INPUT] &&
+          currencies[Field.INPUT]?.wrapped &&
+          currencies[Field.INPUT]?.wrapped.address &&
+          outputCurrency.address.toLowerCase() ===
+            currencies[Field.INPUT]?.wrapped.address.toLowerCase())
       ) {
         redirectWithSwitch();
       } else {
@@ -591,6 +614,8 @@ const SwapV3Page: React.FC = () => {
                     disabled={false}
                     shallow={false}
                     swap
+                    color={isProMode ? 'white' : 'secondary'}
+                    bgClass={isProMode ? 'swap-bg-highlight' : currencyBgClass}
                   />
                 </Box>
 
@@ -628,6 +653,8 @@ const SwapV3Page: React.FC = () => {
                     disabled={false}
                     shallow={false}
                     swap
+                    color={isProMode ? 'white' : 'secondary'}
+                    bgClass={isProMode ? 'swap-bg-highlight' : currencyBgClass}
                   />
                 </Box>
               </Box>

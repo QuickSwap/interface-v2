@@ -1,9 +1,16 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
-import { CurrencyAmount, JSBI, Trade, Token, ETHER } from '@uniswap/sdk';
+import {
+  CurrencyAmount,
+  JSBI,
+  Trade,
+  Token,
+  ETHER,
+  currencyEquals,
+} from '@uniswap/sdk';
 import ReactGA from 'react-ga';
 import { ArrowDown } from 'react-feather';
 import { Box, Button, CircularProgress } from '@material-ui/core';
-import { useWalletModalToggle } from 'state/application/hooks';
+import { useIsProMode, useWalletModalToggle } from 'state/application/hooks';
 import {
   useDefaultsFromURLSearch,
   useDerivedSwapInfo,
@@ -53,6 +60,7 @@ const Swap: React.FC<{
 }> = ({ currencyBgClass }) => {
   const loadedUrlParams = useDefaultsFromURLSearch();
   const history = useHistory();
+  const { isProMode, updateIsProMode } = useIsProMode();
 
   // token warning stuff
   const [loadedInputCurrency, loadedOutputCurrency] = [
@@ -196,17 +204,30 @@ const Swap: React.FC<{
 
   const parsedQs = useParsedQueryString();
   const { redirectWithCurrency, redirectWithSwitch } = useSwapRedirects();
+  const parsedCurrency0Id = (parsedQs.currency0 ??
+    parsedQs.inputCurrency) as string;
+  const parsedCurrency1Id = (parsedQs.currency1 ??
+    parsedQs.outputCurrency) as string;
 
   const handleCurrencySelect = useCallback(
     (inputCurrency) => {
       setApprovalSubmitted(false); // reset 2 step UI for approvals
-      redirectWithCurrency(inputCurrency, true);
+      const isSwichRedirect = currencyEquals(inputCurrency, ETHER)
+        ? parsedCurrency1Id === 'ETH'
+        : parsedCurrency1Id &&
+          inputCurrency &&
+          inputCurrency.address &&
+          inputCurrency.address.toLowerCase() ===
+            parsedCurrency1Id.toLowerCase();
+      if (isSwichRedirect) {
+        redirectWithSwitch();
+      } else {
+        redirectWithCurrency(inputCurrency, true);
+      }
     },
-    [redirectWithCurrency],
+    [parsedCurrency1Id, redirectWithCurrency, redirectWithSwitch],
   );
 
-  const parsedCurrency0Id = (parsedQs.currency0 ??
-    parsedQs.inputCurrency) as string;
   const parsedCurrency0 = useCurrency(parsedCurrency0Id);
   useEffect(() => {
     if (parsedCurrency0) {
@@ -219,13 +240,22 @@ const Swap: React.FC<{
 
   const handleOtherCurrencySelect = useCallback(
     (outputCurrency) => {
-      redirectWithCurrency(outputCurrency, false);
+      const isSwichRedirect = currencyEquals(outputCurrency, ETHER)
+        ? parsedCurrency0Id === 'ETH'
+        : parsedCurrency0Id &&
+          outputCurrency &&
+          outputCurrency.address &&
+          outputCurrency.address.toLowerCase() ===
+            parsedCurrency0Id.toLowerCase();
+      if (isSwichRedirect) {
+        redirectWithSwitch();
+      } else {
+        redirectWithCurrency(outputCurrency, false);
+      }
     },
-    [redirectWithCurrency],
+    [parsedCurrency0Id, redirectWithCurrency, redirectWithSwitch],
   );
 
-  const parsedCurrency1Id = (parsedQs.currency1 ??
-    parsedQs.outputCurrency) as string;
   const parsedCurrency1 = useCurrency(parsedCurrency1Id);
   useEffect(() => {
     if (parsedCurrency1) {
@@ -539,7 +569,8 @@ const Swap: React.FC<{
         handleCurrencySelect={handleCurrencySelect}
         amount={formattedAmounts[Field.INPUT]}
         setAmount={handleTypeInput}
-        bgClass={currencyBgClass}
+        color={isProMode ? 'white' : 'secondary'}
+        bgClass={isProMode ? 'swap-bg-highlight' : currencyBgClass}
       />
       <Box className='exchangeSwap'>
         <ExchangeIcon onClick={redirectWithSwitch} />
@@ -554,7 +585,8 @@ const Swap: React.FC<{
         handleCurrencySelect={handleOtherCurrencySelect}
         amount={formattedAmounts[Field.OUTPUT]}
         setAmount={handleTypeOutput}
-        bgClass={currencyBgClass}
+        color={isProMode ? 'white' : 'secondary'}
+        bgClass={isProMode ? 'swap-bg-highlight' : currencyBgClass}
       />
       {trade && trade.executionPrice && (
         <Box className='swapPrice'>

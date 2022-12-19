@@ -167,7 +167,10 @@ export function SupplyLiquidityV3() {
     (currencyANew: Currency) => {
       const isSwichRedirect = currencyANew.isNative
         ? currencyIdBParam === 'matic'
-        : currencyANew.address.toLowerCase() === currencyIdBParam.toLowerCase();
+        : currencyIdBParam &&
+          currencyANew &&
+          currencyANew.address &&
+          currencyANew.address.toLowerCase() === currencyIdBParam.toLowerCase();
       if (isSwichRedirect) {
         redirectWithSwitch(currencyANew, true, false);
       } else {
@@ -191,7 +194,10 @@ export function SupplyLiquidityV3() {
     (currencyBNew: Currency) => {
       const isSwichRedirect = currencyBNew.isNative
         ? currencyIdAParam === 'matic'
-        : currencyBNew.address.toLowerCase() === currencyIdAParam.toLowerCase();
+        : currencyIdAParam &&
+          currencyBNew &&
+          currencyBNew.address &&
+          currencyBNew.address.toLowerCase() === currencyIdAParam.toLowerCase();
       if (isSwichRedirect) {
         redirectWithSwitch(currencyBNew, false, false);
       } else {

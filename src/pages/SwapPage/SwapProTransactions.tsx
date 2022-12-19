@@ -2,9 +2,11 @@ import { Box, Divider, useMediaQuery, useTheme } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import { CustomTable } from 'components';
 import { GlobalConst } from 'constants/index';
+import { useActiveWeb3React } from 'hooks';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { formatNumber } from 'utils';
+import { formatNumber, getEtherscanLink } from 'utils';
+import dayjs from 'dayjs';
 
 interface SwapProTransactionsProps {
   data: any[];
@@ -16,7 +18,7 @@ const SwapProTransactions: React.FC<SwapProTransactionsProps> = ({
   const { t } = useTranslation();
   const theme = useTheme();
   const mobileWindowSize = useMediaQuery(theme.breakpoints.down('xs'));
-
+  const { chainId } = useActiveWeb3React();
   const [symbol1, setSymbol1] = useState('');
   const [symbol2, setSymbol2] = useState('');
   const [filteredData, setFilteredData] = useState<any[]>([]);
@@ -49,6 +51,14 @@ const SwapProTransactions: React.FC<SwapProTransactionsProps> = ({
         tx.token1Amount = token1Amount;
         tx.token2Amount = token2Amount;
         tx.txPrice = txPrice;
+        tx.timestamp = dayjs(Number(tx.transaction.timestamp) * 1000).fromNow();
+
+        const { transaction } = tx;
+
+        tx.link =
+          chainId && transaction
+            ? getEtherscanLink(chainId, transaction.id, 'transaction')
+            : undefined;
       });
 
       const result: any[] = mobileWindowSize ? data.slice(0, 20) : data;
@@ -79,7 +89,16 @@ const SwapProTransactions: React.FC<SwapProTransactionsProps> = ({
 
   const mobileHTML = (txn: any, index: number) => {
     return (
-      <Box my={1} mx='0.5rem'>
+      <Box
+        my={1}
+        mx='0.5rem'
+        className='cursor-pointer'
+        onClick={() => {
+          if (txn.link) {
+            window.open(txn.link, '_blank');
+          }
+        }}
+      >
         <Divider />
         <Box className='mobileRow'>
           <Box>{`${t('Price')} (${symbol1})`}</Box>
@@ -91,9 +110,7 @@ const SwapProTransactions: React.FC<SwapProTransactionsProps> = ({
         </Box>
         <Box className='mobileRow'>
           <Box>{t('Time')}</Box>
-          <Box>
-            {new Date(txn.transaction.timestamp * 1000).toLocaleTimeString()}
-          </Box>
+          <Box>{txn.timestamp}</Box>
         </Box>
       </Box>
     );
@@ -103,17 +120,44 @@ const SwapProTransactions: React.FC<SwapProTransactionsProps> = ({
     return [
       {
         html: (
-          <Box className={txn.txType}>{formatNumber(txn.token1Amount)}</Box>
+          <Box
+            className={`${txn.txType} cursor-pointer`}
+            onClick={() => {
+              if (txn.link) {
+                window.open(txn.link, '_blank');
+              }
+            }}
+          >
+            {formatNumber(txn.token2Amount)}
+          </Box>
         ),
       },
       {
-        html: <Box>{formatNumber(txn.token2Amount)}</Box>,
+        html: (
+          <Box
+            className={`${txn.txType} cursor-pointer`}
+            onClick={() => {
+              if (txn.link) {
+                window.open(txn.link, '_blank');
+              }
+            }}
+          >
+            {formatNumber(txn.token1Amount)}
+          </Box>
+        ),
       },
       {
         html: (
-          <Box mr={2}>
-            {new Date(txn.transaction.timestamp * 1000).toLocaleTimeString()}
-            {/* {dayjs(Number(txn.transaction.timestamp) * 1000).fromNow()} */}
+          <Box
+            className={`${txn.txType} cursor-pointer`}
+            mr={2}
+            onClick={() => {
+              if (txn.link) {
+                window.open(txn.link, '_blank');
+              }
+            }}
+          >
+            {txn.timestamp}
           </Box>
         ),
       },
@@ -130,7 +174,7 @@ const SwapProTransactions: React.FC<SwapProTransactionsProps> = ({
       <Box className='panel'>
         {data ? (
           <CustomTable
-            defaultOrderBy={tokenHeadCells[1]}
+            defaultOrderBy={tokenHeadCells[2]}
             defaultOrder='desc'
             headCells={tokenHeadCells}
             rowsPerPage={GlobalConst.utils.ROWSPERPAGE}

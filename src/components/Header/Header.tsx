@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Box, useMediaQuery } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
@@ -55,6 +55,20 @@ const Header: React.FC = () => {
   const mobileWindowSize = useMediaQuery(theme.breakpoints.down('xs'));
   const toggleWalletModal = useWalletModalToggle();
   const deviceWidth = useDeviceWidth();
+  const [headerClass, setHeaderClass] = useState('');
+
+  const changeHeaderBg = () => {
+    if (window.scrollY > 0) {
+      setHeaderClass('bg-palette');
+    } else {
+      setHeaderClass('');
+    }
+  };
+
+  useEffect(() => {
+    changeHeaderBg();
+    window.addEventListener('scroll', changeHeaderBg);
+  }, []);
 
   const menuItemCountToShow = useMemo(() => {
     if (deviceWidth > 1370) {
@@ -153,7 +167,7 @@ const Header: React.FC = () => {
   const { updateIsV2 } = useIsV2();
 
   return (
-    <Box className='header'>
+    <Box className={`header ${tabletWindowSize ? '' : headerClass}`}>
       <WalletModal
         ENSName={ENSName ?? undefined}
         pendingTransactions={pending}
