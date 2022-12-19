@@ -65,6 +65,8 @@ const SwapBestTrade: React.FC<{
   const [dismissTokenWarning, setDismissTokenWarning] = useState<boolean>(
     false,
   );
+  const [bonusRouteFound, setBonusRouteFound] = useState(false);
+
   const urlLoadedTokens: Token[] = useMemo(
     () =>
       [loadedInputCurrency, loadedOutputCurrency]?.filter(
@@ -344,7 +346,12 @@ const SwapBestTrade: React.FC<{
         : parsedAmounts[dependentField]?.toExact() ?? '',
     };
   }, [independentField, typedValue, dependentField, showWrap, parsedAmounts]);
-  const [bonusRouteFound, setBonusRouteFound] = useState(false);
+
+  const inputAmount = formattedAmounts[Field.INPUT];
+  const outputAmount = formattedAmounts[Field.OUTPUT];
+  useEffect(() => {
+    setBonusRouteFound(false);
+  }, [inputCurrency, outputCurrency, inputAmount, outputAmount]);
 
   const [approval, approveCallback] = useApproveCallbackFromBestTrade(
     pct,

@@ -30,6 +30,14 @@ const wallchainResponseIsValid = (
     return false;
   }
   return (
+    dataResponse &&
+    dataResponse.transactionArgs &&
+    dataResponse.transactionArgs.destination &&
+    dataResponse.transactionArgs.value &&
+    dataResponse.transactionArgs.sender &&
+    contractAddress &&
+    value &&
+    account &&
     dataResponse.transactionArgs.destination.toLowerCase() ===
       contractAddress.toLowerCase() &&
     dataResponse.transactionArgs.value.toLowerCase() === value.toLowerCase() &&
