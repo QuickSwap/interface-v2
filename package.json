@@ -134,6 +134,7 @@
   ],
   "license": "GPL-3.0-or-later",
   "dependencies": {
+    "@arcxmoney/analytics": "^1.1.0",
     "@coinbase/cbpay-js": "^1.6.0",
     "@cryption/df-sdk-core": "0.0.8",
     "@material-ui/core": "^4.12.3",

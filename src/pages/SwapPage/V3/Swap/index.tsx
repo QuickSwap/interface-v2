@@ -5,7 +5,13 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { Currency, CurrencyAmount, Token, TradeType } from '@uniswap/sdk-core';
+import {
+  Currency,
+  CurrencyAmount,
+  Token,
+  TradeType,
+  NativeCurrency,
+} from '@uniswap/sdk-core';
 import { Trade as V3Trade } from 'lib/src/trade';
 import JSBI from 'jsbi';
 import { ArrowDown, CheckCircle, HelpCircle, Info } from 'react-feather';
@@ -71,9 +77,13 @@ import { ReactComponent as ExchangeIcon } from 'assets/images/ExchangeIcon.svg';
 
 import { Box } from '@material-ui/core';
 import { StyledButton } from 'components/v3/Common/styledElements';
+import useParsedQueryString from 'hooks/useParsedQueryString';
+import { ETHER } from '@uniswap/sdk';
+import { WMATIC_EXTENDED } from 'constants/v3/addresses';
+import useSwapRedirects from 'hooks/useSwapRedirect';
 
 const SwapV3Page: React.FC = () => {
-  const { account } = useActiveWeb3React();
+  const { account, chainId } = useActiveWeb3React();
   const history = useHistory();
   const loadedUrlParams = useDefaultsFromURLSearch();
   const inputCurrencyId = loadedUrlParams?.inputCurrencyId;
@@ -172,7 +182,6 @@ const SwapV3Page: React.FC = () => {
   );
 
   const {
-    onSwitchTokens,
     onCurrencySelection,
     onUserInput,
     onChangeRecipient,
@@ -197,7 +206,7 @@ const SwapV3Page: React.FC = () => {
   // reset if they close warning without tokens in params
   const handleDismissTokenWarning = useCallback(() => {
     setDismissTokenWarning(true);
-    history.push('/swap/v3');
+    history.push('/swap?swapIndex=2');
   }, [history]);
 
   // modal and loading
@@ -418,13 +427,53 @@ const SwapV3Page: React.FC = () => {
     });
   }, [attemptingTxn, showConfirm, swapErrorMessage, trade, txHash]);
 
+  const parsedQs = useParsedQueryString();
+  const { redirectWithCurrency, redirectWithSwitch } = useSwapRedirects();
+
   const handleInputSelect = useCallback(
     (inputCurrency) => {
       setApprovalSubmitted(false); // reset 2 step UI for approvals
-      onCurrencySelection(Field.INPUT, inputCurrency);
+      if (
+        (inputCurrency &&
+          inputCurrency.isNative &&
+          currencies[Field.OUTPUT] &&
+          currencies[Field.OUTPUT]?.isNative) ||
+        (inputCurrency &&
+          inputCurrency.address &&
+          currencies[Field.OUTPUT] &&
+          currencies[Field.OUTPUT]?.wrapped &&
+          currencies[Field.OUTPUT]?.wrapped.address &&
+          inputCurrency.address.toLowerCase() ===
+            currencies[Field.OUTPUT]?.wrapped.address.toLowerCase())
+      ) {
+        redirectWithSwitch();
+      } else {
+        redirectWithCurrency(inputCurrency, true, false);
+      }
     },
-    [onCurrencySelection],
+    [redirectWithCurrency, currencies, redirectWithSwitch],
   );
+
+  const parsedCurrency0Id = (parsedQs.currency0 ??
+    parsedQs.inputCurrency) as string;
+  const parsedCurrency0 = useCurrency(
+    parsedCurrency0Id === 'ETH' ? 'MATIC' : parsedCurrency0Id,
+  );
+  useEffect(() => {
+    if (!chainId) return;
+    if (parsedCurrency0) {
+      onCurrencySelection(Field.INPUT, parsedCurrency0);
+    } else {
+      const nativeCurrency = {
+        ...ETHER,
+        isNative: true,
+        isToken: false,
+        wrapped: WMATIC_EXTENDED[chainId],
+      } as NativeCurrency;
+      redirectWithCurrency(nativeCurrency, true, false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [parsedCurrency0Id]);
 
   const handleMaxInput = useCallback(() => {
     maxInputAmount && onUserInput(Field.INPUT, maxInputAmount.toExact());
@@ -454,20 +503,38 @@ const SwapV3Page: React.FC = () => {
 
   const handleOutputSelect = useCallback(
     (outputCurrency) => {
-      onCurrencySelection(Field.OUTPUT, outputCurrency);
+      if (
+        (outputCurrency &&
+          outputCurrency.isNative &&
+          currencies[Field.INPUT] &&
+          currencies[Field.INPUT]?.isNative) ||
+        (outputCurrency &&
+          outputCurrency.address &&
+          currencies[Field.INPUT] &&
+          currencies[Field.INPUT]?.wrapped &&
+          currencies[Field.INPUT]?.wrapped.address &&
+          outputCurrency.address.toLowerCase() ===
+            currencies[Field.INPUT]?.wrapped.address.toLowerCase())
+      ) {
+        redirectWithSwitch();
+      } else {
+        redirectWithCurrency(outputCurrency, false, false);
+      }
     },
-    [onCurrencySelection],
+    [redirectWithCurrency, currencies, redirectWithSwitch],
   );
 
+  const parsedCurrency1Id = (parsedQs.currency1 ??
+    parsedQs.outputCurrency) as string;
+  const parsedCurrency1 = useCurrency(
+    parsedCurrency1Id === 'ETH' ? 'MATIC' : parsedCurrency1Id,
+  );
   useEffect(() => {
-    if (paramInputCurrency) {
-      handleInputSelect(paramInputCurrency);
-    }
-    if (paramOutputCurrency) {
-      handleOutputSelect(paramOutputCurrency);
+    if (parsedCurrency1) {
+      onCurrencySelection(Field.OUTPUT, parsedCurrency1);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paramInputCurrency, paramOutputCurrency]);
+  }, [parsedCurrency1Id]);
 
   //TODO
   const priceImpactTooHigh = priceImpactSeverity > 3 && !isExpertMode;
@@ -547,7 +614,7 @@ const SwapV3Page: React.FC = () => {
                   <ExchangeIcon
                     onClick={() => {
                       setApprovalSubmitted(false); // reset 2 step UI for approvals
-                      onSwitchTokens();
+                      redirectWithSwitch();
                     }}
                   />
                 </Box>

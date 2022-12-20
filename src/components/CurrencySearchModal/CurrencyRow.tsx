@@ -1,4 +1,5 @@
-import { CurrencyAmount, ETHER, Token } from '@uniswap/sdk';
+import { CurrencyAmount, currencyEquals, ETHER, Token } from '@uniswap/sdk';
+import { NativeCurrency } from '@uniswap/sdk-core';
 import React from 'react';
 import { Box, Tooltip, CircularProgress, ListItem } from '@material-ui/core';
 import { useActiveWeb3React } from 'hooks';
@@ -11,8 +12,11 @@ import { getTokenLogoURL } from 'utils/getTokenLogoURL';
 import { PlusHelper } from 'components/QuestionHelper';
 import { ReactComponent as TokenSelectedIcon } from 'assets/images/TokenSelected.svg';
 import useUSDCPrice from 'utils/useUSDCPrice';
+import { default as useUSDCPriceV3 } from 'hooks/v3/useUSDCPrice';
 import { formatTokenAmount } from 'utils';
 import { useTranslation } from 'react-i18next';
+import { toToken } from 'constants/v3/routing';
+import { WMATIC_EXTENDED } from 'constants/v3/addresses';
 
 function currencyKey(currency: Token): string {
   return currency instanceof Token
@@ -83,7 +87,22 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
   const { account, chainId } = useActiveWeb3React();
   const key = currencyKey(currency);
 
-  const usdPrice = useUSDCPrice(currency);
+  const usdPriceV2 = useUSDCPrice(currency);
+  const usdPriceV2Number = usdPriceV2 ? Number(usdPriceV2.toSignificant()) : 0;
+  const currencyV3 =
+    chainId && currency
+      ? currencyEquals(currency, ETHER)
+        ? ({
+            ...ETHER,
+            isNative: true,
+            isToken: false,
+            wrapped: WMATIC_EXTENDED[chainId],
+          } as NativeCurrency)
+        : toToken(currency)
+      : undefined;
+  const usdPriceV3 = useUSDCPriceV3(currencyV3);
+  const usdPriceV3Number = usdPriceV3 ? Number(usdPriceV3.toSignificant()) : 0;
+  const usdPrice = usdPriceV3Number ?? usdPriceV2Number;
   const balance = useCurrencyBalance(account ?? undefined, currency);
   const customAdded = useIsUserAddedToken(currency);
 
@@ -196,11 +215,7 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
             <>
               <Balance balance={balance} />
               <span className='text-secondary'>
-                $
-                {(
-                  Number(balance.toExact()) *
-                  (usdPrice ? Number(usdPrice.toSignificant()) : 0)
-                ).toLocaleString('us')}
+                ${(Number(balance.toExact()) * usdPrice).toLocaleString('us')}
               </span>
             </>
           ) : account ? (

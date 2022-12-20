@@ -12,8 +12,6 @@ import { useActiveWeb3React } from 'hooks';
 import useENS from './useENS';
 import { OptimalRate } from 'paraswap-core';
 import { useParaswap } from './useParaswap';
-import { SwapSide } from '@paraswap/sdk';
-import { ONE } from 'v3lib/utils';
 
 export enum SwapCallbackState {
   INVALID,
@@ -102,27 +100,17 @@ export function useParaswapCallback(
         response: TransactionResponse;
         summary: string;
       }> {
-        const minDestAmount = new Fraction(ONE)
-          .add(allowedSlippage)
-          .invert()
-          .multiply(priceRoute.destAmount).quotient;
-
         const referrer = 'quickswapv3';
 
         const srcToken = priceRoute.srcToken;
         const destToken = priceRoute.destToken;
-
-        //TODO: we need to support max impact
-        // if (minDestAmount.greaterThan(JSBI.BigInt(priceRoute.destAmount))) {
-        //   throw new Error('Price Rate updated beyond expected slipage rate');
-        // }
 
         try {
           const txParams = await paraswap.buildTx({
             srcToken,
             destToken,
             srcAmount: priceRoute.srcAmount,
-            destAmount: minDestAmount.toString(),
+            destAmount: priceRoute.destAmount,
             priceRoute: priceRoute,
             userAddress: account,
             partner: referrer,
@@ -187,7 +175,6 @@ export function useParaswapCallback(
     chainId,
     recipient,
     recipientAddressOrName,
-    allowedSlippage,
     paraswap,
     addTransaction,
     inputCurrency,

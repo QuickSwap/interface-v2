@@ -51,16 +51,33 @@ export default function FarmCardDetail({ el }: FarmCardDetailProps) {
         ])
       : undefined;
 
+  const HOPTokenAddress = '0xc5102fe9359fd9a28f877a67e36b0f050d81a3cc';
+
   const farmBonusRewardToken =
     chainId && bonusRewardToken
-      ? getTokenFromAddress(bonusRewardToken.id, chainId, tokenMap, [
-          new Token(
-            chainId,
-            bonusRewardToken.id,
-            Number(bonusRewardToken.decimals),
-            bonusRewardToken.symbol,
-          ),
-        ])
+      ? getTokenFromAddress(
+          el.pool &&
+            el.pool.id &&
+            el.pool.id.toLowerCase() ===
+              '0x0db644468cd5c664a354e31aa1f6dba1d1dead47'
+            ? HOPTokenAddress
+            : bonusRewardToken.id,
+          chainId,
+          tokenMap,
+          [
+            new Token(
+              chainId,
+              el.pool &&
+              el.pool.id &&
+              el.pool.id.toLowerCase() ===
+                '0x0db644468cd5c664a354e31aa1f6dba1d1dead47'
+                ? HOPTokenAddress
+                : bonusRewardToken.id,
+              Number(bonusRewardToken.decimals),
+              bonusRewardToken.symbol,
+            ),
+          ],
+        )
       : undefined;
 
   return (
