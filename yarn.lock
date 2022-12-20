@@ -5147,7 +5147,7 @@
   resolved "https://registry.yarnpkg.com/@uauth/common/-/common-2.3.0.tgz#de0018503614e993af9f6373983bc53828bf9b80"
   integrity sha512-RuRYd8UgVN1eotoZjj2YhgHHP7PlEGxPEKSqUbmtJYumb6DLrlR0HNRF+wM8LQz/x4SBBo+hdm0ueC5bAHcXBg==
 
-"@uauth/js@2.4.0":
+"@uauth/js@2.4.0", "@uauth/js@^2.4.0":
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/@uauth/js/-/js-2.4.0.tgz#f69d3221f560b0984955432f6de5e6eb089f36a6"
   integrity sha512-KYWnEa2+Waa216TNhKmd1M78A8VnEjL6TbfaFHUKtixzKHYMYPIGj3zrD2Am3KHKIyq3bP11++ozoos6551Qrw==

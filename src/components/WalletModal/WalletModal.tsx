@@ -15,6 +15,8 @@ import { ApplicationModal } from 'state/application/actions';
 import { useModalOpen, useWalletModalToggle } from 'state/application/hooks';
 import { AccountDetails, CustomModal } from 'components';
 import { useTranslation } from 'react-i18next';
+import { UAuthConnector } from '@uauth/web3-react';
+import UAuth from '@uauth/js';
 
 import { InjectedConnector } from '@web3-react/injected-connector';
 import { TrustWalletConnector } from 'connectors/TrustWalletConnector';
@@ -46,7 +48,8 @@ const WalletModal: React.FC<WalletModalProps> = ({
   const { active, account, connector, activate, deactivate } = useWeb3React();
 
   const [walletView, setWalletView] = useState(WALLET_VIEWS.ACCOUNT);
-  const [error, setError] = useState<Error | undefined>(undefined);
+  const [error, setError] = useState<Error | string | undefined>(undefined);
+  const [udDomain, setUDDomain] = useState('');
 
   const [pendingWallet, setPendingWallet] = useState<
     AbstractConnector | undefined
@@ -158,7 +161,33 @@ const WalletModal: React.FC<WalletModalProps> = ({
 
     connector &&
       activate(connector, undefined, true)
-        .then(() => setError(undefined))
+        .then(() => {
+          if (
+            connector instanceof UAuthConnector &&
+            process.env.REACT_APP_UNSTOPPABLE_DOMAIN_CLIENT_ID &&
+            process.env.REACT_APP_UNSTOPPABLE_DOMAIN_REDIRECT_URI &&
+            process.env.REACT_APP_UNSTOPPABLE_DOMAIN_POST_LOGOUT_REDIRECT_URI
+          ) {
+            const uauth = new UAuth({
+              clientID: process.env.REACT_APP_UNSTOPPABLE_DOMAIN_CLIENT_ID,
+              redirectUri:
+                process.env.REACT_APP_UNSTOPPABLE_DOMAIN_REDIRECT_URI,
+              postLogoutRedirectUri:
+                process.env
+                  .REACT_APP_UNSTOPPABLE_DOMAIN_POST_LOGOUT_REDIRECT_URI,
+              scope: 'openid wallet',
+            });
+            uauth
+              .user()
+              .then((user) => {
+                setUDDomain(user.sub);
+              })
+              .catch(() => {
+                setError('User does not exist.');
+              });
+          }
+          setError(undefined);
+        })
         .catch((error) => {
           if (error instanceof UnsupportedChainIdError) {
             setError(error);
@@ -359,6 +388,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
           toggleWalletModal={toggleWalletModal}
           pendingTransactions={pendingTransactions}
           confirmedTransactions={confirmedTransactions}
+          udDomain={udDomain}
           ENSName={ENSName}
           openOptions={() => setWalletView(WALLET_VIEWS.OPTIONS)}
         />

@@ -29,6 +29,7 @@ interface AccountDetailsProps {
   toggleWalletModal: () => void;
   pendingTransactions: string[];
   confirmedTransactions: string[];
+  udDomain?: string;
   ENSName?: string;
   openOptions: () => void;
 }
@@ -37,6 +38,7 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
   toggleWalletModal,
   pendingTransactions,
   confirmedTransactions,
+  udDomain,
   ENSName,
   openOptions,
 }) => {
@@ -97,7 +99,11 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
         <Box className='flex items-center' my={1.5}>
           <StatusIcon />
           <h5 style={{ marginLeft: 8 }} id='web3-account-identifier-row'>
-            {ENSName ? ENSName : account && shortenAddress(account)}
+            {udDomain
+              ? udDomain
+              : ENSName
+              ? ENSName
+              : account && shortenAddress(account)}
           </h5>
         </Box>
         <Box className='flex justify-between items-center'>
