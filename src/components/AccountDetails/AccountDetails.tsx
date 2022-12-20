@@ -14,6 +14,7 @@ import StatusIcon from './StatusIcon';
 import Copy from './CopyHelper';
 import Transaction from './Transaction';
 import { useTranslation } from 'react-i18next';
+import { useUDDomain } from 'state/application/hooks';
 
 function renderTransactions(transactions: string[]) {
   return (
@@ -29,7 +30,6 @@ interface AccountDetailsProps {
   toggleWalletModal: () => void;
   pendingTransactions: string[];
   confirmedTransactions: string[];
-  udDomain?: string;
   ENSName?: string;
   openOptions: () => void;
 }
@@ -38,11 +38,11 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
   toggleWalletModal,
   pendingTransactions,
   confirmedTransactions,
-  udDomain,
   ENSName,
   openOptions,
 }) => {
   const { chainId, account, connector } = useActiveWeb3React();
+  const { udDomain } = useUDDomain();
   const dispatch = useDispatch<AppDispatch>();
   const { t } = useTranslation();
 

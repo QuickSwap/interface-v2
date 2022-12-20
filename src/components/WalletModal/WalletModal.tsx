@@ -12,7 +12,11 @@ import { OVERLAY_READY } from 'connectors/Fortmatic';
 import { GlobalConst, SUPPORTED_WALLETS } from 'constants/index';
 import usePrevious from 'hooks/usePrevious';
 import { ApplicationModal } from 'state/application/actions';
-import { useModalOpen, useWalletModalToggle } from 'state/application/hooks';
+import {
+  useModalOpen,
+  useUDDomain,
+  useWalletModalToggle,
+} from 'state/application/hooks';
 import { AccountDetails, CustomModal } from 'components';
 import { useTranslation } from 'react-i18next';
 import { UAuthConnector } from '@uauth/web3-react';
@@ -49,7 +53,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
 
   const [walletView, setWalletView] = useState(WALLET_VIEWS.ACCOUNT);
   const [error, setError] = useState<Error | string | undefined>(undefined);
-  const [udDomain, setUDDomain] = useState('');
+  const { udDomain, updateUDDomain } = useUDDomain();
 
   const [pendingWallet, setPendingWallet] = useState<
     AbstractConnector | undefined
@@ -180,11 +184,13 @@ const WalletModal: React.FC<WalletModalProps> = ({
             uauth
               .user()
               .then((user) => {
-                setUDDomain(user.sub);
+                updateUDDomain(user.sub);
               })
               .catch(() => {
                 setError('User does not exist.');
               });
+          } else {
+            updateUDDomain(undefined);
           }
           setError(undefined);
         })
@@ -388,7 +394,6 @@ const WalletModal: React.FC<WalletModalProps> = ({
           toggleWalletModal={toggleWalletModal}
           pendingTransactions={pendingTransactions}
           confirmedTransactions={confirmedTransactions}
-          udDomain={udDomain}
           ENSName={ENSName}
           openOptions={() => setWalletView(WALLET_VIEWS.OPTIONS)}
         />
