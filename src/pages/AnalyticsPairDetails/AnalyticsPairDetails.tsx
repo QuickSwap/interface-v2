@@ -141,8 +141,8 @@ const AnalyticsPairDetails: React.FC = () => {
             Number(pairData.oneDayVolumeUSD) * GlobalConst.utils.FEEPERCENT,
           )
       : '-'
-    : pairData && pairData.feesUSD
-    ? formatNumber(pairData.feesUSD)
+    : pairData && pairData.feesUSDOneDay
+    ? formatNumber(pairData.feesUSDOneDay)
     : '-';
   const { ethPrice } = useEthPrice();
 
