@@ -1,4 +1,4 @@
-import { currencyEquals, Token, Currency, ChainId } from '@uniswap/sdk';
+import { currencyEquals, Token, ETHER, Currency, ChainId } from '@uniswap/sdk';
 import React, { useMemo, useCallback } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 import { useIsV2 } from 'state/application/hooks';
@@ -26,8 +26,8 @@ const CurrencyList: React.FC<CurrencyListProps> = ({
   const { isV2 } = useIsV2();
   const nativeCurrency = useMemo(() => {
     return isV2
-      ? Token.ETHER[chainId]
-      : { ...Token.ETHER[chainId], isNative: true, isToken: false };
+      ? ETHER[chainId]
+      : { ...ETHER[chainId], isNative: true, isToken: false };
   }, [chainId, isV2]);
   const itemData = useMemo(
     () => (showETH ? [nativeCurrency, ...currencies] : currencies),

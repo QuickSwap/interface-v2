@@ -1264,6 +1264,10 @@ export async function getPairInfoV3(address: string, chainId: ChainId) {
     );
 
     const feesUSD = current ? parseFloat(current.feesUSD) : 0;
+    const feesUSDOneDay =
+      current && oneDay
+        ? Number(current.feesUSD ?? 0) - Number(oneDay.feesUSD ?? 0)
+        : 0;
     const feesUSDChange = getPercentChange(
       current ? current.feesUSD : undefined,
       oneDay ? oneDay.feesUSD : undefined,
@@ -1321,6 +1325,7 @@ export async function getPairInfoV3(address: string, chainId: ChainId) {
             volumeChangeUSD: oneDayVolumeChangeUSD,
             liquidityChangeUSD: tvlUSDChange,
             feesUSD,
+            feesUSDOneDay,
             feesUSDChange,
             poolFeeChange,
             token0Price: Number(current.token0Price).toFixed(3),
@@ -1367,9 +1372,9 @@ export const getPairChartDataV3 = async (
 ) => {
   let data: any[] = [];
   const utcEndTime = dayjs.utc();
+  let allFound = false;
+  let skip = 0;
   try {
-    let allFound = false;
-    let skip = 0;
     while (!allFound) {
       const result = await clientV3[chainId].query({
         query: PAIR_CHART_V3,
@@ -1433,7 +1438,6 @@ export const getPairChartDataV3 = async (
   } catch (e) {
     console.log(e);
   }
-
   return data;
 };
 
@@ -1444,12 +1448,12 @@ export async function getPairChartFees(
 ) {
   let data: any[] = [];
   const utcEndTime = dayjs.utc();
+  let allFound = false;
+  let skip = 0;
   try {
-    let allFound = false;
-    let skip = 0;
     while (!allFound) {
       const result = await clientV3[chainId].query({
-        query: PAIR_FEE_CHART_V3(),
+        query: PAIR_FEE_CHART_V3,
         fetchPolicy: 'network-only',
         variables: { address, startTime, skip },
       });
