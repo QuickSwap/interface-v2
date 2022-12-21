@@ -3,7 +3,8 @@
 
 .header {
   padding: 0 24px;
-  position: relative;
+  position: fixed;
+  width: 100%;
   display: flex;
   flex-wrap: wrap;
   min-height: 88px;
@@ -41,9 +42,11 @@
   }
   @include media("screen", "<tablet") {
     align-items: center;
+    position: relative;
   }
   @include media("screen", "<phone") {
     padding: 0 16px;
+    position: relative;
   }
 }
 .mainMenu {
