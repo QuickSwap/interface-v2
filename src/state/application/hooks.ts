@@ -16,7 +16,6 @@ import {
   addBookMarkPair,
   removeBookmarkPair,
   updateTokenDetails,
-  updateIsProMode,
   updateMaticPrice,
   updateIsV2,
 } from './actions';
@@ -256,23 +255,6 @@ export function useBookmarkPairs(): {
     removeBookmarkPair: _removeBookmarkPair,
     updateBookmarkPairs: _updateBookmarkPairs,
   };
-}
-
-export function useIsProMode(): {
-  isProMode: boolean;
-  updateIsProMode: (isProMode: boolean) => void;
-} {
-  const isProMode = useSelector(
-    (state: AppState) => state.application.isProMode,
-  );
-  const dispatch = useDispatch();
-  const _updateIsProMode = useCallback(
-    (isProMode: boolean) => {
-      dispatch(updateIsProMode(isProMode));
-    },
-    [dispatch],
-  );
-  return { isProMode, updateIsProMode: _updateIsProMode };
 }
 
 export function useIsV2(): {
