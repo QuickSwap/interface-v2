@@ -12,6 +12,7 @@ import VersionToggle from 'components/Toggle/VersionToggle';
 import { getConfig } from '../../config/index';
 import { ChainId } from '@uniswap/sdk';
 import { useActiveWeb3React } from 'hooks';
+import { updateIsV2 } from 'state/application/actions';
 
 interface AnalyticHeaderProps {
   data?: any;
@@ -35,8 +36,12 @@ const AnalyticsHeader: React.FC<AnalyticHeaderProps> = ({
   const farms = config['farm']['available'];
   const v3 = config['v3'];
   const v2 = config['v2'];
-  const { isV2 } = useIsV2();
+  const { isV2, updateIsV2 } = useIsV2();
   const version = useMemo(() => `${isV2 ? `v2` : 'v3'}`, [isV2]);
+
+  useEffect(() => {
+    updateIsV2(false);
+  }, [updateIsV2]);
 
   return (
     <Box width='100%' mb={3}>

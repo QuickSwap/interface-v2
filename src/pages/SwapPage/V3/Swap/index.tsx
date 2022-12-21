@@ -80,7 +80,7 @@ import { Box } from '@material-ui/core';
 import { StyledButton } from 'components/v3/Common/styledElements';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import useSwapRedirects from 'hooks/useSwapRedirect';
-import { WMATIC_EXTENDED } from 'constants/v3/addresses';
+import { CHAIN_INFO } from 'constants/v3/chains';
 
 const SwapV3Page: React.FC = () => {
   const { account, chainId } = useActiveWeb3React();
@@ -455,10 +455,14 @@ const SwapV3Page: React.FC = () => {
     [redirectWithCurrency, currencies, redirectWithSwitch],
   );
 
+  const chainInfo = CHAIN_INFO[chainIdToUse];
+
   const parsedCurrency0Id = (parsedQs.currency0 ??
     parsedQs.inputCurrency) as string;
   const parsedCurrency0 = useCurrency(
-    parsedCurrency0Id === 'ETH' ? 'MATIC' : parsedCurrency0Id,
+    parsedCurrency0Id === 'ETH'
+      ? chainInfo.nativeCurrencySymbol
+      : parsedCurrency0Id,
   );
 
   useEffect(() => {
@@ -521,7 +525,9 @@ const SwapV3Page: React.FC = () => {
   const parsedCurrency1Id = (parsedQs.currency1 ??
     parsedQs.outputCurrency) as string;
   const parsedCurrency1 = useCurrency(
-    parsedCurrency1Id === 'ETH' ? 'MATIC' : parsedCurrency1Id,
+    parsedCurrency1Id === 'ETH'
+      ? chainInfo.nativeCurrencySymbol
+      : parsedCurrency1Id,
   );
   useEffect(() => {
     if (parsedCurrency1) {

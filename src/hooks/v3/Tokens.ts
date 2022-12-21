@@ -190,7 +190,9 @@ export function useCurrency(
   const chainInfo = CHAIN_INFO[chainIdToUse];
 
   const isETH =
-    chainInfo && currencyId && currencyId?.toUpperCase() === 'MATIC';
+    chainInfo &&
+    currencyId &&
+    currencyId?.toUpperCase() === chainInfo.nativeCurrencySymbol.toUpperCase();
 
   const token = useToken(isETH ? undefined : currencyId);
   const extendedEther = useMemo(
