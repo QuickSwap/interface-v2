@@ -121,25 +121,6 @@ export default function CurrencyInputPanel({
     setModalOpen(false);
   }, [setModalOpen]);
 
-  const balanceAsUsdc = useMemo(() => {
-    if (!balance) return 'Loading...';
-
-    const _balance = balance.toFixed();
-
-    if (_balance.split('.')[0].length > 10) {
-      return _balance.slice(0, 7) + '...';
-    }
-
-    if (+balance.toFixed() === 0) {
-      return '0';
-    }
-    if (+balance.toFixed() < 0.0001) {
-      return '< 0.0001';
-    }
-
-    return +balance.toFixed(3);
-  }, [balance]);
-
   return (
     <Box className='v3-currency-input-panel'>
       {locked && (
