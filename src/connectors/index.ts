@@ -98,8 +98,6 @@ export const ledger = new LedgerConnector({
 export const unstopabbledomains = new UAuthConnector({
   clientID: process.env.REACT_APP_UNSTOPPABLE_DOMAIN_CLIENT_ID,
   redirectUri: process.env.REACT_APP_UNSTOPPABLE_DOMAIN_REDIRECT_URI,
-  postLogoutRedirectUri:
-    process.env.REACT_APP_UNSTOPPABLE_DOMAIN_POST_LOGOUT_REDIRECT_URI,
 
   // Scope must include openid and wallet
   scope: 'openid wallet',

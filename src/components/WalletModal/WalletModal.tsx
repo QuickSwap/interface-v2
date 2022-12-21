@@ -169,16 +169,12 @@ const WalletModal: React.FC<WalletModalProps> = ({
           if (
             connector instanceof UAuthConnector &&
             process.env.REACT_APP_UNSTOPPABLE_DOMAIN_CLIENT_ID &&
-            process.env.REACT_APP_UNSTOPPABLE_DOMAIN_REDIRECT_URI &&
-            process.env.REACT_APP_UNSTOPPABLE_DOMAIN_POST_LOGOUT_REDIRECT_URI
+            process.env.REACT_APP_UNSTOPPABLE_DOMAIN_REDIRECT_URI
           ) {
             const uauth = new UAuth({
               clientID: process.env.REACT_APP_UNSTOPPABLE_DOMAIN_CLIENT_ID,
               redirectUri:
                 process.env.REACT_APP_UNSTOPPABLE_DOMAIN_REDIRECT_URI,
-              postLogoutRedirectUri:
-                process.env
-                  .REACT_APP_UNSTOPPABLE_DOMAIN_POST_LOGOUT_REDIRECT_URI,
               scope: 'openid wallet',
             });
             uauth
