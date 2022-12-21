@@ -93,10 +93,6 @@ export const updateTokenDetails = createAction<TokenDetail>(
   'application/updateTokenDetail',
 );
 
-export const updateIsProMode = createAction<boolean>(
-  'application/updateIsProMode',
-);
-
 export const updateGasPrice = createAction<{
   fetched: number | null;
   override: boolean;

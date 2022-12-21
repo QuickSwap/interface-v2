@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Button } from '@material-ui/core';
-import { useHistory } from 'react-router-dom';
 import { Header, Footer, BetaWarningBanner, CustomModal } from 'components';
 import Background from './Background';
-import { useIsProMode } from 'state/application/hooks';
 import { useActiveWeb3React } from 'hooks';
 import { useArcxAnalytics } from '@arcxmoney/analytics';
+import useParsedQueryString from 'hooks/useParsedQueryString';
 
 export interface PageLayoutProps {
   children: any;
@@ -13,25 +12,19 @@ export interface PageLayoutProps {
 }
 
 const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
-  const history = useHistory();
   const { chainId, account } = useActiveWeb3React();
+  const parsedQs = useParsedQueryString();
+  const isProMode = Boolean(
+    parsedQs.isProMode && parsedQs.isProMode === 'true',
+  );
   const arcxSDK = useArcxAnalytics();
-  const { isProMode, updateIsProMode } = useIsProMode();
   const [openPassModal, setOpenPassModal] = useState(false);
   const getPageWrapperClassName = () => {
     if (isProMode) {
-      return '';
+      return 'pageProModeWrapper';
     }
     return name == 'prdt' ? 'pageWrapper-no-max' : 'pageWrapper';
   };
-  useEffect(() => {
-    const unlisten = history.listen((location) => {
-      updateIsProMode(false);
-    });
-    return function cleanup() {
-      unlisten();
-    };
-  }, [history, updateIsProMode]);
 
   useEffect(() => {
     if (

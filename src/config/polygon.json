@@ -16,7 +16,7 @@
     "available": true,
     "bestTrade": true,
     "proMode": true,
-    "limitOrder": false
+    "limitOrder": true
   },
   "pools": {
     "available": true

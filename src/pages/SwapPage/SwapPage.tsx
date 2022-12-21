@@ -3,7 +3,7 @@ import { useTheme } from '@material-ui/core/styles';
 import { Box, Grid, useMediaQuery } from '@material-ui/core';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
 import { SettingsModal, SwapTokenDetails, ToggleSwitch } from 'components';
-import { useIsProMode, useIsV2 } from 'state/application/hooks';
+import { useIsV2 } from 'state/application/hooks';
 import { useDerivedSwapInfo } from 'state/swap/hooks';
 import { useDerivedSwapInfo as useDerivedSwapInfoV3 } from 'state/swap/v3/hooks';
 import { Field } from 'state/swap/actions';
@@ -23,10 +23,15 @@ import { getConfig } from '../../config/index';
 import { ChainId } from '@uniswap/sdk';
 import { SwapBuySellWidget } from './BuySellWidget';
 import { Token } from '@uniswap/sdk';
+import useParsedQueryString from 'hooks/useParsedQueryString';
+import useSwapRedirects from 'hooks/useSwapRedirect';
 
 const SwapPage: React.FC = () => {
   const [openSettingsModal, setOpenSettingsModal] = useState(false);
-  const { isProMode, updateIsProMode } = useIsProMode();
+  const parsedQs = useParsedQueryString();
+  const isProMode = Boolean(
+    parsedQs.isProMode && parsedQs.isProMode === 'true',
+  );
   const { breakpoints } = useTheme();
   const isTiny = useMediaQuery(breakpoints.down('xs'));
   const isMobile = useMediaQuery(breakpoints.down('sm'));
@@ -54,6 +59,7 @@ const SwapPage: React.FC = () => {
   const config = getConfig(chainIdToUse);
 
   const showProMode = config['swap']['proMode'];
+  const { redirectWithProMode } = useSwapRedirects();
 
   // this is for refreshing data of trades table every 60 seconds
   useEffect(() => {
@@ -213,7 +219,7 @@ const SwapPage: React.FC = () => {
                 <ToggleSwitch
                   toggled={true}
                   onToggle={() => {
-                    updateIsProMode(false);
+                    redirectWithProMode(false);
                   }}
                 />
                 <Box ml={1} className='headingItem'>
@@ -232,8 +238,12 @@ const SwapPage: React.FC = () => {
               width={isMobile ? 1 : 250}
             >
               <SwapProInfo
-                token1={token1}
-                token2={token2}
+                token1={
+                  isV2 ? token1 : token1V3 ? (token1V3 as Token) : undefined
+                }
+                token2={
+                  isV2 ? token2 : token2V3 ? (token2V3 as Token) : undefined
+                }
                 transactions={transactions}
               />
             </Box>
@@ -250,8 +260,12 @@ const SwapPage: React.FC = () => {
             <SwapProChartTrade
               showChart={showChart}
               showTrades={showTrades}
-              token1={token1}
-              token2={token2}
+              token1={
+                isV2 ? token1 : token1V3 ? (token1V3 as Token) : undefined
+              }
+              token2={
+                isV2 ? token2 : token2V3 ? (token2V3 as Token) : undefined
+              }
               pairAddress={pairId}
               pairTokenReversed={pairTokenReversed}
               transactions={transactions}
@@ -263,8 +277,12 @@ const SwapPage: React.FC = () => {
               width={isTablet ? 1 : 250}
             >
               <SwapProInfo
-                token1={token1}
-                token2={token2}
+                token1={
+                  isV2 ? token1 : token1V3 ? (token1V3 as Token) : undefined
+                }
+                token2={
+                  isV2 ? token2 : token2V3 ? (token2V3 as Token) : undefined
+                }
                 transactions={transactions}
               />
             </Box>

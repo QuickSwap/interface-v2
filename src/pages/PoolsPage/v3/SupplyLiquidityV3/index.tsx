@@ -35,39 +35,43 @@ import { SettingsModal } from 'components';
 import { ReactComponent as SettingsIcon } from 'assets/images/SettingsIcon.svg';
 import { useAppDispatch } from 'state/hooks';
 import usePoolsRedirect from 'hooks/usePoolsRedirect';
+import { CHAIN_INFO } from 'constants/v3/chains';
+import { ChainId } from '@uniswap/sdk';
 
 export function SupplyLiquidityV3() {
+  const history = useHistory();
   const params: any = useParams();
   const parsedQuery = useParsedQueryString();
+  const { account, chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ?? ChainId.MATIC;
+  const chainInfo = CHAIN_INFO[chainIdToUse];
   const currencyIdAParam =
     params && params.currencyIdA
       ? params.currencyIdA.toLowerCase() === 'matic' ||
         params.currencyIdA.toLowerCase() === 'eth'
-        ? 'eth'
+        ? chainInfo.nativeCurrencySymbol.toLowerCase()
         : params.currencyIdA
       : parsedQuery && parsedQuery.currency0
       ? (parsedQuery.currency0 as string).toLowerCase() === 'eth' ||
         (parsedQuery.currency0 as string).toLowerCase() === 'matic'
-        ? 'eth'
+        ? chainInfo.nativeCurrencySymbol.toLowerCase()
         : (parsedQuery.currency0 as string)
       : undefined;
   const currencyIdBParam =
     params && params.currencyIdB
       ? params.currencyIdB.toLowerCase() === 'matic' ||
         params.currencyIdB.toLowerCase() === 'eth'
-        ? 'eth'
+        ? chainInfo.nativeCurrencySymbol.toLowerCase()
         : params.currencyIdB
       : parsedQuery && parsedQuery.currency1
       ? (parsedQuery.currency1 as string).toLowerCase() === 'eth' ||
         (parsedQuery.currency1 as string).toLowerCase() === 'matic'
-        ? 'eth'
+        ? chainInfo.nativeCurrencySymbol.toLowerCase()
         : (parsedQuery.currency1 as string)
       : undefined;
 
   const [currencyIdA, setCurrencyIdA] = useState(currencyIdAParam);
   const [currencyIdB, setCurrencyIdB] = useState(currencyIdBParam);
-
-  const { account, chainId } = useActiveWeb3React();
 
   const toggleWalletModal = useWalletModalToggle(); // toggle wallet when disconnected
 
@@ -172,7 +176,7 @@ export function SupplyLiquidityV3() {
   const handleCurrencyASelect = useCallback(
     (currencyANew: Currency) => {
       const isSwichRedirect = currencyANew.isNative
-        ? currencyIdBParam === 'matic'
+        ? currencyIdBParam === chainInfo.nativeCurrencySymbol.toLowerCase()
         : currencyIdBParam &&
           currencyANew &&
           currencyANew.address &&
@@ -183,7 +187,7 @@ export function SupplyLiquidityV3() {
         redirectWithCurrency(currencyANew, true, false);
       }
     },
-    [redirectWithCurrency, currencyIdBParam, redirectWithSwitch],
+    [redirectWithCurrency, currencyIdBParam, chainInfo, redirectWithSwitch],
   );
 
   useEffect(() => {
@@ -199,7 +203,7 @@ export function SupplyLiquidityV3() {
   const handleCurrencyBSelect = useCallback(
     (currencyBNew: Currency) => {
       const isSwichRedirect = currencyBNew.isNative
-        ? currencyIdAParam === 'matic'
+        ? currencyIdAParam === chainInfo.nativeCurrencySymbol.toLowerCase()
         : currencyIdAParam &&
           currencyBNew &&
           currencyBNew.address &&
@@ -210,7 +214,7 @@ export function SupplyLiquidityV3() {
         redirectWithCurrency(currencyBNew, false, false);
       }
     },
-    [redirectWithCurrency, currencyIdAParam, redirectWithSwitch],
+    [redirectWithCurrency, currencyIdAParam, chainInfo, redirectWithSwitch],
   );
 
   useEffect(() => {
@@ -263,11 +267,12 @@ export function SupplyLiquidityV3() {
           <small
             className='cursor-pointer text-primary'
             onClick={() => {
-              setCurrencyIdA(currencyIdAParam);
-              setCurrencyIdB(currencyIdBParam);
+              setCurrencyIdA('');
+              setCurrencyIdB('');
               resetState();
               onFieldAInput('');
               onFieldBInput('');
+              history.push('/pools');
             }}
           >
             Clear all

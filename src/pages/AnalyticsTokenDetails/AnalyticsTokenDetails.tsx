@@ -66,7 +66,11 @@ const AnalyticsTokenDetails: React.FC = () => {
 
   const dispatch = useDispatch();
 
-  const { isV2 } = useIsV2();
+  const { isV2, updateIsV2 } = useIsV2();
+
+  useEffect(() => {
+    updateIsV2(false);
+  }, [updateIsV2]);
 
   const tokenTransactionsList = useMemo(() => {
     if (tokenTransactions) {

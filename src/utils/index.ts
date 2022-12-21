@@ -2143,7 +2143,9 @@ export function getTVLStaking(
   valueOfTotalStakedAmountInBaseToken?: TokenAmount,
 ) {
   if (!valueOfTotalStakedAmountInUSDC) {
-    return `${formatTokenAmount(valueOfTotalStakedAmountInBaseToken)} ETH`;
+    return valueOfTotalStakedAmountInBaseToken
+      ? formatTokenAmount(valueOfTotalStakedAmountInBaseToken) + ' ETH'
+      : '-';
   }
   return `$${formatTokenAmount(valueOfTotalStakedAmountInUSDC)}`;
 }

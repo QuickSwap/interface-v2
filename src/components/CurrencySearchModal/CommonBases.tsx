@@ -3,7 +3,9 @@ import { ChainId, Currency, currencyEquals, ETHER, Token } from '@uniswap/sdk';
 import { Box } from '@material-ui/core';
 import { CurrencyLogo, QuestionHelper } from 'components';
 import { useTranslation } from 'react-i18next';
-import { SUGGESTED_BASES } from 'constants/v3/addresses';
+import { SUGGESTED_BASES, WMATIC_EXTENDED } from 'constants/v3/addresses';
+import { useIsV2 } from 'state/application/hooks';
+import { NativeCurrency } from '@uniswap/sdk-core';
 
 interface CommonBasesProps {
   chainId?: ChainId;
@@ -19,7 +21,15 @@ const CommonBases: React.FC<CommonBasesProps> = ({
   const { t } = useTranslation();
 
   const chainIdToUse = chainId ? chainId : ChainId.MATIC;
-  const nativeCurrency = ETHER[chainIdToUse];
+  const { isV2 } = useIsV2();
+  const nativeCurrency = isV2
+    ? ETHER[chainIdToUse]
+    : ({
+        ...ETHER[chainIdToUse],
+        isNative: true,
+        isToken: false,
+        wrapped: WMATIC_EXTENDED[chainIdToUse],
+      } as NativeCurrency);
   return (
     <Box mb={2}>
       <Box display='flex' my={1.5}>

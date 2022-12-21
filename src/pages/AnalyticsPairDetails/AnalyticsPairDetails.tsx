@@ -39,8 +39,12 @@ const AnalyticsPairDetails: React.FC = () => {
   const [pairData, setPairData] = useState<any>(null);
   const [pairTransactions, setPairTransactions] = useState<any>(null);
 
-  const { isV2 } = useIsV2();
+  const { isV2, updateIsV2 } = useIsV2();
   const version = useMemo(() => `${!isV2 ? `v3` : 'v2'}`, [isV2]);
+
+  useEffect(() => {
+    updateIsV2(false);
+  }, [updateIsV2]);
 
   const pairTransactionsList = useMemo(() => {
     if (pairTransactions) {

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Box } from '@material-ui/core';
 import { ReactComponent as SettingsIcon } from 'assets/images/SettingsIcon.svg';
-import { useIsProMode, useIsV2 } from 'state/application/hooks';
+import { useIsV2 } from 'state/application/hooks';
 import { Swap, SettingsModal, ToggleSwitch } from 'components';
 import {
   GelatoLimitOrderPanel,
@@ -14,6 +14,7 @@ import { getConfig } from '../../config/index';
 import { useActiveWeb3React } from 'hooks';
 import { useHistory, useParams } from 'react-router-dom';
 import useParsedQueryString from 'hooks/useParsedQueryString';
+import useSwapRedirects from 'hooks/useSwapRedirect';
 
 const SWAP_BEST_TRADE = '0';
 const SWAP_NORMAL = '1';
@@ -23,11 +24,14 @@ const SWAP_LIMIT = '3';
 const SwapMain: React.FC = () => {
   const parsedQs = useParsedQueryString();
   const swapType = parsedQs.swapIndex;
+  const isProMode = Boolean(
+    parsedQs.isProMode && parsedQs.isProMode === 'true',
+  );
   const history = useHistory();
   const [openSettingsModal, setOpenSettingsModal] = useState(false);
-  const { isProMode, updateIsProMode } = useIsProMode();
   const { chainId } = useActiveWeb3React();
 
+  const { redirectWithProMode } = useSwapRedirects();
   const { updateIsV2 } = useIsV2();
   const params: any = useParams();
   const isOnV3 = params ? params.version === 'v3' : false;
@@ -160,7 +164,7 @@ const SwapMain: React.FC = () => {
               <ToggleSwitch
                 toggled={false}
                 onToggle={() => {
-                  updateIsProMode(true);
+                  redirectWithProMode(true);
                 }}
               />
             </Box>
