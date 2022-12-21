@@ -172,7 +172,7 @@ export function SupplyLiquidityV3() {
   const handleCurrencyASelect = useCallback(
     (currencyANew: Currency) => {
       const isSwichRedirect = currencyANew.isNative
-        ? currencyIdBParam === 'matic'
+        ? currencyIdBParam === 'eth'
         : currencyIdBParam &&
           currencyANew &&
           currencyANew.address &&
@@ -199,7 +199,7 @@ export function SupplyLiquidityV3() {
   const handleCurrencyBSelect = useCallback(
     (currencyBNew: Currency) => {
       const isSwichRedirect = currencyBNew.isNative
-        ? currencyIdAParam === 'matic'
+        ? currencyIdAParam === 'eth'
         : currencyIdAParam &&
           currencyBNew &&
           currencyBNew.address &&

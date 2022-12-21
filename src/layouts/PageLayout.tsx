@@ -20,7 +20,7 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
   const [openPassModal, setOpenPassModal] = useState(false);
   const getPageWrapperClassName = () => {
     if (isProMode) {
-      return '';
+      return 'pageProModeWrapper';
     }
     return name == 'prdt' ? 'pageWrapper-no-max' : 'pageWrapper';
   };

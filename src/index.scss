@@ -91,6 +91,13 @@ body {
   }
 }
 
+.pageProModeWrapper {
+  padding-top: 88px;
+  @include media("screen", "<tablet") {
+    padding-top: 0;
+  }
+}
+
 .pageWrapper-no-max {
   position: relative;
   z-index: 2;
