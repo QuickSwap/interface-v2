@@ -457,9 +457,8 @@ const SwapV3Page: React.FC = () => {
 
   const parsedCurrency0Id = (parsedQs.currency0 ??
     parsedQs.inputCurrency) as string;
-  const parsedCurrency0 = useCurrency(
-    parsedCurrency0Id === 'ETH' ? 'MATIC' : parsedCurrency0Id,
-  );
+  const parsedCurrency0 = useCurrency(parsedCurrency0Id);
+
   useEffect(() => {
     if (!chainId) return;
     if (parsedCurrency0) {
@@ -527,9 +526,7 @@ const SwapV3Page: React.FC = () => {
 
   const parsedCurrency1Id = (parsedQs.currency1 ??
     parsedQs.outputCurrency) as string;
-  const parsedCurrency1 = useCurrency(
-    parsedCurrency1Id === 'ETH' ? 'MATIC' : parsedCurrency1Id,
-  );
+  const parsedCurrency1 = useCurrency(parsedCurrency1Id);
   useEffect(() => {
     if (parsedCurrency1) {
       onCurrencySelection(Field.OUTPUT, parsedCurrency1);

@@ -37,6 +37,7 @@ import { useAppDispatch } from 'state/hooks';
 import usePoolsRedirect from 'hooks/usePoolsRedirect';
 
 export function SupplyLiquidityV3() {
+  const history = useHistory();
   const params: any = useParams();
   const parsedQuery = useParsedQueryString();
   const currencyIdAParam =
@@ -263,11 +264,12 @@ export function SupplyLiquidityV3() {
           <small
             className='cursor-pointer text-primary'
             onClick={() => {
-              setCurrencyIdA(currencyIdAParam);
-              setCurrencyIdB(currencyIdBParam);
+              setCurrencyIdA('');
+              setCurrencyIdB('');
               resetState();
               onFieldAInput('');
               onFieldBInput('');
+              history.push('/pools');
             }}
           >
             Clear all

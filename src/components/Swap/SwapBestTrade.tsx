@@ -169,11 +169,18 @@ const SwapBestTrade: React.FC<{
             parsedCurrency1Id.toLowerCase();
       if (isSwichRedirect) {
         redirectWithSwitch();
+        setSwapType(swapType === SwapSide.BUY ? SwapSide.SELL : SwapSide.BUY);
       } else {
         redirectWithCurrency(inputCurrency, true);
       }
     },
-    [parsedCurrency1Id, redirectWithCurrency, redirectWithSwitch, chainIdToUse],
+    [
+      chainIdToUse,
+      parsedCurrency1Id,
+      redirectWithSwitch,
+      swapType,
+      redirectWithCurrency,
+    ],
   );
 
   const parsedCurrency0 = useCurrency(parsedCurrency0Id);
@@ -200,11 +207,18 @@ const SwapBestTrade: React.FC<{
             parsedCurrency0Id.toLowerCase();
       if (isSwichRedirect) {
         redirectWithSwitch();
+        setSwapType(swapType === SwapSide.BUY ? SwapSide.SELL : SwapSide.BUY);
       } else {
         redirectWithCurrency(outputCurrency, false);
       }
     },
-    [parsedCurrency0Id, redirectWithCurrency, redirectWithSwitch, chainIdToUse],
+    [
+      chainIdToUse,
+      parsedCurrency0Id,
+      redirectWithSwitch,
+      swapType,
+      redirectWithCurrency,
+    ],
   );
 
   const parsedCurrency1 = useCurrency(parsedCurrency1Id);
@@ -729,7 +743,14 @@ const SwapBestTrade: React.FC<{
         bgClass={currencyBgClass}
       />
       <Box className='exchangeSwap'>
-        <ExchangeIcon onClick={redirectWithSwitch} />
+        <ExchangeIcon
+          onClick={() => {
+            redirectWithSwitch();
+            setSwapType(
+              swapType === SwapSide.BUY ? SwapSide.SELL : SwapSide.BUY,
+            );
+          }}
+        />
       </Box>
       <CurrencyInput
         title={`${t('toEstimate')}:`}

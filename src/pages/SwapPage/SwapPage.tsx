@@ -238,8 +238,12 @@ const SwapPage: React.FC = () => {
               width={isMobile ? 1 : 250}
             >
               <SwapProInfo
-                token1={token1}
-                token2={token2}
+                token1={
+                  isV2 ? token1 : token1V3 ? (token1V3 as Token) : undefined
+                }
+                token2={
+                  isV2 ? token2 : token2V3 ? (token2V3 as Token) : undefined
+                }
                 transactions={transactions}
               />
             </Box>
@@ -256,8 +260,12 @@ const SwapPage: React.FC = () => {
             <SwapProChartTrade
               showChart={showChart}
               showTrades={showTrades}
-              token1={token1}
-              token2={token2}
+              token1={
+                isV2 ? token1 : token1V3 ? (token1V3 as Token) : undefined
+              }
+              token2={
+                isV2 ? token2 : token2V3 ? (token2V3 as Token) : undefined
+              }
               pairAddress={pairId}
               pairTokenReversed={pairTokenReversed}
               transactions={transactions}
@@ -269,8 +277,12 @@ const SwapPage: React.FC = () => {
               width={isTablet ? 1 : 250}
             >
               <SwapProInfo
-                token1={token1}
-                token2={token2}
+                token1={
+                  isV2 ? token1 : token1V3 ? (token1V3 as Token) : undefined
+                }
+                token2={
+                  isV2 ? token2 : token2V3 ? (token2V3 as Token) : undefined
+                }
                 transactions={transactions}
               />
             </Box>
