@@ -83,7 +83,7 @@ export default function useSwapRedirects() {
           );
         } else {
           redirectPath = currentPath.replace(
-            `outputCurrency=${parsedQs.currency1}`,
+            `outputCurrency=${parsedQs.outputCurrency}`,
             `currency1=${inputCurrencyId}`,
           );
         }
@@ -94,20 +94,36 @@ export default function useSwapRedirects() {
           );
         } else {
           redirectPath = redirectPath.replace(
-            `inputCurrency=${parsedQs.currency0}`,
+            `inputCurrency=${parsedQs.inputCurrency}`,
             `currency0=${outputCurrencyId}`,
           );
         }
       } else {
-        redirectPath = `${currentPath}${
-          history.location.search === '' ? '?' : '&'
-        }currency1=${inputCurrencyId}`;
+        if (parsedQs.currency0) {
+          redirectPath = currentPath.replace(
+            `currency0=${inputCurrencyId}`,
+            `currency1=${inputCurrencyId}`,
+          );
+        } else {
+          redirectPath = currentPath.replace(
+            `inputCurrency=${inputCurrencyId}`,
+            `currency1=${inputCurrencyId}`,
+          );
+        }
       }
     } else {
       if (outputCurrencyId) {
-        redirectPath = `${currentPath}${
-          history.location.search === '' ? '?' : '&'
-        }currency0=${outputCurrencyId}`;
+        if (parsedQs.currency1) {
+          redirectPath = currentPath.replace(
+            `currency1=${outputCurrencyId}`,
+            `currency0=${outputCurrencyId}`,
+          );
+        } else {
+          redirectPath = currentPath.replace(
+            `outputCurrency=${outputCurrencyId}`,
+            `currency0=${outputCurrencyId}`,
+          );
+        }
       }
     }
     history.push(redirectPath);

@@ -457,20 +457,14 @@ const SwapV3Page: React.FC = () => {
 
   const parsedCurrency0Id = (parsedQs.currency0 ??
     parsedQs.inputCurrency) as string;
-  const parsedCurrency0 = useCurrency(parsedCurrency0Id);
+  const parsedCurrency0 = useCurrency(
+    parsedCurrency0Id === 'ETH' ? 'MATIC' : parsedCurrency0Id,
+  );
 
   useEffect(() => {
     if (!chainId) return;
     if (parsedCurrency0) {
       onCurrencySelection(Field.INPUT, parsedCurrency0);
-    } else if (history.location.pathname !== '/') {
-      const nativeCurrency = {
-        ...ETHER[chainId],
-        isNative: true,
-        isToken: false,
-        wrapped: WMATIC_EXTENDED[chainId],
-      } as NativeCurrency;
-      redirectWithCurrency(nativeCurrency, true, false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [parsedCurrency0Id]);
@@ -526,7 +520,9 @@ const SwapV3Page: React.FC = () => {
 
   const parsedCurrency1Id = (parsedQs.currency1 ??
     parsedQs.outputCurrency) as string;
-  const parsedCurrency1 = useCurrency(parsedCurrency1Id);
+  const parsedCurrency1 = useCurrency(
+    parsedCurrency1Id === 'ETH' ? 'MATIC' : parsedCurrency1Id,
+  );
   useEffect(() => {
     if (parsedCurrency1) {
       onCurrencySelection(Field.OUTPUT, parsedCurrency1);

@@ -44,24 +44,24 @@ export function SupplyLiquidityV3() {
     params && params.currencyIdA
       ? params.currencyIdA.toLowerCase() === 'matic' ||
         params.currencyIdA.toLowerCase() === 'eth'
-        ? 'eth'
+        ? 'matic'
         : params.currencyIdA
       : parsedQuery && parsedQuery.currency0
       ? (parsedQuery.currency0 as string).toLowerCase() === 'eth' ||
         (parsedQuery.currency0 as string).toLowerCase() === 'matic'
-        ? 'eth'
+        ? 'matic'
         : (parsedQuery.currency0 as string)
       : undefined;
   const currencyIdBParam =
     params && params.currencyIdB
       ? params.currencyIdB.toLowerCase() === 'matic' ||
         params.currencyIdB.toLowerCase() === 'eth'
-        ? 'eth'
+        ? 'matic'
         : params.currencyIdB
       : parsedQuery && parsedQuery.currency1
       ? (parsedQuery.currency1 as string).toLowerCase() === 'eth' ||
         (parsedQuery.currency1 as string).toLowerCase() === 'matic'
-        ? 'eth'
+        ? 'matic'
         : (parsedQuery.currency1 as string)
       : undefined;
 
@@ -173,7 +173,7 @@ export function SupplyLiquidityV3() {
   const handleCurrencyASelect = useCallback(
     (currencyANew: Currency) => {
       const isSwichRedirect = currencyANew.isNative
-        ? currencyIdBParam === 'eth'
+        ? currencyIdBParam === 'matic'
         : currencyIdBParam &&
           currencyANew &&
           currencyANew.address &&
@@ -200,7 +200,7 @@ export function SupplyLiquidityV3() {
   const handleCurrencyBSelect = useCallback(
     (currencyBNew: Currency) => {
       const isSwichRedirect = currencyBNew.isNative
-        ? currencyIdAParam === 'eth'
+        ? currencyIdAParam === 'matic'
         : currencyIdAParam &&
           currencyBNew &&
           currencyBNew.address &&

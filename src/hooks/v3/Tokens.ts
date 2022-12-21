@@ -189,14 +189,15 @@ export function useCurrency(
 
   const chainInfo = CHAIN_INFO[chainIdToUse];
 
-  const isETH = chainInfo && currencyId && currencyId?.toUpperCase() === 'ETH';
+  const isETH =
+    chainInfo && currencyId && currencyId?.toUpperCase() === 'MATIC';
 
   const token = useToken(isETH ? undefined : currencyId);
   const extendedEther = useMemo(
     () =>
       chainId
         ? ExtendedEther.onChain(
-            chainIdToUse,
+            chainId,
             chainInfo.nativeCurrencyDecimals,
             chainInfo.nativeCurrencySymbol,
             chainInfo.nativeCurrencyName,
@@ -204,7 +205,6 @@ export function useCurrency(
         : undefined,
     [
       chainId,
-      chainIdToUse,
       chainInfo.nativeCurrencyDecimals,
       chainInfo.nativeCurrencyName,
       chainInfo.nativeCurrencySymbol,

@@ -187,8 +187,6 @@ const SwapBestTrade: React.FC<{
   useEffect(() => {
     if (parsedCurrency0) {
       onCurrencySelection(Field.INPUT, parsedCurrency0);
-    } else {
-      redirectWithCurrency(ETHER[chainIdToUse], true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [parsedCurrency0Id, chainIdToUse]);
