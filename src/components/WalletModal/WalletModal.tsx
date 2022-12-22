@@ -43,16 +43,10 @@ const WalletModal: React.FC<WalletModalProps> = ({
 }) => {
   const { t } = useTranslation();
   // important that these are destructed from the account-specific web3-react context
-  const {
-    active,
-    account,
-    connector,
-    activate,
-    error,
-    deactivate,
-  } = useWeb3React();
+  const { active, account, connector, activate, deactivate } = useWeb3React();
 
   const [walletView, setWalletView] = useState(WALLET_VIEWS.ACCOUNT);
+  const [error, setError] = useState<Error | undefined>(undefined);
 
   const [pendingWallet, setPendingWallet] = useState<
     AbstractConnector | undefined
@@ -85,6 +79,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
   // always reset to account view
   useEffect(() => {
     if (walletModalOpen) {
+      setError(undefined);
       setPendingError(false);
       setWalletView(WALLET_VIEWS.ACCOUNT);
     }
@@ -114,7 +109,6 @@ const WalletModal: React.FC<WalletModalProps> = ({
   const tryActivation = async (connector: AbstractConnector | undefined) => {
     let name = '';
     let found = false;
-    const { ethereum } = window as any;
 
     Object.keys(SUPPORTED_WALLETS).map((key) => {
       if (connector === SUPPORTED_WALLETS[key].connector) {
@@ -163,13 +157,15 @@ const WalletModal: React.FC<WalletModalProps> = ({
     }
 
     connector &&
-      activate(connector, undefined, true).catch((error) => {
-        if (error instanceof UnsupportedChainIdError) {
-          activate(connector); // a little janky...can't use setError because the connector isn't set
-        } else {
-          setPendingError(true);
-        }
-      });
+      activate(connector, undefined, true)
+        .then(() => setError(undefined))
+        .catch((error) => {
+          if (error instanceof UnsupportedChainIdError) {
+            setError(error);
+          } else {
+            setPendingError(true);
+          }
+        });
   };
 
   // close wallet modal if fortmatic modal is active

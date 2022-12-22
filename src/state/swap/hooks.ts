@@ -14,7 +14,6 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useActiveWeb3React } from 'hooks';
 import { useCurrency } from 'hooks/Tokens';
-import { useTradeExactIn, useTradeExactOut } from 'hooks/Trades';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import { isAddress } from 'utils';
 import { AppDispatch, AppState } from 'state';
@@ -34,7 +33,7 @@ import {
 import { SwapState } from './reducer';
 import { useUserSlippageTolerance } from 'state/user/hooks';
 import { computeSlippageAdjustedAmounts } from 'utils/prices';
-import { RouterTypes, SmartRouter } from 'constants/index';
+import { RouterTypes, SmartRouter, GlobalData } from 'constants/index';
 import useFindBestRoute from 'hooks/useFindBestRoute';
 
 export function useSwapState(): AppState['swap'] {
@@ -172,6 +171,8 @@ export function useDerivedSwapInfo(): {
   v1Trade: Trade | undefined;
 } {
   const { account } = useActiveWeb3React();
+  const parsedQuery = useParsedQueryString();
+  const swapType = parsedQuery ? parsedQuery.swapIndex : undefined;
 
   const {
     independentField,
@@ -248,9 +249,32 @@ export function useDerivedSwapInfo(): {
     slippageAdjustedAmounts ? slippageAdjustedAmounts[Field.INPUT] : null,
   ];
 
-  if (balanceIn && amountIn && balanceIn.lessThan(amountIn)) {
+  if (
+    swapType !== '0' &&
+    balanceIn &&
+    amountIn &&
+    balanceIn.lessThan(amountIn)
+  ) {
     inputError = 'Insufficient ' + amountIn.currency.symbol + ' balance';
   }
+
+  const [_, setUserSlippageTolerance] = useUserSlippageTolerance();
+
+  useEffect(() => {
+    const stableCoinAddresses = GlobalData.stableCoins.map((token) =>
+      token.address.toLowerCase(),
+    );
+    if (
+      inputCurrencyId &&
+      outputCurrencyId &&
+      stableCoinAddresses.includes(inputCurrencyId.toLowerCase()) &&
+      stableCoinAddresses.includes(outputCurrencyId.toLowerCase())
+    ) {
+      setUserSlippageTolerance(10);
+    } else {
+      setUserSlippageTolerance(50);
+    }
+  }, [inputCurrencyId, outputCurrencyId, setUserSlippageTolerance]);
 
   return {
     currencies,

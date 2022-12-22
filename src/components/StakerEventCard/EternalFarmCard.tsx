@@ -8,7 +8,7 @@ import {
 import { useActiveWeb3React } from 'hooks';
 import Loader from '../Loader';
 import CurrencyLogo from '../CurrencyLogo';
-import { Token } from '@uniswap/sdk';
+import { ChainId, Token } from '@uniswap/sdk';
 import './index.scss';
 import { ReactComponent as AddIcon } from 'assets/images/addIcon.svg';
 import { Box } from '@material-ui/core';
@@ -111,16 +111,33 @@ export function EternalFarmCard({
         ])
       : undefined;
 
+  const HOPTokenAddress = '0xc5102fe9359fd9a28f877a67e36b0f050d81a3cc';
+
   const farmBonusRewardToken =
     chainId && bonusRewardToken
-      ? getTokenFromAddress(bonusRewardToken.id, chainId, tokenMap, [
-          new Token(
-            chainId,
-            bonusRewardToken.id,
-            Number(bonusRewardToken.decimals),
-            bonusRewardToken.symbol,
-          ),
-        ])
+      ? getTokenFromAddress(
+          pool &&
+            pool.id &&
+            pool.id.toLowerCase() ===
+              '0x0db644468cd5c664a354e31aa1f6dba1d1dead47'
+            ? HOPTokenAddress
+            : bonusRewardToken.id,
+          chainId,
+          tokenMap,
+          [
+            new Token(
+              chainId,
+              pool &&
+              pool.id &&
+              pool.id.toLowerCase() ===
+                '0x0db644468cd5c664a354e31aa1f6dba1d1dead47'
+                ? HOPTokenAddress
+                : bonusRewardToken.id,
+              Number(bonusRewardToken.decimals),
+              bonusRewardToken.symbol,
+            ),
+          ],
+        )
       : undefined;
 
   return (
@@ -189,16 +206,18 @@ export function EternalFarmCard({
               className='flex items-center justify-between'
               height={56}
             >
-              <Box className='flex items-center'>
-                {farmRewardToken && (
+              {farmRewardToken && (
+                <Box className='flex items-center'>
                   <CurrencyLogo currency={farmRewardToken} size={'30px'} />
-                )}
 
-                <Box ml={1.5}>
-                  <p className='span text-secondary'>Reward</p>
-                  <small className='weight-600'>{rewardToken?.symbol}</small>
+                  <Box ml={1.5}>
+                    <p className='span text-secondary'>Reward</p>
+                    <small className='weight-600'>
+                      {farmRewardToken.symbol}
+                    </small>
+                  </Box>
                 </Box>
-              </Box>
+              )}
               {rewardRate && (
                 <small className='weight-600'>
                   {formatReward(
@@ -226,21 +245,20 @@ export function EternalFarmCard({
                 className='flex items-center justify-between'
                 height={56}
               >
-                <Box className='flex items-center'>
-                  {farmBonusRewardToken && (
+                {farmBonusRewardToken && (
+                  <Box className='flex items-center'>
                     <CurrencyLogo
                       currency={farmBonusRewardToken}
                       size={'30px'}
                     />
-                  )}
-
-                  <Box ml={1.5}>
-                    <p className='span text-secondary'>Bonus</p>
-                    <small className='weight-600'>
-                      {bonusRewardToken.symbol}
-                    </small>
+                    <Box ml={1.5}>
+                      <p className='span text-secondary'>Bonus</p>
+                      <small className='weight-600'>
+                        {farmBonusRewardToken.symbol}
+                      </small>
+                    </Box>
                   </Box>
-                </Box>
+                )}
                 {bonusRewardRate && (
                   <small className='weight-600'>
                     {formatReward(

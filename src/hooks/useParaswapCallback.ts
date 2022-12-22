@@ -121,10 +121,10 @@ export function useParaswapCallback(
     // if (minDestAmount.greaterThan(JSBI.BigInt(priceRoute.destAmount))) {
     //   throw new Error('Price Rate updated beyond expected slipage rate');
     // }
-    const minDestAmount = new Fraction(ONE)
-      .add(allowedSlippage)
-      .invert()
-      .multiply(priceRoute.destAmount).quotient;
+    // const minDestAmount = new Fraction(ONE)
+    //   .add(allowedSlippage)
+    //   .invert()
+    //   .multiply(priceRoute.destAmount).quotient;
 
     return {
       state: SwapCallbackState.VALID,
@@ -133,12 +133,13 @@ export function useParaswapCallback(
         summary: string;
       }> {
         let txParams;
+
         try {
           txParams = await paraswap.buildTx({
             srcToken,
             destToken,
             srcAmount: priceRoute.srcAmount,
-            destAmount: minDestAmount.toString(),
+            destAmount: priceRoute.destAmount,
             priceRoute: priceRoute,
             userAddress: account,
             partner: referrer,
@@ -227,7 +228,6 @@ export function useParaswapCallback(
     account,
     chainId,
     recipient,
-    allowedSlippage,
     recipientAddressOrName,
     paraswap,
     paraswapContract,

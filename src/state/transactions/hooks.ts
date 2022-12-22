@@ -10,6 +10,7 @@ import { useAddPopup } from 'state/application/hooks';
 import { AppDispatch, AppState } from 'state';
 import { addTransaction, finalizeTransaction } from './actions';
 import { TransactionDetails } from './reducer';
+import { useArcxAnalytics } from '@arcxmoney/analytics';
 
 // helper that can take a ethers library transaction response and add it to the list of transactions
 export function useTransactionAdder(): (
@@ -22,9 +23,10 @@ export function useTransactionAdder(): (
 ) => void {
   const { chainId, account } = useActiveWeb3React();
   const dispatch = useDispatch<AppDispatch>();
+  const arcxSDK = useArcxAnalytics();
 
   return useCallback(
-    (
+    async (
       response: TransactionResponse,
       {
         summary,
@@ -36,12 +38,17 @@ export function useTransactionAdder(): (
         approval?: { tokenAddress: string; spender: string };
       } = {},
     ) => {
-      if (!account) return;
-      if (!chainId) return;
+      if (!account || !chainId) return;
 
       const { hash } = response;
       if (!hash) {
         throw Error('No transaction hash found.');
+      }
+      if (arcxSDK) {
+        await arcxSDK.transaction({
+          chain: chainId,
+          transactionHash: hash,
+        });
       }
       dispatch(
         addTransaction({
@@ -54,7 +61,7 @@ export function useTransactionAdder(): (
         }),
       );
     },
-    [dispatch, chainId, account],
+    [account, chainId, arcxSDK, dispatch],
   );
 }
 
