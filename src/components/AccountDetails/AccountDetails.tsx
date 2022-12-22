@@ -22,7 +22,6 @@ import Transaction from './Transaction';
 import { useTranslation } from 'react-i18next';
 import { useUDDomain } from 'state/application/hooks';
 import UAuth from '@uauth/js';
-import { UAuthConnector } from '@uauth/web3-react';
 
 function renderTransactions(transactions: string[]) {
   return (
@@ -86,7 +85,7 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
                 <small
                   style={{ cursor: 'pointer', marginRight: 8 }}
                   onClick={() => {
-                    if (connector instanceof UAuthConnector) {
+                    if (connector === unstopabbledomains) {
                       if (
                         process.env.REACT_APP_UNSTOPPABLE_DOMAIN_CLIENT_ID &&
                         process.env.REACT_APP_UNSTOPPABLE_DOMAIN_REDIRECT_URI
