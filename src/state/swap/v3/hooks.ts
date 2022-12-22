@@ -32,7 +32,10 @@ import { AppState } from 'state';
 import { isAddress } from 'utils';
 import { useCurrency } from 'hooks/v3/Tokens';
 import { useCurrencyBalances } from 'state/wallet/v3/hooks';
-import { useUserSlippageTolerance } from 'state/user/hooks';
+import {
+  useSlippageManuallySet,
+  useUserSlippageTolerance,
+} from 'state/user/hooks';
 import { GlobalData } from 'constants/index';
 
 export function useSwapState(): AppState['swapV3'] {
@@ -224,6 +227,7 @@ export function useDerivedSwapInfo(): {
     allowedSlippageNum,
     setUserSlippageTolerance,
   ] = useUserSlippageTolerance();
+  const [slippageManuallySet] = useSlippageManuallySet();
   const allowedSlippage = new Percent(
     JSBI.BigInt(allowedSlippageNum),
     JSBI.BigInt(10000),
@@ -243,17 +247,24 @@ export function useDerivedSwapInfo(): {
     const stableCoinAddresses = GlobalData.stableCoins.map((token) =>
       token.address.toLowerCase(),
     );
-    if (
-      inputCurrencyId &&
-      outputCurrencyId &&
-      stableCoinAddresses.includes(inputCurrencyId.toLowerCase()) &&
-      stableCoinAddresses.includes(outputCurrencyId.toLowerCase())
-    ) {
-      setUserSlippageTolerance(10);
-    } else {
-      setUserSlippageTolerance(50);
+    if (!slippageManuallySet) {
+      if (
+        inputCurrencyId &&
+        outputCurrencyId &&
+        stableCoinAddresses.includes(inputCurrencyId.toLowerCase()) &&
+        stableCoinAddresses.includes(outputCurrencyId.toLowerCase())
+      ) {
+        setUserSlippageTolerance(10);
+      } else {
+        setUserSlippageTolerance(50);
+      }
     }
-  }, [inputCurrencyId, outputCurrencyId, setUserSlippageTolerance]);
+  }, [
+    slippageManuallySet,
+    inputCurrencyId,
+    outputCurrencyId,
+    setUserSlippageTolerance,
+  ]);
 
   return {
     currencies,
