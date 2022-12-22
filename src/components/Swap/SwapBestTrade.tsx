@@ -270,15 +270,11 @@ const SwapBestTrade: React.FC<{
       });
       setOptimalRateError('');
       try {
-        const minDestAmount = new Fraction(ONE)
-          .add(pct)
-          .invert()
-          .multiply(rate.destAmount).quotient;
         const txParams = await paraswap.buildTx({
           srcToken: rate.srcToken,
           destToken: rate.destToken,
           srcAmount: rate.srcAmount,
-          destAmount: minDestAmount.toString(),
+          destAmount: rate.destAmount,
           priceRoute: rate,
           userAddress: account,
           partner: 'quickswapv3',
