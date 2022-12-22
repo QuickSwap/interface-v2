@@ -97,7 +97,7 @@ export const GlobalConst = {
       [ChainId.MUMBAI]: undefined,
     },
     SWAP_ROUTER_ADDRESS: {
-      [ChainId.MATIC]: '0x0727743C0aef61840f59a3038CAF98554087F867',
+      [ChainId.MATIC]: '0x29950999202cf01c0A28F156230c76f15454cb90',
       [ChainId.MUMBAI]: undefined,
     },
     ROUTER_ADDRESS: {
