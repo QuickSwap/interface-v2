@@ -162,8 +162,6 @@ const AnalyticsOverview: React.FC = () => {
     }
   }, [globalData, topTokens, topPairs, dispatch]);
 
-  console.log('bbb', globalData);
-
   return (
     <Box width='100%' mb={3}>
       <Grid container spacing={4}>
