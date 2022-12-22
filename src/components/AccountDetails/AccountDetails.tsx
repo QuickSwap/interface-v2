@@ -21,6 +21,8 @@ import Copy from './CopyHelper';
 import Transaction from './Transaction';
 import { useTranslation } from 'react-i18next';
 import { useUDDomain } from 'state/application/hooks';
+import UAuth from '@uauth/js';
+import { UAuthConnector } from '@uauth/web3-react';
 
 function renderTransactions(transactions: string[]) {
   return (
@@ -48,7 +50,7 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
   openOptions,
 }) => {
   const { chainId, account, connector } = useActiveWeb3React();
-  const { udDomain } = useUDDomain();
+  const { udDomain, updateUDDomain } = useUDDomain();
   const dispatch = useDispatch<AppDispatch>();
   const { t } = useTranslation();
 
@@ -84,11 +86,23 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
                 <small
                   style={{ cursor: 'pointer', marginRight: 8 }}
                   onClick={() => {
-                    if (connector === unstopabbledomains) {
-                      if (connector?.deactivate) {
-                        connector.deactivate();
-                      } else {
-                        (connector as any).resetState();
+                    if (connector instanceof UAuthConnector) {
+                      if (
+                        process.env.REACT_APP_UNSTOPPABLE_DOMAIN_CLIENT_ID &&
+                        process.env.REACT_APP_UNSTOPPABLE_DOMAIN_REDIRECT_URI
+                      ) {
+                        const uauth = new UAuth({
+                          clientID:
+                            process.env.REACT_APP_UNSTOPPABLE_DOMAIN_CLIENT_ID,
+                          redirectUri:
+                            process.env
+                              .REACT_APP_UNSTOPPABLE_DOMAIN_REDIRECT_URI,
+                          scope: 'openid wallet',
+                        });
+                        uauth.user().then(async () => {
+                          await uauth.logout();
+                          updateUDDomain(undefined);
+                        });
                       }
                     } else {
                       (connector as any).close();

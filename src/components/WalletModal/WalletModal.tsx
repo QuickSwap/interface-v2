@@ -53,7 +53,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
 
   const [walletView, setWalletView] = useState(WALLET_VIEWS.ACCOUNT);
   const [error, setError] = useState<Error | string | undefined>(undefined);
-  const { udDomain, updateUDDomain } = useUDDomain();
+  const { updateUDDomain } = useUDDomain();
 
   const [pendingWallet, setPendingWallet] = useState<
     AbstractConnector | undefined
