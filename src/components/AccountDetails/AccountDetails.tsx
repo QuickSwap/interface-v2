@@ -21,7 +21,6 @@ import Copy from './CopyHelper';
 import Transaction from './Transaction';
 import { useTranslation } from 'react-i18next';
 import { useUDDomain } from 'state/application/hooks';
-import UAuth from '@uauth/js';
 
 function renderTransactions(transactions: string[]) {
   return (
@@ -86,23 +85,7 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
                   style={{ cursor: 'pointer', marginRight: 8 }}
                   onClick={() => {
                     if (connector === unstopabbledomains) {
-                      if (
-                        process.env.REACT_APP_UNSTOPPABLE_DOMAIN_CLIENT_ID &&
-                        process.env.REACT_APP_UNSTOPPABLE_DOMAIN_REDIRECT_URI
-                      ) {
-                        const uauth = new UAuth({
-                          clientID:
-                            process.env.REACT_APP_UNSTOPPABLE_DOMAIN_CLIENT_ID,
-                          redirectUri:
-                            process.env
-                              .REACT_APP_UNSTOPPABLE_DOMAIN_REDIRECT_URI,
-                          scope: 'openid wallet',
-                        });
-                        uauth.user().then(async () => {
-                          await uauth.logout();
-                          updateUDDomain(undefined);
-                        });
-                      }
+                      (connector as any).handleDeactivate();
                     } else {
                       (connector as any).close();
                     }
