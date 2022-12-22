@@ -80,12 +80,19 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
             {connector !== injected &&
               connector !== walletlink &&
               connector !== trustconnect &&
-              connector !== safeApp &&
-              connector !== unstopabbledomains && (
+              connector !== safeApp && (
                 <small
                   style={{ cursor: 'pointer', marginRight: 8 }}
                   onClick={() => {
-                    (connector as any).close();
+                    if (connector === unstopabbledomains) {
+                      if (connector?.deactivate) {
+                        connector.deactivate();
+                      } else {
+                        (connector as any).resetState();
+                      }
+                    } else {
+                      (connector as any).close();
+                    }
                   }}
                 >
                   {t('disconnect')}
