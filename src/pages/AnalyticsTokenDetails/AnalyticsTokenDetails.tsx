@@ -38,6 +38,7 @@ import {
 } from 'utils/v3-graph';
 import { useDispatch } from 'react-redux';
 import { setAnalyticsLoaded } from 'state/analytics/actions';
+import { getConfig } from 'config';
 
 const AnalyticsTokenDetails: React.FC = () => {
   const { t } = useTranslation();
@@ -63,14 +64,19 @@ const AnalyticsTokenDetails: React.FC = () => {
   } = useBookmarkTokens();
   const { ethPrice } = useEthPrice();
   const { maticPrice } = useMaticPrice();
+  const config = getConfig(chainIdToUse);
+  const v3 = config['v3'];
+  const v2 = config['v2'];
 
   const dispatch = useDispatch();
 
   const { isV2, updateIsV2 } = useIsV2();
 
   useEffect(() => {
-    updateIsV2(false);
-  }, [updateIsV2]);
+    if (!v2 && v3) {
+      updateIsV2(false);
+    }
+  }, [updateIsV2, v2, v3]);
 
   const tokenTransactionsList = useMemo(() => {
     if (tokenTransactions) {

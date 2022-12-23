@@ -289,6 +289,8 @@ function RangePart({
     }
   }, [usdPriceB, initialTokenPrice, initialUSDPrices, value, usdPriceA]);
 
+  console.log('ccc', value);
+
   return (
     <Box className='price-range-part text-center'>
       <p className='caption text-secondary'>{title}</p>

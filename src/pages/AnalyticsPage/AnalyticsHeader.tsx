@@ -40,8 +40,10 @@ const AnalyticsHeader: React.FC<AnalyticHeaderProps> = ({
   const version = useMemo(() => `${isV2 ? `v2` : 'v3'}`, [isV2]);
 
   useEffect(() => {
-    updateIsV2(false);
-  }, [updateIsV2]);
+    if (!v2 && v3) {
+      updateIsV2(false);
+    }
+  }, [updateIsV2, v2, v3]);
 
   return (
     <Box width='100%' mb={3}>
