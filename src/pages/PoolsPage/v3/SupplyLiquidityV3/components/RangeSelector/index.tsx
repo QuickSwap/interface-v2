@@ -267,6 +267,9 @@ function RangePart({
     onUserInput(increment());
   }, [increment, onUserInput]);
 
+  const usdPriceAValue = usdPriceA?.toSignificant(5);
+  const usdPriceBValue = usdPriceB?.toSignificant(5);
+
   useEffect(() => {
     if (value) {
       setLocalTokenValue(value);
@@ -274,22 +277,24 @@ function RangePart({
         setLocalUSDValue(value);
         return;
       }
-      if (usdPriceB) {
-        setLocalUSDValue(String(+value * +usdPriceB.toSignificant(5)));
+      if (usdPriceBValue) {
+        setLocalUSDValue(String(+value * +usdPriceBValue));
       } else if (initialUSDPrices.CURRENCY_B) {
         setLocalUSDValue(String(+value * +initialUSDPrices.CURRENCY_B));
-      } else if (initialTokenPrice && usdPriceA) {
-        setLocalUSDValue(
-          String(+value * +initialTokenPrice * +usdPriceA.toSignificant(5)),
-        );
+      } else if (initialTokenPrice && usdPriceAValue) {
+        setLocalUSDValue(String(+value * +initialTokenPrice * +usdPriceAValue));
       }
     } else if (value === '') {
       setLocalTokenValue('');
       setLocalUSDValue('');
     }
-  }, [usdPriceB, initialTokenPrice, initialUSDPrices, value, usdPriceA]);
-
-  console.log('ccc', value);
+  }, [
+    usdPriceAValue,
+    initialTokenPrice,
+    initialUSDPrices,
+    value,
+    usdPriceBValue,
+  ]);
 
   return (
     <Box className='price-range-part text-center'>

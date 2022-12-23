@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { TransactionResponse } from '@ethersproject/providers';
 import { Box, Button, CircularProgress } from '@material-ui/core';
 import { Trans, useTranslation } from 'react-i18next';
@@ -25,6 +25,8 @@ import { tryParseAmount } from 'state/swap/hooks';
 import 'pages/styles/convertQUICK.scss';
 import { ChainId } from '@uniswap/sdk';
 import { OLD_QUICK } from 'constants/v3/addresses';
+import { getConfig } from 'config';
+import { useHistory } from 'react-router-dom';
 
 const ConvertQUICKPage: React.FC = () => {
   const { t } = useTranslation();
@@ -130,6 +132,17 @@ const ConvertQUICKPage: React.FC = () => {
         });
     }
   };
+
+  const config = getConfig(chainIdToUse);
+  const showConvert = config['convert']['available'];
+  const history = useHistory();
+
+  useEffect(() => {
+    if (!showConvert) {
+      history.push('/');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showConvert]);
 
   return (
     <Box width='100%' maxWidth={488} id='convertQUICKPage'>

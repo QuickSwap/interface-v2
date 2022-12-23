@@ -1,7 +1,13 @@
 import React, { useCallback, useState, useMemo, useEffect } from 'react';
 import { IPresetArgs, PresetRanges } from '../../components/PresetRanges';
 import { RangeSelector } from '../../components/RangeSelector';
-import { Currency } from '@uniswap/sdk-core';
+import {
+  Currency,
+  CurrencyAmount,
+  Fraction,
+  Percent,
+  Price,
+} from '@uniswap/sdk-core';
 import './index.scss';
 import { Bound, updateSelectedPreset } from 'state/mint/v3/actions';
 import {
@@ -11,18 +17,17 @@ import {
   useV3MintState,
   useInitialUSDPrices,
 } from 'state/mint/v3/hooks';
-import useUSDCPrice, { useUSDCValue } from 'hooks/v3/useUSDCPrice';
+import { useUSDCValue } from 'hooks/v3/useUSDCPrice';
 import { useAppDispatch } from 'state/hooks';
 import { useActivePreset } from 'state/mint/v3/hooks';
 import { tryParseAmount } from 'state/swap/v3/hooks';
 import { Presets } from 'state/mint/v3/reducer';
 import { PriceFormats } from 'components/v3/PriceFomatToggler';
 import LiquidityChartRangeInput from 'components/v3/LiquidityChartRangeInput';
-import { toToken } from 'constants/v3/routing';
 import { Box } from '@material-ui/core';
 import { ReportProblemOutlined } from '@material-ui/icons';
 import { useActiveWeb3React } from 'hooks';
-import { ChainId } from '@uniswap/sdk';
+import { ChainId, JSBI } from '@uniswap/sdk';
 import { StableCoins } from 'constants/v3/addresses';
 import { getEternalFarmFromTokens } from 'utils';
 
@@ -119,6 +124,12 @@ export function SelectRange({
       : mintInfo.price.toSignificant(5);
   }, [mintInfo]);
 
+  const priceObj = useMemo(() => {
+    if (!mintInfo.price) return;
+
+    return mintInfo.invertPrice ? mintInfo.price.invert() : mintInfo.price;
+  }, [mintInfo]);
+
   const leftPricePercent =
     leftPrice && price
       ? ((Number(leftPrice.toSignificant(5)) - Number(price)) / Number(price)) *
@@ -155,7 +166,7 @@ export function SelectRange({
   }, [currencyAID, currencyBID, chainId]);
 
   const currentPriceInUSD = useUSDCValue(
-    tryParseAmount(Number(price).toFixed(5), currencyB ?? undefined),
+    tryParseAmount(price, currencyB ?? undefined),
     true,
   );
 
@@ -173,7 +184,7 @@ export function SelectRange({
 
   const handlePresetRangeSelection = useCallback(
     (preset: IPresetArgs | null) => {
-      if (!price) return;
+      if (!priceObj) return;
 
       dispatch(updateSelectedPreset({ preset: preset ? preset.type : null }));
 
@@ -182,11 +193,44 @@ export function SelectRange({
         getSetFullRange();
       } else {
         setFullRangeWarningShown(false);
-        onLeftRangeInput(preset ? String(+price * preset.min) : '');
-        onRightRangeInput(preset ? String(+price * preset.max) : '');
+        const priceQuoteDecimals = Math.max(3, priceObj.baseCurrency.decimals);
+        onLeftRangeInput(
+          preset
+            ? priceObj
+                .quote(
+                  CurrencyAmount.fromRawAmount(
+                    priceObj.baseCurrency,
+                    JSBI.BigInt(preset.min * 10 ** priceQuoteDecimals),
+                  ),
+                )
+                .divide(
+                  JSBI.BigInt(
+                    10 ** (priceQuoteDecimals - priceObj.baseCurrency.decimals),
+                  ),
+                )
+                .toSignificant(5)
+            : '',
+        );
+        onRightRangeInput(
+          preset
+            ? priceObj
+                .quote(
+                  CurrencyAmount.fromRawAmount(
+                    priceObj.baseCurrency,
+                    JSBI.BigInt(preset.max * 10 ** priceQuoteDecimals),
+                  ),
+                )
+                .divide(
+                  JSBI.BigInt(
+                    10 ** (priceQuoteDecimals - priceObj.baseCurrency.decimals),
+                  ),
+                )
+                .toSignificant(5)
+            : '',
+        );
       }
     },
-    [dispatch, getSetFullRange, onLeftRangeInput, onRightRangeInput, price],
+    [dispatch, getSetFullRange, onLeftRangeInput, onRightRangeInput, priceObj],
   );
 
   const initialUSDPrices = useInitialUSDPrices();
