@@ -67,9 +67,7 @@ function TokenPrice({
   const tokenRatio = useMemo(() => {
     if (!basePrice || !quotePrice) return `Loading...`;
 
-    return String(
-      (+basePrice.toSignificant(5) / +quotePrice.toSignificant(5)).toFixed(5),
-    );
+    return basePrice.divide(quotePrice).toSignificant(5);
   }, [basePrice, quotePrice]);
 
   return (
@@ -274,11 +272,7 @@ export default function StartingPrice({
     if (!initialTokenPrice && basePriceUSD && quotePriceUSD) {
       dispatch(
         setInitialTokenPrice({
-          typedValue: String(
-            (
-              +basePriceUSD.toSignificant(8) / +quotePriceUSD.toSignificant(8)
-            ).toFixed(5),
-          ),
+          typedValue: basePriceUSD.divide(quotePriceUSD).toSignificant(5),
         }),
       );
     }

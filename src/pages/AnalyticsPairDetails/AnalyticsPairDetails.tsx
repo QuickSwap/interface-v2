@@ -28,6 +28,7 @@ import { useSelectedTokenList } from 'state/lists/hooks';
 import { getPairInfoV3, getPairTransactionsV3 } from 'utils/v3-graph';
 import { useDispatch } from 'react-redux';
 import { setAnalyticsLoaded } from 'state/analytics/actions';
+import { getConfig } from 'config';
 
 const AnalyticsPairDetails: React.FC = () => {
   const { t } = useTranslation();
@@ -41,10 +42,17 @@ const AnalyticsPairDetails: React.FC = () => {
 
   const { isV2, updateIsV2 } = useIsV2();
   const version = useMemo(() => `${!isV2 ? `v3` : 'v2'}`, [isV2]);
+  const { chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ?? ChainId.MATIC;
+  const config = getConfig(chainIdToUse);
+  const v3 = config['v3'];
+  const v2 = config['v2'];
 
   useEffect(() => {
-    updateIsV2(false);
-  }, [updateIsV2]);
+    if (!v2 && v3) {
+      updateIsV2(false);
+    }
+  }, [updateIsV2, v2, v3]);
 
   const pairTransactionsList = useMemo(() => {
     if (pairTransactions) {
@@ -74,8 +82,6 @@ const AnalyticsPairDetails: React.FC = () => {
       return null;
     }
   }, [pairTransactions]);
-  const { chainId } = useActiveWeb3React();
-  const chainIdToUse = chainId ?? ChainId.MATIC;
   const currency0 = pairData
     ? getTokenFromAddress(pairData.token0.id, chainIdToUse, tokenMap, [
         new Token(
