@@ -25,8 +25,10 @@ export enum Presets {
   NORMAL,
   FULL,
   STABLE,
-  GAMMA_WIDE,
   GAMMA_NARROW,
+  GAMMA_WIDE,
+  GAMMA_DYNAMIC,
+  GAMMA_STABLE,
 }
 
 interface MintState {

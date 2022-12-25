@@ -19,6 +19,7 @@ import PortisIcon from 'assets/images/portisIcon.png';
 import VenlyIcon from 'assets/images/venly.svg';
 import GnosisIcon from 'assets/images/gnosis_safe.png';
 import TrustIcon from 'assets/images/trust.png';
+import { Presets } from 'state/mint/v3/reducer';
 
 const WETH_ONLY: ChainTokenList = {
   [ChainId.MUMBAI]: [WETH[ChainId.MUMBAI]],
@@ -148,6 +149,94 @@ export const GlobalConst = {
     WALLET_LINK: 'Coinbase Wallet',
     WALLET_CONNECT: 'WalletConnect',
   },
+};
+
+export const GammaPairs: {
+  [key: string]: { address: string; title: string; type: Presets }[];
+} = {
+  'WMATIC-ETH': [
+    {
+      type: Presets.GAMMA_NARROW,
+      title: 'Narrow',
+      address: '0x718a554d9740ac9bf4092ec1692961f1c9d96f46',
+    },
+    {
+      type: Presets.GAMMA_WIDE,
+      title: 'Wide',
+      address: '0x056e8299b082d5f1016c846d93e71eadf4137851',
+    },
+  ],
+  'USDC-ETH': [
+    {
+      type: Presets.GAMMA_NARROW,
+      title: 'Narrow',
+      address: '0x7ae5dece3903388281eff3a3d115ca00d4fafd4d',
+    },
+    {
+      type: Presets.GAMMA_WIDE,
+      title: 'Wide',
+      address: '0x5ca313118358e3f5efe0c49f239b66c964f9aef0',
+    },
+  ],
+  'WMATIC-USDC': [
+    {
+      type: Presets.GAMMA_NARROW,
+      title: 'Narrow',
+      address: '0x7922591f6f9b047ebda320a12b6e3ca4d0f1435f',
+    },
+    {
+      type: Presets.GAMMA_WIDE,
+      title: 'Wide',
+      address: '0x6ccf63ac74b5533c456c3a68786629e7670293c0',
+    },
+  ],
+  'WBTC-ETH': [
+    {
+      type: Presets.GAMMA_NARROW,
+      title: 'Narrow',
+      address: '0xb81686295822b639b647d3b421cd5e09af700ada',
+    },
+    {
+      type: Presets.GAMMA_WIDE,
+      title: 'Wide',
+      address: '0x242d1d8bd3e600dc04c56f7817327fd750b61736',
+    },
+  ],
+  'USDC-MAI': [
+    {
+      type: Presets.GAMMA_STABLE,
+      title: 'Stable',
+      address: '0x15f2e223000d392a8449a53a4b930f3c54926987',
+    },
+  ],
+  'USDC-DAI': [
+    {
+      type: Presets.GAMMA_STABLE,
+      title: 'Stable',
+      address: '0x2752e822283c8baec3ad7ad18b09248a914930ff',
+    },
+  ],
+  'USDC-USDT': [
+    {
+      type: Presets.GAMMA_STABLE,
+      title: 'Stable',
+      address: '0x20103b6fcecaa94ddbf3d18ab9d99892003b1d80',
+    },
+  ],
+  'WMATIC-QI': [
+    {
+      type: Presets.GAMMA_DYNAMIC,
+      title: 'Dynamic',
+      address: '0xe0f0622f871d9597649062e9bbbe9bd65e918e34',
+    },
+  ],
+  'WMATIC-QUICK(NEW)': [
+    {
+      type: Presets.GAMMA_DYNAMIC,
+      title: 'Dynamic',
+      address: '0x5c1fa2c9999d4fe0f6b13e95770ca406f79879c4',
+    },
+  ],
 };
 
 export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {

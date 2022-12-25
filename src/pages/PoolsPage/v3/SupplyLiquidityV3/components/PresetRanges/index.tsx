@@ -9,7 +9,10 @@ import Loader from 'components/Loader';
 import { fetchPoolsAPR } from 'utils/api';
 import { computePoolAddress } from 'hooks/v3/computePoolAddress';
 import { POOL_DEPLOYER_ADDRESS } from 'constants/v3/addresses';
+import GammaPairABI from 'constants/abis/gamma-hypervisor.json';
 import './index.scss';
+import { getContract } from 'utils';
+import { useActiveWeb3React } from 'hooks';
 
 export interface IPresetArgs {
   type: Presets;
@@ -27,6 +30,7 @@ interface IPresetRanges {
   priceLower: string | undefined;
   priceUpper: string | undefined;
   price: string | undefined;
+  gammaPair?: { address: string; title: string; type: Presets }[];
   isGamma?: boolean;
 }
 
@@ -48,33 +52,57 @@ export function PresetRanges({
   price,
   priceUpper,
   isGamma = false,
+  gammaPair,
 }: IPresetRanges) {
   const [aprs, setAprs] = useState<undefined | { [key: string]: number }>();
+  const [gammaValues, setGammaValues] = useState<{
+    [key: string]: { min: number; max: number };
+  }>({});
+  const { library } = useActiveWeb3React();
 
   useEffect(() => {
     fetchPoolsAPR().then(setAprs);
   }, []);
 
+  const gammaPairAddressStr = gammaPair
+    ? gammaPair.map((pair) => pair.address).join('-')
+    : '';
+  useEffect(() => {
+    if (!gammaPairAddressStr || !library) return;
+    (async () => {
+      const gammaPairAddresses = gammaPairAddressStr.split('-');
+      const gammaRange: { [key: string]: { min: number; max: number } } = {};
+      for (const pairAddress of gammaPairAddresses) {
+        const gammaPairContract = getContract(
+          pairAddress,
+          GammaPairABI,
+          library,
+        );
+        const baseLower = await gammaPairContract.baseLower();
+        const baseUpper = await gammaPairContract.baseUpper();
+        const lowerValue = Math.pow(1.0001, baseLower);
+        const upperValue = Math.pow(1.0001, baseUpper);
+        gammaRange[pairAddress] = { min: lowerValue, max: upperValue };
+      }
+      setGammaValues(gammaRange);
+    })();
+  }, [gammaPairAddressStr, library]);
+
   const ranges = useMemo(() => {
     if (isGamma) {
-      return [
-        {
-          type: Presets.GAMMA_WIDE,
-          title: `Wide`,
-          min: 0.984,
-          max: 1.016,
-          risk: PresetProfits.VERY_LOW,
-          profit: PresetProfits.HIGH,
-        },
-        {
-          type: Presets.GAMMA_NARROW,
-          title: `Narrow`,
-          min: 0.984,
-          max: 1.016,
-          risk: PresetProfits.VERY_LOW,
-          profit: PresetProfits.HIGH,
-        },
-      ];
+      return gammaPair
+        ? gammaPair.map((pair) => {
+            const pairAddress = pair.address;
+            return {
+              type: pair.type,
+              title: pair.title,
+              min: gammaValues[pairAddress].min ?? 0.9,
+              max: gammaValues[pairAddress].max ?? 1.1,
+              risk: PresetProfits.VERY_LOW,
+              profit: PresetProfits.HIGH,
+            };
+          })
+        : [];
     }
 
     if (isStablecoinPair)
@@ -123,7 +151,7 @@ export function PresetRanges({
         profit: PresetProfits.HIGH,
       },
     ];
-  }, [isStablecoinPair, isGamma]);
+  }, [isStablecoinPair, isGamma, gammaPair, gammaValues]);
 
   const risk = useMemo(() => {
     if (!priceUpper || !priceLower || !price) return;

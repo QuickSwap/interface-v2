@@ -18,7 +18,7 @@ import { tryParseAmount } from 'state/swap/v3/hooks';
 import { Presets } from 'state/mint/v3/reducer';
 import { PriceFormats } from 'components/v3/PriceFomatToggler';
 import LiquidityChartRangeInput from 'components/v3/LiquidityChartRangeInput';
-import { GlobalData } from 'constants/index';
+import { GammaPairs, GlobalData } from 'constants/index';
 import { Box, ButtonGroup, Button } from '@material-ui/core';
 import { ReportProblemOutlined } from '@material-ui/icons';
 import { getEternalFarmFromTokens } from 'utils';
@@ -51,6 +51,20 @@ export function SelectRange({
   const isUSD = useMemo(() => {
     return priceFormat === PriceFormats.USD;
   }, [priceFormat]);
+
+  const currencyASymbol =
+    currencyA && currencyA.wrapped.symbol
+      ? currencyA.wrapped.symbol.toUpperCase()
+      : '';
+  const currencyBSymbol =
+    currencyB && currencyB.wrapped.symbol
+      ? currencyB.wrapped.symbol.toUpperCase()
+      : '';
+  const gammaPair = GammaPairs[currencyASymbol + '-' + currencyBSymbol];
+
+  useEffect(() => {
+    setRangeType(MANUAL_RANGE);
+  }, [currencyA, currencyB]);
 
   const isStablecoinPair = useMemo(() => {
     if (!currencyA || !currencyB) return false;
@@ -260,27 +274,29 @@ export function SelectRange({
   return (
     <Box>
       <small className='weight-600'>Select a range</small>
-      <Box className='buttonGroup poolRangeButtonGroup'>
-        <ButtonGroup>
-          <Button
-            className={rangeType === MANUAL_RANGE ? 'active' : ''}
-            onClick={() => setRangeType(MANUAL_RANGE)}
-          >
-            Manual
-          </Button>
-          <Button
-            className={rangeType === GAMMA_RANGE ? 'active' : ''}
-            onClick={() => setRangeType(GAMMA_RANGE)}
-          >
-            <Box className='flex items-start'>
-              <span>Automatic</span>
-              <Box ml='3px' className='poolRangeBetaBox'>
-                BETA
+      {gammaPair && (
+        <Box className='buttonGroup poolRangeButtonGroup'>
+          <ButtonGroup>
+            <Button
+              className={rangeType === MANUAL_RANGE ? 'active' : ''}
+              onClick={() => setRangeType(MANUAL_RANGE)}
+            >
+              Manual
+            </Button>
+            <Button
+              className={rangeType === GAMMA_RANGE ? 'active' : ''}
+              onClick={() => setRangeType(GAMMA_RANGE)}
+            >
+              <Box className='flex items-start'>
+                <span>Automatic</span>
+                <Box ml='3px' className='poolRangeBetaBox'>
+                  BETA
+                </Box>
               </Box>
-            </Box>
-          </Button>
-        </ButtonGroup>
-      </Box>
+            </Button>
+          </ButtonGroup>
+        </Box>
+      )}
       {rangeType === GAMMA_RANGE && (
         <>
           <Box my={1.5} className='poolRangePowerGamma'>
@@ -301,6 +317,7 @@ export function SelectRange({
           priceUpper={rightPrice?.toSignificant(5)}
           price={price}
           isGamma={rangeType === GAMMA_RANGE}
+          gammaPair={gammaPair}
         />
       </Box>
       {rangeType === GAMMA_RANGE && (
