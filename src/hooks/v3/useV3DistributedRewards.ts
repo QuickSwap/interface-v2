@@ -11,7 +11,8 @@ export function useV3DistributedRewards(chainId: ChainId) {
   } = useFarmingSubgraph() || {};
   useEffect(() => {
     fetchEternalFarmsFn(true);
-  }, [fetchEternalFarmsFn]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const allRewardTokenAddresses = eternalFarms
     ? eternalFarms
         .map(({ rewardToken }) => rewardToken.id)

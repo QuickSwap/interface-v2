@@ -33,9 +33,6 @@ const SwapMain: React.FC = () => {
 
   const { redirectWithProMode } = useSwapRedirects();
   const { updateIsV2 } = useIsV2();
-  const params: any = useParams();
-  const isOnV3 = params ? params.version === 'v3' : false;
-  const isOnV2 = params ? params.version === 'v2' : false;
 
   const { t } = useTranslation();
   const config = getConfig(chainId);
@@ -69,21 +66,41 @@ const SwapMain: React.FC = () => {
   };
 
   useEffect(() => {
-    updateIsV2(!isOnV2 && !isOnV3 ? true : isOnV2);
-    if (!swapType) {
-      if (!isOnV3 && isOnV2) {
-        redirectWithSwapType(SWAP_NORMAL);
-      } else {
-        if (showBestTrade) {
-          redirectWithSwapType(SWAP_BEST_TRADE);
+    if (
+      !swapType ||
+      (swapType === SWAP_BEST_TRADE && !showBestTrade) ||
+      (swapType === SWAP_NORMAL && !v2) ||
+      (swapType === SWAP_V3 && !v3) ||
+      (swapType === SWAP_LIMIT && !showLimitOrder)
+    ) {
+      const availableSwapTypes = [
+        SWAP_BEST_TRADE,
+        SWAP_NORMAL,
+        SWAP_V3,
+        SWAP_LIMIT,
+      ].filter((sType) =>
+        sType === SWAP_BEST_TRADE
+          ? showBestTrade
+          : sType === SWAP_NORMAL
+          ? v2
+          : sType === SWAP_V3
+          ? v3
+          : showLimitOrder,
+      );
+      if (availableSwapTypes.length > 0) {
+        const aSwapType = availableSwapTypes[0];
+        if (aSwapType === SWAP_V3) {
+          updateIsV2(false);
         } else {
-          const defaultSwapType = v2 ? SWAP_NORMAL : SWAP_V3;
-          redirectWithSwapType(defaultSwapType);
+          updateIsV2(true);
         }
+        redirectWithSwapType(availableSwapTypes[0]);
+      } else {
+        history.push('/');
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOnV3, isOnV2, swapType, v2]);
+  }, [swapType, v2, v3, showBestTrade, showLimitOrder]);
 
   useEffect(() => {
     if (swapType) {
@@ -112,7 +129,6 @@ const SwapMain: React.FC = () => {
         <Box display='flex' width={1}>
           {showBestTrade && (
             <Box
-              //TODO: Active class resolution should come from from a func
               className={swapTabClass(SWAP_BEST_TRADE)}
               onClick={() => {
                 redirectWithSwapType(SWAP_BEST_TRADE);
@@ -175,10 +191,10 @@ const SwapMain: React.FC = () => {
         )}
       </Box>
       <Box padding={isProMode ? '0 24px' : '0'} mt={3.5}>
-        {swapType === SWAP_BEST_TRADE && <SwapBestTrade />}
-        {swapType === SWAP_NORMAL && <Swap />}
-        {swapType === SWAP_V3 && <SwapV3Page />}
-        {swapType === SWAP_LIMIT && (
+        {swapType === SWAP_BEST_TRADE && showBestTrade && <SwapBestTrade />}
+        {swapType === SWAP_NORMAL && v2 && <Swap />}
+        {swapType === SWAP_V3 && v3 && <SwapV3Page />}
+        {swapType === SWAP_LIMIT && showLimitOrder && (
           <Box className='limitOrderPanel'>
             <GelatoLimitOrderPanel />
             <GelatoLimitOrdersHistoryPanel />
