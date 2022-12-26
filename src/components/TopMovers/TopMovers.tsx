@@ -5,13 +5,19 @@ import Skeleton from '@material-ui/lab/Skeleton';
 import { Token, ChainId } from '@uniswap/sdk';
 import { getAddress } from '@ethersproject/address';
 import { CurrencyLogo } from 'components';
-import { getTopTokens, getPriceClass, formatNumber } from 'utils';
+import {
+  getTopTokens,
+  getPriceClass,
+  formatNumber,
+  getTokenFromAddress,
+} from 'utils';
 import 'components/styles/TopMovers.scss';
 import { useTranslation } from 'react-i18next';
 import { useEthPrice, useMaticPrice, useIsV2 } from 'state/application/hooks';
 import { getTopTokensV3 } from 'utils/v3-graph';
 import { useActiveWeb3React } from 'hooks';
 import { getConfig } from '../../config/index';
+import { useSelectedTokenList } from 'state/lists/hooks';
 
 interface TopMoversProps {
   hideArrow?: boolean;
@@ -24,6 +30,7 @@ const TopMovers: React.FC<TopMoversProps> = ({ hideArrow = false }) => {
   const { chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ?? ChainId.MATIC;
   const config = getConfig(chainIdToUse);
+  const tokenMap = useSelectedTokenList();
 
   const v2 = config['v2'];
   const v3 = config['v3'];
@@ -83,10 +90,19 @@ const TopMovers: React.FC<TopMoversProps> = ({ hideArrow = false }) => {
         {topMoverTokens ? (
           <Box>
             {topMoverTokens.map((token: any) => {
-              const currency = new Token(
+              const currency = getTokenFromAddress(
+                token.id,
                 chainIdToUse,
-                getAddress(token.id),
-                token.decimals,
+                tokenMap,
+                [
+                  new Token(
+                    chainIdToUse,
+                    getAddress(token.id),
+                    Number(token.decimals),
+                    token.symbol,
+                    token.name,
+                  ),
+                ],
               );
               const priceClass = getPriceClass(Number(token.priceChangeUSD));
               const priceUp = Number(token.priceChangeUSD) > 0;
