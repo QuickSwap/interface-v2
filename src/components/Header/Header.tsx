@@ -303,49 +303,53 @@ const Header: React.FC = () => {
                 <small>{val.text}</small>
               </Link>
             ))}
-            <Box className='flex menuItem'>
-              <ThreeDotIcon
-                onClick={() => setOpenDetailMenu(!openDetailMenu)}
-              />
-              {openDetailMenu && (
-                <Box className='subMenuWrapper'>
-                  <Box className='subMenu'>
-                    {menuItems.slice(4, menuItems.length).map((val, index) => {
-                      return val.isExternal ? (
+            {menuItems.length > 4 && (
+              <Box className='flex menuItem'>
+                <ThreeDotIcon
+                  onClick={() => setOpenDetailMenu(!openDetailMenu)}
+                />
+                {openDetailMenu && (
+                  <Box className='subMenuWrapper'>
+                    <Box className='subMenu'>
+                      {menuItems
+                        .slice(4, menuItems.length)
+                        .map((val, index) => {
+                          return val.isExternal ? (
+                            <a
+                              href={val.externalLink}
+                              target='_blank'
+                              key={index}
+                              rel='noopener noreferrer'
+                            >
+                              <small>{val.text}</small>
+                            </a>
+                          ) : (
+                            <Link
+                              to={val.link}
+                              key={index}
+                              onClick={() => {
+                                setOpenDetailMenu(false);
+                                updateIsV2(false);
+                              }}
+                            >
+                              <small>{val.text}</small>
+                            </Link>
+                          );
+                        })}
+                      {outLinks.map((item, ind) => (
                         <a
-                          href={val.externalLink}
-                          target='_blank'
-                          key={index}
-                          rel='noopener noreferrer'
+                          href={item.link}
+                          key={ind}
+                          onClick={() => setOpenDetailMenu(false)}
                         >
-                          <small>{val.text}</small>
+                          <small>{item.text}</small>
                         </a>
-                      ) : (
-                        <Link
-                          to={val.link}
-                          key={index}
-                          onClick={() => {
-                            setOpenDetailMenu(false);
-                            updateIsV2(false);
-                          }}
-                        >
-                          <small>{val.text}</small>
-                        </Link>
-                      );
-                    })}
-                    {outLinks.map((item, ind) => (
-                      <a
-                        href={item.link}
-                        key={ind}
-                        onClick={() => setOpenDetailMenu(false)}
-                      >
-                        <small>{item.text}</small>
-                      </a>
-                    ))}
+                      ))}
+                    </Box>
                   </Box>
-                </Box>
-              )}
-            </Box>
+                )}
+              </Box>
+            )}
           </Box>
         </Box>
       )}
