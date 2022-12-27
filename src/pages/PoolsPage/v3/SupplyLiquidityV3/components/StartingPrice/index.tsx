@@ -21,6 +21,7 @@ import { isMobileOnly } from 'react-device-detect';
 import { Box, Button } from '@material-ui/core';
 import Badge, { BadgeVariant } from 'components/v3/Badge';
 import { Error } from '@material-ui/icons';
+import { JSBI } from '@uniswap/sdk';
 
 interface IPrice {
   baseCurrency: Currency | undefined;
@@ -67,7 +68,27 @@ function TokenPrice({
   const tokenRatio = useMemo(() => {
     if (!basePrice || !quotePrice) return `Loading...`;
 
-    return basePrice.divide(quotePrice).toSignificant(5);
+    return basePrice.baseCurrency.decimals < quotePrice.baseCurrency.decimals
+      ? basePrice
+          .divide(quotePrice)
+          .divide(
+            JSBI.BigInt(
+              10 **
+                (quotePrice.baseCurrency.decimals -
+                  basePrice.baseCurrency.decimals),
+            ),
+          )
+          .toSignificant(8)
+      : basePrice
+          .divide(quotePrice)
+          .multiply(
+            JSBI.BigInt(
+              10 **
+                (basePrice.baseCurrency.decimals -
+                  quotePrice.baseCurrency.decimals),
+            ),
+          )
+          .toSignificant(8);
   }, [basePrice, quotePrice]);
 
   return (
@@ -272,7 +293,29 @@ export default function StartingPrice({
     if (!initialTokenPrice && basePriceUSD && quotePriceUSD) {
       dispatch(
         setInitialTokenPrice({
-          typedValue: basePriceUSD.divide(quotePriceUSD).toSignificant(5),
+          typedValue:
+            basePriceUSD.baseCurrency.decimals <
+            quotePriceUSD.baseCurrency.decimals
+              ? basePriceUSD
+                  .divide(quotePriceUSD)
+                  .divide(
+                    JSBI.BigInt(
+                      10 **
+                        (quotePriceUSD.baseCurrency.decimals -
+                          basePriceUSD.baseCurrency.decimals),
+                    ),
+                  )
+                  .toFixed(quotePriceUSD.baseCurrency.decimals)
+              : basePriceUSD
+                  .divide(quotePriceUSD)
+                  .multiply(
+                    JSBI.BigInt(
+                      10 **
+                        (basePriceUSD.baseCurrency.decimals -
+                          quotePriceUSD.baseCurrency.decimals),
+                    ),
+                  )
+                  .toFixed(quotePriceUSD.baseCurrency.decimals),
         }),
       );
     }
