@@ -35,6 +35,8 @@ import { useInfiniteLoading } from 'utils/useInfiniteLoading';
 import { useTranslation } from 'react-i18next';
 import { useActiveWeb3React } from 'hooks';
 import { ChainId } from '@uniswap/sdk';
+import useParsedQueryString from 'hooks/useParsedQueryString';
+import { useHistory } from 'react-router-dom';
 
 const LOADFARM_COUNT = 10;
 const POOL_COLUMN = 1;
@@ -45,19 +47,29 @@ const EARNED_COLUMN = 5;
 
 interface FarmsListProps {
   bulkPairs: any;
-  farmIndex: number;
 }
 
-const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
+const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs }) => {
   const { t } = useTranslation();
   const { breakpoints } = useTheme();
+  const history = useHistory();
+  const parsedQuery = useParsedQueryString();
+  const currentTab =
+    parsedQuery && parsedQuery.tab
+      ? (parsedQuery.tab as string)
+      : GlobalConst.v2FarmTab.LPFARM;
+  const isEndedFarm =
+    parsedQuery && parsedQuery.ended ? parsedQuery.ended === 'true' : false;
+  const stakedOnly =
+    parsedQuery && parsedQuery.stakedOnly
+      ? parsedQuery.stakedOnly === 'true'
+      : false;
+
   const isMobile = useMediaQuery(breakpoints.down('xs'));
-  const { chainId, account } = useActiveWeb3React();
+  const { chainId } = useActiveWeb3React();
   const [pageIndex, setPageIndex] = useState(0);
-  const [isEndedFarm, setIsEndedFarm] = useState(false);
   const [sortBy, setSortBy] = useState(0);
   const [sortDesc, setSortDesc] = useState(false);
-  const [stakedOnly, setStakeOnly] = useState(false);
   const [farmSearch, setFarmSearch] = useState('');
   const [farmSearchInput, setFarmSearchInput] = useDebouncedChangeHandler(
     farmSearch,
@@ -69,10 +81,10 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
   const addedLPStakingInfos = useStakingInfo(
     chainIdOrDefault,
     null,
-    farmIndex === GlobalConst.farmIndex.DUALFARM_INDEX || isEndedFarm
+    currentTab === GlobalConst.v2FarmTab.DUALFARM || isEndedFarm
       ? 0
       : undefined,
-    farmIndex === GlobalConst.farmIndex.DUALFARM_INDEX || isEndedFarm
+    currentTab === GlobalConst.v2FarmTab.DUALFARM || isEndedFarm
       ? 0
       : undefined,
     { search: farmSearch, isStaked: stakedOnly },
@@ -80,10 +92,10 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
   const addedLPStakingOldInfos = useOldStakingInfo(
     chainIdOrDefault,
     null,
-    farmIndex === GlobalConst.farmIndex.DUALFARM_INDEX || !isEndedFarm
+    currentTab === GlobalConst.v2FarmTab.DUALFARM || !isEndedFarm
       ? 0
       : undefined,
-    farmIndex === GlobalConst.farmIndex.DUALFARM_INDEX || !isEndedFarm
+    currentTab === GlobalConst.v2FarmTab.DUALFARM || !isEndedFarm
       ? 0
       : undefined,
     { search: farmSearch, isStaked: stakedOnly },
@@ -91,15 +103,15 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
   const addedCNTStakingInfos = useCNTStakingInfo(
     chainIdOrDefault,
     null,
-    farmIndex === GlobalConst.farmIndex.LPFARM_INDEX ? 0 : undefined,
-    farmIndex === GlobalConst.farmIndex.LPFARM_INDEX ? 0 : undefined,
+    currentTab === GlobalConst.v2FarmTab.LPFARM ? 0 : undefined,
+    currentTab === GlobalConst.v2FarmTab.LPFARM ? 0 : undefined,
     { search: farmSearch, isStaked: stakedOnly, isEndedFarm },
   );
   const addedDualStakingInfos = useDualStakingInfo(
     chainIdOrDefault,
     null,
-    farmIndex === GlobalConst.farmIndex.LPFARM_INDEX ? 0 : undefined,
-    farmIndex === GlobalConst.farmIndex.LPFARM_INDEX ? 0 : undefined,
+    currentTab === GlobalConst.v2FarmTab.LPFARM ? 0 : undefined,
+    currentTab === GlobalConst.v2FarmTab.LPFARM ? 0 : undefined,
     { search: farmSearch, isStaked: stakedOnly, isEndedFarm },
   );
 
@@ -331,10 +343,10 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
 
   const addedStakingInfos = useMemo(
     () =>
-      farmIndex === GlobalConst.farmIndex.DUALFARM_INDEX
+      currentTab === GlobalConst.v2FarmTab.DUALFARM
         ? sortedStakingDualInfos
         : sortedLPStakingInfos,
-    [farmIndex, sortedStakingDualInfos, sortedLPStakingInfos],
+    [currentTab, sortedStakingDualInfos, sortedLPStakingInfos],
   );
 
   const stakingRewardAddress = addedStakingInfos
@@ -345,7 +357,7 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
 
   useEffect(() => {
     setPageIndex(0);
-  }, [stakingRewardAddress, farmIndex]);
+  }, [stakingRewardAddress, currentTab]);
 
   const stakingInfos = useMemo(() => {
     return sortedLPStakingInfos
@@ -430,6 +442,22 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
     return { text: item.text, onClick: () => setSortBy(item.index) };
   });
 
+  const redirectWithFarms = (key: string, value: string) => {
+    const currentPath = history.location.pathname + history.location.search;
+    let redirectPath;
+    if (parsedQuery && parsedQuery[key]) {
+      redirectPath = currentPath.replace(
+        `${key}=${parsedQuery[key]}`,
+        `${key}=${value}`,
+      );
+    } else {
+      redirectPath = `${currentPath}${
+        history.location.search === '' ? '?' : '&'
+      }${key}=${value}`;
+    }
+    history.push(redirectPath);
+  };
+
   const renderStakedOnly = () => (
     <Box className='flex items-center'>
       <small className='text-disabled' style={{ marginRight: 8 }}>
@@ -437,7 +465,9 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
       </small>
       <ToggleSwitch
         toggled={stakedOnly}
-        onToggle={() => setStakeOnly(!stakedOnly)}
+        onToggle={() =>
+          redirectWithFarms('stakedOnly', stakedOnly ? 'false' : 'true')
+        }
       />
     </Box>
   );
@@ -445,12 +475,12 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
   const farmStatusItems = [
     {
       text: t('active'),
-      onClick: () => setIsEndedFarm(false),
+      onClick: () => redirectWithFarms('ended', 'false'),
       condition: !isEndedFarm,
     },
     {
       text: t('ended'),
-      onClick: () => setIsEndedFarm(true),
+      onClick: () => redirectWithFarms('ended', 'true'),
       condition: isEndedFarm,
     },
   ];
@@ -461,16 +491,16 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
         <Box>
           <h5>
             {t(
-              farmIndex === GlobalConst.farmIndex.OTHER_LP_INDEX
+              currentTab === GlobalConst.v2FarmTab.OTHER_LP
                 ? 'earnRewards'
                 : 'earndQUICK',
             )}
           </h5>
           <small>
             {t(
-              farmIndex === GlobalConst.farmIndex.LPFARM_INDEX
+              currentTab === GlobalConst.v2FarmTab.LPFARM
                 ? 'stakeMessageLP'
-                : farmIndex === GlobalConst.farmIndex.OTHER_LP_INDEX
+                : currentTab === GlobalConst.v2FarmTab.OTHER_LP
                 ? 'stakeMessageOtherLP'
                 : 'stakeMessageDual',
             )}
@@ -546,18 +576,17 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
           ))}
         </Box>
       )}
-      {(farmIndex === GlobalConst.farmIndex.LPFARM_INDEX && !stakingInfos) ||
-        (farmIndex === GlobalConst.farmIndex.DUALFARM_INDEX &&
-          !stakingDualInfos && (
-            <>
-              <Skeleton width='100%' height={100} />
-              <Skeleton width='100%' height={100} />
-              <Skeleton width='100%' height={100} />
-              <Skeleton width='100%' height={100} />
-              <Skeleton width='100%' height={100} />
-            </>
-          ))}
-      {farmIndex === GlobalConst.farmIndex.LPFARM_INDEX &&
+      {(currentTab === GlobalConst.v2FarmTab.LPFARM && !stakingInfos) ||
+        (currentTab === GlobalConst.v2FarmTab.DUALFARM && !stakingDualInfos && (
+          <>
+            <Skeleton width='100%' height={100} />
+            <Skeleton width='100%' height={100} />
+            <Skeleton width='100%' height={100} />
+            <Skeleton width='100%' height={100} />
+            <Skeleton width='100%' height={100} />
+          </>
+        ))}
+      {currentTab === GlobalConst.v2FarmTab.LPFARM &&
         stakingInfos &&
         stakingInfos.map((info: StakingInfo, index) => (
           <FarmCard
@@ -567,7 +596,7 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
             isLPFarm={true}
           />
         ))}
-      {farmIndex === GlobalConst.farmIndex.DUALFARM_INDEX &&
+      {currentTab === GlobalConst.v2FarmTab.DUALFARM &&
         stakingDualInfos &&
         stakingDualInfos.map((info: DualStakingInfo, index) => (
           <FarmCard
@@ -576,7 +605,7 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs, farmIndex }) => {
             stakingAPY={getPoolApy(info?.pair)}
           />
         ))}
-      {farmIndex === GlobalConst.farmIndex.OTHER_LP_INDEX &&
+      {currentTab === GlobalConst.v2FarmTab.OTHER_LP &&
         otherLpStackingInfos &&
         otherLpStackingInfos.map((info: OtherStackingInfo, index) => (
           <FarmCard
