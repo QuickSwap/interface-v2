@@ -931,7 +931,7 @@ export function useFarmingSubgraph() {
     }
   }
 
-  async function fetchEternalFarms(reload: boolean) {
+  async function fetchEternalFarms(reload: boolean, detached = false) {
     setEternalFarmsLoading(true);
 
     try {
@@ -940,6 +940,9 @@ export function useFarmingSubgraph() {
         errors,
       } = await farmingClient.query<SubgraphResponse<EternalFarming[]>>({
         query: INFINITE_EVENTS,
+        variables: {
+          detached,
+        },
         fetchPolicy: reload ? 'network-only' : 'cache-first',
       });
 

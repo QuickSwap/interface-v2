@@ -29,7 +29,10 @@ import {
   typeInput,
 } from './actions';
 import { SwapState } from './reducer';
-import { useUserSlippageTolerance } from 'state/user/hooks';
+import {
+  useSlippageManuallySet,
+  useUserSlippageTolerance,
+} from 'state/user/hooks';
 import { computeSlippageAdjustedAmounts } from 'utils/prices';
 import { GlobalData } from 'constants/index';
 import { StableCoins } from 'constants/v3/addresses';
@@ -221,7 +224,11 @@ export function useDerivedSwapInfo(): {
     }
   }
 
-  const [allowedSlippage] = useUserSlippageTolerance();
+  const [
+    allowedSlippage,
+    setUserSlippageTolerance,
+  ] = useUserSlippageTolerance();
+  const [slippageManuallySet] = useSlippageManuallySet();
 
   const slippageAdjustedAmounts =
     v2Trade &&
@@ -243,29 +250,30 @@ export function useDerivedSwapInfo(): {
     inputError = 'Insufficient ' + amountIn.currency.symbol + ' balance';
   }
 
-  const [_, setUserSlippageTolerance] = useUserSlippageTolerance();
-
   useEffect(() => {
     const stableCoins = StableCoins[chainIdToUse];
     const stableCoinAddresses =
       stableCoins && stableCoins.length > 0
         ? stableCoins.map((token) => token.address.toLowerCase())
         : [];
-    if (
-      inputCurrencyId &&
-      outputCurrencyId &&
-      stableCoinAddresses.includes(inputCurrencyId.toLowerCase()) &&
-      stableCoinAddresses.includes(outputCurrencyId.toLowerCase())
-    ) {
-      setUserSlippageTolerance(10);
-    } else {
-      setUserSlippageTolerance(50);
+    if (!slippageManuallySet) {
+      if (
+        inputCurrencyId &&
+        outputCurrencyId &&
+        stableCoinAddresses.includes(inputCurrencyId.toLowerCase()) &&
+        stableCoinAddresses.includes(outputCurrencyId.toLowerCase())
+      ) {
+        setUserSlippageTolerance(10);
+      } else {
+        setUserSlippageTolerance(50);
+      }
     }
   }, [
     inputCurrencyId,
     outputCurrencyId,
     setUserSlippageTolerance,
     chainIdToUse,
+    slippageManuallySet,
   ]);
 
   return {

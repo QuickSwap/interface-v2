@@ -13,6 +13,7 @@ import {
   useExpertModeManager,
   useUserTransactionTTL,
   useUserSlippageTolerance,
+  useSlippageManuallySet,
 } from 'state/user/hooks';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 import 'components/styles/SettingsModal.scss';
@@ -39,6 +40,10 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
     userSlippageTolerance,
     setUserslippageTolerance,
   ] = useUserSlippageTolerance();
+  const [
+    slippageManuallySet,
+    setSlippageManuallySet,
+  ] = useSlippageManuallySet();
   const [ttl, setTtl] = useUserTransactionTTL();
   const { onChangeRecipient } = useSwapActionHandlers();
   const [expertMode, toggleExpertMode] = useExpertModeManager();
@@ -91,6 +96,9 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
         valueAsIntFromRoundedFloat < 5000
       ) {
         setUserslippageTolerance(valueAsIntFromRoundedFloat);
+        if (userSlippageTolerance !== valueAsIntFromRoundedFloat) {
+          setSlippageManuallySet(true);
+        }
       }
     } catch {}
   };
@@ -173,6 +181,9 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
               onClick={() => {
                 setSlippageInput('');
                 setUserslippageTolerance(10);
+                if (userSlippageTolerance !== 10) {
+                  setSlippageManuallySet(true);
+                }
               }}
             >
               <small>0.1%</small>
@@ -184,6 +195,9 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
               onClick={() => {
                 setSlippageInput('');
                 setUserslippageTolerance(50);
+                if (userSlippageTolerance !== 50) {
+                  setSlippageManuallySet(true);
+                }
               }}
             >
               <small>0.5%</small>
@@ -195,6 +209,9 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
               onClick={() => {
                 setSlippageInput('');
                 setUserslippageTolerance(100);
+                if (userSlippageTolerance !== 100) {
+                  setSlippageManuallySet(true);
+                }
               }}
             >
               <small>1%</small>
