@@ -3,7 +3,7 @@ import { Currency } from '@uniswap/sdk-core';
 import { PoolStats } from '../PoolStats';
 import { IDerivedMintInfo } from 'state/mint/v3/hooks';
 import { Presets } from 'state/mint/v3/reducer';
-import { Box, Grid } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import { PoolState } from 'hooks/usePools';
 import Loader from 'components/Loader';
 import { fetchPoolsAPR } from 'utils/api';
@@ -67,9 +67,13 @@ export function PresetRanges({
   const gammaPairAddressStr = gammaPair
     ? gammaPair.map((pair) => pair.address).join('-')
     : '';
+
+  const decimalDifference =
+    (quoteCurrency?.decimals ?? 0) - (baseCurrency?.decimals ?? 0);
   useEffect(() => {
     if (!gammaPairAddressStr || !library) return;
     (async () => {
+      setGammaValues({});
       const gammaPairAddresses = gammaPairAddressStr.split('-');
       const gammaRange: { [key: string]: { min: number; max: number } } = {};
       for (const pairAddress of gammaPairAddresses) {
@@ -80,13 +84,17 @@ export function PresetRanges({
         );
         const baseLower = await gammaPairContract.baseLower();
         const baseUpper = await gammaPairContract.baseUpper();
-        const lowerValue = Math.pow(1.0001, baseLower);
-        const upperValue = Math.pow(1.0001, baseUpper);
-        gammaRange[pairAddress] = { min: lowerValue, max: upperValue };
+        const currentTick = await gammaPairContract.currentTick();
+        const lowerValue = Math.pow(1.0001, baseLower - currentTick);
+        const upperValue = Math.pow(1.0001, baseUpper - currentTick);
+        gammaRange[pairAddress] = {
+          min: lowerValue,
+          max: upperValue,
+        };
       }
       setGammaValues(gammaRange);
     })();
-  }, [gammaPairAddressStr, library]);
+  }, [gammaPairAddressStr, library, decimalDifference]);
 
   const ranges = useMemo(() => {
     if (isGamma) {
@@ -96,8 +104,8 @@ export function PresetRanges({
             return {
               type: pair.type,
               title: pair.title,
-              min: gammaValues[pairAddress].min ?? 0.9,
-              max: gammaValues[pairAddress].max ?? 1.1,
+              min: gammaValues[pairAddress] ? gammaValues[pairAddress].min : 0,
+              max: gammaValues[pairAddress] ? gammaValues[pairAddress].max : 0,
               risk: PresetProfits.VERY_LOW,
               profit: PresetProfits.HIGH,
             };
@@ -226,22 +234,32 @@ export function PresetRanges({
   return (
     <Box>
       <Box mb='10px' className='preset-buttons'>
-        {ranges.map((range, i) => (
-          <button
-            className={`${activePreset === range.type ? 'active-preset' : ''}`}
-            onClick={() => {
-              handlePresetRangeSelection(range);
-              if (activePreset == range.type) {
-                handlePresetRangeSelection(null);
-              } else {
-                handlePresetRangeSelection(range);
-              }
-            }}
-            key={i}
-          >
-            <p className='caption'>{range.title}</p>
-          </button>
-        ))}
+        {isGamma && !Object.values(gammaValues).length ? (
+          <Box width={1} className='flex justify-center'>
+            <Loader />
+          </Box>
+        ) : (
+          <>
+            {ranges.map((range, i) => (
+              <button
+                className={`${
+                  activePreset === range.type ? 'active-preset' : ''
+                }`}
+                onClick={() => {
+                  handlePresetRangeSelection(range);
+                  if (activePreset == range.type) {
+                    handlePresetRangeSelection(null);
+                  } else {
+                    handlePresetRangeSelection(range);
+                  }
+                }}
+                key={i}
+              >
+                <p className='caption'>{range.title}</p>
+              </button>
+            ))}
+          </>
+        )}
       </Box>
       {!isGamma && (
         <>
