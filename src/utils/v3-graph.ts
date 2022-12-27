@@ -74,6 +74,11 @@ export async function getGlobalDataV3(): Promise<any> {
       fetchPolicy: 'network-only',
     });
 
+    const dataTwoDay = await clientV3.query({
+      query: GLOBAL_DATA_V3(twoDayBlock.number),
+      fetchPolicy: 'network-only',
+    });
+
     const dataOneWeek = await clientV3.query({
       query: GLOBAL_DATA_V3(oneWeekBlock.number),
       fetchPolicy: 'network-only',
@@ -84,7 +89,13 @@ export async function getGlobalDataV3(): Promise<any> {
       fetchPolicy: 'network-only',
     });
 
-    const [statsCurrent, statsOneDay, statsOneWeek, statsTwoWeek] = [
+    const [
+      statsCurrent,
+      statsOneDay,
+      statsTwoDay,
+      statsOneWeek,
+      statsTwoWeek,
+    ] = [
       dataCurrent &&
       dataCurrent.data &&
       dataCurrent.data.factories &&
@@ -96,6 +107,12 @@ export async function getGlobalDataV3(): Promise<any> {
       dataOneDay.data.factories &&
       dataOneDay.data.factories.length > 0
         ? dataOneDay.data.factories[0]
+        : undefined,
+      dataTwoDay &&
+      dataTwoDay.data &&
+      dataTwoDay.data.factories &&
+      dataTwoDay.data.factories.length > 0
+        ? dataTwoDay.data.factories[0]
         : undefined,
       dataOneWeek &&
       dataOneWeek.data &&
@@ -117,17 +134,20 @@ export async function getGlobalDataV3(): Promise<any> {
     const oneDayBeforeVolumeUSD = statsOneDay
       ? Number(statsOneDay.totalVolumeUSD)
       : 0;
+    const twoDayBeforeVolumeUSD = statsTwoDay
+      ? Number(statsTwoDay.totalVolumeUSD)
+      : 0;
     const oneWeekBeforeVolumeUSD = statsOneWeek
       ? Number(statsOneWeek.totalVolumeUSD)
       : 0;
     const twoWeekBeforeVolumeUSD = statsTwoWeek
       ? Number(statsTwoWeek.totalVolumeUSD)
       : 0;
-    const oneDayVolumeUSD = currentVolumeUSD - oneDayBeforeVolumeUSD;
 
-    const volumeChangeUSD = getPercentChange(
+    const [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(
       currentVolumeUSD,
       oneDayBeforeVolumeUSD,
+      twoDayBeforeVolumeUSD,
     );
 
     const [oneWeekVolume, weeklyVolumeChange] = get2DayPercentChange(
@@ -143,9 +163,13 @@ export async function getGlobalDataV3(): Promise<any> {
 
     const currentFeesUSD = statsCurrent ? Number(statsCurrent.totalFeesUSD) : 0;
     const oneDayFeesUSD = statsOneDay ? Number(statsOneDay.totalFeesUSD) : 0;
-    const feesUSD = currentFeesUSD - oneDayFeesUSD;
+    const twoDayFeesUSD = statsTwoDay ? Number(statsTwoDay.totalFeesUSD) : 0;
 
-    const feesUSDChange = getPercentChange(currentFeesUSD, oneDayFeesUSD);
+    const [feesUSD, feesUSDChange] = get2DayPercentChange(
+      currentFeesUSD,
+      oneDayFeesUSD,
+      twoDayFeesUSD,
+    );
 
     const currentTxns = statsCurrent ? Number(statsCurrent.txCount) : 0;
     const oneDayTxns = statsOneDay ? Number(statsOneDay.txCount) : 0;
