@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Box } from '@material-ui/core';
 import { ArrowDropUp, ArrowDropDown } from '@material-ui/icons';
 import Skeleton from '@material-ui/lab/Skeleton';
-import { Token, ChainId } from '@uniswap/sdk';
+import { Token } from '@uniswap/sdk';
 import { getAddress } from '@ethersproject/address';
 import { CurrencyLogo } from 'components';
 import {
@@ -28,12 +28,11 @@ const TopMovers: React.FC<TopMoversProps> = ({ hideArrow = false }) => {
   const { ethPrice } = useEthPrice();
   const { maticPrice } = useMaticPrice();
   const { chainId } = useActiveWeb3React();
-  const chainIdToUse = chainId ?? ChainId.MATIC;
-  const config = getConfig(chainIdToUse);
+  const config = chainId ? getConfig(chainId) : undefined;
   const tokenMap = useSelectedTokenList();
 
-  const v2 = config['v2'];
-  const v3 = config['v3'];
+  const v2 = config ? config['v2'] : undefined;
+  const v3 = config ? config['v3'] : undefined;
   const { isV2 } = useIsV2();
 
   const topMoverTokens = useMemo(
@@ -42,7 +41,7 @@ const TopMovers: React.FC<TopMoversProps> = ({ hideArrow = false }) => {
   );
 
   useEffect(() => {
-    if (isV2 === undefined) return;
+    if (isV2 === undefined || !chainId) return;
 
     (async () => {
       if (isV2) {
@@ -51,7 +50,7 @@ const TopMovers: React.FC<TopMoversProps> = ({ hideArrow = false }) => {
             ethPrice.price,
             ethPrice.oneDayPrice,
             5,
-            chainIdToUse,
+            chainId,
           );
           if (data) {
             updateTopTokens(data);
@@ -63,7 +62,7 @@ const TopMovers: React.FC<TopMoversProps> = ({ hideArrow = false }) => {
             maticPrice.price,
             maticPrice.oneDayPrice,
             5,
-            chainIdToUse,
+            chainId,
           );
           if (data) {
             updateTopTokens(data);
@@ -80,23 +79,23 @@ const TopMovers: React.FC<TopMoversProps> = ({ hideArrow = false }) => {
     isV2,
     v2,
     v3,
-    chainIdToUse,
+    chainId,
   ]);
 
   return (
     <Box className='bg-palette topMoversWrapper'>
       <p className='weight-600 text-secondary'>{t('24hMostVolume')}</p>
       <Box className='topMoversContent'>
-        {topMoverTokens ? (
+        {topMoverTokens && chainId ? (
           <Box>
             {topMoverTokens.map((token: any) => {
               const currency = getTokenFromAddress(
                 token.id,
-                chainIdToUse,
+                chainId,
                 tokenMap,
                 [
                   new Token(
-                    chainIdToUse,
+                    chainId,
                     getAddress(token.id),
                     Number(token.decimals),
                     token.symbol,
