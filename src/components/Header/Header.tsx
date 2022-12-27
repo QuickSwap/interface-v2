@@ -25,6 +25,7 @@ import SparkleBottom from 'assets/images/SparkleBottom.svg';
 import 'components/styles/Header.scss';
 import { useTranslation } from 'react-i18next';
 import useDeviceWidth from 'hooks/useDeviceWidth';
+import { GlobalValue } from 'constants/index';
 
 const newTransactionsFirst = (a: TransactionDetails, b: TransactionDetails) => {
   return b.addedTime - a.addedTime;
@@ -83,7 +84,7 @@ const Header: React.FC = () => {
 
   const menuItems = [
     {
-      link: '/swap',
+      link: `/swap?swapIndex=0&currency0=ETH&currency1=${GlobalValue.tokens.COMMON.USDC.address}`,
       text: t('swap'),
       id: 'swap-page-link',
     },
