@@ -151,6 +151,8 @@
   "eternalFarms": "Eternal Farms",
   "v3Mining": "V3 Farms",
   "noEternalFarms": "No eternal Farms",
+  "noActiveEternalFarms": "No active eternal farms",
+  "noEndedEternalFarms": "No ended eternal farms",
   "totalRewards": "Total Rewards",
   "fees24h": "Fees [24h]",
   "rewardRate": "Reward Rate",

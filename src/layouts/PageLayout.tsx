@@ -26,7 +26,12 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
   };
   useEffect(() => {
     const unlisten = history.listen((location) => {
-      updateIsProMode(false);
+      const willBeSwapPage = location.pathname === '/swap';
+
+      // disallow the pro mode except for the swap page
+      if (!willBeSwapPage) {
+        updateIsProMode(false);
+      }
     });
     return function cleanup() {
       unlisten();

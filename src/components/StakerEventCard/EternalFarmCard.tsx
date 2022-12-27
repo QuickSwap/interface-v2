@@ -35,6 +35,7 @@ interface EternalFarmCardProps {
     bonusReward?: string;
     bonusRewardRate?: string;
     locked?: boolean;
+    isDetached?: boolean;
   };
   aprs: Aprs | undefined;
   aprsLoading: boolean;
@@ -57,6 +58,7 @@ export function EternalFarmCard({
     bonusRewardToken,
     rewardRate,
     bonusRewardRate,
+    isDetached,
   } = {},
   aprs,
   aprsLoading,
@@ -283,7 +285,11 @@ export function EternalFarmCard({
           )}
 
           <Box marginTop={2}>
-            <StyledButton height='40px' onClick={farmHandler}>
+            <StyledButton
+              height='40px'
+              disabled={isDetached}
+              onClick={farmHandler}
+            >
               Farm
             </StyledButton>
           </Box>
