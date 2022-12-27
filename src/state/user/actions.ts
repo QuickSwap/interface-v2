@@ -25,6 +25,9 @@ export const updateUserExpertMode = createAction<{ userExpertMode: boolean }>(
 export const updateUserSlippageTolerance = createAction<{
   userSlippageTolerance: number;
 }>('user/updateUserSlippageTolerance');
+export const updateSlippageManuallySet = createAction<{
+  slippageManuallySet: boolean;
+}>('user/updateSlippageManuallySet');
 export const updateUserDeadline = createAction<{ userDeadline: number }>(
   'user/updateUserDeadline',
 );
