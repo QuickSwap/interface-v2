@@ -39,11 +39,11 @@ import useParsedQueryString from 'hooks/useParsedQueryString';
 import { useHistory } from 'react-router-dom';
 
 const LOADFARM_COUNT = 10;
-const POOL_COLUMN = 1;
-const TVL_COLUMN = 2;
-const REWARDS_COLUMN = 3;
-const APY_COLUMN = 4;
-const EARNED_COLUMN = 5;
+const POOL_COLUMN = '1';
+const TVL_COLUMN = '2';
+const REWARDS_COLUMN = '3';
+const APY_COLUMN = '4';
+const EARNED_COLUMN = '5';
 
 interface FarmsListProps {
   bulkPairs: any;
@@ -64,12 +64,15 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs }) => {
     parsedQuery && parsedQuery.stakedOnly
       ? parsedQuery.stakedOnly === 'true'
       : false;
+  const sortDesc =
+    parsedQuery && parsedQuery.sortDesc
+      ? parsedQuery.sortDesc === 'true'
+      : false;
+  const sortBy = parsedQuery && parsedQuery.sortBy ? parsedQuery.sortBy : false;
 
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const { chainId } = useActiveWeb3React();
   const [pageIndex, setPageIndex] = useState(0);
-  const [sortBy, setSortBy] = useState(0);
-  const [sortDesc, setSortDesc] = useState(false);
   const [farmSearch, setFarmSearch] = useState('');
   const [farmSearchInput, setFarmSearchInput] = useDebouncedChangeHandler(
     farmSearch,
@@ -424,24 +427,6 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs }) => {
     },
   ];
 
-  const sortByDesktopItems = sortColumns.map((item) => {
-    return {
-      ...item,
-      onClick: () => {
-        if (sortBy === item.index) {
-          setSortDesc(!sortDesc);
-        } else {
-          setSortBy(item.index);
-          setSortDesc(false);
-        }
-      },
-    };
-  });
-
-  const sortByMobileItems = sortColumns.map((item) => {
-    return { text: item.text, onClick: () => setSortBy(item.index) };
-  });
-
   const redirectWithFarms = (key: string, value: string) => {
     const currentPath = history.location.pathname + history.location.search;
     let redirectPath;
@@ -457,6 +442,27 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs }) => {
     }
     history.push(redirectPath);
   };
+
+  const sortByDesktopItems = sortColumns.map((item) => {
+    return {
+      ...item,
+      onClick: () => {
+        if (sortBy === item.index) {
+          redirectWithFarms('sortDesc', sortDesc ? 'false' : 'true');
+        } else {
+          redirectWithFarms('sortBy', item.index);
+          redirectWithFarms('sortDesc', 'false');
+        }
+      },
+    };
+  });
+
+  const sortByMobileItems = sortColumns.map((item) => {
+    return {
+      text: item.text,
+      onClick: () => redirectWithFarms('sortBy', item.index),
+    };
+  });
 
   const renderStakedOnly = () => (
     <Box className='flex items-center'>
@@ -541,7 +547,9 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs }) => {
                   </small>
                   <ToggleSwitch
                     toggled={sortDesc}
-                    onToggle={() => setSortDesc(!sortDesc)}
+                    onToggle={() =>
+                      redirectWithFarms('sortDesc', sortDesc ? 'false' : 'true')
+                    }
                   />
                 </Box>
               </>
