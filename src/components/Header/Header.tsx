@@ -2,7 +2,11 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Box, useMediaQuery } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
-import { useIsV2, useWalletModalToggle } from 'state/application/hooks';
+import {
+  useIsV2,
+  useUDDomain,
+  useWalletModalToggle,
+} from 'state/application/hooks';
 import {
   isTransactionRecent,
   useAllTransactions,
@@ -36,6 +40,7 @@ const Header: React.FC = () => {
   const { account } = useActiveWeb3React();
   const { ethereum } = window as any;
   const { ENSName } = useENSName(account ?? undefined);
+  const { udDomain } = useUDDomain();
   const [openDetailMenu, setOpenDetailMenu] = useState(false);
   const theme = useTheme();
   const allTransactions = useAllTransactions();
@@ -319,7 +324,7 @@ const Header: React.FC = () => {
             className='accountDetails'
             onClick={toggleWalletModal}
           >
-            <p>{shortenAddress(account)}</p>
+            <p>{udDomain ?? shortenAddress(account)}</p>
             <img src={WalletIcon} alt='Wallet' />
           </Box>
         ) : (
