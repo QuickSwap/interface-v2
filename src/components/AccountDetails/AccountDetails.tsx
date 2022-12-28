@@ -7,13 +7,20 @@ import { clearAllTransactions } from 'state/transactions/actions';
 import { shortenAddress, getEtherscanLink, getWalletKeys } from 'utils';
 import { SUPPORTED_WALLETS } from 'constants/index';
 import { ReactComponent as Close } from 'assets/images/CloseIcon.svg';
-import { injected, walletlink, safeApp, trustconnect } from 'connectors';
+import {
+  injected,
+  walletlink,
+  safeApp,
+  trustconnect,
+  unstopabbledomains,
+} from 'connectors';
 import { ExternalLink as LinkIcon } from 'react-feather';
 import 'components/styles/AccountDetails.scss';
 import StatusIcon from './StatusIcon';
 import Copy from './CopyHelper';
 import Transaction from './Transaction';
 import { useTranslation } from 'react-i18next';
+import { useUDDomain } from 'state/application/hooks';
 
 function renderTransactions(transactions: string[]) {
   return (
@@ -41,6 +48,7 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
   openOptions,
 }) => {
   const { chainId, account, connector } = useActiveWeb3React();
+  const { udDomain, updateUDDomain } = useUDDomain();
   const dispatch = useDispatch<AppDispatch>();
   const { t } = useTranslation();
 
@@ -76,7 +84,11 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
                 <small
                   style={{ cursor: 'pointer', marginRight: 8 }}
                   onClick={() => {
-                    (connector as any).close();
+                    if (connector === unstopabbledomains) {
+                      (connector as any).handleDeactivate();
+                    } else {
+                      (connector as any).close();
+                    }
                   }}
                 >
                   {t('disconnect')}
@@ -97,7 +109,11 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
         <Box className='flex items-center' my={1.5}>
           <StatusIcon />
           <h5 style={{ marginLeft: 8 }} id='web3-account-identifier-row'>
-            {ENSName ? ENSName : account && shortenAddress(account)}
+            {udDomain
+              ? udDomain
+              : ENSName
+              ? ENSName
+              : account && shortenAddress(account)}
           </h5>
         </Box>
         <Box className='flex justify-between items-center'>

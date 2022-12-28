@@ -99,3 +99,7 @@ export const updateGasPrice = createAction<{
 }>('application/updateGasPrice');
 
 export const updateIsV2 = createAction<boolean>('application/updateIsV2');
+
+export const updateUDDomain = createAction<string | undefined>(
+  'application/updateUDDomain',
+);

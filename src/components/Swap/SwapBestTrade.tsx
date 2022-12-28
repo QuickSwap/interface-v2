@@ -280,7 +280,7 @@ const SwapBestTrade: React.FC<{
   };
 
   const { data: optimalRate } = useQuery('fetchOptimalRate', fetchOptimalRate, {
-    refetchInterval: 1000,
+    refetchInterval: 5000,
   });
 
   const parsedAmounts = useMemo(() => {
@@ -308,7 +308,7 @@ const SwapBestTrade: React.FC<{
           [Field.INPUT]:
             independentField === Field.INPUT
               ? parsedAmountInput
-              : optimalRate && outputCurrency
+              : optimalRate && inputCurrency
               ? CurrencyAmount.fromRawAmount(
                   inputCurrency as Currency,
                   JSBI.BigInt(optimalRate.srcAmount),
@@ -372,7 +372,6 @@ const SwapBestTrade: React.FC<{
     error: paraswapCallbackError,
   } = useParaswapCallback(
     optimalRate,
-    pct,
     recipient,
     inputCurrency,
     outputCurrency,
@@ -743,10 +742,10 @@ const SwapBestTrade: React.FC<{
       <Box className='exchangeSwap'>
         <ExchangeIcon
           onClick={() => {
-            redirectWithSwitch();
             setSwapType(
               swapType === SwapSide.BUY ? SwapSide.SELL : SwapSide.BUY,
             );
+            redirectWithSwitch();
           }}
         />
       </Box>

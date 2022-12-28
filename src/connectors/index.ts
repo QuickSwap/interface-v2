@@ -2,6 +2,7 @@ import { Web3Provider } from '@ethersproject/providers';
 import { InjectedConnector } from '@web3-react/injected-connector';
 import { WalletConnectConnector } from '@web3-react/walletconnect-connector';
 import { LedgerConnector } from '@web3-react/ledger-connector';
+import { UAuthConnector } from '@uauth/web3-react';
 import { WalletLinkConnector } from './WalletLink';
 import { PortisConnector } from './Portis';
 
@@ -138,4 +139,15 @@ export const ledger = new LedgerConnector({
   chainId: 137,
   url: NETWORK_URL,
   pollingInterval: POLLING_INTERVAL,
+});
+
+export const unstopabbledomains = new UAuthConnector({
+  clientID: process.env.REACT_APP_UNSTOPPABLE_DOMAIN_CLIENT_ID,
+  redirectUri: process.env.REACT_APP_UNSTOPPABLE_DOMAIN_REDIRECT_URI,
+
+  // Scope must include openid and wallet
+  scope: 'openid wallet',
+
+  // Injected and walletconnect connectors are required.
+  connectors: { injected, walletconnect },
 });
