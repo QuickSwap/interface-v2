@@ -13,9 +13,7 @@ import CurrencySearchModal from 'components/CurrencySearchModal';
 import { Box } from '@material-ui/core';
 import NumericalInput from 'components/NumericalInput';
 import { useTranslation } from 'react-i18next';
-import JSBI from 'jsbi';
 import './index.scss';
-import { parseUnits } from 'ethers/lib/utils';
 
 interface CurrencyInputPanelProps {
   value: string;
@@ -88,34 +86,13 @@ export default function CurrencyInputPanel({
 
   const currentPrice = useUSDCPrice(currency ?? undefined);
 
-  const valueBN = useMemo(() => {
-    if (!currency) return;
-    const digitStr = value.substring(value.indexOf('.'));
-    const decimalStr = value.substring(0, value.indexOf('.'));
-    let valueStr = '0';
-    if (!value.length) {
-      valueStr = '0';
-    } else if (value.indexOf('.') === -1) {
-      valueStr = value;
-    } else if (digitStr.length === 1) {
-      valueStr = decimalStr;
-    } else if (digitStr.length > currency.decimals + 1) {
-      valueStr = decimalStr + digitStr.slice(0, currency.decimals + 1);
-    } else {
-      valueStr = decimalStr + digitStr;
-    }
-    return parseUnits(valueStr, currency.decimals);
-  }, [value, currency]);
-
   const valueAsUsd = useMemo(() => {
-    if (!currentPrice || !valueBN || !currency) {
-      return undefined;
+    if (!currentPrice || !value) {
+      return 0;
     }
 
-    return currentPrice.quote(
-      CurrencyAmount.fromRawAmount(currency, JSBI.BigInt(valueBN)),
-    );
-  }, [currentPrice, currency, valueBN]);
+    return Number(currentPrice.toSignificant()) * Number(value);
+  }, [currentPrice, value]);
 
   const handleDismissSearch = useCallback(() => {
     setModalOpen(false);
@@ -188,7 +165,11 @@ export default function CurrencyInputPanel({
             )}
           </Box>
 
-          <small className='text-secondary'>${valueAsUsd?.toFixed(2)}</small>
+          <Box className='v3-currency-input-usd-value'>
+            <small className='text-secondary'>
+              ${valueAsUsd.toLocaleString('us')}
+            </small>
+          </Box>
         </Box>
       </Box>
 
