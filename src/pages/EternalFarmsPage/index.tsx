@@ -57,7 +57,7 @@ export default function EternalFarmsPage() {
   const redirectWithFarmStatus = (status: string) => {
     const currentPath = history.location.pathname + history.location.search;
     let redirectPath;
-    if (parsedQuery.farmStatus) {
+    if (parsedQuery && parsedQuery.farmStatus) {
       redirectPath = currentPath.replace(
         `farmStatus=${parsedQuery.farmStatus}`,
         `farmStatus=${status}`,
