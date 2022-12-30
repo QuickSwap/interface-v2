@@ -287,8 +287,7 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
                   <small>
                     {formatMulDivTokenAmount(
                       syrup.rewardRate,
-                      GlobalConst.utils.ONEDAYSECONDS /
-                        10 ** rateDecimalDifference,
+                      1 / 10 ** rateDecimalDifference,
                     )}{' '}
                     {syrupCurrency.symbol} / {t('day')}
                   </small>
