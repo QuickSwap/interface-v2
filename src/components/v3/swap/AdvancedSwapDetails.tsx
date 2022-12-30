@@ -10,6 +10,7 @@ import { AutoColumn } from '../Column';
 import { RowBetween, RowFixed } from '../Row';
 import FormattedPriceImpact from './FormattedPriceImpact';
 import SwapRoute from './SwapRoute';
+import { useTranslation } from 'react-i18next';
 
 interface AdvancedSwapDetailsProps {
   trade?:
@@ -23,6 +24,7 @@ export function AdvancedSwapDetails({
   allowedSlippage,
 }: AdvancedSwapDetailsProps) {
   const theme = useContext(ThemeContext);
+  const { t } = useTranslation();
 
   const { realizedLPFee, priceImpact } = useMemo(() => {
     if (!trade) return { realizedLPFee: undefined, priceImpact: undefined };
@@ -38,7 +40,7 @@ export function AdvancedSwapDetails({
       <RowBetween>
         <RowFixed>
           <TYPE.black fontSize={12} fontWeight={400} color={theme.text2}>
-            Liquidity Provider Fee
+            {t('liquidityProviderFee')}
           </TYPE.black>
         </RowFixed>
         <TYPE.black textAlign='right' fontSize={12} color={theme.text1}>
@@ -53,7 +55,7 @@ export function AdvancedSwapDetails({
       <RowBetween>
         <RowFixed>
           <TYPE.black fontSize={12} fontWeight={400} color={theme.text2}>
-            Route
+            {t('route')}
           </TYPE.black>
         </RowFixed>
         <TYPE.black textAlign='right' fontSize={12} color={theme.text1}>
@@ -64,7 +66,7 @@ export function AdvancedSwapDetails({
       <RowBetween>
         <RowFixed>
           <TYPE.black fontSize={12} fontWeight={400} color={theme.text2}>
-            Price Impact
+            {t('priceimpact')}
           </TYPE.black>
         </RowFixed>
         <TYPE.black textAlign='right' fontSize={12} color={theme.text1}>
@@ -76,8 +78,8 @@ export function AdvancedSwapDetails({
         <RowFixed>
           <TYPE.black fontSize={12} fontWeight={400} color={theme.text2}>
             {trade.tradeType === TradeType.EXACT_INPUT
-              ? 'Minimum received'
-              : 'Maximum sent'}
+              ? t('minReceived')
+              : t('maxSold')}
           </TYPE.black>
         </RowFixed>
         <TYPE.black textAlign='right' fontSize={12} color={theme.text1}>
@@ -94,7 +96,7 @@ export function AdvancedSwapDetails({
       <RowBetween>
         <RowFixed>
           <TYPE.black fontSize={12} fontWeight={400} color={theme.text2}>
-            Slippage tolerance
+            {t('slippageTolerance')}
           </TYPE.black>
         </RowFixed>
         <TYPE.black textAlign='right' fontSize={12} color={theme.text1}>

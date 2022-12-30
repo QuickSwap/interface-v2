@@ -233,9 +233,16 @@ export default function IncreaseLiquidityV3({
             .then(async (response: TransactionResponse) => {
               setAttemptingTxn(false);
               setTxPending(true);
-              const summary = noLiquidity
-                ? `Create pool and add ${baseCurrency?.symbol}/${quoteCurrency?.symbol} liquidity`
-                : `Add ${baseCurrency?.symbol}/${quoteCurrency?.symbol} liquidity`;
+              const summaryData = {
+                symbolA: baseCurrency?.symbol,
+                symbolB: quoteCurrency?.symbol,
+              };
+              const summary = t(
+                noLiquidity
+                  ? 'createPoolandaddLiquidity'
+                  : 'addLiquidityWithTokens',
+                summaryData,
+              );
               addTransaction(response, {
                 summary,
               });
@@ -310,23 +317,26 @@ export default function IncreaseLiquidityV3({
       </Box>
       <Box mb={4} textAlign='center'>
         <p>
-          Add {formattedAmounts[Field.CURRENCY_A]}{' '}
-          {currencies[Field.CURRENCY_A]?.symbol} and{' '}
-          {formattedAmounts[Field.CURRENCY_B]}{' '}
-          {currencies[Field.CURRENCY_B]?.symbol}
+          {t('addLiquidityTokens', {
+            amountA: formattedAmounts[Field.CURRENCY_A],
+            symbolA: currencies[Field.CURRENCY_A]?.symbol,
+            amountB: formattedAmounts[Field.CURRENCY_B],
+            symbolB: currencies[Field.CURRENCY_B]?.symbol,
+          })}
         </p>
       </Box>
       <Button className='v3-increase-liquidity-button' onClick={onAdd}>
-        Confirm
+        {t('confirm')}
       </Button>
     </>
   );
 
-  const pendingText = `Adding ${formattedAmounts[Field.CURRENCY_A]} ${
-    currencies[Field.CURRENCY_A]?.symbol
-  } and ${formattedAmounts[Field.CURRENCY_B]} ${
-    currencies[Field.CURRENCY_B]?.symbol
-  }`;
+  const pendingText = t('addingLiquidityTokens', {
+    amountA: formattedAmounts[Field.CURRENCY_A],
+    symbolA: currencies[Field.CURRENCY_A]?.symbol,
+    amountB: formattedAmounts[Field.CURRENCY_B],
+    symbolB: currencies[Field.CURRENCY_B]?.symbol,
+  });
 
   return (
     <>
@@ -345,7 +355,7 @@ export default function IncreaseLiquidityV3({
               />
             ) : (
               <ConfirmationModalContent
-                title='Increasing Liquidity'
+                title={t('increasingLiquidity')}
                 onDismiss={handleDismissConfirmation}
                 content={modalHeader}
               />
@@ -354,8 +364,8 @@ export default function IncreaseLiquidityV3({
           pendingText={pendingText}
           modalContent={
             txPending
-              ? 'Submitted transaction to increase liquidity.'
-              : 'Successfully increased liquidity'
+              ? t('submittedTxIncreaseLiquidity')
+              : t('successfullyIncreasedLiquidity')
           }
         />
       )}
@@ -392,13 +402,13 @@ export default function IncreaseLiquidityV3({
         </Box>
         {existingPosition?.pool.fee && (
           <Box mt={2}>
-            <p>Fee</p>
+            <p>{t('fee')}</p>
             <p>{existingPosition?.pool?.fee / 10000}%</p>
           </Box>
         )}
       </Box>
       <Box mt={2} className='flex justify-between'>
-        <p>Select Range</p>
+        <p>{t('selectRange')}</p>
         {currencyBase && currencyQuote && (
           <RateToggle
             currencyA={currencyBase}
@@ -413,14 +423,15 @@ export default function IncreaseLiquidityV3({
             className='v3-increase-liquidity-price-wrapper'
             width={priceUpper ? '49%' : '100%'}
           >
-            <p>Min Price</p>
+            <p>{t('minPrice')}</p>
             <h6>{formatTickPrice(priceLower, ticksAtLimit, Bound.LOWER)}</h6>
             <p>
-              {currencyQuote?.symbol} per {currencyBase?.symbol}
+              {currencyQuote?.symbol} {t('per')} {currencyBase?.symbol}
             </p>
             <p>
-              Your position will be 100% Composed of {currencyBase?.symbol} at
-              this price
+              {t('positionComposedAtThisPrice', {
+                symbol: currencyBase?.symbol,
+              })}
             </p>
           </Box>
         )}
@@ -429,29 +440,30 @@ export default function IncreaseLiquidityV3({
             className='v3-increase-liquidity-price-wrapper'
             width={priceLower ? '49%' : '100%'}
           >
-            <p>Min Price</p>
+            <p>{t('minPrice')}</p>
             <h6>{formatTickPrice(priceUpper, ticksAtLimit, Bound.UPPER)}</h6>
             <p>
-              {currencyQuote?.symbol} per {currencyBase?.symbol}
+              {currencyQuote?.symbol} {t('per')} {currencyBase?.symbol}
             </p>
             <p>
-              Your position will be 100% Composed of {currencyQuote?.symbol} at
-              this price
+              {t('positionComposedAtThisPrice', {
+                symbol: currencyQuote?.symbol,
+              })}
             </p>
           </Box>
         )}
       </Box>
       {currentPrice && (
         <Box mt={2} className='v3-increase-liquidity-price-wrapper'>
-          <p>Current Price</p>
+          <p>{t('currentPrice')}</p>
           <h6>{currentPrice.toSignificant()}</h6>
           <p>
-            {currencyQuote?.symbol} per {currencyBase?.symbol}
+            {currencyQuote?.symbol} {t('per')} {currencyBase?.symbol}
           </p>
         </Box>
       )}
       <Box mt={2}>
-        <p>Add more liquidity</p>
+        <p>{t('addMoreLiquidity')}</p>
       </Box>
       <Box mt={2}>
         <CurrencyInputPanel
@@ -512,9 +524,11 @@ export default function IncreaseLiquidityV3({
                   disabled={approvalA === ApprovalState.PENDING}
                 >
                   {approvalA === ApprovalState.PENDING ? (
-                    <p>Approving {currencies[Field.CURRENCY_A]?.symbol}</p>
+                    <p>
+                      {t('approving')} {currencies[Field.CURRENCY_A]?.symbol}
+                    </p>
                   ) : (
-                    `Approve ${currencies[Field.CURRENCY_A]?.symbol}`
+                    `${t('approve')} ${currencies[Field.CURRENCY_A]?.symbol}`
                   )}
                 </Button>
               </Box>
@@ -529,9 +543,11 @@ export default function IncreaseLiquidityV3({
                   disabled={approvalB === ApprovalState.PENDING}
                 >
                   {approvalB === ApprovalState.PENDING ? (
-                    <p>Approving {currencies[Field.CURRENCY_B]?.symbol}</p>
+                    <p>
+                      {t('approving')} {currencies[Field.CURRENCY_B]?.symbol}
+                    </p>
                   ) : (
-                    `Approve ${currencies[Field.CURRENCY_B]?.symbol}`
+                    `${t('approve')} ${currencies[Field.CURRENCY_B]?.symbol}`
                   )}
                 </Button>
               </Box>
@@ -559,7 +575,7 @@ export default function IncreaseLiquidityV3({
             }
           }}
         >
-          {noLiquidity ? 'Add' : errorMessage ? errorMessage : 'Preview'}
+          {noLiquidity ? t('add') : errorMessage ? errorMessage : t('preview')}
         </Button>
       </Box>
     </>

@@ -81,8 +81,10 @@ import useParsedQueryString from 'hooks/useParsedQueryString';
 import { ETHER } from '@uniswap/sdk';
 import { WMATIC_EXTENDED } from 'constants/v3/addresses';
 import useSwapRedirects from 'hooks/useSwapRedirect';
+import { useTranslation } from 'react-i18next';
 
 const SwapV3Page: React.FC = () => {
+  const { t } = useTranslation();
   const { account, chainId } = useActiveWeb3React();
   const history = useHistory();
   const loadedUrlParams = useDefaultsFromURLSearch();
@@ -323,7 +325,7 @@ const SwapV3Page: React.FC = () => {
     if (!swapCallback) {
       return;
     }
-    if (priceImpact && !confirmPriceImpactWithoutFee(priceImpact)) {
+    if (priceImpact && !confirmPriceImpactWithoutFee(priceImpact, t)) {
       return;
     }
     setSwapState({
@@ -377,6 +379,7 @@ const SwapV3Page: React.FC = () => {
     recipientAddress,
     account,
     trade,
+    t,
   ]);
 
   // errors

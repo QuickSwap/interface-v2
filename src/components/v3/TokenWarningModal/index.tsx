@@ -6,9 +6,11 @@ import { CustomModal, CurrencyLogo } from 'components';
 import { ReportProblemOutlined } from '@material-ui/icons';
 import { useActiveWeb3React } from 'hooks';
 import { getEtherscanLink, shortenAddress } from 'utils';
+import { Trans, useTranslation } from 'react-i18next';
 
 function TokenWarningCard({ token }: { token?: Token | V2Token }) {
   const { chainId } = useActiveWeb3React();
+  const { t } = useTranslation();
 
   if (!token) return null;
 
@@ -30,7 +32,9 @@ function TokenWarningCard({ token }: { token?: Token | V2Token }) {
             target='_blank'
             rel='noreferrer'
           >
-            <p>{shortenAddress(token.address)} (View on Block Explorer)</p>
+            <p>
+              {shortenAddress(token.address)} ({t('viewonBlockExplorer')})
+            </p>
           </a>
         )}
       </Box>
@@ -49,6 +53,7 @@ export default function TokenWarningModal({
   onConfirm: () => void;
   onDismiss: () => void;
 }) {
+  const { t } = useTranslation();
   const [understandChecked, setUnderstandChecked] = useState(false);
   const toggleUnderstand = useCallback(
     () => setUnderstandChecked((uc) => !uc),
@@ -62,25 +67,27 @@ export default function TokenWarningModal({
           <Box className='flex' mr={1}>
             <ReportProblemOutlined />
           </Box>
-          <h5>Token imported</h5>
+          <h5>{t('tokenImported')}</h5>
         </Box>
         <Box mb={3}>
           <p>
-            Anyone can create an ERC20 token on Ethereum/Polygon with{' '}
-            <em>any</em> name, including creating fake versions of existing
-            tokens and tokens that claim to represent projects that do not have
-            a token.
+            <Trans
+              i18nKey='tokenImportDesc1'
+              components={{
+                em: <em />,
+              }}
+            />
           </p>
           <br />
-          <p>
-            This interface can load arbitrary tokens by token addresses. Please
-            take extra caution and do your research when interacting with
-            arbitrary ERC20 tokens.
-          </p>
+          <p>{t('tokenImportDesc2')}</p>
           <br />
           <p>
-            If you purchase an arbitrary token,{' '}
-            <strong>you may be unable to sell it back.</strong>
+            <Trans
+              i18nKey='tokenImportDesc3'
+              components={{
+                strong: <strong />,
+              }}
+            />
           </p>
         </Box>
 
@@ -95,7 +102,7 @@ export default function TokenWarningModal({
               checked={understandChecked}
               onChange={toggleUnderstand}
             />{' '}
-            I understand
+            {t('iunderstand')}
           </p>
           <Button
             disabled={!understandChecked}
@@ -106,7 +113,7 @@ export default function TokenWarningModal({
               onConfirm();
             }}
           >
-            Continue
+            {t('continue')}
           </Button>
         </Box>
       </Box>

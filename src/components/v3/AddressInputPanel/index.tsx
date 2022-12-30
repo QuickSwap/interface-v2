@@ -8,6 +8,7 @@ import { ExplorerDataType, getEtherscanLink } from 'utils';
 import { AutoColumn } from '../Column';
 import { RowBetween } from '../Row';
 import { ContainerRow, Input, InputContainer, InputPanel } from './styled';
+import { useTranslation } from 'react-i18next';
 
 export default function AddressInputPanel({
   id,
@@ -24,6 +25,7 @@ export default function AddressInputPanel({
   value: string;
   onChange: (value: string) => void;
 }) {
+  const { t } = useTranslation();
   const { chainId } = useActiveWeb3React();
   const theme = useContext(ThemeContext);
 
@@ -47,7 +49,7 @@ export default function AddressInputPanel({
           <AutoColumn gap='md'>
             <RowBetween>
               <TYPE.black color={theme.text2} fontWeight={500} fontSize={14}>
-                {label ?? 'Recipient'}
+                {label ?? t('recipient')}
               </TYPE.black>
               {address && chainId && (
                 <ExternalLink
@@ -58,7 +60,7 @@ export default function AddressInputPanel({
                   )}
                   style={{ fontSize: '14px' }}
                 >
-                  {'(View on Explorer)'}
+                  {`(${t('viewonBlockExplorer')})`}
                 </ExternalLink>
               )}
             </RowBetween>
@@ -69,7 +71,7 @@ export default function AddressInputPanel({
               autoCorrect='off'
               autoCapitalize='off'
               spellCheck='false'
-              placeholder={placeholder ?? `Wallet Address or ENS name`}
+              placeholder={placeholder ?? `${t('walletOrENS')}`}
               error={error}
               pattern='^(0x[a-fA-F0-9]{40})$'
               onChange={handleInput}
