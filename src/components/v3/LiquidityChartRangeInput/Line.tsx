@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { ScaleLinear } from 'd3';
 import { StyledLine } from './styled';
+import { useTranslation } from 'react-i18next';
 
 export const Line = ({
   value,
@@ -10,8 +11,9 @@ export const Line = ({
   value: number;
   xScale: ScaleLinear<number, number>;
   innerHeight: number;
-}) =>
-  useMemo(
+}) => {
+  const { t } = useTranslation();
+  return useMemo(
     () => (
       <>
         <StyledLine
@@ -29,9 +31,10 @@ export const Line = ({
           rx={4}
         />
         <text fill={'white'} fontSize={9} x={xScale(value) - 18} y={11}>
-          Curr. price
+          {t('currPrice')}
         </text>
       </>
     ),
-    [value, xScale, innerHeight],
+    [value, xScale, innerHeight, t],
   );
+};

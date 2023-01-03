@@ -450,7 +450,7 @@ const Swap: React.FC<{
   const handleSwap = useCallback(() => {
     if (
       priceImpactWithoutFee &&
-      !confirmPriceImpactWithoutFee(priceImpactWithoutFee)
+      !confirmPriceImpactWithoutFee(priceImpactWithoutFee, t)
     ) {
       return;
     }
@@ -530,6 +530,7 @@ const Swap: React.FC<{
     swapCallback,
     finalizedTransaction,
     trade,
+    t,
   ]);
 
   return (

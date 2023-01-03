@@ -25,7 +25,7 @@ const PoolPositionCard: React.FC<{ pair: Pair }> = ({ pair }) => {
           />
           <p className='weight-600' style={{ marginLeft: 6 }}>
             {!currency0 || !currency1
-              ? 'Loading'
+              ? t('loading')
               : `${currency0.symbol}/${currency1.symbol}`}
           </p>
         </Box>

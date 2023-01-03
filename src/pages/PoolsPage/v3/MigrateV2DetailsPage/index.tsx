@@ -50,8 +50,10 @@ import { currencyId } from 'utils/v3/currencyId';
 import { unwrappedToken } from 'utils/unwrappedToken';
 import { formatCurrencyAmount } from 'utils/v3/formatCurrencyAmount';
 import { ReportProblemOutlined } from '@material-ui/icons';
+import { Trans, useTranslation } from 'react-i18next';
 
 export default function MigrateV2DetailsPage() {
+  const { t } = useTranslation();
   const v2Exchange = V2Exchanges.Quickswap;
   const percentageToMigrate = 100;
   const feeAmount = FeeAmount.MEDIUM;
@@ -554,7 +556,7 @@ export default function MigrateV2DetailsPage() {
           >
             <ArrowLeft />
           </Box>
-          <p className='weight-600'>Migrate V2 Liquidity</p>
+          <p className='weight-600'>{t('migrateLiquidity')}</p>
           <Box
             width={28}
             height={28}
@@ -568,9 +570,12 @@ export default function MigrateV2DetailsPage() {
         </Box>
         <Box mt={3}>
           <small>
-            This tool will safely migrate your V2 liquidity to V3. The process
-            is completely trust-less thanks to{' '}
-            <small className='text-primary'>Quickswap migration contract</small>
+            <Trans
+              i18nKey='liquiditymigrateComment'
+              components={{
+                psmall: <small className='text-primary' />,
+              }}
+            />
           </small>
         </Box>
         <Box mt={3} className='v3-migrate-details-box'>
@@ -665,12 +670,12 @@ export default function MigrateV2DetailsPage() {
             refund1 && (
               <Box mt={1.5}>
                 <small className='text-secondary'>
-                  Due to the selected price range at least{' '}
-                  {`${formatCurrencyAmount(refund0, 4)} ${
-                    currency0?.symbol
-                  } and `}
-                  {`${formatCurrencyAmount(refund1, 4)} ${currency1?.symbol} `}
-                  will be refunded to your wallet
+                  {t('migrateRefundComment', {
+                    amount1: formatCurrencyAmount(refund0, 4),
+                    symbol1: currency0?.symbol,
+                    amount2: formatCurrencyAmount(refund1, 4),
+                    symbol2: currency1?.symbol,
+                  })}
                 </small>
               </Box>
             )}
@@ -682,28 +687,30 @@ export default function MigrateV2DetailsPage() {
                 <Box className='pool-range-chart-warning-icon'>
                   <ReportProblemOutlined />
                 </Box>
-                <small>Price Impact Larger than 15%</small>
+                <small>{t('priceImpactLarger')}</small>
               </Box>
               <Box width={1} mt={1} mb={1.5}>
                 <span>
-                  You should only deposit liquidity into Quickswap at a price
-                  you believe is correct. <br />
+                  {t('shouldDepositLiquidityatCorrectPrice')}. <br />
                   <br />
                   {v2SpotPrice && (
-                    <>Estimated V2 Spot Price: ${v2SpotPrice?.toFixed(4)}</>
+                    <>
+                      {t('estimatedV2Price')}: ${v2SpotPrice?.toFixed(4)}
+                    </>
                   )}
                   <br />
                   {v3SpotPrice && (
-                    <> Estimated V3 Spot Price: ${v3SpotPrice?.toFixed(4)}</>
+                    <>
+                      {t('estimatedV3Price')}: ${v3SpotPrice?.toFixed(4)}
+                    </>
                   )}
                   <br />
                   <br />
-                  If the price seems incorrect, you can either make a swap to
-                  move the price or wait for someone else to do so.
+                  {t('priceIncorrectWarning')}.
                 </span>
               </Box>
               <button onClick={() => setLargePriceDiffDismissed(true)}>
-                I understand
+                {t('iunderstand')}
               </button>
             </Box>
           )}
@@ -728,14 +735,14 @@ export default function MigrateV2DetailsPage() {
           >
             {attemptApproving || approval === ApprovalState.PENDING ? (
               <>
-                Approving
+                {t('approving')}
                 <span className='loadingDots' />
               </>
             ) : approval === ApprovalState.APPROVED ||
               signatureData !== null ? (
-              'Allowed'
+              t('allowed')
             ) : (
-              'Allow LP token migration'
+              t('allowLPMigration')
             )}
           </Button>
         </Box>
@@ -760,16 +767,16 @@ export default function MigrateV2DetailsPage() {
             }}
           >
             {isSuccessfullyMigrated ? (
-              `Success! View pools`
+              t('successViewPool')
             ) : confirmingMigration || isMigrationPending ? (
               <>
-                Migrating
+                {t('migrating')}
                 <span className='loadingDots' />
               </>
             ) : networkFailed ? (
-              'Connecting to network...'
+              `${t('connectingNetwork')}...`
             ) : (
-              'Migrate'
+              t('migrate')
             )}
           </Button>
         </Box>
