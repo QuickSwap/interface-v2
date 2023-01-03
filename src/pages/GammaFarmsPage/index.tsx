@@ -13,7 +13,7 @@ import { useFarmingSubgraph } from 'hooks/useIncentiveSubgraph';
 const GammaFarmsPage: React.FC<{
   farmFilter: number;
   search: string;
-  sortBy: number;
+  sortBy: string;
   sortDesc: boolean;
 }> = ({ farmFilter, search }) => {
   const { t } = useTranslation();

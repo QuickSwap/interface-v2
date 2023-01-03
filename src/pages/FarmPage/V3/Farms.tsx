@@ -94,7 +94,7 @@ export default function Farms() {
 
   const [searchValue, setSearchValue] = useState('');
 
-  const [sortBy, setSortBy] = useState(0);
+  const [sortBy, setSortBy] = useState(GlobalConst.utils.v3FarmSortBy.pool);
   const [sortDesc, setSortDesc] = useState(false);
 
   const sortColumns = [

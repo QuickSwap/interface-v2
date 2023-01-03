@@ -5,7 +5,7 @@ import 'components/styles/SortColumns.scss';
 
 export interface SortColumn {
   text: string;
-  index: number;
+  index: string;
   width: number;
   justify?: string;
   onClick: () => void;
@@ -13,7 +13,7 @@ export interface SortColumn {
 
 interface SortColumnsProps {
   sortColumns: SortColumn[];
-  selectedSort: number;
+  selectedSort: string;
   sortDesc: boolean;
 }
 

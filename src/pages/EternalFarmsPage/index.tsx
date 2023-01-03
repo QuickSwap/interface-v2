@@ -18,7 +18,7 @@ import { useHistory } from 'react-router';
 const EternalFarmsPage: React.FC<{
   farmFilter: number;
   search: string;
-  sortBy: number;
+  sortBy: string;
   sortDesc: boolean;
 }> = ({ farmFilter, search, sortBy, sortDesc }) => {
   const [modalForPool, setModalForPool] = useState(null);

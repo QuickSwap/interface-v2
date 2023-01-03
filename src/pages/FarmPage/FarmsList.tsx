@@ -69,7 +69,10 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs }) => {
     parsedQuery && parsedQuery.sortDesc
       ? parsedQuery.sortDesc === 'true'
       : false;
-  const sortBy = parsedQuery && parsedQuery.sortBy ? parsedQuery.sortBy : false;
+  const sortBy =
+    parsedQuery && parsedQuery.sortBy
+      ? (parsedQuery.sortBy as string)
+      : POOL_COLUMN;
 
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const { chainId } = useActiveWeb3React();
