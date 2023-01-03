@@ -19,7 +19,6 @@ import { useHistory } from 'react-router-dom';
 import { ThemeContext } from 'styled-components/macro';
 import { Helmet } from 'react-helmet';
 import ReactGA from 'react-ga';
-import './index.scss';
 import { useActiveWeb3React } from 'hooks';
 import useENSAddress from 'hooks/useENSAddress';
 import Loader from 'components/Loader';
@@ -54,13 +53,7 @@ import {
 import TokenWarningModal from 'components/v3/TokenWarningModal';
 import TradePrice from 'components/v3/swap/TradePrice';
 import SwapHeader from 'components/v3/swap/SwapHeader';
-import AddressInputPanel from 'components/v3/AddressInputPanel';
-import { LinkStyledButton } from 'theme/components';
-import {
-  ArrowWrapper,
-  Dots,
-  SwapCallbackError,
-} from 'components/v3/swap/styled';
+import { Dots, SwapCallbackError } from 'components/v3/swap/styled';
 import { AdvancedSwapDetails } from 'components/v3/swap/AdvancedSwapDetails';
 import CurrencyInputPanel from 'components/v3/CurrencyInputPanel';
 import {
@@ -75,13 +68,14 @@ import ConfirmSwapModal from 'components/v3/swap/ConfirmSwapModal';
 import { useExpertModeManager } from 'state/user/hooks';
 import { ReactComponent as ExchangeIcon } from 'assets/images/ExchangeIcon.svg';
 
-import { Box } from '@material-ui/core';
+import { Box, Button } from '@material-ui/core';
 import { StyledButton } from 'components/v3/Common/styledElements';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import { ETHER } from '@uniswap/sdk';
 import { WMATIC_EXTENDED } from 'constants/v3/addresses';
 import useSwapRedirects from 'hooks/useSwapRedirect';
 import { useTranslation } from 'react-i18next';
+import { AddressInput } from 'components';
 
 const SwapV3Page: React.FC = () => {
   const { t } = useTranslation();
@@ -651,28 +645,33 @@ const SwapV3Page: React.FC = () => {
                 </Box>
               </Box>
               <div>
-                {recipient !== null && !showWrap ? (
-                  <>
-                    <AutoRow
-                      justify='space-between'
-                      style={{ padding: '0 1rem' }}
-                    >
-                      <ArrowWrapper clickable={false}>
-                        <ArrowDown size='16' color={theme.text2} />
-                      </ArrowWrapper>
-                      <LinkStyledButton
-                        id='remove-recipient-button'
-                        onClick={() => onChangeRecipient(null)}
+                {!showWrap && isExpertMode ? (
+                  <Box className='recipientInput'>
+                    <Box className='recipientInputHeader'>
+                      {recipient !== null ? (
+                        <ArrowDown size='16' color='white' />
+                      ) : (
+                        <Box />
+                      )}
+                      <Button
+                        onClick={() =>
+                          onChangeRecipient(recipient !== null ? null : '')
+                        }
                       >
-                        - {t('removeSend')}
-                      </LinkStyledButton>
-                    </AutoRow>
-                    <AddressInputPanel
-                      id='recipient'
-                      value={recipient}
-                      onChange={onChangeRecipient}
-                    />
-                  </>
+                        {recipient !== null
+                          ? `- ${t('removeSend')}`
+                          : `+ ${t('addSendOptional')}`}
+                      </Button>
+                    </Box>
+                    {recipient !== null && (
+                      <AddressInput
+                        label={t('recipient')}
+                        placeholder={t('walletOrENS')}
+                        value={recipient}
+                        onChange={onChangeRecipient}
+                      />
+                    )}
+                  </Box>
                 ) : null}
 
                 {showWrap ? null : (
