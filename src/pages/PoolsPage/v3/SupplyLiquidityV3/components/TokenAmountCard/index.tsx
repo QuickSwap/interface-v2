@@ -18,6 +18,7 @@ import { Box } from '@material-ui/core';
 import { LockOutlined } from '@material-ui/icons';
 import NumericalInput from 'components/NumericalInput';
 import { ETHER } from '@uniswap/sdk';
+import { useTranslation } from 'react-i18next';
 
 interface ITokenAmountCard {
   currency: Currency | undefined | null;
@@ -48,6 +49,7 @@ export function TokenAmountCard({
   priceFormat,
   isBase,
 }: ITokenAmountCard) {
+  const { t } = useTranslation();
   const { account } = useActiveWeb3React();
 
   const balance = useCurrencyBalance(
@@ -190,7 +192,7 @@ export function TokenAmountCard({
   ]);
 
   const balanceString = useMemo(() => {
-    if (!balance || !currency) return 'loading';
+    if (!balance || !currency) return t('loading');
 
     const _balance =
       isUSD && balanceUSD
@@ -219,7 +221,7 @@ export function TokenAmountCard({
     }
 
     return `${isUSD ? '$ ' : ''}${_balance}`;
-  }, [balance, currency, isUSD, balanceUSD]);
+  }, [balance, currency, isUSD, balanceUSD, t]);
 
   return (
     <>
@@ -228,9 +230,9 @@ export function TokenAmountCard({
           <div className='token-amount-card-locked'>
             <LockOutlined />
             <p className='span'>
-              Price is outside specified price range.
+              {t('priceOutsidePriceRange')}.
               <br />
-              Single-asset deposit only.
+              {t('singleAssetDepositOnly')}.
             </p>
           </div>
         )}
@@ -246,14 +248,14 @@ export function TokenAmountCard({
             <Box mt={1} className='token-amount-card-balance'>
               {balanceString === 'loading' ? (
                 <Box className='flex items-center'>
-                  <small className='text-secondary'>Balance: </small>
+                  <small className='text-secondary'>{t('balance')}: </small>
                   <Box className='flex' ml='5px'>
                     <Loader stroke='white' />
                   </Box>
                 </Box>
               ) : (
                 <small className='text-secondary'>
-                  Balance: {balanceString}
+                  {t('balance')}: {balanceString}
                 </small>
               )}
               {handleHalf && (
@@ -265,13 +267,13 @@ export function TokenAmountCard({
                 onClick={handleMax}
                 disabled={isMax || balance?.toSignificant(5) === '0'}
               >
-                <small>MAX</small>
+                <small>{t('max')}</small>
               </button>
             </Box>
           </Box>
         ) : (
           <Box className='token-amount-select-token'>
-            <p className='weight-600'>Select a token</p>
+            <p className='weight-600'>{t('selectToken')}</p>
           </Box>
         )}
         <NumericalInput

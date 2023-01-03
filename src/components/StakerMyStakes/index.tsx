@@ -10,8 +10,10 @@ import FarmCard from './FarmCard';
 import { Box } from '@material-ui/core';
 import { useV3StakeData } from 'state/farms/hooks';
 import { useFarmingSubgraph } from 'hooks/useIncentiveSubgraph';
+import { useTranslation } from 'react-i18next';
 
 export function FarmingMyFarms() {
+  const { t } = useTranslation();
   const { account } = useActiveWeb3React();
 
   const {
@@ -118,18 +120,18 @@ export function FarmingMyFarms() {
         <div className={' flex-s-between f c f-jc'}>
           <Frown size={35} stroke={'white'} />
           <Box mb={3} mt={1}>
-            No farms
+            {t('nofarms')}
           </Box>
         </div>
       ) : shallowPositions && shallowPositions.length !== 0 ? (
         <Box padding='24px'>
           <div className={'my-farms__ad p-05 br-12 f f-ac f-jc'}>
-            <div className={'mr-1'}>✨ Earn even more Rewards</div>
+            <div className={'mr-1'}>✨ {t('earnMoreRewards')}</div>
             <Link
               className={'my-farms__ad-link p-05 br-8 hover-cp'}
               to={'/dragons'}
             >
-              Stake Rewards
+              {t('stakeRewards')}
             </Link>
           </div>
           {farmedNFTs && (

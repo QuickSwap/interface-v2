@@ -588,8 +588,8 @@ const SwapV3Page: React.FC = () => {
                   <CurrencyInputPanel
                     label={
                       independentField === Field.OUTPUT && !showWrap
-                        ? 'From (at most)'
-                        : 'From'
+                        ? t('fromAtMost')
+                        : t('from')
                     }
                     value={formattedAmounts[Field.INPUT]}
                     showMaxButton={showMaxButton}
@@ -627,8 +627,8 @@ const SwapV3Page: React.FC = () => {
                     onUserInput={handleTypeOutput}
                     label={
                       independentField === Field.INPUT && !showWrap
-                        ? 'To (at least)'
-                        : 'To'
+                        ? t('toAtLeast')
+                        : t('to')
                     }
                     showMaxButton={false}
                     showHalfButton={false}
@@ -664,7 +664,7 @@ const SwapV3Page: React.FC = () => {
                         id='remove-recipient-button'
                         onClick={() => onChangeRecipient(null)}
                       >
-                        - Remove send
+                        - {t('removeSend')}
                       </LinkStyledButton>
                     </AutoRow>
                     <AddressInputPanel
@@ -714,7 +714,7 @@ const SwapV3Page: React.FC = () => {
               <div>
                 {!account ? (
                   <StyledButton onClick={toggleWalletModal}>
-                    Connect Wallet
+                    {t('connectWallet')}
                   </StyledButton>
                 ) : showWrap ? (
                   <StyledButton
@@ -723,9 +723,9 @@ const SwapV3Page: React.FC = () => {
                   >
                     {wrapInputError ??
                       (wrapType === WrapType.WRAP
-                        ? 'Wrap'
+                        ? t('wrap')
                         : wrapType === WrapType.UNWRAP
-                        ? 'Unwrap'
+                        ? t('unWrap')
                         : null)}
                   </StyledButton>
                 ) : routeNotFound && userHasSpecifiedInputOutput ? (
@@ -737,11 +737,11 @@ const SwapV3Page: React.FC = () => {
                     // }}
                   >
                     {isLoadingRoute ? (
-                      <Dots>Loading</Dots>
+                      <Dots>{t('loading')}</Dots>
                     ) : singleHopOnly ? (
-                      'Insufficient liquidity for this trade. Try enabling multi-hop trades.'
+                      `${t('insufficientLiquidityMultiHop')}.`
                     ) : (
-                      'Insufficient liquidity for this trade.'
+                      t('insufficientLiquidityTrade')
                     )}
                   </StyledButton>
                 ) : showApproveFlow ? (
@@ -788,10 +788,10 @@ const SwapV3Page: React.FC = () => {
                             {/* we need to shorten this string on mobile */}
                             {approvalState === ApprovalState.APPROVED ||
                             signatureState === UseERC20PermitState.SIGNED
-                              ? `You can now trade ${
+                              ? `${t('youcannowtrade')} ${
                                   currencies[Field.INPUT]?.symbol
                                 }`
-                              : `Allow Quickswap to use your ${
+                              : `${t('allowQuickswapTouse')} ${
                                   currencies[Field.INPUT]?.symbol
                                 }`}
                           </span>
@@ -810,9 +810,9 @@ const SwapV3Page: React.FC = () => {
                             />
                           ) : (
                             <MouseoverTooltip
-                              text={`You must give the Quickswap smart contracts permission to use your " ${
-                                currencies[Field.INPUT]?.symbol
-                              }. You only have to do this once per token.`}
+                              text={t('mustgiveContractsPermission', {
+                                symbol: currencies[Field.INPUT]?.symbol,
+                              })}
                             >
                               <HelpCircle
                                 size='20'
@@ -849,10 +849,10 @@ const SwapV3Page: React.FC = () => {
                         }
                       >
                         {priceImpactTooHigh
-                          ? 'High Price Impact'
+                          ? t('highPriceImpact')
                           : priceImpactSeverity > 2
-                          ? 'Swap Anyway'
-                          : 'Swap'}
+                          ? t('swapAnyway')
+                          : t('swap')}
                       </StyledButton>
                     </AutoColumn>
                   </AutoRow>
@@ -881,10 +881,10 @@ const SwapV3Page: React.FC = () => {
                     {swapInputError
                       ? swapInputError
                       : priceImpactTooHigh
-                      ? 'Price Impact Too High'
+                      ? t('highPriceImpact')
                       : priceImpactSeverity > 2
-                      ? 'Swap Anyway'
-                      : 'Swap'}
+                      ? t('swapAnyway')
+                      : t('swap')}
                   </StyledButton>
                 )}
                 {isExpertMode && swapErrorMessage ? (
