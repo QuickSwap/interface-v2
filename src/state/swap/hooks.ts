@@ -28,7 +28,10 @@ import {
   typeInput,
 } from './actions';
 import { SwapState } from './reducer';
-import { useUserSlippageTolerance } from 'state/user/hooks';
+import {
+  useSlippageManuallySet,
+  useUserSlippageTolerance,
+} from 'state/user/hooks';
 import { computeSlippageAdjustedAmounts } from 'utils/prices';
 import { GlobalData } from 'constants/index';
 
@@ -139,6 +142,8 @@ export function useDerivedSwapInfo(): {
   v1Trade: Trade | undefined;
 } {
   const { account } = useActiveWeb3React();
+  const parsedQuery = useParsedQueryString();
+  const swapType = parsedQuery ? parsedQuery.swapIndex : undefined;
 
   const {
     independentField,
@@ -211,7 +216,11 @@ export function useDerivedSwapInfo(): {
     }
   }
 
-  const [allowedSlippage] = useUserSlippageTolerance();
+  const [
+    allowedSlippage,
+    setUserSlippageTolerance,
+  ] = useUserSlippageTolerance();
+  const [slippageManuallySet] = useSlippageManuallySet();
 
   const slippageAdjustedAmounts =
     v2Trade &&
@@ -224,27 +233,37 @@ export function useDerivedSwapInfo(): {
     slippageAdjustedAmounts ? slippageAdjustedAmounts[Field.INPUT] : null,
   ];
 
-  if (balanceIn && amountIn && balanceIn.lessThan(amountIn)) {
+  if (
+    swapType !== '0' &&
+    balanceIn &&
+    amountIn &&
+    balanceIn.lessThan(amountIn)
+  ) {
     inputError = 'Insufficient ' + amountIn.currency.symbol + ' balance';
   }
-
-  const [_, setUserSlippageTolerance] = useUserSlippageTolerance();
 
   useEffect(() => {
     const stableCoinAddresses = GlobalData.stableCoins.map((token) =>
       token.address.toLowerCase(),
     );
-    if (
-      inputCurrencyId &&
-      outputCurrencyId &&
-      stableCoinAddresses.includes(inputCurrencyId.toLowerCase()) &&
-      stableCoinAddresses.includes(outputCurrencyId.toLowerCase())
-    ) {
-      setUserSlippageTolerance(10);
-    } else {
-      setUserSlippageTolerance(50);
+    if (!slippageManuallySet) {
+      if (
+        inputCurrencyId &&
+        outputCurrencyId &&
+        stableCoinAddresses.includes(inputCurrencyId.toLowerCase()) &&
+        stableCoinAddresses.includes(outputCurrencyId.toLowerCase())
+      ) {
+        setUserSlippageTolerance(10);
+      } else {
+        setUserSlippageTolerance(50);
+      }
     }
-  }, [inputCurrencyId, outputCurrencyId, setUserSlippageTolerance]);
+  }, [
+    slippageManuallySet,
+    inputCurrencyId,
+    outputCurrencyId,
+    setUserSlippageTolerance,
+  ]);
 
   return {
     currencies,

@@ -29,6 +29,7 @@ interface EternalFarmCardProps {
     bonusReward?: string;
     bonusRewardRate?: string;
     locked?: boolean;
+    isDetached?: boolean;
   };
   aprs: Aprs | undefined;
   aprsLoading: boolean;
@@ -50,6 +51,7 @@ export function EternalFarmCard({
     bonusRewardToken,
     rewardRate,
     bonusRewardRate,
+    isDetached,
   } = {},
   aprs,
   aprsLoading,

@@ -448,14 +448,14 @@ export const PAIR_CHART_V3 = gql`
   }
 `;
 
-export const PAIR_FEE_CHART_V3 = () => gql`
-  query feeHourData($address: String, $startTime: BigInt) {
+export const PAIR_FEE_CHART_V3 = gql`
+  query feeHourData($address: String, $skip: Int!, $startTime: Int!) {
     feeHourDatas(
       first: 1000
       skip: $skip
       orderBy: timestamp
       orderDirection: asc
-      where: { pool: $address, timestamp_gte: $startTime }
+      where: { pool: $address, timestamp_gt: $startTime }
     ) {
       id
       pool

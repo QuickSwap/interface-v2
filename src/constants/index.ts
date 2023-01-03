@@ -8,6 +8,7 @@ import {
   arkaneconnect,
   safeApp,
   trustconnect,
+  unstopabbledomains,
 } from '../connectors';
 import MetamaskIcon from 'assets/images/metamask.png';
 import BlockWalletIcon from 'assets/images/blockwalletIcon.svg';
@@ -20,6 +21,7 @@ import VenlyIcon from 'assets/images/venly.svg';
 import GnosisIcon from 'assets/images/gnosis_safe.png';
 import TrustIcon from 'assets/images/trust.png';
 import { Presets } from 'state/mint/v3/reducer';
+import UnstoppableDomainsIcon from 'assets/images/unstoppableDomains.png';
 
 const WETH_ONLY: ChainTokenList = {
   [ChainId.MUMBAI]: [WETH[ChainId.MUMBAI]],
@@ -127,14 +129,10 @@ export const GlobalConst = {
     ALL_CHART: 5,
     CHART_COUNT: 60, //limit analytics chart items not more than 60
   },
-  farmIndex: {
-    LPFARM_INDEX: 0,
-    DUALFARM_INDEX: 1,
-    OTHER_LP_INDEX: 2,
-  },
-  v3FarmIndex: {
-    MY_FARMS_INDEX: 0,
-    ETERNAL_FARMS_INDEX: 1,
+  v2FarmTab: {
+    LPFARM: 'lpFarm',
+    DUALFARM: 'DualFarm',
+    OTHER_LP: 'OtherFarm',
   },
   walletName: {
     METAMASK: 'Metamask',
@@ -331,6 +329,14 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
     href: null,
     color: '#4196FC',
     mobile: true,
+  },
+  UNSTOPABBLEDOMAINS: {
+    connector: unstopabbledomains,
+    name: 'Unstoppable Domains',
+    iconName: UnstoppableDomainsIcon,
+    description: 'Unstoppable Domains',
+    href: null,
+    color: '#E8831D',
   },
 };
 

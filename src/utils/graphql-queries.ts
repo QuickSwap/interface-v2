@@ -667,8 +667,8 @@ export const FULL_POSITIONS = (
 };
 
 export const INFINITE_EVENTS = gql`
-  query infiniteFarms {
-    eternalFarmings(where: { isDetached: false }) {
+  query infiniteFarms($detached: Boolean) {
+    eternalFarmings(where: { isDetached: $detached }) {
       id
       rewardToken
       bonusRewardToken
@@ -687,6 +687,7 @@ export const INFINITE_EVENTS = gql`
       tier3Multiplier
       multiplierToken
       minRangeLength
+      isDetached
     }
   }
 `;

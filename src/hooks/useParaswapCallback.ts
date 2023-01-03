@@ -4,7 +4,7 @@ import {
   TransactionResponse,
   TransactionRequest,
 } from '@ethersproject/providers';
-import { Fraction, Currency, SwapParameters, Percent } from '@uniswap/sdk';
+import { Currency, SwapParameters } from '@uniswap/sdk';
 import { useMemo } from 'react';
 import { useTransactionAdder } from 'state/transactions/hooks';
 import { isAddress, shortenAddress, getSigner } from 'utils';
@@ -12,8 +12,6 @@ import { useActiveWeb3React } from 'hooks';
 import useENS from './useENS';
 import { OptimalRate } from 'paraswap-core';
 import { useParaswap } from './useParaswap';
-import { SwapSide } from '@paraswap/sdk';
-import { ONE } from 'v3lib/utils';
 
 export enum SwapCallbackState {
   INVALID,
@@ -52,7 +50,6 @@ const convertToEthersTransaction = (txParams: any): TransactionRequest => {
 // and the user has approved the slippage adjusted input amount for the trade
 export function useParaswapCallback(
   priceRoute: OptimalRate | undefined,
-  allowedSlippage: Percent, // in bips
   recipientAddressOrName: string | null, // the ENS name or address of the recipient of the trade, or null if swap should be returned to sender
   inputCurrency?: Currency,
   outputCurrency?: Currency,
@@ -102,27 +99,17 @@ export function useParaswapCallback(
         response: TransactionResponse;
         summary: string;
       }> {
-        const minDestAmount = new Fraction(ONE)
-          .add(allowedSlippage)
-          .invert()
-          .multiply(priceRoute.destAmount).quotient;
-
         const referrer = 'quickswapv3';
 
         const srcToken = priceRoute.srcToken;
         const destToken = priceRoute.destToken;
-
-        //TODO: we need to support max impact
-        // if (minDestAmount.greaterThan(JSBI.BigInt(priceRoute.destAmount))) {
-        //   throw new Error('Price Rate updated beyond expected slipage rate');
-        // }
 
         try {
           const txParams = await paraswap.buildTx({
             srcToken,
             destToken,
             srcAmount: priceRoute.srcAmount,
-            destAmount: minDestAmount.toString(),
+            destAmount: priceRoute.destAmount,
             priceRoute: priceRoute,
             userAddress: account,
             partner: referrer,
@@ -187,7 +174,6 @@ export function useParaswapCallback(
     chainId,
     recipient,
     recipientAddressOrName,
-    allowedSlippage,
     paraswap,
     addTransaction,
     inputCurrency,

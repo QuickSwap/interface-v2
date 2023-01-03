@@ -19,6 +19,7 @@ import {
   updateUserSlippageTolerance,
   toggleURLWarning,
   updateUserSingleHopOnly,
+  updateSlippageManuallySet,
 } from './actions';
 import { basisPointsToPercent } from 'utils';
 
@@ -113,6 +114,28 @@ export function useUserSlippageTolerance(): [
   );
 
   return [userSlippageTolerance, setUserSlippageTolerance];
+}
+
+export function useSlippageManuallySet(): [
+  boolean,
+  (manuallySetSlippage: boolean) => void,
+] {
+  const dispatch = useDispatch<AppDispatch>();
+  const slippageManuallySet = useSelector<
+    AppState,
+    AppState['user']['slippageManuallySet']
+  >((state) => {
+    return state.user.slippageManuallySet;
+  });
+
+  const setSlippageManuallySet = useCallback(
+    (slippageManuallySet: boolean) => {
+      dispatch(updateSlippageManuallySet({ slippageManuallySet }));
+    },
+    [dispatch],
+  );
+
+  return [slippageManuallySet, setSlippageManuallySet];
 }
 
 export function useUserTransactionTTL(): [number, (slippage: number) => void] {

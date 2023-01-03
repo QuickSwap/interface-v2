@@ -3,7 +3,8 @@
 
 .header {
   padding: 0 24px;
-  position: relative;
+  position: fixed;
+  width: 100%;
   display: flex;
   flex-wrap: wrap;
   min-height: 88px;
@@ -41,9 +42,11 @@
   }
   @include media("screen", "<tablet") {
     align-items: center;
+    position: relative;
   }
   @include media("screen", "<phone") {
     padding: 0 16px;
+    position: relative;
   }
 }
 .mainMenu {
@@ -206,10 +209,10 @@
   top: 36px;
   width: 272px;
   right: 0;
-  padding-top: 18px
 }
 .wrongNetworkContent {
   background: $bgColor;
+  margin-top: 18px;
   border-radius: 10px;
   padding: 24px;
   display: none;

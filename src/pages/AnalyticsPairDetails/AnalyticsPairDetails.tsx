@@ -130,8 +130,8 @@ const AnalyticsPairDetails: React.FC = () => {
     pairData &&
     pairData.oneDayVolumeUSD === 0 &&
     !!pairData.oneDayVolumeUntracked;
-  const fees =
-    pairData && (pairData.oneDayVolumeUSD || pairData.oneDayVolumeUSD === 0)
+  const fees = isV2
+    ? pairData && (pairData.oneDayVolumeUSD || pairData.oneDayVolumeUSD === 0)
       ? usingUtVolume
         ? formatNumber(
             Number(pairData.oneDayVolumeUntracked) *
@@ -140,7 +140,10 @@ const AnalyticsPairDetails: React.FC = () => {
         : formatNumber(
             Number(pairData.oneDayVolumeUSD) * GlobalConst.utils.FEEPERCENT,
           )
-      : '-';
+      : '-'
+    : pairData && pairData.feesUSDOneDay
+    ? formatNumber(pairData.feesUSDOneDay)
+    : '-';
   const { ethPrice } = useEthPrice();
 
   const dispatch = useDispatch();
