@@ -10,7 +10,10 @@ import {
 import { ApprovalState, useApproveCallback } from 'hooks/useV3ApproveCallback';
 import { useActiveWeb3React } from 'hooks';
 import { useUSDCValue } from 'hooks/v3/useUSDCPrice';
-import { NONFUNGIBLE_POSITION_MANAGER_ADDRESSES } from 'constants/v3/addresses';
+import {
+  GAMMA_UNIPROXY_ADDRESSES,
+  NONFUNGIBLE_POSITION_MANAGER_ADDRESSES,
+} from 'constants/v3/addresses';
 import { maxAmountSpend } from 'utils/v3/maxAmountSpend';
 import { tryParseAmount } from 'state/swap/v3/hooks';
 import { TokenAmountCard } from '../../components/TokenAmountCard';
@@ -18,6 +21,7 @@ import { PriceFormats } from 'components/v3/PriceFomatToggler';
 import { Box, Button } from '@material-ui/core';
 import Loader from 'components/Loader';
 import { Check } from '@material-ui/icons';
+import { GlobalConst } from 'constants/index';
 
 interface IEnterAmounts {
   currencyA: Currency | undefined;
@@ -82,11 +86,21 @@ export function EnterAmounts({
   // check whether the user has approved the router on the tokens
   const [approvalA, approveACallback] = useApproveCallback(
     mintInfo.parsedAmounts[Field.CURRENCY_A] || tryParseAmount('1', currencyA),
-    chainId ? NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId] : undefined,
+    chainId
+      ? mintInfo.liquidityRangeType ===
+        GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
+        ? GAMMA_UNIPROXY_ADDRESSES[chainId]
+        : NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId]
+      : undefined,
   );
   const [approvalB, approveBCallback] = useApproveCallback(
     mintInfo.parsedAmounts[Field.CURRENCY_B] || tryParseAmount('1', currencyB),
-    chainId ? NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId] : undefined,
+    chainId
+      ? mintInfo.liquidityRangeType ===
+        GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
+        ? GAMMA_UNIPROXY_ADDRESSES[chainId]
+        : NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId]
+      : undefined,
   );
 
   const showApprovalA = useMemo(() => {

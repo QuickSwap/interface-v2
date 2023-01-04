@@ -1,5 +1,8 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { useV3NFTPositionManagerContract } from 'hooks/useContract';
+import {
+  useGammaUNIProxyContract,
+  useV3NFTPositionManagerContract,
+} from 'hooks/useContract';
 import useTransactionDeadline from 'hooks/useTransactionDeadline';
 import { useActiveWeb3React } from 'hooks';
 import { useIsExpertMode, useUserSlippageTolerance } from 'state/user/hooks';
@@ -12,14 +15,21 @@ import {
   useTransactionFinalizer,
 } from 'state/transactions/hooks';
 import { TransactionResponse } from '@ethersproject/abstract-provider';
-import { IDerivedMintInfo, useAddLiquidityTxHash } from 'state/mint/v3/hooks';
+import {
+  IDerivedMintInfo,
+  useActivePreset,
+  useAddLiquidityTxHash,
+} from 'state/mint/v3/hooks';
 import { ApprovalState, useApproveCallback } from 'hooks/useV3ApproveCallback';
 import { Field } from 'state/mint/actions';
 import { Bound, setAddLiquidityTxHash } from 'state/mint/v3/actions';
 import { useIsNetworkFailedImmediate } from 'hooks/v3/useIsNetworkFailed';
 import { JSBI } from '@uniswap/sdk';
-import { NONFUNGIBLE_POSITION_MANAGER_ADDRESSES } from 'constants/v3/addresses';
-import { calculateGasMarginV3 } from 'utils';
+import {
+  GAMMA_UNIPROXY_ADDRESSES,
+  NONFUNGIBLE_POSITION_MANAGER_ADDRESSES,
+} from 'constants/v3/addresses';
+import { calculateGasMargin, calculateGasMarginV3 } from 'utils';
 import { Button, Box } from '@material-ui/core';
 import {
   ConfirmationModalContent,
@@ -32,6 +42,7 @@ import './index.scss';
 import RangeBadge from 'components/v3/Badge/RangeBadge';
 import RateToggle from 'components/v3/RateToggle';
 import { useInverter } from 'hooks/v3/useInverter';
+import { GammaPairs, GlobalConst } from 'constants/index';
 
 interface IAddLiquidityButton {
   baseCurrency: Currency | undefined;
@@ -59,8 +70,10 @@ export function AddLiquidityButton({
     string | null
   >(null);
   const [manuallyInverted, setManuallyInverted] = useState(false);
+  const preset = useActivePreset();
 
   const positionManager = useV3NFTPositionManagerContract();
+  const gammaUNIPROXYContract = useGammaUNIProxyContract();
 
   const deadline = useTransactionDeadline();
 
@@ -89,11 +102,21 @@ export function AddLiquidityButton({
 
   const [approvalA] = useApproveCallback(
     mintInfo.parsedAmounts[Field.CURRENCY_A],
-    chainId ? NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId] : undefined,
+    chainId
+      ? mintInfo.liquidityRangeType ===
+        GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
+        ? GAMMA_UNIPROXY_ADDRESSES[chainId]
+        : NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId]
+      : undefined,
   );
   const [approvalB] = useApproveCallback(
     mintInfo.parsedAmounts[Field.CURRENCY_B],
-    chainId ? NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId] : undefined,
+    chainId
+      ? mintInfo.liquidityRangeType ===
+        GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
+        ? GAMMA_UNIPROXY_ADDRESSES[chainId]
+        : NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId]
+      : undefined,
   );
 
   const isReady = useMemo(() => {
@@ -139,104 +162,175 @@ export function AddLiquidityButton({
   async function onAdd() {
     if (!chainId || !library || !account) return;
 
-    if (!positionManager || !baseCurrency || !quoteCurrency) {
+    if (!baseCurrency || !quoteCurrency) {
       return;
     }
 
     if (mintInfo.position && account && deadline) {
-      const useNative = baseCurrency.isNative
-        ? baseCurrency
-        : quoteCurrency.isNative
-        ? quoteCurrency
-        : undefined;
+      if (
+        mintInfo.liquidityRangeType ===
+        GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
+      ) {
+        if (!gammaUNIPROXYContract) return;
+        const amountA = mintInfo.parsedAmounts[Field.CURRENCY_A];
+        const amountB = mintInfo.parsedAmounts[Field.CURRENCY_B];
+        const baseCurrencySymbol =
+          baseCurrency.wrapped && baseCurrency.wrapped.symbol
+            ? baseCurrency.wrapped.symbol.toUpperCase()
+            : '';
+        const quoteCurrencySymbol =
+          quoteCurrency.wrapped && quoteCurrency.wrapped.symbol
+            ? quoteCurrency.wrapped.symbol.toUpperCase()
+            : '';
+        const gammaPair =
+          GammaPairs[baseCurrencySymbol + '-' + quoteCurrencySymbol];
+        const gammaPairAddress =
+          gammaPair && gammaPair.length > 0
+            ? gammaPair.find((pair) => pair.type === preset)?.address
+            : undefined;
+        if (!amountA || !amountB || !gammaPairAddress) return;
 
-      const { calldata, value } = NonFunPosMan.addCallParameters(
-        mintInfo.position,
-        {
-          slippageTolerance: allowedSlippagePercent,
-          recipient: account,
-          deadline: deadline.toString(),
-          useNative,
-          createPool: mintInfo.noLiquidity,
-        },
-      );
+        setRejected && setRejected(false);
 
-      const txn: { to: string; data: string; value: string } = {
-        to: NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId],
-        data: calldata,
-        value,
-      };
-
-      setRejected && setRejected(false);
-
-      setAttemptingTxn(true);
-
-      library
-        .getSigner()
-        .estimateGas(txn)
-        .then((estimate) => {
-          const newTxn = {
-            ...txn,
-            gasLimit: calculateGasMarginV3(chainId, estimate),
-            gasPrice: gasPrice * GAS_PRICE_MULTIPLIER,
-          };
-
-          return library
-            .getSigner()
-            .sendTransaction(newTxn)
-            .then(async (response: TransactionResponse) => {
-              setAttemptingTxn(false);
-              setTxPending(true);
-              const summary = mintInfo.noLiquidity
-                ? `Create pool and add ${baseCurrency?.symbol}/${quoteCurrency?.symbol} liquidity`
-                : `Add ${baseCurrency?.symbol}/${quoteCurrency?.symbol} liquidity`;
-              addTransaction(response, {
-                summary,
-              });
-
-              dispatch(setAddLiquidityTxHash({ txHash: response.hash }));
-
-              try {
-                const receipt = await response.wait();
-                finalizedTransaction(receipt, {
-                  summary,
-                });
-                setTxPending(false);
-                handleAddLiquidity();
-              } catch (error) {
-                console.error('Failed to send transaction', error);
-                setTxPending(false);
-                setAddLiquidityErrorMessage(
-                  error?.code === 4001
-                    ? 'Transaction Rejected.'
-                    : 'There is an error in the transaction.',
-                );
-              }
-            })
-            .catch((err) => {
-              console.error('Failed to send transaction', err);
-              setAttemptingTxn(false);
-              setAddLiquidityErrorMessage(
-                err?.code === 4001
-                  ? 'Transaction Rejected.'
-                  : 'There is an error in the transaction.',
-              );
-            });
-        })
-        .catch((error) => {
-          console.error('Failed to send transaction', error);
-          // we only care if the error is something _other_ than the user rejected the tx
-          setRejected && setRejected(true);
+        setAttemptingTxn(true);
+        try {
+          const estimatedGas = await gammaUNIPROXYContract.estimateGas.deposit(
+            amountA.numerator.toString(),
+            amountB.numerator.toString(),
+            account,
+            gammaPairAddress,
+            [0, 0, 0, 0],
+          );
+          const response: TransactionResponse = await gammaUNIPROXYContract.deposit(
+            amountA.numerator.toString(),
+            amountB.numerator.toString(),
+            account,
+            gammaPairAddress,
+            [0, 0, 0, 0],
+            {
+              gasLimit: calculateGasMargin(estimatedGas),
+            },
+          );
+          const summary = mintInfo.noLiquidity
+            ? `Create pool and add ${baseCurrency?.symbol}/${quoteCurrency?.symbol} liquidity`
+            : `Add ${baseCurrency?.symbol}/${quoteCurrency?.symbol} liquidity`;
           setAttemptingTxn(false);
+          setTxPending(true);
+          addTransaction(response, {
+            summary,
+          });
+          dispatch(setAddLiquidityTxHash({ txHash: response.hash }));
+          const receipt = await response.wait();
+          finalizedTransaction(receipt, {
+            summary,
+          });
+          setTxPending(false);
+          handleAddLiquidity();
+        } catch (error) {
+          console.error('Failed to send transaction', error);
+          setTxPending(false);
           setAddLiquidityErrorMessage(
             error?.code === 4001
               ? 'Transaction Rejected.'
               : 'There is an error in the transaction.',
           );
-          if (error?.code !== 4001) {
-            console.error(error);
-          }
-        });
+        }
+      } else {
+        if (!positionManager) return;
+        const useNative = baseCurrency.isNative
+          ? baseCurrency
+          : quoteCurrency.isNative
+          ? quoteCurrency
+          : undefined;
+
+        const { calldata, value } = NonFunPosMan.addCallParameters(
+          mintInfo.position,
+          {
+            slippageTolerance: allowedSlippagePercent,
+            recipient: account,
+            deadline: deadline.toString(),
+            useNative,
+            createPool: mintInfo.noLiquidity,
+          },
+        );
+
+        const txn: { to: string; data: string; value: string } = {
+          to: NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId],
+          data: calldata,
+          value,
+        };
+
+        setRejected && setRejected(false);
+
+        setAttemptingTxn(true);
+
+        library
+          .getSigner()
+          .estimateGas(txn)
+          .then((estimate) => {
+            const newTxn = {
+              ...txn,
+              gasLimit: calculateGasMarginV3(chainId, estimate),
+              gasPrice: gasPrice * GAS_PRICE_MULTIPLIER,
+            };
+
+            return library
+              .getSigner()
+              .sendTransaction(newTxn)
+              .then(async (response: TransactionResponse) => {
+                setAttemptingTxn(false);
+                setTxPending(true);
+                const summary = mintInfo.noLiquidity
+                  ? `Create pool and add ${baseCurrency?.symbol}/${quoteCurrency?.symbol} liquidity`
+                  : `Add ${baseCurrency?.symbol}/${quoteCurrency?.symbol} liquidity`;
+                addTransaction(response, {
+                  summary,
+                });
+
+                dispatch(setAddLiquidityTxHash({ txHash: response.hash }));
+
+                try {
+                  const receipt = await response.wait();
+                  finalizedTransaction(receipt, {
+                    summary,
+                  });
+                  setTxPending(false);
+                  handleAddLiquidity();
+                } catch (error) {
+                  console.error('Failed to send transaction', error);
+                  setTxPending(false);
+                  setAddLiquidityErrorMessage(
+                    error?.code === 4001
+                      ? 'Transaction Rejected.'
+                      : 'There is an error in the transaction.',
+                  );
+                }
+              })
+              .catch((err) => {
+                console.error('Failed to send transaction', err);
+                setAttemptingTxn(false);
+                setAddLiquidityErrorMessage(
+                  err?.code === 4001
+                    ? 'Transaction Rejected.'
+                    : 'There is an error in the transaction.',
+                );
+              });
+          })
+          .catch((error) => {
+            console.error('Failed to send transaction', error);
+            // we only care if the error is something _other_ than the user rejected the tx
+            setRejected && setRejected(true);
+            setAttemptingTxn(false);
+            setAddLiquidityErrorMessage(
+              error?.code === 4001
+                ? 'Transaction Rejected.'
+                : 'There is an error in the transaction.',
+            );
+            if (error?.code !== 4001) {
+              console.error(error);
+            }
+          });
+      }
     } else {
       return;
     }

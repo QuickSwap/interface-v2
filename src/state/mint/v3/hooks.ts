@@ -17,6 +17,7 @@ import {
   typeLeftRangeInput,
   typeRightRangeInput,
   typeStartPriceInput,
+  updateLiquidityRangeType,
 } from './actions';
 import { tryParseTick } from './utils';
 import { PoolState, usePool } from 'hooks/v3/usePools';
@@ -60,6 +61,7 @@ export interface IDerivedMintInfo {
   dynamicFee: number;
   lowerPrice: any;
   upperPrice: any;
+  liquidityRangeType: string | undefined;
 }
 
 export function useV3MintState(): AppState['mintV3'] {
@@ -74,6 +76,7 @@ export function useV3MintActionHandlers(
   onLeftRangeInput: (typedValue: string) => void;
   onRightRangeInput: (typedValue: string) => void;
   onStartPriceInput: (typedValue: string) => void;
+  onChangeLiquidityRangeType: (value: string) => void;
 } {
   const dispatch = useAppDispatch();
 
@@ -124,12 +127,20 @@ export function useV3MintActionHandlers(
     [dispatch],
   );
 
+  const onChangeLiquidityRangeType = useCallback(
+    (value: string) => {
+      dispatch(updateLiquidityRangeType({ liquidityRangeType: value }));
+    },
+    [dispatch],
+  );
+
   return {
     onFieldAInput,
     onFieldBInput,
     onLeftRangeInput,
     onRightRangeInput,
     onStartPriceInput,
+    onChangeLiquidityRangeType,
   };
 }
 
@@ -166,6 +177,7 @@ export function useV3DerivedMintInfo(
   dynamicFee: number;
   lowerPrice: any;
   upperPrice: any;
+  liquidityRangeType: string | undefined;
 } {
   const { account } = useActiveWeb3React();
 
@@ -175,6 +187,7 @@ export function useV3DerivedMintInfo(
     leftRangeTypedValue,
     rightRangeTypedValue,
     startPriceTypedValue,
+    liquidityRangeType,
   } = useV3MintState();
 
   const dependentField =
@@ -653,6 +666,7 @@ export function useV3DerivedMintInfo(
     dynamicFee,
     lowerPrice,
     upperPrice,
+    liquidityRangeType,
   };
 }
 

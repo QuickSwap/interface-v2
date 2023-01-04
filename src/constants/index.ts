@@ -134,6 +134,10 @@ export const GlobalConst = {
     DUALFARM: 'DualFarm',
     OTHER_LP: 'OtherFarm',
   },
+  v3LiquidityRangeType: {
+    MANUAL_RANGE: '0',
+    GAMMA_RANGE: '1',
+  },
   walletName: {
     METAMASK: 'Metamask',
     TRUST_WALLET: 'Trust Wallet',

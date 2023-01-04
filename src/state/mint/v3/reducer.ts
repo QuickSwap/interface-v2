@@ -1,6 +1,6 @@
 import { createReducer } from '@reduxjs/toolkit';
-import { selectCurrency } from './actions';
 import {
+  selectCurrency,
   Field,
   resetMintState,
   setAddLiquidityTxHash,
@@ -15,6 +15,7 @@ import {
   typeStartPriceInput,
   updateDynamicFee,
   updateSelectedPreset,
+  updateLiquidityRangeType,
 } from './actions';
 
 export type FullRange = true;
@@ -53,6 +54,7 @@ interface MintState {
   readonly [Field.CURRENCY_B]: {
     readonly currencyId: string | undefined;
   };
+  readonly liquidityRangeType: string | undefined;
 }
 
 const initialState: MintState = {
@@ -74,6 +76,7 @@ const initialState: MintState = {
   [Field.CURRENCY_B]: {
     currencyId: '',
   },
+  liquidityRangeType: undefined,
 };
 
 export default createReducer<MintState>(initialState, (builder) =>
@@ -205,5 +208,14 @@ export default createReducer<MintState>(initialState, (builder) =>
         ...state,
         currentStep,
       };
-    }),
+    })
+    .addCase(
+      updateLiquidityRangeType,
+      (state, { payload: { liquidityRangeType } }) => {
+        return {
+          ...state,
+          liquidityRangeType,
+        };
+      },
+    ),
 );

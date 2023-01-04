@@ -53,3 +53,6 @@ export const selectCurrency = createAction<{
   field: Field;
   currencyId: string;
 }>('mintV3/selectCurrency');
+export const updateLiquidityRangeType = createAction<{
+  liquidityRangeType: string;
+}>('mintV3/setliquidityRangeType');

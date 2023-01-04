@@ -231,13 +231,6 @@ export function PresetRanges({
     return aprs[poolAddress] ? aprs[poolAddress].toFixed(2) : undefined;
   }, [baseCurrency, quoteCurrency, aprs]);
 
-  useEffect(() => {
-    if (ranges.length > 0) {
-      handlePresetRangeSelection(ranges[0]);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ranges.length, isGamma]);
-
   return (
     <Box>
       <Box mb='10px' className='preset-buttons'>

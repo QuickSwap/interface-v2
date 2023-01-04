@@ -18,14 +18,11 @@ import { tryParseAmount } from 'state/swap/v3/hooks';
 import { Presets } from 'state/mint/v3/reducer';
 import { PriceFormats } from 'components/v3/PriceFomatToggler';
 import LiquidityChartRangeInput from 'components/v3/LiquidityChartRangeInput';
-import { GammaPairs, GlobalData } from 'constants/index';
+import { GammaPairs, GlobalConst, GlobalData } from 'constants/index';
 import { Box, ButtonGroup, Button } from '@material-ui/core';
 import { ReportProblemOutlined } from '@material-ui/icons';
 import { getEternalFarmFromTokens } from 'utils';
 import GammaLogo from 'assets/images/gammaLogo.png';
-
-const MANUAL_RANGE = 1;
-const GAMMA_RANGE = 2;
 
 interface IRangeSelector {
   currencyA: Currency | null | undefined;
@@ -40,9 +37,11 @@ export function SelectRange({
   mintInfo,
   priceFormat,
 }: IRangeSelector) {
-  const [rangeType, setRangeType] = useState(MANUAL_RANGE);
   const [fullRangeWarningShown, setFullRangeWarningShown] = useState(true);
-  const { startPriceTypedValue } = useV3MintState();
+  const { startPriceTypedValue, liquidityRangeType } = useV3MintState();
+  const { onChangeLiquidityRangeType } = useV3MintActionHandlers(
+    mintInfo.noLiquidity,
+  );
 
   const dispatch = useAppDispatch();
   const activePreset = useActivePreset();
@@ -63,7 +62,8 @@ export function SelectRange({
   const gammaPair = GammaPairs[currencyASymbol + '-' + currencyBSymbol];
 
   useEffect(() => {
-    setRangeType(MANUAL_RANGE);
+    onChangeLiquidityRangeType(GlobalConst.v3LiquidityRangeType.MANUAL_RANGE);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currencyA, currencyB]);
 
   const isStablecoinPair = useMemo(() => {
@@ -278,14 +278,32 @@ export function SelectRange({
         <Box className='buttonGroup poolRangeButtonGroup'>
           <ButtonGroup>
             <Button
-              className={rangeType === MANUAL_RANGE ? 'active' : ''}
-              onClick={() => setRangeType(MANUAL_RANGE)}
+              className={
+                liquidityRangeType ===
+                GlobalConst.v3LiquidityRangeType.MANUAL_RANGE
+                  ? 'active'
+                  : ''
+              }
+              onClick={() =>
+                onChangeLiquidityRangeType(
+                  GlobalConst.v3LiquidityRangeType.MANUAL_RANGE,
+                )
+              }
             >
               Manual
             </Button>
             <Button
-              className={rangeType === GAMMA_RANGE ? 'active' : ''}
-              onClick={() => setRangeType(GAMMA_RANGE)}
+              className={
+                liquidityRangeType ===
+                GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
+                  ? 'active'
+                  : ''
+              }
+              onClick={() =>
+                onChangeLiquidityRangeType(
+                  GlobalConst.v3LiquidityRangeType.GAMMA_RANGE,
+                )
+              }
             >
               <Box className='flex items-start'>
                 <span>Automatic</span>
@@ -297,13 +315,11 @@ export function SelectRange({
           </ButtonGroup>
         </Box>
       )}
-      {rangeType === GAMMA_RANGE && (
-        <>
-          <Box my={1.5} className='poolRangePowerGamma'>
-            <span className='text-secondary'>Powered by</span>
-            <img src={GammaLogo} alt='Gamma Logo' />
-          </Box>
-        </>
+      {liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE && (
+        <Box my={1.5} className='poolRangePowerGamma'>
+          <span className='text-secondary'>Powered by</span>
+          <img src={GammaLogo} alt='Gamma Logo' />
+        </Box>
       )}
       <Box my={1}>
         <PresetRanges
@@ -316,11 +332,13 @@ export function SelectRange({
           priceLower={leftPrice?.toSignificant(5)}
           priceUpper={rightPrice?.toSignificant(5)}
           price={price}
-          isGamma={rangeType === GAMMA_RANGE}
+          isGamma={
+            liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
+          }
           gammaPair={gammaPair}
         />
       </Box>
-      {rangeType === GAMMA_RANGE && (
+      {liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE && (
         <Box my={2}>
           <small className='text-secondary'>
             Liquidity ranges are automatically rebalanced when certain rebalance
@@ -338,7 +356,7 @@ export function SelectRange({
           </small>
         </Box>
       )}
-      {rangeType === MANUAL_RANGE && (
+      {liquidityRangeType === GlobalConst.v3LiquidityRangeType.MANUAL_RANGE && (
         <>
           {mintInfo.price && (
             <Box textAlign='center'>
