@@ -124,7 +124,7 @@ export const ALL_TOKENS_V3 = gql`
 export const TOKEN_SEARCH_V3 = gql`
   query tokens($value: String, $id: String) {
     asSymbol: tokens(
-      where: { symbol_contains: $value }
+      where: { symbol_contains_nocase: $value }
       orderBy: totalValueLockedUSD
       orderDirection: desc
     ) {
@@ -136,7 +136,7 @@ export const TOKEN_SEARCH_V3 = gql`
       totalValueLockedUSD
     }
     asName: tokens(
-      where: { name_contains: $value }
+      where: { name_contains_nocase: $value }
       orderBy: totalValueLockedUSD
       orderDirection: desc
     ) {
