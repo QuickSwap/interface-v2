@@ -386,7 +386,7 @@ const AnalyticsPairDetails: React.FC = () => {
               </Box>
             </Box>
           </Box>
-          {<PairInfo />}
+          <PairInfo />
           <Box width={1} mt={5}>
             <p>{t('transactions')}</p>
           </Box>
