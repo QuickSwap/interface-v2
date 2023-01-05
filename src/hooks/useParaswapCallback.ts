@@ -112,6 +112,7 @@ export function useParaswapCallback(
             destAmount: priceRoute.destAmount,
             priceRoute: priceRoute,
             userAddress: account,
+            receiver: recipient,
             partner: referrer,
           });
 
