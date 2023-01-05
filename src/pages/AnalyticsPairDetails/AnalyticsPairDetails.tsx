@@ -511,7 +511,7 @@ const AnalyticsPairDetails: React.FC = () => {
         <Skeleton width='100%' height={100} />
       ) : (
         <Box py={4}>
-          <h5>This pair does not exist</h5>
+          <h5>{t('pairNotExist')}</h5>
         </Box>
       )}
     </>

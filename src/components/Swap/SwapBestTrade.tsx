@@ -48,7 +48,7 @@ import { useParaswapCallback } from 'hooks/useParaswapCallback';
 import { getBestTradeCurrencyAddress, useParaswap } from 'hooks/useParaswap';
 import { SwapSide } from '@paraswap/sdk';
 import { BestTradeAdvancedSwapDetails } from './BestTradeAdvancedSwapDetails';
-import { GlobalValue } from 'constants/index';
+import { GlobalValue, paraswapTax } from 'constants/index';
 import { useQuery } from 'react-query';
 import { useAllTokens, useCurrency } from 'hooks/Tokens';
 import TokenWarningModal from 'components/v3/TokenWarningModal';
@@ -269,6 +269,9 @@ const SwapBestTrade: React.FC<{
           includeDEXS: 'quickswap,quickswapv3',
           maxImpact: maxImpactAllowed,
           partner: 'quickswapv3',
+          //@ts-ignore
+          srcTokenTransferFee: paraswapTax[srcToken.toLowerCase()],
+          destTokenTransferFee: paraswapTax[destToken.toLowerCase()],
         },
       });
       setOptimalRateError('');

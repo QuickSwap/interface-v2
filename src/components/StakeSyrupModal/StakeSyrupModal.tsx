@@ -244,9 +244,8 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
           <p>
             {hypotheticalRewardRate
               ? formatNumber(
-                  (Number(hypotheticalRewardRate.toExact()) /
-                    10 ** rateDecimalDifference) *
-                    getSecondsOneDay(),
+                  Number(hypotheticalRewardRate.toExact()) /
+                    10 ** rateDecimalDifference,
                 )
               : '-'}{' '}
             {syrup.token.symbol} / {t('day')}

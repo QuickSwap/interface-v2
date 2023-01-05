@@ -30,6 +30,7 @@ import { useActiveWeb3React } from 'hooks';
 import { ChainId, JSBI } from '@uniswap/sdk';
 import { StableCoins } from 'constants/v3/addresses';
 import { getEternalFarmFromTokens } from 'utils';
+import { Trans, useTranslation } from 'react-i18next';
 
 interface IRangeSelector {
   currencyA: Currency | null | undefined;
@@ -44,6 +45,7 @@ export function SelectRange({
   mintInfo,
   priceFormat,
 }: IRangeSelector) {
+  const { t } = useTranslation();
   const [fullRangeWarningShown, setFullRangeWarningShown] = useState(true);
   const { startPriceTypedValue } = useV3MintState();
   //const history = useHistory();
@@ -306,7 +308,7 @@ export function SelectRange({
 
   return (
     <Box>
-      <small className='weight-600'>Select a range</small>
+      <small className='weight-600'>{t('selectRange')}</small>
       <Box my={1}>
         <PresetRanges
           mintInfo={mintInfo}
@@ -323,12 +325,14 @@ export function SelectRange({
       {mintInfo.price && (
         <Box textAlign='center'>
           <span>
-            {!!mintInfo.noLiquidity ? `Initial Price:` : `Current Price:`}{' '}
+            {!!mintInfo.noLiquidity
+              ? `${t('initialPrice')}:`
+              : `${t('currentPrice')}:`}{' '}
             {currentPrice ?? ''}{' '}
             <span className='text-secondary'>
               {currentPrice
-                ? `${currencyB?.symbol} per ${currencyA?.symbol}`
-                : 'Loading...'}
+                ? `${currencyB?.symbol} ${t('per')} ${currencyA?.symbol}`
+                : `${t('loading')}...`}
             </span>
           </span>
         </Box>
@@ -358,24 +362,26 @@ export function SelectRange({
             <Box className='pool-range-chart-warning-icon'>
               <ReportProblemOutlined />
             </Box>
-            <small>Efficiency Comparison</small>
+            <small>{t('efficiencyComparison')}</small>
           </Box>
           <Box width={1} mt={1} mb={1.5}>
             <span>
-              Full range positions may earn less fees than concentrated
-              positions. Learn more{' '}
-              <a
-                href='https://quickswap.exchange'
-                target='_blank'
-                rel='noreferrer'
-              >
-                here
-              </a>
-              .
+              <Trans
+                i18nKey='fullRangePositionsEarnLessFeeLearnMore'
+                components={{
+                  alink: (
+                    <a
+                      href='https://quickswap.exchange'
+                      target='_blank'
+                      rel='noreferrer'
+                    />
+                  ),
+                }}
+              />
             </span>
           </Box>
           <button onClick={() => setFullRangeWarningShown(false)}>
-            I understand
+            {t('iunderstand')}
           </button>
         </Box>
       )}
@@ -388,8 +394,7 @@ export function SelectRange({
               <ReportProblemOutlined />
             </Box>
             <span>
-              Warning: The minimum price range to earn farming rewards for this
-              liquidity position is {minRangeLength}%
+              {t('minPriceRangeWarning', { rangeLength: minRangeLength })}
             </span>
           </Box>
         )}
@@ -398,11 +403,7 @@ export function SelectRange({
           <Box className='pool-range-chart-warning-icon'>
             <ReportProblemOutlined />
           </Box>
-          <span>
-            Warning: The price range for this liquidity position is not eligible
-            for farming rewards. To become eligible for rewards, please increase
-            your range
-          </span>
+          <span>{t('priceRangeNotElligibleWraning')}</span>
         </Box>
       )}
       {mintInfo.invalidRange && (
@@ -410,7 +411,7 @@ export function SelectRange({
           <Box className='pool-range-chart-warning-icon'>
             <ReportProblemOutlined />
           </Box>
-          <span>Invalid Range</span>
+          <span>{t('invalidRange')}</span>
         </Box>
       )}
       <Box className='pool-range-chart-wrapper'>

@@ -4,6 +4,7 @@ import { Trade as V2Trade } from '@uniswap/v2-sdk';
 import { Trade as V3Trade } from 'lib/src/trade';
 import { SwapCallbackError } from './styled';
 import { StyledButton } from '../Common/styledElements';
+import { useTranslation } from 'react-i18next';
 
 export default function SwapModalFooter({
   onConfirm,
@@ -17,6 +18,7 @@ export default function SwapModalFooter({
   swapErrorMessage: ReactNode | undefined;
   disabledConfirm: boolean;
 }) {
+  const { t } = useTranslation();
   return (
     <div className={'flex-s-between mt-1'}>
       <StyledButton
@@ -25,7 +27,7 @@ export default function SwapModalFooter({
         id='confirm-swap-or-send'
         className={' w-100 p-1 mt-1'}
       >
-        {'Confirm Swap'}
+        {t('confirmSwap')}
       </StyledButton>
       {swapErrorMessage ? <SwapCallbackError error={swapErrorMessage} /> : null}
     </div>

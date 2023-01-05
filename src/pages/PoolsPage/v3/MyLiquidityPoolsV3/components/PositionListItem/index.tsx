@@ -24,6 +24,7 @@ import { ExpandLess, ExpandMore } from '@material-ui/icons';
 import Badge from 'components/v3/Badge';
 import PositionListItemDetails from '../PositionListItemDetails';
 import { ChainId } from '@uniswap/sdk';
+import { useTranslation } from 'react-i18next';
 
 interface PositionListItemProps {
   positionDetails: PositionPool;
@@ -107,6 +108,7 @@ export default function PositionListItem({
   hideExpand = false,
   ownsNFT = true,
 }: PositionListItemProps) {
+  const { t } = useTranslation();
   const history = useHistory();
   const dispatch = useAppDispatch();
   const [expanded, setExpanded] = useState(hideExpand);
@@ -205,7 +207,7 @@ export default function PositionListItem({
         className='flex items-center'
       >
         <Box className='v3-pool-item-tokenId-wrapper'>
-          <p>NFT ID:</p>
+          <p>{t('nftID')}:</p>
           <span>{positionDetails.tokenId.toString()}</span>
         </Box>
         <Box flex={1}>
@@ -233,7 +235,7 @@ export default function PositionListItem({
                 onClick={() => history.push(farmingLink)}
                 color='white'
               >
-                <p className='span'>Farming</p>
+                <p className='span'>{t('farming')}</p>
                 <Box className='flex' ml='3px'>
                   <ArrowRight size={12} />
                 </Box>
@@ -262,14 +264,15 @@ export default function PositionListItem({
               )}
               {_poolState !== PoolState.LOADING && priceLower && priceUpper && (
                 <span className='text-secondary'>
-                  Min{' '}
+                  {t('min1')}{' '}
                   {`${formatTickPrice(priceLower, tickAtLimit, Bound.LOWER)} ${
                     currencyQuote?.symbol
-                  } per ${currencyBase?.symbol}`}
-                  {' <'}-{'> '}Max{' '}
+                  } ${t('per')} ${currencyBase?.symbol}`}
+                  {' <'}-{'> '}
+                  {t('max1')}{' '}
                   {`${formatTickPrice(priceUpper, tickAtLimit, Bound.UPPER)} ${
                     currencyQuote?.symbol
-                  } per ${currencyBase?.symbol}`}
+                  } ${t('per')} ${currencyBase?.symbol}`}
                 </span>
               )}
             </Box>

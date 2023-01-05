@@ -12,10 +12,10 @@ import FarmCardDetail from './FarmCardDetail';
 import { Deposit } from '../../models/interfaces';
 import { IsActive } from './IsActive';
 import { ChainId, Token } from '@uniswap/sdk';
-import { useActiveWeb3React } from 'hooks';
 import { getTokenFromAddress } from 'utils';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { getAddress } from 'ethers/lib/utils';
+import { useTranslation } from 'react-i18next';
 
 interface FarmCardProps {
   el: Deposit;
@@ -23,6 +23,7 @@ interface FarmCardProps {
 }
 
 export default function FarmCard({ el, chainId }: FarmCardProps) {
+  const { t } = useTranslation();
   const [showMore, setShowMore] = useState(false);
 
   const tokenMap = useSelectedTokenList();
@@ -78,7 +79,7 @@ export default function FarmCard({ el, chainId }: FarmCardProps) {
                   rel='noopener noreferrer'
                   target='_blank'
                 >
-                  View position
+                  {t('viewPosition')}
                 </a>
               </StyledLabel>
             </Box>
@@ -94,7 +95,7 @@ export default function FarmCard({ el, chainId }: FarmCardProps) {
 
               <Box className='flex-col' ml={3}>
                 <StyledLabel color='#696c80' fontSize='12px'>
-                  Pool
+                  {t('pool')}
                 </StyledLabel>
 
                 <StyledLabel color='#ebecf2' fontSize='14px'>

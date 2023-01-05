@@ -17,6 +17,7 @@ import { formatCompact, getTokenFromAddress } from 'utils';
 import { Aprs } from 'models/interfaces';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { getAddress } from 'ethers/lib/utils';
+import { useTranslation } from 'react-i18next';
 
 interface EternalFarmCardProps {
   active?: boolean;
@@ -69,6 +70,7 @@ export function EternalFarmCard({
   eternal,
   chainId,
 }: EternalFarmCardProps) {
+  const { t } = useTranslation();
   const apr = aprs ? aprs[id] : undefined;
   const aprValue =
     (apr !== undefined && apr >= 0 ? formatCompact(apr) : '~') + '% APR';
@@ -174,7 +176,7 @@ export function EternalFarmCard({
             <Box className='flex'>
               <Box mx='6px'>
                 <Box ml='3px'>
-                  <small className='weight-600'>Pool</small>
+                  <small className='weight-600'>{t('pool')}</small>
                 </Box>
                 <Box
                   className='flex items-center bg-successLight'
@@ -189,7 +191,7 @@ export function EternalFarmCard({
               </Box>
               <Box>
                 <Box ml='3px'>
-                  <small className='weight-600'>Farm</small>
+                  <small className='weight-600'>{t('farm')}</small>
                 </Box>
                 <Box
                   className='flex items-center bg-successLight'
@@ -215,7 +217,7 @@ export function EternalFarmCard({
                   <CurrencyLogo currency={farmRewardToken} size={'30px'} />
 
                   <Box ml={1.5}>
-                    <p className='span text-secondary'>Reward</p>
+                    <p className='span text-secondary'>{t('reward')}</p>
                     <small className='weight-600'>
                       {farmRewardToken.symbol}
                     </small>
@@ -229,7 +231,7 @@ export function EternalFarmCard({
                       3600 *
                       24,
                   )}{' '}
-                  / day
+                  / {t('day')}
                 </small>
               )}
             </StyledDarkBox>
@@ -256,7 +258,7 @@ export function EternalFarmCard({
                       size={'30px'}
                     />
                     <Box ml={1.5}>
-                      <p className='span text-secondary'>Bonus</p>
+                      <p className='span text-secondary'>{t('bonus')}</p>
                       <small className='weight-600'>
                         {farmBonusRewardToken.symbol}
                       </small>
@@ -272,7 +274,7 @@ export function EternalFarmCard({
                         3600 *
                         24,
                     )}{' '}
-                    / day
+                    / {t('day')}
                   </small>
                 )}
               </StyledDarkBox>
@@ -281,7 +283,7 @@ export function EternalFarmCard({
 
           {!!tvl && (
             <Box mt={2} className='flex justify-between'>
-              <small className='weight-600'>TVL:</small>
+              <small className='weight-600'>{t('tvl')}:</small>
               <small className='weight-600'>${formatCompact(tvl)}</small>
             </Box>
           )}
@@ -292,7 +294,7 @@ export function EternalFarmCard({
               disabled={isDetached}
               onClick={farmHandler}
             >
-              Farm
+              {t('farm')}
             </StyledButton>
           </Box>
         </StyledFilledBox>

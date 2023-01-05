@@ -9,8 +9,7 @@ import { useTranslation } from 'react-i18next';
 
 const LiquidityPoolRow: React.FC<{
   pair: any;
-  key: number;
-}> = ({ pair, key }) => {
+}> = ({ pair }) => {
   const { breakpoints } = useTheme();
   const daysCurrentYear = getDaysCurrentYear();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
@@ -39,7 +38,7 @@ const LiquidityPoolRow: React.FC<{
   const token0 = useCurrency(pair.token0.id);
   const token1 = useCurrency(pair.token1.id);
   return (
-    <Box key={key} className='liquidityContent'>
+    <Box className='liquidityContent'>
       <Box className='flex items-center' width={isMobile ? 1 : 0.5}>
         <DoubleCurrencyLogo
           currency0={token0 ?? undefined}

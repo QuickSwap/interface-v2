@@ -16,11 +16,13 @@ import { Box } from '@material-ui/core';
 import '../styles/analytics.scss';
 import { useActiveWeb3React } from 'hooks';
 import { Skeleton } from '@material-ui/lab';
+import { useTranslation } from 'react-i18next';
 
 const AnalyticsPairLiquidityChartV3: React.FC<{
   pairData: any;
   pairAddress: string;
 }> = ({ pairData, pairAddress }) => {
+  const { t } = useTranslation();
   const [liquidityChartData, updateLiquidtyChartData] = useState<any | null>(
     null,
   );
@@ -268,8 +270,8 @@ const AnalyticsPairLiquidityChartV3: React.FC<{
                 fillSeriesColor: false,
                 custom: ({ dataPointIndex }: any) => {
                   return `<div class="areaChartTooltipLiquidity">
-              <small>Tick stats</small>
-              <small>${pairData.token0.symbol} Price: ${
+              <small>${t('tickStats')}</small>
+              <small>${pairData.token0.symbol} ${t('price')}: ${
                     formattedData
                       ? Number(
                           formattedData[dataPointIndex].price0,
@@ -278,7 +280,7 @@ const AnalyticsPairLiquidityChartV3: React.FC<{
                         })
                       : '-'
                   } ${pairData.token1.symbol}</small>
-              <small>${pairData.token1.symbol} Price: ${
+              <small>${pairData.token1.symbol} ${t('price')}: ${
                     formattedData
                       ? Number(
                           formattedData[dataPointIndex].price1,
@@ -289,12 +291,12 @@ const AnalyticsPairLiquidityChartV3: React.FC<{
                   } ${pairData.token0.symbol}</small>
               ${
                 activeTickIdx && dataPointIndex > activeTickIdx
-                  ? `<small>${pairData.token0.symbol} Locked: ${
+                  ? `<small>${pairData.token0.symbol} ${t('locked')}: ${
                       formattedData
                         ? formattedData[dataPointIndex].tvlToken0
                         : '-'
                     } ${pairData.token0.symbol}</small>`
-                  : `<small>${pairData.token1.symbol} Locked: ${
+                  : `<small>${pairData.token1.symbol} ${t('locked')}: ${
                       formattedData
                         ? formattedData[dataPointIndex].tvlToken1
                         : '-'

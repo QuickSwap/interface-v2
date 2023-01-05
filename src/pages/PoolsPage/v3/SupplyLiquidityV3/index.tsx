@@ -37,8 +37,10 @@ import { useAppDispatch } from 'state/hooks';
 import usePoolsRedirect from 'hooks/usePoolsRedirect';
 import { CHAIN_INFO } from 'constants/v3/chains';
 import { ChainId } from '@uniswap/sdk';
+import { useTranslation } from 'react-i18next';
 
 export function SupplyLiquidityV3() {
+  const { t } = useTranslation();
   const history = useHistory();
   const params: any = useParams();
   const parsedQuery = useParsedQueryString();
@@ -262,7 +264,7 @@ export function SupplyLiquidityV3() {
         />
       )}
       <Box className='flex justify-between items-center'>
-        <p className='weight-600'>Supply Liquidity</p>
+        <p className='weight-600'>{t('supplyLiquidity')}</p>
         <Box className='flex items-center'>
           <small
             className='cursor-pointer text-primary'
@@ -275,7 +277,7 @@ export function SupplyLiquidityV3() {
               history.push('/pools');
             }}
           >
-            Clear all
+            {t('clearAll')}
           </small>
           {!hidePriceFormatter && (
             <Box className='flex' ml={1}>
@@ -306,7 +308,7 @@ export function SupplyLiquidityV3() {
             className='v3-supply-liquidity-button'
             onClick={toggleWalletModal}
           >
-            Connect Wallet
+            {t('connectWallet')}
           </Button>
         )}
       </Box>
@@ -349,7 +351,7 @@ export function SupplyLiquidityV3() {
               onFieldAInput('');
               onFieldBInput('');
             }}
-            title={expertMode ? `Add liquidity` : 'Preview'}
+            title={expertMode ? t('addLiquidity') : t('preview')}
           />
         </Box>
       </Box>

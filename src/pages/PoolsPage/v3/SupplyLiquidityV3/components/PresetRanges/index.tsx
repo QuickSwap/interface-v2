@@ -11,6 +11,7 @@ import { computePoolAddress } from 'hooks/v3/computePoolAddress';
 import { POOL_DEPLOYER_ADDRESS } from 'constants/v3/addresses';
 import './index.scss';
 import { useActiveWeb3React } from 'hooks';
+import { useTranslation } from 'react-i18next';
 
 export interface IPresetArgs {
   type: Presets;
@@ -49,6 +50,7 @@ export function PresetRanges({
   priceUpper,
 }: IPresetRanges) {
   const { chainId } = useActiveWeb3React();
+  const { t } = useTranslation();
   const [aprs, setAprs] = useState<undefined | { [key: string]: number }>();
 
   useEffect(() => {
@@ -61,7 +63,7 @@ export function PresetRanges({
       return [
         {
           type: Presets.STABLE,
-          title: `Stablecoins`,
+          title: t('stablecoins'),
           min: 0.984,
           max: 1.016,
           risk: PresetProfits.VERY_LOW,
@@ -72,7 +74,7 @@ export function PresetRanges({
     return [
       {
         type: Presets.FULL,
-        title: `Full range`,
+        title: t('fullRange'),
         min: 0,
         max: Infinity,
         risk: PresetProfits.VERY_LOW,
@@ -80,7 +82,7 @@ export function PresetRanges({
       },
       {
         type: Presets.SAFE,
-        title: `Safe`,
+        title: t('safe'),
         min: 0.8,
         max: 1.4,
         risk: PresetProfits.LOW,
@@ -88,7 +90,7 @@ export function PresetRanges({
       },
       {
         type: Presets.NORMAL,
-        title: `Common`,
+        title: t('common'),
         min: 0.9,
         max: 1.2,
         risk: PresetProfits.MEDIUM,
@@ -96,14 +98,14 @@ export function PresetRanges({
       },
       {
         type: Presets.RISK,
-        title: `Expert`,
+        title: t('expert'),
         min: 0.95,
         max: 1.1,
         risk: PresetProfits.HIGH,
         profit: PresetProfits.HIGH,
       },
     ];
-  }, [isStablecoinPair]);
+  }, [isStablecoinPair, t]);
 
   const risk = useMemo(() => {
     if (!priceUpper || !priceLower || !price) return;
@@ -157,10 +159,12 @@ export function PresetRanges({
     )
       return <Loader stroke='#22cbdc' />;
 
-    if (mintInfo.noLiquidity) return `0.01% fee`;
+    if (mintInfo.noLiquidity) return `0.01% ${t('fee').toLowerCase()}`;
 
-    return `${(mintInfo.dynamicFee / 10000).toFixed(3)}% fee`;
-  }, [mintInfo]);
+    return `${(mintInfo.dynamicFee / 10000).toFixed(3)}% ${t(
+      'fee',
+    ).toLowerCase()}`;
+  }, [mintInfo, t]);
 
   const aprString = useMemo(() => {
     if (!aprs || !baseCurrency || !quoteCurrency)
@@ -199,7 +203,7 @@ export function PresetRanges({
         {_risk && !mintInfo.invalidRange && !isStablecoinPair && (
           <Box className='preset-range-info'>
             <Box px='12px' className='flex items-center justify-between'>
-              <span>Risk:</span>
+              <span>{t('risk')}:</span>
               <Box className='flex items-center'>
                 {[1, 2, 3, 4, 5].map((_, i) => (
                   <div key={i} className='preset-range-circle'>
@@ -217,7 +221,7 @@ export function PresetRanges({
               px='12px'
               className='flex  items-center justify-between'
             >
-              <span>Profit:</span>
+              <span>{t('profit')}:</span>
               <Box className='flex items-center'>
                 {[1, 2, 3, 4, 5].map((_, i) => (
                   <div key={i} className='preset-range-circle'>

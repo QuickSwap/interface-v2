@@ -27,6 +27,7 @@ import { CustomModal } from 'components';
 import { CloseIcon, CustomLightSpinner } from 'theme/components';
 import { ExplorerDataType, getEtherscanLink } from 'utils';
 import { StyledButton, StyledLabel } from '../Common/styledElements';
+import { useTranslation } from 'react-i18next';
 
 interface ConfirmationPendingContentProps {
   onDismiss: () => void;
@@ -39,6 +40,7 @@ function ConfirmationPendingContent({
   pendingText,
   inline,
 }: ConfirmationPendingContentProps) {
+  const { t } = useTranslation();
   return (
     <div className={'p-1 w-100'}>
       {!inline && (
@@ -56,14 +58,14 @@ function ConfirmationPendingContent({
       </div>
       <div className={'f c f-ac ta-c'}>
         <StyledLabel className=' mb-05' fontSize='16px' color='#c7cad9'>
-          Waiting For Confirmation
+          {t('waitingConfirm')}
         </StyledLabel>
         <StyledLabel className=' mb-05' fontSize='14px' color='#c7cad9'>
           {pendingText}
         </StyledLabel>
 
         <StyledLabel className=' mb-05' fontSize='14px' color='#696c80'>
-          {' Confirm this transaction in your wallet'}
+          {t('confirmTxinWallet')}
         </StyledLabel>
       </div>
     </div>
@@ -85,6 +87,7 @@ function TransactionSubmittedContent({
   currencyToAdd,
   inline,
 }: TransactionSubmittedContentProps) {
+  const { t } = useTranslation();
   const theme = useContext(ThemeContext);
 
   const { library } = useActiveWeb3React();
@@ -108,14 +111,14 @@ function TransactionSubmittedContent({
       </ConfirmedIcon>
       <AutoColumn gap='12px' justify={'center'}>
         <StyledLabel fontSize={'20px'} className='text-center'>
-          Transaction Submitted
+          {t('txSubmitted')}
         </StyledLabel>
         {chainId && hash && (
           <ExternalLink
             href={getEtherscanLink(chainId, hash, ExplorerDataType.TRANSACTION)}
           >
             <StyledLabel fontSize={'14px'} color={theme.winterMainButton}>
-              View on Explorer
+              {t('viewonBlockExplorer')}
             </StyledLabel>
           </ExternalLink>
         )}
@@ -128,12 +131,12 @@ function TransactionSubmittedContent({
           >
             {!success ? (
               <RowFixed>
-                Add {currencyToAdd.symbol} to Metamask{' '}
+                {t('addToMetamaskToken', { symbol: currencyToAdd.symbol })}
                 <StyledLogo src={MetaMaskLogo} />
               </RowFixed>
             ) : (
               <RowFixed>
-                Added ${currencyToAdd.symbol}
+                {t('added')} {currencyToAdd.symbol}
                 <CheckCircle
                   size={'16px'}
                   stroke={'var(--green)'}
@@ -147,7 +150,7 @@ function TransactionSubmittedContent({
           onClick={onDismiss}
           style={{ margin: '20px 0 0 0', color: 'white' }}
         >
-          {inline ? 'Return' : 'Close'}
+          {inline ? t('return') : t('close')}
         </StyledButton>
       </AutoColumn>
     </div>
@@ -190,12 +193,13 @@ export function TransactionErrorContent({
   message,
   onDismiss,
 }: TransactionErrorContentProps) {
+  const { t } = useTranslation();
   const theme = useContext(ThemeContext);
   return (
     <Wrapper>
       <Section>
         <RowBetween>
-          <StyledLabel fontSize={'20px'}>Error</StyledLabel>
+          <StyledLabel fontSize={'20px'}>{t('error')}</StyledLabel>
           <CloseIcon onClick={onDismiss} />
         </RowBetween>
         <AutoColumn
@@ -222,7 +226,7 @@ export function TransactionErrorContent({
         </AutoColumn>
       </Section>
       <BottomSection gap='12px'>
-        <StyledButton onClick={onDismiss}>Dismiss</StyledButton>
+        <StyledButton onClick={onDismiss}>{t('dismiss')}</StyledButton>
       </BottomSection>
     </Wrapper>
   );

@@ -8,11 +8,14 @@ import { GlobalConst } from 'constants/index';
 import { useTranslation } from 'react-i18next';
 import { useDefaultFarmList } from 'state/farms/hooks';
 import { ChainId } from '@uniswap/sdk';
+import useParsedQueryString from 'hooks/useParsedQueryString';
 
-const FarmRewards: React.FC<{ farmIndex: number; bulkPairs: any }> = ({
-  farmIndex,
-  bulkPairs,
-}) => {
+const FarmRewards: React.FC<{ bulkPairs: any }> = ({ bulkPairs }) => {
+  const parsedQuery = useParsedQueryString();
+  const currentTab =
+    parsedQuery && parsedQuery.tab
+      ? (parsedQuery.tab as string)
+      : GlobalConst.v2FarmTab.LPFARM;
   const { t } = useTranslation();
   const { breakpoints } = useTheme();
   const { chainId } = useActiveWeb3React();
@@ -20,7 +23,7 @@ const FarmRewards: React.FC<{ farmIndex: number; bulkPairs: any }> = ({
   const isMobile = useMediaQuery(breakpoints.down('xs'));
 
   const farmData = useUSDRewardsandFees(
-    farmIndex === GlobalConst.farmIndex.LPFARM_INDEX,
+    currentTab === GlobalConst.v2FarmTab.LPFARM,
     bulkPairs,
     defaultChainId,
   );
@@ -72,7 +75,7 @@ const FarmRewards: React.FC<{ farmIndex: number; bulkPairs: any }> = ({
 
   return (
     <Box className='farmRewards'>
-      {farmIndex === GlobalConst.farmIndex.LPFARM_INDEX && (
+      {currentTab === GlobalConst.v2FarmTab.LPFARM && (
         <>
           <Box
             width={isMobile ? 1 : 1 / 3}
@@ -89,7 +92,7 @@ const FarmRewards: React.FC<{ farmIndex: number; bulkPairs: any }> = ({
           {getRewardsSection(true)}
         </>
       )}
-      {farmIndex === GlobalConst.farmIndex.DUALFARM_INDEX &&
+      {currentTab === GlobalConst.v2FarmTab.DUALFARM &&
         getRewardsSection(false)}
     </Box>
   );

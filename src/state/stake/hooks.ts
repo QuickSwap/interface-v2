@@ -277,13 +277,6 @@ export function useFilteredSyrupInfo(
     STAKING_REWARDS_INTERFACE,
     'totalSupply',
   );
-  const rewardRates = useMultipleContractSingleData(
-    rewardsAddresses,
-    STAKING_REWARDS_INTERFACE,
-    'rewardRate',
-    undefined,
-    NEVER_RELOAD,
-  );
 
   const stakingTokenPairs = usePairs(
     info.map((item) => [
@@ -313,7 +306,6 @@ export function useFilteredSyrupInfo(
 
         // these get fetched regardless of account
         const totalSupplyState = totalSupplies[index];
-        const rewardRateState = rewardRates[index];
         const syrupInfo = info[index];
 
         if (
@@ -322,9 +314,7 @@ export function useFilteredSyrupInfo(
           !earnedAmountState?.loading &&
           // always need these
           totalSupplyState &&
-          !totalSupplyState.loading &&
-          rewardRateState &&
-          !rewardRateState.loading
+          !totalSupplyState.loading
         ) {
           // get the LP token
           const token = syrupInfo.token;
@@ -353,20 +343,17 @@ export function useFilteredSyrupInfo(
           const totalRewardRate = new TokenAmount(token, JSBI.BigInt(rate));
           //const pair = info[index].pair.toLowerCase();
           //const fees = (pairData && pairData[pair] ? pairData[pair].oneDayVolumeUSD * 0.0025: 0);
-          const rewardRate = initTokenAmountFromCallResult(
-            token,
-            rewardRateState,
-          );
+
           const getHypotheticalRewardRate = (
             stakedAmount?: TokenAmount,
             totalStakedAmount?: TokenAmount,
           ): TokenAmount | undefined => {
-            if (!stakedAmount || !totalStakedAmount || !rewardRate) return;
+            if (!stakedAmount || !totalStakedAmount) return;
             return new TokenAmount(
               token,
               JSBI.greaterThan(totalStakedAmount.raw, JSBI.BigInt(0))
                 ? JSBI.divide(
-                    JSBI.multiply(rewardRate.raw, stakedAmount.raw),
+                    JSBI.multiply(totalRewardRate.raw, stakedAmount.raw),
                     totalStakedAmount.raw,
                   )
                 : JSBI.BigInt(0),
@@ -419,7 +406,6 @@ export function useFilteredSyrupInfo(
     info,
     rewardsAddresses,
     totalSupplies,
-    rewardRates,
     stakingTokenPairs,
     usdBaseTokenPrices,
     stakingTokenPrices,
@@ -485,14 +471,6 @@ export function useOldSyrupInfo(
     'totalSupply',
   );
 
-  const rewardRates = useMultipleContractSingleData(
-    rewardsAddresses,
-    STAKING_REWARDS_INTERFACE,
-    'rewardRate',
-    undefined,
-    NEVER_RELOAD,
-  );
-
   const stakingTokenPairs = usePairs(
     info.map((item) => [
       unwrappedToken(item.token),
@@ -520,7 +498,6 @@ export function useOldSyrupInfo(
 
         // these get fetched regardless of account
         const totalSupplyState = totalSupplies[index];
-        const rewardRateState = rewardRates[index];
         const syrupInfo = info[index];
         const stakingTokenPrice = stakingTokenPrices[index];
 
@@ -530,9 +507,7 @@ export function useOldSyrupInfo(
           !earnedAmountState?.loading &&
           // always need these
           totalSupplyState &&
-          !totalSupplyState.loading &&
-          rewardRateState &&
-          !rewardRateState.loading
+          !totalSupplyState.loading
         ) {
           // get the LP token
           const token = syrupInfo.token;
@@ -550,20 +525,17 @@ export function useOldSyrupInfo(
           const totalRewardRate = new TokenAmount(token, JSBI.BigInt(rate));
           //const pair = info[index].pair.toLowerCase();
           //const fees = (pairData && pairData[pair] ? pairData[pair].oneDayVolumeUSD * 0.0025: 0);
-          const rewardRate = initTokenAmountFromCallResult(
-            token,
-            rewardRateState,
-          );
+
           const getHypotheticalRewardRate = (
             stakedAmount?: TokenAmount,
             totalStakedAmount?: TokenAmount,
           ): TokenAmount | undefined => {
-            if (!stakedAmount || !totalStakedAmount || !rewardRate) return;
+            if (!stakedAmount || !totalStakedAmount) return;
             return new TokenAmount(
               token,
               JSBI.greaterThan(totalStakedAmount.raw, JSBI.BigInt(0))
                 ? JSBI.divide(
-                    JSBI.multiply(rewardRate.raw, stakedAmount.raw),
+                    JSBI.multiply(totalRewardRate.raw, stakedAmount.raw),
                     totalStakedAmount.raw,
                   )
                 : JSBI.BigInt(0),
@@ -622,7 +594,6 @@ export function useOldSyrupInfo(
     info,
     rewardsAddresses,
     totalSupplies,
-    rewardRates,
     stakingTokenPairs,
     usdBaseTokenPrices,
     stakingTokenPrices,

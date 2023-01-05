@@ -88,14 +88,10 @@ export const GlobalConst = {
     ALL_CHART: 5,
     CHART_COUNT: 60, //limit analytics chart items not more than 60
   },
-  farmIndex: {
-    LPFARM_INDEX: 0,
-    DUALFARM_INDEX: 1,
-    OTHER_LP_INDEX: 2,
-  },
-  v3FarmIndex: {
-    MY_FARMS_INDEX: 0,
-    ETERNAL_FARMS_INDEX: 1,
+  v2FarmTab: {
+    LPFARM: 'lpFarm',
+    DUALFARM: 'DualFarm',
+    OTHER_LP: 'OtherFarm',
   },
   walletName: {
     METAMASK: 'Metamask',
@@ -260,6 +256,10 @@ export const GlobalValue = {
   marketSDK: {
     BLOCKSPERDAY: 0.5 * GlobalConst.utils.ONEDAYSECONDS,
   },
+};
+
+export const paraswapTax: { [key: string]: number } = {
+  '0xed88227296943857409a8e0f15ad7134e70d0f73': 100,
 };
 
 export const GlobalData = {
