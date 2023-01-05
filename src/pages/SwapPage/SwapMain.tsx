@@ -126,7 +126,7 @@ const SwapMain: React.FC = () => {
           isProMode ? ' proModeWrapper' : ''
         }`}
       >
-        <Box display='flex' width={1}>
+        <Box display='flex'>
           {showBestTrade && (
             <Box
               className={swapTabClass(SWAP_BEST_TRADE)}
@@ -168,8 +168,8 @@ const SwapMain: React.FC = () => {
             </Box>
           )}
         </Box>
-        {!isProMode && showProMode && (
-          <Box margin='8px 16px 0' className='flex items-center'>
+        <Box margin='8px 16px 0' className='flex items-center'>
+          {!isProMode && showProMode && (
             <Box className='flex items-center' mr={1}>
               <span
                 className='text-secondary text-uppercase'
@@ -184,11 +184,11 @@ const SwapMain: React.FC = () => {
                 }}
               />
             </Box>
-            <Box className='headingItem'>
-              <SettingsIcon onClick={() => setOpenSettingsModal(true)} />
-            </Box>
+          )}
+          <Box className='headingItem'>
+            <SettingsIcon onClick={() => setOpenSettingsModal(true)} />
           </Box>
-        )}
+        </Box>
       </Box>
       <Box padding={isProMode ? '0 24px' : '0'} mt={3.5}>
         {swapType === SWAP_BEST_TRADE && showBestTrade && <SwapBestTrade />}
