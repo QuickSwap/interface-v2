@@ -23,7 +23,6 @@ const AnalyticsPairs: React.FC = () => {
     if (isV2 === undefined) return;
 
     (async () => {
-      updateTopPairs(null);
       if (!isV2) {
         const pairsData = await getTopPairsV3(
           GlobalConst.utils.ANALYTICS_PAIRS_COUNT,
@@ -65,6 +64,12 @@ const AnalyticsPairs: React.FC = () => {
       }
     })();
   }, [ethPrice.price, isV2]);
+
+  useEffect(() => {
+    if (isV2 !== undefined) {
+      updateTopPairs(null);
+    }
+  }, [isV2]);
 
   useEffect(() => {
     if (topPairs) {

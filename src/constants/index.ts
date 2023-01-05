@@ -8,6 +8,7 @@ import {
   arkaneconnect,
   safeApp,
   trustconnect,
+  unstopabbledomains,
 } from '../connectors';
 import MetamaskIcon from 'assets/images/metamask.png';
 import BlockWalletIcon from 'assets/images/blockwalletIcon.svg';
@@ -19,6 +20,7 @@ import PortisIcon from 'assets/images/portisIcon.png';
 import VenlyIcon from 'assets/images/venly.svg';
 import GnosisIcon from 'assets/images/gnosis_safe.png';
 import TrustIcon from 'assets/images/trust.png';
+import UnstoppableDomainsIcon from 'assets/images/unstoppableDomains.png';
 
 const WETH_ONLY: ChainTokenList = {
   [ChainId.MUMBAI]: [WETH[ChainId.MUMBAI]],
@@ -119,14 +121,10 @@ export const GlobalConst = {
     ALL_CHART: 5,
     CHART_COUNT: 60, //limit analytics chart items not more than 60
   },
-  farmIndex: {
-    LPFARM_INDEX: 0,
-    DUALFARM_INDEX: 1,
-    OTHER_LP_INDEX: 2,
-  },
-  v3FarmIndex: {
-    MY_FARMS_INDEX: 0,
-    ETERNAL_FARMS_INDEX: 1,
+  v2FarmTab: {
+    LPFARM: 'lpFarm',
+    DUALFARM: 'DualFarm',
+    OTHER_LP: 'OtherFarm',
   },
   walletName: {
     METAMASK: 'Metamask',
@@ -235,6 +233,14 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
     href: null,
     color: '#4196FC',
     mobile: true,
+  },
+  UNSTOPABBLEDOMAINS: {
+    connector: unstopabbledomains,
+    name: 'Unstoppable Domains',
+    iconName: UnstoppableDomainsIcon,
+    description: 'Unstoppable Domains',
+    href: null,
+    color: '#E8831D',
   },
 };
 
@@ -383,6 +389,41 @@ export const GlobalValue = {
         'GHST',
         'Aavegotchi GHST Token',
       ),
+      BOB: new Token(
+        ChainId.MATIC,
+        '0xB0B195aEFA3650A6908f15CdaC7D92F8a5791B0B',
+        18,
+        'BOB',
+        'BOB',
+      ),
+      axlUSDC: new Token(
+        ChainId.MATIC,
+        '0x750e4C4984a9e0f12978eA6742Bc1c5D248f40ed',
+        18,
+        'axlUSDC',
+        'Axelar Wrapped USDC',
+      ),
+      TUSD: new Token(
+        ChainId.MATIC,
+        '0x2e1AD108fF1D8C782fcBbB89AAd783aC49586756',
+        18,
+        'TUSD',
+        'TrueUSD',
+      ),
+      UND: new Token(
+        ChainId.MATIC,
+        '0x1eBA4B44C4F8cc2695347C6a78F0B7a002d26413',
+        18,
+        'UND',
+        'Unbound Dollar',
+      ),
+      USDD: new Token(
+        ChainId.MATIC,
+        '0xFFA4D863C96e743A2e1513824EA006B8D0353C57',
+        18,
+        'USDD',
+        'Decentralized USD',
+      ),
     },
   },
   marketSDK: {
@@ -395,6 +436,10 @@ export const GlobalValue = {
     LENS: '0x4B1dfA99d53FFA6E4c0123956ec4Ac2a6D9F4c75',
     BLOCKSPERDAY: 0.5 * GlobalConst.utils.ONEDAYSECONDS,
   },
+};
+
+export const paraswapTax: { [key: string]: number } = {
+  '0xed88227296943857409a8e0f15ad7134e70d0f73': 100,
 };
 
 export const GlobalData = {
@@ -475,6 +520,17 @@ export const GlobalData = {
     ],
     CHART_DURATION_TEXTS: ['1M', '3M', '6M', '1Y', 'All'],
   },
+  stableCoins: [
+    GlobalValue.tokens.COMMON.USDC,
+    GlobalValue.tokens.COMMON.USDT,
+    GlobalValue.tokens.COMMON.MI,
+    GlobalValue.tokens.COMMON.DAI,
+    GlobalValue.tokens.COMMON.axlUSDC,
+    GlobalValue.tokens.COMMON.BOB,
+    GlobalValue.tokens.COMMON.TUSD,
+    GlobalValue.tokens.COMMON.UND,
+    GlobalValue.tokens.COMMON.USDD,
+  ],
 };
 
 // a list of tokens by chain

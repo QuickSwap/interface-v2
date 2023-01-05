@@ -124,7 +124,7 @@ export const ALL_TOKENS_V3 = gql`
 export const TOKEN_SEARCH_V3 = gql`
   query tokens($value: String, $id: String) {
     asSymbol: tokens(
-      where: { symbol_contains: $value }
+      where: { symbol_contains_nocase: $value }
       orderBy: totalValueLockedUSD
       orderDirection: desc
     ) {
@@ -136,7 +136,7 @@ export const TOKEN_SEARCH_V3 = gql`
       totalValueLockedUSD
     }
     asName: tokens(
-      where: { name_contains: $value }
+      where: { name_contains_nocase: $value }
       orderBy: totalValueLockedUSD
       orderDirection: desc
     ) {
@@ -239,6 +239,55 @@ export const TOP_POOLS_V3_TOKEN = (address: string) => gql`
     pools1: pools(
       first: 100
       where: {token1_contains_nocase: "${address}"}
+      orderBy: totalValueLockedUSD
+      orderDirection: desc
+      subgraphError: allow
+    ) {
+      id
+    }
+  }
+`;
+
+export const TOP_POOLS_V3_TOKENS = (address: string, address1: string) => gql`
+  query topPools {
+    pools0: pools(
+      where: {token0_contains_nocase: "${address}", token1_contains_nocase: "${address1}"}
+      orderBy: totalValueLockedUSD
+      orderDirection: desc
+      subgraphError: allow
+    ) {
+      id
+    }
+    pools1: pools(
+      first: 5
+      where: {token0_contains_nocase: "${address}", token1_not_contains_nocase: "${address1}"}
+      orderBy: totalValueLockedUSD
+      orderDirection: desc
+      subgraphError: allow
+    ) {
+      id
+    }
+    pools2: pools(
+      first: 5
+      where: {token0_not_contains_nocase: "${address}", token1_contains_nocase: "${address1}"}
+      orderBy: totalValueLockedUSD
+      orderDirection: desc
+      subgraphError: allow
+    ) {
+      id
+    }
+    pools3: pools(
+      first: 5
+      where: {token0_contains_nocase: "${address1}", token1_not_contains_nocase: "${address}"}
+      orderBy: totalValueLockedUSD
+      orderDirection: desc
+      subgraphError: allow
+    ) {
+      id
+    }
+    pools4: pools(
+      first: 5
+      where: {token0_not_contains_nocase: "${address1}", token1_contains_nocase: "${address}"}
       orderBy: totalValueLockedUSD
       orderDirection: desc
       subgraphError: allow
@@ -399,14 +448,14 @@ export const PAIR_CHART_V3 = gql`
   }
 `;
 
-export const PAIR_FEE_CHART_V3 = () => gql`
-  query feeHourData($address: String, $startTime: BigInt) {
+export const PAIR_FEE_CHART_V3 = gql`
+  query feeHourData($address: String, $skip: Int!, $startTime: Int!) {
     feeHourDatas(
       first: 1000
       skip: $skip
       orderBy: timestamp
       orderDirection: asc
-      where: { pool: $address, timestamp_gte: $startTime }
+      where: { pool: $address, timestamp_gt: $startTime }
     ) {
       id
       pool
@@ -738,5 +787,30 @@ export const FETCH_ETERNAL_FARM_FROM_POOL_V3 = (pools: string[]) => {
         }
       }
       `;
+  return gql(queryString);
+};
+
+export const PRICES_BY_BLOCK_V3: any = (
+  tokenAddress: string,
+  blocks: any[],
+) => {
+  let queryString = 'query blocks {';
+  queryString += blocks.map(
+    (block) => `
+      t${block.timestamp}:token(id:"${tokenAddress}", block: { number: ${block.number} }) { 
+        derivedMatic
+      }
+    `,
+  );
+  queryString += ',';
+  queryString += blocks.map(
+    (block) => `
+      b${block.timestamp}: bundle(id:"1", block: { number: ${block.number} }) { 
+        maticPriceUSD
+      }
+    `,
+  );
+
+  queryString += '}';
   return gql(queryString);
 };

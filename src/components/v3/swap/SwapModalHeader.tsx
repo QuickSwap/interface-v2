@@ -26,6 +26,7 @@ import { computeFiatValuePriceImpact } from 'utils/v3/computeFiatValuePriceImpac
 import { WrappedCurrency } from 'models/types';
 import { StyledFilledBox, StyledLabel } from '../Common/styledElements';
 import { Box } from '@material-ui/core';
+import { useTranslation } from 'react-i18next';
 
 interface SwapModalHeaderProps {
   trade:
@@ -44,6 +45,7 @@ export default function SwapModalHeader({
   showAcceptChanges,
   onAcceptChanges,
 }: SwapModalHeaderProps) {
+  const { t } = useTranslation();
   const theme = useContext(ThemeContext);
 
   const [showInverted, setShowInverted] = useState<boolean>(false);
@@ -56,7 +58,7 @@ export default function SwapModalHeader({
       <StyledFilledBox>
         <Box padding={2} paddingTop={2}>
           <div className={'flex-s-between mb-1'}>
-            <span className={'fs-085'}>{'From'}</span>
+            <span className={'fs-085'}>{t('from')}</span>
             <FiatValue fiatValue={fiatValueInput} />
           </div>
 
@@ -96,7 +98,7 @@ export default function SwapModalHeader({
         <StyledFilledBox>
           <Box padding={2}>
             <div className={'flex-s-between fs-08 mb-1'}>
-              {'To'}
+              {t('to')}
               <FiatValue
                 fiatValue={fiatValueOutput}
                 priceImpact={computeFiatValuePriceImpact(
@@ -129,7 +131,7 @@ export default function SwapModalHeader({
       </Box>
 
       <StyledLabel className={'flex-s-between ph-05 mt-1 mb-1'}>
-        {'Price'}
+        {t('price')}
         <TradePrice
           price={trade.executionPrice}
           showInverted={showInverted}
@@ -154,7 +156,9 @@ export default function SwapModalHeader({
                 size={20}
                 style={{ marginRight: '8px', minWidth: 24 }}
               />
-              <TYPE.main color={'var(--primary)'}>{'Price Updated'}</TYPE.main>
+              <TYPE.main color={'var(--primary)'}>
+                {t('priceUpdated')}
+              </TYPE.main>
             </RowFixed>
             <ButtonPrimary
               style={{
@@ -165,7 +169,7 @@ export default function SwapModalHeader({
               }}
               onClick={onAcceptChanges}
             >
-              {'Accept'}
+              {t('accept')}
             </ButtonPrimary>
           </RowBetween>
         </SwapShowAcceptChanges>
@@ -174,27 +178,23 @@ export default function SwapModalHeader({
       <div>
         {trade.tradeType === TradeType.EXACT_INPUT ? (
           <div className={'l mt-1'}>
-            {'Output is estimated. You will receive at least '}
-            <b>
-              {trade.minimumAmountOut(allowedSlippage).toSignificant(6)}{' '}
-              {trade.outputAmount.currency.symbol}
-            </b>
-            {' or the transaction will revert.'}
+            {t('outputEstimated1', {
+              amount: trade.minimumAmountOut(allowedSlippage).toSignificant(6),
+              symbol: trade.outputAmount.currency.symbol,
+            })}
           </div>
         ) : (
           <div className={'l mt-1'}>
-            {'Input is estimated. You will sell at most '}
-            <b>
-              {trade.maximumAmountIn(allowedSlippage).toSignificant(6)}{' '}
-              {trade.inputAmount.currency.symbol}
-            </b>
-            {' or the transaction will revert.'}
+            {t('inputEstimated', {
+              amount: trade.maximumAmountIn(allowedSlippage).toSignificant(6),
+              symbol: trade.inputAmount.currency.symbol,
+            })}
           </div>
         )}
       </div>
       {recipient !== null ? (
         <div className={'c-p'}>
-          {'Output will be sent to'}{' '}
+          {t('outputSentTo')}
           <b title={recipient}>
             {isAddress(recipient) ? shortenAddress(recipient) : recipient}
           </b>

@@ -23,7 +23,7 @@ export default function V3IncreaseLiquidityModal({
     <CustomModal open={open} onClose={onClose}>
       <Box padding={3}>
         <Box className='flex justify-between'>
-          <p className='weight-600'>Increase Liquidity</p>
+          <p className='weight-600'>{t('increaseLiquidity')}</p>
           <CloseIcon className='cursor-pointer' onClick={onClose} />
         </Box>
         <Box mt={3}>

@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useCurrency } from 'hooks/v3/Tokens';
 import { useActiveWeb3React } from 'hooks';
-import { useParams } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import {
   useV3DerivedMintInfo,
   useV3MintActionHandlers,
@@ -34,8 +34,11 @@ import useParsedQueryString from 'hooks/useParsedQueryString';
 import { SettingsModal } from 'components';
 import { ReactComponent as SettingsIcon } from 'assets/images/SettingsIcon.svg';
 import { useAppDispatch } from 'state/hooks';
+import usePoolsRedirect from 'hooks/usePoolsRedirect';
+import { useTranslation } from 'react-i18next';
 
 export function SupplyLiquidityV3() {
+  const { t } = useTranslation();
   const params: any = useParams();
   const parsedQuery = useParsedQueryString();
   const currencyIdAParam =
@@ -160,21 +163,61 @@ export function SupplyLiquidityV3() {
     [chainId, resetState],
   );
 
+  const { redirectWithCurrency, redirectWithSwitch } = usePoolsRedirect();
+
   const handleCurrencyASelect = useCallback(
     (currencyANew: Currency) => {
-      const [idA] = handleCurrencySelect(currencyANew);
-      setCurrencyIdA(idA);
+      const isSwichRedirect = currencyANew.isNative
+        ? currencyIdBParam === 'matic'
+        : currencyIdBParam &&
+          currencyANew &&
+          currencyANew.address &&
+          currencyANew.address.toLowerCase() === currencyIdBParam.toLowerCase();
+      if (isSwichRedirect) {
+        redirectWithSwitch(currencyANew, true, false);
+      } else {
+        redirectWithCurrency(currencyANew, true, false);
+      }
     },
-    [handleCurrencySelect],
+    [redirectWithCurrency, currencyIdBParam, redirectWithSwitch],
   );
+
+  useEffect(() => {
+    if (currencyIdAParam) {
+      setCurrencyIdA(currencyIdAParam);
+      if (baseCurrency) {
+        handleCurrencySelect(baseCurrency);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currencyIdAParam]);
 
   const handleCurrencyBSelect = useCallback(
     (currencyBNew: Currency) => {
-      const [idB] = handleCurrencySelect(currencyBNew);
-      setCurrencyIdB(idB);
+      const isSwichRedirect = currencyBNew.isNative
+        ? currencyIdAParam === 'matic'
+        : currencyIdAParam &&
+          currencyBNew &&
+          currencyBNew.address &&
+          currencyBNew.address.toLowerCase() === currencyIdAParam.toLowerCase();
+      if (isSwichRedirect) {
+        redirectWithSwitch(currencyBNew, false, false);
+      } else {
+        redirectWithCurrency(currencyBNew, false, false);
+      }
     },
-    [handleCurrencySelect],
+    [redirectWithCurrency, currencyIdAParam, redirectWithSwitch],
   );
+
+  useEffect(() => {
+    if (currencyIdBParam) {
+      setCurrencyIdB(currencyIdBParam);
+      if (currencyB) {
+        handleCurrencySelect(currencyB);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currencyIdBParam]);
 
   const handlePriceFormat = useCallback((priceFormat: PriceFormats) => {
     setPriceFormat(priceFormat);
@@ -211,7 +254,7 @@ export function SupplyLiquidityV3() {
         />
       )}
       <Box className='flex justify-between items-center'>
-        <p className='weight-600'>Supply Liquidity</p>
+        <p className='weight-600'>{t('supplyLiquidity')}</p>
         <Box className='flex items-center'>
           <small
             className='cursor-pointer text-primary'
@@ -223,7 +266,7 @@ export function SupplyLiquidityV3() {
               onFieldBInput('');
             }}
           >
-            Clear all
+            {t('clearAll')}
           </small>
           {!hidePriceFormatter && (
             <Box className='flex' ml={1}>
@@ -254,7 +297,7 @@ export function SupplyLiquidityV3() {
             className='v3-supply-liquidity-button'
             onClick={toggleWalletModal}
           >
-            Connect Wallet
+            {t('connectWallet')}
           </Button>
         )}
       </Box>
@@ -297,7 +340,7 @@ export function SupplyLiquidityV3() {
               onFieldAInput('');
               onFieldBInput('');
             }}
-            title={expertMode ? `Add liquidity` : 'Preview'}
+            title={expertMode ? t('addLiquidity') : t('preview')}
           />
         </Box>
       </Box>

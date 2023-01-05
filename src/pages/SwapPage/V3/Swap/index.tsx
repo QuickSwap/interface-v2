@@ -5,7 +5,13 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { Currency, CurrencyAmount, Token, TradeType } from '@uniswap/sdk-core';
+import {
+  Currency,
+  CurrencyAmount,
+  Token,
+  TradeType,
+  NativeCurrency,
+} from '@uniswap/sdk-core';
 import { Trade as V3Trade } from 'lib/src/trade';
 import JSBI from 'jsbi';
 import { ArrowDown, CheckCircle, HelpCircle, Info } from 'react-feather';
@@ -13,7 +19,6 @@ import { useHistory } from 'react-router-dom';
 import { ThemeContext } from 'styled-components/macro';
 import { Helmet } from 'react-helmet';
 import ReactGA from 'react-ga';
-import './index.scss';
 import { useActiveWeb3React } from 'hooks';
 import useENSAddress from 'hooks/useENSAddress';
 import Loader from 'components/Loader';
@@ -48,13 +53,7 @@ import {
 import TokenWarningModal from 'components/v3/TokenWarningModal';
 import TradePrice from 'components/v3/swap/TradePrice';
 import SwapHeader from 'components/v3/swap/SwapHeader';
-import AddressInputPanel from 'components/v3/AddressInputPanel';
-import { LinkStyledButton } from 'theme/components';
-import {
-  ArrowWrapper,
-  Dots,
-  SwapCallbackError,
-} from 'components/v3/swap/styled';
+import { Dots, SwapCallbackError } from 'components/v3/swap/styled';
 import { AdvancedSwapDetails } from 'components/v3/swap/AdvancedSwapDetails';
 import CurrencyInputPanel from 'components/v3/CurrencyInputPanel';
 import {
@@ -69,11 +68,18 @@ import ConfirmSwapModal from 'components/v3/swap/ConfirmSwapModal';
 import { useExpertModeManager } from 'state/user/hooks';
 import { ReactComponent as ExchangeIcon } from 'assets/images/ExchangeIcon.svg';
 
-import { Box } from '@material-ui/core';
+import { Box, Button } from '@material-ui/core';
 import { StyledButton } from 'components/v3/Common/styledElements';
+import useParsedQueryString from 'hooks/useParsedQueryString';
+import { ETHER } from '@uniswap/sdk';
+import { WMATIC_EXTENDED } from 'constants/v3/addresses';
+import useSwapRedirects from 'hooks/useSwapRedirect';
+import { useTranslation } from 'react-i18next';
+import { AddressInput } from 'components';
 
 const SwapV3Page: React.FC = () => {
-  const { account } = useActiveWeb3React();
+  const { t } = useTranslation();
+  const { account, chainId } = useActiveWeb3React();
   const history = useHistory();
   const loadedUrlParams = useDefaultsFromURLSearch();
   const inputCurrencyId = loadedUrlParams?.inputCurrencyId;
@@ -172,7 +178,6 @@ const SwapV3Page: React.FC = () => {
   );
 
   const {
-    onSwitchTokens,
     onCurrencySelection,
     onUserInput,
     onChangeRecipient,
@@ -197,7 +202,7 @@ const SwapV3Page: React.FC = () => {
   // reset if they close warning without tokens in params
   const handleDismissTokenWarning = useCallback(() => {
     setDismissTokenWarning(true);
-    history.push('/swap/v3');
+    history.push('/swap?swapIndex=2');
   }, [history]);
 
   // modal and loading
@@ -314,7 +319,7 @@ const SwapV3Page: React.FC = () => {
     if (!swapCallback) {
       return;
     }
-    if (priceImpact && !confirmPriceImpactWithoutFee(priceImpact)) {
+    if (priceImpact && !confirmPriceImpactWithoutFee(priceImpact, t)) {
       return;
     }
     setSwapState({
@@ -368,6 +373,7 @@ const SwapV3Page: React.FC = () => {
     recipientAddress,
     account,
     trade,
+    t,
   ]);
 
   // errors
@@ -418,13 +424,53 @@ const SwapV3Page: React.FC = () => {
     });
   }, [attemptingTxn, showConfirm, swapErrorMessage, trade, txHash]);
 
+  const parsedQs = useParsedQueryString();
+  const { redirectWithCurrency, redirectWithSwitch } = useSwapRedirects();
+
   const handleInputSelect = useCallback(
     (inputCurrency) => {
       setApprovalSubmitted(false); // reset 2 step UI for approvals
-      onCurrencySelection(Field.INPUT, inputCurrency);
+      if (
+        (inputCurrency &&
+          inputCurrency.isNative &&
+          currencies[Field.OUTPUT] &&
+          currencies[Field.OUTPUT]?.isNative) ||
+        (inputCurrency &&
+          inputCurrency.address &&
+          currencies[Field.OUTPUT] &&
+          currencies[Field.OUTPUT]?.wrapped &&
+          currencies[Field.OUTPUT]?.wrapped.address &&
+          inputCurrency.address.toLowerCase() ===
+            currencies[Field.OUTPUT]?.wrapped.address.toLowerCase())
+      ) {
+        redirectWithSwitch();
+      } else {
+        redirectWithCurrency(inputCurrency, true, false);
+      }
     },
-    [onCurrencySelection],
+    [redirectWithCurrency, currencies, redirectWithSwitch],
   );
+
+  const parsedCurrency0Id = (parsedQs.currency0 ??
+    parsedQs.inputCurrency) as string;
+  const parsedCurrency0 = useCurrency(
+    parsedCurrency0Id === 'ETH' ? 'MATIC' : parsedCurrency0Id,
+  );
+  useEffect(() => {
+    if (!chainId) return;
+    if (parsedCurrency0) {
+      onCurrencySelection(Field.INPUT, parsedCurrency0);
+    } else {
+      const nativeCurrency = {
+        ...ETHER,
+        isNative: true,
+        isToken: false,
+        wrapped: WMATIC_EXTENDED[chainId],
+      } as NativeCurrency;
+      redirectWithCurrency(nativeCurrency, true, false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [parsedCurrency0Id]);
 
   const handleMaxInput = useCallback(() => {
     maxInputAmount && onUserInput(Field.INPUT, maxInputAmount.toExact());
@@ -454,20 +500,38 @@ const SwapV3Page: React.FC = () => {
 
   const handleOutputSelect = useCallback(
     (outputCurrency) => {
-      onCurrencySelection(Field.OUTPUT, outputCurrency);
+      if (
+        (outputCurrency &&
+          outputCurrency.isNative &&
+          currencies[Field.INPUT] &&
+          currencies[Field.INPUT]?.isNative) ||
+        (outputCurrency &&
+          outputCurrency.address &&
+          currencies[Field.INPUT] &&
+          currencies[Field.INPUT]?.wrapped &&
+          currencies[Field.INPUT]?.wrapped.address &&
+          outputCurrency.address.toLowerCase() ===
+            currencies[Field.INPUT]?.wrapped.address.toLowerCase())
+      ) {
+        redirectWithSwitch();
+      } else {
+        redirectWithCurrency(outputCurrency, false, false);
+      }
     },
-    [onCurrencySelection],
+    [redirectWithCurrency, currencies, redirectWithSwitch],
   );
 
+  const parsedCurrency1Id = (parsedQs.currency1 ??
+    parsedQs.outputCurrency) as string;
+  const parsedCurrency1 = useCurrency(
+    parsedCurrency1Id === 'ETH' ? 'MATIC' : parsedCurrency1Id,
+  );
   useEffect(() => {
-    if (paramInputCurrency) {
-      handleInputSelect(paramInputCurrency);
-    }
-    if (paramOutputCurrency) {
-      handleOutputSelect(paramOutputCurrency);
+    if (parsedCurrency1) {
+      onCurrencySelection(Field.OUTPUT, parsedCurrency1);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paramInputCurrency, paramOutputCurrency]);
+  }, [parsedCurrency1Id]);
 
   //TODO
   const priceImpactTooHigh = priceImpactSeverity > 3 && !isExpertMode;
@@ -518,8 +582,8 @@ const SwapV3Page: React.FC = () => {
                   <CurrencyInputPanel
                     label={
                       independentField === Field.OUTPUT && !showWrap
-                        ? 'From (at most)'
-                        : 'From'
+                        ? t('fromAtMost')
+                        : t('from')
                     }
                     value={formattedAmounts[Field.INPUT]}
                     showMaxButton={showMaxButton}
@@ -547,7 +611,7 @@ const SwapV3Page: React.FC = () => {
                   <ExchangeIcon
                     onClick={() => {
                       setApprovalSubmitted(false); // reset 2 step UI for approvals
-                      onSwitchTokens();
+                      redirectWithSwitch();
                     }}
                   />
                 </Box>
@@ -557,8 +621,8 @@ const SwapV3Page: React.FC = () => {
                     onUserInput={handleTypeOutput}
                     label={
                       independentField === Field.INPUT && !showWrap
-                        ? 'To (at least)'
-                        : 'To'
+                        ? t('toAtLeast')
+                        : t('to')
                     }
                     showMaxButton={false}
                     showHalfButton={false}
@@ -581,28 +645,33 @@ const SwapV3Page: React.FC = () => {
                 </Box>
               </Box>
               <div>
-                {recipient !== null && !showWrap ? (
-                  <>
-                    <AutoRow
-                      justify='space-between'
-                      style={{ padding: '0 1rem' }}
-                    >
-                      <ArrowWrapper clickable={false}>
-                        <ArrowDown size='16' color={theme.text2} />
-                      </ArrowWrapper>
-                      <LinkStyledButton
-                        id='remove-recipient-button'
-                        onClick={() => onChangeRecipient(null)}
+                {!showWrap && isExpertMode ? (
+                  <Box className='recipientInput'>
+                    <Box className='recipientInputHeader'>
+                      {recipient !== null ? (
+                        <ArrowDown size='16' color='white' />
+                      ) : (
+                        <Box />
+                      )}
+                      <Button
+                        onClick={() =>
+                          onChangeRecipient(recipient !== null ? null : '')
+                        }
                       >
-                        - Remove send
-                      </LinkStyledButton>
-                    </AutoRow>
-                    <AddressInputPanel
-                      id='recipient'
-                      value={recipient}
-                      onChange={onChangeRecipient}
-                    />
-                  </>
+                        {recipient !== null
+                          ? `- ${t('removeSend')}`
+                          : `+ ${t('addSendOptional')}`}
+                      </Button>
+                    </Box>
+                    {recipient !== null && (
+                      <AddressInput
+                        label={t('recipient')}
+                        placeholder={t('walletOrENS')}
+                        value={recipient}
+                        onChange={onChangeRecipient}
+                      />
+                    )}
+                  </Box>
                 ) : null}
 
                 {showWrap ? null : (
@@ -644,7 +713,7 @@ const SwapV3Page: React.FC = () => {
               <div>
                 {!account ? (
                   <StyledButton onClick={toggleWalletModal}>
-                    Connect Wallet
+                    {t('connectWallet')}
                   </StyledButton>
                 ) : showWrap ? (
                   <StyledButton
@@ -653,9 +722,9 @@ const SwapV3Page: React.FC = () => {
                   >
                     {wrapInputError ??
                       (wrapType === WrapType.WRAP
-                        ? 'Wrap'
+                        ? t('wrap')
                         : wrapType === WrapType.UNWRAP
-                        ? 'Unwrap'
+                        ? t('unWrap')
                         : null)}
                   </StyledButton>
                 ) : routeNotFound && userHasSpecifiedInputOutput ? (
@@ -667,11 +736,11 @@ const SwapV3Page: React.FC = () => {
                     // }}
                   >
                     {isLoadingRoute ? (
-                      <Dots>Loading</Dots>
+                      <Dots>{t('loading')}</Dots>
                     ) : singleHopOnly ? (
-                      'Insufficient liquidity for this trade. Try enabling multi-hop trades.'
+                      `${t('insufficientLiquidityMultiHop')}.`
                     ) : (
-                      'Insufficient liquidity for this trade.'
+                      t('insufficientLiquidityTrade')
                     )}
                   </StyledButton>
                 ) : showApproveFlow ? (
@@ -718,10 +787,10 @@ const SwapV3Page: React.FC = () => {
                             {/* we need to shorten this string on mobile */}
                             {approvalState === ApprovalState.APPROVED ||
                             signatureState === UseERC20PermitState.SIGNED
-                              ? `You can now trade ${
+                              ? `${t('youcannowtrade')} ${
                                   currencies[Field.INPUT]?.symbol
                                 }`
-                              : `Allow Quickswap to use your ${
+                              : `${t('allowQuickswapTouse')} ${
                                   currencies[Field.INPUT]?.symbol
                                 }`}
                           </span>
@@ -740,9 +809,9 @@ const SwapV3Page: React.FC = () => {
                             />
                           ) : (
                             <MouseoverTooltip
-                              text={`You must give the Quickswap smart contracts permission to use your " ${
-                                currencies[Field.INPUT]?.symbol
-                              }. You only have to do this once per token.`}
+                              text={t('mustgiveContractsPermission', {
+                                symbol: currencies[Field.INPUT]?.symbol,
+                              })}
                             >
                               <HelpCircle
                                 size='20'
@@ -779,10 +848,10 @@ const SwapV3Page: React.FC = () => {
                         }
                       >
                         {priceImpactTooHigh
-                          ? 'High Price Impact'
+                          ? t('highPriceImpact')
                           : priceImpactSeverity > 2
-                          ? 'Swap Anyway'
-                          : 'Swap'}
+                          ? t('swapAnyway')
+                          : t('swap')}
                       </StyledButton>
                     </AutoColumn>
                   </AutoRow>
@@ -811,10 +880,10 @@ const SwapV3Page: React.FC = () => {
                     {swapInputError
                       ? swapInputError
                       : priceImpactTooHigh
-                      ? 'Price Impact Too High'
+                      ? t('highPriceImpact')
                       : priceImpactSeverity > 2
-                      ? 'Swap Anyway'
-                      : 'Swap'}
+                      ? t('swapAnyway')
+                      : t('swap')}
                   </StyledButton>
                 )}
                 {isExpertMode && swapErrorMessage ? (

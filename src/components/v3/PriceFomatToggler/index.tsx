@@ -1,6 +1,7 @@
 import React from 'react';
 import Toggle from 'components/v3/Toggle';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export enum PriceFormats {
   TOKEN,
@@ -16,6 +17,7 @@ export function PriceFormatToggler({
   handlePriceFormat,
   currentFormat,
 }: IPriceFormatToggler) {
+  const { t } = useTranslation();
   const [inputType, setInputType] = useState(currentFormat);
 
   return (
@@ -25,8 +27,8 @@ export function PriceFormatToggler({
         handlePriceFormat(+!inputType);
         setInputType(+!inputType);
       }}
-      checked={'USD'}
-      unchecked={'Tokens'}
+      checked={t('usd').toUpperCase()}
+      unchecked={t('tokens')}
     />
   );
 }

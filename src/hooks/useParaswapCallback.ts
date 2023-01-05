@@ -4,21 +4,15 @@ import {
   TransactionResponse,
   TransactionRequest,
 } from '@ethersproject/providers';
-import { JSBI, SwapParameters, Trade } from '@uniswap/sdk';
+import { Currency, SwapParameters } from '@uniswap/sdk';
 import { useMemo } from 'react';
-import { GlobalConst } from 'constants/index';
 import { useTransactionAdder } from 'state/transactions/hooks';
-import {
-  isAddress,
-  shortenAddress,
-  basisPointsToPercent,
-  getSigner,
-} from 'utils';
+import { isAddress, shortenAddress, getSigner } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import useENS from './useENS';
 import { OptimalRate } from 'paraswap-core';
 import { useParaswap } from './useParaswap';
-import { SwapSide } from '@paraswap/sdk';
+
 export enum SwapCallbackState {
   INVALID,
   LOADING,
@@ -56,9 +50,9 @@ const convertToEthersTransaction = (txParams: any): TransactionRequest => {
 // and the user has approved the slippage adjusted input amount for the trade
 export function useParaswapCallback(
   priceRoute: OptimalRate | undefined,
-  trade: Trade | undefined, // trade to execute, required
-  allowedSlippage: number = GlobalConst.utils.INITIAL_ALLOWED_SLIPPAGE, // in bips
   recipientAddressOrName: string | null, // the ENS name or address of the recipient of the trade, or null if swap should be returned to sender
+  inputCurrency?: Currency,
+  outputCurrency?: Currency,
 ): {
   state: SwapCallbackState;
   callback:
@@ -76,7 +70,7 @@ export function useParaswapCallback(
     recipientAddressOrName === null ? account : recipientAddress;
 
   return useMemo(() => {
-    if (!trade || !priceRoute || !library || !account || !chainId) {
+    if (!priceRoute || !library || !account || !chainId) {
       return {
         state: SwapCallbackState.INVALID,
         callback: null,
@@ -105,34 +99,20 @@ export function useParaswapCallback(
         response: TransactionResponse;
         summary: string;
       }> {
-        const pct = basisPointsToPercent(allowedSlippage);
-
-        const srcAmount =
-          priceRoute.side === SwapSide.SELL
-            ? priceRoute.srcAmount
-            : priceRoute.destAmount;
-        const minDestAmount = trade
-          .minimumAmountOut(pct)
-          .multiply(JSBI.BigInt(10 ** trade.outputAmount.currency.decimals));
-
         const referrer = 'quickswapv3';
 
         const srcToken = priceRoute.srcToken;
         const destToken = priceRoute.destToken;
-
-        //TODO: we need to support max impact
-        if (minDestAmount.greaterThan(JSBI.BigInt(priceRoute.destAmount))) {
-          throw new Error('Price Rate updated beyond expected slipage rate');
-        }
 
         try {
           const txParams = await paraswap.buildTx({
             srcToken,
             destToken,
             srcAmount: priceRoute.srcAmount,
-            destAmount: minDestAmount.toFixed(0),
+            destAmount: priceRoute.destAmount,
             priceRoute: priceRoute,
             userAddress: account,
+            receiver: recipient,
             partner: referrer,
           });
 
@@ -141,8 +121,8 @@ export function useParaswapCallback(
           return signer
             .sendTransaction(ethersTxParams)
             .then((response: TransactionResponse) => {
-              const inputSymbol = trade.inputAmount.currency.symbol;
-              const outputSymbol = trade.outputAmount.currency.symbol;
+              const inputSymbol = inputCurrency?.symbol;
+              const outputSymbol = outputCurrency?.symbol;
               const inputAmount =
                 Number(priceRoute.srcAmount) / 10 ** priceRoute.srcDecimals;
               const outputAmount =
@@ -189,15 +169,15 @@ export function useParaswapCallback(
       error: null,
     };
   }, [
-    trade,
     priceRoute,
     library,
     account,
     chainId,
     recipient,
     recipientAddressOrName,
-    allowedSlippage,
     paraswap,
     addTransaction,
+    inputCurrency,
+    outputCurrency,
   ]);
 }

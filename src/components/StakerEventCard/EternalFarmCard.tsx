@@ -18,6 +18,7 @@ import { formatCompact, getTokenFromAddress } from 'utils';
 import { Aprs } from 'models/interfaces';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { getAddress } from 'ethers/lib/utils';
+import { useTranslation } from 'react-i18next';
 
 interface EternalFarmCardProps {
   active?: boolean;
@@ -35,6 +36,7 @@ interface EternalFarmCardProps {
     bonusReward?: string;
     bonusRewardRate?: string;
     locked?: boolean;
+    isDetached?: boolean;
   };
   aprs: Aprs | undefined;
   aprsLoading: boolean;
@@ -57,6 +59,7 @@ export function EternalFarmCard({
     bonusRewardToken,
     rewardRate,
     bonusRewardRate,
+    isDetached,
   } = {},
   aprs,
   aprsLoading,
@@ -66,6 +69,7 @@ export function EternalFarmCard({
   tvlsLoading,
   eternal,
 }: EternalFarmCardProps) {
+  const { t } = useTranslation();
   const apr = aprs ? aprs[id] : undefined;
   const aprValue =
     (apr !== undefined && apr >= 0 ? formatCompact(apr) : '~') + '% APR';
@@ -77,39 +81,68 @@ export function EternalFarmCard({
   const { chainId } = useActiveWeb3React();
 
   const tokenMap = useSelectedTokenList();
-  const token0 = chainId
-    ? getTokenFromAddress(pool.token0.id, chainId, tokenMap, [
-        new Token(chainId, getAddress(pool.token0.id), pool.token0.decimals),
-      ])
-    : undefined;
+  const token0 =
+    chainId && pool.token0
+      ? getTokenFromAddress(pool.token0.id, chainId, tokenMap, [
+          new Token(
+            chainId,
+            getAddress(pool.token0.id),
+            Number(pool.token0.decimals),
+          ),
+        ])
+      : undefined;
 
-  const token1 = chainId
-    ? getTokenFromAddress(pool.token1.id, chainId, tokenMap, [
-        new Token(chainId, getAddress(pool.token1.id), pool.token1.decimals),
-      ])
-    : undefined;
+  const token1 =
+    chainId && pool.token1
+      ? getTokenFromAddress(pool.token1.id, chainId, tokenMap, [
+          new Token(
+            chainId,
+            getAddress(pool.token1.id),
+            Number(pool.token1.decimals),
+          ),
+        ])
+      : undefined;
 
-  const farmRewardToken = chainId
-    ? getTokenFromAddress(rewardToken.id, chainId, tokenMap, [
-        new Token(
+  const farmRewardToken =
+    chainId && rewardToken
+      ? getTokenFromAddress(rewardToken.id, chainId, tokenMap, [
+          new Token(
+            chainId,
+            rewardToken.id,
+            Number(rewardToken.decimals),
+            rewardToken.symbol,
+          ),
+        ])
+      : undefined;
+
+  const HOPTokenAddress = '0xc5102fe9359fd9a28f877a67e36b0f050d81a3cc';
+
+  const farmBonusRewardToken =
+    chainId && bonusRewardToken
+      ? getTokenFromAddress(
+          pool &&
+            pool.id &&
+            pool.id.toLowerCase() ===
+              '0x0db644468cd5c664a354e31aa1f6dba1d1dead47'
+            ? HOPTokenAddress
+            : bonusRewardToken.id,
           chainId,
-          rewardToken.id,
-          Number(rewardToken.decimals),
-          rewardToken.symbol,
-        ),
-      ])
-    : undefined;
-
-  const farmBonusRewardToken = chainId
-    ? getTokenFromAddress(bonusRewardToken.id, chainId, tokenMap, [
-        new Token(
-          chainId,
-          bonusRewardToken.id,
-          Number(bonusRewardToken.decimals),
-          bonusRewardToken.symbol,
-        ),
-      ])
-    : undefined;
+          tokenMap,
+          [
+            new Token(
+              chainId,
+              pool &&
+              pool.id &&
+              pool.id.toLowerCase() ===
+                '0x0db644468cd5c664a354e31aa1f6dba1d1dead47'
+                ? HOPTokenAddress
+                : bonusRewardToken.id,
+              Number(bonusRewardToken.decimals),
+              bonusRewardToken.symbol,
+            ),
+          ],
+        )
+      : undefined;
 
   return (
     <Box className='flex justify-center' height='100%'>
@@ -141,7 +174,7 @@ export function EternalFarmCard({
             <Box className='flex'>
               <Box mx='6px'>
                 <Box ml='3px'>
-                  <small className='weight-600'>Pool</small>
+                  <small className='weight-600'>{t('pool')}</small>
                 </Box>
                 <Box
                   className='flex items-center bg-successLight'
@@ -156,7 +189,7 @@ export function EternalFarmCard({
               </Box>
               <Box>
                 <Box ml='3px'>
-                  <small className='weight-600'>Farm</small>
+                  <small className='weight-600'>{t('farm')}</small>
                 </Box>
                 <Box
                   className='flex items-center bg-successLight'
@@ -177,16 +210,18 @@ export function EternalFarmCard({
               className='flex items-center justify-between'
               height={56}
             >
-              <Box className='flex items-center'>
-                {farmRewardToken && (
+              {farmRewardToken && (
+                <Box className='flex items-center'>
                   <CurrencyLogo currency={farmRewardToken} size={'30px'} />
-                )}
 
-                <Box ml={1.5}>
-                  <p className='span text-secondary'>Reward</p>
-                  <small className='weight-600'>{rewardToken?.symbol}</small>
+                  <Box ml={1.5}>
+                    <p className='span text-secondary'>{t('reward')}</p>
+                    <small className='weight-600'>
+                      {farmRewardToken.symbol}
+                    </small>
+                  </Box>
                 </Box>
-              </Box>
+              )}
               {rewardRate && (
                 <small className='weight-600'>
                   {formatReward(
@@ -194,7 +229,7 @@ export function EternalFarmCard({
                       3600 *
                       24,
                   )}{' '}
-                  / day
+                  / {t('day')}
                 </small>
               )}
             </StyledDarkBox>
@@ -214,21 +249,20 @@ export function EternalFarmCard({
                 className='flex items-center justify-between'
                 height={56}
               >
-                <Box className='flex items-center'>
-                  {farmBonusRewardToken && (
+                {farmBonusRewardToken && (
+                  <Box className='flex items-center'>
                     <CurrencyLogo
                       currency={farmBonusRewardToken}
                       size={'30px'}
                     />
-                  )}
-
-                  <Box ml={1.5}>
-                    <p className='span text-secondary'>Bonus</p>
-                    <small className='weight-600'>
-                      {bonusRewardToken.symbol}
-                    </small>
+                    <Box ml={1.5}>
+                      <p className='span text-secondary'>{t('bonus')}</p>
+                      <small className='weight-600'>
+                        {farmBonusRewardToken.symbol}
+                      </small>
+                    </Box>
                   </Box>
-                </Box>
+                )}
                 {bonusRewardRate && (
                   <small className='weight-600'>
                     {formatReward(
@@ -238,7 +272,7 @@ export function EternalFarmCard({
                         3600 *
                         24,
                     )}{' '}
-                    / day
+                    / {t('day')}
                   </small>
                 )}
               </StyledDarkBox>
@@ -247,14 +281,18 @@ export function EternalFarmCard({
 
           {!!tvl && (
             <Box mt={2} className='flex justify-between'>
-              <small className='weight-600'>TVL:</small>
+              <small className='weight-600'>{t('tvl')}:</small>
               <small className='weight-600'>${formatCompact(tvl)}</small>
             </Box>
           )}
 
           <Box marginTop={2}>
-            <StyledButton height='40px' onClick={farmHandler}>
-              Farm
+            <StyledButton
+              height='40px'
+              disabled={isDetached}
+              onClick={farmHandler}
+            >
+              {t('farm')}
             </StyledButton>
           </Box>
         </StyledFilledBox>

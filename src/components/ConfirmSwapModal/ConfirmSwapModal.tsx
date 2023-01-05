@@ -1,4 +1,4 @@
-import { currencyEquals, JSBI, Trade } from '@uniswap/sdk';
+import { Currency, currencyEquals, Trade } from '@uniswap/sdk';
 import React, { useCallback, useMemo } from 'react';
 import {
   TransactionConfirmationModal,
@@ -10,7 +10,6 @@ import { formatTokenAmount } from 'utils';
 import 'components/styles/ConfirmSwapModal.scss';
 import { useTranslation } from 'react-i18next';
 import { OptimalRate } from '@paraswap/sdk';
-import { CurrencyAmount } from '@uniswap/sdk-core';
 
 /**
  * Returns true if the trade requires a confirmation of details before we can submit it
@@ -33,8 +32,10 @@ function tradeMeaningfullyDiffers(tradeA: Trade, tradeB: Trade): boolean {
 interface ConfirmSwapModalProps {
   isOpen: boolean;
   optimalRate?: OptimalRate;
-  trade: Trade | undefined;
-  originalTrade: Trade | undefined;
+  trade?: Trade;
+  originalTrade?: Trade;
+  inputCurrency?: Currency;
+  outputCurrency?: Currency;
   attemptingTxn: boolean;
   txPending?: boolean;
   txHash: string | undefined;
@@ -49,6 +50,8 @@ interface ConfirmSwapModalProps {
 const ConfirmSwapModal: React.FC<ConfirmSwapModalProps> = ({
   trade,
   optimalRate,
+  inputCurrency,
+  outputCurrency,
   originalTrade,
   onAcceptChanges,
   allowedSlippage,
@@ -73,10 +76,12 @@ const ConfirmSwapModal: React.FC<ConfirmSwapModalProps> = ({
   );
 
   const modalHeader = useCallback(() => {
-    return trade ? (
+    return optimalRate ?? trade ? (
       <SwapModalHeader
         trade={trade}
         optimalRate={optimalRate}
+        inputCurrency={inputCurrency}
+        outputCurrency={outputCurrency}
         allowedSlippage={allowedSlippage}
         onConfirm={onConfirm}
         showAcceptChanges={showAcceptChanges}
@@ -90,6 +95,8 @@ const ConfirmSwapModal: React.FC<ConfirmSwapModalProps> = ({
     showAcceptChanges,
     trade,
     onConfirm,
+    inputCurrency,
+    outputCurrency,
   ]);
 
   // text to show while loading
@@ -97,11 +104,15 @@ const ConfirmSwapModal: React.FC<ConfirmSwapModalProps> = ({
     amount1: optimalRate
       ? Number(optimalRate.srcAmount) / 10 ** optimalRate.srcDecimals
       : formatTokenAmount(trade?.inputAmount),
-    symbol1: trade?.inputAmount?.currency?.symbol,
+    symbol1: trade
+      ? trade?.inputAmount?.currency?.symbol
+      : inputCurrency?.symbol,
     amount2: optimalRate
       ? Number(optimalRate.destAmount) / 10 ** optimalRate.destDecimals
       : formatTokenAmount(trade?.outputAmount),
-    symbol2: trade?.outputAmount?.currency?.symbol,
+    symbol2: trade
+      ? trade?.outputAmount?.currency?.symbol
+      : outputCurrency?.symbol,
   });
 
   const confirmationContent = useCallback(

@@ -12,8 +12,8 @@ import { TransactionResponse } from '@ethersproject/providers';
 import { BigNumber } from '@ethersproject/bignumber';
 import ReactGA from 'react-ga';
 import { useTranslation } from 'react-i18next';
-import { Currency, Token, ETHER, TokenAmount } from '@uniswap/sdk';
-import { GlobalConst, GlobalValue } from 'constants/index';
+import { ETHER, TokenAmount, currencyEquals } from '@uniswap/sdk';
+import { GlobalConst } from 'constants/index';
 import { useActiveWeb3React } from 'hooks';
 import { useRouterContract } from 'hooks/useContract';
 import useTransactionDeadline from 'hooks/useTransactionDeadline';
@@ -44,6 +44,7 @@ import { ReactComponent as AddLiquidityIcon } from 'assets/images/AddLiquidityIc
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import { useCurrency } from 'hooks/Tokens';
 import { useParams } from 'react-router-dom';
+import usePoolsRedirect from 'hooks/usePoolsRedirect';
 
 const AddLiquidity: React.FC<{
   currencyBgClass?: string;
@@ -67,7 +68,7 @@ const AddLiquidity: React.FC<{
   // queried currency
   const params: any = useParams();
   const parsedQuery = useParsedQueryString();
-  const currency0 = useCurrency(
+  const currency0Id =
     params && params.currencyIdA
       ? params.currencyIdA.toLowerCase() === 'matic' ||
         params.currencyIdA.toLowerCase() === 'eth'
@@ -75,9 +76,8 @@ const AddLiquidity: React.FC<{
         : params.currencyIdA
       : parsedQuery && parsedQuery.currency0
       ? (parsedQuery.currency0 as string)
-      : undefined,
-  );
-  const currency1 = useCurrency(
+      : undefined;
+  const currency1Id =
     params && params.currencyIdB
       ? params.currencyIdB.toLowerCase() === 'matic' ||
         params.currencyIdB.toLowerCase() === 'eth'
@@ -85,8 +85,9 @@ const AddLiquidity: React.FC<{
         : params.currencyIdB
       : parsedQuery && parsedQuery.currency1
       ? (parsedQuery.currency1 as string)
-      : undefined,
-  );
+      : undefined;
+  const currency0 = useCurrency(currency0Id);
+  const currency1 = useCurrency(currency1Id);
 
   const { independentField, typedValue, otherTypedValue } = useMintState();
   const expertMode = useIsExpertMode();
@@ -164,35 +165,55 @@ const AddLiquidity: React.FC<{
     };
   }, {});
 
-  const handleCurrencyASelect = useCallback(
-    (currencyA: Currency) => {
-      onCurrencySelection(Field.CURRENCY_A, currencyA);
-    },
-    [onCurrencySelection],
-  );
+  const { redirectWithCurrency, redirectWithSwitch } = usePoolsRedirect();
 
-  const handleCurrencyBSelect = useCallback(
-    (currencyB: Currency) => {
-      onCurrencySelection(Field.CURRENCY_B, currencyB);
+  const handleCurrencyASelect = useCallback(
+    (currencyA: any) => {
+      const isSwichRedirect = currencyEquals(currencyA, ETHER)
+        ? currency1Id === 'ETH'
+        : currency1Id &&
+          currencyA &&
+          currencyA.address &&
+          currencyA.address.toLowerCase() === currency1Id.toLowerCase();
+      if (isSwichRedirect) {
+        redirectWithSwitch(currencyA, true);
+      } else {
+        redirectWithCurrency(currencyA, true);
+      }
     },
-    [onCurrencySelection],
+    [redirectWithCurrency, currency1Id, redirectWithSwitch],
   );
 
   useEffect(() => {
     if (currency0) {
       onCurrencySelection(Field.CURRENCY_A, currency0);
-    } else {
-      onCurrencySelection(Field.CURRENCY_A, Token.ETHER);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currency0Id]);
+
+  const handleCurrencyBSelect = useCallback(
+    (currencyB: any) => {
+      const isSwichRedirect = currencyEquals(currencyB, ETHER)
+        ? currency0Id === 'ETH'
+        : currencyB &&
+          currencyB.address &&
+          currency0Id &&
+          currencyB.address.toLowerCase() === currency0Id.toLowerCase();
+      if (isSwichRedirect) {
+        redirectWithSwitch(currencyB, false);
+      } else {
+        redirectWithCurrency(currencyB, false);
+      }
+    },
+    [redirectWithCurrency, currency0Id, redirectWithSwitch],
+  );
+
+  useEffect(() => {
     if (currency1) {
       onCurrencySelection(Field.CURRENCY_B, currency1);
-    } else {
-      onCurrencySelection(
-        Field.CURRENCY_B,
-        GlobalValue.tokens.COMMON.OLD_QUICK,
-      );
     }
-  }, [onCurrencySelection, currency0, currency1]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currency1Id]);
 
   const onAdd = () => {
     setAddLiquidityErrorMessage(null);

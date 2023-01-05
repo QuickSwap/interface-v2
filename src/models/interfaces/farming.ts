@@ -80,6 +80,7 @@ export interface FormattedEternalFarming {
   tier2Multiplier: string;
   tier3Multiplier: string;
   multiplierToken: TokenSubgraph;
+  isDetached: boolean;
 }
 
 export interface FarmingEvent extends DefaultFarmingEvent {

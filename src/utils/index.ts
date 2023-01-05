@@ -80,6 +80,10 @@ import {
   FETCH_ETERNAL_FARM_FROM_POOL,
   FETCH_POOL_FROM_TOKENS,
 } from './graphql-queries';
+import { useEffect, useState } from 'react';
+import { useEthPrice } from 'state/application/hooks';
+import { getGlobalDataV3 } from './v3-graph';
+import { TFunction } from 'react-i18next';
 
 dayjs.extend(utc);
 dayjs.extend(weekOfYear);
@@ -315,32 +319,49 @@ export const getTokenInfo = async (
       fetchPolicy: 'network-only',
     });
 
-    const oneDayData = oneDayResult?.data?.tokens.reduce(
-      (obj: any, cur: any) => {
-        return { ...obj, [cur.id]: cur };
-      },
-      {},
-    );
+    const currentData =
+      current &&
+      current.data &&
+      current.data.tokens &&
+      current.data.tokens.length > 0
+        ? current.data.tokens
+        : undefined;
 
-    const twoDayData = twoDayResult?.data?.tokens.reduce(
-      (obj: any, cur: any) => {
-        return { ...obj, [cur.id]: cur };
-      },
-      {},
-    );
+    const oneDayData =
+      oneDayResult &&
+      oneDayResult.data &&
+      oneDayResult.data.tokens &&
+      oneDayResult.data.tokens.length > 0
+        ? oneDayResult.data.tokens.reduce((obj: any, cur: any) => {
+            return { ...obj, [cur.id]: cur };
+          }, {})
+        : undefined;
 
-    const oneWeekData = oneWeekResult?.data?.tokens.reduce(
-      (obj: any, cur: any) => {
-        return { ...obj, [cur.id]: cur };
-      },
-      {},
-    );
+    const twoDayData =
+      oneDayResult &&
+      twoDayResult.data &&
+      twoDayResult.data.tokens &&
+      twoDayResult.data.tokens.length > 0
+        ? twoDayResult.data.tokens.reduce((obj: any, cur: any) => {
+            return { ...obj, [cur.id]: cur };
+          }, {})
+        : undefined;
+
+    const oneWeekData =
+      oneWeekResult &&
+      oneWeekResult.data &&
+      oneWeekResult.data.tokens &&
+      oneWeekResult.data.tokens.length > 0
+        ? oneWeekResult.data.tokens.reduce((obj: any, cur: any) => {
+            return { ...obj, [cur.id]: cur };
+          }, {})
+        : undefined;
 
     const bulkResults = await Promise.all(
-      current &&
+      currentData &&
         oneDayData &&
         twoDayData &&
-        current?.data?.tokens?.map(async (token: any) => {
+        currentData.map(async (token: any) => {
           const data = token;
 
           let oneDayHistory = oneDayData?.[token.id];
@@ -585,7 +606,6 @@ export const getTopTokens = async (
           return data;
         }),
     );
-    console.log('bul', bulkResults);
     return bulkResults;
   } catch (e) {
     console.log(e);
@@ -1518,6 +1538,7 @@ export function isAddress(value: string | null | undefined): string | false {
  */
 export function confirmPriceImpactWithoutFee(
   priceImpactWithoutFee: Percent,
+  translation: TFunction,
 ): boolean {
   if (
     !priceImpactWithoutFee.lessThan(
@@ -1526,9 +1547,11 @@ export function confirmPriceImpactWithoutFee(
   ) {
     return (
       window.prompt(
-        `This swap has a price impact of at least ${GlobalValue.percents.PRICE_IMPACT_WITHOUT_FEE_CONFIRM_MIN.toFixed(
-          0,
-        )}%. Please type the word "confirm" to continue with this swap.`,
+        translation('typeConfirmSwapPriceImpact', {
+          priceImpact: GlobalValue.percents.PRICE_IMPACT_WITHOUT_FEE_CONFIRM_MIN.toFixed(
+            0,
+          ),
+        }),
       ) === 'confirm'
     );
   } else if (
@@ -1537,9 +1560,9 @@ export function confirmPriceImpactWithoutFee(
     )
   ) {
     return window.confirm(
-      `This swap has a price impact of at least ${GlobalValue.percents.ALLOWED_PRICE_IMPACT_HIGH.toFixed(
-        0,
-      )}%. Please confirm that you would like to continue with this swap.`,
+      translation('confirmSwapPriceImpact', {
+        priceImpact: GlobalValue.percents.ALLOWED_PRICE_IMPACT_HIGH.toFixed(0),
+      }),
     );
   }
   return true;
@@ -1964,16 +1987,36 @@ export function useLairDQUICKAPY(isNew: boolean, lair?: LairInfo) {
     ? GlobalValue.tokens.COMMON.NEW_QUICK
     : GlobalValue.tokens.COMMON.OLD_QUICK;
   const quickPrice = useUSDCPriceToken(quickToken);
+  const [feesPercent, setFeesPercent] = useState(0);
+  const { ethPrice } = useEthPrice();
+
+  useEffect(() => {
+    (async () => {
+      let feePercent = 0;
+      if (ethPrice.price && ethPrice.oneDayPrice) {
+        const v3Data = await getGlobalDataV3();
+        const v2data = await getGlobalData(
+          ethPrice.price,
+          ethPrice.oneDayPrice,
+        );
+        if (v2data && v3Data) {
+          feePercent +=
+            Number(v3Data.feesUSD ?? 0) / 7.5 +
+            (Number(v2data.oneDayVolumeUSD) * GlobalConst.utils.FEEPERCENT) /
+              14.7;
+        } else if (v3Data) {
+          feePercent += Number(v3Data.feesUSD ?? 0) / 7.5;
+        }
+        setFeesPercent(feePercent);
+      }
+    })();
+  }, [ethPrice.oneDayPrice, ethPrice.price]);
 
   if (!lair) return '';
-  const dQUICKPrice: any = Number(lair.dQUICKtoQUICK.toExact()) * quickPrice;
+
   const dQUICKAPR =
-    (((Number(lair.oneDayVol) *
-      GlobalConst.utils.DQUICKFEE *
-      GlobalConst.utils.DQUICKAPR_MULTIPLIER) /
-      Number(lair.dQuickTotalSupply.toExact())) *
-      daysCurrentYear) /
-    dQUICKPrice;
+    (feesPercent * daysCurrentYear) /
+    (Number(lair.totalQuickBalance.toExact()) * quickPrice);
   if (!dQUICKAPR) return '';
   const temp = Math.pow(1 + dQUICKAPR / daysCurrentYear, daysCurrentYear) - 1;
   if (temp > 100) {

@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Currency, Token, Price } from '@uniswap/sdk-core';
 import useUSDCPrice from 'hooks/v3/useUSDCPrice';
 import './index.scss';
-import { Lock } from 'react-feather';
 import { PriceFormats } from 'components/v3/PriceFomatToggler';
 import {
   IDerivedMintInfo,
@@ -17,10 +16,10 @@ import {
   updateSelectedPreset,
 } from 'state/mint/v3/actions';
 import Input from 'components/NumericalInput';
-import { isMobileOnly } from 'react-device-detect';
 import { Box, Button } from '@material-ui/core';
 import Badge, { BadgeVariant } from 'components/v3/Badge';
 import { Error } from '@material-ui/icons';
+import { useTranslation } from 'react-i18next';
 
 interface IPrice {
   baseCurrency: Currency | undefined;
@@ -53,6 +52,7 @@ function TokenPrice({
   changeQuotePriceHandler,
   isSelected,
 }: ITokenPrice) {
+  const { t } = useTranslation();
   const [tokenQuotePrice, setTokenQuotePrice] = useState(
     userQuoteCurrencyToken || '',
   );
@@ -98,7 +98,7 @@ function TokenPrice({
                 disabled={!tokenQuotePrice}
                 onClick={() => changeQuotePriceHandler(tokenQuotePrice)}
               >
-                Confirm
+                {t('confirm')}
               </Button>
             </Box>
           ) : (
@@ -123,6 +123,7 @@ function USDPriceField({
   userUSD: string | undefined;
   changeHandler: (price: string) => void;
 }) {
+  const { t } = useTranslation();
   const _price = useMemo(
     () => (price ? price.toSignificant(5) : `Loading...`),
     [price],
@@ -153,7 +154,7 @@ function USDPriceField({
                 disabled={!userUSDVal}
                 onClick={() => changeHandler(userUSDVal)}
               >
-                Confirm
+                {t('confirm')}
               </Button>
             </Box>
           </Box>
@@ -222,6 +223,7 @@ export default function StartingPrice({
   mintInfo,
   priceFormat,
 }: IStartingPrice) {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const initialUSDPrices = useInitialUSDPrices();
   const initialTokenPrice = useInitialTokenPrice();
@@ -491,12 +493,12 @@ export default function StartingPrice({
           <Badge
             text={
               isLocked
-                ? '✨ Prices were auto-fetched'
+                ? `✨ ${t('pricesAutoFetched')}`
                 : !basePriceUSD && !quotePriceUSD
-                ? "Can't auto-fetch prices."
+                ? `${t('cantAutoFetchPrices')}.`
                 : !basePriceUSD
-                ? `Can't auto-fetch ${currencyA?.symbol} price.`
-                : `Can't auto-fetch ${currencyB?.symbol} price.`
+                ? `${t('cantAutoFetchPrice', { symbol: currencyA?.symbol })}.`
+                : `${t('cantAutoFetchPrice', { symbol: currencyB?.symbol })}.`
             }
             variant={isLocked ? BadgeVariant.PRIMARY : BadgeVariant.WARNING}
             icon={isLocked ? undefined : <Error width={14} height={14} />}

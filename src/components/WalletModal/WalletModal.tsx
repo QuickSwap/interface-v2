@@ -12,9 +12,15 @@ import { OVERLAY_READY } from 'connectors/Fortmatic';
 import { GlobalConst, SUPPORTED_WALLETS } from 'constants/index';
 import usePrevious from 'hooks/usePrevious';
 import { ApplicationModal } from 'state/application/actions';
-import { useModalOpen, useWalletModalToggle } from 'state/application/hooks';
+import {
+  useModalOpen,
+  useUDDomain,
+  useWalletModalToggle,
+} from 'state/application/hooks';
 import { AccountDetails, CustomModal } from 'components';
 import { useTranslation } from 'react-i18next';
+import { UAuthConnector } from '@uauth/web3-react';
+import UAuth from '@uauth/js';
 
 import { InjectedConnector } from '@web3-react/injected-connector';
 import { TrustWalletConnector } from 'connectors/TrustWalletConnector';
@@ -43,16 +49,11 @@ const WalletModal: React.FC<WalletModalProps> = ({
 }) => {
   const { t } = useTranslation();
   // important that these are destructed from the account-specific web3-react context
-  const {
-    active,
-    account,
-    connector,
-    activate,
-    error,
-    deactivate,
-  } = useWeb3React();
+  const { active, account, connector, activate, deactivate } = useWeb3React();
 
   const [walletView, setWalletView] = useState(WALLET_VIEWS.ACCOUNT);
+  const [error, setError] = useState<Error | string | undefined>(undefined);
+  const { updateUDDomain } = useUDDomain();
 
   const [pendingWallet, setPendingWallet] = useState<
     AbstractConnector | undefined
@@ -85,6 +86,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
   // always reset to account view
   useEffect(() => {
     if (walletModalOpen) {
+      setError(undefined);
       setPendingError(false);
       setWalletView(WALLET_VIEWS.ACCOUNT);
     }
@@ -114,7 +116,6 @@ const WalletModal: React.FC<WalletModalProps> = ({
   const tryActivation = async (connector: AbstractConnector | undefined) => {
     let name = '';
     let found = false;
-    const { ethereum } = window as any;
 
     Object.keys(SUPPORTED_WALLETS).map((key) => {
       if (connector === SUPPORTED_WALLETS[key].connector) {
@@ -163,13 +164,39 @@ const WalletModal: React.FC<WalletModalProps> = ({
     }
 
     connector &&
-      activate(connector, undefined, true).catch((error) => {
-        if (error instanceof UnsupportedChainIdError) {
-          activate(connector); // a little janky...can't use setError because the connector isn't set
-        } else {
-          setPendingError(true);
-        }
-      });
+      activate(connector, undefined, true)
+        .then(() => {
+          if (
+            connector instanceof UAuthConnector &&
+            process.env.REACT_APP_UNSTOPPABLE_DOMAIN_CLIENT_ID &&
+            process.env.REACT_APP_UNSTOPPABLE_DOMAIN_REDIRECT_URI
+          ) {
+            const uauth = new UAuth({
+              clientID: process.env.REACT_APP_UNSTOPPABLE_DOMAIN_CLIENT_ID,
+              redirectUri:
+                process.env.REACT_APP_UNSTOPPABLE_DOMAIN_REDIRECT_URI,
+              scope: 'openid wallet',
+            });
+            uauth
+              .user()
+              .then((user) => {
+                updateUDDomain(user.sub);
+              })
+              .catch(() => {
+                setError('User does not exist.');
+              });
+          } else {
+            updateUDDomain(undefined);
+          }
+          setError(undefined);
+        })
+        .catch((error) => {
+          if (error instanceof UnsupportedChainIdError) {
+            setError(error);
+          } else {
+            setPendingError(true);
+          }
+        });
   };
 
   // close wallet modal if fortmatic modal is active
