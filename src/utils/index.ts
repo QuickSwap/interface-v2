@@ -319,32 +319,49 @@ export const getTokenInfo = async (
       fetchPolicy: 'network-only',
     });
 
-    const oneDayData = oneDayResult?.data?.tokens.reduce(
-      (obj: any, cur: any) => {
-        return { ...obj, [cur.id]: cur };
-      },
-      {},
-    );
+    const currentData =
+      current &&
+      current.data &&
+      current.data.tokens &&
+      current.data.tokens.length > 0
+        ? current.data.tokens
+        : undefined;
 
-    const twoDayData = twoDayResult?.data?.tokens.reduce(
-      (obj: any, cur: any) => {
-        return { ...obj, [cur.id]: cur };
-      },
-      {},
-    );
+    const oneDayData =
+      oneDayResult &&
+      oneDayResult.data &&
+      oneDayResult.data.tokens &&
+      oneDayResult.data.tokens.length > 0
+        ? oneDayResult.data.tokens.reduce((obj: any, cur: any) => {
+            return { ...obj, [cur.id]: cur };
+          }, {})
+        : undefined;
 
-    const oneWeekData = oneWeekResult?.data?.tokens.reduce(
-      (obj: any, cur: any) => {
-        return { ...obj, [cur.id]: cur };
-      },
-      {},
-    );
+    const twoDayData =
+      oneDayResult &&
+      twoDayResult.data &&
+      twoDayResult.data.tokens &&
+      twoDayResult.data.tokens.length > 0
+        ? twoDayResult.data.tokens.reduce((obj: any, cur: any) => {
+            return { ...obj, [cur.id]: cur };
+          }, {})
+        : undefined;
+
+    const oneWeekData =
+      oneWeekResult &&
+      oneWeekResult.data &&
+      oneWeekResult.data.tokens &&
+      oneWeekResult.data.tokens.length > 0
+        ? oneWeekResult.data.tokens.reduce((obj: any, cur: any) => {
+            return { ...obj, [cur.id]: cur };
+          }, {})
+        : undefined;
 
     const bulkResults = await Promise.all(
-      current &&
+      currentData &&
         oneDayData &&
         twoDayData &&
-        current?.data?.tokens?.map(async (token: any) => {
+        currentData.map(async (token: any) => {
           const data = token;
 
           let oneDayHistory = oneDayData?.[token.id];
