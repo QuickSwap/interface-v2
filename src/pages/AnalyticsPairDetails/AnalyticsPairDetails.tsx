@@ -212,7 +212,14 @@ const AnalyticsPairDetails: React.FC = () => {
             <Box>
               <span className='text-disabled'>{t('totalTokensLocked')}</span>
               <Box mt={1.5} className='bg-gray2' borderRadius={8} padding={1.5}>
-                <Box className='flex items-center justify-between'>
+                <Box
+                  className='flex items-center justify-between cursor-pointer'
+                  onClick={() => {
+                    history.push(
+                      `/analytics/${version}/token/${pairData.token0.id}`,
+                    );
+                  }}
+                >
                   <Box className='flex items-center'>
                     <CurrencyLogo currency={currency0} size='16px' />
                     <span style={{ marginLeft: 6 }}>
@@ -221,7 +228,15 @@ const AnalyticsPairDetails: React.FC = () => {
                   </Box>
                   <span>{formatNumber(pairData.reserve0)}</span>
                 </Box>
-                <Box mt={1} className='flex items-center justify-between'>
+                <Box
+                  mt={1}
+                  className='flex items-center justify-between cursor-pointer'
+                  onClick={() => {
+                    history.push(
+                      `/analytics/${version}/token/${pairData.token1.id}`,
+                    );
+                  }}
+                >
                   <Box className='flex items-center'>
                     <CurrencyLogo currency={currency1} size='16px' />
                     <span style={{ marginLeft: 6 }}>

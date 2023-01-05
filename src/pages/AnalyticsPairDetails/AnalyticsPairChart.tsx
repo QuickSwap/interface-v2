@@ -163,7 +163,7 @@ const AnalyticsPairChart: React.FC<{
         return `1 ${
           priceChartTokenIdx ? pairData.token1.symbol : pairData.token0.symbol
         } = ${
-          priceChartTokenIdx ? pairData.token1Price : pairData.token0Price
+          priceChartTokenIdx ? pairData.token0Price : pairData.token1Price
         } ${
           priceChartTokenIdx ? pairData.token0.symbol : pairData.token1.symbol
         }`;
@@ -188,11 +188,13 @@ const AnalyticsPairChart: React.FC<{
       case CHART_POOL_FEE:
         return pairData.poolFeeChange;
       case CHART_PRICE:
-        return pairData.token0PriceChange;
+        return priceChartTokenIdx
+          ? pairData.token1PriceChange
+          : pairData.token0PriceChange;
       default:
         return;
     }
-  }, [pairData, chartIndex, usingUtVolume, isV2]);
+  }, [pairData, chartIndex, usingUtVolume, isV2, priceChartTokenIdx]);
 
   const chartYTicker = useMemo(() => {
     if (!pairData) return;
