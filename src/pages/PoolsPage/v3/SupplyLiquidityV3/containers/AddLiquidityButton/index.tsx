@@ -228,6 +228,7 @@ export function AddLiquidityButton({
           handleAddLiquidity();
         } catch (error) {
           console.error('Failed to send transaction', error);
+          setAttemptingTxn(false);
           setTxPending(false);
           setAddLiquidityErrorMessage(
             error?.code === 4001
