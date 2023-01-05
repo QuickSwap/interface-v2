@@ -204,110 +204,7 @@ const AnalyticsPairDetails: React.FC = () => {
     }
   }, [pairData, pairTransactions, isV2, dispatch]);
 
-  const V2PairInfo = () => (
-    <Box width={1} className='panel' mt={4}>
-      <Grid container>
-        <Grid item xs={12} sm={12} md={6}>
-          <AnalyticsPairChart pairData={pairData} />
-        </Grid>
-        <Grid item xs={12} sm={12} md={6}>
-          <Box className='analyticsDetailsInfo'>
-            <Box>
-              <Box width={212}>
-                <Box>
-                  <span className='text-disabled'>
-                    {t('totalTokensLocked')}
-                  </span>
-                  <Box
-                    mt={1.5}
-                    className='bg-gray2'
-                    borderRadius={8}
-                    padding={1.5}
-                  >
-                    <Box
-                      className='flex items-center justify-between cursor-pointer'
-                      onClick={() => {
-                        history.push(
-                          `/analytics/${version}/token/${pairData.token0.id}`,
-                        );
-                      }}
-                    >
-                      <Box className='flex items-center'>
-                        <CurrencyLogo currency={currency0} size='16px' />
-                        <span style={{ marginLeft: 6 }}>
-                          {pairData.token0.symbol} :
-                        </span>
-                      </Box>
-                      <span>{formatNumber(pairData.reserve0)}</span>
-                    </Box>
-                    <Box
-                      mt={1}
-                      className='flex items-center justify-between cursor-pointer'
-                      onClick={() => {
-                        history.push(
-                          `/analytics/${version}/token/${pairData.token1.id}`,
-                        );
-                      }}
-                    >
-                      <Box className='flex items-center'>
-                        <CurrencyLogo currency={currency1} size='16px' />
-                        <span style={{ marginLeft: 6 }}>
-                          {pairData.token1.symbol} :
-                        </span>
-                      </Box>
-                      <span>{formatNumber(pairData.reserve1)}</span>
-                    </Box>
-                  </Box>
-                </Box>
-                <Box mt={4}>
-                  <span className='text-disabled'>{t('7dTradingVol')}</span>
-                  <h5>${formatNumber(pairData.oneWeekVolumeUSD)}</h5>
-                </Box>
-                <Box mt={4}>
-                  <span className='text-disabled'>{t('24hFees')}</span>
-                  <h5>${fees}</h5>
-                </Box>
-              </Box>
-              <Box width={140}>
-                <span className='text-disabled'>{t('totalLiquidity')}</span>
-                <h5>
-                  $
-                  {formatNumber(
-                    pairData.reserveUSD
-                      ? pairData.reserveUSD
-                      : pairData.trackedReserveUSD,
-                  )}
-                </h5>
-                <Box mt={4}>
-                  <span className='text-disabled'>{t('24hTradingVol1')}</span>
-                  <h5>${formatNumber(pairData.oneDayVolumeUSD)}</h5>
-                </Box>
-                <Box mt={4}>
-                  <span className='text-disabled'>{t('contractAddress')}</span>
-                  <h5 className='text-primary'>
-                    {chainId ? (
-                      <a
-                        href={getEtherscanLink(chainId, pairData.id, 'address')}
-                        target='_blank'
-                        rel='noopener noreferrer'
-                        className='text-primary no-decoration'
-                      >
-                        {shortenAddress(pairData.id)}
-                      </a>
-                    ) : (
-                      shortenAddress(pairData.id)
-                    )}
-                  </h5>
-                </Box>
-              </Box>
-            </Box>
-          </Box>
-        </Grid>
-      </Grid>
-    </Box>
-  );
-
-  const V3PairInfo = () => (
+  const PairInfo = () => (
     <Box width={1} mt={4}>
       <Grid container spacing={2}>
         <Grid item xs={12} sm={12} md={3}>
@@ -315,14 +212,7 @@ const AnalyticsPairDetails: React.FC = () => {
             <Box>
               <span className='text-disabled'>{t('totalTokensLocked')}</span>
               <Box mt={1.5} className='bg-gray2' borderRadius={8} padding={1.5}>
-                <Box
-                  className='flex items-center justify-between cursor-pointer'
-                  onClick={() => {
-                    history.push(
-                      `/analytics/${version}/token/${pairData.token0.id}`,
-                    );
-                  }}
-                >
+                <Box className='flex items-center justify-between'>
                   <Box className='flex items-center'>
                     <CurrencyLogo currency={currency0} size='16px' />
                     <span style={{ marginLeft: 6 }}>
@@ -331,15 +221,7 @@ const AnalyticsPairDetails: React.FC = () => {
                   </Box>
                   <span>{formatNumber(pairData.reserve0)}</span>
                 </Box>
-                <Box
-                  mt={1}
-                  className='flex items-center justify-between cursor-pointer'
-                  onClick={() => {
-                    history.push(
-                      `/analytics/${version}/token/${pairData.token1.id}`,
-                    );
-                  }}
-                >
+                <Box mt={1} className='flex items-center justify-between'>
                   <Box className='flex items-center'>
                     <CurrencyLogo currency={currency1} size='16px' />
                     <span style={{ marginLeft: 6 }}>
