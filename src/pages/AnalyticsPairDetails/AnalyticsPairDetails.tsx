@@ -233,7 +233,7 @@ const AnalyticsPairDetails: React.FC = () => {
                   className='flex items-center justify-between cursor-pointer'
                   onClick={() => {
                     history.push(
-                      `/analytics/${version}/token/${pairData.token0.id}`,
+                      `/analytics/${version}/token/${pairData.token1.id}`,
                     );
                   }}
                 >
