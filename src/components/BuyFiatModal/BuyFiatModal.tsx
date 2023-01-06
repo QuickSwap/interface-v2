@@ -18,12 +18,14 @@ interface BuyFiatModalProps {
   onClose: () => void;
   buyMoonpay: () => void;
   buyBinance: () => void;
+  buyMeld: () => void;
 }
 
 const BuyFiatModal: React.FC<BuyFiatModalProps> = ({
   open,
   onClose,
   buyBinance,
+  buyMeld,
 }) => {
   const { account } = useActiveWeb3React();
   const [onrampInstance, setOnRampInstance] = useState<
@@ -122,6 +124,12 @@ const BuyFiatModal: React.FC<BuyFiatModalProps> = ({
               initTransak(account, mobileWindowSize);
             }}
           >
+            {t('buy')}
+          </Box>
+        </Box>
+        <Box className='paymentBox'>
+          <h1>Meld</h1>
+          <Box className='buyButton' onClick={buyMeld}>
             {t('buy')}
           </Box>
         </Box>
