@@ -1,6 +1,6 @@
 import { Box, Divider } from '@material-ui/core';
-import BillPay from 'assets/images/featured/BillPay.svg';
-import BuyWithFiat from 'assets/images/featured/BuywithFiatNoPad.svg';
+import BillPay from 'assets/images/featured/BillPay.png';
+import BuyWithFiat from 'assets/images/featured/BuyWithFiatNoPad.png';
 import SpritzIcon from 'assets/images/SpritzIcon.png';
 import { BuyFiatButton } from 'components';
 import React from 'react';

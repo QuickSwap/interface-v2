@@ -577,5 +577,8 @@
   "tokenNotExist": "This token does not exist",
   "tickStats": "Tick stats",
   "locked": "Locked",
-  "pairNotExist": "This pair does not exist"
+  "pairNotExist": "This pair does not exist",
+  "payBillWithCrypto": "Pay your bills with crypto",
+  "payBillWithCryptoDesc": "Use Spritz to pay IRL bills (credit cards, mortgage and more) from your Web3 wallet.",
+  "buywithFiat": "Buy with fiat"
 }
