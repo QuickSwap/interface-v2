@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box } from '@material-ui/core';
 import FiatMask from 'assets/images/FiatMask.svg';
-import BuyWithFiat from 'assets/images/featured/BuywithFiat.svg';
+import BuyWithFiat from 'assets/images/featured/BuyWithFiatNoPad.png';
 import { BuyFiatButton } from 'components';
 import { useTranslation } from 'react-i18next';
 
@@ -13,15 +13,11 @@ export const BuyFiatSection: React.FC = () => {
       <img src={FiatMask} alt='Fiat Mask' />
       <Box>
         <Box className='buyFiatInfo'>
-          <img src={BuyWithFiat} alt='buy with fiat' />
-          <Box>
-            <h3>{t('buyCryptoFiat')}</h3>
-            <p className='weight-600'>{t('buyCryptoFiatDesc')}</p>
-          </Box>
+          <h3>{t('buyCryptoFiat')}</h3>
+          <p>{t('buyCryptoFiatDesc')}</p>
+          <BuyFiatButton />
         </Box>
-        <Box className='buyFiatWrapper'>
-          <BuyFiatButton fullWidth />
-        </Box>
+        <img src={BuyWithFiat} alt='buy with fiat' />
       </Box>
     </Box>
   );
