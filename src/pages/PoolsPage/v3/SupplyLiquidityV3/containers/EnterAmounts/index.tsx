@@ -4,6 +4,7 @@ import './index.scss';
 import { Field } from 'state/mint/actions';
 import {
   IDerivedMintInfo,
+  useActivePreset,
   useV3MintActionHandlers,
   useV3MintState,
 } from 'state/mint/v3/hooks';
@@ -21,7 +22,7 @@ import { PriceFormats } from 'components/v3/PriceFomatToggler';
 import { Box, Button } from '@material-ui/core';
 import Loader from 'components/Loader';
 import { Check } from '@material-ui/icons';
-import { GlobalConst } from 'constants/index';
+import { GammaPairs, GlobalConst } from 'constants/index';
 import { useTranslation } from 'react-i18next';
 
 interface IEnterAmounts {
@@ -39,6 +40,7 @@ export function EnterAmounts({
 }: IEnterAmounts) {
   const { t } = useTranslation();
   const { chainId } = useActiveWeb3React();
+  const preset = useActivePreset();
 
   const { independentField, typedValue } = useV3MintState();
 
@@ -85,13 +87,27 @@ export function EnterAmounts({
     };
   }, {});
 
+  const baseCurrencySymbol =
+    currencyA && currencyA.wrapped && currencyA.wrapped.symbol
+      ? currencyA.wrapped.symbol.toUpperCase()
+      : '';
+  const quoteCurrencySymbol =
+    currencyB && currencyB.wrapped && currencyB.wrapped.symbol
+      ? currencyB.wrapped.symbol.toUpperCase()
+      : '';
+  const gammaPair = GammaPairs[baseCurrencySymbol + '-' + quoteCurrencySymbol];
+  const gammaPairAddress =
+    gammaPair && gammaPair.length > 0
+      ? gammaPair.find((pair) => pair.type === preset)?.address
+      : undefined;
+
   // check whether the user has approved the router on the tokens
   const [approvalA, approveACallback] = useApproveCallback(
     mintInfo.parsedAmounts[Field.CURRENCY_A] || tryParseAmount('1', currencyA),
     chainId
       ? mintInfo.liquidityRangeType ===
         GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
-        ? GAMMA_UNIPROXY_ADDRESSES[chainId]
+        ? gammaPairAddress
         : NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId]
       : undefined,
   );
@@ -100,7 +116,7 @@ export function EnterAmounts({
     chainId
       ? mintInfo.liquidityRangeType ===
         GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
-        ? GAMMA_UNIPROXY_ADDRESSES[chainId]
+        ? gammaPairAddress
         : NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId]
       : undefined,
   );
