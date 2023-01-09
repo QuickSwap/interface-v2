@@ -18,6 +18,7 @@ import { Box } from '@material-ui/core';
 import { LockOutlined } from '@material-ui/icons';
 import NumericalInput from 'components/NumericalInput';
 import { ETHER } from '@uniswap/sdk';
+import { useTranslation } from 'react-i18next';
 
 interface ITokenAmountCard {
   currency: Currency | undefined | null;
@@ -48,6 +49,7 @@ export function TokenAmountCard({
   priceFormat,
   isBase,
 }: ITokenAmountCard) {
+  const { t } = useTranslation();
   const { account } = useActiveWeb3React();
 
   const balance = useCurrencyBalance(
@@ -82,88 +84,6 @@ export function TokenAmountCard({
     return priceFormat === PriceFormats.USD;
   }, [priceFormat]);
 
-  const handleOnBlur = useCallback(() => {
-    if (currency?.wrapped.address === USDC_POLYGON.address) {
-      handleInput(localUSDValue);
-      return;
-    }
-
-    if (isUSD && currencyPrice) {
-      handleInput(String(+localUSDValue / +currencyPrice.toSignificant(5)));
-      setLocalTokenValue(
-        String(+localUSDValue / +currencyPrice.toSignificant(5)),
-      );
-    } else if (isUSD && isBase && initialTokenPrice && otherCurrencyPrice) {
-      handleInput(
-        String(
-          +localUSDValue *
-            +initialTokenPrice *
-            +otherCurrencyPrice.toSignificant(5),
-        ),
-      );
-      setLocalTokenValue(
-        String(
-          +localUSDValue *
-            +initialTokenPrice *
-            +otherCurrencyPrice.toSignificant(5),
-        ),
-      );
-    } else if (
-      isUSD &&
-      initialUSDPrices.CURRENCY_A &&
-      initialUSDPrices.CURRENCY_B
-    ) {
-      const initialUSDPrice = isBase
-        ? initialUSDPrices.CURRENCY_B
-        : initialUSDPrices.CURRENCY_A;
-      handleInput(String(+localUSDValue / +initialUSDPrice));
-      setLocalTokenValue(String(+localUSDValue / +initialUSDPrice));
-    } else if (isUSD && initialTokenPrice && !isBase && otherCurrencyPrice) {
-      handleInput(
-        String(
-          +localUSDValue *
-            +initialTokenPrice *
-            +otherCurrencyPrice.toSignificant(5),
-        ),
-      );
-      setLocalTokenValue(
-        String(
-          +localUSDValue *
-            +initialTokenPrice *
-            +otherCurrencyPrice.toSignificant(5),
-        ),
-      );
-    } else if (!isUSD) {
-      if (currencyPrice) {
-        setLocalUSDValue(
-          String(+localTokenValue * +currencyPrice.toSignificant(5)),
-        );
-      } else if (isBase && initialUSDPrices.CURRENCY_B) {
-        setLocalUSDValue(
-          String(+localTokenValue * +initialUSDPrices.CURRENCY_B),
-        );
-      } else if (!isBase && initialUSDPrices.CURRENCY_A) {
-        setLocalUSDValue(
-          String(+localTokenValue * +initialUSDPrices.CURRENCY_A),
-        );
-      }
-      handleInput(localTokenValue);
-    }
-  }, [
-    currency?.wrapped.address,
-    USDC_POLYGON.address,
-    isUSD,
-    currencyPrice,
-    isBase,
-    initialTokenPrice,
-    otherCurrencyPrice,
-    initialUSDPrices.CURRENCY_A,
-    initialUSDPrices.CURRENCY_B,
-    handleInput,
-    localUSDValue,
-    localTokenValue,
-  ]);
-
   useEffect(() => {
     if (currencyPrice) {
       setLocalUSDValue(String(+value * +currencyPrice.toSignificant(5)));
@@ -190,7 +110,7 @@ export function TokenAmountCard({
   ]);
 
   const balanceString = useMemo(() => {
-    if (!balance || !currency) return 'loading';
+    if (!balance || !currency) return t('loading');
 
     const _balance =
       isUSD && balanceUSD
@@ -219,7 +139,7 @@ export function TokenAmountCard({
     }
 
     return `${isUSD ? '$ ' : ''}${_balance}`;
-  }, [balance, currency, isUSD, balanceUSD]);
+  }, [balance, currency, isUSD, balanceUSD, t]);
 
   return (
     <>
@@ -228,9 +148,9 @@ export function TokenAmountCard({
           <div className='token-amount-card-locked'>
             <LockOutlined />
             <p className='span'>
-              Price is outside specified price range.
+              {t('priceOutsidePriceRange')}.
               <br />
-              Single-asset deposit only.
+              {t('singleAssetDepositOnly')}.
             </p>
           </div>
         )}
@@ -246,14 +166,14 @@ export function TokenAmountCard({
             <Box mt={1} className='token-amount-card-balance'>
               {balanceString === 'loading' ? (
                 <Box className='flex items-center'>
-                  <small className='text-secondary'>Balance: </small>
+                  <small className='text-secondary'>{t('balance')}: </small>
                   <Box className='flex' ml='5px'>
                     <Loader stroke='white' />
                   </Box>
                 </Box>
               ) : (
                 <small className='text-secondary'>
-                  Balance: {balanceString}
+                  {t('balance')}: {balanceString}
                 </small>
               )}
               {handleHalf && (
@@ -265,25 +185,22 @@ export function TokenAmountCard({
                 onClick={handleMax}
                 disabled={isMax || balance?.toSignificant(5) === '0'}
               >
-                <small>MAX</small>
+                <small>{t('max')}</small>
               </button>
             </Box>
           </Box>
         ) : (
           <Box className='token-amount-select-token'>
-            <p className='weight-600'>Select a token</p>
+            <p className='weight-600'>{t('selectToken')}</p>
           </Box>
         )}
         <NumericalInput
-          value={isUSD ? '$' + localUSDValue : localTokenValue}
+          value={value}
           id={`amount-${currency?.symbol}`}
           disabled={locked}
-          onBlur={handleOnBlur}
-          onUserInput={(val) =>
-            isUSD
-              ? setLocalUSDValue(val.trim())
-              : setLocalTokenValue(val.trim())
-          }
+          onUserInput={(val) => {
+            handleInput(val.trim());
+          }}
           placeholder='0'
         />
       </Box>

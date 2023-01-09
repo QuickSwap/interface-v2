@@ -47,7 +47,7 @@ const BuyFiatButton: React.FC<BuyFiatButtonProps> = ({ fullWidth }) => {
           setOpenMenu(true);
         }}
       >
-        <small>{t('buyNow')}</small>
+        <small>{t('buywithFiat')}</small>
       </Button>
     </>
   );

@@ -7,6 +7,7 @@ import { PriceFormats } from 'components/v3/PriceFomatToggler';
 import { Box } from '@material-ui/core';
 import { Add } from '@material-ui/icons';
 import V3CurrencySelect from 'components/v3/CurrencySelect';
+import { useTranslation } from 'react-i18next';
 
 interface ISelectPair {
   baseCurrency: Currency | null | undefined;
@@ -28,6 +29,7 @@ export function SelectPair({
   handleCurrencyASelect,
   handleCurrencyBSelect,
 }: ISelectPair) {
+  const { t } = useTranslation();
   const {
     fetchPopularPools: {
       popularPools,
@@ -43,7 +45,7 @@ export function SelectPair({
 
   return (
     <Box>
-      <small className='weight-600'>Select a pair</small>
+      <small className='weight-600'>{t('selectPair')}</small>
       <Box mt={1.5} className='flex items-center'>
         <Box flex={1}>
           <V3CurrencySelect

@@ -43,6 +43,7 @@ import RangeBadge from 'components/v3/Badge/RangeBadge';
 import RateToggle from 'components/v3/RateToggle';
 import { useInverter } from 'hooks/v3/useInverter';
 import { GammaPairs, GlobalConst } from 'constants/index';
+import { useTranslation } from 'react-i18next';
 
 interface IAddLiquidityButton {
   baseCurrency: Currency | undefined;
@@ -62,6 +63,7 @@ export function AddLiquidityButton({
   title,
   setRejected,
 }: IAddLiquidityButton) {
+  const { t } = useTranslation();
   const { chainId, library, account } = useActiveWeb3React();
   const [showConfirm, setShowConfirm] = useState(false);
   const [attemptingTxn, setAttemptingTxn] = useState(false);
@@ -212,8 +214,14 @@ export function AddLiquidityButton({
             },
           );
           const summary = mintInfo.noLiquidity
-            ? `Create pool and add ${baseCurrency?.symbol}/${quoteCurrency?.symbol} liquidity`
-            : `Add ${baseCurrency?.symbol}/${quoteCurrency?.symbol} liquidity`;
+            ? t('createPoolandaddLiquidity', {
+                symbolA: baseCurrency?.symbol,
+                symbolB: quoteCurrency?.symbol,
+              })
+            : t('addLiquidityWithTokens', {
+                symbolA: baseCurrency?.symbol,
+                symbolB: quoteCurrency?.symbol,
+              });
           setAttemptingTxn(false);
           setTxPending(true);
           addTransaction(response, {
@@ -231,9 +239,7 @@ export function AddLiquidityButton({
           setAttemptingTxn(false);
           setTxPending(false);
           setAddLiquidityErrorMessage(
-            error?.code === 4001
-              ? 'Transaction Rejected.'
-              : 'There is an error in the transaction.',
+            error?.code === 4001 ? t('txRejected') : t('errorInTx'),
           );
         }
       } else {
@@ -282,8 +288,14 @@ export function AddLiquidityButton({
                 setAttemptingTxn(false);
                 setTxPending(true);
                 const summary = mintInfo.noLiquidity
-                  ? `Create pool and add ${baseCurrency?.symbol}/${quoteCurrency?.symbol} liquidity`
-                  : `Add ${baseCurrency?.symbol}/${quoteCurrency?.symbol} liquidity`;
+                  ? t('createPoolandaddLiquidity', {
+                      symbolA: baseCurrency?.symbol,
+                      symbolB: quoteCurrency?.symbol,
+                    })
+                  : t('addLiquidityWithTokens', {
+                      symbolA: baseCurrency?.symbol,
+                      symbolB: quoteCurrency?.symbol,
+                    });
                 addTransaction(response, {
                   summary,
                 });
@@ -301,9 +313,7 @@ export function AddLiquidityButton({
                   console.error('Failed to send transaction', error);
                   setTxPending(false);
                   setAddLiquidityErrorMessage(
-                    error?.code === 4001
-                      ? 'Transaction Rejected.'
-                      : 'There is an error in the transaction.',
+                    error?.code === 4001 ? t('txRejected') : t('errorInTx'),
                   );
                 }
               })
@@ -311,9 +321,7 @@ export function AddLiquidityButton({
                 console.error('Failed to send transaction', err);
                 setAttemptingTxn(false);
                 setAddLiquidityErrorMessage(
-                  err?.code === 4001
-                    ? 'Transaction Rejected.'
-                    : 'There is an error in the transaction.',
+                  err?.code === 4001 ? t('txRejected') : t('errorInTx'),
                 );
               });
           })
@@ -323,9 +331,7 @@ export function AddLiquidityButton({
             setRejected && setRejected(true);
             setAttemptingTxn(false);
             setAddLiquidityErrorMessage(
-              error?.code === 4001
-                ? 'Transaction Rejected.'
-                : 'There is an error in the transaction.',
+              error?.code === 4001 ? t('txRejected') : t('errorInTx'),
             );
             if (error?.code !== 4001) {
               console.error(error);
@@ -428,7 +434,7 @@ export function AddLiquidityButton({
         </Box>
         <Box mt={3}>
           <Box className='flex justify-between items-center'>
-            <p>Selected Range</p>
+            <p>{t('selectedRange')}</p>
             {currencyBase && currencyQuote && (
               <RateToggle
                 currencyA={currencyBase}
@@ -444,14 +450,15 @@ export function AddLiquidityButton({
               className='v3-supply-liquidity-price-wrapper'
               width={priceUpper ? '49%' : '100%'}
             >
-              <p>Min Price</p>
+              <p>{t('minPrice')}</p>
               <h6>{priceLower.toSignificant()}</h6>
               <p>
-                {currencyQuote?.symbol} per {currencyBase?.symbol}
+                {currencyQuote?.symbol} {t('per')} {currencyBase?.symbol}
               </p>
               <p>
-                Your position will be 100% Composed of {currencyBase?.symbol} at
-                this price
+                {t('positionComposedAtThisPrice', {
+                  symbol: currencyBase?.symbol,
+                })}
               </p>
             </Box>
           )}
@@ -460,41 +467,43 @@ export function AddLiquidityButton({
               className='v3-supply-liquidity-price-wrapper'
               width={priceLower ? '49%' : '100%'}
             >
-              <p>Min Price</p>
+              <p>{t('minPrice')}</p>
               <h6>{priceUpper.toSignificant()}</h6>
               <p>
-                {currencyQuote?.symbol} per {currencyBase?.symbol}
+                {currencyQuote?.symbol} {t('per')} {currencyBase?.symbol}
               </p>
               <p>
-                Your position will be 100% Composed of {currencyQuote?.symbol}{' '}
-                at this price
+                {t('positionComposedAtThisPrice', {
+                  symbol: currencyQuote?.symbol,
+                })}
               </p>
             </Box>
           )}
         </Box>
         {currentPrice && (
           <Box mt={2} className='v3-supply-liquidity-price-wrapper'>
-            <p>Current Price</p>
+            <p>{t('currentPrice')}</p>
             <h6>{currentPrice}</h6>
             <p>
-              {currencyQuote?.symbol} per {currencyBase?.symbol}
+              {currencyQuote?.symbol} {t('per')} {currencyBase?.symbol}
             </p>
           </Box>
         )}
         <Box mt={2}>
           <Button className='v3-supply-liquidity-button' onClick={onAdd}>
-            Confirm
+            {t('confirm')}
           </Button>
         </Box>
       </Box>
     );
   };
 
-  const pendingText = `Adding ${mintInfo.parsedAmounts[
-    Field.CURRENCY_A
-  ]?.toSignificant()} ${baseCurrency?.symbol} and ${mintInfo.parsedAmounts[
-    Field.CURRENCY_B
-  ]?.toSignificant()} ${quoteCurrency?.symbol} liquidity`;
+  const pendingText = t('addingLiquidityTokens', {
+    amountA: mintInfo.parsedAmounts[Field.CURRENCY_A]?.toSignificant(),
+    symbolA: baseCurrency?.symbol,
+    amountB: mintInfo.parsedAmounts[Field.CURRENCY_B]?.toSignificant(),
+    symbolB: quoteCurrency?.symbol,
+  });
 
   return (
     <>
@@ -513,7 +522,7 @@ export function AddLiquidityButton({
               />
             ) : (
               <ConfirmationModalContent
-                title={'Supplying Liquidity'}
+                title={t('supplyingliquidity')}
                 onDismiss={handleDismissConfirmation}
                 content={modalHeader}
               />
@@ -522,8 +531,8 @@ export function AddLiquidityButton({
           pendingText={pendingText}
           modalContent={
             txPending
-              ? 'Submitted Adding Liquidity'
-              : 'Liquidity Added successfully'
+              ? t('submittedAddingLiquidity')
+              : t('liquidityAddedSuccessfully')
           }
         />
       )}

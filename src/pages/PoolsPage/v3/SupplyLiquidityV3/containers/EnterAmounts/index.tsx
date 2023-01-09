@@ -22,6 +22,7 @@ import { Box, Button } from '@material-ui/core';
 import Loader from 'components/Loader';
 import { Check } from '@material-ui/icons';
 import { GlobalConst } from 'constants/index';
+import { useTranslation } from 'react-i18next';
 
 interface IEnterAmounts {
   currencyA: Currency | undefined;
@@ -36,6 +37,7 @@ export function EnterAmounts({
   mintInfo,
   priceFormat,
 }: IEnterAmounts) {
+  const { t } = useTranslation();
   const { chainId } = useActiveWeb3React();
 
   const { independentField, typedValue } = useV3MintState();
@@ -151,7 +153,7 @@ export function EnterAmounts({
 
   return (
     <Box>
-      <small className='weight-600'>Deposit Amounts</small>
+      <small className='weight-600'>{t('depositAmounts')}</small>
       <Box my={2}>
         <TokenAmountCard
           currency={currencyA}
@@ -202,20 +204,26 @@ export function EnterAmounts({
               approvalA === ApprovalState.PENDING ? (
                 <Box className='token-approve-button-loading'>
                   <Loader stroke='white' />
-                  <p>Approving {currencyA?.symbol}</p>
+                  <p>
+                    {t('approving')} {currencyA?.symbol}
+                  </p>
                 </Box>
               ) : (
                 <Button
                   className='token-approve-button'
                   onClick={approveACallback}
                 >
-                  <p>Approve {currencyA?.symbol}</p>
+                  <p>
+                    {t('approve')} {currencyA?.symbol}
+                  </p>
                 </Button>
               )
             ) : (
               <Box className='token-approve-button-loading'>
                 <Check />
-                <p>Approved {currencyA?.symbol}</p>
+                <p>
+                  {t('approved')} {currencyA?.symbol}
+                </p>
               </Box>
             )}
           </Box>
@@ -226,20 +234,26 @@ export function EnterAmounts({
               approvalB === ApprovalState.PENDING ? (
                 <Box className='token-approve-button-loading'>
                   <Loader stroke='white' />
-                  <p>Approving {currencyB?.symbol}</p>
+                  <p>
+                    {t('approving')} {currencyB?.symbol}
+                  </p>
                 </Box>
               ) : (
                 <Button
                   className='token-approve-button'
                   onClick={approveBCallback}
                 >
-                  <p>Approve {currencyB?.symbol}</p>
+                  <p>
+                    {t('approve')} {currencyB?.symbol}
+                  </p>
                 </Button>
               )
             ) : (
               <Box className='token-approve-button-loading'>
                 <Check />
-                <p>Approved {currencyB?.symbol}</p>
+                <p>
+                  {t('approved')} {currencyB?.symbol}
+                </p>
               </Box>
             )}
           </Box>

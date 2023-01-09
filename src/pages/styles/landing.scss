@@ -246,16 +246,16 @@
 
 .buyFiatContainer {
   background: $bgPalette;
-  height: 338px;
+  padding: 40px;
   border-radius: 48px;
-  margin-bottom: 160px;
   overflow: hidden;
   position: relative;
   @include media("screen", "<tablet") {
     height: auto;
   }
   @include media("screen", "<phone") {
-    margin-bottom: 80px
+    padding: 24px;
+    border-radius: 24px;
   }
   & > img {
     position: absolute;
@@ -267,35 +267,29 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding-right: 80px;
     height: 100%;
     position: relative;
     z-index: 2;
-    @include media("screen", "<tablet") {
+    & img {
+      width: 129px;
+      max-width: 320px;
+    }
+    @include media("screen", "<phone") {
       flex-direction: column;
       padding: 0
     }
   }
   & .buyFiatInfo {
-    display: flex;
-    width: 50%;
-    align-items: center;
     position: relative;
-    & img {
-      width: 200px;
-      max-width: 320px;
-    }
-    & > div {
-      width: calc(100% - 200px);
-      & > h3 {
-        margin-bottom: 12px;
-      }
-    }
-    @include media("screen", "<tablet") {
-      width: 100%;
+    margin-right: 20px;
+    & > h3 {
+      font-size: 22px;
+      margin-bottom: 12px;
     }
     @include media("screen", "<phone") {
       flex-direction: column;
+      margin-right: 0;
+      margin-bottom: 32px;
       & img, & > div {
         width: 100%;
       }
@@ -304,6 +298,18 @@
       }
       & div {
         padding: 0 20px 20px;
+      }
+      & button {
+        width: 100%;
+      }
+    }
+    & button {
+      margin-top: 24px;
+      height: 40px;
+      border-radius: 20px;
+      padding: 0 20px;
+      & small {
+        font-size: 16px;
       }
     }
   }
@@ -330,9 +336,18 @@
         }
       }
     }
-    & > button {
-      height: 56px;
-      border-radius: 28px;
+  }
+  .poweredBySection {
+    position: absolute;
+    bottom: 16px;
+    right: 16px;
+    height: auto;
+    font-size: 12px;
+    font-weight: 600;
+    color: $textSecondary;
+    & img {
+      height: 20px;
+      width: auto;
     }
   }
 }

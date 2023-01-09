@@ -23,6 +23,7 @@ import { Box, ButtonGroup, Button } from '@material-ui/core';
 import { ReportProblemOutlined } from '@material-ui/icons';
 import { getEternalFarmFromTokens } from 'utils';
 import GammaLogo from 'assets/images/gammaLogo.png';
+import { Trans, useTranslation } from 'react-i18next';
 
 interface IRangeSelector {
   currencyA: Currency | null | undefined;
@@ -37,6 +38,7 @@ export function SelectRange({
   mintInfo,
   priceFormat,
 }: IRangeSelector) {
+  const { t } = useTranslation();
   const [fullRangeWarningShown, setFullRangeWarningShown] = useState(true);
   const { startPriceTypedValue, liquidityRangeType } = useV3MintState();
   const { onChangeLiquidityRangeType } = useV3MintActionHandlers(
@@ -273,7 +275,7 @@ export function SelectRange({
 
   return (
     <Box>
-      <small className='weight-600'>Select a range</small>
+      <small className='weight-600'>{t('selectRange')}</small>
       {gammaPair && (
         <Box className='buttonGroup poolRangeButtonGroup'>
           <ButtonGroup>
@@ -290,7 +292,7 @@ export function SelectRange({
                 )
               }
             >
-              Manual
+              {t('manual')}
             </Button>
             <Button
               className={
@@ -306,9 +308,9 @@ export function SelectRange({
               }
             >
               <Box className='flex items-start'>
-                <span>Automatic</span>
+                <span>{t('automatic')}</span>
                 <Box ml='3px' className='poolRangeBetaBox'>
-                  BETA
+                  {t('beta')}
                 </Box>
               </Box>
             </Button>
@@ -317,7 +319,7 @@ export function SelectRange({
       )}
       {liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE && (
         <Box my={1.5} className='poolRangePowerGamma'>
-          <span className='text-secondary'>Powered by</span>
+          <span className='text-secondary'>{t('poweredBy')}</span>
           <img src={GammaLogo} alt='Gamma Logo' />
         </Box>
       )}
@@ -341,18 +343,18 @@ export function SelectRange({
       {liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE && (
         <Box my={2}>
           <small className='text-secondary'>
-            Liquidity ranges are automatically rebalanced when certain rebalance
-            triggers are met. In determining the width of the ranges, the goal
-            is to optimize fee revenue and volumes while taking into account a
-            years’ worth of volatility to control for impermanent loss.{' '}
-            <a
-              href='https://quickswap.exchange'
-              target='_blank'
-              rel='noreferrer'
-              className='text-primary'
-            >
-              Learn more
-            </a>
+            <Trans
+              i18nKey='gammaLiquidityRangeLearnMore'
+              components={{
+                alink: (
+                  <a
+                    href='https://quickswap.exchange'
+                    target='_blank'
+                    rel='noreferrer'
+                  />
+                ),
+              }}
+            />
           </small>
         </Box>
       )}
@@ -361,12 +363,14 @@ export function SelectRange({
           {mintInfo.price && (
             <Box textAlign='center'>
               <span>
-                {!!mintInfo.noLiquidity ? `Initial Price:` : `Current Price:`}{' '}
+                {!!mintInfo.noLiquidity
+                  ? `${t('initialPrice')}:`
+                  : `${t('currentPrice')}:`}
                 {currentPrice ?? ''}{' '}
                 <span className='text-secondary'>
                   {currentPrice
-                    ? `${currencyB?.symbol} per ${currencyA?.symbol}`
-                    : 'Loading...'}
+                    ? `${currencyB?.symbol} ${t('per')} ${currencyA?.symbol}`
+                    : `${t('loading')}...`}
                 </span>
               </span>
             </Box>
@@ -396,24 +400,26 @@ export function SelectRange({
                 <Box className='pool-range-chart-warning-icon'>
                   <ReportProblemOutlined />
                 </Box>
-                <small>Efficiency Comparison</small>
+                <small>{t('efficiencyComparison')}</small>
               </Box>
               <Box width={1} mt={1} mb={1.5}>
                 <span>
-                  Full range positions may earn less fees than concentrated
-                  positions. Learn more{' '}
-                  <a
-                    href='https://quickswap.exchange'
-                    target='_blank'
-                    rel='noreferrer'
-                  >
-                    here
-                  </a>
-                  .
+                  <Trans
+                    i18nKey='fullRangePositionsEarnLessFeeLearnMore'
+                    components={{
+                      alink: (
+                        <a
+                          href='https://quickswap.exchange'
+                          target='_blank'
+                          rel='noreferrer'
+                        />
+                      ),
+                    }}
+                  />
                 </span>
               </Box>
               <button onClick={() => setFullRangeWarningShown(false)}>
-                I understand
+                {t('iunderstand')}
               </button>
             </Box>
           )}
@@ -426,8 +432,7 @@ export function SelectRange({
                   <ReportProblemOutlined />
                 </Box>
                 <span>
-                  Warning: The minimum price range to earn farming rewards for
-                  this liquidity position is {minRangeLength}%
+                  {t('minPriceRangeWarning', { rangeLength: minRangeLength })}
                 </span>
               </Box>
             )}
@@ -436,11 +441,7 @@ export function SelectRange({
               <Box className='pool-range-chart-warning-icon'>
                 <ReportProblemOutlined />
               </Box>
-              <span>
-                Warning: The price range for this liquidity position is not
-                eligible for farming rewards. To become eligible for rewards,
-                please increase your range
-              </span>
+              <span>{t('priceRangeNotElligibleWraning')}</span>
             </Box>
           )}
           {mintInfo.invalidRange && (
@@ -448,7 +449,7 @@ export function SelectRange({
               <Box className='pool-range-chart-warning-icon'>
                 <ReportProblemOutlined />
               </Box>
-              <span>Invalid Range</span>
+              <span>{t('invalidRange')}</span>
             </Box>
           )}
         </>

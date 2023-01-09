@@ -538,6 +538,10 @@ export const GlobalValue = {
   },
 };
 
+export const paraswapTax: { [key: string]: number } = {
+  '0xed88227296943857409a8e0f15ad7134e70d0f73': 100,
+};
+
 export const GlobalData = {
   bases: {
     // used to construct intermediary pairs for trading

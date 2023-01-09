@@ -14,8 +14,10 @@ import { PositionPool } from 'models/interfaces';
 import { useSingleCallResult } from 'state/multicall/v3/hooks';
 import { useV3NFTPositionManagerContract } from 'hooks/useContract';
 import { FARMING_CENTER } from 'constants/v3/addresses';
+import { useTranslation } from 'react-i18next';
 
 export default function PositionPage() {
+  const { t } = useTranslation();
   const params: any = useParams();
   const tokenIdFromUrl = params.tokenId;
   const { account, chainId } = useActiveWeb3React();
@@ -80,7 +82,7 @@ export default function PositionPage() {
               style={{ textDecoration: 'none' }}
               to='/pools/v3'
             >
-              ← Back to Pools Overview
+              ← {t('backPoolOverview')}
             </NavLink>
           </Box>
           {positionDetails ? (
@@ -90,7 +92,7 @@ export default function PositionPage() {
               ownsNFT={ownsNFT}
             />
           ) : (
-            <p>NFT does not exist</p>
+            <p>{t('nftNotExist')}</p>
           )}
         </>
       )}

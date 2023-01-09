@@ -5,6 +5,7 @@ import { useActiveWeb3React } from 'hooks';
 import Loader from '../Loader';
 import { Token } from '@uniswap/sdk';
 import { Link } from 'react-router-dom';
+import CurrencyLogo from '../CurrencyLogo';
 import './index.scss';
 import { Box } from '@material-ui/core';
 import { formatUnits } from 'ethers/lib/utils';
@@ -13,6 +14,7 @@ import { formatCompact, formatNumber, getTokenFromAddress } from 'utils';
 import { Aprs } from 'models/interfaces';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { getAddress } from 'ethers/lib/utils';
+import { useTranslation } from 'react-i18next';
 
 interface EternalFarmCardProps {
   active?: boolean;
@@ -61,6 +63,7 @@ export function EternalFarmCard({
   tvlsLoading,
   eternal,
 }: EternalFarmCardProps) {
+  const { t } = useTranslation();
   const apr = aprs ? aprs[id] : undefined;
   const aprValue =
     (apr !== undefined && apr >= 0 ? formatCompact(apr) : '~') + '%';
@@ -119,7 +122,7 @@ export function EternalFarmCard({
                 target='_blank'
                 className='no-decoration'
               >
-                <small className='text-primary'>Get LP↗</small>
+                <small className='text-primary'>{t('getLP')}↗</small>
               </Link>
             </Box>
           </Box>
@@ -135,7 +138,7 @@ export function EternalFarmCard({
                   3600 *
                   24,
               )}{' '}
-              {rewardToken.symbol} / day
+              {rewardToken.symbol} / {t('day')}
             </small>
           )}
           <br />
@@ -148,7 +151,7 @@ export function EternalFarmCard({
                   3600 *
                   24,
               )}{' '}
-              {bonusRewardToken.symbol} / day
+              {bonusRewardToken.symbol} / {t('day')}
             </small>
           )}
         </Box>
@@ -170,7 +173,7 @@ export function EternalFarmCard({
 
       <Box width='15%'>
         <StyledButton height='40px' onClick={farmHandler}>
-          Farm
+          {t('farm')}
         </StyledButton>
       </Box>
     </Box>

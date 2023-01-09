@@ -16,12 +16,14 @@ import { useActiveWeb3React } from 'hooks';
 import { getTokenFromAddress } from 'utils';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { getAddress } from 'ethers/lib/utils';
+import { useTranslation } from 'react-i18next';
 
 interface FarmCardProps {
   el: Deposit;
 }
 
 export default function FarmCard({ el }: FarmCardProps) {
+  const { t } = useTranslation();
   const [showMore, setShowMore] = useState(false);
   const { chainId } = useActiveWeb3React();
 
@@ -72,7 +74,7 @@ export default function FarmCard({ el }: FarmCardProps) {
                   rel='noopener noreferrer'
                   target='_blank'
                 >
-                  View position
+                  {t('viewPosition')}
                 </a>
               </StyledLabel>
             </Box>
@@ -89,7 +91,7 @@ export default function FarmCard({ el }: FarmCardProps) {
 
             <Box className='flex-col' ml={3}>
               <StyledLabel color='#696c80' fontSize='12px'>
-                Pool
+                {t('pool')}
               </StyledLabel>
 
               {token0 && token1 && (
