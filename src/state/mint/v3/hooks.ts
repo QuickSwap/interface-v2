@@ -18,6 +18,7 @@ import {
   typeRightRangeInput,
   typeStartPriceInput,
   updateLiquidityRangeType,
+  updatePresetRange,
 } from './actions';
 import { tryParseTick } from './utils';
 import { PoolState, usePool } from 'hooks/v3/usePools';
@@ -34,6 +35,9 @@ import { BIG_INT_ZERO } from 'constants/v3/misc';
 import { FeeAmount } from 'v3lib/utils';
 import { useCurrencyBalances } from 'state/wallet/v3/hooks';
 import { tryParseAmount } from 'state/swap/v3/hooks';
+import { IPresetArgs } from 'pages/PoolsPage/v3/SupplyLiquidityV3/components/PresetRanges';
+import { GlobalConst } from 'constants/index';
+import { parseUnits } from 'ethers/lib/utils';
 
 export interface IDerivedMintInfo {
   pool?: Pool | null;
@@ -62,6 +66,7 @@ export interface IDerivedMintInfo {
   lowerPrice: any;
   upperPrice: any;
   liquidityRangeType: string | undefined;
+  presetRange: IPresetArgs | undefined;
 }
 
 export function useV3MintState(): AppState['mintV3'] {
@@ -77,6 +82,7 @@ export function useV3MintActionHandlers(
   onRightRangeInput: (typedValue: string) => void;
   onStartPriceInput: (typedValue: string) => void;
   onChangeLiquidityRangeType: (value: string) => void;
+  onChangePresetRange: (value: IPresetArgs) => void;
 } {
   const dispatch = useAppDispatch();
 
@@ -134,6 +140,13 @@ export function useV3MintActionHandlers(
     [dispatch],
   );
 
+  const onChangePresetRange = useCallback(
+    (value: IPresetArgs) => {
+      dispatch(updatePresetRange({ presetRange: value }));
+    },
+    [dispatch],
+  );
+
   return {
     onFieldAInput,
     onFieldBInput,
@@ -141,6 +154,7 @@ export function useV3MintActionHandlers(
     onRightRangeInput,
     onStartPriceInput,
     onChangeLiquidityRangeType,
+    onChangePresetRange,
   };
 }
 
@@ -178,6 +192,7 @@ export function useV3DerivedMintInfo(
   lowerPrice: any;
   upperPrice: any;
   liquidityRangeType: string | undefined;
+  presetRange: IPresetArgs | undefined;
 } {
   const { account } = useActiveWeb3React();
 
@@ -188,6 +203,7 @@ export function useV3DerivedMintInfo(
     rightRangeTypedValue,
     startPriceTypedValue,
     liquidityRangeType,
+    presetRange,
   } = useV3MintState();
 
   const dependentField =
@@ -421,6 +437,44 @@ export function useV3DerivedMintInfo(
     | undefined = tryParseAmount(typedValue, currencies[independentField]);
 
   const dependentAmount: CurrencyAmount<Currency> | undefined = useMemo(() => {
+    if (liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE) {
+      if (
+        !independentAmount ||
+        !presetRange ||
+        !presetRange.baseDepositMin ||
+        !presetRange.baseDepositMax ||
+        !presetRange.quoteDepositMin ||
+        !presetRange.quoteDepositMax ||
+        !currencyA ||
+        !currencyB
+      )
+        return;
+      if (independentField === Field.CURRENCY_A) {
+        const quoteDeposit = parseUnits(
+          (
+            (presetRange.quoteDepositMin + presetRange.quoteDepositMax) /
+            2
+          ).toString(),
+          currencyB.wrapped.decimals,
+        );
+        return CurrencyAmount.fromRawAmount(
+          currencyB,
+          JSBI.BigInt(quoteDeposit),
+        );
+      } else {
+        const baseDeposit = parseUnits(
+          (
+            (presetRange.baseDepositMin + presetRange.baseDepositMax) /
+            2
+          ).toString(),
+          currencyA.wrapped.decimals,
+        );
+        return CurrencyAmount.fromRawAmount(
+          currencyA,
+          JSBI.BigInt(baseDeposit),
+        );
+      }
+    }
     // we wrap the currencies just to get the price in terms of the other token
     const wrappedIndependentAmount = independentAmount?.wrapped;
     const dependentCurrency =
@@ -472,14 +526,17 @@ export function useV3DerivedMintInfo(
 
     return undefined;
   }, [
+    liquidityRangeType,
     independentAmount,
-    outOfRange,
     dependentField,
     currencyB,
     currencyA,
     tickLower,
     tickUpper,
     poolForPosition,
+    presetRange,
+    independentField,
+    outOfRange,
     invalidRange,
   ]);
 
@@ -667,6 +724,7 @@ export function useV3DerivedMintInfo(
     lowerPrice,
     upperPrice,
     liquidityRangeType,
+    presetRange,
   };
 }
 

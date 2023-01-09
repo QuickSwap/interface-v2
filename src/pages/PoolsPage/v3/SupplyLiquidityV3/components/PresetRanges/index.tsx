@@ -1,7 +1,7 @@
 import React, { useMemo, useEffect, useState } from 'react';
 import { Currency } from '@uniswap/sdk-core';
 import { PoolStats } from '../PoolStats';
-import { IDerivedMintInfo } from 'state/mint/v3/hooks';
+import { IDerivedMintInfo, useV3MintActionHandlers } from 'state/mint/v3/hooks';
 import { Presets } from 'state/mint/v3/reducer';
 import { Box } from '@material-ui/core';
 import { PoolState } from 'hooks/usePools';
@@ -13,11 +13,17 @@ import GammaPairABI from 'constants/abis/gamma-hypervisor.json';
 import './index.scss';
 import { getContract } from 'utils';
 import { useActiveWeb3React } from 'hooks';
+import { useGammaUNIProxyContract } from 'hooks/useContract';
+import { formatUnits, parseUnits } from 'ethers/lib/utils';
 
 export interface IPresetArgs {
   type: Presets;
   min: number;
   max: number;
+  baseDepositMin?: number;
+  baseDepositMax?: number;
+  quoteDepositMin?: number;
+  quoteDepositMax?: number;
 }
 
 interface IPresetRanges {
@@ -54,7 +60,17 @@ export function PresetRanges({
   isGamma = false,
   gammaPair,
 }: IPresetRanges) {
+  const { onChangePresetRange } = useV3MintActionHandlers(mintInfo.noLiquidity);
   const [aprs, setAprs] = useState<undefined | { [key: string]: number }>();
+  const [gammaDeposit, setGammaDeposit] = useState<{
+    [key: string]: {
+      base: {
+        min: number;
+        max: number;
+      };
+      quote: { min: number; max: number };
+    };
+  }>({});
   const [gammaValues, setGammaValues] = useState<{
     [key: string]: { min: number; max: number };
   }>({});
@@ -70,18 +86,88 @@ export function PresetRanges({
 
   const decimalDifference =
     (quoteCurrency?.decimals ?? 0) - (baseCurrency?.decimals ?? 0);
+  const gammaUNIPROXYContract = useGammaUNIProxyContract();
+
   useEffect(() => {
-    if (!gammaPairAddressStr || !library) return;
+    if (
+      !gammaPairAddressStr ||
+      !library ||
+      !baseCurrency ||
+      !quoteCurrency ||
+      !gammaUNIPROXYContract
+    )
+      return;
     (async () => {
       setGammaValues({});
       const gammaPairAddresses = gammaPairAddressStr.split('-');
       const gammaRange: { [key: string]: { min: number; max: number } } = {};
+      const gammaDeposits: {
+        [key: string]: {
+          base: {
+            min: number;
+            max: number;
+          };
+          quote: { min: number; max: number };
+        };
+      } = {};
       for (const pairAddress of gammaPairAddresses) {
         const gammaPairContract = getContract(
           pairAddress,
           GammaPairABI,
           library,
         );
+
+        const quoteDepositAmount = await gammaUNIPROXYContract.getDepositAmount(
+          pairAddress,
+          baseCurrency.wrapped.address,
+          parseUnits('1', baseCurrency.wrapped.decimals),
+        );
+        const baseDepositAmount = await gammaUNIPROXYContract.getDepositAmount(
+          pairAddress,
+          quoteCurrency.wrapped.address,
+          parseUnits('1', quoteCurrency.wrapped.decimals),
+        );
+        const baseDepositMin =
+          baseDepositAmount && baseDepositAmount.length > 1
+            ? Number(
+                formatUnits(
+                  baseDepositAmount[0],
+                  baseCurrency.wrapped.decimals,
+                ),
+              )
+            : 0;
+        const baseDepositMax =
+          baseDepositAmount && baseDepositAmount.length > 1
+            ? Number(
+                formatUnits(
+                  baseDepositAmount[1],
+                  baseCurrency.wrapped.decimals,
+                ),
+              )
+            : 0;
+        const quoteDepositMin =
+          quoteDepositAmount && quoteDepositAmount.length > 1
+            ? Number(
+                formatUnits(
+                  quoteDepositAmount[0],
+                  quoteCurrency.wrapped.decimals,
+                ),
+              )
+            : 0;
+        const quoteDepositMax =
+          quoteDepositAmount && quoteDepositAmount.length > 1
+            ? Number(
+                formatUnits(
+                  quoteDepositAmount[1],
+                  quoteCurrency.wrapped.decimals,
+                ),
+              )
+            : 0;
+
+        gammaDeposits[pairAddress] = {
+          base: { min: baseDepositMin, max: baseDepositMax },
+          quote: { min: quoteDepositMin, max: quoteDepositMax },
+        };
         const baseLower = await gammaPairContract.baseLower();
         const baseUpper = await gammaPairContract.baseUpper();
         const currentTick = await gammaPairContract.currentTick();
@@ -93,8 +179,16 @@ export function PresetRanges({
         };
       }
       setGammaValues(gammaRange);
+      setGammaDeposit(gammaDeposits);
     })();
-  }, [gammaPairAddressStr, library, decimalDifference]);
+  }, [
+    gammaPairAddressStr,
+    library,
+    decimalDifference,
+    baseCurrency,
+    quoteCurrency,
+    gammaUNIPROXYContract,
+  ]);
 
   const ranges = useMemo(() => {
     if (isGamma) {
@@ -108,6 +202,18 @@ export function PresetRanges({
               max: gammaValues[pairAddress] ? gammaValues[pairAddress].max : 0,
               risk: PresetProfits.VERY_LOW,
               profit: PresetProfits.HIGH,
+              baseDepositMin: gammaDeposit[pairAddress]
+                ? gammaDeposit[pairAddress].base.min
+                : undefined,
+              baseDepositMax: gammaDeposit[pairAddress]
+                ? gammaDeposit[pairAddress].base.max
+                : undefined,
+              quoteDepositMin: gammaDeposit[pairAddress]
+                ? gammaDeposit[pairAddress].quote.min
+                : undefined,
+              quoteDepositMax: gammaDeposit[pairAddress]
+                ? gammaDeposit[pairAddress].quote.max
+                : undefined,
             };
           })
         : [];
@@ -159,7 +265,7 @@ export function PresetRanges({
         profit: PresetProfits.HIGH,
       },
     ];
-  }, [isStablecoinPair, isGamma, gammaPair, gammaValues]);
+  }, [isStablecoinPair, isGamma, gammaPair, gammaValues, gammaDeposit]);
 
   const risk = useMemo(() => {
     if (!priceUpper || !priceLower || !price) return;
@@ -252,6 +358,7 @@ export function PresetRanges({
                   } else {
                     handlePresetRangeSelection(range);
                   }
+                  onChangePresetRange(range);
                 }}
                 key={i}
               >
