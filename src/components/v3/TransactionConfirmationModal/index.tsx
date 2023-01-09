@@ -1,8 +1,7 @@
 import { Currency } from '@uniswap/sdk-core';
 import React, { ReactNode, useContext, useEffect } from 'react';
-import { Box } from '@material-ui/core';
+import { Box, Button } from '@material-ui/core';
 import { ThemeContext } from 'styled-components/macro';
-import { RowBetween, RowFixed } from '../Row';
 import {
   AlertTriangle,
   ArrowUpCircle,
@@ -10,23 +9,13 @@ import {
   ExternalLink,
   X,
 } from 'react-feather';
-import { ButtonLight } from '../Button';
-import { AutoColumn } from '../Column';
 import Circle from 'assets/images/blue-loader.svg';
 import MetaMaskLogo from 'assets/images/metamask-logo.svg';
 import { useActiveWeb3React } from 'hooks';
 import useAddTokenToMetamask from 'hooks/v3/useAddTokenToMetamask';
-import {
-  BottomSection,
-  ConfirmedIcon,
-  Section,
-  StyledLogo,
-  Wrapper,
-} from './styled';
 import { CustomModal } from 'components';
 import { CloseIcon, CustomLightSpinner } from 'theme/components';
 import { ExplorerDataType, getEtherscanLink } from 'utils';
-import { StyledButton, StyledLabel } from '../Common/styledElements';
 import { useTranslation } from 'react-i18next';
 
 interface ConfirmationPendingContentProps {
@@ -57,16 +46,9 @@ function ConfirmationPendingContent({
         />
       </div>
       <div className={'f c f-ac ta-c'}>
-        <StyledLabel className=' mb-05' fontSize='16px' color='#c7cad9'>
-          {t('waitingConfirm')}
-        </StyledLabel>
-        <StyledLabel className=' mb-05' fontSize='14px' color='#c7cad9'>
-          {pendingText}
-        </StyledLabel>
-
-        <StyledLabel className=' mb-05' fontSize='14px' color='#696c80'>
-          {t('confirmTxinWallet')}
-        </StyledLabel>
+        <p>{t('waitingConfirm')}</p>
+        <small>{pendingText}</small>
+        <small className='text-secondary'>{t('confirmTxinWallet')}</small>
       </div>
     </div>
   );
@@ -97,62 +79,53 @@ function TransactionSubmittedContent({
   return (
     <div>
       {!inline && (
-        <RowBetween>
+        <Box className='flex justify-between'>
           <div />
           <CloseIcon onClick={onDismiss} />
-        </RowBetween>
+        </Box>
       )}
-      <ConfirmedIcon inline={inline}>
+      <Box className='flex'>
         <ArrowUpCircle
           strokeWidth={0.5}
           size={inline ? '40px' : '90px'}
           color={theme.winterMainButton}
         />
-      </ConfirmedIcon>
-      <AutoColumn gap='12px' justify={'center'}>
-        <StyledLabel fontSize={'20px'} className='text-center'>
-          {t('txSubmitted')}
-        </StyledLabel>
+      </Box>
+      <Box>
+        <h5>{t('txSubmitted')}</h5>
         {chainId && hash && (
           <ExternalLink
             href={getEtherscanLink(chainId, hash, ExplorerDataType.TRANSACTION)}
           >
-            <StyledLabel fontSize={'14px'} color={theme.winterMainButton}>
-              {t('viewonBlockExplorer')}
-            </StyledLabel>
+            <small>{t('viewonBlockExplorer')}</small>
           </ExternalLink>
         )}
         {currencyToAdd && library?.provider?.isMetaMask && (
-          <ButtonLight
-            mt='12px'
-            padding='6px 12px'
-            width='fit-content'
-            onClick={addToken}
-          >
+          <Button onClick={addToken}>
             {!success ? (
-              <RowFixed>
+              <Box>
                 {t('addToMetamaskToken', { symbol: currencyToAdd.symbol })}
-                <StyledLogo src={MetaMaskLogo} />
-              </RowFixed>
+                <img src={MetaMaskLogo} alt='Metamask' />
+              </Box>
             ) : (
-              <RowFixed>
+              <Box>
                 {t('added')} {currencyToAdd.symbol}
                 <CheckCircle
                   size={'16px'}
                   stroke={'var(--green)'}
                   style={{ marginLeft: '6px' }}
                 />
-              </RowFixed>
+              </Box>
             )}
-          </ButtonLight>
+          </Button>
         )}
-        <StyledButton
+        <Button
           onClick={onDismiss}
           style={{ margin: '20px 0 0 0', color: 'white' }}
         >
           {inline ? t('return') : t('close')}
-        </StyledButton>
-      </AutoColumn>
+        </Button>
+      </Box>
     </div>
   );
 }
@@ -177,9 +150,7 @@ export function ConfirmationModalContent({
         <CloseIcon className={'hover-op trans-op'} onClick={onDismiss} />
       </div>
       {topContent()}
-      {bottomContent && (
-        <BottomSection gap='12px'>{bottomContent()}</BottomSection>
-      )}
+      {bottomContent && <Box>{bottomContent()}</Box>}
     </div>
   );
 }
@@ -196,25 +167,20 @@ export function TransactionErrorContent({
   const { t } = useTranslation();
   const theme = useContext(ThemeContext);
   return (
-    <Wrapper>
-      <Section>
-        <RowBetween>
-          <StyledLabel fontSize={'20px'}>{t('error')}</StyledLabel>
+    <Box>
+      <Box>
+        <Box className='flex justify-between'>
+          <h5>{t('error')}</h5>
           <CloseIcon onClick={onDismiss} />
-        </RowBetween>
-        <AutoColumn
-          style={{ marginTop: 20, padding: '2rem 0' }}
-          gap='24px'
-          justify='center'
-        >
+        </Box>
+        <Box>
           <AlertTriangle
             color={theme.red1}
             style={{ strokeWidth: 1.5 }}
             size={64}
           />
-          <StyledLabel
-            fontSize={'16px'}
-            color={theme.red1}
+          <p
+            className='text-error'
             style={{
               textAlign: 'center',
               width: '85%',
@@ -222,13 +188,11 @@ export function TransactionErrorContent({
             }}
           >
             {message}
-          </StyledLabel>
-        </AutoColumn>
-      </Section>
-      <BottomSection gap='12px'>
-        <StyledButton onClick={onDismiss}>{t('dismiss')}</StyledButton>
-      </BottomSection>
-    </Wrapper>
+          </p>
+        </Box>
+      </Box>
+      <Button onClick={onDismiss}>{t('dismiss')}</Button>
+    </Box>
   );
 }
 

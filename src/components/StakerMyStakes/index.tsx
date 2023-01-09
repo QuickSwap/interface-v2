@@ -113,36 +113,31 @@ export function FarmingMyFarms() {
   return (
     <>
       {transferredPositionsLoading || !shallowPositions ? (
-        <div className={'my-farms__loader flex-s-between f-jc'}>
+        <Box py={5} className='flex justify-center'>
           <Loader stroke={'white'} size={'1.5rem'} />
-        </div>
+        </Box>
       ) : shallowPositions && shallowPositions.length === 0 ? (
-        <div className={' flex-s-between f c f-jc'}>
+        <Box py={5} className='flex flex-col items-center'>
           <Frown size={35} stroke={'white'} />
           <Box mb={3} mt={1}>
             {t('nofarms')}
           </Box>
-        </div>
+        </Box>
       ) : shallowPositions && shallowPositions.length !== 0 ? (
         <Box padding='24px'>
-          <div className={'my-farms__ad p-05 br-12 f f-ac f-jc'}>
-            <div className={'mr-1'}>✨ {t('earnMoreRewards')}</div>
-            <Link
-              className={'my-farms__ad-link p-05 br-8 hover-cp'}
-              to={'/dragons'}
-            >
-              {t('stakeRewards')}
-            </Link>
-          </div>
+          <Box className='v3-farm-rewards'>
+            <Box mr={1}>✨ {t('earnMoreRewards')}</Box>
+            <Link to={'/dragons'}>{t('stakeRewards')}</Link>
+          </Box>
           {farmedNFTs && (
-            <div>
+            <Box pb={2}>
               {farmedNFTs.map((el, i) => {
                 const date = new Date(
                   +el.enteredInEternalFarming * 1000,
                 ).toLocaleString('us');
                 return (
                   <div
-                    className={'my-farms__position-card p-1 br-12 mt-1'}
+                    className={'v3-my-farms-position-card'}
                     key={i}
                     data-navigatedto={hash == `#${el.id}`}
                   >
@@ -150,7 +145,7 @@ export function FarmingMyFarms() {
                   </div>
                 );
               })}
-            </div>
+            </Box>
           )}
         </Box>
       ) : null}

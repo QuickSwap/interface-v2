@@ -5,7 +5,7 @@ import SpritzIcon from 'assets/images/SpritzIcon.png';
 import { BuyFiatButton } from 'components';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import './../../styles/swap.scss';
+import 'pages/styles/swap.scss';
 
 export const SwapBuySellWidget: React.FC = ({}) => {
   const { t } = useTranslation();

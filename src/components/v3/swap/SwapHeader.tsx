@@ -1,6 +1,5 @@
 import React from 'react';
 import { Percent } from '@uniswap/sdk-core';
-import { StyledLabel } from '../Common/styledElements';
 import { useTranslation } from 'react-i18next';
 
 interface SwapHeaderProps {
@@ -16,13 +15,9 @@ export default function SwapHeader({
   return (
     <div className={'flex-s-between w-100 mb-1'}>
       <div className={'flex-s-between w-100'}>
-        <StyledLabel fontSize='16px' color='#c7cad9'>
-          {t('swap')}
-        </StyledLabel>
+        <p>{t('swap')}</p>
         {dynamicFee && (
-          <StyledLabel fontSize='12px' color='#b4b9cc' className={' br-8'}>
-            {t('feeIs', { fee: dynamicFee / 10000 })}
-          </StyledLabel>
+          <p className='caption'>{t('feeIs', { fee: dynamicFee / 10000 })}</p>
         )}
       </div>
     </div>

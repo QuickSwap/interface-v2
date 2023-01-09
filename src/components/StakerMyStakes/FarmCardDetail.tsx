@@ -1,11 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Box, useMediaQuery, useTheme } from '@material-ui/core';
+import { Box, Button, useMediaQuery, useTheme } from '@material-ui/core';
 import { CurrencyLogo } from 'components';
-import {
-  StyledButton,
-  StyledDarkBox,
-  StyledFilledBox,
-} from 'components/v3/Common/styledElements';
 import { useFarmingHandlers } from 'hooks/useStakerHandlers';
 import { FarmingType } from 'models/enums';
 import Loader from 'components/Loader';
@@ -83,8 +78,12 @@ export default function FarmCardDetail({ el }: FarmCardDetailProps) {
       : undefined;
 
   return (
-    <Box className='flex justify-evenly items-center flex-wrap'>
-      <StyledDarkBox padding={1.5} width={1}>
+    <Box
+      mt={1}
+      borderRadius='12px'
+      className='flex bg-palette justify-evenly items-center flex-wrap'
+    >
+      <Box padding={1.5} width={1}>
         <Box>
           <p>{t('eternalFarming')}</p>
         </Box>
@@ -93,40 +92,41 @@ export default function FarmCardDetail({ el }: FarmCardDetailProps) {
             <Box className='flex justify-center items-center' height='130px'>
               <small className='text-secondary'>{t('noEternalFarms')}</small>
             </Box>
-            <StyledButton
-              height='40px'
-              width='100%'
-              disabled={
-                selectedTokenId === el.id &&
+            <Box width='100%'>
+              <Button
+                fullWidth
+                disabled={
+                  selectedTokenId === el.id &&
+                  txType === 'withdraw' &&
+                  !txConfirmed &&
+                  !txError
+                }
+                onClick={() => {
+                  withdrawHandler(el.id);
+                }}
+              >
+                {selectedTokenId === el.id &&
                 txType === 'withdraw' &&
                 !txConfirmed &&
-                !txError
-              }
-              onClick={() => {
-                withdrawHandler(el.id);
-              }}
-            >
-              {selectedTokenId === el.id &&
-              txType === 'withdraw' &&
-              !txConfirmed &&
-              !txError ? (
-                <>
-                  <Loader size={'1rem'} stroke={'var(--white)'} />
-                  <Box ml='5px'>
-                    <small>{t('withdrawing')}</small>
-                  </Box>
-                </>
-              ) : (
-                <>
-                  <small>{t('withdraw')}</small>
-                </>
-              )}
-            </StyledButton>
+                !txError ? (
+                  <>
+                    <Loader size={'1rem'} stroke={'var(--white)'} />
+                    <Box ml='5px'>
+                      <small>{t('withdrawing')}</small>
+                    </Box>
+                  </>
+                ) : (
+                  <>
+                    <small>{t('withdraw')}</small>
+                  </>
+                )}
+              </Button>
+            </Box>
           </>
         )}
         {el.eternalFarming && (
           <>
-            <StyledFilledBox className='flex flex-wrap' mt={2} p={2}>
+            <Box className='flex flex-wrap' mt={2} p={2}>
               <Box width={!isMobile && bonusRewardToken ? 0.5 : 1}>
                 <small className='text-secondary'>{t('earnedRewards')}</small>
                 <Box mt={1}>
@@ -166,74 +166,76 @@ export default function FarmCardDetail({ el }: FarmCardDetailProps) {
                   </Box>
                 </Box>
               )}
-            </StyledFilledBox>
+            </Box>
 
             <Box
               marginTop={2}
               className='flex justify-between items-center flex-wrap'
             >
-              <StyledButton
-                height='40px'
-                width={isMobile ? '100%' : '49%'}
-                disabled={
-                  (selectedTokenId === el.id &&
-                    txType === 'eternalCollectReward' &&
+              <Box width={isMobile ? '100%' : '49%'}>
+                <Button
+                  fullWidth
+                  disabled={
+                    (selectedTokenId === el.id &&
+                      txType === 'eternalCollectReward' &&
+                      !txConfirmed &&
+                      !txError) ||
+                    (el.eternalEarned == 0 && el.eternalBonusEarned == 0)
+                  }
+                  onClick={() => {
+                    eternalCollectRewardHandler(el.id, { ...el });
+                  }}
+                >
+                  {selectedTokenId === el.id &&
+                  txType === 'eternalCollectReward' &&
+                  !txConfirmed &&
+                  !txError ? (
+                    <>
+                      <Loader size={'18px'} stroke={'var(--white)'} />
+                      <Box ml='5px'>
+                        <small>{t('claiming')}</small>
+                      </Box>
+                    </>
+                  ) : (
+                    <small>{t('claim')}</small>
+                  )}
+                </Button>
+              </Box>
+              <Box width={isMobile ? '100%' : '49%'}>
+                <Button
+                  fullWidth
+                  style={{ marginTop: isMobile ? '16px' : 0 }}
+                  disabled={
+                    selectedTokenId === el.id &&
+                    selectedFarmingType === FarmingType.ETERNAL &&
+                    txType === 'claimRewards' &&
                     !txConfirmed &&
-                    !txError) ||
-                  (el.eternalEarned == 0 && el.eternalBonusEarned == 0)
-                }
-                onClick={() => {
-                  eternalCollectRewardHandler(el.id, { ...el });
-                }}
-              >
-                {selectedTokenId === el.id &&
-                txType === 'eternalCollectReward' &&
-                !txConfirmed &&
-                !txError ? (
-                  <>
-                    <Loader size={'18px'} stroke={'var(--white)'} />
-                    <Box ml='5px'>
-                      <small>{t('claiming')}</small>
-                    </Box>
-                  </>
-                ) : (
-                  <small>{t('claim')}</small>
-                )}
-              </StyledButton>
-              <StyledButton
-                height='40px'
-                width={isMobile ? '100%' : '49%'}
-                style={{ marginTop: isMobile ? '16px' : 0 }}
-                disabled={
-                  selectedTokenId === el.id &&
+                    !txError
+                  }
+                  onClick={() => {
+                    claimRewardsHandler(el.id, { ...el }, FarmingType.ETERNAL);
+                  }}
+                >
+                  {selectedTokenId === el.id &&
                   selectedFarmingType === FarmingType.ETERNAL &&
                   txType === 'claimRewards' &&
                   !txConfirmed &&
-                  !txError
-                }
-                onClick={() => {
-                  claimRewardsHandler(el.id, { ...el }, FarmingType.ETERNAL);
-                }}
-              >
-                {selectedTokenId === el.id &&
-                selectedFarmingType === FarmingType.ETERNAL &&
-                txType === 'claimRewards' &&
-                !txConfirmed &&
-                !txError ? (
-                  <>
-                    <Loader size={'18px'} stroke={'var(--white)'} />
-                    <Box ml='5px'>
-                      <small>{t('undepositing')}</small>
-                    </Box>
-                  </>
-                ) : (
-                  <small>{t('undeposit')}</small>
-                )}
-              </StyledButton>
+                  !txError ? (
+                    <>
+                      <Loader size={'18px'} stroke={'var(--white)'} />
+                      <Box ml='5px'>
+                        <small>{t('undepositing')}</small>
+                      </Box>
+                    </>
+                  ) : (
+                    <small>{t('undeposit')}</small>
+                  )}
+                </Button>
+              </Box>
             </Box>
           </>
         )}
-      </StyledDarkBox>
+      </Box>
     </Box>
   );
 }

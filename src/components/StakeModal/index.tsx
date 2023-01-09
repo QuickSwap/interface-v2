@@ -18,13 +18,12 @@ import { FARMING_CENTER } from 'constants/v3/addresses';
 import { useActiveWeb3React } from 'hooks';
 
 import { Token } from '@uniswap/sdk-core';
-import { formatUnits, parseUnits } from 'ethers/lib/utils';
+import { formatUnits } from 'ethers/lib/utils';
 import { BigNumber } from 'ethers';
 import { ChainId } from '@uniswap/sdk';
 import { Box, Button } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import { Check } from '@material-ui/icons';
-import { StyledCircle, StyledLabel } from 'components/v3/Common/styledElements';
 import { useV3StakeData } from 'state/farms/hooks';
 
 interface FarmModalProps {
@@ -452,9 +451,7 @@ export function FarmModal({
                       }}
                     >
                       <Box className='flex items-center'>
-                        <Box mr={2}>
-                          <StyledCircle>{el.id}</StyledCircle>
-                        </Box>
+                        <Box mr={2}>{el.id}</Box>
                         <Box className='flex-col' ml={0.5}>
                           <Box mb='4px'>
                             <IsActive el={el} />
