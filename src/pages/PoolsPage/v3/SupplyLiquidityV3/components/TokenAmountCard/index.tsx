@@ -84,88 +84,6 @@ export function TokenAmountCard({
     return priceFormat === PriceFormats.USD;
   }, [priceFormat]);
 
-  const handleOnBlur = useCallback(() => {
-    if (currency?.wrapped.address === USDC_POLYGON.address) {
-      handleInput(localUSDValue);
-      return;
-    }
-
-    if (isUSD && currencyPrice) {
-      handleInput(String(+localUSDValue / +currencyPrice.toSignificant(5)));
-      setLocalTokenValue(
-        String(+localUSDValue / +currencyPrice.toSignificant(5)),
-      );
-    } else if (isUSD && isBase && initialTokenPrice && otherCurrencyPrice) {
-      handleInput(
-        String(
-          +localUSDValue *
-            +initialTokenPrice *
-            +otherCurrencyPrice.toSignificant(5),
-        ),
-      );
-      setLocalTokenValue(
-        String(
-          +localUSDValue *
-            +initialTokenPrice *
-            +otherCurrencyPrice.toSignificant(5),
-        ),
-      );
-    } else if (
-      isUSD &&
-      initialUSDPrices.CURRENCY_A &&
-      initialUSDPrices.CURRENCY_B
-    ) {
-      const initialUSDPrice = isBase
-        ? initialUSDPrices.CURRENCY_B
-        : initialUSDPrices.CURRENCY_A;
-      handleInput(String(+localUSDValue / +initialUSDPrice));
-      setLocalTokenValue(String(+localUSDValue / +initialUSDPrice));
-    } else if (isUSD && initialTokenPrice && !isBase && otherCurrencyPrice) {
-      handleInput(
-        String(
-          +localUSDValue *
-            +initialTokenPrice *
-            +otherCurrencyPrice.toSignificant(5),
-        ),
-      );
-      setLocalTokenValue(
-        String(
-          +localUSDValue *
-            +initialTokenPrice *
-            +otherCurrencyPrice.toSignificant(5),
-        ),
-      );
-    } else if (!isUSD) {
-      if (currencyPrice) {
-        setLocalUSDValue(
-          String(+localTokenValue * +currencyPrice.toSignificant(5)),
-        );
-      } else if (isBase && initialUSDPrices.CURRENCY_B) {
-        setLocalUSDValue(
-          String(+localTokenValue * +initialUSDPrices.CURRENCY_B),
-        );
-      } else if (!isBase && initialUSDPrices.CURRENCY_A) {
-        setLocalUSDValue(
-          String(+localTokenValue * +initialUSDPrices.CURRENCY_A),
-        );
-      }
-      handleInput(localTokenValue);
-    }
-  }, [
-    currency?.wrapped.address,
-    USDC_POLYGON.address,
-    isUSD,
-    currencyPrice,
-    isBase,
-    initialTokenPrice,
-    otherCurrencyPrice,
-    initialUSDPrices.CURRENCY_A,
-    initialUSDPrices.CURRENCY_B,
-    handleInput,
-    localUSDValue,
-    localTokenValue,
-  ]);
-
   useEffect(() => {
     if (currencyPrice) {
       setLocalUSDValue(String(+value * +currencyPrice.toSignificant(5)));
@@ -277,15 +195,12 @@ export function TokenAmountCard({
           </Box>
         )}
         <NumericalInput
-          value={isUSD ? '$' + localUSDValue : localTokenValue}
+          value={value}
           id={`amount-${currency?.symbol}`}
           disabled={locked}
-          onBlur={handleOnBlur}
-          onUserInput={(val) =>
-            isUSD
-              ? setLocalUSDValue(val.trim())
-              : setLocalTokenValue(val.trim())
-          }
+          onUserInput={(val) => {
+            handleInput(val.trim());
+          }}
           placeholder='0'
         />
       </Box>
