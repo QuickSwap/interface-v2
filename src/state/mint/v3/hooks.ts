@@ -452,9 +452,9 @@ export function useV3DerivedMintInfo(
       if (independentField === Field.CURRENCY_A) {
         const quoteDeposit = parseUnits(
           (
-            (presetRange.quoteDepositMin + presetRange.quoteDepositMax) /
-            2
-          ).toString(),
+            ((presetRange.quoteDepositMin + presetRange.quoteDepositMax) / 2) *
+            Number(independentAmount.toSignificant())
+          ).toFixed(currencyB.wrapped.decimals),
           currencyB.wrapped.decimals,
         );
         return CurrencyAmount.fromRawAmount(
@@ -464,9 +464,9 @@ export function useV3DerivedMintInfo(
       } else {
         const baseDeposit = parseUnits(
           (
-            (presetRange.baseDepositMin + presetRange.baseDepositMax) /
-            2
-          ).toString(),
+            ((presetRange.baseDepositMin + presetRange.baseDepositMax) / 2) *
+            Number(independentAmount.toSignificant())
+          ).toFixed(currencyA.wrapped.decimals),
           currencyA.wrapped.decimals,
         );
         return CurrencyAmount.fromRawAmount(
