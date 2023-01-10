@@ -52,22 +52,20 @@ export default function SwapModalHeader({
         paddingTop={2}
       >
         <Box className='flex justify-between'>
-          <span className={'fs-085'}>{t('from')}</span>
+          <small>{t('from')}</small>
           <FiatValue fiatValue={fiatValueInput} />
         </Box>
 
-        <Box mt={1} className={'flex-s-between'}>
-          <div className={'f f-ac'}>
-            <span className={'mr-05'}>
+        <Box mt={1} className='flex justify-between'>
+          <Box className='flex'>
+            <Box mr='6px'>
               <CurrencyLogo
                 currency={trade.inputAmount.currency as WrappedCurrency}
-                size={'1.5rem'}
+                size={'24px'}
               />
-            </span>
-            <Text fontSize={16} fontWeight={600}>
-              {trade.inputAmount.currency.symbol}
-            </Text>
-          </div>
+            </Box>
+            <p className='weight-600'>{trade.inputAmount.currency.symbol}</p>
+          </Box>
           <p
             className={`truncatedText weight-600 ${
               showAcceptChanges && trade.tradeType === TradeType.EXACT_OUTPUT
@@ -84,8 +82,8 @@ export default function SwapModalHeader({
       </Box>
       <Box className='bg-secondary1' borderRadius='6px' marginTop={1}>
         <Box padding={2}>
-          <div className={'flex-s-between fs-08'}>
-            {t('to')}
+          <Box className='flex justify-between'>
+            <small>{t('to')}</small>
             <FiatValue
               fiatValue={fiatValueOutput}
               priceImpact={computeFiatValuePriceImpact(
@@ -93,20 +91,18 @@ export default function SwapModalHeader({
                 fiatValueOutput,
               )}
             />
-          </div>
+          </Box>
 
-          <Box mt={1} className={'flex-s-between'}>
-            <div className={'f f-ac'}>
-              <span className={'mr-05'}>
+          <Box mt={1} className='flex justify-between'>
+            <Box className='flex'>
+              <Box mr='6px'>
                 <CurrencyLogo
                   currency={trade.outputAmount.currency as WrappedCurrency}
-                  size={'1.5rem'}
+                  size='24px'
                 />
-              </span>
-              <Text fontSize={16} fontWeight={600}>
-                {trade.outputAmount.currency.symbol}
-              </Text>
-            </div>
+              </Box>
+              <p className='weight-600'>{trade.outputAmount.currency.symbol}</p>
+            </Box>
             <p className='truncatedText weight-600'>
               {trade.outputAmount.toSignificant(6)}
             </p>
@@ -167,8 +163,8 @@ export default function SwapModalHeader({
             })}
       </div>
       {recipient !== null ? (
-        <div className={'c-p'}>
-          {t('outputSentTo')}
+        <div>
+          {t('outputSentTo') + ' '}
           <b title={recipient}>
             {isAddress(recipient) ? shortenAddress(recipient) : recipient}
           </b>

@@ -551,322 +551,310 @@ const SwapV3Page: React.FC = () => {
         onConfirm={handleConfirmTokenWarning}
         onDismiss={handleDismissTokenWarning}
       />
-      <div className={'maw-610 mh-a pos-r swap'}>
-        <Box>
-          <SwapHeader
+      <Box className='swap'>
+        <SwapHeader allowedSlippage={allowedSlippage} dynamicFee={dynamicFee} />
+        <div id='swap-page'>
+          <ConfirmSwapModal
+            isOpen={showConfirm}
+            trade={trade}
+            originalTrade={tradeToConfirm}
+            onAcceptChanges={handleAcceptChanges}
+            attemptingTxn={attemptingTxn}
+            txHash={txHash}
+            recipient={recipient}
             allowedSlippage={allowedSlippage}
-            dynamicFee={dynamicFee}
+            onConfirm={handleSwap}
+            swapErrorMessage={swapErrorMessage}
+            onDismiss={handleConfirmDismiss}
           />
-          <div id='swap-page'>
-            <ConfirmSwapModal
-              isOpen={showConfirm}
-              trade={trade}
-              originalTrade={tradeToConfirm}
-              onAcceptChanges={handleAcceptChanges}
-              attemptingTxn={attemptingTxn}
-              txHash={txHash}
-              recipient={recipient}
-              allowedSlippage={allowedSlippage}
-              onConfirm={handleSwap}
-              swapErrorMessage={swapErrorMessage}
-              onDismiss={handleConfirmDismiss}
+
+          <Box mt={1.5} mb={1}>
+            <CurrencyInputPanel
+              label={
+                independentField === Field.OUTPUT && !showWrap
+                  ? t('fromAtMost')
+                  : t('from')
+              }
+              value={formattedAmounts[Field.INPUT]}
+              showMaxButton={showMaxButton}
+              showHalfButton={true}
+              currency={currencies[Field.INPUT] as WrappedCurrency}
+              onUserInput={handleTypeInput}
+              onMax={handleMaxInput}
+              onHalf={handleHalfInput}
+              fiatValue={fiatValueInput ?? undefined}
+              onCurrencySelect={handleInputSelect}
+              otherCurrency={currencies[Field.OUTPUT]}
+              showCommonBases={true}
+              id='swap-currency-input'
+              locked={false}
+              hideCurrency={false}
+              hideInput={false}
+              showBalance={true}
+              disabled={false}
+              shallow={false}
+              swap
             />
+          </Box>
 
-            <Box>
-              <Box mt={1.5} mb={1}>
-                <CurrencyInputPanel
-                  label={
-                    independentField === Field.OUTPUT && !showWrap
-                      ? t('fromAtMost')
-                      : t('from')
+          <Box className='exchangeSwap'>
+            <ExchangeIcon
+              onClick={() => {
+                setApprovalSubmitted(false); // reset 2 step UI for approvals
+                redirectWithSwitch();
+              }}
+            />
+          </Box>
+          <Box mt={1} mb={1.5}>
+            <CurrencyInputPanel
+              value={formattedAmounts[Field.OUTPUT]}
+              onUserInput={handleTypeOutput}
+              label={
+                independentField === Field.INPUT && !showWrap
+                  ? t('toAtLeast')
+                  : t('to')
+              }
+              showMaxButton={false}
+              showHalfButton={false}
+              hideBalance={false}
+              fiatValue={fiatValueOutput ?? undefined}
+              priceImpact={priceImpact}
+              currency={currencies[Field.OUTPUT] as WrappedCurrency}
+              onCurrencySelect={handleOutputSelect}
+              otherCurrency={currencies[Field.INPUT]}
+              showCommonBases={true}
+              id='swap-currency-output'
+              locked={false}
+              hideCurrency={false}
+              hideInput={false}
+              showBalance={true}
+              disabled={false}
+              shallow={false}
+              swap
+            />
+          </Box>
+          {!showWrap && isExpertMode ? (
+            <Box className='recipientInput' mb={1.5}>
+              <Box className='recipientInputHeader'>
+                {recipient !== null ? (
+                  <ArrowDown size='16' color='white' />
+                ) : (
+                  <Box />
+                )}
+                <Button
+                  onClick={() =>
+                    onChangeRecipient(recipient !== null ? null : '')
                   }
-                  value={formattedAmounts[Field.INPUT]}
-                  showMaxButton={showMaxButton}
-                  showHalfButton={true}
-                  currency={currencies[Field.INPUT] as WrappedCurrency}
-                  onUserInput={handleTypeInput}
-                  onMax={handleMaxInput}
-                  onHalf={handleHalfInput}
-                  fiatValue={fiatValueInput ?? undefined}
-                  onCurrencySelect={handleInputSelect}
-                  otherCurrency={currencies[Field.OUTPUT]}
-                  showCommonBases={true}
-                  id='swap-currency-input'
-                  locked={false}
-                  hideCurrency={false}
-                  hideInput={false}
-                  showBalance={true}
-                  disabled={false}
-                  shallow={false}
-                  swap
-                />
+                >
+                  {recipient !== null
+                    ? `- ${t('removeSend')}`
+                    : `+ ${t('addSendOptional')}`}
+                </Button>
               </Box>
-
-              <Box className='exchangeSwap'>
-                <ExchangeIcon
-                  onClick={() => {
-                    setApprovalSubmitted(false); // reset 2 step UI for approvals
-                    redirectWithSwitch();
-                  }}
+              {recipient !== null && (
+                <AddressInput
+                  label={t('recipient')}
+                  placeholder={t('walletOrENS')}
+                  value={recipient}
+                  onChange={onChangeRecipient}
                 />
-              </Box>
-              <Box mt={1} mb={1.5}>
-                <CurrencyInputPanel
-                  value={formattedAmounts[Field.OUTPUT]}
-                  onUserInput={handleTypeOutput}
-                  label={
-                    independentField === Field.INPUT && !showWrap
-                      ? t('toAtLeast')
-                      : t('to')
-                  }
-                  showMaxButton={false}
-                  showHalfButton={false}
-                  hideBalance={false}
-                  fiatValue={fiatValueOutput ?? undefined}
-                  priceImpact={priceImpact}
-                  currency={currencies[Field.OUTPUT] as WrappedCurrency}
-                  onCurrencySelect={handleOutputSelect}
-                  otherCurrency={currencies[Field.INPUT]}
-                  showCommonBases={true}
-                  id='swap-currency-output'
-                  locked={false}
-                  hideCurrency={false}
-                  hideInput={false}
-                  showBalance={true}
-                  disabled={false}
-                  shallow={false}
-                  swap
-                />
-              </Box>
+              )}
             </Box>
-            {!showWrap && isExpertMode ? (
-              <Box className='recipientInput'>
-                <Box className='recipientInputHeader'>
-                  {recipient !== null ? (
-                    <ArrowDown size='16' color='white' />
-                  ) : (
-                    <Box />
-                  )}
+          ) : null}
+
+          {!showWrap && trade && (
+            <div className='flex items-center'>
+              <TradePrice
+                price={trade.executionPrice}
+                showInverted={showInverted}
+                setShowInverted={setShowInverted}
+              />
+              <MouseoverTooltipContent
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                //@ts-ignore
+                onOpen={() => {
+                  ReactGA.event({
+                    category: 'Swap',
+                    action: 'Transaction Details Tooltip Open',
+                  });
+                }}
+                content={
+                  <AdvancedSwapDetails
+                    trade={trade}
+                    allowedSlippage={allowedSlippage}
+                  />
+                }
+              >
+                <Info size={'1rem'} stroke='white' />
+              </MouseoverTooltipContent>
+            </div>
+          )}
+
+          <Box className='swapButtonWrapper'>
+            {!account ? (
+              <Button fullWidth onClick={toggleWalletModal}>
+                {t('connectWallet')}
+              </Button>
+            ) : showWrap ? (
+              <Button
+                fullWidth
+                disabled={Boolean(wrapInputError)}
+                onClick={onWrap}
+              >
+                {wrapInputError ??
+                  (wrapType === WrapType.WRAP
+                    ? t('wrap')
+                    : wrapType === WrapType.UNWRAP
+                    ? t('unWrap')
+                    : null)}
+              </Button>
+            ) : routeNotFound && userHasSpecifiedInputOutput ? (
+              <Button
+                fullWidth
+                disabled={routeNotFound && userHasSpecifiedInputOutput}
+              >
+                {isLoadingRoute ? (
+                  <p className='loadingDots'>{t('loading')}</p>
+                ) : singleHopOnly ? (
+                  `${t('insufficientLiquidityMultiHop')}.`
+                ) : (
+                  t('insufficientLiquidityTrade')
+                )}
+              </Button>
+            ) : showApproveFlow ? (
+              <>
+                <Box width='48%'>
                   <Button
-                    onClick={() =>
-                      onChangeRecipient(recipient !== null ? null : '')
+                    fullWidth
+                    onClick={handleApprove}
+                    disabled={
+                      approvalState !== ApprovalState.NOT_APPROVED ||
+                      approvalSubmitted ||
+                      signatureState === UseERC20PermitState.SIGNED
                     }
                   >
-                    {recipient !== null
-                      ? `- ${t('removeSend')}`
-                      : `+ ${t('addSendOptional')}`}
+                    <Box className='flex justify-between'>
+                      <span
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          background: theme.winterMainButton,
+                          color: 'white',
+                        }}
+                      >
+                        <CurrencyLogo
+                          currency={currencies[Field.INPUT] as WrappedCurrency}
+                          size={'24px'}
+                          style={{ marginRight: '8px', flexShrink: 0 }}
+                        />
+                        {/* we need to shorten this string on mobile */}
+                        {approvalState === ApprovalState.APPROVED ||
+                        signatureState === UseERC20PermitState.SIGNED
+                          ? `${t('youcannowtrade')} ${
+                              currencies[Field.INPUT]?.symbol
+                            }`
+                          : `${t('allowQuickswapTouse')} ${
+                              currencies[Field.INPUT]?.symbol
+                            }`}
+                      </span>
+                      {approvalState === ApprovalState.PENDING ? (
+                        <Loader stroke='white' style={{ marginLeft: '5px' }} />
+                      ) : (approvalSubmitted &&
+                          approvalState === ApprovalState.APPROVED) ||
+                        signatureState === UseERC20PermitState.SIGNED ? (
+                        <CheckCircle
+                          size='20'
+                          style={{ marginLeft: '5px' }}
+                          color={theme.green1}
+                        />
+                      ) : (
+                        <MouseoverTooltip
+                          text={t('mustgiveContractsPermission', {
+                            symbol: currencies[Field.INPUT]?.symbol,
+                          })}
+                        >
+                          <HelpCircle
+                            size='20'
+                            color={'white'}
+                            style={{ marginLeft: '8px' }}
+                          />
+                        </MouseoverTooltip>
+                      )}
+                    </Box>
                   </Button>
                 </Box>
-                {recipient !== null && (
-                  <AddressInput
-                    label={t('recipient')}
-                    placeholder={t('walletOrENS')}
-                    value={recipient}
-                    onChange={onChangeRecipient}
-                  />
-                )}
-              </Box>
-            ) : null}
-
-            {!showWrap && trade && (
-              <div className='flex items-center'>
-                <TradePrice
-                  price={trade.executionPrice}
-                  showInverted={showInverted}
-                  setShowInverted={setShowInverted}
-                />
-                <MouseoverTooltipContent
-                  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                  //@ts-ignore
-                  onOpen={() => {
-                    ReactGA.event({
-                      category: 'Swap',
-                      action: 'Transaction Details Tooltip Open',
-                    });
-                  }}
-                  content={
-                    <AdvancedSwapDetails
-                      trade={trade}
-                      allowedSlippage={allowedSlippage}
-                    />
-                  }
-                >
-                  <Info size={'1rem'} stroke={'var(--primary)'} />
-                </MouseoverTooltipContent>
-              </div>
-            )}
-
-            <Box className='swapButtonWrapper'>
-              {!account ? (
-                <Button fullWidth onClick={toggleWalletModal}>
-                  {t('connectWallet')}
-                </Button>
-              ) : showWrap ? (
-                <Button
-                  fullWidth
-                  disabled={Boolean(wrapInputError)}
-                  onClick={onWrap}
-                >
-                  {wrapInputError ??
-                    (wrapType === WrapType.WRAP
-                      ? t('wrap')
-                      : wrapType === WrapType.UNWRAP
-                      ? t('unWrap')
-                      : null)}
-                </Button>
-              ) : routeNotFound && userHasSpecifiedInputOutput ? (
-                <Button
-                  fullWidth
-                  disabled={routeNotFound && userHasSpecifiedInputOutput}
-                >
-                  {isLoadingRoute ? (
-                    <p className='loadingDots'>{t('loading')}</p>
-                  ) : singleHopOnly ? (
-                    `${t('insufficientLiquidityMultiHop')}.`
-                  ) : (
-                    t('insufficientLiquidityTrade')
-                  )}
-                </Button>
-              ) : showApproveFlow ? (
-                <>
-                  <Box width='48%'>
-                    <Button
-                      fullWidth
-                      onClick={handleApprove}
-                      disabled={
-                        approvalState !== ApprovalState.NOT_APPROVED ||
-                        approvalSubmitted ||
-                        signatureState === UseERC20PermitState.SIGNED
+                <Box width='48%'>
+                  <Button
+                    fullWidth
+                    onClick={() => {
+                      if (isExpertMode) {
+                        handleSwap();
+                      } else {
+                        setSwapState({
+                          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                          //@ts-ignore
+                          tradeToConfirm: trade,
+                          attemptingTxn: false,
+                          swapErrorMessage: undefined,
+                          showConfirm: true,
+                          txHash: undefined,
+                        });
                       }
-                    >
-                      <Box className='flex justify-between'>
-                        <span
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            background: theme.winterMainButton,
-                            color: 'white',
-                          }}
-                        >
-                          <CurrencyLogo
-                            currency={
-                              currencies[Field.INPUT] as WrappedCurrency
-                            }
-                            size={'24px'}
-                            style={{ marginRight: '8px', flexShrink: 0 }}
-                          />
-                          {/* we need to shorten this string on mobile */}
-                          {approvalState === ApprovalState.APPROVED ||
-                          signatureState === UseERC20PermitState.SIGNED
-                            ? `${t('youcannowtrade')} ${
-                                currencies[Field.INPUT]?.symbol
-                              }`
-                            : `${t('allowQuickswapTouse')} ${
-                                currencies[Field.INPUT]?.symbol
-                              }`}
-                        </span>
-                        {approvalState === ApprovalState.PENDING ? (
-                          <Loader
-                            stroke='white'
-                            style={{ marginLeft: '5px' }}
-                          />
-                        ) : (approvalSubmitted &&
-                            approvalState === ApprovalState.APPROVED) ||
-                          signatureState === UseERC20PermitState.SIGNED ? (
-                          <CheckCircle
-                            size='20'
-                            style={{ marginLeft: '5px' }}
-                            color={theme.green1}
-                          />
-                        ) : (
-                          <MouseoverTooltip
-                            text={t('mustgiveContractsPermission', {
-                              symbol: currencies[Field.INPUT]?.symbol,
-                            })}
-                          >
-                            <HelpCircle
-                              size='20'
-                              color={'white'}
-                              style={{ marginLeft: '8px' }}
-                            />
-                          </MouseoverTooltip>
-                        )}
-                      </Box>
-                    </Button>
-                  </Box>
-                  <Box width='48%'>
-                    <Button
-                      fullWidth
-                      onClick={() => {
-                        if (isExpertMode) {
-                          handleSwap();
-                        } else {
-                          setSwapState({
-                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                            //@ts-ignore
-                            tradeToConfirm: trade,
-                            attemptingTxn: false,
-                            swapErrorMessage: undefined,
-                            showConfirm: true,
-                            txHash: undefined,
-                          });
-                        }
-                      }}
-                      id='swap-button'
-                      disabled={
-                        !isValid ||
-                        (approvalState !== ApprovalState.APPROVED &&
-                          signatureState !== UseERC20PermitState.SIGNED) ||
-                        priceImpactTooHigh
-                      }
-                    >
-                      {priceImpactTooHigh
-                        ? t('highPriceImpact')
-                        : priceImpactSeverity > 2
-                        ? t('swapAnyway')
-                        : t('swap')}
-                    </Button>
-                  </Box>
-                </>
-              ) : (
-                <Button
-                  fullWidth
-                  onClick={() => {
-                    if (isExpertMode) {
-                      handleSwap();
-                    } else {
-                      setSwapState({
-                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                        //@ts-ignore
-                        tradeToConfirm: trade,
-                        attemptingTxn: false,
-                        swapErrorMessage: undefined,
-                        showConfirm: true,
-                        txHash: undefined,
-                      });
+                    }}
+                    id='swap-button'
+                    disabled={
+                      !isValid ||
+                      (approvalState !== ApprovalState.APPROVED &&
+                        signatureState !== UseERC20PermitState.SIGNED) ||
+                      priceImpactTooHigh
                     }
-                  }}
-                  id='swap-button'
-                  disabled={
-                    !isValid || priceImpactTooHigh || !!swapCallbackError
+                  >
+                    {priceImpactTooHigh
+                      ? t('highPriceImpact')
+                      : priceImpactSeverity > 2
+                      ? t('swapAnyway')
+                      : t('swap')}
+                  </Button>
+                </Box>
+              </>
+            ) : (
+              <Button
+                fullWidth
+                onClick={() => {
+                  if (isExpertMode) {
+                    handleSwap();
+                  } else {
+                    setSwapState({
+                      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                      //@ts-ignore
+                      tradeToConfirm: trade,
+                      attemptingTxn: false,
+                      swapErrorMessage: undefined,
+                      showConfirm: true,
+                      txHash: undefined,
+                    });
                   }
-                >
-                  {swapInputError
-                    ? swapInputError
-                    : priceImpactTooHigh
-                    ? t('highPriceImpact')
-                    : priceImpactSeverity > 2
-                    ? t('swapAnyway')
-                    : t('swap')}
-                </Button>
-              )}
-              {isExpertMode && swapErrorMessage ? (
-                <SwapCallbackError error={swapErrorMessage} />
-              ) : null}
+                }}
+                id='swap-button'
+                disabled={!isValid || priceImpactTooHigh || !!swapCallbackError}
+              >
+                {swapInputError
+                  ? swapInputError
+                  : priceImpactTooHigh
+                  ? t('highPriceImpact')
+                  : priceImpactSeverity > 2
+                  ? t('swapAnyway')
+                  : t('swap')}
+              </Button>
+            )}
+          </Box>
+          {isExpertMode && swapErrorMessage ? (
+            <Box mt={2}>
+              <SwapCallbackError error={swapErrorMessage} />
             </Box>
-          </div>
-        </Box>
-      </div>
+          ) : null}
+        </div>
+      </Box>
     </>
   );
 };

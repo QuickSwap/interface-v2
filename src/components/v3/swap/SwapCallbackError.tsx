@@ -4,8 +4,8 @@ import { AlertTriangle } from 'react-feather';
 
 export default function SwapCallbackError({ error }: { error: ReactNode }) {
   return (
-    <Box>
-      <Box>
+    <Box className='flex items-center justify-center'>
+      <Box mr='6px'>
         <AlertTriangle size={24} />
       </Box>
       <p style={{ wordBreak: 'break-word' }}>{error}</p>

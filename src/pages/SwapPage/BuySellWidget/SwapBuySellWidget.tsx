@@ -13,7 +13,7 @@ export const SwapBuySellWidget: React.FC = ({}) => {
 
   return (
     <Box className='wrapper buySellWidgetContainer'>
-      <Box className='row mb-1'>
+      <Box mb={2} className='row'>
         <Box>
           <img className='wallet' src={BuyWithFiat} alt='buy with fiat' />
         </Box>
@@ -23,7 +23,7 @@ export const SwapBuySellWidget: React.FC = ({}) => {
         </Box>
       </Box>
       <Divider />
-      <Box className='row mt-1'>
+      <Box mt={2} className='row'>
         <Box>
           <img className='bill' src={BillPay} alt='bill pay' />
         </Box>

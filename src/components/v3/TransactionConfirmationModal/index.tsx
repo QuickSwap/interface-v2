@@ -1,7 +1,6 @@
 import { Currency } from '@uniswap/sdk-core';
-import React, { ReactNode, useContext, useEffect } from 'react';
+import React, { ReactNode, useEffect } from 'react';
 import { Box, Button } from '@material-ui/core';
-import { ThemeContext } from 'styled-components/macro';
 import {
   AlertTriangle,
   ArrowUpCircle,
@@ -31,26 +30,26 @@ function ConfirmationPendingContent({
 }: ConfirmationPendingContentProps) {
   const { t } = useTranslation();
   return (
-    <div className={'p-1 w-100'}>
+    <Box className='flex flex-col items-center'>
       {!inline && (
-        <div className={'flex-s-between'}>
-          <div />
-          <X className={'c-w hover-op trans-op'} onClick={onDismiss} />
-        </div>
+        <Box width='100%' className='flex justify-between'>
+          <Box />
+          <X onClick={onDismiss} />
+        </Box>
       )}
-      <div className={'f c f-ac f-jc mb-1 p-2'}>
-        <CustomLightSpinner
-          src={Circle}
-          alt='loader'
-          size={inline ? '40px' : '90px'}
-        />
-      </div>
-      <div className={'f c f-ac ta-c'}>
+      <CustomLightSpinner
+        src={Circle}
+        alt='loader'
+        size={inline ? '40px' : '90px'}
+      />
+      <Box mt='20px' textAlign='center'>
         <p>{t('waitingConfirm')}</p>
-        <small>{pendingText}</small>
-        <small className='text-secondary'>{t('confirmTxinWallet')}</small>
-      </div>
-    </div>
+        <Box my='8px'>
+          <small>{pendingText}</small>
+        </Box>
+        <p className='small text-secondary'>{t('confirmTxinWallet')}</p>
+      </Box>
+    </Box>
   );
 }
 
@@ -70,7 +69,6 @@ function TransactionSubmittedContent({
   inline,
 }: TransactionSubmittedContentProps) {
   const { t } = useTranslation();
-  const theme = useContext(ThemeContext);
 
   const { library } = useActiveWeb3React();
 
@@ -84,14 +82,10 @@ function TransactionSubmittedContent({
           <CloseIcon onClick={onDismiss} />
         </Box>
       )}
-      <Box className='flex'>
-        <ArrowUpCircle
-          strokeWidth={0.5}
-          size={inline ? '40px' : '90px'}
-          color={theme.winterMainButton}
-        />
+      <Box mt={2} className='flex justify-center'>
+        <ArrowUpCircle strokeWidth={0.5} size={inline ? '40px' : '90px'} />
       </Box>
-      <Box>
+      <Box mt={2} className='flex flex-col items-center'>
         <h5>{t('txSubmitted')}</h5>
         {chainId && hash && (
           <ExternalLink
@@ -101,27 +95,45 @@ function TransactionSubmittedContent({
           </ExternalLink>
         )}
         {currencyToAdd && library?.provider?.isMetaMask && (
-          <Button onClick={addToken}>
+          <>
             {!success ? (
-              <Box>
-                {t('addToMetamaskToken', { symbol: currencyToAdd.symbol })}
-                <img src={MetaMaskLogo} alt='Metamask' />
-              </Box>
+              <Button
+                style={{ marginTop: 12, borderRadius: 12 }}
+                onClick={addToken}
+              >
+                <Box className='flex items-center'>
+                  {t('addToMetamaskToken', { symbol: currencyToAdd.symbol })}
+                  <img
+                    src={MetaMaskLogo}
+                    alt='Metamask'
+                    width='16px'
+                    style={{ marginLeft: 6 }}
+                  />
+                </Box>
+              </Button>
             ) : (
-              <Box>
-                {t('added')} {currencyToAdd.symbol}
+              <Box mt='12px' className='flex items-center'>
+                <p>
+                  {t('added')} {currencyToAdd.symbol}
+                </p>
                 <CheckCircle
                   size={'16px'}
-                  stroke={'var(--green)'}
+                  stroke='green'
                   style={{ marginLeft: '6px' }}
                 />
               </Box>
             )}
-          </Button>
+          </>
         )}
         <Button
+          fullWidth
           onClick={onDismiss}
-          style={{ margin: '20px 0 0 0', color: 'white' }}
+          style={{
+            height: 40,
+            borderRadius: 12,
+            margin: '20px 0 0 0',
+            color: 'white',
+          }}
         >
           {inline ? t('return') : t('close')}
         </Button>
@@ -144,14 +156,14 @@ export function ConfirmationModalContent({
   topContent,
 }: ConfirmationModalContentProps) {
   return (
-    <div className={'w-100'}>
-      <div className={'flex-s-between mb-1'}>
+    <Box width='100%'>
+      <Box className='flex items-center justify-between' mb={2}>
         {title}
-        <CloseIcon className={'hover-op trans-op'} onClick={onDismiss} />
-      </div>
+        <CloseIcon onClick={onDismiss} />
+      </Box>
       {topContent()}
-      {bottomContent && <Box>{bottomContent()}</Box>}
-    </div>
+      {bottomContent && <>{bottomContent()}</>}
+    </Box>
   );
 }
 
@@ -165,7 +177,6 @@ export function TransactionErrorContent({
   onDismiss,
 }: TransactionErrorContentProps) {
   const { t } = useTranslation();
-  const theme = useContext(ThemeContext);
   return (
     <Box>
       <Box>
@@ -173,15 +184,12 @@ export function TransactionErrorContent({
           <h5>{t('error')}</h5>
           <CloseIcon onClick={onDismiss} />
         </Box>
-        <Box>
-          <AlertTriangle
-            color={theme.red1}
-            style={{ strokeWidth: 1.5 }}
-            size={64}
-          />
+        <Box mt={2} className='flex flex-col items-center'>
+          <AlertTriangle color='red' style={{ strokeWidth: 1.5 }} size={64} />
           <p
             className='text-error'
             style={{
+              marginTop: 16,
               textAlign: 'center',
               width: '85%',
               wordBreak: 'break-word',
@@ -191,7 +199,15 @@ export function TransactionErrorContent({
           </p>
         </Box>
       </Box>
-      <Button onClick={onDismiss}>{t('dismiss')}</Button>
+      <Box mt={2}>
+        <Button
+          fullWidth
+          onClick={onDismiss}
+          style={{ height: '40px', borderRadius: 12 }}
+        >
+          {t('dismiss')}
+        </Button>
+      </Box>
     </Box>
   );
 }

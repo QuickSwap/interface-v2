@@ -25,6 +25,7 @@ import { Box, Button } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import { Check } from '@material-ui/icons';
 import { useV3StakeData } from 'state/farms/hooks';
+import { useTranslation } from 'react-i18next';
 
 interface FarmModalProps {
   event: {
@@ -67,6 +68,7 @@ export function FarmModal({
   farmingType,
 }: FarmModalProps) {
   const { account } = useActiveWeb3React();
+  const { t } = useTranslation();
 
   const isTierFarming = useMemo(
     () =>
@@ -353,31 +355,33 @@ export function FarmModal({
   return (
     <Box padding='20px 16px'>
       {submitState === 3 ? (
-        <div className={'w-100 p-1 c-w cur-d'}>
-          <div className={'f f-je mb-1 w-100'}>
-            <button className={'bg-t br-0'} onClick={closeHandler}>
-              <X size={18} stroke={'var(--white)'} />
-            </button>
-          </div>
-          <div className={'h-400 f c f-ac f-jc'}>
+        <Box width='100%'>
+          <button onClick={closeHandler}>
+            <X size={18} stroke={'white'} />
+          </button>
+          <Box className='flex'>
             <CheckCircle size={55} stroke={'var(--green)'} />
-            <p
-              className={'mt-05'}
-            >{`Position #${selectedNFT?.id} deposited succesfully!`}</p>
-          </div>
-        </div>
+            <p>
+              {t('positionDepositedSuccessfully', { nftID: selectedNFT?.id })}!
+            </p>
+          </Box>
+        </Box>
       ) : positionsForPoolLoading ? (
-        <div className={'w-100 p-1 c-w h-400 f c f-ac f-jc cur-p'}>
-          <Loader stroke={'var(--white)'} size={'25px'} />
-        </div>
+        <Box
+          className='flex justify-center items-center'
+          width='100%'
+          height='400px'
+        >
+          <Loader size={'25px'} />
+        </Box>
       ) : (
         <div className='v3-farm-stake-modal-wrapper'>
-          <div className={'mb-1 flex-s-between'}>
-            <h6 className='weight-600'>Select NFT for farming</h6>
+          <Box mb={1} className='flex justify-between'>
+            <h6 className='weight-600'>{t('selectNFTFarm')}</h6>
             <Box className='cursor-pointer' onClick={closeHandler}>
-              <X size={18} stroke={'var(--white)'} />
+              <X size={18} />
             </Box>
-          </div>
+          </Box>
           {isTierFarming && chunkedPositions && chunkedPositions.length !== 0 && (
             <FarmModalFarmingTiers
               tiersLimits={{
@@ -395,29 +399,30 @@ export function FarmModal({
             />
           )}
           {isTierFarming && chunkedPositions && chunkedPositions.length !== 0 && (
-            <div className='mv-1 f w-100'>
-              <span
-                className='b'
-                style={{ fontSize: '18px' }}
-              >{`2. Select a Position`}</span>
-            </div>
+            <Box width='100%'>
+              <b style={{ fontSize: '18px' }}>{`2. ${t('selectPosition')}`}</b>
+            </Box>
           )}
-          <Box mb={2}>
+          <Box mt={2}>
             {chunkedPositions && chunkedPositions.length === 0 ? (
-              <div className={`f c f-ac f-jc`}>
-                <Frown size={30} stroke={'var(--white)'} />
-                <p className={'mt-1 mb-05'}>No NFT-s for this pool</p>
-                <p>To take part in this farming event, you need to</p>
-                <NavLink
-                  className={
-                    'flex-s-between c-w ph-1 pv-05 bg-p br-8 mt-1 hover-c-ph'
-                  }
-                  to={linkToProviding}
-                >
-                  <span>{`Provide liquidity for ${pool.token0.symbol} / ${pool.token1.symbol}`}</span>
-                  <ArrowRight className={'ml-05'} size={16} />
-                </NavLink>
-              </div>
+              <Box textAlign='center'>
+                <Frown size={32} />
+                <Box mt={2} mb={1}>
+                  <p>{t('noNFTForPool')}</p>
+                </Box>
+                <p>{t('takePartinFarmNeedTo')}</p>
+                <Box mt={1} className='flex justify-center items-center'>
+                  <NavLink
+                    className='v3-stake-liquidity-link'
+                    to={linkToProviding}
+                  >
+                    <small>{`${t('provideLiquidity')} ${pool.token0.symbol} / ${
+                      pool.token1.symbol
+                    }`}</small>
+                    <ArrowRight size={16} />
+                  </NavLink>
+                </Box>
+              </Box>
             ) : chunkedPositions && chunkedPositions.length !== 0 ? (
               chunkedPositions.map((row, i, arr) => (
                 <Box
@@ -451,7 +456,9 @@ export function FarmModal({
                       }}
                     >
                       <Box className='flex items-center'>
-                        <Box mr={2}>{el.id}</Box>
+                        <Box className='v3-tokenId-wrapper' mr={2}>
+                          <span>{el.id}</span>
+                        </Box>
                         <Box className='flex-col' ml={0.5}>
                           <Box mb='4px'>
                             <IsActive el={el} />
@@ -462,7 +469,7 @@ export function FarmModal({
                             rel='noopener noreferrer'
                             target='_blank'
                           >
-                            <small>View position</small>
+                            <small>{t('viewPosition')}</small>
                           </a>
                         </Box>
                       </Box>
@@ -503,12 +510,14 @@ export function FarmModal({
           {selectedTier === '' &&
           chunkedPositions &&
           chunkedPositions.length !== 0 ? (
-            <Button disabled>Select Tier</Button>
+            <Button disabled>{t('selectTier')}</Button>
           ) : selectedTier &&
             !isEnoughTokenForLock &&
             chunkedPositions &&
             chunkedPositions.length !== 0 ? (
-            <Button disabled>{`Not enough ${multiplierToken.symbol}`}</Button>
+            <Button disabled>{`${t('notEnough')} ${
+              multiplierToken.symbol
+            }`}</Button>
           ) : selectedNFT ? (
             <Box className='flex justify-between'>
               {selectedTier && (
@@ -520,12 +529,12 @@ export function FarmModal({
                     {approval === ApprovalState.PENDING ? (
                       <Box className='flex items-center'>
                         <Loader stroke={'white'} />
-                        <div className={'ml-05'}>Approving</div>
+                        <div>{t('approving')}</div>
                       </Box>
                     ) : !showApproval ? (
-                      `${multiplierToken.symbol} Approved`
+                      `${multiplierToken.symbol} ${t('approved')}`
                     ) : (
-                      `Approve ${multiplierToken.symbol}`
+                      `${t('approve')} ${multiplierToken.symbol}`
                     )}
                   </Button>
                 </Box>
@@ -538,12 +547,12 @@ export function FarmModal({
                   {submitLoader && submitState === 0 ? (
                     <Box className='flex items-center'>
                       <Loader stroke={'white'} />
-                      <div className={'ml-05'}>Approving</div>
+                      <div>{t('approving')}</div>
                     </Box>
                   ) : NFTsForStake && !NFTsForApprove ? (
-                    `Position Approved`
+                    t('positionApproved')
                   ) : (
-                    `Approve Position`
+                    t('approvePosition')
                   )}
                 </Button>
               </Box>
@@ -555,16 +564,16 @@ export function FarmModal({
                   {submitLoader && submitState === 2 ? (
                     <Box className='flex items-center'>
                       <Loader stroke={'white'} />
-                      <div className={'ml-05'}>Depositing</div>
+                      <div>{t('depositing')}</div>
                     </Box>
                   ) : (
-                    `Deposit`
+                    t('deposit')
                   )}
                 </Button>
               </Box>
             </Box>
           ) : chunkedPositions && chunkedPositions.length !== 0 ? (
-            <Button disabled>Select Position</Button>
+            <Button disabled>{t('selectPosition')}</Button>
           ) : null}
         </div>
       )}
