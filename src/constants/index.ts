@@ -156,7 +156,7 @@ export const GlobalConst = {
 export const GammaPairs: {
   [key: string]: { address: string; title: string; type: Presets }[];
 } = {
-  'WMATIC-ETH': [
+  '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0x7ceb23fd6bc0add59e62ac25578270cff1b9f619': [
     {
       type: Presets.GAMMA_NARROW,
       title: 'Narrow',
@@ -168,7 +168,7 @@ export const GammaPairs: {
       address: '0x056e8299b082d5f1016c846d93e71eadf4137851',
     },
   ],
-  'USDC-ETH': [
+  '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0x7ceb23fd6bc0add59e62ac25578270cff1b9f619': [
     {
       type: Presets.GAMMA_NARROW,
       title: 'Narrow',
@@ -180,7 +180,7 @@ export const GammaPairs: {
       address: '0x5ca313118358e3f5efe0c49f239b66c964f9aef0',
     },
   ],
-  'WMATIC-USDC': [
+  '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0x2791bca1f2de4661ed88a30c99a7a9449aa84174': [
     {
       type: Presets.GAMMA_NARROW,
       title: 'Narrow',
@@ -192,7 +192,7 @@ export const GammaPairs: {
       address: '0x6ccf63ac74b5533c456c3a68786629e7670293c0',
     },
   ],
-  'WBTC-ETH': [
+  '0x1bfd67037b42cf73acf2047067bd4f2c47d9fd6-0x7ceb23fd6bc0add59e62ac25578270cff1b9f619': [
     {
       type: Presets.GAMMA_NARROW,
       title: 'Narrow',
@@ -204,35 +204,35 @@ export const GammaPairs: {
       address: '0x242d1d8bd3e600dc04c56f7817327fd750b61736',
     },
   ],
-  'USDC-MAI': [
+  '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0xa3fa99a148fa48d14dd51d610c367c61876997f1': [
     {
       type: Presets.GAMMA_STABLE,
       title: 'Stable',
       address: '0x15f2e223000d392a8449a53a4b930f3c54926987',
     },
   ],
-  'USDC-DAI': [
+  '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0x8f3cf7ad23cd3cadbd9735aff958023239c6a063': [
     {
       type: Presets.GAMMA_STABLE,
       title: 'Stable',
       address: '0x2752e822283c8baec3ad7ad18b09248a914930ff',
     },
   ],
-  'USDC-USDT': [
+  '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0xc2132d05d31c914a87c6611c10748aeb04b58e8f': [
     {
       type: Presets.GAMMA_STABLE,
       title: 'Stable',
       address: '0x20103b6fcecaa94ddbf3d18ab9d99892003b1d80',
     },
   ],
-  'WMATIC-QI': [
+  '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0x580a84c73811e1839f75d86d75d88cca0c241ff4': [
     {
       type: Presets.GAMMA_DYNAMIC,
       title: 'Dynamic',
       address: '0xe0f0622f871d9597649062e9bbbe9bd65e918e34',
     },
   ],
-  'WMATIC-QUICK(NEW)': [
+  '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0xb5c064f955d8e7f38fe0460c556a72987494ee17': [
     {
       type: Presets.GAMMA_DYNAMIC,
       title: 'Dynamic',

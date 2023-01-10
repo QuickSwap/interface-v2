@@ -589,5 +589,10 @@
   "automatic": "Automatic",
   "beta": "BETA",
   "gammaLiquidityRangeLearnMore": "Liquidity ranges are automatically rebalanced when certain rebalance triggers are met. In determining the width of the ranges, the goal is to optimize fee revenue and volumes while taking into account a years’ worth of volatility to control for impermanent loss. Learn more <alink>here</alink>.",
-  "getLP": "Get LP"
+  "getLP": "Get LP",
+  "myQuickSwapLP": "My Quickswap LP",
+  "myGammaLP": "My Gamma LP",
+  "range": "Range",
+  "myLiquidity": "My Liquidity",
+  "loss": "Loss"
 }

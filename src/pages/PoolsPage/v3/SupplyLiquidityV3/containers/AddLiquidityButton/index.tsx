@@ -176,16 +176,14 @@ export function AddLiquidityButton({
         if (!gammaUNIPROXYContract) return;
         const amountA = mintInfo.parsedAmounts[Field.CURRENCY_A];
         const amountB = mintInfo.parsedAmounts[Field.CURRENCY_B];
-        const baseCurrencySymbol =
-          baseCurrency.wrapped && baseCurrency.wrapped.symbol
-            ? baseCurrency.wrapped.symbol.toUpperCase()
-            : '';
-        const quoteCurrencySymbol =
-          quoteCurrency.wrapped && quoteCurrency.wrapped.symbol
-            ? quoteCurrency.wrapped.symbol.toUpperCase()
-            : '';
+        const baseCurrencyAddress = baseCurrency.wrapped
+          ? baseCurrency.wrapped.address.toLowerCase()
+          : '';
+        const quoteCurrencyAddress = quoteCurrency.wrapped
+          ? quoteCurrency.wrapped.address.toLowerCase()
+          : '';
         const gammaPair =
-          GammaPairs[baseCurrencySymbol + '-' + quoteCurrencySymbol];
+          GammaPairs[baseCurrencyAddress + '-' + quoteCurrencyAddress];
         const gammaPairAddress =
           gammaPair && gammaPair.length > 0
             ? gammaPair.find((pair) => pair.type === preset)?.address

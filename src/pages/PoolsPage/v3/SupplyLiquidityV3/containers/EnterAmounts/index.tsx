@@ -87,15 +87,16 @@ export function EnterAmounts({
     };
   }, {});
 
-  const baseCurrencySymbol =
-    currencyA && currencyA.wrapped && currencyA.wrapped.symbol
-      ? currencyA.wrapped.symbol.toUpperCase()
+  const baseCurrencyAddress =
+    currencyA && currencyA.wrapped
+      ? currencyA.wrapped.address.toLowerCase()
       : '';
-  const quoteCurrencySymbol =
-    currencyB && currencyB.wrapped && currencyB.wrapped.symbol
-      ? currencyB.wrapped.symbol.toUpperCase()
+  const quoteCurrencyAddress =
+    currencyB && currencyB.wrapped
+      ? currencyB.wrapped.address.toUpperCase()
       : '';
-  const gammaPair = GammaPairs[baseCurrencySymbol + '-' + quoteCurrencySymbol];
+  const gammaPair =
+    GammaPairs[baseCurrencyAddress + '-' + quoteCurrencyAddress];
   const gammaPairAddress =
     gammaPair && gammaPair.length > 0
       ? gammaPair.find((pair) => pair.type === preset)?.address

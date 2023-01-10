@@ -53,15 +53,15 @@ export function SelectRange({
     return priceFormat === PriceFormats.USD;
   }, [priceFormat]);
 
-  const currencyASymbol =
-    currencyA && currencyA.wrapped.symbol
-      ? currencyA.wrapped.symbol.toUpperCase()
+  const currencyAAddress =
+    currencyA && currencyA.wrapped
+      ? currencyA.wrapped.address.toUpperCase()
       : '';
-  const currencyBSymbol =
-    currencyB && currencyB.wrapped.symbol
-      ? currencyB.wrapped.symbol.toUpperCase()
+  const currencyBAddress =
+    currencyB && currencyB.wrapped
+      ? currencyB.wrapped.address.toUpperCase()
       : '';
-  const gammaPair = GammaPairs[currencyASymbol + '-' + currencyBSymbol];
+  const gammaPair = GammaPairs[currencyAAddress + '-' + currencyBAddress];
 
   useEffect(() => {
     onChangeLiquidityRangeType(GlobalConst.v3LiquidityRangeType.MANUAL_RANGE);
