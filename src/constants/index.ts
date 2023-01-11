@@ -192,7 +192,7 @@ export const GammaPairs: {
       address: '0x6ccf63ac74b5533c456c3a68786629e7670293c0',
     },
   ],
-  '0x1bfd67037b42cf73acf2047067bd4f2c47d9fd6-0x7ceb23fd6bc0add59e62ac25578270cff1b9f619': [
+  '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6-0x7ceb23fd6bc0add59e62ac25578270cff1b9f619': [
     {
       type: Presets.GAMMA_NARROW,
       title: 'Narrow',
@@ -237,6 +237,32 @@ export const GammaPairs: {
       type: Presets.GAMMA_DYNAMIC,
       title: 'Dynamic',
       address: '0x5c1fa2c9999d4fe0f6b13e95770ca406f79879c4',
+    },
+  ],
+  '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6-0x2791bca1f2de4661ed88a30c99a7a9449aa84174': [
+    {
+      type: Presets.GAMMA_NARROW,
+      title: 'Narrow',
+      address: '0x82927c36ab62e504e24ab160afa5821b6c4a9265',
+    },
+    {
+      type: Presets.GAMMA_WIDE,
+      title: 'Wide',
+      address: '0xac0f71f2492daf020f459bd163052b9dae28f159',
+    },
+  ],
+  '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0xfa68fb4628dff1028cfec22b4162fccd0d45efb6': [
+    {
+      type: Presets.GAMMA_DYNAMIC,
+      title: 'Dynamic',
+      address: '0xe389d95e2e8c799fde5d37f245bdd7160bf50864',
+    },
+  ],
+  '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0x3a58a54c066fdc0f2d55fc9c89f0415c92ebf3c4': [
+    {
+      type: Presets.GAMMA_DYNAMIC,
+      title: 'Dynamic',
+      address: '0xe389d95e2e8c799fde5d37f245bdd7160bf50864',
     },
   ],
 };

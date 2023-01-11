@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Box } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import './index.scss';
@@ -7,19 +7,46 @@ import { CurrencyLogo } from 'components';
 import Badge from 'components/v3/Badge';
 import { Button } from '@material-ui/core';
 import useUSDCPrice from 'hooks/v3/useUSDCPrice';
+import { formatUnits } from 'ethers/lib/utils';
+import IncreaseGammaLiquidityModal from '../IncreaseGammaLiquidityModal';
+import WithdrawGammaLiquidityModal from '../WithdrawGammaLiquidityModal';
 
 const GammaLPItemDetails: React.FC<{ gammaPosition: any }> = ({
   gammaPosition,
 }) => {
   const { t } = useTranslation();
   const token0USDPrice = useUSDCPrice(gammaPosition.token0);
-  const token1USDPrice = useUSDCPrice(gammaPosition.token1);
+  const token0PooledPercent = token0USDPrice
+    ? ((Number(token0USDPrice.toSignificant()) * gammaPosition.balance0) /
+        gammaPosition.balanceUSD) *
+      100
+    : 0;
+
+  const [showAddLPModal, setShowAddLPModal] = useState(false);
+  const [showWithdrawModal, setShowWithdrawModal] = useState(false);
 
   return (
     <Box>
+      {showAddLPModal && (
+        <IncreaseGammaLiquidityModal
+          open={showAddLPModal}
+          onClose={() => setShowAddLPModal(false)}
+          position={gammaPosition}
+        />
+      )}
+      {showWithdrawModal && (
+        <WithdrawGammaLiquidityModal
+          open={showWithdrawModal}
+          onClose={() => setShowWithdrawModal(false)}
+          position={gammaPosition}
+        />
+      )}
       <Box className='flex justify-between'>
         <small>{t('myLiquidity')}</small>
-        <small>${formatNumber(gammaPosition.balanceUSD)}</small>
+        <small>
+          ${formatNumber(gammaPosition.balanceUSD)} (
+          {formatNumber(formatUnits(gammaPosition.shares, 18))} LP)
+        </small>
       </Box>
       <Box className='flex justify-between' mt={1}>
         <small>
@@ -51,18 +78,9 @@ const GammaLPItemDetails: React.FC<{ gammaPosition: any }> = ({
         </Box>
         <Box className='flex items-center'>
           <small>{formatNumber(gammaPosition.balance0)}</small>
-          {token0USDPrice && (
-            <Box ml='6px'>
-              <Badge
-                text={`${formatNumber(
-                  ((Number(token0USDPrice.toSignificant()) *
-                    gammaPosition.balance0) /
-                    gammaPosition.balanceUSD) *
-                    100,
-                )}%`}
-              />
-            </Box>
-          )}
+          <Box ml='6px'>
+            <Badge text={`${formatNumber(token0PooledPercent)}%`} />
+          </Box>
         </Box>
       </Box>
       <Box className='flex justify-between' mt={1}>
@@ -76,25 +94,16 @@ const GammaLPItemDetails: React.FC<{ gammaPosition: any }> = ({
         </Box>
         <Box className='flex items-center'>
           <small>{formatNumber(gammaPosition.balance1)}</small>
-          {token1USDPrice && (
-            <Box ml='6px'>
-              <Badge
-                text={`${formatNumber(
-                  ((Number(token1USDPrice.toSignificant()) *
-                    gammaPosition.balance1) /
-                    gammaPosition.balanceUSD) *
-                    100,
-                )}%`}
-              />
-            </Box>
-          )}
+          <Box ml='6px'>
+            <Badge text={`${formatNumber(100 - token0PooledPercent)}%`} />
+          </Box>
         </Box>
       </Box>
       <Box mt={2} className='gamma-liquidity-item-buttons'>
-        <Button>
+        <Button onClick={() => setShowAddLPModal(true)}>
           <small>{t('addLiquidity')}</small>
         </Button>
-        <Button>
+        <Button onClick={() => setShowWithdrawModal(true)}>
           <small>{t('withdraw')}</small>
         </Button>
       </Box>
