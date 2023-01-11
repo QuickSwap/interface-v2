@@ -14,10 +14,13 @@ const GammaLPItem: React.FC<{ gammaPosition: any }> = ({ gammaPosition }) => {
     '-' +
     gammaPosition.token1.address.toLowerCase();
   const gammaPair = GammaPairs[gammaTokenStr];
-  const gammaPairInfo = gammaPair.find(
-    (item) =>
-      item.address.toLowerCase() === gammaPosition.pairAddress.toLowerCase(),
-  );
+  const gammaPairInfo = gammaPair
+    ? gammaPair.find(
+        (item) =>
+          item.address.toLowerCase() ===
+          gammaPosition.pairAddress.toLowerCase(),
+      )
+    : undefined;
   const [expanded, setExpanded] = useState(false);
 
   return (

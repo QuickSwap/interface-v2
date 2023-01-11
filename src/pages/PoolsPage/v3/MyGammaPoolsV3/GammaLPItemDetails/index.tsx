@@ -100,10 +100,16 @@ const GammaLPItemDetails: React.FC<{ gammaPosition: any }> = ({
         </Box>
       </Box>
       <Box mt={2} className='gamma-liquidity-item-buttons'>
-        <Button onClick={() => setShowAddLPModal(true)}>
+        <Button
+          className='gamma-liquidity-item-button'
+          onClick={() => setShowAddLPModal(true)}
+        >
           <small>{t('addLiquidity')}</small>
         </Button>
-        <Button onClick={() => setShowWithdrawModal(true)}>
+        <Button
+          className='gamma-liquidity-item-button'
+          onClick={() => setShowWithdrawModal(true)}
+        >
           <small>{t('withdraw')}</small>
         </Button>
       </Box>

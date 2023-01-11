@@ -617,5 +617,8 @@
   "nftDepositing": "Depositing NFT #{{ nftID }}",
   "nftDeposited": "NFT #{{ nftID }} was deposited",
   "nftApproving": "Approving NFT #{{ nftID }}",
-  "nftApproved": "NFT #{{ nftID }} was approved"
+  "nftApproved": "NFT #{{ nftID }} was approved",
+  "withdrawingGammaLiquidity": "Withdrawing Gamma Liquidity",
+  "withdrewGammaLiquidity": "Withdrew Gamma Liquidity",
+  "fetchingGammaDepositRange": "Fetching Gamma Deposit Range"
 }
