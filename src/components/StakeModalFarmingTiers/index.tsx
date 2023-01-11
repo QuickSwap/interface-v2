@@ -17,6 +17,7 @@ import BachelorTierIcon from '../../assets/images/bachelor-tier-icon.png';
 import MasterTierIcon from '../../assets/images/master-tier-icon.png';
 import ProfessorTierIcon from '../../assets/images/professor-tier-icon.png';
 import { ChainId } from '@uniswap/sdk';
+import { useTranslation } from 'react-i18next';
 
 interface StakeModalFarmingTiersProps {
   tiersLimits: {
@@ -40,6 +41,7 @@ export default function StakeModalFarmingTiers({
   multiplierToken,
 }: StakeModalFarmingTiersProps) {
   const { account } = useActiveWeb3React();
+  const { t } = useTranslation();
 
   const [selectedTier, setSelectedTier] = useState<number | undefined>(0);
 
@@ -99,7 +101,7 @@ export default function StakeModalFarmingTiers({
   return (
     <div className='f c'>
       <div className='f-ac f farming-tier__balance br-8 mb-1'>
-        <div className='farming-tier__balance-title mr-1'>Balance</div>
+        <div className='farming-tier__balance-title mr-1'>{t('balance')}</div>
         <div>
           <div className='f'>
             <CurrencyLogo
@@ -120,15 +122,14 @@ export default function StakeModalFarmingTiers({
           </div>
         </div>
         <div className='ml-a mxs_display-none ms_display-none'>
-          <Link
-            to={'/swap'}
-            className='farming-tier__balance-buy b'
-          >{`Buy ${multiplierToken.symbol} →`}</Link>
+          <Link to={'/swap'} className='farming-tier__balance-buy b'>{`${t(
+            'buy',
+          )} ${multiplierToken.symbol} →`}</Link>
         </div>
       </div>
       <div className='mb-1 f w-100'>
         <span className='b' style={{ fontSize: '18px' }}>
-          1. Select a Tier
+          1. {t('selectTier')}
         </span>
         <div className='ml-a f f-ac farming-tier__hint'>
           <HelpCircle color='#347CC9' size={'14px'} />
@@ -138,7 +139,7 @@ export default function StakeModalFarmingTiers({
             rel={'noreferrer noopener'}
             className='ml-05'
           >
-            How tiers work
+            {t('howTiersWork')}
           </a>
         </div>
       </div>
@@ -160,7 +161,7 @@ export default function StakeModalFarmingTiers({
             </div>
             <div className='p-1 farming-tier__body w-100'>
               <div className='farming-tier__locked w-100 f ac mb-1'>
-                <span className='b'>Lock:</span>
+                <span className='b'>{t('lock')}:</span>
                 <span className='ml-a farming-tier__locked-value'>
                   {tier.lock
                     ? `${formatAmountTokens(
@@ -171,7 +172,7 @@ export default function StakeModalFarmingTiers({
                 </span>
               </div>
               <div className='farming-tier__rewards f'>
-                <span className='b'>Earn:</span>
+                <span className='b'>{t('earn')}:</span>
                 <span className='ml-a farming-tier__rewards-value'>
                   {tier.earn ? `${100 + (tier.earn - 10000) / 100}%` : '100%'}
                 </span>

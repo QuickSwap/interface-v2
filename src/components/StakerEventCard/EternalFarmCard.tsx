@@ -1,13 +1,10 @@
 import React from 'react';
 import { DoubleCurrencyLogo } from 'components';
-import { StyledButton } from 'components/v3/Common/styledElements';
 import { useActiveWeb3React } from 'hooks';
 import Loader from '../Loader';
 import { Token } from '@uniswap/sdk';
 import { Link } from 'react-router-dom';
-import CurrencyLogo from '../CurrencyLogo';
-import './index.scss';
-import { Box } from '@material-ui/core';
+import { Box, Button } from '@material-ui/core';
 import { formatUnits } from 'ethers/lib/utils';
 import { formatReward } from 'utils/formatReward';
 import { formatCompact, formatNumber, getTokenFromAddress } from 'utils';
@@ -172,9 +169,7 @@ export function EternalFarmCard({
       </Box>
 
       <Box width='15%'>
-        <StyledButton height='40px' onClick={farmHandler}>
-          {t('farm')}
-        </StyledButton>
+        <Button onClick={farmHandler}>{t('farm')}</Button>
       </Box>
     </Box>
   );
