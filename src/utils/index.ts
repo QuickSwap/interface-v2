@@ -83,6 +83,7 @@ import {
 import { useEffect, useState } from 'react';
 import { useEthPrice } from 'state/application/hooks';
 import { getGlobalDataV3 } from './v3-graph';
+import { TFunction } from 'react-i18next';
 
 dayjs.extend(utc);
 dayjs.extend(weekOfYear);
@@ -1537,6 +1538,7 @@ export function isAddress(value: string | null | undefined): string | false {
  */
 export function confirmPriceImpactWithoutFee(
   priceImpactWithoutFee: Percent,
+  translation: TFunction,
 ): boolean {
   if (
     !priceImpactWithoutFee.lessThan(
@@ -1545,9 +1547,11 @@ export function confirmPriceImpactWithoutFee(
   ) {
     return (
       window.prompt(
-        `This swap has a price impact of at least ${GlobalValue.percents.PRICE_IMPACT_WITHOUT_FEE_CONFIRM_MIN.toFixed(
-          0,
-        )}%. Please type the word "confirm" to continue with this swap.`,
+        translation('typeConfirmSwapPriceImpact', {
+          priceImpact: GlobalValue.percents.PRICE_IMPACT_WITHOUT_FEE_CONFIRM_MIN.toFixed(
+            0,
+          ),
+        }),
       ) === 'confirm'
     );
   } else if (
@@ -1556,9 +1560,9 @@ export function confirmPriceImpactWithoutFee(
     )
   ) {
     return window.confirm(
-      `This swap has a price impact of at least ${GlobalValue.percents.ALLOWED_PRICE_IMPACT_HIGH.toFixed(
-        0,
-      )}%. Please confirm that you would like to continue with this swap.`,
+      translation('confirmSwapPriceImpact', {
+        priceImpact: GlobalValue.percents.ALLOWED_PRICE_IMPACT_HIGH.toFixed(0),
+      }),
     );
   }
   return true;

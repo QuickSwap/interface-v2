@@ -15,12 +15,14 @@ import { useV3StakeData } from 'state/farms/hooks';
 import { useActiveWeb3React } from 'hooks';
 import { getTokenFromAddress } from 'utils';
 import { useSelectedTokenList } from 'state/lists/hooks';
+import { useTranslation } from 'react-i18next';
 
 interface FarmCardDetailProps {
   el: any;
 }
 
 export default function FarmCardDetail({ el }: FarmCardDetailProps) {
+  const { t } = useTranslation();
   const rewardToken = el.eternalRewardToken;
   const earned = el.eternalEarned;
   const bonusEarned = el.eternalBonusEarned;
@@ -84,12 +86,12 @@ export default function FarmCardDetail({ el }: FarmCardDetailProps) {
     <Box className='flex justify-evenly items-center flex-wrap'>
       <StyledDarkBox padding={1.5} width={1}>
         <Box>
-          <p>Eternal Farming</p>
+          <p>{t('eternalFarming')}</p>
         </Box>
         {!el.eternalFarming && (
           <>
             <Box className='flex justify-center items-center' height='130px'>
-              <small className='text-secondary'>No Eternal farms for now</small>
+              <small className='text-secondary'>{t('noEternalFarms')}</small>
             </Box>
             <StyledButton
               height='40px'
@@ -111,12 +113,12 @@ export default function FarmCardDetail({ el }: FarmCardDetailProps) {
                 <>
                   <Loader size={'1rem'} stroke={'var(--white)'} />
                   <Box ml='5px'>
-                    <small>Withdrawing</small>
+                    <small>{t('withdrawing')}</small>
                   </Box>
                 </>
               ) : (
                 <>
-                  <small>Withdraw</small>
+                  <small>{t('withdraw')}</small>
                 </>
               )}
             </StyledButton>
@@ -126,7 +128,7 @@ export default function FarmCardDetail({ el }: FarmCardDetailProps) {
           <>
             <StyledFilledBox className='flex flex-wrap' mt={2} p={2}>
               <Box width={!isMobile && bonusRewardToken ? 0.5 : 1}>
-                <small className='text-secondary'>Earned rewards</small>
+                <small className='text-secondary'>{t('earnedRewards')}</small>
                 <Box mt={1}>
                   <Box className='flex items-center'>
                     {farmRewardToken && (
@@ -145,7 +147,7 @@ export default function FarmCardDetail({ el }: FarmCardDetailProps) {
                   width={!isMobile ? 0.5 : 1}
                   textAlign={isMobile ? 'left' : 'right'}
                 >
-                  <small className='text-secondary'>Earned bonus</small>
+                  <small className='text-secondary'>{t('earnedBonus')}</small>
                   <Box
                     mt={1}
                     className={`flex items-center ${
@@ -191,11 +193,11 @@ export default function FarmCardDetail({ el }: FarmCardDetailProps) {
                   <>
                     <Loader size={'18px'} stroke={'var(--white)'} />
                     <Box ml='5px'>
-                      <small>{'Claiming'}</small>
+                      <small>{t('claiming')}</small>
                     </Box>
                   </>
                 ) : (
-                  <small>Claim</small>
+                  <small>{t('claim')}</small>
                 )}
               </StyledButton>
               <StyledButton
@@ -221,11 +223,11 @@ export default function FarmCardDetail({ el }: FarmCardDetailProps) {
                   <>
                     <Loader size={'18px'} stroke={'var(--white)'} />
                     <Box ml='5px'>
-                      <small>{' Undepositing'}</small>
+                      <small>{t('undepositing')}</small>
                     </Box>
                   </>
                 ) : (
-                  <small>Undeposit</small>
+                  <small>{t('undeposit')}</small>
                 )}
               </StyledButton>
             </Box>

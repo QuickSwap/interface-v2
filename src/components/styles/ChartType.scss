@@ -8,7 +8,16 @@
   padding: 0 8px;
   border-radius: 10px;
   cursor: pointer;
-  & span {
-    color: $textPrimary
+  &.chartType_big {
+    height: 33px;
+    padding: 0 12px;
+    & span {
+      font-size: 14px;
+    }
+  }
+  &.chartType_selected {
+    & span {
+      color: $textPrimary
+    }  
   }
 }

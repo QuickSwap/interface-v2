@@ -5,6 +5,7 @@ import Loader from 'components/Loader';
 import { PriceFormats } from 'components/v3/PriceFomatToggler';
 import { useInitialTokenPrice, useInitialUSDPrices } from 'state/mint/v3/hooks';
 import './index.scss';
+import { useTranslation } from 'react-i18next';
 
 interface ISelectRangeUSDC {
   currencyA: Currency;
@@ -21,6 +22,7 @@ export function USDPrices({
   currencyBUSDC,
   priceFormat,
 }: ISelectRangeUSDC) {
+  const { t } = useTranslation();
   const isUSD = useMemo(() => {
     return priceFormat === PriceFormats.USD;
   }, [priceFormat]);
@@ -61,7 +63,7 @@ export function USDPrices({
         setLoadingTimedout(true);
       }
     }, 5000);
-  }, [currencyAUSDC, currencyBUSDC, userUSDPrices]);
+  }, [currencyAUSDC, currencyBUSDC, hasUSDPrices, userUSDPrices]);
 
   return (
     <div
@@ -75,7 +77,9 @@ export function USDPrices({
         ) : (
           <DollarSign style={{ display: 'block' }} size={15} />
         )}
-        <span className='ml-05'>{isUSD ? 'Token Prices' : 'USD Prices'}</span>
+        <span className='ml-05'>
+          {isUSD ? t('tokenPrices') : t('usdPrices')}
+        </span>
       </div>
 
       {hasUSDPrices ? (
@@ -110,7 +114,7 @@ export function USDPrices({
       ) : !loadingTimedout ? (
         <Loader stroke='white' />
       ) : (
-        <div>Cant fetch prices</div>
+        <div>{t('cantFetchPrices')}</div>
       )}
     </div>
   );

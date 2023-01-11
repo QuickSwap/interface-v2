@@ -3,7 +3,7 @@ import { useHistory } from 'react-router-dom';
 import { Box, Grid } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import Motif from 'assets/images/Motif.svg';
-import BuyWithFiat from 'assets/images/featured/BuywithFiat.svg';
+import BuyWithFiat from 'assets/images/featured/BuyWithFiatNoPad.png';
 import Analytics from 'assets/images/featured/Analytics.svg';
 import DragonsLair from 'assets/images/featured/DragonsLair.svg';
 import ProvideLiquidity from 'assets/images/featured/ProvideLiquidity.svg';
@@ -22,6 +22,7 @@ import 'pages/styles/landing.scss';
 import { SwapSection } from './SwapSection';
 import { BuyFiatSection } from './BuyFiatSection';
 import { GlobalSection } from './GlobalSection';
+import { BuySpritzSection } from './BuySpritzSection';
 
 const LandingPage: React.FC = () => {
   const { t } = useTranslation();
@@ -152,7 +153,16 @@ const LandingPage: React.FC = () => {
           <p>{t('seeAllPairs')}</p>
         </Box>
       </Box>
-      <BuyFiatSection />
+      <Box mb='120px'>
+        <Grid container spacing={4}>
+          <Grid item xs={12} sm={12} md={6}>
+            <BuyFiatSection />
+          </Grid>
+          <Grid item xs={12} sm={12} md={6}>
+            <BuySpritzSection />
+          </Grid>
+        </Grid>
+      </Box>
       <Box className='featureContainer'>
         <Box className='featureHeading'>
           <h3>{t('features')}</h3>

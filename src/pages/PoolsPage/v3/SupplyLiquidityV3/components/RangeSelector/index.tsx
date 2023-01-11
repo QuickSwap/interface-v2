@@ -17,6 +17,7 @@ import { tryParseAmount } from 'state/swap/v3/hooks';
 import './index.scss';
 import { Box } from '@material-ui/core';
 import { Add, Remove } from '@material-ui/icons';
+import { useTranslation } from 'react-i18next';
 
 interface IRangeSelector {
   priceLower: Price<Token, Token> | undefined;
@@ -74,6 +75,7 @@ export function RangeSelector({
   priceFormat,
   mintInfo,
 }: IRangeSelector) {
+  const { t } = useTranslation();
   const tokenA = (currencyA ?? undefined)?.wrapped;
   const tokenB = (currencyB ?? undefined)?.wrapped;
 
@@ -111,7 +113,7 @@ export function RangeSelector({
           tokenB={currencyB ?? undefined}
           initialPrice={mintInfo.price}
           disabled={disabled}
-          title={`Min price`}
+          title={t('minPrice')}
           priceFormat={priceFormat}
         />
       </Box>
@@ -132,7 +134,7 @@ export function RangeSelector({
           tokenB={currencyB ?? undefined}
           initialPrice={mintInfo.price}
           disabled={disabled}
-          title={`Max price`}
+          title={t('maxPrice')}
           priceFormat={priceFormat}
         />
       </Box>
@@ -156,6 +158,7 @@ function RangePart({
   title,
   priceFormat,
 }: IRangePart) {
+  const { t } = useTranslation();
   const [localUSDValue, setLocalUSDValue] = useState('');
   const [localTokenValue, setLocalTokenValue] = useState('');
 
@@ -318,7 +321,7 @@ function RangePart({
       {tokenA && tokenB && (
         <Box mt={1}>
           <p className='text-secondary caption'>
-            {tokenB?.symbol} per {tokenA?.symbol}
+            {tokenB?.symbol} {t('per')} {tokenA?.symbol}
           </p>
         </Box>
       )}
