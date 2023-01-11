@@ -12,6 +12,7 @@ import { SwapBestTrade } from 'components/Swap';
 import SwapV3Page from './V3/Swap';
 import { useHistory, useParams } from 'react-router-dom';
 import useParsedQueryString from 'hooks/useParsedQueryString';
+import SwapLimitOrder from './SwapLimitOrder';
 
 const SWAP_BEST_TRADE = '0';
 const SWAP_NORMAL = '1';
@@ -152,29 +153,7 @@ const SwapMain: React.FC = () => {
         {swapType === SWAP_BEST_TRADE && <SwapBestTrade />}
         {swapType === SWAP_NORMAL && <Swap />}
         {swapType === SWAP_V3 && <SwapV3Page />}
-        {swapType === SWAP_LIMIT && (
-          <Box className='limitOrderPanel'>
-            <GelatoLimitOrderPanel />
-            <GelatoLimitOrdersHistoryPanel />
-            <Box mt={2} textAlign='center'>
-              <small>
-                <Trans
-                  i18nKey='limitOrderDisclaimer'
-                  components={{
-                    bold: <b />,
-                    alink: (
-                      <a
-                        target='_blank'
-                        rel='noopener noreferrer'
-                        href='https://www.certik.org/projects/gelato'
-                      />
-                    ),
-                  }}
-                />
-              </small>
-            </Box>
-          </Box>
-        )}
+        {swapType === SWAP_LIMIT && <SwapLimitOrder />}
       </Box>
     </>
   );
