@@ -54,3 +54,12 @@
     width: 14px;
   }
 }
+
+.v3-stake-liquidity-link {
+  background-color: $primary;
+  padding: 6px 10px;
+  border-radius: 8px;
+  color: $textPrimary;
+  display: flex;
+  align-items: center;
+}

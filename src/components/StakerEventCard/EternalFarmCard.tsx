@@ -1,17 +1,11 @@
 import React from 'react';
 import { DoubleCurrencyLogo } from 'components';
-import {
-  StyledButton,
-  StyledDarkBox,
-  StyledFilledBox,
-} from 'components/v3/Common/styledElements';
 import { useActiveWeb3React } from 'hooks';
 import Loader from '../Loader';
 import CurrencyLogo from '../CurrencyLogo';
 import { Token } from '@uniswap/sdk';
-import './index.scss';
 import { ReactComponent as AddIcon } from 'assets/images/addIcon.svg';
-import { Box } from '@material-ui/core';
+import { Box, Button } from '@material-ui/core';
 import { formatUnits } from 'ethers/lib/utils';
 import { formatReward } from 'utils/formatReward';
 import { formatCompact, getTokenFromAddress } from 'utils';
@@ -145,12 +139,16 @@ export function EternalFarmCard({
       : undefined;
 
   return (
-    <Box className='flex justify-center' height='100%'>
+    <Box
+      className='flex justify-center bg-secondary1'
+      borderRadius='6px'
+      height='100%'
+    >
       {refreshing && (
         <Loader size={'18px'} stroke={'white'} style={{ margin: 'auto' }} />
       )}
       {!refreshing && (
-        <StyledFilledBox
+        <Box
           padding={1.5}
           width='100%'
           height='100%'
@@ -205,10 +203,11 @@ export function EternalFarmCard({
             </Box>
           </Box>
           {rewardToken && (
-            <StyledDarkBox
+            <Box
               padding={1.5}
-              className='flex items-center justify-between'
+              className='flex bg-default items-center justify-between'
               height={56}
+              borderRadius='10px'
             >
               {farmRewardToken && (
                 <Box className='flex items-center'>
@@ -232,7 +231,7 @@ export function EternalFarmCard({
                   / {t('day')}
                 </small>
               )}
-            </StyledDarkBox>
+            </Box>
           )}
           {bonusRewardToken && (
             <>
@@ -244,9 +243,10 @@ export function EternalFarmCard({
               >
                 <AddIcon />
               </Box>
-              <StyledDarkBox
+              <Box
                 padding={1.5}
-                className='flex items-center justify-between'
+                className='flex bg-default items-center justify-between'
+                borderRadius='10px'
                 height={56}
               >
                 {farmBonusRewardToken && (
@@ -275,7 +275,7 @@ export function EternalFarmCard({
                     / {t('day')}
                   </small>
                 )}
-              </StyledDarkBox>
+              </Box>
             </>
           )}
 
@@ -287,15 +287,16 @@ export function EternalFarmCard({
           )}
 
           <Box marginTop={2}>
-            <StyledButton
-              height='40px'
+            <Button
+              style={{ height: 40, borderRadius: 16 }}
+              fullWidth
               disabled={isDetached}
               onClick={farmHandler}
             >
               {t('farm')}
-            </StyledButton>
+            </Button>
           </Box>
-        </StyledFilledBox>
+        </Box>
       )}
     </Box>
   );

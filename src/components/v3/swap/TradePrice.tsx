@@ -1,8 +1,7 @@
 import React from 'react';
 import { useCallback } from 'react';
 import { Currency, Price } from '@uniswap/sdk-core';
-import { StyledPriceContainer } from './styled';
-import { StyledLabel } from '../Common/styledElements';
+import { Box } from '@material-ui/core';
 
 interface TradePriceProps {
   price: Price<Currency, Currency>;
@@ -39,12 +38,8 @@ export default function TradePrice({
     '-'} ${label}`;
 
   return (
-    <StyledPriceContainer onClick={flipPrice} title={text}>
-      <div
-        style={{ alignItems: 'center', display: 'flex', width: 'fit-content' }}
-      >
-        <StyledLabel color={'#c7cad9'}>{text}</StyledLabel>
-      </div>
-    </StyledPriceContainer>
+    <Box className='cursor-pointer' onClick={flipPrice}>
+      <small>{text}</small>
+    </Box>
   );
 }

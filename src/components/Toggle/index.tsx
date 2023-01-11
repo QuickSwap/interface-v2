@@ -1,19 +1,8 @@
 import React from 'react';
 import { darken } from 'polished';
 import { useState } from 'react';
+import { Box } from '@material-ui/core';
 import styled, { keyframes } from 'styled-components/macro';
-
-const Wrapper = styled.button<{ isActive?: boolean; activeElement?: boolean }>`
-  align-items: center;
-  background: ${({ theme }) => theme.bg1};
-  border: none;
-  border-radius: 20px;
-  cursor: pointer;
-  display: flex;
-  outline: none;
-  padding: 0.4rem 0.4rem;
-  width: fit-content;
-`;
 
 const turnOnToggle = keyframes`
   from {
@@ -91,12 +80,12 @@ export default function Toggle({ id, bgColor, isActive, toggle }: ToggleProps) {
   };
 
   return (
-    <Wrapper id={id} isActive={isActive} onClick={switchToggle}>
+    <Box id={id} onClick={switchToggle}>
       <ToggleElement
         isActive={isActive}
         bgColor={bgColor}
         isInitialToggleLoad={isInitialToggleLoad}
       />
-    </Wrapper>
+    </Box>
   );
 }

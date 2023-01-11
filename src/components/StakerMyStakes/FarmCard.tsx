@@ -1,10 +1,5 @@
 import { Box } from '@material-ui/core';
 import { DoubleCurrencyLogo } from 'components';
-import {
-  StyledCircle,
-  StyledFilledBox,
-  StyledLabel,
-} from 'components/v3/Common/styledElements';
 import React, { useState } from 'react';
 import { ReactComponent as ExpandIcon } from 'assets/images/expand_circle.svg';
 import { ReactComponent as ExpandIconUp } from 'assets/images/expand_circle_up.svg';
@@ -50,33 +45,30 @@ export default function FarmCard({ el }: FarmCardProps) {
       : undefined;
 
   return (
-    <StyledFilledBox borderRadius='16px' mt={1.5} mb={1.5}>
+    <Box>
       <Box
         className='flex justify-between items-center flex-wrap'
-        py={2}
         borderRadius={10}
       >
         <Box className='flex flex-wrap justify-around' width='70%'>
           <Box className='flex items-center' my={1}>
-            <Box mr={2}>
-              <StyledCircle>{el.id}</StyledCircle>
+            <Box className='v3-tokenId-wrapper' mr={2}>
+              <span>{el.id}</span>
             </Box>
             <Box className='flex-col' ml={0.5} mr={5}>
               <Box>
                 <IsActive el={el} />
               </Box>
 
-              <StyledLabel color='#ebecf2' fontSize='14px'>
-                <a
-                  style={{ textDecoration: 'underline' }}
-                  className={'c-w fs-075'}
-                  href={`/#/pool/${+el.id}`}
-                  rel='noopener noreferrer'
-                  target='_blank'
-                >
-                  {t('viewPosition')}
-                </a>
-              </StyledLabel>
+              <a
+                style={{ textDecoration: 'underline' }}
+                className='small'
+                href={`/#/pool/${+el.id}`}
+                rel='noopener noreferrer'
+                target='_blank'
+              >
+                {t('viewPosition')}
+              </a>
             </Box>
           </Box>
 
@@ -90,14 +82,10 @@ export default function FarmCard({ el }: FarmCardProps) {
             )}
 
             <Box className='flex-col' ml={3}>
-              <StyledLabel color='#696c80' fontSize='12px'>
-                {t('pool')}
-              </StyledLabel>
+              <p className='caption'>{t('pool')}</p>
 
               {token0 && token1 && (
-                <StyledLabel color='#ebecf2' fontSize='14px'>
-                  {`${token0.symbol} / ${token1.symbol}`}
-                </StyledLabel>
+                <small>{`${token0.symbol} / ${token1.symbol}`}</small>
               )}
             </Box>
           </Box>
@@ -115,6 +103,6 @@ export default function FarmCard({ el }: FarmCardProps) {
         </Box>
       </Box>
       <Box>{showMore && <FarmCardDetail el={el} />}</Box>
-    </StyledFilledBox>
+    </Box>
   );
 }
