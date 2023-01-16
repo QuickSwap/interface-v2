@@ -133,12 +133,12 @@ const GammaFarmCardDetails: React.FC<{
     if (!masterChefContract || !account) return;
     setAttemptUnstaking(true);
     try {
-      const estimatedGas = await masterChefContract.estimateGas.withdrawAndHarvest(
+      const estimatedGas = await masterChefContract.estimateGas.withdraw(
         pairData.pid,
         parseUnits(Number(unStakeAmount).toFixed(18), 18),
         account,
       );
-      const response: TransactionResponse = await masterChefContract.withdrawAndHarvest(
+      const response: TransactionResponse = await masterChefContract.withdraw(
         pairData.pid,
         parseUnits(Number(unStakeAmount).toFixed(18), 18),
         account,
