@@ -15,12 +15,14 @@ import {
 import { TransactionResponse } from '@ethersproject/abstract-provider';
 import { ApprovalState, useApproveCallback } from 'hooks/useApproveCallback';
 import { tryParseAmount } from 'state/swap/hooks';
+import { useQuery } from 'react-query';
 
 const GammaFarmCardDetails: React.FC<{
+  data: any;
   pairData: any;
   rewardData: any;
   positionData: any;
-}> = ({ pairData, rewardData, positionData }) => {
+}> = ({ pairData, rewardData, positionData, data }) => {
   const { t } = useTranslation();
   const { chainId, account } = useActiveWeb3React();
   const addTransaction = useTransactionAdder();
@@ -29,6 +31,38 @@ const GammaFarmCardDetails: React.FC<{
   const [unStakeAmount, setUnStakeAmount] = useState('');
   const [approveOrStaking, setApproveOrStaking] = useState(false);
   const [attemptUnstaking, setAttemptUnstaking] = useState(false);
+
+  const fetchStakedData = async () => {
+    if (!account) return;
+    try {
+      const data = await fetch(
+        `https://gammawire.net/quickswap/polygon/userRewards2/${account}`,
+      );
+      const gammaData = await data.json();
+      return gammaData ? gammaData.stakes : undefined;
+    } catch (e) {
+      console.log(e);
+      return;
+    }
+  };
+
+  const { data: stakedData } = useQuery('fetchStakedData', fetchStakedData, {
+    refetchInterval: 30000,
+  });
+
+  const availableStakeAmount = positionData
+    ? formatUnits(positionData.shares, 18)
+    : '0';
+  const stakedAmount =
+    stakedData && stakedData.length > 0
+      ? stakedData[0].stakedAmount.toFixed(18)
+      : '0';
+  const lpTokenUSD =
+    data && data.totalSupply && Number(data.totalSupply) > 0
+      ? Number(data.tvlUSD) / Number(formatUnits(data.totalSupply, 18))
+      : 0;
+  const stakedUSD = Number(stakedAmount) * lpTokenUSD;
+
   const rewards: any[] =
     rewardData && rewardData['rewarders']
       ? Object.values(rewardData['rewarders'])
@@ -37,10 +71,16 @@ const GammaFarmCardDetails: React.FC<{
   const masterChefContract = useMasterChefContract();
   const stakeButtonDisabled =
     Number(stakeAmount) <= 0 ||
-    Number(stakeAmount) > Number(formatUnits(positionData.shares, 18)) ||
+    Number(stakeAmount) > Number(availableStakeAmount) ||
     !masterChefContract ||
     !account ||
     approveOrStaking;
+  const unStakeButtonDisabled =
+    Number(unStakeAmount) <= 0 ||
+    Number(unStakeAmount) > Number(stakedAmount) ||
+    !masterChefContract ||
+    !account ||
+    attemptUnstaking;
   const lpToken = chainId
     ? new Token(chainId, pairData.address, 18)
     : undefined;
@@ -89,6 +129,59 @@ const GammaFarmCardDetails: React.FC<{
     });
   };
 
+  const unStakeLP = async () => {
+    if (!masterChefContract || !account) return;
+    setAttemptUnstaking(true);
+    try {
+      const estimatedGas = await masterChefContract.estimateGas.withdrawAndHarvest(
+        pairData.pid,
+        parseUnits(Number(unStakeAmount).toFixed(18), 18),
+        account,
+      );
+      const response: TransactionResponse = await masterChefContract.withdrawAndHarvest(
+        pairData.pid,
+        parseUnits(Number(unStakeAmount).toFixed(18), 18),
+        account,
+        {
+          gasLimit: calculateGasMargin(estimatedGas),
+        },
+      );
+      addTransaction(response, {
+        summary: t('withdrawliquidity'),
+      });
+      const receipt = await response.wait();
+      finalizedTransaction(receipt, {
+        summary: t('withdrawliquidity'),
+      });
+      setAttemptUnstaking(false);
+    } catch (e) {
+      setAttemptUnstaking(false);
+      console.log('err: ', e);
+    }
+  };
+
+  const claimReward = async () => {
+    if (!masterChefContract || !account) return;
+    const estimatedGas = await masterChefContract.estimateGas.harvest(
+      pairData.pid,
+      account,
+    );
+    const response: TransactionResponse = await masterChefContract.harvest(
+      pairData.pid,
+      account,
+      {
+        gasLimit: calculateGasMargin(estimatedGas),
+      },
+    );
+    addTransaction(response, {
+      summary: t('claimrewards'),
+    });
+    const receipt = await response.wait();
+    finalizedTransaction(receipt, {
+      summary: t('claimrewards'),
+    });
+  };
+
   return (
     <Box>
       <Divider />
@@ -97,10 +190,7 @@ const GammaFarmCardDetails: React.FC<{
           <Box className='flex justify-between'>
             <small className='text-secondary'>{t('available')}:</small>
             <small>
-              {positionData
-                ? formatNumber(formatUnits(positionData.shares, 18))
-                : 0}{' '}
-              LP ($
+              {formatNumber(availableStakeAmount)} LP ($
               {positionData ? formatNumber(positionData.balanceUSD) : 0})
             </small>
           </Box>
@@ -113,9 +203,7 @@ const GammaFarmCardDetails: React.FC<{
             <NumericalInput value={stakeAmount} onUserInput={setStakeAmount} />
             <span
               className='weight-600 cursor-pointer text-primary'
-              onClick={() =>
-                setStakeAmount(formatUnits(positionData.shares, 18))
-              }
+              onClick={() => setStakeAmount(availableStakeAmount)}
             >
               {t('max')}
             </span>
@@ -139,7 +227,9 @@ const GammaFarmCardDetails: React.FC<{
         <Box width='calc(33% - 32px)' px='16px'>
           <Box className='flex justify-between'>
             <small className='text-secondary'>{t('deposited')}:</small>
-            <small>LP ($)</small>
+            <small>
+              {formatNumber(stakedAmount)} LP (${formatNumber(stakedUSD)})
+            </small>
           </Box>
           <Box
             className='flex items-center bg-palette'
@@ -151,12 +241,19 @@ const GammaFarmCardDetails: React.FC<{
               value={unStakeAmount}
               onUserInput={setUnStakeAmount}
             />
-            <span className='weight-600 cursor-pointer text-primary'>
+            <span
+              className='weight-600 cursor-pointer text-primary'
+              onClick={() => setUnStakeAmount(stakedAmount)}
+            >
               {t('max')}
             </span>
           </Box>
           <Box mt={2}>
-            <Button disabled={!Number(unStakeAmount)} fullWidth>
+            <Button
+              disabled={unStakeButtonDisabled}
+              fullWidth
+              onClick={unStakeLP}
+            >
               {attemptUnstaking ? t('unstakingLPTokens') : t('unstakeLPTokens')}
             </Button>
           </Box>
@@ -197,7 +294,9 @@ const GammaFarmCardDetails: React.FC<{
               })}
             </Box>
             <Box width='100%'>
-              <Button fullWidth>{t('claim')}</Button>
+              <Button fullWidth onClick={claimReward}>
+                {t('claim')}
+              </Button>
             </Box>
           </Box>
         )}

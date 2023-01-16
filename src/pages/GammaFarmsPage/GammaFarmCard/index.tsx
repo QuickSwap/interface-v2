@@ -106,6 +106,7 @@ const GammaFarmCard: React.FC<{
       </Box>
       {showDetails && (
         <GammaFarmCardDetails
+          data={data}
           pairData={pairData}
           rewardData={rewardData}
           positionData={positionData}

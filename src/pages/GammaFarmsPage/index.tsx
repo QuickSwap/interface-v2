@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { Box, Grid } from '@material-ui/core';
+import React from 'react';
+import { Box } from '@material-ui/core';
 import { Frown } from 'react-feather';
 import { useTranslation } from 'react-i18next';
 import Loader from '../../components/Loader';
