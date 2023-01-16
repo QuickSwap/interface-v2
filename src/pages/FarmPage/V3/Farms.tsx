@@ -177,7 +177,7 @@ export default function Farms() {
             />
           </Box>
           <Box mt={2} px={3.5}>
-            <Box width='85%'>
+            <Box width='90%'>
               <SortColumns
                 sortColumns={sortByDesktopItems}
                 selectedSort={sortBy}

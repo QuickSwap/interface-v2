@@ -35,6 +35,10 @@ export const GAMMA_UNIPROXY_ADDRESSES: AddressMap = {
   [ChainId.MATIC]: '0x8c8f7d348a568553819c4dad401ba6a68fa65924',
 };
 
+export const GAMMA_MASTERCHEF_ADDRESSES: AddressMap = {
+  [ChainId.MATIC]: '0x9c64060cac9a20a44dbf9eff47bd4de7d049877d',
+};
+
 export const MULTICALL_ADDRESS: AddressMap = {
   [ChainId.MATIC]: '0x6ccb9426CeceE2903FbD97fd833fD1D31c100292',
 };

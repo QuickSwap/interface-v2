@@ -154,18 +154,28 @@ export const GlobalConst = {
 };
 
 export const GammaPairs: {
-  [key: string]: { address: string; title: string; type: Presets }[];
+  [key: string]: {
+    address: string;
+    title: string;
+    type: Presets;
+    ableToFarm?: boolean;
+    pid?: number;
+  }[];
 } = {
   '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0x7ceb23fd6bc0add59e62ac25578270cff1b9f619': [
     {
       type: Presets.GAMMA_NARROW,
       title: 'Narrow',
       address: '0x718a554d9740ac9bf4092ec1692961f1c9d96f46',
+      ableToFarm: true,
+      pid: 4,
     },
     {
       type: Presets.GAMMA_WIDE,
       title: 'Wide',
       address: '0x056e8299b082d5f1016c846d93e71eadf4137851',
+      ableToFarm: true,
+      pid: 2,
     },
   ],
   '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0x7ceb23fd6bc0add59e62ac25578270cff1b9f619': [
@@ -173,11 +183,15 @@ export const GammaPairs: {
       type: Presets.GAMMA_NARROW,
       title: 'Narrow',
       address: '0x7ae5dece3903388281eff3a3d115ca00d4fafd4d',
+      ableToFarm: true,
+      pid: 7,
     },
     {
       type: Presets.GAMMA_WIDE,
       title: 'Wide',
       address: '0x5ca313118358e3f5efe0c49f239b66c964f9aef0',
+      ableToFarm: true,
+      pid: 0,
     },
   ],
   '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0x2791bca1f2de4661ed88a30c99a7a9449aa84174': [
@@ -185,11 +199,15 @@ export const GammaPairs: {
       type: Presets.GAMMA_NARROW,
       title: 'Narrow',
       address: '0x7922591f6f9b047ebda320a12b6e3ca4d0f1435f',
+      ableToFarm: true,
+      pid: 5,
     },
     {
       type: Presets.GAMMA_WIDE,
       title: 'Wide',
       address: '0x6ccf63ac74b5533c456c3a68786629e7670293c0',
+      ableToFarm: true,
+      pid: 1,
     },
   ],
   '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6-0x7ceb23fd6bc0add59e62ac25578270cff1b9f619': [
@@ -197,11 +215,15 @@ export const GammaPairs: {
       type: Presets.GAMMA_NARROW,
       title: 'Narrow',
       address: '0xb81686295822b639b647d3b421cd5e09af700ada',
+      ableToFarm: true,
+      pid: 6,
     },
     {
       type: Presets.GAMMA_WIDE,
       title: 'Wide',
       address: '0x242d1d8bd3e600dc04c56f7817327fd750b61736',
+      ableToFarm: true,
+      pid: 3,
     },
   ],
   '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0xa3fa99a148fa48d14dd51d610c367c61876997f1': [

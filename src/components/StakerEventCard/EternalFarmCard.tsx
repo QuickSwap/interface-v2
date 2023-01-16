@@ -101,7 +101,7 @@ export function EternalFarmCard({
       borderRadius={16}
       className='flex items-center bg-secondary1'
     >
-      <Box width='85%' className='flex items-center'>
+      <Box width='90%' className='flex items-center'>
         <Box width='30%' className='flex items-center'>
           {token0 && token1 && (
             <DoubleCurrencyLogo
@@ -168,7 +168,7 @@ export function EternalFarmCard({
         </Box>
       </Box>
 
-      <Box width='15%'>
+      <Box width='10%'>
         <Button onClick={farmHandler}>{t('farm')}</Button>
       </Box>
     </Box>

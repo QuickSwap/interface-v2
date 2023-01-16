@@ -620,5 +620,6 @@
   "nftApproved": "NFT #{{ nftID }} was approved",
   "withdrawingGammaLiquidity": "Withdrawing Gamma Liquidity",
   "withdrewGammaLiquidity": "Withdrew Gamma Liquidity",
-  "fetchingGammaDepositRange": "Fetching Gamma Deposit Range"
+  "fetchingGammaDepositRange": "Fetching Gamma Deposit Range",
+  "available": "Available"
 }
